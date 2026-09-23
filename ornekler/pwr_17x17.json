@@ -1,0 +1,287 @@
+{
+  "surum": 1,
+  "ad": "PWR 17x17 yakit demeti",
+  "aciklama": "Westinghouse tipi 17x17 yakit demeti: 264 yakit cubugu, 24 kilavuz boru, 1 merkezi enstruman borusu. Sicak sartlar (yakit 900 K, zarf 600 K, sogutucu 580 K / 0.70 g/cc), 1300 ppm cozunmus bor. Yansitici sinir -> sonsuz kafes (k-inf).",
+  "malzemeler": [
+    {
+      "ad": "uo2",
+      "gorunen_ad": "UO2 %3.20",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 10.4
+      },
+      "sicaklik": 900.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "U",
+          "miktar": 1.0,
+          "birim": "ao",
+          "zenginlik": 3.2
+        },
+        {
+          "tur": "element",
+          "isim": "O",
+          "miktar": 2.0,
+          "birim": "ao"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        222,
+        93,
+        40
+      ]
+    },
+    {
+      "ad": "helyum",
+      "gorunen_ad": "He",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 0.0001785
+      },
+      "sicaklik": 600.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "He",
+          "miktar": 1.0,
+          "birim": "ao"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        235,
+        235,
+        245
+      ]
+    },
+    {
+      "ad": "zirkaloy4",
+      "gorunen_ad": "Zircaloy-4",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 6.55
+      },
+      "sicaklik": 600.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "Zr",
+          "miktar": 98.23,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Sn",
+          "miktar": 1.45,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Fe",
+          "miktar": 0.21,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Cr",
+          "miktar": 0.11,
+          "birim": "wo"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        150,
+        150,
+        160
+      ]
+    },
+    {
+      "ad": "su",
+      "gorunen_ad": "H2O 0.700 g/cc + 1300 ppm B",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 0.7
+      },
+      "sicaklik": 580.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "H",
+          "miktar": 11.176126561199002,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "O",
+          "miktar": 88.69941715237303,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "B",
+          "miktar": 0.13,
+          "birim": "wo"
+        }
+      ],
+      "sab": [
+        "c_H_in_H2O"
+      ],
+      "renk": [
+        90,
+        150,
+        220
+      ]
+    }
+  ],
+  "cubuklar": [
+    {
+      "ad": "yakit_cubugu",
+      "tur": "silindirik",
+      "bolgeler": [
+        {
+          "r": 0.4096,
+          "malzeme": "uo2"
+        },
+        {
+          "r": 0.418,
+          "malzeme": "helyum"
+        },
+        {
+          "r": 0.475,
+          "malzeme": "zirkaloy4"
+        },
+        {
+          "r": null,
+          "malzeme": "su"
+        }
+      ]
+    },
+    {
+      "ad": "kilavuz_boru",
+      "tur": "silindirik",
+      "bolgeler": [
+        {
+          "r": 0.561,
+          "malzeme": "su"
+        },
+        {
+          "r": 0.602,
+          "malzeme": "zirkaloy4"
+        },
+        {
+          "r": null,
+          "malzeme": "su"
+        }
+      ]
+    }
+  ],
+  "plakalar": [],
+  "demetler": [
+    {
+      "ad": "demet_17x17",
+      "tur": "kare",
+      "adim": 1.26,
+      "boyut": [
+        17,
+        17
+      ],
+      "harita": [
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyykyykyykyyyyy",
+        "yyykyyyyyyyyykyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yykyykyykyykyykyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yykyykyyeyykyykyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yykyykyykyykyykyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyykyyyyyyyyykyyy",
+        "yyyyykyykyykyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy"
+      ],
+      "anahtar": {
+        "y": "yakit_cubugu",
+        "k": "kilavuz_boru",
+        "e": "kilavuz_boru"
+      },
+      "dolgu_disi": "su"
+    }
+  ],
+  "kor": {
+    "tur": "tek_demet",
+    "cubuk": null,
+    "demet": "demet_17x17",
+    "plaka": null,
+    "adim": 1.26,
+    "boyut": [
+      1,
+      1
+    ],
+    "harita": [],
+    "anahtar": {},
+    "yukseklik": null,
+    "yansitici": {
+      "var": false,
+      "kalinlik": 20.0,
+      "malzeme": "su"
+    },
+    "sinir": {
+      "yan": "reflective",
+      "alt": "reflective",
+      "ust": "reflective"
+    }
+  },
+  "ayarlar": {
+    "mod": "eigenvalue",
+    "parcacik": 10000,
+    "cevrim": 150,
+    "pasif": 40,
+    "tohum": 1,
+    "sicaklik_yontemi": "interpolation",
+    "kaynak": {
+      "tur": "kutu",
+      "alt": null,
+      "ust": null
+    }
+  },
+  "tallyler": [
+    {
+      "ad": "reaksiyonlar",
+      "skorlar": [
+        "fission",
+        "absorption",
+        "nu-fission"
+      ],
+      "filtreler": [],
+      "nuklidler": []
+    },
+    {
+      "ad": "iki_grup_aki",
+      "skorlar": [
+        "flux"
+      ],
+      "filtreler": [
+        {
+          "tur": "enerji",
+          "gruplar": [
+            0.0,
+            0.625,
+            20000000.0
+          ]
+        }
+      ],
+      "nuklidler": []
+    }
+  ],
+  "calistirma": {
+    "is_parcacigi": 24,
+    "dizin": "kosu"
+  }
+}

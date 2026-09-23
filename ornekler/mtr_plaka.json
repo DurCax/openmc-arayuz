@@ -1,0 +1,210 @@
+{
+  "surum": 1,
+  "ad": "MTR plaka yakit elemani",
+  "aciklama": "Havuz tipi arastirma reaktoru standart yakit elemani: 23 duz plaka, U3Si2-Al dispersiyon yakiti (4.8 gU/cm3, %19.75 zenginlik), Al-6061 zarf, hafif su sogutucu. Yansitici sinir -> sonsuz kafes yaklasimi.",
+  "malzemeler": [
+    {
+      "ad": "u3si2_al",
+      "gorunen_ad": "U3Si2-Al 4.8 gU/cc",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 5.4
+      },
+      "sicaklik": 350.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "U",
+          "miktar": 88.88888888888889,
+          "birim": "wo",
+          "zenginlik": 19.75
+        },
+        {
+          "tur": "element",
+          "isim": "Si",
+          "miktar": 6.98953726674577,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Al",
+          "miktar": 4.121573844365351,
+          "birim": "wo"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        222,
+        93,
+        40
+      ]
+    },
+    {
+      "ad": "al6061",
+      "gorunen_ad": "Al-6061",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 2.7
+      },
+      "sicaklik": 350.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "Al",
+          "miktar": 97.2,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Mg",
+          "miktar": 1.0,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Si",
+          "miktar": 0.6,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Fe",
+          "miktar": 0.4,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Cu",
+          "miktar": 0.28,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Cr",
+          "miktar": 0.2,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Mn",
+          "miktar": 0.15,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Zn",
+          "miktar": 0.17,
+          "birim": "wo"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        190,
+        190,
+        200
+      ]
+    },
+    {
+      "ad": "su",
+      "gorunen_ad": "H2O 0.989 g/cc",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 0.9891605
+      },
+      "sicaklik": 320.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "H",
+          "miktar": 2.0,
+          "birim": "ao"
+        },
+        {
+          "tur": "element",
+          "isim": "O",
+          "miktar": 1.0,
+          "birim": "ao"
+        }
+      ],
+      "sab": [
+        "c_H_in_H2O"
+      ],
+      "renk": [
+        90,
+        150,
+        220
+      ]
+    }
+  ],
+  "cubuklar": [],
+  "plakalar": [
+    {
+      "ad": "mtr_eleman",
+      "tur": "plaka",
+      "plaka_sayisi": 23,
+      "et_kalinlik": 0.051,
+      "zarf_kalinlik": 0.038,
+      "kanal_kalinlik": 0.2,
+      "plaka_genislik": 6.3,
+      "et_malzeme": "u3si2_al",
+      "zarf_malzeme": "al6061",
+      "sogutucu": "su",
+      "yan_levha_kalinlik": 0.475,
+      "yan_levha_malzeme": "al6061"
+    }
+  ],
+  "demetler": [],
+  "kor": {
+    "tur": "tek_plaka",
+    "cubuk": null,
+    "demet": null,
+    "plaka": "mtr_eleman",
+    "adim": 1.26,
+    "boyut": [
+      1,
+      1
+    ],
+    "harita": [],
+    "anahtar": {},
+    "yukseklik": null,
+    "yansitici": {
+      "var": false,
+      "kalinlik": 20.0,
+      "malzeme": null
+    },
+    "sinir": {
+      "yan": "reflective",
+      "alt": "reflective",
+      "ust": "reflective"
+    }
+  },
+  "ayarlar": {
+    "mod": "eigenvalue",
+    "parcacik": 10000,
+    "cevrim": 120,
+    "pasif": 30,
+    "tohum": 1,
+    "sicaklik_yontemi": "interpolation",
+    "kaynak": {
+      "tur": "kutu",
+      "alt": null,
+      "ust": null
+    }
+  },
+  "tallyler": [
+    {
+      "ad": "reaksiyonlar",
+      "skorlar": [
+        "fission",
+        "absorption",
+        "nu-fission"
+      ],
+      "filtreler": [],
+      "nuklidler": []
+    }
+  ],
+  "calistirma": {
+    "is_parcacigi": 24,
+    "dizin": "kosu"
+  }
+}

@@ -1,0 +1,29 @@
+# --- OpenMC kosu ciktilari ---
+kosu/
+*.h5
+statepoint.*
+summary.h5
+tallies.out
+model.xml
+materials.xml
+geometry.xml
+settings.xml
+plots.xml
+*.log
+
+# --- uretilen dosyalar ---
+*.png
+!belge/*.png
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.egg-info/
+
+# --- editor / sistem ---
+.vscode/
+.idea/
+*.swp
+*~
+.DS_Store

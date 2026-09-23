@@ -1,0 +1,294 @@
+{
+  "surum": 1,
+  "ad": "SFR altigen yakit demeti",
+  "aciklama": "Sodyum sogutmali hizli reaktor yakit demeti: 7 halkali altigen kafes, 127 U-10Mo yakit cubugu, SS316 zarf, sivi sodyum 673 K. Altigen prizma yansitici sinir -> sonsuz kafes (k-inf). 'e' harfi B4C emici cubuga bagli; kontrol demeti kurmak icin haritada kullanilabilir.",
+  "malzemeler": [
+    {
+      "ad": "u10mo",
+      "gorunen_ad": "U-10Mo %19.75",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 17.0
+      },
+      "sicaklik": 900.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "U",
+          "miktar": 90.0,
+          "birim": "wo",
+          "zenginlik": 19.75
+        },
+        {
+          "tur": "element",
+          "isim": "Mo",
+          "miktar": 10.0,
+          "birim": "wo"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        222,
+        93,
+        40
+      ]
+    },
+    {
+      "ad": "ss316",
+      "gorunen_ad": "SS-316",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 7.99
+      },
+      "sicaklik": 750.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "Fe",
+          "miktar": 65.0,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Cr",
+          "miktar": 17.0,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Ni",
+          "miktar": 12.0,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Mo",
+          "miktar": 2.5,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Mn",
+          "miktar": 2.0,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Si",
+          "miktar": 1.0,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "C",
+          "miktar": 0.5,
+          "birim": "wo"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        190,
+        190,
+        200
+      ]
+    },
+    {
+      "ad": "sodyum",
+      "gorunen_ad": "Na 673 K (0.856 g/cc)",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 0.8558450000000001
+      },
+      "sicaklik": 673.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "Na",
+          "miktar": 1.0,
+          "birim": "ao"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        200,
+        200,
+        120
+      ]
+    },
+    {
+      "ad": "b4c",
+      "gorunen_ad": "B4C %90.0 B10",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 2.52
+      },
+      "sicaklik": 750.0,
+      "bilesim": [
+        {
+          "tur": "nuklid",
+          "isim": "B10",
+          "miktar": 3.6,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "B11",
+          "miktar": 0.3999999999999999,
+          "birim": "ao"
+        },
+        {
+          "tur": "element",
+          "isim": "C",
+          "miktar": 1.0,
+          "birim": "ao"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        60,
+        60,
+        60
+      ]
+    }
+  ],
+  "cubuklar": [
+    {
+      "ad": "yakit_cubugu",
+      "tur": "silindirik",
+      "bolgeler": [
+        {
+          "r": 0.32,
+          "malzeme": "u10mo"
+        },
+        {
+          "r": 0.345,
+          "malzeme": "sodyum"
+        },
+        {
+          "r": 0.395,
+          "malzeme": "ss316"
+        },
+        {
+          "r": null,
+          "malzeme": "sodyum"
+        }
+      ]
+    },
+    {
+      "ad": "emici_cubuk",
+      "tur": "silindirik",
+      "bolgeler": [
+        {
+          "r": 0.34,
+          "malzeme": "b4c"
+        },
+        {
+          "r": 0.395,
+          "malzeme": "ss316"
+        },
+        {
+          "r": null,
+          "malzeme": "sodyum"
+        }
+      ]
+    }
+  ],
+  "plakalar": [],
+  "demetler": [
+    {
+      "ad": "demet_hex",
+      "tur": "altigen",
+      "adim": 0.9,
+      "halka_sayisi": 7,
+      "yonelim": "y",
+      "boyut": [
+        7,
+        7
+      ],
+      "harita": [
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyy",
+        "yyyyyy",
+        "y"
+      ],
+      "anahtar": {
+        "y": "yakit_cubugu",
+        "e": "emici_cubuk"
+      },
+      "dolgu_disi": "sodyum"
+    }
+  ],
+  "kor": {
+    "tur": "tek_demet",
+    "cubuk": null,
+    "demet": "demet_hex",
+    "plaka": null,
+    "adim": 1.26,
+    "boyut": [
+      1,
+      1
+    ],
+    "harita": [],
+    "anahtar": {},
+    "yukseklik": null,
+    "yansitici": {
+      "var": false,
+      "kalinlik": 10.0,
+      "malzeme": "sodyum"
+    },
+    "sinir": {
+      "yan": "reflective",
+      "alt": "reflective",
+      "ust": "reflective"
+    }
+  },
+  "ayarlar": {
+    "mod": "eigenvalue",
+    "parcacik": 10000,
+    "cevrim": 120,
+    "pasif": 30,
+    "tohum": 1,
+    "sicaklik_yontemi": "interpolation",
+    "kaynak": {
+      "tur": "kutu",
+      "alt": null,
+      "ust": null
+    }
+  },
+  "tallyler": [
+    {
+      "ad": "reaksiyonlar",
+      "skorlar": [
+        "fission",
+        "absorption",
+        "nu-fission"
+      ],
+      "filtreler": [],
+      "nuklidler": []
+    },
+    {
+      "ad": "iki_grup_aki",
+      "skorlar": [
+        "flux"
+      ],
+      "filtreler": [
+        {
+          "tur": "enerji",
+          "gruplar": [
+            0.0,
+            100000.0,
+            20000000.0
+          ]
+        }
+      ],
+      "nuklidler": []
+    }
+  ],
+  "calistirma": {
+    "is_parcacigi": 24,
+    "dizin": "kosu"
+  }
+}

@@ -1,0 +1,169 @@
+{
+  "surum": 1,
+  "ad": "PWR pin hucre (regresyon cipasi)",
+  "aciklama": "Klasik PWR yakit hucresi. Bu spec, arayuz gelistirilirken olculen referans sonucu uretmelidir: k-inf = 1.3570 +/- 0.0020. 2 sigma disina cikarsa kurucu katmaninda hata var demektir.",
+  "malzemeler": [
+    {
+      "ad": "uo2",
+      "gorunen_ad": "UO2 %3.0",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 10.0
+      },
+      "sicaklik": 293.6,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "U",
+          "miktar": 1.0,
+          "birim": "ao",
+          "zenginlik": 3.0
+        },
+        {
+          "tur": "element",
+          "isim": "O",
+          "miktar": 2.0,
+          "birim": "ao"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        222,
+        93,
+        40
+      ]
+    },
+    {
+      "ad": "zirkaloy",
+      "gorunen_ad": "Zircaloy kilif",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 6.55
+      },
+      "sicaklik": 293.6,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "Zr",
+          "miktar": 1.0,
+          "birim": "ao"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        150,
+        150,
+        160
+      ]
+    },
+    {
+      "ad": "su",
+      "gorunen_ad": "Hafif su 0.7 g/cc",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 0.7
+      },
+      "sicaklik": 293.6,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "H",
+          "miktar": 2.0,
+          "birim": "ao"
+        },
+        {
+          "tur": "element",
+          "isim": "O",
+          "miktar": 1.0,
+          "birim": "ao"
+        }
+      ],
+      "sab": [
+        "c_H_in_H2O"
+      ],
+      "renk": [
+        90,
+        150,
+        220
+      ]
+    }
+  ],
+  "cubuklar": [
+    {
+      "ad": "yakit_cubugu",
+      "tur": "silindirik",
+      "bolgeler": [
+        {
+          "r": 0.39218,
+          "malzeme": "uo2"
+        },
+        {
+          "r": 0.4572,
+          "malzeme": "zirkaloy"
+        },
+        {
+          "r": null,
+          "malzeme": "su"
+        }
+      ]
+    }
+  ],
+  "plakalar": [],
+  "demetler": [],
+  "kor": {
+    "tur": "tek_cubuk",
+    "cubuk": "yakit_cubugu",
+    "demet": null,
+    "plaka": null,
+    "adim": 1.26,
+    "boyut": [
+      1,
+      1
+    ],
+    "harita": [],
+    "anahtar": {},
+    "yukseklik": null,
+    "yansitici": {
+      "var": false,
+      "kalinlik": 20.0,
+      "malzeme": null
+    },
+    "sinir": {
+      "yan": "reflective",
+      "alt": "reflective",
+      "ust": "reflective"
+    }
+  },
+  "ayarlar": {
+    "mod": "eigenvalue",
+    "parcacik": 5000,
+    "cevrim": 60,
+    "pasif": 10,
+    "tohum": 1,
+    "sicaklik_yontemi": "interpolation",
+    "kaynak": {
+      "tur": "nokta",
+      "konum": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    }
+  },
+  "tallyler": [
+    {
+      "ad": "reaksiyonlar",
+      "skorlar": [
+        "fission",
+        "absorption",
+        "nu-fission"
+      ],
+      "filtreler": [],
+      "nuklidler": []
+    }
+  ],
+  "calistirma": {
+    "is_parcacigi": 8,
+    "dizin": "kosu"
+  }
+}
