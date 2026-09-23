@@ -275,6 +275,31 @@ def _geometri(spec, satirlar):
             gx, gy = altigen.kapsayan_olcu(halka, d["adim"], d.get("yonelim", "y"))
         else:
             gx, gy = d["adim"] * d["boyut"][0], d["adim"] * d["boyut"][1]
+    elif tur == "kuresel":
+        kabuklar = kor.get("kabuklar") or []
+        satirlar.append("")
+        satirlar.append("# Es merkezli kuresel kabuklar (icten disa).")
+        satirlar.append("# En dis kabugun yuzeyi modelin sinir yuzeyidir.")
+        sinir_bc = (kor.get("sinir") or {}).get("yan", "vacuum")
+        satirlar.append("_kure_hucreler = []")
+        satirlar.append("_onceki = None")
+        for i, k in enumerate(kabuklar):
+            son = (i == len(kabuklar) - 1)
+            bc = ", boundary_type=%r" % sinir_bc if son else ""
+            satirlar.append("_y%d = openmc.Sphere(r=%s%s)" % (i, _f(k["r"]), bc))
+            if i == 0:
+                satirlar.append("_kure_hucreler.append(openmc.Cell(fill=%s, region=-_y0))"
+                                % _mat_ifade(k.get("malzeme")))
+            else:
+                satirlar.append("_kure_hucreler.append(openmc.Cell(fill=%s, "
+                                "region=+_y%d & -_y%d))"
+                                % (_mat_ifade(k.get("malzeme")), i - 1, i))
+        satirlar.append("kok = openmc.Universe(cells=_kure_hucreler)")
+        satirlar.append("")
+        satirlar.append("geometri = openmc.Geometry(kok)")
+        capi = 2.0 * (kabuklar[-1]["r"] if kabuklar else 1.0)
+        return capi, capi
+
     elif tur == "kare_kafes":
         for harf, hedef in sorted(kor["anahtar"].items()):
             _bagimliliklar(spec, hedef, satirlar, uretilen)

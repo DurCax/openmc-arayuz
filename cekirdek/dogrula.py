@@ -412,7 +412,7 @@ def kor_kontrol(spec):
     bulgular = []
     kor = spec["kor"]
     tur = kor.get("tur")
-    gecerli = ("tek_cubuk", "tek_demet", "kare_kafes", "tek_plaka")
+    gecerli = ("tek_cubuk", "tek_demet", "kare_kafes", "tek_plaka", "kuresel")
     if tur not in gecerli:
         bulgular.append(Bulgu("hata", "kor",
                               "bilinmeyen kor turu: %s (gecerli: %s)"
@@ -441,6 +441,33 @@ def kor_kontrol(spec):
     elif tur == "tek_plaka":
         if not kor.get("plaka") or plaka_bul(spec, kor.get("plaka")) is None:
             bulgular.append(Bulgu("hata", "kor", "tanimsiz plaka elemani: %s" % kor.get("plaka")))
+    elif tur == "kuresel":
+        kabuklar = kor.get("kabuklar") or []
+        if not kabuklar:
+            bulgular.append(Bulgu("hata", "kor", "kuresel korda en az bir kabuk gerekir"))
+        for i, k in enumerate(kabuklar):
+            if not k.get("r") or k["r"] <= 0:
+                bulgular.append(Bulgu("hata", "kor",
+                                      "%d. kabugun yaricapi pozitif olmali" % (i + 1)))
+            ad = k.get("malzeme")
+            if ad and ad != BOSLUK and malzeme_bul(spec, ad) is None:
+                bulgular.append(Bulgu("hata", "kor",
+                                      "%d. kabukta tanimsiz malzeme: %s" % (i + 1, ad)))
+        r = [k.get("r") for k in kabuklar if k.get("r")]
+        for i in range(len(r) - 1):
+            if r[i] >= r[i + 1]:
+                bulgular.append(Bulgu(
+                    "hata", "kor",
+                    "kabuk yaricaplari artan sirada olmali: r%d=%.5f >= r%d=%.5f"
+                    % (i + 1, r[i], i + 2, r[i + 1])))
+        if kor.get("sinir", {}).get("yan") == "reflective":
+            bulgular.append(Bulgu(
+                "uyari", "kor",
+                "kuresel duzenekte dis sinir 'reflective' -- ciplak (bare) bir "
+                "kriter modelliyorsaniz 'vacuum' olmali",
+                "Yansitici sinir sonsuz bir ortam demektir; kritik kure "
+                "kriterleri ciplaktir (vacuum)."))
+
     elif tur == "kare_kafes":
         harita = kor.get("harita") or []
         if not harita:

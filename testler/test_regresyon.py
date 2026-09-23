@@ -61,7 +61,8 @@ def kontrol(baslik, kosul, ayrinti=""):
 
 def test_dogrulama_temiz():
     print("\n[1] Temiz modeller dogrulamadan hatasiz gecmeli")
-    for ad in ("pwr_pinhucre", "pwr_17x17", "mtr_plaka", "sfr_altigen"):
+    for ad in ("pwr_pinhucre", "pwr_17x17", "mtr_plaka", "sfr_altigen",
+                   "godiva_kriter"):
         spec = sema.yukle(os.path.join(ORNEK, ad + ".json"))
         b = dogrula.tum_kontroller(spec)
         kontrol(ad, not dogrula.hata_var(b), "(%s)" % dogrula.ozet(b))
@@ -129,7 +130,8 @@ def test_cizim():
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
-    for ad in ("pwr_pinhucre", "pwr_17x17", "mtr_plaka", "sfr_altigen"):
+    for ad in ("pwr_pinhucre", "pwr_17x17", "mtr_plaka", "sfr_altigen",
+                   "godiva_kriter"):
         spec = sema.yukle(os.path.join(ORNEK, ad + ".json"))
         model, bilgi = kurucu.kur(spec)
         try:
@@ -307,6 +309,150 @@ def test_onbellek():
 
 
 # ============================================================================
+# 3i. REAKTIVITE, TARAMA VE KRITIK ARAMA
+# ============================================================================
+
+def test_reaktivite():
+    """rho = (k-1)/k ve belirsizlik yayilimi dogru olmali."""
+    print("\n[3i] Reaktivite hesabi")
+    from cekirdek.tarama import reaktivite
+    for k, beklenen in ((1.0, 0.0), (1.05, 4761.9), (0.95, -5263.2)):
+        r, _ = reaktivite(k, 0.001)
+        kontrol("k=%.2f -> %.1f pcm" % (k, beklenen), abs(r - beklenen) < 0.1)
+    # sigma_rho = sigma_k / k^2
+    _, s = reaktivite(1.25, 0.001)
+    kontrol("belirsizlik yayilimi", abs(s - 1e5 * 0.001 / 1.25 ** 2) < 1e-6)
+
+
+def test_parametre_uygula():
+    """Tarama parametreleri spec'i dogru degistirmeli, kaynagi bozmamali."""
+    print("\n[3j] Parametre uygulama")
+    from cekirdek import tarama
+    from cekirdek import malzeme_kutup as mk
+    spec = sema.yukle(os.path.join(ORNEK, "pwr_17x17.json"))
+    ilk_sicaklik = sema.malzeme_bul(spec, "su")["sicaklik"]
+
+    y, _ = tarama.parametre_uygula(spec, "yakit_sicaklik", "uo2", 1100.0)
+    kontrol("yakit sicakligi", sema.malzeme_bul(y, "uo2")["sicaklik"] == 1100.0)
+    kontrol("kaynak spec bozulmadi",
+            sema.malzeme_bul(spec, "su")["sicaklik"] == ilk_sicaklik)
+
+    # sogutucu sicakligi: YOGUNLUK DA degismeli (en kritik davranis)
+    y, _ = tarama.parametre_uygula(spec, "sogutucu_sicaklik", "su", 620.0)
+    yeni_rho = sema.malzeme_bul(y, "su")["yogunluk"]["deger"]
+    kontrol("sogutucu sicakligi yogunlugu da degistirdi",
+            abs(yeni_rho - mk.su_yogunluk(620.0)) < 1e-9,
+            "rho = %.4f" % yeni_rho)
+
+    # void: rho0*(1-alfa)
+    rho0 = sema.malzeme_bul(spec, "su")["yogunluk"]["deger"]
+    y, _ = tarama.parametre_uygula(spec, "void_orani", "su", 40.0)
+    kontrol("void %40 -> rho0*0.6",
+            abs(sema.malzeme_bul(y, "su")["yogunluk"]["deger"] - rho0 * 0.6) < 1e-9)
+
+    y, _ = tarama.parametre_uygula(spec, "zenginlik", "uo2", 4.5)
+    z = [b.get("zenginlik") for b in sema.malzeme_bul(y, "uo2")["bilesim"]
+         if b.get("zenginlik")]
+    kontrol("zenginlik", z and abs(z[0] - 4.5) < 1e-9)
+
+    y, _ = tarama.parametre_uygula(spec, "kafes_adim", "demet_17x17", 1.40)
+    kontrol("kafes adimi", abs(sema.demet_bul(y, "demet_17x17")["adim"] - 1.40) < 1e-9)
+
+
+def test_katsayi_uyumu():
+    """Agirlikli dogrusal uyum bilinen bir egimi geri vermeli."""
+    print("\n[3k] Katsayi uyumu (sentetik)")
+    from cekirdek import tarama
+    # rho(p) = -3.0 * p + 5000 pcm olacak sekilde k uret
+    sonuclar = []
+    for p in (0, 100, 200, 300, 400):
+        rho = (5000.0 - 3.0 * p) / 1e5
+        k = 1.0 / (1.0 - rho)
+        sonuclar.append({"deger": float(p), "keff": k, "sapma": 1e-5})
+    kats = tarama.katsayi(sonuclar)
+    kontrol("egim -3.0 pcm/birim geri geldi",
+            abs(kats["egim"] + 3.0) < 0.02, "olculen %.4f" % kats["egim"])
+    kontrol("R2 ~ 1", kats["r2"] > 0.999)
+    kontrol("tek nokta -> None", tarama.katsayi(sonuclar[:1]) is None)
+
+
+def test_kritik_arama_kok_sarti():
+    """Hedef aralik disindaysa arama EKSTRAPOLASYON YAPMAMALI."""
+    print("\n[3l] Kritik arama kok sarti")
+    from cekirdek import kritik_arama
+    import tempfile as _t
+
+    class SahteKosucu:
+        """k(p) = 1.3 - 0.0001*p  -- gercek kosu yapmadan mantigi sinar."""
+        @staticmethod
+        def sahte(spec, tur, hedef, deger, dizin, is_parcacigi, taban):
+            return 1.3 - 0.0001 * deger, 0.0005
+
+    orj = kritik_arama._nokta_kos
+    kritik_arama._nokta_kos = SahteKosucu.sahte
+    try:
+        spec = sema.yukle(os.path.join(ORNEK, "pwr_17x17.json"))
+        # k(0)=1.3, k(1000)=1.2 -> hedef 1.0 aralikta DEGIL
+        s = kritik_arama.ara(spec, "bor_ppm", "su", 0, 1000, _t.mkdtemp())
+        kontrol("aralik disi -> reddetti", not s.basarili and "aralikta degil" in s.mesaj)
+        # k(0)=1.3, k(5000)=0.8 -> hedef 1.0 aralikta
+        s = kritik_arama.ara(spec, "bor_ppm", "su", 0, 5000, _t.mkdtemp())
+        kontrol("aralik icinde -> buldu", s.basarili, "cozum=%.1f" % (s.cozum or -1))
+        kontrol("cozum dogru (beklenen 3000)", s.basarili and abs(s.cozum - 3000) < 60,
+                "cozum=%.1f" % (s.cozum or -1))
+    finally:
+        kritik_arama._nokta_kos = orj
+
+
+def test_kuresel_kor():
+    """Kuresel kor kurulmali ve olculeri dogru olmali."""
+    print("\n[3m] Kuresel kor turu")
+    spec = sema.yukle(os.path.join(ORNEK, "godiva_kriter.json"))
+    b = dogrula.tum_kontroller(spec)
+    kontrol("godiva dogrulamadan geciyor", not dogrula.hata_var(b),
+            "(%s)" % dogrula.ozet(b))
+    _, bilgi = kurucu.kur(spec)
+    gx, gy = bilgi["sinir_kutu"]
+    kontrol("sinir kutusu = 2 x yaricap", abs(gx - 2 * 8.7407) < 1e-9,
+            "%.4f cm" % gx)
+    # ters siralı kabuk -> hata
+    import copy as _c
+    bozuk = _c.deepcopy(spec)
+    bozuk["kor"]["kabuklar"] = [sema.kabuk(9.0, "heu"), sema.kabuk(5.0, "heu")]
+    b = dogrula.tum_kontroller(bozuk)
+    kontrol("ters kabuk sirasi yakalandi",
+            any("artan sirada" in x.mesaj for x in b))
+
+
+def test_veri_sicaklik_araligi():
+    """Veri kutuphanesi sicaklik araliklari okunabilmeli."""
+    print("\n[3n] Veri kutuphanesi sicaklik araliklari")
+    from cekirdek import veri_bilgi
+    a = veri_bilgi.nuklid_araligi("U235")
+    kontrol("U235 araligi okundu", a is not None and a[0] > 0 and a[1] > a[0],
+            str(a))
+    s = veri_bilgi.sab_araligi("c_H_in_H2O")
+    kontrol("c_H_in_H2O araligi okundu", s is not None, str(s))
+    kontrol("su S(a,b) araligi notrondan DAR",
+            s is not None and a is not None and s[1] < a[1],
+            "S(a,b) ust sinir %s < notron %s" % (s[1] if s else "?", a[1] if a else "?"))
+
+
+def test_keff_yorumu():
+    """k-eff yorumu dogru kritiklik durumunu vermeli."""
+    print("\n[3o] k-eff yorumu")
+    from cekirdek.kosucu import keff_yorumu
+    d, _ = keff_yorumu(1.05, 0.001)
+    kontrol("k=1.05 -> kritik ustu", "USTU" in d)
+    d, _ = keff_yorumu(0.95, 0.001)
+    kontrol("k=0.95 -> kritik alti", "ALTI" in d)
+    d, _ = keff_yorumu(1.0001, 0.001)
+    kontrol("k=1.0001 -> kritik", d.startswith("KRITIK ("))
+    _, a = keff_yorumu(1.01, 0.0005, 0.0065)
+    kontrol("dolar cinsinden verildi", "$" in a, a[:60])
+
+
+# ============================================================================
 # 5-6. MONTE CARLO (yavas)
 # ============================================================================
 
@@ -389,6 +535,37 @@ def test_altigen_betik_esdegerligi(gecici):
             fark < 1e-10, "-> fark %.2e" % fark)
 
 
+def test_godiva_kriteri(gecici):
+    """
+    ICSBEP HEU-MET-FAST-001 (Godiva) kriteri: yayimlanmis k_eff = 1.0000 +/- 0.0010.
+
+    Bu test regresyon cipasindan FARKLIDIR: cipa "kod kendiyle tutarli" der,
+    bu test "sonuc gercekten dogru" der. Malzeme bilesimi, geometri, tesir
+    kesiti kutuphanesi ve tasima zincirinin tamami bagimsiz bir olcume
+    karsi sinanir.
+    """
+    print("\n[8] GODIVA KRITERI (ICSBEP HEU-MET-FAST-001)")
+    import math
+    import openmc
+    spec = sema.yukle(os.path.join(ORNEK, "godiva_kriter.json"))
+    spec["ayarlar"].update(parcacik=15000, cevrim=140, pasif=40)
+    dizin = os.path.join(gecici, "godiva")
+    os.makedirs(dizin, exist_ok=True)
+    eski = os.getcwd()
+    try:
+        os.chdir(dizin)
+        model, _ = kurucu.kur(spec)
+        k = openmc.StatePoint(model.run(threads=8, output=False)).keff
+    finally:
+        os.chdir(eski)
+    KRITER, KRITER_S = 1.0000, 0.0010
+    fark = abs(k.nominal_value - KRITER)
+    top = math.sqrt(k.std_dev ** 2 + KRITER_S ** 2)
+    kontrol("k = %.5f +/- %.5f  (kriter %.4f +/- %.4f)"
+            % (k.nominal_value, k.std_dev, KRITER, KRITER_S),
+            fark < 2 * top, "-> %.2f sigma" % (fark / top))
+
+
 def main(argv):
     hizli = "--hizli" in argv
     print("=" * 74)
@@ -405,6 +582,13 @@ def main(argv):
     test_entropi_ayristirma()
     test_entropi_yakinsama()
     test_onbellek()
+    test_reaktivite()
+    test_parametre_uygula()
+    test_katsayi_uyumu()
+    test_kritik_arama_kok_sarti()
+    test_kuresel_kor()
+    test_veri_sicaklik_araligi()
+    test_keff_yorumu()
     test_cizim()
 
     if not hizli:
@@ -413,10 +597,11 @@ def main(argv):
             test_regresyon_cipasi(gecici)
             test_betik_esdegerligi(gecici)
             test_altigen_betik_esdegerligi(gecici)
+            test_godiva_kriteri(gecici)
         finally:
             shutil.rmtree(gecici, ignore_errors=True)
     else:
-        print("\n[5-7] Monte Carlo testleri atlandi (--hizli)")
+        print("\n[5-8] Monte Carlo testleri atlandi (--hizli)")
 
     print("\n" + "=" * 74)
     print(" SONUC: %d gecti, %d kaldi" % (len(_gecti), len(_kaldi)))

@@ -338,6 +338,31 @@ def kor_kur(spec, nesneler, universeler):
     elif tur == "tek_demet":
         ic = demet_lattice(spec, kor["demet"], nesneler, universeler)
         gx, gy = ic.arayuz_boyut
+    elif tur == "kuresel":
+        # Es merkezli kuresel kabuklar. Eksenel sinir yoktur; en dis kabugun
+        # yuzeyi modelin sinir yuzeyidir. Kritik kure kriterleri icin.
+        kabuklar = kor.get("kabuklar") or []
+        if not kabuklar:
+            raise ValueError("kuresel korda en az bir kabuk gerekir")
+        yaricaplar = [k["r"] for k in kabuklar]
+        for i in range(len(yaricaplar) - 1):
+            if yaricaplar[i] >= yaricaplar[i + 1]:
+                raise ValueError("kabuk yaricaplari artan sirada olmali: "
+                                 "r%d=%.5f >= r%d=%.5f"
+                                 % (i + 1, yaricaplar[i], i + 2, yaricaplar[i + 1]))
+        hucreler = []
+        onceki = None
+        for i, k in enumerate(kabuklar):
+            son = (i == len(kabuklar) - 1)
+            yuzey = openmc.Sphere(r=k["r"],
+                                  boundary_type=yan_bc if son else "transmission")
+            bolge = -yuzey if onceki is None else (+onceki & -yuzey)
+            hucreler.append(openmc.Cell(fill=_mat(nesneler, k.get("malzeme")),
+                                        region=bolge))
+            onceki = yuzey
+        capi = 2.0 * yaricaplar[-1]
+        return openmc.Universe(cells=hucreler), (capi, capi)
+
     elif tur == "kare_kafes":
         nx, ny = kor["boyut"]
         harita = kor["harita"]
@@ -503,6 +528,14 @@ def kur(spec):
 
     model = openmc.Model(geometry=geometry, materials=materials,
                          settings=settings, tallies=tallies)
+
+    # --- kinetik parametreler (IFP) ---
+    # add_kinetics_parameters_tallies() modele tally EKLER; bu yuzden model
+    # kurulurken yapilmalidir, sonradan degil (onbellek kimliginin parcasi).
+    kin = spec["ayarlar"].get("kinetik") or {}
+    if kin.get("var") and settings.run_mode == "eigenvalue":
+        model.add_kinetics_parameters_tallies()
+        model.settings.ifp_n_generation = int(kin.get("nesil") or 10)
     bilgi = {
         "malzemeler": nesneler,
         "renkler": renkler,

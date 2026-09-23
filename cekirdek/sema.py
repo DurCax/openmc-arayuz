@@ -58,6 +58,9 @@ VARSAYILAN_AYARLAR = {
     # Ozdeger hesaplarinda acik olmasi onerilir -- yakinsamamis kaynak
     # k-eff'i yanli tahmin ettirir ve bu baska turlu fark edilmez.
     "entropi_mesh": {"var": True, "boyut": [8, 8, 1]},
+    # Kinetik parametreler (IFP yontemi): beta_eff ve uretim zamani Lambda.
+    # Kosuyu bir miktar yavaslatir, bu yuzden varsayilan olarak kapalidir.
+    "kinetik": {"var": False, "nesil": 10},
 }
 
 VARSAYILAN_CALISTIRMA = {
@@ -66,7 +69,7 @@ VARSAYILAN_CALISTIRMA = {
 }
 
 VARSAYILAN_KOR = {
-    "tur": "tek_cubuk",           # tek_cubuk | tek_demet | kare_kafes | tek_plaka
+    "tur": "tek_cubuk",           # tek_cubuk | tek_demet | kare_kafes | tek_plaka | kuresel
     "cubuk": None,
     "demet": None,
     "plaka": None,
@@ -76,6 +79,10 @@ VARSAYILAN_KOR = {
     "anahtar": {},                # harf -> demet adi
     "yukseklik": None,            # cm; None => 2B sonsuz (eksenel sinir yok)
     "yansitici": {"var": False, "kalinlik": 20.0, "malzeme": None},
+    # Kuresel duzenek: es merkezli kabuklar, ICTEN DISA. Her kabugun "r"
+    # degeri DIS yaricapidir; en distaki ayni zamanda modelin sinir yuzeyidir.
+    # Kritik kure kriterlerini (Godiva, Jezebel gibi) kurmak icin kullanilir.
+    "kabuklar": [],
     "sinir": {"yan": "reflective", "alt": "reflective", "ust": "reflective"},
 }
 
@@ -206,6 +213,11 @@ def demet_altigen(ad, adim, halka_sayisi, harita, anahtar, dolgu_disi,
     }
 
 
+def kabuk(r, malzeme_adi):
+    """Kuresel duzenek icin tek bir kuresel kabuk (r = dis yaricap)."""
+    return {"r": r, "malzeme": malzeme_adi}
+
+
 def tally(ad, skorlar, filtreler=None, nuklidler=None):
     """Tally tanimi."""
     return {
@@ -321,6 +333,9 @@ def kullanilan_malzemeler(spec):
     for d in spec["demetler"]:
         if d.get("dolgu_disi") and d["dolgu_disi"] != BOSLUK:
             adlar.add(d["dolgu_disi"])
+    for k in (spec["kor"].get("kabuklar") or []):
+        if k.get("malzeme") and k["malzeme"] != BOSLUK:
+            adlar.add(k["malzeme"])
     yans = spec["kor"].get("yansitici") or {}
     if yans.get("var") and yans.get("malzeme") and yans["malzeme"] != BOSLUK:
         adlar.add(yans["malzeme"])

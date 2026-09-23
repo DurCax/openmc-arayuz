@@ -41,6 +41,7 @@ class CalistirSekmesi(QtWidgets.QWidget):
         self._dizin = None
         self._tampon = ""
         self._cevrimler = []
+        self._son_basarili = False
 
         # --- ust: denetimler ---
         self.d_calistir = QtWidgets.QPushButton("CALISTIR")
@@ -87,11 +88,14 @@ class CalistirSekmesi(QtWidgets.QWidget):
         sonuc = QtWidgets.QWidget()
         sd = QtWidgets.QVBoxLayout(sonuc)
         sd.setContentsMargins(0, 0, 0, 0)
+        self.durum_etiket = QtWidgets.QLabel("")
+        self.durum_etiket.setWordWrap(True)
         kutu = QtWidgets.QHBoxLayout()
         kutu.addWidget(QtWidgets.QLabel("k-eff:"))
         kutu.addWidget(self.keff_etiket)
         kutu.addStretch(1)
         sd.addLayout(kutu)
+        sd.addWidget(self.durum_etiket)
         sd.addWidget(self.sonuc_metin, 1)
 
         alt_sekme = QtWidgets.QTabWidget()
@@ -213,6 +217,7 @@ class CalistirSekmesi(QtWidgets.QWidget):
         self.log.clear()
         self.sonuc_metin.clear()
         self.keff_etiket.setText("kosuyor...")
+        self.durum_etiket.setText("")
         self._cevrimler = []
         self._tampon = ""
         self._grafik_sifirla()
@@ -291,6 +296,13 @@ class CalistirSekmesi(QtWidgets.QWidget):
             return
 
         self.keff_etiket.setText("%.5f +/- %.5f" % s["keff"])
+        kin0 = s.get("kinetik") or {}
+        durum, ayrinti = kosucu.keff_yorumu(s["keff"][0], s["keff"][1],
+                                            kin0.get("beta_eff"))
+        self.durum_etiket.setText("%s\n%s" % (durum, ayrinti))
+        renk = "#27ae60" if durum.startswith("KRITIK (") else (
+            "#c0392b" if "USTU" in durum else "#2980b9")
+        self.durum_etiket.setStyleSheet("color: %s; font-weight: bold;" % renk)
         satirlar = [
             "k-eff    = %.5f +/- %.5f" % s["keff"],
             "cevrim   = %d (%d pasif)" % (s["cevrim"], s["pasif"]),
@@ -307,6 +319,12 @@ class CalistirSekmesi(QtWidgets.QWidget):
         else:
             satirlar.append("kaynak   = [  ?  ] Shannon entropisi kapali -- "
                             "kaynak yakinsamasi dogrulanamiyor")
+        kin = s.get("kinetik")
+        if kin:
+            satirlar.append("beta_eff = %.1f +/- %.1f pcm   (reaktivite birimi: 1 $ = beta_eff)"
+                            % (kin["beta_eff"] * 1e5, kin["beta_eff_sapma"] * 1e5))
+            satirlar.append("Lambda   = %-22s (notron uretim zamani)"
+                            % kosucu.lambda_metni(kin["lambda"], kin["lambda_sapma"]))
         satirlar += ["statepoint: %s" % sp, ""]
         for ad, df in s["tallyler"].items():
             satirlar.append("=" * 70)
@@ -315,5 +333,6 @@ class CalistirSekmesi(QtWidgets.QWidget):
             satirlar.append(str(df))
             satirlar.append("")
         self.sonuc_metin.setPlainText("\n".join(satirlar))
+        self._son_basarili = True
         self.alt_sekme.setCurrentIndex(1)
         self.durum.emit("Kosu tamamlandi: k-eff = %.5f +/- %.5f" % s["keff"], True)

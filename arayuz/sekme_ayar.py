@@ -44,6 +44,14 @@ class AyarSekmesi(SekmeTabani):
         self.entropi_nx = tamsayi(8, 1, 200)
         self.entropi_ny = tamsayi(8, 1, 200)
         self.entropi_nz = tamsayi(1, 1, 200)
+        self.kinetik_var = QtWidgets.QCheckBox(
+            "Kinetik parametreleri hesapla (beta_eff ve uretim zamani Lambda)")
+        self.kinetik_var.setToolTip(
+            "IFP (Iterated Fission Probability) yontemiyle hesaplanir.\n"
+            "beta_eff : gecikmis notron kesri -- reaktivite biriminin ($) tanimi\n"
+            "Lambda   : notron uretim zamani -- kinetik davranisin hizi\n\n"
+            "Kosuyu bir miktar yavaslatir; ihtiyac duymadikca kapali birakin.")
+        self.kinetik_nesil = tamsayi(10, 1, 50, 1, "nesil")
 
         # --- kaynak ---
         self.kaynak_tur = QtWidgets.QComboBox()
@@ -72,6 +80,9 @@ class AyarSekmesi(SekmeTabani):
         ent.addStretch(1)
         self.entropi_etiket = QtWidgets.QLabel("Entropi mesh bolmeleri:")
         form.addRow(self.entropi_etiket, self._sar(ent))
+        form.addRow(self.kinetik_var)
+        self.kinetik_etiket = QtWidgets.QLabel("IFP nesil sayisi:")
+        form.addRow(self.kinetik_etiket, self.kinetik_nesil)
 
         kaynak_form = QtWidgets.QFormLayout()
         kaynak_form.addRow("Kaynak tipi:", self.kaynak_tur)
@@ -149,9 +160,11 @@ class AyarSekmesi(SekmeTabani):
         for w in (self.parcacik, self.cevrim, self.pasif, self.tohum,
                   self.is_parcacigi, self.kx, self.ky, self.kz,
                   self.entropi_nx, self.entropi_ny, self.entropi_nz,
+                  self.kinetik_nesil,
                   self.t_mesh_nx, self.t_mesh_ny, self.t_mesh_nz):
             w.valueChanged.connect(self._kaydet)
         self.entropi_var.toggled.connect(self._kaydet)
+        self.kinetik_var.toggled.connect(self._kaydet)
         for w in (self.mod, self.sicaklik_yontemi, self.kaynak_tur):
             w.currentIndexChanged.connect(self._kaydet)
         self.kosu_dizini.editingFinished.connect(self._kaydet)
@@ -189,6 +202,10 @@ class AyarSekmesi(SekmeTabani):
         self.entropi_nx.setValue(boyut[0]); self.entropi_ny.setValue(boyut[1])
         self.entropi_nz.setValue(boyut[2])
 
+        kin = a.get("kinetik") or {}
+        self.kinetik_var.setChecked(bool(kin.get("var")))
+        self.kinetik_nesil.setValue(kin.get("nesil") or 10)
+
         c = self.spec["calistirma"]
         self.is_parcacigi.setValue(c.get("is_parcacigi", 8))
         self.kosu_dizini.setText(c.get("dizin", "kosu"))
@@ -202,6 +219,8 @@ class AyarSekmesi(SekmeTabani):
         self._kaynak_gorunurluk()
         for w in (self.entropi_etiket, self.entropi_nx, self.entropi_ny, self.entropi_nz):
             w.setEnabled(self.entropi_var.isChecked())
+        for w in (self.kinetik_etiket, self.kinetik_nesil):
+            w.setEnabled(self.kinetik_var.isChecked())
 
     def _aktif_guncelle(self):
         aktif = self.cevrim.value() - self.pasif.value()
@@ -229,6 +248,10 @@ class AyarSekmesi(SekmeTabani):
             "boyut": [self.entropi_nx.value(), self.entropi_ny.value(),
                       self.entropi_nz.value()],
         }
+        a["kinetik"] = {"var": self.kinetik_var.isChecked(),
+                        "nesil": self.kinetik_nesil.value()}
+        for w in (self.kinetik_etiket, self.kinetik_nesil):
+            w.setEnabled(self.kinetik_var.isChecked())
         for w in (self.entropi_etiket, self.entropi_nx, self.entropi_ny, self.entropi_nz):
             w.setEnabled(self.entropi_var.isChecked())
         if self.kaynak_tur.currentData() == "nokta":

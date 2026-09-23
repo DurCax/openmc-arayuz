@@ -73,6 +73,60 @@ def cevrim_satiri(satir):
     }
 
 
+def keff_yorumu(k, sapma, beta_eff=None):
+    """
+    k-eff'i fiziksel olarak yorumlar.
+
+    Bir sayinin kendisi bir seyi anlatmaz; reaktorun kritik olup olmadigi,
+    ne kadar reaktivite fazlasi tasidigi ve bunun dolar cinsinden karsiligi
+    anlatir. ($ = reaktivite / beta_eff; 1 $ ustu ANI KRITIK demektir ve
+    reaktorun kontrolu gecikmis notronlara degil, ani notronlara kalir.)
+
+    DONER (durum_metni, ayrinti_metni)
+    """
+    if k <= 0:
+        return "gecersiz", ""
+    rho = (k - 1.0) / k
+    pcm = rho * 1.0e5
+    s_pcm = (sapma / (k * k)) * 1.0e5
+
+    if abs(k - 1.0) <= 2.0 * sapma:
+        durum = "KRITIK (k = 1, istatistiksel olarak ayirt edilemez)"
+    elif k > 1.0:
+        durum = "KRITIK USTU (k > 1 -- guc artar)"
+    else:
+        durum = "KRITIK ALTI (k < 1 -- guc soner)"
+
+    parcalar = ["reaktivite = %+.0f +/- %.0f pcm" % (pcm, s_pcm)]
+    if beta_eff and beta_eff > 0:
+        dolar = rho / beta_eff
+        parcalar.append("%+.2f $ (beta_eff = %.0f pcm)" % (dolar, beta_eff * 1e5))
+        if dolar >= 1.0:
+            # Bu ifadeyi dikkatli kurmak gerekir: sonsuz kafes (k-inf) hesabinda
+            # 1 $ ustu bir deger bir GECICI REJIM degil, yakitin tasidigi
+            # reaktivite fazlasidir ve kontrol sistemiyle dengelenir. Ayni sayi
+            # gercek bir gecici rejimde ani kritiklik anlamina gelir. Kod hangi
+            # durumda oldugunu bilemez, bu yuzden ikisini de soyler.
+            parcalar.append("rho > 1 $: gercek bir gecici rejimde bu ANI KRITIKLIK "
+                            "demektir; sonsuz kafes (k-inf) hesabinda ise yakitin "
+                            "tasidigi reaktivite fazlasidir (kontrol sistemiyle "
+                            "dengelenir)")
+    return durum, "  |  ".join(parcalar)
+
+
+def lambda_metni(lam, sapma):
+    """
+    Uretim zamanini okunabilir birimde yazar.
+    Termal reaktorde ~20 us, hizli metal sistemde ~6 ns olabilir; sabit birim
+    birini okunmaz yapar.
+    """
+    if lam >= 1e-6:
+        return "%.2f +/- %.2f us" % (lam * 1e6, sapma * 1e6)
+    if lam >= 1e-9:
+        return "%.2f +/- %.2f ns" % (lam * 1e9, sapma * 1e9)
+    return "%.3e +/- %.1e s" % (lam, sapma)
+
+
 def entropi_yakinsama(entropiler, pasif):
     """
     Kaynak dagiliminin pasif cevrimler icinde yakinsayip yakinsamadigini
@@ -80,9 +134,15 @@ def entropi_yakinsama(entropiler, pasif):
 
     YONTEM
       Aktif cevrimlerdeki entropi sacilmasi (sigma) gurultu olcusu olarak
-      alinir. Pasif cevrimlerin ilk yarisi ile ikinci yarisinin ortalamalari
-      arasindaki fark bu gurultunun 2 katindan buyukse, kaynak hala kayiyor
-      demektir ve pasif cevrim sayisi yetersizdir.
+      alinir. Onemli olan kaynagin pasif donemin SONUNDA durmus olmasidir;
+      basta hizla yukselmesi normaldir (nokta kaynaktan baslanirsa entropi
+      sifirdan baslar). Bu yuzden yalnizca pasif donemin SON YARISI incelenir,
+      o yari ikiye bolunur ve iki ceyregin ortalamalari karsilastirilir.
+      Fark 2 sigmayi asiyorsa kaynak hala kayiyordur.
+
+      (Ilk surumde pasif donemin TAMAMI ikiye bolunuyordu; bu, basta hizla
+      yukselip sonra duzlesen -- yani yakinsamis -- kosulara yanlis alarm
+      veriyordu. Godiva kriterinde tam olarak bu oldu.)
 
     DONER (yakinsadi_mi, mesaj) -- degerlendirilemezse (None, aciklama)
     """
@@ -99,17 +159,22 @@ def entropi_yakinsama(entropiler, pasif):
     sigma = (sum((x - ortalama) ** 2 for x in aktif) / max(len(aktif) - 1, 1)) ** 0.5
     if sigma <= 0:
         return None, "entropi sabit, degerlendirilemedi"
-    yari = pasif // 2
-    ilk = sum(dizi[:yari]) / max(yari, 1)
-    son = sum(dizi[yari:pasif]) / max(pasif - yari, 1)
-    kayma = abs(son - ilk)
+    # Yalnizca pasif donemin son yarisi; o da ikiye bolunur.
+    bas = pasif // 2
+    orta = bas + (pasif - bas) // 2
+    if orta <= bas or pasif <= orta:
+        return None, "pasif cevrim sayisi bolunemeyecek kadar az"
+    ceyrek1 = sum(dizi[bas:orta]) / (orta - bas)
+    ceyrek2 = sum(dizi[orta:pasif]) / (pasif - orta)
+    kayma = abs(ceyrek2 - ceyrek1)
     if kayma > 2.0 * sigma:
-        return False, ("Kaynak dagilimi pasif cevrimler boyunca hala kayiyor "
+        return False, ("Kaynak dagilimi pasif donemin SONUNDA hala kayiyor "
                        "(kayma %.4f, aktif sacilma sigma=%.4f). Pasif cevrim "
                        "sayisini artirin -- k-eff yanli olabilir."
                        % (kayma, sigma))
     return True, ("Kaynak dagilimi yakinsamis gorunuyor "
-                  "(kayma %.4f <= 2 sigma = %.4f)." % (kayma, 2 * sigma))
+                  "(pasif donem sonunda kayma %.4f <= 2 sigma = %.4f)."
+                  % (kayma, 2 * sigma))
 
 
 def openmc_yolu():
@@ -235,11 +300,39 @@ def sonuc_oku(statepoint_yolu):
         "entropi": entropi,
         "tallyler": {},
     }
+    ifp = {}
     for _, t in sp.tallies.items():
+        ad = t.name or "tally_%d" % t.id
         try:
-            sonuc["tallyler"][t.name or "tally_%d" % t.id] = t.get_pandas_dataframe()
+            df = t.get_pandas_dataframe()
         except Exception as e:
-            sonuc["tallyler"][t.name or "tally_%d" % t.id] = "okunamadi: %s" % e
+            sonuc["tallyler"][ad] = "okunamadi: %s" % e
+            continue
+        if ad.startswith("IFP "):
+            import math as _m
+            ifp[ad] = (float(df["mean"].sum()),
+                       _m.sqrt(float((df["std. dev."] ** 2).sum())))
+        else:
+            sonuc["tallyler"][ad] = df
+
+    # --- kinetik parametreler (IFP yontemi) ---
+    # beta_eff = <beta payi> / <payda>,  Lambda = <zaman payi> / <payda>
+    # Belirsizlik oransal olarak birlestirilir (paylar ve payda bagimsiz kabul).
+    gerekli = ("IFP beta numerator", "IFP time numerator", "IFP denominator")
+    if all(g in ifp for g in gerekli):
+        import math as _m
+        pb, spb = ifp["IFP beta numerator"]
+        pt, spt = ifp["IFP time numerator"]
+        pd, spd = ifp["IFP denominator"]
+        if pd > 0 and pb > 0 and pt > 0:
+            beta = pb / pd
+            lam = pt / pd
+            sonuc["kinetik"] = {
+                "beta_eff": beta,
+                "beta_eff_sapma": beta * _m.sqrt((spb / pb) ** 2 + (spd / pd) ** 2),
+                "lambda": lam,
+                "lambda_sapma": lam * _m.sqrt((spt / pt) ** 2 + (spd / pd) ** 2),
+            }
     return sonuc
 
 
@@ -333,6 +426,10 @@ def _terminal(argv):
     print("\n[3/3] Sonuclar")
     s = sonuc_oku(sonuc["statepoint"])
     print("      k-eff    = %.5f +/- %.5f" % s["keff"])
+    _kin = s.get("kinetik") or {}
+    _durum, _ayrinti = keff_yorumu(s["keff"][0], s["keff"][1], _kin.get("beta_eff"))
+    print("      durum    = %s" % _durum)
+    print("                 %s" % _ayrinti)
     print("      cevrim   = %d (%d pasif), %d parcacik/cevrim"
           % (s["cevrim"], s["pasif"], s["parcacik"]))
     if s.get("entropi"):
@@ -342,6 +439,11 @@ def _terminal(argv):
     else:
         print("      kaynak   = [     ] Shannon entropisi kapali -- kaynak "
               "yakinsamasi dogrulanamiyor")
+    kin = s.get("kinetik")
+    if kin:
+        print("      beta_eff = %.1f +/- %.1f pcm" % (kin["beta_eff"] * 1e5,
+                                                      kin["beta_eff_sapma"] * 1e5))
+        print("      Lambda   = %s" % lambda_metni(kin["lambda"], kin["lambda_sapma"]))
     for ad, df in s["tallyler"].items():
         print("\n      --- tally: %s ---" % ad)
         print("      " + str(df).replace("\n", "\n      "))

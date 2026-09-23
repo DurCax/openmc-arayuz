@@ -46,17 +46,20 @@ openmc_arayuz/
 │   ├── sema.py              spec şeması, varsayılanlar, oku/yaz
 │   ├── malzeme_kutup.py     21 hazır malzeme (doğrulanmış bileşimler)
 │   ├── altigen.py           HexLattice halka düzeni ve konum hesabı
+│   ├── veri_bilgi.py        kütüphanenin sunduğu sıcaklık aralıkları
 │   ├── kurucu.py            spec → openmc.Model
 │   ├── onbellek.py          model önbelleği (21.9 ms → 0.07 ms)
 │   ├── dogrula.py           koşu öncesi kontroller
 │   ├── kod_uret.py          spec → tek başına çalışan Python betiği
 │   ├── ice_aktar.py         materials.xml → spec malzemeleri
+│   ├── tarama.py            parametre taraması → reaktivite katsayıları
+│   ├── kritik_arama.py      hedef k-eff'i veren parametre değeri
 │   └── kosucu.py            çalıştırma + statepoint okuma + terminal girişi
 ├── arayuz/                  PySide6 katmanı
 │   ├── ana_pencere.py       sekmeler, proje aç/kaydet, doğrulama paneli
 │   ├── onizleme.py          canlı geometri kesiti (Model.plot sarmalayıcı)
 │   ├── hex_izgara.py        altıgen harita editörü (QPainter)
-│   └── sekme_*.py           malzeme / çubuk / kafes / kor / ayar / çalıştır
+│   └── sekme_*.py           malzeme / çubuk / kafes / kor / ayar / çalıştır / analiz
 ├── ornekler/                pwr_pinhucre, pwr_17x17, mtr_plaka, sfr_altigen
 └── testler/test_regresyon.py
 ```
@@ -76,6 +79,10 @@ Sekmeler numaralandırılmıştır, sırayla ilerlenir:
 4. **Kor** — kor türü, yükseklik, yansıtıcı, sınır koşulları.
 5. **Ayarlar & Tally** — çevrim/parçacık, kaynak, tally tanımları.
 6. **Çalıştır** — canlı log, k-eff yakınsama grafiği, sonuç tabloları.
+7. **Analiz** — parametre taraması (reaktivite katsayıları) ve kritik arama.
+
+Üstteki **rehber şeridi** modelin durumuna bakıp sonraki adımı söyler; "Oraya git"
+ile doğrudan ilgili sekmeye gider. **F1** terim sözlüğünü açar.
 
 Sağ tarafta her değişiklikten sonra geometri kesiti yenilenir (~0.2 s),
 sağ altta doğrulama paneli canlı çalışır.
@@ -114,7 +121,7 @@ python3 testler/test_regresyon.py            # tümü (~2 dk)
 python3 testler/test_regresyon.py --hizli    # Monte Carlo hariç (~10 s)
 ```
 
-64 test var. Üçü bu katmanın doğruluğunun asıl kanıtıdır:
+93 test var. Üçü bu katmanın doğruluğunun asıl kanıtıdır:
 
 - **Regresyon çıpası** — `ornekler/pwr_pinhucre.json` referans değeri
   **k∞ = 1.3570 ± 0.0020** vermeli. 2σ dışına çıkarsa `kurucu.py`'de hata var.
@@ -123,6 +130,7 @@ python3 testler/test_regresyon.py --hizli    # Monte Carlo hariç (~10 s)
   `kod_uret.py` değiştirilirse mutlaka tekrar koşulmalı.
 - **Altıgen düzen** — `altigen.py`'nin halka indeksleri OpenMC'nin kendi
   `HexLattice.show_indices()` çıktısıyla birebir uyuşmalı.
+- **Godiva kriteri** — yayımlanmış k_eff'ten 2σ'dan fazla sapmamalı.
 
 ## Ölçülen referans sonuçlar
 
@@ -132,6 +140,63 @@ python3 testler/test_regresyon.py --hizli    # Monte Carlo hariç (~10 s)
 | `pwr_17x17` | 1.18325 ± 0.00075 | 44 s |
 | `mtr_plaka` | 1.65368 ± 0.00083 | 42 s |
 | `sfr_altigen` | 1.46634 ± 0.00070 | 53 s |
+| `godiva_kriter` | 0.99900 ± 0.00045 | 6 s |
+
+## Reaktivite katsayıları ve kritik arama (7. Analiz)
+
+Tek bir k-eff sayısı bir tasarım hakkında az şey söyler. Analiz sekmesi bir
+parametreyi tarayıp eğimden **reaktivite katsayısını** çıkarır:
+
+| Tarama | Katsayı | Ölçülen (pwr_17x17) |
+|---|---|---|
+| Yakıt sıcaklığı 600→1200 K | Doppler | **−1.98 ± 0.17 pcm/K** |
+| Soğutucu sıcaklığı 540→620 K, 0 ppm bor | Moderatör sıcaklık | **−35.2 ± 1.0 pcm/K** |
+| Soğutucu sıcaklığı, 1300 ppm bor | Moderatör sıcaklık | **−2.6 ± 1.2 pcm/K** |
+| Bor 0→8000 ppm | Bor değeri | **−7.0 pcm/ppm** |
+
+> ⚠ **Sıcaklık ve yoğunluk birlikte değişir.** Soğutucu sıcaklığı artınca
+> yoğunluğu da düşer. Yalnızca sıcaklığı değiştirirseniz etkinin en büyük
+> parçasını kaçırırsınız. `sogutucu_sicaklik` taraması yoğunluğu korelasyonla
+> günceller (su: doymuş sıvı tablosu; LBE: Sobolev; Na: Fink & Leibowitz).
+> Korelasyonu bilinmeyen malzemede yoğunluk sabit tutulur ve **bu açıkça
+> raporlanır**.
+
+> 📘 Yukarıdaki iki MTC değeri arasındaki fark gerçek fiziktir: bor suda
+> çözünmüştür, yoğunluk düşünce soğurucu da azalır ve iki etki birbirini
+> götürür. PWR'lerde çevrim başı bor sınırının sebebi budur.
+
+**Kritik arama** hedef k-eff'i veren değeri bulur (kritik bor, kritik yükseklik…).
+Durma ölçütü istatistiğe bağlıdır: `|k − hedef| < 1σ` olunca durur, çünkü daha
+sıkı bir ölçüt gürültü kovalamaktır. Kök aralıkta değilse **ekstrapolasyon
+yapmaz**, aralığı genişletmenizi söyler.
+
+Örnek: 17×17 demeti için kritik bor = **3430 ppm**, 7 koşuda yakınsadı.
+
+## Kinetik parametreler
+
+Ayarlar sekmesinden açılır (IFP yöntemi). Ölçülen:
+
+| Model | β_eff | Λ |
+|---|---|---|
+| PWR 17×17 | 696 ± 48 pcm | 22.4 μs |
+| Godiva | 681 ± 27 pcm | 5.62 ns |
+
+β_eff sayesinde reaktivite **dolar** cinsinden de raporlanır (1 $ = β_eff).
+
+## Bilimsel doğrulama — Godiva kriteri
+
+`ornekler/godiva_kriter.json` — ICSBEP **HEU-MET-FAST-001**: çıplak HEU metal
+küresi, yayımlanmış k_eff = 1.0000 ± 0.0010.
+
+| | k_eff |
+|---|---|
+| Bu araç | **0.99957 ± 0.00054** |
+| Kriter | 1.0000 ± 0.0010 |
+| Fark | **0.38 σ** |
+
+Bu, regresyon çıpasından **farklı** bir testtir: çıpa "kod kendiyle tutarlı" der,
+bu "sonuç gerçekten doğru" der. Malzeme bileşimi, geometri, tesir kesiti
+kütüphanesi ve taşınım zincirinin tamamı bağımsız bir ölçüme karşı sınanır.
 
 ## Kaynak yakınsaması (Shannon entropisi)
 
@@ -141,9 +206,10 @@ değerlendirilir:
 
 > `kaynak = [OK] Kaynak dagilimi yakinsamis gorunuyor (kayma 0.0003 <= 2 sigma = 0.0096)`
 
-**Yöntem:** aktif çevrimlerdeki entropi saçılması (σ) gürültü ölçüsü alınır;
-pasif çevrimlerin ilk ve ikinci yarısının ortalamaları arasındaki kayma 2σ'yı
-aşıyorsa kaynak hâlâ kayıyor demektir ve pasif çevrim sayısı yetersizdir.
+**Yöntem:** aktif çevrimlerdeki entropi saçılması (σ) gürültü ölçüsü alınır.
+Önemli olan kaynağın pasif dönemin **sonunda** durmuş olmasıdır — başta hızla
+yükselmesi normaldir (nokta kaynaktan başlanırsa entropi sıfırdan başlar). Bu
+yüzden yalnızca pasif dönemin son yarısı incelenir, ikiye bölünüp karşılaştırılır.
 Yakınsamamış kaynak k-eff'i **yanlı** tahmin ettirir ve bu başka türlü fark
 edilmez.
 
@@ -166,6 +232,10 @@ Bitmiş bir geometriyi incelerken (eksen değiştirme, yakınlaştırma) açın;
 
 ## Bilinen tuzaklar
 
+- **Veri kütüphanesi sıcaklık aralıkları dar olabilir.** Nötron verisi
+  250–2500 K, ama **su için S(α,β) yalnızca 284–800 K**. Aralık dışına çıkan bir
+  sıcaklık taraması koşunun ortasında patlar; `veri_bilgi.py` bunu önceden okur.
+
 - **`HexLattice` ve `HexagonalPrism` yönelimleri aynı harfi kullanır ama
   tanımları terstir** (biri "y eksenine dik", diğeri "y eksenine paralel").
   Pratikte aynı geometrik yönelim için **aynı harf** verilir; bu ölçümle
@@ -181,7 +251,12 @@ Bitmiş bir geometriyi incelerken (eksen değiştirme, yakınlaştırma) açın;
 
 ## Bilinen sınırlar
 
-- **Kontrol tamburu / dönen bileşenler** kapsam dışı.
+- **Güç dağılımı (pin peaking)** yok — `DistribcellFilter` gerekiyor.
+- **Kontrol elemanı hareketi** yok (çubuk daldırma, tambur dönüşü).
+- **Eksenel heterojenlik** yok — kor tek eksenel bölge; zenginlik kuşağı,
+  blanket, plenum tanımlanamaz.
+- **Sabit kaynak modu yarım** — kaynak enerji spektrumu Watt'a sabit;
+  kalkanlama/aktivasyon işleri yapılamaz.
 - **Geometri içe aktarılamaz.** Malzemeler `materials.xml` / `model.xml`'den
   aktarılabilir (Dosya menüsü); geometri aktarılamaz çünkü ham CSG'yi
   "çubuk → kafes → kor" katmanlarına geri çevirmek genel olarak çözülebilir bir

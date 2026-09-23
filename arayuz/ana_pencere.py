@@ -31,6 +31,7 @@ from PySide6 import QtCore, QtGui, QtWidgets
 
 from cekirdek import sema, dogrula, ice_aktar, kod_uret, onbellek
 from arayuz.onizleme import OnizlemeWidget
+from arayuz.sekme_analiz import AnalizSekmesi
 from arayuz.sekme_ayar import AyarSekmesi
 from arayuz.sekme_calistir import CalistirSekmesi
 from arayuz.sekme_cubuk import CubukSekmesi
@@ -81,6 +82,72 @@ SABLONLAR = [
      "Hicbir sey tanimli degil. Malzemelerden baslayarak kendiniz kurarsiniz.",
      None),
 ]
+
+
+SOZLUK_HTML = """
+<h2>Terim sozlugu</h2>
+<p><i>Bu programda gecen terimlerin kisa aciklamalari.</i></p>
+
+<h3>Temel buyuklukler</h3>
+<table cellpadding="5">
+<tr><td><b>k-eff</b></td><td>Cogalma carpani. Bir nesil notronun bir sonraki
+nesli ne kadar buyuttugu. k&gt;1 guc artar, k=1 kritik, k&lt;1 soner.</td></tr>
+<tr><td><b>k-inf</b></td><td>Sonsuz kafes cogalma carpani. Sinirlardan sizinti
+olmadigi varsayilir (yansitici sinir kosulu). Gercek bir reaktor icin ust
+sinirdir.</td></tr>
+<tr><td><b>Reaktivite (&rho;)</b></td><td>(k-1)/k. Kritiklikten ne kadar uzak
+oldugunun olcusu. <b>pcm</b> = 10<sup>-5</sup> birim.</td></tr>
+<tr><td><b>Dolar ($)</b></td><td>Reaktivite / &beta;<sub>eff</sub>. 1 $ ustu
+gecici rejimde ani kritiklik demektir.</td></tr>
+<tr><td><b>&beta;<sub>eff</sub></b></td><td>Etkin gecikmis notron kesri.
+Fisyon notronlarinin kucuk bir kismi (~%0.7) gecikmeli cikar; reaktor kontrolu
+bu gecikmeye dayanir.</td></tr>
+<tr><td><b>&Lambda;</b></td><td>Notron uretim zamani. Termal reaktorde ~20 &mu;s,
+hizli metal sistemde ~6 ns.</td></tr>
+</table>
+
+<h3>Reaktivite katsayilari (7. Analiz sekmesi)</h3>
+<table cellpadding="5">
+<tr><td><b>Doppler katsayisi</b></td><td>Yakit sicakligi arttiginda reaktivite
+degisimi [pcm/K]. U-238 rezonanslari genisler, yakalama artar &rarr; NEGATIF
+olmali. Guvenligin ilk savunma hattidir: guc artarsa yakit isinir ve reaktivite
+kendiliginden duser.</td></tr>
+<tr><td><b>Moderator sicaklik kats.</b></td><td>Sogutucu sicakligi arttiginda
+reaktivite degisimi [pcm/K]. Sicaklik artinca yogunluk da duser; ikisi birlikte
+hesaplanmalidir. Termal reaktorde NEGATIF olmali.</td></tr>
+<tr><td><b>Void katsayisi</b></td><td>Sogutucuda bosluk olusursa reaktivite
+degisimi [pcm/%void]. Termal reaktorde negatif olmali.</td></tr>
+<tr><td><b>Bor degeri (worth)</b></td><td>Suda cozunmus bor basina reaktivite
+[pcm/ppm]. Bor sogurucudur &rarr; negatif. Cok bor, moderator sicaklik
+katsayisini pozitife dogru iter -- bu yuzden sinirlanir.</td></tr>
+</table>
+
+<h3>Monte Carlo terimleri</h3>
+<table cellpadding="5">
+<tr><td><b>Cevrim (batch)</b></td><td>Bir grup notronun izlendigi tur.</td></tr>
+<tr><td><b>Pasif cevrim</b></td><td>Baslangictaki cevrimler. Kaynak dagilimi
+henuz dogru degildir, bu yuzden istatistige KATILMAZ. Tipik 20-50.</td></tr>
+<tr><td><b>Shannon entropisi</b></td><td>Kaynak dagiliminin ne kadar yayildigini
+olcer. Pasif cevrimler boyunca duzlesmelidir; hala kayiyorsa pasif cevrim
+sayisi yetersizdir ve k-eff YANLI cikar.</td></tr>
+<tr><td><b>Tally</b></td><td>Sayac. Modelin belirli bir yerinde/enerjisinde
+hangi reaksiyonlarin kac kez oldugunu toplar (aki, fisyon, sogurma...).</td></tr>
+<tr><td><b>S(&alpha;,&beta;)</b></td><td>Termal sacilma verisi. Dusuk enerjide
+notron serbest bir cekirdekten degil, BAGLI bir molekulden sacilir (sudaki
+hidrojen gibi). Unutulursa termal reaktorde k yuzde mertebesinde kayar.</td></tr>
+</table>
+
+<h3>Geometri terimleri</h3>
+<table cellpadding="5">
+<tr><td><b>Universe</b></td><td>Tekrar kullanilabilir geometri parcasi. Bir
+yakit cubugu bir universe'dir; kafes onu tekrarlar.</td></tr>
+<tr><td><b>Kafes (lattice)</b></td><td>Universe'lerin duzenli dizilimi. Kare
+(PWR) ya da altigen (VVER, SFR).</td></tr>
+<tr><td><b>Adim (pitch)</b></td><td>Komsu iki hucre merkezi arasi mesafe.</td></tr>
+<tr><td><b>Sinir kosulu</b></td><td><i>vacuum</i>: notron kacar (gercek dis
+yuzey). <i>reflective</i>: geri yansir (sonsuz tekrar varsayimi).</td></tr>
+</table>
+"""
 
 
 class SablonDiyalog(QtWidgets.QDialog):
@@ -147,6 +214,7 @@ class AnaPencere(QtWidgets.QMainWindow):
         self.s_kor = KorSekmesi()
         self.s_ayar = AyarSekmesi()
         self.s_calistir = CalistirSekmesi()
+        self.s_analiz = AnalizSekmesi()
 
         self.editorler = [self.s_malzeme, self.s_cubuk, self.s_demet,
                           self.s_kor, self.s_ayar]
@@ -155,7 +223,8 @@ class AnaPencere(QtWidgets.QMainWindow):
                       ("3. Kafesler", self.s_demet),
                       ("4. Kor", self.s_kor),
                       ("5. Ayarlar & Tally", self.s_ayar),
-                      ("6. Calistir", self.s_calistir)):
+                      ("6. Calistir", self.s_calistir),
+                      ("7. Analiz", self.s_analiz)):
             self.sekmeler.addTab(w, ad)
         for e in self.editorler:
             e.degisti.connect(self._degisti)
@@ -202,14 +271,39 @@ class AnaPencere(QtWidgets.QMainWindow):
         bolucu.setStretchFactor(0, 3)
         bolucu.setStretchFactor(1, 2)
         bolucu.setSizes([900, 640])
-        self.setCentralWidget(bolucu)
+
+        # Rehber seridi + ana bolucu
+        self.rehber = QtWidgets.QLabel("")
+        self.rehber.setWordWrap(True)
+        self.rehber.setTextFormat(QtCore.Qt.RichText)
+        self.rehber.setContentsMargins(10, 6, 10, 6)
+        self.rehber_git = QtWidgets.QPushButton("Oraya git")
+        self.rehber_git.setMaximumWidth(110)
+        self.rehber_git.clicked.connect(self._rehbere_git)
+        rehber_kutu = QtWidgets.QWidget()
+        rk = QtWidgets.QHBoxLayout(rehber_kutu)
+        rk.setContentsMargins(0, 0, 8, 0)
+        rk.addWidget(self.rehber, 1)
+        rk.addWidget(self.rehber_git)
+        self._rehber_kutu = rehber_kutu
+
+        merkez = QtWidgets.QWidget()
+        md = QtWidgets.QVBoxLayout(merkez)
+        md.setContentsMargins(0, 0, 0, 0)
+        md.setSpacing(0)
+        md.addWidget(rehber_kutu)
+        md.addWidget(bolucu, 1)
+        self.setCentralWidget(merkez)
 
         self._menu_kur()
         self._arac_cubugu_kur()
+        self._rehber_kur()
         self._durum_cubugu_kur()
 
         self.s_calistir.kapi_ayarla(self._kosu_izni)
         self.s_calistir.durum.connect(lambda m, ok: self.statusBar().showMessage(m, 8000))
+        self.s_analiz.kapi_ayarla(self._kosu_izni)
+        self.s_analiz.durum.connect(lambda m, ok: self.statusBar().showMessage(m, 8000))
 
         self._dog_sayac = QtCore.QTimer(self); self._dog_sayac.setSingleShot(True)
         self._dog_sayac.setInterval(250)
@@ -273,6 +367,7 @@ class AnaPencere(QtWidgets.QMainWindow):
         self.e_calistir = self._eylem(m_model, "CALISTIR", self._calistir_menuden, "F9")
 
         m_yardim = self.menuBar().addMenu("&Yardim")
+        self._eylem(m_yardim, "Terim sozlugu", self._sozluk, "F1")
         self._eylem(m_yardim, "Kisayollar", self._kisayollar)
         self._eylem(m_yardim, "Hakkinda", self._hakkinda)
         self._son_menusu_yenile()
@@ -295,6 +390,84 @@ class AnaPencere(QtWidgets.QMainWindow):
         self.model_ozet = QtWidgets.QLabel("-")
         cubuk.addWidget(self.model_ozet)
         self.addToolBar(cubuk)
+
+    def _rehber_kur(self):
+        """Rehber seridinin gorunumu (icerigi _rehber_guncelle doldurur)."""
+        self._rehber_hedef = 0
+
+    def _rehbere_git(self):
+        self.sekmeler.setCurrentIndex(self._rehber_hedef)
+
+    def _sonraki_adim(self):
+        """
+        Modelin durumuna bakip "simdi ne yapmalisin" sorusunu cevaplar.
+
+        Bu, ilk kez acan bir kullanicinin en buyuk sorunudur: sekmeler numarali
+        ama hangisinde ne eksik oldugu gorunmez. Burada eksik olan ilk sey
+        bulunur ve dogrudan oraya yonlendirilir.
+        DONER (sekme_indeksi, html_metin, seviye)   seviye: "yap" | "hata" | "hazir"
+        """
+        s = self.spec
+        if not s["malzemeler"]:
+            return (0, "<b>Basla:</b> once malzeme gerekir. "
+                       "<i>1. Malzemeler</i> sekmesinde <b>Kutuphaneden ekle...</b> "
+                       "dugmesiyle yakit (orn. UO2), zarf (Zircaloy-4) ve sogutucu "
+                       "(su) ekleyin.", "yap")
+
+        kor = s["kor"]
+        tur = kor.get("tur")
+        if tur in ("tek_cubuk",) and not s.get("cubuklar"):
+            return (1, "<b>Sonraki adim:</b> <i>2. Cubuk / Plaka</i> sekmesinde "
+                       "<b>+ Cubuk</b> ile bir yakit cubugu tanimlayin "
+                       "(icten disa: yakit, bosluk, zarf, sogutucu).", "yap")
+        if tur == "tek_plaka" and not s.get("plakalar"):
+            return (1, "<b>Sonraki adim:</b> <i>2. Cubuk / Plaka</i> sekmesinde "
+                       "<b>+ Plaka</b> ile bir plaka elemani tanimlayin.", "yap")
+        if tur == "tek_demet" and not s.get("demetler"):
+            return (2, "<b>Sonraki adim:</b> <i>3. Kafesler</i> sekmesinde bir "
+                       "kafes kurun ve haritasini boyayin.", "yap")
+        if tur == "kuresel" and not kor.get("kabuklar"):
+            return (3, "<b>Sonraki adim:</b> <i>4. Kor</i> sekmesinde kuresel "
+                       "kabuklari tanimlayin (yaricap + malzeme).", "yap")
+
+        if dogrula.hata_var(self._bulgular):
+            n = sum(1 for b in self._bulgular if b.seviye == "hata")
+            ilk = next(b for b in self._bulgular if b.seviye == "hata")
+            hedef = 4
+            for onek, ix in _YER_SEKME:
+                if ilk.yer.lower().startswith(onek):
+                    hedef = ix
+                    break
+            return (hedef, "<b>%d hata var:</b> %s &nbsp; "
+                           "<i>(sag alttaki dogrulama panelinde satira tiklayarak "
+                           "da gidebilirsiniz)</i>" % (n, ilk.mesaj), "hata")
+
+        if not self.onizleme.cizildi_mi():
+            return (3, "<b>Geometri cizilmeyi bekliyor.</b> Sag ustteki onizleme "
+                       "uretilince CALISTIR etkinlesir.", "yap")
+
+        if not getattr(self.s_calistir, "_son_basarili", False):
+            return (5, "<b>Hazir.</b> <i>6. Calistir</i> sekmesinden "
+                       "<b>CALISTIR</b> (F9) ile k-eff hesaplayin.", "hazir")
+
+        return (6, "<b>Kosu tamam.</b> Simdi <i>7. Analiz</i> sekmesinde "
+                   "reaktivite katsayilarini (Doppler, moderator sicaklik, void, "
+                   "bor degeri) hesaplayabilir ya da kritik arama yapabilirsiniz.",
+                "hazir")
+
+    def _rehber_guncelle(self):
+        try:
+            hedef, metin, seviye = self._sonraki_adim()
+        except Exception:
+            return
+        self._rehber_hedef = hedef
+        renk = {"yap": ("#1f4e79", "#e8f0f8"),
+                "hata": ("#8b1a1a", "#fbeaea"),
+                "hazir": ("#1e6b3a", "#e8f5ec")}[seviye]
+        self._rehber_kutu.setStyleSheet(
+            "background: %s; border-bottom: 1px solid palette(mid);" % renk[1])
+        self.rehber.setStyleSheet("color: %s;" % renk[0])
+        self.rehber.setText(metin)
 
     def _durum_cubugu_kur(self):
         self.durum_dogrulama = QtWidgets.QLabel("")
@@ -321,9 +494,26 @@ class AnaPencere(QtWidgets.QMainWindow):
             "Ctrl+E   Python betigi olarak disa aktar\n"
             "F5       Dogrulamayi yenile (veri kutuphanesi dahil)\n"
             "F6       Onizlemeyi yenile\n"
-            "F9       CALISTIR\n\n"
+            "F9       CALISTIR\n"
+            "F1       Terim sozlugu\n\n"
             "Altigen haritada: sol tik boyar, sag tik fircayi degistirir, "
             "tekerlek yakinlastirir.")
+
+    def _sozluk(self):
+        """Ogrenciye yonelik kisa terim sozlugu."""
+        d = QtWidgets.QDialog(self)
+        d.setWindowTitle("Terim sozlugu")
+        d.resize(760, 640)
+        metin = QtWidgets.QTextBrowser()
+        metin.setOpenExternalLinks(False)
+        metin.setHtml(SOZLUK_HTML)
+        kutu = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Close)
+        kutu.rejected.connect(d.reject)
+        kutu.accepted.connect(d.accept)
+        duzen = QtWidgets.QVBoxLayout(d)
+        duzen.addWidget(metin)
+        duzen.addWidget(kutu)
+        d.exec()
 
     def _hakkinda(self):
         QtWidgets.QMessageBox.information(
@@ -345,9 +535,11 @@ class AnaPencere(QtWidgets.QMainWindow):
         self._kirli_sekmeler.clear()
         self.onizleme.spec_ayarla(self.spec)
         self.s_calistir.spec_ayarla(self.spec, self.proje_yolu)
+        self.s_analiz.spec_ayarla(self.spec, self.proje_yolu)
         self._dogrula(veri=False)
         self._baslik_guncelle()
         self._ozet_guncelle()
+        self._rehber_guncelle()
 
     def _degisti(self, konu="genel"):
         """
@@ -376,6 +568,7 @@ class AnaPencere(QtWidgets.QMainWindow):
         self._gecmis_sayac.start()
         self._baslik_guncelle()
         self._ozet_guncelle()
+        self._rehber_guncelle()
 
     def _sekme_degisti(self, indeks):
         w = self.sekmeler.widget(indeks)
@@ -384,6 +577,8 @@ class AnaPencere(QtWidgets.QMainWindow):
             self._kirli_sekmeler.discard(w)
         if w is self.s_calistir:
             self.s_calistir.spec_ayarla(self.spec, self.proje_yolu)
+        elif w is self.s_analiz:
+            self.s_analiz.spec_ayarla(self.spec, self.proje_yolu)
 
     def _baslik_guncelle(self):
         ad = os.path.basename(self.proje_yolu) if self.proje_yolu else "kaydedilmemis"
@@ -478,6 +673,8 @@ class AnaPencere(QtWidgets.QMainWindow):
         self.durum_dogrulama.setText(ozet)
         self.durum_dogrulama.setStyleSheet("color: %s;" % renk)
         self.s_calistir.kapi_guncelle()
+        self.s_analiz.kapi_guncelle()
+        self._rehber_guncelle()
 
     def _bulguya_git(self, oge):
         """Dogrulama satirina tiklayinca ilgili sekmeyi ac."""
