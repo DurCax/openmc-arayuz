@@ -238,6 +238,75 @@ def test_sab_yanlis_alarm():
 
 
 # ============================================================================
+# 3f. KAYNAK YAKINSAMASI (Shannon entropisi)
+# ============================================================================
+
+def test_entropi_ayristirma():
+    """Cevrim satiri ayristirici entropili ve entropisiz bicimi de tanimali."""
+    print("\n[3f] Entropi cikti ayristirma (iki bicim)")
+    from cekirdek.kosucu import cevrim_satiri
+    durumlar = [
+        ("entropisiz pasif", "        5/1    1.19846", (5, 1.19846, None, None)),
+        ("entropisiz aktif", "       54/1    1.32041    1.36400 +/- 0.00368",
+         (54, 1.32041, None, 1.364)),
+        ("entropili pasif", "        5/1    1.22935    5.96734",
+         (5, 1.22935, 5.96734, None)),
+        ("entropili aktif", "       10/1    1.16569    5.94225    1.15720 +/- 0.00849",
+         (10, 1.16569, 5.94225, 1.15720)),
+    ]
+    for ad, satir, beklenen in durumlar:
+        r = cevrim_satiri(satir)
+        ok = (r is not None and r["cevrim"] == beklenen[0]
+              and abs(r["k"] - beklenen[1]) < 1e-9
+              and ((r["entropi"] is None and beklenen[2] is None)
+                   or (r["entropi"] is not None and abs(r["entropi"] - beklenen[2]) < 1e-9))
+              and ((r["ortalama"] is None and beklenen[3] is None)
+                   or (r["ortalama"] is not None and abs(r["ortalama"] - beklenen[3]) < 1e-9)))
+        kontrol(ad, ok)
+    for ad, satir in (("statepoint satiri", " Creating state point statepoint.60.h5..."),
+                      ("zaman satiri", " Total time elapsed = 6.5384e+00 seconds")):
+        kontrol("%s reddedilmeli" % ad, cevrim_satiri(satir) is None)
+
+
+def test_entropi_yakinsama():
+    """Yakinsama karari sentetik veride dogru olmali."""
+    print("\n[3g] Kaynak yakinsamasi karari")
+    import random
+    from cekirdek.kosucu import entropi_yakinsama
+    random.seed(7)
+
+    def gurultu(n, taban, sigma):
+        return [taban + random.gauss(0, sigma) for _ in range(n)]
+
+    sabit = gurultu(30, 5.95, 0.01) + gurultu(70, 5.95, 0.01)
+    kontrol("sabit entropi -> yakinsamis",
+            entropi_yakinsama(sabit, 30)[0] is True)
+    kayan = [5.50 + 0.015 * i + random.gauss(0, 0.01) for i in range(30)]
+    kontrol("kayan entropi -> yakinsamamis",
+            entropi_yakinsama(kayan + gurultu(70, 5.95, 0.01), 30)[0] is False)
+    kontrol("pasif=2 -> karar verilemez",
+            entropi_yakinsama(gurultu(40, 5.95, 0.01), 2)[0] is None)
+    kontrol("entropi yok -> karar verilemez",
+            entropi_yakinsama([None] * 40, 20)[0] is None)
+
+
+def test_onbellek():
+    """Model onbellegi ayni spec icin yeniden kurmamali, degisince kurmali."""
+    print("\n[3h] Model onbellegi")
+    from cekirdek import onbellek
+    spec = sema.yukle(os.path.join(ORNEK, "pwr_pinhucre.json"))
+    m1, _ = onbellek.kur_onbellekli(spec)
+    m2, _ = onbellek.kur_onbellekli(spec)
+    kontrol("ayni spec -> ayni nesne", m1 is m2)
+    import copy as _copy
+    degisik = _copy.deepcopy(spec)
+    degisik["kor"]["adim"] = 1.30
+    m3, _ = onbellek.kur_onbellekli(degisik)
+    kontrol("degisen spec -> yeni nesne", m3 is not m1)
+    kontrol("kur_taze her zaman yeni", onbellek.kur_taze(spec)[0] is not m1)
+
+
+# ============================================================================
 # 5-6. MONTE CARLO (yavas)
 # ============================================================================
 
@@ -333,6 +402,9 @@ def main(argv):
     test_altigen_sinir()
     test_ice_aktarma()
     test_sab_yanlis_alarm()
+    test_entropi_ayristirma()
+    test_entropi_yakinsama()
+    test_onbellek()
     test_cizim()
 
     if not hizli:

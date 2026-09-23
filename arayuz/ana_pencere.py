@@ -4,8 +4,22 @@
  ana_pencere.py  --  Ana uygulama penceresi
 ================================================================================
  Sol tarafta editor sekmeleri, sag tarafta canli geometri onizlemesi, altta
- dogrulama paneli. Butun sekmeler ayni spec sozlugu uzerinde calisir; herhangi
- bir degisiklik dogrulamayi ve onizlemeyi tetikler.
+ dogrulama paneli. Butun sekmeler ayni spec sozlugu uzerinde calisir.
+
+ PERFORMANS NOTLARI (olcume dayali)
+   1. Model onbellegi  : ayni spec icin openmc.Model yeniden kurulmaz.
+                         Olculen: 21.9 ms -> 0.07 ms (bkz. cekirdek/onbellek.py)
+   2. Tembel sekme yenileme : bir degisiklikte TUM sekmeler yeniden kurulmuyordu;
+                         artik yalnizca gorunur sekme yenilenir, digerleri
+                         "kirli" isaretlenip acildiklarinda guncellenir.
+                         Olculen kazanc: degisiklik basina ~34 ms.
+                         Yan fayda: gorunmeyen sekmelerin secim/kaydirma
+                         durumu korunur (eskiden her degisiklikte sifirlaniyordu).
+   3. Onizleme 300 ms geciktirilir (debounce); hizli yazarken tek cizime duser.
+
+ GERI AL / YINELE
+   Spec anlik goruntuleri 700 ms bosta kalinca yigina itilir; ardarda tus
+   basislari tek adima birlesir. En fazla 50 adim tutulur.
 ================================================================================
 """
 
@@ -15,7 +29,7 @@ import sys
 
 from PySide6 import QtCore, QtGui, QtWidgets
 
-from cekirdek import sema, dogrula, ice_aktar, kod_uret, kurucu
+from cekirdek import sema, dogrula, ice_aktar, kod_uret, onbellek
 from arayuz.onizleme import OnizlemeWidget
 from arayuz.sekme_ayar import AyarSekmesi
 from arayuz.sekme_calistir import CalistirSekmesi
@@ -28,6 +42,84 @@ KOK = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ORNEKLER = os.path.join(KOK, "ornekler")
 
 _SEVIYE_RENK = {"hata": "#c0392b", "uyari": "#c87f0a", "bilgi": "#7f8c8d"}
+_GECMIS_SINIR = 50
+
+# Dogrulama bulgusundaki "yer" onekinden sekme indeksine
+# Bir konu degistiginde hangi sekmelerin tazelenmesi gerektigi.
+# Amac: ayar degisikligi yuzunden kullanicinin kafes secimini sifirlamamak.
+_KONU_BAGIMLILIK = {
+    "malzeme": {"cubuk", "demet", "kor"},   # malzeme listeleri her yerde kullaniliyor
+    "cubuk":   {"demet", "kor"},            # kafes anahtarlari ve kor secimi
+    "demet":   {"kor"},                     # kor hangi demeti kullanacagini secer
+    "kor":     set(),
+    "ayar":    set(),
+    "genel":   {"malzeme", "cubuk", "demet", "kor", "ayar"},
+}
+
+_YER_SEKME = [
+    ("malzeme", 0), ("cubuk", 1), ("plaka", 1), ("demet", 2),
+    ("kor", 3), ("ayarlar", 4), ("veri kutuphanesi", 4),
+]
+
+# Yeni model sihirbazi sablonlari: (baslik, aciklama, ornek dosyasi)
+SABLONLAR = [
+    ("PWR yakit hucresi",
+     "Tek yakit cubugu, yansitici sinir. En kucuk calisir model; ogrenmek ve "
+     "hizli denemeler icin. Bu ornek ayni zamanda regresyon cipasidir "
+     "(k-inf = 1.3570 +/- 0.0020).", "pwr_pinhucre.json"),
+    ("PWR 17x17 yakit demeti",
+     "264 yakit cubugu, 24 kilavuz boru, 1 enstruman borusu. Sicak sartlar, "
+     "1300 ppm bor. Termal reaktor demet hesaplari icin baslangic noktasi.",
+     "pwr_17x17.json"),
+    ("MTR plaka yakit elemani",
+     "23 duz plaka, U3Si2-Al dispersiyon yakiti, Al-6061 zarf. Havuz tipi "
+     "arastirma reaktoru elemani.", "mtr_plaka.json"),
+    ("SFR altigen demet",
+     "7 halkali altigen kafes, 127 U-10Mo cubuk, sivi sodyum. Hizli reaktor "
+     "ve altigen kafes ornegi.", "sfr_altigen.json"),
+    ("Bos model",
+     "Hicbir sey tanimli degil. Malzemelerden baslayarak kendiniz kurarsiniz.",
+     None),
+]
+
+
+class SablonDiyalog(QtWidgets.QDialog):
+    """Yeni model olustururken sablon secimi."""
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("Yeni model")
+        self.resize(620, 400)
+        self.liste = QtWidgets.QListWidget()
+        for baslik, _aciklama, _dosya in SABLONLAR:
+            self.liste.addItem(baslik)
+        self.liste.setCurrentRow(0)
+        self.aciklama = QtWidgets.QLabel()
+        self.aciklama.setWordWrap(True)
+        self.aciklama.setMinimumHeight(90)
+        self.aciklama.setAlignment(QtCore.Qt.AlignTop)
+        self.liste.currentRowChanged.connect(self._aciklama_guncelle)
+        self._aciklama_guncelle(0)
+
+        kutu = QtWidgets.QDialogButtonBox(
+            QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel)
+        kutu.accepted.connect(self.accept)
+        kutu.rejected.connect(self.reject)
+        self.liste.doubleClicked.connect(self.accept)
+
+        d = QtWidgets.QVBoxLayout(self)
+        d.addWidget(QtWidgets.QLabel("Neyle baslamak istersiniz?"))
+        d.addWidget(self.liste, 1)
+        d.addWidget(self.aciklama)
+        d.addWidget(kutu)
+
+    def _aciklama_guncelle(self, satir):
+        if 0 <= satir < len(SABLONLAR):
+            self.aciklama.setText(SABLONLAR[satir][1])
+
+    def secilen_dosya(self):
+        satir = self.liste.currentRow()
+        return SABLONLAR[satir][2] if 0 <= satir < len(SABLONLAR) else None
 
 
 class AnaPencere(QtWidgets.QMainWindow):
@@ -35,14 +127,19 @@ class AnaPencere(QtWidgets.QMainWindow):
     def __init__(self, acilis_dosyasi=None):
         super().__init__()
         self.setWindowTitle("OpenMC Reaktor Kuru Arayuzu")
-        self.resize(1500, 950)
+        self.resize(1560, 980)
 
+        self.ayarlar = QtCore.QSettings("openmc_arayuz", "arayuz")
         self.spec = sema.yeni_spec("yeni model")
         self.proje_yolu = None
         self._kirli = False
         self._bulgular = []
+        self._kirli_sekmeler = set()
+        self._gecmis = []
+        self._gecmis_ix = -1
+        self._gecmis_yaziyor = False
 
-        # --- editor sekmeleri ---
+        # ---------------- editor sekmeleri ----------------
         self.sekmeler = QtWidgets.QTabWidget()
         self.s_malzeme = MalzemeSekmesi()
         self.s_cubuk = CubukSekmesi()
@@ -62,14 +159,19 @@ class AnaPencere(QtWidgets.QMainWindow):
             self.sekmeler.addTab(w, ad)
         for e in self.editorler:
             e.degisti.connect(self._degisti)
+        self.sekmeler.currentChanged.connect(self._sekme_degisti)
+        self._konu_sekme = {e.KONU: e for e in self.editorler}
 
-        # --- onizleme ---
+        # ---------------- onizleme ----------------
         self.onizleme = OnizlemeWidget()
         self.onizleme.durum.connect(self._onizleme_durum)
+        self.onizleme.olcu_bulundu.connect(lambda *_: self._ozet_guncelle())
 
-        # --- dogrulama paneli ---
+        # ---------------- dogrulama paneli ----------------
         self.dogrulama = QtWidgets.QListWidget()
         self.dogrulama.setAlternatingRowColors(True)
+        self.dogrulama.itemActivated.connect(self._bulguya_git)
+        self.dogrulama.itemClicked.connect(self._bulguya_git)
         self.dogrulama_ozet = QtWidgets.QLabel("-")
         dg = QtWidgets.QWidget()
         dgd = QtWidgets.QVBoxLayout(dg)
@@ -77,14 +179,17 @@ class AnaPencere(QtWidgets.QMainWindow):
         ust = QtWidgets.QHBoxLayout()
         ust.addWidget(QtWidgets.QLabel("Dogrulama:"))
         ust.addWidget(self.dogrulama_ozet)
+        ust.addWidget(QtWidgets.QLabel("(bir satira tiklayinca ilgili sekmeye gider)"))
         ust.addStretch(1)
         d_yenile = QtWidgets.QPushButton("Veri kutuphanesini de kontrol et")
+        d_yenile.setToolTip("Modelin istedigi her nuklidin cross_sections.xml "
+                            "icinde bulunup bulunmadigini kontrol eder (yavas).")
         d_yenile.clicked.connect(lambda: self._dogrula(veri=True))
         ust.addWidget(d_yenile)
         dgd.addLayout(ust)
         dgd.addWidget(self.dogrulama)
 
-        # --- yerlesim ---
+        # ---------------- yerlesim ----------------
         sag = QtWidgets.QSplitter(QtCore.Qt.Vertical)
         sag.addWidget(self.onizleme)
         sag.addWidget(dg)
@@ -96,45 +201,50 @@ class AnaPencere(QtWidgets.QMainWindow):
         bolucu.addWidget(sag)
         bolucu.setStretchFactor(0, 3)
         bolucu.setStretchFactor(1, 2)
-        bolucu.setSizes([880, 620])
+        bolucu.setSizes([900, 640])
         self.setCentralWidget(bolucu)
 
         self._menu_kur()
-        self.statusBar().showMessage("Hazir")
+        self._arac_cubugu_kur()
+        self._durum_cubugu_kur()
 
         self.s_calistir.kapi_ayarla(self._kosu_izni)
-        self.s_calistir.durum.connect(lambda m, ok: self.statusBar().showMessage(m))
+        self.s_calistir.durum.connect(lambda m, ok: self.statusBar().showMessage(m, 8000))
 
-        # dogrulama icin gecikme sayaci
-        self._dog_sayac = QtCore.QTimer(self)
-        self._dog_sayac.setSingleShot(True)
+        self._dog_sayac = QtCore.QTimer(self); self._dog_sayac.setSingleShot(True)
         self._dog_sayac.setInterval(250)
         self._dog_sayac.timeout.connect(lambda: self._dogrula(veri=False))
+
+        self._gecmis_sayac = QtCore.QTimer(self); self._gecmis_sayac.setSingleShot(True)
+        self._gecmis_sayac.setInterval(700)
+        self._gecmis_sayac.timeout.connect(self._gecmise_it)
 
         if acilis_dosyasi:
             self.proje_ac(acilis_dosyasi)
         else:
             self._spec_uygula()
+            self._gecmise_it(ilk=True)
 
     # ==================================================================
-    # menu
+    # menu / arac cubugu / durum cubugu
     # ==================================================================
     def _menu_kur(self):
         m_dosya = self.menuBar().addMenu("&Dosya")
-        self._eylem(m_dosya, "Yeni", self.proje_yeni, QtGui.QKeySequence.New)
-        self._eylem(m_dosya, "Ac...", self._ac_diyalog, QtGui.QKeySequence.Open)
-
+        self.e_yeni = self._eylem(m_dosya, "Yeni...", self.proje_yeni,
+                                  QtGui.QKeySequence.New, "Sablondan yeni model")
+        self.e_ac = self._eylem(m_dosya, "Ac...", self._ac_diyalog,
+                                QtGui.QKeySequence.Open)
+        self.m_son = m_dosya.addMenu("Son kullanilanlar")
         m_ornek = m_dosya.addMenu("Ornek ac")
-        for ad, dosya in (("PWR pin hucre (regresyon cipasi)", "pwr_pinhucre.json"),
-                          ("PWR 17x17 yakit demeti", "pwr_17x17.json"),
-                          ("MTR plaka yakit elemani", "mtr_plaka.json")):
-            yol = os.path.join(ORNEKLER, dosya)
-            eylem = QtGui.QAction(ad, self)
-            eylem.triggered.connect(lambda _c=False, y=yol: self.proje_ac(y))
-            m_ornek.addAction(eylem)
-
+        for baslik, _a, dosya in SABLONLAR:
+            if dosya:
+                yol = os.path.join(ORNEKLER, dosya)
+                e = QtGui.QAction(baslik, self)
+                e.triggered.connect(lambda _c=False, y=yol: self.proje_ac(y))
+                m_ornek.addAction(e)
         m_dosya.addSeparator()
-        self._eylem(m_dosya, "Kaydet", self.proje_kaydet, QtGui.QKeySequence.Save)
+        self.e_kaydet = self._eylem(m_dosya, "Kaydet", self.proje_kaydet,
+                                    QtGui.QKeySequence.Save)
         self._eylem(m_dosya, "Farkli kaydet...", self.proje_farkli_kaydet,
                     QtGui.QKeySequence.SaveAs)
         m_dosya.addSeparator()
@@ -143,27 +253,77 @@ class AnaPencere(QtWidgets.QMainWindow):
         self._eylem(m_dosya, "Neden geometri ice aktarilamiyor?",
                     self._geometri_aciklama)
         m_dosya.addSeparator()
-        self._eylem(m_dosya, "Python betigi olarak disa aktar...", self.betik_disa_aktar)
+        self._eylem(m_dosya, "Python betigi olarak disa aktar...",
+                    self.betik_disa_aktar, "Ctrl+E")
         self._eylem(m_dosya, "OpenMC XML disa aktar...", self.xml_disa_aktar)
         self._eylem(m_dosya, "Onizlemeyi PNG kaydet...", self.png_kaydet)
         m_dosya.addSeparator()
         self._eylem(m_dosya, "Cikis", self.close, QtGui.QKeySequence.Quit)
 
+        m_duzen = self.menuBar().addMenu("&Duzen")
+        self.e_geri = self._eylem(m_duzen, "Geri al", self.geri_al,
+                                  QtGui.QKeySequence.Undo)
+        self.e_yinele = self._eylem(m_duzen, "Yinele", self.yinele,
+                                    QtGui.QKeySequence.Redo)
+
         m_model = self.menuBar().addMenu("&Model")
         self._eylem(m_model, "Dogrulamayi yenile (veri kutuphanesi dahil)",
                     lambda: self._dogrula(veri=True), "F5")
         self._eylem(m_model, "Onizlemeyi yenile", self.onizleme._ciz, "F6")
+        self.e_calistir = self._eylem(m_model, "CALISTIR", self._calistir_menuden, "F9")
 
         m_yardim = self.menuBar().addMenu("&Yardim")
+        self._eylem(m_yardim, "Kisayollar", self._kisayollar)
         self._eylem(m_yardim, "Hakkinda", self._hakkinda)
+        self._son_menusu_yenile()
 
-    def _eylem(self, menu, ad, islev, kisayol=None):
+    def _arac_cubugu_kur(self):
+        cubuk = QtWidgets.QToolBar("Ana")
+        cubuk.setToolButtonStyle(QtCore.Qt.ToolButtonTextBesideIcon)
+        cubuk.setMovable(False)
+        for e in (self.e_yeni, self.e_ac, self.e_kaydet):
+            cubuk.addAction(e)
+        cubuk.addSeparator()
+        for e in (self.e_geri, self.e_yinele):
+            cubuk.addAction(e)
+        cubuk.addSeparator()
+        cubuk.addAction(self.e_calistir)
+        bosluk = QtWidgets.QWidget()
+        bosluk.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
+                             QtWidgets.QSizePolicy.Preferred)
+        cubuk.addWidget(bosluk)
+        self.model_ozet = QtWidgets.QLabel("-")
+        cubuk.addWidget(self.model_ozet)
+        self.addToolBar(cubuk)
+
+    def _durum_cubugu_kur(self):
+        self.durum_dogrulama = QtWidgets.QLabel("")
+        self.statusBar().addPermanentWidget(self.durum_dogrulama)
+        self.statusBar().showMessage("Hazir")
+
+    def _eylem(self, menu, ad, islev, kisayol=None, ipucu=None):
         e = QtGui.QAction(ad, self)
         e.triggered.connect(lambda _c=False: islev())
         if kisayol:
             e.setShortcut(kisayol)
+        if ipucu:
+            e.setToolTip(ipucu)
         menu.addAction(e)
         return e
+
+    def _kisayollar(self):
+        QtWidgets.QMessageBox.information(self, "Kisayollar",
+            "Ctrl+N   Yeni model (sablon secimi)\n"
+            "Ctrl+O   Ac\n"
+            "Ctrl+S   Kaydet\n"
+            "Ctrl+Z   Geri al\n"
+            "Ctrl+Y   Yinele\n"
+            "Ctrl+E   Python betigi olarak disa aktar\n"
+            "F5       Dogrulamayi yenile (veri kutuphanesi dahil)\n"
+            "F6       Onizlemeyi yenile\n"
+            "F9       CALISTIR\n\n"
+            "Altigen haritada: sol tik boyar, sag tik fircayi degistirir, "
+            "tekerlek yakinlastirir.")
 
     def _hakkinda(self):
         QtWidgets.QMessageBox.information(
@@ -172,34 +332,126 @@ class AnaPencere(QtWidgets.QMainWindow):
             "Model tanimi JSON 'spec' olarak tutulur; ondan hem openmc.Model\n"
             "hem de tek basina calisan Python betigi uretilir.\n\n"
             "Arayuz bir cikmaz sokak degildir: Dosya > Python betigi olarak\n"
-            "disa aktar ile modeli alip elle duzenlemeye devam edebilirsiniz.")
+            "disa aktar (Ctrl+E) ile modeli alip elle duzenlemeye devam\n"
+            "edebilirsiniz.")
 
     # ==================================================================
     # spec yasam dongusu
     # ==================================================================
     def _spec_uygula(self):
+        """Spec bastan yuklendi -- tum sekmeleri tazele."""
         for e in self.editorler:
             e.spec_yukle(self.spec)
+        self._kirli_sekmeler.clear()
         self.onizleme.spec_ayarla(self.spec)
         self.s_calistir.spec_ayarla(self.spec, self.proje_yolu)
         self._dogrula(veri=False)
         self._baslik_guncelle()
+        self._ozet_guncelle()
 
-    def _degisti(self):
+    def _degisti(self, konu="genel"):
+        """
+        Bir editor sekmesi spec'i degistirdi.
+
+        Eskiden burada TUM sekmeler yeniden kuruluyordu: olculen 34 ms ve --
+        daha kotusu -- gorunmeyen sekmelerin secim/kaydirma durumu her
+        seferinde sifirlaniyordu. Artik yalnizca konuya BAGIMLI sekmeler
+        kirli isaretlenir, onlar da ancak acildiklarinda yenilenir.
+        """
         self._kirli = True
+        bagimli_konular = _KONU_BAGIMLILIK.get(konu, set())
+        gorunur = self.sekmeler.currentWidget()
+        for k in bagimli_konular:
+            e = self._konu_sekme.get(k)
+            if e is None:
+                continue
+            if e is gorunur:
+                e.spec_yukle(self.spec)
+                self._kirli_sekmeler.discard(e)
+            else:
+                self._kirli_sekmeler.add(e)
+
         self.onizleme.iste()
         self._dog_sayac.start()
+        self._gecmis_sayac.start()
         self._baslik_guncelle()
-        # sekmeler birbirine bagimli (malzeme adi -> cubuk kutulari vb.)
-        gonderen = self.sender()
-        for e in self.editorler:
-            if e is not gonderen:
-                e.spec_yukle(self.spec)
+        self._ozet_guncelle()
+
+    def _sekme_degisti(self, indeks):
+        w = self.sekmeler.widget(indeks)
+        if w in self._kirli_sekmeler:
+            w.spec_yukle(self.spec)
+            self._kirli_sekmeler.discard(w)
+        if w is self.s_calistir:
+            self.s_calistir.spec_ayarla(self.spec, self.proje_yolu)
 
     def _baslik_guncelle(self):
         ad = os.path.basename(self.proje_yolu) if self.proje_yolu else "kaydedilmemis"
         self.setWindowTitle("OpenMC Reaktor Kuru Arayuzu  --  %s%s"
                             % (ad, " *" if self._kirli else ""))
+        self.e_geri.setEnabled(self._gecmis_ix > 0)
+        self.e_yinele.setEnabled(0 <= self._gecmis_ix < len(self._gecmis) - 1)
+
+    def _ozet_guncelle(self):
+        """
+        Arac cubugundaki kisa ozet. BURADA MODEL KURULMAZ -- olcu bilgisi
+        onizlemeden gelir (olcu_bulundu sinyali). Onceki surumde burada
+        kur_onbellekli() cagriliyordu ve spec her degistiginde onbellek
+        iskaladigi icin degisiklik basina ~22 ms ekliyordu.
+        """
+        s = self.spec
+        parcalar = ["%d malzeme" % len(s["malzemeler"])]
+        n_cubuk = len(s.get("cubuklar", [])) + len(s.get("plakalar", []))
+        if n_cubuk:
+            parcalar.append("%d cubuk/plaka" % n_cubuk)
+        if s.get("demetler"):
+            parcalar.append("%d kafes" % len(s["demetler"]))
+        olcu = self.onizleme.son_olcu
+        if olcu:
+            parcalar.append("%.2f x %.2f cm" % olcu)
+        self.model_ozet.setText("   |   ".join(parcalar) + "   ")
+
+    # ==================================================================
+    # geri al / yinele
+    # ==================================================================
+    def _gecmise_it(self, ilk=False):
+        if self._gecmis_yaziyor:
+            return
+        anlik = copy.deepcopy(self.spec)
+        if self._gecmis and self._gecmis_ix >= 0:
+            if onbellek.ozet(self._gecmis[self._gecmis_ix]) == onbellek.ozet(anlik):
+                return          # degisiklik yok
+        del self._gecmis[self._gecmis_ix + 1:]
+        self._gecmis.append(anlik)
+        if len(self._gecmis) > _GECMIS_SINIR:
+            self._gecmis.pop(0)
+        self._gecmis_ix = len(self._gecmis) - 1
+        self._baslik_guncelle()
+
+    def _gecmisten_yukle(self, ix):
+        self._gecmis_yaziyor = True
+        try:
+            self.spec = copy.deepcopy(self._gecmis[ix])
+            self._gecmis_ix = ix
+            self._spec_uygula()
+            self._kirli = True
+        finally:
+            self._gecmis_yaziyor = False
+        self._baslik_guncelle()
+
+    def geri_al(self):
+        self._gecmis_sayac.stop()
+        self._gecmise_it()
+        if self._gecmis_ix > 0:
+            self._gecmisten_yukle(self._gecmis_ix - 1)
+            self.statusBar().showMessage("Geri alindi (%d/%d)"
+                                         % (self._gecmis_ix + 1, len(self._gecmis)), 3000)
+
+    def yinele(self):
+        if self._gecmis_ix < len(self._gecmis) - 1:
+            self._gecmisten_yukle(self._gecmis_ix + 1)
+            self.statusBar().showMessage("Yinelendi (%d/%d)"
+                                         % (self._gecmis_ix + 1, len(self._gecmis)), 3000)
 
     # ==================================================================
     # dogrulama
@@ -212,30 +464,40 @@ class AnaPencere(QtWidgets.QMainWindow):
                                             "dogrulama sirasinda hata: %s" % e)]
         self.dogrulama.clear()
         for b in self._bulgular:
-            oge = QtWidgets.QListWidgetItem("%s  %s%s"
-                                            % (b.seviye.upper().ljust(5), b.yer.ljust(20),
-                                               b.mesaj))
+            oge = QtWidgets.QListWidgetItem(
+                "%s  %s%s" % (b.seviye.upper().ljust(5), b.yer.ljust(22), b.mesaj))
             oge.setForeground(QtGui.QColor(_SEVIYE_RENK[b.seviye]))
-            if b.oneri:
-                oge.setToolTip(b.oneri)
+            oge.setData(QtCore.Qt.UserRole, b.yer)
+            ipucu = b.oneri or ""
+            oge.setToolTip((ipucu + "\n\n") if ipucu else "" + "Tiklayinca ilgili sekmeye gider.")
             self.dogrulama.addItem(oge)
         ozet = dogrula.ozet(self._bulgular)
         self.dogrulama_ozet.setText(ozet)
-        self.dogrulama_ozet.setStyleSheet(
-            "color: %s; font-weight: bold;"
-            % (_SEVIYE_RENK["hata"] if dogrula.hata_var(self._bulgular) else "#27ae60"))
+        renk = _SEVIYE_RENK["hata"] if dogrula.hata_var(self._bulgular) else "#27ae60"
+        self.dogrulama_ozet.setStyleSheet("color: %s; font-weight: bold;" % renk)
+        self.durum_dogrulama.setText(ozet)
+        self.durum_dogrulama.setStyleSheet("color: %s;" % renk)
         self.s_calistir.kapi_guncelle()
 
+    def _bulguya_git(self, oge):
+        """Dogrulama satirina tiklayinca ilgili sekmeyi ac."""
+        yer = (oge.data(QtCore.Qt.UserRole) or "").lower()
+        for onek, indeks in _YER_SEKME:
+            if yer.startswith(onek):
+                self.sekmeler.setCurrentIndex(indeks)
+                return
+
     def _onizleme_durum(self, mesaj, basarili):
-        self.statusBar().showMessage(mesaj)
+        self.statusBar().showMessage(mesaj, 6000)
         self.s_calistir.kapi_guncelle()
 
     def _kosu_izni(self):
         """CALISTIR kapisi: once geometri cizilmeli, sonra hata olmamali."""
         if dogrula.hata_var(self._bulgular):
             n = sum(1 for b in self._bulgular if b.seviye == "hata")
-            return False, ("Dogrulamada %d hata var -- once bunlari giderin "
-                           "(sag alttaki panel)." % n)
+            return False, ("Dogrulamada %d hata var -- once bunlari giderin. "
+                           "Sag alttaki panelde bir satira tiklayarak ilgili "
+                           "sekmeye gidebilirsiniz." % n)
         if not self.onizleme.cizildi_mi():
             return False, ("Geometri onizlemesi henuz basariyla uretilmedi. "
                            "ONCE CIZ, SONRA CALISTIR: yanlis geometriyle saatlerce "
@@ -245,6 +507,37 @@ class AnaPencere(QtWidgets.QMainWindow):
             return True, ("Calistirilabilir. %d uyari var -- sonucu etkileyebilir, "
                           "dogrulama panelini gozden gecirin." % uyari)
         return True, "Model calistirilmaya hazir."
+
+    def _calistir_menuden(self):
+        self.sekmeler.setCurrentWidget(self.s_calistir)
+        self.s_calistir.spec_ayarla(self.spec, self.proje_yolu)
+        self.s_calistir.calistir()
+
+    # ==================================================================
+    # son kullanilanlar
+    # ==================================================================
+    def _son_listesi(self):
+        return [y for y in (self.ayarlar.value("son_dosyalar", []) or [])
+                if isinstance(y, str) and os.path.exists(y)]
+
+    def _sona_ekle(self, yol):
+        liste = [os.path.abspath(yol)] + [y for y in self._son_listesi()
+                                          if os.path.abspath(y) != os.path.abspath(yol)]
+        self.ayarlar.setValue("son_dosyalar", liste[:10])
+        self._son_menusu_yenile()
+
+    def _son_menusu_yenile(self):
+        self.m_son.clear()
+        liste = self._son_listesi()
+        if not liste:
+            e = self.m_son.addAction("(bos)")
+            e.setEnabled(False)
+            return
+        for yol in liste:
+            e = QtGui.QAction(os.path.basename(yol), self)
+            e.setToolTip(yol)
+            e.triggered.connect(lambda _c=False, y=yol: self.proje_ac(y))
+            self.m_son.addAction(e)
 
     # ==================================================================
     # dosya islemleri
@@ -264,10 +557,26 @@ class AnaPencere(QtWidgets.QMainWindow):
     def proje_yeni(self):
         if not self._kaydetme_sor():
             return
-        self.spec = sema.yeni_spec("yeni model")
+        d = SablonDiyalog(self)
+        if d.exec() != QtWidgets.QDialog.Accepted:
+            return
+        dosya = d.secilen_dosya()
+        if dosya:
+            try:
+                self.spec = sema.yukle(os.path.join(ORNEKLER, dosya))
+                self.spec["ad"] = self.spec.get("ad", "") + " (kopya)"
+            except Exception as e:
+                QtWidgets.QMessageBox.critical(self, "Sablon acilamadi", str(e))
+                return
+        else:
+            self.spec = sema.yeni_spec("yeni model")
         self.proje_yolu = None
-        self._kirli = False
+        self._kirli = bool(dosya)
+        self._gecmis, self._gecmis_ix = [], -1
         self._spec_uygula()
+        self._gecmise_it(ilk=True)
+        self.statusBar().showMessage(
+            "Yeni model olusturuldu -- 'Farkli kaydet' ile bir dosyaya baglayin", 8000)
 
     def _ac_diyalog(self):
         yol, _ = QtWidgets.QFileDialog.getOpenFileName(
@@ -285,8 +594,11 @@ class AnaPencere(QtWidgets.QMainWindow):
             return
         self.proje_yolu = os.path.abspath(yol)
         self._kirli = False
+        self._gecmis, self._gecmis_ix = [], -1
         self._spec_uygula()
-        self.statusBar().showMessage("Acildi: %s" % yol)
+        self._gecmise_it(ilk=True)
+        self._sona_ekle(yol)
+        self.statusBar().showMessage("Acildi: %s" % yol, 6000)
 
     def proje_kaydet(self):
         if self.proje_yolu is None:
@@ -298,7 +610,8 @@ class AnaPencere(QtWidgets.QMainWindow):
             return False
         self._kirli = False
         self._baslik_guncelle()
-        self.statusBar().showMessage("Kaydedildi: %s" % self.proje_yolu)
+        self._sona_ekle(self.proje_yolu)
+        self.statusBar().showMessage("Kaydedildi: %s" % self.proje_yolu, 5000)
         return True
 
     def proje_farkli_kaydet(self):
@@ -315,7 +628,6 @@ class AnaPencere(QtWidgets.QMainWindow):
         return self.proje_kaydet()
 
     def malzeme_ice_aktar(self):
-        """Mevcut bir materials.xml / model.xml icindeki malzemeleri spec'e ekler."""
         yol, _ = QtWidgets.QFileDialog.getOpenFileName(
             self, "Malzeme iceren OpenMC XML dosyasi",
             os.path.dirname(self.proje_yolu) if self.proje_yolu else os.getcwd(),
@@ -330,9 +642,7 @@ class AnaPencere(QtWidgets.QMainWindow):
         if not yeni_malzemeler:
             QtWidgets.QMessageBox.information(self, "Bos", "Dosyada malzeme bulunamadi.")
             return
-
         mevcut = {m["ad"] for m in self.spec["malzemeler"]}
-        eklenen = 0
         for m in yeni_malzemeler:
             ad, i = m["ad"], 2
             while ad in mevcut:
@@ -341,11 +651,10 @@ class AnaPencere(QtWidgets.QMainWindow):
             m["ad"] = ad
             mevcut.add(ad)
             self.spec["malzemeler"].append(m)
-            eklenen += 1
-
         self._kirli = True
         self._spec_uygula()
-        mesaj = "%d malzeme eklendi.\n\n" % eklenen
+        self._gecmise_it()
+        mesaj = "%d malzeme eklendi.\n\n" % len(yeni_malzemeler)
         if notlar:
             mesaj += "Notlar:\n" + "\n".join("  - " + n for n in notlar)
         QtWidgets.QMessageBox.information(self, "Ice aktarildi", mesaj)
@@ -379,22 +688,23 @@ class AnaPencere(QtWidgets.QMainWindow):
         if not dizin:
             return
         try:
-            model, _ = kurucu.kur(self.spec)
+            model, _ = onbellek.kur_taze(self.spec)
             model.export_to_model_xml(os.path.join(dizin, "model.xml"))
         except Exception as e:
             QtWidgets.QMessageBox.critical(self, "Uretilemedi", str(e))
             return
-        self.statusBar().showMessage("XML yazildi: %s/model.xml" % dizin)
+        self.statusBar().showMessage("XML yazildi: %s/model.xml" % dizin, 6000)
 
     def png_kaydet(self):
         yol, _ = QtWidgets.QFileDialog.getSaveFileName(
             self, "Onizlemeyi kaydet", "geometri.png", "PNG (*.png)")
         if yol:
             self.onizleme.kaydet(yol)
-            self.statusBar().showMessage("Kaydedildi: %s" % yol)
+            self.statusBar().showMessage("Kaydedildi: %s" % yol, 5000)
 
     def closeEvent(self, olay):
         if self._kaydetme_sor():
+            self.onizleme.kapat()      # openmc kutuphanesini serbest birak
             olay.accept()
         else:
             olay.ignore()

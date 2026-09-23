@@ -33,28 +33,83 @@ import time
 
 from cekirdek import sema, kurucu, dogrula
 
-# OpenMC cevrim satiri:  "       54/1    1.32041    1.36400 +/- 0.00368"
-# pasif cevrimlerde ortalama sutunlari yoktur.
+# OpenMC cevrim satiri iki bicimde gelir:
+#   entropi YOK :  "  54/1   1.32041   1.36400 +/- 0.00368"
+#   entropi VAR :  "  54/1   1.32041   5.94225   1.36400 +/- 0.00368"
+#                                      ^^^^^^^ Shannon entropisi
+# Pasif cevrimlerde "ortalama +/- sapma" sutunlari bulunmaz.
+#
+# !!! Once bu desen yalnizca ucuncu bicimi taniyordu ve entropi acikken
+# TUM cevrim satirlari sessizce atlaniyordu (ilerleme cubugu ve yakinsama
+# grafigi bos kaliyordu). Sayilari genel olarak ayristirip sutun SAYISINDAN
+# karar vermek bu tur bir sessiz kirilmayi onler.
 _CEVRIM_DESEN = re.compile(
-    r"^\s*(\d+)/(\d+)\s+([0-9.]+)(?:\s+([0-9.]+)\s+\+/-\s+([0-9.]+))?\s*$")
+    r"^\s*(\d+)/(\d+)\s+([0-9.eE+-]+(?:\s+[0-9.eE+-]+)*?)"
+    r"(?:\s+([0-9.eE+-]+)\s+\+/-\s+([0-9.eE+-]+))?\s*$")
 
 
 def cevrim_satiri(satir):
     """
-    Cevrim satirini ayristirir.
-    DONER {"cevrim":int,"nesil":int,"k":float,"ortalama":float|None,"sapma":float|None}
-    ya da satir cevrim satiri degilse None.
+    Cevrim satirini ayristirir; entropi sutunu varsa da yoksa da calisir.
+
+    DONER {"cevrim","nesil","k","entropi","ortalama","sapma"} ya da None.
     """
     m = _CEVRIM_DESEN.match(satir)
     if not m:
         return None
+    try:
+        sutunlar = [float(x) for x in m.group(3).split()]
+    except ValueError:
+        return None
+    if not sutunlar or len(sutunlar) > 2:
+        return None
     return {
         "cevrim": int(m.group(1)),
         "nesil": int(m.group(2)),
-        "k": float(m.group(3)),
+        "k": sutunlar[0],
+        "entropi": sutunlar[1] if len(sutunlar) > 1 else None,
         "ortalama": float(m.group(4)) if m.group(4) else None,
         "sapma": float(m.group(5)) if m.group(5) else None,
     }
+
+
+def entropi_yakinsama(entropiler, pasif):
+    """
+    Kaynak dagiliminin pasif cevrimler icinde yakinsayip yakinsamadigini
+    degerlendirir.
+
+    YONTEM
+      Aktif cevrimlerdeki entropi sacilmasi (sigma) gurultu olcusu olarak
+      alinir. Pasif cevrimlerin ilk yarisi ile ikinci yarisinin ortalamalari
+      arasindaki fark bu gurultunun 2 katindan buyukse, kaynak hala kayiyor
+      demektir ve pasif cevrim sayisi yetersizdir.
+
+    DONER (yakinsadi_mi, mesaj) -- degerlendirilemezse (None, aciklama)
+    """
+    dizi = [e for e in entropiler if e is not None]
+    if pasif < 4:
+        return None, ("pasif cevrim sayisi (%d) kaynak yakinsamasini "
+                      "degerlendirmek icin cok az -- en az 4, pratikte 20-50 "
+                      "pasif cevrim kullanin" % pasif)
+    if len(dizi) < 8 or len(dizi) <= pasif + 4:
+        return None, ("aktif cevrim sayisi degerlendirme icin yetersiz "
+                      "(%d cevrim, %d pasif)" % (len(dizi), pasif))
+    aktif = dizi[pasif:]
+    ortalama = sum(aktif) / len(aktif)
+    sigma = (sum((x - ortalama) ** 2 for x in aktif) / max(len(aktif) - 1, 1)) ** 0.5
+    if sigma <= 0:
+        return None, "entropi sabit, degerlendirilemedi"
+    yari = pasif // 2
+    ilk = sum(dizi[:yari]) / max(yari, 1)
+    son = sum(dizi[yari:pasif]) / max(pasif - yari, 1)
+    kayma = abs(son - ilk)
+    if kayma > 2.0 * sigma:
+        return False, ("Kaynak dagilimi pasif cevrimler boyunca hala kayiyor "
+                       "(kayma %.4f, aktif sacilma sigma=%.4f). Pasif cevrim "
+                       "sayisini artirin -- k-eff yanli olabilir."
+                       % (kayma, sigma))
+    return True, ("Kaynak dagilimi yakinsamis gorunuyor "
+                  "(kayma %.4f <= 2 sigma = %.4f)." % (kayma, 2 * sigma))
 
 
 def openmc_yolu():
@@ -82,6 +137,8 @@ def dizin_hazirla(dizin, temizle=True):
 
 def xml_yaz(spec, dizin):
     """Modeli kurar ve model.xml'i kosu dizinine yazar. DONER (model, bilgi, yol)"""
+    # Kosu icin DAIMA taze model -- onbellekteki nesne paylasilir, uzerinde
+    # calisma dizinine bagli islemler yapilmamalidir (bkz. onbellek.py).
     model, bilgi = kurucu.kur(spec)
     yol = os.path.join(dizin, "model.xml")
     model.export_to_model_xml(yol)
@@ -164,11 +221,18 @@ def sonuc_oku(statepoint_yolu):
     """
     import openmc
     sp = openmc.StatePoint(statepoint_yolu)
+    entropi = []
+    try:
+        if sp.entropy is not None:
+            entropi = [float(x) for x in sp.entropy]
+    except Exception:
+        pass
     sonuc = {
         "keff": (sp.keff.nominal_value, sp.keff.std_dev),
         "cevrim": sp.n_batches,
         "pasif": sp.n_inactive,
         "parcacik": sp.n_particles,
+        "entropi": entropi,
         "tallyler": {},
     }
     for _, t in sp.tallies.items():
@@ -271,6 +335,13 @@ def _terminal(argv):
     print("      k-eff    = %.5f +/- %.5f" % s["keff"])
     print("      cevrim   = %d (%d pasif), %d parcacik/cevrim"
           % (s["cevrim"], s["pasif"], s["parcacik"]))
+    if s.get("entropi"):
+        yakinsadi, mesaj = entropi_yakinsama(s["entropi"], s["pasif"])
+        isaret = {True: "OK   ", False: "UYARI", None: "     "}[yakinsadi]
+        print("      kaynak   = [%s] %s" % (isaret, mesaj))
+    else:
+        print("      kaynak   = [     ] Shannon entropisi kapali -- kaynak "
+              "yakinsamasi dogrulanamiyor")
     for ad, df in s["tallyler"].items():
         print("\n      --- tally: %s ---" % ad)
         print("      " + str(df).replace("\n", "\n      "))

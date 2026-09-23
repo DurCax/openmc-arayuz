@@ -148,6 +148,14 @@
         0.0,
         0.0
       ]
+    },
+    "entropi_mesh": {
+      "var": true,
+      "boyut": [
+        8,
+        8,
+        1
+      ]
     }
   },
   "tallyler": [

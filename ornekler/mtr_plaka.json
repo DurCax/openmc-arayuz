@@ -189,6 +189,14 @@
       "tur": "kutu",
       "alt": null,
       "ust": null
+    },
+    "entropi_mesh": {
+      "var": true,
+      "boyut": [
+        8,
+        8,
+        1
+      ]
     }
   },
   "tallyler": [

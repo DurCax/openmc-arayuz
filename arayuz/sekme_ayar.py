@@ -20,6 +20,8 @@ SKORLAR = ["flux", "fission", "absorption", "nu-fission", "scatter", "total",
 
 class AyarSekmesi(SekmeTabani):
 
+    KONU = "ayar"
+
     def __init__(self, parent=None):
         super().__init__(parent)
 
@@ -34,6 +36,14 @@ class AyarSekmesi(SekmeTabani):
         self.sicaklik_yontemi = QtWidgets.QComboBox()
         self.sicaklik_yontemi.addItems(["interpolation", "nearest"])
         self.aktif_etiket = QtWidgets.QLabel("-")
+        self.entropi_var = QtWidgets.QCheckBox("Shannon entropisi ile kaynak yakinsamasini olc")
+        self.entropi_var.setToolTip(
+            "Kaynak dagiliminin pasif cevrimler icinde yakinsayip yakinsamadigini\n"
+            "olcer. Yakinsamamis kaynak k-eff'i YANLI tahmin ettirir ve bu baska\n"
+            "turlu fark edilmez. Ozdeger hesaplarinda acik tutun.")
+        self.entropi_nx = tamsayi(8, 1, 200)
+        self.entropi_ny = tamsayi(8, 1, 200)
+        self.entropi_nz = tamsayi(1, 1, 200)
 
         # --- kaynak ---
         self.kaynak_tur = QtWidgets.QComboBox()
@@ -55,6 +65,13 @@ class AyarSekmesi(SekmeTabani):
         form.addRow("Aktif cevrim:", self.aktif_etiket)
         form.addRow("Rastgele tohum:", self.tohum)
         form.addRow("Sicaklik yontemi:", self.sicaklik_yontemi)
+        form.addRow(self.entropi_var)
+        ent = QtWidgets.QHBoxLayout()
+        for e, w in (("nx", self.entropi_nx), ("ny", self.entropi_ny), ("nz", self.entropi_nz)):
+            ent.addWidget(QtWidgets.QLabel(e)); ent.addWidget(w)
+        ent.addStretch(1)
+        self.entropi_etiket = QtWidgets.QLabel("Entropi mesh bolmeleri:")
+        form.addRow(self.entropi_etiket, self._sar(ent))
 
         kaynak_form = QtWidgets.QFormLayout()
         kaynak_form.addRow("Kaynak tipi:", self.kaynak_tur)
@@ -131,8 +148,10 @@ class AyarSekmesi(SekmeTabani):
 
         for w in (self.parcacik, self.cevrim, self.pasif, self.tohum,
                   self.is_parcacigi, self.kx, self.ky, self.kz,
+                  self.entropi_nx, self.entropi_ny, self.entropi_nz,
                   self.t_mesh_nx, self.t_mesh_ny, self.t_mesh_nz):
             w.valueChanged.connect(self._kaydet)
+        self.entropi_var.toggled.connect(self._kaydet)
         for w in (self.mod, self.sicaklik_yontemi, self.kaynak_tur):
             w.currentIndexChanged.connect(self._kaydet)
         self.kosu_dizini.editingFinished.connect(self._kaydet)
@@ -164,6 +183,12 @@ class AyarSekmesi(SekmeTabani):
         konum = k.get("konum") or [0.0, 0.0, 0.0]
         self.kx.setValue(konum[0]); self.ky.setValue(konum[1]); self.kz.setValue(konum[2])
 
+        ent = a.get("entropi_mesh") or {}
+        self.entropi_var.setChecked(bool(ent.get("var", True)))
+        boyut = ent.get("boyut") or [8, 8, 1]
+        self.entropi_nx.setValue(boyut[0]); self.entropi_ny.setValue(boyut[1])
+        self.entropi_nz.setValue(boyut[2])
+
         c = self.spec["calistirma"]
         self.is_parcacigi.setValue(c.get("is_parcacigi", 8))
         self.kosu_dizini.setText(c.get("dizin", "kosu"))
@@ -175,6 +200,8 @@ class AyarSekmesi(SekmeTabani):
             self.tally_liste.setCurrentRow(0)
         self._aktif_guncelle()
         self._kaynak_gorunurluk()
+        for w in (self.entropi_etiket, self.entropi_nx, self.entropi_ny, self.entropi_nz):
+            w.setEnabled(self.entropi_var.isChecked())
 
     def _aktif_guncelle(self):
         aktif = self.cevrim.value() - self.pasif.value()
@@ -197,6 +224,13 @@ class AyarSekmesi(SekmeTabani):
         a["pasif"] = self.pasif.value()
         a["tohum"] = self.tohum.value()
         a["sicaklik_yontemi"] = self.sicaklik_yontemi.currentText()
+        a["entropi_mesh"] = {
+            "var": self.entropi_var.isChecked(),
+            "boyut": [self.entropi_nx.value(), self.entropi_ny.value(),
+                      self.entropi_nz.value()],
+        }
+        for w in (self.entropi_etiket, self.entropi_nx, self.entropi_ny, self.entropi_nz):
+            w.setEnabled(self.entropi_var.isChecked())
         if self.kaynak_tur.currentData() == "nokta":
             a["kaynak"] = {"tur": "nokta",
                            "konum": [self.kx.value(), self.ky.value(), self.kz.value()]}
@@ -258,8 +292,8 @@ class AyarSekmesi(SekmeTabani):
                 pass
         if self.t_mesh_var.isChecked():
             try:
-                from cekirdek import kurucu
-                _, bilgi = kurucu.kur(self.spec)
+                from cekirdek import onbellek
+                _, bilgi = onbellek.kur_onbellekli(self.spec)
                 gx, gy = bilgi["sinir_kutu"]
             except Exception:
                 gx = gy = 10.0

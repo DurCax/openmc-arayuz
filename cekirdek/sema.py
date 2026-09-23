@@ -54,6 +54,10 @@ VARSAYILAN_AYARLAR = {
     "tohum": 1,                   # rastgele sayi tohumu
     "sicaklik_yontemi": "interpolation",   # nearest | interpolation
     "kaynak": {"tur": "nokta", "konum": [0.0, 0.0, 0.0]},
+    # Shannon entropisi mesh'i: kaynak dagiliminin yakinsamasini olcer.
+    # Ozdeger hesaplarinda acik olmasi onerilir -- yakinsamamis kaynak
+    # k-eff'i yanli tahmin ettirir ve bu baska turlu fark edilmez.
+    "entropi_mesh": {"var": True, "boyut": [8, 8, 1]},
 }
 
 VARSAYILAN_CALISTIRMA = {

@@ -436,6 +436,18 @@ def ayarlari_kur(spec, sinir_kutu):
         kisit = None
     s.source = openmc.IndependentSource(space=uzay, energy=openmc.stats.Watt(),
                                         constraints=kisit)
+
+    # --- Shannon entropisi mesh'i (kaynak yakinsamasi olcumu) ---
+    ent = a.get("entropi_mesh") or {}
+    if ent.get("var") and s.run_mode == "eigenvalue":
+        gx, gy = sinir_kutu
+        mesh = openmc.RegularMesh()
+        mesh.dimension = list(ent.get("boyut") or [8, 8, 1])
+        # Eksenel yonde sinir yoksa mesh'i cok genis tut (2B model)
+        z = 1.0e10
+        mesh.lower_left = (-gx / 2.0, -gy / 2.0, -z)
+        mesh.upper_right = (gx / 2.0, gy / 2.0, z)
+        s.entropy_mesh = mesh
     return s
 
 

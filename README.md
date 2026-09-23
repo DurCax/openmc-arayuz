@@ -45,15 +45,19 @@ openmc_arayuz/
 ├── cekirdek/                GUI'siz katman — terminalden de çalışır
 │   ├── sema.py              spec şeması, varsayılanlar, oku/yaz
 │   ├── malzeme_kutup.py     21 hazır malzeme (doğrulanmış bileşimler)
+│   ├── altigen.py           HexLattice halka düzeni ve konum hesabı
 │   ├── kurucu.py            spec → openmc.Model
+│   ├── onbellek.py          model önbelleği (21.9 ms → 0.07 ms)
 │   ├── dogrula.py           koşu öncesi kontroller
 │   ├── kod_uret.py          spec → tek başına çalışan Python betiği
+│   ├── ice_aktar.py         materials.xml → spec malzemeleri
 │   └── kosucu.py            çalıştırma + statepoint okuma + terminal girişi
 ├── arayuz/                  PySide6 katmanı
 │   ├── ana_pencere.py       sekmeler, proje aç/kaydet, doğrulama paneli
 │   ├── onizleme.py          canlı geometri kesiti (Model.plot sarmalayıcı)
+│   ├── hex_izgara.py        altıgen harita editörü (QPainter)
 │   └── sekme_*.py           malzeme / çubuk / kafes / kor / ayar / çalıştır
-├── ornekler/                pwr_pinhucre, pwr_17x17, mtr_plaka
+├── ornekler/                pwr_pinhucre, pwr_17x17, mtr_plaka, sfr_altigen
 └── testler/test_regresyon.py
 ```
 
@@ -66,7 +70,9 @@ Sekmeler numaralandırılmıştır, sırayla ilerlenir:
    (sıcaklığa bağlı yoğunluk + boron), D2O, LBE, Na, He, grafit, Be, B4C,
    Gd2O3, Ag-In-Cd var. S(α,β) uygun olanlara otomatik eklenir.
 2. **Çubuk / Plaka** — eşmerkezli silindirik çubuk veya MTR tipi plaka elemanı.
-3. **Kafesler** — harita ızgarasında hücrelere tıklayarak boyama.
+3. **Kafesler** — kare kafeste ızgara, altıgen kafeste gerçek altıgen yerleşim
+   üzerinde boyama (sol tık boyar, sağ tık fırçayı değiştirir, tekerlek
+   yakınlaştırır). Kafes tipi değiştirilince harita otomatik dönüştürülür.
 4. **Kor** — kor türü, yükseklik, yansıtıcı, sınır koşulları.
 5. **Ayarlar & Tally** — çevrim/parçacık, kaynak, tally tanımları.
 6. **Çalıştır** — canlı log, k-eff yakınsama grafiği, sonuç tabloları.
@@ -108,13 +114,15 @@ python3 testler/test_regresyon.py            # tümü (~2 dk)
 python3 testler/test_regresyon.py --hizli    # Monte Carlo hariç (~10 s)
 ```
 
-İki test bu katmanın doğruluğunun asıl kanıtıdır:
+64 test var. Üçü bu katmanın doğruluğunun asıl kanıtıdır:
 
 - **Regresyon çıpası** — `ornekler/pwr_pinhucre.json` referans değeri
   **k∞ = 1.3570 ± 0.0020** vermeli. 2σ dışına çıkarsa `kurucu.py`'de hata var.
 - **Betik eşdeğerliği** — `kurucu.py` ile üretilen betik aynı tohumla **birebir
-  aynı** k-eff vermeli. `kurucu.py` ya da `kod_uret.py` değiştirilirse mutlaka
-  tekrar koşulmalı.
+  aynı** k-eff vermeli (kare ve altıgen için ayrı ayrı). `kurucu.py` ya da
+  `kod_uret.py` değiştirilirse mutlaka tekrar koşulmalı.
+- **Altıgen düzen** — `altigen.py`'nin halka indeksleri OpenMC'nin kendi
+  `HexLattice.show_indices()` çıktısıyla birebir uyuşmalı.
 
 ## Ölçülen referans sonuçlar
 
@@ -123,15 +131,62 @@ python3 testler/test_regresyon.py --hizli    # Monte Carlo hariç (~10 s)
 | `pwr_pinhucre` | 1.35698 ± 0.00197 | 7 s |
 | `pwr_17x17` | 1.18325 ± 0.00075 | 44 s |
 | `mtr_plaka` | 1.65368 ± 0.00083 | 42 s |
+| `sfr_altigen` | 1.46634 ± 0.00070 | 53 s |
+
+## Kaynak yakınsaması (Shannon entropisi)
+
+Özdeğer hesaplarında entropi mesh'i varsayılan olarak **açıktır**. Koşu bitince
+kaynak dağılımının pasif çevrimler içinde yakınsayıp yakınsamadığı otomatik
+değerlendirilir:
+
+> `kaynak = [OK] Kaynak dagilimi yakinsamis gorunuyor (kayma 0.0003 <= 2 sigma = 0.0096)`
+
+**Yöntem:** aktif çevrimlerdeki entropi saçılması (σ) gürültü ölçüsü alınır;
+pasif çevrimlerin ilk ve ikinci yarısının ortalamaları arasındaki kayma 2σ'yı
+aşıyorsa kaynak hâlâ kayıyor demektir ve pasif çevrim sayısı yetersizdir.
+Yakınsamamış kaynak k-eff'i **yanlı** tahmin ettirir ve bu başka türlü fark
+edilmez.
+
+## Performans notları (ölçülmüş)
+
+| Ne | Önce | Sonra | Nasıl |
+|---|---|---|---|
+| Bir düzenlemenin anlık maliyeti | 19–34 ms | **0.01 ms** | Konu bazlı sekme geçersizleştirme |
+| `openmc.Model` kurulumu (tekrar) | 21.9 ms | **0.07 ms** | İçerik özetine dayalı model önbelleği |
+| Önizleme (görüntü değişikliği) | 292 ms | **66 ms** | İsteğe bağlı "hızlı mod" |
+
+**Çözünürlük neredeyse bedava.** Ölçüm: tek seferlik çizimde 200 px → 632 ms,
+1200 px → 387 ms. Maliyet ışın izlemede değil, `Model.plot()`'un her çağrıda
+OpenMC kütüphanesini yeniden başlatıp tesir kesitlerini okumasında. Bu yüzden
+varsayılan çözünürlük yüksek tutuldu.
+
+**Hızlı mod** kütüphaneyi açık tutar: ilk çizim ~3 s, sonrakiler ~40 ms.
+Bitmiş bir geometriyi incelerken (eksen değiştirme, yakınlaştırma) açın;
+**düzenlerken açmayın** — her spec değişikliği yeniden başlatma gerektirir.
+
+## Bilinen tuzaklar
+
+- **`HexLattice` ve `HexagonalPrism` yönelimleri aynı harfi kullanır ama
+  tanımları terstir** (biri "y eksenine dik", diğeri "y eksenine paralel").
+  Pratikte aynı geometrik yönelim için **aynı harf** verilir; bu ölçümle
+  doğrulanmıştır (`testler` → `test_altigen_sinir`). Yanlış eşleme %2.4 Δk
+  hataya yol açıyordu.
+- **Altıgen duct apothem'i** `(halka-1)·adım·√3/2 + adım/2`'dir,
+  `(halka-0.5)·adım` değil. İkincisi köşelerde doğru görünür ama düz yüzlerde
+  fazla boşluk bırakır.
+- **`Model.plot()` renk sözlüğü** SVG renk adı veya `(R,G,B)` demeti ister;
+  hex dize (`"#d95f02"`) `KeyError` verir.
+- **Entropi açıkken OpenMC çıktı formatı değişir** (ek sütun). Çevrim satırı
+  ayrıştırıcısı her iki biçimi de tanımak zorundadır.
 
 ## Bilinen sınırlar
 
-- **Altıgen kafes**: `kurucu.py` ve `kod_uret.py` `HexLattice`'i destekler ve
-  spec'te `"tur": "altigen"` taşınır, ancak ızgara editörü kare kafes içindir.
-  Altıgen haritalar JSON'dan okunabilir, arayüzden çizilemez.
 - **Kontrol tamburu / dönen bileşenler** kapsam dışı.
-- **Mevcut Python betikleri içe aktarılamaz** — keyfi Python çözümlenemez.
-  `Model.from_model_xml()` ile XML setleri okunabilir (henüz arayüze bağlı değil).
+- **Geometri içe aktarılamaz.** Malzemeler `materials.xml` / `model.xml`'den
+  aktarılabilir (Dosya menüsü); geometri aktarılamaz çünkü ham CSG'yi
+  "çubuk → kafes → kor" katmanlarına geri çevirmek genel olarak çözülebilir bir
+  problem değildir. Yanlış bir tahmin sessizce yanlış model üretirdi.
+- **Python betikleri içe aktarılamaz** — keyfi Python çözümlenemez.
 - **Yanma (depletion)** kapsam dışı; zincir dosyası kurulmadı. Şema sürümlü
   (`"surum": 1`) tutuluyor, `"tuketim"` bölümü sonradan eklenebilir.
 - `MPI` yok — OpenMC bu makinede OpenMP ile tek düğümde çalışıyor (24 çekirdek).

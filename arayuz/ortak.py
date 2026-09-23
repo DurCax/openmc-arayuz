@@ -111,12 +111,19 @@ class SekmeTabani(QtWidgets.QWidget):
 
     Sozlesme:
       spec_yukle(spec)  -- spec'ten arayuzu doldurur (sinyal yaymadan)
-      degisti           -- kullanici bir sey degistirdiginde yayilir
+      degisti(konu)     -- kullanici bir sey degistirdiginde yayilir
+      KONU              -- bu sekmenin degistirdigi spec bolumu
+
+    "konu" ana pencerenin hangi sekmelerin tazelenmesi gerektigini bilmesini
+    saglar. Boylece bir ayar degisikligi, kullanicinin kafes sekmesindeki
+    secimini bosu bosuna sifirlamaz.
+
     Alt siniflar _yukleniyor bayragini kontrol ederek yukleme sirasinda
     sinyal yaymaktan kacinir.
     """
 
-    degisti = QtCore.Signal()
+    degisti = QtCore.Signal(str)
+    KONU = "genel"
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -138,4 +145,4 @@ class SekmeTabani(QtWidgets.QWidget):
     def bildir(self):
         """Degisikligi ana pencereye bildirir (yukleme sirasinda susar)."""
         if not self._yukleniyor:
-            self.degisti.emit()
+            self.degisti.emit(self.KONU)

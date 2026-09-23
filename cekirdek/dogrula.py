@@ -511,6 +511,17 @@ def ayar_kontrol(spec):
             bulgular.append(Bulgu(
                 "uyari", "ayarlar",
                 "aktif cevrim sayisi az (%d) -- istatistik zayif kalir" % (cevrim - pasif)))
+        ent = a.get("entropi_mesh") or {}
+        if not ent.get("var"):
+            bulgular.append(Bulgu(
+                "uyari", "ayarlar",
+                "Shannon entropisi kapali -- kaynak dagiliminin yakinsayip "
+                "yakinsamadigi olculemez",
+                "Yakinsamamis kaynak k-eff'i yanli tahmin ettirir ve bu baska "
+                "turlu fark edilmez. Ozdeger hesaplarinda acik tutun."))
+        elif any(n <= 0 for n in (ent.get("boyut") or [0])):
+            bulgular.append(Bulgu("hata", "ayarlar",
+                                  "entropi mesh boyutlari pozitif olmali"))
         if parcacik < 1000:
             bulgular.append(Bulgu(
                 "uyari", "ayarlar",

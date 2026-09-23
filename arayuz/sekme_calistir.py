@@ -62,9 +62,11 @@ class CalistirSekmesi(QtWidgets.QWidget):
         ust.addWidget(self.ilerleme, 1)
 
         # --- yakinsama grafigi ---
-        self.figur = Figure(figsize=(5, 2.6), tight_layout=True)
+        # Ust: k-eff yakinsamasi, alt: Shannon entropisi (kaynak yakinsamasi)
+        self.figur = Figure(figsize=(5, 3.6), tight_layout=True)
         self.tuval = FigureCanvasQTAgg(self.figur)
-        self.eksen = self.figur.add_subplot(111)
+        self.eksen = self.figur.add_subplot(211)
+        self.eksen_ent = self.figur.add_subplot(212, sharex=self.eksen)
         self._grafik_sifirla()
 
         # --- log ---
@@ -125,11 +127,12 @@ class CalistirSekmesi(QtWidgets.QWidget):
 
     # ------------------------------------------------------------------
     def _grafik_sifirla(self):
-        self.eksen.clear()
-        self.eksen.set_xlabel("cevrim", fontsize=8)
-        self.eksen.set_ylabel("k-eff", fontsize=8)
-        self.eksen.tick_params(labelsize=7)
-        self.eksen.grid(alpha=0.3)
+        for eks, etiket in ((self.eksen, "k-eff"), (self.eksen_ent, "Shannon entropisi")):
+            eks.clear()
+            eks.set_ylabel(etiket, fontsize=8)
+            eks.tick_params(labelsize=7)
+            eks.grid(alpha=0.3)
+        self.eksen_ent.set_xlabel("cevrim", fontsize=8)
         self.tuval.draw_idle()
 
     def _grafik_guncelle(self):
@@ -155,10 +158,28 @@ class CalistirSekmesi(QtWidgets.QWidget):
             self.eksen.axvline(pasif, color="#c0392b", ls="--", lw=1.0)
             self.eksen.text(pasif, self.eksen.get_ylim()[1], " pasif biter",
                             color="#c0392b", fontsize=7, va="top")
-        self.eksen.set_xlabel("cevrim", fontsize=8)
         self.eksen.set_ylabel("k-eff", fontsize=8)
         self.eksen.tick_params(labelsize=7)
         self.eksen.legend(fontsize=7, loc="best")
+
+        # --- entropi grafigi ---
+        self.eksen_ent.clear()
+        self.eksen_ent.grid(alpha=0.3)
+        ent = [(c["cevrim"], c["entropi"]) for c in self._cevrimler
+               if c.get("entropi") is not None]
+        if ent:
+            ex = [a for a, _ in ent]
+            ey = [b for _, b in ent]
+            self.eksen_ent.plot(ex, ey, lw=1.0, color="#8e44ad")
+            if pasif:
+                self.eksen_ent.axvline(pasif, color="#c0392b", ls="--", lw=1.0)
+        else:
+            self.eksen_ent.text(0.5, 0.5, "Shannon entropisi kapali",
+                                transform=self.eksen_ent.transAxes,
+                                ha="center", va="center", fontsize=8, color="#95a5a6")
+        self.eksen_ent.set_ylabel("Shannon entropisi", fontsize=8)
+        self.eksen_ent.set_xlabel("cevrim", fontsize=8)
+        self.eksen_ent.tick_params(labelsize=7)
         self.tuval.draw_idle()
 
     # ------------------------------------------------------------------
@@ -274,9 +295,19 @@ class CalistirSekmesi(QtWidgets.QWidget):
             "k-eff    = %.5f +/- %.5f" % s["keff"],
             "cevrim   = %d (%d pasif)" % (s["cevrim"], s["pasif"]),
             "parcacik = %d / cevrim" % s["parcacik"],
-            "statepoint: %s" % sp,
-            "",
         ]
+        # --- kaynak yakinsamasi degerlendirmesi ---
+        if s.get("entropi"):
+            yakinsadi, mesaj = kosucu.entropi_yakinsama(s["entropi"], s["pasif"])
+            isaret = {True: "[OK]   ", False: "[UYARI]", None: "[  ?  ]"}[yakinsadi]
+            satirlar.append("kaynak   = %s %s" % (isaret, mesaj))
+            if yakinsadi is False:
+                self.durum.emit("DIKKAT: kaynak yakinsamamis olabilir -- "
+                                "pasif cevrim sayisini artirin", False)
+        else:
+            satirlar.append("kaynak   = [  ?  ] Shannon entropisi kapali -- "
+                            "kaynak yakinsamasi dogrulanamiyor")
+        satirlar += ["statepoint: %s" % sp, ""]
         for ad, df in s["tallyler"].items():
             satirlar.append("=" * 70)
             satirlar.append("tally: %s" % ad)

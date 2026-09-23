@@ -28,6 +28,8 @@ from arayuz.ortak import SekmeTabani, baslik, ipucu, sayi, tamsayi
 class DemetSekmesi(SekmeTabani):
     """Kafes listesi + kare/altigen harita editoru."""
 
+    KONU = "demet"
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self._firca = None

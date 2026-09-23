@@ -27,6 +27,8 @@ SINIRLAR = ["reflective", "vacuum", "periodic", "white"]
 
 class KorSekmesi(SekmeTabani):
 
+    KONU = "kor"
+
     def __init__(self, parent=None):
         super().__init__(parent)
 
@@ -257,8 +259,8 @@ class KorSekmesi(SekmeTabani):
 
     def _ozet_guncelle(self):
         try:
-            from cekirdek import kurucu
-            _, bilgi = kurucu.kur(self.spec)
+            from cekirdek import onbellek
+            _, bilgi = onbellek.kur_onbellekli(self.spec)
             gx, gy = bilgi["sinir_kutu"]
             h = self.spec["kor"].get("yukseklik")
             self.ozet.setText("%.4f x %.4f cm%s" % (gx, gy, (" x %.2f cm" % h) if h else "  (2B)"))

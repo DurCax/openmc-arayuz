@@ -278,6 +278,8 @@ class KutuphaneDiyalog(QtWidgets.QDialog):
 class MalzemeSekmesi(SekmeTabani):
     """Malzeme listesi sekmesi."""
 
+    KONU = "malzeme"
+
     BASLIKLAR = ["Renk", "Ad", "Gorunen ad", "Yogunluk", "Sicaklik [K]", "S(a,b)", "Bilesim"]
 
     def __init__(self, parent=None):

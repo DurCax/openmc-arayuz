@@ -411,6 +411,17 @@ def _ayarlar(spec, satirlar, gx, gy):
     satirlar.append("ayar.source = openmc.IndependentSource(space=_uzay,")
     satirlar.append("                                       energy=openmc.stats.Watt(),")
     satirlar.append("                                       constraints=_kisit)")
+    ent = a.get("entropi_mesh") or {}
+    if ent.get("var") and a.get("mod", "eigenvalue") == "eigenvalue":
+        satirlar.append("")
+        satirlar.append("# Shannon entropisi mesh'i -- kaynak yakinsamasini olcer.")
+        satirlar.append("# Entropi pasif cevrimler boyunca kayiyorsa pasif cevrim")
+        satirlar.append("# sayisi yetersizdir ve k-eff yanli cikar.")
+        satirlar.append("_ent_mesh = openmc.RegularMesh()")
+        satirlar.append("_ent_mesh.dimension = %r" % (list(ent.get("boyut") or [8, 8, 1]),))
+        satirlar.append("_ent_mesh.lower_left  = (%s, %s, -1.0e10)" % (_f(-gx/2.0), _f(-gy/2.0)))
+        satirlar.append("_ent_mesh.upper_right = (%s, %s, +1.0e10)" % (_f(gx/2.0), _f(gy/2.0)))
+        satirlar.append("ayar.entropy_mesh = _ent_mesh")
 
 
 def _tallyler(spec, satirlar):

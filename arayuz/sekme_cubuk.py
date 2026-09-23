@@ -34,6 +34,8 @@ def _malzeme_kutusu(spec, secili=None, bosluk_dahil=True):
 class CubukSekmesi(SekmeTabani):
     """Cubuk ve plaka tanimlari."""
 
+    KONU = "cubuk"
+
     def __init__(self, parent=None):
         super().__init__(parent)
 
