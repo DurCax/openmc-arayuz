@@ -52,6 +52,7 @@ openmc_arayuz/
 │   ├── dogrula.py           koşu öncesi kontroller
 │   ├── kod_uret.py          spec → tek başına çalışan Python betiği
 │   ├── ice_aktar.py         materials.xml → spec malzemeleri
+│   ├── guc.py               çubuk bazlı güç dağılımı, F_ΔH, F_q
 │   ├── tarama.py            parametre taraması → reaktivite katsayıları
 │   ├── kritik_arama.py      hedef k-eff'i veren parametre değeri
 │   └── kosucu.py            çalıştırma + statepoint okuma + terminal girişi
@@ -59,6 +60,7 @@ openmc_arayuz/
 │   ├── ana_pencere.py       sekmeler, proje aç/kaydet, doğrulama paneli
 │   ├── onizleme.py          canlı geometri kesiti (Model.plot sarmalayıcı)
 │   ├── hex_izgara.py        altıgen harita editörü (QPainter)
+│   ├── guc_harita.py        güç dağılımı ısı haritası
 │   └── sekme_*.py           malzeme / çubuk / kafes / kor / ayar / çalıştır / analiz
 ├── ornekler/                pwr_pinhucre, pwr_17x17, mtr_plaka, sfr_altigen
 └── testler/test_regresyon.py
@@ -121,7 +123,7 @@ python3 testler/test_regresyon.py            # tümü (~2 dk)
 python3 testler/test_regresyon.py --hizli    # Monte Carlo hariç (~10 s)
 ```
 
-93 test var. Üçü bu katmanın doğruluğunun asıl kanıtıdır:
+125 test var. Üçü bu katmanın doğruluğunun asıl kanıtıdır:
 
 - **Regresyon çıpası** — `ornekler/pwr_pinhucre.json` referans değeri
   **k∞ = 1.3570 ± 0.0020** vermeli. 2σ dışına çıkarsa `kurucu.py`'de hata var.
@@ -131,6 +133,9 @@ python3 testler/test_regresyon.py --hizli    # Monte Carlo hariç (~10 s)
 - **Altıgen düzen** — `altigen.py`'nin halka indeksleri OpenMC'nin kendi
   `HexLattice.show_indices()` çıktısıyla birebir uyuşmalı.
 - **Godiva kriteri** — yayımlanmış k_eff'ten 2σ'dan fazla sapmamalı.
+- **Güç toplamı korunumu** — çubuk güçlerinin toplamı filtresiz tally'ye eşit
+  olmalı (ölçülen bağıl fark 9e-16). Haritalama hatası toplamı bozar; bu, yanlış
+  bir haritanın sessizce doğru görünmesini önleyen en güçlü kontrol.
 
 ## Ölçülen referans sonuçlar
 
@@ -141,6 +146,38 @@ python3 testler/test_regresyon.py --hizli    # Monte Carlo hariç (~10 s)
 | `mtr_plaka` | 1.65368 ± 0.00083 | 42 s |
 | `sfr_altigen` | 1.46634 ± 0.00070 | 53 s |
 | `godiva_kriter` | 0.99900 ± 0.00045 | 6 s |
+| `pwr_3b` (3B, güç dağılımı) | 1.17953 ± 0.00059 | 73 s |
+
+## Güç dağılımı ve tepe faktörleri
+
+Ayarlar sekmesinden açılır; sonuç **6. Çalıştır → Güç haritası** alt sekmesinde.
+`DistribcellFilter` kafeste tekrarlanan yakıt hücresinin her örneğini ayrı sayar.
+
+| | Tanım | Neyi sınırlar |
+|---|---|---|
+| **F_ΔH** | maks çubuk gücü / ortalama | Sıcak kanalda soğutucu sıcaklık artışı (DNB marjı) |
+| **F_q** | maks yerel güç yoğunluğu / ortalama | Yakıt merkez sıcaklığı, lineer güç (~400–500 W/cm) |
+
+Ölçülen (`pwr_3b`, 20k parçacık, 20 eksenel dilim):
+**F_ΔH = 1.071**, **F_q = 1.885**, ortalama lineer güç **182 W/cm** (17.6 MW/demet).
+
+> 🔴 **Belirsizlikler iyimserdir.** Özdeğer hesabında ardışık çevrimlerin fisyon
+> kaynakları korelasyonludur; OpenMC'nin raporladığı tally belirsizliği bu
+> korelasyonu görmez. **Bu modelde ölçüldü:** raporlanan σ bin başına 0.003–0.008,
+> 3 bağımsız tohum arasındaki gerçek saçılma 0.07–0.17 — yani **~20 kat**.
+> Gerçek belirsizlik için `guc.coklu_tohum()` ile birkaç tohumda koşun.
+
+> ⚠ **F_ΔH bir MAKSİMUMDUR ve az istatistikte yukarı yanlıdır.** Ölçüldü: aynı
+> modelde 3k parçacıkla 1.1455, 20k parçacıkla 1.0708. Çubuk başına istatistik
+> sapma dağılımın saçılmasının %30'unu aşarsa araç bunu uyarır.
+
+> ⚠ **F_q eksenel çözünürlüğe bağlıdır.** Kaba dilimler tepeyi ortalar ve F_q'yu
+> küçük gösterir (saf kosinüs limiti π/2 = 1.571). En az 10–20 dilim kullanın.
+
+**Mutlak güç** isteğe bağlıdır. `toplam_guc` **modelin kapsadığı bölgenin**
+gücüdür — tüm korun değil. Örnek: 3400 MWth / 193 demet = 17.6 MW; tek demetlik
+bir modelde `17.6e6` girilir. Doğru girdiyle ortalama lineer güç ~182 W/cm çıkar;
+bu mertebede değilse girdi yanlıştır.
 
 ## Reaktivite katsayıları ve kritik arama (7. Analiz)
 
@@ -248,10 +285,22 @@ Bitmiş bir geometriyi incelerken (eksen değiştirme, yakınlaştırma) açın;
   hex dize (`"#d95f02"`) `KeyError` verir.
 - **Entropi açıkken OpenMC çıktı formatı değişir** (ek sütun). Çevrim satırı
   ayrıştırıcısı her iki biçimi de tanımak zorundadır.
+- **Kutu kaynağın z aralığı modelin yüksekliğini kapsamalıdır.** Önceki sürümde
+  ±1.0 cm'ye sabitti; 2B'de sorun değildi ama 366 cm'lik 3B bir modelde kaynak
+  merkezdeki 2 cm'lik dilimde başlıyor ve eksenel güç şekli **aşırı tepeli**
+  çıkıyordu (eksenel tepe 2.32 yerine 1.49). **Shannon entropisi bunu
+  göstermedi** — entropi global bir skalerdir ve bu geometride radyal dağılım
+  baskın gelir.
+- **`Tally.scores` hiçbir doğrulama yapmaz** — uydurma bir skor adı bile kabul
+  edilir, hata koşuda çıkar. OpenMC geçerli skor listesi sunmadığı için
+  `dogrula.py` küratörlü bir listeye göre *uyarı* verir.
+- **`Tally.get_pandas_dataframe`'de `distribcell_paths` yoktur**; doğru kwarg
+  `paths=True`'dur (filtre sınıfındaki isimle karışmasın).
+- **`Cell.num_instances` önce `Geometry.determine_paths()` ister**, aksi halde
+  `ValueError`.
 
 ## Bilinen sınırlar
 
-- **Güç dağılımı (pin peaking)** yok — `DistribcellFilter` gerekiyor.
 - **Kontrol elemanı hareketi** yok (çubuk daldırma, tambur dönüşü).
 - **Eksenel heterojenlik** yok — kor tek eksenel bölge; zenginlik kuşağı,
   blanket, plenum tanımlanamaz.

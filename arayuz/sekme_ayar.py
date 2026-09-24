@@ -98,6 +98,40 @@ class AyarSekmesi(SekmeTabani):
         kosu_form.addRow("OpenMP is parcacigi:", self.is_parcacigi)
         kosu_form.addRow("Kosu dizini:", self.kosu_dizini)
 
+        # --- guc dagilimi ---
+        self.guc_var = QtWidgets.QCheckBox(
+            "Cubuk bazli guc dagilimi hesapla (F_dH ve F_q)")
+        self.guc_var.setToolTip(
+            "Kafeste tekrarlanan yakit hucresinin HER ORNEGI ayri sayilir\n"
+            "(DistribcellFilter). Buradan tepe faktorleri cikar:\n"
+            "  F_dH = maks cubuk gucu / ortalama          (radyal)\n"
+            "  F_q  = maks yerel guc yogunlugu / ortalama (3B gerekir)")
+        self.guc_cubuk = QtWidgets.QComboBox()
+        self.guc_bolge = QtWidgets.QComboBox()
+        self.guc_skor = QtWidgets.QComboBox()
+        self.guc_skor.addItems(["kappa-fission", "fission-q-recoverable",
+                                "fission-q-prompt", "heating-local"])
+        self.guc_dilim = tamsayi(20, 1, 200, 1, "dilim")
+        self.guc_toplam = sayi(0.0, 1, 0.0, 1e12, 1e5, "W")
+        self.guc_toplam.setSpecialValueText("(bos -- yalnizca bagil)")
+        self.guc_etiketler = {}
+
+        guc_form = QtWidgets.QFormLayout()
+        guc_form.addRow(self.guc_var)
+        for etiket, w, ad in (("Hedef cubuk:", self.guc_cubuk, "cubuk"),
+                              ("Hedef bolge:", self.guc_bolge, "bolge"),
+                              ("Skor:", self.guc_skor, "skor"),
+                              ("Eksenel dilim:", self.guc_dilim, "dilim"),
+                              ("Toplam guc:", self.guc_toplam, "toplam")):
+            e = QtWidgets.QLabel(etiket)
+            self.guc_etiketler[ad] = e
+            guc_form.addRow(e, w)
+        self.guc_not = ipucu(
+            "Toplam guc, MODELIN KAPSADIGI bolgenin gucudur -- tum korun degil. "
+            "Ornek: 3400 MWth / 193 demet = 17.6 MW; tek demetlik bir modelde "
+            "17.6e6 W girilir. Bos birakilirsa yalnizca bagil dagilim verilir.")
+        guc_form.addRow(self.guc_not)
+
         # --- tally'ler ---
         self.tally_liste = QtWidgets.QListWidget()
         self.tally_liste.currentRowChanged.connect(self._tally_secildi)
@@ -154,17 +188,24 @@ class AyarSekmesi(SekmeTabani):
         duzen.addWidget(baslik("Calistirma"))
         duzen.addLayout(kosu_form)
         duzen.addWidget(ayrac())
+        duzen.addWidget(baslik("Guc dagilimi"))
+        duzen.addLayout(guc_form)
+        duzen.addWidget(ayrac())
         duzen.addWidget(baslik("Tally'ler"))
         duzen.addLayout(tally_bolucu, 1)
 
         for w in (self.parcacik, self.cevrim, self.pasif, self.tohum,
                   self.is_parcacigi, self.kx, self.ky, self.kz,
                   self.entropi_nx, self.entropi_ny, self.entropi_nz,
-                  self.kinetik_nesil,
+                  self.kinetik_nesil, self.guc_dilim, self.guc_toplam,
                   self.t_mesh_nx, self.t_mesh_ny, self.t_mesh_nz):
             w.valueChanged.connect(self._kaydet)
         self.entropi_var.toggled.connect(self._kaydet)
         self.kinetik_var.toggled.connect(self._kaydet)
+        self.guc_var.toggled.connect(self._kaydet)
+        self.guc_cubuk.currentIndexChanged.connect(self._guc_cubuk_degisti)
+        self.guc_bolge.currentIndexChanged.connect(self._kaydet)
+        self.guc_skor.currentIndexChanged.connect(self._kaydet)
         for w in (self.mod, self.sicaklik_yontemi, self.kaynak_tur):
             w.currentIndexChanged.connect(self._kaydet)
         self.kosu_dizini.editingFinished.connect(self._kaydet)
@@ -206,6 +247,19 @@ class AyarSekmesi(SekmeTabani):
         self.kinetik_var.setChecked(bool(kin.get("var")))
         self.kinetik_nesil.setValue(kin.get("nesil") or 10)
 
+        g = self.spec.get("guc_dagilimi") or {}
+        self.guc_var.setChecked(bool(g.get("var")))
+        self.guc_cubuk.clear()
+        for cb in self.spec.get("cubuklar", []):
+            self.guc_cubuk.addItem(cb["ad"], cb["ad"])
+        i = self.guc_cubuk.findData(g.get("cubuk"))
+        if i >= 0:
+            self.guc_cubuk.setCurrentIndex(i)
+        self._guc_bolgeleri_doldur(g.get("bolge"))
+        self.guc_skor.setCurrentText(g.get("skor") or "kappa-fission")
+        self.guc_dilim.setValue(g.get("eksenel_dilim") or 20)
+        self.guc_toplam.setValue(g.get("toplam_guc") or 0.0)
+
         c = self.spec["calistirma"]
         self.is_parcacigi.setValue(c.get("is_parcacigi", 8))
         self.kosu_dizini.setText(c.get("dizin", "kosu"))
@@ -221,6 +275,45 @@ class AyarSekmesi(SekmeTabani):
             w.setEnabled(self.entropi_var.isChecked())
         for w in (self.kinetik_etiket, self.kinetik_nesil):
             w.setEnabled(self.kinetik_var.isChecked())
+
+    def _guc_bolgeleri_doldur(self, secili=None):
+        """Secili cubugun bolgelerini listeler (malzeme adiyla birlikte)."""
+        self.guc_bolge.clear()
+        ad = self.guc_cubuk.currentData()
+        c = sema.cubuk_bul(self.spec, ad) if ad else None
+        if c:
+            for i, b in enumerate(c["bolgeler"]):
+                etiket = "%d -- %s" % (i, b.get("malzeme") or "bosluk")
+                if b.get("r"):
+                    etiket += "  (r = %.4f cm)" % b["r"]
+                else:
+                    etiket += "  (disarisi)"
+                self.guc_bolge.addItem(etiket, i)
+        if secili is not None:
+            j = self.guc_bolge.findData(secili)
+            if j >= 0:
+                self.guc_bolge.setCurrentIndex(j)
+
+    def _guc_cubuk_degisti(self, *_):
+        if self._yukleniyor:
+            return
+        self._yukleniyor = True
+        try:
+            self._guc_bolgeleri_doldur(0)
+        finally:
+            self._yukleniyor = False
+        self._kaydet()
+
+    def _guc_gorunurluk(self):
+        acik = self.guc_var.isChecked()
+        for w in list(self.guc_etiketler.values()) + [
+                self.guc_cubuk, self.guc_bolge, self.guc_skor,
+                self.guc_dilim, self.guc_toplam, self.guc_not]:
+            w.setEnabled(acik)
+        h = (self.spec or {}).get("kor", {}).get("yukseklik")
+        for ad in ("dilim",):
+            self.guc_etiketler[ad].setEnabled(acik and bool(h))
+        self.guc_dilim.setEnabled(acik and bool(h))
 
     def _aktif_guncelle(self):
         aktif = self.cevrim.value() - self.pasif.value()
@@ -250,6 +343,15 @@ class AyarSekmesi(SekmeTabani):
         }
         a["kinetik"] = {"var": self.kinetik_var.isChecked(),
                         "nesil": self.kinetik_nesil.value()}
+        self.spec["guc_dagilimi"] = {
+            "var": self.guc_var.isChecked(),
+            "cubuk": self.guc_cubuk.currentData(),
+            "bolge": self.guc_bolge.currentData() or 0,
+            "skor": self.guc_skor.currentText(),
+            "eksenel_dilim": self.guc_dilim.value(),
+            "toplam_guc": (self.guc_toplam.value() or None),
+        }
+        self._guc_gorunurluk()
         for w in (self.kinetik_etiket, self.kinetik_nesil):
             w.setEnabled(self.kinetik_var.isChecked())
         for w in (self.entropi_etiket, self.entropi_nx, self.entropi_ny, self.entropi_nz):

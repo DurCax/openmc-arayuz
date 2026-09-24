@@ -330,10 +330,15 @@ def kor_kur(spec, nesneler, universeler):
 
     # --- ic dolgu ve onun yanal olculeri ---
     if tur == "tek_cubuk":
-        ic = cubuk_universe(spec, kor["cubuk"], nesneler)
+        # universeler sozlugune kaydedilir: guc dagilimi tally'si hedef cubugun
+        # GEOMETRIDEKI universe nesnesine ihtiyac duyar, yeniden kurulmus bir
+        # kopyaya degil (distribcell hucre kimligine baglidir).
+        ic = universeler.setdefault(kor["cubuk"],
+                                    cubuk_universe(spec, kor["cubuk"], nesneler))
         gx = gy = kor["adim"]
     elif tur == "tek_plaka":
-        ic = plaka_universe(spec, kor["plaka"], nesneler)
+        ic = universeler.setdefault(kor["plaka"],
+                                    plaka_universe(spec, kor["plaka"], nesneler))
         gx, gy = ic.arayuz_boyut
     elif tur == "tek_demet":
         ic = demet_lattice(spec, kor["demet"], nesneler, universeler)
@@ -452,8 +457,17 @@ def ayarlari_kur(spec, sinir_kutu):
 
     k = a.get("kaynak") or {}
     if k.get("tur") == "kutu":
-        alt = k.get("alt") or [-sinir_kutu[0] / 2, -sinir_kutu[1] / 2, -1.0]
-        ust = k.get("ust") or [+sinir_kutu[0] / 2, +sinir_kutu[1] / 2, +1.0]
+        # !!! Z ARALIGI MODELIN YUKSEKLIGINI KAPSAMALIDIR !!!
+        #   Onceki surumde z araligi +/-1.0 cm'ye sabitti. 2B modelde sorun
+        #   degildi ama 366 cm'lik 3B bir modelde kaynak merkezdeki 2 cm'lik
+        #   bir dilimde basliyordu; eksenel sekil onlarca cevrim boyunca
+        #   yayilmaya calisiyor ve GUC DAGILIMI YANLIS (asiri tepeli) cikiyordu.
+        #   Shannon entropisi bunu gostermiyor: entropi global bir skalerdir ve
+        #   bu geometride radyal dagilim baskin geliyor.
+        h = spec["kor"].get("yukseklik")
+        yari_z = (h / 2.0) if h else 1.0
+        alt = k.get("alt") or [-sinir_kutu[0] / 2, -sinir_kutu[1] / 2, -yari_z]
+        ust = k.get("ust") or [+sinir_kutu[0] / 2, +sinir_kutu[1] / 2, +yari_z]
         uzay = openmc.stats.Box(alt, ust)
         kisit = {"fissionable": True}
     else:
@@ -508,6 +522,66 @@ def tallyleri_kur(spec, nesneler):
 # 6. ANA GIRIS
 # ============================================================================
 
+def guc_tally_ekle(spec, model, nesneler, universeler, sinir_kutu):
+    """
+    Cubuk bazli guc dagilimi tally'sini modele ekler.
+
+    DistribcellFilter hedef cubugun belirtilen bolgesinin hucresine baglanir;
+    3B modelde buna 1x1xN'lik bir MeshFilter eklenerek eksenel cozunurluk
+    saglanir.
+
+    !!! EKSENEL MESH AKTIF YAKIT YUKSEKLIGIYLE TAM ORTUSMELIDIR !!!
+      Mesh yakittan tasarsa bos bin'ler ortalamayi dusurur ve F_q yapay olarak
+      sisrer. Bu yuzden mesh sinirlari kor yuksekliginden TURETILIR, elle
+      girilmez.
+
+    DONER (hucre, kafes_var_mi)
+    """
+    from cekirdek import guc as _guc
+
+    g = spec.get("guc_dagilimi") or {}
+    cubuk_ad = g.get("cubuk")
+    c = cubuk_bul(spec, cubuk_ad) if cubuk_ad else None
+    if c is None:
+        raise ValueError("guc dagilimi icin gecerli bir cubuk secilmeli "
+                         "(secili: %r)" % cubuk_ad)
+    univ = universeler.get(cubuk_ad)
+    if univ is None:
+        raise ValueError(
+            "'%s' cubugu modelde kullanilmiyor. Guc dagilimi yalnizca geometride "
+            "yer alan bir cubuk icin hesaplanabilir." % cubuk_ad)
+
+    hucreler = _guc.bolge_hucresi(univ, c, nesneler)
+    bolge_no = int(g.get("bolge") or 0)
+    if not (0 <= bolge_no < len(hucreler)):
+        raise ValueError("gecersiz bolge numarasi %d (cubukta %d bolge var)"
+                         % (bolge_no, len(hucreler)))
+    hedef = hucreler[bolge_no]
+
+    tal = openmc.Tally(name="guc_dagilimi")
+    tal.scores = [g.get("skor") or "kappa-fission"]
+    filtreler = [openmc.DistribcellFilter(hedef)]
+
+    h = spec["kor"].get("yukseklik")
+    dilim = int(g.get("eksenel_dilim") or 1)
+    if h and dilim > 1:
+        gx, gy = sinir_kutu
+        pay = max(gx, gy)          # x,y'de tek bin -- her seyi kapsamasi yeter
+        mesh = openmc.RegularMesh()
+        mesh.dimension = [1, 1, dilim]
+        mesh.lower_left = (-pay, -pay, -h / 2.0)
+        mesh.upper_right = (pay, pay, h / 2.0)
+        filtreler.append(openmc.MeshFilter(mesh))
+    tal.filters = filtreler
+
+    # Toplam korunumu testi icin filtresiz esdes tally
+    ref = openmc.Tally(name="guc_toplam_ref")
+    ref.scores = list(tal.scores)
+
+    model.tallies = openmc.Tallies(list(model.tallies) + [tal, ref])
+    return hedef
+
+
 def kur(spec):
     """
     Spec'i tam bir openmc.Model'e cevirir.
@@ -541,5 +615,12 @@ def kur(spec):
         "renkler": renkler,
         "universeler": universeler,
         "sinir_kutu": sinir_kutu,
+        "guc_hucre": None,
     }
+
+    # --- cubuk bazli guc dagilimi ---
+    g = spec.get("guc_dagilimi") or {}
+    if g.get("var"):
+        bilgi["guc_hucre"] = guc_tally_ekle(spec, model, nesneler, universeler,
+                                            sinir_kutu)
     return model, bilgi

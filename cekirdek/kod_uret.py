@@ -252,7 +252,11 @@ def _demet(spec, demet_ad, satirlar, uretilen, sarmala=False):
 
 
 def _geometri(spec, satirlar):
-    """Kor duzenini uretir; (kok_degisken, gx, gy) dondurur."""
+    """
+    Kor duzenini uretir.
+    DONER (gx, gy, uretilen) -- uretilen: {spec_adi: betikteki degisken adi}
+    Guc dagilimi tally'si hedef cubugun betikteki degisken adina ihtiyac duyar.
+    """
     _bolum(satirlar, 2, "GEOMETRI")
     kor = spec["kor"]
     tur = kor["tur"]
@@ -260,9 +264,11 @@ def _geometri(spec, satirlar):
 
     if tur == "tek_cubuk":
         ic = _cubuk(spec, kor["cubuk"], satirlar)
+        uretilen[kor["cubuk"]] = ic
         gx = gy = kor["adim"]
     elif tur == "tek_plaka":
         ic = _plaka(spec, kor["plaka"], satirlar)
+        uretilen[kor["plaka"]] = ic
         p = plaka_bul(spec, kor["plaka"])
         gx = (p["plaka_sayisi"] * (2 * p["zarf_kalinlik"] + p["et_kalinlik"])
               + (p["plaka_sayisi"] + 1) * p["kanal_kalinlik"])
@@ -298,7 +304,7 @@ def _geometri(spec, satirlar):
         satirlar.append("")
         satirlar.append("geometri = openmc.Geometry(kok)")
         capi = 2.0 * (kabuklar[-1]["r"] if kabuklar else 1.0)
-        return capi, capi
+        return capi, capi, uretilen
 
     elif tur == "kare_kafes":
         for harf, hedef in sorted(kor["anahtar"].items()):
@@ -382,7 +388,7 @@ def _geometri(spec, satirlar):
                             "openmc.Cell(fill=%s, region=-_prizma%s)])" % (ic, eksen))
         satirlar.append("")
         satirlar.append("geometri = openmc.Geometry(kok)")
-        return gx, gy
+        return gx, gy, uretilen
 
     if yans.get("var") and tur in ("tek_demet", "kare_kafes"):
         kal = yans["kalinlik"]
@@ -403,7 +409,7 @@ def _geometri(spec, satirlar):
                         % (ic, eksen))
     satirlar.append("")
     satirlar.append("geometri = openmc.Geometry(kok)")
-    return gx, gy
+    return gx, gy, uretilen
 
 
 def _ayarlar(spec, satirlar, gx, gy):
@@ -424,8 +430,12 @@ def _ayarlar(spec, satirlar, gx, gy):
     k = a.get("kaynak") or {}
     satirlar.append("")
     if k.get("tur") == "kutu":
-        alt = k.get("alt") or [-gx / 2, -gy / 2, -1.0]
-        ust = k.get("ust") or [+gx / 2, +gy / 2, +1.0]
+        # Z araligi modelin yuksekligini kapsamali (bkz. kurucu.py notu):
+        # dar bir baslangic kutusu eksenel sekli yanlis yakinsatir.
+        _h = spec["kor"].get("yukseklik")
+        _yari_z = (_h / 2.0) if _h else 1.0
+        alt = k.get("alt") or [-gx / 2, -gy / 2, -_yari_z]
+        ust = k.get("ust") or [+gx / 2, +gy / 2, +_yari_z]
         satirlar.append("_uzay = openmc.stats.Box(%r, %r)"
                         % (list(alt), list(ust)))
         satirlar.append("_kisit = {'fissionable': True}   # kaynak sadece fisil bolgelerde")
@@ -449,10 +459,56 @@ def _ayarlar(spec, satirlar, gx, gy):
         satirlar.append("ayar.entropy_mesh = _ent_mesh")
 
 
-def _tallyler(spec, satirlar):
-    if not spec.get("tallyler"):
+def _guc_dagilimi(spec, satirlar, uretilen, gx, gy):
+    """Cubuk bazli guc dagilimi tally'sini uretir; tally degisken adlarini dondurur."""
+    g = spec.get("guc_dagilimi") or {}
+    if not g.get("var"):
+        return []
+    cubuk_ad = g.get("cubuk")
+    degisken = uretilen.get(cubuk_ad)
+    if degisken is None:
+        satirlar.append("")
+        satirlar.append("# UYARI: guc dagilimi icin '%s' cubugu geometride" % cubuk_ad)
+        satirlar.append("# bulunamadi; tally uretilmedi.")
+        return []
+
+    bolge = int(g.get("bolge") or 0)
+    satirlar.append("")
+    satirlar.append("# --- cubuk bazli guc dagilimi ---")
+    satirlar.append("# pin() hucreleri BOLGE SIRASINDA olusturur, bu yuzden id'ye")
+    satirlar.append("# gore siralamak bolge sirasini verir.")
+    satirlar.append("_guc_hucreler = sorted(%s.cells.values(), key=lambda c: c.id)" % degisken)
+    satirlar.append("_guc_hedef = _guc_hucreler[%d]" % bolge)
+    satirlar.append("guc_tally = openmc.Tally(name='guc_dagilimi')")
+    satirlar.append("guc_tally.scores = [%r]" % (g.get("skor") or "kappa-fission"))
+    satirlar.append("_guc_filtreler = [openmc.DistribcellFilter(_guc_hedef)]")
+
+    h = spec["kor"].get("yukseklik")
+    dilim = int(g.get("eksenel_dilim") or 1)
+    if h and dilim > 1:
+        pay = max(gx, gy)
+        satirlar.append("")
+        satirlar.append("# Eksenel mesh AKTIF YAKIT YUKSEKLIGIYLE tam ortusmelidir;")
+        satirlar.append("# tasarsa bos bin'ler ortalamayi duserir ve F_q sisrer.")
+        satirlar.append("_guc_mesh = openmc.RegularMesh()")
+        satirlar.append("_guc_mesh.dimension   = [1, 1, %d]" % dilim)
+        satirlar.append("_guc_mesh.lower_left  = (%s, %s, %s)" % (_f(-pay), _f(-pay), _f(-h/2.0)))
+        satirlar.append("_guc_mesh.upper_right = (%s, %s, %s)" % (_f(pay), _f(pay), _f(h/2.0)))
+        satirlar.append("_guc_filtreler.append(openmc.MeshFilter(_guc_mesh))")
+    satirlar.append("guc_tally.filters = _guc_filtreler")
+    satirlar.append("")
+    satirlar.append("# Toplam korunumu kontrolu icin filtresiz esdes tally")
+    satirlar.append("guc_ref = openmc.Tally(name='guc_toplam_ref')")
+    satirlar.append("guc_ref.scores = list(guc_tally.scores)")
+    return ["guc_tally", "guc_ref"]
+
+
+def _tallyler(spec, satirlar, ek_tallyler=None, on_satirlar=None):
+    ek_tallyler = list(ek_tallyler or [])
+    if not spec.get("tallyler") and not ek_tallyler:
         return
     _bolum(satirlar, 4, "TALLY'LER")
+    satirlar.extend(on_satirlar or [])
     adlar = []
     for i, t in enumerate(spec["tallyler"]):
         v = "tally_%d" % (i + 1)
@@ -479,12 +535,14 @@ def _tallyler(spec, satirlar):
         if filtre_ifadeleri:
             satirlar.append("%s.filters = [%s]" % (v, ", ".join(filtre_ifadeleri)))
     satirlar.append("")
-    satirlar.append("tallyler = openmc.Tallies([%s])" % ", ".join(adlar))
+    satirlar.append("tallyler = openmc.Tallies([%s])" % ", ".join(adlar + ek_tallyler))
 
 
 def _kapanis(spec, satirlar, renkli):
     _bolum(satirlar, 5, "MODEL VE CALISTIRMA")
-    tallyler = "tallyler" if spec.get("tallyler") else "openmc.Tallies()"
+    tallyler = ("tallyler" if (spec.get("tallyler")
+                or (spec.get("guc_dagilimi") or {}).get("var"))
+                else "openmc.Tallies()")
     satirlar.append("")
     satirlar.append("model = openmc.Model(geometry=geometri, materials=malzemeler,")
     satirlar.append("                     settings=ayar, tallies=%s)" % tallyler)
@@ -551,9 +609,11 @@ def uret(spec, kaynak_dosya=None, renkli=True):
     ]
 
     _malzemeler(spec, satirlar)
-    gx, gy = _geometri(spec, satirlar)
+    gx, gy, uretilen = _geometri(spec, satirlar)
     _ayarlar(spec, satirlar, gx, gy)
-    _tallyler(spec, satirlar)
+    guc_satirlari = []
+    ek = _guc_dagilimi(spec, guc_satirlari, uretilen, gx, gy)
+    _tallyler(spec, satirlar, ek_tallyler=ek, on_satirlar=guc_satirlari)
     _kapanis(spec, satirlar, renkli)
     satirlar.append("")
     return "\n".join(satirlar)

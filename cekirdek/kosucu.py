@@ -308,6 +308,8 @@ def sonuc_oku(statepoint_yolu):
         except Exception as e:
             sonuc["tallyler"][ad] = "okunamadi: %s" % e
             continue
+        if ad in ("guc_dagilimi", "guc_toplam_ref"):
+            continue          # asagida ayrica islenir
         if ad.startswith("IFP "):
             import math as _m
             ifp[ad] = (float(df["mean"].sum()),
@@ -333,6 +335,35 @@ def sonuc_oku(statepoint_yolu):
                 "lambda": lam,
                 "lambda_sapma": lam * _m.sqrt((spt / pt) ** 2 + (spd / pd) ** 2),
             }
+
+    # --- cubuk bazli guc dagilimi ---
+    try:
+        from cekirdek import guc as _guc
+        dagilim = _guc.dagilim_oku(sp)
+    except Exception as e:
+        dagilim = None
+        sonuc["guc_hata"] = str(e)
+    if dagilim:
+        faktorler = _guc.tepe_faktorleri(dagilim)
+        sonuc["guc"] = {"dagilim": dagilim, "faktorler": faktorler}
+        # --- TOPLAM KORUNUMU ---
+        # Cubuk guclerinin toplami, filtresiz esdes tally'ye esit olmalidir.
+        # Esit degilse haritalama bozuktur; bu, yanlis bir haritanin sessizce
+        # dogru gorunmesini onleyen en guclu kontroldur.
+        try:
+            ref = sp.get_tally(name="guc_toplam_ref")
+            ref_toplam = float(ref.get_pandas_dataframe()["mean"].sum())
+            dag_toplam = sum(k["toplam"][0] for k in dagilim["konumlar"].values())
+            if ref_toplam > 0:
+                bagil = abs(dag_toplam / ref_toplam - 1.0)
+                sonuc["guc"]["korunum"] = bagil
+                if bagil > 1e-6:
+                    sonuc["guc"]["korunum_uyari"] = (
+                        "Cubuk guclerinin toplami filtresiz tally'den %.2e bagil "
+                        "fark gosteriyor. Haritalama bozuk olabilir -- sonuclara "
+                        "guvenmeyin." % bagil)
+        except Exception:
+            pass
     return sonuc
 
 
@@ -444,6 +475,23 @@ def _terminal(argv):
         print("      beta_eff = %.1f +/- %.1f pcm" % (kin["beta_eff"] * 1e5,
                                                       kin["beta_eff_sapma"] * 1e5))
         print("      Lambda   = %s" % lambda_metni(kin["lambda"], kin["lambda_sapma"]))
+    g = s.get("guc")
+    if g and g.get("faktorler"):
+        from cekirdek import guc as _guc
+        f = g["faktorler"]
+        spec_g = spec.get("guc_dagilimi") or {}
+        m = _guc.mutlak_guc(f, spec_g.get("toplam_guc"),
+                            spec.get("kor", {}).get("yukseklik"))
+        print("\n      --- guc dagilimi (%d cubuk, %d eksenel dilim) ---"
+              % (f["cubuk_sayisi"], f["eksenel_dilim"]))
+        if "korunum" in g:
+            print("      toplam korunumu: bagil fark %.2e %s"
+                  % (g["korunum"], "OK" if g["korunum"] < 1e-6 else "!!! BOZUK !!!"))
+        for satir in _guc.yorumla(f, m):
+            print("      %s" % satir)
+    elif s.get("guc_hata"):
+        print("\n      guc dagilimi okunamadi: %s" % s["guc_hata"])
+
     for ad, df in s["tallyler"].items():
         print("\n      --- tally: %s ---" % ad)
         print("      " + str(df).replace("\n", "\n      "))

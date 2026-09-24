@@ -63,6 +63,17 @@ VARSAYILAN_AYARLAR = {
     "kinetik": {"var": False, "nesil": 10},
 }
 
+# Cubuk bazli guc dagilimi (DistribcellFilter). Kafeste tekrarlanan bir
+# cubugun her ornegi ayri sayilir; buradan F_dH ve (3B modelde) F_q cikar.
+VARSAYILAN_GUC = {
+    "var": False,
+    "cubuk": None,          # hedef cubuk adi
+    "bolge": 0,             # hangi radyal bolge (0 = en icteki, yakit eti)
+    "skor": "kappa-fission",
+    "eksenel_dilim": 20,    # 3B modelde eksenel bin sayisi; 2B'de yok sayilir
+    "toplam_guc": None,     # W -- MODELIN KAPSADIGI bolgenin gucu
+}
+
 VARSAYILAN_CALISTIRMA = {
     "is_parcacigi": 8,            # OpenMP is parcacigi (openmc -s N)
     "dizin": "kosu",              # spec dosyasina gore goreli kosu dizini
@@ -100,6 +111,7 @@ def yeni_spec(ad="isimsiz model"):
         "kor": copy.deepcopy(VARSAYILAN_KOR),
         "ayarlar": copy.deepcopy(VARSAYILAN_AYARLAR),
         "tallyler": [],
+        "guc_dagilimi": copy.deepcopy(VARSAYILAN_GUC),
         "calistirma": copy.deepcopy(VARSAYILAN_CALISTIRMA),
     }
 
@@ -275,6 +287,7 @@ def tamamla(ham):
     # ic ice sozlukler: varsayilanin uzerine yaz
     for anahtar, vars_ in (("kor", VARSAYILAN_KOR),
                            ("ayarlar", VARSAYILAN_AYARLAR),
+                           ("guc_dagilimi", VARSAYILAN_GUC),
                            ("calistirma", VARSAYILAN_CALISTIRMA)):
         birlesik = copy.deepcopy(vars_)
         birlesik.update(ham.get(anahtar, {}))

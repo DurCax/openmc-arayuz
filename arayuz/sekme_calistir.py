@@ -98,9 +98,13 @@ class CalistirSekmesi(QtWidgets.QWidget):
         sd.addWidget(self.durum_etiket)
         sd.addWidget(self.sonuc_metin, 1)
 
+        from arayuz.guc_harita import GucHaritaWidget
+        self.guc_harita = GucHaritaWidget()
+
         alt_sekme = QtWidgets.QTabWidget()
         alt_sekme.addTab(self.log, "Kosu ciktisi")
         alt_sekme.addTab(sonuc, "Sonuclar")
+        alt_sekme.addTab(self.guc_harita, "Guc haritasi")
         self.alt_sekme = alt_sekme
 
         duzen = QtWidgets.QVBoxLayout(self)
@@ -325,6 +329,25 @@ class CalistirSekmesi(QtWidgets.QWidget):
                             % (kin["beta_eff"] * 1e5, kin["beta_eff_sapma"] * 1e5))
             satirlar.append("Lambda   = %-22s (notron uretim zamani)"
                             % kosucu.lambda_metni(kin["lambda"], kin["lambda_sapma"]))
+        g = s.get("guc") or {}
+        gf = g.get("faktorler")
+        if gf:
+            satirlar.append("F_dH     = %.4f   (maks cubuk gucu / ortalama)" % gf["F_dH"])
+            if gf["F_q"]:
+                satirlar.append("F_q      = %.4f   (maks yerel guc yogunlugu / ortalama)"
+                                % gf["F_q"])
+            else:
+                satirlar.append("F_q      = tanimsiz (model 2B)")
+            satirlar.append("sicak cubuk %s%s"
+                            % (gf["sicak_cubuk"],
+                               (", dilim %d" % (gf["sicak_dilim"][1] + 1))
+                               if gf["sicak_dilim"] else ""))
+            if "korunum" in g:
+                satirlar.append("toplam korunumu: bagil fark %.1e %s"
+                                % (g["korunum"],
+                                   "OK" if g["korunum"] < 1e-6 else "!!! BOZUK !!!"))
+        elif s.get("guc_hata"):
+            satirlar.append("guc dagilimi okunamadi: %s" % s["guc_hata"])
         satirlar += ["statepoint: %s" % sp, ""]
         for ad, df in s["tallyler"].items():
             satirlar.append("=" * 70)
@@ -333,6 +356,7 @@ class CalistirSekmesi(QtWidgets.QWidget):
             satirlar.append(str(df))
             satirlar.append("")
         self.sonuc_metin.setPlainText("\n".join(satirlar))
+        self.guc_harita.sonuc_ayarla(s, self.spec)
         self._son_basarili = True
         self.alt_sekme.setCurrentIndex(1)
         self.durum.emit("Kosu tamamlandi: k-eff = %.5f +/- %.5f" % s["keff"], True)

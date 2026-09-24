@@ -59,6 +59,27 @@ _SAB_KURALLARI = [
     ({"D", "O"},      "c_D_in_D2O",  "agir su (D2O)"),
 ]
 
+# ----------------------------------------------------------------------------
+# Bilinen tally skorlari.
+#
+# !!! BU LISTE KURATORLUDUR !!!
+#   OpenMC'nin Python tarafi gecerli skor listesi SUNMAZ; Tally.scores setter'i
+#   hicbir dogrulama yapmaz (uydurma bir ad bile kabul edilir) ve hata ancak
+#   kosu sirasinda C++ tarafinda cikar. Bu yuzden liste elle tutuluyor.
+#   Yeni bir OpenMC surumu skor eklerse liste eskir -- bu nedenle bulunamayan
+#   skor HATA degil UYARI uretir.
+# ----------------------------------------------------------------------------
+BILINEN_SKORLAR = {
+    "flux", "total", "absorption", "elastic", "fission", "nu-fission",
+    "prompt-nu-fission", "delayed-nu-fission", "kappa-fission",
+    "fission-q-prompt", "fission-q-recoverable", "scatter", "nu-scatter",
+    "heating", "heating-local", "damage-energy", "decay-rate",
+    "inverse-velocity", "current", "events", "pulse-height",
+    "(n,2n)", "(n,3n)", "(n,4n)", "(n,gamma)", "(n,p)", "(n,a)", "(n,d)",
+    "(n,t)", "(n,elastic)", "(n,level)",
+    "ifp-time-numerator", "ifp-beta-numerator", "ifp-denominator",
+}
+
 # Yogunlastirilmis faz esigi [g/cm3] -- bunun altinda gaz kabul edilir,
 # termal sacilma baglama etkisi anlamsizdir.
 _YOGUN_FAZ_ESIGI = 0.1
@@ -560,6 +581,115 @@ def ayar_kontrol(spec):
 # 5. REFERANS TUTARLILIGI
 # ============================================================================
 
+def tally_kontrol(spec):
+    """Tally skorlarinin taninip taninmadigini kontrol eder."""
+    bulgular = []
+    for t in spec.get("tallyler", []):
+        yer = "tally:%s" % t.get("ad", "?")
+        if not t.get("skorlar"):
+            bulgular.append(Bulgu("hata", yer, "en az bir skor secilmeli"))
+        for s in t.get("skorlar", []):
+            if s not in BILINEN_SKORLAR and not str(s).isdigit():
+                bulgular.append(Bulgu(
+                    "uyari", yer,
+                    "'%s' bilinen skorlar arasinda degil" % s,
+                    "OpenMC bu skoru tanimayabilir ve hata KOSU SIRASINDA cikar. "
+                    "Liste kuratorludur (OpenMC gecerli skor listesi sunmuyor), "
+                    "yeni bir skor kullaniyorsaniz bu uyari yanlis alarm olabilir."))
+    return bulgular
+
+
+def guc_dagilimi_kontrol(spec):
+    """Cubuk bazli guc dagilimi ayarlarini kontrol eder."""
+    bulgular = []
+    g = spec.get("guc_dagilimi") or {}
+    if not g.get("var"):
+        return bulgular
+    yer = "guc dagilimi"
+
+    cubuk_ad = g.get("cubuk")
+    c = cubuk_bul(spec, cubuk_ad) if cubuk_ad else None
+    if c is None:
+        bulgular.append(Bulgu("hata", yer, "hedef cubuk secilmemis ya da tanimsiz: %r"
+                              % cubuk_ad))
+        return bulgular
+
+    bolge = g.get("bolge")
+    if not isinstance(bolge, int) or not (0 <= bolge < len(c["bolgeler"])):
+        bulgular.append(Bulgu("hata", yer,
+                              "gecersiz bolge numarasi %r (cubukta %d bolge var)"
+                              % (bolge, len(c["bolgeler"]))))
+    else:
+        mal = c["bolgeler"][bolge].get("malzeme")
+        m = malzeme_bul(spec, mal) if mal else None
+        fisil = False
+        if m:
+            for b in m.get("bilesim", []):
+                isim = str(b.get("isim", ""))
+                if isim.startswith(("U", "Pu", "Th")) or b.get("zenginlik"):
+                    fisil = True
+        if not fisil:
+            bulgular.append(Bulgu(
+                "uyari", yer,
+                "secilen bolgenin malzemesi ('%s') fisil gorunmuyor" % mal,
+                "Guc dagilimi genellikle YAKIT bolgesinde olculur (bolge 0). "
+                "Zarf ya da sogutucu secildiyse sonuc anlamsiz olur."))
+
+    # --- cubuk bir kafeste tekrarlaniyor mu? ---
+    kafeste = False
+    for d in spec.get("demetler", []):
+        if cubuk_ad in (d.get("anahtar") or {}).values():
+            kafeste = True
+    if spec["kor"].get("cubuk") == cubuk_ad and not kafeste:
+        bulgular.append(Bulgu(
+            "hata", yer,
+            "'%s' bir kafeste tekrarlanmiyor (kor turu 'tek_cubuk')" % cubuk_ad,
+            "Guc dagilimi tekrarlanan hucre ornekleri uzerinden hesaplanir; "
+            "tek bir cubukta dagilim yoktur. Bir kafes kurun."))
+    elif not kafeste:
+        bulgular.append(Bulgu(
+            "uyari", yer,
+            "'%s' hicbir kafes haritasinda kullanilmiyor" % cubuk_ad,
+            "Tekrarlanan ornek yoksa dagilim tek bir degerden ibaret kalir."))
+
+    skor = g.get("skor") or "kappa-fission"
+    if skor not in BILINEN_SKORLAR:
+        bulgular.append(Bulgu("uyari", yer, "'%s' bilinen skorlar arasinda degil" % skor))
+    elif skor not in ("kappa-fission", "fission-q-prompt", "fission-q-recoverable",
+                      "heating", "heating-local"):
+        bulgular.append(Bulgu(
+            "uyari", yer,
+            "'%s' bir ENERJI skoru degil" % skor,
+            "Guc dagilimi icin enerji birakan bir skor gerekir; standart secim "
+            "'kappa-fission'dir. 'fission' yalnizca fisyon SAYISINI verir."))
+
+    # --- eksenel ---
+    h = spec["kor"].get("yukseklik")
+    dilim = int(g.get("eksenel_dilim") or 1)
+    if not h:
+        bulgular.append(Bulgu(
+            "bilgi", yer,
+            "model 2B -- F_q hesaplanamaz, yalnizca F_dH verilir",
+            "Yerel guc yogunlugu tepesi eksenel sekle baglidir. Kor sekmesinde "
+            "aktif yukseklik tanimlayin."))
+    elif dilim < 10:
+        bulgular.append(Bulgu(
+            "uyari", yer,
+            "yalnizca %d eksenel dilim -- F_q KUCUK cikar" % dilim,
+            "Kaba dilimler eksenel tepeyi ortalar. En az 10-20 dilim kullanin."))
+
+    tg = g.get("toplam_guc")
+    if tg is not None:
+        if tg <= 0:
+            bulgular.append(Bulgu("hata", yer, "toplam guc pozitif olmali"))
+        elif not h:
+            bulgular.append(Bulgu(
+                "uyari", yer,
+                "toplam guc verilmis ama model 2B -- lineer guc [W/cm] hesaplanamaz",
+                "W/cm icin aktif yukseklik gerekir."))
+    return bulgular
+
+
 def referans_kontrol(spec):
     """Tanimli ama kullanilmayan / kullanilan ama tanimsiz ogeler."""
     from cekirdek.sema import kullanilan_malzemeler
@@ -594,6 +724,8 @@ def tum_kontroller(spec, veri_kontrolu=True):
     bulgular += demet_kontrol(spec)
     bulgular += kor_kontrol(spec)
     bulgular += ayar_kontrol(spec)
+    bulgular += tally_kontrol(spec)
+    bulgular += guc_dagilimi_kontrol(spec)
     bulgular += referans_kontrol(spec)
     # nuklid kontrolu malzemeleri kurmayi gerektirir; once temel hatalar temiz olmali
     if veri_kontrolu and not hata_var(bulgular):
