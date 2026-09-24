@@ -110,7 +110,51 @@ def cubuk_universe(spec, cubuk_ad, nesneler):
 
     yuzeyler = [openmc.ZCylinder(r=b["r"]) for b in bolgeler[:-1]]
     dolgular = [_mat(nesneler, b["malzeme"]) for b in bolgeler]
-    return openmc.model.pin(yuzeyler, dolgular)
+
+    if c.get("tur") != "kontrol":
+        return openmc.model.pin(yuzeyler, dolgular)
+
+    # ---------------- eksenel hareket eden kontrol cubugu ----------------
+    # Emici bolge, cubuk UCUNDE bir ZPlane ile ikiye bolunur:
+    #   ucun USTU  -> emici   (cubuk oraya dalmis)
+    #   ucun ALTI  -> izleyici (henuz dalmamis kisim)
+    # Diger bolgeler (zarf, sogutucu) tum yuksekligi kaplar.
+    #
+    # pin() burada kullanilamaz: pin() yalnizca RADYAL bolme yapar.
+    h = spec["kor"].get("yukseklik")
+    if not h:
+        raise ValueError(
+            "kontrol cubugu '%s' 3B model gerektirir: kor yuksekligi tanimli degil. "
+            "Eksenel bir uc konumu olmadan daldirma tanimlanamaz." % cubuk_ad)
+    daldirma = float(c.get("daldirma") or 0.0)
+    if not (0.0 <= daldirma <= 100.0):
+        raise ValueError("kontrol cubugu '%s': daldirma %%0-%%100 arasinda olmali (%s)"
+                         % (cubuk_ad, daldirma))
+    z_uc = h / 2.0 - (daldirma / 100.0) * h
+    uc_duzlem = openmc.ZPlane(z_uc)
+
+    emici_ix = int(c.get("emici_bolge") or 0)
+    if not (0 <= emici_ix < len(bolgeler)):
+        raise ValueError("kontrol cubugu '%s': gecersiz emici bolge %d"
+                         % (cubuk_ad, emici_ix))
+    izleyici = _mat(nesneler, c.get("izleyici_malzeme"))
+
+    hucreler = []
+    for i in range(len(bolgeler)):
+        if i == 0:
+            radyal = -yuzeyler[0] if yuzeyler else None
+        elif i == len(bolgeler) - 1:
+            radyal = +yuzeyler[-1]
+        else:
+            radyal = +yuzeyler[i - 1] & -yuzeyler[i]
+        if i == emici_ix:
+            ust = radyal & +uc_duzlem if radyal is not None else +uc_duzlem
+            alt = radyal & -uc_duzlem if radyal is not None else -uc_duzlem
+            hucreler.append(openmc.Cell(fill=dolgular[i], region=ust))
+            hucreler.append(openmc.Cell(fill=izleyici, region=alt))
+        else:
+            hucreler.append(openmc.Cell(fill=dolgular[i], region=radyal))
+    return openmc.Universe(cells=hucreler)
 
 
 def plaka_universe(spec, plaka_ad, nesneler):

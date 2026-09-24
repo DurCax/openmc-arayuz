@@ -162,6 +162,32 @@ def bolge(r, malzeme_adi):
     return {"r": r, "malzeme": malzeme_adi}
 
 
+def kontrol_cubugu(ad, bolgeler, izleyici_malzeme, daldirma=0.0, emici_bolge=0):
+    """
+    Eksenel hareket eden kontrol cubugu.
+
+    bolgeler          : normal cubuk gibi radyal bolgeler. emici_bolge ile
+                        belirtilen bolgenin malzemesi EMICIDIR.
+    izleyici_malzeme  : emici bolgenin cubuk UCUNUN ALTINDA kalan kismini
+                        dolduran malzeme (izleyici / follower; cogu zaman
+                        sogutucu ya da celik).
+    daldirma          : %0 = tamamen cekilmis (emici kor icinde yok)
+                        %100 = tamamen dalmis (emici tum yuksekligi kaplar)
+                        Cubuk YUKARIDAN daldirilir; uc konumu
+                        z_uc = +H/2 - (daldirma/100)*H
+    emici_bolge       : hangi radyal bolgenin eksenel olarak bolunecegi
+
+    !!! 3B MODEL GEREKTIRIR !!!  Kor yuksekligi tanimli degilse eksenel bir
+    konum tanimlanamaz; dogrula.py bunu hata olarak bildirir.
+    """
+    return {
+        "ad": ad, "tur": "kontrol", "bolgeler": list(bolgeler),
+        "emici_bolge": int(emici_bolge),
+        "izleyici_malzeme": izleyici_malzeme,
+        "daldirma": float(daldirma),
+    }
+
+
 def plaka(ad, plaka_sayisi, et_kalinlik, zarf_kalinlik, kanal_kalinlik,
           plaka_genislik, et_malzeme, zarf_malzeme, sogutucu,
           yan_levha_kalinlik=0.0, yan_levha_malzeme=None):
@@ -339,6 +365,9 @@ def kullanilan_malzemeler(spec):
         for b in c["bolgeler"]:
             if b.get("malzeme") and b["malzeme"] != BOSLUK:
                 adlar.add(b["malzeme"])
+        iz = c.get("izleyici_malzeme")
+        if iz and iz != BOSLUK:
+            adlar.add(iz)
     for p in spec["plakalar"]:
         for k in ("et_malzeme", "zarf_malzeme", "sogutucu", "yan_levha_malzeme"):
             if p.get(k) and p[k] != BOSLUK:

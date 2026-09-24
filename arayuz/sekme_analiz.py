@@ -255,6 +255,7 @@ class AnalizSekmesi(QtWidgets.QWidget):
             "zenginlik": (2.0, 5.0, 5), "kafes_adim": (1.1, 1.5, 5),
             "malzeme_yogunluk": (0.4, 0.8, 5), "kor_adim": (1.1, 1.5, 5),
             "cubuk_yaricap": (0.35, 0.45, 5), "yansitici_kalinlik": (5, 40, 5),
+            "cubuk_daldirma": (0, 100, 6),
         }
         if tur in varsayilan:
             a, b, n = varsayilan[tur]
@@ -277,6 +278,12 @@ class AnalizSekmesi(QtWidgets.QWidget):
             for d in self.spec.get("demetler", []):
                 self.hedef.addItem(d["ad"], d["ad"])
             self.hedef_etiket.setText("Hedef kafes:")
+        elif hedef_turu == "kontrol_cubugu":
+            for c in self.spec.get("cubuklar", []):
+                if c.get("tur") == "kontrol":
+                    self.hedef.addItem("%s  (su an %%%.1f)"
+                                       % (c["ad"], c.get("daldirma") or 0.0), c["ad"])
+            self.hedef_etiket.setText("Kontrol cubugu:")
         elif hedef_turu == "cubuk_bolge":
             for c in self.spec.get("cubuklar", []):
                 for i, b in enumerate(c["bolgeler"][:-1]):
@@ -406,6 +413,15 @@ class AnalizSekmesi(QtWidgets.QWidget):
             if fonk is None:
                 return False, (aciklama + "\n\nSonuc yalnizca spektral etkiyi "
                                "olcer, gercek moderator sicaklik katsayisi degildir.")
+        if tur == "cubuk_daldirma":
+            kontroller = [c for c in self.spec.get("cubuklar", [])
+                          if c.get("tur") == "kontrol"]
+            if not kontroller:
+                return False, ("Modelde kontrol cubugu yok. 2. sekmede bir cubugun "
+                               "turunu 'Kontrol cubugu' yapin.")
+            if not self.spec["kor"].get("yukseklik"):
+                return False, ("Kontrol cubugu 3B model gerektirir; kor "
+                               "yuksekligi tanimli degil.")
         if tur in ("kafes_adim",) and not self.spec.get("demetler"):
             return False, "Modelde kafes yok."
         if tur == "yansitici_kalinlik" and not (self.spec["kor"].get("yansitici") or {}).get("var"):

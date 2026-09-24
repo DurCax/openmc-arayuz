@@ -345,6 +345,47 @@ def cubuk_kontrol(spec):
     return bulgular
 
 
+def kontrol_cubugu_kontrol(spec):
+    """Kontrol cubuklarinin gereksinimleri."""
+    bulgular = []
+    h = spec["kor"].get("yukseklik")
+    for c in spec.get("cubuklar", []):
+        if c.get("tur") != "kontrol":
+            continue
+        yer = "cubuk:%s" % c["ad"]
+        if not h:
+            bulgular.append(Bulgu(
+                "hata", yer,
+                "kontrol cubugu 3B model gerektirir (kor yuksekligi tanimsiz)",
+                "Eksenel bir uc konumu olmadan daldirma tanimlanamaz. "
+                "Kor sekmesinde aktif yukseklik tanimlayin."))
+        d = c.get("daldirma")
+        if d is None or not (0.0 <= float(d) <= 100.0):
+            bulgular.append(Bulgu("hata", yer,
+                                  "daldirma %%0-%%100 arasinda olmali: %s" % d))
+        ix = c.get("emici_bolge")
+        if not isinstance(ix, int) or not (0 <= ix < len(c.get("bolgeler", []))):
+            bulgular.append(Bulgu("hata", yer,
+                                  "gecersiz emici bolge: %s" % ix))
+        else:
+            mal = c["bolgeler"][ix].get("malzeme")
+            m = malzeme_bul(spec, mal) if mal else None
+            if m:
+                elemanlar = {b.get("isim", "") for b in m.get("bilesim", [])}
+                sogurucu = bool(elemanlar & {"B", "B10", "Gd", "Ag", "In", "Cd", "Hf", "Eu"})
+                if not sogurucu:
+                    bulgular.append(Bulgu(
+                        "uyari", yer,
+                        "emici bolgenin malzemesi ('%s') guclu bir notron "
+                        "sogurucu icermiyor" % mal,
+                        "Kontrol malzemeleri genellikle B4C, Ag-In-Cd, Gd2O3 ya "
+                        "da Hf icerir."))
+        iz = c.get("izleyici_malzeme")
+        if iz and iz != BOSLUK and malzeme_bul(spec, iz) is None:
+            bulgular.append(Bulgu("hata", yer, "tanimsiz izleyici malzeme: %s" % iz))
+    return bulgular
+
+
 def plaka_kontrol(spec):
     """Plaka eleman olculeri."""
     bulgular = []
@@ -720,6 +761,7 @@ def tum_kontroller(spec, veri_kontrolu=True):
         bulgular += veri_kutuphanesi_kontrol()
     bulgular += malzeme_kontrol(spec)
     bulgular += cubuk_kontrol(spec)
+    bulgular += kontrol_cubugu_kontrol(spec)
     bulgular += plaka_kontrol(spec)
     bulgular += demet_kontrol(spec)
     bulgular += kor_kontrol(spec)

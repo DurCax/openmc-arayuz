@@ -14,13 +14,30 @@
    sonsuza kadar iterasyon yapar ve sonunda rastgele bir noktada durur.
 
    Bu yuzden durma olcutu istatistige baglanmistir:
-       |k - hedef| < tolerans * sigma_k        (varsayilan tolerans = 1.0)
+       |k - hedef| < tolerans * sigma_k        (varsayilan tolerans = 2.0)
+
+   Tolerans 2 sigma secildi cunku kosucu.keff_yorumu() de bir sonucu
+   "|k-1| <= 2 sigma" oldugunda KRITIK sayiyor. Daha sıkı bir arama olcutu
+   (orn. 1 sigma) aramanin, sonuc panelinin kritik dedigi bir konfigurasyonu
+   REDDETMESINE yol aciyordu -- iki yer ayni tanimi kullanmali.
    Yani "k, hedeften istatistiksel olarak ayirt edilemiyor" olur olmaz durulur.
    Daha sıkı bir cevap isteniyorsa cozum daha cok iterasyon degil, nokta
    basina DAHA COK PARCACIK'tir; kod bunu acikca soyler.
 
-   Ilk iki nokta aralik uclarindan alinir, sonra sekant (kiris) yontemiyle
-   ilerlenir. Kok aralik disina cikarsa aralik ucuna kirpilir ve bildirilir.
+   YONTEM: PARANTEZ KORUMALI YANLIS KONUM (regula falsi) + IKIYE BOLME
+     Ilk iki nokta aralik uclarindan alinir ve kokun iclerinde oldugu dogrulanir.
+     Her adimda kiris (sekant) tahmini yapilir; tahmin parantezin disina duserse
+     ya da DAHA ONCE OLCULEN bir noktaya denk gelirse IKIYE BOLMEYE gecilir.
+     (Ilk surumde saf sekant kullaniliyordu ve ayni noktayi -- aralik ucunu --
+     ust uste kosuyordu: 12 iterasyonun 2'si bosa gidiyordu.)
+
+   KOKUN BELIRSIZLIGI
+     k bir olcumdur; kokun konumu da belirsizdir. Yerel egimden
+         delta_x = sigma_k / |dk/dx|
+     olarak tahmin edilir ve sonucla birlikte raporlanir. Parantez genisligi
+     bu belirsizligin altina indiginde daha fazla iterasyon BILGI KATMAZ --
+     arama durur ve bunu soyler. Daha dar bir cevap icin cozum iterasyon degil,
+     nokta basina DAHA COK PARCACIK'tir.
 
  KOK SARTI
    f(alt) ve f(ust) zit isaretli olmali (hedef aralikta olmali). Degilse
@@ -44,12 +61,16 @@ class AramaSonucu(object):
         self.cozum_sapma = None
         self.basarili = False
         self.mesaj = ""
+        self.cozum_belirsizlik = None     # kokun konum belirsizligi
+        self.egim = None                  # yerel dk/dx
 
     def ozet(self):
         if not self.basarili:
             return "Arama basarisiz: %s" % self.mesaj
-        return ("Cozum: %s = %.6g   (k = %.5f +/- %.5f, %d iterasyon)"
-                % (self.parametre_adi, self.cozum, self.cozum_keff,
+        bel = ("" if self.cozum_belirsizlik is None
+               else " +/- %.4g" % self.cozum_belirsizlik)
+        return ("Cozum: %s = %.6g%s   (k = %.5f +/- %.5f, %d iterasyon)"
+                % (self.parametre_adi, self.cozum, bel, self.cozum_keff,
                    self.cozum_sapma, len(self.adimlar)))
 
 
@@ -65,7 +86,7 @@ def _nokta_kos(spec, tur, hedef, deger, dizin, is_parcacigi, taban):
 
 
 def ara(spec, tur, hedef, alt, ust, kok_dizin, hedef_keff=1.0,
-        tolerans_sigma=1.0, en_fazla=12, is_parcacigi=None,
+        tolerans_sigma=2.0, en_fazla=15, is_parcacigi=None,
         geri_cagir=None, dur_bayragi=None):
     """
     hedef_keff'i veren parametre degerini arar.
@@ -120,39 +141,73 @@ def ara(spec, tur, hedef, alt, ust, kok_dizin, hedef_keff=1.0,
                            % (abs(k - hedef_keff) / s if s else 0))
             return sonuc
 
-    # --- sekant iterasyonu ---
-    x0, y0 = alt, f_alt
-    x1, y1 = ust, f_ust
+    # --- parantez korumali iterasyon ---
+    # Parantez: f(x_alt) ve f(x_ust) zit isaretli; kok daima aralarindadir.
+    x_alt, f_a = (alt, f_alt) if f_alt < 0 else (ust, f_ust)
+    x_ust, f_u = (ust, f_ust) if f_alt < 0 else (alt, f_alt)
+    olculen = {alt: k_alt, ust: k_ust}
+
+    def _yakin(x):
+        """Bu deger daha once olculdu mu? (ayni noktayi tekrar kosma)"""
+        genislik = abs(ust - alt)
+        return any(abs(x - o) < 1e-6 * max(genislik, 1.0) for o in olculen)
+
     for _ in range(en_fazla):
-        if abs(y1 - y0) < 1e-12:
-            sonuc.mesaj = "Sekant paydasi sifira yaklasti; k parametreye duyarsiz."
-            break
-        x2 = x1 - y1 * (x1 - x0) / (y1 - y0)
-        # kok aralik disina taserse kirp
-        kirpildi = False
-        if not (min(alt, ust) <= x2 <= max(alt, ust)):
-            x2 = min(max(x2, min(alt, ust)), max(alt, ust))
-            kirpildi = True
+        # kiris (yanlis konum) tahmini
+        if abs(f_u - f_a) > 1e-12:
+            x2 = x_alt + (x_ust - x_alt) * (-f_a) / (f_u - f_a)
+        else:
+            x2 = 0.5 * (x_alt + x_ust)
+        # parantez disina dustuyse ya da tekrar ise ikiye bol
+        ic = min(x_alt, x_ust) < x2 < max(x_alt, x_ust)
+        if not ic or _yakin(x2):
+            x2 = 0.5 * (x_alt + x_ust)
+            if _yakin(x2):
+                sonuc.mesaj = ("Parantez istatistiksel cozunurlugun altina indi; "
+                               "daha fazla iterasyon bilgi katmaz.")
+                break
         try:
             k2, s2 = olc(x2)
         except KeyboardInterrupt as e:
             sonuc.mesaj = str(e); return sonuc
         except Exception as e:
             sonuc.mesaj = str(e); return sonuc
+        olculen[x2] = k2
         f2 = k2 - hedef_keff
+
+        # yerel egim ve kokun belirsizligi
+        yakin_uc = x_ust if abs(x_ust - x2) > 1e-12 else x_alt
+        egim = ((k2 - olculen[yakin_uc]) / (x2 - yakin_uc)) if abs(x2 - yakin_uc) > 1e-12 else None
+        if egim:
+            sonuc.egim = egim
+            sonuc.cozum_belirsizlik = abs(s2 / egim)
 
         if abs(f2) <= tolerans_sigma * s2:
             sonuc.cozum, sonuc.cozum_keff, sonuc.cozum_sapma = x2, k2, s2
             sonuc.basarili = True
             sonuc.mesaj = (
-                "Yakinsadi: |k - hedef| = %.2f sigma (<= %.1f sigma olcutu). "
-                "Daha sıkı bir cevap icin iterasyon degil, nokta basina "
-                "PARCACIK sayisini artirin." % (abs(f2) / s2, tolerans_sigma))
+                "Yakinsadi: |k - hedef| = %.2f sigma (<= %.1f sigma olcutu)."
+                % (abs(f2) / s2, tolerans_sigma))
             return sonuc
-        if kirpildi and abs(x2 - x1) < 1e-12:
-            sonuc.mesaj = "Kok aralik ucunda; araligi genisletin."
-            break
-        x0, y0, x1, y1 = x1, y1, x2, f2
+
+        # parantezi daralt
+        if f2 < 0:
+            x_alt, f_a = x2, f2
+        else:
+            x_ust, f_u = x2, f2
+
+        # Parantez, kokun ISTATISTIKSEL belirsizliginden dar hale geldiyse dur:
+        # bundan sonrasi gurultu kovalamaktir.
+        if sonuc.cozum_belirsizlik and abs(x_ust - x_alt) <= sonuc.cozum_belirsizlik:
+            sonuc.cozum = 0.5 * (x_alt + x_ust)
+            sonuc.cozum_keff, sonuc.cozum_sapma = k2, s2
+            sonuc.basarili = True
+            sonuc.mesaj = (
+                "Parantez genisligi (%.4g) kokun istatistiksel belirsizligine "
+                "(%.4g) indi. Daha fazla iterasyon BILGI KATMAZ; daha dar bir "
+                "cevap icin nokta basina parcacik sayisini artirin."
+                % (abs(x_ust - x_alt), sonuc.cozum_belirsizlik))
+            return sonuc
 
     if not sonuc.basarili and sonuc.adimlar:
         en_iyi = min(sonuc.adimlar, key=lambda a: abs(a["fark"]))
@@ -184,7 +239,7 @@ def _terminal(argv):
 
     spec_yolu = argv[0]
     p = {"tur": None, "hedef": None, "alt": None, "ust": None,
-         "keff": "1.0", "s": None, "dizin": None, "sigma": "1.0"}
+         "keff": "1.0", "s": None, "dizin": None, "sigma": "2.0"}
     i = 1
     while i < len(argv):
         a = argv[i].lstrip("-")
@@ -220,8 +275,12 @@ def _terminal(argv):
 
     print("\n" + "=" * 74)
     if s.basarili:
-        print("  COZUM: %s = %.6g %s" % (p["tur"], s.cozum, birim))
+        bel = ("" if s.cozum_belirsizlik is None
+               else " +/- %.4g" % s.cozum_belirsizlik)
+        print("  COZUM: %s = %.6g%s %s" % (p["tur"], s.cozum, bel, birim))
         print("         k = %.5f +/- %.5f" % (s.cozum_keff, s.cozum_sapma))
+        if s.egim:
+            print("         yerel egim dk/dx = %.4g / %s" % (s.egim, birim))
     else:
         print("  BULUNAMADI")
     print("  %s" % s.mesaj)

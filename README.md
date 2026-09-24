@@ -124,7 +124,7 @@ python3 testler/test_regresyon.py            # tümü (~2 dk)
 python3 testler/test_regresyon.py --hizli    # Monte Carlo hariç (~10 s)
 ```
 
-125 test var. Üçü bu katmanın doğruluğunun asıl kanıtıdır:
+151 test var. Üçü bu katmanın doğruluğunun asıl kanıtıdır:
 
 - **Regresyon çıpası** — `ornekler/pwr_pinhucre.json` referans değeri
   **k∞ = 1.3570 ± 0.0020** vermeli. 2σ dışına çıkarsa `kurucu.py`'de hata var.
@@ -148,6 +148,32 @@ python3 testler/test_regresyon.py --hizli    # Monte Carlo hariç (~10 s)
 | `sfr_altigen` | 1.46634 ± 0.00070 | 53 s |
 | `godiva_kriter` | 0.99900 ± 0.00045 | 6 s |
 | `pwr_3b` (3B, güç dağılımı) | 1.17953 ± 0.00059 | 73 s |
+| `pwr_kontrol` (çubuk %0) | 1.17801 ± 0.00196 | 24 s |
+
+## Kontrol çubuğu ve kritik çubuk konumu
+
+Bir çubuğun türü **2. Çubuk / Plaka** sekmesinden `Kontrol çubuğu` yapılır.
+Çubuk **yukarıdan** daldırılır; emici bölge, uç konumunda ikiye bölünür:
+ucun üstü emici, altı izleyici malzeme.
+
+```
+daldırma %0   → uç z = +H/2   (emici kor içinde yok)
+daldırma %100 → uç z = −H/2   (emici tüm yüksekliği kaplar)
+```
+
+3B model gerektirir — eksenel bir uç konumu olmadan daldırma tanımlanamaz.
+
+**7. Analiz** sekmesinde iki kullanımı var:
+- *Parametre taraması* → integral çubuk değeri eğrisi
+- *Kritik arama* + hedef k=1 → **kritik çubuk konumu**
+
+Ölçülen (`pwr_kontrol`, 25 B4C çubuğu): kritik konum **%87.85 ± 0.09**, 13 koşuda.
+
+> ⚠ **Eğri şekli hakkında.** Klasik S eğrisi yalnızca sistem *her konumda
+> kritiğe yakınsa* görülür. Bu örnek yansıtıcı yan sınırlı tek bir demettir ve
+> k∞ yüksektir; rodlanmamış alt bölge tek başına süperkritik kalır. Bu yüzden
+> değer geç toplanır ve diferansiyel değer tepesi merkezde değil tam daldırmaya
+> yakın çıkar. Ölçülen: %0 → k=1.165, %50 → k=1.131, %100 → k=0.588.
 
 ## Güç dağılımı ve tepe faktörleri
 
@@ -203,12 +229,25 @@ parametreyi tarayıp eğimden **reaktivite katsayısını** çıkarır:
 > çözünmüştür, yoğunluk düşünce soğurucu da azalır ve iki etki birbirini
 > götürür. PWR'lerde çevrim başı bor sınırının sebebi budur.
 
-**Kritik arama** hedef k-eff'i veren değeri bulur (kritik bor, kritik yükseklik…).
-Durma ölçütü istatistiğe bağlıdır: `|k − hedef| < 1σ` olunca durur, çünkü daha
-sıkı bir ölçüt gürültü kovalamaktır. Kök aralıkta değilse **ekstrapolasyon
-yapmaz**, aralığı genişletmenizi söyler.
+**Kritik arama** hedef k-eff'i veren değeri bulur (kritik bor, kritik çubuk
+konumu, kritik yükseklik…). Kök aralıkta değilse **ekstrapolasyon yapmaz**,
+aralığı genişletmenizi söyler.
 
-Örnek: 17×17 demeti için kritik bor = **3430 ppm**, 7 koşuda yakınsadı.
+Yöntem **parantez korumalı yanlış konum + ikiye bölme**: kiriş tahmini parantez
+dışına düşerse ya da daha önce ölçülen bir noktaya denk gelirse ikiye bölmeye
+geçer. (İlk sürüm saf sekanttı ve aralık ucunu üst üste koşuyordu — 12
+iterasyonun 2'si boşa gidiyordu.)
+
+Durma ölçütü `|k − hedef| ≤ 2σ`'dır; aynı tanımı sonuç paneli de kullanır
+(`keff_yorumu`). Daha sıkı bir ölçüt (1σ) aramanın, panelin **kritik dediği** bir
+konfigürasyonu reddetmesine yol açıyordu.
+
+**Kökün kendisi de belirsizdir.** Yerel eğimden `δx = σ_k / |dk/dx|` olarak
+tahmin edilip raporlanır. Parantez bu belirsizliğin altına indiğinde daha fazla
+iterasyon bilgi katmaz — arama durur ve bunu söyler.
+
+Örnekler: 17×17 için kritik bor **3430 ppm** (7 koşu); `pwr_kontrol` için
+kritik çubuk konumu **%87.85 ± 0.09** (13 koşu).
 
 ## Kinetik parametreler
 
@@ -323,7 +362,8 @@ Bitmiş bir geometriyi incelerken (eksen değiştirme, yakınlaştırma) açın;
 
 ## Bilinen sınırlar
 
-- **Kontrol elemanı hareketi** yok (çubuk daldırma, tambur dönüşü).
+- **Kontrol tamburu (dönen) yok.** Çubuk daldırma var; tambur dönüşü için
+  sektör geometrisi ve yansıtıcı içine ayrık bileşen yerleştirme gerekiyor.
 - **Eksenel heterojenlik** yok — kor tek eksenel bölge; zenginlik kuşağı,
   blanket, plenum tanımlanamaz.
 - **Sabit kaynak modu yarım** — kaynak enerji spektrumu Watt'a sabit;

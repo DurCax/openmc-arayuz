@@ -75,6 +75,9 @@ TURLER = {
     "kor_adim": (
         "Kor hucre adimi",
         "kor", "cm", "pcm/cm"),
+    "cubuk_daldirma": (
+        "Kontrol cubugu daldirma orani (%0 cekilmis, %100 tam dalmis)",
+        "kontrol_cubugu", "%", "pcm/%"),
     "cubuk_yaricap": (
         "Cubugun bir bolgesinin yaricapi",
         "cubuk_bolge", "cm", "pcm/cm"),
@@ -189,6 +192,17 @@ def parametre_uygula(spec, tur, hedef, deger, taban=None):
     elif tur == "kor_adim":
         yeni["kor"]["adim"] = float(deger)
 
+    elif tur == "cubuk_daldirma":
+        c = sema.cubuk_bul(yeni, hedef)
+        if c is None:
+            raise KeyError("tanimsiz cubuk: %s" % hedef)
+        if c.get("tur") != "kontrol":
+            raise ValueError("'%s' bir kontrol cubugu degil; daldirma taramasi "
+                             "yalnizca kontrol cubuklarina uygulanir" % hedef)
+        if not (0.0 <= float(deger) <= 100.0):
+            raise ValueError("daldirma %0-%100 arasinda olmali: %s" % deger)
+        c["daldirma"] = float(deger)
+
     elif tur == "cubuk_yaricap":
         cubuk_ad, bolge_no = hedef
         c = sema.cubuk_bul(yeni, cubuk_ad)
@@ -296,6 +310,13 @@ def yorumla(tur, kats):
         "kafes_adim": ("Moderasyon orani etkisi. Isareti, kafesin az mi cok mu "
                        "moderatorlu oldugunu soyler: az moderatorlu tarafta "
                        "adim artisi k'yi ARTIRIR (pozitif)."),
+        "cubuk_daldirma": (
+            "Kontrol cubugu degeri. NEGATIF olmali: emici daldikca reaktivite "
+            "duser. DIKKAT -- klasik S egrisi yalnizca sistem her konumda "
+            "KRITIGE YAKIN oldugunda gorulur. k-sonsuz'u yuksek bir kafeste "
+            "(orn. yansitici sinirli tek demet) rodlanmamis bolge tek basina "
+            "superkritik kalir, bu yuzden deger gec toplanir ve diferansiyel "
+            "deger tepesi merkezde degil tam daldirmaya yakin cikar."),
     }
     taban = notlar.get(tur, "")
     return "Egim %s (%s)." % (isaret, taban) if taban else "Egim %s." % isaret

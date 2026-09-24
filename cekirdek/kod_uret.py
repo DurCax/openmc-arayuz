@@ -111,8 +111,39 @@ def _cubuk(spec, cubuk_ad, satirlar):
     satirlar.append("# %s -- es merkezli %d bolge" % (cubuk_ad, len(c["bolgeler"])))
     satirlar.append("%s_yuzeyler = [%s]"
                     % (v, ", ".join("openmc.ZCylinder(r=%s)" % _f(r) for r in yaricaplar)))
-    satirlar.append("%s = openmc.model.pin(%s_yuzeyler, [%s])"
-                    % (v, v, ", ".join(dolgular)))
+    if c.get("tur") != "kontrol":
+        satirlar.append("%s = openmc.model.pin(%s_yuzeyler, [%s])"
+                        % (v, v, ", ".join(dolgular)))
+        return v
+
+    # ---- eksenel hareket eden kontrol cubugu ----
+    h = spec["kor"].get("yukseklik") or 0.0
+    daldirma = float(c.get("daldirma") or 0.0)
+    z_uc = h / 2.0 - (daldirma / 100.0) * h
+    emici_ix = int(c.get("emici_bolge") or 0)
+    satirlar.append("")
+    satirlar.append("# Kontrol cubugu: emici bolge UC KONUMUNDA ikiye bolunur.")
+    satirlar.append("#   ucun ustu -> emici,  ucun alti -> izleyici")
+    satirlar.append("# daldirma %%%.1f  ->  z_uc = %s cm" % (daldirma, _f(z_uc)))
+    satirlar.append("%s_uc = openmc.ZPlane(%s)" % (v, _f(z_uc)))
+    satirlar.append("%s_hucreler = []" % v)
+    n = len(c["bolgeler"])
+    for i in range(n):
+        if i == 0:
+            radyal = "-%s_yuzeyler[0]" % v
+        elif i == n - 1:
+            radyal = "+%s_yuzeyler[-1]" % v
+        else:
+            radyal = "+%s_yuzeyler[%d] & -%s_yuzeyler[%d]" % (v, i - 1, v, i)
+        if i == emici_ix:
+            satirlar.append("%s_hucreler.append(openmc.Cell(fill=%s, region=(%s) & +%s_uc))"
+                            % (v, dolgular[i], radyal, v))
+            satirlar.append("%s_hucreler.append(openmc.Cell(fill=%s, region=(%s) & -%s_uc))"
+                            % (v, _mat_ifade(c.get("izleyici_malzeme")), radyal, v))
+        else:
+            satirlar.append("%s_hucreler.append(openmc.Cell(fill=%s, region=%s))"
+                            % (v, dolgular[i], radyal))
+    satirlar.append("%s = openmc.Universe(cells=%s_hucreler)" % (v, v))
     return v
 
 

@@ -1,0 +1,358 @@
+{
+  "surum": 1,
+  "ad": "PWR 17x17 -- kontrol cubuklu (3B)",
+  "aciklama": "17x17 demeti, 25 kilavuz boru konumunda B4C kontrol cubugu. Cubuklar\nyukaridan daldirilir; 'daldirma' %0 = tamamen cekilmis, %100 = tam dalmis.\n\nKULLANIM: 7. Analiz sekmesinde\n  - 'Kontrol cubugu daldirma orani' taramasi -> integral cubuk degeri egrisi\n  - 'Kritik arama' + hedef k=1.0        -> KRITIK CUBUK KONUMU\n\n!!! EGRI SEKLI HAKKINDA !!!\nKlasik S egrisi yalnizca sistem her konumda kritige yakinsa gorulur.\nBu model yansitici yan sinirli tek bir demettir ve k-sonsuz yuksektir;\nrodlanmamis alt bolge tek basina superkritik kalir, bu yuzden deger gec\ntoplanir ve diferansiyel deger tepesi merkezde degil tam daldirmaya\nyakin cikar. Olculen: %0 -> k=1.165, %50 -> k=1.131, %100 -> k=0.588.",
+  "malzemeler": [
+    {
+      "ad": "uo2",
+      "gorunen_ad": "UO2 %3.20",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 10.4
+      },
+      "sicaklik": 900.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "U",
+          "miktar": 1.0,
+          "birim": "ao",
+          "zenginlik": 3.2
+        },
+        {
+          "tur": "element",
+          "isim": "O",
+          "miktar": 2.0,
+          "birim": "ao"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        222,
+        93,
+        40
+      ]
+    },
+    {
+      "ad": "helyum",
+      "gorunen_ad": "He",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 0.0001785
+      },
+      "sicaklik": 600.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "He",
+          "miktar": 1.0,
+          "birim": "ao"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        235,
+        235,
+        245
+      ]
+    },
+    {
+      "ad": "zirkaloy4",
+      "gorunen_ad": "Zircaloy-4",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 6.55
+      },
+      "sicaklik": 600.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "Zr",
+          "miktar": 98.23,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Sn",
+          "miktar": 1.45,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Fe",
+          "miktar": 0.21,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Cr",
+          "miktar": 0.11,
+          "birim": "wo"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        150,
+        150,
+        160
+      ]
+    },
+    {
+      "ad": "su",
+      "gorunen_ad": "H2O 0.700 g/cc + 1300 ppm B",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 0.7
+      },
+      "sicaklik": 580.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "H",
+          "miktar": 11.176126561199002,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "O",
+          "miktar": 88.69941715237303,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "B",
+          "miktar": 0.13,
+          "birim": "wo"
+        }
+      ],
+      "sab": [
+        "c_H_in_H2O"
+      ],
+      "renk": [
+        90,
+        150,
+        220
+      ]
+    },
+    {
+      "ad": "b4c",
+      "gorunen_ad": "B4C (dogal)",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 2.52
+      },
+      "sicaklik": 600.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "B",
+          "miktar": 4.0,
+          "birim": "ao"
+        },
+        {
+          "tur": "element",
+          "isim": "C",
+          "miktar": 1.0,
+          "birim": "ao"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        60,
+        60,
+        60
+      ]
+    }
+  ],
+  "cubuklar": [
+    {
+      "ad": "yakit_cubugu",
+      "tur": "silindirik",
+      "bolgeler": [
+        {
+          "r": 0.4096,
+          "malzeme": "uo2"
+        },
+        {
+          "r": 0.418,
+          "malzeme": "helyum"
+        },
+        {
+          "r": 0.475,
+          "malzeme": "zirkaloy4"
+        },
+        {
+          "r": null,
+          "malzeme": "su"
+        }
+      ]
+    },
+    {
+      "ad": "kilavuz_boru",
+      "tur": "silindirik",
+      "bolgeler": [
+        {
+          "r": 0.561,
+          "malzeme": "su"
+        },
+        {
+          "r": 0.602,
+          "malzeme": "zirkaloy4"
+        },
+        {
+          "r": null,
+          "malzeme": "su"
+        }
+      ]
+    },
+    {
+      "ad": "kontrol_cubugu",
+      "tur": "kontrol",
+      "bolgeler": [
+        {
+          "r": 0.561,
+          "malzeme": "b4c"
+        },
+        {
+          "r": 0.602,
+          "malzeme": "zirkaloy4"
+        },
+        {
+          "r": null,
+          "malzeme": "su"
+        }
+      ],
+      "emici_bolge": 0,
+      "izleyici_malzeme": "su",
+      "daldirma": 0.0
+    }
+  ],
+  "plakalar": [],
+  "demetler": [
+    {
+      "ad": "demet_17x17",
+      "tur": "kare",
+      "adim": 1.26,
+      "boyut": [
+        17,
+        17
+      ],
+      "harita": [
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyykyykyykyyyyy",
+        "yyykyyyyyyyyykyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yykyykyykyykyykyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yykyykyyeyykyykyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yykyykyykyykyykyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyykyyyyyyyyykyyy",
+        "yyyyykyykyykyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy"
+      ],
+      "anahtar": {
+        "y": "yakit_cubugu",
+        "k": "kontrol_cubugu",
+        "e": "kontrol_cubugu"
+      },
+      "dolgu_disi": "su"
+    }
+  ],
+  "kor": {
+    "tur": "tek_demet",
+    "cubuk": null,
+    "demet": "demet_17x17",
+    "plaka": null,
+    "adim": 1.26,
+    "boyut": [
+      1,
+      1
+    ],
+    "harita": [],
+    "anahtar": {},
+    "yukseklik": 366.0,
+    "yansitici": {
+      "var": false,
+      "kalinlik": 20.0,
+      "malzeme": "su"
+    },
+    "kabuklar": [],
+    "sinir": {
+      "yan": "reflective",
+      "alt": "vacuum",
+      "ust": "vacuum"
+    }
+  },
+  "ayarlar": {
+    "mod": "eigenvalue",
+    "parcacik": 8000,
+    "cevrim": 90,
+    "pasif": 30,
+    "tohum": 1,
+    "sicaklik_yontemi": "interpolation",
+    "kaynak": {
+      "tur": "kutu",
+      "alt": null,
+      "ust": null
+    },
+    "entropi_mesh": {
+      "var": true,
+      "boyut": [
+        8,
+        8,
+        8
+      ]
+    },
+    "kinetik": {
+      "var": false,
+      "nesil": 10
+    }
+  },
+  "tallyler": [
+    {
+      "ad": "reaksiyonlar",
+      "skorlar": [
+        "fission",
+        "absorption",
+        "nu-fission"
+      ],
+      "filtreler": [],
+      "nuklidler": []
+    },
+    {
+      "ad": "iki_grup_aki",
+      "skorlar": [
+        "flux"
+      ],
+      "filtreler": [
+        {
+          "tur": "enerji",
+          "gruplar": [
+            0.0,
+            0.625,
+            20000000.0
+          ]
+        }
+      ],
+      "nuklidler": []
+    }
+  ],
+  "guc_dagilimi": {
+    "var": false,
+    "cubuk": "yakit_cubugu",
+    "bolge": 0,
+    "skor": "kappa-fission",
+    "eksenel_dilim": 20,
+    "toplam_guc": 17600000.0
+  },
+  "calistirma": {
+    "is_parcacigi": 24,
+    "dizin": "kosu_kontrol"
+  }
+}

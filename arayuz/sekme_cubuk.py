@@ -97,6 +97,18 @@ class CubukSekmesi(SekmeTabani):
         self.c_ad = QtWidgets.QLineEdit()
         self.c_ad.editingFinished.connect(self._cubuk_ad_degisti)
 
+        # --- kontrol cubugu alanlari ---
+        self.c_tur = QtWidgets.QComboBox()
+        self.c_tur.addItem("Silindirik (sabit)", "silindirik")
+        self.c_tur.addItem("Kontrol cubugu (eksenel hareketli)", "kontrol")
+        self.c_emici = QtWidgets.QComboBox()
+        self.c_izleyici = QtWidgets.QComboBox()
+        self.c_daldirma = sayi(0.0, 2, 0.0, 100.0, 5.0, "%")
+        self.c_daldirma_kaydirici = QtWidgets.QSlider(QtCore.Qt.Horizontal)
+        self.c_daldirma_kaydirici.setRange(0, 1000)
+        self.c_uc_etiket = QtWidgets.QLabel("-")
+        self.c_kontrol_etiketleri = {}
+
         self.c_tablo = QtWidgets.QTableWidget(0, 3)
         self.c_tablo.setHorizontalHeaderLabels(["Yaricap r [cm]", "Malzeme", "Aciklama"])
         self.c_tablo.horizontalHeader().setStretchLastSection(True)
@@ -117,16 +129,49 @@ class CubukSekmesi(SekmeTabani):
 
         form = QtWidgets.QFormLayout()
         form.addRow("Ad:", self.c_ad)
+        form.addRow("Tur:", self.c_tur)
+        for etiket, alan, anahtar in (
+                ("Emici bolge:", self.c_emici, "emici"),
+                ("Izleyici malzeme:", self.c_izleyici, "izleyici")):
+            e = QtWidgets.QLabel(etiket)
+            self.c_kontrol_etiketleri[anahtar] = e
+            form.addRow(e, alan)
+        dald = QtWidgets.QWidget()
+        dd = QtWidgets.QHBoxLayout(dald)
+        dd.setContentsMargins(0, 0, 0, 0)
+        dd.addWidget(self.c_daldirma)
+        dd.addWidget(self.c_daldirma_kaydirici, 1)
+        e = QtWidgets.QLabel("Daldirma:")
+        self.c_kontrol_etiketleri["daldirma"] = e
+        form.addRow(e, dald)
+        e = QtWidgets.QLabel("Uc konumu:")
+        self.c_kontrol_etiketleri["uc"] = e
+        form.addRow(e, self.c_uc_etiket)
+
+        self.c_kontrol_not = ipucu(
+            "Kontrol cubugu YUKARIDAN daldirilir. %0 = tamamen cekilmis "
+            "(emici kor icinde yok), %100 = tam dalmis. Emici bolge, cubuk "
+            "ucunun ALTINDA izleyici malzemeyle doldurulur. 3B model gerektirir: "
+            "kor yuksekligi tanimli olmali.\n"
+            "Kritik cubuk konumunu bulmak icin 7. Analiz sekmesinde "
+            "'Kritik arama' + 'Kontrol cubugu daldirma orani' kullanin.")
 
         d = QtWidgets.QVBoxLayout(w)
-        d.addWidget(baslik("Silindirik yakit cubugu"))
+        d.addWidget(baslik("Yakit / kontrol cubugu"))
         d.addLayout(form)
+        d.addWidget(self.c_kontrol_not)
         d.addWidget(ipucu(
             "Bolgeler ICTEN DISA dogru siralanir ve yaricaplar artan olmalidir. "
             "EN SON bolgenin yaricapi bos birakilir -- o bolge 'disarisi'dir ve "
             "hucrenin kalanini doldurur (genellikle sogutucu)."))
         d.addWidget(self.c_tablo, 1)
         d.addLayout(dugme)
+
+        self.c_tur.currentIndexChanged.connect(self._cubuk_tur_degisti)
+        self.c_emici.currentIndexChanged.connect(self._cubuk_kaydet)
+        self.c_izleyici.currentIndexChanged.connect(self._cubuk_kaydet)
+        self.c_daldirma.valueChanged.connect(self._daldirma_degisti)
+        self.c_daldirma_kaydirici.valueChanged.connect(self._kaydirici_degisti)
         return w
 
     def _plaka_sayfa(self):
@@ -181,7 +226,8 @@ class CubukSekmesi(SekmeTabani):
     def doldur(self):
         self.liste.clear()
         for c in self.spec.get("cubuklar", []):
-            oge = QtWidgets.QListWidgetItem("[cubuk]  %s" % c["ad"])
+            simge = "[kontrol]" if c.get("tur") == "kontrol" else "[cubuk]  "
+            oge = QtWidgets.QListWidgetItem("%s %s" % (simge, c["ad"]))
             oge.setData(QtCore.Qt.UserRole, ("cubuk", c["ad"]))
             self.liste.addItem(oge)
         for p in self.spec.get("plakalar", []):
@@ -220,6 +266,27 @@ class CubukSekmesi(SekmeTabani):
         if c is None:
             return
         self.c_ad.setText(c["ad"])
+        i = self.c_tur.findData(c.get("tur", "silindirik"))
+        self.c_tur.setCurrentIndex(max(i, 0))
+        self.c_emici.clear()
+        for j, b in enumerate(c["bolgeler"]):
+            self.c_emici.addItem("%d -- %s" % (j, b.get("malzeme") or "bosluk"), j)
+        j = self.c_emici.findData(c.get("emici_bolge", 0))
+        if j >= 0:
+            self.c_emici.setCurrentIndex(j)
+        self.c_izleyici.clear()
+        self.c_izleyici.addItem("bosluk (void)", sema.BOSLUK)
+        for m in self.spec["malzemeler"]:
+            self.c_izleyici.addItem("%s  --  %s" % (m["ad"], m.get("gorunen_ad") or ""),
+                                    m["ad"])
+        j = self.c_izleyici.findData(c.get("izleyici_malzeme"))
+        if j >= 0:
+            self.c_izleyici.setCurrentIndex(j)
+        dd = float(c.get("daldirma") or 0.0)
+        self.c_daldirma.setValue(dd)
+        self.c_daldirma_kaydirici.setValue(int(round(dd * 10)))
+        self._kontrol_gorunurluk()
+        self._uc_guncelle()
         self.c_tablo.setRowCount(0)
         for i, b in enumerate(c["bolgeler"]):
             self._bolge_satiri(i, b, son=(i == len(c["bolgeler"]) - 1))
@@ -241,6 +308,67 @@ class CubukSekmesi(SekmeTabani):
         self.c_tablo.setItem(satir, 2, QtWidgets.QTableWidgetItem(aciklama))
         self.c_tablo.resizeColumnsToContents()
 
+    def _kontrol_gorunurluk(self):
+        kontrol = self.c_tur.currentData() == "kontrol"
+        for w in list(self.c_kontrol_etiketleri.values()) + [
+                self.c_emici, self.c_izleyici, self.c_daldirma,
+                self.c_daldirma_kaydirici, self.c_uc_etiket, self.c_kontrol_not]:
+            w.setVisible(kontrol)
+
+    def _uc_guncelle(self):
+        """Daldirma oranindan uc konumunu hesaplayip gosterir."""
+        h = (self.spec or {}).get("kor", {}).get("yukseklik")
+        if not h:
+            self.c_uc_etiket.setText("model 2B -- kor yuksekligi tanimli degil")
+            self.c_uc_etiket.setStyleSheet("color: palette(mid);")
+            return
+        z = h / 2.0 - (self.c_daldirma.value() / 100.0) * h
+        self.c_uc_etiket.setText("z = %+.2f cm   (kor: %+.1f .. %+.1f cm)"
+                                 % (z, -h / 2.0, h / 2.0))
+        self.c_uc_etiket.setStyleSheet("")
+
+    def _cubuk_tur_degisti(self, *_):
+        if self._yukleniyor:
+            return
+        tur, ad = self._secili()
+        if tur != "cubuk":
+            return
+        c = sema.cubuk_bul(self.spec, ad)
+        yeni_tur = self.c_tur.currentData()
+        c["tur"] = yeni_tur
+        if yeni_tur == "kontrol":
+            c.setdefault("emici_bolge", 0)
+            c.setdefault("daldirma", 0.0)
+            if not c.get("izleyici_malzeme"):
+                adlar = [m["ad"] for m in self.spec["malzemeler"]]
+                c["izleyici_malzeme"] = "su" if "su" in adlar else (
+                    adlar[0] if adlar else sema.BOSLUK)
+        self.spec_yukle(self.spec)
+        self._sec(("cubuk", ad))
+        self.bildir()
+
+    def _daldirma_degisti(self, *_):
+        if self._yukleniyor:
+            return
+        self._yukleniyor = True
+        try:
+            self.c_daldirma_kaydirici.setValue(int(round(self.c_daldirma.value() * 10)))
+        finally:
+            self._yukleniyor = False
+        self._uc_guncelle()
+        self._cubuk_kaydet()
+
+    def _kaydirici_degisti(self, deger):
+        if self._yukleniyor:
+            return
+        self._yukleniyor = True
+        try:
+            self.c_daldirma.setValue(deger / 10.0)
+        finally:
+            self._yukleniyor = False
+        self._uc_guncelle()
+        self._cubuk_kaydet()
+
     def _cubuk_kaydet(self, *_):
         if self._yukleniyor:
             return
@@ -256,6 +384,10 @@ class CubukSekmesi(SekmeTabani):
             k = self.c_tablo.cellWidget(i, 1)
             bolgeler.append({"r": r, "malzeme": k.currentData() if k else None})
         c["bolgeler"] = bolgeler
+        if c.get("tur") == "kontrol":
+            c["emici_bolge"] = self.c_emici.currentData() or 0
+            c["izleyici_malzeme"] = self.c_izleyici.currentData()
+            c["daldirma"] = self.c_daldirma.value()
         self.bildir()
 
     def _cubuk_ad_degisti(self):
