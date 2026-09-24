@@ -36,7 +36,8 @@
 import os
 
 from cekirdek.sema import BOSLUK, malzeme_bul, cubuk_bul, plaka_bul, demet_bul
-from cekirdek import altigen, kurucu
+from cekirdek import altigen, kurucu, veri_bilgi
+from cekirdek import kaynak as _kaynak
 
 # ----------------------------------------------------------------------------
 # S(a,b) beklentisi -- SAFLIK KURALLARIYLA
@@ -620,7 +621,9 @@ def kor_kontrol(spec):
             "tek hucre/demet modelinde yan sinir 'vacuum' -- sizinti sonsuz "
             "kafes varsayimini bozar",
             "Sonsuz kafes (k-inf) istiyorsaniz 'reflective' kullanin"))
-    if not kor.get("yukseklik"):
+    # Kuresel duzenekte "yukseklik" diye bir kavram yoktur; kabuk yaricaplari
+    # geometriyi tamamen belirler. Orada 2B uyarisi vermek yanlis olurdu.
+    if not kor.get("yukseklik") and kor.get("tur") != "kuresel":
         bulgular.append(Bulgu(
             "bilgi", "kor",
             "yukseklik verilmemis -- model eksenel yonde sonsuz (2B) kabul ediliyor"))
@@ -678,6 +681,143 @@ def ayar_kontrol(spec):
 # ============================================================================
 # 5. REFERANS TUTARLILIGI
 # ============================================================================
+
+def kaynak_kontrol(spec, veri_kontrolu=True):
+    """
+    Kaynak tanimi: enerji tayfi, acisal dagilim, parcacik turu, siddet.
+
+    Sabit kaynak modunun kendine ozgu tuzaklari var ve hicbiri kosuyu
+    durdurmuyor -- sessizce anlamsiz sonuc uretiyorlar:
+      * foton kaynagi acik ama foton tasinimi kapali -> hicbir etkilesim yok
+      * hicbir tally yok -> kosu hicbir sey uretmez, k-eff de yoktur
+      * kaynak enerjisi kutuphane tavaninin ustunde -> kosuda hata
+      * nokta kaynak geometrinin disinda -> butun parcaciklar aninda kayip
+    """
+    bulgular = []
+    a = spec["ayarlar"]
+    k = a.get("kaynak") or {}
+    e = k.get("enerji") or {}
+    mod = a.get("mod", "eigenvalue")
+    sabit = (mod != "eigenvalue")
+
+    # --- dagilimlar gercekten kurulabiliyor mu ---
+    for ad, fn, arg in (("enerji tayfi", _kaynak.enerji_dagilimi, e),
+                        ("acisal dagilim", _kaynak.aci_dagilimi, k.get("aci"))):
+        try:
+            fn(arg)
+        except Exception as hata:
+            bulgular.append(Bulgu("hata", "kaynak", "%s kurulamadi: %s" % (ad, hata)))
+
+    # --- siddet ---
+    kuvvet = k.get("kuvvet")
+    if kuvvet is not None and float(kuvvet) <= 0:
+        bulgular.append(Bulgu("hata", "kaynak",
+                              "kaynak siddeti pozitif olmali (%s)" % kuvvet))
+
+    # --- parcacik turu ---
+    parca = k.get("parcacik") or "neutron"
+    if parca not in ("neutron", "photon"):
+        bulgular.append(Bulgu("hata", "kaynak",
+                              "bilinmeyen parcacik turu: %s" % parca))
+    elif parca == "photon":
+        if mod == "eigenvalue":
+            bulgular.append(Bulgu(
+                "hata", "kaynak",
+                "foton kaynagi ozdeger (k-eff) modunda anlamsiz",
+                "Fotonlar fisyon zincirini tasimaz. Foton kaynagi icin modu "
+                "'Sabit kaynak' yapin."))
+        if veri_kontrolu:
+            _, _, foton = _kutuphane_icerigi_foton()
+            if foton is not None and not foton:
+                bulgular.append(Bulgu(
+                    "hata", "kaynak",
+                    "foton kaynagi secildi ama kutuphanede foton verisi yok",
+                    "cross_sections.xml icinde type='photon' kaydi bulunamadi."))
+
+    # --- enerji tavani ---
+    tepe = _kaynak.en_yuksek_enerji(e)
+    if tepe is not None and veri_kontrolu and parca == "neutron":
+        try:
+            nesneler, _, _ = kurucu.malzemeleri_kur(spec)
+            nuklidler = set()
+            for mat in nesneler.values():
+                nuklidler |= set(mat.get_nuclides())
+            tavan, sahibi = veri_bilgi.enerji_tavani(sorted(nuklidler))
+        except Exception:
+            tavan, sahibi = None, None
+        if tavan is not None and tepe > tavan:
+            bulgular.append(Bulgu(
+                "hata", "kaynak",
+                "kaynak enerjisi %s, veri tavani %s (%s)"
+                % (_kaynak.enerji_metni(tepe), _kaynak.enerji_metni(tavan), sahibi),
+                "Tavani belirleyen nuklid modelin icindeki en dusuk ust sinira "
+                "sahip olandir. OpenMC kosu sirasinda hata verir."))
+
+    # --- nokta kaynak geometrinin icinde mi ---
+    if k.get("tur", "nokta") == "nokta":
+        konum = list(k.get("konum") or (0.0, 0.0, 0.0))
+        h = spec["kor"].get("yukseklik")
+        if h and abs(float(konum[2])) >= float(h) / 2.0:
+            bulgular.append(Bulgu(
+                "hata", "kaynak",
+                "nokta kaynak z=%g modelin disinda (yukseklik %g, sinir +/-%g)"
+                % (konum[2], h, h / 2.0),
+                "Geometri disinda baslayan parcaciklar aninda kaybolur."))
+
+    # --- sabit kaynak moduna ozgu ---
+    if sabit:
+        if not spec.get("tallyler") and not (spec.get("guc_dagilimi") or {}).get("var"):
+            bulgular.append(Bulgu(
+                "hata", "ayarlar",
+                "sabit kaynak modunda hicbir tally tanimli degil -- kosu hicbir "
+                "sonuc uretmez",
+                "Sabit kaynak hesabinda k-eff yoktur; ne olculecsekse bir "
+                "tally olarak tanimlanmalidir (akı, doz, reaksiyon hizi)."))
+        if (a.get("entropi_mesh") or {}).get("var"):
+            bulgular.append(Bulgu(
+                "bilgi", "ayarlar",
+                "Shannon entropisi sabit kaynak modunda kullanilmaz",
+                "Entropi fisyon kaynagi dagiliminin yakinsamasini olcer; sabit "
+                "kaynakta kaynak zaten sabittir. OpenMC bunu yok sayar."))
+        if k.get("tur") == "kutu":
+            bulgular.append(Bulgu(
+                "uyari", "kaynak",
+                "sabit kaynak modunda kutu kaynagi 'yalnizca fisil bolgeler' "
+                "kisitiyla orneklenir",
+                "Zirhlama probleminde fisil bolge olmayabilir; o durumda OpenMC "
+                "ornekleme yapamaz. Nokta kaynak kullanmayi dusunun."))
+    else:
+        tur = e.get("tur", "watt")
+        if tur != "watt":
+            bulgular.append(Bulgu(
+                "bilgi", "kaynak",
+                "ozdeger modunda enerji tayfi ('%s') yalnizca BASLANGIC tahminidir"
+                % tur,
+                "Pasif cevrimler icinde gercek fisyon tayfiyla degisir; k-eff'i "
+                "etkilemez. Tayf asil sabit kaynak modunda belirleyicidir."))
+        if (k.get("aci") or {}).get("tur", "izotropik") != "izotropik":
+            bulgular.append(Bulgu(
+                "bilgi", "kaynak",
+                "ozdeger modunda acisal dagilim da yalnizca baslangic tahminidir"))
+
+    return bulgular
+
+
+def _kutuphane_icerigi_foton():
+    """(notron, termal, foton) ad kumeleri; okunamazsa (None, None, None)."""
+    notron, termal = _kutuphane_icerigi()
+    yol = os.environ.get("OPENMC_CROSS_SECTIONS")
+    if not yol or not os.path.exists(yol):
+        return notron, termal, None
+    try:
+        import xml.etree.ElementTree as ET
+        kok = ET.parse(yol).getroot()
+        foton = {d.get("materials") for d in kok.findall("library")
+                 if d.get("type") == "photon"}
+        return notron, termal, foton
+    except Exception:
+        return notron, termal, None
+
 
 def tally_kontrol(spec):
     """Tally skorlarinin taninip taninmadigini kontrol eder."""
@@ -823,6 +963,7 @@ def tum_kontroller(spec, veri_kontrolu=True):
     bulgular += demet_kontrol(spec)
     bulgular += kor_kontrol(spec)
     bulgular += ayar_kontrol(spec)
+    bulgular += kaynak_kontrol(spec, veri_kontrolu)
     bulgular += tally_kontrol(spec)
     bulgular += guc_dagilimi_kontrol(spec)
     bulgular += referans_kontrol(spec)

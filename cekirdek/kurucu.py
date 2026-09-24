@@ -39,6 +39,7 @@ import openmc
 
 from cekirdek import altigen
 from cekirdek import tambur as _tambur
+from cekirdek import kaynak as _kaynak
 from cekirdek.sema import BOSLUK, malzeme_bul, cubuk_bul, plaka_bul, demet_bul
 
 # Varsayilan renk (spec'te renk verilmemis malzemeler icin)
@@ -561,8 +562,11 @@ def ayarlari_kur(spec, sinir_kutu):
     else:
         uzay = openmc.stats.Point(tuple(k.get("konum") or (0.0, 0.0, 0.0)))
         kisit = None
-    s.source = openmc.IndependentSource(space=uzay, energy=openmc.stats.Watt(),
-                                        constraints=kisit)
+    s.source = _kaynak.kaynak_kur(k, uzay, kisit)
+    # Foton kaynagi foton tasinimi gerektirir; acilmazsa parcaciklar hicbir
+    # etkilesime girmeden gecer ve sonuc sessizce ANLAMSIZ olur.
+    if (k.get("parcacik") or "neutron") == "photon":
+        s.photon_transport = True
 
     # --- Shannon entropisi mesh'i (kaynak yakinsamasi olcumu) ---
     ent = a.get("entropi_mesh") or {}
@@ -570,8 +574,14 @@ def ayarlari_kur(spec, sinir_kutu):
         gx, gy = sinir_kutu
         mesh = openmc.RegularMesh()
         mesh.dimension = list(ent.get("boyut") or [8, 8, 1])
-        # Eksenel yonde sinir yoksa mesh'i cok genis tut (2B model)
-        z = 1.0e10
+        # Eksenel sinirlar: 3B modelde GERCEK kor yuksekligi kullanilmali.
+        #   Onceki surumde z daima +/-1e10 idi. nz=1 iken zararsizdi, ama
+        #   nz>1 istendiginde iki bin de 1e10 cm yuksekliginde oluyor, hepsi
+        #   ayni dilime dusuyor ve EKSENEL yakinsama olculmemis oluyordu --
+        #   entropi yine de "yakinsadi" diyordu. Eksenel heterojen bir korda
+        #   (blanket, plenum) asil riskli yon tam da budur.
+        h = spec["kor"].get("yukseklik")
+        z = (h / 2.0) if h else 1.0e10
         mesh.lower_left = (-gx / 2.0, -gy / 2.0, -z)
         mesh.upper_right = (gx / 2.0, gy / 2.0, z)
         s.entropy_mesh = mesh

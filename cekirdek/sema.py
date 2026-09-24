@@ -53,7 +53,45 @@ VARSAYILAN_AYARLAR = {
     "pasif": 20,                  # pasif (inactive) cevrim
     "tohum": 1,                   # rastgele sayi tohumu
     "sicaklik_yontemi": "interpolation",   # nearest | interpolation
-    "kaynak": {"tur": "nokta", "konum": [0.0, 0.0, 0.0]},
+    "kaynak": {
+        "tur": "nokta",                # nokta | kutu
+        "konum": [0.0, 0.0, 0.0],
+        # Parcacik turu. "photon" secilirse foton tasinimi da acilir ve
+        # kutuphanede foton verisi bulunmasi gerekir.
+        "parcacik": "neutron",         # neutron | photon
+        # Kaynak siddeti [parcacik/s]. Sabit kaynak modunda tally sonuclari
+        # KAYNAK PARCACIGI BASINA verilir; mutlak birim icin bununla carpilir.
+        # Ozdeger modunda hicbir etkisi yoktur.
+        "kuvvet": 1.0,
+        # --- enerji dagilimi ---
+        #   watt      : fisyon tayfi  chi(E) ~ exp(-E/a) sinh(sqrt(bE))
+        #   maxwell   : Maxwell tayfi ~ sqrt(E) exp(-E/theta)
+        #   tek       : tek enerjili (monoenerjetik) kaynak
+        #   ayrik     : ayrik cizgiler [[E, olasilik], ...]  (or. Co-60 gamalari)
+        #   histogram : grup grup tayf (kenarlar N+1, degerler N)
+        #   fuzyon    : D-T / D-D fuzyon tayfi (Muir; iyon sicakligi genislemesi)
+        # ONEMLI: ozdeger (k-eff) modunda bu yalnizca BASLANGIC tahminidir;
+        # pasif cevrimler icinde gercek fisyon tayfiyla degisir. Enerji tayfi
+        # asil SABIT KAYNAK modunda belirleyicidir.
+        "enerji": {
+            "tur": "watt",
+            "a": 988.0e3,              # watt  [eV]   -- U-235 termal fisyon
+            "b": 2.249e-6,             # watt  [1/eV]
+            "theta": 1.2932e6,         # maxwell [eV]
+            "enerji": 14.1e6,          # tek [eV]
+            "noktalar": [],            # ayrik: [[E_eV, olasilik], ...]
+            "kenarlar": [],            # histogram: N+1 grup kenari [eV]
+            "degerler": [],            # histogram: N grup degeri
+            "e0": 14.08e6,             # fuzyon: ortalama enerji [eV] (D-T)
+            "kutle_orani": 5.0,        # fuzyon: reaktif kutlelerin toplami (D+T=5)
+            "iyon_sicaklik": 20.0e3,   # fuzyon: iyon sicakligi kT [eV]
+        },
+        # --- acisal dagilim ---
+        #   izotropik : her yone esit
+        #   tek_yon   : tek yonlu demet (kalem demet)
+        #   koni      : "yon" ekseni etrafinda yari-acilimi "koni_aci" olan koni
+        "aci": {"tur": "izotropik", "yon": [0.0, 0.0, 1.0], "koni_aci": 30.0},
+    },
     # Shannon entropisi mesh'i: kaynak dagiliminin yakinsamasini olcer.
     # Ozdeger hesaplarinda acik olmasi onerilir -- yakinsamamis kaynak
     # k-eff'i yanli tahmin ettirir ve bu baska turlu fark edilmez.
@@ -327,6 +365,20 @@ def yukle(dosya):
     return tamamla(ham)
 
 
+def _derin_birlestir(taban, ustu):
+    """
+    "ustu" sozlugunu "taban" uzerine ic ice yazar ve tabani dondurur.
+    Listeler BUTUN olarak degistirilir (harita, bolgeler, kabuklar gibi
+    kullanici verisinde kismi birlestirme anlamsiz olurdu).
+    """
+    for k, v in (ustu or {}).items():
+        if isinstance(v, dict) and isinstance(taban.get(k), dict):
+            _derin_birlestir(taban[k], v)
+        else:
+            taban[k] = v
+    return taban
+
+
 def tamamla(ham):
     """
     Eksik bolumleri varsayilanla doldurur. Eski surumden okunan dosyalarin
@@ -337,14 +389,17 @@ def tamamla(ham):
                     "plakalar", "demetler", "tallyler"):
         if anahtar in ham:
             spec[anahtar] = ham[anahtar]
-    # ic ice sozlukler: varsayilanin uzerine yaz
+    # Ic ice sozlukler: varsayilanin uzerine DERIN birlestirme.
+    #   Sig update() yeterli DEGILDI: "kaynak" gibi ic ice bir sozluge yeni
+    #   alan eklendiginde, o sozlugu iceren eski bir dosya tum yeni alanlari
+    #   kaybediyordu (ornegin kaynak.enerji hic olusmuyordu) ve hata ancak
+    #   kurucu.py'de KeyError olarak cikiyordu.
     for anahtar, vars_ in (("kor", VARSAYILAN_KOR),
                            ("ayarlar", VARSAYILAN_AYARLAR),
                            ("guc_dagilimi", VARSAYILAN_GUC),
                            ("calistirma", VARSAYILAN_CALISTIRMA)):
-        birlesik = copy.deepcopy(vars_)
-        birlesik.update(ham.get(anahtar, {}))
-        spec[anahtar] = birlesik
+        spec[anahtar] = _derin_birlestir(copy.deepcopy(vars_),
+                                         ham.get(anahtar, {}))
     spec["surum"] = SEMA_SURUM
     return spec
 

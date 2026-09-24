@@ -146,3 +146,77 @@ class SekmeTabani(QtWidgets.QWidget):
         """Degisikligi ana pencereye bildirir (yukleme sirasinda susar)."""
         if not self._yukleniyor:
             self.degisti.emit(self.KONU)
+
+
+# ----------------------------------------------------------------------------
+# Enerji girdisi
+#   Nukleer hesapta enerji araligi 0.0253 eV ile 14 MeV arasinda degisir --
+#   tek bir kutuya "14100000" yazdirmak hata davetiyesidir. Deger + birim
+#   ikilisi hem okunakli hem de belirsizlik birakmaz. Spec dosyasinda daima
+#   eV tutulur; donusumu bu bilesen yapar.
+# ----------------------------------------------------------------------------
+
+_BIRIMLER = [("eV", 1.0), ("keV", 1.0e3), ("MeV", 1.0e6)]
+
+
+class EnerjiGirdi(QtWidgets.QWidget):
+    """Deger + birim (eV/keV/MeV). deger() ve ayarla() DAIMA eV kullanir."""
+
+    degisti = QtCore.Signal()
+
+    def __init__(self, ev=1.0e6, parent=None):
+        super().__init__(parent)
+        self.kutu = QtWidgets.QDoubleSpinBox()
+        self.kutu.setDecimals(4)
+        self.kutu.setRange(1.0e-6, 1.0e9)
+        self.kutu.setSingleStep(0.1)
+        self.kutu.setMinimumWidth(80)
+        self.birim = QtWidgets.QComboBox()
+        self.birim.addItems([b for b, _ in _BIRIMLER])
+        d = QtWidgets.QHBoxLayout(self)
+        d.setContentsMargins(0, 0, 0, 0)
+        d.addWidget(self.kutu, 1)
+        d.addWidget(self.birim, 0)
+        self.ayarla(ev)
+        self.kutu.valueChanged.connect(self.degisti)
+        self.birim.currentIndexChanged.connect(self._birim_degisti)
+
+    def _birim_degisti(self):
+        self.degisti.emit()
+
+    def deger(self):
+        """Girilen enerjiyi eV cinsinden dondurur."""
+        return self.kutu.value() * _BIRIMLER[self.birim.currentIndex()][1]
+
+    def ayarla(self, ev):
+        """eV cinsinden bir enerjiyi, okunakli bir birim secerek gosterir."""
+        ev = float(ev or 0.0)
+        i = 0
+        for j, (_, carpan) in enumerate(_BIRIMLER):
+            if ev >= carpan:
+                i = j
+        eski = self.blockSignals(True)
+        self.birim.setCurrentIndex(i)
+        self.kutu.setValue(ev / _BIRIMLER[i][1])
+        self.blockSignals(eski)
+
+
+class BilimselGirdi(QtWidgets.QLineEdit):
+    """1e12 gibi buyuk sayilar icin; QDoubleSpinBox bunlari okunakli gostermiyor."""
+
+    def __init__(self, deger=1.0, parent=None):
+        super().__init__(parent)
+        dogrulayici = QtGui.QDoubleValidator(self)
+        dogrulayici.setNotation(QtGui.QDoubleValidator.ScientificNotation)
+        dogrulayici.setBottom(0.0)
+        self.setValidator(dogrulayici)
+        self.ayarla(deger)
+
+    def deger(self, vars_=1.0):
+        try:
+            return float(self.text().replace(",", "."))
+        except ValueError:
+            return vars_
+
+    def ayarla(self, v):
+        self.setText("%g" % float(v or 1.0))

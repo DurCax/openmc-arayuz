@@ -1,0 +1,255 @@
+{
+  "surum": 1,
+  "ad": "D-T zirh kuresi",
+  "aciklama": "SABIT KAYNAK ornegi: merkezde 14.1 MeV'lik D-T fuzyon notron kaynagi, cevresinde 30 cm su + 5 cm celik zirh. Ozdeger hesabi DEGILDIR: k-eff yoktur, sonuc tally'lerdir.\nKaynak siddeti 1e12 n/s girildigi icin sonuclar MUTLAK birimdedir -- OpenMC siddeti kendisi uygular, ayrica carpmayin. 'flux' skoru hacimle integrelidir (birim cm/s); nokta akisi [1/cm2/s] icin bolge hacmine bolun.\nBeklenen: suda termal akı hizli akıyı gecer (yavaslatma), celikte oran tersine doner (agir cekirdek yavaslatmaz, demir termali sogurur).",
+  "malzemeler": [
+    {
+      "ad": "su",
+      "gorunen_ad": "H2O 0.998 g/cc",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 0.9980485
+      },
+      "sicaklik": 293.6,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "H",
+          "miktar": 2.0,
+          "birim": "ao"
+        },
+        {
+          "tur": "element",
+          "isim": "O",
+          "miktar": 1.0,
+          "birim": "ao"
+        }
+      ],
+      "sab": [
+        "c_H_in_H2O"
+      ],
+      "renk": [
+        90,
+        150,
+        220
+      ]
+    },
+    {
+      "ad": "celik",
+      "gorunen_ad": "SS-316",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 7.99
+      },
+      "sicaklik": 293.6,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "Fe",
+          "miktar": 65.0,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Cr",
+          "miktar": 17.0,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Ni",
+          "miktar": 12.0,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Mo",
+          "miktar": 2.5,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Mn",
+          "miktar": 2.0,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Si",
+          "miktar": 1.0,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "C",
+          "miktar": 0.5,
+          "birim": "wo"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        190,
+        190,
+        200
+      ]
+    }
+  ],
+  "cubuklar": [],
+  "plakalar": [],
+  "demetler": [],
+  "kor": {
+    "tur": "kuresel",
+    "cubuk": null,
+    "demet": null,
+    "plaka": null,
+    "adim": 1.26,
+    "boyut": [
+      1,
+      1
+    ],
+    "harita": [],
+    "anahtar": {},
+    "yukseklik": null,
+    "yansitici": {
+      "var": false,
+      "kalinlik": 20.0,
+      "malzeme": null
+    },
+    "kabuklar": [
+      {
+        "r": 30.0,
+        "malzeme": "su"
+      },
+      {
+        "r": 35.0,
+        "malzeme": "celik"
+      }
+    ],
+    "dolgu": null,
+    "kor_yaricap": 20.0,
+    "tambur": {
+      "sayi": 0,
+      "yaricap": 4.0,
+      "merkez_yaricap": 26.0,
+      "govde_malzeme": null,
+      "emici_malzeme": null,
+      "emici_ic_yaricap": 2.5,
+      "emici_aci": 120.0,
+      "donme": 0.0,
+      "baslangic_acisi": 0.0
+    },
+    "sinir": {
+      "yan": "vacuum",
+      "alt": "vacuum",
+      "ust": "vacuum"
+    }
+  },
+  "ayarlar": {
+    "mod": "fixed source",
+    "parcacik": 20000,
+    "cevrim": 50,
+    "pasif": 0,
+    "tohum": 1,
+    "sicaklik_yontemi": "interpolation",
+    "kaynak": {
+      "tur": "nokta",
+      "konum": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "parcacik": "neutron",
+      "kuvvet": 1000000000000.0,
+      "enerji": {
+        "tur": "fuzyon",
+        "a": 988000.0,
+        "b": 2.249e-06,
+        "theta": 1293200.0,
+        "enerji": 14100000.0,
+        "noktalar": [],
+        "kenarlar": [],
+        "degerler": [],
+        "e0": 14080000.0,
+        "kutle_orani": 5.0,
+        "iyon_sicaklik": 20000.0
+      },
+      "aci": {
+        "tur": "izotropik",
+        "yon": [
+          0,
+          0,
+          1
+        ],
+        "koni_aci": 30.0
+      }
+    },
+    "entropi_mesh": {
+      "var": false,
+      "boyut": [
+        8,
+        8,
+        1
+      ]
+    },
+    "kinetik": {
+      "var": false,
+      "nesil": 10
+    }
+  },
+  "tallyler": [
+    {
+      "ad": "akı_gruplu",
+      "skorlar": [
+        "flux"
+      ],
+      "nuklidler": [],
+      "filtreler": [
+        {
+          "tur": "malzeme",
+          "adlar": [
+            "su",
+            "celik"
+          ]
+        },
+        {
+          "tur": "enerji",
+          "gruplar": [
+            1e-05,
+            0.625,
+            100000.0,
+            20000000.0
+          ]
+        }
+      ]
+    },
+    {
+      "ad": "soğurma",
+      "skorlar": [
+        "absorption",
+        "(n,gamma)"
+      ],
+      "nuklidler": [],
+      "filtreler": [
+        {
+          "tur": "malzeme",
+          "adlar": [
+            "su",
+            "celik"
+          ]
+        }
+      ]
+    }
+  ],
+  "guc_dagilimi": {
+    "var": false,
+    "cubuk": null,
+    "bolge": 0,
+    "skor": "kappa-fission",
+    "eksenel_dilim": 20,
+    "toplam_guc": null
+  },
+  "calistirma": {
+    "is_parcacigi": 8,
+    "dizin": "kosu_zirh"
+  }
+}

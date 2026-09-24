@@ -29,6 +29,7 @@ import datetime
 import re
 
 from cekirdek import altigen
+from cekirdek import kaynak as _kaynak
 from cekirdek.sema import BOSLUK, cubuk_bul, plaka_bul, demet_bul
 
 BANNER = "# " + "=" * 74
@@ -551,9 +552,18 @@ def _ayarlar(spec, satirlar, gx, gy):
         satirlar.append("_uzay = openmc.stats.Point(%r)"
                         % (tuple(k.get("konum") or (0.0, 0.0, 0.0)),))
         satirlar.append("_kisit = None")
+    satirlar.append("_enerji = %s" % _kaynak.enerji_kod(k.get("enerji")))
+    satirlar.append("_aci    = %s" % _kaynak.aci_kod(k.get("aci")))
     satirlar.append("ayar.source = openmc.IndependentSource(space=_uzay,")
-    satirlar.append("                                       energy=openmc.stats.Watt(),")
+    satirlar.append("                                       angle=_aci,")
+    satirlar.append("                                       energy=_enerji,")
+    satirlar.append("                                       strength=%r,"
+                    % float(k.get("kuvvet") or 1.0))
+    satirlar.append("                                       particle=%r,"
+                    % (k.get("parcacik") or "neutron"))
     satirlar.append("                                       constraints=_kisit)")
+    if (k.get("parcacik") or "neutron") == "photon":
+        satirlar.append("ayar.photon_transport = True   # foton kaynagi foton tasinimi gerektirir")
     ent = a.get("entropi_mesh") or {}
     if ent.get("var") and a.get("mod", "eigenvalue") == "eigenvalue":
         satirlar.append("")
@@ -562,8 +572,10 @@ def _ayarlar(spec, satirlar, gx, gy):
         satirlar.append("# sayisi yetersizdir ve k-eff yanli cikar.")
         satirlar.append("_ent_mesh = openmc.RegularMesh()")
         satirlar.append("_ent_mesh.dimension = %r" % (list(ent.get("boyut") or [8, 8, 1]),))
-        satirlar.append("_ent_mesh.lower_left  = (%s, %s, -1.0e10)" % (_f(-gx/2.0), _f(-gy/2.0)))
-        satirlar.append("_ent_mesh.upper_right = (%s, %s, +1.0e10)" % (_f(gx/2.0), _f(gy/2.0)))
+        _hz = spec["kor"].get("yukseklik")
+        _ez = (_hz / 2.0) if _hz else 1.0e10
+        satirlar.append("_ent_mesh.lower_left  = (%s, %s, %s)" % (_f(-gx/2.0), _f(-gy/2.0), _f(-_ez)))
+        satirlar.append("_ent_mesh.upper_right = (%s, %s, %s)" % (_f(gx/2.0), _f(gy/2.0), _f(_ez)))
         satirlar.append("ayar.entropy_mesh = _ent_mesh")
 
 

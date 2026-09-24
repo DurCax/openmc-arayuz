@@ -32,6 +32,7 @@ import sys
 import time
 
 from cekirdek import sema, kurucu, dogrula
+from cekirdek import kaynak as _kaynak
 
 # OpenMC cevrim satiri iki bicimde gelir:
 #   entropi YOK :  "  54/1   1.32041   1.36400 +/- 0.00368"
@@ -292,10 +293,15 @@ def sonuc_oku(statepoint_yolu):
             entropi = [float(x) for x in sp.entropy]
     except Exception:
         pass
+    # Sabit kaynak modunda k-eff YOKTUR: sp.keff istisna atmaz, None doner.
+    # Once bunu kontrol etmeyen kod "'NoneType' object has no attribute
+    # 'nominal_value'" ile cokuyordu -- kosu basariyla bitmis olmasina ragmen.
+    ozdeger = getattr(sp, "keff", None) is not None
     sonuc = {
-        "keff": (sp.keff.nominal_value, sp.keff.std_dev),
+        "mod": "eigenvalue" if ozdeger else "fixed source",
+        "keff": (sp.keff.nominal_value, sp.keff.std_dev) if ozdeger else None,
         "cevrim": sp.n_batches,
-        "pasif": sp.n_inactive,
+        "pasif": sp.n_inactive if ozdeger else 0,
         "parcacik": sp.n_particles,
         "entropi": entropi,
         "tallyler": {},
@@ -456,20 +462,44 @@ def _terminal(argv):
     # --- 3. sonuc ---
     print("\n[3/3] Sonuclar")
     s = sonuc_oku(sonuc["statepoint"])
-    print("      k-eff    = %.5f +/- %.5f" % s["keff"])
-    _kin = s.get("kinetik") or {}
-    _durum, _ayrinti = keff_yorumu(s["keff"][0], s["keff"][1], _kin.get("beta_eff"))
-    print("      durum    = %s" % _durum)
-    print("                 %s" % _ayrinti)
-    print("      cevrim   = %d (%d pasif), %d parcacik/cevrim"
-          % (s["cevrim"], s["pasif"], s["parcacik"]))
-    if s.get("entropi"):
-        yakinsadi, mesaj = entropi_yakinsama(s["entropi"], s["pasif"])
-        isaret = {True: "OK   ", False: "UYARI", None: "     "}[yakinsadi]
-        print("      kaynak   = [%s] %s" % (isaret, mesaj))
+    if s.get("keff") is None:
+        # --- sabit kaynak: k-eff yok, sonuc tally'lerdir ---
+        k_tanim = (spec["ayarlar"].get("kaynak") or {})
+        kuvvet = float(k_tanim.get("kuvvet") or 1.0)
+        print("      mod      = sabit kaynak (k-eff tanimsiz)")
+        print("      kaynak   = %s" % _kaynak.ozet(k_tanim))
+        print("      siddet   = %.4g parcacik/s" % kuvvet)
+        print("      cevrim   = %d, %d parcacik/cevrim" % (s["cevrim"], s["parcacik"]))
+        # OLCULDU: OpenMC sabit kaynak tally'lerini kaynak siddetiyle ZATEN
+        # carpiyor (kuvvet=1 ve kuvvet=1e12 ile kosuldu, oran tam 1e12 cikti).
+        # Bu yuzden kullaniciya "siddetle carpin" demek CIFT SAYIM olurdu.
+        if kuvvet == 1.0:
+            print("      NOT: tally degerleri kaynak parcacigi basinadir")
+            print("           (siddet 1 birakildi). Mutlak birim icin siddeti girin.")
+        else:
+            print("      NOT: tally degerleri MUTLAK birimdedir -- OpenMC kaynak")
+            print("           siddetini zaten uygulamistir, tekrar carpmayin.")
+            print("           reaksiyon hizlari: 1/s")
+            print("           DIKKAT: 'flux' skoru HACIMLE INTEGRELIDIR (birim cm/s).")
+            print("           Nokta akisi [1/cm^2/s] icin bolgenin hacmine bolun.")
     else:
-        print("      kaynak   = [     ] Shannon entropisi kapali -- kaynak "
-              "yakinsamasi dogrulanamiyor")
+        print("      k-eff    = %.5f +/- %.5f" % s["keff"])
+        _kin = s.get("kinetik") or {}
+        _durum, _ayrinti = keff_yorumu(s["keff"][0], s["keff"][1], _kin.get("beta_eff"))
+        print("      durum    = %s" % _durum)
+        print("                 %s" % _ayrinti)
+        print("      cevrim   = %d (%d pasif), %d parcacik/cevrim"
+              % (s["cevrim"], s["pasif"], s["parcacik"]))
+    # Entropi yalnizca ozdeger modunda anlamlidir: sabit kaynakta kaynak
+    # zaten sabittir, "yakinsamasi" diye bir sey yoktur.
+    if s.get("keff") is not None:
+        if s.get("entropi"):
+            yakinsadi, mesaj = entropi_yakinsama(s["entropi"], s["pasif"])
+            isaret = {True: "OK   ", False: "UYARI", None: "     "}[yakinsadi]
+            print("      yakinsama= [%s] %s" % (isaret, mesaj))
+        else:
+            print("      yakinsama= [     ] Shannon entropisi kapali -- kaynak "
+                  "yakinsamasi dogrulanamiyor")
     kin = s.get("kinetik")
     if kin:
         print("      beta_eff = %.1f +/- %.1f pcm" % (kin["beta_eff"] * 1e5,

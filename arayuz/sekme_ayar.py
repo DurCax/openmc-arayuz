@@ -11,7 +11,9 @@
 from PySide6 import QtCore, QtWidgets
 
 from cekirdek import sema
-from arayuz.ortak import SekmeTabani, ayrac, baslik, ipucu, sayi, tamsayi
+from cekirdek import kaynak as _kaynak
+from arayuz.ortak import (SekmeTabani, ayrac, baslik, ipucu, sayi, tamsayi,
+                          EnerjiGirdi, BilimselGirdi)
 
 SKORLAR = ["flux", "fission", "absorption", "nu-fission", "scatter", "total",
            "elastic", "(n,gamma)", "(n,2n)", "heating", "kappa-fission",
@@ -61,6 +63,75 @@ class AyarSekmesi(SekmeTabani):
         self.ky = sayi(0.0, 4, -1e5, 1e5, 0.1, "cm")
         self.kz = sayi(0.0, 4, -1e5, 1e5, 0.1, "cm")
 
+        # --- kaynak parcacigi ve siddeti ---
+        self.kaynak_parcacik = QtWidgets.QComboBox()
+        self.kaynak_parcacik.addItem("Notron", "neutron")
+        self.kaynak_parcacik.addItem("Foton (gama)", "photon")
+        self.kaynak_parcacik.setToolTip(
+            "Foton secilirse foton tasinimi da acilir ve kutuphanede foton\n"
+            "verisi bulunmalidir. Ozdeger (k-eff) modunda foton kaynagi\n"
+            "anlamsizdir -- fotonlar fisyon zincirini tasimaz.")
+        self.kaynak_kuvvet = BilimselGirdi(1.0)
+        self.kaynak_kuvvet.setToolTip(
+            "Kaynak siddeti [parcacik/s]. SABIT KAYNAK modunda tally sonuclari\n"
+            "bununla carpilir ve mutlak birime gecer (1/s, 1/cm2/s).\n"
+            "Ozdeger modunda hicbir etkisi yoktur.\n\n"
+            "1 birakilirsa sonuclar kaynak parcacigi basina kalir.")
+
+        # --- enerji tayfi ---
+        self.tayf = QtWidgets.QComboBox()
+        for anahtar, ad in _kaynak.TAYFLAR:
+            self.tayf.addItem(ad, anahtar)
+        self.tayf.setToolTip(
+            "OZDEGER modunda bu yalnizca BASLANGIC tahminidir: pasif cevrimler\n"
+            "icinde gercek fisyon tayfiyla degisir ve k-eff'i etkilemez.\n"
+            "SABIT KAYNAK modunda ise sonucun kendisini belirler.")
+        self.watt_a = EnerjiGirdi(988.0e3)
+        self.watt_b = sayi(2.249e-6, 9, 1e-9, 1.0, 1e-7, " 1/eV")
+        self.maxwell_theta = EnerjiGirdi(1.2932e6)
+        self.tek_enerji = EnerjiGirdi(14.1e6)
+        self.ayrik_metin = QtWidgets.QLineEdit("1.173e6:0.5, 1.333e6:0.5")
+        self.ayrik_metin.setToolTip("enerji[eV]:olasilik ciftleri, virgulle ayrilmis\n"
+                                    "Ornek (Co-60): 1.173e6:0.5, 1.333e6:0.5")
+        self.hist_kenar = QtWidgets.QLineEdit("1e5, 1e6, 1e7")
+        self.hist_deger = QtWidgets.QLineEdit("1.0, 1.0")
+        self.hist_kenar.setToolTip("N+1 grup kenari [eV], artan sirada")
+        self.hist_deger.setToolTip("N grup degeri (bagil); kenar sayisindan bir eksik olmali")
+        self.fuzyon_e0 = EnerjiGirdi(14.08e6)
+        self.fuzyon_kutle = sayi(5.0, 2, 1.0, 100.0, 1.0)
+        self.fuzyon_kutle.setToolTip("Reaktif kutlelerinin toplami: D+T = 2+3 = 5, D+D = 4")
+        self.fuzyon_kt = EnerjiGirdi(20.0e3)
+        self.fuzyon_kt.setToolTip("Iyon sicakligi kT. D-T icin genisleme:\n"
+                                  "FWHM = 177 * sqrt(kT[keV]) keV")
+
+        self.tayf_yigin = QtWidgets.QStackedWidget()
+        for alanlar in (
+                [("a (%s):" % "Watt", self.watt_a), ("b:", self.watt_b)],
+                [("theta:", self.maxwell_theta)],
+                [("Enerji:", self.tek_enerji)],
+                [("Cizgiler:", self.ayrik_metin)],
+                [("Grup kenarlari:", self.hist_kenar), ("Grup degerleri:", self.hist_deger)],
+                [("Ortalama E0:", self.fuzyon_e0), ("Kutle orani:", self.fuzyon_kutle),
+                 ("Iyon sicakligi:", self.fuzyon_kt)]):
+            sayfa = QtWidgets.QWidget()
+            f = QtWidgets.QFormLayout(sayfa)
+            f.setContentsMargins(0, 0, 0, 0)
+            for etiket, w in alanlar:
+                f.addRow(etiket, w)
+            self.tayf_yigin.addWidget(sayfa)
+        self.tayf_ozet = QtWidgets.QLabel("-")
+        self.tayf_ozet.setWordWrap(True)
+
+        # --- acisal dagilim ---
+        self.aci_tur = QtWidgets.QComboBox()
+        for anahtar, ad in _kaynak.ACILAR:
+            self.aci_tur.addItem(ad, anahtar)
+        self.ax = sayi(0.0, 4, -1e3, 1e3, 0.1)
+        self.ay = sayi(0.0, 4, -1e3, 1e3, 0.1)
+        self.az = sayi(1.0, 4, -1e3, 1e3, 0.1)
+        self.koni_aci = sayi(30.0, 2, 0.01, 180.0, 5.0, " derece")
+        self.koni_aci.setToolTip("Koninin YARI acilimi. Kati acida duzgun dagilim kullanilir.")
+
         # --- is parcacigi ---
         self.is_parcacigi = tamsayi(8, 1, 512, 1, "is parcacigi")
         self.kosu_dizini = QtWidgets.QLineEdit("kosu")
@@ -93,6 +164,22 @@ class AyarSekmesi(SekmeTabani):
         konum.addStretch(1)
         self.konum_etiket = QtWidgets.QLabel("Nokta konumu:")
         kaynak_form.addRow(self.konum_etiket, self._sar(konum))
+        kaynak_form.addRow("Parcacik:", self.kaynak_parcacik)
+        self.kuvvet_etiket = QtWidgets.QLabel("Kaynak siddeti [1/s]:")
+        kaynak_form.addRow(self.kuvvet_etiket, self.kaynak_kuvvet)
+        kaynak_form.addRow("Enerji tayfi:", self.tayf)
+        kaynak_form.addRow("", self.tayf_yigin)
+        kaynak_form.addRow("", self.tayf_ozet)
+        kaynak_form.addRow("Acisal dagilim:", self.aci_tur)
+        yon = QtWidgets.QHBoxLayout()
+        for e, w in (("u", self.ax), ("v", self.ay), ("w", self.az)):
+            yon.addWidget(QtWidgets.QLabel(e))
+            yon.addWidget(w)
+        yon.addStretch(1)
+        self.yon_etiket = QtWidgets.QLabel("Yon:")
+        kaynak_form.addRow(self.yon_etiket, self._sar(yon))
+        self.koni_etiket = QtWidgets.QLabel("Koni yari acisi:")
+        kaynak_form.addRow(self.koni_etiket, self.koni_aci)
 
         kosu_form = QtWidgets.QFormLayout()
         kosu_form.addRow("OpenMP is parcacigi:", self.is_parcacigi)
@@ -182,7 +269,8 @@ class AyarSekmesi(SekmeTabani):
         # cikariyordu.
         for _w in (self.entropi_nx, self.entropi_ny, self.entropi_nz,
                    self.t_mesh_nx, self.t_mesh_ny, self.t_mesh_nz,
-                   self.kx, self.ky, self.kz):
+                   self.kx, self.ky, self.kz,
+                   self.ax, self.ay, self.az):
             _w.setMinimumWidth(56)
 
         # --- yerlesim: IKI SUTUN ---
@@ -234,8 +322,18 @@ class AyarSekmesi(SekmeTabani):
         self.guc_cubuk.currentIndexChanged.connect(self._guc_cubuk_degisti)
         self.guc_bolge.currentIndexChanged.connect(self._kaydet)
         self.guc_skor.currentIndexChanged.connect(self._kaydet)
-        for w in (self.mod, self.sicaklik_yontemi, self.kaynak_tur):
+        for w in (self.mod, self.sicaklik_yontemi, self.kaynak_tur,
+                  self.kaynak_parcacik, self.tayf, self.aci_tur):
             w.currentIndexChanged.connect(self._kaydet)
+        for w in (self.watt_a, self.maxwell_theta, self.tek_enerji,
+                  self.fuzyon_e0, self.fuzyon_kt):
+            w.degisti.connect(self._kaydet)
+        for w in (self.watt_b, self.fuzyon_kutle, self.koni_aci,
+                  self.ax, self.ay, self.az):
+            w.valueChanged.connect(self._kaydet)
+        for w in (self.ayrik_metin, self.hist_kenar, self.hist_deger,
+                  self.kaynak_kuvvet):
+            w.editingFinished.connect(self._kaydet)
         self.kosu_dizini.editingFinished.connect(self._kaydet)
         self.t_ad.editingFinished.connect(self._tally_kaydet)
         self.t_skor.itemSelectionChanged.connect(self._tally_kaydet)
@@ -264,6 +362,34 @@ class AyarSekmesi(SekmeTabani):
         self.kaynak_tur.setCurrentIndex(max(i, 0))
         konum = k.get("konum") or [0.0, 0.0, 0.0]
         self.kx.setValue(konum[0]); self.ky.setValue(konum[1]); self.kz.setValue(konum[2])
+        i = self.kaynak_parcacik.findData(k.get("parcacik") or "neutron")
+        self.kaynak_parcacik.setCurrentIndex(max(i, 0))
+        self.kaynak_kuvvet.ayarla(k.get("kuvvet") or 1.0)
+
+        e = k.get("enerji") or {}
+        i = self.tayf.findData(e.get("tur", "watt"))
+        self.tayf.setCurrentIndex(max(i, 0))
+        self.watt_a.ayarla(e.get("a", 988.0e3))
+        self.watt_b.setValue(e.get("b", 2.249e-6))
+        self.maxwell_theta.ayarla(e.get("theta", 1.2932e6))
+        self.tek_enerji.ayarla(e.get("enerji", 14.1e6))
+        if e.get("noktalar"):
+            self.ayrik_metin.setText(", ".join("%g:%g" % (p[0], p[1])
+                                               for p in e["noktalar"]))
+        if e.get("kenarlar"):
+            self.hist_kenar.setText(", ".join("%g" % x for x in e["kenarlar"]))
+        if e.get("degerler"):
+            self.hist_deger.setText(", ".join("%g" % x for x in e["degerler"]))
+        self.fuzyon_e0.ayarla(e.get("e0", 14.08e6))
+        self.fuzyon_kutle.setValue(e.get("kutle_orani", 5.0))
+        self.fuzyon_kt.ayarla(e.get("iyon_sicaklik", 20.0e3))
+
+        ac = k.get("aci") or {}
+        i = self.aci_tur.findData(ac.get("tur", "izotropik"))
+        self.aci_tur.setCurrentIndex(max(i, 0))
+        yon = ac.get("yon") or [0.0, 0.0, 1.0]
+        self.ax.setValue(yon[0]); self.ay.setValue(yon[1]); self.az.setValue(yon[2])
+        self.koni_aci.setValue(ac.get("koni_aci") or 30.0)
 
         ent = a.get("entropi_mesh") or {}
         self.entropi_var.setChecked(bool(ent.get("var", True)))
@@ -353,6 +479,79 @@ class AyarSekmesi(SekmeTabani):
         self.konum_etiket.setVisible(nokta)
         for w in (self.kx, self.ky, self.kz):
             w.parentWidget().setVisible(nokta)
+        self._tayf_gorunurluk()
+
+    @staticmethod
+    def _sayi_listesi(metin):
+        cikti = []
+        for parca in (metin or "").replace(";", ",").split(","):
+            parca = parca.strip()
+            if not parca:
+                continue
+            try:
+                cikti.append(float(parca))
+            except ValueError:
+                pass
+        return cikti
+
+    def _tayf_oku(self):
+        """Arayuzdeki tayf alanlarini spec sozluguna cevirir."""
+        e = dict((self.spec["ayarlar"].get("kaynak") or {}).get("enerji") or {})
+        e.update({
+            "tur": self.tayf.currentData(),
+            "a": self.watt_a.deger(),
+            "b": self.watt_b.value(),
+            "theta": self.maxwell_theta.deger(),
+            "enerji": self.tek_enerji.deger(),
+            "e0": self.fuzyon_e0.deger(),
+            "kutle_orani": self.fuzyon_kutle.value(),
+            "iyon_sicaklik": self.fuzyon_kt.deger(),
+        })
+        noktalar = []
+        for parca in (self.ayrik_metin.text() or "").replace(";", ",").split(","):
+            if ":" not in parca:
+                continue
+            a_, b_ = parca.split(":", 1)
+            try:
+                noktalar.append([float(a_), float(b_)])
+            except ValueError:
+                pass
+        e["noktalar"] = noktalar
+        e["kenarlar"] = self._sayi_listesi(self.hist_kenar.text())
+        e["degerler"] = self._sayi_listesi(self.hist_deger.text())
+        return e
+
+    def _tayf_gorunurluk(self):
+        """Yalnizca secili tayfin alanlari gorunur; ozet satiri guncellenir."""
+        i = max(self.tayf.currentIndex(), 0)
+        self.tayf_yigin.setCurrentIndex(i)
+        aci = self.aci_tur.currentData()
+        self.yon_etiket.setVisible(aci != "izotropik")
+        self.ax.parentWidget().setVisible(aci != "izotropik")
+        self.koni_etiket.setVisible(aci == "koni")
+        self.koni_aci.setVisible(aci == "koni")
+        sabit = self.mod.currentData() != "eigenvalue"
+        self.kuvvet_etiket.setEnabled(sabit)
+        self.kaynak_kuvvet.setEnabled(sabit)
+
+        e = self._tayf_oku()
+        try:
+            _kaynak.enerji_dagilimi(e)
+            ort = _kaynak.ortalama_enerji(e)
+            metin = ("Ortalama enerji: %s" % _kaynak.enerji_metni(ort)) if ort else ""
+            if not sabit:
+                metin += ("\nOzdeger modunda tayf yalnizca baslangic tahminidir; "
+                          "pasif cevrimlerde gercek fisyon tayfiyla degisir.")
+            elif self.kaynak_kuvvet.deger(1.0) == 1.0:
+                metin += "\nSiddet 1 -- sonuclar kaynak parcacigi basina kalir."
+            else:
+                metin += ("\nSonuclar mutlak birimde olur (OpenMC siddeti kendisi "
+                          "uygular, ayrica carpmayin).")
+            self.tayf_ozet.setText(metin)
+            self.tayf_ozet.setStyleSheet("")
+        except Exception as hata:
+            self.tayf_ozet.setText("Tayf kurulamadi: %s" % hata)
+            self.tayf_ozet.setStyleSheet("color: #d04437;")
 
     def _kaydet(self, *_):
         if self._yukleniyor:
@@ -384,11 +583,25 @@ class AyarSekmesi(SekmeTabani):
             w.setEnabled(self.kinetik_var.isChecked())
         for w in (self.entropi_etiket, self.entropi_nx, self.entropi_ny, self.entropi_nz):
             w.setEnabled(self.entropi_var.isChecked())
+        # Kaynak sozlugu BASTAN YAZILMAZ: eskiden oyleydi ve her kayitta
+        # enerji tayfi, acisal dagilim, parcacik turu ve siddet siliniyordu.
+        kay = a.setdefault("kaynak", {})
         if self.kaynak_tur.currentData() == "nokta":
-            a["kaynak"] = {"tur": "nokta",
-                           "konum": [self.kx.value(), self.ky.value(), self.kz.value()]}
+            kay["tur"] = "nokta"
+            kay["konum"] = [self.kx.value(), self.ky.value(), self.kz.value()]
+            kay.pop("alt", None)
+            kay.pop("ust", None)
         else:
-            a["kaynak"] = {"tur": "kutu", "alt": None, "ust": None}
+            kay["tur"] = "kutu"
+            kay["alt"] = None
+            kay["ust"] = None
+        kay["parcacik"] = self.kaynak_parcacik.currentData()
+        kay["kuvvet"] = self.kaynak_kuvvet.deger(1.0)
+        kay["enerji"] = self._tayf_oku()
+        kay["aci"] = {"tur": self.aci_tur.currentData(),
+                      "yon": [self.ax.value(), self.ay.value(), self.az.value()],
+                      "koni_aci": self.koni_aci.value()}
+        self._tayf_gorunurluk()
         self.spec["calistirma"]["is_parcacigi"] = self.is_parcacigi.value()
         self.spec["calistirma"]["dizin"] = self.kosu_dizini.text().strip() or "kosu"
         self._aktif_guncelle()

@@ -53,6 +53,7 @@ openmc_arayuz/
 │   ├── kod_uret.py          spec → tek başına çalışan Python betiği
 │   ├── ice_aktar.py         materials.xml → spec malzemeleri
 │   ├── tambur.py            dönen kontrol tamburu geometrisi ve yerleşimi
+│   ├── kaynak.py            kaynak enerji tayfı, açısal dağılım, parçacık türü
 │   ├── guc.py               çubuk bazlı güç dağılımı, F_ΔH, F_q
 │   ├── tarama.py            parametre taraması → reaktivite katsayıları
 │   ├── kritik_arama.py      hedef k-eff'i veren parametre değeri
@@ -125,7 +126,7 @@ python3 testler/test_regresyon.py            # tümü (~2 dk)
 python3 testler/test_regresyon.py --hizli    # Monte Carlo hariç (~10 s)
 ```
 
-170 test var. Üçü bu katmanın doğruluğunun asıl kanıtıdır:
+214 test var. Üçü bu katmanın doğruluğunun asıl kanıtıdır:
 
 - **Regresyon çıpası** — `ornekler/pwr_pinhucre.json` referans değeri
   **k∞ = 1.3570 ± 0.0020** vermeli. 2σ dışına çıkarsa `kurucu.py`'de hata var.
@@ -151,6 +152,7 @@ python3 testler/test_regresyon.py --hizli    # Monte Carlo hariç (~10 s)
 | `pwr_3b` (3B, güç dağılımı) | 1.17953 ± 0.00059 | 73 s |
 | `pwr_kontrol` (çubuk %0) | 1.17801 ± 0.00196 | 24 s |
 | `tamburlu_kor` (dönme 180°) | 1.01057 ± 0.00157 | 21 s |
+| `zirh_kure` (sabit kaynak) | k-eff yok, tally | 24 s |
 
 ## Kontrol çubuğu ve kritik çubuk konumu
 
@@ -307,6 +309,65 @@ Bu, regresyon çıpasından **farklı** bir testtir: çıpa "kod kendiyle tutarl
 bu "sonuç gerçekten doğru" der. Malzeme bileşimi, geometri, tesir kesiti
 kütüphanesi ve taşınım zincirinin tamamı bağımsız bir ölçüme karşı sınanır.
 
+## Sabit kaynak ve enerji tayfı
+
+Özdeğer (k-eff) hesabında kaynak tayfı yalnızca **başlangıç tahminidir** — pasif
+çevrimler içinde gerçek fisyon tayfıyla değişir. Sabit kaynak hesabında
+(zırhlama, aktivasyon, dedektör) ise **sonucun kendisidir**. Eskiden tayf
+`openmc.stats.Watt()` olarak gömülüydü; artık 5. Ayarlar sekmesinden seçilir:
+
+| Tayf | Parametre | Analitik ortalama | Ölçülen |
+|---|---|---|---|
+| Watt (fisyon) | a=988 keV, b=2.249e-6 | 1.5a + a²b/4 = 2.031 MeV | 2.034 MeV |
+| Maxwell | θ=1.2932 MeV | 1.5θ = 1.940 MeV | 1.943 MeV |
+| Tek enerjili | E | E | tam |
+| Ayrık çizgiler | [E, p] çiftleri | Σ E·p / Σ p | tam |
+| Histogram | N+1 kenar, N değer | grup ağırlıklı | — |
+| Füzyon (Muir) | E₀, kütle oranı, kT | E₀ | σ = 335 keV |
+
+Füzyon genişlemesi analitik değerle doğrulandı: D-T için `FWHM = 177·√(kT[keV]) keV`
+→ kT=20 keV'de σ = 336.2 keV, ölçülen 335.2 keV.
+
+Ayrıca **açısal dağılım** (izotropik / tek yönlü demet / koni), **parçacık türü**
+(nötron / foton — foton seçilince foton taşınımı otomatik açılır) ve **kaynak
+şiddeti** ayarlanabilir.
+
+> 📐 **Şiddet normalizasyonu ölçüldü.** OpenMC sabit kaynak tally'lerini kaynak
+> şiddetiyle **kendisi çarpar** (şiddet=1 ve 1e12 ile koşuldu, oran tam 1e12).
+> Yani sonuçlar zaten mutlak birimdedir; kullanıcıya "şiddetle çarpın" demek
+> çift sayım olurdu. İlk yazdığım not tam olarak bu hatayı yapıyordu.
+>
+> Bir tuzak daha: `flux` skoru **hacimle integrelidir** (birim cm/s). Nokta akısı
+> [1/cm²/s] için bölge hacmine bölmek gerekir.
+
+### Analitik doğrulama — üstel zayıflatma
+
+Sabit kaynak yolunun doğruluğu **tam analitik** bir sonuçla sınandı. Merkezde
+monoenerjetik termal kaynak, çevresinde optik kalınlığı τ=1 olan B-10 küresi
+(termalde saçılma 2.1 b, soğurma 3847 b → saçılma ihmal edilebilir):
+
+```
+soğurulan kesir = 1 − exp(−τ) = 0.63212   (analitik)
+                              = 0.63180 ± 0.00032   (ölçülen, 1.0σ)
+```
+
+Bu tek test aynı anda şunları doğrular: tek enerjili kaynağın enerjisi doğru,
+sabit kaynak modu çalışıyor, tally normalizasyonu kaynak parçacığı başına.
+
+### Örnek: `zirh_kure`
+
+Merkezde 14.1 MeV D-T kaynağı, 30 cm su + 5 cm çelik. Ölçülen nötron dengesi:
+
+| | değer |
+|---|---|
+| suda soğurma | 0.678 / kaynak nötronu |
+| çelikte soğurma | 0.080 |
+| sızıntı | 0.242 |
+
+Suda termal akı (2.55e8) hızlı akıyı (2.35e8) geçiyor — su yavaşlatıyor.
+Çelikte oran tersine dönüyor (4.17e7 hızlı / 5.1e6 termal) — ağır çekirdek
+yavaşlatmaz, demir termali soğurur. Beklenen fizik bu.
+
 ## Kaynak yakınsaması (Shannon entropisi)
 
 Özdeğer hesaplarında entropi mesh'i varsayılan olarak **açıktır**. Koşu bitince
@@ -400,8 +461,10 @@ Bitmiş bir geometriyi incelerken (eksen değiştirme, yakınlaştırma) açın;
   desteklenmiyor.
 - **Eksenel heterojenlik** yok — kor tek eksenel bölge; zenginlik kuşağı,
   blanket, plenum tanımlanamaz.
-- **Sabit kaynak modu yarım** — kaynak enerji spektrumu Watt'a sabit;
-  kalkanlama/aktivasyon işleri yapılamaz.
+- **Sabit kaynakta uzaysal dağılım sınırlı** — nokta ya da kutu. Yüzey kaynağı,
+  hacimsel kaynak dosyası ve dış kaynak dosyası (`source.h5`) desteklenmiyor.
+- **Doz dönüşüm faktörleri yok** — akı tally'si var, ICRP akı→doz çarpanı yok;
+  doz için dönüşümü kullanıcı kendisi yapar.
 - **Geometri içe aktarılamaz.** Malzemeler `materials.xml` / `model.xml`'den
   aktarılabilir (Dosya menüsü); geometri aktarılamaz çünkü ham CSG'yi
   "çubuk → kafes → kor" katmanlarına geri çevirmek genel olarak çözülebilir bir

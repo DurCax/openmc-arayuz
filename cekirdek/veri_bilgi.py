@@ -94,6 +94,52 @@ def _h5_sicakliklari(dosya, ad, tur):
         return None
 
 
+_ENERJI_ONBELLEK = {}
+
+
+def nuklid_enerji_tavani(nuklid):
+    """
+    Nuklidin degerlendirmesinin ust enerji siniri [eV]; okunamazsa None.
+
+    Bu sayi kutuphaneye ve nuklide gore DEGISIR -- sabit bir 20 MeV varsaymak
+    yanlis olurdu. ENDF/B-VIII.0'da olculen ornekler:
+        H1  = 20 MeV,  U235 = 30 MeV,  Fe56 = 150 MeV
+    Modelin gercek tavani, icindeki nuklidlerin tavanlarinin EN KUCUGUdur.
+    """
+    if nuklid in _ENERJI_ONBELLEK:
+        return _ENERJI_ONBELLEK[nuklid]
+    sonuc = None
+    dosya = _yol_haritasi().get(("neutron", nuklid))
+    if dosya and os.path.exists(dosya):
+        try:
+            import h5py
+            with h5py.File(dosya, "r") as f:
+                if nuklid in f and "energy" in f[nuklid]:
+                    g = f[nuklid]["energy"]
+                    anahtarlar = sorted(g.keys())
+                    if anahtarlar:
+                        sonuc = float(g[anahtarlar[0]][-1])
+        except Exception:
+            sonuc = None
+    _ENERJI_ONBELLEK[nuklid] = sonuc
+    return sonuc
+
+
+def enerji_tavani(nuklidler):
+    """
+    Nuklid listesi icin (tavan_eV, tavani_belirleyen_nuklid); hicbiri
+    okunamazsa (None, None).
+    """
+    en_dusuk, sahibi = None, None
+    for n in nuklidler:
+        t = nuklid_enerji_tavani(n)
+        if t is None:
+            continue
+        if en_dusuk is None or t < en_dusuk:
+            en_dusuk, sahibi = t, n
+    return en_dusuk, sahibi
+
+
 def nuklid_araligi(nuklid):
     """Nuklidin veri kutuphanesindeki (en_dusuk, en_yuksek) sicakligi [K]."""
     if nuklid in _NUKLID_ONBELLEK:

@@ -394,6 +394,13 @@ class AnalizSekmesi(QtWidgets.QWidget):
         """
         if self.spec is None:
             return True, ""
+        # Butun taramalar reaktiviteye dayanir: rho = (k-1)/k. Sabit kaynak
+        # modunda k-eff YOKTUR, dolayisiyla hicbir tarama anlamli degildir.
+        if (self.spec["ayarlar"].get("mod") or "eigenvalue") != "eigenvalue":
+            return False, ("Bu sekmedeki tum taramalar reaktivite (k-eff) uzerinden "
+                           "calisir; model SABIT KAYNAK modunda ve k-eff tanimsiz.\n"
+                           "5. Ayarlar sekmesinden kosu modunu 'Ozdeger (k-eff)' "
+                           "yapin.")
         hedef = self.hedef.currentData()
         m = sema.malzeme_bul(self.spec, hedef) if isinstance(hedef, str) else None
         if tur == "bor_ppm":
