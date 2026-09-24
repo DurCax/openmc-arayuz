@@ -63,11 +63,11 @@ class GucHaritaWidget(QtWidgets.QWidget):
         self.ozet.setTextFormat(QtCore.Qt.RichText)
         self.ozet.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
         self.ozet.setStyleSheet(
-            "background: palette(alternate-base); padding: 8px; "
-            "border: 1px solid palette(mid);")
+            "background: palette(alternate-base); padding: 10px; "
+            "border: 1px solid palette(mid); border-radius: 8px;")
 
         # --- tuval ---
-        self.figur = Figure(figsize=(6, 5), tight_layout=True)
+        self.figur = Figure(figsize=(6, 4), tight_layout=True)
         self.tuval = FigureCanvasQTAgg(self.figur)
         self.arac = NavigationToolbar2QT(self.tuval, self)
 

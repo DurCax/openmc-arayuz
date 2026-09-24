@@ -172,9 +172,9 @@ class AnalizSekmesi(QtWidgets.QWidget):
         self.tablo.setHorizontalHeaderLabels(["Deger", "k-eff", "+/-", "rho [pcm]"])
         self.tablo.horizontalHeader().setStretchLastSection(True)
         self.tablo.verticalHeader().setVisible(False)
-        self.tablo.setMaximumHeight(190)
+        self.tablo.setMaximumHeight(140)
 
-        self.figur = Figure(figsize=(5, 3.0), tight_layout=True)
+        self.figur = Figure(figsize=(5, 2.4), tight_layout=True)
         self.tuval = FigureCanvasQTAgg(self.figur)
         self.eksen = self.figur.add_subplot(111)
         self._grafik_sifirla()
@@ -184,8 +184,8 @@ class AnalizSekmesi(QtWidgets.QWidget):
         self.sonuc_kutusu.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
         self.sonuc_kutusu.setTextFormat(QtCore.Qt.RichText)
         self.sonuc_kutusu.setStyleSheet(
-            "background: palette(alternate-base); padding: 8px; "
-            "border: 1px solid palette(mid);")
+            "background: palette(alternate-base); padding: 10px; "
+            "border: 1px solid palette(mid); border-radius: 8px;")
         sf = self.sonuc_kutusu.font(); sf.setPointSizeF(sf.pointSizeF() + 1)
         self.sonuc_kutusu.setFont(sf)
 

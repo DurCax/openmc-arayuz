@@ -130,17 +130,20 @@ class AyarSekmesi(SekmeTabani):
             "Toplam guc, MODELIN KAPSADIGI bolgenin gucudur -- tum korun degil. "
             "Ornek: 3400 MWth / 193 demet = 17.6 MW; tek demetlik bir modelde "
             "17.6e6 W girilir. Bos birakilirsa yalnizca bagil dagilim verilir.")
-        guc_form.addRow(self.guc_not)
+
 
         # --- tally'ler ---
         self.tally_liste = QtWidgets.QListWidget()
+        self.tally_liste.setMaximumHeight(120)
+        self.tally_liste.setMaximumWidth(150)
         self.tally_liste.currentRowChanged.connect(self._tally_secildi)
         self.t_ad = QtWidgets.QLineEdit()
         self.t_skor = QtWidgets.QListWidget()
         self.t_skor.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
         for s in SKORLAR:
             self.t_skor.addItem(s)
-        self.t_skor.setMaximumHeight(120)
+        self.t_skor.setMaximumHeight(96)
+        self.t_skor.setMinimumWidth(130)
         self.t_enerji_var = QtWidgets.QCheckBox("Enerji grup filtresi")
         self.t_enerji = QtWidgets.QLineEdit("0.0, 0.625, 2.0e7")
         self.t_mesh_var = QtWidgets.QCheckBox("Mesh (akı haritasi) filtresi")
@@ -171,28 +174,53 @@ class AyarSekmesi(SekmeTabani):
         tally_sol.addWidget(self.tally_liste, 1)
         tally_sol.addLayout(t_dugme)
         tally_bolucu = QtWidgets.QHBoxLayout()
-        tally_bolucu.addLayout(tally_sol, 1)
-        tally_bolucu.addLayout(t_form, 2)
+        tally_bolucu.addLayout(tally_sol, 0)
+        tally_bolucu.addLayout(t_form, 1)
 
-        # --- yerlesim ---
-        duzen = QtWidgets.QVBoxLayout(self)
-        duzen.addWidget(baslik("Kosu ayarlari"))
-        duzen.addLayout(form)
-        duzen.addWidget(ipucu(
+        # Uclu satirlardaki (nx/ny/nz, x/y/z) alanlar dar sutuna sigsin.
+        # Varsayilan 88 px ile ayarlar sekmesi tasip yatay kaydirma cubugu
+        # cikariyordu.
+        for _w in (self.entropi_nx, self.entropi_ny, self.entropi_nz,
+                   self.t_mesh_nx, self.t_mesh_ny, self.t_mesh_nz,
+                   self.kx, self.ky, self.kz):
+            _w.setMinimumWidth(56)
+
+        # --- yerlesim: IKI SUTUN ---
+        # Tek sutunda bu sekmenin minimum yuksekligi 1179 px'e cikiyordu ve
+        # QTabWidget tum sayfalarin en buyugunu minimum kabul ettigi icin ANA
+        # PENCERE 1317 px'in altina inemiyordu (ekranda 1048 px var).
+        # Sonuc: pencere tam ekran yapilamiyor ve alt kismi goruntulenemiyordu.
+        sol = QtWidgets.QVBoxLayout()
+        sol.addWidget(baslik("Kosu ayarlari"))
+        sol.addLayout(form)
+        sol.addWidget(ipucu(
             "Pasif cevrimler kaynak dagilimi yakinsayana kadar atilir ve "
             "istatistige katilmaz. Tipik olarak 20-50 pasif cevrim kullanilir."))
-        duzen.addWidget(ayrac())
-        duzen.addWidget(baslik("Baslangic kaynagi"))
-        duzen.addLayout(kaynak_form)
-        duzen.addWidget(ayrac())
-        duzen.addWidget(baslik("Calistirma"))
-        duzen.addLayout(kosu_form)
-        duzen.addWidget(ayrac())
-        duzen.addWidget(baslik("Guc dagilimi"))
-        duzen.addLayout(guc_form)
-        duzen.addWidget(ayrac())
-        duzen.addWidget(baslik("Tally'ler"))
-        duzen.addLayout(tally_bolucu, 1)
+        sol.addWidget(ayrac())
+        sol.addWidget(baslik("Baslangic kaynagi"))
+        sol.addLayout(kaynak_form)
+        sol.addWidget(ayrac())
+        sol.addWidget(baslik("Calistirma"))
+        sol.addLayout(kosu_form)
+        sol.addStretch(1)
+
+        sag = QtWidgets.QVBoxLayout()
+        sag.addWidget(baslik("Guc dagilimi"))
+        sag.addLayout(guc_form)
+        self.guc_not.setMinimumWidth(1)
+        sag.addWidget(self.guc_not)
+        sag.addWidget(ayrac())
+        sag.addWidget(baslik("Tally'ler"))
+        sag.addLayout(tally_bolucu, 1)
+
+        sol_k = QtWidgets.QWidget(); sol_k.setLayout(sol)
+        sag_k = QtWidgets.QWidget(); sag_k.setLayout(sag)
+        bolucu = QtWidgets.QSplitter(QtCore.Qt.Horizontal)
+        bolucu.addWidget(sol_k); bolucu.addWidget(sag_k)
+        bolucu.setStretchFactor(0, 4); bolucu.setStretchFactor(1, 5)
+        bolucu.setSizes([420, 520])
+        duzen = QtWidgets.QVBoxLayout(self)
+        duzen.addWidget(bolucu)
 
         for w in (self.parcacik, self.cevrim, self.pasif, self.tohum,
                   self.is_parcacigi, self.kx, self.ky, self.kz,

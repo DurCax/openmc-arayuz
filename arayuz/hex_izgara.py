@@ -42,7 +42,7 @@ class HexIzgara(QtWidgets.QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setMinimumSize(320, 320)
+        self.setMinimumSize(220, 220)
         self.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
                            QtWidgets.QSizePolicy.Expanding)
         self.setFocusPolicy(QtCore.Qt.StrongFocus)

@@ -140,7 +140,7 @@ class OnizlemeWidget(QtWidgets.QWidget):
         ust.addWidget(self.yenile_dugme)
 
         # --- tuval ---
-        self.figur = Figure(figsize=(5, 5), tight_layout=True)
+        self.figur = Figure(figsize=(5, 4), tight_layout=True)
         self.tuval = FigureCanvasQTAgg(self.figur)
         self.eksenler = self.figur.add_subplot(111)
         self.arac_cubugu = NavigationToolbar2QT(self.tuval, self)
@@ -225,6 +225,19 @@ class OnizlemeWidget(QtWidgets.QWidget):
             self.eksenler.set_title("%s   %.3f x %.3f cm"
                                     % (self.spec.get("ad", ""), genislik[0], genislik[1]),
                                     fontsize=9)
+            # Model.plot() gostergeyi eksenin SAGINA koyuyor; dar bir panelde
+            # tuvalin disina tasip kirpilıyordu. Yatay olarak grafigin ALTINA
+            # aliniyor -- genislik gerektirmez ve geometriyi kapatmaz.
+            gosterge = self.eksenler.get_legend()
+            if gosterge is not None:
+                etiketler = [t.get_text() for t in gosterge.get_texts()]
+                tutamaklar = gosterge.legend_handles
+                gosterge.remove()
+                self.eksenler.legend(
+                    tutamaklar, etiketler, loc="upper center",
+                    bbox_to_anchor=(0.5, -0.09), ncol=min(len(etiketler), 4),
+                    fontsize=7, frameon=False, handlelength=1.4,
+                    columnspacing=1.2)
             self.tuval.draw_idle()
             self._son_hata = None
             self.son_olcu = (gx, gy)

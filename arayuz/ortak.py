@@ -20,7 +20,7 @@ def sayi(deger=0.0, ondalik=5, en_az=0.0, en_cok=1e9, adim=0.01, sonek=""):
     w.setValue(deger if deger is not None else 0.0)
     if sonek:
         w.setSuffix(" " + sonek)
-    w.setMinimumWidth(110)
+    w.setMinimumWidth(88)
     return w
 
 
@@ -32,7 +32,7 @@ def tamsayi(deger=0, en_az=0, en_cok=10 ** 9, adim=1, sonek=""):
     w.setValue(int(deger or 0))
     if sonek:
         w.setSuffix(" " + sonek)
-    w.setMinimumWidth(110)
+    w.setMinimumWidth(88)
     return w
 
 

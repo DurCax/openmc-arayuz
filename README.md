@@ -57,6 +57,7 @@ openmc_arayuz/
 │   ├── kritik_arama.py      hedef k-eff'i veren parametre değeri
 │   └── kosucu.py            çalıştırma + statepoint okuma + terminal girişi
 ├── arayuz/                  PySide6 katmanı
+│   ├── tema.py              açık/koyu tema paletleri (matplotlib dahil)
 │   ├── ana_pencere.py       sekmeler, proje aç/kaydet, doğrulama paneli
 │   ├── onizleme.py          canlı geometri kesiti (Model.plot sarmalayıcı)
 │   ├── hex_izgara.py        altıgen harita editörü (QPainter)
@@ -249,6 +250,27 @@ yükselmesi normaldir (nokta kaynaktan başlanırsa entropi sıfırdan başlar).
 yüzden yalnızca pasif dönemin son yarısı incelenir, ikiye bölünüp karşılaştırılır.
 Yakınsamamış kaynak k-eff'i **yanlı** tahmin ettirir ve bu başka türlü fark
 edilmez.
+
+## Görünüm
+
+**Görünüm > Tema** menüsünden açık/koyu geçişi yapılır; seçim hatırlanır.
+matplotlib grafikleri de aynı palete uyar, böylece grafikler arayüzden kopuk
+görünmez.
+
+Kısayollar: **F10** pencereyi büyüt/eski hâline döndür, **F11** tam ekran.
+
+> ⚠ **Pencere boyutu tuzağı.** `QTabWidget`'in minimum yüksekliği *tüm
+> sayfalarının en büyüğüdür*. Ayarlar sekmesi büyüdükçe (entropi, kinetik, güç
+> dağılımı) pencerenin minimumu **1317 px**'e çıkmıştı; ekranda 1048 px olduğu
+> için pencere tam ekran yapılamıyor ve alt kısmı hiç görünmüyordu. İki katmanlı
+> çözüm: ayarlar sekmesi iki sütuna bölündü ve **her sekme bir `QScrollArea`
+> içine alındı** — minimum 1317 → **308 px**. Yeni bir bölüm eklendiğinde bu
+> bağ bir daha kurulmaz.
+
+> ⚠ **`showMaximized()` bu makinedeki pencere yöneticisinde yok sayılıyor.**
+> `show()`'dan hemen sonra `setWindowState()` de tutmuyor — pencerenin önce
+> haritalanması gerekiyor. Büyütme bu yüzden olay döngüsü başladıktan
+> ~120 ms sonra uygulanıyor.
 
 ## Performans notları (ölçülmüş)
 

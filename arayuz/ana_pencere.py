@@ -38,11 +38,14 @@ from arayuz.sekme_cubuk import CubukSekmesi
 from arayuz.sekme_demet import DemetSekmesi
 from arayuz.sekme_kor import KorSekmesi
 from arayuz.sekme_malzeme import MalzemeSekmesi
+from arayuz import tema
 
 KOK = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ORNEKLER = os.path.join(KOK, "ornekler")
 
-_SEVIYE_RENK = {"hata": "#c0392b", "uyari": "#c87f0a", "bilgi": "#7f8c8d"}
+def _seviye_renk(seviye):
+    """Dogrulama seviyesi rengi -- etkin temadan gelir."""
+    return tema.renk({"hata": "hata", "uyari": "uyari", "bilgi": "bilgi"}[seviye])
 _GECMIS_SINIR = 50
 
 # Dogrulama bulgusundaki "yer" onekinden sekme indeksine
@@ -194,7 +197,13 @@ class AnaPencere(QtWidgets.QMainWindow):
     def __init__(self, acilis_dosyasi=None):
         super().__init__()
         self.setWindowTitle("OpenMC Reaktor Kuru Arayuzu")
-        self.resize(1560, 980)
+        # Boyut EKRANA gore belirlenir; sabit bir deger kucuk ekranlarda
+        # pencerenin bir kismini ekran disinda birakiyordu.
+        ekran = QtWidgets.QApplication.primaryScreen()
+        alan = ekran.availableGeometry() if ekran else QtCore.QRect(0, 0, 1280, 800)
+        self.resize(min(1600, int(alan.width() * 0.92)),
+                    min(1000, int(alan.height() * 0.92)))
+        self.setMinimumSize(900, 560)
 
         self.ayarlar = QtCore.QSettings("openmc_arayuz", "arayuz")
         self.spec = sema.yeni_spec("yeni model")
@@ -218,6 +227,14 @@ class AnaPencere(QtWidgets.QMainWindow):
 
         self.editorler = [self.s_malzeme, self.s_cubuk, self.s_demet,
                           self.s_kor, self.s_ayar]
+        # Her sekme bir kaydirma alanina sarilir.
+        #
+        # SEBEP: QTabWidget'in minimum yuksekligi TUM sayfalarin en buyugudur.
+        # Ayarlar sekmesi buyudukce (entropi, kinetik, guc dagilimi) pencerenin
+        # minimumu 1317 px'e cikmisti; ekranda 1048 px oldugu icin pencere tam
+        # ekran yapilamiyor ve ALT KISMI HIC GORUNMUYORDU. Kaydirma alani bu
+        # bagi koparir: sekme buyuse de pencere kucuk ekranlara sigar.
+        self._sayfa_editor = {}
         for ad, w in (("1. Malzemeler", self.s_malzeme),
                       ("2. Cubuk / Plaka", self.s_cubuk),
                       ("3. Kafesler", self.s_demet),
@@ -225,7 +242,12 @@ class AnaPencere(QtWidgets.QMainWindow):
                       ("5. Ayarlar & Tally", self.s_ayar),
                       ("6. Calistir", self.s_calistir),
                       ("7. Analiz", self.s_analiz)):
-            self.sekmeler.addTab(w, ad)
+            kaydirma = QtWidgets.QScrollArea()
+            kaydirma.setWidgetResizable(True)
+            kaydirma.setFrameShape(QtWidgets.QFrame.NoFrame)
+            kaydirma.setWidget(w)
+            self._sayfa_editor[kaydirma] = w
+            self.sekmeler.addTab(kaydirma, ad)
         for e in self.editorler:
             e.degisti.connect(self._degisti)
         self.sekmeler.currentChanged.connect(self._sekme_degisti)
@@ -268,9 +290,11 @@ class AnaPencere(QtWidgets.QMainWindow):
         bolucu = QtWidgets.QSplitter(QtCore.Qt.Horizontal)
         bolucu.addWidget(self.sekmeler)
         bolucu.addWidget(sag)
-        bolucu.setStretchFactor(0, 3)
-        bolucu.setStretchFactor(1, 2)
-        bolucu.setSizes([900, 640])
+        # Sekme tarafi daha genis: ayarlar sekmesi iki sutunlu ve dar kalinca
+        # yatay kaydirma cubugu cikiyordu.
+        bolucu.setStretchFactor(0, 5)
+        bolucu.setStretchFactor(1, 3)
+        bolucu.setSizes([1150, 700])
 
         # Rehber seridi + ana bolucu
         self.rehber = QtWidgets.QLabel("")
@@ -359,6 +383,23 @@ class AnaPencere(QtWidgets.QMainWindow):
                                   QtGui.QKeySequence.Undo)
         self.e_yinele = self._eylem(m_duzen, "Yinele", self.yinele,
                                     QtGui.QKeySequence.Redo)
+
+        m_gorunum = self.menuBar().addMenu("&Gorunum")
+        m_tema = m_gorunum.addMenu("Tema")
+        self._tema_eylemleri = {}
+        grup = QtGui.QActionGroup(self)
+        grup.setExclusive(True)
+        for anahtar, bilgi in tema.TEMALAR.items():
+            e = QtGui.QAction(bilgi["ad"], self)
+            e.setCheckable(True)
+            e.setChecked(anahtar == tema.etkin())
+            e.triggered.connect(lambda _c=False, a=anahtar: self._tema_degistir(a))
+            grup.addAction(e)
+            m_tema.addAction(e)
+            self._tema_eylemleri[anahtar] = e
+        m_gorunum.addSeparator()
+        self._eylem(m_gorunum, "Tam ekran", self._tam_ekran, "F11")
+        self._eylem(m_gorunum, "Pencereyi buyut", self._buyut, "F10")
 
         m_model = self.menuBar().addMenu("&Model")
         self._eylem(m_model, "Dogrulamayi yenile (veri kutuphanesi dahil)",
@@ -461,12 +502,12 @@ class AnaPencere(QtWidgets.QMainWindow):
         except Exception:
             return
         self._rehber_hedef = hedef
-        renk = {"yap": ("#1f4e79", "#e8f0f8"),
-                "hata": ("#8b1a1a", "#fbeaea"),
-                "hazir": ("#1e6b3a", "#e8f5ec")}[seviye]
+        on = {"yap": tema.renk("vurgu"), "hata": tema.renk("hata"),
+              "hazir": tema.renk("basari")}[seviye]
         self._rehber_kutu.setStyleSheet(
-            "background: %s; border-bottom: 1px solid palette(mid);" % renk[1])
-        self.rehber.setStyleSheet("color: %s;" % renk[0])
+            "background: %s; border-bottom: 1px solid %s;"
+            % (tema.renk("yuzey2"), tema.renk("kenar")))
+        self.rehber.setStyleSheet("color: %s; font-size: 10pt;" % on)
         self.rehber.setText(metin)
 
     def _durum_cubugu_kur(self):
@@ -484,6 +525,30 @@ class AnaPencere(QtWidgets.QMainWindow):
         menu.addAction(e)
         return e
 
+    def _tema_degistir(self, ad):
+        """Temayi degistirir ve renge bagli panelleri tazeler."""
+        tema.uygula(QtWidgets.QApplication.instance(), ad)
+        for anahtar, e in self._tema_eylemleri.items():
+            e.setChecked(anahtar == ad)
+        self._dogrula(veri=False)          # seviye renkleri
+        self._rehber_guncelle()            # rehber seridi
+        self.onizleme._ciz()               # grafik paleti
+        self.statusBar().showMessage("Tema: %s" % tema.TEMALAR[ad]["ad"], 4000)
+
+    def _tam_ekran(self):
+        """F11 -- tam ekran ac/kapa."""
+        if self.isFullScreen():
+            self.setWindowState(self.windowState() & ~QtCore.Qt.WindowFullScreen)
+        else:
+            self.setWindowState(self.windowState() | QtCore.Qt.WindowFullScreen)
+
+    def _buyut(self):
+        """F10 -- pencereyi ekrana sigacak sekilde buyut."""
+        if self.isMaximized():
+            self.setWindowState(self.windowState() & ~QtCore.Qt.WindowMaximized)
+        else:
+            self.setWindowState(self.windowState() | QtCore.Qt.WindowMaximized)
+
     def _kisayollar(self):
         QtWidgets.QMessageBox.information(self, "Kisayollar",
             "Ctrl+N   Yeni model (sablon secimi)\n"
@@ -495,7 +560,9 @@ class AnaPencere(QtWidgets.QMainWindow):
             "F5       Dogrulamayi yenile (veri kutuphanesi dahil)\n"
             "F6       Onizlemeyi yenile\n"
             "F9       CALISTIR\n"
-            "F1       Terim sozlugu\n\n"
+            "F1       Terim sozlugu\n"
+            "F10      Pencereyi buyut / eski haline dondur\n"
+            "F11      Tam ekran\n\n"
             "Altigen haritada: sol tik boyar, sag tik fircayi degistirir, "
             "tekerlek yakinlastirir.")
 
@@ -552,7 +619,7 @@ class AnaPencere(QtWidgets.QMainWindow):
         """
         self._kirli = True
         bagimli_konular = _KONU_BAGIMLILIK.get(konu, set())
-        gorunur = self.sekmeler.currentWidget()
+        gorunur = self._gorunur_editor()
         for k in bagimli_konular:
             e = self._konu_sekme.get(k)
             if e is None:
@@ -570,8 +637,14 @@ class AnaPencere(QtWidgets.QMainWindow):
         self._ozet_guncelle()
         self._rehber_guncelle()
 
+    def _gorunur_editor(self):
+        """Etkin sekmenin ICINDEKI editoru dondurur (kaydirma alanini asar)."""
+        return self._sayfa_editor.get(self.sekmeler.currentWidget())
+
     def _sekme_degisti(self, indeks):
-        w = self.sekmeler.widget(indeks)
+        w = self._sayfa_editor.get(self.sekmeler.widget(indeks))
+        if w is None:
+            return
         if w in self._kirli_sekmeler:
             w.spec_yukle(self.spec)
             self._kirli_sekmeler.discard(w)
@@ -661,14 +734,15 @@ class AnaPencere(QtWidgets.QMainWindow):
         for b in self._bulgular:
             oge = QtWidgets.QListWidgetItem(
                 "%s  %s%s" % (b.seviye.upper().ljust(5), b.yer.ljust(22), b.mesaj))
-            oge.setForeground(QtGui.QColor(_SEVIYE_RENK[b.seviye]))
+            oge.setForeground(QtGui.QColor(_seviye_renk(b.seviye)))
             oge.setData(QtCore.Qt.UserRole, b.yer)
             ipucu = b.oneri or ""
             oge.setToolTip((ipucu + "\n\n") if ipucu else "" + "Tiklayinca ilgili sekmeye gider.")
             self.dogrulama.addItem(oge)
         ozet = dogrula.ozet(self._bulgular)
         self.dogrulama_ozet.setText(ozet)
-        renk = _SEVIYE_RENK["hata"] if dogrula.hata_var(self._bulgular) else "#27ae60"
+        renk = (tema.renk("hata") if dogrula.hata_var(self._bulgular)
+                else tema.renk("basari"))
         self.dogrulama_ozet.setStyleSheet("color: %s; font-weight: bold;" % renk)
         self.durum_dogrulama.setText(ozet)
         self.durum_dogrulama.setStyleSheet("color: %s;" % renk)
@@ -911,8 +985,18 @@ def main(argv=None):
     argv = list(argv if argv is not None else sys.argv[1:])
     app = QtWidgets.QApplication(sys.argv[:1])
     app.setApplicationName("OpenMC Arayuz")
+    tema.uygula(app)
     pencere = AnaPencere(argv[0] if argv else None)
     pencere.show()
+
+    # Pencereyi buyutme:
+    #   showMaximized() bu makinedeki pencere yoneticisinde yok sayiliyor,
+    #   show()'dan hemen sonra setWindowState() de tutmuyor -- pencerenin
+    #   once HARITALANMASI gerekiyor. Bu yuzden olay dongusu basladiktan
+    #   kisa bir sure sonra uygulaniyor.
+    def _buyut_gecikmeli():
+        pencere.setWindowState(pencere.windowState() | QtCore.Qt.WindowMaximized)
+    QtCore.QTimer.singleShot(120, _buyut_gecikmeli)
     return app.exec()
 
 

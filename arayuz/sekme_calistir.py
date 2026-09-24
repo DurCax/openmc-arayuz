@@ -64,7 +64,7 @@ class CalistirSekmesi(QtWidgets.QWidget):
 
         # --- yakinsama grafigi ---
         # Ust: k-eff yakinsamasi, alt: Shannon entropisi (kaynak yakinsamasi)
-        self.figur = Figure(figsize=(5, 3.6), tight_layout=True)
+        self.figur = Figure(figsize=(5, 2.8), tight_layout=True)
         self.tuval = FigureCanvasQTAgg(self.figur)
         self.eksen = self.figur.add_subplot(211)
         self.eksen_ent = self.figur.add_subplot(212, sharex=self.eksen)
@@ -146,26 +146,27 @@ class CalistirSekmesi(QtWidgets.QWidget):
     def _grafik_guncelle(self):
         if not self._cevrimler:
             return
+        from arayuz import tema as _t
         self.eksen.clear()
         self.eksen.grid(alpha=0.3)
         pasif = self.spec["ayarlar"].get("pasif", 0)
         x = [c["cevrim"] for c in self._cevrimler]
         y = [c["k"] for c in self._cevrimler]
-        self.eksen.plot(x, y, lw=0.8, color="#95a5a6", label="cevrim k")
+        self.eksen.plot(x, y, lw=0.8, color=_t.renk("metin_soluk"), label="cevrim k")
         ort = [(c["cevrim"], c["ortalama"], c["sapma"])
                for c in self._cevrimler if c["ortalama"] is not None]
         if ort:
             ox = [a for a, _, _ in ort]
             oy = [b for _, b, _ in ort]
             os_ = [c for _, _, c in ort]
-            self.eksen.plot(ox, oy, lw=1.6, color="#2c3e50", label="kumulatif ortalama")
+            self.eksen.plot(ox, oy, lw=1.6, color=_t.renk("vurgu"), label="kumulatif ortalama")
             self.eksen.fill_between(ox, [a - b for a, b in zip(oy, os_)],
                                     [a + b for a, b in zip(oy, os_)],
-                                    color="#2c3e50", alpha=0.18)
+                                    color=_t.renk("vurgu"), alpha=0.18)
         if pasif:
-            self.eksen.axvline(pasif, color="#c0392b", ls="--", lw=1.0)
+            self.eksen.axvline(pasif, color=_t.renk("hata"), ls="--", lw=1.0)
             self.eksen.text(pasif, self.eksen.get_ylim()[1], " pasif biter",
-                            color="#c0392b", fontsize=7, va="top")
+                            color=_t.renk("hata"), fontsize=7, va="top")
         self.eksen.set_ylabel("k-eff", fontsize=8)
         self.eksen.tick_params(labelsize=7)
         self.eksen.legend(fontsize=7, loc="best")
@@ -178,13 +179,14 @@ class CalistirSekmesi(QtWidgets.QWidget):
         if ent:
             ex = [a for a, _ in ent]
             ey = [b for _, b in ent]
-            self.eksen_ent.plot(ex, ey, lw=1.0, color="#8e44ad")
+            self.eksen_ent.plot(ex, ey, lw=1.0, color=_t.renk("vurgu"))
             if pasif:
-                self.eksen_ent.axvline(pasif, color="#c0392b", ls="--", lw=1.0)
+                self.eksen_ent.axvline(pasif, color=_t.renk("hata"), ls="--", lw=1.0)
         else:
             self.eksen_ent.text(0.5, 0.5, "Shannon entropisi kapali",
                                 transform=self.eksen_ent.transAxes,
-                                ha="center", va="center", fontsize=8, color="#95a5a6")
+                                ha="center", va="center", fontsize=8,
+                                color=_t.renk("metin_soluk"))
         self.eksen_ent.set_ylabel("Shannon entropisi", fontsize=8)
         self.eksen_ent.set_xlabel("cevrim", fontsize=8)
         self.eksen_ent.tick_params(labelsize=7)
@@ -304,8 +306,9 @@ class CalistirSekmesi(QtWidgets.QWidget):
         durum, ayrinti = kosucu.keff_yorumu(s["keff"][0], s["keff"][1],
                                             kin0.get("beta_eff"))
         self.durum_etiket.setText("%s\n%s" % (durum, ayrinti))
-        renk = "#27ae60" if durum.startswith("KRITIK (") else (
-            "#c0392b" if "USTU" in durum else "#2980b9")
+        from arayuz import tema
+        renk = (tema.renk("basari") if durum.startswith("KRITIK (")
+                else (tema.renk("hata") if "USTU" in durum else tema.renk("vurgu")))
         self.durum_etiket.setStyleSheet("color: %s; font-weight: bold;" % renk)
         satirlar = [
             "k-eff    = %.5f +/- %.5f" % s["keff"],

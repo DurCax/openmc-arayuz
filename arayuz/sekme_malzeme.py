@@ -343,7 +343,10 @@ class MalzemeSekmesi(SekmeTabani):
             for i, d in enumerate(degerler, start=1):
                 self.tablo.setItem(satir, i, QtWidgets.QTableWidgetItem(str(d)))
         self.tablo.resizeColumnsToContents()
-        self.tablo.setColumnWidth(0, 34)
+        # Sutun genisligi baslik metnini ("Renk") de kapsamali; 34 px'te
+        # baslik kirpiliyordu.
+        self.tablo.setColumnWidth(0, 52)
+        self.tablo.verticalHeader().setDefaultSectionSize(26)
 
     # ------------------------------------------------------------------
     def _adlar(self):
