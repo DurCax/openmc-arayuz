@@ -474,7 +474,8 @@ def kor_kontrol(spec):
     bulgular = []
     kor = spec["kor"]
     tur = kor.get("tur")
-    gecerli = ("tek_cubuk", "tek_demet", "kare_kafes", "tek_plaka", "kuresel")
+    gecerli = ("tek_cubuk", "tek_demet", "kare_kafes", "tek_plaka", "kuresel",
+               "tamburlu")
     if tur not in gecerli:
         bulgular.append(Bulgu("hata", "kor",
                               "bilinmeyen kor turu: %s (gecerli: %s)"
@@ -503,6 +504,62 @@ def kor_kontrol(spec):
     elif tur == "tek_plaka":
         if not kor.get("plaka") or plaka_bul(spec, kor.get("plaka")) is None:
             bulgular.append(Bulgu("hata", "kor", "tanimsiz plaka elemani: %s" % kor.get("plaka")))
+    elif tur == "tamburlu":
+        from cekirdek import tambur as _t
+        R_kor = kor.get("kor_yaricap") or 0.0
+        yans = kor.get("yansitici") or {}
+        kal = yans.get("kalinlik") or 0.0
+        if R_kor <= 0:
+            bulgular.append(Bulgu("hata", "kor", "kor yaricapi pozitif olmali"))
+        if kal <= 0:
+            bulgular.append(Bulgu("hata", "kor",
+                                  "tamburlu korda yansitici kalinligi pozitif olmali"))
+        if not yans.get("malzeme") or yans["malzeme"] == BOSLUK:
+            bulgular.append(Bulgu("uyari", "kor",
+                                  "yansitici malzemesi secilmemis (void)"))
+        dolgu = kor.get("dolgu")
+        if not dolgu:
+            bulgular.append(Bulgu("hata", "kor", "kor dolgusu secilmemis"))
+        elif (dolgu != BOSLUK and cubuk_bul(spec, dolgu) is None
+              and demet_bul(spec, dolgu) is None
+              and malzeme_bul(spec, dolgu) is None):
+            bulgular.append(Bulgu("hata", "kor",
+                                  "kor dolgusu cozumlenemedi: %s" % dolgu))
+        t = kor.get("tambur") or {}
+        if int(t.get("sayi") or 0) <= 0:
+            bulgular.append(Bulgu(
+                "bilgi", "kor",
+                "tambur sayisi 0 -- kontrol tamburu olmadan duz yansitici kusak"))
+        else:
+            for h in _t.geometri_kontrol(t, R_kor, kal):
+                bulgular.append(Bulgu("hata", "kor", h))
+            for anahtar, etiket in (("govde_malzeme", "tambur govdesi"),
+                                    ("emici_malzeme", "tambur emicisi")):
+                ad = t.get(anahtar)
+                if not ad:
+                    bulgular.append(Bulgu("hata", "kor",
+                                          "%s malzemesi secilmemis" % etiket))
+                elif ad != BOSLUK and malzeme_bul(spec, ad) is None:
+                    bulgular.append(Bulgu("hata", "kor",
+                                          "%s icin tanimsiz malzeme: %s" % (etiket, ad)))
+            em = malzeme_bul(spec, t.get("emici_malzeme") or "")
+            if em:
+                elemanlar = {b.get("isim", "") for b in em.get("bilesim", [])}
+                if not (elemanlar & {"B", "B10", "Gd", "Ag", "In", "Cd", "Hf", "Eu"}):
+                    bulgular.append(Bulgu(
+                        "uyari", "kor",
+                        "tambur emicisi ('%s') guclu bir notron sogurucu icermiyor"
+                        % t.get("emici_malzeme")))
+            d = t.get("donme")
+            if d is None or not (-360.0 <= float(d) <= 360.0):
+                bulgular.append(Bulgu("hata", "kor",
+                                      "tambur donmesi -360..360 derece olmali: %s" % d))
+            if not kor.get("yukseklik"):
+                bulgular.append(Bulgu(
+                    "bilgi", "kor",
+                    "tamburlu kor 2B -- eksenel sizinti yok, deger fazla cikar",
+                    "Gercekci bir tambur degeri icin aktif yukseklik tanimlayin."))
+
     elif tur == "kuresel":
         kabuklar = kor.get("kabuklar") or []
         if not kabuklar:

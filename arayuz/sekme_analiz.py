@@ -256,6 +256,7 @@ class AnalizSekmesi(QtWidgets.QWidget):
             "malzeme_yogunluk": (0.4, 0.8, 5), "kor_adim": (1.1, 1.5, 5),
             "cubuk_yaricap": (0.35, 0.45, 5), "yansitici_kalinlik": (5, 40, 5),
             "cubuk_daldirma": (0, 100, 6),
+            "tambur_donme": (0, 180, 5),
         }
         if tur in varsayilan:
             a, b, n = varsayilan[tur]
@@ -422,6 +423,11 @@ class AnalizSekmesi(QtWidgets.QWidget):
             if not self.spec["kor"].get("yukseklik"):
                 return False, ("Kontrol cubugu 3B model gerektirir; kor "
                                "yuksekligi tanimli degil.")
+        if tur == "tambur_donme":
+            t = (self.spec.get("kor") or {}).get("tambur") or {}
+            if int(t.get("sayi") or 0) <= 0:
+                return False, ("Modelde kontrol tamburu yok. 4. Kor sekmesinde "
+                               "kor turunu 'Tamburlu kor' yapin.")
         if tur in ("kafes_adim",) and not self.spec.get("demetler"):
             return False, "Modelde kafes yok."
         if tur == "yansitici_kalinlik" and not (self.spec["kor"].get("yansitici") or {}).get("var"):

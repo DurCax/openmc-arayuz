@@ -81,6 +81,9 @@ TURLER = {
     "cubuk_yaricap": (
         "Cubugun bir bolgesinin yaricapi",
         "cubuk_bolge", "cm", "pcm/cm"),
+    "tambur_donme": (
+        "Kontrol tamburu donmesi (0 = emici kore bakiyor, 180 = disa)",
+        "kor", "derece", "pcm/derece"),
     "yansitici_kalinlik": (
         "Yansitici kusak kalinligi",
         "kor", "cm", "pcm/cm"),
@@ -210,6 +213,12 @@ def parametre_uygula(spec, tur, hedef, deger, taban=None):
             raise KeyError("tanimsiz cubuk: %s" % cubuk_ad)
         c["bolgeler"][int(bolge_no)]["r"] = float(deger)
 
+    elif tur == "tambur_donme":
+        t = yeni["kor"].get("tambur") or {}
+        if int(t.get("sayi") or 0) <= 0:
+            raise ValueError("modelde kontrol tamburu yok")
+        t["donme"] = float(deger)
+
     elif tur == "yansitici_kalinlik":
         yeni["kor"].setdefault("yansitici", {})["kalinlik"] = float(deger)
         yeni["kor"]["yansitici"]["var"] = True
@@ -310,6 +319,11 @@ def yorumla(tur, kats):
         "kafes_adim": ("Moderasyon orani etkisi. Isareti, kafesin az mi cok mu "
                        "moderatorlu oldugunu soyler: az moderatorlu tarafta "
                        "adim artisi k'yi ARTIRIR (pozitif)."),
+        "tambur_donme": (
+            "Tambur degeri. Donme 0'da emici kora bakar (en dusuk k), 180'de "
+            "disa bakar (en yuksek k); bu yuzden egim POZITIF olmali. "
+            "Diferansiyel deger tepesi orta donmede cikar -- klasik tambur "
+            "S egrisi."),
         "cubuk_daldirma": (
             "Kontrol cubugu degeri. NEGATIF olmali: emici daldikca reaktivite "
             "duser. DIKKAT -- klasik S egrisi yalnizca sistem her konumda "

@@ -312,6 +312,83 @@ def _geometri(spec, satirlar):
             gx, gy = altigen.kapsayan_olcu(halka, d["adim"], d.get("yonelim", "y"))
         else:
             gx, gy = d["adim"] * d["boyut"][0], d["adim"] * d["boyut"][1]
+    elif tur == "tamburlu":
+        from cekirdek import tambur as _t
+        # yan_bc bu fonksiyonda DAHA SONRA tanimlaniyor; bu dal erken dondugu
+        # icin burada yerel olarak okunur.
+        yan_bc = (kor.get("sinir") or {}).get("yan", "vacuum")
+        R_kor = float(kor.get("kor_yaricap") or 0.0)
+        yans = kor.get("yansitici") or {}
+        kal = float(yans.get("kalinlik") or 0.0)
+        R_dis = R_kor + kal
+        t = kor.get("tambur") or {}
+        ic_ad = _bagimliliklar(spec, kor["dolgu"], satirlar, uretilen)
+        h = kor.get("yukseklik")
+        eksen = ""
+        if h:
+            sinir_d = kor.get("sinir") or {}
+            satirlar.append("")
+            satirlar.append("z_alt = openmc.ZPlane(%s, boundary_type=%r)"
+                            % (_f(-h / 2.0), sinir_d.get("alt", "vacuum")))
+            satirlar.append("z_ust = openmc.ZPlane(%s, boundary_type=%r)"
+                            % (_f(+h / 2.0), sinir_d.get("ust", "vacuum")))
+            eksen = " & +z_alt & -z_ust"
+        satirlar.append("")
+        satirlar.append("# --- tamburlu kor: silindirik kor + yansitici + donen tamburlar ---")
+        satirlar.append("import math")
+        satirlar.append("kor_silindir = openmc.ZCylinder(r=%s)" % _f(R_kor))
+        satirlar.append("dis_silindir = openmc.ZCylinder(r=%s, boundary_type=%r)"
+                        % (_f(R_dis), yan_bc))
+        satirlar.append("_hucreler = [openmc.Cell(fill=%s, region=-kor_silindir%s)]"
+                        % (ic_ad, eksen))
+        satirlar.append("_yansitici = +kor_silindir & -dis_silindir")
+        n = int(t.get("sayi") or 0)
+        if n > 0:
+            aci = float(t.get("emici_aci") or 120.0)
+            satirlar.append("")
+            satirlar.append("# Tambur universe'i: emici yay LOKAL +x yonunde ortalanmis.")
+            satirlar.append("# cell.rotation = psi yayi DOGRUDAN psi acisina koyar")
+            satirlar.append("# (nokta sorgusuyla olculdu); ters cevirme yoktur.")
+            satirlar.append("def _yari_duzlem(aci):")
+            satirlar.append("    a = math.radians(aci)")
+            satirlar.append("    return openmc.Plane(a=-math.sin(a), b=math.cos(a), c=0.0, d=0.0)")
+            satirlar.append("_t_dis = openmc.ZCylinder(r=%s)" % _f(t["yaricap"]))
+            birlesim = aci > 180.0
+            if float(t.get("emici_ic_yaricap") or 0) > 0:
+                satirlar.append("_t_ic  = openmc.ZCylinder(r=%s)" % _f(t["emici_ic_yaricap"]))
+                taban = "+_t_ic & -_t_dis"
+            else:
+                taban = "-_t_dis"
+            kama = ("(+_yari_duzlem(%s) | -_yari_duzlem(%s))" if birlesim
+                    else "(+_yari_duzlem(%s) & -_yari_duzlem(%s))") % (_f(-aci/2), _f(aci/2))
+            satirlar.append("_t_emici = (%s) & %s" % (taban, kama))
+            satirlar.append("_tambur = openmc.Universe(cells=[")
+            satirlar.append("    openmc.Cell(fill=%s, region=_t_emici),"
+                            % _mat_ifade(t.get("emici_malzeme")))
+            satirlar.append("    openmc.Cell(fill=%s, region=(-_t_dis) & ~_t_emici),"
+                            % _mat_ifade(t.get("govde_malzeme")))
+            satirlar.append("    openmc.Cell(fill=%s, region=+_t_dis)])"
+                            % _mat_ifade(t.get("govde_malzeme")))
+            satirlar.append("")
+            satirlar.append("# yerlesim: psi = azimut + 180 + donme  ->  donme=0'da emici kore bakar")
+            satirlar.append("_tambur_yerlesim = [")
+            for x, y, psi in _t.yerlesim(t):
+                satirlar.append("    (%s, %s, %s)," % (_f(x), _f(y), _f(psi)))
+            satirlar.append("]")
+            satirlar.append("for _x, _y, _psi in _tambur_yerlesim:")
+            satirlar.append("    _delik = openmc.ZCylinder(x0=_x, y0=_y, r=%s)" % _f(t["yaricap"]))
+            satirlar.append("    _h = openmc.Cell(fill=_tambur, region=-_delik%s)" % eksen)
+            satirlar.append("    _h.translation = (_x, _y, 0.0)")
+            satirlar.append("    _h.rotation = (0.0, 0.0, _psi)")
+            satirlar.append("    _hucreler.append(_h)")
+            satirlar.append("    _yansitici = _yansitici & +_delik")
+        satirlar.append("_hucreler.append(openmc.Cell(fill=%s, region=_yansitici%s))"
+                        % (_mat_ifade(yans.get("malzeme")), eksen))
+        satirlar.append("kok = openmc.Universe(cells=_hucreler)")
+        satirlar.append("")
+        satirlar.append("geometri = openmc.Geometry(kok)")
+        return 2 * R_dis, 2 * R_dis, uretilen
+
     elif tur == "kuresel":
         kabuklar = kor.get("kabuklar") or []
         satirlar.append("")

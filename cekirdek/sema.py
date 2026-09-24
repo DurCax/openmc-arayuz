@@ -80,7 +80,8 @@ VARSAYILAN_CALISTIRMA = {
 }
 
 VARSAYILAN_KOR = {
-    "tur": "tek_cubuk",           # tek_cubuk | tek_demet | kare_kafes | tek_plaka | kuresel
+    "tur": "tek_cubuk",           # tek_cubuk | tek_demet | kare_kafes |
+                                  # tek_plaka | kuresel | tamburlu
     "cubuk": None,
     "demet": None,
     "plaka": None,
@@ -94,6 +95,16 @@ VARSAYILAN_KOR = {
     # degeri DIS yaricapidir; en distaki ayni zamanda modelin sinir yuzeyidir.
     # Kritik kure kriterlerini (Godiva, Jezebel gibi) kurmak icin kullanilir.
     "kabuklar": [],
+    # Tamburlu kor: silindirik kor + yansitici kusak + kusak icine gomulu
+    # donen kontrol tamburlari (bkz. cekirdek/tambur.py).
+    "dolgu": None,                # kor bolgesini dolduran kafes/cubuk/malzeme
+    "kor_yaricap": 20.0,
+    "tambur": {
+        "sayi": 0, "yaricap": 4.0, "merkez_yaricap": 26.0,
+        "govde_malzeme": None, "emici_malzeme": None,
+        "emici_ic_yaricap": 2.5, "emici_aci": 120.0,
+        "donme": 0.0, "baslangic_acisi": 0.0,
+    },
     "sinir": {"yan": "reflective", "alt": "reflective", "ust": "reflective"},
 }
 
@@ -256,6 +267,22 @@ def kabuk(r, malzeme_adi):
     return {"r": r, "malzeme": malzeme_adi}
 
 
+def tambur(sayi, yaricap, merkez_yaricap, govde_malzeme, emici_malzeme,
+           emici_ic_yaricap=0.0, emici_aci=120.0, donme=0.0, baslangic_acisi=0.0):
+    """
+    Donen kontrol tamburu takimi.
+
+    donme = 0   -> emici KORE bakiyor (daldirilmis, en dusuk k)
+    donme = 180 -> emici DISA bakiyor (cekilmis, en yuksek k)
+    """
+    return {
+        "sayi": int(sayi), "yaricap": yaricap, "merkez_yaricap": merkez_yaricap,
+        "govde_malzeme": govde_malzeme, "emici_malzeme": emici_malzeme,
+        "emici_ic_yaricap": emici_ic_yaricap, "emici_aci": emici_aci,
+        "donme": donme, "baslangic_acisi": baslangic_acisi,
+    }
+
+
 def tally(ad, skorlar, filtreler=None, nuklidler=None):
     """Tally tanimi."""
     return {
@@ -375,6 +402,14 @@ def kullanilan_malzemeler(spec):
     for d in spec["demetler"]:
         if d.get("dolgu_disi") and d["dolgu_disi"] != BOSLUK:
             adlar.add(d["dolgu_disi"])
+    t = spec["kor"].get("tambur") or {}
+    if int(t.get("sayi") or 0) > 0:
+        for anahtar in ("govde_malzeme", "emici_malzeme"):
+            if t.get(anahtar) and t[anahtar] != BOSLUK:
+                adlar.add(t[anahtar])
+    d = spec["kor"].get("dolgu")
+    if d and d != BOSLUK and malzeme_bul(spec, d) is not None:
+        adlar.add(d)
     for k in (spec["kor"].get("kabuklar") or []):
         if k.get("malzeme") and k["malzeme"] != BOSLUK:
             adlar.add(k["malzeme"])

@@ -1,0 +1,181 @@
+{
+  "surum": 1,
+  "ad": "Tamburlu kompakt hizli reaktor",
+  "aciklama": "Donen kontrol tamburlu kompakt hizli reaktor. U-10Mo (%19.75) silindirik\nkor, berilyum yansitici kusak, kusaga gomulu 8 adet B4C tamburu.\nKilopower/KRUSTY ve PETEK gibi tasarimlarda kontrol cubugu yerine bu\nkullanilir.\n\nKONVANSIYON\n  donme = 0   -> emici KORE bakiyor  = DALDIRILMIS (en dusuk k)\n  donme = 180 -> emici DISA bakiyor  = CEKILMIS   (en yuksek k)\nOlculen: k(0) = 0.963,  k(180) = 1.012  -> toplam tambur degeri ~5000 pcm\nKritik nokta arada kalir; 7. Analiz sekmesinde 'Kritik arama' +\n'Kontrol tamburu donmesi' ile KRITIK TAMBUR KONUMU bulunabilir.\n\nMalzeme sicakliklari 400 K secildi: berilyum S(a,b) verisi 296-1200 K\naraliginda ve ara degerler icin sicaklik yontemi 'interpolation' olmali.",
+  "malzemeler": [
+    {
+      "ad": "u10mo",
+      "gorunen_ad": "U-10Mo %19.75",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 17.0
+      },
+      "sicaklik": 400.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "U",
+          "miktar": 90.0,
+          "birim": "wo",
+          "zenginlik": 19.75
+        },
+        {
+          "tur": "element",
+          "isim": "Mo",
+          "miktar": 10.0,
+          "birim": "wo"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        222,
+        93,
+        40
+      ]
+    },
+    {
+      "ad": "berilyum",
+      "gorunen_ad": "Be",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 1.85
+      },
+      "sicaklik": 400.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "Be",
+          "miktar": 1.0,
+          "birim": "ao"
+        }
+      ],
+      "sab": [
+        "c_Be"
+      ],
+      "renk": [
+        120,
+        200,
+        140
+      ]
+    },
+    {
+      "ad": "b4c",
+      "gorunen_ad": "B4C (dogal)",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 2.52
+      },
+      "sicaklik": 400.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "B",
+          "miktar": 4.0,
+          "birim": "ao"
+        },
+        {
+          "tur": "element",
+          "isim": "C",
+          "miktar": 1.0,
+          "birim": "ao"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        60,
+        60,
+        60
+      ]
+    }
+  ],
+  "cubuklar": [],
+  "plakalar": [],
+  "demetler": [],
+  "kor": {
+    "tur": "tamburlu",
+    "cubuk": null,
+    "demet": null,
+    "plaka": null,
+    "adim": 1.26,
+    "boyut": [
+      1,
+      1
+    ],
+    "harita": [],
+    "anahtar": {},
+    "yukseklik": 45.0,
+    "yansitici": {
+      "var": true,
+      "kalinlik": 12.0,
+      "malzeme": "berilyum"
+    },
+    "kabuklar": [],
+    "dolgu": "u10mo",
+    "kor_yaricap": 16.0,
+    "tambur": {
+      "sayi": 8,
+      "yaricap": 4.0,
+      "merkez_yaricap": 21.5,
+      "govde_malzeme": "berilyum",
+      "emici_malzeme": "b4c",
+      "emici_ic_yaricap": 2.6,
+      "emici_aci": 120.0,
+      "donme": 180.0,
+      "baslangic_acisi": 0.0
+    },
+    "sinir": {
+      "yan": "vacuum",
+      "alt": "vacuum",
+      "ust": "vacuum"
+    }
+  },
+  "ayarlar": {
+    "mod": "eigenvalue",
+    "parcacik": 10000,
+    "cevrim": 110,
+    "pasif": 30,
+    "tohum": 1,
+    "sicaklik_yontemi": "interpolation",
+    "kaynak": {
+      "tur": "kutu",
+      "alt": null,
+      "ust": null
+    },
+    "entropi_mesh": {
+      "var": true,
+      "boyut": [
+        6,
+        6,
+        6
+      ]
+    },
+    "kinetik": {
+      "var": false,
+      "nesil": 10
+    }
+  },
+  "tallyler": [
+    {
+      "ad": "reaksiyonlar",
+      "skorlar": [
+        "fission",
+        "absorption",
+        "nu-fission"
+      ],
+      "filtreler": [],
+      "nuklidler": []
+    }
+  ],
+  "guc_dagilimi": {
+    "var": false,
+    "cubuk": null,
+    "bolge": 0,
+    "skor": "kappa-fission",
+    "eksenel_dilim": 20,
+    "toplam_guc": null
+  },
+  "calistirma": {
+    "is_parcacigi": 24,
+    "dizin": "kosu_tambur"
+  }
+}

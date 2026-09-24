@@ -52,6 +52,7 @@ openmc_arayuz/
 │   ├── dogrula.py           koşu öncesi kontroller
 │   ├── kod_uret.py          spec → tek başına çalışan Python betiği
 │   ├── ice_aktar.py         materials.xml → spec malzemeleri
+│   ├── tambur.py            dönen kontrol tamburu geometrisi ve yerleşimi
 │   ├── guc.py               çubuk bazlı güç dağılımı, F_ΔH, F_q
 │   ├── tarama.py            parametre taraması → reaktivite katsayıları
 │   ├── kritik_arama.py      hedef k-eff'i veren parametre değeri
@@ -124,7 +125,7 @@ python3 testler/test_regresyon.py            # tümü (~2 dk)
 python3 testler/test_regresyon.py --hizli    # Monte Carlo hariç (~10 s)
 ```
 
-151 test var. Üçü bu katmanın doğruluğunun asıl kanıtıdır:
+170 test var. Üçü bu katmanın doğruluğunun asıl kanıtıdır:
 
 - **Regresyon çıpası** — `ornekler/pwr_pinhucre.json` referans değeri
   **k∞ = 1.3570 ± 0.0020** vermeli. 2σ dışına çıkarsa `kurucu.py`'de hata var.
@@ -149,6 +150,7 @@ python3 testler/test_regresyon.py --hizli    # Monte Carlo hariç (~10 s)
 | `godiva_kriter` | 0.99900 ± 0.00045 | 6 s |
 | `pwr_3b` (3B, güç dağılımı) | 1.17953 ± 0.00059 | 73 s |
 | `pwr_kontrol` (çubuk %0) | 1.17801 ± 0.00196 | 24 s |
+| `tamburlu_kor` (dönme 180°) | 1.01057 ± 0.00157 | 21 s |
 
 ## Kontrol çubuğu ve kritik çubuk konumu
 
@@ -174,6 +176,35 @@ daldırma %100 → uç z = −H/2   (emici tüm yüksekliği kaplar)
 > k∞ yüksektir; rodlanmamış alt bölge tek başına süperkritik kalır. Bu yüzden
 > değer geç toplanır ve diferansiyel değer tepesi merkezde değil tam daldırmaya
 > yakın çıkar. Ölçülen: %0 → k=1.165, %50 → k=1.131, %100 → k=0.588.
+
+## Kontrol tamburu (dönen)
+
+Kompakt/uzay reaktörlerinde (Kilopower, KRUSTY, PETEK) çubuk yerine **dönen
+tambur** kullanılır: yansıtıcı kuşağına gömülü silindirlerin bir yayı emicidir,
+dönerek kora yaklaşır veya uzaklaşır.
+
+Kor türü **`Tamburlu kor`** ile kurulur: silindirik kor + yansıtıcı kuşak +
+kuşağa gömülü N tambur.
+
+```
+dönme 0°   → emici KORA bakıyor  = daldırılmış (en düşük k)
+dönme 180° → emici DIŞA bakıyor  = çekilmiş   (en yüksek k)
+```
+
+Ölçülen (`tamburlu_kor`, 8 B4C tamburu, 120° yay): k(0°)=0.963, k(180°)=1.012 →
+toplam tambur değeri ~5000 pcm. **Kritik tambur konumu = 122.46° ± 3.68**,
+4 koşuda bulundu.
+
+> 📐 **Dönme matematiği ölçümle belirlendi.** `openmc.Cell.rotation = (0,0,ψ)`
+> emici yayı **doğrudan ψ açısına** koyar — ters çevirme veya kaydırma yok.
+> (Nokta sorgusuyla ölçüldü: ψ=45° → yay merkezi 44.5°.) Azimutu φ olan bir
+> tamburda emicinin kora bakması için `ψ = φ + 180 + dönme`. Bunu çizimden
+> okumaya çalışmak yanıltıcı: ilk denemede grafiği yanlış okuyup konvansiyonun
+> ters olduğunu sanmıştım.
+
+**Yerleşim canlı doğrulanır:** tamburlar kora giriyor mu, yansıtıcıdan taşıyor
+mu, komşular çakışıyor mu (kiriş mesafesi `2·R_m·sin(π/N)` ile). Geçersiz
+yerleşim koşuyu değil **model kurulumunu** durdurur.
 
 ## Güç dağılımı ve tepe faktörleri
 
@@ -247,7 +278,8 @@ tahmin edilip raporlanır. Parantez bu belirsizliğin altına indiğinde daha fa
 iterasyon bilgi katmaz — arama durur ve bunu söyler.
 
 Örnekler: 17×17 için kritik bor **3430 ppm** (7 koşu); `pwr_kontrol` için
-kritik çubuk konumu **%87.85 ± 0.09** (13 koşu).
+kritik çubuk konumu **%87.85 ± 0.09** (13 koşu); `tamburlu_kor` için kritik
+tambur konumu **122.46° ± 3.68** (4 koşu).
 
 ## Kinetik parametreler
 
@@ -362,8 +394,10 @@ Bitmiş bir geometriyi incelerken (eksen değiştirme, yakınlaştırma) açın;
 
 ## Bilinen sınırlar
 
-- **Kontrol tamburu (dönen) yok.** Çubuk daldırma var; tambur dönüşü için
-  sektör geometrisi ve yansıtıcı içine ayrık bileşen yerleştirme gerekiyor.
+- **Küresel düzenek kabukları arayüzden düzenlenemiyor** — yalnızca JSON'dan
+  (`ornekler/godiva_kriter.json`). Arayüz kor türünü gösterir ve uyarır.
+- **Tambur yayı tek parça.** Çok parçalı ya da eksenel olarak bölünmüş tambur
+  desteklenmiyor.
 - **Eksenel heterojenlik** yok — kor tek eksenel bölge; zenginlik kuşağı,
   blanket, plenum tanımlanamaz.
 - **Sabit kaynak modu yarım** — kaynak enerji spektrumu Watt'a sabit;

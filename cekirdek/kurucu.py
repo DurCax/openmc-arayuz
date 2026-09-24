@@ -38,6 +38,7 @@ import math
 import openmc
 
 from cekirdek import altigen
+from cekirdek import tambur as _tambur
 from cekirdek.sema import BOSLUK, malzeme_bul, cubuk_bul, plaka_bul, demet_bul
 
 # Varsayilan renk (spec'te renk verilmemis malzemeler icin)
@@ -387,6 +388,49 @@ def kor_kur(spec, nesneler, universeler):
     elif tur == "tek_demet":
         ic = demet_lattice(spec, kor["demet"], nesneler, universeler)
         gx, gy = ic.arayuz_boyut
+    elif tur == "tamburlu":
+        # Silindirik kor + yansitici kusak + kusaga gomulu donen tamburlar.
+        R_kor = float(kor.get("kor_yaricap") or 0.0)
+        yans = kor.get("yansitici") or {}
+        kal = float(yans.get("kalinlik") or 0.0)
+        R_dis = R_kor + kal
+        if R_kor <= 0 or kal <= 0:
+            raise ValueError("tamburlu korda kor yaricapi ve yansitici "
+                             "kalinligi pozitif olmali")
+        t = kor.get("tambur") or {}
+        hatalar = _tambur.geometri_kontrol(t, R_kor, kal) if int(t.get("sayi") or 0) else []
+        if hatalar:
+            raise ValueError("tambur yerlesimi gecersiz: " + hatalar[0])
+
+        dolgu_ad = kor.get("dolgu")
+        if not dolgu_ad:
+            raise ValueError("tamburlu korda 'dolgu' secilmeli "
+                             "(kafes, cubuk ya da malzeme adi)")
+        if dolgu_ad not in universeler:
+            universeler[dolgu_ad] = _universe_uret(spec, dolgu_ad, nesneler, universeler)
+        ic_univ = universeler[dolgu_ad]
+
+        kor_silindir = openmc.ZCylinder(r=R_kor)
+        dis_silindir = openmc.ZCylinder(r=R_dis, boundary_type=yan_bc)
+
+        hucreler = [openmc.Cell(fill=ic_univ,
+                                region=_eksenel_bolge(kor, -kor_silindir))]
+        yansitici_bolge = +kor_silindir & -dis_silindir
+        if int(t.get("sayi") or 0) > 0:
+            t_univ = _tambur.universe(t, nesneler, _mat)
+            for x, y, psi in _tambur.yerlesim(t):
+                delik = openmc.ZCylinder(x0=x, y0=y, r=float(t["yaricap"]))
+                h = openmc.Cell(fill=t_univ,
+                                region=_eksenel_bolge(kor, -delik))
+                h.translation = (x, y, 0.0)
+                # psi emici yayi DOGRUDAN psi acisina koyar (olcumle dogrulandi)
+                h.rotation = (0.0, 0.0, psi)
+                hucreler.append(h)
+                yansitici_bolge = yansitici_bolge & +delik
+        hucreler.append(openmc.Cell(fill=_mat(nesneler, yans.get("malzeme")),
+                                    region=_eksenel_bolge(kor, yansitici_bolge)))
+        return openmc.Universe(cells=hucreler), (2 * R_dis, 2 * R_dis)
+
     elif tur == "kuresel":
         # Es merkezli kuresel kabuklar. Eksenel sinir yoktur; en dis kabugun
         # yuzeyi modelin sinir yuzeyidir. Kritik kure kriterleri icin.
