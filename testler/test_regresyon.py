@@ -50,18 +50,9 @@ ORNEK = os.path.join(KOK, "ornekler")
 REFERANS_K = 1.3570
 REFERANS_SAPMA = 0.0020
 
-_gecti = []
-_kaldi = []
-
-
-def kontrol(baslik, kosul, ayrinti=""):
-    if kosul:
-        _gecti.append(baslik)
-        print("  [GECTI] %s %s" % (baslik, ayrinti))
-    else:
-        _kaldi.append(baslik)
-        print("  [KALDI] %s %s" % (baslik, ayrinti))
-    return kosul
+# Sayaclar ve kontrol() ortak modulde: ek test modulleri (testler/test_*.py)
+# AYNI listelere yazsin ve ozet hepsini saysin. Bkz. testler/ortak_test.py.
+from testler.ortak_test import kontrol, _gecti, _kaldi, ek_moduller   # noqa: E402
 
 
 def _ornek_adlari():
@@ -3284,9 +3275,18 @@ def main(argv):
     test_arayuz_kafes_onay()
     test_dogrulama_yeni_kontroller()
 
+    # --- ek test modulleri: hizli testler ---
+    moduller = ek_moduller()
+    for m in moduller:
+        for fn in getattr(m, "HIZLI", []):
+            fn()
+
     if not hizli:
         gecici = tempfile.mkdtemp(prefix="openmc_arayuz_test_")
         try:
+            for m in moduller:
+                for fn in getattr(m, "YAVAS", []):
+                    fn(gecici)
             test_regresyon_cipasi(gecici)
             test_betik_esdegerligi(gecici)
             test_altigen_betik_esdegerligi(gecici)
