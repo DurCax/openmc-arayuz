@@ -19,6 +19,7 @@
   13. ANALITIK ZAYIFLATMA: saf sogurucuda 1 - exp(-tau)
   14. EKSENEL HETEROJENLIK: katman yigini, uc ayri eksenel aralik
   15. EKSENEL betik esdegerligi + guc korunumu
+  16. ONIZLEME: tally'li model cizimi cokertmemeli
 
  5 ve 6 numarali testler bu katmanin dogru oldugunun tek gercek kanitidir.
  kurucu.py ya da kod_uret.py degistirilirse mutlaka tekrar kosulmalidir.
@@ -59,15 +60,26 @@ def kontrol(baslik, kosul, ayrinti=""):
     return kosul
 
 
+def _ornek_adlari():
+    """
+    ornekler/ altindaki butun spec dosyalari, sirali.
+
+    ORNEK LISTELERI ELLE YAZILMAZ. Once sabit listeler vardi ve yeni eklenen
+    ornekler (zirh_kure, pwr_eksenel) kapsam disinda kaliyordu; arayuzu
+    cokerten bir cizim hatasi tam bu yuzden testlerden kacti.
+    """
+    import glob
+    return sorted(os.path.splitext(os.path.basename(p))[0]
+                  for p in glob.glob(os.path.join(ORNEK, "*.json")))
+
+
 # ============================================================================
 # 1-2. DOGRULAMA
 # ============================================================================
 
 def test_dogrulama_temiz():
     print("\n[1] Temiz modeller dogrulamadan hatasiz gecmeli")
-    for ad in ("pwr_pinhucre", "pwr_17x17", "mtr_plaka", "sfr_altigen",
-                   "godiva_kriter", "pwr_3b", "pwr_kontrol",
-                   "tamburlu_kor"):
+    for ad in _ornek_adlari():
         spec = sema.yukle(os.path.join(ORNEK, ad + ".json"))
         b = dogrula.tum_kontroller(spec)
         kontrol(ad, not dogrula.hata_var(b), "(%s)" % dogrula.ozet(b))
@@ -135,9 +147,7 @@ def test_cizim():
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
-    for ad in ("pwr_pinhucre", "pwr_17x17", "mtr_plaka", "sfr_altigen",
-                   "godiva_kriter", "pwr_3b", "pwr_kontrol",
-                   "tamburlu_kor"):
+    for ad in _ornek_adlari():
         spec = sema.yukle(os.path.join(ORNEK, ad + ".json"))
         model, bilgi = kurucu.kur(spec)
         try:
@@ -1782,6 +1792,80 @@ def test_eksenel_betik_ve_korunum(gecici):
             1.3 < (f.get("F_q") or 0) < 2.5)
 
 
+def test_onizleme_tallyli_model():
+    """
+    ONIZLEME TALLY'LERE TAKILMAMALI.
+
+    Model.plot() geometriyi dilimlemek icin OpenMC KUTUPHANESINI baslatiyor ve
+    bu sirada tally'leri de cozmeye calisiyor. Guc dagilimi tally'sine eklenen
+    CellFilter cozulemedigi icin OpenMC C++ tarafinda terminate() cagriliyordu:
+    Python istisnasi degil, DOGRUDAN SIGABRT -- butun arayuz kapaniyordu.
+    Olculdu: duzeltmeden once 3/3 kosuda cokme, duzeltmeden sonra 4/4 temiz.
+
+    DURUSTLUK NOTU: cokme yalnizca GERCEK bir X oturumunda, tam arayuz
+    akisinda tekrarlanabiliyordu; basssiz (offscreen) ortamda duzeltme
+    kapaliyken bile cokmuyor. Yani bu test cokmenin KENDISINI degil,
+    cokmeyi ortadan kaldiran DEGISMEZI sinar: cizime giden modelde tally
+    olmamalidir. Elle tekrar tarifi README'de yazili.
+    """
+    print("\n[16] ONIZLEME: tally'li modeller cizimi cokertmemeli")
+    os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
+    try:
+        from PySide6 import QtWidgets
+    except Exception as e:
+        kontrol("PySide6 yok, onizleme testi atlandi", True, "-> %s" % e)
+        return
+    uyg = QtWidgets.QApplication.instance() or QtWidgets.QApplication([])
+    from arayuz.onizleme import OnizlemeWidget
+
+    tallyli = [ad for ad in _ornek_adlari()
+               if (lambda sp: sp.get("tallyler")
+                   or (sp.get("guc_dagilimi") or {}).get("var"))(
+                       sema.yukle(os.path.join(ORNEK, ad + ".json")))]
+    kontrol("tally tasiyan ornek var (test anlamli olsun)", len(tallyli) >= 3,
+            "-> %s" % ", ".join(tallyli))
+
+    # Model.plot() sarmalanip cagrildigi modelin tally sayisi kaydediliyor.
+    # Duzeltme geri alinirsa bu sayi sifirdan buyuk cikar ve test KALIR.
+    import openmc
+    gorulen = []
+    asil_plot = openmc.Model.plot
+
+    def izleyen_plot(self, *a, **kw):
+        gorulen.append(len(self.tallies))
+        return asil_plot(self, *a, **kw)
+
+    w = OnizlemeWidget()
+    openmc.Model.plot = izleyen_plot
+    try:
+        for ad in tallyli:
+            w.spec = sema.yukle(os.path.join(ORNEK, ad + ".json"))
+            iyi = True
+            for eksen in ("xy", "xz"):
+                w.eksen.setCurrentText(eksen)
+                w._ciz()
+                iyi = iyi and w.cizildi_mi()
+            kontrol("%s xy+xz cizildi" % ad, iyi, "-> %s" % (w._son_hata or ""))
+    finally:
+        openmc.Model.plot = asil_plot
+    kontrol("cizime giden modellerin hicbiri tally tasimiyor (%d cizim)"
+            % len(gorulen), bool(gorulen) and max(gorulen) == 0,
+            "-> gorulen tally sayilari: %s" % sorted(set(gorulen)))
+
+    # Yeniden girme korumasi: cizim surerken ikinci cizim baslamamali.
+    w.spec = sema.yukle(os.path.join(ORNEK, "pwr_eksenel.json"))
+    w._ciziliyor = True
+    onceki = len(gorulen)
+    openmc.Model.plot = izleyen_plot
+    try:
+        w._ciz()
+    finally:
+        openmc.Model.plot = asil_plot
+        w._ciziliyor = False
+    kontrol("cizim surerken ikinci cizim atlaniyor", len(gorulen) == onceki)
+    uyg  # noqa: B018
+
+
 def main(argv):
     hizli = "--hizli" in argv
     print("=" * 74)
@@ -1831,6 +1915,7 @@ def main(argv):
     test_eksenel_dogrulama()
     test_kontrol_cubugu_eksenel()
     test_arayuz_eksenel_gidip_gelme()
+    test_onizleme_tallyli_model()
 
     if not hizli:
         gecici = tempfile.mkdtemp(prefix="openmc_arayuz_test_")

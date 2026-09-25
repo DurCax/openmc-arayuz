@@ -126,7 +126,7 @@ python3 testler/test_regresyon.py            # tümü (~2 dk)
 python3 testler/test_regresyon.py --hizli    # Monte Carlo hariç (~10 s)
 ```
 
-233 test hizli modda, Monte Carlo dahil 251 test var. Üçü bu katmanın doğruluğunun asıl kanıtıdır:
+250 test hizli modda, Monte Carlo dahil 268 test var. Üçü bu katmanın doğruluğunun asıl kanıtıdır:
 
 - **Regresyon çıpası** — `ornekler/pwr_pinhucre.json` referans değeri
   **k∞ = 1.3570 ± 0.0020** vermeli. 2σ dışına çıkarsa `kurucu.py`'de hata var.
@@ -538,6 +538,40 @@ Bitmiş bir geometriyi incelerken (eksen değiştirme, yakınlaştırma) açın;
   `paths=True`'dur (filtre sınıfındaki isimle karışmasın).
 - **`Cell.num_instances` önce `Geometry.determine_paths()` ister**, aksi halde
   `ValueError`.
+
+
+### Önizleme, tally'ler yüzünden bütün uygulamayı çökertiyordu
+
+Arayüzü gerçekten açıp bakınca çıktı — testler görmemişti. `Model.plot()`
+geometriyi dilimlemek için **OpenMC kütüphanesini başlatıyor** ve bu sırada
+tally'leri de çözmeye çalışıyor. Güç dağılımı tally'sine eklenen `CellFilter`
+çözülemeyince OpenMC C++ tarafında `terminate()` çağrılıyor:
+
+```
+terminate called after throwing an instance of 'std::runtime_error'
+  what():  Could not find cell 0 specified on tally filter.
+```
+
+Bu bir Python istisnası değil — `try/except` yakalayamaz, süreç doğrudan
+**SIGABRT** ile ölür. Ölçüldü: düzeltmeden önce 3/3 koşuda çökme, sonra 4/4 temiz.
+
+İki önlem alındı:
+- **Önizleme tally'siz bir model çiziyor.** Zaten sadece geometri, malzeme ve
+  sıcaklık ayarları gerekiyor; ileride eklenecek her tally türü de aynı riski
+  taşırdı.
+- **Yeniden girme koruması.** Çizim sürerken ikinci bir çizim başlarsa aynı
+  süreçte ikinci bir kütüphane oturumu açılırdı.
+
+> ⚠ **Çökme yalnızca gerçek bir X oturumunda, tam arayüz akışında tekrarlanıyor.**
+> Başsız (`QT_QPA_PLATFORM=offscreen`) ortamda düzeltme kapalıyken bile
+> çökmüyor, dolayısıyla otomatik test çökmenin kendisini üretemiyor. Test bunun
+> yerine **değişmezi** sınıyor: çizime giden modelde tally sayısı sıfır olmalı
+> (`Model.plot` sarmalanıp ölçülüyor). Elle tekrar tarifi: `pwr_eksenel.json`'ı
+> arayüzde açın, 4. Kor sekmesine geçin, önizlemeyi `xz` yapın.
+
+**İkinci ders aynı yerden:** `test_cizim` ve `test_dogrulama_temiz` örnek
+listelerini **elle** tutuyordu; yeni eklenen `zirh_kure` ve `pwr_eksenel` kapsam
+dışında kalmıştı. İkisi de artık `ornekler/*.json` dizinini tarıyor.
 
 ### Eksenel katmanlama üç hata ortaya çıkardı (hepsi ölçümle bulundu)
 

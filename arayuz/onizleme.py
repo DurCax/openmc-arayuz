@@ -43,6 +43,8 @@ from matplotlib.figure import Figure
 
 from PySide6 import QtCore, QtWidgets
 
+import openmc
+
 from cekirdek import onbellek, sema
 
 # Cozunurluk secenekleri -- maliyet baslatmada oldugu icin yuksek varsayilan ucuz
@@ -206,9 +208,36 @@ class OnizlemeWidget(QtWidgets.QWidget):
         if self.spec is None:
             self._bos_mesaj("Model bekleniyor")
             return
+        # Yeniden girme korumasi: Model.plot() OpenMC kutuphanesini acip
+        # kapatiyor. Cizim surerken ikinci bir cizim baslarsa ayni surecte
+        # ikinci bir kutuphane oturumu acilmis olur; OpenMC C++ tarafinda bu
+        # toparlanamayan bir durumdur ve surec cokebilir. Cizimi atlamak
+        # zararsiz -- zamanlayici zaten yeniden tetikliyor.
+        if getattr(self, "_ciziliyor", False):
+            return
+        self._ciziliyor = True
         try:
             model, bilgi = onbellek.kur_onbellekli(self.spec)
             gx, gy = bilgi["sinir_kutu"]
+            # ------------------------------------------------------------------
+            # CIZIM ICIN TALLY'SIZ MODEL
+            #   Model.plot() geometriyi dilimlemek icin OpenMC KUTUPHANESINI
+            #   baslatiyor ve bu sirada tally'leri de cozmeye calisiyor. Guc
+            #   dagilimi tally'sindeki CellFilter cozulemeyince OpenMC C++
+            #   tarafinda std::runtime_error atiyor; bu Python'a yakalanabilir
+            #   bir istisna olarak gelmiyor, dogrudan terminate() cagrilip
+            #   BUTUN UYGULAMA cokuyor (SIGABRT). Olculdu: 3/3 kosuda cokme.
+            #
+            #   Onizlemenin tally'lere zaten hic ihtiyaci yok: yalnizca
+            #   geometri, malzemeler ve sicaklik ayarlari gerekli. Ayni
+            #   nesneleri paylasan tally'siz bir kabuk model kullanmak hem bu
+            #   cokmeyi hem de ileride eklenecek her tally turunun ayni riski
+            #   tasimasini ortadan kaldiriyor.
+            # ------------------------------------------------------------------
+            if len(model.tallies) > 0:
+                model = openmc.Model(geometry=model.geometry,
+                                     materials=model.materials,
+                                     settings=model.settings)
             piksel = COZUNURLUK[self.cozunurluk.currentIndex()][1]
             eksen = self.eksen.currentText()
 
@@ -235,8 +264,18 @@ class OnizlemeWidget(QtWidgets.QWidget):
                        colors=bilgi["renkler"] if renk_ver else None,
                        legend=self.gosterge.isChecked() and renk_ver,
                        axes=self.eksenler)
-            self.eksenler.set_title("%s   %.3f x %.3f cm"
-                                    % (self.spec.get("ad", ""), genislik[0], genislik[1]),
+            # Eksenel kesitte model cok ince ve uzun olabilir (or. 21 x 395 cm).
+            # 1:1 en-boy oraninda gorunum okunamaz bir serit haline geliyor ve
+            # eksenel katmanlar -- bu gorunumun tek varlik sebebi -- secilemez
+            # oluyor. Oran 3'u asarsa eksen gerilir ve baslikta BELIRTILIR;
+            # sessizce carpitmak yaniltici olurdu.
+            oran = genislik[1] / genislik[0] if genislik[0] else 1.0
+            gerildi = eksen != "xy" and (oran > 3.0 or oran < 1 / 3.0)
+            if gerildi:
+                self.eksenler.set_aspect("auto")
+            self.eksenler.set_title("%s   %.3f x %.3f cm%s"
+                                    % (self.spec.get("ad", ""), genislik[0], genislik[1],
+                                       "   [olcek 1:1 DEGIL]" if gerildi else ""),
                                     fontsize=9)
             # Model.plot() gostergeyi eksenin SAGINA koyuyor; dar bir panelde
             # tuvalin disina tasip kirpilıyordu. Yatay olarak grafigin ALTINA
@@ -261,6 +300,8 @@ class OnizlemeWidget(QtWidgets.QWidget):
             self._son_hata = traceback.format_exc()
             self._bos_mesaj("Geometri kurulamadi:\n\n%s" % e, hata=True)
             self.durum.emit("Onizleme basarisiz: %s" % e, False)
+        finally:
+            self._ciziliyor = False
 
     # ------------------------------------------------------------------
     def cizildi_mi(self):

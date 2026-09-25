@@ -567,7 +567,10 @@ class KorSekmesi(SekmeTabani):
             from cekirdek import onbellek
             _, bilgi = onbellek.kur_onbellekli(self.spec)
             gx, gy = bilgi["sinir_kutu"]
-            h = self.spec["kor"].get("yukseklik")
+            # sema.kor_yuksekligi(): eksenel katmanlama acikken yukseklik
+            # katman toplamindan gelir. Ham alani okumak, katmanli 3B bir
+            # modeli "(2B)" diye gostermeye yol aciyordu.
+            h = sema.kor_yuksekligi(self.spec["kor"])
             self.ozet.setText("%.4f x %.4f cm%s" % (gx, gy, (" x %.2f cm" % h) if h else "  (2B)"))
         except Exception as e:
             self.ozet.setText("kurulamadi: %s" % str(e)[:80])
