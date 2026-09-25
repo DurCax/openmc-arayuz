@@ -32,6 +32,7 @@ from PySide6 import QtCore, QtGui, QtWidgets
 from cekirdek import sema, dogrula, ice_aktar, kod_uret, onbellek
 from arayuz.onizleme import OnizlemeWidget
 from arayuz.sekme_analiz import AnalizSekmesi
+from arayuz.sekme_tukenme import TukenmeSekmesi
 from arayuz.sekme_ayar import AyarSekmesi
 from arayuz.sekme_calistir import CalistirSekmesi
 from arayuz.sekme_cubuk import CubukSekmesi
@@ -224,9 +225,12 @@ class AnaPencere(QtWidgets.QMainWindow):
         self.s_ayar = AyarSekmesi()
         self.s_calistir = CalistirSekmesi()
         self.s_analiz = AnalizSekmesi()
+        self.s_tukenme = TukenmeSekmesi()
 
+        # Tukenme sekmesi hem EDITOR (spec'in "tukenme" bolumunu yazar) hem de
+        # kosu baslatir; bu yuzden editorler listesinde ve kapi/proje yolu alir.
         self.editorler = [self.s_malzeme, self.s_cubuk, self.s_demet,
-                          self.s_kor, self.s_ayar]
+                          self.s_kor, self.s_ayar, self.s_tukenme]
         # Her sekme bir kaydirma alanina sarilir.
         #
         # SEBEP: QTabWidget'in minimum yuksekligi TUM sayfalarin en buyugudur.
@@ -241,7 +245,8 @@ class AnaPencere(QtWidgets.QMainWindow):
                       ("4. Kor", self.s_kor),
                       ("5. Ayarlar & Tally", self.s_ayar),
                       ("6. Calistir", self.s_calistir),
-                      ("7. Analiz", self.s_analiz)):
+                      ("7. Analiz", self.s_analiz),
+                      ("8. Tukenme", self.s_tukenme)):
             kaydirma = QtWidgets.QScrollArea()
             kaydirma.setWidgetResizable(True)
             kaydirma.setFrameShape(QtWidgets.QFrame.NoFrame)
@@ -328,6 +333,8 @@ class AnaPencere(QtWidgets.QMainWindow):
         self.s_calistir.durum.connect(lambda m, ok: self.statusBar().showMessage(m, 8000))
         self.s_analiz.kapi_ayarla(self._kosu_izni)
         self.s_analiz.durum.connect(lambda m, ok: self.statusBar().showMessage(m, 8000))
+        self.s_tukenme.kapi_ayarla(self._kosu_izni)
+        self.s_tukenme.durum.connect(lambda m, ok: self.statusBar().showMessage(m, 8000))
 
         self._dog_sayac = QtCore.QTimer(self); self._dog_sayac.setSingleShot(True)
         self._dog_sayac.setInterval(250)
@@ -597,6 +604,7 @@ class AnaPencere(QtWidgets.QMainWindow):
     # ==================================================================
     def _spec_uygula(self):
         """Spec bastan yuklendi -- tum sekmeleri tazele."""
+        self.s_tukenme.proje_ayarla(self.proje_yolu)
         for e in self.editorler:
             e.spec_yukle(self.spec)
         self._kirli_sekmeler.clear()
@@ -748,6 +756,7 @@ class AnaPencere(QtWidgets.QMainWindow):
         self.durum_dogrulama.setStyleSheet("color: %s;" % renk)
         self.s_calistir.kapi_guncelle()
         self.s_analiz.kapi_guncelle()
+        self.s_tukenme.kapi_guncelle()
         self._rehber_guncelle()
 
     def _bulguya_git(self, oge):
@@ -761,6 +770,7 @@ class AnaPencere(QtWidgets.QMainWindow):
     def _onizleme_durum(self, mesaj, basarili):
         self.statusBar().showMessage(mesaj, 6000)
         self.s_calistir.kapi_guncelle()
+        self.s_tukenme.kapi_guncelle()
 
     def _kosu_izni(self):
         """CALISTIR kapisi: once geometri cizilmeli, sonra hata olmamali."""
@@ -896,6 +906,7 @@ class AnaPencere(QtWidgets.QMainWindow):
             yol += ".json"
         self.proje_yolu = yol
         self.s_calistir.spec_ayarla(self.spec, self.proje_yolu)
+        self.s_tukenme.proje_ayarla(self.proje_yolu)
         return self.proje_kaydet()
 
     def malzeme_ice_aktar(self):

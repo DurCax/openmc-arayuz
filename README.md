@@ -46,7 +46,7 @@ openmc_arayuz/
 │   ├── sema.py              spec şeması, varsayılanlar, oku/yaz
 │   ├── malzeme_kutup.py     21 hazır malzeme (doğrulanmış bileşimler)
 │   ├── altigen.py           HexLattice halka düzeni ve konum hesabı
-│   ├── veri_bilgi.py        kütüphanenin sunduğu sıcaklık aralıkları
+│   ├── veri_bilgi.py        kütüphane sıcaklık/enerji aralıkları, zincir bütünlüğü
 │   ├── kurucu.py            spec → openmc.Model
 │   ├── onbellek.py          model önbelleği (21.9 ms → 0.07 ms)
 │   ├── dogrula.py           koşu öncesi kontroller
@@ -57,6 +57,7 @@ openmc_arayuz/
 │   ├── guc.py               çubuk bazlı güç dağılımı, F_ΔH, F_q
 │   ├── tarama.py            parametre taraması → reaktivite katsayıları
 │   ├── kritik_arama.py      hedef k-eff'i veren parametre değeri
+│   ├── tukenme.py           yanma: zincir seçimi, analitik hacimler, koşu
 │   └── kosucu.py            çalıştırma + statepoint okuma + terminal girişi
 ├── arayuz/                  PySide6 katmanı
 │   ├── tema.py              açık/koyu tema paletleri (matplotlib dahil)
@@ -64,8 +65,10 @@ openmc_arayuz/
 │   ├── onizleme.py          canlı geometri kesiti (Model.plot sarmalayıcı)
 │   ├── hex_izgara.py        altıgen harita editörü (QPainter)
 │   ├── guc_harita.py        güç dağılımı ısı haritası
-│   └── sekme_*.py           malzeme / çubuk / kafes / kor / ayar / çalıştır / analiz
-├── ornekler/                pwr_pinhucre, pwr_17x17, mtr_plaka, sfr_altigen
+│   └── sekme_*.py           malzeme / çubuk / kafes / kor / ayar / çalıştır / analiz / tükenme
+├── ornekler/                pwr_pinhucre, pwr_17x17, mtr_plaka, sfr_altigen,
+│                            godiva_kriter, pwr_3b, pwr_kontrol, tamburlu_kor,
+│                            zirh_kure, pwr_eksenel, pwr_tukenme
 └── testler/test_regresyon.py
 ```
 
@@ -126,7 +129,7 @@ python3 testler/test_regresyon.py            # tümü (~2 dk)
 python3 testler/test_regresyon.py --hizli    # Monte Carlo hariç (~10 s)
 ```
 
-250 test hizli modda, Monte Carlo dahil 268 test var. Üçü bu katmanın doğruluğunun asıl kanıtıdır:
+304 test hızlı modda; Monte Carlo ve tükenme koşuları dahil 332. Üçü bu katmanın doğruluğunun asıl kanıtıdır:
 
 - **Regresyon çıpası** — `ornekler/pwr_pinhucre.json` referans değeri
   **k∞ = 1.3570 ± 0.0020** vermeli. 2σ dışına çıkarsa `kurucu.py`'de hata var.
@@ -154,6 +157,7 @@ python3 testler/test_regresyon.py --hizli    # Monte Carlo hariç (~10 s)
 | `tamburlu_kor` (dönme 180°) | 1.01057 ± 0.00157 | 21 s |
 | `zirh_kure` (sabit kaynak) | k-eff yok, tally | 24 s |
 | `pwr_eksenel` (katmanlı) | 1.17680 ± 0.00052 | 86 s |
+| `pwr_tukenme` (20 MWd/kg) | 1.35930 → 1.06545 | ~50 dk |
 
 ## Kontrol çubuğu ve kritik çubuk konumu
 
@@ -293,6 +297,159 @@ eksenel profil düzleşiyor. Vakum uçlu `pwr_3b`'de profil kesilmiş kosinüst�
 > entropisi pasif dönemin sonunda hâlâ kayıyordu (kayma 0.0433 > 2σ = 0.0125).
 > 100'e çıkarınca kayma 0.0006'ya düştü. Bu uyarı ancak entropi mesh'inin z
 > sınırları düzeltildikten sonra güvenilir oldu (aşağıdaki tuzak listesi).
+
+## Tükenme (yanma) — 8. Tükenme
+
+Yakıtın zaman içinde nasıl değiştiğini hesaplar: U-235 tükenir, Pu-239 birikir,
+Xe-135 ve Sm-149 gibi fisyon ürünü zehirleri reaktiviteyi düşürür. Her adımda
+transport çözülür, reaksiyon hızları alınır, Bateman denklemleri OpenMC'nin CRAM
+çözücüsüyle ilerletilir.
+
+```json
+"tukenme": {
+  "var": true,
+  "zincir": "otomatik",          // otomatik | termal | hizli | casl_termal | casl_hizli
+  "guc_yogunlugu": 40.0,         // W/gHM
+  "adimlar": [0.5, 1.5, 3, 5, 10, 30, 100, 350],
+  "adim_birimi": "d",            // d | MWd/kg
+  "entegrator": "cecm",          // cecm (2 transport/adım) | predictor (1)
+  "malzemeleri_ayir": false,
+  "izlenen": ["U235","U238","Pu239","Pu240","Pu241","Xe135","Sm149"]
+}
+```
+
+Terminalden: `python3 -m cekirdek.tukenme ornekler/pwr_tukenme.json -s 16`
+(`--hazirla` koşmadan hacim/zincir/ağır metal bilgisini yazar).
+
+**Neden güç yoğunluğu (W/gHM), mutlak güç değil?** Mutlak güç 2B bir modelde
+"cm başına" olmak zorunda kalırdı — bu projede birkaç kez yakaladığımız türden
+sessiz bir birim tuzağı. W/gHM geometriden bağımsızdır ve mühendislerin
+gerçekten verdiği sayıdır (PWR ~38–40, BWR ~25, SFR 50–100).
+
+### Zincir: termal mi hızlı mı — ve fisyon verimi
+
+| | nüklid | ne zaman |
+|---|---|---|
+| ENDF/B-VIII.0 termal | 3820 | su, grafit, ZrH moderatörlü sistemler |
+| ENDF/B-VIII.0 hızlı | 3820 | SFR, Godiva, PETEK, U-10Mo kompakt kor |
+| CASL basit termal/hızlı | 228 | ön inceleme — ~3 kat hızlı |
+
+`otomatik`: modelde hidrojen/döteryum ya da grafit S(α,β)'sı varsa termal, yoksa
+hızlı. Berilyum **bilerek** sayılmıyor: tamburlu korda Be yalnızca yansıtıcıdır,
+kor spektrumu hızlıdır.
+
+İki zincir **101 nüklidin yakalama dallanma oranında** farklı (ölçüldü). Örnek:
+Am-241(n,γ) → Am-242m termalde %8.1, hızlıda %13.2.
+
+> ⚠ **Hızlı zincir seçmek yetmez.** Zincir yalnızca dallanma oranlarını değiştirir;
+> fisyon ürünü verimleri ayrı bir ayardır ve OpenMC'nin varsayılanı **sabit
+> 0.0253 eV**'tur — hızlı zincir seçilse bile. Yani hızlı bir reaktörde fisyon
+> ürünleri sessizce termal verimle üretilirdi. Burada hızlı sistemde verim
+> enerjisi 500 keV'e çekiliyor (testte operatöre geçtiği doğrulandı; U-235 →
+> Xe-135 bağımsız verimi termalde 0.00079, hızlıda 0.00120).
+
+### Hacimler analitik — ve neden bu kadar önemli
+
+OpenMC tükenmede her yanabilir malzemenin hacmini ister: reaksiyon hızı / (N·V)
+atom başına hızı verir. **Hacim f kat yanlışsa yanma hızı da f kat yanlış olur —
+k-eff'te hiçbir iz bırakmadan.** Hacim, bölge alanı × (katman yüksekliği × o
+katmandaki çubuk sayısı) toplamı olarak analitik hesaplanır; çubuk, plaka,
+küresel kabuk, tamburlu kor silindiri, eksenel katmanlar ve altıgen demetler
+destekleniyor. OpenMC'nin stokastik hacim hesabıyla karşılaştırıldı:
+
+| örnek | malzeme | analitik | stokastik | fark |
+|---|---|---|---|---|
+| pwr_17x17 | uo2 | 139.147 | 139.187 ± 0.122 | −0.33σ |
+| pwr_eksenel | uo2 / uo2_dogal | 41744.1 / 4174.41 | 41786.5 ± 44 / 4164.7 ± 16 | −0.96σ / +0.62σ |
+| sfr_altigen | u10mo | 40.8558 | 40.8179 ± 0.033 | +1.13σ |
+| mtr_plaka | u3si2_al | 7.3899 | 7.3987 ± 0.011 | −0.80σ |
+| tamburlu_kor | u10mo | 36191.1 | 36155.1 ± 36 | +1.01σ |
+
+Ağır metal kütlesi OpenMC'nin kendi hesabıyla birebir aynı (4.2591911 g).
+2B modelde hacim 1 cm yükseklik içindir; güç yoğunluğu kullanıldığı için bu
+tutarlıdır (kütle ve güç aynı oranda ölçeklenir).
+
+### Maliyet (ölçülmüş)
+
+Zincirdeki nüklidler yakıta eklenir, transport bu yüzden yavaşlar. Pin hücre,
+2000 × 20 parçacık, 2 transport:
+
+| zincir | yakıttaki nüklid | süre |
+|---|---|---|
+| CASL | 228 | 37 s |
+| ENDF/B-VIII.0 | 3820 | 125 s |
+
+Arayüz kalan süreyi **ilk transportun gerçek süresinden** hesaplar, tahmin etmez.
+
+### Örnek: `pwr_tukenme`
+
+`pwr_pinhucre` ile aynı pin, 40 W/gHM, 500 gün (20 MWd/kg), tam ENDF/B-VIII.0
+termal zincir, CECM, 5000 × 60 parçacık. Ağır metal 4.259 g, 17 transport, ~50 dakika:
+
+| gün | MWd/kg | k∞ | not |
+|---|---|---|---|
+| 0 | 0 | 1.35930 ± 0.00184 | regresyon çıpasıyla (1.3570 ± 0.0020) 1σ içinde |
+| 0.5 | 0.02 | 1.32788 ± 0.00179 | Xe-135 birikiyor |
+| 2 | 0.08 | 1.31232 ± 0.00211 | Xe-135 dengede |
+| 5 | 0.2 | 1.30615 ± 0.00179 | |
+| 10 | 0.4 | 1.30014 ± 0.00173 | Sm-149 birikmeye devam ediyor |
+| 20 | 0.8 | 1.29382 ± 0.00176 | |
+| 50 | 2 | 1.27547 ± 0.00175 | |
+| 150 | 6 | 1.22697 ± 0.00177 | |
+| 500 | 20 | 1.06545 ± 0.00168 | |
+
+- **Xe-135 + erken Sm-149 (0 → 2 gün): Δρ = −2634 ± 158 pcm** — tam güç PWR için
+  yayımlanan ~2500–3000 pcm bandında. Xe-135 7.74e-9 atom/b·cm'de dengeye oturuyor.
+- **20 MWd/kg'da** U-235'in %40'ı kalıyor, Pu-239 ağır metalin ~%0.5'i
+  (Pu-239/U-235 = 0.42). Kaba bir elle hesap (200 MeV/fisyon, Pu ve U-238 fisyon
+  payı, α ≈ 0.17) %38–48 veriyor — tutarlı. Bunlar **akla yatkınlık**
+  kontrolleridir; asıl kanıtlar aşağıdaki Bateman testi, hacim karşılaştırması ve
+  betik eşdeğerliğidir.
+
+İlk iki adım bilerek kısa (0.5 ve 1.5 gün): Xe-135 ~2 günde dengeye gelir;
+uzun bir ilk adım bu hızlı düşüşü tek bir çizgiye ezer ve görünmez kılar.
+Doğrulama bunu uyarır.
+
+### Analitik doğrulama — Bateman
+
+Güç sıfırken tek bir radyonüklid N(t) = N₀·exp(−ln2·t/T½) izlemeli. Yarı ömür
+**zincirin kendisinden** okunur, dolayısıyla test hem zincir dosyasını hem
+çözücüyü sınar. Xe-135, I-131, Co-60 için bir ve iki yarı ömürde N/N₀ = 0.5 ve
+0.25, **on hanede**. (Zincirdeki yarı ömürler gerçek değerler: 9.14 saat,
+8.02 gün, 5.27 yıl.)
+
+Üretilen betiğin `tukenme_kos()` fonksiyonu ile `cekirdek/tukenme.py` her
+adımda **bit düzeyinde aynı** k-eff'i veriyor (iki yol ayrı alt süreçte,
+`OMP_NUM_THREADS=1` ile).
+
+### Zinciri kendin indirmek ve doğrulamak
+
+İlk indirme (23.09.2026) **%13'te sessizce kesilmişti**: 3 645 440 / 27 526 672
+bayt, bir özniteliğin ortasında bitiyordu. Dosyanın adı ve yeri doğruydu; bakan
+biri bir sorun görmezdi. Bir dahaki sefere:
+
+```bash
+URL=https://anl.box.com/shared/static/nyezmyuofd4eqt6wzd626lqth7wvpprr.xml
+# 1. Sunucunun söylediği boyut (box.com HEAD'e 404 verir, 1 baytlık GET kullanın)
+curl -sL -r 0-0 -D - "$URL" -o /dev/null | grep -i content-range   # .../27526672
+# 2. Önce geçici adla indir, yarım kalırsa -C - ile sürdür
+curl -L --fail --retry 3 -C - -o zincir.xml.part "$URL"
+# 3. Boyut eşit mi, dosya kapanıyor mu, ayrıştırılıyor mu?
+stat -c %s zincir.xml.part
+tail -c 200 zincir.xml.part | grep -c "</depletion_chain>"            # 1 olmalı
+python3 -c "import openmc.deplete as d; print(len(d.Chain.from_xml('zincir.xml.part').nuclides))"
+# 4. Ancak hepsi tamamsa asıl adına taşı
+mv zincir.xml.part chain_endfb80_thermal.xml
+```
+
+Arayüz ve `calistir.sh` bunu artık kendileri yapar: yarım bir zincir doğrulama
+panelinde **hata** olarak görünür ve tükenme başlatılamaz.
+
+> **WMP (çok kutuplu) veri bilerek indirilmedi.** openmc.org'daki 1.7 GB'lık
+> dosya ayrı bir WMP verisi değil, **ENDF/B-VII.1 kütüphanesinin tamamı**; WMP
+> yalnızca VII.1 ile sunuluyor. VIII.0 kesitleriyle karıştırmak iki farklı
+> değerlendirmeyi tek modelde birleştirmek olurdu; kütüphaneyi değiştirmek ise
+> bütün ölçüm çıpalarını geçersiz kılardı.
 
 ## Güç dağılımı ve tepe faktörleri
 
@@ -573,6 +730,15 @@ Bu bir Python istisnası değil — `try/except` yakalayamaz, süreç doğrudan
 listelerini **elle** tutuyordu; yeni eklenen `zirh_kure` ve `pwr_eksenel` kapsam
 dışında kalmıştı. İkisi de artık `ornekler/*.json` dizinini tarıyor.
 
+### S(α,β) kuralı saf zirkonyuma hidrojen öneriyordu
+
+Kural yalnızca "malzemenin elementleri izin verilen kümenin alt kümesi mi" diye
+bakıyordu. {Zr} ⊆ {H, Zr} olduğu için **saf zirkonyum "zirkonyum hidrür"**
+sayılıyor ve kullanıcıya `c_H_in_ZrH` eklemesi öneriliyordu — hidrojensiz bir
+malzemeye hidrojen S(α,β)'sı, yani yanlış fizik. Aynı mantıkla B₂O₃ "borlu su"
+çıkardı. Her kurala **zorunlu** element kümesi eklendi. `pwr_pinhucre`'nin
+başından beri taşıdığı uyarı bu yanlış alarmdı.
+
 ### Eksenel katmanlama üç hata ortaya çıkardı (hepsi ölçümle bulundu)
 
 **1. "Fisil aralık"ın iki ayrı tanımı → 1300 pcm.** Kurucu aralığı kurulmuş
@@ -616,8 +782,12 @@ yetmediğini **bu uyarı yakaladı**.
   "çubuk → kafes → kor" katmanlarına geri çevirmek genel olarak çözülebilir bir
   problem değildir. Yanlış bir tahmin sessizce yanlış model üretirdi.
 - **Python betikleri içe aktarılamaz** — keyfi Python çözümlenemez.
-- **Yanma (depletion)** kapsam dışı; zincir dosyası kurulmadı. Şema sürümlü
-  (`"surum": 1`) tutuluyor, `"tuketim"` bölümü sonradan eklenebilir.
+- **Tükenmede fisyon verimi sabit** (termal 0.0253 eV, hızlı 500 keV). OpenMC'nin
+  spektrum ağırlıklı `average` modu kullanılmıyor.
+- **Tükenme yalnızca özdeğer modunda.** Sabit kaynaklı aktivasyon hesabı yok.
+- **Tükenme kaldığı yerden sürdürülemiyor** (`prev_results`); her koşu baştan.
+- **Kontrol elemanları yanmıyor.** B4C çubuk ve tamburlar yanabilir malzeme
+  sayılmıyor (`ek_malzemeler` ile JSON'dan eklenebilir).
 - `MPI` yok — OpenMC bu makinede OpenMP ile tek düğümde çalışıyor (24 çekirdek).
 
 ## Ortam
@@ -627,4 +797,9 @@ yetmediğini **bu uyarı yakaladı**.
 ```
 openmc 0.16.0 (DAGMC, MPI yok)   PySide6 6.11.2   matplotlib   pandas   h5py
 OPENMC_CROSS_SECTIONS = ~/nucdata/endfb-viii.0-hdf5/cross_sections.xml
+OPENMC_CHAIN_FILE     = ~/nucdata/chain/chain_endfb80_thermal.xml   (~/.bashrc)
 ```
+
+Tükenme zincirleri `~/nucdata/chain/` altında; kaynak URL'leri ve sha256'lar
+`~/nucdata/chain/KAYNAK.txt`'te. Uygulama `OPENMC_CHAIN_FILE`'a güvenmez, zinciri
+her model için kendisi seçer; değişken yalnızca terminal/betik kullanımı içindir.

@@ -2127,6 +2127,47 @@ def test_tukenme_betik_esdegerligi(gecici):
                 "-> bit duzeyinde %s" % ("ayni" if ka[i][0] == kb[i][0] else "FARKLI"))
 
 
+
+def test_arayuz_tukenme_gidip_gelme():
+    """
+    8. Tukenme sekmesi spec'i bozmuyor mu?
+
+    Ozellikle arayuzde duzenlenmeyen "ek_malzemeler": kaynak sekmesinde bir
+    kez sozlugu bastan yazip alan silmistik; ayni hata burada olmasin.
+    """
+    print("\n[17f] ARAYUZ: tukenme sekmesi gidip gelmede bozmuyor")
+    os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
+    try:
+        from PySide6 import QtWidgets
+    except Exception as e:
+        kontrol("PySide6 yok, arayuz testi atlandi", True, "-> %s" % e)
+        return
+    uyg = QtWidgets.QApplication.instance() or QtWidgets.QApplication([])
+    from arayuz.sekme_tukenme import TukenmeSekmesi
+    spec = sema.yukle(os.path.join(ORNEK, "pwr_tukenme.json"))
+    spec["tukenme"]["ek_malzemeler"] = ["zirkaloy"]
+    t = TukenmeSekmesi()
+    t.spec_yukle(spec)
+    kontrol("tukenme acik yuklendi", t.var.isChecked())
+    kontrol("adimlar yuklendi", t._sayilar(t.adimlar.text())
+            == [float(a) for a in spec["tukenme"]["adimlar"]])
+    kontrol("ozet toplam yanmayi gosteriyor (20 MWd/kg)", "20 MWd/kg" in t.adim_ozet.text(),
+            "-> %s" % t.adim_ozet.text())
+    kontrol("ozet transport sayisini gosteriyor (17)", "17 transport" in t.adim_ozet.text())
+    kontrol("yanabilir malzeme ve analitik hacim gosteriliyor",
+            "uo2" in t.malzeme_bilgi.text() and "analitik" in t.malzeme_bilgi.text())
+    t.guc.setValue(38.0)
+    kontrol("guc spec'e yazildi", spec["tukenme"]["guc_yogunlugu"] == 38.0)
+    kontrol("duzenlenmeyen ek_malzemeler KORUNDU",
+            spec["tukenme"].get("ek_malzemeler") == ["zirkaloy"])
+    t.adimlar.setText("1, 2, 3")
+    t._kaydet()
+    kontrol("adimlar spec'e yazildi", spec["tukenme"]["adimlar"] == [1.0, 2.0, 3.0])
+    t.var.setChecked(False)
+    kontrol("kapaliyken baslat devre disi", not t.d_baslat.isEnabled())
+    uyg  # noqa: B018
+
+
 def main(argv):
     hizli = "--hizli" in argv
     print("=" * 74)
@@ -2182,6 +2223,7 @@ def main(argv):
     test_tukenme_zincir_secimi()
     test_tukenme_hacimleri()
     test_tukenme_dogrulama()
+    test_arayuz_tukenme_gidip_gelme()
 
     if not hizli:
         gecici = tempfile.mkdtemp(prefix="openmc_arayuz_test_")
