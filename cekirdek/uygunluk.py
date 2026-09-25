@@ -75,13 +75,15 @@ _AVOGADRO_BARN = 0.602214076    # N_A * 1e-24  (atom/b-cm <-> mol/cm3)
 KRITIK_PARAMETRELER = ("bor_ppm", "cubuk_daldirma", "tambur_donme",
                        "zenginlik", "yansitici_kalinlik")
 
-# Altigen prizmada periodic yan sinir.
-#   OpenMC 0.16 HexagonalPrism karsi yuzleri periodic_surface ile acikca
-#   esler ve kosar (olculdu: sfr_altigen k = 1.46737 +/- 0.00142 periodic,
-#   1.46804 +/- 0.00192 reflective). Arayuz bunu su an SUNMAZ ve dogrula
-#   hata sayar (testler/test_regresyon.py [18r] d). Acmak icin bu bayrak ve
-#   o test birlikte degismelidir.
-_ALTIGEN_PERIODIC = False
+# Altigen prizmada periodic yan sinir -- SUNULUR.
+#   Kullanilabilirlik denetimi "OpenMC altigende periodic esleyemez" demisti;
+#   YANLIS. OpenMC 0.16 HexagonalPrism karsi yuzleri periodic_surface ile
+#   esler ve kosar. Iki bagimsiz olcum, sfr_altigen:
+#     periodic 1.46737 +/- 0.00142  vs reflective 1.46804 +/- 0.00192
+#     periodic 1.46672 +/- 0.00109  vs reflective 1.46699 +/- 0.00156 (0.14 sigma)
+#   Silindir (tamburlu) ve kure icin periodic gecersiz kalir: OpenMC "Found
+#   only one periodic surface without a specified partner" ile durur (olculdu).
+_ALTIGEN_PERIODIC = True
 
 
 # ----------------------------------------------------------------------------

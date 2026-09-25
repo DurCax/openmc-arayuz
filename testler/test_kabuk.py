@@ -10,16 +10,13 @@ Yalnizca offscreen calisir; modal diyaloglar exec() EDILMEZ.
 import glob
 import os
 import re
-import shutil
-import tempfile
 import warnings
 
-from testler.ortak_test import kontrol, ORNEK, KOK   # noqa: F401
+from testler.ortak_test import kontrol, ORNEK, KOK, AYAR_DIZINI   # noqa: F401
 
 warnings.filterwarnings("ignore")
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
-_AYAR = []
 
 
 def _qt():
@@ -28,15 +25,8 @@ def _qt():
     except Exception as e:                         # pragma: no cover
         kontrol("PySide6 yok, kabuk testi atlandi", True, "-> %s" % e)
         return None
+    # Kullanicinin GERCEK ayarlari ortak_test.py'de yalitilir (AYAR_DIZINI).
     uyg = QtWidgets.QApplication.instance() or QtWidgets.QApplication([])
-    if not _AYAR:
-        # Kullanicinin GERCEK ayarlari (son dosyalar, Gelismis durumlari)
-        # kirletilmesin.
-        import atexit
-        _AYAR.append(tempfile.mkdtemp(prefix="kabuk_ayar_"))
-        atexit.register(shutil.rmtree, _AYAR[0], True)
-        for bicim in (QtCore.QSettings.NativeFormat, QtCore.QSettings.IniFormat):
-            QtCore.QSettings.setPath(bicim, QtCore.QSettings.UserScope, _AYAR[0])
     return uyg
 
 
@@ -852,10 +842,68 @@ def test_izgara_boyama():
     kontrol("bos altigen izgara cizimi calisiyor", a._geometri() == [])
 
 
+def test_ayarlar_yalitik():
+    """Test suiti kullanicinin GERCEK ayar dosyasina yazmamali. Onceden
+    test_regresyon'un pencere testleri gecici projeleri gercek "Son
+    kullanilanlar" listesine ekliyordu (olculdu: arayuz.conf'ta
+    /tmp/openmc_arayuz_test_*/proje.json)."""
+    import hashlib
+    import subprocess
+    import sys
+    import tempfile
+    if _qt() is None:
+        return
+    from PySide6 import QtCore
+    from cekirdek import sema
+    gercek = os.path.join(os.path.expanduser("~"), ".config", "openmc_arayuz",
+                          "arayuz.conf")
+
+    def ozet():
+        if not os.path.exists(gercek):
+            return None
+        with open(gercek, "rb") as f:
+            return hashlib.sha1(f.read()).hexdigest()
+
+    once = ozet()
+    dosya = QtCore.QSettings("openmc_arayuz", "arayuz").fileName()
+    kontrol("uygulama ayarlari test dizininde",
+            os.path.abspath(dosya).startswith(os.path.abspath(AYAR_DIZINI)),
+            "-> %s" % dosya)
+
+    d = tempfile.mkdtemp(prefix="kabuk_son_")
+    yol = os.path.join(d, "proje.json")
+    sema.kaydet(sema.yukle(os.path.join(ORNEK, "pwr_pinhucre.json")), yol)
+    p = _pencere(yol)                  # proje_ac -> _sona_ekle
+    p.ayarlar.setValue("son_dosyalar", p._son_listesi()
+                       + [os.path.join(ORNEK, "pwr_17x17.json")])  # eski surum kalintisi
+    son = p._son_listesi()
+    p.close()
+    kontrol("pencere acilan projeyi (test) son listesine yaziyor",
+            os.path.abspath(yol) in son, "-> %s" % son[:2])
+    kontrol("ornekler son kullanilanlarda gosterilmiyor (baslangicta ayri liste)",
+            not any(os.path.dirname(y) == os.path.abspath(ORNEK) for y in son),
+            "-> %s" % son)
+
+    # Alt surecte acilan pencere de (ortam degiskeniyle) yalitik olmali.
+    betik = ("import sys; sys.path.insert(0, %r)\n"
+             "from PySide6 import QtCore, QtWidgets\n"
+             "app = QtWidgets.QApplication([])\n"
+             "print(QtCore.QSettings('openmc_arayuz', 'arayuz').fileName())\n" % KOK)
+    r = subprocess.run([sys.executable, "-c", betik], capture_output=True, text=True,
+                       timeout=60, env=dict(os.environ, QT_QPA_PLATFORM="offscreen"))
+    alt = r.stdout.strip().splitlines()[-1] if r.stdout.strip() else r.stderr[-200:]
+    kontrol("alt surecin ayarlari da test dizininde",
+            os.path.abspath(alt).startswith(os.path.abspath(AYAR_DIZINI)), "-> %s" % alt)
+    kontrol("gercek ayar dosyasi degismedi", ozet() == once)
+    import shutil
+    shutil.rmtree(d, True)
+
+
 HIZLI = [test_bos_sablonlar, test_baslangic_ekrani, test_sekme_gorunurlugu,
          test_sekme_isaretleri, test_model_basligi, test_sag_panel_ve_rozet,
          test_kaldirilanlar_ve_kisayollar, test_minimum_yukseklik, test_tema_gecisi,
-         test_ortak_bilesenler, test_izgara_yardimcilari, test_izgara_boyama]
+         test_ortak_bilesenler, test_izgara_yardimcilari, test_izgara_boyama,
+         test_ayarlar_yalitik]
 YAVAS = []
 
 

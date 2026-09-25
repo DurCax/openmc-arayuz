@@ -2268,9 +2268,6 @@ def test_arayuz_tukenme_gidip_gelme():
 #   duzeltmeden once gecen bir test hicbir sey kanitlamaz.
 # ============================================================================
 
-_AYAR_DIZINI = []
-
-
 def _qt():
     """Ekransiz (offscreen) QApplication; PySide6 yoksa None."""
     os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
@@ -2284,17 +2281,10 @@ def _qt():
 
 def _ana_pencere(dosya=None):
     """
-    AnaPencere kurar. QSettings gecici bir dizine yonlendirilir: pencere
-    "son kullanilanlar" listesini yazar ve testler kullanicinin GERCEK
-    ayarlarini kirletmemeli.
+    AnaPencere kurar. Kullanicinin GERCEK ayarlari (son kullanilanlar)
+    ortak_test.py'de, alt surecler dahil, yalitilir (AYAR_DIZINI). Buradaki
+    eski yerel yonlendirme alt surecleri kapsamiyordu.
     """
-    from PySide6 import QtCore
-    if not _AYAR_DIZINI:
-        import atexit
-        _AYAR_DIZINI.append(tempfile.mkdtemp(prefix="arayuz_ayar_"))
-        atexit.register(shutil.rmtree, _AYAR_DIZINI[0], True)
-        for bicim in (QtCore.QSettings.NativeFormat, QtCore.QSettings.IniFormat):
-            QtCore.QSettings.setPath(bicim, QtCore.QSettings.UserScope, _AYAR_DIZINI[0])
     from arayuz.ana_pencere import AnaPencere
     return AnaPencere(dosya)
 
@@ -3113,11 +3103,16 @@ def test_dogrulama_yeni_kontroller():
     kontrol("c) adim 21.42 hata degil",
             not [x for x in bul(s, "hata", "kafes") if x.yer == "demet:kor_kafesi"])
 
-    # d) periodic yalnizca duzlemsel sinirlarda
-    for ad in ("godiva_kriter", "tamburlu_kor", "sfr_altigen"):
+    # d) periodic: kure ve silindirde gecersiz (OpenMC esleyemez, olculdu).
+    #    Altigen prizmada GECERLI -- denetimin aksi iddiasi olcumle curutuldu
+    #    (sfr_altigen periodic ile reflective 0.14 sigma icinde ayni k).
+    for ad in ("godiva_kriter", "tamburlu_kor"):
         s = sema.yukle(os.path.join(ORNEK, ad + ".json"))
         s["kor"]["sinir"]["yan"] = "periodic"
         kontrol("d) %s + periodic -> HATA" % ad, bool(bul(s, "hata", "periodic")))
+    s = sema.yukle(os.path.join(ORNEK, "sfr_altigen.json"))
+    s["kor"]["sinir"]["yan"] = "periodic"
+    kontrol("d) altigen demet + periodic hata DEGIL", not bul(s, "hata", "periodic"))
     s = copy.deepcopy(p17)
     s["kor"]["sinir"]["yan"] = "periodic"
     kontrol("d) kare demet + periodic hata degil", not bul(s, "hata", "periodic"))

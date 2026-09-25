@@ -1344,7 +1344,10 @@ class AnaPencere(QtWidgets.QMainWindow):
             ham = []
         if isinstance(ham, str):
             ham = [ham]
-        return [y for y in ham if isinstance(y, str) and os.path.exists(y)]
+        # Ornekler baslangic ekraninda ayrica listelenir ve kopya olarak
+        # acilir; eski surumlerden kalan ornek girdileri burada gosterilmez.
+        return [y for y in ham if isinstance(y, str) and os.path.exists(y)
+                and not self._ornek_mi(y)]
 
     def _sona_ekle(self, yol):
         liste = [os.path.abspath(yol)] + [y for y in self._son_listesi()

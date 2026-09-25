@@ -340,7 +340,7 @@ def _spec_fisil_mi(spec, ad, derinlik=0):
     p = plaka_bul(spec, ad)
     if p is not None:
         return any(_spec_fisil_mi(spec, p.get(k), derinlik + 1)
-                   for k in ("et_malzeme", "zarf_malzeme", "kanal_malzeme",
+                   for k in ("et_malzeme", "zarf_malzeme", "sogutucu",
                              "yan_levha_malzeme"))
     d = demet_bul(spec, ad)
     if d is not None:

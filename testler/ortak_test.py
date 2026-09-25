@@ -27,6 +27,30 @@ if KOK not in sys.path:
     sys.path.insert(0, KOK)
 ORNEK = os.path.join(KOK, "ornekler")
 
+
+def _ayarlari_yalit():
+    """Testler kullanicinin GERCEK uygulama ayarlarina (son kullanilanlar,
+    tema, Gelismis bolum durumu) yazmasin. Onceden test gecici projeleri
+    ~/.config/openmc_arayuz/arayuz.conf'taki "Son kullanilanlar" listesine
+    dusuyordu. Qt ayar yolunu XDG_CONFIG_HOME'dan okur; ortam degiskeni alt
+    sureclere de gecer. PySide6 yuklenmisse yol ayrica acikca yonlendirilir."""
+    import atexit
+    import shutil
+    import tempfile
+    dizin = tempfile.mkdtemp(prefix="openmc_arayuz_ayar_")
+    os.environ["XDG_CONFIG_HOME"] = dizin
+    atexit.register(shutil.rmtree, dizin, True)
+    try:
+        from PySide6 import QtCore
+    except ImportError:
+        return dizin
+    for bicim in (QtCore.QSettings.NativeFormat, QtCore.QSettings.IniFormat):
+        QtCore.QSettings.setPath(bicim, QtCore.QSettings.UserScope, dizin)
+    return dizin
+
+
+AYAR_DIZINI = _ayarlari_yalit()
+
 _gecti = []
 _kaldi = []
 

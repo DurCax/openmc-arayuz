@@ -92,7 +92,8 @@ SM = {"sogutucu", "moderator"}
 TUM_SEKME = ["malzemeler", "parcalar", "demet", "kor", "ayarlar", "calistir",
              "analiz", "tukenme"]
 KARE = ["reflective", "vacuum", "white", "periodic"]
-EGRI = ["reflective", "vacuum", "white"]            # silindir, altigen
+ALTIGEN = ["reflective", "vacuum", "white", "periodic"]   # altigen prizma: periodic GECERLI
+EGRI = ["reflective", "vacuum", "white"]            # silindir
 KURE = ["vacuum", "reflective", "white"]
 ZB = ["vacuum", "reflective", "white"]              # 3B alt/ust
 OZDEGER = {"pasif": True, "entropi": True, "kinetik": True,
@@ -231,7 +232,7 @@ KAHIN = {
                     void_orani=["sodyum"], zenginlik=["u10mo"],
                     kafes_adim=["demet_hex"], cubuk_yaricap=YAKIT_3),
         kritik=["zenginlik"],
-        sinir=(EGRI, [], []),
+        sinir=(ALTIGEN, [], []),
         ayar=dict(OZDEGER, guc_dagilimi=True, eksenel_dilim=False),
         kaynak=(["nokta", "kutu"], ["neutron"]),
         guc=["yakit_cubugu"], tukenme=True, parca=(True, False, False)),
@@ -834,12 +835,10 @@ def test_dogrula_yeni_bulgular():
     kontrol("2) kure: alt/ust vacuum icin bilgi yok (godiva)",
             not _bul(_yukle("godiva_kriter"), None, "sınırı ("))
 
-    # 3) altigen periodic: hata kalir ama "eslenemez" yanlis iddiasi gitti
+    # 3) altigen periodic GECERLI (olculdu: reflective ile ayni k)
     s = _yukle("sfr_altigen")
     s["kor"]["sinir"]["yan"] = "periodic"
-    h = _bul(s, "hata", "periodic")
-    kontrol("3) altigen + periodic HATA, mesajda 'eşlenemez' iddiasi yok",
-            bool(h) and not any("eşlenemez" in (x.mesaj + (x.oneri or "")) for x in h))
+    kontrol("3) altigen + periodic hata degil", not _bul(s, "hata", "periodic"))
 
     # 4) guc: kullanilmayan kafesteki cubuk -> HATA (kurucu durur)
     s = _yedek_demetli()
