@@ -112,6 +112,29 @@ VARSAYILAN_GUC = {
     "toplam_guc": None,     # W -- MODELIN KAPSADIGI bolgenin gucu
 }
 
+# Tukenme (yanma) hesabi. Ayrintilar: cekirdek/tukenme.py
+VARSAYILAN_TUKENME = {
+    "var": False,
+    # otomatik: modelde hidrojen/doteryum ya da grafit S(a,b) varsa termal,
+    # yoksa hizli. casl_*: 228 nuklidlik basitlestirilmis zincir, yaklasik
+    # 3 kat hizli ama yalnizca on inceleme icindir.
+    "zincir": "otomatik",       # otomatik | termal | hizli | casl_termal | casl_hizli
+    # GUC YOGUNLUGU W/gHM. Mutlak guc [W] kullanilmaz: 2B bir modelde "cm
+    # basina" olmak zorunda kalirdi ve bu sessiz bir birim tuzagidir.
+    # Tipik: PWR ~38-40, BWR ~25, SFR ~ 50-100 W/gHM.
+    "guc_yogunlugu": 40.0,
+    "adimlar": [0.5, 1.5, 3.0, 5.0, 10.0, 10.0],
+    "adim_birimi": "d",         # d | MWd/kg
+    "entegrator": "cecm",       # cecm (adim basina 2 transport) | predictor (1)
+    # false: ayni malzemeyi iceren butun hucreler TEK malzeme olarak yanar
+    #        (demet ortalamasi, hizli). true: cubuk cubuk yanma (cok agir).
+    "malzemeleri_ayir": False,
+    # Yakit disinda yanmasi istenen malzemeler (or. Gd2O3 yanabilir zehir).
+    # Fisil malzemeler otomatik eklenir.
+    "ek_malzemeler": [],
+    "izlenen": ["U235", "U238", "Pu239", "Pu240", "Pu241", "Xe135", "Sm149"],
+}
+
 VARSAYILAN_CALISTIRMA = {
     "is_parcacigi": 8,            # OpenMP is parcacigi (openmc -s N)
     "dizin": "kosu",              # spec dosyasina gore goreli kosu dizini
@@ -184,6 +207,7 @@ def yeni_spec(ad="isimsiz model"):
         "ayarlar": copy.deepcopy(VARSAYILAN_AYARLAR),
         "tallyler": [],
         "guc_dagilimi": copy.deepcopy(VARSAYILAN_GUC),
+        "tukenme": copy.deepcopy(VARSAYILAN_TUKENME),
         "calistirma": copy.deepcopy(VARSAYILAN_CALISTIRMA),
     }
 
@@ -466,6 +490,7 @@ def tamamla(ham):
     for anahtar, vars_ in (("kor", VARSAYILAN_KOR),
                            ("ayarlar", VARSAYILAN_AYARLAR),
                            ("guc_dagilimi", VARSAYILAN_GUC),
+                           ("tukenme", VARSAYILAN_TUKENME),
                            ("calistirma", VARSAYILAN_CALISTIRMA)):
         spec[anahtar] = _derin_birlestir(copy.deepcopy(vars_),
                                          ham.get(anahtar, {}))

@@ -1,5 +1,7 @@
 # --- OpenMC kosu ciktilari ---
-kosu/
+# Butun kosu dizinleri (kosu, kosu_3b, kosu_pin_tukenme ...). Onceden
+# yalnizca kosu/ vardi; digerleri icerikleri tek tek eslestigi icin gizli kaliyordu.
+kosu*/
 *.h5
 statepoint.*
 summary.h5

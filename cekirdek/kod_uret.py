@@ -713,6 +713,58 @@ def _tallyler(spec, satirlar, ek_tallyler=None, on_satirlar=None):
     satirlar.append("tallyler = openmc.Tallies([%s])" % ", ".join(adlar + ek_tallyler))
 
 
+def _tukenme(spec, satirlar):
+    """
+    Tukenme bolumu. Hacimler cekirdek/tukenme.py'deki AYNI fonksiyondan gelir:
+    ayni sayiyi iki ayri yoldan hesaplayan iki kod er ya da gec ayrisir
+    (eksenel katmanlamada tam bu yuzden 1300 pcm'lik bir fark cikmisti).
+    DONER tukenme bolumu yazildi mi.
+    """
+    t = spec.get("tukenme") or {}
+    if not t.get("var"):
+        return False
+    from cekirdek import tukenme as _tk
+    zs = _tk.zincir_secimi(spec)
+    hv = _tk.hacimler(spec)
+    _bolum(satirlar, 6, "TUKENME (YANMA)")
+    satirlar.append("")
+    satirlar.append("# Yanabilir malzemeler ve ANALITIK hacimleri. Hacim yanlissa yanma")
+    satirlar.append("# hizi ayni oranda yanlis olur ve k-eff'te iz birakmaz.")
+    for ad, v in hv.items():
+        satirlar.append("%s.depletable = True" % _ad(ad))
+        satirlar.append("%s.volume = %r   # cm3 -- %s" % (_ad(ad), v["hacim"], v["ayrinti"]))
+    satirlar.append("")
+    satirlar.append("# Zincir: %s" % zs["gerekce"])
+    satirlar.append("# Bu yol bu makineye aittir; baska yerde OPENMC_CHAIN_FILE'a bakin.")
+    satirlar.append("TUKENME_ZINCIRI = %r" % zs["yol"])
+    satirlar.append("TUKENME_ADIMLARI = %r   # %s" % ([float(a) for a in t["adimlar"]],
+                                                    t.get("adim_birimi") or "d"))
+    satirlar.append("")
+    satirlar.append("")
+    satirlar.append("def tukenme_kos():")
+    satirlar.append('    """Yanma hesabi; depletion_results.h5 uretir."""')
+    satirlar.append("    import openmc.deplete")
+    satirlar.append("    op = openmc.deplete.CoupledOperator(")
+    satirlar.append("        model, TUKENME_ZINCIRI,")
+    satirlar.append("        diff_burnable_mats=%r," % bool(t.get("malzemeleri_ayir")))
+    satirlar.append("        normalization_mode='fission-q',")
+    satirlar.append("        fission_yield_mode='constant',")
+    satirlar.append("        # Fisyon urunu verimleri bu enerjide okunur: 0.0253 eV termal,")
+    satirlar.append("        # 5e5 eV hizli. OpenMC'nin varsayilani 0.0253 eV'tur -- hizli")
+    satirlar.append("        # zincir secilse bile. Hizli sistemde bu ayrica verilmelidir.")
+    satirlar.append("        fission_yield_opts={'energy': %r})" % zs["verim_enerjisi"])
+    sinif = {"cecm": "CECMIntegrator", "predictor": "PredictorIntegrator"}[
+        t.get("entegrator") or "cecm"]
+    satirlar.append("    integ = openmc.deplete.%s(" % sinif)
+    satirlar.append("        op, TUKENME_ADIMLARI,")
+    satirlar.append("        power_density=%r,   # W/gHM (mutlak guc DEGIL)"
+                    % float(t["guc_yogunlugu"]))
+    satirlar.append("        timestep_units=%r)" % (t.get("adim_birimi") or "d"))
+    satirlar.append("    integ.integrate()")
+    satirlar.append("    return 'depletion_results.h5'")
+    return True
+
+
 def _kapanis(spec, satirlar, renkli):
     _bolum(satirlar, 5, "MODEL VE CALISTIRMA")
     tallyler = ("tallyler" if (spec.get("tallyler")
@@ -729,7 +781,10 @@ def _kapanis(spec, satirlar, renkli):
             if m.get("renk"):
                 satirlar.append("    %s: %r," % (_ad(m["ad"]), tuple(m["renk"])))
         satirlar.append("}")
+    tukenme_var = _tukenme(spec, satirlar)
     satirlar.append("")
+    if tukenme_var:
+        satirlar.append("")
     satirlar.append("if __name__ == '__main__':")
     satirlar.append("    import matplotlib.pyplot as plt")
     satirlar.append("")
@@ -745,6 +800,11 @@ def _kapanis(spec, satirlar, renkli):
     satirlar.append("    # Plotlar dogruysa asagidaki satirin yorumunu kaldirin.")
     satirlar.append("    # sp = model.run(threads=%d)" % spec["calistirma"].get("is_parcacigi", 8))
     satirlar.append("    # print(openmc.StatePoint(sp).keff)")
+    if tukenme_var:
+        satirlar.append("")
+        satirlar.append("    # Yanma hesabi (uzun surer; OMP_NUM_THREADS ortam degiskeniyle")
+        satirlar.append("    # is parcacigi sayisini ayarlayin):")
+        satirlar.append("    # tukenme_kos()")
 
 
 # ============================================================================

@@ -50,15 +50,22 @@ from cekirdek import kaynak as _kaynak
 # Her giris: (uygun_element_kumesi, onerilen_sab, insan_okunur_ad)
 #   bilesimdeki tum elementler kumenin icindeyse kural tetiklenir.
 # ----------------------------------------------------------------------------
+# (izin verilen elementler, ZORUNLU elementler, onerilen S(a,b), tanim)
+#   Eslesme sarti: zorunlu <= malzeme <= izin verilen.
+#   ZORUNLU kume sonradan eklendi. Once yalnizca "malzeme <= izin verilen"
+#   bakiliyordu; {Zr} kumesi {H, Zr}'nin alt kumesi oldugu icin SAF ZIRKONYUM
+#   "zirkonyum hidrur" sayiliyor ve kullaniciya c_H_in_ZrH eklemesi
+#   oneriliyordu -- hidrojensiz bir malzemeye hidrojen S(a,b)'si, yani yanlis
+#   fizik. Ayni mantikla B2O3 "borlu su" cikardi.
 _SAB_KURALLARI = [
-    ({"H", "O"},      "c_H_in_H2O",  "su (H2O)"),
-    ({"H", "O", "B"}, "c_H_in_H2O",  "borlu su"),
-    ({"H", "Zr"},     "c_H_in_ZrH",  "sirkonyum hidrur"),
-    ({"H", "C"},      "c_H_in_CH2",  "polietilen / plastik"),
-    ({"C"},           "c_Graphite",  "grafit"),
-    ({"Be"},          "c_Be",        "berilyum"),
-    ({"Be", "O"},     "c_Be_in_BeO", "berilyum oksit"),
-    ({"D", "O"},      "c_D_in_D2O",  "agir su (D2O)"),
+    ({"H", "O"},      {"H"},       "c_H_in_H2O",  "su (H2O)"),
+    ({"H", "O", "B"}, {"H"},       "c_H_in_H2O",  "borlu su"),
+    ({"H", "Zr"},     {"H", "Zr"}, "c_H_in_ZrH",  "sirkonyum hidrur"),
+    ({"H", "C"},      {"H", "C"},  "c_H_in_CH2",  "polietilen / plastik"),
+    ({"C"},           {"C"},       "c_Graphite",  "grafit"),
+    ({"Be"},          {"Be"},      "c_Be",        "berilyum"),
+    ({"Be", "O"},     {"Be", "O"}, "c_Be_in_BeO", "berilyum oksit"),
+    ({"D", "O"},      {"D"},       "c_D_in_D2O",  "agir su (D2O)"),
 ]
 
 # ----------------------------------------------------------------------------
@@ -291,8 +298,8 @@ def _sab_kontrol(malzeme, yer):
     # kumesinin alt kumesidir). EN DAR kural kazanir -- yoksa grafit
     # "polietilen" diye raporlanir.
     eslesenler = [(len(uygun), onerilen, tanim)
-                  for uygun, onerilen, tanim in _SAB_KURALLARI
-                  if elemanlar <= uygun]
+                  for uygun, zorunlu, onerilen, tanim in _SAB_KURALLARI
+                  if zorunlu <= elemanlar <= uygun]
     if eslesenler:
         _, onerilen, tanim = min(eslesenler)
         return [Bulgu(
@@ -777,6 +784,115 @@ def _ad_var(spec, ad):
             or demet_bul(spec, ad) is not None)
 
 
+def tukenme_kontrol(spec, veri_kontrolu=True):
+    """
+    Tukenme ayarlari tutarli mi?
+
+    Tukenmenin sessiz hatalari: yarim indirilmis zincir, yanlis spektrumlu
+    zincir, hacmi yanlis malzeme (yanma hizi o oranda yanlis olur ve k-eff'te
+    iz birakmaz), Xe-135 dengesini kaciran uzun ilk adim.
+    """
+    from cekirdek import tukenme as _tk
+    bulgular = []
+    t = spec.get("tukenme") or {}
+    if not t.get("var"):
+        return bulgular
+    yer = "tukenme"
+
+    if spec["ayarlar"].get("mod", "eigenvalue") != "eigenvalue":
+        bulgular.append(Bulgu("hata", yer,
+                              "tukenme ozdeger (k-eff) modu gerektirir",
+                              "Sabit kaynakli tukenme (aktivasyon) bu surumde yok."))
+
+    # --- zincir ---
+    zs = _tk.zincir_secimi(spec)
+    # Hizli kontrol yalnizca dosyanin SONUNU okur (<1 ms); veri_kontrolu
+    # kapaliyken bile yapilir ki arayuz yarim bir zinciri aninda gostersin.
+    tamam, mesaj, _n = veri_bilgi.zincir_kontrol(zs["yol"])
+    if not tamam:
+        bulgular.append(Bulgu("hata", yer, mesaj,
+                              "Kaynak ve sha256: ~/nucdata/chain/KAYNAK.txt"))
+    if t.get("zincir", "otomatik") != "otomatik" and zs["temel"] != zs["spektrum"]:
+        bulgular.append(Bulgu(
+            "uyari", yer,
+            "%s zincir secildi ama model %s spektrumlu gorunuyor"
+            % (zs["temel"], zs["spektrum"]),
+            "Termal/hizli zincir yakalama dallanma oranlarini ve fisyon "
+            "verimlerini belirler (or. Am241(n,g)->Am242m termalde %8.1, "
+            "hizlida %13.2)."))
+    if zs["tur"].startswith("casl"):
+        bulgular.append(Bulgu(
+            "bilgi", yer,
+            "basitlestirilmis CASL zinciri: 228 nuklid (tam zincir 3820)",
+            "Yaklasik 3 kat hizli; on inceleme icindir. Sonuclari tam zincirle "
+            "dogrulayin."))
+
+    # --- guc ve adimlar ---
+    p = t.get("guc_yogunlugu")
+    if p is None or float(p) <= 0:
+        bulgular.append(Bulgu("hata", yer, "guc yogunlugu pozitif olmali [W/gHM]"))
+    elif not (1.0 <= float(p) <= 200.0):
+        bulgular.append(Bulgu(
+            "uyari", yer, "guc yogunlugu %g W/gHM olagan disi" % float(p),
+            "Tipik: PWR 38-40, BWR ~25, SFR 50-100 W/gHM. Birim W/gHM'dir, "
+            "mutlak guc degil."))
+    adimlar = t.get("adimlar") or []
+    if not adimlar:
+        bulgular.append(Bulgu("hata", yer, "en az bir zaman adimi gerekli"))
+    elif any(float(a) <= 0 for a in adimlar):
+        bulgular.append(Bulgu("hata", yer, "zaman adimlari pozitif olmali"))
+    else:
+        birim = t.get("adim_birimi") or "d"
+        ilk_gun = float(adimlar[0])
+        if birim == "MWd/kg" and p:
+            ilk_gun = float(adimlar[0]) * 1000.0 / float(p)
+        if ilk_gun > 2.0:
+            bulgular.append(Bulgu(
+                "uyari", yer,
+                "ilk adim %.3g gun -- Xe-135 dengesi (~2 gun) tek adima eziliyor"
+                % ilk_gun,
+                "Ilk adimlari kisa tutun (or. 0.5 ve 1.5 gun). Xe-135 PWR'da "
+                "birkac bin pcm'lik hizli bir dusus yaratir; uzun bir ilk adim "
+                "bunu gorunmez kilar."))
+
+    # --- yanabilir malzemeler ve hacimler ---
+    try:
+        hv = _tk.hacimler(spec)
+    except Exception as e:
+        hv = None
+        bulgular.append(Bulgu("hata", yer, "hacimler hesaplanamadi: %s" % e))
+    if hv is not None:
+        if not hv:
+            bulgular.append(Bulgu("hata", yer,
+                                  "modelde yanabilir (fisil) malzeme yok"))
+        for ad, v in hv.items():
+            if not v["hacim"]:
+                bulgular.append(Bulgu(
+                    "hata", "tukenme/%s" % ad,
+                    "hacim hesaplanamiyor: %s" % v["ayrinti"],
+                    "Tukenme KESIN hacim gerektirir: yanlis hacim yanma hizini "
+                    "ayni oranda bozar ve k-eff'te iz birakmaz."))
+    for ad in t.get("ek_malzemeler") or []:
+        if malzeme_bul(spec, ad) is None:
+            bulgular.append(Bulgu("hata", yer, "tanimsiz ek malzeme: '%s'" % ad))
+
+    # --- istatistik ---
+    a = spec["ayarlar"]
+    aktif = int(a.get("cevrim", 0)) - int(a.get("pasif", 0))
+    if int(a.get("parcacik", 0)) * max(aktif, 0) < 100000:
+        bulgular.append(Bulgu(
+            "uyari", yer,
+            "aktif istatistik az (%d parcacik x %d cevrim)"
+            % (int(a.get("parcacik", 0)), aktif),
+            "Tukenme her adimda reaksiyon hizlarini transporttan alir; gurultu "
+            "adimdan adima BIRIKIR. Aktif parcacik x cevrim >= 1e5 onerilir."))
+    if t.get("malzemeleri_ayir"):
+        bulgular.append(Bulgu(
+            "bilgi", yer, "cubuk cubuk yanma acik (malzemeleri_ayir)",
+            "Her hucre ayri malzeme olur; bellek ve sure hucre sayisiyla artar."))
+    return bulgular
+
+
 def ayar_kontrol(spec):
     """Cevrim/parcacik sayilari ve kaynak tanimi."""
     bulgular = []
@@ -1108,6 +1224,7 @@ def tum_kontroller(spec, veri_kontrolu=True):
     bulgular += eksenel_kontrol(spec)
     bulgular += ayar_kontrol(spec)
     bulgular += kaynak_kontrol(spec, veri_kontrolu)
+    bulgular += tukenme_kontrol(spec, veri_kontrolu)
     bulgular += tally_kontrol(spec)
     bulgular += guc_dagilimi_kontrol(spec)
     bulgular += referans_kontrol(spec)
