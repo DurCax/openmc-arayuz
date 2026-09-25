@@ -63,6 +63,11 @@ class DemetSekmesi(SekmeTabani):
         self.nx = tamsayi(17, 1, 200)
         self.ny = tamsayi(17, 1, 200)
         self.halka = tamsayi(7, 1, 40, 1, "halka")
+        # Yazarken ara degerler islenmesin: "17" secip "15" yazmak once nx=1
+        # yapip haritayi TEK SUTUNA kirpiyordu. Deger Enter/odak kaybinda ya da
+        # ok tuslariyla islenir.
+        for _w in (self.nx, self.ny, self.halka):
+            _w.setKeyboardTracking(False)
         self.yonelim = QtWidgets.QComboBox()
         self.yonelim.addItem("y -- ust/alt yuzler yatay (tepede hucre)", "y")
         self.yonelim.addItem("x -- sag/sol yuzler dusey (sagda hucre)", "x")
@@ -137,6 +142,7 @@ class DemetSekmesi(SekmeTabani):
         harita_dugme.addWidget(d_hepsi)
 
         sag = QtWidgets.QWidget()
+        self._sag_panel = sag          # kafes secili degilken devre disi
         sag_d = QtWidgets.QVBoxLayout(sag)
         sag_d.setContentsMargins(0, 0, 0, 0)
         sag_d.addWidget(baslik("Kafes ozellikleri"))
@@ -190,7 +196,30 @@ class DemetSekmesi(SekmeTabani):
         else:
             self._temizle()
 
+    def _onay_al(self, baslik_, metin):
+        """Veri silen islemler icin onay. Testler bunu degistirir (modal acilmaz)."""
+        cevap = QtWidgets.QMessageBox.question(
+            self, baslik_, metin,
+            QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No,
+            QtWidgets.QMessageBox.No)
+        return cevap == QtWidgets.QMessageBox.Yes
+
+    def _geri_al_kutu(self, kutu, deger):
+        """Reddedilen degisiklikte kutuyu sinyal islemeden eski degere dondurur."""
+        eski = self._yukleniyor
+        self._yukleniyor = True
+        try:
+            if isinstance(kutu, QtWidgets.QComboBox):
+                kutu.setCurrentIndex(max(kutu.findData(deger), 0))
+            else:
+                kutu.setValue(deger)
+        finally:
+            self._yukleniyor = eski
+
     def _temizle(self):
+        # Kafes secili degilken form duzenlenebilir kaliyordu (hicbir yere
+        # yazilmayan degisiklikler). Sag panel tamamen devre disi.
+        self._sag_panel.setEnabled(False)
         self.ad.clear()
         self.izgara.setRowCount(0)
         self.izgara.setColumnCount(0)
@@ -211,6 +240,7 @@ class DemetSekmesi(SekmeTabani):
         if d is None:
             self._temizle()
             return
+        self._sag_panel.setEnabled(True)
         eski = self._yukleniyor
         self._yukleniyor = True
         try:
@@ -463,6 +493,18 @@ class DemetSekmesi(SekmeTabani):
         yeni_tur = self.tur.currentData()
         if yeni_tur == d.get("tur"):
             return
+        # Tip degisimi haritayi YENIDEN KURAR (kare <-> altigen haritalar
+        # birbirine cevrilemez). Eskiden SORMADAN yapiliyordu: 17x17 -> altigen
+        # tum kilavuz borulari sildi, geri donmek geri getirmedi.
+        n_hucre = sum(len(x) for x in (d.get("harita") or []))
+        if not self._onay_al(
+                "Kafes tipi değişiyor",
+                "'%s' kafesinin haritası (%d hücre) silinecek ve yeni tip için "
+                "tek harfle doldurulmuş boş bir harita kurulacak.\n\n"
+                "Bu işlem geri dönüşte eski haritayı GETİRMEZ (Düzen > Geri al "
+                "getirir). Devam edilsin mi?" % (d["ad"], n_hucre)):
+            self._geri_al_kutu(self.tur, d.get("tur", "kare"))
+            return
         harfler = sorted((d.get("anahtar") or {}).keys())
         varsayilan = harfler[0] if harfler else "y"
         d["tur"] = yeni_tur
@@ -496,6 +538,17 @@ class DemetSekmesi(SekmeTabani):
         if d is None or d.get("tur") == "altigen":
             return
         nx, ny = self.nx.value(), self.ny.value()
+        eski_nx, eski_ny = (d.get("boyut") or [nx, ny])[:2]
+        if nx < eski_nx or ny < eski_ny:
+            # Kucultme haritanin sag/alt kismini KIRPAR; eskiden sessizdi.
+            if not self._onay_al(
+                    "Harita küçülüyor",
+                    "Kafes %dx%d'den %dx%d'ye küçülüyor: haritanın sağ/alt kısmındaki "
+                    "hücreler silinecek (büyütmek onları geri getirmez).\n\n"
+                    "Devam edilsin mi?" % (eski_nx, eski_ny, nx, ny)):
+                self._geri_al_kutu(self.nx, eski_nx)
+                self._geri_al_kutu(self.ny, eski_ny)
+                return
         eski = d.get("harita") or []
         harfler = sorted((d.get("anahtar") or {}).keys())
         varsayilan = harfler[0] if harfler else "."
@@ -522,6 +575,16 @@ class DemetSekmesi(SekmeTabani):
             return
         harfler = sorted((d.get("anahtar") or {}).keys())
         halka = self.halka.value()
+        eski_halka = d.get("halka_sayisi") or halka
+        if halka < eski_halka:
+            # Halka azaltmak DIS halkalari siler; eskiden sessizdi.
+            if not self._onay_al(
+                    "Halka sayısı azalıyor",
+                    "Halka sayısı %d'den %d'ye iniyor: dıştaki %d halka silinecek "
+                    "(artırmak onları geri getirmez).\n\nDevam edilsin mi?"
+                    % (eski_halka, halka, eski_halka - halka)):
+                self._geri_al_kutu(self.halka, eski_halka)
+                return
         d["halka_sayisi"] = halka
         d["boyut"] = [halka, halka]
         d["harita"] = altigen.harita_yeniden_boyutlandir(

@@ -73,6 +73,7 @@ class TukenmeSekmesi(SekmeTabani):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.proje_yolu = None
+        self.okuma_kaynagi = None     # kopyasi acilmis ornek (yalnizca OKUMA)
         self._kapi = lambda: (False, "hazir degil")
         self._surec = None
         self._dizin = None
@@ -318,8 +319,34 @@ class TukenmeSekmesi(SekmeTabani):
     def kapi_ayarla(self, fonksiyon):
         self._kapi = fonksiyon
 
-    def proje_ayarla(self, proje_yolu):
+    def proje_ayarla(self, proje_yolu, okuma_kaynagi=None):
+        """
+        proje_yolu    : kaydedilmis proje dosyasi (yeni kosu buraya gore yazilir)
+        okuma_kaynagi : kopyasi acilmis ornek/sablon dosyasi. Onceki sonuclar
+                        yalnizca OKUMAK icin oradan aranir; yeni kosu asla
+                        ornek dizinine yazilmaz.
+        """
         self.proje_yolu = proje_yolu
+        self.okuma_kaynagi = okuma_kaynagi
+
+    def _okuma_dizini(self):
+        """Onceki sonucun aranacagi dizin (bkz. proje_ayarla)."""
+        dizin = _tk.kosu_dizini(self.spec, self.proje_yolu)
+        if (self.proje_yolu is None and getattr(self, "okuma_kaynagi", None)
+                and not os.path.exists(os.path.join(dizin, "depletion_results.h5"))):
+            dizin = _tk.kosu_dizini(self.spec, self.okuma_kaynagi)
+        return dizin
+
+    def sifirla(self):
+        """PROJE degisince onceki projenin gosterilen sonucunu siler."""
+        if self._surec is not None:
+            return
+        self.bekle()
+        self._onceki = self._onceki_anahtar = None
+        self.onceki_etiket.setText("")
+        self.onceki_etiket.setStyleSheet("")
+        self.tablo.setRowCount(0)
+        self._grafik_bos()
 
     def kapi_guncelle(self):
         if self._surec is not None:
@@ -443,7 +470,7 @@ class TukenmeSekmesi(SekmeTabani):
         """
         if self._surec is not None or not self.spec:
             return
-        dizin = _tk.kosu_dizini(self.spec, self.proje_yolu)
+        dizin = self._okuma_dizini()
         h5 = os.path.join(dizin, "depletion_results.h5")
         if not os.path.exists(h5):
             self._onceki = self._onceki_anahtar = None

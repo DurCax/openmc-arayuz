@@ -40,6 +40,7 @@ from arayuz.sekme_demet import DemetSekmesi
 from arayuz.sekme_kor import KorSekmesi
 from arayuz.sekme_malzeme import MalzemeSekmesi
 from arayuz import tema
+from arayuz.ortak import tekerlek_korumasi_kur
 
 KOK = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ORNEKLER = os.path.join(KOK, "ornekler")
@@ -61,9 +62,20 @@ _KONU_BAGIMLILIK = {
     "genel":   {"malzeme", "cubuk", "demet", "kor", "ayar"},
 }
 
+# Dogrulama bulgusunun "yer" onekinden o bulguyu duzelten EDITORE.
+# (dogrula.py'nin urettigi yerler: malzeme:X, malzemeler, cubuk:X, plaka:X,
+#  demet:X, kor, kor/katman N, ayarlar, veri kutuphanesi, kaynak, tally:X,
+#  guc dagilimi, guc_dagilimi, tukenme, tukenme/X.)
+# Sekme INDEKSI degil editor adi tutulur: indeks calisma aninda bulunur, sekme
+# sirasi degisse de esleme bozulmaz. Eskiden kaynak/tally/guc/tukenme eksikti
+# (tiklamak hicbir sey yapmiyordu) ve rehber tukenme hatalarini Ayarlar'a
+# gonderiyordu.
 _YER_SEKME = [
-    ("malzeme", 0), ("cubuk", 1), ("plaka", 1), ("demet", 2),
-    ("kor", 3), ("ayarlar", 4), ("veri kutuphanesi", 4),
+    ("malzeme", "s_malzeme"), ("cubuk", "s_cubuk"), ("plaka", "s_cubuk"),
+    ("demet", "s_demet"), ("kor", "s_kor"),
+    ("ayarlar", "s_ayar"), ("veri kutuphanesi", "s_ayar"), ("kaynak", "s_ayar"),
+    ("tally", "s_ayar"), ("guc dagilimi", "s_ayar"), ("guc_dagilimi", "s_ayar"),
+    ("tukenme", "s_tukenme"),
 ]
 
 # Yeni model sihirbazi sablonlari: (baslik, aciklama, ornek dosyasi)
@@ -197,6 +209,8 @@ class AnaPencere(QtWidgets.QMainWindow):
 
     def __init__(self, acilis_dosyasi=None):
         super().__init__()
+        # Fare tekerlegi odaksiz kutulari degistirmesin (bkz. ortak.py).
+        tekerlek_korumasi_kur()
         self.setWindowTitle("OpenMC Reaktor Kuru Arayuzu")
         # Boyut EKRANA gore belirlenir; sabit bir deger kucuk ekranlarda
         # pencerenin bir kismini ekran disinda birakiyordu.
@@ -209,6 +223,9 @@ class AnaPencere(QtWidgets.QMainWindow):
         self.ayarlar = QtCore.QSettings("openmc_arayuz", "arayuz")
         self.spec = sema.yeni_spec("yeni model")
         self.proje_yolu = None
+        # Kopyasi acilmis ornek/sablon dosyasi. YALNIZCA OKUMA icin (tukenme
+        # sekmesinin onceki sonuclari); kayit asla buraya yapilmaz.
+        self.ornek_kaynagi = None
         self._kirli = False
         self._bulgular = []
         self._kirli_sekmeler = set()
@@ -481,11 +498,9 @@ class AnaPencere(QtWidgets.QMainWindow):
         if dogrula.hata_var(self._bulgular):
             n = sum(1 for b in self._bulgular if b.seviye == "hata")
             ilk = next(b for b in self._bulgular if b.seviye == "hata")
-            hedef = 4
-            for onek, ix in _YER_SEKME:
-                if ilk.yer.lower().startswith(onek):
-                    hedef = ix
-                    break
+            hedef = self._yer_sekmesi(ilk.yer)
+            if hedef is None:
+                hedef = self._sekme_indeksi(self.s_ayar)
             return (hedef, "<b>%d hata var:</b> %s &nbsp; "
                            "<i>(sag alttaki dogrulama panelinde satira tiklayarak "
                            "da gidebilirsiniz)</i>" % (n, ilk.mesaj), "hata")
@@ -602,9 +617,20 @@ class AnaPencere(QtWidgets.QMainWindow):
     # ==================================================================
     # spec yasam dongusu
     # ==================================================================
+    def _proje_degisti(self):
+        """
+        PROJE degisti (yeni / ac / ornek / sablon): onceki projenin SONUCLARI
+        silinir. Sekme degisiminde ve geri al/yinele'de CAGRILMAZ -- orada ayni
+        projedeyiz. Eskiden Calistir/Analiz yeni projede eski k-eff'i ve
+        katsayiyi gosteriyor, rehber hic kosulmamis modele "Kosu tamam" diyordu.
+        """
+        self.s_calistir.sifirla()
+        self.s_analiz.sifirla()
+        self.s_tukenme.sifirla()
+
     def _spec_uygula(self):
         """Spec bastan yuklendi -- tum sekmeleri tazele."""
-        self.s_tukenme.proje_ayarla(self.proje_yolu)
+        self.s_tukenme.proje_ayarla(self.proje_yolu, self.ornek_kaynagi)
         for e in self.editorler:
             e.spec_yukle(self.spec)
         self._kirli_sekmeler.clear()
@@ -662,7 +688,13 @@ class AnaPencere(QtWidgets.QMainWindow):
             self.s_analiz.spec_ayarla(self.spec, self.proje_yolu)
 
     def _baslik_guncelle(self):
-        ad = os.path.basename(self.proje_yolu) if self.proje_yolu else "kaydedilmemis"
+        if self.proje_yolu:
+            ad = os.path.basename(self.proje_yolu)
+        elif self.ornek_kaynagi:
+            ad = "adsız — örnek: %s" % os.path.splitext(
+                os.path.basename(self.ornek_kaynagi))[0]
+        else:
+            ad = "kaydedilmemis"
         self.setWindowTitle("OpenMC Reaktor Kuru Arayuzu  --  %s%s"
                             % (ad, " *" if self._kirli else ""))
         self.e_geri.setEnabled(self._gecmis_ix > 0)
@@ -744,8 +776,10 @@ class AnaPencere(QtWidgets.QMainWindow):
                 "%s  %s%s" % (b.seviye.upper().ljust(5), b.yer.ljust(22), b.mesaj))
             oge.setForeground(QtGui.QColor(_seviye_renk(b.seviye)))
             oge.setData(QtCore.Qt.UserRole, b.yer)
-            ipucu = b.oneri or ""
-            oge.setToolTip((ipucu + "\n\n") if ipucu else "" + "Tiklayinca ilgili sekmeye gider.")
+            # Eskiden: (ipucu + "\n\n") if ipucu else "" + "Tiklayinca..." --
+            # oncelik yuzunden oneri varken tiklama bilgisi DUSUYORDU.
+            tiklama = "Tıklayınca ilgili sekmeye gider."
+            oge.setToolTip((b.oneri + "\n\n" + tiklama) if b.oneri else tiklama)
             self.dogrulama.addItem(oge)
         ozet = dogrula.ozet(self._bulgular)
         self.dogrulama_ozet.setText(ozet)
@@ -761,11 +795,24 @@ class AnaPencere(QtWidgets.QMainWindow):
 
     def _bulguya_git(self, oge):
         """Dogrulama satirina tiklayinca ilgili sekmeyi ac."""
-        yer = (oge.data(QtCore.Qt.UserRole) or "").lower()
-        for onek, indeks in _YER_SEKME:
+        indeks = self._yer_sekmesi(oge.data(QtCore.Qt.UserRole))
+        if indeks is not None and indeks >= 0:
+            self.sekmeler.setCurrentIndex(indeks)
+
+    def _sekme_indeksi(self, editor):
+        """Editorun (kaydirma alanina sarili) sekme indeksi; yoksa -1."""
+        for kaydirma, w in self._sayfa_editor.items():
+            if w is editor:
+                return self.sekmeler.indexOf(kaydirma)
+        return -1
+
+    def _yer_sekmesi(self, yer):
+        """Bulgunun 'yer' alanindan sekme indeksi; eslesme yoksa None."""
+        yer = (yer or "").lower()
+        for onek, ad in _YER_SEKME:
             if yer.startswith(onek):
-                self.sekmeler.setCurrentIndex(indeks)
-                return
+                return self._sekme_indeksi(getattr(self, ad))
+        return None
 
     def _onizleme_durum(self, mesaj, basarili):
         self.statusBar().showMessage(mesaj, 6000)
@@ -844,14 +891,17 @@ class AnaPencere(QtWidgets.QMainWindow):
         dosya = d.secilen_dosya()
         if dosya:
             try:
-                self.spec = sema.yukle(os.path.join(ORNEKLER, dosya))
-                self.spec["ad"] = self.spec.get("ad", "") + " (kopya)"
+                yeni = sema.yukle(os.path.join(ORNEKLER, dosya))
+                yeni["ad"] = yeni.get("ad", "") + " (kopya)"
             except Exception as e:
                 QtWidgets.QMessageBox.critical(self, "Sablon acilamadi", str(e))
                 return
         else:
-            self.spec = sema.yeni_spec("yeni model")
+            yeni = sema.yeni_spec("yeni model")
+        self._proje_degisti()
+        self.spec = yeni
         self.proje_yolu = None
+        self.ornek_kaynagi = os.path.join(ORNEKLER, dosya) if dosya else None
         self._kirli = bool(dosya)
         self._gecmis, self._gecmis_ix = [], -1
         self._spec_uygula()
@@ -865,21 +915,57 @@ class AnaPencere(QtWidgets.QMainWindow):
         if yol:
             self.proje_ac(yol)
 
+    @staticmethod
+    def _ornek_mi(yol):
+        """Dosya ornekler/ dizininde mi? (ornekler aynı zamanda test referansidir)"""
+        return (os.path.dirname(os.path.realpath(yol))
+                == os.path.realpath(ORNEKLER))
+
     def proje_ac(self, yol):
+        # Ornek dosyalar (Dosya > Ornek ac, Ac..., komut satiri, son
+        # kullanilanlar -- hepsi buradan gecer) KAYDEDILMEMIS BIR KOPYA olarak
+        # acilir. Eskiden gercek dosya aciliyordu ve Ctrl+S ornekler/*.json'u
+        # (testlerin referanslarini) ustune yaziyordu.
+        if self._ornek_mi(yol):
+            return self.ornek_ac(yol)
         if not self._kaydetme_sor():
             return
         try:
-            self.spec = sema.yukle(yol)
+            yeni = sema.yukle(yol)
         except Exception as e:
             QtWidgets.QMessageBox.critical(self, "Acilamadi", str(e))
             return
+        self._proje_degisti()
+        self.spec = yeni
         self.proje_yolu = os.path.abspath(yol)
+        self.ornek_kaynagi = None
         self._kirli = False
         self._gecmis, self._gecmis_ix = [], -1
         self._spec_uygula()
         self._gecmise_it(ilk=True)
         self._sona_ekle(yol)
         self.statusBar().showMessage("Acildi: %s" % yol, 6000)
+
+    def ornek_ac(self, yol):
+        """Bir ornegi kaydedilmemis KOPYA olarak acar (proje_yolu = None)."""
+        if not self._kaydetme_sor():
+            return
+        try:
+            yeni = sema.yukle(yol)
+        except Exception as e:
+            QtWidgets.QMessageBox.critical(self, "Acilamadi", str(e))
+            return
+        self._proje_degisti()
+        self.spec = yeni
+        self.proje_yolu = None
+        self.ornek_kaynagi = os.path.abspath(yol)
+        self._kirli = False
+        self._gecmis, self._gecmis_ix = [], -1
+        self._spec_uygula()
+        self._gecmise_it(ilk=True)
+        self.statusBar().showMessage(
+            "Örnek kopya olarak açıldı: %s — kaydetmek için 'Farklı kaydet' "
+            "kullanın (örnek dosyası değişmez)" % os.path.basename(yol), 8000)
 
     def proje_kaydet(self):
         if self.proje_yolu is None:
@@ -896,15 +982,22 @@ class AnaPencere(QtWidgets.QMainWindow):
         return True
 
     def proje_farkli_kaydet(self):
+        if self.proje_yolu:
+            varsayilan = self.proje_yolu
+        elif self.ornek_kaynagi:
+            # Ornegin kopyasi: varsayilan yer ornekler/ OLMAMALI.
+            varsayilan = os.path.join(os.path.expanduser("~"),
+                                      os.path.basename(self.ornek_kaynagi))
+        else:
+            varsayilan = os.path.join(ORNEKLER, "model.json")
         yol, _ = QtWidgets.QFileDialog.getSaveFileName(
-            self, "Model spec kaydet",
-            self.proje_yolu or os.path.join(ORNEKLER, "model.json"),
-            "JSON model (*.json)")
+            self, "Model spec kaydet", varsayilan, "JSON model (*.json)")
         if not yol:
             return False
         if not yol.endswith(".json"):
             yol += ".json"
         self.proje_yolu = yol
+        self.ornek_kaynagi = None
         self.s_calistir.spec_ayarla(self.spec, self.proje_yolu)
         self.s_tukenme.proje_ayarla(self.proje_yolu)
         return self.proje_kaydet()
@@ -1002,6 +1095,7 @@ def main(argv=None):
     app = QtWidgets.QApplication(sys.argv[:1])
     app.setApplicationName("OpenMC Arayuz")
     tema.uygula(app)
+    tekerlek_korumasi_kur(app)
     pencere = AnaPencere(argv[0] if argv else None)
     pencere.show()
 

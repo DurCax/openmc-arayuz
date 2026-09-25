@@ -11,6 +11,53 @@
 from PySide6 import QtCore, QtGui, QtWidgets
 
 
+# ----------------------------------------------------------------------------
+# Fare tekerlegi korumasi
+#   Her sekme bir QScrollArea icindedir. Sayfayi tekerlekle kaydiran kullanici
+#   imlecin altindan gecen secim/sayi kutusunun degerini SESSIZCE degistiriyordu
+#   (olculdu: kor turu tek_cubuk -> tek_plaka, yan sinir reflective -> vacuum,
+#   hucre adimi 1.26 -> 1.25). Kutular pek cok dosyada, cogu ciplak
+#   QComboBox() olarak kuruldugu icin cozum uygulama genelindedir:
+#     * ODAKSIZ kutu tekerlek olayini yok sayar -> olay kaydirma alanina gecer;
+#     * odak politikasi StrongFocus yapilir: varsayilan WheelFocus'ta tekerlek
+#       kutuya ODAK VERIR ve korumayi bosa cikarirdi.
+#   Kutuya tiklayan (odak veren) kullanici tekerlegi yine kullanabilir.
+#   QScrollBar bilerek disarida: kaydirma cubugu tekerlegi almali.
+# ----------------------------------------------------------------------------
+
+_TEKERLEK_HEDEFLERI = (QtWidgets.QComboBox, QtWidgets.QAbstractSpinBox,
+                       QtWidgets.QSlider)
+
+
+class _TekerlekSuzgeci(QtCore.QObject):
+    """Uygulama geneli olay suzgeci -- bkz. tekerlek_korumasi_kur()."""
+
+    def eventFilter(self, nesne, olay):
+        tur = olay.type()
+        if tur == QtCore.QEvent.Wheel:
+            if isinstance(nesne, _TEKERLEK_HEDEFLERI) and not nesne.hasFocus():
+                olay.ignore()          # yok say: ust widget'a (kaydirma alanina) gecer
+                return True            # kutunun kendisi degeri DEGISTIRMEZ
+        elif tur == QtCore.QEvent.Polish:
+            if (isinstance(nesne, _TEKERLEK_HEDEFLERI)
+                    and nesne.focusPolicy() == QtCore.Qt.WheelFocus):
+                nesne.setFocusPolicy(QtCore.Qt.StrongFocus)
+        return False
+
+
+_SUZGEC = {}
+
+
+def tekerlek_korumasi_kur(uygulama=None):
+    """Tekerlek korumasini uygulamaya bir kez kurar (tekrar cagrilabilir)."""
+    uygulama = uygulama or QtWidgets.QApplication.instance()
+    if uygulama is None or id(uygulama) in _SUZGEC:
+        return
+    suzgec = _TekerlekSuzgeci(uygulama)
+    uygulama.installEventFilter(suzgec)
+    _SUZGEC[id(uygulama)] = suzgec
+
+
 def sayi(deger=0.0, ondalik=5, en_az=0.0, en_cok=1e9, adim=0.01, sonek=""):
     """Ondalikli sayi girisi."""
     w = QtWidgets.QDoubleSpinBox()

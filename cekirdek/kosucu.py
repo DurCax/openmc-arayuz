@@ -74,6 +74,19 @@ def cevrim_satiri(satir):
     }
 
 
+# Sabit kaynak modunda OpenMC cevrim basina tek bir satir yazar ve k-eff
+# sutunu yoktur:  " Simulating batch 7"   (bkz. ornekler/kosu_zirh/kosu.log)
+# cevrim_satiri() bunu tanimaz; tanimasaydi sabit kaynak kosusunda ilerleme
+# cubugu hic ilerlemiyordu.
+_SABIT_KAYNAK_DESEN = re.compile(r"^\s*Simulating batch\s+(\d+)\s*$")
+
+
+def sabit_kaynak_cevrimi(satir):
+    """' Simulating batch N' satirindan N'i dondurur; baska satirda None."""
+    m = _SABIT_KAYNAK_DESEN.match(satir or "")
+    return int(m.group(1)) if m else None
+
+
 def keff_yorumu(k, sapma, beta_eff=None):
     """
     k-eff'i fiziksel olarak yorumlar.

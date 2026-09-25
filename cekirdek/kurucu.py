@@ -365,15 +365,10 @@ def aktif_eksenel_aralik(spec):
     katmanlar = sema_eksenel_katmanlar(kor)
     if katmanlar is None:
         return (-h / 2.0, h / 2.0)
-    ana = kor.get("cubuk") or kor.get("demet") or kor.get("plaka") or kor.get("dolgu")
+    from cekirdek.sema import katman_adaylari
     alt, ust = None, None
     for z0, z1, katman in katmanlar:
-        ad = katman.get("dolgu") or ana
-        fisil = _spec_fisil_mi(spec, ad)
-        if not fisil and katman.get("anahtar"):
-            fisil = any(_spec_fisil_mi(spec, x)
-                        for x in (katman["anahtar"] or {}).values())
-        if not fisil:
+        if not any(_spec_fisil_mi(spec, x) for x in katman_adaylari(kor, katman)):
             continue
         alt = z0 if alt is None else min(alt, z0)
         ust = z1 if ust is None else max(ust, z1)
@@ -411,12 +406,10 @@ def cubuk_eksenel_aralik(spec, cubuk_ad):
     katmanlar = sema_eksenel_katmanlar(kor)
     if katmanlar is None:
         return (-h / 2.0, h / 2.0)
-    ana = kor.get("cubuk") or kor.get("demet") or kor.get("plaka") or kor.get("dolgu")
+    from cekirdek.sema import katman_adaylari
     alt, ust = None, None
     for z0, z1, katman in katmanlar:
-        adaylar = [katman.get("dolgu") or ana]
-        adaylar += list((katman.get("anahtar") or {}).values())
-        if not any(_iceriyor_mu(spec, x, cubuk_ad) for x in adaylar if x):
+        if not any(_iceriyor_mu(spec, x, cubuk_ad) for x in katman_adaylari(kor, katman)):
             continue
         alt = z0 if alt is None else min(alt, z0)
         ust = z1 if ust is None else max(ust, z1)
@@ -721,6 +714,30 @@ def kor_kur(spec, nesneler, universeler):
 # 5. AYARLAR VE TALLY'LER
 # ============================================================================
 
+def kor_ic_olcusu(spec, sinir_kutu):
+    """
+    Korun YANSITICI HARIC yanal olcusu (gx, gy).
+
+    Baslangic kaynagi kutusu bunu kullanir. Once modelin tum sinir kutusu
+    kullaniliyordu; yansitici eklenince yakit kutunun kucuk bir kesrine
+    dusuyor ve OpenMC "Too few source sites satisfied the constraints
+    (minimum source rejection fraction = 0.05)" diyerek kosuyu durduruyordu
+    (olculdu: 17x17 + 20 cm su yansitici -> yakit kutunun ~%3.7'si). Yani
+    yansitici ekleyen HER kullanici bu hatayla karsilasiyordu.
+    Butun yansitici durumlarinda dis olcu = kor olcusu + 2 x kalinlik
+    (bkz. kor_kur donusleri).
+    """
+    kor = spec["kor"]
+    tur = kor.get("tur")
+    yans = kor.get("yansitici") or {}
+    yansitici_var = (tur == "tamburlu"
+                     or (yans.get("var") and tur in ("tek_demet", "kare_kafes")))
+    if not yansitici_var:
+        return tuple(sinir_kutu)
+    kal = float(yans.get("kalinlik") or 0.0)
+    return (sinir_kutu[0] - 2.0 * kal, sinir_kutu[1] - 2.0 * kal)
+
+
 def ayarlari_kur(spec, sinir_kutu, fisil_aralik=None):
     """spec["ayarlar"] -> openmc.Settings"""
     a = spec["ayarlar"]
@@ -753,8 +770,9 @@ def ayarlari_kur(spec, sinir_kutu, fisil_aralik=None):
         else:
             yari_z = (h / 2.0) if h else 1.0
             z_alt, z_ust = -yari_z, +yari_z
-        alt = k.get("alt") or [-sinir_kutu[0] / 2, -sinir_kutu[1] / 2, z_alt]
-        ust = k.get("ust") or [+sinir_kutu[0] / 2, +sinir_kutu[1] / 2, z_ust]
+        kx, ky = kor_ic_olcusu(spec, sinir_kutu)
+        alt = k.get("alt") or [-kx / 2, -ky / 2, z_alt]
+        ust = k.get("ust") or [+kx / 2, +ky / 2, z_ust]
         uzay = openmc.stats.Box(alt, ust)
         kisit = {"fissionable": True}
     else:
@@ -786,7 +804,35 @@ def ayarlari_kur(spec, sinir_kutu, fisil_aralik=None):
     return s
 
 
-def tallyleri_kur(spec, nesneler):
+def tally_mesh_sinirlari(spec, f, sinir_kutu):
+    """
+    Tally mesh filtresinin (alt, ust) sinirlari [cm].
+
+    "otomatik": true (ya da sinir yok) -> model KURULURKEN turetilir:
+      x, y : modelin sinir kutusu (yansitici dahil)
+      z    : 3B modelde kor yuksekligi; kuresel duzenekte kure capi;
+             2B modelde +/-1 cm (eksenel yonde sonsuz model, tek dilim)
+    Eski dosyalardaki acik "alt"/"ust" oldugu gibi kullanilir.
+
+    Uretilen betik (kod_uret.py) AYNI fonksiyonu cagirir -- ayni sayiyi iki
+    yoldan hesaplayan iki kod er ya da gec ayrisir.
+    """
+    if not f.get("otomatik") and f.get("alt") and f.get("ust"):
+        return list(f["alt"]), list(f["ust"])
+    if sinir_kutu is None:
+        raise ValueError("otomatik mesh sinirlari icin modelin sinir kutusu gerekli")
+    gx, gy = sinir_kutu
+    h = sema_kor_yuksekligi(spec["kor"])
+    if h:
+        z = h / 2.0
+    elif spec["kor"].get("tur") == "kuresel":
+        z = gx / 2.0
+    else:
+        z = 1.0
+    return [-gx / 2.0, -gy / 2.0, -z], [gx / 2.0, gy / 2.0, z]
+
+
+def tallyleri_kur(spec, nesneler, sinir_kutu=None):
     """spec["tallyler"] -> openmc.Tallies"""
     liste = []
     for t in spec.get("tallyler", []):
@@ -801,8 +847,8 @@ def tallyleri_kur(spec, nesneler):
             elif f["tur"] == "mesh":
                 mesh = openmc.RegularMesh()
                 mesh.dimension = f["boyut"]
-                mesh.lower_left = f["alt"]
-                mesh.upper_right = f["ust"]
+                mesh.lower_left, mesh.upper_right = tally_mesh_sinirlari(
+                    spec, f, sinir_kutu)
                 filtreler.append(openmc.MeshFilter(mesh))
             elif f["tur"] == "malzeme":
                 filtreler.append(openmc.MaterialFilter(
@@ -911,7 +957,7 @@ def kur(spec):
     # icin betik ile kurucu FARKLI kaynak kutusu kuruyordu (1300 pcm).
     fisil = aktif_eksenel_aralik(spec)
     settings = ayarlari_kur(spec, sinir_kutu, fisil)
-    tallies = tallyleri_kur(spec, nesneler)
+    tallies = tallyleri_kur(spec, nesneler, sinir_kutu)
 
     model = openmc.Model(geometry=geometry, materials=materials,
                          settings=settings, tallies=tallies)

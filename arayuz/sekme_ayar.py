@@ -429,6 +429,9 @@ class AyarSekmesi(SekmeTabani):
             w.setEnabled(self.entropi_var.isChecked())
         for w in (self.kinetik_etiket, self.kinetik_nesil):
             w.setEnabled(self.kinetik_var.isChecked())
+        # Eskiden yalnizca _kaydet() cagiriyordu: guc kapaliyken alanlari ilk
+        # duzenlemeye kadar etkin gorunuyordu.
+        self._guc_gorunurluk()
 
     def _guc_bolgeleri_doldur(self, secili=None):
         """Secili cubugun bolgelerini listeler (malzeme adiyla birlikte)."""
@@ -647,26 +650,44 @@ class AyarSekmesi(SekmeTabani):
             return
         t["ad"] = self.t_ad.text().strip() or t["ad"]
         t["skorlar"] = [o.text() for o in self.t_skor.selectedItems()] or ["flux"]
-        filtreler = []
+        eski = list(t.get("filtreler", []))
+        eski_enerji = next((f for f in eski if f.get("tur") == "enerji"), None)
+        eski_mesh = next((f for f in eski if f.get("tur") == "mesh"), None)
+        yeni = {"enerji": None, "mesh": None}
         if self.t_enerji_var.isChecked():
             try:
                 gruplar = [float(x) for x in self.t_enerji.text().replace(";", ",").split(",")
                            if x.strip()]
-                if len(gruplar) >= 2:
-                    filtreler.append(sema.filtre_enerji(sorted(gruplar)))
             except ValueError:
-                pass
+                gruplar = []
+            # Okunamayan metin mevcut filtreyi SILMEZ (eskiden siliyordu).
+            yeni["enerji"] = (sema.filtre_enerji(sorted(gruplar)) if len(gruplar) >= 2
+                              else eski_enerji)
         if self.t_mesh_var.isChecked():
-            try:
-                from cekirdek import onbellek
-                _, bilgi = onbellek.kur_onbellekli(self.spec)
-                gx, gy = bilgi["sinir_kutu"]
-            except Exception:
-                gx = gy = 10.0
-            h = sema.kor_yuksekligi(self.spec["kor"]) or 2.0
-            filtreler.append(sema.filtre_mesh(
-                [self.t_mesh_nx.value(), self.t_mesh_ny.value(), self.t_mesh_nz.value()],
-                [-gx / 2, -gy / 2, -h / 2], [gx / 2, gy / 2, h / 2]))
+            boyut = [self.t_mesh_nx.value(), self.t_mesh_ny.value(), self.t_mesh_nz.value()]
+            if eski_mesh is not None:
+                # Arayuzde gosterilmeyen alanlar (eski dosyalarin acik alt/ust
+                # sinirlari, "otomatik") korunur; yalnizca bolme sayisi degisir.
+                yeni["mesh"] = dict(eski_mesh, boyut=boyut)
+            else:
+                # Sinirlar model KURULURKEN turetilir (kurucu.tally_mesh_sinirlari):
+                # sonradan yansitici eklenince mesh modelle birlikte buyur.
+                yeni["mesh"] = sema.filtre_mesh_otomatik(boyut)
+        # Bu editorun YONETMEDIGI filtre turleri (or. malzeme) yerinde korunur.
+        # Eskiden liste yalnizca enerji/mesh kutularindan yeniden kuruluyordu:
+        # zirh_kure'de ad alaninda Enter'a basmak [malzeme, enerji] -> [enerji].
+        filtreler, konan = [], set()
+        for f in eski:
+            tur = f.get("tur")
+            if tur in yeni:
+                if yeni[tur] is not None and tur not in konan:
+                    filtreler.append(yeni[tur])
+                    konan.add(tur)
+            else:
+                filtreler.append(f)
+        for tur in ("enerji", "mesh"):
+            if yeni[tur] is not None and tur not in konan:
+                filtreler.append(yeni[tur])
         t["filtreler"] = filtreler
         i = self.tally_liste.currentRow()
         if i >= 0:

@@ -316,15 +316,28 @@ class CubukSekmesi(SekmeTabani):
             w.setVisible(kontrol)
 
     def _uc_guncelle(self):
-        """Daldirma oranindan uc konumunu hesaplayip gosterir."""
+        """
+        Daldirma oranindan uc konumunu hesaplayip gosterir.
+
+        Kurucu ile AYNI formul (kurucu.cubuk_universe): daldirma AKTIF yakit
+        araliginda olculur, modelin toplam yuksekliginde degil:
+            z_uc = z_ust - daldirma/100 * (z_ust - z_alt)
+        Eskiden toplam yukseklik kullaniliyordu: katmanli modelde %50'de
+        etiket z=+0.00 derken kurucu ucu z=-2.5'e koyuyordu.
+        """
         h = sema.kor_yuksekligi((self.spec or {}).get("kor") or {})
         if not h:
             self.c_uc_etiket.setText("model 2B -- kor yuksekligi tanimli degil")
             self.c_uc_etiket.setStyleSheet("color: palette(mid);")
             return
-        z = h / 2.0 - (self.c_daldirma.value() / 100.0) * h
-        self.c_uc_etiket.setText("z = %+.2f cm   (kor: %+.1f .. %+.1f cm)"
-                                 % (z, -h / 2.0, h / 2.0))
+        try:
+            from cekirdek import kurucu
+            z_alt, z_ust = kurucu.aktif_eksenel_aralik(self.spec) or (-h / 2.0, h / 2.0)
+        except Exception:
+            z_alt, z_ust = -h / 2.0, h / 2.0
+        z = z_ust - (self.c_daldirma.value() / 100.0) * (z_ust - z_alt)
+        self.c_uc_etiket.setText("z = %+.2f cm   (aktif yakıt: %+.1f .. %+.1f cm)"
+                                 % (z, z_alt, z_ust))
         self.c_uc_etiket.setStyleSheet("")
 
     def _cubuk_tur_degisti(self, *_):

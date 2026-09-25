@@ -217,9 +217,28 @@ class AnalizSekmesi(QtWidgets.QWidget):
     def spec_ayarla(self, spec, proje_yolu=None):
         self.spec = spec
         self.proje_yolu = proje_yolu
-        self._hedefleri_doldur()
+        # Ana pencere bunu sekmeye HER giriste cagirir: secili hedef korunmali
+        # (eskiden "su" secip geri gelen kullanici "uo2" buluyordu).
+        self._hedefleri_doldur(koru=True)
         self.kapi_guncelle()
         self._tahmin_guncelle()
+
+    def sifirla(self):
+        """
+        PROJE degisince onceki projenin analiz sonucunu siler (sekme
+        degisiminde CAGRILMAZ). Eskiden PWR taramasindan sonra acilan Godiva
+        PWR'in bor katsayisini gosteriyordu.
+        """
+        if self._isci is not None:
+            return                 # suren analizin sonucu silinmez
+        self._sonuclar = []
+        self.tablo.setRowCount(0)
+        self._grafik_sifirla()
+        self.sonuc_kutusu.setText("Henüz analiz yapılmadı.")
+        self.tahmin_etiket.setText("")
+        self.ilerleme.setRange(0, 1)
+        self.ilerleme.setValue(0)
+        self.hedef.clear()         # onceki projenin hedefi yeni projeye tasinmasin
 
     def kapi_guncelle(self):
         if self._isci is not None:
@@ -263,8 +282,20 @@ class AnalizSekmesi(QtWidgets.QWidget):
             self.bas.setValue(a); self.son.setValue(b); self.adet.setValue(n)
         self._tahmin_guncelle()
 
-    def _hedefleri_doldur(self):
-        """Parametre turune gore secilebilir hedefleri listeler."""
+    def _hedefleri_doldur(self, koru=False):
+        """
+        Parametre turune gore secilebilir hedefleri listeler.
+        koru=True: onceki secim (hala listedeyse) geri secilir.
+        """
+        onceki = self.hedef.currentData() if koru and self.hedef.count() else None
+        self._hedefleri_listele()
+        if onceki is not None:
+            for j in range(self.hedef.count()):
+                if self.hedef.itemData(j) == onceki:
+                    self.hedef.setCurrentIndex(j)
+                    break
+
+    def _hedefleri_listele(self):
         self.hedef.clear()
         if self.spec is None:
             return
@@ -437,7 +468,8 @@ class AnalizSekmesi(QtWidgets.QWidget):
                                "kor turunu 'Tamburlu kor' yapin.")
         if tur in ("kafes_adim",) and not self.spec.get("demetler"):
             return False, "Modelde kafes yok."
-        if tur == "yansitici_kalinlik" and not (self.spec["kor"].get("yansitici") or {}).get("var"):
+        if (tur == "yansitici_kalinlik" and self.spec["kor"].get("tur") != "tamburlu"
+                and not (self.spec["kor"].get("yansitici") or {}).get("var")):
             return False, "Modelde yansitici kusak tanimli degil."
         return True, ""
 

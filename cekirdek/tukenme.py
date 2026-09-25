@@ -178,8 +178,7 @@ def _kor_sayimi(spec, kor, dolgu, hedef, esleme=None):
                 if harf in anahtar:
                     toplam += _sayim(spec, anahtar[harf], hedef)
         return toplam
-    ana = kor.get("cubuk") or kor.get("demet") or kor.get("plaka") or kor.get("dolgu")
-    return _sayim(spec, dolgu or ana, hedef)
+    return _sayim(spec, dolgu or sema.ana_dolgu(kor), hedef)
 
 
 def _eksenel_dilimler(kor):

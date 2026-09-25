@@ -24,6 +24,7 @@ from matplotlib.figure import Figure
 from PySide6 import QtCore, QtGui, QtWidgets
 
 from cekirdek import kosucu
+from cekirdek import kaynak as _kaynak
 from arayuz.ortak import baslik, ipucu
 
 
@@ -91,7 +92,8 @@ class CalistirSekmesi(QtWidgets.QWidget):
         self.durum_etiket = QtWidgets.QLabel("")
         self.durum_etiket.setWordWrap(True)
         kutu = QtWidgets.QHBoxLayout()
-        kutu.addWidget(QtWidgets.QLabel("k-eff:"))
+        self.keff_baslik = QtWidgets.QLabel("k-eff:")
+        kutu.addWidget(self.keff_baslik)
         kutu.addWidget(self.keff_etiket)
         kutu.addStretch(1)
         sd.addLayout(kutu)
@@ -122,7 +124,45 @@ class CalistirSekmesi(QtWidgets.QWidget):
     def spec_ayarla(self, spec, proje_yolu=None):
         self.spec = spec
         self.proje_yolu = proje_yolu
+        # Ekranda bir sonuc yokken gorunum modelin moduna uyar (sabit kaynakta
+        # k-eff/entropi grafigi anlamsiz). Gosterilen bir sonuc varsa o sonucun
+        # moduna dokunulmaz.
+        if self._surec is None and not self._son_basarili:
+            self._mod_gorunumu(self._sabit_mi(spec))
         self.kapi_guncelle()
+
+    @staticmethod
+    def _sabit_mi(spec):
+        return ((spec or {}).get("ayarlar") or {}).get("mod", "eigenvalue") != "eigenvalue"
+
+    def _mod_gorunumu(self, sabit):
+        """Sabit kaynak modunda k-eff etiketi ve k-eff/entropi grafigi gizlenir."""
+        for w in (self.keff_baslik, self.keff_etiket, self.tuval):
+            w.setVisible(not sabit)
+
+    def sifirla(self):
+        """
+        PROJE degisince (yeni/ac/ornek/sablon) onceki projenin sonucunu siler.
+        Sekme degisiminde CAGRILMAZ. Eskiden yeni projede eski k-eff gorunuyor,
+        _son_basarili tasiniyor ve rehber hic kosulmamis modele "Kosu tamam"
+        diyordu.
+        """
+        self._son_basarili = False
+        self._cevrimler = []
+        self._tampon = ""
+        if self._surec is not None:
+            return                 # suren kosunun ciktisi silinmez
+        self.log.clear()
+        self.sonuc_metin.clear()
+        self.keff_etiket.setText("-")
+        self.durum_etiket.setText("")
+        self.durum_etiket.setStyleSheet("")
+        self.ilerleme.setRange(0, 1)
+        self.ilerleme.setValue(0)
+        self.ilerleme.resetFormat()
+        self._grafik_sifirla()
+        self.guc_harita.sonuc_ayarla(None, None)
+        self.alt_sekme.setCurrentIndex(0)
 
     def kapi_guncelle(self):
         if self._surec is not None:
@@ -222,8 +262,13 @@ class CalistirSekmesi(QtWidgets.QWidget):
 
         self.log.clear()
         self.sonuc_metin.clear()
+        self._son_basarili = False
+        sabit = self._sabit_mi(self.spec)
+        self._mod_gorunumu(sabit)
         self.keff_etiket.setText("kosuyor...")
-        self.durum_etiket.setText("")
+        self.durum_etiket.setStyleSheet("")
+        self.durum_etiket.setText("Sabit kaynak — k-eff tanımsız; sonuç tally'lerdir."
+                                  if sabit else "")
         self._cevrimler = []
         self._tampon = ""
         self._grafik_sifirla()
@@ -275,6 +320,11 @@ class CalistirSekmesi(QtWidgets.QWidget):
                 if bilgi["ortalama"] is not None:
                     self.keff_etiket.setText("%.5f +/- %.5f"
                                              % (bilgi["ortalama"], bilgi["sapma"]))
+                continue
+            # Sabit kaynak: " Simulating batch N" (k-eff sutunu yok)
+            n = kosucu.sabit_kaynak_cevrimi(satir)
+            if n is not None:
+                self.ilerleme.setValue(n)
 
     def _hata(self, _kod):
         self._yaz("\n# SUREC HATASI: %s" % self._surec.errorString())
@@ -287,12 +337,16 @@ class CalistirSekmesi(QtWidgets.QWidget):
 
         if cikis_kodu != 0:
             self.keff_etiket.setText("basarisiz")
+            # Sabit kaynakta k-eff etiketi gizli: durum satiri da soylesin.
+            self.durum_etiket.setText("Koşu başarısız (çıkış kodu %d) — 'Kosu ciktisi' "
+                                      "sekmesine bakın." % cikis_kodu)
             self.durum.emit("Kosu basarisiz (cikis kodu %d)" % cikis_kodu, False)
             return
 
         sp = kosucu.son_statepoint(self._dizin)
         if sp is None:
             self.keff_etiket.setText("statepoint yok")
+            self.durum_etiket.setText("Koşu bitti ama statepoint bulunamadı.")
             self.durum.emit("Kosu bitti ama statepoint bulunamadi", False)
             return
         try:
@@ -300,32 +354,64 @@ class CalistirSekmesi(QtWidgets.QWidget):
         except Exception as e:
             self.durum.emit("Sonuc okunamadi: %s" % e, False)
             return
+        self._sonuc_goster(s, sp)
 
-        self.keff_etiket.setText("%.5f +/- %.5f" % s["keff"])
-        kin0 = s.get("kinetik") or {}
-        durum, ayrinti = kosucu.keff_yorumu(s["keff"][0], s["keff"][1],
-                                            kin0.get("beta_eff"))
-        self.durum_etiket.setText("%s\n%s" % (durum, ayrinti))
+    def _sonuc_goster(self, s, sp):
+        """
+        kosucu.sonuc_oku() ciktisini gosterir. Sabit kaynak modunda k-eff YOKTUR
+        (s["keff"] is None): eskiden "%.5f" % None ile cokuyor, tally'ler hic
+        gosterilmiyor ve kosu basarili sayilmiyordu.
+        """
         from arayuz import tema
-        renk = (tema.renk("basari") if durum.startswith("KRITIK (")
-                else (tema.renk("hata") if "USTU" in durum else tema.renk("vurgu")))
-        self.durum_etiket.setStyleSheet("color: %s; font-weight: bold;" % renk)
-        satirlar = [
-            "k-eff    = %.5f +/- %.5f" % s["keff"],
-            "cevrim   = %d (%d pasif)" % (s["cevrim"], s["pasif"]),
-            "parcacik = %d / cevrim" % s["parcacik"],
-        ]
-        # --- kaynak yakinsamasi degerlendirmesi ---
-        if s.get("entropi"):
-            yakinsadi, mesaj = kosucu.entropi_yakinsama(s["entropi"], s["pasif"])
-            isaret = {True: "[OK]   ", False: "[UYARI]", None: "[  ?  ]"}[yakinsadi]
-            satirlar.append("kaynak   = %s %s" % (isaret, mesaj))
-            if yakinsadi is False:
-                self.durum.emit("DIKKAT: kaynak yakinsamamis olabilir -- "
-                                "pasif cevrim sayisini artirin", False)
+        sabit = s.get("keff") is None
+        self._mod_gorunumu(sabit)
+        if sabit:
+            k_tanim = ((self.spec or {}).get("ayarlar") or {}).get("kaynak") or {}
+            kuvvet = float(k_tanim.get("kuvvet") or 1.0)
+            self.keff_etiket.setText("-")
+            self.durum_etiket.setText(
+                "Sabit kaynak — k-eff tanımsız\nSonuç tally'lerdir (aşağıda).")
+            self.durum_etiket.setStyleSheet("color: %s; font-weight: bold;"
+                                            % tema.renk("vurgu"))
+            satirlar = [
+                "mod      = sabit kaynak (k-eff tanımsız)",
+                "kaynak   = %s" % _kaynak.ozet(k_tanim),
+                "şiddet   = %.4g parçacık/s" % kuvvet,
+                "çevrim   = %d, %d parçacık/çevrim" % (s["cevrim"], s["parcacik"]),
+            ]
+            # OLCULDU (kosucu.py): OpenMC sabit kaynak tally'lerini kaynak
+            # siddetiyle ZATEN carpar; "siddetle carpin" demek cift sayim olurdu.
+            if kuvvet == 1.0:
+                satirlar.append("NOT: tally değerleri kaynak parçacığı başınadır "
+                                "(şiddet 1). Mutlak birim için şiddeti girin.")
+            else:
+                satirlar.append("NOT: tally değerleri MUTLAK birimdedir — OpenMC "
+                                "şiddeti zaten uygulamıştır, tekrar çarpmayın.")
         else:
-            satirlar.append("kaynak   = [  ?  ] Shannon entropisi kapali -- "
-                            "kaynak yakinsamasi dogrulanamiyor")
+            self.keff_etiket.setText("%.5f +/- %.5f" % s["keff"])
+            kin0 = s.get("kinetik") or {}
+            durum, ayrinti = kosucu.keff_yorumu(s["keff"][0], s["keff"][1],
+                                                kin0.get("beta_eff"))
+            self.durum_etiket.setText("%s\n%s" % (durum, ayrinti))
+            renk = (tema.renk("basari") if durum.startswith("KRITIK (")
+                    else (tema.renk("hata") if "USTU" in durum else tema.renk("vurgu")))
+            self.durum_etiket.setStyleSheet("color: %s; font-weight: bold;" % renk)
+            satirlar = [
+                "k-eff    = %.5f +/- %.5f" % s["keff"],
+                "cevrim   = %d (%d pasif)" % (s["cevrim"], s["pasif"]),
+                "parcacik = %d / cevrim" % s["parcacik"],
+            ]
+            # --- kaynak yakinsamasi degerlendirmesi ---
+            if s.get("entropi"):
+                yakinsadi, mesaj = kosucu.entropi_yakinsama(s["entropi"], s["pasif"])
+                isaret = {True: "[OK]   ", False: "[UYARI]", None: "[  ?  ]"}[yakinsadi]
+                satirlar.append("kaynak   = %s %s" % (isaret, mesaj))
+                if yakinsadi is False:
+                    self.durum.emit("DIKKAT: kaynak yakinsamamis olabilir -- "
+                                    "pasif cevrim sayisini artirin", False)
+            else:
+                satirlar.append("kaynak   = [  ?  ] Shannon entropisi kapali -- "
+                                "kaynak yakinsamasi dogrulanamiyor")
         kin = s.get("kinetik")
         if kin:
             satirlar.append("beta_eff = %.1f +/- %.1f pcm   (reaktivite birimi: 1 $ = beta_eff)"
@@ -362,4 +448,7 @@ class CalistirSekmesi(QtWidgets.QWidget):
         self.guc_harita.sonuc_ayarla(s, self.spec)
         self._son_basarili = True
         self.alt_sekme.setCurrentIndex(1)
-        self.durum.emit("Kosu tamamlandi: k-eff = %.5f +/- %.5f" % s["keff"], True)
+        if sabit:
+            self.durum.emit("Koşu tamamlandı (sabit kaynak) — sonuçlar tally'lerde", True)
+        else:
+            self.durum.emit("Kosu tamamlandi: k-eff = %.5f +/- %.5f" % s["keff"], True)

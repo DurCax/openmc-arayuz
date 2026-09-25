@@ -594,8 +594,10 @@ def _ayarlar(spec, satirlar, gx, gy):
         from cekirdek import kurucu as _kur
         _ar = _kur.aktif_eksenel_aralik(spec)
         _z0, _z1 = _ar if _ar else (-1.0, 1.0)
-        alt = k.get("alt") or [-gx / 2, -gy / 2, _z0]
-        ust = k.get("ust") or [+gx / 2, +gy / 2, _z1]
+        # Yanal olcu yansitici HARIC (kurucu.kor_ic_olcusu ile ayni).
+        _kx, _ky = _kur.kor_ic_olcusu(spec, (gx, gy))
+        alt = k.get("alt") or [-_kx / 2, -_ky / 2, _z0]
+        ust = k.get("ust") or [+_kx / 2, +_ky / 2, _z1]
         satirlar.append("_uzay = openmc.stats.Box(%r, %r)"
                         % (list(alt), list(ust)))
         satirlar.append("_kisit = {'fissionable': True}   # kaynak sadece fisil bolgelerde")
@@ -678,7 +680,7 @@ def _guc_dagilimi(spec, satirlar, uretilen, gx, gy):
     return ["guc_tally", "guc_ref"]
 
 
-def _tallyler(spec, satirlar, ek_tallyler=None, on_satirlar=None):
+def _tallyler(spec, satirlar, ek_tallyler=None, on_satirlar=None, sinir_kutu=None):
     ek_tallyler = list(ek_tallyler or [])
     if not spec.get("tallyler") and not ek_tallyler:
         return
@@ -699,10 +701,16 @@ def _tallyler(spec, satirlar, ek_tallyler=None, on_satirlar=None):
                 filtre_ifadeleri.append("openmc.EnergyFilter(%r)" % list(f["gruplar"]))
             elif f["tur"] == "mesh":
                 mv = "%s_mesh_%d" % (v, j)
+                # kurucu.py ile AYNI fonksiyon: otomatik sinirlar modelin sinir
+                # kutusundan ve kor yuksekliginden turetilir.
+                from cekirdek import kurucu as _kur
+                alt, ust = _kur.tally_mesh_sinirlari(spec, f, sinir_kutu)
+                if f.get("otomatik"):
+                    satirlar.append("# mesh sinirlari modelin sinir kutusundan turetildi")
                 satirlar.append("%s = openmc.RegularMesh()" % mv)
                 satirlar.append("%s.dimension  = %r" % (mv, list(f["boyut"])))
-                satirlar.append("%s.lower_left = %r" % (mv, list(f["alt"])))
-                satirlar.append("%s.upper_right = %r" % (mv, list(f["ust"])))
+                satirlar.append("%s.lower_left = %r" % (mv, list(alt)))
+                satirlar.append("%s.upper_right = %r" % (mv, list(ust)))
                 filtre_ifadeleri.append("openmc.MeshFilter(%s)" % mv)
             elif f["tur"] == "malzeme":
                 filtre_ifadeleri.append("openmc.MaterialFilter([%s])"
@@ -848,7 +856,8 @@ def uret(spec, kaynak_dosya=None, renkli=True):
     _ayarlar(spec, satirlar, gx, gy)
     guc_satirlari = []
     ek = _guc_dagilimi(spec, guc_satirlari, uretilen, gx, gy)
-    _tallyler(spec, satirlar, ek_tallyler=ek, on_satirlar=guc_satirlari)
+    _tallyler(spec, satirlar, ek_tallyler=ek, on_satirlar=guc_satirlari,
+              sinir_kutu=(gx, gy))
     _kapanis(spec, satirlar, renkli)
     satirlar.append("")
     return "\n".join(satirlar)

@@ -192,6 +192,83 @@ VARSAYILAN_KOR = {
 # yoktur; orada katman istemek anlamsizdir.
 EKSENEL_DESTEKLI = ("tek_cubuk", "tek_plaka", "tek_demet", "kare_kafes", "tamburlu")
 
+# ----------------------------------------------------------------------------
+# Kor turune OZGU alanlar -- hangi alan hangi turde anlamlidir (TEK tanim).
+#   Ortak alanlar (tur, yukseklik, eksenel, sinir) burada yoktur.
+#   Arayuz yalnizca secili turun alanlarini yazar; digerleri VARSAYILAN_KOR
+#   degerine doner (kor_alanlarini_ayikla). Sebep: kurucu/dogrula/tukenme
+#   "ana dolgu"yu  kor.cubuk or kor.demet or kor.plaka or kor.dolgu
+#   zinciriyle okur; tek_demet bir modelde kalmis bir 'cubuk' degeri aktif
+#   eksenel araligi, dogrulamayi ve tukenme hacimlerini SESSIZCE degistirir.
+#   "yansitici" tek_demet ve kare_kafes'te istege bagli, tamburlu'da ZORUNLU
+#   (tamburlar kusagin icine gomulur); kare_kafes'te malzemesi kafes disini
+#   da doldurur.
+# ----------------------------------------------------------------------------
+KOR_TUR_ALANLARI = {
+    "tek_cubuk":  ("cubuk", "adim"),
+    "tek_plaka":  ("plaka",),
+    "tek_demet":  ("demet", "yansitici"),
+    "kare_kafes": ("adim", "boyut", "harita", "anahtar", "yansitici"),
+    "kuresel":    ("kabuklar",),
+    "tamburlu":   ("dolgu", "kor_yaricap", "tambur", "yansitici"),
+}
+KOR_TURE_OZGU = tuple(sorted({a for alanlar in KOR_TUR_ALANLARI.values() for a in alanlar}))
+
+# Arayuzde editoru OLMAYAN alanlar tur degisince silinmez: kuresel kabuklar
+# yalnizca JSON'dan girilebilir; tur kutusu bir kez yanlislikla degisince
+# (or. fare tekerlegi) kullanici onlari arayuzden geri getiremezdi. Kurucu,
+# dogrulayici ve tukenme kabuklari YALNIZCA kuresel turde okur -- kalmalari
+# zararsizdir.
+KOR_KORUNAN = ("kabuklar",)
+
+
+def ana_dolgu(kor):
+    """
+    Korun ANA dolgusunun adi -- kor TURUNE gore.
+
+    Once birkac yerde `cubuk or demet or plaka or dolgu` zinciri kullaniliyordu.
+    Tur'e bakmadigi icin eski (baska bir turden kalma) bir alan varsa onu
+    seciyordu; kare_kafes'te ise ana dolgu tek bir ad degil KOR HARITASININ
+    kendisidir (bkz. katman_adaylari). kare_kafes ve kuresel icin None doner.
+    """
+    alan = {"tek_cubuk": "cubuk", "tek_plaka": "plaka",
+            "tek_demet": "demet", "tamburlu": "dolgu"}.get(kor.get("tur"))
+    return kor.get(alan) if alan else None
+
+
+def katman_adaylari(kor, katman=None):
+    """
+    Bir eksenel katmani (ya da katmansiz koru) dolduran adlarin listesi.
+    kare_kafes'te bu, kor haritasindaki harflerin gosterdigi demetlerdir
+    (katmana ozel 'anahtar' uygulanmis olarak).
+    """
+    katman = katman or {}
+    if katman.get("dolgu"):
+        return [katman["dolgu"]]
+    if kor.get("tur") == "kare_kafes":
+        esleme = dict(kor.get("anahtar") or {})
+        esleme.update(katman.get("anahtar") or {})
+        return [v for v in esleme.values() if v]
+    adaylar = [ana_dolgu(kor)]
+    adaylar += list((katman.get("anahtar") or {}).values())
+    return [a for a in adaylar if a]
+
+
+def kor_alanlarini_ayikla(kor, korunan=KOR_KORUNAN):
+    """
+    Secili kor turune ait OLMAYAN ture ozgu alanlari varsayilana dondurur
+    (yerinde degistirir ve kor'u dondurur). Kuresel duzenekte eksen kavrami
+    olmadigi icin yukseklik de temizlenir.
+    """
+    tur = kor.get("tur")
+    izinli = set(KOR_TUR_ALANLARI.get(tur, ()))
+    for alan in KOR_TURE_OZGU:
+        if alan not in izinli and alan not in korunan:
+            kor[alan] = copy.deepcopy(VARSAYILAN_KOR[alan])
+    if tur == "kuresel":
+        kor["yukseklik"] = None
+    return kor
+
 
 def yeni_spec(ad="isimsiz model"):
     """Bos ama gecerli bir spec dondurur."""
@@ -434,6 +511,16 @@ def filtre_mesh(boyut, alt, ust):
     return {"tur": "mesh", "boyut": list(boyut), "alt": list(alt), "ust": list(ust)}
 
 
+def filtre_mesh_otomatik(boyut):
+    """
+    Sinirlari model KURULURKEN turetilen mesh filtresi (bkz.
+    kurucu.tally_mesh_sinirlari). Sinirlari olusturma aninda dondurmak,
+    sonradan yansitici eklenen bir modelde mesh'i eski olcude birakiyordu
+    (olculdu: model 61.42 cm, mesh +/-10.71 cm).
+    """
+    return {"tur": "mesh", "boyut": list(boyut), "otomatik": True}
+
+
 def filtre_malzeme(adlar):
     """Malzeme filtresi."""
     return {"tur": "malzeme", "adlar": list(adlar)}
@@ -559,10 +646,14 @@ def kullanilan_malzemeler(spec):
     d = spec["kor"].get("dolgu")
     if d and d != BOSLUK and malzeme_bul(spec, d) is not None:
         adlar.add(d)
-    for k in (spec["kor"].get("kabuklar") or []):
-        if k.get("malzeme") and k["malzeme"] != BOSLUK:
-            adlar.add(k["malzeme"])
+    # Kabuklar yalnizca kuresel turde geometriye girer (bkz. KOR_KORUNAN).
+    if spec["kor"].get("tur") == "kuresel":
+        for k in (spec["kor"].get("kabuklar") or []):
+            if k.get("malzeme") and k["malzeme"] != BOSLUK:
+                adlar.add(k["malzeme"])
     yans = spec["kor"].get("yansitici") or {}
-    if yans.get("var") and yans.get("malzeme") and yans["malzeme"] != BOSLUK:
+    # Tamburlu korda yansitici ZORUNLUDUR; kurucu onu "var" alanina bakmadan kurar.
+    yans_var = yans.get("var") or spec["kor"].get("tur") == "tamburlu"
+    if yans_var and yans.get("malzeme") and yans["malzeme"] != BOSLUK:
         adlar.add(yans["malzeme"])
     return adlar

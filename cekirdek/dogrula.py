@@ -33,6 +33,7 @@
 ================================================================================
 """
 
+import math
 import os
 
 from cekirdek.sema import kor_yuksekligi as sema_kor_yuksekligi
@@ -240,6 +241,25 @@ def malzeme_kontrol(spec):
                                       "'%s' miktari pozitif olmali: %s"
                                       % (b.get("isim"), b.get("miktar"))))
             z = b.get("zenginlik")
+            # OpenMC zenginligi yalnizca U ELEMENTINE uygular: baska bir
+            # elementte kosu sirasinda reddeder ("Unable to use enrichment for
+            # element O which is not uranium"); nuklid satirinda kurucu onu
+            # sessizce yok sayar. Ikisi de kosudan ONCE yakalanmali.
+            if z is not None and b.get("tur", "element") == "nuklid":
+                bulgular.append(Bulgu(
+                    "hata", yer,
+                    "'%s' nüklid satırında zenginlik tanımlı -- nüklidde zenginlik "
+                    "yok sayılır" % b.get("isim"),
+                    "Zenginlik yalnızca U ELEMENTİ satırında kullanılabilir. "
+                    "İzotopları nüklid olarak giriyorsanız miktarları doğrudan verin."))
+            elif z is not None and b.get("isim") != "U":
+                bulgular.append(Bulgu(
+                    "hata", yer,
+                    "'%s' elementinde zenginlik tanımlı -- zenginlik yalnızca U "
+                    "elementinde kullanılabilir" % b.get("isim"),
+                    "OpenMC koşu sırasında reddeder (\"Unable to use enrichment for "
+                    "element %s which is not uranium\"). Zenginliği U satırına "
+                    "taşıyın ya da bu satırdan silin." % b.get("isim")))
             if z is not None and not (0.0 < z < 100.0):
                 bulgular.append(Bulgu("hata", yer,
                                       "'%s' zenginligi 0-100 araliginda olmali: %s"
@@ -475,6 +495,84 @@ def demet_kontrol(spec):
                     and hedef != BOSLUK and malzeme_bul(spec, hedef) is None):
                 bulgular.append(Bulgu("hata", yer,
                                       "'%s' harfi cozumlenemeyen ada isaret ediyor: %s" % (h, hedef)))
+        bulgular += _kafes_icerik_kontrol(
+            spec, yer, d.get("adim"), d.get("tur", "kare"),
+            [(d.get("anahtar") or {}).get(h) for h in sorted(kullanilan)])
+    return bulgular
+
+
+def _cubuk_dis_capi(c):
+    """Cubugun dis capi: 2 x en buyuk SONLU bolge yaricapi (son bolge 'disarisi')."""
+    r = [b.get("r") for b in (c.get("bolgeler") or [])
+         if isinstance(b.get("r"), (int, float)) and b.get("r") > 0]
+    return 2.0 * max(r) if r else None
+
+
+def _kafes_olculeri(d):
+    """
+    Ic ice yerlestirilen kafesin olculeri: (zarf_x, zarf_y, en_dar_genislik).
+
+    Zarf kurucu.py'nin kullandigi olcudur (kare: adim x n; altigen:
+    altigen.kapsayan_olcu). En dar genislik altigende kurucu._altigen_sinir'in
+    duz yuzden duz yuze olcusudur: (halka-1) * adim * sqrt(3) + adim.
+    """
+    adim = float(d.get("adim") or 0.0)
+    if d.get("tur") == "altigen":
+        halka = d.get("halka_sayisi") or (d.get("boyut") or [1])[0] or 1
+        gx, gy = altigen.kapsayan_olcu(halka, adim, d.get("yonelim", "y"))
+        return gx, gy, (halka - 1) * adim * math.sqrt(3.0) + adim
+    nx, ny = (d.get("boyut") or [1, 1])[:2]
+    return adim * nx, adim * ny, adim * min(nx, ny)
+
+
+def _kafes_icerik_kontrol(spec, yer, adim, kafes_turu, hedefler):
+    """
+    Kafes adimi, konumlara yerlestirilen iceriklerden kucuk mu?
+
+    Cubuk: dis cap > adim ise cubuk komsu hucreye TASAR. OpenMC bunu hata
+    saymaz -- kafes hucresi cubugu sessizce keser. Ic ice kafes: zarfi hucreye
+    sigmiyorsa dis halkadaki cubuklar kesilir.
+      kare hucre (adim x adim)  : zarfin iki boyutu da adima sigmali
+      altigen hucre (duz yuz = adim): en dar genislik adimdan buyukse hicbir
+                                    yonelimde sigmaz
+    Yalnizca KESIN tasmalar raporlanir (yanlis alarm yerine sessiz kalir).
+    """
+    bulgular = []
+    try:
+        P = float(adim or 0.0)
+    except (TypeError, ValueError):
+        return bulgular
+    if P <= 0:
+        return bulgular
+    pay = P * (1.0 + 1e-9)
+    gorulen = set()
+    for hedef in hedefler:
+        if not hedef or hedef in gorulen:
+            continue
+        gorulen.add(hedef)
+        c = cubuk_bul(spec, hedef)
+        if c is not None:
+            cap = _cubuk_dis_capi(c)
+            if cap and cap > pay:
+                bulgular.append(Bulgu(
+                    "hata", yer,
+                    "'%s' çubuğunun dış çapı (%.5f cm) kafes adımından (%.5f cm) "
+                    "büyük -- çubuk komşu hücreye taşar" % (hedef, cap, P),
+                    "OpenMC bunu hata saymaz: kafes hücresi çubuğu SESSİZCE keser. "
+                    "Adımı büyütün ya da çubuk yarıçaplarını küçültün."))
+            continue
+        ic = demet_bul(spec, hedef)
+        if ic is not None:
+            gx, gy, dar = _kafes_olculeri(ic)
+            gerekli = max(gx, gy) if kafes_turu != "altigen" else dar
+            if gerekli > pay:
+                bulgular.append(Bulgu(
+                    "hata", yer,
+                    "iç içe kafes '%s' (%.4f x %.4f cm) kafes adımına (%.5f cm) "
+                    "sığmıyor" % (hedef, gx, gy, P),
+                    "Kafes hücresi içteki kafesi keser; dış halkadaki çubuklar "
+                    "SESSİZCE kaybolur. Dış kafesin adımı en az %.5f cm olmalı."
+                    % gerekli))
     return bulgular
 
 
@@ -588,6 +686,13 @@ def kor_kontrol(spec):
                     "hata", "kor",
                     "kabuk yaricaplari artan sirada olmali: r%d=%.5f >= r%d=%.5f"
                     % (i + 1, r[i], i + 2, r[i + 1])))
+        if kor.get("yukseklik"):
+            bulgular.append(Bulgu(
+                "hata", "kor",
+                "küresel düzenekte yükseklik tanımlanamaz (%g cm)" % float(kor["yukseklik"]),
+                "Küre geometrisi kabuk yarıçaplarıyla tamamen belirlenir; yükseklik "
+                "kaynak kutusuna, entropi ağına ve tally ağlarına girer. Kor "
+                "sekmesinde küresel tür seçiliyken alan temizlenir."))
         if kor.get("sinir", {}).get("yan") == "reflective":
             bulgular.append(Bulgu(
                 "uyari", "kor",
@@ -614,6 +719,9 @@ def kor_kontrol(spec):
             tanimli = set((kor.get("anahtar") or {}).keys())
             for h in sorted(kullanilan - tanimli):
                 bulgular.append(Bulgu("hata", "kor", "haritada tanimsiz harf: '%s'" % h))
+            bulgular += _kafes_icerik_kontrol(
+                spec, "kor", kor.get("adim"), "kare",
+                [(kor.get("anahtar") or {}).get(h) for h in sorted(kullanilan)])
 
     # --- sinir kosullari ---
     sinir = kor.get("sinir") or {}
@@ -623,6 +731,21 @@ def kor_kontrol(spec):
         if bc and bc not in gecerli_bc:
             bulgular.append(Bulgu("hata", "kor",
                                   "gecersiz sinir kosulu '%s': %s" % (yon, bc)))
+    if sinir.get("yan") == "periodic":
+        yuzey = None
+        if tur == "kuresel":
+            yuzey = "bir küre"
+        elif tur == "tamburlu":
+            yuzey = "bir silindir"
+        elif kurucu._altigen_mi(spec, kor):
+            yuzey = "altıgen bir prizma (eğik düzlemler eşlenemez)"
+        if yuzey:
+            bulgular.append(Bulgu(
+                "hata", "kor",
+                "periodic yalnızca düzlemsel sınırlarda (x/y düzlem çiftleri) "
+                "kullanılabilir -- bu kor türünün yan yüzeyi %s" % yuzey,
+                "OpenMC periyodik yüzeyi karşı yüzeyle eşleyemez ve koşu "
+                "başlamadan durur. 'reflective' ya da 'vacuum' seçin."))
     if sinir.get("yan") == "vacuum" and tur in ("tek_cubuk", "tek_demet"):
         bulgular.append(Bulgu(
             "uyari", "kor",
@@ -717,13 +840,9 @@ def eksenel_kontrol(spec):
         try:
             aralik = kurucu.aktif_eksenel_aralik(spec)
             toplam = sema.kor_yuksekligi(kor)
-            ana = (kor.get("cubuk") or kor.get("demet") or kor.get("plaka")
-                   or kor.get("dolgu"))
             fisil_var = any(
-                kurucu._spec_fisil_mi(spec, b.get("dolgu") or ana)
-                or any(kurucu._spec_fisil_mi(spec, x)
-                       for x in (b.get("anahtar") or {}).values())
-                for b in katmanlar)
+                kurucu._spec_fisil_mi(spec, x)
+                for b in katmanlar for x in sema.katman_adaylari(kor, b))
         except Exception:
             aralik, toplam, fisil_var = None, None, True
         if not fisil_var:
@@ -1032,6 +1151,13 @@ def kaynak_kontrol(spec, veri_kontrolu=True):
                 "sonuc uretmez",
                 "Sabit kaynak hesabinda k-eff yoktur; ne olculecsekse bir "
                 "tally olarak tanimlanmalidir (akı, doz, reaksiyon hizi)."))
+        if (a.get("kinetik") or {}).get("var"):
+            bulgular.append(Bulgu(
+                "bilgi", "ayarlar",
+                "kinetik parametreler (beta_eff, Λ) yalnızca özdeğer modunda "
+                "hesaplanır -- sabit kaynak modunda yok sayılır",
+                "IFP yöntemi fisyon zincirini nesiller boyunca izler; sabit "
+                "kaynak hesabında k-eff ve nesil kavramı yoktur."))
         if (a.get("entropi_mesh") or {}).get("var"):
             bulgular.append(Bulgu(
                 "bilgi", "ayarlar",
@@ -1137,7 +1263,8 @@ def guc_dagilimi_kontrol(spec):
     for d in spec.get("demetler", []):
         if cubuk_ad in (d.get("anahtar") or {}).values():
             kafeste = True
-    if spec["kor"].get("cubuk") == cubuk_ad and not kafeste:
+    if (spec["kor"].get("tur") == "tek_cubuk" and spec["kor"].get("cubuk") == cubuk_ad
+            and not kafeste):
         bulgular.append(Bulgu(
             "hata", yer,
             "'%s' bir kafeste tekrarlanmiyor (kor turu 'tek_cubuk')" % cubuk_ad,

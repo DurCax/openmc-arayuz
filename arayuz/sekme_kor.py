@@ -117,6 +117,7 @@ class KorSekmesi(SekmeTabani):
         self.tb_emici = QtWidgets.QComboBox()
         self.tb_durum = QtWidgets.QLabel("-")
         self.tb_durum.setWordWrap(True)
+        self._baslangic_acisi = 0.0     # arayuzde alani yok; dosyadan korunur
 
         self.ozet = QtWidgets.QLabel("-")
 
@@ -150,6 +151,7 @@ class KorSekmesi(SekmeTabani):
 
         eksen_kutu = QtWidgets.QGroupBox("Eksenel yon ve sinir kosullari")
         ed = QtWidgets.QFormLayout(eksen_kutu)
+        self._eksen_form = ed
         ed.addRow(self.yukseklik_var)
         ed.addRow("Aktif yukseklik:", self.yukseklik)
         ed.addRow("Yan sinir:", self.bc_yan)
@@ -284,13 +286,14 @@ class KorSekmesi(SekmeTabani):
         self._kutu_doldur(self.tb_dolgu, hedefler, kor.get("dolgu"))
         self.tb_kor_r.setValue(kor.get("kor_yaricap") or 16.0)
         t = kor.get("tambur") or {}
+        self._baslangic_acisi = t.get("baslangic_acisi", 0.0)
         self.tb_sayi.setValue(int(t.get("sayi") or 0))
         self.tb_r.setValue(t.get("yaricap") or 4.0)
         self.tb_rm.setValue(t.get("merkez_yaricap") or 21.5)
         self.tb_emici_ric.setValue(t.get("emici_ic_yaricap") or 0.0)
         self.tb_aci.setValue(t.get("emici_aci") or 120.0)
         self.tb_donme.setValue(t.get("donme") or 0.0)
-        self.tb_donme_kaydirici.setValue(int(round((t.get("donme") or 0.0) * 10)) % 3601)
+        self.tb_donme_kaydirici.setValue(int(round((t.get("donme") or 0.0) * 10)) % 3600)
         self._kutu_doldur(self.tb_govde, self._malzeme_secenekleri, t.get("govde_malzeme"))
         self._kutu_doldur(self.tb_emici, self._malzeme_secenekleri, t.get("emici_malzeme"))
 
@@ -532,9 +535,12 @@ class KorSekmesi(SekmeTabani):
                 w.setVisible(gorunur)
         yans_uygun = tur in ("tek_demet", "kare_kafes", "tamburlu")
         zorunlu = tur == "tamburlu"
+        # Tamburlu korda yansitici ZORUNLUDUR (kurucu onu "var" alanina bakmadan
+        # kurar); kutu gizlenir ve ELLENMEZ. Eskiden burada zorla isaretleniyor,
+        # baska ture donunce isaret kaliyordu: pwr_17x17 -> tamburlu -> tek_demet
+        # 21.42 cm'lik demeti sessizce 20 cm su ile 61.42 cm yapiyordu.
+        self.yans_var.setVisible(not zorunlu)
         self.yans_var.setEnabled(yans_uygun and not zorunlu)
-        if zorunlu and not self.yans_var.isChecked():
-            self.yans_var.setChecked(True)
         self.yans_kal.setEnabled(yans_uygun and (zorunlu or self.yans_var.isChecked()))
         self.yans_mal.setEnabled(yans_uygun and (zorunlu or self.yans_var.isChecked()))
         # Eksenel katmanlama: kuresel duzenekte eksen kavrami yok.
@@ -551,6 +557,12 @@ class KorSekmesi(SekmeTabani):
         eksenel_3b = katmanli or self.yukseklik_var.isChecked()
         self.bc_alt.setEnabled(eksenel_3b)
         self.bc_ust.setEnabled(eksenel_3b)
+        # Kuresel duzenekte eksen yoktur: yukseklik ve alt/ust sinir satirlari
+        # gizlenir. Gorunur kaldiklarinda Godiva "17.48 x 17.48 x 366 cm"
+        # oluyor, yukseklik entropi mesh'ine ve kaynak kutusuna giriyordu.
+        kuresel = tur == "kuresel"
+        for w in (self.yukseklik_var, self.yukseklik, self.bc_alt, self.bc_ust):
+            self._eksen_form.setRowVisible(w, not kuresel)
 
     def _tur_degisti(self, *_):
         self._gorunurluk()
@@ -571,7 +583,8 @@ class KorSekmesi(SekmeTabani):
             # katman toplamindan gelir. Ham alani okumak, katmanli 3B bir
             # modeli "(2B)" diye gostermeye yol aciyordu.
             h = sema.kor_yuksekligi(self.spec["kor"])
-            self.ozet.setText("%.4f x %.4f cm%s" % (gx, gy, (" x %.2f cm" % h) if h else "  (2B)"))
+            ek = ("" if self.spec["kor"].get("tur") == "kuresel" else "  (2B)")
+            self.ozet.setText("%.4f x %.4f cm%s" % (gx, gy, (" x %.2f cm" % h) if h else ek))
         except Exception as e:
             self.ozet.setText("kurulamadi: %s" % str(e)[:80])
 
@@ -580,22 +593,45 @@ class KorSekmesi(SekmeTabani):
         if self._yukleniyor:
             return
         kor = self.spec["kor"]
-        kor["tur"] = self.tur.currentData()
-        kor["cubuk"] = self.cubuk.currentData()
-        kor["plaka"] = self.plaka.currentData()
-        kor["demet"] = self.demet.currentData()
-        kor["adim"] = self.adim.value()
-        kor["boyut"] = [self.nx.value(), self.ny.value()]
-        kor["harita"] = [s for s in self.harita.toPlainText().split("\n") if s.strip()]
-        anahtar = {}
-        for i in range(self.anahtar_tablo.rowCount()):
-            harf = self.anahtar_tablo.item(i, 0).text()
-            kutu = self.anahtar_tablo.cellWidget(i, 1)
-            anahtar[harf] = kutu.currentData()
-        kor["anahtar"] = anahtar
+        tur = self.tur.currentData()
+        kor["tur"] = tur
+        # Yalnizca SECILI TURUN alanlari yazilir (sema.KOR_TUR_ALANLARI);
+        # digerleri sonda varsayilana doner. Eskiden her alan yaziliyordu:
+        # pwr_3b (tek_demet) tek bir sinir degisikliginden sonra cubuk=
+        # 'yakit_cubugu', dolgu='bosluk' ve tam bir tambur blogu kazaniyordu;
+        # dogrula/kurucu "ana dolgu"yu cubuk-or-demet-or-... zinciriyle okur.
+        # Diger turlerin DEGERLERI kutularda durur: ture geri donmek onlari
+        # geri getirir.
+        alanlar = sema.KOR_TUR_ALANLARI.get(tur, ())
+        if "cubuk" in alanlar:
+            kor["cubuk"] = self.cubuk.currentData()
+        if "plaka" in alanlar:
+            kor["plaka"] = self.plaka.currentData()
+        if "demet" in alanlar:
+            kor["demet"] = self.demet.currentData()
+        if "adim" in alanlar:
+            kor["adim"] = self.adim.value()
+        if "boyut" in alanlar:
+            kor["boyut"] = [self.nx.value(), self.ny.value()]
+        if "harita" in alanlar:
+            kor["harita"] = [s for s in self.harita.toPlainText().split("\n") if s.strip()]
+        if "anahtar" in alanlar:
+            anahtar = {}
+            for i in range(self.anahtar_tablo.rowCount()):
+                harf = self.anahtar_tablo.item(i, 0).text()
+                kutu = self.anahtar_tablo.cellWidget(i, 1)
+                anahtar[harf] = kutu.currentData()
+            kor["anahtar"] = anahtar
+        # Eksenel katmanlama kuresel duzenekte yoktur (katman kutusu orada
+        # gizli; acik kalirsa kullanicinin arayuzden kapatamayacagi bir hata
+        # olurdu). Kutunun durumu korunur: ture geri donunce geri gelir.
+        if isinstance(kor.get("eksenel"), dict):
+            kor["eksenel"]["var"] = (self.eksenel_var.isChecked()
+                                     and tur in sema.EKSENEL_DESTEKLI)
         # Katmanlama acikken yukseklik katman toplamindan gelir; alani None
         # yapmak spec'te tek gercek kaynak birakir (aksi halde dosyada
-        # birbirini tutmayan iki yukseklik gorunur).
+        # birbirini tutmayan iki yukseklik gorunur). Kuresel duzenekte
+        # yukseklik YOKTUR (kor_alanlarini_ayikla temizler).
         if (kor.get("eksenel") or {}).get("var"):
             kor["yukseklik"] = None
         else:
@@ -604,23 +640,33 @@ class KorSekmesi(SekmeTabani):
         kor["sinir"] = {"yan": self.bc_yan.currentText(),
                         "alt": self.bc_alt.currentText(),
                         "ust": self.bc_ust.currentText()}
-        kor["dolgu"] = self.tb_dolgu.currentData()
-        kor["kor_yaricap"] = self.tb_kor_r.value()
-        kor["tambur"] = {
-            "sayi": self.tb_sayi.value(),
-            "yaricap": self.tb_r.value(),
-            "merkez_yaricap": self.tb_rm.value(),
-            "govde_malzeme": self.tb_govde.currentData(),
-            "emici_malzeme": self.tb_emici.currentData(),
-            "emici_ic_yaricap": self.tb_emici_ric.value(),
-            "emici_aci": self.tb_aci.value(),
-            "donme": self.tb_donme.value(),
-            "baslangic_acisi": (kor.get("tambur") or {}).get("baslangic_acisi", 0.0),
-        }
+        if "dolgu" in alanlar:
+            kor["dolgu"] = self.tb_dolgu.currentData()
+        if "kor_yaricap" in alanlar:
+            kor["kor_yaricap"] = self.tb_kor_r.value()
+        if "tambur" in alanlar:
+            kor["tambur"] = {
+                "sayi": self.tb_sayi.value(),
+                "yaricap": self.tb_r.value(),
+                "merkez_yaricap": self.tb_rm.value(),
+                "govde_malzeme": self.tb_govde.currentData(),
+                "emici_malzeme": self.tb_emici.currentData(),
+                "emici_ic_yaricap": self.tb_emici_ric.value(),
+                "emici_aci": self.tb_aci.value(),
+                "donme": self.tb_donme.value(),
+                # arayuzde alani yok: yuklenen deger korunur
+                "baslangic_acisi": self._baslangic_acisi,
+            }
+        if "yansitici" in alanlar:
+            # Tamburlu'da "var" kutusu gizli ve anlamsiz (yansitici zorunlu):
+            # dosyadaki deger oldugu gibi birakilir.
+            eski_var = (kor.get("yansitici") or {}).get("var", False)
+            kor["yansitici"] = {"var": (eski_var if tur == "tamburlu"
+                                        else self.yans_var.isChecked()),
+                                "kalinlik": self.yans_kal.value(),
+                                "malzeme": self.yans_mal.currentData()}
+        sema.kor_alanlarini_ayikla(kor)
         self._tambur_durumu()
-        kor["yansitici"] = {"var": self.yans_var.isChecked(),
-                            "kalinlik": self.yans_kal.value(),
-                            "malzeme": self.yans_mal.currentData()}
         self._gorunurluk()
         self._ozet_guncelle()
         self.bildir()
@@ -630,7 +676,7 @@ class KorSekmesi(SekmeTabani):
             return
         self._yukleniyor = True
         try:
-            self.tb_donme_kaydirici.setValue(int(round(self.tb_donme.value() * 10)) % 3601)
+            self.tb_donme_kaydirici.setValue(int(round(self.tb_donme.value() * 10)) % 3600)
         finally:
             self._yukleniyor = False
         self._kaydet()
