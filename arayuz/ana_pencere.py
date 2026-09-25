@@ -987,6 +987,11 @@ class AnaPencere(QtWidgets.QMainWindow):
     def closeEvent(self, olay):
         if self._kaydetme_sor():
             self.onizleme.kapat()      # openmc kutuphanesini serbest birak
+            # Onceki tukenme sonucu arka planda okunuyor olabilir (~3 s).
+            # Calisan bir QThread yok edilirse Qt sureci DUSURUR ("QThread:
+            # Destroyed while thread is still running") -- ornegi acip hemen
+            # kapatan kullanici uygulamayi cokertirdi.
+            self.s_tukenme.bekle()
             olay.accept()
         else:
             olay.ignore()

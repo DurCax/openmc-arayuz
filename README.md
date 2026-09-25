@@ -129,7 +129,7 @@ python3 testler/test_regresyon.py            # tümü (~2 dk)
 python3 testler/test_regresyon.py --hizli    # Monte Carlo hariç (~10 s)
 ```
 
-304 test hızlı modda; Monte Carlo ve tükenme koşuları dahil 332. Üçü bu katmanın doğruluğunun asıl kanıtıdır:
+313 test hızlı modda; Monte Carlo ve tükenme koşuları dahil 347. Üçü bu katmanın doğruluğunun asıl kanıtıdır:
 
 - **Regresyon çıpası** — `ornekler/pwr_pinhucre.json` referans değeri
   **k∞ = 1.3570 ± 0.0020** vermeli. 2σ dışına çıkarsa `kurucu.py`'de hata var.
@@ -380,6 +380,31 @@ Zincirdeki nüklidler yakıta eklenir, transport bu yüzden yavaşlar. Pin hücr
 | ENDF/B-VIII.0 | 3820 | 125 s |
 
 Arayüz kalan süreyi **ilk transportun gerçek süresinden** hesaplar, tahmin etmez.
+
+### Önceki sonuç — ve eskimesi
+
+Sekme açılışta son koşunun sonucunu gösterir; 50 dakikalık bir koşuyu görmek için
+yeniden koşmak gerekmez. Tuzak: o sonuç **şu anki modele ait olmayabilir**.
+Kullanıcı koşudan sonra gücü ya da zenginliği değiştirmiş olabilir; eski bir
+sonucu güncelmiş gibi göstermek hiç göstermemekten kötüdür. Bu yüzden:
+
+- Koşu başında spec'in kopyası (`tukenme_spec.json`) sonuçla aynı dizine yazılır.
+  Önce **eski sonuç silinir**: yarıda kalan bir koşu eski sonucu yeni kaydın
+  yanında bırakıp "güncel" gösterilmesine yol açardı.
+- Açılışta ve her düzenlemede karşılaştırılır: **bu modele ait** / kırmızı
+  **ESKİ SONUÇ** (hangi bölümün değiştiği yazılır) / **doğrulanamıyor** (kayıt yok).
+  Ad, açıklama ve koşu dizini fiziği etkilemediği için sayılmaz; tükenmeyi
+  kapatıp açmak da sonucu eskitmez.
+- Karşılaştırma metinle (hash) değil Python eşitliğiyle yapılır: JSON'da `3` ile
+  `3.0` farklı metindir ama aynı sayıdır.
+- Sonuç **kayıttaki** spec'e göre okunur, şu ankine göre değil — malzeme
+  eşlemesi ve hacimler koşudaki modelden gelsin.
+
+Okuma arka planda yapılır. Ölçüldü: 3.4 s (`openmc.deplete` içe aktarımı 1.2 s +
+`Results` dosyadaki 3820 nüklidin hepsini ayrıştırıyor 2.0 s). Arayüz 0.001 s
+bloklanıyor. İlk sürüm pencere kapanırken okumanın bitmesini beklemiyordu:
+örneği açıp hemen kapatınca süreç **kapanışta asılı kalıyordu** (60 s zaman
+aşımı). Test alt süreçte bunu sınıyor.
 
 ### Örnek: `pwr_tukenme`
 

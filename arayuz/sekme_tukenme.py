@@ -40,6 +40,31 @@ ZINCIR_SECENEK = [
 KOK = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
+class _OncekiIsci(QtCore.QThread):
+    """
+    Onceki sonucu arka planda okur.
+
+    Olculdu: 3.4 s -- openmc.deplete ice aktarimi (kutuphane yukleniyor,
+    1.2 s) + Results() dosyadaki 3820 nuklidin hepsini ayristiriyor (2.0 s).
+    Ikisi de resmi API'de kacinilmaz; OpenMC'nin ic dosya bicimini elle okumak
+    surum degisince kirilirdi. Arayuzde calissa dosya acilisi 3.4 s donardi.
+    """
+    bitti = QtCore.Signal(object, object)      # (anahtar, sonuc | Exception)
+
+    def __init__(self, spec, dizin, anahtar, parent=None):
+        super().__init__(parent)
+        import copy
+        self._spec = copy.deepcopy(spec)       # arayuz spec'i degistirirse yaris olmasin
+        self._dizin = dizin
+        self._anahtar = anahtar
+
+    def run(self):
+        try:
+            self.bitti.emit(self._anahtar, _tk.onceki_sonuc(self._spec, self._dizin))
+        except Exception as e:
+            self.bitti.emit(self._anahtar, e)
+
+
 class TukenmeSekmesi(SekmeTabani):
 
     KONU = "tukenme"
@@ -110,6 +135,11 @@ class TukenmeSekmesi(SekmeTabani):
         self.kapi_etiket = QtWidgets.QLabel("-")
         self.kapi_etiket.setWordWrap(True)
         self.sure_etiket = QtWidgets.QLabel("")
+        self.onceki_etiket = QtWidgets.QLabel("")
+        self.onceki_etiket.setWordWrap(True)
+        self._onceki = None           # onceki_sonuc() ciktisi
+        self._onceki_anahtar = None   # (h5 yolu, degisiklik zamani) -- yeniden okumayi onler
+        self._isci = None
         self.d_baslat.clicked.connect(self.baslat)
         self.d_durdur.clicked.connect(self.durdur)
 
@@ -157,6 +187,7 @@ class TukenmeSekmesi(SekmeTabani):
         ust.addWidget(self.ilerleme, 1)
         sag.addLayout(ust)
         sag.addWidget(self.sure_etiket)
+        sag.addWidget(self.onceki_etiket)
         sag.addWidget(self.tuval)
         sag.addWidget(alt, 1)
 
@@ -194,6 +225,7 @@ class TukenmeSekmesi(SekmeTabani):
         self.ayir.setChecked(bool(t.get("malzemeleri_ayir")))
         self.izlenen.setText(", ".join(t.get("izlenen") or []))
         self._ozet_guncelle()
+        self._onceki_yukle()
 
     @staticmethod
     def _sayilar(metin):
@@ -277,6 +309,7 @@ class TukenmeSekmesi(SekmeTabani):
                 self.malzeme_bilgi.setText("\n".join(satirlar))
         except Exception as e:
             self.malzeme_bilgi.setText("hesaplanamadi: %s" % e)
+        self._onceki_durum_guncelle()
         self.kapi_guncelle()
 
     # ==================================================================
@@ -304,10 +337,7 @@ class TukenmeSekmesi(SekmeTabani):
         if not izin or not self.spec.get("tukenme", {}).get("var"):
             QtWidgets.QMessageBox.warning(self, "Baslatilamaz", mesaj)
             return
-        taban = os.path.dirname(self.proje_yolu) if self.proje_yolu else os.getcwd()
-        dizin = (self.spec.get("calistirma") or {}).get("dizin", "kosu") + "_tukenme"
-        if not os.path.isabs(dizin):
-            dizin = os.path.join(taban, dizin)
+        dizin = _tk.kosu_dizini(self.spec, self.proje_yolu)
         os.makedirs(dizin, exist_ok=True)
         eski = os.path.join(dizin, "depletion_results.h5")
         if os.path.exists(eski):
@@ -319,6 +349,8 @@ class TukenmeSekmesi(SekmeTabani):
         self._dizin = dizin
 
         self.log.clear()
+        self.onceki_etiket.setText("")
+        self._onceki = self._onceki_anahtar = None
         self._tampon = ""
         self._transport = 0
         self._t0 = time.time()
@@ -400,6 +432,83 @@ class TukenmeSekmesi(SekmeTabani):
         self._sonuc_goster(s)
         self.sure_etiket.setText("tamamlandi: %s" % _sure(time.time() - self._t0))
         self.durum.emit("Tukenme tamamlandi", True)
+
+    # ==================================================================
+    # onceki kosu
+    # ==================================================================
+    def _onceki_yukle(self):
+        """
+        Dizinde bir sonuc varsa gosterir. Dosya degismediyse tekrar okumaz:
+        sekme her tazelendiginde 3.7 MB'lik sonucu okumak gereksiz.
+        """
+        if self._surec is not None or not self.spec:
+            return
+        dizin = _tk.kosu_dizini(self.spec, self.proje_yolu)
+        h5 = os.path.join(dizin, "depletion_results.h5")
+        if not os.path.exists(h5):
+            self._onceki = self._onceki_anahtar = None
+            self.onceki_etiket.setText("")
+            self._grafik_bos()
+            self.tablo.setRowCount(0)
+            return
+        anahtar = (h5, os.path.getmtime(h5))
+        if anahtar == self._onceki_anahtar:
+            self._onceki_durum_guncelle()
+            return
+        if self._isci is not None and self._isci.isRunning():
+            return                              # zaten okunuyor
+        self.onceki_etiket.setStyleSheet("")
+        self.onceki_etiket.setText("Onceki kosunun sonucu okunuyor...")
+        self._isci = _OncekiIsci(self.spec, dizin, anahtar, self)
+        self._isci.bitti.connect(self._onceki_geldi)
+        # Pencere disi bir cikis yolunda da (or. uygulama kapanirken) calisan
+        # is parcacigi yok edilmesin -- Qt bu durumda sureci dusurur.
+        uyg = QtWidgets.QApplication.instance()
+        if uyg is not None and not getattr(self, "_cikis_bagli", False):
+            uyg.aboutToQuit.connect(self.bekle)
+            self._cikis_bagli = True
+        self._isci.start()
+
+    def _onceki_geldi(self, anahtar, sonuc):
+        if self._surec is not None:
+            return                              # bu arada yeni kosu basladi
+        if isinstance(sonuc, Exception):
+            self._onceki = None
+            self.onceki_etiket.setText("Onceki sonuc okunamadi: %s" % sonuc)
+            return
+        if sonuc is None:
+            return
+        self._onceki, self._onceki_anahtar = sonuc, anahtar
+        self._sonuc_goster(sonuc["sonuc"])
+        self._onceki_durum_guncelle()
+
+    def bekle(self, ms=30000):
+        """Arka plandaki okuma bitene kadar bekler (testler ve kapanis icin)."""
+        if self._isci is not None:
+            self._isci.wait(ms)
+            QtWidgets.QApplication.processEvents()
+
+    def _onceki_durum_guncelle(self):
+        """Gosterilen sonucun SU ANKI spec'e ait olup olmadigini yazar."""
+        if not self._onceki or self._surec is not None:
+            return
+        dizin = os.path.dirname(self._onceki["h5"])
+        durum, farklar = _tk.eskime(self.spec, dizin)
+        tarih = time.strftime("%d.%m.%Y %H:%M", time.localtime(self._onceki["tarih"]))
+        if durum == "guncel":
+            metin = "Onceki kosunun sonucu (%s) -- bu modele AIT." % tarih
+            stil = ""
+        elif durum == "eski":
+            metin = ("ESKI SONUC (%s): model o kosudan beri degisti (%s). "
+                     "Gosterilen sayilar bu modele ait DEGIL -- yeniden kosun."
+                     % (tarih, ", ".join(farklar)))
+            stil = "color: #d04437; font-weight: bold;"
+        else:
+            metin = ("Onceki kosunun sonucu (%s). Kosunun spec kaydi yok; bu modele "
+                     "ait oldugu DOGRULANAMIYOR." % tarih)
+            stil = "color: #c9820a;"
+        self.onceki_etiket.setText(metin)
+        self.onceki_etiket.setStyleSheet(stil)
 
     # ==================================================================
     # sonuclar

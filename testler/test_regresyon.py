@@ -2080,6 +2080,63 @@ def test_tukenme_kosu(gecici):
     kontrol("k Xe birikimiyle dusuyor: %.5f -> %.5f" % (s["k"][0], s["k"][2]),
             s["k"][2] < s["k"][0])
 
+    # --- onceki sonuc: kosu kendi spec kaydini birakti mi, arayuz gosteriyor mu ---
+    o = tukenme.onceki_sonuc(sp, dizin)
+    kontrol("kosu spec kaydini birakti -> onceki sonuc 'guncel'",
+            o is not None and o["durum"] == "guncel", "-> %s" % (o and o["durum"]))
+    kontrol("onceki sonuc ayni k'yi veriyor", o is not None and o["sonuc"]["k"] == s["k"])
+    os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
+    try:
+        from PySide6 import QtWidgets
+    except Exception:
+        return
+    uyg = QtWidgets.QApplication.instance() or QtWidgets.QApplication([])
+    from arayuz.sekme_tukenme import TukenmeSekmesi
+    proje = os.path.join(gecici, "proje.json")
+    sp_ui = copy.deepcopy(sp)
+    sp_ui["calistirma"]["dizin"] = "arayuz"
+    hedef = tukenme.kosu_dizini(sp_ui, proje)
+    shutil.copytree(dizin, hedef)
+    w = TukenmeSekmesi()
+    w.proje_ayarla(proje)
+    w.spec_yukle(sp_ui)
+    w.bekle()
+    kontrol("arayuz acilista onceki sonucu gosteriyor (%d satir)" % w.tablo.rowCount(),
+            w.tablo.rowCount() == len(s["k"]))
+    kontrol("arayuz 'bu modele AIT' diyor", "AIT" in w.onceki_etiket.text(),
+            "-> %s" % w.onceki_etiket.text())
+    w.guc.setValue(41.0)
+    kontrol("model degisince arayuz ESKI diyor", "ESKI" in w.onceki_etiket.text())
+
+    # --- pencere, onceki sonuc OKUNURKEN kapatiliyor ---
+    # Duzeltmeden once surec kapanista ASILI kaliyordu (olculdu: 60 s zaman
+    # asimi); calisan QThread'in yok edilmesi Qt'de sureci de dusurebilir.
+    # Hata sureci oldurdugu icin alt surecte, zaman siniriyla sinanir.
+    import subprocess
+    sema.kaydet(sp_ui, proje)
+    betik = (
+        "import sys, os, warnings; warnings.filterwarnings('ignore')\n"
+        "sys.path.insert(0, %r)\n"
+        "from PySide6 import QtCore, QtWidgets\n"
+        "from arayuz.ana_pencere import AnaPencere\n"
+        "app = QtWidgets.QApplication([])\n"
+        "p = AnaPencere(%r); p.show()\n"
+        "print('okuma_suruyor', p.s_tukenme._isci is not None and p.s_tukenme._isci.isRunning())\n"
+        "QtCore.QTimer.singleShot(100, p.close)\n"
+        "QtCore.QTimer.singleShot(200, app.quit)\n"
+        "app.exec()\n" % (KOK, proje))
+    try:
+        r = subprocess.run([sys.executable, "-c", betik], capture_output=True, text=True,
+                           timeout=60, env=dict(os.environ, QT_QPA_PLATFORM="offscreen"))
+        kod, cikti = r.returncode, r.stdout + r.stderr
+    except subprocess.TimeoutExpired:
+        kod, cikti = "ZAMAN ASIMI (asili kaldi)", ""
+    kontrol("okuma surerken pencereyi kapatmak temiz cikiyor",
+            kod == 0 and "QThread" not in cikti,
+            "-> cikis %s, %s" % (kod, "okuma suruyordu" if "okuma_suruyor True" in cikti
+                                 else "okuma bitmisti (senaryo zayif)"))
+    uyg  # noqa: B018
+
 
 
 def test_tukenme_betik_esdegerligi(gecici):
@@ -2126,6 +2183,48 @@ def test_tukenme_betik_esdegerligi(gecici):
                 ka[i][0] == kb[i][0],
                 "-> bit duzeyinde %s" % ("ayni" if ka[i][0] == kb[i][0] else "FARKLI"))
 
+
+
+def test_tukenme_eskime():
+    """
+    Onceki sonuc SU ANKI modele mi ait?
+
+    Eski bir sonucu guncelmis gibi gostermek hic gostermemekten kotudur.
+    Karsilastirma metinle degil Python esitligiyle yapilir: JSON'da 3 ile 3.0
+    farkli metindir ama ayni sayidir.
+    """
+    print("\n[17g] TUKENME: onceki sonucun eskimesi")
+    from cekirdek import tukenme
+    sp = sema.yukle(os.path.join(ORNEK, "pwr_tukenme.json"))
+    d = tempfile.mkdtemp(prefix="eskime_")
+    try:
+        kontrol("kayit yoksa 'bilinmiyor'", tukenme.eskime(sp, d)[0] == "bilinmiyor")
+        kontrol("sonuc dosyasi yoksa onceki_sonuc None", tukenme.onceki_sonuc(sp, d) is None)
+        tukenme.spec_kaydet(sp, d)
+        kontrol("ayni spec -> guncel", tukenme.eskime(sp, d) == ("guncel", []))
+
+        def durum(degistir):
+            t = copy.deepcopy(sp)
+            degistir(t)
+            return tukenme.eskime(t, d)
+
+        kontrol("guc degisti -> eski (tukenme)",
+                durum(lambda t: t["tukenme"].update(guc_yogunlugu=41.0)) == ("eski", ["tukenme"]))
+        kontrol("zenginlik degisti -> eski (malzemeler)",
+                durum(lambda t: t["malzemeler"][0].update(yogunluk={"deger": 10.1, "birim": "g/cm3"}))[0] == "eski")
+        kontrol("ad / aciklama / kosu dizini degisti -> guncel (fizik degil)",
+                durum(lambda t: (t.update(ad="baska", aciklama="x"),
+                                 t["calistirma"].update(dizin="y", is_parcacigi=3)))[0] == "guncel")
+        kontrol("tukenmeyi kapatip acmak eskitmez",
+                durum(lambda t: t["tukenme"].update(var=False))[0] == "guncel")
+        kontrol("3 ile 3.0 ayni sayi -> guncel",
+                durum(lambda t: t["tukenme"].update(
+                    adimlar=[float(a) if float(a) != int(a) else int(a)
+                             for a in t["tukenme"]["adimlar"]]))[0] == "guncel")
+        kontrol("kosu dizini proje dizinine gore",
+                tukenme.kosu_dizini(sp, "/a/b/p.json") == "/a/b/kosu_pin_tukenme")
+    finally:
+        shutil.rmtree(d, ignore_errors=True)
 
 
 def test_arayuz_tukenme_gidip_gelme():
@@ -2223,6 +2322,7 @@ def main(argv):
     test_tukenme_zincir_secimi()
     test_tukenme_hacimleri()
     test_tukenme_dogrulama()
+    test_tukenme_eskime()
     test_arayuz_tukenme_gidip_gelme()
 
     if not hizli:
