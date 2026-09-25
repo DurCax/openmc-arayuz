@@ -29,6 +29,7 @@ import datetime
 import re
 
 from cekirdek import altigen
+from cekirdek import sema
 from cekirdek import kaynak as _kaynak
 from cekirdek.sema import BOSLUK, cubuk_bul, plaka_bul, demet_bul
 
@@ -118,7 +119,7 @@ def _cubuk(spec, cubuk_ad, satirlar):
         return v
 
     # ---- eksenel hareket eden kontrol cubugu ----
-    h = spec["kor"].get("yukseklik") or 0.0
+    h = sema.kor_yuksekligi(spec["kor"]) or 0.0
     daldirma = float(c.get("daldirma") or 0.0)
     z_uc = h / 2.0 - (daldirma / 100.0) * h
     emici_ix = int(c.get("emici_bolge") or 0)
@@ -201,6 +202,42 @@ def _plaka(spec, plaka_ad, satirlar):
                         "region=+_x_sol & -_x_sag & +_y_ust & -_yy_ust))" % (v, yan_mat))
     satirlar.append("")
     satirlar.append("%s = openmc.Universe(cells=%s_hucreler)" % (v, v))
+    return v
+
+
+def _kor_kafesi(spec, kor, satirlar, uretilen, anahtar=None, sonek=""):
+    """
+    kare_kafes korunun RectLattice'ini ureten satirlari yazar; degisken adini
+    dondurur. "anahtar" verilirse harita ayni kalir, harf -> demet eslemesi
+    degisir (eksenel zenginlik kusaklama).
+    """
+    esleme = dict(kor["anahtar"])
+    if anahtar:
+        esleme.update(anahtar)
+    for _harf, hedef in sorted(esleme.items()):
+        _bagimliliklar(spec, hedef, satirlar, uretilen)
+    nx, ny = kor["boyut"]
+    v = "kor_kafes%s" % ("_" + sonek if sonek else "")
+    satirlar.append("")
+    satirlar.append("# kor kafesi (%d x %d demet), adim %s cm%s"
+                    % (nx, ny, _f(kor["adim"]),
+                       (" -- katman: %s" % sonek) if sonek else ""))
+    satirlar.append("%s_disi = openmc.Universe(cells=[openmc.Cell(fill=%s)])"
+                    % (v, _mat_ifade((kor.get("yansitici") or {}).get("malzeme"))))
+    satirlar.append("%s = openmc.RectLattice()" % v)
+    satirlar.append("%s.pitch = (%s, %s)" % (v, _f(kor["adim"]), _f(kor["adim"])))
+    satirlar.append("%s.lower_left = (%s, %s)"
+                    % (v, _f(-kor["adim"] * nx / 2.0), _f(-kor["adim"] * ny / 2.0)))
+    satirlar.append("%s.outer = %s_disi" % (v, v))
+    satirlar.append("_harita%s = [" % sonek)
+    for satir in kor["harita"]:
+        satirlar.append("    %r," % satir)
+    satirlar.append("]")
+    satirlar.append("_anahtar%s = {%s}"
+                    % (sonek, ", ".join("%r: %s" % (h, uretilen[t])
+                                        for h, t in sorted(esleme.items()))))
+    satirlar.append("%s.universes = [[_anahtar%s[_h] for _h in _s] "
+                    "for _s in _harita%s]" % (v, sonek, sonek))
     return v
 
 
@@ -324,7 +361,7 @@ def _geometri(spec, satirlar):
         R_dis = R_kor + kal
         t = kor.get("tambur") or {}
         ic_ad = _bagimliliklar(spec, kor["dolgu"], satirlar, uretilen)
-        h = kor.get("yukseklik")
+        h = sema.kor_yuksekligi(kor)
         eksen = ""
         if h:
             sinir_d = kor.get("sinir") or {}
@@ -416,28 +453,8 @@ def _geometri(spec, satirlar):
         return capi, capi, uretilen
 
     elif tur == "kare_kafes":
-        for harf, hedef in sorted(kor["anahtar"].items()):
-            _bagimliliklar(spec, hedef, satirlar, uretilen)
         nx, ny = kor["boyut"]
-        satirlar.append("")
-        satirlar.append("# kor kafesi (%d x %d demet), adim %s cm" % (nx, ny, _f(kor["adim"])))
-        satirlar.append("kor_disi = openmc.Universe(cells=[openmc.Cell(fill=%s)])"
-                        % _mat_ifade((kor.get("yansitici") or {}).get("malzeme")))
-        satirlar.append("kor_kafes = openmc.RectLattice()")
-        satirlar.append("kor_kafes.pitch = (%s, %s)" % (_f(kor["adim"]), _f(kor["adim"])))
-        satirlar.append("kor_kafes.lower_left = (%s, %s)"
-                        % (_f(-kor["adim"] * nx / 2.0), _f(-kor["adim"] * ny / 2.0)))
-        satirlar.append("kor_kafes.outer = kor_disi")
-        satirlar.append("_kor_harita = [")
-        for satir in kor["harita"]:
-            satirlar.append("    %r," % satir)
-        satirlar.append("]")
-        satirlar.append("_kor_anahtar = {%s}"
-                        % ", ".join("%r: %s" % (h, uretilen[t])
-                                    for h, t in sorted(kor["anahtar"].items())))
-        satirlar.append("kor_kafes.universes = "
-                        "[[_kor_anahtar[_h] for _h in _s] for _s in _kor_harita]")
-        ic = "kor_kafes"
+        ic = _kor_kafesi(spec, kor, satirlar, uretilen)
         gx, gy = kor["adim"] * nx, kor["adim"] * ny
     else:
         raise ValueError("bilinmeyen kor turu: %s" % tur)
@@ -445,11 +462,12 @@ def _geometri(spec, satirlar):
     # --- sinir ve kok universe ---
     sinir = kor.get("sinir") or {}
     yan_bc = sinir.get("yan", "reflective")
-    h = kor.get("yukseklik")
+    h = sema.kor_yuksekligi(kor)
     yans = kor.get("yansitici") or {}
 
     satirlar.append("")
     satirlar.append("# --- sinirlar ve kok universe ---")
+    katmanlar = sema.eksenel_katmanlar(kor)
     if h:
         satirlar.append("z_alt = openmc.ZPlane(%s, boundary_type=%r)"
                         % (_f(-h / 2.0), sinir.get("alt", "reflective")))
@@ -459,6 +477,37 @@ def _geometri(spec, satirlar):
     else:
         satirlar.append("# yukseklik verilmemis -> eksenel yonde sonsuz (2B)")
         eksen = ""
+
+    if katmanlar:
+        satirlar.append("")
+        satirlar.append("# --- eksenel katmanlar (alttan uste) ---")
+        satirlar.append("# Ic arayuzler 'transmission'dir; sinir kosulu yalnizca")
+        satirlar.append("# en alt ve en ust yuzeye uygulanir.")
+        for i, (_z0, z1, _b) in enumerate(katmanlar[:-1]):
+            satirlar.append("z_ara%d = openmc.ZPlane(%s)" % (i, _f(z1)))
+        parcalar = []
+        for i, (_z0, _z1, b) in enumerate(katmanlar):
+            if b.get("anahtar"):
+                dolgu_ifade = _kor_kafesi(spec, kor, satirlar, uretilen,
+                                          b["anahtar"], "kat%d" % i)
+            elif b.get("dolgu"):
+                dolgu_ifade = _bagimliliklar(spec, b["dolgu"], satirlar, uretilen)
+            else:
+                dolgu_ifade = ic
+            alt = "z_alt" if i == 0 else "z_ara%d" % (i - 1)
+            ust = "z_ust" if i == len(katmanlar) - 1 else "z_ara%d" % i
+            parcalar.append("    (%s, +%s & -%s, %r),"
+                            % (dolgu_ifade, alt, ust, b.get("ad") or "katman %d" % (i + 1)))
+        satirlar.append("_katmanlar = [")
+        satirlar.extend(parcalar)
+        satirlar.append("]")
+
+    def _kok_hucreler(taban):
+        """Kok universe'in ic hucrelerini ureten Python ifadesi."""
+        if katmanlar:
+            return ("[openmc.Cell(fill=_d, region=%s & _r, name=_a)\n"
+                    "         for _d, _r, _a in _katmanlar]" % taban)
+        return "[openmc.Cell(fill=%s, region=%s%s)]" % (ic, taban, eksen)
 
     # --- altigen kor: HexagonalPrism sinirlari ---
     hex_demet = None
@@ -483,18 +532,18 @@ def _geometri(spec, satirlar):
             satirlar.append("_dis_prizma = openmc.model.HexagonalPrism("
                             "edge_length=2*(_apothem + %s)/math.sqrt(3), orientation=%r, "
                             "boundary_type=%r)" % (_f(yans["kalinlik"]), yonelim, yan_bc))
-            satirlar.append("kok = openmc.Universe(cells=[")
-            satirlar.append("    openmc.Cell(fill=%s, region=-_ic_prizma%s)," % (ic, eksen))
-            satirlar.append("    openmc.Cell(fill=%s, region=+_ic_prizma & -_dis_prizma%s),"
+            satirlar.append("_kok_hucreler = %s" % _kok_hucreler("-_ic_prizma"))
+            satirlar.append("_kok_hucreler.append(openmc.Cell(fill=%s, "
+                            "region=+_ic_prizma & -_dis_prizma%s))"
                             % (_mat_ifade(yans.get("malzeme")), eksen))
-            satirlar.append("])")
+            satirlar.append("kok = openmc.Universe(cells=_kok_hucreler)")
             gx, gy = gx + 2 * yans["kalinlik"], gy + 2 * yans["kalinlik"]
         else:
             satirlar.append("_prizma = openmc.model.HexagonalPrism("
                             "edge_length=2*_apothem/math.sqrt(3), orientation=%r, "
                             "boundary_type=%r)" % (yonelim, yan_bc))
-            satirlar.append("kok = openmc.Universe(cells=["
-                            "openmc.Cell(fill=%s, region=-_prizma%s)])" % (ic, eksen))
+            satirlar.append("kok = openmc.Universe(cells=%s)"
+                            % _kok_hucreler("-_prizma"))
         satirlar.append("")
         satirlar.append("geometri = openmc.Geometry(kok)")
         return gx, gy, uretilen
@@ -505,17 +554,16 @@ def _geometri(spec, satirlar):
         satirlar.append("ic_kutu  = openmc.model.RectangularPrism(%s, %s)" % (_f(gx), _f(gy)))
         satirlar.append("dis_kutu = openmc.model.RectangularPrism(%s, %s, boundary_type=%r)"
                         % (_f(dgx), _f(dgy), yan_bc))
-        satirlar.append("kok = openmc.Universe(cells=[")
-        satirlar.append("    openmc.Cell(fill=%s, region=-ic_kutu%s)," % (ic, eksen))
-        satirlar.append("    openmc.Cell(fill=%s, region=+ic_kutu & -dis_kutu%s),"
+        satirlar.append("_kok_hucreler = %s" % _kok_hucreler("-ic_kutu"))
+        satirlar.append("_kok_hucreler.append(openmc.Cell(fill=%s, "
+                        "region=+ic_kutu & -dis_kutu%s))"
                         % (_mat_ifade(yans.get("malzeme")), eksen))
-        satirlar.append("])")
+        satirlar.append("kok = openmc.Universe(cells=_kok_hucreler)")
         gx, gy = dgx, dgy
     else:
         satirlar.append("kutu = openmc.model.RectangularPrism(%s, %s, boundary_type=%r)"
                         % (_f(gx), _f(gy), yan_bc))
-        satirlar.append("kok = openmc.Universe(cells=[openmc.Cell(fill=%s, region=-kutu%s)])"
-                        % (ic, eksen))
+        satirlar.append("kok = openmc.Universe(cells=%s)" % _kok_hucreler("-kutu"))
     satirlar.append("")
     satirlar.append("geometri = openmc.Geometry(kok)")
     return gx, gy, uretilen
@@ -541,10 +589,13 @@ def _ayarlar(spec, satirlar, gx, gy):
     if k.get("tur") == "kutu":
         # Z araligi modelin yuksekligini kapsamali (bkz. kurucu.py notu):
         # dar bir baslangic kutusu eksenel sekli yanlis yakinsatir.
-        _h = spec["kor"].get("yukseklik")
-        _yari_z = (_h / 2.0) if _h else 1.0
-        alt = k.get("alt") or [-gx / 2, -gy / 2, -_yari_z]
-        ust = k.get("ust") or [+gx / 2, +gy / 2, +_yari_z]
+        # Kutu AKTIF yakit araligini kapsar (kurucu.py ile ayni tanim):
+        # yansitici/plenum katmanlarinda orneklenen noktalar zaten reddedilir.
+        from cekirdek import kurucu as _kur
+        _ar = _kur.aktif_eksenel_aralik(spec)
+        _z0, _z1 = _ar if _ar else (-1.0, 1.0)
+        alt = k.get("alt") or [-gx / 2, -gy / 2, _z0]
+        ust = k.get("ust") or [+gx / 2, +gy / 2, _z1]
         satirlar.append("_uzay = openmc.stats.Box(%r, %r)"
                         % (list(alt), list(ust)))
         satirlar.append("_kisit = {'fissionable': True}   # kaynak sadece fisil bolgelerde")
@@ -572,7 +623,7 @@ def _ayarlar(spec, satirlar, gx, gy):
         satirlar.append("# sayisi yetersizdir ve k-eff yanli cikar.")
         satirlar.append("_ent_mesh = openmc.RegularMesh()")
         satirlar.append("_ent_mesh.dimension = %r" % (list(ent.get("boyut") or [8, 8, 1]),))
-        _hz = spec["kor"].get("yukseklik")
+        _hz = sema.kor_yuksekligi(spec["kor"])
         _ez = (_hz / 2.0) if _hz else 1.0e10
         satirlar.append("_ent_mesh.lower_left  = (%s, %s, %s)" % (_f(-gx/2.0), _f(-gy/2.0), _f(-_ez)))
         satirlar.append("_ent_mesh.upper_right = (%s, %s, %s)" % (_f(gx/2.0), _f(gy/2.0), _f(_ez)))
@@ -603,7 +654,7 @@ def _guc_dagilimi(spec, satirlar, uretilen, gx, gy):
     satirlar.append("guc_tally.scores = [%r]" % (g.get("skor") or "kappa-fission"))
     satirlar.append("_guc_filtreler = [openmc.DistribcellFilter(_guc_hedef)]")
 
-    h = spec["kor"].get("yukseklik")
+    h = sema.kor_yuksekligi(spec["kor"])
     dilim = int(g.get("eksenel_dilim") or 1)
     if h and dilim > 1:
         pay = max(gx, gy)
@@ -612,14 +663,18 @@ def _guc_dagilimi(spec, satirlar, uretilen, gx, gy):
         satirlar.append("# tasarsa bos bin'ler ortalamayi duserir ve F_q sisrer.")
         satirlar.append("_guc_mesh = openmc.RegularMesh()")
         satirlar.append("_guc_mesh.dimension   = [1, 1, %d]" % dilim)
-        satirlar.append("_guc_mesh.lower_left  = (%s, %s, %s)" % (_f(-pay), _f(-pay), _f(-h/2.0)))
-        satirlar.append("_guc_mesh.upper_right = (%s, %s, %s)" % (_f(pay), _f(pay), _f(h/2.0)))
+        from cekirdek import kurucu as _kur
+        _z0, _z1 = _kur.cubuk_eksenel_aralik(spec, g.get("cubuk")) or (-h / 2.0, h / 2.0)
+        satirlar.append("_guc_mesh.lower_left  = (%s, %s, %s)" % (_f(-pay), _f(-pay), _f(_z0)))
+        satirlar.append("_guc_mesh.upper_right = (%s, %s, %s)" % (_f(pay), _f(pay), _f(_z1)))
         satirlar.append("_guc_filtreler.append(openmc.MeshFilter(_guc_mesh))")
     satirlar.append("guc_tally.filters = _guc_filtreler")
     satirlar.append("")
-    satirlar.append("# Toplam korunumu kontrolu icin filtresiz esdes tally")
+    satirlar.append("# Toplam korunumu kontrolu: AYNI hucre, bolunmemis.")
+    satirlar.append("# Eksenel mesh'in hucrenin tamamini kapsayip kapsamadigini da sinar.")
     satirlar.append("guc_ref = openmc.Tally(name='guc_toplam_ref')")
     satirlar.append("guc_ref.scores = list(guc_tally.scores)")
+    satirlar.append("guc_ref.filters = [openmc.CellFilter(_guc_hedef)]")
     return ["guc_tally", "guc_ref"]
 
 

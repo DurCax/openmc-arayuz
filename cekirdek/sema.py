@@ -143,8 +143,31 @@ VARSAYILAN_KOR = {
         "emici_ic_yaricap": 2.5, "emici_aci": 120.0,
         "donme": 0.0, "baslangic_acisi": 0.0,
     },
+    # ------------------------------------------------------------------
+    # Eksenel heterojenlik: kor z yonunde KATMANLARA ayrilir.
+    #   Gercek bir reaktorde aktif yakit tek bir eksenel bolge degildir:
+    #   altta ve ustte yansitici, aktif bolgenin ucunda dogal uranyum
+    #   blanket, gaz plenumu, farkli zenginlik kusaklari bulunur. Bunlar
+    #   olmadan eksenel guc sekli ve reaktivite katsayilari gercekci cikmaz.
+    #
+    #   Her katman:
+    #     ad       : gorunen ad (hucre adi olarak da yazilir)
+    #     yukseklik: cm
+    #     dolgu    : o katmani dolduran cubuk/plaka/demet/malzeme adi.
+    #                None birakilirsa korun ANA dolgusu kullanilir.
+    #     anahtar  : yalnizca kare_kafes icin -- ayni harita, katmana ozel
+    #                harf -> demet eslemesi (eksenel zenginlik kusaklama).
+    #
+    #   "var" acikken modelin toplam yuksekligi katman yuksekliklerinin
+    #   TOPLAMIDIR; "yukseklik" alani yok sayilir (tek gercek kaynak kurali).
+    # ------------------------------------------------------------------
+    "eksenel": {"var": False, "bolgeler": []},
     "sinir": {"yan": "reflective", "alt": "reflective", "ust": "reflective"},
 }
+
+# Eksenel katmanlamayi destekleyen kor turleri. "kuresel"de eksen kavrami
+# yoktur; orada katman istemek anlamsizdir.
+EKSENEL_DESTEKLI = ("tek_cubuk", "tek_plaka", "tek_demet", "kare_kafes", "tamburlu")
 
 
 def yeni_spec(ad="isimsiz model"):
@@ -298,6 +321,52 @@ def demet_altigen(ad, adim, halka_sayisi, harita, anahtar, dolgu_disi,
         "harita": list(harita), "anahtar": dict(anahtar),
         "dolgu_disi": dolgu_disi,
     }
+
+
+def eksenel_bolge(ad, yukseklik, dolgu=None, anahtar=None):
+    """Eksenel katman tanimi uretir (alttan uste sirayla verilir)."""
+    b = {"ad": ad, "yukseklik": float(yukseklik), "dolgu": dolgu}
+    if anahtar:
+        b["anahtar"] = dict(anahtar)
+    return b
+
+
+def eksenel_katmanlar(kor):
+    """
+    Gecerli eksenel katmanlari [(z_alt, z_ust, katman), ...] olarak dondurur.
+    Katmanlama kapaliysa ya da hicbir gecerli katman yoksa None doner.
+    Katmanlar ALTTAN USTE sirayla verilir; kor z=0 etrafinda ortalanir.
+    """
+    eks = kor.get("eksenel") or {}
+    if not eks.get("var"):
+        return None
+    katmanlar = [b for b in (eks.get("bolgeler") or [])
+                 if float(b.get("yukseklik") or 0.0) > 0.0]
+    if not katmanlar:
+        return None
+    toplam = sum(float(b["yukseklik"]) for b in katmanlar)
+    z = -toplam / 2.0
+    cikti = []
+    for b in katmanlar:
+        h = float(b["yukseklik"])
+        cikti.append((z, z + h, b))
+        z += h
+    return cikti
+
+
+def kor_yuksekligi(kor):
+    """
+    Modelin toplam eksenel yuksekligi [cm]; 2B modelde None.
+
+    Eksenel katmanlama acikken bu TOPLAM KATMAN YUKSEKLIGIDIR ve "yukseklik"
+    alani yok sayilir. Iki yerden yukseklik okumak (biri katmanlardan, biri
+    alandan) er ya da gec birbirini tutmaz; tek gercek kaynak burasidir.
+    """
+    katmanlar = eksenel_katmanlar(kor)
+    if katmanlar:
+        return katmanlar[-1][1] - katmanlar[0][0]
+    h = kor.get("yukseklik")
+    return float(h) if h else None
 
 
 def kabuk(r, malzeme_adi):

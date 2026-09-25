@@ -427,7 +427,7 @@ class AnalizSekmesi(QtWidgets.QWidget):
             if not kontroller:
                 return False, ("Modelde kontrol cubugu yok. 2. sekmede bir cubugun "
                                "turunu 'Kontrol cubugu' yapin.")
-            if not self.spec["kor"].get("yukseklik"):
+            if not sema.kor_yuksekligi(self.spec["kor"]):
                 return False, ("Kontrol cubugu 3B model gerektirir; kor "
                                "yuksekligi tanimli degil.")
         if tur == "tambur_donme":

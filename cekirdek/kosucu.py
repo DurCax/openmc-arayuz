@@ -510,8 +510,12 @@ def _terminal(argv):
         from cekirdek import guc as _guc
         f = g["faktorler"]
         spec_g = spec.get("guc_dagilimi") or {}
+        # Lineer guc [W/cm] AKTIF yakit yuksekligine bolunur, modelin toplam
+        # yuksekligine degil: eksenel katmanlamada yansitici ve plenum
+        # katmanlari yakit degildir ve toplama katilirsa W/cm kucuk cikar.
+        _ar = kurucu.aktif_eksenel_aralik(spec)
         m = _guc.mutlak_guc(f, spec_g.get("toplam_guc"),
-                            spec.get("kor", {}).get("yukseklik"))
+                            (_ar[1] - _ar[0]) if _ar else None)
         print("\n      --- guc dagilimi (%d cubuk, %d eksenel dilim) ---"
               % (f["cubuk_sayisi"], f["eksenel_dilim"]))
         if "korunum" in g:

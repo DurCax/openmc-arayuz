@@ -40,6 +40,8 @@ import openmc
 from cekirdek import altigen
 from cekirdek import tambur as _tambur
 from cekirdek import kaynak as _kaynak
+from cekirdek.sema import kor_yuksekligi as sema_kor_yuksekligi
+from cekirdek.sema import eksenel_katmanlar as sema_eksenel_katmanlar
 from cekirdek.sema import BOSLUK, malzeme_bul, cubuk_bul, plaka_bul, demet_bul
 
 # Varsayilan renk (spec'te renk verilmemis malzemeler icin)
@@ -123,7 +125,7 @@ def cubuk_universe(spec, cubuk_ad, nesneler):
     # Diger bolgeler (zarf, sogutucu) tum yuksekligi kaplar.
     #
     # pin() burada kullanilamaz: pin() yalnizca RADYAL bolme yapar.
-    h = spec["kor"].get("yukseklik")
+    h = sema_kor_yuksekligi(spec["kor"])
     if not h:
         raise ValueError(
             "kontrol cubugu '%s' 3B model gerektirir: kor yuksekligi tanimli degil. "
@@ -132,7 +134,11 @@ def cubuk_universe(spec, cubuk_ad, nesneler):
     if not (0.0 <= daldirma <= 100.0):
         raise ValueError("kontrol cubugu '%s': daldirma %%0-%%100 arasinda olmali (%s)"
                          % (cubuk_ad, daldirma))
-    z_uc = h / 2.0 - (daldirma / 100.0) * h
+    # Daldirma AKTIF YAKIT araliginda tanimlidir, modelin toplam yuksekliginde
+    # degil: %0 = uc aktif bolgenin tepesinde, %100 = dibinde. Eksenel
+    # katmanlama yokken ikisi ayni sey oldugu icin eski davranis korunur.
+    z_alt, z_ust = aktif_eksenel_aralik(spec) or (-h / 2.0, h / 2.0)
+    z_uc = z_ust - (daldirma / 100.0) * (z_ust - z_alt)
     uc_duzlem = openmc.ZPlane(z_uc)
 
     emici_ix = int(c.get("emici_bolge") or 0)
@@ -302,6 +308,123 @@ def demet_lattice(spec, demet_ad, nesneler, universeler):
     raise ValueError("bilinmeyen kafes turu: %s" % d["tur"])
 
 
+def _spec_fisil_mi(spec, ad, derinlik=0):
+    """
+    Spec'teki bir ad (cubuk / plaka / demet / malzeme) fisil malzeme iceriyor mu?
+
+    Geometri kurulmadan cevaplanmasi gerekiyor: kontrol cubugunun daldirma
+    ekseni ve arayuzdeki aktif yukseklik gostergesi buna bagli.
+    Olcut: Z >= 90 (aktinit) bir bilesen.
+    """
+    import openmc.data
+    if derinlik > 8 or not ad:
+        return False
+    m = malzeme_bul(spec, ad)
+    if m is not None:
+        for b in m.get("bilesim", []):
+            isim = b.get("isim") or ""
+            try:
+                if b.get("tur") == "element":
+                    z = openmc.data.ATOMIC_NUMBER.get(isim, 0)
+                else:
+                    z = openmc.data.zam(isim)[0]
+            except Exception:
+                z = 0
+            if z >= 90:
+                return True
+        return False
+    c = cubuk_bul(spec, ad)
+    if c is not None:
+        return any(_spec_fisil_mi(spec, b.get("malzeme"), derinlik + 1)
+                   for b in c.get("bolgeler", []))
+    p = plaka_bul(spec, ad)
+    if p is not None:
+        return any(_spec_fisil_mi(spec, p.get(k), derinlik + 1)
+                   for k in ("et_malzeme", "zarf_malzeme", "kanal_malzeme",
+                             "yan_levha_malzeme"))
+    d = demet_bul(spec, ad)
+    if d is not None:
+        adaylar = list((d.get("anahtar") or {}).values()) + [d.get("dolgu_disi")]
+        return any(_spec_fisil_mi(spec, x, derinlik + 1) for x in adaylar if x)
+    return False
+
+
+def aktif_eksenel_aralik(spec):
+    """
+    Aktif (fisil) yakitin eksenel araligi (z_alt, z_ust); 2B modelde None.
+
+    Eksenel katmanlama yokken tum yukseklik aktiftir. Katmanlama varken
+    yalnizca fisil dolgusu olan katmanlar sayilir -- alt/ust yansitici ve
+    plenum aktif bolgeye DAHIL DEGILDIR. Kontrol cubugu daldirmasi ve
+    lineer guc [W/cm] bu araliga gore tanimlidir.
+    """
+    kor = spec["kor"]
+    h = sema_kor_yuksekligi(kor)
+    if not h:
+        return None
+    katmanlar = sema_eksenel_katmanlar(kor)
+    if katmanlar is None:
+        return (-h / 2.0, h / 2.0)
+    ana = kor.get("cubuk") or kor.get("demet") or kor.get("plaka") or kor.get("dolgu")
+    alt, ust = None, None
+    for z0, z1, katman in katmanlar:
+        ad = katman.get("dolgu") or ana
+        fisil = _spec_fisil_mi(spec, ad)
+        if not fisil and katman.get("anahtar"):
+            fisil = any(_spec_fisil_mi(spec, x)
+                        for x in (katman["anahtar"] or {}).values())
+        if not fisil:
+            continue
+        alt = z0 if alt is None else min(alt, z0)
+        ust = z1 if ust is None else max(ust, z1)
+    if alt is None:
+        return (-h / 2.0, h / 2.0)       # fisil katman bulunamadi: tumunu kullan
+    return (alt, ust)
+
+
+def _iceriyor_mu(spec, kapsayan, aranan, derinlik=0):
+    """'kapsayan' adli dolgu, 'aranan' cubugu/plakayi iceriyor mu?"""
+    if derinlik > 8 or not kapsayan:
+        return False
+    if kapsayan == aranan:
+        return True
+    d = demet_bul(spec, kapsayan)
+    if d is not None:
+        adaylar = list((d.get("anahtar") or {}).values()) + [d.get("dolgu_disi")]
+        return any(_iceriyor_mu(spec, x, aranan, derinlik + 1) for x in adaylar if x)
+    return False
+
+
+def cubuk_eksenel_aralik(spec, cubuk_ad):
+    """
+    Belirli bir cubugun eksenel olarak BULUNDUGU aralik (z_alt, z_ust).
+
+    Guc dagilimi eksenel mesh'i bunu kullanir. "Fisil aralik" yetmez:
+    dogal uranyum blanket fisildir ama iceriginde HEDEF cubuk yoktur; mesh
+    oraya tasarsa bos bin'ler ortalamayi duserir ve F_q YAPAY OLARAK SISER.
+    (Olculdu: pwr_eksenel'de F_q 1.815 -> 1.712, %6 fark.)
+    """
+    kor = spec["kor"]
+    h = sema_kor_yuksekligi(kor)
+    if not h:
+        return None
+    katmanlar = sema_eksenel_katmanlar(kor)
+    if katmanlar is None:
+        return (-h / 2.0, h / 2.0)
+    ana = kor.get("cubuk") or kor.get("demet") or kor.get("plaka") or kor.get("dolgu")
+    alt, ust = None, None
+    for z0, z1, katman in katmanlar:
+        adaylar = [katman.get("dolgu") or ana]
+        adaylar += list((katman.get("anahtar") or {}).values())
+        if not any(_iceriyor_mu(spec, x, cubuk_ad) for x in adaylar if x):
+            continue
+        alt = z0 if alt is None else min(alt, z0)
+        ust = z1 if ust is None else max(ust, z1)
+    if alt is None:
+        return aktif_eksenel_aralik(spec)
+    return (alt, ust)
+
+
 def _universe_uret(spec, ad, nesneler, universeler):
     """Ad bir cubuk, plaka, demet ya da malzeme olabilir -- uygun universe'i uretir."""
     if cubuk_bul(spec, ad) is not None:
@@ -322,7 +445,7 @@ def _universe_uret(spec, ad, nesneler, universeler):
 
 def _eksenel_bolge(kor, taban_bolge):
     """yukseklik verilmisse alt/ust ZPlane ekler, verilmemisse 2B birakir."""
-    h = kor.get("yukseklik")
+    h = sema_kor_yuksekligi(kor)
     if not h:
         return taban_bolge
     sinir = kor.get("sinir", {})
@@ -365,6 +488,92 @@ def _altigen_sinir(halka_sayisi, adim, kafes_yonelimi, bc, buyutme=0.0):
     return openmc.model.HexagonalPrism(edge_length=kenar,
                                        orientation=kafes_yonelimi,
                                        boundary_type=bc)
+
+
+def _kare_kafes_kur(spec, kor, nesneler, universeler, anahtar=None):
+    """
+    kare_kafes korunun RectLattice'ini kurar.
+
+    "anahtar" verilirse harita ayni kalir ama harf -> demet eslemesi degisir.
+    Eksenel zenginlik kusaklama boyle yapilir: hangi konumda ne oldugu
+    (harita) eksenel olarak degismez -- fiziksel olarak da degismez, demetler
+    yerinden oynamaz -- degisen yalnizca her harfin O KATMANDA ne anlama
+    geldigidir.
+    """
+    nx, ny = kor["boyut"]
+    harita = kor["harita"]
+    esleme = dict(kor["anahtar"])
+    if anahtar:
+        esleme.update(anahtar)
+
+    def coz(harf):
+        if harf not in esleme:
+            raise KeyError("kor haritasinda tanimsiz harf: '%s'" % harf)
+        hedef = esleme[harf]
+        if hedef not in universeler:
+            universeler[hedef] = _universe_uret(spec, hedef, nesneler, universeler)
+        return universeler[hedef]
+
+    if len(harita) != ny:
+        raise ValueError("kor haritasi %d satir, boyut %d bekliyor"
+                         % (len(harita), ny))
+    lat = openmc.RectLattice()
+    lat.pitch = (kor["adim"], kor["adim"])
+    lat.lower_left = (-kor["adim"] * nx / 2.0, -kor["adim"] * ny / 2.0)
+    lat.universes = [[coz(h) for h in satir] for satir in harita]
+    dis_mat = _mat(nesneler, (kor.get("yansitici") or {}).get("malzeme"))
+    lat.outer = openmc.Universe(cells=[openmc.Cell(fill=dis_mat)])
+    return lat
+
+
+def _katman_dolgusu(spec, kor, katman, ana_ic, nesneler, universeler):
+    """Bir eksenel katmani dolduracak universe/lattice."""
+    if katman.get("anahtar"):
+        if kor["tur"] != "kare_kafes":
+            raise ValueError(
+                "eksenel katman '%s': katmana ozel 'anahtar' yalnizca kare_kafes "
+                "korunda kullanilabilir" % katman.get("ad"))
+        return _kare_kafes_kur(spec, kor, nesneler, universeler, katman["anahtar"])
+    dolgu = katman.get("dolgu")
+    if not dolgu:
+        return ana_ic
+    anahtar = "__katman__%s" % dolgu
+    if anahtar not in universeler:
+        universeler[anahtar] = _universe_uret(spec, dolgu, nesneler, universeler)
+    return universeler[anahtar]
+
+
+def _eksenel_hucreler(spec, kor, taban_bolge, ana_ic, nesneler, universeler,
+                      ad_oneki=""):
+    """
+    Yanal bolgesi "taban_bolge" olan hacmi eksenel katmanlara boler.
+
+    Katmanlama kapaliysa tek bir hucre doner ve davranis eskisiyle aynidir.
+    Katman arayuzleri DAIMA 'transmission'dir; sinir kosulu yalnizca en alt
+    ve en ust yuzeye uygulanir -- ic bir yuzeye yansitici sinir konmasi
+    korun ustunu altindan koparir ve bunu k-eff'e bakarak fark etmek zordur.
+    """
+    katmanlar = sema_eksenel_katmanlar(kor)
+    if katmanlar is None:
+        return [openmc.Cell(fill=ana_ic, region=_eksenel_bolge(kor, taban_bolge))]
+
+    sinir = kor.get("sinir", {})
+    h = katmanlar[-1][1] - katmanlar[0][0]
+    duzlemler = [openmc.ZPlane(-h / 2.0, boundary_type=sinir.get("alt", "reflective"))]
+    for _z0, z1, _b in katmanlar[:-1]:
+        duzlemler.append(openmc.ZPlane(z1))          # ic arayuz: transmission
+    duzlemler.append(openmc.ZPlane(+h / 2.0, boundary_type=sinir.get("ust", "reflective")))
+
+    hucreler = []
+    for i, (_z0, _z1, katman) in enumerate(katmanlar):
+        ic = _katman_dolgusu(spec, kor, katman, ana_ic, nesneler, universeler)
+        bolge = +duzlemler[i] & -duzlemler[i + 1]
+        if taban_bolge is not None:
+            bolge = taban_bolge & bolge
+        hucreler.append(openmc.Cell(
+            fill=ic, region=bolge,
+            name="%s%s" % (ad_oneki, katman.get("ad") or "katman %d" % (i + 1))))
+    return hucreler
 
 
 def kor_kur(spec, nesneler, universeler):
@@ -414,8 +623,11 @@ def kor_kur(spec, nesneler, universeler):
         kor_silindir = openmc.ZCylinder(r=R_kor)
         dis_silindir = openmc.ZCylinder(r=R_dis, boundary_type=yan_bc)
 
-        hucreler = [openmc.Cell(fill=ic_univ,
-                                region=_eksenel_bolge(kor, -kor_silindir))]
+        # Kor silindirinin ici eksenel katmanlara ayrilabilir (alt/ust
+        # yansitici, plenum). Tamburlar ve yanal yansitici kusak TAM
+        # YUKSEKLIGI kaplar -- tambur eksenel olarak bolunmez.
+        hucreler = _eksenel_hucreler(spec, kor, -kor_silindir, ic_univ,
+                                     nesneler, universeler)
         yansitici_bolge = +kor_silindir & -dis_silindir
         if int(t.get("sayi") or 0) > 0:
             t_univ = _tambur.universe(t, nesneler, _mat)
@@ -459,27 +671,7 @@ def kor_kur(spec, nesneler, universeler):
 
     elif tur == "kare_kafes":
         nx, ny = kor["boyut"]
-        harita = kor["harita"]
-
-        def coz(harf):
-            if harf not in kor["anahtar"]:
-                raise KeyError("kor haritasinda tanimsiz harf: '%s'" % harf)
-            hedef = kor["anahtar"][harf]
-            if hedef not in universeler:
-                universeler[hedef] = _universe_uret(spec, hedef, nesneler, universeler)
-            return universeler[hedef]
-
-        if len(harita) != ny:
-            raise ValueError("kor haritasi %d satir, boyut %d bekliyor"
-                             % (len(harita), ny))
-        matris = [[coz(h) for h in satir] for satir in harita]
-        dis_mat = _mat(nesneler, (kor.get("yansitici") or {}).get("malzeme"))
-        lat = openmc.RectLattice()
-        lat.pitch = (kor["adim"], kor["adim"])
-        lat.lower_left = (-kor["adim"] * nx / 2.0, -kor["adim"] * ny / 2.0)
-        lat.universes = matris
-        lat.outer = openmc.Universe(cells=[openmc.Cell(fill=dis_mat)])
-        ic = lat
+        ic = _kare_kafes_kur(spec, kor, nesneler, universeler)
         gx, gy = kor["adim"] * nx, kor["adim"] * ny
     else:
         raise ValueError("bilinmeyen kor turu: %s" % tur)
@@ -496,16 +688,16 @@ def kor_kur(spec, nesneler, universeler):
             kal = yans["kalinlik"]
             ic_prizma = _altigen_sinir(halka, d["adim"], yonelim, "transmission")
             dis_prizma = _altigen_sinir(halka, d["adim"], yonelim, yan_bc, buyutme=kal)
-            hucreler = [
-                openmc.Cell(fill=ic, region=_eksenel_bolge(kor, -ic_prizma)),
-                openmc.Cell(fill=_mat(nesneler, yans.get("malzeme")),
-                            region=_eksenel_bolge(kor, +ic_prizma & -dis_prizma)),
-            ]
+            hucreler = _eksenel_hucreler(spec, kor, -ic_prizma, ic,
+                                         nesneler, universeler)
+            hucreler.append(openmc.Cell(
+                fill=_mat(nesneler, yans.get("malzeme")),
+                region=_eksenel_bolge(kor, +ic_prizma & -dis_prizma)))
             olcu = altigen.kapsayan_olcu(halka, d["adim"], yonelim)
             return openmc.Universe(cells=hucreler), (olcu[0] + 2 * kal, olcu[1] + 2 * kal)
         prizma = _altigen_sinir(halka, d["adim"], yonelim, yan_bc)
-        hucre = openmc.Cell(fill=ic, region=_eksenel_bolge(kor, -prizma))
-        return openmc.Universe(cells=[hucre]), (gx, gy)
+        return (openmc.Universe(cells=_eksenel_hucreler(
+            spec, kor, -prizma, ic, nesneler, universeler)), (gx, gy))
 
     # --- yansitici (dikdortgen) ---
     if yans_var:
@@ -514,23 +706,22 @@ def kor_kur(spec, nesneler, universeler):
         dis_gx, dis_gy = gx + 2 * kal, gy + 2 * kal
         dis_kutu = openmc.model.RectangularPrism(dis_gx, dis_gy,
                                                  boundary_type=yan_bc)
-        hucreler = [
-            openmc.Cell(fill=ic, region=_eksenel_bolge(kor, -ic_kutu)),
-            openmc.Cell(fill=_mat(nesneler, yans.get("malzeme")),
-                        region=_eksenel_bolge(kor, +ic_kutu & -dis_kutu)),
-        ]
+        hucreler = _eksenel_hucreler(spec, kor, -ic_kutu, ic, nesneler, universeler)
+        hucreler.append(openmc.Cell(
+            fill=_mat(nesneler, yans.get("malzeme")),
+            region=_eksenel_bolge(kor, +ic_kutu & -dis_kutu)))
         return openmc.Universe(cells=hucreler), (dis_gx, dis_gy)
 
     kutu = openmc.model.RectangularPrism(gx, gy, boundary_type=yan_bc)
-    hucre = openmc.Cell(fill=ic, region=_eksenel_bolge(kor, -kutu))
-    return openmc.Universe(cells=[hucre]), (gx, gy)
+    return (openmc.Universe(cells=_eksenel_hucreler(
+        spec, kor, -kutu, ic, nesneler, universeler)), (gx, gy))
 
 
 # ============================================================================
 # 5. AYARLAR VE TALLY'LER
 # ============================================================================
 
-def ayarlari_kur(spec, sinir_kutu):
+def ayarlari_kur(spec, sinir_kutu, fisil_aralik=None):
     """spec["ayarlar"] -> openmc.Settings"""
     a = spec["ayarlar"]
     s = openmc.Settings()
@@ -553,10 +744,17 @@ def ayarlari_kur(spec, sinir_kutu):
         #   yayilmaya calisiyor ve GUC DAGILIMI YANLIS (asiri tepeli) cikiyordu.
         #   Shannon entropisi bunu gostermiyor: entropi global bir skalerdir ve
         #   bu geometride radyal dagilim baskin geliyor.
-        h = spec["kor"].get("yukseklik")
-        yari_z = (h / 2.0) if h else 1.0
-        alt = k.get("alt") or [-sinir_kutu[0] / 2, -sinir_kutu[1] / 2, -yari_z]
-        ust = k.get("ust") or [+sinir_kutu[0] / 2, +sinir_kutu[1] / 2, +yari_z]
+        h = sema_kor_yuksekligi(spec["kor"])
+        # Eksenel katmanlamada kutu, tum modeli degil FISIL araligi kapsar:
+        # yansitici ve plenum katmanlarinda orneklenen noktalar "fissionable"
+        # kisiti yuzunden reddedilirdi, bu da yakinsamayi bosa yavaslatir.
+        if fisil_aralik:
+            z_alt, z_ust = fisil_aralik
+        else:
+            yari_z = (h / 2.0) if h else 1.0
+            z_alt, z_ust = -yari_z, +yari_z
+        alt = k.get("alt") or [-sinir_kutu[0] / 2, -sinir_kutu[1] / 2, z_alt]
+        ust = k.get("ust") or [+sinir_kutu[0] / 2, +sinir_kutu[1] / 2, z_ust]
         uzay = openmc.stats.Box(alt, ust)
         kisit = {"fissionable": True}
     else:
@@ -580,7 +778,7 @@ def ayarlari_kur(spec, sinir_kutu):
         #   ayni dilime dusuyor ve EKSENEL yakinsama olculmemis oluyordu --
         #   entropi yine de "yakinsadi" diyordu. Eksenel heterojen bir korda
         #   (blanket, plenum) asil riskli yon tam da budur.
-        h = spec["kor"].get("yukseklik")
+        h = sema_kor_yuksekligi(spec["kor"])
         z = (h / 2.0) if h else 1.0e10
         mesh.lower_left = (-gx / 2.0, -gy / 2.0, -z)
         mesh.upper_right = (gx / 2.0, gy / 2.0, z)
@@ -620,7 +818,8 @@ def tallyleri_kur(spec, nesneler):
 # 6. ANA GIRIS
 # ============================================================================
 
-def guc_tally_ekle(spec, model, nesneler, universeler, sinir_kutu):
+def guc_tally_ekle(spec, model, nesneler, universeler, sinir_kutu,
+                   fisil_aralik=None):
     """
     Cubuk bazli guc dagilimi tally'sini modele ekler.
 
@@ -660,21 +859,32 @@ def guc_tally_ekle(spec, model, nesneler, universeler, sinir_kutu):
     tal.scores = [g.get("skor") or "kappa-fission"]
     filtreler = [openmc.DistribcellFilter(hedef)]
 
-    h = spec["kor"].get("yukseklik")
+    h = sema_kor_yuksekligi(spec["kor"])
     dilim = int(g.get("eksenel_dilim") or 1)
     if h and dilim > 1:
         gx, gy = sinir_kutu
         pay = max(gx, gy)          # x,y'de tek bin -- her seyi kapsamasi yeter
+        # Mesh AKTIF YAKIT araligini kapsar, tum modeli degil: eksenel
+        # katmanlamada yansitici/plenum katmanlari mesh'e girerse bos bin'ler
+        # ortalamayi duserir ve F_q yapay olarak siser.
+        # Mesh HEDEF CUBUGUN bulundugu araligi kapsar.
+        z_alt, z_ust = cubuk_eksenel_aralik(spec, cubuk_ad) or (-h / 2.0, h / 2.0)
         mesh = openmc.RegularMesh()
         mesh.dimension = [1, 1, dilim]
-        mesh.lower_left = (-pay, -pay, -h / 2.0)
-        mesh.upper_right = (pay, pay, h / 2.0)
+        mesh.lower_left = (-pay, -pay, z_alt)
+        mesh.upper_right = (pay, pay, z_ust)
         filtreler.append(openmc.MeshFilter(mesh))
     tal.filters = filtreler
 
-    # Toplam korunumu testi icin filtresiz esdes tally
+    # Toplam korunumu testi icin AYNI HUCREYE bagli, bolunmemis tally.
+    #   Once filtresizdi (tum model). Eksenel katmanlama gelince bu
+    #   karsilastirma anlamsizlasti: dogal uranyum blanket de fisyon yapiyor
+    #   ama distribcell'e dahil degil, korunum sahte olarak "BOZUK" cikiyordu.
+    #   Ayni hucreye baglayinca kontrol GUCLENIYOR: artik eksenel mesh'in
+    #   hucrenin tamamini kapsayip kapsamadigini da sinar.
     ref = openmc.Tally(name="guc_toplam_ref")
     ref.scores = list(tal.scores)
+    ref.filters = [openmc.CellFilter(hedef)]
 
     model.tallies = openmc.Tallies(list(model.tallies) + [tal, ref])
     return hedef
@@ -695,7 +905,12 @@ def kur(spec):
     kok, sinir_kutu = kor_kur(spec, nesneler, universeler)
 
     geometry = openmc.Geometry(kok)
-    settings = ayarlari_kur(spec, sinir_kutu)
+    # AKTIF (fisil) eksenel aralik: kaynak kutusu, guc mesh'i ve kontrol
+    # cubugu daldirmasi hep bu TEK tanimdan okur. Bir zamanlar geometriden
+    # turetilen ikinci bir tanim daha vardi; uretilen betik onu bilemedigi
+    # icin betik ile kurucu FARKLI kaynak kutusu kuruyordu (1300 pcm).
+    fisil = aktif_eksenel_aralik(spec)
+    settings = ayarlari_kur(spec, sinir_kutu, fisil)
     tallies = tallyleri_kur(spec, nesneler)
 
     model = openmc.Model(geometry=geometry, materials=materials,
@@ -714,11 +929,12 @@ def kur(spec):
         "universeler": universeler,
         "sinir_kutu": sinir_kutu,
         "guc_hucre": None,
+        "aktif_aralik": fisil,
     }
 
     # --- cubuk bazli guc dagilimi ---
     g = spec.get("guc_dagilimi") or {}
     if g.get("var"):
         bilgi["guc_hucre"] = guc_tally_ekle(spec, model, nesneler, universeler,
-                                            sinir_kutu)
+                                            sinir_kutu, fisil)
     return model, bilgi

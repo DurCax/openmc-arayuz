@@ -126,7 +126,7 @@ python3 testler/test_regresyon.py            # tümü (~2 dk)
 python3 testler/test_regresyon.py --hizli    # Monte Carlo hariç (~10 s)
 ```
 
-214 test var. Üçü bu katmanın doğruluğunun asıl kanıtıdır:
+233 test hizli modda, Monte Carlo dahil 251 test var. Üçü bu katmanın doğruluğunun asıl kanıtıdır:
 
 - **Regresyon çıpası** — `ornekler/pwr_pinhucre.json` referans değeri
   **k∞ = 1.3570 ± 0.0020** vermeli. 2σ dışına çıkarsa `kurucu.py`'de hata var.
@@ -153,6 +153,7 @@ python3 testler/test_regresyon.py --hizli    # Monte Carlo hariç (~10 s)
 | `pwr_kontrol` (çubuk %0) | 1.17801 ± 0.00196 | 24 s |
 | `tamburlu_kor` (dönme 180°) | 1.01057 ± 0.00157 | 21 s |
 | `zirh_kure` (sabit kaynak) | k-eff yok, tally | 24 s |
+| `pwr_eksenel` (katmanlı) | 1.17680 ± 0.00052 | 86 s |
 
 ## Kontrol çubuğu ve kritik çubuk konumu
 
@@ -207,6 +208,91 @@ toplam tambur değeri ~5000 pcm. **Kritik tambur konumu = 122.46° ± 3.68**,
 **Yerleşim canlı doğrulanır:** tamburlar kora giriyor mu, yansıtıcıdan taşıyor
 mu, komşular çakışıyor mu (kiriş mesafesi `2·R_m·sin(π/N)` ile). Geçersiz
 yerleşim koşuyu değil **model kurulumunu** durdurur.
+
+## Eksenel heterojenlik
+
+Gerçek bir reaktörde aktif yakıt tek bir eksenel bölge değildir: altta ve üstte
+yansıtıcı, aktif bölgenin ucunda doğal uranyum blanket, gaz plenumu, farklı
+zenginlik kuşakları bulunur. Bunlar olmadan eksenel güç şekli ve reaktivite
+katsayıları gerçekçi çıkmaz.
+
+`4. Kor` sekmesindeki **Eksenel katmanlar** tablosuyla kurulur. Katmanlar
+**alttan üste** sıralanır:
+
+```json
+"eksenel": {"var": true, "bolgeler": [
+  {"ad": "alt yansitici", "yukseklik":  20.0, "dolgu": "su"},
+  {"ad": "alt blanket",   "yukseklik":  15.0, "dolgu": "demet_blanket"},
+  {"ad": "aktif yakit",   "yukseklik": 300.0, "dolgu": null},
+  {"ad": "ust blanket",   "yukseklik":  15.0, "dolgu": "demet_blanket"},
+  {"ad": "plenum",        "yukseklik":  25.0, "dolgu": "demet_plenum"},
+  {"ad": "ust yansitici", "yukseklik":  20.0, "dolgu": "su"}
+]}
+```
+
+- `dolgu` boş (`null`) bırakılırsa korun **ana dolgusu** kullanılır.
+- `dolgu` bir çubuk, plaka, demet ya da malzeme adı olabilir.
+- `kare_kafes` korunda katmana özel **`anahtar`** verilebilir: harita aynı kalır,
+  yalnızca harf → demet eşlemesi değişir. Eksenel zenginlik kuşaklama böyle
+  yapılır — hangi konumda ne olduğu eksenel olarak değişmez, fiziksel olarak da
+  değişmez, değişen yalnızca her harfin o katmanda ne anlama geldiğidir.
+  (Bu alan şimdilik JSON'dan girilir; tablo onu **silmez**, kilitli gösterir.)
+- Katmanlama açıkken modelin yüksekliği **katman toplamıdır**; `yukseklik` alanı
+  yok sayılır ve arayüz onu `null`'a çeker (tek gerçek kaynak kuralı).
+- Desteklenen kor türleri: `tek_cubuk`, `tek_plaka`, `tek_demet`, `kare_kafes`,
+  `tamburlu`. `kuresel`de eksen kavramı yoktur.
+
+> ⚠ **İç katman arayüzleri daima geçirgendir.** Sınır koşulu yalnızca en alt ve
+> en üst yüzeye uygulanır. İç bir yüzeye yansıtıcı sınır konursa korun üstü
+> altından **kopar** ve bunu k-eff'e bakarak fark etmek neredeyse imkânsızdır;
+> bu yüzden her z düzleminin sınır koşulu teste bağlandı.
+
+### Üç ayrı yükseklik — karıştırılmamalı
+
+Katmanlama gelince "kor yüksekliği" tek bir sayı olmaktan çıktı:
+
+| | ne | nerede kullanılır |
+|---|---|---|
+| **toplam model** | katman toplamı | geometri, eksenel sınır koşulları |
+| **fisil aralık** | fisil malzeme içeren katmanlar | başlangıç kaynağı kutusu, kontrol çubuğu daldırması |
+| **hedef çubuk aralığı** | o çubuğun bulunduğu katmanlar | güç dağılımı eksenel mesh'i, W/cm |
+
+`pwr_eksenel` için sırasıyla **395 / 330 / 300 cm**. Fisil aralık doğal uranyum
+blanket'i içerir (U-238 fisyon yapar), ama blanket'te `yakit_cubugu` **yoktur**.
+
+Kontrol çubuğu daldırması artık **aktif** aralıkta tanımlı: %0 = uç aktif
+bölgenin tepesinde, %100 = dibinde. Katmanlama yokken üçü de `±H/2`'ye eşit
+olduğu için eski modeller bit düzeyinde aynı sonucu verir.
+
+### Örnek: `pwr_eksenel`
+
+`pwr_3b` ile aynı 17×17 demet, katmanlı. **İkisi de aynı ayarla** koşuldu
+(250 çevrim / 100 pasif) — farklı ayarlardan gelen sayıları karşılaştırmak
+yanıltıcı olurdu:
+
+| | `pwr_3b` (katmansız) | `pwr_eksenel` (katmanlı) |
+|---|---|---|
+| k-eff | 1.18002 ± 0.00051 | 1.17680 ± 0.00052 |
+| F_ΔH | 1.0674 | **1.0674** |
+| **F_q** | 1.7210 | **1.6435** |
+
+**F_ΔH dört hanede birebir aynı çıktı.** Eksenel katmanlama radyal dağılıma
+dokunmaz, dolayısıyla böyle olması gerekiyordu — iyi bir tutarlılık kontrolü.
+Değişen yalnızca F_q: 1.7210 → 1.6435 (−%4.5). Su yansıtıcı eksenel
+ekstrapolasyon mesafesini büyütüyor, yakıtın uçlarındaki akı yükseliyor ve
+eksenel profil düzleşiyor. Vakum uçlu `pwr_3b`'de profil kesilmiş kosinüstür.
+
+> **k-eff farkı temiz bir yansıtıcı kazancı ölçümü DEĞİL.** İki model birden
+> fazla yönden farklı: yakıt kolonu 366 cm %3.2 yerine 300 cm %3.2 + 30 cm doğal
+> UO2. Doğal uranyum termal spektrumda net soğurucudur, yansıtıcı ise sızıntıyı
+> azaltır; iki etki ters yönde çalışıyor ve net sonuç −232 pcm. Yansıtıcı
+> kazancını ayrı ölçmek isterseniz yalnızca su katmanlarını ekleyip blanket'i
+> çıkarın.
+
+> **Pasif çevrim:** katmanlı modelde 40 pasif çevrim **yetmedi** — Shannon
+> entropisi pasif dönemin sonunda hâlâ kayıyordu (kayma 0.0433 > 2σ = 0.0125).
+> 100'e çıkarınca kayma 0.0006'ya düştü. Bu uyarı ancak entropi mesh'inin z
+> sınırları düzeltildikten sonra güvenilir oldu (aşağıdaki tuzak listesi).
 
 ## Güç dağılımı ve tepe faktörleri
 
@@ -453,14 +539,40 @@ Bitmiş bir geometriyi incelerken (eksen değiştirme, yakınlaştırma) açın;
 - **`Cell.num_instances` önce `Geometry.determine_paths()` ister**, aksi halde
   `ValueError`.
 
+### Eksenel katmanlama üç hata ortaya çıkardı (hepsi ölçümle bulundu)
+
+**1. "Fisil aralık"ın iki ayrı tanımı → 1300 pcm.** Kurucu aralığı kurulmuş
+geometriden türetiyordu, üretilen betik ise spec'ten. Betik ötekinin ne yaptığını
+bilemediği için farklı kaynak kutusu kuruyordu. Geometri 400 noktada birebir
+aynıydı — fark **ayarlardaydı**. Tek tanıma indirildi.
+*Ders: aynı sayıyı iki yoldan hesaplayan iki kod, er ya da geç ayrışır.*
+
+**2. Korunum tally'si tüm modeli sayıyordu → sahte "BOZUK" (4.73e-03).**
+Doğal uranyum blanket de fisyon yapıyor ama distribcell'e dahil değil. Referans
+tally `CellFilter` ile aynı hücreye bağlandı; kontrol böylece **güçlendi** —
+artık eksenel mesh'in hücrenin tamamını kapsayıp kapsamadığını da sınıyor.
+
+**3. Güç mesh'i hedef çubuktan taşıyordu → F_q %6 şişti (1.6435 → 1.8150).**
+Mesh fisil aralığı kapsıyordu, ama blanket katmanlarında `yakit_cubugu` yok;
+boş bin'ler ortalamayı düşürüp tepeyi şişiriyordu. Sayılar makul görünüyordu —
+sessiz hata tam olarak budur. Mesh artık **hedef çubuğun** aralığını kullanıyor.
+
+**Ayrıca:** entropi mesh'inin z sınırları `±1e10`'da sabitti. `nz=1` iken
+zararsızdı ama `nz>1` istendiğinde bütün parçacıklar tek dilime düşüyor ve
+eksenel yakınsama hiç ölçülmemiş oluyordu; entropi yine "yakınsadı" diyordu.
+Gerçek yükseklikten türetildikten sonra `pwr_eksenel`'de 40 pasif çevrimin
+yetmediğini **bu uyarı yakaladı**.
+
 ## Bilinen sınırlar
 
 - **Küresel düzenek kabukları arayüzden düzenlenemiyor** — yalnızca JSON'dan
   (`ornekler/godiva_kriter.json`). Arayüz kor türünü gösterir ve uyarır.
 - **Tambur yayı tek parça.** Çok parçalı ya da eksenel olarak bölünmüş tambur
   desteklenmiyor.
-- **Eksenel heterojenlik** yok — kor tek eksenel bölge; zenginlik kuşağı,
-  blanket, plenum tanımlanamaz.
+- **Tambur eksenel olarak bölünmüyor.** Eksenel katmanlar tamburlu korda kor
+  silindirinin içinde çalışır; tamburlar ve yansıtıcı kuşak tam yüksekliği kaplar.
+- **Katmana özel harf eşlemesi (`anahtar`) yalnızca JSON'dan** girilir ve yalnızca
+  `kare_kafes` korunda geçerlidir. Tablo onu silmez, kilitli gösterir.
 - **Sabit kaynakta uzaysal dağılım sınırlı** — nokta ya da kutu. Yüzey kaynağı,
   hacimsel kaynak dosyası ve dış kaynak dosyası (`source.h5`) desteklenmiyor.
 - **Doz dönüşüm faktörleri yok** — akı tally'si var, ICRP akı→doz çarpanı yok;

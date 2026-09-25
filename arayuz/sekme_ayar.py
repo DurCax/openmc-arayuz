@@ -464,7 +464,7 @@ class AyarSekmesi(SekmeTabani):
                 self.guc_cubuk, self.guc_bolge, self.guc_skor,
                 self.guc_dilim, self.guc_toplam, self.guc_not]:
             w.setEnabled(acik)
-        h = (self.spec or {}).get("kor", {}).get("yukseklik")
+        h = sema.kor_yuksekligi((self.spec or {}).get("kor") or {})
         for ad in ("dilim",):
             self.guc_etiketler[ad].setEnabled(acik and bool(h))
         self.guc_dilim.setEnabled(acik and bool(h))
@@ -663,7 +663,7 @@ class AyarSekmesi(SekmeTabani):
                 gx, gy = bilgi["sinir_kutu"]
             except Exception:
                 gx = gy = 10.0
-            h = self.spec["kor"].get("yukseklik") or 2.0
+            h = sema.kor_yuksekligi(self.spec["kor"]) or 2.0
             filtreler.append(sema.filtre_mesh(
                 [self.t_mesh_nx.value(), self.t_mesh_ny.value(), self.t_mesh_nz.value()],
                 [-gx / 2, -gy / 2, -h / 2], [gx / 2, gy / 2, h / 2]))

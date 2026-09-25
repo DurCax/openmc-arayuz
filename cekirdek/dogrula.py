@@ -35,8 +35,9 @@
 
 import os
 
+from cekirdek.sema import kor_yuksekligi as sema_kor_yuksekligi
 from cekirdek.sema import BOSLUK, malzeme_bul, cubuk_bul, plaka_bul, demet_bul
-from cekirdek import altigen, kurucu, veri_bilgi
+from cekirdek import altigen, kurucu, veri_bilgi, sema
 from cekirdek import kaynak as _kaynak
 
 # ----------------------------------------------------------------------------
@@ -349,7 +350,7 @@ def cubuk_kontrol(spec):
 def kontrol_cubugu_kontrol(spec):
     """Kontrol cubuklarinin gereksinimleri."""
     bulgular = []
-    h = spec["kor"].get("yukseklik")
+    h = sema_kor_yuksekligi(spec["kor"])
     for c in spec.get("cubuklar", []):
         if c.get("tur") != "kontrol":
             continue
@@ -555,7 +556,7 @@ def kor_kontrol(spec):
             if d is None or not (-360.0 <= float(d) <= 360.0):
                 bulgular.append(Bulgu("hata", "kor",
                                       "tambur donmesi -360..360 derece olmali: %s" % d))
-            if not kor.get("yukseklik"):
+            if not sema_kor_yuksekligi(kor):
                 bulgular.append(Bulgu(
                     "bilgi", "kor",
                     "tamburlu kor 2B -- eksenel sizinti yok, deger fazla cikar",
@@ -623,7 +624,7 @@ def kor_kontrol(spec):
             "Sonsuz kafes (k-inf) istiyorsaniz 'reflective' kullanin"))
     # Kuresel duzenekte "yukseklik" diye bir kavram yoktur; kabuk yaricaplari
     # geometriyi tamamen belirler. Orada 2B uyarisi vermek yanlis olurdu.
-    if not kor.get("yukseklik") and kor.get("tur") != "kuresel":
+    if not sema_kor_yuksekligi(kor) and kor.get("tur") != "kuresel":
         bulgular.append(Bulgu(
             "bilgi", "kor",
             "yukseklik verilmemis -- model eksenel yonde sonsuz (2B) kabul ediliyor"))
@@ -633,6 +634,148 @@ def kor_kontrol(spec):
 # ============================================================================
 # 4. AYARLAR
 # ============================================================================
+
+def eksenel_kontrol(spec):
+    """
+    Eksenel katmanlama tutarli mi?
+
+    Katmanlamanin sessiz hatalari:
+      * hicbir katmanda fisil malzeme yok -> ozdeger kosusu kaynak bulamaz
+      * katman dolgusu tanimsiz bir ad -> kurulumda KeyError, kosudan once yakala
+      * "yukseklik" ile katman toplami farkli -> hangisi gecerli belirsiz kalir
+    """
+    bulgular = []
+    kor = spec["kor"]
+    eks = kor.get("eksenel") or {}
+    if not eks.get("var"):
+        return bulgular
+
+    tur = kor.get("tur")
+    if tur not in sema.EKSENEL_DESTEKLI:
+        bulgular.append(Bulgu(
+            "hata", "kor",
+            "eksenel katmanlama '%s' kor turunde desteklenmiyor" % tur,
+            "Destekleyen turler: %s. Kuresel duzenekte eksen kavrami yoktur; "
+            "orada katmani es merkezli kabuklarla kurun." % ", ".join(sema.EKSENEL_DESTEKLI)))
+        return bulgular
+
+    katmanlar = eks.get("bolgeler") or []
+    if not katmanlar:
+        bulgular.append(Bulgu("hata", "kor",
+                              "eksenel katmanlama acik ama hic katman tanimli degil"))
+        return bulgular
+
+    adlar = set()
+    for i, b in enumerate(katmanlar):
+        yer = "kor/katman %d (%s)" % (i + 1, b.get("ad") or "adsiz")
+        h = b.get("yukseklik")
+        if not h or float(h) <= 0:
+            bulgular.append(Bulgu("hata", yer, "katman yuksekligi pozitif olmali"))
+        ad = b.get("ad") or ""
+        if ad and ad in adlar:
+            bulgular.append(Bulgu("uyari", yer,
+                                  "ayni ad birden fazla katmanda kullanilmis: '%s'" % ad))
+        adlar.add(ad)
+
+        dolgu = b.get("dolgu")
+        if dolgu and not _ad_var(spec, dolgu):
+            bulgular.append(Bulgu(
+                "hata", yer, "tanimsiz dolgu adi: '%s'" % dolgu,
+                "Dolgu bir cubuk, plaka, demet ya da malzeme adi olmali."))
+
+        anahtar = b.get("anahtar") or {}
+        if anahtar and tur != "kare_kafes":
+            bulgular.append(Bulgu(
+                "hata", yer,
+                "katmana ozel 'anahtar' yalnizca kare_kafes korunda kullanilabilir"))
+        for harf, hedef in anahtar.items():
+            if not any(harf in satir for satir in (kor.get("harita") or [])):
+                bulgular.append(Bulgu(
+                    "uyari", yer,
+                    "'%s' harfi kor haritasinda hic gecmiyor" % harf))
+            if not _ad_var(spec, hedef):
+                bulgular.append(Bulgu("hata", yer,
+                                      "tanimsiz demet/malzeme adi: '%s'" % hedef))
+
+    if kor.get("yukseklik"):
+        toplam = sema.kor_yuksekligi(kor)
+        bulgular.append(Bulgu(
+            "bilgi", "kor",
+            "eksenel katmanlama acikken 'yukseklik' alani (%g cm) yok sayilir; "
+            "gecerli yukseklik katman toplamidir (%g cm)"
+            % (float(kor["yukseklik"]), toplam or 0.0)))
+
+    # --- fisil katman var mi ---
+    if spec["ayarlar"].get("mod", "eigenvalue") == "eigenvalue":
+        try:
+            aralik = kurucu.aktif_eksenel_aralik(spec)
+            toplam = sema.kor_yuksekligi(kor)
+            ana = (kor.get("cubuk") or kor.get("demet") or kor.get("plaka")
+                   or kor.get("dolgu"))
+            fisil_var = any(
+                kurucu._spec_fisil_mi(spec, b.get("dolgu") or ana)
+                or any(kurucu._spec_fisil_mi(spec, x)
+                       for x in (b.get("anahtar") or {}).values())
+                for b in katmanlar)
+        except Exception:
+            aralik, toplam, fisil_var = None, None, True
+        if not fisil_var:
+            bulgular.append(Bulgu(
+                "hata", "kor",
+                "hicbir eksenel katmanda fisil malzeme yok -- ozdeger kosusu "
+                "baslangic kaynagi bulamaz"))
+        elif aralik and toplam:
+            aktif = aralik[1] - aralik[0]
+            if aktif < toplam:
+                bulgular.append(Bulgu(
+                    "bilgi", "kor",
+                    "aktif yakit yuksekligi %g cm / toplam %g cm "
+                    "(z = %g .. %g)" % (aktif, toplam, aralik[0], aralik[1]),
+                    "Baslangic kaynagi kutusu ve kontrol cubugu daldirmasi bu "
+                    "FISIL araliga gore tanimlidir. Guc dagilimi eksenel mesh'i "
+                    "ise hedef CUBUGUN bulundugu araliga gore -- ikisi ayni "
+                    "olmak zorunda degil (dogal uranyum blanket fisildir ama "
+                    "icinde yakit cubugu yoktur)."))
+
+    # Mutlak guc normalizasyonu uyarisi: distribcell yalnizca HEDEF cubugu
+    # kapsar, ama toplam_guc tum modelin gucudur. Katmanlamada fisil ama
+    # hedef cubugu icermeyen katmanlar (blanket) varsa onlarin gucu de hedef
+    # cubuklara paylastirilmis olur ve W/cm YUKSEK cikar.
+    g = spec.get("guc_dagilimi") or {}
+    if g.get("var") and g.get("toplam_guc") and g.get("cubuk"):
+        try:
+            ar = kurucu.aktif_eksenel_aralik(spec)
+            cr = kurucu.cubuk_eksenel_aralik(spec, g["cubuk"])
+        except Exception:
+            ar = cr = None
+        if ar and cr and (cr[1] - cr[0]) < (ar[1] - ar[0]) - 1e-9:
+            bulgular.append(Bulgu(
+                "uyari", "guc_dagilimi",
+                "fisil aralik %g cm ama '%s' cubugu yalnizca %g cm boyunca var"
+                % (ar[1] - ar[0], g["cubuk"], cr[1] - cr[0]),
+                "Guc dagilimi yalnizca bu cubugu sayar; toplam_guc ise tum "
+                "modelin gucudur. Aradaki fisil katmanlarin (blanket gibi) gucu "
+                "de bu cubuklara paylastirilmis olur ve W/cm YUKSEK cikar. "
+                "Mutlak sayilari kullanacaksaniz toplam_guc'u yalnizca bu "
+                "cubuklarin uretimi olacak sekilde girin."))
+
+    if any(c.get("tur") == "kontrol" for c in spec.get("cubuklar", [])):
+        bulgular.append(Bulgu(
+            "bilgi", "kor",
+            "kontrol cubugu daldirmasi AKTIF yakit araliginda olculur",
+            "%0 = uc aktif bolgenin tepesinde, %100 = dibinde. Modelin toplam "
+            "yuksekligi degil."))
+    return bulgular
+
+
+def _ad_var(spec, ad):
+    """Ad bir cubuk / plaka / demet / malzeme (ya da bosluk) mu?"""
+    return (ad == BOSLUK
+            or malzeme_bul(spec, ad) is not None
+            or cubuk_bul(spec, ad) is not None
+            or plaka_bul(spec, ad) is not None
+            or demet_bul(spec, ad) is not None)
+
 
 def ayar_kontrol(spec):
     """Cevrim/parcacik sayilari ve kaynak tanimi."""
@@ -756,7 +899,7 @@ def kaynak_kontrol(spec, veri_kontrolu=True):
     # --- nokta kaynak geometrinin icinde mi ---
     if k.get("tur", "nokta") == "nokta":
         konum = list(k.get("konum") or (0.0, 0.0, 0.0))
-        h = spec["kor"].get("yukseklik")
+        h = sema_kor_yuksekligi(spec["kor"])
         if h and abs(float(konum[2])) >= float(h) / 2.0:
             bulgular.append(Bulgu(
                 "hata", "kaynak",
@@ -902,7 +1045,7 @@ def guc_dagilimi_kontrol(spec):
             "'kappa-fission'dir. 'fission' yalnizca fisyon SAYISINI verir."))
 
     # --- eksenel ---
-    h = spec["kor"].get("yukseklik")
+    h = sema_kor_yuksekligi(spec["kor"])
     dilim = int(g.get("eksenel_dilim") or 1)
     if not h:
         bulgular.append(Bulgu(
@@ -962,6 +1105,7 @@ def tum_kontroller(spec, veri_kontrolu=True):
     bulgular += plaka_kontrol(spec)
     bulgular += demet_kontrol(spec)
     bulgular += kor_kontrol(spec)
+    bulgular += eksenel_kontrol(spec)
     bulgular += ayar_kontrol(spec)
     bulgular += kaynak_kontrol(spec, veri_kontrolu)
     bulgular += tally_kontrol(spec)

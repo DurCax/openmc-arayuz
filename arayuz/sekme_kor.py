@@ -65,6 +65,34 @@ class KorSekmesi(SekmeTabani):
         self.yukseklik = sayi(366.0, 3, 0.01, 10000.0, 1.0, "cm")
         self.yukseklik_var.toggled.connect(self._yukseklik_degisti)
 
+        # --- eksenel katmanlar (heterojenlik) ---
+        self.eksenel_var = QtWidgets.QCheckBox(
+            "Eksenel katmanlara ayir (yansitici / blanket / plenum)")
+        self.eksenel_var.setToolTip(
+            "Kor z yonunde katmanlara ayrilir. Katmanlar ALTTAN USTE siralanir.\n"
+            "Acikken modelin yuksekligi katman yuksekliklerinin TOPLAMIDIR;\n"
+            "yukarideki 'Aktif yukseklik' alani yok sayilir.")
+        self.eksenel_var.toggled.connect(self._eksenel_degisti)
+        self.katman_tablo = QtWidgets.QTableWidget(0, 3)
+        self.katman_tablo.setHorizontalHeaderLabels(["Ad", "Yukseklik [cm]", "Dolgu"])
+        self.katman_tablo.horizontalHeader().setStretchLastSection(True)
+        self.katman_tablo.verticalHeader().setVisible(False)
+        self.katman_tablo.setMaximumHeight(150)
+        self.d_kat_ekle = QtWidgets.QPushButton("+ Katman")
+        self.d_kat_sil = QtWidgets.QPushButton("Sil")
+        self.d_kat_yukari = QtWidgets.QPushButton("\u25b2")
+        self.d_kat_asagi = QtWidgets.QPushButton("\u25bc")
+        for d in (self.d_kat_yukari, self.d_kat_asagi):
+            d.setMaximumWidth(34)
+        self.d_kat_yukari.setToolTip("Katmani asagi dogru kaydir (liste alttan uste)")
+        self.d_kat_asagi.setToolTip("Katmani yukari dogru kaydir")
+        self.d_kat_ekle.clicked.connect(self._katman_ekle)
+        self.d_kat_sil.clicked.connect(self._katman_sil)
+        self.d_kat_yukari.clicked.connect(lambda: self._katman_tasi(-1))
+        self.d_kat_asagi.clicked.connect(lambda: self._katman_tasi(+1))
+        self.katman_ozet = QtWidgets.QLabel("-")
+        self.katman_ozet.setWordWrap(True)
+
         self.bc_yan = QtWidgets.QComboBox(); self.bc_yan.addItems(SINIRLAR)
         self.bc_alt = QtWidgets.QComboBox(); self.bc_alt.addItems(SINIRLAR)
         self.bc_ust = QtWidgets.QComboBox(); self.bc_ust.addItems(SINIRLAR)
@@ -128,6 +156,24 @@ class KorSekmesi(SekmeTabani):
         ed.addRow("Alt sinir:", self.bc_alt)
         ed.addRow("Ust sinir:", self.bc_ust)
 
+        self.katman_kutu = QtWidgets.QGroupBox("Eksenel katmanlar")
+        kl = QtWidgets.QVBoxLayout(self.katman_kutu)
+        kl.addWidget(self.eksenel_var)
+        kl.addWidget(self.katman_tablo)
+        kat_dugme = QtWidgets.QHBoxLayout()
+        for d in (self.d_kat_ekle, self.d_kat_sil, self.d_kat_yukari, self.d_kat_asagi):
+            kat_dugme.addWidget(d)
+        kat_dugme.addStretch(1)
+        kl.addLayout(kat_dugme)
+        kl.addWidget(self.katman_ozet)
+        kl.addWidget(ipucu(
+            "Katmanlar ALTTAN USTE siralanir. Dolgu bos ('(ana dolgu)') birakilirsa "
+            "korun ana dolgusu kullanilir.\n"
+            "Katman arayuzleri daima gecirgendir; sinir kosulu yalnizca en alt ve "
+            "en ust yuzeye uygulanir.\n"
+            "Kontrol cubugu daldirmasi ve lineer guc [W/cm] AKTIF yakit araligina "
+            "gore olculur, modelin toplam yuksekligine gore degil."))
+
         # --- tambur kutusu ---
         self.tambur_kutu = QtWidgets.QGroupBox("Kontrol tamburlari")
         tf = QtWidgets.QFormLayout(self.tambur_kutu)
@@ -174,6 +220,7 @@ class KorSekmesi(SekmeTabani):
         ikili.addWidget(eksen_kutu)
         ikili.addWidget(yans_kutu)
         duzen.addLayout(ikili)
+        duzen.addWidget(self.katman_kutu)
         duzen.addWidget(self._ozet_satiri())
         duzen.addStretch(1)
 
@@ -258,6 +305,10 @@ class KorSekmesi(SekmeTabani):
         self.yukseklik.setValue(h or 366.0)
         self.yukseklik.setEnabled(bool(h))
 
+        eks = kor.get("eksenel") or {}
+        self.eksenel_var.setChecked(bool(eks.get("var")))
+        self._katman_doldur()
+
         sinir = kor.get("sinir") or {}
         self.bc_yan.setCurrentText(sinir.get("yan", "reflective"))
         self.bc_alt.setCurrentText(sinir.get("alt", "reflective"))
@@ -304,6 +355,164 @@ class KorSekmesi(SekmeTabani):
         self.anahtar_tablo.resizeColumnsToContents()
 
     # ------------------------------------------------------------------
+    # ------------------------------------------------------------------
+    # Eksenel katmanlar
+    # ------------------------------------------------------------------
+    def _dolgu_secenekleri(self):
+        """Bir katmani doldurabilecek adlar. '(ana dolgu)' = None."""
+        ogeler = [(None, "(ana dolgu)"), (sema.BOSLUK, "bosluk (void)")]
+        ogeler += [(d["ad"], "kafes: %s" % d["ad"]) for d in self.spec.get("demetler", [])]
+        ogeler += [(c["ad"], "cubuk: %s" % c["ad"]) for c in self.spec.get("cubuklar", [])]
+        ogeler += [(p["ad"], "plaka: %s" % p["ad"]) for p in self.spec.get("plakalar", [])]
+        ogeler += [(m["ad"], "malzeme: %s" % m["ad"]) for m in self.spec["malzemeler"]]
+        return ogeler
+
+    def _katman_doldur(self):
+        """spec -> tablo. Hucre widget'lari her seferinde yeniden kurulur."""
+        katmanlar = ((self.spec["kor"].get("eksenel") or {}).get("bolgeler") or [])
+        secenekler = self._dolgu_secenekleri()
+        self.katman_tablo.setRowCount(0)
+        for i, b in enumerate(katmanlar):
+            self.katman_tablo.insertRow(i)
+            ad = QtWidgets.QLineEdit(b.get("ad") or "")
+            ad.editingFinished.connect(self._katman_kaydet)
+            self.katman_tablo.setCellWidget(i, 0, ad)
+            h = sayi(float(b.get("yukseklik") or 1.0), 3, 0.001, 10000.0, 1.0, "cm")
+            h.valueChanged.connect(self._katman_kaydet)
+            self.katman_tablo.setCellWidget(i, 1, h)
+            kutu = QtWidgets.QComboBox()
+            for deger, etiket in secenekler:
+                kutu.addItem(etiket, deger)
+            if b.get("anahtar"):
+                # Katmana ozel harf eslemesi arayuzde duzenlenmiyor; secim
+                # kutusu bunu SESSIZCE SILMESIN diye ayri bir oge gosterilir.
+                kutu.insertItem(0, "(katmana ozel harita -- JSON)", "__anahtar__")
+                kutu.setCurrentIndex(0)
+                kutu.setEnabled(False)
+            else:
+                j = kutu.findData(b.get("dolgu"))
+                kutu.setCurrentIndex(max(j, 0))
+            kutu.currentIndexChanged.connect(self._katman_kaydet)
+            self.katman_tablo.setCellWidget(i, 2, kutu)
+        self.katman_tablo.resizeColumnsToContents()
+        self._katman_ozet_guncelle()
+
+    def _katman_kaydet(self, *_):
+        """Tablo -> spec. Duzenlenmeyen alanlar (anahtar) KORUNUR."""
+        if self._yukleniyor:
+            return
+        eski = ((self.spec["kor"].get("eksenel") or {}).get("bolgeler") or [])
+        yeni = []
+        for i in range(self.katman_tablo.rowCount()):
+            b = dict(eski[i]) if i < len(eski) else {}
+            ad_w = self.katman_tablo.cellWidget(i, 0)
+            h_w = self.katman_tablo.cellWidget(i, 1)
+            d_w = self.katman_tablo.cellWidget(i, 2)
+            b["ad"] = ad_w.text().strip() or ("katman %d" % (i + 1))
+            b["yukseklik"] = h_w.value()
+            if not b.get("anahtar"):
+                b["dolgu"] = d_w.currentData()
+            yeni.append(b)
+        eks = self.spec["kor"].setdefault("eksenel", {})
+        eks["var"] = self.eksenel_var.isChecked()
+        eks["bolgeler"] = yeni
+        self._katman_ozet_guncelle()
+        self._ozet_guncelle()
+        self.bildir()
+
+    def _katman_ozet_guncelle(self):
+        """Toplam / aktif / cubuk araliklarini canli gosterir."""
+        if not self.eksenel_var.isChecked():
+            self.katman_ozet.setText(
+                "Katmanlama kapali -- kor tek eksenel bolge.")
+            return
+        kor = self.spec["kor"]
+        toplam = sema.kor_yuksekligi(kor)
+        if not toplam:
+            self.katman_ozet.setText("Gecerli katman yok.")
+            return
+        satir = "Toplam yukseklik = %g cm" % toplam
+        try:
+            from cekirdek import kurucu
+            ar = kurucu.aktif_eksenel_aralik(self.spec)
+            if ar:
+                satir += ("   |   aktif yakit = %g cm  (z = %g .. %g)"
+                          % (ar[1] - ar[0], ar[0], ar[1]))
+            g = self.spec.get("guc_dagilimi") or {}
+            if g.get("var") and g.get("cubuk"):
+                cr = kurucu.cubuk_eksenel_aralik(self.spec, g["cubuk"])
+                if cr and (cr[1] - cr[0]) != (ar[1] - ar[0] if ar else None):
+                    satir += ("\n'%s' cubugu = %g cm (z = %g .. %g) "
+                              "-- guc mesh'i bunu kullanir"
+                              % (g["cubuk"], cr[1] - cr[0], cr[0], cr[1]))
+        except Exception as hata:
+            satir += "   |   aralik hesaplanamadi: %s" % hata
+        self.katman_ozet.setText(satir)
+
+    def _eksenel_degisti(self, acik):
+        if self._yukleniyor:
+            return
+        kor = self.spec["kor"]
+        eks = kor.setdefault("eksenel", {})
+        eks["var"] = acik
+        if acik and not (eks.get("bolgeler") or []):
+            # Ilk acilista makul bir baslangic: mevcut yuksekligi tek katman yap.
+            h = kor.get("yukseklik") or 100.0
+            eks["bolgeler"] = [sema.eksenel_bolge("aktif", h, None)]
+        self._yukleniyor = True
+        try:
+            self._katman_doldur()
+        finally:
+            self._yukleniyor = False
+        self._gorunurluk()
+        self._ozet_guncelle()
+        self.bildir()
+
+    def _katman_ekle(self):
+        eks = self.spec["kor"].setdefault("eksenel", {})
+        eks.setdefault("bolgeler", []).append(
+            sema.eksenel_bolge("katman %d" % (len(eks["bolgeler"]) + 1), 20.0, None))
+        eks["var"] = True
+        self.eksenel_var.setChecked(True)
+        self._yukleniyor = True
+        try:
+            self._katman_doldur()
+        finally:
+            self._yukleniyor = False
+        self._gorunurluk()
+        self._ozet_guncelle()
+        self.bildir()
+
+    def _katman_sil(self):
+        satir = self.katman_tablo.currentRow()
+        katmanlar = ((self.spec["kor"].get("eksenel") or {}).get("bolgeler") or [])
+        if satir < 0 or satir >= len(katmanlar):
+            return
+        katmanlar.pop(satir)
+        self._yukleniyor = True
+        try:
+            self._katman_doldur()
+        finally:
+            self._yukleniyor = False
+        self._ozet_guncelle()
+        self.bildir()
+
+    def _katman_tasi(self, yon):
+        satir = self.katman_tablo.currentRow()
+        katmanlar = ((self.spec["kor"].get("eksenel") or {}).get("bolgeler") or [])
+        hedef = satir + yon
+        if satir < 0 or hedef < 0 or hedef >= len(katmanlar):
+            return
+        katmanlar[satir], katmanlar[hedef] = katmanlar[hedef], katmanlar[satir]
+        self._yukleniyor = True
+        try:
+            self._katman_doldur()
+        finally:
+            self._yukleniyor = False
+        self.katman_tablo.setCurrentCell(hedef, 0)
+        self._ozet_guncelle()
+        self.bildir()
+
     def _gorunurluk(self):
         tur = self.tur.currentData()
         for satir, gorunur in (
@@ -328,8 +537,20 @@ class KorSekmesi(SekmeTabani):
             self.yans_var.setChecked(True)
         self.yans_kal.setEnabled(yans_uygun and (zorunlu or self.yans_var.isChecked()))
         self.yans_mal.setEnabled(yans_uygun and (zorunlu or self.yans_var.isChecked()))
-        self.bc_alt.setEnabled(self.yukseklik_var.isChecked())
-        self.bc_ust.setEnabled(self.yukseklik_var.isChecked())
+        # Eksenel katmanlama: kuresel duzenekte eksen kavrami yok.
+        katman_uygun = tur in sema.EKSENEL_DESTEKLI
+        self.katman_kutu.setVisible(katman_uygun)
+        katmanli = katman_uygun and self.eksenel_var.isChecked()
+        for w in (self.katman_tablo, self.d_kat_ekle, self.d_kat_sil,
+                  self.d_kat_yukari, self.d_kat_asagi):
+            w.setEnabled(katmanli)
+        # Katmanlama acikken yukseklik KATMAN TOPLAMIDIR; ustteki alan yok
+        # sayilir, bu yuzden devre disi birakilir (iki gercek kaynak olmasin).
+        self.yukseklik_var.setEnabled(not katmanli)
+        self.yukseklik.setEnabled(self.yukseklik_var.isChecked() and not katmanli)
+        eksenel_3b = katmanli or self.yukseklik_var.isChecked()
+        self.bc_alt.setEnabled(eksenel_3b)
+        self.bc_ust.setEnabled(eksenel_3b)
 
     def _tur_degisti(self, *_):
         self._gorunurluk()
@@ -369,7 +590,14 @@ class KorSekmesi(SekmeTabani):
             kutu = self.anahtar_tablo.cellWidget(i, 1)
             anahtar[harf] = kutu.currentData()
         kor["anahtar"] = anahtar
-        kor["yukseklik"] = self.yukseklik.value() if self.yukseklik_var.isChecked() else None
+        # Katmanlama acikken yukseklik katman toplamindan gelir; alani None
+        # yapmak spec'te tek gercek kaynak birakir (aksi halde dosyada
+        # birbirini tutmayan iki yukseklik gorunur).
+        if (kor.get("eksenel") or {}).get("var"):
+            kor["yukseklik"] = None
+        else:
+            kor["yukseklik"] = (self.yukseklik.value()
+                                if self.yukseklik_var.isChecked() else None)
         kor["sinir"] = {"yan": self.bc_yan.currentText(),
                         "alt": self.bc_alt.currentText(),
                         "ust": self.bc_ust.currentText()}

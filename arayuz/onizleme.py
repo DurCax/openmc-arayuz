@@ -43,7 +43,7 @@ from matplotlib.figure import Figure
 
 from PySide6 import QtCore, QtWidgets
 
-from cekirdek import onbellek
+from cekirdek import onbellek, sema
 
 # Cozunurluk secenekleri -- maliyet baslatmada oldugu icin yuksek varsayilan ucuz
 COZUNURLUK = [("Hizli (400)", 400), ("Normal (800)", 800), ("Yuksek (1400)", 1400)]
@@ -168,6 +168,19 @@ class OnizlemeWidget(QtWidgets.QWidget):
     # ------------------------------------------------------------------
     def spec_ayarla(self, spec):
         self.spec = spec
+        # Eksenel katmanlama xy kesitinde GORUNMEZ: katmanlar z yonunde
+        # sirali oldugu icin ustten bakan bir kesit hepsini ayni gosterir.
+        # Kullaniciyi xz'ye yonlendirmek, "geometriyi cizmeden kosma" kuralinin
+        # eksenel karsiligidir.
+        katmanli = bool(((spec or {}).get("kor") or {}).get("eksenel", {}).get("var"))
+        if katmanli and self.eksen.currentText() == "xy":
+            self.eksen.setToolTip(
+                "Bu modelde EKSENEL KATMANLAR var; xy kesiti onlari gostermez.\n"
+                "Katman yapisini gormek icin 'xz' secin.")
+            self.eksen.setStyleSheet("QComboBox { font-weight: bold; }")
+        else:
+            self.eksen.setToolTip("")
+            self.eksen.setStyleSheet("")
         self.iste()
 
     def iste(self):
@@ -199,7 +212,7 @@ class OnizlemeWidget(QtWidgets.QWidget):
             piksel = COZUNURLUK[self.cozunurluk.currentIndex()][1]
             eksen = self.eksen.currentText()
 
-            h = self.spec["kor"].get("yukseklik")
+            h = sema.kor_yuksekligi(self.spec["kor"])
             if eksen == "xy":
                 genislik = (gx, gy)
             else:

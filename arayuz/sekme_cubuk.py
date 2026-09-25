@@ -317,7 +317,7 @@ class CubukSekmesi(SekmeTabani):
 
     def _uc_guncelle(self):
         """Daldirma oranindan uc konumunu hesaplayip gosterir."""
-        h = (self.spec or {}).get("kor", {}).get("yukseklik")
+        h = sema.kor_yuksekligi((self.spec or {}).get("kor") or {})
         if not h:
             self.c_uc_etiket.setText("model 2B -- kor yuksekligi tanimli degil")
             self.c_uc_etiket.setStyleSheet("color: palette(mid);")

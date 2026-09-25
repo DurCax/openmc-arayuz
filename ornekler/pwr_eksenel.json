@@ -1,0 +1,527 @@
+{
+  "surum": 1,
+  "ad": "PWR 17x17 -- eksenel heterojen",
+  "aciklama": "EKSENEL HETEROJENLIK ornegi. Ayni 17x17 demet, ama artik tek bir eksenel bolge degil: alttan uste su yansitici / dogal UO2 blanket / %3.2 aktif yakit / dogal UO2 blanket / gaz plenumu / su yansitici.\nUC AYRI YUKSEKLIK vardir ve birbirine karistirilmamalidir:\n  toplam model         = 395 cm  (geometri, eksenel sinir kosullari)\n  fisil aralik         = 330 cm  (baslangic kaynagi kutusu; blanket dahil)\n  yakit_cubugu araligi = 300 cm  (guc dagilimi eksenel mesh'i, W/cm)\nDIKKAT: toplam_guc = 17.6 MW tum demetin gucudur, ama guc dagilimi yalnizca 'yakit_cubugu'nu kapsar. Blanket'in urettigi guc de 264 aktif cubuga paylastirilmis olur, bu yuzden W/cm bir miktar YUKSEK cikar.\nKarsilastirma icin pwr_3b.json'a bakin: ayni demet, katmansiz. Olculen F_q 1.7497 -> 1.6435; yansitici eksenel profili duzlestiriyor.",
+  "malzemeler": [
+    {
+      "ad": "uo2",
+      "gorunen_ad": "UO2 %3.20",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 10.4
+      },
+      "sicaklik": 900.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "U",
+          "miktar": 1.0,
+          "birim": "ao",
+          "zenginlik": 3.2
+        },
+        {
+          "tur": "element",
+          "isim": "O",
+          "miktar": 2.0,
+          "birim": "ao"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        222,
+        93,
+        40
+      ]
+    },
+    {
+      "ad": "helyum",
+      "gorunen_ad": "He",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 0.0001785
+      },
+      "sicaklik": 600.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "He",
+          "miktar": 1.0,
+          "birim": "ao"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        235,
+        235,
+        245
+      ]
+    },
+    {
+      "ad": "zirkaloy4",
+      "gorunen_ad": "Zircaloy-4",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 6.55
+      },
+      "sicaklik": 600.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "Zr",
+          "miktar": 98.23,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Sn",
+          "miktar": 1.45,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Fe",
+          "miktar": 0.21,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Cr",
+          "miktar": 0.11,
+          "birim": "wo"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        150,
+        150,
+        160
+      ]
+    },
+    {
+      "ad": "su",
+      "gorunen_ad": "H2O 0.700 g/cc + 1300 ppm B",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 0.7
+      },
+      "sicaklik": 580.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "H",
+          "miktar": 11.176126561199002,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "O",
+          "miktar": 88.69941715237303,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "B",
+          "miktar": 0.13,
+          "birim": "wo"
+        }
+      ],
+      "sab": [
+        "c_H_in_H2O"
+      ],
+      "renk": [
+        90,
+        150,
+        220
+      ]
+    },
+    {
+      "ad": "uo2_dogal",
+      "gorunen_ad": "UO2 %0.71",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 10.4
+      },
+      "sicaklik": 900.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "U",
+          "miktar": 1.0,
+          "birim": "ao",
+          "zenginlik": 0.711
+        },
+        {
+          "tur": "element",
+          "isim": "O",
+          "miktar": 2.0,
+          "birim": "ao"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        222,
+        93,
+        40
+      ]
+    }
+  ],
+  "cubuklar": [
+    {
+      "ad": "yakit_cubugu",
+      "tur": "silindirik",
+      "bolgeler": [
+        {
+          "r": 0.4096,
+          "malzeme": "uo2"
+        },
+        {
+          "r": 0.418,
+          "malzeme": "helyum"
+        },
+        {
+          "r": 0.475,
+          "malzeme": "zirkaloy4"
+        },
+        {
+          "r": null,
+          "malzeme": "su"
+        }
+      ]
+    },
+    {
+      "ad": "kilavuz_boru",
+      "tur": "silindirik",
+      "bolgeler": [
+        {
+          "r": 0.561,
+          "malzeme": "su"
+        },
+        {
+          "r": 0.602,
+          "malzeme": "zirkaloy4"
+        },
+        {
+          "r": null,
+          "malzeme": "su"
+        }
+      ]
+    },
+    {
+      "ad": "blanket_cubugu",
+      "tur": "silindirik",
+      "bolgeler": [
+        {
+          "r": 0.4096,
+          "malzeme": "uo2_dogal"
+        },
+        {
+          "r": 0.418,
+          "malzeme": "helyum"
+        },
+        {
+          "r": 0.475,
+          "malzeme": "zirkaloy4"
+        },
+        {
+          "r": null,
+          "malzeme": "su"
+        }
+      ]
+    },
+    {
+      "ad": "plenum_cubugu",
+      "tur": "silindirik",
+      "bolgeler": [
+        {
+          "r": 0.4096,
+          "malzeme": "helyum"
+        },
+        {
+          "r": 0.418,
+          "malzeme": "helyum"
+        },
+        {
+          "r": 0.475,
+          "malzeme": "zirkaloy4"
+        },
+        {
+          "r": null,
+          "malzeme": "su"
+        }
+      ]
+    }
+  ],
+  "plakalar": [],
+  "demetler": [
+    {
+      "ad": "demet_17x17",
+      "tur": "kare",
+      "adim": 1.26,
+      "boyut": [
+        17,
+        17
+      ],
+      "harita": [
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyykyykyykyyyyy",
+        "yyykyyyyyyyyykyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yykyykyykyykyykyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yykyykyyeyykyykyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yykyykyykyykyykyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyykyyyyyyyyykyyy",
+        "yyyyykyykyykyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy"
+      ],
+      "anahtar": {
+        "y": "yakit_cubugu",
+        "k": "kilavuz_boru",
+        "e": "kilavuz_boru"
+      },
+      "dolgu_disi": "su"
+    },
+    {
+      "ad": "demet_blanket",
+      "tur": "kare",
+      "adim": 1.26,
+      "boyut": [
+        17,
+        17
+      ],
+      "harita": [
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyykyykyykyyyyy",
+        "yyykyyyyyyyyykyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yykyykyykyykyykyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yykyykyyeyykyykyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yykyykyykyykyykyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyykyyyyyyyyykyyy",
+        "yyyyykyykyykyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy"
+      ],
+      "anahtar": {
+        "y": "blanket_cubugu",
+        "k": "kilavuz_boru",
+        "e": "kilavuz_boru"
+      },
+      "dolgu_disi": "su"
+    },
+    {
+      "ad": "demet_plenum",
+      "tur": "kare",
+      "adim": 1.26,
+      "boyut": [
+        17,
+        17
+      ],
+      "harita": [
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyykyykyykyyyyy",
+        "yyykyyyyyyyyykyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yykyykyykyykyykyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yykyykyyeyykyykyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yykyykyykyykyykyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyykyyyyyyyyykyyy",
+        "yyyyykyykyykyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy"
+      ],
+      "anahtar": {
+        "y": "plenum_cubugu",
+        "k": "kilavuz_boru",
+        "e": "kilavuz_boru"
+      },
+      "dolgu_disi": "su"
+    }
+  ],
+  "kor": {
+    "tur": "tek_demet",
+    "cubuk": null,
+    "demet": "demet_17x17",
+    "plaka": null,
+    "adim": 1.26,
+    "boyut": [
+      1,
+      1
+    ],
+    "harita": [],
+    "anahtar": {},
+    "yukseklik": null,
+    "yansitici": {
+      "var": false,
+      "kalinlik": 20.0,
+      "malzeme": "su"
+    },
+    "kabuklar": [],
+    "dolgu": null,
+    "kor_yaricap": 20.0,
+    "tambur": {
+      "sayi": 0,
+      "yaricap": 4.0,
+      "merkez_yaricap": 26.0,
+      "govde_malzeme": null,
+      "emici_malzeme": null,
+      "emici_ic_yaricap": 2.5,
+      "emici_aci": 120.0,
+      "donme": 0.0,
+      "baslangic_acisi": 0.0
+    },
+    "eksenel": {
+      "var": true,
+      "bolgeler": [
+        {
+          "ad": "alt yansitici",
+          "yukseklik": 20.0,
+          "dolgu": "su"
+        },
+        {
+          "ad": "alt blanket",
+          "yukseklik": 15.0,
+          "dolgu": "demet_blanket"
+        },
+        {
+          "ad": "aktif yakit",
+          "yukseklik": 300.0,
+          "dolgu": null
+        },
+        {
+          "ad": "ust blanket",
+          "yukseklik": 15.0,
+          "dolgu": "demet_blanket"
+        },
+        {
+          "ad": "plenum",
+          "yukseklik": 25.0,
+          "dolgu": "demet_plenum"
+        },
+        {
+          "ad": "ust yansitici",
+          "yukseklik": 20.0,
+          "dolgu": "su"
+        }
+      ]
+    },
+    "sinir": {
+      "yan": "reflective",
+      "alt": "vacuum",
+      "ust": "vacuum"
+    }
+  },
+  "ayarlar": {
+    "mod": "eigenvalue",
+    "parcacik": 20000,
+    "cevrim": 250,
+    "pasif": 100,
+    "tohum": 1,
+    "sicaklik_yontemi": "interpolation",
+    "kaynak": {
+      "tur": "kutu",
+      "konum": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "parcacik": "neutron",
+      "kuvvet": 1.0,
+      "enerji": {
+        "tur": "watt",
+        "a": 988000.0,
+        "b": 2.249e-06,
+        "theta": 1293200.0,
+        "enerji": 14100000.0,
+        "noktalar": [],
+        "kenarlar": [],
+        "degerler": [],
+        "e0": 14080000.0,
+        "kutle_orani": 5.0,
+        "iyon_sicaklik": 20000.0
+      },
+      "aci": {
+        "tur": "izotropik",
+        "yon": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "koni_aci": 30.0
+      },
+      "alt": null,
+      "ust": null
+    },
+    "entropi_mesh": {
+      "var": true,
+      "boyut": [
+        8,
+        8,
+        8
+      ]
+    },
+    "kinetik": {
+      "var": false,
+      "nesil": 10
+    }
+  },
+  "tallyler": [
+    {
+      "ad": "reaksiyonlar",
+      "skorlar": [
+        "fission",
+        "absorption",
+        "nu-fission"
+      ],
+      "filtreler": [],
+      "nuklidler": []
+    },
+    {
+      "ad": "iki_grup_aki",
+      "skorlar": [
+        "flux"
+      ],
+      "filtreler": [
+        {
+          "tur": "enerji",
+          "gruplar": [
+            0.0,
+            0.625,
+            20000000.0
+          ]
+        }
+      ],
+      "nuklidler": []
+    }
+  ],
+  "guc_dagilimi": {
+    "var": true,
+    "cubuk": "yakit_cubugu",
+    "bolge": 0,
+    "skor": "kappa-fission",
+    "eksenel_dilim": 20,
+    "toplam_guc": 17600000.0
+  },
+  "calistirma": {
+    "is_parcacigi": 24,
+    "dizin": "kosu_eksenel"
+  }
+}

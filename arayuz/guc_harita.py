@@ -21,7 +21,17 @@ from matplotlib.patches import RegularPolygon
 
 from PySide6 import QtCore, QtWidgets
 
-from cekirdek import altigen, guc as _guc
+from cekirdek import altigen, sema, guc as _guc
+
+
+def _aktif_yukseklik(spec):
+    """Lineer guc icin AKTIF yakit yuksekligi (yansitici/plenum haric)."""
+    try:
+        from cekirdek import kurucu
+        ar = kurucu.aktif_eksenel_aralik(spec)
+        return (ar[1] - ar[0]) if ar else None
+    except Exception:
+        return sema.kor_yuksekligi(spec.get("kor") or {})
 from arayuz.ortak import baslik, ipucu
 
 
@@ -94,7 +104,7 @@ class GucHaritaWidget(QtWidgets.QWidget):
         if self.faktorler and spec:
             sg = spec.get("guc_dagilimi") or {}
             self.mutlak = _guc.mutlak_guc(self.faktorler, sg.get("toplam_guc"),
-                                          (spec.get("kor") or {}).get("yukseklik"))
+                                          _aktif_yukseklik(spec))
         if self.faktorler:
             n = self.faktorler["eksenel_dilim"]
             self.dilim.setMaximum(max(n, 1))
