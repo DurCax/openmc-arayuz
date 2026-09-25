@@ -267,3 +267,234 @@ class BilimselGirdi(QtWidgets.QLineEdit):
 
     def ayarla(self, v):
         self.setText("%g" % float(v or 1.0))
+
+
+# ----------------------------------------------------------------------------
+# Sadelestirme bilesenleri (dalga 2)
+#   GelismisBolum : nadiren gereken alanlari "Gelismis" basliginin altina
+#                   katlar. Varsayilan KAPALI -- ilk bakista yalnizca gerekli
+#                   alanlar gorunur. Durum anahtar basina hatirlanir.
+#   BosDurum      : bos bir liste/sekme yerine "ne yapmaliyim" sorusunu
+#                   cevaplayan panel: baslik, tek cumle, tek birincil eylem.
+#   DurumRozeti   : kucuk renkli rozet ("2 hata", "Tamam"...). Renkler temadan
+#                   okunur ve tema degisince kendiliginden yenilenir.
+# ----------------------------------------------------------------------------
+
+def _tema_renk(ad, vars_):
+    """Tema rengi; tema modulu yuklenemezse (or. yalniz test) yedek renk."""
+    try:
+        from arayuz import tema
+        return tema.renk(ad)
+    except Exception:
+        return vars_
+
+
+class GelismisBolum(QtWidgets.QWidget):
+    """
+    Katlanabilir "Gelismis" bolumu (ok isaretli baslik + icerik).
+
+    Kullanim:
+        g = GelismisBolum("kor_gelismis")          # anahtar: QSettings'te durum
+        g.ekle(widget)  ya da  g.duzen().addRow(...) icin kendi duzeninizi
+        g.icerik'e kurun.
+    Varsayilan KAPALI. anahtar None ise durum hatirlanmaz. QSettings
+    kullanilamazsa (bozuk dosya, izin yok) sessizce varsayilanla calisir.
+    """
+
+    acildi = QtCore.Signal(bool)
+    AYAR_ONEKI = "gelismis/"
+
+    def __init__(self, anahtar=None, baslik="Gelişmiş", parent=None):
+        super().__init__(parent)
+        self._anahtar = anahtar
+        self._baslik = baslik
+        self.dugme = QtWidgets.QToolButton()
+        self.dugme.setObjectName("gelismisDugme")
+        self.dugme.setCheckable(True)
+        self.dugme.setAutoRaise(True)
+        self.dugme.setToolButtonStyle(QtCore.Qt.ToolButtonTextOnly)
+        self.dugme.setCursor(QtCore.Qt.PointingHandCursor)
+        self.dugme.toggled.connect(self._degisti)
+        self.icerik = QtWidgets.QWidget()
+        self._icerik_duzeni = QtWidgets.QVBoxLayout(self.icerik)
+        self._icerik_duzeni.setContentsMargins(18, 2, 0, 4)
+        d = QtWidgets.QVBoxLayout(self)
+        d.setContentsMargins(0, 0, 0, 0)
+        d.setSpacing(2)
+        d.addWidget(self.dugme, 0, QtCore.Qt.AlignLeft)
+        d.addWidget(self.icerik)
+        acik = self._oku()
+        self.dugme.blockSignals(True)
+        self.dugme.setChecked(acik)
+        self.dugme.blockSignals(False)
+        self._uygula(acik)
+
+    # -- durum kaliciligi --
+    def _oku(self):
+        if not self._anahtar:
+            return False
+        try:
+            deger = QtCore.QSettings("openmc_arayuz", "arayuz").value(
+                self.AYAR_ONEKI + self._anahtar, False)
+        except Exception:
+            return False
+        if isinstance(deger, str):
+            return deger.strip().lower() in ("true", "1", "yes")
+        return bool(deger)
+
+    def _yaz(self, acik):
+        if not self._anahtar:
+            return
+        try:
+            QtCore.QSettings("openmc_arayuz", "arayuz").setValue(
+                self.AYAR_ONEKI + self._anahtar, bool(acik))
+        except Exception:
+            pass
+
+    # -- gorunum --
+    def _uygula(self, acik):
+        self.dugme.setText(("▾  " if acik else "▸  ") + self._baslik)
+        self.dugme.setToolTip("Gizle" if acik else "Nadiren gereken ayarları göster")
+        self.icerik.setVisible(acik)
+
+    def _degisti(self, acik):
+        self._uygula(acik)
+        self._yaz(acik)
+        self.acildi.emit(acik)
+
+    # -- API --
+    def ekle(self, widget):
+        self._icerik_duzeni.addWidget(widget)
+        return widget
+
+    def duzen(self):
+        """Icerigin QVBoxLayout'u (form satirlari icin bir QFormLayout eklenebilir)."""
+        return self._icerik_duzeni
+
+    def acik_mi(self):
+        return self.dugme.isChecked()
+
+    def ac(self, acik=True):
+        self.dugme.setChecked(bool(acik))
+
+
+class BosDurum(QtWidgets.QWidget):
+    """
+    Bos durum paneli: simge, baslik, tek cumle aciklama, tek birincil dugme.
+    eylem() dugmeye basilinca yayilir. dugme_metni None ise dugme gizlenir.
+    """
+
+    eylem = QtCore.Signal()
+
+    def __init__(self, baslik="", metin="", dugme_metni=None, simge="＋", parent=None):
+        super().__init__(parent)
+        self.simge = QtWidgets.QLabel(simge)
+        self.simge.setAlignment(QtCore.Qt.AlignCenter)
+        f = self.simge.font()
+        f.setPointSizeF(f.pointSizeF() * 2.6)
+        self.simge.setFont(f)
+        self.baslik = QtWidgets.QLabel(baslik)
+        self.baslik.setAlignment(QtCore.Qt.AlignCenter)
+        self.baslik.setWordWrap(True)
+        f = self.baslik.font()
+        f.setPointSizeF(f.pointSizeF() * 1.25)
+        f.setBold(True)
+        self.baslik.setFont(f)
+        self.metin = QtWidgets.QLabel(metin)
+        self.metin.setAlignment(QtCore.Qt.AlignCenter)
+        self.metin.setWordWrap(True)
+        self.dugme = QtWidgets.QPushButton(dugme_metni or "")
+        self.dugme.setObjectName("birincil")
+        self.dugme.setCursor(QtCore.Qt.PointingHandCursor)
+        self.dugme.clicked.connect(self.eylem)
+        self.dugme.setVisible(bool(dugme_metni))
+        d = QtWidgets.QVBoxLayout(self)
+        d.setContentsMargins(24, 24, 24, 24)
+        d.addStretch(1)
+        d.addWidget(self.simge)
+        d.addWidget(self.baslik)
+        d.addWidget(self.metin)
+        d.addSpacing(8)
+        d.addWidget(self.dugme, 0, QtCore.Qt.AlignHCenter)
+        d.addStretch(2)
+        self._renkleri_uygula()
+
+    def ayarla(self, baslik=None, metin=None, dugme_metni=None):
+        if baslik is not None:
+            self.baslik.setText(baslik)
+        if metin is not None:
+            self.metin.setText(metin)
+        if dugme_metni is not None:
+            self.dugme.setText(dugme_metni)
+            self.dugme.setVisible(bool(dugme_metni))
+
+    def _renkleri_uygula(self):
+        soluk = _tema_renk("metin_soluk", "#6b7785")
+        stil_s = "color: %s;" % _tema_renk("vurgu", "#0f766e")
+        stil_m = "color: %s;" % soluk
+        if self.simge.styleSheet() != stil_s:
+            self.simge.setStyleSheet(stil_s)
+        if self.metin.styleSheet() != stil_m:
+            self.metin.setStyleSheet(stil_m)
+
+    def changeEvent(self, olay):
+        if olay.type() == QtCore.QEvent.PaletteChange:
+            self._renkleri_uygula()
+        super().changeEvent(olay)
+
+
+class DurumRozeti(QtWidgets.QLabel):
+    """
+    Kucuk renkli rozet. seviye: "hata" | "uyari" | "basari" | "bilgi" | "notr".
+    tiklanabilir=True ise imlec el olur ve tiklandi() yayilir.
+    """
+
+    tiklandi = QtCore.Signal()
+    SEVIYELER = ("hata", "uyari", "basari", "bilgi", "notr")
+
+    def __init__(self, metin="", seviye="notr", tiklanabilir=False, parent=None):
+        super().__init__(metin, parent)
+        self._seviye = seviye if seviye in self.SEVIYELER else "notr"
+        self._tiklanabilir = tiklanabilir
+        self.setAlignment(QtCore.Qt.AlignCenter)
+        if tiklanabilir:
+            self.setCursor(QtCore.Qt.PointingHandCursor)
+        self._stil_uygula()
+
+    def ayarla(self, metin, seviye=None):
+        self.setText(metin)
+        if seviye is not None:
+            self._seviye = seviye if seviye in self.SEVIYELER else "notr"
+        self._stil_uygula()
+
+    def seviye(self):
+        return self._seviye
+
+    def _stil_uygula(self):
+        ad = {"hata": "hata", "uyari": "uyari", "basari": "basari",
+              "bilgi": "bilgi", "notr": "metin_soluk"}[self._seviye]
+        renk = QtGui.QColor(_tema_renk(ad, "#5b6673"))
+        zemin = QtGui.QColor(renk)
+        zemin.setAlpha(38)
+        kenar = QtGui.QColor(renk)
+        kenar.setAlpha(110)
+        stil = ("QLabel { color: %s; background: rgba(%d,%d,%d,%d); "
+                "border: 1px solid rgba(%d,%d,%d,%d); border-radius: 9px; "
+                "padding: 1px 9px; font-weight: 600; }"
+                % (renk.name(), zemin.red(), zemin.green(), zemin.blue(), zemin.alpha(),
+                   kenar.red(), kenar.green(), kenar.blue(), kenar.alpha()))
+        # Ayni stili yeniden kurmamak PaletteChange dongusunu de onler.
+        if self.styleSheet() != stil:
+            self.setStyleSheet(stil)
+
+    def changeEvent(self, olay):
+        if olay.type() == QtCore.QEvent.PaletteChange:
+            self._stil_uygula()
+        super().changeEvent(olay)
+
+    def mousePressEvent(self, olay):
+        if self._tiklanabilir and olay.button() == QtCore.Qt.LeftButton:
+            self.tiklandi.emit()
+            olay.accept()
+            return
+        super().mousePressEvent(olay)

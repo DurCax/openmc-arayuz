@@ -2782,6 +2782,8 @@ def test_arayuz_proje_sifirlama():
     [11] Onceki projenin sonuclari ekranda kaliyordu: Calistir/Analiz yeni
     projede de eski k-eff'i ve katsayiyi gosteriyor, _son_basarili tasiniyor
     ve rehber seridi hic kosulmamis modele "Kosu tamam" diyordu.
+    (Dalga 2: rehber seridi kaldirildi; ayni bilgi artik Calistir sekmesinin
+    basligindaki isarette -- "✓" yalnizca bu projede basarili kosu varsa.)
     """
     print("\n[18l] ARAYUZ: proje degisince sonuclar sifirlaniyor")
     uyg = _qt()
@@ -2798,8 +2800,11 @@ def test_arayuz_proje_sifirlama():
         an._tabloya_ekle(an._sonuclar[0])
         an.sonuc_kutusu.setText("<b>KATSAYI = -8.000 pcm/ppm</b>")
         p.onizleme.cizildi_mi = lambda: True
-        p._rehber_guncelle()
-        kontrol("(on kosul) rehber 'Kosu tamam'", "Kosu tamam" in p.rehber.text())
+        p._isaretleri_guncelle()
+        ix_calistir = p._sekme_ix["calistir"]
+        kontrol("(on kosul) Calistir sekmesi 'tamam' (✓)",
+                p.sekmeler.tabText(ix_calistir).endswith("✓"),
+                "-> %r" % p.sekmeler.tabText(ix_calistir))
 
         # sekme degisimi SONUCU SILMEMELI
         for i in (5, 0, 6, 5):
@@ -2817,8 +2822,9 @@ def test_arayuz_proje_sifirlama():
         kontrol("yeni proje: analiz sonuclari silindi",
                 an._sonuclar == [] and an.tablo.rowCount() == 0)
         kontrol("yeni proje: analiz katsayisi silindi", "KATSAYI" not in an.sonuc_kutusu.text())
-        kontrol("yeni proje: rehber 'Kosu tamam' DEMIYOR", "Kosu tamam" not in p.rehber.text(),
-                "-> %r" % p.rehber.text()[:60])
+        kontrol("yeni proje: Calistir sekmesi 'tamam' DEMIYOR (✓ yok)",
+                not p.sekmeler.tabText(ix_calistir).endswith("✓"),
+                "-> %r" % p.sekmeler.tabText(ix_calistir))
     finally:
         _pencere_kapat(p)
 
@@ -2828,12 +2834,13 @@ def test_arayuz_ornek_kopya():
     [12] 'Dosya > Ornek ac' gercek ornek dosyasini aciyordu: Ctrl+S
     ornekler/*.json'u (testlerin referanslarini) USTUNE YAZIYORDU. Ornek artik
     kaydedilmemis bir KOPYA olarak acilir; Kaydet 'Farkli kaydet'e gider.
+    (Dalga 2: ornekler baslangic ekraninin listesinden acilir.)
     """
     print("\n[18m] ARAYUZ: ornek dosyalar kopya olarak aciliyor")
     uyg = _qt()
     if uyg is None:
         return
-    from PySide6 import QtGui, QtWidgets
+    from PySide6 import QtCore, QtWidgets
     yol = os.path.join(ORNEK, "pwr_17x17.json")
     with open(yol, "rb") as f:
         ham = f.read()
@@ -2845,10 +2852,12 @@ def test_arayuz_ornek_kopya():
     eski_dizin = os.getcwd()
     try:
         p = _ana_pencere()
-        eylem = [e for e in p.findChildren(QtGui.QAction)
-                 if e.text() == "PWR 17x17 yakit demeti"]
-        kontrol("(on kosul) 'Ornek ac' menusunde PWR 17x17 var", len(eylem) == 1)
-        eylem[0].trigger()
+        liste = p.baslangic.ornek_listesi
+        oge = [liste.topLevelItem(i) for i in range(liste.topLevelItemCount())
+               if os.path.basename(liste.topLevelItem(i).data(0, QtCore.Qt.UserRole))
+               == "pwr_17x17.json"]
+        kontrol("(on kosul) baslangic ekraninin ornek listesinde PWR 17x17 var", len(oge) == 1)
+        liste.secildi.emit(oge[0])
         kontrol("ornek acildi (demet_17x17)", p.spec["kor"].get("demet") == "demet_17x17")
         kontrol("ornek KOPYA: proje_yolu None", p.proje_yolu is None, "-> %r" % p.proje_yolu)
         kontrol("baslikta 'örnek: pwr_17x17'", "örnek: pwr_17x17" in p.windowTitle(),
@@ -2895,13 +2904,16 @@ def test_arayuz_bulgu_sekme():
     [13] Dogrulama satirina tiklamak 'kaynak', 'tally:', 'guc dagilimi',
     'tukenme' bulgularinda hicbir sey yapmiyordu; rehber tukenme hatalarini
     Tukenme (8.) yerine Ayarlar (5.) sekmesine gonderiyordu.
+    (Dalga 2: uygun olmayan sekmeler gizlenir -- butun sekmeleri gosteren
+    bir ornek acilir. Rehberin yerini sekme isaretleri aldi: tukenme hatasi
+    Tukenme sekmesinin basliginda "!" olarak gorunmeli.)
     """
     print("\n[18n] ARAYUZ: dogrulama bulgusu dogru sekmeye gidiyor")
     uyg = _qt()
     if uyg is None:
         return
     from PySide6 import QtCore, QtWidgets
-    p = _ana_pencere()
+    p = _ana_pencere(os.path.join(ORNEK, "pwr_17x17.json"))
     try:
         beklenen = {
             "malzeme:uo2": 0, "malzemeler": 0, "cubuk:yakit_cubugu": 1,
@@ -2924,8 +2936,10 @@ def test_arayuz_bulgu_sekme():
         hatalar = [b for b in p._bulgular if b.seviye == "hata"]
         kontrol("(on kosul) ilk hata tukenme", bool(hatalar) and hatalar[0].yer == "tukenme",
                 "-> %s" % ([b.yer for b in hatalar],))
-        kontrol("rehber tukenme hatasini Tukenme sekmesine gonderiyor",
-                p._sonraki_adim()[0] == 7, "-> %d" % (p._sonraki_adim()[0] + 1))
+        isaretli = [i for i in range(p.sekmeler.count())
+                    if p.sekmeler.tabText(i).endswith("!")]
+        kontrol("tukenme hatasi Tukenme sekmesinde '!' isareti olarak gorunuyor",
+                isaretli == [7], "-> %s" % [p.sekmeler.tabText(i) for i in isaretli])
     finally:
         _pencere_kapat(p)
 

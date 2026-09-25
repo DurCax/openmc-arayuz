@@ -23,7 +23,7 @@ from PySide6 import QtCore, QtGui, QtWidgets
 # ----------------------------------------------------------------------------
 TEMALAR = {
     "acik": {
-        "ad": "Acik",
+        "ad": "Açık",
         "zemin": "#f4f7fa",        # pencere zemini
         "yuzey": "#ffffff",        # giris alanlari, tablolar
         "yuzey2": "#eef2f7",       # alternatif satir, basliklar
@@ -104,17 +104,21 @@ def _stil(t):
 QWidget { color: %(metin)s; font-size: 10pt; }
 QMainWindow, QDialog { background: %(zemin)s; }
 
-/* ---------- sekmeler: altcizgi gostergeli, modern ---------- */
+/* ---------- sekmeler: altcizgi gostergeli, modern ----------
+   Sekme YAZI RENGI burada VERILMEZ: stil sayfasindaki renk QTabBar::
+   setTabTextColor'u ezer ve ana penceredeki durum isaretleri (hatali sekme
+   kirmizi) gorunmezdi. Ana sekme cubugunun renklerini ana_pencere.py verir
+   (secili: vurgu, digerleri: soluk, hata: kirmizi). */
 QTabWidget::pane { border: none; background: %(zemin)s; }
 QTabBar::tab {
-    background: transparent; color: %(metin_soluk)s;
+    background: transparent;
     padding: 9px 16px; margin-right: 2px;
     border: none; border-bottom: 2px solid transparent;
 }
-QTabBar::tab:hover { color: %(metin)s; background: %(yuzey2)s;
+QTabBar::tab:hover { background: %(yuzey2)s;
                      border-top-left-radius: 6px; border-top-right-radius: 6px; }
 QTabBar::tab:selected {
-    color: %(vurgu)s; font-weight: 600;
+    font-weight: 600;
     border-bottom: 2px solid %(vurgu)s;
 }
 
@@ -168,9 +172,9 @@ QMenu::item:selected { background: %(vurgu)s; color: %(vurgu_metin)s; }
 QMenu::separator { height: 1px; background: %(kenar)s; margin: 5px 8px; }
 
 QToolBar { background: %(zemin)s; border: none;
-           border-bottom: 1px solid %(kenar)s; padding: 4px 6px; spacing: 4px; }
+           border-bottom: 1px solid %(kenar)s; padding: 2px 6px; spacing: 4px; }
 QToolButton { background: transparent; border: 1px solid transparent;
-              border-radius: 6px; padding: 5px 10px; }
+              border-radius: 6px; padding: 3px 10px; }
 QToolButton:hover { background: %(vurgu_soluk)s; border-color: %(kenar)s; }
 QToolButton:disabled { color: %(metin_soluk)s; }
 
@@ -213,6 +217,43 @@ QSlider::handle:horizontal { background: %(vurgu)s; width: 14px; height: 14px;
                              margin: -5px 0; border-radius: 7px; }
 QToolTip { background: %(yuzey)s; color: %(metin)s;
            border: 1px solid %(kenar)s; padding: 6px; border-radius: 6px; }
+
+/* ---------- dalga 2: sade kabuk ---------- */
+/* birincil eylem dugmesi (Bos basla, bos durum eylemi) */
+QPushButton#birincil { background: %(vurgu)s; color: %(vurgu_metin)s;
+                       border: 1px solid %(vurgu)s; font-weight: 600; }
+QPushButton#birincil:hover { background: %(vurgu)s; border-color: %(metin)s; }
+QPushButton#birincil:disabled { background: %(yuzey2)s; color: %(metin_soluk)s;
+                                border-color: %(kenar)s; }
+/* baslangic ekrani kartlari */
+QFrame#kart { background: %(yuzey)s; border: 1px solid %(kenar)s;
+              border-radius: 10px; }
+QFrame#kart:hover { border-color: %(vurgu)s; }
+QFrame#kart QLabel { background: transparent; border: none; }
+QLabel#kartAciklama, QLabel#soluk { color: %(metin_soluk)s; }
+QLabel#ekranBaslik { font-size: 20pt; font-weight: 700; }
+QLabel#bolumBaslik { color: %(metin_soluk)s; font-weight: 600; }
+/* model basligi (arac cubugunun altinda) */
+QWidget#modelSeridi { background: %(yuzey2)s; border-bottom: 1px solid %(kenar)s; }
+QWidget#modelSeridi QLabel { background: transparent; }
+QWidget#modelSeridi QToolButton { border: 1px solid %(kenar)s; background: %(yuzey)s;
+                                  padding: 3px 10px; }
+QWidget#modelSeridi QToolButton:hover { border-color: %(vurgu)s; background: %(vurgu_soluk)s; }
+/* katlanabilir Gelismis bolumu */
+QToolButton#gelismisDugme { color: %(metin_soluk)s; font-weight: 600;
+                            padding: 3px 4px; border: none; }
+QToolButton#gelismisDugme:hover { color: %(vurgu)s; background: transparent; }
+QToolButton#gelismisDugme:checked { color: %(metin)s; background: transparent; }
+/* arac cubugunda CALISTIR one ciksin */
+QToolButton#calistirDugmesi { color: %(vurgu)s; font-weight: 700; }
+QToolButton#calistirDugmesi:disabled { color: %(metin_soluk)s; font-weight: 600; }
+/* baslangic ekrani listeleri: satir araligi ve uzerine gelme */
+QTreeView#tikListe { background: %(yuzey)s; }
+QTreeView#tikListe::item { padding: 3px 4px; }
+QTreeView#tikListe::item:hover { background: %(vurgu_soluk)s; }
+/* bulgu acilir listesi (durum cubugu rozeti) */
+QFrame#bulguAcilir { background: %(yuzey)s; border: 1px solid %(kenar)s;
+                     border-radius: 8px; }
 """ % t
 
 
