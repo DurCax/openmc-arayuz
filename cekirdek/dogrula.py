@@ -30,6 +30,11 @@
    7. Sinir kosullari ve sizinti riski
    8. Ayarlar: pasif cevrim sayisi, parcacik sayisi
    9. Tanimli ama kullanilmayan / kullanilmis ama tanimsiz malzemeler
+  10. Bu modelde GECERLI OLMAYAN secimler -- kurallar uygunluk.py'de (arayuz
+      ayni kurallarla secenekleri gizler; burada elle yazilmis dosyalar
+      yakalanir): sinir kosullari, bu kor turunde kurulmayan alanlar,
+      guc dagilimi cubugu, fisil malzeme gerektiren secimler (ozdeger modu,
+      kutu kaynagi, tukenme), malzeme rolleri (emici / yakit)
 ================================================================================
 """
 
@@ -40,6 +45,10 @@ from cekirdek.sema import kor_yuksekligi as sema_kor_yuksekligi
 from cekirdek.sema import BOSLUK, malzeme_bul, cubuk_bul, plaka_bul, demet_bul
 from cekirdek import altigen, kurucu, veri_bilgi, sema
 from cekirdek import kaynak as _kaynak
+# "Bu modelde ne gecerli?" kurallarinin TEK kaynagi. Arayuz ayni kurallarla
+# secenekleri gizler/suzer; burada ayni kurali ihlal eden (elle yazilmis)
+# dosyalar yakalanir. Kural burada TEKRAR YAZILMAZ.
+from cekirdek import uygunluk
 
 # ----------------------------------------------------------------------------
 # S(a,b) beklentisi -- SAFLIK KURALLARIYLA
@@ -400,8 +409,10 @@ def kontrol_cubugu_kontrol(spec):
             mal = c["bolgeler"][ix].get("malzeme")
             m = malzeme_bul(spec, mal) if mal else None
             if m:
-                elemanlar = {b.get("isim", "") for b in m.get("bilesim", [])}
-                sogurucu = bool(elemanlar & {"B", "B10", "Gd", "Ag", "In", "Cd", "Hf", "Eu"})
+                # "emici" rolu uygunluk'tan: eskiden burada ayri bir element
+                # listesi vardi; "Gd157" nuklidi ya da Dy2TiO5 yanlis alarm
+                # veriyordu, borlu su ise (2000 ppm) emici sayiliyordu.
+                sogurucu = "emici" in uygunluk.tek_malzeme_rolleri(m)
                 if not sogurucu:
                     bulgular.append(Bulgu(
                         "uyari", yer,
@@ -651,8 +662,7 @@ def kor_kontrol(spec):
                                           "%s icin tanimsiz malzeme: %s" % (etiket, ad)))
             em = malzeme_bul(spec, t.get("emici_malzeme") or "")
             if em:
-                elemanlar = {b.get("isim", "") for b in em.get("bilesim", [])}
-                if not (elemanlar & {"B", "B10", "Gd", "Ag", "In", "Cd", "Hf", "Eu"}):
+                if "emici" not in uygunluk.tek_malzeme_rolleri(em):
                     bulgular.append(Bulgu(
                         "uyari", "kor",
                         "tambur emicisi ('%s') guclu bir notron sogurucu icermiyor"
@@ -731,21 +741,82 @@ def kor_kontrol(spec):
         if bc and bc not in gecerli_bc:
             bulgular.append(Bulgu("hata", "kor",
                                   "gecersiz sinir kosulu '%s': %s" % (yon, bc)))
-    if sinir.get("yan") == "periodic":
-        yuzey = None
-        if tur == "kuresel":
-            yuzey = "bir küre"
-        elif tur == "tamburlu":
-            yuzey = "bir silindir"
-        elif kurucu._altigen_mi(spec, kor):
-            yuzey = "altıgen bir prizma (eğik düzlemler eşlenemez)"
-        if yuzey:
+    # Hangi yuzeyde hangi sinirin gecerli oldugu uygunluk.sinir_secenekleri'nde
+    # (arayuz de listeyi oradan alir). Burada yalnizca ihlal raporlanir.
+    yan = sinir.get("yan")
+    if yan in gecerli_bc and yan not in uygunluk.sinir_secenekleri(spec, "yan"):
+        yy = uygunluk.yan_yuzey(spec)
+        if yy == "altigen":
+            yuzey = "altıgen bir prizma"
+            oneri = ("Bu sürüm periyodik sınırı yalnızca kare kesitte (x/y düzlem "
+                     "çiftleri) sunuyor. Simetrik bir demette sonsuz kafes için "
+                     "'reflective' aynı k'yı verir.")
+        else:
+            yuzey = {"kure": "bir küre", "silindir": "bir silindir"}.get(yy, "düzlemsel değil")
+            oneri = ("OpenMC periyodik yüzeyin eşini bulamaz (\"Found only one "
+                     "periodic surface without a specified partner\") ve koşu "
+                     "başlamadan durur. 'reflective' ya da 'vacuum' seçin.")
+        bulgular.append(Bulgu(
+            "hata", "kor",
+            "periodic yalnızca düzlemsel sınırlarda (x/y düzlem çiftleri) "
+            "kullanılabilir -- bu kor türünün yan yüzeyi %s" % yuzey, oneri))
+    for yon in ("alt", "ust"):
+        bc = sinir.get(yon)
+        if bc not in gecerli_bc:
+            continue
+        secenek = uygunluk.sinir_secenekleri(spec, yon)
+        if not secenek:
+            # 2B modelde z yuzeyi kurulmaz; kurede eksen yoktur (orada hic
+            # soylenmez -- kabuk yuzeyi tek sinirdir).
+            if tur != "kuresel" and bc != "reflective":
+                bulgular.append(Bulgu(
+                    "bilgi", "kor",
+                    "model 2B -- '%s' sınırı ('%s') yok sayılır" % (yon, bc),
+                    "2B model eksenel yönde sonsuzdur (yansıtıcı alt/üst ile "
+                    "eşdeğer). Eksenel sızıntı için Kor sekmesinde yükseklik "
+                    "tanımlayın."))
+            continue
+        if bc in secenek:
+            continue
+        # buraya yalnizca periodic duser
+        karsi = "ust" if yon == "alt" else "alt"
+        if sinir.get(karsi) != "periodic":
             bulgular.append(Bulgu(
                 "hata", "kor",
-                "periodic yalnızca düzlemsel sınırlarda (x/y düzlem çiftleri) "
-                "kullanılabilir -- bu kor türünün yan yüzeyi %s" % yuzey,
-                "OpenMC periyodik yüzeyi karşı yüzeyle eşleyemez ve koşu "
-                "başlamadan durur. 'reflective' ya da 'vacuum' seçin."))
+                "'%s' sınırı periodic ama '%s' sınırı değil -- periyodik yüzeyin "
+                "eşi yok" % (yon, karsi),
+                "OpenMC koşu başlamadan durur (\"Found only one periodic surface "
+                "without a specified partner\"). Alt/üst için 'reflective' ya da "
+                "'vacuum' seçin."))
+        elif yon == "alt":
+            bulgular.append(Bulgu(
+                "uyari", "kor",
+                "alt ve üst sınır periodic -- korun tepesi dibine bağlanır",
+                "Sonlu yükseklikteki bir korda eksenel periyodiklik fiziksel "
+                "değildir (üst yansıtıcıdan çıkan nötron alt yansıtıcıya girer). "
+                "Eksenel simetri için 'reflective' kullanın; arayüz bu seçeneği "
+                "sunmaz."))
+
+    # --- bu kor turunde KURULMAYAN alanlar (elle yazilmis dosyalar) ---
+    alanlar = uygunluk.kor_alanlari(tur)
+    yans = kor.get("yansitici") or {}
+    if yans.get("var") and "yansitici" not in alanlar:
+        bulgular.append(Bulgu(
+            "uyari", "kor",
+            "'%s' kor türünde yansıtıcı kurulmaz -- 'yansitici.var' açık ama "
+            "yok sayılır" % tur,
+            "Yansıtıcı yalnızca tek_demet ve kare_kafes (isteğe bağlı) ile "
+            "tamburlu (zorunlu) korda kurulur. Model yansıtıcısız çalışır."))
+    artik = [alan for alan in sema.KOR_TURE_OZGU
+             if alan not in alanlar and alan not in sema.KOR_KORUNAN
+             and alan != "yansitici"
+             and kor.get(alan, sema.VARSAYILAN_KOR[alan]) != sema.VARSAYILAN_KOR[alan]]
+    if artik:
+        bulgular.append(Bulgu(
+            "bilgi", "kor",
+            "'%s' kor türünde kullanılmayan alanlar dolu: %s -- yok sayılır"
+            % (tur, ", ".join(artik)),
+            "Başka bir kor türünden kalmış olabilir; kurucu bu alanlara bakmaz."))
     if sinir.get("yan") == "vacuum" and tur in ("tek_cubuk", "tek_demet"):
         bulgular.append(Bulgu(
             "uyari", "kor",
@@ -918,10 +989,17 @@ def tukenme_kontrol(spec, veri_kontrolu=True):
         return bulgular
     yer = "tukenme"
 
-    if spec["ayarlar"].get("mod", "eigenvalue") != "eigenvalue":
-        bulgular.append(Bulgu("hata", yer,
-                              "tukenme ozdeger (k-eff) modu gerektirir",
-                              "Sabit kaynakli tukenme (aktivasyon) bu surumde yok."))
+    # Tukenmenin bu modelde yapilabilir olup olmadigi: uygunluk.tukenme_uygun
+    # (arayuz tukenme sekmesini ayni kuralla gizler).
+    uygun, sebep = uygunluk.tukenme_uygun(spec)
+    if not uygun:
+        if spec["ayarlar"].get("mod", "eigenvalue") != "eigenvalue":
+            bulgular.append(Bulgu("hata", yer,
+                                  "tukenme ozdeger (k-eff) modu gerektirir",
+                                  "Sabit kaynakli tukenme (aktivasyon) bu surumde yok."))
+        else:
+            bulgular.append(Bulgu("hata", yer, "tukenme yapilamaz: %s" % sebep,
+                                  "Yanacak yakit geometride yer almali."))
 
     # --- zincir ---
     zs = _tk.zincir_secimi(spec)
@@ -981,7 +1059,7 @@ def tukenme_kontrol(spec, veri_kontrolu=True):
         hv = None
         bulgular.append(Bulgu("hata", yer, "hacimler hesaplanamadi: %s" % e))
     if hv is not None:
-        if not hv:
+        if not hv and uygun:
             bulgular.append(Bulgu("hata", yer,
                                   "modelde yanabilir (fisil) malzeme yok"))
         for ad, v in hv.items():
@@ -1077,6 +1155,9 @@ def kaynak_kontrol(spec, veri_kontrolu=True):
     e = k.get("enerji") or {}
     mod = a.get("mod", "eigenvalue")
     sabit = (mod != "eigenvalue")
+    # hangi alan/secenek bu modelde gecerli: uygunluk (arayuzle ayni kural)
+    alan = uygunluk.ayar_alanlari(spec)
+    secenek = uygunluk.kaynak_secenekleri(spec)
 
     # --- dagilimlar gercekten kurulabiliyor mu ---
     for ad, fn, arg in (("enerji tayfi", _kaynak.enerji_dagilimi, e),
@@ -1091,6 +1172,15 @@ def kaynak_kontrol(spec, veri_kontrolu=True):
     if kuvvet is not None and float(kuvvet) <= 0:
         bulgular.append(Bulgu("hata", "kaynak",
                               "kaynak siddeti pozitif olmali (%s)" % kuvvet))
+    elif (kuvvet is not None and not alan["kaynak_siddeti"]
+          and float(kuvvet) != float(sema.VARSAYILAN_AYARLAR["kaynak"]["kuvvet"])):
+        bulgular.append(Bulgu(
+            "bilgi", "kaynak",
+            "ozdeger modunda kaynak siddeti (%g) yok sayilir" % float(kuvvet),
+            "Ozdeger hesabinda sonuclar fisyon kaynagina normalize edilir; "
+            "mutlak olcek icin guc dagilimindaki toplam gucu kullanin."))
+
+    # (kutu kaynagi + fisil malzeme yok: fisil_gereksinim_kontrol)
 
     # --- parcacik turu ---
     parca = k.get("parcacik") or "neutron"
@@ -1098,7 +1188,7 @@ def kaynak_kontrol(spec, veri_kontrolu=True):
         bulgular.append(Bulgu("hata", "kaynak",
                               "bilinmeyen parcacik turu: %s" % parca))
     elif parca == "photon":
-        if mod == "eigenvalue":
+        if parca not in secenek["parcaciklar"]:
             bulgular.append(Bulgu(
                 "hata", "kaynak",
                 "foton kaynagi ozdeger (k-eff) modunda anlamsiz",
@@ -1151,26 +1241,35 @@ def kaynak_kontrol(spec, veri_kontrolu=True):
                 "sonuc uretmez",
                 "Sabit kaynak hesabinda k-eff yoktur; ne olculecsekse bir "
                 "tally olarak tanimlanmalidir (akı, doz, reaksiyon hizi)."))
-        if (a.get("kinetik") or {}).get("var"):
+        if (a.get("kinetik") or {}).get("var") and not alan["kinetik"]:
             bulgular.append(Bulgu(
                 "bilgi", "ayarlar",
                 "kinetik parametreler (beta_eff, Λ) yalnızca özdeğer modunda "
                 "hesaplanır -- sabit kaynak modunda yok sayılır",
                 "IFP yöntemi fisyon zincirini nesiller boyunca izler; sabit "
                 "kaynak hesabında k-eff ve nesil kavramı yoktur."))
-        if (a.get("entropi_mesh") or {}).get("var"):
+        if (a.get("entropi_mesh") or {}).get("var") and not alan["entropi"]:
             bulgular.append(Bulgu(
                 "bilgi", "ayarlar",
                 "Shannon entropisi sabit kaynak modunda kullanilmaz",
                 "Entropi fisyon kaynagi dagiliminin yakinsamasini olcer; sabit "
                 "kaynakta kaynak zaten sabittir. OpenMC bunu yok sayar."))
-        if k.get("tur") == "kutu":
+        if int(a.get("pasif") or 0) > 0 and not alan["pasif"]:
+            bulgular.append(Bulgu(
+                "bilgi", "ayarlar",
+                "sabit kaynak modunda pasif cevrim (%d) yok sayilir"
+                % int(a.get("pasif") or 0),
+                "Pasif cevrim fisyon kaynaginin yakinsamasi icindir; kurucu "
+                "sabit kaynakta onu hic yazmaz. Butun cevrimler sayilir."))
+        if k.get("tur") == "kutu" and "kutu" in secenek["turler"]:
+            # fisil malzeme yoksa fisil_gereksinim_kontrol HATA verir
             bulgular.append(Bulgu(
                 "uyari", "kaynak",
                 "sabit kaynak modunda kutu kaynagi 'yalnizca fisil bolgeler' "
                 "kisitiyla orneklenir",
-                "Zirhlama probleminde fisil bolge olmayabilir; o durumda OpenMC "
-                "ornekleme yapamaz. Nokta kaynak kullanmayi dusunun."))
+                "Kaynak parcaciklari yalnizca fisil malzemede baslar; kutunun "
+                "geri kalani bos kalir. Dis bir kaynak modelliyorsaniz nokta "
+                "kaynak kullanin."))
     else:
         tur = e.get("tur", "watt")
         if tur != "watt":
@@ -1245,12 +1344,9 @@ def guc_dagilimi_kontrol(spec):
     else:
         mal = c["bolgeler"][bolge].get("malzeme")
         m = malzeme_bul(spec, mal) if mal else None
-        fisil = False
-        if m:
-            for b in m.get("bilesim", []):
-                isim = str(b.get("isim", ""))
-                if isim.startswith(("U", "Pu", "Th")) or b.get("zenginlik"):
-                    fisil = True
+        # "yakit" rolu uygunluk'tan (Z >= 90, kurucu ile ayni olcut). Eski
+        # kural ad oneki ("U"/"Pu"/"Th") ve zenginlik alanina bakiyordu.
+        fisil = bool(m) and "yakit" in uygunluk.tek_malzeme_rolleri(m)
         if not fisil:
             bulgular.append(Bulgu(
                 "uyari", yer,
@@ -1258,23 +1354,39 @@ def guc_dagilimi_kontrol(spec):
                 "Guc dagilimi genellikle YAKIT bolgesinde olculur (bolge 0). "
                 "Zarf ya da sogutucu secildiyse sonuc anlamsiz olur."))
 
-    # --- cubuk bir kafeste tekrarlaniyor mu? ---
-    kafeste = False
-    for d in spec.get("demetler", []):
-        if cubuk_ad in (d.get("anahtar") or {}).values():
-            kafeste = True
-    if (spec["kor"].get("tur") == "tek_cubuk" and spec["kor"].get("cubuk") == cubuk_ad
-            and not kafeste):
-        bulgular.append(Bulgu(
-            "hata", yer,
-            "'%s' bir kafeste tekrarlanmiyor (kor turu 'tek_cubuk')" % cubuk_ad,
-            "Guc dagilimi tekrarlanan hucre ornekleri uzerinden hesaplanir; "
-            "tek bir cubukta dagilim yoktur. Bir kafes kurun."))
-    elif not kafeste:
-        bulgular.append(Bulgu(
-            "uyari", yer,
-            "'%s' hicbir kafes haritasinda kullanilmiyor" % cubuk_ad,
-            "Tekrarlanan ornek yoksa dagilim tek bir degerden ibaret kalir."))
+    # --- cubuk geometride mi, bir kafeste tekrarlaniyor mu? ---
+    # Uygun cubuk kurali uygunluk.guc_cubuklari'nda (arayuz listeyi oradan
+    # alir). Eskiden "herhangi bir demetin anahtarinda geciyor mu" bakiliyordu:
+    # KULLANILMAYAN bir demette gecen cubuk gecerli sayiliyor, kurucu ise
+    # "cubugu modelde kullanilmiyor" diyerek duruyordu.
+    uygun = uygunluk.guc_cubuklari(spec)
+    if cubuk_ad not in uygun:
+        geo = uygunluk.geometri_icerigi(spec)
+        liste = ("Uygun cubuklar: %s" % ", ".join(uygun) if uygun else
+                 "Bu modelde uygun cubuk yok: fisil bolgeli bir cubugun bir "
+                 "kafeste tekrarlanmasi gerekir.")
+        if cubuk_ad not in geo["cubuk"]:
+            bulgular.append(Bulgu(
+                "hata", yer,
+                "'%s' cubugu modelde kullanilmiyor -- guc dagilimi yalnizca "
+                "geometride yer alan bir cubuk icin hesaplanabilir" % cubuk_ad,
+                "Model kurulurken durur. " + liste))
+        elif cubuk_ad not in geo["kafesteki_cubuk"]:
+            if (spec["kor"].get("tur") == "tek_cubuk"
+                    and spec["kor"].get("cubuk") == cubuk_ad):
+                bulgular.append(Bulgu(
+                    "hata", yer,
+                    "'%s' bir kafeste tekrarlanmiyor (kor turu 'tek_cubuk')" % cubuk_ad,
+                    "Guc dagilimi tekrarlanan hucre ornekleri uzerinden "
+                    "hesaplanir; tek bir cubukta dagilim yoktur. Bir kafes kurun."))
+            else:
+                bulgular.append(Bulgu(
+                    "uyari", yer,
+                    "'%s' hicbir kafes haritasinda kullanilmiyor" % cubuk_ad,
+                    "Tekrarlanan ornek yoksa dagilim tek bir degerden ibaret "
+                    "kalir. " + liste))
+        # cubuk kafeste ama fisil bolgesi yok: yukaridaki "fisil gorunmuyor"
+        # uyarisi bunu zaten soyler.
 
     skor = g.get("skor") or "kappa-fission"
     if skor not in BILINEN_SKORLAR:
@@ -1311,6 +1423,43 @@ def guc_dagilimi_kontrol(spec):
                 "uyari", yer,
                 "toplam guc verilmis ama model 2B -- lineer guc [W/cm] hesaplanamaz",
                 "W/cm icin aktif yukseklik gerekir."))
+    return bulgular
+
+
+def fisil_gereksinim_kontrol(spec):
+    """
+    Fisil malzeme gerektiren secimler: ozdeger modu ve kutu kaynagi.
+
+    "Fisil" uygunluk'tan gelir: GEOMETRIDE KULLANILAN yakit (Z >= 90). Arayuz
+    ayni kuralla analiz/tukenme sekmelerini ve kutu kaynagini gizler.
+    Iki durumda da model KURULUR ama OpenMC kosuda durur (olculdu:
+    ozdegerde "No fission sites banked"). Bu yuzden tum_kontroller bunu
+    nuklid kontrolunden SONRA cagirir: bozuk bir yakit bilesimi (or. veri
+    kutuphanesinde olmayan bir nuklid) once KOK NEDEN olarak raporlanmali,
+    bu bulgu onu gizlememeli.
+    """
+    bulgular = []
+    a = spec["ayarlar"]
+    oz = uygunluk.model_ozeti(spec)
+    if oz["fisil"]:
+        return bulgular
+    # Geometri hic cozulmuyorsa kor hatalari zaten soyler; katmanli korda
+    # eksenel_kontrol ayni seyi katman diliyle soyler.
+    geometri_var = bool(uygunluk.geometri_icerigi(spec)["malzeme"])
+    if (a.get("mod", "eigenvalue") == "eigenvalue" and geometri_var
+            and sema.eksenel_katmanlar(spec["kor"]) is None):
+        bulgular.append(Bulgu(
+            "hata", "ayarlar",
+            "ozdeger (k-eff) modu fisil malzeme gerektirir -- geometride "
+            "fisil malzeme yok",
+            "OpenMC ilk cevrimde durur (\"No fission sites banked\"). "
+            "Zirhlama/aktivasyon hesabi icin modu 'Sabit kaynak' yapin."))
+    if (a.get("kaynak") or {}).get("tur") == "kutu":
+        bulgular.append(Bulgu(
+            "hata", "kaynak",
+            "kutu kaynagi fisil malzeme gerektirir -- geometride fisil malzeme yok",
+            "Kutu kaynagi yalnizca fisil bolgelerde orneklenir; OpenMC hic "
+            "ornek bulamaz ve durur. Nokta kaynak kullanin."))
     return bulgular
 
 
@@ -1358,6 +1507,8 @@ def tum_kontroller(spec, veri_kontrolu=True):
     # nuklid kontrolu malzemeleri kurmayi gerektirir; once temel hatalar temiz olmali
     if veri_kontrolu and not hata_var(bulgular):
         bulgular += nuklid_kontrol(spec)
+    # fisil gereksinimi nuklid kontrolunden SONRA (bkz. fonksiyon notu)
+    bulgular += fisil_gereksinim_kontrol(spec)
 
     sira = {"hata": 0, "uyari": 1, "bilgi": 2}
     return sorted(bulgular, key=lambda b: sira[b.seviye])
