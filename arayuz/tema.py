@@ -97,7 +97,46 @@ def _palet(t):
     return p
 
 
+def _ok_dosyalari(t):
+    """
+    Acilir liste ve sayi kutusu oklari (PNG, 1x ve @2x). Stil sayfasi
+    giris kutularina kenar/dolgu verince Qt oklari kendi cizmez: acilir
+    listelerde ok HIC gorunmuyordu, sayi kutularinda yalnizca bir cizgi
+    ("┤") vardi -- kullanici bunlarin secilebilir oldugunu anlamiyordu.
+    """
+    import os
+    import tempfile
+    dizin = os.path.join(tempfile.gettempdir(), "openmc_arayuz_tema_%s" % os.getuid()
+                         if hasattr(os, "getuid") else "openmc_arayuz_tema")
+    os.makedirs(dizin, exist_ok=True)
+    yollar = {}
+    for ad, renk_ in (("ok", t["metin_soluk"]), ("ok_pasif", t["kenar"])):
+        for yon in ("asagi", "yukari"):
+            for olcek, ek in ((1, ""), (2, "@2x")):
+                yol = os.path.join(dizin, "%s_%s_%s%s.png" % (ad, yon, renk_.lstrip("#"), ek))
+                if not os.path.exists(yol):
+                    n = 12 * olcek
+                    resim = QtGui.QImage(n, n, QtGui.QImage.Format_ARGB32)
+                    resim.fill(QtCore.Qt.transparent)
+                    ressam = QtGui.QPainter(resim)
+                    ressam.setRenderHint(QtGui.QPainter.Antialiasing)
+                    kalem = QtGui.QPen(QtGui.QColor(renk_), 1.7 * olcek)
+                    kalem.setCapStyle(QtCore.Qt.RoundCap)
+                    kalem.setJoinStyle(QtCore.Qt.RoundJoin)
+                    ressam.setPen(kalem)
+                    y0, y1 = (4.5, 8.0) if yon == "asagi" else (8.0, 4.5)
+                    ressam.drawPolyline([QtCore.QPointF(2.5 * olcek, y0 * olcek),
+                                         QtCore.QPointF(6.0 * olcek, y1 * olcek),
+                                         QtCore.QPointF(9.5 * olcek, y0 * olcek)])
+                    ressam.end()
+                    resim.save(yol)
+                if olcek == 1:
+                    yollar["%s_%s" % (ad, yon)] = yol.replace("\\", "/")
+    return yollar
+
+
 def _stil(t):
+    t = dict(t, **_ok_dosyalari(t))
     return """
 * { outline: 0; }
 
@@ -142,7 +181,34 @@ QLineEdit, QSpinBox, QDoubleSpinBox, QComboBox, QPlainTextEdit, QTextBrowser {
 }
 QLineEdit:focus, QSpinBox:focus, QDoubleSpinBox:focus, QComboBox:focus,
 QPlainTextEdit:focus { border: 1px solid %(vurgu)s; }
-QComboBox::drop-down { border: none; width: 22px; }
+QComboBox { padding-right: 26px; }
+QComboBox::drop-down { subcontrol-origin: padding; subcontrol-position: center right;
+                       border: none; width: 24px; }
+QComboBox::down-arrow { image: url("%(ok_asagi)s"); width: 12px; height: 12px; }
+QComboBox::down-arrow:disabled { image: url("%(ok_pasif_asagi)s"); }
+QSpinBox, QDoubleSpinBox { padding-right: 26px; }
+QSpinBox::up-button, QDoubleSpinBox::up-button,
+QSpinBox::down-button, QDoubleSpinBox::down-button {
+    subcontrol-origin: border; width: 22px; border: none;
+    border-left: 1px solid %(kenar)s; background: transparent;
+}
+QSpinBox::up-button, QDoubleSpinBox::up-button {
+    subcontrol-position: top right; border-top-right-radius: 6px; }
+QSpinBox::down-button, QDoubleSpinBox::down-button {
+    subcontrol-position: bottom right; border-bottom-right-radius: 6px; }
+QSpinBox::up-button:hover, QDoubleSpinBox::up-button:hover,
+QSpinBox::down-button:hover, QDoubleSpinBox::down-button:hover {
+    background: %(vurgu_soluk)s; }
+QSpinBox::up-arrow, QDoubleSpinBox::up-arrow {
+    image: url("%(ok_yukari)s"); width: 10px; height: 10px; }
+QSpinBox::down-arrow, QDoubleSpinBox::down-arrow {
+    image: url("%(ok_asagi)s"); width: 10px; height: 10px; }
+QSpinBox::up-arrow:disabled, QDoubleSpinBox::up-arrow:disabled,
+QSpinBox::up-arrow:off, QDoubleSpinBox::up-arrow:off {
+    image: url("%(ok_pasif_yukari)s"); }
+QSpinBox::down-arrow:disabled, QDoubleSpinBox::down-arrow:disabled,
+QSpinBox::down-arrow:off, QDoubleSpinBox::down-arrow:off {
+    image: url("%(ok_pasif_asagi)s"); }
 QComboBox QAbstractItemView {
     background: %(yuzey)s; border: 1px solid %(kenar)s;
     selection-background-color: %(vurgu)s; selection-color: %(vurgu_metin)s;

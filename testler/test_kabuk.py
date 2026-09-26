@@ -971,12 +971,31 @@ def test_bulgusuz_dogrulama_satiri():
     p.close()
 
 
+def test_giris_oklari():
+    """Acilir liste ve sayi kutusu oklari cizilir (stil sayfasi oklari siliyordu)."""
+    uyg = _qt()
+    if uyg is None:
+        return
+    from arayuz import tema
+    stil = tema._stil(tema.TEMALAR["acik"])
+    yollar = re.findall(r'url\("([^"]+)"\)', stil)
+    kontrol("stil sayfasi ok resimlerine bagli (combo + sayi kutusu)",
+            "QComboBox::down-arrow" in stil and "QSpinBox::up-arrow" in stil and len(yollar) >= 4)
+    kontrol("ok resimleri diskte (1x ve @2x)",
+            all(os.path.exists(y) and os.path.exists(y.replace(".png", "@2x.png")) for y in yollar))
+    from PySide6 import QtGui
+    r = QtGui.QImage(yollar[0])
+    dolu = sum(1 for x in range(r.width()) for y in range(r.height()) if r.pixelColor(x, y).alpha() > 0)
+    kontrol("ok resmi bos degil", dolu > 8, "-> %d piksel" % dolu)
+
+
 HIZLI = [test_bos_sablonlar, test_baslangic_ekrani, test_sekme_gorunurlugu,
          test_sekme_isaretleri, test_model_basligi, test_sag_panel_ve_rozet,
          test_kaldirilanlar_ve_kisayollar, test_minimum_yukseklik, test_tema_gecisi,
          test_ortak_bilesenler, test_izgara_yardimcilari, test_izgara_boyama,
          test_ayarlar_yalitik, test_tur_hafizasi_ad_degisimi,
-         test_kor_tur_baglantisi, test_bulgusuz_dogrulama_satiri]
+         test_kor_tur_baglantisi, test_bulgusuz_dogrulama_satiri,
+         test_giris_oklari]
 YAVAS = []
 
 
