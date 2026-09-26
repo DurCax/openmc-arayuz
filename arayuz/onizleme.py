@@ -154,11 +154,11 @@ class OnizlemeWidget(QtWidgets.QWidget):
         self.gosterge.setChecked(True)
         self.hizli_mod = QtWidgets.QCheckBox("Hızlı mod (kütüphaneyi açık tut)")
         self.hizli_mod.setToolTip(
-            "KAPALI : her çizim ~0,3 s; model düzenlerken doğru seçim.\n"
-            "AÇIK   : ilk çizim ~3 s (tesir kesitleri belleğe yüklenir),\n"
-            "         sonraki çizimler ~40 ms.\n\n"
+            "Kapalı: her çizim ~0.3 s; model düzenlerken doğru seçim.\n"
+            "Açık: ilk çizim ~3 s (tesir kesitleri belleğe yüklenir),\n"
+            "sonraki çizimler ~40 ms.\n\n"
             "Bitmiş bir geometriyi incelerken (kesit değiştirme, yakınlaştırma)\n"
-            "açın. DÜZENLERKEN AÇMAYIN: her model değişikliği kütüphaneyi\n"
+            "açın. Düzenlerken açmayın: her model değişikliği kütüphaneyi\n"
             "yeniden başlatır ve değişiklik başına ~3 s sürer.")
         self.yenile_dugme = QtWidgets.QPushButton("Yenile")
 

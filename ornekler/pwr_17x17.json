@@ -1,7 +1,7 @@
 {
   "surum": 1,
-  "ad": "PWR 17x17 yakit demeti",
-  "aciklama": "Westinghouse tipi 17x17 yakit demeti: 264 yakit cubugu, 24 kilavuz boru, 1 merkezi enstruman borusu. Sicak sartlar (yakit 900 K, zarf 600 K, sogutucu 580 K / 0.70 g/cc), 1300 ppm cozunmus bor. Yansitici sinir -> sonsuz kafes (k-inf).",
+  "ad": "PWR 17×17 yakıt demeti",
+  "aciklama": "Westinghouse tipi 17×17 yakıt demeti: 264 yakıt çubuğu, 24 kılavuz boru, 1 merkezi enstrüman borusu. Sıcak koşullar (yakıt 900 K, zarf 600 K, soğutucu 580 K / 0.70 g/cm³), 1300 ppm çözünmüş bor. Yansıtıcı sınır → sonsuz kafes (k∞).",
   "malzemeler": [
     {
       "ad": "uo2",

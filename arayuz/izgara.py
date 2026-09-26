@@ -201,8 +201,10 @@ def palet_ogeleri(spec, turler=("cubuk", "plaka", "demet", "malzeme", "bosluk"),
                  "malzeme": "malzemeler"}[tur]
         for x in spec.get(liste, []):
             # Malzemeler her listede ayni bicimde: "ad — aciklama".
-            etiket = (sema.malzeme_etiketi(x) if tur == "malzeme"
-                      else x["ad"].replace("_", " "))
+            # Parca adlari kimliktir ve her listede aynen gorunur ("yakit_cubugu");
+            # alt cizgiyi bosluga cevirmek "yakit cubugu" gibi ASCII'lestirilmis
+            # Turkce gibi okunuyordu.
+            etiket = sema.malzeme_etiketi(x) if tur == "malzeme" else x["ad"]
             ogeler.append((x["ad"], etiket, tur))
     sonuc, kullanilan = [], []
     yedek = iter(_PALET * 4)
@@ -618,7 +620,7 @@ class KareIzgara(_BoyaTuvali):
         return nx, ny
 
     def _bos_metin(self):
-        return "Kafes tanımlı değil"
+        return "Demet tanımlı değil"
 
     def _yerlesim(self):
         nx, ny = self.boyut()

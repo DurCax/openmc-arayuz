@@ -943,7 +943,7 @@ class AnaPencere(QtWidgets.QMainWindow):
         html.append("<tr><td><b>F1</b></td><td>Bu yardım</td></tr>"
                     "<tr><td><b>F11</b></td><td>Tam ekran</td></tr>"
                     "<tr><td><b>Esc</b></td><td>Başlangıç ekranında: açık modele dön</td></tr>"
-                    "</table><p>Kafes haritasında sol tık boyar, sağ tık o hücrenin "
+                    "</table><p>Demet ve kor haritasında sol tık boyar, sağ tık o hücrenin "
                     "parçasını fırça yapar; altıgen haritada tekerlek yakınlaştırır.</p>")
         return "".join(html)
 

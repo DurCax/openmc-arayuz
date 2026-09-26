@@ -594,7 +594,7 @@ class CalistirSekmesi(QtWidgets.QWidget):
         if self._surec is None:
             return
         if not self._eski_kosu():
-            self._yaz("\n# SÜREÇ HATASI: %s" % self._surec.errorString())
+            self._yaz("\n# Süreç hatası: %s" % self._surec.errorString())
         # Baslatilamayan surec finished() YAYMAZ: dugmeler kilitli kalirdi.
         if kod == QtCore.QProcess.FailedToStart:
             self._bitti(-1, None)

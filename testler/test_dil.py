@@ -51,19 +51,24 @@ ASCII_TURKCE = (
     "cubuk", "cubugu", "cubugun", "cubuklar", "bolge", "bolgenin", "bolgesi",
     "yaricap", "yaricapi", "yaricaplar", "yukseklik", "yuksekligi", "adim",
     "adimi", "adimlar", "kalinlik", "kalinligi", "genislik", "satir", "sutun",
-    "haritasi", "haritada", "yansitici", "kusak", "kusagi", "donme",
+    "haritasi", "yansitici", "kusak", "kusagi", "donme",
     "donmesi", "dis", "ic", "icinde", "disinda", "kure", "kuresel", "sinir",
     "sinirlar", "kosulu", "sizinti", "altigen", "hucre", "hucresi",
     # malzeme / fizik
     "sicaklik", "sicakligi", "yogunluk", "yogunlugu", "bilesim", "bilesen",
-    "zenginlik", "zenginligi", "nuklid", "nuklidler", "sogutucu", "sogurucu",
+    "zenginligi", "nuklid", "nuklidler", "sogutucu", "sogurucu",
     "moderator", "yakit", "agir", "dogal", "bosluk", "kutuphane", "kutuphanesi",
     "sacilma", "tukenme", "tukenmeyi", "guc", "gucu", "yogunlugu", "bagil",
     "sicak", "katsayi", "katsayisi", "egim", "reaktor", "notron", "cozunmus",
     "tayfi", "acisal", "dagilim", "dagilimi", "siddet", "siddeti",
     "gun", "hazir",
 )
-_ASCII_DESEN = re.compile(r"\b(%s)\b" % "|".join(ASCII_TURKCE), re.IGNORECASE)
+# re.IGNORECASE KULLANILMAZ: Python'da "i" buyuk/kucuk harf duyarsiz aramada
+# "ı" ve "İ" ile de eslesir ("olmalı" -> "olmali" diye yakalanirdi). Bunun
+# yerine her kelimenin kucuk, Bas-harfi-buyuk ve BUYUK yazimlari aranir.
+_ASCII_DESEN = re.compile(r"(?<!\w)(%s)(?!\w)" % "|".join(
+    sorted({v for w in ASCII_TURKCE for v in (w, w.capitalize(), w.upper())},
+           key=len, reverse=True)))
 
 # (b) ham kaliplar
 _HAM_DESENLER = [
@@ -249,10 +254,43 @@ def bulgu_metinleri():
     return out
 
 
+def kullanici_verileri():
+    """
+    Orneklerdeki kullanici verisi DENETLENMEZ (GOREV: malzemelerin
+    "gorunen_ad"i OpenMC malzeme adi olur ve tukenme sonucunun eskime
+    karsilastirmasina girer; katman adlari hucre adina gider). Metinden
+    maskelenirler. Tam metni bir veri olan ogeler (kosu dizini "kosu")
+    yalnizca TAM eslesmede atlanir; dosya yollari da maskelenir.
+    """
+    import json
+    parcali, tam = set(), set()
+    for yol in glob.glob(os.path.join(ORNEK, "*.json")):
+        with open(yol, encoding="utf-8") as f:
+            sp = json.load(f)
+        for m in sp.get("malzemeler") or []:
+            if m.get("gorunen_ad"):
+                parcali.add(m["gorunen_ad"])
+        for b in ((sp.get("kor") or {}).get("eksenel") or {}).get("bolgeler") or []:
+            if b.get("ad"):
+                parcali.add(b["ad"])
+        tam.add(((sp.get("calistirma") or {}).get("dizin")) or "kosu")
+    return sorted(parcali, key=len, reverse=True), tam
+
+
 def _denetle(metinler):
     """(ascii, ham, virgul) ihlal listeleri."""
     ascii_, ham, virgul = [], [], []
+    parcali, tam = kullanici_verileri()
+    temiz = []
     for yer, m in metinler:
+        if m.strip() in tam:
+            continue
+        for v in parcali:
+            m = m.replace(v, "⟨veri⟩")
+        m = re.sub(r"(?<!\w)/\S*", "⟨yol⟩", m)
+        m = re.sub(r"'[a-z0-9_]+'", "⟨kimlik⟩", m)      # 'bosluk' gibi ayrilmis adlar
+        temiz.append((yer, m))
+    for yer, m in temiz:
         for satir in m.split("\n"):
             x = _ASCII_DESEN.search(satir)
             if x:
@@ -335,7 +373,8 @@ def test_ornek_basliklari():
         for alan in ("ad", "aciklama"):
             ascii_, ham, virgul = _denetle([(os.path.basename(yol), s.get(alan) or "")])
             kotu += ascii_ + ham + virgul
-        for bolum in ("malzemeler", "cubuklar", "plakalar", "demetler", "tallyler"):
+        # (tally adlari zaten Turkce karakterli olabilir: "akı_gruplu")
+        for bolum in ("malzemeler", "cubuklar", "plakalar", "demetler"):
             for x in s.get(bolum) or []:
                 if not re.fullmatch(r"[A-Za-z0-9_\-]+", str(x.get("ad", ""))):
                     kimlik.append((os.path.basename(yol), x.get("ad")))

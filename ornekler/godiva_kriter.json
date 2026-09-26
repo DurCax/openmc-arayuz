@@ -1,7 +1,7 @@
 {
   "surum": 1,
-  "ad": "Godiva -- HEU-MET-FAST-001 kriteri",
-  "aciklama": "ICSBEP kriteri HEU-MET-FAST-001 (Godiva): ciplak, yuksek zenginlikli uranyum metal kuresi. Yayimlanmis kriter degeri k_eff = 1.0000 +/- 0.0010.\n\nBu ornek aracin BILIMSEL dogrulamasidir: regresyon cipasi 'kod kendi kendisiyle tutarli' der, bu ornek 'sonuc gercekten dogru' der. Malzeme bilesimi, geometri, tesir kesiti kutuphanesi ve tasima zincirinin tamami bagimsiz bir olcume karsi sinanir.\n\nAtom yogunluklari [atom/b-cm]: U234 4.91840e-04, U235 4.49940e-02, U238 2.49840e-03\nKure yaricapi: 8.7407 cm, ciplak (vacuum sinir), 293.6 K.",
+  "ad": "Godiva kritik küresi (HEU-MET-FAST-001)",
+  "aciklama": "ICSBEP kriteri HEU-MET-FAST-001 (Godiva): çıplak, yüksek zenginlikli uranyum metal küresi. Yayımlanmış kriter değeri k_eff = 1.0000 ± 0.0010.\n\nBu örnek aracın bilimsel doğrulamasıdır: regresyon çıpası 'kod kendi kendisiyle tutarlı' der, bu örnek 'sonuç gerçekten doğru' der. Malzeme bileşimi, geometri, tesir kesiti kütüphanesi ve taşıma zincirinin tamamı bağımsız bir ölçüme karşı sınanır.\n\nAtom yoğunlukları [atom/b-cm]: U234 4.91840e-04, U235 4.49940e-02, U238 2.49840e-03\nKüre yarıçapı: 8.7407 cm, çıplak (Vakum sınır), 293.6 K.",
   "malzemeler": [
     {
       "ad": "heu",

@@ -1,7 +1,7 @@
 {
   "surum": 1,
-  "ad": "PWR 17x17 -- kontrol cubuklu (3B)",
-  "aciklama": "17x17 demeti, 25 kilavuz boru konumunda B4C kontrol cubugu. Cubuklar\nyukaridan daldirilir; 'daldirma' %0 = tamamen cekilmis, %100 = tam dalmis.\n\nKULLANIM: 7. Analiz sekmesinde\n  - 'Kontrol cubugu daldirma orani' taramasi -> integral cubuk degeri egrisi\n  - 'Kritik arama' + hedef k=1.0        -> KRITIK CUBUK KONUMU\n\n!!! EGRI SEKLI HAKKINDA !!!\nKlasik S egrisi yalnizca sistem her konumda kritige yakinsa gorulur.\nBu model yansitici yan sinirli tek bir demettir ve k-sonsuz yuksektir;\nrodlanmamis alt bolge tek basina superkritik kalir, bu yuzden deger gec\ntoplanir ve diferansiyel deger tepesi merkezde degil tam daldirmaya\nyakin cikar. Olculen: %0 -> k=1.165, %50 -> k=1.131, %100 -> k=0.588.",
+  "ad": "PWR 17×17 demet — kontrol çubuklu (3B)",
+  "aciklama": "17×17 demeti, 25 kılavuz boru konumunda B4C kontrol çubuğu. Çubuklar\nyukarıdan daldırılır; daldırma %0 = tamamen çekilmiş, %100 = tam dalmış.\n\nKullanım: Analiz sekmesinde\n  - 'Kontrol çubuğu daldırma' taraması → integral çubuk değeri eğrisi\n  - 'Kritik arama' + hedef k = 1.0     → kritik çubuk konumu\n\nEğri şekli hakkında:\nKlasik S eğrisi yalnızca sistem her konumda kritiğe yakınsa görülür.\nBu model yansıtıcı yan sınırlı tek bir demettir ve k∞ yüksektir;\nçubuksuz alt bölge tek başına süperkritik kalır, bu yüzden değer geç\ntoplanır ve diferansiyel değerin tepesi merkezde değil tam daldırmaya\nyakın çıkar. Ölçülen: %0 → k = 1.165, %50 → k = 1.131, %100 → k = 0.588.",
   "malzemeler": [
     {
       "ad": "uo2",

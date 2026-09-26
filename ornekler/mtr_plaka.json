@@ -1,7 +1,7 @@
 {
   "surum": 1,
-  "ad": "MTR plaka yakit elemani",
-  "aciklama": "Havuz tipi arastirma reaktoru standart yakit elemani: 23 duz plaka, U3Si2-Al dispersiyon yakiti (4.8 gU/cm3, %19.75 zenginlik), Al-6061 zarf, hafif su sogutucu. Yansitici sinir -> sonsuz kafes yaklasimi.",
+  "ad": "MTR plaka yakıt elemanı",
+  "aciklama": "Havuz tipi araştırma reaktörünün standart yakıt elemanı: 23 düz plaka, U₃Si₂-Al dispersiyon yakıtı (4.8 gU/cm³, %19.75 zenginlik), Al-6061 zarf, hafif su soğutucu. Yansıtıcı sınır → sonsuz kafes yaklaşımı.",
   "malzemeler": [
     {
       "ad": "u3si2_al",

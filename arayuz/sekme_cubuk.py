@@ -145,7 +145,7 @@ def cubuk_sablonu(spec, anahtar, ad):
         return sema.kontrol_cubugu(
             ad, [b(0.433, emici), b(0.561, sog), b(0.602, zarf), b(None, sog)],
             izleyici_malzeme=sog, daldirma=0.0, emici_bolge=0)
-    raise KeyError("bilinmeyen cubuk sablonu: %s" % anahtar)
+    raise KeyError("bilinmeyen çubuk şablonu: %s" % anahtar)
 
 
 # Sablonlarin istedigi roller (eksik olanlar kullaniciya adiyla soylenir).
@@ -590,9 +590,9 @@ class CubukSekmesi(SekmeTabani):
         self.d_ice = QtWidgets.QPushButton("İçe taşı")
         self.d_disa = QtWidgets.QPushButton("Dışa taşı")
         self.d_bolge_ekle.setToolTip("Dış bölgenin hemen içine yeni bir bölge ekler.")
-        self.d_ice.setToolTip("Seçili bölgenin MALZEMESİNİ bir içteki bölgeyle değiştirir; "
+        self.d_ice.setToolTip("Seçili bölgenin malzemesini bir içteki bölgeyle değiştirir; "
                               "yarıçaplar yerinde kalır.")
-        self.d_disa.setToolTip("Seçili bölgenin MALZEMESİNİ bir dıştaki bölgeyle değiştirir; "
+        self.d_disa.setToolTip("Seçili bölgenin malzemesini bir dıştaki bölgeyle değiştirir; "
                                "yarıçaplar yerinde kalır. Dış bölgeye taşınmaz.")
         self.d_bolge_ekle.clicked.connect(self._bolge_ekle)
         self.d_bolge_sil.clicked.connect(self._bolge_sil)
@@ -616,7 +616,7 @@ class CubukSekmesi(SekmeTabani):
             form.addRow(e, alan)
         self.c_emici.setToolTip("Eksenel olarak daldırılan (emici) bölge. Dış bölge seçilemez.")
         self.c_izleyici.setToolTip(
-            "Emici bölgenin çubuk ucunun ALTINDA kalan kısmını dolduran malzeme "
+            "Emici bölgenin çubuk ucunun altında kalan kısmını dolduran malzeme "
             "(follower). Yakıt ve emici malzemeler listelenmez.")
         dald = QtWidgets.QWidget()
         dd = QtWidgets.QHBoxLayout(dald)
@@ -634,7 +634,7 @@ class CubukSekmesi(SekmeTabani):
             "Kontrol çubuğu yukarıdan daldırılır: %0 tamamen çekilmiş, %100 tamamen "
             "dalmış. Emici bölgenin uç altında kalan kısmı izleyici malzemeyle dolar. "
             "Kritik çubuk konumunu bulmak için Analiz sekmesinde 'Kritik arama' ile "
-            "'Kontrol çubuğu daldırma oranı'nı kullanın.")
+            "'Kontrol çubuğu daldırma' parametresini kullanın.")
         self.c_eksik = self._hata_etiketi()
         self.c_sira_uyari = self._hata_etiketi()
 
@@ -645,7 +645,7 @@ class CubukSekmesi(SekmeTabani):
         d.addWidget(self.c_kontrol_not)
         d.addWidget(baslik("Radyal bölgeler"))
         d.addWidget(ipucu(
-            "Bölgeler içten dışa sıralanır; her satırın yarıçapı o bölgenin DIŞ "
+            "Bölgeler içten dışa sıralanır; her satırın yarıçapı o bölgenin dış "
             "sınırıdır ve bir öncekinden büyük olmalıdır. Son satır dış bölgedir: "
             "çubuğun çevresini hücrenin kenarına kadar doldurur (çoğunlukla soğutucu)."))
         d.addWidget(self.c_tablo, 1)

@@ -624,7 +624,7 @@ class TukenmeSekmesi(SekmeTabani):
         # Baslatilamayan surec finished() YAYMAZ: dugmeler kilitli kalirdi.
         if self._surec is not None and kod == QtCore.QProcess.FailedToStart:
             if not self._eski_kosu():
-                self.log.appendPlainText("\n# SÜREÇ BAŞLATILAMADI: %s"
+                self.log.appendPlainText("\n# Süreç başlatılamadı: %s"
                                          % self._surec.errorString())
             self._bitti(-1, None)
 
@@ -663,7 +663,7 @@ class TukenmeSekmesi(SekmeTabani):
         except Exception as e:
             self.durum.emit("Sonuç okunamadı: %s" % e, False)
             self.sure_etiket.setText("Sonuç okunamadı — ayrıntılı çıktıya bakın.")
-            self.log.appendPlainText("\n# SONUÇ OKUNAMADI: %s" % e)
+            self.log.appendPlainText("\n# Sonuç okunamadı: %s" % e)
             self.ayrinti.ac(True)
             self._gorunum_guncelle()
             self.sonuc_degisti.emit()

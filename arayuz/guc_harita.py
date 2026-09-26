@@ -94,7 +94,7 @@ class GucHaritaWidget(QtWidgets.QWidget):
         aciklama = QtWidgets.QLabel(
             "F_ΔH = en yüksek çubuk gücü / ortalama (radyal). "
             "F_q = en yüksek yerel güç yoğunluğu / ortalama (radyal × eksenel, 3B gerekir). "
-            "Renk ölçeği ortalamaya göre bağıldır: 1,00 = ortalama çubuk.")
+            "Renk ölçeği ortalamaya göre bağıldır: 1.00 = ortalama çubuk.")
         aciklama.setObjectName("soluk")
         aciklama.setWordWrap(True)
         duzen.addWidget(aciklama)
@@ -139,8 +139,9 @@ class GucHaritaWidget(QtWidgets.QWidget):
 
     def _ozet_yaz(self):
         if not self.faktorler:
-            self.ozet.setText("Güç dağılımı hesaplanmadı. Hesap ayarları'nda "
-                              "'Güç dağılımı'nı açıp modeli yeniden çalıştırın.")
+            self.ozet.setText("Güç dağılımı hesaplanmadı. Hesap ayarları sekmesinde "
+                              "'Çubuk bazlı güç dağılımı hesapla' kutusunu işaretleyip "
+                              "modeli yeniden çalıştırın.")
             return
         f = self.faktorler
         p = ["<b>F_&Delta;H = %.4f</b>" % f["F_dH"]]
