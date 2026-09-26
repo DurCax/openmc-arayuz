@@ -47,10 +47,10 @@ KARTLAR = [
      "aciklama": "Tek yakıt çubuğu ve çevresindeki soğutucu; en hızlı başlangıç.",
      "ornek": "pwr_pinhucre.json", "bos": True, "sekme": "parcalar", "simge": "pin"},
     {"anahtar": "demet_kare", "baslik": "Yakıt demeti — kare",
-     "aciklama": "Kare kafeste yakıt çubukları ve kılavuz borular (PWR tipi).",
+     "aciklama": "Kare ızgarada yakıt çubukları ve kılavuz borular (PWR tipi).",
      "ornek": "pwr_17x17.json", "bos": True, "sekme": "demet", "simge": "kare"},
     {"anahtar": "demet_altigen", "baslik": "Yakıt demeti — altıgen",
-     "aciklama": "Altıgen kafeste çubuk demeti (VVER, hızlı reaktör).",
+     "aciklama": "Altıgen ızgarada çubuk demeti (VVER, hızlı reaktör).",
      "ornek": "sfr_altigen.json", "bos": True, "sekme": "demet", "simge": "altigen"},
     {"anahtar": "tam_kor", "baslik": "Tam kor (kare harita)",
      "aciklama": "Demetlerden oluşan kor haritası, çevresinde su yansıtıcı.",
@@ -81,6 +81,14 @@ ORNEK_BASLIKLARI = {
     "godiva_kriter.json": "Godiva kritik küresi",
     "zirh_kure.json": "Zırh küresi (sabit kaynak)",
 }
+
+
+def _kucuk_bas(metin):
+    """Cumle icinde kullanmak icin ilk harfi kucultur; kisaltmaya dokunmaz
+    ("MTR plaka elemani" aynen kalir, "Yakit cubugu" -> "yakit cubugu")."""
+    if len(metin) > 1 and metin[1].islower():
+        return ("ı" if metin[0] == "I" else "i" if metin[0] == "İ" else metin[0].lower()) + metin[1:]
+    return metin
 
 
 def kart(anahtar):
@@ -215,7 +223,7 @@ def bos_sablon(anahtar):
         kor["sinir"] = {"yan": "vacuum", "alt": "reflective", "ust": "reflective"}
         sema.kor_alanlarini_ayikla(kor)
         return _sadelestir(spec, "Yeni tam kor")
-    raise KeyError("bos sablonu olmayan kart: %s" % anahtar)
+    raise KeyError("boş şablonu olmayan kart: %s" % anahtar)
 
 
 # ============================================================================
@@ -373,7 +381,7 @@ class _Kart(QtWidgets.QFrame):
         if bilgi["bos"]:
             self.d_bos.setToolTip("Çalışır durumda, sade bir %s modeli kurar "
                                   "(malzemeler, parçalar ve kor hazır)."
-                                  % bilgi["baslik"].split(" (")[0].lower())
+                                  % _kucuk_bas(bilgi["baslik"].split(" (")[0]))
         else:
             self.d_bos.setVisible(False)
         if bilgi["ornek"]:
@@ -424,15 +432,15 @@ class BaslangicEkrani(QtWidgets.QWidget):
         self._kartlar = []
         self._sutun = 0
 
-        self.baslik = QtWidgets.QLabel("Ne modelliyorsun?")
+        self.baslik = QtWidgets.QLabel("Ne modellemek istiyorsunuz?")
         self.baslik.setObjectName("ekranBaslik")
         self.alt_baslik = QtWidgets.QLabel(
-            "Bir model türü seç. <b>Boş başla</b> çalışır durumda sade bir model "
+            "Bir model türü seçin. <b>Boş başla</b> çalışır durumda sade bir model "
             "kurar; <b>Örnekten başla</b> hazır bir örneğin kopyasını açar.")
         self.alt_baslik.setObjectName("soluk")
         self.alt_baslik.setWordWrap(True)
         self.d_geri = _Dugme("←  Açık modele dön")
-        self.d_geri.setToolTip("Başlangıç ekranını kapatıp üzerinde çalıştığın "
+        self.d_geri.setToolTip("Başlangıç ekranını kapatıp üzerinde çalıştığınız "
                                "modele döner (Esc).")
         self.d_geri.clicked.connect(self.geri_istendi)
         self.d_geri.setVisible(False)
@@ -476,7 +484,7 @@ class BaslangicEkrani(QtWidgets.QWidget):
         self.son_bos = QtWidgets.QLabel("Henüz kaydedilmiş bir model yok.")
         self.son_bos.setObjectName("soluk")
         self.d_ac = _Dugme("Başka bir dosya aç…")
-        self.d_ac.setToolTip("Bilgisayarındaki bir model dosyasını (.json) açar (Ctrl+O).")
+        self.d_ac.setToolTip("Bilgisayarınızdaki bir model dosyasını (.json) açar (Ctrl+O).")
         self.d_ac.clicked.connect(self.ac_istendi)
 
         # Ic duzenler araligi ACIKCA verir: verilmezse ust duzenin 24 px'lik

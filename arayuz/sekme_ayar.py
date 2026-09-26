@@ -179,7 +179,7 @@ class AyarSekmesi(SekmeTabani):
         self.entropi_var = QtWidgets.QCheckBox("Shannon entropisi ile kaynak yakınsamasını ölç")
         self.entropi_var.setToolTip(
             "Kaynak dağılımının pasif çevrimler içinde yakınsayıp yakınsamadığını\n"
-            "ölçer. Yakınsamamış kaynak k-eff'i YANLI tahmin ettirir ve bu başka\n"
+            "ölçer. Yakınsamamış kaynak k-eff'i yanlı tahmin ettirir ve bu başka\n"
             "türlü fark edilmez. Özdeğer hesaplarında açık tutun.")
         self.entropi_oto = QtWidgets.QCheckBox("Ağ boyutu otomatik")
         self.entropi_oto.setToolTip(
@@ -253,13 +253,13 @@ class AyarSekmesi(SekmeTabani):
         self.ay = sayi(0.0, 4, -1e3, 1e3, 0.1)
         self.az = sayi(1.0, 4, -1e3, 1e3, 0.1)
         self.koni_aci = sayi(30.0, 2, 0.01, 180.0, 5.0, " derece")
-        self.koni_aci.setToolTip("Koninin YARI açılımı. Katı açıda düzgün dağılım kullanılır.")
+        self.koni_aci.setToolTip("Koninin yarı açılımı (eksenden kenara açı). Katı açıda düzgün dağılım kullanılır.")
 
         # ================= guc dagilimi =================
         self.guc_var = QtWidgets.QCheckBox("Çubuk bazlı güç dağılımı hesapla (F_ΔH, 3B'de F_q)")
         self.guc_var.setToolTip(
-            "Kafeste tekrarlanan yakıt çubuğunun HER örneği ayrı sayılır\n"
-            "(DistribcellFilter). Buradan tepe faktörleri çıkar:\n"
+            "Demette tekrarlanan yakıt çubuğunun her örneği ayrı sayılır\n"
+            "(OpenMC: DistribcellFilter). Buradan tepe faktörleri çıkar:\n"
             "  F_ΔH = en yüksek çubuk gücü / ortalama        (radyal)\n"
             "  F_q  = en yüksek yerel güç yoğunluğu / ortalama (3B gerekir)")
         self.guc_cubuk = QtWidgets.QComboBox()
@@ -272,8 +272,8 @@ class AyarSekmesi(SekmeTabani):
         self.guc_toplam.setSpecialValueText("(boş — yalnızca bağıl)")
         self.guc_etiketler = {}
         self.guc_not = ipucu(
-            "Toplam güç, MODELİN KAPSADIĞI bölgenin gücüdür — tüm korun değil. "
-            "Örnek: 3400 MWth / 193 demet = 17,6 MW; tek demetlik modelde 17.6e6 W "
+            "Toplam güç, <b>modelin kapsadığı</b> bölgenin gücüdür — tüm korun değil. "
+            "Örnek: 3400 MWth / 193 demet = 17.6 MW; tek demetlik modelde 17.6e6 W "
             "girilir. Boş bırakılırsa yalnızca bağıl dağılım verilir.")
         self.guc_uyari = ipucu("")
 
@@ -677,7 +677,7 @@ class AyarSekmesi(SekmeTabani):
         self.guc_var.setChecked(bool(g.get("var")))
         cubuklar = uygunluk.guc_cubuklari(self.spec)
         self._kutu_doldur(self.guc_cubuk, [(c, c) for c in cubuklar], g.get("cubuk"),
-                          " (fisil değil ya da kafeste değil)")
+                          " (fisil değil ya da demette değil)")
         self._guc_bolgeleri_doldur(g.get("bolge"))
         self._kutu_doldur(self.guc_skor, GUC_SKORLARI, g.get("skor") or "kappa-fission",
                           " (bilinmeyen)")
@@ -693,9 +693,11 @@ class AyarSekmesi(SekmeTabani):
             c = sema.cubuk_bul(self.spec, ad) if ad else None
             if c:
                 for i, b in enumerate(c["bolgeler"]):
-                    etiket = "%d. bölge — %s" % (i + 1, b.get("malzeme") or "boş")
+                    m_ad = b.get("malzeme")
+                    etiket = "%d. bölge — %s" % (i + 1, m_ad if m_ad and m_ad != sema.BOSLUK
+                                                   else "Boş (madde yok)")
                     if b.get("r"):
-                        etiket += ("  (r = %.4f cm)" % b["r"]).replace(".", ",")
+                        etiket += "  (r = %.4f cm)" % b["r"]
                     else:
                         etiket += "  (dış bölge)"
                     self.guc_bolge.addItem(etiket, i)
@@ -801,7 +803,7 @@ class AyarSekmesi(SekmeTabani):
         self.guc_etiketler["dilim"].setEnabled(acik and alan["eksenel_dilim"])
         uyari = ""
         if acik and not alan["guc_dagilimi"]:
-            uyari = ("Bu modelde güç dağılımı hesaplanamaz: kafeste tekrarlanan "
+            uyari = ("Bu modelde güç dağılımı hesaplanamaz: demette tekrarlanan "
                      "fisil bir çubuk yok. Kutuyu kapatın.")
         self.guc_uyari.setText(uyari)
         self.guc_uyari.setVisible(bool(uyari))

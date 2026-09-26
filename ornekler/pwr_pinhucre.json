@@ -1,7 +1,7 @@
 {
   "surum": 1,
-  "ad": "PWR pin hucre (regresyon cipasi)",
-  "aciklama": "Klasik PWR yakit hucresi. Bu spec, arayuz gelistirilirken olculen referans sonucu uretmelidir: k-inf = 1.3570 +/- 0.0020. 2 sigma disina cikarsa kurucu katmaninda hata var demektir.",
+  "ad": "PWR yakıt hücresi (pin) — regresyon çıpası",
+  "aciklama": "Klasik PWR yakıt hücresi. Bu model, arayüz geliştirilirken ölçülen referans sonucu üretmelidir: k∞ = 1.3570 ± 0.0020. 2σ dışına çıkarsa kurucu katmanında hata var demektir.",
   "malzemeler": [
     {
       "ad": "uo2",

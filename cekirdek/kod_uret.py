@@ -123,7 +123,7 @@ def _malzemeler(spec, satirlar):
         if m.get("sicaklik"):
             satirlar.append("%s.temperature = %s" % (v, _f(m["sicaklik"])))
         for s in m.get("sab", []):
-            satirlar.append("%s.add_s_alpha_beta(%r)      # termal sacilma" % (v, s))
+            satirlar.append("%s.add_s_alpha_beta(%r)      # termal saçılma" % (v, s))
     satirlar.append("")
     satirlar.append("malzemeler = openmc.Materials([%s])" % ", ".join(adlar))
     return adlar
@@ -143,7 +143,7 @@ def _cubuk(spec, cubuk_ad, satirlar):
     yaricaplar = [b["r"] for b in c["bolgeler"][:-1]]
     dolgular = [_mat_ifade(b["malzeme"]) for b in c["bolgeler"]]
     satirlar.append("")
-    satirlar.append("# %s -- es merkezli %d bolge" % (cubuk_ad, len(c["bolgeler"])))
+    satirlar.append("# %s — eş merkezli %d bölge" % (cubuk_ad, len(c["bolgeler"])))
     satirlar.append("%s_yuzeyler = [%s]"
                     % (v, ", ".join("openmc.ZCylinder(r=%s)" % _f(r) for r in yaricaplar)))
     if c.get("tur") != "kontrol":
@@ -157,9 +157,9 @@ def _cubuk(spec, cubuk_ad, satirlar):
     z_uc = h / 2.0 - (daldirma / 100.0) * h
     emici_ix = int(c.get("emici_bolge") or 0)
     satirlar.append("")
-    satirlar.append("# Kontrol cubugu: emici bolge UC KONUMUNDA ikiye bolunur.")
-    satirlar.append("#   ucun ustu -> emici,  ucun alti -> izleyici")
-    satirlar.append("# daldirma %%%.1f  ->  z_uc = %s cm" % (daldirma, _f(z_uc)))
+    satirlar.append("# Kontrol çubuğu: emici bölge uç konumunda ikiye bölünür.")
+    satirlar.append("#   ucun üstü -> emici,  ucun altı -> izleyici")
+    satirlar.append("# daldırma %%%.1f  ->  z_uc = %s cm" % (daldirma, _f(z_uc)))
     satirlar.append("%s_uc = openmc.ZPlane(%s)" % (v, _f(z_uc)))
     satirlar.append("%s_hucreler = []" % v)
     n = len(c["bolgeler"])
@@ -187,13 +187,13 @@ def _plaka(spec, plaka_ad, satirlar):
     p = plaka_bul(spec, plaka_ad)
     v = _ad(plaka_ad, "p")
     satirlar.append("")
-    satirlar.append("# %s -- %d plakali MTR elemani" % (plaka_ad, p["plaka_sayisi"]))
+    satirlar.append("# %s — %d plakalı MTR elemanı" % (plaka_ad, p["plaka_sayisi"]))
     satirlar.append("N_PLAKA   = %s" % _f(p["plaka_sayisi"]))
-    satirlar.append("ET        = %-12s # cm   yakit eti kalinligi" % _f(p["et_kalinlik"]))
-    satirlar.append("ZARF      = %-12s # cm   her yuzdeki zarf" % _f(p["zarf_kalinlik"]))
-    satirlar.append("KANAL     = %-12s # cm   plakalar arasi sogutucu" % _f(p["kanal_kalinlik"]))
-    satirlar.append("GENISLIK  = %-12s # cm   aktif genislik (y)" % _f(p["plaka_genislik"]))
-    satirlar.append("YAN_LEVHA = %-12s # cm   yan levha kalinligi" % _f(p.get("yan_levha_kalinlik", 0.0)))
+    satirlar.append("ET        = %-12s # cm   yakıt eti kalınlığı" % _f(p["et_kalinlik"]))
+    satirlar.append("ZARF      = %-12s # cm   her yüzdeki zarf" % _f(p["zarf_kalinlik"]))
+    satirlar.append("KANAL     = %-12s # cm   plakalar arası soğutucu" % _f(p["kanal_kalinlik"]))
+    satirlar.append("GENISLIK  = %-12s # cm   aktif genişlik (y)" % _f(p["plaka_genislik"]))
+    satirlar.append("YAN_LEVHA = %-12s # cm   yan levha kalınlığı" % _f(p.get("yan_levha_kalinlik", 0.0)))
     satirlar.append("")
     satirlar.append("PLAKA_KAL = 2.0 * ZARF + ET")
     satirlar.append("TOP_X = N_PLAKA * PLAKA_KAL + (N_PLAKA + 1) * KANAL")
@@ -201,7 +201,7 @@ def _plaka(spec, plaka_ad, satirlar):
     satirlar.append("")
     satirlar.append("_xd = {}")
     satirlar.append("def _x(deger):")
-    satirlar.append("    \"\"\"Ayni x degeri icin tek bir XPlane paylas.\"\"\"")
+    satirlar.append("    \"\"\"Aynı x değeri için tek bir XPlane paylaş.\"\"\"")
     satirlar.append("    a = round(deger, 9)")
     satirlar.append("    if a not in _xd:")
     satirlar.append("        _xd[a] = openmc.XPlane(a)")
@@ -252,9 +252,9 @@ def _kor_kafesi(spec, kor, satirlar, uretilen, anahtar=None, sonek=""):
     nx, ny = kor["boyut"]
     v = "kor_kafes%s" % ("_" + sonek if sonek else "")
     satirlar.append("")
-    satirlar.append("# kor kafesi (%d x %d demet), adim %s cm%s"
+    satirlar.append("# kor kafesi (%d x %d demet), adım %s cm%s"
                     % (nx, ny, _f(kor["adim"]),
-                       (" -- katman: %s" % sonek) if sonek else ""))
+                       (" — katman: %s" % sonek) if sonek else ""))
     satirlar.append("%s_disi = openmc.Universe(cells=[openmc.Cell(fill=%s)])"
                     % (v, _mat_ifade((kor.get("yansitici") or {}).get("malzeme"))))
     satirlar.append("%s = openmc.RectLattice()" % v)
@@ -301,7 +301,7 @@ def _demet(spec, demet_ad, satirlar, uretilen, sarmala=False):
         _bagimliliklar(spec, hedef, satirlar, uretilen)
 
     satirlar.append("")
-    satirlar.append("# %s -- %s kafes, adim %s cm" % (demet_ad, d["tur"], _f(d["adim"])))
+    satirlar.append("# %s — %s demet, adım %s cm" % (demet_ad, d["tur"], _f(d["adim"])))
     satirlar.append("%s_disi = openmc.Universe(cells=[openmc.Cell(fill=%s)])"
                     % (v, _mat_ifade(d.get("dolgu_disi"))))
     if d["tur"] == "kare":
@@ -312,7 +312,7 @@ def _demet(spec, demet_ad, satirlar, uretilen, sarmala=False):
                         % (v, _f(-d["adim"] * nx / 2.0), _f(-d["adim"] * ny / 2.0)))
         satirlar.append("%s.outer = %s_disi" % (v, v))
         satirlar.append("")
-        satirlar.append("# kafes haritasi (%d x %d)" % (nx, ny))
+        satirlar.append("# kafes haritası (%d x %d)" % (nx, ny))
         for harf, hedef in sorted(d["anahtar"].items()):
             satirlar.append("#   '%s' -> %s" % (harf, hedef))
         satirlar.append("_harita = [")
@@ -325,8 +325,8 @@ def _demet(spec, demet_ad, satirlar, uretilen, sarmala=False):
         satirlar.append("%s.universes = [[_anahtar[_h] for _h in _s] for _s in _harita]" % v)
     else:
         halka = d.get("halka_sayisi") or d["boyut"][0]
-        satirlar.append("# halkalar DISTAN ICE; her halka tepeden saat yonunde")
-        satirlar.append("# yaricapi k olan halkada 6k oge, merkezde 1 oge")
+        satirlar.append("# halkalar dıştan içe; her halka tepeden saat yönünde")
+        satirlar.append("# yarıçapı k olan halkada 6k öğe, merkezde 1 öğe")
         satirlar.append("%s = openmc.HexLattice()" % v)
         satirlar.append("%s.center = (0.0, 0.0)" % v)
         satirlar.append("%s.pitch = (%s,)" % (v, _f(d["adim"])))
@@ -337,7 +337,7 @@ def _demet(spec, demet_ad, satirlar, uretilen, sarmala=False):
             # !!! VIRGUL SART !!! virgulsuz ardarda string literal'leri Python
             # ortuk olarak birlestirir ve harita tek bir dizeye cokup sessizce
             # yanlis kafes uretir.
-            satirlar.append("    %-*s  # yaricap %d, %d oge"
+            satirlar.append("    %-*s  # yarıçap %d, %d öğe"
                             % (max(len(repr(s)) for s in d["harita"]) + 2,
                                repr(satir) + ",", halka - 1 - i, len(satir)))
         satirlar.append("]")
@@ -359,7 +359,7 @@ def _geometri(spec, satirlar):
     DONER (gx, gy, uretilen) -- uretilen: {spec_adi: betikteki degisken adi}
     Guc dagilimi tally'si hedef cubugun betikteki degisken adina ihtiyac duyar.
     """
-    _bolum(satirlar, 2, "GEOMETRI")
+    _bolum(satirlar, 2, "GEOMETRİ")
     kor = spec["kor"]
     tur = kor["tur"]
     uretilen = {}
@@ -405,7 +405,7 @@ def _geometri(spec, satirlar):
                             % (_f(+h / 2.0), sinir_d.get("ust", "vacuum")))
             eksen = " & +z_alt & -z_ust"
         satirlar.append("")
-        satirlar.append("# --- tamburlu kor: silindirik kor + yansitici + donen tamburlar ---")
+        satirlar.append("# --- tamburlu kor: silindirik kor + yansıtıcı + dönen tamburlar ---")
         satirlar.append("import math")
         satirlar.append("kor_silindir = openmc.ZCylinder(r=%s)" % _f(R_kor))
         satirlar.append("dis_silindir = openmc.ZCylinder(r=%s, boundary_type=%r)"
@@ -417,9 +417,9 @@ def _geometri(spec, satirlar):
         if n > 0:
             aci = float(t.get("emici_aci") or 120.0)
             satirlar.append("")
-            satirlar.append("# Tambur universe'i: emici yay LOKAL +x yonunde ortalanmis.")
-            satirlar.append("# cell.rotation = psi yayi DOGRUDAN psi acisina koyar")
-            satirlar.append("# (nokta sorgusuyla olculdu); ters cevirme yoktur.")
+            satirlar.append("# Tambur universe'i: emici yay yerel +x yönünde ortalanmış.")
+            satirlar.append("# cell.rotation = psi yayı doğrudan psi açısına koyar")
+            satirlar.append("# (nokta sorgusuyla ölçüldü); ters çevirme yoktur.")
             satirlar.append("def _yari_duzlem(aci):")
             satirlar.append("    a = math.radians(aci)")
             satirlar.append("    return openmc.Plane(a=-math.sin(a), b=math.cos(a), c=0.0, d=0.0)")
@@ -441,7 +441,7 @@ def _geometri(spec, satirlar):
             satirlar.append("    openmc.Cell(fill=%s, region=+_t_dis)])"
                             % _mat_ifade(t.get("govde_malzeme")))
             satirlar.append("")
-            satirlar.append("# yerlesim: psi = azimut + 180 + donme  ->  donme=0'da emici kore bakar")
+            satirlar.append("# yerleşim: psi = azimut + 180 + dönme  ->  dönme=0'da emici kora bakar")
             satirlar.append("_tambur_yerlesim = [")
             for x, y, psi in _t.yerlesim(t):
                 satirlar.append("    (%s, %s, %s)," % (_f(x), _f(y), _f(psi)))
@@ -463,8 +463,8 @@ def _geometri(spec, satirlar):
     elif tur == "kuresel":
         kabuklar = kor.get("kabuklar") or []
         satirlar.append("")
-        satirlar.append("# Es merkezli kuresel kabuklar (icten disa).")
-        satirlar.append("# En dis kabugun yuzeyi modelin sinir yuzeyidir.")
+        satirlar.append("# Eş merkezli küresel kabuklar (içten dışa).")
+        satirlar.append("# En dış kabuğun yüzeyi modelin sınır yüzeyidir.")
         sinir_bc = (kor.get("sinir") or {}).get("yan", "vacuum")
         satirlar.append("_kure_hucreler = []")
         satirlar.append("_onceki = None")
@@ -490,7 +490,7 @@ def _geometri(spec, satirlar):
         ic = _kor_kafesi(spec, kor, satirlar, uretilen)
         gx, gy = kor["adim"] * nx, kor["adim"] * ny
     else:
-        raise ValueError("bilinmeyen kor turu: %s" % tur)
+        raise ValueError("bilinmeyen kor türü: %s" % tur)
 
     # --- sinir ve kok universe ---
     sinir = kor.get("sinir") or {}
@@ -499,7 +499,7 @@ def _geometri(spec, satirlar):
     yans = kor.get("yansitici") or {}
 
     satirlar.append("")
-    satirlar.append("# --- sinirlar ve kok universe ---")
+    satirlar.append("# --- sınırlar ve kök universe ---")
     katmanlar = sema.eksenel_katmanlar(kor)
     if h:
         satirlar.append("z_alt = openmc.ZPlane(%s, boundary_type=%r)"
@@ -508,14 +508,14 @@ def _geometri(spec, satirlar):
                         % (_f(+h / 2.0), sinir.get("ust", "reflective")))
         eksen = " & +z_alt & -z_ust"
     else:
-        satirlar.append("# yukseklik verilmemis -> eksenel yonde sonsuz (2B)")
+        satirlar.append("# yükseklik verilmemiş -> eksenel yönde sonsuz (2B)")
         eksen = ""
 
     if katmanlar:
         satirlar.append("")
-        satirlar.append("# --- eksenel katmanlar (alttan uste) ---")
-        satirlar.append("# Ic arayuzler 'transmission'dir; sinir kosulu yalnizca")
-        satirlar.append("# en alt ve en ust yuzeye uygulanir.")
+        satirlar.append("# --- eksenel katmanlar (alttan üste) ---")
+        satirlar.append("# İç arayüzler 'transmission'dir; sınır koşulu yalnızca")
+        satirlar.append("# en alt ve en üst yüzeye uygulanır.")
         for i, (_z0, z1, _b) in enumerate(katmanlar[:-1]):
             satirlar.append("z_ara%d = openmc.ZPlane(%s)" % (i, _f(z1)))
         parcalar = []
@@ -553,9 +553,9 @@ def _geometri(spec, satirlar):
         yonelim = hex_demet.get("yonelim", "y")
         adim = hex_demet["adim"]
         satirlar.append("")
-        satirlar.append("# Altigen duct. HexLattice ve HexagonalPrism yonelimleri AYNIDIR:")
-        satirlar.append("# kafes 'y' -> zarf tepede sivri, sag/solda duz; prizma 'y' de oyle.")
-        satirlar.append("# apothem = (halka-1)*adim*sqrt(3)/2 + adim/2   (yarim adim aciklik)")
+        satirlar.append("# Altıgen duct. HexLattice ve HexagonalPrism yönelimleri aynıdır:")
+        satirlar.append("# kafes 'y' -> zarf tepede sivri, sağ/solda düz; prizma 'y' de öyle.")
+        satirlar.append("# apothem = (halka-1)*adım*sqrt(3)/2 + adım/2   (yarım adım açıklık)")
         satirlar.append("import math")
         satirlar.append("_apothem = (%s - 1) * %s * math.sqrt(3) / 2 + %s / 2"
                         % (_f(halka), _f(adim), _f(adim)))
@@ -608,10 +608,10 @@ def _ayarlar(spec, satirlar, gx, gy):
     satirlar.append("")
     satirlar.append("ayar = openmc.Settings()")
     satirlar.append("ayar.run_mode  = %r" % a.get("mod", "eigenvalue"))
-    satirlar.append("ayar.particles = %-10s # cevrim basina parcacik" % _f(int(a["parcacik"])))
-    satirlar.append("ayar.batches   = %-10s # toplam cevrim" % _f(int(a["cevrim"])))
+    satirlar.append("ayar.particles = %-10s # çevrim başına parçacık" % _f(int(a["parcacik"])))
+    satirlar.append("ayar.batches   = %-10s # toplam çevrim" % _f(int(a["cevrim"])))
     if a.get("mod", "eigenvalue") == "eigenvalue":
-        satirlar.append("ayar.inactive  = %-10s # pasif cevrim" % _f(int(a["pasif"])))
+        satirlar.append("ayar.inactive  = %-10s # pasif çevrim" % _f(int(a["pasif"])))
     if a.get("tohum"):
         satirlar.append("ayar.seed      = %s" % _f(int(a["tohum"])))
     if a.get("sicaklik_yontemi"):
@@ -633,7 +633,7 @@ def _ayarlar(spec, satirlar, gx, gy):
         ust = k.get("ust") or [+_kx / 2, +_ky / 2, _z1]
         satirlar.append("_uzay = openmc.stats.Box(%r, %r)"
                         % (list(alt), list(ust)))
-        satirlar.append("_kisit = {'fissionable': True}   # kaynak sadece fisil bolgelerde")
+        satirlar.append("_kisit = {'fissionable': True}   # kaynak yalnızca fisil bölgelerde")
     else:
         satirlar.append("_uzay = openmc.stats.Point(%r)"
                         % (tuple(k.get("konum") or (0.0, 0.0, 0.0)),))
@@ -649,13 +649,13 @@ def _ayarlar(spec, satirlar, gx, gy):
                     % (k.get("parcacik") or "neutron"))
     satirlar.append("                                       constraints=_kisit)")
     if (k.get("parcacik") or "neutron") == "photon":
-        satirlar.append("ayar.photon_transport = True   # foton kaynagi foton tasinimi gerektirir")
+        satirlar.append("ayar.photon_transport = True   # foton kaynağı foton taşınımı gerektirir")
     ent = a.get("entropi_mesh") or {}
     if ent.get("var") and a.get("mod", "eigenvalue") == "eigenvalue":
         satirlar.append("")
-        satirlar.append("# Shannon entropisi mesh'i -- kaynak yakinsamasini olcer.")
-        satirlar.append("# Entropi pasif cevrimler boyunca kayiyorsa pasif cevrim")
-        satirlar.append("# sayisi yetersizdir ve k-eff yanli cikar.")
+        satirlar.append("# Shannon entropisi ağı — kaynak yakınsamasını ölçer.")
+        satirlar.append("# Entropi pasif çevrimler boyunca kayıyorsa pasif çevrim")
+        satirlar.append("# sayısı yetersizdir ve k-eff yanlı çıkar.")
         satirlar.append("_ent_mesh = openmc.RegularMesh()")
         satirlar.append("_ent_mesh.dimension = %r" % (_kaynak.entropi_boyutu(spec),))
         _hz = sema.kor_yuksekligi(spec["kor"])
@@ -674,15 +674,15 @@ def _guc_dagilimi(spec, satirlar, uretilen, gx, gy):
     degisken = uretilen.get(cubuk_ad)
     if degisken is None:
         satirlar.append("")
-        satirlar.append("# UYARI: guc dagilimi icin '%s' cubugu geometride" % cubuk_ad)
-        satirlar.append("# bulunamadi; tally uretilmedi.")
+        satirlar.append("# Uyarı: güç dağılımı için '%s' çubuğu geometride" % cubuk_ad)
+        satirlar.append("# bulunamadı; tally üretilmedi.")
         return []
 
     bolge = int(g.get("bolge") or 0)
     satirlar.append("")
-    satirlar.append("# --- cubuk bazli guc dagilimi ---")
-    satirlar.append("# pin() hucreleri BOLGE SIRASINDA olusturur, bu yuzden id'ye")
-    satirlar.append("# gore siralamak bolge sirasini verir.")
+    satirlar.append("# --- çubuk bazlı güç dağılımı ---")
+    satirlar.append("# pin() hücreleri bölge sırasında oluşturur, bu yüzden id'ye")
+    satirlar.append("# göre sıralamak bölge sırasını verir.")
     satirlar.append("_guc_hucreler = sorted(%s.cells.values(), key=lambda c: c.id)" % degisken)
     satirlar.append("_guc_hedef = _guc_hucreler[%d]" % bolge)
     satirlar.append("guc_tally = openmc.Tally(name='guc_dagilimi')")
@@ -694,8 +694,8 @@ def _guc_dagilimi(spec, satirlar, uretilen, gx, gy):
     if h and dilim > 1:
         pay = max(gx, gy)
         satirlar.append("")
-        satirlar.append("# Eksenel mesh AKTIF YAKIT YUKSEKLIGIYLE tam ortusmelidir;")
-        satirlar.append("# tasarsa bos bin'ler ortalamayi duserir ve F_q sisrer.")
+        satirlar.append("# Eksenel mesh aktif yakıt yüksekliğiyle tam örtüşmelidir;")
+        satirlar.append("# taşarsa boş bin'ler ortalamayı düşürür ve F_q şişer.")
         satirlar.append("_guc_mesh = openmc.RegularMesh()")
         satirlar.append("_guc_mesh.dimension   = [1, 1, %d]" % dilim)
         from cekirdek import kurucu as _kur
@@ -705,8 +705,8 @@ def _guc_dagilimi(spec, satirlar, uretilen, gx, gy):
         satirlar.append("_guc_filtreler.append(openmc.MeshFilter(_guc_mesh))")
     satirlar.append("guc_tally.filters = _guc_filtreler")
     satirlar.append("")
-    satirlar.append("# Toplam korunumu kontrolu: AYNI hucre, bolunmemis.")
-    satirlar.append("# Eksenel mesh'in hucrenin tamamini kapsayip kapsamadigini da sinar.")
+    satirlar.append("# Toplam korunumu kontrolü: aynı hücre, bölünmemiş.")
+    satirlar.append("# Eksenel mesh'in hücrenin tamamını kapsayıp kapsamadığını da sınar.")
     satirlar.append("guc_ref = openmc.Tally(name='guc_toplam_ref')")
     satirlar.append("guc_ref.scores = list(guc_tally.scores)")
     satirlar.append("guc_ref.filters = [openmc.CellFilter(_guc_hedef)]")
@@ -739,7 +739,7 @@ def _tallyler(spec, satirlar, ek_tallyler=None, on_satirlar=None, sinir_kutu=Non
                 from cekirdek import kurucu as _kur
                 alt, ust = _kur.tally_mesh_sinirlari(spec, f, sinir_kutu)
                 if f.get("otomatik"):
-                    satirlar.append("# mesh sinirlari modelin sinir kutusundan turetildi")
+                    satirlar.append("# mesh sınırları modelin sınır kutusundan türetildi")
                 satirlar.append("%s = openmc.RegularMesh()" % mv)
                 satirlar.append("%s.dimension  = %r" % (mv, list(f["boyut"])))
                 satirlar.append("%s.lower_left = %r" % (mv, list(alt)))
@@ -767,38 +767,38 @@ def _tukenme(spec, satirlar):
     from cekirdek import tukenme as _tk
     zs = _tk.zincir_secimi(spec)
     hv = _tk.hacimler(spec)
-    _bolum(satirlar, 6, "TUKENME (YANMA)")
+    _bolum(satirlar, 6, "TÜKENME (YANMA)")
     satirlar.append("")
-    satirlar.append("# Yanabilir malzemeler ve ANALITIK hacimleri. Hacim yanlissa yanma")
-    satirlar.append("# hizi ayni oranda yanlis olur ve k-eff'te iz birakmaz.")
+    satirlar.append("# Yanabilir malzemeler ve analitik hacimleri. Hacim yanlışsa yanma")
+    satirlar.append("# hızı aynı oranda yanlış olur ve k-eff'te iz bırakmaz.")
     for ad, v in hv.items():
         satirlar.append("%s.depletable = True" % _ad(ad))
-        satirlar.append("%s.volume = %r   # cm3 -- %s" % (_ad(ad), v["hacim"], v["ayrinti"]))
+        satirlar.append("%s.volume = %r   # cm³ — %s" % (_ad(ad), v["hacim"], v["ayrinti"]))
     satirlar.append("")
     satirlar.append("# Zincir: %s" % zs["gerekce"])
-    satirlar.append("# Bu yol bu makineye aittir; baska yerde OPENMC_CHAIN_FILE'a bakin.")
+    satirlar.append("# Bu yol bu makineye aittir; başka yerde OPENMC_CHAIN_FILE'a bakın.")
     satirlar.append("TUKENME_ZINCIRI = %r" % zs["yol"])
     satirlar.append("TUKENME_ADIMLARI = %r   # %s" % ([float(a) for a in t["adimlar"]],
                                                     t.get("adim_birimi") or "d"))
     satirlar.append("")
     satirlar.append("")
     satirlar.append("def tukenme_kos():")
-    satirlar.append('    """Yanma hesabi; depletion_results.h5 uretir."""')
+    satirlar.append('    """Yanma hesabı; depletion_results.h5 üretir."""')
     satirlar.append("    import openmc.deplete")
     satirlar.append("    op = openmc.deplete.CoupledOperator(")
     satirlar.append("        model, TUKENME_ZINCIRI,")
     satirlar.append("        diff_burnable_mats=%r," % bool(t.get("malzemeleri_ayir")))
     satirlar.append("        normalization_mode='fission-q',")
     satirlar.append("        fission_yield_mode='constant',")
-    satirlar.append("        # Fisyon urunu verimleri bu enerjide okunur: 0.0253 eV termal,")
-    satirlar.append("        # 5e5 eV hizli. OpenMC'nin varsayilani 0.0253 eV'tur -- hizli")
-    satirlar.append("        # zincir secilse bile. Hizli sistemde bu ayrica verilmelidir.")
+    satirlar.append("        # Fisyon ürünü verimleri bu enerjide okunur: 0.0253 eV termal,")
+    satirlar.append("        # 5e5 eV hızlı. OpenMC'nin varsayılanı 0.0253 eV'tur — hızlı")
+    satirlar.append("        # zincir seçilse bile. Hızlı sistemde bu ayrıca verilmelidir.")
     satirlar.append("        fission_yield_opts={'energy': %r})" % zs["verim_enerjisi"])
     sinif = {"cecm": "CECMIntegrator", "predictor": "PredictorIntegrator"}[
         t.get("entegrator") or "cecm"]
     satirlar.append("    integ = openmc.deplete.%s(" % sinif)
     satirlar.append("        op, TUKENME_ADIMLARI,")
-    satirlar.append("        power_density=%r,   # W/gHM (mutlak guc DEGIL)"
+    satirlar.append("        power_density=%r,   # W/gHM (mutlak güç değil)"
                     % float(t["guc_yogunlugu"]))
     satirlar.append("        timestep_units=%r)" % (t.get("adim_birimi") or "d"))
     satirlar.append("    integ.integrate()")
@@ -807,7 +807,7 @@ def _tukenme(spec, satirlar):
 
 
 def _kapanis(spec, satirlar, renkli):
-    _bolum(satirlar, 5, "MODEL VE CALISTIRMA")
+    _bolum(satirlar, 5, "MODEL VE ÇALIŞTIRMA")
     tallyler = ("tallyler" if (spec.get("tallyler")
                 or (spec.get("guc_dagilimi") or {}).get("var"))
                 else "openmc.Tallies()")
@@ -819,13 +819,13 @@ def _kapanis(spec, satirlar, renkli):
         # kurucu.kur ile ayni: onceden betik IFP'yi hic yazmiyordu ve disa
         # aktarilan Godiva beta_eff / notron omru vermiyordu.
         satirlar.append("")
-        satirlar.append("# Kinetik parametreler (IFP): etkin gecikmis notron kesri (beta_eff)")
-        satirlar.append("# ve ortalama notron nesil suresi. Kosu suresini biraz uzatir.")
+        satirlar.append("# Kinetik parametreler (IFP): etkin gecikmiş nötron kesri (beta_eff)")
+        satirlar.append("# ve ortalama nötron nesil süresi. Koşu süresini biraz uzatır.")
         satirlar.append("model.add_kinetics_parameters_tallies()")
         satirlar.append("model.settings.ifp_n_generation = %d" % int(kin.get("nesil") or 10))
     if renkli:
         satirlar.append("")
-        satirlar.append("# Model.plot() SVG renk adi ya da (R,G,B) demeti ister -- hex dize KABUL ETMEZ")
+        satirlar.append("# Model.plot() SVG renk adı ya da (R,G,B) demeti ister — hex dize kabul etmez")
         satirlar.append("renkler = {")
         for m in spec["malzemeler"]:
             if m.get("renk"):
@@ -838,22 +838,22 @@ def _kapanis(spec, satirlar, renkli):
     satirlar.append("if __name__ == '__main__':")
     satirlar.append("    import matplotlib.pyplot as plt")
     satirlar.append("")
-    satirlar.append("    # --- ONCE CIZ, SONRA CALISTIR ---")
-    satirlar.append("    # Geometri dogru gorunmeden kosu baslatmak zaman kaybidir.")
+    satirlar.append("    # --- Önce çiz, sonra çalıştır ---")
+    satirlar.append("    # Geometri doğru görünmeden koşu başlatmak zaman kaybıdır.")
     satirlar.append("    for _eksen in ('xy',):")
     satirlar.append("        _ax = model.plot(basis=_eksen, color_by='material',")
     satirlar.append("                         colors=%s pixels=(600, 600))"
                     % ("renkler," if renkli else "None,"))
     satirlar.append("        _ax.get_figure().savefig('geometri_%s.png' % _eksen, dpi=110)")
-    satirlar.append("        print('cizildi: geometri_%s.png' % _eksen)")
+    satirlar.append("        print('çizildi: geometri_%s.png' % _eksen)")
     satirlar.append("")
-    satirlar.append("    # Plotlar dogruysa asagidaki satirin yorumunu kaldirin.")
+    satirlar.append("    # Çizimler doğruysa aşağıdaki satırın yorumunu kaldırın.")
     satirlar.append("    # sp = model.run(threads=%d)" % spec["calistirma"].get("is_parcacigi", 8))
     satirlar.append("    # print(openmc.StatePoint(sp).keff)")
     if tukenme_var:
         satirlar.append("")
-        satirlar.append("    # Yanma hesabi (uzun surer; OMP_NUM_THREADS ortam degiskeniyle")
-        satirlar.append("    # is parcacigi sayisini ayarlayin):")
+        satirlar.append("    # Yanma hesabı (uzun sürer; OMP_NUM_THREADS ortam değişkeniyle")
+        satirlar.append("    # iş parçacığı sayısını ayarlayın):")
         satirlar.append("    # tukenme_kos()")
 
 
@@ -877,7 +877,7 @@ def _uret(spec, kaynak_dosya, renkli):
         "# -*- coding: utf-8 -*-",
         '"""',
         "=" * 78,
-        " %s" % spec.get("ad", "isimsiz model"),
+        " %s" % spec.get("ad", "adsız model"),
         "=" * 78,
     ]
     if spec.get("aciklama"):
@@ -885,16 +885,16 @@ def _uret(spec, kaynak_dosya, renkli):
             satirlar.append(" %s" % satir)
         satirlar.append("")
     satirlar += [
-        " Bu betik openmc_arayuz tarafindan uretilmistir (%s)." % tarih,
+        " Bu betik openmc_arayuz tarafından üretilmiştir (%s)." % tarih,
     ]
     if kaynak_dosya:
-        satirlar.append(" Kaynak spec: %s" % kaynak_dosya)
+        satirlar.append(" Kaynak model dosyası: %s" % kaynak_dosya)
     satirlar += [
         "",
-        " Betik tek basina calisir; openmc_arayuz'a bagimli degildir.",
-        " Elle duzenlenebilir, ancak arayuze GERI YUKLENEMEZ.",
+        " Betik tek başına çalışır; openmc_arayuz'a bağımlı değildir.",
+        " Elle düzenlenebilir, ancak arayüze geri yüklenemez.",
         "",
-        " KULLANIM",
+        " Kullanım",
         "   python3 %s" % (kaynak_dosya or "model.py"),
         "=" * 78,
         '"""',

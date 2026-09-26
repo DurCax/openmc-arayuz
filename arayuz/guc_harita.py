@@ -52,7 +52,7 @@ class GucHaritaWidget(QtWidgets.QWidget):
         self.gorunum.addItem("Tek eksenel dilim (F_q)", "dilim")
         self.dilim = QtWidgets.QSlider(QtCore.Qt.Horizontal)
         self.dilim.setMinimum(1); self.dilim.setMaximum(1); self.dilim.setValue(1)
-        self.dilim_etiket = QtWidgets.QLabel("dilim 1")
+        self.dilim_etiket = QtWidgets.QLabel("Dilim 1")
         self.degerler = QtWidgets.QCheckBox("Değerleri haritaya yaz")
         self.d_kaydet = QtWidgets.QPushButton("PNG kaydet…")
 
@@ -94,7 +94,7 @@ class GucHaritaWidget(QtWidgets.QWidget):
         aciklama = QtWidgets.QLabel(
             "F_ΔH = en yüksek çubuk gücü / ortalama (radyal). "
             "F_q = en yüksek yerel güç yoğunluğu / ortalama (radyal × eksenel, 3B gerekir). "
-            "Renk ölçeği ortalamaya göre bağıldır: 1,00 = ortalama çubuk.")
+            "Renk ölçeği ortalamaya göre bağıldır: 1.00 = ortalama çubuk.")
         aciklama.setObjectName("soluk")
         aciklama.setWordWrap(True)
         duzen.addWidget(aciklama)
@@ -139,24 +139,25 @@ class GucHaritaWidget(QtWidgets.QWidget):
 
     def _ozet_yaz(self):
         if not self.faktorler:
-            self.ozet.setText("Güç dağılımı hesaplanmadı. Hesap ayarları'nda "
-                              "'Güç dağılımı'nı açıp modeli yeniden çalıştırın.")
+            self.ozet.setText("Güç dağılımı hesaplanmadı. Hesap ayarları sekmesinde "
+                              "'Çubuk bazlı güç dağılımı hesapla' kutusunu işaretleyip "
+                              "modeli yeniden çalıştırın.")
             return
         f = self.faktorler
         p = ["<b>F_&Delta;H = %.4f</b>" % f["F_dH"]]
         if f["F_q"]:
             p.append("<b>F_q = %.4f</b>" % f["F_q"])
-        p.append("%d cubuk, %d eksenel dilim" % (f["cubuk_sayisi"], f["eksenel_dilim"]))
-        p.append("sicak cubuk %s" % (f["sicak_cubuk"],))
+        p.append("%d çubuk, %d eksenel dilim" % (f["cubuk_sayisi"], f["eksenel_dilim"]))
+        p.append("en sıcak çubuk: %s" % _guc.konum_metni(f["sicak_cubuk"], f.get("kafes_turu")))
         if f["sicak_dilim"]:
-            p.append("sicak dilim %d" % (f["sicak_dilim"][1] + 1))
+            p.append("en sıcak dilim: %d" % (f["sicak_dilim"][1] + 1))
         metin = " &nbsp;|&nbsp; ".join(p)
         if self.korunum is not None:
             iyi = self.korunum < 1e-6
-            metin += ("<br><span style='color:%s'>toplam korunumu: bagil fark "
-                      "%.1e %s</span>"
+            metin += ("<br><span style='color:%s'>Toplamın korunumu: bağıl fark "
+                      "%.1e — %s</span>"
                       % ("#1e6b3a" if iyi else "#8b1a1a", self.korunum,
-                         "OK" if iyi else "BOZUK -- haritaya guvenmeyin"))
+                         "tamam" if iyi else "bozuk, haritaya güvenmeyin"))
         satirlar = _guc.yorumla(f, self.mutlak)
         metin += "<br><br>" + "<br>".join("&bull; " + s.strip() for s in satirlar)
         self.ozet.setText(metin)
@@ -169,14 +170,14 @@ class GucHaritaWidget(QtWidgets.QWidget):
             i = self.dilim.value() - 1
             return {a: v[i][0] for a, v in f["bagil_eksenel"].items()}, \
                    "dilim %d / %d" % (i + 1, f["eksenel_dilim"])
-        return {a: v[0] for a, v in f["bagil"].items()}, "cubuk toplami"
+        return {a: v[0] for a, v in f["bagil"].items()}, "çubuk toplamı"
 
     def _ciz(self):
         if not self.faktorler or not self.dagilim:
             self._bos("Güç dağılımı hesaplanmadı")
             return
         f = self.faktorler
-        self.dilim_etiket.setText("dilim %d" % self.dilim.value())
+        self.dilim_etiket.setText("Dilim %d" % self.dilim.value())
         veri, alt_baslik = self._veri()
 
         self.figur.clear()
@@ -192,7 +193,7 @@ class GucHaritaWidget(QtWidgets.QWidget):
             self._ciz_altigen(eks, veri)
         else:
             self._ciz_kare(eks, veri)
-        eks.set_title("Bagil guc -- %s" % alt_baslik, fontsize=9)
+        eks.set_title("Bağıl güç — %s" % alt_baslik, fontsize=9)
 
         if eks_p is not None and f["eksenel_profil"]:
             y = [p[0] for p in f["eksenel_profil"]]
@@ -201,7 +202,7 @@ class GucHaritaWidget(QtWidgets.QWidget):
             eks_p.axvline(1.0, color="#95a5a6", ls="--", lw=0.8)
             if self.gorunum.currentData() == "dilim":
                 eks_p.axhline(self.dilim.value(), color="#c0392b", ls="-", lw=1.2)
-            eks_p.set_xlabel("bagil guc", fontsize=8)
+            eks_p.set_xlabel("bağıl güç", fontsize=8)
             eks_p.set_ylabel("eksenel dilim", fontsize=8)
             eks_p.tick_params(labelsize=7)
             eks_p.grid(alpha=0.3)
@@ -220,18 +221,20 @@ class GucHaritaWidget(QtWidgets.QWidget):
         for (x, y), v in veri.items():
             izgara[y, x] = v
         alt, ust = self._renk_olcegi(veri)
+        # Eksenler 1'den numarali (x soldan, y alttan): hucre (x, y) -> (x+1, y+1)
         im = eks.imshow(izgara, origin="lower", cmap="inferno",
-                        vmin=alt, vmax=ust, interpolation="nearest")
-        self.figur.colorbar(im, ax=eks, fraction=0.046, label="bagil guc")
+                        vmin=alt, vmax=ust, interpolation="nearest",
+                        extent=(0.5, nx + 0.5, 0.5, ny + 0.5))
+        self.figur.colorbar(im, ax=eks, fraction=0.046, label="bağıl güç")
         sicak = self.faktorler["sicak_cubuk"]
-        eks.plot(sicak[0], sicak[1], marker="o", ms=11, mfc="none",
-                 mec="#00e5ff", mew=2.0, label="en sicak")
+        eks.plot(sicak[0] + 1, sicak[1] + 1, marker="o", ms=11, mfc="none",
+                 mec="#00e5ff", mew=2.0, label="en sıcak")
         eks.legend(fontsize=7, loc="upper right")
-        eks.set_xlabel("kafes x", fontsize=8); eks.set_ylabel("kafes y", fontsize=8)
+        eks.set_xlabel("x (soldan)", fontsize=8); eks.set_ylabel("y (alttan)", fontsize=8)
         eks.tick_params(labelsize=7)
         if self.degerler.isChecked() and nx * ny <= 400:
             for (x, y), v in veri.items():
-                eks.text(x, y, "%.2f" % v, ha="center", va="center", fontsize=5,
+                eks.text(x + 1, y + 1, "%.2f" % v, ha="center", va="center", fontsize=5,
                          color="white" if v < (alt + ust) / 2 else "black")
 
     def _ciz_altigen(self, eks, veri):
@@ -261,21 +264,21 @@ class GucHaritaWidget(QtWidgets.QWidget):
         if sicak in konum:
             sx, sy = konum[sicak]
             eks.plot(sx, sy, marker="o", ms=11, mfc="none", mec="#00e5ff",
-                     mew=2.0, label="en sicak")
+                     mew=2.0, label="en sıcak")
             eks.legend(fontsize=7, loc="upper right")
         tum = list(konum.values())
         pay = yaricap * 1.5
         eks.set_xlim(min(p[0] for p in tum) - pay, max(p[0] for p in tum) + pay)
         eks.set_ylim(min(p[1] for p in tum) - pay, max(p[1] for p in tum) + pay)
         eks.set_aspect("equal")
-        eks.set_xlabel("adim birimi", fontsize=8)
+        eks.set_xlabel("adım birimi", fontsize=8)
         eks.tick_params(labelsize=7)
         self.figur.colorbar(
             matplotlib.cm.ScalarMappable(norm=norm, cmap="inferno"),
-            ax=eks, fraction=0.046, label="bagil guc")
+            ax=eks, fraction=0.046, label="bağıl güç")
 
     def _kaydet(self):
         yol, _ = QtWidgets.QFileDialog.getSaveFileName(
-            self, "Guc haritasini kaydet", "guc_haritasi.png", "PNG (*.png)")
+            self, "Güç haritasını kaydet", "guc_haritasi.png", "PNG (*.png)")
         if yol:
             self.figur.savefig(yol, dpi=150, bbox_inches="tight")

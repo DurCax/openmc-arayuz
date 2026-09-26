@@ -1,7 +1,7 @@
 {
   "surum": 1,
-  "ad": "SFR altigen yakit demeti",
-  "aciklama": "Sodyum sogutmali hizli reaktor yakit demeti: 7 halkali altigen kafes, 127 U-10Mo yakit cubugu, SS316 zarf, sivi sodyum 673 K. Altigen prizma yansitici sinir -> sonsuz kafes (k-inf). 'e' harfi B4C emici cubuga bagli; kontrol demeti kurmak icin haritada kullanilabilir.",
+  "ad": "SFR altıgen yakıt demeti",
+  "aciklama": "Sodyum soğutmalı hızlı reaktör yakıt demeti: 7 halkalı altıgen demet, 127 U-10Mo yakıt çubuğu, SS316 zarf, sıvı sodyum 673 K. Altıgen prizma, yansıtıcı sınır → sonsuz kafes (k∞). 'e' harfi B4C emici çubuğa bağlı; kontrol demeti kurmak için haritada kullanılabilir.",
   "malzemeler": [
     {
       "ad": "u10mo",

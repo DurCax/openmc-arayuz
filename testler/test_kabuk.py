@@ -145,7 +145,7 @@ def test_baslangic_ekrani():
     try:
         b = p.baslangic
         kontrol("dosyasiz acilista baslangic ekrani gorunur", p.baslangic_acik_mi())
-        kontrol("baslik 'Ne modelliyorsun?'", b.baslik.text() == "Ne modelliyorsun?")
+        kontrol("baslik 'Ne modellemek istiyorsunuz?'", b.baslik.text() == "Ne modellemek istiyorsunuz?")
         kontrol("ilk acilista 'modele don' gizli", b.d_geri.isHidden())
         kontrol("baslangicta model eylemleri kapali (Kaydet, F9)",
                 not p.e_kaydet.isEnabled() and not p.e_calistir.isEnabled())
@@ -446,7 +446,7 @@ def test_sag_panel_ve_rozet():
         # ONCE CIZ, SONRA CALISTIR
         p.onizleme.cizildi_mi = lambda: False
         izin, mesaj = p._kosu_izni()
-        kontrol("cizilmemis geometri: CALISTIR kapali", not izin and "ÇİZ" in mesaj)
+        kontrol("cizilmemis geometri: CALISTIR kapali", not izin and "Önce çiz" in mesaj)
         p.onizleme.cizildi_mi = lambda: True
         kontrol("cizilmis ve hatasiz: CALISTIR acik", p._kosu_izni()[0])
 

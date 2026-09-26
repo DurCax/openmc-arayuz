@@ -1,7 +1,7 @@
 {
   "surum": 1,
-  "ad": "PWR pin hucre -- tukenme",
-  "aciklama": "TUKENME ornegi. pwr_pinhucre ile ayni pin hucre (2B, yansitici sinir), 40 W/gHM guc yogunlugunda yakilir.\nIlk iki adim KISA tutuldu (0.5 ve 1.5 gun): Xe-135 dengesi ~2 gunde kurulur; ilk adim uzun olursa bu hizli dusus tek bir cizgiye ezilir ve gorulmez. Sonrasi ~20 MWd/kg'a kadar uzar.\nZincir otomatik secilir: suda hidrojen var -> termal (ENDF/B-VIII.0).\nHacim analitik: pi x 0.39218^2 x 1 cm (2B modelde 1 cm yukseklik; guc yogunlugu kullanildigi icin tutarlidir).",
+  "ad": "PWR pin hücre — tükenme",
+  "aciklama": "pwr_pinhucre ile aynı pin hücrenin (2B, yansıtıcı sınır) 40 W/gHM güç yoğunluğunda ~20 MWd/kg'a kadar yakılması (tükenme örneği).\nİlk iki adım kısa tutuldu (0.5 ve 1.5 gün): Xe-135 dengesi ~2 günde kurulur; ilk adım uzun olursa bu hızlı düşüş tek bir çizgiye ezilir ve görülmez. Sonrası ~20 MWd/kg'a kadar uzar.\nZincir otomatik seçilir: suda hidrojen var → termal (ENDF/B-VIII.0).\nHacim analitik: π × 0.39218² × 1 cm (2B modelde 1 cm yükseklik; güç yoğunluğu kullanıldığı için tutarlıdır).",
   "malzemeler": [
     {
       "ad": "uo2",

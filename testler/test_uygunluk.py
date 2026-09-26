@@ -788,7 +788,7 @@ def test_dogrula_uyumu():
                 if yon != "yan" and bc == "periodic":
                     continue                     # ayrica sinanir (tek/cift tarafli)
                 hatalar = [b for b in dogrula.kor_kontrol(x) if b.seviye == "hata"
-                           and ("periodic" in b.mesaj or "sinir" in b.mesaj.lower())]
+                           and ("periodic" in b.mesaj or "sınır" in b.mesaj.lower())]
                 if (bc in secenek) == bool(hatalar):
                     sorun.append((yon, bc, [b.mesaj[:50] for b in hatalar]))
         kontrol("%s: sunulan sinir <=> sinir hatasi yok" % ad, not sorun,
@@ -801,7 +801,7 @@ def test_dogrula_uyumu():
             x = copy.deepcopy(s)
             x["guc_dagilimi"].update(var=True, cubuk=c["ad"], bolge=0)
             b = [y for y in dogrula.guc_dagilimi_kontrol(x) if y.seviye in ("hata", "uyari")
-                 and ("kafes" in y.mesaj or "kullanilmiyor" in y.mesaj
+                 and ("demet" in y.mesaj or "kullanılmıyor" in y.mesaj
                       or "fisil" in y.mesaj)]
             if (c["ad"] in uygun) == bool(b):
                 sorun.append((c["ad"], [y.mesaj[:50] for y in b]))
@@ -811,7 +811,7 @@ def test_dogrula_uyumu():
         # kaynak turu: sunulan kutu hatasiz, sunulmayan kutu HATA
         x = copy.deepcopy(s)
         x["ayarlar"]["kaynak"]["tur"] = "kutu"
-        h = _bul(x, "hata", "kutu kaynagi fisil")
+        h = _bul(x, "hata", "kutu kaynağı fisil")
         kontrol("%s: kutu kaynagi sunuluyor <=> hata yok" % ad,
                 ("kutu" in ks.get("turler", [])) != bool(h))
 
@@ -833,7 +833,7 @@ def test_dogrula_yeni_bulgular():
     s["kor"]["sinir"]["alt"] = "vacuum"
     kontrol("2) 2B + alt vacuum -> BILGI 'yok sayılır'", bool(_bul(s, "bilgi", "yok sayılır")))
     kontrol("2) kure: alt/ust vacuum icin bilgi yok (godiva)",
-            not _bul(_yukle("godiva_kriter"), None, "sınırı ("))
+            not _bul(_yukle("godiva_kriter"), None, "sınır koşulu ("))
 
     # 3) altigen periodic GECERLI (olculdu: reflective ile ayni k)
     s = _yukle("sfr_altigen")
@@ -844,18 +844,18 @@ def test_dogrula_yeni_bulgular():
     s = _yedek_demetli()
     s["guc_dagilimi"].update(var=True, cubuk="yedek_cubugu", bolge=0)
     kontrol("4) guc hedefi kullanilmayan kafeste -> HATA 'kullanilmiyor'",
-            bool(_bul(s, "hata", "modelde kullanilmiyor")))
+            bool(_bul(s, "hata", "modelde kullanılmıyor")))
 
     # 5) guc: tamburlu malzeme dolgu + tanimli cubuk
     s = _kafesli_tamburlu(False)
     s["guc_dagilimi"].update(var=True, cubuk="tc", bolge=0)
-    kontrol("5) tamburlu (malzeme dolgu) guc -> HATA", bool(_bul(s, "hata", "kullanilmiyor")))
+    kontrol("5) tamburlu (malzeme dolgu) guc -> HATA", bool(_bul(s, "hata", "kullanılmıyor")))
 
     # 6) fisilsiz kutu kaynagi
     s = _yukle("zirh_kure")
     s["ayarlar"]["kaynak"]["tur"] = "kutu"
     kontrol("6) fisil malzemesiz kutu kaynagi -> HATA",
-            bool(_bul(s, "hata", "kutu kaynagi fisil")))
+            bool(_bul(s, "hata", "kutu kaynağı fisil")))
 
     # 7) fisilsiz ozdeger (OpenMC: "No fission sites banked" -- olculdu)
     s = _yukle("zirh_kure")
@@ -866,7 +866,7 @@ def test_dogrula_yeni_bulgular():
     s = _yukle("pwr_pinhucre")
     s["kor"]["yansitici"].update(var=True, malzeme="su")
     kontrol("8) tek_cubuk + yansitici.var -> UYARI 'yansıtıcı kurulmaz'",
-            bool(_bul(s, "uyari", "yansıtıcı kurulmaz")))
+            bool(_bul(s, "uyari", "yansıtıcı kuşak kurulmaz")))
 
     # 9) baska kor turunden kalan alan
     s = _yukle("pwr_17x17")
@@ -878,7 +878,7 @@ def test_dogrula_yeni_bulgular():
     def emici_uyarisi(malzeme):
         s = _yukle("pwr_kontrol")
         s["malzemeler"] = [m for m in s["malzemeler"] if m["ad"] != "b4c"] + [malzeme]
-        return bool(_bul(s, "uyari", "sogurucu icermiyor", dogrula.kontrol_cubugu_kontrol))
+        return bool(_bul(s, "uyari", "emici içermiyor", dogrula.kontrol_cubugu_kontrol))
     B, M = sema.bilesen, sema.malzeme
     kontrol("10) Gd157 nuklidli emici icin yanlis alarm yok",
             not emici_uyarisi(M("b4c", [B("Gd157", 2, tur="nuklid"), B("O", 3)], 7.4)))
@@ -894,15 +894,15 @@ def test_dogrula_yeni_bulgular():
                                                   sema.bolge(None, "su")]))
     s["kor"]["cubuk"] = "bos_cubuk"
     kontrol("11) tukenme + geometride yakit yok -> HATA 'tukenme yapilamaz'",
-            bool(_bul(s, "hata", "tukenme yapilamaz", dogrula.tukenme_kontrol)))
+            bool(_bul(s, "hata", "tükenme yapılamaz", dogrula.tukenme_kontrol)))
 
     # 12) ozdegerde kaynak siddeti, 13) sabit kaynakta pasif cevrim
     s = _yukle("pwr_17x17")
     s["ayarlar"]["kaynak"]["kuvvet"] = 1.0e12
-    kontrol("12) ozdeger + kaynak siddeti -> BILGI", bool(_bul(s, "bilgi", "kaynak siddeti")))
+    kontrol("12) ozdeger + kaynak siddeti -> BILGI", bool(_bul(s, "bilgi", "kaynak şiddeti")))
     s = _yukle("zirh_kure")
     s["ayarlar"]["pasif"] = 10
-    kontrol("13) sabit kaynak + pasif -> BILGI", bool(_bul(s, "bilgi", "pasif cevrim")))
+    kontrol("13) sabit kaynak + pasif -> BILGI", bool(_bul(s, "bilgi", "pasif çevrim")))
 
 
 HIZLI = [test_kahin_tablosu, test_sunulan_hedef_modeli_degistirir,

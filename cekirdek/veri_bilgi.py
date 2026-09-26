@@ -185,7 +185,7 @@ def malzeme_araligi(nuklidler, sab_listesi):
         if ust is None or a[1] < ust:
             ust, kisitlayan = a[1], s
     if alt is None or ust is None:
-        return None, None, "sicaklik araligi okunamadi"
+        return None, None, "sıcaklık aralığı okunamadı"
     return alt, ust, kisitlayan
 
 
@@ -228,21 +228,21 @@ def zincir_kontrol(yol, tam=False):
     sonuc yol+boyut+degisiklik zamanina gore onbelleklenir).
     """
     if not yol or not os.path.exists(yol):
-        return False, "zincir dosyasi yok: %s" % yol, None
+        return False, "zincir dosyası yok: %s" % yol, None
     boyut = os.path.getsize(yol)
     if boyut == 0:
-        return False, "zincir dosyasi bos: %s" % yol, None
+        return False, "zincir dosyası boş: %s" % yol, None
     try:
         with open(yol, "rb") as f:
             f.seek(max(0, boyut - 512))
             son = f.read()
     except OSError as e:
-        return False, "zincir dosyasi okunamadi: %s" % e, None
+        return False, "zincir dosyası okunamadı: %s" % e, None
     if b"</depletion_chain>" not in son:
-        return False, ("zincir dosyasi YARIM: kapanis etiketi yok (%d bayt). "
-                       "Indirme kesilmis olabilir; yeniden indirin." % boyut), None
+        return False, ("zincir dosyası yarım: kapanış etiketi yok (%d bayt). "
+                       "İndirme kesilmiş olabilir; yeniden indirin." % boyut), None
     if not tam:
-        return True, "zincir dosyasi tamam gorunuyor (%.1f MB)" % (boyut / 1e6), None
+        return True, "zincir dosyası tamam görünüyor (%.1f MB)" % (boyut / 1e6), None
 
     anahtar = (os.path.abspath(yol), boyut, os.path.getmtime(yol))
     if anahtar in _ZINCIR_ONBELLEK:
@@ -250,8 +250,8 @@ def zincir_kontrol(yol, tam=False):
     try:
         import openmc.deplete
         n = len(openmc.deplete.Chain.from_xml(yol).nuclides)
-        sonuc = (True, "zincir ayristirildi: %d nuklid" % n, n)
+        sonuc = (True, "zincir ayrıştırıldı: %d nüklid" % n, n)
     except Exception as e:
-        sonuc = (False, "zincir ayristirilamadi: %s" % e, None)
+        sonuc = (False, "zincir ayrıştırılamadı: %s" % e, None)
     _ZINCIR_ONBELLEK[anahtar] = sonuc
     return sonuc

@@ -52,40 +52,40 @@ from cekirdek import malzeme_kutup as mk
 # ----------------------------------------------------------------------------
 TURLER = {
     "yakit_sicaklik": (
-        "Yakit sicakligi (Doppler) -- yogunluk SABIT tutulur (kati yakit)",
+        "Yakıt sıcaklığı (Doppler) — yoğunluk sabit tutulur (katı yakıt)",
         "malzeme", "K", "pcm/K"),
     "sogutucu_sicaklik": (
-        "Sogutucu sicakligi -- yogunluk korelasyonla BIRLIKTE degisir",
+        "Soğutucu sıcaklığı — yoğunluk korelasyonla birlikte değişir",
         "malzeme", "K", "pcm/K"),
     "malzeme_yogunluk": (
-        "Malzeme yogunlugu",
+        "Malzeme yoğunluğu",
         "malzeme", "g/cm3", "pcm/(g/cm3)"),
     "void_orani": (
-        "Sogutucu void orani -- yogunluk rho0*(1-alfa) olur",
+        "Soğutucu boşluk (void) oranı — yoğunluk ρ0·(1−α) olur",
         "malzeme", "%", "pcm/%void"),
     "bor_ppm": (
-        "Suda cozunmus dogal bor",
+        "Suda çözünmüş doğal bor",
         "malzeme", "ppm", "pcm/ppm"),
     "zenginlik": (
-        "Uranyum zenginligi (agirlik %)",
+        "Uranyum zenginliği (ağırlıkça %)",
         "malzeme", "%", "pcm/%"),
     "kafes_adim": (
-        "Kafes adimi (moderasyon orani etudu)",
+        "Demet adımı (moderasyon oranı etüdü)",
         "demet", "cm", "pcm/cm"),
     "kor_adim": (
-        "Kor hucre adimi",
+        "Kor hücre adımı",
         "kor", "cm", "pcm/cm"),
     "cubuk_daldirma": (
-        "Kontrol cubugu daldirma orani (%0 cekilmis, %100 tam dalmis)",
+        "Kontrol çubuğu daldırma oranı (%0 çekilmiş, %100 tam dalmış)",
         "kontrol_cubugu", "%", "pcm/%"),
     "cubuk_yaricap": (
-        "Cubugun bir bolgesinin yaricapi",
+        "Çubuğun bir bölgesinin yarıçapı",
         "cubuk_bolge", "cm", "pcm/cm"),
     "tambur_donme": (
-        "Kontrol tamburu donmesi (0 = emici kore bakiyor, 180 = disa)",
+        "Kontrol tamburu dönmesi (0° = emici kora bakıyor, 180° = dışa)",
         "kor", "derece", "pcm/derece"),
     "yansitici_kalinlik": (
-        "Yansitici kusak kalinligi",
+        "Yansıtıcı kuşak kalınlığı",
         "kor", "cm", "pcm/cm"),
 }
 
@@ -105,16 +105,16 @@ def _yogunluk_korelasyonu(malzeme):
         elemanlar.add("".join(ch for ch in isim if ch.isalpha()))
 
     if elemanlar <= {"H", "O", "B"} and "H" in elemanlar:
-        return mk.su_yogunluk, "doymus sivi su tablosu (273-623 K)"
+        return mk.su_yogunluk, "doymuş sıvı su tablosu (273–623 K)"
     if elemanlar <= {"Pb", "Bi"} and elemanlar:
         return (lambda T: (11096.0 - 1.3236 * T) / 1000.0,
-                "LBE: rho = 11096 - 1.3236*T kg/m3 (Sobolev, 400-1300 K)")
+                "LBE: ρ = 11096 − 1.3236·T kg/m³ (Sobolev, 400–1300 K)")
     if elemanlar == {"Na"}:
         return (lambda T: (1014.0 - 0.235 * T) / 1000.0,
-                "Na: rho = 1014 - 0.235*T kg/m3 (371-1200 K)")
-    return None, ("'%s' icin sicakliga bagli yogunluk korelasyonu yok -- "
-                  "yogunluk SABIT tutuldu; moderator sicaklik katsayisi "
-                  "eksik cikar" % malzeme["ad"])
+                "Na: ρ = 1014 − 0.235·T kg/m³ (371–1200 K)")
+    return None, ("'%s' için sıcaklığa bağlı yoğunluk korelasyonu yok — "
+                  "yoğunluk sabit tutuldu; moderatör sıcaklık katsayısı "
+                  "eksik çıkar" % malzeme["ad"])
 
 
 # ============================================================================
@@ -137,13 +137,13 @@ def parametre_uygula(spec, tur, hedef, deger, taban=None):
     if tur == "yakit_sicaklik":
         m = sema.malzeme_bul(yeni, hedef)
         if m is None:
-            raise KeyError("tanimsiz malzeme: %s" % hedef)
+            raise KeyError("tanımsız malzeme: %s" % hedef)
         m["sicaklik"] = float(deger)
 
     elif tur == "sogutucu_sicaklik":
         m = sema.malzeme_bul(yeni, hedef)
         if m is None:
-            raise KeyError("tanimsiz malzeme: %s" % hedef)
+            raise KeyError("tanımsız malzeme: %s" % hedef)
         m["sicaklik"] = float(deger)
         fonk, aciklama = _yogunluk_korelasyonu(m)
         if fonk is not None:
@@ -162,7 +162,7 @@ def parametre_uygula(spec, tur, hedef, deger, taban=None):
         rho0 = m0["yogunluk"]["deger"]
         alfa = float(deger) / 100.0
         if not (0.0 <= alfa <= 1.0):
-            raise ValueError("void orani 0-100 arasinda olmali")
+            raise ValueError("boşluk (void) oranı %0–100 arasında olmalı")
         m["yogunluk"]["deger"] = rho0 * (1.0 - alfa)
 
     elif tur == "bor_ppm":
@@ -183,13 +183,13 @@ def parametre_uygula(spec, tur, hedef, deger, taban=None):
                 b["zenginlik"] = float(deger)
                 bulundu = True
         if not bulundu:
-            raise ValueError("'%s' malzemesinde zenginlik alani olan bir "
-                             "bilesen yok" % hedef)
+            raise ValueError("'%s' malzemesinde zenginlik tanımlı bir "
+                             "bileşen yok" % hedef)
 
     elif tur == "kafes_adim":
         d = sema.demet_bul(yeni, hedef)
         if d is None:
-            raise KeyError("tanimsiz kafes: %s" % hedef)
+            raise KeyError("tanımsız demet: %s" % hedef)
         d["adim"] = float(deger)
 
     elif tur == "kor_adim":
@@ -198,19 +198,19 @@ def parametre_uygula(spec, tur, hedef, deger, taban=None):
     elif tur == "cubuk_daldirma":
         c = sema.cubuk_bul(yeni, hedef)
         if c is None:
-            raise KeyError("tanimsiz cubuk: %s" % hedef)
+            raise KeyError("tanımsız çubuk: %s" % hedef)
         if c.get("tur") != "kontrol":
-            raise ValueError("'%s' bir kontrol cubugu degil; daldirma taramasi "
-                             "yalnizca kontrol cubuklarina uygulanir" % hedef)
+            raise ValueError("'%s' bir kontrol çubuğu değil; daldırma taraması "
+                             "yalnızca kontrol çubuklarına uygulanır" % hedef)
         if not (0.0 <= float(deger) <= 100.0):
-            raise ValueError("daldirma %0-%100 arasinda olmali: %s" % deger)
+            raise ValueError("daldırma %%0–%%100 arasında olmalı: %s" % deger)
         c["daldirma"] = float(deger)
 
     elif tur == "cubuk_yaricap":
         cubuk_ad, bolge_no = hedef
         c = sema.cubuk_bul(yeni, cubuk_ad)
         if c is None:
-            raise KeyError("tanimsiz cubuk: %s" % cubuk_ad)
+            raise KeyError("tanımsız çubuk: %s" % cubuk_ad)
         c["bolgeler"][int(bolge_no)]["r"] = float(deger)
 
     elif tur == "tambur_donme":
@@ -224,7 +224,7 @@ def parametre_uygula(spec, tur, hedef, deger, taban=None):
         yeni["kor"]["yansitici"]["var"] = True
 
     else:
-        raise ValueError("bilinmeyen tarama turu: %s" % tur)
+        raise ValueError("bilinmeyen tarama türü: %s" % tur)
 
     return yeni, not_metni
 
@@ -297,43 +297,43 @@ def katsayi(sonuclar):
 def yorumla(tur, kats):
     """Katsayiyi fiziksel olarak yorumlar (ogrenciye yonelik kisa not)."""
     if kats is None:
-        return "Katsayi hesaplanamadi (yeterli nokta yok)."
+        return "Katsayı hesaplanamadı (yeterli nokta yok)."
     e, s = kats["egim"], kats["egim_sapma"]
     anlamli = abs(e) > 2 * s
     isaret = "negatif" if e < 0 else "pozitif"
     if not anlamli:
-        return ("Egim istatistiksel olarak sifirdan ayirt edilemiyor "
-                "(%.2f +/- %.2f). Daha fazla parcacik/cevrim ya da daha genis "
-                "aralik gerekir." % (e, s))
+        return ("Eğim istatistiksel olarak sıfırdan ayırt edilemiyor "
+                "(%.2f ± %.2f). Daha fazla parçacık/çevrim ya da daha geniş "
+                "aralık gerekir." % (e, s))
     notlar = {
-        "yakit_sicaklik": ("Doppler katsayisi. NEGATIF olmasi beklenir: yakit "
-                           "isindikca U-238 rezonanslari genisler, yakalama artar. "
-                           "Pozitif cikmasi ciddi bir guvenlik isaretidir."),
-        "sogutucu_sicaklik": ("Moderator sicaklik katsayisi. Termal reaktorde "
-                              "NEGATIF olmasi istenir. Pozitifse sogutucu isindikca "
-                              "guc artar -- kararsizlik."),
-        "void_orani": ("Void katsayisi. Termal reaktorde NEGATIF olmali. "
-                       "Hizli reaktorlerde merkezi bolgede pozitif olabilir."),
-        "bor_ppm": ("Bor degeri (worth). NEGATIF olmasi beklenir: bor sogurucudur."),
-        "zenginlik": ("Zenginlik duyarliligi. POZITIF olmasi beklenir."),
-        "kafes_adim": ("Moderasyon orani etkisi. Isareti, kafesin az mi cok mu "
-                       "moderatorlu oldugunu soyler: az moderatorlu tarafta "
-                       "adim artisi k'yi ARTIRIR (pozitif)."),
+        "yakit_sicaklik": ("Doppler katsayısı. Negatif olması beklenir: yakıt "
+                           "ısındıkça U-238 rezonansları genişler, yakalama artar. "
+                           "Pozitif çıkması ciddi bir güvenlik işaretidir."),
+        "sogutucu_sicaklik": ("Moderatör sıcaklık katsayısı. Termal reaktörde "
+                              "negatif olması istenir. Pozitifse soğutucu ısındıkça "
+                              "güç artar — kararsızlık."),
+        "void_orani": ("Boşluk (void) katsayısı. Termal reaktörde negatif olmalı. "
+                       "Hızlı reaktörlerde merkezi bölgede pozitif olabilir."),
+        "bor_ppm": ("Bor değeri (worth). Negatif olması beklenir: bor nötron emicidir."),
+        "zenginlik": ("Zenginlik duyarlılığı. Pozitif olması beklenir."),
+        "kafes_adim": ("Moderasyon oranı etkisi. İşareti, demetin az mı çok mu "
+                       "moderatörlü olduğunu söyler: az moderatörlü tarafta "
+                       "adım artışı k'yi artırır (pozitif)."),
         "tambur_donme": (
-            "Tambur degeri. Donme 0'da emici kora bakar (en dusuk k), 180'de "
-            "disa bakar (en yuksek k); bu yuzden egim POZITIF olmali. "
-            "Diferansiyel deger tepesi orta donmede cikar -- klasik tambur "
-            "S egrisi."),
+            "Tambur değeri. Dönme 0°'de emici kora bakar (en düşük k), 180°'de "
+            "dışa bakar (en yüksek k); bu yüzden eğim pozitif olmalı. "
+            "Diferansiyel değerin tepesi orta dönmede çıkar — klasik tambur "
+            "S eğrisi."),
         "cubuk_daldirma": (
-            "Kontrol cubugu degeri. NEGATIF olmali: emici daldikca reaktivite "
-            "duser. DIKKAT -- klasik S egrisi yalnizca sistem her konumda "
-            "KRITIGE YAKIN oldugunda gorulur. k-sonsuz'u yuksek bir kafeste "
-            "(orn. yansitici sinirli tek demet) rodlanmamis bolge tek basina "
-            "superkritik kalir, bu yuzden deger gec toplanir ve diferansiyel "
-            "deger tepesi merkezde degil tam daldirmaya yakin cikar."),
+            "Kontrol çubuğu değeri. Negatif olmalı: emici daldıkça reaktivite "
+            "düşer. Dikkat: klasik S eğrisi yalnızca sistem her konumda "
+            "kritiğe yakın olduğunda görülür. k∞'u yüksek bir demette "
+            "(ör. yansıtıcı sınırlı tek demet) çubuksuz bölge tek başına "
+            "süperkritik kalır; bu yüzden değer geç toplanır ve diferansiyel "
+            "değerin tepesi merkezde değil tam daldırmaya yakın çıkar."),
     }
     taban = notlar.get(tur, "")
-    return "Egim %s (%s)." % (isaret, taban) if taban else "Egim %s." % isaret
+    return "Eğim %s. %s" % (isaret, taban) if taban else "Eğim %s." % isaret
 
 
 # ============================================================================
@@ -354,7 +354,7 @@ def calistir(spec, tur, hedef, degerler, kok_dizin, geri_cagir=None,
     toplam = len(degerler)
     for i, deger in enumerate(degerler):
         if dur_bayragi and dur_bayragi():
-            notlar.append("Tarama kullanici tarafindan durduruldu (%d/%d)."
+            notlar.append("Tarama kullanıcı tarafından durduruldu (%d/%d)."
                           % (i, toplam))
             break
         nokta_spec, uyari = parametre_uygula(spec, tur, hedef, deger, taban=spec)
@@ -370,7 +370,7 @@ def calistir(spec, tur, hedef, degerler, kok_dizin, geri_cagir=None,
                 sonuc["entropi"] = okunan.get("entropi")
                 sonuc["pasif"] = okunan.get("pasif")
             else:
-                sonuc["hata"] = "kosu basarisiz (cikis kodu %d)" % kosu["cikis_kodu"]
+                sonuc["hata"] = "koşu başarısız (çıkış kodu %d)" % kosu["cikis_kodu"]
         except Exception as e:
             sonuc["hata"] = str(e)
         sonuclar.append(sonuc)
@@ -386,9 +386,9 @@ def calistir(spec, tur, hedef, degerler, kok_dizin, geri_cagir=None,
 def _terminal(argv):
     if not argv or argv[0] in ("-h", "--yardim", "--help"):
         print(__doc__)
-        print("\nTARAMA TURLERI")
+        print("\nTARAMA TÜRLERİ")
         for ad, (aciklama, _h, birim, kbirim) in sorted(TURLER.items()):
-            print("  %-20s %-58s [%s -> %s]" % (ad, aciklama, birim, kbirim))
+            print("  %-20s %-58s [%s → %s]" % (ad, aciklama, birim, kbirim))
         return 0
 
     spec_yolu = argv[0]
@@ -401,15 +401,15 @@ def _terminal(argv):
             i += 1
             p[a] = argv[i]
         else:
-            print("bilinmeyen secenek: %s" % argv[i]); return 2
+            print("bilinmeyen seçenek: %s" % argv[i]); return 2
         i += 1
     if not all([p["tur"], p["bas"], p["son"]]):
-        print("--tur, --bas ve --son zorunlu"); return 2
+        print("--tur, --bas ve --son zorunlu."); return 2
 
     spec = sema.yukle(spec_yolu)
     tur = p["tur"]
     if tur not in TURLER:
-        print("bilinmeyen tur: %s" % tur); return 2
+        print("bilinmeyen tür: %s" % tur); return 2
     hedef = p["hedef"]
     if tur == "cubuk_yaricap" and hedef:
         ad, no = hedef.split(":")
@@ -421,33 +421,33 @@ def _terminal(argv):
     aciklama, _h, birim, kbirim = TURLER[tur]
     print("=" * 74)
     print(" TARAMA: %s" % aciklama)
-    print(" hedef: %s   |   %g -> %g %s   |   %d nokta"
+    print(" hedef: %s   |   %g → %g %s   |   %d nokta"
           % (hedef, degerler[0], degerler[-1], birim, len(degerler)))
     print("=" * 74)
 
     def ilerleme(i, toplam, s):
         if s.get("keff"):
             r, sr = reaktivite(s["keff"], s["sapma"])
-            print("  [%d/%d] %-12g %s  k = %.5f +/- %.5f   rho = %+9.1f pcm"
+            print("  [%d/%d] %-12g %s  k = %.5f ± %.5f   ρ = %+9.1f pcm"
                   % (i + 1, toplam, s["deger"], birim, s["keff"], s["sapma"], r))
         else:
-            print("  [%d/%d] %-12g %s  BASARISIZ: %s"
+            print("  [%d/%d] %-12g %s  başarısız: %s"
                   % (i + 1, toplam, s["deger"], birim, s.get("hata", "?")))
 
     sonuclar, notlar = calistir(spec, tur, hedef, degerler, dizin,
                                 geri_cagir=ilerleme,
                                 is_parcacigi=int(p["s"]) if p["s"] else None)
     for n in notlar:
-        print("\n  NOT: %s" % n)
+        print("\n  Not: %s" % n)
 
     k = katsayi(sonuclar)
     print("\n" + "=" * 74)
     if k:
-        print("  KATSAYI = %+.3f +/- %.3f %s   (R^2 = %.4f, %d nokta)"
+        print("  Katsayı = %+.3f ± %.3f %s   (R² = %.4f, %d nokta)"
               % (k["egim"], k["egim_sapma"], kbirim, k["r2"], k["nokta"]))
         print("  %s" % yorumla(tur, k))
     else:
-        print("  Katsayi hesaplanamadi.")
+        print("  Katsayı hesaplanamadı.")
     print("=" * 74)
     return 0
 

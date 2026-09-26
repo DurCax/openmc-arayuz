@@ -96,22 +96,22 @@ def test_dogrulama_negatif():
             if m["ad"] == "su":
                 m["sab"] = []
 
-    dene("S(a,b)'siz su", sab_sil, "S(a,b)")
-    dene("yogunluk yok", lambda s: s["malzemeler"][0]["yogunluk"].update({"deger": None}), "yogunluk")
-    dene("yaricap sirasi", lambda s: s["cubuklar"][0]["bolgeler"].__setitem__(0, sema.bolge(0.9, "uo2")), "artan sirada")
-    dene("son bolge kapali", lambda s: s["cubuklar"][0]["bolgeler"].__setitem__(2, sema.bolge(0.8, "su")), "null olmali")
-    dene("cubuk sigmiyor", lambda s: s["kor"].update({"adim": 0.5}), "adimindan")
-    dene("tanimsiz malzeme", lambda s: s["cubuklar"][0]["bolgeler"].__setitem__(0, sema.bolge(0.39, "yok")), "tanimsiz malzeme")
-    dene("olmayan nuklid", lambda s: s["malzemeler"][0].update({"bilesim": [sema.bilesen("Xx999", 1.0, tur="nuklid")]}), "nuklid")
-    dene("olmayan S(a,b)", lambda s: s["malzemeler"][2].update({"sab": ["c_Yok"]}), "termal sacilma")
-    dene("pasif >= cevrim", lambda s: s["ayarlar"].update({"pasif": 60, "cevrim": 60}), "pasif cevrim")
-    dene("gecersiz sinir", lambda s: s["kor"]["sinir"].update({"yan": "xx"}), "gecersiz sinir")
-    dene("vacuum sizinti", lambda s: s["kor"]["sinir"].update({"yan": "vacuum"}), "sizinti")
-    dene("zenginlik araligi", lambda s: s["malzemeler"][0]["bilesim"][0].update({"zenginlik": 150.0}), "zenginligi")
+    dene("S(a,b)'siz su", sab_sil, "S(α,β)")
+    dene("yogunluk yok", lambda s: s["malzemeler"][0]["yogunluk"].update({"deger": None}), "yoğunluk")
+    dene("yaricap sirasi", lambda s: s["cubuklar"][0]["bolgeler"].__setitem__(0, sema.bolge(0.9, "uo2")), "artan sırada")
+    dene("son bolge kapali", lambda s: s["cubuklar"][0]["bolgeler"].__setitem__(2, sema.bolge(0.8, "su")), "yarıçapı boş olmalı")
+    dene("cubuk sigmiyor", lambda s: s["kor"].update({"adim": 0.5}), "adımından")
+    dene("tanimsiz malzeme", lambda s: s["cubuklar"][0]["bolgeler"].__setitem__(0, sema.bolge(0.39, "yok")), "tanımsız malzeme")
+    dene("olmayan nuklid", lambda s: s["malzemeler"][0].update({"bilesim": [sema.bilesen("Xx999", 1.0, tur="nuklid")]}), "nüklid")
+    dene("olmayan S(a,b)", lambda s: s["malzemeler"][2].update({"sab": ["c_Yok"]}), "termal saçılma")
+    dene("pasif >= cevrim", lambda s: s["ayarlar"].update({"pasif": 60, "cevrim": 60}), "pasif çevrim")
+    dene("gecersiz sinir", lambda s: s["kor"]["sinir"].update({"yan": "xx"}), "geçersiz sınır")
+    dene("vacuum sizinti", lambda s: s["kor"]["sinir"].update({"yan": "vacuum"}), "sızıntı")
+    dene("zenginlik araligi", lambda s: s["malzemeler"][0]["bilesim"][0].update({"zenginlik": 150.0}), "zenginliği")
     dene("yuksek zenginlik", lambda s: s["malzemeler"][0]["bilesim"][0].update({"zenginlik": 19.75}), "U234")
     dene("kafeste tanimsiz harf",
          lambda s: s.update({"demetler": [sema.demet("d", 1.26, [2, 2], ["yy", "yz"], {"y": "yakit_cubugu"}, "su")]}),
-         "tanimsiz harf")
+         "tanımsız harf")
     dene("kafes satir uzunlugu",
          lambda s: s.update({"demetler": [sema.demet("d", 1.26, [3, 2], ["yy", "yy"], {"y": "yakit_cubugu"}, "su")]}),
          "karakter")
@@ -419,7 +419,7 @@ def test_kritik_arama_kok_sarti():
         spec = sema.yukle(os.path.join(ORNEK, "pwr_17x17.json"))
         # k(0)=1.3, k(1000)=1.2 -> hedef 1.0 aralikta DEGIL
         s = kritik_arama.ara(spec, "bor_ppm", "su", 0, 1000, _t.mkdtemp())
-        kontrol("aralik disi -> reddetti", not s.basarili and "aralikta degil" in s.mesaj)
+        kontrol("aralik disi -> reddetti", not s.basarili and "aralıkta değil" in s.mesaj)
         # k(0)=1.3, k(5000)=0.8 -> hedef 1.0 aralikta
         s = kritik_arama.ara(spec, "bor_ppm", "su", 0, 5000, _t.mkdtemp())
         kontrol("aralik icinde -> buldu", s.basarili, "cozum=%.1f" % (s.cozum or -1))
@@ -446,7 +446,7 @@ def test_kuresel_kor():
     bozuk["kor"]["kabuklar"] = [sema.kabuk(9.0, "heu"), sema.kabuk(5.0, "heu")]
     b = dogrula.tum_kontroller(bozuk)
     kontrol("ters kabuk sirasi yakalandi",
-            any("artan sirada" in x.mesaj for x in b))
+            any("artan sırada" in x.mesaj for x in b))
 
 
 def test_veri_sicaklik_araligi():
@@ -468,11 +468,11 @@ def test_keff_yorumu():
     print("\n[3o] k-eff yorumu")
     from cekirdek.kosucu import keff_yorumu
     d, _ = keff_yorumu(1.05, 0.001)
-    kontrol("k=1.05 -> kritik ustu", "USTU" in d)
+    kontrol("k=1.05 -> kritik ustu", "Kritik üstü" in d)
     d, _ = keff_yorumu(0.95, 0.001)
-    kontrol("k=0.95 -> kritik alti", "ALTI" in d)
+    kontrol("k=0.95 -> kritik alti", "Kritik altı" in d)
     d, _ = keff_yorumu(1.0001, 0.001)
-    kontrol("k=1.0001 -> kritik", d.startswith("KRITIK ("))
+    kontrol("k=1.0001 -> kritik", d.startswith("Kritik ("))
     _, a = keff_yorumu(1.01, 0.0005, 0.0065)
     kontrol("dolar cinsinden verildi", "$" in a, a[:60])
 
@@ -579,15 +579,15 @@ def test_guc_dogrulama():
         kontrol(ad, any(anahtar.lower() in x.mesaj.lower() for x in b))
 
     dene("gecersiz bolge", lambda s: s["guc_dagilimi"].update({"bolge": 99}),
-         "gecersiz bolge")
+         "geçersiz bölge")
     dene("fisil olmayan bolge", lambda s: s["guc_dagilimi"].update({"bolge": 2}),
-         "fisil gorunmuyor")
+         "fisil görünmüyor")
     dene("enerji olmayan skor", lambda s: s["guc_dagilimi"].update({"skor": "fission"}),
-         "ENERJI skoru")
+         "enerji skoru")
     dene("2B'de F_q yok", lambda s: s["kor"].update({"yukseklik": None}),
          "F_q hesaplanamaz")
     dene("az eksenel dilim", lambda s: s["guc_dagilimi"].update({"eksenel_dilim": 3}),
-         "KUCUK cikar")
+         "olduğundan küçük çıkar")
     dene("uydurma skor", lambda s: s["tallyler"][0].update({"skorlar": ["yok-boyle"]}),
          "bilinen skorlar")
 
@@ -661,7 +661,7 @@ def test_kontrol_cubugu_parametre():
         tarama.parametre_uygula(spec, "cubuk_daldirma", "yakit_cubugu", 50.0)
         kontrol("kontrol olmayan cubugu reddediyor", False, "reddetmedi")
     except ValueError as e:
-        kontrol("kontrol olmayan cubugu reddediyor", "kontrol cubugu degil" in str(e))
+        kontrol("kontrol olmayan cubugu reddediyor", "kontrol çubuğu değil" in str(e))
     # aralik disi
     for d in (-5.0, 150.0):
         try:
@@ -689,16 +689,16 @@ def test_kontrol_cubugu_dogrulama():
          "3B model gerektirir")
     dene("daldirma araligi",
          lambda s: sema.cubuk_bul(s, "kontrol_cubugu").update({"daldirma": 150.0}),
-         "daldirma")
+         "daldırma")
     dene("gecersiz emici bolge",
          lambda s: sema.cubuk_bul(s, "kontrol_cubugu").update({"emici_bolge": 9}),
-         "gecersiz emici bolge")
+         "geçersiz emici bölge")
     dene("sogurucu olmayan emici",
          lambda s: sema.cubuk_bul(s, "kontrol_cubugu").update({"emici_bolge": 1}),
-         "sogurucu icermiyor")
+         "emici içermiyor")
     dene("tanimsiz izleyici",
          lambda s: sema.cubuk_bul(s, "kontrol_cubugu").update(
-             {"izleyici_malzeme": "yok_boyle"}), "tanimsiz izleyici")
+             {"izleyici_malzeme": "yok_boyle"}), "tanımsız izleyici")
 
 
 def test_arama_tekrar_etmiyor():
@@ -765,9 +765,9 @@ def test_tambur_geometri_kontrol():
             not tambur.geometri_kontrol(saglam, 14.0, 12.0))
     for ad, degisim, anahtar in (
             ("kora giriyor", {"merkez_yaricap": 16.0}, "kora giriyor"),
-            ("yansiticidan tasiyor", {"merkez_yaricap": 24.0}, "tasiyor"),
-            ("komsular cakisiyor", {"sayi": 20}, "cakisiyor"),
-            ("emici ic yaricap buyuk", {"emici_ic_yaricap": 5.0}, "kucuk olmali")):
+            ("yansiticidan tasiyor", {"merkez_yaricap": 24.0}, "taşıyor"),
+            ("komsular cakisiyor", {"sayi": 20}, "çakışıyor"),
+            ("emici ic yaricap buyuk", {"emici_ic_yaricap": 5.0}, "küçük olmalı")):
         h = tambur.geometri_kontrol(dict(saglam, **degisim), 14.0, 12.0)
         kontrol(ad, any(anahtar in x for x in h))
 
@@ -797,7 +797,7 @@ def test_tambur_kor():
         kurucu.kur(bozuk)
         kontrol("cakisan yerlesim reddediliyor", False, "reddetmedi")
     except ValueError as e:
-        kontrol("cakisan yerlesim reddediliyor", "cakisiyor" in str(e))
+        kontrol("cakisan yerlesim reddediliyor", "çakışıyor" in str(e))
 
 
 def test_tambur_emici_yonu():
@@ -1182,7 +1182,7 @@ def test_kaynak_tayfi():
                                 "degerler": [1.0]})
         kontrol("histogram uzunluk hatasi yakalaniyor", False, "-> hata atmadi")
     except ValueError as e:
-        kontrol("histogram uzunluk hatasi yakalaniyor", "2 deger olmali" in str(e))
+        kontrol("histogram uzunluk hatasi yakalaniyor", "2 değer olmalı" in str(e))
 
 
 def test_kaynak_betik_esleme():
@@ -1267,34 +1267,34 @@ def test_kaynak_dogrulama():
 
     s = copy.deepcopy(temel)
     s["tallyler"] = []
-    v = bul(s, "hicbir tally")
+    v = bul(s, "hiçbir tally")
     kontrol("sabit kaynakta tally yoksa HATA", v and v[0].seviye == "hata")
 
     s = copy.deepcopy(temel)
     s["ayarlar"]["kaynak"]["parcacik"] = "photon"
     s["ayarlar"]["mod"] = "eigenvalue"
-    v = bul(s, "foton kaynagi ozdeger")
+    v = bul(s, "foton kaynağı Özdeğer")
     kontrol("ozdeger modunda foton kaynagi HATA", v and v[0].seviye == "hata")
 
     s = copy.deepcopy(temel)
     s["ayarlar"]["kaynak"]["kuvvet"] = 0.0
-    kontrol("sifir kaynak siddeti HATA", bool(bul(s, "siddeti pozitif")))
+    kontrol("sifir kaynak siddeti HATA", bool(bul(s, "şiddeti sıfırdan büyük")))
 
     s = copy.deepcopy(temel)
     s["ayarlar"]["kaynak"]["aci"] = {"tur": "tek_yon", "yon": [0.0, 0.0, 0.0]}
-    kontrol("sifir yon vektoru HATA", bool(bul(s, "sifir vektor")))
+    kontrol("sifir yon vektoru HATA", bool(bul(s, "sıfır vektör")))
 
     # nokta kaynak model disinda -- yuksekligi olan bir modelde
     s = sema.yukle(os.path.join(ORNEK, "pwr_3b.json"))
     h = s["kor"]["yukseklik"]
     s["ayarlar"]["kaynak"] = {"tur": "nokta", "konum": [0.0, 0.0, h]}
-    kontrol("nokta kaynak geometri disinda HATA", bool(bul(s, "modelin disinda")))
+    kontrol("nokta kaynak geometri disinda HATA", bool(bul(s, "modelin dışında")))
 
     # enerji tavani: 40 MeV kaynak, ENDF/B-VIII.0 su+celik icin tavan 20 MeV
     s = copy.deepcopy(temel)
     s["ayarlar"]["kaynak"]["enerji"] = {"tur": "tek", "enerji": 40.0e6}
     v = [x for x in dg.kaynak_kontrol(s, veri_kontrolu=True)
-         if "veri tavani" in x.mesaj]
+         if "veri tavanı" in x.mesaj]
     kontrol("kutuphane enerji tavani asilirsa HATA",
             bool(v) and v[0].seviye == "hata",
             "-> %s" % (v[0].mesaj if v else "bulgu yok"))
@@ -1635,18 +1635,18 @@ def test_eksenel_dogrulama():
              lambda t: t["kor"].update(tur="kuresel"), "desteklenmiyor"),
             ("tanimsiz dolgu adi",
              lambda t: t["kor"]["eksenel"]["bolgeler"][0].update(dolgu="yok_boyle"),
-             "tanimsiz dolgu"),
+             "tanımsız dolgu"),
             ("sifir katman yuksekligi",
              lambda t: t["kor"]["eksenel"]["bolgeler"][1].update(yukseklik=0.0),
-             "pozitif olmali"),
+             "sıfırdan büyük olmalı"),
             ("hic katman yok",
-             lambda t: t["kor"]["eksenel"].update(bolgeler=[]), "hic katman"),
+             lambda t: t["kor"]["eksenel"].update(bolgeler=[]), "hiç katman"),
             ("fisil katman yok",
              lambda t: t["kor"]["eksenel"].update(
                  bolgeler=[sema.eksenel_bolge("su", 20.0, "su")]), "fisil malzeme yok"),
             ("anahtar kare_kafes disinda",
              lambda t: t["kor"]["eksenel"]["bolgeler"][1].update(
-                 anahtar={"y": "demet_17x17"}), "yalnizca kare_kafes"),
+                 anahtar={"y": "demet_17x17"}), "yalnızca kare haritalı tam kor"),
     ):
         m = hata(degistir)
         kontrol("%s -> HATA" % ad, bool(m) and parca in m,
@@ -1904,7 +1904,7 @@ def test_zincir_butunlugu():
         with open(kesik, "wb") as f:
             f.write(veri[: len(veri) // 2])
         tamam, mesaj, _ = veri_bilgi.zincir_kontrol(kesik)
-        kontrol("yarim kesilmis zincir reddediliyor", not tamam and "YARIM" in mesaj,
+        kontrol("yarim kesilmis zincir reddediliyor", not tamam and "yarım" in mesaj,
                 "-> %s" % mesaj)
         tamam, _m, n = veri_bilgi.zincir_kontrol(
             os.path.join(dizin, "chain_endfb80_thermal.xml"), tam=True)
@@ -2031,11 +2031,11 @@ def test_tukenme_dogrulama():
                    for b in dg.tukenme_kontrol(t))
 
     kontrol("sabit kaynak modunda HATA",
-            bul(lambda t: t["ayarlar"].update(mod="fixed source"), "hata", "ozdeger"))
+            bul(lambda t: t["ayarlar"].update(mod="fixed source"), "hata", "Özdeğer"))
     kontrol("negatif guc HATA",
-            bul(lambda t: t["tukenme"].update(guc_yogunlugu=-1), "hata", "pozitif"))
+            bul(lambda t: t["tukenme"].update(guc_yogunlugu=-1), "hata", "sıfırdan büyük"))
     kontrol("sifir adim HATA",
-            bul(lambda t: t["tukenme"].update(adimlar=[1.0, 0.0]), "hata", "pozitif"))
+            bul(lambda t: t["tukenme"].update(adimlar=[1.0, 0.0]), "hata", "sıfırdan büyük"))
     kontrol("uzun ilk adim (Xe dengesi) UYARI",
             bul(lambda t: t["tukenme"].update(adimlar=[10.0]), "uyari", "Xe-135"))
     kontrol("MWd/kg biriminde uzun ilk adim da UYARI",
@@ -2044,7 +2044,7 @@ def test_tukenme_dogrulama():
     kontrol("termal modelde hizli zincir UYARI",
             bul(lambda t: t["tukenme"].update(zincir="hizli"), "uyari", "spektrumlu"))
     kontrol("olagan disi guc yogunlugu UYARI",
-            bul(lambda t: t["tukenme"].update(guc_yogunlugu=1000.0), "uyari", "olagan"))
+            bul(lambda t: t["tukenme"].update(guc_yogunlugu=1000.0), "uyari", "olağan dışı"))
 
 
 def test_tukenme_kosu(gecici):
@@ -2098,10 +2098,10 @@ def test_tukenme_kosu(gecici):
     w.bekle()
     kontrol("arayuz acilista onceki sonucu gosteriyor (%d satir)" % w.tablo.rowCount(),
             w.tablo.rowCount() == len(s["k"]))
-    kontrol("arayuz 'bu modele AIT' diyor", "AIT" in w.onceki_etiket.text(),
+    kontrol("arayuz 'bu modele ait' diyor", "bu modele ait." in w.onceki_etiket.text(),
             "-> %s" % w.onceki_etiket.text())
     w.guc.setValue(41.0)
-    kontrol("model degisince arayuz ESKI diyor", "ESKI" in w.onceki_etiket.text())
+    kontrol("model degisince arayuz ESKI diyor", "Eski sonuç" in w.onceki_etiket.text())
 
     # --- pencere, onceki sonuc OKUNURKEN kapatiliyor ---
     # Duzeltmeden once surec kapanista ASILI kaliyordu (olculdu: 60 s zaman
@@ -2417,7 +2417,7 @@ def test_arayuz_tambur_yansitici():
     kontrol("tamburlu korda yansitici 'var' alanindan bagimsiz kuruluyor",
             abs(olcu_t[0] - 2 * (16.0 + 12.0)) < 1e-9, "-> %.2f" % olcu_t[0])
     b = [x for x in dogrula.tum_kontroller(t, veri_kontrolu=False)
-         if "kullanilmayan malzeme: berilyum" in x.mesaj]
+         if "kullanılmayan malzeme: berilyum" in x.mesaj]
     kontrol("tamburlu yansitici malzemesi 'kullaniliyor' sayiliyor", not b)
     uyg  # noqa: B018
 
@@ -2763,7 +2763,7 @@ def test_arayuz_sabit_kaynak_sonuc():
     finally:
         kosucu.son_statepoint, kosucu.sonuc_oku = eski_sp, eski_oku
     kontrol("ozdeger sonucu hala gosteriliyor", hata is None
-            and c.keff_etiket.text() == "1.00000 +/- 0.00100"
+            and c.keff_etiket.text() == "1.00000 ± 0.00100"
             and c.keff_etiket.isVisibleTo(c), "-> %r %r" % (hata, c.keff_etiket.text()))
     uyg  # noqa: B018
 
@@ -2831,7 +2831,7 @@ def test_arayuz_proje_sifirlama():
         kontrol("yeni proje: durum etiketi bos", c.durum_etiket.text() == "")
         kontrol("yeni proje: analiz sonuclari silindi",
                 an._sonuclar == [] and an.tablo.rowCount() == 0)
-        kontrol("yeni proje: analiz katsayisi silindi", "KATSAYI" not in an.sonuc_kutusu.text())
+        kontrol("yeni proje: analiz katsayisi silindi", "katsay" not in an.sonuc_kutusu.text().lower())
         kontrol("yeni proje: Calistir sekmesi 'tamam' DEMIYOR (✓ yok)",
                 not p.sekmeler.tabText(ix_calistir).endswith("✓"),
                 "-> %r" % p.sekmeler.tabText(ix_calistir))
@@ -3123,12 +3123,12 @@ def test_dogrulama_yeni_kontroller():
     s = copy.deepcopy(p17)
     s["demetler"].append(sema.demet("kor_kafesi", 20.0, [2, 2], ["aa", "aa"],
                                     {"a": "demet_17x17"}, "su"))
-    b = [x for x in bul(s, "hata", "kafes") if x.yer == "demet:kor_kafesi"]
+    b = [x for x in bul(s, "hata", "iç içe demet") if x.yer == "demet:kor_kafesi"]
     kontrol("c) ic kafes 21.42 cm > adim 20 -> HATA", bool(b),
             "-> %s" % (b[0].mesaj if b else "yok"))
     sema.demet_bul(s, "kor_kafesi")["adim"] = 21.42
     kontrol("c) adim 21.42 hata degil",
-            not [x for x in bul(s, "hata", "kafes") if x.yer == "demet:kor_kafesi"])
+            not [x for x in bul(s, "hata", "iç içe demet") if x.yer == "demet:kor_kafesi"])
 
     # d) periodic: kure ve silindirde gecersiz (OpenMC esleyemez, olculdu).
     #    Altigen prizmada GECERLI -- denetimin aksi iddiasi olcumle curutuldu

@@ -270,7 +270,7 @@ def kor_alanlarini_ayikla(kor, korunan=KOR_KORUNAN):
     return kor
 
 
-def yeni_spec(ad="isimsiz model"):
+def yeni_spec(ad="adsız model"):
     """
     Bos ama gecerli bir spec dondurur. YENI modellerde entropi agi modelden
     turetilir (entropi_mesh.otomatik; kaynak.entropi_boyutu): 2B'den 3B'ye
@@ -572,7 +572,7 @@ def tamamla(ham):
     Eksik bolumleri varsayilanla doldurur. Eski surumden okunan dosyalarin
     yeni alanlar yuzunden patlamamasi icin gerekli.
     """
-    spec = yeni_spec(ham.get("ad", "isimsiz model"))
+    spec = yeni_spec(ham.get("ad", "adsız model"))
     for anahtar in ("surum", "ad", "aciklama", "malzemeler", "cubuklar",
                     "plakalar", "demetler", "tallyler"):
         if anahtar in ham:
@@ -723,7 +723,7 @@ def malzeme_adi_sorunu(spec, ad, haric=None):
         return "'%s' adında başka bir malzeme var." % ad
     for bolum, etiket in _MALZEME_BOLUMLERI:
         if any(x.get("ad") == ad for x in spec.get(bolum) or []):
-            return ("'%s' adı bir %s için kullanılıyor. Kafes ve katman "
+            return ("'%s' adı bir %s için kullanılıyor. Demet ve katman "
                     "seçimlerinde aynı ad iki şeyi gösterirdi." % (ad, etiket))
     return None
 

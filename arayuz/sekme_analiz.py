@@ -91,9 +91,9 @@ PARAMETRE_ADLARI = {
                        "%0 tamamen çekilmiş, %100 tamamen dalmış."),
     "tambur_donme": ("Kontrol tamburu dönmesi",
                      "0° emici kora bakar (en düşük k), 180° dışa bakar (en yüksek k)."),
-    "yansitici_kalinlik": ("Yansıtıcı kalınlığı",
+    "yansitici_kalinlik": ("Yansıtıcı kuşak kalınlığı",
                            "Yansıtıcı kuşağın radyal kalınlığı."),
-    "kafes_adim": ("Kafes adımı (moderasyon oranı)",
+    "kafes_adim": ("Çubuk adımı (moderasyon oranı)",
                    "Demetteki çubuk adımı; moderatör/yakıt oranını değiştirir."),
     "kor_adim": ("Kor hücre adımı",
                  "Pin hücrede hücre adımı, tam korda demet adımı."),
@@ -107,7 +107,7 @@ PARAMETRE_ADLARI = {
 KATSAYI_ADLARI = {
     "yakit_sicaklik": "Doppler katsayısı",
     "sogutucu_sicaklik": "Moderatör sıcaklık katsayısı",
-    "void_orani": "Void katsayısı",
+    "void_orani": "Boşluk (void) katsayısı",
     "bor_ppm": "Bor değeri",
     "zenginlik": "Zenginlik duyarlılığı",
     "cubuk_daldirma": "Çubuk değeri (diferansiyel)",
@@ -229,7 +229,7 @@ class AnalizSekmesi(QtWidgets.QWidget):
         super().__init__(parent)
         self.spec = None
         self.proje_yolu = None
-        self._kapi = lambda: (False, "hazir degil")
+        self._kapi = lambda: (False, "hazır değil")
         self._isci = None
         self._sonuclar = []
         self._kusak = 0                 # proje kusagi (sifirla artirir)
@@ -462,8 +462,8 @@ class AnalizSekmesi(QtWidgets.QWidget):
             return "Model okunamadı; doğrulama listesine bakın."
         if oz.get("mod") != "eigenvalue":
             return ("Reaktivite katsayıları ve kritik arama k-eff üzerinden hesaplanır; "
-                    "bu model sabit kaynak modunda (k-eff tanımsız). Hesap ayarları'nda "
-                    "koşu modunu Özdeğer (k-eff) yapın.")
+                    "bu modelin hesap türü Sabit kaynak (k-eff tanımsız). Hesap "
+                    "ayarları sekmesinde hesap türünü Özdeğer (k-eff) yapın.")
         if not oz.get("fisil"):
             return ("Geometride fisil (yakıt) malzeme yok; k-eff tanımsız olduğu için "
                     "reaktivite hesaplanamaz.")
@@ -654,7 +654,9 @@ class AnalizSekmesi(QtWidgets.QWidget):
                 c = sema.cubuk_bul(self.spec, ad) or {}
                 b = (c.get("bolgeler") or [{}] * (i + 1))[i]
                 self.hedef.addItem("%s — %d. bölge (r = %.4g cm, %s)"
-                                   % (ad, i + 1, b.get("r") or 0.0, b.get("malzeme", "")),
+                                   % (ad, i + 1, b.get("r") or 0.0,
+                                      "Boş (madde yok)" if b.get("malzeme") in (None, sema.BOSLUK)
+                                      else b.get("malzeme")),
                                    (ad, i))
             self.hedef_etiket.setText("Hedef bölge:")
         else:
@@ -692,7 +694,7 @@ class AnalizSekmesi(QtWidgets.QWidget):
         tek = self._tek_kosu_tahmini()
         tarama_modu = self.mod.currentData() != "arama"
         adet = self.adet.value() if tarama_modu else 6
-        ek = "" if tarama_modu else " (arama genellikle 4-8 koşu sürer)"
+        ek = "" if tarama_modu else " (arama genellikle 4–8 koşu sürer)"
         self.tahmin_etiket.setText(
             "~%s   (%d koşu × ~%s)%s"
             % (self._sure_metni(tek * adet), adet, self._sure_metni(tek), ek))
@@ -761,7 +763,7 @@ class AnalizSekmesi(QtWidgets.QWidget):
             degerler = ["%.6g" % s["deger"], "%.5f" % s["keff"],
                         "%.5f" % s["sapma"], "%+.1f" % r]
         else:
-            degerler = ["%.6g" % s["deger"], "BAŞARISIZ", "-", s.get("hata", "")[:60]]
+            degerler = ["%.6g" % s["deger"], "başarısız", "—", s.get("hata", "")[:60]]
         for i, d in enumerate(degerler):
             self.tablo.setItem(satir, i, QtWidgets.QTableWidgetItem(d))
         self.tablo.scrollToBottom()

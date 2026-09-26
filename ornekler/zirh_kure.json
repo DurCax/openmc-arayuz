@@ -1,7 +1,7 @@
 {
   "surum": 1,
-  "ad": "D-T zirh kuresi",
-  "aciklama": "SABIT KAYNAK ornegi: merkezde 14.1 MeV'lik D-T fuzyon notron kaynagi, cevresinde 30 cm su + 5 cm celik zirh. Ozdeger hesabi DEGILDIR: k-eff yoktur, sonuc tally'lerdir.\nKaynak siddeti 1e12 n/s girildigi icin sonuclar MUTLAK birimdedir -- OpenMC siddeti kendisi uygular, ayrica carpmayin. 'flux' skoru hacimle integrelidir (birim cm/s); nokta akisi [1/cm2/s] icin bolge hacmine bolun.\nBeklenen: suda termal akı hizli akıyı gecer (yavaslatma), celikte oran tersine doner (agir cekirdek yavaslatmaz, demir termali sogurur).",
+  "ad": "D-T zırh küresi (sabit kaynak)",
+  "aciklama": "Sabit kaynak örneği: merkezde 14.1 MeV'lik D-T füzyon nötron kaynağı, çevresinde 30 cm su + 5 cm çelik zırh. Özdeğer hesabı değildir: k-eff yoktur, sonuç tally'lerdir.\nKaynak şiddeti 1e12 n/s girildiği için sonuçlar mutlak birimdedir — OpenMC şiddeti kendisi uygular, ayrıca çarpmayın. 'flux' skoru hacim üzerinden integrallidir (birim cm/s); nokta akısı [1/cm²/s] için bölge hacmine bölün.\nBeklenen: suda termal akı hızlı akıyı geçer (yavaşlatma), çelikte oran tersine döner (ağır çekirdek yavaşlatmaz, demir termal nötronları soğurur).",
   "malzemeler": [
     {
       "ad": "su",

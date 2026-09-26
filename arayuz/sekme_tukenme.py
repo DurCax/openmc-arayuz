@@ -42,7 +42,7 @@ from matplotlib.figure import Figure
 from PySide6 import QtCore, QtGui, QtWidgets
 
 from cekirdek import tukenme as _tk
-from arayuz.ortak import BosDurum, GelismisBolum, SekmeTabani, sayi
+from arayuz.ortak import BosDurum, GelismisBolum, SekmeTabani, cumle_basi, sayi
 from arayuz.sekme_analiz import aciklama, dar
 
 ZINCIR_SECENEK = [
@@ -105,7 +105,7 @@ class TukenmeSekmesi(SekmeTabani):
         super().__init__(parent)
         self.proje_yolu = None
         self.okuma_kaynagi = None     # kopyasi acilmis ornek (yalnizca OKUMA)
-        self._kapi = lambda: (False, "hazir degil")
+        self._kapi = lambda: (False, "hazır değil")
         self._surec = None
         self._dizin = None
         self._tampon = ""
@@ -132,26 +132,26 @@ class TukenmeSekmesi(SekmeTabani):
         self.guc.setToolTip(
             "Güç yoğunluğu, ağır metalin gramı başına. Mutlak güç kullanılmaz:\n"
             "2B bir modelde 'cm başına' olmak zorunda kalırdı.\n\n"
-            "Tipik: PWR 38-40, BWR ~25, SFR 50-100 W/gHM.")
+            "Tipik: PWR 38–40, BWR ~25, SFR 50–100 W/gHM.")
         self.birim = QtWidgets.QComboBox()
         self.birim.addItem("gün", "d")
         self.birim.addItem("MWd/kg (yanma)", "MWd/kg")
         self.adimlar = QtWidgets.QLineEdit()
         self.adimlar.setPlaceholderText("ör. 0.5, 1.5, 3, 5, 10, 30")
         self.adimlar.setToolTip(
-            "Adım uzunlukları, virgülle. İlk adımları KISA tutun (ör. 0.5, 1.5):\n"
+            "Adım uzunlukları, virgülle. İlk adımları kısa tutun (ör. 0.5, 1.5):\n"
             "Xe-135 ~2 günde dengeye gelir ve PWR'da birkaç bin pcm'lik hızlı\n"
             "bir düşüş yaratır; uzun bir ilk adım bunu görünmez kılar.")
-        self.adim_ozet = QtWidgets.QLabel("-")
+        self.adim_ozet = QtWidgets.QLabel("—")
         self.adim_ozet.setObjectName("soluk")
         self.adim_ozet.setWordWrap(True)
-        self.malzeme_bilgi = QtWidgets.QLabel("-")
+        self.malzeme_bilgi = QtWidgets.QLabel("—")
         self.malzeme_bilgi.setWordWrap(True)
         self.malzeme_bilgi.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
         self.malzeme_bilgi.setToolTip(
             "Fisil malzemeler ve yanabilir zehirler (Gd, Er) otomatik yanar. Hacimler "
-            "ANALİTİK hesaplanır: yanlış bir hacim yanma hızını aynı oranda bozar ve "
-            "k-eff'te iz bırakmaz. Testte OpenMC'nin stokastik hacim hesabıyla 1 sigma "
+            "analitik hesaplanır: yanlış bir hacim yanma hızını aynı oranda bozar ve "
+            "k-eff'te iz bırakmaz. Testte OpenMC'nin stokastik hacim hesabıyla 1σ "
             "içinde uyuştuğu ölçüldü.")
         self.zincir_uyari = QtWidgets.QLabel("")
         self.zincir_uyari.setWordWrap(True)
@@ -371,11 +371,12 @@ class TukenmeSekmesi(SekmeTabani):
             zs = _tk.zincir_secimi(self.spec)
             from cekirdek import veri_bilgi
             tamam, mesaj, _ = veri_bilgi.zincir_kontrol(zs["yol"])
-            metin = ("%s  |  fisyon verimi %s eV (%s)\n%s"
+            metin = ("%s  |  fisyon verimi %s eV (%s spektrum)\n%s"
                      % (os.path.basename(zs["yol"]), "%g" % zs["verim_enerjisi"],
-                        zs["temel"], zs["gerekce"]))
+                        _tk.SPEKTRUM_ADLARI.get(zs["temel"], zs["temel"]),
+                        cumle_basi(zs["gerekce"])))
             if not tamam:
-                metin += "\n!! " + mesaj
+                metin += "\n" + mesaj
                 # Gelismis kapaliyken de gorulsun: kosuyu engelleyen bir sorun.
                 self.zincir_uyari.setText("Zincir dosyası kullanılamıyor: %s "
                                           "(Gelişmiş › Zincir)" % mesaj)
@@ -412,7 +413,7 @@ class TukenmeSekmesi(SekmeTabani):
                 for ad, v in hv.items():
                     satirlar.append("%s: %s  [%s]\n    %s"
                                     % (ad, ("%.6g cm³" % v["hacim"]) if v["hacim"]
-                                       else "HACİM YOK", v["yontem"], v["ayrinti"]))
+                                       else "hacim yok", v["yontem"], v["ayrinti"]))
                 self.malzeme_bilgi.setText("\n".join(satirlar))
         except Exception as e:
             self.malzeme_bilgi.setText("hesaplanamadı: %s" % e)
@@ -600,7 +601,7 @@ class TukenmeSekmesi(SekmeTabani):
             # cevrim satirlari cok daha derin girintili ve logu bogar.
             bizim = satir.startswith("  ") and not satir.startswith("   ")
             if (satir.startswith("[openmc.deplete]") or bizim
-                    or "Combined k-effective" in satir or "TUKENME" in satir
+                    or "Combined k-effective" in satir or "TÜKENME" in satir
                     or "Error" in satir or "HATA" in satir or "Traceback" in satir):
                 self.log.appendPlainText(satir)
             # Transport basina TAM BIR KEZ yazilan satir. "Creating state point"
@@ -623,7 +624,7 @@ class TukenmeSekmesi(SekmeTabani):
         # Baslatilamayan surec finished() YAYMAZ: dugmeler kilitli kalirdi.
         if self._surec is not None and kod == QtCore.QProcess.FailedToStart:
             if not self._eski_kosu():
-                self.log.appendPlainText("\n# SÜREÇ BAŞLATILAMADI: %s"
+                self.log.appendPlainText("\n# Süreç başlatılamadı: %s"
                                          % self._surec.errorString())
             self._bitti(-1, None)
 
@@ -662,7 +663,7 @@ class TukenmeSekmesi(SekmeTabani):
         except Exception as e:
             self.durum.emit("Sonuç okunamadı: %s" % e, False)
             self.sure_etiket.setText("Sonuç okunamadı — ayrıntılı çıktıya bakın.")
-            self.log.appendPlainText("\n# SONUÇ OKUNAMADI: %s" % e)
+            self.log.appendPlainText("\n# Sonuç okunamadı: %s" % e)
             self.ayrinti.ac(True)
             self._gorunum_guncelle()
             self.sonuc_degisti.emit()
@@ -743,16 +744,16 @@ class TukenmeSekmesi(SekmeTabani):
         durum, farklar = _tk.eskime(self.spec, dizin)
         tarih = time.strftime("%d.%m.%Y %H:%M", time.localtime(self._onceki["tarih"]))
         if durum == "guncel":
-            metin = "Onceki kosunun sonucu (%s) -- bu modele AIT." % tarih
+            metin = "Önceki koşunun sonucu (%s) — bu modele ait." % tarih
             stil = ""
         elif durum == "eski":
-            metin = ("ESKI SONUC (%s): model o kosudan beri degisti (%s). "
-                     "Gosterilen sayilar bu modele ait DEGIL -- yeniden kosun."
-                     % (tarih, ", ".join(farklar)))
+            metin = ("Eski sonuç (%s): model o koşudan beri değişti (%s). "
+                     "Gösterilen sayılar bu modele ait değil — yeniden koşun."
+                     % (tarih, _tk.fark_metni(farklar)))
             stil = "color: #d04437; font-weight: bold;"
         else:
-            metin = ("Onceki kosunun sonucu (%s). Kosunun spec kaydi yok; bu modele "
-                     "ait oldugu DOGRULANAMIYOR." % tarih)
+            metin = ("Önceki koşunun sonucu (%s). Koşunun model kaydı yok; bu "
+                     "modele ait olduğu doğrulanamıyor." % tarih)
             stil = "color: #c9820a;"
         self.onceki_etiket.setText(metin)
         self.onceki_etiket.setStyleSheet(stil)
