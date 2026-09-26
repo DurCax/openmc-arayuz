@@ -375,7 +375,9 @@ class OnizlemeWidget(QtWidgets.QWidget):
             baslik_ = "%s (%s)   %s" % (eksen, kesim, olcu)
         else:
             baslik_ = "%s   %s" % (self.spec.get("ad", ""), olcu)
-        ax.set_title(baslik_ + ("   [ölçek 1:1 DEĞİL]" if gerildi else ""), fontsize=8)
+        # Ikili (xy + xz) gorunumde dar eksenin uzerine sigsin: not alt satirda.
+        ek = ("\n[ölçek 1:1 değil]" if ikili else "   [ölçek 1:1 değil]") if gerildi else ""
+        ax.set_title(baslik_ + ek, fontsize=8)
         ax.tick_params(labelsize=7)
         ax.xaxis.label.set_size(8)
         ax.yaxis.label.set_size(8)

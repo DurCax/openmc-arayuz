@@ -1330,6 +1330,12 @@ class AnaPencere(QtWidgets.QMainWindow):
             tiklama = "Tıklayınca ilgili sekmeye gider."
             oge.setToolTip((b.oneri + "\n\n" + tiklama) if b.oneri else tiklama)
             liste.addItem(oge)
+        if not self._bulgular:
+            # Bos kutu "calismiyor mu?" sorusunu dogurur; sonucu soyle.
+            oge = QtWidgets.QListWidgetItem("✓ Bulgu yok — model tutarlı görünüyor.")
+            oge.setForeground(QtGui.QColor(tema.renk("basari")))
+            oge.setFlags(QtCore.Qt.ItemIsEnabled)
+            liste.addItem(oge)
 
     def _dogrula(self, veri=False):
         try:

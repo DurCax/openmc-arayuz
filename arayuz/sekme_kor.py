@@ -374,9 +374,10 @@ class KorSekmesi(SekmeTabani):
         self._kutu_doldur(self.yans_mal, malzemeler, (kor.get("yansitici") or {}).get("malzeme"))
 
         hedefler = [(sema.BOSLUK, _BOS_ETIKET)]
-        hedefler += [(d["ad"], "kafes: %s" % d["ad"]) for d in self.spec.get("demetler", [])]
+        hedefler += [(d["ad"], "demet: %s" % d["ad"]) for d in self.spec.get("demetler", [])]
         hedefler += [(c["ad"], "çubuk: %s" % c["ad"]) for c in self.spec.get("cubuklar", [])]
-        hedefler += [(m["ad"], "malzeme: %s" % m["ad"]) for m in self.spec["malzemeler"]]
+        hedefler += [(m["ad"], "malzeme: %s" % sema.malzeme_etiketi(m))
+                     for m in self.spec["malzemeler"]]
         self._kutu_doldur(self.tb_dolgu, hedefler, kor.get("dolgu"))
         self.tb_kor_r.setValue(kor.get("kor_yaricap") or 16.0)
         t = kor.get("tambur") or {}

@@ -954,12 +954,29 @@ def test_kor_tur_baglantisi():
     p.close()
 
 
+def test_bulgusuz_dogrulama_satiri():
+    """Bulgu yokken dogrulama kutusu bos kalmaz; tiklanabilir bir bulgu da degildir."""
+    if _qt() is None:
+        return
+    from PySide6 import QtCore
+    p = _pencere(os.path.join(ORNEK, "zirh_kure.json"))
+    p._bulgular = []
+    p._bulgu_ogeleri(p.dogrulama)
+    kontrol("bulgusuz: tek bilgilendirme satiri",
+            p.dogrulama.count() == 1 and "Bulgu yok" in p.dogrulama.item(0).text())
+    kontrol("bilgilendirme satiri secilemez, yer verisi yok",
+            not (p.dogrulama.item(0).flags() & QtCore.Qt.ItemIsSelectable)
+            and p.dogrulama.item(0).data(QtCore.Qt.UserRole) is None)
+    p._bulguya_git(p.dogrulama.item(0))       # cokmemeli, sekme degismemeli
+    p.close()
+
+
 HIZLI = [test_bos_sablonlar, test_baslangic_ekrani, test_sekme_gorunurlugu,
          test_sekme_isaretleri, test_model_basligi, test_sag_panel_ve_rozet,
          test_kaldirilanlar_ve_kisayollar, test_minimum_yukseklik, test_tema_gecisi,
          test_ortak_bilesenler, test_izgara_yardimcilari, test_izgara_boyama,
          test_ayarlar_yalitik, test_tur_hafizasi_ad_degisimi,
-         test_kor_tur_baglantisi]
+         test_kor_tur_baglantisi, test_bulgusuz_dogrulama_satiri]
 YAVAS = []
 
 
