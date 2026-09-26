@@ -3012,6 +3012,7 @@ def test_arayuz_kafes_onay():
     uyg = _qt()
     if uyg is None:
         return
+    from PySide6 import QtWidgets
     from arayuz.sekme_demet import DemetSekmesi
     spec = sema.yukle(os.path.join(ORNEK, "pwr_17x17.json"))
     d = spec["demetler"][0]
@@ -3029,11 +3030,14 @@ def test_arayuz_kafes_onay():
         return True
 
     w._onay_al = hayir
-    w.tur.setCurrentIndex(w.tur.findData("altigen"))
-    kontrol("tip degisimi onay sordu", len(sorular) == 1)
-    kontrol("reddedilince tip kare kaldi", d["tur"] == "kare", "-> %s" % d["tur"])
-    kontrol("reddedilince harita AYNI (kilavuz borular yerinde)", d["harita"] == harita0)
-    kontrol("reddedilince kutu geri alindi", w.tur.currentData() == "kare")
+    # Dalga 3: "Kafes tipi" kutusu KALDIRILDI (tip "+ Kare/Altigen demet" ile
+    # belirlenir). Korunan davranis ayni: harita bir tip degisimiyle silinemez.
+    tip_kutulari = [k for k in w.findChildren(QtWidgets.QComboBox) if k.findData("altigen") >= 0]
+    kontrol("tip degistiren kutu yok (harita tip degisimiyle silinemez)",
+            not hasattr(w, "tur") and not tip_kutulari)
+    kontrol("tip kare kaldi", d["tur"] == "kare", "-> %s" % d["tur"])
+    kontrol("harita AYNI (kilavuz borular yerinde)", d["harita"] == harita0)
+    kontrol("arayuz tipi kare gosteriyor", w.oz_baslik.text() == "Kare demet")
 
     sorular.clear()
     w.nx.setValue(15)
@@ -3050,8 +3054,11 @@ def test_arayuz_kafes_onay():
     w.nx.setValue(17)
 
     sorular.clear()
-    w.tur.setCurrentIndex(w.tur.findData("altigen"))
-    kontrol("onaylaninca tip altigen oldu", d["tur"] == "altigen" and len(sorular) == 1)
+    ad_hex = w._yeni("altigen")
+    yeni_hex = sema.demet_bul(spec, ad_hex) if ad_hex else None
+    kontrol("altigen demet '+ Altigen demet' ile kuruluyor; eski kare harita yerinde",
+            yeni_hex is not None and yeni_hex["tur"] == "altigen" and d["tur"] == "kare"
+            and d["harita"] == harita0 and len(sorular) == 0)
 
     # hic kafes yokken form devre disi
     bos = sema.yukle(os.path.join(ORNEK, "pwr_pinhucre.json"))
@@ -3059,8 +3066,8 @@ def test_arayuz_kafes_onay():
     w2.spec_yukle(bos)
     kontrol("(on kosul) kafes yok", not bos.get("demetler"))
     kontrol("kafes secili degilken form devre disi",
-            not w2.tur.isEnabled() and not w2.nx.isEnabled() and not w2.adim.isEnabled(),
-            "-> tur %s nx %s" % (w2.tur.isEnabled(), w2.nx.isEnabled()))
+            not w2.palet.isEnabled() and not w2.nx.isEnabled() and not w2.adim.isEnabled(),
+            "-> palet %s nx %s" % (w2.palet.isEnabled(), w2.nx.isEnabled()))
     uyg  # noqa: B018
 
 
