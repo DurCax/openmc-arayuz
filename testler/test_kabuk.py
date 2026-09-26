@@ -338,7 +338,7 @@ def test_sekme_isaretleri():
 def test_model_basligi():
     print("\n[K5] MODEL BASLIGI: metin, baglantilar, 'Turu degistir...'")
     from cekirdek import sema, dogrula, uygunluk
-    from arayuz.ana_pencere import model_ozet_metni
+    from arayuz.ana_pencere import model_ozet_metni, TUR_ADLARI
     beklenen = {
         "pwr_17x17.json": "· 17×17 yakıt demeti · 2B · Özdeğer (k-eff)",
         "pwr_3b.json": "· 17×17 yakıt demeti · 3B · Özdeğer (k-eff)",
@@ -393,7 +393,8 @@ def test_model_basligi():
         kontrol("tur degisimi sonrasi model gecerli", not hatalar, "-> %s" % hatalar[:3])
         kontrol("baslik yeni turu gosteriyor", "1×1 tam kor" in _duz(p.model_basligi.text()))
         kontrol("Kor sekmesi turu spec'ten okuyor (tutarli)",
-                p.s_kor.tur.currentData() == "kare_kafes")
+                p.s_kor.gosterilen_tur() == "kare_kafes"
+                and TUR_ADLARI["kare_kafes"] in p.s_kor.tur_etiket.text())
         kontrol("tur degisimi tek geri al adimi", p._gecmis_ix == gecmis0 + 1)
         p.kor_turunu_degistir("tek_demet")
         kontrol("tek_demet'e donus: demet geri geldi",

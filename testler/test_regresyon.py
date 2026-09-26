@@ -1500,7 +1500,7 @@ def test_arayuz_kaynak_gidip_gelme():
     sekme.hist_deger.setText("1.0")
     sekme._kaydet()
     kontrol("gecersiz histogram arayuzde uyari veriyor",
-            "kurulamadi" in sekme.tayf_ozet.text()
+            "kurulamad" in sekme.tayf_ozet.text()        # "kurulamadı" (Dalga 3 Turkce)
             and "color" in sekme.tayf_ozet.styleSheet())
     uyg  # noqa: B018  -- uygulama nesnesi yasasin diye
 
@@ -1722,13 +1722,15 @@ def test_arayuz_eksenel_gidip_gelme():
     ilk = adlar()
     sekme._katman_ekle()
     kontrol("katman eklendi", len(adlar()) == 7)
-    sekme.katman_tablo.setCurrentCell(6, 0)
+    # Dalga 3: tablo fiziksel sirada (en ust katman ilk satirda); yeni katman
+    # en uste eklenir -> tablonun ilk satiri.
+    sekme.katman_tablo.setCurrentCell(0, 0)
     sekme._katman_sil()
     kontrol("katman silindi, sira bozulmadi", adlar() == ilk)
-    sekme.katman_tablo.setCurrentCell(0, 0)
-    sekme._katman_tasi(+1)
+    sekme.katman_tablo.setCurrentCell(5, 0)       # en alt katman (spec[0])
+    sekme._katman_tasi(-1)                        # yukari
     kontrol("katman kaydirildi", adlar()[:2] == [ilk[1], ilk[0]])
-    sekme._katman_tasi(-1)
+    sekme._katman_tasi(+1)                        # asagi
     kontrol("geri kaydirildi", adlar() == ilk)
 
     kontrol("katmanli modelde kor.yukseklik None (tek gercek kaynak)",
@@ -1743,8 +1745,8 @@ def test_arayuz_eksenel_gidip_gelme():
     kontrol("katmana ozel anahtar KORUNDU",
             spec["kor"]["eksenel"]["bolgeler"][2].get("anahtar")
             == {"y": "demet_blanket"})
-    kontrol("anahtarli katmanin dolgu kutusu devre disi",
-            not sekme.katman_tablo.cellWidget(2, 2).isEnabled())
+    kontrol("anahtarli katmanin dolgu kutusu devre disi",       # spec[2] -> satir 3
+            not sekme.katman_tablo.cellWidget(3, 2).isEnabled())
     uyg  # noqa: B018
 
 
@@ -2324,7 +2326,7 @@ def test_arayuz_tekerlek():
 
         k, a = p.s_kor, p.s_ayar
         for ad, w, oku in (
-                ("kor turu (QComboBox)", k.tur, lambda w: w.currentIndex()),
+                ("yukseklik secimi (QComboBox)", k.yukseklik_modu, lambda w: w.currentIndex()),
                 ("yan sinir (QComboBox)", k.bc_yan, lambda w: w.currentIndex()),
                 ("hucre adimi (ortak.sayi)", k.adim, lambda w: w.value()),
                 ("kosu modu (ayarlar)", a.mod, lambda w: w.currentIndex()),
@@ -2345,9 +2347,9 @@ def test_arayuz_tekerlek():
                 "-> %s %s %s" % (kor["tur"], kor["sinir"]["yan"], kor["adim"]))
         p.ensurePolished()
         kontrol("kutularin odak politikasi StrongFocus (tekerlek odak VERMEZ)",
-                k.tur.focusPolicy() == QtCore.Qt.StrongFocus
+                k.yukseklik_modu.focusPolicy() == QtCore.Qt.StrongFocus
                 and k.adim.focusPolicy() == QtCore.Qt.StrongFocus,
-                "-> %s" % k.tur.focusPolicy())
+                "-> %s" % k.yukseklik_modu.focusPolicy())
 
         # Odakli kutu tekerlekle CALISMAYA devam etmeli (yalnizca offscreen'de
         # pencere gosterilir -- gercek ekranda pencere acilmaz).
@@ -2368,6 +2370,14 @@ def test_arayuz_tekerlek():
         _pencere_kapat(p)
 
 
+def _kor_turu(k, spec, tur, hafiza):
+    """Dalga 3: kor turu Kor sekmesinde degil, model basligindan degisir
+    (ana_pencere.kor_turu_degistir -> her editorde spec_yukle)."""
+    from arayuz.ana_pencere import kor_turu_degistir
+    kor_turu_degistir(spec, tur, hafiza)
+    k.spec_yukle(spec)
+
+
 def test_arayuz_tambur_yansitici():
     """
     [2] 'tamburlu' secmek 'Yansitici kusak ekle'yi zorla isaretliyordu; geri
@@ -2384,12 +2394,15 @@ def test_arayuz_tambur_yansitici():
     var0 = spec["kor"]["yansitici"]["var"]
     k = KorSekmesi()
     k.spec_yukle(spec)
-    k.tur.setCurrentIndex(k.tur.findData("tamburlu"))
+    hafiza = {}
+    _kor_turu(k, spec, "tamburlu", hafiza)
     kontrol("tamburlu'da 'Yansitici kusak ekle' kutusu gizli (zorunlu)",
             not k.yans_var.isVisibleTo(k))
     kontrol("tamburlu'da kalinlik/malzeme duzenlenebilir",
             k.yans_kal.isEnabled() and k.yans_mal.isEnabled())
-    k.tur.setCurrentIndex(k.tur.findData("tek_demet"))
+    k._kaydet()                   # sekmenin kaydi da 'var'i zorlamamali
+    _kor_turu(k, spec, "tek_demet", hafiza)
+    k._kaydet()
     kontrol("gidis-donus: yansitici.var degismedi (%s)" % var0,
             spec["kor"]["yansitici"]["var"] == var0,
             "-> %s" % spec["kor"]["yansitici"]["var"])
@@ -2425,7 +2438,7 @@ def test_arayuz_kor_tur_alanlari():
     spec = sema.yukle(os.path.join(ORNEK, "pwr_3b.json"))
     k = KorSekmesi()
     k.spec_yukle(spec)
-    k.bc_yan.setCurrentText("vacuum")
+    k.bc_yan.setCurrentIndex(k.bc_yan.findData("vacuum"))
     kor = spec["kor"]
     kontrol("sinir degisikligi yazildi", kor["sinir"]["yan"] == "vacuum")
     kontrol("tek_demet: 'cubuk' kalintisi yok", kor.get("cubuk") is None,
@@ -2438,12 +2451,15 @@ def test_arayuz_kor_tur_alanlari():
     kontrol("tek_demet: demet korundu", kor.get("demet") == "demet_17x17")
     kontrol("tur -> alan tablosu sema'da TEK yerde (KOR_TUR_ALANLARI)",
             hasattr(sema, "KOR_TUR_ALANLARI"))
-    # tek_cubuk'a gecip donmek demeti geri getirir (arayuz kutusu tutuyor)
-    k.tur.setCurrentIndex(k.tur.findData("tek_cubuk"))
+    # tek_cubuk'a gecip donmek demeti geri getirir (tur hafizasi tutuyor)
+    hafiza = {}
+    _kor_turu(k, spec, "tek_cubuk", hafiza)
+    k._kaydet()
     kontrol("tek_cubuk: cubuk yazildi, demet temizlendi",
             kor.get("cubuk") == "yakit_cubugu" and kor.get("demet") is None,
             "-> cubuk=%r demet=%r" % (kor.get("cubuk"), kor.get("demet")))
-    k.tur.setCurrentIndex(k.tur.findData("tek_demet"))
+    _kor_turu(k, spec, "tek_demet", hafiza)
+    k._kaydet()
     kontrol("tek_demet'e donus: demet geri geldi, cubuk temizlendi",
             kor.get("demet") == "demet_17x17" and kor.get("cubuk") is None)
     # JSON'dan baska yolla duzenlenemeyen kuresel kabuklar tur degisince SILINMEMELI
@@ -2451,8 +2467,11 @@ def test_arayuz_kor_tur_alanlari():
     kabuk0 = copy.deepcopy(g["kor"]["kabuklar"])
     k2 = KorSekmesi()
     k2.spec_yukle(g)
-    k2.tur.setCurrentIndex(k2.tur.findData("tek_cubuk"))
-    k2.tur.setCurrentIndex(k2.tur.findData("kuresel"))
+    h2 = {}
+    _kor_turu(k2, g, "tek_cubuk", h2)
+    k2._kaydet()
+    _kor_turu(k2, g, "kuresel", h2)
+    k2._kaydet()
     kontrol("kuresel kabuklar gidis-donuste korundu", g["kor"]["kabuklar"] == kabuk0)
 
     # Butun ornekler: arayuzden bir kez kaydetmek (degisiklik yok) modeli ve
@@ -2486,17 +2505,18 @@ def test_arayuz_kuresel_yukseklik():
     g = sema.yukle(os.path.join(ORNEK, "godiva_kriter.json"))
     k = KorSekmesi()
     k.spec_yukle(g)
-    kontrol("kuresel: yukseklik kutusu gizli", not k.yukseklik_var.isVisibleTo(k))
+    kontrol("kuresel: yukseklik kutusu gizli", not k.yukseklik_modu.isVisibleTo(k))
     kontrol("kuresel: yukseklik alani gizli", not k.yukseklik.isVisibleTo(k))
     kontrol("kuresel: alt/ust sinir gizli",
             not k.bc_alt.isVisibleTo(k) and not k.bc_ust.isVisibleTo(k))
-    k.tur.setCurrentIndex(k.tur.findData("tek_cubuk"))
-    kontrol("tek_cubuk: yukseklik kutusu yeniden gorunur", k.yukseklik_var.isVisibleTo(k))
+    _kor_turu(k, g, "tek_cubuk", {})
+    kontrol("tek_cubuk: yukseklik kutusu yeniden gorunur", k.yukseklik_modu.isVisibleTo(k))
 
     s = sema.yukle(os.path.join(ORNEK, "pwr_3b.json"))
     k2 = KorSekmesi()
     k2.spec_yukle(s)
-    k2.tur.setCurrentIndex(k2.tur.findData("kuresel"))
+    _kor_turu(k2, s, "kuresel", {})
+    k2._kaydet()
     kontrol("kuresel'e geciste yukseklik temizlendi", s["kor"].get("yukseklik") is None,
             "-> %r" % s["kor"].get("yukseklik"))
     kontrol("kuresel'de eksenel yukseklik yok (kor_yuksekligi None)",
