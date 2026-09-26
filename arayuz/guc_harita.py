@@ -32,7 +32,9 @@ def _aktif_yukseklik(spec):
         return (ar[1] - ar[0]) if ar else None
     except Exception:
         return sema.kor_yuksekligi(spec.get("kor") or {})
-from arayuz.ortak import baslik, ipucu
+
+
+from arayuz.ortak import GelismisBolum, baslik  # noqa: E402
 
 
 class GucHaritaWidget(QtWidgets.QWidget):
@@ -46,13 +48,13 @@ class GucHaritaWidget(QtWidgets.QWidget):
 
         # --- denetimler ---
         self.gorunum = QtWidgets.QComboBox()
-        self.gorunum.addItem("Cubuk toplam gucu (F_dH)", "toplam")
+        self.gorunum.addItem("Çubuk toplam gücü (F_ΔH)", "toplam")
         self.gorunum.addItem("Tek eksenel dilim (F_q)", "dilim")
         self.dilim = QtWidgets.QSlider(QtCore.Qt.Horizontal)
         self.dilim.setMinimum(1); self.dilim.setMaximum(1); self.dilim.setValue(1)
         self.dilim_etiket = QtWidgets.QLabel("dilim 1")
-        self.degerler = QtWidgets.QCheckBox("Degerleri yaz")
-        self.d_kaydet = QtWidgets.QPushButton("PNG kaydet...")
+        self.degerler = QtWidgets.QCheckBox("Değerleri haritaya yaz")
+        self.d_kaydet = QtWidgets.QPushButton("PNG kaydet…")
 
         self.gorunum.currentIndexChanged.connect(self._ciz)
         self.dilim.valueChanged.connect(self._ciz)
@@ -60,15 +62,14 @@ class GucHaritaWidget(QtWidgets.QWidget):
         self.d_kaydet.clicked.connect(self._kaydet)
 
         ust = QtWidgets.QHBoxLayout()
-        ust.addWidget(QtWidgets.QLabel("Gorunum:"))
+        ust.addWidget(QtWidgets.QLabel("Görünüm:"))
         ust.addWidget(self.gorunum)
         ust.addWidget(self.dilim_etiket)
         ust.addWidget(self.dilim, 1)
-        ust.addWidget(self.degerler)
         ust.addWidget(self.d_kaydet)
 
         # --- ozet ---
-        self.ozet = QtWidgets.QLabel("Henuz guc dagilimi hesaplanmadi.")
+        self.ozet = QtWidgets.QLabel("Güç dağılımı henüz hesaplanmadı.")
         self.ozet.setWordWrap(True)
         self.ozet.setTextFormat(QtCore.Qt.RichText)
         self.ozet.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
@@ -79,19 +80,29 @@ class GucHaritaWidget(QtWidgets.QWidget):
         # --- tuval ---
         self.figur = Figure(figsize=(6, 4), tight_layout=True)
         self.tuval = FigureCanvasQTAgg(self.figur)
+        self.tuval.setMinimumHeight(380)
         self.arac = NavigationToolbar2QT(self.tuval, self)
 
+        # Nadiren gereken: deger yazimi ve matplotlib gezinme cubugu
+        self.gelismis = GelismisBolum("guc_harita_gelismis")
+        self.gelismis.ekle(self.degerler)
+        self.gelismis.ekle(self.arac)
+
         duzen = QtWidgets.QVBoxLayout(self)
-        duzen.addWidget(baslik("Cubuk bazli guc dagilimi"))
-        duzen.addWidget(ipucu(
-            "F_dH = maks cubuk gucu / ortalama (radyal). "
-            "F_q = maks yerel guc yogunlugu / ortalama (radyal x eksenel, 3B gerekir). "
-            "Renk olcegi ORTALAMAYA gore bagildir: 1.00 = ortalama cubuk."))
+        duzen.setContentsMargins(0, 0, 0, 0)
+        duzen.addWidget(baslik("Çubuk güç dağılımı"))
+        aciklama = QtWidgets.QLabel(
+            "F_ΔH = en yüksek çubuk gücü / ortalama (radyal). "
+            "F_q = en yüksek yerel güç yoğunluğu / ortalama (radyal × eksenel, 3B gerekir). "
+            "Renk ölçeği ortalamaya göre bağıldır: 1,00 = ortalama çubuk.")
+        aciklama.setObjectName("soluk")
+        aciklama.setWordWrap(True)
+        duzen.addWidget(aciklama)
         duzen.addLayout(ust)
         duzen.addWidget(self.ozet)
         duzen.addWidget(self.tuval, 1)
-        duzen.addWidget(self.arac)
-        self._bos("Henuz kosu yapilmadi")
+        duzen.addWidget(self.gelismis)
+        self._bos("Henüz koşu yapılmadı")
 
     # ==================================================================
     def sonuc_ayarla(self, sonuc, spec=None):
@@ -128,8 +139,8 @@ class GucHaritaWidget(QtWidgets.QWidget):
 
     def _ozet_yaz(self):
         if not self.faktorler:
-            self.ozet.setText("Henuz guc dagilimi hesaplanmadi. "
-                              "5. sekmede 'Guc dagilimi'ni acin ve kosun.")
+            self.ozet.setText("Güç dağılımı hesaplanmadı. Hesap ayarları'nda "
+                              "'Güç dağılımı'nı açıp modeli yeniden çalıştırın.")
             return
         f = self.faktorler
         p = ["<b>F_&Delta;H = %.4f</b>" % f["F_dH"]]
@@ -162,7 +173,7 @@ class GucHaritaWidget(QtWidgets.QWidget):
 
     def _ciz(self):
         if not self.faktorler or not self.dagilim:
-            self._bos("Henuz guc dagilimi hesaplanmadi")
+            self._bos("Güç dağılımı hesaplanmadı")
             return
         f = self.faktorler
         self.dilim_etiket.setText("dilim %d" % self.dilim.value())
