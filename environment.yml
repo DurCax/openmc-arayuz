@@ -1,0 +1,20 @@
+# OpenMC arayüzü için conda ortamı
+#   conda env create -f environment.yml
+#   conda activate openmc-env
+#
+# Geliştirildiği sürümler: Python 3.13, OpenMC 0.16.0, PySide6 6.11,
+# matplotlib 3.11, pandas 3.0, h5py 3.16. OpenMC sürümü sabitlenmiştir
+# (testlerdeki referans değerler 0.16.0 ile ölçüldü); diğerleri conda-forge'un
+# uyumlu sürümüyle gelir.
+name: openmc-env
+channels:
+  - conda-forge
+dependencies:
+  - python>=3.11
+  - openmc=0.16.0
+  - pyside6
+  - matplotlib
+  - pandas
+  - h5py
+  - uncertainties
+  - curl

@@ -4,6 +4,9 @@ Malzemeden kora kadar tüm model parametrelerinin tek bir arayüzden kurulduğu,
 geometrinin çalıştırmadan önce görüldüğü ve hesabın aynı arayüzden başlatılıp
 sonuçlarının okunduğu bir PySide6 masaüstü uygulaması.
 
+> **İlk kez mi kuruyorsunuz?** Adım adım kurulum (conda ortamı, nükleer veri
+> indirme, doğrulama) için **[KURULUM.md](KURULUM.md)**.
+
 ## Hızlı başlangıç
 
 ```bash
