@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 ================================================================================
- sekme_analiz.py  --  Parametre taramasi ve kritik arama
+ sekme_analiz.py  --  Parametre taramasi ve kritik arama (tek akisli sayfa)
 ================================================================================
  Tek bir k-eff sayisindan reaktor fizigine gecilen yer burasi:
 
@@ -10,25 +10,155 @@
                  (Doppler, moderator sicaklik, void, bor degeri, ...)
 
    KRITIK ARAMA  hedef k-eff'i (genellikle 1.0) veren parametre degerini bulur.
-                 (kritik bor konsantrasyonu, kritik yukseklik, ...)
+                 (kritik bor konsantrasyonu, kritik cubuk konumu, ...)
+
+ YALNIZCA GECERLI SECENEKLER
+   Parametre listesi uygunluk.gecerli_taramalar(spec, amac), hedef listesi
+   uygunluk.gecerli_hedefler(spec, tur) ile suzulur: UO2'ye bor, yakita void,
+   tambursuz modele tambur donmesi SUNULMAZ. Eski "yine de devam et" secenegi
+   kaldirildi -- gecersiz bir secim baslatilamaz.
 
  Her nokta ayri bir OpenMC kosusudur; is arka planda bir QThread'de yurutulur,
- arayuz donmaz ve istenildigi an durdurulabilir.
+ arayuz donmaz ve istenildigi an durdurulabilir. Proje degisince (sifirla)
+ kusak artar; onceki projenin suren analizinin sonucu yeni projeye yazilmaz.
 ================================================================================
 """
 
+import copy
 import os
 import tempfile
+import time
 
 import matplotlib
 matplotlib.use("QtAgg")
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
 
-from PySide6 import QtCore, QtGui, QtWidgets
+from PySide6 import QtCore, QtWidgets
 
-from cekirdek import kritik_arama, sema, tarama
-from arayuz.ortak import ayrac, baslik, ipucu, sayi, tamsayi
+from cekirdek import kritik_arama, sema, tarama, uygunluk
+from arayuz.ortak import BosDurum, GelismisBolum, sayi, tamsayi
+
+# Formlar okunur genislikte kalir (tam ekranda 1500 px'lik sayi kutusu okunmaz).
+FORM_GENISLIGI = 760
+
+
+def aciklama(metin):
+    """Kisa aciklama satiri (tema: soluk metin rengi, okunur karsitlik)."""
+    e = QtWidgets.QLabel(metin)
+    e.setObjectName("soluk")
+    e.setWordWrap(True)
+    return e
+
+
+def dar(duzen_ya_da_widget, genislik=FORM_GENISLIGI):
+    """Bir formu en fazla 'genislik' px genislikte, sola yasli tutar."""
+    if isinstance(duzen_ya_da_widget, QtWidgets.QWidget):
+        w = duzen_ya_da_widget
+    else:
+        w = QtWidgets.QWidget()
+        w.setLayout(duzen_ya_da_widget)
+        duzen_ya_da_widget.setContentsMargins(0, 0, 0, 0)
+    w.setMaximumWidth(genislik)
+    return w
+
+
+def _tema_renk(ad, vars_="#6b7785"):
+    try:
+        from arayuz import tema
+        return tema.renk(ad)
+    except Exception:
+        return vars_
+
+
+# ----------------------------------------------------------------------------
+# Gorunen adlar. Tanimlayicilar ve fizik tarama.TURLER'dedir; burada yalnizca
+# kullaniciya gosterilen ad, kisa aciklama (ipucu) ve katsayinin adi durur.
+# ----------------------------------------------------------------------------
+PARAMETRE_ADLARI = {
+    "yakit_sicaklik": ("Yakıt sıcaklığı (Doppler)",
+                       "Yakıtın sıcaklığı değişir; yoğunluğu sabit tutulur (katı yakıt)."),
+    "sogutucu_sicaklik": ("Soğutucu sıcaklığı",
+                          "Sıcaklıkla birlikte yoğunluk da değişir (su tablosu, Na ve "
+                          "Pb-Bi korelasyonları); moderatör sıcaklık katsayısını verir."),
+    "void_orani": ("Soğutucu boşluğu (void)",
+                   "Soğutucu yoğunluğu boşluk oranı kadar azaltılır."),
+    "bor_ppm": ("Çözünmüş bor",
+                "Suya doğal bor eklenir (ppm, kütlece)."),
+    "zenginlik": ("Uranyum zenginliği",
+                  "U-235'in ağırlıkça yüzdesi."),
+    "cubuk_daldirma": ("Kontrol çubuğu daldırma",
+                       "%0 tamamen çekilmiş, %100 tamamen dalmış."),
+    "tambur_donme": ("Kontrol tamburu dönmesi",
+                     "0° emici kora bakar (en düşük k), 180° dışa bakar (en yüksek k)."),
+    "yansitici_kalinlik": ("Yansıtıcı kalınlığı",
+                           "Yansıtıcı kuşağın radyal kalınlığı."),
+    "kafes_adim": ("Kafes adımı (moderasyon oranı)",
+                   "Demetteki çubuk adımı; moderatör/yakıt oranını değiştirir."),
+    "kor_adim": ("Kor hücre adımı",
+                 "Pin hücrede hücre adımı, tam korda demet adımı."),
+    "cubuk_yaricap": ("Çubuk bölge yarıçapı",
+                      "Çubuğun seçilen bölgesinin dış yarıçapı."),
+    "malzeme_yogunluk": ("Malzeme yoğunluğu",
+                         "Seçilen malzemenin yoğunluğu (g/cm³)."),
+}
+
+# Katsayinin adi (sonuc kartinda). Listede olmayan: "Reaktivite katsayısı".
+KATSAYI_ADLARI = {
+    "yakit_sicaklik": "Doppler katsayısı",
+    "sogutucu_sicaklik": "Moderatör sıcaklık katsayısı",
+    "void_orani": "Void katsayısı",
+    "bor_ppm": "Bor değeri",
+    "zenginlik": "Zenginlik duyarlılığı",
+    "cubuk_daldirma": "Çubuk değeri (diferansiyel)",
+    "tambur_donme": "Tambur değeri (diferansiyel)",
+}
+
+# Liste sirasi: en yaygin analizler basta. Tasarim etutleri (geometri ve
+# yogunluk) "Gelismis" altindadir.
+SIRA = ("yakit_sicaklik", "sogutucu_sicaklik", "void_orani", "bor_ppm", "zenginlik",
+        "cubuk_daldirma", "tambur_donme", "yansitici_kalinlik",
+        "kafes_adim", "kor_adim", "cubuk_yaricap", "malzeme_yogunluk")
+GELISMIS_PARAMETRELER = ("kafes_adim", "kor_adim", "cubuk_yaricap", "malzeme_yogunluk")
+
+_BIRIM_GORUNEN = {"g/cm3": "g/cm³", "derece": "°"}
+
+# Makul varsayilan araliklar (bas, son, nokta). Geometri ve yogunluk
+# parametrelerinde aralik modeldeki MEVCUT degerden turetilir (bkz.
+# _varsayilan_aralik): sabit bir 0.35-0.45 cm yaricap araligi ic ice
+# bolgeleri cakistirabiliyordu.
+_VARSAYILAN = {
+    "yakit_sicaklik": (600, 1200, 5), "sogutucu_sicaklik": (540, 620, 5),
+    "void_orani": (0, 50, 5), "bor_ppm": (0, 2000, 5),
+    "zenginlik": (2.0, 5.0, 5), "kafes_adim": (1.1, 1.5, 5),
+    "malzeme_yogunluk": (0.4, 0.8, 5), "kor_adim": (1.1, 1.5, 5),
+    "cubuk_yaricap": (0.35, 0.45, 5), "yansitici_kalinlik": (5, 40, 5),
+    "cubuk_daldirma": (0, 100, 6), "tambur_donme": (0, 180, 5),
+}
+
+
+def parametre_adi(tur):
+    if tur in PARAMETRE_ADLARI:
+        return PARAMETRE_ADLARI[tur][0]
+    return tarama.TURLER.get(tur, (tur,))[0]
+
+
+def birim(tur):
+    b = tarama.TURLER.get(tur, ("", "", "", ""))[2]
+    return _BIRIM_GORUNEN.get(b, b)
+
+
+def katsayi_birimi(tur):
+    b = tarama.TURLER.get(tur, ("", "", "", ""))[3]
+    for eski, yeni in _BIRIM_GORUNEN.items():
+        b = b.replace(eski, yeni)
+    return b
+
+
+def sirali_taramalar(turler):
+    """Gecerli tarama turlerini gorunen siraya dizer (bilinmeyenler sonda)."""
+    turler = list(turler)
+    return [t for t in SIRA if t in turler] + [t for t in turler if t not in SIRA]
 
 
 class TaramaIsci(QtCore.QThread):
@@ -92,6 +222,8 @@ class AramaIsci(QtCore.QThread):
 class AnalizSekmesi(QtWidgets.QWidget):
 
     durum = QtCore.Signal(str, bool)
+    # Gosterilen analiz sonucu degisti (bitti / basarisiz / sifirlandi).
+    sonuc_degisti = QtCore.Signal()
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -100,65 +232,73 @@ class AnalizSekmesi(QtWidgets.QWidget):
         self._kapi = lambda: (False, "hazir degil")
         self._isci = None
         self._sonuclar = []
+        self._kusak = 0                 # proje kusagi (sifirla artirir)
+        self._is_kusagi = None          # suren isin kusagi
+        self._gecerli = {"katsayi": [], "kritik": []}
+        self._analiz_turu = None        # son analizin turu (sonuc gosterimi icin)
+        self._analiz_modu = None
+
+        # ---------------- bos durum ----------------
+        self.bos = BosDurum("Bu modelde analiz yapılamaz", "", None, "∅")
 
         # ---------------- mod ve parametre ----------------
         self.mod = QtWidgets.QComboBox()
-        self.mod.addItem("Parametre taramasi (reaktivite katsayisi)", "tarama")
-        self.mod.addItem("Kritik arama (hedef k-eff'i veren deger)", "arama")
         self.mod.currentIndexChanged.connect(self._mod_degisti)
+        self.e_mod = QtWidgets.QLabel("Ne hesaplanacak:")
 
         self.tur = QtWidgets.QComboBox()
-        # En yaygin analizler basta: once Doppler, sonra moderator, void, bor.
-        # Alfabetik sira "Al-..." gibi ilgisiz bir parametreyi basa koyuyordu.
-        ONCELIK = ["yakit_sicaklik", "sogutucu_sicaklik", "void_orani", "bor_ppm",
-                   "zenginlik", "kafes_adim"]
-        sirali = ([a for a in ONCELIK if a in tarama.TURLER]
-                  + [a for a in sorted(tarama.TURLER) if a not in ONCELIK])
-        for ad in sirali:
-            aciklama, _h, birim, _k = tarama.TURLER[ad]
-            self.tur.addItem("%s  [%s]" % (aciklama, birim), ad)
         self.tur.currentIndexChanged.connect(self._tur_degisti)
+
+        self.gelismis = GelismisBolum("analiz_gelismis", "Gelişmiş parametreler")
+        self.gelismis_ipucu = aciklama("")
+        self.gelismis.ekle(self.gelismis_ipucu)
+        self.gelismis.acildi.connect(self._gelismis_degisti)
 
         self.hedef = QtWidgets.QComboBox()
         self.hedef_etiket = QtWidgets.QLabel("Hedef:")
+        self.hedef.activated.connect(self._hedef_secildi)
 
         self.bas = sayi(600.0, 4, -1e6, 1e6, 10.0)
         self.son = sayi(1200.0, 4, -1e6, 1e6, 10.0)
         self.adet = tamsayi(5, 2, 50, 1, "nokta")
         self.hedef_keff = sayi(1.0, 5, 0.0001, 10.0, 0.01)
 
-        self.e_adet = QtWidgets.QLabel("Nokta sayisi:")
+        self.e_adet = QtWidgets.QLabel("Nokta sayısı:")
         self.e_hedef_keff = QtWidgets.QLabel("Hedef k-eff:")
-        self.e_bas = QtWidgets.QLabel("Baslangic:")
-        self.e_son = QtWidgets.QLabel("Bitis:")
-
-        self.birim_etiket = QtWidgets.QLabel("")
+        self.e_bas = QtWidgets.QLabel("Başlangıç:")
+        self.e_son = QtWidgets.QLabel("Bitiş:")
         self.tahmin_etiket = QtWidgets.QLabel("")
+        self.tahmin_etiket.setObjectName("soluk")
 
         form = QtWidgets.QFormLayout()
-        form.addRow("Ne yapilacak:", self.mod)
+        form.addRow(self.e_mod, self.mod)
         form.addRow("Parametre:", self.tur)
+        form.addRow("", self.gelismis)
         form.addRow(self.hedef_etiket, self.hedef)
         form.addRow(self.e_bas, self.bas)
         form.addRow(self.e_son, self.son)
         form.addRow(self.e_adet, self.adet)
         form.addRow(self.e_hedef_keff, self.hedef_keff)
-        form.addRow("Birim:", self.birim_etiket)
-        form.addRow("Tahmini sure:", self.tahmin_etiket)
+        form.addRow("Tahmini süre:", self.tahmin_etiket)
+        self.form = form
 
         for w in (self.bas, self.son, self.hedef_keff):
             w.valueChanged.connect(self._tahmin_guncelle)
         self.adet.valueChanged.connect(self._tahmin_guncelle)
 
         # ---------------- calistirma ----------------
-        self.d_basla = QtWidgets.QPushButton("ANALIZI BASLAT")
-        self.d_basla.setMinimumHeight(32)
-        f = self.d_basla.font(); f.setBold(True); self.d_basla.setFont(f)
+        self.d_basla = QtWidgets.QPushButton("Taramayı başlat")
+        self.d_basla.setObjectName("birincil")
+        self.d_basla.setMinimumHeight(34)
+        self.d_basla.setMinimumWidth(150)
         self.d_dur = QtWidgets.QPushButton("Durdur")
+        self.d_dur.setMinimumHeight(34)
         self.d_dur.setEnabled(False)
         self.d_basla.clicked.connect(self._basla)
         self.d_dur.clicked.connect(self._durdur)
         self.ilerleme = QtWidgets.QProgressBar()
+        self.ilerleme.setRange(0, 1)
+        self.ilerleme.setValue(0)
         self.kapi_etiket = QtWidgets.QLabel("-")
         self.kapi_etiket.setWordWrap(True)
 
@@ -168,70 +308,82 @@ class AnalizSekmesi(QtWidgets.QWidget):
         dugme.addWidget(self.ilerleme, 1)
 
         # ---------------- sonuc ----------------
-        self.tablo = QtWidgets.QTableWidget(0, 4)
-        self.tablo.setHorizontalHeaderLabels(["Deger", "k-eff", "+/-", "rho [pcm]"])
-        self.tablo.horizontalHeader().setStretchLastSection(True)
-        self.tablo.verticalHeader().setVisible(False)
-        self.tablo.setMaximumHeight(140)
-
-        self.figur = Figure(figsize=(5, 2.4), tight_layout=True)
-        self.tuval = FigureCanvasQTAgg(self.figur)
-        self.eksen = self.figur.add_subplot(111)
-        self._grafik_sifirla()
-
-        self.sonuc_kutusu = QtWidgets.QLabel("Henuz analiz yapilmadi.")
+        self.sonuc_kutusu = QtWidgets.QLabel("Henüz analiz yapılmadı.")
         self.sonuc_kutusu.setWordWrap(True)
         self.sonuc_kutusu.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
         self.sonuc_kutusu.setTextFormat(QtCore.Qt.RichText)
         self.sonuc_kutusu.setStyleSheet(
-            "background: palette(alternate-base); padding: 10px; "
-            "border: 1px solid palette(mid); border-radius: 8px;")
-        sf = self.sonuc_kutusu.font(); sf.setPointSizeF(sf.pointSizeF() + 1)
-        self.sonuc_kutusu.setFont(sf)
+            "background: palette(base); padding: 12px; font-size: 11pt; "
+            "border: 1px solid palette(mid); border-radius: 10px;")
+
+        self.figur = Figure(figsize=(5, 2.6), tight_layout=True)
+        self.tuval = FigureCanvasQTAgg(self.figur)
+        self.tuval.setFixedHeight(260)
+        self.eksen = self.figur.add_subplot(111)
+        self._grafik_sifirla()
+
+        self.tablo = QtWidgets.QTableWidget(0, 4)
+        self.tablo.setHorizontalHeaderLabels(["Değer", "k-eff", "±", "ρ [pcm]"])
+        self.tablo.horizontalHeader().setStretchLastSection(True)
+        self.tablo.verticalHeader().setVisible(False)
+        self.tablo.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
+        self.tablo.setMinimumHeight(120)
+        self.tablo.setMaximumHeight(220)
+
+        # ---------------- yerlesim ----------------
+        self.icerik = QtWidgets.QWidget()
+        ic = QtWidgets.QVBoxLayout(self.icerik)
+        ic.setContentsMargins(0, 0, 0, 0)
+        ic.setSpacing(8)
+        ic.addWidget(aciklama(
+            "Bir parametreyi tarayıp eğimden reaktivite katsayısını ya da hedef k-eff'i "
+            "veren değeri bulursunuz. Yalnızca bu modelde anlamlı parametreler listelenir; "
+            "her nokta ayrı bir OpenMC koşusudur."))
+        ic.addWidget(dar(form))
+        ic.addLayout(dugme)
+        ic.addWidget(self.kapi_etiket)
+        ic.addWidget(self.sonuc_kutusu)
+        ic.addWidget(self.tuval)
+        ic.addWidget(self.tablo)
+        ic.addStretch(1)
 
         duzen = QtWidgets.QVBoxLayout(self)
-        duzen.addWidget(baslik("Reaktor fizigi analizi"))
-        duzen.addWidget(ipucu(
-            "Bir k-eff sayisi tek basina bir sey soylemez. Reaktivite katsayilari "
-            "(Doppler, moderator sicaklik, void, bor degeri) bir tasarimin guvenli "
-            "olup olmadigini belirleyen buyukluklerdir. Burada bir parametreyi "
-            "tarayip egimden bu katsayilari cikarirsiniz. Her nokta ayri bir "
-            "OpenMC kosusudur -- sure, nokta sayisi x tek kosu suresi kadardir."))
-        duzen.addLayout(form)
-        duzen.addWidget(self.kapi_etiket)
-        duzen.addLayout(dugme)
-        duzen.addWidget(ayrac())
-        duzen.addWidget(self.sonuc_kutusu)
-        duzen.addWidget(self.tuval, 1)
-        duzen.addWidget(self.tablo)
+        duzen.addWidget(self.bos, 1)
+        duzen.addWidget(self.icerik, 1)
 
-        self._mod_degisti()
-        # Birim etiketi ve varsayilan aralik acilista da dolsun
-        # (once yalnizca kullanici parametre degistirince doluyordu).
-        self._tur_degisti()
+        self._listeleri_doldur()
 
+    # ==================================================================
+    # disaridan
     # ==================================================================
     def kapi_ayarla(self, fonksiyon):
         self._kapi = fonksiyon
 
     def spec_ayarla(self, spec, proje_yolu=None):
+        """
+        Ana pencere bunu sekmeye HER giriste cagirir: secili mod, parametre,
+        hedef ve aralik (hala gecerliyse) korunur -- eskiden "su" secip geri
+        gelen kullanici "uo2" buluyordu.
+        """
         self.spec = spec
         self.proje_yolu = proje_yolu
-        # Ana pencere bunu sekmeye HER giriste cagirir: secili hedef korunmali
-        # (eskiden "su" secip geri gelen kullanici "uo2" buluyordu).
-        self._hedefleri_doldur(koru=True)
+        self._listeleri_doldur()
         self.kapi_guncelle()
         self._tahmin_guncelle()
+
+    def sonuc_var(self):
+        """Bu projede en az bir basarili analiz noktasi gosteriliyor mu."""
+        return any(s.get("keff") for s in self._sonuclar)
 
     def sifirla(self):
         """
         PROJE degisince onceki projenin analiz sonucunu siler (sekme
-        degisiminde CAGRILMAZ). Eskiden PWR taramasindan sonra acilan Godiva
-        PWR'in bor katsayisini gosteriyordu.
+        degisiminde CAGRILMAZ). Kusak artar: onceki projede baslamis ve hala
+        suren bir analizin noktalari/sonucu yeni projeye yazilmaz.
         """
-        if self._isci is not None:
-            return                 # suren analizin sonucu silinmez
+        self._kusak += 1
         self._sonuclar = []
+        self._analiz_turu = self._analiz_modu = None
         self.tablo.setRowCount(0)
         self._grafik_sifirla()
         self.sonuc_kutusu.setText("Henüz analiz yapılmadı.")
@@ -239,52 +391,228 @@ class AnalizSekmesi(QtWidgets.QWidget):
         self.ilerleme.setRange(0, 1)
         self.ilerleme.setValue(0)
         self.hedef.clear()         # onceki projenin hedefi yeni projeye tasinmasin
+        self._sonuc_gorunumu()
+        self.kapi_guncelle()
+        self.sonuc_degisti.emit()
 
     def kapi_guncelle(self):
         if self._isci is not None:
+            if self._eski_is():
+                self._kapi_yaz(False, "Önceki projenin analizi arka planda sürüyor; "
+                                      "sonucu bu projeye yazılmayacak. Yeni analiz için "
+                                      "Durdur ile sonlandırın.")
             return
         izin, mesaj = self._kapi()
+        izin = izin and self.tur.count() > 0
         self.d_basla.setEnabled(izin)
-        self.kapi_etiket.setStyleSheet("color: %s;" % ("palette(mid)" if izin else "#c0392b"))
+        self._kapi_yaz(izin, mesaj)
+
+    def _kapi_yaz(self, izin, mesaj):
+        self.kapi_etiket.setStyleSheet(
+            "color: %s;" % (_tema_renk("metin_soluk") if izin else _tema_renk("hata", "#b3261e")))
         self.kapi_etiket.setText(mesaj)
+
+    def _eski_is(self):
+        return self._is_kusagi is not None and self._is_kusagi != self._kusak
+
+    # ==================================================================
+    # listeler (uygunluk'tan)
+    # ==================================================================
+    def _listeleri_doldur(self):
+        """Mod, parametre ve hedef listelerini modele gore kurar; secim korunur."""
+        if self.spec is None:
+            self._gecerli = {"katsayi": [], "kritik": []}
+        else:
+            try:
+                self._gecerli = {"katsayi": uygunluk.gecerli_taramalar(self.spec, "katsayi"),
+                                 "kritik": uygunluk.gecerli_taramalar(self.spec, "kritik")}
+            except Exception:
+                self._gecerli = {"katsayi": [], "kritik": []}
+
+        # --- mod ---
+        onceki = self.mod.currentData()
+        self.mod.blockSignals(True)
+        self.mod.clear()
+        if self._gecerli["katsayi"]:
+            self.mod.addItem("Reaktivite katsayısı (parametre taraması)", "tarama")
+        if self._gecerli["kritik"]:
+            self.mod.addItem("Kritik arama (hedef k-eff'i veren değer)", "arama")
+        i = self.mod.findData(onceki)
+        self.mod.setCurrentIndex(i if i >= 0 else 0)
+        self.mod.blockSignals(False)
+        tek_mod = self.mod.count() <= 1
+        self.form.setRowVisible(self.e_mod, not tek_mod)
+
+        # --- bos durum ---
+        bos = not self._gecerli["katsayi"]
+        self.bos.setVisible(bos)
+        self.icerik.setVisible(not bos)
+        if bos:
+            self.bos.ayarla(metin=self._bos_nedeni())
+
+        self._mod_gorunumu()
+        self._turleri_doldur()
+
+    def _bos_nedeni(self):
+        if self.spec is None:
+            return "Önce bir model açın."
+        try:
+            oz = uygunluk.model_ozeti(self.spec)
+        except Exception:
+            return "Model okunamadı; doğrulama listesine bakın."
+        if oz.get("mod") != "eigenvalue":
+            return ("Reaktivite katsayıları ve kritik arama k-eff üzerinden hesaplanır; "
+                    "bu model sabit kaynak modunda (k-eff tanımsız). Hesap ayarları'nda "
+                    "koşu modunu Özdeğer (k-eff) yapın.")
+        if not oz.get("fisil"):
+            return ("Geometride fisil (yakıt) malzeme yok; k-eff tanımsız olduğu için "
+                    "reaktivite hesaplanamaz.")
+        return "Bu modelde taranabilecek bir parametre bulunamadı."
+
+    def _amac(self):
+        return "kritik" if self.mod.currentData() == "arama" else "katsayi"
+
+    def _sunulan_turler(self):
+        """Parametre listesinde gosterilecek turler (Gelismis kapaliysa etutler yok)."""
+        gecerli = sirali_taramalar(self._gecerli[self._amac()])
+        ana = [t for t in gecerli if t not in GELISMIS_PARAMETRELER]
+        ileri = [t for t in gecerli if t in GELISMIS_PARAMETRELER]
+        if self.gelismis.acik_mi() or not ana:
+            return ana, ileri
+        return ana, []
+
+    def _turleri_doldur(self):
+        onceki = self.tur.currentData()
+        ana, ileri = self._sunulan_turler()
+        self.tur.blockSignals(True)
+        self.tur.clear()
+        for t in ana + ileri:
+            self.tur.addItem("%s  [%s]" % (parametre_adi(t), birim(t)), t)
+            aciklama = PARAMETRE_ADLARI.get(t, ("", ""))[1]
+            if aciklama:
+                self.tur.setItemData(self.tur.count() - 1, aciklama, QtCore.Qt.ToolTipRole)
+        if ana and ileri:
+            self.tur.insertSeparator(len(ana))
+        i = self.tur.findData(onceki)
+        self.tur.setCurrentIndex(i if i >= 0 else 0)
+        self.tur.blockSignals(False)
+
+        # Gelismis bolum yalnizca bu modelde gecerli bir tasarim etudu varsa
+        tum_ileri = [t for t in sirali_taramalar(self._gecerli[self._amac()])
+                     if t in GELISMIS_PARAMETRELER]
+        self.form.setRowVisible(self.gelismis, bool(tum_ileri) and bool(ana))
+        if tum_ileri:
+            self.gelismis_ipucu.setText(
+                "Açıkken parametre listesinde tasarım etütleri de yer alır: %s. "
+                "Bunlar reaktivite katsayısı değil, tasarım duyarlılığıdır."
+                % ", ".join(parametre_adi(t).lower() for t in tum_ileri))
+
+        if self.tur.currentData() != onceki:
+            self._tur_degisti()          # yeni parametre: hedefler + varsayilan aralik
+        else:
+            self._hedefleri_doldur(koru=True)
+            self._birim_uygula()
+
+    def _gelismis_degisti(self, _acik):
+        self._turleri_doldur()
+        self.kapi_guncelle()
 
     # ==================================================================
     def _mod_degisti(self, *_):
-        arama = self.mod.currentData() == "arama"
-        for w in (self.e_adet, self.adet):
-            w.setVisible(not arama)
-        for w in (self.e_hedef_keff, self.hedef_keff):
-            w.setVisible(arama)
-        self.e_bas.setText("Alt sinir:" if arama else "Baslangic:")
-        self.e_son.setText("Ust sinir:" if arama else "Bitis:")
-        self.d_basla.setText("KRITIK ARAMAYI BASLAT" if arama else "TARAMAYI BASLAT")
+        self._mod_gorunumu()
+        self._turleri_doldur()
         self._tahmin_guncelle()
+
+    def _mod_gorunumu(self):
+        arama = self.mod.currentData() == "arama"
+        self.form.setRowVisible(self.e_adet, not arama)
+        self.form.setRowVisible(self.e_hedef_keff, arama)
+        self.e_bas.setText("Alt sınır:" if arama else "Başlangıç:")
+        self.e_son.setText("Üst sınır:" if arama else "Bitiş:")
+        self.d_basla.setText("Kritik aramayı başlat" if arama else "Taramayı başlat")
 
     def _tur_degisti(self, *_):
         self._hedefleri_doldur()
-        tur = self.tur.currentData()
-        if tur in tarama.TURLER:
-            self.birim_etiket.setText(
-                "%s   ->   katsayi birimi: %s"
-                % (tarama.TURLER[tur][2], tarama.TURLER[tur][3]))
-        # makul varsayilan araliklar
-        varsayilan = {
-            "yakit_sicaklik": (600, 1200, 5), "sogutucu_sicaklik": (540, 620, 5),
-            "void_orani": (0, 50, 5), "bor_ppm": (0, 2000, 5),
-            "zenginlik": (2.0, 5.0, 5), "kafes_adim": (1.1, 1.5, 5),
-            "malzeme_yogunluk": (0.4, 0.8, 5), "kor_adim": (1.1, 1.5, 5),
-            "cubuk_yaricap": (0.35, 0.45, 5), "yansitici_kalinlik": (5, 40, 5),
-            "cubuk_daldirma": (0, 100, 6),
-            "tambur_donme": (0, 180, 5),
-        }
-        if tur in varsayilan:
-            a, b, n = varsayilan[tur]
-            self.bas.setValue(a); self.son.setValue(b); self.adet.setValue(n)
+        self._birim_uygula()
+        self._aralik_uygula()
         self._tahmin_guncelle()
+
+    def _hedef_secildi(self, *_):
+        """Kullanici hedefi degistirdi: aralik o hedefin mevcut degerine gore."""
+        self._aralik_uygula()
+        self._tahmin_guncelle()
+
+    def _birim_uygula(self):
+        tur = self.tur.currentData()
+        sonek = (" " + birim(tur)) if tur else ""
+        if sonek.strip() == "°":
+            sonek = "°"
+        for w in (self.bas, self.son):
+            w.setSuffix(sonek)
+
+    def _aralik_uygula(self):
+        tur = self.tur.currentData()
+        if tur is None:
+            return
+        a, b, n = self._varsayilan_aralik(tur, self.hedef.currentData())
+        self.bas.setValue(a)
+        self.son.setValue(b)
+        self.adet.setValue(n)
+
+    def _varsayilan_aralik(self, tur, hedef):
+        """
+        (bas, son, nokta). Geometri/yogunluk parametrelerinde modeldeki MEVCUT
+        degerden turetilir; ic ice bolgeler cakismasin diye komsu yaricaplarla
+        sinirlanir.
+        """
+        a, b, n = _VARSAYILAN.get(tur, (0.0, 1.0, 5))
+        spec = self.spec or {}
+        try:
+            if tur == "cubuk_yaricap" and hedef:
+                c = sema.cubuk_bul(spec, hedef[0])
+                bolgeler = c["bolgeler"]
+                i = int(hedef[1])
+                r = float(bolgeler[i]["r"])
+                r_once = float(bolgeler[i - 1]["r"]) if i > 0 else 0.0
+                r_sonra = bolgeler[i + 1].get("r") if i + 1 < len(bolgeler) else None
+                a = max(0.9 * r, 0.5 * (r_once + r))
+                b = min(1.1 * r, 0.5 * (r + float(r_sonra))) if r_sonra else 1.05 * r
+            elif tur in ("kafes_adim", "kor_adim"):
+                if tur == "kafes_adim":
+                    adim = float(sema.demet_bul(spec, hedef)["adim"])
+                else:
+                    adim = float((spec.get("kor") or {}).get("adim") or 0.0)
+                if adim > 0:
+                    r_en = max([float(x["r"]) for c in spec.get("cubuklar", [])
+                                for x in c.get("bolgeler") or [] if x.get("r")] or [0.0])
+                    if tur == "kor_adim" and (spec.get("kor") or {}).get("tur") == "kare_kafes":
+                        a, b = adim, 1.05 * adim     # demetler ust uste binmesin
+                    else:
+                        a, b = max(0.95 * adim, 2.02 * r_en), 1.25 * adim
+            elif tur == "malzeme_yogunluk" and hedef:
+                rho = float(sema.malzeme_bul(spec, hedef)["yogunluk"]["deger"])
+                a, b = 0.9 * rho, 1.1 * rho
+            elif tur == "sogutucu_sicaklik" and hedef:
+                T = float(sema.malzeme_bul(spec, hedef).get("sicaklik") or 0.0)
+                if T > 0:
+                    a, b = T - 40.0, T + 40.0
+                    m = sema.malzeme_bul(spec, hedef)
+                    from cekirdek import malzeme_kutup as mk
+                    if tarama._yogunluk_korelasyonu(m)[0] is mk.su_yogunluk:
+                        a, b = max(a, 280.0), min(b, 620.0)   # doymus su tablosu
+            elif tur == "yansitici_kalinlik":
+                k = float(((spec.get("kor") or {}).get("yansitici") or {}).get("kalinlik") or 0.0)
+                if k > 0:
+                    a, b = max(0.25 * k, 1.0), 2.0 * k
+        except Exception:
+            pass
+        yuvarla = 4 if tur in ("cubuk_yaricap", "kafes_adim", "kor_adim",
+                               "malzeme_yogunluk") else 1
+        return round(a, yuvarla), round(b, yuvarla), n
 
     def _hedefleri_doldur(self, koru=False):
         """
-        Parametre turune gore secilebilir hedefleri listeler.
+        Parametre turune gore gecerli hedefleri listeler (uygunluk'tan).
         koru=True: onceki secim (hala listedeyse) geri secilir.
         """
         onceki = self.hedef.currentData() if koru and self.hedef.count() else None
@@ -297,36 +625,46 @@ class AnalizSekmesi(QtWidgets.QWidget):
 
     def _hedefleri_listele(self):
         self.hedef.clear()
-        if self.spec is None:
-            return
         tur = self.tur.currentData()
+        if self.spec is None or tur is None:
+            self.form.setRowVisible(self.hedef_etiket, False)
+            return
+        try:
+            hedefler = uygunluk.gecerli_hedefler(self.spec, tur)
+        except Exception:
+            hedefler = []
         hedef_turu = tarama.TURLER.get(tur, (None, None, None, None))[1]
         if hedef_turu == "malzeme":
-            for m in self.spec["malzemeler"]:
-                self.hedef.addItem("%s  --  %s" % (m["ad"], m.get("gorunen_ad") or ""),
-                                   m["ad"])
+            for ad in hedefler:
+                m = sema.malzeme_bul(self.spec, ad) or {}
+                g = m.get("gorunen_ad") or ""
+                self.hedef.addItem("%s  —  %s" % (ad, g) if g else ad, ad)
             self.hedef_etiket.setText("Hedef malzeme:")
         elif hedef_turu == "demet":
-            for d in self.spec.get("demetler", []):
-                self.hedef.addItem(d["ad"], d["ad"])
+            for ad in hedefler:
+                self.hedef.addItem(ad, ad)
             self.hedef_etiket.setText("Hedef kafes:")
         elif hedef_turu == "kontrol_cubugu":
-            for c in self.spec.get("cubuklar", []):
-                if c.get("tur") == "kontrol":
-                    self.hedef.addItem("%s  (su an %%%.1f)"
-                                       % (c["ad"], c.get("daldirma") or 0.0), c["ad"])
-            self.hedef_etiket.setText("Kontrol cubugu:")
+            for ad in hedefler:
+                c = sema.cubuk_bul(self.spec, ad) or {}
+                self.hedef.addItem("%s  (şu an %%%.1f dalmış)"
+                                   % (ad, c.get("daldirma") or 0.0), ad)
+            self.hedef_etiket.setText("Kontrol çubuğu:")
         elif hedef_turu == "cubuk_bolge":
-            for c in self.spec.get("cubuklar", []):
-                for i, b in enumerate(c["bolgeler"][:-1]):
-                    self.hedef.addItem("%s -- bolge %d (r=%.4f, %s)"
-                                       % (c["ad"], i + 1, b["r"], b["malzeme"]),
-                                       (c["ad"], i))
-            self.hedef_etiket.setText("Hedef bolge:")
+            for ad, i in hedefler:
+                c = sema.cubuk_bul(self.spec, ad) or {}
+                b = (c.get("bolgeler") or [{}] * (i + 1))[i]
+                self.hedef.addItem("%s — %d. bölge (r = %.4g cm, %s)"
+                                   % (ad, i + 1, b.get("r") or 0.0, b.get("malzeme", "")),
+                                   (ad, i))
+            self.hedef_etiket.setText("Hedef bölge:")
         else:
-            self.hedef.addItem("(kor ayari)", None)
+            # kor ayari: hedef secimi yok (liste [None])
+            for h in hedefler:
+                self.hedef.addItem("", h)
             self.hedef_etiket.setText("Hedef:")
-        self.hedef.setEnabled(self.hedef.count() > 1 or hedef_turu != "kor")
+        kor_ayari = hedefler == [None]
+        self.form.setRowVisible(self.hedef_etiket, bool(hedefler) and not kor_ayari)
 
     # Kosu hizi kalibrasyonu [parcacik/saniye]. Baslangic degeri bu makinede
     # olculmus bir ortalamadir; ilk nokta bitince GERCEK olcume guncellenir,
@@ -350,11 +688,14 @@ class AnalizSekmesi(QtWidgets.QWidget):
         if self.spec is None:
             self.tahmin_etiket.setText("-")
             return
+        if self._isci is not None and not self._eski_is():
+            return                        # suren analiz kendi olcumunu yaziyor
         tek = self._tek_kosu_tahmini()
-        adet = self.adet.value() if self.mod.currentData() == "tarama" else 6
-        ek = "" if self.mod.currentData() == "tarama" else " (arama ~4-8 kosu surer)"
+        tarama_modu = self.mod.currentData() != "arama"
+        adet = self.adet.value() if tarama_modu else 6
+        ek = "" if tarama_modu else " (arama genellikle 4-8 koşu sürer)"
         self.tahmin_etiket.setText(
-            "~%s   (%d kosu x ~%s)%s"
+            "~%s   (%d koşu × ~%s)%s"
             % (self._sure_metni(tek * adet), adet, self._sure_metni(tek), ek))
 
     def _hizi_kalibre_et(self, gecen_saniye):
@@ -367,6 +708,14 @@ class AnalizSekmesi(QtWidgets.QWidget):
             self._HIZ = 0.5 * self._HIZ + 0.5 * olculen
 
     # ==================================================================
+    def _sonuc_gorunumu(self):
+        """Sonuc karti, grafik ve tablo yalnizca bir analiz baslamissa gorunur."""
+        var = bool(self._sonuclar) or (self._isci is not None and not self._eski_is()) \
+            or self._analiz_turu is not None
+        self.sonuc_kutusu.setVisible(var)
+        self.tuval.setVisible(var)
+        self.tablo.setVisible(var)
+
     def _grafik_sifirla(self):
         self.eksen.clear()
         self.eksen.set_xlabel("parametre", fontsize=8)
@@ -376,6 +725,7 @@ class AnalizSekmesi(QtWidgets.QWidget):
         self.tuval.draw_idle()
 
     def _grafik_guncelle(self, kats=None):
+        from arayuz import tema as _t
         self.eksen.clear()
         self.eksen.grid(alpha=0.3)
         gecerli = [s for s in self._sonuclar if s.get("keff")]
@@ -384,9 +734,9 @@ class AnalizSekmesi(QtWidgets.QWidget):
             y = [s["keff"] for s in gecerli]
             e = [s["sapma"] for s in gecerli]
             self.eksen.errorbar(x, y, yerr=e, fmt="o-", ms=4, lw=1.2,
-                                capsize=3, color="#2c3e50")
-            if self.mod.currentData() == "arama":
-                self.eksen.axhline(self.hedef_keff.value(), color="#c0392b",
+                                capsize=3, color=_t.renk("vurgu"))
+            if self._analiz_modu == "arama":
+                self.eksen.axhline(self.hedef_keff.value(), color=_t.renk("hata"),
                                    ls="--", lw=1.0, label="hedef k")
                 self.eksen.legend(fontsize=7)
             elif kats:
@@ -395,11 +745,11 @@ class AnalizSekmesi(QtWidgets.QWidget):
                 px = np.linspace(min(x), max(x), 50)
                 rho = (kats["kesisim"] + kats["egim"] * px) / 1.0e5
                 self.eksen.plot(px, 1.0 / (1.0 - rho), lw=1.0, ls="--",
-                                color="#e67e22", label="dogrusal uyum")
+                                color=_t.renk("uyari"), label="doğrusal uyum")
                 self.eksen.legend(fontsize=7)
-        tur = self.tur.currentData()
-        birim = tarama.TURLER.get(tur, ("", "", "", ""))[2]
-        self.eksen.set_xlabel("%s [%s]" % (tur, birim), fontsize=8)
+        tur = self._analiz_turu or self.tur.currentData()
+        self.eksen.set_xlabel("%s [%s]" % (parametre_adi(tur), birim(tur)) if tur
+                              else "parametre", fontsize=8)
         self.eksen.set_ylabel("k-eff", fontsize=8)
         self.eksen.tick_params(labelsize=7)
         self.tuval.draw_idle()
@@ -412,65 +762,29 @@ class AnalizSekmesi(QtWidgets.QWidget):
             degerler = ["%.6g" % s["deger"], "%.5f" % s["keff"],
                         "%.5f" % s["sapma"], "%+.1f" % r]
         else:
-            degerler = ["%.6g" % s["deger"], "BASARISIZ", "-", s.get("hata", "")[:40]]
+            degerler = ["%.6g" % s["deger"], "BAŞARISIZ", "-", s.get("hata", "")[:60]]
         for i, d in enumerate(degerler):
             self.tablo.setItem(satir, i, QtWidgets.QTableWidgetItem(d))
         self.tablo.scrollToBottom()
 
     # ==================================================================
-    def _uygunluk(self, tur):
+    def _secim_gecerli(self):
         """
-        Secilen parametrenin bu modele uyup uymadigini kabaca kontrol eder.
-        Kesin degil -- yalnizca belirgin uyumsuzluklari yakalar ve sorar.
+        Secili (tur, hedef) bu modelde gecerli mi? Listeler zaten suzuldugu icin
+        normalde hep gecerlidir; model sekme acikken degistiyse yakalanir.
+        Gecersiz secim BASLATILMAZ (eski "yine de devam et" secenegi yok).
         """
         if self.spec is None:
-            return True, ""
-        # Butun taramalar reaktiviteye dayanir: rho = (k-1)/k. Sabit kaynak
-        # modunda k-eff YOKTUR, dolayisiyla hicbir tarama anlamli degildir.
-        if (self.spec["ayarlar"].get("mod") or "eigenvalue") != "eigenvalue":
-            return False, ("Bu sekmedeki tum taramalar reaktivite (k-eff) uzerinden "
-                           "calisir; model SABIT KAYNAK modunda ve k-eff tanimsiz.\n"
-                           "5. Ayarlar sekmesinden kosu modunu 'Ozdeger (k-eff)' "
-                           "yapin.")
-        hedef = self.hedef.currentData()
-        m = sema.malzeme_bul(self.spec, hedef) if isinstance(hedef, str) else None
-        if tur == "bor_ppm":
-            if m is None:
-                return False, "Bor taramasi bir su malzemesi gerektirir."
-            elemanlar = {b.get("isim", "") for b in m.get("bilesim", [])}
-            if not ({"H", "O"} <= elemanlar):
-                return False, ("'%s' su gorunumunde degil (bilesiminde H ve O yok). "
-                               "Bor taramasi suda cozunmus bor icindir." % hedef)
-        if tur == "zenginlik":
-            if m is None or not any(b.get("zenginlik") is not None
-                                    for b in m.get("bilesim", [])):
-                return False, ("'%s' malzemesinde zenginlik alani olan bir bilesen "
-                               "yok. Bilesim nuklid bazinda verilmisse zenginlik "
-                               "taramasi uygulanamaz." % hedef)
-        if tur == "sogutucu_sicaklik" and m is not None:
-            fonk, aciklama = tarama._yogunluk_korelasyonu(m)
-            if fonk is None:
-                return False, (aciklama + "\n\nSonuc yalnizca spektral etkiyi "
-                               "olcer, gercek moderator sicaklik katsayisi degildir.")
-        if tur == "cubuk_daldirma":
-            kontroller = [c for c in self.spec.get("cubuklar", [])
-                          if c.get("tur") == "kontrol"]
-            if not kontroller:
-                return False, ("Modelde kontrol cubugu yok. 2. sekmede bir cubugun "
-                               "turunu 'Kontrol cubugu' yapin.")
-            if not sema.kor_yuksekligi(self.spec["kor"]):
-                return False, ("Kontrol cubugu 3B model gerektirir; kor "
-                               "yuksekligi tanimli degil.")
-        if tur == "tambur_donme":
-            t = (self.spec.get("kor") or {}).get("tambur") or {}
-            if int(t.get("sayi") or 0) <= 0:
-                return False, ("Modelde kontrol tamburu yok. 4. Kor sekmesinde "
-                               "kor turunu 'Tamburlu kor' yapin.")
-        if tur in ("kafes_adim",) and not self.spec.get("demetler"):
-            return False, "Modelde kafes yok."
-        if (tur == "yansitici_kalinlik" and self.spec["kor"].get("tur") != "tamburlu"
-                and not (self.spec["kor"].get("yansitici") or {}).get("var")):
-            return False, "Modelde yansitici kusak tanimli degil."
+            return False, "Model yok."
+        tur = self.tur.currentData()
+        if tur is None:
+            return False, "Bu modelde taranabilecek bir parametre yok."
+        if tur not in uygunluk.gecerli_taramalar(self.spec, self._amac()):
+            return False, ("'%s' bu modelde artık geçerli değil." % parametre_adi(tur))
+        if self.hedef.count() == 0 or \
+                self.hedef.currentData() not in uygunluk.gecerli_hedefler(self.spec, tur):
+            return False, ("Seçili hedef bu parametre için geçerli değil "
+                           "(model değişmiş olabilir).")
         return True, ""
 
     def _dizin(self, onek):
@@ -482,44 +796,46 @@ class AnalizSekmesi(QtWidgets.QWidget):
     def _basla(self):
         izin, mesaj = self._kapi()
         if not izin:
-            QtWidgets.QMessageBox.warning(self, "Calistirilamaz", mesaj)
+            QtWidgets.QMessageBox.warning(self, "Çalıştırılamaz", mesaj)
             return
-        tur = self.tur.currentData()
-        # Secilen parametre bu modele uygun mu? (orn. tek malzemeli ciplak bir
-        # kurede "suda cozunmus bor" taramasi anlamsizdir.)
-        uygun, sebep = self._uygunluk(tur)
+        if self._isci is not None:
+            return
+        uygun, sebep = self._secim_gecerli()
         if not uygun:
-            c = QtWidgets.QMessageBox.question(
-                self, "Bu parametre bu modele uymuyor olabilir",
-                "%s\n\nYine de devam edilsin mi?" % sebep)
-            if c != QtWidgets.QMessageBox.Yes:
-                return
-        if self.hedef.count() == 0:
-            QtWidgets.QMessageBox.warning(self, "Hedef yok",
-                                          "Bu parametre icin uygun bir hedef bulunamadi.")
+            QtWidgets.QMessageBox.warning(
+                self, "Seçim geçerli değil",
+                "%s\n\nListeler modele göre yenilendi; seçimi gözden geçirin." % sebep)
+            self._listeleri_doldur()
+            self.kapi_guncelle()
             return
 
+        tur = self.tur.currentData()
+        hedef = self.hedef.currentData()
+        # Analiz boyunca model SABIT: kullanici baska sekmede duzenleme yapsa da
+        # taramanin noktalari ayni modelden turetilir.
+        spec = copy.deepcopy(self.spec)
+        n = int(spec.get("calistirma", {}).get("is_parcacigi", 8) or 8)
+        self._is_kusagi = self._kusak
+        self._analiz_turu = tur
+        self._analiz_modu = self.mod.currentData()
         self._sonuclar = []
         self.tablo.setRowCount(0)
         self._grafik_sifirla()
-        self.sonuc_kutusu.setText("Calisiyor...")
-        tur = self.tur.currentData()
-        hedef = self.hedef.currentData()
-        n = self.spec["calistirma"].get("is_parcacigi", 8)
+        self.sonuc_kutusu.setText("Çalışıyor…")
 
-        if self.mod.currentData() == "tarama":
+        if self._analiz_modu == "tarama":
             degerler = tarama.noktalar(self.bas.value(), self.son.value(),
                                        self.adet.value())
             self.ilerleme.setRange(0, len(degerler))
             self.ilerleme.setValue(0)
-            self._isci = TaramaIsci(self.spec, tur, hedef, degerler,
+            self._isci = TaramaIsci(spec, tur, hedef, degerler,
                                     self._dizin("tarama"), n, self)
             self._isci.nokta.connect(self._tarama_noktasi)
             self._isci.bitti.connect(self._tarama_bitti)
             self._isci.hata.connect(self._hata)
         else:
             self.ilerleme.setRange(0, 0)     # belirsiz
-            self._isci = AramaIsci(self.spec, tur, hedef, self.bas.value(),
+            self._isci = AramaIsci(spec, tur, hedef, self.bas.value(),
                                    self.son.value(), self.hedef_keff.value(),
                                    self._dizin("arama"), n, self)
             self._isci.adim.connect(self._arama_adimi)
@@ -527,36 +843,52 @@ class AnalizSekmesi(QtWidgets.QWidget):
             self._isci.hata.connect(self._hata)
 
         self._isci.finished.connect(self._isci_bitti)
-        self._baslangic = __import__("time").perf_counter()
+        self._baslangic = time.perf_counter()
         self._son_nokta_zamani = self._baslangic
         self.d_basla.setEnabled(False)
         self.d_dur.setEnabled(True)
+        self._kapi_yaz(True, "Analiz sürüyor: %s — her nokta ayrı bir koşu."
+                       % parametre_adi(tur))
+        self._sonuc_gorunumu()
         self._isci.start()
-        self.durum.emit("Analiz basladi", True)
+        self.sonuc_degisti.emit()
+        self.durum.emit("Analiz başladı", True)
 
     def _durdur(self):
         if self._isci:
             self._isci.durdur()
-            self.durum.emit("Durdurma istendi -- suren kosu bitince duracak", True)
+            self.durum.emit("Durdurma istendi — süren koşu bitince duracak", True)
 
     def _isci_bitti(self):
-        import time
-        if hasattr(self, "_baslangic"):
+        eski = self._eski_is()
+        if not eski and hasattr(self, "_baslangic"):
             self.tahmin_etiket.setText(
-                "tamamlandi -- toplam %s"
+                "tamamlandı — toplam %s"
                 % self._sure_metni(time.perf_counter() - self._baslangic))
-        self._isci = None
+        isci, self._isci = self._isci, None
+        if isci is not None:
+            isci.deleteLater()
+        self._is_kusagi = None
         self.d_dur.setEnabled(False)
         self.ilerleme.setRange(0, 1)
+        self.ilerleme.setValue(1 if (not eski and self._sonuclar) else 0)
         self.kapi_guncelle()
+        self._sonuc_gorunumu()
+        if eski:
+            self._tahmin_guncelle()
+            self.durum.emit("Önceki projenin analizi bitti; sonucu bu projeye yazılmadı.", True)
 
     def _hata(self, mesaj):
-        self.sonuc_kutusu.setText("HATA: %s" % mesaj)
-        self.durum.emit("Analiz hatasi: %s" % mesaj, False)
+        if self._eski_is():
+            return
+        self.sonuc_kutusu.setText("<b>Hata:</b> %s" % mesaj)
+        self.sonuc_degisti.emit()
+        self.durum.emit("Analiz hatası: %s" % mesaj, False)
 
     # ------------------------------------------------------------------
     def _tarama_noktasi(self, i, toplam, s):
-        import time
+        if self._eski_is():
+            return
         simdi = time.perf_counter()
         self._hizi_kalibre_et(simdi - self._son_nokta_zamani)
         self._son_nokta_zamani = simdi
@@ -566,48 +898,57 @@ class AnalizSekmesi(QtWidgets.QWidget):
         self._grafik_guncelle()
         kalan = (toplam - i - 1) * (simdi - self._baslangic) / (i + 1)
         self.tahmin_etiket.setText(
-            "gecen %s  |  kalan ~%s  (olcume gore)"
+            "geçen %s  |  kalan ~%s  (ölçüme göre)"
             % (self._sure_metni(simdi - self._baslangic), self._sure_metni(kalan)))
 
     def _tarama_bitti(self, sonuclar, notlar):
+        if self._eski_is():
+            return
         self._sonuclar = sonuclar
-        tur = self.tur.currentData()
+        tur = self._analiz_turu or self.tur.currentData()
         kats = tarama.katsayi(sonuclar)
         self._grafik_guncelle(kats)
-        kbirim = tarama.TURLER[tur][3]
+        kbirim = katsayi_birimi(tur)
         if kats:
-            metin = ("<b>KATSAYI = %+.3f &plusmn; %.3f %s</b><br>"
-                     "dogrusal uyum R&sup2; = %.4f, %d nokta<br><br>%s"
-                     % (kats["egim"], kats["egim_sapma"], kbirim,
+            metin = ("<b>%s = %+.3f &plusmn; %.3f %s</b><br>"
+                     "doğrusal uyum R&sup2; = %.4f, %d nokta<br><br>%s"
+                     % (KATSAYI_ADLARI.get(tur, "Reaktivite katsayısı"),
+                        kats["egim"], kats["egim_sapma"], kbirim,
                         kats["r2"], kats["nokta"], tarama.yorumla(tur, kats)))
         else:
-            metin = "Katsayi hesaplanamadi (yeterli gecerli nokta yok)."
+            metin = "Katsayı hesaplanamadı (yeterli geçerli nokta yok)."
         if notlar:
             metin += "<br><br><i>Notlar:</i><br>" + "<br>".join("&bull; " + n for n in notlar)
         self.sonuc_kutusu.setText(metin)
-        self.durum.emit("Tarama tamamlandi", True)
+        self.sonuc_degisti.emit()
+        self.durum.emit("Tarama tamamlandı", True)
 
     def _arama_adimi(self, i, kayit):
-        import time
+        if self._eski_is():
+            return
         simdi = time.perf_counter()
         self._hizi_kalibre_et(simdi - self._son_nokta_zamani)
         self._son_nokta_zamani = simdi
-        self.tahmin_etiket.setText("gecen %s  |  %d. kosu bitti"
+        self.tahmin_etiket.setText("geçen %s  |  %d. koşu bitti"
                                    % (self._sure_metni(simdi - self._baslangic), i + 1))
         self._sonuclar.append(kayit)
         self._tabloya_ekle(kayit)
         self._grafik_guncelle()
 
     def _arama_bitti(self, s):
+        if self._eski_is():
+            return
         self._grafik_guncelle()
-        tur = self.tur.currentData()
-        birim = tarama.TURLER[tur][2]
+        tur = self._analiz_turu or self.tur.currentData()
         if s.basarili:
-            metin = ("<b>COZUM: %s = %.6g %s</b><br>"
-                     "k = %.5f &plusmn; %.5f &nbsp;&nbsp; (%d kosu)<br><br>%s"
-                     % (tur, s.cozum, birim, s.cozum_keff, s.cozum_sapma,
-                        len(s.adimlar), s.mesaj))
+            bel = ("" if s.cozum_belirsizlik is None
+                   else " &plusmn; %.4g" % s.cozum_belirsizlik)
+            metin = ("<b>Çözüm: %s = %.6g%s %s</b><br>"
+                     "k = %.5f &plusmn; %.5f &nbsp;&nbsp; (%d koşu)<br><br>%s"
+                     % (parametre_adi(tur), s.cozum, bel, birim(tur),
+                        s.cozum_keff, s.cozum_sapma, len(s.adimlar), s.mesaj))
         else:
-            metin = "<b>Cozum bulunamadi.</b><br><br>%s" % s.mesaj
+            metin = "<b>Çözüm bulunamadı.</b><br><br>%s" % s.mesaj
         self.sonuc_kutusu.setText(metin)
-        self.durum.emit("Kritik arama tamamlandi", s.basarili)
+        self.sonuc_degisti.emit()
+        self.durum.emit("Kritik arama tamamlandı", s.basarili)
