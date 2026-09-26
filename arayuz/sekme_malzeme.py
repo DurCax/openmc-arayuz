@@ -198,7 +198,7 @@ class SicaklikGirdi(QtWidgets.QWidget):
         self.kutu = sayi(deger if deger is not None else 293.6, ondalik,
                          en_az, en_cok, adim, "K")
         self.celsius = QtWidgets.QLabel()
-        self.celsius.setStyleSheet("color: palette(mid);")
+        self.celsius.setObjectName("soluk")
         self.celsius.setMinimumWidth(90)
         d = QtWidgets.QHBoxLayout(self)
         d.setContentsMargins(0, 0, 0, 0)

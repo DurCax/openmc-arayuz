@@ -271,8 +271,14 @@ def kor_alanlarini_ayikla(kor, korunan=KOR_KORUNAN):
 
 
 def yeni_spec(ad="isimsiz model"):
-    """Bos ama gecerli bir spec dondurur."""
-    return {
+    """
+    Bos ama gecerli bir spec dondurur. YENI modellerde entropi agi modelden
+    turetilir (entropi_mesh.otomatik; kaynak.entropi_boyutu): 2B'den 3B'ye
+    gecince nz kendiliginden 1 -> 8 olur. Eski dosyalarda (anahtar yok)
+    dosyadaki "boyut" aynen kullanilir -- VARSAYILAN_AYARLAR'a eklenmedi,
+    yoksa tamamla() kullanicinin sectigi boyutu ezerdi.
+    """
+    spec = {
         "surum": SEMA_SURUM,
         "ad": ad,
         "aciklama": "",
@@ -287,6 +293,8 @@ def yeni_spec(ad="isimsiz model"):
         "tukenme": copy.deepcopy(VARSAYILAN_TUKENME),
         "calistirma": copy.deepcopy(VARSAYILAN_CALISTIRMA),
     }
+    spec["ayarlar"]["entropi_mesh"]["otomatik"] = True
+    return spec
 
 
 # ----------------------------------------------------------------------------

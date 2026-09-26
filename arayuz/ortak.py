@@ -97,7 +97,9 @@ def ipucu(metin):
     """Kucuk, soluk aciklama metni."""
     e = QtWidgets.QLabel(metin)
     e.setWordWrap(True)
-    e.setStyleSheet("color: palette(mid);")
+    # palette(mid) bir KENAR rengidir: zemine karsi ~1.3:1 karsitlikla ipuclari
+    # neredeyse gorunmuyordu. Temanin soluk metin rengi (~4.3:1) kullanilir.
+    e.setObjectName("soluk")
     f = e.font()
     f.setPointSizeF(max(f.pointSizeF() - 1.0, 7.0))
     e.setFont(f)

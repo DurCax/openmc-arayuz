@@ -65,37 +65,8 @@ def _tema_renk(ad, vars_="#6b7785"):
 
 
 def yakit_ornek_sayisi(spec):
-    """
-    Yanabilir malzemelerin geometrideki en buyuk ORNEK (hucre) sayisi.
-    "Cubuk cubuk yanma" (diff_burnable_mats) her ornegi ayri malzeme yapar;
-    tek ornekte (pin hucre, tek kabuklu kure, homojen tek katmanli kor)
-    hicbir sey degistirmez. Sayim tukenme.hacimler()'in izledigi yolu izler.
-    # GECICI: uygunluk'a tasinacak (ornek: uygunluk.tukenme_ayirma_anlamli)
-    """
-    kor = spec.get("kor") or {}
-    adlar = _tk.yanabilir_adlar(spec)
-    if kor.get("tur") == "kuresel":
-        return max([sum(1 for k in kor.get("kabuklar") or [] if k.get("malzeme") == ad)
-                    for ad in adlar] or [0])
-    dilimler = _tk._eksenel_dilimler(kor)
-
-    def sayim(parca):
-        return sum(_tk._kor_sayimi(spec, kor, d, parca, e) for _h, d, e in dilimler)
-
-    en_cok = 0
-    for ad in adlar:
-        n = 0
-        for c in spec.get("cubuklar", []):
-            bolge = sum(1 for b in c.get("bolgeler") or [] if b.get("malzeme") == ad)
-            if bolge:
-                n += bolge * sayim(c["ad"])
-        for p in spec.get("plakalar", []):
-            if p.get("et_malzeme") == ad:
-                n += int(p.get("plaka_sayisi") or 1) * sayim(p["ad"])
-        if kor.get("tur") == "tamburlu":
-            n += sum(1 for _h, d, _e in dilimler if (d or kor.get("dolgu")) == ad)
-        en_cok = max(en_cok, n)
-    return en_cok
+    """Geriye uyum: sayim cekirdek/tukenme.py'de."""
+    return _tk.yakit_ornek_sayisi(spec)
 
 
 class _OncekiIsci(QtCore.QThread):
@@ -382,7 +353,8 @@ class TukenmeSekmesi(SekmeTabani):
 
     def _ayirma_anlamli(self):
         try:
-            return yakit_ornek_sayisi(self.spec) > 1
+            from cekirdek import uygunluk
+            return uygunluk.tukenme_ayirma_anlamli(self.spec)
         except Exception:
             return True                  # sayilamadi: secenegi saklama
 

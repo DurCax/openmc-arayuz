@@ -35,6 +35,7 @@ import os
 
 from PySide6 import QtCore, QtGui, QtWidgets
 
+from cekirdek import kaynak
 from cekirdek import sema
 
 KOK = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -174,6 +175,11 @@ def _sadelestir(spec, ad):
     spec["guc_dagilimi"] = copy.deepcopy(sema.VARSAYILAN_GUC)
     spec["tukenme"] = copy.deepcopy(sema.VARSAYILAN_TUKENME)
     spec["calistirma"] = copy.deepcopy(sema.VARSAYILAN_CALISTIRMA)
+    # Yeni modelde entropi agi modelden turetilir (sema.yeni_spec ile ayni):
+    # kullanici 2B'den 3B'ye gecince nz kendiliginden artar.
+    ent = spec["ayarlar"].setdefault("entropi_mesh", {})
+    ent["otomatik"] = True
+    ent["boyut"] = kaynak.entropi_boyutu_otomatik(spec)   # dosyadaki deger de tutarli
     _kullanilmayanlari_at(spec)
     return spec
 

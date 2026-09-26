@@ -939,11 +939,27 @@ def test_tur_hafizasi_ad_degisimi():
     p.close()
 
 
+def test_kor_tur_baglantisi():
+    """Kor sekmesindeki 'Türü değiştir…' baglantisi basliktaki tur menusunu acar."""
+    if _qt() is None:
+        return
+    p = _pencere(os.path.join(ORNEK, "pwr_17x17.json"))
+    acilan = []
+    p.d_tur.showMenu = lambda: acilan.append("baslik")
+    p._tur_menusu.exec = lambda *a: acilan.append("menu")
+    kontrol("kor sekmesinde tur satiri baglanti iceriyor",
+            'href="tur"' in p.s_kor.tur_etiket.text() and "Türü değiştir" in p.s_kor.tur_etiket.text())
+    p.s_kor.tur_etiket.linkActivated.emit("tur")
+    kontrol("baglanti tur menusunu aciyor", len(acilan) == 1, "-> %s" % acilan)
+    p.close()
+
+
 HIZLI = [test_bos_sablonlar, test_baslangic_ekrani, test_sekme_gorunurlugu,
          test_sekme_isaretleri, test_model_basligi, test_sag_panel_ve_rozet,
          test_kaldirilanlar_ve_kisayollar, test_minimum_yukseklik, test_tema_gecisi,
          test_ortak_bilesenler, test_izgara_yardimcilari, test_izgara_boyama,
-         test_ayarlar_yalitik, test_tur_hafizasi_ad_degisimi]
+         test_ayarlar_yalitik, test_tur_hafizasi_ad_degisimi,
+         test_kor_tur_baglantisi]
 YAVAS = []
 
 

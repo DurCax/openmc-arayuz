@@ -636,14 +636,13 @@ class AnalizSekmesi(QtWidgets.QWidget):
         hedef_turu = tarama.TURLER.get(tur, (None, None, None, None))[1]
         if hedef_turu == "malzeme":
             for ad in hedefler:
-                m = sema.malzeme_bul(self.spec, ad) or {}
-                g = m.get("gorunen_ad") or ""
-                self.hedef.addItem("%s  —  %s" % (ad, g) if g else ad, ad)
+                m = sema.malzeme_bul(self.spec, ad) or {"ad": ad}
+                self.hedef.addItem(sema.malzeme_etiketi(m), ad)
             self.hedef_etiket.setText("Hedef malzeme:")
         elif hedef_turu == "demet":
             for ad in hedefler:
                 self.hedef.addItem(ad, ad)
-            self.hedef_etiket.setText("Hedef kafes:")
+            self.hedef_etiket.setText("Hedef demet:")
         elif hedef_turu == "kontrol_cubugu":
             for ad in hedefler:
                 c = sema.cubuk_bul(self.spec, ad) or {}

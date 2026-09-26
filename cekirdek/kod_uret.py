@@ -36,12 +36,45 @@ from cekirdek.sema import BOSLUK, cubuk_bul, plaka_bul, demet_bul
 BANNER = "# " + "=" * 74
 
 
+# Spec adlarindan uretilen degiskenler TURE GORE onek alir (m_ malzeme,
+# c_ cubuk, p_ plaka, d_ demet, u_ malzeme/cubuk sarmalayan universe) ve
+# uret() boyunca bir kayitla BENZERSIZ tutulur. Eskiden ad aynen degisken
+# oluyordu (olculdu, testler/test_butunlesme.py):
+#   'a b' ve 'a_b' malzemeleri ayni degiskene dusup betikte iki malzeme
+#   karisiyordu -- betik SESSIZCE farkli geometri kuruyordu;
+#   'class', 'None', 'openmc', 'malzemeler' adli malzemeler betigi
+#   calismaz yapiyordu (SyntaxError / ic degiskenin ustune yazma).
+# Betigin ic adlari (ayar, geometri, kok, _harita...) bu oneklerle baslamaz.
+_TUREV_EKLERI = ("_yuzeyler", "_hucreler", "_disi", "_u", "_uc")
+_KAYIT = None                          # uret() icinde: {"esle": {}, "kullanilan": set()}
+
+
+def _cakisiyor(aday, kullanilan):
+    if aday in kullanilan:
+        return True
+    for k in kullanilan:
+        for ek in _TUREV_EKLERI:
+            if aday == k + ek or k == aday + ek:
+                return True
+    return False
+
+
 def _ad(metin, onek="m"):
-    """Spec adini gecerli bir Python degisken adina cevirir."""
-    temiz = re.sub(r"[^0-9a-zA-Z_]", "_", metin)
-    if not temiz or temiz[0].isdigit():
-        temiz = onek + "_" + temiz
-    return temiz
+    """Spec adini betikte (tur onekli, benzersiz) bir degisken adina cevirir."""
+    temiz = re.sub(r"[^0-9a-zA-Z_]", "_", str(metin))
+    taban = "%s_%s" % (onek, temiz)
+    if _KAYIT is None:
+        return taban
+    anahtar = (onek, metin)
+    if anahtar in _KAYIT["esle"]:
+        return _KAYIT["esle"][anahtar]
+    aday, i = taban, 2
+    while _cakisiyor(aday, _KAYIT["kullanilan"]):
+        aday = "%s_%d" % (taban, i)
+        i += 1
+    _KAYIT["esle"][anahtar] = aday
+    _KAYIT["kullanilan"].add(aday)
+    return aday
 
 
 def _f(deger):
@@ -624,7 +657,7 @@ def _ayarlar(spec, satirlar, gx, gy):
         satirlar.append("# Entropi pasif cevrimler boyunca kayiyorsa pasif cevrim")
         satirlar.append("# sayisi yetersizdir ve k-eff yanli cikar.")
         satirlar.append("_ent_mesh = openmc.RegularMesh()")
-        satirlar.append("_ent_mesh.dimension = %r" % (list(ent.get("boyut") or [8, 8, 1]),))
+        satirlar.append("_ent_mesh.dimension = %r" % (_kaynak.entropi_boyutu(spec),))
         _hz = sema.kor_yuksekligi(spec["kor"])
         _ez = (_hz / 2.0) if _hz else 1.0e10
         satirlar.append("_ent_mesh.lower_left  = (%s, %s, %s)" % (_f(-gx/2.0), _f(-gy/2.0), _f(-_ez)))
@@ -781,6 +814,15 @@ def _kapanis(spec, satirlar, renkli):
     satirlar.append("")
     satirlar.append("model = openmc.Model(geometry=geometri, materials=malzemeler,")
     satirlar.append("                     settings=ayar, tallies=%s)" % tallyler)
+    kin = spec["ayarlar"].get("kinetik") or {}
+    if kin.get("var") and spec["ayarlar"].get("mod", "eigenvalue") == "eigenvalue":
+        # kurucu.kur ile ayni: onceden betik IFP'yi hic yazmiyordu ve disa
+        # aktarilan Godiva beta_eff / notron omru vermiyordu.
+        satirlar.append("")
+        satirlar.append("# Kinetik parametreler (IFP): etkin gecikmis notron kesri (beta_eff)")
+        satirlar.append("# ve ortalama notron nesil suresi. Kosu suresini biraz uzatir.")
+        satirlar.append("model.add_kinetics_parameters_tallies()")
+        satirlar.append("model.settings.ifp_n_generation = %d" % int(kin.get("nesil") or 10))
     if renkli:
         satirlar.append("")
         satirlar.append("# Model.plot() SVG renk adi ya da (R,G,B) demeti ister -- hex dize KABUL ETMEZ")
@@ -821,6 +863,15 @@ def _kapanis(spec, satirlar, renkli):
 
 def uret(spec, kaynak_dosya=None, renkli=True):
     """Spec'ten tek basina calisan Python betigi metni uretir."""
+    global _KAYIT
+    _KAYIT = {"esle": {}, "kullanilan": set()}
+    try:
+        return _uret(spec, kaynak_dosya, renkli)
+    finally:
+        _KAYIT = None
+
+
+def _uret(spec, kaynak_dosya, renkli):
     tarih = datetime.date.today().isoformat()
     satirlar = [
         "# -*- coding: utf-8 -*-",

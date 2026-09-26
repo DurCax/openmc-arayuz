@@ -51,17 +51,9 @@ TUR_ADI = {"kare": "Kare demet", "altigen": "Altıgen demet"}
 # ============================================================================
 
 def demet_turleri(spec):
-    """
-    Bu modelde eklenebilecek demet tipleri.
-    # GECICI: uygunluk'a tasinacak (uygunluk.parca_turleri'ne "demet_kare" /
-    # "demet_altigen" olarak). Tam kor (kare_kafes) haritasi kare hucrelidir;
-    # altigen demet oraya oturmaz ve altigen demetin ic demeti de altigen olmali.
-    """
-    tur = (spec.get("kor") or {}).get("tur")
-    if tur == "kare_kafes":
-        return ("kare",)
-    return ("kare", "altigen")
-
+    """Bu modelde eklenebilecek demet tipleri (uygunluk.parca_turleri)."""
+    t = uygunluk.parca_turleri(spec)
+    return tuple(tip for tip in ("kare", "altigen") if t.get("demet_" + tip))
 
 def _harita_adlari(d):
     return izgara.harita_adlara(d.get("harita"), d.get("anahtar"))
@@ -475,8 +467,14 @@ class DemetSekmesi(SekmeTabani):
         secili = self._secili() is not None
         self.d_kopya.setEnabled(secili)
         self.d_sil.setEnabled(secili)
-        self._bos_tipi = turler[0]
-        if not cubuk_var:
+        # Demet kullanmayan modelde (pin hucre, plaka) sekme gizlidir ama yine
+        # yuklenir: tip listesi bos olabilir.
+        self._bos_tipi = turler[0] if turler else None
+        if not turler:
+            self.bos.ayarla("Bu modelde demet kullanılmıyor",
+                            "Bu kor türü demet içermez. Demet gerekiyorsa kor türünü "
+                            "model başlığındaki “Türü değiştir…” ile değiştirin.", "")
+        elif not cubuk_var:
             self.bos.ayarla("Önce çubuk gerekli",
                             "Demet, Parçalar sekmesinde tanımlanan çubuklardan kurulur. "
                             "Önce bir yakıt çubuğu ekleyin.", "")

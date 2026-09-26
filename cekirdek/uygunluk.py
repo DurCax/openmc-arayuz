@@ -508,16 +508,22 @@ def kor_turleri(spec):
 
 def parca_turleri(spec):
     """
-    {"cubuk": bool, "plaka": bool, "kontrol_cubugu": bool} -- 2. sekmede neler eklenebilir.
+    {"cubuk", "plaka", "kontrol_cubugu", "demet_kare", "demet_altigen": bool}
+    -- Parcalar ve Demet sekmelerinde neler eklenebilir.
       kontrol cubugu 3B ve bir kafese (demet / kor haritasi / tambur dolgusu)
       yerlestirilebilen turlerde; tek_cubuk'ta cubugun kendisi kordur.
     """
     b = _Baglam(spec)
     tur = b.tur
+    demet = tur in ("tek_demet", "kare_kafes", "tamburlu") or bool(b.geo["demet"])
     return {
         "cubuk": tur in ("tek_cubuk", "tek_demet", "kare_kafes", "tamburlu"),
         "plaka": tur == "tek_plaka",
         "kontrol_cubugu": b.boyut != "2B" and tur in ("tek_demet", "kare_kafes", "tamburlu"),
+        # Demet sekmesinde eklenebilecek kafes tipleri. Tam kor (kare_kafes)
+        # haritasi kare hucrelidir; altigen demet oraya oturmaz.
+        "demet_kare": demet,
+        "demet_altigen": demet and tur != "kare_kafes",
     }
 
 
@@ -678,6 +684,40 @@ def _tukenme_uygun(b):
 def tukenme_uygun(spec):
     """(bool, sebep) -- tukenme sekmesi/hesabi bu modelde anlamli mi."""
     return _tukenme_uygun(_Baglam(spec))
+
+
+def tukenme_ayirma_anlamli(spec):
+    """
+    "Cubuk cubuk yanma" (her yakit ornegi ayri malzeme) secenegi anlamli mi?
+    Yalnizca bir yanabilir malzeme geometride birden fazla kez geciyorsa
+    (17x17: 264, MTR: 23); pin hucrede ve Godiva'da (1) hicbir sey degistirmez.
+    Sayilamazsa True (secenek saklanmasin).
+    """
+    try:
+        from cekirdek import tukenme
+        return tukenme.yakit_ornek_sayisi(spec) > 1
+    except Exception:
+        return True
+
+
+# Bir eksenel katmani doldurabilecek parca turleri. Katman, korun ana
+# dolgusuyla AYNI yanal kutuya yerlesir (kurucu._eksenel_hucreler); bu yuzden
+# ana dolguyla ayni olcekte olmali: pin hucrede cubuk, demette (ayni tipte)
+# demet; tam korda ana dolgu haritanin kendisidir, ayri katmana yalnizca
+# malzeme (or. su yansitici) konur.
+KATMAN_DOLGU_TURLERI = {
+    "tek_cubuk":  ("cubuk", "malzeme"),
+    "tek_plaka":  ("plaka", "malzeme"),
+    "tek_demet":  ("demet", "malzeme"),
+    "kare_kafes": ("malzeme",),
+    "tamburlu":   ("demet", "cubuk", "malzeme"),
+}
+
+
+def katman_dolgu_turleri(spec):
+    """Bu kor turunde eksenel katmana konabilecek parca turleri."""
+    tur = (spec.get("kor") or {}).get("tur")
+    return KATMAN_DOLGU_TURLERI.get(tur, ("cubuk", "plaka", "demet", "malzeme"))
 
 
 # ----------------------------------------------------------------------------

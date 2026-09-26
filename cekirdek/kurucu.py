@@ -789,7 +789,7 @@ def ayarlari_kur(spec, sinir_kutu, fisil_aralik=None):
     if ent.get("var") and s.run_mode == "eigenvalue":
         gx, gy = sinir_kutu
         mesh = openmc.RegularMesh()
-        mesh.dimension = list(ent.get("boyut") or [8, 8, 1])
+        mesh.dimension = _kaynak.entropi_boyutu(spec)   # otomatik ya da dosyadaki
         # Eksenel sinirlar: 3B modelde GERCEK kor yuksekligi kullanilmali.
         #   Onceki surumde z daima +/-1e10 idi. nz=1 iken zararsizdi, ama
         #   nz>1 istendiginde iki bin de 1e10 cm yuksekliginde oluyor, hepsi

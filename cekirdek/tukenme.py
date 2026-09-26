@@ -190,6 +190,41 @@ def _eksenel_dilimler(kor):
     return [(h if h else 1.0, None, None)]
 
 
+
+def yakit_ornek_sayisi(spec):
+    """
+    Yanabilir malzemelerin geometrideki en buyuk ORNEK (hucre) sayisi.
+    "Cubuk cubuk yanma" (diff_burnable_mats) her ornegi ayri malzeme yapar;
+    tek ornekte (pin hucre, tek kabuklu kure, homojen tek katmanli kor)
+    hicbir sey degistirmez. Sayim tukenme.hacimler()'in izledigi yolu izler.
+    uygunluk.tukenme_ayirma_anlamli bunu kullanir.
+    """
+    kor = spec.get("kor") or {}
+    adlar = yanabilir_adlar(spec)
+    if kor.get("tur") == "kuresel":
+        return max([sum(1 for k in kor.get("kabuklar") or [] if k.get("malzeme") == ad)
+                    for ad in adlar] or [0])
+    dilimler = _eksenel_dilimler(kor)
+
+    def sayim(parca):
+        return sum(_kor_sayimi(spec, kor, d, parca, e) for _h, d, e in dilimler)
+
+    en_cok = 0
+    for ad in adlar:
+        n = 0
+        for c in spec.get("cubuklar", []):
+            bolge = sum(1 for b in c.get("bolgeler") or [] if b.get("malzeme") == ad)
+            if bolge:
+                n += bolge * sayim(c["ad"])
+        for p in spec.get("plakalar", []):
+            if p.get("et_malzeme") == ad:
+                n += int(p.get("plaka_sayisi") or 1) * sayim(p["ad"])
+        if kor.get("tur") == "tamburlu":
+            n += sum(1 for _h, d, _e in dilimler if (d or kor.get("dolgu")) == ad)
+        en_cok = max(en_cok, n)
+    return en_cok
+
+
 def hacimler(spec):
     """
     {malzeme_adi: {"hacim": cm3|None, "yontem": str, "ayrinti": str}}

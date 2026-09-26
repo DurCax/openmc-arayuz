@@ -67,20 +67,6 @@ def _tur_adi(tur):
         return tur or "tanımsız"
 
 
-# GECICI: uygunluk'a tasinacak (katman_dolgu_secenekleri). Bir eksenel
-# katmani doldurabilecek parca turleri -- katman, korun ana dolgusuyla AYNI
-# yanal kutuya yerlesir (kurucu._eksenel_hucreler), bu yuzden ana dolguyla
-# ayni olcekte olmali: pin hucrede cubuk, demette demet; tam korda ana dolgu
-# haritanin kendisidir, ayri katmana yalnizca malzeme (or. su yansitici) konur.
-_KATMAN_TURLERI = {
-    "tek_cubuk": ("cubuk", "malzeme"),
-    "tek_plaka": ("plaka", "malzeme"),
-    "tek_demet": ("demet", "malzeme"),
-    "kare_kafes": ("malzeme",),
-    "tamburlu": ("demet", "cubuk", "malzeme"),
-}
-
-
 def _tablo_yuksekligi(tablo, en_cok_satir):
     """Tablo yuksekligi satir sayisina uysun (en_cok_satir'a kadar kaydirmasiz)."""
     n = max(1, min(tablo.rowCount(), en_cok_satir))
@@ -94,6 +80,9 @@ def _tablo_yuksekligi(tablo, en_cok_satir):
 class KorSekmesi(SekmeTabani):
 
     KONU = "kor"
+    # "Türü değiştir…" baglantisi: ana pencere model basligindaki tur
+    # menusunu acar (tur yalnizca oradan degisir -- tek yol, tek kural).
+    tur_degistir_istendi = QtCore.Signal()
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -103,6 +92,9 @@ class KorSekmesi(SekmeTabani):
         self.tur_etiket = QtWidgets.QLabel("-")
         self.tur_etiket.setTextFormat(QtCore.Qt.RichText)
         self.tur_etiket.setWordWrap(True)
+        self.tur_etiket.setTextInteractionFlags(
+            QtCore.Qt.LinksAccessibleByMouse | QtCore.Qt.LinksAccessibleByKeyboard)
+        self.tur_etiket.linkActivated.connect(lambda _b: self.tur_degistir_istendi.emit())
 
         # --- ture ozgu alanlar ---
         self.cubuk = QtWidgets.QComboBox()
@@ -367,8 +359,8 @@ class KorSekmesi(SekmeTabani):
         kor = self.spec["kor"]
         self._tur = kor.get("tur", "tek_cubuk")
         self.tur_etiket.setText(
-            "Kor türü: <b>%s</b> — üstteki model başlığındaki “Türü değiştir…” "
-            "ile değiştirilebilir." % _tur_adi(self._tur))
+            "Kor türü: <b>%s</b> — <a href=\"tur\">Türü değiştir…</a> "
+            "(model başlığındaki menüyle aynı)" % _tur_adi(self._tur))
 
         self._kutu_doldur(self.cubuk, [(c["ad"], c["ad"]) for c in self.spec.get("cubuklar", [])],
                           kor.get("cubuk"))
@@ -429,8 +421,7 @@ class KorSekmesi(SekmeTabani):
 
     @staticmethod
     def _malzeme_etiketi(m):
-        ad = m["ad"]
-        return "%s — %s" % (ad, m["gorunen_ad"]) if m.get("gorunen_ad") else ad
+        return sema.malzeme_etiketi(m)
 
     def _kutu_doldur(self, kutu, ogeler, secili):
         """
@@ -618,7 +609,7 @@ class KorSekmesi(SekmeTabani):
             ana_etiket = "Ana dolgu (%s)" % ", ".join(ana)
         else:
             ana_etiket = "Ana dolgu (seçilmedi)"
-        izinli = _KATMAN_TURLERI.get(tur, ("cubuk", "plaka", "demet", "malzeme"))
+        izinli = uygunluk.katman_dolgu_turleri(self.spec)
         ogeler = [(None, ana_etiket), (sema.BOSLUK, _BOS_ETIKET)]
         ana_demet = sema.demet_bul(self.spec, kor.get("demet")) if kor.get("demet") else None
         if "demet" in izinli:
@@ -627,13 +618,14 @@ class KorSekmesi(SekmeTabani):
                 if tur == "tek_demet" and ana_demet is not None \
                         and d.get("tur", "kare") != ana_demet.get("tur", "kare"):
                     continue
-                ogeler.append((d["ad"], "kafes: %s" % d["ad"]))
+                ogeler.append((d["ad"], "demet: %s" % d["ad"]))
         if "cubuk" in izinli:
             ogeler += [(c["ad"], "çubuk: %s" % c["ad"]) for c in self.spec.get("cubuklar", [])]
         if "plaka" in izinli:
             ogeler += [(p["ad"], "plaka: %s" % p["ad"]) for p in self.spec.get("plakalar", [])]
         if "malzeme" in izinli:
-            ogeler += [(m["ad"], "malzeme: %s" % m["ad"]) for m in self.spec["malzemeler"]]
+            ogeler += [(m["ad"], "malzeme: %s" % sema.malzeme_etiketi(m))
+                       for m in self.spec["malzemeler"]]
         return ogeler
 
     def _katman_doldur(self):
@@ -982,7 +974,8 @@ class KorSekmesi(SekmeTabani):
         t = kor.get("tambur") or {}
         if int(t.get("sayi") or 0) <= 0:
             self.tb_durum.setText("Tambur yok — düz yansıtıcı kuşak.")
-            self.tb_durum.setStyleSheet("color: palette(mid);")
+            self.tb_durum.setObjectName("soluk")
+            self.tb_durum.setStyleSheet("")
             return
         kal = (kor.get("yansitici") or {}).get("kalinlik") or 0.0
         hatalar = _t.geometri_kontrol(t, kor.get("kor_yaricap") or 0.0, kal)

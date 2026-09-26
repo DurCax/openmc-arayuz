@@ -85,8 +85,10 @@ _KONU_BAGIMLILIK = {
     # dagilimi bolgesi ve Tukenme'nin ek malzemeleri de malzeme adi gosterir
     "malzeme": {"cubuk", "demet", "kor", "ayar", "tukenme"},
     "cubuk":   {"demet", "kor", "ayar"},    # kafes anahtarlari, kor secimi, guc cubugu
-    "demet":   {"kor"},                     # kor hangi demeti kullanacagini secer
-    "kor":     {"cubuk", "demet"},
+    "demet":   {"kor", "ayar"},             # kor hangi demeti kullanacagini secer
+    # Hesap ayarlarinda gorunenler (kaynak kutusu, guc dagilimi, eksenel
+    # dilim) kor turune ve yukseklige bagli
+    "kor":     {"cubuk", "demet", "ayar"},
     "ayar":    set(),
     # Calistir'daki kosu dizini: Tukenme onceki sonucu <dizin>_tukenme'de arar
     "calistirma": {"tukenme"},
@@ -726,6 +728,7 @@ class AnaPencere(QtWidgets.QMainWindow):
         # Is parcacigi ve kosu dizini Calistir'da duzenlenir (konu "calistirma"):
         # proje kirlenir, geri alinabilir.
         self.s_calistir.degisti.connect(self._degisti)
+        self.s_kor.tur_degistir_istendi.connect(self._tur_menusunu_ac)
 
         self._dog_sayac = QtCore.QTimer(self); self._dog_sayac.setSingleShot(True)
         self._dog_sayac.setInterval(250)
@@ -1233,6 +1236,14 @@ class AnaPencere(QtWidgets.QMainWindow):
 
     def _baslik_baglantisi(self, hedef):
         self._sekmeye_git({"mod": "ayarlar", "kor": "kor"}.get(hedef, "kor"))
+
+    def _tur_menusunu_ac(self):
+        """Kor sekmesindeki 'Türü değiştir…' baglantisi: basliktaki menu."""
+        if self.d_tur.isVisible():
+            self.d_tur.showMenu()
+        else:
+            self._tur_menusunu_doldur()
+            self._tur_menusu.exec(QtGui.QCursor.pos())
 
     def _tur_menusunu_doldur(self):
         self._tur_menusu.clear()
