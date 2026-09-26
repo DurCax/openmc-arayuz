@@ -29,19 +29,47 @@ import openmc
 
 # Arayuzde ve dogrulamada kullanilan tayf listesi: (anahtar, gorunen ad)
 TAYFLAR = [
-    ("watt",      "Watt fisyon tayfi"),
-    ("maxwell",   "Maxwell tayfi"),
+    ("watt",      "Watt fisyon tayfı"),
+    ("maxwell",   "Maxwell tayfı"),
     ("tek",       "Tek enerjili (monoenerjetik)"),
-    ("ayrik",     "Ayrik cizgiler"),
+    ("ayrik",     "Ayrık çizgiler"),
     ("histogram", "Grup grup tayf (histogram)"),
-    ("fuzyon",    "Fuzyon tayfi (D-T / D-D, Muir)"),
+    ("fuzyon",    "Füzyon tayfı (D-T / D-D, Muir)"),
 ]
 
 ACILAR = [
-    ("izotropik", "Izotropik"),
-    ("tek_yon",   "Tek yonlu demet"),
+    ("izotropik", "İzotropik"),
+    ("tek_yon",   "Tek yönlü demet"),
     ("koni",      "Koni"),
 ]
+
+# Shannon entropisi agi -- "otomatik" boyut.
+#   Entropi FISYON KAYNAGININ yakinsamasini olcer; bu yuzden kaynak modulunde.
+#   Radyal 8 x 8 bolme; 3B modelde eksenel 8 bolme (asil yakinsama riski
+#   eksenel yondedir: bkz. kurucu.ayarlari_kur), 2B'de tek dilim. Butun 3B
+#   ornekler (pwr_3b, pwr_eksenel, pwr_kontrol) ve 2B ornekler zaten bu
+#   degerleri kullaniyordu; "otomatik" onlari DEGISTIRMEZ, model 2B <-> 3B
+#   degisince agin da degismesini saglar.
+ENTROPI_RADYAL = 8
+ENTROPI_EKSENEL = 8
+
+
+def entropi_boyutu_otomatik(spec):
+    """Modelin boyutuna gore entropi agi bolmeleri [nx, ny, nz]."""
+    from cekirdek import sema
+    h = sema.kor_yuksekligi((spec or {}).get("kor") or {})
+    return [ENTROPI_RADYAL, ENTROPI_RADYAL, ENTROPI_EKSENEL if h else 1]
+
+
+def entropi_boyutu(spec):
+    """
+    Kurulacak entropi aginin bolmeleri. entropi_mesh.otomatik True ise
+    modelden turetilir (entropi_boyutu_otomatik); degilse dosyadaki "boyut".
+    """
+    ent = ((spec or {}).get("ayarlar") or {}).get("entropi_mesh") or {}
+    if ent.get("otomatik"):
+        return entropi_boyutu_otomatik(spec)
+    return list(ent.get("boyut") or [8, 8, 1])
 
 
 def _f(d, ad, vars_=0.0):
