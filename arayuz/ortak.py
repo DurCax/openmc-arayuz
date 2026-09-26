@@ -58,6 +58,22 @@ def tekerlek_korumasi_kur(uygulama=None):
     _SUZGEC[id(uygulama)] = suzgec
 
 
+def qt_turkce_cevirisi(uygulama):
+    """
+    Qt'nin kendi metinlerini (standart dugmeler: Kapat, Evet/Hayir, Iptal;
+    dosya diyaloglari, sag tik menuleri) Turkce yapar. Ceviri dosyasi
+    (qtbase_tr.qm) Qt ile gelir. Yuklenemezse None doner, uygulama Ingilizce
+    Qt metinleriyle calismayi surdurur. Sayi bicimi ETKILENMEZ (QLocale
+    varsayilani ayridir).
+    """
+    ceviri = QtCore.QTranslator(uygulama)
+    yol = QtCore.QLibraryInfo.path(QtCore.QLibraryInfo.TranslationsPath)
+    if ceviri.load(QtCore.QLocale(QtCore.QLocale.Turkish, QtCore.QLocale.Turkey),
+                   "qtbase", "_", yol) and uygulama.installTranslator(ceviri):
+        return ceviri
+    return None
+
+
 def cumle_basi(metin):
     """Ilk harfi buyuk (Turkce: i -> İ); bos metin oldugu gibi doner."""
     if not metin:

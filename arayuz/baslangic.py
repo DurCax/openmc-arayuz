@@ -223,7 +223,7 @@ def bos_sablon(anahtar):
         kor["sinir"] = {"yan": "vacuum", "alt": "reflective", "ust": "reflective"}
         sema.kor_alanlarini_ayikla(kor)
         return _sadelestir(spec, "Yeni tam kor")
-    raise KeyError("bos sablonu olmayan kart: %s" % anahtar)
+    raise KeyError("boş şablonu olmayan kart: %s" % anahtar)
 
 
 # ============================================================================

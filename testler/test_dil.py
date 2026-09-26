@@ -74,10 +74,11 @@ _ASCII_DESEN = re.compile(r"(?<!\w)(%s)(?!\w)" % "|".join(
 _HAM_DESENLER = [
     ("None", re.compile(r"\bNone\b")),
     ("' -- '", re.compile(r"(^|\s)--(\s|$)")),
-    ("Python liste repr'i", re.compile(r"\[\s*'")),
+    ("Python liste repr'i", re.compile(r"\[\s*('|⟨kimlik⟩)")),
     ("0'dan numara", re.compile(r"(?<![\d.,])0\.\s+(bölge|katman|halka|adım|tambur|satır)")),
-    ("büyük harfle bağırma", re.compile(r"\b(DIKKAT|DİKKAT|ONCE|ÖNCE|YANLIŞ|YANLI|UYARI:|NOT:|"
-                                        r"BOZUK|BAŞARISIZ|KESİN|SESSİZCE|ANALİTİK)\b")),
+    ("büyük harfle bağırma", re.compile(r"(?<!\w)(DIKKAT|DİKKAT|ONCE|ÖNCE|YANLIŞ|YANLI|UYARI:|NOT:|"
+                                        r"BOZUK|BAŞARISIZ|KESİN|SESSİZCE|ANALİTİK|AIT|ESKI|DEGIL|SONUC|KOSU|BILGI|"
+                                        r"OZDEGER|TUKENME)(?!\w)")),
 ]
 
 # (c) virgullu ondalik: rakam,rakam (liste "0.5, 1.5" bosluklu oldugu icin tutmaz)
@@ -382,7 +383,36 @@ def test_ornek_basliklari():
     kontrol("malzeme/parca/demet/tally kimlikleri ASCII kaldi", not kimlik, "-> %s" % kimlik[:5])
 
 
-HIZLI = [test_arayuz_metinleri, test_bulgu_metinleri, test_cekirdek_yorumlari,
+def test_qt_standart_metinleri():
+    print("\n[D5] DIL: Qt'nin standart dugme metinleri Turkce")
+    from PySide6 import QtCore, QtWidgets
+    from arayuz.ortak import qt_turkce_cevirisi
+    uyg = _qt()
+    ceviri = qt_turkce_cevirisi(uyg)
+    try:
+        kontrol("qtbase_tr cevirisi yuklendi", ceviri is not None)
+        kutu = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Close
+                                          | QtWidgets.QDialogButtonBox.Yes
+                                          | QtWidgets.QDialogButtonBox.No
+                                          | QtWidgets.QDialogButtonBox.Cancel)
+        metinler = sorted(b.text().replace("&", "") for b in kutu.buttons())
+        kontrol("standart dugmeler Turkce (Kapat/Evet/Hayir/Iptal)",
+                metinler == sorted(["Kapat", "Evet", "Hayır", "İptal"]), "-> %s" % metinler)
+    finally:
+        if ceviri is not None:
+            uyg.removeTranslator(ceviri)
+    # Yardim diyalogunun dugmesi ceviriden bagimsiz Turkce
+    p = _pencere()
+    d = p._yardim_diyalogu()
+    dugmeler = [b.text() for b in d.findChildren(QtWidgets.QPushButton)]
+    kontrol("Yardim diyalogunda 'Kapat' (Close degil)", dugmeler == ["Kapat"], "-> %s" % dugmeler)
+    _kapat(p)
+    kontrol("sayi kutulari icin C yerel ayari main()'de kuruluyor",
+            "QLocale.setDefault(QtCore.QLocale.c())" in open(
+                os.path.join(KOK, "arayuz", "ana_pencere.py"), encoding="utf-8").read())
+
+
+HIZLI = [test_arayuz_metinleri, test_qt_standart_metinleri, test_bulgu_metinleri, test_cekirdek_yorumlari,
          test_ornek_basliklari]
 YAVAS = []
 

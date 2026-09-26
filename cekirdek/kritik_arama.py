@@ -230,7 +230,7 @@ def _terminal(argv):
     import sys
     if not argv or argv[0] in ("-h", "--yardim", "--help"):
         print(__doc__)
-        print("\nKULLANIM")
+        print("\nKullanım")
         print("  python3 -m cekirdek.kritik_arama <spec.json> --tur <tur> "
               "--hedef <ad> --alt <a> --ust <b> [--keff 1.0] [-s N]")
         print("\nTARAMA TÜRLERİ (tarama.py ile aynı)")

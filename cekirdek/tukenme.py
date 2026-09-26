@@ -595,7 +595,7 @@ def _terminal(argv):
     ap.add_argument("-s", "--is-parcacigi", type=int, default=None)
     ap.add_argument("--dizin", default=None)
     ap.add_argument("--hazirla", action="store_true",
-                    help="kosmadan hacim/zincir/agir metal bilgisini yazdir")
+                    help="koşmadan hacim, zincir ve ağır metal bilgisini yazdır")
     a = ap.parse_args(argv)
 
     # libgomp OMP_NUM_THREADS'i KUTUPHANE YUKLENIRKEN okur; openmc.deplete'in

@@ -1,7 +1,7 @@
 {
   "surum": 1,
   "ad": "PWR 17×17 demet — eksenel katmanlı",
-  "aciklama": "Eksenel katmanlı (heterojen) örnek. Aynı 17×17 demet, ama artık tek bir eksenel bölge değil: alttan üste su yansıtıcı / doğal UO₂ örtü (blanket) / %3.2 aktif yakıt / doğal UO₂ örtü / gaz plenumu / su yansıtıcı.\nÜç ayrı yükseklik vardır ve birbirine karıştırılmamalıdır:\n  toplam model          = 395 cm  (geometri, eksenel sınır koşulları)\n  fisil aralık          = 330 cm  (başlangıç kaynağı kutusu; örtü dahil)\n  yakit_cubugu aralığı  = 300 cm  (güç dağılımının eksenel ağı, W/cm)\nDikkat: toplam güç = 17.6 MW tüm demetin gücüdür, ama güç dağılımı yalnızca 'yakit_cubugu'nu kapsar. Örtünün ürettiği güç de 264 aktif çubuğa paylaştırılmış olur; bu yüzden W/cm bir miktar yüksek çıkar.\nKarşılaştırma için pwr_3b.json'a bakın: aynı demet, katmansız. Ölçülen F_q 1.7497 → 1.6435; yansıtıcı eksenel profili düzleştiriyor.",
+  "aciklama": "Aynı 17×17 demet, bu kez eksenel katmanlı (heterojen): alttan üste su yansıtıcı / doğal UO₂ örtü (blanket) / %3.2 aktif yakıt / doğal UO₂ örtü / gaz plenumu / su yansıtıcı.\nÜç ayrı yükseklik vardır ve birbirine karıştırılmamalıdır:\n  toplam model          = 395 cm  (geometri, eksenel sınır koşulları)\n  fisil aralık          = 330 cm  (başlangıç kaynağı kutusu; örtü dahil)\n  yakit_cubugu aralığı  = 300 cm  (güç dağılımının eksenel ağı, W/cm)\nDikkat: toplam güç = 17.6 MW tüm demetin gücüdür, ama güç dağılımı yalnızca 'yakit_cubugu'nu kapsar. Örtünün ürettiği güç de 264 aktif çubuğa paylaştırılmış olur; bu yüzden W/cm bir miktar yüksek çıkar.\nKarşılaştırma için pwr_3b.json'a bakın: aynı demet, katmansız. Ölçülen F_q 1.7497 → 1.6435; yansıtıcı eksenel profili düzleştiriyor.",
   "malzemeler": [
     {
       "ad": "uo2",

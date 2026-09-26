@@ -230,7 +230,7 @@ class KorSekmesi(SekmeTabani):
         dnl.addWidget(self.tb_donme_kaydirici, 1)
         tf.addRow("Dönme:", dn)
         tf.addRow(ipucu(
-            "Dönme 0° = emici kore bakar (daldırılmış, en düşük k); 180° = emici "
+            "Dönme 0° = emici kora bakar (daldırılmış, en düşük k); 180° = emici "
             "dışa bakar (çekilmiş, en yüksek k). Kritik tambur konumu için: "
             "Analiz sekmesi › Kritik arama › Kontrol tamburu dönmesi."))
         tf.addRow("Yerleşim:", self.tb_durum)

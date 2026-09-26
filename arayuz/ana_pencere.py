@@ -59,7 +59,7 @@ from arayuz.sekme_demet import DemetSekmesi
 from arayuz.sekme_kor import KorSekmesi
 from arayuz.sekme_malzeme import MalzemeSekmesi
 from arayuz import baslangic, tema
-from arayuz.ortak import DurumRozeti, cumle_basi, tekerlek_korumasi_kur
+from arayuz.ortak import DurumRozeti, cumle_basi, qt_turkce_cevirisi, tekerlek_korumasi_kur
 
 KOK = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ORNEKLER = os.path.join(KOK, "ornekler")
@@ -148,25 +148,9 @@ def yer_sekme_anahtari(yer):
     return None
 
 
-# Bulgu "yer" kodunun kullaniciya gorunen adi. Kod degismez (sekme eslemesi
-# ona bakar); yalnizca listede okunur bir ad gosterilir.
-_YER_ETIKETI = [
-    ("malzemeler", "Malzemeler"), ("malzeme:", "Malzeme "), ("cubuk:", "Çubuk "),
-    ("plaka:", "Plaka elemanı "), ("demet:", "Demet "), ("kor/katman ", "Kor, katman "),
-    ("kor", "Kor"), ("ayarlar", "Hesap ayarları"), ("veri kutuphanesi", "Veri kütüphanesi"),
-    ("kaynak", "Kaynak"), ("tally:", "Tally "), ("guc dagilimi", "Güç dağılımı"),
-    ("guc_dagilimi", "Güç dağılımı"), ("tukenme/", "Tükenme, "), ("tukenme", "Tükenme"),
-    ("dogrulama", "Doğrulama"),
-]
-
-
-def yer_etiketi(yer):
-    """Bulgu yerinin okunur adi: "malzeme:uo2" -> "Malzeme uo2"."""
-    yer = yer or ""
-    for onek, ad in _YER_ETIKETI:
-        if yer == onek or (onek.endswith((":", "/", " ")) and yer.startswith(onek)):
-            return ad + yer[len(onek):]
-    return yer
+# Bulgu "yer" kodunun okunur adi: kural dogrula.yer_etiketi'nde (terminal
+# ciktisi da ayni adi kullanir).
+yer_etiketi = dogrula.yer_etiketi
 
 
 def tur_ozeti(spec):
@@ -956,6 +940,7 @@ class AnaPencere(QtWidgets.QMainWindow):
         metin.setOpenExternalLinks(False)
         metin.setHtml(YARDIM_HTML + self._kisayol_html())
         kutu = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Close)
+        kutu.button(QtWidgets.QDialogButtonBox.Close).setText("Kapat")
         kutu.rejected.connect(d.reject)
         duzen = QtWidgets.QVBoxLayout(d)
         duzen.addWidget(metin)
@@ -1365,7 +1350,7 @@ class AnaPencere(QtWidgets.QMainWindow):
         liste.clear()
         for b in self._bulgular:
             oge = QtWidgets.QListWidgetItem(
-                "%s · %s — %s" % (_SEVIYE_ADI.get(b.seviye, b.seviye), yer_etiketi(b.yer),
+                "%s · %s: %s" % (_SEVIYE_ADI.get(b.seviye, b.seviye), yer_etiketi(b.yer),
                                   cumle_basi(b.mesaj)))
             oge.setForeground(QtGui.QColor(_seviye_renk(b.seviye)))
             oge.setData(QtCore.Qt.UserRole, b.yer)
@@ -1517,11 +1502,18 @@ class AnaPencere(QtWidgets.QMainWindow):
     def _kaydetme_sor(self):
         if not self._kirli:
             return True
-        c = QtWidgets.QMessageBox.question(
-            self, "Kaydedilmemiş değişiklikler",
+        soru = QtWidgets.QMessageBox(
+            QtWidgets.QMessageBox.Question, "Kaydedilmemiş değişiklikler",
             "Değişiklikler kaydedilmedi. Kaydedilsin mi?",
             QtWidgets.QMessageBox.Save | QtWidgets.QMessageBox.Discard
-            | QtWidgets.QMessageBox.Cancel)
+            | QtWidgets.QMessageBox.Cancel, self)
+        # Qt'nin Turkce cevirisinde "Discard" -> "At"; burada acik adlar.
+        for dugme, ad in ((QtWidgets.QMessageBox.Save, "Kaydet"),
+                          (QtWidgets.QMessageBox.Discard, "Kaydetme"),
+                          (QtWidgets.QMessageBox.Cancel, "Vazgeç")):
+            soru.button(dugme).setText(ad)
+        soru.exec()
+        c = soru.standardButton(soru.clickedButton())
         if c == QtWidgets.QMessageBox.Save:
             return self.proje_kaydet()
         return c == QtWidgets.QMessageBox.Discard
@@ -1708,6 +1700,7 @@ def main(argv=None):
     # virgul) degil C yerel ayarina gore yazar/okur; etiketler de nokta kullanir.
     QtCore.QLocale.setDefault(QtCore.QLocale.c())
     app = QtWidgets.QApplication(sys.argv[:1])
+    qt_turkce_cevirisi(app)
     app.setApplicationName("OpenMC Arayüz")
     tema.uygula(app)
     tekerlek_korumasi_kur(app)
