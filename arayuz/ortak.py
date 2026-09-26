@@ -8,6 +8,8 @@
 ================================================================================
 """
 
+import re
+
 from PySide6 import QtCore, QtGui, QtWidgets
 
 
@@ -115,6 +117,17 @@ def baslik(metin):
     e.setFont(f)
     e.setContentsMargins(0, 8, 0, 2)
     return e
+
+
+def hata_metni(e):
+    """
+    Istisnayi kullanici cumlesine cevirir. KeyError'un str()'i tirnakli
+    gelir ("'tanımsız plaka elemanı: None'"); ham None da "seçilmemiş" olur.
+    """
+    metin = e.args[0] if isinstance(e, KeyError) and e.args else str(e)
+    metin = str(metin)
+    metin = re.sub(r":\s*None\b", ": seçilmemiş", metin)
+    return metin
 
 
 def ipucu(metin):

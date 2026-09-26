@@ -359,7 +359,53 @@ def tur_hafizasini_esitle(hafiza, onceki, simdiki):
     return True
 
 
-def kor_turu_degistir(spec, yeni_tur, hafiza=None):
+def _eksik_parcayi_kur(spec, tur, eklenen=None):
+    """
+    Yeni kor turunun ihtiyac duydugu parca modelde yoksa sablondan kurar
+    (Ajan 9 bulgusu K10): pin -> plaka gecisinde plaka elemani olmadigi icin
+    kor "kurulamadı: 'tanımsız plaka elemanı: None'" diyordu ve "+ Plaka"
+    dugmesi yalniz plaka modelinde gorundugu icin kullanici cikmaza giriyordu.
+    Kurulan parcalarin adlari 'eklenen' listesine yazilir.
+    """
+    from arayuz import sekme_cubuk as sc
+    eklenen = eklenen if eklenen is not None else []
+
+    def cubuk_gerekli():
+        if not spec.get("cubuklar"):
+            ad = sc.benzersiz_ad(spec, "yakit_cubugu")
+            spec.setdefault("cubuklar", []).append(sc.cubuk_sablonu(spec, "yakit", ad))
+            eklenen.append(ad)
+
+    def kare_demet_gerekli():
+        if not any(d.get("tur", "kare") == "kare" for d in spec.get("demetler", [])):
+            cubuk_gerekli()
+            from arayuz.sekme_demet import yeni_demet
+            ad = sc.benzersiz_ad(spec, "demet")
+            spec.setdefault("demetler", []).append(yeni_demet(spec, "kare", ad))
+            eklenen.append(ad)
+
+    if tur == "tek_cubuk":
+        cubuk_gerekli()
+    elif tur == "tek_plaka" and not spec.get("plakalar"):
+        ad = sc.benzersiz_ad(spec, "plaka_eleman")
+        spec.setdefault("plakalar", []).append(sc.plaka_sablonu(spec, ad))
+        eklenen.append(ad)
+    elif tur == "tek_demet" and not spec.get("demetler"):
+        kare_demet_gerekli()
+    elif tur == "kare_kafes":
+        kare_demet_gerekli()
+    return eklenen
+
+
+# Bos sablonun varsayilan model adi; tur degisince ad da yeni ture uyar
+# (kullanici adi degistirmediyse). Ajan 9: "Yeni yakıt çubuğu" adli model
+# plakaya donunce de ayni adla kaliyordu.
+_SABLON_ADLARI = {"tek_cubuk": "Yeni yakıt çubuğu", "tek_demet": "Yeni kare yakıt demeti",
+                  "tek_plaka": "Yeni plaka elemanı", "tamburlu": "Yeni tamburlu kor",
+                  "kare_kafes": "Yeni tam kor"}
+
+
+def kor_turu_degistir(spec, yeni_tur, hafiza=None, eklenen=None):
     """
     Kor turunu degistirir: tur yazilir, ture ozgu olmayan alanlar temizlenir
     (sema.kor_alanlarini_ayikla) ve yeni turun bos kalan zorunlu secimleri
@@ -382,6 +428,8 @@ def kor_turu_degistir(spec, yeni_tur, hafiza=None):
     for alan, deger in ((hafiza or {}).get(yeni_tur) or {}).items():
         if _alan_varsayilan_mi(kor, alan):
             kor[alan] = copy.deepcopy(deger)
+
+    _eksik_parcayi_kur(spec, yeni_tur, eklenen)
 
     def ilk(liste):
         return spec.get(liste)[0]["ad"] if spec.get(liste) else None
@@ -429,7 +477,8 @@ durumu söyler: <b>!</b> düzeltilmesi gereken hata, <b>•</b> eksik adım,
 durum çubuğu da sıradaki adımı söyler. Kor türünü üstteki
 <b>Türü değiştir…</b> düğmesiyle değiştirebilirsiniz.</p>
 <p><b>Önce çiz, sonra çalıştır:</b> geometri önizlemesi başarıyla
-çizilmeden ve doğrulama hataları giderilmeden ÇALIŞTIR etkinleşmez.</p>
+çizilmeden ve doğrulama hataları giderilmeden koşu başlamaz; ÇALIŞTIR'a basarsanız
+önce neyin eksik olduğu söylenir.</p>
 
 <h3>Temel büyüklükler</h3>
 <table cellpadding="5">
@@ -477,6 +526,21 @@ k-eff ve tally sonuçları yalnızca bunlardan hesaplanır.</td></tr>
 sayısı yetersizdir ve k-eff <b>yanlı</b> çıkar.</td></tr>
 <tr><td><b>Tally (ölçüm)</b></td><td>Sayaç. Modelin belirli bir yerinde/enerjisinde
 hangi reaksiyonların kaç kez olduğunu toplar (akı, fisyon, soğurma…).</td></tr>
+<tr><td><b>k-eff ve k&infin;</b></td><td>Çoğaltma katsayısı. Bütün dış sınırlar
+yansıtıcı (sızıntısız) ise sonuç <b>k&infin;</b>'dur: sonsuz tekrarlanan ortamın
+katsayısı. k&infin; &gt; 1 reaktörün süperkritik olduğunu değil, yakıtın reaktivite
+fazlası taşıdığını söyler; sonlu bir korda sızıntı yüzünden k-eff daha küçüktür.</td></tr>
+<tr><td><b>Sabit kaynak</b></td><td>Fisyon zinciri yerine dışarıdan verilen bir
+kaynağın (ör. D-T füzyon, 14.1 MeV) nötronları izlenir; k-eff tanımsızdır. Kaynak
+şiddeti [1/s] girilirse sonuçlar mutlak birimdedir (OpenMC şiddeti kendisi uygular).</td></tr>
+<tr><td><b>Akı (flux)</b></td><td>OpenMC'nin akı tally'si hücre hacmi üzerinden
+integrallidir: birimi n&middot;cm/s (ya da kaynak nötronu başına n&middot;cm).
+Ortalama akı [n/cm²/s] için bölgenin hacmine bölün. Arayüz <b>doz</b> hesaplamaz;
+doz için akı–doz dönüşüm katsayıları (ör. ICRP-116) gerekir.</td></tr>
+<tr><td><b>F<sub>&Delta;H</sub> ve F<sub>q</sub></b></td><td>Güç tepe faktörleri:
+en yüksek çubuk gücü / ortalama (radyal) ve en yüksek yerel güç yoğunluğu / ortalama
+(3B). Az parçacıkla F<sub>&Delta;H</sub> istatistik gürültüsüyle <b>yukarı</b>
+yanlıdır; güvenilir değer için Normal ya da Hassas hassasiyet kullanın.</td></tr>
 <tr><td><b>S(&alpha;,&beta;)</b></td><td>Termal saçılma verisi. Düşük enerjide
 nötron serbest bir çekirdekten değil, <b>bağlı</b> bir molekülden saçılır (sudaki
 hidrojen gibi). Unutulursa termal reaktörde k yüzde mertebesinde kayar.</td></tr>
@@ -1291,13 +1355,18 @@ class AnaPencere(QtWidgets.QMainWindow):
         # onceki duzenlemeyle birlikte silmesin.
         self._gecmis_sayac.stop()
         self._gecmise_it()
-        if not kor_turu_degistir(self.spec, tur, self._tur_hafizasi):
+        eklenen = []
+        if not kor_turu_degistir(self.spec, tur, self._tur_hafizasi, eklenen):
             return False
+        if self.spec.get("ad") in _SABLON_ADLARI.values() and tur in _SABLON_ADLARI:
+            self.spec["ad"] = _SABLON_ADLARI[tur]
         self._kirli = True
         self._spec_uygula()
         self._gecmise_it()
+        ek = (" Model bu türün gerektirdiği parçayı içermiyordu; şablondan eklendi: %s "
+              "(Parçalar/Demet sekmesinde düzenleyin)." % ", ".join(eklenen)) if eklenen else ""
         self.statusBar().showMessage(
-            "Kor türü: %s — geri almak için Ctrl+Z." % TUR_ADLARI.get(tur, tur), 6000)
+            "Kor türü: %s — geri almak için Ctrl+Z.%s" % (TUR_ADLARI.get(tur, tur), ek), 10000)
         return True
 
     # ==================================================================
@@ -1607,7 +1676,7 @@ class AnaPencere(QtWidgets.QMainWindow):
     def malzeme_ice_aktar(self):
         yol, _ = QtWidgets.QFileDialog.getOpenFileName(
             self, "Malzeme içeren OpenMC XML dosyası",
-            os.path.dirname(self.proje_yolu) if self.proje_yolu else os.getcwd(),
+            os.path.dirname(self.proje_yolu) if self.proje_yolu else os.path.expanduser("~"),
             "OpenMC XML (materials.xml model.xml *.xml);;Tüm dosyalar (*)")
         if not yol:
             return
@@ -1663,7 +1732,7 @@ class AnaPencere(QtWidgets.QMainWindow):
     def xml_disa_aktar(self):
         dizin = QtWidgets.QFileDialog.getExistingDirectory(
             self, "XML'lerin yazılacağı dizin",
-            os.path.dirname(self.proje_yolu) if self.proje_yolu else os.getcwd())
+            os.path.dirname(self.proje_yolu) if self.proje_yolu else os.path.expanduser("~"))
         if not dizin:
             return
         try:

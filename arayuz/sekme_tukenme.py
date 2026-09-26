@@ -311,6 +311,20 @@ class TukenmeSekmesi(SekmeTabani):
         self._onceki_yukle()
 
     @staticmethod
+    def _gecersiz_parcalar(metin):
+        """Adim metninde sayiya cevrilemeyen parcalar."""
+        kotu = []
+        for p in (metin or "").replace(";", ",").split(","):
+            p = p.strip()
+            if not p:
+                continue
+            try:
+                float(p)
+            except ValueError:
+                kotu.append(p)
+        return kotu
+
+    @staticmethod
     def _sayilar(metin):
         cikti = []
         for p in (metin or "").replace(";", ",").split(","):
@@ -390,7 +404,17 @@ class TukenmeSekmesi(SekmeTabani):
         # --- adimlar ---
         adimlar = [float(a) for a in (t.get("adimlar") or [])]
         p = float(t.get("guc_yogunlugu") or 0.0)
-        if adimlar and p > 0:
+        # Sayi olmayan parca eskiden SESSIZCE atiliyordu; eksi adimla da
+        # "toplam -4 gün" yaziliyordu (Ajan 9 bulgusu).
+        gecersiz = self._gecersiz_parcalar(self.adimlar.text())
+        self.adim_ozet.setStyleSheet("")
+        if gecersiz or any(a <= 0 for a in adimlar):
+            neden = (("sayı olmayan: %s" % ", ".join(gecersiz)) if gecersiz
+                     else "her adım sıfırdan büyük olmalı")
+            self.adim_ozet.setText("Adımlar geçersiz — %s. Virgülle ayrılmış pozitif "
+                                   "sayılar girin (ör. 1, 5, 30)." % neden)
+            self.adim_ozet.setStyleSheet("color: %s;" % _tema_renk("hata", "#d04437"))
+        elif adimlar and p > 0:
             if (t.get("adim_birimi") or "d") == "d":
                 gun = sum(adimlar)
                 bu = _tk.yanma(gun, p)
@@ -687,7 +711,14 @@ class TukenmeSekmesi(SekmeTabani):
         if not os.path.exists(h5):
             degisti = self.sonuc_var()
             self._onceki = self._onceki_anahtar = None
-            self.onceki_etiket.setText("")
+            # Sonucun nereye yazilacagini soyle: dizin Calistir'daki kosu
+            # dizininden turer; onu degistiren kullanici onceki sonucun neden
+            # "kayboldugunu" gorebilsin (Ajan 9 bulgusu K12).
+            self.onceki_etiket.setText(
+                "Bu model için kayıtlı tükenme sonucu yok. Sonuçlar şuraya yazılır: %s "
+                "(Çalıştır sekmesindeki koşu dizininden türetilir)."
+                % _tk.kosu_dizini(self.spec, self.proje_yolu))
+            self.onceki_etiket.setStyleSheet("color: %s;" % _tema_renk("metin_soluk"))
             self._grafik_bos()
             self.tablo.setRowCount(0)
             self._gorunum_guncelle()
@@ -743,7 +774,17 @@ class TukenmeSekmesi(SekmeTabani):
         dizin = os.path.dirname(self._onceki["h5"])
         durum, farklar = _tk.eskime(self.spec, dizin)
         tarih = time.strftime("%d.%m.%Y %H:%M", time.localtime(self._onceki["tarih"]))
-        if durum == "guncel":
+        kayit = _tk._kayit_oku(dizin) or {}
+        beklenen = len((kayit.get("tukenme") or {}).get("adimlar") or [])
+        yapilan = (self._onceki.get("sonuc") or {}).get("adim_sayisi")
+        if beklenen and yapilan is not None and yapilan < beklenen:
+            # Yarim kalmis (durdurulmus ya da hala suren) kosu: "bu modele
+            # ait" demek yaniltirdi (Ajan 9 bulgusu K11).
+            metin = ("Yarım kalmış koşu (%s): %d / %d adım tamamlanmış. Koşu durdurulmuş "
+                     "ya da hâlâ sürüyor olabilir; tam sonuç için yeniden koşun."
+                     % (tarih, yapilan, beklenen))
+            stil = "color: #c9820a; font-weight: bold;"
+        elif durum == "guncel":
             metin = "Önceki koşunun sonucu (%s) — bu modele ait." % tarih
             stil = ""
         elif durum == "eski":

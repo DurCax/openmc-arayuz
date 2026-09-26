@@ -175,6 +175,59 @@ def _kullanilmayanlari_at(spec):
     return spec
 
 
+# Bos sablonlarin malzemeleri KUTUPHANEDEN, parametreleriyle kurulur (Ajan 9
+# bulgusu): ornekten kopyalanan elle malzemede "Duzenle" zenginlik/sicaklik
+# sormuyordu ve pin ornegi soguk (293.6 K) ama su yogunlugu sicak (0.7) idi.
+# Sicakliklar tipik calisma kosulu: PWR yakit 900 K, zarf 600 K, su 580 K.
+_PWR = {"zirkaloy": ("zirkaloy4", {"sicaklik": 600.0}),
+        "zirkaloy4": ("zirkaloy4", {"sicaklik": 600.0}),
+        "helyum": ("helyum", {"sicaklik": 600.0})}
+SABLON_MALZEMELERI = {
+    "pin": dict(_PWR, uo2=("uo2", {"zenginlik": 3.0, "sicaklik": 900.0}),
+                su=("su", {"sicaklik": 580.0, "bor_ppm": 0.0})),
+    "demet_kare": dict(_PWR, uo2=("uo2", {"zenginlik": 3.2, "sicaklik": 900.0}),
+                       su=("su", {"sicaklik": 580.0, "bor_ppm": 1300.0})),
+    "demet_altigen": {"u10mo": ("u10mo", {"zenginlik": 19.75, "sicaklik": 900.0}),
+                      "ss316": ("ss316", {"sicaklik": 750.0}),
+                      "sodyum": ("sodyum", {"sicaklik": 673.0}),
+                      "b4c": ("b4c", {"b10_zenginlik": 90.0, "sicaklik": 750.0})},
+    "plaka": {"u3si2_al": ("u3si2_al", {"u_yukleme": 4.8, "zenginlik": 19.75,
+                                        "sicaklik": 350.0}),
+              "al6061": ("al6061", {"sicaklik": 350.0}),
+              "su": ("su", {"sicaklik": 320.0, "bor_ppm": 0.0})},
+    "tamburlu": {"u10mo": ("u10mo", {"zenginlik": 19.75, "sicaklik": 400.0}),
+                 "berilyum": ("berilyum", {"sicaklik": 400.0}),
+                 "b4c": ("b4c", {"sicaklik": 400.0})},
+}
+SABLON_MALZEMELERI["tam_kor"] = SABLON_MALZEMELERI["demet_kare"]
+
+
+def _parametrik_malzemeler(spec, eslem):
+    """Sablon malzemelerini kutuphane uretimiyle degistirir (ad ve renk korunur)."""
+    from cekirdek import malzeme_kutup as mk
+    for i, m in enumerate(spec["malzemeler"]):
+        if m["ad"] not in eslem:
+            continue
+        anahtar, param = eslem[m["ad"]]
+        yeni = mk.parametrik_uret(anahtar, dict(param))
+        yeni["ad"] = m["ad"]
+        if m.get("renk"):
+            yeni["renk"] = list(m["renk"])
+        spec["malzemeler"][i] = yeni
+
+
+def _normal_hassasiyet(spec):
+    """Ozdeger sablonlari "Normal" hassasiyet onayariyla baslar (Hesap
+    ayarlarinda "Özel" degil, bilinen bir onayar gorunsun)."""
+    from arayuz.sekme_ayar import HASSASIYET
+    a = spec["ayarlar"]
+    if a.get("mod", "eigenvalue") != "eigenvalue":
+        return
+    for anahtar, _ad, n, c, p in HASSASIYET:
+        if anahtar == "normal":
+            a["parcacik"], a["cevrim"], a["pasif"] = n, c, p
+
+
 def _sadelestir(spec, ad):
     """Ornekten sablon: ad/aciklama, tally, guc dagilimi, tukenme sifirlanir."""
     spec["ad"] = ad
@@ -189,14 +242,22 @@ def _sadelestir(spec, ad):
     ent["otomatik"] = True
     ent["boyut"] = kaynak.entropi_boyutu_otomatik(spec)   # dosyadaki deger de tutarli
     _kullanilmayanlari_at(spec)
+    _normal_hassasiyet(spec)
     return spec
 
 
 def bos_sablon(anahtar):
     """
     Kart anahtari icin ASGARI ama TAM ve gecerli spec (0 dogrulama hatasi,
-    kurulur ve cizilir -- testler/test_kabuk.py sinar).
+    kurulur ve cizilir -- testler/test_kabuk.py sinar). Malzemeler
+    kutuphaneden parametrik kurulur (SABLON_MALZEMELERI).
     """
+    spec = _bos_sablon_ham(anahtar)
+    _parametrik_malzemeler(spec, SABLON_MALZEMELERI.get(anahtar, {}))
+    return spec
+
+
+def _bos_sablon_ham(anahtar):
     if anahtar == "pin":
         return _sadelestir(_yukle("pwr_pinhucre.json"), "Yeni yakıt çubuğu")
     if anahtar == "demet_kare":

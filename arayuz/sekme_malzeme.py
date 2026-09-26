@@ -786,6 +786,13 @@ class MalzemeDiyalog(QtWidgets.QDialog):
         self.kopuk_not.setVisible(self._kopmus)
         ed.addWidget(self.kopuk_not)
         self.elle_form = QtWidgets.QFormLayout()
+        # Elle malzemede aciklama kendiliginden yenilenmez (bilesimden okunamaz):
+        # zenginligi degistiren kullanici onu burada gunceller. Eskiden alan
+        # yoktu ve "UO2 %3.0" aciklamasi %4 zenginlikte de listelerde kaliyordu.
+        g0 = malzeme.get("gorunen_ad") or ""
+        self.aciklama = QtWidgets.QLineEdit("" if g0 == self._eski_ad else g0)
+        self.aciklama.setPlaceholderText("ör. UO₂ %4.0 — listelerde adın yanında görünür")
+        self.elle_form.addRow(_etiket("Açıklama:"), self.aciklama)
         yog = QtWidgets.QHBoxLayout()
         self.yogunluk = KesinSayiGirdi((malzeme.get("yogunluk") or {}).get("deger") or 1.0)
         self.yogunluk.textChanged.connect(self._elle_degisti)
@@ -923,6 +930,7 @@ class MalzemeDiyalog(QtWidgets.QDialog):
             if k not in m and k != "kutup":
                 m[k] = copy.deepcopy(v)
         self._orijinal = m
+        self.aciklama.setText(m.get("gorunen_ad") or "")
         self.form.hide()
         self.form.setParent(None)
         self.form.deleteLater()
@@ -1073,8 +1081,7 @@ class MalzemeDiyalog(QtWidgets.QDialog):
         m = copy.deepcopy(self._orijinal)
         m.pop("kutup", None)
         m["ad"] = ad
-        g0 = self._orijinal.get("gorunen_ad")
-        m["gorunen_ad"] = ad if (not g0 or g0 == self._eski_ad) else g0
+        m["gorunen_ad"] = self.aciklama.text().strip() or ad
         m["yogunluk"] = {"birim": self.birim.currentData(), "deger": self.yogunluk.deger()}
         v = self.sicaklik.value()
         m["sicaklik"] = self._ilk_sicaklik if v == self._ilk_sicaklik_gosterim else v

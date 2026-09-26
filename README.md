@@ -9,8 +9,15 @@ sonuçlarının okunduğu bir PySide6 masaüstü uygulaması.
 ```bash
 conda activate openmc-env
 cd ~/openmc_arayuz
-./calistir.sh ornekler/pwr_17x17.json
+./calistir.sh                          # başlangıç ekranı: "Ne modellemek istiyorsunuz?"
+./calistir.sh ornekler/pwr_17x17.json  # doğrudan bir modelle (örnekler KOPYA açılır)
 ```
+
+Başlangıç ekranında her model türü için bir kart vardır (yakıt çubuğu, kare/altıgen
+yakıt demeti, tam kor, MTR plaka elemanı, tamburlu kor, zırhlama). **Boş başla**
+çalışır durumda sade bir model kurar; **Örnekten başla** hazır bir örneğin
+kaydedilmemiş kopyasını açar — `ornekler/*.json` test referansıdır, üzerine
+yazılmaz ("Farklı kaydet" ile kendi dosyanıza kaydedin).
 
 GUI istemiyorsan çekirdek katman terminalden de çalışır:
 
@@ -49,7 +56,8 @@ openmc_arayuz/
 │   ├── veri_bilgi.py        kütüphane sıcaklık/enerji aralıkları, zincir bütünlüğü
 │   ├── kurucu.py            spec → openmc.Model
 │   ├── onbellek.py          model önbelleği (21.9 ms → 0.07 ms)
-│   ├── dogrula.py           koşu öncesi kontroller
+│   ├── uygunluk.py          TEK kural tablosu: bu modelde hangi sekme/alan/seçenek geçerli
+│   ├── dogrula.py           koşu öncesi kontroller (uygunluk ile aynı kurallar)
 │   ├── kod_uret.py          spec → tek başına çalışan Python betiği
 │   ├── ice_aktar.py         materials.xml → spec malzemeleri
 │   ├── tambur.py            dönen kontrol tamburu geometrisi ve yerleşimi
@@ -61,39 +69,62 @@ openmc_arayuz/
 │   └── kosucu.py            çalıştırma + statepoint okuma + terminal girişi
 ├── arayuz/                  PySide6 katmanı
 │   ├── tema.py              açık/koyu tema paletleri (matplotlib dahil)
-│   ├── ana_pencere.py       sekmeler, proje aç/kaydet, doğrulama paneli
-│   ├── onizleme.py          canlı geometri kesiti (Model.plot sarmalayıcı)
-│   ├── hex_izgara.py        altıgen harita editörü (QPainter)
+│   ├── ana_pencere.py       model başlığı, sekmeler, proje aç/kaydet, doğrulama paneli
+│   ├── baslangic.py         başlangıç ekranı (kartlar, boş şablonlar, örnekler)
+│   ├── izgara.py            parça paleti + kare/altıgen boyama ızgarası (demet ve kor haritası)
+│   ├── ortak.py             Gelişmiş bölümü, boş durum, durum rozeti, tekerlek koruması
+│   ├── onizleme.py          canlı geometri kesiti (3B'de xy + xz yan yana)
 │   ├── guc_harita.py        güç dağılımı ısı haritası
-│   └── sekme_*.py           malzeme / çubuk / kafes / kor / ayar / çalıştır / analiz / tükenme
+│   └── sekme_*.py           malzeme / parça / demet / kor / ayar / çalıştır / analiz / tükenme
 ├── ornekler/                pwr_pinhucre, pwr_17x17, mtr_plaka, sfr_altigen,
 │                            godiva_kriter, pwr_3b, pwr_kontrol, tamburlu_kor,
 │                            zirh_kure, pwr_eksenel, pwr_tukenme
-└── testler/test_regresyon.py
+└── testler/                test_regresyon.py (giriş) + test_*.py modülleri (kendiliğinden bulunur)
 ```
 
 ## Çalışma akışı
 
-Sekmeler numaralandırılmıştır, sırayla ilerlenir:
+Üstteki **model başlığı** ne modellediğinizi tek satırda söyler
+("Model: PWR 17×17 yakıt demeti · 17×17 yakıt demeti · 2B · Özdeğer (k-eff)");
+kor türü yalnızca buradaki **Türü değiştir…** ile değişir (Ctrl+Z geri alır).
+Sekmeler numarasızdır ve **yalnızca modelde anlamlı olanlar görünür** (ör. zırhlamada
+Parçalar/Demet/Analiz/Tükenme yoktur). Sekme adındaki işaret durumu söyler:
+**✓** tamam, **!** bu sekmede hata var, **•** eksik adım.
 
-1. **Malzemeler** — kütüphaneden ekle veya elle tanımla. Kütüphanede UO2, UN,
-   U-10Mo, MOX, U3Si2-Al, Zircaloy-4, SS316, MA956, FeCrAl, SiC, Al-6061, su
-   (sıcaklığa bağlı yoğunluk + boron), D2O, LBE, Na, He, grafit, Be, B4C,
-   Gd2O3, Ag-In-Cd var. S(α,β) uygun olanlara otomatik eklenir.
-2. **Çubuk / Plaka** — eşmerkezli silindirik çubuk veya MTR tipi plaka elemanı.
-3. **Kafesler** — kare kafeste ızgara, altıgen kafeste gerçek altıgen yerleşim
-   üzerinde boyama (sol tık boyar, sağ tık fırçayı değiştirir, tekerlek
-   yakınlaştırır). Kafes tipi değiştirilince harita otomatik dönüştürülür.
-4. **Kor** — kor türü, yükseklik, yansıtıcı, sınır koşulları.
-5. **Ayarlar & Tally** — çevrim/parçacık, kaynak, tally tanımları.
-6. **Çalıştır** — canlı log, k-eff yakınsama grafiği, sonuç tabloları.
-7. **Analiz** — parametre taraması (reaktivite katsayıları) ve kritik arama.
+- **Malzemeler** — kütüphane role göre gruplu (Yakıt / Zarf ve yapısal / Soğutucu ve
+  moderatör / Emici / Gaz): UO₂, UN, U-10Mo, MOX, U₃Si₂-Al, Zircaloy-4, SS-316, MA956,
+  FeCrAl, SiC, Al-6061, su (sıcaklıktan yoğunluk + bor), D₂O, LBE, Na, He, grafit,
+  Be, B₄C, Gd₂O₃, Ag-In-Cd. Kütüphane malzemesi **parametreleriyle saklanır**:
+  Düzenle aynı formu açar, sıcaklık/bor/zenginlik değişince yoğunluk ve açıklama
+  yeniden hesaplanır. Zenginlik yalnız uranyum satırında yazılabilir. Ad değişimi
+  modeldeki bütün kullanım yerlerini günceller.
+- **Parçalar** — "+ Çubuk" şablonları (PWR yakıt çubuğu, kılavuz boru, kontrol çubuğu —
+  kontrol yalnız 3B modelde); malzemeler role göre kendiliğinden seçilir. Plaka
+  elemanı yalnız plaka modelinde.
+- **Demet** — renkli **parça paletiyle** tıklayarak/sürükleyerek boyanır (sağ tık o
+  hücrenin parçasını seçer); harf anahtarı arka planda otomatiktir. Harita solda,
+  özellikler sağda.
+- **Kor** — türün alanları; yükseklik tek seçim: 2B (sonsuz) / 3B tek bölge /
+  3B katmanlı. Tam korun haritası da aynı paletle boyanır; katman tablosunda en üst
+  katman en üsttedir.
+- **Hesap ayarları** — Hesap türü + **Hesap hassasiyeti** (Hızlı deneme / Normal /
+  Hassas; beklenen k-eff belirsizliği yazılır), kaynak, güç dağılımı, tally'ler
+  (hazır skor setleri). Uzman alanları **Gelişmiş** altında.
+- **Çalıştır** — iş parçacığı ve koşu dizini, canlı k-eff grafiği, sonuç kartı, güç
+  haritası; ham çıktı katlanır "Ayrıntılı çıktı" altında.
+- **Analiz** — yalnız bu modelde yapılabilecek taramalar (ör. bor hedefi yalnız su
+  içeren malzeme) ve kritik arama.
+- **Tükenme** — yanma hesabı (bkz. aşağı).
 
-Üstteki **rehber şeridi** modelin durumuna bakıp sonraki adımı söyler; "Oraya git"
-ile doğrudan ilgili sekmeye gider. **F1** terim sözlüğünü açar.
+Sağ tarafta (tasarım sekmelerinde) her değişiklikten sonra geometri kesiti yenilenir,
+altında doğrulama paneli canlı çalışır; hesap sekmelerinde bulgular durum çubuğundaki
+rozettedir. **F1** Yardım ve terimler, **F5** veri kütüphanesiyle doğrula, **F6**
+önizlemeyi yenile, **F9** çalıştır, **Ctrl+E** Python betiği olarak dışa aktar.
 
-Sağ tarafta her değişiklikten sonra geometri kesiti yenilenir (~0.2 s),
-sağ altta doğrulama paneli canlı çalışır.
+Neyin gösterilip neyin gizleneceği tek bir kural tablosundan gelir
+(`cekirdek/uygunluk.py`); doğrulama da aynı kuralları kullanır, bu yüzden arayüzün
+sunmadığı bir seçenek doğrulamada da hatadır. Gizlenen bir alanın değeri dosyadan
+silinmez.
 
 ## ⚠ ÖNCE ÇİZ, SONRA ÇALIŞTIR
 
@@ -125,11 +156,14 @@ Seviyeler: **hata** çalıştırmayı engeller, **uyarı** kullanıcıya bırak�
 ## Testler
 
 ```bash
-python3 testler/test_regresyon.py            # tümü (~2 dk)
-python3 testler/test_regresyon.py --hizli    # Monte Carlo hariç (~10 s)
+python3 -m testler.test_regresyon            # tümü (~8–25 dk; Monte Carlo ve tükenme dahil)
+python3 -m testler.test_regresyon --hizli    # Monte Carlo hariç (~2–4 dk)
 ```
 
-313 test hızlı modda; Monte Carlo ve tükenme koşuları dahil 347. Üçü bu katmanın doğruluğunun asıl kanıtıdır:
+~2150 kontrol hızlı modda, ~2170 tam modda. `testler/test_*.py` modülleri
+(`HIZLI`/`YAVAS` listeleri) kendiliğinden bulunur; testler kullanıcının gerçek
+uygulama ayarlarına yazmaz (`testler/ortak_test.py` ayarları geçici dizine yönlendirir).
+Asıl kanıtlar:
 
 - **Regresyon çıpası** — `ornekler/pwr_pinhucre.json` referans değeri
   **k∞ = 1.3570 ± 0.0020** vermeli. 2σ dışına çıkarsa `kurucu.py`'de hata var.
@@ -139,6 +173,11 @@ python3 testler/test_regresyon.py --hizli    # Monte Carlo hariç (~10 s)
 - **Altıgen düzen** — `altigen.py`'nin halka indeksleri OpenMC'nin kendi
   `HexLattice.show_indices()` çıktısıyla birebir uyuşmalı.
 - **Godiva kriteri** — yayımlanmış k_eff'ten 2σ'dan fazla sapmamalı.
+- **Betik anlamsal eşdeğerliği** — 11 örneğin her birinde kurucu ile betik aynı
+  malzeme ve ayar XML'ini, aynı tally'leri ve 400 rastgele noktada aynı malzemeyi
+  kurmalı (`test_butunlesme.py`). Betikte spec adlarından gelen değişkenler türe
+  göre önekli ve benzersizdir (`m_uo2`, `c_yakit_cubugu`, `d_demet_17x17`); "a b"
+  ile "a_b" ya da "class"/"openmc" gibi adlar betiği bozamaz.
 - **Güç toplamı korunumu** — çubuk güçlerinin toplamı filtresiz tally'ye eşit
   olmalı (ölçülen bağıl fark 9e-16). Haritalama hatası toplamı bozar; bu, yanlış
   bir haritanın sessizce doğru görünmesini önleyen en güçlü kontrol.
@@ -161,7 +200,7 @@ python3 testler/test_regresyon.py --hizli    # Monte Carlo hariç (~10 s)
 
 ## Kontrol çubuğu ve kritik çubuk konumu
 
-Bir çubuğun türü **2. Çubuk / Plaka** sekmesinden `Kontrol çubuğu` yapılır.
+Kontrol çubuğu **Parçalar** sekmesinde "+ Çubuk → Kontrol çubuğu" şablonuyla eklenir (yalnız 3B modelde).
 Çubuk **yukarıdan** daldırılır; emici bölge, uç konumunda ikiye bölünür:
 ucun üstü emici, altı izleyici malzeme.
 
@@ -172,7 +211,7 @@ daldırma %100 → uç z = −H/2   (emici tüm yüksekliği kaplar)
 
 3B model gerektirir — eksenel bir uç konumu olmadan daldırma tanımlanamaz.
 
-**7. Analiz** sekmesinde iki kullanımı var:
+**Analiz** sekmesinde iki kullanımı var:
 - *Parametre taraması* → integral çubuk değeri eğrisi
 - *Kritik arama* + hedef k=1 → **kritik çubuk konumu**
 
@@ -220,7 +259,7 @@ yansıtıcı, aktif bölgenin ucunda doğal uranyum blanket, gaz plenumu, farkl�
 zenginlik kuşakları bulunur. Bunlar olmadan eksenel güç şekli ve reaktivite
 katsayıları gerçekçi çıkmaz.
 
-`4. Kor` sekmesindeki **Eksenel katmanlar** tablosuyla kurulur. Katmanlar
+**Kor** sekmesinde yükseklik "3B, katmanlı" seçilince açılan **Eksenel katmanlar** tablosuyla kurulur. Katmanlar
 **alttan üste** sıralanır:
 
 ```json
@@ -298,7 +337,7 @@ eksenel profil düzleşiyor. Vakum uçlu `pwr_3b`'de profil kesilmiş kosinüst�
 > 100'e çıkarınca kayma 0.0006'ya düştü. Bu uyarı ancak entropi mesh'inin z
 > sınırları düzeltildikten sonra güvenilir oldu (aşağıdaki tuzak listesi).
 
-## Tükenme (yanma) — 8. Tükenme
+## Tükenme (yanma)
 
 Yakıtın zaman içinde nasıl değiştiğini hesaplar: U-235 tükenir, Pu-239 birikir,
 Xe-135 ve Sm-149 gibi fisyon ürünü zehirleri reaktiviteyi düşürür. Her adımda
@@ -478,7 +517,7 @@ panelinde **hata** olarak görünür ve tükenme başlatılamaz.
 
 ## Güç dağılımı ve tepe faktörleri
 
-Ayarlar sekmesinden açılır; sonuç **6. Çalıştır → Güç haritası** alt sekmesinde.
+Hesap ayarları sekmesinden açılır (yalnız fisil çubuğu tekrarlanan modellerde görünür); sonuç **Çalıştır** sayfasında güç haritası olarak çıkar.
 `DistribcellFilter` kafeste tekrarlanan yakıt hücresinin her örneğini ayrı sayar.
 
 | | Tanım | Neyi sınırlar |
@@ -507,7 +546,7 @@ gücüdür — tüm korun değil. Örnek: 3400 MWth / 193 demet = 17.6 MW; tek d
 bir modelde `17.6e6` girilir. Doğru girdiyle ortalama lineer güç ~182 W/cm çıkar;
 bu mertebede değilse girdi yanlıştır.
 
-## Reaktivite katsayıları ve kritik arama (7. Analiz)
+## Reaktivite katsayıları ve kritik arama (Analiz)
 
 Tek bir k-eff sayısı bir tasarım hakkında az şey söyler. Analiz sekmesi bir
 parametreyi tarayıp eğimden **reaktivite katsayısını** çıkarır:
@@ -553,7 +592,7 @@ tambur konumu **122.46° ± 3.68** (4 koşu).
 
 ## Kinetik parametreler
 
-Ayarlar sekmesinden açılır (IFP yöntemi). Ölçülen:
+Hesap ayarlarından açılır (IFP yöntemi; dışa aktarılan betik de aynı IFP ayarını yazar). Ölçülen:
 
 | Model | β_eff | Λ |
 |---|---|---|
@@ -582,7 +621,7 @@ kütüphanesi ve taşınım zincirinin tamamı bağımsız bir ölçüme karşı
 Özdeğer (k-eff) hesabında kaynak tayfı yalnızca **başlangıç tahminidir** — pasif
 çevrimler içinde gerçek fisyon tayfıyla değişir. Sabit kaynak hesabında
 (zırhlama, aktivasyon, dedektör) ise **sonucun kendisidir**. Eskiden tayf
-`openmc.stats.Watt()` olarak gömülüydü; artık 5. Ayarlar sekmesinden seçilir:
+`openmc.stats.Watt()` olarak gömülüydü; artık Hesap ayarları sekmesinden seçilir:
 
 | Tayf | Parametre | Analitik ortalama | Ölçülen |
 |---|---|---|---|
@@ -657,7 +696,7 @@ edilmez.
 matplotlib grafikleri de aynı palete uyar, böylece grafikler arayüzden kopuk
 görünmez.
 
-Kısayollar: **F10** pencereyi büyüt/eski hâline döndür, **F11** tam ekran.
+Kısayol: **F11** tam ekran.
 
 > ⚠ **Pencere boyutu tuzağı.** `QTabWidget`'in minimum yüksekliği *tüm
 > sayfalarının en büyüğüdür*. Ayarlar sekmesi büyüdükçe (entropi, kinetik, güç
@@ -749,7 +788,7 @@ Bu bir Python istisnası değil — `try/except` yakalayamaz, süreç doğrudan
 > çökmüyor, dolayısıyla otomatik test çökmenin kendisini üretemiyor. Test bunun
 > yerine **değişmezi** sınıyor: çizime giden modelde tally sayısı sıfır olmalı
 > (`Model.plot` sarmalanıp ölçülüyor). Elle tekrar tarifi: `pwr_eksenel.json`'ı
-> arayüzde açın, 4. Kor sekmesine geçin, önizlemeyi `xz` yapın.
+> arayüzde açın, Kor sekmesine geçin; 3B modelde önizleme xy ve xz kesitlerini yan yana gösterir.
 
 **İkinci ders aynı yerden:** `test_cizim` ve `test_dogrulama_temiz` örnek
 listelerini **elle** tutuyordu; yeni eklenen `zirh_kure` ve `pwr_eksenel` kapsam
@@ -787,6 +826,24 @@ zararsızdı ama `nz>1` istendiğinde bütün parçacıklar tek dilime düşüyo
 eksenel yakınsama hiç ölçülmemiş oluyordu; entropi yine "yakınsadı" diyordu.
 Gerçek yükseklikten türetildikten sonra `pwr_eksenel`'de 40 pasif çevrimin
 yetmediğini **bu uyarı yakaladı**.
+
+### U₃Si₂-Al yoğunluğu yüklemeyle tutarsızdı
+
+Kütüphanedeki dispersiyon yakıtı 4.8 gU/cm³ yüklemede sabit **5.4 g/cm³**
+yoğunlukla kuruluyordu; U₃Si₂ (12.2 g/cm³) + Al (2.70 g/cm³) karışımından bu
+yüklemede **6.73 g/cm³** çıkar ve eski değerde alüminyumun kütle payı %23 yerine
+%4'e düşüyordu. Yoğunluk artık yüklemeden hesaplanır
+(`malzeme_kutup.u3si2_yogunlugu`; isteğe bağlı gözeneklilik). Elle verilmiş
+yoğunluk (eski kayıtlar, `mtr_plaka` örneği) aynen kullanılır.
+
+### Dışa aktarılan betik bazı adlarda sessizce farklı model kuruyordu
+
+Spec adları doğrudan Python değişkeni oluyordu: "a b" ve "a_b" malzemeleri aynı
+değişkene düşüyor (400 noktanın 4'ünde farklı malzeme), "class", "None",
+"openmc", "malzemeler" adları betiği çalışmaz yapıyordu; ayrıca kinetik (IFP)
+açıkken betik β_eff tally'lerini yazmıyordu. Değişkenler artık türe göre önekli
+ve benzersiz, IFP betikte de var; `test_butunlesme.py` 11 örnekte anlamsal
+eşdeğerliği denetler.
 
 ## Bilinen sınırlar
 

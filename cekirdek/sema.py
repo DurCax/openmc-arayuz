@@ -34,6 +34,7 @@
 
 import json
 import copy
+import os
 
 # Spec sema surumu. Bolum eklendiginde artirilir; yukle() eski surumleri
 # okuyup eksik alanlari varsayilanla tamamlar.
@@ -268,6 +269,18 @@ def kor_alanlarini_ayikla(kor, korunan=KOR_KORUNAN):
     if tur == "kuresel":
         kor["yukseklik"] = None
     return kor
+
+
+# Kaydedilmemis projelerin (bos sablon, ornek kopyasi) kosu dizini tabani.
+# Eskiden goreli "kosu" dizini os.getcwd()'ye dusuyordu: uygulamayi depodan
+# baslatan ogrencinin kosulari depo icine yaziliyordu (Ajan 9 bulgusu).
+KOSU_KOKU = os.path.join(os.path.expanduser("~"), "openmc_kosular")
+
+
+def kosu_tabani(proje_yolu=None):
+    """Goreli kosu dizinlerinin tabani: kayitli projede projenin dizini,
+    kaydedilmemiste ~/openmc_kosular."""
+    return os.path.dirname(os.path.abspath(proje_yolu)) if proje_yolu else KOSU_KOKU
 
 
 def yeni_spec(ad="adsız model"):

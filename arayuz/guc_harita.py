@@ -193,7 +193,9 @@ class GucHaritaWidget(QtWidgets.QWidget):
             self._ciz_altigen(eks, veri)
         else:
             self._ciz_kare(eks, veri)
-        eks.set_title("Bağıl güç — %s" % alt_baslik, fontsize=9)
+        # Gosterge hucrelerin ustune biniyordu (Ajan 9): aciklama baslikta.
+        eks.set_title("Bağıl güç — %s\n○ en sıcak çubuk · beyaz: yakıtsız konum "
+                      "(kılavuz/ölçüm borusu)" % alt_baslik, fontsize=8)
 
         if eks_p is not None and f["eksenel_profil"]:
             y = [p[0] for p in f["eksenel_profil"]]
@@ -208,6 +210,14 @@ class GucHaritaWidget(QtWidgets.QWidget):
             eks_p.grid(alpha=0.3)
             eks_p.set_title("Eksenel profil", fontsize=9)
         self.tuval.draw_idle()
+
+    def _renk_cubugu(self, eslenebilir, eks):
+        """Renk olcegi eksenin HEMEN yaninda. figur.colorbar(ax=eks) ebeveyn
+        ekseni saga capaliyordu: genis pencerede harita sagda, solunda ~1000 px
+        bosluk kaliyordu (Ajan 9 bulgusu)."""
+        from mpl_toolkits.axes_grid1 import make_axes_locatable
+        cax = make_axes_locatable(eks).append_axes("right", size="4%", pad=0.08)
+        self.figur.colorbar(eslenebilir, cax=cax, label="bağıl güç")
 
     def _renk_olcegi(self, veri):
         d = list(veri.values())
@@ -225,11 +235,10 @@ class GucHaritaWidget(QtWidgets.QWidget):
         im = eks.imshow(izgara, origin="lower", cmap="inferno",
                         vmin=alt, vmax=ust, interpolation="nearest",
                         extent=(0.5, nx + 0.5, 0.5, ny + 0.5))
-        self.figur.colorbar(im, ax=eks, fraction=0.046, label="bağıl güç")
+        self._renk_cubugu(im, eks)
         sicak = self.faktorler["sicak_cubuk"]
         eks.plot(sicak[0] + 1, sicak[1] + 1, marker="o", ms=11, mfc="none",
-                 mec="#00e5ff", mew=2.0, label="en sıcak")
-        eks.legend(fontsize=7, loc="upper right")
+                 mec="#00e5ff", mew=2.0)
         eks.set_xlabel("x (soldan)", fontsize=8); eks.set_ylabel("y (alttan)", fontsize=8)
         eks.tick_params(labelsize=7)
         if self.degerler.isChecked() and nx * ny <= 400:
@@ -263,9 +272,7 @@ class GucHaritaWidget(QtWidgets.QWidget):
         sicak = self.faktorler["sicak_cubuk"]
         if sicak in konum:
             sx, sy = konum[sicak]
-            eks.plot(sx, sy, marker="o", ms=11, mfc="none", mec="#00e5ff",
-                     mew=2.0, label="en sıcak")
-            eks.legend(fontsize=7, loc="upper right")
+            eks.plot(sx, sy, marker="o", ms=11, mfc="none", mec="#00e5ff", mew=2.0)
         tum = list(konum.values())
         pay = yaricap * 1.5
         eks.set_xlim(min(p[0] for p in tum) - pay, max(p[0] for p in tum) + pay)
@@ -273,9 +280,7 @@ class GucHaritaWidget(QtWidgets.QWidget):
         eks.set_aspect("equal")
         eks.set_xlabel("adım birimi", fontsize=8)
         eks.tick_params(labelsize=7)
-        self.figur.colorbar(
-            matplotlib.cm.ScalarMappable(norm=norm, cmap="inferno"),
-            ax=eks, fraction=0.046, label="bağıl güç")
+        self._renk_cubugu(matplotlib.cm.ScalarMappable(norm=norm, cmap="inferno"), eks)
 
     def _kaydet(self):
         yol, _ = QtWidgets.QFileDialog.getSaveFileName(

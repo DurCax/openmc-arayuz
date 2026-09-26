@@ -872,7 +872,8 @@ class KorSekmesi(SekmeTabani):
             metin = "%.4f × %.4f cm%s" % (gx, gy, (" × %.2f cm" % h) if h else ek)
             self.ozet.setText(metin)
         except Exception as e:
-            self.ozet.setText("kurulamadı: %s" % str(e)[:80])
+            from arayuz.ortak import hata_metni
+            self.ozet.setText("Kurulamadı: %s" % hata_metni(e)[:120])
 
     # ------------------------------------------------------------------
     # kayit

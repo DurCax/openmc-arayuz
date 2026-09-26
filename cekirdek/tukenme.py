@@ -498,7 +498,7 @@ _FIZIK_DISI = ("ad", "aciklama", "calistirma")
 
 def kosu_dizini(spec, proje_yolu=None):
     """Tukenme sonuclarinin dizini: <proje dizini>/<calistirma.dizin>_tukenme."""
-    taban = os.path.dirname(os.path.abspath(proje_yolu)) if proje_yolu else os.getcwd()
+    taban = sema.kosu_tabani(proje_yolu)
     dizin = (spec.get("calistirma") or {}).get("dizin", "kosu") + "_tukenme"
     return dizin if os.path.isabs(dizin) else os.path.join(taban, dizin)
 

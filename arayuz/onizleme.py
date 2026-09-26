@@ -355,7 +355,8 @@ class OnizlemeWidget(QtWidgets.QWidget):
                             % (" + ".join(kesitler), piksel, ek), True)
         except Exception as e:
             self._son_hata = traceback.format_exc()
-            self._bos_mesaj("Geometri kurulamadı:\n\n%s" % e, hata=True)
+            from arayuz.ortak import hata_metni
+            self._bos_mesaj("Geometri kurulamadı:\n\n%s" % hata_metni(e), hata=True)
             self.durum.emit("Önizleme başarısız: %s" % e, False)
         finally:
             self._ciziliyor = False

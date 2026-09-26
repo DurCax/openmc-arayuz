@@ -300,8 +300,123 @@ def test_ornek_aciklamalari_turkce():
         kontrol("ornek '%s' aciklamalari" % ad, not kotu, "-> %s" % kotu)
 
 
+def test_sonsuz_ortam_etiketi():
+    """Butun dis sinirlar yansiticiyken sonuc k∞'dur; "Kritik ustu — guc
+    artar" demek yanlistir (Ajan 9 bulgusu, pin hucrede kirmizi yaziyordu)."""
+    print("\n[B9] SONUC: yansitici sinirli modelde k∞, kritiklik hukmu yok")
+    from cekirdek import uygunluk, kosucu
+    beklenen = {"pwr_pinhucre": True, "pwr_17x17": True, "sfr_altigen": True,
+                "mtr_plaka": True, "pwr_3b": False, "pwr_eksenel": False,
+                "godiva_kriter": False, "tamburlu_kor": False}
+    for ad, b in beklenen.items():
+        kontrol("sonsuz_ortam(%s) = %s" % (ad, b), uygunluk.sonsuz_ortam(_yukle(ad)) is b)
+    d, a = kosucu.keff_yorumu(1.35, 0.001, sonsuz=True)
+    kontrol("k∞ yorumunda 'Kritik üstü' yok, 'k∞' var", "üstü" not in d and "k∞" in d, d)
+    kontrol("sonlu modelde hukum aynen", "Kritik üstü" in kosucu.keff_yorumu(1.05, 0.001)[0])
+    try:
+        from PySide6 import QtWidgets
+    except Exception:
+        return
+    QtWidgets.QApplication.instance() or QtWidgets.QApplication([])
+    from arayuz.sekme_calistir import CalistirSekmesi
+    for ad, baslik in (("pwr_pinhucre", "k∞"), ("pwr_3b", "k-eff")):
+        w = CalistirSekmesi()
+        w.spec_ayarla(_yukle(ad), None)
+        w._sonuc_goster({"keff": (1.35, 0.001), "cevrim": 10, "pasif": 5, "parcacik": 100,
+                         "entropi": None, "tallyler": {}}, None)
+        kontrol("%s sonuc kartinda baslik '%s'" % (ad, baslik), w.keff_baslik.text() == baslik,
+                "-> %s / %s" % (w.keff_baslik.text(), w.durum_etiket.text()[:40]))
+
+
+def test_sablon_malzemeleri_parametrik():
+    """Bos sablon malzemeleri kutuphaneden (Duzenle zenginlik/sicaklik sorar),
+    sicakliklar tutarli; elle malzemede aciklama duzenlenebilir (Ajan 9 K1-K3)."""
+    print("\n[B10] SABLONLAR: parametrik malzeme, tutarli sicaklik; elle aciklama")
+    try:
+        from PySide6 import QtWidgets
+    except Exception:
+        return
+    QtWidgets.QApplication.instance() or QtWidgets.QApplication([])
+    from arayuz import baslangic
+    from arayuz import sekme_malzeme as sm
+    from cekirdek import malzeme_kutup as mk
+    for k in ("pin", "demet_kare", "demet_altigen", "plaka", "tamburlu", "tam_kor"):
+        s = baslangic.bos_sablon(k)
+        kontrol("sablon '%s': butun malzemeler parametrik" % k,
+                all(mk.parametrik_mi(m) for m in s["malzemeler"]))
+        kontrol("sablon '%s': Normal hassasiyet" % k,
+                (s["ayarlar"]["parcacik"], s["ayarlar"]["cevrim"], s["ayarlar"]["pasif"])
+                == (10000, 150, 40))
+    s = baslangic.bos_sablon("pin")
+    t = {m["ad"]: m["sicaklik"] for m in s["malzemeler"]}
+    kontrol("pin sablonu sicak kosul: yakit 900, zarf 600, su 580 K",
+            t == {"uo2": 900.0, "zirkaloy": 600.0, "su": 580.0}, "-> %s" % t)
+    uo2 = [m for m in s["malzemeler"] if m["ad"] == "uo2"][0]
+    d = sm.MalzemeDiyalog(uo2, s)
+    kontrol("sablon UO2'yi Duzenle -> parametre formu (zenginlik alani var)",
+            d.parametrik_kip() and "zenginlik" in d.form.alanlar)
+    elle = {"ad": "yakit", "gorunen_ad": "UO2 %3.0", "yogunluk": {"birim": "g/cm3", "deger": 10.4},
+            "sicaklik": 900.0, "bilesim": [{"tur": "element", "isim": "U", "miktar": 1.0,
+                                            "birim": "ao", "zenginlik": 3.0},
+                                           {"tur": "element", "isim": "O", "miktar": 2.0,
+                                            "birim": "ao"}], "sab": []}
+    d = sm.MalzemeDiyalog(elle, s)
+    kontrol("elle malzemede aciklama alani dolu", d.aciklama.text() == "UO2 %3.0")
+    d.aciklama.setText("UO2 %4.0")
+    kontrol("aciklama degisince sonuca yaziliyor", d.sonuc()["gorunen_ad"] == "UO2 %4.0")
+
+
+def test_tukenme_dizin_yarim_adim():
+    """Tukenme: sonuc dizini gosterilir (K12), yarim kosu 'bu modele ait'
+    denmez (K11), gecersiz adim sessizce atilmaz; kaydedilmemis projenin
+    kosulari ~/openmc_kosular altina yazilir (calisma dizinine degil)."""
+    print("\n[B11] TUKENME: dizin, yarim kosu, adim dogrulamasi; kosu tabani")
+    import json
+    import tempfile
+    import time
+    from cekirdek import sema, tukenme
+    kontrol("kaydedilmemis proje: kosu tabani ~/openmc_kosular",
+            sema.kosu_tabani(None) == os.path.join(os.path.expanduser("~"), "openmc_kosular"))
+    kontrol("kayitli proje: kosu tabani projenin dizini",
+            sema.kosu_tabani("/a/b/model.json") == "/a/b")
+    try:
+        from PySide6 import QtWidgets
+    except Exception:
+        return
+    QtWidgets.QApplication.instance() or QtWidgets.QApplication([])
+    from arayuz.sekme_tukenme import TukenmeSekmesi
+    d = tempfile.mkdtemp(prefix="butunlesme_tuk_")
+    spec = _yukle("pwr_tukenme")
+    spec["calistirma"]["dizin"] = os.path.join(d, "kosu")
+    w = TukenmeSekmesi()
+    w.proje_ayarla(None)
+    w.spec_yukle(spec)
+    kontrol("sonuc yokken yazilacagi dizin soyleniyor",
+            os.path.join(d, "kosu_tukenme") in w.onceki_etiket.text(), "-> %s" % w.onceki_etiket.text())
+    dizin = tukenme.kosu_dizini(spec, None)
+    os.makedirs(dizin, exist_ok=True)
+    tukenme.spec_kaydet(spec, dizin)
+    n = len(spec["tukenme"]["adimlar"])
+    w._onceki = {"h5": os.path.join(dizin, "depletion_results.h5"), "tarih": time.time(),
+                 "sonuc": {"adim_sayisi": 1}}
+    w._onceki_durum_guncelle()
+    kontrol("yarim kosu: 'Yarım kalmış' ve 1 / %d adım" % n,
+            "Yarım kalmış" in w.onceki_etiket.text() and ("1 / %d" % n) in w.onceki_etiket.text()
+            and "bu modele ait" not in w.onceki_etiket.text(), "-> %s" % w.onceki_etiket.text())
+    w._onceki["sonuc"]["adim_sayisi"] = n
+    w._onceki_durum_guncelle()
+    kontrol("tam kosu: 'bu modele ait'", "bu modele ait" in w.onceki_etiket.text())
+    w.adimlar.setText("1, -5, abc")
+    w._kaydet()
+    kontrol("gecersiz adim: sayi olmayan parca soyleniyor, eksi toplam yazilmiyor",
+            "abc" in w.adim_ozet.text() and "toplam" not in w.adim_ozet.text(),
+            "-> %s" % w.adim_ozet.text())
+
+
 HIZLI = [test_betik_anlamsal_esdegerlik, test_betik_ad_cakismalari,
          test_dogrula_secilmemis_malzeme, test_entropi_otomatik,
          test_uygunluk_tasinan_kurallar, test_ipucu_okunur,
-         test_u3si2_yogunlugu, test_ornek_aciklamalari_turkce]
+         test_u3si2_yogunlugu, test_ornek_aciklamalari_turkce,
+         test_sonsuz_ortam_etiketi, test_sablon_malzemeleri_parametrik,
+         test_tukenme_dizin_yarim_adim]
 YAVAS = []

@@ -87,7 +87,7 @@ def sabit_kaynak_cevrimi(satir):
     return int(m.group(1)) if m else None
 
 
-def keff_yorumu(k, sapma, beta_eff=None):
+def keff_yorumu(k, sapma, beta_eff=None, sonsuz=False):
     """
     k-eff'i fiziksel olarak yorumlar.
 
@@ -104,14 +104,21 @@ def keff_yorumu(k, sapma, beta_eff=None):
     pcm = rho * 1.0e5
     s_pcm = (sapma / (k * k)) * 1.0e5
 
-    if abs(k - 1.0) <= 2.0 * sapma:
+    if sonsuz:
+        # Butun dis sinirlar sizintisiz: bu k∞'dur, bir reaktorun durumu degil.
+        durum = ("k∞ (sonsuz ortam) — sızıntı yok, kritiklik hükmü verilmez; "
+                 "sonlu bir reaktörde k-eff daha küçüktür")
+    elif abs(k - 1.0) <= 2.0 * sapma:
         durum = "Kritik (k = 1'den istatistiksel olarak ayırt edilemez)"
     elif k > 1.0:
         durum = "Kritik üstü (k > 1 — güç artar)"
     else:
         durum = "Kritik altı (k < 1 — güç söner)"
 
-    parcalar = ["reaktivite = %+.0f ± %.0f pcm" % (pcm, s_pcm)]
+    if sonsuz:
+        parcalar = ["ρ∞ = %+.0f ± %.0f pcm (yakıtın taşıdığı reaktivite fazlası)" % (pcm, s_pcm)]
+    else:
+        parcalar = ["reaktivite = %+.0f ± %.0f pcm" % (pcm, s_pcm)]
     if beta_eff and beta_eff > 0:
         dolar = rho / beta_eff
         parcalar.append("%+.2f $ (β_eff = %.0f pcm)" % (dolar, beta_eff * 1e5))
@@ -293,6 +300,78 @@ def son_statepoint(dizin):
 # SONUC OKUMA
 # ============================================================================
 
+_SKOR_ADLARI = {
+    "flux": "akı", "absorption": "soğurma", "fission": "fisyon", "nu-fission": "fisyon nötronu üretimi",
+    "total": "toplam tepkime", "scatter": "saçılma", "heating": "ısınma",
+    "heating-local": "yerel ısınma", "kappa-fission": "fisyon enerjisi", "(n,gamma)": "(n,γ) yakalama",
+    "elastic": "esnek saçılma", "current": "akım",
+}
+
+
+def _enerji_metni(ev):
+    if ev >= 1e6:
+        return "%.4g MeV" % (ev / 1e6)
+    if ev >= 1e3:
+        return "%.4g keV" % (ev / 1e3)
+    return "%.4g eV" % ev
+
+
+def _birim(skor, sabit, kuvvet):
+    """Tally degerinin birimi. OpenMC sabit kaynakta siddeti zaten uygular."""
+    mutlak = sabit and kuvvet not in (None, 1.0)
+    if skor in ("flux",):
+        return "n·cm/s (hacim-integralli)" if mutlak else "n·cm / kaynak nötronu"
+    if skor in ("heating", "heating-local", "kappa-fission"):
+        return "eV/s" if mutlak else "eV / kaynak nötronu"
+    return "1/s" if mutlak else "/ kaynak nötronu"
+
+
+def tally_metni(ad, df, malzeme_adlari=None, sabit=False, kuvvet=1.0):
+    """
+    Tally DataFrame'ini okunur metin tablosuna cevirir: malzeme kimligi
+    yerine adi, enerji araligi okunur birimle, skor Turkce, birim ve bagil
+    hata sutunu. Eskiden ham pandas dokumu basiliyordu: "material 1",
+    "..." ile gizlenen sutunlar, birim yok (Ajan 9 bulgusu, zirh ornegi).
+    """
+    try:
+        import pandas as pd
+    except Exception:                                  # pragma: no cover
+        return "tally: %s\n%s" % (ad, df)
+    if not isinstance(df, pd.DataFrame):
+        return "tally: %s\n%s" % (ad, df)
+    adlar = malzeme_adlari or {}
+    satirlar = []
+    for _, r in df.iterrows():
+        etiket = []
+        if "material" in df.columns:
+            etiket.append(str(adlar.get(int(r["material"]), "malzeme %s" % r["material"])))
+        if "energy low [eV]" in df.columns:
+            etiket.append("%s – %s" % (_enerji_metni(r["energy low [eV]"]),
+                                       _enerji_metni(r["energy high [eV]"])))
+        if "nuclide" in df.columns and r["nuclide"] != "total":
+            etiket.append(str(r["nuclide"]))
+        skor = str(r.get("score", ""))
+        ort, sap = float(r["mean"]), float(r["std. dev."])
+        bagil = (100.0 * sap / abs(ort)) if ort else 0.0
+        satirlar.append((" · ".join(etiket) or "tüm model", _SKOR_ADLARI.get(skor, skor),
+                         "%.4e" % ort, "± %.1f%%" % bagil, _birim(skor, sabit, kuvvet)))
+    ek_sutun = [c for c in df.columns if c not in (
+        "material", "energy low [eV]", "energy high [eV]", "nuclide", "score", "mean", "std. dev.")]
+    if ek_sutun or not satirlar:
+        # tanimadigimiz filtre (mesh vb.): tam tabloyu kirpmadan bas
+        with pd.option_context("display.max_columns", None, "display.width", 200,
+                               "display.max_rows", 60):
+            return "tally: %s\n%s" % (ad, df.to_string())
+    genislik = [max(len(s[i]) for s in satirlar) for i in range(5)]
+    baslik = ("Bölge / enerji", "Ölçülen", "Değer", "Bağıl hata", "Birim")
+    genislik = [max(g, len(b)) for g, b in zip(genislik, baslik)]
+    def bicimle(sat):
+        return "  ".join(str(x).ljust(g) for x, g in zip(sat, genislik)).rstrip()
+    cikti = ["tally: %s" % ad, bicimle(baslik), bicimle(["─" * g for g in genislik])]
+    cikti += [bicimle(sat) for sat in satirlar]
+    return "\n".join(cikti)
+
+
 def sonuc_oku(statepoint_yolu):
     """
     Statepoint'ten k-eff ve tally sonuclarini okur.
@@ -318,7 +397,14 @@ def sonuc_oku(statepoint_yolu):
         "parcacik": sp.n_particles,
         "entropi": entropi,
         "tallyler": {},
+        "malzeme_adlari": {},
     }
+    # Tally tablolarinda malzeme KIMLIGI yerine adi gosterilsin (Ajan 9:
+    # "material 1 / 2" hangisinin su, hangisinin celik oldugunu soylemiyordu).
+    try:
+        sonuc["malzeme_adlari"] = {m.id: m.name for m in sp.summary.materials}
+    except Exception:
+        pass
     ifp = {}
     for _, t in sp.tallies.items():
         ad = t.name or "tally_%d" % t.id
@@ -498,7 +584,9 @@ def _terminal(argv):
     else:
         print("      k-eff    = %.5f ± %.5f" % s["keff"])
         _kin = s.get("kinetik") or {}
-        _durum, _ayrinti = keff_yorumu(s["keff"][0], s["keff"][1], _kin.get("beta_eff"))
+        from cekirdek import uygunluk as _u
+        _durum, _ayrinti = keff_yorumu(s["keff"][0], s["keff"][1], _kin.get("beta_eff"),
+                                       sonsuz=_u.sonsuz_ortam(spec))
         print("      durum    = %s" % _durum)
         print("                 %s" % _ayrinti)
         print("      çevrim   = %d (%d pasif), %d parçacık/çevrim"
@@ -540,9 +628,11 @@ def _terminal(argv):
     elif s.get("guc_hata"):
         print("\n      güç dağılımı okunamadı: %s" % s["guc_hata"])
 
+    _kuvvet = float(((spec.get("ayarlar") or {}).get("kaynak") or {}).get("kuvvet") or 1.0)
     for ad, df in s["tallyler"].items():
-        print("\n      --- tally: %s ---" % ad)
-        print("      " + str(df).replace("\n", "\n      "))
+        print("")
+        print("      " + tally_metni(ad, df, s.get("malzeme_adlari"), s.get("keff") is None,
+                                     _kuvvet).replace("\n", "\n      "))
     print("\n      statepoint: %s" % sonuc["statepoint"])
     print("      log       : %s" % sonuc["log"])
     return 0

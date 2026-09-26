@@ -26,7 +26,6 @@
 
 import copy
 import os
-import tempfile
 import time
 
 import matplotlib
@@ -789,7 +788,7 @@ class AnalizSekmesi(QtWidgets.QWidget):
         return True, ""
 
     def _dizin(self, onek):
-        taban = os.path.dirname(self.proje_yolu) if self.proje_yolu else tempfile.gettempdir()
+        taban = sema.kosu_tabani(self.proje_yolu)
         yol = os.path.join(taban, "%s_%s" % (onek, self.tur.currentData()))
         os.makedirs(yol, exist_ok=True)
         return yol

@@ -375,7 +375,7 @@ def yorumla(faktorler, mutlak=None):
     if oran is not None and oran > 0.3:
         satirlar.append(
             "  Dikkat: çubuk başına istatistik sapma (%.4f) dağılımın gerçek "
-            "saçılmasının (%.4f) %%%.0f'i kadar. Bir en büyük değer hesaplandığı "
+            "saçılmasının (%.4f) %%%.0f kadarı. Bir en büyük değer hesaplandığı "
             "için F_ΔH bu durumda yukarı yanlıdır — gerçek tepe daha düşüktür. "
             "Çevrim başına parçacık sayısını artırın."
             % (faktorler["istatistik_sapma"], faktorler["sacilma"], oran * 100))
@@ -408,10 +408,10 @@ def yorumla(faktorler, mutlak=None):
                 satirlar.append("  Sınırın üstünde: tipik PWR çizgisel güç "
                                 "sınırı ~400–500 W/cm.")
     satirlar.append(
-        "Uyarı: buradaki sapmalar iyimserdir. Özdeğer hesaplarında ardışık "
-        "çevrimler ilişkili olduğu için OpenMC'nin raporladığı tally "
-        "belirsizliği ölçümle ~20 kat küçük çıktı. Gerçek belirsizlik için "
-        "modeli birkaç bağımsız rastgele tohumla koşup saçılmaya bakın.")
+        "Not: çubuk başına sapmalar iyimser olabilir. Özdeğer hesabında ardışık "
+        "çevrimler birbirine bağlıdır ve OpenMC'nin raporladığı tally belirsizliği "
+        "bunu hesaba katmaz; gerçek belirsizlik daha büyüktür. Kesin değer için "
+        "modeli birkaç farklı rastgele tohumla koşup sonuçların saçılmasına bakın.")
     return satirlar
 
 

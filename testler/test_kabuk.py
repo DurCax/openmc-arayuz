@@ -989,13 +989,43 @@ def test_giris_oklari():
     kontrol("ok resmi bos degil", dolu > 8, "-> %d piksel" % dolu)
 
 
+def test_tur_degisimi_eksik_parca():
+    """Pin -> plaka / demet / tam kor: gereken parca sablondan kurulur, ham
+    Python hata metni gorunmez, sablon adi yeni ture uyar (Ajan 9 K10)."""
+    if _qt() is None:
+        return
+    from arayuz import baslangic
+    from cekirdek import dogrula
+    for hedef, parca in (("tek_plaka", "plakalar"), ("tek_demet", "demetler"),
+                         ("kare_kafes", "demetler")):
+        p = _pencere()
+        p._proje_kur(baslangic.bos_sablon("pin"), None, None)
+        kontrol("(on kosul) pin sablonunda %s yok" % parca, not p.spec.get(parca))
+        p.kor_turunu_degistir(hedef)
+        hatalar = [b.mesaj for b in dogrula.tum_kontroller(p.spec, veri_kontrolu=False)
+                   if b.seviye == "hata"]
+        kontrol("%s: parca kuruldu, dogrulama hatasi yok" % hedef,
+                bool(p.spec.get(parca)) and not hatalar, "-> %s" % hatalar[:2])
+        kontrol("%s: durum cubugu eklenen parcayi soyluyor" % hedef,
+                "şablondan eklendi" in p.statusBar().currentMessage())
+        kontrol("%s: kor ozetinde ham 'None' / 'kurulamadı' yok" % hedef,
+                "None" not in p.s_kor.ozet.text() and "urulamad" not in p.s_kor.ozet.text(),
+                "-> %s" % p.s_kor.ozet.text()[:80])
+        kontrol("%s: model adi yeni ture uydu" % hedef, p.spec["ad"] != "Yeni yakıt çubuğu",
+                "-> %s" % p.spec["ad"])
+        p.close()
+    from arayuz.ortak import hata_metni
+    kontrol("hata_metni: KeyError tirnaksiz, None -> seçilmemiş",
+            hata_metni(KeyError("tanımsız plaka elemanı: None")) == "tanımsız plaka elemanı: seçilmemiş")
+
+
 HIZLI = [test_bos_sablonlar, test_baslangic_ekrani, test_sekme_gorunurlugu,
          test_sekme_isaretleri, test_model_basligi, test_sag_panel_ve_rozet,
          test_kaldirilanlar_ve_kisayollar, test_minimum_yukseklik, test_tema_gecisi,
          test_ortak_bilesenler, test_izgara_yardimcilari, test_izgara_boyama,
          test_ayarlar_yalitik, test_tur_hafizasi_ad_degisimi,
          test_kor_tur_baglantisi, test_bulgusuz_dogrulama_satiri,
-         test_giris_oklari]
+         test_giris_oklari, test_tur_degisimi_eksik_parca]
 YAVAS = []
 
 

@@ -697,6 +697,29 @@ def tukenme_uygun(spec):
     return _tukenme_uygun(_Baglam(spec))
 
 
+# Nötron kaçırmayan sınır koşulları (dışarı sızıntı yok).
+_SIZINTISIZ = ("reflective", "white", "periodic")
+
+
+def sonsuz_ortam(spec):
+    """
+    Modelin DIS sinirlarinin hepsi sizintisiz mi (yansitici / beyaz /
+    periyodik)? O zaman hesaplanan carpim katsayisi k-eff degil k∞'dur:
+    sonsuz tekrarlanan ortamin katsayisi. Bu durumda "kritik ustu" hukmu
+    YANLIS olur -- k∞ > 1 yalnizca yakitin reaktivite fazlasi tasidigini
+    soyler, reaktorun ne yaptigini degil (Ajan 9 bulgusu: pin hucrede
+    kirmiziyla "Kritik ustu — guc artar" yaziyordu).
+    2B modelde (yukseklik yok) eksen yonu zaten sonsuzdur; yalniz yan sinir
+    bakilir. Kurede tek sinir vardir.
+    """
+    kor = spec.get("kor") or {}
+    sinir = kor.get("sinir") or {}
+    yuzeyler = ["yan"]
+    if kor.get("tur") != "kuresel" and sema.kor_yuksekligi(kor):
+        yuzeyler += ["alt", "ust"]
+    return all(sinir.get(y, "reflective") in _SIZINTISIZ for y in yuzeyler)
+
+
 def tukenme_ayirma_anlamli(spec):
     """
     "Cubuk cubuk yanma" (her yakit ornegi ayri malzeme) secenegi anlamli mi?

@@ -36,6 +36,7 @@ from matplotlib.figure import Figure
 from PySide6 import QtCore, QtGui, QtWidgets
 
 from cekirdek import kosucu
+from cekirdek import sema, uygunluk
 from cekirdek import kaynak as _kaynak
 from cekirdek import guc as _guc
 from arayuz.ortak import BosDurum, GelismisBolum, tamsayi
@@ -323,7 +324,7 @@ class CalistirSekmesi(QtWidgets.QWidget):
 
     def _kosu_dizini(self):
         """Kosunun yazilacagi mutlak dizin (spec'teki goreli yol projeye gore)."""
-        taban = os.path.dirname(self.proje_yolu) if self.proje_yolu else os.getcwd()
+        taban = sema.kosu_tabani(self.proje_yolu)
         dizin = ((self.spec or {}).get("calistirma") or {}).get("dizin", "kosu") or "kosu"
         return dizin if os.path.isabs(dizin) else os.path.join(taban, dizin)
 
@@ -683,6 +684,9 @@ class CalistirSekmesi(QtWidgets.QWidget):
                 "şiddet   = %.4g parçacık/s" % kuvvet,
                 "çevrim   = %d, %d parçacık/çevrim" % (s["cevrim"], s["parcacik"]),
             ]
+            ozet.append("Sonuçlar akı ve tepkime hızlarıdır; doz hesaplanmaz. Akı hacim-"
+                        "integrallidir (n·cm/s): ortalama akı [n/cm²/s] için bölgenin "
+                        "hacmine bölün.")
             # OLCULDU (kosucu.py): OpenMC sabit kaynak tally'lerini kaynak
             # siddetiyle ZATEN carpar; "siddetle carpin" demek cift sayim olurdu.
             if kuvvet == 1.0:
@@ -694,8 +698,10 @@ class CalistirSekmesi(QtWidgets.QWidget):
         else:
             self.keff_etiket.setText("%.5f ± %.5f" % s["keff"])
             kin0 = s.get("kinetik") or {}
+            sonsuz = uygunluk.sonsuz_ortam(self.spec or {})
+            self.keff_baslik.setText("k∞" if sonsuz else "k-eff")
             durum, ayrinti = kosucu.keff_yorumu(s["keff"][0], s["keff"][1],
-                                                kin0.get("beta_eff"))
+                                                kin0.get("beta_eff"), sonsuz=sonsuz)
             self.durum_etiket.setText("%s\n%s" % (durum, ayrinti))
             renk = (_tema_renk("basari") if durum.startswith("Kritik (")
                     else (_tema_renk("hata") if "üstü" in durum else _tema_renk("vurgu")))
@@ -724,7 +730,11 @@ class CalistirSekmesi(QtWidgets.QWidget):
         g = s.get("guc") or {}
         gf = g.get("faktorler")
         if gf:
-            ozet.append("F_ΔH     = %.4f   (en yüksek çubuk gücü / ortalama)" % gf["F_dH"])
+            zayif = (gf.get("yanlilik_orani") or 0.0) > 0.3
+            ozet.append("F_ΔH     = %.4f   (en yüksek çubuk gücü / ortalama)%s"
+                        % (gf["F_dH"], "\n           ⚠ istatistik zayıf: bu değer yukarı "
+                           "yanlı, güvenilir F_ΔH için Normal ya da Hassas hassasiyetle "
+                           "koşun" if zayif else ""))
             if gf["F_q"]:
                 ozet.append("F_q      = %.4f   (en yüksek yerel güç yoğunluğu / ortalama)"
                             % gf["F_q"])
@@ -743,11 +753,10 @@ class CalistirSekmesi(QtWidgets.QWidget):
             ozet.append("güç dağılımı okunamadı: %s" % s["guc_hata"])
 
         tally = []
+        k_tanim = ((self.spec or {}).get("ayarlar") or {}).get("kaynak") or {}
         for ad, df in s["tallyler"].items():
-            tally.append("=" * 70)
-            tally.append("tally: %s" % ad)
-            tally.append("=" * 70)
-            tally.append(str(df))
+            tally.append(kosucu.tally_metni(ad, df, s.get("malzeme_adlari"), sabit,
+                                            float(k_tanim.get("kuvvet") or 1.0)))
             tally.append("")
         tam = ([] if sabit else ["k-eff    = %.5f ± %.5f" % s["keff"]]) + ozet
         tam += ["statepoint: %s" % sp, ""] + tally
