@@ -68,14 +68,14 @@ from cekirdek import uygunluk
 #   oneriliyordu -- hidrojensiz bir malzemeye hidrojen S(a,b)'si, yani yanlis
 #   fizik. Ayni mantikla B2O3 "borlu su" cikardi.
 _SAB_KURALLARI = [
-    ({"H", "O"},      {"H"},       "c_H_in_H2O",  "su (H2O)"),
+    ({"H", "O"},      {"H"},       "c_H_in_H2O",  "su (H₂O)"),
     ({"H", "O", "B"}, {"H"},       "c_H_in_H2O",  "borlu su"),
-    ({"H", "Zr"},     {"H", "Zr"}, "c_H_in_ZrH",  "sirkonyum hidrur"),
+    ({"H", "Zr"},     {"H", "Zr"}, "c_H_in_ZrH",  "zirkonyum hidrür"),
     ({"H", "C"},      {"H", "C"},  "c_H_in_CH2",  "polietilen / plastik"),
     ({"C"},           {"C"},       "c_Graphite",  "grafit"),
     ({"Be"},          {"Be"},      "c_Be",        "berilyum"),
     ({"Be", "O"},     {"Be", "O"}, "c_Be_in_BeO", "berilyum oksit"),
-    ({"D", "O"},      {"D"},       "c_D_in_D2O",  "agir su (D2O)"),
+    ({"D", "O"},      {"D"},       "c_D_in_D2O",  "ağır su (D₂O)"),
 ]
 
 # ----------------------------------------------------------------------------
@@ -104,6 +104,23 @@ BILINEN_SKORLAR = {
 _YOGUN_FAZ_ESIGI = 0.1
 
 
+# Kullaniciya gorunen adlar (anahtarlar spec'te ASCII kalir).
+_PLAKA_ALAN_ADI = {
+    "plaka_sayisi": "plaka sayısı", "et_kalinlik": "yakıt (et) kalınlığı",
+    "zarf_kalinlik": "zarf kalınlığı", "kanal_kalinlik": "soğutucu kanalı kalınlığı",
+    "plaka_genislik": "plaka genişliği",
+}
+_YON_ADI = {"yan": "yan", "alt": "alt", "ust": "üst"}
+_SINIR_ADI = {"reflective": "Yansıtıcı", "vacuum": "Vakum", "white": "Beyaz",
+              "periodic": "Periyodik"}
+_SPEKTRUM_ADI = {"termal": "termal", "hizli": "hızlı"}
+
+
+def _kor_turu_adi(tur):
+    """Kor turunun sade adi (uygunluk.KOR_TURU_ADLARI); bilinmiyorsa kendisi."""
+    return uygunluk.KOR_TURU_ADLARI.get(tur, str(tur))
+
+
 class Bulgu(object):
     """Tek bir dogrulama bulgusu."""
 
@@ -114,7 +131,7 @@ class Bulgu(object):
         self.oneri = oneri
 
     def __str__(self):
-        im = {"hata": "HATA ", "uyari": "UYARI", "bilgi": "BILGI"}[self.seviye]
+        im = {"hata": "HATA ", "uyari": "UYARI", "bilgi": "BİLGİ"}[self.seviye]
         s = "[%s] %-22s %s" % (im, self.yer, self.mesaj)
         if self.oneri:
             s += "\n                             -> %s" % self.oneri
@@ -140,13 +157,13 @@ def veri_kutuphanesi_kontrol():
     if not yol:
         bulgular.append(Bulgu(
             "hata", "veri kutuphanesi",
-            "OPENMC_CROSS_SECTIONS ortam degiskeni ayarli degil",
+            "OPENMC_CROSS_SECTIONS ortam değişkeni ayarlı değil",
             "export OPENMC_CROSS_SECTIONS=$HOME/nucdata/.../cross_sections.xml"))
     elif not os.path.exists(yol):
         bulgular.append(Bulgu(
             "hata", "veri kutuphanesi",
-            "cross_sections.xml bulunamadi: %s" % yol,
-            "Yolu kontrol edin ya da veri kutuphanesini indirin"))
+            "cross_sections.xml bulunamadı: %s" % yol,
+            "Yolu denetleyin ya da nükleer veri kütüphanesini indirin."))
     return bulgular
 
 
@@ -184,14 +201,14 @@ def nuklid_kontrol(spec):
     notron, termal = _kutuphane_icerigi()
     if notron is None:
         bulgular.append(Bulgu("uyari", "veri kutuphanesi",
-                              "cross_sections.xml okunamadi, nuklid kontrolu atlandi"))
+                              "cross_sections.xml okunamadı; nüklid denetimi atlandı"))
         return bulgular
 
     try:
         nesneler, _, _ = kurucu.malzemeleri_kur(spec)
     except Exception as e:
         bulgular.append(Bulgu("hata", "malzemeler",
-                              "malzemeler kurulamadi: %s" % e))
+                              "malzemeler kurulamadı: %s" % e))
         return bulgular
 
     for ad, mat in nesneler.items():
@@ -199,20 +216,20 @@ def nuklid_kontrol(spec):
             istenen = set(mat.get_nuclides())
         except Exception as e:
             bulgular.append(Bulgu("uyari", "malzeme:%s" % ad,
-                                  "nuklid listesi cikarilamadi: %s" % e))
+                                  "nüklid listesi çıkarılamadı: %s" % e))
             continue
         eksik = sorted(istenen - notron)
         if eksik:
             bulgular.append(Bulgu(
                 "hata", "malzeme:%s" % ad,
-                "veri kutuphanesinde olmayan nuklid: %s" % ", ".join(eksik),
-                "Bilesimi degistirin ya da bu nuklidleri iceren bir kutuphane kullanin"))
+                "veri kütüphanesinde olmayan nüklid: %s" % ", ".join(eksik),
+                "Bileşimi değiştirin ya da bu nüklidleri içeren bir kütüphane kullanın."))
         for s in (malzeme_bul(spec, ad) or {}).get("sab", []):
             if s not in termal:
                 bulgular.append(Bulgu(
                     "hata", "malzeme:%s" % ad,
-                    "termal sacilma verisi kutuphanede yok: %s" % s,
-                    "Mevcut S(a,b) kayitlari: %d adet" % len(termal)))
+                    "termal saçılma verisi (S(α,β)) kütüphanede yok: %s" % s,
+                    "Kütüphanede %d S(α,β) kaydı var; listeden birini seçin." % len(termal)))
     return bulgular
 
 
@@ -228,21 +245,21 @@ def malzeme_kontrol(spec):
     for ad in set(adlar):
         if adlar.count(ad) > 1:
             bulgular.append(Bulgu("hata", "malzeme:%s" % ad,
-                                  "ayni ad %d kez tanimlanmis" % adlar.count(ad)))
+                                  "aynı ad %d kez tanımlanmış" % adlar.count(ad)))
     if BOSLUK in adlar:
         bulgular.append(Bulgu("hata", "malzemeler",
-                              "'%s' ayrilmis bir addir (void), malzeme olarak tanimlanamaz" % BOSLUK))
+                              "'%s' ayrılmış bir addır (Boş, madde yok); malzeme adı olarak kullanılamaz" % BOSLUK))
 
     for m in spec["malzemeler"]:
         yer = "malzeme:%s" % m["ad"]
         if not m.get("bilesim"):
-            bulgular.append(Bulgu("hata", yer, "bilesim bos"))
+            bulgular.append(Bulgu("hata", yer, "bileşim boş"))
             continue
         yog = (m.get("yogunluk") or {}).get("deger")
         if yog is None:
-            bulgular.append(Bulgu("hata", yer, "yogunluk verilmemis"))
+            bulgular.append(Bulgu("hata", yer, "yoğunluk verilmemiş"))
         elif yog <= 0:
-            bulgular.append(Bulgu("hata", yer, "yogunluk pozitif olmali: %s" % yog))
+            bulgular.append(Bulgu("hata", yer, "yoğunluk sıfırdan büyük olmalı: %s" % yog))
 
         for b in m["bilesim"]:
             # Kurucu "nuklid" disindaki her turu element sayar ve birimi
@@ -251,16 +268,16 @@ def malzeme_kontrol(spec):
             if b.get("tur", "element") not in ("element", "nuklid"):
                 bulgular.append(Bulgu(
                     "hata", yer,
-                    "'%s' satırının türü geçersiz: %r" % (b.get("isim"), b.get("tur")),
+                    "'%s' satırının türü geçersiz: %s" % (b.get("isim"), b.get("tur")),
                     "Tür 'element' (doğal element) ya da 'nuklid' (izotop) olmalı."))
             if b.get("birim", "ao") not in ("ao", "wo"):
                 bulgular.append(Bulgu(
                     "hata", yer,
-                    "'%s' satırının birimi geçersiz: %r" % (b.get("isim"), b.get("birim")),
+                    "'%s' satırının birimi geçersiz: %s" % (b.get("isim"), b.get("birim")),
                     "Birim 'ao' (atom oranı) ya da 'wo' (ağırlık oranı) olmalı."))
             if b.get("miktar", 0) <= 0:
                 bulgular.append(Bulgu("hata", yer,
-                                      "'%s' miktari pozitif olmali: %s"
+                                      "'%s' miktarı sıfırdan büyük olmalı: %s"
                                       % (b.get("isim"), b.get("miktar"))))
             z = b.get("zenginlik")
             # OpenMC zenginligi yalnizca U ELEMENTINE uygular: baska bir
@@ -270,30 +287,30 @@ def malzeme_kontrol(spec):
             if z is not None and b.get("tur", "element") == "nuklid":
                 bulgular.append(Bulgu(
                     "hata", yer,
-                    "'%s' nüklid satırında zenginlik tanımlı -- nüklidde zenginlik "
+                    "'%s' nüklid satırında zenginlik tanımlı — nüklidde zenginlik "
                     "yok sayılır" % b.get("isim"),
-                    "Zenginlik yalnızca U ELEMENTİ satırında kullanılabilir. "
+                    "Zenginlik yalnızca U elementi satırında kullanılabilir. "
                     "İzotopları nüklid olarak giriyorsanız miktarları doğrudan verin."))
             elif z is not None and b.get("isim") != "U":
                 bulgular.append(Bulgu(
                     "hata", yer,
-                    "'%s' elementinde zenginlik tanımlı -- zenginlik yalnızca U "
+                    "'%s' elementinde zenginlik tanımlı — zenginlik yalnızca U "
                     "elementinde kullanılabilir" % b.get("isim"),
                     "OpenMC koşu sırasında reddeder (\"Unable to use enrichment for "
                     "element %s which is not uranium\"). Zenginliği U satırına "
                     "taşıyın ya da bu satırdan silin." % b.get("isim")))
             if z is not None and not (0.0 < z < 100.0):
                 bulgular.append(Bulgu("hata", yer,
-                                      "'%s' zenginligi 0-100 araliginda olmali: %s"
+                                      "'%s' zenginliği %%0–100 aralığında olmalı: %s"
                                       % (b["isim"], z)))
             elif z is not None and b.get("isim") == "U" and z > 5.0:
                 bulgular.append(Bulgu(
                     "uyari", yer,
-                    "U zenginligi %%%.2f -- OpenMC zenginlik kisayolu U234/U235 "
-                    "kutle oranini sabit 0.008 varsayar, bu sadece dusuk "
-                    "zenginliklerde gecerlidir" % z,
-                    "Bilesimi nuklid bazinda verin (U234/U235/U238) ya da sonucun "
-                    "U234 duyarliligini kabul edin"))
+                    "U zenginliği %%%.2f — OpenMC'nin zenginlik kısayolu U234/U235 "
+                    "kütle oranını sabit 0.008 varsayar; bu yalnızca düşük "
+                    "zenginliklerde geçerlidir" % z,
+                    "Bileşimi nüklid bazında verin (U234/U235/U238) ya da sonucun "
+                    "U234'e duyarlılığını kabul edin."))
 
         # --- S(a,b) unutulmus mu? termal spektrumun en klasik hatasi ---
         bulgular += _sab_kontrol(m, yer)
@@ -346,16 +363,16 @@ def _sab_kontrol(malzeme, yer):
         _, onerilen, tanim = min(eslesenler)
         return [Bulgu(
             "uyari", yer,
-            "%s gorunumunde ama S(a,b) termal sacilma verisi eklenmemis" % tanim,
-            "Termal spektrumda k'yi yuzde mertebesinde kaydirir. "
-            "Ekleyin: sab=['%s']" % onerilen)]
+            "%s görünümünde ama termal saçılma verisi (S(α,β)) eklenmemiş" % tanim,
+            "Termal spektrumda k'yi yüzde mertebesinde kaydırır. Malzemeler "
+            "sekmesinde S(α,β) olarak %s ekleyin." % onerilen)]
     # Kurala uymayan ama hidrojen iceren yogun malzeme -- yine de uyar
     if "H" in elemanlar:
         return [Bulgu(
             "uyari", yer,
-            "yogunlastirilmis fazda hidrojen var ama S(a,b) eklenmemis",
-            "Hidrojenin bagli oldugu faza uygun bir S(a,b) secin "
-            "(orn. c_H_in_H2O, c_H_in_ZrH, c_H_in_CH2)")]
+            "yoğun fazda hidrojen var ama termal saçılma verisi (S(α,β)) eklenmemiş",
+            "Hidrojenin bağlı olduğu faza uygun bir S(α,β) seçin "
+            "(ör. c_H_in_H2O, c_H_in_ZrH, c_H_in_CH2).")]
     return []
 
 
@@ -371,23 +388,23 @@ def cubuk_kontrol(spec):
         bolgeler = c.get("bolgeler") or []
         if len(bolgeler) < 2:
             bulgular.append(Bulgu("hata", yer,
-                                  "en az iki bolge gerekir (ic + disarisi)"))
+                                  "en az iki bölge gerekir (iç bölge + dış dolgu)"))
             continue
         if bolgeler[-1].get("r") is not None:
             bulgular.append(Bulgu(
-                "hata", yer, "son bolgenin 'r' degeri null olmali",
-                "Son bolge 'disarisi'dir ve hucreyi doldurur"))
+                "hata", yer, "son bölgenin yarıçapı boş olmalı",
+                "Son bölge çubuğun dışıdır ve hücrenin geri kalanını doldurur."))
         yaricaplar = [b.get("r") for b in bolgeler[:-1]]
         for i, r in enumerate(yaricaplar):
             if r is None or r <= 0:
                 bulgular.append(Bulgu("hata", yer,
-                                      "%d. bolgenin yaricapi pozitif olmali: %s" % (i + 1, r)))
+                                      "%d. bölgenin yarıçapı sıfırdan büyük olmalı: %s" % (i + 1, r)))
         temiz = [r for r in yaricaplar if isinstance(r, (int, float))]
         for i in range(len(temiz) - 1):
             if temiz[i] >= temiz[i + 1]:
                 bulgular.append(Bulgu(
                     "hata", yer,
-                    "yaricaplar artan sirada olmali: r%d=%.5f >= r%d=%.5f"
+                    "yarıçaplar artan sırada olmalı: r%d = %.5f ≥ r%d = %.5f"
                     % (i + 1, temiz[i], i + 2, temiz[i + 1])))
         for i, b in enumerate(bolgeler):
             ad = b.get("malzeme")
@@ -399,7 +416,7 @@ def cubuk_kontrol(spec):
                     "Bir malzeme seçin; bölge bilerek boş bırakılacaksa "
                     "'Boş (madde yok)' seçin."))
             elif ad != BOSLUK and malzeme_bul(spec, ad) is None:
-                bulgular.append(Bulgu("hata", yer, "tanimsiz malzeme: %s" % ad))
+                bulgular.append(Bulgu("hata", yer, "tanımsız malzeme: %s" % ad))
     return bulgular
 
 
@@ -414,17 +431,18 @@ def kontrol_cubugu_kontrol(spec):
         if not h:
             bulgular.append(Bulgu(
                 "hata", yer,
-                "kontrol cubugu 3B model gerektirir (kor yuksekligi tanimsiz)",
-                "Eksenel bir uc konumu olmadan daldirma tanimlanamaz. "
-                "Kor sekmesinde aktif yukseklik tanimlayin."))
+                "kontrol çubuğu 3B model gerektirir (kor yüksekliği tanımsız)",
+                "Eksenel bir uç konumu olmadan daldırma tanımlanamaz. "
+                "Kor sekmesinde aktif yükseklik tanımlayın."))
         d = c.get("daldirma")
         if d is None or not (0.0 <= float(d) <= 100.0):
             bulgular.append(Bulgu("hata", yer,
-                                  "daldirma %%0-%%100 arasinda olmali: %s" % d))
+                                  "daldırma %%0–%%100 arasında olmalı: %s" % d))
         ix = c.get("emici_bolge")
         if not isinstance(ix, int) or not (0 <= ix < len(c.get("bolgeler", []))):
             bulgular.append(Bulgu("hata", yer,
-                                  "gecersiz emici bolge: %s" % ix))
+                                  "geçersiz emici bölge: %s"
+                                  % (ix + 1 if isinstance(ix, int) else "seçilmemiş")))
         else:
             mal = c["bolgeler"][ix].get("malzeme")
             m = malzeme_bul(spec, mal) if mal else None
@@ -436,19 +454,19 @@ def kontrol_cubugu_kontrol(spec):
                 if not sogurucu:
                     bulgular.append(Bulgu(
                         "uyari", yer,
-                        "emici bolgenin malzemesi ('%s') guclu bir notron "
-                        "sogurucu icermiyor" % mal,
+                        "emici bölgenin malzemesi ('%s') güçlü bir nötron "
+                        "emici içermiyor" % mal,
                         "Kontrol malzemeleri genellikle B4C, Ag-In-Cd, Gd2O3 ya "
-                        "da Hf icerir."))
+                        "da Hf içerir."))
         iz = c.get("izleyici_malzeme")
         if iz is None:
             bulgular.append(Bulgu(
                 "uyari", yer,
-                "izleyici malzeme seçilmemiş -- çubuk çekildiğinde yeri boş (void) kalır",
+                "izleyici malzeme seçilmemiş — çubuk çekildiğinde yeri boş (madde yok) kalır",
                 "Çekilen çubuğun yerini genellikle soğutucu doldurur; bilerek boş "
                 "bırakılacaksa 'Boş (madde yok)' seçin."))
         elif iz != BOSLUK and malzeme_bul(spec, iz) is None:
-            bulgular.append(Bulgu("hata", yer, "tanimsiz izleyici malzeme: %s" % iz))
+            bulgular.append(Bulgu("hata", yer, "tanımsız izleyici malzeme: %s" % iz))
     return bulgular
 
 
@@ -462,7 +480,8 @@ def plaka_kontrol(spec):
             deger = p.get(alan)
             if deger is None or deger <= 0:
                 bulgular.append(Bulgu("hata", yer,
-                                      "%s pozitif olmali: %s" % (alan, deger)))
+                                      "%s sıfırdan büyük olmalı: %s"
+                                      % (_PLAKA_ALAN_ADI[alan], deger)))
         for alan in ("et_malzeme", "zarf_malzeme", "sogutucu"):
             ad = p.get(alan)
             if ad is None:
@@ -471,10 +490,11 @@ def plaka_kontrol(spec):
                     "%s seçilmemiş" % {"et_malzeme": "yakıt (et) malzemesi",
                                         "zarf_malzeme": "zarf malzemesi",
                                         "sogutucu": "soğutucu"}[alan],
-                    "Kurucu seçilmemiş malzemeyi boşluk (void) kurardı."))
+                    "Seçilmeyen malzeme boş (madde yok) kurulurdu."))
             elif ad != BOSLUK and malzeme_bul(spec, ad) is None:
                 bulgular.append(Bulgu("hata", yer,
-                                      "%s icin tanimsiz malzeme: %s" % (alan, ad)))
+                                      "%s için tanımsız malzeme: %s"
+                                      % (_PLAKA_ALAN_ADI[alan], ad)))
     return bulgular
 
 
@@ -485,60 +505,60 @@ def demet_kontrol(spec):
         yer = "demet:%s" % d["ad"]
         harita = d.get("harita") or []
         if not harita:
-            bulgular.append(Bulgu("hata", yer, "harita bos"))
+            bulgular.append(Bulgu("hata", yer, "harita boş"))
             continue
         if d.get("tur") == "kare":
             nx, ny = d["boyut"]
             if len(harita) != ny:
                 bulgular.append(Bulgu(
                     "hata", yer,
-                    "harita %d satir ama boyut %d satir bekliyor" % (len(harita), ny)))
+                    "harita %d satır ama boyut %d satır bekliyor" % (len(harita), ny)))
             for i, satir in enumerate(harita):
                 if len(satir) != nx:
                     bulgular.append(Bulgu(
                         "hata", yer,
-                        "%d. satir %d karakter ama %d bekleniyor" % (i + 1, len(satir), nx)))
+                        "%d. satır %d karakter ama %d bekleniyor" % (i + 1, len(satir), nx)))
         if d.get("tur") == "altigen":
             halka = d.get("halka_sayisi") or d.get("boyut", [0])[0]
             if not halka or halka < 1:
-                bulgular.append(Bulgu("hata", yer, "halka sayisi en az 1 olmali"))
+                bulgular.append(Bulgu("hata", yer, "halka sayısı en az 1 olmalı"))
             else:
                 beklenen = altigen.halka_uzunluklari(halka)
                 if len(harita) != len(beklenen):
                     bulgular.append(Bulgu(
                         "hata", yer,
-                        "%d halka bekleniyor, haritada %d satir var"
+                        "%d halka bekleniyor, haritada %d satır var"
                         % (len(beklenen), len(harita)),
-                        "Halkalar DISTAN ICE siralanir; yaricapi k olan halkada "
-                        "6k oge, merkezde 1 oge bulunur"))
+                        "Halkalar dıştan içe sıralanır; yarıçapı k olan halkada "
+                        "6k öğe, merkezde 1 öğe bulunur."))
                 else:
                     for i, (satir, uzunluk) in enumerate(zip(harita, beklenen)):
                         if len(satir) != uzunluk:
                             bulgular.append(Bulgu(
                                 "hata", yer,
-                                "%d. halka (yaricap %d) %d oge bekliyor, %d var"
+                                "%d. halka (yarıçap %d) %d öğe bekliyor, %d var"
                                 % (i + 1, halka - 1 - i, uzunluk, len(satir))))
             if d.get("yonelim", "y") not in ("x", "y"):
                 bulgular.append(Bulgu("hata", yer,
-                                      "yonelim 'x' ya da 'y' olmali: %s" % d.get("yonelim")))
+                                      "yönelim 'x' ya da 'y' olmalı: %s" % d.get("yonelim")))
         if d.get("adim", 0) <= 0:
-            bulgular.append(Bulgu("hata", yer, "adim pozitif olmali"))
+            bulgular.append(Bulgu("hata", yer, "adım sıfırdan büyük olmalı"))
 
         kullanilan = {h for satir in harita for h in satir}
         tanimli = set((d.get("anahtar") or {}).keys())
         for h in sorted(kullanilan - tanimli):
             bulgular.append(Bulgu("hata", yer,
-                                  "haritada tanimsiz harf: '%s'" % h,
-                                  "anahtar sozlugune ekleyin"))
+                                  "haritada tanımsız harf: '%s'" % h,
+                                  "Harfi demetin anahtar listesine ekleyin."))
         for h in sorted(tanimli - kullanilan):
             bulgular.append(Bulgu("bilgi", yer,
-                                  "anahtarda tanimli ama haritada kullanilmayan harf: '%s'" % h))
+                                  "anahtarda tanımlı ama haritada kullanılmayan harf: '%s'" % h))
         for h, hedef in (d.get("anahtar") or {}).items():
             if (cubuk_bul(spec, hedef) is None and plaka_bul(spec, hedef) is None
                     and demet_bul(spec, hedef) is None
                     and hedef != BOSLUK and malzeme_bul(spec, hedef) is None):
                 bulgular.append(Bulgu("hata", yer,
-                                      "'%s' harfi cozumlenemeyen ada isaret ediyor: %s" % (h, hedef)))
+                                      "'%s' harfi tanımsız bir ada işaret ediyor: %s" % (h, hedef)))
         bulgular += _kafes_icerik_kontrol(
             spec, yer, d.get("adim"), d.get("tur", "kare"),
             [(d.get("anahtar") or {}).get(h) for h in sorted(kullanilan)])
@@ -601,8 +621,8 @@ def _kafes_icerik_kontrol(spec, yer, adim, kafes_turu, hedefler):
                 bulgular.append(Bulgu(
                     "hata", yer,
                     "'%s' çubuğunun dış çapı (%.5f cm) kafes adımından (%.5f cm) "
-                    "büyük -- çubuk komşu hücreye taşar" % (hedef, cap, P),
-                    "OpenMC bunu hata saymaz: kafes hücresi çubuğu SESSİZCE keser. "
+                    "büyük — çubuk komşu hücreye taşar" % (hedef, cap, P),
+                    "OpenMC bunu hata saymaz: kafes hücresi çubuğu sessizce keser. "
                     "Adımı büyütün ya da çubuk yarıçaplarını küçültün."))
             continue
         ic = demet_bul(spec, hedef)
@@ -612,10 +632,10 @@ def _kafes_icerik_kontrol(spec, yer, adim, kafes_turu, hedefler):
             if gerekli > pay:
                 bulgular.append(Bulgu(
                     "hata", yer,
-                    "iç içe kafes '%s' (%.4f x %.4f cm) kafes adımına (%.5f cm) "
+                    "iç içe demet '%s' (%.4f × %.4f cm) demet adımına (%.5f cm) "
                     "sığmıyor" % (hedef, gx, gy, P),
-                    "Kafes hücresi içteki kafesi keser; dış halkadaki çubuklar "
-                    "SESSİZCE kaybolur. Dış kafesin adımı en az %.5f cm olmalı."
+                    "Kafes hücresi içteki demeti keser; dış halkadaki çubuklar "
+                    "sessizce kaybolur. Dış demetin adımı en az %.5f cm olmalı."
                     % gerekli))
     return bulgular
 
@@ -629,17 +649,17 @@ def kor_kontrol(spec):
                "tamburlu")
     if tur not in gecerli:
         bulgular.append(Bulgu("hata", "kor",
-                              "bilinmeyen kor turu: %s (gecerli: %s)"
+                              "bilinmeyen kor türü: %s (geçerli: %s)"
                               % (tur, ", ".join(gecerli))))
         return bulgular
 
     if tur == "tek_cubuk":
         if not kor.get("cubuk"):
-            bulgular.append(Bulgu("hata", "kor", "cubuk secilmemis"))
+            bulgular.append(Bulgu("hata", "kor", "çubuk seçilmemiş"))
         elif cubuk_bul(spec, kor["cubuk"]) is None:
-            bulgular.append(Bulgu("hata", "kor", "tanimsiz cubuk: %s" % kor["cubuk"]))
+            bulgular.append(Bulgu("hata", "kor", "tanımsız çubuk: %s" % kor["cubuk"]))
         if kor.get("adim", 0) <= 0:
-            bulgular.append(Bulgu("hata", "kor", "adim pozitif olmali"))
+            bulgular.append(Bulgu("hata", "kor", "hücre adımı sıfırdan büyük olmalı"))
         else:
             c = cubuk_bul(spec, kor.get("cubuk") or "")
             if c:
@@ -647,87 +667,89 @@ def kor_kontrol(spec):
                 if dis_r * 2 > kor["adim"]:
                     bulgular.append(Bulgu(
                         "hata", "kor",
-                        "cubuk dis capi (%.5f) hucre adimindan (%.5f) buyuk"
+                        "çubuğun dış çapı (%.5f cm) hücre adımından (%.5f cm) büyük"
                         % (dis_r * 2, kor["adim"])))
     elif tur == "tek_demet":
         if not kor.get("demet") or demet_bul(spec, kor.get("demet")) is None:
-            bulgular.append(Bulgu("hata", "kor", "tanimsiz demet: %s" % kor.get("demet")))
+            bulgular.append(Bulgu("hata", "kor", "tanımsız demet: %s" % kor.get("demet")
+                                  if kor.get("demet") else "demet seçilmemiş"))
     elif tur == "tek_plaka":
         if not kor.get("plaka") or plaka_bul(spec, kor.get("plaka")) is None:
-            bulgular.append(Bulgu("hata", "kor", "tanimsiz plaka elemani: %s" % kor.get("plaka")))
+            bulgular.append(Bulgu("hata", "kor", "tanımsız plaka elemanı: %s" % kor.get("plaka")
+                                  if kor.get("plaka") else "plaka elemanı seçilmemiş"))
     elif tur == "tamburlu":
         from cekirdek import tambur as _t
         R_kor = kor.get("kor_yaricap") or 0.0
         yans = kor.get("yansitici") or {}
         kal = yans.get("kalinlik") or 0.0
         if R_kor <= 0:
-            bulgular.append(Bulgu("hata", "kor", "kor yaricapi pozitif olmali"))
+            bulgular.append(Bulgu("hata", "kor", "kor yarıçapı sıfırdan büyük olmalı"))
         if kal <= 0:
             bulgular.append(Bulgu("hata", "kor",
-                                  "tamburlu korda yansitici kalinligi pozitif olmali"))
+                                  "tamburlu korda yansıtıcı kuşak kalınlığı sıfırdan büyük olmalı"))
         if not yans.get("malzeme") or yans["malzeme"] == BOSLUK:
             bulgular.append(Bulgu("uyari", "kor",
-                                  "yansitici malzemesi secilmemis (void)"))
+                                  "yansıtıcı kuşağın malzemesi seçilmemiş (boş, madde yok)"))
         dolgu = kor.get("dolgu")
         if not dolgu:
-            bulgular.append(Bulgu("hata", "kor", "kor dolgusu secilmemis"))
+            bulgular.append(Bulgu("hata", "kor", "kor dolgusu seçilmemiş"))
         elif (dolgu != BOSLUK and cubuk_bul(spec, dolgu) is None
               and demet_bul(spec, dolgu) is None
               and malzeme_bul(spec, dolgu) is None):
             bulgular.append(Bulgu("hata", "kor",
-                                  "kor dolgusu cozumlenemedi: %s" % dolgu))
+                                  "kor dolgusu tanımsız: %s" % dolgu))
         t = kor.get("tambur") or {}
         if int(t.get("sayi") or 0) <= 0:
             bulgular.append(Bulgu(
                 "bilgi", "kor",
-                "tambur sayisi 0 -- kontrol tamburu olmadan duz yansitici kusak"))
+                "tambur sayısı 0 — kontrol tamburu olmadan düz yansıtıcı kuşak"))
         else:
             for h in _t.geometri_kontrol(t, R_kor, kal):
                 bulgular.append(Bulgu("hata", "kor", h))
-            for anahtar, etiket in (("govde_malzeme", "tambur govdesi"),
+            for anahtar, etiket in (("govde_malzeme", "tambur gövdesi"),
                                     ("emici_malzeme", "tambur emicisi")):
                 ad = t.get(anahtar)
                 if not ad:
                     bulgular.append(Bulgu("hata", "kor",
-                                          "%s malzemesi secilmemis" % etiket))
+                                          "%s malzemesi seçilmemiş" % etiket))
                 elif ad != BOSLUK and malzeme_bul(spec, ad) is None:
                     bulgular.append(Bulgu("hata", "kor",
-                                          "%s icin tanimsiz malzeme: %s" % (etiket, ad)))
+                                          "%s için tanımsız malzeme: %s" % (etiket, ad)))
             em = malzeme_bul(spec, t.get("emici_malzeme") or "")
             if em:
                 if "emici" not in uygunluk.tek_malzeme_rolleri(em):
                     bulgular.append(Bulgu(
                         "uyari", "kor",
-                        "tambur emicisi ('%s') guclu bir notron sogurucu icermiyor"
+                        "tambur emicisi ('%s') güçlü bir nötron emici içermiyor"
                         % t.get("emici_malzeme")))
             d = t.get("donme")
             if d is None or not (-360.0 <= float(d) <= 360.0):
                 bulgular.append(Bulgu("hata", "kor",
-                                      "tambur donmesi -360..360 derece olmali: %s" % d))
+                                      "tambur dönme açısı −360…360° aralığında olmalı: %s" % d))
             if not sema_kor_yuksekligi(kor):
                 bulgular.append(Bulgu(
                     "bilgi", "kor",
-                    "tamburlu kor 2B -- eksenel sizinti yok, deger fazla cikar",
-                    "Gercekci bir tambur degeri icin aktif yukseklik tanimlayin."))
+                    "tamburlu kor 2B — eksenel sızıntı yok, k-eff olduğundan yüksek çıkar",
+                    "Gerçekçi bir tambur değeri için Kor sekmesinde aktif yükseklik tanımlayın."))
 
     elif tur == "kuresel":
         kabuklar = kor.get("kabuklar") or []
         if not kabuklar:
-            bulgular.append(Bulgu("hata", "kor", "kuresel korda en az bir kabuk gerekir"))
+            bulgular.append(Bulgu("hata", "kor", "küresel düzenekte en az bir kabuk gerekir"))
         for i, k in enumerate(kabuklar):
             if not k.get("r") or k["r"] <= 0:
                 bulgular.append(Bulgu("hata", "kor",
-                                      "%d. kabugun yaricapi pozitif olmali" % (i + 1)))
+                                      "%d. kabuğun yarıçapı sıfırdan büyük olmalı" % (i + 1)))
             ad = k.get("malzeme")
             if ad and ad != BOSLUK and malzeme_bul(spec, ad) is None:
                 bulgular.append(Bulgu("hata", "kor",
-                                      "%d. kabukta tanimsiz malzeme: %s" % (i + 1, ad)))
+                                      "%d. kabukta tanımsız malzeme: %s" % (i + 1, ad)))
         r = [k.get("r") for k in kabuklar if k.get("r")]
         for i in range(len(r) - 1):
             if r[i] >= r[i + 1]:
                 bulgular.append(Bulgu(
                     "hata", "kor",
-                    "kabuk yaricaplari artan sirada olmali: r%d=%.5f >= r%d=%.5f"
+                    "kabuk yarıçapları artan sırada olmalı: r%d = %.5f ≥ r%d = %.5f"
                     % (i + 1, r[i], i + 2, r[i + 1])))
         if kor.get("yukseklik"):
             bulgular.append(Bulgu(
@@ -739,29 +761,29 @@ def kor_kontrol(spec):
         if kor.get("sinir", {}).get("yan") == "reflective":
             bulgular.append(Bulgu(
                 "uyari", "kor",
-                "kuresel duzenekte dis sinir 'reflective' -- ciplak (bare) bir "
-                "kriter modelliyorsaniz 'vacuum' olmali",
-                "Yansitici sinir sonsuz bir ortam demektir; kritik kure "
-                "kriterleri ciplaktir (vacuum)."))
+                "küresel düzenekte dış sınır Yansıtıcı (reflective) — çıplak (bare) bir "
+                "kritiklik düzeneği modelliyorsanız Vakum (vacuum) olmalı",
+                "Yansıtıcı sınır sonsuz bir ortam demektir; kritik küre "
+                "düzenekleri çıplaktır (Vakum)."))
 
     elif tur == "kare_kafes":
         harita = kor.get("harita") or []
         if not harita:
-            bulgular.append(Bulgu("hata", "kor", "kor haritasi bos"))
+            bulgular.append(Bulgu("hata", "kor", "kor haritası boş"))
         else:
             nx, ny = kor["boyut"]
             if len(harita) != ny:
                 bulgular.append(Bulgu("hata", "kor",
-                                      "harita %d satir, boyut %d bekliyor" % (len(harita), ny)))
+                                      "harita %d satır, boyut %d bekliyor" % (len(harita), ny)))
             for i, satir in enumerate(harita):
                 if len(satir) != nx:
                     bulgular.append(Bulgu("hata", "kor",
-                                          "%d. satir %d karakter, %d bekleniyor"
+                                          "%d. satır %d karakter, %d bekleniyor"
                                           % (i + 1, len(satir), nx)))
             kullanilan = {h for satir in harita for h in satir}
             tanimli = set((kor.get("anahtar") or {}).keys())
             for h in sorted(kullanilan - tanimli):
-                bulgular.append(Bulgu("hata", "kor", "haritada tanimsiz harf: '%s'" % h))
+                bulgular.append(Bulgu("hata", "kor", "haritada tanımsız harf: '%s'" % h))
             bulgular += _kafes_icerik_kontrol(
                 spec, "kor", kor.get("adim"), "kare",
                 [(kor.get("anahtar") or {}).get(h) for h in sorted(kullanilan)])
@@ -773,7 +795,7 @@ def kor_kontrol(spec):
         bc = sinir.get(yon)
         if bc and bc not in gecerli_bc:
             bulgular.append(Bulgu("hata", "kor",
-                                  "gecersiz sinir kosulu '%s': %s" % (yon, bc)))
+                                  "geçersiz sınır koşulu (%s): %s" % (_YON_ADI.get(yon, yon), bc)))
     # Hangi yuzeyde hangi sinirin gecerli oldugu uygunluk.sinir_secenekleri'nde
     # (arayuz de listeyi oradan alir). Burada yalnizca ihlal raporlanir.
     yan = sinir.get("yan")
@@ -783,16 +805,16 @@ def kor_kontrol(spec):
             yuzey = "altıgen bir prizma"
             oneri = ("Bu sürüm periyodik sınırı yalnızca kare kesitte (x/y düzlem "
                      "çiftleri) sunuyor. Simetrik bir demette sonsuz kafes için "
-                     "'reflective' aynı k'yı verir.")
+                     "Yansıtıcı (reflective) sınır aynı k'yı verir.")
         else:
             yuzey = {"kure": "bir küre", "silindir": "bir silindir"}.get(yy, "düzlemsel değil")
             oneri = ("OpenMC periyodik yüzeyin eşini bulamaz (\"Found only one "
                      "periodic surface without a specified partner\") ve koşu "
-                     "başlamadan durur. 'reflective' ya da 'vacuum' seçin.")
+                     "başlamadan durur. Yansıtıcı ya da Vakum seçin.")
         bulgular.append(Bulgu(
             "hata", "kor",
-            "periodic yalnızca düzlemsel sınırlarda (x/y düzlem çiftleri) "
-            "kullanılabilir -- bu kor türünün yan yüzeyi %s" % yuzey, oneri))
+            "Periyodik (periodic) sınır yalnızca düzlemsel sınırlarda (x/y düzlem "
+            "çiftleri) kullanılabilir — bu kor türünün yan yüzeyi %s" % yuzey, oneri))
     for yon in ("alt", "ust"):
         bc = sinir.get(yon)
         if bc not in gecerli_bc:
@@ -804,7 +826,7 @@ def kor_kontrol(spec):
             if tur != "kuresel" and bc != "reflective":
                 bulgular.append(Bulgu(
                     "bilgi", "kor",
-                    "model 2B -- '%s' sınırı ('%s') yok sayılır" % (yon, bc),
+                    "model 2B — %s sınır koşulu (%s) yok sayılır" % (_YON_ADI.get(yon, yon), _SINIR_ADI.get(bc, bc)),
                     "2B model eksenel yönde sonsuzdur (yansıtıcı alt/üst ile "
                     "eşdeğer). Eksenel sızıntı için Kor sekmesinde yükseklik "
                     "tanımlayın."))
@@ -816,18 +838,18 @@ def kor_kontrol(spec):
         if sinir.get(karsi) != "periodic":
             bulgular.append(Bulgu(
                 "hata", "kor",
-                "'%s' sınırı periodic ama '%s' sınırı değil -- periyodik yüzeyin "
-                "eşi yok" % (yon, karsi),
+                "%s sınır Periyodik (periodic) ama %s sınır değil — periyodik yüzeyin "
+                "eşi yok" % (_YON_ADI.get(yon, yon).capitalize(), _YON_ADI.get(karsi, karsi)),
                 "OpenMC koşu başlamadan durur (\"Found only one periodic surface "
-                "without a specified partner\"). Alt/üst için 'reflective' ya da "
-                "'vacuum' seçin."))
+                "without a specified partner\"). Alt/üst için Yansıtıcı ya da "
+                "Vakum seçin."))
         elif yon == "alt":
             bulgular.append(Bulgu(
                 "uyari", "kor",
-                "alt ve üst sınır periodic -- korun tepesi dibine bağlanır",
+                "alt ve üst sınır Periyodik (periodic) — korun tepesi dibine bağlanır",
                 "Sonlu yükseklikteki bir korda eksenel periyodiklik fiziksel "
                 "değildir (üst yansıtıcıdan çıkan nötron alt yansıtıcıya girer). "
-                "Eksenel simetri için 'reflective' kullanın; arayüz bu seçeneği "
+                "Eksenel simetri için Yansıtıcı sınır kullanın; arayüz bu seçeneği "
                 "sunmaz."))
 
     # --- bu kor turunde KURULMAYAN alanlar (elle yazilmis dosyalar) ---
@@ -836,10 +858,11 @@ def kor_kontrol(spec):
     if yans.get("var") and "yansitici" not in alanlar:
         bulgular.append(Bulgu(
             "uyari", "kor",
-            "'%s' kor türünde yansıtıcı kurulmaz -- 'yansitici.var' açık ama "
-            "yok sayılır" % tur,
-            "Yansıtıcı yalnızca tek_demet ve kare_kafes (isteğe bağlı) ile "
-            "tamburlu (zorunlu) korda kurulur. Model yansıtıcısız çalışır."))
+            "'%s' kor türünde yansıtıcı kuşak kurulmaz — dosyada açık ama "
+            "yok sayılır" % _kor_turu_adi(tur),
+            "Yansıtıcı kuşak yalnızca tek yakıt demeti ve kare haritalı tam korda "
+            "(isteğe bağlı) ve tamburlu korda (zorunlu) kurulur. Model "
+            "yansıtıcısız çalışır."))
     artik = [alan for alan in sema.KOR_TURE_OZGU
              if alan not in alanlar and alan not in sema.KOR_KORUNAN
              and alan != "yansitici"
@@ -847,21 +870,21 @@ def kor_kontrol(spec):
     if artik:
         bulgular.append(Bulgu(
             "bilgi", "kor",
-            "'%s' kor türünde kullanılmayan alanlar dolu: %s -- yok sayılır"
-            % (tur, ", ".join(artik)),
+            "'%s' kor türünde kullanılmayan alanlar dolu: %s — yok sayılır"
+            % (_kor_turu_adi(tur), ", ".join(artik)),
             "Başka bir kor türünden kalmış olabilir; kurucu bu alanlara bakmaz."))
     if sinir.get("yan") == "vacuum" and tur in ("tek_cubuk", "tek_demet"):
         bulgular.append(Bulgu(
             "uyari", "kor",
-            "tek hucre/demet modelinde yan sinir 'vacuum' -- sizinti sonsuz "
-            "kafes varsayimini bozar",
-            "Sonsuz kafes (k-inf) istiyorsaniz 'reflective' kullanin"))
+            "tek hücre/demet modelinde yan sınır Vakum (vacuum) — sızıntı sonsuz "
+            "kafes varsayımını bozar",
+            "Sonsuz kafes (k∞) istiyorsanız Yansıtıcı (reflective) sınır kullanın."))
     # Kuresel duzenekte "yukseklik" diye bir kavram yoktur; kabuk yaricaplari
     # geometriyi tamamen belirler. Orada 2B uyarisi vermek yanlis olurdu.
     if not sema_kor_yuksekligi(kor) and kor.get("tur") != "kuresel":
         bulgular.append(Bulgu(
             "bilgi", "kor",
-            "yukseklik verilmemis -- model eksenel yonde sonsuz (2B) kabul ediliyor"))
+            "yükseklik verilmemiş — model eksenel yönde sonsuz (2B) kabul ediliyor"))
     return bulgular
 
 
@@ -888,55 +911,56 @@ def eksenel_kontrol(spec):
     if tur not in sema.EKSENEL_DESTEKLI:
         bulgular.append(Bulgu(
             "hata", "kor",
-            "eksenel katmanlama '%s' kor turunde desteklenmiyor" % tur,
-            "Destekleyen turler: %s. Kuresel duzenekte eksen kavrami yoktur; "
-            "orada katmani es merkezli kabuklarla kurun." % ", ".join(sema.EKSENEL_DESTEKLI)))
+            "eksenel katmanlar '%s' kor türünde desteklenmiyor" % _kor_turu_adi(tur),
+            "Destekleyen türler: %s. Küresel düzenekte eksen kavramı yoktur; "
+            "orada katmanı eş merkezli kabuklarla kurun."
+            % ", ".join(_kor_turu_adi(x) for x in sema.EKSENEL_DESTEKLI)))
         return bulgular
 
     katmanlar = eks.get("bolgeler") or []
     if not katmanlar:
         bulgular.append(Bulgu("hata", "kor",
-                              "eksenel katmanlama acik ama hic katman tanimli degil"))
+                              "eksenel katmanlar açık ama hiç katman tanımlı değil"))
         return bulgular
 
     adlar = set()
     for i, b in enumerate(katmanlar):
-        yer = "kor/katman %d (%s)" % (i + 1, b.get("ad") or "adsiz")
+        yer = "kor/katman %d (%s)" % (i + 1, b.get("ad") or "adsız")
         h = b.get("yukseklik")
         if not h or float(h) <= 0:
-            bulgular.append(Bulgu("hata", yer, "katman yuksekligi pozitif olmali"))
+            bulgular.append(Bulgu("hata", yer, "katman yüksekliği sıfırdan büyük olmalı"))
         ad = b.get("ad") or ""
         if ad and ad in adlar:
             bulgular.append(Bulgu("uyari", yer,
-                                  "ayni ad birden fazla katmanda kullanilmis: '%s'" % ad))
+                                  "aynı ad birden fazla katmanda kullanılmış: '%s'" % ad))
         adlar.add(ad)
 
         dolgu = b.get("dolgu")
         if dolgu and not _ad_var(spec, dolgu):
             bulgular.append(Bulgu(
-                "hata", yer, "tanimsiz dolgu adi: '%s'" % dolgu,
-                "Dolgu bir cubuk, plaka, demet ya da malzeme adi olmali."))
+                "hata", yer, "tanımsız dolgu adı: '%s'" % dolgu,
+                "Dolgu bir çubuk, plaka elemanı, demet ya da malzeme adı olmalı."))
 
         anahtar = b.get("anahtar") or {}
         if anahtar and tur != "kare_kafes":
             bulgular.append(Bulgu(
                 "hata", yer,
-                "katmana ozel 'anahtar' yalnizca kare_kafes korunda kullanilabilir"))
+                "katmana özel harf eşlemesi yalnızca kare haritalı tam korda kullanılabilir"))
         for harf, hedef in anahtar.items():
             if not any(harf in satir for satir in (kor.get("harita") or [])):
                 bulgular.append(Bulgu(
                     "uyari", yer,
-                    "'%s' harfi kor haritasinda hic gecmiyor" % harf))
+                    "'%s' harfi kor haritasında hiç geçmiyor" % harf))
             if not _ad_var(spec, hedef):
                 bulgular.append(Bulgu("hata", yer,
-                                      "tanimsiz demet/malzeme adi: '%s'" % hedef))
+                                      "tanımsız demet/malzeme adı: '%s'" % hedef))
 
     if kor.get("yukseklik"):
         toplam = sema.kor_yuksekligi(kor)
         bulgular.append(Bulgu(
             "bilgi", "kor",
-            "eksenel katmanlama acikken 'yukseklik' alani (%g cm) yok sayilir; "
-            "gecerli yukseklik katman toplamidir (%g cm)"
+            "eksenel katmanlar açıkken yükseklik alanı (%g cm) yok sayılır; "
+            "geçerli yükseklik katmanların toplamıdır (%g cm)"
             % (float(kor["yukseklik"]), toplam or 0.0)))
 
     # --- fisil katman var mi ---
@@ -952,20 +976,20 @@ def eksenel_kontrol(spec):
         if not fisil_var:
             bulgular.append(Bulgu(
                 "hata", "kor",
-                "hicbir eksenel katmanda fisil malzeme yok -- ozdeger kosusu "
-                "baslangic kaynagi bulamaz"))
+                "hiçbir eksenel katmanda fisil malzeme yok — özdeğer koşusu "
+                "başlangıç kaynağı bulamaz"))
         elif aralik and toplam:
             aktif = aralik[1] - aralik[0]
             if aktif < toplam:
                 bulgular.append(Bulgu(
                     "bilgi", "kor",
-                    "aktif yakit yuksekligi %g cm / toplam %g cm "
-                    "(z = %g .. %g)" % (aktif, toplam, aralik[0], aralik[1]),
-                    "Baslangic kaynagi kutusu ve kontrol cubugu daldirmasi bu "
-                    "FISIL araliga gore tanimlidir. Guc dagilimi eksenel mesh'i "
-                    "ise hedef CUBUGUN bulundugu araliga gore -- ikisi ayni "
-                    "olmak zorunda degil (dogal uranyum blanket fisildir ama "
-                    "icinde yakit cubugu yoktur)."))
+                    "aktif yakıt yüksekliği %g cm / toplam %g cm "
+                    "(z = %g … %g)" % (aktif, toplam, aralik[0], aralik[1]),
+                    "Başlangıç kaynağı kutusu ve kontrol çubuğu daldırması bu "
+                    "fisil aralığa göre tanımlıdır. Güç dağılımının eksenel ağı "
+                    "ise hedef çubuğun bulunduğu aralığa göre — ikisi aynı "
+                    "olmak zorunda değil (doğal uranyum örtü fisildir ama "
+                    "içinde yakıt çubuğu yoktur)."))
 
     # Mutlak guc normalizasyonu uyarisi: distribcell yalnizca HEDEF cubugu
     # kapsar, ama toplam_guc tum modelin gucudur. Katmanlamada fisil ama
@@ -981,20 +1005,20 @@ def eksenel_kontrol(spec):
         if ar and cr and (cr[1] - cr[0]) < (ar[1] - ar[0]) - 1e-9:
             bulgular.append(Bulgu(
                 "uyari", "guc_dagilimi",
-                "fisil aralik %g cm ama '%s' cubugu yalnizca %g cm boyunca var"
+                "fisil aralık %g cm ama '%s' çubuğu yalnızca %g cm boyunca var"
                 % (ar[1] - ar[0], g["cubuk"], cr[1] - cr[0]),
-                "Guc dagilimi yalnizca bu cubugu sayar; toplam_guc ise tum "
-                "modelin gucudur. Aradaki fisil katmanlarin (blanket gibi) gucu "
-                "de bu cubuklara paylastirilmis olur ve W/cm YUKSEK cikar. "
-                "Mutlak sayilari kullanacaksaniz toplam_guc'u yalnizca bu "
-                "cubuklarin uretimi olacak sekilde girin."))
+                "Güç dağılımı yalnızca bu çubuğu sayar; toplam güç ise tüm "
+                "modelin gücüdür. Aradaki fisil katmanların (örtü gibi) gücü "
+                "de bu çubuklara paylaştırılmış olur ve W/cm olduğundan yüksek "
+                "çıkar. Mutlak sayıları kullanacaksanız toplam gücü yalnızca bu "
+                "çubukların ürettiği güç olarak girin."))
 
     if any(c.get("tur") == "kontrol" for c in spec.get("cubuklar", [])):
         bulgular.append(Bulgu(
             "bilgi", "kor",
-            "kontrol cubugu daldirmasi AKTIF yakit araliginda olculur",
-            "%0 = uc aktif bolgenin tepesinde, %100 = dibinde. Modelin toplam "
-            "yuksekligi degil."))
+            "kontrol çubuğu daldırması aktif yakıt aralığında ölçülür",
+            "%0 = uç aktif bölgenin tepesinde, %100 = dibinde; modelin toplam "
+            "yüksekliği değil."))
     return bulgular
 
 
@@ -1028,11 +1052,11 @@ def tukenme_kontrol(spec, veri_kontrolu=True):
     if not uygun:
         if spec["ayarlar"].get("mod", "eigenvalue") != "eigenvalue":
             bulgular.append(Bulgu("hata", yer,
-                                  "tukenme ozdeger (k-eff) modu gerektirir",
-                                  "Sabit kaynakli tukenme (aktivasyon) bu surumde yok."))
+                                  "tükenme Özdeğer (k-eff) hesabı gerektirir",
+                                  "Sabit kaynaklı tükenme (aktivasyon) bu sürümde yok."))
         else:
-            bulgular.append(Bulgu("hata", yer, "tukenme yapilamaz: %s" % sebep,
-                                  "Yanacak yakit geometride yer almali."))
+            bulgular.append(Bulgu("hata", yer, "tükenme yapılamaz: %s" % sebep,
+                                  "Yanacak yakıt geometride yer almalı."))
 
     # --- zincir ---
     zs = _tk.zincir_secimi(spec)
@@ -1045,32 +1069,33 @@ def tukenme_kontrol(spec, veri_kontrolu=True):
     if t.get("zincir", "otomatik") != "otomatik" and zs["temel"] != zs["spektrum"]:
         bulgular.append(Bulgu(
             "uyari", yer,
-            "%s zincir secildi ama model %s spektrumlu gorunuyor"
-            % (zs["temel"], zs["spektrum"]),
-            "Termal/hizli zincir yakalama dallanma oranlarini ve fisyon "
-            "verimlerini belirler (or. Am241(n,g)->Am242m termalde %8.1, "
-            "hizlida %13.2)."))
+            "%s zincir seçildi ama model %s spektrumlu görünüyor"
+            % (_SPEKTRUM_ADI.get(zs["temel"], zs["temel"]),
+               _SPEKTRUM_ADI.get(zs["spektrum"], zs["spektrum"])),
+            "Termal/hızlı zincir yakalama dallanma oranlarını ve fisyon "
+            "verimlerini belirler (ör. Am241(n,γ)→Am242m termalde %8.1, "
+            "hızlıda %13.2)."))
     if zs["tur"].startswith("casl"):
         bulgular.append(Bulgu(
             "bilgi", yer,
-            "basitlestirilmis CASL zinciri: 228 nuklid (tam zincir 3820)",
-            "Yaklasik 3 kat hizli; on inceleme icindir. Sonuclari tam zincirle "
-            "dogrulayin."))
+            "basitleştirilmiş CASL zinciri: 228 nüklid (tam zincir 3820)",
+            "Yaklaşık 3 kat hızlı; ön inceleme içindir. Sonuçları tam zincirle "
+            "doğrulayın."))
 
     # --- guc ve adimlar ---
     p = t.get("guc_yogunlugu")
     if p is None or float(p) <= 0:
-        bulgular.append(Bulgu("hata", yer, "guc yogunlugu pozitif olmali [W/gHM]"))
+        bulgular.append(Bulgu("hata", yer, "güç yoğunluğu sıfırdan büyük olmalı [W/gHM]"))
     elif not (1.0 <= float(p) <= 200.0):
         bulgular.append(Bulgu(
-            "uyari", yer, "guc yogunlugu %g W/gHM olagan disi" % float(p),
-            "Tipik: PWR 38-40, BWR ~25, SFR 50-100 W/gHM. Birim W/gHM'dir, "
-            "mutlak guc degil."))
+            "uyari", yer, "güç yoğunluğu %g W/gHM olağan dışı" % float(p),
+            "Tipik: PWR 38–40, BWR ~25, SFR 50–100 W/gHM. Birim W/gHM'dir, "
+            "mutlak güç değil."))
     adimlar = t.get("adimlar") or []
     if not adimlar:
-        bulgular.append(Bulgu("hata", yer, "en az bir zaman adimi gerekli"))
+        bulgular.append(Bulgu("hata", yer, "en az bir zaman adımı gerekli"))
     elif any(float(a) <= 0 for a in adimlar):
-        bulgular.append(Bulgu("hata", yer, "zaman adimlari pozitif olmali"))
+        bulgular.append(Bulgu("hata", yer, "zaman adımları sıfırdan büyük olmalı"))
     else:
         birim = t.get("adim_birimi") or "d"
         ilk_gun = float(adimlar[0])
@@ -1079,18 +1104,18 @@ def tukenme_kontrol(spec, veri_kontrolu=True):
         if ilk_gun > 2.0:
             bulgular.append(Bulgu(
                 "uyari", yer,
-                "ilk adim %.3g gun -- Xe-135 dengesi (~2 gun) tek adima eziliyor"
+                "ilk adım %.3g gün — Xe-135 dengesi (~2 gün) tek adıma eziliyor"
                 % ilk_gun,
-                "Ilk adimlari kisa tutun (or. 0.5 ve 1.5 gun). Xe-135 PWR'da "
-                "birkac bin pcm'lik hizli bir dusus yaratir; uzun bir ilk adim "
-                "bunu gorunmez kilar."))
+                "İlk adımları kısa tutun (ör. 0.5 ve 1.5 gün). Xe-135 PWR'da "
+                "birkaç bin pcm'lik hızlı bir düşüş yaratır; uzun bir ilk adım "
+                "bunu görünmez kılar."))
 
     # --- yanabilir malzemeler ve hacimler ---
     try:
         hv = _tk.hacimler(spec)
     except Exception as e:
         hv = None
-        bulgular.append(Bulgu("hata", yer, "hacimler hesaplanamadi: %s" % e))
+        bulgular.append(Bulgu("hata", yer, "hacimler hesaplanamadı: %s" % e))
     if hv is not None:
         if not hv and uygun:
             bulgular.append(Bulgu("hata", yer,
@@ -1099,12 +1124,12 @@ def tukenme_kontrol(spec, veri_kontrolu=True):
             if not v["hacim"]:
                 bulgular.append(Bulgu(
                     "hata", "tukenme/%s" % ad,
-                    "hacim hesaplanamiyor: %s" % v["ayrinti"],
-                    "Tukenme KESIN hacim gerektirir: yanlis hacim yanma hizini "
-                    "ayni oranda bozar ve k-eff'te iz birakmaz."))
+                    "hacim hesaplanamıyor: %s" % v["ayrinti"],
+                    "Tükenme kesin hacim gerektirir: yanlış hacim yanma hızını "
+                    "aynı oranda bozar ve k-eff'te iz bırakmaz."))
     for ad in t.get("ek_malzemeler") or []:
         if malzeme_bul(spec, ad) is None:
-            bulgular.append(Bulgu("hata", yer, "tanimsiz ek malzeme: '%s'" % ad))
+            bulgular.append(Bulgu("hata", yer, "tanımsız ek malzeme: '%s'" % ad))
 
     # --- istatistik ---
     a = spec["ayarlar"]
@@ -1112,14 +1137,15 @@ def tukenme_kontrol(spec, veri_kontrolu=True):
     if int(a.get("parcacik", 0)) * max(aktif, 0) < 100000:
         bulgular.append(Bulgu(
             "uyari", yer,
-            "aktif istatistik az (%d parcacik x %d cevrim)"
+            "aktif istatistik az (%d parçacık × %d çevrim)"
             % (int(a.get("parcacik", 0)), aktif),
-            "Tukenme her adimda reaksiyon hizlarini transporttan alir; gurultu "
-            "adimdan adima BIRIKIR. Aktif parcacik x cevrim >= 1e5 onerilir."))
+            "Tükenme her adımda reaksiyon hızlarını transport hesabından alır; "
+            "gürültü adımdan adıma birikir. Parçacık × aktif çevrim ≥ 100 000 "
+            "önerilir."))
     if t.get("malzemeleri_ayir"):
         bulgular.append(Bulgu(
-            "bilgi", yer, "cubuk cubuk yanma acik (malzemeleri_ayir)",
-            "Her hucre ayri malzeme olur; bellek ve sure hucre sayisiyla artar."))
+            "bilgi", yer, "çubuk çubuk yanma açık",
+            "Her hücre ayrı malzeme olur; bellek ve süre hücre sayısıyla artar."))
     return bulgular
 
 
@@ -1132,38 +1158,38 @@ def ayar_kontrol(spec):
     parcacik = a.get("parcacik", 0)
 
     if parcacik <= 0:
-        bulgular.append(Bulgu("hata", "ayarlar", "parcacik sayisi pozitif olmali"))
+        bulgular.append(Bulgu("hata", "ayarlar", "parçacık sayısı sıfırdan büyük olmalı"))
     if cevrim <= 0:
-        bulgular.append(Bulgu("hata", "ayarlar", "cevrim sayisi pozitif olmali"))
+        bulgular.append(Bulgu("hata", "ayarlar", "çevrim sayısı sıfırdan büyük olmalı"))
     if a.get("mod") == "eigenvalue":
         if pasif >= cevrim:
             bulgular.append(Bulgu(
                 "hata", "ayarlar",
-                "pasif cevrim (%d) toplam cevrimden (%d) az olmali" % (pasif, cevrim)))
+                "pasif çevrim (%d) toplam çevrimden (%d) az olmalı" % (pasif, cevrim)))
         elif pasif < 5:
             bulgular.append(Bulgu(
                 "uyari", "ayarlar",
-                "pasif cevrim cok az (%d) -- kaynak dagilimi yakinsamamis olabilir" % pasif,
-                "Tipik olarak en az 20-50 pasif cevrim kullanilir"))
+                "pasif çevrim çok az (%d) — kaynak dağılımı yakınsamamış olabilir" % pasif,
+                "Tipik olarak en az 20–50 pasif çevrim kullanılır."))
         elif cevrim - pasif < 20:
             bulgular.append(Bulgu(
                 "uyari", "ayarlar",
-                "aktif cevrim sayisi az (%d) -- istatistik zayif kalir" % (cevrim - pasif)))
+                "aktif çevrim sayısı az (%d) — istatistik zayıf kalır" % (cevrim - pasif)))
         ent = a.get("entropi_mesh") or {}
         if not ent.get("var"):
             bulgular.append(Bulgu(
                 "uyari", "ayarlar",
-                "Shannon entropisi kapali -- kaynak dagiliminin yakinsayip "
-                "yakinsamadigi olculemez",
-                "Yakinsamamis kaynak k-eff'i yanli tahmin ettirir ve bu baska "
-                "turlu fark edilmez. Ozdeger hesaplarinda acik tutun."))
+                "Shannon entropisi kapalı — kaynak dağılımının yakınsayıp "
+                "yakınsamadığı ölçülemez",
+                "Yakınsamamış kaynak k-eff'i yanlı tahmin ettirir ve bu başka "
+                "türlü fark edilmez. Özdeğer hesaplarında açık tutun."))
         elif any(n <= 0 for n in (ent.get("boyut") or [0])):
             bulgular.append(Bulgu("hata", "ayarlar",
-                                  "entropi mesh boyutlari pozitif olmali"))
+                                  "entropi ağı boyutları sıfırdan büyük olmalı"))
         if parcacik < 1000:
             bulgular.append(Bulgu(
                 "uyari", "ayarlar",
-                "cevrim basina parcacik az (%d) -- kaynak yakinsamasi bozulabilir" % parcacik))
+                "çevrim başına parçacık az (%d) — kaynak yakınsaması bozulabilir" % parcacik))
     return bulgular
 
 
@@ -1193,25 +1219,25 @@ def kaynak_kontrol(spec, veri_kontrolu=True):
     secenek = uygunluk.kaynak_secenekleri(spec)
 
     # --- dagilimlar gercekten kurulabiliyor mu ---
-    for ad, fn, arg in (("enerji tayfi", _kaynak.enerji_dagilimi, e),
-                        ("acisal dagilim", _kaynak.aci_dagilimi, k.get("aci"))):
+    for ad, fn, arg in (("enerji tayfı", _kaynak.enerji_dagilimi, e),
+                        ("açısal dağılım", _kaynak.aci_dagilimi, k.get("aci"))):
         try:
             fn(arg)
         except Exception as hata:
-            bulgular.append(Bulgu("hata", "kaynak", "%s kurulamadi: %s" % (ad, hata)))
+            bulgular.append(Bulgu("hata", "kaynak", "%s kurulamadı: %s" % (ad, hata)))
 
     # --- siddet ---
     kuvvet = k.get("kuvvet")
     if kuvvet is not None and float(kuvvet) <= 0:
         bulgular.append(Bulgu("hata", "kaynak",
-                              "kaynak siddeti pozitif olmali (%s)" % kuvvet))
+                              "kaynak şiddeti sıfırdan büyük olmalı (%s)" % kuvvet))
     elif (kuvvet is not None and not alan["kaynak_siddeti"]
           and float(kuvvet) != float(sema.VARSAYILAN_AYARLAR["kaynak"]["kuvvet"])):
         bulgular.append(Bulgu(
             "bilgi", "kaynak",
-            "ozdeger modunda kaynak siddeti (%g) yok sayilir" % float(kuvvet),
-            "Ozdeger hesabinda sonuclar fisyon kaynagina normalize edilir; "
-            "mutlak olcek icin guc dagilimindaki toplam gucu kullanin."))
+            "özdeğer hesabında kaynak şiddeti (%g) yok sayılır" % float(kuvvet),
+            "Özdeğer hesabında sonuçlar fisyon kaynağına normalize edilir; "
+            "mutlak ölçek için güç dağılımındaki toplam gücü kullanın."))
 
     # (kutu kaynagi + fisil malzeme yok: fisil_gereksinim_kontrol)
 
@@ -1219,21 +1245,21 @@ def kaynak_kontrol(spec, veri_kontrolu=True):
     parca = k.get("parcacik") or "neutron"
     if parca not in ("neutron", "photon"):
         bulgular.append(Bulgu("hata", "kaynak",
-                              "bilinmeyen parcacik turu: %s" % parca))
+                              "bilinmeyen parçacık türü: %s" % parca))
     elif parca == "photon":
         if parca not in secenek["parcaciklar"]:
             bulgular.append(Bulgu(
                 "hata", "kaynak",
-                "foton kaynagi ozdeger (k-eff) modunda anlamsiz",
-                "Fotonlar fisyon zincirini tasimaz. Foton kaynagi icin modu "
-                "'Sabit kaynak' yapin."))
+                "foton kaynağı Özdeğer (k-eff) hesabında anlamsız",
+                "Fotonlar fisyon zincirini taşımaz. Foton kaynağı için hesap "
+                "türünü Sabit kaynak yapın."))
         if veri_kontrolu:
             _, _, foton = _kutuphane_icerigi_foton()
             if foton is not None and not foton:
                 bulgular.append(Bulgu(
                     "hata", "kaynak",
-                    "foton kaynagi secildi ama kutuphanede foton verisi yok",
-                    "cross_sections.xml icinde type='photon' kaydi bulunamadi."))
+                    "foton kaynağı seçildi ama kütüphanede foton verisi yok",
+                    "cross_sections.xml içinde type='photon' kaydı bulunamadı."))
 
     # --- enerji tavani ---
     tepe = _kaynak.en_yuksek_enerji(e)
@@ -1249,10 +1275,10 @@ def kaynak_kontrol(spec, veri_kontrolu=True):
         if tavan is not None and tepe > tavan:
             bulgular.append(Bulgu(
                 "hata", "kaynak",
-                "kaynak enerjisi %s, veri tavani %s (%s)"
+                "kaynak enerjisi %s, veri tavanı %s (%s)"
                 % (_kaynak.enerji_metni(tepe), _kaynak.enerji_metni(tavan), sahibi),
-                "Tavani belirleyen nuklid modelin icindeki en dusuk ust sinira "
-                "sahip olandir. OpenMC kosu sirasinda hata verir."))
+                "Tavanı, modeldeki nüklidler içinde en düşük üst sınıra sahip "
+                "olan belirler. OpenMC koşu sırasında hata verir."))
 
     # --- nokta kaynak geometrinin icinde mi ---
     if k.get("tur", "nokta") == "nokta":
@@ -1261,61 +1287,61 @@ def kaynak_kontrol(spec, veri_kontrolu=True):
         if h and abs(float(konum[2])) >= float(h) / 2.0:
             bulgular.append(Bulgu(
                 "hata", "kaynak",
-                "nokta kaynak z=%g modelin disinda (yukseklik %g, sinir +/-%g)"
+                "nokta kaynak z = %g modelin dışında (yükseklik %g, sınır ±%g)"
                 % (konum[2], h, h / 2.0),
-                "Geometri disinda baslayan parcaciklar aninda kaybolur."))
+                "Geometri dışında başlayan parçacıklar anında kaybolur."))
 
     # --- sabit kaynak moduna ozgu ---
     if sabit:
         if not spec.get("tallyler") and not (spec.get("guc_dagilimi") or {}).get("var"):
             bulgular.append(Bulgu(
                 "hata", "ayarlar",
-                "sabit kaynak modunda hicbir tally tanimli degil -- kosu hicbir "
-                "sonuc uretmez",
-                "Sabit kaynak hesabinda k-eff yoktur; ne olculecsekse bir "
-                "tally olarak tanimlanmalidir (akı, doz, reaksiyon hizi)."))
+                "sabit kaynak hesabında hiçbir tally tanımlı değil — koşu hiçbir "
+                "sonuç üretmez",
+                "Sabit kaynak hesabında k-eff yoktur; ne ölçülecekse bir "
+                "tally olarak tanımlanmalıdır (akı, doz, reaksiyon hızı)."))
         if (a.get("kinetik") or {}).get("var") and not alan["kinetik"]:
             bulgular.append(Bulgu(
                 "bilgi", "ayarlar",
-                "kinetik parametreler (beta_eff, Λ) yalnızca özdeğer modunda "
-                "hesaplanır -- sabit kaynak modunda yok sayılır",
+                "kinetik parametreler (β_eff, Λ) yalnızca özdeğer hesabında "
+                "bulunur — sabit kaynak hesabında yok sayılır",
                 "IFP yöntemi fisyon zincirini nesiller boyunca izler; sabit "
                 "kaynak hesabında k-eff ve nesil kavramı yoktur."))
         if (a.get("entropi_mesh") or {}).get("var") and not alan["entropi"]:
             bulgular.append(Bulgu(
                 "bilgi", "ayarlar",
-                "Shannon entropisi sabit kaynak modunda kullanilmaz",
-                "Entropi fisyon kaynagi dagiliminin yakinsamasini olcer; sabit "
+                "Shannon entropisi sabit kaynak hesabında kullanılmaz",
+                "Entropi fisyon kaynağı dağılımının yakınsamasını ölçer; sabit "
                 "kaynakta kaynak zaten sabittir. OpenMC bunu yok sayar."))
         if int(a.get("pasif") or 0) > 0 and not alan["pasif"]:
             bulgular.append(Bulgu(
                 "bilgi", "ayarlar",
-                "sabit kaynak modunda pasif cevrim (%d) yok sayilir"
+                "sabit kaynak hesabında pasif çevrim (%d) yok sayılır"
                 % int(a.get("pasif") or 0),
-                "Pasif cevrim fisyon kaynaginin yakinsamasi icindir; kurucu "
-                "sabit kaynakta onu hic yazmaz. Butun cevrimler sayilir."))
+                "Pasif çevrim fisyon kaynağının yakınsaması içindir; sabit "
+                "kaynak hesabında hiç yazılmaz. Bütün çevrimler sayılır."))
         if k.get("tur") == "kutu" and "kutu" in secenek["turler"]:
             # fisil malzeme yoksa fisil_gereksinim_kontrol HATA verir
             bulgular.append(Bulgu(
                 "uyari", "kaynak",
-                "sabit kaynak modunda kutu kaynagi 'yalnizca fisil bolgeler' "
-                "kisitiyla orneklenir",
-                "Kaynak parcaciklari yalnizca fisil malzemede baslar; kutunun "
-                "geri kalani bos kalir. Dis bir kaynak modelliyorsaniz nokta "
-                "kaynak kullanin."))
+                "sabit kaynak hesabında kutu kaynağı 'yalnızca fisil bölgeler' "
+                "kısıtıyla örneklenir",
+                "Kaynak parçacıkları yalnızca fisil malzemede başlar; kutunun "
+                "geri kalanı boş kalır. Dış bir kaynak modelliyorsanız nokta "
+                "kaynak kullanın."))
     else:
         tur = e.get("tur", "watt")
         if tur != "watt":
             bulgular.append(Bulgu(
                 "bilgi", "kaynak",
-                "ozdeger modunda enerji tayfi ('%s') yalnizca BASLANGIC tahminidir"
-                % tur,
-                "Pasif cevrimler icinde gercek fisyon tayfiyla degisir; k-eff'i "
-                "etkilemez. Tayf asil sabit kaynak modunda belirleyicidir."))
+                "özdeğer hesabında enerji tayfı (%s) yalnızca başlangıç tahminidir"
+                % dict(_kaynak.TAYFLAR).get(tur, tur),
+                "Pasif çevrimler içinde gerçek fisyon tayfıyla değişir; k-eff'i "
+                "etkilemez. Tayf asıl sabit kaynak hesabında belirleyicidir."))
         if (k.get("aci") or {}).get("tur", "izotropik") != "izotropik":
             bulgular.append(Bulgu(
                 "bilgi", "kaynak",
-                "ozdeger modunda acisal dagilim da yalnizca baslangic tahminidir"))
+                "özdeğer hesabında açısal dağılım da yalnızca başlangıç tahminidir"))
 
     return bulgular
 
@@ -1342,15 +1368,15 @@ def tally_kontrol(spec):
     for t in spec.get("tallyler", []):
         yer = "tally:%s" % t.get("ad", "?")
         if not t.get("skorlar"):
-            bulgular.append(Bulgu("hata", yer, "en az bir skor secilmeli"))
+            bulgular.append(Bulgu("hata", yer, "en az bir skor seçilmeli"))
         for s in t.get("skorlar", []):
             if s not in BILINEN_SKORLAR and not str(s).isdigit():
                 bulgular.append(Bulgu(
                     "uyari", yer,
-                    "'%s' bilinen skorlar arasinda degil" % s,
-                    "OpenMC bu skoru tanimayabilir ve hata KOSU SIRASINDA cikar. "
-                    "Liste kuratorludur (OpenMC gecerli skor listesi sunmuyor), "
-                    "yeni bir skor kullaniyorsaniz bu uyari yanlis alarm olabilir."))
+                    "'%s' bilinen skorlar arasında değil" % s,
+                    "OpenMC bu skoru tanımayabilir; hata ancak koşu sırasında çıkar. "
+                    "Liste elle tutulur (OpenMC geçerli skor listesi sunmuyor); "
+                    "yeni bir skor kullanıyorsanız bu uyarı yanlış alarm olabilir."))
     return bulgular
 
 
@@ -1365,15 +1391,16 @@ def guc_dagilimi_kontrol(spec):
     cubuk_ad = g.get("cubuk")
     c = cubuk_bul(spec, cubuk_ad) if cubuk_ad else None
     if c is None:
-        bulgular.append(Bulgu("hata", yer, "hedef cubuk secilmemis ya da tanimsiz: %r"
-                              % cubuk_ad))
+        bulgular.append(Bulgu("hata", yer, "hedef çubuk tanımsız: %s" % cubuk_ad
+                              if cubuk_ad else "hedef çubuk seçilmemiş"))
         return bulgular
 
     bolge = g.get("bolge")
     if not isinstance(bolge, int) or not (0 <= bolge < len(c["bolgeler"])):
         bulgular.append(Bulgu("hata", yer,
-                              "gecersiz bolge numarasi %r (cubukta %d bolge var)"
-                              % (bolge, len(c["bolgeler"]))))
+                              "geçersiz bölge numarası %s (çubukta %d bölge var)"
+                              % (bolge + 1 if isinstance(bolge, int) else "(seçilmemiş)",
+                                 len(c["bolgeler"]))))
     else:
         mal = c["bolgeler"][bolge].get("malzeme")
         m = malzeme_bul(spec, mal) if mal else None
@@ -1383,9 +1410,9 @@ def guc_dagilimi_kontrol(spec):
         if not fisil:
             bulgular.append(Bulgu(
                 "uyari", yer,
-                "secilen bolgenin malzemesi ('%s') fisil gorunmuyor" % mal,
-                "Guc dagilimi genellikle YAKIT bolgesinde olculur (bolge 0). "
-                "Zarf ya da sogutucu secildiyse sonuc anlamsiz olur."))
+                "seçilen bölgenin malzemesi ('%s') fisil görünmüyor" % mal,
+                "Güç dağılımı genellikle yakıt bölgesinde (1. bölge) ölçülür. "
+                "Zarf ya da soğutucu seçildiyse sonuç anlamsız olur."))
 
     # --- cubuk geometride mi, bir kafeste tekrarlaniyor mu? ---
     # Uygun cubuk kurali uygunluk.guc_cubuklari'nda (arayuz listeyi oradan
@@ -1395,42 +1422,43 @@ def guc_dagilimi_kontrol(spec):
     uygun = uygunluk.guc_cubuklari(spec)
     if cubuk_ad not in uygun:
         geo = uygunluk.geometri_icerigi(spec)
-        liste = ("Uygun cubuklar: %s" % ", ".join(uygun) if uygun else
-                 "Bu modelde uygun cubuk yok: fisil bolgeli bir cubugun bir "
-                 "kafeste tekrarlanmasi gerekir.")
+        liste = ("Uygun çubuklar: %s" % ", ".join(uygun) if uygun else
+                 "Bu modelde uygun çubuk yok: fisil bölgeli bir çubuğun bir "
+                 "demette tekrarlanması gerekir.")
         if cubuk_ad not in geo["cubuk"]:
             bulgular.append(Bulgu(
                 "hata", yer,
-                "'%s' cubugu modelde kullanilmiyor -- guc dagilimi yalnizca "
-                "geometride yer alan bir cubuk icin hesaplanabilir" % cubuk_ad,
+                "'%s' çubuğu modelde kullanılmıyor — güç dağılımı yalnızca "
+                "geometride yer alan bir çubuk için hesaplanabilir" % cubuk_ad,
                 "Model kurulurken durur. " + liste))
         elif cubuk_ad not in geo["kafesteki_cubuk"]:
             if (spec["kor"].get("tur") == "tek_cubuk"
                     and spec["kor"].get("cubuk") == cubuk_ad):
                 bulgular.append(Bulgu(
                     "hata", yer,
-                    "'%s' bir kafeste tekrarlanmiyor (kor turu 'tek_cubuk')" % cubuk_ad,
-                    "Guc dagilimi tekrarlanan hucre ornekleri uzerinden "
-                    "hesaplanir; tek bir cubukta dagilim yoktur. Bir kafes kurun."))
+                    "'%s' bir demette tekrarlanmıyor (kor türü: '%s')"
+                    % (cubuk_ad, _kor_turu_adi("tek_cubuk")),
+                    "Güç dağılımı tekrarlanan hücre örnekleri üzerinden "
+                    "hesaplanır; tek bir çubukta dağılım yoktur. Bir demet kurun."))
             else:
                 bulgular.append(Bulgu(
                     "uyari", yer,
-                    "'%s' hicbir kafes haritasinda kullanilmiyor" % cubuk_ad,
-                    "Tekrarlanan ornek yoksa dagilim tek bir degerden ibaret "
-                    "kalir. " + liste))
+                    "'%s' hiçbir demet haritasında kullanılmıyor" % cubuk_ad,
+                    "Tekrarlanan örnek yoksa dağılım tek bir değerden ibaret "
+                    "kalır. " + liste))
         # cubuk kafeste ama fisil bolgesi yok: yukaridaki "fisil gorunmuyor"
         # uyarisi bunu zaten soyler.
 
     skor = g.get("skor") or "kappa-fission"
     if skor not in BILINEN_SKORLAR:
-        bulgular.append(Bulgu("uyari", yer, "'%s' bilinen skorlar arasinda degil" % skor))
+        bulgular.append(Bulgu("uyari", yer, "'%s' bilinen skorlar arasında değil" % skor))
     elif skor not in ("kappa-fission", "fission-q-prompt", "fission-q-recoverable",
                       "heating", "heating-local"):
         bulgular.append(Bulgu(
             "uyari", yer,
-            "'%s' bir ENERJI skoru degil" % skor,
-            "Guc dagilimi icin enerji birakan bir skor gerekir; standart secim "
-            "'kappa-fission'dir. 'fission' yalnizca fisyon SAYISINI verir."))
+            "'%s' bir enerji skoru değil" % skor,
+            "Güç dağılımı için enerji bırakan bir skor gerekir; standart seçim "
+            "'kappa-fission'dır. 'fission' yalnızca fisyon sayısını verir."))
 
     # --- eksenel ---
     h = sema_kor_yuksekligi(spec["kor"])
@@ -1438,24 +1466,24 @@ def guc_dagilimi_kontrol(spec):
     if not h:
         bulgular.append(Bulgu(
             "bilgi", yer,
-            "model 2B -- F_q hesaplanamaz, yalnizca F_dH verilir",
-            "Yerel guc yogunlugu tepesi eksenel sekle baglidir. Kor sekmesinde "
-            "aktif yukseklik tanimlayin."))
+            "model 2B — F_q hesaplanamaz, yalnızca F_ΔH verilir",
+            "Yerel güç yoğunluğu tepesi eksenel şekle bağlıdır. Kor sekmesinde "
+            "aktif yükseklik tanımlayın."))
     elif dilim < 10:
         bulgular.append(Bulgu(
             "uyari", yer,
-            "yalnizca %d eksenel dilim -- F_q KUCUK cikar" % dilim,
-            "Kaba dilimler eksenel tepeyi ortalar. En az 10-20 dilim kullanin."))
+            "yalnızca %d eksenel dilim — F_q olduğundan küçük çıkar" % dilim,
+            "Kaba dilimler eksenel tepeyi ortalar. En az 10–20 dilim kullanın."))
 
     tg = g.get("toplam_guc")
     if tg is not None:
         if tg <= 0:
-            bulgular.append(Bulgu("hata", yer, "toplam guc pozitif olmali"))
+            bulgular.append(Bulgu("hata", yer, "toplam güç sıfırdan büyük olmalı"))
         elif not h:
             bulgular.append(Bulgu(
                 "uyari", yer,
-                "toplam guc verilmis ama model 2B -- lineer guc [W/cm] hesaplanamaz",
-                "W/cm icin aktif yukseklik gerekir."))
+                "toplam güç verilmiş ama model 2B — çizgisel güç [W/cm] hesaplanamaz",
+                "W/cm için Kor sekmesinde aktif yükseklik tanımlayın."))
     return bulgular
 
 
@@ -1483,16 +1511,16 @@ def fisil_gereksinim_kontrol(spec):
             and sema.eksenel_katmanlar(spec["kor"]) is None):
         bulgular.append(Bulgu(
             "hata", "ayarlar",
-            "ozdeger (k-eff) modu fisil malzeme gerektirir -- geometride "
+            "Özdeğer (k-eff) hesabı fisil malzeme gerektirir — geometride "
             "fisil malzeme yok",
-            "OpenMC ilk cevrimde durur (\"No fission sites banked\"). "
-            "Zirhlama/aktivasyon hesabi icin modu 'Sabit kaynak' yapin."))
+            "OpenMC ilk çevrimde durur (\"No fission sites banked\"). "
+            "Zırhlama/aktivasyon hesabı için hesap türünü Sabit kaynak yapın."))
     if (a.get("kaynak") or {}).get("tur") == "kutu":
         bulgular.append(Bulgu(
             "hata", "kaynak",
-            "kutu kaynagi fisil malzeme gerektirir -- geometride fisil malzeme yok",
-            "Kutu kaynagi yalnizca fisil bolgelerde orneklenir; OpenMC hic "
-            "ornek bulamaz ve durur. Nokta kaynak kullanin."))
+            "kutu kaynağı fisil malzeme gerektirir — geometride fisil malzeme yok",
+            "Kutu kaynağı yalnızca fisil bölgelerde örneklenir; OpenMC hiç "
+            "örnek bulamaz ve durur. Nokta kaynak kullanın."))
     return bulgular
 
 
@@ -1504,10 +1532,10 @@ def referans_kontrol(spec):
     kullanilan = kullanilan_malzemeler(spec)
 
     for ad in sorted(kullanilan - tanimli):
-        bulgular.append(Bulgu("hata", "malzemeler", "kullanilan ama tanimsiz malzeme: %s" % ad))
+        bulgular.append(Bulgu("hata", "malzemeler", "kullanılan ama tanımsız malzeme: %s" % ad))
     for ad in sorted(tanimli - kullanilan):
         bulgular.append(Bulgu("bilgi", "malzemeler",
-                              "tanimli ama modelde kullanilmayan malzeme: %s" % ad))
+                              "tanımlı ama modelde kullanılmayan malzeme: %s" % ad))
     return bulgular
 
 
@@ -1552,4 +1580,4 @@ def ozet(bulgular):
     say = {"hata": 0, "uyari": 0, "bilgi": 0}
     for b in bulgular:
         say[b.seviye] += 1
-    return "%d hata, %d uyari, %d bilgi" % (say["hata"], say["uyari"], say["bilgi"])
+    return "%d hata, %d uyarı, %d bilgi" % (say["hata"], say["uyari"], say["bilgi"])

@@ -88,8 +88,8 @@ def spektrum_tahmini(spec):
             isim = b.get("isim") or ""
             eleman = isim.rstrip("0123456789") if b.get("tur") == "nuklid" else isim
             if eleman in ("H", "D") and float(b.get("miktar") or 0) > 0:
-                return "termal", "'%s' malzemesi hidrojen iceriyor" % m["ad"]
-    return "hizli", "modelde hidrojen ya da grafit moderator yok"
+                return "termal", "'%s' malzemesi hidrojen içeriyor" % m["ad"]
+    return "hizli", "modelde hidrojen ya da grafit moderatör yok"
 
 
 def zincir_secimi(spec):
@@ -104,7 +104,7 @@ def zincir_secimi(spec):
         gerekce = "otomatik: " + gerekce
     else:
         tur = istek
-        gerekce = "kullanici secimi"
+        gerekce = "kullanıcı seçimi"
     temel = "hizli" if tur.endswith("hizli") else "termal"
     return {
         "tur": tur,
@@ -250,7 +250,7 @@ def hacimler(spec):
                 if k.get("malzeme") == ad:
                     v = 4.0 / 3.0 * math.pi * (k["r"] ** 3 - r_ic ** 3)
                     V += v
-                    parcalar.append("kabuk r=%g: %.4g" % (k["r"], v))
+                    parcalar.append("kabuk r = %g cm: %.4g cm³" % (k["r"], v))
                 r_ic = k["r"]
             sonuc[ad] = {"hacim": V if V > 0 else None,
                          "yontem": "analitik" if V > 0 else "yok",
@@ -272,7 +272,7 @@ def hacimler(spec):
                     n = _kor_sayimi(spec, kor, dolgu, c["ad"], esleme)
                     if n:
                         V += alan * h * n
-                        parcalar.append("%s[%d] %d adet x %g cm" % (c["ad"], i, n, h))
+                        parcalar.append("%s, %d. bölge: %d adet × %g cm" % (c["ad"], i + 1, n, h))
 
         # --- plaka eti ---
         for p in spec.get("plakalar", []):
@@ -283,7 +283,7 @@ def hacimler(spec):
                 n = _kor_sayimi(spec, kor, dolgu, p["ad"], esleme)
                 if n:
                     V += alan * h * n
-                    parcalar.append("%s %d eleman x %g cm" % (p["ad"], n, h))
+                    parcalar.append("%s: %d eleman × %g cm" % (p["ad"], n, h))
 
         # --- tamburlu kor: kor silindirini dogrudan dolduran homojen malzeme ---
         if kor["tur"] == "tamburlu":
@@ -292,19 +292,19 @@ def hacimler(spec):
                 if (dolgu or kor.get("dolgu")) == ad:
                     v = math.pi * R * R * h
                     V += v
-                    parcalar.append("kor silindiri R=%g x %g cm" % (R, h))
+                    parcalar.append("kor silindiri R = %g cm × %g cm" % (R, h))
         # --- baska bir yerde dogrudan dolgu olarak kullanilan malzeme ---
         elif kor.get("dolgu") == ad or any(d == ad for _h, d, _e in dilimler):
             analitik_disi = True
 
         if analitik_disi:
-            sonuc[ad] = {"hacim": None, "yontem": "stokastik gerekli",
-                         "ayrinti": "malzeme cubuk/plaka disinda da kullaniliyor"}
+            sonuc[ad] = {"hacim": None, "yontem": "stokastik hesap gerekli",
+                         "ayrinti": "malzeme çubuk/plaka dışında da kullanılıyor"}
         elif V > 0:
             sonuc[ad] = {"hacim": V, "yontem": "analitik", "ayrinti": "; ".join(parcalar)}
         else:
             sonuc[ad] = {"hacim": None, "yontem": "yok",
-                         "ayrinti": "malzeme geometride bulunamadi"}
+                         "ayrinti": "malzeme geometride bulunamadı"}
     return sonuc
 
 
@@ -372,7 +372,7 @@ def hazirla(spec):
     if eksik:
         raise ValueError(
             "hacmi analitik hesaplanamayan yanabilir malzeme: %s (%s). "
-            "Tukenme kesin hacim gerektirir."
+            "Tükenme kesin hacim gerektirir."
             % (", ".join(eksik), "; ".join(hv[a]["ayrinti"] for a in eksik)))
     nesneler = kbilgi["malzemeler"]
     agir = 0.0
@@ -546,6 +546,20 @@ def _kayit_oku(dizin):
     return sema.yukle(yol) if os.path.exists(yol) else None
 
 
+# Spec bolumlerinin kullaniciya gorunen adlari (eskime farklari icin).
+BOLUM_ADLARI = {
+    "malzemeler": "malzemeler", "cubuklar": "çubuklar", "plakalar": "plaka elemanları",
+    "demetler": "demetler", "kor": "kor", "ayarlar": "hesap ayarları",
+    "tallyler": "tally'ler", "guc_dagilimi": "güç dağılımı", "tukenme": "tükenme ayarları",
+}
+SPEKTRUM_ADLARI = {"termal": "termal", "hizli": "hızlı"}
+
+
+def fark_metni(farklar):
+    """Eskime farklarinin okunur listesi: "malzemeler, hesap ayarları"."""
+    return ", ".join(BOLUM_ADLARI.get(f, f) for f in farklar)
+
+
 def eskime(spec, dizin):
     """
     (durum, farklar): sonuc bu spec'e mi ait? Sonucu OKUMAZ -- arayuz her
@@ -596,30 +610,33 @@ def _terminal(argv):
     zs = zincir_secimi(spec)
     t = spec["tukenme"]
     print("=" * 74)
-    print(" TUKENME: %s" % spec.get("ad", ""))
+    print(" TÜKENME: %s" % spec.get("ad", ""))
     print("=" * 74)
     print("  zincir        : %s  (%s)" % (os.path.basename(zs["yol"]), zs["gerekce"]))
-    print("  fisyon verimi : %s eV (%s spektrum)" % (zs["verim_enerjisi"], zs["temel"]))
-    print("  guc yogunlugu : %g W/gHM" % float(t["guc_yogunlugu"]))
-    print("  adimlar       : %s %s  -> %d transport" % (t["adimlar"], t.get("adim_birimi", "d"),
-                                                      transport_sayisi(spec)))
+    print("  fisyon verimi : %s eV (%s spektrum)"
+          % (zs["verim_enerjisi"], SPEKTRUM_ADLARI.get(zs["temel"], zs["temel"])))
+    print("  güç yoğunluğu : %g W/gHM" % float(t["guc_yogunlugu"]))
+    print("  adımlar       : %s %s  → %d transport"
+          % (", ".join("%g" % float(x) for x in t["adimlar"]),
+             {"d": "gün"}.get(t.get("adim_birimi", "d"), t.get("adim_birimi", "d")),
+             transport_sayisi(spec)))
     for ad, v in hacimler(spec).items():
-        print("  hacim %-10s: %s cm3 [%s] %s" % (ad, ("%.6g" % v["hacim"]) if v["hacim"] else "-",
+        print("  hacim %-10s: %s cm³ [%s] %s" % (ad, ("%.6g" % v["hacim"]) if v["hacim"] else "—",
                                                   v["yontem"], v["ayrinti"]))
     if a.hazirla:
         _m, b = hazirla(spec)
-        print("  agir metal    : %.6g g" % b["agir_metal_g"])
+        print("  ağır metal    : %.6g g" % b["agir_metal_g"])
         return 0
 
     dizin = a.dizin or os.path.join(os.path.dirname(os.path.abspath(a.spec)),
                                     (spec.get("calistirma") or {}).get("dizin", "kosu") + "_tukenme")
     h5, bilgi = calistir(spec, dizin)
     s = sonuc_oku(h5, spec)
-    print("\n  agir metal: %.6g g" % bilgi["agir_metal_g"])
-    print("  %8s %10s %18s" % ("gun", "MWd/kg", "k-eff"))
+    print("\n  ağır metal: %.6g g" % bilgi["agir_metal_g"])
+    print("  %8s %10s %18s" % ("gün", "MWd/kg", "k-eff"))
     for z, b, k, sk in zip(s["zaman_d"], s["yanma"], s["k"], s["k_sapma"]):
-        print("  %8.2f %10.3f %10.5f +/- %.5f" % (z, b, k, sk))
-    print("\n  sonuc: %s" % h5)
+        print("  %8.2f %10.3f %10.5f ± %.5f" % (z, b, k, sk))
+    print("\n  sonuç: %s" % h5)
     return 0
 
 

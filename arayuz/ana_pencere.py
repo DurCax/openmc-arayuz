@@ -59,7 +59,7 @@ from arayuz.sekme_demet import DemetSekmesi
 from arayuz.sekme_kor import KorSekmesi
 from arayuz.sekme_malzeme import MalzemeSekmesi
 from arayuz import baslangic, tema
-from arayuz.ortak import DurumRozeti, tekerlek_korumasi_kur
+from arayuz.ortak import DurumRozeti, cumle_basi, tekerlek_korumasi_kur
 
 KOK = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ORNEKLER = os.path.join(KOK, "ornekler")
@@ -73,7 +73,7 @@ def _seviye_renk(seviye):
     return tema.renk({"hata": "hata", "uyari": "uyari", "bilgi": "bilgi"}.get(seviye, "bilgi"))
 
 
-_SEVIYE_ADI = {"hata": "HATA", "uyari": "UYARI", "bilgi": "BİLGİ"}
+_SEVIYE_ADI = {"hata": "Hata", "uyari": "Uyarı", "bilgi": "Bilgi"}
 
 # Bir konu degistiginde hangi sekmelerin tazelenmesi gerektigi.
 # Amac: ayar degisikligi yuzunden kullanicinin kafes secimini sifirlamamak.
@@ -128,17 +128,10 @@ TASARIM_SEKMELERI = ("malzemeler", "parcalar", "demet", "kor")
 DOGRULAMA_SEKMELERI = TASARIM_SEKMELERI + ("ayarlar",)
 
 # Kor turlerinin sade adlari ("Turu degistir..." menusu).
-TUR_ADLARI = {
-    "tek_cubuk": "Yakıt çubuğu (pin hücre)",
-    "tek_plaka": "Plaka elemanı (MTR)",
-    "tek_demet": "Tek yakıt demeti",
-    "kare_kafes": "Tam kor (kare harita)",
-    "tamburlu": "Tamburlu kompakt kor",
-    "kuresel": "Küresel düzenek (kabuklar)",
-}
+TUR_ADLARI = uygunluk.KOR_TURU_ADLARI
 
 _ICE_AKTAR_NOTU = ("Yalnızca malzemeler aktarılır: OpenMC geometrisi ham CSG'dir "
-                   "ve bu arayüzün malzeme → parça → kafes → kor katmanlarına "
+                   "ve bu arayüzün malzeme → parça → demet → kor katmanlarına "
                    "güvenle çevrilemez; geometriyi arayüzde yeniden kurun.")
 
 
@@ -153,6 +146,27 @@ def yer_sekme_anahtari(yer):
         if yer.startswith(onek):
             return EDITOR_ANAHTARI[ad]
     return None
+
+
+# Bulgu "yer" kodunun kullaniciya gorunen adi. Kod degismez (sekme eslemesi
+# ona bakar); yalnizca listede okunur bir ad gosterilir.
+_YER_ETIKETI = [
+    ("malzemeler", "Malzemeler"), ("malzeme:", "Malzeme "), ("cubuk:", "Çubuk "),
+    ("plaka:", "Plaka elemanı "), ("demet:", "Demet "), ("kor/katman ", "Kor, katman "),
+    ("kor", "Kor"), ("ayarlar", "Hesap ayarları"), ("veri kutuphanesi", "Veri kütüphanesi"),
+    ("kaynak", "Kaynak"), ("tally:", "Tally "), ("guc dagilimi", "Güç dağılımı"),
+    ("guc_dagilimi", "Güç dağılımı"), ("tukenme/", "Tükenme, "), ("tukenme", "Tükenme"),
+    ("dogrulama", "Doğrulama"),
+]
+
+
+def yer_etiketi(yer):
+    """Bulgu yerinin okunur adi: "malzeme:uo2" -> "Malzeme uo2"."""
+    yer = yer or ""
+    for onek, ad in _YER_ETIKETI:
+        if yer == onek or (onek.endswith((":", "/", " ")) and yer.startswith(onek)):
+            return ad + yer[len(onek):]
+    return yer
 
 
 def tur_ozeti(spec):
@@ -242,7 +256,7 @@ def sekme_isaretleri(spec, hata_sayilari=None, kosu_basarili=False,
         eksik = "Eksik: bu kor türü için bir plaka elemanı tanımlanmalı."
     koy("parcalar", eksik)
 
-    koy("demet", "Eksik: bu kor türü için bir kafes (demet) kurulmalı."
+    koy("demet", "Eksik: bu kor türü için bir demet kurulmalı."
         if tur in ("tek_demet", "kare_kafes") and not spec.get("demetler") else None)
 
     eksik = None
@@ -437,7 +451,7 @@ durum çubuğu da sıradaki adımı söyler. Kor türünü üstteki
 <table cellpadding="5">
 <tr><td><b>k-eff</b></td><td>Çoğalma çarpanı. Bir nötron neslinin bir sonraki
 nesli ne kadar büyüttüğü. k&gt;1 güç artar, k=1 kritik, k&lt;1 söner.</td></tr>
-<tr><td><b>k-inf</b></td><td>Sonsuz kafes çoğalma çarpanı. Sınırlardan sızıntı
+<tr><td><b>k&infin; (k-inf)</b></td><td>Sonsuz ortam çoğalma çarpanı. Sınırlardan sızıntı
 olmadığı varsayılır (yansıtıcı sınır koşulu). Gerçek bir reaktör için üst
 sınırdır.</td></tr>
 <tr><td><b>Reaktivite (&rho;)</b></td><td>(k-1)/k. Kritiklikten ne kadar uzak
@@ -445,7 +459,7 @@ olunduğunun ölçüsü. <b>pcm</b> = 10<sup>-5</sup> birim.</td></tr>
 <tr><td><b>Dolar ($)</b></td><td>Reaktivite / &beta;<sub>eff</sub>. 1 $ üstü
 geçici rejimde anlık kritiklik demektir.</td></tr>
 <tr><td><b>&beta;<sub>eff</sub></b></td><td>Etkin gecikmiş nötron kesri.
-Fisyon nötronlarının küçük bir kısmı (~%0,7) gecikmeli çıkar; reaktör denetimi
+Fisyon nötronlarının küçük bir kısmı (~%0.7) gecikmeli çıkar; reaktör denetimi
 bu gecikmeye dayanır.</td></tr>
 <tr><td><b>&Lambda;</b></td><td>Nötron üretim zamanı. Termal reaktörde ~20 &mu;s,
 hızlı metal sistemde ~6 ns.</td></tr>
@@ -454,16 +468,16 @@ hızlı metal sistemde ~6 ns.</td></tr>
 <h3>Reaktivite katsayıları (Analiz sekmesi)</h3>
 <table cellpadding="5">
 <tr><td><b>Doppler katsayısı</b></td><td>Yakıt sıcaklığı arttığında reaktivite
-değişimi [pcm/K]. U-238 rezonansları genişler, yakalama artar &rarr; NEGATİF
-olmalı. Güvenliğin ilk savunma hattıdır: güç artarsa yakıt ısınır ve
+değişimi [pcm/K]. U-238 rezonansları genişler, yakalama artar &rarr;
+<b>negatif</b> olmalı. Güvenliğin ilk savunma hattıdır: güç artarsa yakıt ısınır ve
 reaktivite kendiliğinden düşer.</td></tr>
-<tr><td><b>Moderatör sıcaklık kats.</b></td><td>Soğutucu sıcaklığı arttığında
+<tr><td><b>Moderatör sıcaklık katsayısı</b></td><td>Soğutucu sıcaklığı arttığında
 reaktivite değişimi [pcm/K]. Sıcaklık artınca yoğunluk da düşer; ikisi birlikte
-hesaplanmalıdır. Termal reaktörde NEGATİF olmalı.</td></tr>
+hesaplanmalıdır. Termal reaktörde <b>negatif</b> olmalı.</td></tr>
 <tr><td><b>Boşluk (void) katsayısı</b></td><td>Soğutucuda boşluk oluşursa
 reaktivite değişimi [pcm/%void]. Termal reaktörde negatif olmalı.</td></tr>
 <tr><td><b>Bor değeri (worth)</b></td><td>Suda çözünmüş bor başına reaktivite
-[pcm/ppm]. Bor soğurucudur &rarr; negatif. Çok bor, moderatör sıcaklık
+[pcm/ppm]. Bor nötron emicidir &rarr; negatif. Çok bor, moderatör sıcaklık
 katsayısını pozitife doğru iter; bu yüzden sınırlanır.</td></tr>
 </table>
 
@@ -471,26 +485,55 @@ katsayısını pozitife doğru iter; bu yüzden sınırlanır.</td></tr>
 <table cellpadding="5">
 <tr><td><b>Çevrim (batch)</b></td><td>Bir grup nötronun izlendiği tur.</td></tr>
 <tr><td><b>Pasif çevrim</b></td><td>Baştaki çevrimler. Kaynak dağılımı henüz
-doğru değildir, bu yüzden istatistiğe KATILMAZ. Tipik 20-50.</td></tr>
+doğru değildir, bu yüzden istatistiğe <b>katılmaz</b>. Tipik 20–50.</td></tr>
+<tr><td><b>Aktif çevrim</b></td><td>Pasif çevrimlerden sonraki çevrimler;
+k-eff ve tally sonuçları yalnızca bunlardan hesaplanır.</td></tr>
 <tr><td><b>Shannon entropisi</b></td><td>Kaynak dağılımının ne kadar yayıldığını
 ölçer. Pasif çevrimler boyunca düzleşmelidir; hâlâ kayıyorsa pasif çevrim
-sayısı yetersizdir ve k-eff YANLI çıkar.</td></tr>
-<tr><td><b>Tally</b></td><td>Sayaç. Modelin belirli bir yerinde/enerjisinde
+sayısı yetersizdir ve k-eff <b>yanlı</b> çıkar.</td></tr>
+<tr><td><b>Tally (ölçüm)</b></td><td>Sayaç. Modelin belirli bir yerinde/enerjisinde
 hangi reaksiyonların kaç kez olduğunu toplar (akı, fisyon, soğurma…).</td></tr>
 <tr><td><b>S(&alpha;,&beta;)</b></td><td>Termal saçılma verisi. Düşük enerjide
-nötron serbest bir çekirdekten değil, BAĞLI bir molekülden saçılır (sudaki
+nötron serbest bir çekirdekten değil, <b>bağlı</b> bir molekülden saçılır (sudaki
 hidrojen gibi). Unutulursa termal reaktörde k yüzde mertebesinde kayar.</td></tr>
 </table>
 
 <h3>Geometri terimleri</h3>
 <table cellpadding="5">
-<tr><td><b>Universe</b></td><td>Tekrar kullanılabilir geometri parçası. Bir
-yakıt çubuğu bir universe'dür; kafes onu tekrarlar.</td></tr>
-<tr><td><b>Kafes (lattice)</b></td><td>Universe'lerin düzenli dizilimi. Kare
-(PWR) ya da altıgen (VVER, SFR).</td></tr>
+<tr><td><b>Çubuk (pin, rod)</b></td><td>Eş merkezli bölgelerden oluşan
+yakıt, kontrol ya da boş kanal çubuğu: yakıt, yakıt-zarf aralığı, zarf ve
+çevresindeki soğutucu.</td></tr>
+<tr><td><b>Plaka elemanı</b></td><td>Araştırma reaktörlerindeki (MTR) düz
+plakalı yakıt elemanı.</td></tr>
+<tr><td><b>Demet (fuel assembly)</b></td><td>Çubukların kare ya da altıgen
+ızgarada düzenli dizilimi (OpenMC'de kafes, <i>lattice</i>). Kare (PWR) ya da
+altıgen (VVER, SFR).</td></tr>
+<tr><td><b>Kor ve kor haritası</b></td><td>Demetlerin yerleşimi. Kor haritası
+her konuma hangi demetin geldiğini gösterir.</td></tr>
+<tr><td><b>Yansıtıcı kuşak (reflector)</b></td><td>Koru saran, kaçan
+nötronları geri gönderen malzeme katmanı.</td></tr>
+<tr><td><b>Kontrol tamburu</b></td><td>Yansıtıcı kuşağa gömülü, bir yüzü emici
+kaplı dönen silindir. Emici kora döndükçe reaktivite düşer.</td></tr>
+<tr><td><b>Eksenel katman</b></td><td>Koru yükseklik boyunca bölen katmanlar
+(alt/üst yansıtıcı, örtü, farklı zenginlikte yakıt).</td></tr>
 <tr><td><b>Adım (pitch)</b></td><td>Komşu iki hücre merkezi arası mesafe.</td></tr>
-<tr><td><b>Sınır koşulu</b></td><td><i>vacuum</i>: nötron kaçar (gerçek dış
-yüzey). <i>reflective</i>: geri yansır (sonsuz tekrar varsayımı).</td></tr>
+<tr><td><b>Universe</b></td><td>OpenMC'de tekrar kullanılabilir geometri
+parçası. Her çubuk bir universe'tür; demet onu tekrarlar.</td></tr>
+<tr><td><b>Sınır koşulu</b></td><td><b>Vakum (vacuum)</b>: nötron kaçar
+(gerçek dış yüzey). <b>Yansıtıcı (reflective)</b>: aynadaki gibi geri yansır
+(sonsuz tekrar varsayımı). <b>Beyaz (white)</b>: rastgele yönde geri döner.
+<b>Periyodik (periodic)</b>: karşı yüzden geri girer.</td></tr>
+</table>
+
+<h3>Tükenme terimleri</h3>
+<table cellpadding="5">
+<tr><td><b>Tükenme (depletion)</b></td><td>Yakıttaki nüklidlerin zamanla
+değişmesi: fisil çekirdekler azalır, fisyon ürünleri ve aktinitler birikir.</td></tr>
+<tr><td><b>Yanma (burnup)</b></td><td>Birim ağır metal kütlesi başına üretilen
+enerji [MWd/kg].</td></tr>
+<tr><td><b>Zincir (chain)</b></td><td>Bozunma ve reaksiyon yollarını tanımlayan
+veri dosyası; termal ve hızlı spektrum için ayrı zincirler vardır.</td></tr>
+<tr><td><b>Güç yoğunluğu</b></td><td>Ağır metal gramı başına güç [W/gHM].</td></tr>
 </table>
 """
 
@@ -1232,7 +1275,7 @@ class AnaPencere(QtWidgets.QMainWindow):
             "Kor türüne ya da boyuta tıklayınca Kor sekmesine, hesap türüne "
             "tıklayınca Hesap ayarlarına gider.")
         olcu = self.onizleme.son_olcu
-        self.model_olcu.setText(("%.2f × %.2f cm" % olcu).replace(".", ",") if olcu else "")
+        self.model_olcu.setText("%.2f × %.2f cm" % olcu if olcu else "")
 
     def _baslik_baglantisi(self, hedef):
         self._sekmeye_git({"mod": "ayarlar", "kor": "kor"}.get(hedef, "kor"))
@@ -1322,7 +1365,8 @@ class AnaPencere(QtWidgets.QMainWindow):
         liste.clear()
         for b in self._bulgular:
             oge = QtWidgets.QListWidgetItem(
-                "%s · %s — %s" % (_SEVIYE_ADI.get(b.seviye, b.seviye.upper()), b.yer, b.mesaj))
+                "%s · %s — %s" % (_SEVIYE_ADI.get(b.seviye, b.seviye), yer_etiketi(b.yer),
+                                  cumle_basi(b.mesaj)))
             oge.setForeground(QtGui.QColor(_seviye_renk(b.seviye)))
             oge.setData(QtCore.Qt.UserRole, b.yer)
             # Eskiden: (ipucu + "\n\n") if ipucu else "" + "Tiklayinca..." --
@@ -1417,9 +1461,9 @@ class AnaPencere(QtWidgets.QMainWindow):
                            "alttaki rozete tıklayıp bir bulguyu seçince ilgili "
                            "sekmeye gidersiniz." % n)
         if not self.onizleme.cizildi_mi():
-            return False, ("Geometri önizlemesi henüz başarıyla üretilmedi. "
-                           "ÖNCE ÇİZ, SONRA ÇALIŞTIR: yanlış geometriyle saatlerce "
-                           "koşmamak için önizlemenin çalışması bekleniyor.")
+            return False, ("Geometri önizlemesi henüz çizilmedi. Önce çiz, "
+                           "sonra çalıştır: yanlış geometriyle saatlerce koşmamak "
+                           "için önizlemenin çizilmesi bekleniyor.")
         uyari = sum(1 for b in self._bulgular if b.seviye == "uyari")
         if uyari:
             return True, ("Çalıştırılabilir. %d uyarı var — sonucu etkileyebilir, "
@@ -1660,6 +1704,9 @@ class AnaPencere(QtWidgets.QMainWindow):
 
 def main(argv=None):
     argv = list(argv if argv is not None else sys.argv[1:])
+    # Ondalik ayirici her yerde nokta: sayi kutulari sistem diline (tr_TR'de
+    # virgul) degil C yerel ayarina gore yazar/okur; etiketler de nokta kullanir.
+    QtCore.QLocale.setDefault(QtCore.QLocale.c())
     app = QtWidgets.QApplication(sys.argv[:1])
     app.setApplicationName("OpenMC Arayüz")
     tema.uygula(app)

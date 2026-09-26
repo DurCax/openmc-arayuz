@@ -373,11 +373,11 @@ def agincd(yogunluk=10.16, sicaklik=600.0, ad=None):
 
 KUTUPHANE = {
     # yakitlar
-    "uo2": (uo2, "UO2 -- zenginlik parametreli uranyum dioksit"),
-    "un": (un, "UN -- uranyum nitrür"),
-    "u10mo": (u10mo, "U-10Mo -- metalik alaşım yakıt"),
-    "mox": (mox, "MOX -- karışık oksit"),
-    "u3si2_al": (u3si2_al, "U3Si2-Al -- MTR dispersiyon yakıtı"),
+    "uo2": (uo2, "UO₂ — zenginlik parametreli uranyum dioksit"),
+    "un": (un, "UN — uranyum nitrür"),
+    "u10mo": (u10mo, "U-10Mo — metalik alaşım yakıt"),
+    "mox": (mox, "MOX — karışık oksit"),
+    "u3si2_al": (u3si2_al, "U₃Si₂-Al — MTR dispersiyon yakıtı"),
     # zarf / yapisal
     "zirkaloy4": (zirkaloy4, "Zircaloy-4 zarf"),
     "ss316": (ss316, "AISI 316 paslanmaz çelik"),
@@ -387,7 +387,7 @@ KUTUPHANE = {
     "al6061": (al6061, "Al-6061 plaka zarfı"),
     # sogutucu / moderator
     "su": (su, "Hafif su (S(α,β) dahil, sıcaklığa bağlı yoğunluk)"),
-    "agir_su": (agir_su, "Ağır su D2O"),
+    "agir_su": (agir_su, "Ağır su (D₂O)"),
     "lbe": (lbe, "Kurşun-bizmut ötektiği"),
     "sodyum": (sodyum, "Sıvı sodyum"),
     "helyum": (helyum, "Helyum dolgu gazı"),
@@ -403,7 +403,7 @@ KUTUPHANE = {
 def uret(anahtar, **kwargs):
     """Kutuphaneden ada gore malzeme uretir."""
     if anahtar not in KUTUPHANE:
-        raise KeyError("kutuphanede yok: %s  (mevcut: %s)"
+        raise KeyError("kütüphanede yok: %s  (mevcut: %s)"
                        % (anahtar, ", ".join(sorted(KUTUPHANE))))
     return KUTUPHANE[anahtar][0](**kwargs)
 
@@ -483,7 +483,7 @@ _PARAM = {
 # Katalog sirasi listede grup ICI siradir.
 _SICAK_SU = ("sicaklik", {"en_az": 273.15, "en_cok": 623.15,
                           "ipucu": "Yoğunluk bu sıcaklıktaki doymuş sıvı sudan "
-                                   "hesaplanır (273-623 K)."})
+                                   "hesaplanır (273–623 K)."})
 KATALOG = {
     "uo2": ("UO₂ — uranyum dioksit", "Hafif su reaktörlerinin seramik yakıtı.",
             ["zenginlik", "yogunluk", "sicaklik"]),

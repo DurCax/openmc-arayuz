@@ -37,6 +37,7 @@ from PySide6 import QtCore, QtGui, QtWidgets
 
 from cekirdek import kosucu
 from cekirdek import kaynak as _kaynak
+from cekirdek import guc as _guc
 from arayuz.ortak import BosDurum, GelismisBolum, tamsayi
 
 
@@ -71,7 +72,7 @@ class CalistirSekmesi(QtWidgets.QWidget):
         super().__init__(parent)
         self.spec = None
         self.proje_yolu = None
-        self._kapi = lambda: (False, "hazir degil")
+        self._kapi = lambda: (False, "hazır değil")
         self._surec = None
         self._dizin = None
         self._tampon = ""
@@ -688,16 +689,16 @@ class CalistirSekmesi(QtWidgets.QWidget):
                 ozet.append("NOT: tally değerleri kaynak parçacığı başınadır "
                             "(şiddet 1). Mutlak birim için şiddeti girin.")
             else:
-                ozet.append("NOT: tally değerleri MUTLAK birimdedir — OpenMC "
+                ozet.append("Not: tally değerleri mutlak birimdedir — OpenMC "
                             "şiddeti zaten uygulamıştır, tekrar çarpmayın.")
         else:
-            self.keff_etiket.setText("%.5f +/- %.5f" % s["keff"])
+            self.keff_etiket.setText("%.5f ± %.5f" % s["keff"])
             kin0 = s.get("kinetik") or {}
             durum, ayrinti = kosucu.keff_yorumu(s["keff"][0], s["keff"][1],
                                                 kin0.get("beta_eff"))
             self.durum_etiket.setText("%s\n%s" % (durum, ayrinti))
-            renk = (_tema_renk("basari") if durum.startswith("KRITIK (")
-                    else (_tema_renk("hata") if "USTU" in durum else _tema_renk("vurgu")))
+            renk = (_tema_renk("basari") if durum.startswith("Kritik (")
+                    else (_tema_renk("hata") if "üstü" in durum else _tema_renk("vurgu")))
             self.durum_etiket.setStyleSheet("color: %s; font-weight: bold;" % renk)
             ozet += [
                 "çevrim   = %d (%d pasif), %d parçacık/çevrim"
@@ -706,37 +707,38 @@ class CalistirSekmesi(QtWidgets.QWidget):
             # --- kaynak yakinsamasi degerlendirmesi ---
             if s.get("entropi"):
                 yakinsadi, mesaj = kosucu.entropi_yakinsama(s["entropi"], s["pasif"])
-                isaret = {True: "[OK]   ", False: "[UYARI]", None: "[  ?  ]"}[yakinsadi]
+                isaret = {True: "[tamam]", False: "[uyarı]", None: "[  ?  ]"}[yakinsadi]
                 ozet.append("kaynak   = %s %s" % (isaret, mesaj))
                 if yakinsadi is False:
-                    self.durum.emit("DİKKAT: kaynak yakınsamamış olabilir — "
+                    self.durum.emit("Dikkat: kaynak yakınsamamış olabilir — "
                                     "pasif çevrim sayısını artırın", False)
             else:
                 ozet.append("kaynak   = [  ?  ] Shannon entropisi kapalı — "
                             "kaynak yakınsaması doğrulanamıyor")
         kin = s.get("kinetik")
         if kin:
-            ozet.append("beta_eff = %.1f +/- %.1f pcm   (reaktivite birimi: 1 $ = beta_eff)"
+            ozet.append("β_eff    = %.1f ± %.1f pcm   (reaktivite birimi: 1 $ = β_eff)"
                         % (kin["beta_eff"] * 1e5, kin["beta_eff_sapma"] * 1e5))
-            ozet.append("Lambda   = %-22s (nötron üretim zamanı)"
+            ozet.append("Λ        = %-22s (nötron üretim zamanı)"
                         % kosucu.lambda_metni(kin["lambda"], kin["lambda_sapma"]))
         g = s.get("guc") or {}
         gf = g.get("faktorler")
         if gf:
-            ozet.append("F_dH     = %.4f   (en yüksek çubuk gücü / ortalama)" % gf["F_dH"])
+            ozet.append("F_ΔH     = %.4f   (en yüksek çubuk gücü / ortalama)" % gf["F_dH"])
             if gf["F_q"]:
                 ozet.append("F_q      = %.4f   (en yüksek yerel güç yoğunluğu / ortalama)"
                             % gf["F_q"])
             else:
                 ozet.append("F_q      = tanımsız (model 2B)")
-            ozet.append("sıcak çubuk %s%s"
-                        % (gf["sicak_cubuk"],
+            ozet.append("en sıcak çubuk: %s%s"
+                        % (_guc.konum_metni(gf["sicak_cubuk"], gf.get("kafes_turu")),
                            (", dilim %d" % (gf["sicak_dilim"][1] + 1))
                            if gf["sicak_dilim"] else ""))
             if "korunum" in g:
-                ozet.append("toplam korunumu: bağıl fark %.1e %s"
+                ozet.append("toplamın korunumu: bağıl fark %.1e — %s"
                             % (g["korunum"],
-                               "OK" if g["korunum"] < 1e-6 else "!!! BOZUK !!!"))
+                               "tamam" if g["korunum"] < 1e-6
+                               else "bozuk, haritaya güvenmeyin"))
         elif s.get("guc_hata"):
             ozet.append("güç dağılımı okunamadı: %s" % s["guc_hata"])
 
@@ -747,7 +749,7 @@ class CalistirSekmesi(QtWidgets.QWidget):
             tally.append("=" * 70)
             tally.append(str(df))
             tally.append("")
-        tam = ([] if sabit else ["k-eff    = %.5f +/- %.5f" % s["keff"]]) + ozet
+        tam = ([] if sabit else ["k-eff    = %.5f ± %.5f" % s["keff"]]) + ozet
         tam += ["statepoint: %s" % sp, ""] + tally
         self.ozet_etiket.setText("\n".join(ozet))
         self.sonuc_metin.setPlainText("\n".join(tam))
@@ -761,4 +763,4 @@ class CalistirSekmesi(QtWidgets.QWidget):
         if sabit:
             self.durum.emit("Koşu tamamlandı (sabit kaynak) — sonuçlar tally'lerde", True)
         else:
-            self.durum.emit("Koşu tamamlandı: k-eff = %.5f +/- %.5f" % s["keff"], True)
+            self.durum.emit("Koşu tamamlandı: k-eff = %.5f ± %.5f" % s["keff"], True)

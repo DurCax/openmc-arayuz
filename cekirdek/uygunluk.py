@@ -55,6 +55,17 @@ SEKMELER = ("malzemeler", "parcalar", "demet", "kor", "ayarlar",
 # dosya acildiginda gorunur (kullanici karari).
 KOR_TURLERI = ("tek_cubuk", "tek_plaka", "tek_demet", "kare_kafes", "tamburlu")
 
+# Kor turlerinin kullaniciya gorunen sade adlari (arayuz menusu, dogrulama
+# mesajlari). Anahtarlar spec'te ASCII kalir.
+KOR_TURU_ADLARI = {
+    "tek_cubuk": "Yakıt çubuğu (pin hücre)",
+    "tek_plaka": "Plaka elemanı (MTR)",
+    "tek_demet": "Tek yakıt demeti",
+    "kare_kafes": "Tam kor (kare harita)",
+    "tamburlu": "Tamburlu kompakt kor",
+    "kuresel": "Küresel düzenek (kabuklar)",
+}
+
 ROLLER = ("yakit", "sogutucu", "moderator", "emici", "yapisal", "gaz")
 
 # Guclu notron sogurucu elementler (kontrol cubugu, tambur, yanabilir zehir).

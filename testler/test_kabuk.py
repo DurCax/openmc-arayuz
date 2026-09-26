@@ -446,7 +446,7 @@ def test_sag_panel_ve_rozet():
         # ONCE CIZ, SONRA CALISTIR
         p.onizleme.cizildi_mi = lambda: False
         izin, mesaj = p._kosu_izni()
-        kontrol("cizilmemis geometri: CALISTIR kapali", not izin and "ÇİZ" in mesaj)
+        kontrol("cizilmemis geometri: CALISTIR kapali", not izin and "Önce çiz" in mesaj)
         p.onizleme.cizildi_mi = lambda: True
         kontrol("cizilmis ve hatasiz: CALISTIR acik", p._kosu_izni()[0])
 

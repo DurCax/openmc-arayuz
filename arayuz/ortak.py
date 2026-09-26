@@ -58,6 +58,14 @@ def tekerlek_korumasi_kur(uygulama=None):
     _SUZGEC[id(uygulama)] = suzgec
 
 
+def cumle_basi(metin):
+    """Ilk harfi buyuk (Turkce: i -> İ); bos metin oldugu gibi doner."""
+    if not metin:
+        return metin
+    ilk = "İ" if metin[0] == "i" else metin[0].upper()
+    return ilk + metin[1:]
+
+
 def sayi(deger=0.0, ondalik=5, en_az=0.0, en_cok=1e9, adim=0.01, sonek=""):
     """Ondalikli sayi girisi."""
     w = QtWidgets.QDoubleSpinBox()

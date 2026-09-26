@@ -701,7 +701,7 @@ class AltigenIzgara(_BoyaTuvali):
         self._gecersiz()
 
     def _bos_metin(self):
-        return "Altıgen kafes tanımlı değil"
+        return "Altıgen demet tanımlı değil"
 
     def _yerlesim(self):
         if not self._konumlar:

@@ -539,9 +539,9 @@ def test_gelismis_ve_sab():
     for k in mk.KUTUPHANE:
         m = mk.uret(k)
         m["sab"] = []
-        uyari = [b for b in dogrula._sab_kontrol(m, "t") if "sab=['" in (b.oneri or "")]
+        uyari = [b for b in dogrula._sab_kontrol(m, "t") if "S(α,β) olarak " in (b.oneri or "")]
         oneriler = sm.sab_onerileri(m)
-        dogrula_der = re.findall(r"sab=\['([^']+)'\]", uyari[0].oneri)[0] if uyari else None
+        dogrula_der = re.findall(r"S\(α,β\) olarak (\S+) ekleyin", uyari[0].oneri)[0] if uyari else None
         bizim = oneriler[0][0] if oneriler else None
         if dogrula_der != bizim:
             celiski.append((k, dogrula_der, bizim))

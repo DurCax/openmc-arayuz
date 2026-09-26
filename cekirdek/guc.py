@@ -77,15 +77,15 @@ def bolge_hucresi(universe, cubuk, nesneler):
     bolgeler = cubuk["bolgeler"]
     if len(hucreler) != len(bolgeler):
         raise ValueError(
-            "cubuk '%s': %d bolge bekleniyor ama universe'de %d hucre var. "
-            "Guc dagilimi icin hucre-bolge eslesmesi guvenilir degil."
+            "'%s' çubuğu: %d bölge bekleniyor ama geometride %d hücre var. "
+            "Güç dağılımı için hücre-bölge eşleşmesi güvenilir değil."
             % (cubuk["ad"], len(bolgeler), len(hucreler)))
     for i, (h, b) in enumerate(zip(hucreler, bolgeler)):
         beklenen = nesneler.get(b.get("malzeme"))
         if beklenen is not None and h.fill is not beklenen:
             raise ValueError(
-                "cubuk '%s' %d. bolge: beklenen malzeme '%s' ama hucrede '%s' var. "
-                "Hucre-bolge eslesmesi bozulmus."
+                "'%s' çubuğu, %d. bölge: beklenen malzeme '%s' ama hücrede '%s' var. "
+                "Hücre-bölge eşleşmesi bozulmuş."
                 % (cubuk["ad"], i + 1, b.get("malzeme"),
                    getattr(h.fill, "name", h.fill)))
     return hucreler
@@ -136,8 +136,8 @@ def dagilim_oku(sp, tally_adi="guc_dagilimi"):
     # distribcell yollari summary'den gelen geometriye ve determine_paths()'e baglidir
     if sp.summary is None:
         raise RuntimeError(
-            "summary.h5 bulunamadi; distribcell yollari okunamaz. "
-            "Kosu dizininde statepoint ile summary yan yana olmalidir.")
+            "summary.h5 bulunamadı; güç dağılımının hücre konumları okunamaz. "
+            "Koşu dizininde statepoint ile summary.h5 yan yana olmalıdır.")
     geometri = sp.summary.geometry
     geometri.determine_paths()
 
@@ -147,13 +147,13 @@ def dagilim_oku(sp, tally_adi="guc_dagilimi"):
     seviyeler = _kafes_seviyeleri(df)
     if not seviyeler:
         raise RuntimeError(
-            "Distribcell yolunda kafes seviyesi bulunamadi. Hedef cubuk bir "
-            "kafeste tekrarlanmiyor olabilir; guc dagilimi yalnizca kafes "
-            "icindeki cubuklar icin anlamlidir.")
+            "Güç dağılımı sonucunda demet (kafes) düzeyi bulunamadı. Hedef "
+            "çubuk bir demette tekrarlanmıyor olabilir; güç dağılımı yalnızca "
+            "demet içindeki çubuklar için anlamlıdır.")
     if len(seviyeler) > 1:
         notlar.append(
-            "Ic ice %d kafes seviyesi var; harita EN IC kafese gore ciziliyor, "
-            "tepe faktorleri ise tum cubuklar uzerinden hesaplaniyor."
+            "İç içe %d demet düzeyi var; harita en içteki demete göre çiziliyor, "
+            "tepe faktörleri ise tüm çubuklar üzerinden hesaplanıyor."
             % len(seviyeler))
     ic_seviye = seviyeler[-1]
 
@@ -161,7 +161,7 @@ def dagilim_oku(sp, tally_adi="guc_dagilimi"):
     kafesler = geometri.get_all_lattices()
     kafes = kafesler.get(kafes_id)
     if kafes is None:
-        raise RuntimeError("kafes id=%d geometride bulunamadi" % kafes_id)
+        raise RuntimeError("kafes (id = %d) geometride bulunamadı" % kafes_id)
 
     import openmc
     altigen_mi = isinstance(kafes, openmc.HexLattice)
@@ -196,8 +196,8 @@ def dagilim_oku(sp, tally_adi="guc_dagilimi"):
     for anahtar, kayit in konumlar.items():
         if any(d is None for d in kayit["eksenel"]):
             raise RuntimeError(
-                "konum %s icin bazi eksenel dilimler eksik; veri bicimi "
-                "beklenenden farkli." % (anahtar,))
+                "%s konumunda bazı eksenel dilimler eksik; veri biçimi "
+                "beklenenden farklı." % konum_metni(anahtar, kafes_turu))
         toplam = sum(d[0] for d in kayit["eksenel"])
         sapma = math.sqrt(sum(d[1] ** 2 for d in kayit["eksenel"]))
         kayit["toplam"] = (toplam, sapma)
@@ -215,6 +215,20 @@ def dagilim_oku(sp, tally_adi="guc_dagilimi"):
 # ============================================================================
 # 3. TEPE FAKTORLERI
 # ============================================================================
+
+def konum_metni(anahtar, kafes_turu=None):
+    """
+    Kafes konumunun okunur, 1'den numarali metni. Kare: (x, y) indisleri
+    (x soldan, y alttan); altigen: (halka, sira) -- halka distan ice.
+    """
+    try:
+        a, b = int(anahtar[0]), int(anahtar[1])
+    except (TypeError, ValueError, IndexError):
+        return str(anahtar)
+    if kafes_turu == "altigen":
+        return "dıştan %d. halka, %d. konum" % (a + 1, b + 1)
+    return "x = %d, y = %d" % (a + 1, b + 1)
+
 
 def tepe_faktorleri(dagilim):
     """
@@ -261,6 +275,7 @@ def tepe_faktorleri(dagilim):
         "F_dH": f_dh,
         "F_dH_sapma": f_dh_sapma,
         "sicak_cubuk": sicak_cubuk[0],
+        "kafes_turu": dagilim.get("kafes_turu"),
         "sacilma": sacilma,
         "istatistik_sapma": ist_sapma,
         "yanlilik_orani": (ist_sapma / sacilma) if sacilma > 0 else None,
@@ -331,7 +346,7 @@ def mutlak_guc(faktorler, toplam_guc, yukseklik=None):
         # Maks lineer guc yerel tepeye baglidir: F_q varsa onu, yoksa F_dH'yi kullan
         tepe = faktorler["F_q"] or faktorler["F_dH"]
         sonuc["lineer_maks_W_cm"] = (cubuk_ort / yukseklik) * tepe
-        sonuc["lineer_tepe_kaynagi"] = "F_q" if faktorler["F_q"] else "F_dH (2B -- eksenel tepe dahil degil)"
+        sonuc["lineer_tepe_kaynagi"] = "F_q" if faktorler["F_q"] else "F_ΔH (2B — eksenel tepe dahil değil)"
     return sonuc
 
 
@@ -342,60 +357,61 @@ def mutlak_guc(faktorler, toplam_guc, yukseklik=None):
 def yorumla(faktorler, mutlak=None):
     """Ogrenciye yonelik kisa yorum satirlari."""
     if not faktorler:
-        return ["Guc dagilimi hesaplanamadi."]
+        return ["Güç dağılımı hesaplanamadı."]
     satirlar = []
     f = faktorler["F_dH"]
     satirlar.append(
-        "F_dH = %.4f -- en sicak cubuk ortalamanin %.1f%% ustunde guc uretiyor."
+        "F_ΔH = %.4f — en sıcak çubuk ortalamanın %%%.1f üstünde güç üretiyor."
         % (f, (f - 1) * 100))
     if f < 1.02:
-        satirlar.append("  Dagilim neredeyse duz. Yansitici sinirli tek demet "
-                        "hesaplarinda beklenen budur; gercek bir korda kenar "
-                        "etkileri ve yakit yuklemesi tepeyi buyutur.")
+        satirlar.append("  Dağılım neredeyse düz. Yansıtıcı sınırlı tek demet "
+                        "hesaplarında beklenen budur; gerçek bir korda kenar "
+                        "etkileri ve yakıt yüklemesi tepeyi büyütür.")
     elif f > 1.65:
-        satirlar.append("  YUKSEK. Tipik PWR tasarim siniri F_dH ~ 1.65 "
-                        "civarindadir; yakit yuklemesi duzeltilmeli.")
+        satirlar.append("  Yüksek: tipik PWR tasarım sınırı F_ΔH ≈ 1.65 "
+                        "civarındadır; yakıt yüklemesi düzeltilmeli.")
     # --- maksimumun yukari yanliligi ---
     oran = faktorler.get("yanlilik_orani")
     if oran is not None and oran > 0.3:
         satirlar.append(
-            "  DIKKAT: cubuk basina istatistik sapma (%.4f) dagilimin gercek "
-            "sacilmasinin (%.4f) %.0f%%'i kadar. Bir MAKSIMUM hesaplandigi icin "
-            "F_dH bu durumda YUKARI YANLIDIR -- gercek tepe daha dusuktur. "
-            "Cevrim basina parcacik sayisini artirin."
+            "  Dikkat: çubuk başına istatistik sapma (%.4f) dağılımın gerçek "
+            "saçılmasının (%.4f) %%%.0f'i kadar. Bir en büyük değer hesaplandığı "
+            "için F_ΔH bu durumda yukarı yanlıdır — gerçek tepe daha düşüktür. "
+            "Çevrim başına parçacık sayısını artırın."
             % (faktorler["istatistik_sapma"], faktorler["sacilma"], oran * 100))
 
     if faktorler["F_q"]:
         satirlar.append(
-            "F_q = %.4f -- yerel guc yogunlugu tepesi. Eksenel sekil dahil."
+            "F_q = %.4f — yerel güç yoğunluğu tepesi (eksenel şekil dahil)."
             % faktorler["F_q"])
         if faktorler["eksenel_dilim"] < 10:
             satirlar.append(
-                "  DIKKAT: yalnizca %d eksenel dilim var. Kaba dilimler tepeyi "
-                "ortalar ve F_q'yu KUCUK gosterir (saf kosinus profilinde ince "
-                "dilim limiti pi/2 = 1.571'dir). En az 10-20 dilim kullanin."
+                "  Dikkat: yalnızca %d eksenel dilim var. Kaba dilimler tepeyi "
+                "ortalar ve F_q'yu olduğundan küçük gösterir (saf kosinüs "
+                "profilinde ince dilim sınırı π/2 = 1.571'dir). En az 10–20 "
+                "dilim kullanın."
                 % faktorler["eksenel_dilim"])
         if faktorler["F_q"] > 2.6:
-            satirlar.append("  YUKSEK. Tipik PWR siniri F_q ~ 2.3-2.6.")
+            satirlar.append("  Yüksek: tipik PWR sınırı F_q ≈ 2.3–2.6.")
     else:
-        satirlar.append("F_q TANIMSIZ -- model 2B (eksenel yukseklik yok). "
-                        "Eksenel tepe olmadan yerel guc yogunlugu hesaplanamaz; "
-                        "kor yuksekligi tanimlayin.")
+        satirlar.append("F_q tanımsız — model 2B (eksenel yükseklik yok). "
+                        "Eksenel tepe olmadan yerel güç yoğunluğu hesaplanamaz; "
+                        "Kor sekmesinde yükseklik tanımlayın.")
     if mutlak:
-        satirlar.append("Cubuk basina ortalama %.1f W, en sicak cubuk %.1f W."
+        satirlar.append("Çubuk başına ortalama %.1f W, en sıcak çubuk %.1f W."
                         % (mutlak["cubuk_ortalama_W"], mutlak["cubuk_maks_W"]))
         if "lineer_maks_W_cm" in mutlak:
             lm = mutlak["lineer_maks_W_cm"]
-            satirlar.append("Maks lineer guc %.1f W/cm (kaynak: %s)."
+            satirlar.append("En yüksek çizgisel güç %.1f W/cm (tepe faktörü: %s)."
                             % (lm, mutlak["lineer_tepe_kaynagi"]))
             if lm > 500:
-                satirlar.append("  SINIR USTU. Tipik PWR lineer guc siniri "
-                                "~400-500 W/cm.")
+                satirlar.append("  Sınırın üstünde: tipik PWR çizgisel güç "
+                                "sınırı ~400–500 W/cm.")
     satirlar.append(
-        "UYARI: buradaki sapmalar IYIMSERDIR. Ozdeger hesaplarinda ardisik "
-        "cevrimler korelasyonlu oldugu icin OpenMC'nin raporladigi tally "
-        "belirsizligi olcumle ~20 kat kucuk cikti. Gercek belirsizlik icin "
-        "birkac BAGIMSIZ TOHUMLA kosup sacilmaya bakin (coklu_tohum).")
+        "Uyarı: buradaki sapmalar iyimserdir. Özdeğer hesaplarında ardışık "
+        "çevrimler ilişkili olduğu için OpenMC'nin raporladığı tally "
+        "belirsizliği ölçümle ~20 kat küçük çıktı. Gerçek belirsizlik için "
+        "modeli birkaç bağımsız rastgele tohumla koşup saçılmaya bakın.")
     return satirlar
 
 
@@ -423,12 +439,12 @@ def coklu_tohum(spec, kok_dizin, tohumlar=(1, 2, 3), is_parcacigi=None,
         try:
             kosu = kosucu.calistir(alt, dizin, is_parcacigi=is_parcacigi)
             if not kosu["basarili"]:
-                hatalar.append("tohum %d: kosu basarisiz" % t)
+                hatalar.append("tohum %d: koşu başarısız" % t)
                 continue
             s = kosucu.sonuc_oku(kosu["statepoint"])
             f = (s.get("guc") or {}).get("faktorler")
             if not f:
-                hatalar.append("tohum %d: guc dagilimi okunamadi" % t)
+                hatalar.append("tohum %d: güç dağılımı okunamadı" % t)
                 continue
             f_dh.append(f["F_dH"])
             if f["F_q"]:
@@ -451,9 +467,10 @@ def coklu_tohum(spec, kok_dizin, tohumlar=(1, 2, 3), is_parcacigi=None,
 def ozet_metni(faktorler, mutlak=None):
     """Tek satirlik ozet (terminal ve durum cubugu icin)."""
     if not faktorler:
-        return "guc dagilimi yok"
-    p = ["F_dH = %.4f +/- %.4f" % (faktorler["F_dH"], faktorler["F_dH_sapma"])]
+        return "güç dağılımı yok"
+    p = ["F_ΔH = %.4f ± %.4f" % (faktorler["F_dH"], faktorler["F_dH_sapma"])]
     if faktorler["F_q"]:
-        p.append("F_q = %.4f +/- %.4f" % (faktorler["F_q"], faktorler["F_q_sapma"]))
-    p.append("sicak cubuk %s" % (faktorler["sicak_cubuk"],))
+        p.append("F_q = %.4f ± %.4f" % (faktorler["F_q"], faktorler["F_q_sapma"]))
+    p.append("en sıcak çubuk: %s" % konum_metni(faktorler["sicak_cubuk"],
+                                                 faktorler.get("kafes_turu")))
     return "  |  ".join(p)

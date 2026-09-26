@@ -370,7 +370,7 @@ class OnizlemeWidget(QtWidgets.QWidget):
         if gerildi:
             ax.set_aspect("auto")
         kesim = {"xy": "z = 0", "xz": "y = 0", "yz": "x = 0"}[eksen]
-        olcu = ("%.3f × %.3f cm" % genislik).replace(".", ",")
+        olcu = "%.3f × %.3f cm" % genislik
         if ikili:
             baslik_ = "%s (%s)   %s" % (eksen, kesim, olcu)
         else:

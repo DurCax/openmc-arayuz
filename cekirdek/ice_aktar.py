@@ -67,7 +67,7 @@ def malzemeleri_oku(yol):
     import openmc
 
     if not os.path.exists(yol):
-        raise IOError("dosya bulunamadi: %s" % yol)
+        raise IOError("dosya bulunamadı: %s" % yol)
 
     notlar = []
     taban = os.path.basename(yol).lower()
@@ -97,7 +97,7 @@ def malzemeleri_oku(yol):
                 if toplam > 0:
                     bilesim.append(bilesen(nuklid, yog / toplam, tur="nuklid"))
         else:
-            notlar.append("%s: bilesim okunamadi, bos birakildi" % ad)
+            notlar.append("%s: bileşim okunamadı, boş bırakıldı" % ad)
 
         # --- yogunluk ---
         birim, deger = "g/cm3", None
@@ -111,12 +111,12 @@ def malzemeleri_oku(yol):
             try:
                 deger = float(mat.get_mass_density())
                 birim = "g/cm3"
-                notlar.append("%s: yogunluk 'sum' olarak verilmis, kutle "
-                              "yogunluguna cevrildi (%.4f g/cm3)" % (ad, deger))
+                notlar.append("%s: yoğunluk 'sum' olarak verilmiş, kütle "
+                              "yoğunluğuna çevrildi (%.4f g/cm³)" % (ad, deger))
             except Exception:
                 deger = 1.0
-                notlar.append("%s: yogunluk belirlenemedi, 1.0 g/cm3 varsayildi "
-                              "-- MUTLAKA duzeltin" % ad)
+                notlar.append("%s: yoğunluk belirlenemedi, 1.0 g/cm³ varsayıldı "
+                              "— mutlaka düzeltin" % ad)
 
         # --- sicaklik ---
         sicaklik = 293.6
@@ -135,8 +135,8 @@ def malzemeleri_oku(yol):
                 if isinstance(kayit, (tuple, list)):
                     sab.append(str(kayit[0]))
                     if len(kayit) > 1 and abs(float(kayit[1]) - 1.0) > 1e-9:
-                        notlar.append("%s: S(a,b) '%s' kesri %.3f -- spec yalnizca "
-                                      "ad tasir, kesir kayboldu"
+                        notlar.append("%s: S(α,β) '%s' kesri %.3f — model dosyası "
+                                      "yalnızca adı taşır, kesir kayboldu"
                                       % (ad, kayit[0], float(kayit[1])))
                 elif isinstance(kayit, dict):
                     sab.append(str(kayit.get("name", "")))
@@ -144,7 +144,7 @@ def malzemeleri_oku(yol):
                     sab.append(str(kayit))
             sab = [s for s in sab if s]
         except Exception as e:
-            notlar.append("%s: S(a,b) okunamadi (%s)" % (ad, e))
+            notlar.append("%s: S(α,β) okunamadı (%s)" % (ad, e))
 
         sonuc.append(malzeme(
             ad, bilesim, deger, birim=birim, sicaklik=sicaklik, sab=sab,
@@ -152,22 +152,22 @@ def malzemeleri_oku(yol):
             gorunen_ad=(mat.name or ad)))
 
     if sonuc:
-        notlar.insert(0, "%d malzeme aktarildi. Bilesimler NUKLID BAZINDA "
-                         "aktarilir (element kisayollari korunmaz); sonuc ayni "
-                         "olsa da tablo daha uzun gorunur." % len(sonuc))
+        notlar.insert(0, "%d malzeme aktarıldı. Bileşimler nüklid bazında "
+                         "aktarılır (element kısayolları korunmaz); sonuç aynı "
+                         "olsa da tablo daha uzun görünür." % len(sonuc))
     return sonuc, notlar
 
 
 def geometri_neden_aktarilamaz():
     """Arayuzde gosterilecek aciklama."""
     return (
-        "Geometri ice aktarilamaz.\n\n"
-        "Bu arayuz rehberli bir kor kurucusudur: malzeme -> cubuk -> kafes -> "
-        "kor katmanlari uzerinden calisir. OpenMC XML'i ise ham CSG'dir "
-        "(yuzeyler, hucreler, universe'ler). Ayni geometri sonsuz farkli "
-        "sekilde kurulmus olabilecegi icin ham CSG'yi bu katmanlara geri "
-        "cevirmek genel olarak cozulebilir bir problem degildir.\n\n"
-        "Yanlis bir tahmin, sessizce yanlis bir model uretirdi; bu yuzden "
+        "Geometri içe aktarılamaz.\n\n"
+        "Bu arayüz rehberli bir kor kurucusudur: malzeme → çubuk → demet → "
+        "kor katmanları üzerinden çalışır. OpenMC XML'i ise ham CSG'dir "
+        "(yüzeyler, hücreler, universe'ler). Aynı geometri sonsuz farklı "
+        "şekilde kurulmuş olabileceği için ham CSG'yi bu katmanlara geri "
+        "çevirmek genel olarak çözülebilir bir problem değildir.\n\n"
+        "Yanlış bir tahmin, sessizce yanlış bir model üretirdi; bu yüzden "
         "denenmiyor.\n\n"
-        "Pratik yol: malzemeleri buradan aktarin, geometriyi arayuzde yeniden "
-        "kurun. Malzemeler bir modelin en zahmetli kismidir.")
+        "Pratik yol: malzemeleri buradan aktarın, geometriyi arayüzde yeniden "
+        "kurun. Malzemeler bir modelin en zahmetli kısmıdır.")

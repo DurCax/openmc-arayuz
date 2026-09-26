@@ -52,7 +52,7 @@ SINIR_ADLARI = {
 YUKSEKLIK_MODLARI = [
     ("2B", "2B (sonsuz yükseklik)"),
     ("3B", "3B, tek bölge"),
-    ("katmanli", "3B, katmanlı (yansıtıcı / blanket / plenum)"),
+    ("katmanli", "3B, katmanlı (yansıtıcı / örtü / plenum)"),
 ]
 
 _BOS_ETIKET = "Boş (madde yok)"
@@ -130,12 +130,12 @@ class KorSekmesi(SekmeTabani):
         for veri, ad in YUKSEKLIK_MODLARI:
             self.yukseklik_modu.addItem(ad, veri)
         self.yukseklik_modu.setToolTip(
-            "2B: model eksenel yönde sonsuzdur (k-inf / kesit hesabı).\n"
+            "2B: model eksenel yönde sonsuzdur (k∞ / kesit hesabı).\n"
             "3B, tek bölge: aktif yükseklik H boyunca tek eksenel bölge.\n"
             "3B, katmanlı: kor alttan üste katmanlara ayrılır; yükseklik\n"
             "katmanların toplamıdır.")
         self.yukseklik = sayi(366.0, 3, 0.01, 10000.0, 1.0, "cm")
-        self.yukseklik.setToolTip("Modelin eksenel yüksekliği (z = -H/2 … +H/2).")
+        self.yukseklik.setToolTip("Modelin eksenel yüksekliği (z = −H/2 … +H/2).")
 
         # --- eksenel katmanlar ---
         self.katman_tablo = QtWidgets.QTableWidget(0, 3)
@@ -189,7 +189,7 @@ class KorSekmesi(SekmeTabani):
         self.form = QtWidgets.QFormLayout()
         self.satir_cubuk = self._satir("Çubuk:", self.cubuk)
         self.satir_plaka = self._satir("Plaka elemanı:", self.plaka)
-        self.satir_demet = self._satir("Kafes demeti:", self.demet)
+        self.satir_demet = self._satir("Demet:", self.demet)
         self.satir_tb_dolgu = self._satir("Kor dolgusu:", self.tb_dolgu)
         self.satir_tb_kor_r = self._satir("Kor yarıçapı:", self.tb_kor_r)
         self.satir_adim = self._satir("Hücre adımı:", self.adim)
@@ -470,7 +470,7 @@ class KorSekmesi(SekmeTabani):
         kabuklar = self.spec["kor"].get("kabuklar") or []
         self.kabuk_tablo.setRowCount(len(kabuklar))
         for i, k in enumerate(kabuklar):
-            r = QtWidgets.QTableWidgetItem(("%g" % float(k.get("r") or 0.0)).replace(".", ","))
+            r = QtWidgets.QTableWidgetItem("%g" % float(k.get("r") or 0.0))
             r.setTextAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
             self.kabuk_tablo.setItem(i, 0, r)
             m = k.get("malzeme") or sema.BOSLUK
@@ -870,7 +870,7 @@ class KorSekmesi(SekmeTabani):
             h = sema.kor_yuksekligi(self.spec["kor"])
             ek = ("" if self.spec["kor"].get("tur") == "kuresel" else "  (2B)")
             metin = "%.4f × %.4f cm%s" % (gx, gy, (" × %.2f cm" % h) if h else ek)
-            self.ozet.setText(metin.replace(".", ","))
+            self.ozet.setText(metin)
         except Exception as e:
             self.ozet.setText("kurulamadı: %s" % str(e)[:80])
 
@@ -987,6 +987,6 @@ class KorSekmesi(SekmeTabani):
             n = int(t["sayi"])
             kiris = 2.0 * t["merkez_yaricap"] * math.sin(math.pi / n) if n > 1 else 0.0
             self.tb_durum.setText(
-                ("Geçerli — komşu tambur merkezleri arası %.3f cm (iki yarıçap %.3f cm)."
-                 % (kiris, 2 * t["yaricap"])).replace(".", ",", 2))
+                "Geçerli — komşu tambur merkezleri arası %.3f cm (iki yarıçap %.3f cm)."
+                % (kiris, 2 * t["yaricap"]))
             self.tb_durum.setStyleSheet("color: #1e7a44;")

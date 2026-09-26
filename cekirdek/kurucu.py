@@ -88,7 +88,7 @@ def _mat(nesneler, ad):
     if ad is None or ad == BOSLUK:
         return None
     if ad not in nesneler:
-        raise KeyError("tanimsiz malzeme: %s" % ad)
+        raise KeyError("tanımsız malzeme: %s" % ad)
     return nesneler[ad]
 
 
@@ -103,14 +103,14 @@ def cubuk_universe(spec, cubuk_ad, nesneler):
     """
     c = cubuk_bul(spec, cubuk_ad)
     if c is None:
-        raise KeyError("tanimsiz cubuk: %s" % cubuk_ad)
+        raise KeyError("tanımsız çubuk: %s" % cubuk_ad)
 
     bolgeler = c["bolgeler"]
     if not bolgeler:
-        raise ValueError("cubuk '%s' bos" % cubuk_ad)
+        raise ValueError("'%s' çubuğunda bölge yok" % cubuk_ad)
     if bolgeler[-1].get("r") is not None:
-        raise ValueError("cubuk '%s': son bolgenin 'r' degeri null olmali "
-                         "(disarisi anlamina gelir)" % cubuk_ad)
+        raise ValueError("'%s' çubuğu: son bölgenin yarıçapı boş olmalı "
+                         "(son bölge çubuğun dışıdır)" % cubuk_ad)
 
     yuzeyler = [openmc.ZCylinder(r=b["r"]) for b in bolgeler[:-1]]
     dolgular = [_mat(nesneler, b["malzeme"]) for b in bolgeler]
@@ -128,11 +128,11 @@ def cubuk_universe(spec, cubuk_ad, nesneler):
     h = sema_kor_yuksekligi(spec["kor"])
     if not h:
         raise ValueError(
-            "kontrol cubugu '%s' 3B model gerektirir: kor yuksekligi tanimli degil. "
-            "Eksenel bir uc konumu olmadan daldirma tanimlanamaz." % cubuk_ad)
+            "'%s' kontrol çubuğu 3B model gerektirir: kor yüksekliği tanımlı değil. "
+            "Eksenel bir uç konumu olmadan daldırma tanımlanamaz." % cubuk_ad)
     daldirma = float(c.get("daldirma") or 0.0)
     if not (0.0 <= daldirma <= 100.0):
-        raise ValueError("kontrol cubugu '%s': daldirma %%0-%%100 arasinda olmali (%s)"
+        raise ValueError("'%s' kontrol çubuğu: daldırma %%0–%%100 arasında olmalı (%s)"
                          % (cubuk_ad, daldirma))
     # Daldirma AKTIF YAKIT araliginda tanimlidir, modelin toplam yuksekliginde
     # degil: %0 = uc aktif bolgenin tepesinde, %100 = dibinde. Eksenel
@@ -143,8 +143,8 @@ def cubuk_universe(spec, cubuk_ad, nesneler):
 
     emici_ix = int(c.get("emici_bolge") or 0)
     if not (0 <= emici_ix < len(bolgeler)):
-        raise ValueError("kontrol cubugu '%s': gecersiz emici bolge %d"
-                         % (cubuk_ad, emici_ix))
+        raise ValueError("'%s' kontrol çubuğu: geçersiz emici bölge %d"
+                         % (cubuk_ad, emici_ix + 1))
     izleyici = _mat(nesneler, c.get("izleyici_malzeme"))
 
     hucreler = []
@@ -175,7 +175,7 @@ def plaka_universe(spec, plaka_ad, nesneler):
     """
     p = plaka_bul(spec, plaka_ad)
     if p is None:
-        raise KeyError("tanimsiz plaka elemani: %s" % plaka_ad)
+        raise KeyError("tanımsız plaka elemanı: %s" % plaka_ad)
 
     n = p["plaka_sayisi"]
     et = p["et_kalinlik"]
@@ -246,12 +246,12 @@ def demet_lattice(spec, demet_ad, nesneler, universeler):
     """
     d = demet_bul(spec, demet_ad)
     if d is None:
-        raise KeyError("tanimsiz demet: %s" % demet_ad)
+        raise KeyError("tanımsız demet: %s" % demet_ad)
 
     # harf -> universe cozumlemesi
     def coz(harf):
         if harf not in d["anahtar"]:
-            raise KeyError("demet '%s': haritada tanimsiz harf '%s'"
+            raise KeyError("'%s' demeti: haritada tanımsız harf '%s'"
                            % (demet_ad, harf))
         hedef = d["anahtar"][harf]
         if hedef not in universeler:
@@ -265,12 +265,12 @@ def demet_lattice(spec, demet_ad, nesneler, universeler):
         nx, ny = d["boyut"]
         harita = d["harita"]
         if len(harita) != ny:
-            raise ValueError("demet '%s': harita %d satir, boyut %d bekliyor"
+            raise ValueError("'%s' demeti: harita %d satır, boyut %d bekliyor"
                              % (demet_ad, len(harita), ny))
         matris = []
         for satir in harita:
             if len(satir) != nx:
-                raise ValueError("demet '%s': '%s' satiri %d karakter, %d bekleniyor"
+                raise ValueError("'%s' demeti: '%s' satırı %d karakter, %d bekleniyor"
                                  % (demet_ad, satir, len(satir), nx))
             matris.append([coz(h) for h in satir])
         lat = openmc.RectLattice()
@@ -288,12 +288,12 @@ def demet_lattice(spec, demet_ad, nesneler, universeler):
         harita = d["harita"]
         if len(harita) != len(beklenen):
             raise ValueError(
-                "demet '%s': %d halka bekleniyor, haritada %d satir var"
+                "'%s' demeti: %d halka bekleniyor, haritada %d satır var"
                 % (demet_ad, len(beklenen), len(harita)))
         for i, (satir, uzunluk) in enumerate(zip(harita, beklenen)):
             if len(satir) != uzunluk:
                 raise ValueError(
-                    "demet '%s': %d. halka (yaricap %d) %d oge bekliyor, %d var"
+                    "'%s' demeti: %d. halka (yarıçap %d) %d öğe bekliyor, %d var"
                     % (demet_ad, i + 1, halka - 1 - i, uzunluk, len(satir)))
         lat = openmc.HexLattice()
         lat.center = (0.0, 0.0)
@@ -305,7 +305,7 @@ def demet_lattice(spec, demet_ad, nesneler, universeler):
         lat.arayuz_boyut = altigen.kapsayan_olcu(halka, d["adim"], yonelim)
         return lat
 
-    raise ValueError("bilinmeyen kafes turu: %s" % d["tur"])
+    raise ValueError("bilinmeyen demet türü: %s" % d["tur"])
 
 
 def _spec_fisil_mi(spec, ad, derinlik=0):
@@ -429,7 +429,7 @@ def _universe_uret(spec, ad, nesneler, universeler):
         return openmc.Universe(cells=[openmc.Cell(fill=lat)])
     if ad == BOSLUK or malzeme_bul(spec, ad) is not None:
         return openmc.Universe(cells=[openmc.Cell(fill=_mat(nesneler, ad))])
-    raise KeyError("cozumlenemeyen ad: %s (cubuk/plaka/demet/malzeme degil)" % ad)
+    raise KeyError("tanımsız ad: %s (çubuk, plaka elemanı, demet ya da malzeme değil)" % ad)
 
 
 # ============================================================================
@@ -501,14 +501,14 @@ def _kare_kafes_kur(spec, kor, nesneler, universeler, anahtar=None):
 
     def coz(harf):
         if harf not in esleme:
-            raise KeyError("kor haritasinda tanimsiz harf: '%s'" % harf)
+            raise KeyError("kor haritasında tanımsız harf: '%s'" % harf)
         hedef = esleme[harf]
         if hedef not in universeler:
             universeler[hedef] = _universe_uret(spec, hedef, nesneler, universeler)
         return universeler[hedef]
 
     if len(harita) != ny:
-        raise ValueError("kor haritasi %d satir, boyut %d bekliyor"
+        raise ValueError("kor haritası %d satır, boyut %d bekliyor"
                          % (len(harita), ny))
     lat = openmc.RectLattice()
     lat.pitch = (kor["adim"], kor["adim"])
@@ -524,8 +524,8 @@ def _katman_dolgusu(spec, kor, katman, ana_ic, nesneler, universeler):
     if katman.get("anahtar"):
         if kor["tur"] != "kare_kafes":
             raise ValueError(
-                "eksenel katman '%s': katmana ozel 'anahtar' yalnizca kare_kafes "
-                "korunda kullanilabilir" % katman.get("ad"))
+                "'%s' eksenel katmanı: katmana özel harf eşlemesi yalnızca kare "
+                "haritalı tam korda kullanılabilir" % katman.get("ad"))
         return _kare_kafes_kur(spec, kor, nesneler, universeler, katman["anahtar"])
     dolgu = katman.get("dolgu")
     if not dolgu:
@@ -598,17 +598,17 @@ def kor_kur(spec, nesneler, universeler):
         kal = float(yans.get("kalinlik") or 0.0)
         R_dis = R_kor + kal
         if R_kor <= 0 or kal <= 0:
-            raise ValueError("tamburlu korda kor yaricapi ve yansitici "
-                             "kalinligi pozitif olmali")
+            raise ValueError("tamburlu korda kor yarıçapı ve yansıtıcı kuşak "
+                             "kalınlığı sıfırdan büyük olmalı")
         t = kor.get("tambur") or {}
         hatalar = _tambur.geometri_kontrol(t, R_kor, kal) if int(t.get("sayi") or 0) else []
         if hatalar:
-            raise ValueError("tambur yerlesimi gecersiz: " + hatalar[0])
+            raise ValueError("tambur yerleşimi geçersiz: " + hatalar[0])
 
         dolgu_ad = kor.get("dolgu")
         if not dolgu_ad:
-            raise ValueError("tamburlu korda 'dolgu' secilmeli "
-                             "(kafes, cubuk ya da malzeme adi)")
+            raise ValueError("tamburlu korda kor dolgusu seçilmeli "
+                             "(demet, çubuk ya da malzeme)")
         if dolgu_ad not in universeler:
             universeler[dolgu_ad] = _universe_uret(spec, dolgu_ad, nesneler, universeler)
         ic_univ = universeler[dolgu_ad]
@@ -642,12 +642,12 @@ def kor_kur(spec, nesneler, universeler):
         # yuzeyi modelin sinir yuzeyidir. Kritik kure kriterleri icin.
         kabuklar = kor.get("kabuklar") or []
         if not kabuklar:
-            raise ValueError("kuresel korda en az bir kabuk gerekir")
+            raise ValueError("küresel düzenekte en az bir kabuk gerekir")
         yaricaplar = [k["r"] for k in kabuklar]
         for i in range(len(yaricaplar) - 1):
             if yaricaplar[i] >= yaricaplar[i + 1]:
-                raise ValueError("kabuk yaricaplari artan sirada olmali: "
-                                 "r%d=%.5f >= r%d=%.5f"
+                raise ValueError("kabuk yarıçapları artan sırada olmalı: "
+                                 "r%d = %.5f ≥ r%d = %.5f"
                                  % (i + 1, yaricaplar[i], i + 2, yaricaplar[i + 1]))
         hucreler = []
         onceki = None
@@ -667,7 +667,7 @@ def kor_kur(spec, nesneler, universeler):
         ic = _kare_kafes_kur(spec, kor, nesneler, universeler)
         gx, gy = kor["adim"] * nx, kor["adim"] * ny
     else:
-        raise ValueError("bilinmeyen kor turu: %s" % tur)
+        raise ValueError("bilinmeyen kor türü: %s" % tur)
 
     yans = kor.get("yansitici") or {}
     yans_var = yans.get("var") and tur in ("tek_demet", "kare_kafes")
@@ -820,7 +820,7 @@ def tally_mesh_sinirlari(spec, f, sinir_kutu):
     if not f.get("otomatik") and f.get("alt") and f.get("ust"):
         return list(f["alt"]), list(f["ust"])
     if sinir_kutu is None:
-        raise ValueError("otomatik mesh sinirlari icin modelin sinir kutusu gerekli")
+        raise ValueError("otomatik ağ sınırları için modelin sınır kutusu gerekli")
     gx, gy = sinir_kutu
     h = sema_kor_yuksekligi(spec["kor"])
     if h:
@@ -854,7 +854,7 @@ def tallyleri_kur(spec, nesneler, sinir_kutu=None):
                 filtreler.append(openmc.MaterialFilter(
                     [nesneler[a] for a in f["adlar"]]))
             else:
-                raise ValueError("bilinmeyen filtre turu: %s" % f["tur"])
+                raise ValueError("bilinmeyen filtre türü: %s" % f["tur"])
         tal.filters = filtreler
         liste.append(tal)
     return openmc.Tallies(liste)
@@ -886,19 +886,19 @@ def guc_tally_ekle(spec, model, nesneler, universeler, sinir_kutu,
     cubuk_ad = g.get("cubuk")
     c = cubuk_bul(spec, cubuk_ad) if cubuk_ad else None
     if c is None:
-        raise ValueError("guc dagilimi icin gecerli bir cubuk secilmeli "
-                         "(secili: %r)" % cubuk_ad)
+        raise ValueError("güç dağılımı için geçerli bir çubuk seçilmeli"
+                         + (" ('%s' tanımsız)" % cubuk_ad if cubuk_ad else ""))
     univ = universeler.get(cubuk_ad)
     if univ is None:
         raise ValueError(
-            "'%s' cubugu modelde kullanilmiyor. Guc dagilimi yalnizca geometride "
-            "yer alan bir cubuk icin hesaplanabilir." % cubuk_ad)
+            "'%s' çubuğu modelde kullanılmıyor. Güç dağılımı yalnızca geometride "
+            "yer alan bir çubuk için hesaplanabilir." % cubuk_ad)
 
     hucreler = _guc.bolge_hucresi(univ, c, nesneler)
     bolge_no = int(g.get("bolge") or 0)
     if not (0 <= bolge_no < len(hucreler)):
-        raise ValueError("gecersiz bolge numarasi %d (cubukta %d bolge var)"
-                         % (bolge_no, len(hucreler)))
+        raise ValueError("geçersiz bölge numarası %d (çubukta %d bölge var)"
+                         % (bolge_no + 1, len(hucreler)))
     hedef = hucreler[bolge_no]
 
     tal = openmc.Tally(name="guc_dagilimi")
