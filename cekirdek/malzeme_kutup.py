@@ -338,7 +338,7 @@ def b4c(yogunluk=2.52, b10_zenginlik=None, sicaklik=600.0, ad=None):
     """
     if b10_zenginlik is None:
         bil = [bilesen("B", 4.0), bilesen("C", 1.0)]
-        gad = "B4C (dogal)"
+        gad = "B4C (doğal)"
     else:
         f = b10_zenginlik / 100.0
         bil = [bilesen("B10", 4.0 * f, tur="nuklid"),
@@ -374,29 +374,29 @@ def agincd(yogunluk=10.16, sicaklik=600.0, ad=None):
 KUTUPHANE = {
     # yakitlar
     "uo2": (uo2, "UO2 -- zenginlik parametreli uranyum dioksit"),
-    "un": (un, "UN -- uranyum nitrur"),
-    "u10mo": (u10mo, "U-10Mo -- metalik alasim yakit"),
-    "mox": (mox, "MOX -- karisik oksit"),
-    "u3si2_al": (u3si2_al, "U3Si2-Al -- MTR dispersiyon yakiti"),
+    "un": (un, "UN -- uranyum nitrür"),
+    "u10mo": (u10mo, "U-10Mo -- metalik alaşım yakıt"),
+    "mox": (mox, "MOX -- karışık oksit"),
+    "u3si2_al": (u3si2_al, "U3Si2-Al -- MTR dispersiyon yakıtı"),
     # zarf / yapisal
     "zirkaloy4": (zirkaloy4, "Zircaloy-4 zarf"),
-    "ss316": (ss316, "AISI 316 paslanmaz celik"),
+    "ss316": (ss316, "AISI 316 paslanmaz çelik"),
     "ma956": (ma956, "MA956 ODS FeCrAl"),
-    "fecral": (fecral, "FeCrAl kaza toleransli zarf"),
-    "sic": (sic, "Silisyum karbur"),
-    "al6061": (al6061, "Al-6061 plaka zarfi"),
+    "fecral": (fecral, "FeCrAl kazaya dayanıklı zarf"),
+    "sic": (sic, "Silisyum karbür"),
+    "al6061": (al6061, "Al-6061 plaka zarfı"),
     # sogutucu / moderator
-    "su": (su, "Hafif su (S(a,b) dahil, sicakliga bagli yogunluk)"),
-    "agir_su": (agir_su, "Agir su D2O"),
-    "lbe": (lbe, "Kursun-bizmut otektigi"),
-    "sodyum": (sodyum, "Sivi sodyum"),
-    "helyum": (helyum, "Helyum bosluk gazi"),
-    "grafit": (grafit, "Grafit yansitici/moderator"),
-    "berilyum": (berilyum, "Berilyum yansitici"),
+    "su": (su, "Hafif su (S(α,β) dahil, sıcaklığa bağlı yoğunluk)"),
+    "agir_su": (agir_su, "Ağır su D2O"),
+    "lbe": (lbe, "Kurşun-bizmut ötektiği"),
+    "sodyum": (sodyum, "Sıvı sodyum"),
+    "helyum": (helyum, "Helyum dolgu gazı"),
+    "grafit": (grafit, "Grafit yansıtıcı/moderatör"),
+    "berilyum": (berilyum, "Berilyum yansıtıcı"),
     # emiciler
-    "b4c": (b4c, "Bor karbur"),
+    "b4c": (b4c, "Bor karbür"),
     "gd2o3": (gd2o3, "Gadolinyum oksit yanabilir zehir"),
-    "agincd": (agincd, "Ag-In-Cd kontrol alasimi"),
+    "agincd": (agincd, "Ag-In-Cd kontrol alaşımı"),
 }
 
 
@@ -411,3 +411,238 @@ def uret(anahtar, **kwargs):
 def listele():
     """Kutuphanedeki malzemeleri (anahtar, aciklama) olarak dondurur."""
     return [(k, v[1]) for k, v in sorted(KUTUPHANE.items())]
+
+
+# ============================================================================
+# 6. PARAMETRIK MALZEME -- "kutup" kaydi
+# ============================================================================
+#
+#  Kutuphaneden arayuzle eklenen malzeme, URETIM PARAMETRELERINI de tasir:
+#
+#      m["kutup"] = {"anahtar": "su", "param": {"sicaklik": 580.0, "bor_ppm": 1300.0}}
+#
+#  Boylece "Duzenle" ayni parametre formunu yeniden acar ve malzeme bu
+#  parametrelerden YENIDEN URETILIR (bilesim, yogunluk, sicaklik, S(a,b),
+#  aciklama). Once parametreler tek seferlikti: 580 K su 600 K'e cekilince
+#  yogunluk 0.6965'te (600 K: 0.6467), aciklama "H2O 0.696 g/cc"de kaliyordu.
+#
+#  kurucu.py ve kod_uret.py bu anahtari OKUMAZ (malzemenin alanlarina tek tek
+#  erisirler); model yalnizca bilesim/yogunluk/sicaklik/sab'dan kurulur.
+#
+#  TUTARLILIK: ayni parametrelerle yeniden uretim BIT BIT ayni bilesimi verir
+#  (fonksiyonlar deterministik; JSON float gidis-donusu kayipsiz). Malzeme
+#  parametre formu disinda degistirilmisse (elle JSON, eski surum) yeniden
+#  uretim onu EZMEMELI: parametrik_mi() bunu yakalar ve arayuz bileşim
+#  tablosuna duser.
+#
+#  ROL/GRUP BURADA YAZILMAZ: kutuphane listesindeki gruplar
+#  uygunluk.tek_malzeme_rolleri'nden turetilir (tek dogruluk kaynagi).
+# ----------------------------------------------------------------------------
+
+# Parametrik yeniden uretimde karsilastirilan (fizik tasiyan) alanlar.
+FIZIK_ALANLARI = ("bilesim", "yogunluk", "sicaklik", "sab")
+
+# Ortak parametre tanimlari (etiket gorunen metindir; anahtar fonksiyon
+# argumanidir). "tur": "sayi" | "sicaklik" (K + canli °C) | "dogal_ya_da"
+# (en kucuk deger = None = dogal bolluk).
+_PARAM = {
+    "zenginlik": {"etiket": "U-235 ağırlıkça %", "en_az": 0.01, "en_cok": 97.0,
+                  "ondalik": 2, "adim": 0.1, "sonek": "%",
+                  "ipucu": "U-235'in uranyum içindeki ağırlık yüzdesi. OpenMC'nin "
+                           "zenginlik kısayolu %97'nin üstünde tanımsızdır."},
+    "yogunluk": {"etiket": "Yoğunluk", "en_az": 0.01, "en_cok": 30.0,
+                 "ondalik": 4, "adim": 0.01, "sonek": "g/cm³"},
+    "sicaklik": {"etiket": "Sıcaklık", "tur": "sicaklik", "en_az": 250.0,
+                 "en_cok": 3000.0, "ondalik": 2, "adim": 10.0, "sonek": "K",
+                 "ipucu": "Tesir kesiti verisi bu sıcaklıkta kullanılır."},
+    "bor_ppm": {"etiket": "Çözünmüş bor [ppm]", "en_az": 0.0, "en_cok": 5000.0,
+                "ondalik": 0, "adim": 50.0, "sonek": "",
+                "ipucu": "Suda çözünmüş doğal borun ağırlıkça ppm'i (PWR kimyasal kontrolü)."},
+    "pu_orani": {"etiket": "Pu ağırlıkça %", "en_az": 0.01,
+                 "en_cok": 100.0, "ondalik": 2, "adim": 0.5, "sonek": "%",
+                 "ipucu": "Ağır metal (U + Pu) içindeki plütonyumun ağırlık yüzdesi."},
+    "pu_fissil": {"etiket": "Fisil Pu %", "en_az": 0.0,
+                  "en_cok": 100.0, "ondalik": 1, "adim": 1.0, "sonek": "%",
+                  "ipucu": "Plütonyum içindeki Pu-239 + Pu-241 ağırlık yüzdesi; "
+                           "kalanı Pu-240 ve Pu-242."},
+    "u_zenginlik": {"etiket": "Taşıyıcı U'da U-235 %", "en_az": 0.01,
+                    "en_cok": 97.0, "ondalik": 2, "adim": 0.05, "sonek": "%",
+                    "ipucu": "MOX'taki uranyumun (çoğunlukla fakir U) U-235 ağırlık yüzdesi."},
+    "u_yukleme": {"etiket": "Uranyum yüklemesi", "en_az": 0.1, "en_cok": 10.0,
+                  "ondalik": 2, "adim": 0.1, "sonek": "gU/cm³"},
+    "saflik": {"etiket": "D₂O saflığı (mol %)", "en_az": 50.0, "en_cok": 100.0,
+               "ondalik": 2, "adim": 0.05, "sonek": "%"},
+    "b10_zenginlik": {"etiket": "B-10 atomca %", "tur": "dogal_ya_da",
+                      "en_az": 0.0, "en_cok": 100.0, "ondalik": 1, "adim": 1.0,
+                      "sonek": "%", "dogal_metin": "doğal bor (%19.9)",
+                      "ipucu": "En küçük değer doğal bor demektir."},
+}
+
+# Anahtar -> okunur ad, tek cumle aciklama, formda sorulan parametreler
+# (SIRAYLA). Bir parametre (ad, {ezme}) olarak verilirse ortak tanim ezilir.
+# Katalog sirasi listede grup ICI siradir.
+_SICAK_SU = ("sicaklik", {"en_az": 273.15, "en_cok": 623.15,
+                          "ipucu": "Yoğunluk bu sıcaklıktaki doymuş sıvı sudan "
+                                   "hesaplanır (273-623 K)."})
+KATALOG = {
+    "uo2": ("UO₂ — uranyum dioksit", "Hafif su reaktörlerinin seramik yakıtı.",
+            ["zenginlik", "yogunluk", "sicaklik"]),
+    "mox": ("MOX — karışık oksit (U, Pu)O₂", "Plütonyumlu seramik yakıt; basitleştirilmiş Pu vektörü.",
+            ["pu_orani", "pu_fissil", "u_zenginlik", "yogunluk", "sicaklik"]),
+    "un": ("UN — uranyum nitrür", "Yüksek yoğunluklu seramik yakıt.",
+           ["zenginlik", "yogunluk", "sicaklik"]),
+    "u10mo": ("U-10Mo — metalik uranyum alaşımı", "Ağırlıkça %10 molibdenli metalik yakıt.",
+              ["zenginlik", "yogunluk", "sicaklik"]),
+    "u3si2_al": ("U₃Si₂-Al — dispersiyon yakıtı", "MTR tipi araştırma reaktörü plakalarının yakıt tabakası.",
+                 ["u_yukleme", "zenginlik", "yogunluk", "sicaklik"]),
+    "zirkaloy4": ("Zircaloy-4", "Hafif su reaktörü yakıt zarfı.", ["yogunluk", "sicaklik"]),
+    "ss316": ("SS-316 paslanmaz çelik", "Hızlı reaktör zarfı ve yapısal malzeme.",
+              ["yogunluk", "sicaklik"]),
+    "fecral": ("FeCrAl", "Kazaya dayanıklı yakıt zarfı.", ["yogunluk", "sicaklik"]),
+    "ma956": ("MA956 — ODS FeCrAl", "Yüksek sıcaklık zarf alaşımı.", ["yogunluk", "sicaklik"]),
+    "sic": ("SiC — silisyum karbür", "Seramik zarf / yapısal malzeme.", ["yogunluk", "sicaklik"]),
+    "al6061": ("Al-6061 alüminyum", "Araştırma reaktörü plaka zarfı ve yapısı.",
+               ["yogunluk", "sicaklik"]),
+    "su": ("Hafif su (H₂O)", "Soğutucu ve moderatör; yoğunluk sıcaklıktan hesaplanır.",
+           [_SICAK_SU, "bor_ppm"]),
+    "agir_su": ("Ağır su (D₂O)", "Moderatör; kalanı hafif sudur.",
+                ["saflik", ("yogunluk", {"en_az": 0.5, "en_cok": 1.2}),
+                 ("sicaklik", {"en_az": 276.97, "en_cok": 640.0})]),
+    "sodyum": ("Sıvı sodyum (Na)", "Hızlı reaktör soğutucusu; yoğunluk sıcaklıktan hesaplanır.",
+               [("sicaklik", {"en_az": 371.0, "en_cok": 1200.0})]),
+    "lbe": ("Kurşun-bizmut ötektiği (LBE)", "Hızlı reaktör soğutucusu; yoğunluk sıcaklıktan hesaplanır.",
+            [("sicaklik", {"en_az": 400.0, "en_cok": 1300.0})]),
+    "grafit": ("Grafit (C)", "Moderatör ve yansıtıcı.", ["yogunluk", "sicaklik"]),
+    "berilyum": ("Berilyum (Be)", "Yansıtıcı ve moderatör.", ["yogunluk", "sicaklik"]),
+    "b4c": ("B₄C — bor karbür", "Kontrol çubuğu ve tambur emicisi.",
+            ["b10_zenginlik", "yogunluk", "sicaklik"]),
+    "agincd": ("Ag-In-Cd", "PWR kontrol çubuğu alaşımı.", ["yogunluk", "sicaklik"]),
+    "gd2o3": ("Gd₂O₃ — gadolinyum oksit", "Yanabilir zehir.", ["yogunluk", "sicaklik"]),
+    "helyum": ("Helyum (He)", "Yakıt-zarf aralığı dolgu gazı.",
+               [("yogunluk", {"en_az": 1.0e-7, "en_cok": 0.01, "ondalik": 7,
+                              "adim": 1.0e-5}),
+                ("sicaklik", {"en_cok": 2000.0})]),
+}
+
+# Yogunlugu SICAKLIKTAN hesaplayan malzemeler: yogunluk sorulmaz, formda
+# hesaplanan deger gosterilir (fonksiyon yogunluk=None ile cagrilir).
+SICAKLIKTAN_YOGUNLUK = ("su", "lbe", "sodyum")
+
+
+def okunur_ad(anahtar):
+    """Kutuphane anahtarinin gorunen adi ("uo2" -> "UO₂ — uranyum dioksit")."""
+    k = KATALOG.get(anahtar)
+    return k[0] if k else anahtar
+
+
+def katalog_aciklamasi(anahtar):
+    k = KATALOG.get(anahtar)
+    return k[1] if k else ""
+
+
+def varsayilan_parametreler(anahtar):
+    """Fonksiyon imzasindaki varsayilanlar (formdaki parametreler icin)."""
+    import inspect
+    imza = inspect.signature(KUTUPHANE[anahtar][0]).parameters
+    return {p["ad"]: imza[p["ad"]].default for p in parametreler(anahtar)}
+
+
+def parametreler(anahtar):
+    """
+    Formda sorulan parametreler, SIRAYLA: [{"ad", "etiket", "tur", "en_az",
+    "en_cok", "ondalik", "adim", "sonek", "ipucu", "varsayilan"}, ...].
+    Varsayilanlar FONKSIYON IMZASINDAN okunur (tek kaynak).
+    """
+    import inspect
+    imza = inspect.signature(KUTUPHANE[anahtar][0]).parameters
+    cikti = []
+    for oge in KATALOG[anahtar][2]:
+        ad, ezme = (oge, {}) if isinstance(oge, str) else oge
+        p = {"tur": "sayi", "ipucu": "", "dogal_metin": ""}
+        p.update(_PARAM[ad])
+        p.update(ezme)
+        p["ad"] = ad
+        p["varsayilan"] = imza[ad].default
+        cikti.append(p)
+    return cikti
+
+
+def parametrik_uret(anahtar, param=None):
+    """
+    Kutuphaneden malzeme uretir ve uretim parametrelerini m["kutup"]'a yazar.
+    param: {arguman: deger}; verilmeyenler fonksiyon varsayilanidir.
+    """
+    param = dict(param or {})
+    m = uret(anahtar, **param)
+    m["kutup"] = {"anahtar": anahtar, "param": param}
+    return m
+
+
+def yeniden_uret(m):
+    """
+    m["kutup"] kaydindan malzemeyi yeniden uretir (yeni sozluk; "ad" ve
+    "renk" m'den korunur). Kayit yoksa ya da gecersizse None.
+    """
+    k = m.get("kutup") if isinstance(m, dict) else None
+    if not isinstance(k, dict) or k.get("anahtar") not in KUTUPHANE:
+        return None
+    param = k.get("param") or {}
+    if not isinstance(param, dict):
+        return None
+    try:
+        yeni = parametrik_uret(k["anahtar"], param)
+    except (TypeError, ValueError):
+        return None
+    yeni["ad"] = m.get("ad", yeni["ad"])
+    if m.get("renk"):
+        yeni["renk"] = list(m["renk"])
+    return yeni
+
+
+def parametrik_mi(m):
+    """
+    Malzeme kutuphane parametrelerinden uretilmis VE o zamandan beri elle
+    degistirilmemis mi? (yeniden uretim FIZIK_ALANLARI'nda birebir ayni)
+    """
+    yeni = yeniden_uret(m)
+    if yeni is None:
+        return False
+    return all(yeni.get(a) == m.get(a) for a in FIZIK_ALANLARI)
+
+
+# U3Si2 kuramsal yogunlugu ve Al yogunlugu [g/cm3] -- dispersiyon tutarlilik uyarisi
+_U3SI2_YOGUNLUK = 12.2
+_AL_YOGUNLUK = 2.70
+
+
+def parametre_uyarilari(anahtar, param):
+    """
+    Parametreler gecerli ama fiziksel olarak supheli ise kisa uyari metinleri
+    (arayuz formun altinda gosterir; malzemeyi DEGISTIRMEZ).
+    """
+    uyari = []
+    p = dict(varsayilan_parametreler(anahtar)) if anahtar in KATALOG else {}
+    p.update(param or {})
+    for ad in ("zenginlik", "u_zenginlik"):
+        z = p.get(ad)
+        # dogrula %5 ustunu zaten uyarir; formda yalnizca HEU (> %20) icin
+        # soylenir -- HALEU (%19.75) yakitlarda her seferinde uyari gurultu olur.
+        if z is not None and z > 20.0:
+            uyari.append("Zenginlik %%%.2f: OpenMC'nin zenginlik kısayolu U-234 "
+                         "oranını sabit varsayar; yüksek zenginlikte izotopları "
+                         "elle vermek daha doğrudur." % z)
+            break
+    if anahtar == "u3si2_al":
+        u = float(p.get("u_yukleme") or 0.0)
+        yog = float(p.get("yogunluk") or 0.0)
+        kutle = u / 0.9271
+        if yog <= kutle:
+            uyari.append("Yoğunluk (%.2f g/cm³) U₃Si₂ kütlesinden (%.2f g/cm³) "
+                         "küçük: alüminyum payı sıfıra iner." % (yog, kutle))
+        else:
+            beklenen = kutle + (1.0 - kutle / _U3SI2_YOGUNLUK) * _AL_YOGUNLUK
+            if abs(yog / beklenen - 1.0) > 0.10:
+                uyari.append("Bu yüklemede U₃Si₂ (%.1f g/cm³) ile Al (%.2f g/cm³) "
+                             "karışımının yoğunluğu ≈ %.2f g/cm³; girilen %.2f g/cm³."
+                             % (_U3SI2_YOGUNLUK, _AL_YOGUNLUK, beklenen, yog))
+    return uyari
