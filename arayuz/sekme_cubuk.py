@@ -255,7 +255,9 @@ def bolge_aciklamasi(spec, c, i):
 
 
 def malzeme_etiketi(spec, ad, rol_goster=False, rol_tablosu=None):
-    """Kullaniciya gosterilen malzeme adi (gorunen ad; cakisirsa kimlik de)."""
+    """Kullaniciya gosterilen malzeme adi: Malzemeler sekmesiyle ayni
+    "ad — aciklama" bicimi (sema.malzeme_etiketi; ad benzersiz oldugu icin
+    etiket de benzersizdir)."""
     if ad is None:
         return SECILMEDI_ETIKETI
     if ad == sema.BOSLUK:
@@ -263,11 +265,7 @@ def malzeme_etiketi(spec, ad, rol_goster=False, rol_tablosu=None):
     m = sema.malzeme_bul(spec, ad)
     if m is None:
         return "%s (tanımsız)" % ad
-    metin = m.get("gorunen_ad") or ad
-    ayni = [x for x in spec.get("malzemeler", [])
-            if (x.get("gorunen_ad") or x["ad"]) == metin]
-    if len(ayni) > 1:
-        metin = "%s [%s]" % (metin, ad)
+    metin = sema.malzeme_etiketi(m)
     if rol_goster:
         r = (rol_tablosu if rol_tablosu is not None else roller(spec)).get(ad, set())
         adlar = [ROL_ADI[x] for x in uygunluk.ROLLER if x in r]

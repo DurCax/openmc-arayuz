@@ -24,8 +24,8 @@
    ParcaPaleti   : renk karesi + ad listesi; tek secim = firca; secildi(ad)
    KareIzgara    : nx x ny hucre; tikla-surukle boyama; degisti
    AltigenIzgara : halka duzeni (cekirdek/altigen.py ile AYNI konumlar);
-                   ayni etkilesim. arayuz/hex_izgara.py bu dalgada kullanimda
-                   kalir; bu sinif onun parca-adli genellemesidir.
+                   ayni etkilesim (eski arayuz/hex_izgara.py'nin parca-adli
+                   genellemesi; o dosya Dalga 3'te kaldirildi).
 
  ETKILESIM (iki izgara icin ayni)
    Sol tik / surukle : secili parcayi hucrelere boyar. Bir darbe (bas-surukle-
@@ -40,7 +40,7 @@ import string
 
 from PySide6 import QtCore, QtGui, QtWidgets
 
-from cekirdek import altigen
+from cekirdek import altigen, sema
 
 # Tanimsiz (anahtarda karsiligi olmayan) hucre icin harita karakteri.
 BOS_HARF = "."
@@ -195,14 +195,14 @@ def palet_ogeleri(spec, turler=("cubuk", "plaka", "demet", "malzeme", "bosluk"),
     ogeler = []
     for tur in turler:
         if tur == "bosluk":
-            ogeler.append(("bosluk", "Boşluk (void)", "bosluk"))
+            ogeler.append(("bosluk", "Boş (madde yok)", "bosluk"))
             continue
         liste = {"cubuk": "cubuklar", "plaka": "plakalar", "demet": "demetler",
                  "malzeme": "malzemeler"}[tur]
         for x in spec.get(liste, []):
-            etiket = x["ad"].replace("_", " ")
-            if tur == "malzeme" and x.get("gorunen_ad"):
-                etiket = "%s (%s)" % (etiket, x["gorunen_ad"])
+            # Malzemeler her listede ayni bicimde: "ad — aciklama".
+            etiket = (sema.malzeme_etiketi(x) if tur == "malzeme"
+                      else x["ad"].replace("_", " "))
             ogeler.append((x["ad"], etiket, tur))
     sonuc, kullanilan = [], []
     yedek = iter(_PALET * 4)
