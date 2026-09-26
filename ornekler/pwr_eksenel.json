@@ -99,7 +99,7 @@
     },
     {
       "ad": "su",
-      "gorunen_ad": "H2O 0.700 g/cc + 1300 ppm B",
+      "gorunen_ad": "H2O 0.700 g/cm³ + 1300 ppm B",
       "yogunluk": {
         "birim": "g/cm3",
         "deger": 0.7
@@ -392,22 +392,22 @@
       "var": true,
       "bolgeler": [
         {
-          "ad": "alt yansitici",
+          "ad": "alt yansıtıcı",
           "yukseklik": 20.0,
           "dolgu": "su"
         },
         {
-          "ad": "alt blanket",
+          "ad": "alt örtü",
           "yukseklik": 15.0,
           "dolgu": "demet_blanket"
         },
         {
-          "ad": "aktif yakit",
+          "ad": "aktif yakıt",
           "yukseklik": 300.0,
           "dolgu": null
         },
         {
-          "ad": "ust blanket",
+          "ad": "üst örtü",
           "yukseklik": 15.0,
           "dolgu": "demet_blanket"
         },
@@ -417,7 +417,7 @@
           "dolgu": "demet_plenum"
         },
         {
-          "ad": "ust yansitici",
+          "ad": "üst yansıtıcı",
           "yukseklik": 20.0,
           "dolgu": "su"
         }

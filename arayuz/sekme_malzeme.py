@@ -341,6 +341,15 @@ class ParametreFormu(QtWidgets.QWidget):
     def malzeme(self):
         return mk.parametrik_uret(self.anahtar, self.param())
 
+    def uretim_sorunu(self):
+        """Bu parametrelerle malzeme kurulamiyorsa nedeni (or. U3Si2-Al'da
+        alüminyuma yer kalmamasi); kurulabiliyorsa None."""
+        try:
+            self.malzeme()
+        except (ValueError, TypeError) as e:
+            return str(e)
+        return None
+
 
 def _tema_renk(ad, vars_):
     try:
@@ -681,17 +690,23 @@ class KutuphaneDiyalog(QtWidgets.QDialog):
     def _ozet_guncelle(self):
         if self.form is None:
             return
-        m = self.form.malzeme()
-        sab = ", ".join(m.get("sab") or []) or "yok"
-        self.ozet.setText("Bileşim: %s   ·   S(α,β): %s\nAçıklama: %s"
-                          % (bilesim_ozeti(m), sab, m.get("gorunen_ad")))
+        uretim = self.form.uretim_sorunu()
+        if uretim:
+            self.ozet.setText("Bu değerlerle malzeme kurulamıyor: %s" % uretim)
+        else:
+            m = self.form.malzeme()
+            sab = ", ".join(m.get("sab") or []) or "yok"
+            self.ozet.setText("Bileşim: %s   ·   S(α,β): %s\nAçıklama: %s"
+                              % (bilesim_ozeti(m), sab, m.get("gorunen_ad")))
+        self._dogrula()
 
     def _dogrula(self, *_):
         sorun = sema.malzeme_adi_sorunu(self._spec, self.ad.text())
         self.ad_hata.setText(sorun or "")
         self.ad_hata.setVisible(bool(sorun))
-        self.d_tamam.setEnabled(sorun is None and self.secilen() is not None)
-        return sorun is None
+        uretim = self.form.uretim_sorunu() if self.form is not None else None
+        self.d_tamam.setEnabled(sorun is None and uretim is None and self.secilen() is not None)
+        return sorun is None and uretim is None
 
     def _onayla(self):
         if self._dogrula():
@@ -928,11 +943,16 @@ class MalzemeDiyalog(QtWidgets.QDialog):
     def _param_degisti(self):
         if self.form is None:
             return
-        m = self.form.malzeme()
-        self.ham_model.yukle(m.get("bilesim"))
-        sab = ", ".join(m.get("sab") or []) or "yok"
-        self.ozet.setText("Bileşim: %s   ·   S(α,β): %s\nAçıklama: %s"
-                          % (bilesim_ozeti(m), sab, m.get("gorunen_ad")))
+        uretim = self.form.uretim_sorunu()
+        if uretim:
+            self.ozet.setText("Bu değerlerle malzeme kurulamıyor: %s" % uretim)
+        else:
+            m = self.form.malzeme()
+            self.ham_model.yukle(m.get("bilesim"))
+            sab = ", ".join(m.get("sab") or []) or "yok"
+            self.ozet.setText("Bileşim: %s   ·   S(α,β): %s\nAçıklama: %s"
+                              % (bilesim_ozeti(m), sab, m.get("gorunen_ad")))
+        self._dogrula()
 
     # ----------------------------------------------------------------- elle
     def _gecici_malzeme(self):
@@ -1011,8 +1031,9 @@ class MalzemeDiyalog(QtWidgets.QDialog):
         sorun = sema.malzeme_adi_sorunu(self._spec, self.ad.text(), haric=self._eski_ad)
         self.ad_hata.setText(sorun or "")
         self.ad_hata.setVisible(bool(sorun))
-        self.d_tamam.setEnabled(sorun is None)
-        return sorun is None
+        uretim = self.form.uretim_sorunu() if self.parametrik_kip() else None
+        self.d_tamam.setEnabled(sorun is None and uretim is None)
+        return sorun is None and uretim is None
 
     def icerik_sorunu(self):
         """Elle kipte kaydi engelleyen eksik; yoksa None."""

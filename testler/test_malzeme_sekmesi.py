@@ -216,11 +216,25 @@ def test_parametre_formlari():
             any(b["isim"] == "B10" and b["tur"] == "nuklid" for b in m["bilesim"])
             and m["kutup"]["param"]["b10_zenginlik"] == 90.0)
 
+    # Yogunluk artik U yuklemesi ve gozeneklilikten hesaplanir (eskiden 5.4
+    # g/cm3 sabitti ve form tutarsizlik uyarisi gosteriyordu).
     f = sm.ParametreFormu("u3si2_al")
-    kontrol("U3Si2-Al 4.8 gU / 5.4 g/cm3: tutarsiz yogunluk uyarisi gorunur",
-            f.uyari.isVisibleTo(f) and "6.73" in f.uyari.text(), "-> %s" % f.uyari.text())
-    f.alanlar["yogunluk"].setValue(6.7)
-    kontrol("tutarli yogunlukta uyari kalkar", not f.uyari.isVisibleTo(f))
+    kontrol("U3Si2-Al: yogunluk sorulmuyor, gozeneklilik soruluyor",
+            "yogunluk" not in f.alanlar and "gozeneklilik" in f.alanlar)
+    kontrol("varsayilanda uyari yok, yogunluk ~6.73",
+            not f.uyari.isVisibleTo(f) and abs(f.malzeme()["yogunluk"]["deger"] - 6.7316) < 1e-3)
+    f.alanlar["u_yukleme"].setValue(9.0)
+    f.alanlar["gozeneklilik"].setValue(0.3)
+    kontrol("Al'a yer kalmayan yuklemede uyari gorunur",
+            f.uyari.isVisibleTo(f) and "alüminyuma yer" in f.uyari.text(), "-> %s" % f.uyari.text())
+    kontrol("kurulamayan parametrede uretim_sorunu dolu", bool(f.uretim_sorunu()))
+    d = sm.KutuphaneDiyalog()
+    d.sec("u3si2_al")
+    kontrol("diyalog: gecerli U3Si2-Al'da Ekle acik", d.d_tamam.isEnabled())
+    d.form.alanlar["u_yukleme"].setValue(9.0)
+    d.form.alanlar["gozeneklilik"].setValue(0.3)
+    kontrol("diyalog: kurulamayan degerde Ekle kapali, ozet nedeni soyluyor",
+            not d.d_tamam.isEnabled() and "kurulamıyor" in d.ozet.text(), "-> %s" % d.ozet.text())
     f = sm.ParametreFormu("zirkaloy4")
     kontrol("Zircaloy-4: yalnizca yogunluk + sicaklik",
             sorted(f.alanlar) == ["sicaklik", "yogunluk"])
@@ -816,7 +830,7 @@ def test_ad_degisimi_genel_alanlar():
     kontrol("ad degismiyorsa her zaman gecerli (eski dosyadaki cakisma kilitlemez)",
             sema.malzeme_adi_sorunu(s, "su", haric="su") is None)
     kontrol("malzeme_etiketi: 'su — H2O ...' ; aciklama adla ayniysa yalnizca ad",
-            sema.malzeme_etiketi(sema.malzeme_bul(s, "su")) == "su — H2O 0.700 g/cc + 1300 ppm B"
+            sema.malzeme_etiketi(sema.malzeme_bul(s, "su")) == "su — H2O 0.700 g/cm³ + 1300 ppm B"
             and sema.malzeme_etiketi({"ad": "yakit", "gorunen_ad": "yakit"}) == "yakit")
     kontrol("referans listesi spec'i degistirmez",
             len(sema.malzeme_referanslari(s, "su")) == 5 and sema.malzeme_bul(s, "su") is not None)

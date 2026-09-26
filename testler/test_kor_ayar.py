@@ -267,24 +267,24 @@ def test_kor_katman_sirasi():
     kontrol("tablo = spec tersi (en ust katman ilk satirda)",
             tablo() == list(reversed(ilk)), "-> %s" % tablo())
     kontrol("ilk satir 'ust yansitici', son satir 'alt yansitici'",
-            tablo()[0] == "ust yansitici" and tablo()[-1] == "alt yansitici")
+            tablo()[0] == "üst yansıtıcı" and tablo()[-1] == "alt yansıtıcı")
 
     def z_araligi(ad):
         for z0, z1, b in sema.eksenel_katmanlar(s["kor"]):
             if b["ad"] == ad:
                 return z0, z1
     h0 = sema.kor_yuksekligi(s["kor"])
-    z0 = z_araligi("aktif yakit")
-    k.katman_tablo.setCurrentCell(tablo().index("aktif yakit"), 0)
+    z0 = z_araligi("aktif yakıt")
+    k.katman_tablo.setCurrentCell(tablo().index("aktif yakıt"), 0)
     k.d_kat_yukari.click()
-    z1 = z_araligi("aktif yakit")
+    z1 = z_araligi("aktif yakıt")
     kontrol("'Yukari tasi': aktif yakit fiziksel olarak YUKARI (z arttı)",
             z1[0] > z0[0], "-> %s -> %s" % (z0, z1))
     kontrol("yukari: spec'te bir sonraki katmanla yer degisti",
-            adlar() == ["alt yansitici", "alt blanket", "ust blanket", "aktif yakit",
-                        "plenum", "ust yansitici"], "-> %s" % adlar())
+            adlar() == ["alt yansıtıcı", "alt örtü", "üst örtü", "aktif yakıt",
+                        "plenum", "üst yansıtıcı"], "-> %s" % adlar())
     kontrol("yukari: secim tasinan katmanda kaldi",
-            tablo()[k.katman_tablo.currentRow()] == "aktif yakit")
+            tablo()[k.katman_tablo.currentRow()] == "aktif yakıt")
     kontrol("yukari: toplam yukseklik degismedi", sema.kor_yuksekligi(s["kor"]) == h0)
     k.d_kat_asagi.click()
     kontrol("'Asagi tasi' geri getirdi", adlar() == ilk, "-> %s" % adlar())
@@ -307,7 +307,7 @@ def test_kor_katman_sirasi():
 
     # Dolgu listeleri sema.katman_adaylari ile tutarli
     kor = s["kor"]
-    kutu = k.katman_tablo.cellWidget(tablo().index("aktif yakit"), 2)
+    kutu = k.katman_tablo.cellWidget(tablo().index("aktif yakıt"), 2)
     veri = _oge_verileri(kutu)
     ana = sema.katman_adaylari(kor, {})
     kontrol("'ana dolgu' ogesi katman_adaylari'ni adlandiriyor (%s)" % ana,

@@ -5,7 +5,7 @@
   "malzemeler": [
     {
       "ad": "su",
-      "gorunen_ad": "H2O 0.998 g/cc",
+      "gorunen_ad": "H2O 0.998 g/cm³",
       "yogunluk": {
         "birim": "g/cm3",
         "deger": 0.9980485

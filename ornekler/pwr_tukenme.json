@@ -35,7 +35,7 @@
     },
     {
       "ad": "zirkaloy",
-      "gorunen_ad": "Zircaloy kilif",
+      "gorunen_ad": "Zircaloy kılıf",
       "yogunluk": {
         "birim": "g/cm3",
         "deger": 6.55
@@ -58,7 +58,7 @@
     },
     {
       "ad": "su",
-      "gorunen_ad": "Hafif su 0.7 g/cc",
+      "gorunen_ad": "Hafif su 0.7 g/cm³",
       "yogunluk": {
         "birim": "g/cm3",
         "deger": 0.7

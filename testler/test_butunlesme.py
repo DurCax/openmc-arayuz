@@ -263,7 +263,45 @@ def test_ipucu_okunur():
             e.objectName() == "soluk" and "palette(mid)" not in e.styleSheet())
 
 
+def test_u3si2_yogunlugu():
+    """U3Si2-Al yogunlugu U yuklemesinden (eski sabit 5.4 g/cm3 4.8 gU/cm3
+    yuklemeyle tutarsizdi: Al payi %4'e dusuyordu)."""
+    print("\n[B7] U3Si2-Al: yogunluk yuklemeden hesaplaniyor")
+    from cekirdek import malzeme_kutup as mk
+    m = mk.u3si2_al()
+    rho = m["yogunluk"]["deger"]
+    b = {x["isim"]: x["miktar"] for x in m["bilesim"]}
+    kontrol("4.8 gU/cm3, gozeneksiz -> ~6.73 g/cm3", abs(rho - 6.7316) < 1e-3, "-> %.4f" % rho)
+    kontrol("geri hesaplanan U kutle yogunlugu = yukleme",
+            abs(rho * b["U"] / 100.0 - 4.8) < 1e-9, "-> %.9f" % (rho * b["U"] / 100.0))
+    kontrol("Al agirlikca payi makul (%20-%30)", 20.0 < b["Al"] < 30.0, "-> %.2f" % b["Al"])
+    kontrol("%5 gozeneklilik yogunlugu 0.05*2.70 dusurur",
+            abs(mk.u3si2_yogunlugu(4.8, 0.0) - mk.u3si2_yogunlugu(4.8, 0.05) - 0.135) < 1e-9)
+    try:
+        mk.u3si2_yogunlugu(9.0, 0.3)
+        kontrol("Al'a yer kalmayan yukleme reddediliyor", False)
+    except ValueError:
+        kontrol("Al'a yer kalmayan yukleme reddediliyor", True)
+    kontrol("elle verilen yogunluk aynen (eski kayitlar)",
+            mk.u3si2_al(yogunluk=5.4)["yogunluk"]["deger"] == 5.4)
+    adlar = [x["ad"] for x in mk.parametreler("u3si2_al")]
+    kontrol("formda gozeneklilik var, yogunluk sorulmuyor",
+            "gozeneklilik" in adlar and "yogunluk" not in adlar, "-> %s" % adlar)
+    kontrol("varsayilanda tutarlilik uyarisi yok", mk.parametre_uyarilari("u3si2_al", {}) == [])
+
+
+def test_ornek_aciklamalari_turkce():
+    print("\n[B8] ORNEKLER: malzeme aciklamalari ve katman adlari Turkce, birim g/cm3")
+    for ad in _ORNEKLER:
+        s = _yukle(ad)
+        metin = " ".join([m.get("gorunen_ad") or "" for m in s["malzemeler"]] +
+                         [b.get("ad") or "" for b in ((s["kor"].get("eksenel") or {}).get("bolgeler") or [])])
+        kotu = [k for k in ("g/cc", "dogal", "kilif", "yansitici", "yakit", "blanket") if k in metin]
+        kontrol("ornek '%s' aciklamalari" % ad, not kotu, "-> %s" % kotu)
+
+
 HIZLI = [test_betik_anlamsal_esdegerlik, test_betik_ad_cakismalari,
          test_dogrula_secilmemis_malzeme, test_entropi_otomatik,
-         test_uygunluk_tasinan_kurallar, test_ipucu_okunur]
+         test_uygunluk_tasinan_kurallar, test_ipucu_okunur,
+         test_u3si2_yogunlugu, test_ornek_aciklamalari_turkce]
 YAVAS = []

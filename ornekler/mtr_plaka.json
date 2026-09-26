@@ -5,7 +5,7 @@
   "malzemeler": [
     {
       "ad": "u3si2_al",
-      "gorunen_ad": "U3Si2-Al 4.8 gU/cc",
+      "gorunen_ad": "U3Si2-Al 4.8 gU/cm³",
       "yogunluk": {
         "birim": "g/cm3",
         "deger": 5.4
@@ -106,7 +106,7 @@
     },
     {
       "ad": "su",
-      "gorunen_ad": "H2O 0.989 g/cc",
+      "gorunen_ad": "H2O 0.989 g/cm³",
       "yogunluk": {
         "birim": "g/cm3",
         "deger": 0.9891605

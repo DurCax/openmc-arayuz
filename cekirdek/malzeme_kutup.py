@@ -120,16 +120,45 @@ def mox(pu_orani=7.0, pu_fissil=65.0, u_zenginlik=0.25,
     )
 
 
-def u3si2_al(u_yukleme=4.8, zenginlik=19.75, yogunluk=5.4,
+# U3Si2 icinde U agirlik orani: 3*238.03 / (3*238.03 + 2*28.09)
+_U3SI2_U_ORANI = 0.9271
+# U3Si2 kuramsal yogunlugu ve Al yogunlugu [g/cm3]
+_U3SI2_YOGUNLUK = 12.2
+_AL_YOGUNLUK = 2.70
+
+
+def u3si2_yogunlugu(u_yukleme, gozeneklilik=0.0):
+    """
+    U3Si2-Al dispersiyon yakitinin (et) yogunlugu [g/cm3], U yuklemesinden:
+      U3Si2 kutlesi   m = u_yukleme / 0.9271              [g/cm3 et]
+      U3Si2 hacmi     v = m / 12.2                         [cm3/cm3 et]
+      Al hacmi        1 - v - p     (p: gozeneklilik, 0-1)
+      yogunluk        m + (1 - v - p) * 2.70
+    4.8 gU/cm3, p = 0 -> 6.73 g/cm3. (Eski sabit varsayilan 5.4 g/cm3 bu
+    yuklemeyle tutarsizdi: Al payi %4'e dusuyordu.)
+    """
+    m = u_yukleme / _U3SI2_U_ORANI
+    v = m / _U3SI2_YOGUNLUK
+    al_hacmi = 1.0 - v - gozeneklilik
+    if al_hacmi < 0.0:
+        raise ValueError("U yüklemesi %.2f gU/cm³ ve gözeneklilik %%%.1f ile alüminyuma yer "
+                         "kalmıyor (U₃Si₂ hacim kesri %.2f)." % (u_yukleme, 100 * gozeneklilik, v))
+    return m + al_hacmi * _AL_YOGUNLUK
+
+
+def u3si2_al(u_yukleme=4.8, zenginlik=19.75, gozeneklilik=0.0, yogunluk=None,
              sicaklik=350.0, ad=None):
     """
     U3Si2-Al dispersiyon yakiti -- MTR tipi arastirma reaktoru plakalari.
-    u_yukleme : gU/cm3 (tipik 4.8; yuksek yuklemede 5.3)
-    Yogunluk dispersiyon yogunlugudur, u_yukleme ile tutarli olmalidir.
+    u_yukleme    : gU/cm3 (tipik 4.8; yuksek yuklemede 5.3)
+    gozeneklilik : etteki bosluk hacim kesri (0-1); varsayilan 0
+    yogunluk     : verilmezse yuklemeden hesaplanir (u3si2_yogunlugu);
+                   verilirse aynen kullanilir (eski dosyalar ve elle deger).
     """
-    # U3Si2 icinde U agirlik orani: 3*238.03 / (3*238.03 + 2*28.09) = 0.9271
-    u_kutle = u_yukleme                       # g U / cm3
-    u3si2_kutle = u_kutle / 0.9271            # g U3Si2 / cm3
+    if yogunluk is None:
+        yogunluk = u3si2_yogunlugu(u_yukleme, gozeneklilik)
+    u_kutle = u_yukleme                          # g U / cm3
+    u3si2_kutle = u_kutle / _U3SI2_U_ORANI       # g U3Si2 / cm3
     al_kutle = max(yogunluk - u3si2_kutle, 0.0)
     top = u3si2_kutle + al_kutle
     return malzeme(
@@ -138,7 +167,7 @@ def u3si2_al(u_yukleme=4.8, zenginlik=19.75, yogunluk=5.4,
          bilesen("Si", 100.0 * (u3si2_kutle - u_kutle) / top, birim="wo"),
          bilesen("Al", 100.0 * al_kutle / top, birim="wo")],
         yogunluk, sicaklik=sicaklik, renk=RENK["yakit"],
-        gorunen_ad="U3Si2-Al %.1f gU/cc" % u_yukleme,
+        gorunen_ad="U3Si2-Al %.1f gU/cm³" % u_yukleme,
     )
 
 
@@ -252,7 +281,7 @@ def su(sicaklik=293.6, yogunluk=None, bor_ppm=0.0, ad=None):
     """
     rho = yogunluk if yogunluk is not None else su_yogunluk(sicaklik)
     bil = [bilesen("H", 2.0), bilesen("O", 1.0)]
-    gad = "H2O %.3f g/cc" % rho
+    gad = "H2O %.3f g/cm³" % rho
     if bor_ppm > 0:
         # ppm agirlikca: 1e-6 * ppm kutle orani bor
         bil = [bilesen("H", 2.0 * 1.008 / 18.015 * 100.0 * (1 - bor_ppm * 1e-6), birim="wo"),
@@ -291,7 +320,7 @@ def lbe(sicaklik=723.0, yogunluk=None, ad=None):
         ad or "lbe",
         [bilesen("Pb", 44.5, birim="wo"), bilesen("Bi", 55.5, birim="wo")],
         rho, sicaklik=sicaklik, renk=(140, 140, 170),
-        gorunen_ad="LBE %.0f K (%.2f g/cc)" % (sicaklik, rho),
+        gorunen_ad="LBE %.0f K (%.2f g/cm³)" % (sicaklik, rho),
     )
 
 
@@ -304,7 +333,7 @@ def sodyum(sicaklik=673.0, yogunluk=None, ad=None):
     rho = yogunluk if yogunluk is not None else (1014.0 - 0.235 * sicaklik) / 1000.0
     return malzeme(ad or "sodyum", [bilesen("Na", 1.0)], rho,
                    sicaklik=sicaklik, renk=(200, 200, 120),
-                   gorunen_ad="Na %.0f K (%.3f g/cc)" % (sicaklik, rho))
+                   gorunen_ad="Na %.0f K (%.3f g/cm³)" % (sicaklik, rho))
 
 
 def helyum(yogunluk=0.0001785, sicaklik=600.0, ad=None):
@@ -450,6 +479,11 @@ _PARAM = {
                   "ondalik": 2, "adim": 0.1, "sonek": "%",
                   "ipucu": "U-235'in uranyum içindeki ağırlık yüzdesi. OpenMC'nin "
                            "zenginlik kısayolu %97'nin üstünde tanımsızdır."},
+    "gozeneklilik": {"etiket": "Gözeneklilik", "en_az": 0.0, "en_cok": 0.3,
+                     "ondalik": 3, "adim": 0.01, "sonek": "",
+                     "ipucu": "Yakıt tabakasındaki boşluk hacim kesri (0–0.3). Yoğunluk, "
+                              "U yüklemesi ve bu değerden hesaplanır: U₃Si₂ (12.2 g/cm³) + "
+                              "Al (2.70 g/cm³)."},
     "yogunluk": {"etiket": "Yoğunluk", "en_az": 0.01, "en_cok": 30.0,
                  "ondalik": 4, "adim": 0.01, "sonek": "g/cm³"},
     "sicaklik": {"etiket": "Sıcaklık", "tur": "sicaklik", "en_az": 250.0,
@@ -494,7 +528,7 @@ KATALOG = {
     "u10mo": ("U-10Mo — metalik uranyum alaşımı", "Ağırlıkça %10 molibdenli metalik yakıt.",
               ["zenginlik", "yogunluk", "sicaklik"]),
     "u3si2_al": ("U₃Si₂-Al — dispersiyon yakıtı", "MTR tipi araştırma reaktörü plakalarının yakıt tabakası.",
-                 ["u_yukleme", "zenginlik", "yogunluk", "sicaklik"]),
+                 ["u_yukleme", "zenginlik", "gozeneklilik", "sicaklik"]),
     "zirkaloy4": ("Zircaloy-4", "Hafif su reaktörü yakıt zarfı.", ["yogunluk", "sicaklik"]),
     "ss316": ("SS-316 paslanmaz çelik", "Hızlı reaktör zarfı ve yapısal malzeme.",
               ["yogunluk", "sicaklik"]),
@@ -610,9 +644,6 @@ def parametrik_mi(m):
     return all(yeni.get(a) == m.get(a) for a in FIZIK_ALANLARI)
 
 
-# U3Si2 kuramsal yogunlugu ve Al yogunlugu [g/cm3] -- dispersiyon tutarlilik uyarisi
-_U3SI2_YOGUNLUK = 12.2
-_AL_YOGUNLUK = 2.70
 
 
 def parametre_uyarilari(anahtar, param):
@@ -634,15 +665,15 @@ def parametre_uyarilari(anahtar, param):
             break
     if anahtar == "u3si2_al":
         u = float(p.get("u_yukleme") or 0.0)
-        yog = float(p.get("yogunluk") or 0.0)
-        kutle = u / 0.9271
-        if yog <= kutle:
-            uyari.append("Yoğunluk (%.2f g/cm³) U₃Si₂ kütlesinden (%.2f g/cm³) "
-                         "küçük: alüminyum payı sıfıra iner." % (yog, kutle))
-        else:
-            beklenen = kutle + (1.0 - kutle / _U3SI2_YOGUNLUK) * _AL_YOGUNLUK
-            if abs(yog / beklenen - 1.0) > 0.10:
-                uyari.append("Bu yüklemede U₃Si₂ (%.1f g/cm³) ile Al (%.2f g/cm³) "
-                             "karışımının yoğunluğu ≈ %.2f g/cm³; girilen %.2f g/cm³."
-                             % (_U3SI2_YOGUNLUK, _AL_YOGUNLUK, beklenen, yog))
+        gz = float(p.get("gozeneklilik") or 0.0)
+        try:
+            beklenen = u3si2_yogunlugu(u, gz)
+        except ValueError as e:
+            uyari.append(str(e))
+            beklenen = None
+        yog = p.get("yogunluk")
+        if beklenen is not None and yog is not None and abs(float(yog) / beklenen - 1.0) > 0.10:
+            uyari.append("Bu yüklemede U₃Si₂ (%.1f g/cm³) ile Al (%.2f g/cm³) "
+                         "karışımının yoğunluğu ≈ %.2f g/cm³; girilen %.2f g/cm³."
+                         % (_U3SI2_YOGUNLUK, _AL_YOGUNLUK, beklenen, float(yog)))
     return uyari

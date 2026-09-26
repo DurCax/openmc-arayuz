@@ -99,7 +99,7 @@
     },
     {
       "ad": "su",
-      "gorunen_ad": "H2O 0.700 g/cc + 1300 ppm B",
+      "gorunen_ad": "H2O 0.700 g/cm³ + 1300 ppm B",
       "yogunluk": {
         "birim": "g/cm3",
         "deger": 0.7

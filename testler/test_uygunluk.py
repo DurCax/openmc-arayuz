@@ -686,7 +686,7 @@ def test_sentetik_kurallar():
     # j) eksenel: aktif katmana kendi dolgusu verilince ana kafes geometriden cikar
     s = _yukle("pwr_eksenel")
     for b in s["kor"]["eksenel"]["bolgeler"]:
-        if b["ad"] == "aktif yakit":
+        if b["ad"] == "aktif yakıt":
             b["dolgu"] = "demet_blanket"
     kontrol("j) ana dolgu hicbir katmanda yok: demet_17x17 sunulmuyor",
             _g(u.gecerli_hedefler, s, "kafes_adim") == ["demet_blanket", "demet_plenum"])
