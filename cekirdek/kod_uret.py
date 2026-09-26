@@ -254,7 +254,7 @@ def _kor_kafesi(spec, kor, satirlar, uretilen, anahtar=None, sonek=""):
     satirlar.append("")
     satirlar.append("# kor kafesi (%d x %d demet), adım %s cm%s"
                     % (nx, ny, _f(kor["adim"]),
-                       (" -- katman: %s" % sonek) if sonek else ""))
+                       (" — katman: %s" % sonek) if sonek else ""))
     satirlar.append("%s_disi = openmc.Universe(cells=[openmc.Cell(fill=%s)])"
                     % (v, _mat_ifade((kor.get("yansitici") or {}).get("malzeme"))))
     satirlar.append("%s = openmc.RectLattice()" % v)
@@ -773,7 +773,7 @@ def _tukenme(spec, satirlar):
     satirlar.append("# hızı aynı oranda yanlış olur ve k-eff'te iz bırakmaz.")
     for ad, v in hv.items():
         satirlar.append("%s.depletable = True" % _ad(ad))
-        satirlar.append("%s.volume = %r   # cm3 -- %s" % (_ad(ad), v["hacim"], v["ayrinti"]))
+        satirlar.append("%s.volume = %r   # cm³ — %s" % (_ad(ad), v["hacim"], v["ayrinti"]))
     satirlar.append("")
     satirlar.append("# Zincir: %s" % zs["gerekce"])
     satirlar.append("# Bu yol bu makineye aittir; başka yerde OPENMC_CHAIN_FILE'a bakın.")
