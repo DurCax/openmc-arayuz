@@ -245,6 +245,19 @@ def malzeme_kontrol(spec):
             bulgular.append(Bulgu("hata", yer, "yogunluk pozitif olmali: %s" % yog))
 
         for b in m["bilesim"]:
+            # Kurucu "nuklid" disindaki her turu element sayar ve birimi
+            # OpenMC'ye aynen verir: "nuclide"/"atom" gibi bir yazim ancak
+            # kosuda patlar ya da nuklidi element diye ekler.
+            if b.get("tur", "element") not in ("element", "nuklid"):
+                bulgular.append(Bulgu(
+                    "hata", yer,
+                    "'%s' satırının türü geçersiz: %r" % (b.get("isim"), b.get("tur")),
+                    "Tür 'element' (doğal element) ya da 'nuklid' (izotop) olmalı."))
+            if b.get("birim", "ao") not in ("ao", "wo"):
+                bulgular.append(Bulgu(
+                    "hata", yer,
+                    "'%s' satırının birimi geçersiz: %r" % (b.get("isim"), b.get("birim")),
+                    "Birim 'ao' (atom oranı) ya da 'wo' (ağırlık oranı) olmalı."))
             if b.get("miktar", 0) <= 0:
                 bulgular.append(Bulgu("hata", yer,
                                       "'%s' miktari pozitif olmali: %s"
@@ -376,9 +389,16 @@ def cubuk_kontrol(spec):
                     "hata", yer,
                     "yaricaplar artan sirada olmali: r%d=%.5f >= r%d=%.5f"
                     % (i + 1, temiz[i], i + 2, temiz[i + 1])))
-        for b in bolgeler:
+        for i, b in enumerate(bolgeler):
             ad = b.get("malzeme")
-            if ad and ad != BOSLUK and malzeme_bul(spec, ad) is None:
+            if ad is None:
+                # Kurucu None'u sessizce bosluk (void) kurar; bilincli bosluk
+                # "bosluk" ile secilir.
+                bulgular.append(Bulgu(
+                    "hata", yer, "%d. bölgenin malzemesi seçilmemiş" % (i + 1),
+                    "Bir malzeme seçin; bölge bilerek boş bırakılacaksa "
+                    "'Boş (madde yok)' seçin."))
+            elif ad != BOSLUK and malzeme_bul(spec, ad) is None:
                 bulgular.append(Bulgu("hata", yer, "tanimsiz malzeme: %s" % ad))
     return bulgular
 
@@ -421,7 +441,13 @@ def kontrol_cubugu_kontrol(spec):
                         "Kontrol malzemeleri genellikle B4C, Ag-In-Cd, Gd2O3 ya "
                         "da Hf icerir."))
         iz = c.get("izleyici_malzeme")
-        if iz and iz != BOSLUK and malzeme_bul(spec, iz) is None:
+        if iz is None:
+            bulgular.append(Bulgu(
+                "uyari", yer,
+                "izleyici malzeme seçilmemiş -- çubuk çekildiğinde yeri boş (void) kalır",
+                "Çekilen çubuğun yerini genellikle soğutucu doldurur; bilerek boş "
+                "bırakılacaksa 'Boş (madde yok)' seçin."))
+        elif iz != BOSLUK and malzeme_bul(spec, iz) is None:
             bulgular.append(Bulgu("hata", yer, "tanimsiz izleyici malzeme: %s" % iz))
     return bulgular
 
@@ -439,7 +465,14 @@ def plaka_kontrol(spec):
                                       "%s pozitif olmali: %s" % (alan, deger)))
         for alan in ("et_malzeme", "zarf_malzeme", "sogutucu"):
             ad = p.get(alan)
-            if ad and ad != BOSLUK and malzeme_bul(spec, ad) is None:
+            if ad is None:
+                bulgular.append(Bulgu(
+                    "hata", yer,
+                    "%s seçilmemiş" % {"et_malzeme": "yakıt (et) malzemesi",
+                                        "zarf_malzeme": "zarf malzemesi",
+                                        "sogutucu": "soğutucu"}[alan],
+                    "Kurucu seçilmemiş malzemeyi boşluk (void) kurardı."))
+            elif ad != BOSLUK and malzeme_bul(spec, ad) is None:
                 bulgular.append(Bulgu("hata", yer,
                                       "%s icin tanimsiz malzeme: %s" % (alan, ad)))
     return bulgular

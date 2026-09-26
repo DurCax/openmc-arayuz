@@ -81,12 +81,16 @@ _SEVIYE_ADI = {"hata": "HATA", "uyari": "UYARI", "bilgi": "BİLGİ"}
 # sunulacagini belirler (uygunluk.parca_turleri); sekmeler acildiklarinda
 # yeni ture gore yeniden dolar.
 _KONU_BAGIMLILIK = {
-    "malzeme": {"cubuk", "demet", "kor"},   # malzeme listeleri her yerde kullaniliyor
-    "cubuk":   {"demet", "kor"},            # kafes anahtarlari ve kor secimi
+    # malzeme listeleri her yerde kullaniliyor; Hesap ayarlarindaki guc
+    # dagilimi bolgesi ve Tukenme'nin ek malzemeleri de malzeme adi gosterir
+    "malzeme": {"cubuk", "demet", "kor", "ayar", "tukenme"},
+    "cubuk":   {"demet", "kor", "ayar"},    # kafes anahtarlari, kor secimi, guc cubugu
     "demet":   {"kor"},                     # kor hangi demeti kullanacagini secer
     "kor":     {"cubuk", "demet"},
     "ayar":    set(),
-    "genel":   {"malzeme", "cubuk", "demet", "kor", "ayar"},
+    # Calistir'daki kosu dizini: Tukenme onceki sonucu <dizin>_tukenme'de arar
+    "calistirma": {"tukenme"},
+    "genel":   {"malzeme", "cubuk", "demet", "kor", "ayar", "tukenme"},
 }
 
 # Dogrulama bulgusunun "yer" onekinden o bulguyu duzelten EDITORE.
@@ -288,6 +292,71 @@ def sonraki_adim(isaretler, gorunur, cizildi=True):
 
 def _alan_varsayilan_mi(kor, alan):
     return kor.get(alan) == sema.VARSAYILAN_KOR.get(alan)
+
+
+_AD_LISTELERI = ("malzemeler", "cubuklar", "plakalar", "demetler")
+
+
+def model_adlari(spec):
+    """{liste: set(ad)} -- malzeme ve parca adlari (tur hafizasi icin)."""
+    return {l: {x.get("ad") for x in spec.get(l) or []} for l in _AD_LISTELERI}
+
+
+def _adlari_cevir(deger, esle, kaybolan, anahtar=None):
+    """
+    Tur hafizasindaki bir alan degerinde adlari cevirir. (yeni_deger,
+    kaybolan_ad_var_mi) dondurur. Yalnizca AD olabilecek dizgilere bakar:
+    sozluk ANAHTARLARI (harita harfleri) ve "harita" satirlari atlanir --
+    "A" adli bir demet 1x1 haritanin "A" satirini degistirmesin.
+    """
+    if anahtar == "harita":
+        return deger, False
+    if isinstance(deger, str):
+        if deger in esle:
+            return esle[deger], False
+        return deger, deger in kaybolan
+    if isinstance(deger, dict):
+        yeni, kayip = {}, False
+        for k, v in deger.items():
+            yeni[k], kv = _adlari_cevir(v, esle, kaybolan, k)
+            kayip = kayip or kv
+        return yeni, kayip
+    if isinstance(deger, list):
+        yeni, kayip = [], False
+        for v in deger:
+            yv, kv = _adlari_cevir(v, esle, kaybolan)
+            yeni.append(yv)
+            kayip = kayip or kv
+        return yeni, kayip
+    return deger, False
+
+
+def tur_hafizasini_esitle(hafiza, onceki, simdiki):
+    """
+    Kor turu hafizasini ad degisimlerine uydurur (onceki/simdiki:
+    model_adlari). Bir listede TEK ad kaybolup TEK ad eklendiyse bu bir
+    yeniden adlandirmadir: hafizadaki eski ad yenisine cevrilir. Baska
+    kaybolan (silinen) adlari iceren alanlar hafizadan dusurulur; yoksa tur
+    geri cevrilince var olmayan bir ada baglanirdi (Ajan 4/5 bulgusu).
+    """
+    esle, kaybolan = {}, set()
+    for l in _AD_LISTELERI:
+        giden = onceki.get(l, set()) - simdiki.get(l, set())
+        gelen = simdiki.get(l, set()) - onceki.get(l, set())
+        if len(giden) == 1 and len(gelen) == 1:
+            esle[next(iter(giden))] = next(iter(gelen))
+        else:
+            kaybolan |= giden
+    if not esle and not kaybolan:
+        return False
+    for tur, alanlar in hafiza.items():
+        for alan in list(alanlar):
+            yeni, kayip = _adlari_cevir(alanlar[alan], esle, kaybolan, alan)
+            if kayip:
+                del alanlar[alan]
+            else:
+                alanlar[alan] = yeni
+    return True
 
 
 def kor_turu_degistir(spec, yeni_tur, hafiza=None):
@@ -493,6 +562,7 @@ class AnaPencere(QtWidgets.QMainWindow):
         self._gecmis_yaziyor = False
         self._model_var = False          # baslangic ekraninda "modele don" gorunsun mu
         self._tur_hafizasi = {}          # kor turu degisiminde eski turun alanlari
+        self._adlar = {}                 # model_adlari: hafizayi ad degisimine uydurmak icin
         self._isaretler = {}
 
         # ---------------- editor sekmeleri ----------------
@@ -652,6 +722,10 @@ class AnaPencere(QtWidgets.QMainWindow):
         self.s_tukenme.kapi_ayarla(self._kosu_izni)
         for s in (self.s_calistir, self.s_analiz, self.s_tukenme):
             s.durum.connect(self._sekme_durum_mesaji)
+            s.sonuc_degisti.connect(self._isaretleri_guncelle)
+        # Is parcacigi ve kosu dizini Calistir'da duzenlenir (konu "calistirma"):
+        # proje kirlenir, geri alinabilir.
+        self.s_calistir.degisti.connect(self._degisti)
 
         self._dog_sayac = QtCore.QTimer(self); self._dog_sayac.setSingleShot(True)
         self._dog_sayac.setInterval(250)
@@ -933,6 +1007,7 @@ class AnaPencere(QtWidgets.QMainWindow):
 
     def _spec_uygula(self):
         """Spec bastan yuklendi -- tum sekmeleri tazele."""
+        self._hafizayi_esitle()
         self.s_tukenme.proje_ayarla(self.proje_yolu, self.ornek_kaynagi)
         for e in self.editorler:
             e.spec_yukle(self.spec)
@@ -954,6 +1029,7 @@ class AnaPencere(QtWidgets.QMainWindow):
         gorunmeyen sekmelerin secimi sifirlaniyordu).
         """
         self._kirli = True
+        self._hafizayi_esitle()
         bagimli_konular = _KONU_BAGIMLILIK.get(konu, set())
         gorunur = self._gorunur_editor()
         for k in bagimli_konular:
@@ -966,13 +1042,23 @@ class AnaPencere(QtWidgets.QMainWindow):
             else:
                 self._kirli_sekmeler.add(e)
 
-        self.onizleme.iste()
+        if konu != "calistirma":
+            # Is parcacigi / kosu dizini geometriyi degistirmez; onizleme
+            # onbellek anahtari tum spec'i kapsadigi icin bosuna yeniden cizerdi.
+            self.onizleme.iste()
         self._dog_sayac.start()
         self._gecmis_sayac.start()
         self._sekme_gorunurlugu()
         self._baslik_guncelle()
         self._ozet_guncelle()
         self._isaretleri_guncelle()
+
+    def _hafizayi_esitle(self):
+        """Malzeme/parca adi degistiyse ya da silindiyse tur hafizasini uydur."""
+        simdiki = model_adlari(self.spec)
+        if self._adlar:
+            tur_hafizasini_esitle(self._tur_hafizasi, self._adlar, simdiki)
+        self._adlar = simdiki
 
     def _gorunur_editor(self):
         """Etkin sekmenin ICINDEKI editoru dondurur (kaydirma alanini asar)."""
@@ -1042,15 +1128,11 @@ class AnaPencere(QtWidgets.QMainWindow):
                 k = yer_sekme_anahtari(b.yer)
                 if k:
                     hata[k] = hata.get(k, 0) + 1
-        try:
-            tukenme_sonucu = self.s_tukenme.tablo.rowCount() > 0
-        except Exception:
-            tukenme_sonucu = False
         self._isaretler = sekme_isaretleri(
             self.spec, hata,
-            kosu_basarili=bool(getattr(self.s_calistir, "_son_basarili", False)),
-            analiz_sonucu=bool(getattr(self.s_analiz, "_sonuclar", None)),
-            tukenme_sonucu=tukenme_sonucu)
+            kosu_basarili=self.s_calistir.sonuc_var(),
+            analiz_sonucu=self.s_analiz.sonuc_var(),
+            tukenme_sonucu=self.s_tukenme.sonuc_var())
         for anahtar, i in self._sekme_ix.items():
             isaret, aciklama = self._isaretler.get(anahtar, ("", ""))
             ad = SEKME_ADLARI[anahtar]

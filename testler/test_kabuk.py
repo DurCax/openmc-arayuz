@@ -899,11 +899,50 @@ def test_ayarlar_yalitik():
     shutil.rmtree(d, True)
 
 
+def test_tur_hafizasi_ad_degisimi():
+    """Kor turu hafizasi ad degisimine uyar (Ajan 4/5 bulgusu): tek_demet ->
+    tamburlu -> (demet yeniden adlandirilir) -> tek_demet donusunde kor
+    ESKI, artik olmayan ada baglanmamali."""
+    if _qt() is None:
+        return
+    from arayuz import ana_pencere as ap
+    import json
+    from arayuz.sekme_cubuk import parca_adini_degistir
+
+    # saf fonksiyon: yeniden adlandirma cevrilir, silinen ad dusurulur,
+    # harita satirlari ve sozluk anahtarlari (harfler) dokunulmaz
+    h = {"kare_kafes": {"harita": ["A"], "anahtar": {"A": "A"}, "adim": 21.5},
+         "tamburlu": {"dolgu": "uo2", "yansitici": {"malzeme": "su"}}}
+    once = {"malzemeler": {"uo2", "su"}, "cubuklar": set(), "plakalar": set(),
+            "demetler": {"A"}}
+    sonra = {"malzemeler": {"uo2"}, "cubuklar": set(), "plakalar": set(),
+             "demetler": {"B"}}
+    ap.tur_hafizasini_esitle(h, once, sonra)
+    kontrol("hafiza: yeniden adlandirilan demet cevrildi, harita satiri ayni",
+            h["kare_kafes"]["anahtar"] == {"A": "B"} and h["kare_kafes"]["harita"] == ["A"],
+            "-> %s" % h["kare_kafes"])
+    kontrol("hafiza: silinen malzemeyi iceren alan dusuruldu, digerleri kaldi",
+            "yansitici" not in h["tamburlu"] and h["tamburlu"].get("dolgu") == "uo2",
+            "-> %s" % h["tamburlu"])
+
+    # uctan uca: pencerede
+    p = _pencere(os.path.join(ORNEK, "pwr_17x17.json"))
+    kontrol("17x17 tek demet", p.spec["kor"]["tur"] == "tek_demet")
+    p.kor_turunu_degistir("tamburlu")
+    parca_adini_degistir(p.spec, "demet_17x17", "demet_yeni")
+    p._degisti("genel")
+    p.kor_turunu_degistir("tek_demet")
+    d = p.spec["kor"].get("demet")
+    kontrol("tur geri cevrilince kor yeni ada bagli", d == "demet_yeni", "-> %r" % d)
+    kontrol("eski ad spec'te kalmadi", "demet_17x17" not in json.dumps(p.spec))
+    p.close()
+
+
 HIZLI = [test_bos_sablonlar, test_baslangic_ekrani, test_sekme_gorunurlugu,
          test_sekme_isaretleri, test_model_basligi, test_sag_panel_ve_rozet,
          test_kaldirilanlar_ve_kisayollar, test_minimum_yukseklik, test_tema_gecisi,
          test_ortak_bilesenler, test_izgara_yardimcilari, test_izgara_boyama,
-         test_ayarlar_yalitik]
+         test_ayarlar_yalitik, test_tur_hafizasi_ad_degisimi]
 YAVAS = []
 
 
