@@ -13,7 +13,7 @@ Hakkinda penceresi ve rapor bu sabiti kullanir (ad degisirse tek satir).
 
 import os
 
-UYGULAMA_ADI = "OpenMC Arayüz"
+UYGULAMA_ADI = "OpenMC Reaktör Kuru Arayüzü"
 PAKET_ADI = "openmc-arayuz"
 _GERI_DONUS_SURUMU = "2.0.0.dev0"
 _PYPROJECT = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),

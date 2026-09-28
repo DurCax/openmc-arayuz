@@ -27,6 +27,11 @@ if KOK not in sys.path:
     sys.path.insert(0, KOK)
 ORNEK = os.path.join(KOK, "ornekler")
 
+# Monte Carlo testlerinin is parcacigi sayisi. Sabit yazilmaz: paralel
+# ajanlar/CI makineyi paylasir (TEST_IS_PARCACIGI > OMP_NUM_THREADS > 8).
+ISLEM_PARCACIGI = int(os.environ.get("TEST_IS_PARCACIGI")
+                      or os.environ.get("OMP_NUM_THREADS") or 8)
+
 
 def _ayarlari_yalit():
     """Testler kullanicinin GERCEK uygulama ayarlarina (son kullanilanlar,

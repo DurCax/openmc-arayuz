@@ -9,7 +9,7 @@
 import os
 
 from cekirdek import sema, kurucu
-from testler.ortak_test import kontrol
+from testler.ortak_test import kontrol, ISLEM_PARCACIGI
 from testler.regresyon_ortak import ORNEK, REFERANS_K, REFERANS_SAPMA
 
 
@@ -27,7 +27,7 @@ def test_regresyon_cipasi(gecici):
     try:
         os.chdir(dizin)
         model, _ = kurucu.kur(spec)
-        k = openmc.StatePoint(model.run(threads=8, output=False)).keff
+        k = openmc.StatePoint(model.run(threads=ISLEM_PARCACIGI, output=False)).keff
     finally:
         os.chdir(eski)
     fark = abs(k.nominal_value - REFERANS_K)
@@ -56,7 +56,7 @@ def test_godiva_kriteri(gecici):
     try:
         os.chdir(dizin)
         model, _ = kurucu.kur(spec)
-        k = openmc.StatePoint(model.run(threads=8, output=False)).keff
+        k = openmc.StatePoint(model.run(threads=ISLEM_PARCACIGI, output=False)).keff
     finally:
         os.chdir(eski)
     KRITER, KRITER_S = 1.0000, 0.0010

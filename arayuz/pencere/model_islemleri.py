@@ -9,14 +9,14 @@
 import copy
 import os
 
-from cekirdek import sema, dogrula, uygunluk
+from cekirdek import sema, dogrula, surum, uygunluk
 
 
 # Proje koku: arayuz/pencere/ -> arayuz/ -> kok (eski arayuz/ana_pencere.py'de
 # iki dirname idi; dosya bir dizin derine indigi icin uc).
 KOK = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 ORNEKLER = os.path.join(KOK, "ornekler")
-UYGULAMA_ADI = "OpenMC Reaktör Kuru Arayüzü"
+UYGULAMA_ADI = surum.UYGULAMA_ADI
 
 
 # Bir konu degistiginde hangi sekmelerin tazelenmesi gerektigi.

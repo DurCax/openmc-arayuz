@@ -31,7 +31,10 @@ from arayuz.sekme_demet import DemetSekmesi  # noqa: F401
 from arayuz.sekme_kor import KorSekmesi  # noqa: F401
 from arayuz.sekme_malzeme import MalzemeSekmesi  # noqa: F401
 from arayuz import baslangic, tema  # noqa: F401
-from arayuz.ortak import DurumRozeti, cumle_basi, qt_turkce_cevirisi, tekerlek_korumasi_kur  # noqa: F401
+from arayuz.ortak import (  # noqa: F401
+    DurumRozeti, cumle_basi, qt_cevirisi_kur, qt_turkce_cevirisi, tekerlek_korumasi_kur)
+from arayuz import hata_yakalayici
+from cekirdek import ceviri, gunluk, surum
 
 from arayuz.pencere.model_islemleri import (  # noqa: F401
     KOK, ORNEKLER, UYGULAMA_ADI, _KONU_BAGIMLILIK, _YER_SEKME, EDITOR_ANAHTARI,
@@ -52,8 +55,14 @@ def main(argv=None):
     # virgul) degil C yerel ayarina gore yazar/okur; etiketler de nokta kullanir.
     QtCore.QLocale.setDefault(QtCore.QLocale.c())
     app = QtWidgets.QApplication(sys.argv[:1])
-    qt_turkce_cevirisi(app)
-    app.setApplicationName("OpenMC Arayüz")
+    gunluk.kur()
+    hata_yakalayici.kur(app)
+    ayar = QtCore.QSettings("openmc_arayuz", "arayuz")
+    ceviri.dil_ayarla(ceviri.varsayilan_dil(ayar=ayar.value("gorunum/dil", "", str)))
+    qt_cevirisi_kur(app, ceviri.etkin_dil())
+    ceviri.dinleyici_ekle(lambda kod: qt_cevirisi_kur(app, kod))
+    app.setApplicationName(surum.UYGULAMA_ADI)
+    app.setApplicationVersion(surum.surum())
     tema.uygula(app)
     tekerlek_korumasi_kur(app)
     pencere = AnaPencere(argv[0] if argv else None)

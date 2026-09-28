@@ -49,3 +49,10 @@ msgstr "Open log"
 msgctxt "menü"
 msgid "Dil"
 msgstr "Language"
+
+# Dil secimi onayi (arayuz/pencere/menuler.py)
+msgid "Dil"
+msgstr "Language"
+
+msgid "Dil değişikliği uygulama yeniden başlatılınca geçerli olur."
+msgstr "The language change takes effect after the application restarts."

@@ -53,7 +53,7 @@ def test_zincir_butunlugu():
         shutil.rmtree(gecici, ignore_errors=True)
 
 
-def test_bateman_bozunum():
+def test_bateman_bozunum(gecici=None):
     """
     ANALITIK: zincirin bozunum verisi + OpenMC'nin CRAM cozucusu.
 
@@ -403,10 +403,9 @@ def test_arayuz_tukenme_gidip_gelme():
 
 
 HIZLI = [
-    test_zincir_butunlugu, test_bateman_bozunum, test_tukenme_zincir_secimi,
+    test_zincir_butunlugu, test_tukenme_zincir_secimi,
     test_tukenme_hacimleri, test_tukenme_dogrulama, test_tukenme_eskime,
     test_arayuz_tukenme_gidip_gelme,
 ]
 YAVAS = [
-    test_tukenme_kosu, test_tukenme_betik_esdegerligi,
-]
+    test_tukenme_kosu, test_tukenme_betik_esdegerligi, test_bateman_bozunum]

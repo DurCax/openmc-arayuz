@@ -10,7 +10,7 @@ import importlib.util
 import os
 
 from cekirdek import sema, kurucu, dogrula, kod_uret
-from testler.ortak_test import kontrol
+from testler.ortak_test import kontrol, ISLEM_PARCACIGI
 from testler.regresyon_ortak import ORNEK
 
 
@@ -169,7 +169,7 @@ def test_kontrol_cubugu_fizik(gecici):
         try:
             os.chdir(dizin)
             model, _ = kurucu.kur(s2)
-            kler.append(openmc.StatePoint(model.run(threads=8, output=False)).keff)
+            kler.append(openmc.StatePoint(model.run(threads=ISLEM_PARCACIGI, output=False)).keff)
         finally:
             os.chdir(eski)
     kontrol("daldirma k'yi dusuruyor (%.5f -> %.5f)"
@@ -195,7 +195,7 @@ def test_kontrol_cubugu_fizik(gecici):
                 model = mo.model
             else:
                 model, _ = kurucu.kur(s3)
-            sonuclar.append(openmc.StatePoint(model.run(threads=8, output=False)).keff)
+            sonuclar.append(openmc.StatePoint(model.run(threads=ISLEM_PARCACIGI, output=False)).keff)
         finally:
             os.chdir(eski)
     fark = abs(sonuclar[0].nominal_value - sonuclar[1].nominal_value)

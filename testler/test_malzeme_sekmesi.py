@@ -737,7 +737,7 @@ def _ad_degisimi_olc(spec, eski, yeni, baslik):
     return None
 
 
-def test_ad_degisimi_ornekler():
+def test_ad_degisimi_ornekler(gecici=None):
     print("\n[M8] AD DEGISIMI: 11 ornekte her malzeme yeni ada")
     from cekirdek import sema
     dosyalar = sorted(glob.glob(os.path.join(ORNEK, "*.json")))
@@ -910,9 +910,9 @@ def test_turkce_metinler():
 
 HIZLI = [test_kutuphane_listesi, test_parametre_formlari, test_parametrik_malzeme,
          test_kutup_yok_sayilir, test_bilesim_tablosu, test_gelismis_ve_sab,
-         test_sekme_dugmeleri, test_ad_degisimi_ornekler, test_ad_degisimi_genel_alanlar,
+         test_sekme_dugmeleri, test_ad_degisimi_genel_alanlar,
          test_sekmeden_ad_degisimi, test_turkce_metinler]
-YAVAS = []
+YAVAS = [test_ad_degisimi_ornekler]
 
 
 if __name__ == "__main__":

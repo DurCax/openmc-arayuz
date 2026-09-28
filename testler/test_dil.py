@@ -304,7 +304,7 @@ def _denetle(metinler):
     return ascii_, ham, virgul
 
 
-def test_arayuz_metinleri():
+def test_arayuz_metinleri(gecici=None):
     print("\n[D1] DIL: 11 ornekle kurulan pencerenin gorunen metinleri")
     metinler = ornek_metinleri()
     ascii_, ham, virgul = _denetle(metinler)
@@ -412,9 +412,9 @@ def test_qt_standart_metinleri():
                 os.path.join(KOK, "arayuz", "ana_pencere.py"), encoding="utf-8").read())
 
 
-HIZLI = [test_arayuz_metinleri, test_qt_standart_metinleri, test_bulgu_metinleri, test_cekirdek_yorumlari,
+HIZLI = [test_qt_standart_metinleri, test_bulgu_metinleri, test_cekirdek_yorumlari,
          test_ornek_basliklari]
-YAVAS = []
+YAVAS = [test_arayuz_metinleri]
 
 
 if __name__ == "__main__":

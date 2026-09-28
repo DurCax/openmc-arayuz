@@ -10,7 +10,7 @@ import importlib.util
 import os
 
 from cekirdek import sema, kurucu, kod_uret
-from testler.ortak_test import kontrol
+from testler.ortak_test import kontrol, ISLEM_PARCACIGI
 from testler.regresyon_ortak import ORNEK
 
 
@@ -24,7 +24,7 @@ def test_betik_esdegerligi(gecici):
         os.makedirs(yol_a, exist_ok=True)
         os.chdir(yol_a)
         model_a, _ = kurucu.kur(spec)
-        k_a = openmc.StatePoint(model_a.run(threads=8, output=False)).keff
+        k_a = openmc.StatePoint(model_a.run(threads=ISLEM_PARCACIGI, output=False)).keff
 
         yol_b = os.path.join(gecici, "yol_b")
         os.makedirs(yol_b, exist_ok=True)
@@ -35,7 +35,7 @@ def test_betik_esdegerligi(gecici):
         sm = importlib.util.spec_from_file_location("uretilen", betik)
         mod = importlib.util.module_from_spec(sm)
         sm.loader.exec_module(mod)
-        k_b = openmc.StatePoint(mod.model.run(threads=8, output=False)).keff
+        k_b = openmc.StatePoint(mod.model.run(threads=ISLEM_PARCACIGI, output=False)).keff
     finally:
         os.chdir(eski)
     fark = abs(k_a.nominal_value - k_b.nominal_value)
@@ -57,7 +57,7 @@ def test_altigen_betik_esdegerligi(gecici):
         ya = os.path.join(gecici, "hex_a"); os.makedirs(ya, exist_ok=True)
         os.chdir(ya)
         ma, _ = kurucu.kur(spec)
-        ka = openmc.StatePoint(ma.run(threads=8, output=False)).keff
+        ka = openmc.StatePoint(ma.run(threads=ISLEM_PARCACIGI, output=False)).keff
         yb = os.path.join(gecici, "hex_b"); os.makedirs(yb, exist_ok=True)
         os.chdir(yb)
         betik = os.path.join(yb, "model.py")
@@ -66,7 +66,7 @@ def test_altigen_betik_esdegerligi(gecici):
         sm = importlib.util.spec_from_file_location("hexuret", betik)
         mo = importlib.util.module_from_spec(sm)
         sm.loader.exec_module(mo)
-        kb = openmc.StatePoint(mo.model.run(threads=8, output=False)).keff
+        kb = openmc.StatePoint(mo.model.run(threads=ISLEM_PARCACIGI, output=False)).keff
     finally:
         os.chdir(eski)
     fark = abs(ka.nominal_value - kb.nominal_value)

@@ -10,7 +10,7 @@ import importlib.util
 import os
 
 from cekirdek import sema, kurucu, dogrula, kod_uret
-from testler.ortak_test import kontrol
+from testler.ortak_test import kontrol, ISLEM_PARCACIGI
 from testler.regresyon_ortak import ORNEK
 
 
@@ -158,7 +158,7 @@ def test_guc_esdegerlik_ve_korunum(gecici):
                 model = mo.model
             else:
                 model, _ = kurucu.kur(spec)
-            sp = openmc.StatePoint(model.run(threads=8, output=False))
+            sp = openmc.StatePoint(model.run(threads=ISLEM_PARCACIGI, output=False))
         finally:
             os.chdir(eski)
         return sp

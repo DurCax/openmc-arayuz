@@ -313,7 +313,7 @@ def test_eksenel_betik_ve_korunum(gecici):
             1.3 < (f.get("F_q") or 0) < 2.5)
 
 
-def test_onizleme_tallyli_model():
+def test_onizleme_tallyli_model(gecici=None):
     """
     ONIZLEME TALLY'LERE TAKILMAMALI.
 
@@ -424,8 +424,6 @@ def test_ana_dolgu_ture_gore():
 HIZLI = [
     test_ana_dolgu_ture_gore, test_eksenel_geometri, test_eksenel_araliklar,
     test_eksenel_dogrulama, test_kontrol_cubugu_eksenel,
-    test_arayuz_eksenel_gidip_gelme, test_onizleme_tallyli_model,
-]
+    test_arayuz_eksenel_gidip_gelme, ]
 YAVAS = [
-    test_eksenel_betik_ve_korunum,
-]
+    test_eksenel_betik_ve_korunum, test_onizleme_tallyli_model]

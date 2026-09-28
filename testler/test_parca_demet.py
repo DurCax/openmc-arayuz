@@ -33,7 +33,7 @@ import os
 import re
 import tempfile
 
-from testler.ortak_test import kontrol, KOK, ORNEK  # noqa: F401
+from testler.ortak_test import kontrol, KOK, ORNEK, ISLEM_PARCACIGI  # noqa: F401
 
 
 def _qt():
@@ -436,7 +436,7 @@ def _bulgular(spec, esleme=None):
     return sorted(sonuc)
 
 
-def test_ad_degisimi():
+def test_ad_degisimi(gecici=None):
     print("\n[P4] AD DEGISIMI: 11 ornekte her parca/demet yeniden adlandirilir")
     if _qt() is None:
         return
@@ -675,7 +675,7 @@ def test_demet_boyama():
 # [P7] yerlesim (gercek pencere)
 # ============================================================================
 
-def test_demet_yerlesim():
+def test_demet_yerlesim(gecici=None):
     print("\n[P7] DEMET: iki sutun, 17x17 harita kaydirmasiz")
     uyg = _qt()
     if uyg is None:
@@ -850,7 +850,7 @@ def test_yavas_sablon_pin(gecici):
     os.makedirs(dizin, exist_ok=True)
     try:
         import openmc
-        sp = model.run(cwd=dizin, threads=4, output=False)
+        sp = model.run(cwd=dizin, threads=ISLEM_PARCACIGI, output=False)
         with openmc.StatePoint(sp) as st:
             k = st.keff
         kontrol("sablon pin hucre k-inf 1.25-1.50 (PWR UO2 %3.x)",
@@ -860,9 +860,8 @@ def test_yavas_sablon_pin(gecici):
 
 
 HIZLI = [test_parca_gorunurluk, test_sablon_malzemeleri, test_bolge_tablosu,
-         test_ad_degisimi, test_demet_palet, test_demet_boyama, test_demet_yerlesim,
-         test_demet_ozellikler]
-YAVAS = [test_yavas_sablon_pin]
+         test_demet_palet, test_demet_boyama, test_demet_ozellikler]
+YAVAS = [test_yavas_sablon_pin, test_demet_yerlesim, test_ad_degisimi]
 
 
 if __name__ == "__main__":

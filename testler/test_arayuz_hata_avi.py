@@ -26,7 +26,7 @@ from testler.regresyon_ortak import (
 #   duzeltmeden once gecen bir test hicbir sey kanitlamaz.
 # ============================================================================
 
-def test_arayuz_tekerlek():
+def test_arayuz_tekerlek(gecici=None):
     """
     [1] Fare tekerlegi ODAKSIZ secim/sayi kutularini degistirmemeli.
 
@@ -493,10 +493,10 @@ def test_arayuz_analiz_hedef():
 
 
 HIZLI = [
-    test_arayuz_tekerlek, test_arayuz_tambur_yansitici, test_arayuz_kor_tur_alanlari,
+    test_arayuz_tambur_yansitici, test_arayuz_kor_tur_alanlari,
     test_arayuz_kuresel_yukseklik, test_arayuz_tambur_kaydirici,
     test_arayuz_tally_filtre_korunur, test_tally_mesh_otomatik,
     test_arayuz_guc_alanlari, test_sabit_kaynak_cevrim_satiri,
     test_arayuz_sabit_kaynak_sonuc, test_arayuz_analiz_hedef,
 ]
-YAVAS = []
+YAVAS = [test_arayuz_tekerlek]

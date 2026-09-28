@@ -388,7 +388,7 @@ def _deger(spec, tur, hedef):
     raise ValueError(tur)
 
 
-def test_sunulan_hedef_modeli_degistirir():
+def test_sunulan_hedef_modeli_degistirir(gecici=None):
     """
     Ilk surum pwr_kontrol'de kilavuz_boru yaricaplarini (kafeste yok), sfr'de
     b4c yogunlugunu ve emici_cubuk yaricaplarini (anahtarda var, haritada yok)
@@ -905,7 +905,6 @@ def test_dogrula_yeni_bulgular():
     kontrol("13) sabit kaynak + pasif -> BILGI", bool(_bul(s, "bilgi", "pasif çevrim")))
 
 
-HIZLI = [test_kahin_tablosu, test_sunulan_hedef_modeli_degistirir,
-         test_kutuphane_rolleri, test_sentetik_kurallar, test_dogrula_uyumu,
+HIZLI = [test_kahin_tablosu, test_kutuphane_rolleri, test_sentetik_kurallar, test_dogrula_uyumu,
          test_dogrula_yeni_bulgular]
-YAVAS = []
+YAVAS = [test_sunulan_hedef_modeli_degistirir]

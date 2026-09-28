@@ -410,7 +410,7 @@ def test_kor_harita_boyama():
     uyg  # noqa: B018
 
 
-def test_kor_yalniz_tur_alanlari_yazilir():
+def test_kor_yalniz_tur_alanlari_yazilir(gecici=None):
     print("\n[A6-7] KOR: kayit yalnizca turun alanlarini yazar; yukleme spec'i degistirmez")
     uyg = _qt()
     if uyg is None:
@@ -840,7 +840,7 @@ def test_ayar_yukleme_kayit_kimligi():
 # ONIZLEME
 # ============================================================================
 
-def test_onizleme_ikili_kesit():
+def test_onizleme_ikili_kesit(gecici=None):
     print("\n[A6-17] ONIZLEME: 3B'de xy + xz yan yana, 2B'de tek; API ve korumalar")
     uyg = _qt()
     if uyg is None:
@@ -925,12 +925,12 @@ def test_onizleme_ikili_kesit():
 
 HIZLI = [test_kor_tur_bilgisi, test_kor_gorunen_alanlar, test_kor_sinir_ogeleri,
          test_kor_yukseklik_secimi, test_kor_katman_sirasi, test_kor_harita_boyama,
-         test_kor_yalniz_tur_alanlari_yazilir, test_kor_tur_gecisi_ve_yansitici,
+         test_kor_tur_gecisi_ve_yansitici,
          test_numarali_sekme_atfi_yok, test_ayar_hassasiyet, test_ayar_moda_gore_gizleme,
          test_ayar_calistirma_dokunulmaz, test_ayar_gelismis_ve_entropi,
          test_ayar_guc_dagilimi, test_ayar_tally_setleri, test_ayar_yukleme_kayit_kimligi,
-         test_onizleme_ikili_kesit]
-YAVAS = []
+         ]
+YAVAS = [test_onizleme_ikili_kesit, test_kor_yalniz_tur_alanlari_yazilir]
 
 
 if __name__ == "__main__":

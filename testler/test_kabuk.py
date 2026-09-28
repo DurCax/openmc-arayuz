@@ -66,7 +66,7 @@ def _duz(html):
 # 1. bos sablonlar
 # ============================================================================
 
-def test_bos_sablonlar():
+def test_bos_sablonlar(gecici=None):
     print("\n[K1] BASLANGIC: her 'Bos basla' sablonu gecerli, kurulur ve cizilir")
     import matplotlib
     matplotlib.use("Agg")
@@ -211,7 +211,7 @@ def test_baslangic_ekrani():
 # 3. sekmeler: gorunurluk, geri dusme, isaretler
 # ============================================================================
 
-def test_sekme_gorunurlugu():
+def test_sekme_gorunurlugu(gecici=None):
     print("\n[K3] SEKMELER: gorunurluk = uygunluk.gecerli_sekmeler, numarasiz basliklar")
     uyg = _qt()
     if uyg is None:
@@ -423,7 +423,7 @@ def test_model_basligi():
 # 5. sag panel, rozet, CALISTIR kapisi
 # ============================================================================
 
-def test_sag_panel_ve_rozet():
+def test_sag_panel_ve_rozet(gecici=None):
     print("\n[K6] SAG PANEL yalnizca tasarim sekmelerinde; durum rozeti; kapi")
     uyg = _qt()
     if uyg is None:
@@ -523,7 +523,7 @@ def test_kaldirilanlar_ve_kisayollar():
         _kapat(p)
 
 
-def test_minimum_yukseklik():
+def test_minimum_yukseklik(gecici=None):
     print("\n[K8] PENCERE minimum yuksekligi kucuk ekranlara sigar (<= 320 px)")
     uyg = _qt()
     if uyg is None:
@@ -545,7 +545,7 @@ def test_minimum_yukseklik():
         _kapat(p)
 
 
-def test_tema_gecisi():
+def test_tema_gecisi(gecici=None):
     print("\n[K9] TEMA: acik <-> koyu gecisi kabugu bozmuyor")
     uyg = _qt()
     if uyg is None:
@@ -989,7 +989,7 @@ def test_giris_oklari():
     kontrol("ok resmi bos degil", dolu > 8, "-> %d piksel" % dolu)
 
 
-def test_tur_degisimi_eksik_parca():
+def test_tur_degisimi_eksik_parca(gecici=None):
     """Pin -> plaka / demet / tam kor: gereken parca sablondan kurulur, ham
     Python hata metni gorunmez, sablon adi yeni ture uyar (Ajan 9 K10)."""
     if _qt() is None:
@@ -1019,14 +1019,11 @@ def test_tur_degisimi_eksik_parca():
             hata_metni(KeyError("tanımsız plaka elemanı: None")) == "tanımsız plaka elemanı: seçilmemiş")
 
 
-HIZLI = [test_bos_sablonlar, test_baslangic_ekrani, test_sekme_gorunurlugu,
-         test_sekme_isaretleri, test_model_basligi, test_sag_panel_ve_rozet,
-         test_kaldirilanlar_ve_kisayollar, test_minimum_yukseklik, test_tema_gecisi,
-         test_ortak_bilesenler, test_izgara_yardimcilari, test_izgara_boyama,
+HIZLI = [test_baslangic_ekrani, test_sekme_isaretleri, test_model_basligi, test_kaldirilanlar_ve_kisayollar, test_ortak_bilesenler, test_izgara_yardimcilari, test_izgara_boyama,
          test_ayarlar_yalitik, test_tur_hafizasi_ad_degisimi,
          test_kor_tur_baglantisi, test_bulgusuz_dogrulama_satiri,
-         test_giris_oklari, test_tur_degisimi_eksik_parca]
-YAVAS = []
+         test_giris_oklari, ]
+YAVAS = [test_bos_sablonlar, test_sekme_gorunurlugu, test_sag_panel_ve_rozet, test_tema_gecisi, test_minimum_yukseklik, test_tur_degisimi_eksik_parca]
 
 
 if __name__ == "__main__":

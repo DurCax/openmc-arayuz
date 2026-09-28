@@ -8,6 +8,8 @@
 
 from PySide6 import QtCore, QtGui, QtWidgets
 from arayuz import tema
+from cekirdek import ceviri
+from cekirdek.ceviri import _
 from arayuz.ortak import DurumRozeti
 from arayuz.pencere.model_islemleri import UYGULAMA_ADI
 from arayuz.pencere.proje import _ICE_AKTAR_NOTU
@@ -220,6 +222,8 @@ class MenulerMixin(object):
             m_gorunum.addAction(e)
             self._tema_eylemleri[anahtar] = e
         m_gorunum.addSeparator()
+        self._dil_menusu_kur(m_gorunum)
+        m_gorunum.addSeparator()
         self._eylem(m_gorunum, "Tam ekran", self._tam_ekran, "F11")
 
         m_yardim = self.menuBar().addMenu("&Yardım")
@@ -304,6 +308,25 @@ class MenulerMixin(object):
         self._ozet_guncelle()              # baslik baglanti rengi
         self.onizleme._ciz()               # grafik paleti
         self.statusBar().showMessage("Tema: %s" % tema.TEMALAR[ad]["ad"], 4000)
+
+    def _dil_menusu_kur(self, ust_menu):
+        """Gorunum > Dil: secim QSettings'e yazilir, yeniden baslatinca gecerli."""
+        menu = ust_menu.addMenu(ceviri.dil_menusu_basligi())
+        grup = QtGui.QActionGroup(menu)
+        grup.setExclusive(True)
+        for kod, ad in ceviri.dil_secenekleri():
+            e = menu.addAction(ad)
+            e.setCheckable(True)
+            e.setData(kod)
+            e.setChecked(kod == ceviri.etkin_dil())
+            grup.addAction(e)
+        grup.triggered.connect(self._dil_secildi)
+        self._dil_grubu = grup
+
+    def _dil_secildi(self, eylem):
+        self.ayarlar.setValue("gorunum/dil", eylem.data())
+        QtWidgets.QMessageBox.information(
+            self, _("Dil"), _("Dil değişikliği uygulama yeniden başlatılınca geçerli olur."))
 
     def _tam_ekran(self):
         """F11 -- tam ekran ac/kapa."""

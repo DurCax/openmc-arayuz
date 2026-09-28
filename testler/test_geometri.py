@@ -34,7 +34,7 @@ def test_geometri_olculeri():
         kontrol(ad, uyum, "olculen %.4f x %.4f, beklenen %.4f x %.4f" % (gx, gy, bx, by))
 
 
-def test_cizim():
+def test_cizim(gecici=None):
     print("\n[4] Model.plot() calismali")
     import matplotlib
     matplotlib.use("Agg")
@@ -128,6 +128,5 @@ def test_ice_aktarma():
 
 HIZLI = [
     test_geometri_olculeri, test_altigen_duzen, test_altigen_sinir, test_ice_aktarma,
-    test_cizim,
-]
-YAVAS = []
+    ]
+YAVAS = [test_cizim]

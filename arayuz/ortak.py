@@ -60,20 +60,35 @@ def tekerlek_korumasi_kur(uygulama=None):
     _SUZGEC[id(uygulama)] = suzgec
 
 
-def qt_turkce_cevirisi(uygulama):
+_QT_CEVIRMEN = {}
+
+
+def qt_cevirisi_kur(uygulama, dil):
     """
     Qt'nin kendi metinlerini (standart dugmeler: Kapat, Evet/Hayir, Iptal;
-    dosya diyaloglari, sag tik menuleri) Turkce yapar. Ceviri dosyasi
-    (qtbase_tr.qm) Qt ile gelir. Yuklenemezse None doner, uygulama Ingilizce
-    Qt metinleriyle calismayi surdurur. Sayi bicimi ETKILENMEZ (QLocale
-    varsayilani ayridir).
+    dosya diyaloglari, sag tik menuleri) etkin dile uydurur. "tr" icin
+    qtbase_tr.qm (Qt ile gelir) yuklenir; baska dilde cevirmen kaldirilir
+    (Qt'nin kaynak dili Ingilizcedir). Yuklenemezse None doner, uygulama
+    Ingilizce Qt metinleriyle calismayi surdurur. Sayi bicimi ETKILENMEZ
+    (QLocale varsayilani ayridir).
     """
+    eski = _QT_CEVIRMEN.pop(id(uygulama), None)
+    if eski is not None:
+        uygulama.removeTranslator(eski)
+    if dil != "tr":
+        return None
     ceviri = QtCore.QTranslator(uygulama)
     yol = QtCore.QLibraryInfo.path(QtCore.QLibraryInfo.TranslationsPath)
     if ceviri.load(QtCore.QLocale(QtCore.QLocale.Turkish, QtCore.QLocale.Turkey),
                    "qtbase", "_", yol) and uygulama.installTranslator(ceviri):
+        _QT_CEVIRMEN[id(uygulama)] = ceviri
         return ceviri
     return None
+
+
+def qt_turkce_cevirisi(uygulama):
+    """Geriye uyumluluk: Qt metinlerini Turkce yapar (bkz. qt_cevirisi_kur)."""
+    return qt_cevirisi_kur(uygulama, "tr")
 
 
 def cumle_basi(metin):

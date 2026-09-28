@@ -13,7 +13,7 @@ import shutil
 import tempfile
 
 from cekirdek import sema, kurucu, kod_uret
-from testler.ortak_test import kontrol
+from testler.ortak_test import kontrol, ISLEM_PARCACIGI
 from testler.regresyon_ortak import ORNEK
 
 
@@ -109,7 +109,7 @@ def test_kaynak_betik_esleme():
         kontrol("aci '%s' betik metni ile ayni" % ac["tur"], ayni)
 
 
-def test_kaynak_yonu():
+def test_kaynak_yonu(gecici=None):
     """
     ACISAL DAGILIM GERCEKTEN OLCULUYOR.
 
@@ -287,7 +287,7 @@ def test_zayiflatma_analitik(gecici):
     try:
         os.chdir(yol)
         model, _ = kurucu.kur(spec)
-        sp_yolu = model.run(threads=8, output=False)
+        sp_yolu = model.run(threads=ISLEM_PARCACIGI, output=False)
     finally:
         os.chdir(eski)
     with openmc.StatePoint(sp_yolu) as sp:
@@ -448,9 +448,8 @@ def test_kaynak_kutusu_yansitici():
 
 HIZLI = [
     test_kaynak_kutusu_yansitici, test_kaynak_tayfi, test_kaynak_betik_esleme,
-    test_kaynak_yonu, test_kaynak_dogrulama, test_sema_derin_birlestirme,
+    test_kaynak_dogrulama, test_sema_derin_birlestirme,
     test_entropi_mesh_eksenel, test_arayuz_kaynak_gidip_gelme,
 ]
 YAVAS = [
-    test_zayiflatma_analitik, test_sabit_kaynak_betik,
-]
+    test_zayiflatma_analitik, test_sabit_kaynak_betik, test_kaynak_yonu]

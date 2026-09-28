@@ -207,7 +207,7 @@ def test_calistir_calistirma_alanlari():
 # 3. Calistir: proje kusagi (sahte openmc ile uctan uca)
 # ============================================================================
 
-def test_calistir_kusak():
+def test_calistir_kusak(gecici=None):
     """
     Onceki projede baslayan bir kosu, proje degistikten SONRA biterse sonucu
     yeni projeye yazilmamali. Eski kodda sifirla() suren kosuda hicbir sey
@@ -598,7 +598,7 @@ def test_tukenme_gorunum():
 # 7. Tukenme: proje kusagi (onceki-sonuc okumasi ve sahte kosu)
 # ============================================================================
 
-def test_tukenme_kusak():
+def test_tukenme_kusak(gecici=None):
     print("\n[H8] TUKENME: proje degistikten sonra biten okuma/kosu yeni projeye yazilmiyor")
     uyg = _qt()
     if uyg is None:
@@ -751,10 +751,9 @@ def test_metinler():
     kontrol("Analiz'de 'Yine de devam' secenegi yok", "Yine de devam" not in metin)
 
 
-HIZLI = [test_calistir_sayfa_yapisi, test_calistir_calistirma_alanlari, test_calistir_kusak,
-         test_analiz_listeler, test_analiz_secim_ve_red, test_analiz_kusak,
-         test_tukenme_gorunum, test_tukenme_kusak, test_sonuc_api, test_metinler]
-YAVAS = []
+HIZLI = [test_calistir_sayfa_yapisi, test_calistir_calistirma_alanlari, test_analiz_listeler, test_analiz_secim_ve_red, test_analiz_kusak,
+         test_tukenme_gorunum, test_sonuc_api, test_metinler]
+YAVAS = [test_calistir_kusak, test_tukenme_kusak]
 
 
 if __name__ == "__main__":
