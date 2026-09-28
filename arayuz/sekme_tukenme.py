@@ -12,8 +12,11 @@
    acma anahtari + kisa aciklama      -- tukenme kapaliyken YALNIZCA bunlar
    guc, adim birimi, adimlar, yanan malzemeler
    Gelismis: zincir, entegrator, cubuk cubuk yanma (yakit birden fazla
-             ornekse), izlenen nuklidler
-   kosu cubugu, onceki sonuc/eskime isareti, grafik, tablo
+             ornekse)
+   Izlenen nuklidler: aranabilir gruplu secici (arayuz/nuklid_secici.py);
+             secim degisince gosterilen sonuc h5'ten yeniden okunur
+   kosu cubugu, onceki sonuc/eskime isareti, grafik, tablo, CSV
+             (sonuc bolumu: arayuz/tukenme_sonuc.py)
    Ayrintili cikti (katlanir; hata olursa kendiliginden acilir)
  Modelde tukenme uygun degilse (uygunluk.tukenme_uygun) sekme zaten gizlidir;
  sekme yine de gosterilirse yalnizca nedenini soyleyen bos durum gorunur.
@@ -42,7 +45,6 @@ from matplotlib.figure import Figure
 from PySide6 import QtCore, QtGui, QtWidgets
 
 from cekirdek import tukenme as _tk
-from cekirdek import nuklidler as _nk
 from cekirdek.ceviri import _
 from cekirdek.gunluk import kaydedici
 from arayuz.tukenme_sonuc import SonucBolumu
