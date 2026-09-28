@@ -1,0 +1,51 @@
+# English translation of openmc-arayuz.
+# Kaynak dil Turkce: msgid Turkce metnin kendisidir.
+# Uretim/derleme: araclar/ceviri.sh (Babel). Parca kataloglar (cekirdek.po,
+# arayuz.po) varsa bu dosya onlardan BIRLESTIRILIR; o zaman parcalari duzenleyin.
+msgid ""
+msgstr ""
+"Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: cekirdek/ceviri.py
+msgid "Türkçe"
+msgstr "Turkish"
+
+#: cekirdek/ceviri.py
+msgid "İngilizce"
+msgstr "English"
+
+#: arayuz/hata_yakalayici.py
+msgid "Beklenmeyen hata"
+msgstr "Unexpected error"
+
+#: arayuz/hata_yakalayici.py
+msgid "Beklenmeyen bir hata oluştu: {ozet}"
+msgstr "An unexpected error occurred: {ozet}"
+
+#: arayuz/hata_yakalayici.py
+msgid ""
+"Ayrıntılar log dosyasına yazıldı:\n"
+"{yol}"
+msgstr ""
+"Details were written to the log file:\n"
+"{yol}"
+
+#: arayuz/hata_yakalayici.py
+msgid "Bu oturumda {n} hata kaydedildi."
+msgid_plural "Bu oturumda {n} hata kaydedildi."
+msgstr[0] "{n} error was logged in this session."
+msgstr[1] "{n} errors were logged in this session."
+
+#: arayuz/hata_yakalayici.py
+msgid "Logu aç"
+msgstr "Open log"
+
+# "Görünüm > Dil" menusu
+msgctxt "menü"
+msgid "Dil"
+msgstr "Language"

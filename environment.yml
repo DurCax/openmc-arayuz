@@ -6,6 +6,10 @@
 # matplotlib 3.11, pandas 3.0, h5py 3.16. OpenMC sürümü sabitlenmiştir
 # (testlerdeki referans değerler 0.16.0 ile ölçüldü); diğerleri conda-forge'un
 # uyumlu sürümüyle gelir.
+#
+# Uygulamanın kendisi (giriş komutları openmc-arayuz, openmc-arayuz-kosu):
+#   pip install -e . --no-deps
+# Test ve çeviri araçları: pytest, pytest-xdist (MIT), babel (BSD-3).
 name: openmc-env
 channels:
   - conda-forge
@@ -18,3 +22,8 @@ dependencies:
   - h5py
   - uncertainties
   - curl
+  - pip
+  # test ve ceviri araclari
+  - pytest>=8
+  - pytest-xdist>=3.5
+  - babel>=2.12
