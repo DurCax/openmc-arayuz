@@ -4,7 +4,7 @@ test_ceviri.py -- i18n iskeleti (cekirdek/ceviri.py).
 
 Kaynak dil Turkce: msgid Turkce metnin kendisidir. "tr" etkinken metin aynen
 doner; "en" etkinken locale/en/LC_MESSAGES/openmc_arayuz.mo'dan cevrilir.
-Katalogda olmayan metin Turkce msgid'e duser ve DEBUG log yazilir.
+Katalogda olmayan metin Turkce msgid'e duser ve WARNING log yazilir.
 """
 
 import logging
@@ -89,7 +89,7 @@ def test_ceviri_cogul_ve_baglam():
 
 
 def test_ceviri_eksik_giris_loglanir():
-    print("\n[C4] CEVIRI: eksik giris Turkce'ye duser ve DEBUG loglanir")
+    print("\n[C4] CEVIRI: eksik giris Turkce'ye duser ve WARNING loglanir")
     from cekirdek import ceviri as c
     toplayici = _Toplayici()
     kaydedici = logging.getLogger(c.KAYDEDICI_ADI)
@@ -103,7 +103,7 @@ def test_ceviri_eksik_giris_loglanir():
         kaydedici.removeHandler(toplayici)
         kaydedici.setLevel(eski_seviye)
     kontrol("eksik giris msgid'e duser", sonuc == metin)
-    kontrol("eksik giris DEBUG log yazar",
+    kontrol("eksik giris WARNING log yazar",
             any(metin in k for k in toplayici.kayitlar), "-> %s" % toplayici.kayitlar)
 
 

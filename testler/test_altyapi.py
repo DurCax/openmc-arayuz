@@ -79,6 +79,26 @@ def test_gunluk_yazilamazsa():
     kontrol("yazilamayan yol -> None (istisna yok)", isleyici is None)
 
 
+def test_hata_diyalogu_log_yazilamazsa():
+    print("\n[A3b] HATA DIYALOGU: log yazilamiyorsa 'yazildi' denmez, Logu ac pasif")
+    _uygulama()
+    from arayuz import hata_yakalayici as hy
+    from cekirdek import gunluk
+    eski = dict(gunluk._durum)
+    try:
+        gunluk._durum["isleyici"] = None
+        kutu = hy.mesaj_kutusu("ValueError: x", "iz")
+        metin = kutu.informativeText()
+        kontrol("yazilamayan logda 'yazıldı' denmiyor", "yazıldı" not in metin, metin)
+        kontrol("yazilamayan logda Logu ac pasif",
+                not kutu.property("log_dugmesi").isEnabled())
+    finally:
+        gunluk._durum.update(eski)
+    kutu = hy.mesaj_kutusu("ValueError: x", "iz")
+    kontrol("yazilan logda Logu ac etkin", kutu.property("log_dugmesi").isEnabled()
+            or not gunluk.dosyaya_yaziliyor())
+
+
 def _uygulama():
     os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
     from PySide6 import QtWidgets
@@ -167,5 +187,6 @@ def test_veri_listesi_gecerli():
 
 
 HIZLI = [test_surum, test_gunluk_yolu_ve_yazim, test_gunluk_yazilamazsa,
+         test_hata_diyalogu_log_yazilamazsa,
          test_hata_yakalayici_loglar, test_hata_diyalogu, test_veri_listesi_gecerli]
 YAVAS = []

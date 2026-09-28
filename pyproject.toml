@@ -60,7 +60,8 @@ addopts = "-ra --strict-markers"
 markers = [
     "hizli: kosu gerektirmeyen hizli test (eski calistiricida --hizli)",
     "yavas: Monte Carlo / uzun test (eski calistiricida tam mod)",
-    "veri: nukleer veri (OPENMC_CROSS_SECTIONS, tukenme zinciri) gerektirir; yoksa atlanir",
+    "veri: nukleer veri (OPENMC_CROSS_SECTIONS) gerektirir; yoksa atlanir",
+    "zincir: tukenme zinciri (OPENMC_CHAIN_FILE ya da ~/nucdata/chain) gerektirir; yoksa atlanir",
 ]
 filterwarnings = [
     "ignore::pytest.PytestReturnNotNoneWarning",

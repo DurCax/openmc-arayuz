@@ -9,6 +9,9 @@
 from cekirdek.sema import BOSLUK, malzeme_bul, cubuk_bul, plaka_bul, demet_bul
 from cekirdek import kurucu, sema
 from cekirdek.dogrula._ortak import Bulgu, _kor_turu_adi
+from cekirdek.gunluk import kaydedici, uyar_bir_kez
+
+_log = kaydedici(__name__)
 
 
 # ============================================================================
@@ -95,6 +98,7 @@ def eksenel_kontrol(spec):
                 kurucu._spec_fisil_mi(spec, x)
                 for b in katmanlar for x in sema.katman_adaylari(kor, b))
         except Exception:
+            uyar_bir_kez(_log, "eksenel denetim: aktif aralik hesaplanamadi")
             aralik, toplam, fisil_var = None, None, True
         if not fisil_var:
             bulgular.append(Bulgu(
@@ -124,6 +128,7 @@ def eksenel_kontrol(spec):
             ar = kurucu.aktif_eksenel_aralik(spec)
             cr = kurucu.cubuk_eksenel_aralik(spec, g["cubuk"])
         except Exception:
+            uyar_bir_kez(_log, "eksenel denetim: cubuk araligi hesaplanamadi")
             ar = cr = None
         if ar and cr and (cr[1] - cr[0]) < (ar[1] - ar[0]) - 1e-9:
             bulgular.append(Bulgu(

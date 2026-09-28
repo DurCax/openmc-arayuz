@@ -4,8 +4,10 @@ test_hata_yutma.py -- SESSIZ HATA YUTMA denetimi (AST).
 
 `cekirdek/` ve `arayuz/` altindaki genis `except` bloklarindan (Exception,
 BaseException ya da ciplak `except:`) govdesi YALNIZCA `pass`, `continue`,
-`return` ya da `return <sabit>` olanlari bulur. Boyle bir blok hatayi ne
-loglar ne de kullaniciya gosterir: hata sessizce kaybolur.
+`return`, `return <sabit>` ya da bir ada sabit atama (`x = None`,
+`a, b = None, None`, `x = []`) olanlari, ayrica `contextlib.suppress(Exception)`
+kullanimlarini bulur. Boyle bir blok hatayi ne loglar ne de kullaniciya
+gosterir: hata sessizce kaybolur.
 
 IZIN LISTESI (IZINLI) dosya yoluna ya da satira DEGIL, islevin NITELIKLI
 ADINA (ornek "AnaPencere._ciz") ve o islevdeki kayit SAYISINA gore tutulur;
@@ -31,13 +33,16 @@ GENIS_ISTISNALAR = {"Exception", "BaseException"}
 
 # Nitelikli islev adi -> o islevdeki sessiz except sayisi.
 # Modul duzeyindeki kayitlar "<modul:dosya_adi>" anahtariyla tutulur.
-IZINLI = {  # olculen: 24 kayit, 20 islev (28.09.2026)
+IZINLI = {  # olculen: 31 kayit, 26 islev (28.09.2026; sabit atama kalibi eklenince)
     "AnalizSekmesi._bos_nedeni": 1,
+    "AnalizSekmesi._hedefleri_listele": 1,
+    "BaslangicEkrani._renkleri_uygula": 1,
     "AnalizSekmesi._varsayilan_aralik": 1,
     "CalistirSekmesi._bitti": 1,
     "CalistirSekmesi._guc_etkin": 1,
     "GelismisBolum._oku": 1,
     "GelismisBolum._yaz": 1,
+    "MalzemeSekmesi.doldur": 1,
     "TukenmeSekmesi._ayirma_anlamli": 1,
     "TukenmeSekmesi._bitti": 1,
     "TukenmeSekmesi._uygunluk_oku": 1,
@@ -47,9 +52,12 @@ IZINLI = {  # olculen: 24 kayit, 20 islev (28.09.2026)
     "_kutle": 1,
     "_kutuphane_icerigi": 1,
     "_ortalama_kutle": 1,
+    "_spec_fisil_mi": 1,
     "dagilim_oku": 1,
-    "malzemeleri_oku": 2,
+    "malzemeleri_oku": 3,
+    "nuklid_enerji_tavani": 1,
     "ornek_listesi": 1,
+    "sab_onerileri": 1,
     "sonuc_oku": 4,
     "tukenme_ayirma_anlamli": 1,
 }
@@ -83,9 +91,20 @@ def _sabit_mi(deger):
     return False
 
 
+def _ad_hedefi_mi(hedef):
+    if isinstance(hedef, ast.Name):
+        return True
+    return isinstance(hedef, (ast.Tuple, ast.List)) and all(
+        _ad_hedefi_mi(e) for e in hedef.elts)
+
+
 def _sessiz_ifade_mi(ifade):
     if isinstance(ifade, (ast.Pass, ast.Continue)):
         return True
+    if isinstance(ifade, ast.Assign):
+        # "x = None" / "a, b = None, None" / "x = []": hata varsayilan degerle
+        # ortulur, iz kalmaz.
+        return all(_ad_hedefi_mi(h) for h in ifade.targets) and _sabit_mi(ifade.value)
     if isinstance(ifade, ast.Return):
         return ifade.value is None or _sabit_mi(ifade.value)
     # Yalnizca aciklama metni (docstring benzeri) de sessizdir.
@@ -113,10 +132,23 @@ class _Tarayici(ast.NodeVisitor):
     visit_AsyncFunctionDef = _kapsam
     visit_ClassDef = _kapsam
 
+    def _kayit(self, satir):
+        ad = ".".join(self._yigin) if self._yigin else "<modul:%s>" % self._modul
+        self.kayitlar.append((ad, satir))
+
+    def visit_With(self, dugum):
+        # with contextlib.suppress(Exception): ...  (ya da suppress(...))
+        for oge in dugum.items:
+            cagri = oge.context_expr
+            if (isinstance(cagri, ast.Call)
+                    and getattr(cagri.func, "attr", getattr(cagri.func, "id", "")) == "suppress"
+                    and any(_genis_mi(a) for a in cagri.args)):
+                self._kayit(dugum.lineno)
+        self.generic_visit(dugum)
+
     def visit_ExceptHandler(self, dugum):
         if _genis_mi(dugum.type) and _sessiz_mi(dugum):
-            ad = ".".join(self._yigin) if self._yigin else "<modul:%s>" % self._modul
-            self.kayitlar.append((ad, dugum.lineno))
+            self._kayit(dugum.lineno)
         self.generic_visit(dugum)
 
 
@@ -164,12 +196,17 @@ def test_tarayici_ornekleri():
         "def f():\n    try:\n        x()\n    except Exception:\n        raise\n"
         "def g():\n    try:\n        x()\n    except Exception:\n        return (None, [])\n"
         "def h():\n    try:\n        x()\n    except Exception:\n        return y\n"
+        "def i():\n    try:\n        x()\n    except Exception:\n        a, b = None, None\n"
+        "def j():\n    with contextlib.suppress(Exception):\n        x()\n"
+        "def k():\n    try:\n        x()\n    except Exception:\n        self.a = None\n"
+        "def m():\n    try:\n        x()\n    except Exception:\n        a = hesapla()\n"
     )
     t = _Tarayici("ornek")
     t.visit(ast.parse(kaynak))
     adlar = sorted(ad for ad, _ in t.kayitlar)
     kontrol("pass / return None / continue / sabit literal yakalandi; log, raise, "
-            "dar tip ve degisken donusu yakalanmadi", adlar == ["K.c", "a", "b", "g"],
+            "dar tip ve degisken donusu yakalanmadi; sabit atama ve suppress yakalandi",
+            adlar == ["K.c", "a", "b", "g", "i", "j"],
             "-> %s" % adlar)
     yeni, eski = izin_farki({"a": 2, "b": 1}, {"a": 1, "c": 1})
     kontrol("izin farki: artan ve yeni kayit bulunur", yeni == {"a": (2, 1), "b": (1, 0)},

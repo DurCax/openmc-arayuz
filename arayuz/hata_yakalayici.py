@@ -50,7 +50,12 @@ def mesaj_kutusu(ozet, ayrinti, sayi=1, ust=None):
     kutu.setIcon(QtWidgets.QMessageBox.Critical)
     kutu.setWindowTitle(_("Beklenmeyen hata"))
     kutu.setText(_("Beklenmeyen bir hata oluştu: {ozet}").format(ozet=ozet))
-    bilgi = _("Ayrıntılar log dosyasına yazıldı:\n{yol}").format(yol=gunluk.log_yolu())
+    if gunluk.dosyaya_yaziliyor():
+        bilgi = _("Ayrıntılar log dosyasına yazıldı:\n{yol}").format(yol=gunluk.log_yolu())
+    else:
+        # Dizin yazilamiyorsa "log'a yazildi" demek teshis verisini kaybettirir.
+        bilgi = _("Log dosyasına yazılamadı ({yol}); ayrıntıları aşağıdan "
+                  "kopyalayın.").format(yol=gunluk.log_yolu())
     if sayi > 1:
         bilgi += "\n" + _n("Bu oturumda {n} hata kaydedildi.",
                            "Bu oturumda {n} hata kaydedildi.", sayi).format(n=sayi)
@@ -59,6 +64,7 @@ def mesaj_kutusu(ozet, ayrinti, sayi=1, ust=None):
     log_dugmesi = kutu.addButton(_("Logu aç"), QtWidgets.QMessageBox.ActionRole)
     log_dugmesi.clicked.disconnect()          # ActionRole dugmesi kutuyu kapatmasin
     log_dugmesi.clicked.connect(log_klasorunu_ac)
+    log_dugmesi.setEnabled(gunluk.dosyaya_yaziliyor())
     kutu.addButton(QtWidgets.QMessageBox.Close)
     kutu.setProperty("log_dugmesi", log_dugmesi)
     return kutu

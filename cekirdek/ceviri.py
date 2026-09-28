@@ -17,7 +17,7 @@ degilse "en".
 
 Katalog: locale/<dil>/LC_MESSAGES/openmc_arayuz.mo (araclar/ceviri.sh derler).
 Katalog yoksa ya da giris eksikse metin Turkce msgid'e DUSER; bu sessiz
-degildir: katalog eksigi WARNING, eksik giris (her msgid bir kez) DEBUG loglanir.
+degildir: katalog eksigi WARNING, eksik giris (her msgid bir kez) WARNING loglanir (varsayilan INFO seviyesinde gorunsun).
 """
 
 import gettext
@@ -139,7 +139,7 @@ def _eksik(anahtar):
     if anahtar in _bildirilen_eksikler:
         return
     _bildirilen_eksikler.add(anahtar)
-    _log.debug("ceviri eksik (%s): %r", _durum["dil"], anahtar)
+    _log.warning("ceviri eksik (%s): %r", _durum["dil"], anahtar)
 
 
 def _(metin):

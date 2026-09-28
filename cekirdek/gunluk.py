@@ -41,6 +41,11 @@ def durum_dizini(ortam=None):
     return os.path.join(taban, UYGULAMA_DIZINI)
 
 
+def dosyaya_yaziliyor():
+    """Dosya isleyicisi kurulu mu (log gercekten diske yaziliyor mu)."""
+    return _durum["isleyici"] is not None
+
+
 def log_yolu():
     """Etkin log dosyasinin tam yolu."""
     return os.path.join(durum_dizini(), LOG_DOSYASI)
@@ -85,6 +90,26 @@ def kaydedici(ad):
     "openmc_arayuz.cekirdek.kosucu". Ilk cagrida dosya isleyicisini kurar."""
     kur()
     return logging.getLogger("%s.%s" % (KOK_KAYDEDICI, ad) if ad else KOK_KAYDEDICI)
+
+
+_BILDIRILEN = set()
+
+
+def uyar_bir_kez(log, mesaj, *args):
+    """Yakalanan istisnayi (exc_info) WARNING olarak BIR KEZ loglar.
+
+    Dogrulama her duzenlemede kosar; ayni bozuk durum her tus vurusunda
+    loga yazilmasin diye (kaydedici, mesaj, istisna turu ve metni) anahtari
+    surec boyunca bir kez yazilir. Yalnizca except blogu icinden cagrilir."""
+    import sys
+    tur, deger, _iz = sys.exc_info()
+    anahtar = (log.name, mesaj % args if args else mesaj,
+               getattr(tur, "__name__", ""), str(deger))
+    with _kilit:
+        if anahtar in _BILDIRILEN:
+            return
+        _BILDIRILEN.add(anahtar)
+    log.warning(mesaj, *args, exc_info=True)
 
 
 def dosya_isleyicisi():

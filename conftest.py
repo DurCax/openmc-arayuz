@@ -52,9 +52,19 @@ VERI_GEREKTIREN = frozenset({
     "test_kosu_yardimcilari:test_kuresel_kor",
     "test_tambur:test_tambur_kor",
     "test_tukenme_temel:test_tukenme_dogrulama",
-    "test_tukenme_temel:test_tukenme_hacimleri",          # zincir dosyasi
+    "test_tukenme_temel:test_tukenme_hacimleri",
     "test_kosu_yardimcilari:test_veri_sicaklik_araligi",
-    "test_tukenme_temel:test_zincir_butunlugu",           # zincir dosyasi
+    "test_tukenme_temel:test_zincir_butunlugu",
+})
+
+# Tesir kesitine EK OLARAK tukenme zinciri isteyen testler: tesir kesiti var
+# ama zincir yoksa (OPENMC_CHAIN_FILE / ~/nucdata/chain) atlanir; aksi halde
+# FileNotFoundError ile KALDI gorunurdu.
+ZINCIR_GEREKTIREN = frozenset({
+    "test_dogrulama:test_dogrulama_temiz",           # pwr_tukenme ornegi zinciri denetler
+    "test_tukenme_temel:test_tukenme_dogrulama",
+    "test_tukenme_temel:test_zincir_butunlugu",
+    "test_tukenme_temel:test_tukenme_hacimleri",
 })
 
 _TEST_DIZINI = os.path.join(ortak_test.KOK, "testler")
@@ -65,6 +75,13 @@ def veri_var(ortam=None):
     ortam = os.environ if ortam is None else ortam
     yol = ortam.get("OPENMC_CROSS_SECTIONS", "")
     return bool(yol) and os.path.isfile(yol)
+
+
+def zincir_var():
+    """Tukenme zincir dosyalari (termal + hizli) erisilebilir mi."""
+    from cekirdek import tukenme, veri_bilgi
+    dizin = veri_bilgi.zincir_dizini()
+    return all(os.path.isfile(os.path.join(dizin, f)) for f in tukenme.ZINCIRLER.values())
 
 
 def _main_cagrilari(modul):
@@ -124,6 +141,8 @@ class OrtakTestDosyasi(pytest.File):
                 oge.add_marker(isaret)
                 if isaret == "yavas" or "%s:%s" % (ad, fn.__name__) in VERI_GEREKTIREN:
                     oge.add_marker("veri")
+                if "%s:%s" % (ad, fn.__name__) in ZINCIR_GEREKTIREN:
+                    oge.add_marker("zincir")
                 oge.ortak_test = True
                 yield oge
 
@@ -145,12 +164,35 @@ def gecici(tmp_path):
 
 
 def pytest_collection_modifyitems(config, items):
-    if veri_var():
-        return
-    atla = pytest.mark.skip(reason="nukleer veri yok (OPENMC_CROSS_SECTIONS)")
+    veri, zincir = veri_var(), zincir_var()
+    atla_veri = pytest.mark.skip(reason="nukleer veri yok (OPENMC_CROSS_SECTIONS)")
+    atla_zincir = pytest.mark.skip(reason="tukenme zinciri yok (OPENMC_CHAIN_FILE)")
     for oge in items:
-        if oge.get_closest_marker("veri"):
-            oge.add_marker(atla)
+        if not veri and oge.get_closest_marker("veri"):
+            oge.add_marker(atla_veri)
+        elif not zincir and oge.get_closest_marker("zincir"):
+            oge.add_marker(atla_zincir)
+
+
+@pytest.fixture(autouse=True)
+def _verisiz_openmc_lib_korumasi(monkeypatch):
+    """Veri yokken openmc.lib.init sureci C++ tarafinda SONLANDIRIR ve xdist
+    iscisiyle birlikte baska testlerin sonucu da kaybolur. "veri" isareti
+    unutulmus bir test bunun yerine acik bir mesajla KALIR."""
+    if veri_var():
+        yield
+        return
+    try:
+        import openmc.lib
+    except ImportError:          # openmc.lib yuklenemiyorsa korunacak bir sey yok
+        yield
+        return
+
+    def _engelle(*_a, **_k):
+        pytest.fail("nukleer veri yokken openmc.lib.init cagrildi: bu test "
+                    "conftest.py VERI_GEREKTIREN listesine eklenmeli", pytrace=False)
+    monkeypatch.setattr(openmc.lib, "init", _engelle)
+    yield
 
 
 @pytest.hookimpl(wrapper=True)

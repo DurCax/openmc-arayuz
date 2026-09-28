@@ -10,7 +10,10 @@ import os
 
 from PySide6 import QtGui, QtWidgets
 from cekirdek import sema, ice_aktar, kod_uret, onbellek
+from cekirdek.gunluk import kaydedici
 from arayuz.pencere.model_islemleri import ORNEKLER
+
+_log = kaydedici(__name__)
 
 
 _ICE_AKTAR_NOTU = ("Yalnızca malzemeler aktarılır: OpenMC geometrisi ham CSG'dir "
@@ -28,6 +31,7 @@ class ProjeMixin(object):
         try:
             ham = self.ayarlar.value("son_dosyalar", []) or []
         except Exception:
+            _log.warning("son kullanilanlar listesi okunamadi", exc_info=True)
             ham = []
         if isinstance(ham, str):
             ham = [ham]
@@ -106,6 +110,7 @@ class ProjeMixin(object):
         try:
             yeni = sema.yukle(yol)
         except Exception as e:
+            _log.exception("proje islemi basarisiz: %s", "Açılamadı")
             QtWidgets.QMessageBox.critical(self, "Açılamadı", str(e))
             return False
         self._proje_kur(yeni, proje_yolu=os.path.abspath(yol), ornek_kaynagi=None)
@@ -120,6 +125,7 @@ class ProjeMixin(object):
         try:
             yeni = sema.yukle(yol)
         except Exception as e:
+            _log.exception("proje islemi basarisiz: %s", "Açılamadı")
             QtWidgets.QMessageBox.critical(self, "Açılamadı", str(e))
             return False
         self._proje_kur(yeni, proje_yolu=None, ornek_kaynagi=os.path.abspath(yol))
@@ -134,6 +140,7 @@ class ProjeMixin(object):
         try:
             sema.kaydet(self.spec, self.proje_yolu)
         except Exception as e:
+            _log.exception("proje islemi basarisiz: %s", "Kaydedilemedi")
             QtWidgets.QMessageBox.critical(self, "Kaydedilemedi", str(e))
             return False
         self._kirli = False
@@ -173,6 +180,7 @@ class ProjeMixin(object):
         try:
             yeni_malzemeler, notlar = ice_aktar.malzemeleri_oku(yol)
         except Exception as e:
+            _log.exception("proje islemi basarisiz: %s", "Okunamadı")
             QtWidgets.QMessageBox.critical(self, "Okunamadı", str(e))
             return
         if not yeni_malzemeler:
@@ -212,6 +220,7 @@ class ProjeMixin(object):
             with open(yol, "w", encoding="utf-8") as f:
                 f.write(kod)
         except Exception as e:
+            _log.exception("proje islemi basarisiz: %s", "Üretilemedi")
             QtWidgets.QMessageBox.critical(self, "Üretilemedi", str(e))
             return
         QtWidgets.QMessageBox.information(
@@ -229,6 +238,7 @@ class ProjeMixin(object):
             model, _ = onbellek.kur_taze(self.spec)
             model.export_to_model_xml(os.path.join(dizin, "model.xml"))
         except Exception as e:
+            _log.exception("proje islemi basarisiz: %s", "Üretilemedi")
             QtWidgets.QMessageBox.critical(self, "Üretilemedi", str(e))
             return
         self.statusBar().showMessage("XML yazıldı: %s/model.xml" % dizin, 6000)

@@ -14,6 +14,9 @@ from cekirdek import kaynak as _kaynak
 from cekirdek import uygunluk
 from cekirdek.dogrula._ortak import Bulgu
 from cekirdek.dogrula.veri import _kutuphane_icerigi
+from cekirdek.gunluk import kaydedici, uyar_bir_kez
+
+_log = kaydedici(__name__)
 
 
 # ============================================================================
@@ -94,6 +97,7 @@ def kaynak_kontrol(spec, veri_kontrolu=True):
                 nuklidler |= set(mat.get_nuclides())
             tavan, sahibi = veri_bilgi.enerji_tavani(sorted(nuklidler))
         except Exception:
+            uyar_bir_kez(_log, "kaynak denetimi: enerji tavani hesaplanamadi")
             tavan, sahibi = None, None
         if tavan is not None and tepe > tavan:
             bulgular.append(Bulgu(
@@ -182,4 +186,5 @@ def _kutuphane_icerigi_foton():
                  if d.get("type") == "photon"}
         return notron, termal, foton
     except Exception:
+        uyar_bir_kez(_log, "cross_sections.xml foton kayitlari okunamadi: %s", yol)
         return notron, termal, None
