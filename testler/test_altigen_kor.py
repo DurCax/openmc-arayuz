@@ -584,8 +584,9 @@ def test_altigen_analitik_esdegerlik(gecici):
     from cekirdek import kurucu
     tek, _b = kurucu.kur(_tek_demet_spec())
     kor, _b = kurucu.kur(_kor_spec())
-    k1 = _kos(tek, os.path.join(gecici, "tek"), 20000)
-    k2 = _kos(kor, os.path.join(gecici, "kor"), 20000)
+    # 40 000 parcacik: 20 000'de 2 sigma ~178 pcm cikiyordu (olculdu), olcut 150 pcm.
+    k1 = _kos(tek, os.path.join(gecici, "tek"), 40000)
+    k2 = _kos(kor, os.path.join(gecici, "kor"), 40000)
     fark = abs(k1.nominal_value - k2.nominal_value)
     sigma = math.hypot(k1.std_dev, k2.std_dev)
     kontrol("tek %.5f +/- %.5f  vs  7 demet %.5f +/- %.5f  (fark %.2f sigma)"
