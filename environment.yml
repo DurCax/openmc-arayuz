@@ -9,7 +9,7 @@
 #
 # Uygulamanın kendisi (giriş komutları openmc-arayuz, openmc-arayuz-kosu):
 #   pip install -e . --no-deps
-# Test ve çeviri araçları: pytest, pytest-xdist (MIT), babel (BSD-3).
+# Test ve çeviri araçları: pytest, pytest-xdist, pytest-cov (MIT), babel (BSD-3).
 name: openmc-env
 channels:
   - conda-forge
@@ -26,4 +26,5 @@ dependencies:
   # test ve ceviri araclari
   - pytest>=8
   - pytest-xdist>=3.5
+  - pytest-cov>=5
   - babel>=2.12

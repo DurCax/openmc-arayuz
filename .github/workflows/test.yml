@@ -66,4 +66,6 @@ jobs:
           openmc-arayuz-kosu --yardim > /dev/null
 
       - name: Hizli suit (nukleer veri gerektirmeyenler)
-        run: python -m pytest -m "hizli and not veri" -n auto -q --durations=15
+        # Kapsam CI'da yalnizca GOSTERILIR: veri gerektiren testler atlandigi
+        # icin oran yerelden dusuktur. %80 kapisi yerelde araclar/kapsam.sh ile.
+        run: python -m pytest -m "hizli and not veri" -n auto -q --durations=15 --cov --cov-report=term
