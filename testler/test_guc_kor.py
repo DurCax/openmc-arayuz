@@ -89,7 +89,11 @@ def _sahte_sp(satirlar, duzeyler, kafesler, dilim_var=False):
 
 def _kare_kafes(lid, n, adim):
     import openmc
-    lat = openmc.RectLattice(lattice_id=lid)
+    import warnings
+    with warnings.catch_warnings():
+        # sabit kimlik bilerek: sentetik DataFrame bu kimlige basvurur
+        warnings.simplefilter("ignore", openmc.IDWarning)
+        lat = openmc.RectLattice(lattice_id=lid)
     lat.pitch = (adim, adim)
     lat.lower_left = (-adim * n / 2.0, -adim * n / 2.0)
     u = openmc.Universe()
@@ -100,7 +104,11 @@ def _kare_kafes(lid, n, adim):
 def _altigen_kafes(lid, halka, adim, yonelim):
     import openmc
     from cekirdek import altigen
-    lat = openmc.HexLattice(lattice_id=lid)
+    import warnings
+    with warnings.catch_warnings():
+        # sabit kimlik bilerek: sentetik DataFrame bu kimlige basvurur
+        warnings.simplefilter("ignore", openmc.IDWarning)
+        lat = openmc.HexLattice(lattice_id=lid)
     lat.center = (0.0, 0.0)
     lat.pitch = (adim,)
     lat.orientation = yonelim
