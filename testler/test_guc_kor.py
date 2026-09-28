@@ -451,8 +451,16 @@ print("SONUC" + json.dumps(cikti))
 
 def _nokta_hucre(dizin, noktalar):
     """Noktalari AYRI SURECTE openmc.lib.find_cell ile bulur: [(hucre, ornek)].
-    openmc.lib ayni surecte C++ terminate ile tum pytest'i oldurebilir."""
-    r = subprocess.run([sys.executable, "-c", _BUL_BETIGI, dizin, json.dumps(noktalar)],
+    openmc.lib ayni surecte C++ terminate ile tum pytest'i oldurebilir.
+    XML'ler ayri dizine kopyalanir: init summary.h5 yazar, acik StatePoint
+    ayni dosyayi kilitler."""
+    import glob
+    import shutil
+    bul = os.path.join(dizin, "nokta_hucre")
+    os.makedirs(bul, exist_ok=True)
+    for xml in glob.glob(os.path.join(dizin, "*.xml")):
+        shutil.copy(xml, bul)
+    r = subprocess.run([sys.executable, "-c", _BUL_BETIGI, bul, json.dumps(noktalar)],
                        capture_output=True, text=True, timeout=300,
                        env=dict(os.environ, OMP_NUM_THREADS="1"))
     satir = [s for s in r.stdout.splitlines() if s.startswith("SONUC")]
