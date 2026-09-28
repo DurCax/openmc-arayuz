@@ -73,11 +73,13 @@ def test_bos_sablonlar(gecici=None):
     import matplotlib.pyplot as plt
     from arayuz import baslangic
     from cekirdek import dogrula, kurucu, uygunluk
-    kontrol("7 kart, basliklar dogru sirada",
+    kontrol("8 kart, basliklar dogru sirada",
             [k["anahtar"] for k in baslangic.KARTLAR]
-            == ["pin", "demet_kare", "demet_altigen", "tam_kor", "plaka", "tamburlu", "zirh"])
+            == ["pin", "demet_kare", "demet_altigen", "tam_kor", "tam_kor_altigen",
+                "plaka", "tamburlu", "zirh"])
     beklenen_tur = {"pin": "tek_cubuk", "demet_kare": "tek_demet",
                     "demet_altigen": "tek_demet", "tam_kor": "kare_kafes",
+                    "tam_kor_altigen": "altigen_kafes",
                     "plaka": "tek_plaka", "tamburlu": "tamburlu"}
     for k in baslangic.KARTLAR:
         if not k["bos"]:

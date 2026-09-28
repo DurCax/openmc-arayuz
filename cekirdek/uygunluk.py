@@ -36,7 +36,9 @@
                        yalnizca en az bir gecerli hedefi varsa
    kritik arama      : KRITIK_PARAMETRELER ∩ gecerli taramalar
    sinirlar          : periodic yalnizca kare (x/y duzlem ciftli) yan
-                       yuzeyde; alt/ust yalnizca 3B ve kure disinda
+                       yuzeyde ve altigen tek demette; altigen tam korda
+                       (kirik cizgi sinir) yok; alt/ust yalnizca 3B ve kure
+                       disinda
    ayarlar           : mod ve fisil malzemeye gore (ayar_alanlari)
    guc dagilimi      : fisil bolgeli ve bir KAFESTE tekrarlanan cubuk
    tukenme           : ozdeger modu + geometride fisil malzeme
@@ -53,7 +55,8 @@ SEKMELER = ("malzemeler", "parcalar", "demet", "kor", "ayarlar",
 
 # Yeni modelde secilebilen kor turleri. "kuresel" yalnizca onu kullanan bir
 # dosya acildiginda gorunur (kullanici karari).
-KOR_TURLERI = ("tek_cubuk", "tek_plaka", "tek_demet", "kare_kafes", "tamburlu")
+KOR_TURLERI = ("tek_cubuk", "tek_plaka", "tek_demet", "kare_kafes", "altigen_kafes",
+               "tamburlu")
 
 # Kor turlerinin kullaniciya gorunen sade adlari (arayuz menusu, dogrulama
 # mesajlari). Anahtarlar spec'te ASCII kalir.
@@ -62,6 +65,7 @@ KOR_TURU_ADLARI = {
     "tek_plaka": "Plaka elemanı (MTR)",
     "tek_demet": "Tek yakıt demeti",
     "kare_kafes": "Tam kor (kare harita)",
+    "altigen_kafes": "Tam kor (altıgen harita)",
     "tamburlu": "Tamburlu kompakt kor",
     "kuresel": "Küresel düzenek (kabuklar)",
 }
@@ -368,6 +372,9 @@ def geometri_icerigi(spec):
                 return
             ic["demet"].add(ad)
             malzeme_ekle(d.get("dolgu_disi"))
+            k = d.get("kilif") if d.get("tur") == "altigen" else None
+            if isinstance(k, dict):
+                malzeme_ekle(k.get("malzeme"))
             for hedef in _harita_hedefleri(d.get("harita"), d.get("anahtar") or {}):
                 gez(hedef, True, derinlik + 1)
             return
@@ -393,14 +400,14 @@ def geometri_icerigi(spec):
         if int(t.get("sayi") or 0) > 0:
             malzeme_ekle(t.get("govde_malzeme"))
             malzeme_ekle(t.get("emici_malzeme"))
-    elif tur in ("tek_demet", "kare_kafes") and yans.get("var"):
+    elif tur in ("tek_demet", "kare_kafes", "altigen_kafes") and yans.get("var"):
         malzeme_ekle(yans.get("malzeme"))
 
     katmanlar = sema.eksenel_katmanlar(kor)
     ana_kullanilir = katmanlar is None
     for _z0, _z1, b in katmanlar or []:
         if b.get("anahtar"):
-            if tur == "kare_kafes":
+            if tur in sema.HARITALI_KORLAR:
                 kor_haritasi(b["anahtar"])
             # baska turde kurucu hata verir (dogrula.eksenel_kontrol bildirir)
         elif b.get("dolgu"):
@@ -408,7 +415,7 @@ def geometri_icerigi(spec):
         else:
             ana_kullanilir = True
     if ana_kullanilir:
-        if tur == "kare_kafes":
+        if tur in sema.HARITALI_KORLAR:
             kor_haritasi()
         else:
             gez(sema.ana_dolgu(kor))
@@ -496,7 +503,7 @@ def gecerli_sekmeler(spec):
     gorunur = {"malzemeler", "kor", "ayarlar", "calistir"}
     if b.tur != "kuresel":
         gorunur.add("parcalar")
-    if b.tur in ("tek_demet", "kare_kafes", "tamburlu") or b.geo["demet"]:
+    if b.tur in ("tek_demet", "kare_kafes", "altigen_kafes", "tamburlu") or b.geo["demet"]:
         gorunur.add("demet")
     if _gecerli_taramalar(b, "katsayi"):
         gorunur.add("analiz")
@@ -526,14 +533,15 @@ def parca_turleri(spec):
     """
     b = _Baglam(spec)
     tur = b.tur
-    demet = tur in ("tek_demet", "kare_kafes", "tamburlu") or bool(b.geo["demet"])
+    kafesli = ("tek_demet", "kare_kafes", "altigen_kafes", "tamburlu")
+    demet = tur in kafesli or bool(b.geo["demet"])
     return {
-        "cubuk": tur in ("tek_cubuk", "tek_demet", "kare_kafes", "tamburlu"),
+        "cubuk": tur in ("tek_cubuk",) + kafesli,
         "plaka": tur == "tek_plaka",
-        "kontrol_cubugu": b.boyut != "2B" and tur in ("tek_demet", "kare_kafes", "tamburlu"),
-        # Demet sekmesinde eklenebilecek kafes tipleri. Tam kor (kare_kafes)
-        # haritasi kare hucrelidir; altigen demet oraya oturmaz.
-        "demet_kare": demet,
+        "kontrol_cubugu": b.boyut != "2B" and tur in kafesli,
+        # Demet sekmesinde eklenebilecek kafes tipleri. Kare haritanin
+        # hucresi kare, altigen haritaninki altigendir; oteki tip oturmaz.
+        "demet_kare": demet and tur != "altigen_kafes",
         "demet_altigen": demet and tur != "kare_kafes",
     }
 
@@ -563,6 +571,8 @@ def kor_ortak_alanlari(spec):
 
 def _altigen_kor(spec):
     kor = spec.get("kor") or {}
+    if kor.get("tur") == "altigen_kafes":
+        return True
     if kor.get("tur") != "tek_demet":
         return False
     d = _bul(spec, "demetler", kor.get("demet") or "")
@@ -573,7 +583,8 @@ def yan_yuzey(spec):
     """
     kurucu.kor_kur'un kurdugu yan sinir yuzeyi:
       "kare"    : RectangularPrism (tek_cubuk, tek_plaka, kare demet, kare_kafes)
-      "altigen" : HexagonalPrism (altigen tek_demet)
+      "altigen" : HexagonalPrism (altigen tek_demet) ya da altigen tam korun
+                  kirik cizgi siniri (altigen_kafes)
       "silindir": ZCylinder (tamburlu)
       "kure"    : Sphere (kuresel)
       None      : bilinmeyen tur
@@ -583,7 +594,7 @@ def yan_yuzey(spec):
         return "kure"
     if tur == "tamburlu":
         return "silindir"
-    if tur == "tek_demet":
+    if tur in ("tek_demet", "altigen_kafes"):
         return "altigen" if _altigen_kor(spec) else "kare"
     if tur in ("tek_cubuk", "tek_plaka", "kare_kafes"):
         return "kare"
@@ -615,6 +626,10 @@ def sinir_secenekleri(spec, yuzey):
     if yy == "kure":
         return ["vacuum", "reflective", "white"]
     secenek = ["reflective", "vacuum", "white"]
+    # Altigen tam korun yan siniri demetlerin dis yuzlerinden gecen KIRIK bir
+    # cizgidir (ya da yansitici halkasi); eslesen duzlem cifti yoktur.
+    if b.tur == "altigen_kafes":
+        return secenek
     if yy == "kare" or (yy == "altigen" and _ALTIGEN_PERIODIC):
         secenek.append("periodic")
     return secenek
@@ -744,6 +759,7 @@ KATMAN_DOLGU_TURLERI = {
     "tek_plaka":  ("plaka", "malzeme"),
     "tek_demet":  ("demet", "malzeme"),
     "kare_kafes": ("malzeme",),
+    "altigen_kafes": ("malzeme",),
     "tamburlu":   ("demet", "cubuk", "malzeme"),
 }
 
@@ -821,8 +837,8 @@ def _hedefler(b, tarama_turu):
         # "var" iken kurar. Bosluk (void) yansiticinin kalinligi hicbir sey
         # degistirmez.
         yans = b.kor.get("yansitici") or {}
-        kurulur = b.tur == "tamburlu" or (b.tur in ("tek_demet", "kare_kafes")
-                                          and yans.get("var"))
+        kurulur = b.tur == "tamburlu" or (
+            b.tur in ("tek_demet", "kare_kafes", "altigen_kafes") and yans.get("var"))
         malzeme_var = (yans.get("malzeme") or sema.BOSLUK) != sema.BOSLUK
         return [None] if kurulur and malzeme_var else []
     return []
@@ -849,7 +865,7 @@ def gecerli_hedefler(spec, tarama_turu):
       kafes_adim         geometrideki kafesler
       cubuk_daldirma     geometrideki kontrol cubuklari, yalnizca 3B
       cubuk_yaricap      geometrideki cubuklarin sinirli bolgeleri
-      kor_adim           tek_cubuk, kare_kafes
+      kor_adim           tek_cubuk, kare_kafes, altigen_kafes
       tambur_donme       tamburlu, sayi > 0
       yansitici_kalinlik tamburlu ya da yansiticisi acik tek_demet/kare_kafes;
                          yansitici malzemesi bosluk olmamali

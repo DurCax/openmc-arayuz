@@ -167,8 +167,9 @@ def _sayim(spec, dolgu, hedef, esleme=None, derinlik=0):
 
 
 def _kor_sayimi(spec, kor, dolgu, hedef, esleme=None):
-    """Bir katmanin dolgusunda hedef kac kez var (kare_kafes kor haritasi dahil)."""
-    if kor["tur"] == "kare_kafes" and dolgu is None:
+    """Bir katmanin dolgusunda hedef kac kez var (kare/altigen kor haritasi dahil).
+    Altigen harita halka listesidir; her harf bir konumdur, sayim aynidir."""
+    if kor["tur"] in sema.HARITALI_KORLAR and dolgu is None:
         anahtar = dict(kor.get("anahtar") or {})
         if esleme:
             anahtar.update(esleme)

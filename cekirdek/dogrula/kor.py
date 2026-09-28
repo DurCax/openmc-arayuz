@@ -8,10 +8,13 @@
 
 from cekirdek.sema import kor_yuksekligi as sema_kor_yuksekligi
 from cekirdek.sema import BOSLUK, malzeme_bul, cubuk_bul, plaka_bul, demet_bul
+from cekirdek import altigen
+from cekirdek import altigen_kor as akor
 from cekirdek import sema
 from cekirdek import uygunluk
 from cekirdek.dogrula._ortak import Bulgu, _kor_turu_adi
 from cekirdek.dogrula.geometri import _kafes_icerik_kontrol
+from cekirdek.ceviri import _
 
 
 _YON_ADI = {"yan": "yan", "alt": "alt", "ust": "üst"}
@@ -24,8 +27,8 @@ def kor_kontrol(spec):
     bulgular = []
     kor = spec["kor"]
     tur = kor.get("tur")
-    gecerli = ("tek_cubuk", "tek_demet", "kare_kafes", "tek_plaka", "kuresel",
-               "tamburlu")
+    gecerli = ("tek_cubuk", "tek_demet", "kare_kafes", "altigen_kafes", "tek_plaka",
+               "kuresel", "tamburlu")
     if tur not in gecerli:
         bulgular.append(Bulgu("hata", "kor",
                               "bilinmeyen kor türü: %s (geçerli: %s)"
@@ -167,6 +170,9 @@ def kor_kontrol(spec):
                 spec, "kor", kor.get("adim"), "kare",
                 [(kor.get("anahtar") or {}).get(h) for h in sorted(kullanilan)])
 
+    elif tur == "altigen_kafes":
+        bulgular += altigen_kor_kontrol(spec)
+
     # --- sinir kosullari ---
     sinir = kor.get("sinir") or {}
     gecerli_bc = ("reflective", "vacuum", "periodic", "white")
@@ -180,7 +186,11 @@ def kor_kontrol(spec):
     yan = sinir.get("yan")
     if yan in gecerli_bc and yan not in uygunluk.sinir_secenekleri(spec, "yan"):
         yy = uygunluk.yan_yuzey(spec)
-        if yy == "altigen":
+        if tur == "altigen_kafes":
+            yuzey = _("demetlerin dış yüzlerinden geçen kırık bir çizgi")
+            oneri = _("Altıgen tam korda eşleşen düzlem çifti yoktur. Sonsuz kafes "
+                      "için Yansıtıcı (reflective) sınır aynı sonucu verir.")
+        elif yy == "altigen":
             yuzey = "altıgen bir prizma"
             oneri = ("Bu sürüm periyodik sınırı yalnızca kare kesitte (x/y düzlem "
                      "çiftleri) sunuyor. Simetrik bir demette sonsuz kafes için "
@@ -239,7 +249,7 @@ def kor_kontrol(spec):
             "uyari", "kor",
             "'%s' kor türünde yansıtıcı kuşak kurulmaz — dosyada açık ama "
             "yok sayılır" % _kor_turu_adi(tur),
-            "Yansıtıcı kuşak yalnızca tek yakıt demeti ve kare haritalı tam korda "
+            "Yansıtıcı kuşak yalnızca tek yakıt demeti ve haritalı tam korda "
             "(isteğe bağlı) ve tamburlu korda (zorunlu) kurulur. Model "
             "yansıtıcısız çalışır."))
     artik = [alan for alan in sema.KOR_TURE_OZGU
@@ -264,4 +274,91 @@ def kor_kontrol(spec):
         bulgular.append(Bulgu(
             "bilgi", "kor",
             "yükseklik verilmemiş — model eksenel yönde sonsuz (2B) kabul ediliyor"))
+    return bulgular
+
+
+def _altigen_harita_kontrol(kor, n):
+    """Halka uzunluklari; (bulgular, harita_gecerli)."""
+    beklenen = altigen.halka_uzunluklari(n)
+    harita = kor.get("harita") or []
+    if not harita:
+        return [Bulgu("hata", "kor", _("kor haritası boş"))], False
+    if len(harita) != len(beklenen):
+        return [Bulgu("hata", "kor",
+                      _("%d halka bekleniyor, haritada %d satır var")
+                      % (len(beklenen), len(harita)),
+                      _("Halkalar dıştan içe sıralanır; yarıçapı k olan halkada "
+                        "6k öğe, merkezde 1 öğe bulunur."))], False
+    bulgular = [Bulgu("hata", "kor", _("%d. halka (yarıçap %d) %d öğe bekliyor, %d var")
+                      % (i + 1, n - 1 - i, u, len(satir)))
+                for i, (satir, u) in enumerate(zip(harita, beklenen)) if len(satir) != u]
+    return bulgular, not bulgular
+
+
+def _altigen_hedef_kontrol(spec, kor, harfler):
+    """Haritadaki her ad: altigen demet, malzeme ya da bosluk olmali."""
+    bulgular = []
+    anahtar = kor.get("anahtar") or {}
+    for h in sorted(harfler - set(anahtar)):
+        bulgular.append(Bulgu("hata", "kor", _("haritada tanımsız harf: '%s'") % h))
+    yon = kor.get("yonelim") or "x"
+    P = float(kor.get("adim") or 0.0)
+    for ad in sorted({anahtar[h] for h in harfler if anahtar.get(h)}):
+        d = demet_bul(spec, ad)
+        if d is None:
+            if ad != BOSLUK and malzeme_bul(spec, ad) is None:
+                bulgular.append(Bulgu(
+                    "hata", "kor",
+                    _("'%s' altıgen kor haritasına konamaz: altıgen demet ya da "
+                      "malzeme olmalı") % ad,
+                    _("Çubuk ya da plaka tek başına bir demet hücresini doldurmaz; "
+                      "önce bir altıgen demete yerleştirin.")))
+            continue
+        if d.get("tur") != "altigen":
+            bulgular.append(Bulgu("hata", "kor",
+                                  _("'%s' kare bir demet; altıgen kor haritasına "
+                                    "yalnızca altıgen demet konabilir") % ad))
+            continue
+        bulgular += _altigen_demet_uyumu(d, yon, P)
+    return bulgular
+
+
+def _altigen_demet_uyumu(d, kor_yonelimi, P):
+    """Demet yonelimi ve olcusu kor hucresine uyuyor mu? (olculdu: altigen_kor)."""
+    bulgular = []
+    if d.get("yonelim", "y") == kor_yonelimi:
+        bulgular.append(Bulgu(
+            "hata", "kor",
+            _("'%s' demetinin yönelimi ('%s') kor yönelimiyle aynı — demet "
+              "köşeleri komşu hücreye taşar") % (d["ad"], kor_yonelimi),
+            _("Kor kafesi pin kafesine göre 90° dönüktür: demet '%s' ise kor "
+              "yönelimi '%s' olmalı (VVER / SFR tam korları böyledir).")
+            % (d.get("yonelim", "y"), akor.ters_yonelim(d.get("yonelim", "y")))))
+    dis = akor.demet_dis_olcu(d)
+    if P > 0 and dis > P * (1.0 + 1e-9):
+        bulgular.append(Bulgu(
+            "hata", "kor",
+            _("demet adımı (%.5f cm) '%s' demetinin dış ölçüsünden (%.5f cm%s) küçük")
+            % (P, d["ad"], dis, _(", kılıf dahil") if akor.kilif(d) else ""),
+            _("Demet adımı düz yüzden düz yüze ölçülür ve en az demetin dış ölçüsü "
+              "kadar olmalı; yoksa kor hücresi demeti keser.")))
+    return bulgular
+
+
+def altigen_kor_kontrol(spec):
+    """altigen_kafes: halka, harita, yonelim, adim, demet uyumu."""
+    kor = spec["kor"]
+    bulgular = []
+    n = kor.get("halka_sayisi")
+    if not isinstance(n, int) or n < 1:
+        return [Bulgu("hata", "kor", _("kor halka sayısı en az 1 olmalı: %s") % n)]
+    if kor.get("yonelim") not in ("x", "y"):
+        bulgular.append(Bulgu("hata", "kor", _("kor yönelimi 'x' ya da 'y' olmalı: %s")
+                              % kor.get("yonelim")))
+    if float(kor.get("adim") or 0.0) <= 0:
+        bulgular.append(Bulgu("hata", "kor", _("demet adımı sıfırdan büyük olmalı")))
+    harita_bulgu, gecerli = _altigen_harita_kontrol(kor, n)
+    bulgular += harita_bulgu
+    if gecerli:
+        bulgular += _altigen_hedef_kontrol(spec, kor, {h for s in kor["harita"] for h in s})
     return bulgular

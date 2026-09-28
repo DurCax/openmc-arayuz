@@ -37,6 +37,7 @@ from PySide6 import QtCore, QtGui, QtWidgets
 
 from cekirdek import kaynak
 from cekirdek import sema
+from cekirdek.ceviri import _
 
 KOK = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ORNEKLER = os.path.join(KOK, "ornekler")
@@ -55,6 +56,9 @@ KARTLAR = [
     {"anahtar": "tam_kor", "baslik": "Tam kor (kare harita)",
      "aciklama": "Demetlerden oluşan kor haritası, çevresinde su yansıtıcı.",
      "ornek": None, "bos": True, "sekme": "kor", "simge": "kor"},
+    {"anahtar": "tam_kor_altigen", "baslik": _("Tam kor — altıgen"),
+     "aciklama": _("Kılıflı altıgen demetlerden kor haritası (SFR / VVER tipi)."),
+     "ornek": None, "bos": True, "sekme": "kor", "simge": "altigen"},
     {"anahtar": "plaka", "baslik": "MTR plaka elemanı",
      "aciklama": "Araştırma reaktörünün düz plakalı yakıt elemanı.",
      "ornek": "mtr_plaka.json", "bos": True, "sekme": "parcalar", "simge": "plaka"},
@@ -146,7 +150,7 @@ def _kullanilmayanlari_at(spec):
     ana = sema.ana_dolgu(kor)
     if ana:
         kok.add(ana)
-    if kor.get("tur") == "kare_kafes":
+    if kor.get("tur") in sema.HARITALI_KORLAR:
         kullanilan = {h for satir in kor.get("harita") or [] for h in satir}
         kor["anahtar"] = {h: a for h, a in (kor.get("anahtar") or {}).items()
                           if h in kullanilan}
@@ -200,6 +204,7 @@ SABLON_MALZEMELERI = {
                  "b4c": ("b4c", {"sicaklik": 400.0})},
 }
 SABLON_MALZEMELERI["tam_kor"] = SABLON_MALZEMELERI["demet_kare"]
+SABLON_MALZEMELERI["tam_kor_altigen"] = SABLON_MALZEMELERI["demet_altigen"]
 
 
 def _parametrik_malzemeler(spec, eslem):
@@ -284,7 +289,31 @@ def _bos_sablon_ham(anahtar):
         kor["sinir"] = {"yan": "vacuum", "alt": "reflective", "ust": "reflective"}
         sema.kor_alanlarini_ayikla(kor)
         return _sadelestir(spec, "Yeni tam kor")
+    if anahtar == "tam_kor_altigen":
+        return _sadelestir(_altigen_tam_kor(), _("Yeni altıgen tam kor"))
     raise KeyError("boş şablonu olmayan kart: %s" % anahtar)
+
+
+def _altigen_tam_kor():
+    """
+    ornekler/ altinda altigen tam kor ornegi yok: SFR altigen demetine
+    ss316 kilif eklenir ve 7 demetli (2 halkali) kor kurulur; cevresinde
+    15 cm celik yansitici, yanlarda vakum. Kor yonelimi ve adimi tur
+    degisimiyle AYNI kuraldan gelir (model_islemleri.altigen_kor_haritasi_kur).
+    """
+    from arayuz.pencere.model_islemleri import altigen_kor_haritasi_kur
+    spec = _yukle("sfr_altigen.json")
+    d = spec["demetler"][0]
+    # en dis pinler (r = 0.395) + 0.08 cm pay; 0.3 cm kilif; 0.3 cm bosluk
+    d["kilif"] = sema.demet_kilifi(10.30, 0.30, "ss316")
+    kor = spec["kor"]
+    kor["tur"] = "altigen_kafes"
+    altigen_kor_haritasi_kur(spec, d["ad"], halka=2)
+    kor["adim"] = round(kor["adim"] + 0.30, 6)
+    kor["yansitici"] = {"var": True, "kalinlik": 15.0, "malzeme": "ss316"}
+    kor["sinir"] = {"yan": "vacuum", "alt": "reflective", "ust": "reflective"}
+    sema.kor_alanlarini_ayikla(kor)
+    return spec
 
 
 # ============================================================================

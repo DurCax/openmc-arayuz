@@ -143,13 +143,20 @@ VARSAYILAN_CALISTIRMA = {
 
 VARSAYILAN_KOR = {
     "tur": "tek_cubuk",           # tek_cubuk | tek_demet | kare_kafes |
-                                  # tek_plaka | kuresel | tamburlu
+                                  # altigen_kafes | tek_plaka | kuresel | tamburlu
     "cubuk": None,
     "demet": None,
     "plaka": None,
     "adim": 1.26,                 # cm -- tek_cubuk / tek_demet icin hucre adimi
     "boyut": [1, 1],              # kare_kafes icin [nx, ny]
-    "harita": [],                 # kare_kafes icin satir satir harf haritasi
+    # kare_kafes: satir satir; altigen_kafes: DISTAN ICE halka listesi (demet
+    # haritasiyla ayni bicim, bkz. cekirdek/altigen.py)
+    "harita": [],
+    # altigen_kafes: halka sayisi (merkez dahil; 2 -> 7 demet) ve kor kafesi
+    # yonelimi (HexLattice anlaminda). Demet pin kafesi 'y' ise kor 'x'
+    # olmalidir (birbirine 90 derece; bkz. cekirdek/altigen_kor.py).
+    "halka_sayisi": 2,
+    "yonelim": "x",
     "anahtar": {},                # harf -> demet adi
     "yukseklik": None,            # cm; None => 2B sonsuz (eksenel sinir yok)
     "yansitici": {"var": False, "kalinlik": 20.0, "malzeme": None},
@@ -179,7 +186,8 @@ VARSAYILAN_KOR = {
     #     yukseklik: cm
     #     dolgu    : o katmani dolduran cubuk/plaka/demet/malzeme adi.
     #                None birakilirsa korun ANA dolgusu kullanilir.
-    #     anahtar  : yalnizca kare_kafes icin -- ayni harita, katmana ozel
+    #     anahtar  : yalnizca haritali korlarda (kare_kafes, altigen_kafes)
+    #                -- ayni harita, katmana ozel
     #                harf -> demet eslemesi (eksenel zenginlik kusaklama).
     #
     #   "var" acikken modelin toplam yuksekligi katman yuksekliklerinin
@@ -191,7 +199,11 @@ VARSAYILAN_KOR = {
 
 # Eksenel katmanlamayi destekleyen kor turleri. "kuresel"de eksen kavrami
 # yoktur; orada katman istemek anlamsizdir.
-EKSENEL_DESTEKLI = ("tek_cubuk", "tek_plaka", "tek_demet", "kare_kafes", "tamburlu")
+EKSENEL_DESTEKLI = ("tek_cubuk", "tek_plaka", "tek_demet", "kare_kafes", "altigen_kafes",
+                    "tamburlu")
+
+# Ana dolgusu tek bir ad degil KOR HARITASI olan turler (harf -> demet).
+HARITALI_KORLAR = ("kare_kafes", "altigen_kafes")
 
 # ----------------------------------------------------------------------------
 # Kor turune OZGU alanlar -- hangi alan hangi turde anlamlidir (TEK tanim).
@@ -210,6 +222,8 @@ KOR_TUR_ALANLARI = {
     "tek_plaka":  ("plaka",),
     "tek_demet":  ("demet", "yansitici"),
     "kare_kafes": ("adim", "boyut", "harita", "anahtar", "yansitici"),
+    # adim: demet adimi (duz yuzden duz yuze); harita: halka listesi
+    "altigen_kafes": ("adim", "halka_sayisi", "harita", "anahtar", "yonelim", "yansitici"),
     "kuresel":    ("kabuklar",),
     "tamburlu":   ("dolgu", "kor_yaricap", "tambur", "yansitici"),
 }
@@ -246,7 +260,7 @@ def katman_adaylari(kor, katman=None):
     katman = katman or {}
     if katman.get("dolgu"):
         return [katman["dolgu"]]
-    if kor.get("tur") == "kare_kafes":
+    if kor.get("tur") in HARITALI_KORLAR:
         esleme = dict(kor.get("anahtar") or {})
         esleme.update(katman.get("anahtar") or {})
         return [v for v in esleme.values() if v]
@@ -426,7 +440,7 @@ def demet(ad, adim, boyut, harita, anahtar, dolgu_disi, tur="kare"):
 
 
 def demet_altigen(ad, adim, halka_sayisi, harita, anahtar, dolgu_disi,
-                  yonelim="y"):
+                  yonelim="y", kilif=None):
     """
     Altigen kafes (HexLattice) tanimi.
 
@@ -435,14 +449,29 @@ def demet_altigen(ad, adim, halka_sayisi, harita, anahtar, dolgu_disi,
                    Yaricapi k olan halkada 6k karakter, merkezde 1 karakter.
                    Her halkanin karakterleri TEPEDEN baslar, SAAT YONUNDE ilerler.
     yonelim      : "y" (ust/alt yuzler yatay) | "x" (sag/sol yuzler dusey)
+    kilif        : istege bagli kilif (duct), bkz. demet_kilifi(). Yoksa alan
+                   yazilmaz (eski dosyalar aynen kalir).
     """
-    return {
+    d = {
         "ad": ad, "tur": "altigen", "adim": adim,
         "halka_sayisi": halka_sayisi, "yonelim": yonelim,
         "boyut": [halka_sayisi, halka_sayisi],   # geriye uyumluluk icin
         "harita": list(harita), "anahtar": dict(anahtar),
         "dolgu_disi": dolgu_disi,
     }
+    if kilif:
+        d["kilif"] = dict(kilif)
+    return d
+
+
+def demet_kilifi(ic_duz, kalinlik, malzeme):
+    """
+    Altigen demet kilifi (duct; SFR, VVER-440). ic_duz: kilifin IC duz yuzden
+    duz yuze olcusu [cm]; kalinlik: duvar kalinligi. Kilifin disi ile demet
+    hucresinin siniri arasi demetin dolgu_disi malzemesiyle dolar (demetler
+    arasi bosluk). Kilif yoksa pin kafesi kor hucresinde kirpilir.
+    """
+    return {"ic_duz": float(ic_duz), "kalinlik": float(kalinlik), "malzeme": malzeme}
 
 
 def eksenel_bolge(ad, yukseklik, dolgu=None, anahtar=None):
@@ -659,6 +688,9 @@ def kullanilan_malzemeler(spec):
     for d in spec["demetler"]:
         if d.get("dolgu_disi") and d["dolgu_disi"] != BOSLUK:
             adlar.add(d["dolgu_disi"])
+        k = d.get("kilif") if d.get("tur") == "altigen" else None
+        if isinstance(k, dict) and k.get("malzeme") and k["malzeme"] != BOSLUK:
+            adlar.add(k["malzeme"])
     t = spec["kor"].get("tambur") or {}
     if int(t.get("sayi") or 0) > 0:
         for anahtar in ("govde_malzeme", "emici_malzeme"):
@@ -804,6 +836,7 @@ def malzeme_adini_degistir(spec, eski, yeni):
             alan(p, k, "plakalar/%s/%s" % (p.get("ad"), k))
     for d in spec.get("demetler") or []:
         alan(d, "dolgu_disi", "demetler/%s/dolgu_disi" % d.get("ad"))
+        alan(d.get("kilif"), "malzeme", "demetler/%s/kilif" % d.get("ad"))
     kor = spec.get("kor") or {}
     alan(kor.get("yansitici"), "malzeme", "kor/yansitici")
     for i, k in enumerate(kor.get("kabuklar") or []):

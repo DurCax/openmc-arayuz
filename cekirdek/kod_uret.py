@@ -29,6 +29,7 @@ import datetime
 import re
 
 from cekirdek import altigen
+from cekirdek import altigen_kor as _akor
 from cekirdek import sema
 from cekirdek import kaynak as _kaynak
 from cekirdek.sema import BOSLUK, cubuk_bul, plaka_bul, demet_bul
@@ -346,6 +347,15 @@ def _demet(spec, demet_ad, satirlar, uretilen, sarmala=False):
                                     for h, t in sorted(d["anahtar"].items())))
         satirlar.append("%s.universes = [[_anahtar[_h] for _h in _s] for _s in _harita]" % v)
 
+    k = _akor.kilif(d)
+    if k:
+        # kilif (duct): kurucu ile AYNI islev (altigen_kor.kilifli_demet_universe)
+        vs = v + "_u"
+        satirlar.append("%s = kilifli_demet_universe(%s, %s, %s, %r, %s, %s)"
+                        % (vs, v, _f(float(k["ic_duz"])), _f(float(k["kalinlik"])),
+                           d.get("yonelim", "y"), _mat_ifade(k.get("malzeme")),
+                           _mat_ifade(d.get("dolgu_disi"))))
+        return vs
     if sarmala:
         vs = v + "_u"
         satirlar.append("%s = openmc.Universe(cells=[openmc.Cell(fill=%s)])" % (vs, v))
@@ -363,6 +373,10 @@ def _geometri(spec, satirlar):
     kor = spec["kor"]
     tur = kor["tur"]
     uretilen = {}
+    if tur == "altigen_kafes" or _akor.kilif_kullaniliyor(spec):
+        satirlar.append("")
+        satirlar.append("# Altıgen kor / demet kılıfı yardımcıları (arayüzün kurucusuyla aynı kod)")
+        satirlar.extend(_akor.betik_kaynagi().splitlines())
 
     if tur == "tek_cubuk":
         ic = _cubuk(spec, kor["cubuk"], satirlar)
@@ -378,7 +392,9 @@ def _geometri(spec, satirlar):
     elif tur == "tek_demet":
         ic = _demet(spec, kor["demet"], satirlar, uretilen)
         d = demet_bul(spec, kor["demet"])
-        if d.get("tur") == "altigen":
+        if d.get("tur") == "altigen" and _akor.kilif(d):
+            gx, gy = _akor.prizma_kutusu(_akor.demet_dis_olcu(d) / 2.0, d.get("yonelim", "y"))
+        elif d.get("tur") == "altigen":
             halka = d.get("halka_sayisi") or d["boyut"][0]
             gx, gy = altigen.kapsayan_olcu(halka, d["adim"], d.get("yonelim", "y"))
         else:
@@ -489,6 +505,11 @@ def _geometri(spec, satirlar):
         nx, ny = kor["boyut"]
         ic = _kor_kafesi(spec, kor, satirlar, uretilen)
         gx, gy = kor["adim"] * nx, kor["adim"] * ny
+    elif tur == "altigen_kafes":
+        gx, gy = _akor.betik_satirlari(
+            spec, satirlar, lambda ad: _bagimliliklar(spec, ad, satirlar, uretilen),
+            _mat_ifade, _f)
+        return gx, gy, uretilen
     else:
         raise ValueError("bilinmeyen kor türü: %s" % tur)
 
@@ -559,6 +580,10 @@ def _geometri(spec, satirlar):
         satirlar.append("import math")
         satirlar.append("_apothem = (%s - 1) * %s * math.sqrt(3) / 2 + %s / 2"
                         % (_f(halka), _f(adim), _f(adim)))
+        if _akor.kilif(hex_demet):
+            buy = (_akor.demet_dis_olcu(hex_demet) - _akor.pin_zarfi(hex_demet)) / 2.0
+            satirlar.append("_apothem += %s   # kılıflı demet: sınır kılıfın dış yüzünde"
+                            % _f(buy))
         if yans.get("var"):
             satirlar.append("_ic_prizma = openmc.model.HexagonalPrism("
                             "edge_length=2*_apothem/math.sqrt(3), orientation=%r)" % yonelim)

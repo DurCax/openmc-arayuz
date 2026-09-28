@@ -24,6 +24,7 @@
    tek_cubuk   : tek yakit cubugu, yansitici/vakum sinirli hucre (pin cell)
    tek_demet   : tek kafes demeti
    kare_kafes  : demetlerden olusan kare kor + istege bagli yansitici
+   altigen_kafes: altigen demetlerden olusan altigen kor (cekirdek/altigen_kor.py)
    tek_plaka   : MTR tipi plaka yakit elemani
 
  NOT
@@ -38,6 +39,7 @@ import math
 import openmc
 
 from cekirdek import altigen
+from cekirdek import altigen_kor as _akor
 from cekirdek import tambur as _tambur
 from cekirdek import kaynak as _kaynak
 from cekirdek.sema import kor_yuksekligi as sema_kor_yuksekligi
@@ -308,6 +310,20 @@ def demet_lattice(spec, demet_ad, nesneler, universeler):
     raise ValueError("bilinmeyen demet türü: %s" % d["tur"])
 
 
+def _demet_universe(spec, ad, nesneler, universeler):
+    """Demeti bir universe olarak kurar; altigen demette varsa kilifiyla."""
+    d = demet_bul(spec, ad)
+    lat = demet_lattice(spec, ad, nesneler, universeler)
+    k = _akor.kilif(d)
+    if k is None:
+        return openmc.Universe(cells=[openmc.Cell(fill=lat)], name=ad)
+    u = _akor.kilifli_demet_universe(
+        lat, float(k["ic_duz"]), float(k["kalinlik"]), d.get("yonelim", "y"),
+        _mat(nesneler, k.get("malzeme")), _mat(nesneler, d.get("dolgu_disi")))
+    u.name = ad
+    return u
+
+
 def _spec_fisil_mi(spec, ad, derinlik=0):
     """
     Spec'teki bir ad (cubuk / plaka / demet / malzeme) fisil malzeme iceriyor mu?
@@ -425,8 +441,7 @@ def _universe_uret(spec, ad, nesneler, universeler):
     if plaka_bul(spec, ad) is not None:
         return plaka_universe(spec, ad, nesneler)
     if demet_bul(spec, ad) is not None:
-        lat = demet_lattice(spec, ad, nesneler, universeler)
-        return openmc.Universe(cells=[openmc.Cell(fill=lat)])
+        return _demet_universe(spec, ad, nesneler, universeler)
     if ad == BOSLUK or malzeme_bul(spec, ad) is not None:
         return openmc.Universe(cells=[openmc.Cell(fill=_mat(nesneler, ad))])
     raise KeyError("tanımsız ad: %s (çubuk, plaka elemanı, demet ya da malzeme değil)" % ad)
@@ -520,7 +535,8 @@ def _kare_kafes_kur(spec, kor, nesneler, universeler, anahtar=None):
 
 
 def _katman_dolgusu(spec, kor, katman, ana_ic, nesneler, universeler):
-    """Bir eksenel katmani dolduracak universe/lattice."""
+    """Bir eksenel katmani dolduracak universe/lattice. (altigen_kafes'te
+    katmana ozel anahtar konum konum cozulur: altigen_kor.konum_dolgu_adlari.)"""
     if katman.get("anahtar"):
         if kor["tur"] != "kare_kafes":
             raise ValueError(
@@ -534,6 +550,15 @@ def _katman_dolgusu(spec, kor, katman, ana_ic, nesneler, universeler):
     if anahtar not in universeler:
         universeler[anahtar] = _universe_uret(spec, dolgu, nesneler, universeler)
     return universeler[anahtar]
+
+
+def _ad_universe(spec, ad, nesneler, universeler):
+    """Adin universe'i (bir kez kurulur, sonra paylasilir: distribcell)."""
+    if not ad:
+        raise KeyError("kor haritasında tanımsız harf")
+    if ad not in universeler:
+        universeler[ad] = _universe_uret(spec, ad, nesneler, universeler)
+    return universeler[ad]
 
 
 def _eksenel_hucreler(spec, kor, taban_bolge, ana_ic, nesneler, universeler,
@@ -591,6 +616,13 @@ def kor_kur(spec, nesneler, universeler):
     elif tur == "tek_demet":
         ic = demet_lattice(spec, kor["demet"], nesneler, universeler)
         gx, gy = ic.arayuz_boyut
+        if altigen_kor and _akor.kilif(demet_bul(spec, kor["demet"])):
+            ic = _demet_universe(spec, kor["demet"], nesneler, universeler)
+            gx, gy = _akor.prizma_kutusu(
+                _akor.demet_dis_olcu(demet_bul(spec, kor["demet"])) / 2.0,
+                demet_bul(spec, kor["demet"]).get("yonelim", "y"))
+    elif tur == "altigen_kafes":
+        return _akor.kor_kur(spec, nesneler, universeler)
     elif tur == "tamburlu":
         # Silindirik kor + yansitici kusak + kusaga gomulu donen tamburlar.
         R_kor = float(kor.get("kor_yaricap") or 0.0)
@@ -677,18 +709,20 @@ def kor_kur(spec, nesneler, universeler):
         d = demet_bul(spec, kor["demet"])
         halka = d.get("halka_sayisi") or d["boyut"][0]
         yonelim = d.get("yonelim", "y")
+        # Kilifli demette sinir kilifin dis yuzudur (kilifsizda pin zarfi).
+        buy = (_akor.demet_dis_olcu(d) - _akor.pin_zarfi(d)) / 2.0 if _akor.kilif(d) else 0.0
         if yans_var:
             kal = yans["kalinlik"]
-            ic_prizma = _altigen_sinir(halka, d["adim"], yonelim, "transmission")
-            dis_prizma = _altigen_sinir(halka, d["adim"], yonelim, yan_bc, buyutme=kal)
+            ic_prizma = _altigen_sinir(halka, d["adim"], yonelim, "transmission", buy)
+            dis_prizma = _altigen_sinir(halka, d["adim"], yonelim, yan_bc, buyutme=kal + buy)
             hucreler = _eksenel_hucreler(spec, kor, -ic_prizma, ic,
                                          nesneler, universeler)
             hucreler.append(openmc.Cell(
                 fill=_mat(nesneler, yans.get("malzeme")),
                 region=_eksenel_bolge(kor, +ic_prizma & -dis_prizma)))
-            olcu = altigen.kapsayan_olcu(halka, d["adim"], yonelim)
+            olcu = altigen.kapsayan_olcu(halka, d["adim"], yonelim) if not buy else (gx, gy)
             return openmc.Universe(cells=hucreler), (olcu[0] + 2 * kal, olcu[1] + 2 * kal)
-        prizma = _altigen_sinir(halka, d["adim"], yonelim, yan_bc)
+        prizma = _altigen_sinir(halka, d["adim"], yonelim, yan_bc, buy)
         return (openmc.Universe(cells=_eksenel_hucreler(
             spec, kor, -prizma, ic, nesneler, universeler)), (gx, gy))
 
@@ -729,6 +763,9 @@ def kor_ic_olcusu(spec, sinir_kutu):
     """
     kor = spec["kor"]
     tur = kor.get("tur")
+    if tur == "altigen_kafes":
+        # dis prizma altigen: "kutu - 2 x kalinlik" burada gecersiz
+        return _akor.kor_ic_olcusu(kor)
     yans = kor.get("yansitici") or {}
     yansitici_var = (tur == "tamburlu"
                      or (yans.get("var") and tur in ("tek_demet", "kare_kafes")))
