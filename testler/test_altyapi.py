@@ -147,6 +147,25 @@ def test_hata_diyalogu():
     kutu.deleteLater()
 
 
+def test_veri_listesi_gecerli():
+    print("\n[A6] PYTEST KOPRUSU: VERI_GEREKTIREN listesi var olan testleri gosteriyor")
+    import importlib
+    try:
+        import conftest
+    except ImportError as e:            # pytest kurulu degil
+        kontrol("pytest yok; kopru denetimi atlandi", True, "-> %s" % e)
+        return
+    hizli_adlar = set()
+    for m in importlib.import_module("testler.ortak_test").ek_moduller() + [
+            importlib.import_module("testler.test_regresyon")]:
+        ad = m.__name__.rsplit(".", 1)[-1]
+        hizli, _ = conftest.test_listeleri(m)
+        hizli_adlar.update("%s:%s" % (ad, fn.__name__) for fn in hizli)
+    bilinmeyen = sorted(conftest.VERI_GEREKTIREN - hizli_adlar)
+    kontrol("VERI_GEREKTIREN'deki her ad bir HIZLI teste karsilik geliyor", not bilinmeyen,
+            "-> tasinmis/silinmis: %s (conftest.py'de guncelleyin)" % bilinmeyen)
+
+
 HIZLI = [test_surum, test_gunluk_yolu_ve_yazim, test_gunluk_yazilamazsa,
-         test_hata_yakalayici_loglar, test_hata_diyalogu]
+         test_hata_yakalayici_loglar, test_hata_diyalogu, test_veri_listesi_gecerli]
 YAVAS = []

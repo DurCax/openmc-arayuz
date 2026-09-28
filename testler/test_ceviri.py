@@ -83,6 +83,9 @@ def test_ceviri_cogul_ve_baglam():
             _dil_ile(c, "en", lambda: c.pgettext("menü", "Dil")) == "Language")
     kontrol("tr: pgettext msgid aynen",
             _dil_ile(c, "tr", lambda: c.pgettext("menü", "Dil")) == "Dil")
+    kontrol("dil menusu: baslik ve secenekler etkin dilde",
+            _dil_ile(c, "en", lambda: (c.dil_menusu_basligi(), c.dil_secenekleri()))
+            == ("Language", [("tr", "Turkish"), ("en", "English")]))
 
 
 def test_ceviri_eksik_giris_loglanir():

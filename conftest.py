@@ -37,8 +37,37 @@ os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 from testler import ortak_test  # noqa: E402
 
 # Modul:islev -> nukleer veri gerektirir. YAVAS listesindekilerin hepsi
-# (Monte Carlo) ayrica otomatik isaretlenir.
+# (Monte Carlo) ayrica otomatik isaretlenir. Olcum (28.09.2026): veri yokken
+# (OPENMC_CROSS_SECTIONS/OPENMC_CHAIN_FILE bos, ~/nucdata yok) hizli suit.
+# (*) = veri olmadan openmc.lib sureci SONLANDIRIR (Model.plot ya da onizleme
+#       widget'i tesir kesitlerini yukler); digerleri KALDI/istisna verir.
+# Ajan 0 testleri konu modullerine tasirsa modul adlari burada guncellenir;
+# bilinmeyen ad zararsizdir ama test_veri_listesi_gecerli uyarir.
 VERI_GEREKTIREN = frozenset({
+    "test_dil:test_arayuz_metinleri",                 # (*)
+    "test_kabuk:test_bos_sablonlar",                  # (*)
+    "test_kabuk:test_minimum_yukseklik",              # (*)
+    "test_kabuk:test_sag_panel_ve_rozet",             # (*)
+    "test_kabuk:test_tema_gecisi",                    # (*)
+    "test_kor_ayar:test_onizleme_ikili_kesit",        # (*)
+    "test_parca_demet:test_ad_degisimi",
+    "test_parca_demet:test_demet_yerlesim",           # (*)
+    "test_regresyon:test_arayuz_tekerlek",            # (*)
+    "test_regresyon:test_bateman_bozunum",            # zincir dosyasi
+    "test_regresyon:test_cizim",                      # (*)
+    "test_regresyon:test_dogrulama_negatif",
+    "test_regresyon:test_dogrulama_temiz",
+    "test_regresyon:test_guc_dogrulama",
+    "test_regresyon:test_kaynak_dogrulama",
+    "test_regresyon:test_kaynak_yonu",                # (*)
+    "test_regresyon:test_kontrol_cubugu_dogrulama",
+    "test_regresyon:test_kuresel_kor",
+    "test_regresyon:test_onizleme_tallyli_model",     # (*)
+    "test_regresyon:test_tambur_kor",
+    "test_regresyon:test_tukenme_dogrulama",
+    "test_regresyon:test_tukenme_hacimleri",          # zincir dosyasi
+    "test_regresyon:test_veri_sicaklik_araligi",
+    "test_regresyon:test_zincir_butunlugu",           # zincir dosyasi
 })
 
 _TEST_DIZINI = os.path.join(ortak_test.KOK, "testler")

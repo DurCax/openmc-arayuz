@@ -1,0 +1,69 @@
+# =============================================================================
+#  Hizli test suiti (CI)
+#
+#  conda-forge ortami (environment.yml: python + openmc=0.16.0 + PySide6 ...),
+#  basssiz Qt (offscreen) ve pytest koprusu (conftest.py).
+#
+#  NUKLEER VERI CI'DA YOK (ENDF/B-VIII.0 ~13 GB). Bu yuzden yalnizca
+#  "hizli and not veri" kosar; `veri` isaretli testler (conftest.py
+#  VERI_GEREKTIREN + butun YAVAS) ve Monte Carlo suiti yerel makinede kalir:
+#      python3 testler/test_regresyon.py            # tam suit
+#      pytest -m hizli -n auto                      # veri dahil hizli suit
+# =============================================================================
+name: test
+
+on:
+  push:
+    branches: [ana]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  hizli:
+    name: hizli suit (veri yok)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: bash -el {0}
+    env:
+      QT_QPA_PLATFORM: offscreen
+      OPENMC_ARAYUZ_DIYALOGSUZ: "1"
+      OMP_NUM_THREADS: "1"
+      PYTHONUNBUFFERED: "1"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Qt icin sistem kutuphaneleri (EGL, xkb, fontconfig)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libegl1 libgl1 libopengl0 libxkbcommon0 libxkbcommon-x11-0 \
+            libfontconfig1 libdbus-1-3 fonts-dejavu-core
+
+      - name: conda-forge ortami (micromamba)
+        uses: mamba-org/setup-micromamba@v2
+        with:
+          environment-file: environment.yml
+          environment-name: openmc-env
+          cache-environment: true
+          post-cleanup: all
+
+      - name: Paketi kur (giris komutlari)
+        run: pip install -e . --no-deps
+
+      - name: Ortam ozeti
+        run: |
+          python -c "import openmc, PySide6; print('openmc', openmc.__version__, 'PySide6', PySide6.__version__)"
+          python -c "from cekirdek.surum import surum, UYGULAMA_ADI; print(UYGULAMA_ADI, surum())"
+          openmc-arayuz-kosu --yardim > /dev/null
+
+      - name: Hizli suit (nukleer veri gerektirmeyenler)
+        run: python -m pytest -m "hizli and not veri" -n auto -q --durations=15

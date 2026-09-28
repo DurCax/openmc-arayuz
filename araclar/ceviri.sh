@@ -48,7 +48,13 @@ guncelle() {
             local pot="$LOCALE/$parca.pot"
             local po="$LOCALE/$dil/LC_MESSAGES/$parca.po"
             [ -f "$pot" ] || hata "$pot yok; once: $0 cikar"
+            local birlesik="$LOCALE/$dil/LC_MESSAGES/$ALAN.po"
             mkdir -p "$(dirname "$po")"
+            if [ ! -f "$po" ] && [ -f "$birlesik" ]; then
+                # Ilk parca: mevcut cevirileri kaybetmemek icin birlesik
+                # katalogdan tohumla; update bu parcaya ait olmayanlari eler.
+                cp "$birlesik" "$po"
+            fi
             if [ -f "$po" ]; then
                 pybabel update -i "$pot" -o "$po" -l "$dil" -D "$parca" --width=88
             else

@@ -55,6 +55,16 @@ def N_(metin):
 DIL_ADLARI = {"tr": N_("Türkçe"), "en": N_("İngilizce")}
 
 
+def dil_menusu_basligi():
+    """"Görünüm > Dil" menusunun basligi (etkin dilde)."""
+    return pgettext("menü", "Dil")
+
+
+def dil_secenekleri():
+    """Dil menusu icin [(kod, gorunen_ad)], etkin dilde."""
+    return [(kod, _(DIL_ADLARI[kod])) for kod in DESTEKLENEN_DILLER]
+
+
 def dil_kodu(deger):
     """"tr_TR.UTF-8", "tr-TR", "TR" -> "tr"; desteklenmeyen/bos -> "en"."""
     kod = (deger or "").strip().split(".")[0].replace("-", "_").split("_")[0].lower()

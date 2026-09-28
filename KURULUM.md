@@ -1,5 +1,9 @@
 # Kurulum — OpenMC Reaktör Kuru Arayüzü
 
+<!-- CI rozeti (depo herkese açılınca ya da oturum açıkken görünür):
+[![test](https://github.com/DurCax/openmc-arayuz/actions/workflows/test.yml/badge.svg?branch=ana)](https://github.com/DurCax/openmc-arayuz/actions/workflows/test.yml)
+-->
+
 Bu klasör, OpenMC ile reaktör modeli (yakıt çubuğundan tam kora, zırhlamadan
 tükenmeye) kurup çalıştırmayı sağlayan bir masaüstü uygulamasıdır. Model
 arayüzde kurulur, geometri çalıştırmadan önce görülür, hesap aynı yerden
@@ -33,7 +37,13 @@ Zip'i açtığınız klasörde:
 cd openmc_arayuz
 conda env create -f environment.yml    # OpenMC 0.16.0 + PySide6 + matplotlib ... (birkaç dakika)
 conda activate openmc-env
+pip install -e . --no-deps             # uygulamayı ortama bağlar: openmc-arayuz, openmc-arayuz-kosu
 ```
+
+OpenMC PyPI'da yayımlanmıyor; conda-forge'dan gelir. Bu yüzden `pip install`
+**`--no-deps`** ile çalıştırılır: bütün bağımlılıklar zaten `environment.yml`
+ile kuruldu. Ortam önceden kurulduysa eksik araçlar için:
+`conda install -c conda-forge pytest pytest-xdist babel`.
 
 ## 3. Nükleer veriyi indirin
 
@@ -56,9 +66,24 @@ bir diske koymak için: `./veri_indir.sh --hedef /baska/disk/nucdata --bashrc`.
 ## 4. Doğrulayın ve başlatın
 
 ```bash
-python3 -m testler.test_regresyon --hizli   # ~3 dakika, sonunda "0 kaldi" yazmalı
-./calistir.sh                               # uygulama açılır
+pytest -m hizli -n auto -q                  # hızlı süit, paralel (~40 sn); "passed", 0 failed
+./calistir.sh                               # uygulama açılır (ya da: openmc-arayuz)
 ```
+
+Testleri çalıştırmanın diğer yolları:
+
+| Komut | Ne yapar |
+|---|---|
+| `pytest -m hizli -q` | Hızlı süit, tek çekirdek (~2,5 dk) |
+| `pytest -m "hizli and not veri"` | Nükleer veri gerektirmeyenler (CI bunu koşar) |
+| `pytest -m yavas` | Monte Carlo testleri (uzun; veri gerekir) |
+| `python3 -m testler.test_regresyon --hizli` | Eski çalıştırıcı; sonunda "0 kaldi" yazmalı |
+| `python3 -m testler.test_regresyon` | Tam süit (Monte Carlo dahil) |
+| `TEST_SURE=1 python3 -m testler.test_regresyon --hizli` | Test başına süre ve en yavaş 20 test |
+
+`veri` işaretli testler `OPENMC_CROSS_SECTIONS` yoksa atlanır (3. adım).
+Uygulama logu `~/.local/state/openmc_arayuz/openmc_arayuz.log` dosyasına yazılır
+(`XDG_STATE_HOME` ayarlıysa onun altına); hata bildirirken bu dosyayı ekleyin.
 
 İlk deneme: açılan **"Ne modellemek istiyorsunuz?"** ekranında **Yakıt çubuğu → Boş
 başla**, sonra **F9** (Çalıştır). Yarım dakika içinde sonuç kartında
@@ -87,8 +112,11 @@ SFR demeti, MTR plakası, Godiva kritiklik küresi, zırhlama küresi, tükenme.
 okunabilir bir OpenMC Python betiğine çevirebilir:
 
 ```bash
-python3 -m cekirdek.kosucu ornekler/pwr_pinhucre.json               # koş ve sonucu yaz
-python3 -m cekirdek.kosucu ornekler/pwr_17x17.json --betik model.py  # Python betiği üret
+openmc-arayuz-kosu ornekler/pwr_pinhucre.json                   # koş ve sonucu yaz
+openmc-arayuz-kosu ornekler/pwr_pinhucre.json --sadece-dogrula  # yalnızca doğrula
+openmc-arayuz-kosu ornekler/pwr_17x17.json --betik model.py     # Python betiği üret
 ```
+
+`pip install -e .` yapılmadıysa aynı komutlar `python3 -m cekirdek.kosucu ...` ile çalışır.
 
 Arayüzde aynı işlem: **Dosya → Python betiği olarak dışa aktar (Ctrl+E)**.

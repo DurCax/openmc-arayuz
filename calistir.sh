@@ -5,6 +5,10 @@
 #  KULLANIM
 #    ./calistir.sh                          bos modelle acilir
 #    ./calistir.sh ornekler/pwr_17x17.json  verilen spec ile acilir
+#
+#  Paket kuruluysa (pip install -e . --no-deps) ayni is `openmc-arayuz`
+#  komutuyla da yapilir. Uygulama logu: ~/.local/state/openmc_arayuz/
+#  (XDG_STATE_HOME); arayuz hata verirse yolu asagida yazilir.
 # =============================================================================
 set -u
 KOK="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -33,4 +37,11 @@ except Exception as e:
     print("UYARI: zincir kontrolu yapilamadi: %s" % e)
 KONTROL
 
-cd "$KOK" && exec python3 -m arayuz.ana_pencere "$@"
+cd "$KOK" || hata "$KOK dizinine girilemedi."
+python3 -m arayuz.ana_pencere "$@"
+durum=$?
+if [ "$durum" -ne 0 ]; then
+    log=$(python3 -c "from cekirdek.gunluk import log_yolu; print(log_yolu())" 2>/dev/null)
+    echo "Arayuz $durum koduyla kapandi. Ayrintilar: ${log:-~/.local/state/openmc_arayuz/openmc_arayuz.log}" >&2
+fi
+exit "$durum"
