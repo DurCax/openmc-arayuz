@@ -552,9 +552,9 @@ def test_tukenme_gorunum():
     t.bekle()
     kontrol("acik: ayarlar ve kosu cubugu gorunur",
             _gorunur(t.ayar_kutusu, t) and _gorunur(t.kosu_kutusu, t))
-    kontrol("zincir, entegrator, cubuk cubuk yanma, izlenen 'Gelismis' icinde",
-            all(t.gelismis.isAncestorOf(w)
-                for w in (t.zincir, t.entegrator, t.ayir, t.izlenen)))
+    kontrol("zincir, entegrator, cubuk cubuk yanma 'Gelismis' icinde; izlenen DISINDA",
+            all(t.gelismis.isAncestorOf(w) for w in (t.zincir, t.entegrator, t.ayir))
+            and not t.gelismis.isAncestorOf(t.izlenen))
     kontrol("guc, adimlar Gelismis DISINDA",
             not t.gelismis.isAncestorOf(t.guc) and not t.gelismis.isAncestorOf(t.adimlar))
     kontrol("pin hucre (tek ornek): cubuk cubuk yanma gizli",
@@ -632,7 +632,7 @@ def test_tukenme_kusak(gecici=None):
                        'echo " Combined k-effective = 1.3 +/- 0.001"\n'
                        'sleep 0.8\n: > "$2/depletion_results.h5"\nexit 0\n')
         st.sys = types.SimpleNamespace(executable=betik)
-        _tk.sonuc_oku = lambda h5, spec: copy.deepcopy(SAHTE_TUKENME)
+        _tk.sonuc_oku = lambda h5, spec, izlenen=None: copy.deepcopy(SAHTE_TUKENME)
         proje_a = os.path.join(gecici, "a", "proje.json")
         proje_b = os.path.join(gecici, "b", "proje.json")
         os.makedirs(os.path.dirname(proje_a)); os.makedirs(os.path.dirname(proje_b))
