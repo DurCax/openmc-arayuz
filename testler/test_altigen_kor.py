@@ -110,8 +110,9 @@ def _yaprak_malzeme(model, nokta):
 
 
 def _kok_hucresi(model, nokta):
-    yol = _yol(model, nokta)
-    return yol[0] if yol else None
+    """Yolun ilk HUCRESI (yol kok universe ile baslar)."""
+    import openmc
+    return next((x for x in _yol(model, nokta) if isinstance(x, openmc.Cell)), None)
 
 
 # ============================================================================
