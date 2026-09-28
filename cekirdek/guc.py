@@ -29,6 +29,9 @@
    Kare kafeste (x,y) dogrudan izgara konumudur.
    ALTIGEN kafeste (x,y) aslinda (x, alfa) eksenel koordinatidir; (halka,sira)
    duzenine cevirmek icin HexLattice.get_universe_index() kullanilir.
+   Tam korda (kafes icinde kafes) HER kafes duzeyi icin ayri bir 'level N'
+   grubu gelir (olculdu, 2x2 kare kor: level 2 = kor kafesi, level 4 = demet
+   kafesi). Anahtar tum duzeylerin konumundan kurulur (bkz. bolum 2).
 
  !!! BELIRSIZLIK -- OKUMADAN GECMEYIN !!!
 
@@ -54,7 +57,13 @@
 ================================================================================
 """
 
+import functools
 import math
+
+from cekirdek.ceviri import _
+from cekirdek.gunluk import kaydedici
+
+_log = kaydedici(__name__)
 
 
 # ============================================================================
@@ -94,6 +103,26 @@ def bolge_hucresi(universe, cubuk, nesneler):
 # ============================================================================
 # 2. STATEPOINT'TEN DAGILIMI OKUMA
 # ============================================================================
+#
+# ANAHTAR = TAM KAFES YOLU (duzeltme, 28.09.2026 -- olculdu)
+#   Eski surum yalnizca EN ICTEKI kafesin (x, y) konumunu anahtar yapiyordu.
+#   Tam korda (kafes icinde kafes) farkli demetlerin ayni konumdaki cubuklari
+#   AYNI anahtara yaziliyor, harita SON demetin degerini gosteriyordu:
+#   2x2 kare korda 96 cubuk yerine 24 anahtar, toplamin %80'i kayip; F_dH
+#   yanlis demetten ve yanlis ortalamadan okunuyordu (testler/test_guc_kor.py).
+#
+#   Simdi anahtar her kafes duzeyindeki konumun demetidir (distan ice):
+#     tek duzey (tek demet) : (x, y)                     -- eskisiyle AYNI
+#     iki duzey (tam kor)   : ((demet_x, demet_y), (x, y))
+#   Altigen duzeyde konum HER DUZEYDE HexLattice.get_universe_index ile
+#   (halka, sira)'ya cevrilir.
+#
+#   Anahtar kafes KIMLIGINI ve ara hucreleri icermez: eksenel katmanlarda
+#   ayni cubuk konumu her katmanda ayri bir distribcell ornegidir (katman
+#   hucresi ya da katmana ozel kafes farkli), ama fiziksel olarak AYNI
+#   cubuk sutunudur. Bu ornekler dilim dilim TOPLANIR. (Eski surum bunlari
+#   uzerine yaziyordu: ust katmanin o dilimde SIFIR olan degeri alt katmanin
+#   degerini siliyordu.)
 
 def _kafes_seviyeleri(df):
     """DataFrame sutunlarindan kafes seviyelerini bulur (distan ice sirali)."""
@@ -113,23 +142,109 @@ def _eksenel_sutun(df):
     return None
 
 
+def _kafes_turu(kafes):
+    import openmc
+    return "altigen" if isinstance(kafes, openmc.HexLattice) else "kare"
+
+
+def _duzey_konumu(kafes, x, y):
+    """Bir kafes duzeyindeki ham DataFrame konumunu haritanin konumuna cevirir.
+    Kare: (x, y) aynen (x soldan, y alttan). Altigen: ham (x, alfa) --
+    OpenMC'nin kendi ceviri islevi kullanilir; elle turetmek hataya cok acik."""
+    if _kafes_turu(kafes) == "altigen":
+        return tuple(int(i) for i in kafes.get_universe_index((x, y)))[:2]
+    return (x, y)
+
+
+def _satir_anahtarlari(df, seviyeler, kafesler):
+    """
+    Her satirin konum anahtari ve her duzeyin temsilci kafesi.
+    DONER (anahtarlar listesi, [duzey kafesi, ...])
+    """
+    sutunlar = [[df[(s, "lat", e)].astype(int).tolist() for e in ("id", "x", "y")]
+                for s in seviyeler]
+    temsilci = []
+    for (ids, _xs, _ys) in sutunlar:
+        kafes = kafesler.get(ids[0])
+        if kafes is None:
+            raise RuntimeError(_("kafes (id = %d) geometride bulunamadı") % ids[0])
+        temsilci.append(kafes)
+
+    onbellek = {}
+
+    def cevir(lid, x, y):
+        k = (lid, x, y)
+        if k not in onbellek:
+            kafes = kafesler.get(lid)
+            if kafes is None:
+                raise RuntimeError(_("kafes (id = %d) geometride bulunamadı") % lid)
+            onbellek[k] = _duzey_konumu(kafes, x, y)
+        return onbellek[k]
+
+    tek = len(seviyeler) == 1
+    anahtarlar = []
+    for i in range(len(df)):
+        parca = tuple(cevir(ids[i], xs[i], ys[i]) for ids, xs, ys in sutunlar)
+        anahtarlar.append(parca[0] if tek else parca)
+    return anahtarlar, temsilci
+
+
+def _konumlari_topla(anahtarlar, dilimler, ortalar, sapmalar, eksenel_dilim):
+    """
+    Satirlari konum x dilim bin'lerine yerlestirir. Ayni bin'e dusen birden
+    cok ornek (eksenel katmanlar) TOPLANIR, sapmalari karesel birlesir.
+    Tek ornekli bin'de deger ham okunan degerin kendisidir (bitwise).
+    DONER (konumlar, birlesen_bin_sayisi)
+    """
+    konumlar = {}
+    birlesen = 0
+    for anahtar, dilim, m, s in zip(anahtarlar, dilimler, ortalar, sapmalar):
+        kayit = konumlar.setdefault(anahtar, {"eksenel": [None] * eksenel_dilim})
+        onceki = kayit["eksenel"][dilim]
+        if onceki is None:
+            kayit["eksenel"][dilim] = (float(m), float(s))
+        else:
+            birlesen += 1
+            kayit["eksenel"][dilim] = (onceki[0] + float(m),
+                                       math.sqrt(onceki[1] ** 2 + float(s) ** 2))
+    return konumlar, birlesen
+
+
+def _tally_bul(sp, tally_adi):
+    """Tally'yi dondurur; statepoint'te yoksa None (guc dagilimi istenmemis)."""
+    try:
+        return sp.get_tally(name=tally_adi)
+    except LookupError:
+        # OpenMC bulunamayan tally icin LookupError verir: guc dagilimi bu
+        # kosuda istenmemis demektir, hata degil. Diger istisnalar (bozuk
+        # dosya vb.) yukari cikar; kosucu.sonuc_oku onlari "guc_hata" yapar.
+        _log.debug("'%s' tally'si statepoint'te yok", tally_adi)
+        return None
+
+
 def dagilim_oku(sp, tally_adi="guc_dagilimi"):
     """
     Statepoint'ten guc dagilimini okur.
 
-    DONER sozluk:
-      kafes_turu     "kare" | "altigen"
-      kafes          openmc.Lattice (en ic kafes)
+    DONER sozluk (ya da tally yoksa None):
+      kafes_turu     "kare" | "altigen"            (EN IC kafesin turu)
+      kafes          openmc.Lattice                 (en ic kafes)
+      kafes_id       int
       eksenel_dilim  int (1 = 2B)
-      konumlar       {anahtar: {"eksenel": [(ort,sapma), ...], "toplam": (ort,sapma)}}
-                     anahtar kare icin (x, y); altigen icin (halka, sira)
+      konumlar       {anahtar: {"eksenel": [(ort, sapma), ...], "toplam": (ort, sapma)}}
+                     tek demet : anahtar (x, y) kare / (halka, sira) altigen
+                     tam kor   : anahtar ((demet konumu), (cubuk konumu))
       notlar         list of str
-    ya da tally bulunamazsa None.
+      --- 28.09.2026'da eklendi (tam kor) ---
+      duzey_sayisi   int: kafes duzeyi sayisi (1 = tek demet, 2 = tam kor)
+      tam_kor        bool: duzey_sayisi >= 2
+      kafesler       [openmc.Lattice, ...] duzey basina temsilci kafes, DISTAN ICE
+      kafes_turleri  ["kare"|"altigen", ...] ayni sirada
+      kor_kafes      en dis kafes (tam korda); tek demette None
+      kor_kafes_turu en dis kafesin turu (tam korda); tek demette None
+      birlesen_bin   int: ayni konum x dilim bin'inde toplanan ek ornek sayisi
     """
-    try:
-        tal = sp.get_tally(name=tally_adi)
-    except Exception:
-        return None
+    tal = _tally_bul(sp, tally_adi)
     if tal is None:
         return None
 
@@ -150,95 +265,221 @@ def dagilim_oku(sp, tally_adi="guc_dagilimi"):
             "Güç dağılımı sonucunda demet (kafes) düzeyi bulunamadı. Hedef "
             "çubuk bir demette tekrarlanmıyor olabilir; güç dağılımı yalnızca "
             "demet içindeki çubuklar için anlamlıdır.")
-    if len(seviyeler) > 1:
-        notlar.append(
-            "İç içe %d demet düzeyi var; harita en içteki demete göre çiziliyor, "
-            "tepe faktörleri ise tüm çubuklar üzerinden hesaplanıyor."
-            % len(seviyeler))
-    ic_seviye = seviyeler[-1]
 
-    kafes_id = int(df[(ic_seviye, "lat", "id")].iloc[0])
-    kafesler = geometri.get_all_lattices()
-    kafes = kafesler.get(kafes_id)
-    if kafes is None:
-        raise RuntimeError("kafes (id = %d) geometride bulunamadı" % kafes_id)
-
-    import openmc
-    altigen_mi = isinstance(kafes, openmc.HexLattice)
-    kafes_turu = "altigen" if altigen_mi else "kare"
+    anahtarlar, kafesler = _satir_anahtarlari(df, seviyeler, geometri.get_all_lattices())
+    kafes = kafesler[-1]
+    kafes_turleri = [_kafes_turu(k) for k in kafesler]
+    kafes_turu = kafes_turleri[-1]
+    tam_kor = len(seviyeler) > 1
 
     z_sut = _eksenel_sutun(df)
-    if z_sut is not None:
-        eksenel_dilim = int(df[z_sut].max())
-    else:
-        eksenel_dilim = 1
-
-    xs = df[(ic_seviye, "lat", "x")].astype(int)
-    ys = df[(ic_seviye, "lat", "y")].astype(int)
+    eksenel_dilim = int(df[z_sut].max()) if z_sut is not None else 1
+    dilimler = ((df[z_sut].astype(int) - 1).tolist() if z_sut is not None
+                else [0] * len(df))
     ort = df[("mean", "", "")] if ("mean", "", "") in df.columns else df["mean"]
     sap = df[("std. dev.", "", "")] if ("std. dev.", "", "") in df.columns else df["std. dev."]
 
-    konumlar = {}
-    for i in range(len(df)):
-        ham = (int(xs.iloc[i]), int(ys.iloc[i]))
-        if altigen_mi:
-            # (x, alfa) -> (halka, sira).  OpenMC'nin kendi cevirimi kullanilir;
-            # elle turetmek hataya cok acik.
-            anahtar = tuple(kafes.get_universe_index(ham))
-        else:
-            anahtar = ham
-        dilim = int(df[z_sut].iloc[i]) - 1 if z_sut is not None else 0
-        kayit = konumlar.setdefault(
-            anahtar, {"eksenel": [None] * eksenel_dilim})
-        kayit["eksenel"][dilim] = (float(ort.iloc[i]), float(sap.iloc[i]))
+    konumlar, birlesen = _konumlari_topla(anahtarlar, dilimler, ort.tolist(),
+                                         sap.tolist(), eksenel_dilim)
 
     # eksik dilim var mi (olmamali) ve toplamlari hesapla
     for anahtar, kayit in konumlar.items():
         if any(d is None for d in kayit["eksenel"]):
             raise RuntimeError(
                 "%s konumunda bazı eksenel dilimler eksik; veri biçimi "
-                "beklenenden farklı." % konum_metni(anahtar, kafes_turu))
+                "beklenenden farklı." % konum_metni(anahtar, kafes_turu, kafes_turleri))
         toplam = sum(d[0] for d in kayit["eksenel"])
         sapma = math.sqrt(sum(d[1] ** 2 for d in kayit["eksenel"]))
         kayit["toplam"] = (toplam, sapma)
 
+    if tam_kor:
+        notlar.append(
+            _("Tam kor: %d kafes düzeyi. Her çubuk kordaki tam konumuyla "
+              "(demet konumu + demet içi konum) ayrı sayılır; bağıl güç tüm "
+              "kordaki yakıt çubuklarının ortalamasına göredir.") % len(seviyeler))
+    if birlesen:
+        notlar.append(
+            _("%d bin'de aynı çubuk konumu birden çok eksenel katmanda "
+              "bulundu; katman örnekleri dilim dilim toplandı.") % birlesen)
+
     return {
         "kafes_turu": kafes_turu,
         "kafes": kafes,
-        "kafes_id": kafes_id,
+        "kafes_id": kafes.id,
         "eksenel_dilim": eksenel_dilim,
         "konumlar": konumlar,
         "notlar": notlar,
+        "duzey_sayisi": len(seviyeler),
+        "tam_kor": tam_kor,
+        "kafesler": kafesler,
+        "kafes_turleri": kafes_turleri,
+        "kor_kafes": kafesler[0] if tam_kor else None,
+        "kor_kafes_turu": kafes_turleri[0] if tam_kor else None,
+        "birlesen_bin": birlesen,
     }
+
+
+# ============================================================================
+# 2b. KONUM -> FIZIKSEL MERKEZ (cizim ve nokta-hucre olcumu ayni kaynagi kullanir)
+# ============================================================================
+
+@functools.lru_cache(maxsize=32)
+def _altigen_konumlar(halka, yonelim):
+    from cekirdek import altigen
+    return altigen.konumlar(halka, yonelim)
+
+
+def eleman_merkezi(kafes, konum):
+    """
+    Kafes elemaninin merkezi, kafesin kendi koordinatinda [cm].
+    Kare: lower_left + (i + 1/2) * adim. Altigen: center + adim * konum
+    (konum cekirdek/altigen.konumlar'dan; OpenMC ile nokta-hucre olcumuyle
+    dogrulandi, testler/test_guc_kor.py).
+    """
+    if _kafes_turu(kafes) == "altigen":
+        kx, ky = _altigen_konumlar(int(kafes.num_rings), kafes.orientation)[tuple(konum)]
+        cx, cy = tuple(kafes.center)[:2]
+        adim = kafes.pitch[0]
+        return (cx + adim * kx, cy + adim * ky)
+    llx, lly = tuple(kafes.lower_left)[:2]
+    px, py = tuple(kafes.pitch)[:2]
+    return (llx + (konum[0] + 0.5) * px, lly + (konum[1] + 0.5) * py)
+
+
+def _duzeyler(dagilim, anahtar):
+    """Anahtari duzey konumlari listesine acar (tek demette [anahtar])."""
+    return list(anahtar) if dagilim.get("tam_kor") else [anahtar]
+
+
+def cubuk_merkezi(dagilim, anahtar):
+    """
+    Cubugun modeldeki (x, y) merkezi [cm]: duzey merkezlerinin toplami.
+    OpenMC kafes elemanina girerken koordinati eleman merkezine tasir; ara
+    hucrelerde oteleme/donme olmadigi varsayilir (kurucu bunu kullanmaz).
+    """
+    x = y = 0.0
+    for kafes, konum in zip(dagilim["kafesler"], _duzeyler(dagilim, anahtar)):
+        ex, ey = eleman_merkezi(kafes, konum)
+        x, y = x + ex, y + ey
+    return (x, y)
+
+
+def demet_anahtari(anahtar):
+    """Tam kor anahtarindan demet anahtari (en ic duzey haric konum)."""
+    return anahtar[0] if len(anahtar) == 2 else tuple(anahtar[:-1])
+
+
+def demet_merkezi(dagilim, demet):
+    """Demetin modeldeki (x, y) merkezi [cm] (tam kor)."""
+    duzeyler = [demet] if dagilim.get("duzey_sayisi", 1) == 2 else list(demet)
+    x = y = 0.0
+    for kafes, konum in zip(dagilim["kafesler"][:-1], duzeyler):
+        ex, ey = eleman_merkezi(kafes, konum)
+        x, y = x + ex, y + ey
+    return (x, y)
 
 
 # ============================================================================
 # 3. TEPE FAKTORLERI
 # ============================================================================
 
-def konum_metni(anahtar, kafes_turu=None):
+def _tek_konum_metni(konum, tur):
+    a, b = int(konum[0]), int(konum[1])
+    if tur == "altigen":
+        return "dıştan %d. halka, %d. konum" % (a + 1, b + 1)
+    return "x = %d, y = %d" % (a + 1, b + 1)
+
+
+def konum_metni(anahtar, kafes_turu=None, kafes_turleri=None):
     """
     Kafes konumunun okunur, 1'den numarali metni. Kare: (x, y) indisleri
     (x soldan, y alttan); altigen: (halka, sira) -- halka distan ice.
+    Tam kor anahtari ((demet), (cubuk)) icin "demet ... · çubuk ...";
+    kafes_turleri verilirse her duzey kendi turuyle yazilir.
     """
     try:
-        a, b = int(anahtar[0]), int(anahtar[1])
+        if isinstance(anahtar[0], tuple):
+            n = len(anahtar)
+            turler = list(kafes_turleri or [kafes_turu] * n)
+            demet = ", ".join(_tek_konum_metni(k, t)
+                              for k, t in zip(anahtar[:-1], turler[:-1]))
+            return _("demet %s · çubuk %s") % (
+                demet, _tek_konum_metni(anahtar[-1], turler[-1]))
+        return _tek_konum_metni(anahtar, kafes_turu)
     except (TypeError, ValueError, IndexError):
         return str(anahtar)
-    if kafes_turu == "altigen":
-        return "dıştan %d. halka, %d. konum" % (a + 1, b + 1)
-    return "x = %d, y = %d" % (a + 1, b + 1)
+
+
+def demet_metni(demet, faktorler_ya_da_dagilim):
+    """Demet anahtarinin okunur metni (tam kor)."""
+    turler = faktorler_ya_da_dagilim.get("kafes_turleri") or []
+    tur = turler[0] if turler else None
+    if demet and isinstance(demet[0], tuple):
+        return ", ".join(_tek_konum_metni(k, t) for k, t in zip(demet, turler))
+    return _tek_konum_metni(demet, tur)
+
+
+def _demet_faktorleri(bagil, bagil_eksenel):
+    """
+    Demet basina ozet (bagil birimde; kor geneli cubuk ortalamasi = 1).
+      ortalama   (demetteki yakit cubuklarinin ortalamasi, sapma)
+      tepe       (en guclu cubuk, sapma);  tepe_cubuk: anahtari
+      F_dH_ic    tepe / ortalama  (demet ici radyal tepe)
+      tepe_yerel (en yuksek yerel dilim, sapma) ve tepe_dilim: 3B'de; 2B'de None
+    Sapmalar IYIMSERDIR (modul basligi): cubuklar bagimsiz sayilir.
+    """
+    gruplar = {}
+    for a, v in bagil.items():
+        gruplar.setdefault(demet_anahtari(a), []).append((a, v))
+    sonuc = {}
+    for demet, uyeler in gruplar.items():
+        n = len(uyeler)
+        ort = sum(v[0] for _a, v in uyeler) / n
+        sap = math.sqrt(sum(v[1] ** 2 for _a, v in uyeler)) / n
+        tepe_a, tepe = max(uyeler, key=lambda av: av[1][0])
+        kayit = {"cubuk_sayisi": n, "ortalama": (ort, sap), "tepe": tepe,
+                 "tepe_cubuk": tepe_a, "F_dH_ic": tepe[0] / ort if ort > 0 else None,
+                 "tepe_yerel": None, "tepe_dilim": None}
+        if bagil_eksenel:
+            yerel = [(a, i, d) for a, _v in uyeler
+                     for i, d in enumerate(bagil_eksenel[a])]
+            ya, yi, yd = max(yerel, key=lambda t: t[2][0])
+            kayit["tepe_yerel"], kayit["tepe_dilim"] = yd, (ya, yi)
+        sonuc[demet] = kayit
+    return sonuc
+
+
+def _tam_kor_alanlari(sonuc):
+    """tepe_faktorleri sonucuna demet duzeyi alanlarini ekler (tam kor)."""
+    demetler = _demet_faktorleri(sonuc["bagil"], sonuc["bagil_eksenel"])
+    sicak = max(demetler.items(), key=lambda kv: kv[1]["ortalama"][0])
+    sonuc["demetler"] = demetler
+    sonuc["demet_sayisi"] = len(demetler)
+    sonuc["sicak_demet"] = sicak[0]
+    sonuc["F_demet"] = sicak[1]["ortalama"][0]
+    sonuc["F_demet_sapma"] = sicak[1]["ortalama"][1]
+    return sonuc
 
 
 def tepe_faktorleri(dagilim):
     """
     F_dH ve F_q hesaplar.
 
-    F_dH = maks(cubuk toplam gucu) / ortalama(cubuk toplam gucu)
-    F_q  = maks(yerel dilim gucu)  / ortalama(yerel dilim gucu)
+    NORMALIZASYON (tek demet ve tam kor icin AYNI):
+      Payda, tally'nin kapsadigi TUM yakit cubuklarinin (hedef hucrenin tum
+      distribcell ornekleri; tam korda butun demetlerdeki) ortalamasidir.
+      Kilavuz/olcum borusu gibi yakitsiz konumlar tally'de yoktur, paydaya
+      girmez. Bagil guc = deger / bu ortalama; bagil ortalama tam olarak 1.
+
+    F_dH = maks(cubuk toplam gucu) / ortalama(cubuk toplam gucu)   -- TUM korda
+    F_q  = maks(yerel dilim gucu)  / ortalama(yerel dilim gucu)    -- TUM korda
            yalnizca eksenel_dilim > 1 ise tanimli.
 
-    Bagil guc = her degerin ortalamaya bolunmus hali (ortalama tam olarak 1.000).
+    Tam korda ek olarak (tek demette bu alanlar None):
+      demetler     {demet: _demet_faktorleri kaydi} -- her demetin kendi
+                   ortalamasi ve tepesi, KOR ortalamasina gore bagil
+      sicak_demet  ortalamasi en yuksek demet
+      F_demet      o demetin bagil ortalamasi (demet tepe faktoru)
     """
     konumlar = dagilim["konumlar"]
     if not konumlar:
@@ -268,6 +509,7 @@ def tepe_faktorleri(dagilim):
     sacilma = math.sqrt(sum((d - ort_bagil) ** 2 for d in degerler) / n) if n > 1 else 0.0
     ist_sapma = sum(v[1] for v in bagil.values()) / n
 
+    tam_kor = bool(dagilim.get("tam_kor"))
     sonuc = {
         "cubuk_sayisi": n,
         "eksenel_dilim": dagilim["eksenel_dilim"],
@@ -282,33 +524,45 @@ def tepe_faktorleri(dagilim):
         "bagil": bagil,
         "F_q": None, "F_q_sapma": None, "sicak_dilim": None,
         "bagil_eksenel": None, "eksenel_profil": None,
+        # --- tam kor (28.09.2026) ---
+        "tam_kor": tam_kor,
+        "kafes_turleri": list(dagilim.get("kafes_turleri") or [dagilim.get("kafes_turu")]),
+        "demetler": None, "demet_sayisi": None, "sicak_demet": None,
+        "F_demet": None, "F_demet_sapma": None,
     }
 
     if dagilim["eksenel_dilim"] > 1:
-        hepsi = []
-        for a, k in konumlar.items():
-            for i, d in enumerate(k["eksenel"]):
-                hepsi.append((a, i, d[0], d[1]))
-        ort_yerel = sum(h[2] for h in hepsi) / len(hepsi)
-        sicak = max(hepsi, key=lambda h: h[2])
-        f_q = sicak[2] / ort_yerel if ort_yerel > 0 else None
-        sonuc["F_q"] = f_q
-        sonuc["F_q_sapma"] = (f_q * sicak[3] / sicak[2]) if (f_q and sicak[2]) else None
-        sonuc["sicak_dilim"] = (sicak[0], sicak[1])
-        sonuc["ortalama_yerel"] = ort_yerel
-        sonuc["bagil_eksenel"] = {
-            a: [(d[0] / ort_yerel, d[1] / ort_yerel) for d in k["eksenel"]]
-            for a, k in konumlar.items()}
-        # eksenel guc profili (tum cubuklar toplanarak)
-        profil = []
-        for i in range(dagilim["eksenel_dilim"]):
-            t = sum(k["eksenel"][i][0] for k in konumlar.values())
-            s = math.sqrt(sum(k["eksenel"][i][1] ** 2 for k in konumlar.values()))
-            profil.append((t, s))
-        ort_profil = sum(p[0] for p in profil) / len(profil)
-        sonuc["eksenel_profil"] = [(p[0] / ort_profil, p[1] / ort_profil)
-                                   for p in profil] if ort_profil > 0 else None
+        _eksenel_faktorler(sonuc, konumlar, dagilim["eksenel_dilim"])
+    if tam_kor:
+        _tam_kor_alanlari(sonuc)
     return sonuc
+
+
+def _eksenel_faktorler(sonuc, konumlar, eksenel_dilim):
+    """F_q, sicak dilim, bagil eksenel harita ve eksenel profil (3B)."""
+    hepsi = []
+    for a, k in konumlar.items():
+        for i, d in enumerate(k["eksenel"]):
+            hepsi.append((a, i, d[0], d[1]))
+    ort_yerel = sum(h[2] for h in hepsi) / len(hepsi)
+    sicak = max(hepsi, key=lambda h: h[2])
+    f_q = sicak[2] / ort_yerel if ort_yerel > 0 else None
+    sonuc["F_q"] = f_q
+    sonuc["F_q_sapma"] = (f_q * sicak[3] / sicak[2]) if (f_q and sicak[2]) else None
+    sonuc["sicak_dilim"] = (sicak[0], sicak[1])
+    sonuc["ortalama_yerel"] = ort_yerel
+    sonuc["bagil_eksenel"] = {
+        a: [(d[0] / ort_yerel, d[1] / ort_yerel) for d in k["eksenel"]]
+        for a, k in konumlar.items()}
+    # eksenel guc profili (tum cubuklar toplanarak)
+    profil = []
+    for i in range(eksenel_dilim):
+        t = sum(k["eksenel"][i][0] for k in konumlar.values())
+        s = math.sqrt(sum(k["eksenel"][i][1] ** 2 for k in konumlar.values()))
+        profil.append((t, s))
+    ort_profil = sum(p[0] for p in profil) / len(profil)
+    sonuc["eksenel_profil"] = [(p[0] / ort_profil, p[1] / ort_profil)
+                               for p in profil] if ort_profil > 0 else None
 
 
 # ============================================================================
@@ -370,6 +624,13 @@ def yorumla(faktorler, mutlak=None):
     elif f > 1.65:
         satirlar.append("  Yüksek: tipik PWR tasarım sınırı F_ΔH ≈ 1.65 "
                         "civarındadır; yakıt yüklemesi düzeltilmeli.")
+    if faktorler.get("tam_kor"):
+        satirlar.append(
+            _("Tam kor: %d demet, %d yakıt çubuğu. En sıcak demet %s; ortalaması "
+              "kor ortalamasının %.4f katı (F_demet). F_ΔH ve F_q tüm kordaki "
+              "yakıt çubukları üzerinden hesaplanır.")
+            % (faktorler["demet_sayisi"], faktorler["cubuk_sayisi"],
+               demet_metni(faktorler["sicak_demet"], faktorler), faktorler["F_demet"]))
     # --- maksimumun yukari yanliligi ---
     oran = faktorler.get("yanlilik_orani")
     if oran is not None and oran > 0.3:
@@ -472,5 +733,9 @@ def ozet_metni(faktorler, mutlak=None):
     if faktorler["F_q"]:
         p.append("F_q = %.4f ± %.4f" % (faktorler["F_q"], faktorler["F_q_sapma"]))
     p.append("en sıcak çubuk: %s" % konum_metni(faktorler["sicak_cubuk"],
-                                                 faktorler.get("kafes_turu")))
+                                                 faktorler.get("kafes_turu"),
+                                                 faktorler.get("kafes_turleri")))
+    if faktorler.get("tam_kor"):
+        p.append(_("en sıcak demet: %s (F_demet = %.4f)")
+                 % (demet_metni(faktorler["sicak_demet"], faktorler), faktorler["F_demet"]))
     return "  |  ".join(p)

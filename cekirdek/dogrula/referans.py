@@ -157,6 +157,54 @@ def guc_dagilimi_kontrol(spec):
                 "uyari", yer,
                 "toplam güç verilmiş ama model 2B — çizgisel güç [W/cm] hesaplanamaz",
                 "W/cm için Kor sekmesinde aktif yükseklik tanımlayın."))
+    bulgular.extend(_guc_tam_kor_kontrol(spec, cubuk_ad, dilim if h else 1, yer))
+    return bulgular
+
+
+# Guc tally'sinin bin sayisi (ornek x eksenel dilim) bunu asarsa sonuc okuma
+# (get_pandas_dataframe(paths=True)) belirgin yavaslar ve bellek buyur.
+GUC_BIN_BILGI_ESIGI = 200000
+
+
+def _guc_tam_kor_kontrol(spec, cubuk_ad, dilim, yer):
+    """
+    Tam korda (demet haritali kor) guc dagilimi kapsami:
+      - hedef cubugu ICERMEYEN demetler haritada bos kalir (uyari). Guc tally'si
+        tek bir hucreye (hedef cubugun bolgesi) baglidir; farkli zenginlikteki
+        demetler cogu zaman FARKLI cubuk tanimi kullanir ve haritaya girmez.
+      - tally bin sayisi = cubuk ornegi x eksenel dilim (bilgi, buyukse).
+    """
+    from cekirdek.ceviri import _
+    kor = spec.get("kor") or {}
+    if kor.get("tur") not in ("kare_kafes", "altigen_kafes"):
+        return []
+    esleme = kor.get("anahtar") or {}
+    ornek, eksik = 0, []
+    for harf in "".join(kor.get("harita") or []):
+        d = sema.demet_bul(spec, esleme.get(harf)) if esleme.get(harf) else None
+        if d is None:
+            continue
+        d_esleme = d.get("anahtar") or {}
+        adet = sum(1 for h in "".join(d.get("harita") or []) if d_esleme.get(h) == cubuk_ad)
+        ornek += adet
+        if adet == 0 and d["ad"] not in eksik:
+            eksik.append(d["ad"])
+    bulgular = []
+    if eksik:
+        bulgular.append(Bulgu(
+            "uyari", yer,
+            _("'%s' çubuğunu içermeyen demetler var (%s) — güç haritasında bu "
+              "demetler boş kalır") % (cubuk_ad, ", ".join(eksik)),
+            _("Güç dağılımı tek bir çubuk tanımının örnekleri üzerinden sayılır. "
+              "Tepe faktörleri yalnızca bu çubuğu içeren demetler için geçerlidir; "
+              "farklı zenginlikteki demetler ayrı çubuk tanımı kullanıyorsa "
+              "haritaya girmez.")))
+    if ornek * dilim > GUC_BIN_BILGI_ESIGI:
+        bulgular.append(Bulgu(
+            "bilgi", yer,
+            _("güç tally'si %d bin (%d çubuk × %d eksenel dilim)") % (ornek * dilim, ornek, dilim),
+            _("Sonuç okuma ve harita çizimi yavaşlayabilir; gerekmiyorsa eksenel "
+              "dilim sayısını azaltın.")))
     return bulgular
 
 
