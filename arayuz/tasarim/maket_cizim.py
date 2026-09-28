@@ -206,6 +206,9 @@ def _tuval(gen=5.0, yuk=2.6):
     sekil = Figure(figsize=(gen, yuk), dpi=100, layout="constrained")
     t = FigureCanvasQTAgg(sekil)
     t.setMinimumHeight(180)
+    # Tuvalin sizeHint'i mevcut boyutudur (buyudukce buyur): yerlesim onu dikkate
+    # almasin, yoksa sayfa gereksiz kaydirma cubugu alir.
+    t.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Ignored)
     return t, sekil
 
 
@@ -258,23 +261,41 @@ def entropi_grafigi():
     return t
 
 
+def guc_verisi():
+    """Sahte 17x17 pin guc haritasi (ortalama 1): kosinus zarfi + kilavuz boru
+    komsularinda yerel tepe (suyla yavaslama). -> (harita, F_dH, (satir, sutun))."""
+    import numpy as np
+    n = 17
+    i, j = np.mgrid[0:n, 0:n]
+    g = 1.0 + 0.06 * np.cos((i - 8) / 8.5 * 1.2) * np.cos((j - 8) / 8.5 * 1.2)
+    bos = KILAVUZ | ENSTRUMAN
+    for a, b_ in bos:
+        for da, db in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+            if 0 <= a + da < n and 0 <= b_ + db < n and (a + da, b_ + db) not in bos:
+                g[a + da, b_ + db] += 0.025
+    for a, b_ in bos:
+        g[a, b_] = np.nan
+    g = g / np.nanmean(g)
+    tepe = tuple(int(v) for v in np.unravel_index(np.nanargmax(g), g.shape))
+    return g, float(np.nanmax(g)), tepe
+
+
 def guc_haritasi_grafigi():
     import numpy as np
     from arayuz import tema
     t, sekil = _tuval(3.2, 3.0)
     ax = sekil.add_subplot()
-    n = 17
-    i, j = np.mgrid[0:n, 0:n]
-    g = 1.0 + 0.10 * np.cos((i - 8) / 8.5 * 1.2) * np.cos((j - 8) / 8.5 * 1.2) - 0.05
-    for a, b_ in KILAVUZ | ENSTRUMAN:
-        g[a, b_] = np.nan
-    g = g / np.nanmean(g)
-    im = ax.imshow(g, cmap=tokenlar.GRAFIK_HARITASI, vmin=0.9, vmax=1.08)
-    tepe = np.unravel_index(np.nanargmax(g), g.shape)
-    ax.plot(tepe[1], tepe[0], marker="s", mfc="none", mec=tema.renk("metin"), ms=7, mew=1.4)
+    g, fdh, tepe = guc_verisi()
+    ax.set_facecolor(tema.renk("yuzey2"))       # kilavuz borular (NaN) notr gorunur
+    alt = math.floor(np.nanmin(g) * 50) / 50.0
+    ust = math.ceil(fdh * 50) / 50.0
+    im = ax.imshow(g, cmap=tokenlar.GRAFIK_HARITASI, vmin=alt, vmax=ust)
+    ax.plot(tepe[1], tepe[0], marker="s", mfc="none", mec=tema.renk("hata"), ms=8, mew=1.6)
     ax.set_xticks([])
     ax.set_yticks([])
     for kenar in ax.spines.values():
         kenar.set_visible(False)
-    sekil.colorbar(im, ax=ax, shrink=0.85, label=_("göreli güç"))
+    # Renk cubugu goruntuyle ayni yukseklikte: eksen koordinatinda ic eksen.
+    cax = ax.inset_axes([1.04, 0.0, 0.05, 1.0])
+    sekil.colorbar(im, cax=cax, label=_("göreli güç (ort. = 1)"))
     return t

@@ -172,11 +172,15 @@ def dogrulama_seridi(durum="basari"):
     else:
         d.addWidget(ikon_etiketi("triangle-alert", "uyari", 14))
         d.addWidget(QtWidgets.QLabel(_("Doğrulama: 1 uyarı")))
+        bulgu = QtWidgets.QLabel(_("Parçalar · “su” hücresi tanımlı ama ızgarada kullanılmıyor."))
+        bulgu.setObjectName("kucuk")
+        d.addWidget(bulgu)
         d.addWidget(b.baglanti_dugmesi(_("Bulguya git")))
-    d.addWidget(dikey_ayirici())
-    ipucu = QtWidgets.QLabel(_("Sonraki adım: Kor sayfasında demetleri yerleştirin."))
-    ipucu.setObjectName("kucuk")
-    d.addWidget(ipucu)
+    if durum == "basari":        # uyarida bulgu metni one cikar; ipucu yer kaplamasin
+        d.addWidget(dikey_ayirici())
+        ipucu = QtWidgets.QLabel(_("Sonraki adım: Kor sayfasında demetleri yerleştirin."))
+        ipucu.setObjectName("kucuk")
+        d.addWidget(ipucu)
     d.addStretch(1)
     d.addWidget(b.baglanti_dugmesi(_("Veri kütüphanesini denetle")))
     d.addWidget(dikey_ayirici())
@@ -245,3 +249,5 @@ class MaketKabuk(QtWidgets.QMainWindow):
         d.addLayout(govde, 1)
         d.addWidget(dogrulama_seridi(serit))
         self.setCentralWidget(merkez)
+        from arayuz.bilesenler.bildirim import ALT_PAYI_OZELLIGI
+        self.setProperty(ALT_PAYI_OZELLIGI, B["serit"])

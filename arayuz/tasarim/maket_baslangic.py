@@ -13,7 +13,7 @@ from arayuz.tasarim import tokenlar
 from arayuz.tasarim.maket_cizim import KucukResim
 from arayuz.tasarim.maket_kabuk import _menu_kur, ikon_etiketi, ust_cubuk
 from arayuz.tasarim.maket_veri import KATEGORILER, MODEL_TURLERI, ORNEKLER, SON_KULLANILANLAR
-from cekirdek.ceviri import _
+from cekirdek.ceviri import N_, _
 
 A = tokenlar.ARALIK
 _KATEGORI_ADI = dict(KATEGORILER)
@@ -21,7 +21,7 @@ _SUTUN_TUR = 4
 _SUTUN_ORNEK = 4
 
 
-def _tur_karti(ikon, baslik, aciklama):
+def _tur_karti(ikon, baslik, aciklama, eylemler=(N_("Boş başla"), N_("Örnekten"))):
     k = b.Kart(dolgu="l")
     k.setProperty("tiklanir", True)
     ust = QtWidgets.QHBoxLayout()
@@ -41,8 +41,8 @@ def _tur_karti(ikon, baslik, aciklama):
     k.govde.addStretch(1)
     eylem = QtWidgets.QHBoxLayout()
     eylem.setSpacing(A["s"])
-    eylem.addWidget(b.ikincil_dugme(_("Boş başla")))
-    eylem.addWidget(b.duz_dugme(_("Örnekten")))
+    eylem.addWidget(b.ikincil_dugme(_(eylemler[0])))
+    eylem.addWidget(b.duz_dugme(_(eylemler[1])))
     eylem.addStretch(1)
     k.govde.addLayout(eylem)
     k.setAccessibleName(_(baslik))
@@ -67,29 +67,38 @@ def _ornek_karti(baslik, kategori, aciklama, motif):
     return k
 
 
-def _son_kullanilanlar():
-    k = b.Kart(_("Son kullanılanlar"), eylem=b.baglanti_dugmesi(_("Başka dosya aç…")))
-    for ad, dizin, zaman in SON_KULLANILANLAR:
-        satir = QtWidgets.QHBoxLayout()
-        satir.setSpacing(A["s"])
-        satir.addWidget(ikon_etiketi("file-text", "metin_soluk"))
-        m = QtWidgets.QVBoxLayout()
-        m.setSpacing(0)
-        a = QtWidgets.QLabel(ad)
-        a.setObjectName("govdeVurgulu")
-        m.addWidget(a)
-        y = QtWidgets.QLabel(dizin)
-        y.setObjectName("kucuk")
-        m.addWidget(y)
-        satir.addLayout(m, 1)
-        z = QtWidgets.QLabel(_(zaman))
-        z.setObjectName("kucuk")
-        satir.addWidget(z)
-        k.govde.addLayout(satir)
+def _dosya_karti():
+    """Izgaranin 8. hucresi: kendi dosyasini acmak isteyen icin."""
+    k = _tur_karti("folder-open", N_("Dosyadan aç"),
+                   N_("Kaydedilmiş bir model (.json) ya da OpenMC XML klasörü."),
+                   (N_("Aç…"), N_("XML içe aktar…")))
     return k
 
 
-def baslangic_icerigi(kategori="pwr"):
+def _son_kullanilanlar():
+    """Tek satirlik yatay serit: baslik + son dosyalar (dosya adi, dizin, zaman)."""
+    serit = QtWidgets.QHBoxLayout()
+    serit.setSpacing(A["xl"])
+    serit.addWidget(b.BolumBasligi(_("Son kullanılanlar")), 0, QtCore.Qt.AlignVCenter)
+    for ad, dizin, zaman in SON_KULLANILANLAR:
+        oge = QtWidgets.QHBoxLayout()
+        oge.setSpacing(A["s"])
+        oge.addWidget(ikon_etiketi("file-text", "metin_soluk"))
+        m = QtWidgets.QVBoxLayout()
+        m.setSpacing(0)
+        a = b.baglanti_dugmesi(ad)
+        a.setToolTip("%s/%s" % (dizin, ad))
+        m.addWidget(a, 0, QtCore.Qt.AlignLeft)
+        y = QtWidgets.QLabel("%s · %s" % (dizin, _(zaman)))
+        y.setObjectName("kucuk")
+        m.addWidget(y)
+        oge.addLayout(m)
+        serit.addLayout(oge)
+    serit.addStretch(1)
+    return serit
+
+
+def baslangic_icerigi():
     ic = QtWidgets.QWidget()
     ic.setObjectName("sayfa")
     d = QtWidgets.QVBoxLayout(ic)
@@ -106,9 +115,13 @@ def baslangic_icerigi(kategori="pwr"):
     turler.setSpacing(A["m"])
     for i, (ikon, bas, ac) in enumerate(MODEL_TURLERI):
         turler.addWidget(_tur_karti(ikon, bas, ac), i // _SUTUN_TUR, i % _SUTUN_TUR)
-    turler.addWidget(_son_kullanilanlar(), 1, 3)
+    turler.addWidget(_dosya_karti(), 1, 3)
+    for s_ in range(_SUTUN_TUR):
+        turler.setColumnStretch(s_, 1)
     d.addLayout(turler)
-    d.addSpacing(A["m"])
+    d.addSpacing(A["xs"])
+    d.addLayout(_son_kullanilanlar())
+    d.addSpacing(A["xs"])
     filtre = QtWidgets.QHBoxLayout()
     filtre.addWidget(b.BolumBasligi(_("Örnekler"), _("%d örnek · kategoriye göre süzün") % len(ORNEKLER)), 1)
     arama = QtWidgets.QLineEdit()
@@ -120,7 +133,7 @@ def baslangic_icerigi(kategori="pwr"):
     d.addLayout(filtre)
     ornekler = QtWidgets.QGridLayout()
     ornekler.setSpacing(A["m"])
-    for i, o in enumerate(ORNEKLER[:8]):
+    for i, o in enumerate(ORNEKLER):
         ornekler.addWidget(_ornek_karti(*o), i // _SUTUN_ORNEK, i % _SUTUN_ORNEK)
     for s in range(_SUTUN_ORNEK):
         ornekler.setColumnStretch(s, 1)

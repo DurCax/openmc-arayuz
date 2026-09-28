@@ -125,6 +125,8 @@ def _tablo_karti():
             ust.addChild(QtWidgets.QTreeWidgetItem([ad, kat]))
         agac.addTopLevelItem(ust)
     agac.expandAll()
+    agac.header().setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
+    agac.header().setStretchLastSection(False)
     agac.setFixedHeight(130)
     k.ekle(agac)
     return k
@@ -249,13 +251,16 @@ def main(argv=None):
     ayr.add_argument("--kaydet", metavar="DIZIN", help=_("iki temanın PNG'sini yazar"))
     ayr.add_argument("--vurgu", choices=sorted(tokenlar.VURGULAR), default=None)
     a = ayr.parse_args(argv)
+    from arayuz.tasarim.once_goruntu import ayarlari_yalit
+    ayarlari_yalit()             # tema/vurgu secimi kullanicinin ayarlarina yazilmasin
+    vurgu = a.vurgu or tokenlar.VARSAYILAN_VURGU
     app = QtWidgets.QApplication.instance() or QtWidgets.QApplication(sys.argv)
     if a.kaydet:
-        for yol in kaydet(a.kaydet, vurgu=a.vurgu):
+        for yol in kaydet(a.kaydet, vurgu=vurgu):
             print(yol)
         return 0
     from arayuz import tema
-    tema.uygula(app, None, a.vurgu)
+    tema.uygula(app, "acik", vurgu)
     g = GaleriPenceresi()
     g.resize(1440, 1000)
     g.show()

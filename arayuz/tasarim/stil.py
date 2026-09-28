@@ -314,6 +314,7 @@ QLabel#baslik { font-size: %(f_baslik)spx; font-weight: 600; }
 QLabel#altBaslik { font-size: %(f_alt)spx; font-weight: 600; }
 QLabel#kucuk { font-size: %(f_kucuk)spx; color: %(metin_soluk)s; }
 QLabel#mono { %(mono)s font-size: %(f_kucuk)spx; }
+QLabel#monoSoluk { %(mono)s font-size: %(f_kucuk)spx; color: %(metin_soluk)s; }
 QLabel#sayiBuyuk { %(mono)s font-size: %(f_sayi)spx; font-weight: 500; color: %(metin)s; }
 QLabel#birim { color: %(metin_soluk)s; }
 

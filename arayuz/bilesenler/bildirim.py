@@ -11,8 +11,11 @@ kapanan kisa mesaj.
 Bildirimler pencerenin COCUGU (ust duzey pencere degil): odak calmaz,
 offscreen ekran goruntusune girer, pencere tasininca birlikte gider. Konum
 pencerenin cocuklari taranarak hesaplanir (ayri durum tutulmaz); pencere
-boyutu degisince _Konumlayici yeniden dizer.
+boyutu degisince _Konumlayici yeniden dizer. Altta kalici bir serit varsa
+pencere.setProperty(ALT_PAYI_OZELLIGI, yukseklik) ile bildirimler onun ustune alinir.
 """
+
+import itertools
 
 from PySide6 import QtCore, QtGui, QtWidgets
 
@@ -27,6 +30,10 @@ TUR_IKONU = {"basari": "circle-check", "uyari": "triangle-alert", "hata": "circl
              "bilgi": "info"}
 VARSAYILAN_SURE = 4000
 _EN_COK = 4          # ayni anda gorunen bildirim; fazlasinda en eskisi kapanir
+# Pencerenin altinda kalici bir serit varsa (dogrulama seridi) bildirimler
+# onun USTUNDE dursun: pencere.setProperty(ALT_PAYI_OZELLIGI, serit_yuksekligi)
+ALT_PAYI_OZELLIGI = "bildirimAltPayi"
+_SIRA = itertools.count()   # olusma sirasi: raise_() cocuk sirasini degistirir
 
 
 class Bildirim(QtWidgets.QFrame):
@@ -38,6 +45,7 @@ class Bildirim(QtWidgets.QFrame):
         if tur not in TUR_IKONU:
             raise ValueError("bilinmeyen bildirim turu: %r" % (tur,))
         self.setObjectName("bildirim")
+        self.sira = next(_SIRA)
         durum_ayarla(self, "tur", tur)
         self.setAttribute(QtCore.Qt.WA_StyledBackground, True)
         self.setFixedWidth(tokenlar.BOYUT["bildirim_genislik"])
@@ -111,8 +119,9 @@ class _Konumlayici(QtCore.QObject):
 
 
 def _acik_bildirimler(pencere):
-    return [b for b in pencere.findChildren(Bildirim, options=QtCore.Qt.FindDirectChildrenOnly)
+    acik = [b for b in pencere.findChildren(Bildirim, options=QtCore.Qt.FindDirectChildrenOnly)
             if not b.property("_kapandi")]
+    return sorted(acik, key=lambda b: b.sira)
 
 
 def yeniden_diz(pencere):
@@ -121,9 +130,11 @@ def yeniden_diz(pencere):
         acik = _acik_bildirimler(pencere)
     except RuntimeError:          # pencere silinmis: dizilecek bir sey yok
         return
-    alt = pencere.height() - A["l"]
-    if isinstance(pencere, QtWidgets.QMainWindow) and pencere.statusBar().isVisible():
-        alt -= pencere.statusBar().height()
+    alt = pencere.height() - A["l"] - int(pencere.property(ALT_PAYI_OZELLIGI) or 0)
+    # statusBar() CAGRILMAZ: durum cubugu yoksa onu yaratirdi.
+    durum = pencere.findChild(QtWidgets.QStatusBar, options=QtCore.Qt.FindDirectChildrenOnly)
+    if durum is not None and durum.isVisible():
+        alt -= durum.height()
     for b in reversed(acik):
         b.adjustSize()
         y = alt - b.height()

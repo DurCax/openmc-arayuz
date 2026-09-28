@@ -359,6 +359,14 @@ def test_bildirim():
     kontrol("sag altta", b1.geometry().right() > 700 and b1.geometry().bottom() > 500)
     kontrol("yigilir (ust uste binmez)", not b1.geometry().intersects(b2.geometry()))
     kontrol("erisilebilir ad = metin", "Kaydedildi" in b1.accessibleName())
+    kontrol("durum cubugu olmayan pencereye durum cubugu eklenmez",
+            p.findChild(QtWidgets.QStatusBar) is None)
+    from arayuz.bilesenler.bildirim import ALT_PAYI_OZELLIGI, yeniden_diz
+    alt_once = b2.geometry().bottom()
+    p.setProperty(ALT_PAYI_OZELLIGI, 30)
+    yeniden_diz(p)
+    kontrol("alt payi kadar yukari alinir", b2.geometry().bottom() == alt_once - 30,
+            "-> %d / %d" % (b2.geometry().bottom(), alt_once))
 
     def _acik():
         return [b for b in p.findChildren(Bildirim) if b.isVisible()]
@@ -428,8 +436,9 @@ def test_maket_ve_galeri_kurulur():
     g = galeri.GaleriPenceresi()
     kontrol("galeri penceresi kuruldu", g.centralWidget() is not None)
     ekranlar = maket.ekranlar()
-    kontrol("maket ekranlari (5 + cekmece)", set(ekranlar) == {"kabuk", "baslangic", "demet", "hesap", "sonuclar",
-                                          "sonuclar_cekmece"})
+    kontrol("maket ekranlari (5 + cekmece + dar + palet)",
+            set(ekranlar) == {"kabuk", "kabuk_dar", "kabuk_palet", "baslangic", "demet",
+                              "hesap", "sonuclar", "sonuclar_cekmece"})
     for ad, kur in ekranlar.items():
         w = kur()
         kontrol("maket %s kuruldu" % ad, w is not None)

@@ -137,7 +137,12 @@ def demet():
     arac = _satir(b.Rozet(_("1/8 simetri"), "vurgu"), b.Rozet(_("3 hücre seçili"), "notr"))
     izgara.ekle(arac)
     izgara.ekle(cz.KafesCizimi(izgara=True), 1)
-    izgara.ekle(_satir(b.duz_dugme(_("Tümünü doldur")), b.duz_dugme(_("Temizle"), "x")))
+    # Ozet sag sutunda ayri kart degil, izgaranin altinda tek satir (dikey yer kazanir).
+    ozet = _mono("21.420 × 21.420 cm · 289 %s · 264 YÇ / 24 KB / 1 EN" % _("hücre"))
+    ozet.setObjectName("monoSoluk")
+    alt = _satir(b.duz_dugme(_("Tümünü doldur")), b.duz_dugme(_("Temizle"), "x"))
+    alt.layout().addWidget(ozet)
+    izgara.ekle(alt)
     palet = b.Kart(_("Parça paleti"), eylem=b.ikon_dugmesi("plus", _("Parça ekle")))
     for i, (anahtar, kisa, ad, sayi, _r) in enumerate(PARCALAR[:3]):
         palet.ekle(_liste_satiri(cz.PARCA_RENGI[anahtar], _(ad), kisa, sag=str(sayi),
@@ -152,14 +157,10 @@ def demet():
         (_("Ad"), QtWidgets.QLineEdit("demet_17x17")),
         (_("Adım"), b.SayiBirim(birim="cm", deger=1.26, ondalik=4)),
         (_("Boyut"), boyut), (_("Simetri"), simetri))))
-    ozet = b.Kart(_("Özet"))
-    ozet.govde.addLayout(_form(((_("Toplam ölçü"), _mono("21.420 × 21.420 cm")),
-                                (_("Hücre"), _mono("289")),
-                                (_("Yakıt / kılavuz"), _mono("264 / 24 + 1")))))
     sag = QtWidgets.QVBoxLayout()
     sag.setContentsMargins(0, 0, 0, 0)
     sag.setSpacing(A["l"])
-    for k in (palet, ozellik, ozet):
+    for k in (palet, ozellik):
         sag.addWidget(k)
     sag.addStretch(1)
     sag_w = QtWidgets.QWidget()
@@ -307,9 +308,10 @@ def sonuclar(cekmece_acik=False):
     grafik.ekle(cz.yakinsama_grafigi(), 1)
     entropi = b.Kart(_("Kaynak entropisi"))
     entropi.ekle(cz.entropi_grafigi(), 1)
-    guc = b.Kart(_("Güç dağılımı"), aciklama=_("Pin başına göreli güç · tepe: F_ΔH = 1.042"),
+    guc = b.Kart(_("Güç dağılımı"), aciklama=_("Pin başına göreli güç"),
                  eylem=b.SegmentSecici([("demet", _("Demet")), ("cubuk", _("Çubuk"))], "cubuk"))
     guc.ekle(cz.guc_haritasi_grafigi(), 1)
+    guc.ekle(_guc_ozeti())
     orta = QtWidgets.QHBoxLayout()
     orta.setSpacing(A["l"])
     orta.addWidget(grafik, 5)
@@ -323,6 +325,16 @@ def sonuclar(cekmece_acik=False):
     return sayfa(_("Sonuçlar"), _("Koşu tamamlandı · 28.09.2026 14:32 · statepoint.250.h5"), govde,
                  [b.ikincil_dugme(_("Klasörü aç"), "folder-open"),
                   b.ikincil_dugme(_("Rapor oluştur…"), "file-text")])
+
+
+def _guc_ozeti():
+    """Haritanin altinda: F_dH ve tepe konumu (veriden hesaplanir, metinle tutarli)."""
+    _g, fdh, (satir, sutun) = cz.guc_verisi()
+    f = QtWidgets.QLabel("F<sub>ΔH</sub> = %.3f" % fdh)
+    f.setObjectName("mono")
+    f.setTextFormat(QtCore.Qt.RichText)
+    tepe = _kucuk(_("tepe: satır %d, sütun %d (kılavuz boru komşusu)") % (satir + 1, sutun + 1))
+    return _satir(f, tepe)
 
 
 def _cekmece(acik):
