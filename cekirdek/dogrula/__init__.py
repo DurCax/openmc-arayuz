@@ -119,6 +119,37 @@ def tum_kontroller(spec, veri_kontrolu=True):
     return sorted(bulgular, key=lambda b: sira[b.seviye])
 
 
+class DogrulamaHatasi(ValueError):
+    """Spec'te "hata" seviyesinde bulgu var; kosu baslatilmaz.
+
+    ValueError alt sinifidir: kosu hatalarini ValueError olarak yakalayan
+    mevcut cagiranlar (tarama noktasi, kritik arama) davranisini korur.
+    `bulgular` yalnizca hata seviyesindeki bulgulardir."""
+
+    def __init__(self, bulgular):
+        self.bulgular = list(bulgular)
+        ilk = self.bulgular[0] if self.bulgular else None
+        metin = "%d doğrulama hatası; önce bunları giderin" % len(self.bulgular)
+        if ilk is not None:
+            metin += ": %s" % ilk.mesaj
+        super().__init__(metin)
+
+
+def kapi(spec, veri_kontrolu=True):
+    """
+    Kosu oncesi TEK dogrulama kapisi (arayuz, terminal ve programatik yol).
+
+    Hata bulgusu varsa DogrulamaHatasi firlatir; yoksa butun bulgulari (uyari,
+    bilgi) dondurur. spec'i DEGISTIRMEZ. Cagiranlar dosya silmeden / kosu
+    dizinini temizlemeden ONCE cagirir: gecersiz bir spec eski sonucu silmesin.
+    """
+    bulgular = tum_kontroller(spec, veri_kontrolu=veri_kontrolu)
+    hatalar = [b for b in bulgular if b.seviye == "hata"]
+    if hatalar:
+        raise DogrulamaHatasi(hatalar)
+    return bulgular
+
+
 def ozet(bulgular):
     """Bulgulari '2 hata, 1 uyari, 3 bilgi' seklinde ozetler."""
     say = {"hata": 0, "uyari": 0, "bilgi": 0}
