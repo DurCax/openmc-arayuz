@@ -44,6 +44,8 @@ from testler import ortak_test  # noqa: E402
 # Test tasinirsa modul adi burada guncellenir; bilinmeyen ad zararsizdir
 # ama test_veri_listesi_gecerli uyarir.
 VERI_GEREKTIREN = frozenset({
+    "test_nuklid_secici:test_dogrulama_yazim_hatasi",
+    "test_nuklid_secici:test_sonuc_oku_bulunamayan",
     "test_dogrulama:test_dogrulama_negatif",
     "test_dogrulama:test_dogrulama_temiz",
     "test_guc:test_guc_dogrulama",
@@ -61,6 +63,9 @@ VERI_GEREKTIREN = frozenset({
 # ama zincir yoksa (OPENMC_CHAIN_FILE / ~/nucdata/chain) atlanir; aksi halde
 # FileNotFoundError ile KALDI gorunurdu.
 ZINCIR_GEREKTIREN = frozenset({
+    "test_nuklid_secici:test_zincir_nuklidleri",
+    "test_nuklid_secici:test_dogrulama_yazim_hatasi",
+    "test_nuklid_secici:test_sekme_onceki_sonuc_yeni_secim",
     "test_dogrulama:test_dogrulama_temiz",           # pwr_tukenme ornegi zinciri denetler
     "test_tukenme_temel:test_tukenme_dogrulama",
     "test_tukenme_temel:test_zincir_butunlugu",

@@ -9,10 +9,30 @@
 from cekirdek.sema import malzeme_bul
 from cekirdek import veri_bilgi
 from cekirdek import uygunluk
+from cekirdek import nuklidler
+from cekirdek.ceviri import _
 from cekirdek.dogrula._ortak import Bulgu
 
 
 _SPEKTRUM_ADI = {"termal": "termal", "hizli": "hızlı"}
+
+
+def _izlenen_kontrol(izlenen, zincir_yolu, yer):
+    """
+    Izlenen nuklidler zincirde var mi? Eskiden yazim hatasi ("Xe-135") sonuc
+    okumada SESSIZCE atlaniyordu. Zincir okunamiyorsa yeni bulgu uretilmez:
+    zincir bulgusu zaten verilmistir.
+    """
+    adlar = nuklidler.zincir_nuklidleri_guvenli(zincir_yolu)
+    if adlar is None:
+        return []
+    bulgular = []
+    for ad, onerilen in nuklidler.eksikler(izlenen, adlar):
+        oneri = (_("Zincirde en yakın ad: %s") % nuklidler.oneri_metni(ad, onerilen)
+                 if onerilen else _("Adı OpenMC biçiminde yazın (ör. Xe135, Am242_m1)."))
+        bulgular.append(Bulgu("hata", yer,
+                              _("izlenen nüklid zincirde yok: '%s'") % ad, oneri))
+    return bulgular
 
 
 def tukenme_kontrol(spec, veri_kontrolu=True):
@@ -50,6 +70,8 @@ def tukenme_kontrol(spec, veri_kontrolu=True):
     if not tamam:
         bulgular.append(Bulgu("hata", yer, mesaj,
                               "Kaynak ve sha256: ~/nucdata/chain/KAYNAK.txt"))
+    if tamam:
+        bulgular.extend(_izlenen_kontrol(t.get("izlenen") or [], zs["yol"], yer))
     if t.get("zincir", "otomatik") != "otomatik" and zs["temel"] != zs["spektrum"]:
         bulgular.append(Bulgu(
             "uyari", yer,

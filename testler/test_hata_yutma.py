@@ -33,7 +33,7 @@ GENIS_ISTISNALAR = {"Exception", "BaseException"}
 
 # Nitelikli islev adi -> o islevdeki sessiz except sayisi.
 # Modul duzeyindeki kayitlar "<modul:dosya_adi>" anahtariyla tutulur.
-IZINLI = {  # olculen: 30 kayit, 25 islev (28.09.2026; dagilim_oku kaydi silindi -- Ajan 4)
+IZINLI = {  # olculen: 26 kayit (29.09.2026; Dalga 1: Ajan 4 dagilim_oku, Ajan 2 tukenme sekmesi/sonuc_oku)
     "AnalizSekmesi._bos_nedeni": 1,
     "AnalizSekmesi._hedefleri_listele": 1,
     "BaslangicEkrani._renkleri_uygula": 1,
@@ -43,9 +43,6 @@ IZINLI = {  # olculen: 30 kayit, 25 islev (28.09.2026; dagilim_oku kaydi silindi
     "GelismisBolum._oku": 1,
     "GelismisBolum._yaz": 1,
     "MalzemeSekmesi.doldur": 1,
-    "TukenmeSekmesi._ayirma_anlamli": 1,
-    "TukenmeSekmesi._bitti": 1,
-    "TukenmeSekmesi._uygunluk_oku": 1,
     "_LibYoneticisi.kapat": 1,
     "_h5_sicakliklari": 1,
     "_korelasyon": 1,
@@ -57,7 +54,7 @@ IZINLI = {  # olculen: 30 kayit, 25 islev (28.09.2026; dagilim_oku kaydi silindi
     "nuklid_enerji_tavani": 1,
     "ornek_listesi": 1,
     "sab_onerileri": 1,
-    "sonuc_oku": 4,
+    "sonuc_oku": 3,
     "tukenme_ayirma_anlamli": 1,
 }
 

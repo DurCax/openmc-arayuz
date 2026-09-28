@@ -441,34 +441,65 @@ def calistir(spec, dizin, geri_cagir=None):
     return os.path.join(dizin, "depletion_results.h5"), bilgi
 
 
-def sonuc_oku(h5, spec):
-    """
-    DONER {"zaman_d", "yanma", "k", "k_sapma", "atomlar": {malz: {nuklid: [..]}},
-           "yogunluk": {malz: {nuklid: [atom/b-cm]}}}
-    """
+# Sonuc okuma kaynagi onbellegi: {(h5, boyut, mtime, spec imzasi): (Results,
+# {malzeme_id: ad}, hacimler)}. Olculdu: Results() 3820 nuklidli dosyada
+# 1.8 s, kurucu.kur + hacimler ~0.5 s; secim degisince bunlar TEKRARLANMAZ.
+_SONUC_KAYNAGI = {}
+_SONUC_KAYNAGI_EN_COK = 2
+
+
+def _sonuc_kaynagi(h5, spec):
+    """(Results, {malzeme_id: ad}, hacimler) -- dosya ve spec degismedikce onbellekten."""
+    import json
     import openmc.deplete as d
-    r = d.Results(h5)
-    zaman, k = r.get_keff(time_units="d")
-    p = float(spec["tukenme"]["guc_yogunlugu"])
-    hv = hacimler(spec)
-    izlenen = (spec.get("tukenme") or {}).get("izlenen") or []
-    atomlar, yogunluk = {}, {}
-    malz_idleri = list(r[0].index_mat.keys())
     from cekirdek import kurucu
+    bilgi = os.stat(h5)
+    anahtar = (os.path.abspath(h5), bilgi.st_size, bilgi.st_mtime,
+               json.dumps(spec, sort_keys=True, default=str))
+    kaynak = _SONUC_KAYNAGI.get(anahtar)
+    if kaynak is not None:
+        return kaynak
+    r = d.Results(h5)
     _m, kb = kurucu.kur(spec)
     ad_by_id = {str(m.id): ad for ad, m in kb["malzemeler"].items()}
-    for mid in malz_idleri:
+    kaynak = (r, ad_by_id, hacimler(spec))
+    while len(_SONUC_KAYNAGI) >= _SONUC_KAYNAGI_EN_COK:
+        _SONUC_KAYNAGI.pop(next(iter(_SONUC_KAYNAGI)))
+    _SONUC_KAYNAGI[anahtar] = kaynak
+    return kaynak
+
+
+def sonuc_oku(h5, spec, izlenen=None):
+    """
+    DONER {"zaman_d", "yanma", "k", "k_sapma", "atomlar": {malz: {nuklid: [..]}},
+           "yogunluk": {malz: {nuklid: [atom/b-cm]}}, "adim_sayisi",
+           "bulunamayan": [sonuc dosyasinda olmayan izlenen adlar]}
+
+    izlenen verilmezse spec'teki tukenme.izlenen okunur. Verilirse (arayuzde
+    secim degisti) ayni h5'ten okunur; kosu tekrarlanmaz. Bulunamayan ad
+    (or. "Xe-135") eskiden SESSIZCE atlaniyordu; simdi listelenir ve loglanir.
+    """
+    from cekirdek.gunluk import kaydedici
+    r, ad_by_id, hv = _sonuc_kaynagi(h5, spec)
+    zaman, k = r.get_keff(time_units="d")
+    p = float(spec["tukenme"]["guc_yogunlugu"])
+    if izlenen is None:
+        izlenen = (spec.get("tukenme") or {}).get("izlenen") or []
+    bilinen = r[0].index_nuc
+    bulunamayan = [n for n in izlenen if n not in bilinen]
+    atomlar, yogunluk = {}, {}
+    for mid in r[0].index_mat.keys():
         ad = ad_by_id.get(str(mid), str(mid))
         atomlar[ad], yogunluk[ad] = {}, {}
         V = (hv.get(ad) or {}).get("hacim")
-        for n in izlenen:
-            try:
-                _t, a = r.get_atoms(str(mid), n)
-            except Exception:
-                continue
+        for n in (n for n in izlenen if n in bilinen):
+            _t, a = r.get_atoms(str(mid), n)
             atomlar[ad][n] = [float(x) for x in a]
             if V:
                 yogunluk[ad][n] = [float(x) / V * 1e-24 for x in a]
+    if bulunamayan:
+        kaydedici(__name__).warning("tükenme sonucunda bulunamayan nüklidler (%s): %s",
+                                    h5, ", ".join(bulunamayan))
     return {
         "zaman_d": [float(x) for x in zaman],
         "yanma": [yanma(float(x), p) for x in zaman],
@@ -477,6 +508,7 @@ def sonuc_oku(h5, spec):
         "atomlar": atomlar,
         "yogunluk": yogunluk,
         "adim_sayisi": len(zaman) - 1,
+        "bulunamayan": bulunamayan,
     }
 
 

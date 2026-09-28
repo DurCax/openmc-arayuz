@@ -12,8 +12,11 @@
    acma anahtari + kisa aciklama      -- tukenme kapaliyken YALNIZCA bunlar
    guc, adim birimi, adimlar, yanan malzemeler
    Gelismis: zincir, entegrator, cubuk cubuk yanma (yakit birden fazla
-             ornekse), izlenen nuklidler
-   kosu cubugu, onceki sonuc/eskime isareti, grafik, tablo
+             ornekse)
+   Izlenen nuklidler: aranabilir gruplu secici (arayuz/nuklid_secici.py);
+             secim degisince gosterilen sonuc h5'ten yeniden okunur
+   kosu cubugu, onceki sonuc/eskime isareti, grafik, tablo, CSV
+             (sonuc bolumu: arayuz/tukenme_sonuc.py)
    Ayrintili cikti (katlanir; hata olursa kendiliginden acilir)
  Modelde tukenme uygun degilse (uygunluk.tukenme_uygun) sekme zaten gizlidir;
  sekme yine de gosterilirse yalnizca nedenini soyleyen bos durum gorunur.
@@ -42,8 +45,14 @@ from matplotlib.figure import Figure
 from PySide6 import QtCore, QtGui, QtWidgets
 
 from cekirdek import tukenme as _tk
+from cekirdek.ceviri import _
+from cekirdek.gunluk import kaydedici
+from arayuz.tukenme_sonuc import SonucBolumu
+from arayuz.nuklid_secici import NuklidSecici
 from arayuz.ortak import BosDurum, GelismisBolum, SekmeTabani, cumle_basi, sayi
 from arayuz.sekme_analiz import aciklama, dar
+
+_log = kaydedici(__name__)
 
 ZINCIR_SECENEK = [
     ("otomatik",    "Otomatik (spektrumdan)"),
@@ -69,31 +78,7 @@ def yakit_ornek_sayisi(spec):
     return _tk.yakit_ornek_sayisi(spec)
 
 
-class _OncekiIsci(QtCore.QThread):
-    """
-    Onceki sonucu arka planda okur.
-
-    Olculdu: 3.4 s -- openmc.deplete ice aktarimi (kutuphane yukleniyor,
-    1.2 s) + Results() dosyadaki 3820 nuklidin hepsini ayristiriyor (2.0 s).
-    Ikisi de resmi API'de kacinilmaz; OpenMC'nin ic dosya bicimini elle okumak
-    surum degisince kirilirdi. Arayuzde calissa dosya acilisi 3.4 s donardi.
-    """
-    bitti = QtCore.Signal(object, object)      # (anahtar, sonuc | Exception)
-
-    def __init__(self, spec, dizin, anahtar, parent=None):
-        super().__init__(parent)
-        self._spec = copy.deepcopy(spec)       # arayuz spec'i degistirirse yaris olmasin
-        self._dizin = dizin
-        self._anahtar = anahtar
-
-    def run(self):
-        try:
-            self.bitti.emit(self._anahtar, _tk.onceki_sonuc(self._spec, self._dizin))
-        except Exception as e:
-            self.bitti.emit(self._anahtar, e)
-
-
-class TukenmeSekmesi(SekmeTabani):
+class TukenmeSekmesi(SekmeTabani, SonucBolumu):
 
     KONU = "tukenme"
     durum = QtCore.Signal(str, bool)
@@ -177,8 +162,6 @@ class TukenmeSekmesi(SekmeTabani):
         self.ayir = QtWidgets.QCheckBox("Çubuk çubuk yanma (her örnek ayrı malzeme — çok ağır)")
         self.ayir.setToolTip("Yakıtın her örneği (ör. demetteki her çubuk) ayrı yanar; "
                              "bellek ve süre örnek sayısıyla artar.")
-        self.izlenen = QtWidgets.QLineEdit()
-        self.izlenen.setToolTip("Grafikte ve tabloda izlenecek nüklidler, virgülle.")
         self.gelismis = GelismisBolum("tukenme_gelismis")
         gf = QtWidgets.QFormLayout()
         gf.setContentsMargins(0, 0, 0, 0)
@@ -186,7 +169,6 @@ class TukenmeSekmesi(SekmeTabani):
         gf.addRow("", self.zincir_bilgi)
         gf.addRow("Entegratör:", self.entegrator)
         gf.addRow("", self.ayir)
-        gf.addRow("İzlenen nüklidler:", self.izlenen)
         self.gelismis_form = gf
         gk = QtWidgets.QWidget()
         gk.setLayout(gf)
@@ -213,8 +195,21 @@ class TukenmeSekmesi(SekmeTabani):
         self._onceki = None           # onceki_sonuc() ciktisi
         self._onceki_anahtar = None   # (h5 yolu, degisiklik zamani) -- yeniden okumayi onler
         self._isci = None
+        self._secim_isci = None       # secim degisince h5'ten yeniden okuma
+        self._secim_okunuyor = False
+        self._secim_bekliyor = False  # okuma surerken secim yine degisti
+        self._sonuc = None            # gosterilen sonuc_oku() ciktisi
+        self._kaynak = None           # (h5, okuma spec'i): secim degisince yeniden okunur
         self.d_baslat.clicked.connect(self.baslat)
         self.d_durdur.clicked.connect(self.durdur)
+
+        # ---------------- izlenen nuklidler (gorunur bolum) ----------------
+        self.izlenen = NuklidSecici()
+        self.izlenen.setToolTip(_("Grafikte, tabloda ve CSV'de izlenecek nüklidler. Seçim "
+                                  "değişince önceki sonuç yeniden koşmadan güncellenir."))
+        self.izlenen_kutusu = QtWidgets.QGroupBox(_("İzlenen nüklidler"))
+        QtWidgets.QVBoxLayout(self.izlenen_kutusu).addWidget(self.izlenen)
+        self.izlenen.secim_degisti.connect(self._izlenen_degisti)
 
         self.figur = Figure(figsize=(5, 4.2), tight_layout=True)
         self.tuval = FigureCanvasQTAgg(self.figur)
@@ -222,6 +217,14 @@ class TukenmeSekmesi(SekmeTabani):
         self.eksen_k = self.figur.add_subplot(211)
         self.eksen_n = self.figur.add_subplot(212)
         self._grafik_bos()
+        self.bulunamayan_etiket = QtWidgets.QLabel("")
+        self.bulunamayan_etiket.setWordWrap(True)
+        self.bulunamayan_etiket.setVisible(False)
+        self.csv_dugmesi = QtWidgets.QPushButton(_("CSV olarak dışa aktar"))
+        self.csv_dugmesi.setToolTip(_("Zaman, yanma, k, σ ve seçili her nüklidin atom "
+                                      "sayısı ile yoğunluğu (ondalık nokta)"))
+        self.csv_dugmesi.setEnabled(False)
+        self.csv_dugmesi.clicked.connect(self.csv_disa_aktar)
 
         self.tablo = QtWidgets.QTableWidget(0, 4)
         self.tablo.setHorizontalHeaderLabels(["gün", "MWd/kg", "k-eff", "ρ [pcm]"])
@@ -262,8 +265,10 @@ class TukenmeSekmesi(SekmeTabani):
         sk = QtWidgets.QVBoxLayout(self.sonuc_kutusu)
         sk.setContentsMargins(0, 0, 0, 0)
         sk.addWidget(self.onceki_etiket)
+        sk.addWidget(self.bulunamayan_etiket)
         sk.addWidget(self.tuval)
         sk.addWidget(self.tablo)
+        sk.addWidget(self.csv_dugmesi, 0, QtCore.Qt.AlignLeft)
 
         self.icerik = QtWidgets.QWidget()
         ic = QtWidgets.QVBoxLayout(self.icerik)
@@ -272,6 +277,7 @@ class TukenmeSekmesi(SekmeTabani):
         ic.addWidget(self.var)
         ic.addWidget(self.aciklama)
         ic.addWidget(self.ayar_kutusu)
+        ic.addWidget(dar(self.izlenen_kutusu))
         ic.addWidget(self.kosu_kutusu)
         ic.addWidget(self.sonuc_kutusu)
         ic.addWidget(self.ayrinti)
@@ -287,8 +293,7 @@ class TukenmeSekmesi(SekmeTabani):
         for w in (self.zincir, self.birim, self.entegrator):
             w.currentIndexChanged.connect(self._kaydet)
         self.guc.valueChanged.connect(self._kaydet)
-        for w in (self.adimlar, self.izlenen):
-            w.editingFinished.connect(self._kaydet)
+        self.adimlar.editingFinished.connect(self._kaydet)
         self._gorunum_guncelle()
 
     # ==================================================================
@@ -306,7 +311,8 @@ class TukenmeSekmesi(SekmeTabani):
         i = self.entegrator.findData(t.get("entegrator") or "cecm")
         self.entegrator.setCurrentIndex(max(i, 0))
         self.ayir.setChecked(bool(t.get("malzemeleri_ayir")))
-        self.izlenen.setText(", ".join(t.get("izlenen") or []))
+        # Eski JSON'lardaki liste AYNEN korunur (zincirde olmayan ad bile silinmez).
+        self.izlenen.secim_ayarla(list(t.get("izlenen") or []), sinyal=False)
         self._ozet_guncelle()
         self._onceki_yukle()
 
@@ -352,7 +358,7 @@ class TukenmeSekmesi(SekmeTabani):
         t["adimlar"] = self._sayilar(self.adimlar.text())
         t["entegrator"] = self.entegrator.currentData()
         t["malzemeleri_ayir"] = self.ayir.isChecked()
-        t["izlenen"] = [x.strip() for x in self.izlenen.text().split(",") if x.strip()]
+        t["izlenen"] = self.izlenen.secim()
         self._ozet_guncelle()
         self.bildir()
 
@@ -363,6 +369,7 @@ class TukenmeSekmesi(SekmeTabani):
             from cekirdek import uygunluk
             return uygunluk.tukenme_uygun(self.spec)
         except Exception:
+            _log.exception("tükenme uygunluğu belirlenemedi; sekme açık bırakıldı")
             return (True, "")
 
     def _ayirma_anlamli(self):
@@ -370,6 +377,7 @@ class TukenmeSekmesi(SekmeTabani):
             from cekirdek import uygunluk
             return uygunluk.tukenme_ayirma_anlamli(self.spec)
         except Exception:
+            _log.exception("yakıt örnekleri sayılamadı; 'çubuk çubuk yanma' gösteriliyor")
             return True                  # sayilamadi: secenegi saklama
 
     def _ozet_guncelle(self):
@@ -383,6 +391,7 @@ class TukenmeSekmesi(SekmeTabani):
         self.zincir_uyari.setText("")
         try:
             zs = _tk.zincir_secimi(self.spec)
+            self.izlenen.zincir_ayarla(zs["yol"])
             from cekirdek import veri_bilgi
             tamam, mesaj, _ = veri_bilgi.zincir_kontrol(zs["yol"])
             metin = ("%s  |  fisyon verimi %s eV (%s spektrum)\n%s"
@@ -461,6 +470,7 @@ class TukenmeSekmesi(SekmeTabani):
             self.bos.ayarla(metin=_cumle(neden or "model uygun değil"))
         self.icerik.setVisible(uygun or kosuyor)
         self.ayar_kutusu.setVisible(acik)
+        self.izlenen_kutusu.setVisible(acik or self.sonuc_var())
         self.kosu_kutusu.setVisible(acik or kosuyor)
         self.aciklama.setVisible(True)
         self.sonuc_kutusu.setVisible(self.sonuc_var() or kosuyor
@@ -507,6 +517,7 @@ class TukenmeSekmesi(SekmeTabani):
         self._kusak += 1
         self.bekle()                  # suren okuma biter; sonucu kusaktan atilir
         self._onceki = self._onceki_anahtar = None
+        self._sonucu_unut()
         self.onceki_etiket.setText("")
         self.onceki_etiket.setStyleSheet("")
         self.tablo.setRowCount(0)
@@ -570,6 +581,7 @@ class TukenmeSekmesi(SekmeTabani):
         self.log.clear()
         self.onceki_etiket.setText("")
         self._onceki = self._onceki_anahtar = None
+        self._sonucu_unut()
         self.tablo.setRowCount(0)
         self._tampon = ""
         self._transport = 0
@@ -658,8 +670,8 @@ class TukenmeSekmesi(SekmeTabani):
         if surec is not None:
             try:
                 surec.deleteLater()
-            except Exception:
-                pass
+            except RuntimeError:         # C++ nesnesi zaten silinmis
+                _log.debug("tükenme süreci zaten silinmiş", exc_info=True)
         self._kosu_kusagi = None
         self.d_durdur.setEnabled(False)
         self.kapi_guncelle()
@@ -683,8 +695,9 @@ class TukenmeSekmesi(SekmeTabani):
             self.sonuc_degisti.emit()
             return
         try:
-            s = _tk.sonuc_oku(h5, self._kosu_spec or self.spec)
+            s = _tk.sonuc_oku(h5, self._kosu_spec or self.spec, izlenen=self.izlenen.secim())
         except Exception as e:
+            _log.exception("tükenme sonucu okunamadı: %s", h5)
             self.durum.emit("Sonuç okunamadı: %s" % e, False)
             self.sure_etiket.setText("Sonuç okunamadı — ayrıntılı çıktıya bakın.")
             self.log.appendPlainText("\n# Sonuç okunamadı: %s" % e)
@@ -692,155 +705,9 @@ class TukenmeSekmesi(SekmeTabani):
             self._gorunum_guncelle()
             self.sonuc_degisti.emit()
             return
-        self._sonuc_goster(s)
+        self._sonuc_goster(s, (h5, copy.deepcopy(self._kosu_spec or self.spec)))
         self.sure_etiket.setText("Tamamlandı: %s" % _sure(time.time() - self._t0))
         self.durum.emit("Tükenme tamamlandı", True)
-
-    # ==================================================================
-    # onceki kosu
-    # ==================================================================
-    def _onceki_yukle(self):
-        """
-        Dizinde bir sonuc varsa gosterir. Dosya degismediyse tekrar okumaz:
-        sekme her tazelendiginde 3.7 MB'lik sonucu okumak gereksiz.
-        """
-        if self._surec is not None or not self.spec:
-            return
-        dizin = self._okuma_dizini()
-        h5 = os.path.join(dizin, "depletion_results.h5")
-        if not os.path.exists(h5):
-            degisti = self.sonuc_var()
-            self._onceki = self._onceki_anahtar = None
-            # Sonucun nereye yazilacagini soyle: dizin Calistir'daki kosu
-            # dizininden turer; onu degistiren kullanici onceki sonucun neden
-            # "kayboldugunu" gorebilsin (Ajan 9 bulgusu K12).
-            self.onceki_etiket.setText(
-                "Bu model için kayıtlı tükenme sonucu yok. Sonuçlar şuraya yazılır: %s "
-                "(Çalıştır sekmesindeki koşu dizininden türetilir)."
-                % _tk.kosu_dizini(self.spec, self.proje_yolu))
-            self.onceki_etiket.setStyleSheet("color: %s;" % _tema_renk("metin_soluk"))
-            self._grafik_bos()
-            self.tablo.setRowCount(0)
-            self._gorunum_guncelle()
-            if degisti:
-                self.sonuc_degisti.emit()
-            return
-        anahtar = (h5, os.path.getmtime(h5))
-        if anahtar == self._onceki_anahtar:
-            self._onceki_durum_guncelle()
-            return
-        if self._isci is not None and self._isci.isRunning():
-            return                              # zaten okunuyor
-        self.onceki_etiket.setStyleSheet("")
-        self.onceki_etiket.setText("Önceki koşunun sonucu okunuyor…")
-        self._okuma_kusagi = self._kusak
-        self._isci = _OncekiIsci(self.spec, dizin, anahtar, self)
-        self._isci.bitti.connect(self._onceki_geldi)
-        # Pencere disi bir cikis yolunda da (or. uygulama kapanirken) calisan
-        # is parcacigi yok edilmesin -- Qt bu durumda sureci dusurur.
-        uyg = QtWidgets.QApplication.instance()
-        if uyg is not None and not getattr(self, "_cikis_bagli", False):
-            uyg.aboutToQuit.connect(self.bekle)
-            self._cikis_bagli = True
-        self._gorunum_guncelle()
-        self._isci.start()
-
-    def _onceki_geldi(self, anahtar, sonuc):
-        if self._okuma_kusagi is not None and self._okuma_kusagi != self._kusak:
-            return                              # onceki projenin okumasi: atilir
-        if self._surec is not None:
-            return                              # bu arada yeni kosu basladi
-        if isinstance(sonuc, Exception):
-            self._onceki = None
-            self.onceki_etiket.setText("Önceki sonuç okunamadı: %s" % sonuc)
-            self._gorunum_guncelle()
-            return
-        if sonuc is None:
-            return
-        self._onceki, self._onceki_anahtar = sonuc, anahtar
-        self._sonuc_goster(sonuc["sonuc"])
-        self._onceki_durum_guncelle()
-
-    def bekle(self, ms=30000):
-        """Arka plandaki okuma bitene kadar bekler (testler ve kapanis icin)."""
-        if self._isci is not None:
-            self._isci.wait(ms)
-            QtWidgets.QApplication.processEvents()
-
-    def _onceki_durum_guncelle(self):
-        """Gosterilen sonucun SU ANKI spec'e ait olup olmadigini yazar."""
-        if not self._onceki or self._surec is not None:
-            return
-        dizin = os.path.dirname(self._onceki["h5"])
-        durum, farklar = _tk.eskime(self.spec, dizin)
-        tarih = time.strftime("%d.%m.%Y %H:%M", time.localtime(self._onceki["tarih"]))
-        kayit = _tk._kayit_oku(dizin) or {}
-        beklenen = len((kayit.get("tukenme") or {}).get("adimlar") or [])
-        yapilan = (self._onceki.get("sonuc") or {}).get("adim_sayisi")
-        if beklenen and yapilan is not None and yapilan < beklenen:
-            # Yarim kalmis (durdurulmus ya da hala suren) kosu: "bu modele
-            # ait" demek yaniltirdi (Ajan 9 bulgusu K11).
-            metin = ("Yarım kalmış koşu (%s): %d / %d adım tamamlanmış. Koşu durdurulmuş "
-                     "ya da hâlâ sürüyor olabilir; tam sonuç için yeniden koşun."
-                     % (tarih, yapilan, beklenen))
-            stil = "color: #c9820a; font-weight: bold;"
-        elif durum == "guncel":
-            metin = "Önceki koşunun sonucu (%s) — bu modele ait." % tarih
-            stil = ""
-        elif durum == "eski":
-            metin = ("Eski sonuç (%s): model o koşudan beri değişti (%s). "
-                     "Gösterilen sayılar bu modele ait değil — yeniden koşun."
-                     % (tarih, _tk.fark_metni(farklar)))
-            stil = "color: #d04437; font-weight: bold;"
-        else:
-            metin = ("Önceki koşunun sonucu (%s). Koşunun model kaydı yok; bu "
-                     "modele ait olduğu doğrulanamıyor." % tarih)
-            stil = "color: #c9820a;"
-        self.onceki_etiket.setText(metin)
-        self.onceki_etiket.setStyleSheet(stil)
-
-    # ==================================================================
-    # sonuclar
-    # ==================================================================
-    def _grafik_bos(self):
-        for e, y in ((self.eksen_k, "k-eff"), (self.eksen_n, "atom/b-cm")):
-            e.clear(); e.grid(alpha=0.3)
-            e.set_ylabel(y, fontsize=8); e.tick_params(labelsize=7)
-        self.eksen_n.set_xlabel("yanma [MWd/kg]", fontsize=8)
-        self.tuval.draw_idle()
-
-    def _sonuc_goster(self, s):
-        from arayuz import tema as _t
-        bu, k, sk = s["yanma"], s["k"], s["k_sapma"]
-        self._grafik_bos()
-        self.eksen_k.errorbar(bu, k, yerr=sk, fmt="o-", ms=3, lw=1.2,
-                              color=_t.renk("vurgu"), capsize=2)
-        self.eksen_k.axhline(1.0, color=_t.renk("metin_soluk"), lw=0.8, ls="--")
-        cizgi = False
-        for ad, yog in s["yogunluk"].items():
-            for n, v in yog.items():
-                if any(x > 0 for x in v):
-                    xs = [b for b, x in zip(bu, v) if x > 0]
-                    ys = [x for x in v if x > 0]
-                    self.eksen_n.plot(xs, ys, "o-", ms=2, lw=1.0,
-                                      label=n if len(s["yogunluk"]) == 1 else "%s (%s)" % (n, ad))
-                    cizgi = True
-        if cizgi:
-            self.eksen_n.set_yscale("log")
-            self.eksen_n.legend(fontsize=6, ncol=2, loc="best")
-        self.tuval.draw_idle()
-
-        self.tablo.setRowCount(0)
-        for z, b, kk, ss in zip(s["zaman_d"], bu, k, sk):
-            r = self.tablo.rowCount()
-            self.tablo.insertRow(r)
-            rho = (kk - 1.0) / kk * 1e5
-            for c, metin in enumerate(("%.3f" % z, "%.4f" % b,
-                                       "%.5f +/- %.5f" % (kk, ss), "%+.0f" % rho)):
-                self.tablo.setItem(r, c, QtWidgets.QTableWidgetItem(metin))
-        self.tablo.resizeColumnsToContents()
-        self._gorunum_guncelle()
-        self.sonuc_degisti.emit()
 
 
 def _cumle(metin):
