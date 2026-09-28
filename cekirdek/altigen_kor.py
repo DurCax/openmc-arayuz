@@ -331,3 +331,64 @@ def betik_kaynagi():
     """Betige kopyalanan islevlerin kaynak kodu."""
     return "\n\n".join(inspect.getsource(f) for f in
                        (kilifli_demet_universe, altigen_kor_hucreleri))
+
+
+def kilif_kullaniliyor(spec):
+    """Spec'te kilifli altigen demet var mi (betige yardimci islev gerekir)."""
+    return any(kilif(d) for d in spec.get("demetler") or [])
+
+
+def betik_satirlari(spec, satirlar, bagimlilik, mat_ifade, f):
+    """
+    altigen_kafes korunun betik satirlari (kurucu ile AYNI islevler).
+    bagimlilik(ad) -> betikteki universe degiskeni; mat_ifade(ad) -> malzeme
+    ifadesi; f(sayi) -> tam duyarlikli yazim. DONER (gx, gy).
+    """
+    from cekirdek.sema import eksenel_katmanlar, kor_yuksekligi
+    kor = spec["kor"]
+    harita_kontrol(kor)
+    n, P = halka_sayisi(kor), float(kor["adim"])
+    yon = kor.get("yonelim") or "x"
+    sinir = kor.get("sinir") or {}
+    h = kor_yuksekligi(kor)
+    katmanlar = eksenel_katmanlar(kor)
+    satirlar += ["", "# --- altıgen tam kor (%d halka, %d demet), demet adımı %s cm ---"
+                 % (n, len(kor_merkezleri(n, P, yon)), f(P)),
+                 "# Kor kafesi '%s', demet pin kafesi '%s' (birbirine 90°, ölçüldü)."
+                 % (yon, ters_yonelim(yon)),
+                 "# Yan sınır en dış demetlerin DIŞ YÜZLERİNDEDİR (kırık çizgi)."]
+    if h:
+        sinirlar = ([-h / 2.0] + [z1 for _a, z1, _b in katmanlar[:-1]] + [h / 2.0]
+                    if katmanlar else [-h / 2.0, h / 2.0])
+        satirlar.append("_z = [openmc.ZPlane(%s, boundary_type=%r)," % (
+            f(sinirlar[0]), sinir.get("alt", "reflective")))
+        for z in sinirlar[1:-1]:
+            satirlar.append("      openmc.ZPlane(%s)," % f(z))
+        satirlar.append("      openmc.ZPlane(%s, boundary_type=%r)]" % (
+            f(sinirlar[-1]), sinir.get("ust", "reflective")))
+        satirlar.append("_dilimler = [+_z[_i] & -_z[_i + 1] for _i in range(len(_z) - 1)]")
+        satirlar.append("_tam_z = +_z[0] & -_z[-1]")
+    else:
+        satirlar += ["_dilimler = [None]", "_tam_z = None"]
+    dilimler = [(None, b) for _a, _c, b in katmanlar] if katmanlar else [(None, None)]
+    adlar = [a for _z, a in katman_adlari(dilimler)]
+    satirlar.append("_katmanlar = list(zip(_dilimler, %r))" % (adlar,))
+    satirlar.append("_merkezler = [")
+    for x, y in kor_merkezleri(n, P, yon):
+        satirlar.append("    (%s, %s)," % (f(x), f(y)))
+    satirlar.append("]")
+    # once bagimliliklar (universe'ler) uretilir, sonra liste yazilir
+    dolgu_satirlari = [", ".join(bagimlilik(deger if tur == "ad" else deger.get("dolgu"))
+                                 for tur, deger in satir)
+                       for satir in konum_dolgu_adlari(kor, dilimler)]
+    satirlar.append("_dolgular = [")
+    satirlar.extend("    [%s]," % d for d in dolgu_satirlari)
+    satirlar.append("]")
+    kal = yansitici_kalinligi(kor)
+    satirlar.append("_yansitici = %s" % ("None" if kal is None else "(%s, %s, _tam_z)" % (
+        mat_ifade((kor.get("yansitici") or {}).get("malzeme")), f(kal))))
+    satirlar.append("kok = openmc.Universe(cells=altigen_kor_hucreleri(")
+    satirlar.append("    _merkezler, %s, %r, _dolgular, _katmanlar, %r, _yansitici))"
+                    % (f(P), yon, sinir.get("yan", "reflective")))
+    satirlar += ["", "geometri = openmc.Geometry(kok)"]
+    return kor_sinir_kutusu(kor)

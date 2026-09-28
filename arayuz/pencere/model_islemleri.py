@@ -7,8 +7,10 @@
 """
 
 import copy
+import math
 import os
 
+from cekirdek.ceviri import _
 from cekirdek import sema, dogrula, surum, uygunluk
 
 
@@ -114,6 +116,11 @@ def tur_ozeti(spec):
     if tur == "kare_kafes":
         nx, ny = (kor.get("boyut") or [0, 0])[:2]
         return "%d×%d tam kor" % (nx, ny)
+    if tur == "altigen_kafes":
+        from cekirdek import altigen
+        n = int(kor.get("halka_sayisi") or 0)
+        return _("%d demetli altıgen tam kor") % altigen.toplam_hucre(n) if n else \
+            _("altıgen tam kor")
     if tur == "tamburlu":
         n = int(((kor.get("tambur") or {}).get("sayi")) or 0)
         return "tamburlu kor (%d tambur)" % n if n else "tamburlu kor"
@@ -174,21 +181,21 @@ def sekme_isaretleri(spec, hata_sayilari=None, kosu_basarili=False,
         "Eksik: henüz malzeme yok; yakıt, zarf ve soğutucu ekleyin.")
 
     eksik = None
-    if tur in ("tek_cubuk", "tek_demet", "kare_kafes") and not spec.get("cubuklar"):
+    if tur in ("tek_cubuk", "tek_demet") + sema.HARITALI_KORLAR and not spec.get("cubuklar"):
         eksik = "Eksik: bu kor türü için en az bir yakıt çubuğu tanımlanmalı."
     elif tur == "tek_plaka" and not spec.get("plakalar"):
         eksik = "Eksik: bu kor türü için bir plaka elemanı tanımlanmalı."
     koy("parcalar", eksik)
 
     koy("demet", "Eksik: bu kor türü için bir demet kurulmalı."
-        if tur in ("tek_demet", "kare_kafes") and not spec.get("demetler") else None)
+        if tur in ("tek_demet",) + sema.HARITALI_KORLAR and not spec.get("demetler") else None)
 
     eksik = None
     alan = {"tek_cubuk": "cubuk", "tek_plaka": "plaka", "tek_demet": "demet",
             "tamburlu": "dolgu"}.get(tur)
     if alan and not kor.get(alan):
         eksik = "Eksik: korun dolgusu henüz seçilmedi."
-    elif tur == "kare_kafes" and not kor.get("harita"):
+    elif tur in sema.HARITALI_KORLAR and not kor.get("harita"):
         eksik = "Eksik: kor haritası boş; demetleri haritaya yerleştirin."
     elif tur == "kuresel" and not kor.get("kabuklar"):
         eksik = "Eksik: küresel kabuk tanımlanmadı."
@@ -324,6 +331,15 @@ def _eksik_parcayi_kur(spec, tur, eklenen=None):
             spec.setdefault("demetler", []).append(yeni_demet(spec, "kare", ad))
             eklenen.append(ad)
 
+    def altigen_demet_gerekli():
+        # Altigen korun haritasina yalnizca altigen demet oturur.
+        if not any(d.get("tur") == "altigen" for d in spec.get("demetler", [])):
+            cubuk_gerekli()
+            from arayuz.sekme_demet import yeni_demet
+            ad = sc.benzersiz_ad(spec, "altigen_demet")
+            spec.setdefault("demetler", []).append(yeni_demet(spec, "altigen", ad))
+            eklenen.append(ad)
+
     if tur == "tek_cubuk":
         cubuk_gerekli()
     elif tur == "tek_plaka" and not spec.get("plakalar"):
@@ -334,6 +350,8 @@ def _eksik_parcayi_kur(spec, tur, eklenen=None):
         kare_demet_gerekli()
     elif tur == "kare_kafes":
         kare_demet_gerekli()
+    elif tur == "altigen_kafes":
+        altigen_demet_gerekli()
     return eklenen
 
 
@@ -342,7 +360,7 @@ def _eksik_parcayi_kur(spec, tur, eklenen=None):
 # plakaya donunce de ayni adla kaliyordu.
 _SABLON_ADLARI = {"tek_cubuk": "Yeni yakıt çubuğu", "tek_demet": "Yeni kare yakıt demeti",
                   "tek_plaka": "Yeni plaka elemanı", "tamburlu": "Yeni tamburlu kor",
-                  "kare_kafes": "Yeni tam kor"}
+                  "kare_kafes": "Yeni tam kor", "altigen_kafes": "Yeni altıgen tam kor"}
 
 
 def kor_turu_degistir(spec, yeni_tur, hafiza=None, eklenen=None):
@@ -365,6 +383,11 @@ def kor_turu_degistir(spec, yeni_tur, hafiza=None, eklenen=None):
                         for a in sema.KOR_TUR_ALANLARI.get(eski, ())}
     kor["tur"] = yeni_tur
     sema.kor_alanlarini_ayikla(kor)
+    if eski in sema.HARITALI_KORLAR and yeni_tur in sema.HARITALI_KORLAR:
+        # Kare ve altigen harita ayni alanlari paylasir ama bicimleri farklidir
+        # (satirlar / halkalar): birinin haritasi otekine tasinmaz.
+        for alan in ("adim", "boyut", "harita", "anahtar"):
+            kor[alan] = copy.deepcopy(sema.VARSAYILAN_KOR[alan])
     for alan, deger in ((hafiza or {}).get(yeni_tur) or {}).items():
         if _alan_varsayilan_mi(kor, alan):
             kor[alan] = copy.deepcopy(deger)
@@ -400,4 +423,31 @@ def kor_turu_degistir(spec, yeni_tur, hafiza=None, eklenen=None):
             kor["adim"] = round(d["adim"] * max(d.get("boyut") or [1]), 6)
             kor["boyut"] = [1, 1]
             kor["harita"], kor["anahtar"] = adlardan_harita([[ad]])
+    elif yeni_tur == "altigen_kafes" and not kor.get("harita"):
+        altigen_kor_haritasi_kur(spec, eski_dolgu)
+    return True
+
+
+def altigen_kor_haritasi_kur(spec, tercih=None, halka=2):
+    """
+    Altigen tam korun varsayilan haritasi: 'halka' halkali (2 -> 7 demet),
+    tum konumlarda ayni altigen demet. Kor yonelimi demetin tersidir
+    (pin kafesi ile kor kafesi 90 derece; altigen_kor), adim demetin dis
+    olcusudur (kilif dahil; demetler arasi bosluk yok).
+    """
+    from cekirdek import altigen, altigen_kor
+    from arayuz.izgara import adlardan_harita
+    kor = spec["kor"]
+    hexler = [d["ad"] for d in spec.get("demetler", []) if d.get("tur") == "altigen"]
+    ad = tercih if tercih in hexler else (hexler[0] if hexler else None)
+    d = sema.demet_bul(spec, ad) if ad else None
+    if d is None:
+        return False
+    kor["halka_sayisi"] = int(halka)
+    kor["yonelim"] = altigen_kor.ters_yonelim(d.get("yonelim", "y"))
+    # 6 haneye YUKARI yuvarlanir: asagi yuvarlanan adim demetten kucuk kalir
+    # ve dogrulama bunu (hakli olarak) hata sayardi.
+    kor["adim"] = math.ceil(altigen_kor.demet_dis_olcu(d) * 1e6 - 1e-6) / 1e6
+    kor["harita"], kor["anahtar"] = adlardan_harita(
+        [[ad] * u for u in altigen.halka_uzunluklari(int(halka))])
     return True

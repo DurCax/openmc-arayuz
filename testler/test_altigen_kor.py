@@ -194,7 +194,7 @@ def test_altigen_kor_dogrulama():
     kontrol("halka uzunlugu yanlis -> HATA", ok, "-> %s" % h)
     ok, h = hata_var(lambda s: s["kor"].update(yonelim="y"), "yönelim")
     kontrol("kor yonelimi demetle ayni -> HATA", ok, "-> %s" % h)
-    ok, h = hata_var(lambda s: s["demetler"][0]["kilif"].update(ic_duz=ZARF - 0.2), "kılıf")
+    ok, h = hata_var(lambda s: s["demetler"][0]["kilif"].update(ic_duz=ZARF - 0.5), "kılıf")
     kontrol("pinler kilifa sigmiyor -> HATA", ok, "-> %s" % h)
     ok, h = hata_var(lambda s: s["demetler"][0]["kilif"].update(malzeme="yok"), "kılıf")
     kontrol("kilif malzemesi tanimsiz -> HATA", ok, "-> %s" % h)

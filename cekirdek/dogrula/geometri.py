@@ -11,7 +11,9 @@ import math
 from cekirdek.sema import kor_yuksekligi as sema_kor_yuksekligi
 from cekirdek.sema import BOSLUK, malzeme_bul, cubuk_bul, plaka_bul, demet_bul
 from cekirdek import altigen
+from cekirdek import altigen_kor as akor
 from cekirdek import uygunluk
+from cekirdek.ceviri import _
 from cekirdek.dogrula._ortak import Bulgu
 
 
@@ -209,6 +211,50 @@ def demet_kontrol(spec):
         bulgular += _kafes_icerik_kontrol(
             spec, yer, d.get("adim"), d.get("tur", "kare"),
             [(d.get("anahtar") or {}).get(h) for h in sorted(kullanilan)])
+        bulgular += kilif_kontrol(spec, d)
+    return bulgular
+
+
+def _en_buyuk_pin_yaricapi(spec, d):
+    """Haritadaki cubuklarin en buyuk dis yaricapi; cubuk yoksa adim/2."""
+    anahtar = d.get("anahtar") or {}
+    caplar = [_cubuk_dis_capi(cubuk_bul(spec, anahtar[h]))
+              for h in {h for s in d.get("harita") or [] for h in s}
+              if anahtar.get(h) and cubuk_bul(spec, anahtar[h]) is not None]
+    caplar = [c for c in caplar if c]
+    return max(caplar) / 2.0 if caplar else float(d.get("adim") or 0.0) / 2.0
+
+
+def kilif_kontrol(spec, d):
+    """Altigen demet kilifi (duct): olculer, malzeme, pinlerin kilifa sigmasi."""
+    k = d.get("kilif")
+    if not k:
+        return []
+    yer = "demet:%s" % d["ad"]
+    if d.get("tur") != "altigen" or not isinstance(k, dict):
+        return [Bulgu("uyari", yer, _("kılıf yalnızca altıgen demette kurulur — yok sayılır"))]
+    bulgular = []
+    ic, kal = k.get("ic_duz"), k.get("kalinlik")
+    for deger, ad in ((ic, _("kılıf iç ölçüsü")), (kal, _("kılıf kalınlığı"))):
+        if not isinstance(deger, (int, float)) or deger <= 0:
+            bulgular.append(Bulgu("hata", yer, _("%s sıfırdan büyük olmalı: %s") % (ad, deger)))
+    m = k.get("malzeme")
+    if not m:
+        bulgular.append(Bulgu("hata", yer, _("kılıf malzemesi seçilmemiş")))
+    elif m != BOSLUK and malzeme_bul(spec, m) is None:
+        bulgular.append(Bulgu("hata", yer, _("kılıf için tanımsız malzeme: %s") % m))
+    if bulgular:
+        return bulgular
+    # En distaki pin merkezleri zarfin duz kenarinda: (halka-1) adim sqrt3/2
+    gerekli = 2.0 * ((akor.halka_sayisi(d) - 1) * float(d.get("adim") or 0.0)
+                     * math.sqrt(3.0) / 2.0 + _en_buyuk_pin_yaricapi(spec, d))
+    if gerekli > float(ic) * (1.0 + 1e-9):
+        bulgular.append(Bulgu(
+            "hata", yer,
+            _("pinler kılıfa sığmıyor: kılıf iç ölçüsü %.5f cm, en az %.5f cm gerekli")
+            % (float(ic), gerekli),
+            _("Kılıf, dış halkadaki pinleri keser. İç ölçüyü büyütün ya da adımı "
+              "küçültün.")))
     return bulgular
 
 
@@ -231,6 +277,9 @@ def _kafes_olculeri(d):
     if d.get("tur") == "altigen":
         halka = d.get("halka_sayisi") or (d.get("boyut") or [1])[0] or 1
         gx, gy = altigen.kapsayan_olcu(halka, adim, d.get("yonelim", "y"))
+        if akor.kilif(d):
+            dis = akor.demet_dis_olcu(d)
+            return (*akor.prizma_kutusu(dis / 2.0, d.get("yonelim", "y")), dis)
         return gx, gy, (halka - 1) * adim * math.sqrt(3.0) + adim
     nx, ny = (d.get("boyut") or [1, 1])[:2]
     return adim * nx, adim * ny, adim * min(nx, ny)
