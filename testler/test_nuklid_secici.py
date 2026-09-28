@@ -470,6 +470,13 @@ def _sekme_yeni_secim(sekme, beklenen_satir):
     kontrol("CSV yazildi: secili nuklidler, %d satir" % (len(satirlar) - 1),
             len(satirlar) == beklenen_satir + 1 and "uo2 Pu238 [atom/b-cm]" in satirlar[0]
             and not any("Xe135" in h for h in satirlar[0]), "-> %r" % satirlar[0])
+    # Okuma surerken secim yine degisirse SON secim gosterilir.
+    sekme.izlenen.secim_ayarla(["U235"])
+    sekme.izlenen.secim_ayarla(["U238", "Pu239"])
+    sekme.bekle()
+    kontrol("art arda iki secim: son secim cizildi", _cizgi_etiketleri(sekme)
+            == ["Pu239", "U238"] and sekme.bulunamayan_etiket.isHidden(),
+            "-> %r" % _cizgi_etiketleri(sekme))
 
 
 def test_sekme_onceki_sonuc_yeni_secim():

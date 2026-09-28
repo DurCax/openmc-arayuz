@@ -194,6 +194,8 @@ class TukenmeSekmesi(SekmeTabani, SonucBolumu):
         self._onceki_anahtar = None   # (h5 yolu, degisiklik zamani) -- yeniden okumayi onler
         self._isci = None
         self._secim_isci = None       # secim degisince h5'ten yeniden okuma
+        self._secim_okunuyor = False
+        self._secim_bekliyor = False  # okuma surerken secim yine degisti
         self._sonuc = None            # gosterilen sonuc_oku() ciktisi
         self._kaynak = None           # (h5, okuma spec'i): secim degisince yeniden okunur
         self.d_baslat.clicked.connect(self.baslat)
@@ -215,6 +217,7 @@ class TukenmeSekmesi(SekmeTabani, SonucBolumu):
         self._grafik_bos()
         self.bulunamayan_etiket = QtWidgets.QLabel("")
         self.bulunamayan_etiket.setWordWrap(True)
+        self.bulunamayan_etiket.setVisible(False)
         self.csv_dugmesi = QtWidgets.QPushButton(_("CSV olarak dışa aktar"))
         self.csv_dugmesi.setToolTip(_("Zaman, yanma, k, σ ve seçili her nüklidin atom "
                                       "sayısı ile yoğunluğu (ondalık nokta)"))
@@ -512,6 +515,7 @@ class TukenmeSekmesi(SekmeTabani, SonucBolumu):
         self._kusak += 1
         self.bekle()                  # suren okuma biter; sonucu kusaktan atilir
         self._onceki = self._onceki_anahtar = None
+        self._sonucu_unut()
         self.onceki_etiket.setText("")
         self.onceki_etiket.setStyleSheet("")
         self.tablo.setRowCount(0)
@@ -575,6 +579,7 @@ class TukenmeSekmesi(SekmeTabani, SonucBolumu):
         self.log.clear()
         self.onceki_etiket.setText("")
         self._onceki = self._onceki_anahtar = None
+        self._sonucu_unut()
         self.tablo.setRowCount(0)
         self._tampon = ""
         self._transport = 0

@@ -208,6 +208,7 @@ class SonucBolumu:
                 "(Çalıştır sekmesindeki koşu dizininden türetilir)."
                 % _tk.kosu_dizini(self.spec, self.proje_yolu))
             self.onceki_etiket.setStyleSheet("color: %s;" % _tema_renk("metin_soluk"))
+            self._sonucu_unut()
             self._grafik_bos()
             self.tablo.setRowCount(0)
             self._gorunum_guncelle()
@@ -253,12 +254,15 @@ class SonucBolumu:
 
     def bekle(self, ms=30000):
         """Arka plandaki okuma bitene kadar bekler (testler ve kapanis icin)."""
-        for isci in (self._isci, self._secim_isci):
-            if isci is not None:
-                isci.wait(ms)
+        son = time.monotonic() + ms / 1000.0
+        if self._isci is not None:
+            self._isci.wait(ms)
         QtWidgets.QApplication.processEvents()
-        if self._secim_isci is not None and self._secim_isci.isRunning():
-            self.bekle(ms)                 # sirada bekleyen secim okumasi
+        # Secim okumasi zincirlenebilir (sirada bekleyen secim): bitene kadar.
+        while self._secim_okunuyor and time.monotonic() < son:
+            if self._secim_isci is not None:
+                self._secim_isci.wait(max(int((son - time.monotonic()) * 1000), 1))
+            QtWidgets.QApplication.processEvents()
 
     def _onceki_durum_guncelle(self):
         """Gosterilen sonucun SU ANKI spec'e ait olup olmadigini yazar."""
@@ -298,6 +302,14 @@ class SonucBolumu:
     def _grafik_bos(self):
         grafik_bos(self.eksen_k, self.eksen_n)
         self.tuval.draw_idle()
+
+    def _sonucu_unut(self):
+        """Gosterilen sonucun kaynagini birakir (proje degisti / yeni kosu)."""
+        self._sonuc = self._kaynak = None
+        self._secim_bekliyor = False
+        self.csv_dugmesi.setEnabled(False)
+        self.bulunamayan_etiket.setText("")
+        self.bulunamayan_etiket.setVisible(False)
 
     def _sonuc_goster(self, s, kaynak=None):
         """s: sonuc_oku() ciktisi. kaynak: (h5, okuma spec'i) -- secim degisince
@@ -339,10 +351,11 @@ class SonucBolumu:
         """Gosterilen sonucu yeni secimle ayni h5'ten okur (kosu tekrarlanmaz)."""
         if self._kaynak is None or self._surec is not None:
             return
-        if self._secim_isci is not None and self._secim_isci.isRunning():
+        if self._secim_okunuyor:
             self._secim_bekliyor = True           # bitince son secimle tekrar
             return
         self._secim_bekliyor = False
+        self._secim_okunuyor = True
         h5, spec = self._kaynak
         izlenen, kusak = self.izlenen.secim(), self._kusak
         self._secim_isci = _Isci(lambda: _tk.sonuc_oku(h5, spec, izlenen=izlenen),
@@ -351,10 +364,11 @@ class SonucBolumu:
         self._secim_isci.start()
 
     def _secim_geldi(self, anahtar, sonuc):
+        self._secim_okunuyor = False
         if anahtar[0] != self._kusak or self._surec is not None or self._kaynak is None:
             return                                  # proje degisti ya da kosu basladi
-        if getattr(self, "_secim_bekliyor", False):
-            QtCore.QTimer.singleShot(0, self._secim_oku)
+        if self._secim_bekliyor:
+            self._secim_oku()                       # bu sonuc eski secime ait
             return
         if isinstance(sonuc, Exception):
             self.bulunamayan_etiket.setText(_("Seçim sonuç dosyasından okunamadı: %s") % sonuc)
