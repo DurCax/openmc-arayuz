@@ -11,7 +11,8 @@ maket.py -- KAPI G1 icin statik maket ekranlari (gercek bilesenlerle; islev yok)
         # (DIZIN/karsilastirma/<ekran>_<tema>_<WxH>.png: once | sonra)
     python -m arayuz.tasarim.maket --kaydet DIZIN --varyant  # vurgu secenekleri
 
-Ekranlar: kabuk (Malzemeler sayfasiyla), baslangic, demet, hesap, sonuclar.
+Ekranlar: kabuk (Malzemeler sayfasiyla), baslangic, demet, hesap, sonuclar
+(+ sonuclar_cekmece: "Ayrintili cikti" cekmecesi acik).
 """
 
 import argparse
@@ -49,13 +50,13 @@ def _demet():
 def _hesap():
     from arayuz.tasarim import maket_ekranlar as e
     from arayuz.tasarim.maket_kabuk import MaketKabuk
-    return MaketKabuk(e.hesap(), "hesap", onizleme="acik")
+    return MaketKabuk(e.hesap(), "hesap", onizleme="dar")
 
 
-def _sonuclar():
+def _sonuclar(cekmece_acik=False):
     from arayuz.tasarim import maket_ekranlar as e
     from arayuz.tasarim.maket_kabuk import MaketKabuk
-    k = MaketKabuk(e.sonuclar(), "sonuclar", onizleme="yok")
+    k = MaketKabuk(e.sonuclar(cekmece_acik), "sonuclar", onizleme="yok")
     k.kenar.durum_ayarla("calistir", "tamam")
     k.kenar.durum_ayarla("sonuclar", "tamam")
     return k
@@ -64,7 +65,7 @@ def _sonuclar():
 def ekranlar():
     """ad -> pencere kurucusu (her cagri YENI pencere)."""
     return {"kabuk": _kabuk, "baslangic": _baslangic, "demet": _demet, "hesap": _hesap,
-            "sonuclar": _sonuclar}
+            "sonuclar": _sonuclar, "sonuclar_cekmece": lambda: _sonuclar(True)}
 
 
 def _uygulama():
@@ -76,6 +77,7 @@ def _cek(kur, boyut):
     w = kur()
     w.resize(*boyut)
     w.show()
+    w.setFocus()         # ilk dugmenin odak halkasi maketi yaniltmasin
     for _i in range(3):
         app.processEvents()
     resim = w.grab()

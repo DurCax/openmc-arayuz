@@ -19,6 +19,7 @@ from PySide6 import QtCore, QtWidgets
 from arayuz.tasarim import tokenlar
 
 A = tokenlar.ARALIK
+_EN_AZ_GENISLIK = 11 * A["s"]
 
 
 class SayiBirim(QtWidgets.QWidget):
@@ -47,6 +48,9 @@ class SayiBirim(QtWidgets.QWidget):
         self.kutu.setSingleStep(adim if adim is not None else 10 ** -min(ondalik, 2))
         self.kutu.setKeyboardTracking(False)
         self.kutu.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        # Genis aralik (1e9) sizeHint'i sisirir; formlar dar ekranda tassin diye
+        # alt sinir acikca verilir.
+        self.kutu.setMinimumWidth(_EN_AZ_GENISLIK)
         self.kutu.setValue(deger)
         self.kutu.valueChanged.connect(lambda _v: self.degisti.emit(self.deger()))
         d.addWidget(self.kutu, 1)

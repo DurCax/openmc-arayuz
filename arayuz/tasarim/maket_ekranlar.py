@@ -157,6 +157,7 @@ def demet():
                                 (_("Hücre"), _mono("289")),
                                 (_("Yakıt / kılavuz"), _mono("264 / 24 + 1")))))
     sag = QtWidgets.QVBoxLayout()
+    sag.setContentsMargins(0, 0, 0, 0)
     sag.setSpacing(A["l"])
     for k in (palet, ozellik, ozet):
         sag.addWidget(k)
@@ -252,9 +253,11 @@ def _sayi(deger, en_az, en_cok):
 
 
 def _uclu(deger):
-    kutular = [b.SayiBirim(birim="cm" if i == 2 else None, deger=deger if i < 2 else 0.0,
-                           en_az=-1e6, ondalik=2) for i in range(3)]
-    return _satir(*kutular, esnek=False)
+    kutular = [b.SayiBirim(deger=deger if i < 2 else 0.0, en_az=-1e4, en_cok=1e4, ondalik=2)
+               for i in range(3)]
+    birim = QtWidgets.QLabel("cm")
+    birim.setObjectName("birim")
+    return _satir(*kutular, birim, esnek=False)
 
 
 # ============================================================================
@@ -287,7 +290,7 @@ def _istatistik(etiket, deger, alt=None, rozet=None, birim=None):
     return k
 
 
-def sonuclar(cekmece_acik=True):
+def sonuclar(cekmece_acik=False):
     s = SONUC
     ust = QtWidgets.QHBoxLayout()
     ust.setSpacing(A["l"])
@@ -296,7 +299,8 @@ def sonuclar(cekmece_acik=True):
                               ("±%s pcm" % s["pcm"], "basari")), 2)
     ust.addWidget(_istatistik(_("Shannon entropisi"), s["entropi"], _("50. çevrimden beri durağan"),
                               (_("Yakınsadı"), "basari"), birim=_("bit")), 1)
-    ust.addWidget(_istatistik(_("Süre"), _(s["sure"]), _("%s etkin + 50 pasif çevrim") % "200"), 1)
+    ust.addWidget(_istatistik(_("Süre"), s["sure"], _("%s etkin + 50 pasif çevrim") % "200",
+                              birim=_("dk:sn")), 1)
     ust.addWidget(_istatistik(_("Hız"), s["hiz"], _("6 iş parçacığı"), birim=_("parçacık/s")), 1)
     grafik = b.Kart(_("Yakınsama"), aciklama=_("Çevrim başına k ve etkin ortalama ± 1σ"),
                     eylem=b.ikon_dugmesi("download", _("Grafiği kaydet")))
@@ -309,19 +313,13 @@ def sonuclar(cekmece_acik=True):
     orta = QtWidgets.QHBoxLayout()
     orta.setSpacing(A["l"])
     orta.addWidget(grafik, 5)
-    sag = QtWidgets.QVBoxLayout()
-    sag.setSpacing(A["l"])
-    sag.addWidget(entropi)
-    orta.addLayout(sag, 3)
-    alt = QtWidgets.QHBoxLayout()
-    alt.setSpacing(A["l"])
-    alt.addWidget(guc, 3)
-    alt.addWidget(_cekmece(cekmece_acik), 5)
+    orta.addWidget(entropi, 3)
+    orta.addWidget(guc, 4)
     govde = QtWidgets.QVBoxLayout()
     govde.setSpacing(A["l"])
     govde.addLayout(ust)
     govde.addLayout(orta, 1)
-    govde.addLayout(alt, 1)
+    govde.addWidget(_cekmece(cekmece_acik))
     return sayfa(_("Sonuçlar"), _("Koşu tamamlandı · 28.09.2026 14:32 · statepoint.250.h5"), govde,
                  [b.ikincil_dugme(_("Klasörü aç"), "folder-open"),
                   b.ikincil_dugme(_("Rapor oluştur…"), "file-text")])

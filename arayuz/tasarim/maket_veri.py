@@ -81,7 +81,7 @@ SON_KULLANILANLAR = (("kor_taslak.json", "~/modeller", N_("2 saat önce")),
                      ("godiva_dogrulama.json", "~/tez", N_("3 gün önce")))
 
 SONUC = {"keff": "1.18342", "sigma": "0.00041", "pcm": "41", "hedef_pcm": "50",
-         "entropi": "7.921", "sure": N_("3 dk 12 sn"), "hiz": "52 400", "parcacik": "10 000",
+         "entropi": "7.921", "sure": "3:12", "hiz": "52 400", "parcacik": "10 000",
          "cevrim": "250 / 50"}
 
 GUNLUK = (

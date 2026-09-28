@@ -382,7 +382,8 @@ def test_maket_ve_galeri_kurulur():
     g = galeri.GaleriPenceresi()
     kontrol("galeri penceresi kuruldu", g.centralWidget() is not None)
     ekranlar = maket.ekranlar()
-    kontrol("5 maket ekrani", set(ekranlar) == {"kabuk", "baslangic", "demet", "hesap", "sonuclar"})
+    kontrol("maket ekranlari (5 + cekmece)", set(ekranlar) == {"kabuk", "baslangic", "demet", "hesap", "sonuclar",
+                                          "sonuclar_cekmece"})
     for ad, kur in ekranlar.items():
         w = kur()
         kontrol("maket %s kuruldu" % ad, w is not None)

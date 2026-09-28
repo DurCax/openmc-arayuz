@@ -98,12 +98,6 @@ class KafesCizimi(QtWidgets.QWidget):
                     p.setPen(QtGui.QPen(_r("vurgu"), 2))
                     p.setBrush(QtCore.Qt.NoBrush)
                     p.drawRoundedRect(h.adjusted(1, 1, -1, -1), 3, 3)
-        # 1/8 simetri kilavuzu
-        p.setPen(QtGui.QPen(_r("vurgu"), 1, QtCore.Qt.DashLine))
-        orta = x0 + self.n * adim / 2
-        p.drawLine(QtCore.QPointF(orta, y0), QtCore.QPointF(orta, y0 + self.n * adim))
-        p.drawLine(QtCore.QPointF(x0, y0 + self.n * adim / 2),
-                   QtCore.QPointF(x0 + self.n * adim, y0 + self.n * adim / 2))
 
 
 class KucukResim(QtWidgets.QWidget):

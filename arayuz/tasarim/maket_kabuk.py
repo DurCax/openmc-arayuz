@@ -141,8 +141,10 @@ def onizleme_paneli(dar=False):
     d.addWidget(KafesCizimi(), 1)
     gosterge = QtWidgets.QGridLayout()
     gosterge.setHorizontalSpacing(A["s"])
-    for i, (anahtar, metin) in enumerate((("yakit_cubugu", "UO2 %3.20"), ("kilavuz_boru", "Zircaloy-4"),
-                                          ("enstruman", "B4C"), ("su", "H2O + B"))):
+    for i, (anahtar, metin) in enumerate((("yakit_cubugu", _("Yakıt (UO2)")),
+                                          ("kilavuz_boru", _("Kılavuz boru")),
+                                          ("enstruman", _("Enstrüman")),
+                                          ("su", _("Su (H2O + B)")))):
         gosterge.addWidget(renk_kutusu(PARCA_RENGI[anahtar]), i // 2, 2 * (i % 2))
         e = QtWidgets.QLabel(metin)
         e.setObjectName("kucuk")
