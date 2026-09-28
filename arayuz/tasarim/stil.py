@@ -229,10 +229,12 @@ QTableWidget, QTableView, QListWidget, QListView, QTreeWidget, QTreeView {
 }
 QTableView:focus, QListView:focus, QTreeView:focus { border-color: %(odak)s; }
 QListView::item, QTreeView::item { padding: %(a_xs)spx %(a_s)spx; border: none; }
-QTableView::item { padding: 0 %(a_s)spx; border: none; }
 QListView::item:hover, QTreeView::item:hover { background: %(yuzey2)s; }
-QListView::item:selected, QTreeView::item:selected, QTableView::item:selected {
+QListView::item:selected, QTreeView::item:selected {
     background: %(vurgu_soluk)s; color: %(metin)s; }
+/* QTableView::item BILEREK stillenmez: ::item kurali modelin BackgroundRole
+   rengini (malzeme renk hucreleri) ezer ve hucre dolgusu sutunlari genisletir.
+   Secim rengi yukaridaki selection-* ozelliklerinden gelir. */
 QHeaderView { background: transparent; }
 QHeaderView::section {
     background: %(yuzey2)s; color: %(metin_soluk)s;

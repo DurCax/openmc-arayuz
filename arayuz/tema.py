@@ -160,6 +160,17 @@ def _inter_yolu():
     return os.path.join(yazi.FONT_DIZINI, "Inter-Regular.ttf")
 
 
+def _govde_yazisi(app, aile):
+    """Uygulama yazisi NOKTA boyutuyla kurulur (piksel tokenindan cevrilir):
+    mevcut kod f.setPointSizeF(f.pointSizeF() * k) yapar; piksel boyutlu yazida
+    pointSizeF() -1 doner ve boyut negatif olurdu."""
+    ekran = app.primaryScreen() if hasattr(app, "primaryScreen") else None
+    dpi = ekran.logicalDotsPerInchY() if ekran is not None else 96.0
+    f = QtGui.QFont(aile)
+    f.setPointSizeF(tokenlar.TIPOGRAFI["govde"][0] * 72.0 / (dpi or 96.0))
+    return f
+
+
 def uygula(app, ad=None, vurgu=None):
     """Temayi uygular. ad/vurgu verilmezse QSettings'ten okunur."""
     global _ETKIN, _VURGU, TEMALAR
@@ -180,9 +191,7 @@ def uygula(app, ad=None, vurgu=None):
     t = TEMALAR[ad]
     aile = yazi.yukle()
     app.setStyle("Fusion")
-    f = QtGui.QFont(aile)
-    f.setPixelSize(tokenlar.TIPOGRAFI["govde"][0])
-    app.setFont(f)
+    app.setFont(_govde_yazisi(app, aile))
     app.setPalette(_palet(t))
     app.setStyleSheet(_stil(t))
     _matplotlib_uydur(t, grafik_paleti(ad))

@@ -138,6 +138,30 @@ def test_qss_uyarisiz():
             tema.TEMALAR["koyu"]["vurgu"] in qss and tema.TEMALAR["acik"]["vurgu"] not in qss)
 
 
+def test_eski_ekran_uyumu():
+    print("\n[T4b] QSS: mevcut ekranlarin model renkleri korunur")
+    from PySide6 import QtGui, QtWidgets
+    from arayuz import tema
+    app = _qt()
+    onceki = tema.etkin()
+    try:
+        for ad in ("acik", "koyu"):
+            tema.uygula(app, ad)
+            t = QtWidgets.QTableWidget(1, 2)
+            oge = QtWidgets.QTableWidgetItem("")
+            oge.setBackground(QtGui.QColor("#ff0000"))
+            t.setItem(0, 0, oge)
+            t.resize(300, 120)
+            t.show()
+            app.processEvents()
+            r = t.visualItemRect(oge)
+            renk = t.viewport().grab().toImage().pixelColor(r.center()).name()
+            kontrol("tablo hucresi BackgroundRole rengi (%s)" % ad, renk == "#ff0000", "-> %s" % renk)
+            _sil(t)
+    finally:
+        tema.uygula(app, onceki)
+
+
 def test_yazi_tipi():
     print("\n[T5] YAZI: gomulu Inter yuklenir; mono secilir")
     _qt()
@@ -145,6 +169,13 @@ def test_yazi_tipi():
     kontrol("Inter yuklendi", yazi.aile() == "Inter", "-> %s" % yazi.aile())
     kontrol("mono aile bos degil", bool(yazi.mono_aile()), "-> %s" % yazi.mono_aile())
     kontrol("font('baslik') piksel boyutu", yazi.font("baslik").pixelSize() == 17)
+    from arayuz import tema
+    app = _qt()
+    tema.uygula(app, tema.etkin())
+    # Mevcut kod f.setPointSizeF(f.pointSizeF() * k) yapar: nokta boyutu olmali.
+    nokta = app.font().pointSizeF()
+    kontrol("uygulama yazisi nokta boyutlu (eski kodla uyumlu)", 8.0 <= nokta <= 12.0,
+            "-> %s" % nokta)
     lisans = os.path.join(yazi.FONT_DIZINI, "LICENSE.txt")
     kontrol("OFL lisansi yaninda", os.path.isfile(lisans)
             and "Open Font License" in open(lisans, encoding="utf-8").read())
@@ -407,6 +438,7 @@ def test_maket_ve_galeri_kurulur():
 
 
 HIZLI = [test_kontrast_wcag, test_token_olcekleri, test_tema_eski_anahtarlar, test_qss_uyarisiz,
+         test_eski_ekran_uyumu,
          test_yazi_tipi, test_ikonlar, test_tema_degisimi_ikon_ve_renk, test_kenar_cubugu,
          test_komut_paleti, test_bildirim, test_form_bilesenleri, test_maket_ve_galeri_kurulur]
 YAVAS = []
