@@ -278,7 +278,7 @@ def test_referans_eksik_demet_uyarisi():
     spec = _kor_spec_2x2()
     b = referans.guc_dagilimi_kontrol(spec)
     kontrol("tum demetlerde varken uyari yok",
-            not any("demet" in x.mesaj and "içermiyor" in x.mesaj for x in b))
+            not any("içermeyen" in x.mesaj for x in b))
     import copy
     s2 = copy.deepcopy(spec)
     d = copy.deepcopy(s2["demetler"][0])
@@ -288,7 +288,7 @@ def test_referans_eksik_demet_uyarisi():
     s2["kor"]["harita"] = ["AB", "AA"]
     s2["kor"]["anahtar"] = {"A": "d5", "B": "d5_bos"}
     b = referans.guc_dagilimi_kontrol(s2)
-    kontrol("eksik demet uyarisi", any("içermiyor" in x.mesaj for x in b),
+    kontrol("eksik demet uyarisi", any("içermeyen" in x.mesaj for x in b),
             "-> %r" % [x.mesaj for x in b])
 
 
