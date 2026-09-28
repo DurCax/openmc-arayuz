@@ -37,7 +37,9 @@ import math
 from PySide6 import QtCore, QtWidgets
 
 from cekirdek import sema, uygunluk
+from cekirdek.ceviri import _
 from arayuz import izgara
+from arayuz.kor_altigen import AltigenKorHaritasi
 from arayuz.ortak import SekmeTabani, baslik, ipucu, sayi, tamsayi
 
 # Sinir kosullarinin gorunen adlari (OpenMC anahtar sozcugu parantezde).
@@ -117,6 +119,9 @@ class KorSekmesi(SekmeTabani):
         self.ny.setToolTip("Haritanın satır sayısı. Büyütünce yeni hücreler "
                            "paletteki seçili parçayla dolar.")
         self.d_doldur = QtWidgets.QPushButton("Tümünü seçili parçayla doldur")
+        # --- kor haritasi (altigen_kafes; arayuz/kor_altigen.py) ---
+        # onay testlerde degistirilen self._onay_al'dan CAGRI ANINDA okunur
+        self.altigen_harita = AltigenKorHaritasi(lambda b, m: self._onay_al(b, m))
 
         # --- kuresel kabuklar (salt okunur) ---
         self.kabuk_tablo = QtWidgets.QTableWidget(0, 2)
@@ -195,8 +200,14 @@ class KorSekmesi(SekmeTabani):
         self.satir_adim = self._satir("Hücre adımı:", self.adim)
 
         # kor haritasi
+        # Kare ve altigen harita ayni kutuda; ture gore biri gorunur.
         self.kafes_kutu = QtWidgets.QGroupBox("Kor haritası")
-        kd = QtWidgets.QVBoxLayout(self.kafes_kutu)
+        dis_kd = QtWidgets.QVBoxLayout(self.kafes_kutu)
+        self.kare_harita = QtWidgets.QWidget()
+        kd = QtWidgets.QVBoxLayout(self.kare_harita)
+        kd.setContentsMargins(0, 0, 0, 0)
+        dis_kd.addWidget(self.kare_harita, 1)
+        dis_kd.addWidget(self.altigen_harita, 1)
         boyut = QtWidgets.QHBoxLayout()
         boyut.addWidget(QtWidgets.QLabel("Boyut:"))
         boyut.addWidget(self.nx)
@@ -324,6 +335,7 @@ class KorSekmesi(SekmeTabani):
         self.nx.valueChanged.connect(self._boyut_degisti)
         self.ny.valueChanged.connect(self._boyut_degisti)
         self.d_doldur.clicked.connect(self._tumunu_doldur)
+        self.altigen_harita.degisti.connect(self._altigen_boyandi)
 
     # ------------------------------------------------------------------
     def _satir(self, etiket, w):
@@ -393,7 +405,10 @@ class KorSekmesi(SekmeTabani):
         self._kutu_doldur(self.tb_emici, malzemeler, t.get("emici_malzeme"))
 
         self.adim.setValue(kor.get("adim") or 1.26)
-        self._harita_doldur()
+        if self._tur == "altigen_kafes":
+            self.altigen_harita.yukle(self.spec)
+        else:
+            self._harita_doldur()
         self._kabuklari_doldur()
 
         # yukseklik: tek secim
@@ -549,6 +564,12 @@ class KorSekmesi(SekmeTabani):
         if self._harita_yaz(self.izgara.adlar()):
             self._ozet_guncelle()
             self.bildir()
+
+    def _altigen_boyandi(self):
+        if self._yukleniyor or self.spec is None:
+            return
+        self._ozet_guncelle()
+        self.bildir()
 
     def _boyut_degisti(self, *_):
         if self._yukleniyor or self.spec is None:
@@ -820,8 +841,14 @@ class KorSekmesi(SekmeTabani):
                 (self.satir_adim, "adim" in alan)):
             for w in satir:
                 w.setVisible(gorunur)
-        self.satir_adim[0].setText("Demet adımı:" if tur == "kare_kafes" else "Hücre adımı:")
+        self.satir_adim[0].setText("Demet adımı:" if tur in sema.HARITALI_KORLAR
+                                   else "Hücre adımı:")
+        self.adim.setToolTip(_("Komşu demet merkezleri arası; altıgende düz yüzden düz "
+                               "yüze. En az demetin dış ölçüsü (kılıf dahil) kadar.")
+                             if tur == "altigen_kafes" else "")
         self.kafes_kutu.setVisible("harita" in alan)
+        self.kare_harita.setVisible(tur != "altigen_kafes")
+        self.altigen_harita.setVisible(tur == "altigen_kafes")
         self.tambur_kutu.setVisible("tambur" in alan)
         self.kabuk_kutu.setVisible("kabuklar" in alan)
 

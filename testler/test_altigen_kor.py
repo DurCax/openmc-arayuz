@@ -529,8 +529,9 @@ def test_altigen_kor_sekmesi():
     k.spec_yukle(s)
     k.show()
     hk = k.altigen_harita
-    kontrol("altigen harita kutusu gorunur, kare harita gizli",
-            hk.isVisibleTo(k) and not k.kafes_kutu.isVisibleTo(k))
+    kontrol("altigen harita gorunur, kare harita gizli (ayni 'Kor haritası' kutusu)",
+            hk.isVisibleTo(k) and k.kafes_kutu.isVisibleTo(k)
+            and not k.kare_harita.isVisibleTo(k))
     kontrol("izgara 3 halka, yonelim 'x'",
             hk.izgara.halka_sayisi == 3 and hk.izgara.yonelim == "x")
     kontrol("palette altigen demetler var, kare yok",
