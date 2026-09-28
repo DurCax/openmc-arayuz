@@ -1,0 +1,67 @@
+# =============================================================================
+#  openmc-arayuz -- paket tanimi
+#
+#  SURUM TEK YERDE: [project].version. Kod surumu cekirdek/surum.py uzerinden
+#  okur (kuruluysa paket meta verisi, degilse bu dosya).
+#
+#  KURULUM (conda ortaminda; OpenMC PyPI'da YOK, conda-forge'dan gelir):
+#      conda env create -f environment.yml && conda activate openmc-env
+#      pip install -e . --no-deps
+#  Ayrintilar: KURULUM.md
+# =============================================================================
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "openmc-arayuz"
+version = "2.0.0.dev0"
+description = "OpenMC ile reaktor modeli kurma, calistirma ve sonuc okuma arayuzu"
+readme = "README.md"
+requires-python = ">=3.11"
+# Lisans: tum haklari saklidir (LICENSE dosyasi Dalga 4'te eklenir).
+classifiers = [
+    "Private :: Do Not Upload",
+    "Programming Language :: Python :: 3",
+    "Operating System :: POSIX :: Linux",
+]
+# openmc (>=0.16.0,<0.17) BURADA YOK: PyPI'da yayimlanmiyor; conda-forge'dan
+# kurulur (environment.yml). Buraya yazilirsa `pip install` PyPI'da arayip
+# basarisiz olur. Testlerdeki referans degerler openmc 0.16.0 ile olculdu.
+dependencies = [
+    "numpy>=1.24",
+    "PySide6>=6.5",
+    "matplotlib>=3.7",
+    "pandas>=2.0",
+    "h5py>=3.8",
+    "uncertainties>=3.1",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=8.0", "pytest-xdist>=3.5"]
+ceviri = ["babel>=2.12"]
+
+[project.scripts]
+openmc-arayuz = "cekirdek.giris:gui"
+openmc-arayuz-kosu = "cekirdek.giris:kosu"
+
+[tool.setuptools.packages.find]
+include = ["cekirdek*", "arayuz*"]
+
+# -----------------------------------------------------------------------------
+# pytest: testler/test_*.py modullerindeki HIZLI/YAVAS listeleri kok
+# conftest.py tarafindan toplanir (pytest_pycollect_makemodule); pytest'in
+# kendi test_* islev kesfi bu dosyalarda kullanilmaz.
+# -----------------------------------------------------------------------------
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["testler"]
+addopts = "-ra --strict-markers"
+markers = [
+    "hizli: kosu gerektirmeyen hizli test (eski calistiricida --hizli)",
+    "yavas: Monte Carlo / uzun test (eski calistiricida tam mod)",
+    "veri: nukleer veri (OPENMC_CROSS_SECTIONS, tukenme zinciri) gerektirir; yoksa atlanir",
+]
+filterwarnings = [
+    "ignore::pytest.PytestReturnNotNoneWarning",
+]
