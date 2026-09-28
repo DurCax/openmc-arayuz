@@ -216,8 +216,10 @@ QCheckBox::indicator:hover, QRadioButton::indicator:hover { border-color: %(vurg
 QCheckBox::indicator:checked { background: %(vurgu)s; border-color: %(vurgu)s; image: url("%(onay)s"); }
 QCheckBox::indicator:disabled { background: %(yuzey2)s; border-color: %(kenar)s; }
 QCheckBox:focus, QRadioButton:focus { color: %(vurgu)s; }
-QRadioButton::indicator { border: 1px solid %(kenar_guclu)s; border-radius: 8px; background: %(yuzey1)s; }
-QRadioButton::indicator:checked { border: 5px solid %(vurgu)s; background: %(vurgu_metin)s; }
+QRadioButton::indicator { width: 14px; height: 14px; border: 1px solid %(kenar_guclu)s;
+                          border-radius: 8px; background: %(yuzey1)s; }
+QRadioButton::indicator:checked { width: 6px; height: 6px; border: 5px solid %(vurgu)s;
+                                  background: %(vurgu_metin)s; }
 """
 
 _LISTELER = """
@@ -228,6 +230,7 @@ QTableWidget, QTableView, QListWidget, QListView, QTreeWidget, QTreeView {
 }
 QTableView:focus, QListView:focus, QTreeView:focus { border-color: %(odak)s; }
 QListView::item, QTreeView::item { padding: %(a_xs)spx %(a_s)spx; border: none; }
+QTableView::item { padding: 0 %(a_s)spx; border: none; }
 QListView::item:hover, QTreeView::item:hover { background: %(yuzey2)s; }
 QListView::item:selected, QTreeView::item:selected, QTableView::item:selected {
     background: %(vurgu_soluk)s; color: %(metin)s; }
@@ -312,6 +315,11 @@ QLabel#kucuk { font-size: %(f_kucuk)spx; color: %(metin_soluk)s; }
 QLabel#mono { %(mono)s font-size: %(f_kucuk)spx; }
 QLabel#sayiBuyuk { %(mono)s font-size: %(f_sayi)spx; font-weight: 500; color: %(metin)s; }
 QLabel#birim { color: %(metin_soluk)s; }
+
+QLabel#govdeVurgulu { font-weight: 500; }
+QFrame#listeSatiri { background: transparent; border: 1px solid transparent; border-radius: %(r_o)spx; }
+QFrame#listeSatiri:hover { background: %(yuzey2)s; }
+QFrame#listeSatiri[secili="true"] { background: %(vurgu_soluk)s; border-color: %(vurgu_soluk)s; }
 
 /* ---- Rozet ---- */
 QLabel[rozet] { border-radius: %(r_k)spx; padding: 1px %(a_s)spx; font-size: %(f_kucuk)spx;

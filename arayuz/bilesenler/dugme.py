@@ -18,8 +18,13 @@ from arayuz.tasarim import tokenlar
 from arayuz.tasarim.ikon import ikon_bagla
 
 
+# QPushButton QSS altinda ikon ile metin arasina bosluk koymaz; iki ince
+# bosluk (U+2009) gorsel araligi verir. Erisilebilir ad bosluksuz metindir.
+_IKON_ARALIGI = "\u2009\u2009"
+
+
 def _kur(metin, ikon, ipucu, ikon_rengi, tur=None, ad=None):
-    d = QtWidgets.QPushButton(metin)
+    d = QtWidgets.QPushButton((_IKON_ARALIGI + metin) if ikon and metin else metin)
     if ad:
         d.setObjectName(ad)
     if tur:

@@ -153,9 +153,12 @@ TEMA_ADLARI = {"acik": N_("Açık"), "koyu": N_("Koyu")}
 # Renk koruge uygun kategorik grafik paleti: Okabe & Ito (2008), "Color
 # Universal Design". Sira temaya gore: acik zeminde sari (#F0E442) okunmaz,
 # koyu zeminde koyu mavi (#0072B2) zayif kalir -- sona alinir.
+OKABE_ITO = {"turuncu": "#E69F00", "gok": "#56B4E9", "yesil": "#009E73", "sari": "#F0E442",
+             "mavi": "#0072B2", "kiremit": "#D55E00", "mor": "#CC79A7", "siyah": "#000000"}
+_O = OKABE_ITO
 GRAFIK_PALETI = {
-    "acik": ("#0072B2", "#D55E00", "#009E73", "#CC79A7", "#E69F00", "#56B4E9", "#000000"),
-    "koyu": ("#56B4E9", "#E69F00", "#009E73", "#CC79A7", "#F0E442", "#D55E00", "#0072B2"),
+    "acik": (_O["mavi"], _O["kiremit"], _O["yesil"], _O["mor"], _O["turuncu"], _O["gok"], _O["siyah"]),
+    "koyu": (_O["gok"], _O["turuncu"], _O["yesil"], _O["mor"], _O["sari"], _O["kiremit"], _O["mavi"]),
 }
 # Surekli haritalar (guc, aki): algisal olarak duzgun ve renk koruge uygun.
 GRAFIK_HARITASI = "cividis"

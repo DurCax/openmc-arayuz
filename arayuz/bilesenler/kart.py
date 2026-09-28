@@ -49,6 +49,8 @@ class Kart(QtWidgets.QFrame):
         self.govde = QtWidgets.QVBoxLayout()
         self.govde.setSpacing(A["s"])
         dis.addLayout(self.govde, 1)
+        # Govdede buyuyen oge yoksa bos alan altta kalsin (baslik ortada yuzmesin).
+        dis.addStretch(0)
 
     def ekle(self, widget, esnek=0):
         self.govde.addWidget(widget, esnek)
