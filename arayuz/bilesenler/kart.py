@@ -43,9 +43,12 @@ class Kart(QtWidgets.QFrame):
             self._ust.addWidget(eylem)
         self.baslik_etiketi.setVisible(bool(baslik))
         self.aciklama_etiketi.setVisible(bool(aciklama))
-        if baslik or eylem is not None:
-            dis.addLayout(self._ust)
-            self.setAccessibleName(baslik or "")
+        # Baslik satiri HER ZAMAN yerlesime girer (bossa yer kaplamaz): sahipsiz
+        # kalan bir QLayout Python'a ait olur ve widget silinirken uygulama
+        # geneli olay suzgeci varken (ortak.tekerlek_korumasi_kur) cokerdi.
+        dis.addLayout(self._ust)
+        if baslik:
+            self.setAccessibleName(baslik)
         self.govde = QtWidgets.QVBoxLayout()
         self.govde.setSpacing(A["s"])
         dis.addLayout(self.govde, 1)

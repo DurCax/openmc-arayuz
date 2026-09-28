@@ -192,7 +192,6 @@ QComboBox QAbstractItemView { background: %(yuzey1)s; border: 1px solid %(kenar_
     border-radius: %(r_o)spx; padding: %(a_xs)spx; outline: 0;
     selection-background-color: %(vurgu_soluk)s; selection-color: %(metin)s; }
 
-QSpinBox, QDoubleSpinBox { padding-right: 24px; }
 QSpinBox::up-button, QDoubleSpinBox::up-button,
 QSpinBox::down-button, QDoubleSpinBox::down-button {
     subcontrol-origin: border; width: 20px; border: none; background: transparent; }

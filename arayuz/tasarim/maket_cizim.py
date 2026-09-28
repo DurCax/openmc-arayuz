@@ -27,6 +27,16 @@ def _r(ad):
     return QtGui.QColor(tema.renk(ad))
 
 
+# (tema koyu mu) -> (diger parca, yakit) hucre dolgu opakligi: koyu zeminde
+# ayni opaklik camurlu gorunur, daha yuksek olmali.
+_IZGARA_OPAKLIK = {False: (90, 46), True: (150, 95)}
+
+
+def _koyu_mu():
+    from arayuz import tema
+    return tema.etkin() == "koyu"
+
+
 def _hucre_turu(i, j):
     if (i, j) in ENSTRUMAN:
         return "enstruman"
@@ -88,7 +98,7 @@ class KafesCizimi(QtWidgets.QWidget):
                 tur = _hucre_turu(i, j)
                 h = QtCore.QRectF(x0 + j * adim + 1, y0 + i * adim + 1, adim - 2, adim - 2)
                 zemin = QtGui.QColor(PARCA_RENGI[tur])
-                zemin.setAlpha(46 if tur == "yakit_cubugu" else 90)
+                zemin.setAlpha(_IZGARA_OPAKLIK[_koyu_mu()][tur == "yakit_cubugu"])
                 p.setPen(QtCore.Qt.NoPen)
                 p.setBrush(zemin)
                 p.drawRoundedRect(h, 3, 3)

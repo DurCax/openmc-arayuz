@@ -303,28 +303,40 @@ def test_komut_paleti():
     _sil(p)
 
 
+def _bekle(kosul, en_cok_ms):
+    """kosul() dogru olana ya da sure dolana dek olay dongusunu dondurur."""
+    from PySide6.QtTest import QTest
+    for _i in range(en_cok_ms // 20):
+        if kosul():
+            return True
+        QTest.qWait(20)
+    return kosul()
+
+
 def test_bildirim():
     print("\n[T10] BILDIRIM: sag altta, yigilir, kendiliginden kapanir")
     from PySide6 import QtWidgets
-    from PySide6.QtTest import QTest
     from arayuz.bilesenler import Bildirim, bildir
     _qt()
     p = QtWidgets.QMainWindow()
     p.resize(800, 600)
     p.show()
-    b1 = bildir(p, "Kaydedildi", "basari", 150)
+    # Zamanlama yuk altinda (xdist) kayar: sure uzun tutulur, bekleme _bekle ile.
+    b1 = bildir(p, "Kaydedildi", "basari", 600)
     b2 = bildir(p, "Doğrulama: 2 uyarı", "uyari", 0)
-    QTest.qWait(10)
     kontrol("iki bildirim gorunur", b1.isVisible() and b2.isVisible())
     kontrol("sag altta", b1.geometry().right() > 700 and b1.geometry().bottom() > 500)
     kontrol("yigilir (ust uste binmez)", not b1.geometry().intersects(b2.geometry()))
     kontrol("erisilebilir ad = metin", "Kaydedildi" in b1.accessibleName())
-    QTest.qWait(450)
-    kalan = [b for b in p.findChildren(Bildirim) if b.isVisible()]
+
+    def _acik():
+        return [b for b in p.findChildren(Bildirim) if b.isVisible()]
+    _bekle(lambda: len(_acik()) == 1, 5000)
+    kalan = _acik()
     kontrol("sure dolunca kapanir; sure=0 kalir", kalan == [b2], "-> %d" % len(kalan))
     b2.kapat()
-    QTest.qWait(10)
-    kontrol("kapat() ile kapanir", not [b for b in p.findChildren(Bildirim) if b.isVisible()])
+    _bekle(lambda: not _acik(), 2000)
+    kontrol("kapat() ile kapanir", not _acik())
     _sil(p)
 
 
@@ -376,9 +388,12 @@ def test_form_bilesenleri():
 
 
 def test_maket_ve_galeri_kurulur():
-    print("\n[T12] GALERI ve MAKETLER kurulur (PNG yazmadan)")
+    print("\n[T12] GALERI ve MAKETLER kurulur ve silinir (PNG yazmadan)")
+    from arayuz.ortak import tekerlek_korumasi_kur
     from arayuz.tasarim import galeri, maket
-    _qt()
+    # Gercek uygulamadaki gibi uygulama geneli Python olay suzgeci: sahipsiz
+    # (Python'a ait) bir QLayout widget silinirken bu suzgecle COKUYORDU.
+    tekerlek_korumasi_kur(_qt())
     g = galeri.GaleriPenceresi()
     kontrol("galeri penceresi kuruldu", g.centralWidget() is not None)
     ekranlar = maket.ekranlar()
