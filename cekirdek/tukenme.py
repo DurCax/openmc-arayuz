@@ -538,8 +538,10 @@ def kosu_dizini(spec, proje_yolu=None):
 
 def _fizik_kismi(spec):
     """
-    Sonucu etkileyen kisim. ad/aciklama/calistirma ve tukenme.var cikarilir:
-    tukenmeyi kapatip acmak sonucu eskitmez.
+    Sonucu etkileyen kisim. ad/aciklama/calistirma, tukenme.var ve
+    tukenme.izlenen cikarilir: tukenmeyi kapatip acmak ya da izlenen nuklid
+    secimini degistirmek sonucu eskitmez (izlenen yalnizca h5'ten hangi
+    nuklidlerin OKUNACAGINI belirler; kosu butun zinciri izler).
 
     Karsilastirma METIN (json/hash) ile degil Python esitligiyle yapilir:
     JSON'da 3 ile 3.0 farkli metindir ama ayni sayidir; hash kullanmak
@@ -549,6 +551,7 @@ def _fizik_kismi(spec):
     sade = {k: copy.deepcopy(v) for k, v in sema.tamamla(spec).items()
             if k not in _FIZIK_DISI}
     sade.get("tukenme", {}).pop("var", None)
+    sade.get("tukenme", {}).pop("izlenen", None)
     sade.pop("surum", None)
     return sade
 

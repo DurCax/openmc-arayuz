@@ -350,6 +350,9 @@ def test_tukenme_eskime():
         kontrol("ad / aciklama / kosu dizini degisti -> guncel (fizik degil)",
                 durum(lambda t: (t.update(ad="baska", aciklama="x"),
                                  t["calistirma"].update(dizin="y", is_parcacigi=3)))[0] == "guncel")
+        kontrol("izlenen nuklid secimi degisti -> guncel (fizik degil, yalniz okuma)",
+                durum(lambda t: t["tukenme"].update(izlenen=["Pu238", "Am241"]))
+                == ("guncel", []))
         kontrol("tukenmeyi kapatip acmak eskitmez",
                 durum(lambda t: t["tukenme"].update(var=False))[0] == "guncel")
         kontrol("3 ile 3.0 ayni sayi -> guncel",

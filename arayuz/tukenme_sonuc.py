@@ -7,7 +7,7 @@
  cekirdek.tukenme.sonuc_oku() ciktisidir. Izlenen nuklid secimi degisince
  gosterilen sonuc AYNI h5'ten yeniden okunur (kosu tekrarlanmaz; Results
  onbellekte). Izlenen nuklidler fizik degildir: secim degisti diye sonuc
- "eski" sayilmaz (_izlenensiz_eskime).
+ "eski" sayilmaz (cekirdek.tukenme._fizik_kismi izlenen'i dislar).
 
  CSV: zaman [gun], yanma [MWd/kg], k, sigma ve her malzeme x nuklid icin atom
  sayisi ve yogunluk [atom/b-cm]. Ondalik ayirici NOKTA, alan ayirici virgul;
@@ -159,24 +159,6 @@ class _Isci(QtCore.QThread):
             self.bitti.emit(self._anahtar, e)
 
 
-def _izlenensiz_eskime(spec, dizin):
-    """
-    tukenme.eskime, ama izlenen nuklidler fizik degildir: secim degisti diye
-    sonuc "eski" sayilmaz (yalnizca hangi nuklidlerin okunacagini belirler).
-    """
-    kayit = _tk._kayit_oku(dizin)
-    if kayit is None or not spec:
-        return _tk.eskime(spec, dizin)
-    kopya = copy.deepcopy(spec)
-    t = kopya.setdefault("tukenme", {})
-    kayit_t = kayit.get("tukenme") or {}
-    if "izlenen" in kayit_t:
-        t["izlenen"] = kayit_t["izlenen"]
-    else:
-        t.pop("izlenen", None)
-    return _tk.eskime(kopya, dizin)
-
-
 class SonucBolumu:
     """
     TukenmeSekmesi'nin sonuc bolumu (karisim): onceki kosunun okunmasi,
@@ -269,7 +251,7 @@ class SonucBolumu:
         if not self._onceki or self._surec is not None:
             return
         dizin = os.path.dirname(self._onceki["h5"])
-        durum, farklar = _izlenensiz_eskime(self.spec, dizin)
+        durum, farklar = _tk.eskime(self.spec, dizin)
         tarih = time.strftime("%d.%m.%Y %H:%M", time.localtime(self._onceki["tarih"]))
         kayit = _tk._kayit_oku(dizin) or {}
         beklenen = len((kayit.get("tukenme") or {}).get("adimlar") or [])
