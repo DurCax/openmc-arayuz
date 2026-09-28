@@ -58,7 +58,7 @@ IZINLI = {  # olculen: 31 kayit, 26 islev (28.09.2026; sabit atama kalibi ekleni
     "nuklid_enerji_tavani": 1,
     "ornek_listesi": 1,
     "sab_onerileri": 1,
-    "sonuc_oku": 4,
+    "sonuc_oku": 3,
     "tukenme_ayirma_anlamli": 1,
 }
 

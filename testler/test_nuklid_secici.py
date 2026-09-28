@@ -210,7 +210,7 @@ def _pwr_tukenme():
 
 def _izlenen_bulgulari(spec):
     from cekirdek import dogrula as dg
-    return [b for b in dg.tukenme_kontrol(spec) if "nüklid" in b.mesaj]
+    return [b for b in dg.tukenme_kontrol(spec) if "izlenen" in b.mesaj]
 
 
 def test_dogrulama_yazim_hatasi():
@@ -242,7 +242,7 @@ def test_dogrulama_yazim_hatasi():
             os.environ["OPENMC_CHAIN_FILE"] = eski
     kontrol("zincir yokken: zincir hatasi var, izlenen hatasi yok",
             any("zincir" in b.mesaj for b in hepsi)
-            and not any("nüklid" in b.mesaj for b in hepsi),
+            and not any("izlenen" in b.mesaj for b in hepsi),
             "-> %r" % [b.mesaj for b in hepsi])
 
 
