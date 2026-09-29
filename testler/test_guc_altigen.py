@@ -433,12 +433,21 @@ def test_altigen_kor_mc(gecici):
     dm = f.get("demetler") or {}
     cevre = [dm[(0, i)]["ortalama"] for i in range(6) if (0, i) in dm]
     ort = sum(c[0] for c in cevre) / max(len(cevre), 1)
-    sapma = [abs(c[0] - ort) / c[1] if c[1] else float("inf") for c in cevre]
+    # D1-Kapanis M-2: olcut BAGIL (ortalamadan <= %2). Once "3 sigma" idi; ama
+    # tally sigmasi ozdeger hesabinda cevrim korelasyonu ve yakinsamamis
+    # kaynak yuzunden IYIMSERDIR (guc.py basligi: gercek sacilma ~20 kat).
+    # Simetrik demetlerin esitligini iyimser bir sigmaya baglamak testi hem
+    # kirilgan (gercek fark sigmayi asar) hem anlamsiz (sigma buyurse her sey
+    # gecer) yapar. Olculdu (29.09, D1-Kapanis): en buyuk sapma %0.81 (6 cevre
+    # demeti 0.836-0.848; tally sigmasi ~0.0033 = %0.4). %2 bunun ~2.5 kati,
+    # haritalama hatasinin (merkez/cevre karismasi: F_demet 1.65 vs 0.84)
+    # ise cok altindadir.
+    bagil = [abs(c[0] / ort - 1.0) if ort else float("inf") for c in cevre]
     print("  F_dH = %.4f, F_demet = %.4f, cevre ortalamalari %s"
           % (f.get("F_dH", float("nan")), f.get("F_demet") or float("nan"),
              ["%.4f±%.4f" % c for c in cevre]))
-    kontrol("6 cevre demeti birbirine 3 sigma icinde", len(cevre) == 6 and max(sapma) < 3.0,
-            "-> maks %.2f sigma" % max(sapma or [float("inf")]))
+    kontrol("6 cevre demeti ortalamadan <= %2", len(cevre) == 6 and max(bagil) <= 0.02,
+            "-> maks %%%.2f" % (100.0 * max(bagil or [float("inf")])))
     kontrol("F_demet > 1 (merkez sicak)", (f.get("F_demet") or 0) > 1.0)
 
 

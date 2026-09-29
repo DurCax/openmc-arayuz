@@ -147,6 +147,8 @@ def guc_dagilimi_kontrol(spec):
             "uyari", yer,
             "yalnızca %d eksenel dilim — F_q olduğundan küçük çıkar" % dilim,
             "Kaba dilimler eksenel tepeyi ortalar. En az 10–20 dilim kullanın."))
+    if h and dilim > 1:
+        bulgular.extend(_guc_dilim_hizasi(spec, cubuk_ad, dilim, yer))
 
     tg = g.get("toplam_guc")
     if tg is not None:
@@ -162,6 +164,57 @@ def guc_dagilimi_kontrol(spec):
     return bulgular
 
 
+# Dilim siniri ile katman siniri arasindaki fark (dilim kalinligi cinsinden)
+# bundan kucukse hizali sayilir.
+_DILIM_HIZA_TOL = 1e-6
+
+
+def _hedef_katman_durumu(spec, cubuk_ad):
+    """[(z_alt, z_ust, hedef cubuk bu katmanda mi)] ya da None (katmanlama yok)."""
+    from cekirdek import kurucu
+    kor = spec["kor"]
+    katmanlar = sema.eksenel_katmanlar(kor)
+    if katmanlar is None:
+        return None
+    return [(z0, z1, any(kurucu._iceriyor_mu(spec, x, cubuk_ad)
+                         for x in sema.katman_adaylari(kor, k)))
+            for z0, z1, k in katmanlar]
+
+
+def _guc_dilim_hizasi(spec, cubuk_ad, dilim, yer):
+    """
+    M-1 (profesor denetimi): eksenel mesh hedef cubugun ARALIGINI kapsar
+    (kurucu.cubuk_eksenel_aralik). Hedef cubuk kesintili katmanlardaysa
+    (arada cubuksuz katman) ve bir dilim siniri, cubuklu / cubuksuz katman
+    sinirina denk gelmiyorsa o dilim KISMEN BOS olur: tepe_faktorleri yalniz
+    tamamen bos dilimleri dislar, kismen bos dilim ortalamayi dusurur ve F_q
+    birkac % siser. Hizalama: her durum degisim siniri z icin
+    (z - z_alt) / dz tamsayiya yakin mi.
+    """
+    from cekirdek import kurucu
+    from cekirdek.ceviri import _
+    durum = _hedef_katman_durumu(spec, cubuk_ad)
+    aralik = kurucu.cubuk_eksenel_aralik(spec, cubuk_ad)
+    if not durum or not aralik:
+        return []
+    z_alt, z_ust = aralik
+    dz = (z_ust - z_alt) / dilim
+    sinirlar = [a[1] for a, b in zip(durum, durum[1:])
+                if a[2] != b[2] and z_alt < a[1] < z_ust]
+    kayik = [z for z in sinirlar
+             if abs((z - z_alt) / dz - round((z - z_alt) / dz)) > _DILIM_HIZA_TOL]
+    if not kayik:
+        return []
+    return [Bulgu(
+        "uyari", yer,
+        _("eksenel dilim sınırları katman sınırlarıyla hizalı değil (z = %s cm); "
+          "F_q birkaç %% şişebilir — dilim sayısını katmanlara göre seçin")
+        % ", ".join("%g" % z for z in kayik),
+        _("Hedef çubuk bazı katmanlarda yok; %d dilimle (%.4g cm) bir dilim hem "
+          "çubuklu hem çubuksuz katmana düşer ve ortalamayı düşürür. Katman "
+          "kalınlıklarının ortak böleni olan bir dilim kalınlığı seçin.") % (dilim, dz))]
+
+
 def _guc_cok_tur_kontrol(spec, cubuk_ad, yer):
     """
     Guc tally'si TEK cubuk tanimina baglidir (cok turlu tally Dalga 2'de).
@@ -169,19 +222,40 @@ def _guc_cok_tur_kontrol(spec, cubuk_ad, yer):
     F_dH / F_q yalniz hedef cubugu kapsar: uyari. Tek turlu modelde uyari YOK.
     "Fisil ve kafeste tekrarlanan" olcutu arayuzun hedef listesiyle aynidir
     (uygunluk.guc_cubuklari).
+    L-3: diger tur hedefle HICBIR eksenel katmani paylasmiyorsa (ayni cubugun
+    uc parcasi, ornek blanket ortusu) radyal harita eksik degildir: bilgi.
     """
     from cekirdek.ceviri import _
     digerleri = [c for c in uygunluk.guc_cubuklari(spec) if c != cubuk_ad]
     if not digerleri:
         return []
-    return [Bulgu(
-        "uyari", yer,
-        _("F_ΔH yalnız '%s' çubuğunu kapsar — modelde yakıt içeren başka çubuk türleri "
-          "de var (%s)") % (cubuk_ad, ", ".join(digerleri)),
-        _("Güç dağılımı tek bir çubuk tanımının örnekleri üzerinden sayılır; diğer "
-          "türlerin çubukları haritada yoktur ve en sıcak çubuk onlardan biri "
-          "olabilir. Mutlak güç, hedef çubukların model fisyon enerjisindeki "
-          "payıyla dağıtılır."))]
+    hedef = _hedef_katman_durumu(spec, cubuk_ad)
+    ayri = []
+    if hedef is not None:
+        for c in digerleri:
+            diger = _hedef_katman_durumu(spec, c)
+            if not any(h[2] and d[2] for h, d in zip(hedef, diger)):
+                ayri.append(c)
+    ayni = [c for c in digerleri if c not in ayri]
+    bulgular = []
+    if ayni:
+        bulgular.append(Bulgu(
+            "uyari", yer,
+            _("F_ΔH yalnız '%s' çubuğunu kapsar — modelde yakıt içeren başka çubuk "
+              "türleri de var (%s)") % (cubuk_ad, ", ".join(ayni)),
+            _("Güç dağılımı tek bir çubuk tanımının örnekleri üzerinden sayılır; diğer "
+              "türlerin çubukları haritada yoktur ve en sıcak çubuk onlardan biri "
+              "olabilir. Mutlak güç, hedef çubukların model fisyon enerjisindeki "
+              "payıyla dağıtılır.")))
+    if ayri:
+        bulgular.append(Bulgu(
+            "bilgi", yer,
+            _("'%s' yalnız ayrı eksenel katmanlarda (%s): güç haritası '%s' çubuğunun "
+              "katmanlarını kapsar") % (", ".join(ayri), _("örtü, uç parçası"), cubuk_ad),
+            _("Bu türler hedef çubukla aynı katmanda bulunmaz; radyal harita eksik "
+              "değildir. Onların gücü haritada görünmez ve mutlak güç hedef "
+              "çubukların model fisyon enerjisindeki payıyla dağıtılır.")))
+    return bulgular
 
 
 # Guc tally'sinin bin sayisi (ornek x eksenel dilim) bunu asarsa sonuc okuma

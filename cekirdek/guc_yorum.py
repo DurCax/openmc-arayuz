@@ -101,6 +101,9 @@ def _mutlak_satirlari(mutlak, hedef_payi_hata=None):
         if lm > 500:
             satirlar.append("  Sınırın üstünde: tipik PWR çizgisel güç "
                             "sınırı ~400–500 W/cm.")
+    satirlar.append(_("  Not: kappa-fission, gama ısınmasının yakıt dışında (zarf, "
+                      "soğutucu) bırakılan kısmını da (PWR'da ~%2–3) çubuklara "
+                      "yazar; çubuk gücü bu oranda büyük çıkar."))
     return satirlar
 
 

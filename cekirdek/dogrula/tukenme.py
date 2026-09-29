@@ -165,6 +165,8 @@ def _hacimsiz_zehir_bulgulari(spec):
     return [Bulgu("uyari", "tukenme/%s" % ad,
                   _("yanabilir zehir '%s' tükenmeye katılmıyor: %s") % (ad, ayrinti),
                   _("Hacmi analitik hesaplanamıyor; bu malzeme koşu boyunca taze "
-                    "kalır. Yanması önemliyse onu kesin hacimli bir çubuk bölgesine "
+                    "kalır. Taze kalan emici ömür sonunda kontrol değerini "
+                    "olduğundan büyük gösterir (kapanma payı açısından iyimser). "
+                    "Yanması önemliyse onu kesin hacimli bir çubuk bölgesine "
                     "yerleştirin."))
             for ad, ayrinti in _tk.hacimsiz_zehirler(spec).items()]
