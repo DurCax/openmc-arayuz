@@ -340,6 +340,11 @@ def _malzeme_hacmi(spec, ad, dilimler):
                 "ayrinti": "hacmi kesin değil: " + "; ".join(sorunlar)}
     if V > 0:
         return {"hacim": V, "yontem": "analitik", "ayrinti": "; ".join(parcalar)}
+    from cekirdek import uygunluk
+    if ad in (uygunluk.geometri_icerigi(spec).get("malzeme") or set()):
+        # geometride var ama analitik yolu yok (or. kontrol tamburu emicisi)
+        return {"hacim": None, "yontem": tukenme_hacim.KESIN_DEGIL,
+                "ayrinti": "bu yerleşim için analitik hacim yok (ör. kontrol tamburu)"}
     return {"hacim": None, "yontem": "yok", "ayrinti": "malzeme geometride bulunamadı"}
 
 
@@ -365,9 +370,11 @@ def hacimler(spec):
 
 
 def hacimsiz_zehirler(spec):
-    """{ad: ayrinti}: yanabilir zehir ama hacmi kesin degil -> tukenmeye katilmaz."""
+    """{ad: ayrinti}: geometride yer alan yanabilir zehir ama hacmi kesin degil ->
+    tukenmeye katilmaz. Geometride hic olmayan (tanimli ama kullanilmayan)
+    zehir burada yoktur: yakilacak bir sey yok."""
     return {ad: v["ayrinti"] for ad, v in _hacim_tablosu(spec).items()
-            if not v["hacim"] and not v["zorunlu"]}
+            if not v["hacim"] and not v["zorunlu"] and v["yontem"] != "yok"}
 
 
 def stokastik_hacimler(spec, adlar, orneklem=2_000_000, dizin=None):
