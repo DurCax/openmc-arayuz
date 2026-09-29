@@ -35,6 +35,7 @@ from cekirdek.ceviri import _
 
 KOK_HUCRE_SUTUNU = ("level 1", "cell", "id")
 _GORELI_TOL = 1e-6
+_ACI_TOL = 1e-6          # derece; bundan yakin iki duzlem normali ayni dogrultu
 _MAKS_HALKA = 64
 
 
@@ -70,18 +71,32 @@ def _yarim_uzaylar(bolge):
 
 
 def _dogrultu_gruplari(duzlemler):
-    """{aci (derece, [0,180)): [u yonunde isaretli uzaklik, ...]}."""
-    gruplar = {}
+    """
+    {aci (derece, [0,180)): [u yonunde isaretli uzaklik, ...]}.
+    Acilar TOLERANSLA kumelenir (sirala, ardisik fark < _ACI_TOL derece ise ayni
+    dogrultu; anahtar kumenin ilk acisi). Eskiden round(aci, 6) anahtardi:
+    yuvarlama sinirinin iki yanindaki iki paralel duzlem (60.0000004 /
+    60.0000006) ayri dogrultu sayiliyor, altigen hucre taninmiyordu.
+    """
+    kayitlar = []
     for s in duzlemler:
         a, b, c, d = float(s.a), float(s.b), float(s.c), float(s.d)
         boy = math.hypot(a, b)
         if abs(c) > _GORELI_TOL or boy == 0.0:
             return None
         aci = math.degrees(math.atan2(b, a)) % 180.0
-        aci = round(aci, 6) % 180.0
-        ux, uy = math.cos(math.radians(aci)), math.sin(math.radians(aci))
+        if aci > 180.0 - _ACI_TOL:          # 180'e yakin = 0 dogrultusu
+            aci -= 180.0
+        kayitlar.append((aci, a, b, d, boy))
+    kayitlar.sort(key=lambda k: k[0])
+    gruplar, temsil, onceki = {}, None, None
+    for aci, a, b, d, boy in kayitlar:
+        if onceki is None or aci - onceki >= _ACI_TOL:
+            temsil = aci
+        onceki = aci
+        ux, uy = math.cos(math.radians(temsil)), math.sin(math.radians(temsil))
         isaret = 1.0 if (a * ux + b * uy) > 0 else -1.0
-        gruplar.setdefault(aci, []).append(isaret * d / boy)
+        gruplar.setdefault(temsil, []).append(isaret * d / boy)
     return gruplar
 
 

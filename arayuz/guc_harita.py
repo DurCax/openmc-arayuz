@@ -142,8 +142,14 @@ class GucHaritaWidget(QtWidgets.QWidget):
         self.dagilim = g.get("dagilim")
         self.faktorler = g.get("faktorler")
         self.korunum = g.get("korunum")
-        self.korunum_notlari = [g[a] for a in ("korunum_hata", "korunum_notu") if g.get(a)]
+        # korunum_hata ham istisna metnidir (onek gerekir); korunum_notu kendi
+        # basina tam cumledir ("... denetlenemedi ...") -- onek eklenmez.
+        self.korunum_notlari = (
+            [_("Toplamın korunumu denetlenemedi: %s") % g["korunum_hata"]]
+            if g.get("korunum_hata") else []) + (
+            [g["korunum_notu"]] if g.get("korunum_notu") else [])
         self.hedef_payi = g.get("hedef_payi")
+        self.hedef_payi_hata = g.get("hedef_payi_hata")
         self.mutlak = None
         if self.faktorler and spec:
             sg = spec.get("guc_dagilimi") or {}
@@ -205,8 +211,9 @@ class GucHaritaWidget(QtWidgets.QWidget):
                       % ("#1e6b3a" if iyi else "#8b1a1a", self.korunum,
                          "tamam" if iyi else "bozuk, haritaya güvenmeyin"))
         for not_metni in getattr(self, "korunum_notlari", []):
-            metin += "<br>" + html.escape(_("Toplamın korunumu denetlenemedi: %s") % not_metni)
-        satirlar = _guc.yorumla(f, self.mutlak, getattr(self, "hedef_payi", None))
+            metin += "<br>" + html.escape(not_metni)
+        satirlar = _guc.yorumla(f, self.mutlak, getattr(self, "hedef_payi", None),
+                                hedef_payi_hata=getattr(self, "hedef_payi_hata", None))
         metin += "<br><br>" + "<br>".join("&bull; " + s.strip() for s in satirlar)
         self.ozet.setText(metin)
 

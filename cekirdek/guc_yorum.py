@@ -75,7 +75,9 @@ def _eksenel_satirlari(faktorler):
     return satirlar
 
 
-def _mutlak_satirlari(mutlak):
+def _mutlak_satirlari(mutlak, hedef_payi_hata=None):
+    """hedef_payi_hata: pay tally'si OKUNAMADI (kosucu guc["hedef_payi_hata"]);
+    verilmezse pay yoklugu eski kosu (tally yok) sayilir."""
     if not mutlak:
         return []
     satirlar = ["Çubuk başına ortalama %.1f W, en sıcak çubuk %.1f W."
@@ -84,6 +86,10 @@ def _mutlak_satirlari(mutlak):
         satirlar.append(_("  Modelin fisyon enerjisinin %%%.1f'i bu çubuklarda "
                           "(%.4g W); kalanı diğer fisil bölgelerde.")
                         % (100.0 * mutlak["hedef_payi"], mutlak["hedef_guc"]))
+    elif hedef_payi_hata:
+        satirlar.append(_("  Uyarı: güç payı tally'si okunamadı: %s. Toplam gücün "
+                          "tamamı bu çubuklara yazıldı; başka fisil bölge varsa "
+                          "çubuk gücü olduğundan büyüktür.") % hedef_payi_hata)
     else:
         satirlar.append(_("  Not: güç payı ölçülemedi (eski koşu); toplam gücün "
                           "tamamı bu çubuklara yazıldı. Başka fisil bölge varsa "
@@ -95,6 +101,9 @@ def _mutlak_satirlari(mutlak):
         if lm > 500:
             satirlar.append("  Sınırın üstünde: tipik PWR çizgisel güç "
                             "sınırı ~400–500 W/cm.")
+    satirlar.append(_("  Not: kappa-fission, gama ısınmasının yakıt dışında (zarf, "
+                      "soğutucu) bırakılan kısmını da (PWR'da ~%2–3) çubuklara "
+                      "yazar; çubuk gücü bu oranda büyük çıkar."))
     return satirlar
 
 
@@ -108,18 +117,20 @@ def _kapsam_satiri(hedef_payi):
               "onlardan biri olabilir.") % (100.0 * hedef_payi)]
 
 
-def yorumla(faktorler, mutlak=None, hedef_payi=None):
+def yorumla(faktorler, mutlak=None, hedef_payi=None, hedef_payi_hata=None):
     """
     Ogrenciye yonelik kisa yorum satirlari.
     hedef_payi: kappa_hedef / kappa_model (kosucu.sonuc_oku guc["hedef_payi"]);
     verilmezse mutlak["hedef_payi"] kullanilir.
+    hedef_payi_hata: pay okunamadiysa hata metni (guc["hedef_payi_hata"]).
     """
     if not faktorler:
         return ["Güç dağılımı hesaplanamadı."]
     if hedef_payi is None and mutlak:
         hedef_payi = mutlak.get("hedef_payi")
     satirlar = (_radyal_satirlari(faktorler) + _kapsam_satiri(hedef_payi)
-                + _eksenel_satirlari(faktorler) + _mutlak_satirlari(mutlak))
+                + _eksenel_satirlari(faktorler)
+                + _mutlak_satirlari(mutlak, hedef_payi_hata))
     satirlar.append(_(
         "Not: çubuk başına sapmalar iyimserdir. Özdeğer hesabında ardışık çevrimler "
         "birbirine bağlıdır ve OpenMC'nin raporladığı tally belirsizliği bunu hesaba "

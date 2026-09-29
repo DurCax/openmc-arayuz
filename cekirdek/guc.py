@@ -64,6 +64,10 @@
      2. coklu_tohum() ile en az 5-10 bagimsiz tohumda kosup sonuclarin
         sacilmasina bakin (varsayilan 5 tohum).
      Tek kosunun sigmasi bir ALT SINIRDIR, gercek hata degildir.
+     Tohum saçılması yalnız rastgele kısmı ölçer; pasif çevrim yetersizse
+     bütün tohumlar aynı yöne yanlı olabilir (hepsi ayni yakinsamamis
+     kaynaktan baslar): saçılma küçük diye sonuç doğru değildir, önce
+     entropi yakınsaması (1. madde) sağlanır.
 ================================================================================
 """
 
@@ -510,7 +514,10 @@ def tepe_faktorleri(dagilim):
       demetler     {demet: _demet_faktorleri kaydi} -- her demetin kendi
                    ortalamasi ve tepesi, KOR ortalamasina gore bagil
       sicak_demet  ortalamasi en yuksek demet
-      F_demet      o demetin bagil ortalamasi (demet tepe faktoru)
+      F_demet      o demetin bagil ortalamasi: demetteki ortalama çubuk gücü
+                   faktörü (demet gücü oranı değil -- kilavuz boru sayisi ya
+                   da cubuk sayisi farkli demetlerde demet gucu orani
+                   F_demet x cubuk sayisi orani olur)
     """
     konumlar = dagilim["konumlar"]
     if not konumlar:
@@ -635,6 +642,13 @@ def mutlak_guc(faktorler, toplam_guc, yukseklik=None, hedef_payi=None):
       toplam_guc MODELIN KAPSADIGI bolgenin gucudur. Sonsuz kafes (yansitici
       sinirli tek demet) hesabinda bu "bir demetin gucu"dur, tum korun degil.
       Yanlis deger girilirse tum mutlak sayilar ayni oranda yanlis cikar.
+
+    L-1 (profesor denetimi): kappa-fission fisyonun geri kazanilabilir
+      enerjisini fisyonun OLDUGU yere yazar. Gercekte gama isinmasinin bir
+      kismi yakit disinda (zarf, sogutucu, yapi) birakilir -- PWR'da toplam
+      gucun ~%2-3'u. Bu yuzden cubuk gucu ve lineer guc bu oranda fazla
+      cikar (muhafazakar yon). Yerel birakimi icin 'heating' skoru ve
+      foton tasinimi gerekir.
 
       ORNEK: 3400 MWth / 193 demet = 17.6 MW. Tek demetlik bir modelde
       toplam_guc = 17.6e6 W girilir (3400e6 DEGIL, 17.6e6/193 de DEGIL).

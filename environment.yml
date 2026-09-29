@@ -15,6 +15,8 @@ channels:
   - conda-forge
 dependencies:
   - python>=3.11
+  # SABIT: yukseltmeden once testler/test_tukenme_hacim.py TH10 (Cell.paths =
+  # C++ distribcell sirasi; cekirdek/tukenme_hacim.py bu varsayima dayanir).
   - openmc=0.16.0
   - pyside6
   - matplotlib

@@ -774,7 +774,7 @@ def _terminal(argv):
         h5, bilgi = calistir(spec, dizin, veri_kontrolu=not a.veri_kontrolu_yok)
     except dogrula.DogrulamaHatasi as e:
         print("\n  DOĞRULAMA: koşu başlatılmadı (%d hata)" % len(e.bulgular))
-        for b in e.bulgular:
+        for b in e.tum_bulgular:          # hatalar + uyari/bilgi (tek denetim)
             print("  %s" % b)
         return 2
     for b in bilgi["dogrulama"]:

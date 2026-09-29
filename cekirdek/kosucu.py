@@ -392,12 +392,13 @@ _GUC_TALLYLERI = ("guc_dagilimi", "guc_toplam_ref", "guc_model_toplam")
 
 
 def _entropi_oku(sp):
-    """Shannon entropisi listesi; yoksa ya da okunamazsa [] (hata loglanir)."""
+    """(entropi listesi, hata metni). Entropi kapaliysa ([], None); okuma
+    hatasinda ([], metin) -- hata loglanir ve "kapali" ile karistirilmaz."""
     try:
-        return [float(x) for x in sp.entropy] if sp.entropy is not None else []
-    except Exception:
+        return ([float(x) for x in sp.entropy] if sp.entropy is not None else []), None
+    except Exception as e:
         _log.warning("statepoint entropisi okunamadı", exc_info=True)
-        return []
+        return [], str(e)
 
 
 def _malzeme_adlari(sp):
@@ -481,7 +482,11 @@ def _guc_korunumu(sp, dagilim):
         _log.exception("güç toplamı korunum denetimi yapılamadı")
         return {"korunum_hata": str(e)}
     if ref_toplam is None:
-        return {}
+        # Referans tally'si guc tally'siyle birlikte kurulur; yoksa ya eski
+        # bir statepoint ya da kurucuda regresyon vardir. Iz birakilir.
+        return {"korunum_notu": _(
+            "Referans tally yok — korunum denetlenemedi (eski statepoint ya da "
+            "model regresyonu).")}
     if ref_toplam <= 0:
         return {"korunum_notu": _(
             "Referans güç toplamı sıfır ya da negatif (%.3g): hedef bölgede fisyon "
@@ -501,17 +506,19 @@ def _hedef_payi(sp):
     """
     Hedef cubuk bolgesinin model geneli fisyon enerjisindeki payi:
     kappa_hedef (guc_toplam_ref) / kappa_model (guc_model_toplam). Mutlak guc
-    bu payla dagitilir (guc.mutlak_guc). Eski statepoint'te tally yoksa None.
+    bu payla dagitilir (guc.mutlak_guc).
+    DONER {"hedef_payi": pay | None}; okuma HATASINDA ek "hedef_payi_hata"
+    (eski statepoint'te tally yoksa -- LookupError -- yalniz None).
     """
     try:
         hedef = _tally_toplami(sp, "guc_toplam_ref")
         model = _tally_toplami(sp, "guc_model_toplam")
-    except Exception:
+    except Exception as e:
         _log.exception("güç payı (hedef / model) okunamadı")
-        return None
+        return {"hedef_payi": None, "hedef_payi_hata": str(e)}
     if hedef is None or model is None or model <= 0:
-        return None
-    return hedef / model
+        return {"hedef_payi": None}
+    return {"hedef_payi": hedef / model}
 
 
 def _guc_oku(sp, sonuc):
@@ -525,9 +532,15 @@ def _guc_oku(sp, sonuc):
         return
     if not dagilim:
         return
-    g = {"dagilim": dagilim, "faktorler": _guc.tepe_faktorleri(dagilim)}
+    try:
+        faktorler = _guc.tepe_faktorleri(dagilim)
+    except Exception as e:
+        _log.exception("güç tepe faktörleri hesaplanamadı")
+        sonuc["guc_hata"] = str(e)
+        return
+    g = {"dagilim": dagilim, "faktorler": faktorler}
     g.update(_guc_korunumu(sp, dagilim))
-    g["hedef_payi"] = _hedef_payi(sp)
+    g.update(_hedef_payi(sp))
     sonuc["guc"] = g
 
 
@@ -551,7 +564,9 @@ def sonuc_oku(statepoint_yolu):
     Statepoint'ten k-eff ve tally sonuclarini okur.
     DONER {"keff":(deger,sapma), "cevrim":int, "pasif":int, "tallyler":{ad: DataFrame}}
       guc (varsa): {"dagilim", "faktorler", "korunum" | "korunum_hata" |
-                    "korunum_notu", "korunum_uyari", "hedef_payi"}
+                    "korunum_notu", "korunum_uyari", "hedef_payi",
+                    "hedef_payi_hata" (yalniz okuma hatasinda)}
+      entropi_hata (yalniz okuma hatasinda): entropi [] ama "kapali" DEGIL
     """
     import openmc
     sp = openmc.StatePoint(statepoint_yolu)
@@ -559,16 +574,19 @@ def sonuc_oku(statepoint_yolu):
     # Once bunu kontrol etmeyen kod "'NoneType' object has no attribute
     # 'nominal_value'" ile cokuyordu -- kosu basariyla bitmis olmasina ragmen.
     ozdeger = getattr(sp, "keff", None) is not None
+    entropi, entropi_hata = _entropi_oku(sp)
     sonuc = {
         "mod": "eigenvalue" if ozdeger else "fixed source",
         "keff": (sp.keff.nominal_value, sp.keff.std_dev) if ozdeger else None,
         "cevrim": sp.n_batches,
         "pasif": sp.n_inactive if ozdeger else 0,
         "parcacik": sp.n_particles,
-        "entropi": _entropi_oku(sp),
+        "entropi": entropi,
         "tallyler": {},
         "malzeme_adlari": _malzeme_adlari(sp),
     }
+    if entropi_hata is not None:
+        sonuc["entropi_hata"] = entropi_hata
     kinetik = _kinetik(_tallyleri_oku(sp, sonuc))
     if kinetik:
         sonuc["kinetik"] = kinetik
@@ -615,7 +633,7 @@ def _terminal(argv):
     try:
         bulgular = dogrula.kapi(spec)
     except dogrula.DogrulamaHatasi as e:
-        bulgular = dogrula.tum_kontroller(spec)
+        bulgular = e.tum_bulgular
         print("\n[1/3] Doğrulama: %s" % dogrula.ozet(bulgular))
         for b in bulgular:
             print("  %s" % b)
@@ -709,6 +727,9 @@ def _terminal(argv):
             yakinsadi, mesaj = entropi_yakinsama(s["entropi"], s["pasif"])
             isaret = {True: "tamam", False: "uyarı", None: "  ?  "}[yakinsadi]
             print("      yakınsama= [%s] %s" % (isaret, mesaj))
+        elif s.get("entropi_hata"):
+            print("      yakınsama= [  ?  ] %s"
+                  % (_("Shannon entropisi okunamadı: %s") % s["entropi_hata"]))
         else:
             print("      yakınsama= [  ?  ] Shannon entropisi kapalı — kaynak "
                   "yakınsaması doğrulanamıyor")
@@ -731,7 +752,8 @@ def _terminal(argv):
               % (f["cubuk_sayisi"], f["eksenel_dilim"]))
         for satir in korunum_satirlari(g):
             print("      %s" % satir)
-        for satir in _guc.yorumla(f, m, hedef_payi=g.get("hedef_payi")):
+        for satir in _guc.yorumla(f, m, hedef_payi=g.get("hedef_payi"),
+                                  hedef_payi_hata=g.get("hedef_payi_hata")):
             print("      %s" % satir)
     elif s.get("guc_hata"):
         print("\n      güç dağılımı okunamadı: %s" % s["guc_hata"])

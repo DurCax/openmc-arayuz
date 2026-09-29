@@ -31,6 +31,13 @@
     ile olculdu, testler/test_tukenme_hacim.py) kendi hucre alani x kendi
     katman yuksekligi ile ayri malzeme olur. Ornek toplami analitik toplamla
     tutmazsa ValueError: tahminle devam edilmez.
+
+    NOT -- SIRA VARSAYIMI VE OPENMC SURUMU: toplam denetimi iki ornegin YER
+    DEGISTIRMESINI yakalamaz (toplam ayni kalir). Sira esitligi yalniz
+    testler/test_tukenme_hacim.py:test_ornek_sirasi_openmc (TH10; kare, altigen,
+    ic ice kafes + esit olmayan katman + katmana ozel demet) ile olculur.
+    environment.yml openmc=0.16.0'a sabittir; OpenMC surumu yukseltilirken
+    bu test KAPIDIR (once o kosulur, gecmeden surum degismez).
 ================================================================================
 """
 
@@ -154,10 +161,20 @@ def _yarim_uzaylar(bolge):
     return None
 
 
+_YARDIMCI_KUTU = 1.0e5              # cm; kor olculerinin cok ustunde
+# Kirpilan cokgenin bir kosesi yardimci kutunun kenarinda kaldiysa bolge o
+# yonde ACIKTIR (yalniz bir yonde sinirli serit, ceyrek duzlem...).
+_KUTU_KENAR_TOL = 1.0e-9
+
+
 def _dugunluk_alani(yarilar):
-    """Duz yuzlerle sinirli konveks cokgenin alani (yarim duzlem kirpmasi)."""
+    """
+    Duz yuzlerle sinirli konveks cokgenin alani (yarim duzlem kirpmasi).
+    Bolge her yonde kapali degilse None: eskiden yalniz bir yonde sinirli bir
+    serit (iki XPlane) 2 * dx * R gibi SONLU ama anlamsiz bir alan donuyordu.
+    """
     import openmc
-    R = 1.0e5                       # cm; kor olculerinin cok ustunde
+    R = _YARDIMCI_KUTU
     cokgen = [(-R, -R), (R, -R), (R, R), (-R, R)]
     for y in yarilar:
         s = y.surface
@@ -171,11 +188,13 @@ def _dugunluk_alani(yarilar):
         cokgen = _kirp(cokgen, a * isaret, b * isaret, d * isaret)
         if not cokgen:
             return 0.0
+    sinir = R * (1.0 - _KUTU_KENAR_TOL)
+    if any(abs(x) >= sinir or abs(y) >= sinir for x, y in cokgen):
+        return None                 # kutunun kenarina/kosesine dokunuyor: acik bolge
     alan = 0.0
     for (x0, y0), (x1, y1) in zip(cokgen, cokgen[1:] + cokgen[:1]):
         alan += x0 * y1 - x1 * y0
-    alan = abs(alan) / 2.0
-    return None if alan > R * R else alan
+    return abs(alan) / 2.0
 
 
 def _kirp(cokgen, a, b, d):
@@ -267,7 +286,8 @@ def ornek_hacmi(yol, hucreler, kafesler):
             break
     if alan is None:
         return None
-    uzunluklar = [u for t, n in ogeler if t == "c" for u in [_z_uzunlugu(n.region)] if u]
+    uzunluklar = [u for t, n in ogeler if t == "c" for u in [_z_uzunlugu(n.region)]
+                  if u is not None]
     return alan * (min(uzunluklar) if uzunluklar else 1.0)
 
 

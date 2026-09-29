@@ -36,7 +36,8 @@ from matplotlib.figure import Figure
 from PySide6 import QtCore, QtGui, QtWidgets
 
 from cekirdek import kosucu
-from cekirdek import sema, uygunluk
+from cekirdek import dogrula, sema, uygunluk
+from cekirdek.ceviri import _
 from cekirdek import kaynak as _kaynak
 from cekirdek import guc as _guc
 from arayuz.ortak import BosDurum, GelismisBolum, tamsayi
@@ -493,6 +494,8 @@ class CalistirSekmesi(QtWidgets.QWidget):
             return
         self._calistirma_kaydet()           # yazilip Enter'a basilmamis dizin
         dizin = self._kosu_dizini()
+        if not self._dogrulama_kapisi():
+            return
         self._dizin = dizin
 
         try:
@@ -553,6 +556,29 @@ class CalistirSekmesi(QtWidgets.QWidget):
         self._gorunum_guncelle()
         self.sonuc_degisti.emit()
         self.durum.emit("Koşu başladı → %s" % dizin, True)
+
+    # En fazla bu kadar dogrulama hatasi mesaj kutusunda listelenir.
+    _KAPI_GOSTERILEN_HATA = 5
+
+    def _dogrulama_kapisi(self):
+        """
+        Kosu dizini temizlenmeden ONCE tek dogrulama kapisi (dogrula.kapi,
+        nukleer veri denetimi dahil). Ana pencerenin izni (self._kapi) 250 ms
+        gecikmeli ve veri denetimsizdir; bayat izinle gecersiz bir spec eski
+        sonucu silmesin. DONER True: kosu baslayabilir.
+        """
+        try:
+            dogrula.kapi(self.spec, veri_kontrolu=True)
+        except dogrula.DogrulamaHatasi as e:
+            ilk = e.bulgular[:self._KAPI_GOSTERILEN_HATA]
+            metin = _("Doğrulama hataları giderilmeden koşu başlatılmaz "
+                      "(%d hata); önceki sonuç silinmedi.") % len(e.bulgular)
+            metin += "\n\n" + "\n".join("• %s" % b.mesaj for b in ilk)
+            if len(e.bulgular) > len(ilk):
+                metin += "\n" + _("… ve %d hata daha.") % (len(e.bulgular) - len(ilk))
+            QtWidgets.QMessageBox.warning(self, _("Çalıştırılamaz"), metin)
+            return False
+        return True
 
     def durdur(self):
         if self._surec is not None:
@@ -718,6 +744,9 @@ class CalistirSekmesi(QtWidgets.QWidget):
                 if yakinsadi is False:
                     self.durum.emit("Dikkat: kaynak yakınsamamış olabilir — "
                                     "pasif çevrim sayısını artırın", False)
+            elif s.get("entropi_hata"):
+                ozet.append("kaynak   = [  ?  ] " + _("Shannon entropisi okunamadı: %s")
+                            % s["entropi_hata"])
             else:
                 ozet.append("kaynak   = [  ?  ] Shannon entropisi kapalı — "
                             "kaynak yakınsaması doğrulanamıyor")

@@ -675,8 +675,11 @@ def test_altigen_tukenme_hacmi_stokastik(gecici):
     a = tukenme.hacimler(s)["uo2"]["hacim"]
     v, sd = tukenme.stokastik_hacimler(s, ["uo2"], orneklem=4_000_000,
                                        dizin=gecici)["uo2"]
+    # 3 sigma (D1-Kapanis L-6; once 2 sigma): stokastik hacim sigmasi gercek
+    # binom sigmasidir, 2 sigma dogru analitik degerde de ~%5 olasilikla
+    # kalirdi. test_tukenme_hacim TH9 ile ayni olcut.
     kontrol("analitik %.3f cm3 vs stokastik %.3f +/- %.3f (%.2f sigma)"
-            % (a, v, sd, abs(a - v) / sd), abs(a - v) <= 2 * sd)
+            % (a, v, sd, abs(a - v) / sd), abs(a - v) <= 3 * sd)
 
 
 def test_altigen_cizim(gecici=None):

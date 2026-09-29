@@ -186,6 +186,23 @@ def _iki_cubuklu_altigen():
     return s
 
 
+def _ic_ice_katmanli_kare():
+    """2x2 kare kor (kafes icinde kafes), iki demet turu; esit olmayan uc
+    katman (40 / 10 / 20 cm) ve ortadaki katmanda demetler yer degistirir
+    (katmana ozel anahtar). Toplam yukseklik 70 cm (z = +-35)."""
+    from cekirdek import sema
+    s = _iki_cubuklu_kare(eksenel=False)
+    s["demetler"].append(_kare_demet(sema, ad="kd2", harita=("zzz", "zyz", "zzz"),
+                                     anahtar={"y": "yakit_cubugu", "z": "ince"}))
+    s["kor"]["anahtar"]["B"] = "kd2"
+    s["kor"]["harita"] = ["AB", "BA"]
+    s["kor"]["eksenel"] = {"var": True, "bolgeler": [
+        sema.eksenel_bolge("alt", 40.0, None),
+        sema.eksenel_bolge("orta", 10.0, None, anahtar={"A": "kd2", "B": "kd"}),
+        sema.eksenel_bolge("ust", 20.0, None)]}
+    return s
+
+
 def _ayrilmis(spec):
     """(modelin uo2 klonlarinin hacimleri, analitik toplam)."""
     from cekirdek import kurucu, tukenme, tukenme_hacim
@@ -223,6 +240,21 @@ def test_ornek_hacimleri():
     esit = toplam / len(hacimler)
     kontrol("esit bolme bu modelde yanlis olurdu (%.4g cm3 tek deger; gercek %.4g..%.4g)"
             % (esit, min(hacimler), max(hacimler)), max(hacimler) / min(hacimler) > 3)
+
+
+def test_ornek_hacimleri_ic_ice_katmanli():
+    print("\n[TH3b] CUBUK CUBUK YANMA: ic ice kafes + 3 esit olmayan katman + "
+          "katmana ozel demet")
+    hacimler, toplam = _ayrilmis(_ic_ice_katmanli_kare())
+    # katman basina 12 kalin (2x5 + 2x1) ve 24 ince (2x4 + 2x8) cubuk
+    beklenen = sorted([PIN * h for h in (40.0, 10.0, 20.0) for _ in range(12)]
+                      + [math.pi * 0.30 ** 2 * h for h in (40.0, 10.0, 20.0)
+                         for _ in range(24)])
+    kontrol("%d ornek (beklenen %d)" % (len(hacimler), len(beklenen)),
+            len(hacimler) == len(beklenen))
+    kontrol("her ornek = pi r^2 x kendi katmani", len(hacimler) == len(beklenen) and all(
+        abs(a - b) < 1e-9 * b for a, b in zip(sorted(hacimler), beklenen)))
+    kontrol("ornek toplami = analitik", abs(sum(hacimler) - toplam) < 1e-9 * toplam)
 
 
 def test_ornek_hacimleri_2b_ve_tek_ornek():
@@ -566,12 +598,22 @@ def test_ornek_sirasi_openmc(gecici):
     Ornek hacimleri Cell.paths sirasina gore atanir; bu sira C++ distribcell
     ornek sirasiyla ayni olmali (openmc.lib.find_cell). Olculdu (29.09):
     kare 3000/3000, altigen 1968/1968 nokta uyustu.
+
+    !!! OPENMC SURUMU YUKSELTILIRKEN BU TEST KAPIDIR !!!
+      tukenme_hacim.ornekleri_ayir Cell.paths sirasinin C++ distribcell
+      sirasiyla ayni oldugunu VARSAYAR; ornek toplami denetimi iki ornegin
+      yer degistirmesini YAKALAMAZ (toplam ayni kalir). environment.yml'de
+      openmc=0.16.0 sabittir; surum degisirse once bu test kosulur.
+      D1-Kapanis (B9): ic ice kafes + esit olmayan UC katman + katmana ozel
+      demet eslemesi (ayni hucre farkli katmanlarda farkli kafes yolundan
+      gecer) eklendi.
     """
     print("\n[TH10] ORNEK SIRASI: Python Cell.paths = C++ distribcell (openmc.lib)")
     import random
     import openmc.lib
     from cekirdek import kurucu, tukenme_hacim
-    for ad, s in (("kare", _iki_cubuklu_kare()), ("altigen", _iki_cubuklu_altigen())):
+    for ad, s in (("kare", _iki_cubuklu_kare()), ("altigen", _iki_cubuklu_altigen()),
+                  ("kare ic ice + katmana ozel demet", _ic_ice_katmanli_kare())):
         model, bilgi = kurucu.kur(s)
         geo = model.geometry
         geo.determine_paths()
@@ -627,7 +669,8 @@ def test_cubuk_cubuk_tukenme(gecici):
 
 
 HIZLI = [test_dogrudan_malzeme_hacmi, test_tukenme_dogrulama_dogrudan,
-         test_ornek_hacimleri, test_ornek_hacimleri_2b_ve_tek_ornek,
+         test_ornek_hacimleri, test_ornek_hacimleri_ic_ice_katmanli,
+         test_ornek_hacimleri_2b_ve_tek_ornek,
          test_yanabilir_bor, test_hacimsiz_zehir,
          test_calistir_kapisi, test_terminal_kapisi, test_bolge_alani,
          test_ornek_hacimleri_dogrudan, test_ornek_hacimleri_hatalar, test_nokta_yolu,
