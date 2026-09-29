@@ -52,12 +52,12 @@ KABA_EKLEME = {"append", "add", "extend", "insert"}
 # "modul:nitelikli_islev" -> o islevdeki sessiz except sayisi.
 # Olculen 29.09.2026 (D1-C): 33 kayit. Kaynak dosya satirlari rapordadir.
 #   (T) Dalga 1 tabani (eski anahtar "islev" -> "modul:islev" tasindi; 26 kayit).
+#   D2-7: arayuz.sekme_malzeme:MalzemeSekmesi.doldur ve arayuz.malzeme.yardimcilar:sab_onerileri loglaniyor (silindi).
 #   (Y) D1-C yeni kurali (hata metnini alana/listeye yazip birakma) ile eklenen
 #       taban cizgisi; DUZELTME Dalga 2 sahiplerine kalir (7 kayit).
 IZINLI = {
     "arayuz.baslangic:BaslangicEkrani._renkleri_uygula": 1,       # (T)
     "arayuz.baslangic:ornek_listesi": 1,                          # (T)
-    "arayuz.malzeme.yardimcilar:sab_onerileri": 1,                # (T)
     "arayuz.onizleme:_LibYoneticisi.kapat": 1,                    # (T)
     "arayuz.ortak:GelismisBolum._oku": 1,                         # (T)
     "arayuz.ortak:GelismisBolum._yaz": 1,                         # (T)
@@ -67,7 +67,6 @@ IZINLI = {
     "arayuz.sekme_calistir:CalistirSekmesi._bitti": 1,            # (T)
     "arayuz.sekme_calistir:CalistirSekmesi._guc_etkin": 1,        # (T)
     "arayuz.sekme_kor:KorSekmesi._katman_ozet_guncelle": 1,       # (Y) satir += "...%s" % hata
-    "arayuz.sekme_malzeme:MalzemeSekmesi.doldur": 1,              # (T)
     "cekirdek.dogrula.veri:_kutuphane_icerigi": 1,                # (T)
     "cekirdek.ice_aktar:malzemeleri_oku": 4,                      # (T) 3 + (Y) 1
     "cekirdek.kurucu:_spec_fisil_mi": 1,                          # (T)

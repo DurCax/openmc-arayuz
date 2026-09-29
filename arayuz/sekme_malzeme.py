@@ -27,6 +27,7 @@ from PySide6 import QtCore, QtGui, QtWidgets
 
 from cekirdek import malzeme_kutup as mk
 from cekirdek import sema
+from cekirdek.gunluk import kaydedici
 from arayuz.ortak import (BosDurum, GelismisBolum, RenkDugmesi, SekmeTabani,
                           baslik, ipucu, sayi)
 
@@ -45,6 +46,8 @@ from arayuz.malzeme.kutuphane_diyalog import (  # noqa: F401
     KutuphaneDiyalog)
 from arayuz.malzeme.malzeme_diyalog import (  # noqa: F401
     MalzemeDiyalog)
+
+_log = kaydedici(__name__)
 
 
 # ============================================================================
@@ -146,7 +149,8 @@ class MalzemeSekmesi(SekmeTabani):
         self.yigin.setCurrentIndex(1 if malzemeler else 0)
         try:
             roller = uygunluk.malzeme_rolleri(self.spec)
-        except Exception:
+        except Exception as e:              # bozuk malzeme: tablo yine dolar, rol sutunu bos
+            _log.warning("malzeme rolleri okunamadi: %s", e)
             roller = {}
         self.tablo.blockSignals(True)
         self.tablo.setRowCount(0)
