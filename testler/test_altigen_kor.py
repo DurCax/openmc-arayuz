@@ -373,15 +373,22 @@ def test_altigen_tek_demet_kilif():
             tuple(b0["sinir_kutu"]) == altigen.kapsayan_olcu(PIN_HALKA, PIN_ADIM, "y"))
 
 
-def test_altigen_kor_katman_anahtari():
-    print("\n[AK7] ALTIGEN KOR: eksenel katmanlar ve katmana ozel anahtar")
-    from cekirdek import kurucu, sema
+def _katman_anahtarli_spec():
+    """3 katman (10 su + 50 aktif + 20 ust); ust katmanda A -> hex2."""
+    from cekirdek import sema
     s = _kor_spec()
     s["demetler"].append(dict(copy.deepcopy(s["demetler"][0]), ad="hex2", dolgu_disi="su"))
     s["kor"]["eksenel"] = {"var": True, "bolgeler": [
         sema.eksenel_bolge("alt_yans", 10.0, "su"),
         sema.eksenel_bolge("aktif", 50.0, None),
         sema.eksenel_bolge("ust", 20.0, None, anahtar={"A": "hex2"})]}
+    return s
+
+
+def test_altigen_kor_katman_anahtari():
+    print("\n[AK7] ALTIGEN KOR: eksenel katmanlar ve katmana ozel anahtar")
+    from cekirdek import kurucu
+    s = _katman_anahtarli_spec()
     model, _b = kurucu.kur(s)
     hucreler = list(model.geometry.root_universe.cells.values())
     kontrol("7 konum x 3 katman = 21 kok hucresi", len(hucreler) == 21, "-> %d" % len(hucreler))
@@ -391,6 +398,39 @@ def test_altigen_kor_katman_anahtari():
             "-> %s" % [c.fill.name for c in ust[:2]])
     kontrol("aktif aralik yalniz aktif+ust (-30, 40)",
             kurucu.aktif_eksenel_aralik(s) == (-30.0, 40.0), "-> %s" % (kurucu.aktif_eksenel_aralik(s),))
+
+
+def test_altigen_kor_katman_anahtari_kapi():
+    """Katmana ozel harf eslemesi altigen korda da gecerli: kapi gecer (bulgu 1)."""
+    print("\n[AK7b] ALTIGEN KOR: katmana ozel anahtar dogrulama kapisindan gecer")
+    from cekirdek import dogrula, kurucu, sema
+    s = _katman_anahtarli_spec()
+    # ust katmanin demeti farkli yakitla: nokta sorgusu katmani ayirt etsin
+    ust = dict(copy.deepcopy(sema.malzeme_bul(s, "uo2")), ad="uo2_ust")
+    ust.pop("gorunen_ad", None)
+    s["malzemeler"].append(ust)
+    s["cubuklar"].append(sema.cubuk("yakit_ust", [sema.bolge(R_YAKIT, "uo2_ust"),
+                                                  sema.bolge(R_ZARF, "zr"),
+                                                  sema.bolge(None, "su")]))
+    s["demetler"][1]["anahtar"] = {"y": "yakit_ust"}
+    try:
+        dogrula.kapi(s, veri_kontrolu=False)
+        gecti, hata = True, ""
+    except dogrula.DogrulamaHatasi as e:
+        gecti, hata = False, [b.mesaj for b in e.bulgular]
+    kontrol("dogrula.kapi: katmana ozel anahtarli altigen kor 0 hata", gecti, "-> %s" % hata)
+    model, _b = kurucu.kur(s)
+    P = s["kor"]["adim"]
+
+    def mal(x, y, z):
+        yol = model.geometry.find((x, y, z))
+        return getattr(yol[-1].fill, "name", None) if yol else None
+    # katmanlar: su z -40..-30, aktif -30..20, ust 20..40; merkez pin (0, 0)
+    beklenen = {-35.0: "su", 0.0: "uo2", 30.0: "uo2_ust"}
+    for cx, cy in ((0.0, 0.0), (P, 0.0)):
+        olculen = {z: mal(cx, cy, z) for z in beklenen}
+        kontrol("demet (%.2f, %.2f): katman malzemeleri %s" % (cx, cy, olculen),
+                olculen == beklenen)
 
 
 # ============================================================================
@@ -651,7 +691,8 @@ HIZLI = [
     test_altigen_kor_sema_ve_kurallar, test_altigen_kor_dogrulama,
     test_altigen_kor_geometri, test_altigen_kor_yonelim_olcumu,
     test_altigen_kor_kucuk_parcalar, test_altigen_tek_demet_kilif,
-    test_altigen_kor_katman_anahtari, test_altigen_kor_betik_geometrisi,
+    test_altigen_kor_katman_anahtari, test_altigen_kor_katman_anahtari_kapi,
+    test_altigen_kor_betik_geometrisi,
     test_altigen_kor_tukenme_sayimi, test_altigen_kor_tur_degisimi,
     test_altigen_kor_baslangic_karti, test_altigen_kor_sekmesi,
 ]
