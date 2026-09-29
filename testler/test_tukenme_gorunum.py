@@ -206,8 +206,98 @@ def test_kapanista_bekleyen_cizim_iptal():
     gc.collect()
 
 
+# ============================================================================
+# 3. Cubuk cubuk yanma: klon malzemelerin adi ve yogunlugu
+# ============================================================================
+
+def _ayirmali_spec():
+    s = _spec("pwr_17x17")
+    s.setdefault("tukenme", {}).update(var=True, malzemeleri_ayir=True,
+                                       guc_yogunlugu=40.0, adimlar=[0.5],
+                                       izlenen=["U235", "Pu239"])
+    return s
+
+
+class _SahteSonuclar:
+    """openmc.deplete.Results taklidi (MC'siz): iki adim, iki nuklid."""
+
+    def __init__(self, malzeme_idleri, nuklidler=("U235", "Pu239")):
+        self.index_mat = {str(i): k for k, i in enumerate(malzeme_idleri)}
+        self.index_nuc = {n: k for k, n in enumerate(nuklidler)}
+
+    def __getitem__(self, i):
+        return self
+
+    def get_keff(self, time_units="d"):
+        import numpy as np
+        return np.array([0.0, 0.5]), np.array([[1.30, 0.001], [1.29, 0.001]])
+
+    def get_atoms(self, mid, nuklid):
+        import numpy as np
+        taban = 1.0e20 if nuklid == "U235" else 1.0e18
+        return np.array([0.0, 0.5]), np.array([taban, taban * 0.99])
+
+
+def test_klon_adlari_ve_hacimleri():
+    print("\n[TG6] CUBUK CUBUK YANMA: klonlar 'uo2 #k' adini ve kendi hacmini alir")
+    from cekirdek import tukenme
+    s = _ayirmali_spec()
+    ad_by_id, hacim = tukenme._malzeme_haritasi(s)
+    klonlar = sorted(a for a in ad_by_id.values() if a.startswith("uo2 #"))
+    kontrol("264 klon adlandirildi", len(klonlar) == 264, "-> %d" % len(klonlar))
+    kontrol("adlar 'uo2 #1' ... 'uo2 #264'",
+            "uo2 #1" in klonlar and "uo2 #264" in klonlar, "-> %r" % klonlar[:3])
+    kontrol("kimlik numarasi ad olarak kullanilmiyor",
+            not any(a.isdigit() for a in ad_by_id.values()), "-> %r" % list(ad_by_id.values())[:4])
+    toplam = sum(hacim[a] for a in klonlar)
+    beklenen = tukenme.hacimler(s)["uo2"]["hacim"]
+    kontrol("klon hacimleri toplami analitik hacme esit (%.6g = %.6g)" % (toplam, beklenen),
+            abs(toplam - beklenen) < 1e-9 * beklenen)
+    kontrol("her klonun hacmi var", all(hacim[a] for a in klonlar))
+    tek = tukenme._malzeme_haritasi(_spec("pwr_tukenme"))[0]
+    kontrol("ayirma kapaliyken adlar degismiyor", "uo2" in tek.values()
+            and not any("#" in a for a in tek.values()))
+
+
+def test_sonuc_oku_klon_yogunlugu():
+    print("\n[TG7] SONUC OKUMA: klon malzemelerin yogunlugu ve CSV basligi")
+    import tempfile
+    import openmc.deplete as d
+    from cekirdek import tukenme
+    from arayuz.tukenme_sonuc import csv_metni
+    s = _ayirmali_spec()
+    ad_by_id, _h = tukenme._malzeme_haritasi(s)
+    idler = [int(i) for i in ad_by_id if ad_by_id[i].startswith("uo2 #")][:5]
+    eski = d.Results
+    d.Results = lambda yol: _SahteSonuclar(idler)
+    tutucu = tempfile.NamedTemporaryFile(suffix=".h5", delete=False)
+    tutucu.write(b"x")
+    tutucu.close()
+    try:
+        tukenme._SONUC_KAYNAGI.clear()
+        sonuc = tukenme.sonuc_oku(tutucu.name, s, izlenen=["U235", "Pu239"])
+    finally:
+        d.Results = eski
+        tukenme._SONUC_KAYNAGI.clear()
+        os.unlink(tutucu.name)
+    adlar = sorted(sonuc["yogunluk"])
+    kontrol("sonuc klon adlariyla geliyor", all(a.startswith("uo2 #") for a in adlar)
+            and len(adlar) == 5, "-> %r" % adlar)
+    yog = sonuc["yogunluk"][adlar[0]]
+    kontrol("yogunluk BOS DEGIL (klon hacmi kullanildi)",
+            set(yog) == {"U235", "Pu239"} and all(v > 0 for v in yog["U235"]),
+            "-> %r" % yog)
+    beklenen = 1.0e20 / _h[adlar[0]] * 1e-24
+    kontrol("yogunluk = atom / klon hacmi (%.6g)" % beklenen,
+            abs(yog["U235"][0] - beklenen) < 1e-12 * beklenen)
+    basliklar = csv_metni(sonuc).splitlines()[0]
+    kontrol("CSV basliginda klon adi ve yogunluk sutunu",
+            "uo2 #1 U235 [atom/b-cm]" in basliklar, "-> %r" % basliklar[:120])
+
+
 HIZLI = [test_yeni_gruplar, test_yeni_setler, test_zincirde_cozulme,
-         test_silinmis_sekmeye_gec_sonuc, test_kapanista_bekleyen_cizim_iptal]
+         test_silinmis_sekmeye_gec_sonuc, test_kapanista_bekleyen_cizim_iptal,
+         test_klon_adlari_ve_hacimleri, test_sonuc_oku_klon_yogunlugu]
 YAVAS = []
 ZINCIR_GEREKEN = [test_zincirde_cozulme, test_silinmis_sekmeye_gec_sonuc,
                   test_kapanista_bekleyen_cizim_iptal]

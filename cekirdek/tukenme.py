@@ -552,11 +552,53 @@ _SONUC_KAYNAGI = {}
 _SONUC_KAYNAGI_EN_COK = 2
 
 
+def _klon_kaydi(model, spec, hv, nesneler):
+    """
+    Cubuk cubuk yanmanin (malzemeleri_ayir) klonlari: {malzeme_id: (ad, hacim)}.
+
+    Klonlar kosudakiyle AYNI yolla (tukenme_hacim.ornekleri_ayir) kurulur;
+    malzeme basina, Cell.paths (= distribcell ornek) sirasinda numaralanir:
+    "uo2 #1", "uo2 #2", ... Boylece sonuc tablosu ve CSV klonlari kimlik
+    numarasiyla ("1043") degil okunur adiyla gosterir ve her klonun kendi
+    hacmi bilindigi icin yogunluk [atom/b-cm] hesaplanabilir.
+    """
+    from cekirdek import tukenme_hacim
+    kayit = {}
+    for ad, m in nesneler.items():
+        once = {x.id for x in model.geometry.get_all_materials().values()}
+        m.depletable = True
+        m.volume = hv[ad]["hacim"]
+        tukenme_hacim.ornekleri_ayir(model, spec, {ad: hv[ad]}, {ad: m})
+        yeni = [x for x in model.geometry.get_all_materials().values()
+                if x.id not in once]
+        for i, klon in enumerate(sorted(yeni, key=lambda x: x.id), 1):
+            kayit[str(klon.id)] = ("%s #%d" % (ad, i), klon.volume)
+    return kayit
+
+
+def _malzeme_haritasi(spec):
+    """
+    ({malzeme_id: gorunen ad}, {gorunen ad: hacim cm3}).
+    Cubuk cubuk yanmada klonlar da (ad ve kendi hacmiyle) haritaya girer.
+    """
+    from cekirdek import kurucu
+    model, kb = kurucu.kur(spec)
+    hv = hacimler(spec)
+    ad_by_id = {str(m.id): ad for ad, m in kb["malzemeler"].items()}
+    hacim_by_ad = {ad: v.get("hacim") for ad, v in hv.items()}
+    if not (spec.get("tukenme") or {}).get("malzemeleri_ayir"):
+        return ad_by_id, hacim_by_ad
+    nesneler = {a: kb["malzemeler"][a] for a in hv if a in kb["malzemeler"]}
+    for mid, (ad, hacim) in _klon_kaydi(model, spec, hv, nesneler).items():
+        ad_by_id[mid] = ad
+        hacim_by_ad[ad] = hacim
+    return ad_by_id, hacim_by_ad
+
+
 def _sonuc_kaynagi(h5, spec):
-    """(Results, {malzeme_id: ad}, hacimler) -- dosya ve spec degismedikce onbellekten."""
+    """(Results, {malzeme_id: ad}, {ad: hacim}) -- dosya/spec degismedikce onbellekten."""
     import json
     import openmc.deplete as d
-    from cekirdek import kurucu
     bilgi = os.stat(h5)
     anahtar = (os.path.abspath(h5), bilgi.st_size, bilgi.st_mtime,
                json.dumps(spec, sort_keys=True, default=str))
@@ -564,9 +606,8 @@ def _sonuc_kaynagi(h5, spec):
     if kaynak is not None:
         return kaynak
     r = d.Results(h5)
-    _m, kb = kurucu.kur(spec)
-    ad_by_id = {str(m.id): ad for ad, m in kb["malzemeler"].items()}
-    kaynak = (r, ad_by_id, hacimler(spec))
+    ad_by_id, hacim_by_ad = _malzeme_haritasi(spec)
+    kaynak = (r, ad_by_id, hacim_by_ad)
     while len(_SONUC_KAYNAGI) >= _SONUC_KAYNAGI_EN_COK:
         _SONUC_KAYNAGI.pop(next(iter(_SONUC_KAYNAGI)))
     _SONUC_KAYNAGI[anahtar] = kaynak
@@ -584,7 +625,7 @@ def sonuc_oku(h5, spec, izlenen=None):
     (or. "Xe-135") eskiden SESSIZCE atlaniyordu; simdi listelenir ve loglanir.
     """
     from cekirdek.gunluk import kaydedici
-    r, ad_by_id, hv = _sonuc_kaynagi(h5, spec)
+    r, ad_by_id, hacim_by_ad = _sonuc_kaynagi(h5, spec)
     zaman, k = r.get_keff(time_units="d")
     p = float(spec["tukenme"]["guc_yogunlugu"])
     if izlenen is None:
@@ -595,7 +636,7 @@ def sonuc_oku(h5, spec, izlenen=None):
     for mid in r[0].index_mat.keys():
         ad = ad_by_id.get(str(mid), str(mid))
         atomlar[ad], yogunluk[ad] = {}, {}
-        V = (hv.get(ad) or {}).get("hacim")
+        V = hacim_by_ad.get(ad)
         for n in (n for n in izlenen if n in bilinen):
             _t, a = r.get_atoms(str(mid), n)
             atomlar[ad][n] = [float(x) for x in a]
