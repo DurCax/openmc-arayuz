@@ -8,8 +8,9 @@
 
 import os
 
-from PySide6 import QtGui, QtWidgets
+from PySide6 import QtCore, QtGui, QtWidgets
 from cekirdek import sema, ice_aktar, kod_uret, onbellek
+from cekirdek.ceviri import _
 from cekirdek.gunluk import kaydedici
 from arayuz.pencere.model_islemleri import ORNEKLER
 
@@ -115,7 +116,7 @@ class ProjeMixin(object):
             return False
         self._proje_kur(yeni, proje_yolu=os.path.abspath(yol), ornek_kaynagi=None)
         self._sona_ekle(yol)
-        self.statusBar().showMessage("Açıldı: %s" % yol, 6000)
+        self.bildir_mesaj(_("Açıldı: %s") % yol, "basari", 6000)
         return True
 
     def ornek_ac(self, yol):
@@ -129,9 +130,9 @@ class ProjeMixin(object):
             QtWidgets.QMessageBox.critical(self, "Açılamadı", str(e))
             return False
         self._proje_kur(yeni, proje_yolu=None, ornek_kaynagi=os.path.abspath(yol))
-        self.statusBar().showMessage(
-            "Örnek kopya olarak açıldı: %s — kaydetmek için 'Farklı kaydet' "
-            "kullanın (örnek dosyası değişmez)" % os.path.basename(yol), 8000)
+        self.bildir_mesaj(
+            _("Örnek kopya olarak açıldı: %s — kaydetmek için 'Farklı kaydet' "
+              "kullanın (örnek dosyası değişmez)") % os.path.basename(yol), "basari", 8000)
         return True
 
     def proje_kaydet(self):
@@ -146,7 +147,7 @@ class ProjeMixin(object):
         self._kirli = False
         self._baslik_guncelle()
         self._sona_ekle(self.proje_yolu)
-        self.statusBar().showMessage("Kaydedildi: %s" % self.proje_yolu, 5000)
+        self.bildir_mesaj(_("Kaydedildi: %s") % self.proje_yolu, "basari", 5000)
         return True
 
     def proje_farkli_kaydet(self):
@@ -169,6 +170,41 @@ class ProjeMixin(object):
         self.s_calistir.spec_ayarla(self.spec, self.proje_yolu)
         self.s_tukenme.proje_ayarla(self.proje_yolu)
         return self.proje_kaydet()
+
+    # ==================================================================
+    # rapor (Ajan 10'un cekirdek/rapor.py sozlesmesi)
+    # ==================================================================
+    RAPOR_SUZGECI = "HTML (*.html);;PDF (*.pdf)"
+
+    def rapor_olustur(self):
+        """Dosya > Rapor olustur…: model (+ varsa son basarili kosu) raporu."""
+        varsayilan = os.path.splitext(self.proje_yolu or "rapor.json")[0] + ".html"
+        yol, suzgec = QtWidgets.QFileDialog.getSaveFileName(
+            self, _("Rapor oluştur"), varsayilan, self.RAPOR_SUZGECI)
+        if not yol:
+            return False
+        bicim = "pdf" if (yol.lower().endswith(".pdf")
+                          or "pdf" in (suzgec or "").lower()) else "html"
+        if not yol.lower().endswith("." + bicim):
+            yol += "." + bicim
+        from cekirdek import rapor            # tembel: Qt'siz cekirdek modulu
+        kosu = self.s_calistir.son_kosu_dizini()
+        try:
+            sonuc = rapor.olustur(self.spec, kosu, yol, bicim)
+        except rapor.RaporHatasi as e:        # metni dogrudan gosterilebilir
+            _log.warning("rapor olusturulamadi: %s", e)
+            QtWidgets.QMessageBox.critical(self, _("Rapor oluşturulamadı"), str(e))
+            return False
+        metin = _("Rapor yazıldı: %s") % os.path.basename(sonuc.yol)
+        if sonuc.uyarilar:
+            metin += "\n" + "\n".join(sonuc.uyarilar)
+        self.bildir_mesaj(metin, "uyari" if sonuc.uyarilar else "basari", 8000,
+                          eylem_metni=_("Aç"), eylem=lambda: self._dosyayi_ac(sonuc.yol))
+        return True
+
+    @staticmethod
+    def _dosyayi_ac(yol):
+        QtGui.QDesktopServices.openUrl(QtCore.QUrl.fromLocalFile(yol))
 
     def malzeme_ice_aktar(self):
         yol, _ = QtWidgets.QFileDialog.getOpenFileName(
@@ -205,8 +241,8 @@ class ProjeMixin(object):
         if notlar:
             mesaj += "Notlar:\n" + "\n".join("  - " + n for n in notlar) + "\n\n"
         mesaj += _ICE_AKTAR_NOTU
-        self.statusBar().showMessage("%d malzeme içe aktarıldı — geometri aktarılmaz, "
-                                     "arayüzde kurulur." % len(yeni_malzemeler), 8000)
+        self.bildir_mesaj(_("%d malzeme içe aktarıldı — geometri aktarılmaz, "
+                            "arayüzde kurulur.") % len(yeni_malzemeler), "basari", 8000)
         QtWidgets.QMessageBox.information(self, "İçe aktarıldı", mesaj)
 
     def betik_disa_aktar(self):
@@ -241,11 +277,11 @@ class ProjeMixin(object):
             _log.exception("proje islemi basarisiz: %s", "Üretilemedi")
             QtWidgets.QMessageBox.critical(self, "Üretilemedi", str(e))
             return
-        self.statusBar().showMessage("XML yazıldı: %s/model.xml" % dizin, 6000)
+        self.bildir_mesaj(_("XML yazıldı: %s/model.xml") % dizin, "basari", 6000)
 
     def png_kaydet(self):
         yol, _ = QtWidgets.QFileDialog.getSaveFileName(
             self, "Önizlemeyi kaydet", "geometri.png", "PNG (*.png)")
         if yol:
             self.onizleme.kaydet(yol)
-            self.statusBar().showMessage("Kaydedildi: %s" % yol, 5000)
+            self.bildir_mesaj(_("Kaydedildi: %s") % yol, "basari", 5000)

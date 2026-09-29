@@ -8,6 +8,8 @@
 
 import copy
 
+from cekirdek.ceviri import _
+
 from cekirdek import onbellek
 
 
@@ -50,11 +52,11 @@ class GecmisMixin(object):
         self._gecmise_it()
         if self._gecmis_ix > 0:
             self._gecmisten_yukle(self._gecmis_ix - 1)
-            self.statusBar().showMessage("Geri alındı (%d/%d)"
-                                         % (self._gecmis_ix + 1, len(self._gecmis)), 3000)
+            self.bildir_mesaj(_("Geri alındı ({i}/{n})").format(
+                i=self._gecmis_ix + 1, n=len(self._gecmis)), "bilgi", 3000)
 
     def yinele(self):
         if self._gecmis_ix < len(self._gecmis) - 1:
             self._gecmisten_yukle(self._gecmis_ix + 1)
-            self.statusBar().showMessage("Yinelendi (%d/%d)"
-                                         % (self._gecmis_ix + 1, len(self._gecmis)), 3000)
+            self.bildir_mesaj(_("Yinelendi ({i}/{n})").format(
+                i=self._gecmis_ix + 1, n=len(self._gecmis)), "bilgi", 3000)

@@ -10,7 +10,8 @@ from PySide6 import QtCore, QtGui, QtWidgets
 from arayuz import tema
 from cekirdek import ceviri
 from cekirdek.ceviri import _
-from arayuz.ortak import DurumRozeti
+from arayuz.bilesenler import KomutPaleti
+from arayuz.pencere import kabuk, sekme_arayuzu
 from arayuz.pencere.model_islemleri import UYGULAMA_ADI
 from arayuz.pencere.proje import _ICE_AKTAR_NOTU
 
@@ -207,6 +208,8 @@ class MenulerMixin(object):
                                    "Tek başına çalışan bir Python betiği üretir")
         self.e_xml = self._eylem(m_dosya, "OpenMC XML olarak dışa aktar…", self.xml_disa_aktar)
         self.e_png = self._eylem(m_dosya, "Önizlemeyi PNG olarak kaydet…", self.png_kaydet)
+        self.e_rapor = self._eylem(m_dosya, "Rapor oluştur…", self.rapor_olustur, "Ctrl+R",
+                                   "Model ve son koşu için HTML ya da PDF rapor yazar")
         m_dosya.addSeparator()
         self._eylem(m_dosya, "Çıkış", self.close, QtGui.QKeySequence.Quit)
 
@@ -247,7 +250,7 @@ class MenulerMixin(object):
                                    "doğrulama hatasız olmalı")
         # Baslangic ekraninda anlamsiz eylemler (acik model yok ya da gizli).
         self._model_eylemleri = [self.e_kaydet, self.e_farkli, self.e_ice_aktar,
-                                 self.e_betik, self.e_xml, self.e_png,
+                                 self.e_betik, self.e_xml, self.e_png, self.e_rapor,
                                  self.e_dogrula, self.e_onizle, self.e_calistir]
         self._son_menusu_yenile()
 
@@ -260,38 +263,47 @@ class MenulerMixin(object):
         return e
 
     def _arac_cubugu_kur(self):
-        cubuk = QtWidgets.QToolBar("Ana")
-        cubuk.setObjectName("anaAracCubugu")
-        # Simge yok: TextBesideIcon 24 px simge yuksekligi ayiriyor, pencere
-        # minimumunu bosuna buyutuyordu.
-        cubuk.setToolButtonStyle(QtCore.Qt.ToolButtonTextOnly)
-        cubuk.setMovable(False)
-        for e in (self.e_yeni, self.e_ac, self.e_kaydet):
-            cubuk.addAction(e)
-        cubuk.addSeparator()
-        for e in (self.e_geri, self.e_yinele):
-            cubuk.addAction(e)
-        cubuk.addSeparator()
-        cubuk.addAction(self.e_calistir)
-        calistir = cubuk.widgetForAction(self.e_calistir)
-        if calistir is not None:
-            calistir.setObjectName("calistirDugmesi")
-        self.addToolBar(cubuk)
-        self._arac_cubugu = cubuk
+        """Ust cubuk (maket kabuk_*.png) + Ctrl+K komut paleti."""
+        self.ust = kabuk.UstCubuk({"yeni": self.e_yeni, "ac": self.e_ac,
+                                   "kaydet": self.e_kaydet, "geri": self.e_geri,
+                                   "yinele": self.e_yinele}, self)
+        self._tur_menusu = QtWidgets.QMenu(self)
+        self._tur_menusu.aboutToShow.connect(self._tur_menusunu_doldur)
+        self.ust.d_tur.setMenu(self._tur_menusu)
+        self.palet = KomutPaleti(self, self.komut_eylemleri)
+        self.ust.komut_istendi.connect(self.palet.ac)
+        self.ust.kosu_istendi.connect(self._calistir_menuden)
+        self.ust.durdur_istendi.connect(lambda: self.s_calistir.durdur())
+        self.ust.model_ozet.linkActivated.connect(self._baslik_baglantisi)
+        # Eski ad: testler ve araclar arac cubugunu bu adla ariyordu.
+        self._arac_cubugu = self.ust
+
+    def komut_eylemleri(self):
+        """Ctrl+K paletinin listesi: menu eylemleri + etkin sayfanin komutlari."""
+        eylemler = []
+        for menu in self.menuBar().actions():
+            alt = menu.menu()
+            if alt is None:
+                continue
+            eylemler += [e for e in alt.actions() if not e.isSeparator() and e.menu() is None]
+        eylemler += [self.e_dogrula, self.e_onizle, self.e_calistir]
+        sekme = self.sekme_widget(self.gecerli_sekme())
+        if sekme is not None:
+            eylemler += list(sekme_arayuzu.komutlar(sekme))
+        return eylemler
 
     def _durum_cubugu_kur(self):
-        # Sonraki adim ipucu: "normal" durum cubugu bileseni -- gecici
-        # mesajlar (onizleme, kayit...) onu kisa sure ortup geri birakir.
-        self.durum_ipucu = QtWidgets.QLabel("")
-        self.durum_ipucu.setObjectName("soluk")
-        self.statusBar().addWidget(self.durum_ipucu, 1)
-        self.durum_rozeti = DurumRozeti("", "notr", tiklanabilir=True)
-        self.durum_rozeti.setToolTip("Doğrulama bulgularını göster")
-        self.durum_rozeti.tiklandi.connect(self._bulgu_listesini_ac)
-        self.statusBar().addPermanentWidget(self.durum_rozeti)
+        """Alt dogrulama seridi + bulgu acilir listesi."""
+        self.serit = kabuk.DogrulamaSeridi(self)
+        self.serit.setFixedHeight(kabuk.B["serit"])
+        self.serit.veri_denetle.connect(lambda: self._dogrula(veri=True))
+        self.serit.bulguya_git.connect(self._ilk_bulguya_git)
+        self.serit.ozet_istendi.connect(self._bulgu_listesini_ac)
         self.bulgu_acilir = _BulguAcilir(self)
         self.bulgu_acilir.liste.itemClicked.connect(self._acilirdan_git)
         self.bulgu_acilir.liste.itemActivated.connect(self._acilirdan_git)
+        # Dogrulama listesi artik yalnizca acilir pencerededir.
+        self.dogrulama = self.bulgu_acilir.liste
 
     def _eylem(self, menu, ad, islev, kisayol=None, ipucu=None):
         e = QtGui.QAction(ad, self)
@@ -312,7 +324,7 @@ class MenulerMixin(object):
         self._dogrula(veri=False)          # seviye renkleri, rozetler
         self._ozet_guncelle()              # baslik baglanti rengi
         self.onizleme._ciz()               # grafik paleti
-        self.statusBar().showMessage(_("Tema: {ad}").format(ad=_(tema.TEMALAR[ad]["ad"])), 4000)
+        self.bildir_mesaj(_("Tema: {ad}").format(ad=_(tema.TEMALAR[ad]["ad"])), "bilgi")
 
     def _dil_menusu_kur(self, ust_menu):
         """Gorunum > Dil: secim QSettings'e yazilir, yeniden baslatinca gecerli."""
