@@ -30,7 +30,8 @@ DONUK_SEKME = {
         "kapi_ayarla": "(self, fonksiyon)", "kapi_guncelle": "(self)",
         "sonuc_var": "(self)", "sifirla": "(self)",
         "spec_ayarla": "(self, spec, proje_yolu=None)", "calistir": "(self)",
-        "durdur": "(self)"},
+        "durdur": "(self)",
+        "kosu_durumu_degisti": "kosu_durumu_degisti(bool)", "son_kosu_dizini": "(self)"},
     "arayuz.sekme_analiz:AnalizSekmesi": {
         "durum": "durum(QString,bool)", "sonuc_degisti": "sonuc_degisti()",
         "kapi_ayarla": "(self, fonksiyon)", "kapi_guncelle": "(self)",
