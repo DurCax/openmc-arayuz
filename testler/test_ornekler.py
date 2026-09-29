@@ -198,16 +198,26 @@ def test_tam_kor_varsayilani():
 
 
 def test_ceyrek_kor():
-    print("\n[OR9] Ceyrek kor = tam korun sag-alt ceyregi")
+    print("\n[OR9] Ceyrek kor = tam korun sag-alt ceyregi; AYNALAMA tam koru geri verir")
     tam = _spec("pwr_smr_kor.json")["kor"]
     cey = _spec("pwr_ceyrek_kor.json")["kor"]
     n = tam["boyut"][0] // 2
     kontrol("harita ceyrek", cey["harita"] == [r[n:] for r in tam["harita"][n:]])
+    # Simetri duzlemi YANSITICI sinirdir: cozulen model, ceyregin iki eksende
+    # AYNALANMASIYLA oluşan kordur. Dama deseninin 180 derece donme simetrisi
+    # vardir ama ayna simetrisi yoktur; boyle bir desen sessizce BASKA bir kor
+    # cozerdi (olculdu: +260 pcm). Bu denetim Monte Carlo'suz yakalar.
+    aynali = [r[::-1] + r for r in cey["harita"]]
+    aynali = [s[::1] for s in reversed(aynali)] + aynali
+    kontrol("ceyregin aynasi tam korun kendisi", aynali == tam["harita"],
+            "-> ilk fark: %s" % next((i for i, (a, b) in enumerate(zip(aynali, tam["harita"]))
+                                      if a != b), None))
     kontrol("dis iki yuzde >= 2 sira su", all(r[-2:] == "ss" for r in cey["harita"])
             and cey["harita"][-1] == cey["harita"][-2] == "s" * n)
     kontrol("yan yansitici, eksenel vakum", cey["sinir"] == {"yan": "reflective",
                                                              "alt": "vacuum", "ust": "vacuum"})
-    kontrol("tam kor 52 demet", sum(c in "AB" for r in tam["harita"] for c in r) == 52)
+    kontrol("tam kor 52 demet, ceyrek 13", sum(c in "AB" for r in tam["harita"] for c in r) == 52
+            and sum(c in "AB" for r in cey["harita"] for c in r) == 13)
 
 
 def _on_kosul_atla(neden):
@@ -265,8 +275,13 @@ def test_yavas_yeni_ornekler_kosar(gecici):
 
 
 def test_yavas_ceyrek_tam_esit(gecici):
-    print("\n[OR12] Ceyrek kor k = tam kor k (3 sigma)")
-    t = _kos("pwr_smr_kor.json", gecici, 20000, 160, 60)
+    print("\n[OR12] Ceyrek kor k = tam kor k (ayni yan sinirla, 3 sigma)")
+    # Cekirdek yuz basina sinir kosulu sunmaz: ceyrek korun DIS iki yuzu de
+    # yansiticidir. Karsilastirma ancak tam kor da ayni yan sinirla kosulursa
+    # anlamlidir (fark olculdu: vakum -> yansitici +89 pcm, docs/ORNEKLER.md).
+    tam = _spec("pwr_smr_kor.json")
+    tam["kor"]["sinir"]["yan"] = "reflective"
+    t = _kos("pwr_smr_kor.json", gecici, 20000, 160, 60, spec=tam)
     c = _kos("pwr_ceyrek_kor.json", gecici, 20000, 160, 60)
     if t is None or c is None:
         return
@@ -277,20 +292,29 @@ def test_yavas_ceyrek_tam_esit(gecici):
 
 
 def test_yavas_gd_sogan_kabugu(gecici):
-    print("\n[OR13] Gd tukenmesi: dis halka once yanar, k yukselir")
+    print("\n[OR13] Gd tukenmesi: uzaysal oz-perdeleme (sogan kabugu)")
     from cekirdek import tukenme
     s = _spec("pwr_gd_tukenme.json")
     a = s["ayarlar"]
     a["parcacik"], a["cevrim"], a["pasif"] = 1500, 40, 15
-    s["tukenme"]["adimlar"] = [0.02, 0.08, 0.9, 2.0, 2.0]
+    s["tukenme"]["adimlar"] = [0.02, 0.08, 0.9, 2.0, 2.0]        # 5 MWd/kg
     d = os.path.join(gecici, "gd")
     tukenme.calistir(s, d)
     r = tukenme.sonuc_oku(os.path.join(d, "depletion_results.h5"), s)
     g = {m: v["Gd157"] for m, v in r["yogunluk"].items() if m.startswith("uo2_gd")}
     kalan = {m: v[-1] / v[0] for m, v in g.items()}
     print("   Gd157 kalan orani: %s" % {m: round(v, 3) for m, v in sorted(kalan.items())})
-    kontrol("dis halka (5) ic halkadan (1) hizli yanar", kalan["uo2_gd_5"] < kalan["uo2_gd_1"])
-    kontrol("k Gd yanarken yukselir", r["k"][-1] > r["k"][1], "-> %s" % r["k"])
+    # Gd-157 tesir kesiti oyle buyuktur ki pelet disindan ice dogru "sogan kabugu"
+    # gibi yanar: kalan orani halka numarasiyla (icten disa) TEK YONLU azalir.
+    sirali = [kalan["uo2_gd_%d" % i] for i in range(1, 6)]
+    kontrol("kalan Gd157 ictan disa tek yonlu azalir",
+            all(x > y for x, y in zip(sirali, sirali[1:])), "-> %s" % [round(x, 3) for x in sirali])
+    kontrol("dis halka (5) neredeyse tukendi (< %5)", sirali[-1] < 0.05, "-> %.3f" % sirali[-1])
+    kontrol("ic halka (1) yarisindan fazlasini korudu", sirali[0] > 0.5, "-> %.3f" % sirali[0])
+    # 5 MWd/kg'da Gd hala ic halkalarda duruyor; 25 cubuktan yalnizca biri Gd'li
+    # oldugu icin tutma etkisi zayiftir ve k tepesi GORULMEZ (docs/ORNEKLER.md).
+    kontrol("k yakit tukenmesiyle duser", r["k"][-1] < r["k"][0], "-> %s" % [round(x, 4)
+                                                                            for x in r["k"]])
 
 
 HIZLI = [test_butun_ornekler_kapidan_gecer, test_vver_kor_163_demet, test_vver_demetleri,

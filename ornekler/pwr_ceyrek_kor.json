@@ -1,7 +1,7 @@
 {
   "surum": 1,
   "ad": "Çeyrek simetrik PWR koru (13 demet, 3B)",
-  "aciklama": "Çeyrek simetrik PWR koru: pwr_smr_kor.json'un sağ-alt çeyreği (13 demet). Sol (x = 0) ve üst (y = 0) yüzler SİMETRİ düzlemidir (yansıtıcı). Çekirdek, her yan yüze tek bir sınır koşulu uygular; bu yüzden dış iki yüz de yansıtıcıdır — ama onlardan önce iki sıra (42.8 cm) su vardır: yansıtılan 'ayna' kor 85.7 cm su ile ayrılır ve etkileşmez, yani dış yüzler fiziksel olarak vakum gibi davranır. Hesap maliyeti tam korun ~1/4'üdür; k tam korla istatistik içinde aynıdır (testler/test_ornekler.py, YAVAS).\n\nDemetler pwr_17x17.json ile aynıdır (Westinghouse 17×17, 900/600/580 K, 1300 ppm bor); iki zenginlik: A = %2.4 (iç dama), B = %3.1 (çevre). Demet adımı 21.42 cm, aktif yükseklik 200 cm, alt/üst 20 cm su, eksenel sınırlar vakum. Tasarım EĞİTİM amaçlıdır (gerçek bir SMR değildir); referans k verilmez.\n",
+  "aciklama": "Çeyrek simetrik PWR koru: pwr_smr_kor.json'un sağ-alt çeyreği (13 demet). Sol (x = 0) ve üst (y = 0) yüzler SİMETRİ düzlemidir (yansıtıcı) — aynalandığında tam kor yeniden doğar (testler/test_ornekler.py OR9 bunu harita üzerinde sınar).\n\nSINIR KOŞULU UYARISI: çekirdek, korun DÖRT yan yüzüne tek bir sınır koşulu uygular; yüz başına ayrı koşul yoktur. Bu yüzden dış iki yüz de yansıtıcı kalır: kor, 85.7 cm su ile ayrılmış sonsuz bir kor dizisi olur. Ölçülen etki +89 pcm'dir (tam kor, aynı geometri, yalnız yan sınır vakum → yansıtıcı). Çeyrek ile tam korun k'sı ancak ikisi de aynı yan sınırla koşulursa istatistik içinde eşittir (YAVAS test OR12 böyle karşılaştırır). Mutlak k için tam koru kullanın; çeyrek kor ~4 kat hızlıdır ve göreli karşılaştırmalar (çubuk değeri, güç şekli) için uygundur.\n\nDemetler pwr_17x17.json ile aynıdır (Westinghouse 17×17, 900/600/580 K, 1300 ppm bor); iki zenginlik eş merkezli kuşaklar hâlindedir: B = %3.1 dış kuşak, A = %2.4 iç bölge (dışarıdan içeriye yükleme). Desen EŞ MERKEZLİDİR çünkü çeyrek kor modeli simetri düzlemlerini yansıtıcı sınırla kurar, yani çeyreği AYNALAR: dama deseninin ayna simetrisi olmadığı için aynalanan kor başka bir yükleme olurdu (ölçüldü: +260 pcm). Demet adımı 21.42 cm, aktif yükseklik 200 cm, alt/üst 20 cm su. Tasarım EĞİTİM amaçlıdır (gerçek bir SMR değildir); referans k verilmez.\n",
   "malzemeler": [
     {
       "ad": "uo2_24",
@@ -311,9 +311,9 @@
       6
     ],
     "harita": [
-      "BABBss",
-      "ABABss",
-      "BABsss",
+      "AAABss",
+      "AABBss",
+      "ABBsss",
       "BBssss",
       "ssssss",
       "ssssss"

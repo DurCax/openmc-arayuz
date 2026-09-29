@@ -1,7 +1,7 @@
 {
   "surum": 1,
   "ad": "Kare SMR tam koru (52 demet, 3B)",
-  "aciklama": "Küçük modüler reaktör benzeri kare tam kor (3B): 52 adet 17×17 demet, 8×8 haritanın köşeleri kesilmiş; çevrede iki sıra (42.8 cm) su yansıtıcı, dış yüzeyler vakum.\n\nDemetler pwr_17x17.json ile aynıdır (Westinghouse 17×17, 900/600/580 K, 1300 ppm bor); iki zenginlik: A = %2.4 (iç dama), B = %3.1 (çevre). Demet adımı 21.42 cm, aktif yükseklik 200 cm, alt/üst 20 cm su, eksenel sınırlar vakum. Tasarım EĞİTİM amaçlıdır (gerçek bir SMR değildir); referans k verilmez.\nÇeyrek simetrik eşi: pwr_ceyrek_kor.json.",
+  "aciklama": "Küçük modüler reaktör benzeri kare tam kor (3B): 52 adet 17×17 demet, 8×8 haritanın köşeleri kesilmiş; çevrede iki sıra (42.8 cm) su yansıtıcı, dış yüzeyler vakum.\n\nDemetler pwr_17x17.json ile aynıdır (Westinghouse 17×17, 900/600/580 K, 1300 ppm bor); iki zenginlik eş merkezli kuşaklar hâlindedir: B = %3.1 dış kuşak, A = %2.4 iç bölge (dışarıdan içeriye yükleme). Desen EŞ MERKEZLİDİR çünkü çeyrek kor modeli simetri düzlemlerini yansıtıcı sınırla kurar, yani çeyreği AYNALAR: dama deseninin ayna simetrisi olmadığı için aynalanan kor başka bir yükleme olurdu (ölçüldü: +260 pcm). Demet adımı 21.42 cm, aktif yükseklik 200 cm, alt/üst 20 cm su. Tasarım EĞİTİM amaçlıdır (gerçek bir SMR değildir); referans k verilmez.\nÇeyrek simetrik eşi: pwr_ceyrek_kor.json.",
   "malzemeler": [
     {
       "ad": "uo2_24",
@@ -314,12 +314,12 @@
       "ssssssssssss",
       "ssssssssssss",
       "ssssBBBBssss",
-      "sssBABABBsss",
-      "ssBABABABBss",
-      "ssBBABABABss",
-      "ssBABABABBss",
-      "ssBBABABABss",
-      "sssBBABABsss",
+      "sssBBAABBsss",
+      "ssBBAAAABBss",
+      "ssBAAAAAABss",
+      "ssBAAAAAABss",
+      "ssBBAAAABBss",
+      "sssBBAABBsss",
       "ssssBBBBssss",
       "ssssssssssss",
       "ssssssssssss"
