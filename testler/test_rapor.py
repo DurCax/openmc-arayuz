@@ -17,6 +17,7 @@ import logging
 import os
 import shutil
 import subprocess
+import sys
 import tempfile
 import time
 
@@ -26,6 +27,7 @@ os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
 FIXTURE = os.path.join(KOK, "testler", "veri", "kosu_ornek")
 FIXTURE_SPEC = os.path.join(FIXTURE, "spec.json")
+SURE_SINIRI = 5.0            # s, HTML + PDF (kabul olcutu; offscreen, isinmis surec)
 
 
 def _modul_duzeyi_importlar(agac):
@@ -254,6 +256,13 @@ def _pdf_metni(yol):
                           text=True, check=True).stdout
 
 
+def _kapsam_olcuyor():
+    """coverage (araclar/kapsam.sh) ya da hata ayiklayici izliyor mu."""
+    kapsam = sys.modules.get("coverage")
+    return sys.gettrace() is not None or bool(
+        kapsam is not None and kapsam.Coverage.current() is not None)
+
+
 def test_rapor_pdf_ve_sure():
     print("\n[R8] fixture'dan PDF (sayfa > 0, metin icerir); HTML + PDF < 5 s (offscreen)")
     from cekirdek import rapor
@@ -265,7 +274,10 @@ def test_rapor_pdf_ve_sure():
         rapor.olustur(spec, FIXTURE, os.path.join(dizin, "r.html"), "html")
         sonuc = rapor.olustur(spec, FIXTURE, os.path.join(dizin, "r.pdf"), "pdf")
         sure = time.perf_counter() - t0
-        kontrol("HTML + PDF < 5 s", sure < 5.0, "-> %.2f s" % sure)
+        if not _kapsam_olcuyor():
+            kontrol("HTML + PDF < 5 s", sure < SURE_SINIRI, "-> %.2f s" % sure)
+        else:       # kapsam (coverage) izleyicisi altinda sure olcusu anlamsiz
+            print("  (izleyici etkin: sure denetimi atlandi, %.2f s)" % sure)
         with open(sonuc.yol, "rb") as f:
             kontrol("PDF imzasi", f.read(5) == b"%PDF-")
         n = _pdf_sayfa_sayisi(sonuc.yol)
