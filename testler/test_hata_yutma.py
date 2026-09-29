@@ -52,7 +52,6 @@ KABA_EKLEME = {"append", "add", "extend", "insert"}
 # "modul:nitelikli_islev" -> o islevdeki sessiz except sayisi.
 # Olculen 29.09.2026 (D1-C): 33 kayit. Kaynak dosya satirlari rapordadir.
 #   (T) Dalga 1 tabani (eski anahtar "islev" -> "modul:islev" tasindi; 26 kayit).
-#   D2-7: arayuz.sekme_malzeme:MalzemeSekmesi.doldur ve arayuz.malzeme.yardimcilar:sab_onerileri loglaniyor (silindi).
 #   (Y) D1-C yeni kurali (hata metnini alana/listeye yazip birakma) ile eklenen
 #       taban cizgisi; DUZELTME Dalga 2 sahiplerine kalir (7 kayit).
 IZINLI = {
