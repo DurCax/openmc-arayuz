@@ -118,6 +118,96 @@ def test_zincirde_cozulme():
     sema  # noqa: B018
 
 
-HIZLI = [test_yeni_gruplar, test_yeni_setler, test_zincirde_cozulme]
+# ============================================================================
+# 2. Kapanis: bekleyen cizim ve gec gelen sonuc (D1-A cokmesi)
+# ============================================================================
+
+SAHTE_SONUC = {"zaman_d": [0.0, 1.0], "yanma": [0.0, 0.04], "k": [1.30, 1.28],
+               "k_sapma": [0.0010, 0.0011], "atomlar": {"uo2": {"U235": [1e21, 9e20]}},
+               "yogunluk": {"uo2": {"U235": [7.0e-4, 6.8e-4]}},
+               "adim_sayisi": 1, "bulunamayan": []}
+
+
+def _sekme(ad="pwr_tukenme"):
+    from arayuz.sekme_tukenme import TukenmeSekmesi
+    t = TukenmeSekmesi()
+    t.spec_yukle(_spec(ad))
+    t.bekle()
+    return t
+
+
+def test_silinmis_sekmeye_gec_sonuc():
+    """D1-A: sekme silindikten sonra gelen okuma sonucu / bekleyen cizim coktururdu
+    (RuntimeError: Internal C++ object already deleted)."""
+    print("\n[TG4] KAPANIS: silinmis sekmeye gelen gec sonuc ve bekleyen cizim cokmez")
+    uyg = _qt()
+    if uyg is None:
+        return
+    import shiboken6
+    from PySide6 import QtWidgets
+    t = _sekme()
+    t.show()
+    uyg.processEvents()
+    tuval = t.tuval
+    t._grafik_bos()                       # bekleyen bir cizim birak
+    t.close()
+    shiboken6.delete(t)                   # kabuk sayfayi sildi / test islevi dondu
+    kontrol("(on kosul) C++ nesnesi silindi",
+            not shiboken6.isValid(t) and not shiboken6.isValid(tuval))
+    hatalar = []
+    for ad, f in (("tuval.draw_idle", lambda: tuval.draw_idle()),
+                  ("_grafik_bos", lambda: t._grafik_bos()),
+                  ("_sonuc_goster", lambda: t._sonuc_goster(copy.deepcopy(SAHTE_SONUC))),
+                  ("_onceki_geldi", lambda: t._onceki_geldi(
+                      ("/yok/x.h5", 1.0),
+                      {"h5": "/yok/x.h5", "tarih": time.time(), "durum": "guncel",
+                       "farklar": [], "sonuc": copy.deepcopy(SAHTE_SONUC)})),
+                  ("_secim_geldi", lambda: t._secim_geldi(
+                      (t._kusak, "/yok/x.h5"), copy.deepcopy(SAHTE_SONUC))),
+                  ("_bulunamayan_yaz", lambda: t._bulunamayan_yaz(["Xe-135"]))):
+        try:
+            f()
+        except RuntimeError as e:
+            hatalar.append("%s: %s" % (ad, e))
+    kontrol("silinmis sekmede gec cagrilar sessizce yok sayiliyor", not hatalar,
+            "-> %r" % hatalar)
+    for _i in range(5):
+        QtWidgets.QApplication.processEvents()
+    kontrol("bekleyen cizim olay dongusunde cokmuyor", True)
+
+
+def test_kapanista_bekleyen_cizim_iptal():
+    print("\n[TG5] KAPANIS: close() bekleyen cizimi iptal eder ve okumayi bekler")
+    uyg = _qt()
+    if uyg is None:
+        return
+    from PySide6 import QtCore
+    t = _sekme()
+    t.show()
+    uyg.processEvents()
+    t._grafik_bos()
+    kontrol("(on kosul) cizim bekliyor", t.tuval._draw_pending is True,
+            "-> %r" % getattr(t.tuval, "_draw_pending", None))
+    t.close()
+    kontrol("close(): bekleyen cizim iptal edildi", t.tuval._draw_pending is False)
+
+    class _Yavas(QtCore.QThread):
+        def run(self):
+            self.msleep(300)
+    t2 = _sekme()
+    isci = _Yavas(t2)
+    t2._secim_isci = isci
+    t2._secim_okunuyor = True
+    isci.finished.connect(lambda: setattr(t2, "_secim_okunuyor", False))
+    isci.start()
+    t2.close()
+    kontrol("close(): suren okuma beklendi (QThread calisir durumda degil)",
+            not isci.isRunning() and not t2._secim_okunuyor)
+    gc.collect()
+
+
+HIZLI = [test_yeni_gruplar, test_yeni_setler, test_zincirde_cozulme,
+         test_silinmis_sekmeye_gec_sonuc, test_kapanista_bekleyen_cizim_iptal]
 YAVAS = []
-ZINCIR_GEREKEN = [test_zincirde_cozulme]
+ZINCIR_GEREKEN = [test_zincirde_cozulme, test_silinmis_sekmeye_gec_sonuc,
+                  test_kapanista_bekleyen_cizim_iptal]
