@@ -66,6 +66,13 @@ jobs:
           openmc-arayuz-kosu --yardim > /dev/null
 
       - name: Hizli suit (nukleer veri gerektirmeyenler)
-        # Kapsam CI'da yalnizca GOSTERILIR: veri gerektiren testler atlandigi
-        # icin oran yerelden dusuktur. %80 kapisi yerelde araclar/kapsam.sh ile.
-        run: python -m pytest -m "hizli and not veri" -n auto -q --durations=15 --cov --cov-report=term
+        # Kapsam esigi: bu alt kume (veri yok, zincir yok, bos HOME) yerelde
+        # CI taklidiyle olculdu: %82.4 (29.09.2026, D1-C; 177 gecti, 3 atlandi).
+        # Esik olculenin 3 puan alti (%79.4 -> 79): MC/veri yollari burada
+        # hic kosmadigi icin oran yerelden dusuktur; 3 puanlik pay xdist
+        # dagilimi ve kucuk kod eklemelerine yer birakir, gercek bir dususu
+        # (ornegin bir modulun testlerinin sessizce atlanmasi) yakalar.
+        # Toplam %80 kapisi yerelde: araclar/kapsam.sh tam.
+        run: >-
+          python -m pytest -m "hizli and not veri" -n auto -q --durations=15
+          --cov --cov-report=term --cov-fail-under=79
