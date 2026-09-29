@@ -47,3 +47,49 @@ def surum():
 
 
 __version__ = surum()
+
+
+# ----------------------------------------------------------------------------
+# Derleme / kaynak bilgisi (rapor tekrarlanabilirlik blogu, Hakkinda)
+# ----------------------------------------------------------------------------
+_KOK = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+_GIT = "git"                 # testler var olmayan bir komutla degistirir
+_GIT_SURESI = 5.0            # s; takilan bir git komutu raporu bekletmesin
+
+
+def _git(*argumanlar):
+    """Kaynak agacinda git komutu; cikti metni ya da (git yok / depo degil /
+    zaman asimi) None. Neden loglanir (INFO): kurulu pakette git olmamasi
+    olagandir, hata degildir."""
+    import subprocess
+    from cekirdek.gunluk import kaydedici
+    try:
+        cikti = subprocess.run([_GIT, "-C", _KOK] + list(argumanlar), capture_output=True,
+                               text=True, timeout=_GIT_SURESI, check=True)
+    except (OSError, subprocess.SubprocessError) as e:
+        kaydedici(__name__).info("git bilgisi okunamadı (%s): %s", " ".join(argumanlar), e)
+        return None
+    return cikti.stdout.strip()
+
+
+def derleme_bilgisi():
+    """
+    Uygulamanin kimligi (YENI sozluk):
+      uygulama        UYGULAMA_ADI
+      surum           surum()
+      git_commit      40 haneli commit ya da None (git/depo yoksa; loglanir)
+      git_degisiklik  calisma agacinda commit edilmemis degisiklik var mi; None
+      python          Python surumu
+      platform        isletim sistemi / mimari
+    """
+    import platform
+    commit = _git("rev-parse", "HEAD")
+    durum = _git("status", "--porcelain", "--untracked-files=no") if commit else None
+    return {
+        "uygulama": UYGULAMA_ADI,
+        "surum": surum(),
+        "git_commit": commit or None,
+        "git_degisiklik": (bool(durum) if durum is not None else None),
+        "python": platform.python_version(),
+        "platform": platform.platform(terse=True),
+    }
