@@ -10,6 +10,9 @@
 """
 
 from cekirdek.ceviri import _
+from cekirdek.gunluk import kaydedici
+
+_log = kaydedici(__name__)
 
 
 def _g():
@@ -190,6 +193,8 @@ def coklu_tohum(spec, kok_dizin, tohumlar=(1, 2, 3, 4, 5), is_parcacigi=None,
             if f["F_q"]:
                 f_q.append(f["F_q"])
         except Exception as e:
+            # tek tohumun hatasi olcumu durdurmaz; ozet["hatalar"]da gorunur
+            _log.exception("çoklu tohum: tohum %d koşulamadı", t)
             hatalar.append("tohum %d: %s" % (t, e))
         if geri_cagir:
             geri_cagir(i, len(tohumlar), f_dh[-1] if f_dh else None)

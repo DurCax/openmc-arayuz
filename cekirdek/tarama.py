@@ -46,6 +46,9 @@ import sys
 
 from cekirdek import kosucu, sema
 from cekirdek import malzeme_kutup as mk
+from cekirdek.gunluk import kaydedici
+
+_log = kaydedici(__name__)
 
 # ----------------------------------------------------------------------------
 # Tarama turleri: (aciklama, hedef_turu, birim, katsayi_birimi)
@@ -372,6 +375,9 @@ def calistir(spec, tur, hedef, degerler, kok_dizin, geri_cagir=None,
             else:
                 sonuc["hata"] = "koşu başarısız (çıkış kodu %d)" % kosu["cikis_kodu"]
         except Exception as e:
+            # Tek noktanin hatasi taramayi durdurmaz: nokta "hata" ile
+            # isaretlenir (arayuz/terminal gosterir) ve ayrinti loglanir.
+            _log.exception("tarama noktası %d (%s = %s) koşulamadı", i, tur, deger)
             sonuc["hata"] = str(e)
         sonuclar.append(sonuc)
         if geri_cagir:
