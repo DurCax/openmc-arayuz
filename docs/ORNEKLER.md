@@ -129,6 +129,15 @@ süreleri, 8 iş parçacığı, makine başka koşularla paylaşılırken:
 |---|---|---|
 | vver1000_kor.json | 66.1 | 1.09907 ± 0.00097 |
 | sfr_met1000_kor.json | 281.5 | 1.03014 ± 0.00053 |
+| pwr_beavrs_kor.json | 104.5 | 1.00187 ± 0.00093 |
+| pwr_smr_kor.json | 82.9 | 1.08345 ± 0.00092 |
+| pwr_ceyrek_kor.json | 76.7 | 1.08778 ± 0.00097 |
+| mtr_kor.json | 114.4 | 1.16743 ± 0.00098 |
+
+Çeyrek ve tam SMR koru "Normal" ayarda 3.2σ ayrıştı (433 pcm): tam korda 40
+pasif çevrim kaynak yakınsaması için yetersizdir (entropi hâlâ düşüyordu).
+YAVAS test OR12 20000 × 160/60 ile karşılaştırır; büyük korlarda pasif çevrimi
+artırın.
 
 Hepsi 15 dakikanın altındadır.
 
