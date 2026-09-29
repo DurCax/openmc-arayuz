@@ -54,7 +54,6 @@ IZINLI = {  # olculen: 26 kayit (29.09.2026; Dalga 1: Ajan 4 dagilim_oku, Ajan 2
     "nuklid_enerji_tavani": 1,
     "ornek_listesi": 1,
     "sab_onerileri": 1,
-    "sonuc_oku": 3,
     "tukenme_ayirma_anlamli": 1,
 }
 

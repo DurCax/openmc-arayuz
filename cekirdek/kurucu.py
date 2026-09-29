@@ -969,7 +969,13 @@ def guc_tally_ekle(spec, model, nesneler, universeler, sinir_kutu,
     ref.scores = list(tal.scores)
     ref.filters = [openmc.CellFilter(hedef)]
 
-    model.tallies = openmc.Tallies(list(model.tallies) + [tal, ref])
+    # Mutlak guc payi: hedef bolgenin model geneli fisyon enerjisindeki payi
+    # (guc_toplam_ref / guc_model_toplam). Blanket ya da ikinci bir fisil cubuk
+    # turu varsa toplam gucun tamami hedef cubuklara yazilmaz (D1-A bulgu 2b).
+    tum = openmc.Tally(name="guc_model_toplam")
+    tum.scores = list(tal.scores)
+
+    model.tallies = openmc.Tallies(list(model.tallies) + [tal, ref, tum])
     return hedef
 
 

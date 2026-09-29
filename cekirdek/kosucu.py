@@ -33,6 +33,10 @@ import time
 
 from cekirdek import sema, kurucu, dogrula
 from cekirdek import kaynak as _kaynak
+from cekirdek.ceviri import _
+from cekirdek.gunluk import kaydedici
+
+_log = kaydedici(__name__)
 
 # OpenMC cevrim satiri iki bicimde gelir:
 #   entropi YOK :  "  54/1   1.32041   1.36400 +/- 0.00368"
@@ -235,16 +239,28 @@ def xml_yaz(spec, dizin):
 # CALISTIRMA
 # ============================================================================
 
-def calistir(spec, dizin, geri_cagir=None, is_parcacigi=None, temizle=True):
+def calistir(spec, dizin, geri_cagir=None, is_parcacigi=None, temizle=True,
+             dogrulama=True, veri_kontrolu=True):
     """
-    Modeli kurar, XML yazar ve openmc'yi alt surec olarak calistirir.
+    Modeli dogrular, kurar, XML yazar ve openmc'yi alt surec olarak calistirir.
 
     geri_cagir : her cikti satiri icin cagrilan fonksiyon -- f(satir, cevrim_bilgisi)
                  cevrim_bilgisi cevrim satiri degilse None'dir.
+    dogrulama  : True (varsayilan) ise dogrula.kapi() kosu dizinine DOKUNMADAN
+                 once cagrilir; hata bulgusu varsa dogrula.DogrulamaHatasi
+                 firlatilir ve onceki kosunun dosyalari SILINMEZ. Spec'i zaten
+                 dogrulamis cagiran (terminal girisi) False verir. (Parametre
+                 adi 'dogrula' degildir: modul adini golgelerdi.)
+                 Maliyet (olculdu, 29.09.2026): ornek modellerde ~30 ms (veri
+                 denetimiyle), ~10 ms (verisiz) -- tarama / kritik arama /
+                 coklu tohum her noktada dogrular.
+    veri_kontrolu : kapiya iletilir (nukleer veri denetimi).
     DONER sozluk:
        {"basarili":bool, "cikis_kodu":int, "statepoint":yol|None,
         "sure":float, "log":yol, "cevrimler":[...]}
     """
+    if dogrulama:
+        dogrula.kapi(spec, veri_kontrolu=veri_kontrolu)
     dizin = dizin_hazirla(dizin, temizle=temizle)
     xml_yaz(spec, dizin)
 
@@ -372,19 +388,173 @@ def tally_metni(ad, df, malzeme_adlari=None, sabit=False, kuvvet=1.0):
     return "\n".join(cikti)
 
 
+_GUC_TALLYLERI = ("guc_dagilimi", "guc_toplam_ref", "guc_model_toplam")
+
+
+def _entropi_oku(sp):
+    """Shannon entropisi listesi; yoksa ya da okunamazsa [] (hata loglanir)."""
+    try:
+        return [float(x) for x in sp.entropy] if sp.entropy is not None else []
+    except Exception:
+        _log.warning("statepoint entropisi okunamadı", exc_info=True)
+        return []
+
+
+def _malzeme_adlari(sp):
+    """{malzeme kimligi: ad} -- tally tablolarinda kimlik yerine ad gosterilsin
+    (Ajan 9: "material 1 / 2" hangisinin su oldugunu soylemiyordu)."""
+    try:
+        return {m.id: m.name for m in sp.summary.materials}
+    except Exception:
+        _log.warning("summary.h5 malzeme adları okunamadı; tallylerde kimlik "
+                     "gösterilecek", exc_info=True)
+        return {}
+
+
+def _tallyleri_oku(sp, sonuc):
+    """Kullanici tally'leri sonuc['tallyler']'e; IFP paylari ayrica dondurulur."""
+    import math as _m
+    ifp = {}
+    for _tid, t in sp.tallies.items():
+        ad = t.name or "tally_%d" % t.id
+        if ad in _GUC_TALLYLERI:
+            continue          # guc bolumunde ayrica islenir
+        try:
+            df = t.get_pandas_dataframe()
+        except Exception as e:
+            _log.warning("'%s' tally'si okunamadı", ad, exc_info=True)
+            sonuc["tallyler"][ad] = "okunamadı: %s" % e
+            continue
+        if ad.startswith("IFP "):
+            ifp[ad] = (float(df["mean"].sum()),
+                       _m.sqrt(float((df["std. dev."] ** 2).sum())))
+        else:
+            sonuc["tallyler"][ad] = df
+    return ifp
+
+
+def _kinetik(ifp):
+    """
+    Kinetik parametreler (IFP yontemi); eksikse None.
+    beta_eff = <beta payi> / <payda>,  Lambda = <zaman payi> / <payda>
+    Belirsizlik oransal olarak birlestirilir (paylar ve payda bagimsiz kabul).
+    """
+    import math as _m
+    gerekli = ("IFP beta numerator", "IFP time numerator", "IFP denominator")
+    if not all(g in ifp for g in gerekli):
+        return None
+    pb, spb = ifp["IFP beta numerator"]
+    pt, spt = ifp["IFP time numerator"]
+    pd, spd = ifp["IFP denominator"]
+    if not (pd > 0 and pb > 0 and pt > 0):
+        return None
+    beta, lam = pb / pd, pt / pd
+    return {
+        "beta_eff": beta,
+        "beta_eff_sapma": beta * _m.sqrt((spb / pb) ** 2 + (spd / pd) ** 2),
+        "lambda": lam,
+        "lambda_sapma": lam * _m.sqrt((spt / pt) ** 2 + (spd / pd) ** 2),
+    }
+
+
+def _tally_toplami(sp, ad):
+    """Tally ortalamalarinin toplami; tally yoksa None (LookupError, DEBUG log).
+    Diger istisnalar (bozuk dosya vb.) yukari cikar."""
+    try:
+        tal = sp.get_tally(name=ad)
+    except LookupError:
+        _log.debug("'%s' tally'si statepoint'te yok", ad)
+        return None
+    return float(tal.get_pandas_dataframe()["mean"].sum())
+
+
+def _guc_korunumu(sp, dagilim):
+    """
+    TOPLAM KORUNUMU: cubuk guclerinin toplami, ayni hucreye bagli bolunmemis
+    tally'ye (guc_toplam_ref) esit olmalidir. Esit degilse haritalama
+    bozuktur; bu, yanlis bir haritanin sessizce dogru gorunmesini onleyen en
+    guclu kontroldur. DONER guc sozlugune eklenecek alanlar.
+    """
+    try:
+        ref_toplam = _tally_toplami(sp, "guc_toplam_ref")
+    except Exception as e:
+        _log.exception("güç toplamı korunum denetimi yapılamadı")
+        return {"korunum_hata": str(e)}
+    if ref_toplam is None:
+        return {}
+    if ref_toplam <= 0:
+        return {"korunum_notu": _(
+            "Referans güç toplamı sıfır ya da negatif (%.3g): hedef bölgede fisyon "
+            "sayılmadı, toplamın korunumu denetlenemedi.") % ref_toplam}
+    dag_toplam = sum(k["toplam"][0] for k in dagilim["konumlar"].values())
+    bagil = abs(dag_toplam / ref_toplam - 1.0)
+    alanlar = {"korunum": bagil}
+    if bagil > 1e-6:
+        alanlar["korunum_uyari"] = (
+            "Çubuk güçlerinin toplamı filtresiz tally'den %.2e bağıl "
+            "fark gösteriyor. Haritalama bozuk olabilir — sonuçlara "
+            "güvenmeyin." % bagil)
+    return alanlar
+
+
+def _hedef_payi(sp):
+    """
+    Hedef cubuk bolgesinin model geneli fisyon enerjisindeki payi:
+    kappa_hedef (guc_toplam_ref) / kappa_model (guc_model_toplam). Mutlak guc
+    bu payla dagitilir (guc.mutlak_guc). Eski statepoint'te tally yoksa None.
+    """
+    try:
+        hedef = _tally_toplami(sp, "guc_toplam_ref")
+        model = _tally_toplami(sp, "guc_model_toplam")
+    except Exception:
+        _log.exception("güç payı (hedef / model) okunamadı")
+        return None
+    if hedef is None or model is None or model <= 0:
+        return None
+    return hedef / model
+
+
+def _guc_oku(sp, sonuc):
+    """Cubuk bazli guc dagilimi: sonuc['guc'] ya da sonuc['guc_hata']."""
+    from cekirdek import guc as _guc
+    try:
+        dagilim = _guc.dagilim_oku(sp)
+    except Exception as e:
+        _log.exception("güç dağılımı okunamadı")
+        sonuc["guc_hata"] = str(e)
+        return
+    if not dagilim:
+        return
+    g = {"dagilim": dagilim, "faktorler": _guc.tepe_faktorleri(dagilim)}
+    g.update(_guc_korunumu(sp, dagilim))
+    g["hedef_payi"] = _hedef_payi(sp)
+    sonuc["guc"] = g
+
+
+def korunum_satirlari(g):
+    """Guc sozlugunun korunum durumu, kullaniciya gosterilecek satirlar
+    (terminal ve Calistir sekmesi ayni metni kullanir)."""
+    satirlar = []
+    if "korunum" in g:
+        satirlar.append(_("toplamın korunumu: bağıl fark %.1e — %s") % (
+            g["korunum"], _("tamam") if g["korunum"] < 1e-6
+            else _("bozuk, haritaya güvenmeyin")))
+    if g.get("korunum_hata"):
+        satirlar.append(_("toplamın korunumu denetlenemedi: %s") % g["korunum_hata"])
+    if g.get("korunum_notu"):
+        satirlar.append(g["korunum_notu"])
+    return satirlar
+
+
 def sonuc_oku(statepoint_yolu):
     """
     Statepoint'ten k-eff ve tally sonuclarini okur.
     DONER {"keff":(deger,sapma), "cevrim":int, "pasif":int, "tallyler":{ad: DataFrame}}
+      guc (varsa): {"dagilim", "faktorler", "korunum" | "korunum_hata" |
+                    "korunum_notu", "korunum_uyari", "hedef_payi"}
     """
     import openmc
     sp = openmc.StatePoint(statepoint_yolu)
-    entropi = []
-    try:
-        if sp.entropy is not None:
-            entropi = [float(x) for x in sp.entropy]
-    except Exception:
-        pass
     # Sabit kaynak modunda k-eff YOKTUR: sp.keff istisna atmaz, None doner.
     # Once bunu kontrol etmeyen kod "'NoneType' object has no attribute
     # 'nominal_value'" ile cokuyordu -- kosu basariyla bitmis olmasina ragmen.
@@ -395,80 +565,14 @@ def sonuc_oku(statepoint_yolu):
         "cevrim": sp.n_batches,
         "pasif": sp.n_inactive if ozdeger else 0,
         "parcacik": sp.n_particles,
-        "entropi": entropi,
+        "entropi": _entropi_oku(sp),
         "tallyler": {},
-        "malzeme_adlari": {},
+        "malzeme_adlari": _malzeme_adlari(sp),
     }
-    # Tally tablolarinda malzeme KIMLIGI yerine adi gosterilsin (Ajan 9:
-    # "material 1 / 2" hangisinin su, hangisinin celik oldugunu soylemiyordu).
-    try:
-        sonuc["malzeme_adlari"] = {m.id: m.name for m in sp.summary.materials}
-    except Exception:
-        pass
-    ifp = {}
-    for _, t in sp.tallies.items():
-        ad = t.name or "tally_%d" % t.id
-        try:
-            df = t.get_pandas_dataframe()
-        except Exception as e:
-            sonuc["tallyler"][ad] = "okunamadı: %s" % e
-            continue
-        if ad in ("guc_dagilimi", "guc_toplam_ref"):
-            continue          # asagida ayrica islenir
-        if ad.startswith("IFP "):
-            import math as _m
-            ifp[ad] = (float(df["mean"].sum()),
-                       _m.sqrt(float((df["std. dev."] ** 2).sum())))
-        else:
-            sonuc["tallyler"][ad] = df
-
-    # --- kinetik parametreler (IFP yontemi) ---
-    # beta_eff = <beta payi> / <payda>,  Lambda = <zaman payi> / <payda>
-    # Belirsizlik oransal olarak birlestirilir (paylar ve payda bagimsiz kabul).
-    gerekli = ("IFP beta numerator", "IFP time numerator", "IFP denominator")
-    if all(g in ifp for g in gerekli):
-        import math as _m
-        pb, spb = ifp["IFP beta numerator"]
-        pt, spt = ifp["IFP time numerator"]
-        pd, spd = ifp["IFP denominator"]
-        if pd > 0 and pb > 0 and pt > 0:
-            beta = pb / pd
-            lam = pt / pd
-            sonuc["kinetik"] = {
-                "beta_eff": beta,
-                "beta_eff_sapma": beta * _m.sqrt((spb / pb) ** 2 + (spd / pd) ** 2),
-                "lambda": lam,
-                "lambda_sapma": lam * _m.sqrt((spt / pt) ** 2 + (spd / pd) ** 2),
-            }
-
-    # --- cubuk bazli guc dagilimi ---
-    try:
-        from cekirdek import guc as _guc
-        dagilim = _guc.dagilim_oku(sp)
-    except Exception as e:
-        dagilim = None
-        sonuc["guc_hata"] = str(e)
-    if dagilim:
-        faktorler = _guc.tepe_faktorleri(dagilim)
-        sonuc["guc"] = {"dagilim": dagilim, "faktorler": faktorler}
-        # --- TOPLAM KORUNUMU ---
-        # Cubuk guclerinin toplami, filtresiz esdes tally'ye esit olmalidir.
-        # Esit degilse haritalama bozuktur; bu, yanlis bir haritanin sessizce
-        # dogru gorunmesini onleyen en guclu kontroldur.
-        try:
-            ref = sp.get_tally(name="guc_toplam_ref")
-            ref_toplam = float(ref.get_pandas_dataframe()["mean"].sum())
-            dag_toplam = sum(k["toplam"][0] for k in dagilim["konumlar"].values())
-            if ref_toplam > 0:
-                bagil = abs(dag_toplam / ref_toplam - 1.0)
-                sonuc["guc"]["korunum"] = bagil
-                if bagil > 1e-6:
-                    sonuc["guc"]["korunum_uyari"] = (
-                        "Çubuk güçlerinin toplamı filtresiz tally'den %.2e bağıl "
-                        "fark gösteriyor. Haritalama bozuk olabilir — sonuçlara "
-                        "güvenmeyin." % bagil)
-        except Exception:
-            pass
+    kinetik = _kinetik(_tallyleri_oku(sp, sonuc))
+    if kinetik:
+        sonuc["kinetik"] = kinetik
+    _guc_oku(sp, sonuc)
     return sonuc
 
 
@@ -507,14 +611,19 @@ def _terminal(argv):
     print(" %s" % spec.get("ad", spec_yolu))
     print("=" * 74)
 
-    # --- 1. dogrulama ---
-    bulgular = dogrula.tum_kontroller(spec)
+    # --- 1. dogrulama (tek kapi: dogrula.kapi) ---
+    try:
+        bulgular = dogrula.kapi(spec)
+    except dogrula.DogrulamaHatasi as e:
+        bulgular = dogrula.tum_kontroller(spec)
+        print("\n[1/3] Doğrulama: %s" % dogrula.ozet(bulgular))
+        for b in bulgular:
+            print("  %s" % b)
+        print("\nHatalar giderilmeden koşu başlatılmaz (%s)." % e)
+        return 1
     print("\n[1/3] Doğrulama: %s" % dogrula.ozet(bulgular))
     for b in bulgular:
         print("  %s" % b)
-    if dogrula.hata_var(bulgular):
-        print("\nHatalar giderilmeden koşu başlatılmaz.")
-        return 1
 
     # --- istege bagli betik uretimi ---
     if betik_yolu:
@@ -548,7 +657,9 @@ def _terminal(argv):
                 sys.stdout.write(("\r" + metin) if tty else (metin + "\n"))
                 sys.stdout.flush()
 
-    sonuc = calistir(spec, dizin, geri_cagir=ilerleme, is_parcacigi=is_parcacigi)
+    # spec yukarida dogrulandi: cift dogrulama yok
+    sonuc = calistir(spec, dizin, geri_cagir=ilerleme, is_parcacigi=is_parcacigi,
+                     dogrulama=False)
     if tty:
         sys.stdout.write("\r" + " " * 60 + "\r")
 
@@ -616,14 +727,13 @@ def _terminal(argv):
         # katmanlari yakit degildir ve toplama katilirsa W/cm kucuk cikar.
         _ar = kurucu.aktif_eksenel_aralik(spec)
         m = _guc.mutlak_guc(f, spec_g.get("toplam_guc"),
-                            (_ar[1] - _ar[0]) if _ar else None)
+                            (_ar[1] - _ar[0]) if _ar else None,
+                            hedef_payi=g.get("hedef_payi"))
         print("\n      --- güç dağılımı (%d çubuk, %d eksenel dilim) ---"
               % (f["cubuk_sayisi"], f["eksenel_dilim"]))
-        if "korunum" in g:
-            print("      toplamın korunumu: bağıl fark %.2e — %s"
-                  % (g["korunum"], "tamam" if g["korunum"] < 1e-6
-                     else "bozuk, haritaya güvenmeyin"))
-        for satir in _guc.yorumla(f, m):
+        for satir in korunum_satirlari(g):
+            print("      %s" % satir)
+        for satir in _guc.yorumla(f, m, hedef_payi=g.get("hedef_payi")):
             print("      %s" % satir)
     elif s.get("guc_hata"):
         print("\n      güç dağılımı okunamadı: %s" % s["guc_hata"])

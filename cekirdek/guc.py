@@ -51,8 +51,18 @@
    sigmalarinin kendisi cok daha buyuk bir carpanla kucuk raporlanir; net etki
    iyimser kalir.)
 
+   "20 KAT" NEREDEN GELIYOR (29.09.2026, profesor incelemesi)
+     Farkin buyuk kismi cevrim korelasyonundan DEGIL, yakinsamamis fisyon
+     kaynagindan gelir: 4000 parcacik ve az pasif cevrimle kaynak dagilimi
+     pasif donem sonunda hala kayiyordu; tohumlar ayni dagilimin gurultulu
+     ornekleri degil, farkli (yanli) dagilimlardir. Bu bir SAPMADIR,
+     parcacik sayisiyla azalmaz; pasif cevrim sayisiyla azalir.
+
    GERCEK BELIRSIZLIK NASIL OLCULUR
-     coklu_tohum() ile N bagimsiz tohumda kosup sonuclarin sacilmasina bakin.
+     1. Shannon entropisini acin (Ayarlar); entropi pasif donem sonunda
+        duzlesmiyorsa pasif cevrim sayisini artirin (kosucu.entropi_yakinsama).
+     2. coklu_tohum() ile en az 5-10 bagimsiz tohumda kosup sonuclarin
+        sacilmasina bakin (varsayilan 5 tohum).
      Tek kosunun sigmasi bir ALT SINIRDIR, gercek hata degildir.
 ================================================================================
 """
@@ -60,6 +70,7 @@
 import functools
 import math
 
+from cekirdek import guc_kor as _guc_kor
 from cekirdek.ceviri import _
 from cekirdek.gunluk import kaydedici
 
@@ -144,7 +155,9 @@ def _eksenel_sutun(df):
 
 def _kafes_turu(kafes):
     import openmc
-    return "altigen" if isinstance(kafes, openmc.HexLattice) else "kare"
+    if isinstance(kafes, (openmc.HexLattice, _guc_kor.OtelemeDuzeyi)):
+        return "altigen"
+    return "kare"
 
 
 def _duzey_konumu(kafes, x, y):
@@ -156,9 +169,11 @@ def _duzey_konumu(kafes, x, y):
     return (x, y)
 
 
-def _satir_anahtarlari(df, seviyeler, kafesler):
+def _satir_anahtarlari(df, seviyeler, kafesler, kok_demet=None):
     """
     Her satirin konum anahtari ve her duzeyin temsilci kafesi.
+    kok_demet: {kok hucre kimligi: demet anahtari} (altigen_kafes; bkz.
+    guc_kor) -- verilirse anahtarin EN DIS parcasi budur.
     DONER (anahtarlar listesi, [duzey kafesi, ...])
     """
     sutunlar = [[df[(s, "lat", e)].astype(int).tolist() for e in ("id", "x", "y")]
@@ -181,10 +196,14 @@ def _satir_anahtarlari(df, seviyeler, kafesler):
             onbellek[k] = _duzey_konumu(kafes, x, y)
         return onbellek[k]
 
-    tek = len(seviyeler) == 1
+    kok = (df[_guc_kor.KOK_HUCRE_SUTUNU].astype(int).tolist()
+           if kok_demet is not None else None)
+    tek = len(seviyeler) == 1 and kok is None
     anahtarlar = []
     for i in range(len(df)):
         parca = tuple(cevir(ids[i], xs[i], ys[i]) for ids, xs, ys in sutunlar)
+        if kok is not None:
+            parca = (kok_demet[kok[i]],) + parca
         anahtarlar.append(parca[0] if tek else parca)
     return anahtarlar, temsilci
 
@@ -243,6 +262,10 @@ def dagilim_oku(sp, tally_adi="guc_dagilimi"):
       kor_kafes      en dis kafes (tam korda); tek demette None
       kor_kafes_turu en dis kafesin turu (tam korda); tek demette None
       birlesen_bin   int: ayni konum x dilim bin'inde toplanan ek ornek sayisi
+      --- 29.09.2026 (D1-A, altigen_kafes) ---
+      kor_duzeyi     "oteleme" (altigen_kafes: demet konumu = kok hucre
+                     otelemesi; kafesler[0] bir guc_kor.OtelemeDuzeyi),
+                     "kafes" (kor kafesi) ya da None (tek demet)
     """
     tal = _tally_bul(sp, tally_adi)
     if tal is None:
@@ -266,11 +289,16 @@ def dagilim_oku(sp, tally_adi="guc_dagilimi"):
             "çubuk bir demette tekrarlanmıyor olabilir; güç dağılımı yalnızca "
             "demet içindeki çubuklar için anlamlıdır.")
 
-    anahtarlar, kafesler = _satir_anahtarlari(df, seviyeler, geometri.get_all_lattices())
+    duzen = _guc_kor.oteleme_duzeni(df, geometri)
+    kok_demet, oteleme = duzen if duzen else (None, None)
+    anahtarlar, kafesler = _satir_anahtarlari(df, seviyeler, geometri.get_all_lattices(),
+                                              kok_demet)
+    if oteleme is not None:
+        kafesler = [oteleme] + kafesler
     kafes = kafesler[-1]
     kafes_turleri = [_kafes_turu(k) for k in kafesler]
     kafes_turu = kafes_turleri[-1]
-    tam_kor = len(seviyeler) > 1
+    tam_kor = len(kafesler) > 1
 
     z_sut = _eksenel_sutun(df)
     eksenel_dilim = int(df[z_sut].max()) if z_sut is not None else 1
@@ -296,7 +324,7 @@ def dagilim_oku(sp, tally_adi="guc_dagilimi"):
         notlar.append(
             _("Tam kor: %d kafes düzeyi. Her çubuk kordaki tam konumuyla "
               "(demet konumu + demet içi konum) ayrı sayılır; bağıl güç tüm "
-              "kordaki yakıt çubuklarının ortalamasına göredir.") % len(seviyeler))
+              "kordaki yakıt çubuklarının ortalamasına göredir.") % len(kafesler))
     if birlesen:
         notlar.append(
             _("%d bin'de aynı çubuk konumu birden çok eksenel katmanda "
@@ -309,8 +337,9 @@ def dagilim_oku(sp, tally_adi="guc_dagilimi"):
         "eksenel_dilim": eksenel_dilim,
         "konumlar": konumlar,
         "notlar": notlar,
-        "duzey_sayisi": len(seviyeler),
+        "duzey_sayisi": len(kafesler),
         "tam_kor": tam_kor,
+        "kor_duzeyi": "oteleme" if oteleme is not None else ("kafes" if tam_kor else None),
         "kafesler": kafesler,
         "kafes_turleri": kafes_turleri,
         "kor_kafes": kafesler[0] if tam_kor else None,
@@ -336,6 +365,8 @@ def eleman_merkezi(kafes, konum):
     (konum cekirdek/altigen.konumlar'dan; OpenMC ile nokta-hucre olcumuyle
     dogrulandi, testler/test_guc_kor.py).
     """
+    if isinstance(kafes, _guc_kor.OtelemeDuzeyi):
+        return kafes.merkezler[tuple(konum)]      # kafessiz: kok hucre otelemesi
     if _kafes_turu(kafes) == "altigen":
         kx, ky = _altigen_konumlar(int(kafes.num_rings), kafes.orientation)[tuple(konum)]
         cx, cy = tuple(kafes.center)[:2]
@@ -523,7 +554,7 @@ def tepe_faktorleri(dagilim):
         "yanlilik_orani": (ist_sapma / sacilma) if sacilma > 0 else None,
         "bagil": bagil,
         "F_q": None, "F_q_sapma": None, "sicak_dilim": None,
-        "bagil_eksenel": None, "eksenel_profil": None,
+        "bagil_eksenel": None, "eksenel_profil": None, "bos_dilimler": [],
         # --- tam kor (28.09.2026) ---
         "tam_kor": tam_kor,
         "kafes_turleri": list(dagilim.get("kafes_turleri") or [dagilim.get("kafes_turu")]),
@@ -538,29 +569,47 @@ def tepe_faktorleri(dagilim):
     return sonuc
 
 
+def _bos_dilimler(konumlar, eksenel_dilim):
+    """
+    Hicbir cubukta skor olmayan eksenel dilimler (toplam tam 0). Hedef cubuk
+    kesintili katmanlardaysa (1. ve 3. katmanda var, 2.'de yok) guc mesh'i
+    cubuk_eksenel_aralik ile ilk ve son katmanin arasini kapsar; aradaki
+    katmanin dilimleri BOSTUR. Ortalamaya girerlerse F_q yapay siser.
+    """
+    return [i for i in range(eksenel_dilim)
+            if sum(k["eksenel"][i][0] for k in konumlar.values()) == 0.0]
+
+
 def _eksenel_faktorler(sonuc, konumlar, eksenel_dilim):
-    """F_q, sicak dilim, bagil eksenel harita ve eksenel profil (3B)."""
+    """F_q, sicak dilim, bagil eksenel harita ve eksenel profil (3B).
+    Bos dilimler (bkz. _bos_dilimler) ortalamalara katilmaz; bos dilim
+    yoksa sonuc eskisiyle bit duzeyinde aynidir."""
+    bos = _bos_dilimler(konumlar, eksenel_dilim)
+    dolu = set(range(eksenel_dilim)) - set(bos)
     hepsi = []
     for a, k in konumlar.items():
         for i, d in enumerate(k["eksenel"]):
-            hepsi.append((a, i, d[0], d[1]))
-    ort_yerel = sum(h[2] for h in hepsi) / len(hepsi)
-    sicak = max(hepsi, key=lambda h: h[2])
+            if i in dolu:
+                hepsi.append((a, i, d[0], d[1]))
+    ort_yerel = sum(h[2] for h in hepsi) / len(hepsi) if hepsi else 0.0
+    sicak = max(hepsi, key=lambda h: h[2]) if hepsi else (None, None, 0.0, 0.0)
     f_q = sicak[2] / ort_yerel if ort_yerel > 0 else None
     sonuc["F_q"] = f_q
     sonuc["F_q_sapma"] = (f_q * sicak[3] / sicak[2]) if (f_q and sicak[2]) else None
-    sonuc["sicak_dilim"] = (sicak[0], sicak[1])
+    sonuc["sicak_dilim"] = (sicak[0], sicak[1]) if f_q else None
     sonuc["ortalama_yerel"] = ort_yerel
+    sonuc["bos_dilimler"] = bos
     sonuc["bagil_eksenel"] = {
         a: [(d[0] / ort_yerel, d[1] / ort_yerel) for d in k["eksenel"]]
-        for a, k in konumlar.items()}
+        for a, k in konumlar.items()} if ort_yerel > 0 else None
     # eksenel guc profili (tum cubuklar toplanarak)
     profil = []
     for i in range(eksenel_dilim):
         t = sum(k["eksenel"][i][0] for k in konumlar.values())
         s = math.sqrt(sum(k["eksenel"][i][1] ** 2 for k in konumlar.values()))
         profil.append((t, s))
-    ort_profil = sum(p[0] for p in profil) / len(profil)
+    dolu_profil = [p for i, p in enumerate(profil) if i in dolu]
+    ort_profil = sum(p[0] for p in dolu_profil) / len(dolu_profil) if dolu_profil else 0.0
     sonuc["eksenel_profil"] = [(p[0] / ort_profil, p[1] / ort_profil)
                                for p in profil] if ort_profil > 0 else None
 
@@ -569,12 +618,18 @@ def _eksenel_faktorler(sonuc, konumlar, eksenel_dilim):
 # 4. MUTLAK GUC
 # ============================================================================
 
-def mutlak_guc(faktorler, toplam_guc, yukseklik=None):
+def mutlak_guc(faktorler, toplam_guc, yukseklik=None, hedef_payi=None):
     """
     Bagil dagilimi mutlak guce cevirir.
 
     toplam_guc : modelin temsil ettigi bolgenin toplam gucu [W]
     yukseklik  : aktif yukseklik [cm]; verilirse lineer guc [W/cm] hesaplanir
+    hedef_payi : hedef cubuk bolgesinin model geneli fisyon enerjisindeki payi
+                 = kappa_hedef / kappa_model (kosucu.sonuc_oku: guc_toplam_ref /
+                 guc_model_toplam). Verilirse cubuklara toplam_guc * pay
+                 dagitilir; None ise (eski statepoint) tum guc hedef cubuklarda
+                 sayilir -- baska fisil bolge (blanket, ikinci cubuk turu) varsa
+                 cubuk gucu OLDUGUNDAN BUYUK cikar.
 
     !!! DIKKAT !!!
       toplam_guc MODELIN KAPSADIGI bolgenin gucudur. Sonsuz kafes (yansitici
@@ -589,9 +644,13 @@ def mutlak_guc(faktorler, toplam_guc, yukseklik=None):
     if not faktorler or not toplam_guc or toplam_guc <= 0:
         return None
     n = faktorler["cubuk_sayisi"]
-    cubuk_ort = toplam_guc / n
+    pay = hedef_payi if (hedef_payi is not None and hedef_payi > 0) else None
+    hedef = toplam_guc * pay if pay is not None else toplam_guc
+    cubuk_ort = hedef / n
     sonuc = {
         "toplam_guc": toplam_guc,
+        "hedef_payi": pay,
+        "hedef_guc": hedef,
         "cubuk_ortalama_W": cubuk_ort,
         "cubuk_maks_W": cubuk_ort * faktorler["F_dH"],
     }
@@ -605,137 +664,8 @@ def mutlak_guc(faktorler, toplam_guc, yukseklik=None):
 
 
 # ============================================================================
-# 5. YORUM
+# 5. YORUM, COKLU TOHUM, OZET -- cekirdek/guc_yorum.py (dosya boyutu); ayni
+#    adlarla buradan da erisilir (guc.yorumla, guc.coklu_tohum, guc.ozet_metni).
 # ============================================================================
 
-def yorumla(faktorler, mutlak=None):
-    """Ogrenciye yonelik kisa yorum satirlari."""
-    if not faktorler:
-        return ["Güç dağılımı hesaplanamadı."]
-    satirlar = []
-    f = faktorler["F_dH"]
-    satirlar.append(
-        "F_ΔH = %.4f — en sıcak çubuk ortalamanın %%%.1f üstünde güç üretiyor."
-        % (f, (f - 1) * 100))
-    if f < 1.02:
-        satirlar.append("  Dağılım neredeyse düz. Yansıtıcı sınırlı tek demet "
-                        "hesaplarında beklenen budur; gerçek bir korda kenar "
-                        "etkileri ve yakıt yüklemesi tepeyi büyütür.")
-    elif f > 1.65:
-        satirlar.append("  Yüksek: tipik PWR tasarım sınırı F_ΔH ≈ 1.65 "
-                        "civarındadır; yakıt yüklemesi düzeltilmeli.")
-    if faktorler.get("tam_kor"):
-        satirlar.append(
-            _("Tam kor: %d demet, %d yakıt çubuğu. En sıcak demet %s; ortalaması "
-              "kor ortalamasının %.4f katı (F_demet). F_ΔH ve F_q tüm kordaki "
-              "yakıt çubukları üzerinden hesaplanır.")
-            % (faktorler["demet_sayisi"], faktorler["cubuk_sayisi"],
-               demet_metni(faktorler["sicak_demet"], faktorler), faktorler["F_demet"]))
-    # --- maksimumun yukari yanliligi ---
-    oran = faktorler.get("yanlilik_orani")
-    if oran is not None and oran > 0.3:
-        satirlar.append(
-            "  Dikkat: çubuk başına istatistik sapma (%.4f) dağılımın gerçek "
-            "saçılmasının (%.4f) %%%.0f kadarı. Bir en büyük değer hesaplandığı "
-            "için F_ΔH bu durumda yukarı yanlıdır — gerçek tepe daha düşüktür. "
-            "Çevrim başına parçacık sayısını artırın."
-            % (faktorler["istatistik_sapma"], faktorler["sacilma"], oran * 100))
-
-    if faktorler["F_q"]:
-        satirlar.append(
-            "F_q = %.4f — yerel güç yoğunluğu tepesi (eksenel şekil dahil)."
-            % faktorler["F_q"])
-        if faktorler["eksenel_dilim"] < 10:
-            satirlar.append(
-                "  Dikkat: yalnızca %d eksenel dilim var. Kaba dilimler tepeyi "
-                "ortalar ve F_q'yu olduğundan küçük gösterir (saf kosinüs "
-                "profilinde ince dilim sınırı π/2 = 1.571'dir). En az 10–20 "
-                "dilim kullanın."
-                % faktorler["eksenel_dilim"])
-        if faktorler["F_q"] > 2.6:
-            satirlar.append("  Yüksek: tipik PWR sınırı F_q ≈ 2.3–2.6.")
-    else:
-        satirlar.append("F_q tanımsız — model 2B (eksenel yükseklik yok). "
-                        "Eksenel tepe olmadan yerel güç yoğunluğu hesaplanamaz; "
-                        "Kor sekmesinde yükseklik tanımlayın.")
-    if mutlak:
-        satirlar.append("Çubuk başına ortalama %.1f W, en sıcak çubuk %.1f W."
-                        % (mutlak["cubuk_ortalama_W"], mutlak["cubuk_maks_W"]))
-        if "lineer_maks_W_cm" in mutlak:
-            lm = mutlak["lineer_maks_W_cm"]
-            satirlar.append("En yüksek çizgisel güç %.1f W/cm (tepe faktörü: %s)."
-                            % (lm, mutlak["lineer_tepe_kaynagi"]))
-            if lm > 500:
-                satirlar.append("  Sınırın üstünde: tipik PWR çizgisel güç "
-                                "sınırı ~400–500 W/cm.")
-    satirlar.append(
-        "Not: çubuk başına sapmalar iyimser olabilir. Özdeğer hesabında ardışık "
-        "çevrimler birbirine bağlıdır ve OpenMC'nin raporladığı tally belirsizliği "
-        "bunu hesaba katmaz; gerçek belirsizlik daha büyüktür. Kesin değer için "
-        "modeli birkaç farklı rastgele tohumla koşup sonuçların saçılmasına bakın.")
-    return satirlar
-
-
-def coklu_tohum(spec, kok_dizin, tohumlar=(1, 2, 3), is_parcacigi=None,
-                geri_cagir=None):
-    """
-    Ayni modeli birkac BAGIMSIZ tohumla kosar ve tepe faktorlerinin GERCEK
-    sacilmasini olcer.
-
-    Tek bir kosunun raporladigi sigma, cevrimler arasi korelasyon yuzunden
-    gercek belirsizligin altindadir (bu modulun basligindaki olcume bakin).
-    Bagimsiz tohumlar arasindaki sacilma ise dogrudan gercek belirsizliktir.
-
-    DONER {"F_dH": [...], "F_q": [...], "ozet": {...}}
-    """
-    import os
-    import statistics as st
-    from cekirdek import kosucu
-
-    f_dh, f_q, hatalar = [], [], []
-    for i, t in enumerate(tohumlar):
-        alt = dict(spec)
-        alt["ayarlar"] = dict(spec["ayarlar"], tohum=int(t))
-        dizin = os.path.join(kok_dizin, "tohum_%d" % t)
-        try:
-            kosu = kosucu.calistir(alt, dizin, is_parcacigi=is_parcacigi)
-            if not kosu["basarili"]:
-                hatalar.append("tohum %d: koşu başarısız" % t)
-                continue
-            s = kosucu.sonuc_oku(kosu["statepoint"])
-            f = (s.get("guc") or {}).get("faktorler")
-            if not f:
-                hatalar.append("tohum %d: güç dağılımı okunamadı" % t)
-                continue
-            f_dh.append(f["F_dH"])
-            if f["F_q"]:
-                f_q.append(f["F_q"])
-        except Exception as e:
-            hatalar.append("tohum %d: %s" % (t, e))
-        if geri_cagir:
-            geri_cagir(i, len(tohumlar), f_dh[-1] if f_dh else None)
-
-    ozet = {"hatalar": hatalar, "tohum_sayisi": len(f_dh)}
-    if len(f_dh) >= 2:
-        ozet["F_dH_ort"] = st.mean(f_dh)
-        ozet["F_dH_sacilma"] = st.stdev(f_dh)
-    if len(f_q) >= 2:
-        ozet["F_q_ort"] = st.mean(f_q)
-        ozet["F_q_sacilma"] = st.stdev(f_q)
-    return {"F_dH": f_dh, "F_q": f_q, "ozet": ozet}
-
-
-def ozet_metni(faktorler, mutlak=None):
-    """Tek satirlik ozet (terminal ve durum cubugu icin)."""
-    if not faktorler:
-        return "güç dağılımı yok"
-    p = ["F_ΔH = %.4f ± %.4f" % (faktorler["F_dH"], faktorler["F_dH_sapma"])]
-    if faktorler["F_q"]:
-        p.append("F_q = %.4f ± %.4f" % (faktorler["F_q"], faktorler["F_q_sapma"]))
-    p.append("en sıcak çubuk: %s" % konum_metni(faktorler["sicak_cubuk"],
-                                                 faktorler.get("kafes_turu"),
-                                                 faktorler.get("kafes_turleri")))
-    if faktorler.get("tam_kor"):
-        p.append(_("en sıcak demet: %s (F_demet = %.4f)")
-                 % (demet_metni(faktorler["sicak_demet"], faktorler), faktorler["F_demet"]))
-    return "  |  ".join(p)
+from cekirdek.guc_yorum import yorumla, coklu_tohum, ozet_metni  # noqa: E402,F401
