@@ -47,14 +47,13 @@ def test_arayuz_proje_sifirlama():
         an.sonuc_kutusu.setText("<b>KATSAYI = -8.000 pcm/ppm</b>")
         p.onizleme.cizildi_mi = lambda: True
         p._isaretleri_guncelle()
-        ix_calistir = p._sekme_ix["calistir"]
         kontrol("(on kosul) Calistir sekmesi 'tamam' (✓)",
-                p.sekmeler.tabText(ix_calistir).endswith("✓"),
-                "-> %r" % p.sekmeler.tabText(ix_calistir))
+                p.sekme_isareti("calistir")[0] == "✓",
+                "-> %r" % (p.sekme_isareti("calistir"),))
 
         # sekme degisimi SONUCU SILMEMELI
-        for i in (5, 0, 6, 5):
-            p.sekmeler.setCurrentIndex(i)
+        for k in ("calistir", "malzemeler", "analiz", "calistir"):
+            p.sekmeye_git(k)
         kontrol("sekme degisimi sonucu silmiyor",
                 c._son_basarili and "1.35700" in c.keff_etiket.text()
                 and an.tablo.rowCount() == 1)
@@ -69,8 +68,8 @@ def test_arayuz_proje_sifirlama():
                 an._sonuclar == [] and an.tablo.rowCount() == 0)
         kontrol("yeni proje: analiz katsayisi silindi", "katsay" not in an.sonuc_kutusu.text().lower())
         kontrol("yeni proje: Calistir sekmesi 'tamam' DEMIYOR (✓ yok)",
-                not p.sekmeler.tabText(ix_calistir).endswith("✓"),
-                "-> %r" % p.sekmeler.tabText(ix_calistir))
+                p.sekme_isareti("calistir")[0] != "✓",
+                "-> %r" % (p.sekme_isareti("calistir"),))
     finally:
         _pencere_kapat(p)
 
@@ -162,19 +161,20 @@ def test_arayuz_bulgu_sekme():
     p = _ana_pencere(os.path.join(ORNEK, "pwr_17x17.json"))
     try:
         beklenen = {
-            "malzeme:uo2": 0, "malzemeler": 0, "cubuk:yakit_cubugu": 1,
-            "plaka:mtr_eleman": 1, "demet:demet_17x17": 2, "kor": 3,
-            "kor/katman 1 (aktif)": 3, "ayarlar": 4, "veri kutuphanesi": 4,
-            "kaynak": 4, "tally:aki": 4, "guc dagilimi": 4, "guc_dagilimi": 4,
-            "tukenme": 7, "tukenme/uo2": 7,
+            "malzeme:uo2": "malzemeler", "malzemeler": "malzemeler",
+            "cubuk:yakit_cubugu": "parcalar", "plaka:mtr_eleman": "parcalar",
+            "demet:demet_17x17": "demet", "kor": "kor", "kor/katman 1 (aktif)": "kor",
+            "ayarlar": "ayarlar", "veri kutuphanesi": "ayarlar", "kaynak": "ayarlar",
+            "tally:aki": "ayarlar", "guc dagilimi": "ayarlar", "guc_dagilimi": "ayarlar",
+            "tukenme": "tukenme", "tukenme/uo2": "tukenme",
         }
-        for yer, ix in beklenen.items():
-            p.sekmeler.setCurrentIndex(5 if ix != 5 else 6)
+        for yer, hedef in beklenen.items():
+            p.sekmeye_git("calistir" if hedef != "calistir" else "analiz")
             oge = QtWidgets.QListWidgetItem("x")
             oge.setData(QtCore.Qt.UserRole, yer)
             p._bulguya_git(oge)
-            kontrol("'%s' -> sekme %d" % (yer, ix + 1), p.sekmeler.currentIndex() == ix,
-                    "-> %d" % (p.sekmeler.currentIndex() + 1))
+            kontrol("'%s' -> sekme %s" % (yer, hedef), p.gecerli_sekme() == hedef,
+                    "-> %s" % p.gecerli_sekme())
         s = sema.yukle(os.path.join(ORNEK, "pwr_tukenme.json"))
         s["tukenme"]["guc_yogunlugu"] = -1.0
         p.spec = s
@@ -182,10 +182,9 @@ def test_arayuz_bulgu_sekme():
         hatalar = [b for b in p._bulgular if b.seviye == "hata"]
         kontrol("(on kosul) ilk hata tukenme", bool(hatalar) and hatalar[0].yer == "tukenme",
                 "-> %s" % ([b.yer for b in hatalar],))
-        isaretli = [i for i in range(p.sekmeler.count())
-                    if p.sekmeler.tabText(i).endswith("!")]
+        isaretli = [k for k in p.sekme_anahtarlari() if p.sekme_isareti(k)[0] == "!"]
         kontrol("tukenme hatasi Tukenme sekmesinde '!' isareti olarak gorunuyor",
-                isaretli == [7], "-> %s" % [p.sekmeler.tabText(i) for i in isaretli])
+                isaretli == ["tukenme"], "-> %s" % isaretli)
     finally:
         _pencere_kapat(p)
 

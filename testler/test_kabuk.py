@@ -55,7 +55,7 @@ def _kapat(p):
 
 def _gorunur_anahtarlar(p):
     from cekirdek import uygunluk
-    return [k for k in uygunluk.SEKMELER if p.sekmeler.isTabVisible(p._sekme_ix[k])]
+    return [k for k in uygunluk.SEKMELER if p.sekme_gorunur_mu(k)]
 
 
 def _duz(html):
@@ -182,7 +182,7 @@ def test_baslangic_ekrani():
                 p.spec["kor"]["tur"] == "tek_demet" and p.proje_yolu is None
                 and p.ornek_kaynagi is None)
         kontrol("'Bos basla' karakteristik sekmeye goturuyor (Demet)",
-                p._sekme_anahtari() == "demet")
+                p.gecerli_sekme() == "demet")
         kontrol("editorde model eylemleri acik", p.e_kaydet.isEnabled())
 
         p.e_yeni.trigger()
@@ -221,10 +221,10 @@ def test_sekme_gorunurlugu(gecici=None):
     from cekirdek import uygunluk
     p = _pencere()
     try:
-        kontrol("8 sekme de QTabWidget'ta (dizinler sabit)", p.sekmeler.count() == 8)
+        kontrol("8 sekme de pencerede (dizinler sabit)", len(p.sekme_anahtarlari()) == 8)
         kontrol("sekme sirasi uygunluk.SEKMELER",
-                [p._sekme_ix[k] for k in uygunluk.SEKMELER] == list(range(8)))
-        adlar = [re.sub(r"\s+[!•✓]$", "", p.sekmeler.tabText(i)) for i in range(8)]
+                p.sekme_anahtarlari() == tuple(uygunluk.SEKMELER))
+        adlar = [p.sekme_basligi(k) for k in p.sekme_anahtarlari()]
         kontrol("basliklar numarasiz ve Turkce",
                 adlar == ["Malzemeler", "Parçalar", "Demet", "Kor", "Hesap ayarları",
                           "Çalıştır", "Analiz", "Tükenme"], "-> %s" % adlar)
@@ -235,30 +235,30 @@ def test_sekme_gorunurlugu(gecici=None):
                     _gorunur_anahtarlar(p) == beklenen,
                     "-> %s / %s" % (_gorunur_anahtarlar(p), beklenen))
             kontrol("%s: etkin sekme gorunur" % os.path.basename(yol),
-                    p.sekmeler.isTabVisible(p.sekmeler.currentIndex()))
+                    p.sekme_gorunur_mu(p.gecerli_sekme()))
 
         # etkin sekme gizlenince ILK gorunur sekmeye dusulur
         p.proje_ac(os.path.join(ORNEK, "pwr_17x17.json"))
-        p._sekmeye_git("demet")
-        kontrol("(on kosul) Demet sekmesi etkin", p._sekme_anahtari() == "demet")
+        p.sekmeye_git("demet")
+        kontrol("(on kosul) Demet sekmesi etkin", p.gecerli_sekme() == "demet")
         p.kor_turunu_degistir("tek_cubuk")
-        kontrol("tur tek_cubuk: Demet gizli", not p.sekmeler.isTabVisible(p._sekme_ix["demet"]))
+        kontrol("tur tek_cubuk: Demet gizli", not p.sekme_gorunur_mu("demet"))
         kontrol("gizlenen etkin sekmeden ilk gorunur sekmeye (Malzemeler)",
-                p._sekme_anahtari() == "malzemeler", "-> %s" % p._sekme_anahtari())
+                p.gecerli_sekme() == "malzemeler", "-> %s" % p.gecerli_sekme())
         p.geri_al()
         kontrol("geri al: Demet sekmesi yeniden gorunur",
-                p.sekmeler.isTabVisible(p._sekme_ix["demet"]))
+                p.sekme_gorunur_mu("demet"))
 
-        p._sekmeye_git("tukenme")
+        p.sekmeye_git("tukenme")
         p.spec["ayarlar"]["mod"] = "fixed source"
         p._degisti("ayar")
         kontrol("sabit kaynak: Analiz/Tukenme gizlendi",
-                not p.sekmeler.isTabVisible(p._sekme_ix["analiz"])
-                and not p.sekmeler.isTabVisible(p._sekme_ix["tukenme"]))
+                not p.sekme_gorunur_mu("analiz")
+                and not p.sekme_gorunur_mu("tukenme"))
         kontrol("Tukenme'den ilk gorunur sekmeye dusuldu",
-                p._sekme_anahtari() == "malzemeler", "-> %s" % p._sekme_anahtari())
+                p.gecerli_sekme() == "malzemeler", "-> %s" % p.gecerli_sekme())
         kontrol("gizli sekmeye gidilmiyor",
-                p._sekmeye_git("analiz") is False and p._sekme_anahtari() == "malzemeler")
+                p.sekmeye_git("analiz") is False and p.gecerli_sekme() == "malzemeler")
     finally:
         _kapat(p)
 
@@ -316,17 +316,16 @@ def test_sekme_isaretleri():
         return
     p = _pencere(os.path.join(ORNEK, "pwr_17x17.json"))
     try:
-        ix = p._sekme_ix
         kontrol("pencere: Malzemeler basligi '✓' ile bitiyor",
-                p.sekmeler.tabText(ix["malzemeler"]).endswith("✓"))
+                p.sekme_isareti("malzemeler")[0] == "✓")
         kontrol("pencere: Calistir basligi '•' (hic kosulmadi)",
-                p.sekmeler.tabText(ix["calistir"]).endswith("•"))
+                p.sekme_isareti("calistir")[0] == "•")
         kontrol("pencere: sekme ipucu isareti aciklar",
-                "çalıştırılmadı" in p.sekmeler.tabToolTip(ix["calistir"]))
+                "çalıştırılmadı" in p.sekme_isareti("calistir")[1])
         p.spec["kor"]["demet"] = "yok_boyle_demet"
         p._dogrula(veri=False)
-        kontrol("kor hatasi -> Kor basligi '!'", p.sekmeler.tabText(ix["kor"]).endswith("!"),
-                "-> %r" % p.sekmeler.tabText(ix["kor"]))
+        kontrol("kor hatasi -> Kor basligi '!'", p.sekme_isareti("kor")[0] == "!",
+                "-> %r" % (p.sekme_isareti("kor"),))
         kontrol("durum cubugu ipucu hatali sekmeyi soyluyor",
                 "Kor sekmesinde hata" in p.durum_ipucu.text(), "-> %r" % p.durum_ipucu.text())
     finally:
@@ -366,12 +365,12 @@ def test_model_basligi():
         kontrol("pencere basligi saf metinle ayni",
                 _duz(p.model_basligi.text()) == model_ozet_metni(p.spec),
                 "-> %r" % _duz(p.model_basligi.text()))
-        p._sekmeye_git("malzemeler")
+        p.sekmeye_git("malzemeler")
         p.model_basligi.linkActivated.emit("mod")
         kontrol("hesap turune tiklamak Hesap ayarlarina goturuyor",
-                p._sekme_anahtari() == "ayarlar")
+                p.gecerli_sekme() == "ayarlar")
         p.model_basligi.linkActivated.emit("kor")
-        kontrol("kor turune tiklamak Kor sekmesine goturuyor", p._sekme_anahtari() == "kor")
+        kontrol("kor turune tiklamak Kor sekmesine goturuyor", p.gecerli_sekme() == "kor")
 
         p._tur_menusunu_doldur()
         turler = [e.data() for e in p._tur_menusu.actions()]
@@ -435,14 +434,14 @@ def test_sag_panel_ve_rozet(gecici=None):
         p.show()
         uyg.processEvents()
         for k in ("malzemeler", "parcalar", "demet", "kor"):
-            p._sekmeye_git(k)
+            p.sekmeye_git(k)
             kontrol("%s: onizleme + dogrulama gorunur" % k,
                     p.onizleme.isVisible() and p._dogrulama_kutu.isVisible())
-        p._sekmeye_git("ayarlar")
+        p.sekmeye_git("ayarlar")
         kontrol("Hesap ayarlari: yalnizca dogrulama",
                 not p.onizleme.isVisible() and p._dogrulama_kutu.isVisible())
         for k in ("calistir", "analiz", "tukenme"):
-            p._sekmeye_git(k)
+            p.sekmeye_git(k)
             kontrol("%s: sag panel gizli (tam genislik)" % k, not p._sag.isVisible())
 
         # ONCE CIZ, SONRA CALISTIR
@@ -470,7 +469,7 @@ def test_sag_panel_ve_rozet(gecici=None):
                  if p.bulgu_acilir.liste.item(i).data(0x0100) == "kor"]
         p.bulgu_acilir.liste.itemClicked.emit(p.bulgu_acilir.liste.item(satir[0]))
         kontrol("acilir listeden bulgu Kor sekmesine goturuyor ve liste kapaniyor",
-                p._sekme_anahtari() == "kor" and not p.bulgu_acilir.isVisible())
+                p.gecerli_sekme() == "kor" and not p.bulgu_acilir.isVisible())
     finally:
         _kapat(p)
 
@@ -535,7 +534,7 @@ def test_minimum_yukseklik(gecici=None):
         p.show()
         uyg.processEvents()
         for k in ("malzemeler", "ayarlar", "calistir"):
-            p._sekmeye_git(k)
+            p.sekmeye_git(k)
             uyg.processEvents()
             h = p.minimumSizeHint().height()
             kontrol("%s sekmesinde minimumSizeHint %d px <= 320" % (k, h), h <= 320)

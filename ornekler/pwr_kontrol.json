@@ -2,6 +2,11 @@
   "surum": 1,
   "ad": "PWR 17×17 demet — kontrol çubuklu (3B)",
   "aciklama": "17×17 demeti, 25 kılavuz boru konumunda B4C kontrol çubuğu. Çubuklar\nyukarıdan daldırılır; daldırma %0 = tamamen çekilmiş, %100 = tam dalmış.\n\nKullanım: Analiz sekmesinde\n  - 'Kontrol çubuğu daldırma' taraması → integral çubuk değeri eğrisi\n  - 'Kritik arama' + hedef k = 1.0     → kritik çubuk konumu\n\nEğri şekli hakkında:\nKlasik S eğrisi yalnızca sistem her konumda kritiğe yakınsa görülür.\nBu model yansıtıcı yan sınırlı tek bir demettir ve k∞ yüksektir;\nçubuksuz alt bölge tek başına süperkritik kalır, bu yüzden değer geç\ntoplanır ve diferansiyel değerin tepesi merkezde değil tam daldırmaya\nyakın çıkar. Ölçülen: %0 → k = 1.165, %50 → k = 1.131, %100 → k = 0.588.",
+  "baslik": "PWR demeti — kontrol çubuklu",
+  "baslik_en": "PWR assembly — control rods",
+  "aciklama_en": "The 17×17 assembly with B4C control rods inserted from the top into the guide tube positions (3D).",
+  "kategori": "pwr",
+  "seviye": "orta",
   "malzemeler": [
     {
       "ad": "uo2",

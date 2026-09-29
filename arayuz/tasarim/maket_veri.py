@@ -4,6 +4,7 @@ maket_veri.py -- maket ekranlarinin SABIT ornek verisi ve ortak kurucular.
 Maketler islev baglamaz; buradaki sayilar gorsel ornektir, hesap degildir.
 """
 
+from cekirdek import ornek_bilgi
 from cekirdek.ceviri import N_, _
 
 # (anahtar, metin, ikon, grup) -- Dalga 2 kabugunun is akisi sirasi
@@ -59,15 +60,16 @@ MODEL_TURLERI = (
     ("shield", N_("Zırhlama"), N_("Sabit kaynaktan zırh katmanlarında zayıflama.")),
 )
 
-KATEGORILER = (("hepsi", N_("Tümü")), ("pwr", "PWR"), ("vver", "VVER"), ("sfr", "SFR"),
-               ("arastirma", N_("Araştırma")), ("kriter", N_("Kriter")), ("zirh", N_("Zırh")))
+# Galeri kategorileri tek kaynaktan: cekirdek/ornek_bilgi.py
+KATEGORILER = (("hepsi", N_("Tümü")),) + tuple(
+    (k, ornek_bilgi.KATEGORI_ADLARI[k]) for k in ornek_bilgi.KATEGORILER)
 
 # (baslik, kategori, aciklama, kucuk resim motifi)
 ORNEKLER = (
     (N_("PWR yakıt hücresi"), "pwr", N_("Klasik PWR pin hücresi, 2B."), "pin"),
     (N_("PWR 17×17 yakıt demeti"), "pwr", N_("264 yakıt çubuğu, 24 kılavuz boru."), "kare"),
     (N_("PWR demeti — 3B"), "pwr", N_("366 cm aktif yükseklik, eksenel yansıtıcı."), "kare3b"),
-    (N_("VVER-1000 demeti"), "vver", N_("163 çubuklu altıgen demet."), "altigen"),
+    (N_("VVER-1000 demeti"), "vver", N_("331 konum, 312 yakıt çubuğu."), "altigen"),
     (N_("SFR altıgen demet"), "sfr", N_("Sodyum soğutmalı, 127 çubuk."), "altigen"),
     (N_("MTR plaka elemanı"), "arastirma", N_("23 düz plaka, U3Si2-Al."), "plaka"),
     (N_("TRIGA kor"), "arastirma", N_("Havuz tipi araştırma reaktörü koru."), "kor"),

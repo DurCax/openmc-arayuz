@@ -23,6 +23,9 @@
    ayarlar      : cevrim/parcacik/kaynak/sicaklik
    tallyler     : tally tanimlari
    calistirma   : is parcacigi sayisi, kosu dizini
+   (meta)       : baslik, kategori, seviye, referans, baslik_en, aciklama_en --
+                  ornek galerisi bilgisi (cekirdek/ornek_bilgi.py); fizige
+                  girmez, tamamla() aynen korur
 
  NOTLAR
    "bosluk" ayrilmis bir malzeme adidir -- OpenMC'de None (void) demektir,
@@ -42,6 +45,11 @@ SEMA_SURUM = 1
 
 # OpenMC'de void anlamina gelen ayrilmis malzeme adi
 BOSLUK = "bosluk"
+
+# Ornek meta alanlari (cekirdek/ornek_bilgi.py sozlesmesi). Istege baglidir;
+# varsa tamamla() aynen korur. Fizige girmez: tukenme "sonuc eskidi mi"
+# karsilastirmasi bunlari disarida birakir.
+META_ALANLARI = ("baslik", "kategori", "seviye", "referans", "baslik_en", "aciklama_en")
 
 # ----------------------------------------------------------------------------
 # Varsayilan bolumler
@@ -104,6 +112,19 @@ VARSAYILAN_AYARLAR = {
 
 # Cubuk bazli guc dagilimi (DistribcellFilter). Kafeste tekrarlanan bir
 # cubugun her ornegi ayri sayilir; buradan F_dH ve (3B modelde) F_q cikar.
+#
+# SEMA KARARI (Dalga 2 on-commit; uygulama Ajan 8b, testler/test_guc_coklu.py):
+#   Cok turlu guc dagilimi icin hedef cubuk TEK alan yerine LISTE olur:
+#       "guc_dagilimi": {"var": true,
+#                        "cubuklar": [{"cubuk": "yakit_a", "bolge": 0},
+#                                     {"cubuk": "yakit_b", "bolge": 0}], ...}
+#   - Okuma (tamamla): eski "cubuk"/"bolge" alanlari tek ogeli listeye cevrilir
+#     ({"cubuk": ad, "bolge": bolge or 0}); "cubuk" None/eksikse cubuklar = [].
+#     Hem eski hem yeni alan varsa "cubuklar" kazanir.
+#   - Yazma: yalniz yeni bicim ("cubuk" ve "bolge" ust alanlari yazilmaz).
+#   - Varsayilan: "cubuklar": [].
+#   - Normalizasyon listedeki TUM yakit cubuklari uzerinden yapilir.
+#   Bu karar uygulanana kadar asagidaki eski bicim gecerlidir.
 VARSAYILAN_GUC = {
     "var": False,
     "cubuk": None,          # hedef cubuk adi
@@ -616,7 +637,7 @@ def tamamla(ham):
     """
     spec = yeni_spec(ham.get("ad", "adsız model"))
     for anahtar in ("surum", "ad", "aciklama", "malzemeler", "cubuklar",
-                    "plakalar", "demetler", "tallyler"):
+                    "plakalar", "demetler", "tallyler") + META_ALANLARI:
         if anahtar in ham:
             spec[anahtar] = ham[anahtar]
     # Ic ice sozlukler: varsayilanin uzerine DERIN birlestirme.

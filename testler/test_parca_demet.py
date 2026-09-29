@@ -688,10 +688,10 @@ def test_demet_yerlesim(gecici=None):
         p.resize(1600, 950)
         p.show()
         p._proje_kur(_yukle("pwr_17x17"), None, None)
-        p._sekmeye_git("demet", sessiz=True)
+        p.sekmeye_git("demet", sessiz=True)
         for _ in range(6):
             uyg.processEvents()
-        alan = p.sekmeler.currentWidget()
+        alan = p.sekme_sayfasi(p.gecerli_sekme())
         w = p.s_demet
         iz = w.kare_izgara
         iz._geometri()
@@ -710,7 +710,7 @@ def test_demet_yerlesim(gecici=None):
         print("    olculen: hucre %.1f px, harita %dx%d, sag sutun %d px"
               % (iz._olcek, iz.width(), iz.height(), w._sag.width()))
         p._proje_kur(_yukle("sfr_altigen"), None, None)
-        p._sekmeye_git("demet", sessiz=True)
+        p.sekmeye_git("demet", sessiz=True)
         for _ in range(6):
             uyg.processEvents()
         w.hex_izgara._geometri()
@@ -718,7 +718,7 @@ def test_demet_yerlesim(gecici=None):
                 w.hex_izgara._olcek >= 28 and alan.verticalScrollBar().maximum() == 0,
                 "-> %.1f px" % w.hex_izgara._olcek)
         p._proje_kur(_yukle("pwr_eksenel"), None, None)      # uc demet: uzun liste
-        p._sekmeye_git("demet", sessiz=True)
+        p.sekmeye_git("demet", sessiz=True)
         for _ in range(6):
             uyg.processEvents()
         iz._geometri()

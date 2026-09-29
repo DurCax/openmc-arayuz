@@ -23,6 +23,12 @@ NASIL CALISIR
     tutulur (CI taklidiyle olculdu). Veri yoksa bu testler ATLANIR: veri
     olmadan Model.plot/openmc.lib sureci C++ tarafinda sonlandirir, yani
     pytest'in kendisi de olurdu.
+  - MODUL BASINA LISTE (Dalga 2): yeni test modulleri merkezi listeye
+    dokunmadan kendi listesini tanimlar (paralel ajanlar bu dosyada cakismaz):
+        VERI_GEREKEN = [test_bir_sey]            # islev ya da "test_bir_sey"
+        ZINCIR_GEREKEN = [test_zincirli]
+    Merkezi VERI_GEREKTIREN / ZINCIR_GEREKTIREN geriye uyum icin kalir; bir
+    testin isareti iki kaynagin BIRLESIMIDIR.
 """
 
 import ast
@@ -124,6 +130,15 @@ def _main_cagrilari(modul):
     return hizli, yavas
 
 
+def modul_gerekenleri(modul, liste_adi):
+    """Modulun kendi VERI_GEREKEN / ZINCIR_GEREKEN listesindeki test adlari
+    (islev ya da ad metni kabul edilir). Liste yoksa bos kume."""
+    adlar = set()
+    for oge in getattr(modul, liste_adi, ()) or ():
+        adlar.add(oge if isinstance(oge, str) else getattr(oge, "__name__", repr(oge)))
+    return adlar
+
+
 def test_listeleri(modul):
     """(HIZLI islevleri, YAVAS islevleri) -- eski calistiricinin kostugu sirayla."""
     if hasattr(modul, "HIZLI") or hasattr(modul, "YAVAS"):
@@ -141,13 +156,16 @@ class OrtakTestDosyasi(pytest.File):
         # Eski calistiriciyla AYNI modul nesnesi (testler.<ad>) kullanilir.
         modul = importlib.import_module("testler." + ad)
         hizli, yavas = test_listeleri(modul)
+        veri_ad = modul_gerekenleri(modul, "VERI_GEREKEN")
+        zincir_ad = modul_gerekenleri(modul, "ZINCIR_GEREKEN")
         for isaret, islevler in (("hizli", hizli), ("yavas", yavas)):
             for fn in islevler:
                 oge = pytest.Function.from_parent(self, name=fn.__name__, callobj=fn)
                 oge.add_marker(isaret)
-                if isaret == "yavas" or "%s:%s" % (ad, fn.__name__) in VERI_GEREKTIREN:
+                anahtar = "%s:%s" % (ad, fn.__name__)
+                if isaret == "yavas" or anahtar in VERI_GEREKTIREN or fn.__name__ in veri_ad:
                     oge.add_marker("veri")
-                if "%s:%s" % (ad, fn.__name__) in ZINCIR_GEREKTIREN:
+                if anahtar in ZINCIR_GEREKTIREN or fn.__name__ in zincir_ad:
                     oge.add_marker("zincir")
                 oge.ortak_test = True
                 yield oge

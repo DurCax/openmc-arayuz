@@ -2,6 +2,11 @@
   "surum": 1,
   "ad": "PWR 17×17 demet — 3B (güç dağılımı)",
   "aciklama": "17×17 yakıt demetinin 3 boyutlu hali: 366 cm aktif yükseklik.\n\nEksenel sınır Vakum (vacuum) seçildi.\nEksenel sınır Yansıtıcı (reflective) bırakılırsa eksenel güç profili düz çıkar ve\nF_q ≈ F_ΔH olur — yani özellik çalışır ama hiçbir şey göstermez. Gerçek\nbir kosinüs profili ve anlamlı bir F_q için üst/alt sınır Vakum olmalı.\nYan sınır yansıtıcı bırakıldı (sonsuz kafes, tek demet).\n\nToplam güç = 17.6 MW: 3400 MWth bir PWR'ın 193 demetinden biri.\nBu, modelin kapsadığı bölgenin gücüdür — tüm korun değil.\nDoğru girdiyle ortalama çizgisel güç ~180 W/cm çıkmalıdır.",
+  "baslik": "PWR 17×17 demet — 3B",
+  "baslik_en": "PWR 17×17 assembly — 3D",
+  "aciklama_en": "The 17×17 assembly in 3D (366 cm active height) with a pin power distribution.",
+  "kategori": "pwr",
+  "seviye": "orta",
   "malzemeler": [
     {
       "ad": "uo2",

@@ -68,6 +68,8 @@ class CalistirSekmesi(QtWidgets.QWidget):
     degisti = QtCore.Signal(str)
     # Gosterilen sonucun durumu degisti (kosu bitti / basarisiz / sifirlandi).
     sonuc_degisti = QtCore.Signal()
+    # Kosu basladi (True) / bitti (False): kabuk Calistir <-> Durdur dugmesi.
+    kosu_durumu_degisti = QtCore.Signal(bool)
     KONU = "calistirma"
 
     def __init__(self, parent=None):
@@ -247,6 +249,10 @@ class CalistirSekmesi(QtWidgets.QWidget):
     def sonuc_var(self):
         """Bu projede basarili bir kosunun sonucu gosteriliyor mu."""
         return bool(self._son_basarili)
+
+    def son_kosu_dizini(self):
+        """Bu projedeki son BASARILI kosunun mutlak dizini; yoksa None (rapor)."""
+        return self._dizin if self._son_basarili and self._dizin else None
 
     def sifirla(self):
         """
@@ -556,6 +562,7 @@ class CalistirSekmesi(QtWidgets.QWidget):
         self._gorunum_guncelle()
         self.sonuc_degisti.emit()
         self.durum.emit("Koşu başladı → %s" % dizin, True)
+        self.kosu_durumu_degisti.emit(True)
 
     # En fazla bu kadar dogrulama hatasi mesaj kutusunda listelenir.
     _KAPI_GOSTERILEN_HATA = 5
@@ -636,6 +643,7 @@ class CalistirSekmesi(QtWidgets.QWidget):
                 pass
         self.d_durdur.setEnabled(False)
         self.kapi_guncelle()
+        self.kosu_durumu_degisti.emit(False)
         if eski:
             # Onceki projenin kosusu: sonucu bu projeye YAZILMAZ.
             self._kosu_kusagi = None
