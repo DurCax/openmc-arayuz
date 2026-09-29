@@ -1,70 +1,81 @@
 # -*- coding: utf-8 -*-
 """
 ================================================================================
- tema.py  --  Gorunum temalari
+ tema.py  --  Gorunum temalari (tasarim tokenlarina bagli)
 ================================================================================
- Qt'nin varsayilan paleti duz gri ve dusuk kontrastlidir; uzun sureli kullanimda
- yorucu olur. Burada iki tema tanimli:
+ HERKESE ACIK API (degismez; mevcut kod ve testler buna baglidir):
+   TEMALAR            {"acik": {...}, "koyu": {...}} -- duz renk sozlukleri
+   etkin()            etkin tema adi
+   renk(ad)           etkin temadan renk ("zemin", "yuzey", "vurgu", "hata", ...)
+   uygula(app, ad)    temayi uygular (ad None ise QSettings'ten)
 
-   "acik"  -- serin beyaz zemin, koyu arduvaz metin, teal vurgu
-   "koyu"  -- koyu lacivert-gri zemin, acik metin, turkuaz vurgu
+ EK (Dalga 1, tasarim sistemi):
+   uygula(app, ad, vurgu=None)   vurgu: tokenlar.VURGULAR anahtari
+   etkin_vurgu()                 etkin vurgu adi
+   sinyal().degisti(str)         tema/vurgu degisince yayilir (ikonlar yenilenir)
+   grafik_paleti()               renk koruge uygun kategorik palet (Okabe-Ito)
+
+ Renkler arayuz/tasarim/tokenlar.py'den, stil sayfasi arayuz/tasarim/stil.py'den
+ gelir. Eski anahtarlar (yuzey, yuzey2, grafik_zemin, ...) tokenlara eslenir;
+ yeni anahtarlar (yuzey1..3, metin_ikincil, vurgu_hover, *_soluk, odak ...) de
+ ayni sozlukte bulunur.
 
  Tema yalnizca GORUNUMU degistirir; hicbir sayisal davranisi etkilemez.
  Secim QSettings'te saklanir ve bir sonraki aciliste hatirlanir.
-
- matplotlib de ayni palete uydurulur -- grafikler arayuzden kopuk gorunmesin.
 ================================================================================
 """
 
-from PySide6 import QtCore, QtGui, QtWidgets
+from PySide6 import QtCore, QtGui
 
-# ----------------------------------------------------------------------------
-# Paletler
-# ----------------------------------------------------------------------------
-TEMALAR = {
-    "acik": {
-        "ad": "Açık",
-        "zemin": "#f4f7fa",        # pencere zemini
-        "yuzey": "#ffffff",        # giris alanlari, tablolar
-        "yuzey2": "#eef2f7",       # alternatif satir, basliklar
-        "metin": "#1f2933",
-        "metin_soluk": "#6b7785",
-        "kenar": "#d4dde7",
-        "vurgu": "#0f766e",        # teal
-        "vurgu_metin": "#ffffff",
-        "vurgu_soluk": "#d6f0ec",
-        "basari": "#1e7a44",
-        "uyari": "#a8620a",
-        "hata": "#b3261e",
-        "bilgi": "#5b6673",
-        "grafik_zemin": "#ffffff",
-        "grafik_izgara": "#dde5ee",
-    },
-    "koyu": {
-        "ad": "Koyu",
-        "zemin": "#1b1f27",
-        "yuzey": "#242a34",
-        "yuzey2": "#2c333f",
-        "metin": "#e4e9f0",
-        "metin_soluk": "#95a1b1",
-        "kenar": "#38404d",
-        "vurgu": "#2dd4bf",
-        "vurgu_metin": "#10241f",
-        "vurgu_soluk": "#1d3b38",
-        "basari": "#4ade80",
-        "uyari": "#fbbf24",
-        "hata": "#f87171",
-        "bilgi": "#9aa5b4",
-        "grafik_zemin": "#242a34",
-        "grafik_izgara": "#38404d",
-    },
+from arayuz.tasarim import stil as _stil_modulu
+from arayuz.tasarim import tokenlar
+from cekirdek.gunluk import kaydedici
+
+_log = kaydedici("arayuz.tema")
+
+# Dalga 0 anahtarlari -> token (geriye uyum)
+_ESKI_ANAHTARLAR = {
+    "yuzey": "yuzey1",
+    "grafik_zemin": "yuzey1",
 }
 
+
+def _tema_sozlugu(ad, vurgu):
+    p = tokenlar.palet(ad, vurgu)
+    eski = {k: p[v] for k, v in _ESKI_ANAHTARLAR.items()}
+    return {"ad": tokenlar.TEMA_ADLARI[ad], **p, **eski}
+
+
+def _temalari_kur(vurgu):
+    return {ad: _tema_sozlugu(ad, vurgu) for ad in tokenlar.TEMA_ADLARI}
+
+
 _ETKIN = "acik"
+_VURGU = tokenlar.VARSAYILAN_VURGU
+TEMALAR = _temalari_kur(_VURGU)
+
+
+class _TemaYayici(QtCore.QObject):
+    degisti = QtCore.Signal(str)
+
+
+_yayici = None
+
+
+def sinyal():
+    """Tema degisim sinyalinin sahibi (tekil)."""
+    global _yayici
+    if _yayici is None:
+        _yayici = _TemaYayici()
+    return _yayici
 
 
 def etkin():
     return _ETKIN
+
+
+def etkin_vurgu():
+    return _VURGU
 
 
 def renk(ad):
@@ -72,290 +83,124 @@ def renk(ad):
     return TEMALAR[_ETKIN][ad]
 
 
+def grafik_paleti(ad=None):
+    return tokenlar.GRAFIK_PALETI[ad or _ETKIN]
+
+
 # ----------------------------------------------------------------------------
 def _palet(t):
     p = QtGui.QPalette()
     R = QtGui.QColor
-    p.setColor(QtGui.QPalette.Window, R(t["zemin"]))
-    p.setColor(QtGui.QPalette.WindowText, R(t["metin"]))
-    p.setColor(QtGui.QPalette.Base, R(t["yuzey"]))
-    p.setColor(QtGui.QPalette.AlternateBase, R(t["yuzey2"]))
-    p.setColor(QtGui.QPalette.Text, R(t["metin"]))
-    p.setColor(QtGui.QPalette.Button, R(t["yuzey2"]))
-    p.setColor(QtGui.QPalette.ButtonText, R(t["metin"]))
-    p.setColor(QtGui.QPalette.Highlight, R(t["vurgu"]))
-    p.setColor(QtGui.QPalette.HighlightedText, R(t["vurgu_metin"]))
-    p.setColor(QtGui.QPalette.ToolTipBase, R(t["yuzey"]))
-    p.setColor(QtGui.QPalette.ToolTipText, R(t["metin"]))
-    p.setColor(QtGui.QPalette.Mid, R(t["kenar"]))
-    p.setColor(QtGui.QPalette.Dark, R(t["metin_soluk"]))
-    p.setColor(QtGui.QPalette.PlaceholderText, R(t["metin_soluk"]))
-    for grup in (QtGui.QPalette.Disabled,):
-        p.setColor(grup, QtGui.QPalette.Text, R(t["metin_soluk"]))
-        p.setColor(grup, QtGui.QPalette.ButtonText, R(t["metin_soluk"]))
-        p.setColor(grup, QtGui.QPalette.WindowText, R(t["metin_soluk"]))
+    roller = (
+        (QtGui.QPalette.Window, "zemin"), (QtGui.QPalette.WindowText, "metin"),
+        (QtGui.QPalette.Base, "yuzey1"), (QtGui.QPalette.AlternateBase, "yuzey2"),
+        (QtGui.QPalette.Text, "metin"), (QtGui.QPalette.Button, "yuzey2"),
+        (QtGui.QPalette.ButtonText, "metin"), (QtGui.QPalette.Highlight, "vurgu"),
+        (QtGui.QPalette.HighlightedText, "vurgu_metin"), (QtGui.QPalette.ToolTipBase, "yuzey3"),
+        (QtGui.QPalette.ToolTipText, "metin"), (QtGui.QPalette.Mid, "kenar"),
+        (QtGui.QPalette.Dark, "metin_soluk"), (QtGui.QPalette.PlaceholderText, "metin_soluk"),
+        (QtGui.QPalette.Link, "vurgu"), (QtGui.QPalette.Light, "yuzey1"),
+        (QtGui.QPalette.Midlight, "yuzey3"), (QtGui.QPalette.Shadow, "golge"),
+    )
+    for rol, anahtar in roller:
+        p.setColor(rol, R(t[anahtar]))
+    for rol in (QtGui.QPalette.Text, QtGui.QPalette.ButtonText, QtGui.QPalette.WindowText):
+        p.setColor(QtGui.QPalette.Disabled, rol, R(t["metin_pasif"]))
     return p
 
 
-def _ok_dosyalari(t):
-    """
-    Acilir liste ve sayi kutusu oklari (PNG, 1x ve @2x). Stil sayfasi
-    giris kutularina kenar/dolgu verince Qt oklari kendi cizmez: acilir
-    listelerde ok HIC gorunmuyordu, sayi kutularinda yalnizca bir cizgi
-    ("┤") vardi -- kullanici bunlarin secilebilir oldugunu anlamiyordu.
-    """
-    import os
-    import tempfile
-    dizin = os.path.join(tempfile.gettempdir(), "openmc_arayuz_tema_%s" % os.getuid()
-                         if hasattr(os, "getuid") else "openmc_arayuz_tema")
-    os.makedirs(dizin, exist_ok=True)
-    yollar = {}
-    for ad, renk_ in (("ok", t["metin_soluk"]), ("ok_pasif", t["kenar"])):
-        for yon in ("asagi", "yukari"):
-            for olcek, ek in ((1, ""), (2, "@2x")):
-                yol = os.path.join(dizin, "%s_%s_%s%s.png" % (ad, yon, renk_.lstrip("#"), ek))
-                if not os.path.exists(yol):
-                    n = 12 * olcek
-                    resim = QtGui.QImage(n, n, QtGui.QImage.Format_ARGB32)
-                    resim.fill(QtCore.Qt.transparent)
-                    ressam = QtGui.QPainter(resim)
-                    ressam.setRenderHint(QtGui.QPainter.Antialiasing)
-                    kalem = QtGui.QPen(QtGui.QColor(renk_), 1.7 * olcek)
-                    kalem.setCapStyle(QtCore.Qt.RoundCap)
-                    kalem.setJoinStyle(QtCore.Qt.RoundJoin)
-                    ressam.setPen(kalem)
-                    y0, y1 = (4.5, 8.0) if yon == "asagi" else (8.0, 4.5)
-                    ressam.drawPolyline([QtCore.QPointF(2.5 * olcek, y0 * olcek),
-                                         QtCore.QPointF(6.0 * olcek, y1 * olcek),
-                                         QtCore.QPointF(9.5 * olcek, y0 * olcek)])
-                    ressam.end()
-                    resim.save(yol)
-                if olcek == 1:
-                    yollar["%s_%s" % (ad, yon)] = yol.replace("\\", "/")
-    return yollar
-
-
 def _stil(t):
-    t = dict(t, **_ok_dosyalari(t))
-    return """
-* { outline: 0; }
-
-QWidget { color: %(metin)s; font-size: 10pt; }
-QMainWindow, QDialog { background: %(zemin)s; }
-
-/* ---------- sekmeler: altcizgi gostergeli, modern ----------
-   Sekme YAZI RENGI burada VERILMEZ: stil sayfasindaki renk QTabBar::
-   setTabTextColor'u ezer ve ana penceredeki durum isaretleri (hatali sekme
-   kirmizi) gorunmezdi. Ana sekme cubugunun renklerini ana_pencere.py verir
-   (secili: vurgu, digerleri: soluk, hata: kirmizi). */
-QTabWidget::pane { border: none; background: %(zemin)s; }
-QTabBar::tab {
-    background: transparent;
-    padding: 9px 16px; margin-right: 2px;
-    border: none; border-bottom: 2px solid transparent;
-}
-QTabBar::tab:hover { background: %(yuzey2)s;
-                     border-top-left-radius: 6px; border-top-right-radius: 6px; }
-QTabBar::tab:selected {
-    font-weight: 600;
-    border-bottom: 2px solid %(vurgu)s;
-}
-
-/* ---------- dugmeler ---------- */
-QPushButton {
-    background: %(yuzey)s; border: 1px solid %(kenar)s; border-radius: 6px;
-    padding: 6px 14px; color: %(metin)s;
-}
-QPushButton:hover   { border-color: %(vurgu)s; background: %(vurgu_soluk)s; }
-QPushButton:pressed { background: %(vurgu)s; color: %(vurgu_metin)s; }
-QPushButton:disabled{ color: %(metin_soluk)s; background: %(yuzey2)s;
-                      border-color: %(kenar)s; }
-QPushButton:checked { background: %(vurgu)s; color: %(vurgu_metin)s;
-                      border-color: %(vurgu)s; }
-
-/* ---------- girisler ---------- */
-QLineEdit, QSpinBox, QDoubleSpinBox, QComboBox, QPlainTextEdit, QTextBrowser {
-    background: %(yuzey)s; border: 1px solid %(kenar)s; border-radius: 6px;
-    padding: 5px 8px; selection-background-color: %(vurgu)s;
-    selection-color: %(vurgu_metin)s;
-}
-QLineEdit:focus, QSpinBox:focus, QDoubleSpinBox:focus, QComboBox:focus,
-QPlainTextEdit:focus { border: 1px solid %(vurgu)s; }
-QComboBox { padding-right: 26px; }
-QComboBox::drop-down { subcontrol-origin: padding; subcontrol-position: center right;
-                       border: none; width: 24px; }
-QComboBox::down-arrow { image: url("%(ok_asagi)s"); width: 12px; height: 12px; }
-QComboBox::down-arrow:disabled { image: url("%(ok_pasif_asagi)s"); }
-QSpinBox, QDoubleSpinBox { padding-right: 26px; }
-QSpinBox::up-button, QDoubleSpinBox::up-button,
-QSpinBox::down-button, QDoubleSpinBox::down-button {
-    subcontrol-origin: border; width: 22px; border: none;
-    border-left: 1px solid %(kenar)s; background: transparent;
-}
-QSpinBox::up-button, QDoubleSpinBox::up-button {
-    subcontrol-position: top right; border-top-right-radius: 6px; }
-QSpinBox::down-button, QDoubleSpinBox::down-button {
-    subcontrol-position: bottom right; border-bottom-right-radius: 6px; }
-QSpinBox::up-button:hover, QDoubleSpinBox::up-button:hover,
-QSpinBox::down-button:hover, QDoubleSpinBox::down-button:hover {
-    background: %(vurgu_soluk)s; }
-QSpinBox::up-arrow, QDoubleSpinBox::up-arrow {
-    image: url("%(ok_yukari)s"); width: 10px; height: 10px; }
-QSpinBox::down-arrow, QDoubleSpinBox::down-arrow {
-    image: url("%(ok_asagi)s"); width: 10px; height: 10px; }
-QSpinBox::up-arrow:disabled, QDoubleSpinBox::up-arrow:disabled,
-QSpinBox::up-arrow:off, QDoubleSpinBox::up-arrow:off {
-    image: url("%(ok_pasif_yukari)s"); }
-QSpinBox::down-arrow:disabled, QDoubleSpinBox::down-arrow:disabled,
-QSpinBox::down-arrow:off, QDoubleSpinBox::down-arrow:off {
-    image: url("%(ok_pasif_asagi)s"); }
-QComboBox QAbstractItemView {
-    background: %(yuzey)s; border: 1px solid %(kenar)s;
-    selection-background-color: %(vurgu)s; selection-color: %(vurgu_metin)s;
-}
-
-/* ---------- tablolar ve listeler ---------- */
-QTableWidget, QTableView, QListWidget, QTreeView {
-    background: %(yuzey)s; alternate-background-color: %(yuzey2)s;
-    border: 1px solid %(kenar)s; border-radius: 6px;
-    gridline-color: %(kenar)s;
-    selection-background-color: %(vurgu)s; selection-color: %(vurgu_metin)s;
-}
-QHeaderView::section {
-    background: %(yuzey2)s; color: %(metin_soluk)s;
-    border: none; border-bottom: 1px solid %(kenar)s;
-    padding: 6px 8px; font-weight: 600;
-}
-
-/* ---------- menu ve arac cubugu ---------- */
-QMenuBar { background: %(zemin)s; border-bottom: 1px solid %(kenar)s; }
-QMenuBar::item { padding: 6px 12px; background: transparent; border-radius: 5px; }
-QMenuBar::item:selected { background: %(vurgu_soluk)s; color: %(vurgu)s; }
-QMenu { background: %(yuzey)s; border: 1px solid %(kenar)s; border-radius: 8px;
-        padding: 6px; }
-QMenu::item { padding: 6px 22px; border-radius: 5px; }
-QMenu::item:selected { background: %(vurgu)s; color: %(vurgu_metin)s; }
-QMenu::separator { height: 1px; background: %(kenar)s; margin: 5px 8px; }
-
-QToolBar { background: %(zemin)s; border: none;
-           border-bottom: 1px solid %(kenar)s; padding: 2px 6px; spacing: 4px; }
-QToolButton { background: transparent; border: 1px solid transparent;
-              border-radius: 6px; padding: 3px 10px; }
-QToolButton:hover { background: %(vurgu_soluk)s; border-color: %(kenar)s; }
-QToolButton:disabled { color: %(metin_soluk)s; }
-
-QStatusBar { background: %(zemin)s; border-top: 1px solid %(kenar)s;
-             color: %(metin_soluk)s; }
-
-/* ---------- gruplar, ayraclar ---------- */
-QGroupBox {
-    border: 1px solid %(kenar)s; border-radius: 8px;
-    margin-top: 12px; padding-top: 10px; background: %(yuzey)s;
-}
-QGroupBox::title { subcontrol-origin: margin; left: 12px; padding: 0 6px;
-                   color: %(metin_soluk)s; font-weight: 600; }
-QFrame[frameShape="4"] { color: %(kenar)s; max-height: 1px; }
-
-/* ---------- kaydirma cubuklari: ince, modern ---------- */
-QScrollBar:vertical   { background: transparent; width: 11px; margin: 2px; }
-QScrollBar:horizontal { background: transparent; height: 11px; margin: 2px; }
-QScrollBar::handle:vertical, QScrollBar::handle:horizontal {
-    background: %(kenar)s; border-radius: 5px; min-height: 28px; min-width: 28px;
-}
-QScrollBar::handle:hover { background: %(metin_soluk)s; }
-QScrollBar::add-line, QScrollBar::sub-line { height: 0; width: 0; }
-QScrollBar::add-page, QScrollBar::sub-page { background: transparent; }
-
-/* ---------- diger ---------- */
-QProgressBar { background: %(yuzey2)s; border: 1px solid %(kenar)s;
-               border-radius: 6px; text-align: center; color: %(metin)s; }
-QProgressBar::chunk { background: %(vurgu)s; border-radius: 5px; }
-QCheckBox::indicator, QRadioButton::indicator { width: 15px; height: 15px; }
-QCheckBox::indicator:unchecked { border: 1px solid %(kenar)s; border-radius: 4px;
-                                 background: %(yuzey)s; }
-QCheckBox::indicator:checked { border: 1px solid %(vurgu)s; border-radius: 4px;
-                               background: %(vurgu)s; }
-QSplitter::handle { background: %(kenar)s; }
-QSplitter::handle:horizontal { width: 1px; }
-QSplitter::handle:vertical { height: 1px; }
-QSlider::groove:horizontal { height: 4px; background: %(kenar)s; border-radius: 2px; }
-QSlider::handle:horizontal { background: %(vurgu)s; width: 14px; height: 14px;
-                             margin: -5px 0; border-radius: 7px; }
-QToolTip { background: %(yuzey)s; color: %(metin)s;
-           border: 1px solid %(kenar)s; padding: 6px; border-radius: 6px; }
-
-/* ---------- dalga 2: sade kabuk ---------- */
-/* birincil eylem dugmesi (Bos basla, bos durum eylemi) */
-QPushButton#birincil { background: %(vurgu)s; color: %(vurgu_metin)s;
-                       border: 1px solid %(vurgu)s; font-weight: 600; }
-QPushButton#birincil:hover { background: %(vurgu)s; border-color: %(metin)s; }
-QPushButton#birincil:disabled { background: %(yuzey2)s; color: %(metin_soluk)s;
-                                border-color: %(kenar)s; }
-/* baslangic ekrani kartlari */
-QFrame#kart { background: %(yuzey)s; border: 1px solid %(kenar)s;
-              border-radius: 10px; }
-QFrame#kart:hover { border-color: %(vurgu)s; }
-QFrame#kart QLabel { background: transparent; border: none; }
-QLabel#kartAciklama, QLabel#soluk { color: %(metin_soluk)s; }
-QLabel#ekranBaslik { font-size: 20pt; font-weight: 700; }
-QLabel#bolumBaslik { color: %(metin_soluk)s; font-weight: 600; }
-/* model basligi (arac cubugunun altinda) */
-QWidget#modelSeridi { background: %(yuzey2)s; border-bottom: 1px solid %(kenar)s; }
-QWidget#modelSeridi QLabel { background: transparent; }
-QWidget#modelSeridi QToolButton { border: 1px solid %(kenar)s; background: %(yuzey)s;
-                                  padding: 3px 10px; }
-QWidget#modelSeridi QToolButton:hover { border-color: %(vurgu)s; background: %(vurgu_soluk)s; }
-/* katlanabilir Gelismis bolumu */
-QToolButton#gelismisDugme { color: %(metin_soluk)s; font-weight: 600;
-                            padding: 3px 4px; border: none; }
-QToolButton#gelismisDugme:hover { color: %(vurgu)s; background: transparent; }
-QToolButton#gelismisDugme:checked { color: %(metin)s; background: transparent; }
-/* arac cubugunda CALISTIR one ciksin */
-QToolButton#calistirDugmesi { color: %(vurgu)s; font-weight: 700; }
-QToolButton#calistirDugmesi:disabled { color: %(metin_soluk)s; font-weight: 600; }
-/* baslangic ekrani listeleri: satir araligi ve uzerine gelme */
-QTreeView#tikListe { background: %(yuzey)s; }
-QTreeView#tikListe::item { padding: 3px 4px; }
-QTreeView#tikListe::item:hover { background: %(vurgu_soluk)s; }
-/* bulgu acilir listesi (durum cubugu rozeti) */
-QFrame#bulguAcilir { background: %(yuzey)s; border: 1px solid %(kenar)s;
-                     border-radius: 8px; }
-""" % t
+    """Stil sayfasi (geriye uyum: test_kabuk tema._stil(TEMALAR[..]) cagirir)."""
+    from arayuz.tasarim import yazi
+    aile = mono = None
+    if QtGui.QGuiApplication.instance() is not None:
+        aile, mono = yazi.aile(), yazi.mono_aile()
+    return _stil_modulu.uret(t, aile=aile, mono=mono)
 
 
-def _matplotlib_uydur(t):
-    """Grafikleri arayuz paletine uydurur."""
+def _matplotlib_uydur(t, palet_):
+    """Grafikleri arayuz paletine uydurur (renk koruge uygun renk dongusu)."""
     import matplotlib
-    matplotlib.rcParams.update({
+    from cycler import cycler
+    from arayuz.tasarim import yazi
+    ayar = {
         "figure.facecolor": t["grafik_zemin"],
         "axes.facecolor": t["grafik_zemin"],
         "savefig.facecolor": t["grafik_zemin"],
-        "axes.edgecolor": t["kenar"],
-        "axes.labelcolor": t["metin"],
+        "axes.edgecolor": t["kenar_guclu"],
+        "axes.labelcolor": t["metin_ikincil"],
         "axes.titlecolor": t["metin"],
+        "axes.prop_cycle": cycler(color=list(palet_)),
+        "axes.spines.top": False,
+        "axes.spines.right": False,
         "text.color": t["metin"],
         "xtick.color": t["metin_soluk"],
         "ytick.color": t["metin_soluk"],
         "grid.color": t["grafik_izgara"],
-        "legend.facecolor": t["yuzey"],
+        "legend.facecolor": t["yuzey1"],
         "legend.edgecolor": t["kenar"],
+        "legend.frameon": False,
+        "image.cmap": tokenlar.GRAFIK_HARITASI,
         "font.size": 9,
-    })
+    }
+    if QtGui.QGuiApplication.instance() is not None:
+        from matplotlib import font_manager
+        aile = yazi.aile()
+        try:
+            font_manager.fontManager.addfont(_inter_yolu())
+            ayar["font.family"] = [aile, "DejaVu Sans"]
+        except (OSError, RuntimeError, ValueError):
+            _log.warning("matplotlib Inter'i yukleyemedi; varsayilan yazi", exc_info=True)
+    matplotlib.rcParams.update(ayar)
 
 
-def uygula(app, ad=None):
-    """Temayi uygular. ad verilmezse QSettings'ten okunur."""
-    global _ETKIN
+def _inter_yolu():
+    import os
+    from arayuz.tasarim import yazi
+    return os.path.join(yazi.FONT_DIZINI, "Inter-Regular.ttf")
+
+
+def _govde_yazisi(app, aile):
+    """Uygulama yazisi NOKTA boyutuyla kurulur (piksel tokenindan cevrilir):
+    mevcut kod f.setPointSizeF(f.pointSizeF() * k) yapar; piksel boyutlu yazida
+    pointSizeF() -1 doner ve boyut negatif olurdu."""
+    ekran = app.primaryScreen() if hasattr(app, "primaryScreen") else None
+    dpi = ekran.logicalDotsPerInchY() if ekran is not None else 96.0
+    f = QtGui.QFont(aile)
+    f.setPointSizeF(tokenlar.TIPOGRAFI["govde"][0] * 72.0 / (dpi or 96.0))
+    return f
+
+
+def uygula(app, ad=None, vurgu=None):
+    """Temayi uygular. ad/vurgu verilmezse QSettings'ten okunur."""
+    global _ETKIN, _VURGU, TEMALAR
+    from arayuz.tasarim import ikon, yazi
     ayar = QtCore.QSettings("openmc_arayuz", "arayuz")
     if ad is None:
         ad = ayar.value("tema", "acik")
-    if ad not in TEMALAR:
+    if ad not in tokenlar.TEMA_ADLARI:
+        _log.warning("bilinmeyen tema adi %r; 'acik' temaya dusuldu", ad)
         ad = "acik"
-    _ETKIN = ad
+    if vurgu is None:
+        vurgu = ayar.value("tema_vurgu", tokenlar.VARSAYILAN_VURGU)
+    if vurgu not in tokenlar.VURGULAR:
+        _log.warning("bilinmeyen vurgu %r; %r vurguya dusuldu", vurgu,
+                     tokenlar.VARSAYILAN_VURGU)
+        vurgu = tokenlar.VARSAYILAN_VURGU
+    if vurgu != _VURGU:
+        TEMALAR = _temalari_kur(vurgu)
+        ikon.onbellegi_temizle()
+    _ETKIN, _VURGU = ad, vurgu
     t = TEMALAR[ad]
+    aile = yazi.yukle()
     app.setStyle("Fusion")
+    app.setFont(_govde_yazisi(app, aile))
     app.setPalette(_palet(t))
     app.setStyleSheet(_stil(t))
-    _matplotlib_uydur(t)
+    _matplotlib_uydur(t, grafik_paleti(ad))
     ayar.setValue("tema", ad)
+    ayar.setValue("tema_vurgu", vurgu)
+    sinyal().degisti.emit(ad)
     return ad
+
+

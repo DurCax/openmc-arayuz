@@ -1,0 +1,15 @@
+Gomulu dis varliklar (arayuz/kaynaklar/)
+=========================================
+
+fontlar/  Inter 4.1 -- Inter-Regular.ttf (400), Inter-Medium.ttf (500),
+          Inter-SemiBold.ttf (600)
+          Kaynak : https://github.com/rsms/inter/releases/download/v4.1/Inter-4.1.zip
+                   (arsivdeki extras/ttf/ klasoru)
+          SHA-256: 9883fdd4a49d4fb66bd8177ba6625ef9a64aa45899767dde3d36aa425756b11e (zip)
+          Lisans : SIL Open Font License 1.1 -- fontlar/LICENSE.txt
+
+ikonlar/  Lucide 1.48.0 -- secilmis SVG ikonlar (tam liste: ikonlar/*.svg)
+          Kaynak : https://github.com/lucide-icons/lucide/tree/1.48.0/icons
+          Lisans : ISC (Feather'dan gelen ikonlar icin MIT) -- ikonlar/LICENSE
+          SVG'ler degistirilmeden kopyalandi; renk calisma aninda
+          (stroke="currentColor" -> tema rengi) arayuz/tasarim/ikon.py'de verilir.
