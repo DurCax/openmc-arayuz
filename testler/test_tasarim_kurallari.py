@@ -35,7 +35,6 @@ RENK_TABANI = {
     "arayuz/cubuk/cubuk_formu.py": 1,
     "arayuz/cubuk/malzeme_kutusu.py": 1,
     "arayuz/cubuk/sayfalar.py": 1,
-    "arayuz/guc_harita.py": 9,
     "arayuz/malzeme/bilesim.py": 1,
     "arayuz/malzeme/girdiler.py": 1,
     "arayuz/malzeme/yardimcilar.py": 1,

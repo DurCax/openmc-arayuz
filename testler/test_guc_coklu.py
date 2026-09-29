@@ -674,6 +674,20 @@ def test_cok_tur_betik_esdegerligi(gecici):
                                                                     "yakit_c"])
 
 
+def test_yeniden_adlandirma_cubuklar_listesi():
+    print("\n[GC21] Cubuk yeniden adlandirilinca guc_dagilimi.cubuklar guncellenir")
+    from cekirdek import sema
+    from arayuz.cubuk import parca_islemleri as pi
+    spec = sema.yukle(os.path.join(ORNEK, "pwr_3b.json"))
+    eski = spec["cubuklar"][0]["ad"]
+    spec["guc_dagilimi"]["cubuklar"] = [{"cubuk": eski, "bolge": 0}]
+    kontrol("kullanim listesinde guc dagilimi var",
+            "güç dağılımı" in pi.parca_kullanimlari(spec, eski))
+    pi.parca_adini_degistir(spec, eski, "yeni_ad")
+    kontrol("cubuklar listesi yeni adi tasiyor",
+            [h["cubuk"] for h in spec["guc_dagilimi"]["cubuklar"]] == ["yeni_ad"])
+
+
 BEKLEYEN = []
 HIZLI = [test_varsayilan_cubuklar_bos, test_eski_bicim_tek_ogeli_listeye,
          test_yeni_bicim_kazanir, test_ornekler_yeni_bicimde_yuklenir,
@@ -683,6 +697,7 @@ HIZLI = [test_varsayilan_cubuklar_bos, test_eski_bicim_tek_ogeli_listeye,
          test_dagilim_birlestirme_sentetik, test_varsayilan_hedefler_fisil_bolge,
          test_arayuz_tum_yakit_cubuklari, test_guc_haritasi_tur_secici,
          test_tukenme_betik_ornek_hacimleri, test_katman_anahtari_haritasiz_korda_durur,
-         test_tambur_emici_hacmi_analitik]
+         test_tambur_emici_hacmi_analitik,
+         test_yeniden_adlandirma_cubuklar_listesi]
 YAVAS = [test_uc_zenginlik_mc_fdh, test_cok_tur_betik_esdegerligi, test_emici_hacmi_stokastik]
 ZINCIR_GEREKEN = [test_tukenme_betik_ornek_hacimleri]

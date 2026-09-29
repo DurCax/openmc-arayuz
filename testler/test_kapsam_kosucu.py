@@ -219,7 +219,23 @@ def test_terminal_ilerleme_tty():
     kontrol("entropi okunamadi satiri", "Shannon entropisi okunamadı: bozuk entropi" in metin)
 
 
+def test_xml_yaz_spec_json():
+    print("\n[KK8] xml_yaz kosu dizinine spec.json yazar; dizin_hazirla eskisini siler")
+    from cekirdek import kosucu, sema
+    spec = sema.yukle(os.path.join(KOK, "ornekler", "pwr_pinhucre.json"))
+    d = tempfile.mkdtemp(prefix="kapsam_kosucu_")
+    try:
+        kosucu.xml_yaz(spec, d)
+        yol = os.path.join(d, "spec.json")
+        kontrol("spec.json yazildi (rapor/CLI buradan okur)", os.path.isfile(yol))
+        kontrol("spec.json geri yuklenince ayni model", sema.yukle(yol) == spec)
+        kosucu.dizin_hazirla(d)
+        kontrol("temizlikte eski spec.json silindi", not os.path.exists(yol))
+    finally:
+        shutil.rmtree(d, True)
+
+
 HIZLI = [test_ayristirma_ve_yorum_dallari, test_dizin_ve_yol, test_tally_metni_dallari,
          test_tally_ifp_ve_kinetik, test_guc_korunumu_ve_pay, test_sonuc_oku_kinetik,
-         test_terminal_ilerleme_tty]
+         test_terminal_ilerleme_tty, test_xml_yaz_spec_json]
 YAVAS = []

@@ -769,7 +769,9 @@ def test_dogrula_uyumu():
         kaynak_ok = (k.get("tur", "nokta") in ks.get("turler", [])
                      and (k.get("parcacik") or "neutron") in ks.get("parcaciklar", []))
         g = s.get("guc_dagilimi") or {}
-        guc_ok = not g.get("var") or g.get("cubuk") in (_g(u.guc_cubuklari, s) or [])
+        from cekirdek import sema as _sema
+        guc_ok = not g.get("var") or all(
+            h["cubuk"] in (_g(u.guc_cubuklari, s) or []) for h in _sema.guc_hedefleri(g))
         t = s.get("tukenme") or {}
         tuk_ok = not t.get("var") or (_g(u.tukenme_uygun, s) or (False,))[0]
         kontrol("%s: dosyadaki sinir/kaynak/guc/tukenme sunulan secenekler icinde" % ad,

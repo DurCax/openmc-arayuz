@@ -216,7 +216,8 @@ def dizin_hazirla(dizin, temizle=True):
     if temizle and os.path.isdir(dizin):
         for ad in os.listdir(dizin):
             if (ad.startswith("statepoint") or ad in ("summary.h5", "tallies.out",
-                                                      "model.xml", "kosu.log")):
+                                                      "model.xml", "kosu.log",
+                                                      "spec.json")):
                 try:
                     os.remove(os.path.join(dizin, ad))
                 except OSError:
@@ -232,6 +233,8 @@ def xml_yaz(spec, dizin):
     model, bilgi = kurucu.kur(spec)
     yol = os.path.join(dizin, "model.xml")
     model.export_to_model_xml(yol)
+    # Kosunun modeli dizinde kalir: rapor (CLI ve arayuz) spec'i buradan okur.
+    sema.kaydet(spec, os.path.join(dizin, "spec.json"))
     return model, bilgi, yol
 
 

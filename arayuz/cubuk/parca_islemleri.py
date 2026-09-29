@@ -332,6 +332,8 @@ def parca_adini_degistir(spec, eski, yeni):
         alan(b, "dolgu")
         esle(b.get("anahtar"))
     alan(spec.get("guc_dagilimi"), "cubuk")
+    for h in (spec.get("guc_dagilimi") or {}).get("cubuklar") or []:
+        alan(h, "cubuk")
     return sayac[0]
 
 
@@ -347,7 +349,7 @@ def parca_kullanimlari(spec, ad):
     for b in (kor.get("eksenel") or {}).get("bolgeler") or []:
         if b.get("dolgu") == ad or ad in (b.get("anahtar") or {}).values():
             yerler.append("'%s' eksenel katmanı" % (b.get("ad") or "adsız"))
-    if (spec.get("guc_dagilimi") or {}).get("cubuk") == ad:
+    if ad in [h["cubuk"] for h in sema.guc_hedefleri(spec.get("guc_dagilimi"))]:
         yerler.append("güç dağılımı")
     return yerler
 

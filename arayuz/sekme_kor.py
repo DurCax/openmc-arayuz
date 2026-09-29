@@ -735,11 +735,13 @@ class KorSekmesi(SekmeTabani):
                 satir += ("   ·   aktif yakıt = %g cm  (z = %g … %g)"
                           % (ar[1] - ar[0], ar[0], ar[1]))
             g = self.spec.get("guc_dagilimi") or {}
-            if g.get("var") and g.get("cubuk"):
-                cr = kurucu.cubuk_eksenel_aralik(self.spec, g["cubuk"])
+            adlar = list(dict.fromkeys(h["cubuk"] for h in sema.guc_hedefleri(g)
+                                       if h["cubuk"]))
+            if g.get("var") and adlar:
+                cr = kurucu.guc_eksenel_araligi(self.spec, adlar)
                 if cr and (cr[1] - cr[0]) != (ar[1] - ar[0] if ar else None):
                     satir += ("\n“%s” çubuğu = %g cm (z = %g … %g) — güç ağı bunu kullanır"
-                              % (g["cubuk"], cr[1] - cr[0], cr[0], cr[1]))
+                              % ("”, “".join(adlar), cr[1] - cr[0], cr[0], cr[1]))
         except Exception as hata:
             satir += "   ·   aralık hesaplanamadı: %s" % hata
         self.katman_ozet.setText(satir)
