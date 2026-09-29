@@ -222,7 +222,17 @@
     "k": 1.0,
     "sigma": 0.002,
     "tur": "deney",
-    "kaynak": "ICSBEP PU-MET-FAST-001 (Jezebel)"
+    "kaynak": "ICSBEP PU-MET-FAST-001 (Jezebel)",
+    "olcum": {
+      "k": 0.99996,
+      "sigma": 0.00023,
+      "parcacik": 50000,
+      "sure_s": 5.5,
+      "is_parcacigi": 8,
+      "openmc": "0.16.0",
+      "kutuphane": "ENDF/B-VIII.0",
+      "tarih": "2026-09-29"
+    }
   },
   "baslik_en": "Jezebel plutonium sphere",
   "aciklama_en": "ICSBEP benchmark PU-MET-FAST-001 (Jezebel): bare delta-phase Pu-Ga metal sphere, r = 6.3849 cm, k-eff = 1.0000 ± 0.0020."

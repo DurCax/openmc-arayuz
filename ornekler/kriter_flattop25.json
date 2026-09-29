@@ -249,7 +249,17 @@
     "k": 1.0,
     "sigma": 0.003,
     "tur": "deney",
-    "kaynak": "ICSBEP HEU-MET-FAST-028 (Flattop-25)"
+    "kaynak": "ICSBEP HEU-MET-FAST-028 (Flattop-25)",
+    "olcum": {
+      "k": 1.00106,
+      "sigma": 0.00026,
+      "parcacik": 100000,
+      "sure_s": 51.8,
+      "is_parcacigi": 8,
+      "openmc": "0.16.0",
+      "kutuphane": "ENDF/B-VIII.0",
+      "tarih": "2026-09-29"
+    }
   },
   "baslik_en": "Flattop-25 reflected sphere",
   "aciklama_en": "ICSBEP benchmark HEU-MET-FAST-028 (Flattop-25): HEU metal core reflected by natural uranium, k-eff = 1.0000 ± 0.0030."

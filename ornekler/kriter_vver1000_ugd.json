@@ -460,7 +460,17 @@
     "k": 1.3185,
     "sigma": 0.004,
     "tur": "hesap",
-    "kaynak": "NEA/NSC/DOC(2002)10, Tablo C.1 (UGD, S5, yanma 0): 6 katılımcının ortalaması ± standart sapması"
+    "kaynak": "NEA/NSC/DOC(2002)10, Tablo C.1 (UGD, S5, yanma 0): 6 katılımcının ortalaması ± standart sapması",
+    "olcum": {
+      "k": 1.3191,
+      "sigma": 0.00021,
+      "parcacik": 100000,
+      "sure_s": 574.6,
+      "is_parcacigi": 8,
+      "openmc": "0.16.0",
+      "kutuphane": "ENDF/B-VIII.0",
+      "tarih": "2026-09-29"
+    }
   },
   "baslik_en": "VVER-1000 LEU assembly benchmark (NEA)",
   "aciklama_en": "NEA/NSC/DOC(2002)10 UGD variant, cold state S5, zero burnup: 331-cell hexagonal assembly with 12 U-Gd rods; code-to-code reference (participant mean)."
