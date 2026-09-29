@@ -44,6 +44,7 @@ from PySide6 import QtCore, QtWidgets
 
 from cekirdek import sema, uygunluk
 from cekirdek import kaynak as _kaynak
+from arayuz import tema
 from arayuz.ortak import (SekmeTabani, ayrac, baslik, ipucu, sayi, tamsayi,
                           EnerjiGirdi, BilimselGirdi, GelismisBolum)
 
@@ -479,7 +480,7 @@ class AyarSekmesi(YerlesimMixin, KaynakFormuMixin, GucFormuMixin, TallyFormuMixi
             s = belirsizlik_pcm(n, c, p)
             if s is None:
                 metin += " — aktif çevrim yok: pasif çevrim sayısını azaltın."
-                self.hassasiyet_ozet.setStyleSheet("color: #b3261e;")
+                self.hassasiyet_ozet.setStyleSheet("color: %s;" % tema.renk("hata"))
             else:
                 metin += (" — beklenen k-eff belirsizliği ≈ ±%d pcm (pin hücre ölçümü; "
                           "büyük korlarda daha fazla olabilir)" % _pcm_yuvarla(s))

@@ -8,6 +8,7 @@
 
 from PySide6 import QtWidgets
 from cekirdek import kaynak as _kaynak
+from arayuz import tema
 
 
 class KaynakFormuMixin(object):
@@ -101,4 +102,4 @@ class KaynakFormuMixin(object):
             self.tayf_ozet.setStyleSheet("")
         except Exception as hata:
             self.tayf_ozet.setText("Tayf kurulamadı: %s" % hata)
-            self.tayf_ozet.setStyleSheet("color: #d04437;")
+            self.tayf_ozet.setStyleSheet("color: %s;" % tema.renk("hata"))

@@ -64,6 +64,7 @@ from PySide6 import QtCore, QtWidgets
 import openmc
 
 from cekirdek import onbellek, sema
+from arayuz import tema
 from arayuz.ortak import GelismisBolum
 
 # Cozunurluk secenekleri -- maliyet baslatmada oldugu icin yuksek varsayilan ucuz.
@@ -263,7 +264,7 @@ class OnizlemeWidget(QtWidgets.QWidget):
         self.eksenler.set_axis_off()
         self.eksenler.text(0.5, 0.5, metin, ha="center", va="center",
                            wrap=True, fontsize=9,
-                           color="#c0392b" if hata else "#7f8c8d")
+                           color=tema.renk("hata" if hata else "metin_soluk"))
         self.tuval.draw_idle()
 
     def _ciz(self):

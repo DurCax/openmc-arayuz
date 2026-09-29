@@ -38,9 +38,12 @@ from PySide6 import QtCore, QtWidgets
 
 from cekirdek import sema, uygunluk
 from cekirdek.ceviri import _
-from arayuz import izgara
+from arayuz import izgara, tema
 from arayuz.kor_altigen import AltigenKorHaritasi
 from arayuz.ortak import SekmeTabani, baslik, ipucu, sayi, tamsayi
+from cekirdek.gunluk import kaydedici
+
+_log = kaydedici("arayuz.sekme_kor")
 
 # Sinir kosullarinin gorunen adlari (OpenMC anahtar sozcugu parantezde).
 SINIR_ADLARI = {
@@ -743,6 +746,8 @@ class KorSekmesi(SekmeTabani):
                     satir += ("\n“%s” çubuğu = %g cm (z = %g … %g) — güç ağı bunu kullanır"
                               % ("”, “".join(adlar), cr[1] - cr[0], cr[0], cr[1]))
         except Exception as hata:
+            # Gorunen metne yazilir VE loglanir (sessiz yutma degil).
+            _log.exception("eksenel aralık hesaplanamadı")
             satir += "   ·   aralık hesaplanamadı: %s" % hata
         self.katman_ozet.setText(satir)
 
@@ -1012,11 +1017,11 @@ class KorSekmesi(SekmeTabani):
         hatalar = _t.geometri_kontrol(t, kor.get("kor_yaricap") or 0.0, kal)
         if hatalar:
             self.tb_durum.setText(hatalar[0])
-            self.tb_durum.setStyleSheet("color: #b3261e; font-weight: bold;")
+            self.tb_durum.setStyleSheet("color: %s; font-weight: bold;" % tema.renk("hata"))
         else:
             n = int(t["sayi"])
             kiris = 2.0 * t["merkez_yaricap"] * math.sin(math.pi / n) if n > 1 else 0.0
             self.tb_durum.setText(
                 "Geçerli — komşu tambur merkezleri arası %.3f cm (iki yarıçap %.3f cm)."
                 % (kiris, 2 * t["yaricap"]))
-            self.tb_durum.setStyleSheet("color: #1e7a44;")
+            self.tb_durum.setStyleSheet("color: %s;" % tema.renk("basari"))
