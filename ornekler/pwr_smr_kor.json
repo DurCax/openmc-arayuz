@@ -1,0 +1,497 @@
+{
+  "surum": 1,
+  "ad": "Kare SMR tam koru (52 demet, 3B)",
+  "aciklama": "Küçük modüler reaktör benzeri kare tam kor (3B): 52 adet 17×17 demet, 8×8 haritanın köşeleri kesilmiş; çevrede iki sıra (42.8 cm) su yansıtıcı, dış yüzeyler vakum.\n\nDemetler pwr_17x17.json ile aynıdır (Westinghouse 17×17, 900/600/580 K, 1300 ppm bor); iki zenginlik: A = %2.4 (iç dama), B = %3.1 (çevre). Demet adımı 21.42 cm, aktif yükseklik 200 cm, alt/üst 20 cm su, eksenel sınırlar vakum. Tasarım EĞİTİM amaçlıdır (gerçek bir SMR değildir); referans k verilmez.\nÇeyrek simetrik eşi: pwr_ceyrek_kor.json.",
+  "malzemeler": [
+    {
+      "ad": "uo2_24",
+      "gorunen_ad": "UO2 %2.4",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 10.4
+      },
+      "sicaklik": 900.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "U",
+          "miktar": 1.0,
+          "birim": "ao",
+          "zenginlik": 2.4
+        },
+        {
+          "tur": "element",
+          "isim": "O",
+          "miktar": 2.0,
+          "birim": "ao"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        222,
+        93,
+        40
+      ]
+    },
+    {
+      "ad": "helyum",
+      "gorunen_ad": "He",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 0.0001785
+      },
+      "sicaklik": 600.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "He",
+          "miktar": 1.0,
+          "birim": "ao"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        235,
+        235,
+        245
+      ]
+    },
+    {
+      "ad": "zirkaloy4",
+      "gorunen_ad": "Zircaloy-4",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 6.55
+      },
+      "sicaklik": 600.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "Zr",
+          "miktar": 98.23,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Sn",
+          "miktar": 1.45,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Fe",
+          "miktar": 0.21,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Cr",
+          "miktar": 0.11,
+          "birim": "wo"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        150,
+        150,
+        160
+      ]
+    },
+    {
+      "ad": "su",
+      "gorunen_ad": "H2O 0.700 g/cm³ + 1300 ppm B",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 0.7
+      },
+      "sicaklik": 580.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "H",
+          "miktar": 11.176126561199002,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "O",
+          "miktar": 88.69941715237303,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "B",
+          "miktar": 0.13,
+          "birim": "wo"
+        }
+      ],
+      "sab": [
+        "c_H_in_H2O"
+      ],
+      "renk": [
+        90,
+        150,
+        220
+      ]
+    },
+    {
+      "ad": "uo2_31",
+      "gorunen_ad": "UO2 %3.1",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 10.4
+      },
+      "sicaklik": 900.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "U",
+          "miktar": 1.0,
+          "birim": "ao",
+          "zenginlik": 3.1
+        },
+        {
+          "tur": "element",
+          "isim": "O",
+          "miktar": 2.0,
+          "birim": "ao"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        180,
+        50,
+        30
+      ]
+    }
+  ],
+  "cubuklar": [
+    {
+      "ad": "yakit_24",
+      "tur": "silindirik",
+      "bolgeler": [
+        {
+          "r": 0.4096,
+          "malzeme": "uo2_24"
+        },
+        {
+          "r": 0.418,
+          "malzeme": "helyum"
+        },
+        {
+          "r": 0.475,
+          "malzeme": "zirkaloy4"
+        },
+        {
+          "r": null,
+          "malzeme": "su"
+        }
+      ]
+    },
+    {
+      "ad": "kilavuz_boru",
+      "tur": "silindirik",
+      "bolgeler": [
+        {
+          "r": 0.561,
+          "malzeme": "su"
+        },
+        {
+          "r": 0.602,
+          "malzeme": "zirkaloy4"
+        },
+        {
+          "r": null,
+          "malzeme": "su"
+        }
+      ]
+    },
+    {
+      "ad": "yakit_31",
+      "tur": "silindirik",
+      "bolgeler": [
+        {
+          "r": 0.4096,
+          "malzeme": "uo2_31"
+        },
+        {
+          "r": 0.418,
+          "malzeme": "helyum"
+        },
+        {
+          "r": 0.475,
+          "malzeme": "zirkaloy4"
+        },
+        {
+          "r": null,
+          "malzeme": "su"
+        }
+      ]
+    }
+  ],
+  "plakalar": [],
+  "demetler": [
+    {
+      "ad": "demet_24",
+      "tur": "kare",
+      "adim": 1.26,
+      "boyut": [
+        17,
+        17
+      ],
+      "harita": [
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyykyykyykyyyyy",
+        "yyykyyyyyyyyykyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yykyykyykyykyykyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yykyykyyeyykyykyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yykyykyykyykyykyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyykyyyyyyyyykyyy",
+        "yyyyykyykyykyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy"
+      ],
+      "anahtar": {
+        "y": "yakit_24",
+        "k": "kilavuz_boru",
+        "e": "kilavuz_boru"
+      },
+      "dolgu_disi": "su"
+    },
+    {
+      "ad": "demet_31",
+      "tur": "kare",
+      "adim": 1.26,
+      "boyut": [
+        17,
+        17
+      ],
+      "harita": [
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyykyykyykyyyyy",
+        "yyykyyyyyyyyykyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yykyykyykyykyykyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yykyykyyeyykyykyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yykyykyykyykyykyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyykyyyyyyyyykyyy",
+        "yyyyykyykyykyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy"
+      ],
+      "anahtar": {
+        "y": "yakit_31",
+        "k": "kilavuz_boru",
+        "e": "kilavuz_boru"
+      },
+      "dolgu_disi": "su"
+    }
+  ],
+  "kor": {
+    "tur": "kare_kafes",
+    "cubuk": null,
+    "demet": null,
+    "plaka": null,
+    "adim": 21.42,
+    "boyut": [
+      12,
+      12
+    ],
+    "harita": [
+      "ssssssssssss",
+      "ssssssssssss",
+      "ssssBBBBssss",
+      "sssBABABBsss",
+      "ssBABABABBss",
+      "ssBBABABABss",
+      "ssBABABABBss",
+      "ssBBABABABss",
+      "sssBBABABsss",
+      "ssssBBBBssss",
+      "ssssssssssss",
+      "ssssssssssss"
+    ],
+    "halka_sayisi": 2,
+    "yonelim": "x",
+    "anahtar": {
+      "A": "demet_24",
+      "B": "demet_31",
+      "s": "su"
+    },
+    "yukseklik": null,
+    "yansitici": {
+      "var": false,
+      "kalinlik": 20.0,
+      "malzeme": null
+    },
+    "kabuklar": [],
+    "dolgu": null,
+    "kor_yaricap": 20.0,
+    "tambur": {
+      "sayi": 0,
+      "yaricap": 4.0,
+      "merkez_yaricap": 26.0,
+      "govde_malzeme": null,
+      "emici_malzeme": null,
+      "emici_ic_yaricap": 2.5,
+      "emici_aci": 120.0,
+      "donme": 0.0,
+      "baslangic_acisi": 0.0
+    },
+    "eksenel": {
+      "var": true,
+      "bolgeler": [
+        {
+          "ad": "alt su",
+          "yukseklik": 20.0,
+          "dolgu": "su"
+        },
+        {
+          "ad": "aktif",
+          "yukseklik": 200.0,
+          "dolgu": null
+        },
+        {
+          "ad": "üst su",
+          "yukseklik": 20.0,
+          "dolgu": "su"
+        }
+      ]
+    },
+    "sinir": {
+      "yan": "vacuum",
+      "alt": "vacuum",
+      "ust": "vacuum"
+    }
+  },
+  "ayarlar": {
+    "mod": "eigenvalue",
+    "parcacik": 1000,
+    "cevrim": 60,
+    "pasif": 20,
+    "tohum": 1,
+    "sicaklik_yontemi": "interpolation",
+    "kaynak": {
+      "tur": "kutu",
+      "konum": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "parcacik": "neutron",
+      "kuvvet": 1.0,
+      "enerji": {
+        "tur": "watt",
+        "a": 988000.0,
+        "b": 2.249e-06,
+        "theta": 1293200.0,
+        "enerji": 14100000.0,
+        "noktalar": [],
+        "kenarlar": [],
+        "degerler": [],
+        "e0": 14080000.0,
+        "kutle_orani": 5.0,
+        "iyon_sicaklik": 20000.0
+      },
+      "aci": {
+        "tur": "izotropik",
+        "yon": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "koni_aci": 30.0
+      },
+      "alt": [
+        -86.0,
+        -86.0,
+        -100.0
+      ],
+      "ust": [
+        86.0,
+        86.0,
+        100.0
+      ]
+    },
+    "entropi_mesh": {
+      "var": true,
+      "boyut": [
+        12,
+        12,
+        6
+      ]
+    },
+    "kinetik": {
+      "var": false,
+      "nesil": 10
+    }
+  },
+  "tallyler": [
+    {
+      "ad": "reaksiyonlar",
+      "skorlar": [
+        "fission",
+        "absorption",
+        "nu-fission"
+      ],
+      "filtreler": [],
+      "nuklidler": []
+    }
+  ],
+  "guc_dagilimi": {
+    "var": false,
+    "cubuk": null,
+    "bolge": 0,
+    "skor": "kappa-fission",
+    "eksenel_dilim": 20,
+    "toplam_guc": null
+  },
+  "tukenme": {
+    "var": false,
+    "zincir": "otomatik",
+    "guc_yogunlugu": 40.0,
+    "adimlar": [
+      0.5,
+      1.5,
+      3.0,
+      5.0,
+      10.0,
+      10.0
+    ],
+    "adim_birimi": "d",
+    "entegrator": "cecm",
+    "malzemeleri_ayir": false,
+    "ek_malzemeler": [],
+    "izlenen": [
+      "U235",
+      "U238",
+      "Pu239",
+      "Pu240",
+      "Pu241",
+      "Xe135",
+      "Sm149"
+    ]
+  },
+  "calistirma": {
+    "is_parcacigi": 8,
+    "dizin": "kosu"
+  },
+  "baslik": "Kare SMR tam koru (52 demet)",
+  "kategori": "pwr",
+  "seviye": "orta",
+  "baslik_en": "Square SMR-like full core (52 assemblies)",
+  "aciklama_en": "3D square core of 52 17x17 assemblies, two enrichments, water reflected."
+}
