@@ -571,10 +571,15 @@ def _katman_dolgusu(spec, kor, katman, ana_ic, nesneler, universeler):
     """Bir eksenel katmani dolduracak universe/lattice. (altigen_kafes'te
     katmana ozel anahtar konum konum cozulur: altigen_kor.konum_dolgu_adlari.)"""
     if katman.get("anahtar"):
+        # altigen_kafes buraya anahtarli katman GETIRMEZ (altigen_kor konum
+        # konum cozer); tek_demet / tamburlu gibi haritasiz korlarda ise bu
+        # dal ULASILIR (D1 izleme maddesinde "olu" denmisti; olculdu, 29.09.2026:
+        # tek_demet + katman anahtari -> bu hata). Mesaj dogrula/eksenel ile ayni.
         if kor["tur"] != "kare_kafes":
             raise ValueError(
                 "'%s' eksenel katmanı: katmana özel harf eşlemesi yalnızca kare "
-                "haritalı tam korda kullanılabilir" % katman.get("ad"))
+                "haritalı tam korda ya da altıgen haritalı tam korda kullanılabilir"
+                % katman.get("ad"))
         return _kare_kafes_kur(spec, kor, nesneler, universeler, katman["anahtar"])
     dolgu = katman.get("dolgu")
     if not dolgu:

@@ -474,6 +474,21 @@ def _betik_modulu(metin, dizin):
     return mo
 
 
+def test_katman_anahtari_haritasiz_korda_durur():
+    print("\n[GC18] kurucu._katman_dolgusu: haritasiz korda katman anahtari ValueError")
+    from cekirdek import kurucu, sema
+    s = sema.yukle(os.path.join(ORNEK, "pwr_eksenel.json"))
+    b = s["kor"]["eksenel"]["bolgeler"][1]
+    b.update(anahtar={"A": "demet_blanket"}, dolgu=None)
+    try:
+        kurucu.kur(s)
+        mesaj = ""
+    except ValueError as e:
+        mesaj = str(e)
+    kontrol("tek_demet + katman anahtari -> acik hata (dal olu degil)",
+            "altıgen haritalı" in mesaj and "kare" in mesaj, "-> %s" % mesaj)
+
+
 # ============================================================================
 # YAVAS -- Monte Carlo kabul
 # ============================================================================
@@ -601,6 +616,6 @@ HIZLI = [test_varsayilan_cubuklar_bos, test_eski_bicim_tek_ogeli_listeye,
          test_betik_cok_tur_yapisi, test_kaydet_yeni_bicim,
          test_dagilim_birlestirme_sentetik, test_varsayilan_hedefler_fisil_bolge,
          test_arayuz_tum_yakit_cubuklari, test_guc_haritasi_tur_secici,
-         test_tukenme_betik_ornek_hacimleri]
+         test_tukenme_betik_ornek_hacimleri, test_katman_anahtari_haritasiz_korda_durur]
 YAVAS = [test_uc_zenginlik_mc_fdh, test_cok_tur_betik_esdegerligi]
 ZINCIR_GEREKEN = [test_tukenme_betik_ornek_hacimleri]
