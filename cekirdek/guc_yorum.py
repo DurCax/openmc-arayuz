@@ -223,3 +223,23 @@ def ozet_metni(faktorler, mutlak=None):
         p.append(_("en sıcak demet: %s (F_demet = %.4f)")
                  % (_g().demet_metni(faktorler["sicak_demet"], faktorler), faktorler["F_demet"]))
     return "  |  ".join(p)
+
+
+def tur_ozeti(bagil, cubuk_turleri):
+    """
+    Cok turlu guc: tur basina ozet (bagil birimde; TUM cubuklarin ortalamasi
+    = 1). Tek turde (ya da tur bilgisi yoksa) None.
+    DONER {tur: {"cubuk_sayisi", "ortalama", "tepe", "tepe_cubuk"}}
+    """
+    if not cubuk_turleri or len(set(cubuk_turleri.values())) < 2:
+        return None
+    gruplar = {}
+    for a, v in bagil.items():
+        gruplar.setdefault(cubuk_turleri.get(a), []).append((a, v[0]))
+    ozet = {}
+    for tur, uyeler in gruplar.items():
+        tepe_a, tepe = max(uyeler, key=lambda av: av[1])
+        ozet[tur] = {"cubuk_sayisi": len(uyeler),
+                     "ortalama": sum(v for _a, v in uyeler) / len(uyeler),
+                     "tepe": tepe, "tepe_cubuk": tepe_a}
+    return ozet
