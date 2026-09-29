@@ -2,8 +2,8 @@
 """
 test_rapor_sozlesme.py -- cekirdek/rapor.py DONUK sozlesmesi ve
 CalistirSekmesi.kosu_durumu_degisti / son_kosu_dizini (Dalga 2 on-commit 6).
-Ajan 10 govdeyi uygularken bu testler degismeden gecer; NotImplementedError
-denetimi Ajan 10'un kendi test_rapor.py'siyle yer degistirir (o satiri siler).
+Ajan 10 govdeyi uyguladi; NotImplementedError denetimi (RS3) silindi, yerini
+testler/test_rapor.py aldi.
 Sozlesme: testler/ortak_test.py (HIZLI / YAVAS).
 """
 
@@ -49,17 +49,6 @@ def test_rapor_qt_siz():
     kontrol("PySide6 yok", not any(a.split(".")[0] == "PySide6" for a in adlar), "-> %s" % adlar)
 
 
-def test_rapor_taslak():
-    print("\n[RS3] TASLAK: olustur NotImplementedError (Ajan 10 bu testi siler)")
-    from cekirdek import rapor
-    try:
-        rapor.olustur({}, None, "/tmp/x.html", "html")
-        hata = False
-    except NotImplementedError:
-        hata = True
-    kontrol("govde uygulanmadi", hata)
-
-
 def test_calistir_kosu_sinyali():
     print("\n[RS4] CalistirSekmesi.kosu_durumu_degisti(bool) ve son_kosu_dizini()")
     from PySide6 import QtWidgets
@@ -78,5 +67,5 @@ def test_calistir_kosu_sinyali():
     c.deleteLater()
 
 
-HIZLI = [test_rapor_imzasi, test_rapor_qt_siz, test_rapor_taslak, test_calistir_kosu_sinyali]
+HIZLI = [test_rapor_imzasi, test_rapor_qt_siz, test_calistir_kosu_sinyali]
 YAVAS = []

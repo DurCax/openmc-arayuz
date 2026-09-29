@@ -1,0 +1,24 @@
+/* Rapor stili. Dolar isaretli adlari cekirdek/rapor_sablon/__init__.py tasarim tokenlarindan
+   (arayuz/tasarim/tokenlar.py, acik tema) doldurur; burada renk sabiti YOK.
+   QTextDocument (PDF) CSS'in yalniz bir alt kumesini destekler: basit
+   secici, renk, zemin, yazi boyutu/kalinligi, kenar bosluklari. */
+body { font-family: "DejaVu Sans", "Noto Sans", Arial, sans-serif; font-size: 10pt;
+       color: $metin; background-color: $yuzey1; }
+h1 { font-size: 18pt; color: $metin; margin-bottom: 2pt; }
+h2 { font-size: 13pt; color: $vurgu; margin-top: 14pt; margin-bottom: 4pt;
+     border-bottom: 1px solid $kenar; }
+h3 { font-size: 11pt; color: $metin; margin-top: 8pt; margin-bottom: 2pt; }
+p { margin-top: 2pt; margin-bottom: 4pt; }
+table { border-collapse: collapse; margin-bottom: 6pt; }
+th { background-color: $yuzey2; color: $metin; font-weight: bold; text-align: left; }
+td, th { border: 1px solid $kenar; padding: 2pt 4pt; vertical-align: top; }
+td.etiket { color: $metin_ikincil; }
+.sayi { font-family: "DejaVu Sans Mono", monospace; }
+.buyuk { font-size: 14pt; font-weight: bold; color: $metin; }
+.soluk { color: $metin_soluk; font-size: 8pt; }
+.hata { color: $hata; font-weight: bold; }
+.uyari { color: $uyari; font-weight: bold; }
+.bilgi { color: $bilgi; }
+.kutu { background-color: $uyari_soluk; color: $metin; padding: 4pt; }
+pre { font-family: "DejaVu Sans Mono", monospace; font-size: 7pt; color: $metin_ikincil;
+      background-color: $yuzey2; white-space: pre-wrap; }
