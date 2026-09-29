@@ -124,10 +124,14 @@ class DogrulamaHatasi(ValueError):
 
     ValueError alt sinifidir: kosu hatalarini ValueError olarak yakalayan
     mevcut cagiranlar (tarama noktasi, kritik arama) davranisini korur.
-    `bulgular` yalnizca hata seviyesindeki bulgulardir."""
+    `bulgular` yalnizca hata seviyesindeki bulgulardir; `tum_bulgular` ayni
+    denetimin butun bulgulari (hata + uyari + bilgi, sirali) -- cagiran
+    tum_kontroller'i ikinci kez kosmadan hepsini gosterebilsin. Verilmezse
+    `bulgular`in kopyasidir."""
 
-    def __init__(self, bulgular):
+    def __init__(self, bulgular, tum_bulgular=None):
         self.bulgular = list(bulgular)
+        self.tum_bulgular = list(self.bulgular if tum_bulgular is None else tum_bulgular)
         ilk = self.bulgular[0] if self.bulgular else None
         metin = "%d doğrulama hatası; önce bunları giderin" % len(self.bulgular)
         if ilk is not None:
@@ -146,7 +150,7 @@ def kapi(spec, veri_kontrolu=True):
     bulgular = tum_kontroller(spec, veri_kontrolu=veri_kontrolu)
     hatalar = [b for b in bulgular if b.seviye == "hata"]
     if hatalar:
-        raise DogrulamaHatasi(hatalar)
+        raise DogrulamaHatasi(hatalar, tum_bulgular=bulgular)
     return bulgular
 
 
