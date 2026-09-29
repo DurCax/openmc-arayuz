@@ -618,20 +618,33 @@ def _kos(model, dizin, parcacik, cevrim=130, pasif=30):
                                        output=False)).keff
 
 
+DUYARLILIK_PCM = 200       # analitik esdegerlik testinin 2 sigma ust siniri
+
+
 def test_altigen_analitik_esdegerlik(gecici):
     """7 ayni kilifsiz demet (adim = zarf, yan sinir reflective) = tek demet sonsuz kafes."""
     print("\n[AK13] ANALITIK ESDEGERLIK: 7 demet = tek demet sonsuz kafes")
     from cekirdek import kurucu
     tek, _b = kurucu.kur(_tek_demet_spec())
     kor, _b = kurucu.kur(_kor_spec())
-    # 40 000 parcacik: 20 000'de 2 sigma ~178 pcm cikiyordu (olculdu), olcut 150 pcm.
+    # 40 000 parcacik: 20 000'de 2 sigma ~178 pcm cikiyordu (olculdu).
+    # DUYARLILIK OLCUTU 200 pcm (D1-B karari; eskiden 150): 40 000'de olculen
+    # 2 sigma 138 pcm, 150 pcm'e yalniz %9 pay birakiyordu. Sigma tahmininin
+    # kendi goreli sapmasi ~1/sqrt(2 x 100 aktif cevrim) ~ %7; tohum ya da
+    # OpenMC surumu degisince 2 sigma > 150 pcm olasiligi ~%10 idi (testin
+    # fizikle ilgisiz kalmasi). 200 pcm'e (+%45) cikma olasiligi ~6 sigma
+    # ötesi, pratikte sifir. Olcutun yakalamasi gereken hatalar bunun cok
+    # ustundedir: yonelim hatasi +1640 pcm, vadilere dolgu +5300 pcm.
+    # Kalan yanlis alarm olasiligi |fark| <= 2 sigma kosulundandir: rastgele
+    # bir tohumda ~%4.6; tohum sabit (11), yani ayni surumde sonuc tekrarlanir.
     k1 = _kos(tek, os.path.join(gecici, "tek"), 40000)
     k2 = _kos(kor, os.path.join(gecici, "kor"), 40000)
     fark = abs(k1.nominal_value - k2.nominal_value)
     sigma = math.hypot(k1.std_dev, k2.std_dev)
     kontrol("tek %.5f +/- %.5f  vs  7 demet %.5f +/- %.5f  (fark %.2f sigma)"
             % (k1.nominal_value, k1.std_dev, k2.nominal_value, k2.std_dev, fark / sigma),
-            fark <= 2 * sigma and 2 * sigma <= 0.0015, "-> 2 sigma = %.0f pcm" % (2e5 * sigma))
+            fark <= 2 * sigma and 2 * sigma <= DUYARLILIK_PCM * 1e-5,
+            "-> 2 sigma = %.0f pcm (olcut %d)" % (2e5 * sigma, DUYARLILIK_PCM))
 
 
 def test_altigen_betik_esdegerligi(gecici):

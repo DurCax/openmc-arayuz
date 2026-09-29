@@ -383,6 +383,162 @@ def test_terminal_kapisi():
 
 
 # ============================================================================
+# birim: bolge alani, dogrudan yerlesimli ornekler, nokta yolu, hazirla
+# ============================================================================
+
+def test_bolge_alani():
+    print("\n[TH12] BOLGE ALANI: halka, cokgen, altigen kor hucresi, desteklenmeyen")
+    import openmc
+    from cekirdek import kurucu, tukenme_hacim as th
+    c1, c2 = openmc.ZCylinder(r=0.3), openmc.ZCylinder(r=0.5)
+    kontrol("daire pi r^2", abs(th.bolge_alani(-c1) - math.pi * 0.09) < 1e-12)
+    kontrol("halka", abs(th.bolge_alani(+c1 & -c2) - math.pi * 0.16) < 1e-12)
+    kutu = openmc.model.RectangularPrism(2.0, 3.0)
+    kontrol("dikdortgen 2 x 3", abs(th.bolge_alani(-kutu & +openmc.ZPlane(-1.0)) - 6.0) < 1e-9)
+    kontrol("sinirsiz yarim duzlem -> None", th.bolge_alani(+openmc.XPlane(0.0)) is None)
+    kontrol("dis bolge (+silindir) -> None", th.bolge_alani(+c2) is None)
+    kontrol("birlesim -> None", th.bolge_alani(-c1 | -kutu) is None)
+    kontrol("silindir + duzlem karisik -> None", th.bolge_alani(-c1 & +openmc.XPlane(0.0)) is None)
+    kontrol("bos bolge -> None", th.bolge_alani(None) is None)
+    kontrol("kesismeyen duzlemler -> 0",
+            th.bolge_alani(+openmc.XPlane(1.0) & -openmc.XPlane(0.0)) == 0.0)
+    model, _b = kurucu.kur(_altigen_merkez_uo2())
+    P = T.ZARF
+    kok = [c for c in model.geometry.root_universe.cells.values()]
+    alanlar = [th.bolge_alani(c.region) for c in kok]
+    kontrol("7 altigen kor hucresi: (sqrt3/2) P^2 (goreli 1e-10)",
+            len(alanlar) == 7 and all(abs(a / (SQ3 / 2 * P * P) - 1) < 1e-10 for a in alanlar),
+            "-> %s" % alanlar)
+
+
+def test_ornek_hacimleri_dogrudan():
+    print("\n[TH13] CUBUK CUBUK YANMA: dogrudan yerlesimli ornekler (kor hucresi, kafes, katman)")
+    from cekirdek import sema
+    P, Pk = T.ZARF, 3 * 1.26
+    s1 = _altigen_merkez_uo2(yukseklik=None)
+    s1["kor"]["eksenel"] = {"var": True, "bolgeler": [
+        sema.eksenel_bolge("alt", 30.0, None), sema.eksenel_bolge("ust", 10.0, None)]}
+    s2 = _kare_kor(demet_harita=("yyy", "yuy", "yyy"))
+    s3 = T._kor_spec()
+    s3["kor"]["eksenel"] = {"var": True, "bolgeler": [
+        sema.eksenel_bolge("ortu", 20.0, "uo2"), sema.eksenel_bolge("aktif", 50.0, None)]}
+    durumlar = (
+        ("altigen merkez hucre", s1, SQ3 / 2 * P * P, {30.0: 1, 10.0: 1}),
+        ("kare kor konumu + demet konumu", s2, None, None),
+        ("altigen katman dolgusu", s3, SQ3 / 2 * P * P, {20.0: 7}))
+    for ad, s, alan, sayilar in durumlar:
+        s["tukenme"].update(var=True, malzemeleri_ayir=True)
+        hacimler, toplam = _ayrilmis(s)
+        kontrol("%s: ornek toplami = analitik (%.6g)" % (ad, toplam),
+                abs(sum(hacimler) - toplam) < 1e-9 * toplam)
+        if alan:
+            for h, n in sayilar.items():
+                bulunan = sum(1 for v in hacimler if abs(v - alan * h) < 1e-9 * alan * h)
+                kontrol("%s: %d ornek = alan x %g cm" % (ad, n, h), bulunan == n,
+                        "-> %d" % bulunan)
+    hacimler, _t = _ayrilmis(s2)
+    kontrol("kare: kor konumu (P^2 H) ve demet konumu (p^2 H) ornekleri",
+            any(abs(v - Pk * Pk * H) < 1e-9 for v in hacimler)
+            and sum(1 for v in hacimler if abs(v - 1.26 ** 2 * H) < 1e-9) == 3)
+
+
+def test_ornek_hacimleri_hatalar():
+    print("\n[TH14] CUBUK CUBUK YANMA: toplam tutmazsa / ornek hacmi yoksa ValueError")
+    from cekirdek import kurucu, tukenme, tukenme_hacim
+    s = _iki_cubuklu_kare()
+    model, kb = kurucu.kur(s)
+    hv = tukenme.hacimler(s)
+    m = kb["malzemeler"]["uo2"]
+    m.depletable, m.volume = True, hv["uo2"]["hacim"]
+    yanlis = {"uo2": dict(hv["uo2"], hacim=hv["uo2"]["hacim"] * 1.01)}
+    try:
+        tukenme_hacim.ornekleri_ayir(model, s, yanlis, {"uo2": m})
+        kontrol("toplam tutmuyor -> ValueError", False)
+    except ValueError as e:
+        kontrol("toplam tutmuyor -> ValueError", "tutmuyor" in str(e), "-> %s" % e)
+    model, kb = kurucu.kur(s)
+    su = kb["malzemeler"]["su"]          # cubuk dis bolgesi: alan tanimsiz
+    try:
+        tukenme_hacim.ornekleri_ayir(model, s, {"su": {"hacim": 1.0}}, {"su": su})
+        kontrol("ornek hacmi yok -> ValueError", False)
+    except ValueError as e:
+        kontrol("ornek hacmi yok -> ValueError", "hesaplanamıyor" in str(e), "-> %s" % e)
+
+
+def test_nokta_yolu():
+    print("\n[TH15] NOKTA YOLU: Geometry yolu Cell.paths icinde (saf Python)")
+    import random
+    from cekirdek import kurucu, tukenme_hacim
+    for ad, s in (("kare", _iki_cubuklu_kare()), ("altigen", _iki_cubuklu_altigen())):
+        model, bilgi = kurucu.kur(s)
+        geo = model.geometry
+        geo.determine_paths()
+        gx, gy = bilgi["sinir_kutu"]
+        rnd = random.Random(4)
+        bulunan = disari = yok = 0
+        for _ in range(1500):
+            p = (rnd.uniform(-gx / 2, gx / 2), rnd.uniform(-gy / 2, gy / 2),
+                 rnd.uniform(-34.9, 34.9))
+            y = tukenme_hacim.nokta_yolu(geo, p)
+            if y is None:
+                disari += 1
+                continue
+            hucre, dizi = y
+            bulunan += dizi in hucre.paths and geo.find(p)[-1] is hucre
+            yok += dizi not in hucre.paths
+        kontrol("%s: %d nokta yolu Cell.paths'te, %d eksik (disarida %d)"
+                % (ad, bulunan, yok, disari), yok == 0 and bulunan > 500)
+    kontrol("model disi nokta -> None",
+            tukenme_hacim.nokta_yolu(geo, (1e4, 1e4, 0.0)) is None)
+
+
+class _ZincirVar(object):
+    """hazirla'yi zincir dosyasi olmadan sinamak icin zincir_kontrol taklidi."""
+
+    def __enter__(self):
+        from cekirdek import veri_bilgi
+        self._eski = veri_bilgi.zincir_kontrol
+        veri_bilgi.zincir_kontrol = lambda yol, tam=False: (True, "taklit", 0)
+        return self
+
+    def __exit__(self, *a):
+        from cekirdek import veri_bilgi
+        veri_bilgi.zincir_kontrol = self._eski
+
+
+def test_hazirla():
+    print("\n[TH16] HAZIRLA: ornek ayirma, atlanan zehir, eksik hacim hatasi")
+    from cekirdek import sema, tukenme
+    with _ZincirVar():
+        s = _iki_cubuklu_kare()
+        model, b = tukenme.hazirla(s)
+        kontrol("ornek sayisi 72 (4 demet x 9 cubuk x 2 katman)", b["ornek_sayisi"] == 72,
+                "-> %s" % b["ornek_sayisi"])
+        kontrol("agir metal > 0", b["agir_metal_g"] > 0)
+        k = sema.yukle(os.path.join(ORNEK, "pwr_kontrol.json"))
+        k["tukenme"]["var"] = True
+        _m, b = tukenme.hazirla(k)
+        kontrol("kontrol cubugu b4c atlandi, uo2 yanar",
+                "b4c" in b["atlanan"] and "b4c" not in b["yanabilir"]
+                and "uo2" in b["yanabilir"], "-> %s / %s" % (b["atlanan"], b["yanabilir"]))
+        f = T._kor_spec(kilif=True)
+        f["demetler"][0]["kilif"]["malzeme"] = "uo2"
+        try:
+            tukenme.hazirla(f)
+            kontrol("kesin olmayan fisil hacim -> ValueError", False)
+        except ValueError as e:
+            kontrol("kesin olmayan fisil hacim -> ValueError", "kesin" in str(e), "-> %s" % e)
+        cikti = io.StringIO()
+        yol = os.path.join(tempfile.mkdtemp(prefix="tk_haz_"), "s.json")
+        sema.kaydet(s, yol)
+        with redirect_stdout(cikti):
+            kod = tukenme._terminal([yol, "--hazirla"])
+        kontrol("terminal --hazirla: agir metal basildi, kod 0",
+                kod == 0 and "ağır metal" in cikti.getvalue())
+        shutil.rmtree(os.path.dirname(yol), ignore_errors=True)
+
+
+# ============================================================================
 # YAVAS
 # ============================================================================
 
@@ -397,16 +553,12 @@ def test_hacim_stokastik(gecici):
     for ad, s in (("kare", kare), ("altigen", altigen)):
         s["ayarlar"]["tohum"] = 5
         a = tukenme.hacimler(s)["uo2"]["hacim"]
+        dizin = os.path.join(gecici, ad)
+        os.makedirs(dizin, exist_ok=True)
         v, sd = tukenme.stokastik_hacimler(s, ["uo2"], orneklem=4_000_000,
-                                           dizin=os.path.join(gecici, ad) if _mk(gecici, ad)
-                                           else None)["uo2"]
+                                           dizin=dizin)["uo2"]
         kontrol("%s: analitik %.3f cm3 vs stokastik %.3f +/- %.3f (%.2f sigma)"
                 % (ad, a, v, sd, abs(a - v) / sd), abs(a - v) <= 3 * sd)
-
-
-def _mk(gecici, ad):
-    os.makedirs(os.path.join(gecici, ad), exist_ok=True)
-    return True
 
 
 def test_ornek_sirasi_openmc(gecici):
@@ -477,5 +629,7 @@ def test_cubuk_cubuk_tukenme(gecici):
 HIZLI = [test_dogrudan_malzeme_hacmi, test_tukenme_dogrulama_dogrudan,
          test_ornek_hacimleri, test_ornek_hacimleri_2b_ve_tek_ornek,
          test_yanabilir_bor, test_hacimsiz_zehir,
-         test_calistir_kapisi, test_terminal_kapisi]
+         test_calistir_kapisi, test_terminal_kapisi, test_bolge_alani,
+         test_ornek_hacimleri_dogrudan, test_ornek_hacimleri_hatalar, test_nokta_yolu,
+         test_hazirla]
 YAVAS = [test_hacim_stokastik, test_ornek_sirasi_openmc, test_cubuk_cubuk_tukenme]

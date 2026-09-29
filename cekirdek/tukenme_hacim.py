@@ -157,7 +157,7 @@ def _yarim_uzaylar(bolge):
 def _dugunluk_alani(yarilar):
     """Duz yuzlerle sinirli konveks cokgenin alani (yarim duzlem kirpmasi)."""
     import openmc
-    R = 1.0e6
+    R = 1.0e5                       # cm; kor olculerinin cok ustunde
     cokgen = [(-R, -R), (R, -R), (R, R), (-R, R)]
     for y in yarilar:
         s = y.surface
