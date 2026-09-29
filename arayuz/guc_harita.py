@@ -11,6 +11,7 @@
 ================================================================================
 """
 
+import html
 import math
 
 import matplotlib
@@ -140,11 +141,13 @@ class GucHaritaWidget(QtWidgets.QWidget):
         self.dagilim = g.get("dagilim")
         self.faktorler = g.get("faktorler")
         self.korunum = g.get("korunum")
+        self.korunum_notlari = [g[a] for a in ("korunum_hata", "korunum_notu") if g.get(a)]
         self.mutlak = None
         if self.faktorler and spec:
             sg = spec.get("guc_dagilimi") or {}
             self.mutlak = _guc.mutlak_guc(self.faktorler, sg.get("toplam_guc"),
-                                          _aktif_yukseklik(spec))
+                                          _aktif_yukseklik(spec),
+                                          hedef_payi=g.get("hedef_payi"))
         if self.faktorler:
             n = self.faktorler["eksenel_dilim"]
             self.dilim.setMaximum(max(n, 1))
@@ -199,6 +202,8 @@ class GucHaritaWidget(QtWidgets.QWidget):
                       "%.1e — %s</span>"
                       % ("#1e6b3a" if iyi else "#8b1a1a", self.korunum,
                          "tamam" if iyi else "bozuk, haritaya güvenmeyin"))
+        for not_metni in getattr(self, "korunum_notlari", []):
+            metin += "<br>" + html.escape(_("Toplamın korunumu denetlenemedi: %s") % not_metni)
         satirlar = _guc.yorumla(f, self.mutlak)
         metin += "<br><br>" + "<br>".join("&bull; " + s.strip() for s in satirlar)
         self.ozet.setText(metin)

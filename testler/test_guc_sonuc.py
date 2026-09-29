@@ -278,6 +278,7 @@ def test_sekme_korunum_hata_gorunur():
     metin = c.ozet_etiket.text()
     kontrol("korunum_hata metni gorunur", "bozuk veri 42" in metin, metin[-400:])
     kontrol("tam kor konum metni demet + cubuk", "demet" in metin and "çubuk" in metin)
+    kontrol("guc haritasi ozetinde korunum_hata", "bozuk veri 42" in c.guc_harita.ozet.text())
     c._sonuc_goster(dict(temel, guc={"dagilim": d, "faktorler": f,
                                      "korunum_notu": "referans toplam sıfır"}), "sp.h5")
     kontrol("korunum_notu gorunur", "referans toplam sıfır" in c.ozet_etiket.text())

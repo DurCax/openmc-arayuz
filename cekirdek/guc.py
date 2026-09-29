@@ -590,12 +590,18 @@ def _eksenel_faktorler(sonuc, konumlar, eksenel_dilim):
 # 4. MUTLAK GUC
 # ============================================================================
 
-def mutlak_guc(faktorler, toplam_guc, yukseklik=None):
+def mutlak_guc(faktorler, toplam_guc, yukseklik=None, hedef_payi=None):
     """
     Bagil dagilimi mutlak guce cevirir.
 
     toplam_guc : modelin temsil ettigi bolgenin toplam gucu [W]
     yukseklik  : aktif yukseklik [cm]; verilirse lineer guc [W/cm] hesaplanir
+    hedef_payi : hedef cubuk bolgesinin model geneli fisyon enerjisindeki payi
+                 = kappa_hedef / kappa_model (kosucu.sonuc_oku: guc_toplam_ref /
+                 guc_model_toplam). Verilirse cubuklara toplam_guc * pay
+                 dagitilir; None ise (eski statepoint) tum guc hedef cubuklarda
+                 sayilir -- baska fisil bolge (blanket, ikinci cubuk turu) varsa
+                 cubuk gucu OLDUGUNDAN BUYUK cikar.
 
     !!! DIKKAT !!!
       toplam_guc MODELIN KAPSADIGI bolgenin gucudur. Sonsuz kafes (yansitici
@@ -610,9 +616,13 @@ def mutlak_guc(faktorler, toplam_guc, yukseklik=None):
     if not faktorler or not toplam_guc or toplam_guc <= 0:
         return None
     n = faktorler["cubuk_sayisi"]
-    cubuk_ort = toplam_guc / n
+    pay = hedef_payi if (hedef_payi is not None and hedef_payi > 0) else None
+    hedef = toplam_guc * pay if pay is not None else toplam_guc
+    cubuk_ort = hedef / n
     sonuc = {
         "toplam_guc": toplam_guc,
+        "hedef_payi": pay,
+        "hedef_guc": hedef,
         "cubuk_ortalama_W": cubuk_ort,
         "cubuk_maks_W": cubuk_ort * faktorler["F_dH"],
     }
@@ -682,6 +692,14 @@ def yorumla(faktorler, mutlak=None):
     if mutlak:
         satirlar.append("Çubuk başına ortalama %.1f W, en sıcak çubuk %.1f W."
                         % (mutlak["cubuk_ortalama_W"], mutlak["cubuk_maks_W"]))
+        if mutlak.get("hedef_payi") is not None:
+            satirlar.append(_("  Modelin fisyon enerjisinin %%%.1f'i bu çubuklarda "
+                              "(%.4g W); kalanı diğer fisil bölgelerde.")
+                            % (100.0 * mutlak["hedef_payi"], mutlak["hedef_guc"]))
+        else:
+            satirlar.append(_("  Not: güç payı ölçülemedi (eski koşu); toplam gücün "
+                              "tamamı bu çubuklara yazıldı. Başka fisil bölge varsa "
+                              "çubuk gücü olduğundan büyüktür."))
         if "lineer_maks_W_cm" in mutlak:
             lm = mutlak["lineer_maks_W_cm"]
             satirlar.append("En yüksek çizgisel güç %.1f W/cm (tepe faktörü: %s)."

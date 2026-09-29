@@ -735,7 +735,12 @@ def _guc_dagilimi(spec, satirlar, uretilen, gx, gy):
     satirlar.append("guc_ref = openmc.Tally(name='guc_toplam_ref')")
     satirlar.append("guc_ref.scores = list(guc_tally.scores)")
     satirlar.append("guc_ref.filters = [openmc.CellFilter(_guc_hedef)]")
-    return ["guc_tally", "guc_ref"]
+    satirlar.append("")
+    satirlar.append("# Mutlak güç payı: hedef bölgenin model geneli fisyon enerjisindeki")
+    satirlar.append("# payı = guc_toplam_ref / guc_model_toplam (filtresiz, aynı skor).")
+    satirlar.append("guc_model = openmc.Tally(name='guc_model_toplam')")
+    satirlar.append("guc_model.scores = list(guc_tally.scores)")
+    return ["guc_tally", "guc_ref", "guc_model"]
 
 
 def _tallyler(spec, satirlar, ek_tallyler=None, on_satirlar=None, sinir_kutu=None):

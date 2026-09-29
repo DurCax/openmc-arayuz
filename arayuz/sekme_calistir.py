@@ -741,14 +741,12 @@ class CalistirSekmesi(QtWidgets.QWidget):
             else:
                 ozet.append("F_q      = tanımsız (model 2B)")
             ozet.append("en sıcak çubuk: %s%s"
-                        % (_guc.konum_metni(gf["sicak_cubuk"], gf.get("kafes_turu")),
+                        % (_guc.konum_metni(gf["sicak_cubuk"], gf.get("kafes_turu"),
+                                            gf.get("kafes_turleri")),
                            (", dilim %d" % (gf["sicak_dilim"][1] + 1))
                            if gf["sicak_dilim"] else ""))
-            if "korunum" in g:
-                ozet.append("toplamın korunumu: bağıl fark %.1e — %s"
-                            % (g["korunum"],
-                               "tamam" if g["korunum"] < 1e-6
-                               else "bozuk, haritaya güvenmeyin"))
+            # korunum: tamam / bozuk / denetlenemedi (korunum_hata) / not
+            ozet.extend(kosucu.korunum_satirlari(g))
         elif s.get("guc_hata"):
             ozet.append("güç dağılımı okunamadı: %s" % s["guc_hata"])
 
