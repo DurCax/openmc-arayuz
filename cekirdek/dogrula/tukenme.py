@@ -133,6 +133,7 @@ def tukenme_kontrol(spec, veri_kontrolu=True):
                     "hacim hesaplanamıyor: %s" % v["ayrinti"],
                     "Tükenme kesin hacim gerektirir: yanlış hacim yanma hızını "
                     "aynı oranda bozar ve k-eff'te iz bırakmaz."))
+        bulgular.extend(_hacimsiz_zehir_bulgulari(spec))
     for ad in t.get("ek_malzemeler") or []:
         if malzeme_bul(spec, ad) is None:
             bulgular.append(Bulgu("hata", yer, "tanımsız ek malzeme: '%s'" % ad))
@@ -150,6 +151,20 @@ def tukenme_kontrol(spec, veri_kontrolu=True):
             "önerilir."))
     if t.get("malzemeleri_ayir"):
         bulgular.append(Bulgu(
-            "bilgi", yer, "çubuk çubuk yanma açık",
-            "Her hücre ayrı malzeme olur; bellek ve süre hücre sayısıyla artar."))
+            "bilgi", yer, _("çubuk çubuk yanma açık"),
+            _("Her hücre ayrı malzeme olur; bellek ve süre hücre sayısıyla artar. "
+              "Her örneğin hacmi kendi hücre alanı × kendi katman yüksekliğidir "
+              "(OpenMC'nin eşit bölmesi kullanılmaz: eşit olmayan katmanlarda ve "
+              "aynı yakıtı farklı yarıçapla kullanan çubuklarda yanlış olurdu).")))
     return bulgular
+
+
+def _hacimsiz_zehir_bulgulari(spec):
+    """Hacmi kesin olmayan yanabilir zehirler tukenmeye katilmaz: UYARI."""
+    from cekirdek import tukenme as _tk
+    return [Bulgu("uyari", "tukenme/%s" % ad,
+                  _("yanabilir zehir '%s' tükenmeye katılmıyor: %s") % (ad, ayrinti),
+                  _("Hacmi analitik hesaplanamıyor; bu malzeme koşu boyunca taze "
+                    "kalır. Yanması önemliyse onu kesin hacimli bir çubuk bölgesine "
+                    "yerleştirin."))
+            for ad, ayrinti in _tk.hacimsiz_zehirler(spec).items()]

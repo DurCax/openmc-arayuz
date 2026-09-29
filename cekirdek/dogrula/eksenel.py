@@ -10,6 +10,7 @@ from cekirdek.sema import BOSLUK, malzeme_bul, cubuk_bul, plaka_bul, demet_bul
 from cekirdek import kurucu, sema
 from cekirdek.dogrula._ortak import Bulgu, _kor_turu_adi
 from cekirdek.gunluk import kaydedici, uyar_bir_kez
+from cekirdek.ceviri import _
 
 _log = kaydedici(__name__)
 
@@ -68,10 +69,13 @@ def eksenel_kontrol(spec):
                 "Dolgu bir çubuk, plaka elemanı, demet ya da malzeme adı olmalı."))
 
         anahtar = b.get("anahtar") or {}
-        if anahtar and tur != "kare_kafes":
+        # Katmana ozel harf eslemesi haritali her tam korda kurulur (kare:
+        # kurucu._kare_kafes_kur, altigen: altigen_kor.konum_dolgu_adlari).
+        if anahtar and tur not in sema.HARITALI_KORLAR:
             bulgular.append(Bulgu(
                 "hata", yer,
-                "katmana özel harf eşlemesi yalnızca kare haritalı tam korda kullanılabilir"))
+                _("katmana özel harf eşlemesi yalnızca kare haritalı tam korda ya da "
+                  "altıgen haritalı tam korda kullanılabilir")))
         for harf, hedef in anahtar.items():
             if not any(harf in satir for satir in (kor.get("harita") or [])):
                 bulgular.append(Bulgu(

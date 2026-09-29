@@ -373,15 +373,22 @@ def test_altigen_tek_demet_kilif():
             tuple(b0["sinir_kutu"]) == altigen.kapsayan_olcu(PIN_HALKA, PIN_ADIM, "y"))
 
 
-def test_altigen_kor_katman_anahtari():
-    print("\n[AK7] ALTIGEN KOR: eksenel katmanlar ve katmana ozel anahtar")
-    from cekirdek import kurucu, sema
+def _katman_anahtarli_spec():
+    """3 katman (10 su + 50 aktif + 20 ust); ust katmanda A -> hex2."""
+    from cekirdek import sema
     s = _kor_spec()
     s["demetler"].append(dict(copy.deepcopy(s["demetler"][0]), ad="hex2", dolgu_disi="su"))
     s["kor"]["eksenel"] = {"var": True, "bolgeler": [
         sema.eksenel_bolge("alt_yans", 10.0, "su"),
         sema.eksenel_bolge("aktif", 50.0, None),
         sema.eksenel_bolge("ust", 20.0, None, anahtar={"A": "hex2"})]}
+    return s
+
+
+def test_altigen_kor_katman_anahtari():
+    print("\n[AK7] ALTIGEN KOR: eksenel katmanlar ve katmana ozel anahtar")
+    from cekirdek import kurucu
+    s = _katman_anahtarli_spec()
     model, _b = kurucu.kur(s)
     hucreler = list(model.geometry.root_universe.cells.values())
     kontrol("7 konum x 3 katman = 21 kok hucresi", len(hucreler) == 21, "-> %d" % len(hucreler))
@@ -391,6 +398,39 @@ def test_altigen_kor_katman_anahtari():
             "-> %s" % [c.fill.name for c in ust[:2]])
     kontrol("aktif aralik yalniz aktif+ust (-30, 40)",
             kurucu.aktif_eksenel_aralik(s) == (-30.0, 40.0), "-> %s" % (kurucu.aktif_eksenel_aralik(s),))
+
+
+def test_altigen_kor_katman_anahtari_kapi():
+    """Katmana ozel harf eslemesi altigen korda da gecerli: kapi gecer (bulgu 1)."""
+    print("\n[AK7b] ALTIGEN KOR: katmana ozel anahtar dogrulama kapisindan gecer")
+    from cekirdek import dogrula, kurucu, sema
+    s = _katman_anahtarli_spec()
+    # ust katmanin demeti farkli yakitla: nokta sorgusu katmani ayirt etsin
+    ust = dict(copy.deepcopy(sema.malzeme_bul(s, "uo2")), ad="uo2_ust")
+    ust.pop("gorunen_ad", None)
+    s["malzemeler"].append(ust)
+    s["cubuklar"].append(sema.cubuk("yakit_ust", [sema.bolge(R_YAKIT, "uo2_ust"),
+                                                  sema.bolge(R_ZARF, "zr"),
+                                                  sema.bolge(None, "su")]))
+    s["demetler"][1]["anahtar"] = {"y": "yakit_ust"}
+    try:
+        dogrula.kapi(s, veri_kontrolu=False)
+        gecti, hata = True, ""
+    except dogrula.DogrulamaHatasi as e:
+        gecti, hata = False, [b.mesaj for b in e.bulgular]
+    kontrol("dogrula.kapi: katmana ozel anahtarli altigen kor 0 hata", gecti, "-> %s" % hata)
+    model, _b = kurucu.kur(s)
+    P = s["kor"]["adim"]
+
+    def mal(x, y, z):
+        yol = model.geometry.find((x, y, z))
+        return getattr(yol[-1].fill, "name", None) if yol else None
+    # katmanlar: su z -40..-30, aktif -30..20, ust 20..40; merkez pin (0, 0)
+    beklenen = {-35.0: "su", 0.0: "uo2", 30.0: "uo2_ust"}
+    for cx, cy in ((0.0, 0.0), (P, 0.0)):
+        olculen = {z: mal(cx, cy, z) for z in beklenen}
+        kontrol("demet (%.2f, %.2f): katman malzemeleri %s" % (cx, cy, olculen),
+                olculen == beklenen)
 
 
 # ============================================================================
@@ -578,20 +618,33 @@ def _kos(model, dizin, parcacik, cevrim=130, pasif=30):
                                        output=False)).keff
 
 
+DUYARLILIK_PCM = 200       # analitik esdegerlik testinin 2 sigma ust siniri
+
+
 def test_altigen_analitik_esdegerlik(gecici):
     """7 ayni kilifsiz demet (adim = zarf, yan sinir reflective) = tek demet sonsuz kafes."""
     print("\n[AK13] ANALITIK ESDEGERLIK: 7 demet = tek demet sonsuz kafes")
     from cekirdek import kurucu
     tek, _b = kurucu.kur(_tek_demet_spec())
     kor, _b = kurucu.kur(_kor_spec())
-    # 40 000 parcacik: 20 000'de 2 sigma ~178 pcm cikiyordu (olculdu), olcut 150 pcm.
+    # 40 000 parcacik: 20 000'de 2 sigma ~178 pcm cikiyordu (olculdu).
+    # DUYARLILIK OLCUTU 200 pcm (D1-B karari; eskiden 150): 40 000'de olculen
+    # 2 sigma 138 pcm, 150 pcm'e yalniz %9 pay birakiyordu. Sigma tahmininin
+    # kendi goreli sapmasi ~1/sqrt(2 x 100 aktif cevrim) ~ %7; tohum ya da
+    # OpenMC surumu degisince 2 sigma > 150 pcm olasiligi ~%10 idi (testin
+    # fizikle ilgisiz kalmasi). 200 pcm'e (+%45) cikma olasiligi ~6 sigma
+    # ötesi, pratikte sifir. Olcutun yakalamasi gereken hatalar bunun cok
+    # ustundedir: yonelim hatasi +1640 pcm, vadilere dolgu +5300 pcm.
+    # Kalan yanlis alarm olasiligi |fark| <= 2 sigma kosulundandir: rastgele
+    # bir tohumda ~%4.6; tohum sabit (11), yani ayni surumde sonuc tekrarlanir.
     k1 = _kos(tek, os.path.join(gecici, "tek"), 40000)
     k2 = _kos(kor, os.path.join(gecici, "kor"), 40000)
     fark = abs(k1.nominal_value - k2.nominal_value)
     sigma = math.hypot(k1.std_dev, k2.std_dev)
     kontrol("tek %.5f +/- %.5f  vs  7 demet %.5f +/- %.5f  (fark %.2f sigma)"
             % (k1.nominal_value, k1.std_dev, k2.nominal_value, k2.std_dev, fark / sigma),
-            fark <= 2 * sigma and 2 * sigma <= 0.0015, "-> 2 sigma = %.0f pcm" % (2e5 * sigma))
+            fark <= 2 * sigma and 2 * sigma <= DUYARLILIK_PCM * 1e-5,
+            "-> 2 sigma = %.0f pcm (olcut %d)" % (2e5 * sigma, DUYARLILIK_PCM))
 
 
 def test_altigen_betik_esdegerligi(gecici):
@@ -651,7 +704,8 @@ HIZLI = [
     test_altigen_kor_sema_ve_kurallar, test_altigen_kor_dogrulama,
     test_altigen_kor_geometri, test_altigen_kor_yonelim_olcumu,
     test_altigen_kor_kucuk_parcalar, test_altigen_tek_demet_kilif,
-    test_altigen_kor_katman_anahtari, test_altigen_kor_betik_geometrisi,
+    test_altigen_kor_katman_anahtari, test_altigen_kor_katman_anahtari_kapi,
+    test_altigen_kor_betik_geometrisi,
     test_altigen_kor_tukenme_sayimi, test_altigen_kor_tur_degisimi,
     test_altigen_kor_baslangic_karti, test_altigen_kor_sekmesi,
 ]
