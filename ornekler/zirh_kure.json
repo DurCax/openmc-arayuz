@@ -2,6 +2,11 @@
   "surum": 1,
   "ad": "D-T zırh küresi (sabit kaynak)",
   "aciklama": "Sabit kaynak örneği: merkezde 14.1 MeV'lik D-T füzyon nötron kaynağı, çevresinde 30 cm su + 5 cm çelik zırh. Özdeğer hesabı değildir: k-eff yoktur, sonuç tally'lerdir.\nKaynak şiddeti 1e12 n/s girildiği için sonuçlar mutlak birimdedir — OpenMC şiddeti kendisi uygular, ayrıca çarpmayın. 'flux' skoru hacim üzerinden integrallidir (birim cm/s); nokta akısı [1/cm²/s] için bölge hacmine bölün.\nBeklenen: suda termal akı hızlı akıyı geçer (yavaşlatma), çelikte oran tersine döner (ağır çekirdek yavaşlatmaz, demir termal nötronları soğurur).",
+  "baslik": "Zırh küresi (sabit kaynak)",
+  "baslik_en": "Shielding sphere (fixed source)",
+  "aciklama_en": "Fixed-source example: a 14.1 MeV D-T neutron source surrounded by 30 cm of water and 5 cm of steel shielding.",
+  "kategori": "zirh",
+  "seviye": "orta",
   "malzemeler": [
     {
       "ad": "su",

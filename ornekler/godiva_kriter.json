@@ -2,6 +2,23 @@
   "surum": 1,
   "ad": "Godiva kritik küresi (HEU-MET-FAST-001)",
   "aciklama": "ICSBEP kriteri HEU-MET-FAST-001 (Godiva): çıplak, yüksek zenginlikli uranyum metal küresi. Yayımlanmış kriter değeri k_eff = 1.0000 ± 0.0010.\n\nBu örnek aracın bilimsel doğrulamasıdır: regresyon çıpası 'kod kendi kendisiyle tutarlı' der, bu örnek 'sonuç gerçekten doğru' der. Malzeme bileşimi, geometri, tesir kesiti kütüphanesi ve taşıma zincirinin tamamı bağımsız bir ölçüme karşı sınanır.\n\nAtom yoğunlukları [atom/b-cm]: U234 4.91840e-04, U235 4.49940e-02, U238 2.49840e-03\nKüre yarıçapı: 8.7407 cm, çıplak (Vakum sınır), 293.6 K.",
+  "baslik": "Godiva kritik küresi",
+  "baslik_en": "Godiva critical sphere",
+  "aciklama_en": "ICSBEP benchmark HEU-MET-FAST-001 (Godiva): bare highly enriched uranium metal sphere, k-eff = 1.0000 ± 0.0010.",
+  "kategori": "kriter",
+  "seviye": "giris",
+  "referans": {
+    "k": 1.0,
+    "sigma": 0.001,
+    "tur": "deney",
+    "kaynak": "ICSBEP HEU-MET-FAST-001 (Godiva)",
+    "olcum": {
+      "k": 0.99957,
+      "sigma": 0.00054,
+      "openmc": "0.16.0",
+      "kutuphane": "ENDF/B-VIII.0"
+    }
+  },
   "malzemeler": [
     {
       "ad": "heu",

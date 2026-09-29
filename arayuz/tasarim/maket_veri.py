@@ -4,6 +4,7 @@ maket_veri.py -- maket ekranlarinin SABIT ornek verisi ve ortak kurucular.
 Maketler islev baglamaz; buradaki sayilar gorsel ornektir, hesap degildir.
 """
 
+from cekirdek import ornek_bilgi
 from cekirdek.ceviri import N_, _
 
 # (anahtar, metin, ikon, grup) -- Dalga 2 kabugunun is akisi sirasi
@@ -59,8 +60,9 @@ MODEL_TURLERI = (
     ("shield", N_("Zırhlama"), N_("Sabit kaynaktan zırh katmanlarında zayıflama.")),
 )
 
-KATEGORILER = (("hepsi", N_("Tümü")), ("pwr", "PWR"), ("vver", "VVER"), ("sfr", "SFR"),
-               ("arastirma", N_("Araştırma")), ("kriter", N_("Kriter")), ("zirh", N_("Zırh")))
+# Galeri kategorileri tek kaynaktan: cekirdek/ornek_bilgi.py
+KATEGORILER = (("hepsi", N_("Tümü")),) + tuple(
+    (k, ornek_bilgi.KATEGORI_ADLARI[k]) for k in ornek_bilgi.KATEGORILER)
 
 # (baslik, kategori, aciklama, kucuk resim motifi)
 ORNEKLER = (

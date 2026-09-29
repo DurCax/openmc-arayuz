@@ -23,6 +23,9 @@
    ayarlar      : cevrim/parcacik/kaynak/sicaklik
    tallyler     : tally tanimlari
    calistirma   : is parcacigi sayisi, kosu dizini
+   (meta)       : baslik, kategori, seviye, referans, baslik_en, aciklama_en --
+                  ornek galerisi bilgisi (cekirdek/ornek_bilgi.py); fizige
+                  girmez, tamamla() aynen korur
 
  NOTLAR
    "bosluk" ayrilmis bir malzeme adidir -- OpenMC'de None (void) demektir,
@@ -42,6 +45,11 @@ SEMA_SURUM = 1
 
 # OpenMC'de void anlamina gelen ayrilmis malzeme adi
 BOSLUK = "bosluk"
+
+# Ornek meta alanlari (cekirdek/ornek_bilgi.py sozlesmesi). Istege baglidir;
+# varsa tamamla() aynen korur. Fizige girmez: tukenme "sonuc eskidi mi"
+# karsilastirmasi bunlari disarida birakir.
+META_ALANLARI = ("baslik", "kategori", "seviye", "referans", "baslik_en", "aciklama_en")
 
 # ----------------------------------------------------------------------------
 # Varsayilan bolumler
@@ -616,7 +624,7 @@ def tamamla(ham):
     """
     spec = yeni_spec(ham.get("ad", "adsız model"))
     for anahtar in ("surum", "ad", "aciklama", "malzemeler", "cubuklar",
-                    "plakalar", "demetler", "tallyler"):
+                    "plakalar", "demetler", "tallyler") + META_ALANLARI:
         if anahtar in ham:
             spec[anahtar] = ham[anahtar]
     # Ic ice sozlukler: varsayilanin uzerine DERIN birlestirme.

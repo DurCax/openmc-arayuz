@@ -627,7 +627,7 @@ def sonuc_oku(h5, spec, izlenen=None):
 SPEC_KAYDI = "tukenme_spec.json"
 
 # Fizigi etkilemeyen bolumler: bunlar degisti diye sonuc eskimez.
-_FIZIK_DISI = ("ad", "aciklama", "calistirma")
+_FIZIK_DISI = ("ad", "aciklama", "calistirma") + sema.META_ALANLARI
 
 
 def kosu_dizini(spec, proje_yolu=None):
