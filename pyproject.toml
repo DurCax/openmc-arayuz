@@ -48,6 +48,10 @@ openmc-arayuz-kosu = "cekirdek.giris:kosu"
 [tool.setuptools.packages.find]
 include = ["cekirdek*", "arayuz*"]
 
+[tool.setuptools.package-data]
+# rapor sablonlari (string.Template) wheel icinde olmali
+"cekirdek.rapor_sablon" = ["*.html", "*.css"]
+
 # -----------------------------------------------------------------------------
 # pytest: testler/test_*.py modullerindeki HIZLI/YAVAS listeleri kok
 # conftest.py tarafindan toplanir (pytest_pycollect_makemodule); pytest'in
