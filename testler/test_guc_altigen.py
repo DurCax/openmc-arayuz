@@ -48,6 +48,8 @@ def _malzemeler(sema):
         sema.malzeme("su", [sema.bilesen("H", 2.0), sema.bilesen("O", 1.0)], 0.72,
                      sab=["c_H_in_H2O"], renk=(90, 140, 230)),
         sema.malzeme("celik", [sema.bilesen("Fe", 1.0)], 7.9, renk=(90, 90, 90)),
+        sema.malzeme("b4c", [sema.bilesen("B", 4.0), sema.bilesen("C", 1.0)], 2.52,
+                     renk=(40, 40, 40)),
     ]
 
 
@@ -55,7 +57,7 @@ def _demet(sema, ad="hex", harita=None, kilif=False):
     from cekirdek import altigen
     d = sema.demet_altigen(ad, PIN_ADIM, PIN_HALKA,
                            harita or altigen.bos_harita(PIN_HALKA, "y"),
-                           {"y": "yakit_cubugu", "s": "su"}, "su", yonelim="y")
+                           {"y": "yakit_cubugu", "s": "su", "e": "b4c"}, "su", yonelim="y")
     if kilif:
         d["kilif"] = {"ic_duz": KILIF_IC, "kalinlik": KILIF_KAL, "malzeme": "celik"}
     return d
@@ -299,6 +301,31 @@ def test_altigen_kor_malzeme_konumu():
             all(_beklenen_anahtar(model, y, 1) in k for y in yollar))
 
 
+def test_altigen_kor_sifir_oteleme_summary():
+    """summary.h5 (0, 0, 0) otelemeyi yazmaz (olculdu, MC): merkez demetin kok
+    hucresi translation=None okunur. None yalniz hucrenin altigen merkezi (0, 0)
+    ise sifir sayilir; baska bir konumda None ise ACIK hata."""
+    print("\n[GA5b] Altigen tam kor: summary'de sifir oteleme (None)")
+    from cekirdek import guc, kurucu
+    model, _b = kurucu.kur(_kor_spec())
+    kok = sorted(model.geometry.root_universe.cells.values(), key=lambda c: c.id)
+    merkez = next(c for c in kok if c.translation is not None and not any(c.translation))
+    merkez._translation = None          # summary okumasinin taklidi
+    sp, _h, yollar = _sentetik_sp(model, _asimetrik(model, 1))
+    d = guc.dagilim_oku(sp)
+    kontrol("merkez None -> (0, 0): 133 anahtar", len(d["konumlar"]) == 133)
+    kontrol("anahtarlar beklenenle ayni",
+            all(_beklenen_anahtar(model, y, 1) in d["konumlar"] for y in yollar))
+    kok[0]._translation = None          # dis halkada bir demet: None olamaz
+    try:
+        guc.dagilim_oku(sp)
+        hata = None
+    except RuntimeError as e:
+        hata = str(e)
+    kontrol("dis konumda oteleme yok -> acik RuntimeError", hata is not None
+            and "öteleme" in hata, "-> %r" % hata)
+
+
 def test_altigen_kor_farkli_demet_turleri():
     """Cevre demetlerinde yakitin bir kismi su: demet basina cubuk sayisi farkli."""
     print("\n[GA6] Altigen tam kor: farkli demet turleri (tek yakit cubugu)")
@@ -379,12 +406,14 @@ def test_arayuz_altigen_oteleme_cizimi():
 def test_altigen_kor_mc(gecici):
     """
     7 demet, TEK yakit cubugu turu. Merkez demet tam yakitli; cevre 6 demette
-    12 yakit konumu su (dis halkada her ikinci cubuk). Beklenen: sicak demet
+    dis halkanin her ikinci konumu B4C emici (6 konum). Beklenen: sicak demet
     merkezde; cevre demetler (simetrik) birbirine 3 sigma icinde; korunum.
+    (Once su denendi: bu sik (az yavaslatilmis) demette su konumu komsu
+    cubuklari ISITIR, cevre demetler sicak cikti -- 1.04 / merkez 0.84; olculdu.)
     """
     print("\n[GA9] Altigen tam kor (Monte Carlo)")
-    from cekirdek import guc, kosucu, sema
-    seyrek = _demet(sema, "seyrek", harita=["ysysysysysys", "yyyyyy", "y"])
+    from cekirdek import kosucu, sema
+    seyrek = _demet(sema, "seyrek", harita=["yeyeyeyeyeye", "yyyyyy", "y"])
     spec = _kor_spec(harita=["BBBBBB", "A"], anahtar={"A": "hex", "B": "seyrek"},
                      demetler=[_demet(sema), seyrek])
     spec["ayarlar"].update(parcacik=20000, cevrim=60, pasif=20, tohum=7)
@@ -396,7 +425,7 @@ def test_altigen_kor_mc(gecici):
     g = s.get("guc") or {}
     f = g.get("faktorler") or {}
     d = g.get("dagilim") or {}
-    kontrol("97 cubuk", len(d.get("konumlar") or {}) == 97)
+    kontrol("97 cubuk", len(d.get("konumlar") or {}) == 97, "-> %r" % s.get("guc_hata"))
     kontrol("korunum |sum/ref - 1| < 1e-6", g.get("korunum") is not None
             and g["korunum"] < 1e-6, "-> %r" % g.get("korunum"))
     kontrol("sicak demet merkezde (1, 0)", f.get("sicak_demet") == (1, 0),
@@ -416,7 +445,8 @@ def test_altigen_kor_mc(gecici):
 HIZLI = [
     test_altigen_kor_133_anahtar, test_altigen_kor_asimetrik_konumlar,
     test_altigen_kor_katmanli, test_altigen_kor_kilif_ve_yansitici,
-    test_altigen_kor_malzeme_konumu, test_altigen_kor_farkli_demet_turleri,
+    test_altigen_kor_malzeme_konumu, test_altigen_kor_sifir_oteleme_summary,
+    test_altigen_kor_farkli_demet_turleri,
     test_kafesli_korlar_degismedi, test_arayuz_altigen_oteleme_cizimi,
 ]
 YAVAS = [test_altigen_kor_mc]

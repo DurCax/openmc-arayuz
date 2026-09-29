@@ -60,6 +60,7 @@
 import functools
 import math
 
+from cekirdek import guc_kor as _guc_kor
 from cekirdek.ceviri import _
 from cekirdek.gunluk import kaydedici
 
@@ -144,7 +145,9 @@ def _eksenel_sutun(df):
 
 def _kafes_turu(kafes):
     import openmc
-    return "altigen" if isinstance(kafes, openmc.HexLattice) else "kare"
+    if isinstance(kafes, (openmc.HexLattice, _guc_kor.OtelemeDuzeyi)):
+        return "altigen"
+    return "kare"
 
 
 def _duzey_konumu(kafes, x, y):
@@ -156,9 +159,11 @@ def _duzey_konumu(kafes, x, y):
     return (x, y)
 
 
-def _satir_anahtarlari(df, seviyeler, kafesler):
+def _satir_anahtarlari(df, seviyeler, kafesler, kok_demet=None):
     """
     Her satirin konum anahtari ve her duzeyin temsilci kafesi.
+    kok_demet: {kok hucre kimligi: demet anahtari} (altigen_kafes; bkz.
+    guc_kor) -- verilirse anahtarin EN DIS parcasi budur.
     DONER (anahtarlar listesi, [duzey kafesi, ...])
     """
     sutunlar = [[df[(s, "lat", e)].astype(int).tolist() for e in ("id", "x", "y")]
@@ -181,10 +186,14 @@ def _satir_anahtarlari(df, seviyeler, kafesler):
             onbellek[k] = _duzey_konumu(kafes, x, y)
         return onbellek[k]
 
-    tek = len(seviyeler) == 1
+    kok = (df[_guc_kor.KOK_HUCRE_SUTUNU].astype(int).tolist()
+           if kok_demet is not None else None)
+    tek = len(seviyeler) == 1 and kok is None
     anahtarlar = []
     for i in range(len(df)):
         parca = tuple(cevir(ids[i], xs[i], ys[i]) for ids, xs, ys in sutunlar)
+        if kok is not None:
+            parca = (kok_demet[kok[i]],) + parca
         anahtarlar.append(parca[0] if tek else parca)
     return anahtarlar, temsilci
 
@@ -243,6 +252,10 @@ def dagilim_oku(sp, tally_adi="guc_dagilimi"):
       kor_kafes      en dis kafes (tam korda); tek demette None
       kor_kafes_turu en dis kafesin turu (tam korda); tek demette None
       birlesen_bin   int: ayni konum x dilim bin'inde toplanan ek ornek sayisi
+      --- 29.09.2026 (D1-A, altigen_kafes) ---
+      kor_duzeyi     "oteleme" (altigen_kafes: demet konumu = kok hucre
+                     otelemesi; kafesler[0] bir guc_kor.OtelemeDuzeyi),
+                     "kafes" (kor kafesi) ya da None (tek demet)
     """
     tal = _tally_bul(sp, tally_adi)
     if tal is None:
@@ -266,11 +279,16 @@ def dagilim_oku(sp, tally_adi="guc_dagilimi"):
             "çubuk bir demette tekrarlanmıyor olabilir; güç dağılımı yalnızca "
             "demet içindeki çubuklar için anlamlıdır.")
 
-    anahtarlar, kafesler = _satir_anahtarlari(df, seviyeler, geometri.get_all_lattices())
+    duzen = _guc_kor.oteleme_duzeni(df, geometri)
+    kok_demet, oteleme = duzen if duzen else (None, None)
+    anahtarlar, kafesler = _satir_anahtarlari(df, seviyeler, geometri.get_all_lattices(),
+                                              kok_demet)
+    if oteleme is not None:
+        kafesler = [oteleme] + kafesler
     kafes = kafesler[-1]
     kafes_turleri = [_kafes_turu(k) for k in kafesler]
     kafes_turu = kafes_turleri[-1]
-    tam_kor = len(seviyeler) > 1
+    tam_kor = len(kafesler) > 1
 
     z_sut = _eksenel_sutun(df)
     eksenel_dilim = int(df[z_sut].max()) if z_sut is not None else 1
@@ -296,7 +314,7 @@ def dagilim_oku(sp, tally_adi="guc_dagilimi"):
         notlar.append(
             _("Tam kor: %d kafes düzeyi. Her çubuk kordaki tam konumuyla "
               "(demet konumu + demet içi konum) ayrı sayılır; bağıl güç tüm "
-              "kordaki yakıt çubuklarının ortalamasına göredir.") % len(seviyeler))
+              "kordaki yakıt çubuklarının ortalamasına göredir.") % len(kafesler))
     if birlesen:
         notlar.append(
             _("%d bin'de aynı çubuk konumu birden çok eksenel katmanda "
@@ -309,8 +327,9 @@ def dagilim_oku(sp, tally_adi="guc_dagilimi"):
         "eksenel_dilim": eksenel_dilim,
         "konumlar": konumlar,
         "notlar": notlar,
-        "duzey_sayisi": len(seviyeler),
+        "duzey_sayisi": len(kafesler),
         "tam_kor": tam_kor,
+        "kor_duzeyi": "oteleme" if oteleme is not None else ("kafes" if tam_kor else None),
         "kafesler": kafesler,
         "kafes_turleri": kafes_turleri,
         "kor_kafes": kafesler[0] if tam_kor else None,
@@ -336,6 +355,8 @@ def eleman_merkezi(kafes, konum):
     (konum cekirdek/altigen.konumlar'dan; OpenMC ile nokta-hucre olcumuyle
     dogrulandi, testler/test_guc_kor.py).
     """
+    if isinstance(kafes, _guc_kor.OtelemeDuzeyi):
+        return kafes.merkezler[tuple(konum)]      # kafessiz: kok hucre otelemesi
     if _kafes_turu(kafes) == "altigen":
         kx, ky = _altigen_konumlar(int(kafes.num_rings), kafes.orientation)[tuple(konum)]
         cx, cy = tuple(kafes.center)[:2]
