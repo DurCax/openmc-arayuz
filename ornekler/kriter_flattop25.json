@@ -1,0 +1,256 @@
+{
+  "surum": 1,
+  "ad": "Flattop-25 yansıtıcılı küre (HEU-MET-FAST-028)",
+  "aciklama": "ICSBEP kriteri HEU-MET-FAST-028 (Flattop-25): yüksek zenginlikli uranyum metal çekirdek (%93.24 ağ. U-235), kalın doğal uranyum yansıtıcıyla sarılı. Yansıtıcının hızlı nötronları geri döndürmesini ve U-238 saçılma/fisyon verisini sınar (Godiva ile aynı yakıt, farklı sızıntı).\n\nModel: ICSBEP el kitabının basitleştirilmiş iki bölgeli küresel modeli. Deneysel kriter değeri k_eff = 1.0000 ± 0.0030.\nÇekirdek (r = 6.1156 cm) [atom/b-cm]: U234 4.8869e-04, U235 4.4482e-02, U238 2.7038e-03.\nYansıtıcı (6.1156 – 24.1242 cm, doğal U) [atom/b-cm]: U234 2.6438e-06, U235 3.4610e-04, U238 4.7721e-02.\nDış yüzey vakum, 293.6 K.\nKaynak: ICSBEP Handbook, HEU-MET-FAST-028; sayılar mit-crpg/benchmarks (icsbep/heu-met-fast-028) girdileriyle karşılaştırıldı.",
+  "malzemeler": [
+    {
+      "ad": "heu",
+      "gorunen_ad": "HEU metal (%93.24)",
+      "yogunluk": {
+        "birim": "atom/b-cm",
+        "deger": 0.04767449
+      },
+      "sicaklik": 293.6,
+      "bilesim": [
+        {
+          "tur": "nuklid",
+          "isim": "U234",
+          "miktar": 0.00048869,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "U235",
+          "miktar": 0.044482,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "U238",
+          "miktar": 0.0027038,
+          "birim": "ao"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        222,
+        93,
+        40
+      ]
+    },
+    {
+      "ad": "dogal_u",
+      "gorunen_ad": "Doğal uranyum yansıtıcı",
+      "yogunluk": {
+        "birim": "atom/b-cm",
+        "deger": 0.0480697438
+      },
+      "sicaklik": 293.6,
+      "bilesim": [
+        {
+          "tur": "nuklid",
+          "isim": "U234",
+          "miktar": 2.6438e-06,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "U235",
+          "miktar": 0.0003461,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "U238",
+          "miktar": 0.047721,
+          "birim": "ao"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        110,
+        110,
+        120
+      ]
+    }
+  ],
+  "cubuklar": [],
+  "plakalar": [],
+  "demetler": [],
+  "kor": {
+    "tur": "kuresel",
+    "cubuk": null,
+    "demet": null,
+    "plaka": null,
+    "adim": 1.26,
+    "boyut": [
+      1,
+      1
+    ],
+    "harita": [],
+    "halka_sayisi": 2,
+    "yonelim": "x",
+    "anahtar": {},
+    "yukseklik": null,
+    "yansitici": {
+      "var": false,
+      "kalinlik": 20.0,
+      "malzeme": null
+    },
+    "kabuklar": [
+      {
+        "r": 6.1156,
+        "malzeme": "heu"
+      },
+      {
+        "r": 24.1242,
+        "malzeme": "dogal_u"
+      }
+    ],
+    "dolgu": null,
+    "kor_yaricap": 20.0,
+    "tambur": {
+      "sayi": 0,
+      "yaricap": 4.0,
+      "merkez_yaricap": 26.0,
+      "govde_malzeme": null,
+      "emici_malzeme": null,
+      "emici_ic_yaricap": 2.5,
+      "emici_aci": 120.0,
+      "donme": 0.0,
+      "baslangic_acisi": 0.0
+    },
+    "eksenel": {
+      "var": false,
+      "bolgeler": []
+    },
+    "sinir": {
+      "yan": "vacuum",
+      "alt": "vacuum",
+      "ust": "vacuum"
+    }
+  },
+  "ayarlar": {
+    "mod": "eigenvalue",
+    "parcacik": 20000,
+    "cevrim": 160,
+    "pasif": 40,
+    "tohum": 1,
+    "sicaklik_yontemi": "interpolation",
+    "kaynak": {
+      "tur": "kutu",
+      "konum": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "parcacik": "neutron",
+      "kuvvet": 1.0,
+      "enerji": {
+        "tur": "watt",
+        "a": 988000.0,
+        "b": 2.249e-06,
+        "theta": 1293200.0,
+        "enerji": 14100000.0,
+        "noktalar": [],
+        "kenarlar": [],
+        "degerler": [],
+        "e0": 14080000.0,
+        "kutle_orani": 5.0,
+        "iyon_sicaklik": 20000.0
+      },
+      "aci": {
+        "tur": "izotropik",
+        "yon": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "koni_aci": 30.0
+      },
+      "alt": [
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "ust": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    "entropi_mesh": {
+      "var": true,
+      "boyut": [
+        6,
+        6,
+        6
+      ]
+    },
+    "kinetik": {
+      "var": false,
+      "nesil": 10
+    }
+  },
+  "tallyler": [
+    {
+      "ad": "reaksiyonlar",
+      "skorlar": [
+        "fission",
+        "absorption",
+        "nu-fission"
+      ],
+      "filtreler": [],
+      "nuklidler": []
+    }
+  ],
+  "guc_dagilimi": {
+    "var": false,
+    "cubuk": null,
+    "bolge": 0,
+    "skor": "kappa-fission",
+    "eksenel_dilim": 20,
+    "toplam_guc": null
+  },
+  "tukenme": {
+    "var": false,
+    "zincir": "otomatik",
+    "guc_yogunlugu": 40.0,
+    "adimlar": [
+      0.5,
+      1.5,
+      3.0,
+      5.0,
+      10.0,
+      10.0
+    ],
+    "adim_birimi": "d",
+    "entegrator": "cecm",
+    "malzemeleri_ayir": false,
+    "ek_malzemeler": [],
+    "izlenen": [
+      "U235",
+      "U238",
+      "Pu239",
+      "Pu240",
+      "Pu241",
+      "Xe135",
+      "Sm149"
+    ]
+  },
+  "calistirma": {
+    "is_parcacigi": 8,
+    "dizin": "kosu"
+  },
+  "baslik": "Flattop-25 yansıtıcılı küre",
+  "kategori": "kriter",
+  "seviye": "orta",
+  "referans": {
+    "k": 1.0,
+    "sigma": 0.003,
+    "tur": "deney",
+    "kaynak": "ICSBEP HEU-MET-FAST-028 (Flattop-25)"
+  },
+  "baslik_en": "Flattop-25 reflected sphere",
+  "aciklama_en": "ICSBEP benchmark HEU-MET-FAST-028 (Flattop-25): HEU metal core reflected by natural uranium, k-eff = 1.0000 ± 0.0030."
+}
