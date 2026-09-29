@@ -142,6 +142,11 @@ veri dosyası; termal ve hızlı spektrum için ayrı zincirler vardır.</td></t
 # bulgu acilir listesi (durum cubugu rozeti)
 # ============================================================================
 
+
+def tema_etiketi(anahtar):
+    """Gorunum menusundeki tema eyleminin metni, etkin dilde ("Açık tema")."""
+    return _("{ad} tema").format(ad=_(tema.TEMALAR[anahtar]["ad"]))
+
 class _BulguAcilir(QtWidgets.QFrame):
     """Rozete tiklayinca acilan bulgu listesi; satir ilgili sekmeye goturur."""
 
@@ -214,7 +219,7 @@ class MenulerMixin(object):
         grup = QtGui.QActionGroup(self)
         grup.setExclusive(True)
         for anahtar, bilgi in tema.TEMALAR.items():
-            e = QtGui.QAction("%s tema" % bilgi["ad"], self)
+            e = QtGui.QAction(tema_etiketi(anahtar), self)
             e.setCheckable(True)
             e.setChecked(anahtar == tema.etkin())
             e.triggered.connect(lambda _c=False, a=anahtar: self._tema_degistir(a))
@@ -307,7 +312,7 @@ class MenulerMixin(object):
         self._dogrula(veri=False)          # seviye renkleri, rozetler
         self._ozet_guncelle()              # baslik baglanti rengi
         self.onizleme._ciz()               # grafik paleti
-        self.statusBar().showMessage("Tema: %s" % tema.TEMALAR[ad]["ad"], 4000)
+        self.statusBar().showMessage(_("Tema: {ad}").format(ad=_(tema.TEMALAR[ad]["ad"])), 4000)
 
     def _dil_menusu_kur(self, ust_menu):
         """Gorunum > Dil: secim QSettings'e yazilir, yeniden baslatinca gecerli."""

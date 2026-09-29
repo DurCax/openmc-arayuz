@@ -128,6 +128,16 @@ def test_katalog_derlenmis():
             "-> %s" % eksik[:5])
 
 
-HIZLI = [test_ceviri_temel, test_ceviri_dil_secimi, test_ceviri_cogul_ve_baglam,
+
+def test_tema_menu_etiketi_cevrilir():
+    print("\n[C6] CEVIRI: Gorunum menusundeki tema adi etkin dilde")
+    from cekirdek import ceviri as c
+    from arayuz.pencere import menuler
+    kontrol("tr: 'Açık tema'", _dil_ile(c, "tr", lambda: menuler.tema_etiketi("acik")) == "Açık tema")
+    kontrol("en: 'Light theme'", _dil_ile(c, "en", lambda: menuler.tema_etiketi("acik")) == "Light theme",
+            "-> %r" % _dil_ile(c, "en", lambda: menuler.tema_etiketi("acik")))
+    kontrol("en: 'Dark theme'", _dil_ile(c, "en", lambda: menuler.tema_etiketi("koyu")) == "Dark theme")
+
+HIZLI = [test_tema_menu_etiketi_cevrilir, test_ceviri_temel, test_ceviri_dil_secimi, test_ceviri_cogul_ve_baglam,
          test_ceviri_eksik_giris_loglanir, test_katalog_derlenmis]
 YAVAS = []

@@ -56,3 +56,16 @@ msgstr "Language"
 
 msgid "Dil değişikliği uygulama yeniden başlatılınca geçerli olur."
 msgstr "The language change takes effect after the application restarts."
+
+# Gorunum > tema (arayuz/pencere/menuler.py)
+msgid "Açık"
+msgstr "Light"
+
+msgid "Koyu"
+msgstr "Dark"
+
+msgid "{ad} tema"
+msgstr "{ad} theme"
+
+msgid "Tema: {ad}"
+msgstr "Theme: {ad}"
