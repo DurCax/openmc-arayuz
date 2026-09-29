@@ -856,6 +856,9 @@ def _tukenme(spec, satirlar):
     for ad, v in hv.items():
         satirlar.append("%s.depletable = True" % _ad(ad))
         satirlar.append("%s.volume = %r   # cm³ — %s" % (_ad(ad), v["hacim"], v["ayrinti"]))
+    ayir = bool(t.get("malzemeleri_ayir"))
+    if ayir:
+        _ornek_ayirma_satirlari(spec, hv, satirlar)
     satirlar.append("")
     satirlar.append("# Zincir: %s" % zs["gerekce"])
     satirlar.append("# Bu yol bu makineye aittir; başka yerde OPENMC_CHAIN_FILE'a bakın.")
@@ -867,9 +870,11 @@ def _tukenme(spec, satirlar):
     satirlar.append("def tukenme_kos():")
     satirlar.append('    """Yanma hesabı; depletion_results.h5 üretir."""')
     satirlar.append("    import openmc.deplete")
+    if ayir:
+        satirlar.append("    _ornekleri_ayir(model)   # örnek başına kesin hacim (aşağıda False)")
     satirlar.append("    op = openmc.deplete.CoupledOperator(")
     satirlar.append("        model, TUKENME_ZINCIRI,")
-    satirlar.append("        diff_burnable_mats=%r," % bool(t.get("malzemeleri_ayir")))
+    satirlar.append("        diff_burnable_mats=False,")
     satirlar.append("        normalization_mode='fission-q',")
     satirlar.append("        fission_yield_mode='constant',")
     satirlar.append("        # Fisyon ürünü verimleri bu enerjide okunur: 0.0253 eV termal,")
@@ -886,6 +891,63 @@ def _tukenme(spec, satirlar):
     satirlar.append("    integ.integrate()")
     satirlar.append("    return 'depletion_results.h5'")
     return True
+
+
+def _ornek_hacimleri(spec, hv):
+    """Cubuk cubuk yanma: {malzeme adi: [[ornek hacmi, ...] hucre basina]}.
+    tukenme.hazirla ile AYNI kaynak (tukenme_hacim.ornek_hacmi, Cell.paths
+    sirasi); yalniz birden cok ornegi olan malzemeler. Hacmi hesaplanamayan
+    ornek ValueError (tukenme.hazirla da durur)."""
+    from cekirdek import kurucu, tukenme_hacim as th
+    model, bilgi = kurucu.kur(spec)
+    geo = model.geometry
+    geo.determine_paths()
+    hucreler, kafesler = geo.get_all_cells(), geo.get_all_lattices()
+    sonuc = {}
+    for ad in hv:
+        mat = bilgi["malzemeler"][ad]
+        if mat.num_instances <= 1:
+            continue
+        liste = [[th.ornek_hacmi(y, hucreler, kafesler) for y in c.paths]
+                 for c in hucreler.values() if c.fill is mat]
+        if any(v is None for h in liste for v in h):
+            raise ValueError("'%s' malzemesinin bir örneğinin hacmi hesaplanamıyor; "
+                             "çubuk çubuk yanma kesin hacim gerektirir" % ad)
+        sonuc[ad] = liste
+    return sonuc
+
+
+def _ornek_ayirma_satirlari(spec, hv, satirlar):
+    """Betige _ornekleri_ayir(model): tukenme_hacim.ornekleri_ayir'in betik
+    karsiligi. OpenMC'nin diff_burnable_mats'i toplam hacmi orneklere ESIT
+    bolerdi (esit olmayan katmanlarda yanlis); hacimler burada uretilir."""
+    hacimler = _ornek_hacimleri(spec, hv)
+    satirlar.append("")
+    satirlar.append("# Çubuk çubuk yanma: her örnek kendi hacmiyle ayrı malzeme olur.")
+    satirlar.append("# (malzeme, hücre başına [örnek hacmi, ...]); sıra = Cell.paths.")
+    satirlar.append("_ORNEK_HACIMLERI = [")
+    for ad, liste in hacimler.items():
+        satirlar.append("    (%s, %r)," % (_ad(ad), liste))
+    satirlar.append("]")
+    satirlar.append("")
+    satirlar.append("")
+    satirlar.append("def _ornekleri_ayir(model):")
+    satirlar.append('    """Yanabilir malzemeleri örnek başına klonlar; klon sayısını döndürür."""')
+    satirlar.append("    geo = model.geometry")
+    satirlar.append("    geo.determine_paths()")
+    satirlar.append("    sayi = 0")
+    satirlar.append("    for mat, liste in _ORNEK_HACIMLERI:")
+    satirlar.append("        hucreler = [c for c in geo.get_all_cells().values() if c.fill is mat]")
+    satirlar.append("        for hucre, hacimler in zip(hucreler, liste):")
+    satirlar.append("            klonlar = []")
+    satirlar.append("            for v in hacimler:")
+    satirlar.append("                k = mat.clone()")
+    satirlar.append("                k.depletable, k.volume = True, v")
+    satirlar.append("                klonlar.append(k)")
+    satirlar.append("            hucre.fill = klonlar if len(klonlar) > 1 else klonlar[0]")
+    satirlar.append("            sayi += len(klonlar)")
+    satirlar.append("    model.materials = openmc.Materials(geo.get_all_materials().values())")
+    satirlar.append("    return sayi")
 
 
 def _kapanis(spec, satirlar, renkli):

@@ -435,6 +435,45 @@ def test_guc_haritasi_tur_secici():
     uyg  # noqa: B018
 
 
+# ---------------------------------------------------------------------------
+# kod_uret: cubuk cubuk yanma betigi (D1 izleme maddesi, kod_uret sahibi 8b)
+# ---------------------------------------------------------------------------
+
+def test_tukenme_betik_ornek_hacimleri(gecici=None):
+    print("\n[GC17] betik: malzemeleri_ayir=True -> ornek basina hacim tukenme.hazirla ile ayni")
+    import tempfile
+    from cekirdek import sema, tukenme, kod_uret
+    s = sema.yukle(os.path.join(ORNEK, "pwr_eksenel.json"))
+    s["tukenme"].update(var=True, malzemeleri_ayir=True)
+    model, bilgi = tukenme.hazirla(s)
+
+    def hacimler(m):
+        return sorted(round(x.volume, 9) for x in m.geometry.get_all_materials().values()
+                      if x.depletable)
+    beklenen = hacimler(model)
+    betik = kod_uret.uret(s, "model.py")
+    kontrol("betik OpenMC'nin esit bolmesini kullanmaz", "diff_burnable_mats=False" in betik)
+    mo = _betik_modulu(betik, tempfile.mkdtemp(prefix="gc17_", dir=gecici))
+    n = mo._ornekleri_ayir(mo.model)
+    kontrol("klon sayisi = hazirla ornek sayisi (%d)" % bilgi["ornek_sayisi"],
+            n == bilgi["ornek_sayisi"], "-> %d" % n)
+    kontrol("ornek hacimleri ayni (%d yanabilir)" % len(beklenen),
+            hacimler(mo.model) == beklenen and len(beklenen) > 1)
+    kontrol("model.materials klonlari icerir",
+            sum(1 for x in mo.model.materials if x.depletable) == len(beklenen))
+
+
+def _betik_modulu(metin, dizin):
+    import importlib.util
+    yol = os.path.join(dizin, "model.py")
+    with open(yol, "w", encoding="utf-8") as f:
+        f.write(metin)
+    sm = importlib.util.spec_from_file_location("gc_tk_%d" % id(metin), yol)
+    mo = importlib.util.module_from_spec(sm)
+    sm.loader.exec_module(mo)
+    return mo
+
+
 # ============================================================================
 # YAVAS -- Monte Carlo kabul
 # ============================================================================
@@ -561,5 +600,7 @@ HIZLI = [test_varsayilan_cubuklar_bos, test_eski_bicim_tek_ogeli_listeye,
          test_modelde_olmayan_tur_atlanir, test_dogrula_cok_tur_kapsam,
          test_betik_cok_tur_yapisi, test_kaydet_yeni_bicim,
          test_dagilim_birlestirme_sentetik, test_varsayilan_hedefler_fisil_bolge,
-         test_arayuz_tum_yakit_cubuklari, test_guc_haritasi_tur_secici]
+         test_arayuz_tum_yakit_cubuklari, test_guc_haritasi_tur_secici,
+         test_tukenme_betik_ornek_hacimleri]
 YAVAS = [test_uc_zenginlik_mc_fdh, test_cok_tur_betik_esdegerligi]
+ZINCIR_GEREKEN = [test_tukenme_betik_ornek_hacimleri]
