@@ -399,6 +399,42 @@ def test_arayuz_tum_yakit_cubuklari():
     uyg  # noqa: B018
 
 
+def test_guc_haritasi_tur_secici():
+    print("\n[GC16] Guc haritasi: tur secici, varsayilan Cubuk olcegi, sabit renk yok")
+    os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
+    from PySide6 import QtWidgets
+    uyg = QtWidgets.QApplication.instance() or QtWidgets.QApplication([])
+    from cekirdek import guc
+    from arayuz.guc_harita import GucHaritaWidget
+    from testler.test_guc_kor import _kare_2x2_sentetik
+    d = guc.dagilim_oku(_iki_turlu_sp())
+    w = GucHaritaWidget()
+    w.resize(900, 700)
+    kontrol("varsayilan olcek Cubuk", w.olcek.currentData() == "cubuk")
+    w.sonuc_ayarla({"guc": {"dagilim": d, "faktorler": guc.tepe_faktorleri(d)}})
+    kontrol("cok turde tur secici gorunur: Tum + a + b",
+            not w.tur.isHidden() and [w.tur.itemData(i) for i in range(w.tur.count())]
+            == [None, "a", "b"])
+    kontrol("Tum: 4 cubuk", len(w._veri()[0]) == 4)
+    w.tur.setCurrentIndex(w.tur.findData("b"))
+    veri = w._veri()[0]
+    kontrol("'b' secili: yalniz b cubuklari, degerler degismez",
+            sorted(veri) == [(0, 1), (1, 1)] and abs(veri[(1, 1)] - 2.0) < 1e-12,
+            "-> %s" % veri)
+    ozet = w.ozet.text()
+    kontrol("ozet tur satiri", "a:" in ozet and "b:" in ozet)
+    d1 = guc.dagilim_oku(_kare_2x2_sentetik())
+    w.sonuc_ayarla({"guc": {"dagilim": d1, "faktorler": guc.tepe_faktorleri(d1)}})
+    kontrol("tek turde tur secici gizli, tam kor cubuk olcegi",
+            w.tur.isHidden() and w.olcek.currentData() == "cubuk" and len(w._ipucu_ogeleri) == 16)
+    with open(os.path.join(os.path.dirname(ORNEK), "arayuz", "guc_harita.py"),
+              encoding="utf-8") as f:
+        import re
+        kontrol("guc_harita.py'de #rrggbb yok", not re.findall(r"#[0-9a-fA-F]{6}\b", f.read()))
+    w.close()
+    uyg  # noqa: B018
+
+
 # ============================================================================
 # YAVAS -- Monte Carlo kabul
 # ============================================================================
@@ -525,5 +561,5 @@ HIZLI = [test_varsayilan_cubuklar_bos, test_eski_bicim_tek_ogeli_listeye,
          test_modelde_olmayan_tur_atlanir, test_dogrula_cok_tur_kapsam,
          test_betik_cok_tur_yapisi, test_kaydet_yeni_bicim,
          test_dagilim_birlestirme_sentetik, test_varsayilan_hedefler_fisil_bolge,
-         test_arayuz_tum_yakit_cubuklari]
+         test_arayuz_tum_yakit_cubuklari, test_guc_haritasi_tur_secici]
 YAVAS = [test_uc_zenginlik_mc_fdh, test_cok_tur_betik_esdegerligi]
