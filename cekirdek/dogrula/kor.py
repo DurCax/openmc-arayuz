@@ -188,8 +188,10 @@ def kor_kontrol(spec):
         yy = uygunluk.yan_yuzey(spec)
         if tur == "altigen_kafes":
             yuzey = _("demetlerin dış yüzlerinden geçen kırık bir çizgi")
-            oneri = _("Altıgen tam korda eşleşen düzlem çifti yoktur. Sonsuz kafes "
-                      "için Yansıtıcı (reflective) sınır aynı sonucu verir.")
+            oneri = _("Altıgen tam korda eşleşen düzlem çifti yoktur.")
+            if not _karisik_katmanlar(kor):
+                oneri += " " + _("Sonsuz kafes için Yansıtıcı (reflective) sınır "
+                                 "aynı sonucu verir.")
         elif yy == "altigen":
             yuzey = "altıgen bir prizma"
             oneri = ("Bu sürüm periyodik sınırı yalnızca kare kesitte (x/y düzlem "
@@ -268,12 +270,71 @@ def kor_kontrol(spec):
             "tek hücre/demet modelinde yan sınır Vakum (vacuum) — sızıntı sonsuz "
             "kafes varsayımını bozar",
             "Sonsuz kafes (k∞) istiyorsanız Yansıtıcı (reflective) sınır kullanın."))
+    bulgular += _sonsuz_kafes_uyarilari(spec)
     # Kuresel duzenekte "yukseklik" diye bir kavram yoktur; kabuk yaricaplari
     # geometriyi tamamen belirler. Orada 2B uyarisi vermek yanlis olurdu.
     if not sema_kor_yuksekligi(kor) and kor.get("tur") != "kuresel":
         bulgular.append(Bulgu(
             "bilgi", "kor",
             "yükseklik verilmemiş — model eksenel yönde sonsuz (2B) kabul ediliyor"))
+    return bulgular
+
+
+def _katman_konum_adlari(kor):
+    """Katman basina haritadaki konumlarin dolgu adlari: [[ad, ...], ...].
+    Katmanin kendi dolgusu (butun konumlarda ayni) tek bir ad sayilir."""
+    harfler = [h for satir in kor.get("harita") or [] for h in satir]
+    ana = kor.get("anahtar") or {}
+    katmanlar = sema.eksenel_katmanlar(kor) or [(None, None, {})]
+    sonuc = []
+    for _z0, _z1, k in katmanlar:
+        if k.get("dolgu") and not k.get("anahtar"):
+            sonuc.append([k["dolgu"]])
+            continue
+        esleme = dict(ana)
+        esleme.update(k.get("anahtar") or {})
+        sonuc.append([esleme.get(h) for h in harfler])
+    return sonuc
+
+
+def _karisik_katmanlar(kor):
+    """En az bir katmanda haritada birden fazla farkli dolgu var mi?"""
+    return any(len(set(adlar)) > 1 for adlar in _katman_konum_adlari(kor))
+
+
+def _sonsuz_kafes_uyarilari(spec):
+    """
+    Yansitici yan sinirin sonsuz kafes anlami ne zaman gecerli?
+
+    * Kilifli tek demet: sinir kilifin DIS yuzundedir, kor adimi kurulmaz;
+      demetler arasi sogutucu (SFR'da sodyum) modelde yoktur.
+    * Altigen tam kor + reflective kirik cizgi sinir: her demet komsusunun
+      aynadaki goruntusuyle cevrilir. Bu yalniz AYNI ve simetrik demetlerde
+      sonsuz kafese esittir; karisik haritada (bir katmanda birden fazla
+      dolgu) sinir fiziksel bir simetri duzlemi degildir.
+    """
+    kor = spec["kor"]
+    tur = kor.get("tur")
+    bulgular = []
+    if tur == "tek_demet":
+        d = demet_bul(spec, kor.get("demet") or "")
+        if d is not None and akor.kilif(d):
+            bulgular.append(Bulgu(
+                "uyari", "kor",
+                _("kılıflı tek demette sınır kılıfın dış yüzündedir — demetler arası "
+                  "boşluk (soğutucu) modelde yok"),
+                _("SFR tek demet için halka=1 altigen_kafes kullanın (demetler arası "
+                  "boşluk): demet adımı kılıf dış ölçüsünden büyük verilir ve aradaki "
+                  "boşluk demetin dış dolgusuyla dolar.")))
+    elif (tur == "altigen_kafes" and (kor.get("sinir") or {}).get("yan") == "reflective"
+          and not (kor.get("yansitici") or {}).get("var") and _karisik_katmanlar(kor)):
+        bulgular.append(Bulgu(
+            "uyari", "kor",
+            _("yan sınır Yansıtıcı ve haritada birden fazla demet türü var — sonsuz "
+              "kafes eşdeğerliği yalnız aynı ve simetrik demetlerde geçerli"),
+            _("Kırık çizgi sınırda her demet komşusunun aynadaki görüntüsüyle çevrilir; "
+              "karışık bir haritada bu gerçek bir simetri düzlemi değildir. Tam kor "
+              "için yansıtıcı kuşak ve Vakum sınır kullanın.")))
     return bulgular
 
 
