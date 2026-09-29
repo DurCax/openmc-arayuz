@@ -37,9 +37,6 @@ import os
 import sys
 import time
 
-import matplotlib
-matplotlib.use("QtAgg")
-from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
 
 from PySide6 import QtCore, QtGui, QtWidgets
@@ -47,6 +44,7 @@ from PySide6 import QtCore, QtGui, QtWidgets
 from cekirdek import tukenme as _tk
 from cekirdek.ceviri import _
 from cekirdek.gunluk import kaydedici
+from arayuz.analiz.tuval import Tuval, canli_mi
 from arayuz.tukenme_sonuc import SonucBolumu
 from arayuz.nuklid_secici import NuklidSecici
 from arayuz.ortak import BosDurum, GelismisBolum, SekmeTabani, cumle_basi, sayi
@@ -212,7 +210,7 @@ class TukenmeSekmesi(SekmeTabani, SonucBolumu):
         self.izlenen.secim_degisti.connect(self._izlenen_degisti)
 
         self.figur = Figure(figsize=(5, 4.2), tight_layout=True)
-        self.tuval = FigureCanvasQTAgg(self.figur)
+        self.tuval = Tuval(self.figur)
         self.tuval.setFixedHeight(380)
         self.eksen_k = self.figur.add_subplot(211)
         self.eksen_n = self.figur.add_subplot(212)
@@ -708,6 +706,20 @@ class TukenmeSekmesi(SekmeTabani, SonucBolumu):
         self._sonuc_goster(s, (h5, copy.deepcopy(self._kosu_spec or self.spec)))
         self.sure_etiket.setText("Tamamlandı: %s" % _sure(time.time() - self._t0))
         self.durum.emit("Tükenme tamamlandı", True)
+
+    # ==================================================================
+    # kapanis
+    # ==================================================================
+    def closeEvent(self, olay):                        # noqa: N802 (Qt API)
+        """
+        Sekme kapanirken ARKADA bir sey birakilmaz: suren okuma beklenir ve
+        kuyruktaki matplotlib cizimi iptal edilir. Ikisi de birakilirsa sekme
+        silindikten sonra olu C++ nesnesine gidip sureci dusuruyordu
+        (bkz. arayuz/analiz/tuval.py).
+        """
+        self.bekle()
+        self.tuval.cizimi_iptal_et()
+        super().closeEvent(olay)
 
 
 def _cumle(metin):

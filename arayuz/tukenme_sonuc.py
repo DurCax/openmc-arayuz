@@ -23,6 +23,7 @@ import time
 
 from PySide6 import QtCore, QtWidgets
 
+from arayuz.analiz.tuval import canli_mi
 from cekirdek import nuklidler as _nk
 from cekirdek import tukenme as _tk
 from cekirdek.ceviri import _
@@ -175,7 +176,7 @@ class SonucBolumu:
         Dizinde bir sonuc varsa gosterir. Dosya degismediyse tekrar okumaz:
         sekme her tazelendiginde 3.7 MB'lik sonucu okumak gereksiz.
         """
-        if self._surec is not None or not self.spec:
+        if not self.canli_mi() or self._surec is not None or not self.spec:
             return
         dizin = self._okuma_dizini()
         h5 = os.path.join(dizin, "depletion_results.h5")
@@ -218,7 +219,16 @@ class SonucBolumu:
         self._gorunum_guncelle()
         self._isci.start()
 
+    def canli_mi(self):
+        """Sekmenin C++ nesnesi duruyor mu. Arka plandaki okuma, sekme
+        silindikten SONRA bitebilir (sayfa degisti / uygulama kapaniyor);
+        sonucu olu widget'lara yazmak sureci dusururdu."""
+        return canli_mi(self)
+
     def _onceki_geldi(self, anahtar, sonuc):
+        if not self.canli_mi():
+            _log.debug("tükenme sekmesi silindi; önceki sonuç yok sayıldı")
+            return
         if self._okuma_kusagi is not None and self._okuma_kusagi != self._kusak:
             return                              # onceki projenin okumasi: atilir
         if self._surec is not None:
@@ -282,6 +292,8 @@ class SonucBolumu:
     # sonuclar
     # ==================================================================
     def _grafik_bos(self):
+        if not self.canli_mi():
+            return
         grafik_bos(self.eksen_k, self.eksen_n)
         self.tuval.draw_idle()
 
@@ -296,6 +308,9 @@ class SonucBolumu:
     def _sonuc_goster(self, s, kaynak=None):
         """s: sonuc_oku() ciktisi. kaynak: (h5, okuma spec'i) -- secim degisince
         ayni dosyadan yeniden okumak icin (None: onceki kaynak korunur)."""
+        if not self.canli_mi():
+            _log.debug("tükenme sekmesi silindi; sonuç gösterilmedi")
+            return
         if kaynak is not None:
             self._kaynak = kaynak
         self._sonuc = s
@@ -309,6 +324,8 @@ class SonucBolumu:
 
     def _bulunamayan_yaz(self, bulunamayan):
         """Sonucta olmayan izlenen adlar: eskiden SESSIZCE atlaniyordu."""
+        if not self.canli_mi():
+            return
         parcalar = []
         for ad in bulunamayan:
             onerilen = _nk.oneri(ad, self.izlenen.adlar())
@@ -347,6 +364,9 @@ class SonucBolumu:
 
     def _secim_geldi(self, anahtar, sonuc):
         self._secim_okunuyor = False
+        if not self.canli_mi():
+            _log.debug("tükenme sekmesi silindi; seçim sonucu yok sayıldı")
+            return
         if anahtar[0] != self._kusak or self._surec is not None or self._kaynak is None:
             return                                  # proje degisti ya da kosu basladi
         if self._secim_bekliyor:
