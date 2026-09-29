@@ -67,6 +67,7 @@ ZINCIR_GEREKTIREN = frozenset({
     "test_nuklid_secici:test_dogrulama_yazim_hatasi",
     "test_nuklid_secici:test_sekme_onceki_sonuc_yeni_secim",
     "test_dogrulama:test_dogrulama_temiz",           # pwr_tukenme ornegi zinciri denetler
+    "test_dogrulama_kapisi:test_ornekler_kapidan_gecer",  # ayni: pwr_tukenme (D1-C, CI taklidi)
     "test_tukenme_temel:test_tukenme_dogrulama",
     "test_tukenme_temel:test_zincir_butunlugu",
     "test_tukenme_temel:test_tukenme_hacimleri",
@@ -170,13 +171,47 @@ def gecici(tmp_path):
 
 def pytest_collection_modifyitems(config, items):
     veri, zincir = veri_var(), zincir_var()
-    atla_veri = pytest.mark.skip(reason="nukleer veri yok (OPENMC_CROSS_SECTIONS)")
-    atla_zincir = pytest.mark.skip(reason="tukenme zinciri yok (OPENMC_CHAIN_FILE)")
     for oge in items:
-        if not veri and oge.get_closest_marker("veri"):
-            oge.add_marker(atla_veri)
-        elif not zincir and oge.get_closest_marker("zincir"):
-            oge.add_marker(atla_zincir)
+        neden = atlama_nedeni(veri, zincir, oge.get_closest_marker("veri") is not None,
+                              oge.get_closest_marker("zincir") is not None)
+        if neden:
+            oge.add_marker(pytest.mark.skip(reason=neden))
+
+
+def atlama_nedeni(veri, zincir, veri_ister, zincir_ister):
+    """Eksik olan HER kaynagi soyleyen atlama metni; atlanmayacaksa None."""
+    eksik = []
+    if veri_ister and not veri:
+        eksik.append("nukleer veri yok (OPENMC_CROSS_SECTIONS)")
+    if zincir_ister and not zincir:
+        eksik.append("tukenme zinciri yok (OPENMC_CHAIN_FILE)")
+    return "; ".join(eksik) or None
+
+
+def _gecerli_dizin():
+    """os.getcwd(); dizin silinmisse None (getcwd FileNotFoundError verir)."""
+    try:
+        return os.getcwd()
+    except FileNotFoundError:
+        return None
+
+
+@pytest.fixture(autouse=True)
+def _calisma_dizini_korumasi(request):
+    """Test calisma dizinini degistirip birakirsa (ya da icinde bulundugu
+    gecici dizini silerse) ayni xdist iscisindeki SONRAKI testler
+    os.getcwd() FileNotFoundError ile kalir. Dizin her testten sonra geri
+    alinir ve sorumlu test bir uyari ile adlandirilir."""
+    once = os.getcwd()
+    yield
+    sonra = _gecerli_dizin()
+    if sonra == once:
+        return
+    os.chdir(once)
+    import warnings
+    warnings.warn("%s calisma dizinini degistirip birakti (%s); geri alindi"
+                  % (request.node.nodeid, sonra or "silinmis dizin"),
+                  pytest.PytestWarning)
 
 
 @pytest.fixture(autouse=True)
