@@ -33,81 +33,21 @@ class SayfalarMixin(object):
         etiket.setVisible(bool(metin))
 
     def _cubuk_sayfa(self):
+        """Secili cubugun sayfasi: "Çubuk" karti + "Radyal bölgeler" karti."""
         w = QtWidgets.QWidget()
         self.c_ad = QtWidgets.QLineEdit()
         self.c_ad.editingFinished.connect(lambda: self._ad_degisti("cubuk"))
         self.c_ad_hata = self._hata_etiketi()
+        self._kontrol_alanlari()
+        self._bolge_tablosu()
+        dugme = self._bolge_eylemleri()
+        form = self._cubuk_formu()
 
-        # --- kontrol cubugu alanlari ---
-        self.c_tur = QtWidgets.QComboBox()
-        self.c_emici = QtWidgets.QComboBox()
-        self.c_izleyici = QtWidgets.QComboBox()
-        self.c_daldirma = sayi(0.0, 2, 0.0, 100.0, 5.0, "%")
-        self.c_daldirma_kaydirici = QtWidgets.QSlider(QtCore.Qt.Horizontal)
-        self.c_daldirma_kaydirici.setRange(0, 1000)
-        self.c_uc_etiket = QtWidgets.QLabel("-")
-        self.c_kontrol_etiketleri = {}
-
-        self.c_tablo = QtWidgets.QTableWidget(0, 3)
-        self.c_tablo.setHorizontalHeaderLabels(["Dış yarıçap", "Malzeme", "Bölge"])
-        bas = self.c_tablo.horizontalHeader()
-        bas.setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeToContents)
-        bas.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
-        bas.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
-        self.c_tablo.verticalHeader().setVisible(False)
-        self.c_tablo.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
-        self.c_tablo.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
-        self.c_tablo.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
-        self.c_tablo.currentCellChanged.connect(lambda *_: self._bolge_dugmeleri())
-        self._satir_takibi = _SatirTakibi(self.c_tablo)
-
-        self.d_bolge_ekle = bl.ikincil_dugme(_("Bölge ekle"), "plus")
-        self.d_bolge_sil = bl.duz_dugme(_("Bölge sil"), "trash")
-        self.d_ice = bl.duz_dugme(_("İçe taşı"), "chevron-left")
-        self.d_disa = bl.duz_dugme(_("Dışa taşı"), "chevron-right")
-        self.d_bolge_ekle.setToolTip("Dış bölgenin hemen içine yeni bir bölge ekler.")
-        self.d_ice.setToolTip("Seçili bölgenin malzemesini bir içteki bölgeyle değiştirir; "
-                              "yarıçaplar yerinde kalır.")
-        self.d_disa.setToolTip("Seçili bölgenin malzemesini bir dıştaki bölgeyle değiştirir; "
-                               "yarıçaplar yerinde kalır. Dış bölgeye taşınmaz.")
-        self.d_bolge_ekle.clicked.connect(self._bolge_ekle)
-        self.d_bolge_sil.clicked.connect(self._bolge_sil)
-        self.d_ice.clicked.connect(lambda: self._bolge_tasi(-1))
-        self.d_disa.clicked.connect(lambda: self._bolge_tasi(+1))
-        dugme = sd.satir(self.d_bolge_ekle, self.d_bolge_sil, self.d_ice, self.d_disa)
-
-        form = sd.form()
-        form.addRow("Ad:", self.c_ad)
-        form.addRow("", self.c_ad_hata)
-        self.e_tur = QtWidgets.QLabel("Tür:")
-        form.addRow(self.e_tur, self.c_tur)
-        for etiket, alan, anahtar in (
-                ("Emici bölge:", self.c_emici, "emici"),
-                ("İzleyici malzeme:", self.c_izleyici, "izleyici")):
-            e = QtWidgets.QLabel(etiket)
-            self.c_kontrol_etiketleri[anahtar] = e
-            form.addRow(e, alan)
-        self.c_emici.setToolTip("Eksenel olarak daldırılan (emici) bölge. Dış bölge seçilemez.")
-        self.c_izleyici.setToolTip(
-            "Emici bölgenin çubuk ucunun altında kalan kısmını dolduran malzeme "
-            "(follower). Yakıt ve emici malzemeler listelenmez.")
-        dald = QtWidgets.QWidget()
-        dd = QtWidgets.QHBoxLayout(dald)
-        dd.setContentsMargins(0, 0, 0, 0)
-        dd.addWidget(self.c_daldirma)
-        dd.addWidget(self.c_daldirma_kaydirici, 1)
-        e = QtWidgets.QLabel("Daldırma:")
-        self.c_kontrol_etiketleri["daldirma"] = e
-        form.addRow(e, dald)
-        e = QtWidgets.QLabel("Uç konumu:")
-        self.c_kontrol_etiketleri["uc"] = e
-        form.addRow(e, self.c_uc_etiket)
-
-        self.c_kontrol_not = ipucu(
+        self.c_kontrol_not = ipucu(_(
             "Kontrol çubuğu yukarıdan daldırılır: %0 tamamen çekilmiş, %100 tamamen "
             "dalmış. Emici bölgenin uç altında kalan kısmı izleyici malzemeyle dolar. "
             "Kritik çubuk konumunu bulmak için Analiz sekmesinde 'Kritik arama' ile "
-            "'Kontrol çubuğu daldırma' parametresini kullanın.")
+            "'Kontrol çubuğu daldırma' parametresini kullanın."))
         self.c_eksik = self._hata_etiketi()
         self.c_sira_uyari = self._hata_etiketi()
 
@@ -134,6 +74,76 @@ class SayfalarMixin(object):
         self.c_daldirma.valueChanged.connect(self._daldirma_degisti)
         self.c_daldirma_kaydirici.valueChanged.connect(self._kaydirici_degisti)
         return w
+
+    def _kontrol_alanlari(self):
+        """Yalnizca kontrol cubugunda gorunen alanlar (tur, emici, daldirma)."""
+        self.c_tur = QtWidgets.QComboBox()
+        self.c_emici = QtWidgets.QComboBox()
+        self.c_izleyici = QtWidgets.QComboBox()
+        self.c_daldirma = sayi(0.0, 2, 0.0, 100.0, 5.0, "%")
+        self.c_daldirma_kaydirici = QtWidgets.QSlider(QtCore.Qt.Horizontal)
+        self.c_daldirma_kaydirici.setRange(0, 1000)
+        self.c_uc_etiket = QtWidgets.QLabel("-")
+        self.c_kontrol_etiketleri = {}
+
+    def _bolge_tablosu(self):
+        self.c_tablo = QtWidgets.QTableWidget(0, 3)
+        self.c_tablo.setHorizontalHeaderLabels(["Dış yarıçap", "Malzeme", "Bölge"])
+        bas = self.c_tablo.horizontalHeader()
+        bas.setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeToContents)
+        bas.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
+        bas.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
+        self.c_tablo.verticalHeader().setVisible(False)
+        self.c_tablo.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.c_tablo.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
+        self.c_tablo.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
+        self.c_tablo.currentCellChanged.connect(lambda *_: self._bolge_dugmeleri())
+        self.c_tablo.setAlternatingRowColors(True)
+        self.c_tablo.setShowGrid(False)
+        self.c_tablo.horizontalHeader().setHighlightSections(False)
+        self._satir_takibi = _SatirTakibi(self.c_tablo)
+
+    def _bolge_eylemleri(self):
+        self.d_bolge_ekle = bl.ikincil_dugme(_("Bölge ekle"), "plus", _(
+            "Dış bölgenin hemen içine yeni bir bölge ekler."))
+        self.d_bolge_sil = bl.duz_dugme(_("Bölge sil"), "trash")
+        self.d_ice = bl.duz_dugme(_("İçe taşı"), "chevron-left", _(
+            "Seçili bölgenin malzemesini bir içteki bölgeyle değiştirir; "
+            "yarıçaplar yerinde kalır."))
+        self.d_disa = bl.duz_dugme(_("Dışa taşı"), "chevron-right", _(
+            "Seçili bölgenin malzemesini bir dıştaki bölgeyle değiştirir; "
+            "yarıçaplar yerinde kalır. Dış bölgeye taşınmaz."))
+        self.d_bolge_ekle.clicked.connect(self._bolge_ekle)
+        self.d_bolge_sil.clicked.connect(self._bolge_sil)
+        self.d_ice.clicked.connect(lambda: self._bolge_tasi(-1))
+        self.d_disa.clicked.connect(lambda: self._bolge_tasi(+1))
+        return sd.satir(self.d_bolge_ekle, self.d_bolge_sil, self.d_ice, self.d_disa)
+
+    def _cubuk_formu(self):
+        form = sd.form()
+        form.addRow(_("Ad"), self.c_ad)
+        form.addRow("", self.c_ad_hata)
+        self.e_tur = QtWidgets.QLabel(_("Tür"))
+        form.addRow(self.e_tur, self.c_tur)
+        for etiket, alan, anahtar in ((_("Emici bölge"), self.c_emici, "emici"),
+                                      (_("İzleyici malzeme"), self.c_izleyici, "izleyici")):
+            e = QtWidgets.QLabel(etiket)
+            self.c_kontrol_etiketleri[anahtar] = e
+            form.addRow(e, alan)
+        self.c_emici.setToolTip(_(
+            "Eksenel olarak daldırılan (emici) bölge. Dış bölge seçilemez."))
+        self.c_izleyici.setToolTip(_(
+            "Emici bölgenin çubuk ucunun altında kalan kısmını dolduran malzeme "
+            "(follower). Yakıt ve emici malzemeler listelenmez."))
+        dald = sd.satir(self.c_daldirma, self.c_daldirma_kaydirici, esnek=False)
+        dald.layout().setStretchFactor(self.c_daldirma_kaydirici, 1)
+        e = QtWidgets.QLabel(_("Daldırma"))
+        self.c_kontrol_etiketleri["daldirma"] = e
+        form.addRow(e, dald)
+        e = QtWidgets.QLabel(_("Uç konumu"))
+        self.c_kontrol_etiketleri["uc"] = e
+        form.addRow(e, self.c_uc_etiket)
+        return form
 
     def _plaka_sayfa(self):
         w = QtWidgets.QWidget()
