@@ -1,0 +1,1558 @@
+{
+  "surum": 1,
+  "ad": "BEAVRS benzeri PWR koru (193 demet, HZP)",
+  "aciklama": "BEAVRS benzeri 4 çevrimli Westinghouse PWR koru, 1. çevrim, sıcak sıfır güç (HZP), bütün kontrol çubukları çekilmiş (ARO), 975 ppm bor: 193 adet 17×17 demet, üç zenginlik (%1.6: 65, %2.4: 64, %3.1: 64 demet) ve 1268 Pyrex (borosilikat cam, B-10) yanabilir zehir çubuğu.\n\nÖlçüler BEAVRS'tan: pin adımı 1.25984 cm, demet adımı 21.50364 cm, pelet r 0.39218, kılıf 0.40005/0.45720, kılavuz boru 0.56134/0.60198, Pyrex çubuğu 6 bölgeli (0.214–0.48387 cm); yakıt yoğunlukları 10.313/10.297/10.302 g/cm³, su 0.73986 g/cm³, bütün malzemeler 566.483 K. Zenginlik ve Pyrex yerleşimi BEAVRS core.py / assemblies.py'den birebir.\nBASİTLEŞTİRMELER (bu yüzden 'benzeri'): ızgaralar, nozullar, plenum, enstrüman tüpleri, çelik perde (baffle), kor fıçısı, nötron kalkanları ve basınç kabı YOK; kor 20 cm borlu su ile çevrili, eksenel 365.76 cm aktif yakıt + 20 cm su, dış yüzeyler vakum. Ölçülen kritik bor (975 ppm, k = 1) bu model için referans DEĞİLDİR (çelik perde ve yapıların yokluğu k'yı birkaç yüz pcm değiştirir).\nGüç dağılımı üç yakıt türü için (guc_dagilimi.cubuklar; çok türlü güç Ajan 8b ile gelir, o zamana kadar yalnız %3.1 çubukları sayılır). Varsayılan hassasiyet 'Hızlı deneme'; ≥5 tohumlu ileri ayar docs/ORNEKLER.md'de.",
+  "malzemeler": [
+    {
+      "ad": "uo2_a",
+      "gorunen_ad": "UO2 1.6% (10.31 g/cm³)",
+      "yogunluk": {
+        "birim": "atom/b-cm",
+        "deger": 0.0690098238
+      },
+      "sicaklik": 566.483,
+      "bilesim": [
+        {
+          "tur": "nuklid",
+          "isim": "O16",
+          "miktar": 0.04589708119,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "O17",
+          "miktar": 1.7436482e-05,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "O18",
+          "miktar": 9.2031501e-05,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "U234",
+          "miktar": 3.013069e-06,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "U235",
+          "miktar": 0.000375026458,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "U238",
+          "miktar": 0.02262523506,
+          "birim": "ao"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        240,
+        170,
+        60
+      ]
+    },
+    {
+      "ad": "uo2_b",
+      "gorunen_ad": "UO2 2.4% (10.30 g/cm³)",
+      "yogunluk": {
+        "birim": "atom/b-cm",
+        "deger": 0.0689094335
+      },
+      "sicaklik": 566.483,
+      "bilesim": [
+        {
+          "tur": "nuklid",
+          "isim": "O16",
+          "miktar": 0.045830313572,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "O17",
+          "miktar": 1.7411117e-05,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "O18",
+          "miktar": 9.189762e-05,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "U234",
+          "miktar": 4.484242e-06,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "U235",
+          "miktar": 0.00055813832,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "U238",
+          "miktar": 0.022407188593,
+          "birim": "ao"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        214,
+        96,
+        42
+      ]
+    },
+    {
+      "ad": "uo2_c",
+      "gorunen_ad": "UO2 3.1% (10.30 g/cm³)",
+      "yogunluk": {
+        "birim": "atom/b-cm",
+        "deger": 0.0689429216
+      },
+      "sicaklik": 566.483,
+      "bilesim": [
+        {
+          "tur": "nuklid",
+          "isim": "O16",
+          "miktar": 0.045852585842,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "O17",
+          "miktar": 1.7419578e-05,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "O18",
+          "miktar": 9.194228e-05,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "U234",
+          "miktar": 5.798734e-06,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "U235",
+          "miktar": 0.000721748753,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "U238",
+          "miktar": 0.022253426363,
+          "birim": "ao"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        180,
+        50,
+        30
+      ]
+    },
+    {
+      "ad": "su_borlu",
+      "gorunen_ad": "Su 566.5 K, 975 ppm B (0.73986 g/cm³)",
+      "yogunluk": {
+        "birim": "atom/b-cm",
+        "deger": 0.0742363018
+      },
+      "sicaklik": 566.483,
+      "bilesim": [
+        {
+          "tur": "nuklid",
+          "isim": "B10",
+          "miktar": 7.971377e-06,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "B11",
+          "miktar": 3.2247478e-05,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "H1",
+          "miktar": 0.049456351743,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "H2",
+          "miktar": 7.703532e-06,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "O16",
+          "miktar": 0.024673180251,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "O17",
+          "miktar": 9.373438e-06,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "O18",
+          "miktar": 4.9473948e-05,
+          "birim": "ao"
+        }
+      ],
+      "sab": [
+        "c_H_in_H2O"
+      ],
+      "renk": [
+        90,
+        150,
+        220
+      ]
+    },
+    {
+      "ad": "zirkaloy4",
+      "gorunen_ad": "Zircaloy-4",
+      "yogunluk": {
+        "birim": "atom/b-cm",
+        "deger": 0.0434390131
+      },
+      "sicaklik": 566.483,
+      "bilesim": [
+        {
+          "tur": "nuklid",
+          "isim": "Cr50",
+          "miktar": 3.29618e-06,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Cr52",
+          "miktar": 6.3563556e-05,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Cr53",
+          "miktar": 7.207597e-06,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Cr54",
+          "miktar": 1.794123e-06,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Fe54",
+          "miktar": 8.66983e-06,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Fe56",
+          "miktar": 0.000136097796,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Fe57",
+          "miktar": 3.143092e-06,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Fe58",
+          "miktar": 4.18288e-07,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "O16",
+          "miktar": 0.000307444352,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "O17",
+          "miktar": 1.16799e-07,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "O18",
+          "miktar": 6.16479e-07,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Sn112",
+          "miktar": 4.673521e-06,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Sn114",
+          "miktar": 3.179922e-06,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Sn115",
+          "miktar": 1.638141e-06,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Sn116",
+          "miktar": 7.0054638e-05,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Sn117",
+          "miktar": 3.7002725e-05,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Sn118",
+          "miktar": 0.000116693489,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Sn119",
+          "miktar": 4.1387162e-05,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Sn120",
+          "miktar": 0.000156972497,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Sn122",
+          "miktar": 2.2307632e-05,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Sn124",
+          "miktar": 2.7896585e-05,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Zr90",
+          "miktar": 0.021827579513,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Zr91",
+          "miktar": 0.004760066903,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Zr92",
+          "miktar": 0.007275859838,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Zr94",
+          "miktar": 0.007373436967,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Zr96",
+          "miktar": 0.001187895484,
+          "birim": "ao"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        160,
+        160,
+        170
+      ]
+    },
+    {
+      "ad": "ss304",
+      "gorunen_ad": "SS304",
+      "yogunluk": {
+        "birim": "atom/b-cm",
+        "deger": 0.0879324749
+      },
+      "sicaklik": 566.483,
+      "bilesim": [
+        {
+          "tur": "nuklid",
+          "isim": "Cr50",
+          "miktar": 0.000767783556,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Cr52",
+          "miktar": 0.014805941619,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Cr53",
+          "miktar": 0.001678874928,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Cr54",
+          "miktar": 0.000417907505,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Fe54",
+          "miktar": 0.003461956866,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Fe56",
+          "miktar": 0.054345319131,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Fe57",
+          "miktar": 0.001255070419,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Fe58",
+          "miktar": 0.000167026833,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Mn55",
+          "miktar": 0.00176044823,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Ni58",
+          "miktar": 0.005608895104,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Ni60",
+          "miktar": 0.002160536352,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Ni61",
+          "miktar": 9.3917019e-05,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Ni62",
+          "miktar": 0.000299448554,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Ni64",
+          "miktar": 7.6260719e-05,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Si28",
+          "miktar": 0.000952813801,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Si29",
+          "miktar": 4.8381166e-05,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Si30",
+          "miktar": 3.1893081e-05,
+          "birim": "ao"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        120,
+        120,
+        130
+      ]
+    },
+    {
+      "ad": "helyum",
+      "gorunen_ad": "He (boşluk)",
+      "yogunluk": {
+        "birim": "atom/b-cm",
+        "deger": 0.0002404432
+      },
+      "sicaklik": 566.483,
+      "bilesim": [
+        {
+          "tur": "nuklid",
+          "isim": "He3",
+          "miktar": 4.81e-10,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "He4",
+          "miktar": 0.000240442733,
+          "birim": "ao"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        230,
+        230,
+        200
+      ]
+    },
+    {
+      "ad": "hava",
+      "gorunen_ad": "Hava",
+      "yogunluk": {
+        "birim": "atom/b-cm",
+        "deger": 2.56344e-05
+      },
+      "sicaklik": 566.483,
+      "bilesim": [
+        {
+          "tur": "nuklid",
+          "isim": "Ar36",
+          "miktar": 2.89e-10,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Ar38",
+          "miktar": 5.4e-11,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Ar40",
+          "miktar": 8.6297e-08,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "C12",
+          "miktar": 8.247e-09,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "C13",
+          "miktar": 9.2e-11,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "N14",
+          "miktar": 2.0606141e-05,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "N15",
+          "miktar": 7.5758e-08,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "O16",
+          "miktar": 4.845961e-06,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "O17",
+          "miktar": 1.841e-09,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "O18",
+          "miktar": 9.717e-09,
+          "birim": "ao"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        240,
+        240,
+        240
+      ]
+    },
+    {
+      "ad": "pyrex",
+      "gorunen_ad": "Borosilikat cam (Pyrex, B-10)",
+      "yogunluk": {
+        "birim": "atom/b-cm",
+        "deger": 0.0715956492
+      },
+      "sicaklik": 566.483,
+      "bilesim": [
+        {
+          "tur": "nuklid",
+          "isim": "Al27",
+          "miktar": 0.00173520614,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "B10",
+          "miktar": 0.000965064216,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "B11",
+          "miktar": 0.00391885048,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "O16",
+          "miktar": 0.046513974207,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "O17",
+          "miktar": 1.7670842e-05,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "O18",
+          "miktar": 9.3268477e-05,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Si28",
+          "miktar": 0.016925635636,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Si29",
+          "miktar": 0.000859435485,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Si30",
+          "miktar": 0.000566543713,
+          "birim": "ao"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        60,
+        170,
+        90
+      ]
+    }
+  ],
+  "cubuklar": [
+    {
+      "ad": "yakit_a",
+      "tur": "silindirik",
+      "bolgeler": [
+        {
+          "r": 0.39218,
+          "malzeme": "uo2_a"
+        },
+        {
+          "r": 0.40005,
+          "malzeme": "helyum"
+        },
+        {
+          "r": 0.4572,
+          "malzeme": "zirkaloy4"
+        },
+        {
+          "r": null,
+          "malzeme": "su_borlu"
+        }
+      ]
+    },
+    {
+      "ad": "yakit_b",
+      "tur": "silindirik",
+      "bolgeler": [
+        {
+          "r": 0.39218,
+          "malzeme": "uo2_b"
+        },
+        {
+          "r": 0.40005,
+          "malzeme": "helyum"
+        },
+        {
+          "r": 0.4572,
+          "malzeme": "zirkaloy4"
+        },
+        {
+          "r": null,
+          "malzeme": "su_borlu"
+        }
+      ]
+    },
+    {
+      "ad": "yakit_c",
+      "tur": "silindirik",
+      "bolgeler": [
+        {
+          "r": 0.39218,
+          "malzeme": "uo2_c"
+        },
+        {
+          "r": 0.40005,
+          "malzeme": "helyum"
+        },
+        {
+          "r": 0.4572,
+          "malzeme": "zirkaloy4"
+        },
+        {
+          "r": null,
+          "malzeme": "su_borlu"
+        }
+      ]
+    },
+    {
+      "ad": "kilavuz_boru",
+      "tur": "silindirik",
+      "bolgeler": [
+        {
+          "r": 0.56134,
+          "malzeme": "su_borlu"
+        },
+        {
+          "r": 0.60198,
+          "malzeme": "zirkaloy4"
+        },
+        {
+          "r": null,
+          "malzeme": "su_borlu"
+        }
+      ]
+    },
+    {
+      "ad": "pyrex_cubugu",
+      "tur": "silindirik",
+      "bolgeler": [
+        {
+          "r": 0.214,
+          "malzeme": "hava"
+        },
+        {
+          "r": 0.23051,
+          "malzeme": "ss304"
+        },
+        {
+          "r": 0.2413,
+          "malzeme": "helyum"
+        },
+        {
+          "r": 0.42672,
+          "malzeme": "pyrex"
+        },
+        {
+          "r": 0.43688,
+          "malzeme": "helyum"
+        },
+        {
+          "r": 0.48387,
+          "malzeme": "ss304"
+        },
+        {
+          "r": 0.56134,
+          "malzeme": "su_borlu"
+        },
+        {
+          "r": 0.60198,
+          "malzeme": "zirkaloy4"
+        },
+        {
+          "r": null,
+          "malzeme": "su_borlu"
+        }
+      ]
+    }
+  ],
+  "plakalar": [],
+  "demetler": [
+    {
+      "ad": "dc_yok",
+      "tur": "kare",
+      "adim": 1.25984,
+      "boyut": [
+        17,
+        17
+      ],
+      "harita": [
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyykyykyykyyyyy",
+        "yyykyyyyyyyyykyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yykyykyykyykyykyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yykyykyykyykyykyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yykyykyykyykyykyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyykyyyyyyyyykyyy",
+        "yyyyykyykyykyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy"
+      ],
+      "anahtar": {
+        "y": "yakit_c",
+        "k": "kilavuz_boru"
+      },
+      "dolgu_disi": "su_borlu"
+    },
+    {
+      "ad": "dc_6s",
+      "tur": "kare",
+      "adim": 1.25984,
+      "boyut": [
+        17,
+        17
+      ],
+      "harita": [
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyykyykyykyyyyy",
+        "yyykyyyyyyyyykyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yykyykyykyykyykyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yykyykyykyykyykyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yypyykyykyykyypyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyypyyyyyyyyypyyy",
+        "yyyyypyykyypyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy"
+      ],
+      "anahtar": {
+        "y": "yakit_c",
+        "k": "kilavuz_boru",
+        "p": "pyrex_cubugu"
+      },
+      "dolgu_disi": "su_borlu"
+    },
+    {
+      "ad": "dc_16",
+      "tur": "kare",
+      "adim": 1.25984,
+      "boyut": [
+        17,
+        17
+      ],
+      "harita": [
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyypyypyypyyyyy",
+        "yyypyyyyyyyyypyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yypyykyykyykyypyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yypyykyykyykyypyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yypyykyykyykyypyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyypyyyyyyyyypyyy",
+        "yyyyypyypyypyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy"
+      ],
+      "anahtar": {
+        "y": "yakit_c",
+        "k": "kilavuz_boru",
+        "p": "pyrex_cubugu"
+      },
+      "dolgu_disi": "su_borlu"
+    },
+    {
+      "ad": "da_yok",
+      "tur": "kare",
+      "adim": 1.25984,
+      "boyut": [
+        17,
+        17
+      ],
+      "harita": [
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyykyykyykyyyyy",
+        "yyykyyyyyyyyykyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yykyykyykyykyykyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yykyykyykyykyykyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yykyykyykyykyykyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyykyyyyyyyyykyyy",
+        "yyyyykyykyykyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy"
+      ],
+      "anahtar": {
+        "y": "yakit_a",
+        "k": "kilavuz_boru"
+      },
+      "dolgu_disi": "su_borlu"
+    },
+    {
+      "ad": "dc_20",
+      "tur": "kare",
+      "adim": 1.25984,
+      "boyut": [
+        17,
+        17
+      ],
+      "harita": [
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyypyypyypyyyyy",
+        "yyypyyyyyyyyypyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yypyypyykyypyypyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yypyykyykyykyypyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yypyypyykyypyypyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyypyyyyyyyyypyyy",
+        "yyyyypyypyypyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy"
+      ],
+      "anahtar": {
+        "y": "yakit_c",
+        "k": "kilavuz_boru",
+        "p": "pyrex_cubugu"
+      },
+      "dolgu_disi": "su_borlu"
+    },
+    {
+      "ad": "dc_15se",
+      "tur": "kare",
+      "adim": 1.25984,
+      "boyut": [
+        17,
+        17
+      ],
+      "harita": [
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyykyykyykyyyyy",
+        "yyykyyyyyyyyykyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yykyypyypyypyypyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yykyypyykyypyypyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yykyypyypyypyypyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyykyyyyyyyyypyyy",
+        "yyyyypyypyypyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy"
+      ],
+      "anahtar": {
+        "y": "yakit_c",
+        "k": "kilavuz_boru",
+        "p": "pyrex_cubugu"
+      },
+      "dolgu_disi": "su_borlu"
+    },
+    {
+      "ad": "db_16",
+      "tur": "kare",
+      "adim": 1.25984,
+      "boyut": [
+        17,
+        17
+      ],
+      "harita": [
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyypyypyypyyyyy",
+        "yyypyyyyyyyyypyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yypyykyykyykyypyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yypyykyykyykyypyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yypyykyykyykyypyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyypyyyyyyyyypyyy",
+        "yyyyypyypyypyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy"
+      ],
+      "anahtar": {
+        "y": "yakit_b",
+        "k": "kilavuz_boru",
+        "p": "pyrex_cubugu"
+      },
+      "dolgu_disi": "su_borlu"
+    },
+    {
+      "ad": "dc_15sw",
+      "tur": "kare",
+      "adim": 1.25984,
+      "boyut": [
+        17,
+        17
+      ],
+      "harita": [
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyykyykyykyyyyy",
+        "yyykyyyyyyyyykyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yypyypyypyypyykyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yypyypyykyypyykyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yypyypyypyypyykyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyypyyyyyyyyykyyy",
+        "yyyyypyypyypyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy"
+      ],
+      "anahtar": {
+        "y": "yakit_c",
+        "k": "kilavuz_boru",
+        "p": "pyrex_cubugu"
+      },
+      "dolgu_disi": "su_borlu"
+    },
+    {
+      "ad": "db_yok",
+      "tur": "kare",
+      "adim": 1.25984,
+      "boyut": [
+        17,
+        17
+      ],
+      "harita": [
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyykyykyykyyyyy",
+        "yyykyyyyyyyyykyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yykyykyykyykyykyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yykyykyykyykyykyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yykyykyykyykyykyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyykyyyyyyyyykyyy",
+        "yyyyykyykyykyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy"
+      ],
+      "anahtar": {
+        "y": "yakit_b",
+        "k": "kilavuz_boru"
+      },
+      "dolgu_disi": "su_borlu"
+    },
+    {
+      "ad": "db_12",
+      "tur": "kare",
+      "adim": 1.25984,
+      "boyut": [
+        17,
+        17
+      ],
+      "harita": [
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyypyykyypyyyyy",
+        "yyypyyyyyyyyypyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yypyykyykyykyypyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yykyykyykyykyykyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yypyykyykyykyypyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyypyyyyyyyyypyyy",
+        "yyyyypyykyypyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy"
+      ],
+      "anahtar": {
+        "y": "yakit_b",
+        "k": "kilavuz_boru",
+        "p": "pyrex_cubugu"
+      },
+      "dolgu_disi": "su_borlu"
+    },
+    {
+      "ad": "dc_6e",
+      "tur": "kare",
+      "adim": 1.25984,
+      "boyut": [
+        17,
+        17
+      ],
+      "harita": [
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyykyykyypyyyyy",
+        "yyykyyyyyyyyypyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yykyykyykyykyypyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yykyykyykyykyykyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yykyykyykyykyypyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyykyyyyyyyyypyyy",
+        "yyyyykyykyypyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy"
+      ],
+      "anahtar": {
+        "y": "yakit_c",
+        "k": "kilavuz_boru",
+        "p": "pyrex_cubugu"
+      },
+      "dolgu_disi": "su_borlu"
+    },
+    {
+      "ad": "dc_6w",
+      "tur": "kare",
+      "adim": 1.25984,
+      "boyut": [
+        17,
+        17
+      ],
+      "harita": [
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyypyykyykyyyyy",
+        "yyypyyyyyyyyykyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yypyykyykyykyykyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yykyykyykyykyykyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yypyykyykyykyykyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyypyyyyyyyyykyyy",
+        "yyyyypyykyykyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy"
+      ],
+      "anahtar": {
+        "y": "yakit_c",
+        "k": "kilavuz_boru",
+        "p": "pyrex_cubugu"
+      },
+      "dolgu_disi": "su_borlu"
+    },
+    {
+      "ad": "dc_15ne",
+      "tur": "kare",
+      "adim": 1.25984,
+      "boyut": [
+        17,
+        17
+      ],
+      "harita": [
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyypyypyypyyyyy",
+        "yyykyyyyyyyyypyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yykyypyypyypyypyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yykyypyykyypyypyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yykyypyypyypyypyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyykyyyyyyyyykyyy",
+        "yyyyykyykyykyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy"
+      ],
+      "anahtar": {
+        "y": "yakit_c",
+        "k": "kilavuz_boru",
+        "p": "pyrex_cubugu"
+      },
+      "dolgu_disi": "su_borlu"
+    },
+    {
+      "ad": "dc_15nw",
+      "tur": "kare",
+      "adim": 1.25984,
+      "boyut": [
+        17,
+        17
+      ],
+      "harita": [
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyypyypyypyyyyy",
+        "yyypyyyyyyyyykyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yypyypyypyypyykyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yypyypyykyypyykyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yypyypyypyypyykyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyykyyyyyyyyykyyy",
+        "yyyyykyykyykyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy"
+      ],
+      "anahtar": {
+        "y": "yakit_c",
+        "k": "kilavuz_boru",
+        "p": "pyrex_cubugu"
+      },
+      "dolgu_disi": "su_borlu"
+    },
+    {
+      "ad": "dc_6n",
+      "tur": "kare",
+      "adim": 1.25984,
+      "boyut": [
+        17,
+        17
+      ],
+      "harita": [
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyypyykyypyyyyy",
+        "yyypyyyyyyyyypyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yypyykyykyykyypyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yykyykyykyykyykyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yykyykyykyykyykyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyykyyyyyyyyykyyy",
+        "yyyyykyykyykyyyyy",
+        "yyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyy"
+      ],
+      "anahtar": {
+        "y": "yakit_c",
+        "k": "kilavuz_boru",
+        "p": "pyrex_cubugu"
+      },
+      "dolgu_disi": "su_borlu"
+    }
+  ],
+  "kor": {
+    "tur": "kare_kafes",
+    "cubuk": null,
+    "demet": null,
+    "plaka": null,
+    "adim": 21.50364,
+    "boyut": [
+      15,
+      15
+    ],
+    "harita": [
+      "ssssABABABAssss",
+      "ssAACDEDEDCAAss",
+      "sAFGDGDGDGDGHAs",
+      "sAGIGDJDJDGIGAs",
+      "ACDGDJDJDJDGDCA",
+      "KDGDJDJDJDJDGDL",
+      "AEDJDJDGDJDJDEA",
+      "KDGDJDGDGDJDGDL",
+      "AEDJDJDGDJDJDEA",
+      "KDGDJDJDJDJDGDL",
+      "ACDGDJDJDJDGDCA",
+      "sAGIGDJDJDGIGAs",
+      "sAMGDGDGDGDGNAs",
+      "ssAACDEDEDCAAss",
+      "ssssAOAOAOAssss"
+    ],
+    "halka_sayisi": 2,
+    "yonelim": "x",
+    "anahtar": {
+      "A": "dc_yok",
+      "B": "dc_6s",
+      "C": "dc_16",
+      "D": "da_yok",
+      "E": "dc_20",
+      "F": "dc_15se",
+      "G": "db_16",
+      "H": "dc_15sw",
+      "I": "db_yok",
+      "J": "db_12",
+      "K": "dc_6e",
+      "L": "dc_6w",
+      "M": "dc_15ne",
+      "N": "dc_15nw",
+      "O": "dc_6n",
+      "s": "su_borlu"
+    },
+    "yukseklik": null,
+    "yansitici": {
+      "var": true,
+      "kalinlik": 20.0,
+      "malzeme": "su_borlu"
+    },
+    "kabuklar": [],
+    "dolgu": null,
+    "kor_yaricap": 20.0,
+    "tambur": {
+      "sayi": 0,
+      "yaricap": 4.0,
+      "merkez_yaricap": 26.0,
+      "govde_malzeme": null,
+      "emici_malzeme": null,
+      "emici_ic_yaricap": 2.5,
+      "emici_aci": 120.0,
+      "donme": 0.0,
+      "baslangic_acisi": 0.0
+    },
+    "eksenel": {
+      "var": true,
+      "bolgeler": [
+        {
+          "ad": "alt su",
+          "yukseklik": 20.0,
+          "dolgu": "su_borlu"
+        },
+        {
+          "ad": "aktif yakıt",
+          "yukseklik": 365.76,
+          "dolgu": null
+        },
+        {
+          "ad": "üst su",
+          "yukseklik": 20.0,
+          "dolgu": "su_borlu"
+        }
+      ]
+    },
+    "sinir": {
+      "yan": "vacuum",
+      "alt": "vacuum",
+      "ust": "vacuum"
+    }
+  },
+  "ayarlar": {
+    "mod": "eigenvalue",
+    "parcacik": 1000,
+    "cevrim": 60,
+    "pasif": 20,
+    "tohum": 1,
+    "sicaklik_yontemi": "interpolation",
+    "kaynak": {
+      "tur": "kutu",
+      "konum": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "parcacik": "neutron",
+      "kuvvet": 1.0,
+      "enerji": {
+        "tur": "watt",
+        "a": 988000.0,
+        "b": 2.249e-06,
+        "theta": 1293200.0,
+        "enerji": 14100000.0,
+        "noktalar": [],
+        "kenarlar": [],
+        "degerler": [],
+        "e0": 14080000.0,
+        "kutle_orani": 5.0,
+        "iyon_sicaklik": 20000.0
+      },
+      "aci": {
+        "tur": "izotropik",
+        "yon": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "koni_aci": 30.0
+      },
+      "alt": [
+        -150.0,
+        -150.0,
+        -170.0
+      ],
+      "ust": [
+        150.0,
+        150.0,
+        170.0
+      ]
+    },
+    "entropi_mesh": {
+      "var": true,
+      "boyut": [
+        15,
+        15,
+        10
+      ]
+    },
+    "kinetik": {
+      "var": false,
+      "nesil": 10
+    }
+  },
+  "tallyler": [
+    {
+      "ad": "reaksiyonlar",
+      "skorlar": [
+        "fission",
+        "absorption",
+        "nu-fission"
+      ],
+      "filtreler": [],
+      "nuklidler": []
+    }
+  ],
+  "guc_dagilimi": {
+    "var": true,
+    "cubuk": "yakit_c",
+    "bolge": 0,
+    "skor": "kappa-fission",
+    "eksenel_dilim": 10,
+    "toplam_guc": null,
+    "cubuklar": [
+      {
+        "cubuk": "yakit_a",
+        "bolge": 0
+      },
+      {
+        "cubuk": "yakit_b",
+        "bolge": 0
+      },
+      {
+        "cubuk": "yakit_c",
+        "bolge": 0
+      }
+    ]
+  },
+  "tukenme": {
+    "var": false,
+    "zincir": "otomatik",
+    "guc_yogunlugu": 40.0,
+    "adimlar": [
+      0.5,
+      1.5,
+      3.0,
+      5.0,
+      10.0,
+      10.0
+    ],
+    "adim_birimi": "d",
+    "entegrator": "cecm",
+    "malzemeleri_ayir": false,
+    "ek_malzemeler": [],
+    "izlenen": [
+      "U235",
+      "U238",
+      "Pu239",
+      "Pu240",
+      "Pu241",
+      "Xe135",
+      "Sm149"
+    ]
+  },
+  "calistirma": {
+    "is_parcacigi": 8,
+    "dizin": "kosu"
+  },
+  "baslik": "BEAVRS benzeri PWR koru (193 demet)",
+  "kategori": "pwr",
+  "seviye": "ileri",
+  "baslik_en": "BEAVRS-like PWR core (193 assemblies)",
+  "aciklama_en": "BEAVRS cycle 1 HZP ARO core, 193 17x17 assemblies, three enrichments, Pyrex burnable absorbers; simplified (no baffle, grids)."
+}
