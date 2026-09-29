@@ -29,6 +29,9 @@ import os
 import tempfile
 
 from arayuz.tasarim import tokenlar
+from cekirdek.gunluk import kaydedici
+
+_log = kaydedici("arayuz.tasarim.stil")
 
 A = tokenlar.ARALIK
 R = tokenlar.YARICAP
@@ -44,16 +47,24 @@ def _resim_dizini():
 
 
 def _resim(ad, renk_hex, boyut):
-    """Ikonu 1x ve @2x PNG olarak yazar; 1x yolunu (ileri egik cizgi) dondurur."""
+    """Ikonu 1x ve @2x PNG olarak yazar; 1x yolunu (ileri egik cizgi) dondurur.
+
+    Uretilemezse (bozuk SVG, yazilamayan gecici dizin) uygulama ACILIRKEN
+    cokmesin diye hata loglanir ve bos yol doner: ilgili ok/onay isareti
+    gorunmez, stil sayfasinin geri kalani uygulanir."""
     from arayuz.tasarim.ikon import piksel
-    dizin = _resim_dizini()
-    kok = os.path.join(dizin, "%s_%s_%d" % (ad, renk_hex.lstrip("#"), boyut))
-    for olcek, ek in ((1, ""), (2, "@2x")):
-        yol = kok + ek + ".png"
-        if not os.path.exists(yol):
-            pm = piksel(ad, renk_hex, boyut, olcek)
-            if not pm.toImage().save(yol):
-                raise OSError("stil resmi yazilamadi: %s" % yol)
+    try:
+        dizin = _resim_dizini()
+        kok = os.path.join(dizin, "%s_%s_%d" % (ad, renk_hex.lstrip("#"), boyut))
+        for olcek, ek in ((1, ""), (2, "@2x")):
+            yol = kok + ek + ".png"
+            if not os.path.exists(yol):
+                pm = piksel(ad, renk_hex, boyut, olcek)
+                if not pm.toImage().save(yol):
+                    raise OSError("stil resmi yazilamadi: %s" % yol)
+    except (OSError, ValueError) as e:
+        _log.warning("stil resmi uretilemedi (%s, %s): %s", ad, renk_hex, e, exc_info=True)
+        return ""
     return (kok + ".png").replace("\\", "/")
 
 

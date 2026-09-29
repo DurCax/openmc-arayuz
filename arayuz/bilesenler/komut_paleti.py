@@ -126,9 +126,13 @@ class KomutPaleti(QtWidgets.QFrame):
         self.setGraphicsEffect(golge)
         self.hide()
         if kisayol:
+            # Ebeveyn PENCERE olmali: gizli paletin kendi kisayolu tetiklenmez
+            # (olculdu). Palet silinince kisayol da silinir -- silinmis palete
+            # sinyal gitmesin (palet yenilenirse eski kisayol kalmasin).
             self.kisayol = QtGui.QShortcut(QtGui.QKeySequence(kisayol), pencere)
             self.kisayol.setContext(QtCore.Qt.WindowShortcut)
             self.kisayol.activated.connect(self.ac)
+            self.destroyed.connect(self.kisayol.deleteLater)
 
     # ------------------------------------------------------------------
     def eylemler_ayarla(self, eylemler):

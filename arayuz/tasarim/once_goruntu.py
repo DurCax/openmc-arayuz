@@ -24,13 +24,21 @@ COZUNURLUKLER = ((1440, 900), (1280, 800))
 ORNEK = os.path.join("ornekler", "pwr_17x17.json")
 
 
+_YALITIM = {"dizin": None}
+
+
 def ayarlari_yalit():
-    """QSettings'i gecici bir dizine yonlendirir (tema secimi kullaniciya yazilmasin)."""
+    """QSettings'i gecici bir dizine yonlendirir (tema secimi kullaniciya yazilmasin).
+
+    Tekrar cagrilabilir: surecte ilk cagrinin dizini kullanilir. Maket ve galeri
+    araclarinin kaydet()/varyantlar() islevleri de bunu cagirir; main()
+    atlanip dogrudan cagrilsalar bile kullanicinin gercek ayarina yazmazlar."""
     from PySide6 import QtCore
-    dizin = tempfile.mkdtemp(prefix="openmc_arayuz_ayar_")
+    if _YALITIM["dizin"] is None:
+        _YALITIM["dizin"] = tempfile.mkdtemp(prefix="openmc_arayuz_ayar_")
     for bicim in (QtCore.QSettings.NativeFormat, QtCore.QSettings.IniFormat):
-        QtCore.QSettings.setPath(bicim, QtCore.QSettings.UserScope, dizin)
-    return dizin
+        QtCore.QSettings.setPath(bicim, QtCore.QSettings.UserScope, _YALITIM["dizin"])
+    return _YALITIM["dizin"]
 
 
 def _bekle(app, tur=6):

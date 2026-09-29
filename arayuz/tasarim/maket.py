@@ -148,6 +148,8 @@ def _cek(kur, boyut):
 
 def kaydet(dizin, vurgu=None, adlar=None, cozunurlukler=COZUNURLUKLER):
     from arayuz import tema
+    from arayuz.tasarim.once_goruntu import ayarlari_yalit
+    ayarlari_yalit()             # dogrudan cagrilsa da kullanici ayarina yazmasin
     app = _uygulama()
     os.makedirs(dizin, exist_ok=True)
     yollar = []
@@ -213,6 +215,8 @@ def karsilastirmalar(dizin, once_dizini):
 
 def varyantlar(dizin):
     """Her vurgu secenegi icin kabuk + sonuclar, iki tema, 1440x900."""
+    from arayuz.tasarim.once_goruntu import ayarlari_yalit
+    ayarlari_yalit()
     yollar = []
     for vurgu in tokenlar.VURGULAR:
         alt = os.path.join(dizin, "varyant_%s" % vurgu)

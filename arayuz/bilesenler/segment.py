@@ -11,6 +11,9 @@ hassasiyet onayari Hizli / Dengeli / Hassas / Ozel).
 from PySide6 import QtCore, QtWidgets
 
 from arayuz.tasarim.ikon import ikon_bagla
+from cekirdek.gunluk import kaydedici
+
+_log = kaydedici("arayuz.bilesenler.segment")
 
 
 class SegmentSecici(QtWidgets.QWidget):
@@ -51,11 +54,17 @@ class SegmentSecici(QtWidgets.QWidget):
         return None
 
     def sec(self, anahtar, sinyal=True):
-        if anahtar not in self._dugmeler or self.secili() == anahtar:
-            return
+        """Secer; bilinmeyen anahtarda False (loglanir), aksi halde True."""
+        if anahtar not in self._dugmeler:
+            _log.warning("SegmentSecici: bilinmeyen anahtar %r (secenekler: %s)",
+                         anahtar, ", ".join(self._dugmeler))
+            return False
+        if self.secili() == anahtar:
+            return True
         self._dugmeler[anahtar].setChecked(True)
         if sinyal:
             self.secildi.emit(anahtar)
+        return True
 
     def _tiklandi(self, anahtar):
         self.secildi.emit(anahtar)

@@ -446,10 +446,126 @@ def test_maket_ve_galeri_kurulur():
     _sil(g)
 
 
+
+# ----------------------------------------------------------------------------
+# Inceleme bulgulari (Dalga 1): sessiz dusmeler loglanir, API geri bildirim verir
+# ----------------------------------------------------------------------------
+class _Toplayici(__import__("logging").Handler):
+    def __init__(self):
+        import logging
+        super().__init__(logging.DEBUG)
+        self.kayitlar = []
+
+    def emit(self, kayit):
+        self.kayitlar.append(kayit.getMessage())
+
+
+def _loglarken(ad, fn):
+    import logging
+    kay = logging.getLogger(ad)
+    top = _Toplayici()
+    eski = kay.level
+    kay.addHandler(top)
+    kay.setLevel(logging.DEBUG)
+    try:
+        sonuc = fn()
+    finally:
+        kay.removeHandler(top)
+        kay.setLevel(eski)
+    return sonuc, top.kayitlar
+
+
+def test_bilinmeyen_tema_loglanir():
+    print("\n[T14] TEMA: bilinmeyen tema/vurgu adi varsayilana duser ve LOGLANIR")
+    from arayuz import tema
+    app = _qt()
+    once = (tema.etkin(), tema.etkin_vurgu())
+    try:
+        _s, kayit = _loglarken("openmc_arayuz.arayuz.tema",
+                               lambda: tema.uygula(app, "boyle_tema_yok", "boyle_vurgu_yok"))
+        kontrol("bilinmeyen tema -> acik", tema.etkin() == "acik")
+        kontrol("bilinmeyen tema loglandi", any("boyle_tema_yok" in k for k in kayit),
+                "-> %s" % kayit)
+        kontrol("bilinmeyen vurgu loglandi", any("boyle_vurgu_yok" in k for k in kayit),
+                "-> %s" % kayit)
+    finally:
+        tema.uygula(app, *once)
+
+
+def test_segment_bilinmeyen_anahtar():
+    print("\n[T15] SEGMENT: bilinmeyen anahtar False doner ve loglanir")
+    from arayuz.bilesenler import SegmentSecici
+    _qt()
+    s = SegmentSecici([("a", "A"), ("b", "B")], secili="a")
+    try:
+        sonuc, kayit = _loglarken("openmc_arayuz.arayuz.bilesenler.segment",
+                                  lambda: s.sec("yok"))
+        kontrol("bilinmeyen anahtar -> False, secim degismedi",
+                sonuc is False and s.secili() == "a", "-> %r %r" % (sonuc, s.secili()))
+        kontrol("bilinmeyen anahtar loglandi", any("yok" in k for k in kayit), "-> %s" % kayit)
+        kontrol("bilinen anahtar -> True", s.sec("b") is True and s.secili() == "b")
+        kontrol("zaten secili -> True (hata degil)", s.sec("b") is True)
+    finally:
+        _sil(s)
+
+
+def test_bildir_pencere_yok():
+    print("\n[T16] BILDIRIM: pencere None -> acik ValueError")
+    from arayuz.bilesenler import bildir
+    _qt()
+    try:
+        bildir(None, "x")
+        kontrol("pencere None reddedildi", False, "-> istisna yok")
+    except ValueError as e:
+        kontrol("pencere None reddedildi", "pencere" in str(e), "-> %s" % e)
+
+
+def test_stil_resmi_uretilemezse():
+    print("\n[T17] STIL: ikon resmi uretilemezse QSS yine uretilir ve LOGLANIR")
+    from arayuz.tasarim import ikon, stil, tokenlar
+    _qt()
+    asil = ikon.piksel
+
+    def bozuk(*_a, **_k):
+        raise ValueError("bozuk svg (test)")
+    ikon.piksel = bozuk
+    try:
+        import tempfile
+        eski_dizin = stil._resim_dizini
+        gecici = tempfile.mkdtemp(prefix="stil_test_")
+        stil._resim_dizini = lambda: gecici     # onbellekteki eski PNG kullanilmasin
+        try:
+            qss, kayit = _loglarken("openmc_arayuz.arayuz.tasarim.stil",
+                                    lambda: stil.uret(tokenlar.palet("acik")))
+        finally:
+            stil._resim_dizini = eski_dizin
+        kontrol("QSS yine uretildi", isinstance(qss, str) and "QPushButton" in qss)
+        kontrol("resim hatasi loglandi", any("bozuk svg" in k or "chevron" in k for k in kayit),
+                "-> %s" % kayit)
+    finally:
+        ikon.piksel = asil
+
+
+def test_maket_araclari_ayar_yalitir():
+    print("\n[T18] MAKET/GALERI: kaydet() dogrudan cagrilinca da ayarlar yalitilir")
+    from arayuz.tasarim import maket, galeri, once_goruntu
+    import inspect
+    for mod, adlar in ((maket, ("kaydet", "varyantlar")), (galeri, ("kaydet",))):
+        for ad in adlar:
+            kaynak = inspect.getsource(getattr(mod, ad))
+            kontrol("%s.%s ayarlari_yalit cagiriyor" % (mod.__name__.split(".")[-1], ad),
+                    "ayarlari_yalit(" in kaynak)
+    d1 = once_goruntu.ayarlari_yalit()
+    d2 = once_goruntu.ayarlari_yalit()
+    kontrol("ayarlari_yalit tekrar cagrilinca ayni dizini kullanir", d1 == d2,
+            "-> %s %s" % (d1, d2))
+
 HIZLI = [test_kontrast_wcag, test_token_olcekleri, test_tema_eski_anahtarlar, test_qss_uyarisiz,
          test_eski_ekran_uyumu,
          test_yazi_tipi, test_ikonlar, test_tema_degisimi_ikon_ve_renk, test_kenar_cubugu,
-         test_komut_paleti, test_bildirim, test_form_bilesenleri, test_maket_ve_galeri_kurulur]
+         test_komut_paleti, test_bildirim, test_form_bilesenleri, test_maket_ve_galeri_kurulur,
+         test_bilinmeyen_tema_loglanir, test_segment_bilinmeyen_anahtar,
+         test_bildir_pencere_yok, test_stil_resmi_uretilemezse, test_maket_araclari_ayar_yalitir]
 YAVAS = []
 
 

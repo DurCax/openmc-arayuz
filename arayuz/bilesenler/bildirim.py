@@ -24,6 +24,9 @@ from arayuz.tasarim import tokenlar
 from arayuz.tasarim.ikon import ikon_bagla
 from arayuz.tasarim.stil import durum_ayarla
 from cekirdek.ceviri import _
+from cekirdek.gunluk import kaydedici
+
+_log = kaydedici("arayuz.bilesenler.bildirim")
 
 A = tokenlar.ARALIK
 TUR_IKONU = {"basari": "circle-check", "uyari": "triangle-alert", "hata": "circle-x",
@@ -129,6 +132,7 @@ def yeniden_diz(pencere):
     try:
         acik = _acik_bildirimler(pencere)
     except RuntimeError:          # pencere silinmis: dizilecek bir sey yok
+        _log.debug("yeniden_diz: pencere silinmis olabilir", exc_info=True)
         return
     alt = pencere.height() - A["l"] - int(pencere.property(ALT_PAYI_OZELLIGI) or 0)
     # statusBar() CAGRILMAZ: durum cubugu yoksa onu yaratirdi.
@@ -146,6 +150,8 @@ def yeniden_diz(pencere):
 def bildir(pencere, metin, tur="bilgi", sure=VARSAYILAN_SURE, baslik=None,
            eylem_metni=None, eylem=None):
     """Pencereye bildirim ekler ve dondurur. sure ms (0: elle kapanir)."""
+    if not isinstance(pencere, QtWidgets.QWidget):
+        raise ValueError("bildir(): pencere bir QWidget olmali, %r verildi" % (pencere,))
     if pencere.findChild(_Konumlayici, "_bildirimKonumlayici") is None:
         k = _Konumlayici(pencere)
         k.setObjectName("_bildirimKonumlayici")

@@ -179,10 +179,13 @@ def uygula(app, ad=None, vurgu=None):
     if ad is None:
         ad = ayar.value("tema", "acik")
     if ad not in tokenlar.TEMA_ADLARI:
+        _log.warning("bilinmeyen tema adi %r; 'acik' temaya dusuldu", ad)
         ad = "acik"
     if vurgu is None:
         vurgu = ayar.value("tema_vurgu", tokenlar.VARSAYILAN_VURGU)
     if vurgu not in tokenlar.VURGULAR:
+        _log.warning("bilinmeyen vurgu %r; %r vurguya dusuldu", vurgu,
+                     tokenlar.VARSAYILAN_VURGU)
         vurgu = tokenlar.VARSAYILAN_VURGU
     if vurgu != _VURGU:
         TEMALAR = _temalari_kur(vurgu)

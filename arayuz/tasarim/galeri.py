@@ -222,6 +222,8 @@ class GaleriPenceresi(QtWidgets.QMainWindow):
 
 def kaydet(dizin, boyut=(1440, 1280), vurgu=None):
     from arayuz import tema
+    from arayuz.tasarim.once_goruntu import ayarlari_yalit
+    ayarlari_yalit()             # dogrudan cagrilsa da kullanici ayarina yazmasin
     app = QtWidgets.QApplication.instance() or QtWidgets.QApplication(sys.argv)
     os.makedirs(dizin, exist_ok=True)
     yollar = []

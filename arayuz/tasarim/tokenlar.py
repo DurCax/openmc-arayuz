@@ -62,6 +62,7 @@ BOYUT = {
     "dugme_yuksekligi": 30,
     "ikon": 16,
     "ikon_buyuk": 20,
+    "ikon_bos_durum": 40,
     "kenar_cubugu_genis": 212,
     "kenar_cubugu_dar": 52,
     "kenar_cubugu_satir": 34,

@@ -15,7 +15,7 @@ from arayuz.tasarim import tokenlar
 from arayuz.tasarim.ikon import ikon_bagla
 
 A = tokenlar.ARALIK
-_IKON_BOYUTU = 40
+_IKON_BOYUTU = tokenlar.BOYUT["ikon_bos_durum"]
 
 
 class BosDurum(QtWidgets.QWidget):
