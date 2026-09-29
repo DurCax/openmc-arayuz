@@ -514,6 +514,24 @@ class AyarSekmesi(YerlesimMixin, KaynakFormuMixin, GucFormuMixin, TallyFormuMixi
     # ------------------------------------------------------------------
     # kayit -- yalnizca GORUNEN alanlar yazilir
     # ------------------------------------------------------------------
+    def _guc_hedeflerini_oku(self, g):
+        """
+        Hedef cubuk kutusunun secimi -> guc_dagilimi["cubuklar"] listesi
+        ([{"cubuk", "bolge"}], YENI liste).
+          sema.GUC_TUM   : uygun butun yakit cubuklari (guc.varsayilan_hedefler)
+          sema.GUC_LISTE : dosyadaki liste aynen korunur
+          bir cubuk adi  : tek ogeli liste (secili bolge ile)
+        """
+        from cekirdek import guc as _guc_cekirdek
+        ad = self.guc_cubuk.currentData()
+        if ad == sema.GUC_TUM:
+            return _guc_cekirdek.varsayilan_hedefler(self.spec)
+        if ad == sema.GUC_LISTE:
+            return sema.guc_hedefleri({"cubuklar": g.get("cubuklar")})
+        if ad is None:
+            return []
+        return [{"cubuk": ad, "bolge": int(self.guc_bolge.currentData() or 0)}]
+
     def _kaydet(self, *_):
         if self._yukleniyor or self.spec is None:
             return
@@ -582,8 +600,11 @@ class AyarSekmesi(YerlesimMixin, KaynakFormuMixin, GucFormuMixin, TallyFormuMixi
             g = dict(self.spec.get("guc_dagilimi") or {})
             g["var"] = self.guc_var.isChecked()
             if self.guc_var.isChecked():
-                g["cubuk"] = self.guc_cubuk.currentData()
-                g["bolge"] = self.guc_bolge.currentData() or 0
+                # YALNIZ yeni bicim yazilir (guc_dagilimi.cubuklar); eski tek
+                # alan (cubuk/bolge) bellekte de birakilmaz.
+                g["cubuklar"] = self._guc_hedeflerini_oku(g)
+                g.pop("cubuk", None)
+                g.pop("bolge", None)
                 g["skor"] = self.guc_skor.currentData()
                 if alan["eksenel_dilim"]:
                     g["eksenel_dilim"] = self.guc_dilim.value()

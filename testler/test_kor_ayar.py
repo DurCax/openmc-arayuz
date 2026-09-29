@@ -738,8 +738,13 @@ def test_ayar_guc_dagilimi():
             "-> %s" % _oge_verileri(a.guc_cubuk))
     kontrol("2B: eksenel dilim gizli", not a._guc_form.isRowVisible(a.guc_dilim))
     kontrol("bolge numaralari 1'den", a.guc_bolge.itemText(0).startswith("1. bölge"))
-    kontrol("guc acildi, yazildi", s["guc_dagilimi"]["var"]
-            and s["guc_dagilimi"]["cubuk"] == "yakit_cubugu")
+    from cekirdek import sema as _sema
+    kontrol("guc acildi, YENI bicimde yazildi (cubuklar; eski tek alan yok)",
+            s["guc_dagilimi"]["var"]
+            and _sema.guc_hedefleri(s["guc_dagilimi"]) == [{"cubuk": "yakit_cubugu",
+                                                            "bolge": 0}]
+            and "cubuk" not in s["guc_dagilimi"] and "bolge" not in s["guc_dagilimi"],
+            "-> %r" % s["guc_dagilimi"])
     a3 = _ayar(_ornek("pwr_3b"))
     kontrol("3B: eksenel dilim gorunur", a3._guc_form.isRowVisible(a3.guc_dilim))
     p = _ornek("pwr_pinhucre")
