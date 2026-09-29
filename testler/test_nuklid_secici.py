@@ -521,7 +521,9 @@ def test_kisa_kosu_yeni_secim(gecici):
     from arayuz.sekme_tukenme import TukenmeSekmesi
     proje = os.path.join(gecici, "proje.json")
     sp_ui = copy.deepcopy(sp)
-    sp_ui["calistirma"]["dizin"] = "arayuz"
+    # Kendine ozgu kosu dizini: eski calistirici butun YAVAS testlere AYNI gecici
+    # dizini verir; test_tukenme_temel de "arayuz" adini kullanir (FileExistsError).
+    sp_ui["calistirma"]["dizin"] = "arayuz_nuklid"
     shutil.copytree(dizin, tukenme.kosu_dizini(sp_ui, proje))
     sema.kaydet(sp_ui, proje)
     t = TukenmeSekmesi()
