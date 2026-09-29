@@ -70,8 +70,7 @@ def test_ornekler_yeni_bicimde_yuklenir():
                 "-> %s" % g.get("cubuklar"))
 
 
-# Ajan 8b uygulayinca bunlari HIZLI'ya tasir.
-BEKLEYEN = [test_varsayilan_cubuklar_bos, test_eski_bicim_tek_ogeli_listeye,
-            test_yeni_bicim_kazanir, test_ornekler_yeni_bicimde_yuklenir]
-HIZLI = []
+BEKLEYEN = []
+HIZLI = [test_varsayilan_cubuklar_bos, test_eski_bicim_tek_ogeli_listeye,
+         test_yeni_bicim_kazanir, test_ornekler_yeni_bicimde_yuklenir]
 YAVAS = []

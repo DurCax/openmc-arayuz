@@ -124,11 +124,13 @@ VARSAYILAN_AYARLAR = {
 #   - Yazma: yalniz yeni bicim ("cubuk" ve "bolge" ust alanlari yazilmaz).
 #   - Varsayilan: "cubuklar": [].
 #   - Normalizasyon listedeki TUM yakit cubuklari uzerinden yapilir.
-#   Bu karar uygulanana kadar asagidaki eski bicim gecerlidir.
+#   UYGULANDI (Dalga 2, Ajan 8b). Calisma aninda (bellekteki spec) eski
+#   "cubuk" alani yazilmissa (eski kod, arayuzun tek secimli kutusu) o TAZE
+#   niyettir ve guc_hedefleri() onu kullanir; kaydet() yeni bicime cevirir.
 VARSAYILAN_GUC = {
     "var": False,
-    "cubuk": None,          # hedef cubuk adi
-    "bolge": 0,             # hangi radyal bolge (0 = en icteki, yakit eti)
+    # hedef cubuklar: [{"cubuk": ad, "bolge": radyal bolge (0 = en ic)}]
+    "cubuklar": [],
     "skor": "kappa-fission",
     "eksenel_dilim": 20,    # 3B modelde eksenel bin sayisi; 2B'de yok sayilir
     "toplam_guc": None,     # W -- MODELIN KAPSADIGI bolgenin gucu
@@ -601,8 +603,54 @@ def filtre_malzeme(adlar):
 # Oku / yaz
 # ----------------------------------------------------------------------------
 
+# Arayuzun hedef cubuk kutusundaki ozel secimler (dosyaya yazilmaz):
+#   GUC_LISTE : dosyadaki "cubuklar" listesi aynen kalir
+#   GUC_TUM   : uygun butun yakit cubuklari (arayuz listeyi kendisi kurar)
+GUC_LISTE = "__liste__"
+GUC_TUM = "__tum__"
+
+
+def guc_hedefleri(g):
+    """
+    Guc dagilimi hedefleri [{"cubuk": ad, "bolge": i}] (yeni liste, kopya).
+    Eski "cubuk" alani varsa (tamamla'dan gecmemis eski sozluk ya da calisma
+    aninda eski kodun yazdigi alan) tek ogeli liste; "cubuk" None ise bos
+    liste. Arayuzun ozel secimleri (GUC_LISTE, GUC_TUM) "cubuklar"a bakar.
+    """
+    g = g or {}
+    ad = g.get("cubuk")
+    if "cubuk" in g and ad not in (GUC_LISTE, GUC_TUM):
+        return [{"cubuk": ad, "bolge": int(g.get("bolge") or 0)}] if ad else []
+    return [{"cubuk": h.get("cubuk"), "bolge": int(h.get("bolge") or 0)}
+            for h in (g.get("cubuklar") or [])]
+
+
+def _guc_yeni_bicim(g):
+    """Guc sozlugunun yeni bicimli kopyasi (eski cubuk/bolge alanlari yok)."""
+    yeni = {k: copy.deepcopy(v) for k, v in g.items() if k not in ("cubuk", "bolge")}
+    yeni["cubuklar"] = guc_hedefleri(g)
+    return yeni
+
+
+def _eski_guc_tasi(ham_guc, birlesik):
+    """tamamla icin: eski cubuk/bolge -> cubuklar; "cubuklar" varsa o kazanir.
+    'birlesik' tamamla'nin kendi kopyasidir (girdi degismez)."""
+    ham_guc = ham_guc or {}
+    if "cubuklar" in ham_guc:
+        birlesik["cubuklar"] = guc_hedefleri({"cubuklar": ham_guc["cubuklar"]})
+    else:
+        birlesik["cubuklar"] = guc_hedefleri({"cubuk": ham_guc.get("cubuk"),
+                                              "bolge": ham_guc.get("bolge")})
+    birlesik.pop("cubuk", None)
+    birlesik.pop("bolge", None)
+    return birlesik
+
+
 def kaydet(spec, dosya):
-    """Spec'i JSON olarak yazar (UTF-8, okunabilir girinti)."""
+    """Spec'i JSON olarak yazar (UTF-8, okunabilir girinti). Guc dagilimi
+    yeni bicimde yazilir (eski cubuk/bolge alanlari yok); spec degismez."""
+    if isinstance(spec.get("guc_dagilimi"), dict):
+        spec = dict(spec, guc_dagilimi=_guc_yeni_bicim(spec["guc_dagilimi"]))
     with open(dosya, "w", encoding="utf-8") as f:
         json.dump(spec, f, ensure_ascii=False, indent=2)
         f.write("\n")
@@ -652,6 +700,7 @@ def tamamla(ham):
                            ("calistirma", VARSAYILAN_CALISTIRMA)):
         spec[anahtar] = _derin_birlestir(copy.deepcopy(vars_),
                                          ham.get(anahtar, {}))
+    _eski_guc_tasi(ham.get("guc_dagilimi"), spec["guc_dagilimi"])
     spec["surum"] = SEMA_SURUM
     return spec
 

@@ -85,6 +85,27 @@ _log = kaydedici(__name__)
 # 1. HEDEF HUCREYI BULMA
 # ============================================================================
 
+def _fisil_bolge(spec, cubuk):
+    """Cubugun ilk fisil (yakit rollu) bolgesinin numarasi; yoksa 0.
+    Pelet merkez deligi (bosluk) ya da ic zarfi olan cubukta 0 yakit degildir."""
+    from cekirdek import sema, uygunluk
+    for i, b in enumerate(cubuk.get("bolgeler") or []):
+        m = sema.malzeme_bul(spec, b.get("malzeme")) if b.get("malzeme") else None
+        if m and "yakit" in uygunluk.tek_malzeme_rolleri(m):
+            return i
+    return 0
+
+
+def varsayilan_hedefler(spec):
+    """
+    "Butun yakit cubuklari" secimi: uygun her cubuk (uygunluk.guc_cubuklari,
+    spec sirasiyla) ilk fisil bolgesiyle. DONER [{"cubuk", "bolge"}] (yeni liste).
+    """
+    from cekirdek import sema, uygunluk
+    return [{"cubuk": ad, "bolge": _fisil_bolge(spec, sema.cubuk_bul(spec, ad))}
+            for ad in uygunluk.guc_cubuklari(spec)]
+
+
 def bolge_hucresi(universe, cubuk, nesneler):
     """
     Bir cubuk universe'inin bolgelerine karsilik gelen hucreleri dondurur.
@@ -245,9 +266,95 @@ def _tally_bul(sp, tally_adi):
         return None
 
 
+def _tallyleri_bul(sp, tally_adi):
+    """Ayni adli butun tally'ler, kimlik sirasiyla (cok turlu guc: tur basina
+    bir tally, kurucu.guc_tally_ekle). Yoksa bos liste."""
+    ilk = _tally_bul(sp, tally_adi)
+    if ilk is None:
+        return []
+    tum = getattr(sp, "tallies", None)
+    if not isinstance(tum, dict):
+        return [ilk]
+    return [t for _i, t in sorted(tum.items()) if t.name == tally_adi] or [ilk]
+
+
+def _tur_adi(tal, hucreler):
+    """Tally'nin distribcell hucresinin adi (cok turde cubuk adi) ya da None.
+    Statepoint'ten okunan filtrede bin hucre KIMLIGIDIR; ad geometriden."""
+    import openmc
+    for f in getattr(tal, "filters", None) or []:
+        if isinstance(f, openmc.DistribcellFilter):
+            b = list(f.bins)[0] if len(f.bins) else None
+            hucre = b if isinstance(b, openmc.Cell) else hucreler.get(int(b))
+            return getattr(hucre, "name", None) or None
+    return None
+
+
+def _tally_konumlari(tal, geometri):
+    """Tek bir guc tally'sinin konumlari ve kafes yapisi (dagilim_oku'nun
+    tur basina parcasi)."""
+    df = tal.get_pandas_dataframe(paths=True)
+    seviyeler = _kafes_seviyeleri(df)
+    if not seviyeler:
+        raise RuntimeError(
+            "Güç dağılımı sonucunda demet (kafes) düzeyi bulunamadı. Hedef "
+            "çubuk bir demette tekrarlanmıyor olabilir; güç dağılımı yalnızca "
+            "demet içindeki çubuklar için anlamlıdır.")
+    duzen = _guc_kor.oteleme_duzeni(df, geometri)
+    kok_demet, oteleme = duzen if duzen else (None, None)
+    anahtarlar, kafesler = _satir_anahtarlari(df, seviyeler, geometri.get_all_lattices(),
+                                              kok_demet)
+    if oteleme is not None:
+        kafesler = [oteleme] + kafesler
+    z_sut = _eksenel_sutun(df)
+    eksenel_dilim = int(df[z_sut].max()) if z_sut is not None else 1
+    dilimler = ((df[z_sut].astype(int) - 1).tolist() if z_sut is not None
+                else [0] * len(df))
+    ort = df[("mean", "", "")] if ("mean", "", "") in df.columns else df["mean"]
+    sap = df[("std. dev.", "", "")] if ("std. dev.", "", "") in df.columns else df["std. dev."]
+    return {"anahtarlar": anahtarlar, "dilimler": dilimler, "ortalar": ort.tolist(),
+            "sapmalar": sap.tolist(), "kafesler": kafesler, "oteleme": oteleme,
+            "eksenel_dilim": eksenel_dilim}
+
+
+def _parcalari_birlestir(parcalar, turler):
+    """Tur basina parcalari tek konum sozlugunde birlestirir. Ayni konum x
+    dilim bin'i (ayni cubuk sutununda katman katman farkli tur) TOPLANIR.
+    Tek parcada sonuc eskisiyle bit duzeyinde aynidir.
+    DONER (konumlar, birlesen, cubuk_turleri {anahtar: tur})"""
+    ilk = parcalar[0]
+    for p in parcalar[1:]:
+        if len(p["kafesler"]) != len(ilk["kafesler"]) or \
+                p["eksenel_dilim"] != ilk["eksenel_dilim"]:
+            raise RuntimeError(_(
+                "Güç dağılımı: çubuk türleri farklı kafes düzeylerinde ya da farklı "
+                "eksenel dilimlerde; türler tek haritada birleştirilemez."))
+    anahtarlar, dilimler, ortalar, sapmalar, tur_list = [], [], [], [], []
+    for p, tur in zip(parcalar, turler):
+        anahtarlar += p["anahtarlar"]
+        dilimler += p["dilimler"]
+        ortalar += p["ortalar"]
+        sapmalar += p["sapmalar"]
+        tur_list += [tur] * len(p["anahtarlar"])
+    konumlar, birlesen = _konumlari_topla(anahtarlar, dilimler, ortalar, sapmalar,
+                                         ilk["eksenel_dilim"])
+    cubuk_turleri = {}
+    for a, tur in zip(anahtarlar, tur_list):
+        onceki = cubuk_turleri.get(a)
+        if onceki is None:
+            cubuk_turleri[a] = tur
+        elif tur not in onceki.split("+"):
+            cubuk_turleri[a] = onceki + "+" + tur
+    return konumlar, birlesen, cubuk_turleri
+
+
 def dagilim_oku(sp, tally_adi="guc_dagilimi"):
     """
     Statepoint'ten guc dagilimini okur.
+
+    COK TURLU (Dalga 2): ayni adli her tally bir cubuk turudur; konumlar tek
+    haritada birlesir ve normalizasyon (tepe_faktorleri) TUM turlerin yakit
+    cubuklari uzerinden yapilir. Tek tallyde sonuc eskisiyle aynidir.
 
     DONER sozluk (ya da tally yoksa None):
       kafes_turu     "kare" | "altigen"            (EN IC kafesin turu)
@@ -270,9 +377,13 @@ def dagilim_oku(sp, tally_adi="guc_dagilimi"):
       kor_duzeyi     "oteleme" (altigen_kafes: demet konumu = kok hucre
                      otelemesi; kafesler[0] bir guc_kor.OtelemeDuzeyi),
                      "kafes" (kor kafesi) ya da None (tek demet)
+      --- Dalga 2 (cok turlu) ---
+      turler         [cubuk adi | None, ...] tally sirasiyla (tek turde [None]
+                     olabilir: kurucu tek turde hucreye ad yazmaz)
+      cubuk_turleri  {anahtar: tur adi} ("a+b": ayni sutunda katman katman)
     """
-    tal = _tally_bul(sp, tally_adi)
-    if tal is None:
+    taller = _tallyleri_bul(sp, tally_adi)
+    if not taller:
         return None
 
     # distribcell yollari summary'den gelen geometriye ve determine_paths()'e baglidir
@@ -282,37 +393,18 @@ def dagilim_oku(sp, tally_adi="guc_dagilimi"):
             "Koşu dizininde statepoint ile summary.h5 yan yana olmalıdır.")
     geometri = sp.summary.geometry
     geometri.determine_paths()
-
-    df = tal.get_pandas_dataframe(paths=True)
     notlar = []
 
-    seviyeler = _kafes_seviyeleri(df)
-    if not seviyeler:
-        raise RuntimeError(
-            "Güç dağılımı sonucunda demet (kafes) düzeyi bulunamadı. Hedef "
-            "çubuk bir demette tekrarlanmıyor olabilir; güç dağılımı yalnızca "
-            "demet içindeki çubuklar için anlamlıdır.")
-
-    duzen = _guc_kor.oteleme_duzeni(df, geometri)
-    kok_demet, oteleme = duzen if duzen else (None, None)
-    anahtarlar, kafesler = _satir_anahtarlari(df, seviyeler, geometri.get_all_lattices(),
-                                              kok_demet)
-    if oteleme is not None:
-        kafesler = [oteleme] + kafesler
+    parcalar = [_tally_konumlari(t, geometri) for t in taller]
+    hucreler = geometri.get_all_cells() if len(taller) > 1 else {}
+    turler = [_tur_adi(t, hucreler) for t in taller] if hucreler else [None]
+    konumlar, birlesen, cubuk_turleri = _parcalari_birlestir(parcalar, turler)
+    kafesler, oteleme = parcalar[0]["kafesler"], parcalar[0]["oteleme"]
+    eksenel_dilim = parcalar[0]["eksenel_dilim"]
     kafes = kafesler[-1]
     kafes_turleri = [_kafes_turu(k) for k in kafesler]
     kafes_turu = kafes_turleri[-1]
     tam_kor = len(kafesler) > 1
-
-    z_sut = _eksenel_sutun(df)
-    eksenel_dilim = int(df[z_sut].max()) if z_sut is not None else 1
-    dilimler = ((df[z_sut].astype(int) - 1).tolist() if z_sut is not None
-                else [0] * len(df))
-    ort = df[("mean", "", "")] if ("mean", "", "") in df.columns else df["mean"]
-    sap = df[("std. dev.", "", "")] if ("std. dev.", "", "") in df.columns else df["std. dev."]
-
-    konumlar, birlesen = _konumlari_topla(anahtarlar, dilimler, ort.tolist(),
-                                         sap.tolist(), eksenel_dilim)
 
     # eksik dilim var mi (olmamali) ve toplamlari hesapla
     for anahtar, kayit in konumlar.items():
@@ -333,8 +425,15 @@ def dagilim_oku(sp, tally_adi="guc_dagilimi"):
         notlar.append(
             _("%d bin'de aynı çubuk konumu birden çok eksenel katmanda "
               "bulundu; katman örnekleri dilim dilim toplandı.") % birlesen)
+    if len(taller) > 1:
+        notlar.append(
+            _("Çok türlü güç: %d çubuk türü (%s) tek haritada; bağıl güç bütün "
+              "türlerin yakıt çubuklarının ortalamasına göredir.")
+            % (len(taller), ", ".join(t or "?" for t in turler)))
 
     return {
+        "turler": turler,
+        "cubuk_turleri": cubuk_turleri,
         "kafes_turu": kafes_turu,
         "kafes": kafes,
         "kafes_id": kafes.id,
@@ -573,7 +672,28 @@ def tepe_faktorleri(dagilim):
         _eksenel_faktorler(sonuc, konumlar, dagilim["eksenel_dilim"])
     if tam_kor:
         _tam_kor_alanlari(sonuc)
+    sonuc["tur_ozeti"] = tur_ozeti(bagil, dagilim.get("cubuk_turleri"))
     return sonuc
+
+
+def tur_ozeti(bagil, cubuk_turleri):
+    """
+    Cok turlu guc: tur basina ozet (bagil birimde; TUM cubuklarin ortalamasi
+    = 1). Tek turde (ya da tur bilgisi yoksa) None.
+    DONER {tur: {"cubuk_sayisi", "ortalama", "tepe", "tepe_cubuk"}}
+    """
+    if not cubuk_turleri or len(set(cubuk_turleri.values())) < 2:
+        return None
+    gruplar = {}
+    for a, v in bagil.items():
+        gruplar.setdefault(cubuk_turleri.get(a), []).append((a, v[0]))
+    ozet = {}
+    for tur, uyeler in gruplar.items():
+        tepe_a, tepe = max(uyeler, key=lambda av: av[1])
+        ozet[tur] = {"cubuk_sayisi": len(uyeler),
+                     "ortalama": sum(v for _a, v in uyeler) / len(uyeler),
+                     "tepe": tepe, "tepe_cubuk": tepe_a}
+    return ozet
 
 
 def _bos_dilimler(konumlar, eksenel_dilim):

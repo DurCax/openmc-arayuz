@@ -127,10 +127,11 @@ def eksenel_kontrol(spec):
     # hedef cubugu icermeyen katmanlar (blanket) varsa onlarin gucu de hedef
     # cubuklara paylastirilmis olur ve W/cm YUKSEK cikar.
     g = spec.get("guc_dagilimi") or {}
-    if g.get("var") and g.get("toplam_guc") and g.get("cubuk"):
+    adlar = list(dict.fromkeys(h["cubuk"] for h in sema.guc_hedefleri(g) if h["cubuk"]))
+    if g.get("var") and g.get("toplam_guc") and adlar:
         try:
             ar = kurucu.aktif_eksenel_aralik(spec)
-            cr = kurucu.cubuk_eksenel_aralik(spec, g["cubuk"])
+            cr = kurucu.guc_eksenel_araligi(spec, adlar)
         except Exception:
             uyar_bir_kez(_log, "eksenel denetim: cubuk araligi hesaplanamadi")
             ar = cr = None
@@ -138,7 +139,7 @@ def eksenel_kontrol(spec):
             bulgular.append(Bulgu(
                 "uyari", "guc_dagilimi",
                 "fisil aralık %g cm ama '%s' çubuğu yalnızca %g cm boyunca var"
-                % (ar[1] - ar[0], g["cubuk"], cr[1] - cr[0]),
+                % (ar[1] - ar[0], "', '".join(adlar), cr[1] - cr[0]),
                 "Güç dağılımı yalnızca bu çubuğu sayar; toplam güç ise tüm "
                 "modelin gücüdür. Aradaki fisil katmanların (örtü gibi) gücü "
                 "de bu çubuklara paylaştırılmış olur ve W/cm olduğundan yüksek "

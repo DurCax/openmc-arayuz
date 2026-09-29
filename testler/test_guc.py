@@ -115,10 +115,13 @@ def test_guc_dogrulama():
         b = dogrula.tum_kontroller(s)
         kontrol(ad, any(anahtar.lower() in x.mesaj.lower() for x in b))
 
-    dene("gecersiz bolge", lambda s: s["guc_dagilimi"].update({"bolge": 99}),
+    # Dalga 2: hedef bolge guc_dagilimi.cubuklar listesinde (sema.guc_hedefleri)
+    dene("gecersiz bolge", lambda s: s["guc_dagilimi"]["cubuklar"][0].update({"bolge": 99}),
          "geçersiz bölge")
-    dene("fisil olmayan bolge", lambda s: s["guc_dagilimi"].update({"bolge": 2}),
+    dene("fisil olmayan bolge", lambda s: s["guc_dagilimi"]["cubuklar"][0].update({"bolge": 2}),
          "fisil görünmüyor")
+    dene("eski tek alan hala okunur", lambda s: s["guc_dagilimi"].update(
+        {"cubuk": "yakit_cubugu", "bolge": 99}), "geçersiz bölge")
     dene("enerji olmayan skor", lambda s: s["guc_dagilimi"].update({"skor": "fission"}),
          "enerji skoru")
     dene("2B'de F_q yok", lambda s: s["kor"].update({"yukseklik": None}),
