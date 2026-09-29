@@ -733,7 +733,7 @@ def _terminal(argv):
               % (f["cubuk_sayisi"], f["eksenel_dilim"]))
         for satir in korunum_satirlari(g):
             print("      %s" % satir)
-        for satir in _guc.yorumla(f, m):
+        for satir in _guc.yorumla(f, m, hedef_payi=g.get("hedef_payi")):
             print("      %s" % satir)
     elif s.get("guc_hata"):
         print("\n      güç dağılımı okunamadı: %s" % s["guc_hata"])

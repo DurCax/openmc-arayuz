@@ -142,6 +142,7 @@ class GucHaritaWidget(QtWidgets.QWidget):
         self.faktorler = g.get("faktorler")
         self.korunum = g.get("korunum")
         self.korunum_notlari = [g[a] for a in ("korunum_hata", "korunum_notu") if g.get(a)]
+        self.hedef_payi = g.get("hedef_payi")
         self.mutlak = None
         if self.faktorler and spec:
             sg = spec.get("guc_dagilimi") or {}
@@ -204,7 +205,7 @@ class GucHaritaWidget(QtWidgets.QWidget):
                          "tamam" if iyi else "bozuk, haritaya güvenmeyin"))
         for not_metni in getattr(self, "korunum_notlari", []):
             metin += "<br>" + html.escape(_("Toplamın korunumu denetlenemedi: %s") % not_metni)
-        satirlar = _guc.yorumla(f, self.mutlak)
+        satirlar = _guc.yorumla(f, self.mutlak, getattr(self, "hedef_payi", None))
         metin += "<br><br>" + "<br>".join("&bull; " + s.strip() for s in satirlar)
         self.ozet.setText(metin)
 

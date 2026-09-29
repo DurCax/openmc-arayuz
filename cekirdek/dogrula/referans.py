@@ -158,7 +158,30 @@ def guc_dagilimi_kontrol(spec):
                 "toplam güç verilmiş ama model 2B — çizgisel güç [W/cm] hesaplanamaz",
                 "W/cm için Kor sekmesinde aktif yükseklik tanımlayın."))
     bulgular.extend(_guc_tam_kor_kontrol(spec, cubuk_ad, dilim if h else 1, yer))
+    bulgular.extend(_guc_cok_tur_kontrol(spec, cubuk_ad, yer))
     return bulgular
+
+
+def _guc_cok_tur_kontrol(spec, cubuk_ad, yer):
+    """
+    Guc tally'si TEK cubuk tanimina baglidir (cok turlu tally Dalga 2'de).
+    Modelde (ayni kor ya da demet) baska bir fisil cubuk turu tekrarlaniyorsa
+    F_dH / F_q yalniz hedef cubugu kapsar: uyari. Tek turlu modelde uyari YOK.
+    "Fisil ve kafeste tekrarlanan" olcutu arayuzun hedef listesiyle aynidir
+    (uygunluk.guc_cubuklari).
+    """
+    from cekirdek.ceviri import _
+    digerleri = [c for c in uygunluk.guc_cubuklari(spec) if c != cubuk_ad]
+    if not digerleri:
+        return []
+    return [Bulgu(
+        "uyari", yer,
+        _("F_ΔH yalnız '%s' çubuğunu kapsar — modelde yakıt içeren başka çubuk türleri "
+          "de var (%s)") % (cubuk_ad, ", ".join(digerleri)),
+        _("Güç dağılımı tek bir çubuk tanımının örnekleri üzerinden sayılır; diğer "
+          "türlerin çubukları haritada yoktur ve en sıcak çubuk onlardan biri "
+          "olabilir. Mutlak güç, hedef çubukların model fisyon enerjisindeki "
+          "payıyla dağıtılır."))]
 
 
 # Guc tally'sinin bin sayisi (ornek x eksenel dilim) bunu asarsa sonuc okuma
