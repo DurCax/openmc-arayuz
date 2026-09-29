@@ -78,7 +78,7 @@ class BilesimModeli(QtCore.QAbstractTableModel):
             return "%g" % z
         if rol == QtCore.Qt.ForegroundRole and s == self.S_ZENG:
             if b.get("zenginlik") is None or not self.zenginlik_uygun(ix.row()):
-                return QtGui.QBrush(QtGui.QColor(_tema_renk("metin_soluk", "#6b7785")))
+                return QtGui.QBrush(QtGui.QColor(_tema_renk("metin_soluk")))
         if rol == QtCore.Qt.ToolTipRole and s == self.S_ZENG:
             if not self.zenginlik_uygun(ix.row()):
                 return "Zenginlik yalnızca doğal element U satırında girilir."

@@ -898,7 +898,7 @@ class DemetSekmesi(SekmeTabani):
         if hata:
             self.ad.setText(eski)
             self.ad_hata.setText(hata + " Ad değiştirilmedi.")
-            self.ad_hata.setStyleSheet("color: %s;" % _renk("hata", "#b3261e"))
+            self.ad_hata.setStyleSheet("color: %s;" % _renk("hata"))
             self.ad_hata.setVisible(True)
             return
         parca_adini_degistir(self.spec, eski, yeni)

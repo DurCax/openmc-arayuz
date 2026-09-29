@@ -136,7 +136,7 @@ class ParametreFormu(QtWidgets.QWidget):
             form.addRow(_etiket("Yoğunluk:"), self.hesaplanan)
         self.uyari = QtWidgets.QLabel()
         self.uyari.setWordWrap(True)
-        self.uyari.setStyleSheet("color: %s;" % _tema_renk("uyari", "#a8620a"))
+        self.uyari.setStyleSheet("color: %s;" % _tema_renk("uyari"))
         form.addRow(self.uyari)
         self._degisti()
 

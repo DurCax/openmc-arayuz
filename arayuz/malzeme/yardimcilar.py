@@ -9,6 +9,9 @@
 from PySide6 import QtCore, QtWidgets
 from cekirdek import malzeme_kutup as mk
 from cekirdek import sema
+from cekirdek.gunluk import kaydedici
+
+_log = kaydedici(__name__)
 
 
 # Spec degerleri AYNEN kalir; kullanici yalnizca okunur etiketi gorur.
@@ -164,12 +167,16 @@ def _sayi_metni(v):
     return repr(float(v))
 
 
-def _tema_renk(ad, vars_):
+def _tema_renk(ad, vars_=None):
+    """Etkin tema rengi. Tema (Qt) yuklenemezse acik temanin token rengi;
+    vars_ yalniz eski cagrilar icin kalir (ikisi de yoksa)."""
     try:
         from arayuz import tema
         return tema.renk(ad)
-    except Exception:
-        return vars_
+    except (ImportError, KeyError) as e:
+        from arayuz.tasarim import tokenlar
+        _log.debug("tema rengi %r okunamadi (%s); token rengi kullaniliyor", ad, e)
+        return tokenlar.palet("acik").get(ad, vars_)
 
 
 # Diyalogdaki butun form etiketleri ayni genislikte: ust "Ad" satiri,
@@ -193,7 +200,7 @@ def _ozet_etiketi():
 def _hata_etiketi():
     e = QtWidgets.QLabel()
     e.setWordWrap(True)
-    e.setStyleSheet("color: %s;" % _tema_renk("hata", "#b3261e"))
+    e.setStyleSheet("color: %s;" % _tema_renk("hata"))
     e.setVisible(False)
     return e
 

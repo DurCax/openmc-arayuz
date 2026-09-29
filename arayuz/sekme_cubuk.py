@@ -167,7 +167,7 @@ class CubukSekmesi(SayfalarMixin, CubukFormuMixin, PlakaFormuMixin, SekmeTabani)
         eksik = eksik_malzemeler(self.spec, parca)
         if eksik:
             oge.setText(oge.text() + "  ⚠")
-            oge.setForeground(QtGui.QColor(_renk("hata", "#b3261e")))
+            oge.setForeground(QtGui.QColor(_renk("hata")))
             oge.setToolTip("Malzemesi seçilmemiş: %s" % ", ".join(eksik))
 
     def _eylemleri_guncelle(self):

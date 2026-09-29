@@ -56,7 +56,7 @@ class MalzemeKutusu(QtWidgets.QComboBox):
         return self.currentData() is None and not self._yok_gecerli
 
     def _stil(self, *_):
-        stil = ("QComboBox { color: %s; font-weight: 600; }" % _renk("hata", "#b3261e")
+        stil = ("QComboBox { color: %s; font-weight: 600; }" % _renk("hata")
                 if self.eksik_mi() else "")
         if self.styleSheet() != stil:
             self.setStyleSheet(stil)

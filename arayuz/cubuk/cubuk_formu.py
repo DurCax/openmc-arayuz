@@ -175,7 +175,7 @@ class CubukFormuMixin(object):
         h = sema.kor_yuksekligi((self.spec or {}).get("kor") or {})
         if not h:
             self.c_uc_etiket.setText("Model 2B: Kor sekmesinde yükseklik tanımlayın")
-            self.c_uc_etiket.setStyleSheet("color: %s;" % _renk("hata", "#b3261e"))
+            self.c_uc_etiket.setStyleSheet("color: %s;" % _renk("hata"))
             return
         try:
             from cekirdek import kurucu

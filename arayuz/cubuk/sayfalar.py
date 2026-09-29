@@ -26,7 +26,7 @@ class SayfalarMixin(object):
 
     def _hata_goster(self, etiket, metin):
         etiket.setText(metin or "")
-        etiket.setStyleSheet("color: %s;" % _renk("hata", "#b3261e"))
+        etiket.setStyleSheet("color: %s;" % _renk("hata"))
         etiket.setVisible(bool(metin))
 
     def _cubuk_sayfa(self):
