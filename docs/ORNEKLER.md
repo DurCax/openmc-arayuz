@@ -96,12 +96,30 @@ fıçısı, nötron kalkanı ve basınç kabı **yoktur**; bu yüzden ölçülen
 (`guc_dagilimi.cubuklar`, Ajan 8b) birleşince üç yakıt türünü birlikte sayar;
 test OR10 o zamana kadar ÖN_KOŞUL ile atlanır.
 
-### Çeyrek simetrik kor
+### Çeyrek simetrik kor (ve yükleme deseninin ayna simetrisi)
 
-Çekirdek bir kor yüzüne tek bir yan sınır koşulu uygular (yüz başına sınır koşulu
-yok). Çeyrek kor bu yüzden dört yanda yansıtıcıdır ama dış iki yüzden önce iki
-sıra (42.8 cm) su vardır: yansıtılan "ayna" kor 85.7 cm su ile ayrılır ve
-etkileşmez. YAVAS test OR12 çeyrek ve tam kor k'sını karşılaştırır.
+Simetri düzlemi **yansıtıcı** sınırla kurulur: çözülen model, çeyreğin iki eksende
+**aynalanmasıyla** oluşan kordur. Bunun bir sonucu var ve ilk denemede bu yüzden
+yanlış sonuç alındı:
+
+> **Dama (checkerboard) deseninin 180° dönme simetrisi vardır ama AYNA simetrisi
+> yoktur.** Çeyreği aynalayınca komşu çeyreklerde A/B desen yer değiştirir, yani
+> çeyrek kor modeli *başka bir yükleme* çözer. Ölçüldü: aynı yan sınırla bile
+> çeyrek ile tam kor arasında **+260 pcm** fark. Bu yüzden `pwr_smr_kor.json`
+> yüklemesi eş merkezli kuşaklara (B = %3.1 dış, A = %2.4 iç) çevrildi.
+> `testler/test_ornekler.py` OR9 çeyreğin aynasını tam korun haritasıyla
+> karşılaştırır — Monte Carlo'suz, bedava bir denetim.
+
+Geriye kalan fark yan sınır koşulundan gelir: çekirdek korun **dört yan yüzüne
+tek bir** sınır koşulu uygular, yüz başına ayrı koşul yoktur. Çeyrek korun dış
+iki yüzü de bu yüzden yansıtıcıdır (85.7 cm su ile ayrılmış sonsuz kor dizisi).
+Ölçülen etki: tam kor, aynı geometri, yalnız yan sınır vakum → yansıtıcı
+**+89 pcm** (1.08439 ± 0.00064 → 1.08528 ± 0.00073). Bu yüzden:
+
+- Mutlak k için **tam koru** kullanın.
+- Çeyrek kor ~4 kat hızlıdır; göreli karşılaştırmalar (çubuk değeri, güç şekli)
+  için uygundur.
+- YAVAS test OR12 iki modeli **aynı yan sınırla** karşılaştırır.
 
 ### Diğerleri
 
@@ -110,7 +128,12 @@ etkileşmez. YAVAS test OR12 çeyrek ve tam kor k'sını karşılaştırır.
   borsuz HZP (560 K).
 - **pwr_gd_tukenme:** tek Gd'li pin hücresi temsil edici değildir (sonsuz Gd
   kafesi); 5×5 süper hücrenin merkezindeki Gd'li pelet eşit alanlı 5 halkaya
-  bölünür. YAVAS test OR13 dış halkanın önce yandığını ("soğan kabuğu") sınar.
+  bölünür. Ölçülen (OR13, 5 MWd/kg): kalan Gd-157 oranı içten dışa
+  0.79 / 0.71 / 0.58 / 0.30 / 0.01 — uzaysal öz-perdeleme ("soğan kabuğu")
+  açıkça görünür; 16 MWd/kg'da iç halkada hâlâ ~%12 Gd-157 kalır.
+  **k∞ bu modelde tepe yapmaz:** 25 çubuktan yalnız biri Gd'li olduğu için
+  reaktivite tutması zayıftır ve yakıt tükenmesi baskındır. Gerçek bir demette
+  (12–20 Gd'li çubuk) tepe görülür.
 - **bwr_10x10:** su kanalı duvarı yok; kutu duvarı + bypass suyu 1.145 cm'lik
   homojen kuşak.
 - **mtr_kor:** çekirdeğin plaka elemanı sonlu bir kutudur ve kor kafesi kare
@@ -134,10 +157,10 @@ süreleri, 8 iş parçacığı, makine başka koşularla paylaşılırken:
 | pwr_ceyrek_kor.json | 76.7 | 1.08778 ± 0.00097 |
 | mtr_kor.json | 114.4 | 1.16743 ± 0.00098 |
 
-Çeyrek ve tam SMR koru "Normal" ayarda 3.2σ ayrıştı (433 pcm): tam korda 40
-pasif çevrim kaynak yakınsaması için yetersizdir (entropi hâlâ düşüyordu).
-YAVAS test OR12 20000 × 160/60 ile karşılaştırır; büyük korlarda pasif çevrimi
-artırın.
+Tam korlarda "Normal" ayarın 40 pasif çevrimi kaynak yakınsaması için sınırdadır
+(Shannon entropisi hâlâ düşüyordu); k karşılaştırması yapacaksanız pasif çevrimi
+artırın (YAVAS test OR12 20000 × 160/60 kullanır). Çeyrek ile tam korun
+karşılaştırılması için yukarıdaki "Çeyrek simetrik kor" bölümüne bakın.
 
 Hepsi 15 dakikanın altındadır.
 
