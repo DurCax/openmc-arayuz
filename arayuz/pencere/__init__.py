@@ -8,6 +8,8 @@
  menuler.py         : MenulerMixin -- menu, arac cubugu, durum cubugu, yardim
  proje.py           : ProjeMixin   -- ac/kaydet, son kullanilanlar, ice/disa aktarma
  gecmis.py          : GecmisMixin  -- geri al / yinele
+ gezinme.py         : GezinmeCephesi -- sekme gezinmesinin herkese acik yuzu
+                      (sekmeye_git, gecerli_sekme, sekme_gorunur_mu, ...)
  ana_pencere.py     : AnaPencere   -- pencere iskeleti (yukaridakileri karistirir)
 
  Giris noktasi ve eski ice aktarma yolu arayuz/ana_pencere.py'de kalir:

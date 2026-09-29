@@ -176,10 +176,10 @@ def ornek_metinleri():
         ad = os.path.splitext(os.path.basename(yol))[0]
         p = _pencere(yol)
         p.s_tukenme.bekle()
-        for i in range(p.sekmeler.count()):
-            if not p.sekmeler.isTabVisible(i):
+        for anahtar in p.sekme_anahtarlari():
+            if not p.sekme_gorunur_mu(anahtar):
                 continue
-            p.sekmeler.setCurrentIndex(i)
+            p.sekmeye_git(anahtar, sessiz=True)
             uyg.processEvents()
         p.s_tukenme.bekle()
         uyg.processEvents()

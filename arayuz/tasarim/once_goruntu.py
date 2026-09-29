@@ -52,6 +52,21 @@ def _kaydet(resim, yol):
     return yol
 
 
+def _gorunur_sekmeler(p):
+    """Gorunur sekmelere sirayla gecer ve anahtarini verir. Gezinme cephesi
+    (sekme_anahtarlari/sekmeye_git) olmayan ESKI kod agaclarinda QTabWidget'a
+    dogrudan gidilir (bu arac eski agaclara karsi da calisir)."""
+    if not hasattr(p, "sekme_anahtarlari"):
+        for anahtar, indeks in p._sekme_ix.items():
+            if p.sekmeler.isTabVisible(indeks):
+                p.sekmeler.setCurrentIndex(indeks)
+                yield anahtar
+        return
+    for anahtar in p.sekme_anahtarlari():
+        if p.sekmeye_git(anahtar, sessiz=True):
+            yield anahtar
+
+
 def _pencere_cek(app, boyut, tema_adi, cikti):
     from arayuz import ana_pencere
     yollar = []
@@ -64,10 +79,7 @@ def _pencere_cek(app, boyut, tema_adi, cikti):
     yollar.append(_kaydet(p.grab(), os.path.join(cikti, "baslangic_" + son)))
     p.ornek_ac(ORNEK)
     _bekle(app)
-    for anahtar, indeks in p._sekme_ix.items():
-        if not p.sekmeler.isTabVisible(indeks):
-            continue
-        p.sekmeler.setCurrentIndex(indeks)
+    for anahtar in _gorunur_sekmeler(p):
         _bekle(app)
         yollar.append(_kaydet(p.grab(), os.path.join(cikti, "%s_%s" % (anahtar, son))))
     p.close()

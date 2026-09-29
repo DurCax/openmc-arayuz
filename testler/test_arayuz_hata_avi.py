@@ -80,7 +80,7 @@ def test_arayuz_tekerlek(gecici=None):
         # pencere gosterilir -- gercek ekranda pencere acilmaz).
         if QtGui.QGuiApplication.platformName() == "offscreen":
             p.show()
-            p.sekmeler.setCurrentIndex(3)
+            p.sekmeye_git("kor")
             p.activateWindow()
             k.adim.setFocus()
             uyg.processEvents()

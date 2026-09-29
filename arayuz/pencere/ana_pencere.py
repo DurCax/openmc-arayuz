@@ -60,6 +60,7 @@ from arayuz.ortak import DurumRozeti, cumle_basi, tekerlek_korumasi_kur
 from arayuz.pencere.menuler import MenulerMixin
 from arayuz.pencere.proje import ProjeMixin
 from arayuz.pencere.gecmis import GecmisMixin
+from arayuz.pencere.gezinme import GezinmeCephesi
 from arayuz.pencere.model_islemleri import (
     DOGRULAMA_SEKMELERI, EDITOR_ANAHTARI, SEKME_ADLARI, TASARIM_SEKMELERI, TUR_ADLARI,
     UYGULAMA_ADI, _KONU_BAGIMLILIK, _SABLON_ADLARI, kor_turu_degistir, model_adlari,
@@ -79,7 +80,7 @@ _SEVIYE_ADI = {"hata": "Hata", "uyari": "Uyarı", "bilgi": "Bilgi"}
 # ana pencere
 # ============================================================================
 
-class AnaPencere(MenulerMixin, ProjeMixin, GecmisMixin, QtWidgets.QMainWindow):
+class AnaPencere(GezinmeCephesi, MenulerMixin, ProjeMixin, GecmisMixin, QtWidgets.QMainWindow):
 
     def __init__(self, acilis_dosyasi=None):
         super().__init__()
@@ -329,7 +330,7 @@ class AnaPencere(MenulerMixin, ProjeMixin, GecmisMixin, QtWidgets.QMainWindow):
             return False
         self._proje_kur(spec, proje_yolu=None, ornek_kaynagi=None)
         kart = baslangic.kart(anahtar)
-        self._sekmeye_git(kart.get("sekme") or "malzemeler", sessiz=True)
+        self.sekmeye_git(kart.get("sekme") or "malzemeler", sessiz=True)
         self.statusBar().showMessage(
             "Çalışan sade bir model kuruldu (%s). Kaydetmek için 'Farklı kaydet' "
             "kullanın." % kart["baslik"], 8000)
@@ -465,19 +466,6 @@ class AnaPencere(MenulerMixin, ProjeMixin, GecmisMixin, QtWidgets.QMainWindow):
                 self.sekmeler.setTabVisible(i, acik)
         self._sag_panel_guncelle()
 
-    def _sekmeye_git(self, anahtar, sessiz=False):
-        """Sekmeye gecer; sekme bu modelde gizliyse gecmez (False)."""
-        i = self._sekme_ix.get(anahtar)
-        if i is None:
-            return False
-        if not self.sekmeler.isTabVisible(i):
-            if not sessiz:
-                self.statusBar().showMessage(
-                    "%s sekmesi bu model türünde kullanılmıyor." % SEKME_ADLARI[anahtar], 6000)
-            return False
-        self.sekmeler.setCurrentIndex(i)
-        return True
-
     def _isaretleri_guncelle(self):
         """Sekme basliklarindaki ! • ✓ isaretleri ve ipuclari."""
         hata = {}
@@ -590,7 +578,7 @@ class AnaPencere(MenulerMixin, ProjeMixin, GecmisMixin, QtWidgets.QMainWindow):
         self.model_olcu.setText("%.2f × %.2f cm" % olcu if olcu else "")
 
     def _baslik_baglantisi(self, hedef):
-        self._sekmeye_git({"mod": "ayarlar", "kor": "kor"}.get(hedef, "kor"))
+        self.sekmeye_git({"mod": "ayarlar", "kor": "kor"}.get(hedef, "kor"))
 
     def _tur_menusunu_ac(self):
         """Kor sekmesindeki 'Türü değiştir…' baglantisi: basliktaki menu."""
@@ -698,7 +686,7 @@ class AnaPencere(MenulerMixin, ProjeMixin, GecmisMixin, QtWidgets.QMainWindow):
         if anahtar is not None:
             if self.baslangic_acik_mi():
                 self._editoru_goster()
-            self._sekmeye_git(anahtar)
+            self.sekmeye_git(anahtar)
 
     def _sekme_indeksi(self, editor):
         """Editorun (kaydirma alanina sarili) sekme indeksi; yoksa -1."""
@@ -748,7 +736,7 @@ class AnaPencere(MenulerMixin, ProjeMixin, GecmisMixin, QtWidgets.QMainWindow):
     def _calistir_menuden(self):
         if self.baslangic_acik_mi():
             return
-        self._sekmeye_git("calistir")
+        self.sekmeye_git("calistir")
         self.s_calistir.spec_ayarla(self.spec, self.proje_yolu)
         self.s_calistir.calistir()
 
