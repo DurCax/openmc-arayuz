@@ -39,6 +39,14 @@ def _radyal_satirlari(faktorler):
               "yakıt çubukları üzerinden hesaplanır.")
             % (faktorler["demet_sayisi"], faktorler["cubuk_sayisi"],
                _g().demet_metni(faktorler["sicak_demet"], faktorler), faktorler["F_demet"]))
+    tur = faktorler.get("tur_ozeti")
+    if tur:
+        satirlar.append(
+            _("Çubuk türleri (bağıl ortalama / tepe; bütün yakıt çubuklarının "
+              "ortalaması = 1): %s")
+            % "; ".join("%s: %.4f / %.4f (%d çubuk)" % (ad, v["ortalama"], v["tepe"],
+                                                        v["cubuk_sayisi"])
+                        for ad, v in tur.items()))
     # --- maksimumun yukari yanliligi ---
     oran = faktorler.get("yanlilik_orani")
     if oran is not None and oran > 0.3:
