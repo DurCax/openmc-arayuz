@@ -77,37 +77,7 @@ class CubukSekmesi(SayfalarMixin, CubukFormuMixin, PlakaFormuMixin, SekmeTabani)
     def __init__(self, parent=None):
         super().__init__(parent)
 
-        # --- sol: parca listesi ---
-        self.liste = QtWidgets.QListWidget()
-        self.liste.setIconSize(QtCore.QSize(14, 14))
-        self.liste.setAlternatingRowColors(True)
-        self.liste.currentRowChanged.connect(self._secim_degisti)
-        self.d_cubuk = bl.ikincil_dugme(_("Çubuk"), "cylinder")
-        self.cubuk_menusu = QtWidgets.QMenu(self.d_cubuk)
-        self.sablon_eylemleri = {}
-        for anahtar, metin, _ad in CUBUK_SABLONLARI:
-            e = self.cubuk_menusu.addAction(metin)
-            e.triggered.connect(lambda _c=False, a=anahtar: self.cubuk_ekle(a))
-            self.sablon_eylemleri[anahtar] = e
-        self.sablon_eylemleri["yakit"].setToolTip(
-            "Yakıt, yakıt-zarf aralığı, zarf ve soğutucu; malzemeler rollerine göre seçilir.")
-        self.sablon_eylemleri["kilavuz"].setToolTip(
-            "Suyla dolu kılavuz boru (zarf + soğutucu).")
-        self.sablon_eylemleri["kontrol"].setToolTip(
-            "Kılavuz borusunda eksenel hareket eden emici çubuk (3B model).")
-        self.cubuk_menusu.setToolTipsVisible(True)
-        self.d_cubuk.setMenu(self.cubuk_menusu)
-        self.d_plaka = bl.ikincil_dugme(_("Plaka"), "layers")
-        self.d_kopya = bl.duz_dugme(_("Kopyala"), "copy")
-        self.d_sil = bl.tehlikeli_dugme(_("Sil"), "trash")
-        self.d_plaka.clicked.connect(self.plaka_ekle)
-        self.d_kopya.clicked.connect(self._kopyala)
-        self.d_sil.clicked.connect(self._sil)
-        self.liste_karti = bl.Kart(_("Parçalar"))
-        self.liste_karti.ekle(self.liste, 1)
-        self.liste_karti.ekle(sd.satir(self.d_cubuk, self.d_plaka))
-        self.liste_karti.ekle(sd.satir(self.d_kopya, self.d_sil))
-        sol = self.liste_karti
+        sol = self._liste_karti()
 
         # --- sag: editor yigini ---
         self.bos = BosDurum("Henüz parça yok", "", "Yakıt çubuğu ekle")
@@ -132,6 +102,40 @@ class CubukSekmesi(SayfalarMixin, CubukFormuMixin, PlakaFormuMixin, SekmeTabani)
         duzen.addWidget(sd.sayfa_basligi(
             _("Parçalar"), _("Çubuklar ve plaka elemanları: radyal bölgeler ve malzemeler.")))
         duzen.addWidget(bolucu, 1)
+
+    # ------------------------------------------------------------------
+    def _liste_karti(self):
+        """Sol kart: parca listesi + sablon menusu ve islem dugmeleri."""
+        self.liste = QtWidgets.QListWidget()
+        self.liste.setIconSize(QtCore.QSize(14, 14))
+        self.liste.setAlternatingRowColors(True)
+        self.liste.currentRowChanged.connect(self._secim_degisti)
+        self.d_cubuk = bl.ikincil_dugme(_("Çubuk"), "cylinder")
+        self.cubuk_menusu = QtWidgets.QMenu(self.d_cubuk)
+        self.sablon_eylemleri = {}
+        for anahtar, metin, _ad in CUBUK_SABLONLARI:
+            e = self.cubuk_menusu.addAction(metin)
+            e.triggered.connect(lambda _c=False, a=anahtar: self.cubuk_ekle(a))
+            self.sablon_eylemleri[anahtar] = e
+        self.sablon_eylemleri["yakit"].setToolTip(_(
+            "Yakıt, yakıt-zarf aralığı, zarf ve soğutucu; malzemeler rollerine göre seçilir."))
+        self.sablon_eylemleri["kilavuz"].setToolTip(_(
+            "Suyla dolu kılavuz boru (zarf + soğutucu)."))
+        self.sablon_eylemleri["kontrol"].setToolTip(_(
+            "Kılavuz borusunda eksenel hareket eden emici çubuk (3B model)."))
+        self.cubuk_menusu.setToolTipsVisible(True)
+        self.d_cubuk.setMenu(self.cubuk_menusu)
+        self.d_plaka = bl.ikincil_dugme(_("Plaka"), "layers")
+        self.d_kopya = bl.duz_dugme(_("Kopyala"), "copy")
+        self.d_sil = bl.tehlikeli_dugme(_("Sil"), "trash")
+        self.d_plaka.clicked.connect(self.plaka_ekle)
+        self.d_kopya.clicked.connect(self._kopyala)
+        self.d_sil.clicked.connect(self._sil)
+        self.liste_karti = bl.Kart(_("Parçalar"))
+        self.liste_karti.ekle(self.liste, 1)
+        self.liste_karti.ekle(sd.satir(self.d_cubuk, self.d_plaka))
+        self.liste_karti.ekle(sd.satir(self.d_kopya, self.d_sil))
+        return self.liste_karti
 
     # ------------------------------------------------------------------
     # doldurma
