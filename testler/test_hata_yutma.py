@@ -50,7 +50,7 @@ METIN_CAGRILARI = {"str", "repr", "type", "format"}
 KABA_EKLEME = {"append", "add", "extend", "insert"}
 
 # "modul:nitelikli_islev" -> o islevdeki sessiz except sayisi.
-# Olculen 29.09.2026 (D1-C): 33 kayit. Kaynak dosya satirlari rapordadir.
+# Olculen 30.09.2026 (D2-8c): 20 kayit (Analiz'in uc kaydi silindi). Kaynak dosya satirlari rapordadir.
 #   (T) Dalga 1 tabani (eski anahtar "islev" -> "modul:islev" tasindi; 26 kayit).
 #   (Y) D1-C yeni kurali (hata metnini alana/listeye yazip birakma) ile eklenen
 #       taban cizgisi; DUZELTME Dalga 2 sahiplerine kalir (7 kayit).
@@ -61,9 +61,6 @@ IZINLI = {
     "arayuz.onizleme:_LibYoneticisi.kapat": 1,                    # (T)
     "arayuz.ortak:GelismisBolum._oku": 1,                         # (T)
     "arayuz.ortak:GelismisBolum._yaz": 1,                         # (T)
-    "arayuz.sekme_analiz:AnalizSekmesi._bos_nedeni": 1,           # (T)
-    "arayuz.sekme_analiz:AnalizSekmesi._hedefleri_listele": 1,    # (T)
-    "arayuz.sekme_analiz:AnalizSekmesi._varsayilan_aralik": 1,    # (T)
     "arayuz.sekme_calistir:CalistirSekmesi._bitti": 1,            # (T)
     "arayuz.sekme_calistir:CalistirSekmesi._guc_etkin": 1,        # (T)
     "arayuz.sekme_kor:KorSekmesi._katman_ozet_guncelle": 1,       # (Y) satir += "...%s" % hata
