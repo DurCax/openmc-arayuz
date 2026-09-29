@@ -7,6 +7,9 @@
 """
 
 from PySide6 import QtCore, QtWidgets
+from cekirdek.ceviri import _
+from arayuz import bilesenler as bl
+from arayuz import sekme_duzen as sd
 from arayuz.ortak import baslik, ipucu, sayi, tamsayi
 from arayuz.cubuk.parca_islemleri import _renk
 from arayuz.cubuk.malzeme_kutusu import _SatirTakibi
@@ -58,10 +61,10 @@ class SayfalarMixin(object):
         self.c_tablo.currentCellChanged.connect(lambda *_: self._bolge_dugmeleri())
         self._satir_takibi = _SatirTakibi(self.c_tablo)
 
-        self.d_bolge_ekle = QtWidgets.QPushButton("Bölge ekle")
-        self.d_bolge_sil = QtWidgets.QPushButton("Bölge sil")
-        self.d_ice = QtWidgets.QPushButton("İçe taşı")
-        self.d_disa = QtWidgets.QPushButton("Dışa taşı")
+        self.d_bolge_ekle = bl.ikincil_dugme(_("Bölge ekle"), "plus")
+        self.d_bolge_sil = bl.duz_dugme(_("Bölge sil"), "trash")
+        self.d_ice = bl.duz_dugme(_("İçe taşı"), "chevron-left")
+        self.d_disa = bl.duz_dugme(_("Dışa taşı"), "chevron-right")
         self.d_bolge_ekle.setToolTip("Dış bölgenin hemen içine yeni bir bölge ekler.")
         self.d_ice.setToolTip("Seçili bölgenin malzemesini bir içteki bölgeyle değiştirir; "
                               "yarıçaplar yerinde kalır.")
@@ -71,12 +74,9 @@ class SayfalarMixin(object):
         self.d_bolge_sil.clicked.connect(self._bolge_sil)
         self.d_ice.clicked.connect(lambda: self._bolge_tasi(-1))
         self.d_disa.clicked.connect(lambda: self._bolge_tasi(+1))
-        dugme = QtWidgets.QHBoxLayout()
-        for b in (self.d_bolge_ekle, self.d_bolge_sil, self.d_ice, self.d_disa):
-            dugme.addWidget(b)
-        dugme.addStretch(1)
+        dugme = sd.satir(self.d_bolge_ekle, self.d_bolge_sil, self.d_ice, self.d_disa)
 
-        form = QtWidgets.QFormLayout()
+        form = sd.form()
         form.addRow("Ad:", self.c_ad)
         form.addRow("", self.c_ad_hata)
         self.e_tur = QtWidgets.QLabel("Tür:")
@@ -111,20 +111,22 @@ class SayfalarMixin(object):
         self.c_eksik = self._hata_etiketi()
         self.c_sira_uyari = self._hata_etiketi()
 
-        d = QtWidgets.QVBoxLayout(w)
-        self.c_baslik = baslik("Çubuk")
-        d.addWidget(self.c_baslik)
-        d.addLayout(form)
-        d.addWidget(self.c_kontrol_not)
-        d.addWidget(baslik("Radyal bölgeler"))
-        d.addWidget(ipucu(
+        self.c_karti = bl.Kart(_("Çubuk"))
+        self.c_baslik = self.c_karti.baslik_etiketi
+        self.c_karti.govde.addLayout(form)
+        self.c_karti.ekle(self.c_kontrol_not)
+        self.c_bolge_karti = bl.Kart(_("Radyal bölgeler"), aciklama=_(
             "Bölgeler içten dışa sıralanır; her satırın yarıçapı o bölgenin dış "
             "sınırıdır ve bir öncekinden büyük olmalıdır. Son satır dış bölgedir: "
             "çubuğun çevresini hücrenin kenarına kadar doldurur (çoğunlukla soğutucu)."))
-        d.addWidget(self.c_tablo, 1)
-        d.addWidget(self.c_sira_uyari)
-        d.addWidget(self.c_eksik)
-        d.addLayout(dugme)
+        self.c_bolge_karti.ekle(self.c_tablo, 1)
+        self.c_bolge_karti.ekle(self.c_sira_uyari)
+        self.c_bolge_karti.ekle(self.c_eksik)
+        self.c_bolge_karti.ekle(dugme)
+
+        d = sd.sayfa_duzeni(w, dolgu=False)
+        d.addWidget(self.c_karti)
+        d.addWidget(self.c_bolge_karti, 1)
 
         self.c_tur.currentIndexChanged.connect(self._cubuk_tur_degisti)
         self.c_emici.currentIndexChanged.connect(self._cubuk_kaydet)
@@ -149,7 +151,7 @@ class SayfalarMixin(object):
         # Malzeme kutulari her yuklemede yeniden kurulur (role gore suzulu).
         self.p_et_mal = self.p_zarf_mal = self.p_sog = self.p_yan_mal = None
 
-        self.p_form = QtWidgets.QFormLayout()
+        self.p_form = sd.form()
         f = self.p_form
         f.addRow("Ad:", self.p_ad)
         f.addRow("", self.p_ad_hata)
@@ -180,13 +182,14 @@ class SayfalarMixin(object):
                      self.p_genislik, self.p_yan):
             alan.valueChanged.connect(self._plaka_kaydet)
 
-        d = QtWidgets.QVBoxLayout(w)
-        d.addWidget(baslik("MTR tipi plaka yakıt elemanı"))
-        d.addWidget(ipucu(
+        self.p_karti = bl.Kart(_("MTR tipi plaka yakıt elemanı"), aciklama=_(
             "Kesit x yönünde sırayla kurulur: kanal [zarf | yakıt | zarf] kanal "
             "[zarf | yakıt | zarf] … ve sonda bir kanal daha. Yan levhalar y "
             "yönünde aktif bölgenin altında ve üstünde yer alır."))
-        d.addLayout(f)
-        d.addWidget(self.p_eksik)
+        self.p_karti.govde.addLayout(f)
+        self.p_karti.ekle(self.p_eksik)
+
+        d = sd.sayfa_duzeni(w, dolgu=False)
+        d.addWidget(self.p_karti)
         d.addStretch(1)
         return w

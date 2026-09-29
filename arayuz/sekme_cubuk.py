@@ -42,6 +42,10 @@ import re
 from PySide6 import QtCore, QtGui, QtWidgets
 
 from cekirdek import sema, uygunluk
+from cekirdek.ceviri import _
+from arayuz import bilesenler as bl
+from arayuz import sekme_duzen as sd
+from arayuz.tasarim import tokenlar
 from arayuz.ortak import BosDurum, SekmeTabani, baslik, ipucu, renk_simgesi, sayi, tamsayi
 
 # Bolunen parcalar (Dalga 0): eski ad alani aynen korunur.
@@ -76,8 +80,9 @@ class CubukSekmesi(SayfalarMixin, CubukFormuMixin, PlakaFormuMixin, SekmeTabani)
         # --- sol: parca listesi ---
         self.liste = QtWidgets.QListWidget()
         self.liste.setIconSize(QtCore.QSize(14, 14))
+        self.liste.setAlternatingRowColors(True)
         self.liste.currentRowChanged.connect(self._secim_degisti)
-        self.d_cubuk = QtWidgets.QPushButton("+ Çubuk")
+        self.d_cubuk = bl.ikincil_dugme(_("Çubuk"), "cylinder")
         self.cubuk_menusu = QtWidgets.QMenu(self.d_cubuk)
         self.sablon_eylemleri = {}
         for anahtar, metin, _ad in CUBUK_SABLONLARI:
@@ -92,25 +97,17 @@ class CubukSekmesi(SayfalarMixin, CubukFormuMixin, PlakaFormuMixin, SekmeTabani)
             "Kılavuz borusunda eksenel hareket eden emici çubuk (3B model).")
         self.cubuk_menusu.setToolTipsVisible(True)
         self.d_cubuk.setMenu(self.cubuk_menusu)
-        self.d_plaka = QtWidgets.QPushButton("+ Plaka")
-        self.d_kopya = QtWidgets.QPushButton("Kopyala")
-        self.d_sil = QtWidgets.QPushButton("Sil")
+        self.d_plaka = bl.ikincil_dugme(_("Plaka"), "layers")
+        self.d_kopya = bl.duz_dugme(_("Kopyala"), "copy")
+        self.d_sil = bl.tehlikeli_dugme(_("Sil"), "trash")
         self.d_plaka.clicked.connect(self.plaka_ekle)
         self.d_kopya.clicked.connect(self._kopyala)
         self.d_sil.clicked.connect(self._sil)
-        ekle = QtWidgets.QHBoxLayout()
-        ekle.addWidget(self.d_cubuk)
-        ekle.addWidget(self.d_plaka)
-        islem = QtWidgets.QHBoxLayout()
-        islem.addWidget(self.d_kopya)
-        islem.addWidget(self.d_sil)
-        sol = QtWidgets.QWidget()
-        sol_d = QtWidgets.QVBoxLayout(sol)
-        sol_d.setContentsMargins(0, 0, 0, 0)
-        sol_d.addWidget(baslik("Parçalar"))
-        sol_d.addWidget(self.liste, 1)
-        sol_d.addLayout(ekle)
-        sol_d.addLayout(islem)
+        self.liste_karti = bl.Kart(_("Parçalar"))
+        self.liste_karti.ekle(self.liste, 1)
+        self.liste_karti.ekle(sd.satir(self.d_cubuk, self.d_plaka))
+        self.liste_karti.ekle(sd.satir(self.d_kopya, self.d_sil))
+        sol = self.liste_karti
 
         # --- sag: editor yigini ---
         self.bos = BosDurum("Henüz parça yok", "", "Yakıt çubuğu ekle")
@@ -129,9 +126,12 @@ class CubukSekmesi(SayfalarMixin, CubukFormuMixin, PlakaFormuMixin, SekmeTabani)
         bolucu.setStretchFactor(1, 1)
         bolucu.setSizes([210, 520])
         bolucu.setChildrenCollapsible(False)
+        bolucu.setHandleWidth(tokenlar.ARALIK["m"])
 
-        duzen = QtWidgets.QVBoxLayout(self)
-        duzen.addWidget(bolucu)
+        duzen = sd.sayfa_duzeni(self)
+        duzen.addWidget(sd.sayfa_basligi(
+            _("Parçalar"), _("Çubuklar ve plaka elemanları: radyal bölgeler ve malzemeler.")))
+        duzen.addWidget(bolucu, 1)
 
     # ------------------------------------------------------------------
     # doldurma
