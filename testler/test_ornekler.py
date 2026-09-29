@@ -266,8 +266,8 @@ def test_yavas_yeni_ornekler_kosar(gecici):
 
 def test_yavas_ceyrek_tam_esit(gecici):
     print("\n[OR12] Ceyrek kor k = tam kor k (3 sigma)")
-    t = _kos("pwr_smr_kor.json", gecici, 8000, 70, 20)
-    c = _kos("pwr_ceyrek_kor.json", gecici, 8000, 70, 20)
+    t = _kos("pwr_smr_kor.json", gecici, 20000, 160, 60)
+    c = _kos("pwr_ceyrek_kor.json", gecici, 20000, 160, 60)
     if t is None or c is None:
         return
     (kt, st), (kc, sc) = t["keff"], c["keff"]
