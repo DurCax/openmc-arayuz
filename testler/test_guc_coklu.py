@@ -489,6 +489,72 @@ def test_katman_anahtari_haritasiz_korda_durur():
             "altıgen haritalı" in mesaj and "kare" in mesaj, "-> %s" % mesaj)
 
 
+# ---------------------------------------------------------------------------
+# tukenme hacmi: kontrol tamburu / kontrol cubugu emicisi (D1 izleme, 8b)
+# ---------------------------------------------------------------------------
+
+def test_tambur_emici_hacmi_analitik():
+    print("\n[GC19] tambur emicisi: analitik hacim -> tukenmeye katilir")
+    import math
+    from cekirdek import sema, tukenme, tukenme_hacim
+    s = sema.yukle(os.path.join(ORNEK, "tamburlu_kor.json"))
+    s["tukenme"]["var"] = True
+    t, h = s["kor"]["tambur"], sema.kor_yuksekligi(s["kor"])
+    beklenen = t["sayi"] * t["emici_aci"] / 360.0 * math.pi * (
+        t["yaricap"] ** 2 - t["emici_ic_yaricap"] ** 2) * h
+    hv = tukenme.hacimler(s)
+    kontrol("b4c hacimde, analitik %.6g cm3" % beklenen,
+            "b4c" in hv and abs(hv["b4c"]["hacim"] - beklenen) < 1e-9 * beklenen,
+            "-> %s" % hv.get("b4c"))
+    kontrol("hacimsiz zehir kalmadi", tukenme.hacimsiz_zehirler(s) == {})
+    kontrol("donme hacmi degistirmez", tukenme_hacim.tambur_emici_hacmi(
+        dict(s["kor"], tambur=dict(t, donme=37.0)), "b4c")[0] == hv["b4c"]["hacim"])
+    kontrol("ilgisiz malzeme 0", tukenme_hacim.tambur_emici_hacmi(s["kor"], "u10mo")[0] == 0.0)
+    c = sema.cubuk_bul(sema.yukle(os.path.join(ORNEK, "pwr_kontrol.json")), "kontrol_cubugu")
+    k = sema.yukle(os.path.join(ORNEK, "pwr_kontrol.json"))
+    em, iz = tukenme_hacim.kontrol_emici_uzunlugu(k, c)
+    hk = sema.kor_yuksekligi(k["kor"])
+    kontrol("kontrol cubugu: emici + izleyici = yukseklik, emici = daldirma x h",
+            abs(em + iz - hk) < 1e-12 and abs(em - c["daldirma"] / 100.0 * hk) < 1e-12)
+    kontrol("katmanli modelde None (kesin degil)", tukenme_hacim.kontrol_emici_uzunlugu(
+        sema.yukle(os.path.join(ORNEK, "pwr_eksenel.json")), c) is None)
+
+
+def test_emici_hacmi_stokastik(gecici):
+    """Analitik tambur emicisi ve kontrol cubugu emici uzunlugu, OpenMC'nin
+    stokastik hacim hesabiyla (4 sigma icinde)."""
+    print("\n[GC20] emici hacimleri: analitik vs OpenMC stokastik")
+    import math
+    from cekirdek import sema, tukenme, tukenme_hacim, uygunluk
+    s = sema.yukle(os.path.join(ORNEK, "tamburlu_kor.json"))
+    s["tukenme"]["var"] = True
+    analitik = tukenme.hacimler(s)["b4c"]["hacim"]
+    for alt in ("gc20_t", "gc20_k"):
+        os.makedirs(os.path.join(gecici, alt), exist_ok=True)
+    v, sd = tukenme.stokastik_hacimler(s, ["b4c"], orneklem=4_000_000,
+                                       dizin=os.path.join(gecici, "gc20_t"))["b4c"]
+    print("  tambur b4c: analitik %.2f, stokastik %.2f +- %.2f cm3" % (analitik, v, sd))
+    kontrol("tambur emicisi 4 sigma icinde", abs(v - analitik) <= 4 * sd)
+    k = sema.yukle(os.path.join(ORNEK, "pwr_kontrol.json"))
+    c = sema.cubuk_bul(k, "kontrol_cubugu")
+    c["daldirma"] = 60.0
+    i = int(c.get("emici_bolge") or 0)
+    r_ic = c["bolgeler"][i - 1]["r"] if i > 0 else 0.0
+    alan = math.pi * (c["bolgeler"][i]["r"] ** 2 - r_ic ** 2)
+    adet = sum(r.count(h) for r in sema.demet_bul(k, k["kor"]["demet"])["harita"]
+               for h, ad in sema.demet_bul(k, k["kor"]["demet"])["anahtar"].items()
+               if ad == "kontrol_cubugu")
+    em, _iz = tukenme_hacim.kontrol_emici_uzunlugu(k, c)
+    analitik = alan * em * adet
+    mal = c["bolgeler"][i]["malzeme"]
+    v, sd = tukenme.stokastik_hacimler(k, [mal], orneklem=4_000_000,
+                                       dizin=os.path.join(gecici, "gc20_k"))[mal]
+    print("  kontrol cubugu %s: analitik %.3f (%d cubuk), stokastik %.3f +- %.3f cm3"
+          % (mal, analitik, adet, v, sd))
+    kontrol("kontrol cubugu emicisi 4 sigma icinde", analitik > 0 and abs(v - analitik) <= 4 * sd)
+    uygunluk  # noqa: B018
+
+
 # ============================================================================
 # YAVAS -- Monte Carlo kabul
 # ============================================================================
@@ -616,6 +682,7 @@ HIZLI = [test_varsayilan_cubuklar_bos, test_eski_bicim_tek_ogeli_listeye,
          test_betik_cok_tur_yapisi, test_kaydet_yeni_bicim,
          test_dagilim_birlestirme_sentetik, test_varsayilan_hedefler_fisil_bolge,
          test_arayuz_tum_yakit_cubuklari, test_guc_haritasi_tur_secici,
-         test_tukenme_betik_ornek_hacimleri, test_katman_anahtari_haritasiz_korda_durur]
-YAVAS = [test_uc_zenginlik_mc_fdh, test_cok_tur_betik_esdegerligi]
+         test_tukenme_betik_ornek_hacimleri, test_katman_anahtari_haritasiz_korda_durur,
+         test_tambur_emici_hacmi_analitik]
+YAVAS = [test_uc_zenginlik_mc_fdh, test_cok_tur_betik_esdegerligi, test_emici_hacmi_stokastik]
 ZINCIR_GEREKEN = [test_tukenme_betik_ornek_hacimleri]
