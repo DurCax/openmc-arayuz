@@ -59,14 +59,14 @@ class YerlesimMixin(object):
         self.d_hepsi = bl.duz_dugme(_("Tümünü doldur"), "grid-3x3", _(
             "Bütün hücreleri seçili parçayla doldurur (Ctrl+Z geri alır)."))
         self.d_hepsi.clicked.connect(self._tumunu_doldur)
-        self.halka_secim = QtWidgets.QComboBox()
-        self.halka_secim.setToolTip(_("Doldurulacak halka (merkezden dışa numaralı)"))
-        self.d_halka_doldur = bl.duz_dugme(_("Halkayı doldur"), "hexagon")
-        self.d_halka_doldur.clicked.connect(self._halka_doldur)
         self.ozet = QtWidgets.QLabel("-")
         self.ozet.setObjectName("monoSoluk")
-        alt = sd.satir(self.d_hepsi, self.halka_secim, self.d_halka_doldur)
-        alt.layout().addWidget(self.ozet)
+        self.ozet.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        # Olcu ozeti dar ekranda kartin genisligini zorlamasin (kisalir).
+        self.ozet.setSizePolicy(QtWidgets.QSizePolicy.Ignored,
+                                QtWidgets.QSizePolicy.Preferred)
+        alt = sd.satir(self.d_hepsi, esnek=False)
+        alt.layout().addWidget(self.ozet, 1)
 
         self.izgara_karti = bl.Kart(
             _("Izgara"), aciklama=_("Tıklayın ya da sürükleyin · sağ tık: parçayı seç"))
@@ -111,9 +111,19 @@ class YerlesimMixin(object):
         self.palet.liste.setMinimumHeight(66)
         self.palet_notu = ipucu("")
         self.palet_notu.setVisible(False)
+        # Halka doldurma altigen demete ozgudur: firca secimiyle ayni kartta.
+        self.halka_secim = QtWidgets.QComboBox()
+        self.halka_secim.setToolTip(_("Doldurulacak halka (merkezden dışa numaralı)"))
+        self.halka_secim.setSizeAdjustPolicy(
+            QtWidgets.QComboBox.AdjustToMinimumContentsLengthWithIcon)
+        self.halka_secim.setMinimumContentsLength(10)
+        self.d_halka_doldur = bl.duz_dugme(_("Halkayı doldur"), "hexagon")
+        self.d_halka_doldur.clicked.connect(self._halka_doldur)
         self.palet_kutu = bl.Kart(_("Parça paleti"))
         self.palet_kutu.ekle(self.palet, 1)
         self.palet_kutu.ekle(self.palet_notu)
+        self.palet_kutu.ekle(self.halka_secim)
+        self.palet_kutu.ekle(sd.satir(self.d_halka_doldur))
         return self.palet_kutu
 
     # ------------------------------------------------------------------
