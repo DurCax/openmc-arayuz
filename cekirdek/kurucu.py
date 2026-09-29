@@ -44,6 +44,7 @@ from cekirdek import tambur as _tambur
 from cekirdek import kaynak as _kaynak
 from cekirdek.sema import kor_yuksekligi as sema_kor_yuksekligi
 from cekirdek.sema import eksenel_katmanlar as sema_eksenel_katmanlar
+from cekirdek.sema import guc_hedefleri as sema_guc_hedefleri
 from cekirdek.sema import BOSLUK, malzeme_bul, cubuk_bul, plaka_bul, demet_bul
 
 # Varsayilan renk (spec'te renk verilmemis malzemeler icin)
@@ -403,20 +404,22 @@ def guc_yuksekligi(spec, cubuk_ad=None):
     icerirse W/cm dusuk cikar (olculdu: pwr_eksenel 330 cm vs 300 cm, %9.1 --
     400-500 W/cm sinirina gore IYIMSER yon). Kesintili katmanlarda aradaki bosluk
     sayilmaz. 2B modelde None; hedef hicbir katmanda yoksa aktif aralik.
+    Cok turlu hedefte (guc_dagilimi.cubuklar) hedeflerden EN AZ BIRINI
+    iceren katmanlar sayilir. cubuk_ad: tek ad ya da ad listesi.
     """
     kor = spec["kor"]
     h = sema_kor_yuksekligi(kor)
     if not h:
         return None
-    if cubuk_ad is None:
-        cubuk_ad = (spec.get("guc_dagilimi") or {}).get("cubuk")
+    adlar = _guc_hedef_adlari(spec, cubuk_ad)
     katmanlar = sema_eksenel_katmanlar(kor)
-    if katmanlar is None or not cubuk_ad:
+    if katmanlar is None or not adlar:
         ar = aktif_eksenel_aralik(spec) if katmanlar is not None else None
         return (ar[1] - ar[0]) if ar else h
     from cekirdek.sema import katman_adaylari
     toplam = sum(z1 - z0 for z0, z1, katman in katmanlar
-                 if any(_iceriyor_mu(spec, x, cubuk_ad) for x in katman_adaylari(kor, katman)))
+                 if any(_iceriyor_mu(spec, x, a) for x in katman_adaylari(kor, katman)
+                        for a in adlar))
     if toplam > 0:
         return toplam
     ar = aktif_eksenel_aralik(spec)
@@ -568,10 +571,15 @@ def _katman_dolgusu(spec, kor, katman, ana_ic, nesneler, universeler):
     """Bir eksenel katmani dolduracak universe/lattice. (altigen_kafes'te
     katmana ozel anahtar konum konum cozulur: altigen_kor.konum_dolgu_adlari.)"""
     if katman.get("anahtar"):
+        # altigen_kafes buraya anahtarli katman GETIRMEZ (altigen_kor konum
+        # konum cozer); tek_demet / tamburlu gibi haritasiz korlarda ise bu
+        # dal ULASILIR (D1 izleme maddesinde "olu" denmisti; olculdu, 29.09.2026:
+        # tek_demet + katman anahtari -> bu hata). Mesaj dogrula/eksenel ile ayni.
         if kor["tur"] != "kare_kafes":
             raise ValueError(
                 "'%s' eksenel katmanı: katmana özel harf eşlemesi yalnızca kare "
-                "haritalı tam korda kullanılabilir" % katman.get("ad"))
+                "haritalı tam korda ya da altıgen haritalı tam korda kullanılabilir"
+                % katman.get("ad"))
         return _kare_kafes_kur(spec, kor, nesneler, universeler, katman["anahtar"])
     dolgu = katman.get("dolgu")
     if not dolgu:
@@ -931,82 +939,145 @@ def tallyleri_kur(spec, nesneler, sinir_kutu=None):
 # 6. ANA GIRIS
 # ============================================================================
 
-def guc_tally_ekle(spec, model, nesneler, universeler, sinir_kutu,
-                   fisil_aralik=None):
-    """
-    Cubuk bazli guc dagilimi tally'sini modele ekler.
+def _guc_hedef_adlari(spec, cubuk_ad=None):
+    """Guc hedefi cubuk adlari (sirali, tekrarsiz). cubuk_ad verilirse o
+    (tek ad ya da liste); yoksa spec'in guc_dagilimi hedefleri."""
+    if cubuk_ad is None:
+        adlar = [h["cubuk"] for h in sema_guc_hedefleri(spec.get("guc_dagilimi"))]
+    elif isinstance(cubuk_ad, str):
+        adlar = [cubuk_ad]
+    else:
+        adlar = list(cubuk_ad)
+    return list(dict.fromkeys(a for a in adlar if a))
 
-    DistribcellFilter hedef cubugun belirtilen bolgesinin hucresine baglanir;
-    3B modelde buna 1x1xN'lik bir MeshFilter eklenerek eksenel cozunurluk
-    saglanir.
 
-    !!! EKSENEL MESH AKTIF YAKIT YUKSEKLIGIYLE TAM ORTUSMELIDIR !!!
-      Mesh yakittan tasarsa bos bin'ler ortalamayi dusurur ve F_q yapay olarak
-      sisrer. Bu yuzden mesh sinirlari kor yuksekliginden TURETILIR, elle
-      girilmez.
+def guc_eksenel_araligi(spec, adlar):
+    """Guc mesh'inin eksenel araligi: hedef cubuklarin araliklarinin
+    BIRLESIMI (tek turde cubuk_eksenel_aralik'in kendisi). 2B'de None."""
+    h = sema_kor_yuksekligi(spec["kor"])
+    if not h:
+        return None
+    araliklar = [cubuk_eksenel_aralik(spec, a) or (-h / 2.0, h / 2.0) for a in adlar]
+    if not araliklar:
+        return (-h / 2.0, h / 2.0)
+    return (min(a[0] for a in araliklar), max(a[1] for a in araliklar))
 
-    DONER (hucre, kafes_var_mi)
-    """
+
+def _guc_hedef_hucresi(spec, hedef, nesneler, universeler):
+    """Bir hedefin ({"cubuk", "bolge"}) hucresi; cubuk geometride yoksa None.
+    Tanimsiz cubuk ve gecersiz bolge ValueError."""
     from cekirdek import guc as _guc
-
-    g = spec.get("guc_dagilimi") or {}
-    cubuk_ad = g.get("cubuk")
+    cubuk_ad = hedef.get("cubuk")
     c = cubuk_bul(spec, cubuk_ad) if cubuk_ad else None
     if c is None:
         raise ValueError("güç dağılımı için geçerli bir çubuk seçilmeli"
                          + (" ('%s' tanımsız)" % cubuk_ad if cubuk_ad else ""))
     univ = universeler.get(cubuk_ad)
     if univ is None:
+        return None
+    hucreler = _guc.bolge_hucresi(univ, c, nesneler)
+    bolge_no = int(hedef.get("bolge") or 0)
+    if not (0 <= bolge_no < len(hucreler)):
+        raise ValueError("'%s': geçersiz bölge numarası %d (çubukta %d bölge var)"
+                         % (cubuk_ad, bolge_no + 1, len(hucreler)))
+    return hucreler[bolge_no]
+
+
+def guc_hedef_hucreleri(spec, nesneler, universeler):
+    """
+    Guc dagilimi hedeflerinin hucreleri.
+    DONER ([(cubuk adi, openmc.Cell)], [modelde olmayan cubuk adlari])
+    Tanimsiz cubuk ya da gecersiz bolge ValueError. Listedeki bir tur
+    geometride yoksa atlanir ("modelde yok"); HICBIRI yoksa ValueError.
+    Ayni (cubuk, bolge) iki kez yazilmissa bir kez sayilir.
+    """
+    hedefler = sema_guc_hedefleri(spec.get("guc_dagilimi"))
+    if not hedefler:
+        raise ValueError("güç dağılımı için geçerli bir çubuk seçilmeli")
+    bulunan, eksik, gorulen = [], [], set()
+    for h in hedefler:
+        anahtar = (h["cubuk"], h["bolge"])
+        if anahtar in gorulen:
+            continue
+        gorulen.add(anahtar)
+        hucre = _guc_hedef_hucresi(spec, h, nesneler, universeler)
+        if hucre is None:
+            eksik.append(h["cubuk"])
+        else:
+            bulunan.append((h["cubuk"], hucre))
+    if not bulunan:
         raise ValueError(
             "'%s' çubuğu modelde kullanılmıyor. Güç dağılımı yalnızca geometride "
-            "yer alan bir çubuk için hesaplanabilir." % cubuk_ad)
+            "yer alan bir çubuk için hesaplanabilir." % "', '".join(eksik))
+    return bulunan, eksik
 
-    hucreler = _guc.bolge_hucresi(univ, c, nesneler)
-    bolge_no = int(g.get("bolge") or 0)
-    if not (0 <= bolge_no < len(hucreler)):
-        raise ValueError("geçersiz bölge numarası %d (çubukta %d bölge var)"
-                         % (bolge_no + 1, len(hucreler)))
-    hedef = hucreler[bolge_no]
 
-    tal = openmc.Tally(name="guc_dagilimi")
-    tal.scores = [g.get("skor") or "kappa-fission"]
-    filtreler = [openmc.DistribcellFilter(hedef)]
+def _guc_mesh_filtresi(spec, adlar, sinir_kutu, dilim):
+    """Eksenel 1x1xN mesh filtresi (3B ve dilim > 1); yoksa None.
 
-    h = sema_kor_yuksekligi(spec["kor"])
-    dilim = int(g.get("eksenel_dilim") or 1)
-    if h and dilim > 1:
-        gx, gy = sinir_kutu
-        pay = max(gx, gy)          # x,y'de tek bin -- her seyi kapsamasi yeter
-        # Mesh AKTIF YAKIT araligini kapsar, tum modeli degil: eksenel
-        # katmanlamada yansitici/plenum katmanlari mesh'e girerse bos bin'ler
-        # ortalamayi duserir ve F_q yapay olarak siser.
-        # Mesh HEDEF CUBUGUN bulundugu araligi kapsar.
-        z_alt, z_ust = cubuk_eksenel_aralik(spec, cubuk_ad) or (-h / 2.0, h / 2.0)
-        mesh = openmc.RegularMesh()
-        mesh.dimension = [1, 1, dilim]
-        mesh.lower_left = (-pay, -pay, z_alt)
-        mesh.upper_right = (pay, pay, z_ust)
-        filtreler.append(openmc.MeshFilter(mesh))
-    tal.filters = filtreler
+    !!! EKSENEL MESH HEDEF CUBUKLARIN ARALIGIYLA TAM ORTUSMELIDIR !!!
+      Mesh yakittan tasarsa bos bin'ler ortalamayi dusurur ve F_q yapay
+      olarak siser. Sinirlar kor yuksekliginden TURETILIR, elle girilmez;
+      yansitici/plenum katmanlari mesh'e girmez."""
+    aralik = guc_eksenel_araligi(spec, adlar)
+    if not aralik or dilim <= 1:
+        return None
+    gx, gy = sinir_kutu
+    pay = max(gx, gy)          # x,y'de tek bin -- her seyi kapsamasi yeter
+    mesh = openmc.RegularMesh()
+    mesh.dimension = [1, 1, dilim]
+    mesh.lower_left = (-pay, -pay, aralik[0])
+    mesh.upper_right = (pay, pay, aralik[1])
+    return openmc.MeshFilter(mesh)
 
-    # Toplam korunumu testi icin AYNI HUCREYE bagli, bolunmemis tally.
-    #   Once filtresizdi (tum model). Eksenel katmanlama gelince bu
-    #   karsilastirma anlamsizlasti: dogal uranyum blanket de fisyon yapiyor
-    #   ama distribcell'e dahil degil, korunum sahte olarak "BOZUK" cikiyordu.
-    #   Ayni hucreye baglayinca kontrol GUCLENIYOR: artik eksenel mesh'in
-    #   hucrenin tamamini kapsayip kapsamadigini da sinar.
+
+def guc_tally_ekle(spec, model, nesneler, universeler, sinir_kutu,
+                   fisil_aralik=None, bilgi=None):
+    """
+    Cubuk bazli guc dagilimi tally'lerini modele ekler.
+
+    Her hedef tur (guc_dagilimi.cubuklar) icin AYRI bir "guc_dagilimi"
+    tally'si: DistribcellFilter tek hucre alir. Hepsi ayni adi tasir
+    (guc.dagilim_oku hepsini birlestirir; kosucu kullanici tally'si saymaz)
+    ve 3B modelde AYNI eksenel mesh'i paylasir (dilimler turler arasinda
+    hizali). Cok turde hedef hucreye cubuk adi yazilir (Cell.name; fizige
+    girmez): okurken tur buradan anlasilir. Tek turde XML eskisiyle aynidir.
+
+    guc_toplam_ref: ayni hucrelere bagli bolunmemis tally (toplam korunumu;
+    eksenel mesh'in hucrelerin tamamini kapsayip kapsamadigini da sinar).
+    guc_model_toplam: filtresiz; hedef payi = ref / model (mutlak guc).
+
+    bilgi verilirse "guc_hucreler" [(ad, hucre)] ve "guc_eksik" [ad] yazilir.
+    DONER ilk hedef hucre
+    """
+    hedefler, eksik = guc_hedef_hucreleri(spec, nesneler, universeler)
+    g = spec.get("guc_dagilimi") or {}
+    skor = g.get("skor") or "kappa-fission"
+    cok_tur = len(hedefler) > 1
+    taller, mesh_f = [], None
+    # Nesne olusturma sirasi (tally, distribcell, mesh) eskisiyle ayni: tek
+    # turde uretilen XML (kimlikler dahil) degismez (test_guc_coklu).
+    for i, (ad, hucre) in enumerate(hedefler):
+        if cok_tur:
+            hucre.name = ad
+        tal = openmc.Tally(name="guc_dagilimi")
+        tal.scores = [skor]
+        dc = openmc.DistribcellFilter(hucre)
+        if i == 0:
+            mesh_f = _guc_mesh_filtresi(spec, [a for a, _h in hedefler], sinir_kutu,
+                                        int(g.get("eksenel_dilim") or 1))
+        tal.filters = [dc] + ([mesh_f] if mesh_f else [])
+        taller.append(tal)
     ref = openmc.Tally(name="guc_toplam_ref")
-    ref.scores = list(tal.scores)
-    ref.filters = [openmc.CellFilter(hedef)]
-
-    # Mutlak guc payi: hedef bolgenin model geneli fisyon enerjisindeki payi
-    # (guc_toplam_ref / guc_model_toplam). Blanket ya da ikinci bir fisil cubuk
-    # turu varsa toplam gucun tamami hedef cubuklara yazilmaz (D1-A bulgu 2b).
+    ref.scores = [skor]
+    ref.filters = [openmc.CellFilter([h for _a, h in hedefler])]
     tum = openmc.Tally(name="guc_model_toplam")
-    tum.scores = list(tal.scores)
-
-    model.tallies = openmc.Tallies(list(model.tallies) + [tal, ref, tum])
-    return hedef
+    tum.scores = [skor]
+    model.tallies = openmc.Tallies(list(model.tallies) + taller + [ref, tum])
+    if bilgi is not None:
+        bilgi["guc_hucreler"] = hedefler
+        bilgi["guc_eksik"] = eksik
+    return hedefler[0][1]
 
 
 def kur(spec):
@@ -1048,6 +1119,8 @@ def kur(spec):
         "universeler": universeler,
         "sinir_kutu": sinir_kutu,
         "guc_hucre": None,
+        "guc_hucreler": [],
+        "guc_eksik": [],
         "aktif_aralik": fisil,
     }
 
@@ -1055,5 +1128,5 @@ def kur(spec):
     g = spec.get("guc_dagilimi") or {}
     if g.get("var"):
         bilgi["guc_hucre"] = guc_tally_ekle(spec, model, nesneler, universeler,
-                                            sinir_kutu, fisil)
+                                            sinir_kutu, fisil, bilgi=bilgi)
     return model, bilgi

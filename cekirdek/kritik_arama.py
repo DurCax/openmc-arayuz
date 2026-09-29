@@ -49,6 +49,9 @@
 import os
 
 from cekirdek import kosucu, sema, tarama
+from cekirdek.gunluk import kaydedici
+
+_log = kaydedici(__name__)
 
 
 class AramaSonucu(object):
@@ -118,6 +121,7 @@ def ara(spec, tur, hedef, alt, ust, kok_dizin, hedef_keff=1.0,
     except KeyboardInterrupt as e:
         sonuc.mesaj = str(e); return sonuc
     except Exception as e:
+        _log.exception("kritik arama: aralık ucu koşulamadı")
         sonuc.mesaj = str(e); return sonuc
 
     f_alt, f_ust = k_alt - hedef_keff, k_ust - hedef_keff
@@ -172,6 +176,7 @@ def ara(spec, tur, hedef, alt, ust, kok_dizin, hedef_keff=1.0,
         except KeyboardInterrupt as e:
             sonuc.mesaj = str(e); return sonuc
         except Exception as e:
+            _log.exception("kritik arama: %g noktası koşulamadı", x2)
             sonuc.mesaj = str(e); return sonuc
         olculen[x2] = k2
         f2 = k2 - hedef_keff

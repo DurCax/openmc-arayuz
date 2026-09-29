@@ -10,6 +10,9 @@
 """
 
 from cekirdek.ceviri import _
+from cekirdek.gunluk import kaydedici
+
+_log = kaydedici(__name__)
 
 
 def _g():
@@ -39,6 +42,14 @@ def _radyal_satirlari(faktorler):
               "yakıt çubukları üzerinden hesaplanır.")
             % (faktorler["demet_sayisi"], faktorler["cubuk_sayisi"],
                _g().demet_metni(faktorler["sicak_demet"], faktorler), faktorler["F_demet"]))
+    tur = faktorler.get("tur_ozeti")
+    if tur:
+        satirlar.append(
+            _("Çubuk türleri (bağıl ortalama / tepe; bütün yakıt çubuklarının "
+              "ortalaması = 1): %s")
+            % "; ".join("%s: %.4f / %.4f (%d çubuk)" % (ad, v["ortalama"], v["tepe"],
+                                                        v["cubuk_sayisi"])
+                        for ad, v in tur.items()))
     # --- maksimumun yukari yanliligi ---
     oran = faktorler.get("yanlilik_orani")
     if oran is not None and oran > 0.3:
@@ -182,6 +193,8 @@ def coklu_tohum(spec, kok_dizin, tohumlar=(1, 2, 3, 4, 5), is_parcacigi=None,
             if f["F_q"]:
                 f_q.append(f["F_q"])
         except Exception as e:
+            # tek tohumun hatasi olcumu durdurmaz; ozet["hatalar"]da gorunur
+            _log.exception("çoklu tohum: tohum %d koşulamadı", t)
             hatalar.append("tohum %d: %s" % (t, e))
         if geri_cagir:
             geri_cagir(i, len(tohumlar), f_dh[-1] if f_dh else None)
@@ -210,3 +223,23 @@ def ozet_metni(faktorler, mutlak=None):
         p.append(_("en sıcak demet: %s (F_demet = %.4f)")
                  % (_g().demet_metni(faktorler["sicak_demet"], faktorler), faktorler["F_demet"]))
     return "  |  ".join(p)
+
+
+def tur_ozeti(bagil, cubuk_turleri):
+    """
+    Cok turlu guc: tur basina ozet (bagil birimde; TUM cubuklarin ortalamasi
+    = 1). Tek turde (ya da tur bilgisi yoksa) None.
+    DONER {tur: {"cubuk_sayisi", "ortalama", "tepe", "tepe_cubuk"}}
+    """
+    if not cubuk_turleri or len(set(cubuk_turleri.values())) < 2:
+        return None
+    gruplar = {}
+    for a, v in bagil.items():
+        gruplar.setdefault(cubuk_turleri.get(a), []).append((a, v[0]))
+    ozet = {}
+    for tur, uyeler in gruplar.items():
+        tepe_a, tepe = max(uyeler, key=lambda av: av[1])
+        ozet[tur] = {"cubuk_sayisi": len(uyeler),
+                     "ortalama": sum(v for _a, v in uyeler) / len(uyeler),
+                     "tepe": tepe, "tepe_cubuk": tepe_a}
+    return ozet

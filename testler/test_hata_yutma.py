@@ -69,10 +69,8 @@ IZINLI = {
     "arayuz.sekme_kor:KorSekmesi._katman_ozet_guncelle": 1,       # (Y) satir += "...%s" % hata
     "arayuz.sekme_malzeme:MalzemeSekmesi.doldur": 1,              # (T)
     "cekirdek.dogrula.veri:_kutuphane_icerigi": 1,                # (T)
-    "cekirdek.guc_yorum:coklu_tohum": 1,                          # (Y) hatalar.append(... e); D1-A guc.py'den tasidi
     "cekirdek.ice_aktar:malzemeleri_oku": 4,                      # (T) 3 + (Y) 1
     "cekirdek.kurucu:_spec_fisil_mi": 1,                          # (T)
-    "cekirdek.tarama:calistir": 1,                                # (Y) sonuc["hata"] = str(e)
     "cekirdek.uygunluk:_korelasyon": 1,                           # (T)
     "cekirdek.uygunluk:_kutle": 1,                                # (T)
     "cekirdek.uygunluk:_ortalama_kutle": 1,                       # (T)

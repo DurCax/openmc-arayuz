@@ -70,6 +70,14 @@ class GucHaritaWidget(QtWidgets.QWidget):
         self.olcek.setToolTip(_("Tam kor: demet ortalamaları ya da kordaki bütün "
                                 "çubuklar"))
         self.olcek_etiket = QtWidgets.QLabel(_("Ölçek:"))
+        # Varsayilan Cubuk (Dalga 2): tepe faktorleri cubuk olcegindedir.
+        self.olcek.setCurrentIndex(self.olcek.findData("cubuk"))
+        # Cok turlu guc: haritada yalniz secili cubuk turu (ortalama yine
+        # BUTUN yakit cubuklari uzerinden -- deger degismez, suzulur).
+        self.tur = QtWidgets.QComboBox()
+        self.tur.setToolTip(_("Çok türlü güç dağılımı: haritada yalnız seçili çubuk türü "
+                              "gösterilir; bağıl güç yine bütün yakıt çubuklarına göredir."))
+        self.tur_etiket = QtWidgets.QLabel(_("Çubuk türü:"))
         self._ipucu_ogeleri = []      # [(x, y, yaricap, metin)] fare ipucu icin
 
         self.gorunum.currentIndexChanged.connect(self._ciz)
@@ -77,10 +85,13 @@ class GucHaritaWidget(QtWidgets.QWidget):
         self.degerler.toggled.connect(self._ciz)
         self.d_kaydet.clicked.connect(self._kaydet)
         self.olcek.currentIndexChanged.connect(self._ciz)
+        self.tur.currentIndexChanged.connect(self._ciz)
 
         ust = QtWidgets.QHBoxLayout()
         ust.addWidget(self.olcek_etiket)
         ust.addWidget(self.olcek)
+        ust.addWidget(self.tur_etiket)
+        ust.addWidget(self.tur)
         ust.addWidget(QtWidgets.QLabel("Görünüm:"))
         ust.addWidget(self.gorunum)
         ust.addWidget(self.dilim_etiket)
@@ -167,6 +178,7 @@ class GucHaritaWidget(QtWidgets.QWidget):
             if not uc_boyut:
                 self.gorunum.setCurrentIndex(0)
         self._tam_kor_denetimleri(bool(self.faktorler and self.faktorler.get("tam_kor")))
+        self._tur_secicisini_doldur()
         self._ozet_yaz()
         self._ciz()
 
@@ -176,13 +188,36 @@ class GucHaritaWidget(QtWidgets.QWidget):
         for w in (self.olcek, self.olcek_etiket, self.belirsizlik):
             w.setVisible(tam_kor)
 
+    def _tur_secicisini_doldur(self):
+        """Tur secici yalniz cok turlu sonucta (faktorler["tur_ozeti"]) gorunur."""
+        ozet = (self.faktorler or {}).get("tur_ozeti") or {}
+        eski = self.tur.blockSignals(True)
+        try:
+            self.tur.clear()
+            self.tur.addItem(_("Tüm türler"), None)
+            for ad, v in ozet.items():
+                self.tur.addItem("%s (%d)" % (ad or "?", v["cubuk_sayisi"]), ad)
+        finally:
+            self.tur.blockSignals(eski)
+        for w in (self.tur, self.tur_etiket):
+            w.setVisible(bool(ozet))
+
+    def _tur_suz(self, veri):
+        """Secili ture ait anahtarlar ("a+b" sutunu iki turde de gorunur)."""
+        secili = None if self.tur.isHidden() else self.tur.currentData()
+        turler = (self.dagilim or {}).get("cubuk_turleri") or {}
+        if not secili or not turler:
+            return veri
+        return {a: v for a, v in veri.items()
+                if secili in (turler.get(a) or "").split("+")}
+
     def _bos(self, metin):
         self._ipucu_ogeleri, self._ipucu_dizi = [], None
         self.figur.clear()
         eks = self.figur.add_subplot(111)
         eks.set_axis_off()
         eks.text(0.5, 0.5, metin, ha="center", va="center",
-                 fontsize=10, color="#7f8c8d")
+                 fontsize=10, color=tema.renk("metin_soluk"))
         self.tuval.draw_idle()
 
     def _ozet_yaz(self):
@@ -208,7 +243,7 @@ class GucHaritaWidget(QtWidgets.QWidget):
             iyi = self.korunum < 1e-6
             metin += ("<br><span style='color:%s'>Toplamın korunumu: bağıl fark "
                       "%.1e — %s</span>"
-                      % ("#1e6b3a" if iyi else "#8b1a1a", self.korunum,
+                      % (tema.renk("basari") if iyi else tema.renk("hata"), self.korunum,
                          "tamam" if iyi else "bozuk, haritaya güvenmeyin"))
         for not_metni in getattr(self, "korunum_notlari", []):
             metin += "<br>" + html.escape(not_metni)
@@ -223,9 +258,9 @@ class GucHaritaWidget(QtWidgets.QWidget):
         f = self.faktorler
         if self.gorunum.currentData() == "dilim" and f["bagil_eksenel"]:
             i = self.dilim.value() - 1
-            return {a: v[i][0] for a, v in f["bagil_eksenel"].items()}, \
-                   "dilim %d / %d" % (i + 1, f["eksenel_dilim"])
-        return {a: v[0] for a, v in f["bagil"].items()}, "çubuk toplamı"
+            return self._tur_suz({a: v[i][0] for a, v in f["bagil_eksenel"].items()}), \
+                "dilim %d / %d" % (i + 1, f["eksenel_dilim"])
+        return self._tur_suz({a: v[0] for a, v in f["bagil"].items()}), "çubuk toplamı"
 
     def _ciz(self):
         if not self.faktorler or not self.dagilim:
@@ -259,10 +294,10 @@ class GucHaritaWidget(QtWidgets.QWidget):
         if eks_p is not None and f["eksenel_profil"]:
             y = [p[0] for p in f["eksenel_profil"]]
             x = list(range(1, len(y) + 1))
-            eks_p.plot(y, x, "o-", ms=3, lw=1.2, color="#2c3e50")
-            eks_p.axvline(1.0, color="#95a5a6", ls="--", lw=0.8)
+            eks_p.plot(y, x, "o-", ms=3, lw=1.2, color=tema.renk("metin"))
+            eks_p.axvline(1.0, color=tema.renk("kenar_guclu"), ls="--", lw=0.8)
             if self.gorunum.currentData() == "dilim":
-                eks_p.axhline(self.dilim.value(), color="#c0392b", ls="-", lw=1.2)
+                eks_p.axhline(self.dilim.value(), color=tema.renk("hata"), ls="-", lw=1.2)
             eks_p.set_xlabel("bağıl güç", fontsize=8)
             eks_p.set_ylabel("eksenel dilim", fontsize=8)
             eks_p.tick_params(labelsize=7)
@@ -284,7 +319,9 @@ class GucHaritaWidget(QtWidgets.QWidget):
 
     def _ciz_kare(self, eks, veri):
         import numpy as np
-        xs = [a[0] for a in veri]; ys = [a[1] for a in veri]
+        # izgara olcusu BUTUN cubuklardan (tur suzgeci haritayi kucultmesin)
+        tum = list(self.faktorler["bagil"]) or list(veri)
+        xs = [a[0] for a in tum]; ys = [a[1] for a in tum]
         nx, ny = max(xs) + 1, max(ys) + 1
         izgara = np.full((ny, nx), np.nan)
         for (x, y), v in veri.items():
@@ -297,7 +334,7 @@ class GucHaritaWidget(QtWidgets.QWidget):
         self._renk_cubugu(im, eks)
         sicak = self.faktorler["sicak_cubuk"]
         eks.plot(sicak[0] + 1, sicak[1] + 1, marker="o", ms=11, mfc="none",
-                 mec="#00e5ff", mew=2.0)
+                 mec=tema.renk("vurgu"), mew=2.0)
         eks.set_xlabel("x (soldan)", fontsize=8); eks.set_ylabel("y (alttan)", fontsize=8)
         eks.tick_params(labelsize=7)
         if self.degerler.isChecked() and nx * ny <= 400:
@@ -324,14 +361,14 @@ class GucHaritaWidget(QtWidgets.QWidget):
             eks.add_patch(RegularPolygon(
                 (x, y), numVertices=6, radius=yaricap,
                 orientation=math.radians(kose_aci - 30.0),
-                facecolor=renk_es(norm(v)), edgecolor="#444444", linewidth=0.4))
+                facecolor=renk_es(norm(v)), edgecolor=tema.renk("kenar"), linewidth=0.4))
             if self.degerler.isChecked() and len(veri) <= 200:
                 eks.text(x, y, "%.2f" % v, ha="center", va="center", fontsize=5,
                          color="white" if v < (alt + ust) / 2 else "black")
         sicak = self.faktorler["sicak_cubuk"]
         if sicak in konum:
             sx, sy = konum[sicak]
-            eks.plot(sx, sy, marker="o", ms=11, mfc="none", mec="#00e5ff", mew=2.0)
+            eks.plot(sx, sy, marker="o", ms=11, mfc="none", mec=tema.renk("vurgu"), mew=2.0)
         tum = list(konum.values())
         pay = yaricap * 1.5
         eks.set_xlim(min(p[0] for p in tum) - pay, max(p[0] for p in tum) + pay)

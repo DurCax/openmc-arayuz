@@ -142,6 +142,45 @@ def _alan_bagimli_kullanim(spec, kor, ad):
 
 
 # ============================================================================
+# 1b. kontrol tamburu ve kontrol cubugu emicisi (analitik)
+# ============================================================================
+
+def tambur_emici_hacmi(kor, ad):
+    """
+    Tamburlu korda 'ad' tambur emicisi ise emici yaylarinin toplam hacmi.
+    Emici: r_ic..R arasinda emici_aci genisliginde halka dilimi (tambur.universe);
+    tambur TAM yuksekligi kaplar (2B: 1 cm). Donme hacmi degistirmez.
+    DONER (hacim cm3, [ayrinti]) -- ilgisizse (0.0, []).
+    """
+    t = kor.get("tambur") or {}
+    n = int(t.get("sayi") or 0)
+    if kor.get("tur") != "tamburlu" or n <= 0 or t.get("emici_malzeme") != ad:
+        return 0.0, []
+    R, r_ic = float(t["yaricap"]), float(t.get("emici_ic_yaricap") or 0.0)
+    aci = float(t.get("emici_aci") or 120.0)
+    H = sema.kor_yuksekligi(kor) or 1.0
+    v = n * (aci / 360.0) * math.pi * (R * R - r_ic * r_ic) * H
+    return v, ["%d tambur emici yayı %g° (r = %g…%g cm) × %g cm" % (n, aci, r_ic, R, H)]
+
+
+def kontrol_emici_uzunlugu(spec, cubuk):
+    """
+    Katmansiz 3B modelde kontrol cubugu emicisinin eksenel uzunlugu (cm):
+    ucun ustu (kurucu.cubuk_universe: z_uc = z_ust - daldirma x aktif) ile
+    modelin tepesi arasi. Izleyici = kalan. Katmanli ya da 2B modelde None
+    (emici katman sinirlarini asabilir; kesin degil).
+    DONER (emici_uzunlugu, izleyici_uzunlugu) ya da None
+    """
+    kor = spec["kor"]
+    h = sema.kor_yuksekligi(kor)
+    if not h or sema.eksenel_katmanlar(kor) is not None:
+        return None
+    daldirma = float(cubuk.get("daldirma") or 0.0)
+    emici = daldirma / 100.0 * h
+    return emici, h - emici
+
+
+# ============================================================================
 # 2. ornek hacimleri (kurulan model)
 # ============================================================================
 

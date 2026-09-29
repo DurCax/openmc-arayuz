@@ -323,6 +323,8 @@ def _malzeme_hacmi(spec, ad, dilimler):
     v, p = _plaka_hacmi(spec, kor, ad, dilimler)
     V, parcalar = V + v, parcalar + p
     if kor["tur"] == "tamburlu":
+        v, p = tukenme_hacim.tambur_emici_hacmi(kor, ad)
+        V, parcalar = V + v, parcalar + p
         # kor silindirini dogrudan dolduran homojen malzeme
         R = float(kor.get("kor_yaricap") or 0.0)
         for h, dolgu, _e in dilimler:
@@ -344,7 +346,7 @@ def _malzeme_hacmi(spec, ad, dilimler):
     if ad in (uygunluk.geometri_icerigi(spec).get("malzeme") or set()):
         # geometride var ama analitik yolu yok (or. kontrol tamburu emicisi)
         return {"hacim": None, "yontem": tukenme_hacim.KESIN_DEGIL,
-                "ayrinti": "bu yerleşim için analitik hacim yok (ör. kontrol tamburu)"}
+                "ayrinti": "bu yerleşim için analitik hacim yok"}
     return {"hacim": None, "yontem": "yok", "ayrinti": "malzeme geometride bulunamadı"}
 
 

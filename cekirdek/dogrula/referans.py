@@ -54,114 +54,173 @@ def tally_kontrol(spec):
 
 
 def guc_dagilimi_kontrol(spec):
-    """Cubuk bazli guc dagilimi ayarlarini kontrol eder."""
-    bulgular = []
+    """
+    Cubuk bazli guc dagilimi ayarlarini kontrol eder. Hedefler
+    sema.guc_hedefleri'nden (cok turlu liste; eski tek "cubuk" alani da).
+    Tek hedefte bulgular eskisiyle aynidir.
+    """
     g = spec.get("guc_dagilimi") or {}
     if not g.get("var"):
-        return bulgular
+        return []
     yer = "guc dagilimi"
-
-    cubuk_ad = g.get("cubuk")
-    c = cubuk_bul(spec, cubuk_ad) if cubuk_ad else None
-    if c is None:
-        bulgular.append(Bulgu("hata", yer, "hedef çubuk tanımsız: %s" % cubuk_ad
-                              if cubuk_ad else "hedef çubuk seçilmemiş"))
+    hedefler = sema.guc_hedefleri(g)
+    if not hedefler:
+        return [Bulgu("hata", yer, "hedef çubuk seçilmemiş")]
+    bulgular, gecerli = _guc_hedef_kontrolleri(spec, hedefler, yer)
+    if not gecerli:
         return bulgular
+    adlar = list(dict.fromkeys(h["cubuk"] for h in gecerli))
+    bulgular.extend(_guc_geometri_kontrol(spec, adlar, yer))
+    bulgular.extend(_guc_skor_kontrol(g, yer))
+    h = sema_kor_yuksekligi(spec["kor"])
+    dilim = int(g.get("eksenel_dilim") or 1)
+    bulgular.extend(_guc_eksenel_kontrol(spec, adlar, h, dilim, yer))
+    bulgular.extend(_guc_toplam_kontrol(g, h, yer))
+    bulgular.extend(_guc_tam_kor_kontrol(spec, adlar, dilim if h else 1, yer))
+    bulgular.extend(_guc_cok_tur_kontrol(spec, adlar, yer))
+    return bulgular
 
-    bolge = g.get("bolge")
+
+def _guc_hedef_kontrolleri(spec, hedefler, yer):
+    """Her hedef: tanimli mi, bolge gecerli ve fisil mi, tekrar var mi.
+    DONER (bulgular, gecerli hedefler) -- tanimsiz hedef varsa gecerli bos
+    (kurucu da durur)."""
+    bulgular, gorulen = [], set()
+    for h in hedefler:
+        cubuk_ad = h["cubuk"]
+        c = cubuk_bul(spec, cubuk_ad) if cubuk_ad else None
+        if c is None:
+            bulgular.append(Bulgu("hata", yer, "hedef çubuk tanımsız: %s" % cubuk_ad
+                                  if cubuk_ad else "hedef çubuk seçilmemiş"))
+            return bulgular, []
+        if (cubuk_ad, h["bolge"]) in gorulen:
+            bulgular.append(Bulgu("uyari", yer, "'%s' hedef listesinde iki kez var — "
+                                  "bir kez sayılır" % cubuk_ad))
+            continue
+        gorulen.add((cubuk_ad, h["bolge"]))
+        bulgular.extend(_guc_bolge_kontrol(spec, c, h["bolge"], yer))
+    return bulgular, hedefler
+
+
+def _guc_bolge_kontrol(spec, c, bolge, yer):
+    """Hedef bolge numarasi gecerli mi ve malzemesi fisil mi."""
     if not isinstance(bolge, int) or not (0 <= bolge < len(c["bolgeler"])):
-        bulgular.append(Bulgu("hata", yer,
-                              "geçersiz bölge numarası %s (çubukta %d bölge var)"
-                              % (bolge + 1 if isinstance(bolge, int) else "(seçilmemiş)",
-                                 len(c["bolgeler"]))))
-    else:
-        mal = c["bolgeler"][bolge].get("malzeme")
-        m = malzeme_bul(spec, mal) if mal else None
-        # "yakit" rolu uygunluk'tan (Z >= 90, kurucu ile ayni olcut). Eski
-        # kural ad oneki ("U"/"Pu"/"Th") ve zenginlik alanina bakiyordu.
-        fisil = bool(m) and "yakit" in uygunluk.tek_malzeme_rolleri(m)
-        if not fisil:
-            bulgular.append(Bulgu(
-                "uyari", yer,
-                "seçilen bölgenin malzemesi ('%s') fisil görünmüyor" % mal,
-                "Güç dağılımı genellikle yakıt bölgesinde (1. bölge) ölçülür. "
-                "Zarf ya da soğutucu seçildiyse sonuç anlamsız olur."))
+        return [Bulgu("hata", yer,
+                      "geçersiz bölge numarası %s (çubukta %d bölge var)"
+                      % (bolge + 1 if isinstance(bolge, int) else "(seçilmemiş)",
+                         len(c["bolgeler"])))]
+    mal = c["bolgeler"][bolge].get("malzeme")
+    m = malzeme_bul(spec, mal) if mal else None
+    # "yakit" rolu uygunluk'tan (Z >= 90, kurucu ile ayni olcut). Eski
+    # kural ad oneki ("U"/"Pu"/"Th") ve zenginlik alanina bakiyordu.
+    if bool(m) and "yakit" in uygunluk.tek_malzeme_rolleri(m):
+        return []
+    return [Bulgu(
+        "uyari", yer,
+        "seçilen bölgenin malzemesi ('%s') fisil görünmüyor" % mal,
+        "Güç dağılımı genellikle yakıt bölgesinde (1. bölge) ölçülür. "
+        "Zarf ya da soğutucu seçildiyse sonuç anlamsız olur.")]
 
-    # --- cubuk geometride mi, bir kafeste tekrarlaniyor mu? ---
-    # Uygun cubuk kurali uygunluk.guc_cubuklari'nda (arayuz listeyi oradan
-    # alir). Eskiden "herhangi bir demetin anahtarinda geciyor mu" bakiliyordu:
-    # KULLANILMAYAN bir demette gecen cubuk gecerli sayiliyor, kurucu ise
-    # "cubugu modelde kullanilmiyor" diyerek duruyordu.
+
+def _guc_geometri_kontrol(spec, adlar, yer):
+    """
+    Hedefler geometride mi, bir kafeste tekrarlaniyor mu? Uygun cubuk kurali
+    uygunluk.guc_cubuklari'nda (arayuz listeyi oradan alir). Cok turde
+    geometride OLMAYAN tur "modelde yok" uyarisidir (kurucu atlar); hicbiri
+    yoksa ya da tek hedef yoksa hata (kurucu durur).
+    """
     uygun = uygunluk.guc_cubuklari(spec)
-    if cubuk_ad not in uygun:
-        geo = uygunluk.geometri_icerigi(spec)
-        liste = ("Uygun çubuklar: %s" % ", ".join(uygun) if uygun else
-                 "Bu modelde uygun çubuk yok: fisil bölgeli bir çubuğun bir "
-                 "demette tekrarlanması gerekir.")
+    geo = uygunluk.geometri_icerigi(spec)
+    liste = ("Uygun çubuklar: %s" % ", ".join(uygun) if uygun else
+             "Bu modelde uygun çubuk yok: fisil bölgeli bir çubuğun bir "
+             "demette tekrarlanması gerekir.")
+    modelde = [a for a in adlar if a in geo["cubuk"]]
+    bulgular = []
+    for cubuk_ad in adlar:
+        if cubuk_ad in uygun:
+            continue
         if cubuk_ad not in geo["cubuk"]:
-            bulgular.append(Bulgu(
-                "hata", yer,
-                "'%s' çubuğu modelde kullanılmıyor — güç dağılımı yalnızca "
-                "geometride yer alan bir çubuk için hesaplanabilir" % cubuk_ad,
-                "Model kurulurken durur. " + liste))
+            bulgular.append(_guc_modelde_yok(cubuk_ad, bool(modelde), liste, yer))
         elif cubuk_ad not in geo["kafesteki_cubuk"]:
-            if (spec["kor"].get("tur") == "tek_cubuk"
-                    and spec["kor"].get("cubuk") == cubuk_ad):
-                bulgular.append(Bulgu(
-                    "hata", yer,
-                    "'%s' bir demette tekrarlanmıyor (kor türü: '%s')"
-                    % (cubuk_ad, _kor_turu_adi("tek_cubuk")),
-                    "Güç dağılımı tekrarlanan hücre örnekleri üzerinden "
-                    "hesaplanır; tek bir çubukta dağılım yoktur. Bir demet kurun."))
-            else:
-                bulgular.append(Bulgu(
-                    "uyari", yer,
-                    "'%s' hiçbir demet haritasında kullanılmıyor" % cubuk_ad,
-                    "Tekrarlanan örnek yoksa dağılım tek bir değerden ibaret "
-                    "kalır. " + liste))
-        # cubuk kafeste ama fisil bolgesi yok: yukaridaki "fisil gorunmuyor"
-        # uyarisi bunu zaten soyler.
+            bulgular.append(_guc_tekrarlanmiyor(spec, cubuk_ad, liste, yer))
+        # cubuk kafeste ama fisil bolgesi yok: "fisil gorunmuyor" uyarisi soyler.
+    return bulgular
 
+
+def _guc_modelde_yok(cubuk_ad, digeri_var, liste, yer):
+    from cekirdek.ceviri import _
+    if digeri_var:
+        return Bulgu(
+            "uyari", yer,
+            _("'%s' çubuğu modelde yok — güç haritasında bu tür yer almaz") % cubuk_ad,
+            _("Listedeki diğer türler hesaplanır; bu tür atlanır. ") + liste)
+    return Bulgu(
+        "hata", yer,
+        "'%s' çubuğu modelde kullanılmıyor — güç dağılımı yalnızca "
+        "geometride yer alan bir çubuk için hesaplanabilir" % cubuk_ad,
+        "Model kurulurken durur. " + liste)
+
+
+def _guc_tekrarlanmiyor(spec, cubuk_ad, liste, yer):
+    if (spec["kor"].get("tur") == "tek_cubuk"
+            and spec["kor"].get("cubuk") == cubuk_ad):
+        return Bulgu(
+            "hata", yer,
+            "'%s' bir demette tekrarlanmıyor (kor türü: '%s')"
+            % (cubuk_ad, _kor_turu_adi("tek_cubuk")),
+            "Güç dağılımı tekrarlanan hücre örnekleri üzerinden "
+            "hesaplanır; tek bir çubukta dağılım yoktur. Bir demet kurun.")
+    return Bulgu(
+        "uyari", yer,
+        "'%s' hiçbir demet haritasında kullanılmıyor" % cubuk_ad,
+        "Tekrarlanan örnek yoksa dağılım tek bir değerden ibaret "
+        "kalır. " + liste)
+
+
+def _guc_skor_kontrol(g, yer):
     skor = g.get("skor") or "kappa-fission"
     if skor not in BILINEN_SKORLAR:
-        bulgular.append(Bulgu("uyari", yer, "'%s' bilinen skorlar arasında değil" % skor))
-    elif skor not in ("kappa-fission", "fission-q-prompt", "fission-q-recoverable",
-                      "heating", "heating-local"):
-        bulgular.append(Bulgu(
+        return [Bulgu("uyari", yer, "'%s' bilinen skorlar arasında değil" % skor)]
+    if skor not in ("kappa-fission", "fission-q-prompt", "fission-q-recoverable",
+                    "heating", "heating-local"):
+        return [Bulgu(
             "uyari", yer,
             "'%s' bir enerji skoru değil" % skor,
             "Güç dağılımı için enerji bırakan bir skor gerekir; standart seçim "
-            "'kappa-fission'dır. 'fission' yalnızca fisyon sayısını verir."))
+            "'kappa-fission'dır. 'fission' yalnızca fisyon sayısını verir.")]
+    return []
 
-    # --- eksenel ---
-    h = sema_kor_yuksekligi(spec["kor"])
-    dilim = int(g.get("eksenel_dilim") or 1)
+
+def _guc_eksenel_kontrol(spec, adlar, h, dilim, yer):
     if not h:
-        bulgular.append(Bulgu(
+        return [Bulgu(
             "bilgi", yer,
             "model 2B — F_q hesaplanamaz, yalnızca F_ΔH verilir",
             "Yerel güç yoğunluğu tepesi eksenel şekle bağlıdır. Kor sekmesinde "
-            "aktif yükseklik tanımlayın."))
-    elif dilim < 10:
+            "aktif yükseklik tanımlayın.")]
+    bulgular = []
+    if dilim < 10:
         bulgular.append(Bulgu(
             "uyari", yer,
             "yalnızca %d eksenel dilim — F_q olduğundan küçük çıkar" % dilim,
             "Kaba dilimler eksenel tepeyi ortalar. En az 10–20 dilim kullanın."))
-    if h and dilim > 1:
-        bulgular.extend(_guc_dilim_hizasi(spec, cubuk_ad, dilim, yer))
-
-    tg = g.get("toplam_guc")
-    if tg is not None:
-        if tg <= 0:
-            bulgular.append(Bulgu("hata", yer, "toplam güç sıfırdan büyük olmalı"))
-        elif not h:
-            bulgular.append(Bulgu(
-                "uyari", yer,
-                "toplam güç verilmiş ama model 2B — çizgisel güç [W/cm] hesaplanamaz",
-                "W/cm için Kor sekmesinde aktif yükseklik tanımlayın."))
-    bulgular.extend(_guc_tam_kor_kontrol(spec, cubuk_ad, dilim if h else 1, yer))
-    bulgular.extend(_guc_cok_tur_kontrol(spec, cubuk_ad, yer))
+    if dilim > 1:
+        bulgular.extend(_guc_dilim_hizasi(spec, adlar, dilim, yer))
     return bulgular
+
+
+def _guc_toplam_kontrol(g, h, yer):
+    tg = g.get("toplam_guc")
+    if tg is None:
+        return []
+    if tg <= 0:
+        return [Bulgu("hata", yer, "toplam güç sıfırdan büyük olmalı")]
+    if not h:
+        return [Bulgu(
+            "uyari", yer,
+            "toplam güç verilmiş ama model 2B — çizgisel güç [W/cm] hesaplanamaz",
+            "W/cm için Kor sekmesinde aktif yükseklik tanımlayın.")]
+    return []
 
 
 # Dilim siniri ile katman siniri arasindaki fark (dilim kalinligi cinsinden)
@@ -169,23 +228,29 @@ def guc_dagilimi_kontrol(spec):
 _DILIM_HIZA_TOL = 1e-6
 
 
+def _adlar(cubuk_ad):
+    return [cubuk_ad] if isinstance(cubuk_ad, str) else list(cubuk_ad)
+
+
 def _hedef_katman_durumu(spec, cubuk_ad):
-    """[(z_alt, z_ust, hedef cubuk bu katmanda mi)] ya da None (katmanlama yok)."""
+    """[(z_alt, z_ust, hedeflerden biri bu katmanda mi)] ya da None
+    (katmanlama yok). cubuk_ad: tek ad ya da ad listesi."""
     from cekirdek import kurucu
     kor = spec["kor"]
     katmanlar = sema.eksenel_katmanlar(kor)
     if katmanlar is None:
         return None
-    return [(z0, z1, any(kurucu._iceriyor_mu(spec, x, cubuk_ad)
-                         for x in sema.katman_adaylari(kor, k)))
+    adlar = _adlar(cubuk_ad)
+    return [(z0, z1, any(kurucu._iceriyor_mu(spec, x, a)
+                         for x in sema.katman_adaylari(kor, k) for a in adlar))
             for z0, z1, k in katmanlar]
 
 
 def _guc_dilim_hizasi(spec, cubuk_ad, dilim, yer):
     """
-    M-1 (profesor denetimi): eksenel mesh hedef cubugun ARALIGINI kapsar
-    (kurucu.cubuk_eksenel_aralik). Hedef cubuk kesintili katmanlardaysa
-    (arada cubuksuz katman) ve bir dilim siniri, cubuklu / cubuksuz katman
+    M-1 (profesor denetimi): eksenel mesh hedef cubuklarin ARALIGINI kapsar
+    (kurucu.guc_eksenel_araligi). Hedef kesintili katmanlardaysa (arada
+    cubuksuz katman) ve bir dilim siniri, cubuklu / cubuksuz katman
     sinirina denk gelmiyorsa o dilim KISMEN BOS olur: tepe_faktorleri yalniz
     tamamen bos dilimleri dislar, kismen bos dilim ortalamayi dusurur ve F_q
     birkac % siser. Hizalama: her durum degisim siniri z icin
@@ -194,7 +259,7 @@ def _guc_dilim_hizasi(spec, cubuk_ad, dilim, yer):
     from cekirdek import kurucu
     from cekirdek.ceviri import _
     durum = _hedef_katman_durumu(spec, cubuk_ad)
-    aralik = kurucu.cubuk_eksenel_aralik(spec, cubuk_ad)
+    aralik = kurucu.guc_eksenel_araligi(spec, _adlar(cubuk_ad))
     if not durum or not aralik:
         return []
     z_alt, z_ust = aralik
@@ -217,19 +282,19 @@ def _guc_dilim_hizasi(spec, cubuk_ad, dilim, yer):
 
 def _guc_cok_tur_kontrol(spec, cubuk_ad, yer):
     """
-    Guc tally'si TEK cubuk tanimina baglidir (cok turlu tally Dalga 2'de).
-    Modelde (ayni kor ya da demet) baska bir fisil cubuk turu tekrarlaniyorsa
-    F_dH / F_q yalniz hedef cubugu kapsar: uyari. Tek turlu modelde uyari YOK.
-    "Fisil ve kafeste tekrarlanan" olcutu arayuzun hedef listesiyle aynidir
-    (uygunluk.guc_cubuklari).
-    L-3: diger tur hedefle HICBIR eksenel katmani paylasmiyorsa (ayni cubugun
-    uc parcasi, ornek blanket ortusu) radyal harita eksik degildir: bilgi.
+    Guc tally'leri yalniz HEDEF LISTESINDEKI cubuk turlerini sayar. Modelde
+    (ayni kor ya da demet) listede olmayan baska bir fisil cubuk turu
+    tekrarlaniyorsa F_dH / F_q yalniz hedefleri kapsar: uyari. Butun uygun
+    turler listedeyse uyari YOK. "Fisil ve kafeste tekrarlanan" olcutu
+    arayuzun hedef listesiyle aynidir (uygunluk.guc_cubuklari).
+    L-3: diger tur hedeflerle HICBIR eksenel katmani paylasmiyorsa (ayni
+    cubugun uc parcasi, ornek blanket ortusu) radyal harita eksik degildir: bilgi.
     """
-    from cekirdek.ceviri import _
-    digerleri = [c for c in uygunluk.guc_cubuklari(spec) if c != cubuk_ad]
+    adlar = _adlar(cubuk_ad)
+    digerleri = [c for c in uygunluk.guc_cubuklari(spec) if c not in adlar]
     if not digerleri:
         return []
-    hedef = _hedef_katman_durumu(spec, cubuk_ad)
+    hedef = _hedef_katman_durumu(spec, adlar)
     ayri = []
     if hedef is not None:
         for c in digerleri:
@@ -237,21 +302,27 @@ def _guc_cok_tur_kontrol(spec, cubuk_ad, yer):
             if not any(h[2] and d[2] for h, d in zip(hedef, diger)):
                 ayri.append(c)
     ayni = [c for c in digerleri if c not in ayri]
+    return _cok_tur_bulgulari(", ".join(adlar), ayni, ayri, yer)
+
+
+def _cok_tur_bulgulari(hedef_metni, ayni, ayri, yer):
+    from cekirdek.ceviri import _
     bulgular = []
     if ayni:
         bulgular.append(Bulgu(
             "uyari", yer,
             _("F_ΔH yalnız '%s' çubuğunu kapsar — modelde yakıt içeren başka çubuk "
-              "türleri de var (%s)") % (cubuk_ad, ", ".join(ayni)),
-            _("Güç dağılımı tek bir çubuk tanımının örnekleri üzerinden sayılır; diğer "
-              "türlerin çubukları haritada yoktur ve en sıcak çubuk onlardan biri "
-              "olabilir. Mutlak güç, hedef çubukların model fisyon enerjisindeki "
-              "payıyla dağıtılır.")))
+              "türleri de var (%s)") % (hedef_metni, ", ".join(ayni)),
+            _("Güç dağılımı yalnız hedef listesindeki çubuk türlerinin örnekleri "
+              "üzerinden sayılır; diğer türlerin çubukları haritada yoktur ve en "
+              "sıcak çubuk onlardan biri olabilir. Hesap ayarlarında hedef olarak "
+              "bütün yakıt çubuklarını seçin. Mutlak güç, hedef çubukların model "
+              "fisyon enerjisindeki payıyla dağıtılır.")))
     if ayri:
         bulgular.append(Bulgu(
             "bilgi", yer,
             _("'%s' yalnız ayrı eksenel katmanlarda (%s): güç haritası '%s' çubuğunun "
-              "katmanlarını kapsar") % (", ".join(ayri), _("örtü, uç parçası"), cubuk_ad),
+              "katmanlarını kapsar") % (", ".join(ayri), _("örtü, uç parçası"), hedef_metni),
             _("Bu türler hedef çubukla aynı katmanda bulunmaz; radyal harita eksik "
               "değildir. Onların gücü haritada görünmez ve mutlak güç hedef "
               "çubukların model fisyon enerjisindeki payıyla dağıtılır.")))
@@ -266,15 +337,16 @@ GUC_BIN_BILGI_ESIGI = 200000
 def _guc_tam_kor_kontrol(spec, cubuk_ad, dilim, yer):
     """
     Tam korda (demet haritali kor) guc dagilimi kapsami:
-      - hedef cubugu ICERMEYEN demetler haritada bos kalir (uyari). Guc tally'si
-        tek bir hucreye (hedef cubugun bolgesi) baglidir; farkli zenginlikteki
-        demetler cogu zaman FARKLI cubuk tanimi kullanir ve haritaya girmez.
+      - hedef cubuklardan HICBIRINI icermeyen demetler haritada bos kalir
+        (uyari). Farkli zenginlikteki demetler cogu zaman FARKLI cubuk tanimi
+        kullanir: hepsi hedef listesine alinirsa harita tamamlanir.
       - tally bin sayisi = cubuk ornegi x eksenel dilim (bilgi, buyukse).
     """
     from cekirdek.ceviri import _
     kor = spec.get("kor") or {}
     if kor.get("tur") not in ("kare_kafes", "altigen_kafes"):
         return []
+    adlar = set(_adlar(cubuk_ad))
     esleme = kor.get("anahtar") or {}
     ornek, eksik = 0, []
     for harf in "".join(kor.get("harita") or []):
@@ -282,20 +354,21 @@ def _guc_tam_kor_kontrol(spec, cubuk_ad, dilim, yer):
         if d is None:
             continue
         d_esleme = d.get("anahtar") or {}
-        adet = sum(1 for h in "".join(d.get("harita") or []) if d_esleme.get(h) == cubuk_ad)
+        adet = sum(1 for h in "".join(d.get("harita") or []) if d_esleme.get(h) in adlar)
         ornek += adet
         if adet == 0 and d["ad"] not in eksik:
             eksik.append(d["ad"])
+    hedef_metni = ", ".join(_adlar(cubuk_ad))
     bulgular = []
     if eksik:
         bulgular.append(Bulgu(
             "uyari", yer,
             _("'%s' çubuğunu içermeyen demetler var (%s) — güç haritasında bu "
-              "demetler boş kalır") % (cubuk_ad, ", ".join(eksik)),
-            _("Güç dağılımı tek bir çubuk tanımının örnekleri üzerinden sayılır. "
-              "Tepe faktörleri yalnızca bu çubuğu içeren demetler için geçerlidir; "
-              "farklı zenginlikteki demetler ayrı çubuk tanımı kullanıyorsa "
-              "haritaya girmez.")))
+              "demetler boş kalır") % (hedef_metni, ", ".join(eksik)),
+            _("Güç dağılımı yalnız hedef listesindeki çubuk türlerinin örnekleri "
+              "üzerinden sayılır. Tepe faktörleri yalnızca bu çubukları içeren "
+              "demetler için geçerlidir; farklı zenginlikteki demetlerin çubuklarını "
+              "da hedef listesine ekleyin.")))
     if ornek * dilim > GUC_BIN_BILGI_ESIGI:
         bulgular.append(Bulgu(
             "bilgi", yer,
