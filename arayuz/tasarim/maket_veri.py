@@ -69,7 +69,7 @@ ORNEKLER = (
     (N_("PWR yakıt hücresi"), "pwr", N_("Klasik PWR pin hücresi, 2B."), "pin"),
     (N_("PWR 17×17 yakıt demeti"), "pwr", N_("264 yakıt çubuğu, 24 kılavuz boru."), "kare"),
     (N_("PWR demeti — 3B"), "pwr", N_("366 cm aktif yükseklik, eksenel yansıtıcı."), "kare3b"),
-    (N_("VVER-1000 demeti"), "vver", N_("163 çubuklu altıgen demet."), "altigen"),
+    (N_("VVER-1000 demeti"), "vver", N_("331 konum, 312 yakıt çubuğu."), "altigen"),
     (N_("SFR altıgen demet"), "sfr", N_("Sodyum soğutmalı, 127 çubuk."), "altigen"),
     (N_("MTR plaka elemanı"), "arastirma", N_("23 düz plaka, U3Si2-Al."), "plaka"),
     (N_("TRIGA kor"), "arastirma", N_("Havuz tipi araştırma reaktörü koru."), "kor"),
