@@ -107,7 +107,8 @@ class GucHaritaWidget(QtWidgets.QWidget):
         self.belirsizlik = QtWidgets.QLabel(_(
             "Belirsizlik: ± değerleri OpenMC'nin raporladığı sapmalardır ve "
             "iyimserdir — ardışık çevrimler arasındaki korelasyon hesaba "
-            "katılmaz. Gerçek belirsizlik için modeli birkaç farklı tohumla koşun."))
+            "katılmaz. Gerçek belirsizlik için önce Shannon entropisiyle kaynak "
+            "yakınsamasını doğrulayın, sonra modeli en az 5–10 farklı tohumla koşun."))
         self.belirsizlik.setObjectName("soluk")
         self.belirsizlik.setWordWrap(True)
 
