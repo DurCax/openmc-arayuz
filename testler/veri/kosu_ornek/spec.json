@@ -1,0 +1,387 @@
+{
+ "surum": 1,
+ "ad": "Rapor fixture'ı — PWR 17×17 3B (küçük koşu)",
+ "aciklama": "17×17 yakıt demetinin 3 boyutlu hali: 366 cm aktif yükseklik.\n\nEksenel sınır Vakum (vacuum) seçildi.\nEksenel sınır Yansıtıcı (reflective) bırakılırsa eksenel güç profili düz çıkar ve\nF_q ≈ F_ΔH olur — yani özellik çalışır ama hiçbir şey göstermez. Gerçek\nbir kosinüs profili ve anlamlı bir F_q için üst/alt sınır Vakum olmalı.\nYan sınır yansıtıcı bırakıldı (sonsuz kafes, tek demet).\n\nToplam güç = 17.6 MW: 3400 MWth bir PWR'ın 193 demetinden biri.\nBu, modelin kapsadığı bölgenin gücüdür — tüm korun değil.\nDoğru girdiyle ortalama çizgisel güç ~180 W/cm çıkmalıdır.",
+ "malzemeler": [
+  {
+   "ad": "uo2",
+   "gorunen_ad": "UO2 %3.20",
+   "yogunluk": {
+    "birim": "g/cm3",
+    "deger": 10.4
+   },
+   "sicaklik": 900.0,
+   "bilesim": [
+    {
+     "tur": "element",
+     "isim": "U",
+     "miktar": 1.0,
+     "birim": "ao",
+     "zenginlik": 3.2
+    },
+    {
+     "tur": "element",
+     "isim": "O",
+     "miktar": 2.0,
+     "birim": "ao"
+    }
+   ],
+   "sab": [],
+   "renk": [
+    222,
+    93,
+    40
+   ]
+  },
+  {
+   "ad": "helyum",
+   "gorunen_ad": "He",
+   "yogunluk": {
+    "birim": "g/cm3",
+    "deger": 0.0001785
+   },
+   "sicaklik": 600.0,
+   "bilesim": [
+    {
+     "tur": "element",
+     "isim": "He",
+     "miktar": 1.0,
+     "birim": "ao"
+    }
+   ],
+   "sab": [],
+   "renk": [
+    235,
+    235,
+    245
+   ]
+  },
+  {
+   "ad": "zirkaloy4",
+   "gorunen_ad": "Zircaloy-4",
+   "yogunluk": {
+    "birim": "g/cm3",
+    "deger": 6.55
+   },
+   "sicaklik": 600.0,
+   "bilesim": [
+    {
+     "tur": "element",
+     "isim": "Zr",
+     "miktar": 98.23,
+     "birim": "wo"
+    },
+    {
+     "tur": "element",
+     "isim": "Sn",
+     "miktar": 1.45,
+     "birim": "wo"
+    },
+    {
+     "tur": "element",
+     "isim": "Fe",
+     "miktar": 0.21,
+     "birim": "wo"
+    },
+    {
+     "tur": "element",
+     "isim": "Cr",
+     "miktar": 0.11,
+     "birim": "wo"
+    }
+   ],
+   "sab": [],
+   "renk": [
+    150,
+    150,
+    160
+   ]
+  },
+  {
+   "ad": "su",
+   "gorunen_ad": "H2O 0.700 g/cm³ + 1300 ppm B",
+   "yogunluk": {
+    "birim": "g/cm3",
+    "deger": 0.7
+   },
+   "sicaklik": 580.0,
+   "bilesim": [
+    {
+     "tur": "element",
+     "isim": "H",
+     "miktar": 11.176126561199002,
+     "birim": "wo"
+    },
+    {
+     "tur": "element",
+     "isim": "O",
+     "miktar": 88.69941715237303,
+     "birim": "wo"
+    },
+    {
+     "tur": "element",
+     "isim": "B",
+     "miktar": 0.13,
+     "birim": "wo"
+    }
+   ],
+   "sab": [
+    "c_H_in_H2O"
+   ],
+   "renk": [
+    90,
+    150,
+    220
+   ]
+  }
+ ],
+ "cubuklar": [
+  {
+   "ad": "yakit_cubugu",
+   "tur": "silindirik",
+   "bolgeler": [
+    {
+     "r": 0.4096,
+     "malzeme": "uo2"
+    },
+    {
+     "r": 0.418,
+     "malzeme": "helyum"
+    },
+    {
+     "r": 0.475,
+     "malzeme": "zirkaloy4"
+    },
+    {
+     "r": null,
+     "malzeme": "su"
+    }
+   ]
+  },
+  {
+   "ad": "kilavuz_boru",
+   "tur": "silindirik",
+   "bolgeler": [
+    {
+     "r": 0.561,
+     "malzeme": "su"
+    },
+    {
+     "r": 0.602,
+     "malzeme": "zirkaloy4"
+    },
+    {
+     "r": null,
+     "malzeme": "su"
+    }
+   ]
+  }
+ ],
+ "plakalar": [],
+ "demetler": [
+  {
+   "ad": "demet_17x17",
+   "tur": "kare",
+   "adim": 1.26,
+   "boyut": [
+    17,
+    17
+   ],
+   "harita": [
+    "yyyyyyyyyyyyyyyyy",
+    "yyyyyyyyyyyyyyyyy",
+    "yyyyykyykyykyyyyy",
+    "yyykyyyyyyyyykyyy",
+    "yyyyyyyyyyyyyyyyy",
+    "yykyykyykyykyykyy",
+    "yyyyyyyyyyyyyyyyy",
+    "yyyyyyyyyyyyyyyyy",
+    "yykyykyyeyykyykyy",
+    "yyyyyyyyyyyyyyyyy",
+    "yyyyyyyyyyyyyyyyy",
+    "yykyykyykyykyykyy",
+    "yyyyyyyyyyyyyyyyy",
+    "yyykyyyyyyyyykyyy",
+    "yyyyykyykyykyyyyy",
+    "yyyyyyyyyyyyyyyyy",
+    "yyyyyyyyyyyyyyyyy"
+   ],
+   "anahtar": {
+    "y": "yakit_cubugu",
+    "k": "kilavuz_boru",
+    "e": "kilavuz_boru"
+   },
+   "dolgu_disi": "su"
+  }
+ ],
+ "kor": {
+  "tur": "tek_demet",
+  "cubuk": null,
+  "demet": "demet_17x17",
+  "plaka": null,
+  "adim": 1.26,
+  "boyut": [
+   1,
+   1
+  ],
+  "harita": [],
+  "halka_sayisi": 2,
+  "yonelim": "x",
+  "anahtar": {},
+  "yukseklik": 366.0,
+  "yansitici": {
+   "var": false,
+   "kalinlik": 20.0,
+   "malzeme": "su"
+  },
+  "kabuklar": [],
+  "dolgu": null,
+  "kor_yaricap": 20.0,
+  "tambur": {
+   "sayi": 0,
+   "yaricap": 4.0,
+   "merkez_yaricap": 26.0,
+   "govde_malzeme": null,
+   "emici_malzeme": null,
+   "emici_ic_yaricap": 2.5,
+   "emici_aci": 120.0,
+   "donme": 0.0,
+   "baslangic_acisi": 0.0
+  },
+  "eksenel": {
+   "var": false,
+   "bolgeler": []
+  },
+  "sinir": {
+   "yan": "reflective",
+   "alt": "vacuum",
+   "ust": "vacuum"
+  }
+ },
+ "ayarlar": {
+  "mod": "eigenvalue",
+  "parcacik": 5000,
+  "cevrim": 40,
+  "pasif": 15,
+  "tohum": 1,
+  "sicaklik_yontemi": "interpolation",
+  "kaynak": {
+   "tur": "kutu",
+   "konum": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "parcacik": "neutron",
+   "kuvvet": 1.0,
+   "enerji": {
+    "tur": "watt",
+    "a": 988000.0,
+    "b": 2.249e-06,
+    "theta": 1293200.0,
+    "enerji": 14100000.0,
+    "noktalar": [],
+    "kenarlar": [],
+    "degerler": [],
+    "e0": 14080000.0,
+    "kutle_orani": 5.0,
+    "iyon_sicaklik": 20000.0
+   },
+   "aci": {
+    "tur": "izotropik",
+    "yon": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "koni_aci": 30.0
+   },
+   "alt": null,
+   "ust": null
+  },
+  "entropi_mesh": {
+   "var": true,
+   "boyut": [
+    8,
+    8,
+    4
+   ]
+  },
+  "kinetik": {
+   "var": false,
+   "nesil": 10
+  }
+ },
+ "tallyler": [
+  {
+   "ad": "reaksiyonlar",
+   "skorlar": [
+    "fission",
+    "absorption",
+    "nu-fission"
+   ],
+   "filtreler": [],
+   "nuklidler": []
+  },
+  {
+   "ad": "iki_grup_aki",
+   "skorlar": [
+    "flux"
+   ],
+   "filtreler": [
+    {
+     "tur": "enerji",
+     "gruplar": [
+      0.0,
+      0.625,
+      20000000.0
+     ]
+    }
+   ],
+   "nuklidler": []
+  }
+ ],
+ "guc_dagilimi": {
+  "var": true,
+  "cubuk": "yakit_cubugu",
+  "bolge": 0,
+  "skor": "kappa-fission",
+  "eksenel_dilim": 10,
+  "toplam_guc": 17600000.0
+ },
+ "tukenme": {
+  "var": false,
+  "zincir": "otomatik",
+  "guc_yogunlugu": 40.0,
+  "adimlar": [
+   0.5,
+   1.5,
+   3.0,
+   5.0,
+   10.0,
+   10.0
+  ],
+  "adim_birimi": "d",
+  "entegrator": "cecm",
+  "malzemeleri_ayir": false,
+  "ek_malzemeler": [],
+  "izlenen": [
+   "U235",
+   "U238",
+   "Pu239",
+   "Pu240",
+   "Pu241",
+   "Xe135",
+   "Sm149"
+  ]
+ },
+ "calistirma": {
+  "is_parcacigi": 8,
+  "dizin": "kosu_3b"
+ },
+ "baslik": "PWR 17×17 demet — 3B",
+ "kategori": "pwr",
+ "seviye": "orta",
+ "baslik_en": "PWR 17×17 assembly — 3D",
+ "aciklama_en": "The 17×17 assembly in 3D (366 cm active height) with a pin power distribution."
+}
