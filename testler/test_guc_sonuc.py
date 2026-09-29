@@ -385,7 +385,41 @@ def test_cli_hatali_spec_cikis_kodu():
         shutil.rmtree(d, True)
 
 
-HIZLI = [
+
+def test_lineer_guc_yuksekligi():
+    print("\n[GS14] LINEER GUC: payda hedef cubugun bulundugu katman yuksekliklerinin toplami")
+    import copy
+    from cekirdek import kurucu, sema
+    sp = sema.yukle(os.path.join(ORNEK, "pwr_eksenel.json"))
+    cubuk = (sp.get("guc_dagilimi") or {}).get("cubuk") or "yakit_cubugu"
+    sp.setdefault("guc_dagilimi", {})["cubuk"] = cubuk
+    ar = kurucu.cubuk_eksenel_aralik(sp, cubuk)
+    h = kurucu.guc_yuksekligi(sp)
+    kontrol("pwr_eksenel: hedef cubuk yuksekligi = cubuk araligi (bitisik katmanlar)",
+            abs(h - (ar[1] - ar[0])) < 1e-9, "-> %s vs %s" % (h, ar))
+    kontrol("aktif (blanket dahil) araliktan kucuk",
+            h < (kurucu.aktif_eksenel_aralik(sp)[1] - kurucu.aktif_eksenel_aralik(sp)[0]))
+    # Kesintili: ortadaki katmandan hedef cubugu cikar -> o katman sayilmaz
+    s2 = copy.deepcopy(sp)
+    katmanlar = sema.eksenel_katmanlar(s2["kor"])
+    icerenler = [k for _z0, _z1, k in katmanlar
+                 if any(kurucu._iceriyor_mu(s2, x, cubuk)
+                        for x in sema.katman_adaylari(s2["kor"], k))]
+    if len(icerenler) >= 3:
+        orta = icerenler[len(icerenler) // 2]
+        bosluk = orta.get("yukseklik")
+        orta["dolgu"] = next(m["ad"] for m in s2["malzemeler"])
+        orta.pop("anahtar", None)
+        h2 = kurucu.guc_yuksekligi(s2)
+        kontrol("kesintili katmanda aradaki bosluk dusulur",
+                abs(h2 - (h - bosluk)) < 1e-9, "-> %s, beklenen %s" % (h2, h - bosluk))
+    else:
+        kontrol("kesintili durum icin en az 3 katman (sentetik atlandi)", True)
+    tek = sema.yukle(os.path.join(ORNEK, "pwr_3b.json"))
+    kontrol("tek bolgeli 3B: kor yuksekligi", kurucu.guc_yuksekligi(tek)
+            == sema.kor_yuksekligi(tek["kor"]))
+
+HIZLI = [test_lineer_guc_yuksekligi, 
     test_korunum_tally_yok_debug, test_korunum_bozuk_tally_loglanir,
     test_korunum_ref_sifir_notu, test_korunum_tamam, test_okuma_hatalari_loglanir,
     test_mutlak_guc_hedef_payi, test_mutlak_guc_eski_statepoint,

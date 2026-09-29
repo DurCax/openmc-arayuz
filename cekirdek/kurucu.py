@@ -393,6 +393,36 @@ def aktif_eksenel_aralik(spec):
     return (alt, ust)
 
 
+def guc_yuksekligi(spec, cubuk_ad=None):
+    """
+    Lineer guc [W/cm] paydasi: guc hedef cubugunun GERCEKTEN bulundugu eksenel
+    katmanlarin yukseklik TOPLAMI.
+
+    Aktif (fisil) aralik yetmez: blanket fisildir ama hedef cubugu icermez; pay
+    (toplam guc x kappa_hedef/kappa_model) blanketi disarida birakirken payda onu
+    icerirse W/cm dusuk cikar (olculdu: pwr_eksenel 330 cm vs 300 cm, %9.1 --
+    400-500 W/cm sinirina gore IYIMSER yon). Kesintili katmanlarda aradaki bosluk
+    sayilmaz. 2B modelde None; hedef hicbir katmanda yoksa aktif aralik.
+    """
+    kor = spec["kor"]
+    h = sema_kor_yuksekligi(kor)
+    if not h:
+        return None
+    if cubuk_ad is None:
+        cubuk_ad = (spec.get("guc_dagilimi") or {}).get("cubuk")
+    katmanlar = sema_eksenel_katmanlar(kor)
+    if katmanlar is None or not cubuk_ad:
+        ar = aktif_eksenel_aralik(spec) if katmanlar is not None else None
+        return (ar[1] - ar[0]) if ar else h
+    from cekirdek.sema import katman_adaylari
+    toplam = sum(z1 - z0 for z0, z1, katman in katmanlar
+                 if any(_iceriyor_mu(spec, x, cubuk_ad) for x in katman_adaylari(kor, katman)))
+    if toplam > 0:
+        return toplam
+    ar = aktif_eksenel_aralik(spec)
+    return (ar[1] - ar[0]) if ar else h
+
+
 def _iceriyor_mu(spec, kapsayan, aranan, derinlik=0):
     """'kapsayan' adli dolgu, 'aranan' cubugu/plakayi iceriyor mu?"""
     if derinlik > 8 or not kapsayan:
