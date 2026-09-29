@@ -112,6 +112,19 @@ VARSAYILAN_AYARLAR = {
 
 # Cubuk bazli guc dagilimi (DistribcellFilter). Kafeste tekrarlanan bir
 # cubugun her ornegi ayri sayilir; buradan F_dH ve (3B modelde) F_q cikar.
+#
+# SEMA KARARI (Dalga 2 on-commit; uygulama Ajan 8b, testler/test_guc_coklu.py):
+#   Cok turlu guc dagilimi icin hedef cubuk TEK alan yerine LISTE olur:
+#       "guc_dagilimi": {"var": true,
+#                        "cubuklar": [{"cubuk": "yakit_a", "bolge": 0},
+#                                     {"cubuk": "yakit_b", "bolge": 0}], ...}
+#   - Okuma (tamamla): eski "cubuk"/"bolge" alanlari tek ogeli listeye cevrilir
+#     ({"cubuk": ad, "bolge": bolge or 0}); "cubuk" None/eksikse cubuklar = [].
+#     Hem eski hem yeni alan varsa "cubuklar" kazanir.
+#   - Yazma: yalniz yeni bicim ("cubuk" ve "bolge" ust alanlari yazilmaz).
+#   - Varsayilan: "cubuklar": [].
+#   - Normalizasyon listedeki TUM yakit cubuklari uzerinden yapilir.
+#   Bu karar uygulanana kadar asagidaki eski bicim gecerlidir.
 VARSAYILAN_GUC = {
     "var": False,
     "cubuk": None,          # hedef cubuk adi
