@@ -27,7 +27,10 @@ from PySide6 import QtCore, QtGui, QtWidgets
 
 from cekirdek import malzeme_kutup as mk
 from cekirdek import sema
+from cekirdek.ceviri import _
 from cekirdek.gunluk import kaydedici
+from arayuz import bilesenler as b
+from arayuz import sekme_duzen as sd
 from arayuz.ortak import (BosDurum, GelismisBolum, RenkDugmesi, SekmeTabani,
                           baslik, ipucu, sayi)
 
@@ -66,53 +69,19 @@ class MalzemeSekmesi(SekmeTabani):
         super().__init__(parent)
         self._secim_adi = None
 
-        self.tablo = QtWidgets.QTableWidget(0, len(self.BASLIKLAR))
-        self.tablo.setHorizontalHeaderLabels(self.BASLIKLAR)
-        self.tablo.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
-        self.tablo.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
-        self.tablo.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
-        self.tablo.horizontalHeader().setStretchLastSection(True)
-        self.tablo.verticalHeader().setVisible(False)
-        self.tablo.doubleClicked.connect(self._duzenle)
-        self.tablo.itemSelectionChanged.connect(self._dugmeleri_guncelle)
+        self.tablo = self._tablo_kur()
+        self._dugmeleri_kur()
 
-        self.d_kutup = QtWidgets.QPushButton("Kütüphaneden ekle…")
-        self.d_kutup.setObjectName("birincil")
-        self.d_yeni = QtWidgets.QPushButton("Elle tanımla…")
-        self.d_yeni.setToolTip("Bileşimi element/izotop satırlarıyla kendiniz girin.")
-        self.d_duzenle = QtWidgets.QPushButton("Düzenle…")
-        self.d_kopya = QtWidgets.QPushButton("Kopyala")
-        self.d_sil = QtWidgets.QPushButton("Sil")
-        self.d_kutup.clicked.connect(self._kutuphaneden)
-        self.d_yeni.clicked.connect(self._yeni)
-        self.d_duzenle.clicked.connect(self._duzenle)
-        self.d_kopya.clicked.connect(self._kopyala)
-        self.d_sil.clicked.connect(self._sil)
-
-        # Iki satir: editor paneli dar (onizlemenin yaninda ~250 px); tek
-        # satirda Duzenle/Kopyala/Sil yatay kaydirmanin arkasina dusuyordu.
-        dugmeler = QtWidgets.QVBoxLayout()
-        ekle_satir = QtWidgets.QHBoxLayout()
-        for d in (self.d_kutup, self.d_yeni):
-            ekle_satir.addWidget(d)
-        ekle_satir.addStretch(1)
-        islem_satir = QtWidgets.QHBoxLayout()
-        for d in (self.d_duzenle, self.d_kopya, self.d_sil):
-            islem_satir.addWidget(d)
-        islem_satir.addStretch(1)
-        dugmeler.addLayout(ekle_satir)
-        dugmeler.addLayout(islem_satir)
-
-        liste_sayfa = QtWidgets.QWidget()
-        ld = QtWidgets.QVBoxLayout(liste_sayfa)
-        ld.setContentsMargins(0, 0, 0, 0)
-        ld.addWidget(ipucu(
-            "Düzenlemek için satıra çift tıklayın. Kütüphaneden eklenen "
-            "malzemelerde zenginlik, sıcaklık, bor gibi değerler sonradan "
-            "değiştirilebilir. 'bosluk' ayrılmış addır: geometride Boş (madde "
-            "yok) anlamına gelir, burada tanımlanmaz."))
-        ld.addWidget(self.tablo, 1)
-        ld.addLayout(dugmeler)
+        # Kart: baslik + aciklama + sag ust birincil eylem (maket duzeni).
+        self.kart = b.Kart(
+            _("Malzemeler"),
+            aciklama=_("Düzenlemek için satıra çift tıklayın. 'bosluk' ayrılmış "
+                       "addır: geometride Boş (madde yok) anlamına gelir, burada "
+                       "tanımlanmaz."),
+            eylem=self.d_kutup)
+        self.kart.ekle(self.tablo, 1)
+        self.kart.ekle(sd.satir(self.d_yeni, self.d_duzenle, self.d_kopya, self.d_sil))
+        liste_sayfa = self.kart
 
         bos_sayfa = QtWidgets.QWidget()
         bd = QtWidgets.QVBoxLayout(bos_sayfa)
@@ -137,10 +106,44 @@ class MalzemeSekmesi(SekmeTabani):
         self.yigin.addWidget(bos_sayfa)
         self.yigin.addWidget(liste_sayfa)
 
-        duzen = QtWidgets.QVBoxLayout(self)
-        duzen.addWidget(baslik("Malzemeler"))
+        duzen = sd.sayfa_duzeni(self)
+        duzen.addWidget(sd.sayfa_basligi(
+            _("Malzemeler"), _("Modeldeki malzemeler, yoğunluk ve bileşim.")))
         duzen.addWidget(self.yigin, 1)
         self._dugmeleri_guncelle()
+
+    # ------------------------------------------------------------------
+    def _tablo_kur(self):
+        t = QtWidgets.QTableWidget(0, len(self.BASLIKLAR))
+        t.setHorizontalHeaderLabels(self.BASLIKLAR)
+        t.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        t.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
+        t.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
+        t.horizontalHeader().setStretchLastSection(True)
+        t.horizontalHeader().setHighlightSections(False)
+        t.verticalHeader().setVisible(False)
+        t.setAlternatingRowColors(True)
+        t.setShowGrid(False)
+        t.doubleClicked.connect(self._duzenle)
+        t.itemSelectionChanged.connect(self._dugmeleri_guncelle)
+        return t
+
+    def _dugmeleri_kur(self):
+        """Kart eylemleri: birincil "Kütüphaneden ekle", ikonlu islem dugmeleri."""
+        self.d_kutup = b.birincil_dugme(
+            _("Kütüphaneden ekle…"), "download",
+            _("Hazır, doğrulanmış bileşimler. Zenginlik, sıcaklık ve bor gibi "
+              "değerler sonradan değiştirilebilir."))
+        self.d_yeni = b.ikincil_dugme(
+            _("Elle tanımla…"), "plus",
+            _("Bileşimi element/izotop satırlarıyla kendiniz girin."))
+        self.d_duzenle = b.ikincil_dugme(_("Düzenle…"), "sliders-horizontal")
+        self.d_kopya = b.duz_dugme(_("Kopyala"), "copy")
+        self.d_sil = b.tehlikeli_dugme(_("Sil"), "trash")
+        for d, islem in ((self.d_kutup, self._kutuphaneden), (self.d_yeni, self._yeni),
+                         (self.d_duzenle, self._duzenle), (self.d_kopya, self._kopyala),
+                         (self.d_sil, self._sil)):
+            d.clicked.connect(islem)
 
     # ------------------------------------------------------------------
     def doldur(self):
