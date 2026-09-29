@@ -574,7 +574,17 @@
     "k": 1.0007,
     "sigma": 0.0012,
     "tur": "deney",
-    "kaynak": "ICSBEP LEU-COMP-THERM-008, durum 1 (B&W Core XI)"
+    "kaynak": "ICSBEP LEU-COMP-THERM-008, durum 1 (B&W Core XI)",
+    "olcum": {
+      "k": 1.00067,
+      "sigma": 0.00021,
+      "parcacik": 100000,
+      "sure_s": 451.4,
+      "is_parcacigi": 8,
+      "openmc": "0.16.0",
+      "kutuphane": "ENDF/B-VIII.0",
+      "tarih": "2026-09-29"
+    }
   },
   "baslik_en": "B&W critical lattice (LCT-008)",
   "aciklama_en": "ICSBEP benchmark LEU-COMP-THERM-008 case 1 (B&W Core XI): 4961 UO2 rods (2.459 wt%) in 1511 ppm borated water, k-eff = 1.0007 ± 0.0012."
