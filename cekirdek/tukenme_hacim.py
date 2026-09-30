@@ -22,6 +22,12 @@
       * demetin dis dolgusu, kilifi, kor yansiticisi (alan kafes adimina ve
         zarfa bagli)
 
+ 1b. CUBUK / PLAKA / EMICI HACIMLERI (cubuk_hacmi, plaka_hacmi, tambur_emici_hacmi)
+    Kontrol cubugu emicisi (Dalga 2 kapanis, TH6): katmansiz 3B modelde emici
+    bolge ucta ikiye bolunur; emici = daldirma x yukseklik, izleyici = kalan
+    (kurucu.cubuk_universe ile ayni). Katmanli / 2B modelde kesin degil.
+    Tamamen cekili cubukta emici hacmi sifir: malzeme "yok" sayilir.
+
  2. ORNEK HACIMLERI (cubuk cubuk yanma, kurulan model uzerinde)
     OpenMC diff_burnable_mats'te toplam hacmi orneklere ESIT boler
     ('divide equally'). Bu iki durumda yanlistir:
@@ -180,6 +186,72 @@ def kontrol_emici_uzunlugu(spec, cubuk):
     return emici, h - emici
 
 
+def kontrol_emici_kesri(spec, cubuk, ad):
+    """
+    Kontrol cubugunun EMICI bolgesinde 'ad' malzemesinin kapladigi eksenel
+    kesir (0..1). Emici bolge ucta ikiye bolunur (kurucu.cubuk_universe):
+    ustu emici malzemesi, alti izleyici. Kesin degilse (katmanli / 2B) None.
+    """
+    uz = kontrol_emici_uzunlugu(spec, cubuk)
+    if uz is None:
+        return None
+    emici, izleyici = uz
+    i = int(cubuk.get("emici_bolge") or 0)
+    pay = (emici if cubuk["bolgeler"][i].get("malzeme") == ad else 0.0) \
+        + (izleyici if cubuk.get("izleyici_malzeme") == ad else 0.0)
+    return pay / (emici + izleyici)
+
+
+def cubuk_hacmi(spec, kor, ad, dilimler, sorunlar):
+    """Cubuk bolgelerindeki 'ad' hacmi (V, parcalar); kesin olmayanlar sorunlar'a.
+    Kontrol cubugunun emici bolgesi daldirmaya gore emici/izleyici diye
+    bolunur (kontrol_emici_kesri); diger bolgeleri tam boydur."""
+    from cekirdek import tukenme as _tk
+    V, parcalar = 0.0, []
+    for c in spec.get("cubuklar", []):
+        bolgeler = c.get("bolgeler") or []
+        emici_ix = int(c.get("emici_bolge") or 0) if c.get("tur") == "kontrol" else -1
+        for i, b in enumerate(bolgeler):
+            kontrol = i == emici_ix
+            if b.get("malzeme") != ad and not (kontrol and c.get("izleyici_malzeme") == ad):
+                continue
+            if b.get("r") is None:
+                sorunlar.append("'%s' çubuğunun dış bölgesi (alan kafes adımına bağlı)"
+                                % c["ad"])
+                continue
+            kesir = kontrol_emici_kesri(spec, c, ad) if kontrol else 1.0
+            if kesir is None:
+                sorunlar.append("'%s' kontrol çubuğu (daldırmaya bağlı)" % c["ad"])
+                continue
+            r_ic = bolgeler[i - 1]["r"] if i > 0 else 0.0
+            alan = math.pi * (b["r"] ** 2 - r_ic ** 2)
+            ek = " (daldırma %%%g: boyun %%%.4g'i)" % (
+                float(c.get("daldirma") or 0.0), 100.0 * kesir) if kontrol else ""
+            for h, dolgu, esleme in dilimler:
+                n = _tk._kor_sayimi(spec, kor, dolgu, c["ad"], esleme)
+                if n:
+                    V += alan * h * kesir * n
+                    parcalar.append("%s, %d. bölge: %d adet × %g cm%s"
+                                    % (c["ad"], i + 1, n, h, ek))
+    return V, parcalar
+
+
+def plaka_hacmi(spec, kor, ad, dilimler):
+    """Plaka etlerindeki 'ad' hacmi (V, parcalar)."""
+    from cekirdek import tukenme as _tk
+    V, parcalar = 0.0, []
+    for p in spec.get("plakalar", []):
+        if p.get("et_malzeme") != ad:
+            continue
+        alan = p["et_kalinlik"] * p["plaka_genislik"] * p["plaka_sayisi"]
+        for h, dolgu, esleme in dilimler:
+            n = _tk._kor_sayimi(spec, kor, dolgu, p["ad"], esleme)
+            if n:
+                V += alan * h * n
+                parcalar.append("%s: %d eleman × %g cm" % (p["ad"], n, h))
+    return V, parcalar
+
+
 # ============================================================================
 # 2. ornek hacimleri (kurulan model)
 # ============================================================================
@@ -279,16 +351,32 @@ def bolge_alani(bolge):
     return math.pi * (ic[0] ** 2 - (dis[0] ** 2 if dis else 0.0))
 
 
-def _z_uzunlugu(bolge):
-    """Bolgenin z yonundeki sonlu uzunlugu; sonsuzsa None."""
+def _z_araligi(bolge):
+    """Bolgenin z sinirlari (alt, ust); bir yonde acik olabilir (+-inf).
+    Hesaplanamazsa (-inf, inf)."""
     if bolge is None:
-        return None
+        return -math.inf, math.inf
     try:
         alt, ust = bolge.bounding_box
     except (AttributeError, NotImplementedError, TypeError, ValueError):
-        return None
-    uzun = float(ust[2]) - float(alt[2])
-    return uzun if math.isfinite(uzun) else None
+        return -math.inf, math.inf
+    return float(alt[2]), float(ust[2])
+
+
+def _yol_z_uzunlugu(ogeler):
+    """
+    Yol uzerindeki hucrelerin z araliklarinin KESISIMI; sonsuzsa None.
+    Kesisim (en kisa aralik degil): kontrol cubugu emicisi yalniz ucta bir
+    ZPlane ile sinirlidir (ustu acik), sonlu ust sinirini kor/katman hucresi
+    verir. Kurucu hucreleri yalniz (x, y, 0) oteler; z her duzeyde ortaktir.
+    """
+    alt, ust = -math.inf, math.inf
+    for t, n in ogeler:
+        if t == "c":
+            a, u = _z_araligi(n.region)
+            alt, ust = max(alt, a), min(ust, u)
+    uzun = ust - alt
+    return max(uzun, 0.0) if math.isfinite(uzun) else None
 
 
 def _yol_ogeleri(yol, hucreler, kafesler):
@@ -315,7 +403,7 @@ def ornek_hacmi(yol, hucreler, kafesler):
     Alan: hucrenin kendi bolgesi; bolgesi yoksa (malzeme universe'u bir kafes
     konumunu ya da kor hucresini dolduruyor) yol uzerinde geriye dogru ilk
     kafes hucresi / alani hesaplanabilen hucre. Yukseklik: yol uzerindeki en
-    kisa sonlu z uzunlugu (katman); hic yoksa 2B, 1 cm.
+    yol hucrelerinin z araliklarinin kesisimi (katman, kontrol ucu); sonsuzsa 2B, 1 cm.
     """
     ogeler = _yol_ogeleri(yol, hucreler, kafesler)
     alan = None
@@ -325,9 +413,8 @@ def ornek_hacmi(yol, hucreler, kafesler):
             break
     if alan is None:
         return None
-    uzunluklar = [u for t, n in ogeler if t == "c" for u in [_z_uzunlugu(n.region)]
-                  if u is not None]
-    return alan * (min(uzunluklar) if uzunluklar else 1.0)
+    uzun = _yol_z_uzunlugu(ogeler)
+    return alan * (1.0 if uzun is None else uzun)
 
 
 def ornekleri_ayir(model, spec, hv, yanacak):

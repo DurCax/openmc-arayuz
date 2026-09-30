@@ -319,16 +319,58 @@ def _roller(s, ad):
     return uygunluk.tek_malzeme_rolleri(sema.malzeme_bul(s, ad))
 
 
-def test_hacimsiz_zehir():
-    """Hacmi kesin olmayan zehir (kontrol cubugu B4C) tukenmeye katilmaz, UYARI."""
-    print("\n[TH6] YANABILIR ZEHIR: kontrol cubugundaki B4C -> uyari, kosu engellenmez")
-    from cekirdek import dogrula, sema, tukenme
+def _kontrol_spec(daldirma, katmanli=False):
+    from cekirdek import sema
     s = sema.yukle(os.path.join(ORNEK, "pwr_kontrol.json"))
     s["tukenme"]["var"] = True
-    kontrol("b4c hacimler listesinde yok (kesin hacim yok)", "b4c" not in tukenme.hacimler(s))
-    z = tukenme.hacimsiz_zehirler(s)
-    kontrol("b4c hacimsiz zehir: %s" % z.get("b4c"), "b4c" in z)
-    b = [x for x in dogrula.tukenme_kontrol(s, veri_kontrolu=False) if x.yer == "tukenme/b4c"]
+    sema.cubuk_bul(s, "kontrol_cubugu")["daldirma"] = daldirma
+    if katmanli:
+        h = sema.kor_yuksekligi(s["kor"])
+        s["kor"]["eksenel"] = {"var": True, "bolgeler": [
+            sema.eksenel_bolge("alt", h / 2.0, None), sema.eksenel_bolge("ust", h / 2.0, None)]}
+    return s
+
+
+def test_hacimsiz_zehir():
+    """
+    Kontrol cubugu emicisi (B4C): katmansiz 3B modelde hacim ANALITIK
+    (tukenme_hacim.kontrol_emici_uzunlugu: daldirma x yukseklik) ve tukenmeye
+    katilir; tamamen cekili cubukta emici geometride yok (uyari da yok).
+    Katmanli modelde emici katman sinirlarini asabilir: hacimsiz zehir, UYARI.
+    """
+    print("\n[TH6] YANABILIR ZEHIR: kontrol cubugu B4C -- analitik / cekili / katmanli")
+    import math
+    from cekirdek import dogrula, sema, tukenme, tukenme_hacim
+
+    def uyarilar(s):
+        return [x for x in dogrula.tukenme_kontrol(s, veri_kontrolu=False)
+                if x.yer == "tukenme/b4c"]
+
+    s = _kontrol_spec(50.0)
+    c = sema.cubuk_bul(s, "kontrol_cubugu")
+    em, _iz = tukenme_hacim.kontrol_emici_uzunlugu(s, c)
+    d = sema.demet_bul(s, s["kor"]["demet"])
+    adet = sum(r.count(h) for r in d["harita"] for h, ad in d["anahtar"].items()
+               if ad == "kontrol_cubugu")
+    beklenen = math.pi * c["bolgeler"][0]["r"] ** 2 * em * adet
+    hv = tukenme.hacimler(s)
+    kontrol("daldirma %%50: b4c analitik hacim %.6g cm3 (%d cubuk)" % (beklenen, adet),
+            "b4c" in hv and hv["b4c"]["yontem"] == "analitik"
+            and abs(hv["b4c"]["hacim"] - beklenen) < 1e-9 * beklenen, "-> %s" % hv.get("b4c"))
+    kontrol("daldirma %50: hacimsiz zehir yok, dogrulama uyarisi yok",
+            "b4c" not in tukenme.hacimsiz_zehirler(s) and not uyarilar(s))
+
+    s0 = _kontrol_spec(0.0)
+    kontrol("daldirma %0 (cekili): b4c ne hacimlerde ne hacimsiz zehirlerde, uyari yok",
+            "b4c" not in tukenme.hacimler(s0) and "b4c" not in tukenme.hacimsiz_zehirler(s0)
+            and not uyarilar(s0), "-> %s" % tukenme._hacim_tablosu(s0).get("b4c"))
+
+    sk = _kontrol_spec(50.0, katmanli=True)
+    kontrol("katmanli model: b4c hacimler listesinde yok (kesin hacim yok)",
+            "b4c" not in tukenme.hacimler(sk))
+    z = tukenme.hacimsiz_zehirler(sk)
+    kontrol("katmanli model: b4c hacimsiz zehir: %s" % z.get("b4c"), "b4c" in z)
+    b = uyarilar(sk)
     kontrol("dogrulama: b4c UYARI (hata degil)",
             b and all(x.seviye == "uyari" for x in b), "-> %s" % [(x.seviye, x.mesaj) for x in b])
 
@@ -547,12 +589,33 @@ def test_hazirla():
         kontrol("ornek sayisi 72 (4 demet x 9 cubuk x 2 katman)", b["ornek_sayisi"] == 72,
                 "-> %s" % b["ornek_sayisi"])
         kontrol("agir metal > 0", b["agir_metal_g"] > 0)
-        k = sema.yukle(os.path.join(ORNEK, "pwr_kontrol.json"))
-        k["tukenme"]["var"] = True
-        _m, b = tukenme.hazirla(k)
-        kontrol("kontrol cubugu b4c atlandi, uo2 yanar",
+        _m, b = tukenme.hazirla(_kontrol_spec(50.0, katmanli=True))
+        kontrol("katmanli: kontrol cubugu b4c atlandi, uo2 yanar",
                 "b4c" in b["atlanan"] and "b4c" not in b["yanabilir"]
                 and "uo2" in b["yanabilir"], "-> %s / %s" % (b["atlanan"], b["yanabilir"]))
+        _m, b = tukenme.hazirla(_kontrol_spec(50.0))
+        kontrol("katmansiz, daldirma %50: b4c de yanar (analitik hacim)",
+                "b4c" in b["yanabilir"] and "b4c" not in b["atlanan"]
+                and "uo2" in b["yanabilir"], "-> %s / %s" % (b["atlanan"], b["yanabilir"]))
+        ks = _kontrol_spec(50.0)
+        ks["tukenme"]["malzemeleri_ayir"] = True
+        try:
+            m, b = tukenme.hazirla(ks)
+            b4c = sema.malzeme_bul(ks, "b4c")
+            ad = b4c.get("gorunen_ad") or "b4c"          # OpenMC malzeme adi
+            klon = [x for x in m.materials if x.name == ad and x.depletable]
+            v = sum(x.volume for x in klon)
+            kontrol("cubuk cubuk yanma: 25 b4c ornegi", len(klon) == 25, "-> %d" % len(klon))
+            kontrol("cubuk cubuk yanma: b4c ornekleri toplami analitik hacim (yari boy)",
+                    abs(v - b["hacimler"]["b4c"]["hacim"]) < 1e-6 * v, "-> %g / %g"
+                    % (v, b["hacimler"]["b4c"]["hacim"]))
+        except ValueError as e:
+            kontrol("cubuk cubuk yanma: b4c ornekleri toplami analitik hacim (yari boy)",
+                    False, "-> %s" % e)
+        _m, b = tukenme.hazirla(_kontrol_spec(0.0))
+        kontrol("cekili cubuk: b4c ne yanar ne atlanir (geometride yok)",
+                "b4c" not in b["atlanan"] and "b4c" not in b["yanabilir"],
+                "-> %s / %s" % (b["atlanan"], b["yanabilir"]))
         f = T._kor_spec(kilif=True)
         f["demetler"][0]["kilif"]["malzeme"] = "uo2"
         try:
