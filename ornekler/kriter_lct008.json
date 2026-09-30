@@ -1,0 +1,591 @@
+{
+  "surum": 1,
+  "ad": "B&W Core XI kritik kafesi (LEU-COMP-THERM-008/1)",
+  "aciklama": "ICSBEP kriteri LEU-COMP-THERM-008, durum 1 (B&W Core XI, Loading 1): borlu suda (1511 ppm) %2.459 zenginlikli UO2 çubuklarından oluşan kritik kafes. Hafif su kafeslerinin (termal spektrum, U-238 rezonans soğurması, B-10) klasik doğrulama deneyidir.\n\nGeometri: 1.63576 cm kare adımda 4961 yakıt çubuğu; çubuklar merkezdeki 3×3 demetlik (15×15) bölge ve basamaklı tampon bölgesi boyunca uzanır (haritadaki 's' hücreleri su). Kafes, iç yarıçapı 76.2 cm olan su tankının içindedir; tank duvarı kriter modelinde yoktur (dış yüzey vakum). Yükseklik 163.324 cm, alt/üst vakum; çubuklar eksenel olarak tektir.\nÇubuk: yakıt r = 0.514858 cm, Al-6061 kılıf dış r = 0.602996 cm (boşluk yok).\nSilindirik tank, kontrol tamburu OLMAYAN 'tamburlu' kor türüyle kurulur: kor yarıçapı 75.2 cm + 1.0 cm su kuşağı = 76.2 cm (tank iç yarıçapı).\nAtom yoğunlukları [atom/b-cm] kriter modelinden aynen (yakıtta safsızlık eşdeğeri B-10 dahil). Deneysel kriter değeri k_eff = 1.0007 ± 0.0012.\nKaynak: ICSBEP Handbook, LEU-COMP-THERM-008; sayılar ve çubuk haritası mit-crpg/benchmarks (icsbep/leu-comp-therm-008, case-1) girdilerinden.",
+  "malzemeler": [
+    {
+      "ad": "uo2",
+      "gorunen_ad": "UO2 %2.459 (B-10 safsızlık eşdeğeriyle)",
+      "yogunluk": {
+        "birim": "atom/b-cm",
+        "deger": 0.0685245095
+      },
+      "sicaklik": 293.6,
+      "bilesim": [
+        {
+          "tur": "nuklid",
+          "isim": "U234",
+          "miktar": 4.5689e-06,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "U235",
+          "miktar": 0.00056868,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "U238",
+          "miktar": 0.022268,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "O16",
+          "miktar": 0.045683,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "B10",
+          "miktar": 2.6055e-07,
+          "birim": "ao"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        214,
+        96,
+        42
+      ]
+    },
+    {
+      "ad": "al6061",
+      "gorunen_ad": "Al-6061 kılıf",
+      "yogunluk": {
+        "birim": "atom/b-cm",
+        "deger": 0.055380637
+      },
+      "sicaklik": 293.6,
+      "bilesim": [
+        {
+          "tur": "nuklid",
+          "isim": "Mg24",
+          "miktar": 0.00049006,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Mg25",
+          "miktar": 6.2196e-05,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Mg26",
+          "miktar": 6.8459e-05,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Al27",
+          "miktar": 0.053985,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Si28",
+          "miktar": 0.00029726,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Si29",
+          "miktar": 1.5094e-05,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Si30",
+          "miktar": 9.9499e-06,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Ti46",
+          "miktar": 3.8992e-06,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Ti47",
+          "miktar": 3.5164e-06,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Ti48",
+          "miktar": 3.4842e-05,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Ti49",
+          "miktar": 2.5569e-06,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Ti50",
+          "miktar": 2.4482e-06,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Cr50",
+          "miktar": 2.5214e-06,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Cr52",
+          "miktar": 4.8622e-05,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Cr53",
+          "miktar": 5.5133e-06,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Cr54",
+          "miktar": 1.3724e-06,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Mn55",
+          "miktar": 4.1191e-05,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Fe54",
+          "miktar": 1.1053e-05,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Fe56",
+          "miktar": 0.00017351,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Fe57",
+          "miktar": 4.007e-06,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Fe58",
+          "miktar": 5.3326e-07,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Cu63",
+          "miktar": 4.1043e-05,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Cu65",
+          "miktar": 1.831e-05,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Zn64",
+          "miktar": 2.8361e-05,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Zn66",
+          "miktar": 1.5994e-05,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Zn67",
+          "miktar": 2.3302e-06,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Zn68",
+          "miktar": 1.0642e-05,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Zn70",
+          "miktar": 3.5184e-07,
+          "birim": "ao"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        170,
+        175,
+        185
+      ]
+    },
+    {
+      "ad": "su_borlu",
+      "gorunen_ad": "Su, 1511 ppm B",
+      "yogunluk": {
+        "birim": "atom/b-cm",
+        "deger": 0.100190266
+      },
+      "sicaklik": 293.6,
+      "bilesim": [
+        {
+          "tur": "nuklid",
+          "isim": "H1",
+          "miktar": 0.066737,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "O16",
+          "miktar": 0.033369,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "B10",
+          "miktar": 1.6769e-05,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "B11",
+          "miktar": 6.7497e-05,
+          "birim": "ao"
+        }
+      ],
+      "sab": [
+        "c_H_in_H2O"
+      ],
+      "renk": [
+        90,
+        150,
+        220
+      ]
+    }
+  ],
+  "cubuklar": [
+    {
+      "ad": "yakit_cubugu",
+      "tur": "silindirik",
+      "bolgeler": [
+        {
+          "r": 0.514858,
+          "malzeme": "uo2"
+        },
+        {
+          "r": 0.602996,
+          "malzeme": "al6061"
+        },
+        {
+          "r": null,
+          "malzeme": "su_borlu"
+        }
+      ]
+    }
+  ],
+  "plakalar": [],
+  "demetler": [
+    {
+      "ad": "kor_kafesi",
+      "tur": "kare",
+      "adim": 1.63576,
+      "boyut": [
+        93,
+        93
+      ],
+      "harita": [
+        "sssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss",
+        "sssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss",
+        "sssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss",
+        "sssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss",
+        "sssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss",
+        "sssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss",
+        "ssssssssssssssssssssssssssssssssssssyyyyyyyyyyyyyyyyyyyyyssssssssssssssssssssssssssssssssssss",
+        "ssssssssssssssssssssssssssssssssssssyyyyyyyyyyyyyyyyyyyyyssssssssssssssssssssssssssssssssssss",
+        "ssssssssssssssssssssssssssssssssssssyyyyyyyyyyyyyyyyyyyyyssssssssssssssssssssssssssssssssssss",
+        "ssssssssssssssssssssssssssssssssssssyyyyyyyyyyyyyyyyyyyyyssssssssssssssssssssssssssssssssssss",
+        "ssssssssssssssssssssssssssssssssssssyyyyyyyyyyyyyyyyyyyyyssssssssssssssssssssssssssssssssssss",
+        "ssssssssssssssssssssssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyssssssssssssssssssssssssss",
+        "ssssssssssssssssssssssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyssssssssssssssssssssssssss",
+        "ssssssssssssssssssssssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyssssssssssssssssssssssssss",
+        "ssssssssssssssssssssssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyssssssssssssssssssssssssss",
+        "ssssssssssssssssssssssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyssssssssssssssssssssssssss",
+        "ssssssssssssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyssssssssssssssss",
+        "ssssssssssssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyssssssssssssssss",
+        "ssssssssssssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyssssssssssssssss",
+        "ssssssssssssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyssssssssssssssss",
+        "ssssssssssssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyssssssssssssssss",
+        "ssssssssssssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyssssssssssssssss",
+        "ssssssssssssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyssssssssssssssss",
+        "ssssssssssssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyssssssssssssssss",
+        "ssssssssssssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyssssssssssssssss",
+        "ssssssssssssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyssssssssssssssss",
+        "sssssssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyysssssssssss",
+        "sssssssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyysssssssssss",
+        "sssssssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyysssssssssss",
+        "sssssssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyysssssssssss",
+        "sssssssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyysssssssssss",
+        "sssssssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyysssssssssss",
+        "sssssssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyysssssssssss",
+        "sssssssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyysssssssssss",
+        "sssssssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyysssssssssss",
+        "sssssssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyysssssssssss",
+        "ssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyssssss",
+        "ssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyssssss",
+        "ssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyssssss",
+        "ssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyssssss",
+        "ssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyssssss",
+        "ssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyssssss",
+        "ssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyssssss",
+        "ssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyssssss",
+        "ssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyssssss",
+        "ssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyssssss",
+        "ssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyssssss",
+        "ssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyssssss",
+        "ssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyssssss",
+        "ssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyssssss",
+        "ssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyssssss",
+        "ssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyssssss",
+        "ssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyssssss",
+        "ssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyssssss",
+        "ssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyssssss",
+        "ssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyssssss",
+        "ssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyssssss",
+        "sssssssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyysssssssssss",
+        "sssssssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyysssssssssss",
+        "sssssssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyysssssssssss",
+        "sssssssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyysssssssssss",
+        "sssssssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyysssssssssss",
+        "sssssssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyysssssssssss",
+        "sssssssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyysssssssssss",
+        "sssssssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyysssssssssss",
+        "sssssssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyysssssssssss",
+        "sssssssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyysssssssssss",
+        "ssssssssssssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyssssssssssssssss",
+        "ssssssssssssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyssssssssssssssss",
+        "ssssssssssssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyssssssssssssssss",
+        "ssssssssssssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyssssssssssssssss",
+        "ssssssssssssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyssssssssssssssss",
+        "ssssssssssssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyssssssssssssssss",
+        "ssssssssssssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyssssssssssssssss",
+        "ssssssssssssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyssssssssssssssss",
+        "ssssssssssssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyssssssssssssssss",
+        "ssssssssssssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyssssssssssssssss",
+        "ssssssssssssssssssssssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyssssssssssssssssssssssssss",
+        "ssssssssssssssssssssssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyssssssssssssssssssssssssss",
+        "ssssssssssssssssssssssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyssssssssssssssssssssssssss",
+        "ssssssssssssssssssssssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyssssssssssssssssssssssssss",
+        "ssssssssssssssssssssssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyssssssssssssssssssssssssss",
+        "ssssssssssssssssssssssssssssssssssssyyyyyyyyyyyyyyyyyyyyyssssssssssssssssssssssssssssssssssss",
+        "ssssssssssssssssssssssssssssssssssssyyyyyyyyyyyyyyyyyyyyyssssssssssssssssssssssssssssssssssss",
+        "ssssssssssssssssssssssssssssssssssssyyyyyyyyyyyyyyyyyyyyyssssssssssssssssssssssssssssssssssss",
+        "ssssssssssssssssssssssssssssssssssssyyyyyyyyyyyyyyyyyyyyyssssssssssssssssssssssssssssssssssss",
+        "ssssssssssssssssssssssssssssssssssssyyyyyyyyyyyyyyyyyyyyyssssssssssssssssssssssssssssssssssss",
+        "sssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss",
+        "sssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss",
+        "sssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss",
+        "sssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss",
+        "sssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss",
+        "sssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss"
+      ],
+      "anahtar": {
+        "y": "yakit_cubugu",
+        "s": "su_borlu"
+      },
+      "dolgu_disi": "su_borlu"
+    }
+  ],
+  "kor": {
+    "tur": "tamburlu",
+    "cubuk": null,
+    "demet": null,
+    "plaka": null,
+    "adim": 1.26,
+    "boyut": [
+      1,
+      1
+    ],
+    "harita": [],
+    "halka_sayisi": 2,
+    "yonelim": "x",
+    "anahtar": {},
+    "yukseklik": 163.324,
+    "yansitici": {
+      "var": true,
+      "kalinlik": 1.0,
+      "malzeme": "su_borlu"
+    },
+    "kabuklar": [],
+    "dolgu": "kor_kafesi",
+    "kor_yaricap": 75.2,
+    "tambur": {
+      "sayi": 0,
+      "yaricap": 4.0,
+      "merkez_yaricap": 26.0,
+      "govde_malzeme": null,
+      "emici_malzeme": null,
+      "emici_ic_yaricap": 2.5,
+      "emici_aci": 120.0,
+      "donme": 0.0,
+      "baslangic_acisi": 0.0
+    },
+    "eksenel": {
+      "var": false,
+      "bolgeler": []
+    },
+    "sinir": {
+      "yan": "vacuum",
+      "alt": "vacuum",
+      "ust": "vacuum"
+    }
+  },
+  "ayarlar": {
+    "mod": "eigenvalue",
+    "parcacik": 10000,
+    "cevrim": 150,
+    "pasif": 40,
+    "tohum": 1,
+    "sicaklik_yontemi": "interpolation",
+    "kaynak": {
+      "tur": "kutu",
+      "konum": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "parcacik": "neutron",
+      "kuvvet": 1.0,
+      "enerji": {
+        "tur": "watt",
+        "a": 988000.0,
+        "b": 2.249e-06,
+        "theta": 1293200.0,
+        "enerji": 14100000.0,
+        "noktalar": [],
+        "kenarlar": [],
+        "degerler": [],
+        "e0": 14080000.0,
+        "kutle_orani": 5.0,
+        "iyon_sicaklik": 20000.0
+      },
+      "aci": {
+        "tur": "izotropik",
+        "yon": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "koni_aci": 30.0
+      },
+      "alt": [
+        -45.0,
+        -45.0,
+        -60.0
+      ],
+      "ust": [
+        45.0,
+        45.0,
+        60.0
+      ]
+    },
+    "entropi_mesh": {
+      "var": true,
+      "boyut": [
+        10,
+        10,
+        4
+      ]
+    },
+    "kinetik": {
+      "var": false,
+      "nesil": 10
+    }
+  },
+  "tallyler": [
+    {
+      "ad": "reaksiyonlar",
+      "skorlar": [
+        "fission",
+        "absorption",
+        "nu-fission"
+      ],
+      "filtreler": [],
+      "nuklidler": []
+    }
+  ],
+  "guc_dagilimi": {
+    "var": false,
+    "cubuk": null,
+    "bolge": 0,
+    "skor": "kappa-fission",
+    "eksenel_dilim": 20,
+    "toplam_guc": null
+  },
+  "tukenme": {
+    "var": false,
+    "zincir": "otomatik",
+    "guc_yogunlugu": 40.0,
+    "adimlar": [
+      0.5,
+      1.5,
+      3.0,
+      5.0,
+      10.0,
+      10.0
+    ],
+    "adim_birimi": "d",
+    "entegrator": "cecm",
+    "malzemeleri_ayir": false,
+    "ek_malzemeler": [],
+    "izlenen": [
+      "U235",
+      "U238",
+      "Pu239",
+      "Pu240",
+      "Pu241",
+      "Xe135",
+      "Sm149"
+    ]
+  },
+  "calistirma": {
+    "is_parcacigi": 8,
+    "dizin": "kosu"
+  },
+  "baslik": "B&W kritik kafesi (LCT-008)",
+  "kategori": "kriter",
+  "seviye": "ileri",
+  "referans": {
+    "k": 1.0007,
+    "sigma": 0.0012,
+    "tur": "deney",
+    "kaynak": "ICSBEP LEU-COMP-THERM-008, durum 1 (B&W Core XI)",
+    "olcum": {
+      "k": 1.00067,
+      "sigma": 0.00021,
+      "parcacik": 100000,
+      "sure_s": 451.4,
+      "is_parcacigi": 8,
+      "openmc": "0.16.0",
+      "kutuphane": "ENDF/B-VIII.0",
+      "tarih": "2026-09-29"
+    }
+  },
+  "baslik_en": "B&W critical lattice (LCT-008)",
+  "aciklama_en": "ICSBEP benchmark LEU-COMP-THERM-008 case 1 (B&W Core XI): 4961 UO2 rods (2.459 wt%) in 1511 ppm borated water, k-eff = 1.0007 ± 0.0012."
+}

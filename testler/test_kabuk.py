@@ -152,12 +152,16 @@ def test_baslangic_ekrani():
         kontrol("baslangicta model eylemleri kapali (Kaydet, F9)",
                 not p.e_kaydet.isEnabled() and not p.e_calistir.isEnabled())
         n_ornek = len(glob.glob(os.path.join(ORNEK, "*.json")))
-        kontrol("ornek listesi butun ornekleri gosteriyor (%d)" % n_ornek,
-                b.ornek_listesi.topLevelItemCount() == n_ornek,
-                "-> %d" % b.ornek_listesi.topLevelItemCount())
-        bos = [o for o in range(b.ornek_listesi.topLevelItemCount())
-               if not b.ornek_listesi.topLevelItem(o).text(1)]
-        kontrol("her ornegin aciklama satiri var", not bos)
+        kartlar = b.ornek_kartlari()
+        kontrol("ornek galerisi butun ornekleri gosteriyor (%d)" % n_ornek,
+                len(kartlar) == n_ornek
+                and sorted(k.bilgi.dosya for k in kartlar)
+                == sorted(os.path.basename(y) for y in glob.glob(os.path.join(ORNEK, "*.json"))),
+                "-> %d" % len(kartlar))
+        kontrol("suzgecsiz galeride butun ornekler gorunur",
+                len(b.gorunur_ornekler()) == n_ornek)
+        bos = [k.bilgi.dosya for k in kartlar if not k.bilgi.aciklama.strip()]
+        kontrol("her ornegin aciklama satiri var", not bos, "-> %s" % bos)
         kontrol("zirh kartinda 'Bos basla' gizli, 'Ornekten basla' var",
                 b.kart_dugmesi("zirh", "bos").isHidden()
                 and not b.kart_dugmesi("zirh", "ornek").isHidden())
@@ -326,8 +330,10 @@ def test_sekme_isaretleri():
         p._dogrula(veri=False)
         kontrol("kor hatasi -> Kor basligi '!'", p.sekme_isareti("kor")[0] == "!",
                 "-> %r" % (p.sekme_isareti("kor"),))
-        kontrol("durum cubugu ipucu hatali sekmeyi soyluyor",
-                "Kor sekmesinde hata" in p.durum_ipucu.text(), "-> %r" % p.durum_ipucu.text())
+        kontrol("dogrulama seridi ipucu hatali sayfayi soyluyor",
+                "Kor sekmesinde hata" in p.serit.ipucu.text(), "-> %r" % p.serit.ipucu.text())
+        kontrol("seritte 'Bulguya git' ilk hatayi acikliyor",
+                p.serit.d_bulgu.isVisibleTo(p.serit) and bool(p.serit.d_bulgu.toolTip()))
     finally:
         _kapat(p)
 
@@ -362,14 +368,17 @@ def test_model_basligi():
         return
     p = _pencere(os.path.join(ORNEK, "pwr_eksenel.json"))
     try:
-        kontrol("pencere basligi saf metinle ayni",
-                _duz(p.model_basligi.text()) == model_ozet_metni(p.spec),
-                "-> %r" % _duz(p.model_basligi.text()))
+        # Ust cubuk: ad + tur rozeti + "boyut · mod" baglantilari (maket kabuk_*).
+        u = p.ust
+        ust_metni = "Model: %s · %s · %s" % (u.model_adi.text(), u.tur_rozeti.text(),
+                                            _duz(u.model_ozet.text()))
+        kontrol("ust cubuk model kimligi saf metinle ayni",
+                ust_metni == model_ozet_metni(p.spec), "-> %r" % ust_metni)
         p.sekmeye_git("malzemeler")
-        p.model_basligi.linkActivated.emit("mod")
+        u.model_ozet.linkActivated.emit("mod")
         kontrol("hesap turune tiklamak Hesap ayarlarina goturuyor",
                 p.gecerli_sekme() == "ayarlar")
-        p.model_basligi.linkActivated.emit("kor")
+        u.model_ozet.linkActivated.emit("kor")
         kontrol("kor turune tiklamak Kor sekmesine goturuyor", p.gecerli_sekme() == "kor")
 
         p._tur_menusunu_doldur()
@@ -392,7 +401,8 @@ def test_model_basligi():
         hatalar = [b.mesaj for b in dogrula.tum_kontroller(p.spec, veri_kontrolu=False)
                    if b.seviye == "hata"]
         kontrol("tur degisimi sonrasi model gecerli", not hatalar, "-> %s" % hatalar[:3])
-        kontrol("baslik yeni turu gosteriyor", "1×1 tam kor" in _duz(p.model_basligi.text()))
+        kontrol("baslik yeni turu gosteriyor", "1×1 tam kor" in p.ust.tur_rozeti.text(),
+                "-> %r" % p.ust.tur_rozeti.text())
         kontrol("Kor sekmesi turu spec'ten okuyor (tutarli)",
                 p.s_kor.gosterilen_tur() == "kare_kafes"
                 and TUR_ADLARI["kare_kafes"] in p.s_kor.tur_etiket.text())
@@ -433,16 +443,18 @@ def test_sag_panel_ve_rozet(gecici=None):
     try:
         p.show()
         uyg.processEvents()
+        p.onizleme_paneli.daralt(False)
         for k in ("malzemeler", "parcalar", "demet", "kor"):
             p.sekmeye_git(k)
             kontrol("%s: onizleme + dogrulama gorunur" % k,
-                    p.onizleme.isVisible() and p._dogrulama_kutu.isVisible())
+                    p.onizleme.isVisible() and p.serit.isVisible())
         p.sekmeye_git("ayarlar")
         kontrol("Hesap ayarlari: yalnizca dogrulama",
-                not p.onizleme.isVisible() and p._dogrulama_kutu.isVisible())
+                not p.onizleme.isVisible() and p.serit.isVisible())
         for k in ("calistir", "analiz", "tukenme"):
             p.sekmeye_git(k)
-            kontrol("%s: sag panel gizli (tam genislik)" % k, not p._sag.isVisible())
+            kontrol("%s: sag panel gizli (tam genislik)" % k,
+                    not p.onizleme_paneli.isVisible())
 
         # ONCE CIZ, SONRA CALISTIR
         p.onizleme.cizildi_mi = lambda: False
@@ -451,17 +463,21 @@ def test_sag_panel_ve_rozet(gecici=None):
         p.onizleme.cizildi_mi = lambda: True
         kontrol("cizilmis ve hatasiz: CALISTIR acik", p._kosu_izni()[0])
 
-        kontrol("rozet: 'Hata yok' (basari)",
-                p.durum_rozeti.text() == "Hata yok" and p.durum_rozeti.seviye() == "basari")
+        kontrol("serit: 'Doğrulama: hata yok' (basari)",
+                p.serit.ozet.text() == "Doğrulama: hata yok" and p.serit.rozet.tur() == "basari",
+                "-> %r" % p.serit.ozet.text())
         p.spec["kor"]["demet"] = "yok"
         p.spec["malzemeler"][0]["yogunluk"]["deger"] = -1.0
         p._dogrula(veri=False)
         n = sum(1 for b in p._bulgular if b.seviye == "hata")
-        kontrol("rozet hata sayisini gosteriyor (%d hata)" % n,
-                p.durum_rozeti.text().startswith("%d hata" % n)
-                and p.durum_rozeti.seviye() == "hata", "-> %r" % p.durum_rozeti.text())
+        kontrol("serit hata sayisini gosteriyor (%d hata)" % n,
+                p.serit.ozet.text() == "Doğrulama: %d hata" % n
+                and p.serit.rozet.tur() == "hata", "-> %r" % p.serit.ozet.text())
         kontrol("hata varken CALISTIR kapali", not p._kosu_izni()[0])
-        p.durum_rozeti.tiklandi.emit()
+        p._kosu_dugmesi_guncelle()
+        kontrol("hata varken ust cubuktaki Calistir dugmesi kapali",
+                not p.ust.d_kosu.isEnabled())
+        p.serit.ozet_istendi.emit()
         uyg.processEvents()
         kontrol("rozete tiklamak bulgu listesini aciyor",
                 p.bulgu_acilir.isVisible() and p.bulgu_acilir.liste.count() == len(p._bulgular))
@@ -509,7 +525,15 @@ def test_kaldirilanlar_ve_kisayollar():
                     e is not None and e.shortcutContext() == QtCore.Qt.WindowShortcut)
         kontrol("F10 kisayolu yok",
                 not any(e.shortcut().toString() == "F10" for e in p.findChildren(QtGui.QAction)))
-        kontrol("F9 CALISTIR arac cubugunda", p.e_calistir in p._arac_cubugu.actions())
+        tetik = []
+        p.e_calistir.triggered.connect(lambda *_a: tetik.append(1))
+        kosu = []
+        p.s_calistir.calistir = lambda *a, **k: kosu.append(1)   # kosu baslatilmaz
+        p.ust.d_kosu.setEnabled(True)
+        p.ust.d_kosu.click()
+        kontrol("F9 CALISTIR arac cubugunda (birincil dugme F9 eylemini tetikliyor)",
+                tetik == [1] and kosu == [1] and p._arac_cubugu is p.ust,
+                "-> %s %s" % (tetik, kosu))
         d = p._yardim_diyalogu()
         html = d.metin.toPlainText()
         kontrol("yardimda terimler ve kisayollar birlikte",
@@ -570,13 +594,15 @@ def test_tema_gecisi(gecici=None):
         kontrol("koyu tema: menude 'Koyu tema' isaretli",
                 p._tema_eylemleri["koyu"].isChecked()
                 and not p._tema_eylemleri["acik"].isChecked())
-        kontrol("koyu tema: rozet koyu tema rengini kullaniyor",
-                tema.renk("basari") in p.durum_rozeti.styleSheet())
-        kontrol("koyu tema: baslik baglantisi vurgu rengi",
-                tema.renk("vurgu") in p.model_basligi.text())
+        # Rozet renkleri QSS'ten gelir (QLabel[rozet=...]); seviye korunmali.
+        kontrol("koyu tema: rozet seviyesi korunuyor (basari)",
+                p.serit.rozet.tur() == "basari", "-> %r" % p.serit.rozet.tur())
+        kontrol("koyu tema: baslik baglantisi koyu tema rengi",
+                tema.renk("metin_ikincil") in p.ust.model_ozet.text())
         p._tema_degistir("acik")
-        kontrol("acik tema: rozet acik tema rengini kullaniyor",
-                tema.renk("basari") in p.durum_rozeti.styleSheet())
+        kontrol("acik tema: baslik baglantisi acik tema rengi",
+                tema.renk("metin_ikincil") in p.ust.model_ozet.text()
+                and p.serit.rozet.tur() == "basari")
         from arayuz.baslangic import BaslangicEkrani
         tema._ETKIN = "koyu"
         b = BaslangicEkrani()
@@ -946,7 +972,7 @@ def test_kor_tur_baglantisi():
         return
     p = _pencere(os.path.join(ORNEK, "pwr_17x17.json"))
     acilan = []
-    p.d_tur.showMenu = lambda: acilan.append("baslik")
+    p.ust.d_tur.showMenu = lambda: acilan.append("baslik")
     p._tur_menusu.exec = lambda *a: acilan.append("menu")
     kontrol("kor sekmesinde tur satiri baglanti iceriyor",
             'href="tur"' in p.s_kor.tur_etiket.text() and "Türü değiştir" in p.s_kor.tur_etiket.text())
@@ -1000,6 +1026,13 @@ def test_tur_degisimi_eksik_parca(gecici=None):
     for hedef, parca in (("tek_plaka", "plakalar"), ("tek_demet", "demetler"),
                          ("kare_kafes", "demetler")):
         p = _pencere()
+        mesajlar = []
+        gercek_bildir = p.bildir_mesaj
+
+        def bildir_yakala(metin, *a, _g=gercek_bildir, **k):
+            mesajlar.append(metin)
+            return _g(metin, *a, **k)
+        p.bildir_mesaj = bildir_yakala
         p._proje_kur(baslangic.bos_sablon("pin"), None, None)
         kontrol("(on kosul) pin sablonunda %s yok" % parca, not p.spec.get(parca))
         p.kor_turunu_degistir(hedef)
@@ -1007,8 +1040,8 @@ def test_tur_degisimi_eksik_parca(gecici=None):
                    if b.seviye == "hata"]
         kontrol("%s: parca kuruldu, dogrulama hatasi yok" % hedef,
                 bool(p.spec.get(parca)) and not hatalar, "-> %s" % hatalar[:2])
-        kontrol("%s: durum cubugu eklenen parcayi soyluyor" % hedef,
-                "şablondan eklendi" in p.statusBar().currentMessage())
+        kontrol("%s: bildirim eklenen parcayi soyluyor" % hedef,
+                any("şablondan eklendi" in m for m in mesajlar), "-> %s" % mesajlar[-1:])
         kontrol("%s: kor ozetinde ham 'None' / 'kurulamadı' yok" % hedef,
                 "None" not in p.s_kor.ozet.text() and "urulamad" not in p.s_kor.ozet.text(),
                 "-> %s" % p.s_kor.ozet.text()[:80])

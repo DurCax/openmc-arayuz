@@ -662,6 +662,9 @@ def test_sekme_dugmeleri():
         if "/" in sm.yol_okunur(y):
             ham.append(y)
     kontrol("butun referans yollari okunur Turkceye cevrilir", not ham, "%s" % ham[:5])
+    kontrol("demet kilifi yolu okunur: 'tvs' demetinin kilifi",
+            sm.yol_okunur("demetler/tvs/kilif") == "‘tvs’ demetinin kılıfı",
+            "-> %r" % sm.yol_okunur("demetler/tvs/kilif"))
     t.tablo.selectRow(n - 1)
     t._sil()
     kontrol("kullanilmayan kopya sorusuz silinir",
@@ -732,16 +735,21 @@ def _ad_degisimi_olc(spec, eski, yeni, baslik):
         return "%s: malzeme listesi farkli" % baslik
     if _bulgular(s2, (eski, yeni)) != b0:
         return "%s: dogrula bulgulari farkli" % baslik
-    if eski in set(_dizeler(s2)):
+    # golgeleme (sema.malzeme_adini_degistir): ayni adli cubuk/plaka/demet genel
+    # alanda (demet haritasi anahtari, guc hedefi) KAZANIR ve ad dizesi o ogenin
+    # adi olarak kalir (pwr_mox_demet: malzeme 'mox_25' + cubuk 'mox_25').
+    golgeli = any(x.get("ad") == eski for bolum in ("cubuklar", "plakalar", "demetler")
+                  for x in s2.get(bolum) or [])
+    if eski in set(_dizeler(s2)) and not golgeli:
         return "%s: eski ad spec'te kaldi" % baslik
     return None
 
 
 def test_ad_degisimi_ornekler(gecici=None):
-    print("\n[M8] AD DEGISIMI: 11 ornekte her malzeme yeni ada")
+    print("\n[M8] AD DEGISIMI: butun ornekte her malzeme yeni ada")
     from cekirdek import sema
     dosyalar = sorted(glob.glob(os.path.join(ORNEK, "*.json")))
-    kontrol("11 ornek bulundu", len(dosyalar) == 11, "(%d)" % len(dosyalar))
+    kontrol("butun ornekler bulundu (>= 27)", len(dosyalar) >= 27, "(%d)" % len(dosyalar))
     toplam = 0
     for f in dosyalar:
         spec = sema.yukle(f)

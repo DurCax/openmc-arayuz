@@ -1,0 +1,388 @@
+{
+  "surum": 1,
+  "ad": "Katmanlı zırh (polietilen / kurşun / beton, Cf-252)",
+  "aciklama": "Katmanlı zırh, sabit kaynak: merkezde Cf-252 kendiliğinden fisyon nötron kaynağı (Watt tayfı a = 1.025 MeV, b = 2.926 1/MeV), 5 cm hava boşluğu, ardından 10 cm borlu polietilen (%5 B, nötron yavaşlatma + soğurma), 5 cm kurşun (gama) ve 40 cm sıradan beton. Özdeğer hesabı değildir; sonuçlar katman katman grup akısı ve soğurma tally'leridir (kaynak parçacığı başına; şiddet 1e9 n/s girildiği için mutlak).\n\nMalzemeler: beton 'Concrete, Ordinary' (NIST/PNNL-15870 bileşimi, 2.30 g/cm³); borlu polietilen 1.00 g/cm³ (CH2 + %5 doğal B, H için c_H_in_CH2); kurşun 11.35 g/cm³. Watt parametreleri Cf-252 için yaygın kullanılan değerlerdir (doğrulanmadı; MCNP el kitabı değerleriyle karşılaştırın). Nötron taşınımı yalnız: foton üretimi ve gama zırhlaması için kaynak parçacığı foton seçilerek ayrı bir hesap gerekir.",
+  "malzemeler": [
+    {
+      "ad": "hava",
+      "gorunen_ad": "Hava",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 0.0012
+      },
+      "sicaklik": 293.6,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "N",
+          "miktar": 0.7809,
+          "birim": "ao"
+        },
+        {
+          "tur": "element",
+          "isim": "O",
+          "miktar": 0.2095,
+          "birim": "ao"
+        },
+        {
+          "tur": "element",
+          "isim": "Ar",
+          "miktar": 0.00933,
+          "birim": "ao"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        240,
+        240,
+        240
+      ]
+    },
+    {
+      "ad": "borlu_pe",
+      "gorunen_ad": "Borlu polietilen (%5 B)",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 1.0
+      },
+      "sicaklik": 293.6,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "C",
+          "miktar": 0.81346695,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "H",
+          "miktar": 0.13653305,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "B",
+          "miktar": 0.05,
+          "birim": "wo"
+        }
+      ],
+      "sab": [
+        "c_H_in_CH2"
+      ],
+      "renk": [
+        240,
+        240,
+        200
+      ]
+    },
+    {
+      "ad": "kursun",
+      "gorunen_ad": "Kurşun",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 11.35
+      },
+      "sicaklik": 293.6,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "Pb",
+          "miktar": 1.0,
+          "birim": "ao"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        90,
+        90,
+        110
+      ]
+    },
+    {
+      "ad": "beton",
+      "gorunen_ad": "Sıradan beton (2.30 g/cm³)",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 2.3
+      },
+      "sicaklik": 293.6,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "H",
+          "miktar": 0.0221,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "C",
+          "miktar": 0.002484,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "O",
+          "miktar": 0.57493,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Na",
+          "miktar": 0.015208,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Mg",
+          "miktar": 0.001266,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Al",
+          "miktar": 0.019953,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Si",
+          "miktar": 0.304627,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "K",
+          "miktar": 0.010045,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Ca",
+          "miktar": 0.042951,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Fe",
+          "miktar": 0.006435,
+          "birim": "wo"
+        }
+      ],
+      "sab": [
+        "c_H_in_H2O"
+      ],
+      "renk": [
+        170,
+        170,
+        160
+      ]
+    }
+  ],
+  "cubuklar": [],
+  "plakalar": [],
+  "demetler": [],
+  "kor": {
+    "tur": "kuresel",
+    "cubuk": null,
+    "demet": null,
+    "plaka": null,
+    "adim": 1.26,
+    "boyut": [
+      1,
+      1
+    ],
+    "harita": [],
+    "halka_sayisi": 2,
+    "yonelim": "x",
+    "anahtar": {},
+    "yukseklik": null,
+    "yansitici": {
+      "var": false,
+      "kalinlik": 20.0,
+      "malzeme": null
+    },
+    "kabuklar": [
+      {
+        "r": 5.0,
+        "malzeme": "hava"
+      },
+      {
+        "r": 15.0,
+        "malzeme": "borlu_pe"
+      },
+      {
+        "r": 20.0,
+        "malzeme": "kursun"
+      },
+      {
+        "r": 60.0,
+        "malzeme": "beton"
+      }
+    ],
+    "dolgu": null,
+    "kor_yaricap": 20.0,
+    "tambur": {
+      "sayi": 0,
+      "yaricap": 4.0,
+      "merkez_yaricap": 26.0,
+      "govde_malzeme": null,
+      "emici_malzeme": null,
+      "emici_ic_yaricap": 2.5,
+      "emici_aci": 120.0,
+      "donme": 0.0,
+      "baslangic_acisi": 0.0
+    },
+    "eksenel": {
+      "var": false,
+      "bolgeler": []
+    },
+    "sinir": {
+      "yan": "vacuum",
+      "alt": "vacuum",
+      "ust": "vacuum"
+    }
+  },
+  "ayarlar": {
+    "mod": "fixed source",
+    "parcacik": 20000,
+    "cevrim": 20,
+    "pasif": 0,
+    "tohum": 1,
+    "sicaklik_yontemi": "interpolation",
+    "kaynak": {
+      "tur": "nokta",
+      "konum": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "parcacik": "neutron",
+      "kuvvet": 1000000000.0,
+      "enerji": {
+        "tur": "watt",
+        "a": 1025000.0,
+        "b": 2.926e-06,
+        "theta": 1293200.0,
+        "enerji": 14100000.0,
+        "noktalar": [],
+        "kenarlar": [],
+        "degerler": [],
+        "e0": 14080000.0,
+        "kutle_orani": 5.0,
+        "iyon_sicaklik": 20000.0
+      },
+      "aci": {
+        "tur": "izotropik",
+        "yon": [
+          0,
+          0,
+          1
+        ],
+        "koni_aci": 30.0
+      }
+    },
+    "entropi_mesh": {
+      "var": false,
+      "boyut": [
+        8,
+        8,
+        8
+      ]
+    },
+    "kinetik": {
+      "var": false,
+      "nesil": 10
+    }
+  },
+  "tallyler": [
+    {
+      "ad": "aki_gruplu",
+      "skorlar": [
+        "flux"
+      ],
+      "filtreler": [
+        {
+          "tur": "malzeme",
+          "adlar": [
+            "hava",
+            "borlu_pe",
+            "kursun",
+            "beton"
+          ]
+        },
+        {
+          "tur": "enerji",
+          "gruplar": [
+            1e-05,
+            0.625,
+            100000.0,
+            20000000.0
+          ]
+        }
+      ],
+      "nuklidler": []
+    },
+    {
+      "ad": "sogurma",
+      "skorlar": [
+        "absorption",
+        "(n,gamma)"
+      ],
+      "filtreler": [
+        {
+          "tur": "malzeme",
+          "adlar": [
+            "hava",
+            "borlu_pe",
+            "kursun",
+            "beton"
+          ]
+        }
+      ],
+      "nuklidler": []
+    }
+  ],
+  "guc_dagilimi": {
+    "var": false,
+    "cubuk": null,
+    "bolge": 0,
+    "skor": "kappa-fission",
+    "eksenel_dilim": 20,
+    "toplam_guc": null
+  },
+  "tukenme": {
+    "var": false,
+    "zincir": "otomatik",
+    "guc_yogunlugu": 40.0,
+    "adimlar": [
+      0.5,
+      1.5,
+      3.0,
+      5.0,
+      10.0,
+      10.0
+    ],
+    "adim_birimi": "d",
+    "entegrator": "cecm",
+    "malzemeleri_ayir": false,
+    "ek_malzemeler": [],
+    "izlenen": [
+      "U235",
+      "U238",
+      "Pu239",
+      "Pu240",
+      "Pu241",
+      "Xe135",
+      "Sm149"
+    ]
+  },
+  "calistirma": {
+    "is_parcacigi": 8,
+    "dizin": "kosu"
+  },
+  "baslik": "Katmanlı zırh (sabit kaynak)",
+  "kategori": "zirh",
+  "seviye": "orta",
+  "baslik_en": "Layered shield (fixed source)",
+  "aciklama_en": "Fixed-source shielding: Cf-252 point source behind borated polyethylene, lead and ordinary concrete spherical layers."
+}

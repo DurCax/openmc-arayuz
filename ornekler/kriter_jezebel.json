@@ -1,0 +1,239 @@
+{
+  "surum": 1,
+  "ad": "Jezebel kritik küresi (PU-MET-FAST-001)",
+  "aciklama": "ICSBEP kriteri PU-MET-FAST-001 (Jezebel): çıplak δ-fazı plütonyum metal küresi (%1.02 ağ. Ga ile alaşımlı). Hızlı spektrumlu Pu-239 kritikliğinin klasik doğrulama deneyidir; Pu-239 fisyon ve saçılma verisini sınar.\n\nModel: ICSBEP el kitabının basitleştirilmiş (tek bölgeli, homojen) kriter modeli. Deneysel kriter değeri k_eff = 1.0000 ± 0.0020.\nAtom yoğunlukları [atom/b-cm]: Pu239 3.7047e-02, Pu240 1.7512e-03, Pu241 1.1674e-04, Ga 1.3752e-03 (Ga69 8.26605e-04 + Ga71 5.48595e-04).\nKüre yarıçapı 6.3849 cm, çıplak (vakum sınır), 293.6 K.\nKaynak: ICSBEP Handbook, PU-MET-FAST-001; sayılar mit-crpg/benchmarks (icsbep/pu-met-fast-001) girdileriyle karşılaştırıldı.",
+  "malzemeler": [
+    {
+      "ad": "pu_metal",
+      "gorunen_ad": "δ-Pu metal (Jezebel)",
+      "yogunluk": {
+        "birim": "atom/b-cm",
+        "deger": 0.04029014
+      },
+      "sicaklik": 293.6,
+      "bilesim": [
+        {
+          "tur": "nuklid",
+          "isim": "Pu239",
+          "miktar": 0.037047,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Pu240",
+          "miktar": 0.0017512,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Pu241",
+          "miktar": 0.00011674,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Ga69",
+          "miktar": 0.000826605216,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Ga71",
+          "miktar": 0.000548594784,
+          "birim": "ao"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        170,
+        60,
+        160
+      ]
+    }
+  ],
+  "cubuklar": [],
+  "plakalar": [],
+  "demetler": [],
+  "kor": {
+    "tur": "kuresel",
+    "cubuk": null,
+    "demet": null,
+    "plaka": null,
+    "adim": 1.26,
+    "boyut": [
+      1,
+      1
+    ],
+    "harita": [],
+    "halka_sayisi": 2,
+    "yonelim": "x",
+    "anahtar": {},
+    "yukseklik": null,
+    "yansitici": {
+      "var": false,
+      "kalinlik": 20.0,
+      "malzeme": null
+    },
+    "kabuklar": [
+      {
+        "r": 6.3849,
+        "malzeme": "pu_metal"
+      }
+    ],
+    "dolgu": null,
+    "kor_yaricap": 20.0,
+    "tambur": {
+      "sayi": 0,
+      "yaricap": 4.0,
+      "merkez_yaricap": 26.0,
+      "govde_malzeme": null,
+      "emici_malzeme": null,
+      "emici_ic_yaricap": 2.5,
+      "emici_aci": 120.0,
+      "donme": 0.0,
+      "baslangic_acisi": 0.0
+    },
+    "eksenel": {
+      "var": false,
+      "bolgeler": []
+    },
+    "sinir": {
+      "yan": "vacuum",
+      "alt": "vacuum",
+      "ust": "vacuum"
+    }
+  },
+  "ayarlar": {
+    "mod": "eigenvalue",
+    "parcacik": 20000,
+    "cevrim": 160,
+    "pasif": 40,
+    "tohum": 1,
+    "sicaklik_yontemi": "interpolation",
+    "kaynak": {
+      "tur": "kutu",
+      "konum": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "parcacik": "neutron",
+      "kuvvet": 1.0,
+      "enerji": {
+        "tur": "watt",
+        "a": 988000.0,
+        "b": 2.249e-06,
+        "theta": 1293200.0,
+        "enerji": 14100000.0,
+        "noktalar": [],
+        "kenarlar": [],
+        "degerler": [],
+        "e0": 14080000.0,
+        "kutle_orani": 5.0,
+        "iyon_sicaklik": 20000.0
+      },
+      "aci": {
+        "tur": "izotropik",
+        "yon": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "koni_aci": 30.0
+      },
+      "alt": [
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "ust": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    "entropi_mesh": {
+      "var": true,
+      "boyut": [
+        6,
+        6,
+        6
+      ]
+    },
+    "kinetik": {
+      "var": false,
+      "nesil": 10
+    }
+  },
+  "tallyler": [
+    {
+      "ad": "reaksiyonlar",
+      "skorlar": [
+        "fission",
+        "absorption",
+        "nu-fission"
+      ],
+      "filtreler": [],
+      "nuklidler": []
+    }
+  ],
+  "guc_dagilimi": {
+    "var": false,
+    "cubuk": null,
+    "bolge": 0,
+    "skor": "kappa-fission",
+    "eksenel_dilim": 20,
+    "toplam_guc": null
+  },
+  "tukenme": {
+    "var": false,
+    "zincir": "otomatik",
+    "guc_yogunlugu": 40.0,
+    "adimlar": [
+      0.5,
+      1.5,
+      3.0,
+      5.0,
+      10.0,
+      10.0
+    ],
+    "adim_birimi": "d",
+    "entegrator": "cecm",
+    "malzemeleri_ayir": false,
+    "ek_malzemeler": [],
+    "izlenen": [
+      "U235",
+      "U238",
+      "Pu239",
+      "Pu240",
+      "Pu241",
+      "Xe135",
+      "Sm149"
+    ]
+  },
+  "calistirma": {
+    "is_parcacigi": 8,
+    "dizin": "kosu"
+  },
+  "baslik": "Jezebel plütonyum küresi",
+  "kategori": "kriter",
+  "seviye": "giris",
+  "referans": {
+    "k": 1.0,
+    "sigma": 0.002,
+    "tur": "deney",
+    "kaynak": "ICSBEP PU-MET-FAST-001 (Jezebel)",
+    "olcum": {
+      "k": 0.99996,
+      "sigma": 0.00023,
+      "parcacik": 50000,
+      "sure_s": 5.5,
+      "is_parcacigi": 8,
+      "openmc": "0.16.0",
+      "kutuphane": "ENDF/B-VIII.0",
+      "tarih": "2026-09-29"
+    }
+  },
+  "baslik_en": "Jezebel plutonium sphere",
+  "aciklama_en": "ICSBEP benchmark PU-MET-FAST-001 (Jezebel): bare delta-phase Pu-Ga metal sphere, r = 6.3849 cm, k-eff = 1.0000 ± 0.0020."
+}

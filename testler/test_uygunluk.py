@@ -5,7 +5,7 @@
 ================================================================================
  Imzalar test_sozlesme.py'dedir; burada DAVRANIS sinanir.
 
-   [U1] Kahin tablolari   : 11 ornegin HER sorusu (sekmeler, 12 taramanin
+   [U1] Kahin tablolari   : 27 ornegin HER sorusu (sekmeler, 12 taramanin
                             hedefleri, kritik arama, sinirlar, ayarlar,
                             kaynak, guc, tukenme, parcalar, roller) elle
                             cikarilmis beklentiyle birebir.
@@ -262,19 +262,181 @@ KAHIN = {
               "kutu_kaynagi": False, "guc_dagilimi": False, "eksenel_dilim": False},
         kaynak=(["nokta"], ["neutron", "photon"]),
         guc=[], tukenme=False, parca=(False, False, False)),
+    "bwr_10x10": dict(
+        ozet=_ozet('tek_demet', '2B', kafes=True),
+        roller={'uo2_44': {'yakit'}, 'uo2_36': {'yakit'}, 'uo2_gd': {'yakit'}, 'zirkaloy2': {'yapisal'}, 'helyum': {'gaz'}, 'su_bosluklu': SM, 'su_dolu': SM, 'kutu_bypass': {'yapisal'}},
+        sekmeler=TUM_SEKME,
+        hedefler=_h(yakit_sicaklik=['uo2_44', 'uo2_36', 'uo2_gd'], sogutucu_sicaklik=['su_bosluklu', 'su_dolu'], malzeme_yogunluk=['uo2_44', 'uo2_36', 'uo2_gd', 'zirkaloy2', 'helyum', 'su_bosluklu', 'su_dolu', 'kutu_bypass'], void_orani=['su_bosluklu', 'su_dolu'], bor_ppm=['su_bosluklu', 'su_dolu'], zenginlik=['uo2_44', 'uo2_36', 'uo2_gd'], kafes_adim=['bwr_10x10'], cubuk_yaricap=[('cubuk_44', 0), ('cubuk_44', 1), ('cubuk_44', 2), ('cubuk_36', 0), ('cubuk_36', 1), ('cubuk_36', 2), ('cubuk_gd', 0), ('cubuk_gd', 1), ('cubuk_gd', 2)], yansitici_kalinlik=[None]),
+        kritik=['bor_ppm', 'zenginlik', 'yansitici_kalinlik'],
+        sinir=(KARE, [], []),
+        ayar=dict(OZDEGER, guc_dagilimi=True, eksenel_dilim=False),
+        kaynak=(['nokta', 'kutu'], ['neutron']),
+        guc=['cubuk_44', 'cubuk_36', 'cubuk_gd'], tukenme=True, parca=(True, False, False)),
+    "kriter_flattop25": dict(
+        ozet=_ozet('kuresel', '2B'),
+        roller={'heu': {'yakit'}, 'dogal_u': {'yakit'}},
+        sekmeler=['malzemeler', 'kor', 'ayarlar', 'calistir', 'analiz', 'tukenme'],
+        hedefler=_h(yakit_sicaklik=['heu', 'dogal_u']),
+        kritik=[],
+        sinir=(KURE, [], []),
+        ayar=dict(OZDEGER, guc_dagilimi=False, eksenel_dilim=False),
+        kaynak=(['nokta', 'kutu'], ['neutron']),
+        guc=[], tukenme=True, parca=(False, False, False)),
+    "kriter_jezebel": dict(
+        ozet=_ozet('kuresel', '2B'),
+        roller={'pu_metal': {'yakit'}},
+        sekmeler=['malzemeler', 'kor', 'ayarlar', 'calistir', 'analiz', 'tukenme'],
+        hedefler=_h(yakit_sicaklik=['pu_metal']),
+        kritik=[],
+        sinir=(KURE, [], []),
+        ayar=dict(OZDEGER, guc_dagilimi=False, eksenel_dilim=False),
+        kaynak=(['nokta', 'kutu'], ['neutron']),
+        guc=[], tukenme=True, parca=(False, False, False)),
+    "kriter_lct008": dict(
+        ozet=_ozet('tamburlu', '3B', kafes=True),
+        roller={'uo2': {'yakit'}, 'al6061': {'yapisal'}, 'su_borlu': SM},
+        sekmeler=TUM_SEKME,
+        hedefler=_h(yakit_sicaklik=['uo2'], sogutucu_sicaklik=['su_borlu'], void_orani=['su_borlu'], bor_ppm=['su_borlu'], kafes_adim=['kor_kafesi'], cubuk_yaricap=[('yakit_cubugu', 0), ('yakit_cubugu', 1)], yansitici_kalinlik=[None]),
+        kritik=['bor_ppm', 'yansitici_kalinlik'],
+        sinir=(EGRI, KURE, KURE),
+        ayar=dict(OZDEGER, guc_dagilimi=True, eksenel_dilim=True),
+        kaynak=(['nokta', 'kutu'], ['neutron']),
+        guc=['yakit_cubugu'], tukenme=True, parca=(True, False, True)),
+    "kriter_vver1000_ugd": dict(
+        ozet=_ozet('tek_demet', '2B', kafes=True),
+        roller={'u1': {'yakit'}, 'gd1': {'yakit'}, 'cl1': {'yapisal'}, 'mod3': SM},
+        sekmeler=TUM_SEKME,
+        hedefler=_h(yakit_sicaklik=['u1', 'gd1'], sogutucu_sicaklik=['mod3'], void_orani=['mod3'], bor_ppm=['mod3'], kafes_adim=['tvs_ugd'], cubuk_yaricap=[('yakit_u1', 0), ('yakit_u1', 1), ('yakit_gd', 0), ('yakit_gd', 1), ('kilavuz_boru', 0), ('kilavuz_boru', 1), ('merkez_boru', 0), ('merkez_boru', 1)]),
+        kritik=['bor_ppm'],
+        sinir=(KARE, [], []),
+        ayar=dict(OZDEGER, guc_dagilimi=True, eksenel_dilim=False),
+        kaynak=(['nokta', 'kutu'], ['neutron']),
+        guc=['yakit_u1', 'yakit_gd'], tukenme=True, parca=(True, False, False)),
+    "mtr_kor": dict(
+        ozet=_ozet('kare_kafes', '3B_katmanli'),
+        roller={'u3si2_al': {'yakit'}, 'al6061': {'yapisal'}, 'su': SM, 'berilyum': {'moderator'}, 'grafit': {'moderator'}},
+        sekmeler=TUM_SEKME,
+        hedefler=_h(yakit_sicaklik=['u3si2_al'], sogutucu_sicaklik=['su'], malzeme_yogunluk=['u3si2_al', 'al6061', 'su', 'berilyum', 'grafit'], void_orani=['su'], bor_ppm=['su'], zenginlik=['u3si2_al'], kor_adim=[None], yansitici_kalinlik=[None]),
+        kritik=['bor_ppm', 'zenginlik', 'yansitici_kalinlik'],
+        sinir=(KARE, KURE, KURE),
+        ayar=dict(OZDEGER, guc_dagilimi=False, eksenel_dilim=False),
+        kaynak=(['nokta', 'kutu'], ['neutron']),
+        guc=[], tukenme=True, parca=(True, False, True)),
+    # BEAVRS: dogal bolluktaki H2 (%0.016) agir su SAYILMAZ -> sogutucu_sicaklik
+    # ve bor_ppm hedefi sunulur (agir su ayrimi H2 kesrine bakar)
+    "pwr_beavrs_kor": dict(
+        ozet=_ozet('kare_kafes', '3B_katmanli', kafes=True),
+        roller={'uo2_a': {'yakit'}, 'uo2_b': {'yakit'}, 'uo2_c': {'yakit'}, 'su_borlu': SM, 'zirkaloy4': {'yapisal'}, 'ss304': {'yapisal'}, 'helyum': {'gaz'}, 'hava': {'gaz'}, 'pyrex': {'emici'}},
+        sekmeler=TUM_SEKME,
+        hedefler=_h(yakit_sicaklik=['uo2_a', 'uo2_b', 'uo2_c'], sogutucu_sicaklik=['su_borlu'], void_orani=['su_borlu'], bor_ppm=['su_borlu'], kafes_adim=['dc_yok', 'dc_6s', 'dc_16', 'da_yok', 'dc_20', 'dc_15se', 'db_16', 'dc_15sw', 'db_yok', 'db_12', 'dc_6e', 'dc_6w', 'dc_15ne', 'dc_15nw', 'dc_6n'], kor_adim=[None], cubuk_yaricap=[('yakit_a', 0), ('yakit_a', 1), ('yakit_a', 2), ('yakit_b', 0), ('yakit_b', 1), ('yakit_b', 2), ('yakit_c', 0), ('yakit_c', 1), ('yakit_c', 2), ('kilavuz_boru', 0), ('kilavuz_boru', 1),  ('pyrex_cubugu', 0), ('pyrex_cubugu', 1), ('pyrex_cubugu', 2), ('pyrex_cubugu', 3), ('pyrex_cubugu', 4), ('pyrex_cubugu', 5), ('pyrex_cubugu', 6), ('pyrex_cubugu', 7)], yansitici_kalinlik=[None]),
+        kritik=['bor_ppm', 'yansitici_kalinlik'],
+        sinir=(KARE, KURE, KURE),
+        ayar=dict(OZDEGER, guc_dagilimi=True, eksenel_dilim=True),
+        kaynak=(['nokta', 'kutu'], ['neutron']),
+        guc=['yakit_a', 'yakit_b', 'yakit_c'], tukenme=True, parca=(True, False, True)),
+    "pwr_ceyrek_kor": dict(
+        ozet=_ozet('kare_kafes', '3B_katmanli', kafes=True),
+        roller={'uo2_24': {'yakit'}, 'helyum': {'gaz'}, 'zirkaloy4': {'yapisal'}, 'su': SM, 'uo2_31': {'yakit'}},
+        sekmeler=TUM_SEKME,
+        hedefler=_h(yakit_sicaklik=['uo2_24', 'uo2_31'], sogutucu_sicaklik=['su'], malzeme_yogunluk=['uo2_24', 'helyum', 'zirkaloy4', 'su', 'uo2_31'], void_orani=['su'], bor_ppm=['su'], zenginlik=['uo2_24', 'uo2_31'], kafes_adim=['demet_24', 'demet_31'], kor_adim=[None], cubuk_yaricap=[('yakit_24', 0), ('yakit_24', 1), ('yakit_24', 2), ('kilavuz_boru', 0), ('kilavuz_boru', 1), ('yakit_31', 0), ('yakit_31', 1), ('yakit_31', 2)]),
+        kritik=['bor_ppm', 'zenginlik'],
+        sinir=(KARE, KURE, KURE),
+        ayar=dict(OZDEGER, guc_dagilimi=True, eksenel_dilim=True),
+        kaynak=(['nokta', 'kutu'], ['neutron']),
+        guc=['yakit_24', 'yakit_31'], tukenme=True, parca=(True, False, True)),
+    "pwr_gd_tukenme": dict(
+        ozet=_ozet('tek_demet', '2B', kafes=True),
+        roller={'uo2': {'yakit'}, 'uo2_gd_1': {'yakit'}, 'uo2_gd_2': {'yakit'}, 'uo2_gd_3': {'yakit'}, 'uo2_gd_4': {'yakit'}, 'uo2_gd_5': {'yakit'}, 'helyum': {'gaz'}, 'zirkaloy4': {'yapisal'}, 'su': SM},
+        sekmeler=TUM_SEKME,
+        hedefler=_h(yakit_sicaklik=['uo2', 'uo2_gd_1', 'uo2_gd_2', 'uo2_gd_3', 'uo2_gd_4', 'uo2_gd_5'], sogutucu_sicaklik=['su'], malzeme_yogunluk=['uo2', 'uo2_gd_1', 'uo2_gd_2', 'uo2_gd_3', 'uo2_gd_4', 'uo2_gd_5', 'helyum', 'zirkaloy4', 'su'], void_orani=['su'], bor_ppm=['su'], zenginlik=['uo2', 'uo2_gd_1', 'uo2_gd_2', 'uo2_gd_3', 'uo2_gd_4', 'uo2_gd_5'], kafes_adim=['super_hucre'], cubuk_yaricap=[('yakit_cubugu', 0), ('yakit_cubugu', 1), ('yakit_cubugu', 2), ('gd_cubugu', 0), ('gd_cubugu', 1), ('gd_cubugu', 2), ('gd_cubugu', 3), ('gd_cubugu', 4), ('gd_cubugu', 5), ('gd_cubugu', 6)]),
+        kritik=['bor_ppm', 'zenginlik'],
+        sinir=(KARE, [], []),
+        ayar=dict(OZDEGER, guc_dagilimi=True, eksenel_dilim=False),
+        kaynak=(['nokta', 'kutu'], ['neutron']),
+        guc=['yakit_cubugu', 'gd_cubugu'], tukenme=True, parca=(True, False, False)),
+    "pwr_mox_demet": dict(
+        ozet=_ozet('tek_demet', '2B', kafes=True),
+        roller={'mox_25': {'yakit'}, 'mox_30': {'yakit'}, 'mox_50': {'yakit'}, 'zirkaloy2': {'yapisal'}, 'bosluk_o16': {'gaz'}, 'waba': {'emici'}, 'su': SM},
+        sekmeler=TUM_SEKME,
+        hedefler=_h(yakit_sicaklik=['mox_25', 'mox_30', 'mox_50'], sogutucu_sicaklik=['su'], malzeme_yogunluk=['mox_25', 'mox_30', 'mox_50', 'zirkaloy2', 'bosluk_o16', 'waba', 'su'], void_orani=['su'], bor_ppm=['su'], kafes_adim=['mox_demeti'], cubuk_yaricap=[('mox_25', 0), ('mox_25', 1), ('mox_25', 2), ('mox_30', 0), ('mox_30', 1), ('mox_30', 2), ('mox_50', 0), ('mox_50', 1), ('mox_50', 2), ('kilavuz_boru', 0), ('kilavuz_boru', 1), ('waba_cubugu', 0),  ('waba_cubugu', 1), ('waba_cubugu', 2), ('waba_cubugu', 3), ('waba_cubugu', 4), ('waba_cubugu', 5)]),
+        kritik=['bor_ppm'],
+        sinir=(KARE, [], []),
+        ayar=dict(OZDEGER, guc_dagilimi=True, eksenel_dilim=False),
+        kaynak=(['nokta', 'kutu'], ['neutron']),
+        guc=['mox_25', 'mox_30', 'mox_50'], tukenme=True, parca=(True, False, False)),
+    "pwr_smr_kor": dict(
+        ozet=_ozet('kare_kafes', '3B_katmanli', kafes=True),
+        roller={'uo2_24': {'yakit'}, 'helyum': {'gaz'}, 'zirkaloy4': {'yapisal'}, 'su': SM, 'uo2_31': {'yakit'}},
+        sekmeler=TUM_SEKME,
+        hedefler=_h(yakit_sicaklik=['uo2_24', 'uo2_31'], sogutucu_sicaklik=['su'], malzeme_yogunluk=['uo2_24', 'helyum', 'zirkaloy4', 'su', 'uo2_31'], void_orani=['su'], bor_ppm=['su'], zenginlik=['uo2_24', 'uo2_31'], kafes_adim=['demet_24', 'demet_31'], kor_adim=[None], cubuk_yaricap=[('yakit_24', 0), ('yakit_24', 1), ('yakit_24', 2), ('kilavuz_boru', 0), ('kilavuz_boru', 1), ('yakit_31', 0), ('yakit_31', 1), ('yakit_31', 2)]),
+        kritik=['bor_ppm', 'zenginlik'],
+        sinir=(KARE, KURE, KURE),
+        ayar=dict(OZDEGER, guc_dagilimi=True, eksenel_dilim=True),
+        kaynak=(['nokta', 'kutu'], ['neutron']),
+        guc=['yakit_24', 'yakit_31'], tukenme=True, parca=(True, False, True)),
+    "sfr_met1000_demet": dict(
+        ozet=_ozet('altigen_kafes', '2B', kafes=True),
+        roller={'yakit_ic3': {'yakit'}, 'sodyum': {'sogutucu'}, 'ht9': {'yapisal'}},
+        sekmeler=TUM_SEKME,
+        hedefler=_h(yakit_sicaklik=['yakit_ic3'], sogutucu_sicaklik=['sodyum'], void_orani=['sodyum'], kafes_adim=['surucu_ic3'], kor_adim=[None], cubuk_yaricap=[('pin_ic3', 0), ('pin_ic3', 1)]),
+        kritik=[],
+        sinir=(EGRI, [], []),
+        ayar=dict(OZDEGER, guc_dagilimi=True, eksenel_dilim=False),
+        kaynak=(['nokta', 'kutu'], ['neutron']),
+        guc=['pin_ic3'], tukenme=True, parca=(True, False, False)),
+    "sfr_met1000_kor": dict(
+        ozet=_ozet('altigen_kafes', '3B_katmanli', kafes=True),
+        roller={'yakit_ic1': {'yakit'}, 'yakit_ic2': {'yakit'}, 'yakit_ic3': {'yakit'}, 'yakit_ic4': {'yakit'}, 'yakit_ic5': {'yakit'}, 'yakit_dis1': {'yakit'}, 'yakit_dis2': {'yakit'}, 'yakit_dis3': {'yakit'}, 'yakit_dis4': {'yakit'}, 'yakit_dis5': {'yakit'}, 'sodyum': {'sogutucu'}, 'ht9': {'yapisal'}, 'alt_yapi': {'yapisal'}, 'alt_yansitici': {'yapisal'}, 'bag_na': {'yapisal'}, 'plenum': {'yapisal'}, 'radyal_yansitici': {'yapisal'}, 'radyal_kalkan': {'emici'}, 'sogurucu': {'emici'}, 'bos_kanal': {'yapisal'}},
+        sekmeler=TUM_SEKME,
+        hedefler=_h(yakit_sicaklik=['yakit_ic1', 'yakit_ic2', 'yakit_ic3', 'yakit_ic4', 'yakit_ic5', 'yakit_dis1', 'yakit_dis2', 'yakit_dis3', 'yakit_dis4', 'yakit_dis5'], sogutucu_sicaklik=['sodyum'], void_orani=['sodyum'], kafes_adim=['surucu_ic1', 'surucu_ic2', 'surucu_ic3', 'surucu_ic4', 'surucu_ic5', 'surucu_dis1', 'surucu_dis2', 'surucu_dis3', 'surucu_dis4', 'surucu_dis5'], kor_adim=[None], cubuk_yaricap=[('pin_ic1', 0), ('pin_ic1', 1), ('pin_ic2', 0), ('pin_ic2', 1), ('pin_ic3', 0), ('pin_ic3', 1), ('pin_ic4', 0), ('pin_ic4', 1), ('pin_ic5', 0), ('pin_ic5', 1), ('pin_dis1', 0), ('pin_dis1', 1),  ('pin_dis2', 0), ('pin_dis2', 1), ('pin_dis3', 0), ('pin_dis3', 1), ('pin_dis4', 0), ('pin_dis4', 1), ('pin_dis5', 0), ('pin_dis5', 1)]),
+        kritik=[],
+        sinir=(EGRI, KURE, KURE),
+        ayar=dict(OZDEGER, guc_dagilimi=True, eksenel_dilim=True),
+        kaynak=(['nokta', 'kutu'], ['neutron']),
+        guc=['pin_ic1', 'pin_ic2', 'pin_ic3', 'pin_ic4', 'pin_ic5', 'pin_dis1', 'pin_dis2', 'pin_dis3', 'pin_dis4', 'pin_dis5'], tukenme=True, parca=(True, False, True)),
+    "vver1000_demet": dict(
+        ozet=_ozet('tek_demet', '2B', kafes=True),
+        roller={'uo2_37': {'yakit'}, 'uo2_gd': {'yakit'}, 'zr1nb': {'yapisal'}, 'su': SM, 'helyum': {'gaz'}},
+        sekmeler=TUM_SEKME,
+        hedefler=_h(yakit_sicaklik=['uo2_37', 'uo2_gd'], sogutucu_sicaklik=['su'], malzeme_yogunluk=['uo2_37', 'uo2_gd', 'helyum'], void_orani=['su'], bor_ppm=['su'], zenginlik=['uo2_37', 'uo2_gd'], kafes_adim=['tvs'], cubuk_yaricap=[('yakit_cubugu', 0), ('yakit_cubugu', 1), ('yakit_cubugu', 2), ('yakit_cubugu', 3), ('tveg_cubugu', 0), ('tveg_cubugu', 1), ('tveg_cubugu', 2), ('tveg_cubugu', 3), ('kilavuz_boru', 0),  ('kilavuz_boru', 1), ('merkez_boru', 0), ('merkez_boru', 1)]),
+        kritik=['bor_ppm', 'zenginlik'],
+        sinir=(KARE, [], []),
+        ayar=dict(OZDEGER, guc_dagilimi=True, eksenel_dilim=False),
+        kaynak=(['nokta', 'kutu'], ['neutron']),
+        guc=['yakit_cubugu', 'tveg_cubugu'], tukenme=True, parca=(True, False, False)),
+    "vver1000_kor": dict(
+        ozet=_ozet('altigen_kafes', '3B_katmanli', kafes=True),
+        roller={'uo2_20': {'yakit'}, 'uo2_30': {'yakit'}, 'uo2_44': {'yakit'}, 'uo2_gd': {'yakit'}, 'zr1nb': {'yapisal'}, 'su': SM, 'helyum': {'gaz'}, 'yansitici_celik_su': {'yapisal'}},
+        sekmeler=TUM_SEKME,
+        hedefler=_h(yakit_sicaklik=['uo2_20', 'uo2_30', 'uo2_44', 'uo2_gd'], sogutucu_sicaklik=['su'], malzeme_yogunluk=['uo2_20', 'uo2_30', 'uo2_44', 'uo2_gd', 'helyum', 'yansitici_celik_su'], void_orani=['su'], bor_ppm=['su'], zenginlik=['uo2_20', 'uo2_30', 'uo2_44', 'uo2_gd'], kafes_adim=['tvs_a20', 'tvs_b30', 'tvs_c44'], kor_adim=[None], cubuk_yaricap=[('yakit_20', 0), ('yakit_20', 1), ('yakit_20', 2), ('yakit_20', 3), ('yakit_30', 0), ('yakit_30', 1), ('yakit_30', 2), ('yakit_30', 3), ('yakit_44', 0), ('yakit_44', 1), ('yakit_44', 2),  ('yakit_44', 3), ('tveg_cubugu', 0), ('tveg_cubugu', 1), ('tveg_cubugu', 2), ('tveg_cubugu', 3), ('kilavuz_boru', 0), ('kilavuz_boru', 1), ('merkez_boru', 0), ('merkez_boru', 1)], yansitici_kalinlik=[None]),
+        kritik=['bor_ppm', 'zenginlik', 'yansitici_kalinlik'],
+        sinir=(EGRI, KURE, KURE),
+        ayar=dict(OZDEGER, guc_dagilimi=True, eksenel_dilim=True),
+        kaynak=(['nokta', 'kutu'], ['neutron']),
+        guc=['yakit_20', 'yakit_30', 'yakit_44', 'tveg_cubugu'], tukenme=True, parca=(True, False, True)),
+    "zirh_katmanli": dict(
+        ozet=_ozet('kuresel', '2B', fisil=False, mod='fixed source'),
+        roller={'hava': {'gaz'}, 'borlu_pe': {'emici'}, 'kursun': {'sogutucu'}, 'beton': {'yapisal'}},
+        sekmeler=['malzemeler', 'kor', 'ayarlar', 'calistir'],
+        hedefler=_h(),
+        kritik=[],
+        sinir=(KURE, [], []),
+        ayar={'pasif': False, 'entropi': False, 'kinetik': False, 'kaynak_siddeti': True, 'foton': True, 'kaynak_tayfi_temel': True, 'kutu_kaynagi': False, 'guc_dagilimi': False, 'eksenel_dilim': False},
+        kaynak=(['nokta'], ['neutron', 'photon']),
+        guc=[], tukenme=False, parca=(False, False, False)),
 }
 # pwr_tukenme, pwr_pinhucre ile ayni geometridir (tukenme bolumu eklenmis)
 KAHIN["pwr_tukenme"] = copy.deepcopy(KAHIN["pwr_pinhucre"])
 
 
 def test_kahin_tablosu():
-    print("\n[U1] UYGUNLUK KAHIN TABLOSU: 11 ornek x butun sorular")
+    print("\n[U1] UYGUNLUK KAHIN TABLOSU: 27 ornek x butun sorular")
     from cekirdek import tarama
     u = _u()
     kontrol("kahin 12 tarama turunun hepsini kapsiyor (tarama.TURLER sirasi)",
             tuple(tarama.TURLER) == TURLER, "(%s)" % list(tarama.TURLER))
     orn = sorted(os.path.splitext(a)[0] for a in os.listdir(ORNEK) if a.endswith(".json"))
-    kontrol("kahin 11 ornegin hepsini kapsiyor", orn == sorted(KAHIN), "(%s)" % orn)
+    kontrol("kahin 27 ornegin hepsini kapsiyor", orn == sorted(KAHIN), "(%s)" % orn)
 
     for ad in sorted(KAHIN):
         k = KAHIN[ad]
@@ -799,12 +961,22 @@ def test_dogrula_uyumu():
         # guc: uygun cubuklarda guc hatasi yok, digerlerinde bir bulgu var
         sorun = []
         uygun = _g(u.guc_cubuklari, s) or []
+        yakit_malz = {ad for ad, rol in (_g(u.malzeme_rolleri, s) or {}).items()
+                      if "yakit" in rol}
         for c in s["cubuklar"]:
             x = copy.deepcopy(s)
-            x["guc_dagilimi"].update(var=True, cubuk=c["ad"], bolge=0)
+            # merkez deligi gazli cubuklarda (VVER) ilk fisil bolge secilir
+            bolge = next((i for i, r in enumerate(c.get("bolgeler") or [])
+                          if r.get("malzeme") in yakit_malz), 0)
+            x["guc_dagilimi"].update(var=True, cubuk=c["ad"], bolge=bolge)
             b = [y for y in dogrula.guc_dagilimi_kontrol(x) if y.seviye in ("hata", "uyari")
                  and ("demet" in y.mesaj or "kullanılmıyor" in y.mesaj
                       or "fisil" in y.mesaj)]
+            if c["ad"] in uygun:
+                # cok demetli korlarda cubuk yalniz bazi demetlerdedir (BEAVRS,
+                # SMR, SFR): hedef listesine digerleri eklenir. Bu yalnizca bir
+                # kapsama UYARISIDIR, cubuk yine gecerli bir guc hedefidir.
+                b = [y for y in b if "içermeyen demetler var" not in y.mesaj]
             if (c["ad"] in uygun) == bool(b):
                 sorun.append((c["ad"], [y.mesaj[:50] for y in b]))
         kontrol("%s: guc_cubuklari <=> guc bulgusu yok" % ad, not sorun,

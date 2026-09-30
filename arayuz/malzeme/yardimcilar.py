@@ -8,6 +8,7 @@
 
 from PySide6 import QtCore, QtWidgets
 from cekirdek import malzeme_kutup as mk
+from cekirdek.ceviri import _
 from cekirdek import sema
 from cekirdek.gunluk import kaydedici
 
@@ -126,6 +127,7 @@ _YOL_KALIPLARI = (
      % (a, _PLAKA_ALANI.get(k, k))),
     (r"demetler/(.+)/dolgu_disi$", lambda a: "‘%s’ demetinin dış dolgusu" % a),
     (r"demetler/(.+)/anahtar/.+$", lambda a: "‘%s’ demet haritası" % a),
+    (r"demetler/(.+)/kilif$", lambda a: _("‘%s’ demetinin kılıfı") % a),
     (r"kor/yansitici$", lambda: "kor yansıtıcısı"),
     (r"kor/kabuklar/(\d+)$", lambda i: "%d. küresel kabuk" % (int(i) + 1)),
     (r"kor/tambur/govde_malzeme$", lambda: "tambur gövdesi"),

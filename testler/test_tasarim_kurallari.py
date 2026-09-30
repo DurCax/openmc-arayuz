@@ -31,9 +31,7 @@ MUAF = ("arayuz/tasarim/",)
 # dosya -> izin verilen en cok #rrggbb sayisi (YALNIZ KUCULUR)
 RENK_TABANI = {
     "arayuz/ayar/kaynak_formu.py": 1,
-    "arayuz/baslangic.py": 2,
     "arayuz/onizleme.py": 2,
-    "arayuz/ortak.py": 3,
     "arayuz/sekme_analiz.py": 2,
     "arayuz/sekme_ayar.py": 1,
     "arayuz/sekme_calistir.py": 2,
