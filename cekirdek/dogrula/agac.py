@@ -164,9 +164,9 @@ def _liste(yollar):
 def _kesik_bulgulari(_spec, m, ziyaretler):
     from cekirdek import geometri
     bulgular = []
-    bilesen = [z.yol for z in ziyaretler if z.neden == "bilesen" and z.dugum.get("tur") in
-               ("kap", "bilesen")]
-    cubuk = [z.yol for z in ziyaretler if z.neden == "cubuk" and z.dugum.get("tur") == "bilesen"]
+    # kirpilan bilesenin kendisi: kirpilan bolge ziyaretinin atasi (kap / bilesen)
+    bilesen = [z.ust_yollar[-1] for z in ziyaretler if z.neden == "bilesen" and z.ust_yollar]
+    cubuk = [z.ust_yollar[-1] for z in ziyaretler if z.neden == "cubuk" and z.ust_yollar]
     if bilesen:
         bulgular.append(_b("uyari", bilesen[0], _(
             "%d kesik konum/bileşen üst bölgeyle kırpılıyor (ilk %d: %s).")
