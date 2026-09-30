@@ -301,9 +301,11 @@ A = tokenlar.ARALIK
 _MOTIFLER = {"kuresel": "kure", "tek_cubuk": "pin", "tek_plaka": "plaka",
              "kare_kafes": "kor", "altigen_kafes": "altigen", "tamburlu": "kor"}
 _TUM = "hepsi"
-_SUTUN_GENISLIGI = 300          # kart izgarasinin sutun basina en az genisligi
+_SUTUN_GENISLIGI = 260          # kart izgarasinda sutun basina en az genislik (px)
 _EN_COK_SUTUN = 4
 _SON_DOSYA_SAYISI = 3
+_ARAMA_EN_AZ = 140             # galeri arama kutusu genislik araligi (px)
+_ARAMA_EN_COK = 220
 
 
 def ornek_motifi(bilgi):
@@ -570,21 +572,27 @@ class BaslangicEkrani(QtWidgets.QWidget):
         self.arama = QtWidgets.QLineEdit()
         self.arama.setPlaceholderText(_("Örneklerde ara…"))
         self.arama.setClearButtonEnabled(True)
-        self.arama.setFixedWidth(220)
+        # Arama kutusu daralabilir: suzgec satiri 1280 px'te tasmasin.
+        self.arama.setMinimumWidth(_ARAMA_EN_AZ)
+        self.arama.setMaximumWidth(_ARAMA_EN_COK)
         self.arama.textChanged.connect(lambda *_a: self.filtrele())
-        filtre.addWidget(self.arama, 0, QtCore.Qt.AlignBottom)
+        filtre.addWidget(self.arama, 1, QtCore.Qt.AlignBottom)
+        # Seviye acilir kutu: ikinci bir segment satiri 1280 px'e sigmiyordu.
+        self.seviye = QtWidgets.QComboBox()
+        self.seviye.setAccessibleName(_("Seviye"))
+        self.seviye.setToolTip(_("Örnekleri zorluk seviyesine göre süzer."))
+        self.seviye.addItem(_("Her seviye"), _TUM)
+        for sev in ornek_bilgi.SEVIYELER:
+            if any(o.seviye == sev for o in self.bilgiler):
+                self.seviye.addItem(_(ornek_bilgi.SEVIYE_ADLARI[sev]), sev)
+        self.seviye.currentIndexChanged.connect(lambda *_a: self.filtrele())
+        filtre.addWidget(self.seviye, 0, QtCore.Qt.AlignBottom)
         self.kategori = b.SegmentSecici(
             [(_TUM, _("Tümü"))] + [(k, _(ornek_bilgi.KATEGORI_ADLARI[k]))
                                    for k in ornek_bilgi.KATEGORILER
                                    if any(o.kategori == k for o in self.bilgiler)], _TUM)
         self.kategori.secildi.connect(lambda *_a: self.filtrele())
         filtre.addWidget(self.kategori, 0, QtCore.Qt.AlignBottom)
-        self.seviye = b.SegmentSecici(
-            [(_TUM, _("Her seviye"))] + [(s, _(ornek_bilgi.SEVIYE_ADLARI[s]))
-                                         for s in ornek_bilgi.SEVIYELER
-                                         if any(o.seviye == s for o in self.bilgiler)], _TUM)
-        self.seviye.secildi.connect(lambda *_a: self.filtrele())
-        filtre.addWidget(self.seviye, 0, QtCore.Qt.AlignBottom)
         d.addLayout(filtre)
         self._galeri = QtWidgets.QGridLayout()
         self._galeri.setSpacing(A["m"])
@@ -637,7 +645,7 @@ class BaslangicEkrani(QtWidgets.QWidget):
         """Arama + kategori + seviye secimini galeriye uygular."""
         metin = self.arama.text()
         kategori = self.kategori.secili() or _TUM
-        seviye = self.seviye.secili() or _TUM
+        seviye = self.seviye.currentData() or _TUM
         gorunur = []
         for k in self._ornekler:
             uygun = ornek_eslesiyor(k.bilgi, metin, kategori, seviye)
@@ -720,9 +728,16 @@ class BaslangicEkrani(QtWidgets.QWidget):
         for c in range(_EN_COK_SUTUN):
             self._galeri.setColumnStretch(c, 1 if c < sutun else 0)
 
+    def sutun_sayisi(self, genislik):
+        """Pencere genisliginde tasmadan sigan kart sutunu (en az 1)."""
+        kaydirma = self.style().pixelMetric(QtWidgets.QStyle.PM_ScrollBarExtent)
+        icerik = min(genislik - kaydirma, self._icerik.maximumWidth()) - 2 * A["xxl"]
+        kart = max([_SUTUN_GENISLIGI] + [k.minimumSizeHint().width()
+                                         for k in self._kartlar + self._ornekler])
+        return max(1, (icerik + A["m"]) // (kart + A["m"]))
+
     def resizeEvent(self, olay):                          # noqa: N802 (Qt adi)
-        genislik = min(self.width(), self._icerik.maximumWidth()) - 2 * A["xxl"]
-        self._yerlestir(genislik // _SUTUN_GENISLIGI)
+        self._yerlestir(self.sutun_sayisi(self.width()))
         super().resizeEvent(olay)
 
     def keyPressEvent(self, olay):                        # noqa: N802 (Qt adi)

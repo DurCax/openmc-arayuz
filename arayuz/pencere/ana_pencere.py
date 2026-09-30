@@ -76,6 +76,7 @@ def _seviye_renk(seviye):
 
 _SEVIYE_ADI = {"hata": "Hata", "uyari": "Uyarı", "bilgi": "Bilgi"}
 _EN_KUCUK = (1280, 760)
+_VARSAYILAN_BOLUCU = (820, 360)      # [sayfa, onizleme] px, ilk acilis
 
 
 # ============================================================================
@@ -210,12 +211,7 @@ class AnaPencere(GezinmeCephesi, MenulerMixin, ProjeMixin, GecmisMixin, QtWidget
         bolucu.setStretchFactor(0, 5)
         bolucu.setStretchFactor(1, 2)
         bolucu.setChildrenCollapsible(False)
-        kayitli = self.ayarlar.value(kabuk.BOLUCU_AYARI)
-        try:
-            bolucu.setSizes([int(x) for x in kayitli] if kayitli else [820, 360])
-        except (TypeError, ValueError):
-            _log.warning("bolucu boyutlari okunamadi: %r", kayitli)
-            bolucu.setSizes([820, 360])
+        bolucu.setSizes(self._kayitli_bolucu())
         self._bolucu = bolucu
         editor = QtWidgets.QWidget()
         govde = QtWidgets.QHBoxLayout(editor)
@@ -224,6 +220,30 @@ class AnaPencere(GezinmeCephesi, MenulerMixin, ProjeMixin, GecmisMixin, QtWidget
         govde.addWidget(self.kenar)
         govde.addWidget(bolucu, 1)
         return editor
+
+    def _kayitli_bolucu(self):
+        """QSettings'teki [sayfa, onizleme] genislikleri; gecersizse varsayilan."""
+        kayitli = self.ayarlar.value(kabuk.BOLUCU_AYARI)
+        if not kayitli:
+            return list(_VARSAYILAN_BOLUCU)
+        try:
+            boyut = [int(x) for x in kayitli]
+        except (TypeError, ValueError):
+            _log.warning("bolucu boyutlari okunamadi: %r", kayitli)
+            return list(_VARSAYILAN_BOLUCU)
+        if len(boyut) != 2 or min(boyut) <= 0:
+            _log.warning("bolucu boyutlari gecersiz, varsayilan kullaniliyor: %r", kayitli)
+            return list(_VARSAYILAN_BOLUCU)
+        return boyut
+
+    def _bolucu_kaydet(self):
+        """Yalniz ekranda yerlesmis tasarim bolucusu kaydedilir: gosterilmemis
+        ya da onizlemesiz (kosu/sonuc) sayfadaki boyutlar oranti bozardi."""
+        boyut = self._bolucu.sizes() if (self._bolucu.isVisible()
+                                          and self.onizleme_paneli.isVisible()) \
+            else getattr(self, "_bolucu_boyutlari", None)
+        if boyut and len(boyut) == 2 and min(boyut) > 0:
+            self.ayarlar.setValue(kabuk.BOLUCU_AYARI, list(boyut))
 
     def _baglantilari_kur(self):
         for e in self.editorler:
@@ -464,7 +484,7 @@ class AnaPencere(GezinmeCephesi, MenulerMixin, ProjeMixin, GecmisMixin, QtWidget
         genisligi kullanir (Hesap ayarlarinda dogrulama seridi zaten altta)."""
         anahtar = self.gecerli_sekme()
         tasarim = anahtar in TASARIM_SEKMELERI
-        if self._sag_kip == "tasarim" and not tasarim:
+        if self._sag_kip == "tasarim" and not tasarim and self._bolucu.isVisible():
             self._bolucu_boyutlari = self._bolucu.sizes()
         self.onizleme_paneli.setVisible(tasarim)
         if tasarim and self._sag_kip not in (None, "tasarim"):
@@ -697,7 +717,7 @@ class AnaPencere(GezinmeCephesi, MenulerMixin, ProjeMixin, GecmisMixin, QtWidget
 
     def closeEvent(self, olay):
         if self._kaydetme_sor():
-            self.ayarlar.setValue(kabuk.BOLUCU_AYARI, self._bolucu.sizes())
+            self._bolucu_kaydet()
             self.onizleme.kapat()      # openmc kutuphanesini serbest birak
             # Onceki tukenme sonucu arka planda okunuyor olabilir (~3 s).
             self.s_tukenme.bekle()
