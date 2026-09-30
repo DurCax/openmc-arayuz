@@ -13,6 +13,10 @@ from arayuz import sekme_duzen as sd
 from arayuz.ortak import baslik, ipucu, sayi, tamsayi
 from arayuz.cubuk.parca_islemleri import _renk
 from arayuz.cubuk.malzeme_kutusu import _SatirTakibi
+from arayuz.tasarim import tokenlar
+
+# Yaricap sutununda metnin disinda: ok dugmeleri + kutu dolgusu (token).
+YARICAP_SUTUN_PAYI = 6 * tokenlar.ARALIK["s"]
 
 
 class SayfalarMixin(object):
@@ -90,7 +94,11 @@ class SayfalarMixin(object):
         self.c_tablo = QtWidgets.QTableWidget(0, 3)
         self.c_tablo.setHorizontalHeaderLabels(["Dış yarıçap", "Malzeme", "Bölge"])
         bas = self.c_tablo.horizontalHeader()
-        bas.setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeToContents)
+        # Yaricap kutusunun sizeHint'i ust sinirdan (1000.000000 cm) gelir ve
+        # sutunu sisirir; "0.000000 cm" sigacak sabit genislik yeter.
+        bas.setSectionResizeMode(0, QtWidgets.QHeaderView.Fixed)
+        bas.resizeSection(0, self.fontMetrics().horizontalAdvance("0.0000000 cm")
+                          + YARICAP_SUTUN_PAYI)
         bas.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
         # Aciklama sutunu da esner: icerige gore buyuyunce dar ekranda (1280,
         # onizleme acik) Malzeme sutununu sifira itiyordu. Uzun aciklama
