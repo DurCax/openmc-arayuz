@@ -92,7 +92,11 @@ class SayfalarMixin(object):
         bas = self.c_tablo.horizontalHeader()
         bas.setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeToContents)
         bas.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
-        bas.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
+        # Aciklama sutunu da esner: icerige gore buyuyunce dar ekranda (1280,
+        # onizleme acik) Malzeme sutununu sifira itiyordu. Uzun aciklama
+        # kisaltilir, tamami ipucunda.
+        bas.setSectionResizeMode(2, QtWidgets.QHeaderView.Stretch)
+        self.c_tablo.setTextElideMode(QtCore.Qt.ElideRight)
         self.c_tablo.verticalHeader().setVisible(False)
         self.c_tablo.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
         self.c_tablo.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)

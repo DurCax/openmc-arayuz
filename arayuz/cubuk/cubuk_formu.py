@@ -123,7 +123,9 @@ class CubukFormuMixin(object):
         for i in range(self.c_tablo.rowCount()):
             oge = self.c_tablo.item(i, 2)
             if oge is not None:
-                oge.setText(bolge_aciklamasi(self.spec, c, i))
+                metin = bolge_aciklamasi(self.spec, c, i)
+                oge.setText(metin)
+                oge.setToolTip(metin)
         eksik = eksik_malzemeler(self.spec, c)
         self._hata_goster(self.c_eksik, (
             "Malzemesi seçilmemiş: %s. Uygun malzeme yoksa önce Malzemeler "
