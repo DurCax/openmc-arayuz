@@ -22,7 +22,7 @@ from arayuz.tasarim import tokenlar
 from arayuz.bilesenler.kenar_cubugu import ROL_ANAHTAR
 from arayuz.tasarim.ikon import ikon_bagla
 from cekirdek import surum
-from cekirdek.ceviri import _
+from cekirdek.ceviri import _, N_
 
 A = tokenlar.ARALIK
 B = tokenlar.BOYUT
@@ -33,7 +33,9 @@ GEZINME_IKONLARI = {
     "kor": "hexagon", "ayarlar": "sliders-horizontal", "calistir": "play",
     "analiz": "activity", "tukenme": "hourglass",
 }
-GEZINME_GRUPLARI = (("malzemeler", "Model"), ("ayarlar", "Hesap"), ("analiz", "Sonuç"))
+# Grup adlari yalniz isaretlenir (N_); ana_pencere gosterirken _() ile cevirir.
+GEZINME_GRUPLARI = (("malzemeler", N_("Model")), ("ayarlar", N_("Hesap")),
+                    ("analiz", N_("Sonuç")))
 
 # sekme_isaretleri() isareti -> KenarCubugu durumu
 ISARET_DURUMU = {"!": "hata", "•": "eksik", "✓": "tamam", "": None}
@@ -123,6 +125,8 @@ class UstCubuk(QtWidgets.QFrame):
 
     def _kimlik_kur(self, d):
         self.model_adi = QtWidgets.QLabel("")
+        # Model adi kullanici verisidir: "<b>" gibi metin HTML olarak yorumlanmasin.
+        self.model_adi.setTextFormat(QtCore.Qt.PlainText)
         self.model_adi.setObjectName("altBaslik")
         d.addWidget(self.model_adi)
         d.addSpacing(A["xs"])

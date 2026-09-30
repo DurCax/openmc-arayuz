@@ -563,6 +563,23 @@ def test_gelismis_ve_sab():
             "%s" % celiski)
     kontrol("hidrojen GAZI icin S(a,b) onerilmez",
             not sm.sab_onerileri(sema.malzeme("h2", [sema.bilesen("H", 2.0)], 8.9e-5)))
+    # okunamayan yogunluk sessizce gecilmez: UYARI duzeyinde loglanir
+    import logging
+    from arayuz.malzeme import yardimcilar as sm_yard
+    kayitlar = []
+    tutucu = logging.Handler(logging.WARNING)
+    tutucu.emit = kayitlar.append
+    gunluk = sm_yard._log
+    gunluk.addHandler(tutucu)
+    try:
+        bozuk = sema.malzeme("su_b", [sema.bilesen("H", 2.0), sema.bilesen("O", 1.0)], 1.0)
+        bozuk["yogunluk"] = 1.0              # sozluk degil: okuma istisna atar
+        sm.sab_onerileri(bozuk)
+    finally:
+        gunluk.removeHandler(tutucu)
+    kontrol("sab_onerileri: yogunluk okunamazsa WARNING loglanir",
+            any("yogunluk okunamadi" in k.getMessage() for k in kayitlar),
+            "-> %r" % [k.getMessage() for k in kayitlar])
 
     # yeni elle malzeme: bilesim su gorunumune gelince oneri kendiliginden secilir
     s = sema.yeni_spec()

@@ -11,6 +11,7 @@ arka planda atanir (izgara.adlardan_harita), spec bicimi ayni kalir. Boyut
 from PySide6 import QtWidgets
 
 from arayuz import izgara
+from cekirdek.ceviri import _
 
 
 class KorHaritasiMixin(object):
@@ -70,7 +71,7 @@ class KorHaritasiMixin(object):
             harita, anahtar = izgara.adlardan_harita(adlar, kor.get("anahtar"),
                                                      kor.get("harita"))
         except ValueError as hata:
-            QtWidgets.QMessageBox.warning(self, "Harita yazılamadı", str(hata))
+            QtWidgets.QMessageBox.warning(self, _("Harita yazılamadı"), str(hata))
             return False
         kor["harita"] = harita
         kor["anahtar"] = anahtar
@@ -90,7 +91,7 @@ class KorHaritasiMixin(object):
         self._ozet_guncelle()
         self.bildir()
 
-    def _boyut_degisti(self, *_):
+    def _boyut_degisti(self, *_arg):
         if self._yukleniyor or self.spec is None:
             return
         adlar = self.izgara.adlar()
@@ -101,9 +102,9 @@ class KorHaritasiMixin(object):
                        if (r >= ny or c >= nx) and ad is not None)
         if kaybolan:
             if not self._onay_al(
-                    "Kor haritası küçülüyor",
-                    "Harita %d×%d'den %d×%d'ye küçülüyor: sağdaki/alttaki %d dolu hücre "
-                    "silinecek (büyütmek onları geri getirmez).\n\nDevam edilsin mi?"
+                    _("Kor haritası küçülüyor"),
+                    _("Harita %d×%d'den %d×%d'ye küçülüyor: sağdaki/alttaki %d dolu hücre "
+                      "silinecek (büyütmek onları geri getirmez).\n\nDevam edilsin mi?")
                     % (eski_nx, eski_ny, nx, ny, kaybolan)):
                 for kutu, deger in ((self.nx, eski_nx), (self.ny, eski_ny)):
                     eski = kutu.blockSignals(True)

@@ -1840,7 +1840,7 @@
       ]
     },
     {
-      "ad": "sogurucu",
+      "ad": "b4c",
       "gorunen_ad": "Kontrol soğurucusu (zengin B4C 50.40)",
       "yogunluk": {
         "birim": "atom/b-cm",
@@ -2634,8 +2634,8 @@
             "S": "radyal_kalkan",
             "I": "bag_na",
             "O": "bag_na",
-            "P": "sogurucu",
-            "C": "sogurucu",
+            "P": "b4c",
+            "C": "b4c",
             "-": "bosluk"
           }
         },
@@ -2648,8 +2648,8 @@
             "S": "radyal_kalkan",
             "I": "plenum",
             "O": "plenum",
-            "P": "sogurucu",
-            "C": "sogurucu",
+            "P": "b4c",
+            "C": "b4c",
             "-": "bosluk"
           }
         },

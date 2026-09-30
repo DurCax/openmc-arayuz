@@ -9,14 +9,17 @@ r <-> spec indeksi n-1-r. Yukari ok katmani gercekten yukari (spec'te bir
 sonraki indekse) tasir.
 """
 
+import math
+
 from PySide6 import QtWidgets
 
 from cekirdek import sema, uygunluk
+from cekirdek.ceviri import _, N_
 from cekirdek.gunluk import kaydedici
 from arayuz.ortak import sayi
 
 _log = kaydedici("arayuz.sekme_kor")
-_BOS_ETIKET = "Boş (madde yok)"
+_BOS_ETIKET = N_("Boş (madde yok)")
 _KATMAN_EN_COK_SATIR = 10
 
 
@@ -53,13 +56,15 @@ class KorKatmanMixin(object):
         tur = kor.get("tur")
         ana = sema.katman_adaylari(kor, {})
         if tur == "kare_kafes":
-            ana_etiket = "Ana dolgu (kor haritası)"
+            ana_etiket = _("Ana dolgu (kor haritası)")
         elif ana:
-            ana_etiket = "Ana dolgu (%s)" % ", ".join(ana)
+            # ayrilmis kimlik "bosluk" gorunen metinde Turkce yazilir
+            ana_etiket = _("Ana dolgu (%s)") % ", ".join(
+                _("boşluk") if a == sema.BOSLUK else a for a in ana)
         else:
-            ana_etiket = "Ana dolgu (seçilmedi)"
+            ana_etiket = _("Ana dolgu (seçilmedi)")
         izinli = uygunluk.katman_dolgu_turleri(self.spec)
-        ogeler = [(None, ana_etiket), (sema.BOSLUK, _BOS_ETIKET)]
+        ogeler = [(None, ana_etiket), (sema.BOSLUK, _(_BOS_ETIKET))]
         ana_demet = sema.demet_bul(self.spec, kor.get("demet")) if kor.get("demet") else None
         if "demet" in izinli:
             for d in self.spec.get("demetler", []):
@@ -67,13 +72,13 @@ class KorKatmanMixin(object):
                 if tur == "tek_demet" and ana_demet is not None \
                         and d.get("tur", "kare") != ana_demet.get("tur", "kare"):
                     continue
-                ogeler.append((d["ad"], "demet: %s" % d["ad"]))
+                ogeler.append((d["ad"], _("demet: %s") % d["ad"]))
         if "cubuk" in izinli:
-            ogeler += [(c["ad"], "çubuk: %s" % c["ad"]) for c in self.spec.get("cubuklar", [])]
+            ogeler += [(c["ad"], _("çubuk: %s") % c["ad"]) for c in self.spec.get("cubuklar", [])]
         if "plaka" in izinli:
-            ogeler += [(p["ad"], "plaka: %s" % p["ad"]) for p in self.spec.get("plakalar", [])]
+            ogeler += [(p["ad"], _("plaka: %s") % p["ad"]) for p in self.spec.get("plakalar", [])]
         if "malzeme" in izinli:
-            ogeler += [(m["ad"], "malzeme: %s" % sema.malzeme_etiketi(m))
+            ogeler += [(m["ad"], _("malzeme: %s") % sema.malzeme_etiketi(m))
                        for m in self.spec["malzemeler"]]
         return ogeler
 
@@ -103,14 +108,14 @@ class KorKatmanMixin(object):
             if b.get("anahtar"):
                 # Katmana ozel harf eslemesi arayuzde duzenlenmiyor; secim
                 # kutusu bunu SESSIZCE SILMESIN diye ayri bir oge gosterilir.
-                kutu.insertItem(0, "(katmana özel harita — dosyadan)", "__anahtar__")
+                kutu.insertItem(0, _("(katmana özel harita — dosyadan)"), "__anahtar__")
                 kutu.setCurrentIndex(0)
                 kutu.setEnabled(False)
             else:
                 j = kutu.findData(b.get("dolgu"))
                 if j < 0:
                     # listede olmayan (ture uymayan / tanimsiz) dolgu korunur
-                    kutu.addItem("%s (bu kor türünde uygun değil)" % b.get("dolgu"),
+                    kutu.addItem(_("%s (bu kor türünde uygun değil)") % b.get("dolgu"),
                                  b.get("dolgu"))
                     j = kutu.count() - 1
                 kutu.setCurrentIndex(j)
@@ -120,7 +125,7 @@ class KorKatmanMixin(object):
         tablo_yuksekligi(self.katman_tablo, _KATMAN_EN_COK_SATIR)
         self._katman_ozet_guncelle()
 
-    def _katman_kaydet(self, *_):
+    def _katman_kaydet(self, *_arg):
         """Tablo -> spec. Duzenlenmeyen alanlar (anahtar) KORUNUR."""
         if self._yukleniyor:
             return
@@ -152,27 +157,28 @@ class KorKatmanMixin(object):
             return
         toplam = sema.kor_yuksekligi(kor)
         if not toplam:
-            self.katman_ozet.setText("Geçerli katman yok (her katmanın yüksekliği pozitif olmalı).")
+            self.katman_ozet.setText(
+                _("Geçerli katman yok (her katmanın yüksekliği pozitif olmalı)."))
             return
-        satir = "Toplam yükseklik = %g cm" % toplam
+        satir = _("Toplam yükseklik = %g cm") % toplam
         try:
             from cekirdek import kurucu
             ar = kurucu.aktif_eksenel_aralik(self.spec)
             if ar:
-                satir += ("   ·   aktif yakıt = %g cm  (z = %g … %g)"
+                satir += (_("   ·   aktif yakıt = %g cm  (z = %g … %g)")
                           % (ar[1] - ar[0], ar[0], ar[1]))
             g = self.spec.get("guc_dagilimi") or {}
             adlar = list(dict.fromkeys(h["cubuk"] for h in sema.guc_hedefleri(g)
                                        if h["cubuk"]))
             if g.get("var") and adlar:
                 cr = kurucu.guc_eksenel_araligi(self.spec, adlar)
-                if cr and (cr[1] - cr[0]) != (ar[1] - ar[0] if ar else None):
-                    satir += ("\n“%s” çubuğu = %g cm (z = %g … %g) — güç ağı bunu kullanır"
+                if cr and not (ar and math.isclose(cr[1] - cr[0], ar[1] - ar[0])):
+                    satir += (_("\n“%s” çubuğu = %g cm (z = %g … %g) — güç ağı bunu kullanır")
                               % ("”, “".join(adlar), cr[1] - cr[0], cr[0], cr[1]))
         except Exception as hata:
             # Gorunen metne yazilir VE loglanir (sessiz yutma degil).
             _log.exception("eksenel aralık hesaplanamadı")
-            satir += "   ·   aralık hesaplanamadı: %s" % hata
+            satir += _("   ·   aralık hesaplanamadı: %s") % hata
         self.katman_ozet.setText(satir)
 
     def _katmanlari_yenile(self, secili_spec=None):

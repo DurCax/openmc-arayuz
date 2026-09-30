@@ -28,6 +28,7 @@
 """
 
 import copy
+import html
 import os
 import time
 
@@ -620,7 +621,8 @@ class AnalizSekmesi(QtWidgets.QWidget):
     def _hata(self, mesaj):
         if self._eski_is():
             return
-        self.sonuc_kutusu.setText(_("<b>Hata:</b> %s") % mesaj)
+        # sonuc_kutusu rich-text: istisna metnindeki "<", "&" HTML sayilmasin
+        self.sonuc_kutusu.setText(_("<b>Hata:</b> %s") % html.escape(str(mesaj)))
         self.sonuc_degisti.emit()
         self.durum.emit(_("Analiz hatası: %s") % mesaj, False)
 

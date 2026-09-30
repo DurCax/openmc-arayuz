@@ -79,7 +79,7 @@ def sab_onerileri(m):
     try:
         yog = uygunluk._yogunluk_gcm3(m)
     except Exception as e:                  # eksik/bozuk yogunluk: kural yogunluksuz uygulanir
-        _log.debug("sab_onerileri: yogunluk okunamadi (%s)", e)
+        _log.warning("sab_onerileri: yogunluk okunamadi (%s)", e)
         yog = None
     if yog is not None and yog <= dogrula._YOGUN_FAZ_ESIGI:
         return []

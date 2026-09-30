@@ -754,8 +754,30 @@ def test_metinler():
     kontrol("Analiz'de 'Yine de devam' secenegi yok", "Yine de devam" not in metin)
 
 
+def test_html_kacis():
+    print("\n[H11] KACIS: kullanici/istisna metni rich-text etikette HTML sayilmaz")
+    uyg = _qt()
+    if uyg is None:
+        return
+    from arayuz.sekme_analiz import AnalizSekmesi
+    from arayuz.pencere.kabuk import UstCubuk
+    an = AnalizSekmesi()
+    an.spec_ayarla(_spec("pwr_17x17"), None)
+    an._hata("<b>kalin</b> & <i>bozuk")
+    metin = an.sonuc_kutusu.text()
+    kontrol("Analiz hatasi: istisna metni kacisli (&lt;b&gt;)",
+            "&lt;b&gt;kalin&lt;/b&gt; &amp; &lt;i&gt;bozuk" in metin, "-> %r" % metin)
+    from PySide6 import QtGui
+    cubuk = UstCubuk({ad: QtGui.QAction(ad) for ad in ("yeni", "ac", "kaydet", "geri",
+                                                       "yinele")})
+    kontrol("UstCubuk model adi duz metin (PlainText)",
+            cubuk.model_adi.textFormat() == __import__(
+                "PySide6.QtCore", fromlist=["Qt"]).Qt.PlainText)
+    uyg  # noqa: B018
+
+
 HIZLI = [test_calistir_sayfa_yapisi, test_calistir_calistirma_alanlari, test_analiz_listeler, test_analiz_secim_ve_red, test_analiz_kusak,
-         test_tukenme_gorunum, test_sonuc_api, test_metinler]
+         test_tukenme_gorunum, test_sonuc_api, test_metinler, test_html_kacis]
 YAVAS = [test_calistir_kusak, test_tukenme_kusak]
 
 
