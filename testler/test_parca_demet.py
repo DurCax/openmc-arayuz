@@ -437,16 +437,17 @@ def _bulgular(spec, esleme=None):
 
 
 def test_ad_degisimi(gecici=None):
-    print("\n[P4] AD DEGISIMI: 11 ornekte her parca/demet yeniden adlandirilir")
+    print("\n[P4] AD DEGISIMI: butun orneklerde her parca/demet yeniden adlandirilir")
     if _qt() is None:
         return
     import warnings
     warnings.filterwarnings("ignore")
     from cekirdek import dogrula, sema
     from arayuz.sekme_cubuk import CubukSekmesi, parca_adini_degistir
+    from arayuz.cubuk.parca_islemleri import parca_kullanimlari
     from arayuz.sekme_demet import DemetSekmesi
     ornekler = sorted(glob.glob(os.path.join(ORNEK, "*.json")))
-    kontrol("11 ornek bulundu", len(ornekler) == 11, "-> %d" % len(ornekler))
+    kontrol("en az 11 ornek bulundu", len(ornekler) >= 11, "-> %d" % len(ornekler))
     toplam = 0
     for yol in ornekler:
         ad = os.path.splitext(os.path.basename(yol))[0]
@@ -476,7 +477,11 @@ def test_ad_degisimi(gecici=None):
         kontrol("%s: %d ad degisti" % (ad, len(esleme)), adlar == set(esleme.values()),
                 "-> %s" % sorted(adlar))
         metin = json.dumps(s, ensure_ascii=False)
-        kalan = [e for e in esleme if '"%s"' % e in metin]
+        # Parcayla ayni adli malzeme (pwr_mox_demet: mox_25) metinde kalir;
+        # onlarda parca referansi kalmadigi kullanim taramasiyla denetlenir.
+        malzeme_adlari = {m.get("ad") for m in s.get("malzemeler", [])}
+        kalan = [e for e in esleme if (parca_kullanimlari(s, e) if e in malzeme_adlari
+                                       else '"%s"' % e in metin)]
         kontrol("%s: eski ad spec'te kalmadi" % ad, not kalan, "-> %s" % kalan)
         kontrol("%s: model XML'i ayni" % ad, _model_xml(copy.deepcopy(s)) == once_xml)
         sonra = _bulgular(s, esleme)

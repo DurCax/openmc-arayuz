@@ -10,6 +10,9 @@ import json
 import re
 
 from cekirdek import sema, uygunluk
+from cekirdek.gunluk import kaydedici
+
+_log = kaydedici(__name__)
 
 
 BOS_ETIKETI = "Boş (madde yok)"
@@ -31,12 +34,16 @@ CUBUK_SABLONLARI = (
 # saf yardimcilar (Qt gerektirmez; testler/test_parca_demet.py sinar)
 # ============================================================================
 
-def _renk(ad, vars_):
+def _renk(ad, vars_=None):
+    """Etkin tema rengi. Tema (Qt) yuklenemezse acik temanin token rengi;
+    vars_ yalniz eski cagrilar icin kalir (ikisi de yoksa)."""
     try:
         from arayuz import tema
         return tema.renk(ad)
-    except Exception:
-        return vars_
+    except (ImportError, KeyError) as e:
+        from arayuz.tasarim import tokenlar
+        _log.debug("tema rengi %r okunamadi (%s); token rengi kullaniliyor", ad, e)
+        return tokenlar.palet("acik").get(ad, vars_)
 
 
 _ROL_ONBELLEK = {}

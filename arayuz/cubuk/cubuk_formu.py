@@ -14,6 +14,10 @@ from arayuz.cubuk.parca_islemleri import (
     malzeme_etiketi, parca_rengi, rol_malzemesi, roller)
 from arayuz.cubuk.malzeme_kutusu import MalzemeKutusu
 
+# Yaricap hassasiyeti (cm): kriter ornekleri 1e-6 cm veriyor (LCT-008
+# r=0.514858); daha az ondalik kaydederken yaricapi sessizce yuvarlar.
+YARICAP_ONDALIK = 6
+
 
 class CubukFormuMixin(object):
     """Secili cubugun formu: bolge tablosu, kontrol cubugu, kaydetme."""
@@ -92,7 +96,7 @@ class CubukFormuMixin(object):
                 oge.setToolTip("Son bölgenin yarıçapı yoktur: hücrenin kalanını doldurur.")
                 self.c_tablo.setItem(i, 0, oge)
             else:
-                w = sayi(b.get("r") or 0.0, 5, 0.00001, 1000.0, 0.01, "cm")
+                w = sayi(b.get("r") or 0.0, YARICAP_ONDALIK, 0.00001, 1000.0, 0.01, "cm")
                 w.setKeyboardTracking(False)
                 w.valueChanged.connect(self._yaricap_degisti)
                 self._takip_et(w, i)
@@ -119,7 +123,9 @@ class CubukFormuMixin(object):
         for i in range(self.c_tablo.rowCount()):
             oge = self.c_tablo.item(i, 2)
             if oge is not None:
-                oge.setText(bolge_aciklamasi(self.spec, c, i))
+                metin = bolge_aciklamasi(self.spec, c, i)
+                oge.setText(metin)
+                oge.setToolTip(metin)
         eksik = eksik_malzemeler(self.spec, c)
         self._hata_goster(self.c_eksik, (
             "Malzemesi seçilmemiş: %s. Uygun malzeme yoksa önce Malzemeler "
@@ -175,7 +181,7 @@ class CubukFormuMixin(object):
         h = sema.kor_yuksekligi((self.spec or {}).get("kor") or {})
         if not h:
             self.c_uc_etiket.setText("Model 2B: Kor sekmesinde yükseklik tanımlayın")
-            self.c_uc_etiket.setStyleSheet("color: %s;" % _renk("hata", "#b3261e"))
+            self.c_uc_etiket.setStyleSheet("color: %s;" % _renk("hata"))
             return
         try:
             from cekirdek import kurucu
@@ -302,7 +308,7 @@ class CubukFormuMixin(object):
         n = len(c["bolgeler"])
         # Malzemesi SECILMEMIS olarak eklenir: sessizce bosluk/su olmasin,
         # kullanici secene kadar kirmizi isaretli kalir.
-        c["bolgeler"].insert(n - 1, {"r": round(yeni_r, 5), "malzeme": None})
+        c["bolgeler"].insert(n - 1, {"r": round(yeni_r, YARICAP_ONDALIK), "malzeme": None})
         self._secili_cubuk_yenile(c, n - 1)
         self.bildir()
 

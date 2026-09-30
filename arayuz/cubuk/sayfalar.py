@@ -7,9 +7,16 @@
 """
 
 from PySide6 import QtCore, QtWidgets
+from cekirdek.ceviri import _
+from arayuz import bilesenler as bl
+from arayuz import sekme_duzen as sd
 from arayuz.ortak import baslik, ipucu, sayi, tamsayi
 from arayuz.cubuk.parca_islemleri import _renk
 from arayuz.cubuk.malzeme_kutusu import _SatirTakibi
+from arayuz.tasarim import tokenlar
+
+# Yaricap sutununda metnin disinda: ok dugmeleri + kutu dolgusu (token).
+YARICAP_SUTUN_PAYI = 6 * tokenlar.ARALIK["s"]
 
 
 class SayfalarMixin(object):
@@ -26,16 +33,54 @@ class SayfalarMixin(object):
 
     def _hata_goster(self, etiket, metin):
         etiket.setText(metin or "")
-        etiket.setStyleSheet("color: %s;" % _renk("hata", "#b3261e"))
+        etiket.setStyleSheet("color: %s;" % _renk("hata"))
         etiket.setVisible(bool(metin))
 
     def _cubuk_sayfa(self):
+        """Secili cubugun sayfasi: "Çubuk" karti + "Radyal bölgeler" karti."""
         w = QtWidgets.QWidget()
         self.c_ad = QtWidgets.QLineEdit()
         self.c_ad.editingFinished.connect(lambda: self._ad_degisti("cubuk"))
         self.c_ad_hata = self._hata_etiketi()
+        self._kontrol_alanlari()
+        self._bolge_tablosu()
+        dugme = self._bolge_eylemleri()
+        form = self._cubuk_formu()
 
-        # --- kontrol cubugu alanlari ---
+        self.c_kontrol_not = ipucu(_(
+            "Kontrol çubuğu yukarıdan daldırılır: %0 tamamen çekilmiş, %100 tamamen "
+            "dalmış. Emici bölgenin uç altında kalan kısmı izleyici malzemeyle dolar. "
+            "Kritik çubuk konumunu bulmak için Analiz sekmesinde 'Kritik arama' ile "
+            "'Kontrol çubuğu daldırma' parametresini kullanın."))
+        self.c_eksik = self._hata_etiketi()
+        self.c_sira_uyari = self._hata_etiketi()
+
+        self.c_karti = bl.Kart(_("Çubuk"))
+        self.c_baslik = self.c_karti.baslik_etiketi
+        self.c_karti.govde.addLayout(form)
+        self.c_karti.ekle(self.c_kontrol_not)
+        self.c_bolge_karti = bl.Kart(_("Radyal bölgeler"), aciklama=_(
+            "Bölgeler içten dışa sıralanır; her satırın yarıçapı o bölgenin dış "
+            "sınırıdır ve bir öncekinden büyük olmalıdır. Son satır dış bölgedir: "
+            "çubuğun çevresini hücrenin kenarına kadar doldurur (çoğunlukla soğutucu)."))
+        self.c_bolge_karti.ekle(self.c_tablo, 1)
+        self.c_bolge_karti.ekle(self.c_sira_uyari)
+        self.c_bolge_karti.ekle(self.c_eksik)
+        self.c_bolge_karti.ekle(dugme)
+
+        d = sd.sayfa_duzeni(w, dolgu=False)
+        d.addWidget(self.c_karti)
+        d.addWidget(self.c_bolge_karti, 1)
+
+        self.c_tur.currentIndexChanged.connect(self._cubuk_tur_degisti)
+        self.c_emici.currentIndexChanged.connect(self._cubuk_kaydet)
+        self.c_izleyici.currentIndexChanged.connect(self._cubuk_kaydet)
+        self.c_daldirma.valueChanged.connect(self._daldirma_degisti)
+        self.c_daldirma_kaydirici.valueChanged.connect(self._kaydirici_degisti)
+        return w
+
+    def _kontrol_alanlari(self):
+        """Yalnizca kontrol cubugunda gorunen alanlar (tur, emici, daldirma)."""
         self.c_tur = QtWidgets.QComboBox()
         self.c_emici = QtWidgets.QComboBox()
         self.c_izleyici = QtWidgets.QComboBox()
@@ -45,93 +90,72 @@ class SayfalarMixin(object):
         self.c_uc_etiket = QtWidgets.QLabel("-")
         self.c_kontrol_etiketleri = {}
 
+    def _bolge_tablosu(self):
         self.c_tablo = QtWidgets.QTableWidget(0, 3)
         self.c_tablo.setHorizontalHeaderLabels(["Dış yarıçap", "Malzeme", "Bölge"])
         bas = self.c_tablo.horizontalHeader()
-        bas.setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeToContents)
+        # Yaricap kutusunun sizeHint'i ust sinirdan (1000.000000 cm) gelir ve
+        # sutunu sisirir; "0.000000 cm" sigacak sabit genislik yeter.
+        bas.setSectionResizeMode(0, QtWidgets.QHeaderView.Fixed)
+        bas.resizeSection(0, self.fontMetrics().horizontalAdvance("0.0000000 cm")
+                          + YARICAP_SUTUN_PAYI)
         bas.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
-        bas.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
+        # Aciklama sutunu da esner: icerige gore buyuyunce dar ekranda (1280,
+        # onizleme acik) Malzeme sutununu sifira itiyordu. Uzun aciklama
+        # kisaltilir, tamami ipucunda.
+        bas.setSectionResizeMode(2, QtWidgets.QHeaderView.Stretch)
+        self.c_tablo.setTextElideMode(QtCore.Qt.ElideRight)
         self.c_tablo.verticalHeader().setVisible(False)
         self.c_tablo.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
         self.c_tablo.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
         self.c_tablo.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.c_tablo.currentCellChanged.connect(lambda *_: self._bolge_dugmeleri())
+        self.c_tablo.setAlternatingRowColors(True)
+        self.c_tablo.setShowGrid(False)
+        self.c_tablo.horizontalHeader().setHighlightSections(False)
         self._satir_takibi = _SatirTakibi(self.c_tablo)
 
-        self.d_bolge_ekle = QtWidgets.QPushButton("Bölge ekle")
-        self.d_bolge_sil = QtWidgets.QPushButton("Bölge sil")
-        self.d_ice = QtWidgets.QPushButton("İçe taşı")
-        self.d_disa = QtWidgets.QPushButton("Dışa taşı")
-        self.d_bolge_ekle.setToolTip("Dış bölgenin hemen içine yeni bir bölge ekler.")
-        self.d_ice.setToolTip("Seçili bölgenin malzemesini bir içteki bölgeyle değiştirir; "
-                              "yarıçaplar yerinde kalır.")
-        self.d_disa.setToolTip("Seçili bölgenin malzemesini bir dıştaki bölgeyle değiştirir; "
-                               "yarıçaplar yerinde kalır. Dış bölgeye taşınmaz.")
+    def _bolge_eylemleri(self):
+        self.d_bolge_ekle = bl.ikincil_dugme(_("Bölge ekle"), "plus", _(
+            "Dış bölgenin hemen içine yeni bir bölge ekler."))
+        self.d_bolge_sil = bl.duz_dugme(_("Bölge sil"), "trash")
+        self.d_ice = bl.duz_dugme(_("İçe taşı"), "chevron-left", _(
+            "Seçili bölgenin malzemesini bir içteki bölgeyle değiştirir; "
+            "yarıçaplar yerinde kalır."))
+        self.d_disa = bl.duz_dugme(_("Dışa taşı"), "chevron-right", _(
+            "Seçili bölgenin malzemesini bir dıştaki bölgeyle değiştirir; "
+            "yarıçaplar yerinde kalır. Dış bölgeye taşınmaz."))
         self.d_bolge_ekle.clicked.connect(self._bolge_ekle)
         self.d_bolge_sil.clicked.connect(self._bolge_sil)
         self.d_ice.clicked.connect(lambda: self._bolge_tasi(-1))
         self.d_disa.clicked.connect(lambda: self._bolge_tasi(+1))
-        dugme = QtWidgets.QHBoxLayout()
-        for b in (self.d_bolge_ekle, self.d_bolge_sil, self.d_ice, self.d_disa):
-            dugme.addWidget(b)
-        dugme.addStretch(1)
+        return sd.satir(self.d_bolge_ekle, self.d_bolge_sil, self.d_ice, self.d_disa)
 
-        form = QtWidgets.QFormLayout()
-        form.addRow("Ad:", self.c_ad)
+    def _cubuk_formu(self):
+        form = sd.form()
+        form.addRow(_("Ad"), self.c_ad)
         form.addRow("", self.c_ad_hata)
-        self.e_tur = QtWidgets.QLabel("Tür:")
+        self.e_tur = QtWidgets.QLabel(_("Tür"))
         form.addRow(self.e_tur, self.c_tur)
-        for etiket, alan, anahtar in (
-                ("Emici bölge:", self.c_emici, "emici"),
-                ("İzleyici malzeme:", self.c_izleyici, "izleyici")):
+        for etiket, alan, anahtar in ((_("Emici bölge"), self.c_emici, "emici"),
+                                      (_("İzleyici malzeme"), self.c_izleyici, "izleyici")):
             e = QtWidgets.QLabel(etiket)
             self.c_kontrol_etiketleri[anahtar] = e
             form.addRow(e, alan)
-        self.c_emici.setToolTip("Eksenel olarak daldırılan (emici) bölge. Dış bölge seçilemez.")
-        self.c_izleyici.setToolTip(
+        self.c_emici.setToolTip(_(
+            "Eksenel olarak daldırılan (emici) bölge. Dış bölge seçilemez."))
+        self.c_izleyici.setToolTip(_(
             "Emici bölgenin çubuk ucunun altında kalan kısmını dolduran malzeme "
-            "(follower). Yakıt ve emici malzemeler listelenmez.")
-        dald = QtWidgets.QWidget()
-        dd = QtWidgets.QHBoxLayout(dald)
-        dd.setContentsMargins(0, 0, 0, 0)
-        dd.addWidget(self.c_daldirma)
-        dd.addWidget(self.c_daldirma_kaydirici, 1)
-        e = QtWidgets.QLabel("Daldırma:")
+            "(follower). Yakıt ve emici malzemeler listelenmez."))
+        dald = sd.satir(self.c_daldirma, self.c_daldirma_kaydirici, esnek=False)
+        dald.layout().setStretchFactor(self.c_daldirma_kaydirici, 1)
+        e = QtWidgets.QLabel(_("Daldırma"))
         self.c_kontrol_etiketleri["daldirma"] = e
         form.addRow(e, dald)
-        e = QtWidgets.QLabel("Uç konumu:")
+        e = QtWidgets.QLabel(_("Uç konumu"))
         self.c_kontrol_etiketleri["uc"] = e
         form.addRow(e, self.c_uc_etiket)
-
-        self.c_kontrol_not = ipucu(
-            "Kontrol çubuğu yukarıdan daldırılır: %0 tamamen çekilmiş, %100 tamamen "
-            "dalmış. Emici bölgenin uç altında kalan kısmı izleyici malzemeyle dolar. "
-            "Kritik çubuk konumunu bulmak için Analiz sekmesinde 'Kritik arama' ile "
-            "'Kontrol çubuğu daldırma' parametresini kullanın.")
-        self.c_eksik = self._hata_etiketi()
-        self.c_sira_uyari = self._hata_etiketi()
-
-        d = QtWidgets.QVBoxLayout(w)
-        self.c_baslik = baslik("Çubuk")
-        d.addWidget(self.c_baslik)
-        d.addLayout(form)
-        d.addWidget(self.c_kontrol_not)
-        d.addWidget(baslik("Radyal bölgeler"))
-        d.addWidget(ipucu(
-            "Bölgeler içten dışa sıralanır; her satırın yarıçapı o bölgenin dış "
-            "sınırıdır ve bir öncekinden büyük olmalıdır. Son satır dış bölgedir: "
-            "çubuğun çevresini hücrenin kenarına kadar doldurur (çoğunlukla soğutucu)."))
-        d.addWidget(self.c_tablo, 1)
-        d.addWidget(self.c_sira_uyari)
-        d.addWidget(self.c_eksik)
-        d.addLayout(dugme)
-
-        self.c_tur.currentIndexChanged.connect(self._cubuk_tur_degisti)
-        self.c_emici.currentIndexChanged.connect(self._cubuk_kaydet)
-        self.c_izleyici.currentIndexChanged.connect(self._cubuk_kaydet)
-        self.c_daldirma.valueChanged.connect(self._daldirma_degisti)
-        self.c_daldirma_kaydirici.valueChanged.connect(self._kaydirici_degisti)
-        return w
+        return form
 
     def _plaka_sayfa(self):
         w = QtWidgets.QWidget()
@@ -149,7 +173,7 @@ class SayfalarMixin(object):
         # Malzeme kutulari her yuklemede yeniden kurulur (role gore suzulu).
         self.p_et_mal = self.p_zarf_mal = self.p_sog = self.p_yan_mal = None
 
-        self.p_form = QtWidgets.QFormLayout()
+        self.p_form = sd.form()
         f = self.p_form
         f.addRow("Ad:", self.p_ad)
         f.addRow("", self.p_ad_hata)
@@ -180,13 +204,14 @@ class SayfalarMixin(object):
                      self.p_genislik, self.p_yan):
             alan.valueChanged.connect(self._plaka_kaydet)
 
-        d = QtWidgets.QVBoxLayout(w)
-        d.addWidget(baslik("MTR tipi plaka yakıt elemanı"))
-        d.addWidget(ipucu(
+        self.p_karti = bl.Kart(_("MTR tipi plaka yakıt elemanı"), aciklama=_(
             "Kesit x yönünde sırayla kurulur: kanal [zarf | yakıt | zarf] kanal "
             "[zarf | yakıt | zarf] … ve sonda bir kanal daha. Yan levhalar y "
             "yönünde aktif bölgenin altında ve üstünde yer alır."))
-        d.addLayout(f)
-        d.addWidget(self.p_eksik)
+        self.p_karti.govde.addLayout(f)
+        self.p_karti.ekle(self.p_eksik)
+
+        d = sd.sayfa_duzeni(w, dolgu=False)
+        d.addWidget(self.p_karti)
         d.addStretch(1)
         return w

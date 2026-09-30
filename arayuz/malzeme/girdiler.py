@@ -73,7 +73,7 @@ class KesinSayiGirdi(QtWidgets.QLineEdit):
             return self._ilk
         try:
             return float(self.text().replace(",", "."))
-        except ValueError:
+        except ValueError:      # yarim/bozuk yazim: None -> form "gecersiz" gosterir
             return None
 
 
@@ -136,7 +136,7 @@ class ParametreFormu(QtWidgets.QWidget):
             form.addRow(_etiket("Yoğunluk:"), self.hesaplanan)
         self.uyari = QtWidgets.QLabel()
         self.uyari.setWordWrap(True)
-        self.uyari.setStyleSheet("color: %s;" % _tema_renk("uyari", "#a8620a"))
+        self.uyari.setStyleSheet("color: %s;" % _tema_renk("uyari"))
         form.addRow(self.uyari)
         self._degisti()
 

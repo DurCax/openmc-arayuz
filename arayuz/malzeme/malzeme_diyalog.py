@@ -11,12 +11,18 @@ import copy
 from PySide6 import QtCore, QtWidgets
 from cekirdek import malzeme_kutup as mk
 from cekirdek import sema
+from cekirdek.ceviri import _
+from arayuz import bilesenler as b
+from arayuz import sekme_duzen as sd
 from arayuz.ortak import GelismisBolum, RenkDugmesi, baslik, ipucu
+from arayuz.tasarim import tokenlar
 from arayuz.malzeme.yardimcilar import (
     ROL_ETIKETLERI, YOGUNLUK_BIRIMLERI, _ROL_SIRASI, _etiket, _hata_etiketi, _ozet_etiketi,
     _sayi_metni, bilesim_ozeti, sab_onerileri)
 from arayuz.malzeme.girdiler import KesinSayiGirdi, ParametreFormu, SicaklikGirdi
 from arayuz.malzeme.bilesim import BilesimModeli, _bilesim_tablosu
+
+A = tokenlar.ARALIK
 
 
 # ============================================================================
@@ -52,141 +58,13 @@ class MalzemeDiyalog(QtWidgets.QDialog):
         self.setWindowTitle("Yeni malzeme" if yeni else "Malzemeyi düzenle")
         self.resize(660, 600)
 
-        # ---- ad ----
-        self.ad = QtWidgets.QLineEdit(self._eski_ad)
-        self.ad.textChanged.connect(self._dogrula)
-        self.ad_hata = _hata_etiketi()
-        ust = QtWidgets.QFormLayout()
-        ust.addRow(_etiket("Ad:"), self.ad)
-        ust.addRow(self.ad_hata)
-
-        # ---- kutuphane (parametrik) sayfasi ----
-        self.param_sayfa = QtWidgets.QWidget()
-        pd = QtWidgets.QVBoxLayout(self.param_sayfa)
-        pd.setContentsMargins(0, 0, 0, 0)
-        self.form = None
-        if self._parametrik:
-            k = malzeme["kutup"]
-            self.tur_etiket = baslik("%s (kütüphane)" % mk.okunur_ad(k["anahtar"]))
-            pd.addWidget(self.tur_etiket)
-            pd.addWidget(ipucu(mk.katalog_aciklamasi(k["anahtar"])))
-            self.form = ParametreFormu(k["anahtar"], k.get("param") or {})
-            self.form.degisti.connect(self._param_degisti)
-            pd.addWidget(self.form)
-
-        # ---- elle sayfasi ----
-        self.elle_sayfa = QtWidgets.QWidget()
-        ed = QtWidgets.QVBoxLayout(self.elle_sayfa)
-        ed.setContentsMargins(0, 0, 0, 0)
-        self.kopuk_not = ipucu(
-            "Bu malzeme kütüphaneden eklendikten sonra parametre formu dışında "
-            "değiştirilmiş; bileşim tablosuyla düzenleniyor.")
-        self.kopuk_not.setVisible(self._kopmus)
-        ed.addWidget(self.kopuk_not)
-        self.elle_form = QtWidgets.QFormLayout()
-        # Elle malzemede aciklama kendiliginden yenilenmez (bilesimden okunamaz):
-        # zenginligi degistiren kullanici onu burada gunceller. Eskiden alan
-        # yoktu ve "UO2 %3.0" aciklamasi %4 zenginlikte de listelerde kaliyordu.
-        g0 = malzeme.get("gorunen_ad") or ""
-        self.aciklama = QtWidgets.QLineEdit("" if g0 == self._eski_ad else g0)
-        self.aciklama.setPlaceholderText("ör. UO₂ %4.0 — listelerde adın yanında görünür")
-        self.elle_form.addRow(_etiket("Açıklama:"), self.aciklama)
-        yog = QtWidgets.QHBoxLayout()
-        self.yogunluk = KesinSayiGirdi((malzeme.get("yogunluk") or {}).get("deger") or 1.0)
-        self.yogunluk.textChanged.connect(self._elle_degisti)
-        self.yogunluk_birim_etiket = QtWidgets.QLabel()
-        yog.addWidget(self.yogunluk)
-        yog.addWidget(self.yogunluk_birim_etiket)
-        yog.addStretch(1)
-        self.elle_form.addRow(_etiket("Yoğunluk:"), yog)
-        self._ilk_sicaklik = malzeme.get("sicaklik")
-        self.sicaklik = SicaklikGirdi(self._ilk_sicaklik or 293.6, 0.0, 5000.0, 2, 10.0)
-        self._ilk_sicaklik_gosterim = self.sicaklik.value()
-        self.elle_form.addRow(_etiket("Sıcaklık:"), self.sicaklik)
-        self.sab_kutu = QtWidgets.QComboBox()
-        self.sab_kutu.setToolTip("Bileşime uyan termal saçılma tabloları. Termal "
-                                 "spektrumda eksik bırakmak k'yi yüzde mertebesinde kaydırır.")
-        self.sab_kutu.activated.connect(self._sab_secildi)
-        self.elle_form.addRow(_etiket("Termal saçılma S(α,β):"), self.sab_kutu)
-        ed.addLayout(self.elle_form)
-        ed.addWidget(baslik("Bileşim"))
-        self.model = BilesimModeli(malzeme.get("bilesim"))
-        self.tablo = _bilesim_tablosu(self.model)
-        ed.addWidget(self.tablo, 1)
-        self.d_satir_ekle = QtWidgets.QPushButton("Satır ekle")
-        self.d_satir_sil = QtWidgets.QPushButton("Satırı sil")
-        self.d_satir_ekle.clicked.connect(self._satir_ekle)
-        self.d_satir_sil.clicked.connect(self._satir_sil)
-        sd = QtWidgets.QHBoxLayout()
-        sd.addWidget(self.d_satir_ekle)
-        sd.addWidget(self.d_satir_sil)
-        sd.addStretch(1)
-        ed.addLayout(sd)
-        self.tablo.selectionModel().selectionChanged.connect(self._satir_dugmeleri)
-        for sinyal in (self.model.dataChanged, self.model.rowsInserted,
-                       self.model.rowsRemoved, self.model.modelReset):
-            sinyal.connect(self._elle_degisti)
-
+        self._ad_alani()
+        self._param_sayfasi(malzeme)
+        self._elle_sayfasi(malzeme)
         self.ozet = _ozet_etiketi()
-
-        # ---- gelismis ----
-        self.gelismis = GelismisBolum(self.GELISMIS_ANAHTAR)
-        g_form = QtWidgets.QFormLayout()
-        self.renk = RenkDugmesi(malzeme.get("renk") or (170, 170, 170))
-        g_form.addRow(_etiket("Renk:"), self.renk)
-        self.birim = QtWidgets.QComboBox()
-        for anahtar, etiket in YOGUNLUK_BIRIMLERI:
-            self.birim.addItem(etiket, anahtar)
-        ilk_birim = (malzeme.get("yogunluk") or {}).get("birim") or "g/cm3"
-        if self.birim.findData(ilk_birim) < 0:
-            self.birim.addItem(ilk_birim, ilk_birim)
-        self.birim.setCurrentIndex(self.birim.findData(ilk_birim))
-        self.birim.currentIndexChanged.connect(self._elle_degisti)
-        self.birim_etiket = _etiket("Yoğunluk birimi:")
-        g_form.addRow(self.birim_etiket, self.birim)
-        self.sab_elle = QtWidgets.QLineEdit()
-        self.sab_elle.setPlaceholderText("ör. c_H_in_H2O, c_Graphite")
-        self.sab_elle.setToolTip("Virgülle ayrılmış S(α,β) tablo adları. Önerilen "
-                                 "listede olmayan bir tablo gerekiyorsa buraya yazın.")
-        self.sab_elle.editingFinished.connect(self._sab_elle_bitti)
-        self.sab_elle_etiket = _etiket("S(α,β) (elle):")
-        g_form.addRow(self.sab_elle_etiket, self.sab_elle)
-        self.gelismis.duzen().addLayout(g_form)
-        # parametrik: ham bilesim (salt okunur) + kutuphaneden ayirma
-        self.ham_kutu = QtWidgets.QWidget()
-        hd = QtWidgets.QVBoxLayout(self.ham_kutu)
-        hd.setContentsMargins(0, 0, 0, 0)
-        hd.addWidget(QtWidgets.QLabel("Üretilen bileşim:"))
-        self.ham_model = BilesimModeli([], salt_okunur=True)
-        self.ham_tablo = _bilesim_tablosu(self.ham_model)
-        hd.addWidget(self.ham_tablo)
-        self.d_elle_gec = QtWidgets.QPushButton("Bileşimi elle düzenle")
-        self.d_elle_gec.setToolTip("Malzeme kütüphane parametrelerinden ayrılır; "
-                                   "zenginlik, sıcaklık gibi değerler bir daha "
-                                   "otomatik hesaplanmaz.")
-        self.d_elle_gec.clicked.connect(self.elle_duzenlemeye_gec)
-        hd.addWidget(self.d_elle_gec, 0, QtCore.Qt.AlignLeft)
-        hd.addWidget(ipucu("Elle düzenlemeye geçince malzeme kütüphane "
-                           "parametrelerinden ayrılır."))
-        self.gelismis.ekle(self.ham_kutu)
-
-        # ---- dugmeler ----
-        self.kutu = QtWidgets.QDialogButtonBox()
-        self.d_tamam = self.kutu.addButton("Tamam", QtWidgets.QDialogButtonBox.AcceptRole)
-        self.kutu.addButton("Vazgeç", QtWidgets.QDialogButtonBox.RejectRole)
-        self.kutu.accepted.connect(self._onayla)
-        self.kutu.rejected.connect(self.reject)
-        self.hata = _hata_etiketi()
-
-        duzen = QtWidgets.QVBoxLayout(self)
-        duzen.addLayout(ust)
-        duzen.addWidget(self.param_sayfa)
-        duzen.addWidget(self.elle_sayfa, 1)
-        duzen.addWidget(self.ozet)
-        duzen.addWidget(self.gelismis)
-        duzen.addStretch(0)
-        duzen.addWidget(self.hata)
-        duzen.addWidget(self.kutu)
+        self._gelismis_kutusu(malzeme)
+        self._dugme_kutusu()
+        self._duzeni_kur()
 
         # S(a,b) durumu: tek kaynak self._sab
         self._sab = list(malzeme.get("sab") or [])
@@ -195,6 +73,154 @@ class MalzemeDiyalog(QtWidgets.QDialog):
         self._dogrula()
         if yeni and not self.model.bilesim and not self.parametrik_kip():
             self._satir_ekle()
+
+    # --------------------------------------------------------------- kurulum
+    def _ad_alani(self):
+        self.ad = QtWidgets.QLineEdit(self._eski_ad)
+        self.ad.textChanged.connect(self._dogrula)
+        self.ad_hata = _hata_etiketi()
+        self._ust_form = sd.form()
+        self._ust_form.addRow(_etiket(_("Ad:")), self.ad)
+        self._ust_form.addRow(self.ad_hata)
+
+    def _param_sayfasi(self, malzeme):
+        """Kutuphane malzemesi: parametre formu (elle bilesim tablosu yerine)."""
+        self.param_sayfa = QtWidgets.QWidget()
+        pd = QtWidgets.QVBoxLayout(self.param_sayfa)
+        pd.setContentsMargins(0, 0, 0, 0)
+        pd.setSpacing(A["s"])
+        self.form = None
+        if not self._parametrik:
+            return
+        k = malzeme["kutup"]
+        self.tur_etiket = baslik("%s (%s)" % (mk.okunur_ad(k["anahtar"]), _("kütüphane")))
+        pd.addWidget(self.tur_etiket)
+        pd.addWidget(ipucu(mk.katalog_aciklamasi(k["anahtar"])))
+        self.form = ParametreFormu(k["anahtar"], k.get("param") or {})
+        self.form.degisti.connect(self._param_degisti)
+        pd.addWidget(self.form)
+
+    def _elle_sayfasi(self, malzeme):
+        """Elle tanimli malzeme: yogunluk/sicaklik/S(a,b) formu + bilesim tablosu."""
+        self.elle_sayfa = QtWidgets.QWidget()
+        ed = QtWidgets.QVBoxLayout(self.elle_sayfa)
+        ed.setContentsMargins(0, 0, 0, 0)
+        ed.setSpacing(A["s"])
+        self.kopuk_not = ipucu(_(
+            "Bu malzeme kütüphaneden eklendikten sonra parametre formu dışında "
+            "değiştirilmiş; bileşim tablosuyla düzenleniyor."))
+        self.kopuk_not.setVisible(self._kopmus)
+        ed.addWidget(self.kopuk_not)
+        ed.addLayout(self._elle_formu(malzeme))
+        ed.addWidget(baslik(_("Bileşim")))
+        self.model = BilesimModeli(malzeme.get("bilesim"))
+        self.tablo = _bilesim_tablosu(self.model)
+        ed.addWidget(self.tablo, 1)
+        self.d_satir_ekle = b.ikincil_dugme(_("Satır ekle"), "plus")
+        self.d_satir_sil = b.duz_dugme(_("Satırı sil"), "trash")
+        self.d_satir_ekle.clicked.connect(self._satir_ekle)
+        self.d_satir_sil.clicked.connect(self._satir_sil)
+        ed.addWidget(sd.satir(self.d_satir_ekle, self.d_satir_sil))
+        self.tablo.selectionModel().selectionChanged.connect(self._satir_dugmeleri)
+        for sinyal in (self.model.dataChanged, self.model.rowsInserted,
+                       self.model.rowsRemoved, self.model.modelReset):
+            sinyal.connect(self._elle_degisti)
+
+    def _elle_formu(self, malzeme):
+        self.elle_form = sd.form()
+        # Elle malzemede aciklama kendiliginden yenilenmez (bilesimden okunamaz):
+        # zenginligi degistiren kullanici onu burada gunceller. Eskiden alan
+        # yoktu ve "UO2 %3.0" aciklamasi %4 zenginlikte de listelerde kaliyordu.
+        g0 = malzeme.get("gorunen_ad") or ""
+        self.aciklama = QtWidgets.QLineEdit("" if g0 == self._eski_ad else g0)
+        self.aciklama.setPlaceholderText(
+            _("ör. UO₂ %4.0 — listelerde adın yanında görünür"))
+        self.elle_form.addRow(_etiket(_("Açıklama:")), self.aciklama)
+        self.yogunluk = KesinSayiGirdi((malzeme.get("yogunluk") or {}).get("deger") or 1.0)
+        self.yogunluk.textChanged.connect(self._elle_degisti)
+        self.yogunluk_birim_etiket = QtWidgets.QLabel()
+        self.yogunluk_birim_etiket.setObjectName("birim")
+        self.elle_form.addRow(_etiket(_("Yoğunluk:")),
+                              sd.satir(self.yogunluk, self.yogunluk_birim_etiket))
+        self._ilk_sicaklik = malzeme.get("sicaklik")
+        self.sicaklik = SicaklikGirdi(self._ilk_sicaklik or 293.6, 0.0, 5000.0, 2, 10.0)
+        self._ilk_sicaklik_gosterim = self.sicaklik.value()
+        self.elle_form.addRow(_etiket(_("Sıcaklık:")), self.sicaklik)
+        self.sab_kutu = QtWidgets.QComboBox()
+        self.sab_kutu.setToolTip(_(
+            "Bileşime uyan termal saçılma tabloları. Termal spektrumda eksik "
+            "bırakmak k'yi yüzde mertebesinde kaydırır."))
+        self.sab_kutu.activated.connect(self._sab_secildi)
+        self.elle_form.addRow(_etiket(_("Termal saçılma S(α,β):")), self.sab_kutu)
+        return self.elle_form
+
+    def _gelismis_kutusu(self, malzeme):
+        """Nadiren gereken alanlar: renk, yogunluk birimi, serbest S(a,b), ham bilesim."""
+        self.gelismis = GelismisBolum(self.GELISMIS_ANAHTAR)
+        g_form = sd.form()
+        self.renk = RenkDugmesi(malzeme.get("renk") or (170, 170, 170))
+        g_form.addRow(_etiket(_("Renk:")), self.renk)
+        self.birim = QtWidgets.QComboBox()
+        for anahtar, etiket in YOGUNLUK_BIRIMLERI:
+            self.birim.addItem(etiket, anahtar)
+        ilk_birim = (malzeme.get("yogunluk") or {}).get("birim") or "g/cm3"
+        if self.birim.findData(ilk_birim) < 0:
+            self.birim.addItem(ilk_birim, ilk_birim)
+        self.birim.setCurrentIndex(self.birim.findData(ilk_birim))
+        self.birim.currentIndexChanged.connect(self._elle_degisti)
+        self.birim_etiket = _etiket(_("Yoğunluk birimi:"))
+        g_form.addRow(self.birim_etiket, self.birim)
+        self.sab_elle = QtWidgets.QLineEdit()
+        self.sab_elle.setPlaceholderText("ör. c_H_in_H2O, c_Graphite")
+        self.sab_elle.setToolTip(_("Virgülle ayrılmış S(α,β) tablo adları. Önerilen "
+                                   "listede olmayan bir tablo gerekiyorsa buraya yazın."))
+        self.sab_elle.editingFinished.connect(self._sab_elle_bitti)
+        self.sab_elle_etiket = _etiket(_("S(α,β) (elle):"))
+        g_form.addRow(self.sab_elle_etiket, self.sab_elle)
+        self.gelismis.duzen().addLayout(g_form)
+        self.gelismis.ekle(self._ham_kutu())
+
+    def _ham_kutu(self):
+        """Parametrik malzemede uretilen bilesim (salt okunur) + kutuphaneden ayirma."""
+        self.ham_kutu = QtWidgets.QWidget()
+        hd = QtWidgets.QVBoxLayout(self.ham_kutu)
+        hd.setContentsMargins(0, 0, 0, 0)
+        hd.setSpacing(A["s"])
+        hd.addWidget(QtWidgets.QLabel(_("Üretilen bileşim:")))
+        self.ham_model = BilesimModeli([], salt_okunur=True)
+        self.ham_tablo = _bilesim_tablosu(self.ham_model)
+        hd.addWidget(self.ham_tablo)
+        self.d_elle_gec = b.ikincil_dugme(_("Bileşimi elle düzenle"), "sliders-horizontal",
+                                          _("Malzeme kütüphane parametrelerinden ayrılır; "
+                                            "zenginlik, sıcaklık gibi değerler bir daha "
+                                            "otomatik hesaplanmaz."))
+        self.d_elle_gec.clicked.connect(self.elle_duzenlemeye_gec)
+        hd.addWidget(self.d_elle_gec, 0, QtCore.Qt.AlignLeft)
+        hd.addWidget(ipucu(_("Elle düzenlemeye geçince malzeme kütüphane "
+                             "parametrelerinden ayrılır.")))
+        return self.ham_kutu
+
+    def _dugme_kutusu(self):
+        self.kutu = QtWidgets.QDialogButtonBox()
+        self.d_tamam = self.kutu.addButton(_("Tamam"), QtWidgets.QDialogButtonBox.AcceptRole)
+        self.d_tamam.setObjectName("birincil")
+        self.kutu.addButton(_("Vazgeç"), QtWidgets.QDialogButtonBox.RejectRole)
+        self.kutu.accepted.connect(self._onayla)
+        self.kutu.rejected.connect(self.reject)
+        self.hata = _hata_etiketi()
+
+    def _duzeni_kur(self):
+        duzen = QtWidgets.QVBoxLayout(self)
+        duzen.setContentsMargins(A["l"], A["l"], A["l"], A["l"])
+        duzen.setSpacing(A["m"])
+        duzen.addLayout(self._ust_form)
+        duzen.addWidget(self.param_sayfa)
+        duzen.addWidget(self.elle_sayfa, 1)
+        duzen.addWidget(self.ozet)
+        duzen.addWidget(self.gelismis)
+        duzen.addStretch(0)
+        duzen.addWidget(self.hata)
+        duzen.addWidget(self.kutu)
 
     # ------------------------------------------------------------------ kip
     def parametrik_kip(self):
