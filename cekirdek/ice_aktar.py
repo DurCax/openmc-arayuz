@@ -37,7 +37,10 @@
 import os
 import re
 
+from cekirdek.gunluk import kaydedici
 from cekirdek.sema import malzeme, bilesen
+
+_log = kaydedici(__name__)
 
 # Aktarilan malzemelere dondurulecek renk paleti
 _RENKLER = [(222, 93, 40), (90, 150, 220), (150, 150, 160), (120, 200, 140),
@@ -94,7 +97,8 @@ def _malzeme_listesi(ham_malzemeler):
         bilesim = []
         try:
             nuklidler = mat.get_nuclide_atom_densities()
-        except Exception:
+        except Exception as e:     # bilesimsiz malzeme: nota yazilir (asagida)
+            _log.debug("%s: bileşim okunamadı: %s", ad, e)
             nuklidler = None
 
         if nuklidler:
@@ -112,15 +116,16 @@ def _malzeme_listesi(ham_malzemeler):
             if mat.density is not None:
                 birim = mat.density_units if mat.density_units != "sum" else "atom/b-cm"
                 deger = float(mat.density)
-        except Exception:
-            pass
+        except Exception as e:     # yogunluk yok: kutle yogunluguna duser (asagida)
+            _log.debug("%s: yoğunluk alanı okunamadı: %s", ad, e)
         if deger is None:
             try:
                 deger = float(mat.get_mass_density())
                 birim = "g/cm3"
                 notlar.append("%s: yoğunluk 'sum' olarak verilmiş, kütle "
                               "yoğunluğuna çevrildi (%.4f g/cm³)" % (ad, deger))
-            except Exception:
+            except Exception as e:
+                _log.debug("%s: kütle yoğunluğu hesaplanamadı: %s", ad, e)
                 deger = 1.0
                 notlar.append("%s: yoğunluk belirlenemedi, 1.0 g/cm³ varsayıldı "
                               "— mutlaka düzeltin" % ad)
@@ -130,8 +135,8 @@ def _malzeme_listesi(ham_malzemeler):
         try:
             if mat.temperature:
                 sicaklik = float(mat.temperature)
-        except Exception:
-            pass
+        except Exception as e:     # sicaklik yok: varsayilan 293.6 K
+            _log.debug("%s: sıcaklık okunamadı: %s", ad, e)
 
         # --- S(a,b) ---
         # S(a,b) kayitlari (ad, kesir) demeti olarak tutulur; sadece adi aliriz.
@@ -151,6 +156,7 @@ def _malzeme_listesi(ham_malzemeler):
                     sab.append(str(kayit))
             sab = [s for s in sab if s]
         except Exception as e:
+            _log.warning("%s: S(α,β) okunamadı: %s", ad, e)
             notlar.append("%s: S(α,β) okunamadı (%s)" % (ad, e))
 
         sonuc.append(malzeme(

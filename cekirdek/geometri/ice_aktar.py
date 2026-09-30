@@ -31,8 +31,11 @@
 import math
 import re
 
+from cekirdek.gunluk import kaydedici
+
 SQ3 = math.sqrt(3.0)
 PAY = 1.0e-6
+_log = kaydedici(__name__)
 _DELIK_ADI = re.compile(r"^g:(.+)#(\d+)$")
 
 
@@ -290,7 +293,8 @@ class _Donusturucu(object):
         for c in hucreler:
             try:
                 a = _atomlar(c.region)
-            except Desteklenmez:
+            except Desteklenmez as e:     # pin degil: kap deseni denenir
+                _log.debug("pin deseni değil (hücre %d): %s", c.id, e)
                 return None
             if a["z"] != (-math.inf, math.inf):
                 return None

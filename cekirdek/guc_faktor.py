@@ -85,7 +85,9 @@ def _yaricap(hucre):
     try:
         alt, ust = bolge.bounding_box
         return 0.5 * min(float(ust[0] - alt[0]), float(ust[1] - alt[1]))
-    except (AttributeError, TypeError, ValueError):
+    except (AttributeError, TypeError, ValueError) as e:
+        from cekirdek.gunluk import kaydedici
+        kaydedici(__name__).debug("hedef hücre %s yarıçapı çözülemedi: %s", hucre.id, e)
         return None
 
 
