@@ -4,7 +4,7 @@
  geometri/yapici.py  --  Yapici arayuzu: ayni gezinti -> nesne YA DA betik (R12)
 ================================================================================
 
- geometri/kur.py agaci bir kez gezer ve her yapiyi bir Yapici'ya yazar:
+ geometri/kurulum.py agaci bir kez gezer ve her yapiyi bir Yapici'ya yazar:
    NesneYapici  openmc nesneleri uretir (kurucu).
    BetikYapici  AYNI cagrilari okunur Python satirlari olarak yazar (kod_uret).
  Iki yol ayni sirada ayni cagrilari yaptigi icin ayni kimlikli ayni modeli
@@ -217,6 +217,7 @@ class BetikYapici(object):
         self.satirlar = satirlar
         self._malzeme_degiskeni = malzeme_degiskeni
         self._sayac = {}
+        self._kullanilan = set()
 
     def _yeni(self, onek):
         n = self._sayac.get(onek, 0) + 1
@@ -225,6 +226,12 @@ class BetikYapici(object):
 
     def _ata(self, onek, ifade, degisken=None):
         v = degisken or self._yeni(onek)
+        if v in self._kullanilan:            # ayni ad ikinci kez (tekil kontrol cubugu,
+            taban, i = v, 2                  # katman kopyasi): ustune YAZILMAZ
+            while "%s_%d" % (taban, i) in self._kullanilan:
+                i += 1
+            v = "%s_%d" % (taban, i)
+        self._kullanilan.add(v)
         self.satirlar.append("%s = %s" % (v, ifade))
         return Ifade(v)
 

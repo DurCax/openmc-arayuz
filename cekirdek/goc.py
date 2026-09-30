@@ -13,7 +13,7 @@
                 yeni liste bicimine ("cubuklar") cevrilir. Icerik degismez.
    2 -> 3     : esnek geometri alanlari eklenir: "geometri": None,
                 "tamburlar": []. DISKTEKI KOR DEGISMEZ -- sablonlar calisma
-                aninda genisletilir (cekirdek/geometri/genislet.py), bu yuzden
+                aninda genisletilir (cekirdek/geometri/sablon.py), bu yuzden
                 gocun kendisi risksizdir.
 
  BOZUK DOSYA KORUMASI

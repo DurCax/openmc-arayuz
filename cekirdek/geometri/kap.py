@@ -4,7 +4,7 @@
  geometri/kap.py  --  Kap, bolge, yerlesim, eksenel ve kok kurulumu (R1-R7, R3b)
 ================================================================================
 
- geometri/kur.py'deki Kurucu'nun ikinci yarisi (dosya 800 satir tavani).
+ geometri/kurulum.py'deki Kurucu'nun ikinci yarisi (dosya 800 satir tavani).
  Hucre sirasi eski kurucuyla ayni ilkeyi izler: once ic bolge, sonra halkalar
  icten disa; her bolgede once yerlesim (delik) hucreleri, sonra bolgenin
  kendi hucresi (eski tamburlu: tambur hucreleri, sonra yansitici).

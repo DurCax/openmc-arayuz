@@ -7,7 +7,7 @@
  Dalga G-1'in ilk isi (docs/GEOMETRI_MODELI.md §9): bugunku kurucu.kor_kur ve
  butun yardimcilari (altigen_kor.kor_kur, tambur.universe/yerlesim dahil)
  DEGISTIRILMEDEN buraya kopyalandi. Yalniz testler kullanir: agac kurucusu
- (cekirdek/geometri/kur.py) ile nokta parmak izi, yapi ve hacim karsilastirmasi.
+ (cekirdek/geometri/kurulum.py) ile nokta parmak izi, yapi ve hacim karsilastirmasi.
  Kapi gecince bu dosya silinir; kapi kayitli parmak izi dosyasiyla
  (testler/veri/geometri_parmak_izi.json) calismayi surdurur.
 

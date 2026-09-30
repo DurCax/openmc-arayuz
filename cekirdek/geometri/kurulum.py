@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 ================================================================================
- geometri/kur.py  --  Agac -> OpenMC (ya da betik): TEK gezinti (R1-R12)
+ geometri/kurulum.py  --  Agac -> OpenMC (ya da betik): TEK gezinti (R1-R12)
 ================================================================================
 
  Kurucu agaci bir kez gezer ve her yapiyi bir Yapici'ya yazar
@@ -181,6 +181,8 @@ class Kurucu(KapKurucu):
         """Dugumun dogal dolgusu: ("malzeme" | "evren" | "kafes", tutamak)."""
         d = self._coz(d)
         tur = d.get("tur")
+        if d.get("_katman"):
+            return ("evren", self.katman_evreni(d))
         if tur == "malzeme":
             return ("malzeme", self.y.malzeme(d.get("ad")))
         if tur == "bilesen":
@@ -200,6 +202,8 @@ class Kurucu(KapKurucu):
         d = self._coz(d)
         if d.get("donusum"):
             return self._donusumlu_evren(d)
+        if d.get("_katman"):
+            return self.katman_evreni(d)
         tur = d.get("tur")
         if tur == "malzeme":
             ad = d.get("ad")
@@ -217,6 +221,22 @@ class Kurucu(KapKurucu):
         if d.get("tur") == "malzeme":
             raise ValueError("malzeme düğümüne dönüşüm uygulanamaz")
         return self.y.evren([self.yuva_hucresi(d, None)])
+
+    def katman_evreni(self, d):
+        """Sablon katman dolgusu: ada gore AYRI onbellekli evren (eski kurucunun
+        "__katman__<ad>" evreni; cubukta ayri pin evreni). Distribcell ornek
+        numaralari eski kurucuyla ayni kalir."""
+        def uret():
+            if d.get("tur") == "malzeme":
+                return self.y.evren([self.y.hucre(self.y.malzeme(d.get("ad")))])
+            tur, t = bilesen_tanimi(self.tanim, d.get("ad"))
+            if tur == "cubuk" and t.get("tur") != "kontrol":
+                return _b.cubuk(self, t, d.get("ad"))
+            if tur == "demet":
+                return self.y.evren([self.y.hucre(_b.demet_dolgusu(self, t, d.get("ad"))[1])],
+                                    name=d.get("ad"))
+            return self.bilesen_evreni(d.get("ad"))
+        return self._onbellek(("kat", d.get("tur"), d.get("ad")), self.tekil(d), uret)
 
     def dis_evreni(self, d):
         """Kafes dis dolgusu: malzemede her kafese AYRI evren (eski kurucu gibi)."""

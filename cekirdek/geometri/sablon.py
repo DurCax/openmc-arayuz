@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 ================================================================================
- geometri/genislet.py  --  Sablon (kor.tur) -> dugum agaci  (SAF; §6)
+ geometri/sablon.py  --  Sablon (kor.tur) -> dugum agaci  (SAF; §6)
 ================================================================================
 
  genislet(spec) -> {"kok", "parcalar", "gruplar", ...}; girdi DEGISMEZ.
@@ -75,7 +75,9 @@ def _eksenel_sar(spec, kor, ic, haritali):
                 raise _katman_hatasi(b)
             k["anahtar"] = {h: _ad_dugumu(spec, v) for h, v in sorted(b["anahtar"].items())}
         elif b.get("dolgu"):
-            k["icerik"] = _ad_dugumu(spec, b["dolgu"])
+            # _katman: eski kurucu katman dolgusunu AYRI ("__katman__<ad>") bir
+            # evren olarak kuruyordu; distribcell ornek numaralari korunur.
+            k["icerik"] = dict(_ad_dugumu(spec, b["dolgu"]), _katman=True)
         yeni.append(k)
     return {"tur": "eksenel", "id": "kor_eksen", "icerik": ic, "katmanlar": yeni}, None
 

@@ -168,8 +168,11 @@ def _hucre_bul(evren, p):
     return None
 
 
-def nokta_izi(kok, nokta, mat_adi, sayac):
-    """Tek noktanin kimlikten bagimsiz izi (bkz. modul notu)."""
+def nokta_izi(kok, nokta, mat_adi, sayac, kontrol=frozenset()):
+    """Tek noktanin kimlikten bagimsiz izi (bkz. modul notu). kontrol:
+    kontrol cubugu hucrelerinin id()'leri -- bunlarda ornek sirasi yerine
+    "kc" yazilir (§15 karar 5: yeni kurucuda her cubuk AYRI evren; eski
+    kurucu tek evreni paylastiriyordu -- bilincli fark)."""
     import numpy as np
     evren, p = kok, np.array(nokta, dtype=float)
     kafesler, otelemeler, donmeler, yol = [], [], [], []
@@ -205,7 +208,8 @@ def nokta_izi(kok, nokta, mat_adi, sayac):
     yaprak = yol[-1][2]
     mat = yaprak.fill if yaprak.fill_type == "material" else None
     ad = mat_adi.get(id(mat)) if mat is not None else None
-    return (ad, tuple(kafesler), tuple(otelemeler), tuple(donmeler)) + _ornek(yol, yaprak, sayac)
+    ornek = ("kc",) if id(yaprak) in kontrol else _ornek(yol, yaprak, sayac)
+    return (ad, tuple(kafesler), tuple(otelemeler), tuple(donmeler)) + ornek
 
 
 def _ornek(yol, yaprak, sayac):
@@ -328,8 +332,24 @@ def kok_kur(kurucu_islevi, spec):
     from cekirdek import kurucu
     openmc.reset_auto_ids()
     nesneler, _m, _r = kurucu.malzemeleri_kur(spec)
-    sonuc = kurucu_islevi(spec, nesneler, {})
-    return sonuc[0], tuple(sonuc[1]), {id(m): ad for ad, m in nesneler.items()}
+    universeler = {}
+    sonuc = kurucu_islevi(spec, nesneler, universeler)
+    return (sonuc[0], tuple(sonuc[1]), {id(m): ad for ad, m in nesneler.items()},
+            _kontrol_hucreleri(spec, universeler, sonuc))
+
+
+def _kontrol_hucreleri(spec, universeler, sonuc):
+    """Kontrol cubugu evrenlerinin hucre id()'leri (eski: paylasilan evren;
+    yeni: dizin.kontrol_cubuklari'ndaki her ayri evren)."""
+    adlar = [c["ad"] for c in spec.get("cubuklar") or [] if c.get("tur") == "kontrol"]
+    evrenler = []
+    dizin = sonuc[2] if len(sonuc) > 2 else None
+    for ad in adlar:
+        if dizin is not None:
+            evrenler += dizin.kontrol_cubuklari.get(ad, [])
+        elif ad in universeler:
+            evrenler.append(universeler[ad])
+    return frozenset(id(c) for u in evrenler for c in u.cells.values())
 
 
 def model_yuksekligi(spec):
@@ -361,12 +381,12 @@ def malzeme_ornekleri(kok, mat_adi):
 
 def parmak_izi(kurucu_islevi, spec, n=2000, tohum=1, noktalar=None):
     """{"kutu", "noktalar", "izler", "malzeme_ornekleri"}."""
-    kok, kutu, mat_adi = kok_kur(kurucu_islevi, spec)
+    kok, kutu, mat_adi, kontrol = kok_kur(kurucu_islevi, spec)
     if noktalar is None:
         noktalar = olcum_noktalari(kok, kutu, model_yuksekligi(spec), n, tohum)
     sayac = OrnekSayaci()
     return {"kutu": kutu, "noktalar": noktalar,
-            "izler": [nokta_izi(kok, p, mat_adi, sayac) for p in noktalar],
+            "izler": [nokta_izi(kok, p, mat_adi, sayac, kontrol) for p in noktalar],
             "malzeme_ornekleri": malzeme_ornekleri(kok, mat_adi)}
 
 
