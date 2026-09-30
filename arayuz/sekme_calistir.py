@@ -257,10 +257,12 @@ class CalistirSekmesi(QtWidgets.QWidget):
             self.kosu_dizini.setText(yeni["dizin"])
             self._yukleniyor = False
         degisen = [k for k, v in yeni.items() if c.get(k) != v]
-        self._dizin_yolu_guncelle()
         if not degisen:
             return
         c.update(yeni)
+        # Yol etiketi YENI dizinle (eskiden guncellemeden once yaziliyor, bir
+        # duzenleme geriden geliyordu).
+        self._dizin_yolu_guncelle()
         self.degisti.emit(self.KONU)
 
     def _kosu_dizini(self):
@@ -294,9 +296,8 @@ class CalistirSekmesi(QtWidgets.QWidget):
         try:
             return bool(uygunluk.ayar_alanlari(spec).get("guc_dagilimi"))
         except Exception:
-            from cekirdek.gunluk import kaydedici
-            kaydedici(__name__).warning("guc dagilimi uygunlugu okunamadi; harita "
-                                        "gosteriliyor", exc_info=True)
+            _log.warning("guc dagilimi uygunlugu okunamadi; harita gosteriliyor",
+                         exc_info=True)
             return True
 
     def _eski_kosu(self):
@@ -645,8 +646,7 @@ class CalistirSekmesi(QtWidgets.QWidget):
             with open(yol, encoding="utf-8", errors="replace") as f:
                 return f.read()
         except OSError:
-            from cekirdek.gunluk import kaydedici
-            kaydedici(__name__).info("koşu günlüğü okunamadı: %s", yol, exc_info=True)
+            _log.info("koşu günlüğü okunamadı: %s", yol, exc_info=True)
             return ""
 
     # ==================================================================
