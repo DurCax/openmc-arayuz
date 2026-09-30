@@ -6,7 +6,7 @@
 
  docs/GEOMETRI_MODELI.md §7 (tukenme satiri), §8 UYARI 1, §15 karar 2.
 
-   analitik(m, ad)     -> HacimKaydi   agac gezintisi (geometri/gez.py):
+   analitik(m, ad)     -> HacimKaydi   agac gezintisi (geometri/gezinti.py):
                           her malzeme ziyaretinin alani x z uzunlugu x carpani
                           (kure kokunde kabuk hacmi). Bir ziyaretin alani
                           bilinmiyorsa (kesik konum, kesik cubuk, duzensiz
@@ -29,7 +29,7 @@
 import os
 from dataclasses import dataclass, field
 
-from cekirdek.geometri.gez import gez
+from cekirdek.geometri.gezinti import gez
 from cekirdek.geometri.sema import BOSLUK
 
 KESIN_DEGIL = "stokastik hesap gerekli"

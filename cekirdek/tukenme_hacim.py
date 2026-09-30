@@ -291,39 +291,15 @@ def malzeme_hacimleri(spec, adlar):
 
 
 def ornek_sayisi(spec, ad):
-    """'ad' malzemesinin geometrideki ornek (hucre) sayisi."""
-    if _agac_mi(spec):
-        from cekirdek import geometri
-        from cekirdek.geometri import hacim
-        return hacim.ornek_sayisi(geometri.model(spec), ad)
-    return _sablon_ornek_sayisi(spec, ad)
-
-
-def _sablon_ornek_sayisi(spec, ad):
-    """Sablon: tukenme.hacimler()'in izledigi yol (haritaya / demet anahtarina
-    dogrudan konan malzeme dahil)."""
-    from cekirdek import tukenme as _tk
-    kor = spec.get("kor") or {}
-    if kor.get("tur") == "kuresel":
-        return sum(1 for k in kor.get("kabuklar") or [] if k.get("malzeme") == ad)
-    dilimler = _tk._eksenel_dilimler(kor)
-
-    def sayim(parca):
-        return sum(_tk._kor_sayimi(spec, kor, d, parca, e) for _h, d, e in dilimler)
-
-    n = 0
-    for c in spec.get("cubuklar", []):
-        bolge = sum(1 for b in c.get("bolgeler") or [] if b.get("malzeme") == ad)
-        if bolge:
-            n += bolge * sayim(c["ad"])
-    for p in spec.get("plakalar", []):
-        if p.get("et_malzeme") == ad:
-            n += int(p.get("plaka_sayisi") or 1) * sayim(p["ad"])
-    if kor.get("tur") == "tamburlu":
-        n += sum(1 for _h, d, _e in dilimler if (d or kor.get("dolgu")) == ad)
-    else:
-        n += dogrudan_yerlesim(spec, kor, ad, dilimler)["ornek"]
-    return n
+    """
+    'ad' malzemesinin geometrideki ornek (hacmi sifir olmayan hucre) sayisi --
+    sablon ve agac modunda AYNI yol: agac gezintisi (geometri.hacim). Eski
+    sablon sayimi tambur emicisini saymiyordu (tamburlu_kor: b4c 8 tamburda 8
+    ornek, eskiden 1); 26 ornekte diger sayilar aynidir (GV1).
+    """
+    from cekirdek import geometri
+    from cekirdek.geometri import hacim
+    return hacim.ornek_sayisi(geometri.model(spec), ad)
 
 
 def kuresel_hacim(kor, ad):

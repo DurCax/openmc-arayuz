@@ -4,7 +4,7 @@
  geometri/bolge.py  --  Gezinti bolgeleri: nokta icerme + analitik alan (G-2)
 ================================================================================
 
- Agac gezintisi (geometri/gez.py) her dugume, onu dolduran BOLGEYI verir:
+ Agac gezintisi (geometri/gezinti.py) her dugume, onu dolduran BOLGEYI verir:
  dugumun yerel cercevesinde bir nokta icerme sinamasi ve (biliniyorsa)
  analitik kesit alani. Hacim (geometri/hacim.py), kesik konum/cubuk tespiti
  ve dogrulama (dogrula/agac.py) ayni bolgeyi kullanir.

@@ -186,13 +186,13 @@ def kesik_konumlar(m):
 
 def gez(m):
     """Ziyaret ureteci: (yol, dugum, carpan, z_araligi, kesik, ust_yollar, ...)."""
-    from cekirdek.geometri.gez import gez as _gez
+    from cekirdek.geometri.gezinti import gez as _gez
     return _gez(m)
 
 
 def icerik(m):
     """Modelde yer alan adlar -- uygunluk.geometri_icerigi ile ayni bicim."""
-    from cekirdek.geometri.gez import icerik as _ic
+    from cekirdek.geometri.gezinti import icerik as _ic
     return _ic(m)
 
 

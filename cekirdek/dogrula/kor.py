@@ -29,7 +29,12 @@ _GECERLI_BC = ("reflective", "vacuum", "periodic", "white")
 
 def kor_kontrol(spec):
     """Kor turu, referanslar ve sinir kosullari. Tur basina denetim
-    _TUR_DENETIMLERI'nde; ardindan sinir kosullari ve kurulmayan alanlar."""
+    _TUR_DENETIMLERI'nde; ardindan sinir kosullari ve kurulmayan alanlar.
+    Gelismis (agac) modda dogrula/agac.agac_kontrol (sablon denetimleri
+    form mesajlaridir; ayni konu iki kez bildirilmez)."""
+    if sema.agac_modu(spec):
+        from cekirdek.dogrula.agac import agac_kontrol
+        return agac_kontrol(spec)
     kor = spec["kor"]
     tur = kor.get("tur")
     if tur not in _GECERLI_KOR:

@@ -7,7 +7,8 @@
 """
 
 from cekirdek.sema import BOSLUK, malzeme_bul, cubuk_bul, plaka_bul, demet_bul
-from cekirdek import kurucu, sema
+from cekirdek import geometri, sema
+from cekirdek.geometri import eksenel as _geo_eks
 from cekirdek.dogrula._ortak import Bulgu, _kor_turu_adi
 from cekirdek.gunluk import kaydedici, uyar_bir_kez
 from cekirdek.ceviri import _
@@ -28,6 +29,8 @@ def eksenel_kontrol(spec):
       * katman dolgusu tanimsiz bir ad -> kurulumda KeyError, kosudan once yakala
       * "yukseklik" ile katman toplami farkli -> hangisi gecerli belirsiz kalir
     """
+    if sema.agac_modu(spec):
+        return _agac_eksenel_kontrol(spec)
     bulgular = []
     kor = spec["kor"]
     eks = kor.get("eksenel") or {}
@@ -96,42 +99,52 @@ def eksenel_kontrol(spec):
     # --- fisil katman var mi ---
     if spec["ayarlar"].get("mod", "eigenvalue") == "eigenvalue":
         try:
-            aralik = kurucu.aktif_eksenel_aralik(spec)
+            aralik = geometri.aktif_aralik(spec)
             toplam = sema.kor_yuksekligi(kor)
             fisil_var = any(
-                kurucu._spec_fisil_mi(spec, x)
+                _geo_eks.fisil_mi(spec, x)
                 for b in katmanlar for x in sema.katman_adaylari(kor, b))
         except Exception:
             uyar_bir_kez(_log, "eksenel denetim: aktif aralik hesaplanamadi")
             aralik, toplam, fisil_var = None, None, True
-        if not fisil_var:
-            bulgular.append(Bulgu(
-                "hata", "kor",
-                "hiçbir eksenel katmanda fisil malzeme yok — özdeğer koşusu "
-                "başlangıç kaynağı bulamaz"))
-        elif aralik and toplam:
-            aktif = aralik[1] - aralik[0]
-            if aktif < toplam:
-                bulgular.append(Bulgu(
-                    "bilgi", "kor",
-                    "aktif yakıt yüksekliği %g cm / toplam %g cm "
-                    "(z = %g … %g)" % (aktif, toplam, aralik[0], aralik[1]),
-                    "Başlangıç kaynağı kutusu ve kontrol çubuğu daldırması bu "
-                    "fisil aralığa göre tanımlıdır. Güç dağılımının eksenel ağı "
-                    "ise hedef çubuğun bulunduğu aralığa göre — ikisi aynı "
-                    "olmak zorunda değil (doğal uranyum örtü fisildir ama "
-                    "içinde yakıt çubuğu yoktur)."))
+        bulgular += _aktif_bulgulari(aralik, toplam, fisil_var)
+    return bulgular + _ortak_bulgular(spec)
 
-    # Mutlak guc normalizasyonu uyarisi: distribcell yalnizca HEDEF cubugu
-    # kapsar, ama toplam_guc tum modelin gucudur. Katmanlamada fisil ama
-    # hedef cubugu icermeyen katmanlar (blanket) varsa onlarin gucu de hedef
-    # cubuklara paylastirilmis olur ve W/cm YUKSEK cikar.
+
+def _aktif_bulgulari(aralik, toplam, fisil_var):
+    """Fisil katman yoksa HATA; aktif aralik toplamdan kisaysa BILGI."""
+    if not fisil_var:
+        return [Bulgu(
+            "hata", "kor",
+            "hiçbir eksenel katmanda fisil malzeme yok — özdeğer koşusu "
+            "başlangıç kaynağı bulamaz")]
+    if aralik and toplam and aralik[1] - aralik[0] < toplam:
+        return [Bulgu(
+            "bilgi", "kor",
+            "aktif yakıt yüksekliği %g cm / toplam %g cm "
+            "(z = %g … %g)" % (aralik[1] - aralik[0], toplam, aralik[0], aralik[1]),
+            "Başlangıç kaynağı kutusu ve kontrol çubuğu daldırması bu "
+            "fisil aralığa göre tanımlıdır. Güç dağılımının eksenel ağı "
+            "ise hedef çubuğun bulunduğu aralığa göre — ikisi aynı "
+            "olmak zorunda değil (doğal uranyum örtü fisildir ama "
+            "içinde yakıt çubuğu yoktur).")]
+    return []
+
+
+def _ortak_bulgular(spec):
+    """Sablon ve agac modunda ayni: mutlak guc payi uyarisi ve kontrol cubugu notu.
+
+    Mutlak guc normalizasyonu uyarisi: distribcell yalnizca HEDEF cubugu
+    kapsar, ama toplam_guc tum modelin gucudur. Katmanlamada fisil ama
+    hedef cubugu icermeyen katmanlar (blanket) varsa onlarin gucu de hedef
+    cubuklara paylastirilmis olur ve W/cm YUKSEK cikar."""
+    bulgular = []
     g = spec.get("guc_dagilimi") or {}
     adlar = list(dict.fromkeys(h["cubuk"] for h in sema.guc_hedefleri(g) if h["cubuk"]))
     if g.get("var") and g.get("toplam_guc") and adlar:
         try:
-            ar = kurucu.aktif_eksenel_aralik(spec)
-            cr = kurucu.guc_eksenel_araligi(spec, adlar)
+            ar = geometri.aktif_aralik(spec)
+            cr = geometri.hedef_araligi(spec, adlar)
         except Exception:
             uyar_bir_kez(_log, "eksenel denetim: cubuk araligi hesaplanamadi")
             ar = cr = None
@@ -153,6 +166,26 @@ def eksenel_kontrol(spec):
             "%0 = uç aktif bölgenin tepesinde, %100 = dibinde; modelin toplam "
             "yüksekliği değil."))
     return bulgular
+
+
+def _agac_eksenel_kontrol(spec):
+    """
+    Gelismis (agac) mod: yigin yapisi yapisal denetimde (geometri.yapisal_denetim,
+    dogrula/agac); burada sablonla ayni fizik kurallari agactaki eksenel
+    dilimlerden: fisil katman yoksa HATA, aktif aralik BILGI, guc payi UYARI.
+    """
+    from cekirdek.geometri.eksenel import eksenel_dilimler
+    m = geometri.model(spec)
+    dilim = eksenel_dilimler(m)
+    if not dilim:
+        return []
+    bulgular = []
+    if spec["ayarlar"].get("mod", "eigenvalue") == "eigenvalue":
+        fisil_var = any(_geo_eks.dugum_iceriyor(m, ic, _geo_eks._fisil_sinama)
+                        for _z0, _z1, _ad, ic in dilim)
+        bulgular += _aktif_bulgulari(geometri.aktif_aralik(spec), geometri.yukseklik(m),
+                                     fisil_var)
+    return bulgular + _ortak_bulgular(spec)
 
 
 def _ad_var(spec, ad):

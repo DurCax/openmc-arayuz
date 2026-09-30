@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 ================================================================================
- geometri/gez.py  --  Agac gezintisi: her dugum, bolgesi, carpani, z araligi
+ geometri/gezinti.py  --  Agac gezintisi: her dugum, bolgesi, carpani, z araligi
 ================================================================================
 
  docs/GEOMETRI_MODELI.md §7 (gez, icerik). Kurulumun (kurulum.py + kap.py)
@@ -284,6 +284,12 @@ class _Gezgin(object):
         eleman = eleman_kesiti("altigen", kafes["adim"], kafes.get("yonelim", "y"))
         eb = _b.kesit_bolgesi(eleman)
         konumlar = kafes_konumlari(kafes)
+        # konum hucreleri (R3b): kafes ve yigin dugumleri de ziyaret edilir
+        # (bolgesi kokun ic'i; kafes konumlari ayri kok hucreleridir)
+        if eks is not None:
+            yield Ziyaret(yol + "/ic", eks, carpan, z, kesik, ust, None, kafeste, None, None)
+        kyol = yol + "/ic" + ("/icerik" if eks is not None else "")
+        yield Ziyaret(kyol, kafes, carpan, z, kesik, ust, None, kafeste, None, None)
         katmanlar = [(z, None)] if eks is None else \
             [((z0, z1), k) for z0, z1, k in dilimler(eks)]
         for j, (zz, k) in enumerate(katmanlar):
@@ -418,16 +424,17 @@ class _Gezgin(object):
             kesik, neden = True, "bilesen"
         alt = ust + ("%s>%s" % (yol, ad),)
         y = "%s>%s/" % (yol, ad)
-        katmanlar = [(p["et_malzeme"], n * et * gen, "et"),
-                     (p["zarf_malzeme"], n * 2 * zarf * gen, "zarf"),
-                     (p["sogutucu"], (n + 1) * kanal * gen, "kanal")]
+        # (malzeme, HUCRE basina alan, hucre sayisi, ek): her plaka/kanal ayri hucre
+        katmanlar = [(p["et_malzeme"], et * gen, n, "et"),
+                     (p["zarf_malzeme"], zarf * gen, 2 * n, "zarf"),
+                     (p["sogutucu"], kanal * gen, n + 1, "kanal")]
         if yan > 0:
-            katmanlar.append((p.get("yan_levha_malzeme") or p["zarf_malzeme"], 2 * yan * top_x,
+            katmanlar.append((p.get("yan_levha_malzeme") or p["zarf_malzeme"], yan * top_x, 2,
                               "yan_levha"))
         cikti = []
-        for malzeme, alan, ek in katmanlar:
-            cikti += self._sanal(malzeme, alan if sigar else None, carpan, z, y + ek, alt,
-                                 kafeste, kesik, neden, "plaka")
+        for malzeme, alan, adet, ek in katmanlar:
+            cikti += self._sanal(malzeme, alan if sigar else None, carpan * adet, z, y + ek,
+                                 alt, kafeste, kesik, neden, "plaka")
         return cikti
 
     def tambur(self, ad, t, bolge, yol, kesik, neden, carpan, z, ust, kafeste, _derinlik):

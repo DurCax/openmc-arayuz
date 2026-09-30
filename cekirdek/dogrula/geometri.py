@@ -8,7 +8,7 @@
 
 import math
 
-from cekirdek.sema import kor_yuksekligi as sema_kor_yuksekligi
+from cekirdek import sema
 from cekirdek.sema import BOSLUK, malzeme_bul, cubuk_bul, plaka_bul, demet_bul
 from cekirdek import altigen
 from cekirdek import altigen_kor as akor
@@ -72,7 +72,7 @@ def cubuk_kontrol(spec):
 def kontrol_cubugu_kontrol(spec):
     """Kontrol cubuklarinin gereksinimleri."""
     bulgular = []
-    h = sema_kor_yuksekligi(spec["kor"])
+    h = sema.model_yuksekligi(spec)
     for c in spec.get("cubuklar", []):
         if c.get("tur") != "kontrol":
             continue
