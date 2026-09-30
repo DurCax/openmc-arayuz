@@ -329,6 +329,18 @@ class CubukSekmesi(SayfalarMixin, CubukFormuMixin, PlakaFormuMixin, SekmeTabani)
                 self.liste.setCurrentRow(i)
                 return
 
+    def komutlar(self):
+        return sd.dugme_komutlari(self, _("Parça"), (
+            self.d_cubuk, self.d_plaka, self.d_kopya, self.d_sil))
+
+    def odakla(self, yer):
+        """"cubuk:<ad>" / "plaka:<ad>" bulgusunda o parcayi secer."""
+        hedef = sd.yer_adi(yer, "cubuk", "plaka")
+        if hedef is None:
+            return False
+        self._sec(hedef)
+        return tuple(self._secili()) == hedef
+
     def _kopyala(self):
         tur, ad = self._secili()
         if tur == "cubuk":

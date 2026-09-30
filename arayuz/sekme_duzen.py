@@ -10,7 +10,7 @@ QScrollArea icine koyar, bu yuzden kok duzen yatayda tasmaz ve dikeyde
 buyuyebilir.
 """
 
-from PySide6 import QtWidgets
+from PySide6 import QtGui, QtWidgets
 
 from arayuz.tasarim import tokenlar
 
@@ -89,3 +89,37 @@ def form(bosluk_yatay=None, bosluk_dikey=None):
     f.setLabelAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
     f.setFieldGrowthPolicy(QtWidgets.QFormLayout.AllNonFixedFieldsGrow)
     return f
+
+
+# ----------------------------------------------------------------------
+# Kabuk sozlesmesi (arayuz/pencere/sekme_arayuzu.py) yardimcilari
+# ----------------------------------------------------------------------
+def _dugme_eylemi(sahip, onek, dugme):
+    e = QtGui.QAction(dugme.icon(), "%s: %s" % (onek, dugme.text().strip()), sahip)
+    e.setToolTip(dugme.toolTip())
+    e.triggered.connect(dugme.click)
+    return e
+
+
+def dugme_komutlari(sahip, onek, dugmeler):
+    """
+    Sekme dugmelerinin Ctrl+K paleti eylemleri (QAction). Eylem dugmeye
+    tiklar: davranis tek yerde (dugmenin baglantisi) kalir. Eylemler ilk
+    cagrida kurulur; etkinlik her cagrida dugmeden alinir.
+    """
+    dugmeler = tuple(dugmeler)
+    eylemler = getattr(sahip, "_komut_eylemleri", None)
+    if eylemler is None:
+        eylemler = tuple(_dugme_eylemi(sahip, onek, d) for d in dugmeler)
+        sahip._komut_eylemleri = eylemler
+    for e, d in zip(eylemler, dugmeler):
+        e.setEnabled(d.isEnabled() and not d.isHidden())
+    return eylemler
+
+
+def yer_adi(yer, *turler):
+    """Bulgu yeri "tur:ad" -> (tur, ad); tur beklenmiyorsa ya da ad bossa None."""
+    tur, ayirac, ad = (yer or "").partition(":")
+    if not ayirac or tur not in turler or not ad.strip():
+        return None
+    return tur, ad.strip()

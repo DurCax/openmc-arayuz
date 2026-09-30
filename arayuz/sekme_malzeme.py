@@ -203,6 +203,25 @@ class MalzemeSekmesi(SekmeTabani):
             self._secim_adi = self.spec["malzemeler"][satir]["ad"] if satir >= 0 else None
 
     # ------------------------------------------------------------------
+    # kabuk sozlesmesi (Ctrl+K paleti, "bulguya git")
+    # ------------------------------------------------------------------
+    def komutlar(self):
+        return sd.dugme_komutlari(self, _("Malzeme"), (
+            self.d_kutup, self.d_yeni, self.d_duzenle, self.d_kopya, self.d_sil))
+
+    def odakla(self, yer):
+        """"malzeme:<ad>" bulgusunda o malzemenin satirini secer."""
+        hedef = sd.yer_adi(yer, "malzeme")
+        if hedef is None or self.spec is None:
+            return False
+        for i, m in enumerate(self.spec["malzemeler"]):
+            if m.get("ad") == hedef[1]:
+                self.tablo.selectRow(i)
+                self.tablo.setFocus()
+                return True
+        return False
+
+    # ------------------------------------------------------------------
     def _adlar(self):
         return [m["ad"] for m in self.spec["malzemeler"]]
 

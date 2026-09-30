@@ -39,6 +39,7 @@ from PySide6 import QtCore, QtWidgets
 from cekirdek import altigen, sema
 from cekirdek.ceviri import _
 from arayuz import izgara
+from arayuz import sekme_duzen as sd
 from arayuz.ortak import SekmeTabani, renk_simgesi
 from arayuz.sekme_cubuk import (ad_hatasi, benzersiz_ad, parca_adini_degistir,
                                 parca_kullanimlari, _renk)
@@ -485,6 +486,19 @@ class DemetSekmesi(YerlesimMixin, SekmeTabani):
             if self.liste.item(i).data(QtCore.Qt.UserRole) == ad:
                 self.liste.setCurrentRow(i)
                 return
+
+    def komutlar(self):
+        return sd.dugme_komutlari(self, _("Demet"), (
+            self.d_kare, self.d_hex, self.d_kopya, self.d_sil, self.d_hepsi,
+            self.d_halka_doldur))
+
+    def odakla(self, yer):
+        """"demet:<ad>" bulgusunda o demeti secer."""
+        hedef = sd.yer_adi(yer, "demet")
+        if hedef is None:
+            return False
+        self._sec(hedef[1])
+        return self._secili_ad() == hedef[1]
 
     def _yeni(self, tur):
         """'+ Kare demet' / '+ Altigen demet'. Kontrol ettigi sey mesajiyla ayni."""
