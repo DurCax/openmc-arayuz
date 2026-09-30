@@ -157,6 +157,9 @@ def test_duzenle_parca_ve_sarmala():
             "-> %s" % [b.mesaj for b in bulgular][:2])
 
 
+from testler.geometri_ui_arayuz import (  # noqa: E402  (Qt testleri ayri dosyada)
+    HIZLI as _ARAYUZ_HIZLI)
+
 HIZLI = [test_duzenle_yollar_ve_yuvalar, test_duzenle_saf_ve_ekleme,
-         test_duzenle_sil_tasi_adlandir, test_duzenle_parca_ve_sarmala]
+         test_duzenle_sil_tasi_adlandir, test_duzenle_parca_ve_sarmala] + _ARAYUZ_HIZLI
 YAVAS = []
