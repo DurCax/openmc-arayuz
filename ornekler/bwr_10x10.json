@@ -1,0 +1,541 @@
+{
+  "surum": 1,
+  "ad": "BWR 10×10 yakıt demeti (su kanallı)",
+  "aciklama": "BWR yakıt demeti, 10×10 (ATRIUM-10 benzeri): merkezde 3×3 konumluk kare su kanalı, 91 yakıt çubuğu (%4.4 ve kenarda %3.6 UO2; 6 adet UO2 %3.95 + %5 Gd2O3). Kanal dışı soğutucu %40 buhar boşluğunda (0.45 g/cm³), su kanalı ve bypass kaynamayan doymuş su (0.74 g/cm³), 560 K; yakıt 900 K.\n\nÖlçüler (yaklaşık, açık kaynak ATRIUM-10 değerleri; birincil belgeden DOĞRULANMADI): pin adımı 1.295 cm, pelet r 0.4335, kılıf 0.4420/0.5025 cm, demet adımı 15.24 cm. BASİTLEŞTİRMELER: su kanalının zirkonyum duvarı yok (kanal hücreleri yalnız su); kutu duvarı (0.254 cm Zr) ile bypass suyu kafesin dışındaki 1.145 cm'lik kuşakta hacimce homojenleştirildi (%22.2 Zr). Sonsuz demet kafesi.",
+  "malzemeler": [
+    {
+      "ad": "uo2_44",
+      "gorunen_ad": "UO2 %4.40",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 10.5
+      },
+      "sicaklik": 900.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "U",
+          "miktar": 1.0,
+          "birim": "ao",
+          "zenginlik": 4.4
+        },
+        {
+          "tur": "element",
+          "isim": "O",
+          "miktar": 2.0,
+          "birim": "ao"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        200,
+        60,
+        30
+      ]
+    },
+    {
+      "ad": "uo2_36",
+      "gorunen_ad": "UO2 %3.60",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 10.5
+      },
+      "sicaklik": 900.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "U",
+          "miktar": 1.0,
+          "birim": "ao",
+          "zenginlik": 3.6
+        },
+        {
+          "tur": "element",
+          "isim": "O",
+          "miktar": 2.0,
+          "birim": "ao"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        240,
+        150,
+        60
+      ]
+    },
+    {
+      "ad": "uo2_gd",
+      "gorunen_ad": "UO2 %3.95 + %5 Gd2O3",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 10.3
+      },
+      "sicaklik": 900.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "U",
+          "miktar": 0.837425,
+          "birim": "wo",
+          "zenginlik": 3.95
+        },
+        {
+          "tur": "element",
+          "isim": "O",
+          "miktar": 0.119195,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Gd",
+          "miktar": 0.04338,
+          "birim": "wo"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        120,
+        170,
+        60
+      ]
+    },
+    {
+      "ad": "zirkaloy2",
+      "gorunen_ad": "Zircaloy-2",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 6.55
+      },
+      "sicaklik": 560.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "Zr",
+          "miktar": 98.23,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Sn",
+          "miktar": 1.5,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Fe",
+          "miktar": 0.12,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Cr",
+          "miktar": 0.1,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Ni",
+          "miktar": 0.05,
+          "birim": "wo"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        160,
+        160,
+        170
+      ]
+    },
+    {
+      "ad": "helyum",
+      "gorunen_ad": "He",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 0.0018
+      },
+      "sicaklik": 560.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "He",
+          "miktar": 1.0,
+          "birim": "ao"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        230,
+        230,
+        200
+      ]
+    },
+    {
+      "ad": "su_bosluklu",
+      "gorunen_ad": "su_bosluklu",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 0.45
+      },
+      "sicaklik": 560.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "H",
+          "miktar": 2.0,
+          "birim": "ao"
+        },
+        {
+          "tur": "element",
+          "isim": "O",
+          "miktar": 1.0,
+          "birim": "ao"
+        }
+      ],
+      "sab": [
+        "c_H_in_H2O"
+      ],
+      "renk": [
+        130,
+        180,
+        230
+      ]
+    },
+    {
+      "ad": "su_dolu",
+      "gorunen_ad": "su_dolu",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 0.74
+      },
+      "sicaklik": 560.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "H",
+          "miktar": 2.0,
+          "birim": "ao"
+        },
+        {
+          "tur": "element",
+          "isim": "O",
+          "miktar": 1.0,
+          "birim": "ao"
+        }
+      ],
+      "sab": [
+        "c_H_in_H2O"
+      ],
+      "renk": [
+        60,
+        120,
+        210
+      ]
+    },
+    {
+      "ad": "kutu_bypass",
+      "gorunen_ad": "Kutu (Zr) + bypass suyu, homojen",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 2.02886
+      },
+      "sicaklik": 560.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "Zr",
+          "miktar": 0.71617363,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "H",
+          "miktar": 0.03175847,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "O",
+          "miktar": 0.2520679,
+          "birim": "wo"
+        }
+      ],
+      "sab": [
+        "c_H_in_H2O"
+      ],
+      "renk": [
+        150,
+        150,
+        170
+      ]
+    }
+  ],
+  "cubuklar": [
+    {
+      "ad": "cubuk_44",
+      "tur": "silindirik",
+      "bolgeler": [
+        {
+          "r": 0.4335,
+          "malzeme": "uo2_44"
+        },
+        {
+          "r": 0.442,
+          "malzeme": "helyum"
+        },
+        {
+          "r": 0.5025,
+          "malzeme": "zirkaloy2"
+        },
+        {
+          "r": null,
+          "malzeme": "su_bosluklu"
+        }
+      ]
+    },
+    {
+      "ad": "cubuk_36",
+      "tur": "silindirik",
+      "bolgeler": [
+        {
+          "r": 0.4335,
+          "malzeme": "uo2_36"
+        },
+        {
+          "r": 0.442,
+          "malzeme": "helyum"
+        },
+        {
+          "r": 0.5025,
+          "malzeme": "zirkaloy2"
+        },
+        {
+          "r": null,
+          "malzeme": "su_bosluklu"
+        }
+      ]
+    },
+    {
+      "ad": "cubuk_gd",
+      "tur": "silindirik",
+      "bolgeler": [
+        {
+          "r": 0.4335,
+          "malzeme": "uo2_gd"
+        },
+        {
+          "r": 0.442,
+          "malzeme": "helyum"
+        },
+        {
+          "r": 0.5025,
+          "malzeme": "zirkaloy2"
+        },
+        {
+          "r": null,
+          "malzeme": "su_bosluklu"
+        }
+      ]
+    }
+  ],
+  "plakalar": [],
+  "demetler": [
+    {
+      "ad": "bwr_10x10",
+      "tur": "kare",
+      "adim": 1.295,
+      "boyut": [
+        10,
+        10
+      ],
+      "harita": [
+        "dddddddddd",
+        "dyyyyyyyyd",
+        "dygyyyygyd",
+        "dyyyyyyyyd",
+        "dyyysssyyd",
+        "dygysssygd",
+        "dyyysssyyd",
+        "dyyyyyyyyd",
+        "dygyyyygyd",
+        "dddddddddd"
+      ],
+      "anahtar": {
+        "y": "cubuk_44",
+        "d": "cubuk_36",
+        "g": "cubuk_gd",
+        "s": "su_dolu"
+      },
+      "dolgu_disi": "su_bosluklu"
+    }
+  ],
+  "kor": {
+    "tur": "tek_demet",
+    "cubuk": null,
+    "demet": "bwr_10x10",
+    "plaka": null,
+    "adim": 1.26,
+    "boyut": [
+      1,
+      1
+    ],
+    "harita": [],
+    "halka_sayisi": 2,
+    "yonelim": "x",
+    "anahtar": {},
+    "yukseklik": null,
+    "yansitici": {
+      "var": true,
+      "kalinlik": 1.145,
+      "malzeme": "kutu_bypass"
+    },
+    "kabuklar": [],
+    "dolgu": null,
+    "kor_yaricap": 20.0,
+    "tambur": {
+      "sayi": 0,
+      "yaricap": 4.0,
+      "merkez_yaricap": 26.0,
+      "govde_malzeme": null,
+      "emici_malzeme": null,
+      "emici_ic_yaricap": 2.5,
+      "emici_aci": 120.0,
+      "donme": 0.0,
+      "baslangic_acisi": 0.0
+    },
+    "eksenel": {
+      "var": false,
+      "bolgeler": []
+    },
+    "sinir": {
+      "yan": "reflective",
+      "alt": "reflective",
+      "ust": "reflective"
+    }
+  },
+  "ayarlar": {
+    "mod": "eigenvalue",
+    "parcacik": 10000,
+    "cevrim": 150,
+    "pasif": 40,
+    "tohum": 1,
+    "sicaklik_yontemi": "interpolation",
+    "kaynak": {
+      "tur": "kutu",
+      "konum": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "parcacik": "neutron",
+      "kuvvet": 1.0,
+      "enerji": {
+        "tur": "watt",
+        "a": 988000.0,
+        "b": 2.249e-06,
+        "theta": 1293200.0,
+        "enerji": 14100000.0,
+        "noktalar": [],
+        "kenarlar": [],
+        "degerler": [],
+        "e0": 14080000.0,
+        "kutle_orani": 5.0,
+        "iyon_sicaklik": 20000.0
+      },
+      "aci": {
+        "tur": "izotropik",
+        "yon": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "koni_aci": 30.0
+      },
+      "alt": null,
+      "ust": null
+    },
+    "entropi_mesh": {
+      "var": true,
+      "boyut": [
+        8,
+        8,
+        1
+      ]
+    },
+    "kinetik": {
+      "var": false,
+      "nesil": 10
+    }
+  },
+  "tallyler": [
+    {
+      "ad": "reaksiyonlar",
+      "skorlar": [
+        "fission",
+        "absorption",
+        "nu-fission"
+      ],
+      "filtreler": [],
+      "nuklidler": []
+    },
+    {
+      "ad": "iki_grup_aki",
+      "skorlar": [
+        "flux"
+      ],
+      "filtreler": [
+        {
+          "tur": "enerji",
+          "gruplar": [
+            0.0,
+            0.625,
+            20000000.0
+          ]
+        }
+      ],
+      "nuklidler": []
+    }
+  ],
+  "guc_dagilimi": {
+    "var": false,
+    "cubuk": null,
+    "bolge": 0,
+    "skor": "kappa-fission",
+    "eksenel_dilim": 20,
+    "toplam_guc": null
+  },
+  "tukenme": {
+    "var": false,
+    "zincir": "otomatik",
+    "guc_yogunlugu": 40.0,
+    "adimlar": [
+      0.5,
+      1.5,
+      3.0,
+      5.0,
+      10.0,
+      10.0
+    ],
+    "adim_birimi": "d",
+    "entegrator": "cecm",
+    "malzemeleri_ayir": false,
+    "ek_malzemeler": [],
+    "izlenen": [
+      "U235",
+      "U238",
+      "Pu239",
+      "Pu240",
+      "Pu241",
+      "Xe135",
+      "Sm149"
+    ]
+  },
+  "calistirma": {
+    "is_parcacigi": 8,
+    "dizin": "kosu"
+  },
+  "baslik": "BWR 10×10 demeti (su kanallı)",
+  "kategori": "bwr",
+  "seviye": "orta",
+  "baslik_en": "BWR 10x10 assembly (water channel)",
+  "aciklama_en": "ATRIUM-10-like BWR assembly: 91 rods around a 3x3 water channel, 40% void coolant, homogenised channel box and bypass."
+}

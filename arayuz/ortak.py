@@ -283,6 +283,11 @@ class EnerjiGirdi(QtWidgets.QWidget):
         d.setContentsMargins(0, 0, 0, 0)
         d.addWidget(self.kutu, 1)
         d.addWidget(self.birim, 0)
+        # ayarla() ile verilen tam eV degeri ve o andaki (kutu, birim) durumu:
+        # kullanici dokunmadan deger() AYNI sayiyi dondurur (1.025e6 eV ->
+        # 1.025 MeV -> 1024999.9999999999 kaymasi olmaz).
+        self._verilen_ev = None
+        self._verilen_durum = None
         self.ayarla(ev)
         self.kutu.valueChanged.connect(self.degisti)
         self.birim.currentIndexChanged.connect(self._birim_degisti)
@@ -292,7 +297,10 @@ class EnerjiGirdi(QtWidgets.QWidget):
 
     def deger(self):
         """Girilen enerjiyi eV cinsinden dondurur."""
-        return self.kutu.value() * _BIRIMLER[self.birim.currentIndex()][1]
+        durum = (self.kutu.value(), self.birim.currentIndex())
+        if self._verilen_ev is not None and durum == self._verilen_durum:
+            return self._verilen_ev
+        return durum[0] * _BIRIMLER[durum[1]][1]
 
     def ayarla(self, ev):
         """eV cinsinden bir enerjiyi, okunakli bir birim secerek gosterir."""
@@ -305,6 +313,8 @@ class EnerjiGirdi(QtWidgets.QWidget):
         self.birim.setCurrentIndex(i)
         self.kutu.setValue(ev / _BIRIMLER[i][1])
         self.blockSignals(eski)
+        self._verilen_ev = ev
+        self._verilen_durum = (self.kutu.value(), i)
 
 
 class BilimselGirdi(QtWidgets.QLineEdit):

@@ -104,7 +104,12 @@ def test_ornek_bilgisi_okuma():
     god = ob.ornek_bilgisi(os.path.join(ORNEK, "godiva_kriter.json"))
     kontrol("godiva: deney referansi + olcum",
             god.referans.tur == "deney" and god.referans.k == 1.0
-            and god.referans.olcum.k == 0.99957 and god.referans.olcum.parcacik is None)
+            and god.referans.sigma == 0.001
+            and "HEU-MET-FAST-001" in god.referans.kaynak
+            # 29.09.2026 olcumu (100k parcacik); eski 0.99957 / parcacik yok
+            # kaydi commit 68797a0 ile yerini bu olcume birakti
+            and god.referans.olcum.k == 1.00038 and god.referans.olcum.sigma == 0.00025
+            and god.referans.olcum.parcacik == 100000)
     kontrol("kor/demet turu", (pin.kor_turu, pin.demet_turu) == ("tek_cubuk", None)
             and ob.ornek_bilgisi(os.path.join(ORNEK, "sfr_altigen.json")).demet_turu
             == "altigen")
