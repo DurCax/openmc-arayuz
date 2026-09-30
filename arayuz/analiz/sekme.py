@@ -44,7 +44,7 @@ from arayuz.analiz import sonuc as gos
 from arayuz.analiz.adlar import (FORM_GENISLIGI, GELISMIS_PARAMETRELER, aciklama, birim,
                                  form_duzeni, parametre_adi, parametre_ipucu, renk,
                                  sirali_taramalar, varsayilan_aralik)
-from arayuz.analiz.gorunum import kok_duzeni, kosu_satiri, sayfa_basligi
+from arayuz import sekme_duzen as sd
 from arayuz.analiz.isciler import AramaIsci, TaramaIsci
 from arayuz.analiz.tuval import Tuval
 from arayuz.ortak import BosDurum, GelismisBolum, sayi, tamsayi
@@ -159,7 +159,7 @@ class AnalizSekmesi(QtWidgets.QWidget):
         """Maket duzeni: sayfa basligi, ayar karti, sonuc karti."""
         self.ayar_karti = bil.Kart(_("Analiz ayarları"))
         self.ayar_karti.govde.addLayout(self.form)
-        self.ayar_karti.ekle(kosu_satiri(self.d_basla, self.d_dur, self.ilerleme))
+        self.ayar_karti.ekle(sd.kosu_satiri(self.d_basla, self.d_dur, self.ilerleme))
         self.ayar_karti.ekle(self.kapi_etiket)
         self.ayar_karti.setMaximumWidth(FORM_GENISLIGI)
         self.sonuc_karti = bil.Kart(_("Sonuç"))
@@ -172,11 +172,11 @@ class AnalizSekmesi(QtWidgets.QWidget):
         ic.addWidget(self.ayar_karti)
         ic.addWidget(self.sonuc_karti)
         ic.addStretch(1)
-        duzen = kok_duzeni(self)
-        duzen.addWidget(sayfa_basligi(_("Analiz"), aciklama(_(
+        duzen = sd.sayfa_duzeni(self)
+        duzen.addWidget(sd.sayfa_basligi(_("Analiz"), aciklama(_(
             "Bir parametreyi tarayıp eğimden reaktivite katsayısını ya da hedef k-eff'i "
             "veren değeri bulursunuz. Yalnızca bu modelde anlamlı parametreler listelenir; "
-            "her nokta ayrı bir OpenMC koşusudur."))))
+            "her nokta ayrı bir OpenMC koşusudur.")), bosluk=A["xs"]))
         duzen.addWidget(self.bos, 1)
         duzen.addWidget(self.icerik, 1)
 

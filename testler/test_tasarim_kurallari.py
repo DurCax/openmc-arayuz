@@ -121,5 +121,30 @@ def test_sahipsiz_qlayout_yok():
         QtCore.QCoreApplication.sendPostedEvents(None, QtCore.QEvent.DeferredDelete)
 
 
-HIZLI = [test_sabit_renk_tabani, test_renk_tarayicisi_kendini_sinar, test_sahipsiz_qlayout_yok]
+def test_tek_sayfa_duzeni_modulu():
+    print("\n[TK4] sayfa duzeni tek modulde (sekme_duzen); analiz/gorunum.py yok")
+    from PySide6 import QtWidgets
+    uyg = QtWidgets.QApplication.instance() or QtWidgets.QApplication([])
+    from arayuz import sekme_duzen as sd
+    from arayuz.tasarim import tokenlar
+    kontrol("arayuz/analiz/gorunum.py kaldirildi",
+            not os.path.exists(os.path.join(KOK, "arayuz", "analiz", "gorunum.py")))
+    kontrol("kosu_satiri sekme_duzen'de", callable(getattr(sd, "kosu_satiri", None)))
+    # metin aciklama (tasarim sekmeleri): ikincil QLabel, aralik eskisi gibi 2 px
+    w = sd.sayfa_basligi("Başlık", "Açıklama")
+    etiketler = w.findChildren(QtWidgets.QLabel)
+    kontrol("metin aciklama -> baslik + ikincil etiket, aralik 2",
+            [e.objectName() for e in etiketler] == ["baslik", "ikincil"]
+            and w.layout().spacing() == 2)
+    # hazir QLabel aciklama (Analiz/Tukenme): ayni nesne yerlesir, aralik xs
+    hazir = QtWidgets.QLabel("x")
+    w = sd.sayfa_basligi("Başlık", hazir, bosluk=tokenlar.ARALIK["xs"])
+    kontrol("QLabel aciklama ayni nesne, ikincil + sarmali, aralik xs",
+            hazir.parentWidget() is w and hazir.objectName() == "ikincil"
+            and hazir.wordWrap() and w.layout().spacing() == tokenlar.ARALIK["xs"])
+    uyg  # noqa: B018
+
+
+HIZLI = [test_sabit_renk_tabani, test_renk_tarayicisi_kendini_sinar, test_sahipsiz_qlayout_yok,
+         test_tek_sayfa_duzeni_modulu]
 YAVAS = []

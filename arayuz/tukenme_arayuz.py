@@ -26,7 +26,7 @@ from PySide6 import QtCore, QtWidgets
 from cekirdek.ceviri import N_, _
 from arayuz import bilesenler as bil
 from arayuz.analiz.adlar import FORM_GENISLIGI, aciklama, form_duzeni
-from arayuz.analiz.gorunum import kok_duzeni, kosu_satiri, sayfa_basligi
+from arayuz import sekme_duzen as sd
 from arayuz.analiz.tuval import Tuval
 from arayuz.nuklid_secici import NuklidSecici
 from arayuz.ortak import BosDurum, GelismisBolum, sayi
@@ -190,7 +190,7 @@ class TukenmeArayuzu:
         self.izlenen_kutusu = bil.Kart(_("İzlenen nüklidler"))
         self.izlenen_kutusu.ekle(self.izlenen)
         self.kosu_kutusu = bil.Kart(_("Koşu"))
-        self.kosu_kutusu.ekle(kosu_satiri(self.d_baslat, self.d_durdur, self.ilerleme))
+        self.kosu_kutusu.ekle(sd.kosu_satiri(self.d_baslat, self.d_durdur, self.ilerleme))
         self.kosu_kutusu.ekle(self.kapi_etiket)
         self.kosu_kutusu.ekle(self.sure_etiket)
         for kart in (self.ayar_kutusu, self.izlenen_kutusu, self.kosu_kutusu):
@@ -207,7 +207,7 @@ class TukenmeArayuzu:
                   self.sonuc_kutusu, self.ayrinti):
             ic.addWidget(w)
         ic.addStretch(1)
-        duzen = kok_duzeni(self)
-        duzen.addWidget(sayfa_basligi(_("Tükenme"), self.aciklama))
+        duzen = sd.sayfa_duzeni(self)
+        duzen.addWidget(sd.sayfa_basligi(_("Tükenme"), self.aciklama, bosluk=A["xs"]))
         duzen.addWidget(self.bos, 1)
         duzen.addWidget(self.icerik, 1)
