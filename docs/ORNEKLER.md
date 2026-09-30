@@ -155,7 +155,7 @@ süreleri, 8 iş parçacığı, makine başka koşularla paylaşılırken:
 | pwr_beavrs_kor.json | 104.5 | 1.00187 ± 0.00093 |
 | pwr_smr_kor.json | 82.9 | 1.08345 ± 0.00092 |
 | pwr_ceyrek_kor.json | 76.7 | 1.08778 ± 0.00097 |
-| mtr_kor.json | 114.4 | 1.16743 ± 0.00098 |
+| mtr_kor.json | 114.1 | 1.16884 ± 0.00095 (30.09, U3Si2-Al düzeltmesi sonrası; önce 1.16743 ± 0.00098) |
 
 Tam korlarda "Normal" ayarın 40 pasif çevrimi kaynak yakınsaması için sınırdadır
 (Shannon entropisi hâlâ düşüyordu); k karşılaştırması yapacaksanız pasif çevrimi
