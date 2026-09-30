@@ -48,7 +48,7 @@ from arayuz.analiz.tuval import Tuval, canli_mi
 from arayuz.tukenme_sonuc import SonucBolumu
 from arayuz.nuklid_secici import NuklidSecici
 from arayuz.ortak import BosDurum, GelismisBolum, SekmeTabani, cumle_basi, sayi
-from arayuz.sekme_analiz import aciklama, dar
+from arayuz.analiz.adlar import aciklama, dar, renk
 
 _log = kaydedici(__name__)
 
@@ -61,14 +61,6 @@ ZINCIR_SECENEK = [
 ]
 
 KOK = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-
-def _tema_renk(ad, vars_="#6b7785"):
-    try:
-        from arayuz import tema
-        return tema.renk(ad)
-    except Exception:
-        return vars_
 
 
 def yakit_ornek_sayisi(spec):
@@ -403,10 +395,10 @@ class TukenmeSekmesi(SekmeTabani, SonucBolumu):
                                           "(Gelişmiş › Zincir)" % mesaj)
             self.zincir_bilgi.setText(metin)
             self.zincir_bilgi.setStyleSheet(
-                "" if tamam else "color: %s;" % _tema_renk("hata", "#d04437"))
+                "" if tamam else "color: %s;" % renk("hata"))
         except Exception as e:
             self.zincir_bilgi.setText("zincir seçilemedi: %s" % e)
-        self.zincir_uyari.setStyleSheet("color: %s;" % _tema_renk("hata", "#d04437"))
+        self.zincir_uyari.setStyleSheet("color: %s;" % renk("hata"))
 
         # --- adimlar ---
         adimlar = [float(a) for a in (t.get("adimlar") or [])]
@@ -420,7 +412,7 @@ class TukenmeSekmesi(SekmeTabani, SonucBolumu):
                      else "her adım sıfırdan büyük olmalı")
             self.adim_ozet.setText("Adımlar geçersiz — %s. Virgülle ayrılmış pozitif "
                                    "sayılar girin (ör. 1, 5, 30)." % neden)
-            self.adim_ozet.setStyleSheet("color: %s;" % _tema_renk("hata", "#d04437"))
+            self.adim_ozet.setStyleSheet("color: %s;" % renk("hata"))
         elif adimlar and p > 0:
             if (t.get("adim_birimi") or "d") == "d":
                 gun = sum(adimlar)
@@ -528,7 +520,7 @@ class TukenmeSekmesi(SekmeTabani, SonucBolumu):
             self.ilerleme.resetFormat()
         else:
             self.ilerleme.setRange(0, 0)
-            self.kapi_etiket.setStyleSheet("color: %s;" % _tema_renk("hata", "#b3261e"))
+            self.kapi_etiket.setStyleSheet("color: %s;" % renk("hata"))
             self.kapi_etiket.setText(
                 "Önceki projenin tükenme koşusu arka planda sürüyor; sonucu bu projeye "
                 "yazılmayacak. Yeni koşu için Durdur ile sonlandırın.")
@@ -547,7 +539,7 @@ class TukenmeSekmesi(SekmeTabani, SonucBolumu):
             izin, mesaj = self._kapi()
         self.d_baslat.setEnabled(izin)
         self.kapi_etiket.setStyleSheet(
-            "color: %s;" % (_tema_renk("metin_soluk") if izin else _tema_renk("hata", "#b3261e")))
+            "color: %s;" % (renk("metin_soluk") if izin else renk("hata")))
         self.kapi_etiket.setText(mesaj)
 
     def baslat(self):
@@ -608,7 +600,7 @@ class TukenmeSekmesi(SekmeTabani, SonucBolumu):
         self._surec.start(sys.executable, arg)
         self.d_baslat.setEnabled(False)
         self.d_durdur.setEnabled(True)
-        self.kapi_etiket.setStyleSheet("color: %s;" % _tema_renk("metin_soluk"))
+        self.kapi_etiket.setStyleSheet("color: %s;" % renk("metin_soluk"))
         self.kapi_etiket.setText("Tükenme koşusu sürüyor → %s" % dizin)
         self._gorunum_guncelle()
         self.sonuc_degisti.emit()

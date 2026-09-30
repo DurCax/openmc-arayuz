@@ -23,6 +23,7 @@ import time
 
 from PySide6 import QtCore, QtWidgets
 
+from arayuz.analiz.adlar import renk
 from arayuz.analiz.tuval import canli_mi
 from cekirdek import nuklidler as _nk
 from cekirdek import tukenme as _tk
@@ -30,15 +31,6 @@ from cekirdek.ceviri import _
 from cekirdek.gunluk import kaydedici
 
 _log = kaydedici(__name__)
-
-
-def _tema_renk(ad, vars_="#6b7785"):
-    from arayuz import tema
-    try:
-        return tema.renk(ad)
-    except KeyError:
-        _log.warning("temada renk yok: %s", ad)
-        return vars_
 
 
 def _sayi(x):
@@ -190,7 +182,7 @@ class SonucBolumu:
                 "Bu model için kayıtlı tükenme sonucu yok. Sonuçlar şuraya yazılır: %s "
                 "(Çalıştır sekmesindeki koşu dizininden türetilir)."
                 % _tk.kosu_dizini(self.spec, self.proje_yolu))
-            self.onceki_etiket.setStyleSheet("color: %s;" % _tema_renk("metin_soluk"))
+            self.onceki_etiket.setStyleSheet("color: %s;" % renk("metin_soluk"))
             self._sonucu_unut()
             self._grafik_bos()
             self.tablo.setRowCount(0)
@@ -272,7 +264,7 @@ class SonucBolumu:
             metin = ("Yarım kalmış koşu (%s): %d / %d adım tamamlanmış. Koşu durdurulmuş "
                      "ya da hâlâ sürüyor olabilir; tam sonuç için yeniden koşun."
                      % (tarih, yapilan, beklenen))
-            stil = "color: #c9820a; font-weight: bold;"
+            stil = "color: %s; font-weight: bold;" % renk("uyari")
         elif durum == "guncel":
             metin = "Önceki koşunun sonucu (%s) — bu modele ait." % tarih
             stil = ""
@@ -280,11 +272,11 @@ class SonucBolumu:
             metin = ("Eski sonuç (%s): model o koşudan beri değişti (%s). "
                      "Gösterilen sayılar bu modele ait değil — yeniden koşun."
                      % (tarih, _tk.fark_metni(farklar)))
-            stil = "color: #d04437; font-weight: bold;"
+            stil = "color: %s; font-weight: bold;" % renk("hata")
         else:
             metin = ("Önceki koşunun sonucu (%s). Koşunun model kaydı yok; bu "
                      "modele ait olduğu doğrulanamıyor." % tarih)
-            stil = "color: #c9820a;"
+            stil = "color: %s;" % renk("uyari")
         self.onceki_etiket.setText(metin)
         self.onceki_etiket.setStyleSheet(stil)
 
@@ -333,7 +325,7 @@ class SonucBolumu:
         self.bulunamayan_etiket.setText(
             _("Sonuçta bulunamayan nüklidler (grafikte yok): %s") % ", ".join(parcalar)
             if parcalar else "")
-        self.bulunamayan_etiket.setStyleSheet("color: %s;" % _tema_renk("hata", "#b3261e"))
+        self.bulunamayan_etiket.setStyleSheet("color: %s;" % renk("hata"))
         self.bulunamayan_etiket.setVisible(bool(parcalar))
 
     # ==================================================================
