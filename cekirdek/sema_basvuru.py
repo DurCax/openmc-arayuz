@@ -60,7 +60,18 @@ def kullanilan_malzemeler(spec):
     yans_var = yans.get("var") or spec["kor"].get("tur") == "tamburlu"
     if yans_var and yans.get("malzeme") and yans["malzeme"] != BOSLUK:
         adlar.add(yans["malzeme"])
-    return adlar
+    return adlar | _agac_malzemeleri(spec)
+
+
+def _agac_malzemeleri(spec):
+    """Gelismis modda agac ve tambur kutuphanesindeki malzeme adlari."""
+    if not isinstance(spec.get("geometri"), dict):
+        return set()
+    from cekirdek.geometri.basvuru import basvurular
+    adlar = {b.ad for b in basvurular(spec) if b.tur == "malzeme"}
+    for t in spec.get("tamburlar") or []:
+        adlar |= {t.get("govde_malzeme"), t.get("emici_malzeme")}
+    return {a for a in adlar if a and a != BOSLUK}
 
 
 # ----------------------------------------------------------------------------
@@ -211,7 +222,31 @@ def malzeme_adini_degistir(spec, eski, yeni):
         for i, b in enumerate((kor.get("eksenel") or {}).get("bolgeler") or []):
             alan(b, "dolgu", "kor/eksenel/%d/dolgu" % i)
             harita_anahtari(b, "kor/eksenel/%d" % i)
-    return yollar
+    return yollar + _agac_adini_degistir(spec, eski, yeni)
+
+
+def _agac_adini_degistir(spec, eski, yeni):
+    """Gelismis mod: tambur kutuphanesi + agactaki malzeme basvurulari (yerinde).
+    Malzemeye cozulen kisaltmalar geometri.basvuru ile ayni kuralla degisir."""
+    yollar = []
+    for t in spec.get("tamburlar") or []:
+        for k in ("govde_malzeme", "emici_malzeme"):
+            if t.get(k) == eski:
+                t[k] = yeni
+                yollar.append("tamburlar/%s/%s" % (t.get("ad"), k))
+    if not isinstance(spec.get("geometri"), dict):
+        return yollar
+    from cekirdek.geometri.basvuru import agac_adini_degistir
+    # ad cozumu malzeme listesine bakar: yeniden adlandirilmis listeyle eski
+    # adi bulabilmek icin gecici olarak eski adi goster
+    m = malzeme_bul(spec, yeni)
+    m["ad"] = eski
+    try:
+        agac, agac_yollari = agac_adini_degistir(spec, "malzeme", eski, yeni)
+    finally:
+        m["ad"] = yeni
+    spec["geometri"] = agac
+    return yollar + [y.lstrip("/") for y in agac_yollari]
 
 
 def malzeme_referanslari(spec, ad):

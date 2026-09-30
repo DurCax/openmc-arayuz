@@ -50,6 +50,7 @@
 import math
 
 from cekirdek import sema
+from cekirdek.geometri.kesit import pin_bolge_alani
 
 SQ3 = math.sqrt(3.0)
 KESIN_DEGIL = "stokastik hesap gerekli"
@@ -64,6 +65,15 @@ def kor_hucre_alani(kor):
     """Haritali korun konum hucresi alani [cm2]."""
     P = float(kor.get("adim") or 0.0)
     return SQ3 / 2.0 * P * P if kor.get("tur") == "altigen_kafes" else P * P
+
+
+def _parca_adi_mi(spec, ad):
+    """'ad' bir cubuk/plaka/demet adi mi? Kisaltma cozum sirasi (cubuk -> plaka
+    -> demet -> malzeme) geregi ayni adli malzeme o konumu DOLDURMAZ (olculdu:
+    pwr_mox_demet'te 'mox_25' hem cubuk hem malzeme; eskiden konum hucresi
+    P^2 ayrica sayiliyor, hacim 4.2 kat cikiyordu)."""
+    return any(x.get("ad") == ad for b in ("cubuklar", "plakalar", "demetler")
+               for x in spec.get(b) or [])
 
 
 def _demet_konum_sayilari(d, ad):
@@ -98,6 +108,9 @@ def dogrudan_yerlesim(spec, kor, ad, dilimler):
     """
     from cekirdek import tukenme as _tk
     V, ornek, parcalar, sorunlar = 0.0, 0, [], []
+    if _parca_adi_mi(spec, ad):
+        return {"hacim": V, "ornek": ornek, "parcalar": parcalar,
+                "sorunlar": _alan_bagimli_kullanim(spec, kor, ad)}
     haritali = kor.get("tur") in sema.HARITALI_KORLAR
     for h, dolgu, esleme in dilimler:
         if haritali and dolgu is None:
@@ -224,7 +237,9 @@ def cubuk_hacmi(spec, kor, ad, dilimler, sorunlar):
                 sorunlar.append("'%s' kontrol çubuğu (daldırmaya bağlı)" % c["ad"])
                 continue
             r_ic = bolgeler[i - 1]["r"] if i > 0 else 0.0
-            alan = math.pi * (b["r"] ** 2 - r_ic ** 2)
+            # kare/altigen kesitli pin (§15.3): alan pi r^2 degil
+            sekil = c.get("kesit") or "silindir"
+            alan = pin_bolge_alani(sekil, b["r"]) - pin_bolge_alani(sekil, r_ic)
             ek = " (daldırma %%%g: boyun %%%.4g'i)" % (
                 float(c.get("daldirma") or 0.0), 100.0 * kesir) if kontrol else ""
             for h, dolgu, esleme in dilimler:
