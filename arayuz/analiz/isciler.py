@@ -7,6 +7,9 @@ Sonuclar sinyallerle arayuze gelir; arayuz donmaz ve is durdurulabilir.
 from PySide6 import QtCore
 
 from cekirdek import kritik_arama, tarama
+from cekirdek.gunluk import kaydedici
+
+_log = kaydedici(__name__)
 
 
 class TaramaIsci(QtCore.QThread):
@@ -34,6 +37,7 @@ class TaramaIsci(QtCore.QThread):
                 dur_bayragi=lambda: self._dur)
             self.bitti.emit(sonuclar, notlar)
         except Exception as e:
+            _log.exception("parametre taramasi basarisiz (%s)", self.tur)
             self.hata.emit(str(e))
 
 
@@ -64,4 +68,5 @@ class AramaIsci(QtCore.QThread):
                 dur_bayragi=lambda: self._dur)
             self.bitti.emit(s)
         except Exception as e:
+            _log.exception("kritik arama basarisiz (%s)", self.tur)
             self.hata.emit(str(e))

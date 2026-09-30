@@ -31,6 +31,7 @@ from cekirdek.ceviri import _
 from cekirdek.gunluk import kaydedici
 
 _log = kaydedici(__name__)
+YAZI_LEJANT = 6         # nuklid grafigi lejanti [pt] (matplotlib)
 
 
 def _sayi(x):
@@ -90,7 +91,7 @@ def grafik_ciz(eksen_k, eksen_n, s):
             cizgi = True
     if cizgi:
         eksen_n.set_yscale("log")
-        eksen_n.legend(fontsize=6, ncol=2, loc="best")
+        eksen_n.legend(fontsize=YAZI_LEJANT, ncol=2, loc="best")
 
 
 def tablo_doldur(tablo, s):
@@ -126,6 +127,26 @@ def _onceki_oku(spec, dizin, izlenen):
         o["kaynak_spec"] = _tk._kayit_oku(dizin) or spec
         o["sonuc"] = _tk.sonuc_oku(o["h5"], o["kaynak_spec"], izlenen=izlenen)
     return o
+
+
+def onceki_metni(durum, farklar, tarih, yapilan, beklenen):
+    """
+    Onceki sonucun durum satiri: (metin, tema rengi adi | None, kalin mi).
+    Yarim kalmis kosu (durdurulmus ya da hala suren) "bu modele ait"
+    denmez (Ajan 9 bulgusu K11); eski sonuc kirmizi ve kalin yazilir.
+    """
+    if beklenen and yapilan is not None and yapilan < beklenen:
+        return (_("Yarım kalmış koşu (%s): %d / %d adım tamamlanmış. Koşu durdurulmuş "
+                  "ya da hâlâ sürüyor olabilir; tam sonuç için yeniden koşun.")
+                % (tarih, yapilan, beklenen), "uyari", True)
+    if durum == "guncel":
+        return _("Önceki koşunun sonucu (%s) — bu modele ait.") % tarih, None, False
+    if durum == "eski":
+        return (_("Eski sonuç (%s): model o koşudan beri değişti (%s). "
+                  "Gösterilen sayılar bu modele ait değil — yeniden koşun.")
+                % (tarih, _tk.fark_metni(farklar)), "hata", True)
+    return (_("Önceki koşunun sonucu (%s). Koşunun model kaydı yok; bu "
+              "modele ait olduğu doğrulanamıyor.") % tarih, "uyari", False)
 
 
 class _Isci(QtCore.QThread):
@@ -179,8 +200,8 @@ class SonucBolumu:
             # dizininden turer; onu degistiren kullanici onceki sonucun neden
             # "kayboldugunu" gorebilsin (Ajan 9 bulgusu K12).
             self.onceki_etiket.setText(
-                "Bu model için kayıtlı tükenme sonucu yok. Sonuçlar şuraya yazılır: %s "
-                "(Çalıştır sekmesindeki koşu dizininden türetilir)."
+                _("Bu model için kayıtlı tükenme sonucu yok. Sonuçlar şuraya yazılır: %s "
+                  "(Çalıştır sekmesindeki koşu dizininden türetilir).")
                 % _tk.kosu_dizini(self.spec, self.proje_yolu))
             self.onceki_etiket.setStyleSheet("color: %s;" % renk("metin_soluk"))
             self._sonucu_unut()
@@ -197,7 +218,7 @@ class SonucBolumu:
         if self._isci is not None and self._isci.isRunning():
             return                              # zaten okunuyor
         self.onceki_etiket.setStyleSheet("")
-        self.onceki_etiket.setText("Önceki koşunun sonucu okunuyor…")
+        self.onceki_etiket.setText(_("Önceki koşunun sonucu okunuyor…"))
         self._okuma_kusagi = self._kusak
         spec, izlenen = copy.deepcopy(self.spec), self.izlenen.secim()
         self._isci = _Isci(lambda: _onceki_oku(spec, dizin, izlenen), anahtar, self)
@@ -227,7 +248,7 @@ class SonucBolumu:
             return                              # bu arada yeni kosu basladi
         if isinstance(sonuc, Exception):
             self._onceki = None
-            self.onceki_etiket.setText("Önceki sonuç okunamadı: %s" % sonuc)
+            self.onceki_etiket.setText(_("Önceki sonuç okunamadı: %s") % sonuc)
             self._gorunum_guncelle()
             return
         if sonuc is None:
@@ -258,25 +279,10 @@ class SonucBolumu:
         kayit = _tk._kayit_oku(dizin) or {}
         beklenen = len((kayit.get("tukenme") or {}).get("adimlar") or [])
         yapilan = (self._onceki.get("sonuc") or {}).get("adim_sayisi")
-        if beklenen and yapilan is not None and yapilan < beklenen:
-            # Yarim kalmis (durdurulmus ya da hala suren) kosu: "bu modele
-            # ait" demek yaniltirdi (Ajan 9 bulgusu K11).
-            metin = ("Yarım kalmış koşu (%s): %d / %d adım tamamlanmış. Koşu durdurulmuş "
-                     "ya da hâlâ sürüyor olabilir; tam sonuç için yeniden koşun."
-                     % (tarih, yapilan, beklenen))
-            stil = "color: %s; font-weight: bold;" % renk("uyari")
-        elif durum == "guncel":
-            metin = "Önceki koşunun sonucu (%s) — bu modele ait." % tarih
-            stil = ""
-        elif durum == "eski":
-            metin = ("Eski sonuç (%s): model o koşudan beri değişti (%s). "
-                     "Gösterilen sayılar bu modele ait değil — yeniden koşun."
-                     % (tarih, _tk.fark_metni(farklar)))
-            stil = "color: %s; font-weight: bold;" % renk("hata")
-        else:
-            metin = ("Önceki koşunun sonucu (%s). Koşunun model kaydı yok; bu "
-                     "modele ait olduğu doğrulanamıyor." % tarih)
-            stil = "color: %s;" % renk("uyari")
+        metin, ton, kalin = onceki_metni(durum, farklar, tarih, yapilan, beklenen)
+        stil = ("color: %s;" % renk(ton)) if ton else ""
+        if kalin:
+            stil += " font-weight: bold;"
         self.onceki_etiket.setText(metin)
         self.onceki_etiket.setStyleSheet(stil)
 
