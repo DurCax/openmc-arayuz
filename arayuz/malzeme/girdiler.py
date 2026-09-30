@@ -73,7 +73,7 @@ class KesinSayiGirdi(QtWidgets.QLineEdit):
             return self._ilk
         try:
             return float(self.text().replace(",", "."))
-        except ValueError:
+        except ValueError:      # yarim/bozuk yazim: None -> form "gecersiz" gosterir
             return None
 
 

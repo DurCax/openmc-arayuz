@@ -119,7 +119,7 @@ class BilesimModeli(QtCore.QAbstractTableModel):
                     return False            # yalnizca silinebilir
                 else:
                     b["zenginlik"] = float(metin.replace(",", "."))
-        except ValueError:
+        except ValueError:      # sayi degil: Qt duzenlemeyi reddeder, eski deger kalir
             return False
         # satirin tamami: zenginlik hucresinin etkinligi degismis olabilir
         self.dataChanged.emit(self.index(satir, 0), self.index(satir, self.columnCount() - 1))
