@@ -895,3 +895,33 @@ Sıra: **G-0 → KAPI G-A → G-1a → G-1b → (G-2 ‖ G-3) → G-4 → birle�
    kimliğini, kendi daldırmasını ve kendi hacmini taşır (tükenme ve tally bu hacmi ayrı görür).
    Gruplar yalnız birden çok çubuğu aynı anda sürmek içindir (isteğe bağlı); bir çubuk en çok bir
    gruba üyedir.
+
+## 16. G-1 uygulama notları (30.09.2026) — donmuş API, sapmalar, devredilen işler
+
+**Paket düzeni** (`cekirdek/geometri/`): `sema.py` (türler, tanımlar, kısaltma, normalize), `denetim.py` (yapısal denetim), `sablon.py` (genişletici — belgede `genislet.py`), `kurulum.py` + `kap.py` + `bilesen.py` + `yerlesim.py` (tek gezinti — belgede `kur.py`), `yapici.py` (NesneYapici/BetikYapici), `eksenel.py`, `kesit.py`, `kesik.py`. Alt modül adları `genislet`/`kur` yerine `sablon`/`kurulum` oldu: paket işlevi `geometri.kur` ile aynı adlı alt modül, alt modül ilk içe aktarıldığında paket özniteliğini ezip işlevi modülle değiştiriyordu (ölçüldü).
+
+**Donmuş genel API** (`from cekirdek import geometri`):
+
+```python
+model(spec) -> GeometriModeli          # kok, parcalar, gruplar, tanimlar, sablon, agac
+genislet(spec) -> dict                 # saf; şablonda "_kutu", "_ic_kutu", "_sablon" notları
+gelismise_gec(spec) -> dict            # yeni spec: kor {"tur":"agac"}, tamburlar kütüphanede
+yapisal_denetim(spec) -> [Bulgu]       # yer "geometri:<yol>"
+kur(spec, nesneler, universeler) -> (Universe, (gx, gy), GeometriDizini)
+betik(spec, satirlar, malzeme_degiskeni, degisken_adi=None) -> (gx, gy, {ad: değişken})
+yukseklik(m); eksenel_dilimler(m); sinir_kutusu(m); ic_olcusu(m); gruplar(m)
+aktif_aralik(spec); hedef_araligi(spec, adlar); hedef_yuksekligi(spec, adlar=None)
+kesik_konumlar(m) -> [{"kafes", "yol", "indeks", "harf", "durum": "kesik"|"gizli"}]
+```
+`GeometriDizini`: `hucre_yolu {hücre id: yol}`, `kafes_yolu {kafes id: düğüm id}`, `kesik`, `kontrol_cubuklari {ad: [evren, ...]}`. `bilgi["geometri_dizini"]` olarak `kurucu.kur` döner. **Henüz yok (G-2'ye):** `gez`, `icerik`, `sinir_bilgisi`, `grup_degeri_yaz`, `basvurular`, `ad_degistir`, `hacim.*`, analitik `hucre_alani`.
+
+**Şema eklemeleri (§15 kararlarının uygulanışı):**
+- Pin kesiti: `cubuklar[i].kesit = "silindir"|"kare"|"altigen"`, `kesit_yonelim` (altıgende, prizma anlamı). Bölge `r` = yarı ölçü (kare kenar 2r, altıgen düz-düz 2r). Kare/altıgen pin alanı `kesit.pin_bolge_alani` (kare (2r)², altıgen (√3/2)(2r)²). Uyumlu yön ölçüldü: `kesit_yonelim = ters(kafes.yonelim)`.
+- Yüz başına sınır: kök `sinir.yuzler` — dikdörtgende `{"-x","+x","-y","+y"}`, altıgen/kafes_zarfi'nda 6 öğeli liste (yüz normali açısı artan: prizma 'y' 0°,60°…; 'x' 30°,90°…). Periyodik karşı yüzler `periodic_surface` ile eşlenir.
+- Kontrol çubuğu: her yerleşim AYRI evren; onu içeren demet/parça da paylaşılmaz (tekil). Daldırma grubu (`gruplar[].tur == "daldirma"`) tanımdaki `daldirma`yı ezer.
+
+**Eşdeğerlik kapısı sonuçları:** 27 örnek + 17 fikstür eski = yeni (parmak izi, malzeme örnek sayıları, sınır/kaynak kutusu, aktif aralık, tükenme örnek hacimleri, betik XML'i). **Bilinçli fark:** kontrol çubuğu hücrelerinde örnek sırası karşılaştırılmaz ("kc"; karar 5). **Şablon öykünmesi:** eski kurucu katman dolgusunu ayrı bir `__katman__<ad>` evreni olarak kuruyordu; şablon genişletmesi bunu `_katman` notuyla korur (distribcell örnek numaraları aynı kalsın diye). Gelişmiş modda katman içeriği R1/R2'ye uyar.
+
+**Sapmalar:** (1) §4.1 (a) beklentisi: kare deliğin köşeleri 3. yarıçap halkasından da 4 bloğu kırpar (ölçüldü; belge yalnız 2. halkayı söylüyordu). (2) Kafes zarflı kökte (R3b) '.' konumu desteklenmez (harf tanımlanmalı). (3) `kafes.dis` malzemesinde her kafese ayrı evren kurulur (eski kurucu gibi; dış dolgu evreni eleman evreniyle paylaşılmaz — C++ distribcell sayımına dokunmamak için).
+
+**G-2'ye devredilen:** `tukenme_hacim` kare/altıgen pin alanı (bugün πr² varsayar; `kesit.pin_bolge_alani` hazır); `dogrula/agac` (sığma, örtüşme, kesik UYARI mesajları — `kesik_konumlar` listesi hazır; kafes_konumu deliği konumdan taşma); `uygunluk.sinir_secenekleri` yüz başına sınır; tüketicilerin ağaç modu (§7 tablosu). `kurucu` sarmalayıcıları (`aktif_eksenel_aralik`, `guc_yuksekligi`, `cubuk_eksenel_aralik`, `guc_eksenel_araligi`, `kor_ic_olcusu`, `cubuk_universe`, `plaka_universe`, `_altigen_sinir`, `_spec_fisil_mi`, `_iceriyor_mu`) ağaç modunda da çalışır; G-2 sonunda silinir. **G-3'e:** `gelismise_gec` (Geri Al yığını eski spec'i tutar), `_kaynak` form notları henüz üretilmiyor.

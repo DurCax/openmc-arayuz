@@ -288,13 +288,29 @@ def _json_iz(iz):
     return json.loads(json.dumps(iz))
 
 
+HACIM_ORNEKLERI = ("pwr_tukenme", "pwr_gd_tukenme", "tamburlu_kor", "pwr_pinhucre")
+
+
 def kayit_uret(yol=KAYIT):
-    """Eski kurucudan 27 ornegin parmak izi kaydini uretir (bir kez)."""
+    """Eski kurucudan 27 ornek + fikstürlerin kaydi (spec dahil): A, B, C."""
+    import openmc
+    from cekirdek import kurucu, tukenme, _eski_kurucu as ek
     kayit = {}
-    for ad in _ornek_adlari():
-        a = gi.parmak_izi(_eski(), _yukle(ad), n=KAYIT_NOKTA)
-        kayit[ad] = {"kutu": list(a["kutu"]), "noktalar": a["noktalar"],
-                     "izler": _json_iz(a["izler"]), "malzeme_ornekleri": a["malzeme_ornekleri"]}
+    vakalar = [(a, _yukle(a)) for a in _ornek_adlari()] + [("F " + a, s) for a, s in fiksturler()]
+    for ad, spec in vakalar:
+        a = gi.parmak_izi(_eski(), spec, n=KAYIT_NOKTA)
+        openmc.reset_auto_ids()
+        n, _m, _r = kurucu.malzemeleri_kur(spec)
+        _k, kutu = ek.kor_kur(spec, n, {})
+        ar = ek.aktif_eksenel_aralik(spec)
+        k = {"spec": spec, "kutu": list(kutu), "noktalar": a["noktalar"],
+             "izler": _json_iz(a["izler"]), "malzeme_ornekleri": a["malzeme_ornekleri"],
+             "ic_kutu": list(_eski_ic_olcusu(spec, kutu)), "aktif": list(ar) if ar else None}
+        if ad in HACIM_ORNEKLERI:
+            adlar = set(tukenme.hacimler(spec)) or {m["ad"] for m in spec["malzemeler"]}
+            kok, _kt, mat_adi, _kc = gi.kok_kur(_eski(), spec)
+            k["hacimler"] = _ornek_hacimleri(kok, mat_adi, adlar)
+        kayit[ad] = json.loads(json.dumps(k))
     os.makedirs(os.path.dirname(yol), exist_ok=True)
     with gzip.open(yol, "wt", encoding="utf-8") as f:
         json.dump(kayit, f, separators=(",", ":"))
