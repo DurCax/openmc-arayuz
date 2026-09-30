@@ -3,9 +3,9 @@
  arayuz/demet/yerlesim.py  --  YerlesimMixin: Demet sekmesinin kart duzeni
 
  arayuz/sekme_demet.py'den bolundu. Duzen maketle ayni (maketler/demet_*.png):
-   sol  : "Izgara" karti -- harita + altinda doldurma eylemleri ve olcu ozeti
-   sag  : "Demetler" (liste + ekleme), "Parca paleti", "Demet" (ozellikler),
-          "Gelismis" kutusu; sabit genislikte sutun.
+   sol  : "Izgara" karti -- harita + altinda olcu ozeti
+   sag  : "Demetler" (liste + ekleme), "Demet" (ozellikler), "Parca paleti"
+          (firca + doldurma eylemleri), "Gelismis" kutusu; sabit genislikte sutun.
  Renk/aralik yalnizca tasarim tokenlarindan; sekme QTabWidget'a bagli degil
  (kabuk her sayfayi QScrollArea icine koyar).
 """
@@ -23,6 +23,7 @@ from arayuz.tasarim import tokenlar
 A = tokenlar.ARALIK
 SAG_SUTUN_GENISLIK = 330
 EN_AZ_HARITA = 240
+PALET_EN_COK = 8          # palet listesinin kaydirmadan gosterdigi satir (yaklasik)
 
 
 class YerlesimMixin(object):
@@ -56,22 +57,16 @@ class YerlesimMixin(object):
         self.harita_yigin.addWidget(self.hex_izgara)     # 2
         self.harita_yigin.setMinimumSize(EN_AZ_HARITA, EN_AZ_HARITA)
 
-        self.d_hepsi = bl.duz_dugme(_("Tümünü doldur"), "grid-3x3", _(
-            "Bütün hücreleri seçili parçayla doldurur (Ctrl+Z geri alır)."))
-        self.d_hepsi.clicked.connect(self._tumunu_doldur)
+        # Olcu ozeti haritanin altinda tek basina: dar ekranda (1280) dugmeyle
+        # ayni satirda kartin genisligini zorluyordu.
         self.ozet = QtWidgets.QLabel("-")
         self.ozet.setObjectName("monoSoluk")
         self.ozet.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        # Olcu ozeti dar ekranda kartin genisligini zorlamasin (kisalir).
-        self.ozet.setSizePolicy(QtWidgets.QSizePolicy.Ignored,
-                                QtWidgets.QSizePolicy.Preferred)
-        alt = sd.satir(self.d_hepsi, esnek=False)
-        alt.layout().addWidget(self.ozet, 1)
 
         self.izgara_karti = bl.Kart(
             _("Izgara"), aciklama=_("Tıklayın ya da sürükleyin · sağ tık: parçayı seç"))
         self.izgara_karti.ekle(self.harita_yigin, 1)
-        self.izgara_karti.ekle(alt)
+        self.izgara_karti.ekle(self.ozet)
         return self.izgara_karti
 
     # ------------------------------------------------------------------
@@ -109,6 +104,8 @@ class YerlesimMixin(object):
         self.palet = izgara.ParcaPaleti()
         self.palet.secildi.connect(self._firca_degisti)
         self.palet.liste.setMinimumHeight(66)
+        self.palet.setSizePolicy(QtWidgets.QSizePolicy.Preferred,
+                                 QtWidgets.QSizePolicy.Maximum)
         self.palet_notu = ipucu("")
         self.palet_notu.setVisible(False)
         # Halka doldurma altigen demete ozgudur: firca secimiyle ayni kartta.
@@ -120,11 +117,26 @@ class YerlesimMixin(object):
         self.d_halka_doldur = bl.duz_dugme(_("Halkayı doldur"), "hexagon")
         self.d_halka_doldur.clicked.connect(self._halka_doldur)
         self.palet_kutu = bl.Kart(_("Parça paleti"))
-        self.palet_kutu.ekle(self.palet, 1)
+        self.palet_kutu.ekle(self.palet)
         self.palet_kutu.ekle(self.palet_notu)
+        # Doldurma eylemleri secili parcayla (firca) calisir: paletle ayni kartta.
+        self.d_hepsi = bl.duz_dugme(_("Tümünü doldur"), "grid-3x3", _(
+            "Bütün hücreleri seçili parçayla doldurur (Ctrl+Z geri alır)."))
+        self.d_hepsi.clicked.connect(self._tumunu_doldur)
+        # Altigende halka secimi dugmelerin ustunde; iki doldurma dugmesi tek
+        # satirda (halka denetimleri kare demette gizlenir, bosluk kalmaz).
         self.palet_kutu.ekle(self.halka_secim)
-        self.palet_kutu.ekle(sd.satir(self.d_halka_doldur))
+        self.palet_kutu.ekle(sd.satir(self.d_hepsi, self.d_halka_doldur))
         return self.palet_kutu
+
+    def _palet_boyu(self):
+        """Palet listesi icerigi kadar uzar (bos alan birakmaz, sag sutun
+        ekrana sigar); PALET_EN_COK satirdan fazlasi kaydirilir."""
+        liste = self.palet.liste
+        n = min(max(liste.count(), 1), PALET_EN_COK)
+        satir = liste.sizeHintForRow(0) if liste.count() else liste.fontMetrics().height()
+        boy = n * (satir + 2 * liste.spacing()) + 2 * liste.frameWidth()
+        liste.setFixedHeight(max(boy, liste.minimumSizeHint().height()))
 
     # ------------------------------------------------------------------
     def _ozellik_karti(self):

@@ -284,6 +284,7 @@ class DemetSekmesi(YerlesimMixin, SekmeTabani):
             "ölçüsü kadar olmalı." if sigmayan else "")
         self.palet_notu.setVisible(bool(sigmayan))
         self.palet.parcalari_ayarla(ogeler, secili=firca)
+        self._palet_boyu()
         renkler = self.palet.renkler()
         for iz in (self.kare_izgara, self.hex_izgara):
             iz.renkleri_ayarla(renkler)
