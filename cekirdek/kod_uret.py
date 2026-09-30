@@ -275,6 +275,38 @@ def _kor_kafesi(spec, kor, satirlar, uretilen, anahtar=None, sonek=""):
     return v
 
 
+def _tambur_kor_hucreleri(spec, kor, ic_ad, eksen, satirlar, uretilen):
+    """
+    Tamburlu korun kor silindiri hucreleri (_hucreler listesi). Kurucu
+    (_eksenel_hucreler) kor silindirini eksenel katmanlara boler; betik de
+    ayni seyi yapmali -- eskiden tek hucre yaziliyordu ve tamburlu + eksenel
+    modelde betik farkli bir model kuruyordu (G-0 bulgusu, 30.09.2026).
+    Tamburlar ve yansitici kusak tam yuksekligi kaplar (bolunmez).
+    """
+    katmanlar = sema.eksenel_katmanlar(kor)
+    if not katmanlar:
+        satirlar.append("_hucreler = [openmc.Cell(fill=%s, region=-kor_silindir%s)]"
+                        % (ic_ad, eksen))
+        return
+    satirlar.append("# kor silindiri eksenel katmanlara bölünür (iç arayüzler 'transmission')")
+    for i, (_z0, z1, _b) in enumerate(katmanlar[:-1]):
+        satirlar.append("z_ara%d = openmc.ZPlane(%s)" % (i, _f(z1)))
+    satirlar.append("_hucreler = []")
+    for i, (_z0, _z1, b) in enumerate(katmanlar):
+        if b.get("anahtar"):
+            # kurucu._katman_dolgusu ile ayni kural (dogrula/eksenel de bunu yakalar)
+            raise ValueError(
+                "'%s' eksenel katmanı: katmana özel harf eşlemesi yalnızca kare "
+                "haritalı tam korda ya da altıgen haritalı tam korda kullanılabilir"
+                % b.get("ad"))
+        dolgu = (_bagimliliklar(spec, b["dolgu"], satirlar, uretilen)
+                 if b.get("dolgu") else ic_ad)
+        alt = "z_alt" if i == 0 else "z_ara%d" % (i - 1)
+        ust = "z_ust" if i == len(katmanlar) - 1 else "z_ara%d" % i
+        satirlar.append("_hucreler.append(openmc.Cell(fill=%s, region=-kor_silindir & +%s & -%s, "
+                        "name=%r))" % (dolgu, alt, ust, b.get("ad") or "katman %d" % (i + 1)))
+
+
 def _bagimliliklar(spec, ad, satirlar, uretilen):
     """Bir adin (cubuk/plaka/demet/malzeme) universe'ini gerektiginde uretir."""
     if ad in uretilen:
@@ -426,8 +458,7 @@ def _geometri(spec, satirlar):
         satirlar.append("kor_silindir = openmc.ZCylinder(r=%s)" % _f(R_kor))
         satirlar.append("dis_silindir = openmc.ZCylinder(r=%s, boundary_type=%r)"
                         % (_f(R_dis), yan_bc))
-        satirlar.append("_hucreler = [openmc.Cell(fill=%s, region=-kor_silindir%s)]"
-                        % (ic_ad, eksen))
+        _tambur_kor_hucreleri(spec, kor, ic_ad, eksen, satirlar, uretilen)
         satirlar.append("_yansitici = +kor_silindir & -dis_silindir")
         n = int(t.get("sayi") or 0)
         if n > 0:
