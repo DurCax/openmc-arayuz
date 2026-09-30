@@ -58,6 +58,9 @@ class KorGeometriMixin(object):
     def _geometri_alanlarini_kur(self):
         self.sablon_secici = QtWidgets.QComboBox()
         self.sablon_secici.setAccessibleName(_("Düzenek şablonu"))
+        self.sablon_secici.setSizeAdjustPolicy(
+            QtWidgets.QComboBox.AdjustToMinimumContentsLengthWithIcon)
+        self.sablon_secici.setMinimumContentsLength(18)
         for anahtar, ad in sablon_ogeleri():
             self.sablon_secici.addItem(_(ad), anahtar)
         self.sablon_secici.setToolTip(_(

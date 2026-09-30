@@ -36,7 +36,7 @@ class KesitTuvali(QtWidgets.QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setMinimumSize(12 * A["l"], 12 * A["l"])
+        self.setMinimumSize(8 * A["l"], 12 * A["l"])
         self.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         self.setMouseTracking(True)
         self.ogeler, self.kutu, self.cizgiler = [], None, []
@@ -211,6 +211,7 @@ class KesitGorunumu(QtWidgets.QWidget):
         self.z_etiket = QtWidgets.QLabel(_("z ="))
         self.d_sigdir = b.ikon_dugmesi("refresh-cw", _("Sığdır (çift tık)"))
         self.tuval = KesitTuvali()
+        self.z.kutu.setMinimumWidth(5 * A["l"])
         self.gosterge = QtWidgets.QLabel(
             _("Tıklama ağaçta seçer · tekerlek: yakınlaştır · sağ tuş: kaydır · "
               "taralı = kesik konum (uyarı)"))
@@ -230,12 +231,19 @@ class KesitGorunumu(QtWidgets.QWidget):
         u = QtWidgets.QHBoxLayout(ust)
         u.setContentsMargins(0, 0, 0, 0)
         u.setSpacing(A["s"])
-        u.addWidget(QtWidgets.QLabel(_("Kesit")))
         u.addWidget(self.eksen)
-        u.addWidget(self.z_etiket)
-        u.addWidget(self.z, 1)
+        u.addStretch(1)
         u.addWidget(self.d_sigdir)
         d.addWidget(ust)
+        # z ayri satirda: 1280 genislikte uc panel yan yana sigsin (yatay kaydirma yok).
+        z_satiri = QtWidgets.QWidget()
+        zs = QtWidgets.QHBoxLayout(z_satiri)
+        zs.setContentsMargins(0, 0, 0, 0)
+        zs.setSpacing(A["s"])
+        zs.addWidget(self.z_etiket)
+        zs.addWidget(self.z, 1)
+        self.z_satiri = z_satiri
+        d.addWidget(z_satiri)
         d.addWidget(self.tuval, 1)
         d.addWidget(self.gosterge)
 
@@ -250,8 +258,7 @@ class KesitGorunumu(QtWidgets.QWidget):
         if self.spec is None:
             return
         xy = self.eksen_adi() == "xy"
-        self.z.setVisible(xy)
-        self.z_etiket.setVisible(xy)
+        self.z_satiri.setVisible(xy)
         if xy:
             ogeler, kutu, olcek = cizim.xy_ogeleri(self.spec, self.z.deger())
             self.tuval.ayarla(ogeler, kutu, (), olcek)

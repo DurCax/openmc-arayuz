@@ -104,6 +104,11 @@ class KorYerlesimMixin(object):
 
     def _yukseklik_alanlari_kur(self):
         self.yukseklik_modu = QtWidgets.QComboBox()
+        # Uzun secenek ("3B, katmanlı (...)") kutuyu ~300 px yapiyordu: yan yana iki
+        # kart 1280 genislikte yatay kaydirma doguruyordu (G-3 olcumu).
+        self.yukseklik_modu.setSizeAdjustPolicy(
+            QtWidgets.QComboBox.AdjustToMinimumContentsLengthWithIcon)
+        self.yukseklik_modu.setMinimumContentsLength(14)
         for veri, ad in YUKSEKLIK_MODLARI:
             self.yukseklik_modu.addItem(ad, veri)
         self.yukseklik_modu.setToolTip(

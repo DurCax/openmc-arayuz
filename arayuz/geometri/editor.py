@@ -34,8 +34,8 @@ from arayuz.tasarim import tokenlar
 _log = kaydedici("arayuz.geometri.editor")
 A = tokenlar.ARALIK
 _CIZIM_GECIKMESI = 150            # ms: form yazarken kesit en cok bu siklikta cizilir
-_AGAC_EN_AZ = 14 * A["l"]
-_FORM_EN_AZ = 17 * A["l"]
+_AGAC_EN_AZ = 11 * A["l"]
+_FORM_EN_AZ = 15 * A["l"]
 
 
 class GelismisEditor(QtWidgets.QWidget):
