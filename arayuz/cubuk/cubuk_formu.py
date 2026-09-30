@@ -44,6 +44,7 @@ class CubukFormuMixin(object):
         self.e_tur.setVisible(not tek)
         self.c_tur.setVisible(not tek)
 
+        self._kesit_doldur(c)
         self._emici_doldur(c)
         self._izleyici_doldur(c)
         dd = float(c.get("daldirma") or 0.0)
@@ -52,6 +53,23 @@ class CubukFormuMixin(object):
         self._kontrol_gorunurluk()
         self._uc_guncelle()
         self._tablo_doldur(c)
+
+    def _kesit_doldur(self, c):
+        """Pin kesiti (silindir / kare / altigen) ve altigen yonelimi."""
+        for kutu, deger in ((self.c_kesit, c.get("kesit") or "silindir"),
+                            (self.c_kesit_yonelim, c.get("kesit_yonelim") or "y")):
+            eski = kutu.blockSignals(True)
+            kutu.setCurrentIndex(max(kutu.findData(deger), 0))
+            kutu.blockSignals(eski)
+        altigen = self.c_kesit.currentData() == "altigen"
+        self.c_kesit_yonelim.setVisible(altigen)
+        self.e_kesit_yonelim.setVisible(altigen)
+
+    def _kesit_degisti(self, *_):
+        altigen = self.c_kesit.currentData() == "altigen"
+        self.c_kesit_yonelim.setVisible(altigen)
+        self.e_kesit_yonelim.setVisible(altigen)
+        self._cubuk_kaydet()
 
     def _emici_doldur(self, c):
         """Emici bolge: dis bolge haric; numaralandirma 1'den."""
@@ -258,6 +276,14 @@ class CubukFormuMixin(object):
             k = self.c_tablo.cellWidget(i, 1)
             bolgeler.append({"r": r, "malzeme": k.currentData() if k else None})
         c["bolgeler"] = bolgeler
+        kesit = self.c_kesit.currentData()
+        # Silindir varsayilandir: dosyada alan yoksa yazilmaz (eski dosyalar degismez).
+        if kesit != "silindir" or "kesit" in c:
+            c["kesit"] = kesit
+        if kesit == "altigen":
+            c["kesit_yonelim"] = self.c_kesit_yonelim.currentData()
+        else:
+            c.pop("kesit_yonelim", None)
         if c.get("tur") == "kontrol":
             ix = self.c_emici.currentData()
             c["emici_bolge"] = ix if isinstance(ix, int) else 0

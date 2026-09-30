@@ -7,7 +7,7 @@
 """
 
 from PySide6 import QtCore, QtWidgets
-from cekirdek.ceviri import _
+from cekirdek.ceviri import N_, _
 from arayuz import bilesenler as bl
 from arayuz import sekme_duzen as sd
 from arayuz.ortak import baslik, ipucu, sayi, tamsayi
@@ -18,6 +18,11 @@ from arayuz.tasarim import tokenlar
 # Yaricap sutununda metnin disinda: ok dugmeleri + kutu dolgusu (token).
 YARICAP_SUTUN_PAYI = 6 * tokenlar.ARALIK["s"]
 
+
+
+# Pin kesiti secenekleri (cekirdek/geometri/kesit.PIN_SEKILLERI ile ayni sira)
+PIN_KESITLERI = (("silindir", N_("Silindir (eş merkezli daireler)")),
+                 ("kare", N_("Kare")), ("altigen", N_("Altıgen")))
 
 class SayfalarMixin(object):
     """Cubuk ve plaka duzenleme sayfalarinin yerlesimi."""
@@ -73,6 +78,8 @@ class SayfalarMixin(object):
         d.addWidget(self.c_bolge_karti, 1)
 
         self.c_tur.currentIndexChanged.connect(self._cubuk_tur_degisti)
+        self.c_kesit.currentIndexChanged.connect(self._kesit_degisti)
+        self.c_kesit_yonelim.currentIndexChanged.connect(self._cubuk_kaydet)
         self.c_emici.currentIndexChanged.connect(self._cubuk_kaydet)
         self.c_izleyici.currentIndexChanged.connect(self._cubuk_kaydet)
         self.c_daldirma.valueChanged.connect(self._daldirma_degisti)
@@ -89,6 +96,21 @@ class SayfalarMixin(object):
         self.c_daldirma_kaydirici.setRange(0, 1000)
         self.c_uc_etiket = QtWidgets.QLabel("-")
         self.c_kontrol_etiketleri = {}
+        # Pin kesiti (Dalga G, §15 karar 3): bolgeler ayni sekilde ic ice.
+        self.c_kesit = QtWidgets.QComboBox()
+        self.c_kesit.setAccessibleName(_("pin kesiti"))
+        for veri, ad in PIN_KESITLERI:
+            self.c_kesit.addItem(_(ad), veri)
+        self.c_kesit.setToolTip(_(
+            "Bölgelerin şekli. Kare ve altıgende “yarıçap” yarı ölçüdür: kare kenarı "
+            "2r, altıgen düz yüzden düz yüze 2r. En dış bölge hücre adımıdır."))
+        self.c_kesit_yonelim = QtWidgets.QComboBox()
+        self.c_kesit_yonelim.setAccessibleName(_("pin kesit yönelimi"))
+        self.c_kesit_yonelim.addItem(_("y — düz yüzler sağda/solda"), "y")
+        self.c_kesit_yonelim.addItem(_("x — düz yüzler üstte/altta"), "x")
+        self.c_kesit_yonelim.setToolTip(_(
+            "Altıgen pin kafesin yönelimiyle uyumlu olmalı: kafes 'y' ise pin 'x', "
+            "kafes 'x' ise pin 'y' (ölçüldü)."))
 
     def _bolge_tablosu(self):
         self.c_tablo = QtWidgets.QTableWidget(0, 3)
@@ -137,6 +159,9 @@ class SayfalarMixin(object):
         form.addRow("", self.c_ad_hata)
         self.e_tur = QtWidgets.QLabel(_("Tür"))
         form.addRow(self.e_tur, self.c_tur)
+        form.addRow(_("Kesit"), self.c_kesit)
+        self.e_kesit_yonelim = QtWidgets.QLabel(_("Kesit yönelimi"))
+        form.addRow(self.e_kesit_yonelim, self.c_kesit_yonelim)
         for etiket, alan, anahtar in ((_("Emici bölge"), self.c_emici, "emici"),
                                       (_("İzleyici malzeme"), self.c_izleyici, "izleyici")):
             e = QtWidgets.QLabel(etiket)
