@@ -179,6 +179,23 @@ def _parca_rengi(spec, ad, derinlik=0):
     return _malzeme_rengi(spec, ad)
 
 
+def parca_rengi(spec, ad):
+    """
+    Parcanin / malzemenin cizim rengi (r, g, b): dogal rengi (_parca_rengi),
+    yoksa addan BELIRLEYICI bir kategorik palet rengi (sematik geometri
+    kesiti her cizimde ayni renkleri gorsun). Tambur tanimi gövde rengini alir.
+    """
+    for t in spec.get("tamburlar") or []:
+        if t.get("ad") == ad:
+            return parca_rengi(spec, t.get("govde_malzeme"))
+    rgb = _parca_rengi(spec, ad)
+    if rgb is not None:
+        return rgb
+    if not ad:
+        return _TANIMSIZ_RENGI
+    return _PALET[sum(ord(ch) for ch in str(ad)) % len(_PALET)]
+
+
 _TUR_ETIKETI = {"cubuk": "çubuk", "plaka": "plaka", "demet": "kafes",
                 "malzeme": "malzeme", "bosluk": "boşluk"}
 
