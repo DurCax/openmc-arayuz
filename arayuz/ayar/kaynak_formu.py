@@ -35,7 +35,7 @@ class KaynakFormuMixin(object):
                 continue
             try:
                 cikti.append(float(parca))
-            except ValueError:
+            except ValueError:  # sayi olmayan parca atlanir; dogrulama bos listeyi bildirir
                 pass
         return cikti
 
@@ -60,7 +60,7 @@ class KaynakFormuMixin(object):
                 a_, b_ = parca.split(":", 1)
                 try:
                     noktalar.append([float(a_), float(b_)])
-                except ValueError:
+                except ValueError:  # bozuk "E:p" cifti atlanir; dogrulama eksigi bildirir
                     pass
             e["noktalar"] = noktalar
         elif tur == "histogram":
