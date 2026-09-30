@@ -5,6 +5,7 @@
 
 from cekirdek import sema
 from cekirdek.kod_uret.ad import _ad, _f, _bolum, _mat_ifade  # noqa: F401
+from cekirdek.geometri.yapici import yorum_metni
 
 
 def _guc_dagilimi(spec, satirlar, uretilen, gx, gy):
@@ -15,7 +16,7 @@ def _guc_dagilimi(spec, satirlar, uretilen, gx, gy):
     hedefler, eksik = _guc_hedefleri(spec, uretilen)
     for cubuk_ad in eksik:
         satirlar.append("")
-        satirlar.append("# Uyarı: güç dağılımı için '%s' çubuğu geometride" % cubuk_ad)
+        satirlar.append("# Uyarı: güç dağılımı için '%s' çubuğu geometride" % yorum_metni(cubuk_ad))
         satirlar.append("# bulunamadı; tally üretilmedi.")
     if not hedefler:
         return []

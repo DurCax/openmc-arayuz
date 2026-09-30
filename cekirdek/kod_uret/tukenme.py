@@ -7,6 +7,7 @@
 
 from cekirdek import sema
 from cekirdek.kod_uret.ad import _ad, _f, _bolum, _mat_ifade  # noqa: F401
+from cekirdek.geometri.yapici import yorum_metni
 
 
 def _tukenme(spec, satirlar):
@@ -28,16 +29,16 @@ def _tukenme(spec, satirlar):
     satirlar.append("# hızı aynı oranda yanlış olur ve k-eff'te iz bırakmaz.")
     for ad, v in hv.items():
         satirlar.append("%s.depletable = True" % _ad(ad))
-        satirlar.append("%s.volume = %r   # cm³ — %s" % (_ad(ad), v["hacim"], v["ayrinti"]))
+        satirlar.append("%s.volume = %r   # cm³ — %s" % (_ad(ad), v["hacim"], yorum_metni(v["ayrinti"])))
     ayir = bool(t.get("malzemeleri_ayir"))
     if ayir:
         _ornek_ayirma_satirlari(spec, hv, satirlar)
     satirlar.append("")
-    satirlar.append("# Zincir: %s" % zs["gerekce"])
+    satirlar.append("# Zincir: %s" % yorum_metni(zs["gerekce"]))
     satirlar.append("# Bu yol bu makineye aittir; başka yerde OPENMC_CHAIN_FILE'a bakın.")
     satirlar.append("TUKENME_ZINCIRI = %r" % zs["yol"])
     satirlar.append("TUKENME_ADIMLARI = %r   # %s" % ([float(a) for a in t["adimlar"]],
-                                                    t.get("adim_birimi") or "d"))
+                                                    yorum_metni(t.get("adim_birimi") or "d")))
     satirlar.append("")
     satirlar.append("")
     satirlar.append("def tukenme_kos():")
