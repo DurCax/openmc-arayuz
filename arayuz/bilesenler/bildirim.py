@@ -127,6 +127,19 @@ def _acik_bildirimler(pencere):
     return sorted(acik, key=lambda b: b.sira)
 
 
+def _boyutla(b):
+    """
+    Yukseklik SABIT genislikteki sarilan metne gore (heightForWidth).
+    adjustSize() sarili QLabel'in sizeHint'ini sezgisel bir genislikle hesaplar
+    (tema yazi tipiyle 309 px) ve etiketin gercek genisligi (256 px) icin bir
+    satir eksik kalir: acilis bildiriminin metni kirpiliyordu.
+    """
+    b.adjustSize()
+    gerek = b.heightForWidth(b.width()) if b.hasHeightForWidth() else -1
+    if gerek > b.height():
+        b.resize(b.width(), gerek)
+
+
 def yeniden_diz(pencere):
     """Bildirimleri sag alttan yukari dogru yigar (en yenisi altta)."""
     try:
@@ -140,7 +153,7 @@ def yeniden_diz(pencere):
     if durum is not None and durum.isVisible():
         alt -= durum.height()
     for b in reversed(acik):
-        b.adjustSize()
+        _boyutla(b)
         y = alt - b.height()
         b.move(pencere.width() - b.width() - A["l"], y)
         b.raise_()

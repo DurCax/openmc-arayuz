@@ -560,10 +560,37 @@ def test_maket_araclari_ayar_yalitir():
     kontrol("ayarlari_yalit tekrar cagrilinca ayni dizini kullanir", d1 == d2,
             "-> %s %s" % (d1, d2))
 
+def test_bildirim_uzun_metin_kirpilmaz():
+    print("\n[T10b] BILDIRIM: uzun (sarilan) metin kirpilmaz -- acilis bildirimi")
+    from PySide6 import QtWidgets
+    from arayuz import tema
+    from arayuz.bilesenler import bildir
+    uyg = _qt()
+    tema.uygula(uyg)          # tema yazi tipi/dolgusu olmadan hata gorunmuyordu
+    p = QtWidgets.QMainWindow()
+    p.resize(1280, 800)
+    p.show()
+    metinler = ("Örnek kopya olarak açıldı: sfr_met1000_kor.json — kaydetmek için "
+                "'Farklı kaydet' kullanın (örnek dosyası değişmez)",
+                "Kısa", "Açıldı: " + "/cok/uzun/bir/yol" * 6 + " dosya.json " * 4)
+    kirpik = []
+    for m in metinler:
+        b = bildir(p, m, "bilgi", 0)
+        e = b.etiket
+        gerek = e.heightForWidth(e.width())
+        if e.height() < gerek or not b.rect().contains(e.geometry()):
+            kirpik.append((m[:30], e.height(), gerek))
+        b.kapat()
+    kontrol("etiket yuksekligi sarilan metne yetiyor (heightForWidth)", not kirpik,
+            "-> %s" % kirpik)
+    _sil(p)
+
+
 HIZLI = [test_kontrast_wcag, test_token_olcekleri, test_tema_eski_anahtarlar, test_qss_uyarisiz,
          test_eski_ekran_uyumu,
          test_yazi_tipi, test_ikonlar, test_tema_degisimi_ikon_ve_renk, test_kenar_cubugu,
-         test_komut_paleti, test_bildirim, test_form_bilesenleri, test_maket_ve_galeri_kurulur,
+         test_komut_paleti, test_bildirim, test_bildirim_uzun_metin_kirpilmaz,
+         test_form_bilesenleri, test_maket_ve_galeri_kurulur,
          test_bilinmeyen_tema_loglanir, test_segment_bilinmeyen_anahtar,
          test_bildir_pencere_yok, test_stil_resmi_uretilemezse, test_maket_araclari_ayar_yalitir]
 YAVAS = []
