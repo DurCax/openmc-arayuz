@@ -366,10 +366,223 @@ def test_analiz_kartlari():
     a.close()
 
 
+def test_spec_gidis_donus_27_ornek():
+    print("\n[TG11] GIDIS-DONUS: Tukenme ve Analiz sekmesi 27 ornekte spec'i degistirmez")
+    uyg = _qt()
+    if uyg is None:
+        return
+    import glob
+    from cekirdek import sema
+    from arayuz.sekme_analiz import AnalizSekmesi
+    from arayuz.sekme_tukenme import TukenmeSekmesi
+    t, a = TukenmeSekmesi(), AnalizSekmesi()
+    yollar = sorted(glob.glob(os.path.join(ORNEK, "*.json")))
+    farkli = []
+    for yol in yollar:
+        s = sema.yukle(yol)
+        once = copy.deepcopy(s)
+        t.spec_yukle(s)
+        t.bekle()
+        t._kaydet()
+        a.spec_ayarla(s)
+        if s != once:
+            farkli.append(os.path.basename(yol))
+    kontrol("%d ornek; spec degismedi" % len(yollar), len(yollar) >= 27 and not farkli,
+            "-> %r" % farkli)
+    t.close()
+    a.close()
+
+
+def test_onceki_metni():
+    print("\n[TG12] ONCEKI SONUC SATIRI: yarim / guncel / eski / kayitsiz")
+    from arayuz.tukenme_sonuc import onceki_metni
+    m, ton, kalin = onceki_metni("guncel", [], "01.01.2026 10:00", 2, 5)
+    kontrol("yarim kosu: uyari, kalin", "Yarım" in m and "2 / 5" in m and ton == "uyari"
+            and kalin)
+    kontrol("guncel: renksiz", onceki_metni("guncel", [], "t", 5, 5)[1:] == (None, False))
+    kontrol("eski: hata, kalin", onceki_metni("eski", [], "t", None, 0)[1:] == ("hata", True))
+    kontrol("kayitsiz: uyari", onceki_metni("bilinmiyor", [], "t", None, 0)[1] == "uyari")
+
+
+# ============================================================================
+# 5. Kosu akisi (MC'siz): sahte tukenme sureci
+# ============================================================================
+
+_SAHTE_SUREC = """#!/bin/sh
+# sahte 'python -m cekirdek.tukenme <spec> -s N --dizin D' (MC'siz)
+for a in "$@"; do son="$a"; done
+echo "[openmc.deplete] adim 1"
+echo " Combined k-effective = 1.30 +/- 0.001"
+echo "  TÜKENME bitti"
+case "%s" in
+  basari) : > "$son/depletion_results.h5"; exit 0 ;;
+  hata) exit 3 ;;
+  bekle) sleep 20 ;;
+esac
+"""
+
+
+def _sahte_kosu(gecici, kip, sonuc_oku=None):
+    """Sahte surecle bir tukenme sekmesi kosturur; bitince sekmeyi dondurur."""
+    import stat
+    import types
+    from PySide6 import QtWidgets
+    from arayuz import sekme_tukenme as st
+    betik = os.path.join(gecici, "sahte_%s.sh" % kip)
+    with open(betik, "w") as f:
+        f.write(_SAHTE_SUREC % kip)
+    os.chmod(betik, os.stat(betik).st_mode | stat.S_IEXEC)
+    t = st.TukenmeSekmesi()
+    t.proje_ayarla(os.path.join(gecici, "proje_%s.json" % kip))
+    t.spec_yukle(_spec("pwr_tukenme"))
+    t.bekle()
+    t.kapi_ayarla(lambda: (True, "hazır"))
+    eski_sys, eski_oku = st.sys, st._tk.sonuc_oku
+    st.sys = types.SimpleNamespace(executable=betik if kip != "yok" else "/yok/python")
+    st._tk.sonuc_oku = sonuc_oku or (lambda *a, **k: copy.deepcopy(SAHTE_SONUC))
+    try:
+        t.baslat()
+        return t, st, eski_sys, eski_oku
+    except Exception:
+        st.sys, st._tk.sonuc_oku = eski_sys, eski_oku
+        raise
+
+
+def _bitmesini_bekle(t, sure=15.0):
+    from PySide6 import QtWidgets
+    son = time.monotonic() + sure
+    while t._surec is not None and time.monotonic() < son:
+        QtWidgets.QApplication.processEvents()
+        time.sleep(0.02)
+    QtWidgets.QApplication.processEvents()
+
+
+def test_kosu_akisi_sahte_surec(gecici):
+    print("\n[TG13] KOSU AKISI: basari, hata, okunamayan sonuc, baslatilamayan surec")
+    uyg = _qt()
+    if uyg is None:
+        return
+    for kip, oku, beklenen in (
+            ("basari", None, "Tamamlandı"),
+            ("hata", None, "Başarısız"),
+            ("basari", lambda *a, **k: (_ for _ in ()).throw(ValueError("bozuk h5")),
+             "Sonuç okunamadı"),
+            ("yok", None, "Başarısız")):
+        t, st, eski_sys, eski_oku = _sahte_kosu(gecici, kip, oku)
+        try:
+            kontrol("%s: kosu basladi (Durdur etkin)" % kip,
+                    kip == "yok" or t.d_durdur.isEnabled())
+            _bitmesini_bekle(t)
+        finally:
+            st.sys, st._tk.sonuc_oku = eski_sys, eski_oku
+        kontrol("%s: surec bitti, Durdur kapali" % kip,
+                t._surec is None and not t.d_durdur.isEnabled())
+        kontrol("%s: sure etiketi '%s...'" % (kip, beklenen),
+                t.sure_etiket.text().startswith(beklenen), "-> %r" % t.sure_etiket.text())
+        if kip == "basari" and oku is None:
+            kontrol("basari: transport sayildi, tablo dolu, CSV etkin",
+                    t._transport == 1 and t.tablo.rowCount() == 2
+                    and t.csv_dugmesi.isEnabled())
+            kontrol("basari: gunlukte yalniz anlamli satirlar",
+                    "TÜKENME" in t.log.toPlainText()
+                    and "Combined k-effective" in t.log.toPlainText())
+        else:
+            kontrol("%s: ayrintili cikti acildi" % kip, t.ayrinti.acik_mi())
+        t.close()
+
+
+def test_kosu_sirasinda_proje_degisti(gecici):
+    print("\n[TG14] KUSAK: kosu surerken proje degisirse sonuc yeni projeye yazilmaz")
+    uyg = _qt()
+    if uyg is None:
+        return
+    t, st, eski_sys, eski_oku = _sahte_kosu(gecici, "bekle")
+    try:
+        t.sifirla()
+        kontrol("sifirla: kapi 'Önceki projenin ...' uyarisi",
+                "Önceki projenin" in t.kapi_etiket.text(), "-> %r" % t.kapi_etiket.text())
+        t.durdur()
+        _bitmesini_bekle(t)
+    finally:
+        st.sys, st._tk.sonuc_oku = eski_sys, eski_oku
+    kontrol("durduruldu: surec yok, sonuc yazilmadi",
+            t._surec is None and t.tablo.rowCount() == 0)
+    kontrol("eski kosunun gunlugu yeni projeye yazilmadi",
+            "durduruldu" not in t.log.toPlainText())
+    t.close()
+
+
+def test_kapi_ve_uygunsuz_baslatma():
+    print("\n[TG15] KAPI: uygun olmayan / kapali modelde baslatilamaz")
+    uyg = _qt()
+    if uyg is None:
+        return
+    from PySide6 import QtWidgets
+    t = _sekme()
+    t.kapi_ayarla(lambda: (True, "hazır"))
+    uyarilar = []
+    eski = QtWidgets.QMessageBox.warning
+    QtWidgets.QMessageBox.warning = lambda *a, **k: uyarilar.append(a[2])
+    try:
+        t.var.setChecked(False)
+        t.baslat()
+        kontrol("kapali: uyari, surec yok", uyarilar and t._surec is None, "-> %r" % uyarilar)
+        t._uygunluk_oku = lambda: (False, "sabit kaynak modeli")
+        t.baslat()
+        kontrol("uygun degil: 'Bu modelde yapılamaz'", "yapılamaz" in uyarilar[-1])
+    finally:
+        QtWidgets.QMessageBox.warning = eski
+    t._uygun = (False, "sabit kaynak modeli")
+    t.kapi_guncelle()
+    kontrol("uygun degil: kapi metni ve dugme kapali",
+            "yapılamaz" in t.kapi_etiket.text() and not t.d_baslat.isEnabled())
+    t.adimlar.setText("1, x, -2")
+    t._kaydet()
+    kontrol("gecersiz adim: ozet uyarisi", "geçersiz" in t.adim_ozet.text()
+            and t.spec["tukenme"]["adimlar"] == [1.0, -2.0])
+    t.close()
+
+
+def test_analiz_iscileri():
+    print("\n[TG16] ANALIZ ISCILERI: sonuc ve hata sinyalleri (MC'siz)")
+    from cekirdek import kritik_arama, tarama
+    from arayuz.analiz.isciler import AramaIsci, TaramaIsci
+    gelen = []
+    eski_c, eski_a = tarama.calistir, kritik_arama.ara
+    try:
+        def _sahte_tarama(*_a, **k):
+            k["geri_cagir"](0, 1, {"deger": 1.0})
+            return [{"deger": 1.0}], ["not"]
+        tarama.calistir = _sahte_tarama
+        kritik_arama.ara = lambda *a, **k: "cozum"
+        ti = TaramaIsci({}, "bor_ppm", "su", [1.0], "/tmp", 1)
+        ti.nokta.connect(lambda i, n, s: gelen.append(("nokta", i)))
+        ti.bitti.connect(lambda s, n: gelen.append(("bitti", n)))
+        ti.run()
+        ai = AramaIsci({}, "bor_ppm", "su", 0, 1, 1.0, "/tmp", 1)
+        ai.bitti.connect(lambda s: gelen.append(("arama", s)))
+        ai.run()
+        tarama.calistir = kritik_arama.ara = lambda *a, **k: 1 / 0
+        for isci in (TaramaIsci({}, "x", None, [], "/tmp", 1),
+                     AramaIsci({}, "x", None, 0, 1, 1.0, "/tmp", 1)):
+            isci.hata.connect(lambda m: gelen.append(("hata", m)))
+            isci.durdur()
+            isci.run()
+    finally:
+        tarama.calistir, kritik_arama.ara = eski_c, eski_a
+    kontrol("tarama: nokta + bitti, arama: bitti", gelen[:3] == [
+        ("nokta", 0), ("bitti", ["not"]), ("arama", "cozum")], "-> %r" % gelen)
+    kontrol("hata iki iscide de sinyalle geldi",
+            [g[0] for g in gelen[3:]] == ["hata", "hata"], "-> %r" % gelen)
+
+
 HIZLI = [test_yeni_gruplar, test_yeni_setler, test_zincirde_cozulme,
          test_silinmis_sekmeye_gec_sonuc, test_kapanista_bekleyen_cizim_iptal,
          test_klon_adlari_ve_hacimleri, test_sonuc_oku_klon_yogunlugu,
-         test_secici_tum_setler_akista, test_tukenme_kartlari, test_analiz_kartlari]
+         test_secici_tum_setler_akista, test_tukenme_kartlari, test_analiz_kartlari,
+         test_spec_gidis_donus_27_ornek, test_onceki_metni,
+         test_kosu_akisi_sahte_surec, test_kosu_sirasinda_proje_degisti,
+         test_kapi_ve_uygunsuz_baslatma, test_analiz_iscileri]
 YAVAS = []
 ZINCIR_GEREKEN = [test_zincirde_cozulme, test_silinmis_sekmeye_gec_sonuc,
                   test_kapanista_bekleyen_cizim_iptal, test_tukenme_kartlari]
