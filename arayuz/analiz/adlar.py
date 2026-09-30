@@ -10,7 +10,7 @@ baslangic araliklari durur. Qt'ye bagimli tek yer form yardimcilaridir.
 from PySide6 import QtWidgets
 
 from cekirdek import sema, tarama
-from cekirdek.ceviri import _
+from cekirdek.ceviri import N_, _
 from cekirdek.gunluk import kaydedici
 from arayuz.tasarim import tokenlar
 
@@ -59,42 +59,42 @@ def form_duzeni():
 
 
 PARAMETRE_ADLARI = {
-    "yakit_sicaklik": ("Yakıt sıcaklığı (Doppler)",
-                       "Yakıtın sıcaklığı değişir; yoğunluğu sabit tutulur (katı yakıt)."),
-    "sogutucu_sicaklik": ("Soğutucu sıcaklığı",
-                          "Sıcaklıkla birlikte yoğunluk da değişir (su tablosu, Na ve "
-                          "Pb-Bi korelasyonları); moderatör sıcaklık katsayısını verir."),
-    "void_orani": ("Soğutucu boşluğu (void)",
-                   "Soğutucu yoğunluğu boşluk oranı kadar azaltılır."),
-    "bor_ppm": ("Çözünmüş bor",
-                "Suya doğal bor eklenir (ppm, kütlece)."),
-    "zenginlik": ("Uranyum zenginliği",
-                  "U-235'in ağırlıkça yüzdesi."),
-    "cubuk_daldirma": ("Kontrol çubuğu daldırma",
-                       "%0 tamamen çekilmiş, %100 tamamen dalmış."),
-    "tambur_donme": ("Kontrol tamburu dönmesi",
-                     "0° emici kora bakar (en düşük k), 180° dışa bakar (en yüksek k)."),
-    "yansitici_kalinlik": ("Yansıtıcı kuşak kalınlığı",
-                           "Yansıtıcı kuşağın radyal kalınlığı."),
-    "kafes_adim": ("Çubuk adımı (moderasyon oranı)",
-                   "Demetteki çubuk adımı; moderatör/yakıt oranını değiştirir."),
-    "kor_adim": ("Kor hücre adımı",
-                 "Pin hücrede hücre adımı, tam korda demet adımı."),
-    "cubuk_yaricap": ("Çubuk bölge yarıçapı",
-                      "Çubuğun seçilen bölgesinin dış yarıçapı."),
-    "malzeme_yogunluk": ("Malzeme yoğunluğu",
-                         "Seçilen malzemenin yoğunluğu (g/cm³)."),
+    "yakit_sicaklik": (N_("Yakıt sıcaklığı (Doppler)"),
+                       N_("Yakıtın sıcaklığı değişir; yoğunluğu sabit tutulur (katı yakıt).")),
+    "sogutucu_sicaklik": (N_("Soğutucu sıcaklığı"),
+                          N_("Sıcaklıkla birlikte yoğunluk da değişir (su tablosu, Na ve "
+                             "Pb-Bi korelasyonları); moderatör sıcaklık katsayısını verir.")),
+    "void_orani": (N_("Soğutucu boşluğu (void)"),
+                   N_("Soğutucu yoğunluğu boşluk oranı kadar azaltılır.")),
+    "bor_ppm": (N_("Çözünmüş bor"),
+                N_("Suya doğal bor eklenir (ppm, kütlece).")),
+    "zenginlik": (N_("Uranyum zenginliği"),
+                  N_("U-235'in ağırlıkça yüzdesi.")),
+    "cubuk_daldirma": (N_("Kontrol çubuğu daldırma"),
+                       N_("%0 tamamen çekilmiş, %100 tamamen dalmış.")),
+    "tambur_donme": (N_("Kontrol tamburu dönmesi"),
+                     N_("0° emici kora bakar (en düşük k), 180° dışa bakar (en yüksek k).")),
+    "yansitici_kalinlik": (N_("Yansıtıcı kuşak kalınlığı"),
+                           N_("Yansıtıcı kuşağın radyal kalınlığı.")),
+    "kafes_adim": (N_("Çubuk adımı (moderasyon oranı)"),
+                   N_("Demetteki çubuk adımı; moderatör/yakıt oranını değiştirir.")),
+    "kor_adim": (N_("Kor hücre adımı"),
+                 N_("Pin hücrede hücre adımı, tam korda demet adımı.")),
+    "cubuk_yaricap": (N_("Çubuk bölge yarıçapı"),
+                      N_("Çubuğun seçilen bölgesinin dış yarıçapı.")),
+    "malzeme_yogunluk": (N_("Malzeme yoğunluğu"),
+                         N_("Seçilen malzemenin yoğunluğu (g/cm³).")),
 }
 
 # Katsayinin adi (sonuc kartinda). Listede olmayan: "Reaktivite katsayısı".
 KATSAYI_ADLARI = {
-    "yakit_sicaklik": "Doppler katsayısı",
-    "sogutucu_sicaklik": "Moderatör sıcaklık katsayısı",
-    "void_orani": "Boşluk (void) katsayısı",
-    "bor_ppm": "Bor değeri",
-    "zenginlik": "Zenginlik duyarlılığı",
-    "cubuk_daldirma": "Çubuk değeri (diferansiyel)",
-    "tambur_donme": "Tambur değeri (diferansiyel)",
+    "yakit_sicaklik": N_("Doppler katsayısı"),
+    "sogutucu_sicaklik": N_("Moderatör sıcaklık katsayısı"),
+    "void_orani": N_("Boşluk (void) katsayısı"),
+    "bor_ppm": N_("Bor değeri"),
+    "zenginlik": N_("Zenginlik duyarlılığı"),
+    "cubuk_daldirma": N_("Çubuk değeri (diferansiyel)"),
+    "tambur_donme": N_("Tambur değeri (diferansiyel)"),
 }
 
 # Liste sirasi: en yaygin analizler basta. Tasarim etutleri (geometri ve
@@ -122,8 +122,19 @@ _VARSAYILAN = {
 
 def parametre_adi(tur):
     if tur in PARAMETRE_ADLARI:
-        return PARAMETRE_ADLARI[tur][0]
+        return _(PARAMETRE_ADLARI[tur][0])
     return tarama.TURLER.get(tur, (tur,))[0]
+
+
+def parametre_ipucu(tur):
+    """Parametrenin kisa aciklamasi (liste ipucu); yoksa bos."""
+    metin = PARAMETRE_ADLARI.get(tur, ("", ""))[1]
+    return _(metin) if metin else ""
+
+
+def katsayi_adi(tur):
+    """Sonuc kartindaki katsayi adi; listede yoksa genel ad."""
+    return _(KATSAYI_ADLARI.get(tur, N_("Reaktivite katsayısı")))
 
 
 def birim(tur):
