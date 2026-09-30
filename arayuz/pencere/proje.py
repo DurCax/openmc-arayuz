@@ -88,7 +88,7 @@ class ProjeMixin(object):
         self.baslangici_goster()
 
     def _ac_diyalog(self):
-        yol, _ = QtWidgets.QFileDialog.getOpenFileName(
+        yol, _suzgec = QtWidgets.QFileDialog.getOpenFileName(
             self, "Model aç", ORNEKLER, "JSON model (*.json);;Tüm dosyalar (*)")
         if yol:
             self.proje_ac(yol)
@@ -159,7 +159,7 @@ class ProjeMixin(object):
                                       os.path.basename(self.ornek_kaynagi))
         else:
             varsayilan = os.path.join(os.path.expanduser("~"), "model.json")
-        yol, _ = QtWidgets.QFileDialog.getSaveFileName(
+        yol, _suzgec = QtWidgets.QFileDialog.getSaveFileName(
             self, "Modeli kaydet", varsayilan, "JSON model (*.json)")
         if not yol:
             return False
@@ -207,7 +207,7 @@ class ProjeMixin(object):
         QtGui.QDesktopServices.openUrl(QtCore.QUrl.fromLocalFile(yol))
 
     def malzeme_ice_aktar(self):
-        yol, _ = QtWidgets.QFileDialog.getOpenFileName(
+        yol, _suzgec = QtWidgets.QFileDialog.getOpenFileName(
             self, "Malzeme içeren OpenMC XML dosyası",
             os.path.dirname(self.proje_yolu) if self.proje_yolu else os.path.expanduser("~"),
             "OpenMC XML (materials.xml model.xml *.xml);;Tüm dosyalar (*)")
@@ -247,7 +247,7 @@ class ProjeMixin(object):
 
     def betik_disa_aktar(self):
         varsayilan = os.path.splitext(self.proje_yolu or "model.json")[0] + ".py"
-        yol, _ = QtWidgets.QFileDialog.getSaveFileName(
+        yol, _suzgec = QtWidgets.QFileDialog.getSaveFileName(
             self, "Python betiği olarak dışa aktar", varsayilan, "Python (*.py)")
         if not yol:
             return
@@ -271,7 +271,7 @@ class ProjeMixin(object):
         if not dizin:
             return
         try:
-            model, _ = onbellek.kur_taze(self.spec)
+            model, _bilgi = onbellek.kur_taze(self.spec)
             model.export_to_model_xml(os.path.join(dizin, "model.xml"))
         except Exception as e:
             _log.exception("proje islemi basarisiz: %s", "Üretilemedi")
@@ -280,7 +280,7 @@ class ProjeMixin(object):
         self.bildir_mesaj(_("XML yazıldı: %s/model.xml") % dizin, "basari", 6000)
 
     def png_kaydet(self):
-        yol, _ = QtWidgets.QFileDialog.getSaveFileName(
+        yol, _suzgec = QtWidgets.QFileDialog.getSaveFileName(
             self, "Önizlemeyi kaydet", "geometri.png", "PNG (*.png)")
         if yol:
             self.onizleme.kaydet(yol)
