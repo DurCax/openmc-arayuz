@@ -29,9 +29,7 @@ TARANAN = "arayuz"
 MUAF = ("arayuz/tasarim/",)
 
 # dosya -> izin verilen en cok #rrggbb sayisi (YALNIZ KUCULUR)
-RENK_TABANI = {
-    "arayuz/sekme_calistir.py": 2,
-}
+RENK_TABANI = {}   # Dalga 2 sonu (30.09): arayuz/ icinde sabit renk KALMADI
 
 # Sahipsiz QLayout taban listesi: "SinifAdi@ilk_ogenin_turu" (YALNIZ KUCULUR)
 SAHIPSIZ_TABAN = ()
