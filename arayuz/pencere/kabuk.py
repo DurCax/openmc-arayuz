@@ -77,12 +77,15 @@ def eylem_dugmesi(eylem, ikon_adi):
     """QAction'i ikonlu bir arac dugmesine baglar (metin ipucunda kalir)."""
     ipucu = eylem.text().replace("&", "").rstrip("…")
     kisayol = eylem.shortcut().toString(QtGui.QKeySequence.NativeText)
-    d = b.ikon_dugmesi(ikon_adi, "%s (%s)" % (ipucu, kisayol) if kisayol else ipucu)
+    metin = "%s (%s)" % (ipucu, kisayol) if kisayol else ipucu
+    # Ikon EYLEME baglanir: QToolButton eylem her degistiginde (ör. setEnabled)
+    # metin/ikonu eylemden yeniden okur; ikonsuz eylemde metin gorunuyordu.
+    ikon_bagla(eylem, ikon_adi, "metin_ikincil")
+    d = b.ikon_dugmesi(ikon_adi, metin)
     d.setDefaultAction(eylem)
     d.setToolButtonStyle(QtCore.Qt.ToolButtonIconOnly)
-    d.setText("")
-    ikon_bagla(d, ikon_adi, "metin_ikincil", B["ikon"])
-    d.setToolTip("%s (%s)" % (ipucu, kisayol) if kisayol else ipucu)
+    d.setIconSize(QtCore.QSize(B["ikon"], B["ikon"]))
+    d.setAccessibleName(ipucu)
     return d
 
 

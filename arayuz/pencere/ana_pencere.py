@@ -358,9 +358,9 @@ class AnaPencere(GezinmeCephesi, MenulerMixin, ProjeMixin, GecmisMixin, QtWidget
         self._kirli = False
         self._tur_hafizasi = {}
         self._gecmis, self._gecmis_ix = [], -1
+        self._model_var = True
         self._spec_uygula()
         self._gecmise_it(ilk=True)
-        self._model_var = True
         self._editoru_goster()
 
     def _spec_uygula(self):
@@ -370,7 +370,10 @@ class AnaPencere(GezinmeCephesi, MenulerMixin, ProjeMixin, GecmisMixin, QtWidget
         for e in self.editorler:
             e.spec_yukle(self.spec)
         self._kirli_sekmeler.clear()
-        self.onizleme.spec_ayarla(self.spec)
+        if self._model_var:
+            # Acilistaki bos spec cizilmez: baslangic ekranindayken "geometri
+            # kurulamadi" hatasi uretir ve ilk modelin onizlemesine kadar kalirdi.
+            self.onizleme.spec_ayarla(self.spec)
         self.s_calistir.spec_ayarla(self.spec, self.proje_yolu)
         self.s_analiz.spec_ayarla(self.spec, self.proje_yolu)
         self._sekme_gorunurlugu()
@@ -421,6 +424,7 @@ class AnaPencere(GezinmeCephesi, MenulerMixin, ProjeMixin, GecmisMixin, QtWidget
         if sayfa is not None:
             self.yigin_sekme.setCurrentWidget(sayfa)
         self._sag_panel_guncelle()
+        self._sayfaya_yer_ac()
         w = self._sayfa_editor.get(sayfa)
         if w is None:
             return
@@ -492,6 +496,28 @@ class AnaPencere(GezinmeCephesi, MenulerMixin, ProjeMixin, GecmisMixin, QtWidget
             if boyut:
                 self._bolucu.setSizes(boyut)
         self._sag_kip = "tasarim" if tasarim else "yok"
+
+    def _sayfaya_yer_ac(self):
+        """Sayfa en kucuk genisligine sigmiyorsa onizlemeden (en kucuk
+        genisligine kadar) yer alir: kayitli bolucu orani baska pencere
+        boyutundan gelebilir ve yatay kaydirma dogururdu."""
+        if not self.onizleme_paneli.isVisible() or self.onizleme_paneli.dar_mi():
+            return
+        sayfa = self.yigin_sekme.currentWidget()
+        editor = self._sayfa_editor.get(sayfa)
+        boyut = self._bolucu.sizes()
+        if editor is None or len(boyut) != 2:
+            return
+        kaydirma = self.style().pixelMetric(QtWidgets.QStyle.PM_ScrollBarExtent)
+        eksik = editor.minimumSizeHint().width() + kaydirma - boyut[0]
+        ver = min(eksik, boyut[1] - self.onizleme_paneli.minimumWidth())
+        if ver > 0:
+            self._bolucu.setSizes([boyut[0] + ver, boyut[1] - ver])
+
+    def resizeEvent(self, olay):                          # noqa: N802 (Qt adi)
+        super().resizeEvent(olay)
+        # Bolucu yeni boyutunu olay dongusunun sonraki turunda alir.
+        QtCore.QTimer.singleShot(0, self, self._sayfaya_yer_ac)
 
     def _onizleme_daraltildi(self, dar):
         self.ayarlar.setValue(kabuk.ONIZLEME_AYARI, not bool(dar))

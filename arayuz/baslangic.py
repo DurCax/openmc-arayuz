@@ -670,10 +670,13 @@ class BaslangicEkrani(QtWidgets.QWidget):
 
     def son_dosyalari_ayarla(self, yollar):
         """Son kullanilanlar seridi (en cok 3 dosya: ad, dizin, zaman)."""
-        while self._son_serit.count() > 2:
-            oge = self._son_serit.takeAt(1)
-            w = oge.widget()
-            if w is not None and w is not self.son_bos:
+        # Eski dosya ogeleri silinir; baslik, "henuz yok" etiketi ve sondaki
+        # esneme yerinde kalir (eskiden etiket de seritten dusup sol kenarda
+        # sahipsiz ciziliyordu).
+        for i in reversed(range(self._son_serit.count())):
+            w = self._son_serit.itemAt(i).widget()
+            if w is not None and w not in (self._son_basligi, self.son_bos):
+                self._son_serit.takeAt(i)
                 w.deleteLater()
         for yol in list(yollar)[:_SON_DOSYA_SAYISI]:
             self._son_serit.insertWidget(self._son_serit.count() - 1,

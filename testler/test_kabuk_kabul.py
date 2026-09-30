@@ -326,6 +326,18 @@ def test_boyut_ve_yatay_kaydirma():
         kontrol("1280x800: hicbir sayfada yatay kaydirma yok", not tasan, "-> %s" % tasan)
         kontrol("pencere 1280x800'e sigdi (en kucuk boyut zorlamadi)",
                 p.width() == EKRAN[0] and p.height() == EKRAN[1], "-> %dx%d" % (p.width(), p.height()))
+        # Baska pencere boyutundan kalan bolucu orani (onizleme genis) da tasirmamali.
+        p.sekmeye_git("kor", sessiz=True)
+        p._bolucu.setSizes([300, 900])
+        p.resize(EKRAN[0] - 1, EKRAN[1])
+        p.resize(*EKRAN)
+        for _i in range(3):
+            uyg.processEvents()
+        alan = p.sekme_sayfasi("kor")
+        kontrol("genis onizleme orani: sayfaya yer acildi, yatay kaydirma yok",
+                alan.horizontalScrollBar().maximum() == 0
+                and p._bolucu.sizes()[1] >= p.onizleme_paneli.minimumWidth(),
+                "-> +%d px, %s" % (alan.horizontalScrollBar().maximum(), p._bolucu.sizes()))
         p.e_yeni.trigger()
         uyg.processEvents()
         kontrol("baslangic ekraninda yatay kaydirma yok",
@@ -432,9 +444,41 @@ def test_giris_noktasi():
         QtCore.QLocale.setDefault(eski["yerel"])
 
 
+def test_ust_cubuk_ikonlari_ve_son_seridi():
+    print("\n[KK10] ust cubuk ikonlari etkinlik degisince kalir; son kullanilanlar seridi")
+    _qt()
+    from PySide6 import QtWidgets
+    from arayuz.baslangic import BaslangicEkrani
+    p = _pencere(os.path.join(ORNEK, "pwr_pinhucre.json"))
+    try:
+        dugmeler = [d for d in p.ust.findChildren(QtWidgets.QToolButton)
+                    if d.defaultAction() in (p.e_yeni, p.e_ac, p.e_kaydet, p.e_geri, p.e_yinele)]
+        p.e_geri.setEnabled(False)
+        p.e_geri.setEnabled(True)
+        p.e_kaydet.setEnabled(False)
+        kontrol("5 hizli eylem dugmesi, hepsi ikonlu (etkinlik degisiminden sonra da)",
+                len(dugmeler) == 5 and all(not d.icon().isNull() for d in dugmeler),
+                "-> %s" % [(d.defaultAction().text(), d.icon().isNull()) for d in dugmeler])
+    finally:
+        _kapat(p)
+    b = BaslangicEkrani()
+    try:
+        serit = b._son_serit
+        b.son_dosyalari_ayarla([])
+        b.son_dosyalari_ayarla([os.path.join(ORNEK, "pwr_17x17.json")])
+        b.son_dosyalari_ayarla([])
+        kontrol("'henuz yok' etiketi seritte kalir (sahipsiz cizilmez)",
+                serit.indexOf(b.son_bos) == 1 and not b.son_bos.isHidden()
+                and serit.count() == 3, "-> index %d, %d oge" % (serit.indexOf(b.son_bos),
+                                                               serit.count()))
+    finally:
+        b.deleteLater()
+
+
 HIZLI = [test_palet_calistiri_bulur, test_kosu_dugmesi_durdur, test_rapor_menusu,
          test_galeri_kategorileri, test_baslangic_suresi, test_boyut_ve_yatay_kaydirma,
-         test_onizleme_paneli_hatirlanir, test_kenar_durumlari, test_giris_noktasi]
+         test_onizleme_paneli_hatirlanir, test_kenar_durumlari, test_giris_noktasi,
+         test_ust_cubuk_ikonlari_ve_son_seridi]
 YAVAS = []
 
 
