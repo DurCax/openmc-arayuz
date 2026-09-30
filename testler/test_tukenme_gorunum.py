@@ -295,9 +295,81 @@ def test_sonuc_oku_klon_yogunlugu():
             "uo2 #1 U235 [atom/b-cm]" in basliklar, "-> %r" % basliklar[:120])
 
 
+# ============================================================================
+# 4. Yeni gorunum: secici setleri, kartlar
+# ============================================================================
+
+def test_secici_tum_setler_akista():
+    print("\n[TG8] SECICI: yeni setler dugmede, dugmeler ve cipler akista (token aralik)")
+    uyg = _qt()
+    if uyg is None:
+        return
+    from cekirdek import nuklidler as nk
+    from arayuz.nuklid_secici import NuklidSecici
+    from arayuz.tasarim import tokenlar
+    w = NuklidSecici()
+    w.adlar_ayarla(SENTETIK, "sentetik")
+    kontrol("dugmeler = tum_setler (yanma, toryum, hizli dahil)",
+            list(w.set_dugmeleri) == [s.anahtar for s in nk.tum_setler(SENTETIK)],
+            "-> %r" % list(w.set_dugmeleri))
+    w.secim_ayarla([])
+    w.set_dugmeleri["hizli"].click()
+    beklenen = {s.anahtar: s.nuklidler for s in nk.tum_setler(SENTETIK)}["hizli"]
+    kontrol("'Hizli spektrum' seti secime eklendi", tuple(w.secim()) == beklenen,
+            "-> %r" % w.secim())
+    kontrol("secici dar genislige sigiyor (en az genislik <= 420 px)",
+            w.minimumSizeHint().width() <= 420, "-> %d" % w.minimumSizeHint().width())
+    kontrol("cip araligi token (ARALIK['xs'])",
+            w._cip_duzeni._aralik() == tokenlar.ARALIK["xs"])
+
+
+def test_tukenme_kartlari():
+    print("\n[TG9] TUKENME GORUNUMU: sayfa basligi ve kartlar; CSV sonuc kartinda")
+    uyg = _qt()
+    if uyg is None:
+        return
+    from PySide6 import QtWidgets
+    from arayuz import bilesenler as bil
+    t = _sekme()
+    kartlar = (t.ayar_kutusu, t.izlenen_kutusu, t.kosu_kutusu, t.sonuc_kutusu)
+    kontrol("dort bolum Kart", all(isinstance(k, bil.Kart) for k in kartlar))
+    basliklar = [e.text() for e in t.findChildren(QtWidgets.QLabel)
+                 if e.objectName() == "baslik"]
+    kontrol("sayfa basligi 'Tükenme'", "Tükenme" in basliklar, "-> %r" % basliklar)
+    kontrol("CSV dugmesi sonuc kartinda", t.sonuc_kutusu.isAncestorOf(t.csv_dugmesi))
+    kontrol("QGroupBox kalmadi", t.findChildren(QtWidgets.QGroupBox) == [])
+    t.close()
+
+
+def test_analiz_kartlari():
+    print("\n[TG10] ANALIZ GORUNUMU: ayar ve sonuc kartlari; sonuc metinleri")
+    uyg = _qt()
+    if uyg is None:
+        return
+    from arayuz import bilesenler as bil
+    from arayuz.analiz import sonuc as gos
+    from arayuz.sekme_analiz import AnalizSekmesi
+    a = AnalizSekmesi()
+    a.spec_ayarla(_spec("pwr_tukenme"))
+    kontrol("ayar ve sonuc karti", isinstance(a.ayar_karti, bil.Kart)
+            and isinstance(a.sonuc_karti, bil.Kart) and a.sonuc_karti.isAncestorOf(a.tuval))
+    kontrol("sonuc karti analizden once gizli", a.sonuc_karti.isHidden())
+    kontrol("sure metni", [gos.sure_metni(x) for x in (45, 150, 7200)]
+            == ["45 sn", "2.5 dk", "2.0 saat"])
+    kats = {"egim": -2.5, "egim_sapma": 0.1, "r2": 0.99, "nokta": 5, "kesisim": 100.0}
+    m = gos.tarama_metni("yakit_sicaklik", kats, ["not bir"])
+    kontrol("tarama metni: katsayi adi, R2, not", "Doppler" in m and "0.9900" in m
+            and "not bir" in m, "-> %r" % m[:80])
+    kontrol("katsayisiz tarama metni", "hesaplanamadı" in gos.tarama_metni("x", None, []))
+    kontrol("basarisiz nokta satiri", gos.tablo_satiri({"deger": 1.0, "hata": "h" * 99})[1]
+            == "başarısız")
+    a.close()
+
+
 HIZLI = [test_yeni_gruplar, test_yeni_setler, test_zincirde_cozulme,
          test_silinmis_sekmeye_gec_sonuc, test_kapanista_bekleyen_cizim_iptal,
-         test_klon_adlari_ve_hacimleri, test_sonuc_oku_klon_yogunlugu]
+         test_klon_adlari_ve_hacimleri, test_sonuc_oku_klon_yogunlugu,
+         test_secici_tum_setler_akista, test_tukenme_kartlari, test_analiz_kartlari]
 YAVAS = []
 ZINCIR_GEREKEN = [test_zincirde_cozulme, test_silinmis_sekmeye_gec_sonuc,
-                  test_kapanista_bekleyen_cizim_iptal]
+                  test_kapanista_bekleyen_cizim_iptal, test_tukenme_kartlari]

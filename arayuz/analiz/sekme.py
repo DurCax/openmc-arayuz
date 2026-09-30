@@ -80,6 +80,7 @@ class AnalizSekmesi(QtWidgets.QWidget):
         self._sonuc_kur()
         self._yerlesim_kur()
         self._listeleri_doldur()
+        self._sonuc_gorunumu()
 
     def _girdileri_kur(self):
         """Mod, parametre, hedef ve aralik girdileri."""
