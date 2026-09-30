@@ -251,14 +251,15 @@ class _Cizici:
         kama.moveTo(0, 0)
         kama.arcTo(QtCore.QRectF(-R, -R, 2 * R, 2 * R), -aci / 2.0, aci)
         kama.closeSubpath()
+        kama = T.map(kama)
         if r_ic > 0:
             ic = QtGui.QPainterPath()
             ic.addEllipse(QtCore.QPointF(0, 0), r_ic, r_ic)
-            kama = kama.subtracted(ic)
+            kama = kama.subtracted(T.map(ic))
         # QPainterPath acilari ekranda saat yonunun tersi, y asagi: model
         # cercevesinde (+y yukari) yayi +x'e ortalamak icin ayna gerekmez
         # cunku yay +x etrafinda simetriktir.
-        self.ekle(yol, self.kirp(bolge, T.map(kama)), self.renk(t.get("emici_malzeme")),
+        self.ekle(yol, self.kirp(bolge, kama), self.renk(t.get("emici_malzeme")),
                   etiket=t.get("emici_malzeme"))
 
     def cubuk(self, c, yol, T, bolge):
@@ -436,10 +437,15 @@ def katman_icerigi(d, katman):
     return icerik
 
 
+IC_OLCU = 1000.0             # ic birim: en buyuk olcu bu kadar (egri duzlestirme payi)
+
+
 def xy_ogeleri(spec, z=0.0):
     """
-    Spec'in sematik xy kesiti: (ogeler, sinir kutusu (x0, y0, x1, y1)).
-    Model kurulamazsa ([], None); hata gunluge yazilir.
+    Spec'in sematik xy kesiti: (ogeler, sinir kutusu (x0, y0, x1, y1), olcek).
+    Ogeler ve kutu IC BIRIMDEDIR (cm x olcek): QPainterPath kesisimleri egrileri
+    koordinat birimine gore duzlestirir; santimetre biriminde 4 cm'lik bir
+    tambur 12-gen olurdu. Model kurulamazsa ([], None, 1.0); hata gunluge.
     """
     from cekirdek import geometri
     try:
@@ -447,19 +453,20 @@ def xy_ogeleri(spec, z=0.0):
         kesikler = geometri.kesik_konumlar(m)
     except Exception:
         _log.warning("sematik kesit icin model kurulamadi", exc_info=True)
-        return [], None
+        return [], None, 1.0
     c = _Cizici(spec, m, z, kesikler)
     kok = m.kok
-    evren = QtGui.QPainterPath()
-    kesitler = c._bolge_kesitleri(kok)
-    dis = kesit_yolu(kesitler[-1], zarf=c._zarf(kok))
-    evren.addRect(dis.boundingRect().adjusted(-1, -1, 1, 1))
+    dis_cm = kesit_yolu(bolge_kesitleri(kok)[-1], zarf=zarf(kok))
+    r = dis_cm.boundingRect()
+    olcek = IC_OLCU / max(r.width(), r.height(), 1e-9)
+    T = QtGui.QTransform.fromScale(olcek, olcek)
+    dis = T.map(dis_cm)
     try:
-        c.dugum(kok, ("kok",), QtGui.QTransform(), dis)
+        c.dugum(kok, ("kok",), T, dis)
     except Exception:
         _log.warning("sematik kesit cizilemedi", exc_info=True)
     r = dis.boundingRect()
-    return c.ogeler, (r.left(), r.top(), r.right(), r.bottom())
+    return c.ogeler, (r.left(), r.top(), r.right(), r.bottom()), olcek
 
 
 def isabet(ogeler, x, y):

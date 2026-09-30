@@ -211,7 +211,8 @@ def _cikar(araliklar, a, b):
 
 
 def xz_ogeleri(spec):
-    """(ogeler, kutu (x0, z0, x1, z1), katman cizgileri [z]); 2B'de ([], None, [])."""
+    """(ogeler, kutu (x0, z0, x1, z1), katman cizgileri [z]); 2B'de ([], None, []).
+    Birim cm (yalniz dikdortgenler; egri yok)."""
     from cekirdek import geometri
     try:
         m = geometri.model(spec)

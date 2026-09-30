@@ -309,14 +309,18 @@ def bolge_yerlesim_listesi(agac, bolge_yol):
     raise DuzenlemeHatasi(_("Yerleşim bir kabın içine ya da bir halkaya eklenir."))
 
 
-def yerlesim_ekle(agac, bolge_yol, icerik=None, ad=None, kesit=None):
-    """Bolgeye 'halka' modlu yeni yerlesim ekler (tek ornek, merkezde degil)."""
+_VARSAYILAN_KESIT = {"sekil": "silindir", "yaricap": 1.0}
+
+
+def yerlesim_ekle(agac, bolge_yol, icerik=None, ad=None, kesit=_VARSAYILAN_KESIT):
+    """Bolgeye 'halka' modlu yeni yerlesim ekler (tek ornek, merkezde degil).
+    kesit=None: dogal kesit (tambur dairesi)."""
     liste_yolu = bolge_yerlesim_listesi(agac, bolge_yol)
     ad = _tekil_ad(ad or _("yerlesim"), set(yerlesim_adlari(agac)))
     y = {"ad": ad, "mod": "halka", "sayi": 1, "merkez_yaricap": 5.0,
          "baslangic_acisi": 0.0,
          "icerik": copy.deepcopy(icerik) if icerik else malzeme(BOSLUK),
-         "kesit": copy.deepcopy(kesit) if kesit else {"sekil": "silindir", "yaricap": 1.0}}
+         "kesit": copy.deepcopy(kesit)}
     kopya = copy.deepcopy(agac)
     ebeveyn = al(kopya, liste_yolu[:-1])
     ebeveyn.setdefault("yerlesimler", []).append(y)

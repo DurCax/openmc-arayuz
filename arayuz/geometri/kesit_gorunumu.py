@@ -40,6 +40,7 @@ class KesitTuvali(QtWidgets.QWidget):
         self.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         self.setMouseTracking(True)
         self.ogeler, self.kutu, self.cizgiler = [], None, []
+        self.olcek = 1.0                  # ic birim / cm (cizim.xy_ogeleri)
         self.secili = None
         self._yakin = 1.0
         self._kayma = QtCore.QPointF(0, 0)
@@ -47,9 +48,19 @@ class KesitTuvali(QtWidgets.QWidget):
         self.setAccessibleName(_("Geometri kesiti"))
 
     # ---------------- veri ----------------
-    def ayarla(self, ogeler, kutu, cizgiler=()):
+    def ayarla(self, ogeler, kutu, cizgiler=(), olcek=1.0):
         self.ogeler, self.kutu, self.cizgiler = list(ogeler), kutu, list(cizgiler)
+        self.olcek = float(olcek or 1.0)
         self.update()
+
+    def cm_noktasi(self, piksel):
+        """Piksel -> model cm."""
+        m = self.model_noktasi(piksel)
+        return QtCore.QPointF(m.x() / self.olcek, m.y() / self.olcek)
+
+    def pikseli_bul(self, x_cm, y_cm):
+        """Model cm -> piksel (testler ve klavye erisimi icin)."""
+        return self.donusum().map(QtCore.QPointF(x_cm * self.olcek, y_cm * self.olcek))
 
     def secimi_ayarla(self, yol):
         self.secili = tuple(yol) if yol else None
@@ -175,7 +186,8 @@ class KesitTuvali(QtWidgets.QWidget):
         m = self.model_noktasi(olay.position())
         yol = cizim.isabet(self.ogeler, m.x(), m.y())
         oge = next((o for o in reversed(self.ogeler) if o.yol == yol and o.kesik is None), None)
-        self.setToolTip("(%.3f, %.3f) cm%s" % (m.x(), m.y(),
+        cm = self.cm_noktasi(olay.position())
+        self.setToolTip("(%.3f, %.3f) cm%s" % (cm.x(), cm.y(),
                                               ("\n%s" % oge.etiket) if oge and oge.etiket else ""))
 
     def mouseReleaseEvent(self, _olay):                # noqa: N802
@@ -241,8 +253,8 @@ class KesitGorunumu(QtWidgets.QWidget):
         self.z.setVisible(xy)
         self.z_etiket.setVisible(xy)
         if xy:
-            ogeler, kutu = cizim.xy_ogeleri(self.spec, self.z.deger())
-            self.tuval.ayarla(ogeler, kutu)
+            ogeler, kutu, olcek = cizim.xy_ogeleri(self.spec, self.z.deger())
+            self.tuval.ayarla(ogeler, kutu, (), olcek)
         else:
             ogeler, kutu, cizgiler = cizim_xz.xz_ogeleri(self.spec)
             self.tuval.ayarla(ogeler, kutu, cizgiler)
