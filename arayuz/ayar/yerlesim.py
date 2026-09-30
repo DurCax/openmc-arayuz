@@ -2,12 +2,18 @@
 """
  arayuz/ayar/yerlesim.py  --  YerlesimMixin: sekmenin yerlesimi
 
- arayuz/sekme_ayar.py'den bolundu (davranis degismedi). Eski yol
+ arayuz/sekme_ayar.py'den bolundu (davranis degismedi). Dalga 2 (Ajan 8):
+ bolumler kart (bilesenler.Kart); her kart kendi islevinde kurulur. Eski yol
  `from arayuz import sekme_ayar; sekme_ayar.X` aynen calisir.
 """
 
 from PySide6 import QtCore, QtWidgets
-from arayuz.ortak import ayrac, baslik, ipucu, GelismisBolum
+
+from arayuz import bilesenler as b
+from arayuz.ortak import baslik, ipucu, GelismisBolum
+from arayuz.tasarim import tokenlar
+
+A = tokenlar.ARALIK
 
 
 class YerlesimMixin(object):
@@ -34,7 +40,38 @@ class YerlesimMixin(object):
         return self._sar(d)
 
     def _yerlesim_kur(self):
-        # ---------- hesap ----------
+        """Iki sutun kart (maket: hesap_*): solda hesap, kaynak ve Gelismis;
+        sagda guc dagilimi ve tally'ler."""
+        sol = self._sutun((self._hesap_karti(), self._kaynak_karti(),
+                           self._gelismis_karti()))
+        sag = self._sutun((self._guc_karti(), self._tally_karti()))
+        bolucu = QtWidgets.QSplitter(QtCore.Qt.Horizontal)
+        bolucu.addWidget(sol)
+        bolucu.addWidget(sag)
+        bolucu.setStretchFactor(0, 4)
+        bolucu.setStretchFactor(1, 5)
+        bolucu.setSizes([430, 520])
+        bolucu.setChildrenCollapsible(False)
+        bolucu.setHandleWidth(A["l"])
+        # Kartlar arasi bosluk: tutamac sayfa zemininde gorunmez kalir.
+        bolucu.setStyleSheet("QSplitter::handle { background: transparent; }")
+        duzen = QtWidgets.QVBoxLayout(self)
+        duzen.addWidget(bolucu)
+        self._tayfi_tasi(self._gelismis_tayf_yeri)
+
+    @staticmethod
+    def _sutun(kartlar):
+        """Kartlari alt alta dizen sutun widget'i (bos alan altta)."""
+        w = QtWidgets.QWidget()
+        d = QtWidgets.QVBoxLayout(w)
+        d.setContentsMargins(0, 0, 0, 0)
+        d.setSpacing(A["l"])
+        for kart in kartlar:
+            d.addWidget(kart)
+        d.addStretch(1)
+        return w
+
+    def _hesap_karti(self):
         hesap = QtWidgets.QFormLayout()
         self._hesap_form = hesap
         hesap.addRow("Hesap türü:", self.mod)
@@ -44,8 +81,11 @@ class YerlesimMixin(object):
         hesap.addRow("Toplam çevrim:", self.cevrim)
         hesap.addRow("Pasif çevrim:", self.pasif)
         hesap.addRow(self.kinetik_var)
+        kart = b.Kart("Hesap")
+        kart.govde.addLayout(hesap)
+        return kart
 
-        # ---------- kaynak ----------
+    def _kaynak_karti(self):
         kaynak = QtWidgets.QFormLayout()
         self._kaynak_form = kaynak
         kaynak.addRow("Kaynak tipi:", self.kaynak_tur)
@@ -53,9 +93,18 @@ class YerlesimMixin(object):
         kaynak.addRow("Nokta konumu:", self.konum_satiri)
         kaynak.addRow("Parçacık:", self.kaynak_parcacik)
         kaynak.addRow("Kaynak şiddeti [1/s]:", self.kaynak_kuvvet)
+        self._tayf_kutusu_kur()
+        self._kaynak_tayf_yeri = QtWidgets.QVBoxLayout()
+        self._kaynak_tayf_yeri.setContentsMargins(0, 0, 0, 0)
+        kart = b.Kart("Kaynak")
+        self.kaynak_baslik = kart.baslik_etiketi
+        kart.govde.addLayout(kaynak)
+        kart.govde.addLayout(self._kaynak_tayf_yeri)
+        return kart
 
-        # enerji tayfi + acisal dagilim: ozdegerde Gelismis'e, sabit kaynakta
-        # kaynak bolumune tasinan tek bir kutu
+    def _tayf_kutusu_kur(self):
+        """Enerji tayfi + acisal dagilim: ozdegerde Gelismis'e, sabit kaynakta
+        kaynak kartina tasinan tek bir kutu."""
         self.tayf_kutu = QtWidgets.QWidget()
         tf = QtWidgets.QFormLayout(self.tayf_kutu)
         tf.setContentsMargins(0, 0, 0, 0)
@@ -67,10 +116,8 @@ class YerlesimMixin(object):
         self.yon_satiri = self._uclu((("u", self.ax), ("v", self.ay), ("w", self.az)))
         tf.addRow("Yön:", self.yon_satiri)
         tf.addRow("Koni yarı açısı:", self.koni_aci)
-        self._kaynak_tayf_yeri = QtWidgets.QVBoxLayout()
-        self._kaynak_tayf_yeri.setContentsMargins(0, 0, 0, 0)
 
-        # ---------- gelismis ----------
+    def _gelismis_karti(self):
         self.gelismis = GelismisBolum("ayar_gelismis")
         gf = QtWidgets.QFormLayout()
         self._gelismis_form = gf
@@ -85,10 +132,7 @@ class YerlesimMixin(object):
         self.entropi_agi = self._sar(ent)
         gf.addRow("Entropi ağı:", self.entropi_agi)
         gf.addRow("IFP nesil sayısı:", self.kinetik_nesil)
-        gw = QtWidgets.QWidget()
-        gw.setLayout(gf)
-        gf.setContentsMargins(0, 0, 0, 0)
-        self.gelismis.ekle(gw)
+        self.gelismis.ekle(self._sar(gf))
         self.gelismis_tayf_baslik = baslik("Başlangıç kaynağının enerjisi ve yönü")
         self.gelismis.ekle(self.gelismis_tayf_baslik)
         self.gelismis_tayf_not = ipucu(
@@ -96,28 +140,14 @@ class YerlesimMixin(object):
             "gerçek fisyon tayfına döner ve k-eff'i etkilemez.")
         self.gelismis.ekle(self.gelismis_tayf_not)
         self._gelismis_tayf_yeri = QtWidgets.QVBoxLayout()
-        self._gelismis_tayf_yeri.setContentsMargins(0, 0, 0, 0)
-        gt = QtWidgets.QWidget()
-        gt.setLayout(self._gelismis_tayf_yeri)
-        self.gelismis.ekle(gt)
+        self.gelismis.ekle(self._sar(self._gelismis_tayf_yeri))
+        kart = b.Kart()
+        kart.ekle(self.gelismis)
+        return kart
 
-        sol = QtWidgets.QVBoxLayout()
-        sol.addWidget(baslik("Hesap"))
-        sol.addLayout(hesap)
-        sol.addWidget(ayrac())
-        self.kaynak_baslik = baslik("Kaynak")
-        sol.addWidget(self.kaynak_baslik)
-        sol.addLayout(kaynak)
-        sol.addLayout(self._kaynak_tayf_yeri)
-        sol.addWidget(ayrac())
-        sol.addWidget(self.gelismis)
-        sol.addStretch(1)
-
-        # ---------- guc dagilimi ----------
-        self.guc_kutu = QtWidgets.QWidget()
-        gk = QtWidgets.QVBoxLayout(self.guc_kutu)
-        gk.setContentsMargins(0, 0, 0, 0)
-        gk.addWidget(baslik("Güç dağılımı"))
+    def _guc_karti(self):
+        """Guc dagilimi karti (gorunurluk: guc_formu, self.guc_kutu)."""
+        self.guc_kutu = b.Kart("Güç dağılımı")
         guc_form = QtWidgets.QFormLayout()
         guc_form.addRow(self.guc_var)
         self._guc_form = guc_form
@@ -127,10 +157,10 @@ class YerlesimMixin(object):
             e = QtWidgets.QLabel(etiket)
             self.guc_etiketler[ad] = e
             guc_form.addRow(e, w)
-        gk.addLayout(guc_form)
+        self.guc_kutu.govde.addLayout(guc_form)
         self.guc_not.setMinimumWidth(1)
-        gk.addWidget(self.guc_not)
-        gk.addWidget(self.guc_uyari)
+        self.guc_kutu.ekle(self.guc_not)
+        self.guc_kutu.ekle(self.guc_uyari)
         self.guc_gelismis = GelismisBolum("ayar_guc_gelismis")
         ggf = QtWidgets.QFormLayout()
         for etiket, w, ad in (("Hedef bölge:", self.guc_bolge, "bolge"),
@@ -138,24 +168,11 @@ class YerlesimMixin(object):
             e = QtWidgets.QLabel(etiket)
             self.guc_etiketler[ad] = e
             ggf.addRow(e, w)
-        ggw = QtWidgets.QWidget()
-        ggf.setContentsMargins(0, 0, 0, 0)
-        ggw.setLayout(ggf)
-        self.guc_gelismis.ekle(ggw)
-        gk.addWidget(self.guc_gelismis)
-        gk.addWidget(ayrac())
+        self.guc_gelismis.ekle(self._sar(ggf))
+        self.guc_kutu.ekle(self.guc_gelismis)
+        return self.guc_kutu
 
-        # ---------- tally'ler ----------
-        d_t_ekle = QtWidgets.QPushButton("+ Tally")
-        d_t_sil = QtWidgets.QPushButton("Sil")
-        self.d_t_sil = d_t_sil
-        d_t_ekle.clicked.connect(self._tally_ekle)
-        d_t_sil.clicked.connect(self._tally_sil)
-        t_dugme = QtWidgets.QHBoxLayout()
-        t_dugme.addWidget(d_t_ekle)
-        t_dugme.addWidget(d_t_sil)
-        t_dugme.addStretch(1)
-
+    def _tally_formu(self):
         t_form = QtWidgets.QFormLayout()
         self._t_form = t_form
         t_form.addRow("Ad:", self.t_ad)
@@ -169,38 +186,29 @@ class YerlesimMixin(object):
                                        ("nz", self.t_mesh_nz)))
         t_form.addRow("Ağ bölmeleri:", self.mesh_satiri)
         t_form.addRow(self.t_diger)
-        self.tally_duzenleyici = QtWidgets.QWidget()
-        self.tally_duzenleyici.setLayout(t_form)
-        t_form.setContentsMargins(0, 0, 0, 0)
+        self.tally_duzenleyici = self._sar(t_form)
 
+    def _tally_karti(self):
+        d_t_ekle = b.ikincil_dugme("+ Tally")
+        self.d_t_sil = b.duz_dugme("Sil", "trash")
+        d_t_ekle.clicked.connect(self._tally_ekle)
+        self.d_t_sil.clicked.connect(self._tally_sil)
+        t_dugme = QtWidgets.QHBoxLayout()
+        t_dugme.addWidget(d_t_ekle)
+        t_dugme.addWidget(self.d_t_sil)
+        t_dugme.addStretch(1)
+        self._tally_formu()
         tally_sol = QtWidgets.QVBoxLayout()
         tally_sol.addWidget(self.tally_liste, 1)
         tally_sol.addLayout(t_dugme)
-        tally_bolucu = QtWidgets.QHBoxLayout()
-        tally_bolucu.addLayout(tally_sol, 0)
         tally_sag = QtWidgets.QVBoxLayout()
         tally_sag.addWidget(self.tally_bos)
         tally_sag.addWidget(self.tally_duzenleyici)
         tally_sag.addStretch(1)
+        tally_bolucu = QtWidgets.QHBoxLayout()
+        tally_bolucu.setSpacing(A["l"])
+        tally_bolucu.addLayout(tally_sol, 0)
         tally_bolucu.addLayout(tally_sag, 1)
-
-        sag = QtWidgets.QVBoxLayout()
-        sag.addWidget(self.guc_kutu)
-        sag.addWidget(baslik("Tally'ler (ölçülecek büyüklükler)"))
-        sag.addLayout(tally_bolucu)
-        sag.addStretch(1)
-
-        sol_k = QtWidgets.QWidget()
-        sol_k.setLayout(sol)
-        sag_k = QtWidgets.QWidget()
-        sag_k.setLayout(sag)
-        bolucu = QtWidgets.QSplitter(QtCore.Qt.Horizontal)
-        bolucu.addWidget(sol_k)
-        bolucu.addWidget(sag_k)
-        bolucu.setStretchFactor(0, 4)
-        bolucu.setStretchFactor(1, 5)
-        bolucu.setSizes([430, 520])
-        bolucu.setChildrenCollapsible(False)
-        duzen = QtWidgets.QVBoxLayout(self)
-        duzen.addWidget(bolucu)
-        self._tayfi_tasi(self._gelismis_tayf_yeri)
+        kart = b.Kart("Tally'ler", "Ölçülecek büyüklükler")
+        kart.govde.addLayout(tally_bolucu)
+        return kart

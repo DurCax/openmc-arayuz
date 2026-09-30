@@ -70,8 +70,22 @@ class AyarSekmesi(YerlesimMixin, KaynakFormuMixin, GucFormuMixin, TallyFormuMixi
     def __init__(self, parent=None):
         super().__init__(parent)
         self._tayf_yeri = None
+        self._hesap_alanlari_kur()
+        self._gelismis_alanlari_kur()
+        self._kaynak_alanlari_kur()
+        self._tayf_alanlari_kur()
+        self._aci_alanlari_kur()
+        self._guc_alanlari_kur()
+        self._tally_alanlari_kur()
+        self._dar_alanlari_ayarla()
+        self._yerlesim_kur()
+        self._sinyalleri_bagla()
 
-        # ================= hesap =================
+    # ------------------------------------------------------------------
+    # alanlar (yerlesim: arayuz/ayar/yerlesim.py)
+    # ------------------------------------------------------------------
+    def _hesap_alanlari_kur(self):
+        """Hesap turu, hassasiyet onayari, parcacik/cevrim ve kinetik."""
         self.mod = QtWidgets.QComboBox()
         self.mod.addItem("Özdeğer (k-eff)", "eigenvalue")
         self.mod.addItem("Sabit kaynak", "fixed source")
@@ -104,7 +118,8 @@ class AyarSekmesi(YerlesimMixin, KaynakFormuMixin, GucFormuMixin, TallyFormuMixi
             "Λ     : nötron üretim zamanı — kinetik davranışın hızı\n\n"
             "Koşuyu bir miktar yavaşlatır; gerekmedikçe kapalı bırakın.")
 
-        # ================= gelismis =================
+    def _gelismis_alanlari_kur(self):
+        """Tohum, sicaklik yontemi, entropi agi, IFP nesil sayisi."""
         self.tohum = tamsayi(1, 1, 2 ** 31 - 1, 1)
         self.tohum.setToolTip("Aynı tohum ve aynı model aynı sonucu verir.")
         self.sicaklik_yontemi = QtWidgets.QComboBox()
@@ -123,7 +138,8 @@ class AyarSekmesi(YerlesimMixin, KaynakFormuMixin, GucFormuMixin, TallyFormuMixi
         self.kinetik_nesil = tamsayi(10, 1, 50, 1, "nesil")
         self.kinetik_nesil.setToolTip("IFP'nin geriye doğru izlediği nesil sayısı.")
 
-        # ================= kaynak =================
+    def _kaynak_alanlari_kur(self):
+        """Kaynak turu, konumu, parcacigi ve siddeti."""
         self.kaynak_tur = QtWidgets.QComboBox()
         self.kx = sayi(0.0, 4, -1e5, 1e5, 0.1, "cm")
         self.ky = sayi(0.0, 4, -1e5, 1e5, 0.1, "cm")
@@ -138,7 +154,8 @@ class AyarSekmesi(YerlesimMixin, KaynakFormuMixin, GucFormuMixin, TallyFormuMixi
             "mutlak birime geçer (1/s, 1/cm²/s). 1 bırakılırsa sonuçlar kaynak\n"
             "parçacığı başına kalır.")
 
-        # --- enerji tayfi ---
+    def _tayf_alanlari_kur(self):
+        """Kaynak enerji tayfi: her tayf turu icin bir form sayfasi."""
         self.tayf = QtWidgets.QComboBox()
         for anahtar, ad in _kaynak.TAYFLAR:
             self.tayf.addItem(ad, anahtar)
@@ -177,7 +194,8 @@ class AyarSekmesi(YerlesimMixin, KaynakFormuMixin, GucFormuMixin, TallyFormuMixi
         self.tayf_ozet = QtWidgets.QLabel("-")
         self.tayf_ozet.setWordWrap(True)
 
-        # --- acisal dagilim ---
+    def _aci_alanlari_kur(self):
+        """Kaynagin acisal dagilimi (yon ve koni acisi)."""
         self.aci_tur = QtWidgets.QComboBox()
         for anahtar, ad in _kaynak.ACILAR:
             self.aci_tur.addItem(ad, anahtar)
@@ -187,7 +205,8 @@ class AyarSekmesi(YerlesimMixin, KaynakFormuMixin, GucFormuMixin, TallyFormuMixi
         self.koni_aci = sayi(30.0, 2, 0.01, 180.0, 5.0, " derece")
         self.koni_aci.setToolTip("Koninin yarı açılımı (eksenden kenara açı). Katı açıda düzgün dağılım kullanılır.")
 
-        # ================= guc dagilimi =================
+    def _guc_alanlari_kur(self):
+        """Guc dagilimi alanlari (form mantigi: arayuz/ayar/guc_formu.py)."""
         self.guc_var = QtWidgets.QCheckBox("Çubuk bazlı güç dağılımı hesapla (F_ΔH, 3B'de F_q)")
         self.guc_var.setToolTip(
             "Demette tekrarlanan yakıt çubuğunun her örneği ayrı sayılır\n"
@@ -209,7 +228,8 @@ class AyarSekmesi(YerlesimMixin, KaynakFormuMixin, GucFormuMixin, TallyFormuMixi
             "girilir. Boş bırakılırsa yalnızca bağıl dağılım verilir.")
         self.guc_uyari = ipucu("")
 
-        # ================= tally'ler =================
+    def _tally_alanlari_kur(self):
+        """Tally listesi ve secili tally'nin alanlari."""
         self.tally_liste = QtWidgets.QListWidget()
         self.tally_liste.setMinimumWidth(150)
         self.tally_liste.setMaximumWidth(210)
@@ -238,14 +258,12 @@ class AyarSekmesi(YerlesimMixin, KaynakFormuMixin, GucFormuMixin, TallyFormuMixi
         self.tally_bos = ipucu("Henüz tally yok. “+ Tally” ile ekleyin: ne ölçmek "
                                "istediğinizi (akı, reaksiyon hızı, ısı) seçersiniz.")
 
-        # Uclu satirlardaki alanlar dar sutuna sigsin.
+    def _dar_alanlari_ayarla(self):
+        """Uclu satirlardaki alanlar dar sutuna sigsin."""
         for _w in (self.entropi_nx, self.entropi_ny, self.entropi_nz,
                    self.t_mesh_nx, self.t_mesh_ny, self.t_mesh_nz,
                    self.kx, self.ky, self.kz, self.ax, self.ay, self.az):
             _w.setMinimumWidth(56)
-
-        self._yerlesim_kur()
-        self._sinyalleri_bagla()
 
     def _sinyalleri_bagla(self):
         for w in (self.parcacik, self.cevrim, self.pasif):
