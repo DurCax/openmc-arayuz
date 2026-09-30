@@ -19,6 +19,7 @@ from PySide6 import QtWidgets
 
 from cekirdek.ceviri import N_, _
 from cekirdek.gunluk import kaydedici
+from arayuz.geometri import renk as _renk
 from arayuz import izgara, tema
 from arayuz.geometri import duzenle
 from arayuz.geometri.form_ortak import FormTabani, form_duzeni, sayi_yaz, uzunluk
@@ -152,10 +153,10 @@ class KafesFormu(FormTabani):
         ogeler = []
         for h, icerik in sorted((k.get("anahtar") or {}).items()):
             ad = yuva_adi(icerik)
-            ogeler.append((h, "%s → %s" % (h, ad), izgara.parca_rengi(self.spec, _renk_adi(icerik))))
+            ogeler.append((h, "%s → %s" % (h, ad), _renk.parca_rengi(self.spec, _renk_adi(icerik))))
         dis = k.get("dis")
         ogeler.append((DIS, _("· → dış ({ad})").format(ad=yuva_adi(dis)),
-                       izgara.parca_rengi(self.spec, _renk_adi(dis))))
+                       _renk.parca_rengi(self.spec, _renk_adi(dis))))
         self.palet.parcalari_ayarla(ogeler)
         self.kare.kisaltmalari_ayarla({h: h for h, *_r in ogeler})
         self.altigen.kisaltmalari_ayarla({h: h for h, *_r in ogeler})

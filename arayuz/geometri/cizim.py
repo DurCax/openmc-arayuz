@@ -33,6 +33,7 @@ from cekirdek.geometri import kesit as _k
 from cekirdek.geometri import yerlesim as _yer
 from cekirdek.geometri.sema import bilesen_tanimi
 from cekirdek.gunluk import kaydedici
+from arayuz.geometri import renk as _renk
 
 _log = kaydedici("arayuz.geometri.cizim")
 
@@ -170,7 +171,7 @@ class _Cizici:
     # ---------------- yardimcilar ----------------
     def renk(self, ad):
         if ad not in self._renk:
-            self._renk[ad] = self._izgara.parca_rengi(self.spec, ad)
+            self._renk[ad] = _renk.parca_rengi(self.spec, ad)
         return self._renk[ad]
 
     def ekle(self, yol, yol_yolu, renk, kesik=None, etiket=None):

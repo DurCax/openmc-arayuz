@@ -19,6 +19,7 @@ from PySide6 import QtCore, QtGui
 from cekirdek.geometri import yerlesim as _yer
 from cekirdek.geometri.sema import bilesen_tanimi
 from cekirdek.gunluk import kaydedici
+from arayuz.geometri import renk as _renk
 from arayuz.geometri.cizim import (Oge, altigen_koseleri, bolge_kesitleri, kafes_konumlari,
                                    katman_araliklari, katman_icerigi, yol_metni, zarf)
 
@@ -61,7 +62,7 @@ class _XzCizici:
         self._izgara = izgara
 
     def renk(self, ad):
-        return self._izgara.parca_rengi(self.spec, ad)
+        return _renk.parca_rengi(self.spec, ad)
 
     def serit(self, yol, x0, x1, z0, z1, renk, etiket=None):
         if x1 - x0 <= 0 or z1 - z0 <= 0:
