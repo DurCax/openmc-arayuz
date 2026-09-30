@@ -754,8 +754,57 @@ def test_metinler():
     kontrol("Analiz'de 'Yine de devam' secenegi yok", "Yine de devam" not in metin)
 
 
+def test_html_kacis():
+    print("\n[H11] KACIS: kullanici/istisna metni rich-text etikette HTML sayilmaz")
+    uyg = _qt()
+    if uyg is None:
+        return
+    from arayuz.sekme_analiz import AnalizSekmesi
+    from arayuz.pencere.kabuk import UstCubuk
+    an = AnalizSekmesi()
+    an.spec_ayarla(_spec("pwr_17x17"), None)
+    an._hata("<b>kalin</b> & <i>bozuk")
+    metin = an.sonuc_kutusu.text()
+    kontrol("Analiz hatasi: istisna metni kacisli (&lt;b&gt;)",
+            "&lt;b&gt;kalin&lt;/b&gt; &amp; &lt;i&gt;bozuk" in metin, "-> %r" % metin)
+    from PySide6 import QtGui
+    cubuk = UstCubuk({ad: QtGui.QAction(ad) for ad in ("yeni", "ac", "kaydet", "geri",
+                                                       "yinele")})
+    kontrol("UstCubuk model adi duz metin (PlainText)",
+            cubuk.model_adi.textFormat() == __import__(
+                "PySide6.QtCore", fromlist=["Qt"]).Qt.PlainText)
+    uyg  # noqa: B018
+
+
+def test_varsayilan_aralik():
+    print("\n[H12] ANALIZ: varsayilan aralik modelden (komsu yaricap, adim, sabit yedek)")
+    from arayuz.analiz.adlar import varsayilan_aralik
+    s = _spec("pwr_17x17")
+    kontrol("yakit yaricapi komsu bolgelerin ortasini asmaz",
+            varsayilan_aralik(s, "cubuk_yaricap", ("yakit_cubugu", 1)) == (0.4138, 0.4465, 5))
+    kontrol("demet adimi: cubuklar sigar",
+            varsayilan_aralik(s, "kafes_adim", "demet_17x17") == (1.216, 1.575, 5))
+    kontrol("dis bolge (r yok) / hedef yok: sabit varsayilan",
+            varsayilan_aralik(s, "cubuk_yaricap", ("yakit_cubugu", 3)) == (0.35, 0.45, 5)
+            and varsayilan_aralik(s, "cubuk_yaricap", None) == (0.35, 0.45, 5))
+    kontrol("bilinmeyen tur: (0, 1, 5)", varsayilan_aralik(s, "bilinmeyen", None) == (0.0, 1.0, 5))
+    import logging
+    from arayuz.analiz import adlar
+    kayit = []
+    tutucu = logging.Handler(logging.WARNING)
+    tutucu.emit = kayit.append
+    adlar._log.addHandler(tutucu)
+    try:
+        sonuc = varsayilan_aralik(s, "cubuk_yaricap", ("yok_boyle", 0))
+    finally:
+        adlar._log.removeHandler(tutucu)
+    kontrol("turetilemeyen aralik: sabit yedek + UYARI logu",
+            sonuc == (0.35, 0.45, 5) and kayit, "-> %r" % (sonuc,))
+
+
 HIZLI = [test_calistir_sayfa_yapisi, test_calistir_calistirma_alanlari, test_analiz_listeler, test_analiz_secim_ve_red, test_analiz_kusak,
-         test_tukenme_gorunum, test_sonuc_api, test_metinler]
+         test_tukenme_gorunum, test_sonuc_api, test_metinler, test_html_kacis,
+         test_varsayilan_aralik]
 YAVAS = [test_calistir_kusak, test_tukenme_kusak]
 
 

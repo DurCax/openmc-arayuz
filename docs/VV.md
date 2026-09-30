@@ -9,7 +9,8 @@ kütüphanesi), 8 OpenMP iş parçacığı (makine başka Monte Carlo işleriyle
 süreler bu yüzden üst sınırdır), 29.09.2026. Pasif çevrim sayısı her satırda
 "çevrim/pasif" olarak verilir.
 
-**Kabul ölçütü:** |C − E| ≤ 3·√(σc² + σe²) ve σc ≤ 30 pcm. Ölçütü aşan kriter
+**Kabul ölçütü:** |C − E| ≤ 3·√(σc² + σe²) ve σc ≤ 30 pcm. Bu ölçüt projenin kendi
+ölçütüdür, bir standarttan gelmez (docs/STANDARTLAR.md §6 md. 15–17). Ölçütü aşan kriter
 yalnız aşağıda kütüphane yanlılığı olarak açıklanırsa kabul edilir (şu an yok).
 
 Deney (C/E) ve hesap-hesap karşılaştırmaları AYRI tutulur: deney kriterinde E
@@ -24,6 +25,8 @@ hesap sonucudur ve "doğru" değer değildir.
 | kriter_jezebel.json | PU-MET-FAST-001 (Jezebel) | 1.0000 ± 0.0020 | 0.99996 ± 0.00023 | −4 | 0.02 | 0.99996 | 50000 | 150/50 | 5.5 | geçti |
 | kriter_flattop25.json | HEU-MET-FAST-028 (Flattop-25) | 1.0000 ± 0.0030 | 1.00106 ± 0.00026 | +106 | 0.35 | 1.00106 | 100000 | 150/50 | 51.8 | geçti |
 | kriter_lct008.json | LEU-COMP-THERM-008, durum 1 | 1.0007 ± 0.0012 | 1.00067 ± 0.00021 | −3 | 0.02 | 0.99997 | 100000 | 260/50 | 451.4 | geçti |
+
+C − E [pcm] = Δk × 10⁵ (k farkı; reaktivite farkı Δρ değildir).
 
 Notlar:
 
@@ -46,13 +49,16 @@ Notlar:
 | kriter_vver1000_ugd.json | NEA VVER-1000 LEU (UGD), S5, yanma 0 | 1.3185 ± 0.0040 | 1.31910 ± 0.00021 | +60 | 0.15 | 100000 | 250/50 | 574.6 | geçti |
 | sfr_met1000_kor.json (bilgi) | OECD/NEA SFR MET-1000, BOC | 1.0355 ± 0.0078 | 1.03014 ± 0.00053 | −536 | 0.69 | 10000 | 150/40 | 281.5 | tutarlı (σc > 30 pcm, referans koşusu değil) |
 
+C − E [pcm] = Δk × 10⁵ (k farkı; reaktivite farkı Δρ değildir).
+
 Notlar:
 
 - **VVER-1000 (NEA/NSC/DOC(2002)10):** E, Ek C Tablo C.1'deki altı katılımcının
   (MCU 1.3197, TVS-M 1.3213, WIMS8A 1.3122, HELIOS 1.3181, MCNP4B 1.3235,
   MULTICELL 1.3164) ortalaması, σe örnek standart sapmasıdır (kod/kütüphane
   saçılımı; istatistik belirsizlik değil). Sürekli enerjili tek Monte Carlo
-  katılımcısı MCNP4B'ye göre fark −325 pcm'dir; MCNP4B'nin kütüphanesi (1990'lar,
+  katılımcısı MCNP4B'ye göre fark 1.31910 − 1.3235 = −440 pcm'dir (katılımcı
+  ortalamasına göre +60 pcm); MCNP4B'nin kütüphanesi (1990'lar,
   ENDF/B-VI tabanlı) ENDF/B-VIII.0'dan farklıdır — özellikle U-238 rezonans ve
   O-16 verisi değişti. Bu fark yalnız bilgi amaçlıdır, kabul ölçütü ortalamaya
   göredir.

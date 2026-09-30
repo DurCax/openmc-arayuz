@@ -115,12 +115,12 @@ class KorSekmesi(KorYerlesimMixin, KorHaritasiMixin, KorKatmanMixin, SekmeTabani
                           kor.get("plaka"))
         self._kutu_doldur(self.demet, [(d["ad"], d["ad"]) for d in self.spec.get("demetler", [])],
                           kor.get("demet"))
-        malzemeler = [(sema.BOSLUK, _BOS_ETIKET)] + \
+        malzemeler = [(sema.BOSLUK, _(_BOS_ETIKET))] + \
                      [(m["ad"], self._malzeme_etiketi(m)) for m in self.spec["malzemeler"]]
         self._malzeme_secenekleri = malzemeler
         self._kutu_doldur(self.yans_mal, malzemeler, (kor.get("yansitici") or {}).get("malzeme"))
 
-        hedefler = [(sema.BOSLUK, _BOS_ETIKET)]
+        hedefler = [(sema.BOSLUK, _(_BOS_ETIKET))]
         hedefler += [(d["ad"], "demet: %s" % d["ad"]) for d in self.spec.get("demetler", [])]
         hedefler += [(c["ad"], "çubuk: %s" % c["ad"]) for c in self.spec.get("cubuklar", [])]
         hedefler += [(m["ad"], "malzeme: %s" % sema.malzeme_etiketi(m))
@@ -225,7 +225,7 @@ class KorSekmesi(KorYerlesimMixin, KorHaritasiMixin, KorKatmanMixin, SekmeTabani
             self.kabuk_tablo.setItem(i, 0, r)
             m = k.get("malzeme") or sema.BOSLUK
             self.kabuk_tablo.setItem(i, 1, QtWidgets.QTableWidgetItem(
-                _BOS_ETIKET if m == sema.BOSLUK else m))
+                _(_BOS_ETIKET) if m == sema.BOSLUK else m))
         self.kabuk_tablo.resizeColumnsToContents()
         _tablo_yuksekligi(self.kabuk_tablo, _KABUK_EN_COK_SATIR)
 

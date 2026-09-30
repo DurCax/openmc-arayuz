@@ -270,48 +270,6 @@ def _kuresel_hacim(kor, ad):
             "ayrinti": "; ".join(parcalar)}
 
 
-def _cubuk_hacmi(spec, kor, ad, dilimler, sorunlar):
-    """Cubuk bolgelerindeki 'ad' hacmi (V, parcalar); kesin olmayanlar sorunlar'a."""
-    V, parcalar = 0.0, []
-    for c in spec.get("cubuklar", []):
-        bolgeler = c.get("bolgeler") or []
-        kontrol = c.get("tur") == "kontrol"
-        if kontrol and c.get("izleyici_malzeme") == ad:
-            sorunlar.append("'%s' kontrol çubuğunun izleyicisi (daldırmaya bağlı)" % c["ad"])
-        for i, b in enumerate(bolgeler):
-            if b.get("malzeme") != ad:
-                continue
-            if b.get("r") is None:
-                sorunlar.append("'%s' çubuğunun dış bölgesi (alan kafes adımına bağlı)"
-                                % c["ad"])
-                continue
-            if kontrol:
-                sorunlar.append("'%s' kontrol çubuğu (daldırmaya bağlı)" % c["ad"])
-                continue
-            r_ic = bolgeler[i - 1]["r"] if i > 0 else 0.0
-            alan = math.pi * (b["r"] ** 2 - r_ic ** 2)
-            for h, dolgu, esleme in dilimler:
-                n = _kor_sayimi(spec, kor, dolgu, c["ad"], esleme)
-                if n:
-                    V += alan * h * n
-                    parcalar.append("%s, %d. bölge: %d adet × %g cm" % (c["ad"], i + 1, n, h))
-    return V, parcalar
-
-
-def _plaka_hacmi(spec, kor, ad, dilimler):
-    V, parcalar = 0.0, []
-    for p in spec.get("plakalar", []):
-        if p.get("et_malzeme") != ad:
-            continue
-        alan = p["et_kalinlik"] * p["plaka_genislik"] * p["plaka_sayisi"]
-        for h, dolgu, esleme in dilimler:
-            n = _kor_sayimi(spec, kor, dolgu, p["ad"], esleme)
-            if n:
-                V += alan * h * n
-                parcalar.append("%s: %d eleman × %g cm" % (p["ad"], n, h))
-    return V, parcalar
-
-
 def _malzeme_hacmi(spec, ad, dilimler):
     """Tek bir yanabilir malzemenin hacim kaydi (hacimler() icin)."""
     from cekirdek import tukenme_hacim
@@ -319,8 +277,8 @@ def _malzeme_hacmi(spec, ad, dilimler):
     if kor["tur"] == "kuresel":
         return _kuresel_hacim(kor, ad)
     sorunlar = []
-    V, parcalar = _cubuk_hacmi(spec, kor, ad, dilimler, sorunlar)
-    v, p = _plaka_hacmi(spec, kor, ad, dilimler)
+    V, parcalar = tukenme_hacim.cubuk_hacmi(spec, kor, ad, dilimler, sorunlar)
+    v, p = tukenme_hacim.plaka_hacmi(spec, kor, ad, dilimler)
     V, parcalar = V + v, parcalar + p
     if kor["tur"] == "tamburlu":
         v, p = tukenme_hacim.tambur_emici_hacmi(kor, ad)
@@ -342,6 +300,11 @@ def _malzeme_hacmi(spec, ad, dilimler):
                 "ayrinti": "hacmi kesin değil: " + "; ".join(sorunlar)}
     if V > 0:
         return {"hacim": V, "yontem": "analitik", "ayrinti": "; ".join(parcalar)}
+    if parcalar:
+        # yerlesim var ama hacmi sifir (tamamen cekili kontrol cubugu emicisi):
+        # malzeme fiilen geometride yok, yakilacak bir sey yok
+        return {"hacim": None, "yontem": "yok",
+                "ayrinti": "hacmi sıfır: " + "; ".join(parcalar)}
     from cekirdek import uygunluk
     if ad in (uygunluk.geometri_icerigi(spec).get("malzeme") or set()):
         # geometride var ama analitik yolu yok (or. kontrol tamburu emicisi)

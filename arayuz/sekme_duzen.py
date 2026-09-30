@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 """
-sekme_duzen.py -- tasarim sekmelerinin (Malzemeler, Parcalar, Demet) ortak
-sayfa duzeni: sayfa basligi, dugme satiri, kart sutunu.
+sekme_duzen.py -- sayfalarin ortak duzeni: tasarim sekmeleri (Malzemeler,
+Parcalar, Demet) ve hesap sayfalari (Analiz, Tukenme) icin sayfa basligi,
+kok duzen, dugme satiri, kosu satiri, kart sutunu. (Dalga 2 kapanis:
+eski arayuz/analiz/gorunum.py buraya katildi; davranis degismedi.)
 
 Renk, aralik ve yazi boyutu YALNIZCA tasarim tokenlarindan gelir
 (arayuz/tasarim/tokenlar.py); burada sabit piksel ya da #rrggbb yoktur.
@@ -15,6 +17,11 @@ from PySide6 import QtGui, QtWidgets
 from arayuz.tasarim import tokenlar
 
 A = tokenlar.ARALIK
+B = tokenlar.BOYUT
+
+# Baslik ile aciklama arasi (tasarim sekmelerinin mevcut gorunumu). Hesap
+# sayfalari A["xs"] verir; ikisi de korunur ki ekran degismesin.
+_BASLIK_ARALIGI = 2
 
 
 def sayfa_duzeni(widget, dolgu=True):
@@ -28,21 +35,41 @@ def sayfa_duzeni(widget, dolgu=True):
     return d
 
 
-def sayfa_basligi(metin, aciklama=None):
-    """Sayfa ust basligi: buyuk baslik + tek cumle aciklama (maket duzeni)."""
+def sayfa_basligi(metin, aciklama=None, bosluk=None):
+    """
+    Sayfa ust basligi: buyuk baslik + tek cumle aciklama (maket duzeni).
+    aciklama: metin ya da sekmenin KENDI QLabel'i (gorunurlugunu sekme
+    yonetebilsin diye disaridan verilir); bosluk: baslik-aciklama araligi.
+    """
     w = QtWidgets.QWidget()
     d = QtWidgets.QVBoxLayout(w)
     d.setContentsMargins(0, 0, 0, 0)
-    d.setSpacing(2)
+    d.setSpacing(_BASLIK_ARALIGI if bosluk is None else bosluk)
     b = QtWidgets.QLabel(metin)
     b.setObjectName("baslik")
     d.addWidget(b)
-    if aciklama:
-        a = QtWidgets.QLabel(aciklama)
+    a = aciklama
+    if isinstance(aciklama, str):
+        a = QtWidgets.QLabel(aciklama) if aciklama else None
+    if a is not None:
         a.setObjectName("ikincil")
         a.setWordWrap(True)
         d.addWidget(a)
     w.setAccessibleName(metin)
+    return w
+
+
+def kosu_satiri(birincil, durdur, ilerleme):
+    """Birincil dugme + Durdur + esnek ilerleme cubugu (tek satir widget)."""
+    for dugme in (birincil, durdur):
+        dugme.setMinimumHeight(B["dugme_yuksekligi"])
+    w = QtWidgets.QWidget()
+    d = QtWidgets.QHBoxLayout(w)
+    d.setContentsMargins(0, 0, 0, 0)
+    d.setSpacing(A["s"])
+    d.addWidget(birincil)
+    d.addWidget(durdur)
+    d.addWidget(ilerleme, 1)
     return w
 
 

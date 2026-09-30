@@ -13,27 +13,27 @@
       "gorunen_ad": "U3Si2-Al 4.8 gU/cm³",
       "yogunluk": {
         "birim": "g/cm3",
-        "deger": 5.4
+        "deger": 6.7324
       },
       "sicaklik": 350.0,
       "bilesim": [
         {
           "tur": "element",
           "isim": "U",
-          "miktar": 88.88888888888889,
+          "miktar": 71.2967,
           "birim": "wo",
           "zenginlik": 19.75
         },
         {
           "tur": "element",
           "isim": "Si",
-          "miktar": 6.98953726674577,
+          "miktar": 5.6219,
           "birim": "wo"
         },
         {
           "tur": "element",
           "isim": "Al",
-          "miktar": 4.121573844365351,
+          "miktar": 23.0814,
           "birim": "wo"
         }
       ],

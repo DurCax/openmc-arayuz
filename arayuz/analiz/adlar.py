@@ -155,6 +155,74 @@ def sirali_taramalar(turler):
     return [t for t in SIRA if t in turler] + [t for t in turler if t not in SIRA]
 
 
+def _yaricap_araligi(spec, hedef):
+    """Cubuk bolge yaricapi: komsu yaricaplarin ortasini asmasin (cakisma yok)."""
+    if not hedef:
+        return None
+    bolgeler = sema.cubuk_bul(spec, hedef[0])["bolgeler"]
+    i = int(hedef[1])
+    r = float(bolgeler[i]["r"])
+    r_once = float(bolgeler[i - 1]["r"]) if i > 0 else 0.0
+    r_sonra = bolgeler[i + 1].get("r") if i + 1 < len(bolgeler) else None
+    a = max(0.9 * r, 0.5 * (r_once + r))
+    b = min(1.1 * r, 0.5 * (r + float(r_sonra))) if r_sonra else 1.05 * r
+    return a, b
+
+
+def _adim_araligi(spec, tur, hedef):
+    """Demet (kafes_adim) ya da kor (kor_adim) adimi: cubuklar sigsin."""
+    if tur == "kafes_adim":
+        adim = float(sema.demet_bul(spec, hedef)["adim"])
+    else:
+        adim = float((spec.get("kor") or {}).get("adim") or 0.0)
+    if adim <= 0:
+        return None
+    if tur == "kor_adim" and (spec.get("kor") or {}).get("tur") == "kare_kafes":
+        return adim, 1.05 * adim     # demetler ust uste binmesin
+    r_en = max([float(x["r"]) for c in spec.get("cubuklar", [])
+                for x in c.get("bolgeler") or [] if x.get("r")] or [0.0])
+    return max(0.95 * adim, 2.02 * r_en), 1.25 * adim
+
+
+def _yogunluk_araligi(spec, hedef):
+    if not hedef:
+        return None
+    rho = float(sema.malzeme_bul(spec, hedef)["yogunluk"]["deger"])
+    return 0.9 * rho, 1.1 * rho
+
+
+def _sogutucu_araligi(spec, hedef):
+    """Mevcut sicaklik +-40 K; doymus su tablosunun (280-620 K) icinde."""
+    if not hedef:
+        return None
+    m = sema.malzeme_bul(spec, hedef)
+    T = float(m.get("sicaklik") or 0.0)
+    if T <= 0:
+        return None
+    a, b = T - 40.0, T + 40.0
+    from cekirdek import malzeme_kutup as mk
+    if tarama._yogunluk_korelasyonu(m)[0] is mk.su_yogunluk:
+        a, b = max(a, 280.0), min(b, 620.0)
+    return a, b
+
+
+def _yansitici_araligi(spec, _hedef):
+    k = float(((spec.get("kor") or {}).get("yansitici") or {}).get("kalinlik") or 0.0)
+    return (max(0.25 * k, 1.0), 2.0 * k) if k > 0 else None
+
+
+# tur -> (spec, hedef) -> (bas, son) | None (None: sabit varsayilan kalir)
+_MODELDEN = {
+    "cubuk_yaricap": _yaricap_araligi,
+    "kafes_adim": lambda s, h: _adim_araligi(s, "kafes_adim", h),
+    "kor_adim": lambda s, h: _adim_araligi(s, "kor_adim", h),
+    "malzeme_yogunluk": _yogunluk_araligi,
+    "sogutucu_sicaklik": _sogutucu_araligi,
+    "yansitici_kalinlik": _yansitici_araligi,
+}
+_INCE_YUVARLAMA = ("cubuk_yaricap", "kafes_adim", "kor_adim", "malzeme_yogunluk")
+
+
 def varsayilan_aralik(spec, tur, hedef):
     """
     (bas, son, nokta). Geometri/yogunluk parametrelerinde modeldeki MEVCUT
@@ -162,49 +230,16 @@ def varsayilan_aralik(spec, tur, hedef):
     sinirlanir.
     """
     a, b, n = _VARSAYILAN.get(tur, (0.0, 1.0, 5))
+    turet = _MODELDEN.get(tur)
     try:
-        if tur == "cubuk_yaricap" and hedef:
-            c = sema.cubuk_bul(spec, hedef[0])
-            bolgeler = c["bolgeler"]
-            i = int(hedef[1])
-            r = float(bolgeler[i]["r"])
-            r_once = float(bolgeler[i - 1]["r"]) if i > 0 else 0.0
-            r_sonra = bolgeler[i + 1].get("r") if i + 1 < len(bolgeler) else None
-            a = max(0.9 * r, 0.5 * (r_once + r))
-            b = min(1.1 * r, 0.5 * (r + float(r_sonra))) if r_sonra else 1.05 * r
-        elif tur in ("kafes_adim", "kor_adim"):
-            if tur == "kafes_adim":
-                adim = float(sema.demet_bul(spec, hedef)["adim"])
-            else:
-                adim = float((spec.get("kor") or {}).get("adim") or 0.0)
-            if adim > 0:
-                r_en = max([float(x["r"]) for c in spec.get("cubuklar", [])
-                            for x in c.get("bolgeler") or [] if x.get("r")] or [0.0])
-                if tur == "kor_adim" and (spec.get("kor") or {}).get("tur") == "kare_kafes":
-                    a, b = adim, 1.05 * adim     # demetler ust uste binmesin
-                else:
-                    a, b = max(0.95 * adim, 2.02 * r_en), 1.25 * adim
-        elif tur == "malzeme_yogunluk" and hedef:
-            rho = float(sema.malzeme_bul(spec, hedef)["yogunluk"]["deger"])
-            a, b = 0.9 * rho, 1.1 * rho
-        elif tur == "sogutucu_sicaklik" and hedef:
-            T = float(sema.malzeme_bul(spec, hedef).get("sicaklik") or 0.0)
-            if T > 0:
-                a, b = T - 40.0, T + 40.0
-                m = sema.malzeme_bul(spec, hedef)
-                from cekirdek import malzeme_kutup as mk
-                if tarama._yogunluk_korelasyonu(m)[0] is mk.su_yogunluk:
-                    a, b = max(a, 280.0), min(b, 620.0)   # doymus su tablosu
-        elif tur == "yansitici_kalinlik":
-            k = float(((spec.get("kor") or {}).get("yansitici") or {}).get("kalinlik") or 0.0)
-            if k > 0:
-                a, b = max(0.25 * k, 1.0), 2.0 * k
+        aralik = turet(spec, hedef) if turet else None
+        if aralik is not None:
+            a, b = aralik
     except (KeyError, IndexError, TypeError, ValueError, AttributeError):
         # Model bu parametre icin beklenen bicimde degil (ornek sekme
         # acikken silinen bolge): sabit varsayilanla devam edilir, ama
         # sessiz kalinmaz -- yanlis aralik kullaniciyi yaniltir.
         _log.warning("%r parametresi icin varsayilan aralik modelden "
                      "turetilemedi; sabit aralik kullanildi", tur, exc_info=True)
-    yuvarla = 4 if tur in ("cubuk_yaricap", "kafes_adim", "kor_adim",
-                           "malzeme_yogunluk") else 1
+    yuvarla = 4 if tur in _INCE_YUVARLAMA else 1
     return round(a, yuvarla), round(b, yuvarla), n
