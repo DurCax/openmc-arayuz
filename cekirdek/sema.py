@@ -39,9 +39,21 @@ import json
 import copy
 import os
 
+from cekirdek import goc as _goc
+
 # Spec sema surumu. Bolum eklendiginde artirilir; yukle() eski surumleri
-# okuyup eksik alanlari varsayilanla tamamlar.
-SEMA_SURUM = 1
+# once goc ettirir (cekirdek/goc.py zinciri), sonra eksik alanlari
+# varsayilanla tamamlar. 3: esnek geometri (geometri, tamburlar).
+SEMA_SURUM = _goc.GUNCEL_SURUM
+
+# Gelismis (agac) geometri modunda kor.tur bu degeri alir; tek gercek kaynak
+# spec["geometri"]dir (docs/GEOMETRI_MODELI.md).
+AGAC = "agac"
+
+
+class AgacModuHatasi(RuntimeError):
+    """Gelismis (agac) modda kor alanlarindan okuma yapildi. Goc etmemis bir
+    okuyucu sessizce yanlis deger yerine bu hatayi uretir (R-8)."""
 
 # OpenMC'de void anlamina gelen ayrilmis malzeme adi
 BOSLUK = "bosluk"
@@ -342,167 +354,37 @@ def yeni_spec(ad="adsız model"):
         "guc_dagilimi": copy.deepcopy(VARSAYILAN_GUC),
         "tukenme": copy.deepcopy(VARSAYILAN_TUKENME),
         "calistirma": copy.deepcopy(VARSAYILAN_CALISTIRMA),
+        # Esnek geometri (surum 3): sablon modunda None; gelismis modda
+        # {"kok", "parcalar", "gruplar"} (docs/GEOMETRI_MODELI.md §3).
+        "geometri": None,
+        "tamburlar": [],
     }
     spec["ayarlar"]["entropi_mesh"]["otomatik"] = True
     return spec
 
 
-# ----------------------------------------------------------------------------
-# Yapici yardimcilar -- arayuz ve ornek dosyalar bunlari kullanir
-# ----------------------------------------------------------------------------
 
-def malzeme(ad, bilesim, yogunluk, birim="g/cm3", sicaklik=293.6,
-            sab=None, renk=None, gorunen_ad=None):
+def agac_modu(spec):
+    """Spec gelismis (agac) geometri modunda mi?"""
+    return ((spec or {}).get("kor") or {}).get("tur") == AGAC
+
+
+def _agac_degil(kor, islev):
+    if isinstance(kor, dict) and kor.get("tur") == AGAC:
+        raise AgacModuHatasi(
+            "%s() gelişmiş (ağaç) geometri modunda kullanılamaz: kor alanları yok; "
+            "cekirdek.geometri API'sini kullanın" % islev)
+
+
+def model_yuksekligi(spec):
     """
-    Malzeme tanimi uretir.
-
-    bilesim : [{"tur":"element"|"nuklid", "isim":str, "miktar":float,
-                "birim":"ao"|"wo", "zenginlik":float|None}, ...]
+    Modelin toplam eksenel yuksekligi [cm]; 2B modelde None. Sablon modunda
+    kor_yuksekligi(kor) ile ayni; gelismis modda agactan (geometri.yukseklik).
     """
-    return {
-        "ad": ad,
-        "gorunen_ad": gorunen_ad or ad,
-        "yogunluk": {"birim": birim, "deger": yogunluk},
-        "sicaklik": sicaklik,
-        "bilesim": bilesim,
-        "sab": list(sab or []),
-        "renk": list(renk) if renk else None,
-    }
-
-
-def bilesen(isim, miktar, tur="element", birim="ao", zenginlik=None):
-    """Tek bir bilesim satiri uretir."""
-    d = {"tur": tur, "isim": isim, "miktar": miktar, "birim": birim}
-    if zenginlik is not None:
-        d["zenginlik"] = zenginlik
-    return d
-
-
-def cubuk(ad, bolgeler):
-    """
-    Es merkezli silindirik cubuk.
-
-    bolgeler : [{"r": float|None, "malzeme": str}, ...]
-               artan yaricap sirasinda; SON elemanin "r" degeri None olmali.
-    """
-    return {"ad": ad, "tur": "silindirik", "bolgeler": bolgeler}
-
-
-def bolge(r, malzeme_adi):
-    """Cubuk icin tek bir radyal bolge."""
-    return {"r": r, "malzeme": malzeme_adi}
-
-
-def kontrol_cubugu(ad, bolgeler, izleyici_malzeme, daldirma=0.0, emici_bolge=0):
-    """
-    Eksenel hareket eden kontrol cubugu.
-
-    bolgeler          : normal cubuk gibi radyal bolgeler. emici_bolge ile
-                        belirtilen bolgenin malzemesi EMICIDIR.
-    izleyici_malzeme  : emici bolgenin cubuk UCUNUN ALTINDA kalan kismini
-                        dolduran malzeme (izleyici / follower; cogu zaman
-                        sogutucu ya da celik).
-    daldirma          : %0 = tamamen cekilmis (emici kor icinde yok)
-                        %100 = tamamen dalmis (emici tum yuksekligi kaplar)
-                        Cubuk YUKARIDAN daldirilir; uc konumu
-                        z_uc = +H/2 - (daldirma/100)*H
-    emici_bolge       : hangi radyal bolgenin eksenel olarak bolunecegi
-
-    !!! 3B MODEL GEREKTIRIR !!!  Kor yuksekligi tanimli degilse eksenel bir
-    konum tanimlanamaz; dogrula.py bunu hata olarak bildirir.
-    """
-    return {
-        "ad": ad, "tur": "kontrol", "bolgeler": list(bolgeler),
-        "emici_bolge": int(emici_bolge),
-        "izleyici_malzeme": izleyici_malzeme,
-        "daldirma": float(daldirma),
-    }
-
-
-def plaka(ad, plaka_sayisi, et_kalinlik, zarf_kalinlik, kanal_kalinlik,
-          plaka_genislik, et_malzeme, zarf_malzeme, sogutucu,
-          yan_levha_kalinlik=0.0, yan_levha_malzeme=None):
-    """
-    MTR tipi duz plaka yakit elemani.
-
-    Kesit (x yonu), bir plaka icin:
-        [zarf | et (yakit) | zarf]  ardindan  [kanal (sogutucu)]
-    Bu desen plaka_sayisi kadar tekrarlanir; sonda bir kanal daha olur.
-    plaka_genislik y yonundeki aktif genisliktir.
-    """
-    return {
-        "ad": ad,
-        "tur": "plaka",
-        "plaka_sayisi": plaka_sayisi,
-        "et_kalinlik": et_kalinlik,
-        "zarf_kalinlik": zarf_kalinlik,
-        "kanal_kalinlik": kanal_kalinlik,
-        "plaka_genislik": plaka_genislik,
-        "et_malzeme": et_malzeme,
-        "zarf_malzeme": zarf_malzeme,
-        "sogutucu": sogutucu,
-        "yan_levha_kalinlik": yan_levha_kalinlik,
-        "yan_levha_malzeme": yan_levha_malzeme,
-    }
-
-
-def demet(ad, adim, boyut, harita, anahtar, dolgu_disi, tur="kare"):
-    """
-    Kafes (lattice) tanimi.
-
-    tur     : "kare" (RectLattice) | "altigen" (HexLattice)
-    boyut   : [nx, ny] -- kare icin
-    harita  : satir listesi; her satir harflerden olusan bir dize
-    anahtar : {"y": "yakit_cubugu", "k": "kilavuz_boru", ...}
-    """
-    return {
-        "ad": ad, "tur": tur, "adim": adim, "boyut": list(boyut),
-        "harita": list(harita), "anahtar": dict(anahtar),
-        "dolgu_disi": dolgu_disi,
-    }
-
-
-def demet_altigen(ad, adim, halka_sayisi, harita, anahtar, dolgu_disi,
-                  yonelim="y", kilif=None):
-    """
-    Altigen kafes (HexLattice) tanimi.
-
-    halka_sayisi : merkez dahil halka sayisi (1 = tek hucre)
-    harita       : halka basina bir dize, DISTAN ICE dogru.
-                   Yaricapi k olan halkada 6k karakter, merkezde 1 karakter.
-                   Her halkanin karakterleri TEPEDEN baslar, SAAT YONUNDE ilerler.
-    yonelim      : "y" (ust/alt yuzler yatay) | "x" (sag/sol yuzler dusey)
-    kilif        : istege bagli kilif (duct), bkz. demet_kilifi(). Yoksa alan
-                   yazilmaz (eski dosyalar aynen kalir).
-    """
-    d = {
-        "ad": ad, "tur": "altigen", "adim": adim,
-        "halka_sayisi": halka_sayisi, "yonelim": yonelim,
-        "boyut": [halka_sayisi, halka_sayisi],   # geriye uyumluluk icin
-        "harita": list(harita), "anahtar": dict(anahtar),
-        "dolgu_disi": dolgu_disi,
-    }
-    if kilif:
-        d["kilif"] = dict(kilif)
-    return d
-
-
-def demet_kilifi(ic_duz, kalinlik, malzeme):
-    """
-    Altigen demet kilifi (duct; SFR, VVER-440). ic_duz: kilifin IC duz yuzden
-    duz yuze olcusu [cm]; kalinlik: duvar kalinligi. Kilifin disi ile demet
-    hucresinin siniri arasi demetin dolgu_disi malzemesiyle dolar (demetler
-    arasi bosluk). Kilif yoksa pin kafesi kor hucresinde kirpilir.
-    """
-    return {"ic_duz": float(ic_duz), "kalinlik": float(kalinlik), "malzeme": malzeme}
-
-
-def eksenel_bolge(ad, yukseklik, dolgu=None, anahtar=None):
-    """Eksenel katman tanimi uretir (alttan uste sirayla verilir)."""
-    b = {"ad": ad, "yukseklik": float(yukseklik), "dolgu": dolgu}
-    if anahtar:
-        b["anahtar"] = dict(anahtar)
-    return b
+    if agac_modu(spec):
+        from cekirdek import geometri
+        return geometri.yukseklik(geometri.model(spec))
+    return kor_yuksekligi(spec["kor"])
 
 
 def eksenel_katmanlar(kor):
@@ -510,7 +392,10 @@ def eksenel_katmanlar(kor):
     Gecerli eksenel katmanlari [(z_alt, z_ust, katman), ...] olarak dondurur.
     Katmanlama kapaliysa ya da hicbir gecerli katman yoksa None doner.
     Katmanlar ALTTAN USTE sirayla verilir; kor z=0 etrafinda ortalanir.
+    Gelismis (agac) modda AgacModuHatasi: katmanlar agactadir
+    (cekirdek.geometri.eksenel_dilimler).
     """
+    _agac_degil(kor, "eksenel_katmanlar")
     eks = kor.get("eksenel") or {}
     if not eks.get("var"):
         return None
@@ -535,68 +420,14 @@ def kor_yuksekligi(kor):
     Eksenel katmanlama acikken bu TOPLAM KATMAN YUKSEKLIGIDIR ve "yukseklik"
     alani yok sayilir. Iki yerden yukseklik okumak (biri katmanlardan, biri
     alandan) er ya da gec birbirini tutmaz; tek gercek kaynak burasidir.
+    Gelismis (agac) modda AgacModuHatasi; yerine model_yuksekligi(spec).
     """
+    _agac_degil(kor, "kor_yuksekligi")
     katmanlar = eksenel_katmanlar(kor)
     if katmanlar:
         return katmanlar[-1][1] - katmanlar[0][0]
     h = kor.get("yukseklik")
     return float(h) if h else None
-
-
-def kabuk(r, malzeme_adi):
-    """Kuresel duzenek icin tek bir kuresel kabuk (r = dis yaricap)."""
-    return {"r": r, "malzeme": malzeme_adi}
-
-
-def tambur(sayi, yaricap, merkez_yaricap, govde_malzeme, emici_malzeme,
-           emici_ic_yaricap=0.0, emici_aci=120.0, donme=0.0, baslangic_acisi=0.0):
-    """
-    Donen kontrol tamburu takimi.
-
-    donme = 0   -> emici KORE bakiyor (daldirilmis, en dusuk k)
-    donme = 180 -> emici DISA bakiyor (cekilmis, en yuksek k)
-    """
-    return {
-        "sayi": int(sayi), "yaricap": yaricap, "merkez_yaricap": merkez_yaricap,
-        "govde_malzeme": govde_malzeme, "emici_malzeme": emici_malzeme,
-        "emici_ic_yaricap": emici_ic_yaricap, "emici_aci": emici_aci,
-        "donme": donme, "baslangic_acisi": baslangic_acisi,
-    }
-
-
-def tally(ad, skorlar, filtreler=None, nuklidler=None):
-    """Tally tanimi."""
-    return {
-        "ad": ad,
-        "skorlar": list(skorlar),
-        "filtreler": list(filtreler or []),
-        "nuklidler": list(nuklidler or []),
-    }
-
-
-def filtre_enerji(gruplar):
-    """Enerji grup siniri filtresi (eV, artan)."""
-    return {"tur": "enerji", "gruplar": list(gruplar)}
-
-
-def filtre_mesh(boyut, alt, ust):
-    """Duzenli mesh filtresi. boyut=[nx,ny,nz], alt/ust=[x,y,z] (cm)."""
-    return {"tur": "mesh", "boyut": list(boyut), "alt": list(alt), "ust": list(ust)}
-
-
-def filtre_mesh_otomatik(boyut):
-    """
-    Sinirlari model KURULURKEN turetilen mesh filtresi (bkz.
-    kurucu.tally_mesh_sinirlari). Sinirlari olusturma aninda dondurmak,
-    sonradan yansitici eklenen bir modelde mesh'i eski olcude birakiyordu
-    (olculdu: model 61.42 cm, mesh +/-10.71 cm).
-    """
-    return {"tur": "mesh", "boyut": list(boyut), "otomatik": True}
-
-
-def filtre_malzeme(adlar):
-    """Malzeme filtresi."""
-    return {"tur": "malzeme", "adlar": list(adlar)}
 
 
 # ----------------------------------------------------------------------------
@@ -651,16 +482,35 @@ def kaydet(spec, dosya):
     yeni bicimde yazilir (eski cubuk/bolge alanlari yok); spec degismez."""
     if isinstance(spec.get("guc_dagilimi"), dict):
         spec = dict(spec, guc_dagilimi=_guc_yeni_bicim(spec["guc_dagilimi"]))
+    if isinstance(spec.get("geometri"), dict):
+        # "_" ile baslayan alanlar calisma anindaki turetilmis notlardir
+        # (genislet'in _kaynak/_kutu notlari); diske yazilmaz.
+        spec = dict(spec, geometri=_turetilmisleri_ayikla(spec["geometri"]))
+    # Eski surumlu ya da bozuk bir dosyanin ustune yazmadan once yedek (M2).
+    _goc.yedekle(dosya)
     with open(dosya, "w", encoding="utf-8") as f:
         json.dump(spec, f, ensure_ascii=False, indent=2)
         f.write("\n")
     return dosya
 
 
+def _turetilmisleri_ayikla(deger):
+    """Ic ice yapidan "_" ile baslayan sozluk anahtarlarini atar (kopya)."""
+    if isinstance(deger, dict):
+        return {k: _turetilmisleri_ayikla(v) for k, v in deger.items()
+                if not (isinstance(k, str) and k.startswith("_"))}
+    if isinstance(deger, list):
+        return [_turetilmisleri_ayikla(v) for v in deger]
+    return deger
+
+
 def yukle(dosya):
-    """JSON spec okur ve eksik alanlari varsayilanlarla tamamlar."""
-    with open(dosya, encoding="utf-8") as f:
-        ham = json.load(f)
+    """
+    JSON spec okur, sema surumunu goc ettirir (cekirdek/goc.py) ve eksik
+    alanlari varsayilanlarla tamamlar. Bozuk dosya, sayi olmayan surum,
+    daha yeni surum ya da eksik zorunlu bolum goc.GocHatasi (ValueError).
+    """
+    ham, _adimlar = _goc.dosya_oku(dosya)
     return tamamla(ham)
 
 
@@ -701,6 +551,13 @@ def tamamla(ham):
         spec[anahtar] = _derin_birlestir(copy.deepcopy(vars_),
                                          ham.get(anahtar, {}))
     _eski_guc_tasi(ham.get("guc_dagilimi"), spec["guc_dagilimi"])
+    # Esnek geometri (surum 3). Gelismis modda kor yalniz {"tur": "agac"}dir:
+    # varsayilan kor alanlari BIRLESTIRILMEZ -- goc etmemis bir okuyucu
+    # sessizce varsayilan deger okumasin (R-8).
+    if (ham.get("kor") or {}).get("tur") == AGAC:
+        spec["kor"] = {"tur": AGAC}
+    spec["geometri"] = copy.deepcopy(ham.get("geometri"))
+    spec["tamburlar"] = copy.deepcopy(ham.get("tamburlar") or [])
     spec["surum"] = SEMA_SURUM
     return spec
 
@@ -738,214 +595,11 @@ def demet_bul(spec, ad):
     return None
 
 
-def kullanilan_malzemeler(spec):
-    """
-    Modelde gercekten kullanilan malzeme adlarini dondurur ("bosluk" haric).
-    Dogrulama ve renk atamasi icin kullanilir.
-    """
-    adlar = set()
-    for c in spec["cubuklar"]:
-        for b in c["bolgeler"]:
-            if b.get("malzeme") and b["malzeme"] != BOSLUK:
-                adlar.add(b["malzeme"])
-        iz = c.get("izleyici_malzeme")
-        if iz and iz != BOSLUK:
-            adlar.add(iz)
-    for p in spec["plakalar"]:
-        for k in ("et_malzeme", "zarf_malzeme", "sogutucu", "yan_levha_malzeme"):
-            if p.get(k) and p[k] != BOSLUK:
-                adlar.add(p[k])
-    for d in spec["demetler"]:
-        if d.get("dolgu_disi") and d["dolgu_disi"] != BOSLUK:
-            adlar.add(d["dolgu_disi"])
-        k = d.get("kilif") if d.get("tur") == "altigen" else None
-        if isinstance(k, dict) and k.get("malzeme") and k["malzeme"] != BOSLUK:
-            adlar.add(k["malzeme"])
-    t = spec["kor"].get("tambur") or {}
-    if int(t.get("sayi") or 0) > 0:
-        for anahtar in ("govde_malzeme", "emici_malzeme"):
-            if t.get(anahtar) and t[anahtar] != BOSLUK:
-                adlar.add(t[anahtar])
-    d = spec["kor"].get("dolgu")
-    if d and d != BOSLUK and malzeme_bul(spec, d) is not None:
-        adlar.add(d)
-    # Kabuklar yalnizca kuresel turde geometriye girer (bkz. KOR_KORUNAN).
-    if spec["kor"].get("tur") == "kuresel":
-        for k in (spec["kor"].get("kabuklar") or []):
-            if k.get("malzeme") and k["malzeme"] != BOSLUK:
-                adlar.add(k["malzeme"])
-    yans = spec["kor"].get("yansitici") or {}
-    # Tamburlu korda yansitici ZORUNLUDUR; kurucu onu "var" alanina bakmadan kurar.
-    yans_var = yans.get("var") or spec["kor"].get("tur") == "tamburlu"
-    if yans_var and yans.get("malzeme") and yans["malzeme"] != BOSLUK:
-        adlar.add(yans["malzeme"])
-    return adlar
-
-
-# ----------------------------------------------------------------------------
-# Malzeme adi degisimi
-# ----------------------------------------------------------------------------
-#
-#  Bir malzeme adi spec'te IKI tur yerde gecer:
-#   * yalnizca MALZEME kabul eden alanlar: cubuk bolgeleri ve izleyici,
-#     plaka alanlari, demet dolgu_disi, yansitici, kuresel kabuklar, tambur
-#     govde/emici, tally malzeme filtreleri, tukenme ek_malzemeler.
-#   * GENEL ad alanlari (kurucu._universe_uret: cubuk -> plaka -> demet ->
-#     malzeme sirasiyla cozulur): demet ve kor harita anahtarlari, tamburlu
-#     kor dolgusu, eksenel katman dolgusu ve katman anahtarlari. Buradaki
-#     ad ancak ayni adli cubuk/plaka/demet YOKSA malzemeyi gosterir; varsa
-#     o oge kazanir ve bu alanlar DEGISTIRILMEZ.
-#  Once arayuz yalnizca cubuk/plaka/demet/yansiticiyi guncelliyordu; kabuk,
-#  tambur, kor dolgusu, katman dolgusu, kontrol cubugu izleyicisi ve tally
-#  filtresi eski adda kaliyor, model "tanimsiz malzeme" ile kurulamiyordu.
-#  Yeni bir alan eklenirse BURAYA da eklenmeli; testler/test_malzeme_sekmesi.py
-#  11 ornekte her malzemeyi yeniden adlandirip modelin ayni kuruldugunu olcer.
-
-_MALZEME_BOLUMLERI = (("cubuklar", "çubuk"), ("plakalar", "plaka"),
-                      ("demetler", "demet"))
-
-
-def malzeme_etiketi(m):
-    """
-    Listelerde gosterilecek malzeme etiketi: "ad — aciklama"; aciklama
-    (gorunen_ad) bos ya da adla ayniysa yalnizca ad. Once her liste
-    "%s  --  %s" % (ad, gorunen_ad) yaziyordu: tek ad alanli yeni
-    malzemelerde "yakit  --  yakit" cikardi.
-    """
-    ad = m.get("ad") or ""
-    aciklama = m.get("gorunen_ad") or ""
-    return ad if not aciklama or aciklama == ad else "%s — %s" % (ad, aciklama)
-
-
-def malzeme_adi_sorunu(spec, ad, haric=None):
-    """
-    'ad' bir malzemeye verilebilir mi? Sorun varsa kisa Turkce aciklama,
-    yoksa None. haric: duzenlenen malzemenin su anki adi (ad degismiyorsa
-    her zaman gecerlidir -- eski dosyadaki bir ad cakismasi, ilgisiz bir
-    duzenlemeyi kilitlemesin).
-    """
-    ad = ad if isinstance(ad, str) else ""
-    if haric is not None and ad == haric:
-        return None
-    if not ad.strip():
-        return "Malzeme adı boş olamaz."
-    if ad != ad.strip():
-        return "Ad boşlukla başlayamaz ya da bitemez."
-    if ad == BOSLUK:
-        return ("'%s' ayrılmış bir addır: geometride Boş (madde yok) anlamına "
-                "gelir." % BOSLUK)
-    if any(m.get("ad") == ad for m in spec.get("malzemeler") or []):
-        return "'%s' adında başka bir malzeme var." % ad
-    for bolum, etiket in _MALZEME_BOLUMLERI:
-        if any(x.get("ad") == ad for x in spec.get(bolum) or []):
-            return ("'%s' adı bir %s için kullanılıyor. Demet ve katman "
-                    "seçimlerinde aynı ad iki şeyi gösterirdi." % (ad, etiket))
-    return None
-
-
-def malzeme_adini_degistir(spec, eski, yeni):
-    """
-    'eski' adli malzemeyi 'yeni' olarak yeniden adlandirir ve spec'teki
-    BUTUN referanslari gunceller (yerinde). Malzemenin gorunen_ad'i eski
-    adla ayniysa o da degisir.
-
-    DONER degisen referanslarin yol listesi (malzemenin kendi adi haric),
-    ornek: ["cubuklar/yakit_cubugu/bolgeler/0", "kor/yansitici"].
-    HATA  KeyError  : eski adli malzeme yok
-          ValueError: yeni ad gecersiz ya da cakisiyor (malzeme_adi_sorunu),
-                      ya da eski ad birden fazla malzemede (hangisi oldugu
-                      belirsiz)
-    """
-    if eski == yeni:
-        return []
-    adli = [m for m in spec.get("malzemeler") or [] if m.get("ad") == eski]
-    if not adli:
-        raise KeyError("tanımsız malzeme: %s" % eski)
-    if len(adli) > 1:
-        raise ValueError("'%s' adında %d malzeme var; önce birini yeniden "
-                         "adlandırın." % (eski, len(adli)))
-    sorun = malzeme_adi_sorunu(spec, yeni)
-    if sorun:
-        raise ValueError(sorun)
-
-    yollar = []
-
-    def alan(kap, anahtar, yol):
-        if isinstance(kap, dict) and kap.get(anahtar) == eski:
-            kap[anahtar] = yeni
-            yollar.append(yol)
-
-    def liste(kap, anahtar, yol):
-        dizi = kap.get(anahtar) if isinstance(kap, dict) else None
-        for i, x in enumerate(dizi or []):
-            if x == eski:
-                dizi[i] = yeni
-                yollar.append("%s/%d" % (yol, i))
-
-    def harita_anahtari(kap, yol):
-        esleme = kap.get("anahtar") if isinstance(kap, dict) else None
-        for harf in sorted(esleme or {}):
-            if esleme[harf] == eski:
-                esleme[harf] = yeni
-                yollar.append("%s/anahtar/%s" % (yol, harf))
-
-    # malzemenin kendisi
-    m = adli[0]
-    m["ad"] = yeni
-    if m.get("gorunen_ad") == eski:
-        m["gorunen_ad"] = yeni
-
-    # --- yalnizca malzeme kabul eden alanlar ---
-    for c in spec.get("cubuklar") or []:
-        yol = "cubuklar/%s" % c.get("ad")
-        for i, b in enumerate(c.get("bolgeler") or []):
-            alan(b, "malzeme", "%s/bolgeler/%d" % (yol, i))
-        alan(c, "izleyici_malzeme", yol + "/izleyici_malzeme")
-    for p in spec.get("plakalar") or []:
-        for k in ("et_malzeme", "zarf_malzeme", "sogutucu", "yan_levha_malzeme"):
-            alan(p, k, "plakalar/%s/%s" % (p.get("ad"), k))
-    for d in spec.get("demetler") or []:
-        alan(d, "dolgu_disi", "demetler/%s/dolgu_disi" % d.get("ad"))
-        alan(d.get("kilif"), "malzeme", "demetler/%s/kilif" % d.get("ad"))
-    kor = spec.get("kor") or {}
-    alan(kor.get("yansitici"), "malzeme", "kor/yansitici")
-    for i, k in enumerate(kor.get("kabuklar") or []):
-        alan(k, "malzeme", "kor/kabuklar/%d" % i)
-    for k in ("govde_malzeme", "emici_malzeme"):
-        alan(kor.get("tambur"), k, "kor/tambur/" + k)
-    for t in spec.get("tallyler") or []:
-        for i, f in enumerate(t.get("filtreler") or []):
-            if isinstance(f, dict) and f.get("tur") == "malzeme":
-                liste(f, "adlar", "tallyler/%s/filtreler/%d/adlar" % (t.get("ad"), i))
-    liste(spec.get("tukenme"), "ek_malzemeler", "tukenme/ek_malzemeler")
-
-    # --- genel ad alanlari: ad baska bir ogeyi gostermiyorsa ---
-    golgeli = any(x.get("ad") == eski for bolum, _e in _MALZEME_BOLUMLERI
-                  for x in spec.get(bolum) or [])
-    if not golgeli:
-        for d in spec.get("demetler") or []:
-            harita_anahtari(d, "demetler/%s" % d.get("ad"))
-        harita_anahtari(kor, "kor")
-        alan(kor, "dolgu", "kor/dolgu")
-        for i, b in enumerate((kor.get("eksenel") or {}).get("bolgeler") or []):
-            alan(b, "dolgu", "kor/eksenel/%d/dolgu" % i)
-            harita_anahtari(b, "kor/eksenel/%d" % i)
-    return yollar
-
-
-def malzeme_referanslari(spec, ad):
-    """
-    'ad' malzemesinin spec'te gectigi yerler (malzeme_adini_degistir'in
-    guncelleyecegi yollar); spec DEGISMEZ. Silme onayinda kullanilir.
-    """
-    if malzeme_bul(spec, ad) is None:
-        return []
-    kopya = copy.deepcopy(spec)
-    # yalnizca bu malzeme kalsin: ad cakismasi/cift ad yeniden adlandirmayi
-    # engellemesin (referans yollari malzeme listesine bagli degildir)
-    kopya["malzemeler"] = [m for m in kopya.get("malzemeler") or [] if m.get("ad") == ad][:1]
-    gecici = "\x00silme_denetimi"
-    while any(x.get("ad") == gecici for b, _e in _MALZEME_BOLUMLERI
-              for x in kopya.get(b) or []):
-        gecici += "_"
-    return malzeme_adini_degistir(kopya, ad, gecici)
+# Bolunen alt moduller (Dalga G-1): adlar burada yeniden disa verilir.
+from cekirdek.sema_yapici import (  # noqa: E402,F401
+    malzeme, bilesen, cubuk, bolge, kontrol_cubugu, plaka, demet, demet_altigen,
+    demet_kilifi, eksenel_bolge, kabuk, tambur, tally, filtre_enerji, filtre_mesh,
+    filtre_mesh_otomatik, filtre_malzeme)
+from cekirdek.sema_basvuru import (  # noqa: E402,F401
+    kullanilan_malzemeler, malzeme_etiketi, malzeme_adi_sorunu, malzeme_adini_degistir,
+    malzeme_referanslari, _MALZEME_BOLUMLERI)

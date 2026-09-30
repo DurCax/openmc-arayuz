@@ -57,7 +57,6 @@ KABA_EKLEME = {"append", "add", "extend", "insert"}
 IZINLI = {
     "cekirdek.dogrula.veri:_kutuphane_icerigi": 1,                # (T)
     "cekirdek.ice_aktar:malzemeleri_oku": 4,                      # (T) 3 + (Y) 1
-    "cekirdek.kurucu:_spec_fisil_mi": 1,                          # (T)
     "cekirdek.uygunluk:_korelasyon": 1,                           # (T)
     "cekirdek.uygunluk:_kutle": 1,                                # (T)
     "cekirdek.uygunluk:_ortalama_kutle": 1,                       # (T)
