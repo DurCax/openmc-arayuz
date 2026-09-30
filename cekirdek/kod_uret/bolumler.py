@@ -66,11 +66,11 @@ def _ayarlar(spec, satirlar, gx, gy):
         # dar bir baslangic kutusu eksenel sekli yanlis yakinsatir.
         # Kutu AKTIF yakit araligini kapsar (kurucu.py ile ayni tanim):
         # yansitici/plenum katmanlarinda orneklenen noktalar zaten reddedilir.
-        from cekirdek import kurucu as _kur
-        _ar = _kur.aktif_eksenel_aralik(spec)
+        from cekirdek import geometri as _geo
+        _ar = _geo.aktif_aralik(spec)
         _z0, _z1 = _ar if _ar else (-1.0, 1.0)
         # Yanal olcu yansitici HARIC (kurucu.kor_ic_olcusu ile ayni).
-        _kx, _ky = _kur.kor_ic_olcusu(spec, (gx, gy))
+        _kx, _ky = _geo.ic_olcusu(_geo.model(spec))
         alt = k.get("alt") or [-_kx / 2, -_ky / 2, _z0]
         ust = k.get("ust") or [+_kx / 2, +_ky / 2, _z1]
         satirlar.append("_uzay = openmc.stats.Box(%r, %r)"

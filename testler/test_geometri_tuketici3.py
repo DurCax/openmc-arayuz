@@ -199,6 +199,33 @@ def test_sunulan_hedefler_modeli_degistirir():
                     _model_imzasi(yeni) != taban)
 
 
-HIZLI = [test_gelismise_gecen_ornekler_ayni, test_gelismise_gecen_dogrulama_temiz,
+def test_agac_modunda_hata_yok():
+    print("\n[GV6] agac modunda uygunluk/kaynak/rapor sorulari AgacModuHatasi vermez (G-3 istegi)")
+    from cekirdek import geometri, kaynak, rapor, sema, tarama, uygunluk as u
+    duzenekler = [("a", go.duzenek_a()), ("b", go.duzenek_b()), ("c", go.duzenek_c()),
+                  ("e", go.duzenek_e_ceyrek())]
+    for ad in ("pwr_kontrol", "zirh_kure", "vver1000_kor"):
+        duzenekler.append((ad, geometri.gelismise_gec(
+            sema.yukle(os.path.join(ORNEK, ad + ".json")))))
+    sorular = [u.model_ozeti, u.gecerli_sekmeler, u.kor_turleri, u.parca_turleri,
+               u.kor_ortak_alanlari, u.yan_yuzey, u.yuz_sinir_secenekleri, u.ayar_alanlari,
+               u.kaynak_secenekleri, u.guc_cubuklari, u.tukenme_uygun, u.sonsuz_ortam,
+               u.tukenme_ayirma_anlamli, u.katman_dolgu_turleri, u.kullanilan_malzemeler,
+               lambda s: [u.sinir_secenekleri(s, y) for y in ("yan", "alt", "ust")],
+               lambda s: [u.gecerli_hedefler(s, t) for t in tarama.TURLER],
+               lambda s: (u.gecerli_taramalar(s), u.gecerli_taramalar(s, "kritik")),
+               kaynak.entropi_boyutu, kaynak.entropi_boyutu_otomatik, rapor._ayar_satirlari]
+    hatalar = []
+    for ad, spec in duzenekler:
+        for soru in sorular:
+            try:
+                soru(copy.deepcopy(spec))
+            except Exception as e:     # noqa: BLE001 -- test: her hata raporlanir
+                hatalar.append((ad, getattr(soru, "__name__", "?"), type(e).__name__, str(e)[:80]))
+    kontrol("%d duzenek x %d soru hatasiz" % (len(duzenekler), len(sorular)), not hatalar,
+            "-> %s" % hatalar[:4])
+
+
+HIZLI = [test_agac_modunda_hata_yok, test_gelismise_gecen_ornekler_ayni, test_gelismise_gecen_dogrulama_temiz,
          test_uygunluk_agac_duzenekleri, test_tarama_agac, test_sunulan_hedefler_modeli_degistirir]
 YAVAS = []

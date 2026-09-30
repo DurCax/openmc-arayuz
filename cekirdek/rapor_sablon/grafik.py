@@ -227,7 +227,7 @@ def _kesit_tanimlari(spec, bilgi):
     from cekirdek import sema
     gx, gy = bilgi["sinir_kutu"]
     tanimlar = [("geo_xy", "xy", (gx, gy), _piksel(gx, gy))]
-    h = sema.kor_yuksekligi(spec["kor"])
+    h = sema.model_yuksekligi(spec)
     if h:
         tanimlar.append(("geo_xz", "xz", (gx, h), _piksel(gx, h)))
     return tanimlar

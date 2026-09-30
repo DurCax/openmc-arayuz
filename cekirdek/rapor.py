@@ -299,13 +299,29 @@ def _malzeme_satirlari(spec):
     return satirlar
 
 
+def _sinir_kosullari(spec, kor):
+    """Sinir kosullari: sablonda kor.sinir, gelismis modda agac kokunun siniri
+    (yuz basina sinir varsa o da)."""
+    from cekirdek import sema
+    if not sema.agac_modu(spec):
+        return kor.get("sinir") or {}
+    from cekirdek import geometri
+    sb = geometri.sinir_bilgisi(geometri.model(spec))
+    sinir = {k: v for k, v in (("yan", sb.yan), ("alt", sb.alt), ("ust", sb.ust)) if v}
+    if isinstance(sb.yuzler, dict):
+        sinir.update(sb.yuzler)
+    elif sb.yuzler:
+        sinir.update(zip(sb.yuz_adlari, sb.yuzler))
+    return sinir
+
+
 def _ayar_satirlari(spec):
     from cekirdek import kaynak as _kaynak, sema, uygunluk
     a, kor = spec.get("ayarlar") or {}, spec.get("kor") or {}
     ent = a.get("entropi_mesh") or {}
     g, t = spec.get("guc_dagilimi") or {}, spec.get("tukenme") or {}
-    h = sema.kor_yuksekligi(kor)
-    sinir = kor.get("sinir") or {}
+    h = sema.model_yuksekligi(spec)
+    sinir = _sinir_kosullari(spec, kor)
     satirlar = [
         (_("Kor türü"), uygunluk.KOR_TURU_ADLARI.get(kor.get("tur"), str(kor.get("tur")))),
         (_("Yükseklik"), ("%.2f cm" % h) if h else _("2B (eksenel sonsuz)")),
@@ -374,13 +390,13 @@ def _kosu_ozeti(spec, sonuc, k_nesil):
 
 
 def _guc_ozeti(spec, sonuc):
-    from cekirdek import guc as _guc, kosucu, kurucu
+    from cekirdek import geometri, guc as _guc, kosucu
     g = sonuc.get("guc")
     if not g or not g.get("faktorler"):
         return ({"hata": sonuc["guc_hata"]} if sonuc.get("guc_hata") else None)
     f = g["faktorler"]
     m = _guc.mutlak_guc(f, (spec.get("guc_dagilimi") or {}).get("toplam_guc"),
-                        kurucu.guc_yuksekligi(spec), hedef_payi=g.get("hedef_payi"))
+                        geometri.hedef_yuksekligi(spec), hedef_payi=g.get("hedef_payi"))
     yorum = kosucu.korunum_satirlari(g) + _guc.yorumla(
         f, m, hedef_payi=g.get("hedef_payi"), hedef_payi_hata=g.get("hedef_payi_hata"))
     sicak = _guc.konum_metni(f["sicak_cubuk"], f.get("kafes_turu"), f.get("kafes_turleri"))
