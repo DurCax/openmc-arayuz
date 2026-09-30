@@ -12,6 +12,11 @@ import re
 
 from PySide6 import QtCore, QtGui, QtWidgets
 
+from arayuz.tasarim import tokenlar
+from cekirdek.gunluk import kaydedici
+
+_log = kaydedici(__name__)
+
 
 # ----------------------------------------------------------------------------
 # Fare tekerlegi korumasi
@@ -278,6 +283,11 @@ class EnerjiGirdi(QtWidgets.QWidget):
         d.setContentsMargins(0, 0, 0, 0)
         d.addWidget(self.kutu, 1)
         d.addWidget(self.birim, 0)
+        # ayarla() ile verilen tam eV degeri ve o andaki (kutu, birim) durumu:
+        # kullanici dokunmadan deger() AYNI sayiyi dondurur (1.025e6 eV ->
+        # 1.025 MeV -> 1024999.9999999999 kaymasi olmaz).
+        self._verilen_ev = None
+        self._verilen_durum = None
         self.ayarla(ev)
         self.kutu.valueChanged.connect(self.degisti)
         self.birim.currentIndexChanged.connect(self._birim_degisti)
@@ -287,7 +297,10 @@ class EnerjiGirdi(QtWidgets.QWidget):
 
     def deger(self):
         """Girilen enerjiyi eV cinsinden dondurur."""
-        return self.kutu.value() * _BIRIMLER[self.birim.currentIndex()][1]
+        durum = (self.kutu.value(), self.birim.currentIndex())
+        if self._verilen_ev is not None and durum == self._verilen_durum:
+            return self._verilen_ev
+        return durum[0] * _BIRIMLER[durum[1]][1]
 
     def ayarla(self, ev):
         """eV cinsinden bir enerjiyi, okunakli bir birim secerek gosterir."""
@@ -300,6 +313,8 @@ class EnerjiGirdi(QtWidgets.QWidget):
         self.birim.setCurrentIndex(i)
         self.kutu.setValue(ev / _BIRIMLER[i][1])
         self.blockSignals(eski)
+        self._verilen_ev = ev
+        self._verilen_durum = (self.kutu.value(), i)
 
 
 class BilimselGirdi(QtWidgets.QLineEdit):
@@ -334,13 +349,15 @@ class BilimselGirdi(QtWidgets.QLineEdit):
 #                   okunur ve tema degisince kendiliginden yenilenir.
 # ----------------------------------------------------------------------------
 
-def _tema_renk(ad, vars_):
-    """Tema rengi; tema modulu yuklenemezse (or. yalniz test) yedek renk."""
+def _tema_renk(ad, vars_=None):
+    """Tema rengi; tema modulu yuklenemezse (or. yalniz test) acik temanin
+    tokeni. Sabit renk YAZILMAZ -- yedek de tasarim tokenlarindan gelir."""
     try:
         from arayuz import tema
         return tema.renk(ad)
-    except Exception:
-        return vars_
+    except (ImportError, KeyError, RuntimeError):
+        _log.warning("tema rengi okunamadi: %s", ad, exc_info=True)
+        return vars_ or tokenlar.palet("acik").get(ad, tokenlar.palet("acik")["metin"])
 
 
 class GelismisBolum(QtWidgets.QWidget):
@@ -390,7 +407,8 @@ class GelismisBolum(QtWidgets.QWidget):
         try:
             deger = QtCore.QSettings("openmc_arayuz", "arayuz").value(
                 self.AYAR_ONEKI + self._anahtar, False)
-        except Exception:
+        except (OSError, RuntimeError, ValueError):
+            _log.warning("ayar okunamadi: %s", self._anahtar, exc_info=True)
             return False
         if isinstance(deger, str):
             return deger.strip().lower() in ("true", "1", "yes")
@@ -402,8 +420,8 @@ class GelismisBolum(QtWidgets.QWidget):
         try:
             QtCore.QSettings("openmc_arayuz", "arayuz").setValue(
                 self.AYAR_ONEKI + self._anahtar, bool(acik))
-        except Exception:
-            pass
+        except (OSError, RuntimeError, ValueError):
+            _log.warning("ayar yazilamadi: %s", self._anahtar, exc_info=True)
 
     # -- gorunum --
     def _uygula(self, acik):
@@ -483,8 +501,8 @@ class BosDurum(QtWidgets.QWidget):
             self.dugme.setVisible(bool(dugme_metni))
 
     def _renkleri_uygula(self):
-        soluk = _tema_renk("metin_soluk", "#6b7785")
-        stil_s = "color: %s;" % _tema_renk("vurgu", "#0f766e")
+        soluk = _tema_renk("metin_soluk")
+        stil_s = "color: %s;" % _tema_renk("vurgu")
         stil_m = "color: %s;" % soluk
         if self.simge.styleSheet() != stil_s:
             self.simge.setStyleSheet(stil_s)
@@ -527,7 +545,7 @@ class DurumRozeti(QtWidgets.QLabel):
     def _stil_uygula(self):
         ad = {"hata": "hata", "uyari": "uyari", "basari": "basari",
               "bilgi": "bilgi", "notr": "metin_soluk"}[self._seviye]
-        renk = QtGui.QColor(_tema_renk(ad, "#5b6673"))
+        renk = QtGui.QColor(_tema_renk(ad))
         zemin = QtGui.QColor(renk)
         zemin.setAlpha(38)
         kenar = QtGui.QColor(renk)

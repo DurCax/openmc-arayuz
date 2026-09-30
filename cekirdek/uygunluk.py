@@ -194,8 +194,21 @@ def _yogunluk_gcm3(m):
 
 
 def _doteryumlu(m):
-    """Bilesimde doteryum (H2 / D) var mi? Agir su hafif su degildir."""
-    return any((b.get("isim") or "") in ("H2", "D") for b in m.get("bilesim") or [])
+    """
+    Hidrojenin ANLAMLI kesri doteryum mu (H2 / D)? Agir su hafif su degildir.
+    Dogal bolluktaki eser H2 (%0.016; BEAVRS gibi nuklid listeli hafif su) agir
+    su SAYILMAZ: hidrojenin doteryum kesri _ESER_ESIGI'nin altindaysa False.
+    """
+    doteryum = hafif = 0.0
+    for b in m.get("bilesim") or []:
+        isim = b.get("isim") or ""
+        miktar = abs(float(b.get("miktar") or 0.0))
+        if isim in ("H2", "D"):
+            doteryum += miktar
+        elif isim in ("H", "H1"):
+            hafif += miktar
+    toplam = doteryum + hafif
+    return toplam > 0.0 and doteryum / toplam >= _ESER_ESIGI
 
 
 def _korelasyon(m):

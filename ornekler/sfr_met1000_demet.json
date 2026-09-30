@@ -1,0 +1,449 @@
+{
+  "surum": 1,
+  "ad": "SFR sürücü demeti (MET-1000, k∞)",
+  "aciklama": "OECD/NEA SFR kriteri NEA/NSC/R(2015)9, MET-1000 (1000 MWth metal yakıtlı orta boy kor), BOC. Tek iç kor sürücü demeti, orta eksenel dilim (dilim 3) bileşimiyle; yansıtıcı sınır → sonsuz demet kafesi (k∞, eksenel sızıntı yok).\n\nSürücü demeti (Tablo 2.16): demet adımı 16.2471 cm, zarf dış düz-düz 15.8123 cm, duvar 0.3966 cm (HT-9); 271 pin (10 halka), yakıt r 0.3236 cm, HT-9 kılıf dış r 0.3857 cm. Tel sarımı spesifikasyonda KILIFA homojenleştirilmiştir (kılıf dış yarıçapı büyütülmüş); modelin hacim kesirleri Tablo 2.20 ile aynıdır (yakıt 39.00, HT-9 25.66, Na 35.34 %; testler/test_ornekler.py kütle korunumunu sınar). Pin adımı spesifikasyonda verilmez: pin kafesi zarf içine tam oturacak biçimde p = 0.90539 cm seçildi (hacim kesirleri p'den bağımsızdır). Sıcaklıklar: yakıt 807.15 K, sodyum/yapı 705.65 K. Yakıt bileşimleri Tablo 2.22/2.23 (5 eksenel dilim).\nTek demet 1 halkalı altıgen kor kafesiyle kurulur (kor 'x', pin 'y'); demetler arası sodyum boşluğu (zarf dışı ile 16.2471 cm hücre arası) modeldedir. Deneme: 'sodyum' malzemesinin yoğunluğunu küçültüp sodyum boşluk etkisini görün.",
+  "malzemeler": [
+    {
+      "ad": "yakit_ic3",
+      "gorunen_ad": "İç kor yakıtı, eksenel dilim 3 (U-TRU-10Zr, BOC)",
+      "yogunluk": {
+        "birim": "atom/b-cm",
+        "deger": 0.0323549999
+      },
+      "sicaklik": 807.15,
+      "bilesim": [
+        {
+          "tur": "nuklid",
+          "isim": "U234",
+          "miktar": 1.0727e-06,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "U235",
+          "miktar": 2.8961e-05,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "U236",
+          "miktar": 2.5536e-06,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "U238",
+          "miktar": 0.019433,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Np237",
+          "miktar": 4.6782e-05,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Pu236",
+          "miktar": 5.6701e-10,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Pu238",
+          "miktar": 0.00011196,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Pu239",
+          "miktar": 0.0021754,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Pu240",
+          "miktar": 0.0012902,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Pu241",
+          "miktar": 0.00018518,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Pu242",
+          "miktar": 0.00028818,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Am241",
+          "miktar": 0.00010353,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Am242_m1",
+          "miktar": 9.0224e-06,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Am243",
+          "miktar": 9.7993e-05,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Cm242",
+          "miktar": 5.9476e-06,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Cm243",
+          "miktar": 5.0136e-07,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Cm244",
+          "miktar": 6.5622e-05,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Cm245",
+          "miktar": 1.6663e-05,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Cm246",
+          "miktar": 9.1307e-06,
+          "birim": "ao"
+        },
+        {
+          "tur": "element",
+          "isim": "Zr",
+          "miktar": 0.0072802,
+          "birim": "ao"
+        },
+        {
+          "tur": "element",
+          "isim": "Mo",
+          "miktar": 0.0012031,
+          "birim": "ao"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        214,
+        96,
+        42
+      ]
+    },
+    {
+      "ad": "sodyum",
+      "gorunen_ad": "Sodyum 705.65 K",
+      "yogunluk": {
+        "birim": "atom/b-cm",
+        "deger": 0.022272
+      },
+      "sicaklik": 705.65,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "Na",
+          "miktar": 0.022272,
+          "birim": "ao"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        240,
+        200,
+        90
+      ]
+    },
+    {
+      "ad": "ht9",
+      "gorunen_ad": "HT-9 (kılıf, zarf)",
+      "yogunluk": {
+        "birim": "atom/b-cm",
+        "deger": 0.08146012
+      },
+      "sicaklik": 705.65,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "Fe",
+          "miktar": 0.069715,
+          "birim": "ao"
+        },
+        {
+          "tur": "element",
+          "isim": "Ni",
+          "miktar": 0.00042984,
+          "birim": "ao"
+        },
+        {
+          "tur": "element",
+          "isim": "Cr",
+          "miktar": 0.010366,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Mn55",
+          "miktar": 0.00045921,
+          "birim": "ao"
+        },
+        {
+          "tur": "element",
+          "isim": "Mo",
+          "miktar": 0.00049007,
+          "birim": "ao"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        130,
+        130,
+        140
+      ]
+    }
+  ],
+  "cubuklar": [
+    {
+      "ad": "pin_ic3",
+      "tur": "silindirik",
+      "bolgeler": [
+        {
+          "r": 0.3236,
+          "malzeme": "yakit_ic3"
+        },
+        {
+          "r": 0.3857,
+          "malzeme": "ht9"
+        },
+        {
+          "r": null,
+          "malzeme": "sodyum"
+        }
+      ]
+    }
+  ],
+  "plakalar": [],
+  "demetler": [
+    {
+      "ad": "surucu_ic3",
+      "tur": "altigen",
+      "adim": 0.90539,
+      "halka_sayisi": 10,
+      "yonelim": "y",
+      "boyut": [
+        10,
+        10
+      ],
+      "harita": [
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyy",
+        "yyyyyy",
+        "y"
+      ],
+      "anahtar": {
+        "y": "pin_ic3"
+      },
+      "dolgu_disi": "sodyum",
+      "kilif": {
+        "ic_duz": 15.0191,
+        "kalinlik": 0.3966,
+        "malzeme": "ht9"
+      }
+    }
+  ],
+  "kor": {
+    "tur": "altigen_kafes",
+    "cubuk": null,
+    "demet": null,
+    "plaka": null,
+    "adim": 16.2471,
+    "boyut": [
+      1,
+      1
+    ],
+    "harita": [
+      "I"
+    ],
+    "halka_sayisi": 1,
+    "yonelim": "x",
+    "anahtar": {
+      "I": "surucu_ic3"
+    },
+    "yukseklik": null,
+    "yansitici": {
+      "var": false,
+      "kalinlik": 20.0,
+      "malzeme": null
+    },
+    "kabuklar": [],
+    "dolgu": null,
+    "kor_yaricap": 20.0,
+    "tambur": {
+      "sayi": 0,
+      "yaricap": 4.0,
+      "merkez_yaricap": 26.0,
+      "govde_malzeme": null,
+      "emici_malzeme": null,
+      "emici_ic_yaricap": 2.5,
+      "emici_aci": 120.0,
+      "donme": 0.0,
+      "baslangic_acisi": 0.0
+    },
+    "eksenel": {
+      "var": false,
+      "bolgeler": []
+    },
+    "sinir": {
+      "yan": "reflective",
+      "alt": "reflective",
+      "ust": "reflective"
+    }
+  },
+  "ayarlar": {
+    "mod": "eigenvalue",
+    "parcacik": 10000,
+    "cevrim": 150,
+    "pasif": 40,
+    "tohum": 1,
+    "sicaklik_yontemi": "interpolation",
+    "kaynak": {
+      "tur": "kutu",
+      "konum": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "parcacik": "neutron",
+      "kuvvet": 1.0,
+      "enerji": {
+        "tur": "watt",
+        "a": 988000.0,
+        "b": 2.249e-06,
+        "theta": 1293200.0,
+        "enerji": 14100000.0,
+        "noktalar": [],
+        "kenarlar": [],
+        "degerler": [],
+        "e0": 14080000.0,
+        "kutle_orani": 5.0,
+        "iyon_sicaklik": 20000.0
+      },
+      "aci": {
+        "tur": "izotropik",
+        "yon": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "koni_aci": 30.0
+      },
+      "alt": null,
+      "ust": null
+    },
+    "entropi_mesh": {
+      "var": true,
+      "boyut": [
+        8,
+        8,
+        1
+      ]
+    },
+    "kinetik": {
+      "var": false,
+      "nesil": 10
+    }
+  },
+  "tallyler": [
+    {
+      "ad": "reaksiyonlar",
+      "skorlar": [
+        "fission",
+        "absorption",
+        "nu-fission"
+      ],
+      "filtreler": [],
+      "nuklidler": []
+    },
+    {
+      "ad": "iki_grup_aki",
+      "skorlar": [
+        "flux"
+      ],
+      "filtreler": [
+        {
+          "tur": "enerji",
+          "gruplar": [
+            0.0,
+            100000.0,
+            20000000.0
+          ]
+        }
+      ],
+      "nuklidler": []
+    }
+  ],
+  "guc_dagilimi": {
+    "var": false,
+    "cubuk": null,
+    "bolge": 0,
+    "skor": "kappa-fission",
+    "eksenel_dilim": 20,
+    "toplam_guc": null
+  },
+  "tukenme": {
+    "var": false,
+    "zincir": "hizli",
+    "guc_yogunlugu": 40.0,
+    "adimlar": [
+      0.5,
+      1.5,
+      3.0,
+      5.0,
+      10.0,
+      10.0
+    ],
+    "adim_birimi": "d",
+    "entegrator": "cecm",
+    "malzemeleri_ayir": false,
+    "ek_malzemeler": [],
+    "izlenen": [
+      "U235",
+      "U238",
+      "Pu239",
+      "Pu240",
+      "Pu241",
+      "Xe135",
+      "Sm149"
+    ]
+  },
+  "calistirma": {
+    "is_parcacigi": 8,
+    "dizin": "kosu"
+  },
+  "baslik": "SFR metal yakıt demeti (MET-1000)",
+  "kategori": "sfr",
+  "seviye": "orta",
+  "baslik_en": "SFR metal-fuel assembly (MET-1000)",
+  "aciklama_en": "OECD/NEA MET-1000 driver assembly: 271 U-TRU-Zr pins in an HT-9 duct, infinite lattice (reflective)."
+}

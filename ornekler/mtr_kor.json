@@ -1,0 +1,423 @@
+{
+  "surum": 1,
+  "ad": "MTR araştırma reaktörü tam koru (3B)",
+  "aciklama": "Havuz tipi araştırma reaktörü tam koru (3B): 5×5 yakıt bölgesinde 20 standart MTR elemanı, merkezde 1 su ışınlama kanalı (akı tuzağı), 4 köşede berilyum yansıtıcı eleman; çevresinde bir sıra grafit yansıtıcı eleman ve 20 cm su. Aktif yükseklik 60 cm, alt/üst 20 cm su, dış yüzeyler vakum.\n\nYakıt elemanı mtr_plaka.json ile aynıdır (23 plaka, U3Si2-Al %19.75, Al-6061). Düzen IAEA 10 MW MTR kriterinden (IAEA-TECDOC-233) ESİNLENMİŞTİR ama aynısı değildir: kor kafesi kare adımlıdır ve çekirdeğin plaka elemanı sonlu bir kutudur, bu yüzden eleman kareye tamamlanır — yan levhalar 0.475 yerine 0.7105 cm (7.721 cm kare hücre, elemanlar arası su aralığı yok). Kontrol elemanı yok. Referans k verilmez.",
+  "malzemeler": [
+    {
+      "ad": "u3si2_al",
+      "gorunen_ad": "U3Si2-Al 4.8 gU/cm³",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 5.4
+      },
+      "sicaklik": 350.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "U",
+          "miktar": 88.88888888888889,
+          "birim": "wo",
+          "zenginlik": 19.75
+        },
+        {
+          "tur": "element",
+          "isim": "Si",
+          "miktar": 6.98953726674577,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Al",
+          "miktar": 4.121573844365351,
+          "birim": "wo"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        222,
+        93,
+        40
+      ]
+    },
+    {
+      "ad": "al6061",
+      "gorunen_ad": "Al-6061",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 2.7
+      },
+      "sicaklik": 350.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "Al",
+          "miktar": 97.2,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Mg",
+          "miktar": 1.0,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Si",
+          "miktar": 0.6,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Fe",
+          "miktar": 0.4,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Cu",
+          "miktar": 0.28,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Cr",
+          "miktar": 0.2,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Mn",
+          "miktar": 0.15,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Zn",
+          "miktar": 0.17,
+          "birim": "wo"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        190,
+        190,
+        200
+      ]
+    },
+    {
+      "ad": "su",
+      "gorunen_ad": "H2O 0.989 g/cm³",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 0.9891605
+      },
+      "sicaklik": 320.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "H",
+          "miktar": 2.0,
+          "birim": "ao"
+        },
+        {
+          "tur": "element",
+          "isim": "O",
+          "miktar": 1.0,
+          "birim": "ao"
+        }
+      ],
+      "sab": [
+        "c_H_in_H2O"
+      ],
+      "renk": [
+        90,
+        150,
+        220
+      ]
+    },
+    {
+      "ad": "berilyum",
+      "gorunen_ad": "Berilyum",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 1.85
+      },
+      "sicaklik": 320.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "Be",
+          "miktar": 1.0,
+          "birim": "ao"
+        }
+      ],
+      "sab": [
+        "c_Be"
+      ],
+      "renk": [
+        170,
+        200,
+        170
+      ]
+    },
+    {
+      "ad": "grafit",
+      "gorunen_ad": "Grafit (1.7 g/cm³)",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 1.7
+      },
+      "sicaklik": 320.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "C",
+          "miktar": 1.0,
+          "birim": "ao"
+        }
+      ],
+      "sab": [
+        "c_Graphite"
+      ],
+      "renk": [
+        70,
+        70,
+        70
+      ]
+    }
+  ],
+  "cubuklar": [],
+  "plakalar": [
+    {
+      "ad": "mtr_eleman",
+      "tur": "plaka",
+      "plaka_sayisi": 23,
+      "et_kalinlik": 0.051,
+      "zarf_kalinlik": 0.038,
+      "kanal_kalinlik": 0.2,
+      "plaka_genislik": 6.3,
+      "et_malzeme": "u3si2_al",
+      "zarf_malzeme": "al6061",
+      "sogutucu": "su",
+      "yan_levha_kalinlik": 0.7105,
+      "yan_levha_malzeme": "al6061"
+    }
+  ],
+  "demetler": [],
+  "kor": {
+    "tur": "kare_kafes",
+    "cubuk": null,
+    "demet": null,
+    "plaka": null,
+    "adim": 7.721,
+    "boyut": [
+      7,
+      7
+    ],
+    "harita": [
+      "ggggggg",
+      "gbmmmbg",
+      "gmmmmmg",
+      "gmmsmmg",
+      "gmmmmmg",
+      "gbmmmbg",
+      "ggggggg"
+    ],
+    "halka_sayisi": 2,
+    "yonelim": "x",
+    "anahtar": {
+      "m": "mtr_eleman",
+      "b": "berilyum",
+      "g": "grafit",
+      "s": "su"
+    },
+    "yukseklik": null,
+    "yansitici": {
+      "var": true,
+      "kalinlik": 20.0,
+      "malzeme": "su"
+    },
+    "kabuklar": [],
+    "dolgu": null,
+    "kor_yaricap": 20.0,
+    "tambur": {
+      "sayi": 0,
+      "yaricap": 4.0,
+      "merkez_yaricap": 26.0,
+      "govde_malzeme": null,
+      "emici_malzeme": null,
+      "emici_ic_yaricap": 2.5,
+      "emici_aci": 120.0,
+      "donme": 0.0,
+      "baslangic_acisi": 0.0
+    },
+    "eksenel": {
+      "var": true,
+      "bolgeler": [
+        {
+          "ad": "alt su",
+          "yukseklik": 20.0,
+          "dolgu": "su"
+        },
+        {
+          "ad": "aktif",
+          "yukseklik": 60.0,
+          "dolgu": null
+        },
+        {
+          "ad": "üst su",
+          "yukseklik": 20.0,
+          "dolgu": "su"
+        }
+      ]
+    },
+    "sinir": {
+      "yan": "vacuum",
+      "alt": "vacuum",
+      "ust": "vacuum"
+    }
+  },
+  "ayarlar": {
+    "mod": "eigenvalue",
+    "parcacik": 10000,
+    "cevrim": 150,
+    "pasif": 40,
+    "tohum": 1,
+    "sicaklik_yontemi": "interpolation",
+    "kaynak": {
+      "tur": "kutu",
+      "konum": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "parcacik": "neutron",
+      "kuvvet": 1.0,
+      "enerji": {
+        "tur": "watt",
+        "a": 988000.0,
+        "b": 2.249e-06,
+        "theta": 1293200.0,
+        "enerji": 14100000.0,
+        "noktalar": [],
+        "kenarlar": [],
+        "degerler": [],
+        "e0": 14080000.0,
+        "kutle_orani": 5.0,
+        "iyon_sicaklik": 20000.0
+      },
+      "aci": {
+        "tur": "izotropik",
+        "yon": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "koni_aci": 30.0
+      },
+      "alt": [
+        -20.0,
+        -20.0,
+        -30.0
+      ],
+      "ust": [
+        20.0,
+        20.0,
+        30.0
+      ]
+    },
+    "entropi_mesh": {
+      "var": true,
+      "boyut": [
+        7,
+        7,
+        6
+      ]
+    },
+    "kinetik": {
+      "var": false,
+      "nesil": 10
+    }
+  },
+  "tallyler": [
+    {
+      "ad": "reaksiyonlar",
+      "skorlar": [
+        "fission",
+        "absorption",
+        "nu-fission"
+      ],
+      "filtreler": [],
+      "nuklidler": []
+    },
+    {
+      "ad": "aki_haritasi",
+      "skorlar": [
+        "flux"
+      ],
+      "filtreler": [
+        {
+          "tur": "mesh",
+          "boyut": [
+            35,
+            35,
+            1
+          ],
+          "otomatik": true
+        },
+        {
+          "tur": "enerji",
+          "gruplar": [
+            0.0,
+            0.625,
+            20000000.0
+          ]
+        }
+      ],
+      "nuklidler": []
+    }
+  ],
+  "guc_dagilimi": {
+    "var": false,
+    "cubuk": null,
+    "bolge": 0,
+    "skor": "kappa-fission",
+    "eksenel_dilim": 20,
+    "toplam_guc": null
+  },
+  "tukenme": {
+    "var": false,
+    "zincir": "otomatik",
+    "guc_yogunlugu": 40.0,
+    "adimlar": [
+      0.5,
+      1.5,
+      3.0,
+      5.0,
+      10.0,
+      10.0
+    ],
+    "adim_birimi": "d",
+    "entegrator": "cecm",
+    "malzemeleri_ayir": false,
+    "ek_malzemeler": [],
+    "izlenen": [
+      "U235",
+      "U238",
+      "Pu239",
+      "Pu240",
+      "Pu241",
+      "Xe135",
+      "Sm149"
+    ]
+  },
+  "calistirma": {
+    "is_parcacigi": 8,
+    "dizin": "kosu"
+  },
+  "baslik": "MTR araştırma reaktörü koru",
+  "kategori": "arastirma",
+  "seviye": "orta",
+  "baslik_en": "MTR research reactor core",
+  "aciklama_en": "Pool-type research reactor core: 20 plate-type MTR elements, central water flux trap, Be and graphite reflector elements."
+}

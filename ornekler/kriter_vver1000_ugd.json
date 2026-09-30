@@ -1,0 +1,477 @@
+{
+  "surum": 1,
+  "ad": "VVER-1000 LEU demet kriteri (NEA UGD, S5)",
+  "aciklama": "NEA VVER-1000 LEU demet hesap kriteri (UGD varyantı, NEA/NSC/DOC(2002)10): 331 hücreli altıgen demet — 300 UO2 (%3.7) yakıt çubuğu, 12 U-Gd çubuğu (%3.6 U-235 + %4 Gd2O3), 18 kılavuz boru ve 1 merkez borusu. Sonsuz demet kafesi (yansıtıcı sınır, eksenel sızıntı yok).\n\nDurum S5 (soğuk): bütün bölgeler 300 K, borsuz su MOD3 (1.0033 g/cm³), Xe/Sm yok, yanma 0.\nÖlçüler (Tablo A.2): pin adımı 1.275 cm (altıgen hücre), demet adımı 23.6 cm; yakıt r = 0.386 cm, kılıf dış r = 0.4582 cm (boşluk ve merkez deliği kriterde YOK); merkez borusu 0.48/0.5626 cm; kılavuz boru 0.545/0.6323 cm.\nAtom yoğunlukları Tablo A.1'den aynen; Gd ve kılavuz boru konumları Şekil A.1 kartogramından (60° simetri denetlendi).\nDemetler arası su: 23.6 cm'lik kap, moderatörle aynı malzemeden 0.01 cm kalınlıkta bir 'kılıf' ile kurulur (fiziksel olarak kılıfsız demet).\n\nReferans HESAP-HESAP karşılaştırmasıdır (deney değil): Tablo C.1, S5, yanma 0 katılımcıları MCU 1.3197, TVS-M 1.3213, WIMS8A 1.3122, HELIOS 1.3181, MCNP4B 1.3235, MULTICELL 1.3164; ortalama 1.3185, örnek standart sapması 0.0040. Sürekli enerjili Monte Carlo katılımcısı MCNP4B: 1.3235.",
+  "malzemeler": [
+    {
+      "ad": "u1",
+      "gorunen_ad": "U1: UO2 %3.7",
+      "yogunluk": {
+        "birim": "atom/b-cm",
+        "deger": 0.06909464
+      },
+      "sicaklik": 300.0,
+      "bilesim": [
+        {
+          "tur": "nuklid",
+          "isim": "U235",
+          "miktar": 0.00086264,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "U238",
+          "miktar": 0.022169,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "O16",
+          "miktar": 0.046063,
+          "birim": "ao"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        214,
+        96,
+        42
+      ]
+    },
+    {
+      "ad": "gd1",
+      "gorunen_ad": "GD1: UO2 %3.6 + %4 Gd2O3",
+      "yogunluk": {
+        "birim": "atom/b-cm",
+        "deger": 0.0630910089
+      },
+      "sicaklik": 300.0,
+      "bilesim": [
+        {
+          "tur": "nuklid",
+          "isim": "U235",
+          "miktar": 0.00072875,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "U238",
+          "miktar": 0.019268,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "O16",
+          "miktar": 0.041854,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Gd152",
+          "miktar": 2.5159e-06,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Gd154",
+          "miktar": 2.7303e-05,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Gd155",
+          "miktar": 0.00018541,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Gd156",
+          "miktar": 0.00025602,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Gd157",
+          "miktar": 0.0001948,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Gd158",
+          "miktar": 0.00030715,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Gd160",
+          "miktar": 0.00026706,
+          "birim": "ao"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        120,
+        170,
+        60
+      ]
+    },
+    {
+      "ad": "cl1",
+      "gorunen_ad": "CL1: Zr-1%Nb kılıf",
+      "yogunluk": {
+        "birim": "atom/b-cm",
+        "deger": 0.043019097
+      },
+      "sicaklik": 300.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "Zr",
+          "miktar": 0.04259,
+          "birim": "ao"
+        },
+        {
+          "tur": "element",
+          "isim": "Nb",
+          "miktar": 0.0004225,
+          "birim": "ao"
+        },
+        {
+          "tur": "element",
+          "isim": "Hf",
+          "miktar": 6.597e-06,
+          "birim": "ao"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        160,
+        160,
+        170
+      ]
+    },
+    {
+      "ad": "mod3",
+      "gorunen_ad": "MOD3: su 300 K, borsuz (1.0033 g/cm³)",
+      "yogunluk": {
+        "birim": "atom/b-cm",
+        "deger": 0.10075
+      },
+      "sicaklik": 300.0,
+      "bilesim": [
+        {
+          "tur": "nuklid",
+          "isim": "H1",
+          "miktar": 0.06717,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "O16",
+          "miktar": 0.03358,
+          "birim": "ao"
+        }
+      ],
+      "sab": [
+        "c_H_in_H2O"
+      ],
+      "renk": [
+        90,
+        150,
+        220
+      ]
+    }
+  ],
+  "cubuklar": [
+    {
+      "ad": "yakit_u1",
+      "tur": "silindirik",
+      "bolgeler": [
+        {
+          "r": 0.386,
+          "malzeme": "u1"
+        },
+        {
+          "r": 0.4582,
+          "malzeme": "cl1"
+        },
+        {
+          "r": null,
+          "malzeme": "mod3"
+        }
+      ]
+    },
+    {
+      "ad": "yakit_gd",
+      "tur": "silindirik",
+      "bolgeler": [
+        {
+          "r": 0.386,
+          "malzeme": "gd1"
+        },
+        {
+          "r": 0.4582,
+          "malzeme": "cl1"
+        },
+        {
+          "r": null,
+          "malzeme": "mod3"
+        }
+      ]
+    },
+    {
+      "ad": "kilavuz_boru",
+      "tur": "silindirik",
+      "bolgeler": [
+        {
+          "r": 0.545,
+          "malzeme": "mod3"
+        },
+        {
+          "r": 0.6323,
+          "malzeme": "cl1"
+        },
+        {
+          "r": null,
+          "malzeme": "mod3"
+        }
+      ]
+    },
+    {
+      "ad": "merkez_boru",
+      "tur": "silindirik",
+      "bolgeler": [
+        {
+          "r": 0.48,
+          "malzeme": "mod3"
+        },
+        {
+          "r": 0.5626,
+          "malzeme": "cl1"
+        },
+        {
+          "r": null,
+          "malzeme": "mod3"
+        }
+      ]
+    }
+  ],
+  "plakalar": [],
+  "demetler": [
+    {
+      "ad": "tvs_ugd",
+      "tur": "altigen",
+      "adim": 1.275,
+      "halka_sayisi": 11,
+      "yonelim": "y",
+      "boyut": [
+        11,
+        11
+      ],
+      "harita": [
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "yyyygyyyyyyygyyyyyyygyyyyyyygyyyyyyygyyyyyyygyyy",
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "yyykyyyyykyyyyykyyyyykyyyyykyyyyykyy",
+        "kyyyykyyyykyyyykyyyykyyyykyyyy",
+        "yyygyyygyyygyyygyyygyyyg",
+        "ykyykyykyykyykyyky",
+        "yyyyyyyyyyyy",
+        "yyyyyy",
+        "m"
+      ],
+      "anahtar": {
+        "y": "yakit_u1",
+        "g": "yakit_gd",
+        "k": "kilavuz_boru",
+        "m": "merkez_boru"
+      },
+      "dolgu_disi": "mod3",
+      "kilif": {
+        "ic_duz": 23.58,
+        "kalinlik": 0.01,
+        "malzeme": "mod3"
+      }
+    }
+  ],
+  "kor": {
+    "tur": "tek_demet",
+    "cubuk": null,
+    "demet": "tvs_ugd",
+    "plaka": null,
+    "adim": 1.26,
+    "boyut": [
+      1,
+      1
+    ],
+    "harita": [],
+    "halka_sayisi": 2,
+    "yonelim": "x",
+    "anahtar": {},
+    "yukseklik": null,
+    "yansitici": {
+      "var": false,
+      "kalinlik": 20.0,
+      "malzeme": null
+    },
+    "kabuklar": [],
+    "dolgu": null,
+    "kor_yaricap": 20.0,
+    "tambur": {
+      "sayi": 0,
+      "yaricap": 4.0,
+      "merkez_yaricap": 26.0,
+      "govde_malzeme": null,
+      "emici_malzeme": null,
+      "emici_ic_yaricap": 2.5,
+      "emici_aci": 120.0,
+      "donme": 0.0,
+      "baslangic_acisi": 0.0
+    },
+    "eksenel": {
+      "var": false,
+      "bolgeler": []
+    },
+    "sinir": {
+      "yan": "reflective",
+      "alt": "reflective",
+      "ust": "reflective"
+    }
+  },
+  "ayarlar": {
+    "mod": "eigenvalue",
+    "parcacik": 10000,
+    "cevrim": 150,
+    "pasif": 40,
+    "tohum": 1,
+    "sicaklik_yontemi": "interpolation",
+    "kaynak": {
+      "tur": "kutu",
+      "konum": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "parcacik": "neutron",
+      "kuvvet": 1.0,
+      "enerji": {
+        "tur": "watt",
+        "a": 988000.0,
+        "b": 2.249e-06,
+        "theta": 1293200.0,
+        "enerji": 14100000.0,
+        "noktalar": [],
+        "kenarlar": [],
+        "degerler": [],
+        "e0": 14080000.0,
+        "kutle_orani": 5.0,
+        "iyon_sicaklik": 20000.0
+      },
+      "aci": {
+        "tur": "izotropik",
+        "yon": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "koni_aci": 30.0
+      },
+      "alt": null,
+      "ust": null
+    },
+    "entropi_mesh": {
+      "var": true,
+      "boyut": [
+        8,
+        8,
+        1
+      ]
+    },
+    "kinetik": {
+      "var": false,
+      "nesil": 10
+    }
+  },
+  "tallyler": [
+    {
+      "ad": "reaksiyonlar",
+      "skorlar": [
+        "fission",
+        "absorption",
+        "nu-fission"
+      ],
+      "filtreler": [],
+      "nuklidler": []
+    }
+  ],
+  "guc_dagilimi": {
+    "var": true,
+    "cubuk": "yakit_u1",
+    "bolge": 0,
+    "skor": "kappa-fission",
+    "eksenel_dilim": 20,
+    "toplam_guc": null,
+    "cubuklar": [
+      {
+        "cubuk": "yakit_u1",
+        "bolge": 0
+      },
+      {
+        "cubuk": "yakit_gd",
+        "bolge": 0
+      }
+    ]
+  },
+  "tukenme": {
+    "var": false,
+    "zincir": "otomatik",
+    "guc_yogunlugu": 40.0,
+    "adimlar": [
+      0.5,
+      1.5,
+      3.0,
+      5.0,
+      10.0,
+      10.0
+    ],
+    "adim_birimi": "d",
+    "entegrator": "cecm",
+    "malzemeleri_ayir": false,
+    "ek_malzemeler": [],
+    "izlenen": [
+      "U235",
+      "U238",
+      "Pu239",
+      "Pu240",
+      "Pu241",
+      "Xe135",
+      "Sm149"
+    ]
+  },
+  "calistirma": {
+    "is_parcacigi": 8,
+    "dizin": "kosu"
+  },
+  "baslik": "VVER-1000 LEU demet kriteri (NEA)",
+  "kategori": "kriter",
+  "seviye": "ileri",
+  "referans": {
+    "k": 1.3185,
+    "sigma": 0.004,
+    "tur": "hesap",
+    "kaynak": "NEA/NSC/DOC(2002)10, Tablo C.1 (UGD, S5, yanma 0): 6 katılımcının ortalaması ± standart sapması",
+    "olcum": {
+      "k": 1.3191,
+      "sigma": 0.00021,
+      "parcacik": 100000,
+      "sure_s": 574.6,
+      "is_parcacigi": 8,
+      "openmc": "0.16.0",
+      "kutuphane": "ENDF/B-VIII.0",
+      "tarih": "2026-09-29"
+    }
+  },
+  "baslik_en": "VVER-1000 LEU assembly benchmark (NEA)",
+  "aciklama_en": "NEA/NSC/DOC(2002)10 UGD variant, cold state S5, zero burnup: 331-cell hexagonal assembly with 12 U-Gd rods; code-to-code reference (participant mean)."
+}

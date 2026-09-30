@@ -1,0 +1,562 @@
+{
+  "surum": 1,
+  "ad": "Gd'li süper hücrede tükenme (yanabilir zehir)",
+  "aciklama": "Yanabilir zehirin (Gd2O3) yanması: 5×5 süper hücrenin merkezinde UO2 %2.0 + %8 Gd2O3 çubuğu, çevresinde 24 UO2 %4.0 çubuğu (Westinghouse 17×17 ölçüleri, pwr_17x17.json malzemeleri: 900/600/580 K, 1300 ppm bor). Tek Gd'li pin hücresi (sonsuz Gd kafesi) k∞ ≈ 0.3 verir ve spektrumu temsil etmez; süper hücre komşu yakıttan gelen termal akıyı sağlar.\n\nGd'li pelet eşit alanlı 5 halkaya bölündü ve her halka AYRI malzemedir: Gd-155/157 dıştan içe 'soğan kabuğu' gibi yanar; tükenme sonrasında halka halka Gd157 yoğunlukları bunu gösterir. Güç yoğunluğu 38 W/gHM, ~16 MWd/kg'a kadar.\nÖLÇÜLEN (testler/test_ornekler.py OR13): 5 MWd/kg'da kalan Gd-157 oranı içten dışa 0.79 / 0.71 / 0.58 / 0.30 / 0.01 — dış halka bitmiş, iç halka neredeyse dokunulmamış. 16 MWd/kg'da iç halkada hâlâ ~%12 Gd-157 vardır. 25 çubuktan yalnız biri Gd'li olduğu için reaktivite tutması zayıftır: k∞ bu modelde tepe YAPMAZ, yakıt tükenmesiyle düşer. Gerçek bir demette (ör. 12–20 Gd'li çubuk) tepe görülür.\nGd2O3 bileşimi ve UO2-Gd2O3 yoğunluğu (10.2 g/cm³) tipik değerlerdir; belirli bir kriterden alınmadı. Varsayılan hassasiyet hızlıdır (öğretim amaçlı).",
+  "malzemeler": [
+    {
+      "ad": "uo2",
+      "gorunen_ad": "UO2 %4.0",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 10.4
+      },
+      "sicaklik": 900.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "U",
+          "miktar": 1.0,
+          "birim": "ao",
+          "zenginlik": 4.0
+        },
+        {
+          "tur": "element",
+          "isim": "O",
+          "miktar": 2.0,
+          "birim": "ao"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        222,
+        93,
+        40
+      ]
+    },
+    {
+      "ad": "uo2_gd_1",
+      "gorunen_ad": "UO2 %2.0 + %8 Gd2O3, halka 1",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 10.2
+      },
+      "sicaklik": 900.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "U",
+          "miktar": 0.81098,
+          "birim": "wo",
+          "zenginlik": 2.0
+        },
+        {
+          "tur": "element",
+          "isim": "O",
+          "miktar": 0.119612,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Gd",
+          "miktar": 0.069408,
+          "birim": "wo"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        120,
+        170,
+        60
+      ]
+    },
+    {
+      "ad": "uo2_gd_2",
+      "gorunen_ad": "UO2 %2.0 + %8 Gd2O3, halka 2",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 10.2
+      },
+      "sicaklik": 900.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "U",
+          "miktar": 0.81098,
+          "birim": "wo",
+          "zenginlik": 2.0
+        },
+        {
+          "tur": "element",
+          "isim": "O",
+          "miktar": 0.119612,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Gd",
+          "miktar": 0.069408,
+          "birim": "wo"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        120,
+        155,
+        60
+      ]
+    },
+    {
+      "ad": "uo2_gd_3",
+      "gorunen_ad": "UO2 %2.0 + %8 Gd2O3, halka 3",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 10.2
+      },
+      "sicaklik": 900.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "U",
+          "miktar": 0.81098,
+          "birim": "wo",
+          "zenginlik": 2.0
+        },
+        {
+          "tur": "element",
+          "isim": "O",
+          "miktar": 0.119612,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Gd",
+          "miktar": 0.069408,
+          "birim": "wo"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        120,
+        140,
+        60
+      ]
+    },
+    {
+      "ad": "uo2_gd_4",
+      "gorunen_ad": "UO2 %2.0 + %8 Gd2O3, halka 4",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 10.2
+      },
+      "sicaklik": 900.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "U",
+          "miktar": 0.81098,
+          "birim": "wo",
+          "zenginlik": 2.0
+        },
+        {
+          "tur": "element",
+          "isim": "O",
+          "miktar": 0.119612,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Gd",
+          "miktar": 0.069408,
+          "birim": "wo"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        120,
+        125,
+        60
+      ]
+    },
+    {
+      "ad": "uo2_gd_5",
+      "gorunen_ad": "UO2 %2.0 + %8 Gd2O3, halka 5",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 10.2
+      },
+      "sicaklik": 900.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "U",
+          "miktar": 0.81098,
+          "birim": "wo",
+          "zenginlik": 2.0
+        },
+        {
+          "tur": "element",
+          "isim": "O",
+          "miktar": 0.119612,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Gd",
+          "miktar": 0.069408,
+          "birim": "wo"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        120,
+        110,
+        60
+      ]
+    },
+    {
+      "ad": "helyum",
+      "gorunen_ad": "He",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 0.0001785
+      },
+      "sicaklik": 600.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "He",
+          "miktar": 1.0,
+          "birim": "ao"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        235,
+        235,
+        245
+      ]
+    },
+    {
+      "ad": "zirkaloy4",
+      "gorunen_ad": "Zircaloy-4",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 6.55
+      },
+      "sicaklik": 600.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "Zr",
+          "miktar": 98.23,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Sn",
+          "miktar": 1.45,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Fe",
+          "miktar": 0.21,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Cr",
+          "miktar": 0.11,
+          "birim": "wo"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        150,
+        150,
+        160
+      ]
+    },
+    {
+      "ad": "su",
+      "gorunen_ad": "H2O 0.700 g/cm³ + 1300 ppm B",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 0.7
+      },
+      "sicaklik": 580.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "H",
+          "miktar": 11.176126561199002,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "O",
+          "miktar": 88.69941715237303,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "B",
+          "miktar": 0.13,
+          "birim": "wo"
+        }
+      ],
+      "sab": [
+        "c_H_in_H2O"
+      ],
+      "renk": [
+        90,
+        150,
+        220
+      ]
+    }
+  ],
+  "cubuklar": [
+    {
+      "ad": "yakit_cubugu",
+      "tur": "silindirik",
+      "bolgeler": [
+        {
+          "r": 0.4096,
+          "malzeme": "uo2"
+        },
+        {
+          "r": 0.418,
+          "malzeme": "helyum"
+        },
+        {
+          "r": 0.475,
+          "malzeme": "zirkaloy4"
+        },
+        {
+          "r": null,
+          "malzeme": "su"
+        }
+      ]
+    },
+    {
+      "ad": "gd_cubugu",
+      "tur": "silindirik",
+      "bolgeler": [
+        {
+          "r": 0.18318,
+          "malzeme": "uo2_gd_1"
+        },
+        {
+          "r": 0.25905,
+          "malzeme": "uo2_gd_2"
+        },
+        {
+          "r": 0.31727,
+          "malzeme": "uo2_gd_3"
+        },
+        {
+          "r": 0.36636,
+          "malzeme": "uo2_gd_4"
+        },
+        {
+          "r": 0.4096,
+          "malzeme": "uo2_gd_5"
+        },
+        {
+          "r": 0.418,
+          "malzeme": "helyum"
+        },
+        {
+          "r": 0.475,
+          "malzeme": "zirkaloy4"
+        },
+        {
+          "r": null,
+          "malzeme": "su"
+        }
+      ]
+    }
+  ],
+  "plakalar": [],
+  "demetler": [
+    {
+      "ad": "super_hucre",
+      "tur": "kare",
+      "adim": 1.26,
+      "boyut": [
+        5,
+        5
+      ],
+      "harita": [
+        "yyyyy",
+        "yyyyy",
+        "yygyy",
+        "yyyyy",
+        "yyyyy"
+      ],
+      "anahtar": {
+        "y": "yakit_cubugu",
+        "g": "gd_cubugu"
+      },
+      "dolgu_disi": "su"
+    }
+  ],
+  "kor": {
+    "tur": "tek_demet",
+    "cubuk": null,
+    "demet": "super_hucre",
+    "plaka": null,
+    "adim": 1.26,
+    "boyut": [
+      1,
+      1
+    ],
+    "harita": [],
+    "halka_sayisi": 2,
+    "yonelim": "x",
+    "anahtar": {},
+    "yukseklik": null,
+    "yansitici": {
+      "var": false,
+      "kalinlik": 20.0,
+      "malzeme": null
+    },
+    "kabuklar": [],
+    "dolgu": null,
+    "kor_yaricap": 20.0,
+    "tambur": {
+      "sayi": 0,
+      "yaricap": 4.0,
+      "merkez_yaricap": 26.0,
+      "govde_malzeme": null,
+      "emici_malzeme": null,
+      "emici_ic_yaricap": 2.5,
+      "emici_aci": 120.0,
+      "donme": 0.0,
+      "baslangic_acisi": 0.0
+    },
+    "eksenel": {
+      "var": false,
+      "bolgeler": []
+    },
+    "sinir": {
+      "yan": "reflective",
+      "alt": "reflective",
+      "ust": "reflective"
+    }
+  },
+  "ayarlar": {
+    "mod": "eigenvalue",
+    "parcacik": 5000,
+    "cevrim": 80,
+    "pasif": 20,
+    "tohum": 1,
+    "sicaklik_yontemi": "interpolation",
+    "kaynak": {
+      "tur": "kutu",
+      "konum": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "parcacik": "neutron",
+      "kuvvet": 1.0,
+      "enerji": {
+        "tur": "watt",
+        "a": 988000.0,
+        "b": 2.249e-06,
+        "theta": 1293200.0,
+        "enerji": 14100000.0,
+        "noktalar": [],
+        "kenarlar": [],
+        "degerler": [],
+        "e0": 14080000.0,
+        "kutle_orani": 5.0,
+        "iyon_sicaklik": 20000.0
+      },
+      "aci": {
+        "tur": "izotropik",
+        "yon": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "koni_aci": 30.0
+      },
+      "alt": null,
+      "ust": null
+    },
+    "entropi_mesh": {
+      "var": true,
+      "boyut": [
+        5,
+        5,
+        1
+      ]
+    },
+    "kinetik": {
+      "var": false,
+      "nesil": 10
+    }
+  },
+  "tallyler": [
+    {
+      "ad": "reaksiyonlar",
+      "skorlar": [
+        "fission",
+        "absorption",
+        "nu-fission"
+      ],
+      "filtreler": [],
+      "nuklidler": []
+    }
+  ],
+  "guc_dagilimi": {
+    "var": false,
+    "cubuk": null,
+    "bolge": 0,
+    "skor": "kappa-fission",
+    "eksenel_dilim": 20,
+    "toplam_guc": null
+  },
+  "tukenme": {
+    "var": true,
+    "zincir": "termal",
+    "guc_yogunlugu": 38.0,
+    "adimlar": [
+      0.02,
+      0.08,
+      0.4,
+      0.5,
+      1.0,
+      1.0,
+      1.0,
+      2.0,
+      2.0,
+      2.0,
+      2.0,
+      4.0
+    ],
+    "adim_birimi": "MWd/kg",
+    "entegrator": "predictor",
+    "malzemeleri_ayir": false,
+    "ek_malzemeler": [],
+    "izlenen": [
+      "U235",
+      "Pu239",
+      "Xe135",
+      "Sm149",
+      "Gd155",
+      "Gd157"
+    ]
+  },
+  "calistirma": {
+    "is_parcacigi": 8,
+    "dizin": "kosu"
+  },
+  "baslik": "Gd'li çubukta tükenme",
+  "kategori": "pwr",
+  "seviye": "ileri",
+  "baslik_en": "Gadolinia rod depletion",
+  "aciklama_en": "Burnable-absorber burnout: a UO2-Gd2O3 rod split into 5 equal-area rings at the centre of a 5x5 supercell, depleted to ~16 MWd/kg."
+}

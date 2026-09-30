@@ -841,6 +841,23 @@ def test_ayar_yukleme_kayit_kimligi():
     uyg  # noqa: B018
 
 
+def test_enerji_girdisi_degistirilmeden_tam_geri_verir():
+    print("\n[A6-16b] AYAR: EnerjiGirdi ayarla -> deger float yuvarlamasiyla kaymaz")
+    uyg = _qt()
+    if uyg is None:
+        return
+    from arayuz.ortak import EnerjiGirdi
+    g = EnerjiGirdi()
+    for ev in (1.025e6, 14.1e6, 0.0253, 2.5e3, 1.0e6, 3.3e-2):
+        g.ayarla(ev)
+        kontrol("ayarla(%r) -> deger ayni" % ev, g.deger() == ev, "-> %r" % g.deger())
+    g.ayarla(1.025e6)
+    g.kutu.setValue(2.0)
+    kontrol("kullanici degistirince yeni deger okunur",
+            g.deger() == 2.0 * 1.0e6, "-> %r" % g.deger())
+    uyg  # noqa: B018
+
+
 # ============================================================================
 # ONIZLEME
 # ============================================================================
@@ -934,6 +951,7 @@ HIZLI = [test_kor_tur_bilgisi, test_kor_gorunen_alanlar, test_kor_sinir_ogeleri,
          test_numarali_sekme_atfi_yok, test_ayar_hassasiyet, test_ayar_moda_gore_gizleme,
          test_ayar_calistirma_dokunulmaz, test_ayar_gelismis_ve_entropi,
          test_ayar_guc_dagilimi, test_ayar_tally_setleri, test_ayar_yukleme_kayit_kimligi,
+         test_enerji_girdisi_degistirilmeden_tam_geri_verir,
          ]
 YAVAS = [test_onizleme_ikili_kesit, test_kor_yalniz_tur_alanlari_yazilir]
 

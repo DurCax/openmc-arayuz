@@ -13,10 +13,14 @@
     "tur": "deney",
     "kaynak": "ICSBEP HEU-MET-FAST-001 (Godiva)",
     "olcum": {
-      "k": 0.99957,
-      "sigma": 0.00054,
+      "k": 1.00038,
+      "sigma": 0.00025,
+      "parcacik": 100000,
+      "sure_s": 25.3,
+      "is_parcacigi": 8,
       "openmc": "0.16.0",
-      "kutuphane": "ENDF/B-VIII.0"
+      "kutuphane": "ENDF/B-VIII.0",
+      "tarih": "2026-09-29"
     }
   },
   "malzemeler": [

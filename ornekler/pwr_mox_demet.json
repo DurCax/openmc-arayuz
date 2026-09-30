@@ -1,0 +1,711 @@
+{
+  "surum": 1,
+  "ad": "PWR MOX yakıt demeti (WABA'lı, HZP)",
+  "aciklama": "PWR MOX yakıt demeti (17×17): köşe bölgesi %2.5, çevre %3.0, merkez %5.0 fisil Pu (ağır metale göre ağırlıkça); 264 yakıt çubuğu, 24 WABA (Al2O3-B4C) yanabilir zehir çubuğu, 1 merkez kılavuz borusu. Silah sınıfı Pu vektörü 239/240/241/242 = 93.6/5.9/0.4/0.1, fakir U vektörü 234/235/236/238 = 0.002/0.2/0.001/99.797 (ağ. %).\n\nKaynak: OECD/NEA ve US NRC PWR MOX/UO2 Kor Geçiş Kriteri (2003), 'MOX 4.3%' demeti: Tablo 2 (pin adımı 1.26, demet adımı 21.42 cm), Tablo 3–5 (malzemeler), Tablo 6–7 (hücre ölçüleri: yakıt 0.3951, boşluk 0.4010, kılıf 0.4583; kılavuz 0.5624/0.6032; WABA 0.2858/0.3531/0.4039/0.4839/0.5624/0.6032 cm), Şekil 3 (bölge haritası, görüntüden renk örneklemesiyle; sayılar 12/76/176/24/1 tutar). Yorum: 'x wt%% Pu-fissile' ağır metale göre fisil Pu kütle kesri alındı; yoğunluk 10.41 g/cm³.\nDurum: sıcak sıfır güç (HZP, bütün bölgeler 560 K, su 0.75206 g/cm³), çözünmüş bor YOK (kriter tek bir bor değeri vermez). Sonsuz demet kafesi.",
+  "malzemeler": [
+    {
+      "ad": "mox_25",
+      "gorunen_ad": "MOX %2.5 fisil Pu",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 10.41
+      },
+      "sicaklik": 560.0,
+      "bilesim": [
+        {
+          "tur": "nuklid",
+          "isim": "U234",
+          "miktar": 1.716e-05,
+          "birim": "wo"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "U235",
+          "miktar": 0.0017162,
+          "birim": "wo"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "U236",
+          "miktar": 8.58e-06,
+          "birim": "wo"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "U238",
+          "miktar": 0.85635943,
+          "birim": "wo"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Pu239",
+          "miktar": 0.02194489,
+          "birim": "wo"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Pu240",
+          "miktar": 0.00138328,
+          "birim": "wo"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Pu241",
+          "miktar": 9.378e-05,
+          "birim": "wo"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Pu242",
+          "miktar": 2.345e-05,
+          "birim": "wo"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "O16",
+          "miktar": 0.11845323,
+          "birim": "wo"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        240,
+        160,
+        170
+      ]
+    },
+    {
+      "ad": "mox_30",
+      "gorunen_ad": "MOX %3.0 fisil Pu",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 10.41
+      },
+      "sicaklik": 560.0,
+      "bilesim": [
+        {
+          "tur": "nuklid",
+          "isim": "U234",
+          "miktar": 1.707e-05,
+          "birim": "wo"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "U235",
+          "miktar": 0.00170683,
+          "birim": "wo"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "U236",
+          "miktar": 8.53e-06,
+          "birim": "wo"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "U238",
+          "miktar": 0.85168229,
+          "birim": "wo"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Pu239",
+          "miktar": 0.02633394,
+          "birim": "wo"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Pu240",
+          "miktar": 0.00165994,
+          "birim": "wo"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Pu241",
+          "miktar": 0.00011254,
+          "birim": "wo"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Pu242",
+          "miktar": 2.813e-05,
+          "birim": "wo"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "O16",
+          "miktar": 0.11845073,
+          "birim": "wo"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        230,
+        120,
+        30
+      ]
+    },
+    {
+      "ad": "mox_50",
+      "gorunen_ad": "MOX %5.0 fisil Pu",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 10.41
+      },
+      "sicaklik": 560.0,
+      "bilesim": [
+        {
+          "tur": "nuklid",
+          "isim": "U234",
+          "miktar": 1.669e-05,
+          "birim": "wo"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "U235",
+          "miktar": 0.00166934,
+          "birim": "wo"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "U236",
+          "miktar": 8.35e-06,
+          "birim": "wo"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "U238",
+          "miktar": 0.83297346,
+          "birim": "wo"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Pu239",
+          "miktar": 0.0438904,
+          "birim": "wo"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Pu240",
+          "miktar": 0.0027666,
+          "birim": "wo"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Pu241",
+          "miktar": 0.00018757,
+          "birim": "wo"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "Pu242",
+          "miktar": 4.689e-05,
+          "birim": "wo"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "O16",
+          "miktar": 0.11844072,
+          "birim": "wo"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        210,
+        40,
+        30
+      ]
+    },
+    {
+      "ad": "zirkaloy2",
+      "gorunen_ad": "Zircaloy-2",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 6.504
+      },
+      "sicaklik": 560.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "Zr",
+          "miktar": 98.23,
+          "birim": "ao"
+        },
+        {
+          "tur": "element",
+          "isim": "Sn",
+          "miktar": 1.5,
+          "birim": "ao"
+        },
+        {
+          "tur": "element",
+          "isim": "Fe",
+          "miktar": 0.12,
+          "birim": "ao"
+        },
+        {
+          "tur": "element",
+          "isim": "Cr",
+          "miktar": 0.1,
+          "birim": "ao"
+        },
+        {
+          "tur": "element",
+          "isim": "N",
+          "miktar": 0.05,
+          "birim": "ao"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        160,
+        160,
+        170
+      ]
+    },
+    {
+      "ad": "bosluk_o16",
+      "gorunen_ad": "Boşluk gazı (O-16, 0.001 g/cm³)",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 0.001
+      },
+      "sicaklik": 560.0,
+      "bilesim": [
+        {
+          "tur": "nuklid",
+          "isim": "O16",
+          "miktar": 1.0,
+          "birim": "wo"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        230,
+        230,
+        200
+      ]
+    },
+    {
+      "ad": "waba",
+      "gorunen_ad": "WABA (Al2O3 + %10 B4C)",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 3.5635
+      },
+      "sicaklik": 560.0,
+      "bilesim": [
+        {
+          "tur": "nuklid",
+          "isim": "Al27",
+          "miktar": 0.4763885,
+          "birim": "wo"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "O16",
+          "miktar": 0.4236115,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "C",
+          "miktar": 0.02172177,
+          "birim": "wo"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "B10",
+          "miktar": 0.01442742,
+          "birim": "wo"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "B11",
+          "miktar": 0.06385081,
+          "birim": "wo"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        60,
+        170,
+        90
+      ]
+    },
+    {
+      "ad": "su",
+      "gorunen_ad": "Su 560 K (0.75206 g/cm³)",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 0.75206
+      },
+      "sicaklik": 560.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "H",
+          "miktar": 0.111894,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "O",
+          "miktar": 0.888106,
+          "birim": "wo"
+        }
+      ],
+      "sab": [
+        "c_H_in_H2O"
+      ],
+      "renk": [
+        90,
+        150,
+        220
+      ]
+    }
+  ],
+  "cubuklar": [
+    {
+      "ad": "mox_25",
+      "tur": "silindirik",
+      "bolgeler": [
+        {
+          "r": 0.3951,
+          "malzeme": "mox_25"
+        },
+        {
+          "r": 0.401,
+          "malzeme": "bosluk_o16"
+        },
+        {
+          "r": 0.4583,
+          "malzeme": "zirkaloy2"
+        },
+        {
+          "r": null,
+          "malzeme": "su"
+        }
+      ]
+    },
+    {
+      "ad": "mox_30",
+      "tur": "silindirik",
+      "bolgeler": [
+        {
+          "r": 0.3951,
+          "malzeme": "mox_30"
+        },
+        {
+          "r": 0.401,
+          "malzeme": "bosluk_o16"
+        },
+        {
+          "r": 0.4583,
+          "malzeme": "zirkaloy2"
+        },
+        {
+          "r": null,
+          "malzeme": "su"
+        }
+      ]
+    },
+    {
+      "ad": "mox_50",
+      "tur": "silindirik",
+      "bolgeler": [
+        {
+          "r": 0.3951,
+          "malzeme": "mox_50"
+        },
+        {
+          "r": 0.401,
+          "malzeme": "bosluk_o16"
+        },
+        {
+          "r": 0.4583,
+          "malzeme": "zirkaloy2"
+        },
+        {
+          "r": null,
+          "malzeme": "su"
+        }
+      ]
+    },
+    {
+      "ad": "kilavuz_boru",
+      "tur": "silindirik",
+      "bolgeler": [
+        {
+          "r": 0.5624,
+          "malzeme": "su"
+        },
+        {
+          "r": 0.6032,
+          "malzeme": "zirkaloy2"
+        },
+        {
+          "r": null,
+          "malzeme": "su"
+        }
+      ]
+    },
+    {
+      "ad": "waba_cubugu",
+      "tur": "silindirik",
+      "bolgeler": [
+        {
+          "r": 0.2858,
+          "malzeme": "su"
+        },
+        {
+          "r": 0.3531,
+          "malzeme": "zirkaloy2"
+        },
+        {
+          "r": 0.4039,
+          "malzeme": "waba"
+        },
+        {
+          "r": 0.4839,
+          "malzeme": "zirkaloy2"
+        },
+        {
+          "r": 0.5624,
+          "malzeme": "su"
+        },
+        {
+          "r": 0.6032,
+          "malzeme": "zirkaloy2"
+        },
+        {
+          "r": null,
+          "malzeme": "su"
+        }
+      ]
+    }
+  ],
+  "plakalar": [],
+  "demetler": [
+    {
+      "ad": "mox_demeti",
+      "tur": "kare",
+      "adim": 1.26,
+      "boyut": [
+        17,
+        17
+      ],
+      "harita": [
+        "11222222222222211",
+        "12233233233233221",
+        "22333W33W33W33322",
+        "233W333333333W332",
+        "23333333333333332",
+        "22W33W33W33W33W22",
+        "23333333333333332",
+        "23333333333333332",
+        "22W33W33K33W33W22",
+        "23333333333333332",
+        "23333333333333332",
+        "22W33W33W33W33W22",
+        "23333333333333332",
+        "233W333333333W332",
+        "22333W33W33W33322",
+        "12233233233233221",
+        "11222222222222211"
+      ],
+      "anahtar": {
+        "1": "mox_25",
+        "2": "mox_30",
+        "3": "mox_50",
+        "W": "waba_cubugu",
+        "K": "kilavuz_boru"
+      },
+      "dolgu_disi": "su"
+    }
+  ],
+  "kor": {
+    "tur": "tek_demet",
+    "cubuk": null,
+    "demet": "mox_demeti",
+    "plaka": null,
+    "adim": 1.26,
+    "boyut": [
+      1,
+      1
+    ],
+    "harita": [],
+    "halka_sayisi": 2,
+    "yonelim": "x",
+    "anahtar": {},
+    "yukseklik": null,
+    "yansitici": {
+      "var": false,
+      "kalinlik": 20.0,
+      "malzeme": null
+    },
+    "kabuklar": [],
+    "dolgu": null,
+    "kor_yaricap": 20.0,
+    "tambur": {
+      "sayi": 0,
+      "yaricap": 4.0,
+      "merkez_yaricap": 26.0,
+      "govde_malzeme": null,
+      "emici_malzeme": null,
+      "emici_ic_yaricap": 2.5,
+      "emici_aci": 120.0,
+      "donme": 0.0,
+      "baslangic_acisi": 0.0
+    },
+    "eksenel": {
+      "var": false,
+      "bolgeler": []
+    },
+    "sinir": {
+      "yan": "reflective",
+      "alt": "reflective",
+      "ust": "reflective"
+    }
+  },
+  "ayarlar": {
+    "mod": "eigenvalue",
+    "parcacik": 10000,
+    "cevrim": 150,
+    "pasif": 40,
+    "tohum": 1,
+    "sicaklik_yontemi": "interpolation",
+    "kaynak": {
+      "tur": "kutu",
+      "konum": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "parcacik": "neutron",
+      "kuvvet": 1.0,
+      "enerji": {
+        "tur": "watt",
+        "a": 988000.0,
+        "b": 2.249e-06,
+        "theta": 1293200.0,
+        "enerji": 14100000.0,
+        "noktalar": [],
+        "kenarlar": [],
+        "degerler": [],
+        "e0": 14080000.0,
+        "kutle_orani": 5.0,
+        "iyon_sicaklik": 20000.0
+      },
+      "aci": {
+        "tur": "izotropik",
+        "yon": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "koni_aci": 30.0
+      },
+      "alt": null,
+      "ust": null
+    },
+    "entropi_mesh": {
+      "var": true,
+      "boyut": [
+        8,
+        8,
+        1
+      ]
+    },
+    "kinetik": {
+      "var": false,
+      "nesil": 10
+    }
+  },
+  "tallyler": [
+    {
+      "ad": "reaksiyonlar",
+      "skorlar": [
+        "fission",
+        "absorption",
+        "nu-fission"
+      ],
+      "filtreler": [],
+      "nuklidler": []
+    },
+    {
+      "ad": "iki_grup_aki",
+      "skorlar": [
+        "flux"
+      ],
+      "filtreler": [
+        {
+          "tur": "enerji",
+          "gruplar": [
+            0.0,
+            0.625,
+            20000000.0
+          ]
+        }
+      ],
+      "nuklidler": []
+    }
+  ],
+  "guc_dagilimi": {
+    "var": true,
+    "cubuk": "mox_50",
+    "bolge": 0,
+    "skor": "kappa-fission",
+    "eksenel_dilim": 20,
+    "toplam_guc": null,
+    "cubuklar": [
+      {
+        "cubuk": "mox_25",
+        "bolge": 0
+      },
+      {
+        "cubuk": "mox_30",
+        "bolge": 0
+      },
+      {
+        "cubuk": "mox_50",
+        "bolge": 0
+      }
+    ]
+  },
+  "tukenme": {
+    "var": false,
+    "zincir": "otomatik",
+    "guc_yogunlugu": 40.0,
+    "adimlar": [
+      0.5,
+      1.5,
+      3.0,
+      5.0,
+      10.0,
+      10.0
+    ],
+    "adim_birimi": "d",
+    "entegrator": "cecm",
+    "malzemeleri_ayir": false,
+    "ek_malzemeler": [],
+    "izlenen": [
+      "U235",
+      "U238",
+      "Pu239",
+      "Pu240",
+      "Pu241",
+      "Xe135",
+      "Sm149"
+    ]
+  },
+  "calistirma": {
+    "is_parcacigi": 8,
+    "dizin": "kosu"
+  },
+  "baslik": "PWR MOX demeti (3 bölgeli)",
+  "kategori": "pwr",
+  "seviye": "orta",
+  "baslik_en": "PWR MOX assembly (3 zones)",
+  "aciklama_en": "17x17 MOX assembly from the OECD/NEA-US NRC PWR MOX/UO2 core transient benchmark: 2.5/3.0/5.0 wt% fissile Pu zones, 24 WABA rods."
+}

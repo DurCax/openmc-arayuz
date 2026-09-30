@@ -85,7 +85,7 @@ def test_arayuz_ornek_kopya():
     uyg = _qt()
     if uyg is None:
         return
-    from PySide6 import QtCore, QtWidgets
+    from PySide6 import QtWidgets
     yol = os.path.join(ORNEK, "pwr_17x17.json")
     with open(yol, "rb") as f:
         ham = f.read()
@@ -97,12 +97,9 @@ def test_arayuz_ornek_kopya():
     eski_dizin = os.getcwd()
     try:
         p = _ana_pencere()
-        liste = p.baslangic.ornek_listesi
-        oge = [liste.topLevelItem(i) for i in range(liste.topLevelItemCount())
-               if os.path.basename(liste.topLevelItem(i).data(0, QtCore.Qt.UserRole))
-               == "pwr_17x17.json"]
-        kontrol("(on kosul) baslangic ekraninin ornek listesinde PWR 17x17 var", len(oge) == 1)
-        liste.secildi.emit(oge[0])
+        oge = [k for k in p.baslangic.ornek_kartlari() if k.bilgi.dosya == "pwr_17x17.json"]
+        kontrol("(on kosul) baslangic ekraninin ornek galerisinde PWR 17x17 var", len(oge) == 1)
+        oge[0].secildi.emit()
         kontrol("ornek acildi (demet_17x17)", p.spec["kor"].get("demet") == "demet_17x17")
         kontrol("ornek KOPYA: proje_yolu None", p.proje_yolu is None, "-> %r" % p.proje_yolu)
         kontrol("baslikta 'örnek: pwr_17x17'", "örnek: pwr_17x17" in p.windowTitle(),
@@ -208,11 +205,11 @@ def test_arayuz_bulgu_ipucu():
         for i, b in onerili[:3]:
             ipucu = p.dogrulama.item(i).toolTip()
             kontrol("'%s' ipucu oneri + tiklama bilgisi" % b.yer,
-                    b.oneri in ipucu and "ilgili sekmeye gider" in ipucu, "-> %r" % ipucu[-60:])
+                    b.oneri in ipucu and "ilgili sayfaya gider" in ipucu, "-> %r" % ipucu[-60:])
         onerisiz = [(i, b) for i, b in enumerate(p._bulgular) if not b.oneri]
         if onerisiz:
             kontrol("onerisiz bulguda da tiklama bilgisi",
-                    "ilgili sekmeye gider" in p.dogrulama.item(onerisiz[0][0]).toolTip())
+                    "ilgili sayfaya gider" in p.dogrulama.item(onerisiz[0][0]).toolTip())
     finally:
         _pencere_kapat(p)
 

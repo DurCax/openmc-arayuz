@@ -1,0 +1,735 @@
+{
+  "surum": 1,
+  "ad": "VVER-1000 tam koru (163 demet, 3B)",
+  "aciklama": "VVER-1000 tam koru (3B): 163 altıgen yakıt demeti. Kor kafesi 8 halkalı altıgendir (169 konum); dış halkanın 6 köşesi yakıt değil radyal yansıtıcıdır (169 − 6 = 163). Kor kafesi 'x', demet pin kafesi 'y' yönelimlidir (birbirine 90°).\n\nDemet türleri (hepsi vver1000_demet.json ölçüleri, sıcak tam güç): A = UO2 %2.0 (Gd'siz, 64 demet), B = UO2 %3.0 + 12 TVEG (63), C = UO2 %4.4 + 12 TVEG, dış halka (36). Yükleme deseni EĞİTİM AMAÇLIDIR — gerçek bir VVER-1000 yükleme haritası değildir.\nAktif yükseklik 355 cm; alt ve üstte 20 cm su, dış yüzeyler vakum. Radyal yansıtıcı: 20 cm kalınlığında çelik (08Х18Н10Т, hacimce %80) + su (%20) homojen karışımı (VVER-1000 çelik ağır yansıtıcısının basitleştirilmiş hâli). Kontrol çubukları çekilmiş (kılavuz kanallar su dolu).\nVarsayılan hassasiyet 'Hızlı deneme'dir; 'Normal' süre ölçümü docs/ORNEKLER.md'de.",
+  "malzemeler": [
+    {
+      "ad": "uo2_20",
+      "gorunen_ad": "UO2 %2.0",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 10.4
+      },
+      "sicaklik": 1027.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "U",
+          "miktar": 1.0,
+          "birim": "ao",
+          "zenginlik": 2.0
+        },
+        {
+          "tur": "element",
+          "isim": "O",
+          "miktar": 2.0,
+          "birim": "ao"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        240,
+        170,
+        60
+      ]
+    },
+    {
+      "ad": "uo2_30",
+      "gorunen_ad": "UO2 %3.0",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 10.4
+      },
+      "sicaklik": 1027.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "U",
+          "miktar": 1.0,
+          "birim": "ao",
+          "zenginlik": 3.0
+        },
+        {
+          "tur": "element",
+          "isim": "O",
+          "miktar": 2.0,
+          "birim": "ao"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        214,
+        96,
+        42
+      ]
+    },
+    {
+      "ad": "uo2_44",
+      "gorunen_ad": "UO2 %4.4",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 10.4
+      },
+      "sicaklik": 1027.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "U",
+          "miktar": 1.0,
+          "birim": "ao",
+          "zenginlik": 4.4
+        },
+        {
+          "tur": "element",
+          "isim": "O",
+          "miktar": 2.0,
+          "birim": "ao"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        190,
+        60,
+        30
+      ]
+    },
+    {
+      "ad": "uo2_gd",
+      "gorunen_ad": "UO2 %3.6 + %4 Gd2O3 (TVEG)",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 10.2
+      },
+      "sicaklik": 1027.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "U",
+          "miktar": 0.84624,
+          "birim": "wo",
+          "zenginlik": 3.6
+        },
+        {
+          "tur": "element",
+          "isim": "O",
+          "miktar": 0.119056,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Gd",
+          "miktar": 0.034704,
+          "birim": "wo"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        120,
+        170,
+        60
+      ]
+    },
+    {
+      "ad": "zr1nb",
+      "gorunen_ad": "E110 (Zr-1%Nb) kılıf",
+      "yogunluk": {
+        "birim": "atom/b-cm",
+        "deger": 0.043019097
+      },
+      "sicaklik": 575.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "Zr",
+          "miktar": 0.04259,
+          "birim": "ao"
+        },
+        {
+          "tur": "element",
+          "isim": "Nb",
+          "miktar": 0.0004225,
+          "birim": "ao"
+        },
+        {
+          "tur": "element",
+          "isim": "Hf",
+          "miktar": 6.597e-06,
+          "birim": "ao"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        160,
+        160,
+        170
+      ]
+    },
+    {
+      "ad": "su",
+      "gorunen_ad": "Su 575 K, 600 ppm B (0.7235 g/cm³)",
+      "yogunluk": {
+        "birim": "atom/b-cm",
+        "deger": 0.072674214
+      },
+      "sicaklik": 575.0,
+      "bilesim": [
+        {
+          "tur": "nuklid",
+          "isim": "H1",
+          "miktar": 0.04843,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "O16",
+          "miktar": 0.02422,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "B10",
+          "miktar": 4.794e-06,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "B11",
+          "miktar": 1.942e-05,
+          "birim": "ao"
+        }
+      ],
+      "sab": [
+        "c_H_in_H2O"
+      ],
+      "renk": [
+        90,
+        150,
+        220
+      ]
+    },
+    {
+      "ad": "helyum",
+      "gorunen_ad": "He (boşluk)",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 0.0018
+      },
+      "sicaklik": 575.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "He",
+          "miktar": 1.0,
+          "birim": "ao"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        230,
+        230,
+        200
+      ]
+    },
+    {
+      "ad": "yansitici_celik_su",
+      "gorunen_ad": "Çelik %80 + su %20 (radyal yansıtıcı)",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 6.4647
+      },
+      "sicaklik": 575.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "Fe",
+          "miktar": 0.668201,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Cr",
+          "miktar": 0.175971,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Ni",
+          "miktar": 0.097762,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Mn",
+          "miktar": 0.019552,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Si",
+          "miktar": 0.007821,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Ti",
+          "miktar": 0.007528,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "C",
+          "miktar": 0.000782,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "H",
+          "miktar": 0.002505,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "O",
+          "miktar": 0.019878,
+          "birim": "wo"
+        }
+      ],
+      "sab": [
+        "c_H_in_H2O"
+      ],
+      "renk": [
+        110,
+        125,
+        150
+      ]
+    }
+  ],
+  "cubuklar": [
+    {
+      "ad": "yakit_20",
+      "tur": "silindirik",
+      "bolgeler": [
+        {
+          "r": 0.07,
+          "malzeme": "helyum"
+        },
+        {
+          "r": 0.3785,
+          "malzeme": "uo2_20"
+        },
+        {
+          "r": 0.386,
+          "malzeme": "helyum"
+        },
+        {
+          "r": 0.455,
+          "malzeme": "zr1nb"
+        },
+        {
+          "r": null,
+          "malzeme": "su"
+        }
+      ]
+    },
+    {
+      "ad": "yakit_30",
+      "tur": "silindirik",
+      "bolgeler": [
+        {
+          "r": 0.07,
+          "malzeme": "helyum"
+        },
+        {
+          "r": 0.3785,
+          "malzeme": "uo2_30"
+        },
+        {
+          "r": 0.386,
+          "malzeme": "helyum"
+        },
+        {
+          "r": 0.455,
+          "malzeme": "zr1nb"
+        },
+        {
+          "r": null,
+          "malzeme": "su"
+        }
+      ]
+    },
+    {
+      "ad": "yakit_44",
+      "tur": "silindirik",
+      "bolgeler": [
+        {
+          "r": 0.07,
+          "malzeme": "helyum"
+        },
+        {
+          "r": 0.3785,
+          "malzeme": "uo2_44"
+        },
+        {
+          "r": 0.386,
+          "malzeme": "helyum"
+        },
+        {
+          "r": 0.455,
+          "malzeme": "zr1nb"
+        },
+        {
+          "r": null,
+          "malzeme": "su"
+        }
+      ]
+    },
+    {
+      "ad": "tveg_cubugu",
+      "tur": "silindirik",
+      "bolgeler": [
+        {
+          "r": 0.07,
+          "malzeme": "helyum"
+        },
+        {
+          "r": 0.3785,
+          "malzeme": "uo2_gd"
+        },
+        {
+          "r": 0.386,
+          "malzeme": "helyum"
+        },
+        {
+          "r": 0.455,
+          "malzeme": "zr1nb"
+        },
+        {
+          "r": null,
+          "malzeme": "su"
+        }
+      ]
+    },
+    {
+      "ad": "kilavuz_boru",
+      "tur": "silindirik",
+      "bolgeler": [
+        {
+          "r": 0.545,
+          "malzeme": "su"
+        },
+        {
+          "r": 0.6323,
+          "malzeme": "zr1nb"
+        },
+        {
+          "r": null,
+          "malzeme": "su"
+        }
+      ]
+    },
+    {
+      "ad": "merkez_boru",
+      "tur": "silindirik",
+      "bolgeler": [
+        {
+          "r": 0.48,
+          "malzeme": "su"
+        },
+        {
+          "r": 0.5626,
+          "malzeme": "zr1nb"
+        },
+        {
+          "r": null,
+          "malzeme": "su"
+        }
+      ]
+    }
+  ],
+  "plakalar": [],
+  "demetler": [
+    {
+      "ad": "tvs_a20",
+      "tur": "altigen",
+      "adim": 1.275,
+      "halka_sayisi": 11,
+      "yonelim": "y",
+      "boyut": [
+        11,
+        11
+      ],
+      "harita": [
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "yyykyyyyykyyyyykyyyyykyyyyykyyyyykyy",
+        "kyyyykyyyykyyyykyyyykyyyykyyyy",
+        "yyyyyyyyyyyyyyyyyyyyyyyy",
+        "ykyykyykyykyykyyky",
+        "yyyyyyyyyyyy",
+        "yyyyyy",
+        "m"
+      ],
+      "anahtar": {
+        "y": "yakit_20",
+        "k": "kilavuz_boru",
+        "m": "merkez_boru"
+      },
+      "dolgu_disi": "su"
+    },
+    {
+      "ad": "tvs_b30",
+      "tur": "altigen",
+      "adim": 1.275,
+      "halka_sayisi": 11,
+      "yonelim": "y",
+      "boyut": [
+        11,
+        11
+      ],
+      "harita": [
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "yyyygyyyyyyygyyyyyyygyyyyyyygyyyyyyygyyyyyyygyyy",
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "yyykyyyyykyyyyykyyyyykyyyyykyyyyykyy",
+        "kyyyykyyyykyyyykyyyykyyyykyyyy",
+        "yyygyyygyyygyyygyyygyyyg",
+        "ykyykyykyykyykyyky",
+        "yyyyyyyyyyyy",
+        "yyyyyy",
+        "m"
+      ],
+      "anahtar": {
+        "y": "yakit_30",
+        "k": "kilavuz_boru",
+        "m": "merkez_boru",
+        "g": "tveg_cubugu"
+      },
+      "dolgu_disi": "su"
+    },
+    {
+      "ad": "tvs_c44",
+      "tur": "altigen",
+      "adim": 1.275,
+      "halka_sayisi": 11,
+      "yonelim": "y",
+      "boyut": [
+        11,
+        11
+      ],
+      "harita": [
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "yyyygyyyyyyygyyyyyyygyyyyyyygyyyyyyygyyyyyyygyyy",
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "yyykyyyyykyyyyykyyyyykyyyyykyyyyykyy",
+        "kyyyykyyyykyyyykyyyykyyyykyyyy",
+        "yyygyyygyyygyyygyyygyyyg",
+        "ykyykyykyykyykyyky",
+        "yyyyyyyyyyyy",
+        "yyyyyy",
+        "m"
+      ],
+      "anahtar": {
+        "y": "yakit_44",
+        "k": "kilavuz_boru",
+        "m": "merkez_boru",
+        "g": "tveg_cubugu"
+      },
+      "dolgu_disi": "su"
+    }
+  ],
+  "kor": {
+    "tur": "altigen_kafes",
+    "cubuk": null,
+    "demet": null,
+    "plaka": null,
+    "adim": 23.6,
+    "boyut": [
+      1,
+      1
+    ],
+    "harita": [
+      "RCCCCCCRCCCCCCRCCCCCCRCCCCCCRCCCCCCRCCCCCC",
+      "ABABABABABABABABABABABABABABABABABAB",
+      "BABABABABABABABABABABABABABABA",
+      "ABABABABABABABABABABABAB",
+      "BABABABABABABABABA",
+      "ABABABABABAB",
+      "BABABA",
+      "A"
+    ],
+    "halka_sayisi": 8,
+    "yonelim": "x",
+    "anahtar": {
+      "A": "tvs_a20",
+      "B": "tvs_b30",
+      "C": "tvs_c44",
+      "R": "yansitici_celik_su"
+    },
+    "yukseklik": null,
+    "yansitici": {
+      "var": true,
+      "kalinlik": 20.0,
+      "malzeme": "yansitici_celik_su"
+    },
+    "kabuklar": [],
+    "dolgu": null,
+    "kor_yaricap": 20.0,
+    "tambur": {
+      "sayi": 0,
+      "yaricap": 4.0,
+      "merkez_yaricap": 26.0,
+      "govde_malzeme": null,
+      "emici_malzeme": null,
+      "emici_ic_yaricap": 2.5,
+      "emici_aci": 120.0,
+      "donme": 0.0,
+      "baslangic_acisi": 0.0
+    },
+    "eksenel": {
+      "var": true,
+      "bolgeler": [
+        {
+          "ad": "alt su",
+          "yukseklik": 20.0,
+          "dolgu": "su"
+        },
+        {
+          "ad": "aktif kor",
+          "yukseklik": 355.0,
+          "dolgu": null
+        },
+        {
+          "ad": "üst su",
+          "yukseklik": 20.0,
+          "dolgu": "su"
+        }
+      ]
+    },
+    "sinir": {
+      "yan": "vacuum",
+      "alt": "vacuum",
+      "ust": "vacuum"
+    }
+  },
+  "ayarlar": {
+    "mod": "eigenvalue",
+    "parcacik": 1000,
+    "cevrim": 60,
+    "pasif": 20,
+    "tohum": 1,
+    "sicaklik_yontemi": "interpolation",
+    "kaynak": {
+      "tur": "kutu",
+      "konum": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "parcacik": "neutron",
+      "kuvvet": 1.0,
+      "enerji": {
+        "tur": "watt",
+        "a": 988000.0,
+        "b": 2.249e-06,
+        "theta": 1293200.0,
+        "enerji": 14100000.0,
+        "noktalar": [],
+        "kenarlar": [],
+        "degerler": [],
+        "e0": 14080000.0,
+        "kutle_orani": 5.0,
+        "iyon_sicaklik": 20000.0
+      },
+      "aci": {
+        "tur": "izotropik",
+        "yon": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "koni_aci": 30.0
+      },
+      "alt": [
+        -150.0,
+        -150.0,
+        -170.0
+      ],
+      "ust": [
+        150.0,
+        150.0,
+        170.0
+      ]
+    },
+    "entropi_mesh": {
+      "var": true,
+      "boyut": [
+        10,
+        10,
+        10
+      ]
+    },
+    "kinetik": {
+      "var": false,
+      "nesil": 10
+    }
+  },
+  "tallyler": [
+    {
+      "ad": "reaksiyonlar",
+      "skorlar": [
+        "fission",
+        "absorption",
+        "nu-fission"
+      ],
+      "filtreler": [],
+      "nuklidler": []
+    }
+  ],
+  "guc_dagilimi": {
+    "var": false,
+    "cubuk": null,
+    "bolge": 0,
+    "skor": "kappa-fission",
+    "eksenel_dilim": 20,
+    "toplam_guc": null
+  },
+  "tukenme": {
+    "var": false,
+    "zincir": "otomatik",
+    "guc_yogunlugu": 40.0,
+    "adimlar": [
+      0.5,
+      1.5,
+      3.0,
+      5.0,
+      10.0,
+      10.0
+    ],
+    "adim_birimi": "d",
+    "entegrator": "cecm",
+    "malzemeleri_ayir": false,
+    "ek_malzemeler": [],
+    "izlenen": [
+      "U235",
+      "U238",
+      "Pu239",
+      "Pu240",
+      "Pu241",
+      "Xe135",
+      "Sm149"
+    ]
+  },
+  "calistirma": {
+    "is_parcacigi": 8,
+    "dizin": "kosu"
+  },
+  "baslik": "VVER-1000 tam koru (163 demet)",
+  "kategori": "vver",
+  "seviye": "ileri",
+  "baslik_en": "VVER-1000 full core (163 assemblies)",
+  "aciklama_en": "3D VVER-1000 core: 163 hexagonal assemblies (8-ring map with 6 reflector corners), three enrichments, steel-water radial reflector."
+}
