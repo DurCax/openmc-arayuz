@@ -56,12 +56,9 @@ KABA_EKLEME = {"append", "add", "extend", "insert"}
 #       taban cizgisi; DUZELTME Dalga 2 sahiplerine kalir (7 kayit).
 IZINLI = {
     "arayuz.malzeme.yardimcilar:sab_onerileri": 1,                # (T)
-    "arayuz.onizleme:_LibYoneticisi.kapat": 1,                    # (T)
     "arayuz.sekme_analiz:AnalizSekmesi._bos_nedeni": 1,           # (T)
     "arayuz.sekme_analiz:AnalizSekmesi._hedefleri_listele": 1,    # (T)
     "arayuz.sekme_analiz:AnalizSekmesi._varsayilan_aralik": 1,    # (T)
-    "arayuz.sekme_calistir:CalistirSekmesi._bitti": 1,            # (T)
-    "arayuz.sekme_calistir:CalistirSekmesi._guc_etkin": 1,        # (T)
     "arayuz.sekme_malzeme:MalzemeSekmesi.doldur": 1,              # (T)
     "cekirdek.dogrula.veri:_kutuphane_icerigi": 1,                # (T)
     "cekirdek.ice_aktar:malzemeleri_oku": 4,                      # (T) 3 + (Y) 1

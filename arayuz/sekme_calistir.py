@@ -37,25 +37,19 @@ from PySide6 import QtCore, QtGui, QtWidgets
 from cekirdek import kosucu
 from cekirdek import dogrula, sema, uygunluk
 from cekirdek.ceviri import _
-from cekirdek import kaynak as _kaynak
-from cekirdek import guc as _guc
+from cekirdek.gunluk import kaydedici
 from arayuz import bilesenler as b
 from arayuz import tema
-from arayuz.calistir import gunluk_ozeti
+from arayuz.calistir import gunluk_ozeti, ozet
+from arayuz.calistir.kartlar import AyrintiCekmecesi, KosuKarti, SonucKarti
 from arayuz.calistir.pano import SonucPanosu
 from arayuz.calistir.yakinsama import EntropiKarti, YakinsamaKarti
-from arayuz.ortak import GelismisBolum, tamsayi
 from arayuz.tasarim import tokenlar
 
 A = tokenlar.ARALIK
-
-
-def _yazi_tipi_es_aralikli(w, boyut=8.5):
-    f = w.font()
-    f.setFamily("monospace")
-    f.setStyleHint(QtGui.QFont.StyleHint.Monospace)
-    f.setPointSizeF(boyut)
-    w.setFont(f)
+_log = kaydedici(__name__)
+# Canli kosuda grafik her bu kadar cevrimde bir yeniden cizilir.
+_GRAFIK_ADIMI = 5
 
 
 class CalistirSekmesi(QtWidgets.QWidget):
@@ -92,7 +86,27 @@ class CalistirSekmesi(QtWidgets.QWidget):
         self._sayac = QtCore.QElapsedTimer()   # canli sure (gunluk ozeti yoksa)
         self._zaman = {}                 # {"sure_s", "hiz"} -- panoya yazilir
 
-        self.kosu_karti = self._kosu_karti_kur()
+        self._kartlari_kur()
+        self._yerlesim_kur()
+        self._gorunum_guncelle()
+
+    # ==================================================================
+    # kurulum (kartlar arayuz/calistir/ altinda)
+    # ==================================================================
+    def _kartlari_kur(self):
+        """Kartlari kurar; eski ozellik adlari (testler, ana pencere) korunur."""
+        self.kosu_karti = KosuKarti()
+        k = self.kosu_karti
+        self.d_calistir, self.d_durdur, self.d_klasor = k.d_calistir, k.d_durdur, k.d_klasor
+        self.ilerleme, self.kapi_etiket = k.ilerleme, k.kapi_etiket
+        self.is_parcacigi, self.kosu_dizini = k.is_parcacigi, k.kosu_dizini
+        self.dizin_yolu = k.dizin_yolu
+        self.d_calistir.clicked.connect(self.calistir)
+        self.d_durdur.clicked.connect(self.durdur)
+        self.d_klasor.clicked.connect(self.klasoru_ac)
+        self.is_parcacigi.valueChanged.connect(self._calistirma_kaydet)
+        self.kosu_dizini.editingFinished.connect(self._calistirma_kaydet)
+
         self.bos = b.BosDurum("play", _("Henüz koşu yok"),
                               _("Çalıştır'a basın; k-eff yakınsaması ve sonuçlar "
                                 "bu sayfada görünür."), _("Çalıştır"), "play")
@@ -100,149 +114,41 @@ class CalistirSekmesi(QtWidgets.QWidget):
         self.pano = SonucPanosu()
         self.yakinsama = YakinsamaKarti()
         self.entropi_karti = EntropiKarti()
-        # Geriye uyumlu adlar (mevcut testler ve ana pencere bunlari kullanir).
-        self.keff_etiket = self.pano.k.deger
-        self.keff_baslik = self.pano.k.etiket
-        self.figur = self.yakinsama.figur
-        self.tuval = self.yakinsama.tuval
-        self.eksen = self.yakinsama.eksen
-        self.eksen_ent = self.entropi_karti.eksen
+        self.keff_etiket, self.keff_baslik = self.pano.k.deger, self.pano.k.etiket
+        self.figur, self.tuval = self.yakinsama.figur, self.yakinsama.tuval
+        self.eksen, self.eksen_ent = self.yakinsama.eksen, self.entropi_karti.eksen
 
         from arayuz.guc_harita import GucHaritaWidget
         self.guc_harita = GucHaritaWidget()
+        self.guc_karti = b.Kart()
+        self.guc_karti.ekle(self.guc_harita)
 
-        self.kart = self._sonuc_karti_kur()
-        self.ayrinti_karti = self._ayrinti_karti_kur()
+        self.kart = SonucKarti()
+        self.durum_etiket, self.ozet_etiket = self.kart.durum_etiket, self.kart.ozet_etiket
+        self.tally_baslik, self.tally_metin = self.kart.tally_baslik, self.kart.tally_metin
 
+        self.ayrinti_karti = AyrintiCekmecesi()
+        c = self.ayrinti_karti
+        self.log, self.sonuc_metin, self.ayrinti = c.log, c.sonuc_metin, c.ayrinti
+        self.d_kopyala = c.d_kopyala
+        self.d_kopyala.clicked.connect(self.gunlugu_kopyala)
+
+    def _yerlesim_kur(self):
+        """Yukaridan asagiya tek akis (maket: sonuclar_*)."""
         grafikler = QtWidgets.QHBoxLayout()
         grafikler.setSpacing(A["l"])
         grafikler.addWidget(self.yakinsama, 5)
         grafikler.addWidget(self.entropi_karti, 3)
-
         duzen = QtWidgets.QVBoxLayout(self)
         duzen.setSpacing(A["l"])
         duzen.addWidget(self.kosu_karti)
         duzen.addWidget(self.bos, 1)
         duzen.addWidget(self.pano)
         duzen.addLayout(grafikler)
-        duzen.addWidget(self.guc_harita)
+        duzen.addWidget(self.guc_karti)
         duzen.addWidget(self.kart)
         duzen.addWidget(self.ayrinti_karti)
         duzen.addStretch(0)
-
-        self._gorunum_guncelle()
-
-    # ==================================================================
-    # kurulum (her biri tek bir kart)
-    # ==================================================================
-    def _kosu_karti_kur(self):
-        """Calistir / Durdur / ilerleme + kosu ayarlari + kapi mesaji."""
-        self.d_calistir = b.birincil_dugme(_("Çalıştır"), "play",
-                                           _("Modeli OpenMC ile çalıştırır (F9)."))
-        self.d_durdur = b.ikincil_dugme(_("Durdur"), "square")
-        self.d_durdur.setEnabled(False)
-        self.d_klasor = b.duz_dugme(_("Klasörü aç"), "folder-open")
-        self.d_klasor.setEnabled(False)
-        self.d_calistir.clicked.connect(self.calistir)
-        self.d_durdur.clicked.connect(self.durdur)
-        self.d_klasor.clicked.connect(self.klasoru_ac)
-        self.ilerleme = QtWidgets.QProgressBar()
-        self.ilerleme.setProperty("metinli", True)
-        self.ilerleme.setTextVisible(True)
-        self.ilerleme.setRange(0, 1)
-        self.ilerleme.setValue(0)
-        self.kapi_etiket = QtWidgets.QLabel("-")
-        self.kapi_etiket.setWordWrap(True)
-        self.kapi_etiket.setObjectName("kucuk")
-
-        kart = b.Kart(_("Koşu"), eylem=self.d_klasor)
-        ust = QtWidgets.QHBoxLayout()
-        ust.setSpacing(A["s"])
-        ust.addWidget(self.d_calistir)
-        ust.addWidget(self.d_durdur)
-        ust.addWidget(self.ilerleme, 1)
-        kart.govde.addLayout(ust)
-        kart.govde.addLayout(self._kosu_ayarlari())
-        kart.ekle(self.kapi_etiket)
-        return kart
-
-    def _kosu_ayarlari(self):
-        """Is parcacigi ve kosu dizini satiri (spec["calistirma"])."""
-        self.is_parcacigi = tamsayi(8, 1, 512, 1)
-        self.is_parcacigi.setMinimumWidth(70)
-        n_cekirdek = QtCore.QThread.idealThreadCount()
-        self.is_parcacigi.setToolTip(
-            _("OpenMP iş parçacığı sayısı (openmc -s N). Bu bilgisayarda %d mantıksal "
-              "çekirdek var; tüm çekirdekleri kullanmak arayüzü yavaşlatabilir.")
-            % max(n_cekirdek, 1))
-        self.kosu_dizini = QtWidgets.QLineEdit()
-        self.kosu_dizini.setPlaceholderText("kosu")
-        self.kosu_dizini.setToolTip(
-            _("Koşu dosyalarının yazılacağı dizin. Göreli yol proje dosyasının "
-              "yanına yazılır; her koşuda içi temizlenir."))
-        self.dizin_yolu = QtWidgets.QLabel("")
-        self.dizin_yolu.setObjectName("kucuk")
-        self.dizin_yolu.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
-        self.is_parcacigi.valueChanged.connect(self._calistirma_kaydet)
-        self.kosu_dizini.editingFinished.connect(self._calistirma_kaydet)
-        satir = QtWidgets.QHBoxLayout()
-        satir.setSpacing(A["s"])
-        for etiket, w, esnek in ((_("İş parçacığı:"), self.is_parcacigi, 0),
-                                 (_("Koşu dizini:"), self.kosu_dizini, 1)):
-            e = QtWidgets.QLabel(etiket)
-            e.setObjectName("ikincil")
-            satir.addWidget(e)
-            satir.addWidget(w, esnek)
-        satir.addWidget(self.dizin_yolu, 2)
-        return satir
-
-    def _sonuc_karti_kur(self):
-        """Kritiklik yorumu, ozet metni ve (sabit kaynakta) tally tablolari."""
-        self.durum_etiket = QtWidgets.QLabel("")
-        self.durum_etiket.setWordWrap(True)
-        self.durum_etiket.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
-        self.ozet_etiket = QtWidgets.QLabel("")
-        self.ozet_etiket.setWordWrap(True)
-        self.ozet_etiket.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
-        _yazi_tipi_es_aralikli(self.ozet_etiket, 9.0)
-        self.tally_baslik = QtWidgets.QLabel(_("Tally sonuçları"))
-        self.tally_baslik.setObjectName("altBaslik")
-        self.tally_metin = QtWidgets.QPlainTextEdit()
-        self.tally_metin.setReadOnly(True)
-        self.tally_metin.setProperty("mono", True)
-        self.tally_metin.setMinimumHeight(180)
-        _yazi_tipi_es_aralikli(self.tally_metin)
-        kart = b.Kart(_("Sonuç"))
-        for w in (self.durum_etiket, self.ozet_etiket, self.tally_baslik,
-                  self.tally_metin):
-            kart.ekle(w)
-        return kart
-
-    def _ayrinti_karti_kur(self):
-        """Katlanir ayrintili cikti (ham gunluk + tam sonuc metni)."""
-        self.log = QtWidgets.QPlainTextEdit()
-        self.log.setReadOnly(True)
-        self.log.setMaximumBlockCount(5000)
-        self.log.setMinimumHeight(200)
-        self.log.setProperty("mono", True)
-        _yazi_tipi_es_aralikli(self.log)
-        self.sonuc_metin = QtWidgets.QPlainTextEdit()
-        self.sonuc_metin.setReadOnly(True)
-        self.sonuc_metin.setMinimumHeight(160)
-        self.sonuc_metin.setProperty("mono", True)
-        _yazi_tipi_es_aralikli(self.sonuc_metin)
-        self.d_kopyala = b.duz_dugme(_("Kopyala"), "copy")
-        self.d_kopyala.clicked.connect(self.gunlugu_kopyala)
-        self.ayrinti = GelismisBolum("calistir_ayrinti", _("Ayrıntılı çıktı"))
-        self.ayrinti.ekle(QtWidgets.QLabel(_("OpenMC çıktısı")))
-        self.ayrinti.ekle(self.log)
-        self.ayrinti.ekle(self.d_kopyala)
-        self.ayrinti.ekle(QtWidgets.QLabel(
-            _("Tam sonuç metni (statepoint ve tüm tally tabloları)")))
-        self.ayrinti.ekle(self.sonuc_metin)
-        kart = b.Kart()
-        kart.ekle(self.ayrinti)
-        return kart
 
     # ==================================================================
     # disaridan
@@ -434,7 +340,7 @@ class CalistirSekmesi(QtWidgets.QWidget):
         self.tally_baslik.setVisible(tally)
         self.tally_metin.setVisible(tally)
         self.ozet_etiket.setVisible(bool(self.ozet_etiket.text()))
-        self.guc_harita.setVisible(sonuc and self._guc_var and self._guc_etkin())
+        self.guc_karti.setVisible(sonuc and self._guc_var and self._guc_etkin())
         self.bos.setVisible(not (kart or grafik))
         self.d_klasor.setEnabled(bool(self.son_kosu_dizini()))
         # Ayrintili cikti yalnizca gosterecek bir sey varken (bos bolum gurultudur)
@@ -606,7 +512,7 @@ class CalistirSekmesi(QtWidgets.QWidget):
         if bilgi:
             self._cevrimler.append(bilgi)
             self.ilerleme.setValue(bilgi["cevrim"])
-            if len(self._cevrimler) % 5 == 0:
+            if len(self._cevrimler) % _GRAFIK_ADIMI == 0:
                 self._grafik_guncelle()
             if bilgi["ortalama"] is not None:
                 self.keff_etiket.setText("%.5f ± %.5f"
@@ -689,9 +595,7 @@ class CalistirSekmesi(QtWidgets.QWidget):
         self._basarisiz = True
         self.pano.temizle()
         self.keff_etiket.setText(_("başarısız"))
-        self.durum_etiket.setText(metin)
-        self.durum_etiket.setStyleSheet("color: %s; font-weight: bold;"
-                                        % tema.renk("hata"))
+        self._durum_yaz(metin, "hata")
         self.ayrinti.ac(True)            # hata: ayrintili cikti kendiliginden acilir
         self._gorunum_guncelle()
         self.sonuc_degisti.emit()
@@ -718,9 +622,20 @@ class CalistirSekmesi(QtWidgets.QWidget):
         except Exception as e:
             self._basarisiz_goster(_("Sonuç okunamadı: %s") % e)
             return False
-        self._cevrimler = []
+        self._cevrimler = self.gunluk_cevrimleri(gunluk)
+        self._grafik_kur(self._entropi_acik(self.spec) and s.get("keff") is not None)
+        self.pano.dogrulama_ayarla(_("Diskten yüklendi"), "notr",
+                                   _("Kayıtlı koşu gösteriliyor; koşu öncesi doğrulama "
+                                     "bu oturumda yapılmadı."))
         self._sonuc_goster(s, sp)
+        self._grafik_guncelle()
         return True
+
+    @staticmethod
+    def gunluk_cevrimleri(gunluk):
+        """Gunluk metnindeki cevrim satirlari (kosucu.cevrim_satiri) -- yeni liste."""
+        satirlar = (kosucu.cevrim_satiri(x.rstrip()) for x in (gunluk or "").splitlines())
+        return [c for c in satirlar if c]
 
     @staticmethod
     def _gunlugu_oku(dizin, ad="kosu.log"):
@@ -741,17 +656,19 @@ class CalistirSekmesi(QtWidgets.QWidget):
         """
         kosucu.sonuc_oku() ciktisini gosterir. Sabit kaynak modunda k-eff YOKTUR
         (s["keff"] is None): eskiden "%.5f" % None ile cokuyor, tally'ler hic
-        gosterilmiyor ve kosu basarili sayilmiyordu.
+        gosterilmiyor ve kosu basarili sayilmiyordu. Metinler calistir/ozet.py'den.
         """
         sabit = s.get("keff") is None
         self._gosterilen_sabit = sabit
         self.pano.sonuc_yaz(s, self.spec, self._zaman)
-        ozet = self._sabit_ozeti(s) if sabit else self._ozdeger_ozeti(s)
-        ozet += self._guc_ozeti(s)
-        tally = self._tally_metinleri(s, sabit)
-        tam = ([] if sabit else ["k-eff    = %.5f ± %.5f" % s["keff"]]) + ozet
+        k_tanim = self._kaynak_tanimi()
+        satirlar = (self._sabit_durumu_yaz(s, k_tanim) if sabit
+                    else self._ozdeger_durumu_yaz(s))
+        satirlar += ozet.guc_ozeti(s)
+        tally = ozet.tally_metinleri(s, sabit, float(k_tanim.get("kuvvet") or 1.0))
+        tam = ([] if sabit else ["k-eff    = %.5f ± %.5f" % s["keff"]]) + satirlar
         tam += ["statepoint: %s" % sp, ""] + tally
-        self.ozet_etiket.setText("\n".join(ozet))
+        self.ozet_etiket.setText("\n".join(satirlar))
         self.sonuc_metin.setPlainText("\n".join(tam))
         self.tally_metin.setPlainText("\n".join(tally) if sabit else "")
         self.guc_harita.sonuc_ayarla(s, self.spec)
@@ -766,102 +683,33 @@ class CalistirSekmesi(QtWidgets.QWidget):
         else:
             self.durum.emit(_("Koşu tamamlandı: k-eff = %.5f ± %.5f") % s["keff"], True)
 
-    def _sabit_ozeti(self, s):
-        """Sabit kaynak sonucunun ozet satirlari (k-eff tanimsiz)."""
-        k_tanim = ((self.spec or {}).get("ayarlar") or {}).get("kaynak") or {}
-        kuvvet = float(k_tanim.get("kuvvet") or 1.0)
-        self.keff_etiket.setText("-")
-        self.durum_etiket.setText(
-            _("Sabit kaynak — k-eff tanımsız\nSonuç tally'lerdir (aşağıda)."))
-        self.durum_etiket.setStyleSheet("color: %s; font-weight: bold;"
-                                        % tema.renk("vurgu"))
-        ozet = [
-            "mod      = sabit kaynak (k-eff tanımsız)",
-            "kaynak   = %s" % _kaynak.ozet(k_tanim),
-            "şiddet   = %.4g parçacık/s" % kuvvet,
-            "çevrim   = %d, %d parçacık/çevrim" % (s["cevrim"], s["parcacik"]),
-            "Sonuçlar akı ve tepkime hızlarıdır; doz hesaplanmaz. Akı hacim-"
-            "integrallidir (n·cm/s): ortalama akı [n/cm²/s] için bölgenin "
-            "hacmine bölün.",
-        ]
-        # OLCULDU (kosucu.py): OpenMC sabit kaynak tally'lerini kaynak
-        # siddetiyle ZATEN carpar; "siddetle carpin" demek cift sayim olurdu.
-        if kuvvet == 1.0:
-            ozet.append("NOT: tally değerleri kaynak parçacığı başınadır "
-                        "(şiddet 1). Mutlak birim için şiddeti girin.")
-        else:
-            ozet.append("Not: tally değerleri mutlak birimdedir — OpenMC "
-                        "şiddeti zaten uygulamıştır, tekrar çarpmayın.")
-        return ozet
+    def _kaynak_tanimi(self):
+        return ((self.spec or {}).get("ayarlar") or {}).get("kaynak") or {}
 
-    def _ozdeger_ozeti(self, s):
-        """Ozdeger sonucunun ozet satirlari (+ kritiklik yorumu, kinetik)."""
+    def _durum_yaz(self, metin, renk):
+        self.durum_etiket.setText(metin)
+        self.durum_etiket.setStyleSheet("color: %s; font-weight: bold;" % tema.renk(renk))
+
+    def _sabit_durumu_yaz(self, s, k_tanim):
+        """Sabit kaynak: k-eff tanimsiz; ozet satirlari (ozet.sabit_ozeti)."""
+        self.keff_etiket.setText("-")
+        self._durum_yaz(_("Sabit kaynak — k-eff tanımsız\nSonuç tally'lerdir (aşağıda)."),
+                        "vurgu")
+        return ozet.sabit_ozeti(s, k_tanim)
+
+    def _ozdeger_durumu_yaz(self, s):
+        """Ozdeger: kritiklik yorumu + ozet satirlari; kaynak yakinsamadiysa uyarir."""
         self.keff_etiket.setText("%.5f ± %.5f" % s["keff"])
         kin = s.get("kinetik") or {}
         sonsuz = uygunluk.sonsuz_ortam(self.spec or {})
         self.keff_baslik.setText("k∞" if sonsuz else "k-eff")
         durum, ayrinti = kosucu.keff_yorumu(s["keff"][0], s["keff"][1],
                                             kin.get("beta_eff"), sonsuz=sonsuz)
-        self.durum_etiket.setText("%s\n%s" % (durum, ayrinti))
         renk = ("basari" if durum.startswith("Kritik (")
                 else ("hata" if "üstü" in durum else "vurgu"))
-        self.durum_etiket.setStyleSheet("color: %s; font-weight: bold;" % tema.renk(renk))
-        ozet = ["çevrim   = %d (%d pasif), %d parçacık/çevrim"
-                % (s["cevrim"], s["pasif"], s["parcacik"])]
-        ozet.append(self._kaynak_satiri(s))
-        if kin:
-            ozet.append("β_eff    = %.1f ± %.1f pcm   (reaktivite birimi: 1 $ = β_eff)"
-                        % (kin["beta_eff"] * 1e5, kin["beta_eff_sapma"] * 1e5))
-            ozet.append("Λ        = %-22s (nötron üretim zamanı)"
-                        % kosucu.lambda_metni(kin["lambda"], kin["lambda_sapma"]))
-        return ozet
-
-    def _kaynak_satiri(self, s):
-        """Kaynak yakinsamasi degerlendirmesi (Shannon entropisi)."""
-        if s.get("entropi"):
-            yakinsadi, mesaj = kosucu.entropi_yakinsama(s["entropi"], s["pasif"])
-            isaret = {True: "[tamam]", False: "[uyarı]", None: "[  ?  ]"}[yakinsadi]
-            if yakinsadi is False:
-                self.durum.emit(_("Dikkat: kaynak yakınsamamış olabilir — "
-                                  "pasif çevrim sayısını artırın"), False)
-            return "kaynak   = %s %s" % (isaret, mesaj)
-        if s.get("entropi_hata"):
-            return "kaynak   = [  ?  ] " + _("Shannon entropisi okunamadı: %s") \
-                % s["entropi_hata"]
-        return ("kaynak   = [  ?  ] Shannon entropisi kapalı — "
-                "kaynak yakınsaması doğrulanamıyor")
-
-    @staticmethod
-    def _guc_ozeti(s):
-        """Guc dagilimi ozet satirlari (tepe faktorleri, korunum)."""
-        g = s.get("guc") or {}
-        gf = g.get("faktorler")
-        if not gf:
-            return (["güç dağılımı okunamadı: %s" % s["guc_hata"]]
-                    if s.get("guc_hata") else [])
-        zayif = (gf.get("yanlilik_orani") or 0.0) > 0.3
-        ozet = ["F_ΔH     = %.4f   (en yüksek çubuk gücü / ortalama)%s"
-                % (gf["F_dH"], "\n           ⚠ istatistik zayıf: bu değer yukarı "
-                   "yanlı, güvenilir F_ΔH için Normal ya da Hassas hassasiyetle "
-                   "koşun" if zayif else "")]
-        if gf["F_q"]:
-            ozet.append("F_q      = %.4f   (en yüksek yerel güç yoğunluğu / ortalama)"
-                        % gf["F_q"])
-        else:
-            ozet.append("F_q      = tanımsız (model 2B)")
-        ozet.append("en sıcak çubuk: %s%s"
-                    % (_guc.konum_metni(gf["sicak_cubuk"], gf.get("kafes_turu"),
-                                        gf.get("kafes_turleri")),
-                       (", dilim %d" % (gf["sicak_dilim"][1] + 1))
-                       if gf["sicak_dilim"] else ""))
-        # korunum: tamam / bozuk / denetlenemedi (korunum_hata) / not
-        return ozet + list(kosucu.korunum_satirlari(g))
-
-    def _tally_metinleri(self, s, sabit):
-        k_tanim = ((self.spec or {}).get("ayarlar") or {}).get("kaynak") or {}
-        tally = []
-        for ad, df in s["tallyler"].items():
-            tally.append(kosucu.tally_metni(ad, df, s.get("malzeme_adlari"), sabit,
-                                            float(k_tanim.get("kuvvet") or 1.0)))
-            tally.append("")
-        return tally
+        self._durum_yaz("%s\n%s" % (durum, ayrinti), renk)
+        satirlar, yakinsadi = ozet.ozdeger_ozeti(s)
+        if yakinsadi is False:
+            self.durum.emit(_("Dikkat: kaynak yakınsamamış olabilir — "
+                              "pasif çevrim sayısını artırın"), False)
+        return satirlar

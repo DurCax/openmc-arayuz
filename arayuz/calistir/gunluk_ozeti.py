@@ -33,7 +33,7 @@ def _son_sayi(desen, metin):
         return None
     try:
         return float(eslesmeler[-1])
-    except ValueError:
+    except ValueError:  # bozuk sayi = deger yok (desen "1e" gibi yarim eslesebilir)
         return None
 
 

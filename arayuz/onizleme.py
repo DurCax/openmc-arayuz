@@ -64,8 +64,11 @@ from PySide6 import QtCore, QtWidgets
 import openmc
 
 from cekirdek import onbellek, sema
+from cekirdek.gunluk import kaydedici
 from arayuz import tema
 from arayuz.ortak import GelismisBolum
+
+_log = kaydedici(__name__)
 
 # Cozunurluk secenekleri -- maliyet baslatmada oldugu icin yuksek varsayilan ucuz.
 # ("Hizli" adi "Hizli mod" ile karisiyordu: dusuk cozunurluk "Dusuk" oldu.)
@@ -111,7 +114,8 @@ class _LibYoneticisi:
             try:
                 self.model.finalize_lib()
             except Exception:
-                pass
+                # Kapanista: kutuphane zaten kapanmis olabilir; uygulama surer.
+                _log.warning("OpenMC kütüphanesi kapatılamadı", exc_info=True)
         self.model = None
         self.anahtar = None
         if self.dizin:

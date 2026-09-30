@@ -18,8 +18,12 @@ from arayuz import bilesenler as b
 from arayuz.calistir import gunluk_ozeti
 from arayuz.tasarim import tokenlar
 from arayuz.tasarim.ikon import ikon_bagla
-from cekirdek import kosucu
+from arayuz.ayar.sabitler import belirsizlik_pcm
+from cekirdek import kosucu, uygunluk
 from cekirdek.ceviri import _
+from cekirdek.gunluk import kaydedici
+
+_log = kaydedici(__name__)
 
 A = tokenlar.ARALIK
 BOS = "—"
@@ -58,7 +62,8 @@ class IstatistikKarti(b.Kart):
         self.setAccessibleName(etiket)
 
     def yaz(self, deger=BOS, alt="", rozet=None):
-        """rozet: (metin, tur) ya da None (gizlenir)."""
+        """rozet: (metin, tur) ya da None (gizlenir). Ipucu temizlenir."""
+        self.setToolTip("")
         self.deger.setText(deger)
         self.alt.setText(alt or "")
         self.alt.setVisible(bool(alt))
@@ -140,11 +145,10 @@ class SonucPanosu(QtWidgets.QWidget):
         keff = sonuc.get("keff")
         sonsuz = False
         try:
-            from cekirdek import uygunluk
             sonsuz = bool(spec) and uygunluk.sonsuz_ortam(spec)
         except Exception:
-            from cekirdek.gunluk import kaydedici
-            kaydedici(__name__).warning("sonsuz ortam denetlenemedi", exc_info=True)
+            _log.warning("sonsuz ortam denetlenemedi; k-eff etiketi kullanılıyor",
+                         exc_info=True)
         self.k.etiket_ayarla("k∞" if sonsuz else "k-eff")
         if not keff:
             self.k.yaz(BOS, _("Sabit kaynak — k-eff tanımsız; sonuç tally'lerdir."))
@@ -162,7 +166,6 @@ class SonucPanosu(QtWidgets.QWidget):
         a = (spec or {}).get("ayarlar") or {}
         if (a.get("mod") or "eigenvalue") != "eigenvalue":
             return None
-        from arayuz.ayar.sabitler import belirsizlik_pcm
         return belirsizlik_pcm(int(a.get("parcacik") or 0), int(a.get("cevrim") or 0),
                                int(a.get("pasif") or 0))
 
@@ -176,7 +179,10 @@ class SonucPanosu(QtWidgets.QWidget):
         yakinsadi, mesaj = kosucu.entropi_yakinsama(entropi, sonuc.get("pasif") or 0)
         rozet = {True: (_("Yakınsadı"), "basari"), False: (_("Yakınsamadı"), "uyari"),
                  None: (_("Belirsiz"), "notr")}[yakinsadi]
-        self.entropi.yaz("%.3f" % entropi[-1], mesaj, rozet)
+        # Uzun degerlendirme metni ipucunda; kartta kisa ozet (maket).
+        self.entropi.yaz("%.3f" % entropi[-1],
+                         _("%d çevrimin sonuncusu") % len(entropi), rozet)
+        self.entropi.setToolTip(mesaj)
 
     def _zaman_yaz(self, sonuc, spec, zaman):
         cevrim = int(sonuc.get("cevrim") or 0)
