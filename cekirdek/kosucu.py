@@ -35,6 +35,7 @@ from cekirdek import sema, kurucu, dogrula
 from cekirdek import kaynak as _kaynak
 from cekirdek.ceviri import _
 from cekirdek.gunluk import kaydedici
+from cekirdek.uygunluk_denetimi import ayristir as _ayristir
 
 _log = kaydedici(__name__)
 
@@ -215,7 +216,9 @@ def dizin_hazirla(dizin, temizle=True):
     """Kosu dizinini olusturur; temizle=True ise eski ciktilari siler."""
     if temizle and os.path.isdir(dizin):
         for ad in os.listdir(dizin):
-            if (ad.startswith("statepoint") or ad in ("summary.h5", "tallies.out",
+            # particle_*.h5: kayip parcacik restart dosyasi; eskisi kalirsa
+            # yeni kosuya kayip parcacik (K3) diye yanlis alarm verirdi.
+            if (ad.startswith(("statepoint", "particle_")) or ad in ("summary.h5", "tallies.out",
                                                       "model.xml", "kosu.log",
                                                       "spec.json")):
                 try:
@@ -260,7 +263,8 @@ def calistir(spec, dizin, geri_cagir=None, is_parcacigi=None, temizle=True,
     veri_kontrolu : kapiya iletilir (nukleer veri denetimi).
     DONER sozluk:
        {"basarili":bool, "cikis_kodu":int, "statepoint":yol|None,
-        "sure":float, "log":yol, "cevrimler":[...]}
+        "sure":float, "log":yol, "cevrimler":[...],
+        "cikti": uygunluk_denetimi.ayristir.CiktiOzeti (kayip parcacik, uyarilar)}
     """
     if dogrulama:
         dogrula.kapi(spec, veri_kontrolu=veri_kontrolu)
@@ -302,6 +306,7 @@ def calistir(spec, dizin, geri_cagir=None, is_parcacigi=None, temizle=True,
         "sure": sure,
         "log": log_yolu,
         "cevrimler": cevrimler,
+        "cikti": _ayristir.cikti_ozeti(dizin),
     }
 
 
@@ -689,6 +694,8 @@ def _terminal(argv):
         print("      log: %s" % sonuc["log"])
         return 1
     print("      tamamlandı: %.1f s" % sonuc["sure"])
+    for satir in _ayristir.ozet_satirlari(sonuc.get("cikti")):   # M5: sessiz kalmasin
+        print("      %s" % satir)
 
     # --- 3. sonuc ---
     print("\n[3/3] Sonuçlar")
