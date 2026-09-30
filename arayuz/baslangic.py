@@ -22,23 +22,32 @@
    Kuresel duzenek yeni modelde sunulmaz (kullanici karari): zirhlama karti
    yalnizca ornekten baslar.
 
- Kartlarin altinda butun ornekler (aciklamalarinin ilk cumlesiyle) ve son
- kullanilan dosyalar listelenir. Klavye: Tab ile dugmeler arasinda gezinilir,
- Enter secer; listelerde ok tuslari + Enter. Esc acik modele doner.
+ GALERI (Dalga 2)
+   Kartlarin altinda once SON KULLANILANLAR seridi, sonra filtrelenebilir
+   ornek galerisi gelir: kategori ve seviye segment secicileri + arama kutusu.
+   Basliklar, kategori ve seviye cekirdek/ornek_bilgi.py'den (ornek JSON'unun
+   meta alanlari) okunur; burada ad listesi TUTULMAZ -- Ajan 9 yeni ornek
+   ekleyince galeri kendiliginden buyur. Kucuk resim modelin TURUNDEN cizilir
+   (Monte Carlo ya da openmc.plot YOK). Esc acik modele doner.
 ================================================================================
 """
 
 import copy
-import glob
-import math
 import os
+import time
 
-from PySide6 import QtCore, QtGui, QtWidgets
+from PySide6 import QtCore, QtWidgets
 
-from cekirdek import kaynak
-from cekirdek import sema
+from arayuz import bilesenler as b
+from arayuz.tasarim import tokenlar
+from arayuz.tasarim.ikon import ikon_bagla
+from arayuz.tasarim.maket_cizim import KucukResim
+
+from cekirdek import kaynak, ornek_bilgi, sema
 from cekirdek.ceviri import _
+from cekirdek.gunluk import kaydedici
 
+_log = kaydedici(__name__)
 KOK = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ORNEKLER = os.path.join(KOK, "ornekler")
 
@@ -46,46 +55,29 @@ ORNEKLER = os.path.join(KOK, "ornekler")
 KARTLAR = [
     {"anahtar": "pin", "baslik": "Yakıt çubuğu (pin hücre)",
      "aciklama": "Tek yakıt çubuğu ve çevresindeki soğutucu; en hızlı başlangıç.",
-     "ornek": "pwr_pinhucre.json", "bos": True, "sekme": "parcalar", "simge": "pin"},
+     "ornek": "pwr_pinhucre.json", "bos": True, "sekme": "parcalar", "ikon": "circle-dot"},
     {"anahtar": "demet_kare", "baslik": "Yakıt demeti — kare",
      "aciklama": "Kare ızgarada yakıt çubukları ve kılavuz borular (PWR tipi).",
-     "ornek": "pwr_17x17.json", "bos": True, "sekme": "demet", "simge": "kare"},
+     "ornek": "pwr_17x17.json", "bos": True, "sekme": "demet", "ikon": "grid-3x3"},
     {"anahtar": "demet_altigen", "baslik": "Yakıt demeti — altıgen",
      "aciklama": "Altıgen ızgarada çubuk demeti (VVER, hızlı reaktör).",
-     "ornek": "sfr_altigen.json", "bos": True, "sekme": "demet", "simge": "altigen"},
+     "ornek": "sfr_altigen.json", "bos": True, "sekme": "demet", "ikon": "hexagon"},
     {"anahtar": "tam_kor", "baslik": "Tam kor (kare harita)",
      "aciklama": "Demetlerden oluşan kor haritası, çevresinde su yansıtıcı.",
-     "ornek": None, "bos": True, "sekme": "kor", "simge": "kor"},
+     "ornek": None, "bos": True, "sekme": "kor", "ikon": "layers"},
     {"anahtar": "tam_kor_altigen", "baslik": _("Tam kor — altıgen"),
      "aciklama": _("Kılıflı altıgen demetlerden kor haritası (SFR / VVER tipi)."),
-     "ornek": None, "bos": True, "sekme": "kor", "simge": "altigen"},
+     "ornek": None, "bos": True, "sekme": "kor", "ikon": "hexagon"},
     {"anahtar": "plaka", "baslik": "MTR plaka elemanı",
      "aciklama": "Araştırma reaktörünün düz plakalı yakıt elemanı.",
-     "ornek": "mtr_plaka.json", "bos": True, "sekme": "parcalar", "simge": "plaka"},
+     "ornek": "mtr_plaka.json", "bos": True, "sekme": "parcalar", "ikon": "list"},
     {"anahtar": "tamburlu", "baslik": "Tamburlu kompakt kor",
      "aciklama": "Silindirik kor, yansıtıcı kuşak ve dönen kontrol tamburları.",
-     "ornek": "tamburlu_kor.json", "bos": True, "sekme": "kor", "simge": "tambur"},
+     "ornek": "tamburlu_kor.json", "bos": True, "sekme": "kor", "ikon": "refresh-cw"},
     {"anahtar": "zirh", "baslik": "Zırhlama (sabit kaynak)",
      "aciklama": "Kaynaktan çıkan nötronların zırh katmanlarında zayıflaması.",
-     "ornek": "zirh_kure.json", "bos": False, "sekme": "kor", "simge": "zirh"},
+     "ornek": "zirh_kure.json", "bos": False, "sekme": "kor", "ikon": "shield"},
 ]
-
-# Ornek listesinde gorunen adlar; listede olmayan yeni bir ornek dosyasi
-# kendi "ad" alaniyla yine listelenir.
-ORNEK_BASLIKLARI = {
-    "pwr_pinhucre.json": "PWR yakıt hücresi (pin)",
-    "pwr_17x17.json": "PWR 17×17 yakıt demeti",
-    "pwr_3b.json": "PWR 17×17 demet — 3B",
-    "pwr_eksenel.json": "PWR demeti — eksenel katmanlı",
-    "pwr_kontrol.json": "PWR demeti — kontrol çubuklu",
-    "pwr_tukenme.json": "PWR pin hücre — tükenme",
-    "sfr_altigen.json": "SFR altıgen demet",
-    "mtr_plaka.json": "MTR plaka yakıt elemanı",
-    "tamburlu_kor.json": "Tamburlu kompakt kor",
-    "godiva_kriter.json": "Godiva kritik küresi",
-    "zirh_kure.json": "Zırh küresi (sabit kaynak)",
-}
-
 
 def _kucuk_bas(metin):
     """Cumle icinde kullanmak icin ilk harfi kucultur; kisaltmaya dokunmaz
@@ -111,24 +103,6 @@ def ilk_cumle(metin):
             # "k-inf = 1.3570" gibi sayilari bolme: noktadan sonra bosluk sart.
             return duz[:i + 1]
     return duz
-
-
-def ornek_listesi():
-    """[(yol, baslik, ilk_cumle)] -- ornekler/ altindaki butun spec dosyalari."""
-    sonuc = []
-    for yol in sorted(glob.glob(os.path.join(ORNEKLER, "*.json"))):
-        ad = os.path.basename(yol)
-        try:
-            spec = sema.yukle(yol)
-        except Exception:
-            continue
-        baslik = ORNEK_BASLIKLARI.get(ad) or spec.get("ad") or ad
-        sonuc.append((yol, baslik, ilk_cumle(spec.get("aciklama", ""))))
-    # Bilinen ornekler tanidik sirayla (kolaydan zora), digerleri sonda.
-    sira = list(ORNEK_BASLIKLARI)
-    sonuc.sort(key=lambda x: (sira.index(os.path.basename(x[0]))
-                              if os.path.basename(x[0]) in sira else len(sira), x[0]))
-    return sonuc
 
 
 # ============================================================================
@@ -316,194 +290,191 @@ def _altigen_tam_kor():
     return spec
 
 
-# ============================================================================
-# kart simgeleri (QPainter; tema vurgu rengiyle)
-# ============================================================================
-
-def _kart_simgesi(tur, renk, boyut=46):
-    pix = QtGui.QPixmap(boyut, boyut)
-    pix.fill(QtCore.Qt.transparent)
-    p = QtGui.QPainter(pix)
-    p.setRenderHint(QtGui.QPainter.Antialiasing)
-    r = QtGui.QColor(renk)
-    acik = QtGui.QColor(r)
-    acik.setAlpha(70)
-    kalem = QtGui.QPen(r, 1.6)
-    p.setPen(kalem)
-    m = boyut / 2.0
-
-    def daire(x, y, yc, dolu=True):
-        p.setBrush(r if dolu else acik)
-        p.drawEllipse(QtCore.QPointF(x, y), yc, yc)
-
-    if tur == "pin":
-        p.setBrush(acik)
-        p.drawRect(QtCore.QRectF(4, 4, boyut - 8, boyut - 8))
-        daire(m, m, boyut * 0.28, False)
-        daire(m, m, boyut * 0.19)
-    elif tur == "kare":
-        s = (boyut - 8) / 4.0
-        for i in range(4):
-            for j in range(4):
-                daire(4 + s * (i + 0.5), 4 + s * (j + 0.5), s * 0.36,
-                      not ((i, j) in ((1, 1), (2, 2))))
-    elif tur == "altigen":
-        yc = boyut * 0.47
-        p.setBrush(acik)
-        p.drawPolygon(QtGui.QPolygonF([
-            QtCore.QPointF(m + yc * math.cos(math.radians(60 * k)),
-                           m + yc * math.sin(math.radians(60 * k))) for k in range(6)]))
-        daire(m, m, boyut * 0.09)
-        for k in range(6):
-            a = math.radians(60 * k + 30)
-            daire(m + boyut * 0.24 * math.cos(a), m + boyut * 0.24 * math.sin(a), boyut * 0.09)
-    elif tur == "kor":
-        s = (boyut - 6) / 3.0
-        for i in range(3):
-            for j in range(3):
-                p.setBrush(r if (i, j) != (1, 1) else acik)
-                p.drawRect(QtCore.QRectF(3 + s * i + 1.5, 3 + s * j + 1.5, s - 3, s - 3))
-    elif tur == "plaka":
-        p.setBrush(acik)
-        p.drawRect(QtCore.QRectF(5, 4, boyut - 10, boyut - 8))
-        p.setBrush(r)
-        for k in range(5):
-            y = 9 + k * (boyut - 18) / 4.0
-            p.drawRect(QtCore.QRectF(9, y - 1.5, boyut - 18, 3))
-    elif tur == "tambur":
-        daire(m, m, boyut * 0.47, False)
-        daire(m, m, boyut * 0.24)
-        for k in range(6):
-            a = math.radians(60 * k)
-            daire(m + boyut * 0.36 * math.cos(a), m + boyut * 0.36 * math.sin(a), boyut * 0.08)
-    else:   # zirh
-        for k, yc in enumerate((0.47, 0.34, 0.21)):
-            daire(m, m, boyut * yc, k == 1)
-        p.setBrush(r)
-        p.drawEllipse(QtCore.QPointF(m, m), boyut * 0.06, boyut * 0.06)
-    p.end()
-    return pix
 
 
 # ============================================================================
-# bilesenler
+# galeri yardimcilari
 # ============================================================================
 
-class _Dugme(QtWidgets.QPushButton):
-    """Enter/Return ile de basilan dugme (diyalog disinda Qt bunu yapmaz)."""
+A = tokenlar.ARALIK
+# Ornegin kor/demet turunden kucuk resim motifi (maket_cizim.KucukResim).
+_MOTIFLER = {"kuresel": "kure", "tek_cubuk": "pin", "tek_plaka": "plaka",
+             "kare_kafes": "kor", "altigen_kafes": "altigen", "tamburlu": "kor"}
+_TUM = "hepsi"
+_SUTUN_GENISLIGI = 260          # kart izgarasinda sutun basina en az genislik (px)
+_EN_COK_SUTUN = 4
+_SON_DOSYA_SAYISI = 3
+_ARAMA_EN_AZ = 140             # galeri arama kutusu genislik araligi (px)
+_ARAMA_EN_COK = 220
 
-    def keyPressEvent(self, olay):
-        if olay.key() in (QtCore.Qt.Key_Return, QtCore.Qt.Key_Enter):
-            self.click()
-            return
-        super().keyPressEvent(olay)
+
+def ornek_motifi(bilgi):
+    """OrnekBilgisi -> KucukResim motifi (tur bilinmiyorsa 'pin')."""
+    if bilgi.kategori == "zirh":
+        return "zirh"
+    if bilgi.kor_turu == "tek_demet":
+        return "altigen" if bilgi.demet_turu == "altigen" else "kare"
+    return _MOTIFLER.get(bilgi.kor_turu, "pin")
 
 
-class _TikListe(QtWidgets.QTreeWidget):
-    """
-    Tek tik ya da Enter ile acilan liste. itemActivated kullanilmaz: bazi
-    platformlarda cift tik hem tiklama hem etkinlestirme uretir ve ayni dosya
-    iki kez acilirdi.
-    """
+def _kisa_dizin(yol):
+    """Dizin yolu, ev dizini "~" ile kisaltilmis."""
+    dizin = os.path.dirname(yol)
+    ev = os.path.expanduser("~")
+    return "~" + dizin[len(ev):] if dizin == ev or dizin.startswith(ev + os.sep) else dizin
 
-    secildi = QtCore.Signal(object)
 
-    def __init__(self, sutun=2, parent=None):
-        super().__init__(parent)
-        self.setObjectName("tikListe")
-        self.setColumnCount(sutun)
-        self.setHeaderHidden(True)
-        self.setRootIsDecorated(False)
-        self.setUniformRowHeights(True)
-        self.setMouseTracking(True)
-        self.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
-        self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-        self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-        self.setTextElideMode(QtCore.Qt.ElideRight)
-        self.viewport().setCursor(QtCore.Qt.PointingHandCursor)
+def _dosya_zamani(yol):
+    """Dosyanin son degisim zamani, okunur metin; okunamazsa bos."""
+    try:
+        return zaman_metni(os.path.getmtime(yol))
+    except OSError:
+        _log.warning("dosya zamani okunamadi: %s", yol, exc_info=True)
+        return ""
 
-    def mouseReleaseEvent(self, olay):
+
+def zaman_metni(saniye, simdi=None):
+    """Dosya zaman damgasindan okunur metin ("2 saat önce")."""
+    fark = max(0.0, (time.time() if simdi is None else simdi) - saniye)
+    dakika = fark / 60.0
+    if dakika < 1:
+        return _("az önce")
+    if dakika < 60:
+        return _("{n} dakika önce").format(n=int(dakika))
+    if dakika < 60 * 24:
+        return _("{n} saat önce").format(n=int(dakika // 60))
+    gun = int(dakika // (60 * 24))
+    return _("dün") if gun == 1 else _("{n} gün önce").format(n=gun)
+
+
+def ornek_eslesiyor(bilgi, metin="", kategori=_TUM, seviye=_TUM):
+    """Galeri suzgeci: arama metni basligi/aciklamayi, secimler meta alanlarini tutar."""
+    if kategori != _TUM and bilgi.kategori != kategori:
+        return False
+    if seviye != _TUM and bilgi.seviye != seviye:
+        return False
+    ara = (metin or "").strip().lower()
+    if not ara:
+        return True
+    havuz = " ".join(x for x in (bilgi.baslik, bilgi.aciklama, bilgi.ad, bilgi.dosya) if x)
+    return ara in havuz.lower()
+
+
+class _TiklanirKart(b.Kart):
+    """Tumu tiklanabilir kart (galeri ogesi); Enter/Space de secer."""
+
+    secildi = QtCore.Signal()
+
+    def __init__(self, parent=None, dolgu="m"):
+        super().__init__(parent=parent, dolgu=dolgu)
+        self.setProperty("tiklanir", True)
+        self.setCursor(QtCore.Qt.PointingHandCursor)
+        self.setFocusPolicy(QtCore.Qt.StrongFocus)
+
+    def mouseReleaseEvent(self, olay):                   # noqa: N802 (Qt adi)
+        if olay.button() == QtCore.Qt.LeftButton and self.rect().contains(
+                olay.position().toPoint()):
+            self.secildi.emit()
         super().mouseReleaseEvent(olay)
-        if olay.button() == QtCore.Qt.LeftButton:
-            oge = self.itemAt(olay.position().toPoint())
-            if oge is not None:
-                self.secildi.emit(oge)
 
-    def keyPressEvent(self, olay):
-        if olay.key() in (QtCore.Qt.Key_Return, QtCore.Qt.Key_Enter):
-            if self.currentItem() is not None:
-                self.secildi.emit(self.currentItem())
+    def keyPressEvent(self, olay):                       # noqa: N802 (Qt adi)
+        if olay.key() in (QtCore.Qt.Key_Return, QtCore.Qt.Key_Enter, QtCore.Qt.Key_Space):
+            self.secildi.emit()
             return
         super().keyPressEvent(olay)
 
-    def yuksekligi_sabitle(self):
-        """Ic kaydirma olmasin: sayfa zaten kayar, tum satirlar gorunsun."""
-        n = max(self.topLevelItemCount(), 1)
-        satir = self.sizeHintForRow(0) if self.topLevelItemCount() else 26
-        self.setFixedHeight(n * max(satir, 16) + 2 * self.frameWidth() + 4)
 
+class _TurKarti(b.Kart):
+    """Model turu karti: ikon, baslik, tek cumle aciklama, iki eylem."""
 
-class _Kart(QtWidgets.QFrame):
     def __init__(self, bilgi, parent=None):
-        super().__init__(parent)
+        super().__init__(parent=parent, dolgu="l")
         self.bilgi = bilgi
-        self.setObjectName("kart")
-        self.setSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
-        self.simge = QtWidgets.QLabel()
-        self.simge.setFixedSize(46, 46)
-        self.baslik = QtWidgets.QLabel(bilgi["baslik"])
-        f = self.baslik.font()
-        f.setPointSizeF(f.pointSizeF() + 1.5)
-        f.setBold(True)
-        self.baslik.setFont(f)
+        self.setProperty("tiklanir", True)
+        ust = QtWidgets.QHBoxLayout()
+        ust.setSpacing(A["m"])
+        simge = QtWidgets.QToolButton()
+        simge.setFocusPolicy(QtCore.Qt.NoFocus)
+        simge.setAttribute(QtCore.Qt.WA_TransparentForMouseEvents)
+        simge.setProperty("tur", "ikon")
+        ikon_bagla(simge, bilgi["ikon"], "vurgu", tokenlar.BOYUT["ikon_buyuk"])
+        ust.addWidget(simge, 0, QtCore.Qt.AlignTop)
+        metin = QtWidgets.QVBoxLayout()
+        metin.setSpacing(2)
+        self.baslik = QtWidgets.QLabel(_(bilgi["baslik"]))
+        self.baslik.setObjectName("altBaslik")
         self.baslik.setWordWrap(True)
-        self.aciklama = QtWidgets.QLabel(bilgi["aciklama"])
-        self.aciklama.setObjectName("kartAciklama")
+        metin.addWidget(self.baslik)
+        self.aciklama = QtWidgets.QLabel(_(bilgi["aciklama"]))
+        self.aciklama.setObjectName("kucuk")
         self.aciklama.setWordWrap(True)
-        self.aciklama.setMinimumHeight(self.aciklama.fontMetrics().lineSpacing() * 2)
-        self.aciklama.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
+        metin.addWidget(self.aciklama)
+        ust.addLayout(metin, 1)
+        self.govde.addLayout(ust)
+        self.govde.addStretch(1)
+        self._eylemleri_kur()
+        self.setAccessibleName(_(bilgi["baslik"]))
 
-        self.d_bos = _Dugme("Boş başla")
-        self.d_bos.setObjectName("birincil")
-        self.d_ornek = _Dugme("Örnekten başla")
+    def _eylemleri_kur(self):
+        bilgi = self.bilgi
+        self.d_bos = b.ikincil_dugme(_("Boş başla"))
+        self.d_ornek = b.duz_dugme(_("Örnekten"))
+        # Diyalog disinda QPushButton Enter/Return'e tepki vermez; autoDefault
+        # ile klavyeyle kart secilebilir (odak Tab ile dugmeler arasinda gezer).
         for d in (self.d_bos, self.d_ornek):
-            d.setCursor(QtCore.Qt.PointingHandCursor)
+            d.setAutoDefault(True)
         if bilgi["bos"]:
-            self.d_bos.setToolTip("Çalışır durumda, sade bir %s modeli kurar "
-                                  "(malzemeler, parçalar ve kor hazır)."
-                                  % _kucuk_bas(bilgi["baslik"].split(" (")[0]))
+            self.d_bos.setToolTip(
+                _("Çalışır durumda, sade bir {ad} modeli kurar (malzemeler, "
+                  "parçalar ve kor hazır).").format(
+                      ad=_kucuk_bas(_(bilgi["baslik"]).split(" (")[0])))
         else:
             self.d_bos.setVisible(False)
         if bilgi["ornek"]:
-            self.d_ornek.setToolTip("Hazır örneğin bir kopyasını açar: %s "
-                                    "(örnek dosyası değişmez)." % bilgi["ornek"])
+            self.d_ornek.setToolTip(
+                _("Hazır örneğin bir kopyasını açar: {dosya} "
+                  "(örnek dosyası değişmez).").format(dosya=bilgi["ornek"]))
         else:
             self.d_ornek.setVisible(False)
-        if not bilgi["bos"]:
-            # Tek eylem kaldiysa o birincil olur.
-            self.d_ornek.setObjectName("birincil")
+        eylem = QtWidgets.QHBoxLayout()
+        eylem.setSpacing(A["s"])
+        eylem.addWidget(self.d_bos)
+        eylem.addWidget(self.d_ornek)
+        eylem.addStretch(1)
+        self.govde.addLayout(eylem)
 
+
+class _OrnekKarti(_TiklanirKart):
+    """Galeri ogesi: kucuk resim, baslik, kategori rozeti, seviye, aciklama."""
+
+    def __init__(self, bilgi, parent=None):
+        super().__init__(parent=parent, dolgu="m")
+        self.bilgi = bilgi
+        self.ekle(KucukResim(ornek_motifi(bilgi)))
         ust = QtWidgets.QHBoxLayout()
-        ust.setSpacing(12)
-        ust.addWidget(self.simge, 0, QtCore.Qt.AlignTop)
-        metin = QtWidgets.QVBoxLayout()
-        metin.setSpacing(3)
-        metin.addWidget(self.baslik)
-        metin.addWidget(self.aciklama)
-        ust.addLayout(metin, 1)
-        alt = QtWidgets.QHBoxLayout()
-        alt.addWidget(self.d_bos)
-        alt.addWidget(self.d_ornek)
-        alt.addStretch(1)
-        d = QtWidgets.QVBoxLayout(self)
-        d.setContentsMargins(14, 12, 14, 12)
-        d.setSpacing(10)
-        d.addLayout(ust)
-        d.addLayout(alt)
+        ust.setSpacing(A["s"])
+        baslik = QtWidgets.QLabel(bilgi.baslik)
+        baslik.setObjectName("govdeVurgulu")
+        baslik.setWordWrap(True)
+        ust.addWidget(baslik, 1)
+        if bilgi.kategori:
+            ust.addWidget(b.Rozet(_(ornek_bilgi.KATEGORI_ADLARI[bilgi.kategori]), "notr"))
+        self.govde.addLayout(ust)
+        alt = ilk_cumle(bilgi.aciklama)
+        if bilgi.seviye:
+            alt = "%s · %s" % (_(ornek_bilgi.SEVIYE_ADLARI[bilgi.seviye]), alt) if alt \
+                else _(ornek_bilgi.SEVIYE_ADLARI[bilgi.seviye])
+        a = QtWidgets.QLabel(alt)
+        a.setObjectName("kucuk")
+        a.setWordWrap(True)
+        self.ekle(a)
+        self.setToolTip(_("{dosya} — kopya olarak açılır").format(dosya=bilgi.dosya))
+        self.setAccessibleName(bilgi.baslik)
 
-    def simgeyi_ciz(self, renk):
-        self.simge.setPixmap(_kart_simgesi(self.bilgi["simge"], renk))
 
+# ============================================================================
+# baslangic ekrani
+# ============================================================================
 
 class BaslangicEkrani(QtWidgets.QWidget):
     """
@@ -517,112 +488,136 @@ class BaslangicEkrani(QtWidgets.QWidget):
     ac_istendi = QtCore.Signal()            # "Baska bir dosya ac..."
     geri_istendi = QtCore.Signal()          # acik modele don
 
-    def __init__(self, parent=None):
+    def __init__(self, bilgiler=None, parent=None):
         super().__init__(parent)
         self._kartlar = []
+        self._ornekler = []
         self._sutun = 0
+        self.bilgiler = tuple(ornek_bilgi.ornek_listesi() if bilgiler is None else bilgiler)
+        icerik = QtWidgets.QWidget()
+        icerik.setObjectName("sayfa")
+        icerik.setMaximumWidth(1320)
+        d = QtWidgets.QVBoxLayout(icerik)
+        d.setContentsMargins(A["xxl"], A["xl"], A["xxl"], A["xl"])
+        d.setSpacing(A["m"])
+        self._baslik_kur(d)
+        self._turleri_kur(d)
+        self._son_kullanilanlari_kur(d)
+        self._galeriyi_kur(d)
+        d.addStretch(1)
+        self._kaydirmaya_koy(icerik)
+        self._yerlestir(4)
+        self.son_dosyalari_ayarla([])
+        self.setFocusProxy(self._kartlar[0].d_bos)
 
-        self.baslik = QtWidgets.QLabel("Ne modellemek istiyorsunuz?")
-        self.baslik.setObjectName("ekranBaslik")
-        self.alt_baslik = QtWidgets.QLabel(
-            "Bir model türü seçin. <b>Boş başla</b> çalışır durumda sade bir model "
-            "kurar; <b>Örnekten başla</b> hazır bir örneğin kopyasını açar.")
-        self.alt_baslik.setObjectName("soluk")
-        self.alt_baslik.setWordWrap(True)
-        self.d_geri = _Dugme("←  Açık modele dön")
-        self.d_geri.setToolTip("Başlangıç ekranını kapatıp üzerinde çalıştığınız "
-                               "modele döner (Esc).")
+    # ------------------------------------------------------------------ kurucular
+    def _baslik_kur(self, d):
+        ust = QtWidgets.QHBoxLayout()
+        self.baslik = QtWidgets.QLabel(_("Ne modellemek istiyorsunuz?"))
+        self.baslik.setObjectName("baslikBuyuk")
+        ust.addWidget(self.baslik, 1)
+        self.d_geri = b.duz_dugme(_("Açık modele dön"), "chevron-left")
+        self.d_geri.setToolTip(_("Başlangıç ekranını kapatıp üzerinde çalıştığınız "
+                                 "modele döner (Esc)."))
         self.d_geri.clicked.connect(self.geri_istendi)
         self.d_geri.setVisible(False)
-
-        ust = QtWidgets.QHBoxLayout()
-        ust.addWidget(self.baslik, 1)
         ust.addWidget(self.d_geri, 0, QtCore.Qt.AlignTop)
+        d.addLayout(ust)
+        alt = QtWidgets.QLabel(_("Bir model türüyle boş başlayın ya da hazır bir "
+                                 "örneğin kopyasını açın."))
+        alt.setObjectName("ikincil")
+        alt.setWordWrap(True)
+        d.addWidget(alt)
 
+    def _turleri_kur(self, d):
         self._izgara = QtWidgets.QGridLayout()
-        self._izgara.setSpacing(12)
+        self._izgara.setSpacing(A["m"])
         for bilgi in KARTLAR:
-            k = _Kart(bilgi)
-            k.d_bos.clicked.connect(lambda _c=False, a=bilgi["anahtar"]: self.bos_istendi.emit(a))
+            k = _TurKarti(bilgi)
+            k.d_bos.clicked.connect(
+                lambda _c=False, a=bilgi["anahtar"]: self.bos_istendi.emit(a))
             if bilgi["ornek"]:
                 yol = os.path.join(ORNEKLER, bilgi["ornek"])
                 k.d_ornek.clicked.connect(lambda _c=False, y=yol: self.ornek_istendi.emit(y))
             self._kartlar.append(k)
-
-        # ---------------- ornekler + son kullanilanlar ----------------
-        self.ornek_listesi = _TikListe(2)
-        for yol, baslik, cumle in ornek_listesi():
-            oge = QtWidgets.QTreeWidgetItem([baslik, cumle])
-            oge.setData(0, QtCore.Qt.UserRole, yol)
-            oge.setToolTip(0, "%s — kopya olarak açılır" % os.path.basename(yol))
-            oge.setToolTip(1, cumle)
-            f = oge.font(0)
-            f.setBold(True)
-            oge.setFont(0, f)
-            self.ornek_listesi.addTopLevelItem(oge)
-        self.ornek_listesi.header().setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeToContents)
-        self.ornek_listesi.header().setStretchLastSection(True)
-        self.ornek_listesi.secildi.connect(
-            lambda oge: self.ornek_istendi.emit(oge.data(0, QtCore.Qt.UserRole)))
-        self.ornek_listesi.yuksekligi_sabitle()
-
-        self.son_listesi = _TikListe(2)
-        self.son_listesi.header().setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeToContents)
-        self.son_listesi.header().setStretchLastSection(True)
-        self.son_listesi.secildi.connect(
-            lambda oge: self.dosya_istendi.emit(oge.data(0, QtCore.Qt.UserRole)))
-        self.son_bos = QtWidgets.QLabel("Henüz kaydedilmiş bir model yok.")
-        self.son_bos.setObjectName("soluk")
-        self.d_ac = _Dugme("Başka bir dosya aç…")
-        self.d_ac.setToolTip("Bilgisayarınızdaki bir model dosyasını (.json) açar (Ctrl+O).")
-        self.d_ac.clicked.connect(self.ac_istendi)
-
-        # Ic duzenler araligi ACIKCA verir: verilmezse ust duzenin 24 px'lik
-        # yatay araligini miras alip baslikla liste arasinda bosluk birakiyordu.
-        sol = QtWidgets.QVBoxLayout()
-        sol.setSpacing(6)
-        e = QtWidgets.QLabel("Örnekler")
-        e.setObjectName("bolumBaslik")
-        sol.addWidget(e)
-        sol.addWidget(self.ornek_listesi)
-        sol.addStretch(1)
-        sag = QtWidgets.QVBoxLayout()
-        sag.setSpacing(6)
-        e = QtWidgets.QLabel("Son kullanılanlar")
-        e.setObjectName("bolumBaslik")
-        sag.addWidget(e)
-        sag.addWidget(self.son_listesi)
-        sag.addWidget(self.son_bos)
-        sag.addWidget(self.d_ac, 0, QtCore.Qt.AlignLeft)
-        sag.addStretch(1)
-        alt = QtWidgets.QHBoxLayout()
-        alt.setSpacing(24)
-        alt.addLayout(sol, 3)
-        alt.addLayout(sag, 2)
-
-        # ---------------- ortalanmis icerik + kaydirma ----------------
-        icerik = QtWidgets.QWidget()
-        icerik.setMaximumWidth(1240)
-        d = QtWidgets.QVBoxLayout(icerik)
-        d.setContentsMargins(28, 22, 28, 22)
-        d.setSpacing(10)
-        d.addLayout(ust)
-        d.addWidget(self.alt_baslik)
-        d.addSpacing(8)
+        self.dosya_karti = self._dosya_karti()
+        self._kartlar.append(self.dosya_karti)
         d.addLayout(self._izgara)
-        d.addSpacing(18)
-        d.addLayout(alt)
-        d.addStretch(1)
 
+    def _dosya_karti(self):
+        k = _TurKarti({"anahtar": "dosya", "baslik": "Dosyadan aç",
+                       "aciklama": "Kaydedilmiş bir model (.json) ya da OpenMC XML klasörü.",
+                       "ornek": None, "bos": True, "sekme": None, "ikon": "folder-open"})
+        k.d_bos.setText(_("Aç…"))
+        k.d_bos.setToolTip(_("Bilgisayarınızdaki bir model dosyasını (.json) açar (Ctrl+O)."))
+        k.d_bos.clicked.connect(self.ac_istendi)
+        return k
+
+    def _son_kullanilanlari_kur(self, d):
+        self._son_serit = QtWidgets.QHBoxLayout()
+        self._son_serit.setSpacing(A["xl"])
+        self._son_basligi = b.BolumBasligi(_("Son kullanılanlar"))
+        self._son_serit.addWidget(self._son_basligi, 0, QtCore.Qt.AlignVCenter)
+        self.son_bos = QtWidgets.QLabel(_("Henüz kaydedilmiş bir model yok."))
+        self.son_bos.setObjectName("kucuk")
+        self._son_serit.addWidget(self.son_bos, 0, QtCore.Qt.AlignVCenter)
+        self._son_serit.addStretch(1)
+        d.addLayout(self._son_serit)
+
+    def _galeriyi_kur(self, d):
+        filtre = QtWidgets.QHBoxLayout()
+        filtre.setSpacing(A["s"])
+        self._galeri_basligi = b.BolumBasligi(_("Örnekler"), "")
+        filtre.addWidget(self._galeri_basligi, 1)
+        self.arama = QtWidgets.QLineEdit()
+        self.arama.setPlaceholderText(_("Örneklerde ara…"))
+        self.arama.setClearButtonEnabled(True)
+        # Arama kutusu daralabilir: suzgec satiri 1280 px'te tasmasin.
+        self.arama.setMinimumWidth(_ARAMA_EN_AZ)
+        self.arama.setMaximumWidth(_ARAMA_EN_COK)
+        self.arama.textChanged.connect(lambda *_a: self.filtrele())
+        filtre.addWidget(self.arama, 1, QtCore.Qt.AlignBottom)
+        # Seviye acilir kutu: ikinci bir segment satiri 1280 px'e sigmiyordu.
+        self.seviye = QtWidgets.QComboBox()
+        self.seviye.setAccessibleName(_("Seviye"))
+        self.seviye.setToolTip(_("Örnekleri zorluk seviyesine göre süzer."))
+        self.seviye.addItem(_("Her seviye"), _TUM)
+        for sev in ornek_bilgi.SEVIYELER:
+            if any(o.seviye == sev for o in self.bilgiler):
+                self.seviye.addItem(_(ornek_bilgi.SEVIYE_ADLARI[sev]), sev)
+        self.seviye.currentIndexChanged.connect(lambda *_a: self.filtrele())
+        filtre.addWidget(self.seviye, 0, QtCore.Qt.AlignBottom)
+        self.kategori = b.SegmentSecici(
+            [(_TUM, _("Tümü"))] + [(k, _(ornek_bilgi.KATEGORI_ADLARI[k]))
+                                   for k in ornek_bilgi.KATEGORILER
+                                   if any(o.kategori == k for o in self.bilgiler)], _TUM)
+        self.kategori.secildi.connect(lambda *_a: self.filtrele())
+        filtre.addWidget(self.kategori, 0, QtCore.Qt.AlignBottom)
+        d.addLayout(filtre)
+        self._galeri = QtWidgets.QGridLayout()
+        self._galeri.setSpacing(A["m"])
+        for bilgi in self.bilgiler:
+            k = _OrnekKarti(bilgi)
+            k.secildi.connect(lambda y=bilgi.yol: self.ornek_istendi.emit(y))
+            self._ornekler.append(k)
+        d.addLayout(self._galeri)
+        self.galeri_bos = b.BosDurum("search", _("Eşleşen örnek yok"),
+                                     _("Aramayı ya da kategori süzgecini değiştirin."))
+        self.galeri_bos.setVisible(False)
+        d.addWidget(self.galeri_bos)
+        self.filtrele()
+
+    def _kaydirmaya_koy(self, icerik):
         sarici = QtWidgets.QWidget()
+        sarici.setObjectName("sayfa")
         sd = QtWidgets.QHBoxLayout(sarici)
         sd.setContentsMargins(0, 0, 0, 0)
         sd.addStretch(1)
         sd.addWidget(icerik, 100)
         sd.addStretch(1)
         self._icerik = icerik
-
         self.kaydirma = QtWidgets.QScrollArea()
+        self.kaydirma.setObjectName("sayfa")
         self.kaydirma.setWidgetResizable(True)
         self.kaydirma.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.kaydirma.setWidget(sarici)
@@ -630,12 +625,7 @@ class BaslangicEkrani(QtWidgets.QWidget):
         ana.setContentsMargins(0, 0, 0, 0)
         ana.addWidget(self.kaydirma)
 
-        self._yerlestir(3)
-        self._renkleri_uygula()
-        self.son_dosyalari_ayarla([])
-        self.setFocusProxy(self._kartlar[0].d_bos)
-
-    # ------------------------------------------------------------------
+    # ------------------------------------------------------------------ herkese acik
     def kart_dugmesi(self, anahtar, tur="bos"):
         """Kartin dugmesi (tur: "bos" | "ornek") -- testler ve klavye odagi icin."""
         for k in self._kartlar:
@@ -643,69 +633,118 @@ class BaslangicEkrani(QtWidgets.QWidget):
                 return k.d_bos if tur == "bos" else k.d_ornek
         return None
 
+    def ornek_kartlari(self):
+        """Galerideki butun ornek kartlari (gizliler dahil)."""
+        return tuple(self._ornekler)
+
+    def gorunur_ornekler(self):
+        """Suzgeci gecen orneklerin dosya adlari."""
+        return tuple(k.bilgi.dosya for k in self._ornekler if not k.isHidden())
+
+    def filtrele(self):
+        """Arama + kategori + seviye secimini galeriye uygular."""
+        metin = self.arama.text()
+        kategori = self.kategori.secili() or _TUM
+        seviye = self.seviye.currentData() or _TUM
+        gorunur = []
+        for k in self._ornekler:
+            uygun = ornek_eslesiyor(k.bilgi, metin, kategori, seviye)
+            k.setVisible(uygun)
+            if uygun:
+                gorunur.append(k)
+        self._galeriyi_diz(gorunur)
+        self.galeri_bos.setVisible(not gorunur)
+        self._galeri_basligi.etiket.setText(_("Örnekler"))
+        self._galeri_sayisi(len(gorunur))
+
+    def _galeri_sayisi(self, n):
+        toplam = len(self._ornekler)
+        metin = (_("{n} örnek · kategoriye göre süzün").format(n=toplam) if n == toplam
+                 else _("{n} / {toplam} örnek").format(n=n, toplam=toplam))
+        self._galeri_basligi.setToolTip(metin)
+        self._galeri_basligi.etiket.setToolTip(metin)
+        self._galeri_basligi.setAccessibleDescription(metin)
+
     def geri_gorunur(self, acik):
         self.d_geri.setVisible(bool(acik))
 
     def son_dosyalari_ayarla(self, yollar):
-        self.son_listesi.clear()
-        for yol in yollar:
-            oge = QtWidgets.QTreeWidgetItem([os.path.basename(yol), os.path.dirname(yol)])
-            oge.setData(0, QtCore.Qt.UserRole, yol)
-            oge.setToolTip(0, yol)
-            oge.setToolTip(1, yol)
-            f = oge.font(0)
-            f.setBold(True)
-            oge.setFont(0, f)
-            self.son_listesi.addTopLevelItem(oge)
-        self.son_listesi.setVisible(bool(yollar))
+        """Son kullanilanlar seridi (en cok 3 dosya: ad, dizin, zaman)."""
+        # Eski dosya ogeleri silinir; baslik, "henuz yok" etiketi ve sondaki
+        # esneme yerinde kalir (eskiden etiket de seritten dusup sol kenarda
+        # sahipsiz ciziliyordu).
+        for i in reversed(range(self._son_serit.count())):
+            w = self._son_serit.itemAt(i).widget()
+            if w is not None and w not in (self._son_basligi, self.son_bos):
+                self._son_serit.takeAt(i)
+                w.deleteLater()
+        for yol in list(yollar)[:_SON_DOSYA_SAYISI]:
+            self._son_serit.insertWidget(self._son_serit.count() - 1,
+                                         self._son_ogesi(yol), 0, QtCore.Qt.AlignVCenter)
         self.son_bos.setVisible(not yollar)
-        self.son_listesi.yuksekligi_sabitle()
-        self._renkleri_uygula()
 
-    # ------------------------------------------------------------------
+    def _son_ogesi(self, yol):
+        w = QtWidgets.QWidget()
+        d = QtWidgets.QHBoxLayout(w)
+        d.setContentsMargins(0, 0, 0, 0)
+        d.setSpacing(A["s"])
+        simge = QtWidgets.QToolButton()
+        simge.setFocusPolicy(QtCore.Qt.NoFocus)
+        simge.setAttribute(QtCore.Qt.WA_TransparentForMouseEvents)
+        simge.setProperty("tur", "ikon")
+        ikon_bagla(simge, "file-text", "metin_soluk")
+        d.addWidget(simge)
+        metin = QtWidgets.QVBoxLayout()
+        metin.setSpacing(0)
+        bag = b.baglanti_dugmesi(os.path.basename(yol))
+        bag.setToolTip(yol)
+        bag.clicked.connect(lambda _c=False, y=yol: self.dosya_istendi.emit(y))
+        metin.addWidget(bag, 0, QtCore.Qt.AlignLeft)
+        alt = QtWidgets.QLabel("%s · %s" % (_kisa_dizin(yol), _dosya_zamani(yol)))
+        alt.setObjectName("kucuk")
+        metin.addWidget(alt)
+        d.addLayout(metin)
+        return w
+
+    # ------------------------------------------------------------------ yerlesim
     def _yerlestir(self, sutun):
-        sutun = max(1, min(4, sutun))
+        sutun = max(1, min(_EN_COK_SUTUN, sutun))
         if sutun == self._sutun:
             return
         self._sutun = sutun
-        for k in self._kartlar:
-            self._izgara.removeWidget(k)
         for i, k in enumerate(self._kartlar):
             self._izgara.addWidget(k, i // sutun, i % sutun)
-        for c in range(4):
+        for c in range(_EN_COK_SUTUN):
             self._izgara.setColumnStretch(c, 1 if c < sutun else 0)
-        # Tab sirasi okuma sirasiyla ayni olsun (satir satir, soldan saga).
         onceki = None
         for k in self._kartlar:
             for w in (k.d_bos, k.d_ornek):
                 if onceki is not None:
                     QtWidgets.QWidget.setTabOrder(onceki, w)
                 onceki = w
+        self._galeriyi_diz([k for k in self._ornekler if not k.isHidden()])
 
-    def resizeEvent(self, olay):
-        genislik = min(self.width(), 1240) - 56
-        self._yerlestir(genislik // 300)
+    def _galeriyi_diz(self, kartlar):
+        sutun = max(1, self._sutun or _EN_COK_SUTUN)
+        for i, k in enumerate(kartlar):
+            self._galeri.addWidget(k, i // sutun, i % sutun)
+        for c in range(_EN_COK_SUTUN):
+            self._galeri.setColumnStretch(c, 1 if c < sutun else 0)
+
+    def sutun_sayisi(self, genislik):
+        """Pencere genisliginde tasmadan sigan kart sutunu (en az 1)."""
+        kaydirma = self.style().pixelMetric(QtWidgets.QStyle.PM_ScrollBarExtent)
+        icerik = min(genislik - kaydirma, self._icerik.maximumWidth()) - 2 * A["xxl"]
+        kart = max([_SUTUN_GENISLIGI] + [k.minimumSizeHint().width()
+                                         for k in self._kartlar + self._ornekler])
+        return max(1, (icerik + A["m"]) // (kart + A["m"]))
+
+    def resizeEvent(self, olay):                          # noqa: N802 (Qt adi)
+        self._yerlestir(self.sutun_sayisi(self.width()))
         super().resizeEvent(olay)
 
-    def keyPressEvent(self, olay):
+    def keyPressEvent(self, olay):                        # noqa: N802 (Qt adi)
         if olay.key() == QtCore.Qt.Key_Escape and not self.d_geri.isHidden():
             self.geri_istendi.emit()
             return
         super().keyPressEvent(olay)
-
-    def _renkleri_uygula(self):
-        try:
-            from arayuz import tema
-            vurgu, soluk = tema.renk("vurgu"), tema.renk("metin_soluk")
-        except Exception:
-            vurgu, soluk = "#0f766e", "#6b7785"
-        for k in self._kartlar:
-            k.simgeyi_ciz(vurgu)
-        for liste in (self.ornek_listesi, self.son_listesi):
-            for i in range(liste.topLevelItemCount()):
-                liste.topLevelItem(i).setForeground(1, QtGui.QColor(soluk))
-
-    def changeEvent(self, olay):
-        if olay.type() == QtCore.QEvent.PaletteChange:
-            self._renkleri_uygula()
-        super().changeEvent(olay)

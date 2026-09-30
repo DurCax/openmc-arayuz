@@ -55,12 +55,8 @@ KABA_EKLEME = {"append", "add", "extend", "insert"}
 #   (Y) D1-C yeni kurali (hata metnini alana/listeye yazip birakma) ile eklenen
 #       taban cizgisi; DUZELTME Dalga 2 sahiplerine kalir (7 kayit).
 IZINLI = {
-    "arayuz.baslangic:BaslangicEkrani._renkleri_uygula": 1,       # (T)
-    "arayuz.baslangic:ornek_listesi": 1,                          # (T)
     "arayuz.malzeme.yardimcilar:sab_onerileri": 1,                # (T)
     "arayuz.onizleme:_LibYoneticisi.kapat": 1,                    # (T)
-    "arayuz.ortak:GelismisBolum._oku": 1,                         # (T)
-    "arayuz.ortak:GelismisBolum._yaz": 1,                         # (T)
     "arayuz.sekme_analiz:AnalizSekmesi._bos_nedeni": 1,           # (T)
     "arayuz.sekme_analiz:AnalizSekmesi._hedefleri_listele": 1,    # (T)
     "arayuz.sekme_analiz:AnalizSekmesi._varsayilan_aralik": 1,    # (T)

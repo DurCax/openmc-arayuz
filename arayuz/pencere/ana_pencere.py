@@ -1,44 +1,38 @@
 # -*- coding: utf-8 -*-
 """
 ================================================================================
- ana_pencere.py  --  Ana uygulama penceresi (kabuk)
+ ana_pencere.py  --  Ana uygulama penceresi (Dalga 2 kabugu)
 ================================================================================
- YERLESIM
-   Ust    : menu (Dosya / Duzen / Gorunum / Yardim) + arac cubugu
-   Serit  : model basligi -- "Model: ad · 17×17 yakit demeti · 2B · Ozdeger"
-            + "Turu degistir..." (kor turu; yalnizca uygunluk.kor_turleri)
-   Sol    : editor sekmeleri. Numarasiz; yalnizca modele UYAN sekmeler gorunur
-            (cekirdek/uygunluk.gecerli_sekmeler). Sekme basligindaki isaret
-            durumu soyler:  !  hata   •  eksik adim   ✓  tamam.
-   Sag    : geometri onizlemesi + dogrulama listesi. YALNIZCA tasarim
-            sekmelerinde (Malzemeler/Parcalar/Demet/Kor; Hesap ayarlarinda
-            yalnizca dogrulama). Calistir/Analiz/Tukenme tum genisligi kullanir.
-   Alt    : durum cubugu -- sonraki adim ipucu + "2 hata · 1 uyari" rozeti
-            (tiklayinca bulgu listesi acilir, satir ilgili sekmeye goturur).
+ YERLESIM (maketler/kabuk_*.png)
+   Ust    : menu (Dosya / Duzen / Gorunum / Yardim)
+   Serit  : UstCubuk -- ikonlu hizli eylemler, model adi + tur rozeti + ozet,
+            "Turu degistir…", komut arama alani (Ctrl+K) ve BIRINCIL
+            "▶ Calistir" dugmesi (kosarken "Durdur"a doner).
+   Sol    : KenarCubugu -- is akisi sirasinda sayfalar, gruplu (Model / Hesap /
+            Sonuc). Durum isaretleri ikonlasti: ✓ tamam, ! hata, • eksik adim.
+            Uygun olmayan sayfalar GIZLENIR (uygunluk.gecerli_sekmeler).
+   Orta   : QStackedWidget; her sayfa bir QScrollArea'dir (pencerenin minimum
+            yuksekligi en buyuk sayfaya baglanmasin diye).
+   Sag    : OnizlemePaneli -- acik ve daraltilabilir (QSettings'te hatirlanir),
+            yalnizca tasarim sayfalarinda (Malzemeler/Parcalar/Demet/Kor).
+   Alt    : DogrulamaSeridi -- "✓ Dogrulama: hata yok", rozet (tiklayinca bulgu
+            listesi), ilk bulgu + "Bulguya git", sonraki adim ipucu.
+   Gecici mesajlar durum cubugunu degil BILDIRIM'i (toast) kullanir.
    Yeni model / acilis: "Ne modelliyorsun?" baslangic ekrani (baslangic.py).
 
- DALGA 2'DE KALDIRILANLAR
-   Rehber seridi (icerigi sekme isaretlerine, ipuclarina ve durum cubuguna
-   tasindi), Model menusu (F5/F6/F9 pencere kisayolu olarak kaldi), F10
-   "Pencereyi buyut" (main() zaten buyutuyor), "Neden geometri ice
-   aktarilamiyor?" diyalogu (ozeti ice aktarma eyleminin ipucunda), "Ornek ac"
-   alt menusu (baslangic ekraninda), ayri Kisayollar diyalogu (Yardim'da).
-
- SEKME DIZINLERI SABITTIR
-   Sekiz sekme de QTabWidget'ta kalir; uygun olmayanlar setTabVisible ile
-   GIZLENIR, silinmez. Dizinler uygunluk.SEKMELER sirasidir.
+ SAYFA SIRASI SABITTIR
+   Sekiz sayfa da yiginda kalir; uygun olmayanlar kenar cubugunda gizlenir,
+   silinmez. Sira uygunluk.SEKMELER sirasidir.
 
  PERFORMANS NOTLARI (olcume dayali)
    1. Model onbellegi  : ayni spec icin openmc.Model yeniden kurulmaz.
-                         Olculen: 21.9 ms -> 0.07 ms (bkz. cekirdek/onbellek.py)
-   2. Tembel sekme yenileme : bir degisiklikte yalnizca gorunur sekme
+   2. Tembel sayfa yenileme : bir degisiklikte yalnizca gorunur sayfa
                          yenilenir, digerleri "kirli" isaretlenip acildiklarinda
                          guncellenir. Olculen kazanc: degisiklik basina ~34 ms.
-   3. Onizleme 300 ms geciktirilir (debounce); hizli yazarken tek cizime duser.
+   3. Onizleme 300 ms geciktirilir (debounce).
 
  GERI AL / YINELE
-   Spec anlik goruntuleri 700 ms bosta kalinca yigina itilir; ardarda tus
-   basislari tek adima birlesir. En fazla 50 adim tutulur.
+   Spec anlik goruntuleri 700 ms bosta kalinca yigina itilir; en fazla 50 adim.
 ================================================================================
 """
 
@@ -46,6 +40,9 @@ import os
 
 from PySide6 import QtCore, QtGui, QtWidgets
 from cekirdek import sema, dogrula, uygunluk
+from cekirdek.ceviri import _
+from cekirdek.gunluk import kaydedici
+from arayuz.bilesenler import KenarCubugu, bildir
 from arayuz.onizleme import OnizlemeWidget
 from arayuz.sekme_analiz import AnalizSekmesi
 from arayuz.sekme_tukenme import TukenmeSekmesi
@@ -56,7 +53,8 @@ from arayuz.sekme_demet import DemetSekmesi
 from arayuz.sekme_kor import KorSekmesi
 from arayuz.sekme_malzeme import MalzemeSekmesi
 from arayuz import baslangic, tema
-from arayuz.ortak import DurumRozeti, cumle_basi, tekerlek_korumasi_kur
+from arayuz.ortak import cumle_basi, tekerlek_korumasi_kur
+from arayuz.pencere import kabuk, sekme_arayuzu
 from arayuz.pencere.menuler import MenulerMixin
 from arayuz.pencere.proje import ProjeMixin
 from arayuz.pencere.gecmis import GecmisMixin
@@ -64,8 +62,11 @@ from arayuz.pencere.gezinme import GezinmeCephesi
 from arayuz.pencere.model_islemleri import (
     DOGRULAMA_SEKMELERI, EDITOR_ANAHTARI, SEKME_ADLARI, TASARIM_SEKMELERI, TUR_ADLARI,
     UYGULAMA_ADI, _KONU_BAGIMLILIK, _SABLON_ADLARI, kor_turu_degistir, model_adlari,
-    model_ozet_parcalari, sekme_isaretleri, sonraki_adim, tur_hafizasini_esitle,
-    yer_etiketi, yer_sekme_anahtari)
+    model_ozet_parcalari, sekme_isaretleri, sonraki_adim,
+    tur_hafizasini_esitle, yer_etiketi, yer_sekme_anahtari)
+
+
+_log = kaydedici(__name__)
 
 
 def _seviye_renk(seviye):
@@ -74,6 +75,8 @@ def _seviye_renk(seviye):
 
 
 _SEVIYE_ADI = {"hata": "Hata", "uyari": "Uyarı", "bilgi": "Bilgi"}
+_EN_KUCUK = (1280, 760)
+_VARSAYILAN_BOLUCU = (820, 360)      # [sayfa, onizleme] px, ilk acilis
 
 
 # ============================================================================
@@ -87,14 +90,33 @@ class AnaPencere(GezinmeCephesi, MenulerMixin, ProjeMixin, GecmisMixin, QtWidget
         # Fare tekerlegi odaksiz kutulari degistirmesin (bkz. ortak.py).
         tekerlek_korumasi_kur()
         self.setWindowTitle(UYGULAMA_ADI)
-        # Boyut EKRANA gore belirlenir; sabit bir deger kucuk ekranlarda
-        # pencerenin bir kismini ekran disinda birakiyordu.
+        self._boyut_kur()
+        self._durum_kur()
+        self._sayfalari_kur()
+        self._onizleme_kur()
+        self._menu_kur()
+        self._arac_cubugu_kur()
+        self._durum_cubugu_kur()
+        self._yerlesim_kur()
+        self._baglantilari_kur()
+        self._sayaclari_kur()
+        self._spec_uygula()
+        self._gecmise_it(ilk=True)
+        if acilis_dosyasi:
+            self.proje_ac(acilis_dosyasi)
+        if not self._model_var:
+            self.baslangici_goster()
+
+    # ------------------------------------------------------------------ kurucular
+    def _boyut_kur(self):
+        """Boyut EKRANA gore; en kucuk pencere 1280x800'e sigar (kabul olcutu)."""
         ekran = QtWidgets.QApplication.primaryScreen()
         alan = ekran.availableGeometry() if ekran else QtCore.QRect(0, 0, 1280, 800)
         self.resize(min(1600, int(alan.width() * 0.92)),
                     min(1000, int(alan.height() * 0.92)))
-        self.setMinimumSize(900, 560)
+        self.setMinimumSize(960, 560)
 
+    def _durum_kur(self):
         self.ayarlar = QtCore.QSettings("openmc_arayuz", "arayuz")
         self.spec = sema.yeni_spec("yeni model")
         self.proje_yolu = None
@@ -111,11 +133,11 @@ class AnaPencere(GezinmeCephesi, MenulerMixin, ProjeMixin, GecmisMixin, QtWidget
         self._tur_hafizasi = {}          # kor turu degisiminde eski turun alanlari
         self._adlar = {}                 # model_adlari: hafizayi ad degisimine uydurmak icin
         self._isaretler = {}
+        self._sonraki_ipucu = ""         # dogrulama seridindeki "sonraki adim"
+        self._sag_kip = None
 
-        # ---------------- editor sekmeleri ----------------
-        self.sekmeler = QtWidgets.QTabWidget()
-        self.sekmeler.setDocumentMode(True)
-        self.sekmeler.setUsesScrollButtons(True)
+    def _sayfalari_kur(self):
+        """Sekiz editor, kenar cubugu ogeleri ve yigindaki kaydirma alanlari."""
         self.s_malzeme = MalzemeSekmesi()
         self.s_cubuk = CubukSekmesi()
         self.s_demet = DemetSekmesi()
@@ -124,171 +146,150 @@ class AnaPencere(GezinmeCephesi, MenulerMixin, ProjeMixin, GecmisMixin, QtWidget
         self.s_calistir = CalistirSekmesi()
         self.s_analiz = AnalizSekmesi()
         self.s_tukenme = TukenmeSekmesi()
-
         # Tukenme sekmesi hem EDITOR (spec'in "tukenme" bolumunu yazar) hem de
         # kosu baslatir; bu yuzden editorler listesinde ve kapi/proje yolu alir.
         self.editorler = [self.s_malzeme, self.s_cubuk, self.s_demet,
                           self.s_kor, self.s_ayar, self.s_tukenme]
-        # Her sekme bir kaydirma alanina sarilir.
-        #
-        # SEBEP: QTabWidget'in minimum yuksekligi TUM sayfalarin en buyugudur.
-        # Ayarlar sekmesi buyudukce pencerenin minimumu 1317 px'e cikmisti;
-        # ekranda 1048 px oldugu icin pencere tam ekran yapilamiyor ve ALT
-        # KISMI HIC GORUNMUYORDU. Kaydirma alani bu bagi koparir.
+        self.kenar = KenarCubugu(baslik=_("Sayfalar"))
+        self.yigin_sekme = QtWidgets.QStackedWidget()
+        self._sayfalar = {}
         self._sayfa_editor = {}
-        self._sekme_ix = {}
-        editor_sirasi = {EDITOR_ANAHTARI[ad]: getattr(self, ad) for ad in EDITOR_ANAHTARI}
+        gruplar = dict(kabuk.GEZINME_GRUPLARI)
+        editorler = {EDITOR_ANAHTARI[ad]: getattr(self, ad) for ad in EDITOR_ANAHTARI}
         for anahtar in uygunluk.SEKMELER:
-            w = editor_sirasi[anahtar]
-            kaydirma = QtWidgets.QScrollArea()
-            kaydirma.setWidgetResizable(True)
-            kaydirma.setFrameShape(QtWidgets.QFrame.NoFrame)
-            kaydirma.setWidget(w)
-            self._sayfa_editor[kaydirma] = w
-            self._sekme_ix[anahtar] = self.sekmeler.addTab(kaydirma, SEKME_ADLARI[anahtar])
-        for e in self.editorler:
-            e.degisti.connect(self._degisti)
-        self.sekmeler.currentChanged.connect(self._sekme_degisti)
+            if anahtar in gruplar:
+                self.kenar.grup_ekle(_(gruplar[anahtar]))
+            self.kenar.ekle(anahtar, SEKME_ADLARI[anahtar], kabuk.GEZINME_IKONLARI[anahtar])
+            sayfa = self._kaydirma(editorler[anahtar])
+            self._sayfalar[anahtar] = sayfa
+            self._sayfa_editor[sayfa] = editorler[anahtar]
+            self.yigin_sekme.addWidget(sayfa)
         self._konu_sekme = {e.KONU: e for e in self.editorler}
 
-        # ---------------- onizleme ----------------
+    @staticmethod
+    def _kaydirma(widget):
+        """Her sayfa bir kaydirma alanina sarilir: yiginin minimum yuksekligi
+        en buyuk sayfaya baglanmasin (ayarlar sayfasi pencereyi buyutuyordu)."""
+        alan = QtWidgets.QScrollArea()
+        alan.setObjectName("sayfa")
+        alan.setWidgetResizable(True)
+        alan.setFrameShape(QtWidgets.QFrame.NoFrame)
+        alan.setWidget(widget)
+        return alan
+
+    def _onizleme_kur(self):
         self.onizleme = OnizlemeWidget()
-        self.onizleme.durum.connect(self._onizleme_durum)
-        self.onizleme.olcu_bulundu.connect(lambda *_: self._ozet_guncelle())
-        # matplotlib gezinme cubugu 24 px simgelerle ~51 px yer kapliyordu;
-        # kucuk ekranda pencere minimumunu buyuten en buyuk kalem buydu.
+        # matplotlib gezinme cubugu 24 px simgelerle ~51 px yer kapliyordu.
         self.onizleme.arac_cubugu.setIconSize(QtCore.QSize(18, 18))
+        self.onizleme_paneli = kabuk.OnizlemePaneli(self.onizleme)
+        self.onizleme_paneli.yenile_istendi.connect(self.onizleme._ciz)
+        self.onizleme_paneli.daraltildi.connect(self._onizleme_daraltildi)
 
-        # ---------------- dogrulama paneli ----------------
-        self.dogrulama = QtWidgets.QListWidget()
-        self.dogrulama.setAlternatingRowColors(True)
-        self.dogrulama.setToolTip("Bir satıra tıklayınca ilgili sekmeye gider.")
-        # Kucuk ekranda pencerenin minimum yuksekligini sismesin (bkz. test_kabuk).
-        self.dogrulama.setMinimumHeight(40)
-        # Uzun bulgu metni yatay kaydirma yerine satir kaydirsin.
-        self.dogrulama.setWordWrap(True)
-        self.dogrulama.setResizeMode(QtWidgets.QListView.Adjust)
-        self.dogrulama.itemActivated.connect(self._bulguya_git)
-        self.dogrulama.itemClicked.connect(self._bulguya_git)
-        self.dogrulama_ozet = DurumRozeti("-", "notr")
-        dg = QtWidgets.QWidget()
-        dgd = QtWidgets.QVBoxLayout(dg)
-        dgd.setContentsMargins(6, 4, 6, 4)
-        dgd.setSpacing(4)
-        ust = QtWidgets.QHBoxLayout()
-        e = QtWidgets.QLabel("Doğrulama")
-        f = e.font()
-        f.setBold(True)
-        e.setFont(f)
-        ust.addWidget(e)
-        ust.addWidget(self.dogrulama_ozet)
-        ust.addStretch(1)
-        d_yenile = QtWidgets.QToolButton()
-        d_yenile.setText("Veri kütüphanesini de denetle")
-        d_yenile.setAutoRaise(True)
-        d_yenile.setToolTip("Modelin istediği her nüklidin cross_sections.xml "
-                            "içinde bulunup bulunmadığını denetler (yavaş, F5).")
-        d_yenile.clicked.connect(lambda: self._dogrula(veri=True))
-        ust.addWidget(d_yenile)
-        dgd.addLayout(ust)
-        dgd.addWidget(self.dogrulama)
-        self._dogrulama_kutu = dg
-
-        # ---------------- yerlesim ----------------
-        sag = QtWidgets.QSplitter(QtCore.Qt.Vertical)
-        sag.addWidget(self.onizleme)
-        sag.addWidget(dg)
-        sag.setStretchFactor(0, 3)
-        sag.setStretchFactor(1, 1)
-        sag.setChildrenCollapsible(False)
-        self._sag = sag
-
-        bolucu = QtWidgets.QSplitter(QtCore.Qt.Horizontal)
-        bolucu.addWidget(self.sekmeler)
-        bolucu.addWidget(sag)
-        # Sekme tarafi daha genis: ayarlar sekmesi iki sutunlu ve dar kalinca
-        # yatay kaydirma cubugu cikiyordu.
-        bolucu.setStretchFactor(0, 5)
-        bolucu.setStretchFactor(1, 3)
-        bolucu.setSizes([1150, 700])
-        bolucu.setChildrenCollapsible(False)
-        self._bolucu = bolucu
-
-        # Model basligi seridi (arac cubugunun altinda)
-        self.model_seridi = QtWidgets.QWidget()
-        self.model_seridi.setObjectName("modelSeridi")
-        self.model_seridi.setAttribute(QtCore.Qt.WA_StyledBackground, True)
-        self.model_basligi = QtWidgets.QLabel("")
-        self.model_basligi.setTextFormat(QtCore.Qt.RichText)
-        self.model_basligi.setTextInteractionFlags(
-            QtCore.Qt.LinksAccessibleByMouse | QtCore.Qt.LinksAccessibleByKeyboard)
-        self.model_basligi.linkActivated.connect(self._baslik_baglantisi)
-        self.model_olcu = QtWidgets.QLabel("")
-        self.model_olcu.setObjectName("soluk")
-        self.d_tur = QtWidgets.QToolButton()
-        self.d_tur.setText("Türü değiştir…")
-        self.d_tur.setToolTip("Kor türünü değiştirir (yalnızca bu modelde "
-                              "kullanılabilen türler listelenir). Geri almak için Ctrl+Z.")
-        self._tur_menusu = QtWidgets.QMenu(self)
-        self._tur_menusu.aboutToShow.connect(self._tur_menusunu_doldur)
-        self.d_tur.setMenu(self._tur_menusu)
-        self.d_tur.setPopupMode(QtWidgets.QToolButton.InstantPopup)
-        sd = QtWidgets.QHBoxLayout(self.model_seridi)
-        sd.setContentsMargins(12, 2, 6, 2)
-        sd.setSpacing(12)
-        sd.addWidget(self.model_basligi, 1)
-        sd.addWidget(self.model_olcu)
-        sd.addWidget(self.d_tur)
-
-        editor = QtWidgets.QWidget()
-        md = QtWidgets.QVBoxLayout(editor)
-        md.setContentsMargins(0, 0, 0, 0)
-        md.setSpacing(0)
-        md.addWidget(self.model_seridi)
-        md.addWidget(bolucu, 1)
-        self._editor = editor
-
+    def _yerlesim_kur(self):
+        """Ust cubuk + (kenar | sayfa | onizleme) + dogrulama seridi."""
+        self._editor = self._editor_kur()
         # Baslangic ekrani + editor: ayni pencerede, modal degil.
         self.baslangic = baslangic.BaslangicEkrani()
+        self.yigin = QtWidgets.QStackedWidget()
+        self.yigin.addWidget(self.baslangic)
+        self.yigin.addWidget(self._editor)
+        merkez = QtWidgets.QWidget()
+        d = QtWidgets.QVBoxLayout(merkez)
+        d.setContentsMargins(0, 0, 0, 0)
+        d.setSpacing(0)
+        d.addWidget(self.ust)
+        d.addWidget(self.yigin, 1)
+        d.addWidget(self.serit)
+        self.setCentralWidget(merkez)
+        from arayuz.bilesenler.bildirim import ALT_PAYI_OZELLIGI
+        self.setProperty(ALT_PAYI_OZELLIGI, kabuk.B["serit"])
+
+    def _editor_kur(self):
+        bolucu = QtWidgets.QSplitter(QtCore.Qt.Horizontal)
+        bolucu.addWidget(self.yigin_sekme)
+        bolucu.addWidget(self.onizleme_paneli)
+        bolucu.setStretchFactor(0, 5)
+        bolucu.setStretchFactor(1, 2)
+        bolucu.setChildrenCollapsible(False)
+        bolucu.setSizes(self._kayitli_bolucu())
+        self._bolucu = bolucu
+        editor = QtWidgets.QWidget()
+        govde = QtWidgets.QHBoxLayout(editor)
+        govde.setContentsMargins(0, 0, 0, 0)
+        govde.setSpacing(0)
+        govde.addWidget(self.kenar)
+        govde.addWidget(bolucu, 1)
+        return editor
+
+    def _kayitli_bolucu(self):
+        """QSettings'teki [sayfa, onizleme] genislikleri; gecersizse varsayilan."""
+        kayitli = self.ayarlar.value(kabuk.BOLUCU_AYARI)
+        if not kayitli:
+            return list(_VARSAYILAN_BOLUCU)
+        try:
+            boyut = [int(x) for x in kayitli]
+        except (TypeError, ValueError):
+            _log.warning("bolucu boyutlari okunamadi: %r", kayitli)
+            return list(_VARSAYILAN_BOLUCU)
+        if len(boyut) != 2 or min(boyut) <= 0:
+            _log.warning("bolucu boyutlari gecersiz, varsayilan kullaniliyor: %r", kayitli)
+            return list(_VARSAYILAN_BOLUCU)
+        return boyut
+
+    def _bolucu_kaydet(self):
+        """Yalniz ekranda yerlesmis tasarim bolucusu kaydedilir: gosterilmemis
+        ya da onizlemesiz (kosu/sonuc) sayfadaki boyutlar oranti bozardi."""
+        boyut = self._bolucu.sizes() if (self._bolucu.isVisible()
+                                          and self.onizleme_paneli.isVisible()) \
+            else getattr(self, "_bolucu_boyutlari", None)
+        if boyut and len(boyut) == 2 and min(boyut) > 0:
+            self.ayarlar.setValue(kabuk.BOLUCU_AYARI, list(boyut))
+
+    def _baglantilari_kur(self):
+        for e in self.editorler:
+            e.degisti.connect(self._degisti)
+        self.kenar.secildi.connect(self._sekme_degisti)
+        self.kenar.daraltildi.connect(
+            lambda dar: self.ayarlar.setValue(kabuk.KENAR_AYARI, bool(dar)))
+        self.onizleme.durum.connect(self._onizleme_durum)
+        self.onizleme.olcu_bulundu.connect(lambda *_a: self._ozet_guncelle())
         self.baslangic.bos_istendi.connect(self._bos_basla)
         self.baslangic.ornek_istendi.connect(self.proje_ac)
         self.baslangic.dosya_istendi.connect(self.proje_ac)
         self.baslangic.ac_istendi.connect(self._ac_diyalog)
         self.baslangic.geri_istendi.connect(self._editoru_goster)
-        self.yigin = QtWidgets.QStackedWidget()
-        self.yigin.addWidget(self.baslangic)
-        self.yigin.addWidget(editor)
-        self.setCentralWidget(self.yigin)
-
-        self._menu_kur()
-        self._arac_cubugu_kur()
-        self._durum_cubugu_kur()
-
         self.s_calistir.kapi_ayarla(self._kosu_izni)
         self.s_analiz.kapi_ayarla(self._kosu_izni)
         self.s_tukenme.kapi_ayarla(self._kosu_izni)
         for s in (self.s_calistir, self.s_analiz, self.s_tukenme):
             s.durum.connect(self._sekme_durum_mesaji)
             s.sonuc_degisti.connect(self._isaretleri_guncelle)
-        # Is parcacigi ve kosu dizini Calistir'da duzenlenir (konu "calistirma"):
-        # proje kirlenir, geri alinabilir.
+        # Is parcacigi ve kosu dizini Calistir'da duzenlenir (konu "calistirma").
         self.s_calistir.degisti.connect(self._degisti)
+        self.s_calistir.kosu_durumu_degisti.connect(self._kosu_durumu_degisti)
         self.s_kor.tur_degistir_istendi.connect(self._tur_menusunu_ac)
 
-        self._dog_sayac = QtCore.QTimer(self); self._dog_sayac.setSingleShot(True)
+    def _sayaclari_kur(self):
+        self._dog_sayac = QtCore.QTimer(self)
+        self._dog_sayac.setSingleShot(True)
         self._dog_sayac.setInterval(250)
         self._dog_sayac.timeout.connect(lambda: self._dogrula(veri=False))
-
-        self._gecmis_sayac = QtCore.QTimer(self); self._gecmis_sayac.setSingleShot(True)
+        self._gecmis_sayac = QtCore.QTimer(self)
+        self._gecmis_sayac.setSingleShot(True)
         self._gecmis_sayac.setInterval(700)
         self._gecmis_sayac.timeout.connect(self._gecmise_it)
+        self.kenar.daralt(str(self.ayarlar.value(kabuk.KENAR_AYARI, False)).lower()
+                          in ("true", "1"))
+        acik = str(self.ayarlar.value(kabuk.ONIZLEME_AYARI, True)).lower() not in ("false", "0")
+        self.onizleme_paneli.daralt(not acik)
 
-        self._spec_uygula()
-        self._gecmise_it(ilk=True)
-        if acilis_dosyasi:
-            self.proje_ac(acilis_dosyasi)
-        if not self._model_var:
-            self.baslangici_goster()
+    # ==================================================================
+    # bildirimler
+    # ==================================================================
+    def bildir_mesaj(self, metin, tur="bilgi", sure=None, eylem_metni=None, eylem=None):
+        """Gecici kullanici mesaji (durum cubugu yerine bildirim/toast)."""
+        return bildir(self, metin, tur, 4000 if sure is None else sure,
+                      eylem_metni=eylem_metni, eylem=eylem)
 
     # ==================================================================
     # baslangic ekrani
@@ -301,15 +302,14 @@ class AnaPencere(GezinmeCephesi, MenulerMixin, ProjeMixin, GecmisMixin, QtWidget
         self.baslangic.son_dosyalari_ayarla(self._son_listesi())
         self.baslangic.geri_gorunur(self._model_var)
         self.yigin.setCurrentWidget(self.baslangic)
-        # Baslangic ekraninda dogrulama rozeti anlamsiz (bos model "hata" sayardi).
-        self.durum_rozeti.setVisible(False)
+        # Baslangic ekraninda dogrulama seridi anlamsiz (bos model "hata" sayardi).
+        self.serit.setVisible(False)
         self._model_eylemleri_guncelle()
         self.baslangic.setFocus()
-        self.durum_ipucu.setText("Başlamak için bir model türü seçin.")
 
     def _editoru_goster(self):
         self.yigin.setCurrentWidget(self._editor)
-        self.durum_rozeti.setVisible(True)
+        self.serit.setVisible(True)
         self._model_eylemleri_guncelle()
         self._durum_ipucu_guncelle()
 
@@ -317,6 +317,7 @@ class AnaPencere(GezinmeCephesi, MenulerMixin, ProjeMixin, GecmisMixin, QtWidget
         editorde = not self.baslangic_acik_mi()
         for e in self._model_eylemleri:
             e.setEnabled(editorde)
+        self.ust.model_gorunur(editorde)
         self._baslik_guncelle()
 
     def _bos_basla(self, anahtar):
@@ -325,15 +326,15 @@ class AnaPencere(GezinmeCephesi, MenulerMixin, ProjeMixin, GecmisMixin, QtWidget
             return False
         try:
             spec = baslangic.bos_sablon(anahtar)
-        except Exception as e:
-            QtWidgets.QMessageBox.critical(self, "Şablon kurulamadı", str(e))
+        except (KeyError, OSError, ValueError) as e:
+            QtWidgets.QMessageBox.critical(self, _("Şablon kurulamadı"), str(e))
             return False
         self._proje_kur(spec, proje_yolu=None, ornek_kaynagi=None)
         kart = baslangic.kart(anahtar)
         self.sekmeye_git(kart.get("sekme") or "malzemeler", sessiz=True)
-        self.statusBar().showMessage(
-            "Çalışan sade bir model kuruldu (%s). Kaydetmek için 'Farklı kaydet' "
-            "kullanın." % kart["baslik"], 8000)
+        self.bildir_mesaj(
+            _("Çalışan sade bir model kuruldu ({ad}). Kaydetmek için "
+              "'Farklı kaydet' kullanın.").format(ad=kart["baslik"]), "basari", 8000)
         return True
 
     # ==================================================================
@@ -342,9 +343,7 @@ class AnaPencere(GezinmeCephesi, MenulerMixin, ProjeMixin, GecmisMixin, QtWidget
     def _proje_degisti(self):
         """
         PROJE degisti (yeni / ac / ornek / sablon): onceki projenin SONUCLARI
-        silinir. Sekme degisiminde ve geri al/yinele'de CAGRILMAZ -- orada ayni
-        projedeyiz. Eskiden Calistir/Analiz yeni projede eski k-eff'i ve
-        katsayiyi gosteriyordu.
+        silinir. Sekme degisiminde ve geri al/yinele'de CAGRILMAZ.
         """
         self.s_calistir.sifirla()
         self.s_analiz.sifirla()
@@ -359,9 +358,9 @@ class AnaPencere(GezinmeCephesi, MenulerMixin, ProjeMixin, GecmisMixin, QtWidget
         self._kirli = False
         self._tur_hafizasi = {}
         self._gecmis, self._gecmis_ix = [], -1
+        self._model_var = True
         self._spec_uygula()
         self._gecmise_it(ilk=True)
-        self._model_var = True
         self._editoru_goster()
 
     def _spec_uygula(self):
@@ -371,7 +370,10 @@ class AnaPencere(GezinmeCephesi, MenulerMixin, ProjeMixin, GecmisMixin, QtWidget
         for e in self.editorler:
             e.spec_yukle(self.spec)
         self._kirli_sekmeler.clear()
-        self.onizleme.spec_ayarla(self.spec)
+        if self._model_var:
+            # Acilistaki bos spec cizilmez: baslangic ekranindayken "geometri
+            # kurulamadi" hatasi uretir ve ilk modelin onizlemesine kadar kalirdi.
+            self.onizleme.spec_ayarla(self.spec)
         self.s_calistir.spec_ayarla(self.spec, self.proje_yolu)
         self.s_analiz.spec_ayarla(self.spec, self.proje_yolu)
         self._sekme_gorunurlugu()
@@ -381,17 +383,13 @@ class AnaPencere(GezinmeCephesi, MenulerMixin, ProjeMixin, GecmisMixin, QtWidget
 
     def _degisti(self, konu="genel"):
         """
-        Bir editor sekmesi spec'i degistirdi.
-
-        Yalnizca konuya BAGIMLI sekmeler kirli isaretlenir, onlar da ancak
-        acildiklarinda yenilenir (olculen: tum sekmeleri kurmak 34 ms idi ve
-        gorunmeyen sekmelerin secimi sifirlaniyordu).
+        Bir editor sekmesi spec'i degistirdi. Yalnizca konuya BAGIMLI sekmeler
+        kirli isaretlenir, onlar da ancak acildiklarinda yenilenir.
         """
         self._kirli = True
         self._hafizayi_esitle()
-        bagimli_konular = _KONU_BAGIMLILIK.get(konu, set())
         gorunur = self._gorunur_editor()
-        for k in bagimli_konular:
+        for k in _KONU_BAGIMLILIK.get(konu, set()):
             e = self._konu_sekme.get(k)
             if e is None:
                 continue
@@ -400,10 +398,8 @@ class AnaPencere(GezinmeCephesi, MenulerMixin, ProjeMixin, GecmisMixin, QtWidget
                 self._kirli_sekmeler.discard(e)
             else:
                 self._kirli_sekmeler.add(e)
-
         if konu != "calistirma":
-            # Is parcacigi / kosu dizini geometriyi degistirmez; onizleme
-            # onbellek anahtari tum spec'i kapsadigi icin bosuna yeniden cizerdi.
+            # Is parcacigi / kosu dizini geometriyi degistirmez.
             self.onizleme.iste()
         self._dog_sayac.start()
         self._gecmis_sayac.start()
@@ -420,13 +416,16 @@ class AnaPencere(GezinmeCephesi, MenulerMixin, ProjeMixin, GecmisMixin, QtWidget
         self._adlar = simdiki
 
     def _gorunur_editor(self):
-        """Etkin sekmenin ICINDEKI editoru dondurur (kaydirma alanini asar)."""
-        return self._sayfa_editor.get(self.sekmeler.currentWidget())
+        """Etkin sayfanin ICINDEKI editoru dondurur (kaydirma alanini asar)."""
+        return self._sayfa_editor.get(self.yigin_sekme.currentWidget())
 
-    def _sekme_degisti(self, indeks):
+    def _sekme_degisti(self, anahtar):
+        sayfa = self._sayfalar.get(anahtar)
+        if sayfa is not None:
+            self.yigin_sekme.setCurrentWidget(sayfa)
         self._sag_panel_guncelle()
-        self._sekme_renkleri()
-        w = self._sayfa_editor.get(self.sekmeler.widget(indeks))
+        self._sayfaya_yer_ac()
+        w = self._sayfa_editor.get(sayfa)
         if w is None:
             return
         if w in self._kirli_sekmeler:
@@ -438,36 +437,29 @@ class AnaPencere(GezinmeCephesi, MenulerMixin, ProjeMixin, GecmisMixin, QtWidget
             self.s_analiz.spec_ayarla(self.spec, self.proje_yolu)
 
     # ==================================================================
-    # sekmeler: gorunurluk, isaretler, sag panel
+    # sayfalar: gorunurluk, isaretler, sag panel
     # ==================================================================
     def _gecerli_sekmeler(self):
         try:
             return list(uygunluk.gecerli_sekmeler(self.spec))
-        except Exception:
+        except (KeyError, TypeError, ValueError):
+            _log.warning("gecerli_sekmeler okunamadi; hicbir sayfa gizlenmiyor",
+                         exc_info=True)
             return list(uygunluk.SEKMELER)     # bozuk spec: hicbir seyi gizleme
 
-    def _sekme_anahtari(self, indeks=None):
-        indeks = self.sekmeler.currentIndex() if indeks is None else indeks
-        for anahtar, i in self._sekme_ix.items():
-            if i == indeks:
-                return anahtar
-        return None
-
     def _sekme_gorunurlugu(self):
-        """Yalnizca modele uyan sekmeler gorunur; etkin sekme gizlenirse ilk
-        gorunur sekmeye gecilir (Qt kendiliginden komsuya atliyordu)."""
+        """Yalnizca modele uyan sayfalar gorunur; etkin sayfa gizlenirse ilk
+        gorunur sayfaya gecilir."""
         gorunur = self._gecerli_sekmeler()
-        simdiki = self._sekme_anahtari()
+        for anahtar in self._sayfalar:
+            self.kenar.gorunur_yap(anahtar, anahtar in gorunur)
+        simdiki = self.gecerli_sekme()
         if gorunur and simdiki not in gorunur:
-            self.sekmeler.setCurrentIndex(self._sekme_ix[gorunur[0]])
-        for anahtar, i in self._sekme_ix.items():
-            acik = anahtar in gorunur
-            if self.sekmeler.isTabVisible(i) != acik:
-                self.sekmeler.setTabVisible(i, acik)
+            self.sekmeye_git(gorunur[0], sessiz=True)
         self._sag_panel_guncelle()
 
     def _isaretleri_guncelle(self):
-        """Sekme basliklarindaki ! • ✓ isaretleri ve ipuclari."""
+        """Kenar cubugundaki ! • ✓ durum ikonlari ve ipuclari."""
         hata = {}
         for b in self._bulgular:
             if b.seviye == "hata":
@@ -479,61 +471,56 @@ class AnaPencere(GezinmeCephesi, MenulerMixin, ProjeMixin, GecmisMixin, QtWidget
             kosu_basarili=self.s_calistir.sonuc_var(),
             analiz_sonucu=self.s_analiz.sonuc_var(),
             tukenme_sonucu=self.s_tukenme.sonuc_var())
-        for anahtar, i in self._sekme_ix.items():
+        for anahtar in self._sayfalar:
             isaret, aciklama = self._isaretler.get(anahtar, ("", ""))
-            ad = SEKME_ADLARI[anahtar]
-            metin = "%s  %s" % (ad, isaret) if isaret else ad
-            if self.sekmeler.tabText(i) != metin:
-                self.sekmeler.setTabText(i, metin)
-            self.sekmeler.setTabToolTip(i, aciklama)
-        self._sekme_renkleri()
+            self.kenar.durum_ayarla(anahtar, kabuk.ISARET_DURUMU.get(isaret))
+            kabuk.kenar_ipucu(self.kenar, anahtar, aciklama or SEKME_ADLARI[anahtar])
         self._durum_ipucu_guncelle()
-
-    def _sekme_renkleri(self):
-        """Hatali sekmenin basligi kirmizi; digerleri secili: vurgu, degil: soluk.
-        (Isaretin kendisi baslik metnindedir; renk yalnizca HATAYI one cikarir.)"""
-        cubuk = self.sekmeler.tabBar()
-        simdiki = self.sekmeler.currentIndex()
-        for anahtar, i in self._sekme_ix.items():
-            if self._isaretler.get(anahtar, ("", ""))[0] == "!":
-                renk = tema.renk("hata")
-            elif i == simdiki:
-                renk = tema.renk("vurgu")
-            else:
-                renk = tema.renk("metin_soluk")
-            cubuk.setTabTextColor(i, QtGui.QColor(renk))
 
     def _durum_ipucu_guncelle(self):
         if self.baslangic_acik_mi():
             return
-        self.durum_ipucu.setText(sonraki_adim(
-            self._isaretler, self._gecerli_sekmeler(), self.onizleme.cizildi_mi()))
+        self._serit_guncelle(sonraki_adim(self._isaretler, self._gecerli_sekmeler(),
+                                          self.onizleme.cizildi_mi()))
 
     def _sag_panel_guncelle(self):
-        """Onizleme + dogrulama yalnizca tasarim sekmelerinde; kosu/sonuc
-        sekmeleri tum genisligi kullanir."""
-        anahtar = self._sekme_anahtari()
+        """Onizleme yalnizca tasarim sayfalarinda; kosu/sonuc sayfalari tum
+        genisligi kullanir (Hesap ayarlarinda dogrulama seridi zaten altta)."""
+        anahtar = self.gecerli_sekme()
         tasarim = anahtar in TASARIM_SEKMELERI
-        dogrulama = anahtar in DOGRULAMA_SEKMELERI
-        kip = "tasarim" if tasarim else ("dogrulama" if dogrulama else "yok")
-        onceki = getattr(self, "_sag_kip", None)
-        if onceki == "tasarim" and kip != "tasarim":
-            self._tasarim_boyutlari = self._bolucu.sizes()
-        self.onizleme.setVisible(tasarim)
-        self._dogrulama_kutu.setVisible(dogrulama)
-        self._sag.setVisible(tasarim or dogrulama)
-        # Yalnizca dogrulama gosterilirken (Hesap ayarlari) sag panel daralir:
-        # ayar formu genislik ister; liste icin ~%28 yeter. Tasarim sekmesine
-        # donunce kullanicinin ayarladigi genislik geri gelir.
-        toplam = sum(self._bolucu.sizes()) or self._bolucu.width()
-        if kip == "dogrulama" and onceki != "dogrulama" and toplam > 0:
-            sag = max(300, int(toplam * 0.28))
-            self._bolucu.setSizes([toplam - sag, sag])
-        elif kip == "tasarim" and onceki not in (None, "tasarim"):
-            boyut = getattr(self, "_tasarim_boyutlari", None)
+        if self._sag_kip == "tasarim" and not tasarim and self._bolucu.isVisible():
+            self._bolucu_boyutlari = self._bolucu.sizes()
+        self.onizleme_paneli.setVisible(tasarim)
+        if tasarim and self._sag_kip not in (None, "tasarim"):
+            boyut = getattr(self, "_bolucu_boyutlari", None)
             if boyut:
                 self._bolucu.setSizes(boyut)
-        self._sag_kip = kip
+        self._sag_kip = "tasarim" if tasarim else "yok"
+
+    def _sayfaya_yer_ac(self):
+        """Sayfa en kucuk genisligine sigmiyorsa onizlemeden (en kucuk
+        genisligine kadar) yer alir: kayitli bolucu orani baska pencere
+        boyutundan gelebilir ve yatay kaydirma dogururdu."""
+        if not self.onizleme_paneli.isVisible() or self.onizleme_paneli.dar_mi():
+            return
+        sayfa = self.yigin_sekme.currentWidget()
+        editor = self._sayfa_editor.get(sayfa)
+        boyut = self._bolucu.sizes()
+        if editor is None or len(boyut) != 2:
+            return
+        kaydirma = self.style().pixelMetric(QtWidgets.QStyle.PM_ScrollBarExtent)
+        eksik = editor.minimumSizeHint().width() + kaydirma - boyut[0]
+        ver = min(eksik, boyut[1] - self.onizleme_paneli.minimumWidth())
+        if ver > 0:
+            self._bolucu.setSizes([boyut[0] + ver, boyut[1] - ver])
+
+    def resizeEvent(self, olay):                          # noqa: N802 (Qt adi)
+        super().resizeEvent(olay)
+        # Bolucu yeni boyutunu olay dongusunun sonraki turunda alir.
+        QtCore.QTimer.singleShot(0, self, self._sayfaya_yer_ac)
+
+    def _onizleme_daraltildi(self, dar):
+        self.ayarlar.setValue(kabuk.ONIZLEME_AYARI, not bool(dar))
 
     # ==================================================================
     # model basligi ve kor turu
@@ -542,10 +529,10 @@ class AnaPencere(GezinmeCephesi, MenulerMixin, ProjeMixin, GecmisMixin, QtWidget
         if self.proje_yolu:
             ad = os.path.basename(self.proje_yolu)
         elif self.ornek_kaynagi:
-            ad = "adsız — örnek: %s" % os.path.splitext(
-                os.path.basename(self.ornek_kaynagi))[0]
+            ad = _("adsız — örnek: {ornek}").format(
+                ornek=os.path.splitext(os.path.basename(self.ornek_kaynagi))[0])
         else:
-            ad = "kaydedilmemiş"
+            ad = _("kaydedilmemiş")
         self.setWindowTitle("%s — %s%s" % (UYGULAMA_ADI, ad, " *" if self._kirli else ""))
         editorde = not self.baslangic_acik_mi()
         self.e_geri.setEnabled(editorde and self._gecmis_ix > 0)
@@ -553,37 +540,34 @@ class AnaPencere(GezinmeCephesi, MenulerMixin, ProjeMixin, GecmisMixin, QtWidget
 
     def _ozet_guncelle(self):
         """
-        Model basligi. BURADA MODEL KURULMAZ -- olcu bilgisi onizlemeden gelir
-        (olcu_bulundu sinyali); her degisiklikte model kurmak ~22 ms ekliyordu.
+        Ust cubuktaki model kimligi. BURADA MODEL KURULMAZ -- olcu bilgisi
+        onizlemeden gelir (olcu_bulundu sinyali).
         """
         try:
             p = model_ozet_parcalari(self.spec)
-        except Exception:
+        except (KeyError, TypeError, ValueError):
             p = {"ad": self.spec.get("ad", ""), "tur": "?", "boyut": "?", "mod": "?"}
-        vurgu = tema.renk("vurgu")
-        soluk = tema.renk("metin_soluk")
-        bag = ("<a href='%%s' style='color:%s; text-decoration:none;'>%%s</a>" % vurgu)
         esc = lambda s: (str(s).replace("&", "&amp;").replace("<", "&lt;")
                          .replace(">", "&gt;"))
-        ayrac = " <span style='color:%s'>·</span> " % soluk
-        self.model_basligi.setText(
-            "<span style='color:%s'>Model:</span> <b>%s</b>" % (soluk, esc(p["ad"]))
-            + ayrac + bag % ("kor", esc(p["tur"]))
-            + ayrac + bag % ("kor", esc(p["boyut"]))
-            + ayrac + bag % ("mod", esc(p["mod"])))
-        self.model_basligi.setToolTip(
-            "Kor türüne ya da boyuta tıklayınca Kor sekmesine, hesap türüne "
-            "tıklayınca Hesap ayarlarına gider.")
+        # Baglanti rengi etkin temadan (maket: ikincil metin, alti cizgisiz);
+        # tema degisiminde _tema_degistir bu islevi yeniden cagirir.
+        stil = "color:%s; text-decoration:none" % tema.renk("metin_ikincil")
+        ozet = ("<a href='kor' style='%s'>%s</a> · <a href='mod' style='%s'>%s</a>"
+                % (stil, esc(p["boyut"]), stil, esc(p["mod"])))
+        self.ust.model_ayarla(
+            p["ad"], p["tur"], ozet,
+            _("Boyuta tıklayınca Kor sayfasına, hesap türüne tıklayınca "
+              "Hesap ayarlarına gider."))
         olcu = self.onizleme.son_olcu
-        self.model_olcu.setText("%.2f × %.2f cm" % olcu if olcu else "")
+        self.onizleme_paneli.olcu_ayarla("%.2f × %.2f cm" % olcu if olcu else "")
 
     def _baslik_baglantisi(self, hedef):
         self.sekmeye_git({"mod": "ayarlar", "kor": "kor"}.get(hedef, "kor"))
 
     def _tur_menusunu_ac(self):
-        """Kor sekmesindeki 'Türü değiştir…' baglantisi: basliktaki menu."""
-        if self.d_tur.isVisible():
-            self.d_tur.showMenu()
+        """Kor sayfasindaki 'Türü değiştir…' baglantisi: ust cubuktaki menu."""
+        if self.ust.d_tur.isVisible():
+            self.ust.d_tur.showMenu()
         else:
             self._tur_menusunu_doldur()
             self._tur_menusu.exec(QtGui.QCursor.pos())
@@ -592,18 +576,17 @@ class AnaPencere(GezinmeCephesi, MenulerMixin, ProjeMixin, GecmisMixin, QtWidget
         self._tur_menusu.clear()
         simdiki = (self.spec.get("kor") or {}).get("tur")
         for tur in uygunluk.kor_turleri(self.spec):
-            e = self._tur_menusu.addAction(TUR_ADLARI.get(tur, tur))
+            e = self._tur_menusu.addAction(_(TUR_ADLARI.get(tur, tur)))
             e.setCheckable(True)
             e.setChecked(tur == simdiki)
             e.setData(tur)
             e.triggered.connect(lambda _c=False, t=tur: self.kor_turunu_degistir(t))
 
     def kor_turunu_degistir(self, tur):
-        """Model basligindaki 'Turu degistir...' -- geri alinabilir tek adim."""
+        """Ust cubuktaki 'Turu degistir...' -- geri alinabilir tek adim."""
         if tur not in uygunluk.kor_turleri(self.spec):
             return False
-        # Bekleyen duzenleme once kendi adimi olsun: geri al tur degisimini
-        # onceki duzenlemeyle birlikte silmesin.
+        # Bekleyen duzenleme once kendi adimi olsun.
         self._gecmis_sayac.stop()
         self._gecmise_it()
         eklenen = []
@@ -614,32 +597,30 @@ class AnaPencere(GezinmeCephesi, MenulerMixin, ProjeMixin, GecmisMixin, QtWidget
         self._kirli = True
         self._spec_uygula()
         self._gecmise_it()
-        ek = (" Model bu türün gerektirdiği parçayı içermiyordu; şablondan eklendi: %s "
-              "(Parçalar/Demet sekmesinde düzenleyin)." % ", ".join(eklenen)) if eklenen else ""
-        self.statusBar().showMessage(
-            "Kor türü: %s — geri almak için Ctrl+Z.%s" % (TUR_ADLARI.get(tur, tur), ek), 10000)
+        ek = (_(" Model bu türün gerektirdiği parçayı içermiyordu; şablondan "
+                "eklendi: {parca} (Parçalar/Demet sayfasında düzenleyin).")
+              .format(parca=", ".join(eklenen))) if eklenen else ""
+        self.bildir_mesaj(_("Kor türü: {tur} — geri almak için Ctrl+Z.{ek}").format(
+            tur=_(TUR_ADLARI.get(tur, tur)), ek=ek), "basari", 10000)
         return True
 
     # ==================================================================
     # dogrulama
     # ==================================================================
     def _bulgu_ogeleri(self, liste):
-        """Bulgulari bir QListWidget'a yazar (panel ve acilir liste ayni bicim)."""
+        """Bulgulari bir QListWidget'a yazar (acilir liste)."""
         liste.clear()
         for b in self._bulgular:
             oge = QtWidgets.QListWidgetItem(
-                "%s · %s: %s" % (_SEVIYE_ADI.get(b.seviye, b.seviye), yer_etiketi(b.yer),
-                                  cumle_basi(b.mesaj)))
+                "%s · %s: %s" % (_(_SEVIYE_ADI.get(b.seviye, b.seviye)), yer_etiketi(b.yer),
+                                 cumle_basi(b.mesaj)))
             oge.setForeground(QtGui.QColor(_seviye_renk(b.seviye)))
             oge.setData(QtCore.Qt.UserRole, b.yer)
-            # Eskiden: (ipucu + "\n\n") if ipucu else "" + "Tiklayinca..." --
-            # oncelik yuzunden oneri varken tiklama bilgisi DUSUYORDU.
-            tiklama = "Tıklayınca ilgili sekmeye gider."
+            tiklama = _("Tıklayınca ilgili sayfaya gider.")
             oge.setToolTip((b.oneri + "\n\n" + tiklama) if b.oneri else tiklama)
             liste.addItem(oge)
         if not self._bulgular:
-            # Bos kutu "calismiyor mu?" sorusunu dogurur; sonucu soyle.
-            oge = QtWidgets.QListWidgetItem("✓ Bulgu yok — model tutarlı görünüyor.")
+            oge = QtWidgets.QListWidgetItem(_("✓ Bulgu yok — model tutarlı görünüyor."))
             oge.setForeground(QtGui.QColor(tema.renk("basari")))
             oge.setFlags(QtCore.Qt.ItemIsEnabled)
             liste.addItem(oge)
@@ -647,91 +628,111 @@ class AnaPencere(GezinmeCephesi, MenulerMixin, ProjeMixin, GecmisMixin, QtWidget
     def _dogrula(self, veri=False):
         try:
             self._bulgular = dogrula.tum_kontroller(self.spec, veri_kontrolu=veri)
-        except Exception as e:
+        except Exception as e:                                  # noqa: BLE001
+            _log.exception("dogrulama sirasinda hata")
             self._bulgular = [dogrula.Bulgu("hata", "dogrulama",
-                                            "doğrulama sırasında hata: %s" % e)]
+                                            _("doğrulama sırasında hata: %s") % e)]
         self._bulgu_ogeleri(self.dogrulama)
-        if self.bulgu_acilir.isVisible():
-            self._bulgu_ogeleri(self.bulgu_acilir.liste)
-        n_hata = sum(1 for b in self._bulgular if b.seviye == "hata")
-        n_uyari = sum(1 for b in self._bulgular if b.seviye == "uyari")
-        n_bilgi = sum(1 for b in self._bulgular if b.seviye == "bilgi")
-        if n_hata or n_uyari:
-            parca = (["%d hata" % n_hata] if n_hata else []) + \
-                    (["%d uyarı" % n_uyari] if n_uyari else [])
-            metin, seviye = " · ".join(parca), ("hata" if n_hata else "uyari")
-        else:
-            metin, seviye = "Hata yok", "basari"
-        self.dogrulama_ozet.ayarla(metin, seviye)
-        self.dogrulama_ozet.setToolTip("%d hata, %d uyarı, %d bilgi" % (n_hata, n_uyari, n_bilgi))
-        self.durum_rozeti.ayarla(metin, seviye)
-        self.durum_rozeti.setToolTip("%d hata, %d uyarı, %d bilgi — listeyi açmak için tıklayın"
-                                     % (n_hata, n_uyari, n_bilgi))
+        self._serit_guncelle()
         self.s_calistir.kapi_guncelle()
         self.s_analiz.kapi_guncelle()
         self.s_tukenme.kapi_guncelle()
         self._isaretleri_guncelle()
+        if veri:
+            self.bildir_mesaj(_("Doğrulama yenilendi (veri kütüphanesi dahil)."), "bilgi")
+
+    def _serit_guncelle(self, ipucu=None):
+        """Alt dogrulama seridi: ozet, rozet, ilk bulgu, sonraki adim."""
+        n = {s: sum(1 for b in self._bulgular if b.seviye == s)
+             for s in ("hata", "uyari", "bilgi")}
+        if n["hata"]:
+            seviye, ozet = "hata", _("Doğrulama: {n} hata").format(n=n["hata"])
+        elif n["uyari"]:
+            seviye, ozet = "uyari", _("Doğrulama: {n} uyarı").format(n=n["uyari"])
+        else:
+            seviye, ozet = "basari", _("Doğrulama: hata yok")
+        rozet = (_("{n} bilgi").format(n=n["bilgi"]) if n["bilgi"]
+                 else _("{n} uyarı").format(n=n["uyari"]) if n["uyari"]
+                 else _("Tamam"))
+        onemli = [b for b in self._bulgular if b.seviye in ("hata", "uyari")]
+        ilk = ("%s · %s" % (yer_etiketi(onemli[0].yer), cumle_basi(onemli[0].mesaj))
+               if onemli else "")
+        if ipucu is None:
+            ipucu = self._sonraki_ipucu
+        self._sonraki_ipucu = ipucu
+        self.serit.ayarla(seviye, ozet, rozet, ilk, ipucu)
+        self.serit.setToolTip(_("{h} hata, {u} uyarı, {b} bilgi").format(
+            h=n["hata"], u=n["uyari"], b=n["bilgi"]))
 
     def _bulgu_listesini_ac(self):
         self._bulgu_ogeleri(self.bulgu_acilir.liste)
-        self.bulgu_acilir.goster(self.durum_rozeti)
+        self.bulgu_acilir.goster(self.serit.rozet)
 
     def _acilirdan_git(self, oge):
         self.bulgu_acilir.hide()
         self._bulguya_git(oge)
 
-    def _bulguya_git(self, oge):
-        """Dogrulama satirina tiklayinca ilgili sekmeyi ac."""
-        anahtar = yer_sekme_anahtari(oge.data(QtCore.Qt.UserRole))
-        if anahtar is not None:
-            if self.baslangic_acik_mi():
-                self._editoru_goster()
-            self.sekmeye_git(anahtar)
+    def _ilk_bulguya_git(self):
+        onemli = [b for b in self._bulgular if b.seviye in ("hata", "uyari")]
+        if onemli:
+            self.sekmeye_gitmeyi_dene(onemli[0].yer)
 
-    def _sekme_indeksi(self, editor):
-        """Editorun (kaydirma alanina sarili) sekme indeksi; yoksa -1."""
-        for kaydirma, w in self._sayfa_editor.items():
-            if w is editor:
-                return self.sekmeler.indexOf(kaydirma)
-        return -1
-
-    def _yer_sekmesi(self, yer):
-        """Bulgunun 'yer' alanindan sekme indeksi; eslesme yoksa None."""
+    def sekmeye_gitmeyi_dene(self, yer):
+        """Bulgunun yerinden sayfaya gider; sayfa destekliyorsa odaklar."""
         anahtar = yer_sekme_anahtari(yer)
-        return self._sekme_ix.get(anahtar) if anahtar else None
+        if anahtar is None:
+            return False
+        if self.baslangic_acik_mi():
+            self._editoru_goster()
+        if not self.sekmeye_git(anahtar):
+            return False
+        sekme_arayuzu.odakla(self.sekme_widget(anahtar), yer)
+        return True
+
+    def _bulguya_git(self, oge):
+        """Dogrulama satirina tiklayinca ilgili sayfayi ac."""
+        self.sekmeye_gitmeyi_dene(oge.data(QtCore.Qt.UserRole))
 
     def _onizleme_durum(self, mesaj, basarili):
         # Yalnizca SORUN bildirilir: her duzenlemeden sonra gelen "onizleme
-        # guncel" mesaji durum cubugundaki sonraki-adim ipucunu surekli
-        # ortuyordu. Baslangic ekraninda arkadaki bos modelin cizim hatasi da
-        # gosterilmez.
+        # guncel" mesaji gereksizdir.
         if not basarili and not self.baslangic_acik_mi():
-            self.statusBar().showMessage(mesaj, 8000)
+            self.bildir_mesaj(mesaj, "uyari", 8000)
         self.s_calistir.kapi_guncelle()
         self.s_tukenme.kapi_guncelle()
         self._durum_ipucu_guncelle()
+        self._kosu_dugmesi_guncelle()
 
-    def _sekme_durum_mesaji(self, mesaj, _basarili):
-        """Calistir/Analiz/Tukenme bildirimi: durum cubugu + sekme isaretleri."""
-        self.statusBar().showMessage(mesaj, 8000)
+    def _sekme_durum_mesaji(self, mesaj, basarili):
+        """Calistir/Analiz/Tukenme bildirimi."""
+        self.bildir_mesaj(mesaj, "basari" if basarili else "uyari", 8000)
         self._isaretleri_guncelle()
+
+    def _kosu_durumu_degisti(self, kosuyor):
+        self.ust.kosu_durumu(kosuyor)
+        if not kosuyor:
+            self._kosu_dugmesi_guncelle()
+
+    def _kosu_dugmesi_guncelle(self):
+        if not self.ust.kosuyor_mu():
+            self.ust.kosu_izni(*self._kosu_izni())
 
     def _kosu_izni(self):
         """CALISTIR kapisi: once geometri cizilmeli, sonra hata olmamali."""
         if dogrula.hata_var(self._bulgular):
             n = sum(1 for b in self._bulgular if b.seviye == "hata")
-            return False, ("Doğrulamada %d hata var — önce bunları giderin. Sağ "
-                           "alttaki rozete tıklayıp bir bulguyu seçince ilgili "
-                           "sekmeye gidersiniz." % n)
+            return False, _("Doğrulamada %d hata var — önce bunları giderin. Alttaki "
+                            "rozete tıklayıp bir bulguyu seçince ilgili sayfaya "
+                            "gidersiniz.") % n
         if not self.onizleme.cizildi_mi():
-            return False, ("Geometri önizlemesi henüz çizilmedi. Önce çiz, "
-                           "sonra çalıştır: yanlış geometriyle saatlerce koşmamak "
-                           "için önizlemenin çizilmesi bekleniyor.")
+            return False, _("Geometri önizlemesi henüz çizilmedi. Önce çiz, "
+                            "sonra çalıştır: yanlış geometriyle saatlerce koşmamak "
+                            "için önizlemenin çizilmesi bekleniyor.")
         uyari = sum(1 for b in self._bulgular if b.seviye == "uyari")
         if uyari:
-            return True, ("Çalıştırılabilir. %d uyarı var — sonucu etkileyebilir, "
-                          "doğrulama listesini gözden geçirin." % uyari)
-        return True, "Model çalıştırılmaya hazır."
+            return True, _("Çalıştırılabilir. %d uyarı var — sonucu etkileyebilir, "
+                           "doğrulama listesini gözden geçirin.") % uyari
+        return True, _("Model çalıştırılmaya hazır.")
 
     def _calistir_menuden(self):
         if self.baslangic_acik_mi():
@@ -742,11 +743,9 @@ class AnaPencere(GezinmeCephesi, MenulerMixin, ProjeMixin, GecmisMixin, QtWidget
 
     def closeEvent(self, olay):
         if self._kaydetme_sor():
+            self._bolucu_kaydet()
             self.onizleme.kapat()      # openmc kutuphanesini serbest birak
             # Onceki tukenme sonucu arka planda okunuyor olabilir (~3 s).
-            # Calisan bir QThread yok edilirse Qt sureci DUSURUR ("QThread:
-            # Destroyed while thread is still running") -- ornegi acip hemen
-            # kapatan kullanici uygulamayi cokertirdi.
             self.s_tukenme.bekle()
             olay.accept()
         else:
