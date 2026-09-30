@@ -149,7 +149,7 @@ def tema_etiketi(anahtar):
     return _("{ad} tema").format(ad=_(tema.TEMALAR[anahtar]["ad"]))
 
 class _BulguAcilir(QtWidgets.QFrame):
-    """Rozete tiklayinca acilan bulgu listesi; satir ilgili sekmeye goturur."""
+    """Rozete tiklayinca acilan bulgu listesi; satir ilgili sayfaya goturur."""
 
     def __init__(self, parent=None):
         super().__init__(parent, QtCore.Qt.Popup)
@@ -162,10 +162,11 @@ class _BulguAcilir(QtWidgets.QFrame):
         f = self.baslik.font()
         f.setBold(True)
         self.baslik.setFont(f)
-        ipucu = QtWidgets.QLabel("Bir satıra tıklayınca ilgili sekmeye gider.")
+        ipucu = QtWidgets.QLabel(_("Bir satıra tıklayınca ilgili sayfaya gider."))
         ipucu.setObjectName("soluk")
         d = QtWidgets.QVBoxLayout(self)
-        d.setContentsMargins(10, 8, 10, 10)
+        a = kabuk.A
+        d.setContentsMargins(a["m"], a["s"], a["m"], a["m"])
         d.addWidget(self.baslik)
         d.addWidget(ipucu)
         d.addWidget(self.liste, 1)
@@ -272,7 +273,8 @@ class MenulerMixin(object):
         self.ust.d_tur.setMenu(self._tur_menusu)
         self.palet = KomutPaleti(self, self.komut_eylemleri)
         self.ust.komut_istendi.connect(self.palet.ac)
-        self.ust.kosu_istendi.connect(self._calistir_menuden)
+        # Birincil dugme F9 eylemini tetikler (menu/palet/kisayol ile ayni yol).
+        self.ust.kosu_istendi.connect(self.e_calistir.trigger)
         self.ust.durdur_istendi.connect(lambda: self.s_calistir.durdur())
         self.ust.model_ozet.linkActivated.connect(self._baslik_baglantisi)
         # Eski ad: testler ve araclar arac cubugunu bu adla ariyordu.

@@ -132,6 +132,7 @@ class AnaPencere(GezinmeCephesi, MenulerMixin, ProjeMixin, GecmisMixin, QtWidget
         self._tur_hafizasi = {}          # kor turu degisiminde eski turun alanlari
         self._adlar = {}                 # model_adlari: hafizayi ad degisimine uydurmak icin
         self._isaretler = {}
+        self._sonraki_ipucu = ""         # dogrulama seridindeki "sonraki adim"
         self._sag_kip = None
 
     def _sayfalari_kur(self):
@@ -502,8 +503,11 @@ class AnaPencere(GezinmeCephesi, MenulerMixin, ProjeMixin, GecmisMixin, QtWidget
             p = {"ad": self.spec.get("ad", ""), "tur": "?", "boyut": "?", "mod": "?"}
         esc = lambda s: (str(s).replace("&", "&amp;").replace("<", "&lt;")
                          .replace(">", "&gt;"))
-        ozet = ("<a href='kor'>%s</a> · <a href='mod'>%s</a>"
-                % (esc(p["boyut"]), esc(p["mod"])))
+        # Baglanti rengi etkin temadan (maket: ikincil metin, alti cizgisiz);
+        # tema degisiminde _tema_degistir bu islevi yeniden cagirir.
+        stil = "color:%s; text-decoration:none" % tema.renk("metin_ikincil")
+        ozet = ("<a href='kor' style='%s'>%s</a> · <a href='mod' style='%s'>%s</a>"
+                % (stil, esc(p["boyut"]), stil, esc(p["mod"])))
         self.ust.model_ayarla(
             p["ad"], p["tur"], ozet,
             _("Boyuta tıklayınca Kor sayfasına, hesap türüne tıklayınca "
@@ -608,7 +612,8 @@ class AnaPencere(GezinmeCephesi, MenulerMixin, ProjeMixin, GecmisMixin, QtWidget
         ilk = ("%s · %s" % (yer_etiketi(onemli[0].yer), cumle_basi(onemli[0].mesaj))
                if onemli else "")
         if ipucu is None:
-            ipucu = self.serit.ipucu.text() if not ilk else ""
+            ipucu = self._sonraki_ipucu
+        self._sonraki_ipucu = ipucu
         self.serit.ayarla(seviye, ozet, rozet, ilk, ipucu)
         self.serit.setToolTip(_("{h} hata, {u} uyarı, {b} bilgi").format(
             h=n["hata"], u=n["uyari"], b=n["bilgi"]))

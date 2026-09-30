@@ -292,7 +292,12 @@ class DogrulamaSeridi(QtWidgets.QWidget):
         return super().eventFilter(nesne, olay)
 
     def ayarla(self, seviye, ozet, rozet_metni, ilk_bulgu="", ipucu=""):
-        """seviye: "basari" | "uyari" | "hata"."""
+        """seviye: "basari" | "uyari" | "hata".
+
+        Seritte "sonraki adim" ipucu gorunur (maket: "Sonraki adım: …"; hata
+        varsa hatali sayfayi soyler). Ilk bulgunun metni "Bulguya git"
+        baglantisinin ve ipucunun aciklamasidir; ipucu yoksa kendisi gorunur.
+        """
         ikon_adi = {"basari": "circle-check", "uyari": "triangle-alert",
                     "hata": "circle-x"}.get(seviye, "info")
         ikon_bagla(self.durum_ikonu, ikon_adi, seviye, 14)
@@ -301,6 +306,8 @@ class DogrulamaSeridi(QtWidgets.QWidget):
         self.rozet.tur_ayarla(seviye)
         self.d_bulgu.setVisible(bool(ilk_bulgu))
         self.d_bulgu.setToolTip(ilk_bulgu)
-        self.ipucu.setText(ilk_bulgu or ipucu)
-        self.ipucu.setVisible(bool(ilk_bulgu or ipucu))
-        self.ayirici.setVisible(bool(ilk_bulgu or ipucu))
+        metin = ipucu or ilk_bulgu
+        self.ipucu.setText(metin)
+        self.ipucu.setToolTip(ilk_bulgu if ipucu else "")
+        self.ipucu.setVisible(bool(metin))
+        self.ayirici.setVisible(bool(metin))

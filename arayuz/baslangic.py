@@ -417,6 +417,10 @@ class _TurKarti(b.Kart):
         bilgi = self.bilgi
         self.d_bos = b.ikincil_dugme(_("Boş başla"))
         self.d_ornek = b.duz_dugme(_("Örnekten"))
+        # Diyalog disinda QPushButton Enter/Return'e tepki vermez; autoDefault
+        # ile klavyeyle kart secilebilir (odak Tab ile dugmeler arasinda gezer).
+        for d in (self.d_bos, self.d_ornek):
+            d.setAutoDefault(True)
         if bilgi["bos"]:
             self.d_bos.setToolTip(
                 _("Çalışır durumda, sade bir {ad} modeli kurar (malzemeler, "
