@@ -90,6 +90,32 @@ def test_turetilmis_alan_diske_yazilmaz():
             not [b for b in geometri.yapisal_denetim(g) if b.seviye == "hata"])
 
 
-HIZLI = [test_genislet_27_ornek, test_genislet_sablon_ozellikleri,
+def test_agac_eksenel_araliklar():
+    print("\n[GG4] agac modu eksenel araliklar = sablon (gelismise_gec sonrasi)")
+    from cekirdek import geometri, kurucu, sema
+    for ad in ("pwr_eksenel", "pwr_kontrol", "mtr_kor", "sfr_met1000_kor", "pwr_pinhucre",
+               "tamburlu_kor"):
+        s = sema.yukle(os.path.join(ORNEK, ad + ".json"))
+        g = geometri.gelismise_gec(s)
+        hedef = [c["ad"] for c in s["cubuklar"]][:2]
+        sab = (kurucu.aktif_eksenel_aralik(s), kurucu.guc_eksenel_araligi(s, hedef),
+               kurucu.guc_yuksekligi(s, hedef), kurucu.cubuk_eksenel_aralik(s, hedef[0])
+               if hedef else None, sema.model_yuksekligi(s))
+        agac = (kurucu.aktif_eksenel_aralik(g), kurucu.guc_eksenel_araligi(g, hedef),
+                kurucu.guc_yuksekligi(g, hedef), kurucu.cubuk_eksenel_aralik(g, hedef[0])
+                if hedef else None, sema.model_yuksekligi(g))
+        kontrol("%s: aktif, hedef araligi, hedef yuksekligi, cubuk araligi, yukseklik" % ad,
+                sab == agac, "-> %s / %s" % (sab, agac))
+        if hedef:
+            kontrol("%s: fisil_mi / iceriyor_mu ayni" % ad,
+                    kurucu._spec_fisil_mi(s, hedef[0]) == kurucu._spec_fisil_mi(g, hedef[0]))
+        m = geometri.model(g)
+        dil = geometri.eksenel_dilimler(m)
+        kontrol("%s: kok yigini dilimleri model yuksekligini kaplar" % ad,
+                not dil or abs(max(d[1] for d in dil) - min(d[0] for d in dil)
+                               - sema.model_yuksekligi(g)) < 1e-9)
+
+
+HIZLI = [test_genislet_27_ornek, test_agac_eksenel_araliklar, test_genislet_sablon_ozellikleri,
          test_turetilmis_alan_diske_yazilmaz]
 YAVAS = []
