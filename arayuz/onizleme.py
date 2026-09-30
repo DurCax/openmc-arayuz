@@ -67,8 +67,10 @@ from cekirdek import onbellek, sema
 from cekirdek.gunluk import kaydedici
 from arayuz import tema
 from arayuz.ortak import GelismisBolum
+from arayuz.tasarim import tokenlar
 
 _log = kaydedici(__name__)
+A = tokenlar.ARALIK
 
 # Cozunurluk secenekleri -- maliyet baslatmada oldugu icin yuksek varsayilan ucuz.
 # ("Hizli" adi "Hizli mod" ile karisiyordu: dusuk cozunurluk "Dusuk" oldu.)
@@ -167,15 +169,22 @@ class OnizlemeWidget(QtWidgets.QWidget):
             "yeniden başlatır ve değişiklik başına ~3 s sürer.")
         self.yenile_dugme = QtWidgets.QPushButton("Yenile")
 
-        ust = QtWidgets.QHBoxLayout()
-        ust.setContentsMargins(4, 4, 4, 0)
-        ust.addWidget(self.eksen_etiket)
-        ust.addWidget(self.eksen)
-        ust.addWidget(QtWidgets.QLabel("Renk:"))
-        ust.addWidget(self.renklendirme)
-        ust.addWidget(self.gosterge)
-        ust.addStretch(1)
-        ust.addWidget(self.yenile_dugme)
+        # Iki satir: 1280 genislikte dar panelde secim kutulari kirpilmasin.
+        secim = QtWidgets.QHBoxLayout()
+        secim.setSpacing(A["s"])
+        secim.addWidget(self.eksen_etiket)
+        secim.addWidget(self.eksen, 1)
+        secim.addWidget(QtWidgets.QLabel("Renk:"))
+        secim.addWidget(self.renklendirme, 1)
+        eylem = QtWidgets.QHBoxLayout()
+        eylem.addWidget(self.gosterge)
+        eylem.addStretch(1)
+        eylem.addWidget(self.yenile_dugme)
+        ust = QtWidgets.QVBoxLayout()
+        ust.setContentsMargins(A["xs"], A["xs"], A["xs"], 0)
+        ust.setSpacing(A["xs"])
+        ust.addLayout(secim)
+        ust.addLayout(eylem)
 
         # --- tuval ---
         self.figur = Figure(figsize=(5, 4), tight_layout=True)
@@ -196,7 +205,7 @@ class OnizlemeWidget(QtWidgets.QWidget):
         self.gelismis.ekle(gw)
 
         alt = QtWidgets.QHBoxLayout()
-        alt.setContentsMargins(0, 0, 4, 0)
+        alt.setContentsMargins(0, 0, A["xs"], 0)
         alt.addWidget(self.arac_cubugu, 1)
         alt.addWidget(self.gelismis, 0, QtCore.Qt.AlignBottom)
 
