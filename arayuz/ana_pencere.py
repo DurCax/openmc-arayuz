@@ -75,7 +75,8 @@ def main(argv=None):
     #   kisa bir sure sonra uygulaniyor.
     def _buyut_gecikmeli():
         pencere.setWindowState(pencere.windowState() | QtCore.Qt.WindowMaximized)
-    QtCore.QTimer.singleShot(120, _buyut_gecikmeli)
+    # Baglam nesnesi pencere: pencere daha once kapanirsa zamanlayici iptal olur.
+    QtCore.QTimer.singleShot(120, pencere, _buyut_gecikmeli)
     return app.exec()
 
 

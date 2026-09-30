@@ -390,9 +390,51 @@ def test_kenar_durumlari():
         _kapat(p)
 
 
+def test_giris_noktasi():
+    print("\n[KK9] python -m arayuz.ana_pencere: main() pencereyi kurar ve dosyayi acar")
+    uyg = _qt()
+    import types
+    from PySide6 import QtCore, QtWidgets
+    from arayuz import ana_pencere as ap
+    cagrilar = []
+    eski = {"QtWidgets": ap.QtWidgets, "gunluk": ap.gunluk.kur,
+            "hata": ap.hata_yakalayici.kur, "tema": ap.tema.uygula,
+            "dinleyici": ap.ceviri.dinleyici_ekle, "exec": QtWidgets.QApplication.exec,
+            "yerel": QtCore.QLocale()}
+    ap.QtWidgets = types.SimpleNamespace(QApplication=lambda argv: uyg)
+    ap.gunluk.kur = lambda *a, **k: cagrilar.append("gunluk")
+    ap.hata_yakalayici.kur = lambda app: cagrilar.append("hata_yakalayici")
+    ap.tema.uygula = lambda app, *a, **k: cagrilar.append("tema")
+    ap.ceviri.dinleyici_ekle = lambda f: cagrilar.append("dinleyici")
+    QtWidgets.QApplication.exec = lambda *a: 0
+    once = set(QtWidgets.QApplication.topLevelWidgets())
+    try:
+        sonuc = ap.main([os.path.join(ORNEK, "pwr_pinhucre.json")])
+        yeni = [w for w in QtWidgets.QApplication.topLevelWidgets()
+                if w not in once and isinstance(w, ap.AnaPencere)]
+        kontrol("main 0 doner, bir AnaPencere acar",
+                sonuc == 0 and len(yeni) == 1, "-> %s %d" % (sonuc, len(yeni)))
+        kontrol("komut satiri dosyasi kopya olarak acildi (ornek)",
+                bool(yeni) and yeni[0].ornek_kaynagi
+                and yeni[0].ornek_kaynagi.endswith("pwr_pinhucre.json"))
+        kontrol("gunluk, hata yakalayici, tema ve dil dinleyicisi kuruldu",
+                {"gunluk", "hata_yakalayici", "tema", "dinleyici"} <= set(cagrilar),
+                "-> %s" % cagrilar)
+        kontrol("ondalik ayirici nokta (C yerel ayari)",
+                QtCore.QLocale().decimalPoint() == ".")
+        for w in yeni:
+            _kapat(w)
+    finally:
+        ap.QtWidgets = eski["QtWidgets"]
+        ap.gunluk.kur, ap.hata_yakalayici.kur = eski["gunluk"], eski["hata"]
+        ap.tema.uygula, ap.ceviri.dinleyici_ekle = eski["tema"], eski["dinleyici"]
+        QtWidgets.QApplication.exec = eski["exec"]
+        QtCore.QLocale.setDefault(eski["yerel"])
+
+
 HIZLI = [test_palet_calistiri_bulur, test_kosu_dugmesi_durdur, test_rapor_menusu,
          test_galeri_kategorileri, test_baslangic_suresi, test_boyut_ve_yatay_kaydirma,
-         test_onizleme_paneli_hatirlanir, test_kenar_durumlari]
+         test_onizleme_paneli_hatirlanir, test_kenar_durumlari, test_giris_noktasi]
 YAVAS = []
 
 
