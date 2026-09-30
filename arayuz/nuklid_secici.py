@@ -23,6 +23,10 @@ from PySide6 import QtCore, QtWidgets
 
 from cekirdek import nuklidler as nk
 from cekirdek.ceviri import _
+from arayuz.tasarim import tokenlar
+
+A = tokenlar.ARALIK
+R = tokenlar.YARICAP
 
 _AD_ROLU = QtCore.Qt.UserRole
 _AGAC_SATIR = 12            # agacin en az yuksekligi, satir cinsinden
@@ -78,9 +82,8 @@ class _AkisDuzeni(QtWidgets.QLayout):
         return boyut
 
     def _aralik(self):
-        stil = self.parentWidget().style() if self.parentWidget() else QtWidgets.QApplication.style()
-        return stil.layoutSpacing(QtWidgets.QSizePolicy.PushButton,
-                                  QtWidgets.QSizePolicy.PushButton, QtCore.Qt.Horizontal)
+        """Ogeler arasi yatay ve dikey aralik (tasarim tokeni)."""
+        return A["xs"]
 
     def _yerlestir(self, alan, deneme):
         aralik = max(self._aralik(), 0)
@@ -122,8 +125,9 @@ class Cip(QtWidgets.QFrame):
         zemin = _renk("yuzey") if eksik else _renk("vurgu_soluk")
         metin = _renk("hata") if eksik else _renk("metin")
         self.setStyleSheet(
-            "QFrame#cip { background: %s; border: 1px solid %s; border-radius: 0.8em;"
-            " padding-left: 0.5em; } QLabel { color: %s; }" % (zemin, cerceve, metin))
+            "QFrame#cip { background: %s; border: 1px solid %s; border-radius: %dpx;"
+            " padding-left: %dpx; } QLabel { color: %s; }"
+            % (zemin, cerceve, R["buyuk"], A["s"], metin))
 
 
 # ----------------------------------------------------------------------------
@@ -149,19 +153,7 @@ class NuklidSecici(QtWidgets.QWidget):
         self.arama.setClearButtonEnabled(True)
         self.arama.textChanged.connect(self._suz)
 
-        self.set_dugmeleri = {}
-        setler = QtWidgets.QHBoxLayout()
-        setler.addWidget(QtWidgets.QLabel(_("Hazır setler:")))
-        for s in nk.hazir_setler(()):
-            d = QtWidgets.QPushButton(s.baslik)
-            d.clicked.connect(lambda _c=False, k=s.anahtar: self._set_ekle(k))
-            self.set_dugmeleri[s.anahtar] = d
-            setler.addWidget(d)
-        setler.addStretch(1)
-        self.temizle = QtWidgets.QPushButton(_("Temizle"))
-        self.temizle.setToolTip(_("Bütün seçimi kaldırır"))
-        self.temizle.clicked.connect(lambda: self._secimi_degistir([]))
-        setler.addWidget(self.temizle)
+        setler = self._set_dugmelerini_kur()
 
         self.agac = QtWidgets.QTreeWidget()
         self.agac.setHeaderHidden(True)
@@ -178,13 +170,31 @@ class NuklidSecici(QtWidgets.QWidget):
 
         duzen = QtWidgets.QVBoxLayout(self)
         duzen.setContentsMargins(0, 0, 0, 0)
+        duzen.setSpacing(A["s"])
         duzen.addWidget(self.secili_etiket)
         duzen.addWidget(self.cip_alani)
         duzen.addWidget(self.arama)
-        duzen.addLayout(setler)
+        duzen.addWidget(setler)
         duzen.addWidget(self.agac, 1)
         duzen.addWidget(self.bilgi)
         self._cipleri_kur()
+
+    def _set_dugmelerini_kur(self):
+        """Hazir set dugmeleri (tum_setler) + Temizle; dar sayfada alt satira akar."""
+        self.set_dugmeleri = {}
+        alan = QtWidgets.QWidget()
+        akis = _AkisDuzeni(alan)
+        akis.addWidget(QtWidgets.QLabel(_("Hazır setler:")))
+        for s in nk.tum_setler(()):
+            d = QtWidgets.QPushButton(s.baslik)
+            d.clicked.connect(lambda _c=False, k=s.anahtar: self._set_ekle(k))
+            self.set_dugmeleri[s.anahtar] = d
+            akis.addWidget(d)
+        self.temizle = QtWidgets.QPushButton(_("Temizle"))
+        self.temizle.setToolTip(_("Bütün seçimi kaldırır"))
+        self.temizle.clicked.connect(lambda: self._secimi_degistir([]))
+        akis.addWidget(self.temizle)
+        return alan
 
     # ------------------------------------------------------------------
     # disari acik API
@@ -210,7 +220,7 @@ class NuklidSecici(QtWidgets.QWidget):
         else:
             self.bilgi.setText(_("%s — %d nüklid") % (etiket, len(self._adlar)))
             self.bilgi.setStyleSheet("")
-        for anahtar, s in ((s.anahtar, s) for s in nk.hazir_setler(self._adlar)):
+        for anahtar, s in ((s.anahtar, s) for s in nk.tum_setler(self._adlar)):
             d = self.set_dugmeleri[anahtar]
             d.setEnabled(bool(s.nuklidler))
             d.setToolTip(", ".join(s.nuklidler) or _("Bu zincirde yok"))
@@ -259,7 +269,7 @@ class NuklidSecici(QtWidgets.QWidget):
         self.secim_ayarla(liste, sinyal=True)
 
     def _set_ekle(self, anahtar):
-        s = next(s for s in nk.hazir_setler(self._adlar) if s.anahtar == anahtar)
+        s = next(s for s in nk.tum_setler(self._adlar) if s.anahtar == anahtar)
         self._secimi_degistir(self._secim + [n for n in s.nuklidler if n not in self._secim])
 
     def _agac_kur(self):

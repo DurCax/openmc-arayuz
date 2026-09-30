@@ -38,14 +38,11 @@ RENK_TABANI = {
     "arayuz/malzeme/girdiler.py": 1,
     "arayuz/malzeme/yardimcilar.py": 1,
     "arayuz/onizleme.py": 2,
-    "arayuz/sekme_analiz.py": 2,
     "arayuz/sekme_ayar.py": 1,
     "arayuz/sekme_calistir.py": 2,
     "arayuz/sekme_cubuk.py": 1,
     "arayuz/sekme_demet.py": 1,
     "arayuz/sekme_kor.py": 2,
-    "arayuz/sekme_tukenme.py": 6,
-    "arayuz/tukenme_sonuc.py": 5,
 }
 
 # Sahipsiz QLayout taban listesi: "SinifAdi@ilk_ogenin_turu" (YALNIZ KUCULUR)
