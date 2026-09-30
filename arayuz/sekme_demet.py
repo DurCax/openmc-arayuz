@@ -306,11 +306,11 @@ class DemetSekmesi(YerlesimMixin, SekmeTabani):
         if d.get("tur") == "altigen":
             halka = d.get("halka_sayisi") or 1
             gx, gy = altigen.kapsayan_olcu(halka, d["adim"], d.get("yonelim", "y"))
-            self.ozet.setText("%.3f × %.3f cm\n%d hücre, %d halka"
+            self.ozet.setText("%.3f × %.3f cm · %d hücre, %d halka"
                               % (gx, gy, altigen.toplam_hucre(halka), halka))
         else:
             nx, ny = d["boyut"]
-            self.ozet.setText("%.3f × %.3f cm\n%d hücre"
+            self.ozet.setText("%.3f × %.3f cm · %d hücre"
                               % (d["adim"] * nx, d["adim"] * ny, nx * ny))
 
     # ==================================================================

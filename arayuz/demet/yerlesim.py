@@ -62,6 +62,8 @@ class YerlesimMixin(object):
         self.ozet = QtWidgets.QLabel("-")
         self.ozet.setObjectName("monoSoluk")
         self.ozet.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        # Genis ekranda tek satir (haritadan yer calmaz), darda sarilir.
+        self.ozet.setWordWrap(True)
 
         self.izgara_karti = bl.Kart(
             _("Izgara"), aciklama=_("Tıklayın ya da sürükleyin · sağ tık: parçayı seç"))
