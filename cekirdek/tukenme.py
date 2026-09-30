@@ -225,99 +225,20 @@ def yakit_ornek_sayisi(spec):
     Yanabilir malzemelerin geometrideki en buyuk ORNEK (hucre) sayisi.
     "Cubuk cubuk yanma" (diff_burnable_mats) her ornegi ayri malzeme yapar;
     tek ornekte (pin hucre, tek kabuklu kure, homojen tek katmanli kor)
-    hicbir sey degistirmez. Sayim tukenme.hacimler()'in izledigi yolu izler
-    (haritaya / demet anahtarina dogrudan konan malzeme dahil).
-    uygunluk.tukenme_ayirma_anlamli bunu kullanir.
+    hicbir sey degistirmez. uygunluk.tukenme_ayirma_anlamli bunu kullanir.
+    Sayim tukenme_hacim.ornek_sayisi'ndadir (sablon ve agac modu).
     """
     from cekirdek import tukenme_hacim
-    kor = spec.get("kor") or {}
-    adlar = yanabilir_adlar(spec)
-    if kor.get("tur") == "kuresel":
-        return max([sum(1 for k in kor.get("kabuklar") or [] if k.get("malzeme") == ad)
-                    for ad in adlar] or [0])
-    dilimler = _eksenel_dilimler(kor)
-
-    def sayim(parca):
-        return sum(_kor_sayimi(spec, kor, d, parca, e) for _h, d, e in dilimler)
-
-    en_cok = 0
-    for ad in adlar:
-        n = 0
-        for c in spec.get("cubuklar", []):
-            bolge = sum(1 for b in c.get("bolgeler") or [] if b.get("malzeme") == ad)
-            if bolge:
-                n += bolge * sayim(c["ad"])
-        for p in spec.get("plakalar", []):
-            if p.get("et_malzeme") == ad:
-                n += int(p.get("plaka_sayisi") or 1) * sayim(p["ad"])
-        if kor.get("tur") == "tamburlu":
-            n += sum(1 for _h, d, _e in dilimler if (d or kor.get("dolgu")) == ad)
-        else:
-            n += tukenme_hacim.dogrudan_yerlesim(spec, kor, ad, dilimler)["ornek"]
-        en_cok = max(en_cok, n)
-    return en_cok
-
-
-def _kuresel_hacim(kor, ad):
-    V, parcalar, r_ic = 0.0, [], 0.0
-    for k in kor.get("kabuklar") or []:
-        if k.get("malzeme") == ad:
-            v = 4.0 / 3.0 * math.pi * (k["r"] ** 3 - r_ic ** 3)
-            V += v
-            parcalar.append("kabuk r = %g cm: %.4g cm³" % (k["r"], v))
-        r_ic = k["r"]
-    return {"hacim": V if V > 0 else None, "yontem": "analitik" if V > 0 else "yok",
-            "ayrinti": "; ".join(parcalar)}
-
-
-def _malzeme_hacmi(spec, ad, dilimler):
-    """Tek bir yanabilir malzemenin hacim kaydi (hacimler() icin)."""
-    from cekirdek import tukenme_hacim
-    kor = spec["kor"]
-    if kor["tur"] == "kuresel":
-        return _kuresel_hacim(kor, ad)
-    sorunlar = []
-    V, parcalar = tukenme_hacim.cubuk_hacmi(spec, kor, ad, dilimler, sorunlar)
-    v, p = tukenme_hacim.plaka_hacmi(spec, kor, ad, dilimler)
-    V, parcalar = V + v, parcalar + p
-    if kor["tur"] == "tamburlu":
-        v, p = tukenme_hacim.tambur_emici_hacmi(kor, ad)
-        V, parcalar = V + v, parcalar + p
-        # kor silindirini dogrudan dolduran homojen malzeme
-        R = float(kor.get("kor_yaricap") or 0.0)
-        for h, dolgu, _e in dilimler:
-            if (dolgu or kor.get("dolgu")) == ad:
-                V += math.pi * R * R * h
-                parcalar.append("kor silindiri R = %g cm × %g cm" % (R, h))
-    else:
-        d = tukenme_hacim.dogrudan_yerlesim(spec, kor, ad, dilimler)
-        V, parcalar, sorunlar = V + d["hacim"], parcalar + d["parcalar"], sorunlar + d["sorunlar"]
-        altigen = kor["tur"] == "altigen_kafes"
-        if kor.get("dolgu") == ad or any(dd == ad and not altigen for _h, dd, _e in dilimler):
-            sorunlar.append("katmanı/koru doğrudan dolduruyor")
-    if sorunlar:
-        return {"hacim": None, "yontem": tukenme_hacim.KESIN_DEGIL,
-                "ayrinti": "hacmi kesin değil: " + "; ".join(sorunlar)}
-    if V > 0:
-        return {"hacim": V, "yontem": "analitik", "ayrinti": "; ".join(parcalar)}
-    if parcalar:
-        # yerlesim var ama hacmi sifir (tamamen cekili kontrol cubugu emicisi):
-        # malzeme fiilen geometride yok, yakilacak bir sey yok
-        return {"hacim": None, "yontem": "yok",
-                "ayrinti": "hacmi sıfır: " + "; ".join(parcalar)}
-    from cekirdek import uygunluk
-    if ad in (uygunluk.geometri_icerigi(spec).get("malzeme") or set()):
-        # geometride var ama analitik yolu yok (or. kontrol tamburu emicisi)
-        return {"hacim": None, "yontem": tukenme_hacim.KESIN_DEGIL,
-                "ayrinti": "bu yerleşim için analitik hacim yok"}
-    return {"hacim": None, "yontem": "yok", "ayrinti": "malzeme geometride bulunamadı"}
+    return max([tukenme_hacim.ornek_sayisi(spec, ad) for ad in yanabilir_adlar(spec)] or [0])
 
 
 def _hacim_tablosu(spec):
-    """Butun yanabilir malzemelerin kaydi + "zorunlu" (bkz. _zorunlu_mu)."""
-    dilimler = _eksenel_dilimler(spec["kor"])
-    return {ad: dict(_malzeme_hacmi(spec, ad, dilimler), zorunlu=_zorunlu_mu(spec, ad))
-            for ad in yanabilir_adlar(spec)}
+    """Butun yanabilir malzemelerin kaydi + "zorunlu" (bkz. _zorunlu_mu).
+    Sablon modunda tukenme_hacim.sablon_malzeme_hacmi, gelismis (agac)
+    modunda geometri.hacim.analitik (agac gezintisi)."""
+    from cekirdek import tukenme_hacim
+    kayit = tukenme_hacim.malzeme_hacimleri(spec, yanabilir_adlar(spec))
+    return {ad: dict(v, zorunlu=_zorunlu_mu(spec, ad)) for ad, v in kayit.items()}
 
 
 def hacimler(spec):
@@ -346,39 +267,32 @@ def stokastik_hacimler(spec, adlar, orneklem=2_000_000, dizin=None):
     """
     OpenMC'nin stokastik hacim hesabi. Analitik hacmin DOGRULANMASI ve
     analitik hesaplanamayan malzemeler icin. {ad: (hacim, sapma)}.
+    (geometri.hacim.stokastik; sablon ve agac modunda ayni kutu)
     """
-    import tempfile
-    import openmc
-    from cekirdek import kurucu
-    model, bilgi = kurucu.kur(spec)
-    model.tallies = openmc.Tallies()
-    nesneler = bilgi["malzemeler"]
-    alanlar = [nesneler[a] for a in adlar if a in nesneler]
-    gx, gy = bilgi["sinir_kutu"]
-    h = sema.kor_yuksekligi(spec["kor"])
-    z = (h / 2.0) if h else 0.5
-    if spec["kor"]["tur"] == "kuresel":
-        r = gx / 2.0
-        alt, ust = (-r, -r, -r), (r, r, r)
-    else:
-        alt, ust = (-gx / 2, -gy / 2, -z), (gx / 2, gy / 2, z)
-    vc = openmc.VolumeCalculation(alanlar, orneklem, alt, ust)
-    model.settings.volume_calculations = [vc]
-    dizin = dizin or tempfile.mkdtemp(prefix="tukenme_hacim_")
-    eski = os.getcwd()
-    try:
-        os.chdir(dizin)
-        model.export_to_model_xml()
-        openmc.calculate_volumes(output=False)
-        sonuc = openmc.VolumeCalculation.from_hdf5(os.path.join(dizin, "volume_1.h5"))
-    finally:
-        os.chdir(eski)
-    cikti = {}
-    ters = {id(v): k for k, v in nesneler.items()}
-    for m in alanlar:
-        v = sonuc.volumes[m.id]
-        cikti[ters[id(m)]] = (float(v.nominal_value), float(v.std_dev))
-    return cikti
+    from cekirdek.geometri import hacim
+    return hacim.stokastik(spec, adlar, orneklem, dizin)
+
+
+def _hazir_hacimler(spec):
+    """
+    hazirla() icin (hv, atlanan, stokastik_adlar). Gelismis (agac) modunda
+    kesin olmayan hacim (kesik konum/cubuk) stokastik hacme duser ve
+    BILDIRILIR; cubuk cubuk yanmada bu HATA'dir (ornek hacmi kesin degil).
+    """
+    from cekirdek import tukenme_hacim
+    tablo = _hacim_tablosu(spec)
+    kesin_degil = [a for a, v in tablo.items() if not v["hacim"]
+                   and v["yontem"] == tukenme_hacim.KESIN_DEGIL]
+    if kesin_degil and sema.agac_modu(spec) and (spec.get("tukenme") or {}).get(
+            "malzemeleri_ayir"):
+        raise ValueError(
+            "çubuk çubuk yanma kesin örnek hacmi gerektirir; hacmi kesin olmayan "
+            "(kesik) yanabilir malzeme: %s" % ", ".join(kesin_degil))
+    tablo, dusen = tukenme_hacim.stokastik_tamamla(spec, tablo)
+    hv = {ad: v for ad, v in tablo.items() if v["hacim"] or v["zorunlu"]}
+    atlanan = {ad: v["ayrinti"] for ad, v in tablo.items()
+               if not v["hacim"] and not v["zorunlu"] and v["yontem"] != "yok"}
+    return hv, atlanan, dusen
 
 
 # ============================================================================
@@ -406,7 +320,7 @@ def hazirla(spec):
     if not tamam:
         raise ValueError(mesaj)
 
-    hv = hacimler(spec)
+    hv, atlanan, stokastik = _hazir_hacimler(spec)
     eksik = [a for a, v in hv.items() if not v["hacim"]]
     if eksik:
         raise ValueError(
@@ -415,7 +329,9 @@ def hazirla(spec):
             % (", ".join(eksik), "; ".join(hv[a]["ayrinti"] for a in eksik)))
     if not hv:
         raise ValueError("modelde yanabilir (fisil) malzeme yok")
-    atlanan = hacimsiz_zehirler(spec)
+    if stokastik:
+        kaydedici(__name__).warning("stokastik hacimle tükenen malzemeler (kesik "
+                                    "konum): %s", ", ".join(sorted(stokastik)))
     if atlanan:
         kaydedici(__name__).warning("tükenmeye katılmayan yanabilir zehirler: %s",
                                     ", ".join(sorted(atlanan)))
@@ -430,7 +346,8 @@ def hazirla(spec):
     if (spec.get("tukenme") or {}).get("malzemeleri_ayir"):
         ornek = tukenme_hacim.ornekleri_ayir(model, spec, hv, {a: nesneler[a] for a in hv})
     return model, {"zincir": zs, "hacimler": hv, "agir_metal_g": agir,
-                   "yanabilir": list(hv), "atlanan": atlanan, "ornek_sayisi": ornek}
+                   "yanabilir": list(hv), "atlanan": atlanan, "ornek_sayisi": ornek,
+                   "stokastik": stokastik}
 
 
 def _agir_metal_kutlesi(m):

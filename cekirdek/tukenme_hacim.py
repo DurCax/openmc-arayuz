@@ -268,6 +268,150 @@ def plaka_hacmi(spec, kor, ad, dilimler):
 
 
 # ============================================================================
+# 1c. malzeme hacim kaydi ve ornek sayisi (tukenme.py'den tasindi, Dalga G-2)
+#     Sablon modunda asagidaki spec yolu; gelismis (agac) modunda
+#     geometri.hacim (agac gezintisi). Iki yolun ayni sonucu verdigi 27
+#     ornekte olculur: testler/test_geometri_tuketici.py (GT2).
+# ============================================================================
+
+def _agac_mi(spec):
+    return ((spec or {}).get("kor") or {}).get("tur") == "agac"
+
+
+def malzeme_hacimleri(spec, adlar):
+    """{ad: {"hacim": cm3|None, "yontem", "ayrinti"}} -- sablon ya da agac modu."""
+    if _agac_mi(spec):
+        from cekirdek import geometri
+        from cekirdek.geometri import hacim
+        m = geometri.model(spec)
+        return {ad: hacim.analitik(m, ad).sozluk() for ad in adlar}
+    from cekirdek import tukenme as _tk
+    dilimler = _tk._eksenel_dilimler(spec["kor"])
+    return {ad: sablon_malzeme_hacmi(spec, ad, dilimler) for ad in adlar}
+
+
+def ornek_sayisi(spec, ad):
+    """'ad' malzemesinin geometrideki ornek (hucre) sayisi."""
+    if _agac_mi(spec):
+        from cekirdek import geometri
+        from cekirdek.geometri import hacim
+        return hacim.ornek_sayisi(geometri.model(spec), ad)
+    return _sablon_ornek_sayisi(spec, ad)
+
+
+def _sablon_ornek_sayisi(spec, ad):
+    """Sablon: tukenme.hacimler()'in izledigi yol (haritaya / demet anahtarina
+    dogrudan konan malzeme dahil)."""
+    from cekirdek import tukenme as _tk
+    kor = spec.get("kor") or {}
+    if kor.get("tur") == "kuresel":
+        return sum(1 for k in kor.get("kabuklar") or [] if k.get("malzeme") == ad)
+    dilimler = _tk._eksenel_dilimler(kor)
+
+    def sayim(parca):
+        return sum(_tk._kor_sayimi(spec, kor, d, parca, e) for _h, d, e in dilimler)
+
+    n = 0
+    for c in spec.get("cubuklar", []):
+        bolge = sum(1 for b in c.get("bolgeler") or [] if b.get("malzeme") == ad)
+        if bolge:
+            n += bolge * sayim(c["ad"])
+    for p in spec.get("plakalar", []):
+        if p.get("et_malzeme") == ad:
+            n += int(p.get("plaka_sayisi") or 1) * sayim(p["ad"])
+    if kor.get("tur") == "tamburlu":
+        n += sum(1 for _h, d, _e in dilimler if (d or kor.get("dolgu")) == ad)
+    else:
+        n += dogrudan_yerlesim(spec, kor, ad, dilimler)["ornek"]
+    return n
+
+
+def kuresel_hacim(kor, ad):
+    """Kuresel kor: 'ad' kabuklarinin hacmi (analitik)."""
+    V, parcalar, r_ic = 0.0, [], 0.0
+    for k in kor.get("kabuklar") or []:
+        if k.get("malzeme") == ad:
+            v = 4.0 / 3.0 * math.pi * (k["r"] ** 3 - r_ic ** 3)
+            V += v
+            parcalar.append("kabuk r = %g cm: %.4g cm³" % (k["r"], v))
+        r_ic = k["r"]
+    return {"hacim": V if V > 0 else None, "yontem": "analitik" if V > 0 else "yok",
+            "ayrinti": "; ".join(parcalar)}
+
+
+def _sablon_parcalari(spec, kor, ad, dilimler):
+    """Cubuk, plaka, tambur ve dogrudan yerlesim katkilari: (V, parcalar, sorunlar)."""
+    sorunlar = []
+    V, parcalar = cubuk_hacmi(spec, kor, ad, dilimler, sorunlar)
+    v, p = plaka_hacmi(spec, kor, ad, dilimler)
+    V, parcalar = V + v, parcalar + p
+    if kor["tur"] == "tamburlu":
+        v, p = tambur_emici_hacmi(kor, ad)
+        V, parcalar = V + v, parcalar + p
+        # kor silindirini dogrudan dolduran homojen malzeme
+        R = float(kor.get("kor_yaricap") or 0.0)
+        for h, dolgu, _e in dilimler:
+            if (dolgu or kor.get("dolgu")) == ad:
+                V += math.pi * R * R * h
+                parcalar.append("kor silindiri R = %g cm × %g cm" % (R, h))
+        return V, parcalar, sorunlar
+    d = dogrudan_yerlesim(spec, kor, ad, dilimler)
+    V, parcalar, sorunlar = V + d["hacim"], parcalar + d["parcalar"], sorunlar + d["sorunlar"]
+    altigen = kor["tur"] == "altigen_kafes"
+    if kor.get("dolgu") == ad or any(dd == ad and not altigen for _h, dd, _e in dilimler):
+        sorunlar.append("katmanı/koru doğrudan dolduruyor")
+    return V, parcalar, sorunlar
+
+
+def sablon_malzeme_hacmi(spec, ad, dilimler):
+    """Sablon modunda tek bir yanabilir malzemenin hacim kaydi."""
+    kor = spec["kor"]
+    if kor["tur"] == "kuresel":
+        return kuresel_hacim(kor, ad)
+    V, parcalar, sorunlar = _sablon_parcalari(spec, kor, ad, dilimler)
+    if sorunlar:
+        return {"hacim": None, "yontem": KESIN_DEGIL,
+                "ayrinti": "hacmi kesin değil: " + "; ".join(sorunlar)}
+    if V > 0:
+        return {"hacim": V, "yontem": "analitik", "ayrinti": "; ".join(parcalar)}
+    if parcalar:
+        # yerlesim var ama hacmi sifir (tamamen cekili kontrol cubugu emicisi):
+        # malzeme fiilen geometride yok, yakilacak bir sey yok
+        return {"hacim": None, "yontem": "yok",
+                "ayrinti": "hacmi sıfır: " + "; ".join(parcalar)}
+    from cekirdek import uygunluk
+    if ad in (uygunluk.geometri_icerigi(spec).get("malzeme") or set()):
+        # geometride var ama analitik yolu yok (or. kontrol tamburu emicisi)
+        return {"hacim": None, "yontem": KESIN_DEGIL,
+                "ayrinti": "bu yerleşim için analitik hacim yok"}
+    return {"hacim": None, "yontem": "yok", "ayrinti": "malzeme geometride bulunamadı"}
+
+
+def stokastik_tamamla(spec, tablo, orneklem=2_000_000, dizin=None):
+    """
+    Gelismis (agac) mod: analitik hacmi kesin olmayan kayitlar (kesik konum,
+    kesik cubuk, duzensiz bolge -- §8 UYARI 1) OpenMC stokastik hacmiyle
+    tamamlanir ve yontem "stokastik" olarak BILDIRILIR (sessizce degil).
+    Sablon modunda tablo aynen doner (tukenme orada kesin hacim ister).
+    DONER (yeni tablo, [stokastige dusen adlar])
+    """
+    eksik = [a for a, v in tablo.items() if not v.get("hacim") and v.get("yontem") == KESIN_DEGIL]
+    if not eksik or not _agac_mi(spec):
+        return tablo, []
+    from cekirdek.geometri import hacim
+    olculen = hacim.stokastik(spec, eksik, orneklem, dizin)
+    yeni, dusen = dict(tablo), []
+    for ad in eksik:
+        v, s = olculen.get(ad, (None, None))
+        if v:
+            yeni[ad] = dict(tablo[ad], hacim=v, yontem=hacim.STOKASTIK,
+                            ayrinti="stokastik hacim %.6g ± %.2g cm³ (%s)"
+                            % (v, s, tablo[ad].get("ayrinti")))
+            dusen.append(ad)
+    return yeni, dusen
+
+
+# ============================================================================
 # 2. ornek hacimleri (kurulan model)
 # ============================================================================
 
