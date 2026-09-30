@@ -868,3 +868,30 @@ Sıra: **G-0 → KAPI G-A → G-1a → G-1b → (G-2 ‖ G-3) → G-4 → birle�
 3. Hedef (a) düzenekte altıgen bloklar **yansıtıcı blok** (çelik + su kanalı) mı olsun, **yakıt** (altıgen demet) mı? Aklınızda belirli bir reaktör ya da kriter var mı?
 4. **Yüz başına yan sınır koşulu** (çeyrek kor: iki yüz yansıtıcı, iki yüz vakum) Dalga G'ye girsin mi, İ-listesinde mi kalsın? Bugün `pwr_ceyrek_kor` dört yüzü yansıtıcıyla yaklaşık kuruluyor.
 5. Kontrol çubuğu bankaları için "her banka ayrı bir çubuk tanımı" (Kopyala ile) yeterli mi, yoksa aynı tanımın **konum başına farklı daldırılması** isteniyor mu? İkincisi yeni bir yerleşim alanı ve güç haritası anahtarı gerektirir.
+## 15. KAPI G-A — kullanıcı kararları (30.09.2026)
+
+§14'teki sorulara verilen cevaplar. Bu bölüm belgenin önceki bölümleriyle çelişirse BU BÖLÜM geçerlidir.
+
+1. **Gelişmiş moda geçiş tek yönlüdür; geri dönüş yalnız Geri Al ile olur.** Ağaç düzenlendikten
+   sonra sihirbaz kapanır. Geri Al yığını geçişin kendisini de içermelidir (geçişten önceki şablon
+   durumuna tek adımda dönülebilmeli).
+2. **Kesik (kırpılan) blok/çubuk UYARI'dır.** Hacim stokastiğe düşer, güç haritasında ayrı
+   işaretlenir; çubuk çubuk yanmada HATA (önerildiği gibi).
+3. **Yakıt pini kesiti üç şekli destekler: silindir, altıgen ve kare** (bugün yalnız eş merkezli
+   silindir). Bölgeler (yakıt / boşluk / kılıf) aynı şekilde iç içe olabilir; en dış sınır hücre
+   adımıdır. Kurucu, betik, doğrulama (bölge dış ölçüsü adımdan küçük), analitik tükenme hacmi
+   (kare: a², altıgen: (√3/2)·d² düz yüzden düz yüze) ve önizleme bunu destekler. Altıgen pin
+   kesitinin yönelimi pinin yerleştiği kafesle uyumlu olmalı (ölçülür). Ayrıca **kare demetin
+   çevresine yansıtıcı olarak altıgen gelebilmeli**: hedef (a) düzeneğinde altıgen halka
+   bloklarının içeriği kullanıcı seçimidir (yansıtıcı blok ya da yakıt); örnekte yansıtıcı kullanılır,
+   yakıt blok da bir testle kurulur.
+4. **Yüz başına yan sınır koşulu bu dalgada yapılır** (İ-listesinden çıkar). Kare/dikdörtgen dış
+   sınırda dört yüz (−x, +x, −y, +y), altıgen dış sınırda altı yüz ayrı koşul alabilir
+   (vacuum / reflective / periodic, periyodik çiftler tutarlı olmalı). Çeyrek kor örneği
+   (`pwr_ceyrek_kor`) iki simetri yüzü yansıtıcı + iki dış yüz vakum olarak düzeltilir; açıklamadaki
+   "+89 pcm" notu kaldırılır ve çeyrek ile tam korun k'sı 2σ içinde eşitlenir (kabul testi).
+5. **Her kontrol çubuğu ayrı bir hacim/örnektir; başka bir yere girmez.** Aynı tanımın başka
+   konumlarda paylaşılması (distribcell ile) kontrol çubukları için YOK: her çubuk yerleşimi kendi
+   kimliğini, kendi daldırmasını ve kendi hacmini taşır (tükenme ve tally bu hacmi ayrı görür).
+   Gruplar yalnız birden çok çubuğu aynı anda sürmek içindir (isteğe bağlı); bir çubuk en çok bir
+   gruba üyedir.
