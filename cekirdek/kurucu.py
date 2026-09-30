@@ -94,9 +94,9 @@ def _mat(nesneler, ad):
 #
 # Kor artik bir dugum agacindan kurulur: sablon modunda agac genislet(spec)
 # ile turetilir (cekirdek/geometri/sablon.py), gelismis modda
-# spec["geometri"]dir. Eski kor_kur ve yardimcilari cekirdek/_eski_kurucu.py'de
-# DONMUS olarak durur; yalniz esdegerlik kapisi (testler/
-# test_geometri_esdegerlik.py) kullanir. Asagidaki adlar geriye uyum icin
+# spec["geometri"]dir. Eski kor_kur esdegerlik kapisindan (27 ornek x 1e5
+# nokta) gectikten sonra silindi; kapi kayitli parmak izleriyle surer
+# (testler/test_geometri_esdegerlik.py). Asagidaki adlar geriye uyum icin
 # ince sarmalayicilardir (G-2 sonunda tuketiciler geometri API'sine gecer).
 
 def kor_kur(spec, nesneler, universeler):
