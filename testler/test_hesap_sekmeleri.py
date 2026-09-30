@@ -240,8 +240,10 @@ def test_calistir_kusak(gecici=None):
         c.spec_ayarla(sa, proje_a)
         c.calistir()
         kontrol("(on kosul) sahte kosu basladi", c._surec is not None)
-        kontrol("entropi acik: grafik iki eksenli", len(c.figur.axes) == 2,
-                "-> %d" % len(c.figur.axes))
+        # Dalga 2 (Ajan 8): k-eff ve entropi ayri kartlarda (eskiden tek figurde 2 eksen)
+        kontrol("entropi acik: entropi grafigi gorunur",
+                c.yakinsama.isVisibleTo(c) and c.entropi_karti.isVisibleTo(c),
+                "-> %s" % c.entropi_karti.isVisibleTo(c))
         _bekle(lambda: c._surec is None)
         kontrol("ayni projede biten kosu: sonuc gosterildi",
                 c._son_basarili and "1.18342" in c.keff_etiket.text())
@@ -280,8 +282,9 @@ def test_calistir_kusak(gecici=None):
         sk["ayarlar"].setdefault("entropi_mesh", {})["var"] = False
         c3.spec_ayarla(sk, proje_a)
         c3.calistir()
-        kontrol("entropi kapali: grafik TEK eksenli (yalniz k-eff)", len(c3.figur.axes) == 1,
-                "-> %d" % len(c3.figur.axes))
+        kontrol("entropi kapali: yalniz k-eff grafigi",
+                c3.yakinsama.isVisibleTo(c3) and not c3.entropi_karti.isVisibleTo(c3),
+                "-> %s" % c3.entropi_karti.isVisibleTo(c3))
         kontrol("kosu surerken grafik gorunur", _gorunur(c3.tuval, c3))
         _bekle(lambda: c3._surec is None)
         c4 = CalistirSekmesi()

@@ -30,19 +30,15 @@ MUAF = ("arayuz/tasarim/",)
 
 # dosya -> izin verilen en cok #rrggbb sayisi (YALNIZ KUCULUR)
 RENK_TABANI = {
-    "arayuz/ayar/kaynak_formu.py": 1,
     "arayuz/cubuk/cubuk_formu.py": 1,
     "arayuz/cubuk/malzeme_kutusu.py": 1,
     "arayuz/cubuk/sayfalar.py": 1,
     "arayuz/malzeme/bilesim.py": 1,
     "arayuz/malzeme/girdiler.py": 1,
     "arayuz/malzeme/yardimcilar.py": 1,
-    "arayuz/onizleme.py": 2,
-    "arayuz/sekme_ayar.py": 1,
     "arayuz/sekme_calistir.py": 2,
     "arayuz/sekme_cubuk.py": 1,
     "arayuz/sekme_demet.py": 1,
-    "arayuz/sekme_kor.py": 2,
 }
 
 # Sahipsiz QLayout taban listesi: "SinifAdi@ilk_ogenin_turu" (YALNIZ KUCULUR)
