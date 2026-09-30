@@ -59,8 +59,10 @@ class _Sinir(object):
     def ic(self):
         if self.duzlemler is None:
             return -self.yuzey
+        if len(self.duzlemler) != 4:
+            return self._cok_ic()
         a, b, c, d = self.duzlemler
-        return +a & -b & +c & -d if len(self.duzlemler) == 4 else self._cok_ic()
+        return +a & -b & +c & -d
 
     def _cok_ic(self):
         bolge = None
@@ -416,6 +418,8 @@ def kur(spec, nesneler, universeler=None, m=None):
     m = geometri.model(spec) if m is None else m
     k = Kurucu(spec, m, NesneYapici(nesneler), universeler)
     kok, kutu = k.kok_kur()
+    from cekirdek.geometri.kesik import kesik_konumlar
+    k.dizin.kesik = kesik_konumlar(m)
     return kok, kutu, k.dizin
 
 

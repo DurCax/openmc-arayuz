@@ -172,3 +172,9 @@ def _turetilmissiz(deger):
     if isinstance(deger, list):
         return [_turetilmissiz(v) for v in deger]
     return deger
+
+
+def kesik_konumlar(m):
+    """Kesik/gizli kafes konumlari [{"kafes", "yol", "indeks", "harf", "durum"}]."""
+    from cekirdek.geometri.kesik import kesik_konumlar as _kk
+    return _kk(m)
