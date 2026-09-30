@@ -67,9 +67,10 @@ class SinirFormu(QtWidgets.QWidget):
 
     degisti = QtCore.Signal(object)
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, yalniz_yuzler=False):
         super().__init__(parent)
         self._yukleniyor = False
+        self._yalniz_yuzler = bool(yalniz_yuzler)   # sablon: yan/alt/ust sayfada ayri
         self._sinir = {}
         self._duzen, self._yuz_adlari = None, ()
         self.yan = QtWidgets.QComboBox()
@@ -108,8 +109,8 @@ class SinirFormu(QtWidgets.QWidget):
             self._kutu(self.yan, yan, self._sinir.get("yan", "vacuum"))
             self._kutu(self.alt, TEMEL, self._sinir.get("alt", "vacuum"))
             self._kutu(self.ust, TEMEL, self._sinir.get("ust", "vacuum"))
-            self._form.setRowVisible(self.alt, bool(uc_boyutlu))
-            self._form.setRowVisible(self.ust, bool(uc_boyutlu))
+            self._form.setRowVisible(self.alt, bool(uc_boyutlu) and not self._yalniz_yuzler)
+            self._form.setRowVisible(self.ust, bool(uc_boyutlu) and not self._yalniz_yuzler)
             self._yuzleri_kur()
             self.yuz_basina.setChecked(bool(self._sinir.get("yuzler")) and bool(self._duzen))
         finally:
@@ -157,7 +158,7 @@ class SinirFormu(QtWidgets.QWidget):
     def _gorunurluk(self):
         acik = self.yuz_basina.isChecked() and bool(self._duzen)
         self.yuz_kutusu.setVisible(acik)
-        self._form.setRowVisible(self.yan, not acik)
+        self._form.setRowVisible(self.yan, not acik and not self._yalniz_yuzler)
         tek = tek_tarafli_periyodik(self._yuzler(), self._duzen) if acik else []
         self.not_etiketi.setText(
             _("Periyodik yüzün karşı yüzü de periyodik olmalı (tek taraflı periyodik "
@@ -170,11 +171,20 @@ class SinirFormu(QtWidgets.QWidget):
             return dict(zip(self._yuz_adlari, degerler))
         return degerler
 
+    def yuz_basina_uygun(self):
+        return bool(self._duzen)
+
+    def yuzler(self):
+        """Yuz basina kosullar (dict / liste) ya da None (kapali ya da uygun degil)."""
+        if self.yuz_basina.isChecked() and self._duzen:
+            return self._yuzler()
+        return None
+
     def sinir(self):
         """Formun sinir sozlugu (YENI sozluk)."""
         s = {k: v for k, v in self._sinir.items() if k != "yuzler"}
         s["yan"] = self.yan.currentData()
-        if self._form.isRowVisible(self.alt):
+        if self._form.isRowVisible(self.alt) and not self._yalniz_yuzler:
             s["alt"] = self.alt.currentData()
             s["ust"] = self.ust.currentData()
         if self.yuz_basina.isChecked() and self._duzen:

@@ -45,6 +45,14 @@
    Iki kesit ayri Model.plot() oturumlariyla ~2 kat surerdi; tek oturumla
    ek maliyet ~%25'tir (300 ms gecikmeli cizimde kabul edilebilir).
    "Hizli mod" ve cozunurluk seyrek gerektigi icin "Gelismis" altindadir.
+
+ GELISMIS GEOMETRI (Dalga G-3)
+   Sol tik (arac cubugunda kaydirma/yakinlastirma kapaliyken) noktadaki hucreyi
+   openmc.Geometry.find ile bulur; GeometriDizini onu agactaki dugume cevirir
+   ve dugum_secildi(yol) yayilir (Geometri sayfasi agacta secer).
+   vurgula(yol): "Hucre" renklendirmesinde secili dugumun hucreleri vurgu,
+   digerleri soluk renkte cizilir (arayuz/geometri/onizleme_secim.py).
+   Yukseklik sema.model_yuksekligi ile okunur (sablon ve agac modunda ayni).
 ================================================================================
 """
 
@@ -129,15 +137,30 @@ class _LibYoneticisi:
 _LIB = _LibYoneticisi()
 
 
+def _model_yuksekligi(spec):
+    """Sablon ve agac modunda model yuksekligi [cm]; 2B ya da okunamazsa None."""
+    if not spec:
+        return None
+    try:
+        return sema.model_yuksekligi(spec)
+    except (ValueError, KeyError, TypeError):
+        _log.info("model yuksekligi okunamadi", exc_info=True)
+        return None
+
+
 class OnizlemeWidget(QtWidgets.QWidget):
     """Geometri kesiti gosteren matplotlib tuvali + denetimler."""
 
     durum = QtCore.Signal(str, bool)
     olcu_bulundu = QtCore.Signal(float, float)
+    dugum_secildi = QtCore.Signal(object)
 
     def __init__(self, parent=None):
         super().__init__(parent)
         self.spec = None
+        self._vurgu = None                # gelismis editorde secili dugum yolu
+        self._son_model = None            # (model, bilgi, [(eksen, ax)]) tiklama icin
+        self._son_eksenler = []
         self._son_hata = None
         self.son_olcu = None
 
@@ -226,6 +249,7 @@ class OnizlemeWidget(QtWidgets.QWidget):
         self.gosterge.toggled.connect(lambda *_: self._ciz())
         self.hizli_mod.toggled.connect(self._hizli_mod_degisti)
         self.yenile_dugme.clicked.connect(lambda *_: self._ciz())
+        self.tuval.mpl_connect("button_press_event", self._tiklandi)
 
         self._bos_mesaj("Model bekleniyor")
 
@@ -233,7 +257,7 @@ class OnizlemeWidget(QtWidgets.QWidget):
     @staticmethod
     def _uc_boyutlu(spec):
         """Eksenel kesit anlamli mi: 3B model (yukseklik ya da katman)."""
-        return bool(sema.kor_yuksekligi(((spec or {}).get("kor")) or {}))
+        return bool(_model_yuksekligi(spec))
 
     def spec_ayarla(self, spec):
         self.spec = spec
@@ -317,7 +341,7 @@ class OnizlemeWidget(QtWidgets.QWidget):
                                      settings=model.settings)
             piksel = COZUNURLUK[self.cozunurluk.currentIndex()][1]
             kesitler = self.gorunum()
-            h = sema.kor_yuksekligi(self.spec["kor"])
+            h = _model_yuksekligi(self.spec)
 
             yeniden_baslatildi = False
             if self.hizli_mod.isChecked():
@@ -352,7 +376,8 @@ class OnizlemeWidget(QtWidgets.QWidget):
                     ax.set_axis_on()
                     model.plot(basis=eksen, width=genislik, pixels=(piksel, piksel),
                                color_by=self.renklendirme.currentData(),
-                               colors=bilgi["renkler"] if renk_ver else None,
+                               colors=bilgi["renkler"] if renk_ver else self._vurgu_renkleri(
+                                   model, bilgi),
                                legend=gosterge_ister and i == 0,
                                axes=ax)
                     self._eksen_bicimle(ax, eksen, genislik, len(kesitler) == 2)
@@ -360,6 +385,8 @@ class OnizlemeWidget(QtWidgets.QWidget):
                 self.figur.suptitle(self.spec.get("ad", ""), fontsize=9)
             self._gostergeyi_tasi(self.eksenler, len(kesitler) == 2)
             self.tuval.draw_idle()
+            self._son_model = (model, bilgi)
+            self._son_eksenler = list(zip(kesitler, eksenler))
             self._son_hata = None
             self.son_olcu = (gx, gy)
             self.olcu_bulundu.emit(gx, gy)
@@ -416,6 +443,57 @@ class OnizlemeWidget(QtWidgets.QWidget):
         else:
             ax.legend(tutamaklar, etiketler, loc="upper center",
                       bbox_to_anchor=(0.5, -0.09), **ayar)
+
+    # ------------------------------------------------------------------
+    # gelismis geometri: tiklama -> dugum, vurgu
+    # ------------------------------------------------------------------
+    def vurgula(self, yol):
+        """Secili dugum (Geometri sayfasi). Hucre renklendirmesinde yeniden cizer."""
+        self._vurgu = tuple(yol) if yol else None
+        if self.renklendirme.currentData() == "cell" and self.spec is not None:
+            self.iste()
+
+    def _vurgu_renkleri(self, model, bilgi):
+        if not self._vurgu:
+            return None
+        from arayuz.geometri.onizleme_secim import vurgu_renkleri
+        from matplotlib.colors import to_rgb
+        vurgu = tuple(int(255 * v) for v in to_rgb(tema.renk("vurgu")))
+        soluk = tuple(int(255 * v) for v in to_rgb(tema.renk("yuzey3")))
+        return vurgu_renkleri(model, bilgi.get("geometri_dizini"), self._agac(),
+                              self._vurgu, vurgu, soluk)
+
+    def _agac(self):
+        from cekirdek import geometri
+        try:
+            return geometri.genislet(self.spec)
+        except Exception:
+            _log.info("onizleme agaci kurulamadi", exc_info=True)
+            return {}
+
+    def nokta_sec(self, eksen, a, b):
+        """Kesit duzlemindeki (a, b) noktasinin dugum yolu; bulunursa yayar."""
+        if self._son_model is None:
+            return None
+        from arayuz.geometri.onizleme_secim import nokta_yolu
+        nokta = {"xy": (a, b, 0.0), "xz": (a, 0.0, b), "yz": (0.0, a, b)}.get(eksen)
+        if nokta is None:
+            return None
+        model, bilgi = self._son_model
+        yol = nokta_yolu(model, bilgi.get("geometri_dizini"), self._agac(), nokta)
+        if yol is not None:
+            self.dugum_secildi.emit(yol)
+        return yol
+
+    def _tiklandi(self, olay):
+        if olay.button != 1 or olay.inaxes is None or olay.xdata is None:
+            return
+        if getattr(self.arac_cubugu, "mode", ""):
+            return                        # kaydirma / yakinlastirma araci acik
+        for eksen, ax in self._son_eksenler:
+            if ax is olay.inaxes:
+                self.nokta_sec(eksen, olay.xdata, olay.ydata)
+                return
 
     # ------------------------------------------------------------------
     def cizildi_mi(self):

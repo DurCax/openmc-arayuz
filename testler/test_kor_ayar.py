@@ -105,7 +105,17 @@ def test_kor_tur_bilgisi():
     k = _kor(spec)
     tur_kutusu = [w for w in k.findChildren(QtWidgets.QComboBox)
                   if "tek_cubuk" in _oge_verileri(w) or "kare_kafes" in _oge_verileri(w)]
-    kontrol("Kor sekmesinde kor turu secim kutusu YOK", not tur_kutusu and not hasattr(k, "tur"))
+    # Dalga G-3 (§10, KAPI G-A onayi): tek tur secicisi "Duzenek sablonu"dur ve
+    # turu KENDISI degistirmez -- pencerenin kor_turunu_degistir yoluna
+    # (tur_secildi) iletir: tek yol, tek kural korunur.
+    istenen = []
+    k.tur_secildi.connect(istenen.append)
+    k.sablon_secici.setCurrentIndex(k.sablon_secici.findData("kare_kafes"))
+    k.sablon_secici.activated.emit(k.sablon_secici.currentIndex())
+    kontrol("tek tur secicisi (duzenek sablonu); turu pencereye iletir, spec degismez",
+            tur_kutusu == [k.sablon_secici] and not hasattr(k, "tur")
+            and istenen == ["kare_kafes"] and spec["kor"]["tur"] == "tek_demet",
+            "-> %s %s" % (istenen, spec["kor"]["tur"]))
     kontrol("tur bilgisi: ad + nereden degisir",
             TUR_ADLARI["tek_demet"] in k.tur_etiket.text()
             and "model başlığı" in k.tur_etiket.text(), "-> %s" % k.tur_etiket.text())

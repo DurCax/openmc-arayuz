@@ -268,6 +268,12 @@ class AnaPencere(GezinmeCephesi, MenulerMixin, ProjeMixin, GecmisMixin, QtWidget
         self.s_calistir.degisti.connect(self._degisti)
         self.s_calistir.kosu_durumu_degisti.connect(self._kosu_durumu_degisti)
         self.s_kor.tur_degistir_istendi.connect(self._tur_menusunu_ac)
+        # Geometri sayfasi (Dalga G-3): sablon secici, tek adimlik spec islemleri
+        # (gelismise gecis, agac islemleri) ve onizleme <-> agac secimi.
+        self.s_kor.tur_secildi.connect(self.kor_turunu_degistir)
+        self.s_kor.islem_uygulayici = self.spec_islemi_uygula
+        self.s_kor.dugum_secildi.connect(self.onizleme.vurgula)
+        self.onizleme.dugum_secildi.connect(self.s_kor.dugum_sec)
 
     def _sayaclari_kur(self):
         self._dog_sayac = QtCore.QTimer(self)

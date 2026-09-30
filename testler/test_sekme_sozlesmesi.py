@@ -206,7 +206,7 @@ def test_gezinme_cephesi():
                 not p.sekme_gorunur_mu("demet") and p.sekmeye_git("demet", sessiz=True) is False)
         kontrol("gorunur sekmeye gidilir", p.sekmeye_git("kor") and p.gecerli_sekme() == "kor")
         kontrol("sayfa widget'i sarar", p.sekme_sayfasi("kor").widget() is p.s_kor)
-        kontrol("baslik isaretsiz", p.sekme_basligi("kor") == "Kor")
+        kontrol("baslik isaretsiz", p.sekme_basligi("kor") == "Geometri")
         isaret, ipucu = p.sekme_isareti("malzemeler")
         kontrol("isaret + ipucu", isaret in ("!", "•", "✓") and isinstance(ipucu, str),
                 "-> %r" % ((isaret, ipucu),))

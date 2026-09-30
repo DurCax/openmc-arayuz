@@ -6,8 +6,9 @@ yerlesimi (arayuz/sekme_kor.py'den bolundu; davranis degismedi).
 Bolumler bilesenler.Kart'tir (Dalga 2, Ajan 8: yalnizca gorunum). Kartlarin
 ozellik adlari (kafes_kutu, tambur_kutu, kabuk_kutu, eksen_kutu, yans_kutu,
 katman_kutu) ve form referanslari (_eksen_form, _yans_form) sekme ve testler
-tarafindan kullanilir. Bu dosyaya YENI ozellik eklenmez (Dalga G bu sekmeyi
-esnek geometri sekmesine donusturecek).
+tarafindan kullanilir. Dalga G-3: sayfa artik "Geometri"dir; bu dosyadaki
+kartlar SABLON gorunumudur (sablon_gorunumu); gelismis editor ve sablon secici
+arayuz/kor/geometri_sayfasi.py'dedir.
 """
 
 from PySide6 import QtCore, QtWidgets
@@ -17,6 +18,7 @@ from arayuz import izgara
 from arayuz.kor_altigen import AltigenKorHaritasi
 from arayuz.ortak import ipucu, sayi, tamsayi
 from arayuz.tasarim import tokenlar
+from cekirdek.ceviri import _
 
 A = tokenlar.ARALIK
 
@@ -155,7 +157,12 @@ class KorYerlesimMixin(object):
     # kartlar
     # ------------------------------------------------------------------
     def _yerlesimi_kur(self):
-        duzen = QtWidgets.QVBoxLayout(self)
+        """Sayfa = sablon gorunumu | gelismis editor (arayuz/kor/geometri_sayfasi.py)."""
+        ana = QtWidgets.QVBoxLayout(self)
+        ana.setSpacing(A["l"])
+        self.sablon_gorunumu = QtWidgets.QWidget()
+        duzen = QtWidgets.QVBoxLayout(self.sablon_gorunumu)
+        duzen.setContentsMargins(0, 0, 0, 0)
         duzen.setSpacing(A["l"])
         duzen.addWidget(self._tur_karti())
         duzen.addWidget(self._harita_karti(), 1)
@@ -168,7 +175,10 @@ class KorYerlesimMixin(object):
         duzen.addLayout(ikili)
         duzen.addWidget(self._katman_karti())
         duzen.addWidget(self._ozet_satiri())
+        duzen.addWidget(self._gecis_satiri())
         duzen.addStretch(1)
+        ana.addWidget(self.sablon_gorunumu)
+        ana.addWidget(self._gelismis_gorunumu(), 1)
 
     def _satir(self, etiket, w):
         e = QtWidgets.QLabel(etiket)
@@ -178,13 +188,14 @@ class KorYerlesimMixin(object):
     def _tur_karti(self):
         """Kor turu (degistirme baglantisi) ve ture ozgu tekil alanlar."""
         self.form = _form()
+        self.form.addRow(_("Düzenek şablonu:"), self.sablon_secici)
         self.satir_cubuk = self._satir("Çubuk:", self.cubuk)
         self.satir_plaka = self._satir("Plaka elemanı:", self.plaka)
         self.satir_demet = self._satir("Demet:", self.demet)
         self.satir_tb_dolgu = self._satir("Kor dolgusu:", self.tb_dolgu)
         self.satir_tb_kor_r = self._satir("Kor yarıçapı:", self.tb_kor_r)
         self.satir_adim = self._satir("Hücre adımı:", self.adim)
-        kart = b.Kart("Kor")
+        kart = b.Kart(_("Geometri"))
         kart.ekle(self.tur_etiket)
         kart.govde.addLayout(self.form)
         return kart
@@ -263,6 +274,7 @@ class KorYerlesimMixin(object):
         ed.addRow(self.alt_etiket, self.bc_alt)
         self.ust_etiket = QtWidgets.QLabel("Üst sınır:")
         ed.addRow(self.ust_etiket, self.bc_ust)
+        ed.addRow(self.yuz_sinir)
         ed.addRow(self.sinir_notu)
         self.eksen_kutu.govde.addLayout(ed)
         return self.eksen_kutu
