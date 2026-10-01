@@ -631,7 +631,7 @@ def yeniden_uret(m):
         return None
     try:
         yeni = parametrik_uret(k["anahtar"], param)
-    except (TypeError, ValueError):
+    except (TypeError, ValueError):   # gecersiz kayit: belgelenen donus None (elle duzenleme)
         return None
     yeni["ad"] = m.get("ad", yeni["ad"])
     if m.get("renk"):
@@ -674,7 +674,7 @@ def parametre_uyarilari(anahtar, param):
         gz = float(p.get("gozeneklilik") or 0.0)
         try:
             beklenen = u3si2_yogunlugu(u, gz)
-        except ValueError as e:
+        except ValueError as e:       # metin formun altinda kullaniciya gosterilir
             uyari.append(str(e))
             beklenen = None
         yog = p.get("yogunluk")

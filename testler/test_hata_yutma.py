@@ -55,16 +55,10 @@ KABA_EKLEME = {"append", "add", "extend", "insert"}
 #   (T) Dalga 1 tabani (eski anahtar "islev" -> "modul:islev" tasindi; 26 kayit).
 #   (Y) D1-C yeni kurali (hata metnini alana/listeye yazip birakma) ile eklenen
 #       taban cizgisi; DUZELTME Dalga 2 sahiplerine kalir (7 kayit).
-IZINLI = {
-    "cekirdek.dogrula.veri:_kutuphane_icerigi": 1,                # (T)
-    "cekirdek.uygunluk:_korelasyon": 1,                           # (T)
-    "cekirdek.uygunluk:_kutle": 1,                                # (T)
-    "cekirdek.uygunluk:_ortalama_kutle": 1,                       # (T)
-    "cekirdek.uygunluk:tukenme_ayirma_anlamli": 1,                # (T)
-    "cekirdek.veri_bilgi:_h5_sicakliklari": 1,                    # (T)
-    "cekirdek.veri_bilgi:nuklid_enerji_tavani": 1,                # (T)
-    "cekirdek.veri_bilgi:zincir_kontrol": 1,                      # (Y) sonuc = (False, "...%s" % e, None)
-}
+# 01.10.2026 (Dalga 3, Ajan 11): son 8 cekirdek kaydi temizlendi (her biri artik
+# loglanir -- uyar_bir_kez -- ya da kullaniciya gosterilir). Liste BOS: yeni bir
+# sessiz except KALDI verir.
+IZINLI = {}
 
 
 def _genis_mi(tur):

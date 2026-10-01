@@ -12,6 +12,9 @@ from cekirdek.sema import malzeme_bul
 from cekirdek import kurucu
 from cekirdek.dogrula._ortak import Bulgu
 from cekirdek.ceviri import _
+from cekirdek.gunluk import kaydedici, uyar_bir_kez
+
+_log = kaydedici(__name__)
 
 
 # ============================================================================
@@ -56,6 +59,8 @@ def _kutuphane_icerigi():
                 termal.update(mats)
         return notron, termal
     except Exception:
+        # cagiran (veri_kutuphanesi_kontrol) "okunamadi" bulgusunu gosterir
+        uyar_bir_kez(_log, "cross_sections.xml okunamadi: %s", yol)
         return None, None
 
 

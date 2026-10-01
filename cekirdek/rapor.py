@@ -205,7 +205,7 @@ def _openmc_metni(meta, log):
         try:
             import openmc
             return _("%s (kurulu; koşu yok)") % openmc.__version__
-        except ImportError:
+        except ImportError:           # OpenMC kurulu degil: alan "bilinmiyor" olur (uyari)
             return None
     if log.get("openmc_commit"):
         return "%s (commit %s)" % (surum, log["openmc_commit"][:12])

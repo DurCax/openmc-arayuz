@@ -33,7 +33,7 @@ def _pyproject_surumu(yol=_PYPROJECT):
     try:
         with open(yol, "rb") as f:
             return tomllib.load(f)["project"]["version"]
-    except (OSError, KeyError, ValueError):
+    except (OSError, KeyError, ValueError):   # siradaki kaynaga dusulur (surum())
         return None
 
 
@@ -41,7 +41,7 @@ def _meta_surumu():
     from importlib import metadata
     try:
         return metadata.version(PAKET_ADI)
-    except metadata.PackageNotFoundError:
+    except metadata.PackageNotFoundError:     # paket kurulu degil: pyproject'e dusulur
         return None
 
 

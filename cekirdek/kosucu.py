@@ -68,7 +68,7 @@ def cevrim_satiri(satir):
         return None
     try:
         sutunlar = [float(x) for x in m.group(3).split()]
-    except ValueError:
+    except ValueError:                # cevrim satiri degil (OpenMC baska bir satir)
         return None
     if not sutunlar or len(sutunlar) > 2:
         return None
@@ -227,7 +227,9 @@ def dizin_hazirla(dizin, temizle=True):
                 try:
                     os.remove(os.path.join(dizin, ad))
                 except OSError:
-                    pass
+                    # eski sonuc dosyasi kalirsa yeni koşunun sonucu sanilabilir
+                    _log.warning("eski kosu dosyasi silinemedi: %s",
+                                 os.path.join(dizin, ad), exc_info=True)
     os.makedirs(dizin, exist_ok=True)
     return dizin
 

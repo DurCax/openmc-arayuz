@@ -325,7 +325,7 @@ class _Denetci(object):
         try:
             _k.kutu(kes)
             return True
-        except (KeyError, TypeError, ValueError):
+        except (KeyError, TypeError, ValueError):   # gecersiz kesit: cagiran bulgu yazar
             return False
 
     def kesit(self, kes, yol, kok=False):

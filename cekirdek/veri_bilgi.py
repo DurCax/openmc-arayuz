@@ -29,6 +29,9 @@
 import os
 import xml.etree.ElementTree as ET
 from cekirdek.ceviri import _
+from cekirdek.gunluk import kaydedici, uyar_bir_kez
+
+_log = kaydedici(__name__)
 
 _NUKLID_ONBELLEK = {}      # nuklid adi -> (en_dusuk, en_yuksek) K
 _SAB_ONBELLEK = {}         # S(a,b) adi -> (en_dusuk, en_yuksek) K
@@ -65,7 +68,7 @@ def _h5_sicakliklari(dosya, ad, tur):
     """HDF5 dosyasindan sicaklik listesini okur (veri yuklemeden)."""
     try:
         import h5py
-    except ImportError:
+    except ImportError:          # h5py yoksa sicaklik araligi bilinmez (opsiyonel bilgi)
         return None
     if not dosya or not os.path.exists(dosya):
         return None
@@ -85,13 +88,14 @@ def _h5_sicakliklari(dosya, ad, tur):
             for k in anahtarlar:
                 try:
                     sicakliklar.append(int(str(k).replace("K", "")))
-                except ValueError:
+                except ValueError:   # sicaklik olmayan anahtar ("0K" disi grup) atlanir
                     pass
             # 0 K yalnizca bazi kutuphanelerde bulunur ve kullanilabilir
             # bir calisma sicakligi degildir; alt sinir olarak sayilmaz.
             gercek = [t for t in sicakliklar if t > 0]
             return (min(gercek), max(gercek)) if gercek else None
     except Exception:
+        uyar_bir_kez(_log, "HDF5 sicakliklari okunamadi: %s (%s)", dosya, ad)
         return None
 
 
@@ -121,6 +125,7 @@ def nuklid_enerji_tavani(nuklid):
                     if anahtarlar:
                         sonuc = float(g[anahtarlar[0]][-1])
         except Exception:
+            uyar_bir_kez(_log, "enerji tavani okunamadi: %s (%s)", nuklid, dosya)
             sonuc = None
     _ENERJI_ONBELLEK[nuklid] = sonuc
     return sonuc
@@ -238,6 +243,7 @@ def zincir_kontrol(yol, tam=False):
             f.seek(max(0, boyut - 512))
             son = f.read()
     except OSError as e:
+        _log.warning("zincir dosyasi okunamadi: %s", yol, exc_info=True)
         return False, _("zincir dosyası okunamadı: %s") % e, None
     if b"</depletion_chain>" not in son:
         return False, (_("zincir dosyası yarım: kapanış etiketi yok (%d bayt). "
