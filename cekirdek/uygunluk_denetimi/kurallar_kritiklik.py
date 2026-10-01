@@ -19,7 +19,7 @@ kurallar denetlenir. VVOzeti yoksa K6 "USL hesaplanamadi" der.
 
 from cekirdek.ceviri import _, N_
 from cekirdek.uygunluk_denetimi.kurallar import STANDART, IYI_UYGULAMA, Kural
-from cekirdek.uygunluk_denetimi.profiller import NUREG_6698
+from cekirdek.uygunluk_denetimi.profiller import NUREG_6698, ESITLIK, TABLO
 from cekirdek.uygunluk_denetimi.kurallar_rapor import belirsizlik_metni
 from cekirdek.uygunluk_denetimi.vv_arayuz import AOA_KATEGORILERI
 
@@ -232,15 +232,15 @@ def k14_seriler(kural, baglam):
 
 
 KURALLAR = (
-    Kural("K6", "B", N_("Kabul koşulu k + 2σ < USL"), NUREG_6698 + " eş. (1), (35), (36)",
+    Kural("K6", "B", N_("Kabul koşulu k + 2σ < USL"), NUREG_6698 + " " + ESITLIK + " (1), (35), (36)",
           STANDART, k6_usl),
     Kural("K6-AOA", "B", N_("Uygulanabilirlik alanı (kategorik)"),
-          NUREG_6698 + " §2.5, Tablo 2.3", STANDART, k6_aoa),
-    Kural("K8", "B", N_("Pozitif yanlılık kredilendirilmez"), NUREG_6698 + " §2.4.1 eş. (8)",
+          NUREG_6698 + " §2.5, " + TABLO + " 2.3", STANDART, k6_aoa),
+    Kural("K8", "B", N_("Pozitif yanlılık kredilendirilmez"), NUREG_6698 + " §2.4.1 " + ESITLIK + " (8)",
           STANDART, k8_pozitif_yanlilik),
-    Kural("K9", "B", N_("k_calc / k_exp normalleştirmesi"), NUREG_6698 + " §2.4.1 eş. (9)",
+    Kural("K9", "B", N_("k_calc / k_exp normalleştirmesi"), NUREG_6698 + " §2.4.1 " + ESITLIK + " (9)",
           STANDART, k9_normallestirme),
-    Kural("K10", "B", N_("Vaka sayısı ve güven düzeyi"), NUREG_6698 + " §2.2, Tablo 2.2",
+    Kural("K10", "B", N_("Vaka sayısı ve güven düzeyi"), NUREG_6698 + " §2.2, " + TABLO + " 2.2",
           STANDART, k10_vaka_sayisi),
     Kural("K11", "B", N_("Alt-kritik pay ΔSM ≥ 0.02"), NUREG_6698 + " §2.4.5",
           STANDART, k11_pay),

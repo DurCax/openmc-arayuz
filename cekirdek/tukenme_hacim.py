@@ -51,10 +51,20 @@ import math
 
 from cekirdek import sema
 from cekirdek.geometri.kesit import pin_bolge_alani
+from cekirdek.ceviri import _, N_
 
 SQ3 = math.sqrt(3.0)
 KESIN_DEGIL = "stokastik hesap gerekli"
 _GORELI_TOLERANS = 1e-9
+# "yontem" degerleri tanimlayicidir (karsilastirilir); gorunen adlari:
+_YONTEM_ADLARI = {KESIN_DEGIL: N_("stokastik hesap gerekli"), "analitik": N_("analitik"),
+                  "stokastik": N_("stokastik"), "yok": N_("yok")}
+
+
+def yontem_metni(yontem):
+    """Hacim yonteminin gorunen adi, etkin dilde; bilinmiyorsa kendisi."""
+    ad = _YONTEM_ADLARI.get(yontem)
+    return _(ad) if ad else str(yontem)
 
 
 # ============================================================================
@@ -122,7 +132,7 @@ def dogrudan_yerlesim(spec, kor, ad, dilimler):
         if n:
             V += n * kor_hucre_alani(kor) * h
             ornek += n
-            parcalar.append("kor haritası: %d konum × %g cm" % (n, h))
+            parcalar.append(_("kor haritası: %d konum × %g cm") % (n, h))
         for d in spec.get("demetler") or []:
             ic, dis = _demet_konum_sayilari(d, ad)
             if not (ic or dis):
@@ -131,12 +141,12 @@ def dogrudan_yerlesim(spec, kor, ad, dilimler):
             if not m:
                 continue
             if dis:
-                sorunlar.append("'%s' demetinin dış halkasında (pin hücresi zarfla "
-                                "kırpılır)" % d["ad"])
+                sorunlar.append(_("'%s' demetinin dış halkasında (pin hücresi zarfla "
+                                "kırpılır)") % d["ad"])
             if ic:
                 V += m * ic * _demet_hucre_alani(d) * h
                 ornek += m * ic
-                parcalar.append("%s: %d konum × %d demet × %g cm" % (d["ad"], ic, m, h))
+                parcalar.append(_("%s: %d konum × %d demet × %g cm") % (d["ad"], ic, m, h))
     sorunlar += _alan_bagimli_kullanim(spec, kor, ad)
     return {"hacim": V, "ornek": ornek, "parcalar": parcalar, "sorunlar": sorunlar}
 
@@ -150,13 +160,13 @@ def _alan_bagimli_kullanim(spec, kor, ad):
         if d["ad"] not in kullanilan:
             continue
         if d.get("dolgu_disi") == ad:
-            sorunlar.append("'%s' demetinin dış dolgusu" % d["ad"])
+            sorunlar.append(_("'%s' demetinin dış dolgusu") % d["ad"])
         k = d.get("kilif") if d.get("tur") == "altigen" else None
         if isinstance(k, dict) and k.get("malzeme") == ad:
-            sorunlar.append("'%s' demetinin kılıfı" % d["ad"])
+            sorunlar.append(_("'%s' demetinin kılıfı") % d["ad"])
     y = kor.get("yansitici") or {}
     if y.get("var") and y.get("malzeme") == ad and kor.get("tur") != "tamburlu":
-        sorunlar.append("kor yansıtıcısı")
+        sorunlar.append(_("kor yansıtıcısı"))
     return sorunlar
 
 
@@ -179,7 +189,7 @@ def tambur_emici_hacmi(kor, ad):
     aci = float(t.get("emici_aci") or 120.0)
     H = sema.kor_yuksekligi(kor) or 1.0
     v = n * (aci / 360.0) * math.pi * (R * R - r_ic * r_ic) * H
-    return v, ["%d tambur emici yayı %g° (r = %g…%g cm) × %g cm" % (n, aci, r_ic, R, H)]
+    return v, [_("%d tambur emici yayı %g° (r = %g…%g cm) × %g cm") % (n, aci, r_ic, R, H)]
 
 
 def kontrol_emici_uzunlugu(spec, cubuk):
@@ -229,24 +239,24 @@ def cubuk_hacmi(spec, kor, ad, dilimler, sorunlar):
             if b.get("malzeme") != ad and not (kontrol and c.get("izleyici_malzeme") == ad):
                 continue
             if b.get("r") is None:
-                sorunlar.append("'%s' çubuğunun dış bölgesi (alan kafes adımına bağlı)"
+                sorunlar.append(_("'%s' çubuğunun dış bölgesi (alan kafes adımına bağlı)")
                                 % c["ad"])
                 continue
             kesir = kontrol_emici_kesri(spec, c, ad) if kontrol else 1.0
             if kesir is None:
-                sorunlar.append("'%s' kontrol çubuğu (daldırmaya bağlı)" % c["ad"])
+                sorunlar.append(_("'%s' kontrol çubuğu (daldırmaya bağlı)") % c["ad"])
                 continue
             r_ic = bolgeler[i - 1]["r"] if i > 0 else 0.0
             # kare/altigen kesitli pin (§15.3): alan pi r^2 degil
             sekil = c.get("kesit") or "silindir"
             alan = pin_bolge_alani(sekil, b["r"]) - pin_bolge_alani(sekil, r_ic)
-            ek = " (daldırma %%%g: boyun %%%.4g'i)" % (
+            ek = _(" (daldırma %%%g: boyun %%%.4g'i)") % (
                 float(c.get("daldirma") or 0.0), 100.0 * kesir) if kontrol else ""
             for h, dolgu, esleme in dilimler:
                 n = _tk._kor_sayimi(spec, kor, dolgu, c["ad"], esleme)
                 if n:
                     V += alan * h * kesir * n
-                    parcalar.append("%s, %d. bölge: %d adet × %g cm%s"
+                    parcalar.append(_("%s, %d. bölge: %d adet × %g cm%s")
                                     % (c["ad"], i + 1, n, h, ek))
     return V, parcalar
 
@@ -263,7 +273,7 @@ def plaka_hacmi(spec, kor, ad, dilimler):
             n = _tk._kor_sayimi(spec, kor, dolgu, p["ad"], esleme)
             if n:
                 V += alan * h * n
-                parcalar.append("%s: %d eleman × %g cm" % (p["ad"], n, h))
+                parcalar.append(_("%s: %d eleman × %g cm") % (p["ad"], n, h))
     return V, parcalar
 
 
@@ -309,7 +319,7 @@ def kuresel_hacim(kor, ad):
         if k.get("malzeme") == ad:
             v = 4.0 / 3.0 * math.pi * (k["r"] ** 3 - r_ic ** 3)
             V += v
-            parcalar.append("kabuk r = %g cm: %.4g cm³" % (k["r"], v))
+            parcalar.append(_("kabuk r = %g cm: %.4g cm³") % (k["r"], v))
         r_ic = k["r"]
     return {"hacim": V if V > 0 else None, "yontem": "analitik" if V > 0 else "yok",
             "ayrinti": "; ".join(parcalar)}
@@ -329,13 +339,13 @@ def _sablon_parcalari(spec, kor, ad, dilimler):
         for h, dolgu, _e in dilimler:
             if (dolgu or kor.get("dolgu")) == ad:
                 V += math.pi * R * R * h
-                parcalar.append("kor silindiri R = %g cm × %g cm" % (R, h))
+                parcalar.append(_("kor silindiri R = %g cm × %g cm") % (R, h))
         return V, parcalar, sorunlar
     d = dogrudan_yerlesim(spec, kor, ad, dilimler)
     V, parcalar, sorunlar = V + d["hacim"], parcalar + d["parcalar"], sorunlar + d["sorunlar"]
     altigen = kor["tur"] == "altigen_kafes"
     if kor.get("dolgu") == ad or any(dd == ad and not altigen for _h, dd, _e in dilimler):
-        sorunlar.append("katmanı/koru doğrudan dolduruyor")
+        sorunlar.append(_("katmanı/koru doğrudan dolduruyor"))
     return V, parcalar, sorunlar
 
 
@@ -347,20 +357,20 @@ def sablon_malzeme_hacmi(spec, ad, dilimler):
     V, parcalar, sorunlar = _sablon_parcalari(spec, kor, ad, dilimler)
     if sorunlar:
         return {"hacim": None, "yontem": KESIN_DEGIL,
-                "ayrinti": "hacmi kesin değil: " + "; ".join(sorunlar)}
+                "ayrinti": _("hacmi kesin değil: ") + "; ".join(sorunlar)}
     if V > 0:
         return {"hacim": V, "yontem": "analitik", "ayrinti": "; ".join(parcalar)}
     if parcalar:
         # yerlesim var ama hacmi sifir (tamamen cekili kontrol cubugu emicisi):
         # malzeme fiilen geometride yok, yakilacak bir sey yok
         return {"hacim": None, "yontem": "yok",
-                "ayrinti": "hacmi sıfır: " + "; ".join(parcalar)}
+                "ayrinti": _("hacmi sıfır: ") + "; ".join(parcalar)}
     from cekirdek import uygunluk
     if ad in (uygunluk.geometri_icerigi(spec).get("malzeme") or set()):
         # geometride var ama analitik yolu yok (or. kontrol tamburu emicisi)
         return {"hacim": None, "yontem": KESIN_DEGIL,
-                "ayrinti": "bu yerleşim için analitik hacim yok"}
-    return {"hacim": None, "yontem": "yok", "ayrinti": "malzeme geometride bulunamadı"}
+                "ayrinti": _("bu yerleşim için analitik hacim yok")}
+    return {"hacim": None, "yontem": "yok", "ayrinti": _("malzeme geometride bulunamadı")}
 
 
 def stokastik_tamamla(spec, tablo, orneklem=2_000_000, dizin=None):
@@ -383,7 +393,7 @@ def stokastik_tamamla(spec, tablo, orneklem=2_000_000, dizin=None):
         if ad in olculen:
             v, s = olculen[ad]
             yeni[ad] = dict(tablo[ad], hacim=v, yontem=hacim.STOKASTIK,
-                            ayrinti="stokastik hacim %.6g ± %.2g cm³ (%s)"
+                            ayrinti=_("stokastik hacim %.6g ± %.2g cm³ (%s)")
                             % (v, s, tablo[ad].get("ayrinti")))
             dusen.append(ad)
         else:
@@ -579,8 +589,8 @@ def ornekleri_ayir(model, spec, hv, yanacak):
         for hucre in (c for c in hucreler.values() if c.fill is mat):
             hacimler = [ornek_hacmi(y, hucreler, kafesler) for y in hucre.paths]
             if any(v is None for v in hacimler):
-                raise ValueError("'%s' malzemesinin bir örneğinin hacmi hesaplanamıyor "
-                                 "(hücre %d); çubuk çubuk yanma kesin hacim gerektirir"
+                raise ValueError(_("'%s' malzemesinin bir örneğinin hacmi hesaplanamıyor "
+                                 "(hücre %d); çubuk çubuk yanma kesin hacim gerektirir")
                                  % (ad, hucre.id))
             klonlar = [_klon(mat, v) for v in hacimler]
             hucre.fill = klonlar if len(klonlar) > 1 else klonlar[0]
@@ -588,8 +598,8 @@ def ornekleri_ayir(model, spec, hv, yanacak):
             klon_sayisi += len(klonlar)
         beklenen = hv[ad]["hacim"]
         if abs(toplam - beklenen) > _GORELI_TOLERANS * beklenen:
-            raise ValueError("'%s': örnek hacimleri toplamı %.8g cm³, analitik hacim "
-                             "%.8g cm³ — tutmuyor" % (ad, toplam, beklenen))
+            raise ValueError(_("'%s': örnek hacimleri toplamı %.8g cm³, analitik hacim "
+                             "%.8g cm³ — tutmuyor") % (ad, toplam, beklenen))
     model.materials = openmc.Materials(geo.get_all_materials().values())
     return klon_sayisi
 

@@ -8,6 +8,7 @@
 from cekirdek import sema
 from cekirdek.kod_uret.ad import _ad, _f, _bolum, _mat_ifade  # noqa: F401
 from cekirdek.geometri.yapici import yorum_metni
+from cekirdek.ceviri import _
 
 
 def _tukenme(spec, satirlar):
@@ -29,8 +30,8 @@ def _tukenme(spec, satirlar):
     eksik = [a for a, v in hv.items() if not v["hacim"]]
     if eksik:
         raise ValueError(
-            "hacmi hesaplanamayan yanabilir malzeme: %s (%s). Tükenme betiği kesin "
-            "hacim gerektirir." % (", ".join(eksik), "; ".join(hv[a]["ayrinti"] for a in eksik)))
+            _("hacmi hesaplanamayan yanabilir malzeme: %s (%s). Tükenme betiği kesin "
+            "hacim gerektirir.") % (", ".join(eksik), "; ".join(hv[a]["ayrinti"] for a in eksik)))
     _bolum(satirlar, 6, "TÜKENME (YANMA)")
     satirlar.append("")
     if stokastik:
@@ -96,8 +97,8 @@ def _ornek_hacimleri(spec, hv):
         liste = [[th.ornek_hacmi(y, hucreler, kafesler) for y in c.paths]
                  for c in hucreler.values() if c.fill is mat]
         if any(v is None for h in liste for v in h):
-            raise ValueError("'%s' malzemesinin bir örneğinin hacmi hesaplanamıyor; "
-                             "çubuk çubuk yanma kesin hacim gerektirir" % ad)
+            raise ValueError(_("'%s' malzemesinin bir örneğinin hacmi hesaplanamıyor; "
+                             "çubuk çubuk yanma kesin hacim gerektirir") % ad)
         sonuc[ad] = liste
     return sonuc
 

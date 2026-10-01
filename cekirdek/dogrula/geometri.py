@@ -13,15 +13,19 @@ from cekirdek.sema import BOSLUK, malzeme_bul, cubuk_bul, plaka_bul, demet_bul
 from cekirdek import altigen
 from cekirdek import altigen_kor as akor
 from cekirdek import uygunluk
-from cekirdek.ceviri import _
+from cekirdek.ceviri import _, N_
 from cekirdek.dogrula._ortak import Bulgu
 
 
 # Kullaniciya gorunen adlar (anahtarlar spec'te ASCII kalir).
 _PLAKA_ALAN_ADI = {
-    "plaka_sayisi": "plaka sayısı", "et_kalinlik": "yakıt (et) kalınlığı",
-    "zarf_kalinlik": "zarf kalınlığı", "kanal_kalinlik": "soğutucu kanalı kalınlığı",
-    "plaka_genislik": "plaka genişliği",
+    "plaka_sayisi": N_("plaka sayısı"), "et_kalinlik": N_("yakıt (et) kalınlığı"),
+    "zarf_kalinlik": N_("zarf kalınlığı"), "kanal_kalinlik": N_("soğutucu kanalı kalınlığı"),
+    "plaka_genislik": N_("plaka genişliği"),
+}
+_PLAKA_MALZEME_ADI = {
+    "et_malzeme": N_("yakıt (et) malzemesi"), "zarf_malzeme": N_("zarf malzemesi"),
+    "sogutucu": N_("soğutucu"),
 }
 
 
@@ -37,23 +41,23 @@ def cubuk_kontrol(spec):
         bolgeler = c.get("bolgeler") or []
         if len(bolgeler) < 2:
             bulgular.append(Bulgu("hata", yer,
-                                  "en az iki bölge gerekir (iç bölge + dış dolgu)"))
+                                  _("en az iki bölge gerekir (iç bölge + dış dolgu)")))
             continue
         if bolgeler[-1].get("r") is not None:
             bulgular.append(Bulgu(
-                "hata", yer, "son bölgenin yarıçapı boş olmalı",
-                "Son bölge çubuğun dışıdır ve hücrenin geri kalanını doldurur."))
+                "hata", yer, _("son bölgenin yarıçapı boş olmalı"),
+                _("Son bölge çubuğun dışıdır ve hücrenin geri kalanını doldurur.")))
         yaricaplar = [b.get("r") for b in bolgeler[:-1]]
         for i, r in enumerate(yaricaplar):
             if r is None or r <= 0:
                 bulgular.append(Bulgu("hata", yer,
-                                      "%d. bölgenin yarıçapı sıfırdan büyük olmalı: %s" % (i + 1, r)))
+                                      _("%d. bölgenin yarıçapı sıfırdan büyük olmalı: %s") % (i + 1, r)))
         temiz = [r for r in yaricaplar if isinstance(r, (int, float))]
         for i in range(len(temiz) - 1):
             if temiz[i] >= temiz[i + 1]:
                 bulgular.append(Bulgu(
                     "hata", yer,
-                    "yarıçaplar artan sırada olmalı: r%d = %.5f ≥ r%d = %.5f"
+                    _("yarıçaplar artan sırada olmalı: r%d = %.5f ≥ r%d = %.5f")
                     % (i + 1, temiz[i], i + 2, temiz[i + 1])))
         for i, b in enumerate(bolgeler):
             ad = b.get("malzeme")
@@ -61,11 +65,11 @@ def cubuk_kontrol(spec):
                 # Kurucu None'u sessizce bosluk (void) kurar; bilincli bosluk
                 # "bosluk" ile secilir.
                 bulgular.append(Bulgu(
-                    "hata", yer, "%d. bölgenin malzemesi seçilmemiş" % (i + 1),
-                    "Bir malzeme seçin; bölge bilerek boş bırakılacaksa "
-                    "'Boş (madde yok)' seçin."))
+                    "hata", yer, _("%d. bölgenin malzemesi seçilmemiş") % (i + 1),
+                    _("Bir malzeme seçin; bölge bilerek boş bırakılacaksa "
+                    "'Boş (madde yok)' seçin.")))
             elif ad != BOSLUK and malzeme_bul(spec, ad) is None:
-                bulgular.append(Bulgu("hata", yer, "tanımsız malzeme: %s" % ad))
+                bulgular.append(Bulgu("hata", yer, _("tanımsız malzeme: %s") % ad))
     return bulgular
 
 
@@ -80,18 +84,18 @@ def kontrol_cubugu_kontrol(spec):
         if not h:
             bulgular.append(Bulgu(
                 "hata", yer,
-                "kontrol çubuğu 3B model gerektirir (kor yüksekliği tanımsız)",
-                "Eksenel bir uç konumu olmadan daldırma tanımlanamaz. "
-                "Kor sekmesinde aktif yükseklik tanımlayın."))
+                _("kontrol çubuğu 3B model gerektirir (kor yüksekliği tanımsız)"),
+                _("Eksenel bir uç konumu olmadan daldırma tanımlanamaz. "
+                "Kor sekmesinde aktif yükseklik tanımlayın.")))
         d = c.get("daldirma")
         if d is None or not (0.0 <= float(d) <= 100.0):
             bulgular.append(Bulgu("hata", yer,
-                                  "daldırma %%0–%%100 arasında olmalı: %s" % d))
+                                  _("daldırma %%0–%%100 arasında olmalı: %s") % d))
         ix = c.get("emici_bolge")
         if not isinstance(ix, int) or not (0 <= ix < len(c.get("bolgeler", []))):
             bulgular.append(Bulgu("hata", yer,
-                                  "geçersiz emici bölge: %s"
-                                  % (ix + 1 if isinstance(ix, int) else "seçilmemiş")))
+                                  _("geçersiz emici bölge: %s")
+                                  % (ix + 1 if isinstance(ix, int) else _("seçilmemiş"))))
         else:
             mal = c["bolgeler"][ix].get("malzeme")
             m = malzeme_bul(spec, mal) if mal else None
@@ -103,19 +107,19 @@ def kontrol_cubugu_kontrol(spec):
                 if not sogurucu:
                     bulgular.append(Bulgu(
                         "uyari", yer,
-                        "emici bölgenin malzemesi ('%s') güçlü bir nötron "
-                        "emici içermiyor" % mal,
-                        "Kontrol malzemeleri genellikle B4C, Ag-In-Cd, Gd2O3 ya "
-                        "da Hf içerir."))
+                        _("emici bölgenin malzemesi ('%s') güçlü bir nötron "
+                        "emici içermiyor") % mal,
+                        _("Kontrol malzemeleri genellikle B4C, Ag-In-Cd, Gd2O3 ya "
+                        "da Hf içerir.")))
         iz = c.get("izleyici_malzeme")
         if iz is None:
             bulgular.append(Bulgu(
                 "uyari", yer,
-                "izleyici malzeme seçilmemiş — çubuk çekildiğinde yeri boş (madde yok) kalır",
-                "Çekilen çubuğun yerini genellikle soğutucu doldurur; bilerek boş "
-                "bırakılacaksa 'Boş (madde yok)' seçin."))
+                _("izleyici malzeme seçilmemiş — çubuk çekildiğinde yeri boş (madde yok) kalır"),
+                _("Çekilen çubuğun yerini genellikle soğutucu doldurur; bilerek boş "
+                "bırakılacaksa 'Boş (madde yok)' seçin.")))
         elif iz != BOSLUK and malzeme_bul(spec, iz) is None:
-            bulgular.append(Bulgu("hata", yer, "tanımsız izleyici malzeme: %s" % iz))
+            bulgular.append(Bulgu("hata", yer, _("tanımsız izleyici malzeme: %s") % iz))
     return bulgular
 
 
@@ -129,21 +133,20 @@ def plaka_kontrol(spec):
             deger = p.get(alan)
             if deger is None or deger <= 0:
                 bulgular.append(Bulgu("hata", yer,
-                                      "%s sıfırdan büyük olmalı: %s"
-                                      % (_PLAKA_ALAN_ADI[alan], deger)))
+                                      _("%s sıfırdan büyük olmalı: %s")
+                                      % (_(_PLAKA_ALAN_ADI[alan]), deger)))
         for alan in ("et_malzeme", "zarf_malzeme", "sogutucu"):
             ad = p.get(alan)
             if ad is None:
                 bulgular.append(Bulgu(
                     "hata", yer,
-                    "%s seçilmemiş" % {"et_malzeme": "yakıt (et) malzemesi",
-                                        "zarf_malzeme": "zarf malzemesi",
-                                        "sogutucu": "soğutucu"}[alan],
-                    "Seçilmeyen malzeme boş (madde yok) kurulurdu."))
+                    _("%s seçilmemiş") % _(_PLAKA_MALZEME_ADI[alan]),
+                    _("Seçilmeyen malzeme boş (madde yok) kurulurdu.")))
             elif ad != BOSLUK and malzeme_bul(spec, ad) is None:
+                # (eskiden _PLAKA_ALAN_ADI[alan] -> KeyError: malzeme alanlari orada yok)
                 bulgular.append(Bulgu("hata", yer,
-                                      "%s için tanımsız malzeme: %s"
-                                      % (_PLAKA_ALAN_ADI[alan], ad)))
+                                      _("%s için tanımsız malzeme: %s")
+                                      % (_(_PLAKA_MALZEME_ADI[alan]), ad)))
     return bulgular
 
 
@@ -154,60 +157,60 @@ def demet_kontrol(spec):
         yer = "demet:%s" % d["ad"]
         harita = d.get("harita") or []
         if not harita:
-            bulgular.append(Bulgu("hata", yer, "harita boş"))
+            bulgular.append(Bulgu("hata", yer, _("harita boş")))
             continue
         if d.get("tur") == "kare":
             nx, ny = d["boyut"]
             if len(harita) != ny:
                 bulgular.append(Bulgu(
                     "hata", yer,
-                    "harita %d satır ama boyut %d satır bekliyor" % (len(harita), ny)))
+                    _("harita %d satır ama boyut %d satır bekliyor") % (len(harita), ny)))
             for i, satir in enumerate(harita):
                 if len(satir) != nx:
                     bulgular.append(Bulgu(
                         "hata", yer,
-                        "%d. satır %d karakter ama %d bekleniyor" % (i + 1, len(satir), nx)))
+                        _("%d. satır %d karakter ama %d bekleniyor") % (i + 1, len(satir), nx)))
         if d.get("tur") == "altigen":
             halka = d.get("halka_sayisi") or d.get("boyut", [0])[0]
             if not halka or halka < 1:
-                bulgular.append(Bulgu("hata", yer, "halka sayısı en az 1 olmalı"))
+                bulgular.append(Bulgu("hata", yer, _("halka sayısı en az 1 olmalı")))
             else:
                 beklenen = altigen.halka_uzunluklari(halka)
                 if len(harita) != len(beklenen):
                     bulgular.append(Bulgu(
                         "hata", yer,
-                        "%d halka bekleniyor, haritada %d satır var"
+                        _("%d halka bekleniyor, haritada %d satır var")
                         % (len(beklenen), len(harita)),
-                        "Halkalar dıştan içe sıralanır; yarıçapı k olan halkada "
-                        "6k öğe, merkezde 1 öğe bulunur."))
+                        _("Halkalar dıştan içe sıralanır; yarıçapı k olan halkada "
+                        "6k öğe, merkezde 1 öğe bulunur.")))
                 else:
                     for i, (satir, uzunluk) in enumerate(zip(harita, beklenen)):
                         if len(satir) != uzunluk:
                             bulgular.append(Bulgu(
                                 "hata", yer,
-                                "%d. halka (yarıçap %d) %d öğe bekliyor, %d var"
+                                _("%d. halka (yarıçap %d) %d öğe bekliyor, %d var")
                                 % (i + 1, halka - 1 - i, uzunluk, len(satir))))
             if d.get("yonelim", "y") not in ("x", "y"):
                 bulgular.append(Bulgu("hata", yer,
-                                      "yönelim 'x' ya da 'y' olmalı: %s" % d.get("yonelim")))
+                                      _("yönelim 'x' ya da 'y' olmalı: %s") % d.get("yonelim")))
         if d.get("adim", 0) <= 0:
-            bulgular.append(Bulgu("hata", yer, "adım sıfırdan büyük olmalı"))
+            bulgular.append(Bulgu("hata", yer, _("adım sıfırdan büyük olmalı")))
 
         kullanilan = {h for satir in harita for h in satir}
         tanimli = set((d.get("anahtar") or {}).keys())
         for h in sorted(kullanilan - tanimli):
             bulgular.append(Bulgu("hata", yer,
-                                  "haritada tanımsız harf: '%s'" % h,
-                                  "Harfi demetin anahtar listesine ekleyin."))
+                                  _("haritada tanımsız harf: '%s'") % h,
+                                  _("Harfi demetin anahtar listesine ekleyin.")))
         for h in sorted(tanimli - kullanilan):
             bulgular.append(Bulgu("bilgi", yer,
-                                  "anahtarda tanımlı ama haritada kullanılmayan harf: '%s'" % h))
+                                  _("anahtarda tanımlı ama haritada kullanılmayan harf: '%s'") % h))
         for h, hedef in (d.get("anahtar") or {}).items():
             if (cubuk_bul(spec, hedef) is None and plaka_bul(spec, hedef) is None
                     and demet_bul(spec, hedef) is None
                     and hedef != BOSLUK and malzeme_bul(spec, hedef) is None):
                 bulgular.append(Bulgu("hata", yer,
-                                      "'%s' harfi tanımsız bir ada işaret ediyor: %s" % (h, hedef)))
+                                      _("'%s' harfi tanımsız bir ada işaret ediyor: %s") % (h, hedef)))
         bulgular += _kafes_icerik_kontrol(
             spec, yer, d.get("adim"), d.get("tur", "kare"),
             [(d.get("anahtar") or {}).get(h) for h in sorted(kullanilan)])
@@ -316,10 +319,10 @@ def _kafes_icerik_kontrol(spec, yer, adim, kafes_turu, hedefler):
             if cap and cap > pay:
                 bulgular.append(Bulgu(
                     "hata", yer,
-                    "'%s' çubuğunun dış çapı (%.5f cm) kafes adımından (%.5f cm) "
-                    "büyük — çubuk komşu hücreye taşar" % (hedef, cap, P),
-                    "OpenMC bunu hata saymaz: kafes hücresi çubuğu sessizce keser. "
-                    "Adımı büyütün ya da çubuk yarıçaplarını küçültün."))
+                    _("'%s' çubuğunun dış çapı (%.5f cm) kafes adımından (%.5f cm) "
+                    "büyük — çubuk komşu hücreye taşar") % (hedef, cap, P),
+                    _("OpenMC bunu hata saymaz: kafes hücresi çubuğu sessizce keser. "
+                    "Adımı büyütün ya da çubuk yarıçaplarını küçültün.")))
             continue
         ic = demet_bul(spec, hedef)
         if ic is not None:
@@ -328,9 +331,9 @@ def _kafes_icerik_kontrol(spec, yer, adim, kafes_turu, hedefler):
             if gerekli > pay:
                 bulgular.append(Bulgu(
                     "hata", yer,
-                    "iç içe demet '%s' (%.4f × %.4f cm) demet adımına (%.5f cm) "
-                    "sığmıyor" % (hedef, gx, gy, P),
-                    "Kafes hücresi içteki demeti keser; dış halkadaki çubuklar "
-                    "sessizce kaybolur. Dış demetin adımı en az %.5f cm olmalı."
+                    _("iç içe demet '%s' (%.4f × %.4f cm) demet adımına (%.5f cm) "
+                    "sığmıyor") % (hedef, gx, gy, P),
+                    _("Kafes hücresi içteki demeti keser; dış halkadaki çubuklar "
+                    "sessizce kaybolur. Dış demetin adımı en az %.5f cm olmalı.")
                     % gerekli))
     return bulgular

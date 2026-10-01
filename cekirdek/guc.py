@@ -124,15 +124,15 @@ def bolge_hucresi(universe, cubuk, nesneler):
     bolgeler = cubuk["bolgeler"]
     if len(hucreler) != len(bolgeler):
         raise ValueError(
-            "'%s' çubuğu: %d bölge bekleniyor ama geometride %d hücre var. "
-            "Güç dağılımı için hücre-bölge eşleşmesi güvenilir değil."
+            _("'%s' çubuğu: %d bölge bekleniyor ama geometride %d hücre var. "
+            "Güç dağılımı için hücre-bölge eşleşmesi güvenilir değil.")
             % (cubuk["ad"], len(bolgeler), len(hucreler)))
     for i, (h, b) in enumerate(zip(hucreler, bolgeler)):
         beklenen = nesneler.get(b.get("malzeme"))
         if beklenen is not None and h.fill is not beklenen:
             raise ValueError(
-                "'%s' çubuğu, %d. bölge: beklenen malzeme '%s' ama hücrede '%s' var. "
-                "Hücre-bölge eşleşmesi bozulmuş."
+                _("'%s' çubuğu, %d. bölge: beklenen malzeme '%s' ama hücrede '%s' var. "
+                "Hücre-bölge eşleşmesi bozulmuş.")
                 % (cubuk["ad"], i + 1, b.get("malzeme"),
                    getattr(h.fill, "name", h.fill)))
     return hucreler
@@ -315,9 +315,9 @@ def _tally_konumlari(tal, geometri, df=None, adlar=None):
     seviyeler = _kafes_seviyeleri(df)
     if not seviyeler:
         raise RuntimeError(
-            "Güç dağılımı sonucunda demet (kafes) düzeyi bulunamadı. Hedef "
+            _("Güç dağılımı sonucunda demet (kafes) düzeyi bulunamadı. Hedef "
             "çubuk bir demette tekrarlanmıyor olabilir; güç dağılımı yalnızca "
-            "demet içindeki çubuklar için anlamlıdır.")
+            "demet içindeki çubuklar için anlamlıdır."))
     duzen = _guc_kor.oteleme_duzeni(df, geometri)
     kok_demet, oteleme = duzen if duzen else (None, None)
     sutun = _guc_kor.KOK_HUCRE_SUTUNU
@@ -414,8 +414,8 @@ def dagilim_oku(sp, tally_adi="guc_dagilimi"):
     # distribcell yollari summary'den gelen geometriye ve determine_paths()'e baglidir
     if sp.summary is None:
         raise RuntimeError(
-            "summary.h5 bulunamadı; güç dağılımının hücre konumları okunamaz. "
-            "Koşu dizininde statepoint ile summary.h5 yan yana olmalıdır.")
+            _("summary.h5 bulunamadı; güç dağılımının hücre konumları okunamaz. "
+            "Koşu dizininde statepoint ile summary.h5 yan yana olmalıdır."))
     geometri = sp.summary.geometry
     geometri.determine_paths()
     notlar = []
@@ -439,8 +439,8 @@ def dagilim_oku(sp, tally_adi="guc_dagilimi"):
     for anahtar, kayit in konumlar.items():
         if any(d is None for d in kayit["eksenel"]):
             raise RuntimeError(
-                "%s konumunda bazı eksenel dilimler eksik; veri biçimi "
-                "beklenenden farklı." % konum_metni(anahtar, kafes_turu, kafes_turleri))
+                _("%s konumunda bazı eksenel dilimler eksik; veri biçimi "
+                "beklenenden farklı.") % konum_metni(anahtar, kafes_turu, kafes_turleri))
         toplam = sum(d[0] for d in kayit["eksenel"])
         sapma = math.sqrt(sum(d[1] ** 2 for d in kayit["eksenel"]))
         kayit["toplam"] = (toplam, sapma)
@@ -558,7 +558,7 @@ def _tek_konum_metni(konum, tur):
         return "%s %s" % (konum[0], _tek_konum_metni(konum[1:], None))
     a, b = int(konum[0]), int(konum[1])
     if tur == "altigen":
-        return "dıştan %d. halka, %d. konum" % (a + 1, b + 1)
+        return _("dıştan %d. halka, %d. konum") % (a + 1, b + 1)
     return "x = %d, y = %d" % (a + 1, b + 1)
 
 
@@ -770,7 +770,7 @@ def mutlak_guc(faktorler, toplam_guc, yukseklik=None, hedef_payi=None):
         # Maks lineer guc yerel tepeye baglidir: F_q varsa onu, yoksa F_dH'yi kullan
         tepe = faktorler["F_q"] or faktorler["F_dH"]
         sonuc["lineer_maks_W_cm"] = (cubuk_ort / yukseklik) * tepe
-        sonuc["lineer_tepe_kaynagi"] = "F_q" if faktorler["F_q"] else "F_ΔH (2B — eksenel tepe dahil değil)"
+        sonuc["lineer_tepe_kaynagi"] = "F_q" if faktorler["F_q"] else _("F_ΔH (2B — eksenel tepe dahil değil)")
     return sonuc
 
 

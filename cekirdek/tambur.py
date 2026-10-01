@@ -31,6 +31,7 @@
 import math
 
 import openmc
+from cekirdek.ceviri import _
 
 
 def _duzlem(aci_derece):
@@ -113,25 +114,25 @@ def geometri_kontrol(tambur, kor_yaricap, yansitici_kalinlik):
     aci = float(tambur.get("emici_aci") or 0.0)
 
     if n < 1:
-        hatalar.append("tambur sayısı en az 1 olmalı")
+        hatalar.append(_("tambur sayısı en az 1 olmalı"))
     if R <= 0:
-        hatalar.append("tambur yarıçapı sıfırdan büyük olmalı")
+        hatalar.append(_("tambur yarıçapı sıfırdan büyük olmalı"))
     if not (0.0 < aci <= 360.0):
-        hatalar.append("emici yay açısı 0–360° arasında olmalı")
+        hatalar.append(_("emici yay açısı 0–360° arasında olmalı"))
     if r_ic >= R:
-        hatalar.append("emici iç yarıçapı (%.4f cm) tambur yarıçapından (%.4f cm) "
-                       "küçük olmalı" % (r_ic, R))
+        hatalar.append(_("emici iç yarıçapı (%.4f cm) tambur yarıçapından (%.4f cm) "
+                       "küçük olmalı") % (r_ic, R))
 
     # radyal sigma: tambur tamamen yansitici kusaginin icinde kalmali
     dis_sinir = kor_yaricap + yansitici_kalinlik
     if R_m - R < kor_yaricap:
         hatalar.append(
-            "tamburlar kora giriyor: merkez yarıçapı %.4f − tambur yarıçapı "
-            "%.4f = %.4f cm < kor yarıçapı %.4f cm"
+            _("tamburlar kora giriyor: merkez yarıçapı %.4f − tambur yarıçapı "
+            "%.4f = %.4f cm < kor yarıçapı %.4f cm")
             % (R_m, R, R_m - R, kor_yaricap))
     if R_m + R > dis_sinir:
         hatalar.append(
-            "tamburlar yansıtıcı kuşaktan taşıyor: %.4f + %.4f = %.4f cm > dış sınır %.4f cm"
+            _("tamburlar yansıtıcı kuşaktan taşıyor: %.4f + %.4f = %.4f cm > dış sınır %.4f cm")
             % (R_m, R, R_m + R, dis_sinir))
 
     # komsu tamburlar cakisiyor mu (kiris mesafesi)
@@ -139,16 +140,16 @@ def geometri_kontrol(tambur, kor_yaricap, yansitici_kalinlik):
         kiris = 2.0 * R_m * math.sin(math.pi / n)
         if kiris <= 2.0 * R:
             hatalar.append(
-                "komşu tamburlar çakışıyor: merkezler arası %.4f cm, iki yarıçap "
+                _("komşu tamburlar çakışıyor: merkezler arası %.4f cm, iki yarıçap "
                 "toplamı %.4f cm. Tambur sayısını azaltın, yarıçapı küçültün ya "
-                "da merkez yarıçapını büyütün." % (kiris, 2.0 * R))
+                "da merkez yarıçapını büyütün.") % (kiris, 2.0 * R))
     return hatalar
 
 
 def ozet(tambur):
     """Arayuz icin tek satirlik ozet."""
     n = int(tambur.get("sayi") or 0)
-    return ("%d tambur, yarıçap %.3f cm, merkez %.3f cm, yay %.0f°, "
-            "dönme %.1f°"
+    return (_("%d tambur, yarıçap %.3f cm, merkez %.3f cm, yay %.0f°, "
+            "dönme %.1f°")
             % (n, tambur.get("yaricap") or 0, tambur.get("merkez_yaricap") or 0,
                tambur.get("emici_aci") or 0, tambur.get("donme") or 0))

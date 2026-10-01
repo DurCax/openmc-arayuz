@@ -18,12 +18,13 @@ import html as _html
 import os
 from string import Template
 
-from cekirdek.ceviri import _, etkin_dil
+from cekirdek.ceviri import _, N_, etkin_dil, pgettext
 from cekirdek.rapor_sablon import uygunluk_eki
 from cekirdek.rapor_sablon.bicim import bm, gosterim_notu
 
 SABLON_DIZINI = os.path.dirname(os.path.abspath(__file__))
-_SEVIYE = {"hata": ("hata", "HATA"), "uyari": ("uyari", "UYARI"), "bilgi": ("bilgi", "BİLGİ")}
+_SEVIYE = {"hata": ("hata", N_("HATA")), "uyari": ("uyari", N_("UYARI")),
+           "bilgi": ("bilgi", N_("BİLGİ"))}
 GORSEL_GENISLIK = 640        # px (A4 metin genisligi, ~96 dpi)
 
 
@@ -187,7 +188,7 @@ def _tukenme(icerik, gomulu):
     satirlar = [(str(i), "%.2f" % z, "%.3f" % y, bm(k, s))
                 for i, z, y, k, s in t["satirlar"]]
     parca = ["<h2>%s</h2>" % _e(_("Tükenme")),
-             _tablo((_("Adım"), _("Zaman [gün]"), _("Yanma [MWd/kgHM]"), "k"), satirlar),
+             _tablo((pgettext("tükenme", "Adım"), _("Zaman [gün]"), _("Yanma [MWd/kgHM]"), "k"), satirlar),
              _gorsel(icerik, "tukenme", gomulu, alt=_("tükenme"))]
     if t["bulunamayan"]:
         parca.append('<p class="uyari">%s</p>' % _e(
@@ -203,7 +204,7 @@ def _bulgular(icerik):
     for b in icerik["bulgular"]:
         css, ad = _SEVIYE.get(b["seviye"], ("", b["seviye"]))
         satirlar.append('<tr><td class="%s">%s</td><td>%s</td><td>%s</td><td>%s</td></tr>'
-                        % (css, _e(ad), _e(b["yer"]), _e(b["mesaj"]), _e(b["oneri"])))
+                        % (css, _e(_(ad)), _e(b["yer"]), _e(b["mesaj"]), _e(b["oneri"])))
     bas = "".join("<th>%s</th>" % _e(x) for x in (_("Seviye"), _("Yer"), _("Mesaj"), _("Öneri")))
     return parca[0] + ('<table border="1" cellspacing="0" cellpadding="3" width="100%%">'
                        "<tr>%s</tr>%s</table>" % (bas, "".join(satirlar)))
@@ -221,5 +222,5 @@ def html(icerik, gomulu=True):
                      _bulgular(icerik), uygunluk_eki.html(icerik.get("uygunluk")),
                      _ek(icerik)))
     return _sablon("rapor.html").substitute(
-        dil=_e(etkin_dil()), uretici=_e("%s %s" % (surum.UYGULAMA_ADI, surum.surum())),
+        dil=_e(etkin_dil()), uretici=_e("%s %s" % (_(surum.UYGULAMA_ADI), surum.surum())),
         baslik=_e(icerik["kapak"]["baslik"]), stil=_stil(), govde=govde)

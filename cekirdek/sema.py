@@ -40,6 +40,7 @@ import copy
 import os
 
 from cekirdek import goc as _goc
+from cekirdek.ceviri import _
 
 # Spec sema surumu. Bolum eklendiginde artirilir; yukle() eski surumleri
 # once goc ettirir (cekirdek/goc.py zinciri), sonra eksik alanlari
@@ -372,8 +373,8 @@ def agac_modu(spec):
 def _agac_degil(kor, islev):
     if isinstance(kor, dict) and kor.get("tur") == AGAC:
         raise AgacModuHatasi(
-            "%s() gelişmiş (ağaç) geometri modunda kullanılamaz: kor alanları yok; "
-            "cekirdek.geometri API'sini kullanın" % islev)
+            _("%s() gelişmiş (ağaç) geometri modunda kullanılamaz: kor alanları yok; "
+            "cekirdek.geometri API'sini kullanın") % islev)
 
 
 def model_yuksekligi(spec):
