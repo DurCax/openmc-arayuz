@@ -275,6 +275,13 @@ def test_onizleme_malzeme_vurgusu():
     vurgu = [a for a in eks.get_children() if getattr(a, "get_gid", lambda: None)() == "vurgu"]
     kontrol("malzeme renkleri korunur + vurgu katmani cizildi",
             w.cizildi_mi() and len(eks.images) >= 2 and vurgu, "-> %s %s" % (w._son_hata, vurgu))
+    # kor (64.26 cm kare) yansiticili kutunun icinde: secili pay ~ kor alani / kutu alani
+    gx, gy = w.son_olcu
+    pay = float((eks.images[-1].get_array()[..., 3] == 0).mean())
+    beklenen = 64.26 ** 2 / (gx * gy)
+    kontrol("secili pay = kor alani payi (ata hucre yolu)", abs(pay - beklenen) < 0.05,
+            "-> %.3f / %.3f" % (pay, beklenen))
+    kontrol("vurgu konturu cizildi", any("Contour" in type(a).__name__ for a in eks.get_children()))
     w.vurgula(None)
     w._ciz()
     eks = w.figur.axes[0]
