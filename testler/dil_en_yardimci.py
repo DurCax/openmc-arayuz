@@ -33,7 +33,7 @@ EN_DIZINI = os.path.join(LOCALE, "en", "LC_MESSAGES")
 ANAHTARLAR = {"_": None, "N_": None, "_n": (1, 2), "pgettext": ((1, "c"), 2)}
 TR_HARF = re.compile(r"[çğıöşüÇĞİÖŞÜ]")
 # Yer tutucular: {ad}, {n:.3f}, %s, %d, %.4f, %(ad)s
-_YER_TUTUCU = re.compile(r"\{[^{}]*\}|%\([a-z_]+\)[sdfrgx]|%[-+ 0#]*\d*(?:\.\d+)?[sdfrgeEx]")
+_YER_TUTUCU = re.compile(r"\{[^{}]*\}|%\([a-z_]+\)[sdfrgx]|%[-+0#]*\d*(?:\.\d+)?[sdfrgeEx]")
 _ETIKET = re.compile(r"</?([a-zA-Z0-9]+)")
 
 
@@ -239,7 +239,27 @@ EK_TERIMLER = {
     "doğrulama kümesi": ("validation set", "v&v set", "benchmark set"),
     "sonraki adım": ("next step",), "sıradaki adım": ("next step",),
     "eksik adım": ("missing step",), "adım adım": ("step by step",),
+    "dönüşüm katsayı": ("conversion coefficient",),   # akı-doz dönüşüm katsayıları
+    "örnek": ("e.g.", "for instance", "example", "instance"),   # Dalga G: yerleşim örneği
+    "kaydet": ("record", "logged", "written"),  # "hata kaydedildi" (log)
+    "kor sayfa": ("geometry page",), "kor sekme": ("geometry tab", "geometry page"),
+    "bu adım": ("this step",),
+    "çalıştır": ("ran",), "çalıştırılabilir": ("executable", "ready to run", "runnable"),
+    "ön yüz": ("front",),
+    "emici çubuk": ("absorber rod", "control rod"),
+    "kılavuz": ("guide",),                      # kılavuz/ölçüm konumu = guide tube
+    "doğrulama": ("check",),                    # "doğrulama yapılır" = the model is checked
 }
+# Tukenme sayfasinda "adım" tukenme adimidir (sozluk: tükenme adımı = depletion step):
+# msgid'in kaynak dosyasi bu parcalardan birini iceriyorsa ek karsilik kabul edilir.
+KONUM_KABUL = {"adım": (("tukenme",), ("step",))}
+# Kontrol cubugu baglaminda "çubuk" = rod (sozluk: kontrol çubuğu = control rod).
+BAGLAM_KABUL = {"çubuk": (("kontrol çubu", "emici çubu", "çubuk ucu", "çubuk değeri",
+                            "kontrol grubu"), ("rod",))}
+# "Kaçın" sutunu yalniz bu terimlerde ihlal sayilir: diger kacin sozcukleri metinde
+# baska bir Turkce sozcugun dogru karsiligi olabilir ("reaktör" -> reactor).
+KACIN_DENETLENEN = frozenset({"çubuk", "demet", "parça", "çevrim", "pasif çevrim", "kılıf",
+                              "tükenme", "hesap hassasiyeti", "bulgu", "kılavuz"})
 # Sozlukte grup/sayfa adi olarak gecen, metinde cok anlamli kisa sozcukler.
 ATLANAN_TERIMLER = frozenset({"kap", "hesap", "sonuç", "grup", "seviye"})
 
@@ -304,8 +324,16 @@ def _kucuk(metin):
 _KISA_EKLER = ("", "u", "ü", "ı", "i", "a", "e", "da", "de", "ta", "te", "dan", "den", "un",
                "ün", "ın", "in", "nun", "nün", "nın", "nin", "lar", "ler", "ları", "leri",
                "ların", "lerin", "larda", "lerde", "daki", "deki", "ya", "ye", "yı", "yi",
-               "yu", "yü", "su", "sü", "sı", "si", "nu", "nü", "nı", "ni", "na", "ne")
+               "yu", "yü", "su", "sü", "sı", "si", "nu", "nü", "nı", "ni", "na", "ne",
+               "sunda", "sündaki", "sundaki", "suna", "sunu", "sun", "nda", "ndaki")
 _YUMUSAMA = {"k": "ğ", "p": "b", "t": "d", "ç": "c"}
+# Ayni kokten baska sozcuk turetenler: "yüz" (face) "yüzde" (yuzde) ve "yüzden" degildir.
+_OZEL_EKLER = {"yüz": ("", "ü", "ün", "üne", "ünü", "ünde", "ler", "leri", "lerin", "lerinde",
+                       "lerde", "lere"),
+               "dönme": ("", "si", "sı", "sini", "sine", "sinin", "ler", "leri", "yi", "ye",
+                         "de", "den", "nin"),
+               "bilgi": ("", "si", "sini", "ler", "leri", "lerin", "ye", "yi", "nin", "de",
+                         "den", "dir")}
 
 
 def _terim_deseni(kok):
@@ -315,7 +343,9 @@ def _terim_deseni(kok):
     if son[-1] in _YUMUSAMA:
         govdeler.append(re.escape(son[:-1] + _YUMUSAMA[son[-1]]))
     on = "".join(re.escape(s) + r"\w*\s+" for s in sozcukler[:-1])
-    if len(son) <= 4:
+    if kok in _OZEL_EKLER:
+        ek = "(?:%s)" % "|".join(sorted(_OZEL_EKLER[kok], key=len, reverse=True))
+    elif len(son) <= 4:
         ek = "(?:%s)" % "|".join(sorted(_KISA_EKLER, key=len, reverse=True))
     else:
         ek = r"[a-zçğıöşü]{0,8}"
@@ -326,8 +356,9 @@ def _ingilizce_var(metin, kabul):
     m = metin.lower()
     for k in kabul:
         govde = k[:-3] if len(k) > 6 and k.endswith("ing") else (
-            k[:-1] if len(k) > 4 and k[-1] in "ye" else k)
-        if re.search(r"(?<!\w)" + re.escape(govde), m):
+            k[:-1] if len(k) > 4 and k[-1] in "yes" else k)
+        sinir = "" if len(govde) >= 4 else r"(?<!\w)"
+        if re.search(sinir + re.escape(govde), m):
             return True
     return False
 
@@ -345,21 +376,30 @@ def terim_ihlalleri(katalog, terimler=None, muaf=()):
         ids, strs = _metinler(m)
         if ids[0] in muaf:
             continue
-        kaynak = _kucuk(re.sub(r"<[^>]+>", " ", ids[0]))
+        kaynak = _kucuk(_YER_TUTUCU.sub(" ", re.sub(r"<[^>]+>", " ", ids[0])))
         eslesen = []
         for desen, kok, kabul, kacin in desenler:
             for x in desen.finditer(kaynak):
                 eslesen.append((x.start(), x.end(), kok, kabul, kacin))
         eslesen = [e for e in eslesen
-                   if not any(o[0] <= e[0] and e[1] <= o[1] and (o[1] - o[0]) > (e[1] - e[0])
-                              for o in eslesen)]
+                   if not any(o[0] <= e[0] and e[1] <= o[1] and o is not e and (
+                       (o[1] - o[0]) > (e[1] - e[0]) or len(o[2]) > len(e[2]))
+                       for o in eslesen)]
         tum_kabul = {k for e in eslesen for k in e[3]}
         for s in strs:
             for _b, _s, kok, kabul, kacin in eslesen:
+                baglam, ek = BAGLAM_KABUL.get(kok, ((), ()))
+                if any(b in kaynak for b in baglam):
+                    kabul = kabul + ek
+                konum, ek = KONUM_KABUL.get(kok, ((), ()))
+                if any(k in yol for k in konum for yol, _n in getattr(m, "locations", ())):
+                    kabul = kabul + ek
                 if not _ingilizce_var(s, kabul):
                     out.append((ids[0][:70], kok, "/".join(kabul), s[:70]))
                     continue
-                for k in kacin:
+                for k in (kacin if kok in KACIN_DENETLENEN else ()):
+                    if k in kabul:
+                        continue
                     if re.search(r"(?<!\w)%s(?!\w)" % re.escape(k), s.lower()) and \
                             not any(k in t for t in tum_kabul):
                         out.append((ids[0][:70], kok, "kaçın: " + k, s[:70]))
