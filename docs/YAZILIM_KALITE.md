@@ -39,9 +39,9 @@ numarası verilmez, aşağıdaki her şey kendi sözcüklerimizle yazılmıştı
 | V&V raporu | `docs/VV.md` (kriter C/E tablosu), `docs/STANDARTLAR.md` (uygunluk matrisi) | kısmen; yanlılık/USL (S-3) sürüyor | Validation |
 | Kullanıcı kılavuzu | `docs/kilavuz/` (Dalga 3, Ajan 13b) | **yok** (planlandı); bugün `README.md` + `KURULUM.md` | Operation |
 | Bilinen sınırlamalar | bu belge §5 + `README.md` "Bilinen tuzaklar" + `docs/STANDARTLAR.md` §4.10 | var, dağınık | Validation |
-| Değişiklik günlüğü | `CHANGELOG` (Dalga 4, Ajan 16) | **yok**; geçici kaynak: `git log` (conventional commits) | Configuration management |
+| Değişiklik günlüğü | `CHANGELOG.md` (§7 şablonu), `docs/SURUM_NOTLARI.md` (TR + EN) | var (Dalga 4, 2.0.0rc1); ayrıntı `git log` (conventional commits) | Configuration management |
 | Yapılandırma / ortam kaydı | git + her koşu dizininde `kapsul.json` | var (S-4) | Configuration management |
-| Lisans | `LICENSE`, `THIRD_PARTY_LICENSES.md` (Dalga 4) | **yok** (planlandı; R-M8-01) | — |
+| Lisans | `LICENSE`, `THIRD_PARTY_LICENSES.md` | var (Dalga 4; R-M8-01, `testler/test_paket.py`) | — |
 
 ## 3. Tekrarlanabilirlik kapsülü (Y2)
 

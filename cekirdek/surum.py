@@ -49,7 +49,7 @@ def _meta_surumu():
 
 
 def surum():
-    """Uygulama surumu (PEP 440 metni, ornek "2.0.0rc1")."""
+    """Uygulama surumu (PEP 440 metni, ornek "X.Y.ZrcN")."""
     return _pyproject_surumu() or _meta_surumu() or _GERI_DONUS_SURUMU
 
 
