@@ -366,9 +366,15 @@
       ]
     },
     "sinir": {
-      "yan": "reflective",
+      "yan": "vacuum",
       "alt": "vacuum",
-      "ust": "vacuum"
+      "ust": "vacuum",
+      "yuzler": {
+        "-x": "reflective",
+        "+x": "vacuum",
+        "-y": "vacuum",
+        "+y": "reflective"
+      }
     }
   },
   "ayarlar": {
