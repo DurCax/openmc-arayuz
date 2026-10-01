@@ -7,7 +7,8 @@ eki, arayuz paneli ve komut satiri icin ortak yuzu (Dalga S-2).
     ru.secili_profiller(spec)            -> ("A", "D")   (proje ayari)
     ru.profilleri_yaz(spec, ("A", "B"))  -> YENI spec (girdi degismez)
     ek = ru.ek_verisi(spec, kosu_dizini, rapor_metni=html)
-    ru.cikis_kodu(bulgular)              -> 1 hata varsa, yoksa 0 (CLI)
+    ru.cikis_kodu(bulgular, siki=False)  -> 1 hata varsa; siki ve degerlendirilemeyen
+                                            kural varsa 3; yoksa 0 (CLI)
 
 PROFIL SECIMI spec["calistirma"]["uygunluk_profilleri"] listesindedir.
 "calistirma" sema.tamamla'da derin birlestirilir (ek anahtar korunur) ve
@@ -136,7 +137,16 @@ def ek_verisi(spec, kosu_dizini, profiller=None, rapor_metni=None, vv=None):
             "usl_notu": usl_notu(profiller, vv), "hata": hata}
 
 
-def cikis_kodu(bulgular):
-    """CI / ders otomasyonu: karsilanmayan "hata" bulgusu varsa 1, yoksa 0."""
+CIKIS_TEMIZ, CIKIS_HATA, CIKIS_KULLANIM, CIKIS_DEGERLENDIRILEMEDI = 0, 1, 2, 3
+
+
+def cikis_kodu(bulgular, siki=False):
+    """CI / ders otomasyonu: karsilanmayan "hata" bulgusu varsa 1. siki=True
+    ise "uygulanamadi" (degerlendirilemeyen) kural da basarisizliktir: 3
+    (hata ile karismasin diye ayri kod; 2 kullanim hatasidir). Yoksa 0."""
     from cekirdek.uygunluk_denetimi.denetle import sorunlar
-    return 1 if any(b.seviye == "hata" for b in sorunlar(bulgular)) else 0
+    if any(b.seviye == "hata" for b in sorunlar(bulgular)):
+        return CIKIS_HATA
+    if siki and any(getattr(b, "durum", None) == "uygulanamadi" for b in bulgular):
+        return CIKIS_DEGERLENDIRILEMEDI
+    return CIKIS_TEMIZ

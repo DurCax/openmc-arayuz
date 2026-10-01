@@ -404,15 +404,21 @@ class GelismisEditor(QtWidgets.QWidget):
 
     # ------------------------------------------------------------------ kesik
     def _kesikler(self):
+        """Kesik konumlar; hesaplanamazsa None (bos liste 'kesik yok' demektir)."""
         from cekirdek import geometri
         try:
             return geometri.kesik_konumlar(geometri.model(self.spec))
-        except Exception as e:
-            _log.info("kesik konumlar hesaplanamadi: %s", e)
-            return []
+        except Exception:
+            _log.warning("kesik konumlar hesaplanamadi", exc_info=True)
+            return None
 
     def _kesik_ozeti(self):
         kesikler = self._kesikler() if self.spec else []
+        if kesikler is None:
+            self.kesik_etiketi.setText(_("Kesik konumlar hesaplanamadı (ayrıntı günlükte)."))
+            self.d_git.setEnabled(False)
+            self._kesik_listesi = []
+            return
         n_k = sum(1 for k in kesikler if k.get("durum") == "kesik")
         n_g = len(kesikler) - n_k
         if not kesikler:

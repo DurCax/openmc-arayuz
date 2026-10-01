@@ -14,7 +14,10 @@ uygunluk_girdisi.json'un "kor" anahtarindan alir):
   K7      katsayi isaretleri -- GDC 11 cercevesi (STANDARTLAR.md §6 madde 8):
           net guc geri beslemesi (guc katsayisi) anlamli pozitifse HATA,
           Doppler anlamli pozitifse UYARI; pozitif MTC / bosluk katsayisi
-          tek basina HATA DEGILDIR (bilgi + gecici rejim notu).
+          tek basina HATA DEGILDIR (bilgi + gecici rejim notu). Yalniz ISARET
+          beklentisi sinanir: "tutarli / celisiyor" der, GDC 11'i karsiladi
+          ya da karsilamadi DEMEZ (net geri besleme yargisi tasarim analizidir).
+          sigma eksik ya da <= 0 ise anlamlilik sinanamaz -> uygulanamadi.
   K7-SDM  kapatma marji, en degerli cubuk sikisik (N-1); sinir kullanicidan
   K7-F    F_ΔH / F_q; sinir kullanicidan (varsayilan YOK)
   K16     kor yonteminin dogrulama referansi (ANS-19.3-2022 / ISO 18075)
@@ -41,31 +44,43 @@ def _kaynak(baglam):
 
 
 def _isaret(kats, c):
-    """+1 / -1 anlamli isaret, 0 anlamsiz."""
-    e, s = float(kats["egim"]), float(kats.get("egim_sapma") or 0.0)
+    """+1 / -1 anlamli isaret, 0 anlamsiz. sigma > 0 olmali (bkz. _katsayi_bulgusu)."""
+    e, s = float(kats["egim"]), float(kats["egim_sapma"])
     if abs(e) <= c * s:
         return 0
     return 1 if e > 0 else -1
 
 
+def _sapma_gecerli(kats):
+    s = kats.get("egim_sapma")
+    return isinstance(s, (int, float)) and not isinstance(s, bool) and s > 0
+
+
 def _katsayi_bulgusu(kural, baglam, ad, kats):
     c = baglam.esik("anlamlilik_carpani", 2.0)
+    kw = {"kimlik": "K7-" + ad, "kaynak": _kaynak(baglam)}
+    if not _sapma_gecerli(kats):
+        return kural.uygulanamadi(
+            _("%s = %+.3g %s: belirsizlik (σ) verilmedi ya da ≤ 0; işaretin anlamlılığı "
+              "sınanamaz.") % (_(_KATSAYI_ADLARI[ad]), kats["egim"], kats.get("birim", "")),
+            _("Katsayıyı eğim belirsizliğiyle (tarama.katsayi) verin."), **kw)
     isaret = _isaret(kats, c)
     metin = "%s = %+.3g ± %.2g %s (1σ)" % (_(_KATSAYI_ADLARI[ad]), kats["egim"],
-                                          kats.get("egim_sapma") or 0.0, kats.get("birim", ""))
-    kw = {"kimlik": "K7-" + ad, "kaynak": _kaynak(baglam)}
+                                          kats["egim_sapma"], kats.get("birim", ""))
     if isaret < 0:
-        return kural.gecti(metin + _(": negatif."), **kw)
+        return kural.gecti(metin + _(": negatif — işaret beklentisiyle tutarlı (net geri "
+                                     "besleme yargısı değildir)."), **kw)
     if isaret == 0:
         seviye = "uyari" if ad == "guc" else "bilgi"
         return kural.ihlal(seviye, metin + _(": işaret istatistiksel olarak belirlenemedi "
                                              "(|eğim| ≤ %gσ).") % c,
                            _("Tarama aralığını genişletin ya da istatistiği artırın."), **kw)
     if ad == "guc":
-        return kural.ihlal("hata", metin + _(": POZİTİF — güç işletme aralığında net anlık "
-                                             "geri besleme reaktivite artışını karşılamıyor."),
-                           _("Tasarım GDC 11 çerçevesini karşılamıyor; kor bileşimini "
-                             "gözden geçirin."), **kw)
+        return kural.ihlal("hata", metin + _(": POZİTİF — işaret beklentisiyle çelişiyor "
+                                             "(GDC 11: güç işletme aralığında net anlık geri "
+                                             "besleme reaktivite artışını karşılamalı)."),
+                           _("Kor bileşimini ve tarama aralığını gözden geçirin; net geri "
+                             "besleme yargısı tasarım analizini gerektirir."), **kw)
     if ad == "yakit_sicaklik":
         return kural.ihlal("uyari", metin + _(": POZİTİF Doppler katsayısı olağan dışıdır."),
                            _("Yakıt bileşimini ve sıcaklık taramasını denetleyin; net güç "

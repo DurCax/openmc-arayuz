@@ -73,12 +73,17 @@ sfr_altigen demeti, tamburlu_kor berilyumu).
   berilyum yansıtıcı (r = 80 cm), 4 B4C (doğal) tambur (r = 8 cm, merkez 42 cm,
   kor yüzlerinin karşısında). Tasarım belgesindeki (§4.3) gibi korun
   **köşelerine** bakan tamburlar (merkez 60 cm, 45°) kaba ölçümde yalnız
-  ~600 pcm değer verdi. Yüzlere yaklaştırılınca değer ~3000 pcm oldu (kaba,
-  2000 × 40).
+  ~600 pcm (Δk) değer verdi. Yüzlere yaklaştırılınca değer ~3000 pcm (Δk) oldu
+  (kaba, 2000 × 40).
+
+**pcm tanımı (bu bölümün bütün tambur değerleri):** pcm = × 10⁵. Tambur değeri
+iki biçimde verilir: Δk = k₂ − k₁ (pcm = Δk × 10⁵; k farkı, reaktivite farkı
+değildir) ve Δρ = (k₂ − k₁)/(k₁k₂) = 1/k₁ − 1/k₂ (pcm = Δρ × 10⁵). Burada k₂
+tamburlar dışarıdayken (180°), k₁ içerideyken (0°) k'dır.
 
 Ölçülen tambur değerleri (G-4 fizik kabulleri, aşağıda):
 altigen_tambur_halkasi k(0°) = 0.95139 ± 0.00150, k(180°) = 1.04533 ± 0.00166 →
-toplam ~9400 pcm.
+toplam Δk = 9394 pcm, Δρ = 9446 pcm.
 
 ### Geometri ağacının fizik kabulleri (testler/test_geometri_fizik.py, 01.10.2026)
 
@@ -90,9 +95,9 @@ OpenMC 0.16.0, ENDF/B-VIII.0, 6 iş parçacığı. Ölçüt: k farkları 2σ, ha
 | Sonsuz ortam, kare: 3×3 kafes (iki harf, aynı demet) ile tek demet | 1.09889 ± 0.00095 / 1.09900 ± 0.00121 | 0.07σ, geçti |
 | Sonsuz ortam, altıgen: tek konumlu kor kafesinde demet ile tek demet | 1.46689 ± 0.00068 / 1.46634 ± 0.00070 | 0.56σ, geçti |
 | tamburlu_kor ağaçta (gelismise_gec) ile şablon, dönme 180° | 1.00719 ± 0.00110 (ikisi de) | 0σ (aynı model, aynı tohum), geçti |
-| aynısı, dönme 0° | 0.96346 ± 0.00092 (ikisi de) | 0σ, geçti; k(0) < k(180) 30σ, değer 4372 pcm |
+| aynısı, dönme 0° | 0.96346 ± 0.00092 (ikisi de) | 0σ, geçti; k(0) < k(180) 30σ, değer Δk = 4372 pcm, Δρ = 4506 pcm |
 | 6 tambur, dönme 0/60/120/180° | 0.95139 / 0.97516 / 1.02525 / 1.04533 (σ 0.0015–0.0019) | monoton (adımlar 9.9σ, 18.6σ, 7.9σ), geçti |
-| BİLGİ: tek tambur (biri 0°, beşi 180°) | 1.03251 ± 0.00163 → tek tambur 1282 pcm | toplam / (6 × tek) = 1.22 (kabul ölçütü değil) |
+| BİLGİ: tek tambur (biri 0°, beşi 180°) | 1.03251 ± 0.00163 → tek tambur Δk = 1282, Δρ = 1188 pcm | toplam / (6 × tek) = 1.22 (Δk), 1.33 (Δρ); istatistik ±0.23 (kabul ölçütü değil). Sıkı yeniden ölçüm: 1.03 ± 0.05 (Δk), 1.12 ± 0.06 (Δρ) — "Tambur etkileşimi" |
 | Simetri: bütün model 60° (donusum), tambur 90° (kiral) | asıl 1.00094 ± 0.00108, parça 0° 0.99960 ± 0.00138, parça 60° 0.99891 ± 0.00134 | 1.18σ / 0.77σ, geçti |
 | Hacim: kare+altıgen halka uo2_24 / uo2_31 | 1669.76 / 1660.1 ± 6.1; 1808.91 / 1812.1 ± 6.4 cm³ | 1.58σ / 0.49σ |
 | Hacim: altıgen+tambur u10mo | 62100.8 / 62143 ± 112 cm³ | 0.37σ |
@@ -101,10 +106,11 @@ OpenMC 0.16.0, ENDF/B-VIII.0, 6 iş parçacığı. Ölçüt: k farkları 2σ, ha
 | Pin kesiti hacmi: altıgen pinli demet u10mo | 45.0499 / 45.0051 ± 0.0293 cm³ | 1.53σ |
 
 Notlar:
-- Toplam tambur değerinin tek tambur × 6'dan **büyük** çıkması (1.22) beklenen
-  "gölgeleme" yönünün tersidir. Bu kor küçük ve sızıntısı büyüktür; tamburlar
-  korun her yanını birlikte "kapatınca" etki doğrusal toplanmayabilir. Kesin bir
-  kural yoktur; profesör denetimine gider.
+- Toplam tambur değerinin tek tambur × 6'dan **büyük** çıkması (1.22, G-4) sıkı
+  yöntemle yeniden ölçüldü (aşağıdaki "Tambur etkileşimi" bölümü): Δk ile oran
+  **1.03 ± 0.05**, yani katkısızlıkla uyumlu. G-4'teki 1.22, düşük istatistikli
+  tek tambur değerinden (1282 ± 233 pcm; yeni ölçüm 1532 ± 78 pcm, fark ~1σ)
+  geliyordu.
 - 60° simetri modeli zaten 60° simetrik olduğu için, dönüşümü yok sayan bir
   kurucu da sınamayı geçerdi. Bu yüzden hızlı test [GF3] ayrıca 30° döndürmenin
   (simetri değil) malzeme haritasını değiştirdiğini doğrular (3000 noktanın
@@ -112,6 +118,48 @@ Notlar:
   aynı olduğu Monte Carlo'suz denetlenir.
 - tamburlu_kor'da ağaç ile şablon aynı tohumla **bit düzeyinde** aynı k verdi:
   genişletme eşdeğerdir.
+
+### Tambur etkileşimi: altigen_tambur_halkasi (araclar/tambur_etkilesim.py, 01.10.2026)
+
+Yöntem: OpenMC 0.16.0, ENDF/B-VIII.0, 6 iş parçacığı. Her yapılandırma **ayrı
+tohumla** (1001–1006, bağımsız koşular), 20000 parçacık × 230 çevrim, **100
+pasif** → 2.6 × 10⁶ aktif tarih (G-4'ün 4000 × 80/20 = 2.4 × 10⁵'inin ~11 katı).
+Her koşuda Shannon entropisi platosu (kosucu.entropi_yakinsama) **sağlandı**.
+"İçeri" = dönme 0° (emici yay kora bakar), "dışarı" = 180°. Tek/çoklu tambur
+modelleri liste yerleşimiyle kurulur; 0°'daki tek tamburun yönü asıl (halka
+modu) modelle **malzeme haritasında noktasal aynıdır** (hızlı test GS14: tambur
+diskinde 1500 nokta = halka 0°, dışında 1500 nokta = halka 180°).
+pcm = × 10⁵; Δk = k_dış − k_X; Δρ = (k_dış − k_X)/(k_dış·k_X). Belirsizlikler
+1σ; oranların σ'sı ortak "dış" koşusunun ilintisini yok sayar (üst sınır).
+
+| Yapılandırma (içerideki tamburlar) | k | Δk [pcm] | Δρ [pcm] |
+|---|---|---|---|
+| hepsi dışarı (asıl model, 180°) | 1.04766 ± 0.00056 | — | — |
+| 1 tambur (0) | 1.03234 ± 0.00054 | 1532 ± 78 | 1416 ± 72 |
+| 2 komşu (0, 1) | 1.01897 ± 0.00054 | 2869 ± 78 | 2687 ± 73 |
+| 2 karşıt (0, 3) | 1.01667 ± 0.00054 | 3098 ± 77 | 2909 ± 73 |
+| 3 (0, 2, 4; 120° arayla) | 0.99966 ± 0.00053 | 4800 ± 77 | 4583 ± 74 |
+| 6 tambur (hepsi içeri) | 0.95286 ± 0.00051 | 9480 ± 75 | 9497 ± 76 |
+
+| Oran (katkısız = 1) | Δk ile | Δρ ile |
+|---|---|---|
+| 6 tambur / (6 × tek) | 1.031 ± 0.053 | 1.117 ± 0.057 |
+| 2 komşu / (2 × tek) | 0.936 ± 0.054 | 0.949 ± 0.054 |
+| 2 karşıt / (2 × tek) | 1.011 ± 0.057 | 1.027 ± 0.058 |
+| 3 tambur / (3 × tek) | 1.044 ± 0.055 | 1.078 ± 0.057 |
+
+Yorum (kabul ölçütü değildir; profesör denetimine gider):
+- Δk ile bütün oranlar 1'den en çok ~1.2σ uzaktadır: bu istatistikte tambur
+  değerleri **katkısızlıkla uyumludur**. Komşu çift 0.94 ± 0.05 ile hafif
+  gölgeleme yönündedir (anlamlı değil); karşıt çift 1.01'dir.
+- Δρ ile 6 tambur oranı 1.12 ± 0.06'dır. Bunun büyük kısmı fizik değil
+  tanımdır: Δρ = Δk/(k_dış·k_X) ve 6 tamburda k_X (0.953) tek tamburdakinden
+  (1.032) küçüktür; oran yalnız bu yüzden k_tek/k_6 = 1.083 kat büyür
+  (1.031 × 1.083 = 1.117). Δk ile Δρ oranları bu yüzden ayrı ayrı verilir.
+- "Tek emicide azimutal akı eğimi tek tambur değerini düşürür (telafi)"
+  açıklaması bu ölçümde **gerekmedi**: G-4'teki düşük tek tambur değeri
+  istatistik içindeydi. Eğimin küçük bir etkisi bu duyarlılığın (~%5) altında
+  kalabilir; ölçülmedi.
 
 ### VVER-1000 demeti ve koru
 

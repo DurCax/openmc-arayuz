@@ -50,7 +50,9 @@ def k1_entropi(kural, baglam):
                                        "gösterilemiyor."),
                             _("Hesap ayarlarında entropi ağını açın."))]
     from cekirdek import kosucu
-    yakinsadi, mesaj = kosucu.entropi_yakinsama(list(kosu.entropi), kosu.pasif)
+    # entropi NESIL basinadir: pasif donem pasif x nesil_basina nesildir
+    yakinsadi, mesaj = kosucu.entropi_yakinsama(list(kosu.entropi),
+                                                kosu.pasif * max(kosu.nesil_basina, 1))
     if yakinsadi is None:
         return [kural.uygulanamadi(mesaj)]
     if not yakinsadi:
@@ -126,9 +128,18 @@ def gecikme1_ilinti(dizi):
     return sum((dizi[i] - ort) * (dizi[i + 1] - ort) for i in range(n - 1)) / payda
 
 
+def aktif_cevrim_k(kosu):
+    """Aktif CEVRIMLERIN k degerleri. k_nesil nesil basinadir (generations_per_
+    batch > 1 ise cevrim x g); pasif nesiller atilir, her cevrimin nesilleri
+    ortalanir (Brown 2009 §IV: ilinti cevrimler arasidir)."""
+    g = max(int(kosu.nesil_basina or 1), 1)
+    nesil = list(kosu.k_nesil[kosu.pasif * g:])
+    return [sum(nesil[i:i + g]) / g for i in range(0, len(nesil) - g + 1, g)]
+
+
 def _k2_ilinti(kural, baglam, kosu):
     kimlik, kaynak = "K2-ilinti", baglam.esik_kaynagi("korelasyon_z")
-    aktif = list(kosu.k_nesil[kosu.pasif:])
+    aktif = aktif_cevrim_k(kosu)
     r1 = gecikme1_ilinti(aktif)
     if r1 is None:
         return kural.uygulanamadi(_("Çevrim k değerleri ilinti için yetersiz."),
@@ -137,7 +148,9 @@ def _k2_ilinti(kural, baglam, kosu):
     if r1 > sinir:
         return kural.not_(
             _("Çevrimler arası ilinti belirgin (gecikme-1 r = %.2f > %.2f): bildirilen "
-              "σ gerçek belirsizliği küçümser (%s §IV: 2–5 kat olabilir).")
+              "σ bu ilintiyi yok sayar ve gerçek belirsizliği küçümser (%s §IV.A). "
+              "Kaynak, yerel tally'lerde (fisyon hızları) 1.7–4.7 kat küçümseme ölçer "
+              "(§IV.B Tablo 2); k-eff için büyüklük vermez.")
             % (r1, sinir, BROWN_2009),
             _("Bağımsız tohumlarla birkaç koşu yapıp sonuçların saçılımını "
               "karşılaştırın."), kimlik=kimlik, kaynak=kaynak)

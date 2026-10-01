@@ -32,6 +32,7 @@ from cekirdek import altigen
 from cekirdek.geometri import kesit as _k
 from cekirdek.geometri import yerlesim as _yer
 from cekirdek.geometri.sema import bilesen_tanimi
+from cekirdek.ceviri import _
 from cekirdek.gunluk import kaydedici
 from arayuz.geometri import renk as _renk
 
@@ -441,19 +442,21 @@ def katman_icerigi(d, katman):
 IC_OLCU = 1000.0             # ic birim: en buyuk olcu bu kadar (egri duzlestirme payi)
 
 
-def xy_ogeleri(spec, z=0.0):
+def xy_ogeleri(spec, z=0.0, hatalar=None):
     """
     Spec'in sematik xy kesiti: (ogeler, sinir kutusu (x0, y0, x1, y1), olcek).
     Ogeler ve kutu IC BIRIMDEDIR (cm x olcek): QPainterPath kesisimleri egrileri
     koordinat birimine gore duzlestirir; santimetre biriminde 4 cm'lik bir
-    tambur 12-gen olurdu. Model kurulamazsa ([], None, 1.0); hata gunluge.
+    tambur 12-gen olurdu. Model kurulamazsa ([], None, 1.0); hata gunluge
+    (warning) ve verilmisse 'hatalar' listesine (gorunum "hesaplanamadi" yazar).
     """
     from cekirdek import geometri
     try:
         m = geometri.model(spec)
         kesikler = geometri.kesik_konumlar(m)
-    except Exception:
+    except Exception as e:
         _log.warning("sematik kesit icin model kurulamadi", exc_info=True)
+        _hata_ekle(hatalar, _("Kesit hesaplanamadı: %s") % e)
         return [], None, 1.0
     c = _Cizici(spec, m, z, kesikler)
     kok = m.kok
@@ -464,10 +467,16 @@ def xy_ogeleri(spec, z=0.0):
     dis = T.map(dis_cm)
     try:
         c.dugum(kok, ("kok",), T, dis)
-    except Exception:
+    except Exception as e:
         _log.warning("sematik kesit cizilemedi", exc_info=True)
+        _hata_ekle(hatalar, _("Kesit eksik çizildi (hesaplanamadı): %s") % e)
     r = dis.boundingRect()
     return c.ogeler, (r.left(), r.top(), r.right(), r.bottom()), olcek
+
+
+def _hata_ekle(hatalar, metin):
+    if hatalar is not None:
+        hatalar.append(metin)
 
 
 def isabet(ogeler, x, y):

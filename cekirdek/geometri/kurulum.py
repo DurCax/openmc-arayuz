@@ -396,7 +396,7 @@ class Kurucu(KapKurucu):
         duz = []
         for i, aci in enumerate(_k.altigen_normal_acilari(yon)):
             t = math.radians(aci)
-            duz.append(y.duzlem(math.cos(t), math.sin(t), 0.0, a, bc=yuzler[i] or bc))
+            duz.append(y.duzlem(math.cos(t), math.sin(t), 0.0, a, bc=yuzler[i]))
         for i in range(3):
             if yuzler[i] == "periodic" and yuzler[i + 3] == "periodic":
                 y.periyodik(duz[i], duz[i + 3])

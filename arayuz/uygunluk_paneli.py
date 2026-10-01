@@ -47,7 +47,7 @@ _IKONLAR = {
     ("uygulanamadi", None): ("circle-dot", "metin_soluk"),
     ("karsilandi", None): ("circle-check", "basari"),
 }
-_DURUM_ADLARI = {"karsilandi": N_("karşılandı"), "karsilanmadi": N_("karşılanmadı"),
+_DURUM_ADLARI = {"karsilandi": N_("kontrolü geçti"), "karsilanmadi": N_("kontrolü geçmedi"),
                  "uygulanamadi": N_("uygulanamadı"), "bilgi": N_("not")}
 
 
@@ -79,6 +79,12 @@ def _profil_kutulari():
         kutu.setToolTip(_(p.aciklama))
         kutular[kimlik] = kutu
     return kutular
+
+
+def _degerlendirilemeyen_kurallar(bulgular):
+    """'uygulanamadi' bulgusu olan ayri kural sayisi (bir kural birden cok
+    bulgu verebilir)."""
+    return len({b.kural for b in bulgular if getattr(b, "durum", None) == "uygulanamadi"})
 
 
 class UygunlukPaneli(b.Kart):
@@ -200,8 +206,9 @@ class UygunlukPaneli(b.Kart):
             self.ozet.setText(_("Hiçbir profil seçilmedi; denetim yapılmadı."))
             return
         sayi = ozet(bulgular)
-        self._rozet_yaz(sayi["seviye"], sayi["durum"]["karsilanmadi"])
-        self.ozet.setText(_("Profiller %s · %d karşılandı · %d karşılanmadı · %d "
+        self._rozet_yaz(sayi["seviye"], sayi["durum"]["karsilanmadi"],
+                        sayi["durum"]["karsilandi"], _degerlendirilemeyen_kurallar(bulgular))
+        self.ozet.setText(_("Profiller %s · %d kontrolü geçti · %d kontrolü geçmedi · %d "
                             "uygulanamadı · %d not") % (
             ", ".join(profiller), sayi["durum"]["karsilandi"],
             sayi["durum"]["karsilanmadi"], sayi["durum"]["uygulanamadi"],
@@ -219,13 +226,20 @@ class UygunlukPaneli(b.Kart):
         self.rozet.setText(_("Denetlenemedi"))
         self.rozet.tur_ayarla("hata")
 
-    def _rozet_yaz(self, seviye, karsilanmayan):
+    def _rozet_yaz(self, seviye, karsilanmayan, karsilanan=1, degerlendirilemeyen=0):
+        """Hata > uyari > not > degerlendirme kapsami. Hicbir kural
+        degerlendirilmediyse (statepoint yok vb.) yesil 'Sorun yok' DEGIL."""
         if seviye["hata"]:
             metin, tur = _("%d hata") % seviye["hata"], "hata"
         elif seviye["uyari"]:
             metin, tur = _("%d uyarı") % seviye["uyari"], "uyari"
         elif karsilanmayan:
             metin, tur = _("%d not") % karsilanmayan, "bilgi"
+        elif not karsilanan:
+            metin, tur = _("Değerlendirilemedi: %d kural") % degerlendirilemeyen, "notr"
+        elif degerlendirilemeyen:
+            metin, tur = (_("%d kontrol geçti · %d kural değerlendirilemedi")
+                          % (karsilanan, degerlendirilemeyen), "notr")
         else:
             metin, tur = _("Sorun yok"), "basari"
         self.rozet.setText(metin)

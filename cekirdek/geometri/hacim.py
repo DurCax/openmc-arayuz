@@ -26,6 +26,7 @@
 ================================================================================
 """
 
+import math
 import os
 from dataclasses import dataclass, field
 
@@ -156,27 +157,78 @@ def stokastik(spec, adlar, orneklem=2_000_000, dizin=None):
     vc = openmc.VolumeCalculation(alanlar, orneklem, alt, ust)
     model.settings.volume_calculations = [vc]
     dizin = dizin or tempfile.mkdtemp(prefix="geometri_hacim_")
-    eski = os.getcwd()
-    try:
-        os.chdir(dizin)
-        model.export_to_model_xml()
-        openmc.calculate_volumes(output=False)
-        sonuc = openmc.VolumeCalculation.from_hdf5(os.path.join(dizin, "volume_1.h5"))
-    finally:
-        os.chdir(eski)
+    # surec geneli os.chdir YOK (arayuz is parcaciklari ayni cwd'yi paylasir):
+    # OpenMC 0.16 export_to_model_xml(yol) + calculate_volumes(cwd=dizin)
+    model.export_to_model_xml(os.path.join(dizin, "model.xml"))
+    openmc.calculate_volumes(output=False, cwd=dizin)
+    sonuc = openmc.VolumeCalculation.from_hdf5(os.path.join(dizin, "volume_1.h5"))
     ters = {id(v): k for k, v in nesneler.items()}
     return {ters[id(mat)]: (float(sonuc.volumes[mat.id].nominal_value),
                             float(sonuc.volumes[mat.id].std_dev)) for mat in alanlar}
 
 
+# Stokastik YEDEK hacmin (tukenmede kullanilan) bagil 1-sigma ust siniri.
+# Gerekce (proje olcutu, standarttan gelmez): yanma hizi hacimle ayni oranda
+# yanlis olur; %0.5, ornek modellerde 2e6 orneklemle olculen bagil sapmanin
+# (kesik yakit bloklu duzenek: 18 / 8074 cm3 = %0.22) iki kati payla ulasilabilir
+# bir siniri ve tukenme adimlarindaki tipik k sapmasindan kucuk bir hata payini
+# verir. Asilirsa orneklem sigma ~ 1/sqrt(N) ile gereken N'e (en cok
+# AZAMI_ORNEKLEM) cikarilir; yine asilirsa ValueError.
+BAGIL_SIGMA_SINIRI = 0.005
+AZAMI_ORNEKLEM = 64_000_000
+_ORNEKLEM_PAYI = 1.2            # gereken N tahminine guvenlik payi
+
+
+def _bagil(v, s):
+    return (s or 0.0) / v if v else float("inf")
+
+
+def _gereken_orneklem(orneklem, bagil):
+    return min(AZAMI_ORNEKLEM, int(math.ceil(orneklem * _ORNEKLEM_PAYI
+                                             * (bagil / BAGIL_SIGMA_SINIRI) ** 2)))
+
+
+def denetimli_stokastik(spec, adlar, orneklem=2_000_000, dizin=None):
+    """
+    Bagil sigmasi denetlenen stokastik yedek hacim. DONER ({ad: (hacim, sapma)},
+    {ad: neden}) -- ikinci sozluk olculemeyen malzemelerin nedeni (hacim 0 ya
+    da malzeme kurulan modelde yok); sessiz KESIN_DEGIL birakilmaz.
+    Sinir (BAGIL_SIGMA_SINIRI) orneklem artirildiktan sonra da asilirsa ValueError.
+    """
+    olculen = stokastik(spec, adlar, orneklem, dizin)
+    genis = [a for a, (v, s) in olculen.items() if v and _bagil(v, s) > BAGIL_SIGMA_SINIRI]
+    if genis:
+        n = max(_gereken_orneklem(orneklem, _bagil(*olculen[a])) for a in genis)
+        olculen = dict(olculen, **stokastik(spec, genis, max(n, orneklem + 1), dizin))
+        kalan = [a for a in genis if _bagil(*olculen[a]) > BAGIL_SIGMA_SINIRI]
+        if kalan:
+            raise ValueError(
+                "stokastik hacmin bağıl σ'sı %%%.2f sınırını aşıyor (örneklem %d): %s"
+                % (100 * BAGIL_SIGMA_SINIRI, n, ", ".join(
+                    "%s %.6g ± %.2g cm³" % (a, olculen[a][0], olculen[a][1]) for a in kalan)))
+    sonuc, nedenler = {}, {}
+    for a in adlar:
+        v, s = olculen.get(a, (None, None))
+        if v:
+            sonuc[a] = (v, s)
+        elif a in olculen:
+            nedenler[a] = "stokastik hacim sıfır (malzeme örnekleme kutusunda bulunamadı)"
+        else:
+            nedenler[a] = "stokastik hacim ölçülemedi (malzeme kurulan modelde yok)"
+    return sonuc, nedenler
+
+
 def hesapla(spec, ad, stokastik_yedek=True, orneklem=2_000_000, dizin=None):
-    """Analitik hacim; kesin degilse stokastik yedek (yontem 'stokastik', bildirilir)."""
+    """Analitik hacim; kesin degilse stokastik yedek (yontem 'stokastik', bildirilir).
+    Yedek de olcemezse kayit KESIN_DEGIL kalir ve nedeni ayrintiya eklenir."""
     from cekirdek import geometri
     kayit = analitik(geometri.model(spec), ad)
     if kayit.yontem != KESIN_DEGIL or not stokastik_yedek:
         return kayit
-    v, s = stokastik(spec, [ad], orneklem, dizin).get(ad, (None, None))
-    if not v:
-        return kayit
+    sonuc, nedenler = denetimli_stokastik(spec, [ad], orneklem, dizin)
+    if ad not in sonuc:
+        return HacimKaydi(None, KESIN_DEGIL, "%s; %s" % (nedenler[ad], kayit.ayrinti),
+                          kayit.ornek, kayit.sorunlar)
+    v, s = sonuc[ad]
     return HacimKaydi(v, STOKASTIK, "stokastik hacim %.6g ± %.2g cm³ (%s)"
                       % (v, s, kayit.ayrinti), kayit.ornek, kayit.sorunlar, s)

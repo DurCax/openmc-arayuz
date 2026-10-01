@@ -46,7 +46,19 @@ _ORNEK_SAYISI = 3                    # ozet satirinda gosterilen ileti sayisi
 _UYARI_BASI = re.compile(r"^\s*WARNING:\s?(.*)$")
 _HATA_BASI = re.compile(r"^\s*ERROR:\s?(.*)$")
 _DEVAM = re.compile(r"^ {10}\S")     # OpenMC satir kaydirma girintisi (10)
-_KAYIP = re.compile(r"could not be located|lost particle after|lost a ray", re.I)
+# OpenMC 0.16 kayip parcacik (mark_as_lost) iletileri -- libopenmc.so dizgilerinden
+# dogrulandi (01.10.2026): "After particle {} crossed surface {} it could not be
+# located in any cell...", "Particle {} could not be located after crossing a
+# boundary of lattice {}", "Lost particle after reflection.", "Lost a ray, ...",
+# "Particle {} left lattice {}, but it has no outer definition.", "Particle {}
+# had a negative distance to a lattice boundary.", "Could not find the cell
+# containing particle ...", "Couldn't find particle after hitting periodic
+# boundary on surface ...".
+_KAYIP = re.compile(r"could not be located|lost particle after|lost a ray"
+                    r"|left lattice .*no outer definition"
+                    r"|negative distance to a lattice boundary"
+                    r"|could not find the cell containing particle"
+                    r"|couldn't find particle after hitting periodic boundary", re.I)
 _YENIDEN_BASLATMA = re.compile(r"^particle_\d+_\d+\.h5$")
 
 
@@ -160,8 +172,9 @@ class KosuVerisi:
     cevrim: int
     pasif: int
     entropi: Tuple[float, ...] = ()          # bos: entropi kapali
-    k_nesil: Tuple[float, ...] = ()
+    k_nesil: Tuple[float, ...] = ()          # NESIL basina (cevrim x nesil_basina)
     openmc_surum: str = ""
+    nesil_basina: int = 1                    # settings.generations_per_batch
 
     @property
     def ozdeger(self):
@@ -183,18 +196,19 @@ def kosu_verisi(kosu_dizini):
         return None, None
     try:
         import openmc
-        sp = openmc.StatePoint(yol, autolink=False)
-        ozdeger = sp.run_mode == "eigenvalue"
-        entropi = tuple(float(x) for x in sp.entropy) if (
-            ozdeger and sp.entropy is not None) else ()
-        veri = KosuVerisi(
-            statepoint=yol, mod=str(sp.run_mode),
-            keff=float(sp.keff.nominal_value) if ozdeger else None,
-            sigma=float(sp.keff.std_dev) if ozdeger else None,
-            parcacik=int(sp.n_particles), cevrim=int(sp.n_batches),
-            pasif=int(sp.n_inactive) if ozdeger else 0, entropi=entropi,
-            k_nesil=tuple(float(x) for x in sp.k_generation) if ozdeger else (),
-            openmc_surum=".".join(str(int(x)) for x in sp.version))
+        with openmc.StatePoint(yol, autolink=False) as sp:
+            ozdeger = sp.run_mode == "eigenvalue"
+            entropi = tuple(float(x) for x in sp.entropy) if (
+                ozdeger and sp.entropy is not None) else ()
+            veri = KosuVerisi(
+                statepoint=yol, mod=str(sp.run_mode),
+                keff=float(sp.keff.nominal_value) if ozdeger else None,
+                sigma=float(sp.keff.std_dev) if ozdeger else None,
+                parcacik=int(sp.n_particles), cevrim=int(sp.n_batches),
+                pasif=int(sp.n_inactive) if ozdeger else 0, entropi=entropi,
+                k_nesil=tuple(float(x) for x in sp.k_generation) if ozdeger else (),
+                openmc_surum=".".join(str(int(x)) for x in sp.version),
+                nesil_basina=int(getattr(sp, "generations_per_batch", 1) or 1))
         return veri, None
     except Exception as e:
         _log.warning("statepoint okunamadı: %s", yol, exc_info=True)
@@ -209,8 +223,8 @@ def guc_faktorleri(statepoint_yolu):
     try:
         import openmc
         from cekirdek import guc
-        sp = openmc.StatePoint(statepoint_yolu)
-        dagilim = guc.dagilim_oku(sp)
+        with openmc.StatePoint(statepoint_yolu) as sp:
+            dagilim = guc.dagilim_oku(sp)
         if not dagilim:
             return None, None
         return guc.tepe_faktorleri(dagilim), None

@@ -115,7 +115,13 @@ okunabilir bir OpenMC Python betiğine çevirebilir:
 openmc-arayuz-kosu ornekler/pwr_pinhucre.json                   # koş ve sonucu yaz
 openmc-arayuz-kosu ornekler/pwr_pinhucre.json --sadece-dogrula  # yalnızca doğrula
 openmc-arayuz-kosu ornekler/pwr_17x17.json --betik model.py     # Python betiği üret
+openmc-arayuz-kosu uygunluk kosu/ --profil A,D [--siki]          # uygunluk denetimi
 ```
+
+`uygunluk` çıkış kodu (CI / ders otomasyonu): 0 hata bulgusu yok, 1 hata bulgusu
+var (ya da denetim yapılamadı), 2 kullanım hatası, 3 `--siki` verildiyse
+değerlendirilemeyen ("uygulanamadı") kural var. `--siki` olmadan
+değerlendirilemeyen kurallar başarısızlık sayılmaz; çıktıdaki sayımda görünür.
 
 `pip install -e .` yapılmadıysa aynı komutlar `python3 -m cekirdek.kosucu ...` ile çalışır.
 

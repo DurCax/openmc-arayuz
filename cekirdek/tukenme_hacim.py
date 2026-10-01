@@ -375,15 +375,20 @@ def stokastik_tamamla(spec, tablo, orneklem=2_000_000, dizin=None):
     if not eksik or not _agac_mi(spec):
         return tablo, []
     from cekirdek.geometri import hacim
-    olculen = hacim.stokastik(spec, eksik, orneklem, dizin)
+    # bagil sigma denetimli (geometri.hacim.BAGIL_SIGMA_SINIRI); olculemeyenin
+    # nedeni ayrintiya yazilir
+    olculen, nedenler = hacim.denetimli_stokastik(spec, eksik, orneklem, dizin)
     yeni, dusen = dict(tablo), []
     for ad in eksik:
-        v, s = olculen.get(ad, (None, None))
-        if v:
+        if ad in olculen:
+            v, s = olculen[ad]
             yeni[ad] = dict(tablo[ad], hacim=v, yontem=hacim.STOKASTIK,
                             ayrinti="stokastik hacim %.6g ± %.2g cm³ (%s)"
                             % (v, s, tablo[ad].get("ayrinti")))
             dusen.append(ad)
+        else:
+            yeni[ad] = dict(tablo[ad], ayrinti="%s; %s" % (nedenler[ad],
+                                                           tablo[ad].get("ayrinti")))
     return yeni, dusen
 
 
