@@ -219,7 +219,7 @@ def test_yorum_ve_ozet_dallari():
     metin = " ".join(y)
     for parca in ("1.65", "2.3–2.6", "5 eksenel dilim", "yukarı yanlı", "400–500", "eski koşu"):
         kontrol("yorum: %s" % parca, parca in metin)
-    kontrol("duz dagilim notu", any("neredeyse düz" in s for s in guc.yorumla(dict(f, F_dH=1.01))))
+    kontrol("duz dagilim notu", any("neredeyse düz" in s for s in guc.yorumla(dict(f, F_dH=1.01, F_dH_sapma=0.001))))
     kontrol("faktor yoksa", guc.yorumla(None) == ["Güç dağılımı hesaplanamadı."]
             and guc.ozet_metni(None) == "güç dağılımı yok")
     o = guc.ozet_metni(dict(f, F_q=1.5, F_q_sapma=0.01))

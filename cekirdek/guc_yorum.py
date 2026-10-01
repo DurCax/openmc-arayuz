@@ -45,11 +45,30 @@ def _yanlilik_satiri(yakin, yanlilik, buyukluk):
               "kullanın.") % (yakin, buyukluk[0], buyukluk[1], yanlilik, yakin)]
 
 
+def istatistik_yetersiz(deger, sapma, yanlilik):
+    """Tepe faktorunun 1'den farki gurultu + maksimum yanliligindan ayirt
+    edilemiyorsa True: (deger − 1) ≤ 2σ + yanlilik. O zaman tasarim yorumu
+    (yukleme duzeltilmeli vb.) ertelenir (QA14-Q7)."""
+    if deger is None or sapma is None:
+        return False
+    return (deger - 1.0) <= 2.0 * sapma + (yanlilik or 0.0)
+
+
+def _yetersiz_satiri(ad, deger, sapma, yanlilik):
+    return [_("  İstatistik yetersiz: %s = %.4f ± %.4f; 1'den farkı gürültü ve maksimum "
+              "yanlılığından (2σ + %.4f) ayırt edilemiyor. Tasarım yorumu yapılmadı — önce "
+              "çevrim başına parçacık ve aktif çevrim sayısını artırın.")
+            % (ad, deger, sapma, yanlilik or 0.0)]
+
+
 def _radyal_satirlari(faktorler, kategori=None):
     f = faktorler["F_dH"]
     satirlar = [_("F_ΔH = %.4f — en sıcak çubuk ortalamanın %%%.1f üstünde güç üretiyor.")
                 % (f, (f - 1) * 100)]
-    if f < 1.02:
+    if istatistik_yetersiz(f, faktorler.get("F_dH_sapma"), faktorler.get("F_dH_yanlilik")):
+        satirlar += _yetersiz_satiri("F_ΔH", f, faktorler["F_dH_sapma"],
+                                     faktorler.get("F_dH_yanlilik"))
+    elif f < 1.02:
         satirlar.append(_("  Dağılım neredeyse düz. Yansıtıcı sınırlı tek demet "
                         "hesaplarında beklenen budur; gerçek bir korda kenar "
                         "etkileri ve yakıt yüklemesi tepeyi büyütür."))
@@ -100,6 +119,10 @@ def _eksenel_satirlari(faktorler, kategori=None):
     satirlar += _yanlilik_satiri(faktorler.get("F_q_tepe_yakini"),
                                  faktorler.get("F_q_yanlilik"),
                                  (_("(çubuk, dilim) çifti"), "F_q"))
+    if istatistik_yetersiz(faktorler["F_q"], faktorler.get("F_q_sapma"),
+                           faktorler.get("F_q_yanlilik")):
+        return satirlar + _yetersiz_satiri("F_q", faktorler["F_q"], faktorler["F_q_sapma"],
+                                           faktorler.get("F_q_yanlilik"))
     if faktorler["F_q"] > 2.6 and _pwr_mi(kategori):
         satirlar.append(_("  Yüksek: tipik PWR sınırı F_q ≈ 2.3–2.6."))
     return satirlar

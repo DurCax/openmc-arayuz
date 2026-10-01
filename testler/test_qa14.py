@@ -122,6 +122,22 @@ def test_entropi_kisa_pasif_yakalanir():
             "-> %s" % (entropi_yakinsama(godiva, 30),))
 
 
+def test_guc_yorumu_once_istatistik():
+    print("\n[QA7] Guc yorumu: σ buyukse once istatistik yetersizligi, tasarim yorumu yok")
+    from cekirdek import guc
+    f = {"F_dH": 5.1, "F_dH_sapma": 2.4, "F_q": 45.0, "F_q_sapma": 30.0, "eksenel_dilim": 20,
+         "cubuk_sayisi": 100, "F_dH_tepe_yakini": 1, "F_dH_yanlilik": 0.0}
+    y = guc.yorumla(f, kategori="pwr")
+    metin = " ".join(y)
+    kontrol("istatistik yetersiz satiri (F_ΔH ve F_q)", metin.count("İstatistik yetersiz") == 2,
+            "-> %s" % metin[:400])
+    kontrol("'yakıt yüklemesi düzeltilmeli' ve F_q siniri yazilmaz",
+            "düzeltilmeli" not in metin and "2.3–2.6" not in metin)
+    iyi = guc.yorumla(dict(f, F_dH=1.8, F_dH_sapma=0.002, F_q=2.9, F_q_sapma=0.01),
+                      kategori="pwr")
+    kontrol("yeterli istatistikte PWR siniri yorumu yine var", "1.65" in " ".join(iyi))
+
+
 HIZLI = [test_elle_ealf_tally_vv_dusurmez, test_panel_gecersiz_tally_duzeltir,
-         test_entropi_kisa_pasif_yakalanir]
+         test_entropi_kisa_pasif_yakalanir, test_guc_yorumu_once_istatistik]
 YAVAS = []
