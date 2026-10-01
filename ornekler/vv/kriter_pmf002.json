@@ -544,6 +544,27 @@
     "aoa_girdi": {
       "fiziksel_bicim": "metal",
       "yansitici": "yok"
+    },
+    "olcum": {
+      "k": 1.00194,
+      "sigma": 0.00016,
+      "parcacik": 100000,
+      "cevrim": 200,
+      "pasif": 50,
+      "sure_s": 18.7,
+      "is_parcacigi": 12,
+      "openmc": "0.16.0",
+      "kutuphane": "ENDF/B-VIII.0",
+      "tarih": "2026-10-01"
+    },
+    "aoa": {
+      "bolunebilir": "Pu",
+      "zenginlik": 79.434265,
+      "h_x": 0.0,
+      "fiziksel_bicim": "metal",
+      "ealf": 1275234.532563,
+      "tayf": "hizli",
+      "yansitici": "yok"
     }
   }
 }
