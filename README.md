@@ -881,10 +881,14 @@ eşdeğerliği denetler.
   hacimsel kaynak dosyası ve dış kaynak dosyası (`source.h5`) desteklenmiyor.
 - **Doz dönüşüm faktörleri yok** — akı tally'si var, ICRP akı→doz çarpanı yok;
   doz için dönüşümü kullanıcı kendisi yapar.
-- **Geometri içe aktarılamaz.** Malzemeler `materials.xml` / `model.xml`'den
-  aktarılabilir (Dosya menüsü); geometri aktarılamaz çünkü ham CSG'yi
-  "çubuk → kafes → kor" katmanlarına geri çevirmek genel olarak çözülebilir bir
-  problem değildir. Yanlış bir tahmin sessizce yanlış model üretirdi.
+- **Geometri içe aktarımı kısmi ve yalnız çekirdekte.** Malzemeler `materials.xml` /
+  `model.xml`'den arayüzden aktarılabilir (Dosya menüsü). Geometri için çekirdekte
+  `cekirdek.geometri.ice_aktar` (`geometri_oku`) OpenMC XML geometrisini, geometri
+  ağacına dönüştürebildiği ölçüde alır; dönüştüremediğini (plaka elemanı, z dilimli
+  kontrol çubuğu, kırık zarflı altıgen kor, eşsiz/dönel periyodik sınır, 62'den çok
+  evrenli kafes…) nedenini yazarak reddeder. Ham CSG'yi genel olarak geri çevirmek
+  çözülebilir bir problem değildir; yanlış bir tahmin sessizce yanlış model üretirdi.
+  Arayüzde geometri içe aktarma düğmesi henüz yok.
 - **Python betikleri içe aktarılamaz** — keyfi Python çözümlenemez.
 - **Tükenmede fisyon verimi sabit** (termal 0.0253 eV, hızlı 500 keV). OpenMC'nin
   spektrum ağırlıklı `average` modu kullanılmıyor.
