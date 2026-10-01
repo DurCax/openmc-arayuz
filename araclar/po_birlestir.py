@@ -22,6 +22,15 @@ def _oku(yol):
         return read_po(f)
 
 
+def _dolu(ceviri):
+    """Ceviri dolu mu? Cogul giriste msgstr bir demettir: ('', '') bos
+    sayilir (demet olarak "truthy" oldugu icin eskiden dolu sanilip
+    cevrilmis bir esiyle celiski raporlaniyor ve hic doldurulmuyordu)."""
+    if isinstance(ceviri, (tuple, list)):
+        return all(ceviri)
+    return bool(ceviri)
+
+
 def birlestir(parca_yollari):
     """(katalog, cakismalar) -- cakismalar: ["msgid: parca1 'x' != parca2 'y'"]."""
     ilk = _oku(parca_yollari[0])
@@ -40,13 +49,17 @@ def birlestir(parca_yollari):
                           flags=mesaj.flags, auto_comments=mesaj.auto_comments,
                           user_comments=mesaj.user_comments, context=mesaj.context)
                 kaynagi[anahtar] = yol
-            elif var.string != mesaj.string and mesaj.string and var.string:
+            elif (_dolu(mesaj.string) and _dolu(var.string)
+                  and tuple(var.string if isinstance(var.string, (tuple, list))
+                            else (var.string,))
+                  != tuple(mesaj.string if isinstance(mesaj.string, (tuple, list))
+                           else (mesaj.string,))):
                 cakismalar.append("%r: %s %r != %s %r" % (
                     anahtar[1], kaynagi[anahtar], var.string, yol, mesaj.string))
             else:
                 var.locations = list(var.locations) + [
                     l for l in mesaj.locations if l not in var.locations]
-                if not var.string:
+                if not _dolu(var.string) and _dolu(mesaj.string):
                     var.string = mesaj.string
     return hedef, cakismalar
 

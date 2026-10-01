@@ -373,7 +373,63 @@ def test_cekirdek_po_butun():
             "-> %s" % [m.id for m in kaynakli][:3])
 
 
-HIZLI = [test_bulgular_ingilizce, test_uygunluk_ve_rapor_ingilizce,
+def _parca_yaz(yol, girdiler):
+    from babel.messages.catalog import Catalog
+    from babel.messages.pofile import write_po
+    k = Catalog(locale="en", domain="parca")
+    for mid, ceviri in girdiler:
+        k.add(mid, ceviri)
+    with open(yol, "wb") as f:
+        write_po(f, k)
+
+
+def test_po_birlestir_cogul():
+    print("\n[CC7] M6: po_birlestir -- cevrilmemis cogul giris (('', '')) celiski sayilmaz, "
+          "doldurulur")
+    import sys
+    sys.path.insert(0, os.path.join(KOK, "araclar"))
+    import po_birlestir
+    cogul = ("%d hata", "%d hata")
+    gecici = tempfile.mkdtemp(prefix="po_birlestir_")
+    try:
+        a, b = os.path.join(gecici, "a.po"), os.path.join(gecici, "b.po")
+        _parca_yaz(a, [(cogul, ("", "")), ("Kor", "Core")])
+        _parca_yaz(b, [(cogul, ("%d error", "%d errors")), ("Kor", "Core")])
+        k1, c1 = po_birlestir.birlestir([a, b])
+        k2, c2 = po_birlestir.birlestir([b, a])
+        _parca_yaz(b, [(cogul, ("%d error", "%d errors (x)"))])
+        _parca_yaz(a, [(cogul, ("%d error", "%d errors"))])
+        _k3, c3 = po_birlestir.birlestir([a, b])
+    finally:
+        shutil.rmtree(gecici, True)
+    kontrol("bos cogul + dolu cogul: celiski yok (iki sira)", not c1 and not c2,
+            "-> %s / %s" % (c1, c2))
+    for ad, k in (("bos once", k1), ("dolu once", k2)):
+        m = k.get(cogul[0])
+        kontrol("%s: birlesik cogul ceviri dolu" % ad,
+                m is not None and tuple(m.string) == ("%d error", "%d errors"),
+                "-> %r" % (m.string if m else None,))
+    kontrol("gercekten farkli cogul ceviri celiski sayilir", len(c3) == 1, "-> %s" % c3)
+
+
+def test_regresyon_listeleri_acik():
+    print("\n[CC8] M6: test_regresyon HIZLI/YAVAS listelerini acikca tanimlar "
+          "(conftest main() AST cozumlemesine dusmez)")
+    import importlib
+    m = importlib.import_module("testler.test_regresyon")
+    kontrol("HIZLI ve YAVAS tanimli (bos liste)",
+            getattr(m, "HIZLI", None) == [] and getattr(m, "YAVAS", None) == [],
+            "-> HIZLI=%r YAVAS=%r" % (getattr(m, "HIZLI", None), getattr(m, "YAVAS", None)))
+    try:
+        import conftest
+    except ImportError as e:            # pytest kurulu degil
+        kontrol("pytest yok; kopru denetimi atlandi", True, "-> %s" % e)
+        return
+    kontrol("kopru listeyi kullanir: ([], [])", conftest.test_listeleri(m) == ([], []))
+
+
+HIZLI = [test_bulgular_ingilizce, test_uygunluk_ve_rapor_ingilizce, test_po_birlestir_cogul,
+         test_regresyon_listeleri_acik,
          test_ayni_ceviri_eksik_sayilmaz, test_ceviri_okuma_tutarli,
          test_tukenme_makine_isareti, test_cekirdek_po_butun]
 YAVAS = []
