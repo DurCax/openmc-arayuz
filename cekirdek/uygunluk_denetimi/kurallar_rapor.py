@@ -9,7 +9,12 @@ uygunluk_denetimi/kurallar_rapor.py -- Profil D: raporlama.
       a) "±" varsa 1σ / standart belirsizlik etiketi
       b) belirsizlik en cok 2 anlamli rakam
       c) deger belirsizlikle AYNI ondalik basamaga yuvarli
-      d) pcm varsa tanimi (Δk × 10⁵ mi Δρ × 10⁵ mi) yazili
+      d) pcm varsa tanimi (Δk × 10⁵ mi Δρ × 10⁵ mi) yazili -- pcm'nin
+         kullanildigi BOLUMDE (<h2>..<h6> ile ayrilir) ya da belge basinda
+         (ilk <h2>'den once: kapak gosterim notu); ekteki tanim sayilmaz
+      Cift bicimleri: "1.00038 ± 0.00025" ve parantez bicimi "1.00038(25)"
+      (JCGM 100 §7.2.2; STANDARTLAR.md §3 K5). Kosu dizininde rapor adi
+      bilinen ad (rapor.html); yoksa tek .html; birden cok ise belirsiz.
       e) SI disi birim yok (inch, ft, °F, psi, BTU, lbm)
 
  S-2 icin yardimcilar (rapor ve panel AYNI bicimi kullansin):
@@ -30,6 +35,9 @@ _ORNEK = 3
 _CIFT = re.compile(r"(?<![\w.+\-])([-+]?\d+(?:\.\d+)?)\s*(?:±|\+/-)\s*(\d+(?:\.\d+)?)"
                    r"(?![\d.]*[eE][-+]?\d)\s*(%)?")
 _ETIKET = re.compile(r"1\s*σ|1\s*sigma|standart belirsizlik|standard uncertainty", re.I)
+_PARANTEZ = re.compile(r"(?<![\w.])([-+]?\d+\.\d+)\((\d+)\)")
+_BOLUM_BASI = re.compile(r"(?=<h[2-6][\s>])", re.I)
+RAPOR_ADLARI = ("rapor.html", "rapor.htm")       # giris.rapor_komutu varsayilani
 _PCM = re.compile(r"\bpcm\b")
 _PCM_BUYUKLUK = re.compile(r"Δk|Δρ|delta[ _-]?(k|rho)", re.I)
 _PCM_OLCEK = re.compile(r"10\s*(⁵|⁻⁵|\^\s*-?5)|1e-?5", re.I)
@@ -96,16 +104,36 @@ def _ciftleri_denetle(metin, rakam):
             cok.append(m.group(0).strip())
         elif not yuzde and _anlamli_rakam(sapma) and _ondalik(deger) != _ondalik(sapma):
             uyumsuz.append(m.group(0).strip())
+    # parantez bicimi: belirsizlik son basamaklarda; yuvarlama tanim geregi uyumlu
+    cok += [m.group(0) for m in _PARANTEZ.finditer(metin)
+            if _anlamli_rakam(m.group(2)) > rakam]
     return cok, uyumsuz
+
+
+def _pcm_tanimi_var(metin):
+    return bool(_PCM_BUYUKLUK.search(metin) and _PCM_OLCEK.search(metin))
+
+
+def pcm_tanimsiz_bolumler(ham):
+    """pcm gecen ama tanimi ne kendi bolumunde ne belge basinda olan bolumler
+    (duz metin basliklari). Bolumler HTML <h2>..<h6> ile ayrilir; duz metinde
+    tek bolum vardir (eski davranis)."""
+    parcalar = [duz_metin(p) for p in _BOLUM_BASI.split(ham or "")]
+    bas_tanimli = _pcm_tanimi_var(parcalar[0])
+    eksik = []
+    for p in parcalar:
+        if _PCM.search(p) and not (bas_tanimli or _pcm_tanimi_var(p)):
+            eksik.append(" ".join(p.split())[:40])
+    return eksik
 
 
 def _ornek(liste):
     return ", ".join(liste[:_ORNEK]) + (" …" if len(liste) > _ORNEK else "")
 
 
-def _k5_bulgulari(kural, metin, rakam):
+def _k5_bulgulari(kural, metin, rakam, ham=None):
     b = []
-    ciftler = _CIFT.findall(metin)
+    ciftler = _CIFT.findall(metin) + _PARANTEZ.findall(metin)
     if ciftler and not _ETIKET.search(metin):
         b.append(kural.ihlal("uyari", _("'±' ile verilen değerlerin standart belirsizlik (1σ) "
                                         "olduğu yazılmamış; güven aralığı sanılabilir."),
@@ -121,9 +149,11 @@ def _k5_bulgulari(kural, metin, rakam):
         b.append(kural.ihlal("uyari", _("Değer belirsizlikle aynı ondalık basamağa "
                                         "yuvarlanmamış: %s") % _ornek(uyumsuz),
                              kimlik="K5-yuvarlama", kaynak=GUM + " §7.2.6"))
-    if _PCM.search(metin) and not (_PCM_BUYUKLUK.search(metin) and _PCM_OLCEK.search(metin)):
+    eksik = pcm_tanimsiz_bolumler(metin if ham is None else ham)
+    if eksik:
         b.append(kural.ihlal("uyari", _("'pcm' kullanılmış ama tanımı (Δk × 10⁵ mi Δρ × 10⁵ "
-                                        "mi) yazılmamış."), pcm_tanimi(),
+                                        "mi) o bölümde ya da belge başında yazılmamış: %s")
+                             % _ornek(eksik), pcm_tanimi(),
                              kimlik="K5-pcm", kaynak="BIPM SI Broşürü 9. baskı (tanımsal "
                                                      "terimler); STANDARTLAR.md §6 madde 15"))
     si = sorted(set(_SI_DISI.findall(metin)))
@@ -141,12 +171,20 @@ def _rapor_metni(baglam):
     d = baglam.kosu_dizini
     if not d or not os.path.isdir(d):
         return None, ""
-    adaylar = sorted(a for a in os.listdir(d) if a.lower().endswith(".html"))
-    if not adaylar:
-        return None, ""
-    yol = os.path.join(d, adaylar[0])
-    with open(yol, encoding="utf-8", errors="replace") as f:
-        return f.read(), adaylar[0]
+    ad = next((a for a in RAPOR_ADLARI if os.path.isfile(os.path.join(d, a))), None)
+    if ad is None:
+        adaylar = sorted(a for a in os.listdir(d) if a.lower().endswith((".html", ".htm")))
+        if len(adaylar) > 1:
+            raise _BelirsizRapor(adaylar)
+        if not adaylar:
+            return None, ""
+        ad = adaylar[0]
+    with open(os.path.join(d, ad), encoding="utf-8", errors="replace") as f:
+        return f.read(), ad
+
+
+class _BelirsizRapor(Exception):
+    """Kosu dizininde rapor.html yok, birden cok .html var."""
 
 
 def k5_belirsizlik(kural, baglam):
@@ -154,12 +192,16 @@ def k5_belirsizlik(kural, baglam):
         metin, ad = _rapor_metni(baglam)
     except OSError as e:
         return [kural.ihlal("uyari", _("Rapor okunamadı: %s") % e)]
+    except _BelirsizRapor as e:
+        return [kural.uygulanamadi(
+            _("Koşu dizininde birden çok .html var, hangisinin rapor olduğu belirsiz: %s")
+            % _ornek(e.args[0]), _("Raporu rapor.html adıyla kaydedin."))]
     if metin is None:
         return [kural.uygulanamadi(_("Denetlenecek rapor yok (koşu dizininde .html rapor "
                                      "bulunamadı)."),
                                    _("Raporu oluşturup denetimi yineleyin."))]
     rakam = baglam.esik("anlamli_rakam_azami", 2)
-    bulgular = _k5_bulgulari(kural, duz_metin(metin), rakam)
+    bulgular = _k5_bulgulari(kural, duz_metin(metin), rakam, ham=metin)
     return bulgular or [kural.gecti(_("Belirsizlik ve birim bildirimi uygun (%s).") % ad)]
 
 

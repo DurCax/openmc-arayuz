@@ -467,7 +467,60 @@ def test_rapor_eki_ve_panel_dili():
             and "karşılan" not in adlar, "-> %s" % adlar)
 
 
-TAMBUR_R = 6.0     # altigen_tambur_halkasi tambur yaricapi (cm)
+def _k5(metin=None, dizin=None):
+    import os
+    from cekirdek.uygunluk_denetimi.denetle import denetle
+    from testler.ortak_test import KOK
+    dizin = dizin or os.path.join(KOK, "testler", "veri", "kosu_ornek")
+    return [b for b in denetle(None, dizin, ("D",), rapor_metni=metin)
+            if b.kural.startswith("K5")]
+
+
+def test_k5_bolum_parantez_dosya():
+    print("\n[GS12] K5: pcm tanimi ayni bolumde (ya da belge basinda); 1.00038(25); rapor.html")
+    import os
+    import shutil
+    import tempfile
+
+    def pcm_sorunu(metin):
+        return any("pcm" in b.mesaj for b in _k5(metin) if b.durum == "karsilanmadi")
+    kontrol("tanim baska bolumde (ekte) -> K5-pcm", pcm_sorunu(
+        "<h1>R</h1><p>x</p><h2>Sonuç</h2><p>Δk 120 pcm</p><h2>Ek</h2><p>pcm = Δk × 10⁵</p>"))
+    kontrol("tanim belge basinda (gosterim notu) -> temiz", not pcm_sorunu(
+        "<h1>R</h1><p>pcm = Δρ × 10⁵</p><h2>Sonuç</h2><p>120 pcm</p>"))
+    kontrol("tanim ayni bolumde -> temiz", not pcm_sorunu(
+        "<h1>R</h1><h2>Sonuç</h2><p>120 pcm (pcm = Δk × 10⁵)</p>"))
+    etiketsiz = [b for b in _k5("k = 1.00038(25)") if b.durum == "karsilanmadi"]
+    kontrol("parantez bicimi cift sayilir: etiket yoksa uyari",
+            any("1σ" in b.mesaj for b in etiketsiz), "-> %s" % [b.mesaj for b in etiketsiz])
+    uc = [b for b in _k5("k = 1.00038(253) (1σ standart belirsizlik)")
+          if b.durum == "karsilanmadi"]
+    kontrol("parantezde 3 anlamli rakam -> uyari", any("anlamlı" in b.mesaj for b in uc),
+            "-> %s" % [b.mesaj for b in uc])
+    kontrol("1.00038(25) (1σ) temiz",
+            not [b for b in _k5("k = 1.00038(25) (1σ standart belirsizlik)")
+                 if b.durum == "karsilanmadi"])
+    kok = tempfile.mkdtemp(prefix="gs12_")
+    try:
+        with open(os.path.join(kok, "a_eski.html"), "w", encoding="utf-8") as f:
+            f.write("<p>120 pcm</p>")
+        with open(os.path.join(kok, "rapor.html"), "w", encoding="utf-8") as f:
+            f.write("<p>k = 1.0 ± 0.1 (1σ)</p>")
+        b = _k5(dizin=kok)
+        kontrol("bilinen ad rapor.html secilir (alfabetik ilk degil)",
+                b and all(x.durum == "karsilandi" for x in b) and "rapor.html" in b[0].mesaj,
+                "-> %s" % [(x.durum, x.mesaj) for x in b])
+        os.remove(os.path.join(kok, "rapor.html"))
+        with open(os.path.join(kok, "b.html"), "w", encoding="utf-8") as f:
+            f.write("<p>x</p>")
+        b = _k5(dizin=kok)
+        kontrol("rapor.html yok, birden cok .html -> uygulanamadi (belirsiz)",
+                b and b[0].durum == "uygulanamadi", "-> %s" % [(x.durum, x.mesaj) for x in b])
+    finally:
+        shutil.rmtree(kok, True)
+
+
+TAMBUR_R = 6.0    # altigen_tambur_halkasi tambur yaricapi (cm)
 
 
 def _harita(spec, noktalar):
@@ -516,5 +569,5 @@ HIZLI = [test_periyodik_es_etkin_bc, test_betik_kesik_yakit_hacmi, test_k2_brown
          test_stokastik_hacim_sigma_denetimi, test_stokastik_hacim_chdir_yok,
          test_ice_aktar_ayni_adli_evrenler, test_ice_aktar_tambur_yonu_harf_sinir,
          test_arayuz_sessiz_yedek_yok, test_cli_siki_cikis_kodu, test_k7_sigma_ve_dil,
-         test_rapor_eki_ve_panel_dili]
+         test_rapor_eki_ve_panel_dili, test_k5_bolum_parantez_dosya]
 YAVAS = [test_yavas_betik_kesik_hacim_kosucuyla_ayni]
