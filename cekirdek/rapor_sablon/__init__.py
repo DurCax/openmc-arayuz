@@ -222,5 +222,5 @@ def html(icerik, gomulu=True):
                      _bulgular(icerik), uygunluk_eki.html(icerik.get("uygunluk")),
                      _ek(icerik)))
     return _sablon("rapor.html").substitute(
-        dil=_e(etkin_dil()), uretici=_e("%s %s" % (surum.UYGULAMA_ADI, surum.surum())),
+        dil=_e(etkin_dil()), uretici=_e("%s %s" % (_(surum.UYGULAMA_ADI), surum.surum())),
         baslik=_e(icerik["kapak"]["baslik"]), stil=_stil(), govde=govde)

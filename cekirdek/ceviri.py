@@ -40,7 +40,12 @@ _BAGLAM_AYIRICI = "\x04"
 
 _log = logging.getLogger(KAYDEDICI_ADI)
 _kilit = threading.Lock()
-_durum = {"dil": KAYNAK_DIL, "katalog": gettext.NullTranslations()}
+# Etkin (dil, katalog) cifti DEGISMEZ bir demettir ve yalniz dil_ayarla'da,
+# kilit altinda, TEK atamayla degisir. Okuyucular (_, _n, pgettext) onu bir
+# kez okur: baska is parcacigi dili degistirirken bile dil ile katalog
+# birbirine uyar (M6: eskiden iki ayri sozluk okumasi arasinda yeni dil +
+# eski katalog gorulebiliyordu). Okumada kilit gerekmez.
+_durum = (KAYNAK_DIL, gettext.NullTranslations())
 _bildirilen_eksikler = set()
 _dinleyiciler = []
 
@@ -109,8 +114,9 @@ def dil_ayarla(kod):
     Kayitli dinleyiciler (ornek Qt QTranslator yenileyici) yeni kodla cagrilir."""
     kod = dil_kodu(kod)
     katalog = _katalog_yukle(kod)
+    global _durum
     with _kilit:
-        _durum.update(dil=kod, katalog=katalog)
+        _durum = (kod, katalog)
         _bildirilen_eksikler.clear()
         dinleyiciler = list(_dinleyiciler)
     for fn in dinleyiciler:
@@ -119,7 +125,7 @@ def dil_ayarla(kod):
 
 
 def etkin_dil():
-    return _durum["dil"]
+    return _durum[0]
 
 
 def dinleyici_ekle(fn):
@@ -135,38 +141,52 @@ def dinleyici_cikar(fn):
             _dinleyiciler.remove(fn)
 
 
-def _eksik(anahtar):
-    if anahtar in _bildirilen_eksikler:
-        return
-    _bildirilen_eksikler.add(anahtar)
-    _log.warning("ceviri eksik (%s): %r", _durum["dil"], anahtar)
+def _katalogda(katalog, anahtar):
+    """Anahtar katalogda var mi? Cevirisi msgid'le AYNI olan giris
+    ("Statepoint" -> "Statepoint") eksik sayilmasin diye sonuca degil
+    katalogun kendisine bakilir (GNUTranslations._catalog)."""
+    icerik = getattr(katalog, "_catalog", None)
+    return icerik is not None and anahtar in icerik
+
+
+def _eksik(dil, anahtar):
+    """Eksik girisi (her biri bir kez) WARNING loglar."""
+    with _kilit:
+        if anahtar in _bildirilen_eksikler:
+            return
+        _bildirilen_eksikler.add(anahtar)
+    _log.warning("ceviri eksik (%s): %r", dil, anahtar)
 
 
 def _(metin):
     """Metni etkin dile cevirir; kaynak dilde (tr) aynen doner."""
-    if _durum["dil"] == KAYNAK_DIL or not metin:
+    dil, katalog = _durum
+    if dil == KAYNAK_DIL or not metin:
         return metin
-    sonuc = _durum["katalog"].gettext(metin)
-    if sonuc == metin:
-        _eksik(metin)
-    return sonuc
+    if not _katalogda(katalog, metin):
+        _eksik(dil, metin)
+        return metin
+    return katalog.gettext(metin)
 
 
 def _n(tekil, cogul, n):
     """Cogul bicim (ngettext): n'e gore tekil ya da cogul ceviri."""
-    if _durum["dil"] == KAYNAK_DIL:
+    dil, katalog = _durum
+    if dil == KAYNAK_DIL:
         return tekil if n == 1 else cogul
-    sonuc = _durum["katalog"].ngettext(tekil, cogul, n)
-    if sonuc in (tekil, cogul):
-        _eksik(tekil)
-    return sonuc
+    if not _katalogda(katalog, (tekil, 0)):
+        _eksik(dil, tekil)
+        return tekil if n == 1 else cogul
+    return katalog.ngettext(tekil, cogul, n)
 
 
 def pgettext(baglam, metin):
     """Baglamli ceviri: ayni Turkce metin farkli yerlerde farkli cevrilecekse."""
-    if _durum["dil"] == KAYNAK_DIL:
+    dil, katalog = _durum
+    if dil == KAYNAK_DIL:
         return metin
-    sonuc = _durum["katalog"].pgettext(baglam, metin)
-    if sonuc == metin:
-        _eksik(baglam + _BAGLAM_AYIRICI + metin)
-    return sonuc
+    anahtar = baglam + _BAGLAM_AYIRICI + metin
+    if not _katalogda(katalog, anahtar):
+        _eksik(dil, anahtar)
+        return metin
+    return katalog.pgettext(baglam, metin)

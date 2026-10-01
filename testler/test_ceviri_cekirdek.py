@@ -34,6 +34,7 @@ from testler.ortak_test import gereksinim  # S-4 izlenebilirlik
 
 PO = os.path.join(KOK, "locale", "en", "LC_MESSAGES", "cekirdek.po")
 FIXTURE = os.path.join(KOK, "testler", "veri", "kosu_ornek")
+DEGISIM_SAYISI = 3000     # M6 okuma tutarliligi: dil degisimi sayisi
 TURKCE_HARF = re.compile(r"[çğıöşüÇĞİÖŞÜ]")
 _EKSIK = re.compile(r"ceviri eksik \(en\): (.*)$", re.S)
 
@@ -174,7 +175,9 @@ def _bulgu_metinleri(modeller):
 
 
 def _kullanici_adlari(modeller):
-    """Kullanici verisi (malzeme/parca/model adlari): Turkce harf icerebilir."""
+    """Kullanici verisi (malzeme/parca/model adlari) icinden Turkce harf iceren
+    adlar: metinden cikarilip denetlenir (kisa ASCII adlar -- "su" -- cikarilmaz,
+    yoksa "result" gibi sozcukler bozulurdu)."""
     adlar = set()
     for _ad, s in modeller:
         for anahtar in ("malzemeler", "cubuklar", "demetler", "plakalar", "parcalar"):
@@ -183,7 +186,7 @@ def _kullanici_adlari(modeller):
                     adlar.add(str(oge["ad"]))
         if s.get("ad"):
             adlar.add(str(s["ad"]))
-    return sorted(adlar, key=len, reverse=True)
+    return sorted((a for a in adlar if TURKCE_HARF.search(a)), key=len, reverse=True)
 
 
 def _turkce_kalanlar(metinler, adlar=()):
@@ -257,7 +260,7 @@ def test_uygunluk_ve_rapor_ingilizce():
     duz = _html_duz(html_metin)
     for ad in adlar:
         duz = duz.replace(ad, "")
-    tr_satirlar = [s.strip() for s in duz.splitlines() if TURKCE_HARF.search(s)]
+    tr_satirlar = [s.strip() for s in re.split(r"\n|\s{2,}", duz) if TURKCE_HARF.search(s)]
     kontrol("HTML rapor metninde Turkce harf yok", not tr_satirlar,
             "-> %d: %s" % (len(tr_satirlar), tr_satirlar[:5]))
     kontrol("HTML rapor dili en (<html lang>)", 'lang="en"' in html_metin[:400],
@@ -298,7 +301,7 @@ def test_ceviri_okuma_tutarli():
             okuyucular = [threading.Thread(target=oku) for _i in range(4)]
             for t in okuyucular:
                 t.start()
-            for i in range(300):
+            for i in range(DEGISIM_SAYISI):
                 ceviri.dil_ayarla("tr" if i % 2 else "en")
             dur.set()
             for t in okuyucular:

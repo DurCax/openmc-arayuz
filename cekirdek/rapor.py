@@ -226,7 +226,7 @@ def _alan_listesi(spec, kosu_dizini):
     pasif = kaynaktan("pasif", ayar.get("pasif"))
     cevrim = kaynaktan("cevrim", ayar.get("cevrim"))
     alanlar = [
-        (_("Uygulama sürümü"), "%s %s" % (derleme["uygulama"], derleme["surum"])),
+        (_("Uygulama sürümü"), "%s %s" % (_(derleme["uygulama"]), derleme["surum"])),
         (_("Git commit"), _git_metni(derleme)),
         (_("Python / platform"), "%s / %s" % (derleme["python"], derleme["platform"])),
         (_("OpenMC sürümü"), _openmc_metni(meta, log)),
