@@ -21,7 +21,7 @@ from cekirdek.ceviri import _, N_
 from cekirdek.uygunluk_denetimi.kurallar import STANDART, IYI_UYGULAMA, Kural
 from cekirdek.uygunluk_denetimi.profiller import NUREG_6698, ESITLIK, TABLO
 from cekirdek.uygunluk_denetimi.kurallar_rapor import belirsizlik_metni
-from cekirdek.uygunluk_denetimi.vv_arayuz import AOA_KATEGORILERI
+from cekirdek.uygunluk_denetimi.vv_arayuz import AOA_KATEGORILERI, aoa_adi, aoa_degeri
 
 _VV_YOK = N_("Doğrulama (V&V) kümesi yok: bu kural değerlendirilemedi.")
 _VV_ONERI = N_("Kritiklik güvenliği için S-3 doğrulama kümesi (yanlılık, USL, AOA) "
@@ -74,11 +74,12 @@ def k6_aoa(kural, baglam):
     for k in ortak:
         deger, kume = baglam.uygulama[k], tuple(baglam.vv.aoa_kategorik[k])
         if deger in kume:
-            bulgular.append(kural.gecti(_("%s: %s kümede var.") % (k, deger)))
+            bulgular.append(kural.gecti(_("%s: %s kümede var.") % (aoa_adi(k), aoa_degeri(deger))))
         else:
             bulgular.append(kural.ihlal(
                 "uyari", _("%s: uygulama '%s', doğrulama kümesi yalnız %s içeriyor — "
-                           "uygulanabilirlik alanının dışında.") % (k, deger, ", ".join(kume)),
+                           "uygulanabilirlik alanının dışında.") % (
+                    aoa_adi(k), aoa_degeri(deger), ", ".join(aoa_degeri(x) for x in kume)),
                 _("Bu özelliği taşıyan kriter deneyleri kümeye ekleyin.")))
     return bulgular
 
@@ -164,9 +165,10 @@ def _k12_parametre(kural, baglam, ad, deger):
     alt, ust = baglam.vv.aralik[ad]
     oran = _dis_degerleme(deger, alt, ust)
     if oran == 0:
-        return kural.gecti(_("%s = %g doğrulama aralığında [%g, %g].") % (ad, deger, alt, ust))
+        return kural.gecti(_("%s = %g doğrulama aralığında [%g, %g].") % (aoa_adi(ad), deger,
+                                                                           alt, ust))
     metin = _("%s = %g doğrulama aralığının [%g, %g] dışında (taşma %%%.0f).") % (
-        ad, deger, alt, ust, 100 * oran if oran != float("inf") else 999)
+        aoa_adi(ad), deger, alt, ust, 100 * oran if oran != float("inf") else 999)
     if baglam.vv.yontem == "tolerans_siniri":
         return kural.ihlal("hata", metin + " " + _("Tolerans sınırı yöntemi dış değerleme "
                                                    "için kullanılamaz."),

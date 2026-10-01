@@ -76,7 +76,8 @@ def _kapak(icerik):
                 (_("Koşu dizini"), icerik.get("kosu_dizini") or _("yok (yalnız model)"))]
     parca = ["<h1>%s</h1>" % _e(k["baslik"])]
     if k["aciklama"]:
-        parca.append("<p>%s</p>" % _e(k["aciklama"]))
+        # Aciklamadaki satir sonlari korunur (PDF'de kacisli "\\n" basilmasin; QA14)
+        parca.append("<p>%s</p>" % "<br>".join(_e(s) for s in k["aciklama"].splitlines()))
     parca.append(_anahtar_deger(satirlar))
     parca.append('<p class="soluk">%s</p>' % _e(gosterim_notu()))
     if icerik["uyarilar"]:

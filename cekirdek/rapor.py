@@ -518,8 +518,15 @@ def _yerel_aciklama(spec):
     return spec.get("aciklama") or ""
 
 
+def _yerel_baslik(spec):
+    """Rapor basligi etkin dilde: Turkce disinda `baslik_en` (ornek meta), yoksa `ad`."""
+    if etkin_dil() != KAYNAK_DIL and spec.get("baslik_en"):
+        return spec["baslik_en"]
+    return spec.get("ad") or _("adsız model")
+
+
 def _kapak(spec):
-    return {"baslik": spec.get("ad") or _("adsız model"),
+    return {"baslik": _yerel_baslik(spec),
             "aciklama": _yerel_aciklama(spec),
             "tarih": datetime.datetime.now().strftime("%Y-%m-%d %H:%M"),
             "kullanici": _kullanici()}
