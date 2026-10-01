@@ -195,7 +195,37 @@ def test_stokastik_hacim_sigma_denetimi():
         hacim.stokastik = eski
 
 
-TAMBUR_R = 6.0           # altigen_tambur_halkasi tambur yaricapi (cm)
+def test_stokastik_hacim_chdir_yok():
+    print("\n[GS6] stokastik hacim surec genelinde os.chdir yapmaz (cwd= / model.xml yolu)")
+    import os
+    import tempfile
+    import openmc
+    from cekirdek.geometri import hacim
+    dizin = tempfile.mkdtemp(prefix="gs6_")
+    gelen = {}
+
+    def sahte_hesap(threads=None, output=True, cwd=".", **kw):
+        gelen["cwd"] = cwd
+        gelen["xml"] = os.path.exists(os.path.join(dizin, "model.xml"))
+        raise RuntimeError("sahte: hesap yapilmadi")
+
+    def yasak(_yol):
+        raise AssertionError("os.chdir cagrildi")
+    eski = (os.chdir, openmc.calculate_volumes)
+    os.chdir, openmc.calculate_volumes = yasak, sahte_hesap
+    try:
+        hacim.stokastik(go.duzenek_c(), ["b4c"], 1000, dizin)
+        hata = None
+    except (RuntimeError, AssertionError) as e:
+        hata = e
+    finally:
+        os.chdir, openmc.calculate_volumes = eski
+    kontrol("chdir yok; calculate_volumes(cwd=dizin); model.xml dizinde",
+            isinstance(hata, RuntimeError) and gelen.get("cwd") == dizin and gelen.get("xml"),
+            "-> %r %s" % (hata, gelen))
+
+
+TAMBUR_R = 6.0          # altigen_tambur_halkasi tambur yaricapi (cm)
 
 
 def _harita(spec, noktalar):
@@ -241,5 +271,5 @@ def test_tek_tambur_yonu_asil_modelle_ayni():
 
 HIZLI = [test_periyodik_es_etkin_bc, test_betik_kesik_yakit_hacmi, test_k2_brown_atiflari,
          test_panel_rozeti_degerlendirilemedi, test_tek_tambur_yonu_asil_modelle_ayni,
-         test_stokastik_hacim_sigma_denetimi]
+         test_stokastik_hacim_sigma_denetimi, test_stokastik_hacim_chdir_yok]
 YAVAS = [test_yavas_betik_kesik_hacim_kosucuyla_ayni]

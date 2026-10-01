@@ -157,14 +157,11 @@ def stokastik(spec, adlar, orneklem=2_000_000, dizin=None):
     vc = openmc.VolumeCalculation(alanlar, orneklem, alt, ust)
     model.settings.volume_calculations = [vc]
     dizin = dizin or tempfile.mkdtemp(prefix="geometri_hacim_")
-    eski = os.getcwd()
-    try:
-        os.chdir(dizin)
-        model.export_to_model_xml()
-        openmc.calculate_volumes(output=False)
-        sonuc = openmc.VolumeCalculation.from_hdf5(os.path.join(dizin, "volume_1.h5"))
-    finally:
-        os.chdir(eski)
+    # surec geneli os.chdir YOK (arayuz is parcaciklari ayni cwd'yi paylasir):
+    # OpenMC 0.16 export_to_model_xml(yol) + calculate_volumes(cwd=dizin)
+    model.export_to_model_xml(os.path.join(dizin, "model.xml"))
+    openmc.calculate_volumes(output=False, cwd=dizin)
+    sonuc = openmc.VolumeCalculation.from_hdf5(os.path.join(dizin, "volume_1.h5"))
     ters = {id(v): k for k, v in nesneler.items()}
     return {ters[id(mat)]: (float(sonuc.volumes[mat.id].nominal_value),
                             float(sonuc.volumes[mat.id].std_dev)) for mat in alanlar}
