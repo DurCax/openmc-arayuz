@@ -199,6 +199,9 @@ class GelismisEditor(QtWidgets.QWidget):
         self._cizim_sayaci.start()
         for f in [self.icerik_formu] + list(self.formlar.values()):
             f.agaci_tazele(self.agac)
+        # Form basligi agac etiketinin aynisidir (ad/deger degisince tazelenir; QA14)
+        oge = self.agac_paneli.oge(self._secili)
+        self.form_basligi.setText(oge.text(0) if oge is not None else "-")
         self._kesik_ozeti()
         self._eylem_durumu()
 

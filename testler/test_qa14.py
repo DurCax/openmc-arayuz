@@ -255,8 +255,29 @@ def test_kucuk_bulgular_durum_ve_suzgec():
             "-> %r" % hata)
 
 
+def test_grup_basligi_tazelenir():
+    print("\n[QA-k2] Grup adi/degeri degisince form basligi tazelenir")
+    import copy
+    from PySide6 import QtWidgets
+    QtWidgets.QApplication.instance() or QtWidgets.QApplication([])
+    from arayuz.geometri.editor import GelismisEditor
+    from cekirdek import sema
+    from testler.ortak_test import ORNEK
+    spec = sema.yukle(os.path.join(ORNEK, "kafes_tamburlu_yansitici.json"))
+    e = GelismisEditor()
+    e._secili = ("gruplar", 0)
+    e.yukle(spec)
+    kontrol("baslangic basligi 'tamburlar'", "tamburlar" in e.form_basligi.text(),
+            "-> %r" % e.form_basligi.text())
+    yeni = copy.deepcopy(spec)
+    yeni["geometri"]["gruplar"][0].update(ad="tamburlar2", deger=90.0)
+    e.agaci_tazele(yeni)
+    kontrol("baslik yeni ad ve deger", "tamburlar2" in e.form_basligi.text()
+            and "90" in e.form_basligi.text(), "-> %r" % e.form_basligi.text())
+
+
 HIZLI = [test_elle_ealf_tally_vv_dusurmez, test_panel_gecersiz_tally_duzeltir,
          test_entropi_kisa_pasif_yakalanir, test_guc_yorumu_once_istatistik,
          test_simge_dugmesi_adi_ipucunda, test_kosusuz_rapor_sessiz_degil, test_c_e_panoda,
-         test_kucuk_bulgular_durum_ve_suzgec]
+         test_kucuk_bulgular_durum_ve_suzgec, test_grup_basligi_tazelenir]
 YAVAS = []
