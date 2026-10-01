@@ -20,7 +20,12 @@ Ornek JSON'larinin ust duzeyinde istege bagli meta alanlari bulunur
             "sure_s": 6.0,       # duvar saati (istege bagli)
             "is_parcacigi": 24,  # (istege bagli)
             "openmc": "0.16.0", "kutuphane": "ENDF/B-VIII.0",
+            "cevrim": 200, "pasif": 50,   # (istege bagli)
         },
+        # V&V kumesi (Dalga S-3, cekirdek/vv/kume.py; hepsi istege bagli):
+        "seri": "PU-MET-FAST-001",          # deney serisi (K14 bagimsizlik)
+        "aoa": {"bolunebilir": "Pu", "zenginlik": 95.5, "ealf": 1.27e6, ...},
+        "aoa_not": "...", "aoa_girdi": {...}, "kaynak_model": "...", "lisans": "...",
     }
 
 Kullanim (Qt'siz; galeri ve rapor bunu kullanir):
@@ -61,10 +66,13 @@ KATEGORI_ADLARI = {"pwr": "PWR", "bwr": "BWR", "vver": "VVER", "sfr": "SFR",
 SEVIYE_ADLARI = {"giris": N_("Giriş"), "orta": N_("Orta"), "ileri": N_("İleri")}
 
 _REFERANS_ZORUNLU = ("k", "sigma", "tur", "kaynak")
-_REFERANS_ALANLARI = _REFERANS_ZORUNLU + ("olcum",)
+_REFERANS_VV_METIN = ("seri", "aoa_not", "kaynak_model", "lisans")
+_REFERANS_VV_SOZLUK = ("aoa", "aoa_girdi")
+_REFERANS_ALANLARI = (_REFERANS_ZORUNLU + ("olcum",) + _REFERANS_VV_METIN
+                      + _REFERANS_VV_SOZLUK)
 _OLCUM_ZORUNLU = ("k", "sigma")
 _OLCUM_SAYILAR = ("k", "sigma", "sure_s")
-_OLCUM_TAMSAYILAR = ("parcacik", "is_parcacigi")
+_OLCUM_TAMSAYILAR = ("parcacik", "is_parcacigi", "cevrim", "pasif")
 _OLCUM_METINLER = ("openmc", "kutuphane", "tarih")
 _OLCUM_ALANLARI = _OLCUM_SAYILAR + _OLCUM_TAMSAYILAR + _OLCUM_METINLER
 _METIN_ALANLARI = ("baslik", "baslik_en", "aciklama_en")
@@ -81,6 +89,8 @@ class Olcum:
     openmc: Optional[str] = None
     kutuphane: Optional[str] = None
     tarih: Optional[str] = None
+    cevrim: Optional[int] = None
+    pasif: Optional[int] = None
 
 
 @dataclass(frozen=True)
@@ -155,6 +165,12 @@ def _referans_sorunlari(ref):
         sorunlar.append("referans.kaynak boş olmayan metin olmalı")
     if "olcum" in ref:
         sorunlar += _olcum_sorunlari(ref["olcum"])
+    for a in _REFERANS_VV_METIN:
+        if a in ref and not (isinstance(ref[a], str) and ref[a].strip()):
+            sorunlar.append("referans.%s boş olmayan metin olmalı" % a)
+    for a in _REFERANS_VV_SOZLUK:
+        if a in ref and not isinstance(ref[a], dict):
+            sorunlar.append("referans.%s bir sözlük olmalı" % a)
     return sorunlar
 
 

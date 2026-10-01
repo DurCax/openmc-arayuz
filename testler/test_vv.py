@@ -14,6 +14,7 @@ NE SINANIR (hepsi HIZLI; Monte Carlo yok)
   [VV5] AOA: EALF hesabi, tayf sinirlari, spec'ten bolunebilir tur / zenginlik / H/X / bicim.
   [VV6] Kume: kayitli kriter olcumlerinden VVOzeti (n, seriler, aralik, aoa_kategorik).
   [VV7] Profil B uctan uca: denetle(..., vv=kume.ozet(...)) ile LEU ornegi K6, K8-K14.
+  [VV8] ornekler/vv kriterleri dogrulama kapisindan gecer; kaynak ve lisans notu var.
 """
 
 import math
@@ -321,8 +322,34 @@ def _sahte_kume_leu():
             for i in range(12)]
 
 
+def test_vv_kriterleri_kapidan_gecer():
+    print("\n[VV8] ornekler/vv/*.json: dogrulama kapisi, meta, kaynak/lisans notu")
+    import glob
+    import json
+    import os
+    from cekirdek import dogrula, ornek_bilgi, sema
+    from testler.ortak_test import ORNEK
+    yollar = sorted(glob.glob(os.path.join(ORNEK, "vv", "kriter_*.json")))
+    kontrol("V&V kumesinde >= 20 yeni kriter dosyasi", len(yollar) >= 20, "-> %d" % len(yollar))
+    for yol in yollar:
+        ad = os.path.basename(yol)
+        ham = json.load(open(yol, encoding="utf-8"))
+        kontrol("%s: meta temiz" % ad, not ornek_bilgi.dogrula_meta(ham),
+                "-> %s" % ornek_bilgi.dogrula_meta(ham))
+        ref = ham["referans"]
+        kontrol("%s: kaynak modeli, lisans notu, seri" % ad,
+                "mit-crpg" in ref.get("kaynak_model", "") and "MIT" in ref.get("lisans", "")
+                and ref.get("seri"))
+        try:
+            hatalar = [b for b in dogrula.kapi(sema.yukle(yol)) if b.seviye == "hata"]
+        except dogrula.DogrulamaHatasi as e:
+            hatalar = [str(e)]
+        kontrol("%s: dogrulama kapisindan gecer" % ad, not hatalar, "-> %s" % hatalar)
+
+
 HIZLI = [test_nureg_ornegi_agirlikli, test_nureg_ornegi_egilim_bant,
          test_nureg_ornegi_parametrik_olmayan_normallik, test_tolerans_carpani_tablo,
          test_kurallar, test_yontem_secimi, test_kucuk_kume_usl_yok, test_aoa_ealf_tayf,
-         test_aoa_spec_parametreleri, test_kume_ozeti, test_profil_b_uctan_uca]
+         test_aoa_spec_parametreleri, test_kume_ozeti, test_profil_b_uctan_uca,
+         test_vv_kriterleri_kapidan_gecer]
 YAVAS = []
