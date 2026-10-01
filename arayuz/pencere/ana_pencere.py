@@ -341,9 +341,10 @@ class AnaPencere(GezinmeCephesi, MenulerMixin, ProjeMixin, GecmisMixin, QtWidget
         self._proje_kur(spec, proje_yolu=None, ornek_kaynagi=None)
         kart = baslangic.kart(anahtar)
         self.sekmeye_git(kart.get("sekme") or "malzemeler", sessiz=True)
+        baslik = kart["baslik"]
         self.bildir_mesaj(
             _("Çalışan sade bir model kuruldu ({ad}). Kaydetmek için "
-              "'Farklı kaydet' kullanın.").format(ad=kart["baslik"]), "basari", 8000)
+              "'Farklı kaydet' kullanın.").format(ad=_(baslik)), "basari", 8000)
         return True
 
     # ==================================================================
@@ -629,7 +630,7 @@ class AnaPencere(GezinmeCephesi, MenulerMixin, ProjeMixin, GecmisMixin, QtWidget
                                  cumle_basi(b.mesaj)))
             oge.setForeground(QtGui.QColor(_seviye_renk(b.seviye)))
             oge.setData(QtCore.Qt.UserRole, b.yer)
-            tiklama = _("Tıklayınca ilgili sayfaya gider.")
+            tiklama = _("Tıklayınca ilgili sayfaya gider; sağ tık: kılavuzda aç.")
             oge.setToolTip((b.oneri + "\n\n" + tiklama) if b.oneri else tiklama)
             liste.addItem(oge)
         if not self._bulgular:

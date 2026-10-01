@@ -340,4 +340,4 @@ class MenulerMixin(object):
               "hem de tek başına çalışan Python betiği üretilir.\n\n"
               "Arayüz bir çıkmaz sokak değildir: Dosya > Python betiği olarak\n"
               "dışa aktar (Ctrl+E) ile modeli alıp elle düzenlemeye devam\n"
-              "edebilirsiniz.").format(ad=UYGULAMA_ADI))
+              "edebilirsiniz.").format(ad=_(UYGULAMA_ADI)))

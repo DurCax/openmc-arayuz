@@ -40,6 +40,7 @@ import time
 from PySide6 import QtCore, QtWidgets
 
 from cekirdek import tukenme as _tk
+from cekirdek.tukenme_hacim import yontem_metni
 from cekirdek.ceviri import _, _n
 from cekirdek.gunluk import kaydedici
 from arayuz.analiz.adlar import renk
@@ -199,10 +200,9 @@ class TukenmeSekmesi(SekmeTabani, SonucBolumu, TukenmeArayuzu):
             self.izlenen.zincir_ayarla(zs["yol"])
             from cekirdek import veri_bilgi
             tamam, mesaj, _ayrinti = veri_bilgi.zincir_kontrol(zs["yol"])
-            spektrum = _tk.SPEKTRUM_ADLARI.get(zs["temel"])
             metin = (_("%s  |  fisyon verimi %s eV (%s spektrum)\n%s")
                      % (os.path.basename(zs["yol"]), "%g" % zs["verim_enerjisi"],
-                        _(spektrum) if spektrum else zs["temel"],
+                        _tk.spektrum_adi(zs["temel"]),
                         cumle_basi(zs["gerekce"])))
             if not tamam:
                 metin += "\n" + mesaj
@@ -254,7 +254,7 @@ class TukenmeSekmesi(SekmeTabani, SonucBolumu, TukenmeArayuzu):
                 for ad, v in hv.items():
                     satirlar.append("%s: %s  [%s]\n    %s"
                                     % (ad, ("%.6g cm³" % v["hacim"]) if v["hacim"]
-                                       else _("hacim yok"), v["yontem"], v["ayrinti"]))
+                                       else _("hacim yok"), yontem_metni(v["yontem"]), v["ayrinti"]))
                 self.malzeme_bilgi.setText("\n".join(satirlar))
         except Exception as e:
             self.malzeme_bilgi.setText(_("hesaplanamadı: %s") % e)
@@ -408,6 +408,8 @@ class TukenmeSekmesi(SekmeTabani, SonucBolumu, TukenmeArayuzu):
         ortam = QtCore.QProcessEnvironment.systemEnvironment()
         ortam.insert("PYTHONPATH", KOK)
         ortam.insert("PYTHONUNBUFFERED", "1")
+        from cekirdek import ceviri as _ceviri
+        ortam.insert(_ceviri.ORTAM_DEGISKENI, _ceviri.etkin_dil())   # alt surec ayni dilde
         self._surec.setProcessEnvironment(ortam)
         self._surec.setProcessChannelMode(QtCore.QProcess.MergedChannels)
         self._surec.readyReadStandardOutput.connect(self._cikti_oku)

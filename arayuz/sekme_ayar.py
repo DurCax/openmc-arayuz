@@ -167,8 +167,8 @@ class AyarSekmesi(YerlesimMixin, KaynakFormuMixin, GucFormuMixin, TallyFormuMixi
     def _tayf_alanlari_kur(self):
         """Kaynak enerji tayfi: her tayf turu icin bir form sayfasi."""
         self.tayf = QtWidgets.QComboBox()
-        for anahtar, ad in _kaynak.TAYFLAR:
-            self.tayf.addItem(_(ad), anahtar)
+        for anahtar, _ad in _kaynak.TAYFLAR:
+            self.tayf.addItem(_kaynak.tayf_adi(anahtar), anahtar)
         self.watt_a = EnerjiGirdi(988.0e3)
         self.watt_b = sayi(2.249e-6, 9, 1e-9, 1.0, 1e-7, " 1/eV")
         self.maxwell_theta = EnerjiGirdi(1.2932e6)
@@ -207,8 +207,8 @@ class AyarSekmesi(YerlesimMixin, KaynakFormuMixin, GucFormuMixin, TallyFormuMixi
     def _aci_alanlari_kur(self):
         """Kaynagin acisal dagilimi (yon ve koni acisi)."""
         self.aci_tur = QtWidgets.QComboBox()
-        for anahtar, ad in _kaynak.ACILAR:
-            self.aci_tur.addItem(_(ad), anahtar)
+        for anahtar, _ad in _kaynak.ACILAR:
+            self.aci_tur.addItem(_kaynak.aci_adi(anahtar), anahtar)
         self.ax = sayi(0.0, 4, -1e3, 1e3, 0.1)
         self.ay = sayi(0.0, 4, -1e3, 1e3, 0.1)
         self.az = sayi(1.0, 4, -1e3, 1e3, 0.1)

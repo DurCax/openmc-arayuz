@@ -325,8 +325,14 @@ class GrupFormu(FormTabani):
         tur = g.get("tur", "donme")
         self.ad.setText(g.get("ad") or "")
         self.tur.sec(tur, sinyal=False)
-        birim_max = 360.0 if tur == "donme" else 1.0e5
-        self.deger.kutu.setRange(-birim_max if tur == "donme" else 0.0, birim_max)
+        # Donme grubu derece; daldirma grubu YUZDE (cubugun `daldirma` alanini ezer:
+        # %0 cekilmis, %100 tam dalmis).
+        if tur == "donme":
+            self.deger.kutu.setRange(-360.0, 360.0)
+        else:
+            self.deger.kutu.setRange(0.0, 100.0)
+        if self.deger.birim_etiketi is not None:
+            self.deger.birim_etiketi.setText("°" if tur == "donme" else "%")
         sayi_yaz(self.deger, g.get("deger") or 0.0)
         self._kaydirici_yaz(float(g.get("deger") or 0.0), tur)
         eski = self.uyeler.blockSignals(True)
@@ -344,7 +350,8 @@ class GrupFormu(FormTabani):
             _("Üyeler yerleşim adlarıdır; yerleşimin bütün örnekleri birlikte döner.")
             if tur == "donme" else
             _("Üyeler kontrol çubuğu tanımlarıdır; her çubuk ayrı bir örnektir, grup "
-              "yalnız birlikte sürmek içindir. Değer: daldırma derinliği [cm]."))
+              "yalnız birlikte sürmek içindir. Değer: daldırma oranı [%] "
+              "(%0 çekilmiş, %100 tam dalmış)."))
 
     def _kaydirici_yaz(self, deger, tur):
         eski = self.kaydirici.blockSignals(True)
@@ -352,7 +359,7 @@ class GrupFormu(FormTabani):
             self.kaydirici.setRange(0, _KAYDIRICI)
             self.kaydirici.setValue(int(round(deger * 10)) % _KAYDIRICI)
         else:
-            self.kaydirici.setRange(0, 10000)
+            self.kaydirici.setRange(0, 1000)
             self.kaydirici.setValue(int(round(deger * 10)))
         self.kaydirici.blockSignals(eski)
 

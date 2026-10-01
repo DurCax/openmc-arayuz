@@ -124,8 +124,7 @@ _VARSAYILAN = {
 def parametre_adi(tur):
     if tur in PARAMETRE_ADLARI:
         return _(PARAMETRE_ADLARI[tur][0])
-    tanim = tarama.TURLER.get(tur)
-    return _(tanim[0]) if tanim else tur
+    return tarama.tur_aciklamasi(tur)
 
 
 def parametre_ipucu(tur):
@@ -142,14 +141,14 @@ def katsayi_adi(tur):
 
 def birim(tur):
     b = tarama.TURLER.get(tur, ("", "", "", ""))[2]
-    return _BIRIM_GORUNEN.get(b, b)
+    return _BIRIM_GORUNEN.get(b) or tarama.birim_metni(b)
 
 
 def katsayi_birimi(tur):
     b = tarama.TURLER.get(tur, ("", "", "", ""))[3]
     for eski, yeni in _BIRIM_GORUNEN.items():
         b = b.replace(eski, yeni)
-    return b
+    return tarama.birim_metni(b)
 
 
 def sirali_taramalar(turler):
