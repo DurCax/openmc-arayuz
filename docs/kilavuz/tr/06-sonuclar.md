@@ -145,11 +145,13 @@ ayrı sayar; 3B modelde buna eksenel dilimler eklenir. Adım adım ders:
 
 F_q yalnız 3B modelde tanımlıdır; 2B modelde araç "F_q tanımsız" yazar.
 
-**Ölçülen referans (README, `pwr_3b`, 20 000 parçacık, 20 eksenel dilim):** F_ΔH = 1.071,
-F_q = 1.885, ortalama çizgisel güç 182 W/cm (17.6 MW/demet). Eksenel katmanlı eşi
-`pwr_eksenel` ile aynı ayarla: F_ΔH iki modelde de **1.0674** (katmanlama radyal dağılıma
-dokunmaz — iyi bir tutarlılık kontrolü), F_q 1.7210 → 1.6435 (su yansıtıcı eksenel profili
-düzleştirir).
+**Ölçülen referans (README, `pwr_3b`, örneğin ayarı 20 000 × 150 / 40, 20 eksenel dilim, 5
+tohum, 01.10.2026):** tek koşuda F_ΔH 1.064–1.083, F_q 1.626–1.753; harita ortalamasının tepesi
+F_ΔH = 1.0620 ± 0.0055, F_q = 1.600 ± 0.032; ortalama çizgisel güç 182 W/cm (17.6 MW/demet).
+Eksenel katmanlı eşi `pwr_eksenel` ile aynı ayarla (20 000 × 250 / 100, 5 tohum): F_ΔH
+1.0603 ± 0.0039 ve 1.0618 ± 0.0028 — istatistik içinde aynı (katmanlama radyal dağılıma
+dokunmaz; iyi bir tutarlılık kontrolü); F_q 1.6362 ± 0.0147 → 1.5909 ± 0.0133 (−%2.8, 2.3σ;
+su yansıtıcı eksenel profili düzleştirir).
 
 **1. Raporlanan belirsizlikler iyimserdir.** Çubuk başına σ, çevrimler arası ilintiyi görmez.
 Bu modelde ölçüldü (`pwr_3b`, 4000 parçacık, 3 bağımsız tohum): raporlanan σ bin başına

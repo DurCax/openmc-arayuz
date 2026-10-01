@@ -151,11 +151,13 @@ cell separately; in a 3D model axial bins are added. Step-by-step lesson:
 
 F_q is defined only in a 3D model; in a 2D model the tool prints "F_q undefined".
 
-**Measured reference (README, `pwr_3b`, 20 000 particles, 20 axial bins):** F_ΔH = 1.071,
-F_q = 1.885, average linear power 182 W/cm (17.6 MW per assembly). Its axially layered twin
-`pwr_eksenel` with the same settings: F_ΔH is **1.0674** in both models (layering does not touch
-the radial distribution — a good consistency check), F_q goes from 1.7210 to 1.6435 (the water
-reflector flattens the axial profile).
+**Measured reference (README, `pwr_3b`, the example's settings 20 000 × 150 / 40, 20 axial
+bins, 5 seeds, 01.10.2026):** a single run gives F_ΔH 1.064-1.083 and F_q 1.626-1.753; the peak
+of the averaged map is F_ΔH = 1.0620 ± 0.0055, F_q = 1.600 ± 0.032; average linear power 182 W/cm
+(17.6 MW per assembly). Its axially layered twin `pwr_eksenel` with the same settings (20 000 × 250
+/ 100, 5 seeds): F_ΔH 1.0603 ± 0.0039 and 1.0618 ± 0.0028 - the same within statistics (layering
+does not touch the radial distribution; a good consistency check); F_q 1.6362 ± 0.0147 →
+1.5909 ± 0.0133 (−2.8 %, 2.3σ; the water reflector flattens the axial profile).
 
 **1. The reported uncertainties are optimistic.** The per-pin σ does not see the batch-to-batch
 correlation. Measured in this model (`pwr_3b`, 4000 particles, 3 independent seeds): reported σ

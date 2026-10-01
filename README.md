@@ -335,25 +335,28 @@ olduğu için eski modeller bit düzeyinde aynı sonucu verir.
 ### Örnek: `pwr_eksenel`
 
 `pwr_3b` ile aynı 17×17 demet, katmanlı. **İkisi de aynı ayarla** koşuldu
-(250 çevrim / 100 pasif) — farklı ayarlardan gelen sayıları karşılaştırmak
-yanıltıcı olurdu:
+(20 000 × 250 çevrim / 100 pasif, 5 tohum, 6 iş parçacığı, 01.10.2026; He 0.0018) —
+farklı ayarlardan gelen sayıları karşılaştırmak yanıltıcı olurdu. F değerleri tohum
+haritalarının ortalamasının tepesidir (`guc.coklu_tohum`; σ = tohum saçılması / √5):
 
 | | `pwr_3b` (katmansız) | `pwr_eksenel` (katmanlı) |
 |---|---|---|
-| k-eff | 1.18002 ± 0.00051 | 1.17680 ± 0.00052 |
-| F_ΔH | 1.0674 | **1.0674** |
-| **F_q** | 1.7210 | **1.6435** |
+| k-eff (tohum 1) | 1.17939 ± 0.00053 | 1.17778 ± 0.00054 |
+| F_ΔH | 1.0603 ± 0.0039 | **1.0618 ± 0.0028** |
+| **F_q** | 1.6362 ± 0.0147 | **1.5909 ± 0.0133** |
 
-**F_ΔH dört hanede birebir aynı çıktı.** Eksenel katmanlama radyal dağılıma
-dokunmaz, dolayısıyla böyle olması gerekiyordu — iyi bir tutarlılık kontrolü.
-Değişen yalnızca F_q: 1.7210 → 1.6435 (−%4.5). Su yansıtıcı eksenel
-ekstrapolasyon mesafesini büyütüyor, yakıtın uçlarındaki akı yükseliyor ve
-eksenel profil düzleşiyor. Vakum uçlu `pwr_3b`'de profil kesilmiş kosinüstür.
+**F_ΔH istatistik içinde aynı** (fark 0.0015 ± 0.0048): eksenel katmanlama radyal
+dağılıma dokunmaz — iyi bir tutarlılık kontrolü. F_q katmanlı modelde
+**−%2.8** (−0.045 ± 0.020, 2.3σ) küçüktür: su yansıtıcı eksenel ekstrapolasyon
+mesafesini büyütüyor, yakıtın uçlarındaki akı yükseliyor ve eksenel profil
+düzleşiyor. Vakum uçlu `pwr_3b`'de profil kesilmiş kosinüstür. (Eski tek tohumlu
+tablo F_ΔH'yi "dört hanede aynı" ve F_q farkını −%4.5 veriyordu; tek tohumda F_q'nun
+tohum saçılması ~0.04 olduğu için bu fark çözülemezdi.)
 
 > **k-eff farkı temiz bir yansıtıcı kazancı ölçümü DEĞİL.** İki model birden
 > fazla yönden farklı: yakıt kolonu 366 cm %3.2 yerine 300 cm %3.2 + 30 cm doğal
 > UO2. Doğal uranyum termal spektrumda net soğurucudur, yansıtıcı ise sızıntıyı
-> azaltır; iki etki ters yönde çalışıyor ve net sonuç −232 pcm. Yansıtıcı
+> azaltır; iki etki ters yönde çalışıyor ve net sonuç −161 ± 76 pcm (Δk × 10⁵, tohum 1). Yansıtıcı
 > kazancını ayrı ölçmek isterseniz yalnızca su katmanlarını ekleyip blanket'i
 > çıkarın.
 
