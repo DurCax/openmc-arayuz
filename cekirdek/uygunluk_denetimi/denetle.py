@@ -45,9 +45,13 @@ VARSAYILAN_PROFILLER = ("A",)
 
 
 def _profilleri_coz(profiller):
-    sonuc = []
+    """Profil nesneleri; ayni kimlik iki kez verilirse bir kez (ilk sira)."""
+    sonuc, gorulen = [], set()
     for p in profiller or VARSAYILAN_PROFILLER:
-        sonuc.append(p if isinstance(p, _p.Profil) else _p.profil_getir(p))
+        profil = p if isinstance(p, _p.Profil) else _p.profil_getir(p)
+        if profil.kimlik not in gorulen:
+            gorulen.add(profil.kimlik)
+            sonuc.append(profil)
     return sonuc
 
 

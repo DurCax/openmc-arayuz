@@ -125,9 +125,10 @@ def _psi(bakis, D, x, y, fi, icerik):
     if bakis.get("tur") == "sabit":
         return float(bakis.get("aci") or 0.0) + D
     mx, my = (float(v) for v in bakis.get("merkez") or (0.0, 0.0))
-    if fi is not None and mx == 0.0 and my == 0.0:
-        return fi + 180.0 + D                      # tambur.yerlesim ile bit duzeyinde ayni
+    # cakisma denetimi halka kisayolundan ONCE: R = 0 halkasinda ornek merkezdedir
     if math.hypot(mx - x, my - y) < MERKEZ_PAYI:
         raise ValueError("yerleşim örneği bakış merkeziyle çakışıyor (%.6g, %.6g): 'kora "
                          "bakan' yön tanımsız; 'sabit' bakış seçin" % (x, y))
+    if fi is not None and mx == 0.0 and my == 0.0:
+        return fi + 180.0 + D                      # tambur.yerlesim ile bit duzeyinde ayni
     return math.degrees(math.atan2(my - y, mx - x)) + D

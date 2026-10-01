@@ -531,7 +531,68 @@ def test_tambur_degeri_pcm_tanimi():
             "Δk × 10⁵" in belge and "(k₂ − k₁)/(k₁k₂)" in belge)
 
 
-TAMBUR_R = 6.0   # altigen_tambur_halkasi tambur yaricapi (cm)
+def test_dusuk_oncelikli():
+    print("\n[GS-LOW] kayip iletileri (0.16), nesil/cevrim dilimi, profil tekil, gezinti, R=0 psi")
+    import os
+    import shutil
+    import tempfile
+    from cekirdek.uygunluk_denetimi import ayristir, kurallar_mc
+    from cekirdek.uygunluk_denetimi.denetle import denetle
+    from testler.ortak_test import KOK
+    kok = tempfile.mkdtemp(prefix="gslow_")
+    try:
+        with open(os.path.join(kok, "kosu.log"), "w", encoding="utf-8") as f:
+            f.write(" WARNING: Particle 5 left lattice 3, but it has no outer definition.\n"
+                    " WARNING: Could not find the cell containing particle 7\n"
+                    " WARNING: Couldn't find particle after hitting periodic boundary on "
+                    "surface 4.\n"
+                    " WARNING: Particle 9 had a negative distance to a lattice boundary.\n")
+        o = ayristir.cikti_ozeti(kok)
+        kontrol("OpenMC 0.16 kayip parcacik iletileri (libopenmc dizgileri) sayilir",
+                o.kayip_parcacik == 4 and not o.uyarilar, "-> %d %s" % (o.kayip_parcacik, o.uyarilar))
+    finally:
+        shutil.rmtree(kok, True)
+    # generations_per_batch = 3: pasif 2 cevrim = 6 nesil; pasif nesiller 2.0 (gecis)
+    import random
+    r = random.Random(3)
+    g, pasif, cevrim = 3, 2, 40
+    nesil = [2.0] * (pasif * g) + [1.0 + r.gauss(0, 1e-3) for _ in range((cevrim - pasif) * g)]
+    kosu = ayristir.KosuVerisi("sp", "eigenvalue", 1.0, 1e-4, 1000, cevrim, pasif,
+                               k_nesil=tuple(nesil), nesil_basina=g)
+    aktif = kurallar_mc.aktif_cevrim_k(kosu)
+    kontrol("aktif cevrim k: %d cevrim ortalamasi, pasif nesiller disarida" % (cevrim - pasif),
+            len(aktif) == cevrim - pasif and max(aktif) < 1.01, "-> %d, max %.3f"
+            % (len(aktif), max(aktif)))
+    fixture = os.path.join(KOK, "testler", "veri", "kosu_ornek")
+    kontrol("ayni profil iki kez -> tek denetim",
+            len(denetle(None, fixture, ("A", "A"))) == len(denetle(None, fixture, ("A",))))
+    from cekirdek.geometri import yerlesim
+    try:
+        yerlesim._psi({"tur": "merkez", "merkez": [0.0, 0.0]}, 0.0, 0.0, 0.0, 30.0, {})
+        hata = None
+    except ValueError as e:
+        hata = str(e)
+    kontrol("R = 0 halka: ornek bakis merkezinde -> ValueError (yon tanimsiz)",
+            hata and "çakışıyor" in hata, "-> %s" % hata)
+    from cekirdek import geometri
+    from cekirdek.dogrula import agac
+    eski = geometri.gez
+
+    def bozuk(_m):
+        raise AttributeError("sahte gezinti hatasi")
+    geometri.gez = bozuk
+    try:
+        b = agac.agac_kontrol(go.duzenek_c())
+        sonuc = [x.mesaj for x in b if x.seviye == "hata"]
+    except AttributeError as e:
+        sonuc = "yakalanmadi: %s" % e
+    finally:
+        geometri.gez = eski
+    kontrol("dogrula/agac: beklenmeyen gezinti hatasi bulguya doner (cokme yok)",
+            isinstance(sonuc, list) and any("gezilemedi" in m for m in sonuc), "-> %s" % sonuc)
+
+
+TAMBUR_R = 6.0  # altigen_tambur_halkasi tambur yaricapi (cm)
 
 
 def _harita(spec, noktalar):
@@ -575,7 +636,7 @@ def test_tek_tambur_yonu_asil_modelle_ayni():
             _harita(hepsi_ic, yakin + genel) == _harita(ic, yakin + genel))
 
 
-HIZLI = [test_periyodik_es_etkin_bc, test_betik_kesik_yakit_hacmi, test_k2_brown_atiflari,
+HIZLI = [test_dusuk_oncelikli, test_periyodik_es_etkin_bc, test_betik_kesik_yakit_hacmi, test_k2_brown_atiflari,
          test_panel_rozeti_degerlendirilemedi, test_tek_tambur_yonu_asil_modelle_ayni,
          test_stokastik_hacim_sigma_denetimi, test_stokastik_hacim_chdir_yok,
          test_ice_aktar_ayni_adli_evrenler, test_ice_aktar_tambur_yonu_harf_sinir,

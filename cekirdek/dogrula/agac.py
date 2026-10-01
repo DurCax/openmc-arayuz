@@ -24,10 +24,12 @@ from cekirdek.ceviri import _
 from cekirdek.dogrula._ortak import Bulgu, hata_var
 from cekirdek.geometri import kesit as _k
 from cekirdek.geometri import yerlesim as _yer
+from cekirdek.gunluk import kaydedici
 
 YOKLAMA_N = 600            # hizli dogrulamada yoklama noktasi (derin: yoklama.yokla)
 ILK_KAC = 5                # mesajda listelenen konum sayisi
 _UZUNLUK_PAYI = 1.0e-9
+_log = kaydedici(__name__)
 
 
 def _b(seviye, yol, mesaj, oneri=None):
@@ -45,6 +47,10 @@ def agac_kontrol(spec, yoklama_n=YOKLAMA_N):
         ziyaretler = list(geometri.gez(m))
     except (KeyError, ValueError, TypeError) as e:
         return bulgular + [_b("hata", "kok", _("Geometri gezilemedi: %s") % e)]
+    except Exception as e:      # beklenmeyen: dogrulama cokmesin, ayrinti gunlukte
+        _log.warning("geometri gezintisi beklenmeyen hatayla durdu", exc_info=True)
+        return bulgular + [_b("hata", "kok", _("Geometri gezilemedi (beklenmeyen hata, "
+                                               "ayrıntı günlükte): %s") % e)]
     for denetim in (_yerlesim_bulgulari, _kesik_bulgulari, _yonelim_bulgulari,
                     _plaka_bulgulari, _eksenel_bulgulari, _bosluk_ve_tambur,
                     _kopya_bulgulari):
