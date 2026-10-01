@@ -126,18 +126,8 @@ class KorGeometriMixin(object):
         return False
 
     def _yuz_sinirini_doldur(self):
-        from cekirdek import geometri
-        from arayuz.geometri.cizim import bolge_kesitleri
-        try:
-            kok = geometri.model(self.spec).kok
-            dis = bolge_kesitleri(kok)[-1]
-            ic = kok.get("ic") or {}
-            ic = ic.get("icerik") if ic.get("tur") == "eksenel" else ic
-            yon = ic.get("yonelim", "y") if isinstance(ic, dict) else "y"
-        except Exception as e:
-            _log.info("yuz basina sinir icin dis kesit bulunamadi: %s", e)
-            dis, yon = None, "y"
-        self.yuz_sinir.ayarla(self.spec["kor"].get("sinir"), dis, False, None, yon)
+        from arayuz.geometri.sinir_formu import secenekler
+        self.yuz_sinir.ayarla(self.spec["kor"].get("sinir"), secenekler(self.spec), False)
         self._eksen_form.setRowVisible(self.yuz_sinir, self.yuz_sinir.yuz_basina_uygun())
 
     # ------------------------------------------------------------------ islemler

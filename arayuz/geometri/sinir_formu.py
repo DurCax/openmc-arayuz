@@ -12,13 +12,19 @@
  'x' 30°, 90°, ... Periyodik yalniz karsi yuz ciftinde (ikisi birden) anlamli;
  tek tarafli periyodik secilirse form bunu isaretler (dogrulama ayrica bildirir).
  Sablon (kor.sinir) ve gelismis (kok.sinir) ayni formu kullanir.
+ Hangi yuzlerin var oldugu ve her yuzde hangi kosullarin sunulacagi YEREL
+ kuralla degil cekirdekten okunur (secenekler(spec)): geometri.sinir_bilgisi
+ (yuz adlari) ve uygunluk.sinir_secenekleri / yuz_sinir_secenekleri
+ (periyodik yalniz duzlem ciftli dis kesitte ve dis sinira degen delik yokken).
 ================================================================================
 """
+
+from collections import namedtuple
 
 from PySide6 import QtCore, QtWidgets
 
 from cekirdek.ceviri import N_, _
-from cekirdek.geometri.kesit import altigen_normal_acilari
+from cekirdek.gunluk import kaydedici
 from arayuz import bilesenler as b
 from arayuz.geometri.form_ortak import form_duzeni
 from arayuz.ortak import ipucu
@@ -36,18 +42,30 @@ DIKDORTGEN_YUZLERI = ("-x", "+x", "-y", "+y")
 _DIKDORTGEN_ETIKETI = {"-x": N_("−x (sol)"), "+x": N_("+x (sağ)"),
                        "-y": N_("−y (alt)"), "+y": N_("+y (üst)")}
 TEMEL = ("vacuum", "reflective", "white")
+_log = kaydedici(__name__)
+
+# duzen: "dikdortgen" | "altigen" | None (yuz basina yok); yuz_adlari kurulum
+# sirasiyla; yan/alt/ust: sunulan kosullar; yuzler: {yuz adi: [kosullar]}
+SinirSecenekleri = namedtuple("SinirSecenekleri", "duzen yuz_adlari yan alt ust yuzler")
+BOS_SECENEKLER = SinirSecenekleri(None, (), TEMEL, TEMEL, TEMEL, {})
 
 
-def yuz_duzeni(dis_kesit, kafes_yonelimi=None):
-    """('dikdortgen', 4 ad) | ('altigen', 6 aci) | (None, ()) -- yuz basina uygun mu."""
-    s = (dis_kesit or {}).get("sekil")
-    if s == "dikdortgen":
-        return "dikdortgen", DIKDORTGEN_YUZLERI
-    if s == "altigen":
-        return "altigen", tuple(altigen_normal_acilari(dis_kesit.get("yonelim", "y")))
-    if s == "kafes_zarfi":
-        return "altigen", tuple(altigen_normal_acilari(kafes_yonelimi or "y"))
-    return None, ()
+def secenekler(spec):
+    """Spec'in (sablon ya da agac) dis sinir secenekleri -- cekirdek API'sinden."""
+    from cekirdek import geometri, uygunluk
+    try:
+        sb = geometri.sinir_bilgisi(geometri.model(spec))
+        yuzler = uygunluk.yuz_sinir_secenekleri(spec)
+        yan, alt, ust = (tuple(uygunluk.sinir_secenekleri(spec, y)) for y in ("yan", "alt", "ust"))
+    except (KeyError, ValueError, TypeError) as e:
+        # yarim duzenlenmis model: yuz basina sunulmaz; dogrulama nedeni bildirir
+        _log.info("sinir secenekleri okunamadi: %s", e)
+        return BOS_SECENEKLER
+    duzen = None
+    if yuzler:
+        duzen = "dikdortgen" if tuple(sb.yuz_adlari) == DIKDORTGEN_YUZLERI else "altigen"
+    return SinirSecenekleri(duzen, tuple(yuzler), yan or TEMEL, alt or TEMEL, ust or TEMEL,
+                            dict(yuzler))
 
 
 def tek_tarafli_periyodik(yuzler, duzen):
@@ -63,7 +81,7 @@ def tek_tarafli_periyodik(yuzler, duzen):
 
 
 class SinirFormu(QtWidgets.QWidget):
-    """ayarla(sinir, dis_kesit, uc_boyutlu, yan_secenekleri); degisti(yeni sinir)."""
+    """ayarla(sinir, secenekler(spec), uc_boyutlu); degisti(yeni sinir)."""
 
     degisti = QtCore.Signal(object)
 
@@ -73,6 +91,7 @@ class SinirFormu(QtWidgets.QWidget):
         self._yalniz_yuzler = bool(yalniz_yuzler)   # sablon: yan/alt/ust sayfada ayri
         self._sinir = {}
         self._duzen, self._yuz_adlari = None, ()
+        self._secenekler = BOS_SECENEKLER
         self.yan = QtWidgets.QComboBox()
         self.alt = QtWidgets.QComboBox()
         self.ust = QtWidgets.QComboBox()
@@ -100,15 +119,16 @@ class SinirFormu(QtWidgets.QWidget):
         self.yuz_basina.toggled.connect(self._yuz_basina_degisti)
 
     # ------------------------------------------------------------------
-    def ayarla(self, sinir, dis_kesit, uc_boyutlu, yan_secenekleri=None, kafes_yonelimi=None):
+    def ayarla(self, sinir, secenek, uc_boyutlu):
+        """secenek: secenekler(spec) (SinirSecenekleri)."""
         self._sinir = dict(sinir or {})
-        self._duzen, self._yuz_adlari = yuz_duzeni(dis_kesit, kafes_yonelimi)
-        yan = list(yan_secenekleri or TEMEL)
+        self._secenekler = secenek or BOS_SECENEKLER
+        self._duzen, self._yuz_adlari = self._secenekler.duzen, self._secenekler.yuz_adlari
         self._yukleniyor = True
         try:
-            self._kutu(self.yan, yan, self._sinir.get("yan", "vacuum"))
-            self._kutu(self.alt, TEMEL, self._sinir.get("alt", "vacuum"))
-            self._kutu(self.ust, TEMEL, self._sinir.get("ust", "vacuum"))
+            self._kutu(self.yan, self._secenekler.yan, self._sinir.get("yan", "vacuum"))
+            self._kutu(self.alt, self._secenekler.alt, self._sinir.get("alt", "vacuum"))
+            self._kutu(self.ust, self._secenekler.ust, self._sinir.get("ust", "vacuum"))
             self._form.setRowVisible(self.alt, bool(uc_boyutlu) and not self._yalniz_yuzler)
             self._form.setRowVisible(self.ust, bool(uc_boyutlu) and not self._yalniz_yuzler)
             self._yuzleri_kur()
@@ -140,14 +160,15 @@ class SinirFormu(QtWidgets.QWidget):
         self._yuz_kutulari = []
         yuzler = self._sinir.get("yuzler")
         yan = self._sinir.get("yan", "vacuum")
-        secenek = list(TEMEL) + ["periodic"]
         for i, ad in enumerate(self._yuz_adlari):
+            secenek = self._secenekler.yuzler.get(ad) or TEMEL
             k = QtWidgets.QComboBox()
             if self._duzen == "dikdortgen":
                 etiket = _(_DIKDORTGEN_ETIKETI[ad])
                 deger = (yuzler or {}).get(ad, yan) if isinstance(yuzler, dict) else yan
             else:
-                etiket = _("Yüz {n} (normal {aci:g}°)").format(n=i + 1, aci=ad)
+                etiket = _("Yüz {n} (normal {aci:g}°)").format(
+                    n=i + 1, aci=float(str(ad).rstrip("°")))
                 deger = yuzler[i] if isinstance(yuzler, list) and i < len(yuzler) else yan
             k.setAccessibleName(etiket)
             self._kutu(k, secenek, deger)
