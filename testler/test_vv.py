@@ -19,7 +19,7 @@ NE SINANIR (hepsi HIZLI; Monte Carlo yok)
 
 import math
 
-from testler.ortak_test import kontrol
+from testler.ortak_test import kontrol, gereksinim
 
 # NUREG/CR-6698 Tablo 3.1 (satir 17'deki "-133.4" metin cikarim hatasidir: 133.4).
 HX = [421.8] * 3 + [195.2] * 2 + [293.9] * 2 + [406.3, 495.9] + [613.6] * 2 + [971.7] * 2 \
@@ -43,6 +43,7 @@ def _yakin(a, b, tol):
     return a is not None and abs(a - b) <= tol
 
 
+@gereksinim("R-S-14")
 def test_nureg_ornegi_agirlikli():
     print("\n[VV1a] NUREG/CR-6698 §3 ornegi: agirlikli istatistik ve tolerans siniri")
     from cekirdek.vv import istatistik as ist
@@ -60,6 +61,7 @@ def test_nureg_ornegi_agirlikli():
             _yakin(ist.usl(kl, 0.02, 0.03), 0.92562, 2e-5))
 
 
+@gereksinim("R-S-14")
 def test_nureg_ornegi_egilim_bant():
     print("\n[VV1b] NUREG/CR-6698 §3 ornegi: egilim (H/X) ve tolerans bandi")
     from cekirdek.vv import istatistik as ist
@@ -78,6 +80,7 @@ def test_nureg_ornegi_egilim_bant():
                 _yakin(ist.usl(kl, 0.02, 0.0), kl_bek - 0.02, 1e-4))
 
 
+@gereksinim("R-S-14")
 def test_nureg_ornegi_parametrik_olmayan_normallik():
     print("\n[VV1c] NUREG/CR-6698 §3 ornegi: parametrik olmayan β ve Shapiro-Wilk")
     from cekirdek.vv import istatistik as ist
@@ -94,6 +97,7 @@ def test_nureg_ornegi_parametrik_olmayan_normallik():
             "-> %s" % n)
 
 
+@gereksinim("R-S-14")
 def test_tolerans_carpani_tablo():
     print("\n[VV2] U(n) Tablo 2.1 ile ortusur")
     from cekirdek.vv import istatistik as ist
@@ -105,6 +109,7 @@ def test_tolerans_carpani_tablo():
             ist.tolerans_carpani(80) == ist.tolerans_carpani(50))
 
 
+@gereksinim("R-S-14")
 def test_kurallar():
     print("\n[VV3] Pozitif yanlilik, normallestirme, ΔSM, NPM")
     from cekirdek.vv import istatistik as ist
@@ -135,6 +140,7 @@ def test_kurallar():
             and ist.kabul(0.899, 0.005, 0.91) is True)
 
 
+@gereksinim("R-S-14")
 def test_yontem_secimi():
     print("\n[VV4] Yontem secimi ve USL hesaplanamadi durumlari")
     from cekirdek.vv import istatistik as ist
@@ -209,6 +215,7 @@ def test_aoa_spec_parametreleri():
             p.get("zenginlik", 0) > 95)
 
 
+@gereksinim("R-S-14")
 def test_kucuk_kume_usl_yok():
     print("\n[VV4b] n < 10: istatistik raporlanir, USL verilmez (gerekce olmadan)")
     from cekirdek.vv import istatistik as ist
@@ -233,6 +240,7 @@ def _sahte_kume():
     return vlar
 
 
+@gereksinim("R-S-14")
 def test_kume_ozeti():
     print("\n[VV6] Kume -> VVOzeti (sahte kume ve depodaki kayitli kriterler)")
     import json
@@ -281,6 +289,7 @@ def _bul(bulgular, kimlik):
     return [b for b in bulgular if b.kural == kimlik or b.kural.startswith(kimlik + "-")]
 
 
+@gereksinim("R-S-14", "R-S-07", "R-S-09")
 def test_profil_b_uctan_uca():
     print("\n[VV7] Profil B uctan uca: LEU ornegi (pwr_3b kosu fixture'i) + V&V kumesi")
     from cekirdek import sema
