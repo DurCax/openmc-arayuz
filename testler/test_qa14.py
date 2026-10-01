@@ -286,7 +286,35 @@ def test_ic_anahtar_gorunmez():
             and aoa_degeri("cozelti") == "çözelti" and aoa_adi("h_x") == "H/X")
 
 
-HIZLI = [test_ic_anahtar_gorunmez, test_elle_ealf_tally_vv_dusurmez, test_panel_gecersiz_tally_duzeltir,
+def test_diyalogdan_sonra_kisayol():
+    print("\n[QA-k4] Modal diyalog kapaninca ana pencere yeniden etkin (kisayollar calisir)")
+    from PySide6 import QtCore, QtTest, QtWidgets
+    app = QtWidgets.QApplication.instance() or QtWidgets.QApplication([])
+    from arayuz.ortak import tekerlek_korumasi_kur
+    tekerlek_korumasi_kur(app)
+    p = QtWidgets.QMainWindow()
+    cagri = []
+    eylem = p.addAction("rapor")
+    eylem.setShortcut("Ctrl+R")
+    eylem.triggered.connect(lambda *a: cagri.append(1))
+    p.show()
+    p.activateWindow()
+    QtTest.QTest.qWait(100)
+    d = QtWidgets.QFileDialog(p)
+    d.setOption(QtWidgets.QFileDialog.DontUseNativeDialog, True)
+    QtCore.QTimer.singleShot(100, d.reject)
+    d.exec()
+    QtTest.QTest.qWait(100)
+    kontrol("diyalogdan sonra etkin pencere ana pencere",
+            QtWidgets.QApplication.activeWindow() is p,
+            "-> %r" % QtWidgets.QApplication.activeWindow())
+    QtTest.QTest.keyClick(p, QtCore.Qt.Key_R, QtCore.Qt.ControlModifier)
+    QtTest.QTest.qWait(50)
+    kontrol("Ctrl+R calisir", cagri == [1], "-> %r" % cagri)
+    p.close()
+
+
+HIZLI = [test_ic_anahtar_gorunmez, test_diyalogdan_sonra_kisayol, test_elle_ealf_tally_vv_dusurmez, test_panel_gecersiz_tally_duzeltir,
          test_entropi_kisa_pasif_yakalanir, test_guc_yorumu_once_istatistik,
          test_simge_dugmesi_adi_ipucunda, test_kosusuz_rapor_sessiz_degil, test_c_e_panoda,
          test_kucuk_bulgular_durum_ve_suzgec, test_grup_basligi_tazelenir]

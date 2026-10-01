@@ -38,6 +38,14 @@ _TEKERLEK_HEDEFLERI = (QtWidgets.QComboBox, QtWidgets.QAbstractSpinBox,
                        QtWidgets.QSlider)
 
 
+def _yeniden_etkinlestir(pencere):
+    """Etkin pencere yoksa ve pencere hala gorunurse onu etkinlestirir."""
+    if (shiboken6.isValid(pencere) and pencere.isVisible()
+            and QtWidgets.QApplication.activeWindow() is None
+            and QtWidgets.QApplication.activeModalWidget() is None):
+        pencere.activateWindow()
+
+
 class _TekerlekSuzgeci(QtCore.QObject):
     """Uygulama geneli olay suzgeci -- bkz. tekerlek_korumasi_kur()."""
 
@@ -51,6 +59,14 @@ class _TekerlekSuzgeci(QtCore.QObject):
             if isinstance(nesne, _TEKERLEK_HEDEFLERI) and not nesne.hasFocus():
                 olay.ignore()          # yok say: ust widget'a (kaydirma alanina) gecer
                 return True            # kutunun kendisi degeri DEGISTIRMEZ
+        elif tur == QtCore.QEvent.Hide and isinstance(nesne, QtWidgets.QDialog):
+            # Modal diyalog kapaninca etkin pencere kalmayabilir (baslik yoneticisiz /
+            # offscreen ortam): ana pencerenin kisayollari (F9, Ctrl+S, Ctrl+R) olu
+            # kalir (QA14). Ust pencere, etkin pencere yoksa yeniden etkinlestirilir.
+            ust = nesne.parentWidget()
+            if ust is not None:
+                pencere = ust.window()
+                QtCore.QTimer.singleShot(0, lambda: _yeniden_etkinlestir(pencere))
         elif tur == QtCore.QEvent.Polish:
             if (isinstance(nesne, _TEKERLEK_HEDEFLERI)
                     and nesne.focusPolicy() == QtCore.Qt.WheelFocus):
