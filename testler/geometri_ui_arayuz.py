@@ -321,11 +321,13 @@ def test_yuz_basina_sinir():
     print("\n[GU13] yuz basina sinir: dikdortgen 4 yuz, altigen 6 yuz, periyodik cifti")
     _qt()
     from cekirdek import geometri, kurucu
-    from arayuz.geometri.sinir_formu import SinirFormu, tek_tarafli_periyodik
+    from arayuz.geometri.sinir_formu import SinirFormu, secenekler, tek_tarafli_periyodik
+    from testler import geometri_ortak as go
     f = SinirFormu()
     gelen = []
     f.degisti.connect(gelen.append)
-    f.ayarla({"yan": "vacuum"}, {"sekil": "dikdortgen", "boyut": [10, 10]}, True)
+    ceyrek = go.duzenek_e_ceyrek()
+    f.ayarla({"yan": "vacuum"}, secenekler(ceyrek), True)
     f.yuz_basina.setChecked(True)
     f._yuz_kutulari[0].setCurrentIndex(f._yuz_kutulari[0].findData("reflective"))
     kontrol("dikdortgen: 4 yuz, -x yansitici",
@@ -333,10 +335,27 @@ def test_yuz_basina_sinir():
             and gelen[-1]["yuzler"]["+x"] == "vacuum")
     f._yuz_kutulari[0].setCurrentIndex(f._yuz_kutulari[0].findData("periodic"))
     kontrol("tek tarafli periyodik isaretlenir", bool(f.not_etiketi.text()))
-    f.ayarla({"yan": "vacuum"}, {"sekil": "altigen", "apotem": 5, "yonelim": "x"}, False)
-    kontrol("altigen: 6 yuz", len(f._yuz_kutulari) == 6)
-    f.ayarla({"yan": "vacuum"}, {"sekil": "silindir", "yaricap": 5}, False)
+    altigen = copy.deepcopy(ceyrek)
+    altigen["geometri"]["kok"]["kesit"] = {"sekil": "altigen", "apotem": 200.0, "yonelim": "x"}
+    s = secenekler(altigen)
+    f.ayarla({"yan": "vacuum"}, s, False)
+    kontrol("altigen: 6 yuz, adlar sinir_bilgisi'nden",
+            len(f._yuz_kutulari) == 6 and s.yuz_adlari == geometri.sinir_bilgisi(
+                geometri.model(altigen)).yuz_adlari, "-> %s" % (s.yuz_adlari,))
+    f.ayarla({"yan": "vacuum"}, secenekler(go.duzenek_c()), False)
     kontrol("silindirde yuz basina yok", not f.yuz_basina_uygun())
+    # dis sinira degen delik: periyodik ne yanda ne yuzlerde sunulur (uygunluk)
+    delikli = go.duzenek_e_ceyrek()
+    delikli["geometri"]["kok"]["yerlesimler"].append(
+        {"ad": "kenar", "mod": "liste", "konumlar": [[42.0, 0.0]],
+         "kesit": {"sekil": "silindir", "yaricap": 2.0},
+         "icerik": {"tur": "malzeme", "ad": "bosluk"}})
+    s = secenekler(delikli)
+    kontrol("delik dis sinira degiyor: periodic sunulmaz",
+            "periodic" not in s.yan and all("periodic" not in v for v in s.yuzler.values())
+            and "periodic" in secenekler(ceyrek).yan, "-> %s %s" % (s.yan, s.yuzler))
+    kontrol("bozuk spec: bos secenek, cokmez",
+            secenekler({"kor": {"tur": "agac"}, "geometri": {"kok": 5}}).duzen is None)
     kontrol("cift kurali", tek_tarafli_periyodik(["periodic"] + ["vacuum"] * 5, "altigen") == [0])
     from arayuz.sekme_kor import KorSekmesi
     spec = _ornek("pwr_ceyrek_kor")

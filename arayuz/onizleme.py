@@ -51,7 +51,9 @@
    openmc.Geometry.find ile bulur; GeometriDizini onu agactaki dugume cevirir
    ve dugum_secildi(yol) yayilir (Geometri sayfasi agacta secer).
    vurgula(yol): "Hucre" renklendirmesinde secili dugumun hucreleri vurgu,
-   digerleri soluk renkte cizilir (arayuz/geometri/onizleme_secim.py).
+   digerleri soluk renkte cizilir; "Malzeme" renklendirmesinde malzeme renkleri
+   korunur, secili olmayan bolge yari saydam soluk ortuyle orterek secili
+   dugumun sinirina vurgu kontur cizilir (Model.id_map; onizleme_secim.py).
    Yukseklik sema.model_yuksekligi ile okunur (sablon ve agac modunda ayni).
 ================================================================================
 """
@@ -86,6 +88,8 @@ COZUNURLUK = [("Düşük (400)", 400), ("Normal (800)", 800), ("Yüksek (1400)",
 
 # Gorunum secenekleri (3B modelde). Ogeler eksen adlaridir (xy, xz, yz).
 IKILI = "xy + xz"
+# Malzeme renklendirmesinde secili olmayan bolgenin soluk ortusunun saydamligi
+_SOLUK_ORTU = 0.6
 GORUNUMLER = [IKILI, "xy", "xz", "yz"]
 RENKLENDIRME = [("material", "Malzeme"), ("cell", "Hücre")]
 
@@ -380,6 +384,8 @@ class OnizlemeWidget(QtWidgets.QWidget):
                                    model, bilgi),
                                legend=gosterge_ister and i == 0,
                                axes=ax)
+                    if renk_ver:
+                        self._malzeme_vurgusu(ax, model, bilgi, eksen, genislik, piksel)
                     self._eksen_bicimle(ax, eksen, genislik, len(kesitler) == 2)
             if len(kesitler) == 2:
                 self.figur.suptitle(self.spec.get("ad", ""), fontsize=9)
@@ -450,7 +456,7 @@ class OnizlemeWidget(QtWidgets.QWidget):
     def vurgula(self, yol):
         """Secili dugum (Geometri sayfasi). Hucre renklendirmesinde yeniden cizer."""
         self._vurgu = tuple(yol) if yol else None
-        if self.renklendirme.currentData() == "cell" and self.spec is not None:
+        if self.spec is not None:
             self.iste()
 
     def _vurgu_renkleri(self, model, bilgi):
@@ -462,6 +468,29 @@ class OnizlemeWidget(QtWidgets.QWidget):
         soluk = tuple(int(255 * v) for v in to_rgb(tema.renk("yuzey3")))
         return vurgu_renkleri(model, bilgi.get("geometri_dizini"), self._agac(),
                               self._vurgu, vurgu, soluk)
+
+    def _malzeme_vurgusu(self, ax, model, bilgi, eksen, genislik, piksel):
+        """Malzeme renklendirmesinde secili dugum: soluk ortu + vurgu kontur."""
+        if not self._vurgu or not ax.images:
+            return
+        import numpy as np
+        from matplotlib.colors import to_rgb
+        from arayuz.geometri.onizleme_secim import secili_hucreler, vurgu_maskesi
+        secili = secili_hucreler(model, bilgi.get("geometri_dizini"), self._agac(), self._vurgu)
+        if not secili:
+            return
+        harita = model.id_map(width=genislik, pixels=(piksel, piksel), basis=eksen)
+        maske = vurgu_maskesi(model, harita, secili)
+        kapsam = ax.images[0].get_extent()
+        ortu = np.zeros(maske.shape + (4,))
+        ortu[..., :3] = to_rgb(tema.renk("yuzey3"))
+        ortu[..., 3] = np.where(maske, 0.0, _SOLUK_ORTU)
+        ax.imshow(ortu, extent=kapsam, interpolation="nearest", zorder=2).set_gid("vurgu")
+        if maske.any() and not maske.all():
+            kontur = ax.contour(maske.astype(float), levels=[0.5], extent=kapsam,
+                                origin="upper", colors=[tema.renk("vurgu")],
+                                linewidths=1.6, zorder=3)
+            kontur.set_gid("vurgu")
 
     def _agac(self):
         from cekirdek import geometri

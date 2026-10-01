@@ -87,9 +87,9 @@ def _guc_tur_satirlari(satirlar, ek, degisken, bolge, g, hucre_adi):
 
 
 def _guc_mesh_satirlari(spec, satirlar, adlar, g, gx, gy):
-    """Eksenel mesh (3B, dilim > 1): kurucu.guc_eksenel_araligi ile AYNI aralik.
+    """Eksenel mesh (3B, dilim > 1): kurucu ile AYNI aralik (geometri.hedef_araligi).
     Cok turde mesh filtresi turler arasinda paylasilir (_guc_mesh_filtresi)."""
-    from cekirdek import kurucu as _kur
+    from cekirdek import geometri
     h = sema.model_yuksekligi(spec)
     dilim = int(g.get("eksenel_dilim") or 1)
     cok_tur = len(adlar) > 1
@@ -98,7 +98,7 @@ def _guc_mesh_satirlari(spec, satirlar, adlar, g, gx, gy):
             satirlar.append("_guc_mesh_filtresi = None")
         return
     pay = max(gx, gy)
-    _z0, _z1 = _kur.guc_eksenel_araligi(spec, adlar)
+    _z0, _z1 = geometri.hedef_araligi(spec, adlar)
     satirlar.append("")
     satirlar.append("# Eksenel mesh aktif yakıt yüksekliğiyle tam örtüşmelidir;")
     satirlar.append("# taşarsa boş bin'ler ortalamayı düşürür ve F_q şişer.")

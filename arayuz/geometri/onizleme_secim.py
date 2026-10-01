@@ -13,6 +13,8 @@
 ================================================================================
 """
 
+import re
+
 from cekirdek.gunluk import kaydedici
 from arayuz.geometri import duzenle
 
@@ -60,14 +62,52 @@ def nokta_yolu(model, dizin, agac, nokta):
     return None
 
 
+def secili_hucreler(model, dizin, agac, yol):
+    """Secili dugumun (ve altinin) hucre kimlikleri (kume); yoksa bos."""
+    if model is None or dizin is None or not yol:
+        return set()
+    hucre_yolu = getattr(dizin, "hucre_yolu", {}) or {}
+    return {k for k, dy in hucre_yolu.items()
+            if duzenle.ata_mi(yol, agac_yolu(dy, agac))}
+
+
 def vurgu_renkleri(model, dizin, agac, yol, vurgu, soluk):
     """Hucre renklendirmesinde secili dugumun hucreleri 'vurgu', digerleri 'soluk'."""
     if model is None or dizin is None or not yol:
         return None
-    renkler = {}
-    hucre_yolu = getattr(dizin, "hucre_yolu", {}) or {}
-    for hucre in model.geometry.get_all_cells().values():
-        dy = hucre_yolu.get(hucre.id)
-        secili = dy is not None and duzenle.ata_mi(yol, agac_yolu(dy, agac))
-        renkler[hucre] = vurgu if secili else soluk
-    return renkler
+    secili = secili_hucreler(model, dizin, agac, yol)
+    return {hucre: (vurgu if hucre.id in secili else soluk)
+            for hucre in model.geometry.get_all_cells().values()}
+
+
+_HUCRE = re.compile(r"c(\d+)")
+
+
+def vurgu_maskesi(model, id_haritasi, secili):
+    """
+    Secili hucrelerin (ya da onlarin ICINDEKI hucrelerin) piksel maskesi.
+    id_haritasi: Model.id_map ciktisi (satir, sutun, [hucre, ornek, malzeme]);
+    id_map en derin hucreyi verir (pin hucresi), secili dugum cogu zaman onu
+    dolduran bir ata hucredir: her (hucre, ornek) ciftinin distribcell yolu
+    (Geometry.determine_paths; "u1->c17->l11(0,0)->...->c1") ata hucreleri
+    tasir (olculdu: kafes_tambur 1320 yakit ornegi, 14 ms).
+    """
+    import numpy as np
+    h = np.asarray(id_haritasi)
+    hucre, ornek = h[:, :, 0].astype(np.int64), h[:, :, 1].astype(np.int64)
+    if not secili:
+        return np.zeros(hucre.shape, dtype=bool)
+    model.geometry.determine_paths()
+    hucreler = model.geometry.get_all_cells()
+    ciftler, ters = np.unique(np.stack([hucre.ravel(), ornek.ravel()], axis=1), axis=0,
+                              return_inverse=True)
+    secili = {int(k) for k in secili}
+    sonuc = np.zeros(len(ciftler), dtype=bool)
+    for n, (k, i) in enumerate(ciftler):
+        c = hucreler.get(int(k))
+        if c is None:
+            continue
+        yollar = c.paths or []
+        yol = yollar[int(i)] if 0 <= int(i) < len(yollar) else ""
+        sonuc[n] = int(k) in secili or bool(secili & {int(x) for x in _HUCRE.findall(yol)})
+    return sonuc[ters.ravel()].reshape(hucre.shape)

@@ -303,30 +303,6 @@ def harita_kontrol(kor):
                          "haritada %s" % (n, beklenen, bulunan))
 
 
-def kor_kur(spec, nesneler, universeler):
-    """altigen_kafes: (kok_universe, sinir_kutusu). kurucu.kor_kur buradan cagirir."""
-    import openmc
-    from cekirdek import kurucu as _k
-    kor = spec["kor"]
-    harita_kontrol(kor)
-    n, P = halka_sayisi(kor), float(kor["adim"])
-    yonelim = kor.get("yonelim") or "x"
-    dilimler, tam_z = z_dilimleri(kor)
-    dolgular = []
-    for satir in konum_dolgu_adlari(kor, dilimler):
-        dolgular.append([
-            _k._ad_universe(spec, deger, nesneler, universeler) if tur == "ad"
-            else _k._katman_dolgusu(spec, kor, deger, None, nesneler, universeler)
-            for tur, deger in satir])
-    yan_bc = kor.get("sinir", {}).get("yan", "reflective")
-    kal = yansitici_kalinligi(kor)
-    yans = None if kal is None else (
-        _k._mat(nesneler, (kor.get("yansitici") or {}).get("malzeme")), kal, tam_z)
-    hucreler = altigen_kor_hucreleri(kor_merkezleri(n, P, yonelim), P, yonelim, dolgular,
-                                     katman_adlari(dilimler), yan_bc, yans)
-    return openmc.Universe(cells=hucreler), kor_sinir_kutusu(kor)
-
-
 def betik_kaynagi():
     """Betige kopyalanan islevlerin kaynak kodu."""
     return "\n\n".join(inspect.getsource(f) for f in

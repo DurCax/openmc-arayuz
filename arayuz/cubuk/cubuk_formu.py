@@ -8,11 +8,14 @@
 
 from PySide6 import QtCore, QtWidgets
 from cekirdek import sema, uygunluk
+from cekirdek.gunluk import kaydedici
 from arayuz.ortak import renk_simgesi, sayi
 from arayuz.cubuk.parca_islemleri import (
     BOS_ETIKETI, SECILMEDI_ETIKETI, _renk, bolge_aciklamasi, eksik_malzemeler,
     malzeme_etiketi, parca_rengi, rol_malzemesi, roller)
 from arayuz.cubuk.malzeme_kutusu import MalzemeKutusu
+
+_log = kaydedici(__name__)
 
 # Yaricap hassasiyeti (cm): kriter ornekleri 1e-6 cm veriyor (LCT-008
 # r=0.514858); daha az ondalik kaydederken yaricapi sessizce yuvarlar.
@@ -192,7 +195,7 @@ class CubukFormuMixin(object):
         """
         Daldirma oranindan uc konumunu hesaplayip gosterir.
 
-        Kurucu ile AYNI formul (kurucu.cubuk_universe): daldirma AKTIF yakit
+        Kurucu ile AYNI formul (geometri.bilesen.cubuk): daldirma AKTIF yakit
         araliginda olculur, modelin toplam yuksekliginde degil:
             z_uc = z_ust - daldirma/100 * (z_ust - z_alt)
         """
@@ -202,9 +205,12 @@ class CubukFormuMixin(object):
             self.c_uc_etiket.setStyleSheet("color: %s;" % _renk("hata"))
             return
         try:
-            from cekirdek import kurucu
-            z_alt, z_ust = kurucu.aktif_eksenel_aralik(self.spec) or (-h / 2.0, h / 2.0)
-        except Exception:
+            from cekirdek import geometri
+            z_alt, z_ust = geometri.aktif_aralik(self.spec) or (-h / 2.0, h / 2.0)
+        except (KeyError, ValueError, TypeError):
+            # yarim duzenlenmis model: tum yukseklik gosterilir, nedeni gunlukte
+            _log.warning("aktif eksenel aralık okunamadı; model yüksekliği kullanılıyor",
+                         exc_info=True)
             z_alt, z_ust = -h / 2.0, h / 2.0
         z = z_ust - (self.c_daldirma.value() / 100.0) * (z_ust - z_alt)
         self.c_uc_etiket.setText("z = %+.2f cm   (aktif yakıt: %+.1f … %+.1f cm)"

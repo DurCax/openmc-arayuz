@@ -21,7 +21,7 @@ from arayuz import bilesenler as b
 from arayuz.geometri import duzenle
 from arayuz.geometri.form_ortak import (FormTabani, KesitEditoru, aci, form_duzeni,
                                         kutu_doldur, sayi_yaz, uzunluk)
-from arayuz.geometri.sinir_formu import SinirFormu
+from arayuz.geometri.sinir_formu import SinirFormu, secenekler as sinir_secenekleri
 from arayuz.ortak import ipucu
 
 _log = kaydedici("arayuz.geometri.formlar")
@@ -187,11 +187,8 @@ class KapFormu(FormTabani):
                      (self.donusum, not kok)):
             self._form.setRowVisible(w, g)
         if kok:
-            from arayuz.geometri.cizim import bolge_kesitleri
-            dis = bolge_kesitleri(d)[-1]
-            yon = self._kafes_yonelimi(d)
-            self.sinir.ayarla(d.get("sinir"), dis, h is not None or yigin,
-                              _yan_secenekleri(dis), yon)
+            self.sinir.ayarla(d.get("sinir"), sinir_secenekleri(self._guncel_spec()),
+                              h is not None or yigin)
         else:
             self.donusum.ayarla(d.get("donusum"))
 
@@ -202,12 +199,12 @@ class KapFormu(FormTabani):
             ic = ic.get("icerik")
         return isinstance(ic, dict) and ic.get("tur") == "kafes" and ic.get("sekil") == "altigen"
 
-    @staticmethod
-    def _kafes_yonelimi(d):
-        ic = d.get("ic")
-        if isinstance(ic, dict) and ic.get("tur") == "eksenel":
-            ic = ic.get("icerik")
-        return (ic or {}).get("yonelim", "y") if isinstance(ic, dict) else "y"
+    def _guncel_spec(self):
+        """Editordeki (henuz yayilmamis olabilir) agacla spec: sinir secenekleri icin."""
+        spec = dict(self.spec or {})
+        spec["kor"] = dict(spec.get("kor") or {}, tur="agac")
+        spec["geometri"] = self.agac
+        return spec
 
     def _ad_degisti(self):
         ad = self.ad.text().strip()
@@ -227,13 +224,6 @@ class KapFormu(FormTabani):
             self.doldur(self.oge())
         finally:
             self._yukleniyor = False
-
-
-def _yan_secenekleri(dis_kesit):
-    """Gelismis modda yan sinir secenekleri: periyodik yalniz duzlem ciftli kesitte."""
-    s = (dis_kesit or {}).get("sekil")
-    temel = ["vacuum", "reflective", "white"]
-    return temel + ["periodic"] if s in ("dikdortgen", "altigen") else temel
 
 
 class HalkaFormu(FormTabani):

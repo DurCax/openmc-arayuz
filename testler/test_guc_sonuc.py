@@ -22,6 +22,8 @@ import tempfile
 from types import SimpleNamespace
 
 from testler.ortak_test import kontrol, ORNEK
+from cekirdek import geometri  # noqa: E402
+from cekirdek.geometri import eksenel as geo_eks  # noqa: E402,F401
 
 
 class _Toplayici(logging.Handler):
@@ -393,30 +395,30 @@ def test_lineer_guc_yuksekligi():
     sp = sema.yukle(os.path.join(ORNEK, "pwr_eksenel.json"))
     cubuk = (sp.get("guc_dagilimi") or {}).get("cubuk") or "yakit_cubugu"
     sp.setdefault("guc_dagilimi", {})["cubuk"] = cubuk
-    ar = kurucu.cubuk_eksenel_aralik(sp, cubuk)
-    h = kurucu.guc_yuksekligi(sp)
+    ar = geo_eks.cubuk_araligi(sp, cubuk)
+    h = geometri.hedef_yuksekligi(sp)
     kontrol("pwr_eksenel: hedef cubuk yuksekligi = cubuk araligi (bitisik katmanlar)",
             abs(h - (ar[1] - ar[0])) < 1e-9, "-> %s vs %s" % (h, ar))
     kontrol("aktif (blanket dahil) araliktan kucuk",
-            h < (kurucu.aktif_eksenel_aralik(sp)[1] - kurucu.aktif_eksenel_aralik(sp)[0]))
+            h < (geometri.aktif_aralik(sp)[1] - geometri.aktif_aralik(sp)[0]))
     # Kesintili: ortadaki katmandan hedef cubugu cikar -> o katman sayilmaz
     s2 = copy.deepcopy(sp)
     katmanlar = sema.eksenel_katmanlar(s2["kor"])
     icerenler = [k for _z0, _z1, k in katmanlar
-                 if any(kurucu._iceriyor_mu(s2, x, cubuk)
+                 if any(geo_eks.iceriyor_mu(s2, x, cubuk)
                         for x in sema.katman_adaylari(s2["kor"], k))]
     if len(icerenler) >= 3:
         orta = icerenler[len(icerenler) // 2]
         bosluk = orta.get("yukseklik")
         orta["dolgu"] = next(m["ad"] for m in s2["malzemeler"])
         orta.pop("anahtar", None)
-        h2 = kurucu.guc_yuksekligi(s2)
+        h2 = geometri.hedef_yuksekligi(s2)
         kontrol("kesintili katmanda aradaki bosluk dusulur",
                 abs(h2 - (h - bosluk)) < 1e-9, "-> %s, beklenen %s" % (h2, h - bosluk))
     else:
         kontrol("kesintili durum icin en az 3 katman (sentetik atlandi)", True)
     tek = sema.yukle(os.path.join(ORNEK, "pwr_3b.json"))
-    kontrol("tek bolgeli 3B: kor yuksekligi", kurucu.guc_yuksekligi(tek)
+    kontrol("tek bolgeli 3B: kor yuksekligi", geometri.hedef_yuksekligi(tek)
             == sema.kor_yuksekligi(tek["kor"]))
 
 HIZLI = [test_lineer_guc_yuksekligi, 

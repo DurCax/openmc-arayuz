@@ -24,6 +24,7 @@
 import copy
 import re
 
+from cekirdek import geometri
 from cekirdek.ceviri import _
 
 BOSLUK = "bosluk"
@@ -483,15 +484,26 @@ def bilesen_basvurulari(agac):
     return adlar
 
 
-def _basvuru_degistir(deger, eski, yeni):
-    if isinstance(deger, dict):
-        d = {k: _basvuru_degistir(v, eski, yeni) for k, v in deger.items()}
-        if d.get("tur") == "bilesen" and d.get("ad") == eski:
-            d["ad"] = yeni
-        return d
-    if isinstance(deger, list):
-        return [_basvuru_degistir(v, eski, yeni) for v in deger]
-    return deger
+def _agac_speci(agac):
+    """Agaci cekirdek API'sinin bekledigi (gelismis modda) spec'e sarar."""
+    return {"kor": {"tur": "agac"}, "geometri": agac}
+
+
+def _api_adi(agac, tur, eski, yeni):
+    """geometri.ad_degistir ile yeni agac (grup uyelikleri, bilesen ve kafes
+    basvurulari dahil). Girdi DEGISMEZ."""
+    try:
+        return geometri.ad_degistir(_agac_speci(agac), tur, eski, yeni)["geometri"]
+    except (KeyError, ValueError) as e:
+        raise DuzenlemeHatasi(_("Ad değiştirilemedi: {neden}").format(neden=e)) from e
+
+
+def grup_degeri_yaz(agac, grup, deger):
+    """'grup' adli grubun degeri (geometri.grup_degeri_yaz). Girdi DEGISMEZ."""
+    try:
+        return geometri.grup_degeri_yaz(_agac_speci(agac), grup, deger)["geometri"]
+    except KeyError as e:
+        raise DuzenlemeHatasi(_("Tanımsız grup: {ad}").format(ad=grup)) from e
 
 
 def yeniden_adlandir(agac, yol, yeni_ad, kutuphane_adlari=()):
@@ -515,16 +527,12 @@ def yeniden_adlandir(agac, yol, yeni_ad, kutuphane_adlari=()):
     if tur == "yerlesim":
         if yeni_ad != eski and yeni_ad in yerlesim_adlari(agac):
             raise DuzenlemeHatasi(_("“{ad}” adlı bir yerleşim zaten var.").format(ad=yeni_ad))
-        kopya = alan_yaz(agac, yol, "ad", yeni_ad)
-        for g in kopya.get("gruplar") or []:
-            g["uyeler"] = [yeni_ad if u == eski else u for u in g.get("uyeler") or []]
-        return kopya
+        return _api_adi(agac, "yerlesim", eski, yeni_ad)
     if tur == "parca":
         adlar = {p.get("ad") for p in agac.get("parcalar") or []} | set(kutuphane_adlari)
         if yeni_ad != eski and yeni_ad in adlar:
             raise DuzenlemeHatasi(_("“{ad}” adı zaten kullanılıyor.").format(ad=yeni_ad))
-        kopya = alan_yaz(agac, yol, "ad", yeni_ad)
-        return _basvuru_degistir(kopya, eski, yeni_ad)
+        return _api_adi(agac, "parca", eski, yeni_ad)
     if tur == "grup":
         adlar = {g.get("ad") for g in agac.get("gruplar") or []}
         if yeni_ad != eski and yeni_ad in adlar:

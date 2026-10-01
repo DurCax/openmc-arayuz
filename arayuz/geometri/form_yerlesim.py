@@ -378,14 +378,22 @@ class GrupFormu(FormTabani):
         if self._yukleniyor:
             return
         self._kaydirici_yaz(deger, self.tur.secili())
-        self.yaz("deger", float(deger))
+        self._degeri_yaz(float(deger))
 
     def _kaydirici_degisti(self, deger):
         if self._yukleniyor:
             return
         v = deger / 10.0
         sayi_yaz(self.deger, v)
-        self.yaz("deger", v)
+        self._degeri_yaz(v)
+
+    def _degeri_yaz(self, deger):
+        """geometri.grup_degeri_yaz (duzenle uzerinden); tek geri al adimi."""
+        g = self.oge() or {}
+        try:
+            self.agac_yay(duzenle.grup_degeri_yaz(self.agac, g.get("ad"), deger))
+        except duzenle.DuzenlemeHatasi as e:
+            self.aciklama.setText(str(e))
 
     def _uyeler_degisti(self, *_a):
         uyeler = [self.uyeler.item(i).text() for i in range(self.uyeler.count())

@@ -23,6 +23,8 @@ import os
 import warnings
 
 from testler.ortak_test import kontrol, ISLEM_PARCACIGI
+from cekirdek import geometri  # noqa: E402
+from cekirdek.geometri import eksenel as geo_eks  # noqa: E402,F401
 
 warnings.filterwarnings("ignore")
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
@@ -242,7 +244,7 @@ def test_altigen_kor_geometri():
             abs(gx - 3 * P) < 1e-9 and abs(gy - (SQ3 * P + 2 * P / SQ3)) < 1e-9,
             "-> %.5f x %.5f" % (gx, gy))
     kontrol("kor_ic_olcusu = sinir kutusu (yansitici yok)",
-            tuple(kurucu.kor_ic_olcusu(s, bilgi["sinir_kutu"])) == (gx, gy))
+            tuple(geometri.ic_olcusu(geometri.model(s))) == (gx, gy))
     # yansiticili: dis prizma apotemi = (N-1)P sqrt3/2 + P/sqrt3 + kalinlik
     sy = _kor_spec(kilif=True, yansitici=True)
     _m, by = kurucu.kur(sy)
@@ -251,7 +253,7 @@ def test_altigen_kor_geometri():
             abs(by["sinir_kutu"][0] - 4 * a / SQ3) < 1e-9
             and abs(by["sinir_kutu"][1] - 2 * a) < 1e-9, "-> %s" % (by["sinir_kutu"],))
     kontrol("kor_ic_olcusu yansitici HARIC = kor hucreleri zarfi",
-            all(abs(u - v) < 1e-9 for u, v in zip(kurucu.kor_ic_olcusu(sy, by["sinir_kutu"]),
+            all(abs(u - v) < 1e-9 for u, v in zip(geometri.ic_olcusu(geometri.model(sy)),
                                                   (gx, gy))))
 
 
@@ -397,7 +399,7 @@ def test_altigen_kor_katman_anahtari():
             ust and all("hex2" in (c.fill.name or "") for c in ust),
             "-> %s" % [c.fill.name for c in ust[:2]])
     kontrol("aktif aralik yalniz aktif+ust (-30, 40)",
-            kurucu.aktif_eksenel_aralik(s) == (-30.0, 40.0), "-> %s" % (kurucu.aktif_eksenel_aralik(s),))
+            geometri.aktif_aralik(s) == (-30.0, 40.0), "-> %s" % (geometri.aktif_aralik(s),))
 
 
 def test_altigen_kor_katman_anahtari_kapi():

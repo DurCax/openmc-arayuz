@@ -242,8 +242,8 @@ def test_arayuz_kontrol_cubugu_uc():
             w.liste.setCurrentRow(i)
     for daldirma in (0.0, 50.0, 100.0):
         w.c_daldirma.setValue(daldirma)
-        univ = kurucu.cubuk_universe(spec, kc["ad"], kurucu.malzemeleri_kur(spec)[0])
-        z0lar = sorted({float(srf.z0) for c in univ.cells.values()
+        evrenler = kurucu.kur(spec)[1]["geometri_dizini"].kontrol_cubuklari[kc["ad"]]
+        z0lar = sorted({float(srf.z0) for univ in evrenler for c in univ.cells.values()
                         for srf in c.region.get_surfaces().values()
                         if srf.type == "z-plane"})
         m = re.search(r"z = ([+-]?\d+\.\d+)", w.c_uc_etiket.text())

@@ -14,6 +14,8 @@ import os
 import tempfile
 
 from testler.ortak_test import kontrol, ORNEK
+from cekirdek import geometri  # noqa: E402
+from cekirdek.geometri import eksenel as geo_eks  # noqa: E402,F401
 
 
 def _ornekler():
@@ -98,17 +100,17 @@ def test_agac_eksenel_araliklar():
         s = sema.yukle(os.path.join(ORNEK, ad + ".json"))
         g = geometri.gelismise_gec(s)
         hedef = [c["ad"] for c in s["cubuklar"]][:2]
-        sab = (kurucu.aktif_eksenel_aralik(s), kurucu.guc_eksenel_araligi(s, hedef),
-               kurucu.guc_yuksekligi(s, hedef), kurucu.cubuk_eksenel_aralik(s, hedef[0])
+        sab = (geometri.aktif_aralik(s), geometri.hedef_araligi(s, hedef),
+               geometri.hedef_yuksekligi(s, hedef), geo_eks.cubuk_araligi(s, hedef[0])
                if hedef else None, sema.model_yuksekligi(s))
-        agac = (kurucu.aktif_eksenel_aralik(g), kurucu.guc_eksenel_araligi(g, hedef),
-                kurucu.guc_yuksekligi(g, hedef), kurucu.cubuk_eksenel_aralik(g, hedef[0])
+        agac = (geometri.aktif_aralik(g), geometri.hedef_araligi(g, hedef),
+                geometri.hedef_yuksekligi(g, hedef), geo_eks.cubuk_araligi(g, hedef[0])
                 if hedef else None, sema.model_yuksekligi(g))
         kontrol("%s: aktif, hedef araligi, hedef yuksekligi, cubuk araligi, yukseklik" % ad,
                 sab == agac, "-> %s / %s" % (sab, agac))
         if hedef:
             kontrol("%s: fisil_mi / iceriyor_mu ayni" % ad,
-                    kurucu._spec_fisil_mi(s, hedef[0]) == kurucu._spec_fisil_mi(g, hedef[0]))
+                    geo_eks.fisil_mi(s, hedef[0]) == geo_eks.fisil_mi(g, hedef[0]))
         m = geometri.model(g)
         dil = geometri.eksenel_dilimler(m)
         kontrol("%s: kok yigini dilimleri model yuksekligini kaplar" % ad,
