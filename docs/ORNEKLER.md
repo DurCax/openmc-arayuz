@@ -208,8 +208,8 @@ Fark 41 pcm, yani **0.46σ** (YAVAS test OR12, ölçüt 2σ: geçti).
 - **pwr_gd_tukenme:** tek Gd'li pin hücresi temsil edici değildir (sonsuz Gd
   kafesi); 5×5 süper hücrenin merkezindeki Gd'li pelet eşit alanlı 5 halkaya
   bölünür. Ölçülen (OR13, 5 MWd/kg): kalan Gd-157 oranı içten dışa
-  0.79 / 0.71 / 0.58 / 0.30 / 0.01 — uzaysal öz-perdeleme ("soğan kabuğu")
-  açıkça görünür; 16 MWd/kg'da iç halkada hâlâ ~%12 Gd-157 kalır.
+  0.77 / 0.71 / 0.57 / 0.30 / 0.01 (01.10.2026, He düzeltmesinden sonra yeniden ölçüldü; k∞ 1.1233 → 1.0697, 1500 × 40/15) — uzaysal öz-perdeleme ("soğan kabuğu")
+  açıkça görünür; 16 MWd/kg değerinde iç halkada hâlâ ~%12 Gd-157 kalır (eski ölçüm, yeniden koşulmadı).
   **k∞ bu modelde tepe yapmaz:** 25 çubuktan yalnız biri Gd'li olduğu için
   reaktivite tutması zayıftır ve yakıt tükenmesi baskındır. Gerçek bir demette
   (12–20 Gd'li çubuk) tepe görülür.
