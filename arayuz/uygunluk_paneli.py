@@ -128,7 +128,7 @@ class UygunlukPaneli(b.Kart):
         self.d_ealf.setToolTip(_(
             "Profil B, uygulamanın nötron tayfını (termal / ara / hızlı) EALF'tan "
             "bulur ve USL'yi o tayftaki kriter deneylerinden hesaplar. Bu tally "
-            "olmadan uygulamaya uygun doğrulama alt kümesi seçilemez. Ekledikten "
+            "olmadan uygulamaya uygun V&V alt kümesi seçilemez. Ekledikten "
             "sonra modeli yeniden koşun."))
         self.d_ealf.clicked.connect(self._ealf_oner)
         self.d_ealf.hide()

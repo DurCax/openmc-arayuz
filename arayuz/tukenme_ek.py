@@ -30,9 +30,9 @@ class EkMalzemeListesi(QtWidgets.QListWidget):
         super().__init__(parent)
         self.setAccessibleName(_("Ek yanan malzemeler"))
         self.setToolTip(_(
-            "Yakıt dışında yanması istenen malzemeler (ör. aktivasyonu izlenecek yapısal "
-            "malzeme). Fisil malzemeler ve yanabilir zehirler kendiliğinden yanar. "
-            "Her ek malzemenin kesin hacmi gerekir."))
+            "Yakıt dışında tükenme hesabına katılacak malzemeler (ör. aktivasyonu "
+            "izlenecek yapısal malzeme). Fisil malzemeler ve yanabilir zehirler "
+            "kendiliğinden katılır. Her ek malzemenin kesin hacmi gerekir."))
         self._ilk = []
         self._yukleniyor = False
         self.itemChanged.connect(self._oge_degisti)

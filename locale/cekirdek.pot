@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-01 19:03+0300\n"
+"POT-Creation-Date: 2026-10-01 19:34+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2825,7 +2825,7 @@ msgstr ""
 msgid "uyarı: model (spec) okunamadı, yalnız koşu denetlenir: %s"
 msgstr ""
 
-#: cekirdek/giris.py:208
+#: cekirdek/giris.py:209
 #, python-format
 msgid ""
 "\n"
@@ -5066,22 +5066,27 @@ msgstr ""
 msgid "Etiketler: %s. Kural kimlikleri ve kaynaklar: docs/STANDARTLAR.md §3."
 msgstr ""
 
-#: cekirdek/rapor_uygunluk.py:64
+#: cekirdek/rapor_uygunluk.py:65
 #, python-format
 msgid "bilinmeyen denetim profili: %s"
 msgstr ""
 
-#: cekirdek/rapor_uygunluk.py:74
+#: cekirdek/rapor_uygunluk.py:75
 msgid "profil listesi boş (ör. A,D)"
 msgstr ""
 
-#: cekirdek/rapor_uygunluk.py:94
-msgid ""
-"USL hesaplanamadı: doğrulama (V&V) kümesi yok. Bu koşunun k değeri bir üst alt-"
-"kritiklik sınırıyla karşılaştırılmadı; bu sonuç kritiklik güvenliği kanıtı değildir."
+#: cekirdek/rapor_uygunluk.py:96 cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:45
+msgid "doğrulama (V&V) kümesi yok"
 msgstr ""
 
-#: cekirdek/rapor_uygunluk.py:110
+#: cekirdek/rapor_uygunluk.py:97
+#, python-format
+msgid ""
+"USL hesaplanamadı: %s. Bu koşunun k değeri bir üst alt-kritiklik sınırıyla "
+"karşılaştırılmadı; bu sonuç kritiklik güvenliği kanıtı değildir."
+msgstr ""
+
+#: cekirdek/rapor_uygunluk.py:134
 #, python-format
 msgid "uygunluk denetimi yapılamadı: %s"
 msgstr ""
@@ -5508,127 +5513,127 @@ msgstr ""
 msgid "kullanıcı seçimi"
 msgstr ""
 
-#: cekirdek/tukenme.py:290
+#: cekirdek/tukenme.py:295
 #, python-format
 msgid ""
 "çubuk çubuk yanma kesin örnek hacmi gerektirir; hacmi kesin olmayan (kesik) yanabilir"
 " malzeme: %s"
 msgstr ""
 
-#: cekirdek/tukenme.py:328
+#: cekirdek/tukenme.py:333
 #, python-format
 msgid ""
 "hacmi analitik hesaplanamayan yanabilir malzeme: %s (%s). Tükenme kesin hacim "
 "gerektirir."
 msgstr ""
 
-#: cekirdek/dogrula/tukenme.py:135 cekirdek/tukenme.py:332
+#: cekirdek/dogrula/tukenme.py:135 cekirdek/tukenme.py:337
 msgid "modelde yanabilir (fisil) malzeme yok"
 msgstr ""
 
-#: cekirdek/tukenme.py:612
+#: cekirdek/tukenme.py:617
 msgid "malzemeler"
 msgstr ""
 
-#: cekirdek/tukenme.py:612
+#: cekirdek/tukenme.py:617
 msgid "çubuklar"
 msgstr ""
 
-#: cekirdek/tukenme.py:613
+#: cekirdek/tukenme.py:618
 msgid "plaka elemanları"
 msgstr ""
 
-#: cekirdek/tukenme.py:613
+#: cekirdek/tukenme.py:618
 msgid "demetler"
 msgstr ""
 
-#: cekirdek/tukenme.py:613
+#: cekirdek/tukenme.py:618
 msgid "kor"
 msgstr ""
 
-#: cekirdek/tukenme.py:614
+#: cekirdek/tukenme.py:619
 msgid "hesap ayarları"
 msgstr ""
 
-#: cekirdek/tukenme.py:614
+#: cekirdek/tukenme.py:619
 msgid "tally'ler"
 msgstr ""
 
-#: cekirdek/tukenme.py:615
+#: cekirdek/tukenme.py:620
 msgid "güç dağılımı"
 msgstr ""
 
-#: cekirdek/tukenme.py:615
+#: cekirdek/tukenme.py:620
 msgid "tükenme ayarları"
 msgstr ""
 
-#: cekirdek/dogrula/tukenme.py:23 cekirdek/tukenme.py:623
+#: cekirdek/dogrula/tukenme.py:23 cekirdek/tukenme.py:628 cekirdek/vv/kume.py:159
 msgctxt "spektrum"
 msgid "termal"
 msgstr ""
 
-#: cekirdek/dogrula/tukenme.py:24 cekirdek/tukenme.py:624
+#: cekirdek/dogrula/tukenme.py:24 cekirdek/tukenme.py:629 cekirdek/vv/kume.py:160
 msgctxt "spektrum"
 msgid "hızlı"
 msgstr ""
 
-#: cekirdek/tukenme.py:678
+#: cekirdek/tukenme.py:683
 msgid "koşmadan hacim, zincir ve ağır metal bilgisini yazdır"
 msgstr ""
 
-#: cekirdek/tukenme.py:680
+#: cekirdek/tukenme.py:685
 msgid "doğrulamada nüklid/kütüphane denetimini atla"
 msgstr ""
 
-#: cekirdek/tukenme.py:697
+#: cekirdek/tukenme.py:702
 #, python-format
 msgid "  zincir        : %s  (%s)"
 msgstr ""
 
-#: cekirdek/tukenme.py:698
+#: cekirdek/tukenme.py:703
 #, python-format
 msgid "  fisyon verimi : %s eV (%s spektrum)"
 msgstr ""
 
-#: cekirdek/tukenme.py:700
+#: cekirdek/tukenme.py:705
 #, python-format
 msgid "  güç yoğunluğu : %g W/gHM"
 msgstr ""
 
-#: cekirdek/tukenme.py:701
+#: cekirdek/tukenme.py:706
 #, python-format
 msgid "  adımlar       : %s %s  → %d transport"
 msgstr ""
 
-#: cekirdek/tukenme.py:703 cekirdek/tukenme.py:728
+#: cekirdek/tukenme.py:708 cekirdek/tukenme.py:733
 msgid "gün"
 msgstr ""
 
-#: cekirdek/tukenme.py:707
+#: cekirdek/tukenme.py:712
 #, python-format
 msgid "  hacim %-10s: %s cm³ [%s] %s"
 msgstr ""
 
-#: cekirdek/tukenme.py:711
+#: cekirdek/tukenme.py:716
 #, python-format
 msgid "  ağır metal    : %.6g g"
 msgstr ""
 
-#: cekirdek/tukenme.py:720
+#: cekirdek/tukenme.py:725
 #, python-format
 msgid ""
 "\n"
 "  DOĞRULAMA: koşu başlatılmadı (%d hata)"
 msgstr ""
 
-#: cekirdek/tukenme.py:727
+#: cekirdek/tukenme.py:732
 #, python-format
 msgid ""
 "\n"
 "  ağır metal: %.6g g"
 msgstr ""
 
-#: cekirdek/tukenme.py:731
+#: cekirdek/tukenme.py:736
 #, python-format
 msgid ""
 "\n"
@@ -5785,11 +5790,11 @@ msgstr ""
 msgid "Küresel düzenek (kabuklar)"
 msgstr ""
 
-#: cekirdek/uygunluk.py:548
+#: cekirdek/uygunluk.py:550
 msgid "tükenme özdeğer (k-eff) hesabı gerektirir"
 msgstr ""
 
-#: cekirdek/uygunluk.py:550
+#: cekirdek/uygunluk.py:552
 msgid "geometride fisil (yakıt) malzeme yok"
 msgstr ""
 
@@ -6056,10 +6061,6 @@ msgstr ""
 
 #: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:40
 msgid "Özdeğer koşusu sonucu yok: k + 2σ < USL denetlenemedi."
-msgstr ""
-
-#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:45
-msgid "doğrulama (V&V) kümesi yok"
 msgstr ""
 
 #: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:47
@@ -6845,25 +6846,41 @@ msgid ""
 "verilmez (NUREG/CR-6698 §2.2); hesaplanan K_L = %.4f yalnız bilgi"
 msgstr ""
 
-#: cekirdek/vv/kume.py:34
+#: cekirdek/vv/kume.py:46
 msgid ""
 "ΔSM = 0.05: NUREG-1718 §6.4.3.3.4 / NUREG-1520 Bl. 5 Ek B'de ek gerekçesiz kabul "
 "edildiği bildirilen değer (DOĞRULANMADI); alt sınır 0.02 (NUREG/CR-6698 §2.4.5)"
 msgstr ""
 
-#: cekirdek/vv/kume.py:37
+#: cekirdek/vv/kume.py:49
 msgid ""
 "NUREG/CR-6698 (2001) yöntemi; kriter modelleri mit-crpg/benchmarks (MIT lisansı) ve "
 "ICSBEP E ± σ (uncertainties.csv)"
 msgstr ""
 
-#: cekirdek/vv/kume.py:54
+#: cekirdek/vv/kume.py:66
 #, python-format
 msgid "kriter dosyası okunamadı: %s (%s)"
 msgstr ""
 
-#: cekirdek/vv/kume.py:123
+#: cekirdek/vv/kume.py:135
 #, python-format
 msgid "USL tolerans bandından, %s noktasında"
+msgstr ""
+
+#: cekirdek/vv/kume.py:159
+msgid "ara enerji"
+msgstr ""
+
+#: cekirdek/vv/kume.py:180
+#, python-format
+msgid ""
+"bu uygulama için USL yok (AOA belirlenemedi): nötron tayfı bilinmiyor; EALF "
+"tally'sini ('%s') ekleyip yeniden koşun"
+msgstr ""
+
+#: cekirdek/vv/kume.py:185
+#, python-format
+msgid "bu uygulama için USL yok (AOA dışında): kümede tayfı %s olan %d vaka var; %s"
 msgstr ""
 

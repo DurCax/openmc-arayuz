@@ -25,7 +25,7 @@ import json
 import os
 from collections import Counter
 
-from cekirdek.ceviri import _, N_
+from cekirdek.ceviri import _, N_, pgettext
 from cekirdek.gunluk import kaydedici
 from cekirdek.uygunluk_denetimi.vv_arayuz import AOA_KATEGORILERI, VVOzeti
 from cekirdek.vv import aoa as _aoa
@@ -36,7 +36,6 @@ from cekirdek.vv import istatistik as _ist
 # alt kumeyi daraltmaz (depodaki kume n >= 10'u tutamaz); onlari K6-AOA ayrica
 # denetler ve uyumsuzlukta uyarir.
 AOA_FILTRE_ANAHTARLARI = ("tayf",)
-_TAYF_ADLARI = {"termal": N_("termal"), "ara": N_("ara enerji"), "hizli": N_("hızlı")}
 
 _log = kaydedici(__name__)
 
@@ -157,8 +156,9 @@ def aoa_filtresi(uyg):
 
 
 def _tayf_metni(tayf):
-    ad = _TAYF_ADLARI.get(tayf)
-    return _(ad) if ad else str(tayf)
+    adlar = {"termal": pgettext("spektrum", "termal"), "ara": _("ara enerji"),
+             "hizli": pgettext("spektrum", "hızlı")}
+    return adlar.get(tayf, str(tayf))
 
 
 def _aoa_yok(neden):
