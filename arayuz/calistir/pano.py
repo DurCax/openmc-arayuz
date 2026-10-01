@@ -83,7 +83,7 @@ class SonucPanosu(QtWidgets.QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.k = IstatistikKarti("k-eff")
-        self.entropi = IstatistikKarti(_("Shannon entropisi"), _("bit"))
+        self.entropi = IstatistikKarti(_("Shannon entropisi"), "bit")
         self.sure = IstatistikKarti(_("Süre"), _("dk:sn"))
         self.hiz = IstatistikKarti(_("Hız"), _("parçacık/s"))
         kartlar = QtWidgets.QHBoxLayout()

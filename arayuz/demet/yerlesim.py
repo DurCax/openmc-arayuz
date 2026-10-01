@@ -16,7 +16,7 @@ from cekirdek.ceviri import _
 from arayuz import bilesenler as bl
 from arayuz import izgara
 from arayuz import sekme_duzen as sd
-from arayuz.demet.demet_islemleri import TUR_ADI
+from arayuz.demet.demet_islemleri import tur_adi
 from arayuz.ortak import BosDurum, GelismisBolum, ipucu, sayi, tamsayi
 from arayuz.tasarim import tokenlar
 
@@ -162,7 +162,7 @@ class YerlesimMixin(object):
             w.setKeyboardTracking(False)
         self.dis = None                                  # her yuklemede kurulur
 
-        self.ozellik = bl.Kart(TUR_ADI["kare"])
+        self.ozellik = bl.Kart(tur_adi("kare"))
         self.oz_baslik = self.ozellik.baslik_etiketi
         self.form = sd.form()
         self.form.addRow(_("Ad"), self.ad)

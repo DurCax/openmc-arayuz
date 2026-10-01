@@ -7,11 +7,12 @@
 """
 
 from PySide6 import QtCore, QtWidgets
-from cekirdek import malzeme_kutup as mk
 from cekirdek import sema
+from cekirdek.ceviri import _
 from arayuz.ortak import baslik, ipucu
 from arayuz.malzeme.yardimcilar import (
-    _benzersiz_ad, _etiket, _hata_etiketi, _ozet_etiketi, bilesim_ozeti, kutuphane_gruplari)
+    _benzersiz_ad, _etiket, _hata_etiketi, _ozet_etiketi, katalog_aciklamasi,
+    kutuphane_gruplari, okunur_ad, uretim_ozeti)
 from arayuz.malzeme.girdiler import ParametreFormu
 
 
@@ -26,7 +27,7 @@ class KutuphaneDiyalog(QtWidgets.QDialog):
 
     def __init__(self, spec=None, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("Kütüphaneden malzeme ekle")
+        self.setWindowTitle(_("Kütüphaneden malzeme ekle"))
         self.resize(860, 620)
         self._spec = spec if spec is not None else sema.yeni_spec()
         self._ad_elle = False
@@ -47,9 +48,9 @@ class KutuphaneDiyalog(QtWidgets.QDialog):
             g.setFont(0, f)
             self.liste.addTopLevelItem(g)
             for k in anahtarlar:
-                oge = QtWidgets.QTreeWidgetItem([mk.okunur_ad(k)])
+                oge = QtWidgets.QTreeWidgetItem([okunur_ad(k)])
                 oge.setData(0, QtCore.Qt.UserRole, k)
-                oge.setToolTip(0, mk.katalog_aciklamasi(k))
+                oge.setToolTip(0, katalog_aciklamasi(k))
                 g.addChild(oge)
                 self._ogeler[k] = oge
         self.liste.expandAll()
@@ -61,7 +62,7 @@ class KutuphaneDiyalog(QtWidgets.QDialog):
         self.ad.textChanged.connect(self._dogrula)
         self.ad_hata = _hata_etiketi()
         ust = QtWidgets.QFormLayout()
-        ust.addRow(_etiket("Ad:"), self.ad)
+        ust.addRow(_etiket(_("Ad:")), self.ad)
         ust.addRow(self.ad_hata)
         self.form_kutu = QtWidgets.QWidget()
         self._form_duzen = QtWidgets.QVBoxLayout(self.form_kutu)
@@ -69,8 +70,8 @@ class KutuphaneDiyalog(QtWidgets.QDialog):
         self.ozet = _ozet_etiketi()
 
         self.kutu = QtWidgets.QDialogButtonBox()
-        self.d_tamam = self.kutu.addButton("Ekle", QtWidgets.QDialogButtonBox.AcceptRole)
-        self.kutu.addButton("Vazgeç", QtWidgets.QDialogButtonBox.RejectRole)
+        self.d_tamam = self.kutu.addButton(_("Ekle"), QtWidgets.QDialogButtonBox.AcceptRole)
+        self.kutu.addButton(_("Vazgeç"), QtWidgets.QDialogButtonBox.RejectRole)
         self.kutu.accepted.connect(self._onayla)
         self.kutu.rejected.connect(self.reject)
 
@@ -106,8 +107,8 @@ class KutuphaneDiyalog(QtWidgets.QDialog):
             if oge is not None and oge.childCount():
                 self.liste.setCurrentItem(oge.child(0))
             return
-        self.baslik_etiket.setText(mk.okunur_ad(anahtar))
-        self.aciklama.setText(mk.katalog_aciklamasi(anahtar))
+        self.baslik_etiket.setText(okunur_ad(anahtar))
+        self.aciklama.setText(katalog_aciklamasi(anahtar))
         if self.form is not None:
             # hemen gizle ve ayir: deleteLater olay dongusune kadar bekler,
             # o arada eski formun etiketleri yenisinin ustune ciziliyordu
@@ -131,13 +132,7 @@ class KutuphaneDiyalog(QtWidgets.QDialog):
         if self.form is None:
             return
         uretim = self.form.uretim_sorunu()
-        if uretim:
-            self.ozet.setText("Bu değerlerle malzeme kurulamıyor: %s" % uretim)
-        else:
-            m = self.form.malzeme()
-            sab = ", ".join(m.get("sab") or []) or "yok"
-            self.ozet.setText("Bileşim: %s   ·   S(α,β): %s\nAçıklama: %s"
-                              % (bilesim_ozeti(m), sab, m.get("gorunen_ad")))
+        self.ozet.setText(uretim_ozeti(None if uretim else self.form.malzeme(), uretim))
         self._dogrula()
 
     def _dogrula(self, *_):

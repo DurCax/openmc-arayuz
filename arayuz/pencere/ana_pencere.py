@@ -90,7 +90,8 @@ class AnaPencere(GezinmeCephesi, MenulerMixin, ProjeMixin, GecmisMixin, QtWidget
         super().__init__()
         # Fare tekerlegi odaksiz kutulari degistirmesin (bkz. ortak.py).
         tekerlek_korumasi_kur()
-        self.setWindowTitle(UYGULAMA_ADI)
+        uygulama_adi = UYGULAMA_ADI        # cekirdek sabiti; etkin dilde gosterilir
+        self.setWindowTitle(_(uygulama_adi))
         self._boyut_kur()
         self._durum_kur()
         self._sayfalari_kur()
@@ -159,7 +160,7 @@ class AnaPencere(GezinmeCephesi, MenulerMixin, ProjeMixin, GecmisMixin, QtWidget
         editorler = {EDITOR_ANAHTARI[ad]: getattr(self, ad) for ad in EDITOR_ANAHTARI}
         for anahtar in uygunluk.SEKMELER:
             if anahtar in gruplar:
-                self.kenar.grup_ekle(_(gruplar[anahtar]))
+                self.kenar.grup_ekle(kabuk.gezinme_grup_adi(gruplar[anahtar]))
             self.kenar.ekle(anahtar, _(SEKME_ADLARI[anahtar]),
                             kabuk.GEZINME_IKONLARI[anahtar])
             sayfa = self._kaydirma(editorler[anahtar])
@@ -541,7 +542,8 @@ class AnaPencere(GezinmeCephesi, MenulerMixin, ProjeMixin, GecmisMixin, QtWidget
                 ornek=os.path.splitext(os.path.basename(self.ornek_kaynagi))[0])
         else:
             ad = _("kaydedilmemiş")
-        self.setWindowTitle("%s — %s%s" % (UYGULAMA_ADI, ad, " *" if self._kirli else ""))
+        uygulama_adi = UYGULAMA_ADI
+        self.setWindowTitle("%s — %s%s" % (_(uygulama_adi), ad, " *" if self._kirli else ""))
         editorde = not self.baslangic_acik_mi()
         self.e_geri.setEnabled(editorde and self._gecmis_ix > 0)
         self.e_yinele.setEnabled(editorde and 0 <= self._gecmis_ix < len(self._gecmis) - 1)

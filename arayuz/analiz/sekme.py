@@ -37,7 +37,7 @@ from matplotlib.figure import Figure
 from PySide6 import QtCore, QtWidgets
 
 from cekirdek import sema, tarama, uygunluk
-from cekirdek.ceviri import _
+from cekirdek.ceviri import _, pgettext
 from cekirdek.gunluk import kaydedici
 from arayuz import bilesenler as bil
 from arayuz.analiz import sonuc as gos
@@ -358,8 +358,8 @@ class AnalizSekmesi(QtWidgets.QWidget):
         arama = self.mod.currentData() == "arama"
         self.form.setRowVisible(self.e_adet, not arama)
         self.form.setRowVisible(self.e_hedef_keff, arama)
-        self.e_bas.setText(_("Alt sınır:") if arama else _("Başlangıç:"))
-        self.e_son.setText(_("Üst sınır:") if arama else _("Bitiş:"))
+        self.e_bas.setText(pgettext("arama", "Alt sınır:") if arama else _("Başlangıç:"))
+        self.e_son.setText(pgettext("arama", "Üst sınır:") if arama else _("Bitiş:"))
         self.d_basla.setText(_("Kritik aramayı başlat") if arama else _("Taramayı başlat"))
 
     def _tur_degisti(self, *_args):

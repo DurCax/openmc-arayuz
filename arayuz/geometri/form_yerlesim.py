@@ -48,7 +48,7 @@ class YerlesimFormu(FormTabani):
         self.merkez_r = uzunluk(10.0, 0.0, _("merkez yarıçapı"))
         self.baslangic = aci(0.0, _("başlangıç açısı"))
         self.konumlar = QtWidgets.QTableWidget(0, 2)
-        self.konumlar.setHorizontalHeaderLabels([_("x [cm]"), _("y [cm]")])
+        self.konumlar.setHorizontalHeaderLabels(["x [cm]", "y [cm]"])
         self.konumlar.horizontalHeader().setStretchLastSection(True)
         self.konumlar.verticalHeader().setVisible(False)
         self.konumlar.setMaximumHeight(8 * tokens_satir())

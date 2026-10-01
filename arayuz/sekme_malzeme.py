@@ -27,7 +27,7 @@ from PySide6 import QtCore, QtGui, QtWidgets
 
 from cekirdek import malzeme_kutup as mk
 from cekirdek import sema
-from cekirdek.ceviri import _
+from cekirdek.ceviri import N_, _, _n
 from cekirdek.gunluk import kaydedici
 from arayuz import bilesenler as b
 from arayuz import sekme_duzen as sd
@@ -40,7 +40,7 @@ from arayuz.malzeme.yardimcilar import (  # noqa: F401
     ROL_ETIKETLERI, _ROL_SIRASI, _KELVIN, rol_grubu, _GRUP_ONBELLEK, kutuphane_gruplari,
     sab_onerileri, sicaklik_metni, yogunluk_metni, bilesim_ozeti, _PLAKA_ALANI,
     _YOL_KALIPLARI, yol_okunur, _isim_duzelt, _sayi_metni, _tema_renk, ETIKET_GENISLIGI,
-    _etiket, _ozet_etiketi, _hata_etiketi, _benzersiz_ad)
+    _etiket, _ozet_etiketi, _hata_etiketi, _benzersiz_ad, okunur_ad)
 from arayuz.malzeme.girdiler import (  # noqa: F401
     SicaklikGirdi, KesinSayiGirdi, ParametreFormu)
 from arayuz.malzeme.bilesim import (  # noqa: F401
@@ -62,8 +62,9 @@ class MalzemeSekmesi(SekmeTabani):
 
     KONU = "malzeme"
 
-    BASLIKLAR = ["Renk", "Ad", "Açıklama", "Rol", "Yoğunluk", "Sıcaklık",
-                 "S(α,β)", "Bileşim"]
+    SAB_BASLIGI = "S(α,β)"             # sembol: cevrilmez
+    BASLIKLAR = [N_("Renk"), N_("Ad"), N_("Açıklama"), N_("Rol"), N_("Yoğunluk"),
+                 N_("Sıcaklık"), SAB_BASLIGI, N_("Bileşim")]
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -87,13 +88,13 @@ class MalzemeSekmesi(SekmeTabani):
         bd = QtWidgets.QVBoxLayout(bos_sayfa)
         bd.setContentsMargins(0, 0, 0, 0)
         self.bos = BosDurum(
-            "Henüz malzeme yok",
-            "Yakıt, zarf ve soğutucuyu hazır kütüphaneden ekleyin. Zenginlik, "
-            "sıcaklık ve bor gibi değerleri sonradan değiştirebilirsiniz.",
-            "Kütüphaneden ekle…")
+            _("Henüz malzeme yok"),
+            _("Yakıt, zarf ve soğutucuyu hazır kütüphaneden ekleyin. Zenginlik, "
+              "sıcaklık ve bor gibi değerleri sonradan değiştirebilirsiniz."),
+            _("Kütüphaneden ekle…"))
         self.bos.eylem.connect(self._kutuphaneden)
         self.d_bos_elle = QtWidgets.QToolButton()
-        self.d_bos_elle.setText("ya da bileşimi elle tanımlayın")
+        self.d_bos_elle.setText(_("ya da bileşimi elle tanımlayın"))
         self.d_bos_elle.setAutoRaise(True)
         self.d_bos_elle.setCursor(QtCore.Qt.PointingHandCursor)
         self.d_bos_elle.clicked.connect(self._yeni)
@@ -116,7 +117,8 @@ class MalzemeSekmesi(SekmeTabani):
     # ------------------------------------------------------------------
     def _tablo_kur(self):
         t = QtWidgets.QTableWidget(0, len(self.BASLIKLAR))
-        t.setHorizontalHeaderLabels(self.BASLIKLAR)
+        t.setHorizontalHeaderLabels([b_ if b_ == self.SAB_BASLIGI else _(b_)
+                                     for b_ in self.BASLIKLAR])
         t.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
         t.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
         t.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
@@ -165,7 +167,8 @@ class MalzemeSekmesi(SekmeTabani):
             rgb = m.get("renk") or (170, 170, 170)
             renk.setBackground(QtGui.QColor(*[int(x) for x in rgb]))
             self.tablo.setItem(satir, 0, renk)
-            rol = [ROL_ETIKETLERI[r] for r in _ROL_SIRASI if r in roller.get(m.get("ad"), ())]
+            rol = [_(ROL_ETIKETLERI[r]) for r in _ROL_SIRASI
+                   if r in roller.get(m.get("ad"), ())]
             aciklama = m.get("gorunen_ad") or ""
             degerler = [
                 m.get("ad", ""),
@@ -179,9 +182,7 @@ class MalzemeSekmesi(SekmeTabani):
             for i, d in enumerate(degerler, start=1):
                 oge = QtWidgets.QTableWidgetItem(str(d))
                 if i == 1:
-                    oge.setToolTip("Kütüphaneden (%s) — Düzenle parametre formunu açar"
-                                   % mk.okunur_ad(m["kutup"]["anahtar"])
-                                   if mk.parametrik_mi(m) else "Elle tanımlı bileşim")
+                    oge.setToolTip(self._kaynak_ipucu(m))
                 self.tablo.setItem(satir, i, oge)
         self.tablo.resizeColumnsToContents()
         # Sutun genisligi baslik metnini ("Renk") de kapsamali.
@@ -194,6 +195,15 @@ class MalzemeSekmesi(SekmeTabani):
             self.tablo.selectRow(adlar.index(self._secim_adi))
         self.tablo.blockSignals(False)
         self._dugmeleri_guncelle()
+
+    @staticmethod
+    def _kaynak_ipucu(m):
+        """Ad hucresinin ipucu: kutuphane malzemesi mi, elle tanimli mi."""
+        if not mk.parametrik_mi(m):
+            return _("Elle tanımlı bileşim")
+        anahtar = m["kutup"]["anahtar"]
+        return _("Kütüphaneden ({ad}) — Düzenle parametre formunu açar").format(
+            ad=okunur_ad(anahtar))
 
     def _dugmeleri_guncelle(self):
         """Duzenle / Kopyala / Sil yalnizca bir satir seciliyken etkin."""
@@ -314,10 +324,14 @@ class MalzemeSekmesi(SekmeTabani):
                     okunur.append(o)
             ornek = ", ".join(okunur[:3]) + (" …" if len(okunur) > 3 else "")
             if not self._soru(
-                    "Malzeme kullanımda",
-                    "'%s' modelde %d yerde kullanılıyor (%s).\n"
-                    "Silerseniz bu yerler tanımsız kalır ve model kurulamaz. "
-                    "Yine de silinsin mi?" % (ad, len(yerler), ornek)):
+                    _("Malzeme kullanımda"),
+                    _n("'{ad}' modelde {n} yerde kullanılıyor ({ornek}).\n"
+                       "Silerseniz bu yerler tanımsız kalır ve model kurulamaz. "
+                       "Yine de silinsin mi?",
+                       "'{ad}' modelde {n} yerde kullanılıyor ({ornek}).\n"
+                       "Silerseniz bu yerler tanımsız kalır ve model kurulamaz. "
+                       "Yine de silinsin mi?", len(yerler)).format(
+                           ad=ad, n=len(yerler), ornek=ornek)):
                 return
         self.spec["malzemeler"].pop(satir)
         self._secim_adi = None

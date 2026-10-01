@@ -362,6 +362,9 @@ def _tema_renk(ad, vars_=None):
         return vars_ or tokenlar.palet("acik").get(ad, tokenlar.palet("acik")["metin"])
 
 
+_VARSAYILAN_GELISMIS = N_("Gelişmiş")    # varsayilan baslik; gosterirken _()
+
+
 class GelismisBolum(QtWidgets.QWidget):
     """
     Katlanabilir "Gelismis" bolumu (ok isaretli baslik + icerik).
@@ -376,12 +379,13 @@ class GelismisBolum(QtWidgets.QWidget):
 
     acildi = QtCore.Signal(bool)
     AYAR_ONEKI = "gelismis/"
-    VARSAYILAN_BASLIK = N_("Gelişmiş")      # gosterirken _()
 
-    def __init__(self, anahtar=None, baslik=None, parent=None):
+    def __init__(self, anahtar=None, baslik=_VARSAYILAN_GELISMIS, parent=None):
         super().__init__(parent)
         self._anahtar = anahtar
-        self._baslik = _(self.VARSAYILAN_BASLIK) if baslik is None else baslik
+        # Varsayilan baslik isaretli msgid'dir (N_): burada etkin dile cevrilir;
+        # cagiranin verdigi baslik zaten cevrilmistir.
+        self._baslik = _(baslik) if baslik == _VARSAYILAN_GELISMIS else baslik
         self.dugme = QtWidgets.QToolButton()
         self.dugme.setObjectName("gelismisDugme")
         self.dugme.setCheckable(True)

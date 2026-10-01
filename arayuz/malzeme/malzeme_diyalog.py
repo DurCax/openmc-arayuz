@@ -18,7 +18,7 @@ from arayuz.ortak import GelismisBolum, RenkDugmesi, baslik, ipucu
 from arayuz.tasarim import tokenlar
 from arayuz.malzeme.yardimcilar import (
     ROL_ETIKETLERI, YOGUNLUK_BIRIMLERI, _ROL_SIRASI, _etiket, _hata_etiketi, _ozet_etiketi,
-    _sayi_metni, bilesim_ozeti, sab_onerileri)
+    _sayi_metni, katalog_aciklamasi, okunur_ad, sab_onerileri, uretim_ozeti)
 from arayuz.malzeme.girdiler import KesinSayiGirdi, ParametreFormu, SicaklikGirdi
 from arayuz.malzeme.bilesim import BilesimModeli, _bilesim_tablosu
 
@@ -55,7 +55,7 @@ class MalzemeDiyalog(QtWidgets.QDialog):
         self._eski_ad = malzeme.get("ad", "")
         self._parametrik = mk.parametrik_mi(malzeme)
         self._kopmus = "kutup" in malzeme and not self._parametrik
-        self.setWindowTitle("Yeni malzeme" if yeni else "Malzemeyi düzenle")
+        self.setWindowTitle(_("Yeni malzeme") if yeni else _("Malzemeyi düzenle"))
         self.resize(660, 600)
 
         self._ad_alani()
@@ -93,10 +93,11 @@ class MalzemeDiyalog(QtWidgets.QDialog):
         if not self._parametrik:
             return
         k = malzeme["kutup"]
-        self.tur_etiket = baslik("%s (%s)" % (mk.okunur_ad(k["anahtar"]), _("kütüphane")))
+        anahtar = k["anahtar"]
+        self.tur_etiket = baslik("%s (%s)" % (okunur_ad(anahtar), _("kütüphane")))
         pd.addWidget(self.tur_etiket)
-        pd.addWidget(ipucu(mk.katalog_aciklamasi(k["anahtar"])))
-        self.form = ParametreFormu(k["anahtar"], k.get("param") or {})
+        pd.addWidget(ipucu(katalog_aciklamasi(anahtar)))
+        self.form = ParametreFormu(anahtar, k.get("param") or {})
         self.form.degisti.connect(self._param_degisti)
         pd.addWidget(self.form)
 
@@ -171,7 +172,7 @@ class MalzemeDiyalog(QtWidgets.QDialog):
         self.birim_etiket = _etiket(_("Yoğunluk birimi:"))
         g_form.addRow(self.birim_etiket, self.birim)
         self.sab_elle = QtWidgets.QLineEdit()
-        self.sab_elle.setPlaceholderText("ör. c_H_in_H2O, c_Graphite")
+        self.sab_elle.setPlaceholderText(_("ör. c_H_in_H2O, c_Graphite"))
         self.sab_elle.setToolTip(_("Virgülle ayrılmış S(α,β) tablo adları. Önerilen "
                                    "listede olmayan bir tablo gerekiyorsa buraya yazın."))
         self.sab_elle.editingFinished.connect(self._sab_elle_bitti)
@@ -276,14 +277,11 @@ class MalzemeDiyalog(QtWidgets.QDialog):
         if self.form is None:
             return
         uretim = self.form.uretim_sorunu()
-        if uretim:
-            self.ozet.setText("Bu değerlerle malzeme kurulamıyor: %s" % uretim)
-        else:
+        m = None
+        if not uretim:
             m = self.form.malzeme()
             self.ham_model.yukle(m.get("bilesim"))
-            sab = ", ".join(m.get("sab") or []) or "yok"
-            self.ozet.setText("Bileşim: %s   ·   S(α,β): %s\nAçıklama: %s"
-                              % (bilesim_ozeti(m), sab, m.get("gorunen_ad")))
+        self.ozet.setText(uretim_ozeti(m, uretim))
         self._dogrula()
 
     # ----------------------------------------------------------------- elle
@@ -292,7 +290,7 @@ class MalzemeDiyalog(QtWidgets.QDialog):
                 "yogunluk": {"birim": self.birim.currentData(),
                              "deger": self.yogunluk.deger() or 0.0}}
 
-    def _elle_degisti(self, *_):
+    def _elle_degisti(self, *_arg):           # '_' gettext'i golgelemesin
         if self.parametrik_kip():
             return
         self.yogunluk_birim_etiket.setText(
@@ -310,8 +308,8 @@ class MalzemeDiyalog(QtWidgets.QDialog):
             roller = uygunluk.tek_malzeme_rolleri(self._gecici_malzeme())
         except Exception:
             roller = set()
-        rol = ", ".join(ROL_ETIKETLERI[r] for r in _ROL_SIRASI if r in roller)
-        self.ozet.setText("Bu bileşim modelde şöyle tanınıyor: %s" % (rol or "—"))
+        rol = ", ".join(_(ROL_ETIKETLERI[r]) for r in _ROL_SIRASI if r in roller)
+        self.ozet.setText(_("Bu bileşim modelde şöyle tanınıyor: {rol}").format(rol=rol or "—"))
 
     def _sab_kutusunu_kur(self, oneriler=None):
         if oneriler is None:
@@ -319,10 +317,12 @@ class MalzemeDiyalog(QtWidgets.QDialog):
         self.sab_kutu.blockSignals(True)
         self.sab_kutu.clear()
         for ad, tanim in oneriler:
-            self.sab_kutu.addItem("%s — %s" % (ad, tanim), [ad])
+            # tanim cekirdekten (dogrula._SAB_KURALLARI); burada cevrilir
+            self.sab_kutu.addItem("%s — %s" % (ad, _(tanim)), [ad])
         if self._sab and self._sab not in [[a] for a, _t in oneriler]:
-            self.sab_kutu.insertItem(0, "Elle girilen: %s" % ", ".join(self._sab), list(self._sab))
-        self.sab_kutu.addItem("Yok (termal saçılma verisi ekleme)", [])
+            self.sab_kutu.insertItem(0, _("Elle girilen: {sab}").format(sab=", ".join(self._sab)),
+                                     list(self._sab))
+        self.sab_kutu.addItem(_("Yok (termal saçılma verisi ekleme)"), [])
         for i in range(self.sab_kutu.count()):
             if self.sab_kutu.itemData(i) == self._sab:
                 self.sab_kutu.setCurrentIndex(i)
@@ -373,14 +373,14 @@ class MalzemeDiyalog(QtWidgets.QDialog):
             return None
         yog = self.yogunluk.deger()
         if yog is None or yog <= 0:
-            return "Yoğunluk pozitif bir sayı olmalı."
+            return _("Yoğunluk pozitif bir sayı olmalı.")
         if not self.model.bilesim:
-            return "Bileşime en az bir satır ekleyin."
+            return _("Bileşime en az bir satır ekleyin.")
         for i, b in enumerate(self.model.bilesim, start=1):
             if not (b.get("isim") or "").strip():
-                return "Bileşimin %d. satırında isim boş." % i
+                return _("Bileşimin {n}. satırında isim boş.").format(n=i)
             if float(b.get("miktar") or 0.0) <= 0:
-                return "Bileşimin %d. satırında miktar pozitif olmalı." % i
+                return _("Bileşimin {n}. satırında miktar pozitif olmalı.").format(n=i)
         return None
 
     def _onayla(self):

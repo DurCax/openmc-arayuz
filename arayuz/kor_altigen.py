@@ -20,12 +20,12 @@
 from PySide6 import QtCore, QtWidgets
 
 from cekirdek import altigen, altigen_kor
-from cekirdek.ceviri import _
+from cekirdek.ceviri import N_, _, _n
 from arayuz import izgara
 from arayuz.ortak import ipucu, tamsayi
 
-YONELIMLER = (("x", _("x — komşu demetler sağda/solda")),
-              ("y", _("y — komşu demetler üstte/altta")))
+YONELIMLER = (("x", N_("x — komşu demetler sağda/solda")),
+              ("y", N_("y — komşu demetler üstte/altta")))
 
 
 class AltigenKorHaritasi(QtWidgets.QWidget):
@@ -49,7 +49,7 @@ class AltigenKorHaritasi(QtWidgets.QWidget):
                                 "seçili parçayla dolar."))
         self.yonelim = QtWidgets.QComboBox()
         for veri, ad in YONELIMLER:
-            self.yonelim.addItem(ad, veri)
+            self.yonelim.addItem(_(ad), veri)
         self.yonelim_notu = ipucu("")
         self.d_doldur = QtWidgets.QPushButton(_("Tümünü seçili parçayla doldur"))
         self._yerlestir()
@@ -164,8 +164,11 @@ class AltigenKorHaritasi(QtWidgets.QWidget):
         kaybolan = sum(1 for satir in adlar[:max(0, eski - yeni)] for ad in satir if ad)
         if kaybolan and not self._onay_al(
                 _("Kor haritası küçülüyor"),
-                _("Harita %d halkadan %d halkaya küçülüyor: dış halkalardaki %d dolu "
-                  "hücre silinecek (büyütmek onları geri getirmez).\n\nDevam edilsin mi?")
+                _n("Harita %d halkadan %d halkaya küçülüyor: dış halkalardaki %d dolu "
+                   "hücre silinecek (büyütmek onları geri getirmez).\n\nDevam edilsin mi?",
+                   "Harita %d halkadan %d halkaya küçülüyor: dış halkalardaki %d dolu "
+                   "hücre silinecek (büyütmek onları geri getirmez).\n\nDevam edilsin mi?",
+                   kaybolan)
                 % (eski, yeni, kaybolan)):
             self._yukleniyor = True
             try:

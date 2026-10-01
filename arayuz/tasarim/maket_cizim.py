@@ -14,7 +14,7 @@ from PySide6 import QtCore, QtGui, QtWidgets
 
 from arayuz.tasarim import tokenlar
 from arayuz.tasarim.maket_veri import ENSTRUMAN, KILAVUZ
-from cekirdek.ceviri import _
+from cekirdek.ceviri import N_, _
 
 O = tokenlar.OKABE_ITO
 # parca -> Okabe-Ito rengi (maketlerde tutarli)
@@ -92,7 +92,7 @@ class KafesCizimi(QtWidgets.QWidget):
         f.setPixelSize(max(8, int(adim * 0.3)))
         f.setWeight(QtGui.QFont.Medium)
         p.setFont(f)
-        etiket = {"yakit_cubugu": "YÇ", "kilavuz_boru": "KB", "enstruman": "EN"}
+        etiket = {"yakit_cubugu": N_("YÇ"), "kilavuz_boru": N_("KB"), "enstruman": N_("EN")}
         for i in range(self.n):
             for j in range(self.n):
                 tur = _hucre_turu(i, j)
@@ -103,7 +103,7 @@ class KafesCizimi(QtWidgets.QWidget):
                 p.setBrush(zemin)
                 p.drawRoundedRect(h, 3, 3)
                 p.setPen(_r("metin_ikincil"))
-                p.drawText(h, QtCore.Qt.AlignCenter, etiket[tur])
+                p.drawText(h, QtCore.Qt.AlignCenter, _(etiket[tur]))
                 if (i, j) in self.secili:
                     p.setPen(QtGui.QPen(_r("vurgu"), 2))
                     p.setBrush(QtCore.Qt.NoBrush)

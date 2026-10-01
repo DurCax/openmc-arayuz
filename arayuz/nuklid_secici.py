@@ -22,7 +22,7 @@ import os
 from PySide6 import QtCore, QtWidgets
 
 from cekirdek import nuklidler as nk
-from cekirdek.ceviri import _
+from cekirdek.ceviri import _, _n
 from arayuz.tasarim import tokenlar
 
 A = tokenlar.ARALIK
@@ -218,7 +218,9 @@ class NuklidSecici(QtWidgets.QWidget):
             self.bilgi.setText(etiket)
             self.bilgi.setStyleSheet("color: %s;" % _renk("hata"))
         else:
-            self.bilgi.setText(_("%s — %d nüklid") % (etiket, len(self._adlar)))
+            n = len(self._adlar)
+            self.bilgi.setText(_n("{etiket} — {n} nüklid", "{etiket} — {n} nüklid", n).format(
+                etiket=etiket, n=n))
             self.bilgi.setStyleSheet("")
         for anahtar, s in ((s.anahtar, s) for s in nk.tum_setler(self._adlar)):
             d = self.set_dugmeleri[anahtar]
@@ -363,7 +365,9 @@ class NuklidSecici(QtWidgets.QWidget):
         eksik_sayi = sum(1 for c in self.cipler.values() if c.eksik)
         metin = _("Seçili: %d") % len(self._secim)
         if eksik_sayi:
-            metin += "  ·  " + _("%d tanesi seçili zincirde yok (kırmızı)") % eksik_sayi
+            metin += "  ·  " + _n("{n} tanesi seçili zincirde yok (kırmızı)",
+                                  "{n} tanesi seçili zincirde yok (kırmızı)",
+                                  eksik_sayi).format(n=eksik_sayi)
         elif not self._secim:
             metin += "  ·  " + _("aşağıdan işaretleyin ya da hazır set seçin")
         self.secili_etiket.setText(metin)

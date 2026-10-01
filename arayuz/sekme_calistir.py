@@ -39,7 +39,7 @@ from PySide6 import QtCore, QtGui, QtWidgets
 
 from cekirdek import kosucu
 from cekirdek import dogrula, rapor_uygunluk, sema, uygunluk
-from cekirdek.ceviri import _
+from cekirdek.ceviri import _, _n
 from cekirdek.gunluk import kaydedici
 from arayuz import bilesenler as b
 from arayuz import tema
@@ -74,7 +74,7 @@ class CalistirSekmesi(QtWidgets.QWidget):
         super().__init__(parent)
         self.spec = None
         self.proje_yolu = None
-        self._kapi = lambda: (False, "hazır değil")
+        self._kapi = lambda: (False, _("hazır değil"))
         self._surec = None
         self._dizin = None
         self._tampon = ""
@@ -474,14 +474,15 @@ class CalistirSekmesi(QtWidgets.QWidget):
         self._surec.finished.connect(self._bitti)
         self._surec.errorOccurred.connect(self._hata)
 
-        self._yaz("# komut: %s -s %d" % (exe, n))
-        self._yaz("# dizin: %s\n" % dizin)
+        self._yaz(_("# komut: %s -s %d") % (exe, n))
+        self._yaz(_("# dizin: %s") % dizin + "\n")
         self._sayac.start()
         self._surec.start(exe, ["-s", str(n)])
 
         self.d_calistir.setEnabled(False)
         self.d_durdur.setEnabled(True)
-        self._kapi_yaz(True, _("Koşu sürüyor (%d iş parçacığı) → %s") % (n, dizin))
+        self._kapi_yaz(True, _n("Koşu sürüyor (%d iş parçacığı) → %s",
+                                "Koşu sürüyor (%d iş parçacığı) → %s", n) % (n, dizin))
         self._gorunum_guncelle()
         self.sonuc_degisti.emit()
         self.durum.emit(_("Koşu başladı → %s") % dizin, True)
@@ -500,7 +501,8 @@ class CalistirSekmesi(QtWidgets.QWidget):
         try:
             bulgular = dogrula.kapi(self.spec, veri_kontrolu=True)
         except dogrula.DogrulamaHatasi as e:
-            self.pano.dogrulama_ayarla(_("%d hata") % len(e.bulgular), "hata",
+            self.pano.dogrulama_ayarla(_n("%d hata", "%d hata", len(e.bulgular))
+                                       % len(e.bulgular), "hata",
                                        _("Koşu başlatılmadı; önceki sonuç silinmedi."))
             QtWidgets.QMessageBox.warning(self, _("Çalıştırılamaz"),
                                           self._kapi_hata_metni(e))
@@ -513,11 +515,14 @@ class CalistirSekmesi(QtWidgets.QWidget):
     def _kapi_hata_metni(self, e):
         """Dogrulama kapisi mesaj kutusunun metni (ilk birkac hata)."""
         ilk = e.bulgular[:self._KAPI_GOSTERILEN_HATA]
-        metin = _("Doğrulama hataları giderilmeden koşu başlatılmaz "
-                  "(%d hata); önceki sonuç silinmedi.") % len(e.bulgular)
+        metin = _n("Doğrulama hataları giderilmeden koşu başlatılmaz "
+                   "(%d hata); önceki sonuç silinmedi.",
+                   "Doğrulama hataları giderilmeden koşu başlatılmaz "
+                   "(%d hata); önceki sonuç silinmedi.", len(e.bulgular)) % len(e.bulgular)
         metin += "\n\n" + "\n".join("• %s" % b_.mesaj for b_ in ilk)
         if len(e.bulgular) > len(ilk):
-            metin += "\n" + _("… ve %d hata daha.") % (len(e.bulgular) - len(ilk))
+            kalan = len(e.bulgular) - len(ilk)
+            metin += "\n" + _n("… ve %d hata daha.", "… ve %d hata daha.", kalan) % kalan
         return metin
 
     def durdur(self):
@@ -740,6 +745,16 @@ class CalistirSekmesi(QtWidgets.QWidget):
                         "vurgu")
         return ozet.sabit_ozeti(s, k_tanim)
 
+    @staticmethod
+    def _keff_rengi(k, sapma, sonsuz):
+        """Kritiklik yorumunun rengi (kosucu.keff_yorumu ile ayni siniflama).
+        Yorum METNI geri okunmaz: etkin dile cevrilmis olabilir."""
+        if sonsuz or k <= 0:
+            return "vurgu"
+        if abs(k - 1.0) <= 2.0 * sapma:
+            return "basari"
+        return "hata" if k > 1.0 else "vurgu"
+
     def _ozdeger_durumu_yaz(self, s):
         """Ozdeger: kritiklik yorumu + ozet satirlari; kaynak yakinsamadiysa uyarir."""
         self.keff_etiket.setText("%.5f ± %.5f" % s["keff"])
@@ -748,8 +763,7 @@ class CalistirSekmesi(QtWidgets.QWidget):
         self.keff_baslik.setText("k∞" if sonsuz else "k-eff")
         durum, ayrinti = kosucu.keff_yorumu(s["keff"][0], s["keff"][1],
                                             kin.get("beta_eff"), sonsuz=sonsuz)
-        renk = ("basari" if durum.startswith("Kritik (")
-                else ("hata" if "üstü" in durum else "vurgu"))
+        renk = self._keff_rengi(s["keff"][0], s["keff"][1], sonsuz)
         self._durum_yaz("%s\n%s" % (durum, ayrinti), renk)
         satirlar, yakinsadi = ozet.ozdeger_ozeti(s)
         if yakinsadi is False:
