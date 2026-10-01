@@ -189,7 +189,7 @@ class ProjeMixin(object):
         if not yol.lower().endswith("." + bicim):
             yol += "." + bicim
         from cekirdek import rapor            # tembel: Qt'siz cekirdek modulu
-        kosu = self.s_calistir.son_kosu_dizini()
+        kosu, kosu_notu = self._rapor_kosusu()
         try:
             sonuc = rapor.olustur(self.spec, kosu, yol, bicim)
         except rapor.RaporHatasi as e:        # metni dogrudan gosterilebilir
@@ -197,11 +197,36 @@ class ProjeMixin(object):
             QtWidgets.QMessageBox.critical(self, _("Rapor oluşturulamadı"), str(e))
             return False
         metin = _("Rapor yazıldı: %s") % os.path.basename(sonuc.yol)
-        if sonuc.uyarilar:
-            metin += "\n" + "\n".join(sonuc.uyarilar)
-        self.bildir_mesaj(metin, "uyari" if sonuc.uyarilar else "basari", 8000,
+        uyarilar = list(sonuc.uyarilar) + ([kosu_notu] if kosu_notu else [])
+        if uyarilar:
+            metin += "\n" + "\n".join(uyarilar)
+        self.bildir_mesaj(metin, "uyari" if uyarilar else "basari", 8000,
                           eylem_metni=_("Aç"), eylem=lambda: self._dosyayi_ac(sonuc.yol))
         return True
+
+    def _rapor_kosusu(self):
+        """(kosu dizini | None, not). Bu oturumda basarili kosu yoksa projenin kosu
+        dizininde kayitli bir statepoint aranir ve kullaniciya SORULUR (QA14-Q8);
+        kosusuz rapor sessizce yazilmaz: not bildirimde gorunur."""
+        from cekirdek import kosucu
+        kosu = self.s_calistir.son_kosu_dizini()
+        if kosu:
+            return kosu, ""
+        aday = self.s_calistir._kosu_dizini()
+        if aday and os.path.isdir(aday) and kosucu.son_statepoint(aday):
+            if self._rapor_kosusu_sor(aday):
+                return aday, _("Rapora diskteki kayıtlı koşu eklendi (%s); modelin şimdiki "
+                               "hâliyle aynı olmayabilir.") % aday
+        return None, _("Koşu sonucu yüklü değil: rapor yalnız modeli içerir.")
+
+    def _rapor_kosusu_sor(self, dizin):
+        """Kayitli kosu rapora eklensin mi (testler bunu degistirir)."""
+        cevap = QtWidgets.QMessageBox.question(
+            self, _("Kayıtlı koşu"), _("Bu oturumda koşu yapılmadı, ama proje dizininde kayıtlı "
+                                       "bir koşu var:\n%s\n\nRapora eklensin mi? (Hayır: "
+                                       "rapor yalnız modeli içerir.)") % dizin,
+            QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No, QtWidgets.QMessageBox.Yes)
+        return cevap == QtWidgets.QMessageBox.Yes
 
     @staticmethod
     def _dosyayi_ac(yol):

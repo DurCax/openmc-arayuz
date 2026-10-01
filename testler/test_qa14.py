@@ -150,7 +150,67 @@ def test_simge_dugmesi_adi_ipucunda():
                 d.toolTip().startswith(d.accessibleName()), "-> %r" % d.toolTip())
 
 
+def _rapor_penceresi(son, aday, sor):
+    from PySide6 import QtWidgets
+    from arayuz.pencere.proje import ProjeMixin
+
+    class _Calistir(object):
+        def son_kosu_dizini(self):
+            return son
+
+        def _kosu_dizini(self):
+            return aday
+
+    class _P(ProjeMixin, QtWidgets.QWidget):
+        def __init__(self):
+            QtWidgets.QWidget.__init__(self)
+            self.spec, self.proje_yolu, self.s_calistir = _spec(), None, _Calistir()
+            self.bildirimler, self.sorular = [], []
+
+        def bildir_mesaj(self, metin, tur, *a, **k):
+            self.bildirimler.append((metin, tur))
+
+        def _rapor_kosusu_sor(self, dizin):
+            self.sorular.append(dizin)
+            return sor
+    return _P()
+
+
+def test_kosusuz_rapor_sessiz_degil():
+    print("\n[QA8] Rapor: kosu yuklu degilse kayitli kosu sorulur; yoksa acik uyari")
+    from PySide6 import QtWidgets
+    QtWidgets.QApplication.instance() or QtWidgets.QApplication([])
+    from cekirdek import rapor
+
+    class _Sonuc(object):
+        uyarilar = []
+
+        def __init__(self, yol):
+            self.yol = yol
+    cagri = []
+    eski_olustur, eski_dlg = rapor.olustur, QtWidgets.QFileDialog.getSaveFileName
+    rapor.olustur = lambda spec, kosu, yol, bicim: (cagri.append(kosu), _Sonuc(yol))[1]
+    QtWidgets.QFileDialog.getSaveFileName = staticmethod(
+        lambda *a, **k: ("/tmp/qa8_rapor.html", "HTML (*.html)"))
+    try:
+        p = _rapor_penceresi(None, FIXTURE, True)
+        p.rapor_olustur()
+        kontrol("kayitli kosu soruldu ve eklendi", p.sorular == [FIXTURE] and cagri[-1] == FIXTURE)
+        kontrol("bildirim: diskteki kosu notu (uyari)", p.bildirimler[-1][1] == "uyari"
+                and "kayıtlı koşu" in p.bildirimler[-1][0], "-> %r" % p.bildirimler[-1:])
+        p = _rapor_penceresi(None, tempfile.mkdtemp(prefix="qa8_"), True)
+        p.rapor_olustur()
+        kontrol("kosu yok: yalniz model + acik uyari", cagri[-1] is None
+                and p.bildirimler[-1][1] == "uyari" and "yalnız modeli" in p.bildirimler[-1][0],
+                "-> %r" % p.bildirimler[-1:])
+        p = _rapor_penceresi("/tmp/oturum_kosusu", FIXTURE, True)
+        p.rapor_olustur()
+        kontrol("oturum kosusu varsa sorulmaz", not p.sorular and cagri[-1] == "/tmp/oturum_kosusu")
+    finally:
+        rapor.olustur, QtWidgets.QFileDialog.getSaveFileName = eski_olustur, eski_dlg
+
+
 HIZLI = [test_elle_ealf_tally_vv_dusurmez, test_panel_gecersiz_tally_duzeltir,
          test_entropi_kisa_pasif_yakalanir, test_guc_yorumu_once_istatistik,
-         test_simge_dugmesi_adi_ipucunda]
+         test_simge_dugmesi_adi_ipucunda, test_kosusuz_rapor_sessiz_degil]
 YAVAS = []
