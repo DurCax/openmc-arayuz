@@ -7,7 +7,7 @@ uygunluk_eki.py -- raporun "Uygunluk eki" bolumu (Dalga S-2).
 ek: cekirdek/rapor_uygunluk.ek_verisi sozlugu. Bolum sirasi: durust cerceve
 (AYNEN), secilen profiller, ozet sayilar, (B secili ve V&V yoksa) USL notu,
 sonra durum gruplari: karsilanmayan, not, uygulanamayan, karsilanan. Her
-satirda kural kimligi, profil, seviye, etiket kisaltmasi (IU/S/P/K), bulgu +
+satirda kural kimligi (profil), seviye, etiket kisaltmasi (IU/S/P/K), bulgu +
 oneri, kaynak. QTextDocument (PDF) alt kumesiyle uyumlu: basit tablo + sinif.
 """
 
@@ -17,7 +17,7 @@ from cekirdek.ceviri import _, N_
 
 _DURUM_BASLIKLARI = {
     "karsilanmadi": N_("Karşılanmayan kurallar"),
-    "bilgi": N_("Notlar (bilgi)"),
+    "bilgi": N_("Notlar"),
     "uygulanamadi": N_("Uygulanamayan kurallar (değerlendirilemedi)"),
     "karsilandi": N_("Karşılanan kurallar"),
 }
@@ -28,6 +28,7 @@ _SEVIYE = {"hata": ("hata", N_("HATA")), "uyari": ("uyari", N_("UYARI")),
 # Etiket kisaltmalari (kurallar.etiket_metni'nin tam adlari aciklamada).
 ETIKET_KISA = {"iyi_uygulama": N_("İU"), "standart": N_("S"), "proje_olcutu": N_("P"),
                "kullanici_siniri": N_("K")}
+_SUTUN_GENISLIK = (14, 10, 8, 43, 25)     # yuzde; PDF'de (QTextDocument) dar sutun olmasin
 _TABLO = '<table border="1" cellspacing="0" cellpadding="3" width="100%%">%s</table>'
 
 
@@ -54,7 +55,7 @@ def _satir_html(s):
     bulgu = _e(s["mesaj"])
     if s["oneri"]:
         bulgu += "<br><i>%s</i> %s" % (_e(_("Öneri:")), _e(s["oneri"]))
-    return ('<tr><td class="sayi">%s</td><td>%s</td><td class="%s">%s</td><td>%s</td>'
+    return ('<tr><td class="sayi">%s (%s)</td><td class="%s">%s</td><td>%s</td>'
             "<td>%s</td><td class=\"etiket\">%s</td></tr>"
             % (_e(s["kural"]), _e(s["profil"]), css, _e(_(ad)), _e(_etiket_kisa(s)),
                bulgu, _e(s["kaynak"])))
@@ -64,8 +65,8 @@ def _grup(durum, satirlar):
     baslik = _e(_(_DURUM_BASLIKLARI.get(durum, durum)))
     if not satirlar:
         return '<h3>%s (0)</h3><p class="soluk">%s</p>' % (baslik, _e(_("yok")))
-    bas = "".join("<th>%s</th>" % _e(b) for b in (
-        _("Kural"), _("Profil"), _("Seviye"), _("Etiket"), _("Bulgu"), _("Kaynak")))
+    bas = "".join('<th width="%d%%">%s</th>' % (g, _e(b)) for g, b in zip(_SUTUN_GENISLIK, (
+        _("Kural (profil)"), _("Seviye"), _("Etiket"), _("Bulgu"), _("Kaynak"))))
     govde = "".join(_satir_html(s) for s in satirlar)
     return "<h3>%s (%d)</h3>%s" % (baslik, len(satirlar),
                                    _TABLO % ("<tr>%s</tr>%s" % (bas, govde)))
@@ -81,7 +82,8 @@ def html(ek):
     if not ek:
         return ""
     profiller = "; ".join("%s — %s" % (k, ad) for k, ad in ek["profiller"]) or _("seçilmedi")
-    parca = ["<h2>%s</h2>" % _e(_("Uygunluk eki")),
+    # Ek yeni sayfada baslar (QTextDocument page-break-before destekler).
+    parca = ['<h2 style="page-break-before: always">%s</h2>' % _e(_("Uygunluk eki")),
              '<p class="kutu">%s</p>' % _e(ek["cerceve"]),
              "<p><b>%s</b> %s</p>" % (_e(_("Seçilen denetim profilleri:")), _e(profiller)),
              "<p><b>%s</b> %s</p>" % (_e(_("Özet:")), _e(_ozet(ek)))]
