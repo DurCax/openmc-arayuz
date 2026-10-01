@@ -49,6 +49,7 @@ import os
 import sys
 
 from cekirdek import sema, veri_bilgi
+from cekirdek import tukenme_spektrum as _spektrum
 from cekirdek.ceviri import N_, _, pgettext
 
 ZINCIRLER = {
@@ -70,48 +71,39 @@ YANABILIR_ZEHIR = {"Gd", "Er"}
 BOR_ZEHIR_ROLLERI = {"emici", "yapisal"}
 _BOR_ZEHIR_DISI_ROLLER = {"sogutucu", "moderator", "gaz"}
 
-# Moderator sayilan S(a,b) kayitlari (on eklerine gore). Berilyum BILEREK
-# yok: tamburlu korda Be yalnizca yansiticidir, kor spektrumu hizlidir.
-_MODERATOR_SAB = ("c_H_", "c_D_", "c_Graphite", "c_ortho", "c_para")
+# Moderator sayilan S(a,b) kayitlari: cekirdek/tukenme_spektrum.py.
 
 
 # ============================================================================
 # Zincir secimi
 # ============================================================================
 
-def spektrum_tahmini(spec):
+def spektrum_tahmini(spec, kosu_dizini=None):
     """
-    ("termal"|"hizli", gerekce).
-
-    Kural: modelde hidrojen ya da doteryum iceren, ya da grafit S(a,b)'si
-    tanimli bir malzeme varsa TERMAL; yoksa HIZLI. Hidrojen baskin
-    yavaslaticidir; su, ZrH, polietilen hepsini kapsar.
+    ("termal"|"hizli", gerekce). Kural cekirdek/tukenme_spektrum.py'dedir:
+    once kosudaki EALF (vv_ealf tally'si), sonra yakit komsulugu (yakitla ayni
+    cubuk/demet/plakada moderator), en son kaba genel kural.
     """
-    for m in spec.get("malzemeler", []):
-        for s in m.get("sab") or []:
-            if any(str(s).startswith(o) for o in _MODERATOR_SAB):
-                return "termal", _("'%s' malzemesinde %s var") % (m["ad"], s)
-        for b in m.get("bilesim", []):
-            isim = b.get("isim") or ""
-            eleman = isim.rstrip("0123456789") if b.get("tur") == "nuklid" else isim
-            if eleman in ("H", "D") and float(b.get("miktar") or 0) > 0:
-                return "termal", _("'%s' malzemesi hidrojen içeriyor") % m["ad"]
-    return "hizli", _("modelde hidrojen ya da grafit moderatör yok")
+    tur, gerekce, _yontem = _spektrum.tahmin(spec, kosu_dizini)
+    return tur, gerekce
 
 
-def zincir_secimi(spec):
+def zincir_secimi(spec, kosu_dizini=None):
     """
-    DONER {"tur", "yol", "spektrum", "verim_enerjisi", "gerekce"}
+    DONER {"tur", "yol", "spektrum", "verim_enerjisi", "gerekce", "yontem"}
+    yontem: "ealf" | "komsuluk" | "genel" (otomatik secimin yolu) ya da
+    "kullanici". kosu_dizini verilirse oradaki EALF tally'si kullanilir.
     """
     t = spec.get("tukenme") or {}
     istek = t.get("zincir") or "otomatik"
-    spektrum, gerekce = spektrum_tahmini(spec)
+    spektrum, gerekce, yontem = _spektrum.tahmin(spec, kosu_dizini)
     if istek == "otomatik":
         tur = spektrum
         gerekce = _("otomatik: %s") % gerekce
     else:
         tur = istek
         gerekce = _("kullanıcı seçimi")
+        yontem = "kullanici"
     temel = "hizli" if tur.endswith("hizli") else "termal"
     return {
         "tur": tur,
@@ -120,6 +112,7 @@ def zincir_secimi(spec):
         "temel": temel,
         "verim_enerjisi": VERIM_ENERJISI[temel],
         "gerekce": gerekce,
+        "yontem": yontem,
     }
 
 
