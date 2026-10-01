@@ -208,13 +208,13 @@ Asıl kanıtlar:
 | Örnek | k-eff | Koşu (24 iş parçacığı) |
 |---|---|---|
 | `pwr_pinhucre` | 1.35698 ± 0.00197 | 7 s |
-| `pwr_17x17` | 1.18325 ± 0.00075 | 44 s |
-| `mtr_plaka` | 1.65368 ± 0.00083 | 42 s |
+| `pwr_17x17` | 1.18443 ± 0.00088 | — (6 iş parçacığı, 01.10.2026; He 0.0018) |
+| `mtr_plaka` | 1.64576 ± 0.00087 | — (6 iş parçacığı, 01.10.2026; U₃Si₂-Al yoğunluk düzeltmesinden sonra) |
 | `sfr_altigen` | 1.46634 ± 0.00070 | 53 s |
-| `godiva_kriter` | 0.99900 ± 0.00045 | 6 s |
+| `godiva_kriter` | 1.00038 ± 0.00025 | — (100 000 × 150 / 50; [docs/VV.md](docs/VV.md)) |
 | `pwr_3b` (3B, güç dağılımı) | 1.17953 ± 0.00059 | 73 s |
 | `pwr_kontrol` (çubuk %0) | 1.18186 ± 0.00150 | — (6 iş parçacığı, 01.10.2026) |
-| `tamburlu_kor` (dönme 180°) | 1.01057 ± 0.00157 | 21 s |
+| `tamburlu_kor` (dönme 180°) | 1.00719 ± 0.00110 | — ([docs/ORNEKLER.md](docs/ORNEKLER.md) G-4) |
 | `zirh_kure` (sabit kaynak) | k-eff yok, tally | 24 s |
 | `pwr_eksenel` (katmanlı) | 1.17680 ± 0.00052 | 86 s |
 | `pwr_tukenme` (20 MWd/kg) | 1.35930 → 1.06545 | ~50 dk |
@@ -261,8 +261,9 @@ dönme 0°   → emici KORA bakıyor  = daldırılmış (en düşük k)
 dönme 180° → emici DIŞA bakıyor  = çekilmiş   (en yüksek k)
 ```
 
-Ölçülen (`tamburlu_kor`, 8 B4C tamburu, 120° yay): k(0°)=0.963, k(180°)=1.012 →
-toplam tambur değeri ~5000 pcm. **Kritik tambur konumu = 122.46° ± 3.68**,
+Ölçülen (`tamburlu_kor`, 8 B4C tamburu, 120° yay; örneğin kendi ayarı, docs/ORNEKLER.md):
+k(0°) = 0.96346 ± 0.00092, k(180°) = 1.00719 ± 0.00110 → toplam tambur değeri
+Δk = 4372 pcm (Δk × 10⁵), Δρ = 4506 pcm (Δρ × 10⁵). **Kritik tambur konumu = 122.46° ± 3.68**,
 4 koşuda bulundu.
 
 > 📐 **Dönme matematiği ölçümle belirlendi.** `openmc.Cell.rotation = (0,0,ψ)`
