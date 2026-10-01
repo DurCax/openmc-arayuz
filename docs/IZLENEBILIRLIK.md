@@ -5,22 +5,23 @@
 ## Sonuç kaynakları
 
 - `s4_hizli.xml` — 2026-10-01T15:05:11.591476+03:00, 545 test
+- `s4_yavas.xml` — 2026-10-01T15:09:06.473516+03:00, 30 test
 
 ## Özet
 
-- Gereksinim: 66 (çalıştırılmadı 6, kısmen 12, geçti 42, TESTSİZ 2, inceleme 4)
+- Gereksinim: 66 (geçti 60, TESTSİZ 2, inceleme 4)
 - Toplanan test: 616; gereksinime bağlı: 133; bağsız: 483
 
 ## Gereksinim → test → son sonuç
 
 | Kimlik | Yöntem | Durum | Testler |
 |---|---|---|---|
-| R-FZ-01 | T | çalıştırılmadı | `test_capa:test_regresyon_cipasi` (yavas) — çalıştırılmadı |
-| R-FZ-02 | T | çalıştırılmadı | `test_capa:test_godiva_kriteri` (yavas) — çalıştırılmadı |
-| R-FZ-03 | T | çalıştırılmadı | `test_altigen_kor:test_altigen_betik_esdegerligi` (yavas) — çalıştırılmadı<br>`test_betik:test_betik_esdegerligi` (yavas) — çalıştırılmadı<br>`test_betik:test_altigen_betik_esdegerligi` (yavas) — çalıştırılmadı<br>`test_guc_coklu:test_cok_tur_betik_esdegerligi` (yavas) — çalıştırılmadı<br>`test_tukenme_temel:test_tukenme_betik_esdegerligi` (yavas) — çalıştırılmadı |
-| R-FZ-04 | T | kısmen (1/2 geçti) | `test_geometri_esdegerlik:test_betik_xml_kucuk` (hizli) — geçti<br>`test_geometri_esdegerlik:test_betik_xml_hepsi` (yavas) — çalıştırılmadı |
+| R-FZ-01 | T | geçti | `test_capa:test_regresyon_cipasi` (yavas) — geçti |
+| R-FZ-02 | T | geçti | `test_capa:test_godiva_kriteri` (yavas) — geçti |
+| R-FZ-03 | T | geçti | `test_altigen_kor:test_altigen_betik_esdegerligi` (yavas) — geçti<br>`test_betik:test_betik_esdegerligi` (yavas) — geçti<br>`test_betik:test_altigen_betik_esdegerligi` (yavas) — geçti<br>`test_guc_coklu:test_cok_tur_betik_esdegerligi` (yavas) — geçti<br>`test_tukenme_temel:test_tukenme_betik_esdegerligi` (yavas) — geçti |
+| R-FZ-04 | T | geçti | `test_geometri_esdegerlik:test_betik_xml_kucuk` (hizli) — geçti<br>`test_geometri_esdegerlik:test_betik_xml_hepsi` (yavas) — geçti |
 | R-A1-01 | T | geçti | `test_altigen_kor:test_altigen_kor_sema_ve_kurallar` (hizli) — geçti<br>`test_altigen_kor:test_altigen_kor_dogrulama` (hizli) — geçti<br>`test_altigen_kor:test_altigen_kor_geometri` (hizli) — geçti |
-| R-A1-02 | T | kısmen (1/3 geçti) | `test_altigen_esdeger:test_altigen_nokta_esdegerligi` (hizli) — geçti<br>`test_altigen_esdeger:test_altigen_kilifli_mc_esdegerligi` (yavas) — çalıştırılmadı<br>`test_altigen_kor:test_altigen_analitik_esdegerlik` (yavas) — çalıştırılmadı |
+| R-A1-02 | T | geçti | `test_altigen_esdeger:test_altigen_nokta_esdegerligi` (hizli) — geçti<br>`test_altigen_esdeger:test_altigen_kilifli_mc_esdegerligi` (yavas) — geçti<br>`test_altigen_kor:test_altigen_analitik_esdegerlik` (yavas) — geçti |
 | R-A1-03 | T | geçti | `test_altigen_kor:test_altigen_kor_yonelim_olcumu` (hizli) — geçti |
 | R-A2-01 | T | geçti | `test_nuklid_secici:test_normallestirme_ve_oneri` (hizli) — geçti<br>`test_nuklid_secici:test_dogrulama_yazim_hatasi` (hizli) — geçti |
 | R-A2-02 | T | geçti | `test_nuklid_secici:test_sonuc_oku_bulunamayan` (hizli) — geçti |
@@ -31,12 +32,12 @@
 | R-A4-01 | T | geçti | `test_tasarim:test_kontrast_wcag` (hizli) — geçti |
 | R-A4-02 | T | geçti | `test_tasarim_kurallari:test_sabit_renk_tabani` (hizli) — geçti |
 | R-A4-03 | T | geçti | `test_tasarim_kurallari:test_sahipsiz_qlayout_yok` (hizli) — geçti |
-| R-M1-01 | T | kısmen (2/4 geçti) | `test_guc_kor:test_kare_kor_anahtar_sentetik` (hizli) — geçti<br>`test_guc_kor:test_altigen_ic_ice_anahtar_sentetik` (hizli) — geçti<br>`test_guc_kor:test_kare_kor_2x2_mc` (yavas) — çalıştırılmadı<br>`test_guc_kor:test_altigen_ic_ice_mc` (yavas) — çalıştırılmadı |
+| R-M1-01 | T | geçti | `test_guc_kor:test_kare_kor_anahtar_sentetik` (hizli) — geçti<br>`test_guc_kor:test_altigen_ic_ice_anahtar_sentetik` (hizli) — geçti<br>`test_guc_kor:test_kare_kor_2x2_mc` (yavas) — geçti<br>`test_guc_kor:test_altigen_ic_ice_mc` (yavas) — geçti |
 | R-M1-02 | T | geçti | `test_guc:test_tepe_faktorleri_sentetik` (hizli) — geçti<br>`test_guc_kor:test_tepe_faktorleri_tam_kor` (hizli) — geçti |
-| R-M1-03 | T | kısmen (2/3 geçti) | `test_guc_coklu:test_kurucu_tur_basina_tally` (hizli) — geçti<br>`test_guc_coklu:test_dagilim_birlestirme_sentetik` (hizli) — geçti<br>`test_guc_coklu:test_uc_zenginlik_mc_fdh` (yavas) — çalıştırılmadı |
-| R-M1-04 | T | çalıştırılmadı | `test_guc:test_guc_esdegerlik_ve_korunum` (yavas) — çalıştırılmadı |
+| R-M1-03 | T | geçti | `test_guc_coklu:test_kurucu_tur_basina_tally` (hizli) — geçti<br>`test_guc_coklu:test_dagilim_birlestirme_sentetik` (hizli) — geçti<br>`test_guc_coklu:test_uc_zenginlik_mc_fdh` (yavas) — geçti |
+| R-M1-04 | T | geçti | `test_guc:test_guc_esdegerlik_ve_korunum` (yavas) — geçti |
 | R-M2-01 | T | TESTSİZ | — |
-| R-M3-01 | T | çalıştırılmadı | `test_ornekler:test_yavas_yeni_ornekler_kosar` (yavas) — çalıştırılmadı |
+| R-M3-01 | T | geçti | `test_ornekler:test_yavas_yeni_ornekler_kosar` (yavas) — geçti |
 | R-M4-01 | İ | inceleme | — |
 | R-M5-01 | T | geçti | `test_hata_yutma:test_tarayici_ornekleri` (hizli) — geçti<br>`test_hata_yutma:test_sessiz_hata_yutma` (hizli) — geçti |
 | R-M5-02 | T | geçti | `test_altyapi:test_gunluk_yolu_ve_yazim` (hizli) — geçti<br>`test_altyapi:test_hata_yakalayici_loglar` (hizli) — geçti<br>`test_altyapi:test_hata_diyalogu` (hizli) — geçti |
@@ -49,20 +50,20 @@
 | R-M10-01 | T | geçti | `test_rapor:test_rapor_html_fixture` (hizli) — geçti<br>`test_rapor:test_rapor_sayilar_birebir` (hizli) — geçti<br>`test_rapor:test_rapor_pdf_ve_sure` (hizli) — geçti |
 | R-M10-02 | T | geçti | `test_kapsul:test_rapor_kapsul_satiri` (hizli) — geçti<br>`test_rapor:test_tekrarlanabilirlik` (hizli) — geçti |
 | R-M10-03 | T | geçti | `test_rapor:test_cli_rapor` (hizli) — geçti |
-| R-TK-01 | T | çalıştırılmadı | `test_tukenme_temel:test_bateman_bozunum` (yavas) — çalıştırılmadı |
-| R-TK-02 | T | kısmen (2/4 geçti) | `test_altigen_kor:test_altigen_tukenme_hacmi_stokastik` (yavas) — çalıştırılmadı<br>`test_tukenme_hacim:test_ornek_hacimleri` (hizli) — geçti<br>`test_tukenme_hacim:test_hacim_stokastik` (yavas) — çalıştırılmadı<br>`test_tukenme_temel:test_tukenme_hacimleri` (hizli) — geçti |
+| R-TK-01 | T | geçti | `test_tukenme_temel:test_bateman_bozunum` (yavas) — geçti |
+| R-TK-02 | T | geçti | `test_altigen_kor:test_altigen_tukenme_hacmi_stokastik` (yavas) — geçti<br>`test_tukenme_hacim:test_ornek_hacimleri` (hizli) — geçti<br>`test_tukenme_hacim:test_hacim_stokastik` (yavas) — geçti<br>`test_tukenme_temel:test_tukenme_hacimleri` (hizli) — geçti |
 | R-TK-03 | T | geçti | `test_tukenme_temel:test_zincir_butunlugu` (hizli) — geçti<br>`test_tukenme_temel:test_tukenme_zincir_secimi` (hizli) — geçti |
-| R-G-01 | T | kısmen (6/7 geçti) | `test_geometri_esdegerlik:test_iz_kayit_1` (hizli) — geçti<br>`test_geometri_esdegerlik:test_iz_kayit_2` (hizli) — geçti<br>`test_geometri_esdegerlik:test_iz_kayit_3` (hizli) — geçti<br>`test_geometri_esdegerlik:test_iz_kayit_4` (hizli) — geçti<br>`test_geometri_esdegerlik:test_yapi` (hizli) — geçti<br>`test_geometri_esdegerlik:test_hacim` (hizli) — geçti<br>`test_geometri_esdegerlik:test_yavas_kayit_tam` (yavas) — çalıştırılmadı |
+| R-G-01 | T | geçti | `test_geometri_esdegerlik:test_iz_kayit_1` (hizli) — geçti<br>`test_geometri_esdegerlik:test_iz_kayit_2` (hizli) — geçti<br>`test_geometri_esdegerlik:test_iz_kayit_3` (hizli) — geçti<br>`test_geometri_esdegerlik:test_iz_kayit_4` (hizli) — geçti<br>`test_geometri_esdegerlik:test_yapi` (hizli) — geçti<br>`test_geometri_esdegerlik:test_hacim` (hizli) — geçti<br>`test_geometri_esdegerlik:test_yavas_kayit_tam` (yavas) — geçti |
 | R-G-02 | T | geçti | `test_goc:test_goc_zinciri_saf` (hizli) — geçti<br>`test_goc:test_goc_hatalari` (hizli) — geçti<br>`test_goc:test_goc_yukle_ve_yedek` (hizli) — geçti<br>`test_goc:test_goc_ornekler` (hizli) — geçti |
 | R-G-03 | T | geçti | `test_geometri_ui:test_gelismise_gecis_tek_adimda_geri_alinir` (hizli) — geçti |
 | R-G-04 | T | geçti | `test_geometri_agac:test_a_kesik_ve_nokta` (hizli) — geçti<br>`test_geometri_dogrulama:test_kesik_ve_gizli` (hizli) — geçti |
-| R-G-05 | T | kısmen (2/3 geçti) | `test_geometri_fizik:test_yavas_pin_kesiti_hacmi` (yavas) — çalıştırılmadı<br>`test_geometri_yonelim:test_pin_kesiti_olcumu` (hizli) — geçti<br>`test_tukenme_hacim:test_bolge_alani` (hizli) — geçti |
-| R-G-06 | T | kısmen (1/3 geçti) | `test_geometri_agac:test_yuz_basina_sinir` (hizli) — geçti<br>`test_geometri_agac:test_ceyrek_tam_esit` (yavas) — çalıştırılmadı<br>`test_ornekler:test_yavas_ceyrek_tam_esit` (yavas) — çalıştırılmadı |
+| R-G-05 | T | geçti | `test_geometri_fizik:test_yavas_pin_kesiti_hacmi` (yavas) — geçti<br>`test_geometri_yonelim:test_pin_kesiti_olcumu` (hizli) — geçti<br>`test_tukenme_hacim:test_bolge_alani` (hizli) — geçti |
+| R-G-06 | T | geçti | `test_geometri_agac:test_yuz_basina_sinir` (hizli) — geçti<br>`test_geometri_agac:test_ceyrek_tam_esit` (yavas) — geçti<br>`test_ornekler:test_yavas_ceyrek_tam_esit` (yavas) — geçti |
 | R-G-07 | T | geçti | `test_geometri_agac:test_kontrol_cubugu_ayri_ornek` (hizli) — geçti |
-| R-G-08 | T | kısmen (2/3 geçti) | `test_geometri_dogrulama:test_ortusme_yakalanir` (hizli) — geçti<br>`test_geometri_dogrulama:test_bosluk_yakalanir` (hizli) — geçti<br>`test_geometri_dogrulama:test_yavas_geometri_hata_ayikla` (yavas) — çalıştırılmadı |
-| R-G-09 | T | kısmen (1/6 geçti) | `test_geometri_fizik:test_yeni_ornek_hacimleri_analitik` (hizli) — geçti<br>`test_geometri_fizik:test_yavas_sonsuz_ortam` (yavas) — çalıştırılmadı<br>`test_geometri_fizik:test_yavas_tamburlu_kor_agacta` (yavas) — çalıştırılmadı<br>`test_geometri_fizik:test_yavas_tambur_monoton` (yavas) — çalıştırılmadı<br>`test_geometri_fizik:test_yavas_simetri_60` (yavas) — çalıştırılmadı<br>`test_geometri_fizik:test_yavas_yeni_ornek_hacimleri` (yavas) — çalıştırılmadı |
+| R-G-08 | T | geçti | `test_geometri_dogrulama:test_ortusme_yakalanir` (hizli) — geçti<br>`test_geometri_dogrulama:test_bosluk_yakalanir` (hizli) — geçti<br>`test_geometri_dogrulama:test_yavas_geometri_hata_ayikla` (yavas) — geçti |
+| R-G-09 | T | geçti | `test_geometri_fizik:test_yeni_ornek_hacimleri_analitik` (hizli) — geçti<br>`test_geometri_fizik:test_yavas_sonsuz_ortam` (yavas) — geçti<br>`test_geometri_fizik:test_yavas_tamburlu_kor_agacta` (yavas) — geçti<br>`test_geometri_fizik:test_yavas_tambur_monoton` (yavas) — geçti<br>`test_geometri_fizik:test_yavas_simetri_60` (yavas) — geçti<br>`test_geometri_fizik:test_yavas_yeni_ornek_hacimleri` (yavas) — geçti |
 | R-G-10 | T | geçti | `test_betik_kacis:test_betik_ad_kacisi_fuzz` (hizli) — geçti<br>`test_betik_kacis:test_yorum_ve_dokuman_kacisi` (hizli) — geçti |
-| R-G-11 | T | kısmen (1/2 geçti) | `test_geometri_agac:test_duzenekler_kurulur` (hizli) — geçti<br>`test_geometri_agac:test_duzenekler_kosar` (yavas) — çalıştırılmadı |
+| R-G-11 | T | geçti | `test_geometri_agac:test_duzenekler_kurulur` (hizli) — geçti<br>`test_geometri_agac:test_duzenekler_kosar` (yavas) — geçti |
 | R-S-01 | T | geçti | `test_uygunluk_arayuz:test_rapor_uygunluk_eki_html` (hizli) — geçti<br>`test_uygunluk_denetimi:test_api_sozlesmesi` (hizli) — geçti |
 | R-S-02 | T | geçti | `test_uygunluk_denetimi:test_k1_entropi` (hizli) — geçti<br>`test_uygunluk_denetimi:test_k1_entropi_kapali_ve_bozuk` (hizli) — geçti |
 | R-S-03 | T | geçti | `test_uygunluk_denetimi:test_k2_istatistik` (hizli) — geçti |
@@ -79,7 +80,7 @@
 | R-S-14 | T | TESTSİZ | — |
 | R-S-15 | T | geçti | `test_izlenebilirlik:test_gereksinim_isareti` (hizli) — geçti<br>`test_izlenebilirlik:test_gereksinim_belgesi` (hizli) — geçti<br>`test_izlenebilirlik:test_testler_tanimli_kimlik_kullanir` (hizli) — geçti<br>`test_izlenebilirlik:test_matris_sentetik` (hizli) — geçti<br>`test_izlenebilirlik:test_uretilen_belge_guncel` (hizli) — geçti<br>`test_izlenebilirlik:test_komut_satiri` (hizli) — geçti |
 | R-S-16 | T | geçti | `test_kapsul:test_kapsul_icerigi` (hizli) — geçti<br>`test_kapsul:test_dosya_kimligi_ve_zincir` (hizli) — geçti<br>`test_kapsul:test_ortam_kilidi_yedekleri` (hizli) — geçti<br>`test_kapsul:test_kosucu_kapsul_yazar` (hizli) — geçti<br>`test_kapsul:test_rapor_kapsul_satiri` (hizli) — geçti |
-| R-S-17 | T | kısmen (2/3 geçti) | `test_kapsul:test_farklar` (hizli) — geçti<br>`test_kapsul:test_yeniden_kuru_calisma` (hizli) — geçti<br>`test_kapsul:test_yavas_yeniden_kosu` (yavas) — çalıştırılmadı |
+| R-S-17 | T | geçti | `test_kapsul:test_farklar` (hizli) — geçti<br>`test_kapsul:test_yeniden_kuru_calisma` (hizli) — geçti<br>`test_kapsul:test_yavas_yeniden_kosu` (yavas) — geçti |
 | R-S-18 | İ | inceleme | — |
 
 ## Testsiz gereksinimler (yöntem T, bağlı test yok)
