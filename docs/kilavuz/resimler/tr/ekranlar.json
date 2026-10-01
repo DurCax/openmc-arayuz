@@ -1,0 +1,127 @@
+{
+ "boyut": [
+  1280,
+  800
+ ],
+ "dil": "tr",
+ "ekranlar": {
+  "analiz": {
+   "boyut": [
+    1280,
+    800
+   ],
+   "ornek": "pwr_17x17.json",
+   "sekme": "analiz",
+   "sha256": "6403617c9306e4f889f9931f6ed53ede4aa39d30127f9a0fd568fe3cbdbcd19a"
+  },
+  "baslangic": {
+   "boyut": [
+    1280,
+    800
+   ],
+   "ornek": null,
+   "sekme": null,
+   "sha256": "c0fe6c654e9f4980b374a71d8c4c53bf90cdabbfd89e34b312b6be2068d060db"
+  },
+  "geometri-altigen-kor": {
+   "boyut": [
+    1280,
+    800
+   ],
+   "ornek": "vver1000_kor.json",
+   "sekme": "kor",
+   "sha256": "28f323fa4bbeba7e9548a26acc5eb66902870a0c4d6a08f528202c9623b6a772"
+  },
+  "geometri-gelismis": {
+   "boyut": [
+    1280,
+    800
+   ],
+   "ornek": "pwr_kare_altigen_halka.json",
+   "sekme": "kor",
+   "sha256": "c128e4ff38dfd7c2126c3085fafde5358b310c03dd04c446786866d3c192e74c"
+  },
+  "geometri-tambur": {
+   "boyut": [
+    1280,
+    800
+   ],
+   "ornek": "kafes_tamburlu_yansitici.json",
+   "sekme": "kor",
+   "sha256": "f22ab5f858b3d2ec12f8a1af6c352206dba4127e91befccb12c1c89135b86c11"
+  },
+  "ilk-hesap-calistir": {
+   "boyut": [
+    1280,
+    800
+   ],
+   "ornek": "pwr_17x17.json",
+   "sekme": "calistir",
+   "sha256": "1322bef5bcabafc4c8c32bf70370d9ee924d4ceaabf94cf12972e99095ce0ede"
+  },
+  "ilk-hesap-demet": {
+   "boyut": [
+    1280,
+    800
+   ],
+   "ornek": "pwr_17x17.json",
+   "sekme": "demet",
+   "sha256": "10ebbab3e0d73f78c4001918487fab1d829291c6fb23f8313bf8ada69857a41d"
+  },
+  "ilk-hesap-geometri": {
+   "boyut": [
+    1280,
+    800
+   ],
+   "ornek": "pwr_17x17.json",
+   "sekme": "kor",
+   "sha256": "4d3948b848fc299d853dead423843e0d854c75012d9f30788b9d5294f02d4fd9"
+  },
+  "ilk-hesap-hesap-ayarlari": {
+   "boyut": [
+    1280,
+    800
+   ],
+   "ornek": "pwr_17x17.json",
+   "sekme": "ayarlar",
+   "sha256": "7e347746422afaaf754c8002be88402c176c918d62e1c401a137490671437f9e"
+  },
+  "ilk-hesap-malzemeler": {
+   "boyut": [
+    1280,
+    800
+   ],
+   "ornek": "pwr_17x17.json",
+   "sekme": "malzemeler",
+   "sha256": "1bf28547e8f850d7c29d949f33606b19dd2bf839e4a9d51810e2a79af77b35e7"
+  },
+  "ilk-hesap-parcalar": {
+   "boyut": [
+    1280,
+    800
+   ],
+   "ornek": "pwr_17x17.json",
+   "sekme": "parcalar",
+   "sha256": "d9acd10fcfc2014739ab56440861dedc3884a1e32a4cc31a7ba7b2537850c5f2"
+  },
+  "kilavuz": {
+   "boyut": [
+    1280,
+    800
+   ],
+   "ornek": null,
+   "sekme": "kilavuz",
+   "sha256": "ada8cfd50be27704eb8c835a2b84e05cf446e58b3ee2b9f6bf933377dd83453b"
+  },
+  "tukenme": {
+   "boyut": [
+    1280,
+    800
+   ],
+   "ornek": "pwr_tukenme.json",
+   "sekme": "tukenme",
+   "sha256": "3673ef80fc75a6a3c94ef0e35cda1776f10e0b6cda56e5bfdca53fe96fce1feb"
+  }
+ },
+ "girdi_ozeti": "45d9d4217421125be21e1e99eb8df5769b7ddffa9a6d55c2a19a5d0814d45a27"
+}

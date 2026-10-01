@@ -16,6 +16,7 @@ plots.xml
 # --- uretilen dosyalar ---
 *.png
 !belge/*.png
+!docs/kilavuz/resimler/**/*.png
 
 # --- Python ---
 __pycache__/
@@ -36,3 +37,6 @@ __pycache__/
 .coverage.*
 coverage.xml
 graphify-out/
+
+# --- kilavuz derleme ciktisi (araclar/kilavuz.sh) ---
+build/
