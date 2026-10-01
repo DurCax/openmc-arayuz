@@ -171,7 +171,92 @@ def test_grup_degeri_geri_alinir():
     kontrol("Yinele yeniden uygular", p.spec["geometri"]["gruplar"][0]["deger"] == once + 40.0)
 
 
+# ----------------------------------------------------------------------------
+# guc haritasi: yeni anahtar parcalari (MC'siz, sahte dagilim)
+# ----------------------------------------------------------------------------
+
+_PINLER = ((0, 0), (8, 8), (16, 16), (3, 12))
+
+
+def _dagilim(kafesler, turler, anahtarlar, kesik=()):
+    konumlar = {a: {"eksenel": [(1.0 + 0.01 * i, 0.01)], "toplam": (1.0 + 0.01 * i, 0.01)}
+                for i, a in enumerate(anahtarlar)}
+    tam = len(kafesler) > 1
+    return {"konumlar": konumlar, "eksenel_dilim": 1, "tam_kor": tam, "kafesler": kafesler,
+            "kafes": kafesler[-1], "kafes_turleri": turler, "kafes_turu": turler[-1],
+            "duzey_sayisi": len(kafesler), "cubuk_turleri": {}, "notlar": [],
+            "kesik_cubuklar": list(kesik)}
+
+
+def guc_fiksturleri():
+    """[(ad, dagilim)] -- uc agac sablonunun kurulan kafesleri + iki yerlesim duzeyi."""
+    from cekirdek import altigen, guc_kor, kurucu
+    specler = dict(agac_specleri())
+    cikti = []
+    for anahtar in ("kare_altigen", "altigen_tambur", "kafes_tambur"):
+        model, _b = kurucu.kur(specler[anahtar])
+        adli = {k.name: k for k in model.geometry.get_all_lattices().values() if k.name}
+        adsiz = [k for k in model.geometry.get_all_lattices().values() if not k.name]
+        if anahtar == "kare_altigen":
+            kor, blok = adli["g:cekirdek_kafesi"], adli["g:blok_kafesi"]
+            duzey = guc_kor.KarisikDuzey(kafesler={kor.name: kor, blok.name: blok})
+            a = [((kor.name, i, j), p) for i in range(5) for j in range(5) for p in _PINLER]
+            b = [((blok.name, r, k), (8, 8)) for r, k in sorted(altigen.konumlar(5, "x"))
+                 if r == 1][:6]
+            cikti.append((anahtar, _dagilim([duzey, adsiz[0]], ["karisik", "kare"], a + b,
+                                            kesik=b[:3])))
+        elif anahtar == "altigen_tambur":
+            hex_k = adsiz[0]
+            a = sorted(altigen.konumlar(int(hex_k.num_rings), hex_k.orientation))
+            cikti.append((anahtar, _dagilim([hex_k], ["altigen"], a)))
+        else:
+            kor = adli["g:kor_kafesi"]
+            a = [((i, j), p) for i in range(3) for j in range(3) for p in _PINLER]
+            cikti.append((anahtar, _dagilim([kor, adsiz[0]], ["kare", "kare"], a)))
+            yer = guc_kor.YerlesimDuzeyi(merkezler={("iki", 0): (-34.0, 0.0),
+                                                    ("iki", 1): (34.0, 0.0)})
+            a3 = [(("iki", n),) + k for n in (0, 1) for k in a]
+            cikti.append(("yerlesim+kafes", _dagilim([yer, kor, adsiz[0]],
+                                                    ["yerlesim", "kare", "kare"], a3)))
+            a2 = [(("iki", n), p) for n in (0, 1) for p in _PINLER]
+            cikti.append(("yerlesim+pin", _dagilim([yer, adsiz[0]], ["yerlesim", "kare"], a2)))
+    return cikti
+
+
+def test_guc_haritasi_yeni_anahtarlar():
+    print("\n[GT6] guc haritasi: karisik / yerlesim duzeyleri cizilir, kesik ayri isaretli")
+    from PySide6 import QtWidgets
+    from cekirdek import guc
+    from arayuz.guc_harita import GucHaritaWidget
+    QtWidgets.QApplication.instance() or QtWidgets.QApplication([])
+    for ad, dag in guc_fiksturleri():
+        f = guc.tepe_faktorleri(dag)
+        w = GucHaritaWidget()
+        for olcek in ("cubuk", "demet"):
+            hata = None
+            try:
+                w.olcek.setCurrentIndex(w.olcek.findData(olcek))
+                w.sonuc_ayarla({"guc": {"dagilim": dag, "faktorler": f}})
+            except Exception as e:          # testin amaci cokmeyi raporlamak
+                hata = "%s: %s" % (type(e).__name__, e)
+            kesik = len(dag["kesik_cubuklar"])
+            ipucu = [o[3] for o in w._ipucu_ogeleri]
+            beklenen = (len(dag["konumlar"]) if olcek == "cubuk" or not dag["tam_kor"]
+                        else len(f["demetler"]) + kesik)
+            kontrol("%s (%s): cizildi, %d oge" % (ad, olcek, beklenen),
+                    hata is None and (len(ipucu) == beklenen or not dag["tam_kor"]),
+                    "-> %s, %d oge" % (hata, len(ipucu)))
+            if kesik:
+                kontrol("%s (%s): kesik cubuklar ayri isaretli" % (ad, olcek),
+                        sum("kesik" in m for m in ipucu) == kesik
+                        and "kesik" in w.figur.axes[0].get_title())
+        if dag["tam_kor"]:
+            x0, x1 = w.figur.axes[0].get_xlim()
+            xs = [guc.cubuk_merkezi(dag, a)[0] for a in dag["konumlar"]]
+            kontrol("%s: eksenler butun cubuklari kapsar" % ad, x0 < min(xs) and x1 > max(xs))
+
+
 HIZLI = [test_kurucu_sarmalayicilari_silindi, test_agac_modu_tuketicileri,
          test_yeniden_adlandirma_g2_api, test_parca_adi_agac_modunda,
-         test_grup_degeri_geri_alinir]
+         test_grup_degeri_geri_alinir, test_guc_haritasi_yeni_anahtarlar]
 YAVAS = []

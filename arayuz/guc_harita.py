@@ -25,7 +25,7 @@ from PySide6 import QtCore, QtWidgets
 from cekirdek import altigen, sema, guc as _guc
 from cekirdek.ceviri import _
 from cekirdek.gunluk import kaydedici
-from arayuz import tema
+from arayuz import guc_harita_kor as _kor, tema
 
 _log = kaydedici(__name__)
 
@@ -390,23 +390,17 @@ class GucHaritaWidget(QtWidgets.QWidget):
             return {a: v[i][1] for a, v in f["bagil_eksenel"].items()}
         return {a: v[1] for a, v in f["bagil"].items()}
 
-    @staticmethod
-    def _eleman_yamasi(tur, merkez, adim, yonelim, **stil):
-        """Kafes elemaninin sekli: kare (adim x adim) ya da altigen."""
-        from matplotlib.patches import Rectangle
-        if tur == "altigen":
-            kose = altigen.hucre_kose_acilari(yonelim)[0]
-            return RegularPolygon(merkez, numVertices=6, radius=adim / math.sqrt(3.0),
-                                  orientation=math.radians(kose - 30.0), **stil)
-        return Rectangle((merkez[0] - adim / 2.0, merkez[1] - adim / 2.0),
-                         adim, adim, **stil)
-
-    @staticmethod
-    def _kafes_bilgisi(kafes, tur):
-        """(adim, yonelim) -- cizim icin."""
-        if tur == "altigen":
-            return kafes.pitch[0], getattr(kafes, "orientation", "y")
-        return kafes.pitch[0], None
+    def _demet_yamasi(self, demet, uyeler, olcek=1.0, **stil):
+        """Demetin sekli: kafes elemani ya da (kafessiz yerlesimde) uyelerin kutusu."""
+        dag = self.dagilim
+        bicim = _kor.demet_bicimi(dag, demet)
+        if bicim is not None:
+            return _kor.yama(bicim, _guc.demet_merkezi(dag, demet), olcek, **stil), bicim[1] / 2.0
+        noktalar = [_guc.cubuk_merkezi(dag, a) for a in uyeler]
+        c_bicim = _kor.cubuk_bicimi(dag, uyeler[0]) if uyeler else None
+        pay = (c_bicim[1] / 2.0) if c_bicim else 0.5
+        x0, y0, g, y = _kor.kutu(noktalar, pay)
+        return _kor.kutu_yamasi(noktalar, pay, **stil), max(g, y) / 2.0
 
     def _demet_degerleri(self, veri, sigma):
         """{demet: (ortalama, sapma, [cubuk anahtarlari])} secili goruntu icin."""
@@ -420,21 +414,26 @@ class GucHaritaWidget(QtWidgets.QWidget):
                         math.sqrt(sum(sigma[a] ** 2 for a in uyeler)) / n, uyeler)
         return sonuc
 
+    def _kesikler(self):
+        """Kesik (kirpilan) cubuklar: F_dH disi, haritada ayri isaretli."""
+        f = self.faktorler or {}
+        return [a for a in f.get("kesik_cubuklar") or ()
+                if a in ((self.dagilim or {}).get("konumlar") or {})]
+
     def _ciz_kor(self, eks, veri, alt_baslik):
         """Kor olceginde harita: 'demet' (demet ortalamasi) ya da 'cubuk'
-        (her cubuk kordaki gercek konumunda); demet sinirlari kalin cizgi."""
+        (her cubuk kordaki gercek konumunda); demet sinirlari kalin cizgi.
+        Duzeyler kare, altigen, karisik ya da yerlesim olabilir (guc_harita_kor)."""
         from matplotlib.collections import PatchCollection
-        f, dag = self.faktorler, self.dagilim
+        dag = self.dagilim
         sigma = self._sigmalar()
         demetler = self._demet_degerleri(veri, sigma)
-        kor_tur = dag["kafes_turleri"][0]
-        d_adim, d_yon = self._kafes_bilgisi(dag["kafesler"][0], kor_tur)
         demet_modu = self.olcek.currentData() == "demet"
         renk_es = matplotlib.colormaps["inferno"]
 
         if demet_modu:
             degerler = {d: v[0] for d, v in demetler.items()}
-            yamalar, renkler = self._demet_yamalari(demetler, d_adim, kor_tur, d_yon)
+            yamalar, renkler = self._demet_yamalari(demetler)
         else:
             degerler = veri
             yamalar, renkler = self._cubuk_yamalari(veri, sigma)
@@ -445,7 +444,7 @@ class GucHaritaWidget(QtWidgets.QWidget):
                                      linewidths=0.6 if demet_modu else 0.15)
         koleksiyon.set_array(renkler)
         eks.add_collection(koleksiyon)
-        self._demet_sinirlari(eks, demetler, d_adim, kor_tur, d_yon)
+        self._demet_sinirlari(eks, demetler)
         if demet_modu and (self.degerler.isChecked() or len(demetler) <= 60):
             for d in demetler:
                 x, y = _guc.demet_merkezi(dag, d)
@@ -453,19 +452,22 @@ class GucHaritaWidget(QtWidgets.QWidget):
                 eks.text(x, y, "%.3f" % v, ha="center", va="center", fontsize=6,
                          color=tema.renk("vurgu_metin") if v < (alt + ust) / 2
                          else tema.renk("metin"))
+        kesik = self._kesikleri_isaretle(eks, demet_modu)
         self._sicak_cubugu_isaretle(eks, demet_modu)
-        self._kor_eksenleri(eks, demetler, d_adim)
+        self._kor_eksenleri(eks)
         self._renk_cubugu(koleksiyon, eks)
+        ek = (_(" · × kesik çubuk (%d, F_ΔH dışı)") % kesik) if kesik else ""
         eks.set_title(_("Bağıl güç (kor ortalaması = 1) — %s · %s\n"
                         "○ en sıcak çubuk · kalın çerçeve: en sıcak demet")
-                      % (_("demet ortalaması") if demet_modu else _("çubuk"), alt_baslik),
-                      fontsize=8)
+                      % (_("demet ortalaması") if demet_modu else _("çubuk"), alt_baslik)
+                      + ek, fontsize=8)
 
-    def _demet_yamalari(self, demetler, adim, tur, yonelim):
+    def _demet_yamalari(self, demetler):
         yamalar, renkler = [], []
         for d, (ort, sap, uyeler) in demetler.items():
             merkez = _guc.demet_merkezi(self.dagilim, d)
-            yamalar.append(self._eleman_yamasi(tur, merkez, adim, yonelim))
+            yama, yaricap = self._demet_yamasi(d, uyeler)
+            yamalar.append(yama)
             renkler.append(ort)
             kayit = (self.faktorler.get("demetler") or {}).get(d) or {}
             tepe = kayit.get("tepe")
@@ -475,35 +477,53 @@ class GucHaritaWidget(QtWidgets.QWidget):
                 metin += _("\ntepe %.4f ± %.4f (%s)") % (
                     tepe[0], tepe[1], _guc.konum_metni(kayit["tepe_cubuk"], None,
                                                       self.faktorler["kafes_turleri"]))
-            self._ipucu_ogeleri.append((merkez[0], merkez[1], adim / 2.0, metin))
+            self._ipucu_ogeleri.append((merkez[0], merkez[1], yaricap, metin))
         return yamalar, renkler
+
+    def _cubuk_yamasi(self, anahtar, **stil):
+        merkez = _guc.cubuk_merkezi(self.dagilim, anahtar)
+        bicim = _kor.cubuk_bicimi(self.dagilim, anahtar) or ("kare", 1.0, None)
+        return merkez, _kor.yama(bicim, merkez, **stil), bicim[1] / 2.0
 
     def _cubuk_yamalari(self, veri, sigma):
         dag = self.dagilim
-        ic_tur = dag["kafes_turleri"][-1]
-        c_adim, c_yon = self._kafes_bilgisi(dag["kafesler"][-1], ic_tur)
         yamalar, renkler = [], []
         for a, v in veri.items():
-            merkez = _guc.cubuk_merkezi(dag, a)
-            yamalar.append(self._eleman_yamasi(ic_tur, merkez, c_adim, c_yon))
+            merkez, yama, yaricap = self._cubuk_yamasi(a)
+            yamalar.append(yama)
             renkler.append(v)
             metin = "%s\n%.4f ± %.4f" % (
                 _guc.konum_metni(a, None, dag["kafes_turleri"]), v, sigma[a])
-            self._ipucu_ogeleri.append((merkez[0], merkez[1], c_adim / 2.0, metin))
+            self._ipucu_ogeleri.append((merkez[0], merkez[1], yaricap, metin))
         return yamalar, renkler
 
-    def _demet_sinirlari(self, eks, demetler, adim, tur, yonelim):
+    def _kesikleri_isaretle(self, eks, demet_modu):
+        """Kesik cubuklar: cubuk gorunumunde taranmis gri yama, iki gorunumde × isareti."""
+        kesik = self._kesikler()
+        for a in kesik:
+            merkez, yama, yaricap = self._cubuk_yamasi(
+                a, facecolor=tema.renk("yuzey3"), edgecolor=tema.renk("kenar"),
+                hatch="xx", linewidth=0.15, zorder=2)
+            if not demet_modu:
+                eks.add_patch(yama)
+            eks.plot(merkez[0], merkez[1], marker="x", ms=4, color=tema.renk("metin_soluk"),
+                     zorder=4)
+            self._ipucu_ogeleri.append((merkez[0], merkez[1], yaricap, _(
+                "%s\nkesik çubuk — üst hücre sınırıyla kırpılıyor; F_ΔH ve F_q dışında")
+                % _guc.konum_metni(a, None, self.dagilim["kafes_turleri"])))
+        return len(kesik)
+
+    def _demet_sinirlari(self, eks, demetler):
         """Demet sinirlari kalin cizgi; en sicak demet vurgu renginde."""
         sicak = self.faktorler.get("sicak_demet")
-        for d in demetler:
-            merkez = _guc.demet_merkezi(self.dagilim, d)
-            eks.add_patch(self._eleman_yamasi(
-                tur, merkez, adim, yonelim, fill=False,
-                edgecolor=tema.renk("metin"), linewidth=1.6, zorder=3))
+        for d, (_o, _s, uyeler) in demetler.items():
+            eks.add_patch(self._demet_yamasi(
+                d, uyeler, fill=False, edgecolor=tema.renk("metin"), linewidth=1.6,
+                zorder=3)[0])
         if sicak in demetler:
-            eks.add_patch(self._eleman_yamasi(
-                tur, _guc.demet_merkezi(self.dagilim, sicak), adim * 0.97, yonelim,
-                fill=False, edgecolor=tema.renk("vurgu"), linewidth=3.0, zorder=4))
+            eks.add_patch(self._demet_yamasi(
+                sicak, demetler[sicak][2], 0.97, fill=False, edgecolor=tema.renk("vurgu"),
+                linewidth=3.0, zorder=4)[0])
 
     def _sicak_cubugu_isaretle(self, eks, demet_modu):
         """En sicak cubuk halka isaretiyle (her iki gorunumde)."""
@@ -512,11 +532,12 @@ class GucHaritaWidget(QtWidgets.QWidget):
         eks.plot(x, y, marker="o", ms=11 if not demet_modu else 8, mfc="none",
                  mec=tema.renk("vurgu"), mew=2.0, zorder=5)
 
-    def _kor_eksenleri(self, eks, demetler, d_adim):
-        merkezler = [_guc.demet_merkezi(self.dagilim, d) for d in demetler]
-        pay = d_adim * 0.75
-        eks.set_xlim(min(m[0] for m in merkezler) - pay, max(m[0] for m in merkezler) + pay)
-        eks.set_ylim(min(m[1] for m in merkezler) - pay, max(m[1] for m in merkezler) + pay)
+    def _kor_eksenleri(self, eks):
+        """Sinirlar cizilen ogelerden (ipucu ogeleri: merkez + yaricap)."""
+        ogeler = self._ipucu_ogeleri or [(0.0, 0.0, 1.0, "")]
+        pay = max(o[2] for o in ogeler) * 0.5
+        eks.set_xlim(min(o[0] - o[2] for o in ogeler) - pay, max(o[0] + o[2] for o in ogeler) + pay)
+        eks.set_ylim(min(o[1] - o[2] for o in ogeler) - pay, max(o[1] + o[2] for o in ogeler) + pay)
         eks.set_aspect("equal")
         eks.set_xlabel("x [cm]", fontsize=8)
         eks.set_ylabel("y [cm]", fontsize=8)
