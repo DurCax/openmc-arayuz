@@ -163,8 +163,10 @@ def _delik_ortusmesi(delikler, yol):
 # ----------------------------------------------------------------------------
 
 def _liste(yollar):
+    """Ilk ILK_KAC yolun okunur listesi (';' ile: konum '(1, 2)' virgulu karismasin)."""
+    from cekirdek.geometri.yol_metni import okunur
     ilk = sorted(set(yollar))[:ILK_KAC]
-    return ", ".join(y.lstrip("/") for y in ilk)
+    return "; ".join(okunur(y.lstrip("/")) for y in ilk)
 
 
 def _kesik_bulgulari(_spec, m, ziyaretler):

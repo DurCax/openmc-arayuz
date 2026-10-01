@@ -294,7 +294,7 @@ def _denetle(metinler):
         for v in parcali:
             m = m.replace(v, "⟨veri⟩")
         m = re.sub(r"(?<!\w)/\S*", "⟨yol⟩", m)
-        m = re.sub(r"'[a-z0-9_]+'", "⟨kimlik⟩", m)      # 'bosluk' gibi ayrilmis adlar
+        m = re.sub(r"'[a-z0-9_.]+'", "⟨kimlik⟩", m)     # 'bosluk', 'kafes.dis' gibi ayrilmis adlar
         temiz.append((yer, m))
     for yer, m in temiz:
         for satir in m.split("\n"):

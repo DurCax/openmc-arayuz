@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-01 18:14+0300\n"
+"POT-Creation-Date: 2026-10-01 19:03+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -4024,55 +4024,6 @@ msgid "‘%s’ tamburunun emicisi"
 msgstr ""
 
 #: arayuz/malzeme/yardimcilar.py:180
-msgid "kök"
-msgstr ""
-
-#: arayuz/malzeme/yardimcilar.py:180
-msgid "iç"
-msgstr ""
-
-#: arayuz/malzeme/yardimcilar.py:180
-msgid "dış"
-msgstr ""
-
-#: arayuz/malzeme/yardimcilar.py:180
-msgid "içerik"
-msgstr ""
-
-#: arayuz/malzeme/yardimcilar.py:181
-msgid "harita"
-msgstr ""
-
-#: arayuz/malzeme/yardimcilar.py:181
-msgid "sınır"
-msgstr ""
-
-#: arayuz/malzeme/yardimcilar.py:184
-#, python-brace-format
-msgid "{n}. halka"
-msgstr ""
-
-#: arayuz/malzeme/yardimcilar.py:184
-#, python-brace-format
-msgid "{n}. yerleşim"
-msgstr ""
-
-#: arayuz/malzeme/yardimcilar.py:185
-#, python-brace-format
-msgid "{n}. parça"
-msgstr ""
-
-#: arayuz/malzeme/yardimcilar.py:185
-#, python-brace-format
-msgid "{n}. katman"
-msgstr ""
-
-#: arayuz/malzeme/yardimcilar.py:186
-#, python-brace-format
-msgid "{n}. hücre"
-msgstr ""
-
-#: arayuz/malzeme/yardimcilar.py:204
 #, python-format
 msgid "geometri: %s"
 msgstr ""
@@ -4231,23 +4182,23 @@ msgstr ""
 msgid "[ölçek 1:1 değil]"
 msgstr ""
 
-#: arayuz/ortak.py:150
+#: arayuz/ortak.py:152
 msgid "seçilmemiş"
 msgstr ""
 
-#: arayuz/ortak.py:210
+#: arayuz/ortak.py:212
 msgid "Malzeme rengi"
 msgstr ""
 
-#: arayuz/ortak.py:365 arayuz/tasarim/maket_ekranlar.py:229
+#: arayuz/ortak.py:367 arayuz/tasarim/maket_ekranlar.py:229
 msgid "Gelişmiş"
 msgstr ""
 
-#: arayuz/ortak.py:436
+#: arayuz/ortak.py:438
 msgid "Gizle"
 msgstr ""
 
-#: arayuz/ortak.py:436
+#: arayuz/ortak.py:438
 msgid "Nadiren gereken ayarları göster"
 msgstr ""
 

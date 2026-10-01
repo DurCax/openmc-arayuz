@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-01 18:14+0300\n"
+"POT-Creation-Date: 2026-10-01 19:03+0300\n"
 "PO-Revision-Date: 2026-10-01 18:14+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -814,7 +814,7 @@ msgstr "Pin assembly on a hexagonal grid (VVER, fast reactor)."
 
 #: arayuz/baslangic.py:67
 msgid "Tam kor (kare harita)"
-msgstr "Full core (square map)"
+msgstr "Full core (rectangular map)"
 
 #: arayuz/baslangic.py:68
 msgid "Demetlerden oluşan kor haritası, çevresinde su yansıtıcı."
@@ -838,7 +838,7 @@ msgstr "The flat plate-type fuel element of a research reactor."
 
 #: arayuz/baslangic.py:76 arayuz/tasarim/maket_veri.py:59
 msgid "Tamburlu kompakt kor"
-msgstr "Drum-controlled compact core"
+msgstr "Compact core with control drums"
 
 #: arayuz/baslangic.py:77
 msgid "Silindirik kor, yansıtıcı kuşak ve dönen kontrol tamburları."
@@ -4221,55 +4221,6 @@ msgid "‘%s’ tamburunun emicisi"
 msgstr "absorber of drum ‘%s’"
 
 #: arayuz/malzeme/yardimcilar.py:180
-msgid "kök"
-msgstr "root"
-
-#: arayuz/malzeme/yardimcilar.py:180
-msgid "iç"
-msgstr "inner"
-
-#: arayuz/malzeme/yardimcilar.py:180
-msgid "dış"
-msgstr "outer"
-
-#: arayuz/malzeme/yardimcilar.py:180
-msgid "içerik"
-msgstr "content"
-
-#: arayuz/malzeme/yardimcilar.py:181
-msgid "harita"
-msgstr "map"
-
-#: arayuz/malzeme/yardimcilar.py:181
-msgid "sınır"
-msgstr "boundary"
-
-#: arayuz/malzeme/yardimcilar.py:184
-#, python-brace-format
-msgid "{n}. halka"
-msgstr "ring {n}"
-
-#: arayuz/malzeme/yardimcilar.py:184
-#, python-brace-format
-msgid "{n}. yerleşim"
-msgstr "placement {n}"
-
-#: arayuz/malzeme/yardimcilar.py:185
-#, python-brace-format
-msgid "{n}. parça"
-msgstr "component {n}"
-
-#: arayuz/malzeme/yardimcilar.py:185
-#, python-brace-format
-msgid "{n}. katman"
-msgstr "layer {n}"
-
-#: arayuz/malzeme/yardimcilar.py:186
-#, python-brace-format
-msgid "{n}. hücre"
-msgstr "cell {n}"
-
-#: arayuz/malzeme/yardimcilar.py:204
 #, python-format
 msgid "geometri: %s"
 msgstr "geometry: %s"
@@ -4438,23 +4389,23 @@ msgstr "Preview failed: %s"
 msgid "[ölçek 1:1 değil]"
 msgstr "[scale not 1:1]"
 
-#: arayuz/ortak.py:150
+#: arayuz/ortak.py:152
 msgid "seçilmemiş"
 msgstr "not selected"
 
-#: arayuz/ortak.py:210
+#: arayuz/ortak.py:212
 msgid "Malzeme rengi"
 msgstr "Material color"
 
-#: arayuz/ortak.py:365 arayuz/tasarim/maket_ekranlar.py:229
+#: arayuz/ortak.py:367 arayuz/tasarim/maket_ekranlar.py:229
 msgid "Gelişmiş"
 msgstr "Advanced"
 
-#: arayuz/ortak.py:436
+#: arayuz/ortak.py:438
 msgid "Gizle"
 msgstr "Hide"
 
-#: arayuz/ortak.py:436
+#: arayuz/ortak.py:438
 msgid "Nadiren gereken ayarları göster"
 msgstr "Show rarely needed settings"
 
@@ -8054,4 +8005,37 @@ msgstr "Opens this page's section in the user guide (F1)"
 #: arayuz/pencere/menuler.py:107 arayuz/yardim_baglanti.py:106
 msgid "Kullanım kılavuzu"
 msgstr "User guide"
+
+#~ msgid "kök"
+#~ msgstr "root"
+
+#~ msgid "iç"
+#~ msgstr "inner"
+
+#~ msgid "dış"
+#~ msgstr "outer"
+
+#~ msgid "içerik"
+#~ msgstr "content"
+
+#~ msgid "harita"
+#~ msgstr "map"
+
+#~ msgid "sınır"
+#~ msgstr "boundary"
+
+#~ msgid "{n}. halka"
+#~ msgstr "ring {n}"
+
+#~ msgid "{n}. yerleşim"
+#~ msgstr "placement {n}"
+
+#~ msgid "{n}. parça"
+#~ msgstr "component {n}"
+
+#~ msgid "{n}. katman"
+#~ msgstr "layer {n}"
+
+#~ msgid "{n}. hücre"
+#~ msgstr "cell {n}"
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-01 17:54+0300\n"
+"POT-Creation-Date: 2026-10-01 19:03+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -107,6 +107,10 @@ msgstr ""
 msgid "Doğrulama"
 msgstr ""
 
+#: cekirdek/dogrula/_ortak.py:41 cekirdek/rapor_sablon/__init__.py:105
+msgid "Geometri"
+msgstr ""
+
 #: cekirdek/dogrula/agac.py:49
 #, python-format
 msgid "Geometri gezilemedi: %s"
@@ -153,133 +157,133 @@ msgstr ""
 msgid "Örtüşen hücreler kayıp parçacık üretir; yerleşimleri ayırın."
 msgstr ""
 
-#: cekirdek/dogrula/agac.py:178
+#: cekirdek/dogrula/agac.py:180
 #, python-format
 msgid "%d kesik konum/bileşen üst bölgeyle kırpılıyor (ilk %d: %s)."
 msgstr ""
 
-#: cekirdek/dogrula/agac.py:180
+#: cekirdek/dogrula/agac.py:182
 msgid ""
 "Kırpılan bileşenin hacmi stokastik hesaplanır; güç haritasında 'kesik' olarak "
 "işaretlenir."
 msgstr ""
 
-#: cekirdek/dogrula/agac.py:184
+#: cekirdek/dogrula/agac.py:186
 #, python-format
 msgid "%d kesik çubuk: pin bölgesi hücre sınırıyla kesiliyor (ilk %d: %s)."
 msgstr ""
 
-#: cekirdek/dogrula/agac.py:186
+#: cekirdek/dogrula/agac.py:188
 msgid ""
 "Kesik çubuk F_ΔH'ye girmez ve hacmi stokastik hesaplanır; çubuk çubuk yanmada HATA "
 "verir."
 msgstr ""
 
-#: cekirdek/dogrula/agac.py:191
+#: cekirdek/dogrula/agac.py:193
 #, python-format
 msgid "%d kafes konumu tamamen gizli (delik altında): haritada '.' yazılabilir."
 msgstr ""
 
-#: cekirdek/dogrula/agac.py:210
+#: cekirdek/dogrula/agac.py:212
 #, python-format
 msgid ""
 "Altıgen '%s' demeti altıgen kafes elemanında aynı yönelimle ('%s'); demet elemana "
 "oturmaz."
 msgstr ""
 
-#: cekirdek/dogrula/agac.py:212
+#: cekirdek/dogrula/agac.py:214
 msgid "Demet yönelimi kafes yönelimine dik olmalı: ters(kafes.yonelim)."
 msgstr ""
 
-#: cekirdek/dogrula/agac.py:226
+#: cekirdek/dogrula/agac.py:228
 #, python-format
 msgid ""
 "'%s' plaka elemanı bulunduğu bölgeyi doldurmuyor (%.4g × %.4g cm; bölge %.4g cm²): "
 "aradaki nokta tanımsız (kayıp parçacık)."
 msgstr ""
 
-#: cekirdek/dogrula/agac.py:229
+#: cekirdek/dogrula/agac.py:231
 msgid "Plaka elemanını ölçüsüne eşit bir kafes konumuna ya da kaba koyun."
 msgstr ""
 
-#: cekirdek/dogrula/agac.py:246
+#: cekirdek/dogrula/agac.py:248
 msgid "2B modelde eksenel yığın kurulamaz; kök yüksekliği verin."
 msgstr ""
 
-#: cekirdek/dogrula/agac.py:252
+#: cekirdek/dogrula/agac.py:254
 #, python-format
 msgid "0 cm katman atlandı: %s"
 msgstr ""
 
-#: cekirdek/dogrula/agac.py:255
+#: cekirdek/dogrula/agac.py:257
 #, python-format
 msgid "Kök dışındaki eksenel yığının toplamı (%g cm) model yüksekliğine (%g cm) eşit değil."
 msgstr ""
 
-#: cekirdek/dogrula/agac.py:273
+#: cekirdek/dogrula/agac.py:275
 #, python-format
 msgid "'%s' yüzünde %s sınır bu dış sınırda kullanılamaz (%s)."
 msgstr ""
 
-#: cekirdek/dogrula/agac.py:275
+#: cekirdek/dogrula/agac.py:277
 msgid ""
 "Periyodik sınır yalnız dikdörtgen/altıgen dış sınırda ve sınıra değen delik yokken "
 "kullanılabilir."
 msgstr ""
 
-#: cekirdek/dogrula/agac.py:280
+#: cekirdek/dogrula/agac.py:282
 #, python-format
 msgid "%s sınır periyodik olamaz: sonlu bir korda eksenel periyodiklik fiziksel değildir."
 msgstr ""
 
-#: cekirdek/dogrula/agac.py:284 cekirdek/dogrula/kor.py:364
+#: cekirdek/dogrula/agac.py:286 cekirdek/dogrula/kor.py:364
 msgid "yükseklik verilmemiş — model eksenel yönde sonsuz (2B) kabul ediliyor"
 msgstr ""
 
-#: cekirdek/dogrula/agac.py:295
+#: cekirdek/dogrula/agac.py:297
 msgid "Kök içinde boş (void) bölge: nötron burada etkileşmeden geçer."
 msgstr ""
 
-#: cekirdek/dogrula/agac.py:300
+#: cekirdek/dogrula/agac.py:302
 msgid "2B modelde kontrol tamburu: eksenel sızıntı yok; tambur değeri fazla çıkar."
 msgstr ""
 
-#: cekirdek/dogrula/agac.py:326
+#: cekirdek/dogrula/agac.py:328
 #, python-format
 msgid ""
 "Aynı içerikli iki satır içi alt ağaç ('%s'): ayrı evrenler olur, distribcell ve "
 "tükenme örnekleri bölünür."
 msgstr ""
 
-#: cekirdek/dogrula/agac.py:328
+#: cekirdek/dogrula/agac.py:330
 msgid "Alt ağacı bir parçaya çevirip iki yerde 'bilesen' olarak kullanın."
 msgstr ""
 
-#: cekirdek/dogrula/agac.py:342
+#: cekirdek/dogrula/agac.py:344
 #, python-format
 msgid "Model kurulamadı: %s"
 msgstr ""
 
-#: cekirdek/dogrula/agac.py:345 cekirdek/dogrula/agac.py:350
+#: cekirdek/dogrula/agac.py:347 cekirdek/dogrula/agac.py:352
 #, python-format
 msgid "Nokta yoklaması: %s. %s"
 msgstr ""
 
-#: cekirdek/dogrula/agac.py:347 cekirdek/geometri/yoklama.py:141
+#: cekirdek/dogrula/agac.py:349 cekirdek/geometri/yoklama.py:141
 msgctxt "yoklama"
 msgid "örtüşme"
 msgstr ""
 
-#: cekirdek/dogrula/agac.py:348
+#: cekirdek/dogrula/agac.py:350
 msgid "Örtüşen hücreler kayıp parçacık üretir."
 msgstr ""
 
-#: cekirdek/dogrula/agac.py:352 cekirdek/geometri/yoklama.py:142
+#: cekirdek/dogrula/agac.py:354 cekirdek/geometri/yoklama.py:142
 msgctxt "yoklama"
 msgid "boşluk"
 msgstr ""
 
-#: cekirdek/dogrula/agac.py:353
+#: cekirdek/dogrula/agac.py:355
 msgid "Tanımsız bölge: parçacık kaybolur. Bölgeyi bir malzemeyle doldurun."
 msgstr ""
 
@@ -2273,16 +2277,16 @@ msgstr ""
 msgid "alanı analitik hesaplanamayan bölge"
 msgstr ""
 
-#: cekirdek/geometri/hacim.py:207
+#: cekirdek/geometri/hacim.py:209
 #, python-format
 msgid "stokastik hacmin bağıl σ'sı %%%.2f sınırını aşıyor (örneklem %d): %s"
 msgstr ""
 
-#: cekirdek/geometri/hacim.py:216
+#: cekirdek/geometri/hacim.py:218
 msgid "stokastik hacim sıfır (malzeme örnekleme kutusunda bulunamadı)"
 msgstr ""
 
-#: cekirdek/geometri/hacim.py:218
+#: cekirdek/geometri/hacim.py:220
 msgid "stokastik hacim ölçülemedi (malzeme kurulan modelde yok)"
 msgstr ""
 
@@ -2608,7 +2612,7 @@ msgstr ""
 msgid "hücre %d"
 msgstr ""
 
-#: cekirdek/geometri/yoklama.py:144
+#: cekirdek/geometri/yoklama.py:144 cekirdek/geometri/yol_metni.py:17
 msgid "kök"
 msgstr ""
 
@@ -2620,6 +2624,93 @@ msgstr ""
 #: cekirdek/geometri/yoklama.py:176
 #, python-format
 msgid "%d noktada %d örtüşme, %d boşluk"
+msgstr ""
+
+#: cekirdek/geometri/yol_metni.py:17
+msgid "iç"
+msgstr ""
+
+#: cekirdek/geometri/yol_metni.py:17
+msgid "dış"
+msgstr ""
+
+#: cekirdek/geometri/yol_metni.py:17
+msgid "içerik"
+msgstr ""
+
+#: cekirdek/geometri/yol_metni.py:18
+msgid "harita"
+msgstr ""
+
+#: cekirdek/geometri/yol_metni.py:18
+msgid "sınır"
+msgstr ""
+
+#: cekirdek/geometri/yol_metni.py:18
+msgid "eksenel yığın"
+msgstr ""
+
+#: cekirdek/geometri/yol_metni.py:20
+msgid "emici"
+msgstr ""
+
+#: cekirdek/geometri/yol_metni.py:20
+msgid "gövde"
+msgstr ""
+
+#: cekirdek/geometri/yol_metni.py:23
+#, python-brace-format
+msgid "{n}. halka"
+msgstr ""
+
+#: cekirdek/geometri/yol_metni.py:23
+#, python-brace-format
+msgid "{n}. yerleşim"
+msgstr ""
+
+#: cekirdek/geometri/yol_metni.py:24
+#, python-brace-format
+msgid "{n}. parça"
+msgstr ""
+
+#: cekirdek/geometri/yol_metni.py:24
+#, python-brace-format
+msgid "{n}. katman"
+msgstr ""
+
+#: cekirdek/geometri/yol_metni.py:25
+#, python-brace-format
+msgid "{n}. hücre"
+msgstr ""
+
+#: cekirdek/geometri/yol_metni.py:25
+#, python-brace-format
+msgid "{n}. grup"
+msgstr ""
+
+#: cekirdek/geometri/yol_metni.py:26
+#, python-brace-format
+msgid "{n}. bölge"
+msgstr ""
+
+#: cekirdek/geometri/yol_metni.py:29
+#, python-brace-format
+msgid "‘{ad}’ yerleşimi"
+msgstr ""
+
+#: cekirdek/geometri/yol_metni.py:29
+#, python-brace-format
+msgid "‘{ad}’ yerleşimi, {n}. öğe"
+msgstr ""
+
+#: cekirdek/geometri/yol_metni.py:41
+#, python-brace-format
+msgid "({i}) konumu"
+msgstr ""
+
+#: cekirdek/geometri/yol_metni.py:44
+#, python-brace-format
+msgid "‘{h}’ harfi"
 msgstr ""
 
 #: cekirdek/giris.py:32
@@ -2709,17 +2800,17 @@ msgstr ""
 msgid "not"
 msgstr ""
 
-#: cekirdek/dogrula/_ortak.py:49 cekirdek/giris.py:165 cekirdek/rapor_sablon/__init__.py:26
+#: cekirdek/dogrula/_ortak.py:52 cekirdek/giris.py:165 cekirdek/rapor_sablon/__init__.py:26
 #: cekirdek/rapor_sablon/uygunluk_eki.py:26
 msgid "HATA"
 msgstr ""
 
-#: cekirdek/dogrula/_ortak.py:49 cekirdek/giris.py:165 cekirdek/rapor_sablon/__init__.py:26
+#: cekirdek/dogrula/_ortak.py:52 cekirdek/giris.py:165 cekirdek/rapor_sablon/__init__.py:26
 #: cekirdek/rapor_sablon/uygunluk_eki.py:26
 msgid "UYARI"
 msgstr ""
 
-#: cekirdek/dogrula/_ortak.py:49 cekirdek/giris.py:165 cekirdek/rapor_sablon/__init__.py:27
+#: cekirdek/dogrula/_ortak.py:52 cekirdek/giris.py:165 cekirdek/rapor_sablon/__init__.py:27
 #: cekirdek/rapor_sablon/uygunluk_eki.py:27
 msgid "BİLGİ"
 msgstr ""
@@ -4691,10 +4782,6 @@ msgstr ""
 msgid "Tekrarlanabilirlik"
 msgstr ""
 
-#: cekirdek/rapor_sablon/__init__.py:105
-msgid "Geometri"
-msgstr ""
-
 #: cekirdek/rapor_sablon/__init__.py:106
 msgid "xy kesiti"
 msgstr ""
@@ -5637,11 +5724,11 @@ msgstr ""
 msgid "katmanı/koru doğrudan dolduruyor"
 msgstr ""
 
-#: cekirdek/geometri/hacim.py:113 cekirdek/tukenme_hacim.py:360
+#: cekirdek/geometri/hacim.py:115 cekirdek/tukenme_hacim.py:360
 msgid "hacmi kesin değil: "
 msgstr ""
 
-#: cekirdek/geometri/hacim.py:118 cekirdek/tukenme_hacim.py:367
+#: cekirdek/geometri/hacim.py:120 cekirdek/tukenme_hacim.py:367
 msgid "hacmi sıfır: "
 msgstr ""
 
@@ -5649,11 +5736,11 @@ msgstr ""
 msgid "bu yerleşim için analitik hacim yok"
 msgstr ""
 
-#: cekirdek/geometri/hacim.py:119 cekirdek/tukenme_hacim.py:373
+#: cekirdek/geometri/hacim.py:121 cekirdek/tukenme_hacim.py:373
 msgid "malzeme geometride bulunamadı"
 msgstr ""
 
-#: cekirdek/geometri/hacim.py:234 cekirdek/tukenme_hacim.py:396
+#: cekirdek/geometri/hacim.py:236 cekirdek/tukenme_hacim.py:396
 #, python-format
 msgid "stokastik hacim %.6g ± %.2g cm³ (%s)"
 msgstr ""

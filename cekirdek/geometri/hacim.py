@@ -69,8 +69,10 @@ def _uzunluk(z):
 
 
 def _kisa_yol(yol):
+    """Ayrinti metni icin yolun son uc parcasi, okunur bicimde (yol_metni)."""
+    from cekirdek.geometri.yol_metni import okunur
     parcalar = yol.split("/")
-    return "/".join(parcalar[-3:]) if len(parcalar) > 3 else yol
+    return okunur("/".join(parcalar[-3:]) if len(parcalar) > 3 else yol)
 
 
 def _ozet(satirlar):

@@ -36,6 +36,9 @@ _YER_ETIKETI = [
 def yer_etiketi(yer):
     """Bulgu yerinin okunur adi: "malzeme:uo2" -> "Malzeme uo2". Kod degismez."""
     yer = yer or ""
+    if yer.startswith("geometri:"):
+        from cekirdek.geometri.yol_metni import okunur
+        return _("Geometri") + ": " + okunur(yer[len("geometri:"):])
     for onek, ad in _YER_ETIKETI:
         if yer == onek:
             return _(ad)
