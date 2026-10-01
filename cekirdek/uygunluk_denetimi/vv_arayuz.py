@@ -51,8 +51,10 @@ def aoa_adi(anahtar):
 
 
 def aoa_degeri(deger):
-    if deger in ("termal", "hizli"):                  # baglamli (hizli != "Hızlı deneme")
-        return pgettext("spektrum", {"termal": "termal", "hizli": "hızlı"}[deger])
+    if deger == "termal":                             # baglamli (hizli != "Hızlı deneme")
+        return pgettext("spektrum", "termal")
+    if deger == "hizli":
+        return pgettext("spektrum", "hızlı")
     return _(AOA_DEGERLERI[deger]) if deger in AOA_DEGERLERI else str(deger)
 
 
