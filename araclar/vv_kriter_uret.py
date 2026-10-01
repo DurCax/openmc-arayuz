@@ -220,9 +220,26 @@ def kos(spec, kimlik, is_parcacigi):
     return olcum, {a: (round(v, 6) if isinstance(v, float) else v) for a, v in param.items()}
 
 
+def en_alanlarini_koru(spec, yol):
+    """YENI spec: yol'daki mevcut kriterin elle yazilmis Ingilizce alanlari
+    (baslik_en, aciklama_en, ... -- "_en" ile biten ust duzey anahtarlar) uretilen
+    metnin yerine konur. Dosya yoksa spec'in kopyasi. Bozuk dosyada ValueError."""
+    yeni = dict(spec)
+    if not os.path.exists(yol):
+        return yeni
+    try:
+        with open(yol, encoding="utf-8") as f:
+            mevcut = json.load(f)
+    except (OSError, ValueError) as e:
+        raise ValueError("%s okunamadı (EN alanları korunamaz): %s" % (yol, e)) from e
+    yeni.update({k: v for k, v in mevcut.items() if k.endswith("_en") and v})
+    return yeni
+
+
 def _yaz(spec, kimlik):
     os.makedirs(HEDEF, exist_ok=True)
     yol = os.path.join(HEDEF, "kriter_%s.json" % kimlik)
+    spec = en_alanlarini_koru(spec, yol)
     with open(yol, "w", encoding="utf-8") as f:
         json.dump(spec, f, ensure_ascii=False, indent=2)
         f.write("\n")

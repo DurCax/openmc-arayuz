@@ -12,6 +12,12 @@
    p.denetle(spec, kosu_dizini)          # denetler ve gosterir
    p.profiller_degisti -> tuple          # kullanici kutu degistirdi (spec'e yazilir)
    p.git_istendi -> str                  # sayfa anahtari (uygunluk.SEKMELER)
+   p.tally_eklensin -> dict              # kullanici EALF tally onerisini ONAYLADI
+
+ PROFIL B: V&V ozeti ve uygulama (AOA) rapor_uygunluk.vv_baglami ile kurulur
+ (cekirdek.vv.kume.uygulama_ozeti); USL notu ozetin nedenini yazar. Spec'te
+ EALF tally'si (aoa.EALF_TALLY) yoksa "EALF tally'si ekle" onerisi gorunur:
+ tayf olmadan AOA alt kumesi secilemez. Tally OTOMATIK eklenmez; onay sorulur.
 
  Durust cerceve metni (profiller.durust_cerceve) AYNEN gosterilir. Kilavuz
  baglantisi: baslikta "?" ve alttaki baglanti yardim.ac(KILAVUZ_BOLUMU) cagirir
@@ -94,6 +100,7 @@ class UygunlukPaneli(b.Kart):
 
     profiller_degisti = QtCore.Signal(tuple)
     git_istendi = QtCore.Signal(str)
+    tally_eklensin = QtCore.Signal(dict)
 
     def __init__(self, parent=None):
         self.d_git = b.duz_dugme(_("Bulguya git"), "external-link")
@@ -104,6 +111,7 @@ class UygunlukPaneli(b.Kart):
                                     "isteyeceği kanıta göre denetimi."),
                          eylem=self.d_git, parent=parent)
         self._yukleniyor = False
+        self._spec = None
         self.kutular = _profil_kutulari()
         self.govde.addLayout(self._profil_satiri())
         self.govde.addLayout(self._ozet_satiri())
@@ -116,6 +124,18 @@ class UygunlukPaneli(b.Kart):
         self.d_git.clicked.connect(self._secilene_git)
         self.ekle(self.liste)
         self.usl_notu = self._metin("uyari")
+        self.d_ealf = b.ikincil_dugme(_("EALF tally'sini ekle"), "plus")
+        self.d_ealf.setToolTip(_(
+            "Profil B, uygulamanın nötron tayfını (termal / ara / hızlı) EALF'tan "
+            "bulur ve USL'yi o tayftaki kriter deneylerinden hesaplar. Bu tally "
+            "olmadan uygulamaya uygun V&V alt kümesi seçilemez. Ekledikten "
+            "sonra modeli yeniden koşun."))
+        self.d_ealf.clicked.connect(self._ealf_oner)
+        self.d_ealf.hide()
+        satir = QtWidgets.QHBoxLayout()
+        satir.addWidget(self.d_ealf)
+        satir.addStretch(1)
+        self.govde.addLayout(satir)
         self.cerceve = self._metin(None)
         self.kilavuz = self._metin(None)
         self.kilavuz.setTextFormat(QtCore.Qt.RichText)
@@ -186,7 +206,33 @@ class UygunlukPaneli(b.Kart):
 
     def _kutu_degisti(self, *_a):
         if not self._yukleniyor:
+            self._ealf_guncelle(self._spec, self.secili())
             self.profiller_degisti.emit(self.secili())
+
+    # ------------------------------------------------------------------
+    # EALF tally onerisi (Profil B)
+    # ------------------------------------------------------------------
+    def _ealf_guncelle(self, spec, profiller):
+        from cekirdek.vv import aoa
+        tally_var = any(t.get("ad") == aoa.EALF_TALLY for t in (spec or {}).get("tallyler") or [])
+        self.d_ealf.setVisible(spec is not None and "B" in profiller and not tally_var)
+
+    def _onay_al(self, baslik_, metin):
+        """Spec degistiren oneri icin onay. Testler bunu degistirir (modal acilmaz)."""
+        cevap = QtWidgets.QMessageBox.question(
+            self, baslik_, metin, QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No,
+            QtWidgets.QMessageBox.No)
+        return cevap == QtWidgets.QMessageBox.Yes
+
+    def _ealf_oner(self):
+        from cekirdek.vv import aoa
+        if self._onay_al(_("EALF tally'si eklensin mi?"), _(
+                "Modele '{ad}' adlı fisyon/enerji tally'si eklenecek ({n} logaritmik "
+                "enerji grubu). Koşu biraz yavaşlar; sonuç dosyası büyür. Profil B, "
+                "bir sonraki koşudan sonra uygulamanın tayfını bulup USL'yi o tayftaki "
+                "kriter deneylerinden hesaplar.").format(ad=aoa.EALF_TALLY,
+                                                         n=aoa.EALF_GRUP_SAYISI)):
+            self.tally_eklensin.emit(aoa.ealf_tally_tanimi())
 
     # ------------------------------------------------------------------
     # gosterim
@@ -194,11 +240,15 @@ class UygunlukPaneli(b.Kart):
     def denetle(self, spec, kosu_dizini):
         """Secili profillerle denetler ve gosterir. Girdi hatasi panelde gorunur."""
         profiller = self.secili()
-        bulgular, hata = rapor_uygunluk.denetle(spec, kosu_dizini, profiller)
+        self._spec = spec
+        vv, uygulama = rapor_uygunluk.vv_baglami(spec, kosu_dizini, profiller)
+        bulgular, hata = rapor_uygunluk.denetle(spec, kosu_dizini, profiller, vv=vv,
+                                                uygulama=uygulama)
         if hata:
             self.hata_goster(hata)
         else:
-            self.goster(bulgular, profiller)
+            self.goster(bulgular, profiller, vv)
+        self._ealf_guncelle(spec, profiller)
 
     def temizle(self):
         self.liste.clear()

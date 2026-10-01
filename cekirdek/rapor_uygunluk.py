@@ -7,6 +7,7 @@ eki, arayuz paneli ve komut satiri icin ortak yuzu (Dalga S-2).
     ru.secili_profiller(spec)            -> ("A", "D")   (proje ayari)
     ru.profilleri_yaz(spec, ("A", "B"))  -> YENI spec (girdi degismez)
     ek = ru.ek_verisi(spec, kosu_dizini, rapor_metni=html)
+    vv, uyg = ru.vv_baglami(spec, kosu_dizini, ("B",))  -> V&V ozeti + AOA (Profil B)
     ru.cikis_kodu(bulgular, siki=False)  -> 1 hata varsa; siki ve degerlendirilemeyen
                                             kural varsa 3; yoksa 0 (CLI)
 
@@ -88,23 +89,46 @@ def sirala(bulgular):
 
 
 def usl_notu(profiller, vv=None):
-    """B secili ve V&V ozeti (USL) yoksa ekte/panelde yazilacak not; yoksa ""."""
+    """B secili ve USL yoksa ekte/panelde yazilacak not (V&V ozetinin nedeniyle);
+    yoksa ""."""
     if "B" not in profiller or (vv is not None and getattr(vv, "usl", None) is not None):
         return ""
-    return _("USL hesaplanamadı: doğrulama (V&V) kümesi yok. Bu koşunun k değeri bir "
-             "üst alt-kritiklik sınırıyla karşılaştırılmadı; bu sonuç kritiklik "
-             "güvenliği kanıtı değildir.")
+    neden = getattr(vv, "usl_neden", "") or _("doğrulama (V&V) kümesi yok")
+    return _("USL hesaplanamadı: %s. Bu koşunun k değeri bir üst alt-kritiklik sınırıyla "
+             "karşılaştırılmadı; bu sonuç kritiklik güvenliği kanıtı değildir.") % neden
 
 
-def denetle(spec, kosu_dizini, profiller=None, rapor_metni=None, vv=None):
-    """(bulgular, hata_metni). Girdi hatasi (bozuk uygunluk_girdisi.json vb.)
-    istisna olarak yukari cikmaz: hata_metni doner ve loglanir."""
+def vv_baglami(spec, kosu_dizini, profiller):
+    """Profil B icin (vv, uygulama): cekirdek.vv.kume.uygulama_ozeti -- spec ve
+    kosu dizininden AOA; uygunluk_girdisi.json'daki "uygulama" ustune yazar.
+    B secili degilse (None, None). V&V kumesi kurulamazsa loglanir, (None, None)."""
+    if "B" not in profiller:
+        return None, None
+    from cekirdek.uygunluk_denetimi import denetle as _d
+    from cekirdek.vv import kume
+    try:
+        girdi = _d.girdi_dosyasi_oku(kosu_dizini).get("uygulama")
+        spec = _d._spec_yukle(spec, kosu_dizini)
+        return kume.uygulama_ozeti(spec, kosu_dizini, uygulama=girdi)
+    except (OSError, ValueError, KeyError) as e:
+        _log.warning("V&V özeti kurulamadı (%s): %s", kosu_dizini, e, exc_info=True)
+        return None, None
+
+
+def denetle(spec, kosu_dizini, profiller=None, rapor_metni=None, vv=None, uygulama=None):
+    """(bulgular, hata_metni). B seciliyse ve vv verilmemisse V&V ozeti ve
+    uygulama vv_baglami ile kurulur. Girdi hatasi (bozuk uygunluk_girdisi.json
+    vb.) istisna olarak yukari cikmaz: hata_metni doner ve loglanir."""
     from cekirdek.uygunluk_denetimi import denetle as _d
     profiller = secili_profiller(spec) if profiller is None else tuple(profiller)
     if not profiller:
         return [], ""
+    if vv is None:
+        vv, hesaplanan = vv_baglami(spec, kosu_dizini, profiller)
+        uygulama = hesaplanan if uygulama is None else uygulama
     try:
-        return _d.denetle(spec, kosu_dizini, profiller, vv=vv, rapor_metni=rapor_metni), ""
+        return _d.denetle(spec, kosu_dizini, profiller, vv=vv, rapor_metni=rapor_metni,
+                          uygulama=uygulama), ""
     except (OSError, ValueError) as e:
         _log.warning("uygunluk denetimi yapılamadı: %s", kosu_dizini, exc_info=True)
         return [], _("uygunluk denetimi yapılamadı: %s") % e
@@ -128,7 +152,11 @@ def ek_verisi(spec, kosu_dizini, profiller=None, rapor_metni=None, vv=None):
     from cekirdek.uygunluk_denetimi.denetle import ozet
     from cekirdek.uygunluk_denetimi.profiller import durust_cerceve, profil_getir
     profiller = secili_profiller(spec) if profiller is None else tuple(profiller)
-    bulgular, hata = denetle(spec, kosu_dizini, profiller, rapor_metni=rapor_metni, vv=vv)
+    uygulama = None
+    if vv is None:
+        vv, uygulama = vv_baglami(spec, kosu_dizini, profiller)
+    bulgular, hata = denetle(spec, kosu_dizini, profiller, rapor_metni=rapor_metni, vv=vv,
+                             uygulama=uygulama)
     gruplar = {d: [] for d in DURUM_SIRASI}
     for b in sirala(bulgular):
         gruplar.setdefault(getattr(b, "durum", "bilgi"), []).append(_satir(b))

@@ -202,6 +202,19 @@ could not be made), 2 usage error, 3 with `--siki`: at least one rule could not 
 
 A user guide (`docs/kilavuz/`, Turkish and English) is in preparation.
 
+## ⚠ DRAW FIRST, THEN RUN
+
+The **Run button stays disabled** until the geometry preview has been produced and
+validation errors are fixed: this prevents hours of running on a wrong geometry.
+Details: [guide §6.4](docs/kilavuz/en/06-sonuclar.md#64-plot-first-then-run).
+
+## Known pitfalls
+
+Measured pitfalls and the story of their fixes (narrow data temperature ranges, water
+S(α,β) only 284–800 K, hexagonal orientation letters, duct apothem, source box z range,
+silent acceptance in the OpenMC API) are in the user guide:
+[guide §6.5](docs/kilavuz/en/06-sonuclar.md#65-known-pitfalls).
+
 ## Limitations
 
 The main limitations of the validation are stated in [docs/VV.en.md](docs/VV.en.md); the most

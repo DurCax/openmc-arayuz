@@ -9,21 +9,33 @@ Hesap-hesap kriterleri (tur = "hesap") kumeye GIRMEZ: E olculmus bir deney degil
   vakalar(dosyalar=None, filtre=None) -> [istatistik.Vaka]
   ozet(vakalar=None, filtre=None, uygulama=None, delta_sm=0.05, delta_aoa=0.0) -> VVOzeti
   uygulama(spec, kosu_dizini=None) -> AOA parametreleri (aoa.parametreler)
+  aoa_filtresi(uygulama) -> {"tayf": ...} | None   (uygulamaya uygun alt kume)
+  uygulama_ozeti(spec, kosu_dizini=None, uygulama=None) -> (VVOzeti, uygulama)
+      arayuz paneli, rapor eki ve CLI'nin ortak yolu: uygulamanin AOA'sina
+      uygun alt kumeden USL; uygun alt kume yoksa usl None ve neden
+      "bu uygulama için USL yok (AOA dışında)".
 
 filtre: {parametre: deger | (deger, ...) | ("aralik", alt, ust)} -- AOA'ya gore alt
 kume secimi (6698: USL her AOA icin ayri hesaplanir).
 """
 
+import dataclasses
 import glob
 import json
 import os
 from collections import Counter
 
-from cekirdek.ceviri import _, N_
+from cekirdek.ceviri import _, N_, pgettext
 from cekirdek.gunluk import kaydedici
 from cekirdek.uygunluk_denetimi.vv_arayuz import AOA_KATEGORILERI, VVOzeti
 from cekirdek.vv import aoa as _aoa
 from cekirdek.vv import istatistik as _ist
+
+# Alt kume secimi: 6698 §2.5 tayf sinifi (termal / ara / hizli) birincil AOA
+# olcutudur. Bolunebilir element, fiziksel bicim ve yansitici kategorileri
+# alt kumeyi daraltmaz (depodaki kume n >= 10'u tutamaz); onlari K6-AOA ayrica
+# denetler ve uyumsuzlukta uyarir.
+AOA_FILTRE_ANAHTARLARI = ("tayf",)
 
 _log = kaydedici(__name__)
 
@@ -135,3 +147,40 @@ def ozet(vlar=None, filtre=None, uygulama=None, delta_sm=DELTA_SM_VARSAYILAN,
 def uygulama(spec, kosu_dizini=None):
     """Uygulamanin AOA parametreleri (spec + kosu dizini; cikarilamayan yok)."""
     return _aoa.parametreler(spec, kosu_dizini)
+
+
+def aoa_filtresi(uyg):
+    """Uygulamanin AOA'sina uygun alt kume filtresi; tayf bilinmiyorsa None."""
+    filtre = {a: uyg[a] for a in AOA_FILTRE_ANAHTARLARI if (uyg or {}).get(a)}
+    return filtre or None
+
+
+def _tayf_metni(tayf):
+    adlar = {"termal": pgettext("spektrum", "termal"), "ara": _("ara enerji"),
+             "hizli": pgettext("spektrum", "hızlı")}
+    return adlar.get(tayf, str(tayf))
+
+
+def uygulama_ozeti(spec, kosu_dizini=None, uygulama=None, vlar=None,
+                   delta_sm=DELTA_SM_VARSAYILAN):
+    """(VVOzeti, uygulama). uygulama: spec + kosu dizininden cikarilan AOA
+    parametreleri, verilen sozlukle (kullanici girdisi) GUNCELLENIR. Alt kume
+    aoa_filtresi ile secilir; secilemiyorsa (tayf yok) butun kume betimsel
+    ozetlenir. Iki durumda da USL cikmiyorsa usl None ve neden durustce yazilir.
+    Girdi spec DEGISMEZ."""
+    uyg = dict(_aoa.parametreler(spec, kosu_dizini) if spec is not None else {})
+    uyg.update(uygulama or {})
+    filtre = aoa_filtresi(uyg)
+    if filtre is None:
+        # Alt kume secilemez: kumenin TAMAMI betimsel olarak ozetlenir (K6-AOA, K12
+        # uygulamayi yine kumeyle karsilastirir) ama USL VERILMEZ.
+        oz = ozet(vlar, uygulama=uyg, delta_sm=delta_sm)
+        return dataclasses.replace(oz, usl=None, usl_neden=_(
+            "bu uygulama için USL yok (AOA belirlenemedi): nötron tayfı bilinmiyor; "
+            "EALF tally'sini ('%s') ekleyip yeniden koşun") % _aoa.EALF_TALLY), uyg
+    oz = ozet(vlar, filtre=filtre, uygulama=uyg, delta_sm=delta_sm)
+    if oz.usl is None:
+        oz = dataclasses.replace(oz, usl_neden=_(
+            "bu uygulama için USL yok (AOA dışında): kümede tayfı %s olan %d vaka var; %s")
+            % (_tayf_metni(filtre["tayf"]), oz.n, oz.usl_neden))
+    return oz, uyg

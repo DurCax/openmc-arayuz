@@ -150,10 +150,9 @@ silinmez.
 
 ## ⚠ ÖNCE ÇİZ, SONRA ÇALIŞTIR
 
-Geometri önizlemesi başarıyla üretilmeden ve doğrulama hataları giderilmeden
-**ÇALIŞTIR düğmesi etkinleşmez.** Bu, elle yazılan betiklerdeki
-*"plotlar doğruysa `model.run()` satırının yorumunu kaldır"* alışkanlığının
-arayüze gömülmüş halidir — yanlış geometriyle saatlerce koşmayı önler.
+Geometri önizlemesi üretilmeden ve doğrulama hataları giderilmeden **ÇALIŞTIR
+düğmesi etkinleşmez**: yanlış geometriyle saatlerce koşmayı önler. Ayrıntı:
+[kılavuz §6.4](docs/kilavuz/tr/06-sonuclar.md#64-önce-çiz-sonra-çalıştır).
 
 ## Doğrulama neyi yakalar
 
@@ -752,120 +751,10 @@ Bitmiş bir geometriyi incelerken (eksen değiştirme, yakınlaştırma) açın;
 
 ## Bilinen tuzaklar
 
-- **Veri kütüphanesi sıcaklık aralıkları dar olabilir.** Nötron verisi
-  250–2500 K, ama **su için S(α,β) yalnızca 284–800 K**. Aralık dışına çıkan bir
-  sıcaklık taraması koşunun ortasında patlar; `veri_bilgi.py` bunu önceden okur.
-
-- **`HexLattice` ve `HexagonalPrism` yönelimleri aynı harfi kullanır ama
-  tanımları terstir** (biri "y eksenine dik", diğeri "y eksenine paralel").
-  Pratikte aynı geometrik yönelim için **aynı harf** verilir; bu ölçümle
-  doğrulanmıştır (`testler` → `test_altigen_sinir`). Yanlış eşleme %2.4 Δk
-  hataya yol açıyordu.
-- **Altıgen duct apothem'i** `(halka-1)·adım·√3/2 + adım/2`'dir,
-  `(halka-0.5)·adım` değil. İkincisi köşelerde doğru görünür ama düz yüzlerde
-  fazla boşluk bırakır.
-- **`Model.plot()` renk sözlüğü** SVG renk adı veya `(R,G,B)` demeti ister;
-  hex dize (`"#d95f02"`) `KeyError` verir.
-- **Entropi açıkken OpenMC çıktı formatı değişir** (ek sütun). Çevrim satırı
-  ayrıştırıcısı her iki biçimi de tanımak zorundadır.
-- **Kutu kaynağın z aralığı modelin yüksekliğini kapsamalıdır.** Önceki sürümde
-  ±1.0 cm'ye sabitti; 2B'de sorun değildi ama 366 cm'lik 3B bir modelde kaynak
-  merkezdeki 2 cm'lik dilimde başlıyor ve eksenel güç şekli **aşırı tepeli**
-  çıkıyordu (eksenel tepe 2.32 yerine 1.49). **Shannon entropisi bunu
-  göstermedi** — entropi global bir skalerdir ve bu geometride radyal dağılım
-  baskın gelir.
-- **`Tally.scores` hiçbir doğrulama yapmaz** — uydurma bir skor adı bile kabul
-  edilir, hata koşuda çıkar. OpenMC geçerli skor listesi sunmadığı için
-  `dogrula.py` küratörlü bir listeye göre *uyarı* verir.
-- **`Tally.get_pandas_dataframe`'de `distribcell_paths` yoktur**; doğru kwarg
-  `paths=True`'dur (filtre sınıfındaki isimle karışmasın).
-- **`Cell.num_instances` önce `Geometry.determine_paths()` ister**, aksi halde
-  `ValueError`.
-
-
-### Önizleme, tally'ler yüzünden bütün uygulamayı çökertiyordu
-
-Arayüzü gerçekten açıp bakınca çıktı — testler görmemişti. `Model.plot()`
-geometriyi dilimlemek için **OpenMC kütüphanesini başlatıyor** ve bu sırada
-tally'leri de çözmeye çalışıyor. Güç dağılımı tally'sine eklenen `CellFilter`
-çözülemeyince OpenMC C++ tarafında `terminate()` çağrılıyor:
-
-```
-terminate called after throwing an instance of 'std::runtime_error'
-  what():  Could not find cell 0 specified on tally filter.
-```
-
-Bu bir Python istisnası değil — `try/except` yakalayamaz, süreç doğrudan
-**SIGABRT** ile ölür. Ölçüldü: düzeltmeden önce 3/3 koşuda çökme, sonra 4/4 temiz.
-
-İki önlem alındı:
-- **Önizleme tally'siz bir model çiziyor.** Zaten sadece geometri, malzeme ve
-  sıcaklık ayarları gerekiyor; ileride eklenecek her tally türü de aynı riski
-  taşırdı.
-- **Yeniden girme koruması.** Çizim sürerken ikinci bir çizim başlarsa aynı
-  süreçte ikinci bir kütüphane oturumu açılırdı.
-
-> ⚠ **Çökme yalnızca gerçek bir X oturumunda, tam arayüz akışında tekrarlanıyor.**
-> Başsız (`QT_QPA_PLATFORM=offscreen`) ortamda düzeltme kapalıyken bile
-> çökmüyor, dolayısıyla otomatik test çökmenin kendisini üretemiyor. Test bunun
-> yerine **değişmezi** sınıyor: çizime giden modelde tally sayısı sıfır olmalı
-> (`Model.plot` sarmalanıp ölçülüyor). Elle tekrar tarifi: `pwr_eksenel.json`'ı
-> arayüzde açın, Kor sekmesine geçin; 3B modelde önizleme xy ve xz kesitlerini yan yana gösterir.
-
-**İkinci ders aynı yerden:** `test_cizim` ve `test_dogrulama_temiz` örnek
-listelerini **elle** tutuyordu; yeni eklenen `zirh_kure` ve `pwr_eksenel` kapsam
-dışında kalmıştı. İkisi de artık `ornekler/*.json` dizinini tarıyor.
-
-### S(α,β) kuralı saf zirkonyuma hidrojen öneriyordu
-
-Kural yalnızca "malzemenin elementleri izin verilen kümenin alt kümesi mi" diye
-bakıyordu. {Zr} ⊆ {H, Zr} olduğu için **saf zirkonyum "zirkonyum hidrür"**
-sayılıyor ve kullanıcıya `c_H_in_ZrH` eklemesi öneriliyordu — hidrojensiz bir
-malzemeye hidrojen S(α,β)'sı, yani yanlış fizik. Aynı mantıkla B₂O₃ "borlu su"
-çıkardı. Her kurala **zorunlu** element kümesi eklendi. `pwr_pinhucre`'nin
-başından beri taşıdığı uyarı bu yanlış alarmdı.
-
-### Eksenel katmanlama üç hata ortaya çıkardı (hepsi ölçümle bulundu)
-
-**1. "Fisil aralık"ın iki ayrı tanımı → 1300 pcm.** Kurucu aralığı kurulmuş
-geometriden türetiyordu, üretilen betik ise spec'ten. Betik ötekinin ne yaptığını
-bilemediği için farklı kaynak kutusu kuruyordu. Geometri 400 noktada birebir
-aynıydı — fark **ayarlardaydı**. Tek tanıma indirildi.
-*Ders: aynı sayıyı iki yoldan hesaplayan iki kod, er ya da geç ayrışır.*
-
-**2. Korunum tally'si tüm modeli sayıyordu → sahte "BOZUK" (4.73e-03).**
-Doğal uranyum blanket de fisyon yapıyor ama distribcell'e dahil değil. Referans
-tally `CellFilter` ile aynı hücreye bağlandı; kontrol böylece **güçlendi** —
-artık eksenel mesh'in hücrenin tamamını kapsayıp kapsamadığını da sınıyor.
-
-**3. Güç mesh'i hedef çubuktan taşıyordu → F_q %6 şişti (1.6435 → 1.8150).**
-Mesh fisil aralığı kapsıyordu, ama blanket katmanlarında `yakit_cubugu` yok;
-boş bin'ler ortalamayı düşürüp tepeyi şişiriyordu. Sayılar makul görünüyordu —
-sessiz hata tam olarak budur. Mesh artık **hedef çubuğun** aralığını kullanıyor.
-
-**Ayrıca:** entropi mesh'inin z sınırları `±1e10`'da sabitti. `nz=1` iken
-zararsızdı ama `nz>1` istendiğinde bütün parçacıklar tek dilime düşüyor ve
-eksenel yakınsama hiç ölçülmemiş oluyordu; entropi yine "yakınsadı" diyordu.
-Gerçek yükseklikten türetildikten sonra `pwr_eksenel`'de 40 pasif çevrimin
-yetmediğini **bu uyarı yakaladı**.
-
-### U₃Si₂-Al yoğunluğu yüklemeyle tutarsızdı
-
-Kütüphanedeki dispersiyon yakıtı 4.8 gU/cm³ yüklemede sabit **5.4 g/cm³**
-yoğunlukla kuruluyordu; U₃Si₂ (12.2 g/cm³) + Al (2.70 g/cm³) karışımından bu
-yüklemede **6.73 g/cm³** çıkar ve eski değerde alüminyumun kütle payı %23 yerine
-%4'e düşüyordu. Yoğunluk artık yüklemeden hesaplanır
-(`malzeme_kutup.u3si2_yogunlugu`; isteğe bağlı gözeneklilik). Elle verilmiş
-yoğunluk (eski kayıtlar, `mtr_plaka` örneği) aynen kullanılır.
-
-### Dışa aktarılan betik bazı adlarda sessizce farklı model kuruyordu
-
-Spec adları doğrudan Python değişkeni oluyordu: "a b" ve "a_b" malzemeleri aynı
-değişkene düşüyor (400 noktanın 4'ünde farklı malzeme), "class", "None",
-"openmc", "malzemeler" adları betiği çalışmaz yapıyordu; ayrıca kinetik (IFP)
-açıkken betik β_eff tally'lerini yazmıyordu. Değişkenler artık türe göre önekli
-ve benzersiz, IFP betikte de var; `test_butunlesme.py` 11 örnekte anlamsal
-eşdeğerliği denetler.
+Veri kütüphanesi sıcaklık aralıkları (su S(α,β) yalnız 284–800 K), altıgen yönelim
+harfleri, kılıf apotemi, kaynak kutusunun z aralığı ve OpenMC API'sinin sessiz
+kabulleri gibi ölçümle bulunmuş tuzaklar ve düzeltme öyküleri kılavuzda:
+[kılavuz §6.5](docs/kilavuz/tr/06-sonuclar.md#65-bilinen-tuzaklar).
 
 ## Bilinen sınırlar
 

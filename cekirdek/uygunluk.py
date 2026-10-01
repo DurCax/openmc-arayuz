@@ -431,8 +431,9 @@ def kor_turleri(spec):
 
 def parca_turleri(spec):
     """
-    {"cubuk", "plaka", "kontrol_cubugu", "demet_kare", "demet_altigen": bool}
-    -- Parcalar ve Demet sekmelerinde neler eklenebilir.
+    {"cubuk", "plaka", "kontrol_cubugu", "demet_kare", "demet_altigen", "tambur": bool}
+    -- Parcalar ve Demet sekmelerinde neler eklenebilir. Tambur kutuphanesi
+      (spec["tamburlar"]) yalniz gelismis modda kullanilir (sablonda kor.tambur).
       kontrol cubugu 3B ve bir kafese (demet / kor haritasi / tambur dolgusu)
       yerlestirilebilen turlerde; tek_cubuk'ta cubugun kendisi kordur.
     """
@@ -441,7 +442,7 @@ def parca_turleri(spec):
     if b.agac:
         # gelismis modda her kutuphane parcasi herhangi bir yuvaya konabilir
         return {"cubuk": True, "plaka": True, "kontrol_cubugu": b.boyut != "2B",
-                "demet_kare": True, "demet_altigen": True}
+                "demet_kare": True, "demet_altigen": True, "tambur": True}
     kafesli = ("tek_demet", "kare_kafes", "altigen_kafes", "tamburlu")
     demet = tur in kafesli or bool(b.geo["demet"])
     return {
@@ -452,6 +453,7 @@ def parca_turleri(spec):
         # hucresi kare, altigen haritaninki altigendir; oteki tip oturmaz.
         "demet_kare": demet and tur != "altigen_kafes",
         "demet_altigen": demet and tur != "kare_kafes",
+        "tambur": False,
     }
 
 

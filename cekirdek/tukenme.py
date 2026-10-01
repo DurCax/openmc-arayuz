@@ -160,9 +160,14 @@ def _zehir_mi(m):
             or _bor_zehri_mi(m))
 
 
+def otomatik_yanan_adlar(spec):
+    """Kendiliginden yanan malzemeler (ek listeden bagimsiz): fisil + yanabilir zehir."""
+    return [m["ad"] for m in spec.get("malzemeler", []) if _fisil_mi(m) or _zehir_mi(m)]
+
+
 def yanabilir_adlar(spec):
     """Yanacak malzemelerin adlari: fisil olanlar + yanabilir zehirler + ek liste."""
-    adlar = [m["ad"] for m in spec.get("malzemeler", []) if _fisil_mi(m) or _zehir_mi(m)]
+    adlar = otomatik_yanan_adlar(spec)
     for ad in (spec.get("tukenme") or {}).get("ek_malzemeler") or []:
         if ad not in adlar and sema.malzeme_bul(spec, ad) is not None:
             adlar.append(ad)

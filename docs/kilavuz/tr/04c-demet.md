@@ -91,16 +91,19 @@ yazılır: bir demeti iç demet olarak koymak için adım en az o demetin ölç�
 | **Yönelim** | Yalnız altıgen demette: **Üst/alt yüzler yatay (tepede hücre)** = `y` ya da **Sağ/sol yüzler düşey (sağda hücre)** = `x`. `HexLattice.orientation` anlamındadır: `y`'de ilk komşu tepededir. Harita yönelim değişince yeniden çizilir. | — | demetlerde çoğunlukla `y` | Altıgen tam korda demet ile kor kafesine aynı harfi vermek: demet pin kafesi `y` ise kor kafesi `x` olmalıdır (birbirine 90°; `vver1000_kor`, `sfr_met1000_kor`) | `demetler[].yonelim` (`x` \| `y`) |
 | **Palette bütün malzemeler ve Boş hücre** | Paleti genişletir: yalnız soğutucu/moderatör değil **bütün malzemeler** ve **Boş (madde yok)** hücresi de seçilebilir (ör. gaz kanalı, su deliği, boş konum). Kaydedilmez; yalnız paletin görünümüdür. | — | — | Boş hücreyi soğutucu yerine kullanmak: o hücrede madde yoktur, nötron serbest uçar | (kaydedilmez) |
 
-### Kılıf (duct) — yalnız JSON
+### Kılıf (duct)
 
-Altıgen demetlerin (SFR, VVER-440) çevresindeki altıgen kılıf (*duct*) bugün arayüzden
-düzenlenmez; dosyada `demetler[].kilif` alanıyla verilir ve korunur:
+Altıgen demetlerin (SFR, VVER-440) çevresindeki altıgen kılıf (*duct*) altıgen demet seçiliyken
+**Kılıf** kartında düzenlenir (`demetler[].kilif`); kare demette kart gizlidir. **Kılıf (duct) var**
+kutusu kapatılınca alan dosyadan kaldırılır; açılınca iç ölçü pin zarfı, malzeme yapısal bir
+malzeme olarak önerilir. Ölçü hataları kartta anında gösterilir:
 
-| Anahtar | Anlamı | Birim | Tipik değer |
-|---|---|---|---|
-| `kilif.ic_duz` | Kılıfın **iç** düz yüzden düz yüze ölçüsü | cm | SFR MET-1000 (`sfr_met1000_demet`): 15.0191 |
-| `kilif.kalinlik` | Kılıf duvar kalınlığı | cm | SFR MET-1000: 0.3966 |
-| `kilif.malzeme` | Kılıf malzemesi | — | HT-9, SS-316 |
+| Alan | Anahtar | Anlamı | Birim | Tipik değer |
+|---|---|---|---|---|
+| **İç ölçü** | `kilif.ic_duz` | Kılıfın **iç** düz yüzden düz yüze ölçüsü | cm | SFR MET-1000 (`sfr_met1000_demet`): 15.0191 |
+| **Kalınlık** | `kilif.kalinlik` | Kılıf duvar kalınlığı | cm | SFR MET-1000: 0.3966 |
+| **Malzeme** | `kilif.malzeme` | Kılıf malzemesi | — | HT-9, SS-316 |
+| **Dış ölçü** | (hesaplanır) | İç ölçü + 2 × kalınlık | cm | SFR MET-1000: 15.8123 |
 
 Kılıfın dışı ile demet hücresinin sınırı arası **Demet dışı** malzemesiyle dolar (demetler
 arası boşluk). Kılıf yalnız altıgen demette kurulur (kare demette "yok sayılır" uyarısı);

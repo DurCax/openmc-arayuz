@@ -40,6 +40,10 @@ class YerlesimFormu(FormTabani):
         super().__init__(parent)
         self.ad = QtWidgets.QLineEdit()
         self.ad.setAccessibleName(_("yerleşim adı"))
+        self.icerik = QtWidgets.QComboBox()
+        self.icerik.setAccessibleName(_("yerleşim içeriği"))
+        self.icerik.setToolTip(_("Yerleştirilen kütüphane bileşeni (tambur, çubuk, demet, "
+                                 "parça). Tamburlar Parçalar sayfasında tanımlanır."))
         self.mod = QtWidgets.QComboBox()
         for k, v in MOD_ADLARI.items():
             self.mod.addItem(_(v), k)
@@ -72,6 +76,7 @@ class YerlesimFormu(FormTabani):
     def _kur(self):
         f = form_duzeni(self)
         f.addRow(_("Ad"), self.ad)
+        f.addRow(_("İçerik"), self.icerik)
         f.addRow(_("Mod"), self.mod)
         f.addRow(_("Sayı"), self.sayi)
         f.addRow(_("Merkez yarıçapı"), self.merkez_r)
@@ -108,6 +113,7 @@ class YerlesimFormu(FormTabani):
     def _bagla(self):
         self.ad.editingFinished.connect(self._ad_degisti)
         self.mod.currentIndexChanged.connect(self._kaydet)
+        self.icerik.currentIndexChanged.connect(self._icerik_degisti)
         self.sayi.valueChanged.connect(self._kaydet)
         for w in (self.merkez_r, self.baslangic, self.bakis_x, self.bakis_y,
                   self.bakis_aci, self.ofset):
@@ -126,6 +132,7 @@ class YerlesimFormu(FormTabani):
     def doldur(self, y):
         self.ad.setText(y.get("ad") or "")
         kutu_doldur(self.mod, [(k, _(v)) for k, v in MOD_ADLARI.items()], y.get("mod"))
+        self._icerik_doldur(y.get("icerik"))
         self.sayi.setValue(int(y.get("sayi") or 1))
         sayi_yaz(self.merkez_r, y.get("merkez_yaricap") or 0.0)
         sayi_yaz(self.baslangic, y.get("baslangic_acisi") or 0.0)
@@ -149,6 +156,29 @@ class YerlesimFormu(FormTabani):
                     uye)
         sayi_yaz(self.ofset, y.get("donme_ofset") or 0.0)
         self._gorunurluk()
+
+    def _icerik_doldur(self, icerik):
+        """Kutuphane bilesenleri; icerik bilesen degilse (malzeme, alt agac) en
+        basta secilemeyen bir "agacta duzenleyin" ogesi (veri sessizce degismez)."""
+        ad = icerik.get("ad") if isinstance(icerik, dict) and icerik.get("tur") == "bilesen" \
+            else icerik if isinstance(icerik, str) else None
+        ogeler = self.bilesen_secenekleri()
+        if ad is None:
+            ogeler = [(None, _("(bileşen değil — ağaçta düzenleyin)"))] + ogeler
+        kutu_doldur(self.icerik, ogeler, ad)
+
+    def _icerik_degisti(self, *_a):
+        ad = self.icerik.currentData()
+        if self._yukleniyor or ad is None:
+            return
+        eski = (self.oge() or {}).get("icerik")
+        yeni = {"tur": "bilesen", "ad": ad}
+        if isinstance(eski, dict) and eski.get("tur") == "bilesen" and eski.get("donusum"):
+            yeni["donusum"] = eski["donusum"]
+        self.dogal.setEnabled(_tambur_mu(self.spec, yeni))
+        y = dict(self.yerlesim(), icerik=yeni)
+        self._gorunurluk()
+        self.agac_yay(duzenle.yaz(self.agac, self.yol, y))
 
     def _konumlari_doldur(self, konumlar):
         eski = self.konumlar.blockSignals(True)

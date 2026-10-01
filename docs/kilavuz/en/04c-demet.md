@@ -99,16 +99,19 @@ assembly, the pitch must be at least the size of that assembly.
 | **Orientation** | Hexagonal assembly only: **Top/bottom faces horizontal (cell at the top)** = `y` or **Right/left faces vertical (cell on the right)** = `x`. Meaning of `HexLattice.orientation`: with `y` the first neighbour is at the top. The map is redrawn when the orientation changes. | — | mostly `y` for assemblies | Giving the assembly and the core lattice the same letter in a hexagonal full core: if the pin lattice of the assembly is `y`, the core lattice must be `x` (at 90° to each other; `vver1000_kor`, `sfr_met1000_kor`) | `demetler[].yonelim` (`x` \| `y`) |
 | **All materials and Void cell in the palette** | Extends the palette: not only coolant/moderator but **all materials** and the **Void (no material)** cell can be chosen (for example a gas channel, a water hole, an empty position). Not saved; it only affects the palette view. | — | — | Using a void cell in place of coolant: there is no material in that cell and neutrons fly freely | (not saved) |
 
-### Duct — JSON only
+### Duct
 
-The hexagonal duct around hexagonal assemblies (SFR, VVER-440) is not edited in the interface
-today; it is given in the file with the `demetler[].kilif` field and kept:
+The hexagonal duct around hexagonal assemblies (SFR, VVER-440) is edited on the **Duct** card
+while a hexagonal assembly is selected (`demetler[].kilif`); the card is hidden for a square
+assembly. Clearing **Has a duct** removes the field from the file; ticking it proposes the pin
+envelope as the inner size and a structural material. Size errors are shown on the card at once:
 
-| Key | Meaning | Unit | Typical value |
-|---|---|---|---|
-| `kilif.ic_duz` | **Inner** flat-to-flat size of the duct | cm | SFR MET-1000 (`sfr_met1000_demet`): 15.0191 |
-| `kilif.kalinlik` | Duct wall thickness | cm | SFR MET-1000: 0.3966 |
-| `kilif.malzeme` | Duct material | — | HT-9, SS-316 |
+| Field | Key | Meaning | Unit | Typical value |
+|---|---|---|---|---|
+| **Inner size** | `kilif.ic_duz` | **Inner** flat-to-flat size of the duct | cm | SFR MET-1000 (`sfr_met1000_demet`): 15.0191 |
+| **Thickness** | `kilif.kalinlik` | Duct wall thickness | cm | SFR MET-1000: 0.3966 |
+| **Material** | `kilif.malzeme` | Duct material | — | HT-9, SS-316 |
+| **Outer size** | (computed) | Inner size + 2 × thickness | cm | SFR MET-1000: 15.8123 |
 
 The region between the outside of the duct and the boundary of the assembly cell is filled
 with the **Assembly outer fill** material (the inter-assembly gap). A duct is built only in a

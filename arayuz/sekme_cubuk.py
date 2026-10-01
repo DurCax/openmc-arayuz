@@ -6,6 +6,8 @@
  Solda parca listesi, sagda secili parcanin editoru.
    Silindirik cubuk : es merkezli radyal bolgeler (son bolge "dis bolge")
    Plaka eleman     : MTR tipi duz plaka istifi
+   Tamburlar        : kontrol tamburu kutuphanesi (gelismis mod; ayri liste,
+                      arayuz/cubuk/tambur_formu.py)
 
  YALNIZCA MODELDE ANLAMLI OLAN SUNULUR (cekirdek/uygunluk.parca_turleri)
    "+ Cubuk"  cubuk kullanan kor turlerinde; bir SABLON menusu acar:
@@ -63,13 +65,15 @@ from arayuz.cubuk.cubuk_formu import (  # noqa: F401
     CubukFormuMixin)
 from arayuz.cubuk.plaka_formu import (  # noqa: F401
     PlakaFormuMixin)
+from arayuz.cubuk.tambur_formu import TamburFormuMixin
 
 
 # ============================================================================
 # sekme
 # ============================================================================
 
-class CubukSekmesi(SayfalarMixin, CubukFormuMixin, PlakaFormuMixin, SekmeTabani):
+class CubukSekmesi(SayfalarMixin, CubukFormuMixin, PlakaFormuMixin, TamburFormuMixin,
+                   SekmeTabani):
     """Cubuk ve plaka tanimlari."""
 
     KONU = "cubuk"
@@ -77,7 +81,12 @@ class CubukSekmesi(SayfalarMixin, CubukFormuMixin, PlakaFormuMixin, SekmeTabani)
     def __init__(self, parent=None):
         super().__init__(parent)
 
-        sol = self._liste_karti()
+        sol = QtWidgets.QWidget()
+        sol_duzen = QtWidgets.QVBoxLayout(sol)
+        sol_duzen.setContentsMargins(0, 0, 0, 0)
+        sol_duzen.setSpacing(tokenlar.ARALIK["m"])
+        sol_duzen.addWidget(self._liste_karti(), 2)
+        sol_duzen.addWidget(self._tambur_karti(), 1)
 
         # --- sag: editor yigini ---
         self.bos = BosDurum(_("Henüz parça yok"), "", _("Yakıt çubuğu ekle"))
@@ -88,6 +97,8 @@ class CubukSekmesi(SayfalarMixin, CubukFormuMixin, PlakaFormuMixin, SekmeTabani)
         self.plaka_sayfa = self._plaka_sayfa()
         self.yigin.addWidget(self.cubuk_sayfa)
         self.yigin.addWidget(self.plaka_sayfa)
+        self.tambur_sayfa = self._tambur_sayfa()
+        self.yigin.addWidget(self.tambur_sayfa)
 
         bolucu = QtWidgets.QSplitter(QtCore.Qt.Horizontal)
         bolucu.addWidget(sol)
@@ -143,6 +154,7 @@ class CubukSekmesi(SayfalarMixin, CubukFormuMixin, PlakaFormuMixin, SekmeTabani)
     # ------------------------------------------------------------------
     def doldur(self):
         onceki = self._secili()
+        onceki_tambur = self._tambur_secili()
         self.liste.blockSignals(True)
         self.liste.clear()
         for c in self.spec.get("cubuklar", []):
@@ -167,6 +179,7 @@ class CubukSekmesi(SayfalarMixin, CubukFormuMixin, PlakaFormuMixin, SekmeTabani)
         self.liste.blockSignals(False)
         self._secim_degisti(self.liste.currentRow())
         self._eylemleri_guncelle()
+        self._tamburlari_doldur(onceki_tambur)
 
     def _liste_isareti(self, oge, parca):
         eksik = eksik_malzemeler(self.spec, parca)
@@ -227,6 +240,8 @@ class CubukSekmesi(SayfalarMixin, CubukFormuMixin, PlakaFormuMixin, SekmeTabani)
 
     def _secim_degisti(self, _satir):
         tur, ad = self._secili()
+        if tur is not None:
+            self._tambur_secimini_birak()
         eski = self._yukleniyor
         self._yukleniyor = True
         try:

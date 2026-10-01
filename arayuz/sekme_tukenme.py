@@ -100,6 +100,7 @@ class TukenmeSekmesi(SekmeTabani, SonucBolumu, TukenmeArayuzu):
             w.currentIndexChanged.connect(self._kaydet)
         self.guc.valueChanged.connect(self._kaydet)
         self.adimlar.editingFinished.connect(self._kaydet)
+        self.ek_liste.degisti.connect(self._kaydet)
         self._gorunum_guncelle()
 
     # ==================================================================
@@ -119,6 +120,7 @@ class TukenmeSekmesi(SekmeTabani, SonucBolumu, TukenmeArayuzu):
         self.ayir.setChecked(bool(t.get("malzemeleri_ayir")))
         # Eski JSON'lardaki liste AYNEN korunur (zincirde olmayan ad bile silinmez).
         self.izlenen.secim_ayarla(list(t.get("izlenen") or []), sinyal=False)
+        self.ek_liste.doldur(self.spec)
         self._ozet_guncelle()
         self._onceki_yukle()
 
@@ -152,8 +154,7 @@ class TukenmeSekmesi(SekmeTabani, SonucBolumu, TukenmeArayuzu):
     def _kaydet(self, *_args):
         if self._yukleniyor:
             return
-        # Sozluk BASTAN YAZILMAZ: arayuzde duzenlenmeyen alanlar (ek_malzemeler)
-        # korunur. Kaynak sekmesinde bu hatayi bir kez yapmistik. Gizli alanlarin
+        # Sozluk BASTAN YAZILMAZ: arayuzde duzenlenmeyen alanlar korunur. Kaynak sekmesinde bu hatayi bir kez yapmistik. Gizli alanlarin
         # (or. tek ornekli modelde "cubuk cubuk yanma") degeri de korunur: kutu
         # spec'ten yuklenmistir ve kullanici degistiremez.
         t = self.spec.setdefault("tukenme", {})
@@ -165,6 +166,7 @@ class TukenmeSekmesi(SekmeTabani, SonucBolumu, TukenmeArayuzu):
         t["entegrator"] = self.entegrator.currentData()
         t["malzemeleri_ayir"] = self.ayir.isChecked()
         t["izlenen"] = self.izlenen.secim()
+        t["ek_malzemeler"] = self.ek_liste.secim()
         self._ozet_guncelle()
         self.bildir()
 
