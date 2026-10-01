@@ -122,7 +122,31 @@ def test_yorum_kategori_ve_iyimser_not():
     kontrol("yanlilik uyarisi tepe sayisini yazar", "8 çubuk" in y and "yukarı" in y, y[:300])
 
 
+def test_rapor_k_sonsuz_ve_iyimser():
+    print("\n[GY6] Rapor: butun sinirlar yansiticiysa 'k∞'; F_ΔH satirinda iyimser σ notu")
+    import json
+    import os
+    import tempfile
+    from cekirdek import rapor, uygunluk
+    from testler.ortak_test import KOK
+    fixture = os.path.join(KOK, "testler", "veri", "kosu_ornek")
+    with open(os.path.join(fixture, "spec.json"), encoding="utf-8") as f:
+        spec = json.load(f)
+    dizin = tempfile.mkdtemp(prefix="gy6_")
+    for sinir, beklenen in (("vacuum", "k-eff ="), ("reflective", "k∞ =")):
+        s = json.loads(json.dumps(spec))
+        s["kor"]["sinir"] = {"yan": "reflective", "alt": sinir, "ust": sinir}
+        yol = os.path.join(dizin, "r_%s.html" % sinir)
+        rapor.olustur(s, fixture, yol, "html")
+        with open(yol, encoding="utf-8") as f:
+            html = f.read()
+        kontrol("eksenel %s -> '%s' (sonsuz_ortam %s)" % (sinir, beklenen,
+                                                          uygunluk.sonsuz_ortam(s)),
+                '<p class="buyuk">' + beklenen in html)
+    kontrol("F_ΔH satirinda iyimser σ notu", "(tek koşu σ" in html and "sı iyimser)" in html)
+
+
 HIZLI = [test_fq_yalniz_yakitli_ciftler, test_tepe_yakini_yanlilik,
          test_coklu_tohum_harita_ortalamasi, test_mutlak_guc_kesik,
-         test_yorum_kategori_ve_iyimser_not]
+         test_yorum_kategori_ve_iyimser_not, test_rapor_k_sonsuz_ve_iyimser]
 YAVAS = []

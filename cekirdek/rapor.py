@@ -398,6 +398,7 @@ def _kosu_ozeti(spec, sonuc, k_nesil):
     if k is not None:
         beta = (sonuc.get("kinetik") or {}).get("beta_eff")
         sonsuz = uygunluk.sonsuz_ortam(spec)
+        ozet["sonsuz"] = bool(sonsuz)
         ozet["durum"], ayrinti = kosucu.keff_yorumu(k, s, beta, sonsuz=sonsuz)
         ozet["ayrinti"] = bicim.kosu_ayrintisi(ayrinti, k, s, sonsuz)     # K5 (GUM)
         if ozet["entropi"]:
