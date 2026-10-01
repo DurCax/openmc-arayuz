@@ -4,12 +4,12 @@
 
 ## Sonuç kaynakları
 
-- `s4_taban.xml` — 2026-10-01T14:22:37.113456+03:00, 532 test
+- `s4_hizli.xml` — 2026-10-01T15:05:11.591476+03:00, 545 test
 
 ## Özet
 
-- Gereksinim: 66 (çalıştırılmadı 7, kısmen 11, geçti 40, TESTSİZ 4, inceleme 4)
-- Toplanan test: 608; gereksinime bağlı: 125; bağsız: 483
+- Gereksinim: 66 (çalıştırılmadı 6, kısmen 12, geçti 42, TESTSİZ 2, inceleme 4)
+- Toplanan test: 616; gereksinime bağlı: 133; bağsız: 483
 
 ## Gereksinim → test → son sonuç
 
@@ -47,7 +47,7 @@
 | R-M9-01 | T | geçti | `test_ceviri:test_ceviri_temel` (hizli) — geçti<br>`test_ceviri:test_ceviri_dil_secimi` (hizli) — geçti<br>`test_ceviri:test_katalog_derlenmis` (hizli) — geçti |
 | R-M9-02 | T | geçti | `test_dil:test_bulgu_metinleri` (hizli) — geçti |
 | R-M10-01 | T | geçti | `test_rapor:test_rapor_html_fixture` (hizli) — geçti<br>`test_rapor:test_rapor_sayilar_birebir` (hizli) — geçti<br>`test_rapor:test_rapor_pdf_ve_sure` (hizli) — geçti |
-| R-M10-02 | T | geçti | `test_rapor:test_tekrarlanabilirlik` (hizli) — geçti |
+| R-M10-02 | T | geçti | `test_kapsul:test_rapor_kapsul_satiri` (hizli) — geçti<br>`test_rapor:test_tekrarlanabilirlik` (hizli) — geçti |
 | R-M10-03 | T | geçti | `test_rapor:test_cli_rapor` (hizli) — geçti |
 | R-TK-01 | T | çalıştırılmadı | `test_tukenme_temel:test_bateman_bozunum` (yavas) — çalıştırılmadı |
 | R-TK-02 | T | kısmen (2/4 geçti) | `test_altigen_kor:test_altigen_tukenme_hacmi_stokastik` (yavas) — çalıştırılmadı<br>`test_tukenme_hacim:test_ornek_hacimleri` (hizli) — geçti<br>`test_tukenme_hacim:test_hacim_stokastik` (yavas) — çalıştırılmadı<br>`test_tukenme_temel:test_tukenme_hacimleri` (hizli) — geçti |
@@ -77,17 +77,15 @@
 | R-S-12 | T | geçti | `test_uygunluk_arayuz:test_cli_uygunluk` (hizli) — geçti |
 | R-S-13 | T | geçti | `test_uygunluk_arayuz:test_rapor_uygunluk_eki_html` (hizli) — geçti<br>`test_uygunluk_arayuz:test_rapor_uygunluk_eki_pdf` (hizli) — geçti<br>`test_uygunluk_arayuz:test_rapor_uygunluk_hatasi_raporu_durdurmaz` (hizli) — geçti |
 | R-S-14 | T | TESTSİZ | — |
-| R-S-15 | T | çalıştırılmadı | `test_izlenebilirlik:test_gereksinim_isareti` (hizli) — çalıştırılmadı<br>`test_izlenebilirlik:test_gereksinim_belgesi` (hizli) — çalıştırılmadı<br>`test_izlenebilirlik:test_testler_tanimli_kimlik_kullanir` (hizli) — çalıştırılmadı<br>`test_izlenebilirlik:test_matris_sentetik` (hizli) — çalıştırılmadı<br>`test_izlenebilirlik:test_uretilen_belge_guncel` (hizli) — çalıştırılmadı<br>`test_izlenebilirlik:test_komut_satiri` (hizli) — çalıştırılmadı |
-| R-S-16 | T | TESTSİZ | — |
-| R-S-17 | T | TESTSİZ | — |
+| R-S-15 | T | geçti | `test_izlenebilirlik:test_gereksinim_isareti` (hizli) — geçti<br>`test_izlenebilirlik:test_gereksinim_belgesi` (hizli) — geçti<br>`test_izlenebilirlik:test_testler_tanimli_kimlik_kullanir` (hizli) — geçti<br>`test_izlenebilirlik:test_matris_sentetik` (hizli) — geçti<br>`test_izlenebilirlik:test_uretilen_belge_guncel` (hizli) — geçti<br>`test_izlenebilirlik:test_komut_satiri` (hizli) — geçti |
+| R-S-16 | T | geçti | `test_kapsul:test_kapsul_icerigi` (hizli) — geçti<br>`test_kapsul:test_dosya_kimligi_ve_zincir` (hizli) — geçti<br>`test_kapsul:test_ortam_kilidi_yedekleri` (hizli) — geçti<br>`test_kapsul:test_kosucu_kapsul_yazar` (hizli) — geçti<br>`test_kapsul:test_rapor_kapsul_satiri` (hizli) — geçti |
+| R-S-17 | T | kısmen (2/3 geçti) | `test_kapsul:test_farklar` (hizli) — geçti<br>`test_kapsul:test_yeniden_kuru_calisma` (hizli) — geçti<br>`test_kapsul:test_yavas_yeniden_kosu` (yavas) — çalıştırılmadı |
 | R-S-18 | İ | inceleme | — |
 
 ## Testsiz gereksinimler (yöntem T, bağlı test yok)
 
 - R-M2-01 — Her benchmark için hesap/deney oranı (C/E) ve fark σ cinsinden V&V tablosunda kayıtlı ve kaynak JSON ile tutarlıdır.
 - R-S-14 — Benchmark kümesinden yanlılık, yanlılık belirsizliği ve USL NUREG/CR-6698 yöntemiyle hesaplanır.
-- R-S-16 — Her koşu dizinine spec karması, sürümler, veri karmaları, tohum ve ortam kilidi özetini içeren tekrarlanabilirlik kapsülü yazılır.
-- R-S-17 — Bir koşu kapsüldeki spec ile yeniden üretilir ve ortam/sonuç farkı raporlanır.
 
 ## Test dışı doğrulanan gereksinimler (İ / A)
 
