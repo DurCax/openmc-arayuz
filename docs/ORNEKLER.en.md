@@ -170,7 +170,7 @@ Interpretation (not an acceptance criterion; goes to the professor's review):
 ### VVER-1000 assembly and core
 
 - Assembly: 331 positions = 300 UO2 3.7 % + 12 TVEG (UO2 3.6 % + 4 % Gd2O3) + 18 guide tubes +
-  1 central tube; 11 rings, pin pitch 1.275 cm, assembly pitch 23.6 cm, **no duct (wrapper)**.
+  1 central tube; 11 rings, pin pitch 1.275 cm, assembly pitch 23.6 cm, **no duct**.
   The Gd and guide tube positions were read from the cartogram in NEA/NSC/DOC(2002)10 Figure A.1,
   and the 60° rotational symmetry was checked.
 - Pin: pellet outer r 0.3785, central hole r 0.07, cladding inner/outer r 0.386/0.455 cm (He gap).
