@@ -290,14 +290,14 @@
         "koni_aci": 30.0
       },
       "alt": [
-        -1.0,
-        -1.0,
-        -1.0
+        -34.399,
+        -34.399,
+        -34.399
       ],
       "ust": [
-        1.0,
-        1.0,
-        1.0
+        34.399,
+        34.399,
+        34.399
       ]
     },
     "entropi_mesh": {
@@ -685,6 +685,27 @@
     "seri": "LEU-SOL-THERM-002",
     "aoa_girdi": {
       "fiziksel_bicim": "cozelti",
+      "yansitici": "su"
+    },
+    "olcum": {
+      "k": 0.99994,
+      "sigma": 0.0002,
+      "parcacik": 100000,
+      "cevrim": 200,
+      "pasif": 50,
+      "sure_s": 322.4,
+      "is_parcacigi": 12,
+      "openmc": "0.16.0",
+      "kutuphane": "ENDF/B-VIII.0",
+      "tarih": "2026-10-01"
+    },
+    "aoa": {
+      "bolunebilir": "U-235",
+      "zenginlik": 4.889942,
+      "h_x": 1098.33201,
+      "fiziksel_bicim": "cozelti",
+      "ealf": 0.038466,
+      "tayf": "termal",
       "yansitici": "su"
     }
   }
