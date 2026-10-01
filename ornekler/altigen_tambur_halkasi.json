@@ -1,0 +1,426 @@
+{
+  "surum": 3,
+  "ad": "Altıgen kor + tambur halkası",
+  "baslik": "Altıgen kor + tambur halkası",
+  "baslik_en": "Hexagonal core with a control-drum ring",
+  "aciklama": "Gelişmiş geometri (ağaç) örneği: 19 altıgen demetten oluşan kompakt bir hızlı kor. Kor kafesi 3 halkalıdır ve 'x' yönelimlidir. Demetler sfr_altigen.json ile aynıdır: her birinde 127 U-10Mo çubuk vardır (%19.75 U-235), soğutucu sodyumdur ve pin kafesi 'y' yönelimlidir.\n\nKorun dışında altıgen bir berilyum yansıtıcı halka vardır (dış apotem 48.69 cm). Halkaya 6 adet B4C (%90 B-10) kontrol tamburu gömülüdür: yarıçap 6 cm, 120° emici yay, merkezleri 36 cm'de ve korun düz yüzlerine bakıyor. Kor yüksekliği 80 cm'dir ve bütün yüzler vakumdur.\n\nTambur kuralı:\n  dönme = 0°   → emici kora bakıyor = daldırılmış (en düşük k)\n  dönme = 180° → emici dışa bakıyor = çekilmiş    (en yüksek k)\nAltı tambur 'tamburlar' grubuyla birlikte döner. Analiz sekmesinde grup dönmesi taranabilir ya da kritik tambur açısı aranabilir.\n\nEğitim amaçlıdır: mikro reaktör fikrinden esinlenmiştir, gerçek bir tasarım değildir. Referans k bu aracın kendi ölçümüdür (tamburlar çekilmiş, 180°).",
+  "aciklama_en": "Advanced (tree) geometry example: compact fast core of 19 hexagonal U-10Mo/Na assemblies inside a hexagonal beryllium reflector with 6 B4C control drums (0 deg = absorber facing the core). Educational.",
+  "kategori": "arastirma",
+  "seviye": "ileri",
+  "malzemeler": [
+    {
+      "ad": "u10mo",
+      "gorunen_ad": "U-10Mo %19.75",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 17.0
+      },
+      "sicaklik": 900.0,
+      "bilesim": [
+        {
+          "tur": "nuklid",
+          "isim": "U235",
+          "miktar": 17.775,
+          "birim": "wo"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "U238",
+          "miktar": 72.225,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Mo",
+          "miktar": 10.0,
+          "birim": "wo"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        222,
+        93,
+        40
+      ]
+    },
+    {
+      "ad": "ss316",
+      "gorunen_ad": "SS-316",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 7.99
+      },
+      "sicaklik": 750.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "Fe",
+          "miktar": 65.0,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Cr",
+          "miktar": 17.0,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Ni",
+          "miktar": 12.0,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Mo",
+          "miktar": 2.5,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Mn",
+          "miktar": 2.0,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Si",
+          "miktar": 1.0,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "C",
+          "miktar": 0.5,
+          "birim": "wo"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        190,
+        190,
+        200
+      ]
+    },
+    {
+      "ad": "sodyum",
+      "gorunen_ad": "Na 673 K (0.856 g/cm³)",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 0.8558450000000001
+      },
+      "sicaklik": 673.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "Na",
+          "miktar": 1.0,
+          "birim": "ao"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        200,
+        200,
+        120
+      ]
+    },
+    {
+      "ad": "b4c",
+      "gorunen_ad": "B4C %90.0 B10",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 2.52
+      },
+      "sicaklik": 750.0,
+      "bilesim": [
+        {
+          "tur": "nuklid",
+          "isim": "B10",
+          "miktar": 3.6,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "B11",
+          "miktar": 0.3999999999999999,
+          "birim": "ao"
+        },
+        {
+          "tur": "element",
+          "isim": "C",
+          "miktar": 1.0,
+          "birim": "ao"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        60,
+        60,
+        60
+      ]
+    },
+    {
+      "ad": "berilyum",
+      "gorunen_ad": "Be",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 1.85
+      },
+      "sicaklik": 673.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "Be",
+          "miktar": 1.0,
+          "birim": "ao"
+        }
+      ],
+      "sab": [
+        "c_Be"
+      ],
+      "renk": [
+        120,
+        200,
+        140
+      ]
+    }
+  ],
+  "cubuklar": [
+    {
+      "ad": "yakit_cubugu",
+      "tur": "silindirik",
+      "bolgeler": [
+        {
+          "r": 0.32,
+          "malzeme": "u10mo"
+        },
+        {
+          "r": 0.345,
+          "malzeme": "sodyum"
+        },
+        {
+          "r": 0.395,
+          "malzeme": "ss316"
+        },
+        {
+          "r": null,
+          "malzeme": "sodyum"
+        }
+      ]
+    },
+    {
+      "ad": "emici_cubuk",
+      "tur": "silindirik",
+      "bolgeler": [
+        {
+          "r": 0.34,
+          "malzeme": "b4c"
+        },
+        {
+          "r": 0.395,
+          "malzeme": "ss316"
+        },
+        {
+          "r": null,
+          "malzeme": "sodyum"
+        }
+      ]
+    }
+  ],
+  "plakalar": [],
+  "demetler": [
+    {
+      "ad": "demet_hex",
+      "tur": "altigen",
+      "adim": 0.9,
+      "halka_sayisi": 7,
+      "yonelim": "y",
+      "boyut": [
+        7,
+        7
+      ],
+      "harita": [
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyy",
+        "yyyyyy",
+        "y"
+      ],
+      "anahtar": {
+        "y": "yakit_cubugu",
+        "e": "emici_cubuk"
+      },
+      "dolgu_disi": "sodyum"
+    }
+  ],
+  "kor": {
+    "tur": "agac"
+  },
+  "ayarlar": {
+    "mod": "eigenvalue",
+    "parcacik": 10000,
+    "cevrim": 150,
+    "pasif": 40,
+    "tohum": 1,
+    "sicaklik_yontemi": "interpolation",
+    "kaynak": {
+      "tur": "kutu",
+      "alt": null,
+      "ust": null
+    },
+    "entropi_mesh": {
+      "var": true,
+      "boyut": [
+        10,
+        10,
+        4
+      ]
+    }
+  },
+  "tallyler": [
+    {
+      "ad": "reaksiyonlar",
+      "skorlar": [
+        "fission",
+        "absorption",
+        "nu-fission"
+      ],
+      "filtreler": [],
+      "nuklidler": []
+    }
+  ],
+  "guc_dagilimi": {
+    "var": false,
+    "cubuklar": [],
+    "skor": "kappa-fission",
+    "eksenel_dilim": 20,
+    "toplam_guc": null
+  },
+  "tukenme": {
+    "var": false,
+    "zincir": "otomatik",
+    "guc_yogunlugu": 40.0,
+    "adimlar": [
+      0.5,
+      1.5,
+      3.0,
+      5.0,
+      10.0,
+      10.0
+    ],
+    "adim_birimi": "d",
+    "entegrator": "cecm",
+    "malzemeleri_ayir": false,
+    "ek_malzemeler": [],
+    "izlenen": [
+      "U235",
+      "U238",
+      "Pu239",
+      "Pu240",
+      "Pu241",
+      "Xe135",
+      "Sm149"
+    ]
+  },
+  "calistirma": {
+    "is_parcacigi": 8,
+    "dizin": "kosu"
+  },
+  "geometri": {
+    "kok": {
+      "tur": "kap",
+      "id": "kok",
+      "kesit": {
+        "sekil": "kafes_zarfi"
+      },
+      "ic": {
+        "tur": "kafes",
+        "id": "kor_kafesi",
+        "sekil": "altigen",
+        "adim": 10.2631,
+        "halka_sayisi": 3,
+        "yonelim": "x",
+        "harita": [
+          "DDDDDDDDDDDD",
+          "DDDDDD",
+          "D"
+        ],
+        "anahtar": {
+          "D": {
+            "tur": "bilesen",
+            "ad": "demet_hex"
+          }
+        },
+        "dis": {
+          "tur": "malzeme",
+          "ad": "bosluk"
+        }
+      },
+      "yerlesimler": [],
+      "halkalar": [
+        {
+          "dis": {
+            "sekil": "altigen",
+            "yonelim": "x",
+            "apotem": 48.7
+          },
+          "icerik": {
+            "tur": "malzeme",
+            "ad": "berilyum"
+          },
+          "yerlesimler": [
+            {
+              "ad": "tambur_halkasi",
+              "mod": "halka",
+              "sayi": 6,
+              "merkez_yaricap": 36.0,
+              "baslangic_acisi": 30.0,
+              "icerik": {
+                "tur": "bilesen",
+                "ad": "tambur_b4c"
+              },
+              "kesit": null,
+              "bakis": {
+                "tur": "merkez",
+                "merkez": [
+                  0.0,
+                  0.0
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "yukseklik": 80.0,
+      "sinir": {
+        "yan": "vacuum",
+        "alt": "vacuum",
+        "ust": "vacuum"
+      }
+    },
+    "parcalar": [],
+    "gruplar": [
+      {
+        "ad": "tamburlar",
+        "tur": "donme",
+        "deger": 180.0,
+        "uyeler": [
+          "tambur_halkasi"
+        ]
+      }
+    ]
+  },
+  "tamburlar": [
+    {
+      "ad": "tambur_b4c",
+      "yaricap": 6.0,
+      "govde_malzeme": "berilyum",
+      "emici_malzeme": "b4c",
+      "emici_ic_yaricap": 4.5,
+      "emici_aci": 120.0
+    }
+  ]
+}

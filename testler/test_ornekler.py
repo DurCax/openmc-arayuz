@@ -16,11 +16,12 @@ HIZLI
   [OR7] BEAVRS benzeri: 193 demet, 3 zenginlik (65/64/64), 21.50364 / 1.25984 cm,
         Pyrex (B-10) cubuklari.
   [OR8] Tam korlarin varsayilan hassasiyeti "Hizli deneme" (1000/60/20).
-  [OR9] Ceyrek kor, tam korun sag-alt ceyregi; simetri yuzleri yansitici.
+  [OR9] Ceyrek kor, tam korun sag-alt ceyregi; simetri yuzleri yansitici, dis yuzler vakum.
   [OR10] BEAVRS cok turlu guc (ON_KOSUL: Ajan 8b guc_dagilimi.cubuklar birlesmis).
 YAVAS
   [OR11] Yeni ornekler kosucu.calistir(dogrulama=True) ile kisa kosar.
-  [OR12] Ceyrek kor k = tam kor k (3 sigma): dis yansitici yuzler 42.8 cm su arkasinda.
+  [OR12] Ceyrek kor k = tam kor k (2 sigma): yuz basina sinir (simetri yuzleri
+         yansitici, dis yuzler vakum).
   [OR13] Gd tukenmesi: dis halka ic halkadan hizli yanar (sogan kabugu), k yukselir.
 Sozlesme: testler/ortak_test.py (HIZLI / YAVAS).
 """
@@ -214,8 +215,14 @@ def test_ceyrek_kor():
                                       if a != b), None))
     kontrol("dis iki yuzde >= 2 sira su", all(r[-2:] == "ss" for r in cey["harita"])
             and cey["harita"][-1] == cey["harita"][-2] == "s" * n)
-    kontrol("yan yansitici, eksenel vakum", cey["sinir"] == {"yan": "reflective",
-                                                             "alt": "vacuum", "ust": "vacuum"})
+    # Yuz basina sinir (§15 karar 4): simetri yuzleri (-x sol, +y ust) yansitici,
+    # dis yuzler (+x, -y) ve eksenel yuzler vakum -- tam korla AYNI fizik.
+    kontrol("simetri yuzleri yansitici, dis yuzler ve eksenel vakum",
+            cey["sinir"] == {"yan": "vacuum", "alt": "vacuum", "ust": "vacuum",
+                             "yuzler": {"-x": "reflective", "+x": "vacuum",
+                                        "-y": "vacuum", "+y": "reflective"}}, "-> %s" % cey["sinir"])
+    kontrol("tam kor dort yuz vakum", tam["sinir"]["yan"] == "vacuum"
+            and not tam["sinir"].get("yuzler"))
     kontrol("tam kor 52 demet, ceyrek 13", sum(c in "AB" for r in tam["harita"] for c in r) == 52
             and sum(c in "AB" for r in cey["harita"] for c in r) == 13)
 
@@ -275,20 +282,18 @@ def test_yavas_yeni_ornekler_kosar(gecici):
 
 
 def test_yavas_ceyrek_tam_esit(gecici):
-    print("\n[OR12] Ceyrek kor k = tam kor k (ayni yan sinirla, 3 sigma)")
-    # Cekirdek yuz basina sinir kosulu sunmaz: ceyrek korun DIS iki yuzu de
-    # yansiticidir. Karsilastirma ancak tam kor da ayni yan sinirla kosulursa
-    # anlamlidir (fark olculdu: vakum -> yansitici +89 pcm, docs/ORNEKLER.md).
-    tam = _spec("pwr_smr_kor.json")
-    tam["kor"]["sinir"]["yan"] = "reflective"
-    t = _kos("pwr_smr_kor.json", gecici, 20000, 160, 60, spec=tam)
+    print("\n[OR12] Ceyrek kor k = tam kor k (dosyalardaki sinirlarla, 2 sigma)")
+    # Yuz basina sinir (G-4): ceyregin simetri yuzleri yansitici, dis yuzleri
+    # vakum; tam kor dort yuz vakum. Iki model ayni fizigi cozer (olculdu
+    # 01.10.2026: tam 1.05881 +/- 0.00059, ceyrek 1.05922 +/- 0.00066, 0.5 sigma).
+    t = _kos("pwr_smr_kor.json", gecici, 20000, 160, 60)
     c = _kos("pwr_ceyrek_kor.json", gecici, 20000, 160, 60)
     if t is None or c is None:
         return
     (kt, st), (kc, sc) = t["keff"], c["keff"]
     z = abs(kt - kc) / math.hypot(st, sc)
     print("   tam %.5f +/- %.5f, ceyrek %.5f +/- %.5f" % (kt, st, kc, sc))
-    kontrol("ceyrek = tam (%.2f sigma)" % z, z <= 3.0)
+    kontrol("ceyrek = tam (%.2f sigma)" % z, z <= 2.0)
 
 
 def test_yavas_gd_sogan_kabugu(gecici):

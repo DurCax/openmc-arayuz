@@ -1,7 +1,12 @@
 {
-  "surum": 1,
-  "ad": "Çeyrek simetrik PWR koru (13 demet, 3B)",
-  "aciklama": "Çeyrek simetrik PWR koru: pwr_smr_kor.json'un sağ-alt çeyreği (13 demet). Sol (x = 0) ve üst (y = 0) yüzler SİMETRİ düzlemidir (yansıtıcı) — aynalandığında tam kor yeniden doğar (testler/test_ornekler.py OR9 bunu harita üzerinde sınar).\n\nSınır koşulu yüz başına verilir: iki simetri yüzü (sol −x ve üst +y) yansıtıcı, iki dış yüz (sağ +x ve alt −y) vakumdur; alt ve üst eksenel yüzler de vakumdur. Böylece çeyrek kor, tam korun (pwr_smr_kor.json, dört yüz vakum) aynısını çözer. Ölçülen (20000 parçacık × 160 çevrim, 60 pasif): tam kor k = 1.05881 ± 0.00059, çeyrek kor k = 1.05922 ± 0.00066; fark 0.5σ (YAVAS test OR12, 2σ ölçütü).\n\nAynı parçacık sayısında çeyrek kor tam kordan belirgin hızlı değildir (izlenen nötron sayısı aynıdır). Kazanç istatistiktedir: her demete düşen nötron sayısı dört kat artar; demet ve çubuk güçleri aynı sürede daha az belirsizlikle hesaplanır.\n\nDemetler pwr_17x17.json ile aynıdır (Westinghouse 17×17, 900/600/580 K, 1300 ppm bor); iki zenginlik eş merkezli kuşaklar hâlindedir: B = %3.1 dış kuşak, A = %2.4 iç bölge (dışarıdan içeriye yükleme). Desen EŞ MERKEZLİDİR çünkü çeyrek kor modeli simetri düzlemlerini yansıtıcı sınırla kurar, yani çeyreği AYNALAR: dama deseninin ayna simetrisi olmadığı için aynalanan kor başka bir yükleme olurdu (ölçüldü: +260 pcm). Demet adımı 21.42 cm, aktif yükseklik 200 cm, alt/üst 20 cm su. Tasarım EĞİTİM amaçlıdır (gerçek bir SMR değildir); referans k verilmez.\n",
+  "surum": 3,
+  "ad": "Kafesli kor + tamburlu yansıtıcı",
+  "baslik": "Kafesli kor + tamburlu yansıtıcı",
+  "baslik_en": "Lattice core with a drum-controlled reflector",
+  "aciklama": "Gelişmiş geometri (ağaç) örneği: 3×3 kare kafesli bir PWR koru, silindirik bir berilyum yansıtıcının (yarıçap 80 cm) ortasındadır. Demetler pwr_17x17.json ile aynı Westinghouse 17×17 demetleridir (%2.4 ve %3.1 zenginlik, dama deseni, 1300 ppm borlu su).\n\nYansıtıcıya 4 adet B4C (doğal bor) kontrol tamburu gömülüdür: yarıçap 8 cm, merkezleri 42 cm'de ve kor yüzlerinin karşısında. Aktif yükseklik 200 cm'dir. Eksenel yansıtıcı yoktur ve bütün yüzler vakumdur.\n\nÖrnek, tamburun her geometride kullanılabildiğini gösterir: aynı tambur tanımı burada kare kafesli bir kora uygulanmıştır. dönme = 0° emici kora bakıyor (en düşük k), 180° çekilmiş (en yüksek k). Tamburlar korun köşelerine değil yüzlerine bakacak biçimde yerleştirildi. Köşelere bakan tamburların değeri ölçüldüğünde çok daha düşüktü (~600 pcm, kaba ölçüm).\n\nEğitim amaçlıdır, gerçek bir reaktör değildir. Referans k bu aracın kendi ölçümüdür (tamburlar çekilmiş, 180°).",
+  "aciklama_en": "Advanced (tree) geometry example: 3x3 square PWR core inside a cylindrical beryllium reflector with 4 B4C control drums facing the core flats. Educational.",
+  "kategori": "arastirma",
+  "seviye": "ileri",
   "malzemeler": [
     {
       "ad": "uo2_24",
@@ -163,6 +168,60 @@
         50,
         30
       ]
+    },
+    {
+      "ad": "berilyum",
+      "gorunen_ad": "Be",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 1.85
+      },
+      "sicaklik": 580.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "Be",
+          "miktar": 1.0,
+          "birim": "ao"
+        }
+      ],
+      "sab": [
+        "c_Be"
+      ],
+      "renk": [
+        120,
+        200,
+        140
+      ]
+    },
+    {
+      "ad": "b4c",
+      "gorunen_ad": "B4C (doğal)",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 2.52
+      },
+      "sicaklik": 580.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "B",
+          "miktar": 4.0,
+          "birim": "ao"
+        },
+        {
+          "tur": "element",
+          "isim": "C",
+          "miktar": 1.0,
+          "birim": "ao"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        60,
+        60,
+        60
+      ]
     }
   ],
   "cubuklar": [
@@ -301,142 +360,27 @@
     }
   ],
   "kor": {
-    "tur": "kare_kafes",
-    "cubuk": null,
-    "demet": null,
-    "plaka": null,
-    "adim": 21.42,
-    "boyut": [
-      6,
-      6
-    ],
-    "harita": [
-      "AAABss",
-      "AABBss",
-      "ABBsss",
-      "BBssss",
-      "ssssss",
-      "ssssss"
-    ],
-    "halka_sayisi": 2,
-    "yonelim": "x",
-    "anahtar": {
-      "A": "demet_24",
-      "B": "demet_31",
-      "s": "su"
-    },
-    "yukseklik": null,
-    "yansitici": {
-      "var": false,
-      "kalinlik": 20.0,
-      "malzeme": null
-    },
-    "kabuklar": [],
-    "dolgu": null,
-    "kor_yaricap": 20.0,
-    "tambur": {
-      "sayi": 0,
-      "yaricap": 4.0,
-      "merkez_yaricap": 26.0,
-      "govde_malzeme": null,
-      "emici_malzeme": null,
-      "emici_ic_yaricap": 2.5,
-      "emici_aci": 120.0,
-      "donme": 0.0,
-      "baslangic_acisi": 0.0
-    },
-    "eksenel": {
-      "var": true,
-      "bolgeler": [
-        {
-          "ad": "alt su",
-          "yukseklik": 20.0,
-          "dolgu": "su"
-        },
-        {
-          "ad": "aktif",
-          "yukseklik": 200.0,
-          "dolgu": null
-        },
-        {
-          "ad": "üst su",
-          "yukseklik": 20.0,
-          "dolgu": "su"
-        }
-      ]
-    },
-    "sinir": {
-      "yan": "vacuum",
-      "alt": "vacuum",
-      "ust": "vacuum",
-      "yuzler": {
-        "-x": "reflective",
-        "+x": "vacuum",
-        "-y": "vacuum",
-        "+y": "reflective"
-      }
-    }
+    "tur": "agac"
   },
   "ayarlar": {
     "mod": "eigenvalue",
-    "parcacik": 1000,
-    "cevrim": 60,
-    "pasif": 20,
+    "parcacik": 10000,
+    "cevrim": 150,
+    "pasif": 40,
     "tohum": 1,
     "sicaklik_yontemi": "interpolation",
     "kaynak": {
       "tur": "kutu",
-      "konum": [
-        0.0,
-        0.0,
-        0.0
-      ],
-      "parcacik": "neutron",
-      "kuvvet": 1.0,
-      "enerji": {
-        "tur": "watt",
-        "a": 988000.0,
-        "b": 2.249e-06,
-        "theta": 1293200.0,
-        "enerji": 14100000.0,
-        "noktalar": [],
-        "kenarlar": [],
-        "degerler": [],
-        "e0": 14080000.0,
-        "kutle_orani": 5.0,
-        "iyon_sicaklik": 20000.0
-      },
-      "aci": {
-        "tur": "izotropik",
-        "yon": [
-          0.0,
-          0.0,
-          1.0
-        ],
-        "koni_aci": 30.0
-      },
-      "alt": [
-        -64.0,
-        -64.0,
-        -100.0
-      ],
-      "ust": [
-        22.0,
-        22.0,
-        100.0
-      ]
+      "alt": null,
+      "ust": null
     },
     "entropi_mesh": {
       "var": true,
       "boyut": [
-        6,
-        6,
+        10,
+        10,
         6
       ]
-    },
-    "kinetik": {
-      "var": false,
-      "nesil": 10
     }
   },
   "tallyler": [
@@ -453,8 +397,7 @@
   ],
   "guc_dagilimi": {
     "var": false,
-    "cubuk": null,
-    "bolge": 0,
+    "cubuklar": [],
     "skor": "kappa-fission",
     "eksenel_dilim": 20,
     "toplam_guc": null
@@ -489,9 +432,107 @@
     "is_parcacigi": 8,
     "dizin": "kosu"
   },
-  "baslik": "Çeyrek simetrik PWR koru",
-  "kategori": "pwr",
-  "seviye": "ileri",
-  "baslik_en": "Quarter-symmetric PWR core",
-  "aciklama_en": "Quarter of the square SMR-like core: the two symmetry faces are reflective, the two outer faces vacuum (per-face boundary conditions); k matches the full core within statistics."
+  "geometri": {
+    "kok": {
+      "tur": "kap",
+      "id": "kok",
+      "kesit": {
+        "sekil": "dikdortgen",
+        "boyut": [
+          64.26,
+          64.26
+        ]
+      },
+      "ic": {
+        "tur": "kafes",
+        "id": "kor_kafesi",
+        "sekil": "kare",
+        "adim": 21.42,
+        "boyut": [
+          3,
+          3
+        ],
+        "harita": [
+          "BAB",
+          "ABA",
+          "BAB"
+        ],
+        "anahtar": {
+          "A": {
+            "tur": "bilesen",
+            "ad": "demet_24"
+          },
+          "B": {
+            "tur": "bilesen",
+            "ad": "demet_31"
+          }
+        },
+        "dis": {
+          "tur": "malzeme",
+          "ad": "berilyum"
+        }
+      },
+      "yerlesimler": [],
+      "halkalar": [
+        {
+          "dis": {
+            "sekil": "silindir",
+            "yaricap": 80.0
+          },
+          "icerik": {
+            "tur": "malzeme",
+            "ad": "berilyum"
+          },
+          "yerlesimler": [
+            {
+              "ad": "tamburlar_yansitici",
+              "mod": "halka",
+              "sayi": 4,
+              "merkez_yaricap": 42.0,
+              "baslangic_acisi": 0.0,
+              "icerik": {
+                "tur": "bilesen",
+                "ad": "tambur_b4c"
+              },
+              "kesit": null,
+              "bakis": {
+                "tur": "merkez",
+                "merkez": [
+                  0.0,
+                  0.0
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "yukseklik": 200.0,
+      "sinir": {
+        "yan": "vacuum",
+        "alt": "vacuum",
+        "ust": "vacuum"
+      }
+    },
+    "parcalar": [],
+    "gruplar": [
+      {
+        "ad": "tamburlar",
+        "tur": "donme",
+        "deger": 180.0,
+        "uyeler": [
+          "tamburlar_yansitici"
+        ]
+      }
+    ]
+  },
+  "tamburlar": [
+    {
+      "ad": "tambur_b4c",
+      "yaricap": 8.0,
+      "govde_malzeme": "berilyum",
+      "emici_malzeme": "b4c",
+      "emici_ic_yaricap": 6.0,
+      "emici_aci": 120.0
+    }
+  ]
 }
