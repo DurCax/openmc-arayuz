@@ -93,12 +93,15 @@ class TukenmeArayuzu:
             "içinde uyuştuğu ölçüldü."))
         self.zincir_uyari = QtWidgets.QLabel("")
         self.zincir_uyari.setWordWrap(True)
+        from arayuz.tukenme_ek import EkMalzemeListesi
+        self.ek_liste = EkMalzemeListesi()
         form = form_duzeni()
         form.addRow(_("Güç yoğunluğu:"), self.guc)
         form.addRow(_("Adım birimi:"), self.birim)
         form.addRow(_("Adımlar:"), self.adimlar)
         form.addRow("", self.adim_ozet)
         form.addRow(_("Yanan malzemeler:"), self.malzeme_bilgi)
+        form.addRow(_("Ek yanan malzemeler:"), self.ek_liste)
         form.addRow("", self.zincir_uyari)
         self.ayar_formu = form
 
