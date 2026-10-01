@@ -18,9 +18,11 @@ from PySide6 import QtCore, QtGui
 
 from cekirdek.geometri import yerlesim as _yer
 from cekirdek.geometri.sema import bilesen_tanimi
+from cekirdek.ceviri import _
 from cekirdek.gunluk import kaydedici
 from arayuz.geometri import renk as _renk
-from arayuz.geometri.cizim import (Oge, altigen_koseleri, bolge_kesitleri, kafes_konumlari,
+from arayuz.geometri.cizim import (Oge, _hata_ekle, altigen_koseleri, bolge_kesitleri,
+                                   kafes_konumlari,
                                    katman_araliklari, katman_icerigi, yol_metni, zarf)
 
 _log = kaydedici("arayuz.geometri.cizim_xz")
@@ -211,15 +213,17 @@ def _cikar(araliklar, a, b):
     return cikti
 
 
-def xz_ogeleri(spec):
+def xz_ogeleri(spec, hatalar=None):
     """(ogeler, kutu (x0, z0, x1, z1), katman cizgileri [z]); 2B'de ([], None, []).
-    Birim cm (yalniz dikdortgenler; egri yok)."""
+    Birim cm (yalniz dikdortgenler; egri yok). Hata gunluge (warning) ve
+    verilmisse 'hatalar' listesine."""
     from cekirdek import geometri
     try:
         m = geometri.model(spec)
         H = geometri.yukseklik(m)
-    except Exception:
+    except Exception as e:
         _log.warning("sematik xz icin model kurulamadi", exc_info=True)
+        _hata_ekle(hatalar, _("Kesit hesaplanamadı: %s") % e)
         return [], None, []
     if not H:
         return [], None, []
@@ -228,6 +232,7 @@ def xz_ogeleri(spec):
     w = yarim_genislik(bolge_kesitleri(kok)[-1], 0.0, zarf(kok)) or 1.0
     try:
         c.kap(kok, ("kok",), [(-w, w)], -H / 2.0, H / 2.0)
-    except Exception:
+    except Exception as e:
         _log.warning("sematik xz cizilemedi", exc_info=True)
+        _hata_ekle(hatalar, _("Kesit eksik çizildi (hesaplanamadı): %s") % e)
     return c.ogeler, (-w, -H / 2.0, w, H / 2.0), sorted(set(round(z, 9) for z in c.cizgiler))

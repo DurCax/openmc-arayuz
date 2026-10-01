@@ -347,7 +347,60 @@ def test_ice_aktar_tambur_yonu_harf_sinir():
             "-> %s" % s)
 
 
-TAMBUR_R = 6.0         # altigen_tambur_halkasi tambur yaricapi (cm)
+def test_arayuz_sessiz_yedek_yok():
+    print("\n[GS8] arayuz: kesik/cizim hesaplanamazsa 'hesaplanamadı' (bos sonuc degil) + warning")
+    import logging
+    import os
+    from PySide6 import QtWidgets
+    QtWidgets.QApplication.instance() or QtWidgets.QApplication([])
+    from cekirdek import geometri, sema
+    from testler.ortak_test import ORNEK
+    from arayuz.geometri import cizim, cizim_xz, sablonlar
+    from arayuz.geometri.editor import GelismisEditor
+    spec = sablonlar.uret(sema.yukle(os.path.join(ORNEK, "pwr_ceyrek_kor.json")), "kare_altigen")
+    kayitlar = []
+
+    class _Tut(logging.Handler):
+        def emit(self, r):
+            kayitlar.append(r)
+    tut = _Tut(level=logging.WARNING)
+    logging.getLogger().addHandler(tut)
+    eski_k, eski_m = geometri.kesik_konumlar, geometri.model
+
+    def bozuk(*_a, **_k):
+        raise RuntimeError("sahte hata")
+    e = GelismisEditor()
+    try:
+        geometri.kesik_konumlar = bozuk
+        e.yukle(spec)
+        kontrol("editor: 'Kesik konum yok' DEGIL, 'hesaplanamadı'",
+                "hesaplanamadı" in e.kesik_etiketi.text(), "-> %s" % e.kesik_etiketi.text())
+        f = e.formlar["kafes"]
+        f._kesikleri_isaretle(spec["geometri"]["kok"]["ic"], f.altigen)
+        kontrol("kafes formu: kesik notu 'hesaplanamadı' ve gorunur",
+                "hesaplanamadı" in f.kesik_notu.text(), "-> %r" % f.kesik_notu.text())
+        geometri.kesik_konumlar = eski_k
+        geometri.model = bozuk
+        hatalar = []
+        cizim.xy_ogeleri(spec, hatalar=hatalar)
+        hatalar_xz = []
+        cizim_xz.xz_ogeleri(spec, hatalar=hatalar_xz)
+        kontrol("cizim/cizim_xz hatayi cagirana bildirir", hatalar and hatalar_xz,
+                "-> %s %s" % (hatalar, hatalar_xz))
+        e.kesit.tazele()
+        kontrol("kesit tuvali hata metnini tasir (2B mesaji degil)",
+                "hesaplanamadı" in (e.kesit.tuval.hata or ""), "-> %r" % e.kesit.tuval.hata)
+    finally:
+        geometri.kesik_konumlar, geometri.model = eski_k, eski_m
+        logging.getLogger().removeHandler(tut)
+        e.close()
+        e.deleteLater()
+    kontrol("hatalar warning duzeyinde gunluge yazildi",
+            sum(1 for r in kayitlar if "sahte hata" in str(r.exc_info or r.getMessage())) >= 3,
+            "-> %d kayit" % len(kayitlar))
+
+
+TAMBUR_R = 6.0        # altigen_tambur_halkasi tambur yaricapi (cm)
 
 
 def _harita(spec, noktalar):
@@ -394,5 +447,6 @@ def test_tek_tambur_yonu_asil_modelle_ayni():
 HIZLI = [test_periyodik_es_etkin_bc, test_betik_kesik_yakit_hacmi, test_k2_brown_atiflari,
          test_panel_rozeti_degerlendirilemedi, test_tek_tambur_yonu_asil_modelle_ayni,
          test_stokastik_hacim_sigma_denetimi, test_stokastik_hacim_chdir_yok,
-         test_ice_aktar_ayni_adli_evrenler, test_ice_aktar_tambur_yonu_harf_sinir]
+         test_ice_aktar_ayni_adli_evrenler, test_ice_aktar_tambur_yonu_harf_sinir,
+         test_arayuz_sessiz_yedek_yok]
 YAVAS = [test_yavas_betik_kesik_hacim_kosucuyla_ayni]

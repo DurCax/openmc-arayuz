@@ -169,8 +169,12 @@ class KafesFormu(FormTabani):
             for kk in geometri.kesik_konumlar(m):
                 if kk.get("kafes") == k.get("id") and kk.get("kafes"):
                     isaret[tuple(kk["indeks"])] = kk["durum"]
-        except Exception as e:
-            _log.info("kesik konumlar hesaplanamadi: %s", e)
+        except Exception:
+            _log.warning("kesik konumlar hesaplanamadi", exc_info=True)
+            izg.isaretleri_ayarla({}, tema.renk("uyari"))
+            self.kesik_notu.setText(_("Kesik konumlar hesaplanamadı (ayrıntı günlükte)."))
+            self._form.setRowVisible(self.kesik_notu, True)
+            return
         izg.isaretleri_ayarla(isaret, tema.renk("uyari"))
         n_k = sum(1 for v in isaret.values() if v == "kesik")
         n_g = len(isaret) - n_k
