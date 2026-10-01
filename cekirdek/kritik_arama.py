@@ -50,6 +50,7 @@ import os
 
 from cekirdek import kosucu, sema, tarama
 from cekirdek.gunluk import kaydedici
+from cekirdek.ceviri import _, pgettext
 
 _log = kaydedici(__name__)
 
@@ -69,10 +70,10 @@ class AramaSonucu(object):
 
     def ozet(self):
         if not self.basarili:
-            return "Arama başarısız: %s" % self.mesaj
+            return _("Arama başarısız: %s") % self.mesaj
         bel = ("" if self.cozum_belirsizlik is None
                else " ± %.4g" % self.cozum_belirsizlik)
-        return ("Çözüm: %s = %.6g%s   (k = %.5f ± %.5f, %d yineleme)"
+        return (_("Çözüm: %s = %.6g%s   (k = %.5f ± %.5f, %d yineleme)")
                 % (self.parametre_adi, self.cozum, bel, self.cozum_keff,
                    self.cozum_sapma, len(self.adimlar)))
 
@@ -82,7 +83,7 @@ def _nokta_kos(spec, tur, hedef, deger, dizin, is_parcacigi, taban):
     nokta_spec, _uyari = tarama.parametre_uygula(spec, tur, hedef, deger, taban=taban)
     kosu = kosucu.calistir(nokta_spec, dizin, is_parcacigi=is_parcacigi)
     if not kosu["basarili"]:
-        raise RuntimeError("koşu başarısız (çıkış kodu %d), kayıt: %s"
+        raise RuntimeError(_("koşu başarısız (çıkış kodu %d), kayıt: %s")
                            % (kosu["cikis_kodu"], kosu["log"]))
     okunan = kosucu.sonuc_oku(kosu["statepoint"])
     return okunan["keff"]
@@ -104,7 +105,7 @@ def ara(spec, tur, hedef, alt, ust, kok_dizin, hedef_keff=1.0,
 
     def olc(deger):
         if dur_bayragi and dur_bayragi():
-            raise KeyboardInterrupt("kullanıcı durdurdu")
+            raise KeyboardInterrupt(_("kullanıcı durdurdu"))
         dizin = os.path.join(kok_dizin, "adim_%02d" % adim_no[0])
         k, s = _nokta_kos(spec, tur, hedef, deger, dizin, is_parcacigi, spec)
         kayit = {"deger": deger, "keff": k, "sapma": s,
@@ -128,12 +129,13 @@ def ara(spec, tur, hedef, alt, ust, kok_dizin, hedef_keff=1.0,
 
     # --- kok sarti: hedef aralikta mi? ---
     if f_alt * f_ust > 0:
-        yon = "büyük" if f_alt > 0 else "küçük"
+        yon = (pgettext("karşılaştırma", "büyük") if f_alt > 0
+               else pgettext("karşılaştırma", "küçük"))
         sonuc.mesaj = (
-            "Hedef k = %.5f verilen aralıkta değil: her iki uç da hedeften %s "
+            _("Hedef k = %.5f verilen aralıkta değil: her iki uç da hedeften %s "
             "(k(%g) = %.5f, k(%g) = %.5f). Aralığı genişletin. "
             "Dış değerleme (ekstrapolasyon) yapılmadı — sessizce yanlış cevap "
-            "üretmemek için."
+            "üretmemek için.")
             % (hedef_keff, yon, alt, k_alt, ust, k_ust))
         return sonuc
 
@@ -142,7 +144,7 @@ def ara(spec, tur, hedef, alt, ust, kok_dizin, hedef_keff=1.0,
         if abs(k - hedef_keff) <= tolerans_sigma * s:
             sonuc.cozum, sonuc.cozum_keff, sonuc.cozum_sapma = deger, k, s
             sonuc.basarili = True
-            sonuc.mesaj = ("Aralık ucu zaten hedefte (|k − hedef| = %.1fσ)."
+            sonuc.mesaj = (_("Aralık ucu zaten hedefte (|k − hedef| = %.1fσ).")
                            % (abs(k - hedef_keff) / s if s else 0))
             return sonuc
 
@@ -168,8 +170,8 @@ def ara(spec, tur, hedef, alt, ust, kok_dizin, hedef_keff=1.0,
         if not ic or _yakin(x2):
             x2 = 0.5 * (x_alt + x_ust)
             if _yakin(x2):
-                sonuc.mesaj = ("Arama aralığı istatistiksel çözünürlüğün altına indi; "
-                               "daha fazla yineleme bilgi katmaz.")
+                sonuc.mesaj = (_("Arama aralığı istatistiksel çözünürlüğün altına indi; "
+                               "daha fazla yineleme bilgi katmaz."))
                 break
         try:
             k2, s2 = olc(x2)
@@ -192,7 +194,7 @@ def ara(spec, tur, hedef, alt, ust, kok_dizin, hedef_keff=1.0,
             sonuc.cozum, sonuc.cozum_keff, sonuc.cozum_sapma = x2, k2, s2
             sonuc.basarili = True
             sonuc.mesaj = (
-                "Yakınsadı: |k − hedef| = %.2fσ (ölçüt ≤ %.1fσ)."
+                _("Yakınsadı: |k − hedef| = %.2fσ (ölçüt ≤ %.1fσ).")
                 % (abs(f2) / s2, tolerans_sigma))
             return sonuc
 
@@ -209,9 +211,9 @@ def ara(spec, tur, hedef, alt, ust, kok_dizin, hedef_keff=1.0,
             sonuc.cozum_keff, sonuc.cozum_sapma = k2, s2
             sonuc.basarili = True
             sonuc.mesaj = (
-                "Arama aralığının genişliği (%.4g) kökün istatistiksel "
+                _("Arama aralığının genişliği (%.4g) kökün istatistiksel "
                 "belirsizliğine (%.4g) indi. Daha fazla yineleme bilgi katmaz; "
-                "daha dar bir cevap için nokta başına parçacık sayısını artırın."
+                "daha dar bir cevap için nokta başına parçacık sayısını artırın.")
                 % (abs(x_ust - x_alt), sonuc.cozum_belirsizlik))
             return sonuc
 
@@ -221,8 +223,8 @@ def ara(spec, tur, hedef, alt, ust, kok_dizin, hedef_keff=1.0,
         sonuc.cozum_keff = en_iyi["keff"]
         sonuc.cozum_sapma = en_iyi["sapma"]
         if not sonuc.mesaj:
-            sonuc.mesaj = ("%d yinelemede ölçüte ulaşılamadı; en yakın nokta "
-                           "raporlanıyor (|k − hedef| = %.2fσ)."
+            sonuc.mesaj = (_("%d yinelemede ölçüte ulaşılamadı; en yakın nokta "
+                           "raporlanıyor (|k − hedef| = %.2fσ).")
                            % (en_fazla, abs(en_iyi["fark"]) / en_iyi["sapma"]))
     return sonuc
 
@@ -235,12 +237,12 @@ def _terminal(argv):
     import sys
     if not argv or argv[0] in ("-h", "--yardim", "--help"):
         print(__doc__)
-        print("\nKullanım")
+        print(_("\nKullanım"))
         print("  python3 -m cekirdek.kritik_arama <spec.json> --tur <tur> "
               "--hedef <ad> --alt <a> --ust <b> [--keff 1.0] [-s N]")
-        print("\nTARAMA TÜRLERİ (tarama.py ile aynı)")
+        print(_("\nTARAMA TÜRLERİ (tarama.py ile aynı)"))
         for ad, (aciklama, _h, birim, _k) in sorted(tarama.TURLER.items()):
-            print("  %-20s %-56s [%s]" % (ad, aciklama, birim))
+            print("  %-20s %-56s [%s]" % (ad, _(aciklama), tarama.birim_metni(birim)))
         return 0
 
     spec_yolu = argv[0]
@@ -252,10 +254,10 @@ def _terminal(argv):
         if a in p:
             i += 1; p[a] = argv[i]
         else:
-            print("bilinmeyen seçenek: %s" % argv[i]); return 2
+            print(_("bilinmeyen seçenek: %s") % argv[i]); return 2
         i += 1
     if not all([p["tur"], p["alt"], p["ust"]]):
-        print("--tur, --alt ve --ust zorunlu."); return 2
+        print(_("--tur, --alt ve --ust zorunlu.")); return 2
 
     spec = sema.yukle(spec_yolu)
     hedef = p["hedef"]
@@ -263,15 +265,15 @@ def _terminal(argv):
         ad, no = hedef.split(":"); hedef = (ad, int(no))
     dizin = p["dizin"] or os.path.join(
         os.path.dirname(os.path.abspath(spec_yolu)), "arama_%s" % p["tur"])
-    birim = tarama.TURLER[p["tur"]][2]
+    birim = tarama.birim_metni(tarama.TURLER[p["tur"]][2])
 
     print("=" * 74)
-    print(" KRİTİK ARAMA: %s" % tarama.TURLER[p["tur"]][0])
-    print(" hedef k = %s   |   aralık: %s – %s %s" % (p["keff"], p["alt"], p["ust"], birim))
+    print(_(" KRİTİK ARAMA: %s") % tarama.tur_aciklamasi(p["tur"]))
+    print(_(" hedef k = %s   |   aralık: %s – %s %s") % (p["keff"], p["alt"], p["ust"], birim))
     print("=" * 74)
 
     def ilerleme(i, kayit):
-        print("  [%2d] %-12.6g %s  k = %.5f ± %.5f   fark = %+8.5f (%.1fσ)"
+        print(_("  [%2d] %-12.6g %s  k = %.5f ± %.5f   fark = %+8.5f (%.1fσ)")
               % (i + 1, kayit["deger"], birim, kayit["keff"], kayit["sapma"],
                  kayit["fark"], kayit["sigma_orani"] or 0))
 
@@ -283,12 +285,12 @@ def _terminal(argv):
     if s.basarili:
         bel = ("" if s.cozum_belirsizlik is None
                else " ± %.4g" % s.cozum_belirsizlik)
-        print("  Çözüm: %s = %.6g%s %s" % (p["tur"], s.cozum, bel, birim))
+        print(_("  Çözüm: %s = %.6g%s %s") % (p["tur"], s.cozum, bel, birim))
         print("         k = %.5f ± %.5f" % (s.cozum_keff, s.cozum_sapma))
         if s.egim:
-            print("         yerel eğim dk/dx = %.4g / %s" % (s.egim, birim))
+            print(_("         yerel eğim dk/dx = %.4g / %s") % (s.egim, birim))
     else:
-        print("  Çözüm bulunamadı.")
+        print(_("  Çözüm bulunamadı."))
     print("  %s" % s.mesaj)
     print("=" * 74)
     return 0 if s.basarili else 1

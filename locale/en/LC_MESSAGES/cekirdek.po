@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-01 16:59+0300\n"
+"POT-Creation-Date: 2026-10-01 17:32+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -17,16 +17,16 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: cekirdek/ceviri.py:55
+#: cekirdek/ceviri.py:60
 msgid "Türkçe"
 msgstr "Turkish"
 
-#: cekirdek/ceviri.py:55
+#: cekirdek/ceviri.py:60
 msgid "İngilizce"
 msgstr "English"
 
 # "Görünüm > Dil" menusu
-#: cekirdek/ceviri.py:60
+#: cekirdek/ceviri.py:65
 msgctxt "menü"
 msgid "Dil"
 msgstr "Language"
@@ -557,7 +557,7 @@ msgstr ""
 "Select a material; if the region is deliberately left empty, select 'Void (no "
 "material)'."
 
-#: cekirdek/dogrula/geometri.py:72
+#: cekirdek/dogrula/geometri.py:72 cekirdek/tarama.py:170 cekirdek/tarama.py:176
 #, python-format
 msgid "tanımsız malzeme: %s"
 msgstr "undefined material: %s"
@@ -574,7 +574,7 @@ msgstr ""
 "Insertion cannot be defined without an axial tip position. Define an active height on"
 " the Geometry page."
 
-#: cekirdek/dogrula/geometri.py:93
+#: cekirdek/dogrula/geometri.py:93 cekirdek/tarama.py:236 cekirdek/tarama_agac.py:52
 #, python-format
 msgid "daldırma %%0–%%100 arasında olmalı: %s"
 msgstr "insertion must be between 0%% and 100%%: %s"
@@ -958,7 +958,8 @@ msgstr "unknown core type: %s (valid: %s)"
 msgid "çubuk seçilmemiş"
 msgstr "no pin selected"
 
-#: cekirdek/dogrula/kor.py:66
+#: cekirdek/dogrula/kor.py:66 cekirdek/tarama.py:231 cekirdek/tarama.py:243
+#: cekirdek/tarama_agac.py:95
 #, python-format
 msgid "tanımsız çubuk: %s"
 msgstr "undefined pin: %s"
@@ -972,7 +973,7 @@ msgstr "cell pitch must be greater than zero"
 msgid "çubuğun dış çapı (%.5f cm) hücre adımından (%.5f cm) büyük"
 msgstr "the outer diameter of the pin (%.5f cm) is larger than the cell pitch (%.5f cm)"
 
-#: cekirdek/dogrula/kor.py:83
+#: cekirdek/dogrula/kor.py:83 cekirdek/tarama.py:222
 #, python-format
 msgid "tanımsız demet: %s"
 msgstr "undefined assembly: %s"
@@ -2489,10 +2490,11 @@ msgstr ""
 msgid "%s bir değer bekliyor"
 msgstr ""
 
-#: cekirdek/giris.py:57 cekirdek/giris.py:150
+#: cekirdek/giris.py:57 cekirdek/giris.py:150 cekirdek/kosucu.py:644
+#: cekirdek/kritik_arama.py:257 cekirdek/tarama.py:440
 #, python-format
 msgid "bilinmeyen seçenek: %s"
-msgstr ""
+msgstr "unknown option: %s"
 
 #: cekirdek/giris.py:61 cekirdek/giris.py:154
 msgid "koşu dizini verilmedi"
@@ -2627,16 +2629,61 @@ msgstr ""
 msgid "Dosya UTF-8 metin değil: %s"
 msgstr ""
 
+#: cekirdek/guc.py:127
+#, python-format
+msgid ""
+"'%s' çubuğu: %d bölge bekleniyor ama geometride %d hücre var. Güç dağılımı için "
+"hücre-bölge eşleşmesi güvenilir değil."
+msgstr ""
+"pin '%s': %d pin regions expected but the geometry has %d cells. The cell-to-region "
+"mapping for the power distribution is not reliable."
+
+#: cekirdek/guc.py:134
+#, python-format
+msgid ""
+"'%s' çubuğu, %d. bölge: beklenen malzeme '%s' ama hücrede '%s' var. Hücre-bölge "
+"eşleşmesi bozulmuş."
+msgstr ""
+"pin '%s', region %d: material '%s' expected but the cell contains '%s'. The cell-to-"
+"region mapping is broken."
+
 #: cekirdek/guc.py:217
 #, python-format
 msgid "kafes (id = %d) geometride bulunamadı"
+msgstr "lattice (id = %d) not found in the geometry"
+
+#: cekirdek/guc.py:318
+msgid ""
+"Güç dağılımı sonucunda demet (kafes) düzeyi bulunamadı. Hedef çubuk bir demette "
+"tekrarlanmıyor olabilir; güç dağılımı yalnızca demet içindeki çubuklar için "
+"anlamlıdır."
 msgstr ""
+"No assembly (lattice) level was found in the power distribution result. The target "
+"pin may not be repeated in an assembly; the power distribution is meaningful only for"
+" pins inside an assembly."
 
 #: cekirdek/guc.py:355
 msgid ""
 "Güç dağılımı: çubuk türleri farklı kafes düzeylerinde ya da farklı eksenel "
 "dilimlerde; türler tek haritada birleştirilemez."
 msgstr ""
+"Power distribution: the pin types are at different lattice levels or in different "
+"axial bins; the types cannot be combined in a single map."
+
+#: cekirdek/guc.py:417
+msgid ""
+"summary.h5 bulunamadı; güç dağılımının hücre konumları okunamaz. Koşu dizininde "
+"statepoint ile summary.h5 yan yana olmalıdır."
+msgstr ""
+"summary.h5 not found; the cell positions of the power distribution cannot be read. "
+"summary.h5 must be next to the statepoint in the run directory."
+
+#: cekirdek/guc.py:442
+#, python-format
+msgid "%s konumunda bazı eksenel dilimler eksik; veri biçimi beklenenden farklı."
+msgstr ""
+"some axial bins are missing at position %s; the data format differs from what is "
+"expected."
 
 #: cekirdek/guc.py:450
 #, python-format
@@ -2644,6 +2691,9 @@ msgid ""
 "Tam kor: %d kafes düzeyi. Her çubuk kordaki tam konumuyla (demet konumu + demet içi "
 "konum) ayrı sayılır; bağıl güç tüm kordaki yakıt çubuklarının ortalamasına göredir."
 msgstr ""
+"Full core: %d lattice levels. Each pin is counted separately by its full position in "
+"the core (assembly position + position in the assembly); the relative power is "
+"relative to the mean of all fuel pins in the core."
 
 #: cekirdek/guc.py:455
 #, python-format
@@ -2651,6 +2701,8 @@ msgid ""
 "%d bin'de aynı çubuk konumu birden çok eksenel katmanda bulundu; katman örnekleri "
 "dilim dilim toplandı."
 msgstr ""
+"In %d bins the same pin position was found in more than one axial layer; the layer "
+"instances were summed bin by bin."
 
 #: cekirdek/guc.py:459
 #, python-format
@@ -2658,11 +2710,22 @@ msgid ""
 "Çok türlü güç: %d çubuk türü (%s) tek haritada; bağıl güç bütün türlerin yakıt "
 "çubuklarının ortalamasına göredir."
 msgstr ""
+"Multi-type power: %d pin types (%s) in one map; the relative power is relative to the"
+" mean of the fuel pins of all types."
+
+#: cekirdek/guc.py:561
+#, python-format
+msgid "dıştan %d. halka, %d. konum"
+msgstr "ring %d from the outside, position %d"
 
 #: cekirdek/guc.py:578
 #, python-format
 msgid "demet %s · çubuk %s"
-msgstr ""
+msgstr "assembly %s · pin %s"
+
+#: cekirdek/guc.py:773
+msgid "F_ΔH (2B — eksenel tepe dahil değil)"
+msgstr "F_ΔH (2D — axial peak not included)"
 
 #: cekirdek/guc_faktor.py:181
 #, python-format
@@ -2670,12 +2733,16 @@ msgid ""
 "%d kesik çubuk (yakıt bölgesi üst hücre sınırıyla kırpılıyor) F_ΔH ve F_q dışında "
 "tutuldu."
 msgstr ""
+"%d truncated pins (fuel region clipped by the parent cell boundary) were excluded "
+"from F_ΔH and F_q."
 
 #: cekirdek/guc_kor.py:146
 msgid ""
 "altıgen kor konum hücrelerinin adımı ya da yönelimi birbirini tutmuyor; demet "
 "konumları belirlenemedi"
 msgstr ""
+"the pitch or orientation of the hexagonal core position cells are inconsistent; the "
+"assembly positions could not be determined"
 
 #: cekirdek/guc_kor.py:154
 #, python-format
@@ -2683,6 +2750,8 @@ msgid ""
 "altıgen kor konum hücreleri %d halkalı bir haritaya sığmıyor; demet konumları "
 "belirlenemedi"
 msgstr ""
+"the hexagonal core position cells do not fit a map with %d rings; the assembly "
+"positions could not be determined"
 
 #: cekirdek/guc_kor.py:197
 #, python-format
@@ -2690,11 +2759,35 @@ msgid ""
 "kök hücre %d ötelemesiz ama diğer demet konumları ötelemeli; demet konumu "
 "belirlenemedi"
 msgstr ""
+"root cell %d has no translation but the other assembly positions do; the assembly "
+"position could not be determined"
 
 #: cekirdek/guc_kor.py:215
 #, python-format
 msgid "kök hücre %d ötelemesi (%.6g, %.6g) hiçbir demet konumuna denk gelmiyor"
+msgstr "root cell %d: translation (%.6g, %.6g) does not match any assembly position"
+
+#: cekirdek/guc_yorum.py:29
+#, python-format
+msgid "F_ΔH = %.4f — en sıcak çubuk ortalamanın %%%.1f üstünde güç üretiyor."
+msgstr "F_ΔH = %.4f — the hottest pin produces %.1f%% more power than the average."
+
+#: cekirdek/guc_yorum.py:32
+msgid ""
+"  Dağılım neredeyse düz. Yansıtıcı sınırlı tek demet hesaplarında beklenen budur; "
+"gerçek bir korda kenar etkileri ve yakıt yüklemesi tepeyi büyütür."
 msgstr ""
+"  The distribution is almost flat. This is expected in single-assembly calculations "
+"with a reflective boundary; in a real core, edge effects and fuel loading increase "
+"the peak."
+
+#: cekirdek/guc_yorum.py:36
+msgid ""
+"  Yüksek: tipik PWR tasarım sınırı F_ΔH ≈ 1.65 civarındadır; yakıt yüklemesi "
+"düzeltilmeli."
+msgstr ""
+"  High: the typical PWR design limit is about F_ΔH ≈ 1.65; the fuel loading should be"
+" corrected."
 
 #: cekirdek/guc_yorum.py:40
 #, python-format
@@ -2702,54 +2795,137 @@ msgid ""
 "Tam kor: %d demet, %d yakıt çubuğu. En sıcak demet %s; ortalaması kor ortalamasının "
 "%.4f katı (F_demet). F_ΔH ve F_q tüm kordaki yakıt çubukları üzerinden hesaplanır."
 msgstr ""
+"Full core: %d assemblies, %d fuel pins. Hottest assembly %s; its mean is %.4f times "
+"the core mean (F_assembly). F_ΔH and F_q are computed over all fuel pins in the core."
 
 #: cekirdek/guc_yorum.py:48
 #, python-format
 msgid "Çubuk türleri (bağıl ortalama / tepe; bütün yakıt çubuklarının ortalaması = 1): %s"
-msgstr ""
+msgstr "Pin types (relative mean / peak; mean of all fuel pins = 1): %s"
 
-#: cekirdek/guc_yorum.py:81
+#: cekirdek/guc_yorum.py:50
+#, python-format
+msgid "%s: %.4f / %.4f (%d çubuk)"
+msgid_plural "%s: %.4f / %.4f (%d çubuk)"
+msgstr[0] "%s: %.4f / %.4f (%d pin)"
+msgstr[1] "%s: %.4f / %.4f (%d pins)"
+
+#: cekirdek/guc_yorum.py:58
+#, python-format
+msgid ""
+"  Dikkat: çubuk başına istatistik sapma (%.4f) dağılımın gerçek saçılmasının (%.4f) "
+"%%%.0f kadarı. Bir en büyük değer hesaplandığı için F_ΔH bu durumda yukarı yanlıdır —"
+" gerçek tepe daha düşüktür. Çevrim başına parçacık sayısını artırın."
+msgstr ""
+"  Caution: the per-pin statistical deviation (%.4f) relative to the true spread of "
+"the distribution (%.4f) is %.0f%%. Because a maximum is computed, F_ΔH is biased "
+"upwards in this case — the true peak is lower. Increase the number of particles per "
+"batch."
+
+#: cekirdek/guc_yorum.py:68
+msgid ""
+"F_q tanımsız — model 2B (eksenel yükseklik yok). Eksenel tepe olmadan yerel güç "
+"yoğunluğu hesaplanamaz; Kor sekmesinde yükseklik tanımlayın."
+msgstr ""
+"F_q undefined — the model is 2D (no axial height). Without an axial peak the local "
+"power density cannot be computed; define a height on the Geometry page."
+
+#: cekirdek/guc_yorum.py:71
+#, python-format
+msgid "F_q = %.4f — yerel güç yoğunluğu tepesi (eksenel şekil dahil)."
+msgstr "F_q = %.4f — local power density peak (including the axial shape)."
+
+#: cekirdek/guc_yorum.py:75
+#, python-format
+msgid ""
+"  Dikkat: yalnızca %d eksenel dilim var. Kaba dilimler tepeyi ortalar ve F_q'yu "
+"olduğundan küçük gösterir (saf kosinüs profilinde ince dilim sınırı π/2 = 1.571'dir)."
+" En az 10–20 dilim kullanın."
+msgstr ""
+"  Caution: there are only %d axial bins. Coarse bins average out the peak and make "
+"F_q look smaller than it is (in a pure cosine profile the fine-bin limit is π/2 = "
+"1.571). Use at least 10–20 bins."
+
+#: cekirdek/guc_yorum.py:82
 #, python-format
 msgid ""
 "  %d eksenel dilim boş (hedef çubuk o katmanlarda yok: %s); bu dilimler F_q "
 "ortalamasına katılmadı."
 msgstr ""
+"  %d axial bins are empty (the target pin is absent from those layers: %s); these "
+"bins were excluded from the F_q average."
 
-#: cekirdek/guc_yorum.py:97
+#: cekirdek/guc_yorum.py:86
+msgid "  Yüksek: tipik PWR sınırı F_q ≈ 2.3–2.6."
+msgstr "  High: the typical PWR limit is F_q ≈ 2.3–2.6."
+
+#: cekirdek/guc_yorum.py:95
+#, python-format
+msgid "Çubuk başına ortalama %.1f W, en sıcak çubuk %.1f W."
+msgstr "Average per pin %.1f W, hottest pin %.1f W."
+
+#: cekirdek/guc_yorum.py:98
 #, python-format
 msgid ""
 "  Modelin fisyon enerjisinin %%%.1f'i bu çubuklarda (%.4g W); kalanı diğer fisil "
 "bölgelerde."
 msgstr ""
+"  %.1f%% of the fission energy of the model is in these pins (%.4g W); the rest is in"
+" other fissile regions."
 
-#: cekirdek/guc_yorum.py:101
+#: cekirdek/guc_yorum.py:102
 #, python-format
 msgid ""
 "  Uyarı: güç payı tally'si okunamadı: %s. Toplam gücün tamamı bu çubuklara yazıldı; "
 "başka fisil bölge varsa çubuk gücü olduğundan büyüktür."
 msgstr ""
+"  Warning: the power share tally could not be read: %s. The whole total power was "
+"assigned to these pins; if there are other fissile regions, the pin power is "
+"overstated."
 
-#: cekirdek/guc_yorum.py:105
+#: cekirdek/guc_yorum.py:106
 msgid ""
 "  Not: güç payı ölçülemedi (eski koşu); toplam gücün tamamı bu çubuklara yazıldı. "
 "Başka fisil bölge varsa çubuk gücü olduğundan büyüktür."
 msgstr ""
+"  Note: the power share could not be measured (old run); the whole total power was "
+"assigned to these pins. If there are other fissile regions, the pin power is "
+"overstated."
 
-#: cekirdek/guc_yorum.py:115
+#: cekirdek/guc_yorum.py:111
+#, python-format
+msgid "En yüksek çizgisel güç %.1f W/cm (tepe faktörü: %s)."
+msgstr "Maximum linear power %.1f W/cm (peaking factor: %s)."
+
+#: cekirdek/guc_yorum.py:114
+msgid "  Sınırın üstünde: tipik PWR çizgisel güç sınırı ~400–500 W/cm."
+msgstr "  Above the limit: the typical PWR linear power limit is ~400–500 W/cm."
+
+#: cekirdek/guc_yorum.py:116
 msgid ""
 "  Not: kappa-fission, gama ısınmasının yakıt dışında (zarf, soğutucu) bırakılan "
 "kısmını da (PWR'da ~%2–3) çubuklara yazar; çubuk gücü bu oranda büyük çıkar."
 msgstr ""
+"  Note: kappa-fission also assigns to the pins the part of the gamma heating "
+"deposited outside the fuel (cladding, coolant) (in a PWR ~2–3%); the pin power is "
+"overstated by this fraction."
 
-#: cekirdek/guc_yorum.py:125
+#: cekirdek/guc_yorum.py:126
 #, python-format
 msgid ""
 "Not: F_ΔH ve F_q yalnız hedef çubuk türünü kapsar — modelin fisyon enerjisinin "
 "%%%.1f'i bu çubuklarda, kalanı haritada olmayan diğer fisil bölgelerde (başka çubuk "
 "türü, blanket). En sıcak çubuk onlardan biri olabilir."
 msgstr ""
+"Note: F_ΔH and F_q cover only the target pin type — %.1f%% of the fission energy of "
+"the model is in these pins, the rest in other fissile regions not in the map (other "
+"pin types, blanket). The hottest pin may be one of them."
 
-#: cekirdek/guc_yorum.py:146
+#: cekirdek/guc_yorum.py:140
+msgid "Güç dağılımı hesaplanamadı."
+msgstr "The power distribution could not be computed."
+
+#: cekirdek/guc_yorum.py:147
 msgid ""
 "Not: çubuk başına sapmalar iyimserdir. Özdeğer hesabında ardışık çevrimler birbirine "
 "bağlıdır ve OpenMC'nin raporladığı tally belirsizliği bunu hesaba katmaz. Ölçülen "
@@ -2758,11 +2934,36 @@ msgid ""
 " sayısını artırın ve modeli en az 5–10 farklı tohumla koşup sonuçların saçılmasına "
 "bakın."
 msgstr ""
+"Note: the per-pin deviations are optimistic. In an eigenvalue calculation successive "
+"batches are correlated, and the tally uncertainty reported by OpenMC does not account"
+" for this. Most of the measured seed-to-seed difference comes from an unconverged "
+"fission source (a bias, not only noise): turn on Shannon entropy, increase the number"
+" of inactive batches until the entropy flattens, and run the model with at least 5–10"
+" different seeds to look at the spread of the results."
 
-#: cekirdek/guc_yorum.py:223
+#: cekirdek/guc_yorum.py:186
+#, python-format
+msgid "tohum %d: koşu başarısız"
+msgstr "seed %d: run failed"
+
+#: cekirdek/guc_yorum.py:191
+#, python-format
+msgid "tohum %d: güç dağılımı okunamadı"
+msgstr "seed %d: power distribution could not be read"
+
+#: cekirdek/guc_yorum.py:216
+msgid "güç dağılımı yok"
+msgstr "no power distribution"
+
+#: cekirdek/guc_yorum.py:220
+#, python-format
+msgid "en sıcak çubuk: %s"
+msgstr "hottest pin: %s"
+
+#: cekirdek/guc_yorum.py:224
 #, python-format
 msgid "en sıcak demet: %s (F_demet = %.4f)"
-msgstr ""
+msgstr "hottest assembly: %s (F_assembly = %.4f)"
 
 #: cekirdek/kapsul.py:221
 #, python-format
@@ -2866,39 +3067,648 @@ msgstr ""
 msgid "Not: yeni koşunun kapsülü okunamadı: %s"
 msgstr ""
 
-#: cekirdek/kosucu.py:500
+#: cekirdek/kaynak.py:33
+msgid "Watt fisyon tayfı"
+msgstr "Watt fission spectrum"
+
+#: cekirdek/kaynak.py:34
+msgid "Maxwell tayfı"
+msgstr "Maxwell spectrum"
+
+#: cekirdek/kaynak.py:35
+msgid "Tek enerjili (monoenerjetik)"
+msgstr "Monoenergetic"
+
+#: cekirdek/kaynak.py:36
+msgid "Ayrık çizgiler"
+msgstr "Discrete lines"
+
+#: cekirdek/kaynak.py:37
+msgid "Grup grup tayf (histogram)"
+msgstr "Group-wise spectrum (histogram)"
+
+#: cekirdek/kaynak.py:38
+msgid "Füzyon tayfı (D-T / D-D, Muir)"
+msgstr "Fusion spectrum (D-T / D-D, Muir)"
+
+#: cekirdek/kaynak.py:42
+msgid "İzotropik"
+msgstr "Isotropic"
+
+#: cekirdek/kaynak.py:43
+msgid "Tek yönlü demet"
+msgstr "Monodirectional beam"
+
+#: cekirdek/kaynak.py:44
+msgid "Koni"
+msgstr "Cone"
+
+#: cekirdek/kaynak.py:98
+msgid "ayrık tayf: en az bir (enerji, olasılık) çifti gerekli"
+msgstr "discrete spectrum: at least one (energy, probability) pair is required"
+
+#: cekirdek/kaynak.py:107
+msgid "histogram tayf: en az iki grup kenarı gerekli"
+msgstr "histogram spectrum: at least two group edges are required"
+
+#: cekirdek/kaynak.py:109
+#, python-format
+msgid "histogram tayf: %d kenar için %d değer olmalı, %d verildi"
+msgstr "histogram spectrum: %d edges require %d values, %d were given"
+
+#: cekirdek/kaynak.py:121 cekirdek/kaynak.py:318
+#, python-format
+msgid "bilinmeyen enerji tayfı türü: %s"
+msgstr "unknown energy spectrum type: %s"
+
+#: cekirdek/kaynak.py:156
+msgid "kaynak yönü sıfır vektör olamaz"
+msgstr "the source direction cannot be a zero vector"
+
+#: cekirdek/kaynak.py:164
+#, python-format
+msgid "koninin yarı açılımı 0–180° arasında olmalı (%s)"
+msgstr "the cone half-angle must be between 0 and 180° (%s)"
+
+#: cekirdek/kaynak.py:173 cekirdek/kaynak.py:338
+#, python-format
+msgid "bilinmeyen açısal dağılım türü: %s"
+msgstr "unknown angular distribution type: %s"
+
+#: cekirdek/kaynak.py:254
+msgid "foton"
+msgstr "photon"
+
+#: cekirdek/kaynak.py:254
+msgid "nötron"
+msgstr "neutron"
+
+#: cekirdek/kaynak.py:257
+#, python-format
+msgid " (ortalama %s)"
+msgstr " (mean %s)"
+
+#: cekirdek/kosucu.py:110
+msgid "geçersiz k-eff"
+msgstr "invalid k-eff"
+
+#: cekirdek/kosucu.py:117
+msgid ""
+"k∞ (sonsuz ortam) — sızıntı yok, kritiklik hükmü verilmez; sonlu bir reaktörde k-eff "
+"daha küçüktür"
+msgstr ""
+"k∞ (infinite medium) — no leakage, no criticality verdict is given; in a finite "
+"reactor k-eff is smaller"
+
+#: cekirdek/kosucu.py:120
+msgid "Kritik (k = 1'den istatistiksel olarak ayırt edilemez)"
+msgstr "Critical (statistically indistinguishable from k = 1)"
+
+#: cekirdek/kosucu.py:122
+msgid "Kritik üstü (k > 1 — güç artar)"
+msgstr "Supercritical (k > 1 — power rises)"
+
+#: cekirdek/kosucu.py:124
+msgid "Kritik altı (k < 1 — güç söner)"
+msgstr "Subcritical (k < 1 — power decays)"
+
+#: cekirdek/kosucu.py:127
+#, python-format
+msgid "ρ∞ = %+.0f ± %.0f pcm (yakıtın taşıdığı reaktivite fazlası)"
+msgstr "ρ∞ = %+.0f ± %.0f pcm (excess reactivity carried by the fuel)"
+
+#: cekirdek/kosucu.py:129
+#, python-format
+msgid "reaktivite = %+.0f ± %.0f pcm"
+msgstr "reactivity = %+.0f ± %.0f pcm"
+
+#: cekirdek/kosucu.py:132
+#, python-format
+msgid "%+.2f $ (β_eff = %.0f pcm)"
+msgstr "%+.2f $ (β_eff = %.0f pcm)"
+
+#: cekirdek/kosucu.py:139
+msgid ""
+"ρ > 1 $: gerçek bir geçici rejimde bu anlık kritiklik demektir; sonsuz ortam (k∞) "
+"hesabında ise yakıtın taşıdığı reaktivite fazlasıdır (kontrol sistemiyle dengelenir)"
+msgstr ""
+"ρ > 1 $: in a real transient this means prompt criticality; in an infinite medium "
+"(k∞) calculation it is the excess reactivity carried by the fuel (balanced by the "
+"control system)"
+
+#: cekirdek/kosucu.py:180
+#, python-format
+msgid ""
+"pasif çevrim sayısı (%d) kaynak yakınsamasını değerlendirmek için çok az — en az 4, "
+"pratikte 20–50 pasif çevrim kullanın"
+msgstr ""
+"the number of inactive batches (%d) is too small to assess source convergence — use "
+"at least 4, in practice 20–50 inactive batches"
+
+#: cekirdek/kosucu.py:184
+#, python-format
+msgid "aktif çevrim sayısı değerlendirme için yetersiz (%d çevrim, %d pasif)"
+msgstr "not enough active batches for the assessment (%d batches, %d inactive)"
+
+#: cekirdek/kosucu.py:190
+msgid "entropi sabit; değerlendirilemedi"
+msgstr "entropy is constant; could not be assessed"
+
+#: cekirdek/kosucu.py:195
+msgid "pasif çevrim sayısı bölünemeyecek kadar az"
+msgstr "too few inactive batches to split"
+
+#: cekirdek/kosucu.py:200
+#, python-format
+msgid ""
+"Kaynak dağılımı pasif dönemin sonunda hâlâ kayıyor (kayma %.4f, aktif saçılma σ = "
+"%.4f). Pasif çevrim sayısını artırın — k-eff yanlı olabilir."
+msgstr ""
+"The source distribution is still drifting at the end of the inactive batches (drift "
+"%.4f, active spread σ = %.4f). Increase the number of inactive batches — k-eff may be"
+" biased."
+
+#: cekirdek/kosucu.py:204
+#, python-format
+msgid "Kaynak dağılımı yakınsamış görünüyor (pasif dönem sonunda kayma %.4f ≤ 2σ = %.4f)."
+msgstr ""
+"The source distribution appears converged (drift at the end of the inactive batches "
+"%.4f ≤ 2σ = %.4f)."
+
+#: cekirdek/kosucu.py:281
+msgid "openmc çalıştırılabilir dosyası PATH'te bulunamadı (conda ortamı etkin mi?)"
+msgstr "the openmc executable was not found in PATH (is the conda environment active?)"
+
+#: cekirdek/kosucu.py:332
+msgid "akı"
+msgstr "flux"
+
+#: cekirdek/kosucu.py:332
+msgid "soğurma"
+msgstr "absorption"
+
+#: cekirdek/kosucu.py:332
+msgid "fisyon"
+msgstr "fission"
+
+#: cekirdek/kosucu.py:332
+msgid "fisyon nötronu üretimi"
+msgstr "fission neutron production"
+
+#: cekirdek/kosucu.py:333
+msgid "toplam tepkime"
+msgstr "total reaction"
+
+#: cekirdek/kosucu.py:333
+msgid "saçılma"
+msgstr "scattering"
+
+#: cekirdek/kosucu.py:333
+msgid "ısınma"
+msgstr "heating"
+
+#: cekirdek/kosucu.py:334
+msgid "yerel ısınma"
+msgstr "local heating"
+
+#: cekirdek/kosucu.py:334
+msgid "fisyon enerjisi"
+msgstr "fission energy"
+
+#: cekirdek/kosucu.py:334
+msgid "(n,γ) yakalama"
+msgstr "(n,γ) capture"
+
+#: cekirdek/kosucu.py:335
+msgid "esnek saçılma"
+msgstr "elastic scattering"
+
+#: cekirdek/kosucu.py:335
+msgid "akım"
+msgstr "current"
+
+#: cekirdek/kosucu.py:357
+msgid "n·cm/s (hacim-integralli)"
+msgstr "n·cm/s (volume-integrated)"
+
+#: cekirdek/kosucu.py:357
+msgid "n·cm / kaynak nötronu"
+msgstr "n·cm / source neutron"
+
+#: cekirdek/kosucu.py:359
+msgid "eV / kaynak nötronu"
+msgstr "eV / source neutron"
+
+#: cekirdek/kosucu.py:360
+msgid "/ kaynak nötronu"
+msgstr "/ source neutron"
+
+#: cekirdek/kosucu.py:381
+#, python-format
+msgid "malzeme %s"
+msgstr "material %s"
+
+#: cekirdek/kosucu.py:390
+msgid "tüm model"
+msgstr "whole model"
+
+#: cekirdek/kosucu.py:400
+msgid "Bölge / enerji"
+msgstr "Region / energy"
+
+#: cekirdek/kosucu.py:400
+msgid "Ölçülen"
+msgstr "Quantity"
+
+#: cekirdek/kosucu.py:400
+msgid "Değer"
+msgstr "Value"
+
+#: cekirdek/kosucu.py:400
+msgid "Bağıl hata"
+msgstr "Relative error"
+
+#: cekirdek/kosucu.py:400
+msgid "Birim"
+msgstr "Unit"
+
+#: cekirdek/kosucu.py:445 cekirdek/rapor_sablon/__init__.py:149
+#, python-format
+msgid "okunamadı: %s"
+msgstr "could not be read: %s"
+
+#: cekirdek/kosucu.py:506
 msgid "Referans tally yok — korunum denetlenemedi (eski statepoint ya da model regresyonu)."
 msgstr ""
+"No reference tally — conservation could not be checked (old statepoint or model "
+"regression)."
 
-#: cekirdek/kosucu.py:504
+#: cekirdek/kosucu.py:510
 #, python-format
 msgid ""
 "Referans güç toplamı sıfır ya da negatif (%.3g): hedef bölgede fisyon sayılmadı, "
 "toplamın korunumu denetlenemedi."
 msgstr ""
+"The reference power sum is zero or negative (%.3g): no fissions were counted in the "
+"target region, the conservation of the total could not be checked."
 
-#: cekirdek/kosucu.py:564
+#: cekirdek/kosucu.py:517
+#, python-format
+msgid ""
+"Çubuk güçlerinin toplamı filtresiz tally'den %.2e bağıl fark gösteriyor. Haritalama "
+"bozuk olabilir — sonuçlara güvenmeyin."
+msgstr ""
+"The sum of the pin powers differs from the unfiltered tally by a relative %.2e. The "
+"mapping may be broken — do not trust the results."
+
+#: cekirdek/kosucu.py:570
 #, python-format
 msgid "toplamın korunumu: bağıl fark %.1e — %s"
-msgstr ""
+msgstr "conservation of the total: relative difference %.1e — %s"
 
-#: cekirdek/kosucu.py:565
+#: cekirdek/kosucu.py:571 cekirdek/kosucu.py:750
 msgid "tamam"
-msgstr ""
+msgstr "ok"
 
-#: cekirdek/kosucu.py:566
+#: cekirdek/kosucu.py:572
 msgid "bozuk, haritaya güvenmeyin"
-msgstr ""
+msgstr "broken, do not trust the map"
 
-#: cekirdek/kosucu.py:568
+#: cekirdek/kosucu.py:574
 #, python-format
 msgid "toplamın korunumu denetlenemedi: %s"
-msgstr ""
+msgstr "conservation of the total could not be checked: %s"
 
-#: cekirdek/kosucu.py:748 cekirdek/rapor.py:392
+#: cekirdek/kosucu.py:657 cekirdek/kosucu.py:662
+#, python-format
+msgid ""
+"\n"
+"[1/3] Doğrulama: %s"
+msgstr ""
+"\n"
+"[1/3] Model check: %s"
+
+#: cekirdek/kosucu.py:660
+#, python-format
+msgid ""
+"\n"
+"Hatalar giderilmeden koşu başlatılmaz (%s)."
+msgstr ""
+"\n"
+"The run is not started until the errors are fixed (%s)."
+
+#: cekirdek/kosucu.py:672
+#, python-format
+msgid ""
+"\n"
+"      betik yazıldı: %s (%d satır)"
+msgstr ""
+"\n"
+"      script written: %s (%d lines)"
+
+#: cekirdek/kosucu.py:675
+msgid ""
+"\n"
+"(--sadece-dogrula verildi; koşu atlandı)"
+msgstr ""
+"\n"
+"(--sadece-dogrula given; run skipped)"
+
+#: cekirdek/kosucu.py:682
+#, python-format
+msgid ""
+"\n"
+"[2/3] Koşu başlatılıyor → %s"
+msgstr ""
+"\n"
+"[2/3] Starting the run → %s"
+
+#: cekirdek/kosucu.py:693
+#, python-format
+msgid "      çevrim %4d   k = %.5f ± %.5f"
+msgstr "      batch %4d   k = %.5f ± %.5f"
+
+#: cekirdek/kosucu.py:705
+#, python-format
+msgid "      Koşu başarısız (çıkış kodu %d)"
+msgstr "      Run failed (exit code %d)"
+
+#: cekirdek/kosucu.py:706
+#, python-format
+msgid "      log: %s"
+msgstr "      log: %s"
+
+#: cekirdek/kosucu.py:708
+#, python-format
+msgid "      tamamlandı: %.1f s"
+msgstr "      completed: %.1f s"
+
+#: cekirdek/kosucu.py:713
+msgid ""
+"\n"
+"[3/3] Sonuçlar"
+msgstr ""
+"\n"
+"[3/3] Results"
+
+#: cekirdek/kosucu.py:719
+msgid "      hesap    = sabit kaynak (k-eff tanımsız)"
+msgstr "      mode     = fixed source (k-eff undefined)"
+
+#: cekirdek/kosucu.py:720
+#, python-format
+msgid "      kaynak   = %s"
+msgstr "      source   = %s"
+
+#: cekirdek/kosucu.py:721
+#, python-format
+msgid "      şiddet   = %.4g parçacık/s"
+msgstr "      strength = %.4g particles/s"
+
+#: cekirdek/kosucu.py:722
+#, python-format
+msgid "      çevrim   = %d, %d parçacık/çevrim"
+msgstr "      batches  = %d, %d particles/batch"
+
+#: cekirdek/kosucu.py:727
+msgid "      Not: tally değerleri kaynak parçacığı başınadır"
+msgstr "      Note: tally values are per source particle"
+
+#: cekirdek/kosucu.py:728
+msgid "           (şiddet 1 bırakıldı). Mutlak birim için şiddeti girin."
+msgstr "           (strength left at 1). Enter the strength for absolute units."
+
+#: cekirdek/kosucu.py:730
+msgid "      Not: tally değerleri mutlak birimdedir — OpenMC kaynak"
+msgstr "      Note: tally values are in absolute units — OpenMC has"
+
+#: cekirdek/kosucu.py:731
+msgid "           şiddetini zaten uygulamıştır, tekrar çarpmayın."
+msgstr "           already applied the source strength; do not multiply again."
+
+#: cekirdek/kosucu.py:732
+msgid "           reaksiyon hızları: 1/s"
+msgstr "           reaction rates: 1/s"
+
+#: cekirdek/kosucu.py:733
+msgid "           Dikkat: 'flux' skoru hacim üzerinden integrallidir (birim cm/s)."
+msgstr "           Caution: the 'flux' score is volume-integrated (unit cm/s)."
+
+#: cekirdek/kosucu.py:734
+msgid "           Nokta akısı [1/cm²/s] için bölgenin hacmine bölün."
+msgstr "           For the point flux [1/cm²/s] divide by the volume of the region."
+
+#: cekirdek/kosucu.py:736
+#, python-format
+msgid "      k-eff    = %.5f ± %.5f"
+msgstr "      k-eff    = %.5f ± %.5f"
+
+#: cekirdek/kosucu.py:741
+#, python-format
+msgid "      durum    = %s"
+msgstr "      state    = %s"
+
+#: cekirdek/kosucu.py:742
+#, python-format
+msgid "                 %s"
+msgstr "                 %s"
+
+#: cekirdek/kosucu.py:743
+#, python-format
+msgid "      çevrim   = %d (%d pasif), %d parçacık/çevrim"
+msgstr "      batches  = %d (%d inactive), %d particles/batch"
+
+#: cekirdek/kosucu.py:750
+msgid "uyarı"
+msgstr "warning"
+
+#: cekirdek/kosucu.py:751
+#, python-format
+msgid "      yakınsama= [%s] %s"
+msgstr "      converg. = [%s] %s"
+
+#: cekirdek/kosucu.py:753
+#, python-format
+msgid "      yakınsama= [  ?  ] %s"
+msgstr "      converg. = [  ?  ] %s"
+
+#: cekirdek/kosucu.py:754 cekirdek/rapor.py:392
 #, python-format
 msgid "Shannon entropisi okunamadı: %s"
 msgstr "Shannon entropy could not be read: %s"
+
+#: cekirdek/kosucu.py:756
+msgid "      yakınsama= [  ?  ] Shannon entropisi kapalı — kaynak yakınsaması doğrulanamıyor"
+msgstr ""
+"      converg. = [  ?  ] Shannon entropy is off — source convergence cannot be "
+"verified"
+
+#: cekirdek/kosucu.py:760
+#, python-format
+msgid "      β_eff    = %.1f ± %.1f pcm"
+msgstr "      β_eff    = %.1f ± %.1f pcm"
+
+#: cekirdek/kosucu.py:762
+#, python-format
+msgid "      Λ        = %s"
+msgstr "      Λ        = %s"
+
+#: cekirdek/kosucu.py:773
+#, python-format
+msgid ""
+"\n"
+"      --- güç dağılımı (%d çubuk, %d eksenel dilim) ---"
+msgstr ""
+"\n"
+"      --- power distribution (%d pins, %d axial bins) ---"
+
+#: cekirdek/kosucu.py:781
+#, python-format
+msgid ""
+"\n"
+"      güç dağılımı okunamadı: %s"
+msgstr ""
+"\n"
+"      power distribution could not be read: %s"
+
+#: cekirdek/kosucu.py:788
+#, python-format
+msgid ""
+"\n"
+"      statepoint: %s"
+msgstr ""
+"\n"
+"      statepoint: %s"
+
+#: cekirdek/kosucu.py:789
+#, python-format
+msgid "      log       : %s"
+msgstr "      log       : %s"
+
+#: cekirdek/kritik_arama.py:73
+#, python-format
+msgid "Arama başarısız: %s"
+msgstr "Search failed: %s"
+
+#: cekirdek/kritik_arama.py:76
+#, python-format
+msgid "Çözüm: %s = %.6g%s   (k = %.5f ± %.5f, %d yineleme)"
+msgstr "Solution: %s = %.6g%s   (k = %.5f ± %.5f, %d iterations)"
+
+#: cekirdek/kritik_arama.py:86
+#, python-format
+msgid "koşu başarısız (çıkış kodu %d), kayıt: %s"
+msgstr "run failed (exit code %d), log: %s"
+
+#: cekirdek/kritik_arama.py:108
+msgid "kullanıcı durdurdu"
+msgstr "stopped by the user"
+
+#: cekirdek/kritik_arama.py:132
+msgctxt "karşılaştırma"
+msgid "büyük"
+msgstr "larger"
+
+#: cekirdek/kritik_arama.py:133
+msgctxt "karşılaştırma"
+msgid "küçük"
+msgstr "smaller"
+
+#: cekirdek/kritik_arama.py:135
+#, python-format
+msgid ""
+"Hedef k = %.5f verilen aralıkta değil: her iki uç da hedeften %s (k(%g) = %.5f, k(%g)"
+" = %.5f). Aralığı genişletin. Dış değerleme (ekstrapolasyon) yapılmadı — sessizce "
+"yanlış cevap üretmemek için."
+msgstr ""
+"Target k = %.5f is not within the given range: both ends are %s than the target "
+"(k(%g) = %.5f, k(%g) = %.5f). Widen the range. No extrapolation was made — to avoid "
+"silently producing a wrong answer."
+
+#: cekirdek/kritik_arama.py:147
+#, python-format
+msgid "Aralık ucu zaten hedefte (|k − hedef| = %.1fσ)."
+msgstr "A range end is already at the target (|k − target| = %.1fσ)."
+
+#: cekirdek/kritik_arama.py:173
+msgid ""
+"Arama aralığı istatistiksel çözünürlüğün altına indi; daha fazla yineleme bilgi "
+"katmaz."
+msgstr ""
+"The search interval fell below the statistical resolution; further iterations add no "
+"information."
+
+#: cekirdek/kritik_arama.py:197
+#, python-format
+msgid "Yakınsadı: |k − hedef| = %.2fσ (ölçüt ≤ %.1fσ)."
+msgstr "Converged: |k − target| = %.2fσ (criterion ≤ %.1fσ)."
+
+#: cekirdek/kritik_arama.py:214
+#, python-format
+msgid ""
+"Arama aralığının genişliği (%.4g) kökün istatistiksel belirsizliğine (%.4g) indi. "
+"Daha fazla yineleme bilgi katmaz; daha dar bir cevap için nokta başına parçacık "
+"sayısını artırın."
+msgstr ""
+"The width of the search interval (%.4g) fell to the statistical uncertainty of the "
+"root (%.4g). Further iterations add no information; for a narrower answer increase "
+"the number of particles per point."
+
+#: cekirdek/kritik_arama.py:226
+#, python-format
+msgid "%d yinelemede ölçüte ulaşılamadı; en yakın nokta raporlanıyor (|k − hedef| = %.2fσ)."
+msgstr ""
+"The criterion was not reached in %d iterations; the closest point is reported (|k − "
+"target| = %.2fσ)."
+
+#: cekirdek/kritik_arama.py:240
+msgid ""
+"\n"
+"Kullanım"
+msgstr ""
+"\n"
+"Usage"
+
+#: cekirdek/kritik_arama.py:243
+msgid ""
+"\n"
+"TARAMA TÜRLERİ (tarama.py ile aynı)"
+msgstr ""
+"\n"
+"SWEEP TYPES (same as tarama.py)"
+
+#: cekirdek/kritik_arama.py:260
+msgid "--tur, --alt ve --ust zorunlu."
+msgstr "--tur, --alt and --ust are required."
+
+#: cekirdek/kritik_arama.py:271
+#, python-format
+msgid " KRİTİK ARAMA: %s"
+msgstr " CRITICAL SEARCH: %s"
+
+#: cekirdek/kritik_arama.py:272
+#, python-format
+msgid " hedef k = %s   |   aralık: %s – %s %s"
+msgstr " target k = %s   |   range: %s – %s %s"
+
+#: cekirdek/kritik_arama.py:276
+#, python-format
+msgid "  [%2d] %-12.6g %s  k = %.5f ± %.5f   fark = %+8.5f (%.1fσ)"
+msgstr "  [%2d] %-12.6g %s  k = %.5f ± %.5f   diff = %+8.5f (%.1fσ)"
+
+#: cekirdek/kritik_arama.py:288
+#, python-format
+msgid "  Çözüm: %s = %.6g%s %s"
+msgstr "  Solution: %s = %.6g%s %s"
+
+#: cekirdek/kritik_arama.py:291
+#, python-format
+msgid "         yerel eğim dk/dx = %.4g / %s"
+msgstr "         local slope dk/dx = %.4g / %s"
+
+#: cekirdek/kritik_arama.py:293
+msgid "  Çözüm bulunamadı."
+msgstr "  No solution found."
 
 #: cekirdek/nuklidler.py:51
 msgid "Uranyum"
@@ -3055,6 +3865,10 @@ msgstr "%s (installed; no run)"
 msgid "Uygulama sürümü"
 msgstr "Application version"
 
+#: cekirdek/rapor.py:229
+msgid "uygulama"
+msgstr ""
+
 #: cekirdek/rapor.py:230
 msgid "Git commit"
 msgstr "Git commit"
@@ -3193,30 +4007,30 @@ msgstr "No statepoint file in the run directory: %s"
 msgid "Statepoint okunamadı: %s (%s)"
 msgstr "Statepoint could not be read: %s (%s)"
 
-#: cekirdek/rapor.py:498
+#: cekirdek/rapor.py:506
 msgid "adsız model"
 msgstr "unnamed model"
 
-#: cekirdek/rapor.py:543
+#: cekirdek/rapor.py:551
 #, python-format
 msgid "Bilinmeyen rapor biçimi: %s (geçerli: %s)"
 msgstr "Unknown report format: %s (valid: %s)"
 
-#: cekirdek/rapor.py:546
+#: cekirdek/rapor.py:554
 msgid "Rapor için model (spec) gerekli."
 msgstr "A model (spec) is required for the report."
 
-#: cekirdek/rapor.py:548
+#: cekirdek/rapor.py:556
 #, python-format
 msgid "Koşu dizini bulunamadı: %s"
 msgstr "Run directory not found: %s"
 
-#: cekirdek/rapor.py:557
+#: cekirdek/rapor.py:565
 #, python-format
 msgid "Rapor dizini oluşturulamadı: %s (%s)"
 msgstr "Report directory could not be created: %s (%s)"
 
-#: cekirdek/rapor.py:568
+#: cekirdek/rapor.py:576
 #, python-format
 msgid "Rapor yazılamadı: %s (%s)"
 msgstr "Report could not be written: %s (%s)"
@@ -3318,11 +4132,6 @@ msgstr "Source convergence"
 #: cekirdek/rapor_sablon/__init__.py:139
 msgid "yakınsama"
 msgstr "convergence"
-
-#: cekirdek/rapor_sablon/__init__.py:149
-#, python-format
-msgid "okunamadı: %s"
-msgstr "could not be read: %s"
 
 #: cekirdek/rapor_sablon/__init__.py:153
 msgid "tanımsız (2B model)"
@@ -3595,6 +4404,326 @@ msgstr ""
 #, python-format
 msgid "uygunluk denetimi yapılamadı: %s"
 msgstr "conformity check could not be performed: %s"
+
+#: cekirdek/surum.py:20
+msgid "OpenMC Reaktör Kuru Arayüzü"
+msgstr "OpenMC Reactor Core Interface"
+
+#: cekirdek/tarama.py:59
+msgid "Yakıt sıcaklığı (Doppler) — yoğunluk sabit tutulur (katı yakıt)"
+msgstr "Fuel temperature (Doppler) — density kept constant (solid fuel)"
+
+#: cekirdek/tarama.py:62
+msgid "Soğutucu sıcaklığı — yoğunluk korelasyonla birlikte değişir"
+msgstr "Coolant temperature — density changes with a correlation"
+
+#: cekirdek/tarama.py:65
+msgid "Malzeme yoğunluğu"
+msgstr "Material density"
+
+#: cekirdek/tarama.py:68
+msgid "Soğutucu boşluk (void) oranı — yoğunluk ρ0·(1−α) olur"
+msgstr "Coolant void fraction — density becomes ρ0·(1−α)"
+
+#: cekirdek/tarama.py:71
+msgid "Suda çözünmüş doğal bor"
+msgstr "Natural boron dissolved in water"
+
+#: cekirdek/tarama.py:74
+msgid "Uranyum zenginliği (ağırlıkça %)"
+msgstr "Uranium enrichment (wt%)"
+
+#: cekirdek/tarama.py:77
+msgid "Demet adımı (moderasyon oranı etüdü)"
+msgstr "Assembly pitch (moderation ratio study)"
+
+#: cekirdek/tarama.py:80
+msgid "Kor hücre adımı"
+msgstr "Core cell pitch"
+
+#: cekirdek/tarama.py:83
+msgid "Kontrol çubuğu daldırma oranı (%0 çekilmiş, %100 tam dalmış)"
+msgstr "Control rod insertion fraction (0% = withdrawn, 100% = fully inserted)"
+
+#: cekirdek/tarama.py:86
+msgid "Çubuğun bir bölgesinin yarıçapı"
+msgstr "Radius of a pin region"
+
+#: cekirdek/tarama.py:89
+msgid "Kontrol tamburu dönmesi (0° = emici kora bakıyor, 180° = dışa)"
+msgstr "Control drum rotation (0° = absorber facing the core, 180° = outwards)"
+
+#: cekirdek/tarama.py:90 cekirdek/tarama.py:98
+msgid "derece"
+msgstr "degree"
+
+#: cekirdek/tarama.py:90 cekirdek/tarama.py:98
+msgid "pcm/derece"
+msgstr "pcm/degree"
+
+#: cekirdek/tarama.py:92
+msgid "Yansıtıcı kuşak kalınlığı"
+msgstr "Radial reflector thickness"
+
+#: cekirdek/tarama.py:97
+msgid "Dönme grubu (tamburlar; 0° = emici kora bakıyor, 180° = dışa)"
+msgstr "Rotation group (control drums; 0° = absorber facing the core, 180° = outwards)"
+
+#: cekirdek/tarama.py:100
+msgid "Daldırma grubu (kontrol çubuğu bankası; %0 çekilmiş, %100 tam dalmış)"
+msgstr "Insertion group (control rod bank; 0% = withdrawn, 100% = fully inserted)"
+
+#: cekirdek/tarama.py:134
+msgid "doymuş sıvı su tablosu (273–623 K)"
+msgstr "saturated liquid water table (273–623 K)"
+
+#: cekirdek/tarama.py:141
+#, python-format
+msgid ""
+"'%s' için sıcaklığa bağlı yoğunluk korelasyonu yok — yoğunluk sabit tutuldu; "
+"moderatör sıcaklık katsayısı eksik çıkar"
+msgstr ""
+"no temperature-dependent density correlation for '%s' — density kept constant; the "
+"moderator temperature coefficient will be incomplete"
+
+#: cekirdek/tarama.py:195
+msgid "boşluk (void) oranı %0–100 arasında olmalı"
+msgstr "void fraction must be between 0% and 100%"
+
+#: cekirdek/tarama.py:216
+#, python-format
+msgid "'%s' malzemesinde zenginlik tanımlı bir bileşen yok"
+msgstr "material '%s' has no component with an enrichment"
+
+#: cekirdek/tarama.py:233 cekirdek/tarama_agac.py:97
+#, python-format
+msgid ""
+"'%s' bir kontrol çubuğu değil; daldırma taraması yalnızca kontrol çubuklarına "
+"uygulanır"
+msgstr "'%s' is not a control rod; an insertion sweep applies only to control rods"
+
+#: cekirdek/tarama.py:249
+msgid "modelde kontrol tamburu yok"
+msgstr "the model has no control drum"
+
+#: cekirdek/tarama.py:257 cekirdek/tarama_agac.py:72
+#, python-format
+msgid "bilinmeyen tarama türü: %s"
+msgstr "unknown sweep type: %s"
+
+#: cekirdek/tarama.py:330
+msgid "Katsayı hesaplanamadı (yeterli nokta yok)."
+msgstr "The coefficient could not be computed (not enough points)."
+
+#: cekirdek/tarama.py:333
+msgid "negatif"
+msgstr "negative"
+
+#: cekirdek/tarama.py:333
+msgid "pozitif"
+msgstr "positive"
+
+#: cekirdek/tarama.py:335
+#, python-format
+msgid ""
+"Eğim istatistiksel olarak sıfırdan ayırt edilemiyor (%.2f ± %.2f). Daha fazla "
+"parçacık/çevrim ya da daha geniş aralık gerekir."
+msgstr ""
+"The slope cannot be statistically distinguished from zero (%.2f ± %.2f). More "
+"particles/batches or a wider range are needed."
+
+#: cekirdek/tarama.py:339
+msgid ""
+"Doppler katsayısı. Negatif olması beklenir: yakıt ısındıkça U-238 rezonansları "
+"genişler, yakalama artar. Pozitif çıkması ciddi bir güvenlik işaretidir."
+msgstr ""
+"Doppler coefficient. It is expected to be negative: as the fuel heats up the U-238 "
+"resonances broaden and capture increases. A positive value is a serious safety sign."
+
+#: cekirdek/tarama.py:342
+msgid ""
+"Moderatör sıcaklık katsayısı. Termal reaktörde negatif olması istenir. Pozitifse "
+"soğutucu ısındıkça güç artar — kararsızlık."
+msgstr ""
+"Moderator temperature coefficient. In a thermal reactor it should be negative. If "
+"positive, power rises as the coolant heats up — instability."
+
+#: cekirdek/tarama.py:345
+msgid ""
+"Boşluk (void) katsayısı. Termal reaktörde negatif olmalı. Hızlı reaktörlerde merkezi "
+"bölgede pozitif olabilir."
+msgstr ""
+"Void coefficient. In a thermal reactor it should be negative. In fast reactors it can"
+" be positive in the central region."
+
+#: cekirdek/tarama.py:347
+msgid "Bor değeri (worth). Negatif olması beklenir: bor nötron emicidir."
+msgstr "Boron worth. It is expected to be negative: boron is a neutron absorber."
+
+#: cekirdek/tarama.py:348
+msgid "Zenginlik duyarlılığı. Pozitif olması beklenir."
+msgstr "Enrichment sensitivity. It is expected to be positive."
+
+#: cekirdek/tarama.py:349
+msgid ""
+"Moderasyon oranı etkisi. İşareti, demetin az mı çok mu moderatörlü olduğunu söyler: "
+"az moderatörlü tarafta adım artışı k'yi artırır (pozitif)."
+msgstr ""
+"Moderation ratio effect. Its sign tells whether the assembly is under- or over-"
+"moderated: on the under-moderated side an increase in pitch increases k (positive)."
+
+#: cekirdek/tarama.py:353
+msgid ""
+"Tambur değeri. Dönme 0°'de emici kora bakar (en düşük k), 180°'de dışa bakar (en "
+"yüksek k); bu yüzden eğim pozitif olmalı. Diferansiyel değerin tepesi orta dönmede "
+"çıkar — klasik tambur S eğrisi."
+msgstr ""
+"Drum worth. At 0° rotation the absorber faces the core (lowest k), at 180° it faces "
+"outwards (highest k); so the slope should be positive. The peak of the differential "
+"worth occurs at mid rotation — the classic drum S-curve."
+
+#: cekirdek/tarama.py:358
+msgid ""
+"Kontrol çubuğu değeri. Negatif olmalı: emici daldıkça reaktivite düşer. Dikkat: "
+"klasik S eğrisi yalnızca sistem her konumda kritiğe yakın olduğunda görülür. k∞'u "
+"yüksek bir demette (ör. yansıtıcı sınırlı tek demet) çubuksuz bölge tek başına "
+"süperkritik kalır; bu yüzden değer geç toplanır ve diferansiyel değerin tepesi "
+"merkezde değil tam daldırmaya yakın çıkar."
+msgstr ""
+"Control rod worth. It should be negative: reactivity decreases as the absorber is "
+"inserted. Caution: the classic S-curve is seen only when the system is close to "
+"critical at every position. In an assembly with a high k∞ (e.g. a single assembly "
+"with a reflective boundary) the rodded-free region alone stays supercritical; so the "
+"worth accumulates late and the peak of the differential worth occurs near full "
+"insertion rather than at the centre."
+
+#: cekirdek/tarama.py:368
+#, python-format
+msgid "Eğim %s. %s"
+msgstr "The slope is %s. %s"
+
+#: cekirdek/tarama.py:368
+#, python-format
+msgid "Eğim %s."
+msgstr "The slope is %s."
+
+#: cekirdek/tarama.py:389
+#, python-format
+msgid "Tarama kullanıcı tarafından durduruldu (%d/%d)."
+msgstr "The sweep was stopped by the user (%d/%d)."
+
+#: cekirdek/tarama.py:405
+#, python-format
+msgid "koşu başarısız (çıkış kodu %d)"
+msgstr "run failed (exit code %d)"
+
+#: cekirdek/tarama.py:424
+msgid ""
+"\n"
+"TARAMA TÜRLERİ"
+msgstr ""
+"\n"
+"SWEEP TYPES"
+
+#: cekirdek/tarama.py:443
+msgid "--tur, --bas ve --son zorunlu."
+msgstr "--tur, --bas and --son are required."
+
+#: cekirdek/tarama.py:448
+#, python-format
+msgid "bilinmeyen tür: %s"
+msgstr "unknown type: %s"
+
+#: cekirdek/tarama.py:460
+#, python-format
+msgid " TARAMA: %s"
+msgstr " PARAMETER SWEEP: %s"
+
+#: cekirdek/tarama.py:461
+#, python-format
+msgid " hedef: %s   |   %g → %g %s   |   %d nokta"
+msgstr " target: %s   |   %g → %g %s   |   %d points"
+
+#: cekirdek/tarama.py:468
+#, python-format
+msgid "  [%d/%d] %-12g %s  k = %.5f ± %.5f   ρ = %+9.1f pcm"
+msgstr "  [%d/%d] %-12g %s  k = %.5f ± %.5f   ρ = %+9.1f pcm"
+
+#: cekirdek/tarama.py:471
+#, python-format
+msgid "  [%d/%d] %-12g %s  başarısız: %s"
+msgstr "  [%d/%d] %-12g %s  failed: %s"
+
+#: cekirdek/tarama.py:478
+#, python-format
+msgid ""
+"\n"
+"  Not: %s"
+msgstr ""
+"\n"
+"  Note: %s"
+
+#: cekirdek/tarama.py:483
+#, python-format
+msgid "  Katsayı = %+.3f ± %.3f %s   (R² = %.4f, %d nokta)"
+msgstr "  Coefficient = %+.3f ± %.3f %s   (R² = %.4f, %d points)"
+
+#: cekirdek/tarama.py:487
+msgid "  Katsayı hesaplanamadı."
+msgstr "  The coefficient could not be computed."
+
+#: cekirdek/tarama_agac.py:45
+#, python-format
+msgid "'%s' grubu bir %s grubu değil"
+msgstr "group '%s' is not a %s group"
+
+#: cekirdek/tarama_agac.py:47
+#, python-format
+msgid "tanımsız grup: %s"
+msgstr "undefined group: %s"
+
+#: cekirdek/tarama_agac.py:78
+msgid "modelde kontrol tamburu (dönme grubu) yok"
+msgstr "the model has no control drum (rotation group)"
+
+#: cekirdek/tarama_agac.py:80
+#, python-format
+msgid "modelde %d dönme grubu var (%s); 'grup_donme' ile bir grup seçin"
+msgstr "the model has %d rotation groups (%s); select one with 'grup_donme'"
+
+#: cekirdek/tarama_agac.py:89
+#, python-format
+msgid ""
+"'%s' çubuğu '%s' daldırma grubunun üyesi; grubun değeri çubuğun daldırmasını ezer — "
+"'grup_daldirma' ile tarayın"
+msgstr ""
+"pin '%s' is a member of insertion group '%s'; the group value overrides the insertion"
+" of the pin — sweep with 'grup_daldirma'"
+
+#: cekirdek/tarama_agac.py:128
+#, python-format
+msgid "ağaçta '%s' kimlikli %s yok"
+msgstr "no node with ID '%s' of type %s in the tree"
+
+#: cekirdek/tarama_agac.py:154
+#, python-format
+msgid "kafes adımı sıfırdan büyük olmalı: %s"
+msgstr "lattice pitch must be greater than zero: %s"
+
+#: cekirdek/tarama_agac.py:171
+#, python-format
+msgid "halka kalınlığı sıfırdan büyük olmalı: %s"
+msgstr "ring thickness must be greater than zero: %s"
+
+#: cekirdek/tarama_agac.py:176
+#, python-format
+msgid "halka hedefi '<kap id>/halkalar/<i>' biçiminde olmalı: %r"
+msgstr "the ring target must have the form '<container id>/halkalar/<i>': %r"
+
+#: cekirdek/tarama_agac.py:182
+#, python-format
+msgid "'%s' kabında kalınlıkla tanımlı %d. halka yok"
+msgstr "container '%s' has no ring %d defined by thickness"
 
 #: cekirdek/uygunluk.py:68
 msgid "Yakıt çubuğu (pin hücre)"

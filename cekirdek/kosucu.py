@@ -36,7 +36,7 @@ import time
 from cekirdek import sema, kurucu, dogrula
 from cekirdek import kaynak as _kaynak
 from cekirdek import kapsul as _kapsul
-from cekirdek.ceviri import _
+from cekirdek.ceviri import _, N_
 from cekirdek.gunluk import kaydedici
 from cekirdek.uygunluk_denetimi import ayristir as _ayristir
 
@@ -107,39 +107,39 @@ def keff_yorumu(k, sapma, beta_eff=None, sonsuz=False):
     DONER (durum_metni, ayrinti_metni)
     """
     if k <= 0:
-        return "geçersiz k-eff", ""
+        return _("geçersiz k-eff"), ""
     rho = (k - 1.0) / k
     pcm = rho * 1.0e5
     s_pcm = (sapma / (k * k)) * 1.0e5
 
     if sonsuz:
         # Butun dis sinirlar sizintisiz: bu k∞'dur, bir reaktorun durumu degil.
-        durum = ("k∞ (sonsuz ortam) — sızıntı yok, kritiklik hükmü verilmez; "
-                 "sonlu bir reaktörde k-eff daha küçüktür")
+        durum = (_("k∞ (sonsuz ortam) — sızıntı yok, kritiklik hükmü verilmez; "
+                 "sonlu bir reaktörde k-eff daha küçüktür"))
     elif abs(k - 1.0) <= 2.0 * sapma:
-        durum = "Kritik (k = 1'den istatistiksel olarak ayırt edilemez)"
+        durum = _("Kritik (k = 1'den istatistiksel olarak ayırt edilemez)")
     elif k > 1.0:
-        durum = "Kritik üstü (k > 1 — güç artar)"
+        durum = _("Kritik üstü (k > 1 — güç artar)")
     else:
-        durum = "Kritik altı (k < 1 — güç söner)"
+        durum = _("Kritik altı (k < 1 — güç söner)")
 
     if sonsuz:
-        parcalar = ["ρ∞ = %+.0f ± %.0f pcm (yakıtın taşıdığı reaktivite fazlası)" % (pcm, s_pcm)]
+        parcalar = [_("ρ∞ = %+.0f ± %.0f pcm (yakıtın taşıdığı reaktivite fazlası)") % (pcm, s_pcm)]
     else:
-        parcalar = ["reaktivite = %+.0f ± %.0f pcm" % (pcm, s_pcm)]
+        parcalar = [_("reaktivite = %+.0f ± %.0f pcm") % (pcm, s_pcm)]
     if beta_eff and beta_eff > 0:
         dolar = rho / beta_eff
-        parcalar.append("%+.2f $ (β_eff = %.0f pcm)" % (dolar, beta_eff * 1e5))
+        parcalar.append(_("%+.2f $ (β_eff = %.0f pcm)") % (dolar, beta_eff * 1e5))
         if dolar >= 1.0:
             # Bu ifadeyi dikkatli kurmak gerekir: sonsuz kafes (k-inf) hesabinda
             # 1 $ ustu bir deger bir GECICI REJIM degil, yakitin tasidigi
             # reaktivite fazlasidir ve kontrol sistemiyle dengelenir. Ayni sayi
             # gercek bir gecici rejimde ani kritiklik anlamina gelir. Kod hangi
             # durumda oldugunu bilemez, bu yuzden ikisini de soyler.
-            parcalar.append("ρ > 1 $: gerçek bir geçici rejimde bu anlık kritiklik "
+            parcalar.append(_("ρ > 1 $: gerçek bir geçici rejimde bu anlık kritiklik "
                             "demektir; sonsuz ortam (k∞) hesabında ise yakıtın "
                             "taşıdığı reaktivite fazlasıdır (kontrol sistemiyle "
-                            "dengelenir)")
+                            "dengelenir)"))
     return durum, "  |  ".join(parcalar)
 
 
@@ -177,32 +177,32 @@ def entropi_yakinsama(entropiler, pasif):
     """
     dizi = [e for e in entropiler if e is not None]
     if pasif < 4:
-        return None, ("pasif çevrim sayısı (%d) kaynak yakınsamasını "
+        return None, (_("pasif çevrim sayısı (%d) kaynak yakınsamasını "
                       "değerlendirmek için çok az — en az 4, pratikte 20–50 "
-                      "pasif çevrim kullanın" % pasif)
+                      "pasif çevrim kullanın") % pasif)
     if len(dizi) < 8 or len(dizi) <= pasif + 4:
-        return None, ("aktif çevrim sayısı değerlendirme için yetersiz "
-                      "(%d çevrim, %d pasif)" % (len(dizi), pasif))
+        return None, (_("aktif çevrim sayısı değerlendirme için yetersiz "
+                      "(%d çevrim, %d pasif)") % (len(dizi), pasif))
     aktif = dizi[pasif:]
     ortalama = sum(aktif) / len(aktif)
     sigma = (sum((x - ortalama) ** 2 for x in aktif) / max(len(aktif) - 1, 1)) ** 0.5
     if sigma <= 0:
-        return None, "entropi sabit; değerlendirilemedi"
+        return None, _("entropi sabit; değerlendirilemedi")
     # Yalnizca pasif donemin son yarisi; o da ikiye bolunur.
     bas = pasif // 2
     orta = bas + (pasif - bas) // 2
     if orta <= bas or pasif <= orta:
-        return None, "pasif çevrim sayısı bölünemeyecek kadar az"
+        return None, _("pasif çevrim sayısı bölünemeyecek kadar az")
     ceyrek1 = sum(dizi[bas:orta]) / (orta - bas)
     ceyrek2 = sum(dizi[orta:pasif]) / (pasif - orta)
     kayma = abs(ceyrek2 - ceyrek1)
     if kayma > 2.0 * sigma:
-        return False, ("Kaynak dağılımı pasif dönemin sonunda hâlâ kayıyor "
+        return False, (_("Kaynak dağılımı pasif dönemin sonunda hâlâ kayıyor "
                        "(kayma %.4f, aktif saçılma σ = %.4f). Pasif çevrim "
-                       "sayısını artırın — k-eff yanlı olabilir."
+                       "sayısını artırın — k-eff yanlı olabilir.")
                        % (kayma, sigma))
-    return True, ("Kaynak dağılımı yakınsamış görünüyor "
-                  "(pasif dönem sonunda kayma %.4f ≤ 2σ = %.4f)."
+    return True, (_("Kaynak dağılımı yakınsamış görünüyor "
+                  "(pasif dönem sonunda kayma %.4f ≤ 2σ = %.4f).")
                   % (kayma, 2 * sigma))
 
 
@@ -278,8 +278,8 @@ def calistir(spec, dizin, geri_cagir=None, is_parcacigi=None, temizle=True,
 
     exe = openmc_yolu()
     if exe is None:
-        raise RuntimeError("openmc çalıştırılabilir dosyası PATH'te bulunamadı "
-                           "(conda ortamı etkin mi?)")
+        raise RuntimeError(_("openmc çalıştırılabilir dosyası PATH'te bulunamadı "
+                           "(conda ortamı etkin mi?)"))
 
     komut = [exe, "-s", str(int(n))]
     log_yolu = os.path.join(dizin, "kosu.log")
@@ -329,11 +329,17 @@ def son_statepoint(dizin):
 # ============================================================================
 
 _SKOR_ADLARI = {
-    "flux": "akı", "absorption": "soğurma", "fission": "fisyon", "nu-fission": "fisyon nötronu üretimi",
-    "total": "toplam tepkime", "scatter": "saçılma", "heating": "ısınma",
-    "heating-local": "yerel ısınma", "kappa-fission": "fisyon enerjisi", "(n,gamma)": "(n,γ) yakalama",
-    "elastic": "esnek saçılma", "current": "akım",
+    "flux": N_("akı"), "absorption": N_("soğurma"), "fission": N_("fisyon"), "nu-fission": N_("fisyon nötronu üretimi"),
+    "total": N_("toplam tepkime"), "scatter": N_("saçılma"), "heating": N_("ısınma"),
+    "heating-local": N_("yerel ısınma"), "kappa-fission": N_("fisyon enerjisi"), "(n,gamma)": N_("(n,γ) yakalama"),
+    "elastic": N_("esnek saçılma"), "current": N_("akım"),
 }
+
+
+def _skor_adi(skor):
+    """OpenMC skorunun gorunen adi, etkin dilde; bilinmiyorsa kendisi."""
+    ad = _SKOR_ADLARI.get(skor)
+    return _(ad) if ad else skor
 
 
 def _enerji_metni(ev):
@@ -348,10 +354,10 @@ def _birim(skor, sabit, kuvvet):
     """Tally degerinin birimi. OpenMC sabit kaynakta siddeti zaten uygular."""
     mutlak = sabit and kuvvet not in (None, 1.0)
     if skor in ("flux",):
-        return "n·cm/s (hacim-integralli)" if mutlak else "n·cm / kaynak nötronu"
+        return _("n·cm/s (hacim-integralli)") if mutlak else _("n·cm / kaynak nötronu")
     if skor in ("heating", "heating-local", "kappa-fission"):
-        return "eV/s" if mutlak else "eV / kaynak nötronu"
-    return "1/s" if mutlak else "/ kaynak nötronu"
+        return "eV/s" if mutlak else _("eV / kaynak nötronu")
+    return "1/s" if mutlak else _("/ kaynak nötronu")
 
 
 def tally_metni(ad, df, malzeme_adlari=None, sabit=False, kuvvet=1.0):
@@ -372,7 +378,7 @@ def tally_metni(ad, df, malzeme_adlari=None, sabit=False, kuvvet=1.0):
     for _sira, r in df.iterrows():
         etiket = []
         if "material" in df.columns:
-            etiket.append(str(adlar.get(int(r["material"]), "malzeme %s" % r["material"])))
+            etiket.append(str(adlar.get(int(r["material"]), _("malzeme %s") % r["material"])))
         if "energy low [eV]" in df.columns:
             etiket.append("%s – %s" % (_enerji_metni(r["energy low [eV]"]),
                                        _enerji_metni(r["energy high [eV]"])))
@@ -381,7 +387,7 @@ def tally_metni(ad, df, malzeme_adlari=None, sabit=False, kuvvet=1.0):
         skor = str(r.get("score", ""))
         ort, sap = float(r["mean"]), float(r["std. dev."])
         bagil = (100.0 * sap / abs(ort)) if ort else 0.0
-        satirlar.append((" · ".join(etiket) or "tüm model", _SKOR_ADLARI.get(skor, skor),
+        satirlar.append((" · ".join(etiket) or _("tüm model"), _skor_adi(skor),
                          "%.4e" % ort, "± %.1f%%" % bagil, _birim(skor, sabit, kuvvet)))
     ek_sutun = [c for c in df.columns if c not in (
         "material", "energy low [eV]", "energy high [eV]", "nuclide", "score", "mean", "std. dev.")]
@@ -391,7 +397,7 @@ def tally_metni(ad, df, malzeme_adlari=None, sabit=False, kuvvet=1.0):
                                "display.max_rows", 60):
             return "tally: %s\n%s" % (ad, df.to_string())
     genislik = [max(len(s[i]) for s in satirlar) for i in range(5)]
-    baslik = ("Bölge / enerji", "Ölçülen", "Değer", "Bağıl hata", "Birim")
+    baslik = (_("Bölge / enerji"), _("Ölçülen"), _("Değer"), _("Bağıl hata"), _("Birim"))
     genislik = [max(g, len(b)) for g, b in zip(genislik, baslik)]
     def bicimle(sat):
         return "  ".join(str(x).ljust(g) for x, g in zip(sat, genislik)).rstrip()
@@ -436,7 +442,7 @@ def _tallyleri_oku(sp, sonuc):
             df = t.get_pandas_dataframe()
         except Exception as e:
             _log.warning("'%s' tally'si okunamadı", ad, exc_info=True)
-            sonuc["tallyler"][ad] = "okunamadı: %s" % e
+            sonuc["tallyler"][ad] = _("okunamadı: %s") % e
             continue
         if ad.startswith("IFP "):
             ifp[ad] = (float(df["mean"].sum()),
@@ -508,9 +514,9 @@ def _guc_korunumu(sp, dagilim):
     alanlar = {"korunum": bagil}
     if bagil > 1e-6:
         alanlar["korunum_uyari"] = (
-            "Çubuk güçlerinin toplamı filtresiz tally'den %.2e bağıl "
+            _("Çubuk güçlerinin toplamı filtresiz tally'den %.2e bağıl "
             "fark gösteriyor. Haritalama bozuk olabilir — sonuçlara "
-            "güvenmeyin." % bagil)
+            "güvenmeyin.") % bagil)
     return alanlar
 
 
@@ -635,7 +641,7 @@ def _terminal(argv):
         elif a == "--betik":
             i += 1; betik_yolu = argv[i]
         else:
-            print("bilinmeyen seçenek: %s" % a); return 2
+            print(_("bilinmeyen seçenek: %s") % a); return 2
         i += 1
 
     spec = sema.yukle(spec_yolu)
@@ -648,12 +654,12 @@ def _terminal(argv):
         bulgular = dogrula.kapi(spec)
     except dogrula.DogrulamaHatasi as e:
         bulgular = e.tum_bulgular
-        print("\n[1/3] Doğrulama: %s" % dogrula.ozet(bulgular))
+        print(_("\n[1/3] Doğrulama: %s") % dogrula.ozet(bulgular))
         for b in bulgular:
             print("  %s" % b)
-        print("\nHatalar giderilmeden koşu başlatılmaz (%s)." % e)
+        print(_("\nHatalar giderilmeden koşu başlatılmaz (%s).") % e)
         return 1
-    print("\n[1/3] Doğrulama: %s" % dogrula.ozet(bulgular))
+    print(_("\n[1/3] Doğrulama: %s") % dogrula.ozet(bulgular))
     for b in bulgular:
         print("  %s" % b)
 
@@ -663,17 +669,17 @@ def _terminal(argv):
         kod = kod_uret.uret(spec, os.path.basename(betik_yolu))
         with open(betik_yolu, "w", encoding="utf-8") as f:
             f.write(kod)
-        print("\n      betik yazıldı: %s (%d satır)" % (betik_yolu, len(kod.splitlines())))
+        print(_("\n      betik yazıldı: %s (%d satır)") % (betik_yolu, len(kod.splitlines())))
 
     if sadece_dogrula:
-        print("\n(--sadece-dogrula verildi; koşu atlandı)")
+        print(_("\n(--sadece-dogrula verildi; koşu atlandı)"))
         return 0
 
     # --- 2. kosu ---
     if dizin is None:
         dizin = os.path.join(os.path.dirname(os.path.abspath(spec_yolu)),
                              spec["calistirma"].get("dizin", "kosu"))
-    print("\n[2/3] Koşu başlatılıyor → %s" % dizin)
+    print(_("\n[2/3] Koşu başlatılıyor → %s") % dizin)
 
     son_yazilan = [0]
     tty = sys.stdout.isatty()
@@ -684,7 +690,7 @@ def _terminal(argv):
         if bilgi and bilgi["ortalama"] is not None:
             if bilgi["cevrim"] - son_yazilan[0] >= 10:
                 son_yazilan[0] = bilgi["cevrim"]
-                metin = ("      çevrim %4d   k = %.5f ± %.5f"
+                metin = (_("      çevrim %4d   k = %.5f ± %.5f")
                          % (bilgi["cevrim"], bilgi["ortalama"], bilgi["sapma"]))
                 sys.stdout.write(("\r" + metin) if tty else (metin + "\n"))
                 sys.stdout.flush()
@@ -696,64 +702,64 @@ def _terminal(argv):
         sys.stdout.write("\r" + " " * 60 + "\r")
 
     if not sonuc["basarili"]:
-        print("      Koşu başarısız (çıkış kodu %d)" % sonuc["cikis_kodu"])
-        print("      log: %s" % sonuc["log"])
+        print(_("      Koşu başarısız (çıkış kodu %d)") % sonuc["cikis_kodu"])
+        print(_("      log: %s") % sonuc["log"])
         return 1
-    print("      tamamlandı: %.1f s" % sonuc["sure"])
+    print(_("      tamamlandı: %.1f s") % sonuc["sure"])
     for satir in _ayristir.ozet_satirlari(sonuc.get("cikti")):   # M5: sessiz kalmasin
         print("      %s" % satir)
 
     # --- 3. sonuc ---
-    print("\n[3/3] Sonuçlar")
+    print(_("\n[3/3] Sonuçlar"))
     s = sonuc_oku(sonuc["statepoint"])
     if s.get("keff") is None:
         # --- sabit kaynak: k-eff yok, sonuc tally'lerdir ---
         k_tanim = (spec["ayarlar"].get("kaynak") or {})
         kuvvet = float(k_tanim.get("kuvvet") or 1.0)
-        print("      hesap    = sabit kaynak (k-eff tanımsız)")
-        print("      kaynak   = %s" % _kaynak.ozet(k_tanim))
-        print("      şiddet   = %.4g parçacık/s" % kuvvet)
-        print("      çevrim   = %d, %d parçacık/çevrim" % (s["cevrim"], s["parcacik"]))
+        print(_("      hesap    = sabit kaynak (k-eff tanımsız)"))
+        print(_("      kaynak   = %s") % _kaynak.ozet(k_tanim))
+        print(_("      şiddet   = %.4g parçacık/s") % kuvvet)
+        print(_("      çevrim   = %d, %d parçacık/çevrim") % (s["cevrim"], s["parcacik"]))
         # OLCULDU: OpenMC sabit kaynak tally'lerini kaynak siddetiyle ZATEN
         # carpiyor (kuvvet=1 ve kuvvet=1e12 ile kosuldu, oran tam 1e12 cikti).
         # Bu yuzden kullaniciya "siddetle carpin" demek CIFT SAYIM olurdu.
         if kuvvet == 1.0:
-            print("      Not: tally değerleri kaynak parçacığı başınadır")
-            print("           (şiddet 1 bırakıldı). Mutlak birim için şiddeti girin.")
+            print(_("      Not: tally değerleri kaynak parçacığı başınadır"))
+            print(_("           (şiddet 1 bırakıldı). Mutlak birim için şiddeti girin."))
         else:
-            print("      Not: tally değerleri mutlak birimdedir — OpenMC kaynak")
-            print("           şiddetini zaten uygulamıştır, tekrar çarpmayın.")
-            print("           reaksiyon hızları: 1/s")
-            print("           Dikkat: 'flux' skoru hacim üzerinden integrallidir (birim cm/s).")
-            print("           Nokta akısı [1/cm²/s] için bölgenin hacmine bölün.")
+            print(_("      Not: tally değerleri mutlak birimdedir — OpenMC kaynak"))
+            print(_("           şiddetini zaten uygulamıştır, tekrar çarpmayın."))
+            print(_("           reaksiyon hızları: 1/s"))
+            print(_("           Dikkat: 'flux' skoru hacim üzerinden integrallidir (birim cm/s)."))
+            print(_("           Nokta akısı [1/cm²/s] için bölgenin hacmine bölün."))
     else:
-        print("      k-eff    = %.5f ± %.5f" % s["keff"])
+        print(_("      k-eff    = %.5f ± %.5f") % s["keff"])
         _kin = s.get("kinetik") or {}
         from cekirdek import uygunluk as _u
         _durum, _ayrinti = keff_yorumu(s["keff"][0], s["keff"][1], _kin.get("beta_eff"),
                                        sonsuz=_u.sonsuz_ortam(spec))
-        print("      durum    = %s" % _durum)
-        print("                 %s" % _ayrinti)
-        print("      çevrim   = %d (%d pasif), %d parçacık/çevrim"
+        print(_("      durum    = %s") % _durum)
+        print(_("                 %s") % _ayrinti)
+        print(_("      çevrim   = %d (%d pasif), %d parçacık/çevrim")
               % (s["cevrim"], s["pasif"], s["parcacik"]))
     # Entropi yalnizca ozdeger modunda anlamlidir: sabit kaynakta kaynak
     # zaten sabittir, "yakinsamasi" diye bir sey yoktur.
     if s.get("keff") is not None:
         if s.get("entropi"):
             yakinsadi, mesaj = entropi_yakinsama(s["entropi"], s["pasif"])
-            isaret = {True: "tamam", False: "uyarı", None: "  ?  "}[yakinsadi]
-            print("      yakınsama= [%s] %s" % (isaret, mesaj))
+            isaret = {True: _("tamam"), False: _("uyarı"), None: "  ?  "}[yakinsadi]
+            print(_("      yakınsama= [%s] %s") % (isaret, mesaj))
         elif s.get("entropi_hata"):
-            print("      yakınsama= [  ?  ] %s"
+            print(_("      yakınsama= [  ?  ] %s")
                   % (_("Shannon entropisi okunamadı: %s") % s["entropi_hata"]))
         else:
-            print("      yakınsama= [  ?  ] Shannon entropisi kapalı — kaynak "
-                  "yakınsaması doğrulanamıyor")
+            print(_("      yakınsama= [  ?  ] Shannon entropisi kapalı — kaynak "
+                  "yakınsaması doğrulanamıyor"))
     kin = s.get("kinetik")
     if kin:
-        print("      β_eff    = %.1f ± %.1f pcm" % (kin["beta_eff"] * 1e5,
+        print(_("      β_eff    = %.1f ± %.1f pcm") % (kin["beta_eff"] * 1e5,
                                                       kin["beta_eff_sapma"] * 1e5))
-        print("      Λ        = %s" % lambda_metni(kin["lambda"], kin["lambda_sapma"]))
+        print(_("      Λ        = %s") % lambda_metni(kin["lambda"], kin["lambda_sapma"]))
     g = s.get("guc")
     if g and g.get("faktorler"):
         from cekirdek import geometri as _geometri, guc as _guc
@@ -764,7 +770,7 @@ def _terminal(argv):
         # blanket katmanlari paya girmez, paydaya da girmemeli.
         m = _guc.mutlak_guc(f, spec_g.get("toplam_guc"), _geometri.hedef_yuksekligi(spec),
                             hedef_payi=g.get("hedef_payi"))
-        print("\n      --- güç dağılımı (%d çubuk, %d eksenel dilim) ---"
+        print(_("\n      --- güç dağılımı (%d çubuk, %d eksenel dilim) ---")
               % (f["cubuk_sayisi"], f["eksenel_dilim"]))
         for satir in korunum_satirlari(g):
             print("      %s" % satir)
@@ -772,15 +778,15 @@ def _terminal(argv):
                                   hedef_payi_hata=g.get("hedef_payi_hata")):
             print("      %s" % satir)
     elif s.get("guc_hata"):
-        print("\n      güç dağılımı okunamadı: %s" % s["guc_hata"])
+        print(_("\n      güç dağılımı okunamadı: %s") % s["guc_hata"])
 
     _kuvvet = float(((spec.get("ayarlar") or {}).get("kaynak") or {}).get("kuvvet") or 1.0)
     for ad, df in s["tallyler"].items():
         print("")
         print("      " + tally_metni(ad, df, s.get("malzeme_adlari"), s.get("keff") is None,
                                      _kuvvet).replace("\n", "\n      "))
-    print("\n      statepoint: %s" % sonuc["statepoint"])
-    print("      log       : %s" % sonuc["log"])
+    print(_("\n      statepoint: %s") % sonuc["statepoint"])
+    print(_("      log       : %s") % sonuc["log"])
     return 0
 
 

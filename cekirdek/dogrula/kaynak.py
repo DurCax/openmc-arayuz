@@ -162,7 +162,7 @@ def kaynak_kontrol(spec, veri_kontrolu=True):
             bulgular.append(Bulgu(
                 "bilgi", "kaynak",
                 _("özdeğer hesabında enerji tayfı (%s) yalnızca başlangıç tahminidir")
-                % dict(_kaynak.TAYFLAR).get(tur, tur),
+                % _kaynak.tayf_adi(tur),
                 _("Pasif çevrimler içinde gerçek fisyon tayfıyla değişir; k-eff'i "
                 "etkilemez. Tayf asıl sabit kaynak hesabında belirleyicidir.")))
         if (k.get("aci") or {}).get("tur", "izotropik") != "izotropik":

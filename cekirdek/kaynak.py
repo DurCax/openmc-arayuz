@@ -26,21 +26,22 @@
 import math
 
 import openmc
+from cekirdek.ceviri import _, N_
 
 # Arayuzde ve dogrulamada kullanilan tayf listesi: (anahtar, gorunen ad)
 TAYFLAR = [
-    ("watt",      "Watt fisyon tayfı"),
-    ("maxwell",   "Maxwell tayfı"),
-    ("tek",       "Tek enerjili (monoenerjetik)"),
-    ("ayrik",     "Ayrık çizgiler"),
-    ("histogram", "Grup grup tayf (histogram)"),
-    ("fuzyon",    "Füzyon tayfı (D-T / D-D, Muir)"),
+    ("watt",      N_("Watt fisyon tayfı")),
+    ("maxwell",   N_("Maxwell tayfı")),
+    ("tek",       N_("Tek enerjili (monoenerjetik)")),
+    ("ayrik",     N_("Ayrık çizgiler")),
+    ("histogram", N_("Grup grup tayf (histogram)")),
+    ("fuzyon",    N_("Füzyon tayfı (D-T / D-D, Muir)")),
 ]
 
 ACILAR = [
-    ("izotropik", "İzotropik"),
-    ("tek_yon",   "Tek yönlü demet"),
-    ("koni",      "Koni"),
+    ("izotropik", N_("İzotropik")),
+    ("tek_yon",   N_("Tek yönlü demet")),
+    ("koni",      N_("Koni")),
 ]
 
 # Shannon entropisi agi -- "otomatik" boyut.
@@ -94,7 +95,7 @@ def enerji_dagilimi(e):
     if tur == "ayrik":
         noktalar = e.get("noktalar") or []
         if not noktalar:
-            raise ValueError("ayrık tayf: en az bir (enerji, olasılık) çifti gerekli")
+            raise ValueError(_("ayrık tayf: en az bir (enerji, olasılık) çifti gerekli"))
         x = [float(p[0]) for p in noktalar]
         p = [float(p[1]) for p in noktalar]
         return openmc.stats.Discrete(x, p)
@@ -103,9 +104,9 @@ def enerji_dagilimi(e):
         kenarlar = [float(x) for x in (e.get("kenarlar") or [])]
         degerler = [float(x) for x in (e.get("degerler") or [])]
         if len(kenarlar) < 2:
-            raise ValueError("histogram tayf: en az iki grup kenarı gerekli")
+            raise ValueError(_("histogram tayf: en az iki grup kenarı gerekli"))
         if len(degerler) != len(kenarlar) - 1:
-            raise ValueError("histogram tayf: %d kenar için %d değer olmalı, %d verildi"
+            raise ValueError(_("histogram tayf: %d kenar için %d değer olmalı, %d verildi")
                              % (len(kenarlar), len(kenarlar) - 1, len(degerler)))
         # Tabular "histogram" modunda son deger kullanilmaz; uzunluklari
         # esitlemek icin sifir eklenir (XML semasi esit uzunluk bekler).
@@ -117,7 +118,7 @@ def enerji_dagilimi(e):
                                  m_rat=_f(e, "kutle_orani", 5.0),
                                  kt=_f(e, "iyon_sicaklik", 20.0e3))
 
-    raise ValueError("bilinmeyen enerji tayfı türü: %s" % tur)
+    raise ValueError(_("bilinmeyen enerji tayfı türü: %s") % tur)
 
 
 def _dik_referans(yon):
@@ -152,7 +153,7 @@ def aci_dagilimi(a):
 
     yon = [float(x) for x in (a.get("yon") or [0.0, 0.0, 1.0])]
     if math.sqrt(sum(v * v for v in yon)) == 0.0:
-        raise ValueError("kaynak yönü sıfır vektör olamaz")
+        raise ValueError(_("kaynak yönü sıfır vektör olamaz"))
 
     if tur == "tek_yon":
         return openmc.stats.Monodirectional(reference_uvw=yon)
@@ -160,7 +161,7 @@ def aci_dagilimi(a):
     if tur == "koni":
         yari = _f(a, "koni_aci", 30.0)
         if not (0.0 < yari <= 180.0):
-            raise ValueError("koninin yarı açılımı 0–180° arasında olmalı (%s)" % yari)
+            raise ValueError(_("koninin yarı açılımı 0–180° arasında olmalı (%s)") % yari)
         # mu = cos(kutupsal aci), referans ekseni "yon". mu'da duzgun dagilim
         # koni yuzeyinde degil KATI ACIDA duzgun demektir -- dogrusu budur.
         u, v = _dik_referans(yon)
@@ -169,7 +170,7 @@ def aci_dagilimi(a):
         return openmc.stats.PolarAzimuthal(mu=mu, phi=fi,
                                            reference_uvw=u, reference_vwu=v)
 
-    raise ValueError("bilinmeyen açısal dağılım türü: %s" % tur)
+    raise ValueError(_("bilinmeyen açısal dağılım türü: %s") % tur)
 
 
 def ortalama_enerji(e):
@@ -248,15 +249,27 @@ def ozet(k):
     k = k or {}
     e = k.get("enerji") or {}
     tur = e.get("tur", "watt")
-    ad = dict(TAYFLAR).get(tur, tur)
+    ad = tayf_adi(tur)
     ort = ortalama_enerji(e)
-    parca = "foton" if (k.get("parcacik") == "photon") else "nötron"
+    parca = _("foton") if (k.get("parcacik") == "photon") else _("nötron")
     metin = "%s, %s" % (parca, ad)
     if ort is not None:
-        metin += " (ortalama %s)" % enerji_metni(ort)
+        metin += _(" (ortalama %s)") % enerji_metni(ort)
     aci = (k.get("aci") or {}).get("tur", "izotropik")
-    metin += ", %s" % dict(ACILAR).get(aci, aci)
+    metin += ", %s" % aci_adi(aci)
     return metin
+
+
+def tayf_adi(tur):
+    """Enerji tayfi turunun gorunen adi (TAYFLAR), etkin dilde."""
+    ad = dict(TAYFLAR).get(tur)
+    return _(ad) if ad else str(tur)
+
+
+def aci_adi(tur):
+    """Acisal dagilim turunun gorunen adi (ACILAR), etkin dilde."""
+    ad = dict(ACILAR).get(tur)
+    return _(ad) if ad else str(tur)
 
 
 def enerji_metni(ev):
@@ -302,7 +315,7 @@ def enerji_kod(e):
         return ("openmc.stats.muir(e0=%r, m_rat=%r, kt=%r)"
                 % (_f(e, "e0", 14.08e6), _f(e, "kutle_orani", 5.0),
                    _f(e, "iyon_sicaklik", 20.0e3)))
-    raise ValueError("bilinmeyen enerji tayfı türü: %s" % tur)
+    raise ValueError(_("bilinmeyen enerji tayfı türü: %s") % tur)
 
 
 def aci_kod(a):
@@ -322,4 +335,4 @@ def aci_kod(a):
                 "    phi=openmc.stats.Uniform(0.0, %r),\n"
                 "    reference_uvw=%r,\n"
                 "    reference_vwu=%r)" % (mu0, 2.0 * math.pi, u, v))
-    raise ValueError("bilinmeyen açısal dağılım türü: %s" % tur)
+    raise ValueError(_("bilinmeyen açısal dağılım türü: %s") % tur)
