@@ -177,14 +177,14 @@
         "koni_aci": 30.0
       },
       "alt": [
-        -1.0,
-        -1.0,
-        -1.0
+        -4.1217,
+        -4.1217,
+        -4.1217
       ],
       "ust": [
-        1.0,
-        1.0,
-        1.0
+        4.1217,
+        4.1217,
+        4.1217
       ]
     },
     "entropi_mesh": {
@@ -572,6 +572,26 @@
     "seri": "PU-MET-FAST-011",
     "aoa_girdi": {
       "fiziksel_bicim": "metal",
+      "yansitici": "su"
+    },
+    "olcum": {
+      "k": 1.00016,
+      "sigma": 0.00021,
+      "parcacik": 100000,
+      "cevrim": 200,
+      "pasif": 50,
+      "sure_s": 402.6,
+      "is_parcacigi": 12,
+      "openmc": "0.16.0",
+      "kutuphane": "ENDF/B-VIII.0",
+      "tarih": "2026-10-01"
+    },
+    "aoa": {
+      "bolunebilir": "Pu",
+      "zenginlik": 94.760396,
+      "fiziksel_bicim": "metal",
+      "ealf": 82619.677618,
+      "tayf": "ara",
       "yansitici": "su"
     }
   }
