@@ -25,7 +25,7 @@ def _iz(model, bilgi, h, n=IZ_NOKTASI):
     from cekirdek.geometri.yoklama import _in
     # malzeme kimligi adla degil bilesimle karsilastirilir (ice aktarilan adlar
     # openmc malzeme adindan turetilir)
-    ad = {id(m): tuple((n, round(v, 8)) for n, v in sorted(
+    ad = {id(m): tuple((n, float("%.6g" % v)) for n, v in sorted(
         m.get_nuclide_atom_densities().items())) for m in bilgi["malzemeler"].values()}
     gx, gy = bilgi["sinir_kutu"]
     rnd = random.Random(7)
@@ -52,6 +52,7 @@ def gidis_donus(spec, dizin):
     yeni.update(parca)
     yeni["guc_dagilimi"] = dict(yeni.get("guc_dagilimi") or {}, var=False)
     yeni["tukenme"] = dict(yeni.get("tukenme") or {}, var=False)
+    yeni["tallyler"] = []      # kullanici tally'leri eski malzeme adlarini tasir
     yeni = sema.tamamla(yeni) if hasattr(sema, "tamamla") else yeni
     model2, bilgi2 = kurucu.kur(copy.deepcopy(yeni))
     bilgi2["sinir_kutu"] = bilgi["sinir_kutu"]
