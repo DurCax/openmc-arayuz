@@ -75,6 +75,8 @@ import functools
 import math
 
 from cekirdek import guc_kor as _guc_kor
+from cekirdek.guc_faktor import _bos_dilimler, _eksenel_faktorler  # noqa: F401
+from cekirdek.guc_faktor import kesikler as _kesikler
 from cekirdek.ceviri import _
 from cekirdek.gunluk import kaydedici
 
@@ -182,6 +184,10 @@ def _kafes_turu(kafes):
     import openmc
     if isinstance(kafes, (openmc.HexLattice, _guc_kor.OtelemeDuzeyi)):
         return "altigen"
+    if isinstance(kafes, _guc_kor.YerlesimDuzeyi):
+        return "yerlesim"
+    if isinstance(kafes, _guc_kor.KarisikDuzey):
+        return "karisik"
     return "kare"
 
 
@@ -194,7 +200,8 @@ def _duzey_konumu(kafes, x, y):
     return (x, y)
 
 
-def _satir_anahtarlari(df, seviyeler, kafesler, kok_demet=None):
+def _satir_anahtarlari(df, seviyeler, kafesler, kok_demet=None,
+                       onek_sutun=_guc_kor.KOK_HUCRE_SUTUNU, duzey_adlari=None):
     """
     Her satirin konum anahtari ve her duzeyin temsilci kafesi.
     kok_demet: {kok hucre kimligi: demet anahtari} (altigen_kafes; bkz.
@@ -203,34 +210,45 @@ def _satir_anahtarlari(df, seviyeler, kafesler, kok_demet=None):
     """
     sutunlar = [[df[(s, "lat", e)].astype(int).tolist() for e in ("id", "x", "y")]
                 for s in seviyeler]
-    temsilci = []
+    temsilci, karisik = [], []
     for (ids, _xs, _ys) in sutunlar:
-        kafes = kafesler.get(ids[0])
-        if kafes is None:
-            raise RuntimeError(_("kafes (id = %d) geometride bulunamadı") % ids[0])
-        temsilci.append(kafes)
+        eksik = [i for i in set(ids) if i not in kafesler]
+        if eksik:
+            raise RuntimeError(_("kafes (id = %d) geometride bulunamadı") % eksik[0])
+        adlar = {}
+        for i in sorted(set(ids)):
+            adlar.setdefault(_guc_kor.kafes_adi(kafesler[i]), kafesler[i])
+        # karisik duzey (G-2): farkli kafeslerin konum indeksleri CAKISIYORSA
+        # parca (kafes adi, i, j) olur; karar butun tur tally'lerinde ayni
+        # (karisik_duzeyler). Cakisma yoksa anahtar eskisiyle ayni kalir.
+        genel = (duzey_adlari or {}).get(len(karisik))
+        if genel:
+            adlar.update(genel)
+        karisik.append(bool(genel))
+        temsilci.append(_guc_kor.KarisikDuzey(kafesler=adlar) if karisik[-1]
+                        else kafesler[ids[0]])
 
     onbellek = {}
 
-    def cevir(lid, x, y):
+    def cevir(lid, x, y, adli):
         k = (lid, x, y)
         if k not in onbellek:
-            kafes = kafesler.get(lid)
-            if kafes is None:
-                raise RuntimeError(_("kafes (id = %d) geometride bulunamadı") % lid)
-            onbellek[k] = _duzey_konumu(kafes, x, y)
+            kafes = kafesler[lid]
+            konum = _duzey_konumu(kafes, x, y)
+            onbellek[k] = ((_guc_kor.kafes_adi(kafes),) + tuple(konum)) if adli else konum
         return onbellek[k]
 
-    kok = (df[_guc_kor.KOK_HUCRE_SUTUNU].astype(int).tolist()
+    kok = (df[onek_sutun].astype(int).tolist()
            if kok_demet is not None else None)
     tek = len(seviyeler) == 1 and kok is None
-    anahtarlar = []
+    anahtarlar, isimler = [], []
     for i in range(len(df)):
-        parca = tuple(cevir(ids[i], xs[i], ys[i]) for ids, xs, ys in sutunlar)
+        isimler.append(tuple(_guc_kor.kafes_adi(kafesler[ids[i]]) for ids, _x, _y in sutunlar))
+        parca = tuple(cevir(ids[i], xs[i], ys[i], k) for (ids, xs, ys), k in zip(sutunlar, karisik))
         if kok is not None:
             parca = (kok_demet[kok[i]],) + parca
         anahtarlar.append(parca[0] if tek else parca)
-    return anahtarlar, temsilci
+    return anahtarlar, temsilci, isimler
 
 
 def _konumlari_topla(anahtarlar, dilimler, ortalar, sapmalar, eksenel_dilim):
@@ -290,10 +308,10 @@ def _tur_adi(tal, hucreler):
     return None
 
 
-def _tally_konumlari(tal, geometri):
+def _tally_konumlari(tal, geometri, df=None, adlar=None):
     """Tek bir guc tally'sinin konumlari ve kafes yapisi (dagilim_oku'nun
     tur basina parcasi)."""
-    df = tal.get_pandas_dataframe(paths=True)
+    df = tal.get_pandas_dataframe(paths=True) if df is None else df
     seviyeler = _kafes_seviyeleri(df)
     if not seviyeler:
         raise RuntimeError(
@@ -302,8 +320,14 @@ def _tally_konumlari(tal, geometri):
             "demet içindeki çubuklar için anlamlıdır.")
     duzen = _guc_kor.oteleme_duzeni(df, geometri)
     kok_demet, oteleme = duzen if duzen else (None, None)
-    anahtarlar, kafesler = _satir_anahtarlari(df, seviyeler, geometri.get_all_lattices(),
-                                              kok_demet)
+    sutun = _guc_kor.KOK_HUCRE_SUTUNU
+    if oteleme is None:
+        # agac modu: cok ornekli yerlesim duzeyi (ornek hucresi "g:<ad>#<i>")
+        yd = _guc_kor.yerlesim_duzeni(df, geometri)
+        if yd is not None:
+            (sutun, kok_demet), oteleme = yd
+    anahtarlar, kafesler, isimler = _satir_anahtarlari(df, seviyeler, geometri.get_all_lattices(),
+                                              kok_demet, sutun, adlar)
     if oteleme is not None:
         kafesler = [oteleme] + kafesler
     z_sut = _eksenel_sutun(df)
@@ -312,7 +336,8 @@ def _tally_konumlari(tal, geometri):
                 else [0] * len(df))
     ort = df[("mean", "", "")] if ("mean", "", "") in df.columns else df["mean"]
     sap = df[("std. dev.", "", "")] if ("std. dev.", "", "") in df.columns else df["std. dev."]
-    return {"anahtarlar": anahtarlar, "dilimler": dilimler, "ortalar": ort.tolist(),
+    return {"anahtarlar": anahtarlar, "isimler": isimler, "dilimler": dilimler,
+            "ortalar": ort.tolist(),
             "sapmalar": sap.tolist(), "kafesler": kafesler, "oteleme": oteleme,
             "eksenel_dilim": eksenel_dilim}
 
@@ -395,7 +420,11 @@ def dagilim_oku(sp, tally_adi="guc_dagilimi"):
     geometri.determine_paths()
     notlar = []
 
-    parcalar = [_tally_konumlari(t, geometri) for t in taller]
+    dfs = [t.get_pandas_dataframe(paths=True) for t in taller]
+    parcalar = [_tally_konumlari(t, geometri, df) for t, df in zip(taller, dfs)]
+    karisik = _guc_kor.karisik_duzeyler(parcalar, geometri.get_all_lattices())
+    if karisik:          # cakisan konum anahtarlari: kafes adiyla yeniden kur
+        parcalar = [_tally_konumlari(t, geometri, df, karisik) for t, df in zip(taller, dfs)]
     hucreler = geometri.get_all_cells() if len(taller) > 1 else {}
     turler = [_tur_adi(t, hucreler) for t in taller] if hucreler else [None]
     konumlar, birlesen, cubuk_turleri = _parcalari_birlestir(parcalar, turler)
@@ -431,7 +460,7 @@ def dagilim_oku(sp, tally_adi="guc_dagilimi"):
               "türlerin yakıt çubuklarının ortalamasına göredir.")
             % (len(taller), ", ".join(t or "?" for t in turler)))
 
-    return {
+    sonuc = {
         "turler": turler,
         "cubuk_turleri": cubuk_turleri,
         "kafes_turu": kafes_turu,
@@ -442,13 +471,16 @@ def dagilim_oku(sp, tally_adi="guc_dagilimi"):
         "notlar": notlar,
         "duzey_sayisi": len(kafesler),
         "tam_kor": tam_kor,
-        "kor_duzeyi": "oteleme" if oteleme is not None else ("kafes" if tam_kor else None),
+        "kor_duzeyi": (("yerlesim" if isinstance(oteleme, _guc_kor.YerlesimDuzeyi) else "oteleme")
+                       if oteleme is not None else ("kafes" if tam_kor else None)),
         "kafesler": kafesler,
         "kafes_turleri": kafes_turleri,
         "kor_kafes": kafesler[0] if tam_kor else None,
         "kor_kafes_turu": kafes_turleri[0] if tam_kor else None,
         "birlesen_bin": birlesen,
     }
+    sonuc["kesik_cubuklar"] = _kesikler(sonuc, geometri, taller, notlar)
+    return sonuc
 
 
 # ============================================================================
@@ -468,8 +500,10 @@ def eleman_merkezi(kafes, konum):
     (konum cekirdek/altigen.konumlar'dan; OpenMC ile nokta-hucre olcumuyle
     dogrulandi, testler/test_guc_kor.py).
     """
-    if isinstance(kafes, _guc_kor.OtelemeDuzeyi):
-        return kafes.merkezler[tuple(konum)]      # kafessiz: kok hucre otelemesi
+    if isinstance(kafes, (_guc_kor.OtelemeDuzeyi, _guc_kor.YerlesimDuzeyi)):
+        return kafes.merkezler[tuple(konum)]      # kafessiz: hucre otelemesi
+    if isinstance(kafes, _guc_kor.KarisikDuzey):     # (kafes adi, i, j)
+        return eleman_merkezi(kafes.kafesler[konum[0]], tuple(konum[1:]))
     if _kafes_turu(kafes) == "altigen":
         kx, ky = _altigen_konumlar(int(kafes.num_rings), kafes.orientation)[tuple(konum)]
         cx, cy = tuple(kafes.center)[:2]
@@ -518,6 +552,10 @@ def demet_merkezi(dagilim, demet):
 # ============================================================================
 
 def _tek_konum_metni(konum, tur):
+    if tur == "yerlesim":
+        return "%s #%d" % (konum[0], int(konum[1]) + 1)
+    if konum and isinstance(konum[0], str):          # karisik duzey (kafes adi, i, j)
+        return "%s %s" % (konum[0], _tek_konum_metni(konum[1:], None))
     a, b = int(konum[0]), int(konum[1])
     if tur == "altigen":
         return "dıştan %d. halka, %d. konum" % (a + 1, b + 1)
@@ -618,7 +656,8 @@ def tepe_faktorleri(dagilim):
                    da cubuk sayisi farkli demetlerde demet gucu orani
                    F_demet x cubuk sayisi orani olur)
     """
-    konumlar = dagilim["konumlar"]
+    kesik = set(dagilim.get("kesik_cubuklar") or ())
+    konumlar = {a: k for a, k in dagilim["konumlar"].items() if a not in kesik}
     if not konumlar:
         return None
     n = len(konumlar)
@@ -666,6 +705,8 @@ def tepe_faktorleri(dagilim):
         "kafes_turleri": list(dagilim.get("kafes_turleri") or [dagilim.get("kafes_turu")]),
         "demetler": None, "demet_sayisi": None, "sicak_demet": None,
         "F_demet": None, "F_demet_sapma": None,
+        # --- Dalga G-2: kesik (kirpilan) cubuklar F_dH/F_q disinda, ayrica sayilir
+        "kesik_cubuklar": sorted(kesik & set(dagilim["konumlar"]), key=repr),
     }
 
     if dagilim["eksenel_dilim"] > 1:
@@ -675,51 +716,6 @@ def tepe_faktorleri(dagilim):
     sonuc["tur_ozeti"] = tur_ozeti(bagil, dagilim.get("cubuk_turleri"))
     return sonuc
 
-
-
-def _bos_dilimler(konumlar, eksenel_dilim):
-    """
-    Hicbir cubukta skor olmayan eksenel dilimler (toplam tam 0). Hedef cubuk
-    kesintili katmanlardaysa (1. ve 3. katmanda var, 2.'de yok) guc mesh'i
-    cubuk_eksenel_aralik ile ilk ve son katmanin arasini kapsar; aradaki
-    katmanin dilimleri BOSTUR. Ortalamaya girerlerse F_q yapay siser.
-    """
-    return [i for i in range(eksenel_dilim)
-            if sum(k["eksenel"][i][0] for k in konumlar.values()) == 0.0]
-
-
-def _eksenel_faktorler(sonuc, konumlar, eksenel_dilim):
-    """F_q, sicak dilim, bagil eksenel harita ve eksenel profil (3B).
-    Bos dilimler (bkz. _bos_dilimler) ortalamalara katilmaz; bos dilim
-    yoksa sonuc eskisiyle bit duzeyinde aynidir."""
-    bos = _bos_dilimler(konumlar, eksenel_dilim)
-    dolu = set(range(eksenel_dilim)) - set(bos)
-    hepsi = []
-    for a, k in konumlar.items():
-        for i, d in enumerate(k["eksenel"]):
-            if i in dolu:
-                hepsi.append((a, i, d[0], d[1]))
-    ort_yerel = sum(h[2] for h in hepsi) / len(hepsi) if hepsi else 0.0
-    sicak = max(hepsi, key=lambda h: h[2]) if hepsi else (None, None, 0.0, 0.0)
-    f_q = sicak[2] / ort_yerel if ort_yerel > 0 else None
-    sonuc["F_q"] = f_q
-    sonuc["F_q_sapma"] = (f_q * sicak[3] / sicak[2]) if (f_q and sicak[2]) else None
-    sonuc["sicak_dilim"] = (sicak[0], sicak[1]) if f_q else None
-    sonuc["ortalama_yerel"] = ort_yerel
-    sonuc["bos_dilimler"] = bos
-    sonuc["bagil_eksenel"] = {
-        a: [(d[0] / ort_yerel, d[1] / ort_yerel) for d in k["eksenel"]]
-        for a, k in konumlar.items()} if ort_yerel > 0 else None
-    # eksenel guc profili (tum cubuklar toplanarak)
-    profil = []
-    for i in range(eksenel_dilim):
-        t = sum(k["eksenel"][i][0] for k in konumlar.values())
-        s = math.sqrt(sum(k["eksenel"][i][1] ** 2 for k in konumlar.values()))
-        profil.append((t, s))
-    dolu_profil = [p for i, p in enumerate(profil) if i in dolu]
-    ort_profil = sum(p[0] for p in dolu_profil) / len(dolu_profil) if dolu_profil else 0.0
-    sonuc["eksenel_profil"] = [(p[0] / ort_profil, p[1] / ort_profil)
-                               for p in profil] if ort_profil > 0 else None
 
 
 # ============================================================================

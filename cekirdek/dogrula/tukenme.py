@@ -6,6 +6,7 @@
  `from cekirdek import dogrula; dogrula.X` ile kullanilir.
 """
 
+from cekirdek import sema
 from cekirdek.sema import malzeme_bul
 from cekirdek import veri_bilgi
 from cekirdek import uygunluk
@@ -126,14 +127,17 @@ def tukenme_kontrol(spec, veri_kontrolu=True):
         if not hv and uygun:
             bulgular.append(Bulgu("hata", yer,
                                   "modelde yanabilir (fisil) malzeme yok"))
-        for ad, v in hv.items():
-            if not v["hacim"]:
-                bulgular.append(Bulgu(
-                    "hata", "tukenme/%s" % ad,
-                    "hacim hesaplanamıyor: %s" % v["ayrinti"],
-                    "Tükenme kesin hacim gerektirir: yanlış hacim yanma hızını "
-                    "aynı oranda bozar ve k-eff'te iz bırakmaz."))
-        bulgular.extend(_hacimsiz_zehir_bulgulari(spec))
+        if sema.agac_modu(spec):
+            bulgular.extend(_agac_hacim_bulgulari(spec, t))
+        else:
+            for ad, v in hv.items():
+                if not v["hacim"]:
+                    bulgular.append(Bulgu(
+                        "hata", "tukenme/%s" % ad,
+                        "hacim hesaplanamıyor: %s" % v["ayrinti"],
+                        "Tükenme kesin hacim gerektirir: yanlış hacim yanma hızını "
+                        "aynı oranda bozar ve k-eff'te iz bırakmaz."))
+            bulgular.extend(_hacimsiz_zehir_bulgulari(spec))
     for ad in t.get("ek_malzemeler") or []:
         if malzeme_bul(spec, ad) is None:
             bulgular.append(Bulgu("hata", yer, "tanımsız ek malzeme: '%s'" % ad))
@@ -156,6 +160,34 @@ def tukenme_kontrol(spec, veri_kontrolu=True):
               "Her örneğin hacmi kendi hücre alanı × kendi katman yüksekliğidir "
               "(OpenMC'nin eşit bölmesi kullanılmaz: eşit olmayan katmanlarda ve "
               "aynı yakıtı farklı yarıçapla kullanan çubuklarda yanlış olurdu).")))
+    return bulgular
+
+
+def _agac_hacim_bulgulari(spec, t):
+    """
+    Gelismis (agac) mod, §8 UYARI 1 / HATA 12 ve §15 karar 2: analitik hacmi
+    kesin olmayan (kesik konum, kesik cubuk) yanabilir malzeme stokastik
+    hacimle tukenir (UYARI); cubuk cubuk yanmada ornek hacmi kesin
+    olmadigindan HATA.
+    """
+    from cekirdek import tukenme as _tk
+    from cekirdek import tukenme_hacim as _th
+    bulgular = []
+    for ad, v in _tk._hacim_tablosu(spec).items():
+        if v["hacim"] or v["yontem"] != _th.KESIN_DEGIL:
+            continue
+        if t.get("malzemeleri_ayir"):
+            bulgular.append(Bulgu(
+                "hata", "tukenme/%s" % ad,
+                _("çubuk çubuk yanmada örnek hacmi kesin değil: %s") % v["ayrinti"],
+                _("Kesik (kırpılan) konumlardaki örneklerin hacmi analitik bilinmez. "
+                  "Çubuk çubuk yanmayı kapatın ya da kesik konumları kaldırın.")))
+        else:
+            bulgular.append(Bulgu(
+                "uyari", "tukenme/%s" % ad,
+                _("'%s' hacmi stokastik hesaplanacak: %s") % (ad, v["ayrinti"]),
+                _("Analitik hacim kesin değil (kesik konum ya da çubuk); OpenMC "
+                  "stokastik hacim hesabı kullanılır ve belirsizliği rapora yazılır.")))
     return bulgular
 
 

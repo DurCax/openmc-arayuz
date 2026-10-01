@@ -178,3 +178,43 @@ def kesik_konumlar(m):
     """Kesik/gizli kafes konumlari [{"kafes", "yol", "indeks", "harf", "durum"}]."""
     from cekirdek.geometri.kesik import kesik_konumlar as _kk
     return _kk(m)
+
+
+# ----------------------------------------------------------------------------
+# G-2 eklemeleri (§7; §16 "henuz yok" listesi)
+# ----------------------------------------------------------------------------
+
+def gez(m):
+    """Ziyaret ureteci: (yol, dugum, carpan, z_araligi, kesik, ust_yollar, ...)."""
+    from cekirdek.geometri.gezinti import gez as _gez
+    return _gez(m)
+
+
+def icerik(m):
+    """Modelde yer alan adlar -- uygunluk.geometri_icerigi ile ayni bicim."""
+    from cekirdek.geometri.gezinti import icerik as _ic
+    return _ic(m)
+
+
+def sinir_bilgisi(m):
+    """Dis sinir: yuzey, yan/alt/ust, yuzler, periyodik_uygun."""
+    from cekirdek.geometri.sinir import sinir_bilgisi as _sb
+    return _sb(m)
+
+
+def grup_degeri_yaz(spec, grup, deger):
+    """YENI spec; sablonda tamburlu korun 'tamburlar' grubu kor.tambur.donme."""
+    from cekirdek.geometri.sinir import grup_degeri_yaz as _gdy
+    return _gdy(spec, grup, deger)
+
+
+def basvurular(spec):
+    """[Basvuru(yol, tur, ad)] -- spec["geometri"]deki ad basvurulari."""
+    from cekirdek.geometri.basvuru import basvurular as _b
+    return _b(spec)
+
+
+def ad_degistir(spec, tur, eski, yeni):
+    """YENI spec: tanim + butun basvurular yeniden adlandirilir (saf)."""
+    from cekirdek.geometri.basvuru import ad_degistir as _ad
+    return _ad(spec, tur, eski, yeni)

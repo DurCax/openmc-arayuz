@@ -78,7 +78,7 @@ def _u():
 TURLER = ("yakit_sicaklik", "sogutucu_sicaklik", "malzeme_yogunluk",
           "void_orani", "bor_ppm", "zenginlik", "kafes_adim", "kor_adim",
           "cubuk_daldirma", "cubuk_yaricap", "tambur_donme",
-          "yansitici_kalinlik")
+          "yansitici_kalinlik", "grup_donme", "grup_daldirma")  # G-2: sablonda bos
 
 
 def _h(**kw):
@@ -433,7 +433,7 @@ def test_kahin_tablosu():
     print("\n[U1] UYGUNLUK KAHIN TABLOSU: 27 ornek x butun sorular")
     from cekirdek import tarama
     u = _u()
-    kontrol("kahin 12 tarama turunun hepsini kapsiyor (tarama.TURLER sirasi)",
+    kontrol("kahin 14 tarama turunun hepsini kapsiyor (tarama.TURLER sirasi)",
             tuple(tarama.TURLER) == TURLER, "(%s)" % list(tarama.TURLER))
     orn = sorted(os.path.splitext(a)[0] for a in os.listdir(ORNEK) if a.endswith(".json"))
     kontrol("kahin 27 ornegin hepsini kapsiyor", orn == sorted(KAHIN), "(%s)" % orn)

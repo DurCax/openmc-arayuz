@@ -57,7 +57,7 @@ ENTROPI_EKSENEL = 8
 def entropi_boyutu_otomatik(spec):
     """Modelin boyutuna gore entropi agi bolmeleri [nx, ny, nz]."""
     from cekirdek import sema
-    h = sema.kor_yuksekligi((spec or {}).get("kor") or {})
+    h = sema.model_yuksekligi(spec or {}) if (spec or {}).get("kor") else None
     return [ENTROPI_RADYAL, ENTROPI_RADYAL, ENTROPI_EKSENEL if h else 1]
 
 

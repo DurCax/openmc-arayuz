@@ -48,6 +48,9 @@
 import re
 
 from cekirdek import sema
+from cekirdek.uygunluk_geometri import (  # noqa: F401 -- disa verilen adlar
+    _ALTIGEN_PERIODIC, _bul, geometri_icerigi, model_boyutu, sinir_secenekleri,
+    sonsuz_ortam, yan_yuzey, yuz_sinir_secenekleri)
 
 # Ana penceredeki sekmelerin sabit anahtarlari, SIRAYLA.
 SEKMELER = ("malzemeler", "parcalar", "demet", "kor", "ayarlar",
@@ -88,17 +91,8 @@ _AVOGADRO_BARN = 0.602214076    # N_A * 1e-24  (atom/b-cm <-> mol/cm3)
 
 # Kritik aramada anlamli olan "denetim" parametreleri.
 KRITIK_PARAMETRELER = ("bor_ppm", "cubuk_daldirma", "tambur_donme",
-                       "zenginlik", "yansitici_kalinlik")
+                       "zenginlik", "yansitici_kalinlik", "grup_donme", "grup_daldirma")
 
-# Altigen prizmada periodic yan sinir -- SUNULUR.
-#   Kullanilabilirlik denetimi "OpenMC altigende periodic esleyemez" demisti;
-#   YANLIS. OpenMC 0.16 HexagonalPrism karsi yuzleri periodic_surface ile
-#   esler ve kosar. Iki bagimsiz olcum, sfr_altigen:
-#     periodic 1.46737 +/- 0.00142  vs reflective 1.46804 +/- 0.00192
-#     periodic 1.46672 +/- 0.00109  vs reflective 1.46699 +/- 0.00156 (0.14 sigma)
-#   Silindir (tamburlu) ve kure icin periodic gecersiz kalir: OpenMC "Found
-#   only one periodic surface without a specified partner" ile durur (olculdu).
-_ALTIGEN_PERIODIC = True
 
 
 # ----------------------------------------------------------------------------
@@ -309,132 +303,6 @@ def rol_malzemeleri(spec, rol):
     return [m["ad"] for m in spec.get("malzemeler", []) if rol in r.get(m.get("ad"), ())]
 
 
-# ----------------------------------------------------------------------------
-# geometri icerigi -- kurucu.kor_kur'un izledigi yol
-# ----------------------------------------------------------------------------
-
-def _bul(spec, bolum, ad):
-    for x in spec.get(bolum) or []:
-        if x.get("ad") == ad:
-            return x
-    return None
-
-
-def _harita_hedefleri(harita, anahtar):
-    """Haritada GERCEKTEN gecen harflerin gosterdigi adlar (kurucu yalnizca onlari kurar)."""
-    harfler = []
-    for satir in harita or []:
-        for h in satir:
-            if h not in harfler:
-                harfler.append(h)
-    return [anahtar[h] for h in harfler if anahtar.get(h)]
-
-
-def geometri_icerigi(spec):
-    """
-    Kurulan modelde GERCEKTEN yer alan adlar.
-
-    DONER {"malzeme", "cubuk", "plaka", "demet", "kafesteki_cubuk"} (kumeler)
-      kafesteki_cubuk : bir kafes haritasinda (kor haritasi dahil) yer alan,
-                        yani TEKRARLANAN cubuklar -- guc dagilimi icin.
-
-    kurucu.kor_kur ile ayni yol izlenir:
-      * ad cozumleme sirasi cubuk -> plaka -> demet -> malzeme
-        (kurucu._universe_uret)
-      * kafeste yalnizca haritada gecen harfler kurulur (anahtarda olup
-        haritada olmayan harf modele girmez)
-      * eksenel katmanlamada ana dolgu yalnizca kendi dolgusu olmayan bir
-        katman varsa kullanilir; katmana ozel "anahtar" yalnizca kare_kafes'te
-      * yansitici: tek_demet/kare_kafes'te "var" ise, tamburlu'da her zaman;
-        tek_cubuk/tek_plaka/kuresel'de hic
-      * tambur malzemeleri yalnizca tamburlu ve sayi > 0 iken
-    """
-    ic = {"malzeme": set(), "cubuk": set(), "plaka": set(), "demet": set(),
-          "kafesteki_cubuk": set()}
-    kor = spec.get("kor") or {}
-    tur = kor.get("tur")
-
-    def malzeme_ekle(ad):
-        if ad and ad != sema.BOSLUK and _bul(spec, "malzemeler", ad) is not None:
-            ic["malzeme"].add(ad)
-
-    def gez(ad, kafeste=False, derinlik=0):
-        if not ad or ad == sema.BOSLUK or derinlik > 8:
-            return
-        c = _bul(spec, "cubuklar", ad)
-        if c is not None:
-            ic["cubuk"].add(ad)
-            if kafeste:
-                ic["kafesteki_cubuk"].add(ad)
-            for b in c.get("bolgeler") or []:
-                malzeme_ekle(b.get("malzeme"))
-            if c.get("tur") == "kontrol":
-                malzeme_ekle(c.get("izleyici_malzeme"))
-            return
-        p = _bul(spec, "plakalar", ad)
-        if p is not None:
-            ic["plaka"].add(ad)
-            for alan in ("et_malzeme", "zarf_malzeme", "sogutucu"):
-                malzeme_ekle(p.get(alan))
-            if float(p.get("yan_levha_kalinlik") or 0.0) > 0:
-                malzeme_ekle(p.get("yan_levha_malzeme") or p.get("zarf_malzeme"))
-            return
-        d = _bul(spec, "demetler", ad)
-        if d is not None:
-            if ad in ic["demet"]:
-                return
-            ic["demet"].add(ad)
-            malzeme_ekle(d.get("dolgu_disi"))
-            k = d.get("kilif") if d.get("tur") == "altigen" else None
-            if isinstance(k, dict):
-                malzeme_ekle(k.get("malzeme"))
-            for hedef in _harita_hedefleri(d.get("harita"), d.get("anahtar") or {}):
-                gez(hedef, True, derinlik + 1)
-            return
-        malzeme_ekle(ad)
-
-    def kor_haritasi(ek_anahtar=None):
-        esleme = dict(kor.get("anahtar") or {})
-        esleme.update(ek_anahtar or {})
-        for hedef in _harita_hedefleri(kor.get("harita"), esleme):
-            gez(hedef, True)
-
-    if tur == "kuresel":
-        for k in kor.get("kabuklar") or []:
-            malzeme_ekle(k.get("malzeme"))
-        return ic
-    if tur not in sema.EKSENEL_DESTEKLI:
-        return ic
-
-    yans = kor.get("yansitici") or {}
-    if tur == "tamburlu":
-        malzeme_ekle(yans.get("malzeme"))
-        t = kor.get("tambur") or {}
-        if int(t.get("sayi") or 0) > 0:
-            malzeme_ekle(t.get("govde_malzeme"))
-            malzeme_ekle(t.get("emici_malzeme"))
-    elif tur in ("tek_demet", "kare_kafes", "altigen_kafes") and yans.get("var"):
-        malzeme_ekle(yans.get("malzeme"))
-
-    katmanlar = sema.eksenel_katmanlar(kor)
-    ana_kullanilir = katmanlar is None
-    for _z0, _z1, b in katmanlar or []:
-        if b.get("anahtar"):
-            if tur in sema.HARITALI_KORLAR:
-                kor_haritasi(b["anahtar"])
-            # baska turde kurucu hata verir (dogrula.eksenel_kontrol bildirir)
-        elif b.get("dolgu"):
-            gez(b["dolgu"])
-        else:
-            ana_kullanilir = True
-    if ana_kullanilir:
-        if tur in sema.HARITALI_KORLAR:
-            kor_haritasi()
-        else:
-            gez(sema.ana_dolgu(kor))
-    return ic
-
-
 def kullanilan_malzemeler(spec):
     """Geometride gercekten yer alan malzeme adlari, spec sirasiyla."""
     adlar = geometri_icerigi(spec)["malzeme"]
@@ -445,14 +313,6 @@ def kullanilan_malzemeler(spec):
 # baglam: bir cagrida bir kez hesaplanan bilgiler
 # ----------------------------------------------------------------------------
 
-def _boyut(kor):
-    if sema.eksenel_katmanlar(kor):
-        return "3B_katmanli"
-    if sema.kor_yuksekligi(kor):
-        return "3B"
-    return "2B"
-
-
 class _Baglam(object):
     """Roller ve geometri bir kez hesaplanir; butun kurallar buradan okur."""
 
@@ -462,7 +322,8 @@ class _Baglam(object):
         self.tur = self.kor.get("tur")
         self.mod = (spec.get("ayarlar") or {}).get("mod", "eigenvalue")
         self.ozdeger = self.mod == "eigenvalue"
-        self.boyut = _boyut(self.kor)
+        self.agac = self.tur == "agac"
+        self.boyut = model_boyutu(spec)
         self.roller = malzeme_rolleri(spec)
         self.geo = geometri_icerigi(spec)
         # geometride kullanilan malzeme tanimlari, spec sirasiyla
@@ -473,6 +334,20 @@ class _Baglam(object):
 
     def rolu(self, ad, rol):
         return rol in self.roller.get(ad, ())
+
+    @property
+    def model(self):
+        """GeometriModeli (yalniz gerektiginde kurulur; agac hedefleri)."""
+        if getattr(self, "_model", None) is None:
+            from cekirdek import geometri
+            self._model = geometri.model(self.spec)
+        return self._model
+
+    def gruplar(self, tur):
+        """Uyesi geometride olan 'tur' gruplarinin adlari (agac ya da sablon)."""
+        from cekirdek import geometri
+        return [g["ad"] for g in geometri.gruplar(self.model) if g.get("tur") == tur
+                and g.get("uyeler")]
 
 
 # ----------------------------------------------------------------------------
@@ -495,12 +370,18 @@ def model_ozeti(spec):
         "tur": b.tur,
         "boyut": b.boyut,
         "mod": b.mod,
-        "kafes": bool(b.geo["demet"]),
+        "kafes": bool(b.geo["demet"]) or (b.agac and _agacta_kafes_var(b)),
         "kontrol_cubugu": any((_bul(spec, "cubuklar", c) or {}).get("tur") == "kontrol"
                               for c in b.geo["cubuk"]),
-        "tambur": b.tur == "tamburlu" and int(((b.kor.get("tambur") or {}).get("sayi")) or 0) > 0,
+        "tambur": bool(b.geo.get("tambur")) if b.agac else (
+            b.tur == "tamburlu" and int(((b.kor.get("tambur") or {}).get("sayi")) or 0) > 0),
         "fisil": b.fisil,
     }
+
+
+def _agacta_kafes_var(b):
+    from cekirdek import geometri
+    return any(z.dugum.get("tur") == "kafes" for z in geometri.gez(b.model))
 
 
 def gecerli_sekmeler(spec):
@@ -516,7 +397,8 @@ def gecerli_sekmeler(spec):
     gorunur = {"malzemeler", "kor", "ayarlar", "calistir"}
     if b.tur != "kuresel":
         gorunur.add("parcalar")
-    if b.tur in ("tek_demet", "kare_kafes", "altigen_kafes", "tamburlu") or b.geo["demet"]:
+    if b.tur in ("tek_demet", "kare_kafes", "altigen_kafes", "tamburlu", "agac") \
+            or b.geo["demet"]:
         gorunur.add("demet")
     if _gecerli_taramalar(b, "katsayi"):
         gorunur.add("analiz")
@@ -526,10 +408,12 @@ def gecerli_sekmeler(spec):
 
 
 def kor_turleri(spec):
-    """Kor turu listesinde gosterilecek turler; kuresel yalnizca kullaniliyorsa."""
+    """Kor turu listesinde gosterilecek turler; kuresel ve gelismis (agac)
+    yalnizca kullaniliyorsa (agaca gecis tek yonludur: geometri.gelismise_gec)."""
     turler = list(KOR_TURLERI)
-    if (spec.get("kor") or {}).get("tur") == "kuresel":
-        turler.append("kuresel")
+    tur = (spec.get("kor") or {}).get("tur")
+    if tur in ("kuresel", "agac"):
+        turler.append(tur)
     return turler
 
 
@@ -546,6 +430,10 @@ def parca_turleri(spec):
     """
     b = _Baglam(spec)
     tur = b.tur
+    if b.agac:
+        # gelismis modda her kutuphane parcasi herhangi bir yuvaya konabilir
+        return {"cubuk": True, "plaka": True, "kontrol_cubugu": b.boyut != "2B",
+                "demet_kare": True, "demet_altigen": True}
     kafesli = ("tek_demet", "kare_kafes", "altigen_kafes", "tamburlu")
     demet = tur in kafesli or bool(b.geo["demet"])
     return {
@@ -572,7 +460,8 @@ def kor_ortak_alanlari(spec):
       sinir_alt/sinir_ust: yalnizca 3B ve kuresel disinda (sinir_secenekleri)
     """
     tur = (spec.get("kor") or {}).get("tur")
-    eksenli = tur in sema.EKSENEL_DESTEKLI
+    eksenli = tur in sema.EKSENEL_DESTEKLI or (
+        tur == "agac" and yan_yuzey(spec) != "kure")
     return {
         "yukseklik": eksenli,
         "eksenel": eksenli,
@@ -580,72 +469,6 @@ def kor_ortak_alanlari(spec):
         "sinir_alt": bool(sinir_secenekleri(spec, "alt")),
         "sinir_ust": bool(sinir_secenekleri(spec, "ust")),
     }
-
-
-def _altigen_kor(spec):
-    kor = spec.get("kor") or {}
-    if kor.get("tur") == "altigen_kafes":
-        return True
-    if kor.get("tur") != "tek_demet":
-        return False
-    d = _bul(spec, "demetler", kor.get("demet") or "")
-    return bool(d) and d.get("tur") == "altigen"
-
-
-def yan_yuzey(spec):
-    """
-    kurucu.kor_kur'un kurdugu yan sinir yuzeyi:
-      "kare"    : RectangularPrism (tek_cubuk, tek_plaka, kare demet, kare_kafes)
-      "altigen" : HexagonalPrism (altigen tek_demet) ya da altigen tam korun
-                  kirik cizgi siniri (altigen_kafes)
-      "silindir": ZCylinder (tamburlu)
-      "kure"    : Sphere (kuresel)
-      None      : bilinmeyen tur
-    """
-    tur = (spec.get("kor") or {}).get("tur")
-    if tur == "kuresel":
-        return "kure"
-    if tur == "tamburlu":
-        return "silindir"
-    if tur in ("tek_demet", "altigen_kafes"):
-        return "altigen" if _altigen_kor(spec) else "kare"
-    if tur in ("tek_cubuk", "tek_plaka", "kare_kafes"):
-        return "kare"
-    return None
-
-
-def sinir_secenekleri(spec, yuzey):
-    """
-    yuzey: "yan" | "alt" | "ust". Uygun sinir kosullari; bos liste = yuzey yok.
-
-      yan : reflective, vacuum, white her yuzeyde (OpenMC 0.16 kure ve
-            silindirde de kosar -- olculdu). periodic yalnizca KARE kesitte
-            (x/y duzlem ciftleri): kure ve silindirde OpenMC "Found only one
-            periodic surface without a specified partner" diyerek durur.
-            Altigen prizma icin bkz. _ALTIGEN_PERIODIC.
-      alt/ust : yalnizca 3B modelde ve kure disinda (2B'de z yuzeyi yok,
-            kurede eksen yok). periodic SUNULMAZ: tek tarafli periodic
-            OpenMC'yi durdurur (olculdu), iki tarafli olani ise korun
-            tepesini dibine baglar -- sonlu bir korda fiziksel degildir.
-    """
-    b = _Baglam(spec)
-    if yuzey in ("alt", "ust"):
-        if b.tur == "kuresel" or b.boyut == "2B":
-            return []
-        return ["vacuum", "reflective", "white"]
-    if yuzey != "yan":
-        return []
-    yy = yan_yuzey(spec)
-    if yy == "kure":
-        return ["vacuum", "reflective", "white"]
-    secenek = ["reflective", "vacuum", "white"]
-    # Altigen tam korun yan siniri demetlerin dis yuzlerinden gecen KIRIK bir
-    # cizgidir (ya da yansitici halkasi); eslesen duzlem cifti yoktur.
-    if b.tur == "altigen_kafes":
-        return secenek
-    if yy == "kare" or (yy == "altigen" and _ALTIGEN_PERIODIC):
-        secenek.append("periodic")
-    return secenek
 
 
 def _ayar_alanlari(b):
@@ -723,29 +546,6 @@ def _tukenme_uygun(b):
 def tukenme_uygun(spec):
     """(bool, sebep) -- tukenme sekmesi/hesabi bu modelde anlamli mi."""
     return _tukenme_uygun(_Baglam(spec))
-
-
-# Nötron kaçırmayan sınır koşulları (dışarı sızıntı yok).
-_SIZINTISIZ = ("reflective", "white", "periodic")
-
-
-def sonsuz_ortam(spec):
-    """
-    Modelin DIS sinirlarinin hepsi sizintisiz mi (yansitici / beyaz /
-    periyodik)? O zaman hesaplanan carpim katsayisi k-eff degil k∞'dur:
-    sonsuz tekrarlanan ortamin katsayisi. Bu durumda "kritik ustu" hukmu
-    YANLIS olur -- k∞ > 1 yalnizca yakitin reaktivite fazlasi tasidigini
-    soyler, reaktorun ne yaptigini degil (Ajan 9 bulgusu: pin hucrede
-    kirmiziyla "Kritik ustu — guc artar" yaziyordu).
-    2B modelde (yukseklik yok) eksen yonu zaten sonsuzdur; yalniz yan sinir
-    bakilir. Kurede tek sinir vardir.
-    """
-    kor = spec.get("kor") or {}
-    sinir = kor.get("sinir") or {}
-    yuzeyler = ["yan"]
-    if kor.get("tur") != "kuresel" and sema.kor_yuksekligi(kor):
-        yuzeyler += ["alt", "ust"]
-    return all(sinir.get(y, "reflective") in _SIZINTISIZ for y in yuzeyler)
 
 
 def tukenme_ayirma_anlamli(spec):
@@ -838,6 +638,15 @@ def _hedefler(b, tarama_turu):
     if tarama_turu == "cubuk_yaricap":
         return [(c["ad"], i) for c in spec.get("cubuklar", []) if c.get("ad") in b.geo["cubuk"]
                 for i, _x in enumerate((c.get("bolgeler") or [])[:-1])]
+    if b.agac and tarama_turu in _AGAC_HEDEFLERI:
+        return _AGAC_HEDEFLERI[tarama_turu](b)
+    if tarama_turu in ("grup_donme", "grup_daldirma"):
+        # sablonda gruplar yok (tamburlu korun tek donme grubu tambur_donme'dir)
+        if not b.agac:
+            return []
+        if tarama_turu == "grup_donme":
+            return b.gruplar("donme")
+        return b.gruplar("daldirma") if b.boyut != "2B" else []
     if tarama_turu == "kor_adim":
         # kurucu kor["adim"]i yalnizca tek_cubuk (hucre) ve kare_kafes (kor
         # kafesi) icin okur; tek_demet olcusunu demetten alir.
@@ -855,6 +664,60 @@ def _hedefler(b, tarama_turu):
         malzeme_var = (yans.get("malzeme") or sema.BOSLUK) != sema.BOSLUK
         return [None] if kurulur and malzeme_var else []
     return []
+
+
+def _agac_kafes_hedefleri(b):
+    """kor_adim (agac): adimi taranabilecek agac kafeslerinin kimlikleri."""
+    from cekirdek import geometri
+    kimlikler = []
+    for z in geometri.gez(b.model):
+        kid = z.dugum.get("id")
+        if z.dugum.get("tur") == "kafes" and kid and not str(kid).startswith("demet:") \
+                and kid not in kimlikler:
+            kimlikler.append(kid)
+    return kimlikler
+
+
+def _agac_halka_hedefleri(b):
+    """yansitici_kalinlik (agac): kalinlikla tanimli, malzemeli halkalar
+    "<kap id>/halkalar/<i>" (kok ve parca kaplari)."""
+    from cekirdek import geometri
+    hedefler = []
+    for z in geometri.gez(b.model):
+        d = z.dugum
+        if d.get("tur") != "kap" or not d.get("id"):
+            continue
+        for i, h in enumerate(d.get("halkalar") or []):
+            icerik = h.get("icerik") or {}
+            if h.get("kalinlik") is not None and icerik.get("tur") == "malzeme" \
+                    and (icerik.get("ad") or sema.BOSLUK) != sema.BOSLUK:
+                hedef = "%s/halkalar/%d" % (d["id"], i)
+                if hedef not in hedefler:
+                    hedefler.append(hedef)
+    return hedefler
+
+
+def _agac_daldirma_hedefleri(b):
+    """cubuk_daldirma (agac): bir daldirma grubuna UYE OLMAYAN kontrol
+    cubuklari (uyenin kendi daldirmasi yok sayilir; tarama modeli degistirmezdi)."""
+    if b.boyut == "2B":
+        return []
+    from cekirdek import geometri
+    uyeler = {u for g in geometri.gruplar(b.model) if g.get("tur") == "daldirma"
+              for u in g.get("uyeler") or []}
+    return [c["ad"] for c in b.spec.get("cubuklar", []) if c.get("tur") == "kontrol"
+            and c.get("ad") in b.geo["cubuk"] and c["ad"] not in uyeler]
+
+
+# Gelismis (agac) modda hedefi agactan gelen taramalar (§7 tarama satiri).
+# tambur_donme takma addir: tek donme grubu varsa o grup, yoksa sunulmaz
+# (arayuz grup_donme ile grup secer).
+_AGAC_HEDEFLERI = {
+    "kor_adim": _agac_kafes_hedefleri,
+    "yansitici_kalinlik": _agac_halka_hedefleri,
+    "cubuk_daldirma": _agac_daldirma_hedefleri,
+    "tambur_donme": lambda b: [None] if len(b.gruplar("donme")) == 1 else [],
+}
 
 
 def gecerli_hedefler(spec, tarama_turu):

@@ -6,7 +6,6 @@
  `from cekirdek import dogrula; dogrula.X` ile kullanilir.
 """
 
-from cekirdek.sema import kor_yuksekligi as sema_kor_yuksekligi
 from cekirdek.sema import malzeme_bul, cubuk_bul
 from cekirdek import sema
 from cekirdek import uygunluk
@@ -72,7 +71,7 @@ def guc_dagilimi_kontrol(spec):
     adlar = list(dict.fromkeys(h["cubuk"] for h in gecerli))
     bulgular.extend(_guc_geometri_kontrol(spec, adlar, yer))
     bulgular.extend(_guc_skor_kontrol(g, yer))
-    h = sema_kor_yuksekligi(spec["kor"])
+    h = sema.model_yuksekligi(spec)
     dilim = int(g.get("eksenel_dilim") or 1)
     bulgular.extend(_guc_eksenel_kontrol(spec, adlar, h, dilim, yer))
     bulgular.extend(_guc_toplam_kontrol(g, h, yer))
@@ -235,13 +234,19 @@ def _adlar(cubuk_ad):
 def _hedef_katman_durumu(spec, cubuk_ad):
     """[(z_alt, z_ust, hedeflerden biri bu katmanda mi)] ya da None
     (katmanlama yok). cubuk_ad: tek ad ya da ad listesi."""
-    from cekirdek import kurucu
+    from cekirdek.geometri import eksenel as _ge
+    adlar = _adlar(cubuk_ad)
+    if sema.agac_modu(spec):
+        from cekirdek import geometri
+        m = geometri.model(spec)
+        dilim = _ge.eksenel_dilimler(m)
+        return [(z0, z1, _ge.dugum_iceriyor(m, ic, _ge._ad_sinama(adlar)))
+                for z0, z1, _ad, ic in dilim] or None
     kor = spec["kor"]
     katmanlar = sema.eksenel_katmanlar(kor)
     if katmanlar is None:
         return None
-    adlar = _adlar(cubuk_ad)
-    return [(z0, z1, any(kurucu._iceriyor_mu(spec, x, a)
+    return [(z0, z1, any(_ge.iceriyor_mu(spec, x, a)
                          for x in sema.katman_adaylari(kor, k) for a in adlar))
             for z0, z1, k in katmanlar]
 
@@ -256,10 +261,10 @@ def _guc_dilim_hizasi(spec, cubuk_ad, dilim, yer):
     birkac % siser. Hizalama: her durum degisim siniri z icin
     (z - z_alt) / dz tamsayiya yakin mi.
     """
-    from cekirdek import kurucu
+    from cekirdek import geometri
     from cekirdek.ceviri import _
     durum = _hedef_katman_durumu(spec, cubuk_ad)
-    aralik = kurucu.guc_eksenel_araligi(spec, _adlar(cubuk_ad))
+    aralik = geometri.hedef_araligi(spec, _adlar(cubuk_ad))
     if not durum or not aralik:
         return []
     z_alt, z_ust = aralik
@@ -344,20 +349,15 @@ def _guc_tam_kor_kontrol(spec, cubuk_ad, dilim, yer):
     """
     from cekirdek.ceviri import _
     kor = spec.get("kor") or {}
-    if kor.get("tur") not in ("kare_kafes", "altigen_kafes"):
-        return []
     adlar = set(_adlar(cubuk_ad))
-    esleme = kor.get("anahtar") or {}
-    ornek, eksik = 0, []
-    for harf in "".join(kor.get("harita") or []):
-        d = sema.demet_bul(spec, esleme.get(harf)) if esleme.get(harf) else None
-        if d is None:
-            continue
-        d_esleme = d.get("anahtar") or {}
-        adet = sum(1 for h in "".join(d.get("harita") or []) if d_esleme.get(h) in adlar)
-        ornek += adet
-        if adet == 0 and d["ad"] not in eksik:
-            eksik.append(d["ad"])
+    if sema.agac_modu(spec):
+        ornek, eksik = _agac_demet_kapsami(spec, adlar)
+    elif kor.get("tur") not in ("kare_kafes", "altigen_kafes"):
+        return []
+    else:
+        ornek, eksik = _sablon_demet_kapsami(spec, kor, adlar)
+    if sema.agac_modu(spec) and ornek == 0:
+        return []
     hedef_metni = ", ".join(_adlar(cubuk_ad))
     bulgular = []
     if eksik:
@@ -376,6 +376,39 @@ def _guc_tam_kor_kontrol(spec, cubuk_ad, dilim, yer):
             _("Sonuç okuma ve harita çizimi yavaşlayabilir; gerekmiyorsa eksenel "
               "dilim sayısını azaltın.")))
     return bulgular
+
+
+def _sablon_demet_kapsami(spec, kor, adlar):
+    """(hedef cubuk ornegi, hedef icermeyen demetler) -- kor haritasi."""
+    esleme = kor.get("anahtar") or {}
+    ornek, eksik = 0, []
+    for harf in "".join(kor.get("harita") or []):
+        d = sema.demet_bul(spec, esleme.get(harf)) if esleme.get(harf) else None
+        if d is None:
+            continue
+        d_esleme = d.get("anahtar") or {}
+        adet = sum(1 for h in "".join(d.get("harita") or []) if d_esleme.get(h) in adlar)
+        ornek += adet
+        if adet == 0 and d["ad"] not in eksik:
+            eksik.append(d["ad"])
+    return ornek, eksik
+
+
+def _agac_demet_kapsami(spec, adlar):
+    """Agac: (hedef cubuk ornegi, hedef icermeyen kullanilan demetler)."""
+    from cekirdek import geometri
+    from cekirdek.geometri import eksenel as _ge
+    m = geometri.model(spec)
+    ornek, demetler = 0, []
+    for z in geometri.gez(m):
+        if z.dugum.get("tur") != "bilesen":
+            continue
+        if z.tanim_turu == "cubuk" and z.dugum.get("ad") in adlar:
+            ornek += z.carpan
+        elif z.tanim_turu == "demet" and z.dugum.get("ad") not in demetler:
+            demetler.append(z.dugum["ad"])
+    eksik = [d for d in demetler if not _ge.dugum_iceriyor(m, d, _ge._ad_sinama(adlar))]
+    return ornek, eksik
 
 
 def fisil_gereksinim_kontrol(spec):
@@ -399,7 +432,7 @@ def fisil_gereksinim_kontrol(spec):
     # eksenel_kontrol ayni seyi katman diliyle soyler.
     geometri_var = bool(uygunluk.geometri_icerigi(spec)["malzeme"])
     if (a.get("mod", "eigenvalue") == "eigenvalue" and geometri_var
-            and sema.eksenel_katmanlar(spec["kor"]) is None):
+            and uygunluk.model_boyutu(spec) != "3B_katmanli"):
         bulgular.append(Bulgu(
             "hata", "ayarlar",
             "Özdeğer (k-eff) hesabı fisil malzeme gerektirir — geometride "

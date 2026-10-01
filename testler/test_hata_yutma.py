@@ -56,7 +56,6 @@ KABA_EKLEME = {"append", "add", "extend", "insert"}
 #       taban cizgisi; DUZELTME Dalga 2 sahiplerine kalir (7 kayit).
 IZINLI = {
     "cekirdek.dogrula.veri:_kutuphane_icerigi": 1,                # (T)
-    "cekirdek.ice_aktar:malzemeleri_oku": 4,                      # (T) 3 + (Y) 1
     "cekirdek.uygunluk:_korelasyon": 1,                           # (T)
     "cekirdek.uygunluk:_kutle": 1,                                # (T)
     "cekirdek.uygunluk:_ortalama_kutle": 1,                       # (T)

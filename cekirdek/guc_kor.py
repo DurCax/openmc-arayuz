@@ -29,6 +29,7 @@
 """
 
 import math
+import re
 from dataclasses import dataclass
 
 from cekirdek.ceviri import _
@@ -217,3 +218,99 @@ def _eslestir(otelemeler, konumlar):
         demet_merkezi[anahtarlar[sira]] = (tx, ty)
     return hucre_demet, OtelemeDuzeyi(merkezler=demet_merkezi, pitch=(adim,),
                                       orientation=yonelim, num_rings=n)
+
+
+# ============================================================================
+# Cok ornekli yerlesim duzeyi (Dalga G-2, §7 guc satiri)
+# ============================================================================
+#
+#  Agac modunda ayni kafes (ayni evren) bir kap bolgesine birden cok yerlesim
+#  ornegiyle konabilir (liste / halka / kafes_konumu). Distribcell yolunda
+#  ornek hucresi ('level N', 'cell', 'id') olarak gorunur ve adi
+#  "g:<yerlesim>#<i>"dir (R10). Kafes kimligi anahtara girmedigi icin iki
+#  ornegin cubuklari ayni anahtara duser ve TOPLANIRDI (olculdu: iki 3x3
+#  kor, 4752 cubuk yerine 2376 anahtar). Duzey anahtari (yerlesim adi, i);
+#  merkez = hucre otelemesi. Tek ornekli yerlesim anahtara girmez (eski
+#  anahtarlar degismez).
+
+_YERLESIM_ADI = re.compile(r"^g:(.+)#(\d+)$")
+
+
+@dataclass(frozen=True)
+class YerlesimDuzeyi:
+    """Yerlesim ornekleri duzeyi: {(ad, i): (x, y)} merkezler (hucre otelemesi)."""
+    merkezler: dict
+    id: object = None
+
+
+@dataclass(frozen=True)
+class KarisikDuzey:
+    """
+    Ayni kafes duzeyinde birden cok FARKLI kafes (karisik kafes: kare cekirdek
+    altigen blok halkasinin deliginde). Konum indeksleri kafesler arasinda
+    cakisir ((1, 0) hem kare hem altigen konum olabilir); anahtar parcasi
+    (kafes adi, i, j)'dir. kafesler: {ad: openmc.Lattice}.
+    """
+    kafesler: dict
+    id: object = None
+
+
+def kafes_adi(kafes):
+    """Duzey anahtarinda kullanilan kafes adi (R10 'g:<id>'; yoksa kimlik)."""
+    return getattr(kafes, "name", None) or "kafes %s" % getattr(kafes, "id", "?")
+
+
+def karisik_duzeyler(parcalar, kafesler):
+    """
+    {duzey sirasi: {kafes adi: kafes}} -- konum anahtari CAKISAN duzeyler:
+    ayni anahtar farkli adli kafes dizilerinden geliyor (olculdu: kare
+    cekirdek ve altigen blok halkasi ayni duzeyde, (1, 0) ikisinde de var).
+    Isaretlenen duzey, cakisan satirlarin ad dizilerinin ilk ayristigi
+    duzeydir; butun tur tally'leri (parcalar) birlikte degerlendirilir.
+    Cakisma yoksa bos: anahtarlar eskisiyle ayni kalir.
+    """
+    gorulen, duzeyler = {}, set()
+    for p in parcalar:
+        for anahtar, adlar in zip(p["anahtarlar"], p.get("isimler") or ()):
+            onceki = gorulen.setdefault(anahtar, adlar)
+            if onceki != adlar:
+                duzeyler.add(next(j for j, (a, b) in enumerate(zip(onceki, adlar)) if a != b))
+    if not duzeyler:
+        return {}
+    adli = {}
+    for kafes in kafesler.values():
+        adli.setdefault(kafes_adi(kafes), kafes)
+    cikti = {}
+    for j in duzeyler:
+        adlar = {a[j] for p in parcalar for a in p.get("isimler") or () if len(a) > j}
+        cikti[j] = {a: adli[a] for a in sorted(adlar) if a in adli}
+    return cikti
+
+
+def _hucre_sutunlari(df):
+    return sorted({s for s in df.columns if isinstance(s, tuple) and len(s) == 3
+                   and s[1] == "cell" and s[2] == "id"}, key=lambda s: int(s[0].split()[-1]))
+
+
+def yerlesim_duzeni(df, geometri):
+    """
+    ((sutun, {hucre kimligi: (ad, i)}), YerlesimDuzeyi) -- yolun en distaki cok
+    ornekli yerlesim duzeyi; yoksa None.
+    """
+    tum = getattr(geometri, "get_all_cells", None)
+    if tum is None:            # hucresiz geometri (test sahtesi): yerlesim duzeyi yok
+        return None
+    hucreler = tum()
+    for sutun in _hucre_sutunlari(df):
+        adlar = {}
+        for k in sorted({int(i) for i in df[sutun].tolist()}):
+            e = _YERLESIM_ADI.match(getattr(hucreler.get(k), "name", "") or "")
+            if e is None:
+                adlar = None
+                break
+            adlar[k] = (e.group(1), int(e.group(2)))
+        if not adlar or len(set(adlar.values())) < 2:
+            continue
+        merkezler = {a: (_oteleme(hucreler[k]) or (0.0, 0.0)) for k, a in adlar.items()}
+        return (sutun, adlar), YerlesimDuzeyi(merkezler=merkezler)
+    return None

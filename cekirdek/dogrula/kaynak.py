@@ -8,7 +8,6 @@
 
 import os
 
-from cekirdek.sema import kor_yuksekligi as sema_kor_yuksekligi
 from cekirdek import kurucu, veri_bilgi, sema
 from cekirdek import kaynak as _kaynak
 from cekirdek import uygunluk
@@ -110,7 +109,7 @@ def kaynak_kontrol(spec, veri_kontrolu=True):
     # --- nokta kaynak geometrinin icinde mi ---
     if k.get("tur", "nokta") == "nokta":
         konum = list(k.get("konum") or (0.0, 0.0, 0.0))
-        h = sema_kor_yuksekligi(spec["kor"])
+        h = sema.model_yuksekligi(spec)
         if h and abs(float(konum[2])) >= float(h) / 2.0:
             bulgular.append(Bulgu(
                 "hata", "kaynak",

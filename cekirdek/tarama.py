@@ -90,6 +90,14 @@ TURLER = {
     "yansitici_kalinlik": (
         "Yansıtıcı kuşak kalınlığı",
         "kor", "cm", "pcm/cm"),
+    # Dalga G (§3.10): hedef bir GRUPTUR; tambur_donme / cubuk_daldirma bunun
+    # ozel halidir (tarama_agac.py)
+    "grup_donme": (
+        "Dönme grubu (tamburlar; 0° = emici kora bakıyor, 180° = dışa)",
+        "grup", "derece", "pcm/derece"),
+    "grup_daldirma": (
+        "Daldırma grubu (kontrol çubuğu bankası; %0 çekilmiş, %100 tam dalmış)",
+        "grup", "%", "pcm/%"),
 }
 
 
@@ -133,6 +141,10 @@ def parametre_uygula(spec, tur, hedef, deger, taban=None):
             okunur; verilmezse spec'in kendisi kullanilir)
     DONER (yeni_spec, not_metni|None)
     """
+    from cekirdek import tarama_agac
+    if tur in tarama_agac.GRUP_TURLERI or (
+            sema.agac_modu(spec) and tur in tarama_agac.AGAC_TURLERI):
+        return tarama_agac.uygula(spec, tur, hedef, deger), None
     yeni = copy.deepcopy(spec)
     taban = taban or spec
     not_metni = None
@@ -335,6 +347,8 @@ def yorumla(tur, kats):
             "süperkritik kalır; bu yüzden değer geç toplanır ve diferansiyel "
             "değerin tepesi merkezde değil tam daldırmaya yakın çıkar."),
     }
+    notlar["grup_donme"] = notlar["tambur_donme"]
+    notlar["grup_daldirma"] = notlar["cubuk_daldirma"]
     taban = notlar.get(tur, "")
     return "Eğim %s. %s" % (isaret, taban) if taban else "Eğim %s." % isaret
 
