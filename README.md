@@ -550,8 +550,11 @@ Hesap ayarları sekmesinden açılır (yalnız fisil çubuğu tekrarlanan modell
 | **F_ΔH** | maks çubuk gücü / ortalama | Sıcak kanalda soğutucu sıcaklık artışı (DNB marjı) |
 | **F_q** | maks yerel güç yoğunluğu / ortalama | Yakıt merkez sıcaklığı, lineer güç (~400–500 W/cm) |
 
-Ölçülen (`pwr_3b`, 20k parçacık, 20 eksenel dilim):
-**F_ΔH = 1.071**, **F_q = 1.885**, ortalama lineer güç **182 W/cm** (17.6 MW/demet).
+Ölçülen (`pwr_3b`, örneğin kendi ayarı 20 000 × 150 / 40 pasif, 20 eksenel dilim, 6 iş
+parçacığı, tohum 1–5, 01.10.2026): tek koşuda **F_ΔH 1.064–1.083**, **F_q 1.626–1.753**
+(tohum saçılması 1σ: 0.0071 ve 0.051); harita ortalamasının tepesi **F_ΔH = 1.0620 ± 0.0055**,
+**F_q = 1.600 ± 0.032** (`guc.coklu_tohum`; önce harita ortalaması, sonra maksimum). Ortalama
+lineer güç **182 W/cm** (17.6 MW/demet).
 
 > 🔴 **Belirsizlikler iyimserdir.** Özdeğer hesabında ardışık çevrimlerin fisyon
 > kaynakları korelasyonludur; OpenMC'nin raporladığı tally belirsizliği bu

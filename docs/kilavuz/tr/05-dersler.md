@@ -473,14 +473,20 @@ yorum: [6.3 Güç dağılımını yorumlamak](06-sonuclar.md#guc-dagilimi-yorum)
 6. Aynı modeli **Hızlı deneme** ile koşup F_ΔH'yi karşılaştırın: az istatistikle F_ΔH **yukarı**
    çıkar.
 
-**Beklenen sonuç** ([README.md](../../../README.md) "Güç dağılımı ve tepe faktörleri"; 20 000
-parçacık, 20 eksenel dilim): **F_ΔH = 1.071**, **F_q = 1.885**, ortalama lineer güç **182 W/cm**.
+**Beklenen sonuç** ([README.md](../../../README.md) "Güç dağılımı ve tepe faktörleri"; örneğin
+kendi ayarı 20 000 × 150 / 40 pasif, 20 eksenel dilim, 6 iş parçacığı, 01.10.2026; tohum 1–5):
+tek koşuda **F_ΔH ≈ 1.06–1.08**, **F_q ≈ 1.63–1.75** (tohum 1: 1.0732 ve 1.6264); 5 tohumun
+saçılması (1σ) F_ΔH için 0.0071, F_q için 0.051. Haritaların ortalaması alınıp sonra en büyüğü
+bulunursa **F_ΔH = 1.0620 ± 0.0055**, **F_q = 1.600 ± 0.032** (σ: tohumlar arası saçılma / √5).
+Ortalama lineer güç **182 W/cm**.
 
 - **Belirsizlikler iyimserdir.** Raporlanan bin başına σ 0.003–0.008 iken üç bağımsız tohum arasındaki
   gerçek saçılma 0.07–0.17 ölçüldü (~20 kat): özdeğer hesabında çevrimler arası ilinti tally
   σ'sını küçümser. Gerçek belirsizlik için birkaç tohumla koşun.
-- **F_ΔH bir maksimumdur ve az istatistikte yukarı yanlıdır:** aynı modelde 3 000 parçacıkla 1.1455,
-  20 000 parçacıkla 1.0708 ölçüldü.
+- **F_ΔH bir maksimumdur ve yukarı yanlıdır:** tohum maksimumlarının ortalaması (1.0718) harita
+  ortalamasının tepesinden (1.0620) büyüktür; bu modelde 31 çubuk tepeden istatistik olarak ayırt
+  edilemez (yorum satırı bunu ve beklenen yanlılığı yazar). Az istatistikte fark büyür: 3 000
+  parçacıkla 1.1455 ölçülmüştü (eski ölçüm, He 0.0001785).
 - **F_q eksenel çözünürlüğe bağlıdır:** kaba dilimler tepeyi ortalar; en az 10–20 dilim kullanın
   (saf kosinüs limiti π/2 = 1.571).
 

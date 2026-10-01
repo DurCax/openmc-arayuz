@@ -491,14 +491,21 @@ interpretation: [6.3 Interpreting the power distribution](06-sonuclar.md#guc-dag
 6. Run the same model with **Quick test** and compare F_ΔH: with little statistics F_ΔH goes **up**.
 
 **Expected result** ([README.md](../../../README.md), power distribution and peaking factors section;
-20 000 particles, 20 axial bins): **F_ΔH = 1.071**, **F_q = 1.885**, mean linear power **182 W/cm**.
+the example's own settings 20 000 × 150 / 40 inactive, 20 axial bins, 6 threads, 01.10.2026; seeds
+1-5): a single run gives **F_ΔH ≈ 1.06-1.08**, **F_q ≈ 1.63-1.75** (seed 1: 1.0732 and 1.6264); the
+scatter (1σ) of the 5 seeds is 0.0071 for F_ΔH and 0.051 for F_q. If the maps are averaged first and
+the maximum is taken afterwards, **F_ΔH = 1.0620 ± 0.0055** and **F_q = 1.600 ± 0.032** (σ: seed
+scatter / √5). Mean linear power **182 W/cm**.
 
 - **The uncertainties are optimistic.** The reported σ per bin is 0.003–0.008, while the real spread
   between three independent seeds was measured as 0.07–0.17 (~20 times larger): in an eigenvalue
   calculation the correlation between batches makes the tally σ too small. Run with several seeds
   for the real uncertainty.
-- **F_ΔH is a maximum and is biased upwards with little statistics:** in the same model 1.1455 was
-  measured with 3 000 particles and 1.0708 with 20 000 particles.
+- **F_ΔH is a maximum and is biased upwards:** the mean of the seed maxima (1.0718) is larger than
+  the peak of the averaged map (1.0620); in this model 31 pins are statistically indistinguishable
+  from the peak (the interpretation line states this and the expected bias). With little statistics
+  the difference grows: 1.1455 had been measured with 3 000 particles (old measurement, He
+  0.0001785).
 - **F_q depends on the axial resolution:** coarse bins average the peak away; use at least 10–20 bins
   (the pure cosine limit is π/2 = 1.571).
 
