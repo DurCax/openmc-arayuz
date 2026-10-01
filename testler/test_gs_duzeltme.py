@@ -123,5 +123,35 @@ def test_k2_brown_atiflari():
             "2–5 kat" not in kaynak and "Tablo 2" in kaynak)
 
 
-HIZLI = [test_periyodik_es_etkin_bc, test_betik_kesik_yakit_hacmi, test_k2_brown_atiflari]
+def _db(kural, durum, seviye="bilgi"):
+    from cekirdek.uygunluk_denetimi.kurallar import DenetimBulgusu
+    return DenetimBulgusu(seviye, kural, "m", durum=durum, profil="A")
+
+
+def test_panel_rozeti_degerlendirilemedi():
+    print("\n[GS4] panel rozeti: hic kural degerlendirilmediyse 'Sorun yok' DEGIL")
+    from PySide6 import QtWidgets
+    QtWidgets.QApplication.instance() or QtWidgets.QApplication([])
+    from arayuz.uygunluk_paneli import UygunlukPaneli
+    p = UygunlukPaneli()
+    try:
+        p.goster([_db("K1", "uygulanamadi"), _db("K2", "uygulanamadi"),
+                  _db("K2", "uygulanamadi")], ("A",))
+        kontrol("hicbiri degerlendirilmedi -> notr 'Değerlendirilemedi: 2 kural'",
+                p.rozet.tur() == "notr" and p.rozet.text() == "Değerlendirilemedi: 2 kural",
+                "-> %s %r" % (p.rozet.tur(), p.rozet.text()))
+        p.goster([_db("K1", "karsilandi"), _db("K3", "uygulanamadi")], ("A",))
+        kontrol("bir kismi -> notr, '1 kural değerlendirilemedi' notu",
+                p.rozet.tur() == "notr" and "1 kural değerlendirilemedi" in p.rozet.text(),
+                "-> %s %r" % (p.rozet.tur(), p.rozet.text()))
+        p.goster([_db("K1", "karsilandi")], ("A",))
+        kontrol("hepsi gecti -> basari", p.rozet.tur() == "basari", "-> %s" % p.rozet.tur())
+        p.goster([_db("K1", "karsilanmadi", "hata"), _db("K3", "uygulanamadi")], ("A",))
+        kontrol("hata onceliklidir", p.rozet.tur() == "hata")
+    finally:
+        p.deleteLater()
+
+
+HIZLI = [test_periyodik_es_etkin_bc, test_betik_kesik_yakit_hacmi, test_k2_brown_atiflari,
+         test_panel_rozeti_degerlendirilemedi]
 YAVAS = [test_yavas_betik_kesik_hacim_kosucuyla_ayni]
