@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-01 17:46+0300\n"
+"POT-Creation-Date: 2026-10-01 17:52+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -104,39 +104,9 @@ msgstr "Data library"
 msgid "Tally"
 msgstr "Tally"
 
-#: cekirdek/dogrula/_ortak.py:30 cekirdek/dogrula/_ortak.py:31 cekirdek/rapor.py:344
-#: cekirdek/rapor_sablon/__init__.py:147
-msgid "Güç dağılımı"
-msgstr "Power distribution"
-
-#: cekirdek/dogrula/_ortak.py:30 cekirdek/rapor.py:341
-#: cekirdek/rapor_sablon/uygunluk_eki.py:69
-msgid "Kaynak"
-msgstr "Source"
-
-#: cekirdek/dogrula/_ortak.py:31 cekirdek/dogrula/_ortak.py:32 cekirdek/rapor.py:347
-#: cekirdek/rapor_sablon/__init__.py:190
-msgid "Tükenme"
-msgstr "Depletion"
-
 #: cekirdek/dogrula/_ortak.py:32
 msgid "Doğrulama"
 msgstr "Model check"
-
-#: cekirdek/dogrula/_ortak.py:49 cekirdek/giris.py:165 cekirdek/rapor_sablon/__init__.py:26
-#: cekirdek/rapor_sablon/uygunluk_eki.py:26
-msgid "HATA"
-msgstr "ERROR"
-
-#: cekirdek/dogrula/_ortak.py:49 cekirdek/giris.py:165 cekirdek/rapor_sablon/__init__.py:26
-#: cekirdek/rapor_sablon/uygunluk_eki.py:26
-msgid "UYARI"
-msgstr "WARNING"
-
-#: cekirdek/dogrula/_ortak.py:49 cekirdek/giris.py:165 cekirdek/rapor_sablon/__init__.py:27
-#: cekirdek/rapor_sablon/uygunluk_eki.py:27
-msgid "BİLGİ"
-msgstr "INFO"
 
 #: cekirdek/dogrula/agac.py:49
 #, python-format
@@ -562,12 +532,6 @@ msgstr ""
 "Select a material; if the region is deliberately left empty, select 'Void (no "
 "material)'."
 
-#: cekirdek/dogrula/geometri.py:72 cekirdek/geometri/yapici.py:76 cekirdek/kurucu.py:86
-#: cekirdek/sema_basvuru.py:156 cekirdek/tarama.py:170 cekirdek/tarama.py:176
-#, python-format
-msgid "tanımsız malzeme: %s"
-msgstr "undefined material: %s"
-
 #: cekirdek/dogrula/geometri.py:87
 msgid "kontrol çubuğu 3B model gerektirir (kor yüksekliği tanımsız)"
 msgstr "the control rod requires a 3D model (core height undefined)"
@@ -579,11 +543,6 @@ msgid ""
 msgstr ""
 "Insertion cannot be defined without an axial tip position. Define an active height on"
 " the Geometry page."
-
-#: cekirdek/dogrula/geometri.py:93 cekirdek/tarama.py:236 cekirdek/tarama_agac.py:52
-#, python-format
-msgid "daldırma %%0–%%100 arasında olmalı: %s"
-msgstr "insertion must be between 0%% and 100%%: %s"
 
 #: cekirdek/dogrula/geometri.py:97
 #, python-format
@@ -964,12 +923,6 @@ msgstr "unknown core type: %s (valid: %s)"
 msgid "çubuk seçilmemiş"
 msgstr "no pin selected"
 
-#: cekirdek/dogrula/kor.py:66 cekirdek/geometri/sablon.py:105 cekirdek/tarama.py:231
-#: cekirdek/tarama.py:243 cekirdek/tarama_agac.py:95
-#, python-format
-msgid "tanımsız çubuk: %s"
-msgstr "undefined pin: %s"
-
 #: cekirdek/dogrula/kor.py:68
 msgid "hücre adımı sıfırdan büyük olmalı"
 msgstr "cell pitch must be greater than zero"
@@ -978,11 +931,6 @@ msgstr "cell pitch must be greater than zero"
 #, python-format
 msgid "çubuğun dış çapı (%.5f cm) hücre adımından (%.5f cm) büyük"
 msgstr "the outer diameter of the pin (%.5f cm) is larger than the cell pitch (%.5f cm)"
-
-#: cekirdek/dogrula/kor.py:83 cekirdek/geometri/sablon.py:141 cekirdek/tarama.py:222
-#, python-format
-msgid "tanımsız demet: %s"
-msgstr "undefined assembly: %s"
 
 #: cekirdek/dogrula/kor.py:84
 msgid "demet seçilmemiş"
@@ -1807,16 +1755,6 @@ msgstr "material used but undefined: %s"
 msgid "tanımlı ama modelde kullanılmayan malzeme: %s"
 msgstr "material defined but not used in the model: %s"
 
-#: cekirdek/dogrula/tukenme.py:23 cekirdek/tukenme.py:623
-msgctxt "spektrum"
-msgid "termal"
-msgstr "thermal"
-
-#: cekirdek/dogrula/tukenme.py:24 cekirdek/tukenme.py:624
-msgctxt "spektrum"
-msgid "hızlı"
-msgstr "fast"
-
 #: cekirdek/dogrula/tukenme.py:38
 #, python-format
 msgid "Zincirde en yakın ad: %s"
@@ -1913,10 +1851,6 @@ msgstr ""
 #, python-format
 msgid "hacimler hesaplanamadı: %s"
 msgstr "volumes could not be computed: %s"
-
-#: cekirdek/dogrula/tukenme.py:135 cekirdek/tukenme.py:332
-msgid "modelde yanabilir (fisil) malzeme yok"
-msgstr "the model contains no depletable (fissile) material"
 
 #: cekirdek/dogrula/tukenme.py:143
 #, python-format
@@ -2212,7 +2146,7 @@ msgstr "Rename one of them."
 #: cekirdek/geometri/denetim.py:144
 #, python-format
 msgid "Döngü: '%s' parçası kendini içeriyor (%s)."
-msgstr "Cycle: component '%s' contains itself (%s)."
+msgstr "Circular reference: component '%s' contains itself (%s)."
 
 #: cekirdek/geometri/denetim.py:155
 msgid "Eksenel yığında varsayılan 'icerik' yok."
@@ -2577,18 +2511,6 @@ msgstr "irregular region outside a lattice"
 msgid "alanı analitik hesaplanamayan bölge"
 msgstr "region whose area cannot be computed analytically"
 
-#: cekirdek/geometri/hacim.py:113 cekirdek/tukenme_hacim.py:360
-msgid "hacmi kesin değil: "
-msgstr "volume not exact: "
-
-#: cekirdek/geometri/hacim.py:118 cekirdek/tukenme_hacim.py:367
-msgid "hacmi sıfır: "
-msgstr "volume is zero: "
-
-#: cekirdek/geometri/hacim.py:119 cekirdek/tukenme_hacim.py:373
-msgid "malzeme geometride bulunamadı"
-msgstr "material not found in the geometry"
-
 #: cekirdek/geometri/hacim.py:207
 #, python-format
 msgid "stokastik hacmin bağıl σ'sı %%%.2f sınırını aşıyor (örneklem %d): %s"
@@ -2601,11 +2523,6 @@ msgstr "stochastic volume is zero (material not found in the sampling box)"
 #: cekirdek/geometri/hacim.py:218
 msgid "stokastik hacim ölçülemedi (malzeme kurulan modelde yok)"
 msgstr "stochastic volume could not be measured (material not in the built model)"
-
-#: cekirdek/geometri/hacim.py:234 cekirdek/tukenme_hacim.py:396
-#, python-format
-msgid "stokastik hacim %.6g ± %.2g cm³ (%s)"
-msgstr "stochastic volume %.6g ± %.2g cm³ (%s)"
 
 #: cekirdek/geometri/ice_aktar.py:70
 #, python-format
@@ -2927,11 +2844,6 @@ msgstr "in a core with control drums a core fill must be selected (assembly, pin
 msgid "bilinmeyen kor türü: %s"
 msgstr "unknown core type: %s"
 
-#: cekirdek/geometri/sinir.py:110 cekirdek/geometri/sinir.py:116 cekirdek/tarama_agac.py:47
-#, python-format
-msgid "tanımsız grup: %s"
-msgstr "undefined group: %s"
-
 #: cekirdek/geometri/yerlesim.py:84
 #, python-format
 msgid "'kafes_konumu' yerleşimi: '%s' kimlikli kafes kabın içinde değil"
@@ -3075,6 +2987,21 @@ msgstr "not applicable"
 #: cekirdek/giris.py:164 cekirdek/rapor_sablon/uygunluk_eki.py:25
 msgid "not"
 msgstr "note"
+
+#: cekirdek/dogrula/_ortak.py:49 cekirdek/giris.py:165 cekirdek/rapor_sablon/__init__.py:26
+#: cekirdek/rapor_sablon/uygunluk_eki.py:26
+msgid "HATA"
+msgstr "ERROR"
+
+#: cekirdek/dogrula/_ortak.py:49 cekirdek/giris.py:165 cekirdek/rapor_sablon/__init__.py:26
+#: cekirdek/rapor_sablon/uygunluk_eki.py:26
+msgid "UYARI"
+msgstr "WARNING"
+
+#: cekirdek/dogrula/_ortak.py:49 cekirdek/giris.py:165 cekirdek/rapor_sablon/__init__.py:27
+#: cekirdek/rapor_sablon/uygunluk_eki.py:27
+msgid "BİLGİ"
+msgstr "INFO"
 
 #: cekirdek/giris.py:172
 #, python-format
@@ -4318,6 +4245,12 @@ msgstr "         local slope dk/dx = %.4g / %s"
 msgid "  Çözüm bulunamadı."
 msgstr "  No solution found."
 
+#: cekirdek/dogrula/geometri.py:72 cekirdek/geometri/yapici.py:76 cekirdek/kurucu.py:86
+#: cekirdek/sema_basvuru.py:156 cekirdek/tarama.py:170 cekirdek/tarama.py:176
+#, python-format
+msgid "tanımsız malzeme: %s"
+msgstr "undefined material: %s"
+
 #: cekirdek/kurucu.py:197
 msgid "otomatik ağ sınırları için modelin sınır kutusu gerekli"
 msgstr "automatic mesh boundaries require the bounding box of the model"
@@ -5054,6 +4987,11 @@ msgstr "Calculation mode"
 msgid "Sıcaklık yöntemi"
 msgstr "Temperature method"
 
+#: cekirdek/dogrula/_ortak.py:30 cekirdek/rapor.py:341
+#: cekirdek/rapor_sablon/uygunluk_eki.py:69
+msgid "Kaynak"
+msgstr "Source"
+
 #: cekirdek/rapor.py:342 cekirdek/rapor_sablon/grafik.py:97
 msgid "Shannon entropisi"
 msgstr "Shannon entropy"
@@ -5067,10 +5005,20 @@ msgstr "off"
 msgid "açık: %s, %s dilim, %s"
 msgstr "on: %s, %s bins, %s"
 
+#: cekirdek/dogrula/_ortak.py:30 cekirdek/dogrula/_ortak.py:31 cekirdek/rapor.py:344
+#: cekirdek/rapor_sablon/__init__.py:147
+msgid "Güç dağılımı"
+msgstr "Power distribution"
+
 #: cekirdek/rapor.py:347
 #, python-format
 msgid "açık: %s W/gHM, %d adım"
 msgstr "on: %s W/gHM, %d steps"
+
+#: cekirdek/dogrula/_ortak.py:31 cekirdek/dogrula/_ortak.py:32 cekirdek/rapor.py:347
+#: cekirdek/rapor_sablon/__init__.py:190
+msgid "Tükenme"
+msgstr "Depletion"
 
 #: cekirdek/rapor.py:367
 #, python-format
@@ -5436,10 +5384,6 @@ msgstr "U"
 msgid "Öneri:"
 msgstr "Suggestion:"
 
-#: cekirdek/rapor_sablon/uygunluk_eki.py:67 cekirdek/tukenme_hacim.py:61
-msgid "yok"
-msgstr "none"
-
 #: cekirdek/rapor_sablon/uygunluk_eki.py:69
 msgid "Kural (profil)"
 msgstr "Rule (profile)"
@@ -5689,12 +5633,28 @@ msgstr "void fraction must be between 0% and 100%"
 msgid "'%s' malzemesinde zenginlik tanımlı bir bileşen yok"
 msgstr "material '%s' has no component with an enrichment"
 
+#: cekirdek/dogrula/kor.py:83 cekirdek/geometri/sablon.py:141 cekirdek/tarama.py:222
+#, python-format
+msgid "tanımsız demet: %s"
+msgstr "undefined assembly: %s"
+
+#: cekirdek/dogrula/kor.py:66 cekirdek/geometri/sablon.py:105 cekirdek/tarama.py:231
+#: cekirdek/tarama.py:243 cekirdek/tarama_agac.py:95
+#, python-format
+msgid "tanımsız çubuk: %s"
+msgstr "undefined pin: %s"
+
 #: cekirdek/tarama.py:233 cekirdek/tarama_agac.py:97
 #, python-format
 msgid ""
 "'%s' bir kontrol çubuğu değil; daldırma taraması yalnızca kontrol çubuklarına "
 "uygulanır"
 msgstr "'%s' is not a control rod; an insertion sweep applies only to control rods"
+
+#: cekirdek/dogrula/geometri.py:93 cekirdek/tarama.py:236 cekirdek/tarama_agac.py:52
+#, python-format
+msgid "daldırma %%0–%%100 arasında olmalı: %s"
+msgstr "insertion must be between 0%% and 100%%: %s"
 
 #: cekirdek/tarama.py:249
 msgid "modelde kontrol tamburu yok"
@@ -5871,6 +5831,11 @@ msgstr "  The coefficient could not be computed."
 msgid "'%s' grubu bir %s grubu değil"
 msgstr "group '%s' is not a %s group"
 
+#: cekirdek/geometri/sinir.py:110 cekirdek/geometri/sinir.py:116 cekirdek/tarama_agac.py:47
+#, python-format
+msgid "tanımsız grup: %s"
+msgstr "undefined group: %s"
+
 #: cekirdek/tarama_agac.py:78
 msgid "modelde kontrol tamburu (dönme grubu) yok"
 msgstr "the model has no control drum (rotation group)"
@@ -5955,6 +5920,10 @@ msgstr ""
 "depletable material whose volume cannot be computed analytically: %s (%s). Depletion "
 "requires exact volumes."
 
+#: cekirdek/dogrula/tukenme.py:135 cekirdek/tukenme.py:332
+msgid "modelde yanabilir (fisil) malzeme yok"
+msgstr "the model contains no depletable (fissile) material"
+
 #: cekirdek/tukenme.py:612
 msgid "malzemeler"
 msgstr "materials"
@@ -5990,6 +5959,16 @@ msgstr "power distribution"
 #: cekirdek/tukenme.py:615
 msgid "tükenme ayarları"
 msgstr "depletion settings"
+
+#: cekirdek/dogrula/tukenme.py:23 cekirdek/tukenme.py:623
+msgctxt "spektrum"
+msgid "termal"
+msgstr "thermal"
+
+#: cekirdek/dogrula/tukenme.py:24 cekirdek/tukenme.py:624
+msgctxt "spektrum"
+msgid "hızlı"
+msgstr "fast"
 
 #: cekirdek/tukenme.py:678
 msgid "koşmadan hacim, zincir ve ağır metal bilgisini yazdır"
@@ -6072,6 +6051,10 @@ msgstr "analytical"
 msgid "stokastik"
 msgstr "stochastic"
 
+#: cekirdek/rapor_sablon/uygunluk_eki.py:67 cekirdek/tukenme_hacim.py:61
+msgid "yok"
+msgstr "none"
+
 #: cekirdek/tukenme_hacim.py:135
 #, python-format
 msgid "kor haritası: %d konum × %g cm"
@@ -6145,9 +6128,26 @@ msgstr "core cylinder R = %g cm × %g cm"
 msgid "katmanı/koru doğrudan dolduruyor"
 msgstr "fills the layer/core directly"
 
+#: cekirdek/geometri/hacim.py:113 cekirdek/tukenme_hacim.py:360
+msgid "hacmi kesin değil: "
+msgstr "volume not exact: "
+
+#: cekirdek/geometri/hacim.py:118 cekirdek/tukenme_hacim.py:367
+msgid "hacmi sıfır: "
+msgstr "volume is zero: "
+
 #: cekirdek/tukenme_hacim.py:372
 msgid "bu yerleşim için analitik hacim yok"
 msgstr "no analytical volume for this placement"
+
+#: cekirdek/geometri/hacim.py:119 cekirdek/tukenme_hacim.py:373
+msgid "malzeme geometride bulunamadı"
+msgstr "material not found in the geometry"
+
+#: cekirdek/geometri/hacim.py:234 cekirdek/tukenme_hacim.py:396
+#, python-format
+msgid "stokastik hacim %.6g ± %.2g cm³ (%s)"
+msgstr "stochastic volume %.6g ± %.2g cm³ (%s)"
 
 #: cekirdek/tukenme_hacim.py:592
 #, python-format
