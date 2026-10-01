@@ -1,11 +1,30 @@
 # OpenMC Reaktör Kuru Arayüzü
 
+English: [README.en.md](README.en.md)
+
 Malzemeden kora kadar tüm model parametrelerinin tek bir arayüzden kurulduğu,
 geometrinin çalıştırmadan önce görüldüğü ve hesabın aynı arayüzden başlatılıp
 sonuçlarının okunduğu bir PySide6 masaüstü uygulaması.
 
 > **İlk kez mi kuruyorsunuz?** Adım adım kurulum (conda ortamı, nükleer veri
 > indirme, doğrulama) için **[KURULUM.md](KURULUM.md)**.
+
+## Belge haritası
+
+| Belge | Dil | İçerik |
+|---|---|---|
+| [README.md](README.md) · [README.en.md](README.en.md) | TR · EN | Genel bakış (bu dosya ayrıntılı ölçümleri ve tuzakları da içerir; İngilizcesi özettir) |
+| [KURULUM.md](KURULUM.md) · [INSTALL.md](INSTALL.md) | TR · EN | Kurulum, nükleer veri, testler, sorun giderme |
+| [docs/VV.md](docs/VV.md) · [docs/VV.en.md](docs/VV.en.md) | TR · EN | Doğrulama ve geçerleme: C/E tabloları, AOA, yanlılık ve USL, sınırlamalar |
+| [docs/ORNEKLER.md](docs/ORNEKLER.md) · [docs/ORNEKLER.en.md](docs/ORNEKLER.en.md) | TR · EN | Örnek modeller, kaynakları ve ölçülen sonuçlar |
+| [docs/GEOMETRI_MODELI.md](docs/GEOMETRI_MODELI.md) · [docs/GEOMETRI_MODELI.en.md](docs/GEOMETRI_MODELI.en.md) | TR · EN | Geometri ağacı: tam tasarım belgesi · kullanıcıya dönük İngilizce özet |
+| [docs/STANDARTLAR.md](docs/STANDARTLAR.md) · [docs/STANDARTLAR.en.md](docs/STANDARTLAR.en.md) | TR · EN | Standartlar, uygunluk matrisi, NUREG/CR-6698 yöntem özeti |
+| [docs/SOZLUK.md](docs/SOZLUK.md) | TR → EN | Bağlayıcı terim sözlüğü |
+| [docs/GEREKSINIMLER.md](docs/GEREKSINIMLER.md) | TR | Gereksinimler (R-… kimlikleri) |
+| [docs/IZLENEBILIRLIK.md](docs/IZLENEBILIRLIK.md) | TR | Gereksinim → test → sonuç matrisi (üretilir) |
+| [docs/YAZILIM_KALITE.md](docs/YAZILIM_KALITE.md) | TR | Yazılım kalite kanıtı ve eksiklik listesi |
+
+Kullanım kılavuzu (`docs/kilavuz/`, TR ve EN) hazırlanıyor.
 
 ## Hızlı başlangıç
 
