@@ -17,6 +17,7 @@ from cekirdek import altigen_kor as _akor
 from cekirdek.geometri import kesit as _k
 from cekirdek.geometri import yerlesim as _yer
 from cekirdek.geometri.eksenel import dilimler, kok_yigini
+from cekirdek.ceviri import _
 
 SQ3 = math.sqrt(3.0)
 
@@ -45,7 +46,7 @@ class KapKurucu(object):
     def kap_hucreleri(self, kap, kok):
         if kap["kesit"].get("sekil") == "kafes_zarfi":
             if not kok:
-                raise ValueError("'kafes_zarfi' kesiti yalnız kök kapta kullanılır")
+                raise ValueError(_("'kafes_zarfi' kesiti yalnız kök kapta kullanılır"))
             return self.zarf_hucreleri(kap)
         kesitler = self.sinir_kesitleri(kap)
         son = len(kesitler) - 1
@@ -100,8 +101,8 @@ class KapKurucu(object):
         for i, (x, yy, psi) in enumerate(_yer.ornekler(y, kap, self.tanim, self.gruplar)):
             if psi is not None and not daire and (y.get("bakis") is not None or
                                                   _yer.grup_degeri(self.gruplar, y.get("ad"))):
-                raise ValueError("'%s' yerleşimi: daire dışı delik bakış ya da dönme ile "
-                                 "döndürülemez" % y.get("ad"))
+                raise ValueError(_("'%s' yerleşimi: daire dışı delik bakış ya da dönme ile "
+                                 "döndürülemez") % y.get("ad"))
             delik = self.kesit_siniri(kes, merkez=(x, yy))
             tur, h = self.dolgu(icerik)
             don = icerik.get("donusum") or {}
@@ -122,8 +123,8 @@ class KapKurucu(object):
             tur, t = bilesen_tanimi(self.tanim, icerik.get("ad"))
             if tur == "tambur":
                 return {"sekil": "silindir", "yaricap": float(t["yaricap"])}
-        raise ValueError("yerleşim deliğinin kesiti verilmeli (yalnız tamburun doğal "
-                         "kesiti vardır)")
+        raise ValueError(_("yerleşim deliğinin kesiti verilmeli (yalnız tamburun doğal "
+                         "kesiti vardır)"))
 
     # ------------------------------------------------------------------
     # eksenel
@@ -146,8 +147,8 @@ class KapKurucu(object):
             ic = self._coz(eks.get("icerik"))
             if ic.get("tur") != "kafes":
                 raise ValueError(
-                    "'%s' eksenel katmanı: katmana özel harf eşlemesi yalnızca kare "
-                    "haritalı tam korda ya da altıgen haritalı tam korda kullanılabilir"
+                    _("'%s' eksenel katmanı: katmana özel harf eşlemesi yalnızca kare "
+                    "haritalı tam korda ya da altıgen haritalı tam korda kullanılabilir")
                     % k.get("ad"))
             return ("kafes", ic, k["anahtar"])
         return ("dugum", k.get("icerik") if k.get("icerik") is not None else eks.get("icerik"),
@@ -226,13 +227,13 @@ class KapKurucu(object):
                     satir.append(self._zarf_evreni(anahtar, harf))
             sonuc.append(satir)
         if len(sonuc) != n_konum:
-            raise ValueError("altıgen kor haritası konum sayısı tutmuyor")
+            raise ValueError(_("altıgen kor haritası konum sayısı tutmuyor"))
         return sonuc
 
     def _zarf_evreni(self, esleme, harf):
         if harf not in esleme:
-            raise KeyError("kor haritasında tanımsız harf: '%s' (kafes zarflı kökte '.' "
-                           "konumu için anahtarda harf tanımlayın)" % harf)
+            raise KeyError(_("kor haritasında tanımsız harf: '%s' (kafes zarflı kökte '.' "
+                           "konumu için anahtarda harf tanımlayın)") % harf)
         return self.evren(esleme[harf])
 
     def _zarf_prizmalari(self, merkezler, adim, yonelim, yansitici):
@@ -289,8 +290,8 @@ class KapKurucu(object):
             if h.get("dis") is not None:
                 kes = h["dis"]
             elif onceki_kesit is None:
-                raise ValueError("'kafes_zarfi' üzerinde 'kalinlik' kullanılamaz; 'dis' "
-                                 "kesiti verin")
+                raise ValueError(_("'kafes_zarfi' üzerinde 'kalinlik' kullanılamaz; 'dis' "
+                                 "kesiti verin"))
             else:
                 kes = _k.buyut(onceki_kesit, h["kalinlik"])
             sinir = self.kesit_siniri(kes, bc=self.yan if i == son else None,

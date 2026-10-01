@@ -43,6 +43,7 @@ from cekirdek.geometri import yerlesim as _yer
 from cekirdek.geometri.eksenel import model_yuksekligi
 from cekirdek.geometri.kap import KapKurucu
 from cekirdek.geometri.sema import bilesen_tanimi, kisaltma_coz
+from cekirdek.ceviri import _
 
 SQ3 = math.sqrt(3.0)
 DIKDORTGEN_YUZLERI = ("-x", "+x", "-y", "+y")
@@ -197,7 +198,7 @@ class Kurucu(KapKurucu):
         if tur == "eksenel":
             return ("evren", self._onbellek(("eks", id(d)), self.tekil(d),
                                             lambda: self.eksenel_evreni(d)))
-        raise ValueError("kurulamayan düğüm türü: %r" % (tur,))
+        raise ValueError(_("kurulamayan düğüm türü: %r") % (tur,))
 
     def evren(self, d):
         """Dugumu evren olarak (kafes elemani, dis dolgu, yerlesim icerigi)."""
@@ -221,7 +222,7 @@ class Kurucu(KapKurucu):
     def _donusumlu_evren(self, d):
         """Donusumlu dugum evren olarak: tek hucreli sarmalayici (R6)."""
         if d.get("tur") == "malzeme":
-            raise ValueError("malzeme düğümüne dönüşüm uygulanamaz")
+            raise ValueError(_("malzeme düğümüne dönüşüm uygulanamaz"))
         return self.y.evren([self.yuva_hucresi(d, None)])
 
     def katman_evreni(self, d):
@@ -265,7 +266,7 @@ class Kurucu(KapKurucu):
     def bilesen(self, ad):
         tur, t = bilesen_tanimi(self.tanim, ad)
         if tur is None:
-            raise KeyError("tanımsız ad: %s (çubuk, plaka elemanı, demet ya da malzeme değil)"
+            raise KeyError(_("tanımsız ad: %s (çubuk, plaka elemanı, demet ya da malzeme değil)")
                            % ad)
         if tur == "demet":
             return self._onbellek(("dd", ad), self.tekil_ad(ad),
@@ -278,7 +279,7 @@ class Kurucu(KapKurucu):
     def bilesen_evreni(self, ad):
         tur, t = bilesen_tanimi(self.tanim, ad)
         if tur is None:
-            raise KeyError("tanımsız ad: %s (çubuk, plaka elemanı, demet ya da malzeme değil)"
+            raise KeyError(_("tanımsız ad: %s (çubuk, plaka elemanı, demet ya da malzeme değil)")
                            % ad)
         tekil = self.tekil_ad(ad)
         if tur == "cubuk":
@@ -333,11 +334,11 @@ class Kurucu(KapKurucu):
         harita = d.get("harita") or []
         for h in {c for s in harita for c in s}:
             if h not in anahtar and h != ".":
-                raise KeyError("kor haritasında tanımsız harf: '%s'" % h
+                raise KeyError(_("kor haritasında tanımsız harf: '%s'") % h
                                if d.get("_sablon_harita") else
-                               "'%s' kafesi: haritada tanımsız harf '%s'" % (d.get("id"), h))
+                               _("'%s' kafesi: haritada tanımsız harf '%s'") % (d.get("id"), h))
         if d.get("dis") is None:
-            raise ValueError("'%s' kafesinin 'dis' yuvası boş" % d.get("id"))
+            raise ValueError(_("'%s' kafesinin 'dis' yuvası boş") % d.get("id"))
         esleme, ozel = self.harf_evrenleri(harita, anahtar, d.get("dis"))
         if "." in {c for s in harita for c in s} and "." not in esleme:
             esleme["."] = self.evren(d["dis"])
@@ -379,7 +380,7 @@ class Kurucu(KapKurucu):
             if yuzler:
                 return self._altigen_yuzleri(a, yon, bc, yuzler)
             return _Sinir(y.altigen_prizma(2.0 * a / math.sqrt(3.0), yon, origin=merkez, bc=bc))
-        raise ValueError("kurulamayan kesit: %s" % s)
+        raise ValueError(_("kurulamayan kesit: %s") % s)
 
     def _dikdortgen_yuzleri(self, gx, gy, bc, yuzler):
         y = self.y

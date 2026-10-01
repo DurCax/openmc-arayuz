@@ -28,6 +28,7 @@ from cekirdek.geometri import kesit as _k
 from cekirdek.geometri import yerlesim as _yer
 from cekirdek.geometri.eksenel import model_yuksekligi
 from cekirdek.geometri.kap import en_dis_kesit
+from cekirdek.ceviri import _
 
 SinirBilgisi = namedtuple("SinirBilgisi", "yuzey yan alt ust yuzler yuz_adlari "
                                           "periyodik_uygun dokunan_delikler")
@@ -106,10 +107,10 @@ def grup_degeri_yaz(spec, grup, deger):
             if g.get("ad") == grup:
                 g["deger"] = float(deger)
                 return yeni
-        raise KeyError("tanımsız grup: %s" % grup)
+        raise KeyError(_("tanımsız grup: %s") % grup)
     kor = yeni.get("kor") or {}
     t = kor.get("tambur") or {}
     if kor.get("tur") == "tamburlu" and int(t.get("sayi") or 0) > 0 and grup == "tamburlar":
         t["donme"] = float(deger)
         return yeni
-    raise KeyError("tanımsız grup: %s" % grup)
+    raise KeyError(_("tanımsız grup: %s") % grup)

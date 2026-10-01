@@ -33,6 +33,7 @@ import math
 import re
 
 from cekirdek.gunluk import kaydedici
+from cekirdek.ceviri import _
 
 SQ3 = math.sqrt(3.0)
 PAY = 1.0e-6
@@ -66,7 +67,7 @@ def _duzlem(yuzey, taraf):
         L = math.hypot(float(yuzey.a), float(yuzey.b))
         n, d = (float(yuzey.a) / L, float(yuzey.b) / L), float(yuzey.d) / L
     else:
-        raise Desteklenmez("desteklenmeyen yüzey türü: %s" % t)
+        raise Desteklenmez(_("desteklenmeyen yüzey türü: %s") % t)
     return (n[0], n[1], d) if taraf == "-" else (-n[0], -n[1], -d)
 
 
@@ -79,7 +80,7 @@ def _yari_uzaylar(bolge, tumleyen=False):
     grup = openmc.Union if tumleyen else openmc.Intersection
     if isinstance(bolge, grup):
         return [h for b in bolge for h in _yari_uzaylar(b, tumleyen)]
-    raise Desteklenmez("bölge yapısı çözülemedi (%s)" % type(bolge).__name__)
+    raise Desteklenmez(_("bölge yapısı çözülemedi (%s)") % type(bolge).__name__)
 
 
 def _cokgen(duzlemler):
@@ -99,7 +100,7 @@ def _cokgen(duzlemler):
         a = [d for _nx, _ny, d in duzlemler]
         if yon and max(a) - min(a) < PAY * max(1.0, abs(a[0])):
             return (0.0, 0.0), {"sekil": "altigen", "apotem": a[0], "yonelim": yon}
-    raise Desteklenmez("düzlemlerden tanınan bir kesit çıkmadı (%d düzlem)" % len(duzlemler))
+    raise Desteklenmez(_("düzlemlerden tanınan bir kesit çıkmadı (%d düzlem)") % len(duzlemler))
 
 
 def _atomlar(bolge):
@@ -114,7 +115,7 @@ def _atomlar(bolge):
         if isinstance(p, openmc.Halfspace) and p.surface.type in ("z-cylinder", "sphere"):
             s = p.surface
             if s.type == "sphere" and any(abs(float(v)) > PAY for v in (s.x0, s.y0, s.z0)):
-                raise Desteklenmez("merkezi (0, 0, 0) olmayan küre")
+                raise Desteklenmez(_("merkezi (0, 0, 0) olmayan küre"))
             sekil = "silindir" if s.type == "z-cylinder" else "kure"
             kes = ((float(s.x0), float(s.y0)), {"sekil": sekil, "yaricap": float(s.r)})
             if p.side == "-":
@@ -134,10 +135,10 @@ def _atomlar(bolge):
         elif isinstance(p, openmc.Intersection):
             ic_duzlem += [_duzlem(s, t) for s, t in _yari_uzaylar(p)]
         else:
-            raise Desteklenmez("bölge yapısı çözülemedi (%s)" % type(p).__name__)
+            raise Desteklenmez(_("bölge yapısı çözülemedi (%s)") % type(p).__name__)
     if ic_duzlem:
         if atom["ic"] is not None:
-            raise Desteklenmez("hücrede hem silindir hem prizma iç sınırı var")
+            raise Desteklenmez(_("hücrede hem silindir hem prizma iç sınırı var"))
         atom["ic"] = _cokgen(ic_duzlem)
     atom["z"] = tuple(atom["z"])
     return atom
@@ -171,8 +172,8 @@ def _emici_yayi_dogrula(hucre, r_ic, R, yari):
         t = math.radians(fi)
         icinde = (r * math.cos(t), r * math.sin(t), 0.0) in hucre.region
         if icinde != (abs(fi) < yari):
-            raise Desteklenmez("tambur emici yayı yerel +x yönünde ortalanmamış (hücre %d, "
-                               "%g° yoklaması)" % (hucre.id, fi))
+            raise Desteklenmez(_("tambur emici yayı yerel +x yönünde ortalanmamış (hücre %d, "
+                               "%g° yoklaması)") % (hucre.id, fi))
 
 
 def _merkezde(sekil):
@@ -227,7 +228,7 @@ class _Donusturucu(object):
             aday = "%s_%d" % (ad, i)
         self._adlar[aday] = anahtar
         if aday != ad:
-            self.notlar.append("aynı adlı farklı evren: '%s' -> '%s' olarak alındı" % (ad, aday))
+            self.notlar.append(_("aynı adlı farklı evren: '%s' -> '%s' olarak alındı") % (ad, aday))
         return aday, True
 
     def malzeme(self, m):
@@ -235,7 +236,7 @@ class _Donusturucu(object):
             return {"tur": "malzeme", "ad": "bosluk"}
         ad = self.adlar.get(m.id)
         if ad is None:
-            raise Desteklenmez("malzeme kimliği %d aktarılan malzemelerde yok" % m.id)
+            raise Desteklenmez(_("malzeme kimliği %d aktarılan malzemelerde yok") % m.id)
         return {"tur": "malzeme", "ad": ad}
 
     def dolgu(self, fill):
@@ -315,16 +316,16 @@ class _Donusturucu(object):
         don = {}
         if t is not None and any(abs(float(v)) > PAY for v in t):
             if abs(float(t[2])) > PAY:
-                raise Desteklenmez("z yönünde öteleme desteklenmiyor (hücre %d)" % hucre.id)
+                raise Desteklenmez(_("z yönünde öteleme desteklenmiyor (hücre %d)") % hucre.id)
             don["oteleme"] = [float(t[0]), float(t[1])]
         if r is not None and any(abs(float(v)) > PAY for v in r):
             if abs(float(r[0])) > PAY or abs(float(r[1])) > PAY:
-                raise Desteklenmez("yalnız z ekseni etrafında dönme desteklenir (hücre %d)"
+                raise Desteklenmez(_("yalnız z ekseni etrafında dönme desteklenir (hücre %d)")
                                    % hucre.id)
             don["donme"] = float(r[2])
         if don:
             if dugum.get("tur") == "malzeme":
-                raise Desteklenmez("malzeme dolgulu hücre döndürülemez/ötelenemez")
+                raise Desteklenmez(_("malzeme dolgulu hücre döndürülemez/ötelenemez"))
             dugum = dict(dugum, donusum=don)
         return dugum
 
@@ -374,8 +375,8 @@ class _Donusturucu(object):
             h = next((h for h in HARITA_HARFLERI if h not in kullanilan or
                       anahtar.get(h) == dugum), None)
             if h is None:
-                raise Desteklenmez("kafeste %d'den çok farklı evren var; harita harfleri "
-                                   "yetmiyor" % len(HARITA_HARFLERI))
+                raise Desteklenmez(_("kafeste %d'den çok farklı evren var; harita harfleri "
+                                   "yetmiyor") % len(HARITA_HARFLERI))
             self._harf[k] = h
         h = self._harf[k]
         anahtar[h] = dugum
@@ -384,11 +385,11 @@ class _Donusturucu(object):
     def kare_kafes(self, lat):
         P = [float(v) for v in lat.pitch][:2]
         if abs(P[0] - P[1]) > PAY:
-            raise Desteklenmez("kare olmayan kafes adımı (%g × %g)" % tuple(P))
+            raise Desteklenmez(_("kare olmayan kafes adımı (%g × %g)") % tuple(P))
         ny, nx = len(lat.universes), len(lat.universes[0])
         ll = [float(v) for v in lat.lower_left][:2]
         if abs(ll[0] + P[0] * nx / 2.0) > PAY or abs(ll[1] + P[0] * ny / 2.0) > PAY:
-            raise Desteklenmez("merkezlenmemiş kare kafes (lower_left %s)" % (ll,))
+            raise Desteklenmez(_("merkezlenmemiş kare kafes (lower_left %s)") % (ll,))
         self._harf = {}
         anahtar, harita = {}, []
         for satir in lat.universes:
@@ -400,9 +401,9 @@ class _Donusturucu(object):
 
     def altigen_kafes(self, lat):
         if any(abs(float(v)) > PAY for v in list(lat.center)[:2]):
-            raise Desteklenmez("merkezi (0, 0) olmayan altıgen kafes")
+            raise Desteklenmez(_("merkezi (0, 0) olmayan altıgen kafes"))
         if getattr(lat, "num_axial", None):
-            raise Desteklenmez("eksenel katmanlı altıgen kafes desteklenmiyor")
+            raise Desteklenmez(_("eksenel katmanlı altıgen kafes desteklenmiyor"))
         self._harf = {}
         anahtar = {}
         harita = ["".join(self._harita_harfi(self.dolgu(u), anahtar) for u in halka)
@@ -448,9 +449,9 @@ def xml_den(geo, malzeme_adlari):
     try:
         kok = d.kap(list(geo.root_universe.cells.values()), kok=True)
     except Desteklenmez as e:
-        return None, d.notlar + ["geometri içe aktarılamadı: %s" % e]
+        return None, d.notlar + [_("geometri içe aktarılamadı: %s") % e]
     agac = {"kok": kok, "parcalar": d.parcalar, "gruplar": [], "cubuklar": d.cubuklar,
             "tamburlar": d.tamburlar}
-    d.notlar.insert(0, "geometri ağaca dönüştürüldü: %d parça, %d çubuk tanımı"
+    d.notlar.insert(0, _("geometri ağaca dönüştürüldü: %d parça, %d çubuk tanımı")
                     % (len(d.parcalar), len(d.cubuklar)))
     return agac, d.notlar

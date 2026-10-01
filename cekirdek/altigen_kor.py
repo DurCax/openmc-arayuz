@@ -45,6 +45,7 @@ import inspect
 import math
 
 from cekirdek import altigen
+from cekirdek.ceviri import _
 
 SQ3 = math.sqrt(3.0)
 
@@ -299,8 +300,8 @@ def harita_kontrol(kor):
     beklenen = altigen.halka_uzunluklari(n)
     bulunan = [len(s) for s in kor.get("harita") or []]
     if bulunan != beklenen:
-        raise ValueError("altıgen kor haritası %d halka bekliyor (öğe sayıları %s), "
-                         "haritada %s" % (n, beklenen, bulunan))
+        raise ValueError(_("altıgen kor haritası %d halka bekliyor (öğe sayıları %s), "
+                         "haritada %s") % (n, beklenen, bulunan))
 
 
 def betik_kaynagi():

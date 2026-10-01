@@ -28,6 +28,7 @@ from cekirdek import altigen_kor as _akor
 from cekirdek import tambur as _tambur
 from cekirdek.sema import (BOSLUK, cubuk_bul, plaka_bul, demet_bul, malzeme_bul,
                            eksenel_katmanlar, kor_yuksekligi)
+from cekirdek.ceviri import _
 
 
 def _ad_dugumu(spec, ad):
@@ -56,8 +57,8 @@ def _sinir(kor, yalniz_yan=False):
 
 def _katman_hatasi(katman):
     return ValueError(
-        "'%s' eksenel katmanı: katmana özel harf eşlemesi yalnızca kare "
-        "haritalı tam korda ya da altıgen haritalı tam korda kullanılabilir"
+        _("'%s' eksenel katmanı: katmana özel harf eşlemesi yalnızca kare "
+        "haritalı tam korda ya da altıgen haritalı tam korda kullanılabilir")
         % katman.get("ad"))
 
 
@@ -101,7 +102,7 @@ def _yansitici(kor, tur):
 
 def _tek_cubuk(spec, kor):
     if cubuk_bul(spec, kor.get("cubuk")) is None:
-        raise KeyError("tanımsız çubuk: %s" % kor.get("cubuk"))
+        raise KeyError(_("tanımsız çubuk: %s") % kor.get("cubuk"))
     ic, h = _eksenel_sar(spec, kor, {"tur": "bilesen", "ad": kor["cubuk"]}, False)
     a = kor["adim"]
     return _kok({"sekil": "dikdortgen", "boyut": [a, a]}, ic, [], h, _sinir(kor),
@@ -120,7 +121,7 @@ def plaka_olcusu(p):
 def _tek_plaka(spec, kor):
     p = plaka_bul(spec, kor.get("plaka"))
     if p is None:
-        raise KeyError("tanımsız plaka elemanı: %s" % kor.get("plaka"))
+        raise KeyError(_("tanımsız plaka elemanı: %s") % kor.get("plaka"))
     gx, gy = plaka_olcusu(p)
     ic, h = _eksenel_sar(spec, kor, {"tur": "bilesen", "ad": kor["plaka"]}, False)
     return _kok({"sekil": "dikdortgen", "boyut": [gx, gy]}, ic, [], h, _sinir(kor),
@@ -137,7 +138,7 @@ def _altigen_demet_apotem(d, buyutme=0.0):
 def _tek_demet(spec, kor):
     d = demet_bul(spec, kor.get("demet"))
     if d is None:
-        raise KeyError("tanımsız demet: %s" % kor.get("demet"))
+        raise KeyError(_("tanımsız demet: %s") % kor.get("demet"))
     ic, h = _eksenel_sar(spec, kor, {"tur": "bilesen", "ad": d["ad"]}, False)
     yans = _yansitici(kor, "tek_demet")
     if d.get("tur") != "altigen":
@@ -183,7 +184,7 @@ def _kare_kafes(spec, kor):
     nx, ny = kor["boyut"]
     harita = kor["harita"]
     if len(harita) != ny:
-        raise ValueError("kor haritası %d satır, boyut %d bekliyor" % (len(harita), ny))
+        raise ValueError(_("kor haritası %d satır, boyut %d bekliyor") % (len(harita), ny))
     kafes = {"tur": "kafes", "id": "kor_kafesi", "sekil": "kare", "adim": kor["adim"],
              "boyut": [nx, ny], "harita": list(harita),
              "anahtar": {h: _ad_dugumu(spec, v) for h, v in sorted((kor.get("anahtar") or {}).items())},
@@ -215,12 +216,12 @@ def _altigen_kafes(spec, kor):
 def _kuresel(spec, kor):
     kabuklar = kor.get("kabuklar") or []
     if not kabuklar:
-        raise ValueError("küresel düzenekte en az bir kabuk gerekir")
+        raise ValueError(_("küresel düzenekte en az bir kabuk gerekir"))
     yaricaplar = [k["r"] for k in kabuklar]
     for i in range(len(yaricaplar) - 1):
         if yaricaplar[i] >= yaricaplar[i + 1]:
-            raise ValueError("kabuk yarıçapları artan sırada olmalı: "
-                             "r%d = %.5f ≥ r%d = %.5f"
+            raise ValueError(_("kabuk yarıçapları artan sırada olmalı: "
+                             "r%d = %.5f ≥ r%d = %.5f")
                              % (i + 1, yaricaplar[i], i + 2, yaricaplar[i + 1]))
     halkalar = [{"dis": {"sekil": "kure", "yaricap": k["r"]},
                  "icerik": _malzeme_dugumu(k.get("malzeme")), "yerlesimler": []}
@@ -251,16 +252,16 @@ def _tamburlu(spec, kor):
     yans = kor.get("yansitici") or {}
     kal = float(yans.get("kalinlik") or 0.0)
     if R_kor <= 0 or kal <= 0:
-        raise ValueError("tamburlu korda kor yarıçapı ve yansıtıcı kuşak "
-                         "kalınlığı sıfırdan büyük olmalı")
+        raise ValueError(_("tamburlu korda kor yarıçapı ve yansıtıcı kuşak "
+                         "kalınlığı sıfırdan büyük olmalı"))
     t = kor.get("tambur") or {}
     n = int(t.get("sayi") or 0)
     hatalar = _tambur.geometri_kontrol(t, R_kor, kal) if n else []
     if hatalar:
-        raise ValueError("tambur yerleşimi geçersiz: " + hatalar[0])
+        raise ValueError(_("tambur yerleşimi geçersiz: ") + hatalar[0])
     if not kor.get("dolgu"):
-        raise ValueError("tamburlu korda kor dolgusu seçilmeli "
-                         "(demet, çubuk ya da malzeme)")
+        raise ValueError(_("tamburlu korda kor dolgusu seçilmeli "
+                         "(demet, çubuk ya da malzeme)"))
     ic, h = _eksenel_sar(spec, kor, _ad_dugumu(spec, kor["dolgu"]), False)
     ad = _uretilen_tambur_adi(spec)
     yerlesimler, gruplar = [], []
@@ -300,5 +301,5 @@ def genislet(spec):
             agac["_uretilen_tanimlar"] = {"tamburlar": tamburlar}
         return copy.deepcopy(agac)
     if tur not in _SABLONLAR:
-        raise ValueError("bilinmeyen kor türü: %s" % tur)
+        raise ValueError(_("bilinmeyen kor türü: %s") % tur)
     return copy.deepcopy({"kok": _SABLONLAR[tur](spec, kor), "parcalar": [], "gruplar": []})

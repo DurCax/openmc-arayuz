@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-01 17:32+0300\n"
+"POT-Creation-Date: 2026-10-01 17:41+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -16,6 +16,11 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
+
+#: cekirdek/altigen_kor.py:303
+#, python-format
+msgid "altıgen kor haritası %d halka bekliyor (öğe sayıları %s), haritada %s"
+msgstr "the hexagonal core map expects %d rings (element counts %s), the map has %s"
 
 #: cekirdek/ceviri.py:60
 msgid "Türkçe"
@@ -557,7 +562,8 @@ msgstr ""
 "Select a material; if the region is deliberately left empty, select 'Void (no "
 "material)'."
 
-#: cekirdek/dogrula/geometri.py:72 cekirdek/tarama.py:170 cekirdek/tarama.py:176
+#: cekirdek/dogrula/geometri.py:72 cekirdek/geometri/yapici.py:76 cekirdek/kurucu.py:86
+#: cekirdek/sema_basvuru.py:156 cekirdek/tarama.py:170 cekirdek/tarama.py:176
 #, python-format
 msgid "tanımsız malzeme: %s"
 msgstr "undefined material: %s"
@@ -958,8 +964,8 @@ msgstr "unknown core type: %s (valid: %s)"
 msgid "çubuk seçilmemiş"
 msgstr "no pin selected"
 
-#: cekirdek/dogrula/kor.py:66 cekirdek/tarama.py:231 cekirdek/tarama.py:243
-#: cekirdek/tarama_agac.py:95
+#: cekirdek/dogrula/kor.py:66 cekirdek/geometri/sablon.py:105 cekirdek/tarama.py:231
+#: cekirdek/tarama.py:243 cekirdek/tarama_agac.py:95
 #, python-format
 msgid "tanımsız çubuk: %s"
 msgstr "undefined pin: %s"
@@ -973,7 +979,7 @@ msgstr "cell pitch must be greater than zero"
 msgid "çubuğun dış çapı (%.5f cm) hücre adımından (%.5f cm) büyük"
 msgstr "the outer diameter of the pin (%.5f cm) is larger than the cell pitch (%.5f cm)"
 
-#: cekirdek/dogrula/kor.py:83 cekirdek/tarama.py:222
+#: cekirdek/dogrula/kor.py:83 cekirdek/geometri/sablon.py:141 cekirdek/tarama.py:222
 #, python-format
 msgid "tanımsız demet: %s"
 msgstr "undefined assembly: %s"
@@ -982,7 +988,7 @@ msgstr "undefined assembly: %s"
 msgid "demet seçilmemiş"
 msgstr "no assembly selected"
 
-#: cekirdek/dogrula/kor.py:90
+#: cekirdek/dogrula/kor.py:90 cekirdek/geometri/sablon.py:124
 #, python-format
 msgid "tanımsız plaka elemanı: %s"
 msgstr "undefined plate-type fuel element: %s"
@@ -1047,7 +1053,7 @@ msgstr "core with control drums is 2D — no axial leakage, k-eff comes out too 
 msgid "Gerçekçi bir tambur değeri için Kor sekmesinde aktif yükseklik tanımlayın."
 msgstr "For a realistic drum worth define an active height on the Geometry page."
 
-#: cekirdek/dogrula/kor.py:161
+#: cekirdek/dogrula/kor.py:161 cekirdek/geometri/sablon.py:219
 msgid "küresel düzenekte en az bir kabuk gerekir"
 msgstr "a spherical assembly needs at least one shell"
 
@@ -1061,7 +1067,7 @@ msgstr "the radius of shell %d must be greater than zero"
 msgid "%d. kabukta tanımsız malzeme: %s"
 msgstr "undefined material in shell %d: %s"
 
-#: cekirdek/dogrula/kor.py:175
+#: cekirdek/dogrula/kor.py:175 cekirdek/geometri/sablon.py:223
 #, python-format
 msgid "kabuk yarıçapları artan sırada olmalı: r%d = %.5f ≥ r%d = %.5f"
 msgstr "shell radii must be in increasing order: r%d = %.5f ≥ r%d = %.5f"
@@ -1801,12 +1807,12 @@ msgstr "material used but undefined: %s"
 msgid "tanımlı ama modelde kullanılmayan malzeme: %s"
 msgstr "material defined but not used in the model: %s"
 
-#: cekirdek/dogrula/tukenme.py:23
+#: cekirdek/dogrula/tukenme.py:23 cekirdek/tukenme.py:623
 msgctxt "spektrum"
 msgid "termal"
 msgstr "thermal"
 
-#: cekirdek/dogrula/tukenme.py:24
+#: cekirdek/dogrula/tukenme.py:24 cekirdek/tukenme.py:624
 msgctxt "spektrum"
 msgid "hızlı"
 msgstr "fast"
@@ -1908,7 +1914,7 @@ msgstr ""
 msgid "hacimler hesaplanamadı: %s"
 msgstr "volumes could not be computed: %s"
 
-#: cekirdek/dogrula/tukenme.py:135
+#: cekirdek/dogrula/tukenme.py:135 cekirdek/tukenme.py:332
 msgid "modelde yanabilir (fisil) malzeme yok"
 msgstr "the model contains no depletable (fissile) material"
 
@@ -2048,275 +2054,363 @@ msgstr "thermal scattering data (S(α,β)) not in the library: %s"
 msgid "Kütüphanede %d S(α,β) kaydı var; listeden birini seçin."
 msgstr "The library has %d S(α,β) entries; select one from the list."
 
+#: cekirdek/geometri/basvuru.py:224
+#, python-format
+msgid "tanımsız %s: %s"
+msgstr "undefined %s: %s"
+
+#: cekirdek/geometri/basvuru.py:226
+#, python-format
+msgid "'%s' adı zaten kullanılıyor"
+msgstr "the name '%s' is already in use"
+
+#: cekirdek/geometri/bilesen.py:62
+#, python-format
+msgid "'%s' çubuğunda bölge yok"
+msgstr "pin '%s' has no pin regions"
+
+#: cekirdek/geometri/bilesen.py:64
+#, python-format
+msgid "'%s' çubuğu: son bölgenin yarıçapı boş olmalı (son bölge çubuğun dışıdır)"
+msgstr ""
+"pin '%s': the radius of the last pin region must be empty (the last region is outside"
+" the pin)"
+
+#: cekirdek/geometri/bilesen.py:68
+#, python-format
+msgid "'%s' çubuğu: bilinmeyen kesit şekli %r"
+msgstr "pin '%s': unknown cross-section shape %r"
+
+#: cekirdek/geometri/bilesen.py:88
+#, python-format
+msgid ""
+"'%s' kontrol çubuğu 3B model gerektirir: kor yüksekliği tanımlı değil. Eksenel bir uç"
+" konumu olmadan daldırma tanımlanamaz."
+msgstr ""
+"control rod '%s' requires a 3D model: the core height is not defined. Insertion "
+"cannot be defined without an axial tip position."
+
+#: cekirdek/geometri/bilesen.py:92
+#, python-format
+msgid "'%s' kontrol çubuğu: daldırma %%0–%%100 arasında olmalı (%s)"
+msgstr "control rod '%s': insertion must be between 0%% and 100%% (%s)"
+
+#: cekirdek/geometri/bilesen.py:102
+#, python-format
+msgid "'%s' kontrol çubuğu: geçersiz emici bölge %d"
+msgstr "control rod '%s': invalid absorber region %d"
+
+#: cekirdek/geometri/bilesen.py:179
+#, python-format
+msgid "'%s' demeti: harita %d satır, boyut %d bekliyor"
+msgstr "assembly '%s': the map has %d rows, the size expects %d"
+
+#: cekirdek/geometri/bilesen.py:183
+#, python-format
+msgid "'%s' demeti: '%s' satırı %d karakter, %d bekleniyor"
+msgstr "assembly '%s': row '%s' has %d characters, %d expected"
+
+#: cekirdek/geometri/bilesen.py:189
+#, python-format
+msgid "'%s' demeti: %d halka bekleniyor, haritada %d satır var"
+msgstr "assembly '%s': %d rings expected, the map has %d rows"
+
+#: cekirdek/geometri/bilesen.py:193
+#, python-format
+msgid "'%s' demeti: %d. halka (yarıçap %d) %d öğe bekliyor, %d var"
+msgstr "assembly '%s': ring %d (radius %d) expects %d elements, has %d"
+
+#: cekirdek/geometri/bilesen.py:196
+#, python-format
+msgid "bilinmeyen demet türü: %s"
+msgstr "unknown assembly type: %s"
+
+#: cekirdek/geometri/bilesen.py:199
+#, python-format
+msgid "'%s' demeti: haritada tanımsız harf '%s'"
+msgstr "assembly '%s': undefined letter '%s' in the map"
+
 #: cekirdek/geometri/denetim.py:69
 #, python-format
 msgid "Yuvada düğüm ya da ad bekleniyordu (%r)."
-msgstr ""
+msgstr "A node or a name was expected in the slot (%r)."
 
 #: cekirdek/geometri/denetim.py:76
 #, python-format
 msgid "Tanımsız ad: '%s' (çubuk, plaka, demet, tambur, parça ya da malzeme değil)."
 msgstr ""
+"Undefined name: '%s' (not a pin, plate, assembly, control drum, component or "
+"material)."
 
 #: cekirdek/geometri/denetim.py:82
 #, python-format
 msgid "Bilinmeyen düğüm türü: %r."
-msgstr ""
+msgstr "Unknown node type: %r."
 
 #: cekirdek/geometri/denetim.py:85
 #, python-format
 msgid "İç içe derinlik %d düzeyi aşıyor."
-msgstr ""
+msgstr "Nesting depth exceeds %d levels."
 
 #: cekirdek/geometri/denetim.py:88
 #, python-format
 msgid "İç içe derinlik %d düzeyden fazla; izleme yavaşlar."
-msgstr ""
+msgstr "Nesting depth is more than %d levels; tracking slows down."
 
 #: cekirdek/geometri/denetim.py:93
 msgid "Düğüm kimliği (id) boş olmayan bir dize olmalı."
-msgstr ""
+msgstr "The node ID (id) must be a non-empty string."
 
 #: cekirdek/geometri/denetim.py:95
 #, python-format
 msgid "Kimlik '%s' ağaçta iki kez kullanılıyor (%s)."
-msgstr ""
+msgstr "ID '%s' is used twice in the tree (%s)."
 
 #: cekirdek/geometri/denetim.py:107
 msgid "Malzeme düğümüne dönüşüm uygulanamaz: OpenMC malzeme dolgulu hücreyi döndürmez."
 msgstr ""
+"A transform cannot be applied to a material node: OpenMC does not rotate a material-"
+"filled cell."
 
 #: cekirdek/geometri/denetim.py:111
 #, python-brace-format
 msgid "Dönüşüm bir nesne olmalı: {\"donme\", \"oteleme\"}."
-msgstr ""
+msgstr "A transform must be an object: {\"donme\", \"oteleme\"}."
 
 #: cekirdek/geometri/denetim.py:114
 msgid "Dönüşüm: 'donme' sayı olmalı (derece)."
-msgstr ""
+msgstr "Transform: 'donme' must be a number (degrees)."
 
 #: cekirdek/geometri/denetim.py:118
 msgid "Dönüşüm: 'oteleme' [x, y] olmalı (cm)."
-msgstr ""
+msgstr "Transform: 'oteleme' must be [x, y] (cm)."
 
 #: cekirdek/geometri/denetim.py:124
 #, python-format
 msgid "Tanımsız malzeme: '%s'."
-msgstr ""
+msgstr "Undefined material: '%s'."
 
 #: cekirdek/geometri/denetim.py:127
 #, python-format
 msgid "Çözülmemiş referans '%s': kaydedilmeden önce parçaya çevrilmeliydi."
-msgstr ""
+msgstr "Unresolved reference '%s': it should have been turned into a component before saving."
 
 #: cekirdek/geometri/denetim.py:134
 #, python-format
 msgid "Tanımsız bileşen: '%s'."
-msgstr ""
+msgstr "Undefined component: '%s'."
 
 #: cekirdek/geometri/denetim.py:137
 #, python-format
 msgid "Belirsiz ad '%s': %s bölümlerinin ikisinde de var."
-msgstr ""
+msgstr "Ambiguous name '%s': it exists in both %s sections."
 
 #: cekirdek/geometri/denetim.py:139
 msgid "Birini yeniden adlandırın."
-msgstr ""
+msgstr "Rename one of them."
 
 #: cekirdek/geometri/denetim.py:144
 #, python-format
 msgid "Döngü: '%s' parçası kendini içeriyor (%s)."
-msgstr ""
+msgstr "Cycle: component '%s' contains itself (%s)."
 
 #: cekirdek/geometri/denetim.py:155
 msgid "Eksenel yığında varsayılan 'icerik' yok."
-msgstr ""
+msgstr "The axial stack has no default 'icerik'."
 
 #: cekirdek/geometri/denetim.py:160
 msgid "Eksenel yığında en az bir katman olmalı."
-msgstr ""
+msgstr "The axial stack must have at least one layer."
 
 #: cekirdek/geometri/denetim.py:166 cekirdek/geometri/denetim.py:278
 msgid "Katman yüksekliği sayı olmalı (cm)."
-msgstr ""
+msgstr "The layer height must be a number (cm)."
 
 #: cekirdek/geometri/denetim.py:169
 #, python-format
 msgid "'%s' katmanı 0 cm; atlanır."
-msgstr ""
+msgstr "Layer '%s' is 0 cm; skipped."
 
 #: cekirdek/geometri/denetim.py:174
 msgid "Katmana özgü 'anahtar' yalnız varsayılan içerik bir kafes olduğunda geçerlidir."
-msgstr ""
+msgstr "A layer-specific 'anahtar' is valid only when the default content is a lattice."
 
 #: cekirdek/geometri/denetim.py:182
 #, python-format
 msgid "Kafes şekli 'kare' ya da 'altigen' olmalı (%r)."
-msgstr ""
+msgstr "The lattice shape must be 'kare' or 'altigen' (%r)."
 
 #: cekirdek/geometri/denetim.py:185
 msgid "Kafes adımı sıfırdan büyük bir sayı olmalı."
-msgstr ""
+msgstr "The lattice pitch must be a number greater than zero."
 
 #: cekirdek/geometri/denetim.py:188
 msgid "Kafes haritası dize listesi olmalı."
-msgstr ""
+msgstr "The lattice map must be a list of strings."
 
 #: cekirdek/geometri/denetim.py:197
 #, python-format
 msgid "Haritada tanımsız harf: '%s'."
-msgstr ""
+msgstr "Undefined letter in the map: '%s'."
 
 #: cekirdek/geometri/denetim.py:202
 msgid "Kafesin 'dis' yuvası zorunlu (kafesin dışı ve '.' konumları buraya düşer)."
 msgstr ""
+"The 'dis' slot of the lattice is required (the outside of the lattice and the '.' "
+"positions fall here)."
 
 #: cekirdek/geometri/denetim.py:211
 msgid "Kare kafes 'boyut' [nx, ny] pozitif tam sayılar olmalı."
-msgstr ""
+msgstr "The rectangular lattice 'boyut' [nx, ny] must be positive integers."
 
 #: cekirdek/geometri/denetim.py:215
 #, python-format
 msgid "Harita %d satır; boyut %d bekliyor."
-msgstr ""
+msgstr "The map has %d rows; the size expects %d."
 
 #: cekirdek/geometri/denetim.py:218
 #, python-format
 msgid "Harita satırı %d: %d karakter, %d bekleniyor."
-msgstr ""
+msgstr "Map row %d: %d characters, %d expected."
 
 #: cekirdek/geometri/denetim.py:224
 msgid "Altıgen kafes 'halka_sayisi' pozitif tam sayı olmalı."
-msgstr ""
+msgstr "The hexagonal lattice 'halka_sayisi' must be a positive integer."
 
 #: cekirdek/geometri/denetim.py:227
 msgid "Altıgen kafes yönelimi 'x' ya da 'y' olmalı."
-msgstr ""
+msgstr "The hexagonal lattice orientation must be 'x' or 'y'."
 
 #: cekirdek/geometri/denetim.py:230
 #, python-format
 msgid "Altıgen harita %d halka bekliyor (öğe sayıları %s), haritada %s."
-msgstr ""
+msgstr "The hexagonal map expects %d rings (element counts %s), the map has %s."
 
 #: cekirdek/geometri/denetim.py:239
 msgid "Kabın 'ic' yuvası zorunlu."
-msgstr ""
+msgstr "The 'ic' slot of the container is required."
 
 #: cekirdek/geometri/denetim.py:250
 msgid "Kök kapta 'dis' olamaz (modelin dışı yoktur)."
-msgstr ""
+msgstr "The root container cannot have 'dis' (the model has no outside)."
 
 #: cekirdek/geometri/denetim.py:254
 #, python-format
 msgid "'%s' yalnız kök kapta bulunur."
-msgstr ""
+msgstr "'%s' exists only in the root container."
 
 #: cekirdek/geometri/denetim.py:256
 msgid "Kök olmayan kapta 'dis' yuvası zorunlu (kabın dışı ile yuvanın sınırı arası)."
 msgstr ""
+"A non-root container requires the 'dis' slot (between the outside of the container "
+"and the boundary of its slot)."
 
 #: cekirdek/geometri/denetim.py:265
 msgid "'kafes_zarfi' kesiti yalnız içi altıgen kafes olan kök kapta kullanılır."
 msgstr ""
+"The 'kafes_zarfi' cross-section is used only in a root container whose inside is a "
+"hexagonal lattice."
 
 #: cekirdek/geometri/denetim.py:290
 msgid "Kafes zarflı kökte 'kafes.dis' kullanılmaz (R3b)."
-msgstr ""
+msgstr "'kafes.dis' is not used in a root with a lattice envelope (R3b)."
 
 #: cekirdek/geometri/denetim.py:294
 msgid "Halka bir nesne olmalı."
-msgstr ""
+msgstr "A ring must be an object."
 
 #: cekirdek/geometri/denetim.py:299
 msgid "Halkada 'kalinlik' ya da 'dis' alanlarından tam olarak biri verilmeli."
-msgstr ""
+msgstr "Exactly one of the fields 'kalinlik' or 'dis' must be given in a ring."
 
 #: cekirdek/geometri/denetim.py:303
 msgid "Halka kalınlığı sıfırdan büyük olmalı."
-msgstr ""
+msgstr "The ring thickness must be greater than zero."
 
 #: cekirdek/geometri/denetim.py:305
 msgid "'kafes_zarfi' üzerinde 'kalinlik' kullanılamaz; 'dis' kesiti verin."
-msgstr ""
+msgstr "'kalinlik' cannot be used on 'kafes_zarfi'; give a 'dis' cross-section."
 
 #: cekirdek/geometri/denetim.py:316
 msgid "Halkanın dış kesiti bir önceki sınırı kapsamıyor."
-msgstr ""
+msgstr "The outer cross-section of the ring does not enclose the previous boundary."
 
 #: cekirdek/geometri/denetim.py:318
 msgid "Halkanın 'icerik' yuvası zorunlu."
-msgstr ""
+msgstr "The 'icerik' slot of the ring is required."
 
 #: cekirdek/geometri/denetim.py:333
 #, python-brace-format
 msgid "Kesit bir nesne olmalı ({\"sekil\": ...})."
-msgstr ""
+msgstr "A cross-section must be an object ({\"sekil\": ...})."
 
 #: cekirdek/geometri/denetim.py:337
 #, python-format
 msgid "Bilinmeyen kesit şekli: %r."
-msgstr ""
+msgstr "Unknown cross-section shape: %r."
 
 #: cekirdek/geometri/denetim.py:340
 #, python-format
 msgid "'%s' kesiti yalnız kök kapta kullanılır."
-msgstr ""
+msgstr "The '%s' cross-section is used only in the root container."
 
 #: cekirdek/geometri/denetim.py:348
 #, python-format
 msgid "Kesit alanı '%s' pozitif sayı olmalı."
-msgstr ""
+msgstr "The cross-section field '%s' must be a positive number."
 
 #: cekirdek/geometri/denetim.py:350
 msgid "Altıgen kesit yönelimi 'x' ya da 'y' olmalı."
-msgstr ""
+msgstr "The hexagonal cross-section orientation must be 'x' or 'y'."
 
 #: cekirdek/geometri/denetim.py:357
 msgid "Yerleşimler bir liste olmalı."
-msgstr ""
+msgstr "Placements must be a list."
 
 #: cekirdek/geometri/denetim.py:364
 msgid "Yerleşim bir nesne olmalı."
-msgstr ""
+msgstr "A placement must be an object."
 
 #: cekirdek/geometri/denetim.py:368
 msgid "Yerleşimin adı ('ad') zorunlu."
-msgstr ""
+msgstr "The name of the placement ('ad') is required."
 
 #: cekirdek/geometri/denetim.py:370
 #, python-format
 msgid "Yerleşim adı '%s' iki kez kullanılıyor."
-msgstr ""
+msgstr "Placement name '%s' is used twice."
 
 #: cekirdek/geometri/denetim.py:375
 #, python-format
 msgid "Yerleşim modu %s olmalı (%r)."
-msgstr ""
+msgstr "The placement mode must be %s (%r)."
 
 #: cekirdek/geometri/denetim.py:379
 msgid "Halka yerleşiminde 'sayi' pozitif tam sayı olmalı."
-msgstr ""
+msgstr "In a ring placement 'sayi' must be a positive integer."
 
 #: cekirdek/geometri/denetim.py:381
 msgid "Halka yerleşiminde 'merkez_yaricap' sayı olmalı."
-msgstr ""
+msgstr "In a ring placement 'merkez_yaricap' must be a number."
 
 #: cekirdek/geometri/denetim.py:387
 msgid "Liste yerleşiminde 'konumlar' [[x, y], ...] olmalı."
-msgstr ""
+msgstr "In a list placement 'konumlar' must be [[x, y], ...]."
 
 #: cekirdek/geometri/denetim.py:389
 #, python-format
 msgid "Bir bölgede %d'den fazla delik; hücre arama yavaşlar."
-msgstr ""
+msgstr "More than %d holes in one region; cell search slows down."
 
 #: cekirdek/geometri/denetim.py:395
 msgid "Yerleşimin 'icerik' yuvası zorunlu."
-msgstr ""
+msgstr "The 'icerik' slot of the placement is required."
 
 #: cekirdek/geometri/denetim.py:400
 msgid "Delik kesiti ('kesit') zorunlu: yalnız tambur içeriğinin doğal kesiti vardır."
 msgstr ""
+"The hole cross-section ('kesit') is required: only a control drum content has a "
+"natural cross-section."
 
 #: cekirdek/geometri/denetim.py:421
 #, python-format
@@ -2324,75 +2418,81 @@ msgid ""
 "'kafes_konumu' yerleşimi: '%s' kimlikli kafes aynı kabın içi ya da bir halkasının "
 "içeriği değil."
 msgstr ""
+"'kafes_konumu' placement: the lattice with ID '%s' is neither the inside of the same "
+"container nor the content of one of its rings."
 
 #: cekirdek/geometri/denetim.py:425
 msgid "'kafes_konumu' yerleşiminin kafesi dönüşümsüz olmalı."
-msgstr ""
+msgstr "The lattice of a 'kafes_konumu' placement must have no transform."
 
 #: cekirdek/geometri/denetim.py:428
 msgid "'kafes_konumu' yerleşiminde tek karakterlik 'harf' zorunlu."
-msgstr ""
+msgstr "A single-character 'harf' is required in a 'kafes_konumu' placement."
 
 #: cekirdek/geometri/denetim.py:435
 msgid "Bakış türü 'merkez' ya da 'sabit' olmalı."
-msgstr ""
+msgstr "The facing type must be 'merkez' or 'sabit'."
 
 #: cekirdek/geometri/denetim.py:438
 msgid "Sabit bakışta 'aci' sayı olmalı (derece)."
-msgstr ""
+msgstr "With a fixed facing 'aci' must be a number (degrees)."
 
 #: cekirdek/geometri/denetim.py:442
 msgid "Merkez bakışında 'merkez' [x, y] olmalı."
-msgstr ""
+msgstr "With a centre facing 'merkez' must be [x, y]."
 
 #: cekirdek/geometri/denetim.py:444
 msgid "'donme_ofset' sayı olmalı (derece)."
-msgstr ""
+msgstr "'donme_ofset' must be a number (degrees)."
 
 #: cekirdek/geometri/denetim.py:449
 msgid "Kök düğüm bir 'kap' olmalı."
-msgstr ""
+msgstr "The root node must be a 'kap' (container)."
 
 #: cekirdek/geometri/denetim.py:463
 msgid "Sınır bir nesne olmalı."
-msgstr ""
+msgstr "The boundary must be an object."
 
 #: cekirdek/geometri/denetim.py:467 cekirdek/geometri/denetim.py:497
 #, python-format
 msgid "Bilinmeyen sınır koşulu: %s = %r."
-msgstr ""
+msgstr "Unknown boundary condition: %s = %r."
 
 #: cekirdek/geometri/denetim.py:478
 msgid "Yüz başına sınır koşulu yalnız dikdörtgen ya da altıgen dış sınırda verilebilir."
 msgstr ""
+"A per-face boundary condition can be given only on a rectangular or hexagonal outer "
+"boundary."
 
 #: cekirdek/geometri/denetim.py:492
 #, python-format
 msgid "Dikdörtgen sınırda 'yuzler' anahtarları %s olmalı."
-msgstr ""
+msgstr "On a rectangular boundary the 'yuzler' keys must be %s."
 
 #: cekirdek/geometri/denetim.py:500
 #, python-format
 msgid "Periyodik sınır karşılıklı iki yüzde birlikte verilmeli (%s / %s)."
-msgstr ""
+msgstr "A periodic boundary must be given on two opposite faces together (%s / %s)."
 
 #: cekirdek/geometri/denetim.py:505
 msgid "Altıgen sınırda 'yuzler' 6 öğeli bir liste olmalı (yüz normali açısı artan sırada)."
 msgstr ""
+"On a hexagonal boundary 'yuzler' must be a list of 6 elements (in increasing order of"
+" the face normal angle)."
 
 #: cekirdek/geometri/denetim.py:510
 #, python-format
 msgid "Bilinmeyen sınır koşulu: yüz %d = %r."
-msgstr ""
+msgstr "Unknown boundary condition: face %d = %r."
 
 #: cekirdek/geometri/denetim.py:513
 #, python-format
 msgid "Periyodik sınır karşılıklı iki yüzde birlikte verilmeli (yüz %d / %d)."
-msgstr ""
+msgstr "A periodic boundary must be given on two opposite faces together (face %d / %d)."
 
 #: cekirdek/geometri/denetim.py:519
 msgid "Kök yüksekliği pozitif sayı ya da boş (2B) olmalı."
-msgstr ""
+msgstr "The root height must be a positive number or empty (2D)."
 
 #: cekirdek/geometri/denetim.py:527
 #, python-format
@@ -2400,79 +2500,475 @@ msgid ""
 "Kökte hem 'yukseklik' (%g cm) hem farklı toplamlı eksenel yığın (%g cm) var; "
 "yükseklik boş bırakılmalı."
 msgstr ""
+"The root has both 'yukseklik' (%g cm) and an axial stack with a different total (%g "
+"cm); the height must be left empty."
 
 #: cekirdek/geometri/denetim.py:536
 msgid "Gruplar bir liste olmalı."
-msgstr ""
+msgstr "Groups must be a list."
 
 #: cekirdek/geometri/denetim.py:543
 msgid "Grup türü 'donme' ya da 'daldirma' olmalı."
-msgstr ""
+msgstr "The group type must be 'donme' or 'daldirma'."
 
 #: cekirdek/geometri/denetim.py:546
 msgid "Grup değeri sayı olmalı."
-msgstr ""
+msgstr "The group value must be a number."
 
 #: cekirdek/geometri/denetim.py:549
 #, python-format
 msgid "'%s' grubu boş."
-msgstr ""
+msgstr "Group '%s' is empty."
 
 #: cekirdek/geometri/denetim.py:551
 #, python-format
 msgid "'%s' grubunun tek üyesi var."
-msgstr ""
+msgstr "Group '%s' has only one member."
 
 #: cekirdek/geometri/denetim.py:555
 #, python-format
 msgid "'%s' grubunun üyesi '%s' tanımsız ya da türü uyuşmuyor (%s)."
-msgstr ""
+msgstr "Group '%s': member '%s' is undefined or of the wrong type (%s)."
 
 #: cekirdek/geometri/denetim.py:557
 msgid "yerleşim adı"
-msgstr ""
+msgstr "placement name"
 
 #: cekirdek/geometri/denetim.py:558
 msgid "kontrol çubuğu"
-msgstr ""
+msgstr "control rod"
 
 #: cekirdek/geometri/denetim.py:561
 #, python-format
 msgid "'%s' aynı türden iki grupta (%s, %s)."
-msgstr ""
+msgstr "'%s' is in two groups of the same type (%s, %s)."
 
 #: cekirdek/geometri/denetim.py:570
 msgid "Geometri bölümü bir nesne olmalı."
-msgstr ""
+msgstr "The geometry section must be an object."
 
 #: cekirdek/geometri/denetim.py:573
 #, python-brace-format
 msgid "Parça {\"ad\", \"dugum\"} olmalı."
-msgstr ""
+msgstr "A component must be {\"ad\", \"dugum\"}."
 
 #: cekirdek/geometri/denetim.py:577
 #, python-format
 msgid "'%s' parçası kullanılmıyor."
+msgstr "Component '%s' is not used."
+
+#: cekirdek/geometri/hacim.py:44
+msgid "kesik kafes konumu"
+msgstr "truncated lattice position"
+
+#: cekirdek/geometri/hacim.py:45
+msgid "kesik çubuk (pin hücreye sığmıyor)"
+msgstr "truncated pin (does not fit the pin cell)"
+
+#: cekirdek/geometri/hacim.py:46
+msgid "bileşen bölgesine sığmıyor"
+msgstr "does not fit the component region"
+
+#: cekirdek/geometri/hacim.py:47
+msgid "kafes dışı düzensiz bölge"
+msgstr "irregular region outside a lattice"
+
+#: cekirdek/geometri/hacim.py:48
+msgid "alanı analitik hesaplanamayan bölge"
+msgstr "region whose area cannot be computed analytically"
+
+#: cekirdek/geometri/hacim.py:113 cekirdek/tukenme_hacim.py:360
+msgid "hacmi kesin değil: "
+msgstr "volume not exact: "
+
+#: cekirdek/geometri/hacim.py:118 cekirdek/tukenme_hacim.py:367
+msgid "hacmi sıfır: "
+msgstr "volume is zero: "
+
+#: cekirdek/geometri/hacim.py:119 cekirdek/tukenme_hacim.py:373
+msgid "malzeme geometride bulunamadı"
+msgstr "material not found in the geometry"
+
+#: cekirdek/geometri/hacim.py:207
+#, python-format
+msgid "stokastik hacmin bağıl σ'sı %%%.2f sınırını aşıyor (örneklem %d): %s"
+msgstr "the relative σ of the stochastic volume exceeds the %.2f%% limit (samples %d): %s"
+
+#: cekirdek/geometri/hacim.py:216
+msgid "stokastik hacim sıfır (malzeme örnekleme kutusunda bulunamadı)"
+msgstr "stochastic volume is zero (material not found in the sampling box)"
+
+#: cekirdek/geometri/hacim.py:218
+msgid "stokastik hacim ölçülemedi (malzeme kurulan modelde yok)"
+msgstr "stochastic volume could not be measured (material not in the built model)"
+
+#: cekirdek/geometri/hacim.py:234 cekirdek/tukenme_hacim.py:396
+#, python-format
+msgid "stokastik hacim %.6g ± %.2g cm³ (%s)"
+msgstr "stochastic volume %.6g ± %.2g cm³ (%s)"
+
+#: cekirdek/geometri/ice_aktar.py:70
+#, python-format
+msgid "desteklenmeyen yüzey türü: %s"
+msgstr "unsupported surface type: %s"
+
+#: cekirdek/geometri/ice_aktar.py:83 cekirdek/geometri/ice_aktar.py:138
+#, python-format
+msgid "bölge yapısı çözülemedi (%s)"
+msgstr "region structure could not be resolved (%s)"
+
+#: cekirdek/geometri/ice_aktar.py:103
+#, python-format
+msgid "düzlemlerden tanınan bir kesit çıkmadı (%d düzlem)"
+msgstr "no recognized cross-section was obtained from the planes (%d planes)"
+
+#: cekirdek/geometri/ice_aktar.py:118
+msgid "merkezi (0, 0, 0) olmayan küre"
+msgstr "sphere not centred at (0, 0, 0)"
+
+#: cekirdek/geometri/ice_aktar.py:141
+msgid "hücrede hem silindir hem prizma iç sınırı var"
+msgstr "the cell has both a cylinder and a prism inner boundary"
+
+#: cekirdek/geometri/ice_aktar.py:175
+#, python-format
+msgid "tambur emici yayı yerel +x yönünde ortalanmamış (hücre %d, %g° yoklaması)"
+msgstr "the drum absorber arc is not centred on the local +x direction (cell %d, %g° probe)"
+
+#: cekirdek/geometri/ice_aktar.py:231
+#, python-format
+msgid "aynı adlı farklı evren: '%s' -> '%s' olarak alındı"
+msgstr "different universe with the same name: '%s' -> imported as '%s'"
+
+#: cekirdek/geometri/ice_aktar.py:239
+#, python-format
+msgid "malzeme kimliği %d aktarılan malzemelerde yok"
+msgstr "material ID %d is not among the imported materials"
+
+#: cekirdek/geometri/ice_aktar.py:319
+#, python-format
+msgid "z yönünde öteleme desteklenmiyor (hücre %d)"
+msgstr "translation in the z direction is not supported (cell %d)"
+
+#: cekirdek/geometri/ice_aktar.py:323
+#, python-format
+msgid "yalnız z ekseni etrafında dönme desteklenir (hücre %d)"
+msgstr "only rotation about the z axis is supported (cell %d)"
+
+#: cekirdek/geometri/ice_aktar.py:328
+msgid "malzeme dolgulu hücre döndürülemez/ötelenemez"
+msgstr "a material-filled cell cannot be rotated/translated"
+
+#: cekirdek/geometri/ice_aktar.py:378
+#, python-format
+msgid "kafeste %d'den çok farklı evren var; harita harfleri yetmiyor"
+msgstr "the lattice has more than %d different universes; the map letters are not enough"
+
+#: cekirdek/geometri/ice_aktar.py:388
+#, python-format
+msgid "kare olmayan kafes adımı (%g × %g)"
+msgstr "non-square lattice pitch (%g × %g)"
+
+#: cekirdek/geometri/ice_aktar.py:392
+#, python-format
+msgid "merkezlenmemiş kare kafes (lower_left %s)"
+msgstr "rectangular lattice not centred (lower_left %s)"
+
+#: cekirdek/geometri/ice_aktar.py:404
+msgid "merkezi (0, 0) olmayan altıgen kafes"
+msgstr "hexagonal lattice not centred at (0, 0)"
+
+#: cekirdek/geometri/ice_aktar.py:406
+msgid "eksenel katmanlı altıgen kafes desteklenmiyor"
+msgstr "a hexagonal lattice with axial layers is not supported"
+
+#: cekirdek/geometri/ice_aktar.py:452
+#, python-format
+msgid "geometri içe aktarılamadı: %s"
+msgstr "geometry could not be imported: %s"
+
+#: cekirdek/geometri/ice_aktar.py:455
+#, python-format
+msgid "geometri ağaca dönüştürüldü: %d parça, %d çubuk tanımı"
+msgstr "geometry converted to a tree: %d components, %d pin definitions"
+
+#: cekirdek/geometri/ice_aktar_kap.py:41
+#, python-format
+msgid "hücre %d birden çok iç sınır dışlıyor (tanınmayan desen)"
+msgstr "cell %d excludes more than one inner boundary (unrecognized pattern)"
+
+#: cekirdek/geometri/ice_aktar_kap.py:56
+#, python-format
+msgid "kabın iç bölgesi tek ve dışlamasız olmalı (%d aday)"
 msgstr ""
+"the inner region of the container must be single and without exclusions (%d "
+"candidates)"
+
+#: cekirdek/geometri/ice_aktar_kap.py:61
+msgid "kap halkaları eş merkezli bir zincir oluşturmuyor"
+msgstr "the container rings do not form a concentric chain"
+
+#: cekirdek/geometri/ice_aktar_kap.py:68
+msgid "kökte dış (sınırsız) hücre var"
+msgstr "the root has an outer (unbounded) cell"
+
+#: cekirdek/geometri/ice_aktar_kap.py:70
+msgid "kök olmayan kabın dış hücresi yok"
+msgstr "the non-root container has no outer cell"
+
+#: cekirdek/geometri/ice_aktar_kap.py:73
+msgid "kap bölgesi merkezli değil"
+msgstr "the container region is not centred"
+
+#: cekirdek/geometri/ice_aktar_kap.py:95
+#, python-format
+msgid "'%s' yerleşiminin örnekleri farklı içerikli"
+msgstr "the instances of placement '%s' have different contents"
+
+#: cekirdek/geometri/ice_aktar_kap.py:103
+#, python-format
+msgid "'%s' deliğinin içeriği delik merkezinden ötelenmiş"
+msgstr "the content of hole '%s' is translated from the hole centre"
+
+#: cekirdek/geometri/ice_aktar_kap.py:107
+msgid "yalnız z ekseni etrafında dönme desteklenir"
+msgstr "only rotation about the z axis is supported"
+
+#: cekirdek/geometri/ice_aktar_kap.py:111
+#, python-format
+msgid "'%s': döndürülen delik daire olmalı ve her örnek dönmeli"
+msgstr "'%s': a rotated hole must be a circle and every instance must rotate"
+
+#: cekirdek/geometri/ice_aktar_kap.py:114
+#, python-format
+msgid "'%s' örneklerinin dönmesi 'kora bakan' desene uymuyor"
+msgstr "the rotation of the instances of '%s' does not match the 'facing the core' pattern"
+
+#: cekirdek/geometri/ice_aktar_kap.py:127
+msgid "kök dışında z dilimli bölge desteklenmiyor"
+msgstr "a z-sliced region outside the root is not supported"
+
+#: cekirdek/geometri/ice_aktar_kap.py:131
+msgid "eksenel dilimler bitişik değil"
+msgstr "the axial slices are not contiguous"
+
+#: cekirdek/geometri/ice_aktar_kap.py:150
+#, python-format
+msgid "periyodik sınır yalnız eksene dik düzlemlerde içe aktarılır (yüzey %d, %s)"
+msgstr ""
+"a periodic boundary is imported only on planes perpendicular to an axis (surface %d, "
+"%s)"
+
+#: cekirdek/geometri/ice_aktar_kap.py:160
+#, python-format
+msgid "periyodik eş karşıt yüz değil (yüzey %d <-> %d); dönel periyodiklik içe aktarılmaz"
+msgstr ""
+"the periodic partner is not the opposite face (surface %d <-> %d); rotational "
+"periodicity is not imported"
+
+#: cekirdek/geometri/ice_aktar_kap.py:186
+msgid ""
+"yan sınırda yüzeyler farklı sınır koşulu taşıyor; yüz başına sınır yalnız dikdörtgen "
+"dış sınırda içe aktarılır"
+msgstr ""
+"the surfaces on the radial boundary carry different boundary conditions; a per-face "
+"boundary is imported only on a rectangular outer boundary"
+
+#: cekirdek/geometri/ice_aktar_kap.py:201
+msgid ""
+"kafes zarflı altıgen tam kor (konum hücreleri, R3b) içe aktarılmıyor; şablon "
+"(altigen_kafes) olarak yeniden kurun"
+msgstr ""
+"a hexagonal full core with a lattice envelope (position cells, R3b) is not imported; "
+"rebuild it as a template (altigen_kafes)"
+
+#: cekirdek/geometri/ice_aktar_kap.py:205
+#, python-format
+msgid "tanınmayan çok hücreli evren (%d ayrık bölge; ör. plaka elemanı ya da kontrol çubuğu)"
+msgstr ""
+"unrecognized multi-cell universe (%d disjoint regions; e.g. a plate-type fuel element"
+" or a control rod)"
+
+#: cekirdek/geometri/ice_aktar_kap.py:210
+#, python-format
+msgid "delik hücresi %d kapalı bir kesit değil"
+msgstr "hole cell %d is not a closed cross-section"
+
+#: cekirdek/geometri/ice_aktar_kap.py:221
+msgid "halka bölgesi z dilimli (yalnız kökün iç'i dilimlenebilir)"
+msgstr "the ring region is z-sliced (only the inside of the root can be sliced)"
+
+#: cekirdek/geometri/ice_aktar_kap.py:229
+#, python-format
+msgid "model z = 0 etrafında merkezli değil (%g … %g)"
+msgstr "the model is not centred around z = 0 (%g … %g)"
+
+#: cekirdek/geometri/kap.py:49
+msgid "'kafes_zarfi' kesiti yalnız kök kapta kullanılır"
+msgstr "the 'kafes_zarfi' cross-section is used only in the root container"
+
+#: cekirdek/geometri/kap.py:104
+#, python-format
+msgid "'%s' yerleşimi: daire dışı delik bakış ya da dönme ile döndürülemez"
+msgstr "placement '%s': a non-circular hole cannot be rotated by facing or rotation"
+
+#: cekirdek/geometri/kap.py:126
+msgid "yerleşim deliğinin kesiti verilmeli (yalnız tamburun doğal kesiti vardır)"
+msgstr ""
+"the cross-section of the placement hole must be given (only a control drum has a "
+"natural cross-section)"
+
+#: cekirdek/geometri/kap.py:150 cekirdek/geometri/sablon.py:60
+#, python-format
+msgid ""
+"'%s' eksenel katmanı: katmana özel harf eşlemesi yalnızca kare haritalı tam korda ya "
+"da altıgen haritalı tam korda kullanılabilir"
+msgstr ""
+"axial layer '%s': a layer-specific letter mapping can be used only in a full core "
+"with a rectangular or hexagonal map"
+
+#: cekirdek/geometri/kap.py:230
+msgid "altıgen kor haritası konum sayısı tutmuyor"
+msgstr "the number of positions in the hexagonal core map does not match"
+
+#: cekirdek/geometri/kap.py:235
+#, python-format
+msgid ""
+"kor haritasında tanımsız harf: '%s' (kafes zarflı kökte '.' konumu için anahtarda "
+"harf tanımlayın)"
+msgstr ""
+"undefined letter in the core map: '%s' (in a root with a lattice envelope, define a "
+"letter in the key for the '.' position)"
+
+#: cekirdek/geometri/kap.py:293
+msgid "'kafes_zarfi' üzerinde 'kalinlik' kullanılamaz; 'dis' kesiti verin"
+msgstr "'kalinlik' cannot be used on 'kafes_zarfi'; give a 'dis' cross-section"
+
+#: cekirdek/geometri/kesit.py:61
+#, python-format
+msgid "kutusu hesaplanamayan kesit: %s"
+msgstr "cross-section whose bounding box cannot be computed: %s"
+
+#: cekirdek/geometri/kesit.py:76
+#, python-format
+msgid "kalınlıkla büyütülemeyen kesit: %s"
+msgstr "cross-section that cannot be grown by a thickness: %s"
+
+#: cekirdek/geometri/kesit.py:95
+#, python-format
+msgid "içerme denetimi yapılamayan kesit: %s"
+msgstr "cross-section for which containment cannot be checked: %s"
+
+#: cekirdek/geometri/kesit.py:120
+#, python-format
+msgid "sınır noktası üretilemeyen kesit: %s"
+msgstr "cross-section for which boundary points cannot be generated: %s"
+
+#: cekirdek/geometri/kesit.py:155
+#, python-format
+msgid "alanı hesaplanamayan kesit: %s"
+msgstr "cross-section whose area cannot be computed: %s"
+
+#: cekirdek/geometri/kurulum.py:201
+#, python-format
+msgid "kurulamayan düğüm türü: %r"
+msgstr "node type that cannot be built: %r"
+
+#: cekirdek/geometri/kurulum.py:225
+msgid "malzeme düğümüne dönüşüm uygulanamaz"
+msgstr "a transform cannot be applied to a material node"
+
+#: cekirdek/geometri/kurulum.py:269 cekirdek/geometri/kurulum.py:282
+#, python-format
+msgid "tanımsız ad: %s (çubuk, plaka elemanı, demet ya da malzeme değil)"
+msgstr "undefined name: %s (not a pin, plate-type fuel element, assembly or material)"
+
+#: cekirdek/geometri/kurulum.py:337
+#, python-format
+msgid "kor haritasında tanımsız harf: '%s'"
+msgstr "undefined letter in the core map: '%s'"
+
+#: cekirdek/geometri/kurulum.py:339
+#, python-format
+msgid "'%s' kafesi: haritada tanımsız harf '%s'"
+msgstr "lattice '%s': undefined letter '%s' in the map"
+
+#: cekirdek/geometri/kurulum.py:341
+#, python-format
+msgid "'%s' kafesinin 'dis' yuvası boş"
+msgstr "the 'dis' slot of lattice '%s' is empty"
+
+#: cekirdek/geometri/kurulum.py:383
+#, python-format
+msgid "kurulamayan kesit: %s"
+msgstr "cross-section that cannot be built: %s"
+
+#: cekirdek/geometri/sablon.py:187
+#, python-format
+msgid "kor haritası %d satır, boyut %d bekliyor"
+msgstr "the core map has %d rows, the size expects %d"
+
+#: cekirdek/geometri/sablon.py:255
+msgid "tamburlu korda kor yarıçapı ve yansıtıcı kuşak kalınlığı sıfırdan büyük olmalı"
+msgstr ""
+"in a core with control drums the core radius and the radial reflector thickness must "
+"be greater than zero"
+
+#: cekirdek/geometri/sablon.py:261
+msgid "tambur yerleşimi geçersiz: "
+msgstr "invalid control drum placement: "
+
+#: cekirdek/geometri/sablon.py:263
+msgid "tamburlu korda kor dolgusu seçilmeli (demet, çubuk ya da malzeme)"
+msgstr "in a core with control drums a core fill must be selected (assembly, pin or material)"
+
+#: cekirdek/geometri/sablon.py:304
+#, python-format
+msgid "bilinmeyen kor türü: %s"
+msgstr "unknown core type: %s"
+
+#: cekirdek/geometri/sinir.py:110 cekirdek/geometri/sinir.py:116 cekirdek/tarama_agac.py:47
+#, python-format
+msgid "tanımsız grup: %s"
+msgstr "undefined group: %s"
+
+#: cekirdek/geometri/yerlesim.py:84
+#, python-format
+msgid "'kafes_konumu' yerleşimi: '%s' kimlikli kafes kabın içinde değil"
+msgstr "'kafes_konumu' placement: the lattice with ID '%s' is not inside the container"
+
+#: cekirdek/geometri/yerlesim.py:102
+#, python-format
+msgid "bilinmeyen yerleşim modu: %s"
+msgstr "unknown placement mode: %s"
+
+#: cekirdek/geometri/yerlesim.py:131
+#, python-format
+msgid ""
+"yerleşim örneği bakış merkeziyle çakışıyor (%.6g, %.6g): 'kora bakan' yön tanımsız; "
+"'sabit' bakış seçin"
+msgstr ""
+"a placement instance coincides with the facing centre (%.6g, %.6g): the 'facing the "
+"core' direction is undefined; select a fixed facing"
 
 #: cekirdek/geometri/yoklama.py:136
 #, python-format
 msgid "hücre %d"
-msgstr ""
+msgstr "cell %d"
 
 #: cekirdek/geometri/yoklama.py:144
 msgid "kök"
-msgstr ""
+msgstr "root"
 
 #: cekirdek/geometri/yoklama.py:170
 #, python-format
 msgid "geometri hata ayıklama koşusu temiz (%d × %d parçacık)"
-msgstr ""
+msgstr "geometry debug run is clean (%d × %d particles)"
 
 #: cekirdek/geometri/yoklama.py:176
 #, python-format
 msgid "%d noktada %d örtüşme, %d boşluk"
-msgstr ""
+msgstr "at %d points %d overlaps, %d gaps"
 
 #: cekirdek/giris.py:32
 msgid ""
@@ -2484,11 +2980,18 @@ msgid ""
 "  --spec        modelin JSON dosyası. Verilmezse koşu dizinindeki\n"
 "                spec.json ya da tukenme_spec.json okunur."
 msgstr ""
+"USAGE\n"
+"  openmc-arayuz-kosu rapor <run_directory> [-o rapor.pdf] [--spec model.json]\n"
+"\n"
+"  -o, --cikti   report file; format from the extension (.pdf | .html).\n"
+"                Default: <run_directory>/rapor.pdf\n"
+"  --spec        JSON file of the model. Default: spec.json or\n"
+"                tukenme_spec.json in the run directory."
 
 #: cekirdek/giris.py:49 cekirdek/giris.py:142
 #, python-format
 msgid "%s bir değer bekliyor"
-msgstr ""
+msgstr "%s expects a value"
 
 #: cekirdek/giris.py:57 cekirdek/giris.py:150 cekirdek/kosucu.py:644
 #: cekirdek/kritik_arama.py:257 cekirdek/tarama.py:440
@@ -2498,32 +3001,32 @@ msgstr "unknown option: %s"
 
 #: cekirdek/giris.py:61 cekirdek/giris.py:154
 msgid "koşu dizini verilmedi"
-msgstr ""
+msgstr "no run directory given"
 
 #: cekirdek/giris.py:92
 #, python-format
 msgid "rapor uzantısı .pdf ya da .html olmalı: %s"
-msgstr ""
+msgstr "the report extension must be .pdf or .html: %s"
 
 #: cekirdek/giris.py:96
 #, python-format
 msgid "model (spec) bulunamadı: koşu dizininde spec.json yok; --spec ile verin (%s)"
-msgstr ""
+msgstr "model (spec) not found: no spec.json in the run directory; give it with --spec (%s)"
 
 #: cekirdek/giris.py:105
 #, python-format
 msgid "rapor oluşturulamadı: %s"
-msgstr ""
+msgstr "report could not be generated: %s"
 
 #: cekirdek/giris.py:108
 #, python-format
 msgid "uyarı: %s"
-msgstr ""
+msgstr "warning: %s"
 
 #: cekirdek/giris.py:109
 #, python-format
 msgid "rapor yazıldı: %s"
-msgstr ""
+msgstr "report written: %s"
 
 #: cekirdek/giris.py:116
 msgid ""
@@ -2539,23 +3042,35 @@ msgid ""
 "  Çıkış kodu: 0 hata bulgusu yok, 1 hata bulgusu var, 2 kullanım hatası,\n"
 "  3 (--siki ile) değerlendirilemeyen kural var."
 msgstr ""
+"USAGE\n"
+"  openmc-arayuz-kosu uygunluk <run_directory> [--profil A,B,C,D] [--siki]\n"
+"\n"
+"  --profil   check profiles (comma-separated). Default: the selection in\n"
+"             spec.json in the run directory; otherwise A,D.\n"
+"             A Monte Carlo good practice, B criticality safety,\n"
+"             C reactor core design, D reporting.\n"
+"  --siki     a rule that cannot be evaluated (not applicable) also counts as a "
+"failure.\n"
+"\n"
+"  Exit code: 0 no error findings, 1 error findings, 2 usage error,\n"
+"  3 (with --siki) a rule could not be evaluated."
 
 #: cekirdek/giris.py:156
 #, python-format
 msgid "koşu dizini bulunamadı: %s"
-msgstr ""
+msgstr "run directory not found: %s"
 
 #: cekirdek/giris.py:163
 msgid "kontrolü geçti"
-msgstr ""
+msgstr "passed"
 
 #: cekirdek/giris.py:163
 msgid "KONTROLÜ GEÇMEDİ"
-msgstr ""
+msgstr "NOT MET"
 
 #: cekirdek/giris.py:164
 msgid "uygulanamadı"
-msgstr ""
+msgstr "not applicable"
 
 #: cekirdek/giris.py:164 cekirdek/rapor_sablon/uygunluk_eki.py:25
 msgid "not"
@@ -2564,12 +3079,12 @@ msgstr "note"
 #: cekirdek/giris.py:172
 #, python-format
 msgid "Öneri: %s"
-msgstr ""
+msgstr "Suggestion: %s"
 
 #: cekirdek/giris.py:198
 #, python-format
 msgid "uyarı: model (spec) okunamadı, yalnız koşu denetlenir: %s"
-msgstr ""
+msgstr "warning: the model (spec) could not be read, only the run is checked: %s"
 
 #: cekirdek/giris.py:208
 #, python-format
@@ -2578,34 +3093,36 @@ msgid ""
 "Profiller: %s · %d hata, %d uyarı · %d kontrolü geçti, %d kontrolü geçmedi, %d "
 "uygulanamadı"
 msgstr ""
+"\n"
+"Profiles: %s · %d errors, %d warnings · %d passed, %d not met, %d not applicable"
 
 #: cekirdek/goc.py:62
 #, python-format
 msgid "Dosyadaki şema sürümü sayı değil: %r"
-msgstr ""
+msgstr "The schema version in the file is not a number: %r"
 
 #: cekirdek/goc.py:64
 #, python-format
 msgid "Dosyadaki şema sürümü tam sayı değil: %r"
-msgstr ""
+msgstr "The schema version in the file is not an integer: %r"
 
 #: cekirdek/goc.py:99
 #, python-format
 msgid "Dosyada zorunlu '%s' bölümü yok; dosya bozuk ya da bir model dosyası değil."
-msgstr ""
+msgstr "The file has no required '%s' section; the file is corrupt or not a model file."
 
 #: cekirdek/goc.py:102 cekirdek/goc.py:106
 #, python-format
 msgid "'%s' bölümünün türü yanlış (%s bekleniyordu)."
-msgstr ""
+msgstr "The '%s' section has the wrong type (%s expected)."
 
 #: cekirdek/goc.py:110
 msgid "'geometri' bölümü bir nesne olmalı."
-msgstr ""
+msgstr "The 'geometri' section must be an object."
 
 #: cekirdek/goc.py:119
 msgid "Dosyanın kökü bir JSON nesnesi değil."
-msgstr ""
+msgstr "The root of the file is not a JSON object."
 
 #: cekirdek/goc.py:122
 #, python-format
@@ -2613,21 +3130,23 @@ msgid ""
 "Bu dosya daha yeni bir sürümle yazılmış (şema sürümü %d; bu uygulama en çok %d okur)."
 " Uygulamayı güncelleyin."
 msgstr ""
+"This file was written by a newer version (schema version %d; this application reads "
+"at most %d). Update the application."
 
 #: cekirdek/goc.py:126
 #, python-format
 msgid "Geçersiz şema sürümü: %d"
-msgstr ""
+msgstr "Invalid schema version: %d"
 
 #: cekirdek/goc.py:143
 #, python-format
 msgid "Dosya bozuk (JSON çözülemedi): %s, satır %d sütun %d: %s"
-msgstr ""
+msgstr "The file is corrupt (JSON could not be decoded): %s, line %d column %d: %s"
 
 #: cekirdek/goc.py:146
 #, python-format
 msgid "Dosya UTF-8 metin değil: %s"
-msgstr ""
+msgstr "The file is not UTF-8 text: %s"
 
 #: cekirdek/guc.py:127
 #, python-format
@@ -2965,10 +3484,77 @@ msgstr "hottest pin: %s"
 msgid "en sıcak demet: %s (F_demet = %.4f)"
 msgstr "hottest assembly: %s (F_assembly = %.4f)"
 
+#: cekirdek/ice_aktar.py:77 cekirdek/ice_aktar.py:189
+#, python-format
+msgid "dosya bulunamadı: %s"
+msgstr "file not found: %s"
+
+#: cekirdek/ice_aktar.py:112
+#, python-format
+msgid "%s: bileşim okunamadı, boş bırakıldı"
+msgstr "%s: composition could not be read, left empty"
+
+#: cekirdek/ice_aktar.py:126
+#, python-format
+msgid "%s: yoğunluk 'sum' olarak verilmiş, kütle yoğunluğuna çevrildi (%.4f g/cm³)"
+msgstr "%s: density given as 'sum', converted to mass density (%.4f g/cm³)"
+
+#: cekirdek/ice_aktar.py:131
+#, python-format
+msgid "%s: yoğunluk belirlenemedi, 1.0 g/cm³ varsayıldı — mutlaka düzeltin"
+msgstr "%s: density could not be determined, 1.0 g/cm³ assumed — be sure to correct it"
+
+#: cekirdek/ice_aktar.py:151
+#, python-format
+msgid "%s: S(α,β) '%s' kesri %.3f — model dosyası yalnızca adı taşır, kesir kayboldu"
+msgstr ""
+"%s: S(α,β) '%s' fraction %.3f — the model file carries only the name, the fraction is"
+" lost"
+
+#: cekirdek/ice_aktar.py:161
+#, python-format
+msgid "%s: S(α,β) okunamadı (%s)"
+msgstr "%s: S(α,β) could not be read (%s)"
+
+#: cekirdek/ice_aktar.py:169
+#, python-format
+msgid ""
+"%d malzeme aktarıldı. Bileşimler nüklid bazında aktarılır (element kısayolları "
+"korunmaz); sonuç aynı olsa da tablo daha uzun görünür."
+msgstr ""
+"%d materials imported. Compositions are imported nuclide by nuclide (element "
+"shortcuts are not kept); the result is the same but the table looks longer."
+
+#: cekirdek/ice_aktar.py:210
+msgid ""
+"Geometri içe aktarılamaz.\n"
+"\n"
+"Bu arayüz rehberli bir kor kurucusudur: malzeme → çubuk → demet → kor katmanları "
+"üzerinden çalışır. OpenMC XML'i ise ham CSG'dir (yüzeyler, hücreler, universe'ler). "
+"Aynı geometri sonsuz farklı şekilde kurulmuş olabileceği için ham CSG'yi bu "
+"katmanlara geri çevirmek genel olarak çözülebilir bir problem değildir.\n"
+"\n"
+"Yanlış bir tahmin, sessizce yanlış bir model üretirdi; bu yüzden denenmiyor.\n"
+"\n"
+"Pratik yol: malzemeleri buradan aktarın, geometriyi arayüzde yeniden kurun. "
+"Malzemeler bir modelin en zahmetli kısmıdır."
+msgstr ""
+"The geometry cannot be imported.\n"
+"\n"
+"This interface is a guided core builder: it works through material → pin → assembly →"
+" core layers. OpenMC XML, on the other hand, is raw CSG (surfaces, cells, universes)."
+" Since the same geometry may have been built in infinitely many ways, converting raw "
+"CSG back into these layers is not a solvable problem in general.\n"
+"\n"
+"A wrong guess would silently produce a wrong model; so it is not attempted.\n"
+"\n"
+"The practical way: import the materials here and rebuild the geometry in the "
+"interface. Materials are the most laborious part of a model."
+
 #: cekirdek/kapsul.py:221
 #, python-format
 msgid "%s bulunamadı: %s"
-msgstr ""
+msgstr "%s not found: %s"
 
 #: cekirdek/kapsul.py:223 cekirdek/uygunluk_denetimi/denetle.py:81
 #, python-format
@@ -2977,95 +3563,99 @@ msgstr "%s could not be read: %s"
 
 #: cekirdek/kapsul.py:245
 msgid "eşleşiyor"
-msgstr ""
+msgstr "matches"
 
 #: cekirdek/kapsul.py:245
 msgid "EŞLEŞMİYOR"
-msgstr ""
+msgstr "DOES NOT MATCH"
 
 #: cekirdek/kapsul.py:248
 msgid "ortam kilidi yok"
-msgstr ""
+msgstr "no environment lock"
 
 #: cekirdek/kapsul.py:249
 #, python-format
 msgid "%s (%s); spec sha256 %s… %s; %s"
-msgstr ""
+msgstr "%s (%s); spec sha256 %s… %s; %s"
 
 #: cekirdek/kapsul.py:282
 msgid "Bir koşuyu kapsüldeki spec, tohum ve iş parçacığıyla yeniden üretir."
-msgstr ""
+msgstr "Reproduces a run with the spec, seed and threads in the capsule."
 
 #: cekirdek/kapsul.py:284
 msgid "yeni koşu dizini (varsayılan <koşu_dizini>_yeniden)"
-msgstr ""
+msgstr "new run directory (default <run_directory>_yeniden)"
 
 #: cekirdek/kapsul.py:286
 msgid "koşmadan planı ve ortam farkını göster (dry-run)"
-msgstr ""
+msgstr "show the plan and the environment difference without running (dry-run)"
 
 #: cekirdek/kapsul.py:299
 msgid "k-eff karşılaştırılamadı (özdeğer koşusu değil ya da statepoint yok)"
-msgstr ""
+msgstr "k-eff could not be compared (not an eigenvalue run or no statepoint)"
 
 #: cekirdek/kapsul.py:301
 #, python-format
 msgid "k-eff birebir aynı: %.6f ± %.6f"
-msgstr ""
+msgstr "k-eff exactly the same: %.6f ± %.6f"
 
 #: cekirdek/kapsul.py:305
 #, python-format
 msgid "k-eff aynı (yalnız kayan nokta yuvarlama düzeyinde fark, |Δ| = %.1e): %.6f ± %.6f"
 msgstr ""
+"k-eff the same (difference only at floating-point rounding level, |Δ| = %.1e): %.6f ±"
+" %.6f"
 
 #: cekirdek/kapsul.py:308
 #, python-format
 msgid "k-eff farkı: %.6f → %.6f (Δ = %+.6f, %.2fσ birleşik)"
-msgstr ""
+msgstr "k-eff difference: %.6f → %.6f (Δ = %+.6f, %.2fσ combined)"
 
 #: cekirdek/kapsul.py:315
 msgid "Ortam farkı yok: kapsül ile bugünkü ortam aynı."
-msgstr ""
+msgstr "No environment difference: the capsule and today's environment are the same."
 
 #: cekirdek/kapsul.py:327
 #, python-format
 msgid "hedef dizin kaynak koşu diziniyle aynı olamaz: %s"
-msgstr ""
+msgstr "the target directory cannot be the same as the source run directory: %s"
 
 #: cekirdek/kapsul.py:333
 #, python-format
 msgid "%s kapsülden sonra değişmiş (sha256 farklı); yeniden üretim reddedildi"
-msgstr ""
+msgstr "%s has changed since the capsule (sha256 differs); reproduction refused"
 
 #: cekirdek/kapsul.py:351
 #, python-format
 msgid "Kapsül: %s (oluşturma %s)"
-msgstr ""
+msgstr "Capsule: %s (created %s)"
 
 #: cekirdek/kapsul.py:355
 #, python-format
 msgid "Plan: tohum %s, iş parçacığı %s, hedef %s"
-msgstr ""
+msgstr "Plan: seed %s, threads %s, target %s"
 
 #: cekirdek/kapsul.py:357
 msgid "Kuru çalışma (--kuru): koşu başlatılmadı."
-msgstr ""
+msgstr "Dry run (--kuru): the run was not started."
 
 #: cekirdek/kapsul.py:362
 #, python-format
 msgid "Yeniden koşu başarısız (çıkış kodu %s); log: %s"
-msgstr ""
+msgstr "Rerun failed (exit code %s); log: %s"
 
 #: cekirdek/kapsul.py:368
 msgid ""
 "Not: yeni spec.json baytları farklı (şema göçü ya da biçim); model aynı spec'ten "
 "kuruldu."
 msgstr ""
+"Note: the bytes of the new spec.json differ (schema migration or formatting); the "
+"model was built from the same spec."
 
 #: cekirdek/kapsul.py:371
 #, python-format
 msgid "Not: yeni koşunun kapsülü okunamadı: %s"
-msgstr ""
+msgstr "Note: the capsule of the new run could not be read: %s"
 
 #: cekirdek/kaynak.py:33
 msgid "Watt fisyon tayfı"
@@ -3147,6 +3737,24 @@ msgstr "neutron"
 #, python-format
 msgid " (ortalama %s)"
 msgstr " (mean %s)"
+
+#: cekirdek/kod_uret/tukenme.py:33
+#, python-format
+msgid ""
+"hacmi hesaplanamayan yanabilir malzeme: %s (%s). Tükenme betiği kesin hacim "
+"gerektirir."
+msgstr ""
+"depletable material whose volume cannot be computed: %s (%s). The depletion script "
+"requires exact volumes."
+
+#: cekirdek/kod_uret/tukenme.py:100
+#, python-format
+msgid ""
+"'%s' malzemesinin bir örneğinin hacmi hesaplanamıyor; çubuk çubuk yanma kesin hacim "
+"gerektirir"
+msgstr ""
+"the volume of an instance of material '%s' cannot be computed; pin-by-pin burnup "
+"requires exact volumes"
 
 #: cekirdek/kosucu.py:110
 msgid "geçersiz k-eff"
@@ -3710,128 +4318,618 @@ msgstr "         local slope dk/dx = %.4g / %s"
 msgid "  Çözüm bulunamadı."
 msgstr "  No solution found."
 
+#: cekirdek/kurucu.py:197
+msgid "otomatik ağ sınırları için modelin sınır kutusu gerekli"
+msgstr "automatic mesh boundaries require the bounding box of the model"
+
+#: cekirdek/kurucu.py:231
+#, python-format
+msgid "bilinmeyen filtre türü: %s"
+msgstr "unknown filter type: %s"
+
+#: cekirdek/kurucu.py:249 cekirdek/kurucu.py:272
+msgid "güç dağılımı için geçerli bir çubuk seçilmeli"
+msgstr "a valid pin must be selected for the power distribution"
+
+#: cekirdek/kurucu.py:250
+#, python-format
+msgid " ('%s' tanımsız)"
+msgstr " ('%s' undefined)"
+
+#: cekirdek/kurucu.py:257
+#, python-format
+msgid "'%s': geçersiz bölge numarası %d (çubukta %d bölge var)"
+msgstr "'%s': invalid pin region number %d (the pin has %d regions)"
+
+#: cekirdek/kurucu.py:286
+#, python-format
+msgid ""
+"'%s' çubuğu modelde kullanılmıyor. Güç dağılımı yalnızca geometride yer alan bir "
+"çubuk için hesaplanabilir."
+msgstr ""
+"pin '%s' is not used in the model. The power distribution can be computed only for a "
+"pin that is present in the geometry."
+
+#: cekirdek/malzeme_kutup.py:145
+#, python-format
+msgid ""
+"U yüklemesi %.2f gU/cm³ ve gözeneklilik %%%.1f ile alüminyuma yer kalmıyor (U₃Si₂ "
+"hacim kesri %.2f)."
+msgstr ""
+"With a U loading of %.2f gU/cm³ and a porosity of %.1f%% there is no room left for "
+"aluminium (U₃Si₂ volume fraction %.2f)."
+
+#: cekirdek/malzeme_kutup.py:406
+msgid "UO₂ — zenginlik parametreli uranyum dioksit"
+msgstr "UO₂ — uranium dioxide with enrichment parameter"
+
+#: cekirdek/malzeme_kutup.py:407 cekirdek/malzeme_kutup.py:528
+msgid "UN — uranyum nitrür"
+msgstr "UN — uranium nitride"
+
+#: cekirdek/malzeme_kutup.py:408
+msgid "U-10Mo — metalik alaşım yakıt"
+msgstr "U-10Mo — metallic alloy fuel"
+
+#: cekirdek/malzeme_kutup.py:409
+msgid "MOX — karışık oksit"
+msgstr "MOX — mixed oxide"
+
+#: cekirdek/malzeme_kutup.py:410
+msgid "U₃Si₂-Al — MTR dispersiyon yakıtı"
+msgstr "U₃Si₂-Al — MTR dispersion fuel"
+
+#: cekirdek/malzeme_kutup.py:412
+msgid "Zircaloy-4 zarf"
+msgstr "Zircaloy-4 cladding"
+
+#: cekirdek/malzeme_kutup.py:413
+msgid "AISI 316 paslanmaz çelik"
+msgstr "AISI 316 stainless steel"
+
+#: cekirdek/malzeme_kutup.py:414
+msgid "MA956 ODS FeCrAl"
+msgstr "MA956 ODS FeCrAl"
+
+#: cekirdek/malzeme_kutup.py:415
+msgid "FeCrAl kazaya dayanıklı zarf"
+msgstr "FeCrAl accident-tolerant cladding"
+
+#: cekirdek/malzeme_kutup.py:416
+msgid "Silisyum karbür"
+msgstr "Silicon carbide"
+
+#: cekirdek/malzeme_kutup.py:417
+msgid "Al-6061 plaka zarfı"
+msgstr "Al-6061 plate cladding"
+
+#: cekirdek/malzeme_kutup.py:419
+msgid "Hafif su (S(α,β) dahil, sıcaklığa bağlı yoğunluk)"
+msgstr "Light water (with S(α,β), temperature-dependent density)"
+
+#: cekirdek/malzeme_kutup.py:420 cekirdek/malzeme_kutup.py:544
+msgid "Ağır su (D₂O)"
+msgstr "Heavy water (D₂O)"
+
+#: cekirdek/malzeme_kutup.py:421
+msgid "Kurşun-bizmut ötektiği"
+msgstr "Lead-bismuth eutectic"
+
+#: cekirdek/malzeme_kutup.py:422
+msgid "Sıvı sodyum"
+msgstr "Liquid sodium"
+
+#: cekirdek/malzeme_kutup.py:423
+msgid "Helyum dolgu gazı"
+msgstr "Helium fill gas"
+
+#: cekirdek/malzeme_kutup.py:424
+msgid "Grafit yansıtıcı/moderatör"
+msgstr "Graphite reflector/moderator"
+
+#: cekirdek/malzeme_kutup.py:425
+msgid "Berilyum yansıtıcı"
+msgstr "Beryllium reflector"
+
+#: cekirdek/malzeme_kutup.py:427
+msgid "Bor karbür"
+msgstr "Boron carbide"
+
+#: cekirdek/malzeme_kutup.py:428
+msgid "Gadolinyum oksit yanabilir zehir"
+msgstr "Gadolinium oxide burnable absorber"
+
+#: cekirdek/malzeme_kutup.py:429
+msgid "Ag-In-Cd kontrol alaşımı"
+msgstr "Ag-In-Cd control alloy"
+
+#: cekirdek/malzeme_kutup.py:436
+#, python-format
+msgid "kütüphanede yok: %s  (mevcut: %s)"
+msgstr "not in the library: %s  (available: %s)"
+
+#: cekirdek/malzeme_kutup.py:480
+msgid "U-235 ağırlıkça %"
+msgstr "U-235 wt%"
+
+#: cekirdek/malzeme_kutup.py:482
+msgid ""
+"U-235'in uranyum içindeki ağırlık yüzdesi. OpenMC'nin zenginlik kısayolu %97'nin "
+"üstünde tanımsızdır."
+msgstr ""
+"Weight percentage of U-235 in uranium. OpenMC's enrichment shortcut is undefined "
+"above 97%."
+
+#: cekirdek/malzeme_kutup.py:484
+msgid "Gözeneklilik"
+msgstr "Porosity"
+
+#: cekirdek/malzeme_kutup.py:486
+msgid ""
+"Yakıt tabakasındaki boşluk hacim kesri (0–0.3). Yoğunluk, U yüklemesi ve bu değerden "
+"hesaplanır: U₃Si₂ (12.2 g/cm³) + Al (2.70 g/cm³)."
+msgstr ""
+"Void volume fraction in the fuel layer (0–0.3). The density is computed from the U "
+"loading and this value: U₃Si₂ (12.2 g/cm³) + Al (2.70 g/cm³)."
+
+#: cekirdek/malzeme_kutup.py:489 cekirdek/rapor_sablon/__init__.py:91
+msgid "Yoğunluk"
+msgstr "Density"
+
+#: cekirdek/malzeme_kutup.py:491 cekirdek/rapor_sablon/__init__.py:91
+msgid "Sıcaklık"
+msgstr "Temperature"
+
+#: cekirdek/malzeme_kutup.py:493
+msgid "Tesir kesiti verisi bu sıcaklıkta kullanılır."
+msgstr "Cross section data are used at this temperature."
+
+#: cekirdek/malzeme_kutup.py:494
+msgid "Çözünmüş bor [ppm]"
+msgstr "Dissolved boron [ppm]"
+
+#: cekirdek/malzeme_kutup.py:496
+msgid "Suda çözünmüş doğal borun ağırlıkça ppm'i (PWR kimyasal kontrolü)."
+msgstr "Weight ppm of natural boron dissolved in water (PWR chemical shim)."
+
+#: cekirdek/malzeme_kutup.py:497
+msgid "Pu ağırlıkça %"
+msgstr "Pu wt%"
+
+#: cekirdek/malzeme_kutup.py:499
+msgid "Ağır metal (U + Pu) içindeki plütonyumun ağırlık yüzdesi."
+msgstr "Weight percentage of plutonium in the heavy metal (U + Pu)."
+
+#: cekirdek/malzeme_kutup.py:500
+msgid "Fisil Pu %"
+msgstr "Fissile Pu %"
+
+#: cekirdek/malzeme_kutup.py:502
+msgid "Plütonyum içindeki Pu-239 + Pu-241 ağırlık yüzdesi; kalanı Pu-240 ve Pu-242."
+msgstr "Weight percentage of Pu-239 + Pu-241 in plutonium; the rest is Pu-240 and Pu-242."
+
+#: cekirdek/malzeme_kutup.py:504
+msgid "Taşıyıcı U'da U-235 %"
+msgstr "U-235 in the carrier U (%)"
+
+#: cekirdek/malzeme_kutup.py:506
+msgid "MOX'taki uranyumun (çoğunlukla fakir U) U-235 ağırlık yüzdesi."
+msgstr "U-235 weight percentage of the uranium in MOX (mostly depleted U)."
+
+#: cekirdek/malzeme_kutup.py:507
+msgid "Uranyum yüklemesi"
+msgstr "Uranium loading"
+
+#: cekirdek/malzeme_kutup.py:509
+msgid "D₂O saflığı (mol %)"
+msgstr "D₂O purity (mol %)"
+
+#: cekirdek/malzeme_kutup.py:511
+msgid "B-10 atomca %"
+msgstr "B-10 at%"
+
+#: cekirdek/malzeme_kutup.py:513
+msgid "doğal bor (%19.9)"
+msgstr "natural boron (19.9%)"
+
+#: cekirdek/malzeme_kutup.py:514
+msgid "En küçük değer doğal bor demektir."
+msgstr "The smallest value means natural boron."
+
+#: cekirdek/malzeme_kutup.py:521
+msgid "Yoğunluk bu sıcaklıktaki doymuş sıvı sudan hesaplanır (273–623 K)."
+msgstr "The density is computed from saturated liquid water at this temperature (273–623 K)."
+
+#: cekirdek/malzeme_kutup.py:524
+msgid "UO₂ — uranyum dioksit"
+msgstr "UO₂ — uranium dioxide"
+
+#: cekirdek/malzeme_kutup.py:524
+msgid "Hafif su reaktörlerinin seramik yakıtı."
+msgstr "Ceramic fuel of light water reactors."
+
+#: cekirdek/malzeme_kutup.py:526
+msgid "MOX — karışık oksit (U, Pu)O₂"
+msgstr "MOX — mixed oxide (U, Pu)O₂"
+
+#: cekirdek/malzeme_kutup.py:526
+msgid "Plütonyumlu seramik yakıt; basitleştirilmiş Pu vektörü."
+msgstr "Ceramic fuel with plutonium; simplified Pu vector."
+
+#: cekirdek/malzeme_kutup.py:528
+msgid "Yüksek yoğunluklu seramik yakıt."
+msgstr "High-density ceramic fuel."
+
+#: cekirdek/malzeme_kutup.py:530
+msgid "U-10Mo — metalik uranyum alaşımı"
+msgstr "U-10Mo — metallic uranium alloy"
+
+#: cekirdek/malzeme_kutup.py:530
+msgid "Ağırlıkça %10 molibdenli metalik yakıt."
+msgstr "Metallic fuel with 10 wt% molybdenum."
+
+#: cekirdek/malzeme_kutup.py:532
+msgid "U₃Si₂-Al — dispersiyon yakıtı"
+msgstr "U₃Si₂-Al — dispersion fuel"
+
+#: cekirdek/malzeme_kutup.py:532
+msgid "MTR tipi araştırma reaktörü plakalarının yakıt tabakası."
+msgstr "Fuel layer of MTR-type research reactor plates."
+
+#: cekirdek/malzeme_kutup.py:534
+msgid "Zircaloy-4"
+msgstr "Zircaloy-4"
+
+#: cekirdek/malzeme_kutup.py:534
+msgid "Hafif su reaktörü yakıt zarfı."
+msgstr "Light water reactor fuel cladding."
+
+#: cekirdek/malzeme_kutup.py:535
+msgid "SS-316 paslanmaz çelik"
+msgstr "SS-316 stainless steel"
+
+#: cekirdek/malzeme_kutup.py:535
+msgid "Hızlı reaktör zarfı ve yapısal malzeme."
+msgstr "Fast reactor cladding and structural material."
+
+#: cekirdek/malzeme_kutup.py:537
+msgid "FeCrAl"
+msgstr "FeCrAl"
+
+#: cekirdek/malzeme_kutup.py:537
+msgid "Kazaya dayanıklı yakıt zarfı."
+msgstr "Accident-tolerant fuel cladding."
+
+#: cekirdek/malzeme_kutup.py:538
+msgid "MA956 — ODS FeCrAl"
+msgstr "MA956 — ODS FeCrAl"
+
+#: cekirdek/malzeme_kutup.py:538
+msgid "Yüksek sıcaklık zarf alaşımı."
+msgstr "High-temperature cladding alloy."
+
+#: cekirdek/malzeme_kutup.py:539
+msgid "SiC — silisyum karbür"
+msgstr "SiC — silicon carbide"
+
+#: cekirdek/malzeme_kutup.py:539
+msgid "Seramik zarf / yapısal malzeme."
+msgstr "Ceramic cladding / structural material."
+
+#: cekirdek/malzeme_kutup.py:540
+msgid "Al-6061 alüminyum"
+msgstr "Al-6061 aluminium"
+
+#: cekirdek/malzeme_kutup.py:540
+msgid "Araştırma reaktörü plaka zarfı ve yapısı."
+msgstr "Research reactor plate cladding and structure."
+
+#: cekirdek/malzeme_kutup.py:542
+msgid "Hafif su (H₂O)"
+msgstr "Light water (H₂O)"
+
+#: cekirdek/malzeme_kutup.py:542
+msgid "Soğutucu ve moderatör; yoğunluk sıcaklıktan hesaplanır."
+msgstr "Coolant and moderator; the density is computed from the temperature."
+
+#: cekirdek/malzeme_kutup.py:544
+msgid "Moderatör; kalanı hafif sudur."
+msgstr "Moderator; the rest is light water."
+
+#: cekirdek/malzeme_kutup.py:547
+msgid "Sıvı sodyum (Na)"
+msgstr "Liquid sodium (Na)"
+
+#: cekirdek/malzeme_kutup.py:547 cekirdek/malzeme_kutup.py:549
+msgid "Hızlı reaktör soğutucusu; yoğunluk sıcaklıktan hesaplanır."
+msgstr "Fast reactor coolant; the density is computed from the temperature."
+
+#: cekirdek/malzeme_kutup.py:549
+msgid "Kurşun-bizmut ötektiği (LBE)"
+msgstr "Lead-bismuth eutectic (LBE)"
+
+#: cekirdek/malzeme_kutup.py:551
+msgid "Grafit (C)"
+msgstr "Graphite (C)"
+
+#: cekirdek/malzeme_kutup.py:551
+msgid "Moderatör ve yansıtıcı."
+msgstr "Moderator and reflector."
+
+#: cekirdek/malzeme_kutup.py:552
+msgid "Berilyum (Be)"
+msgstr "Beryllium (Be)"
+
+#: cekirdek/malzeme_kutup.py:552
+msgid "Yansıtıcı ve moderatör."
+msgstr "Reflector and moderator."
+
+#: cekirdek/malzeme_kutup.py:553
+msgid "B₄C — bor karbür"
+msgstr "B₄C — boron carbide"
+
+#: cekirdek/malzeme_kutup.py:553
+msgid "Kontrol çubuğu ve tambur emicisi."
+msgstr "Control rod and control drum absorber."
+
+#: cekirdek/malzeme_kutup.py:555
+msgid "Ag-In-Cd"
+msgstr "Ag-In-Cd"
+
+#: cekirdek/malzeme_kutup.py:555
+msgid "PWR kontrol çubuğu alaşımı."
+msgstr "PWR control rod alloy."
+
+#: cekirdek/malzeme_kutup.py:556
+msgid "Gd₂O₃ — gadolinyum oksit"
+msgstr "Gd₂O₃ — gadolinium oxide"
+
+#: cekirdek/malzeme_kutup.py:556
+msgid "Yanabilir zehir."
+msgstr "Burnable absorber."
+
+#: cekirdek/malzeme_kutup.py:557
+msgid "Helyum (He)"
+msgstr "Helium (He)"
+
+#: cekirdek/malzeme_kutup.py:557
+msgid "Yakıt-zarf aralığı dolgu gazı."
+msgstr "Fuel-cladding gap fill gas."
+
+#: cekirdek/malzeme_kutup.py:668
+#, python-format
+msgid ""
+"Zenginlik %%%.2f: OpenMC'nin zenginlik kısayolu U-234 oranını sabit varsayar; yüksek "
+"zenginlikte izotopları elle vermek daha doğrudur."
+msgstr ""
+"Enrichment %.2f%%: OpenMC's enrichment shortcut assumes a constant U-234 ratio; at "
+"high enrichment it is more accurate to give the isotopes by hand."
+
+#: cekirdek/malzeme_kutup.py:682
+#, python-format
+msgid ""
+"Bu yüklemede U₃Si₂ (%.1f g/cm³) ile Al (%.2f g/cm³) karışımının yoğunluğu ≈ %.2f "
+"g/cm³; girilen %.2f g/cm³."
+msgstr ""
+"At this loading the density of the U₃Si₂ (%.1f g/cm³) and Al (%.2f g/cm³) mixture is "
+"≈ %.2f g/cm³; %.2f g/cm³ was entered."
+
 #: cekirdek/nuklidler.py:51
 msgid "Uranyum"
-msgstr ""
+msgstr "Uranium"
 
 #: cekirdek/nuklidler.py:52
 msgid "Neptünyum"
-msgstr ""
+msgstr "Neptunium"
 
 #: cekirdek/nuklidler.py:53
 msgid "Plütonyum"
-msgstr ""
+msgstr "Plutonium"
 
 #: cekirdek/nuklidler.py:54
 msgid "Amerikyum"
-msgstr ""
+msgstr "Americium"
 
 #: cekirdek/nuklidler.py:55
 msgid "Küriyum"
-msgstr ""
+msgstr "Curium"
 
-#: cekirdek/nuklidler.py:152
+#: cekirdek/nuklidler.py:152 cekirdek/veri_bilgi.py:241
 #, python-format
 msgid "zincir dosyası okunamadı: %s"
-msgstr ""
+msgstr "chain file could not be read: %s"
 
 #: cekirdek/nuklidler.py:176
 #, python-format
 msgid "zincir dosyası ayrıştırılamadı: %s (%s)"
-msgstr ""
+msgstr "chain file could not be parsed: %s (%s)"
 
 #: cekirdek/nuklidler.py:178
 #, python-format
 msgid "zincirde nüklid yok: %s"
-msgstr ""
+msgstr "no nuclides in the chain: %s"
 
 #: cekirdek/nuklidler.py:273
 msgid "Uzun ömürlü (7 LLFP)"
-msgstr ""
+msgstr "Long-lived (7 LLFP)"
 
 #: cekirdek/nuklidler.py:274
 msgid "Orta ömürlü ısı kaynağı (Cs137, Sr90)"
-msgstr ""
+msgstr "Medium-lived heat sources (Cs137, Sr90)"
 
 #: cekirdek/nuklidler.py:277 cekirdek/nuklidler.py:325
 msgid "Atık / ısı"
-msgstr ""
+msgstr "Waste / heat"
 
 #: cekirdek/nuklidler.py:291
 msgid "Toryum çevrimi (Th, Pa)"
-msgstr ""
+msgstr "Thorium cycle (Th, Pa)"
 
 #: cekirdek/nuklidler.py:293
 msgid "Xe/Sm dinamiği (öncülleriyle)"
-msgstr ""
+msgstr "Xe/Sm dynamics (with precursors)"
 
 #: cekirdek/nuklidler.py:295
 msgid "Fisyon ürünü zehirleri"
-msgstr ""
+msgstr "Fission product poisons"
 
 #: cekirdek/nuklidler.py:297
 msgid "Yanabilir zehirler (Gd, Er)"
-msgstr ""
+msgstr "Burnable absorbers (Gd, Er)"
 
 #: cekirdek/nuklidler.py:299
 msgid "Yanma göstergeleri"
-msgstr ""
+msgstr "Burnup indicators"
 
 #: cekirdek/nuklidler.py:303
 msgid "Diğer nüklidler"
-msgstr ""
+msgstr "Other nuclides"
 
 #: cekirdek/nuklidler.py:321
 msgid "Temel"
-msgstr ""
+msgstr "Basic"
 
 #: cekirdek/nuklidler.py:322
 msgid "Pu vektörü"
-msgstr ""
+msgstr "Pu vector"
 
 #: cekirdek/nuklidler.py:323
 msgid "Zehirler"
-msgstr ""
+msgstr "Poisons"
 
 #: cekirdek/nuklidler.py:324
 msgid "Minör aktinitler"
-msgstr ""
+msgstr "Minor actinides"
 
 #: cekirdek/nuklidler.py:332
 msgid "Yanma göstergesi"
-msgstr ""
+msgstr "Burnup indicator"
 
 #: cekirdek/nuklidler.py:333
 msgid "Th çevrimi"
-msgstr ""
+msgstr "Th cycle"
 
 #: cekirdek/nuklidler.py:334
 msgid "Hızlı spektrum"
-msgstr ""
+msgstr "Fast spectrum"
 
 #: cekirdek/ornek_bilgi.py:65
 msgid "Araştırma"
-msgstr ""
+msgstr "Research"
 
 #: cekirdek/ornek_bilgi.py:65
 msgid "Kriter"
-msgstr ""
+msgstr "Benchmark"
 
 #: cekirdek/ornek_bilgi.py:65
 msgid "Zırh"
-msgstr ""
+msgstr "Shielding"
 
 #: cekirdek/ornek_bilgi.py:66
 msgid "Giriş"
-msgstr ""
+msgstr "Introductory"
 
 #: cekirdek/ornek_bilgi.py:66
 msgid "Orta"
-msgstr ""
+msgstr "Intermediate"
 
 #: cekirdek/ornek_bilgi.py:66
 msgid "İleri"
-msgstr ""
+msgstr "Advanced"
+
+#: cekirdek/ornek_bilgi.py:134
+msgid "referans.olcum bir sözlük olmalı"
+msgstr "referans.olcum must be a dictionary"
+
+#: cekirdek/ornek_bilgi.py:135
+#, python-format
+msgid "referans.olcum.%s eksik"
+msgstr "referans.olcum.%s is missing"
+
+#: cekirdek/ornek_bilgi.py:136
+#, python-format
+msgid "referans.olcum.%s bilinmeyen alan"
+msgstr "referans.olcum.%s is an unknown field"
+
+#: cekirdek/ornek_bilgi.py:140
+#, python-format
+msgid "referans.olcum.%s negatif olmayan bir sayı olmalı"
+msgstr "referans.olcum.%s must be a non-negative number"
+
+#: cekirdek/ornek_bilgi.py:144
+#, python-format
+msgid "referans.olcum.%s pozitif tamsayı olmalı"
+msgstr "referans.olcum.%s must be a positive integer"
+
+#: cekirdek/ornek_bilgi.py:147
+#, python-format
+msgid "referans.olcum.%s boş olmayan metin olmalı"
+msgstr "referans.olcum.%s must be non-empty text"
+
+#: cekirdek/ornek_bilgi.py:153
+msgid "referans bir sözlük olmalı"
+msgstr "referans must be a dictionary"
+
+#: cekirdek/ornek_bilgi.py:154
+#, python-format
+msgid "referans.%s eksik"
+msgstr "referans.%s is missing"
+
+#: cekirdek/ornek_bilgi.py:155
+#, python-format
+msgid "referans.%s bilinmeyen alan"
+msgstr "referans.%s is an unknown field"
+
+#: cekirdek/ornek_bilgi.py:158
+msgid "referans.k negatif olmayan bir sayı olmalı"
+msgstr "referans.k must be a non-negative number"
+
+#: cekirdek/ornek_bilgi.py:160
+msgid "referans.sigma negatif olmayan bir sayı olmalı"
+msgstr "referans.sigma must be a non-negative number"
+
+#: cekirdek/ornek_bilgi.py:162
+#, python-format
+msgid "referans.tur %r geçersiz (geçerli: %s)"
+msgstr "referans.tur %r is invalid (valid: %s)"
+
+#: cekirdek/ornek_bilgi.py:165
+msgid "referans.kaynak boş olmayan metin olmalı"
+msgstr "referans.kaynak must be non-empty text"
+
+#: cekirdek/ornek_bilgi.py:170
+#, python-format
+msgid "referans.%s boş olmayan metin olmalı"
+msgstr "referans.%s must be non-empty text"
+
+#: cekirdek/ornek_bilgi.py:173
+#, python-format
+msgid "referans.%s bir sözlük olmalı"
+msgstr "referans.%s must be a dictionary"
+
+#: cekirdek/ornek_bilgi.py:182
+msgid "örnek bir JSON nesnesi olmalı"
+msgstr "the example must be a JSON object"
+
+#: cekirdek/ornek_bilgi.py:189
+#, python-format
+msgid "%s boş olmayan metin olmalı"
+msgstr "%s must be non-empty text"
+
+#: cekirdek/ornek_bilgi.py:191
+#, python-format
+msgid "kategori %r geçersiz (geçerli: %s)"
+msgstr "category %r is invalid (valid: %s)"
+
+#: cekirdek/ornek_bilgi.py:194
+#, python-format
+msgid "seviye %r geçersiz (geçerli: %s)"
+msgstr "level %r is invalid (valid: %s)"
+
+#: cekirdek/ornek_bilgi.py:249
+#, python-format
+msgid "%s: örnek bir JSON nesnesi değil"
+msgstr "%s: the example is not a JSON object"
 
 #: cekirdek/rapor.py:175
 #, python-format
@@ -3867,7 +4965,7 @@ msgstr "Application version"
 
 #: cekirdek/rapor.py:229
 msgid "uygulama"
-msgstr ""
+msgstr "application"
 
 #: cekirdek/rapor.py:230
 msgid "Git commit"
@@ -4072,14 +5170,6 @@ msgstr "Name"
 #: cekirdek/rapor_sablon/__init__.py:91
 msgid "Kimlik"
 msgstr "ID"
-
-#: cekirdek/rapor_sablon/__init__.py:91
-msgid "Yoğunluk"
-msgstr "Density"
-
-#: cekirdek/rapor_sablon/__init__.py:91
-msgid "Sıcaklık"
-msgstr "Temperature"
 
 #: cekirdek/rapor_sablon/__init__.py:91
 msgid "Bileşim"
@@ -4345,7 +5435,7 @@ msgstr "U"
 msgid "Öneri:"
 msgstr "Suggestion:"
 
-#: cekirdek/rapor_sablon/uygunluk_eki.py:67
+#: cekirdek/rapor_sablon/uygunluk_eki.py:67 cekirdek/tukenme_hacim.py:61
 msgid "yok"
 msgstr "none"
 
@@ -4405,9 +5495,112 @@ msgstr ""
 msgid "uygunluk denetimi yapılamadı: %s"
 msgstr "conformity check could not be performed: %s"
 
+#: cekirdek/sema.py:376
+#, python-format
+msgid ""
+"%s() gelişmiş (ağaç) geometri modunda kullanılamaz: kor alanları yok; "
+"cekirdek.geometri API'sini kullanın"
+msgstr ""
+"%s() cannot be used in advanced (tree) geometry mode: there are no core fields; use "
+"the cekirdek.geometri API"
+
+#: cekirdek/sema_basvuru.py:97
+msgid "çubuk"
+msgstr "pin"
+
+#: cekirdek/sema_basvuru.py:97
+msgid "plaka"
+msgstr "plate"
+
+#: cekirdek/sema_basvuru.py:98
+msgid "demet"
+msgstr "assembly"
+
+#: cekirdek/sema_basvuru.py:124
+msgid "Malzeme adı boş olamaz."
+msgstr "The material name cannot be empty."
+
+#: cekirdek/sema_basvuru.py:126
+msgid "Ad boşlukla başlayamaz ya da bitemez."
+msgstr "The name cannot start or end with a space."
+
+#: cekirdek/sema_basvuru.py:128
+#, python-format
+msgid "'%s' ayrılmış bir addır: geometride Boş (madde yok) anlamına gelir."
+msgstr "'%s' is a reserved name: in the geometry it means void (no material)."
+
+#: cekirdek/sema_basvuru.py:131
+#, python-format
+msgid "'%s' adında başka bir malzeme var."
+msgstr "There is another material named '%s'."
+
+#: cekirdek/sema_basvuru.py:134
+#, python-format
+msgid ""
+"'%s' adı bir %s için kullanılıyor. Demet ve katman seçimlerinde aynı ad iki şeyi "
+"gösterirdi."
+msgstr ""
+"The name '%s' is used for a %s. In assembly and layer selections the same name would "
+"refer to two things."
+
+#: cekirdek/sema_basvuru.py:158
+#, python-format
+msgid "'%s' adında %d malzeme var; önce birini yeniden adlandırın."
+msgstr "Material name '%s' is used by %d materials; rename one of them first."
+
 #: cekirdek/surum.py:20
 msgid "OpenMC Reaktör Kuru Arayüzü"
 msgstr "OpenMC Reactor Core Interface"
+
+#: cekirdek/tambur.py:117
+msgid "tambur sayısı en az 1 olmalı"
+msgstr "number of control drums must be at least 1"
+
+#: cekirdek/tambur.py:119
+msgid "tambur yarıçapı sıfırdan büyük olmalı"
+msgstr "drum radius must be greater than zero"
+
+#: cekirdek/tambur.py:121
+msgid "emici yay açısı 0–360° arasında olmalı"
+msgstr "absorber arc angle must be between 0 and 360°"
+
+#: cekirdek/tambur.py:123
+#, python-format
+msgid "emici iç yarıçapı (%.4f cm) tambur yarıçapından (%.4f cm) küçük olmalı"
+msgstr ""
+"the inner radius of the absorber (%.4f cm) must be smaller than the drum radius (%.4f"
+" cm)"
+
+#: cekirdek/tambur.py:130
+#, python-format
+msgid ""
+"tamburlar kora giriyor: merkez yarıçapı %.4f − tambur yarıçapı %.4f = %.4f cm < kor "
+"yarıçapı %.4f cm"
+msgstr ""
+"the control drums extend into the core: centre radius %.4f − drum radius %.4f = %.4f "
+"cm < core radius %.4f cm"
+
+#: cekirdek/tambur.py:135
+#, python-format
+msgid "tamburlar yansıtıcı kuşaktan taşıyor: %.4f + %.4f = %.4f cm > dış sınır %.4f cm"
+msgstr ""
+"the control drums extend beyond the radial reflector: %.4f + %.4f = %.4f cm > outer "
+"boundary %.4f cm"
+
+#: cekirdek/tambur.py:143
+#, python-format
+msgid ""
+"komşu tamburlar çakışıyor: merkezler arası %.4f cm, iki yarıçap toplamı %.4f cm. "
+"Tambur sayısını azaltın, yarıçapı küçültün ya da merkez yarıçapını büyütün."
+msgstr ""
+"neighbouring control drums overlap: centre-to-centre distance %.4f cm, sum of the two"
+" radii %.4f cm. Reduce the number of drums, reduce the radius or increase the centre "
+"radius."
+
+#: cekirdek/tambur.py:152
+#, python-format
+msgid "%d tambur, yarıçap %.3f cm, merkez %.3f cm, yay %.0f°, dönme %.1f°"
+msgstr "%d drums, radius %.3f cm, centre %.3f cm, arc %.0f°, rotation %.1f°"
 
 #: cekirdek/tarama.py:59
 msgid "Yakıt sıcaklığı (Doppler) — yoğunluk sabit tutulur (katı yakıt)"
@@ -4677,11 +5870,6 @@ msgstr "  The coefficient could not be computed."
 msgid "'%s' grubu bir %s grubu değil"
 msgstr "group '%s' is not a %s group"
 
-#: cekirdek/tarama_agac.py:47
-#, python-format
-msgid "tanımsız grup: %s"
-msgstr "undefined group: %s"
-
 #: cekirdek/tarama_agac.py:78
 msgid "modelde kontrol tamburu (dönme grubu) yok"
 msgstr "the model has no control drum (rotation group)"
@@ -4724,6 +5912,262 @@ msgstr "the ring target must have the form '<container id>/halkalar/<i>': %r"
 #, python-format
 msgid "'%s' kabında kalınlıkla tanımlı %d. halka yok"
 msgstr "container '%s' has no ring %d defined by thickness"
+
+#: cekirdek/tukenme.py:93
+#, python-format
+msgid "'%s' malzemesinde %s var"
+msgstr "material '%s' contains %s"
+
+#: cekirdek/tukenme.py:98
+#, python-format
+msgid "'%s' malzemesi hidrojen içeriyor"
+msgstr "material '%s' contains hydrogen"
+
+#: cekirdek/tukenme.py:99
+msgid "modelde hidrojen ya da grafit moderatör yok"
+msgstr "the model has no hydrogen or graphite moderator"
+
+#: cekirdek/tukenme.py:111
+#, python-format
+msgid "otomatik: %s"
+msgstr "automatic: %s"
+
+#: cekirdek/tukenme.py:114
+msgid "kullanıcı seçimi"
+msgstr "user selection"
+
+#: cekirdek/tukenme.py:290
+#, python-format
+msgid ""
+"çubuk çubuk yanma kesin örnek hacmi gerektirir; hacmi kesin olmayan (kesik) yanabilir"
+" malzeme: %s"
+msgstr ""
+"pin-by-pin burnup requires exact instance volumes; depletable material with inexact "
+"(truncated) volume: %s"
+
+#: cekirdek/tukenme.py:328
+#, python-format
+msgid ""
+"hacmi analitik hesaplanamayan yanabilir malzeme: %s (%s). Tükenme kesin hacim "
+"gerektirir."
+msgstr ""
+"depletable material whose volume cannot be computed analytically: %s (%s). Depletion "
+"requires exact volumes."
+
+#: cekirdek/tukenme.py:612
+msgid "malzemeler"
+msgstr "materials"
+
+#: cekirdek/tukenme.py:612
+msgid "çubuklar"
+msgstr "pins"
+
+#: cekirdek/tukenme.py:613
+msgid "plaka elemanları"
+msgstr "plate-type fuel elements"
+
+#: cekirdek/tukenme.py:613
+msgid "demetler"
+msgstr "assemblies"
+
+#: cekirdek/tukenme.py:613
+msgid "kor"
+msgstr "core"
+
+#: cekirdek/tukenme.py:614
+msgid "hesap ayarları"
+msgstr "run settings"
+
+#: cekirdek/tukenme.py:614
+msgid "tally'ler"
+msgstr "tallies"
+
+#: cekirdek/tukenme.py:615
+msgid "güç dağılımı"
+msgstr "power distribution"
+
+#: cekirdek/tukenme.py:615
+msgid "tükenme ayarları"
+msgstr "depletion settings"
+
+#: cekirdek/tukenme.py:667
+msgid "koşmadan hacim, zincir ve ağır metal bilgisini yazdır"
+msgstr "print the volume, chain and heavy metal information without running"
+
+#: cekirdek/tukenme.py:669
+msgid "doğrulamada nüklid/kütüphane denetimini atla"
+msgstr "skip the nuclide/library check in the model check"
+
+#: cekirdek/tukenme.py:684
+#, python-format
+msgid " TÜKENME: %s"
+msgstr " DEPLETION: %s"
+
+#: cekirdek/tukenme.py:686
+#, python-format
+msgid "  zincir        : %s  (%s)"
+msgstr "  chain         : %s  (%s)"
+
+#: cekirdek/tukenme.py:687
+#, python-format
+msgid "  fisyon verimi : %s eV (%s spektrum)"
+msgstr "  fission yield : %s eV (%s spectrum)"
+
+#: cekirdek/tukenme.py:689
+#, python-format
+msgid "  güç yoğunluğu : %g W/gHM"
+msgstr "  power density : %g W/gHM"
+
+#: cekirdek/tukenme.py:690
+#, python-format
+msgid "  adımlar       : %s %s  → %d transport"
+msgstr "  steps         : %s %s  → %d transports"
+
+#: cekirdek/tukenme.py:692 cekirdek/tukenme.py:717
+msgid "gün"
+msgstr "days"
+
+#: cekirdek/tukenme.py:696
+#, python-format
+msgid "  hacim %-10s: %s cm³ [%s] %s"
+msgstr "  volume %-10s: %s cm³ [%s] %s"
+
+#: cekirdek/tukenme.py:700
+#, python-format
+msgid "  ağır metal    : %.6g g"
+msgstr "  heavy metal   : %.6g g"
+
+#: cekirdek/tukenme.py:709
+#, python-format
+msgid ""
+"\n"
+"  DOĞRULAMA: koşu başlatılmadı (%d hata)"
+msgstr ""
+"\n"
+"  MODEL CHECK: the run was not started (%d errors)"
+
+#: cekirdek/tukenme.py:716
+#, python-format
+msgid ""
+"\n"
+"  ağır metal: %.6g g"
+msgstr ""
+"\n"
+"  heavy metal: %.6g g"
+
+#: cekirdek/tukenme.py:720
+#, python-format
+msgid ""
+"\n"
+"  sonuç: %s"
+msgstr ""
+"\n"
+"  result: %s"
+
+#: cekirdek/tukenme_hacim.py:60
+msgid "stokastik hesap gerekli"
+msgstr "stochastic calculation required"
+
+#: cekirdek/tukenme_hacim.py:60
+msgid "analitik"
+msgstr "analytical"
+
+#: cekirdek/tukenme_hacim.py:61
+msgid "stokastik"
+msgstr "stochastic"
+
+#: cekirdek/tukenme_hacim.py:135
+#, python-format
+msgid "kor haritası: %d konum × %g cm"
+msgstr "core map: %d positions × %g cm"
+
+#: cekirdek/tukenme_hacim.py:144
+#, python-format
+msgid "'%s' demetinin dış halkasında (pin hücresi zarfla kırpılır)"
+msgstr "in the outer ring of assembly '%s' (the pin cell is clipped by the envelope)"
+
+#: cekirdek/tukenme_hacim.py:149
+#, python-format
+msgid "%s: %d konum × %d demet × %g cm"
+msgstr "%s: %d positions × %d assemblies × %g cm"
+
+#: cekirdek/tukenme_hacim.py:163
+#, python-format
+msgid "'%s' demetinin dış dolgusu"
+msgstr "outer fill of assembly '%s'"
+
+#: cekirdek/tukenme_hacim.py:166
+#, python-format
+msgid "'%s' demetinin kılıfı"
+msgstr "duct of assembly '%s'"
+
+#: cekirdek/tukenme_hacim.py:169
+msgid "kor yansıtıcısı"
+msgstr "core reflector"
+
+#: cekirdek/tukenme_hacim.py:192
+#, python-format
+msgid "%d tambur emici yayı %g° (r = %g…%g cm) × %g cm"
+msgstr "%d drum absorber arcs of %g° (r = %g…%g cm) × %g cm"
+
+#: cekirdek/tukenme_hacim.py:242
+#, python-format
+msgid "'%s' çubuğunun dış bölgesi (alan kafes adımına bağlı)"
+msgstr "outer region of pin '%s' (the area depends on the lattice pitch)"
+
+#: cekirdek/tukenme_hacim.py:247
+#, python-format
+msgid "'%s' kontrol çubuğu (daldırmaya bağlı)"
+msgstr "control rod '%s' (depends on the insertion)"
+
+#: cekirdek/tukenme_hacim.py:253
+#, python-format
+msgid " (daldırma %%%g: boyun %%%.4g'i)"
+msgstr " (insertion %g%%: %.4g%% of the length)"
+
+#: cekirdek/tukenme_hacim.py:259
+#, python-format
+msgid "%s, %d. bölge: %d adet × %g cm%s"
+msgstr "%s, region %d: %d pieces × %g cm%s"
+
+#: cekirdek/tukenme_hacim.py:276
+#, python-format
+msgid "%s: %d eleman × %g cm"
+msgstr "%s: %d elements × %g cm"
+
+#: cekirdek/tukenme_hacim.py:322
+#, python-format
+msgid "kabuk r = %g cm: %.4g cm³"
+msgstr "shell r = %g cm: %.4g cm³"
+
+#: cekirdek/tukenme_hacim.py:342
+#, python-format
+msgid "kor silindiri R = %g cm × %g cm"
+msgstr "core cylinder R = %g cm × %g cm"
+
+#: cekirdek/tukenme_hacim.py:348
+msgid "katmanı/koru doğrudan dolduruyor"
+msgstr "fills the layer/core directly"
+
+#: cekirdek/tukenme_hacim.py:372
+msgid "bu yerleşim için analitik hacim yok"
+msgstr "no analytical volume for this placement"
+
+#: cekirdek/tukenme_hacim.py:592
+#, python-format
+msgid ""
+"'%s' malzemesinin bir örneğinin hacmi hesaplanamıyor (hücre %d); çubuk çubuk yanma "
+"kesin hacim gerektirir"
+msgstr ""
+"the volume of an instance of material '%s' cannot be computed (cell %d); pin-by-pin "
+"burnup requires exact volumes"
+
+#: cekirdek/tukenme_hacim.py:601
+#, python-format
+msgid "'%s': örnek hacimleri toplamı %.8g cm³, analitik hacim %.8g cm³ — tutmuyor"
+msgstr ""
+"'%s': the sum of the instance volumes is %.8g cm³, the analytical volume %.8g cm³ — "
+"they do not match"
 
 #: cekirdek/uygunluk.py:68
 msgid "Yakıt çubuğu (pin hücre)"
@@ -5807,33 +7251,71 @@ msgstr "the profile file must be a JSON object: %s"
 msgid "bilinmeyen V&V yöntemi: %r (geçerli: %s)"
 msgstr "unknown V&V method: %r (valid: %s)"
 
+#: cekirdek/veri_bilgi.py:189
+msgid "sıcaklık aralığı okunamadı"
+msgstr "temperature range could not be read"
+
+#: cekirdek/veri_bilgi.py:232
+#, python-format
+msgid "zincir dosyası yok: %s"
+msgstr "chain file does not exist: %s"
+
+#: cekirdek/veri_bilgi.py:235
+#, python-format
+msgid "zincir dosyası boş: %s"
+msgstr "chain file is empty: %s"
+
+#: cekirdek/veri_bilgi.py:243
+#, python-format
+msgid ""
+"zincir dosyası yarım: kapanış etiketi yok (%d bayt). İndirme kesilmiş olabilir; "
+"yeniden indirin."
+msgstr ""
+"chain file is incomplete: no closing tag (%d bytes). The download may have been "
+"interrupted; download it again."
+
+#: cekirdek/veri_bilgi.py:246
+#, python-format
+msgid "zincir dosyası tamam görünüyor (%.1f MB)"
+msgstr "chain file looks complete (%.1f MB)"
+
+#: cekirdek/veri_bilgi.py:254
+#, python-format
+msgid "zincir ayrıştırıldı: %d nüklid"
+msgstr "chain parsed: %d nuclides"
+
+#: cekirdek/veri_bilgi.py:256
+#, python-format
+msgid "zincir ayrıştırılamadı: %s"
+msgstr "chain could not be parsed: %s"
+
 #: cekirdek/vv/aoa.py:223
 msgid "modelde bölünebilir nüklid içeren malzeme yok: AOA parametresi yok"
-msgstr ""
+msgstr "the model has no material containing fissionable nuclides: no AOA parameter"
 
 #: cekirdek/vv/istatistik.py:125
 msgid "tolerans çarpanı için en az 2 vaka gerekir"
-msgstr ""
+msgstr "the tolerance factor requires at least 2 cases"
 
 #: cekirdek/vv/istatistik.py:175
 #, python-format
 msgid "ΔSM = %.3f, mutlak alt sınır %.2f'nin altında (NUREG/CR-6698 §2.4.5)"
-msgstr ""
+msgstr "ΔSM = %.3f is below the absolute lower limit %.2f (NUREG/CR-6698 §2.4.5)"
 
 #: cekirdek/vv/istatistik.py:178
 #, python-format
 msgid "ΔAOA negatif olamaz: %g"
-msgstr ""
+msgstr "ΔAOA cannot be negative: %g"
 
 #: cekirdek/vv/istatistik.py:217
 #, python-format
 msgid "%s doğrulama aralığındaki en küçük değer"
-msgstr ""
+msgstr "smallest value in the %s validation range"
 
 #: cekirdek/vv/istatistik.py:238
 #, python-format
 msgid "doğrulama kümesinde %d vaka var; en az %d gerekir"
-msgstr ""
+msgstr "the validation set has %d cases; at least %d are required"
 
 #: cekirdek/vv/istatistik.py:258
 #, python-format
@@ -5841,6 +7323,8 @@ msgid ""
 "veri normal değil ve parametrik olmayan güven β = %%%.1f ≤ %%40: ek kriter verisi "
 "gerekli (NUREG/CR-6698 Tablo 2.2)"
 msgstr ""
+"the data are not normal and the non-parametric confidence β = %.1f%% ≤ 40%%: "
+"additional benchmark data required (NUREG/CR-6698 Table 2.2)"
 
 #: cekirdek/vv/istatistik.py:270
 #, python-format
@@ -5848,16 +7332,36 @@ msgid ""
 "kümede %d vaka var (< %d): bağımsız vaka yetersiz, teknik gerekçe olmadan USL "
 "verilmez (NUREG/CR-6698 §2.2); hesaplanan K_L = %.4f yalnız bilgi"
 msgstr ""
+"the set has %d cases (< %d): not enough independent cases, no USL is given without a "
+"technical justification (NUREG/CR-6698 §2.2); the computed K_L = %.4f is for "
+"information only"
+
+#: cekirdek/vv/kume.py:34
+msgid ""
+"ΔSM = 0.05: NUREG-1718 §6.4.3.3.4 / NUREG-1520 Bl. 5 Ek B'de ek gerekçesiz kabul "
+"edildiği bildirilen değer (DOĞRULANMADI); alt sınır 0.02 (NUREG/CR-6698 §2.4.5)"
+msgstr ""
+"ΔSM = 0.05: the value reported as accepted without additional justification in "
+"NUREG-1718 §6.4.3.3.4 / NUREG-1520 Ch. 5 App. B (NOT VERIFIED); lower limit 0.02 "
+"(NUREG/CR-6698 §2.4.5)"
+
+#: cekirdek/vv/kume.py:37
+msgid ""
+"NUREG/CR-6698 (2001) yöntemi; kriter modelleri mit-crpg/benchmarks (MIT lisansı) ve "
+"ICSBEP E ± σ (uncertainties.csv)"
+msgstr ""
+"NUREG/CR-6698 (2001) method; benchmark models mit-crpg/benchmarks (MIT licence) and "
+"ICSBEP E ± σ (uncertainties.csv)"
 
 #: cekirdek/vv/kume.py:54
 #, python-format
 msgid "kriter dosyası okunamadı: %s (%s)"
-msgstr ""
+msgstr "benchmark file could not be read: %s (%s)"
 
 #: cekirdek/vv/kume.py:123
 #, python-format
 msgid "USL tolerans bandından, %s noktasında"
-msgstr ""
+msgstr "USL from the tolerance band, at %s"
 
 #~ msgid "Beklenmeyen hata"
 #~ msgstr "Unexpected error"

@@ -33,6 +33,7 @@
 """
 
 from cekirdek.sema import malzeme, bilesen
+from cekirdek.ceviri import _, N_
 
 # ----------------------------------------------------------------------------
 # Renk paleti -- Model.plot() icin. OpenMC SVG renk adi veya (R,G,B) ister;
@@ -141,8 +142,8 @@ def u3si2_yogunlugu(u_yukleme, gozeneklilik=0.0):
     v = m / _U3SI2_YOGUNLUK
     al_hacmi = 1.0 - v - gozeneklilik
     if al_hacmi < 0.0:
-        raise ValueError("U yüklemesi %.2f gU/cm³ ve gözeneklilik %%%.1f ile alüminyuma yer "
-                         "kalmıyor (U₃Si₂ hacim kesri %.2f)." % (u_yukleme, 100 * gozeneklilik, v))
+        raise ValueError(_("U yüklemesi %.2f gU/cm³ ve gözeneklilik %%%.1f ile alüminyuma yer "
+                         "kalmıyor (U₃Si₂ hacim kesri %.2f).") % (u_yukleme, 100 * gozeneklilik, v))
     return m + al_hacmi * _AL_YOGUNLUK
 
 
@@ -402,44 +403,45 @@ def agincd(yogunluk=10.16, sicaklik=600.0, ad=None):
 
 KUTUPHANE = {
     # yakitlar
-    "uo2": (uo2, "UO₂ — zenginlik parametreli uranyum dioksit"),
-    "un": (un, "UN — uranyum nitrür"),
-    "u10mo": (u10mo, "U-10Mo — metalik alaşım yakıt"),
-    "mox": (mox, "MOX — karışık oksit"),
-    "u3si2_al": (u3si2_al, "U₃Si₂-Al — MTR dispersiyon yakıtı"),
+    "uo2": (uo2, N_("UO₂ — zenginlik parametreli uranyum dioksit")),
+    "un": (un, N_("UN — uranyum nitrür")),
+    "u10mo": (u10mo, N_("U-10Mo — metalik alaşım yakıt")),
+    "mox": (mox, N_("MOX — karışık oksit")),
+    "u3si2_al": (u3si2_al, N_("U₃Si₂-Al — MTR dispersiyon yakıtı")),
     # zarf / yapisal
-    "zirkaloy4": (zirkaloy4, "Zircaloy-4 zarf"),
-    "ss316": (ss316, "AISI 316 paslanmaz çelik"),
-    "ma956": (ma956, "MA956 ODS FeCrAl"),
-    "fecral": (fecral, "FeCrAl kazaya dayanıklı zarf"),
-    "sic": (sic, "Silisyum karbür"),
-    "al6061": (al6061, "Al-6061 plaka zarfı"),
+    "zirkaloy4": (zirkaloy4, N_("Zircaloy-4 zarf")),
+    "ss316": (ss316, N_("AISI 316 paslanmaz çelik")),
+    "ma956": (ma956, N_("MA956 ODS FeCrAl")),
+    "fecral": (fecral, N_("FeCrAl kazaya dayanıklı zarf")),
+    "sic": (sic, N_("Silisyum karbür")),
+    "al6061": (al6061, N_("Al-6061 plaka zarfı")),
     # sogutucu / moderator
-    "su": (su, "Hafif su (S(α,β) dahil, sıcaklığa bağlı yoğunluk)"),
-    "agir_su": (agir_su, "Ağır su (D₂O)"),
-    "lbe": (lbe, "Kurşun-bizmut ötektiği"),
-    "sodyum": (sodyum, "Sıvı sodyum"),
-    "helyum": (helyum, "Helyum dolgu gazı"),
-    "grafit": (grafit, "Grafit yansıtıcı/moderatör"),
-    "berilyum": (berilyum, "Berilyum yansıtıcı"),
+    "su": (su, N_("Hafif su (S(α,β) dahil, sıcaklığa bağlı yoğunluk)")),
+    "agir_su": (agir_su, N_("Ağır su (D₂O)")),
+    "lbe": (lbe, N_("Kurşun-bizmut ötektiği")),
+    "sodyum": (sodyum, N_("Sıvı sodyum")),
+    "helyum": (helyum, N_("Helyum dolgu gazı")),
+    "grafit": (grafit, N_("Grafit yansıtıcı/moderatör")),
+    "berilyum": (berilyum, N_("Berilyum yansıtıcı")),
     # emiciler
-    "b4c": (b4c, "Bor karbür"),
-    "gd2o3": (gd2o3, "Gadolinyum oksit yanabilir zehir"),
-    "agincd": (agincd, "Ag-In-Cd kontrol alaşımı"),
+    "b4c": (b4c, N_("Bor karbür")),
+    "gd2o3": (gd2o3, N_("Gadolinyum oksit yanabilir zehir")),
+    "agincd": (agincd, N_("Ag-In-Cd kontrol alaşımı")),
 }
 
 
 def uret(anahtar, **kwargs):
     """Kutuphaneden ada gore malzeme uretir."""
     if anahtar not in KUTUPHANE:
-        raise KeyError("kütüphanede yok: %s  (mevcut: %s)"
+        raise KeyError(_("kütüphanede yok: %s  (mevcut: %s)")
                        % (anahtar, ", ".join(sorted(KUTUPHANE))))
     return KUTUPHANE[anahtar][0](**kwargs)
 
 
 def listele():
-    """Kutuphanedeki malzemeleri (anahtar, aciklama) olarak dondurur."""
-    return [(k, v[1]) for k, v in sorted(KUTUPHANE.items())]
+    """Kutuphanedeki malzemeleri (anahtar, aciklama) olarak dondurur
+    (aciklama etkin dilde)."""
+    return [(k, _(v[1])) for k, v in sorted(KUTUPHANE.items())]
 
 
 # ============================================================================
@@ -475,84 +477,84 @@ FIZIK_ALANLARI = ("bilesim", "yogunluk", "sicaklik", "sab")
 # argumanidir). "tur": "sayi" | "sicaklik" (K + canli °C) | "dogal_ya_da"
 # (en kucuk deger = None = dogal bolluk).
 _PARAM = {
-    "zenginlik": {"etiket": "U-235 ağırlıkça %", "en_az": 0.01, "en_cok": 97.0,
+    "zenginlik": {"etiket": N_("U-235 ağırlıkça %"), "en_az": 0.01, "en_cok": 97.0,
                   "ondalik": 2, "adim": 0.1, "sonek": "%",
-                  "ipucu": "U-235'in uranyum içindeki ağırlık yüzdesi. OpenMC'nin "
-                           "zenginlik kısayolu %97'nin üstünde tanımsızdır."},
-    "gozeneklilik": {"etiket": "Gözeneklilik", "en_az": 0.0, "en_cok": 0.3,
+                  "ipucu": N_("U-235'in uranyum içindeki ağırlık yüzdesi. OpenMC'nin "
+                           "zenginlik kısayolu %97'nin üstünde tanımsızdır.")},
+    "gozeneklilik": {"etiket": N_("Gözeneklilik"), "en_az": 0.0, "en_cok": 0.3,
                      "ondalik": 3, "adim": 0.01, "sonek": "",
-                     "ipucu": "Yakıt tabakasındaki boşluk hacim kesri (0–0.3). Yoğunluk, "
+                     "ipucu": N_("Yakıt tabakasındaki boşluk hacim kesri (0–0.3). Yoğunluk, "
                               "U yüklemesi ve bu değerden hesaplanır: U₃Si₂ (12.2 g/cm³) + "
-                              "Al (2.70 g/cm³)."},
-    "yogunluk": {"etiket": "Yoğunluk", "en_az": 0.01, "en_cok": 30.0,
+                              "Al (2.70 g/cm³).")},
+    "yogunluk": {"etiket": N_("Yoğunluk"), "en_az": 0.01, "en_cok": 30.0,
                  "ondalik": 4, "adim": 0.01, "sonek": "g/cm³"},
-    "sicaklik": {"etiket": "Sıcaklık", "tur": "sicaklik", "en_az": 250.0,
+    "sicaklik": {"etiket": N_("Sıcaklık"), "tur": "sicaklik", "en_az": 250.0,
                  "en_cok": 3000.0, "ondalik": 2, "adim": 10.0, "sonek": "K",
-                 "ipucu": "Tesir kesiti verisi bu sıcaklıkta kullanılır."},
-    "bor_ppm": {"etiket": "Çözünmüş bor [ppm]", "en_az": 0.0, "en_cok": 5000.0,
+                 "ipucu": N_("Tesir kesiti verisi bu sıcaklıkta kullanılır.")},
+    "bor_ppm": {"etiket": N_("Çözünmüş bor [ppm]"), "en_az": 0.0, "en_cok": 5000.0,
                 "ondalik": 0, "adim": 50.0, "sonek": "",
-                "ipucu": "Suda çözünmüş doğal borun ağırlıkça ppm'i (PWR kimyasal kontrolü)."},
-    "pu_orani": {"etiket": "Pu ağırlıkça %", "en_az": 0.01,
+                "ipucu": N_("Suda çözünmüş doğal borun ağırlıkça ppm'i (PWR kimyasal kontrolü).")},
+    "pu_orani": {"etiket": N_("Pu ağırlıkça %"), "en_az": 0.01,
                  "en_cok": 100.0, "ondalik": 2, "adim": 0.5, "sonek": "%",
-                 "ipucu": "Ağır metal (U + Pu) içindeki plütonyumun ağırlık yüzdesi."},
-    "pu_fissil": {"etiket": "Fisil Pu %", "en_az": 0.0,
+                 "ipucu": N_("Ağır metal (U + Pu) içindeki plütonyumun ağırlık yüzdesi.")},
+    "pu_fissil": {"etiket": N_("Fisil Pu %"), "en_az": 0.0,
                   "en_cok": 100.0, "ondalik": 1, "adim": 1.0, "sonek": "%",
-                  "ipucu": "Plütonyum içindeki Pu-239 + Pu-241 ağırlık yüzdesi; "
-                           "kalanı Pu-240 ve Pu-242."},
-    "u_zenginlik": {"etiket": "Taşıyıcı U'da U-235 %", "en_az": 0.01,
+                  "ipucu": N_("Plütonyum içindeki Pu-239 + Pu-241 ağırlık yüzdesi; "
+                           "kalanı Pu-240 ve Pu-242.")},
+    "u_zenginlik": {"etiket": N_("Taşıyıcı U'da U-235 %"), "en_az": 0.01,
                     "en_cok": 97.0, "ondalik": 2, "adim": 0.05, "sonek": "%",
-                    "ipucu": "MOX'taki uranyumun (çoğunlukla fakir U) U-235 ağırlık yüzdesi."},
-    "u_yukleme": {"etiket": "Uranyum yüklemesi", "en_az": 0.1, "en_cok": 10.0,
+                    "ipucu": N_("MOX'taki uranyumun (çoğunlukla fakir U) U-235 ağırlık yüzdesi.")},
+    "u_yukleme": {"etiket": N_("Uranyum yüklemesi"), "en_az": 0.1, "en_cok": 10.0,
                   "ondalik": 2, "adim": 0.1, "sonek": "gU/cm³"},
-    "saflik": {"etiket": "D₂O saflığı (mol %)", "en_az": 50.0, "en_cok": 100.0,
+    "saflik": {"etiket": N_("D₂O saflığı (mol %)"), "en_az": 50.0, "en_cok": 100.0,
                "ondalik": 2, "adim": 0.05, "sonek": "%"},
-    "b10_zenginlik": {"etiket": "B-10 atomca %", "tur": "dogal_ya_da",
+    "b10_zenginlik": {"etiket": N_("B-10 atomca %"), "tur": "dogal_ya_da",
                       "en_az": 0.0, "en_cok": 100.0, "ondalik": 1, "adim": 1.0,
-                      "sonek": "%", "dogal_metin": "doğal bor (%19.9)",
-                      "ipucu": "En küçük değer doğal bor demektir."},
+                      "sonek": "%", "dogal_metin": N_("doğal bor (%19.9)"),
+                      "ipucu": N_("En küçük değer doğal bor demektir.")},
 }
 
 # Anahtar -> okunur ad, tek cumle aciklama, formda sorulan parametreler
 # (SIRAYLA). Bir parametre (ad, {ezme}) olarak verilirse ortak tanim ezilir.
 # Katalog sirasi listede grup ICI siradir.
 _SICAK_SU = ("sicaklik", {"en_az": 273.15, "en_cok": 623.15,
-                          "ipucu": "Yoğunluk bu sıcaklıktaki doymuş sıvı sudan "
-                                   "hesaplanır (273–623 K)."})
+                          "ipucu": N_("Yoğunluk bu sıcaklıktaki doymuş sıvı sudan "
+                                   "hesaplanır (273–623 K).")})
 KATALOG = {
-    "uo2": ("UO₂ — uranyum dioksit", "Hafif su reaktörlerinin seramik yakıtı.",
+    "uo2": (N_("UO₂ — uranyum dioksit"), N_("Hafif su reaktörlerinin seramik yakıtı."),
             ["zenginlik", "yogunluk", "sicaklik"]),
-    "mox": ("MOX — karışık oksit (U, Pu)O₂", "Plütonyumlu seramik yakıt; basitleştirilmiş Pu vektörü.",
+    "mox": (N_("MOX — karışık oksit (U, Pu)O₂"), N_("Plütonyumlu seramik yakıt; basitleştirilmiş Pu vektörü."),
             ["pu_orani", "pu_fissil", "u_zenginlik", "yogunluk", "sicaklik"]),
-    "un": ("UN — uranyum nitrür", "Yüksek yoğunluklu seramik yakıt.",
+    "un": (N_("UN — uranyum nitrür"), N_("Yüksek yoğunluklu seramik yakıt."),
            ["zenginlik", "yogunluk", "sicaklik"]),
-    "u10mo": ("U-10Mo — metalik uranyum alaşımı", "Ağırlıkça %10 molibdenli metalik yakıt.",
+    "u10mo": (N_("U-10Mo — metalik uranyum alaşımı"), N_("Ağırlıkça %10 molibdenli metalik yakıt."),
               ["zenginlik", "yogunluk", "sicaklik"]),
-    "u3si2_al": ("U₃Si₂-Al — dispersiyon yakıtı", "MTR tipi araştırma reaktörü plakalarının yakıt tabakası.",
+    "u3si2_al": (N_("U₃Si₂-Al — dispersiyon yakıtı"), N_("MTR tipi araştırma reaktörü plakalarının yakıt tabakası."),
                  ["u_yukleme", "zenginlik", "gozeneklilik", "sicaklik"]),
-    "zirkaloy4": ("Zircaloy-4", "Hafif su reaktörü yakıt zarfı.", ["yogunluk", "sicaklik"]),
-    "ss316": ("SS-316 paslanmaz çelik", "Hızlı reaktör zarfı ve yapısal malzeme.",
+    "zirkaloy4": (N_("Zircaloy-4"), N_("Hafif su reaktörü yakıt zarfı."), ["yogunluk", "sicaklik"]),
+    "ss316": (N_("SS-316 paslanmaz çelik"), N_("Hızlı reaktör zarfı ve yapısal malzeme."),
               ["yogunluk", "sicaklik"]),
-    "fecral": ("FeCrAl", "Kazaya dayanıklı yakıt zarfı.", ["yogunluk", "sicaklik"]),
-    "ma956": ("MA956 — ODS FeCrAl", "Yüksek sıcaklık zarf alaşımı.", ["yogunluk", "sicaklik"]),
-    "sic": ("SiC — silisyum karbür", "Seramik zarf / yapısal malzeme.", ["yogunluk", "sicaklik"]),
-    "al6061": ("Al-6061 alüminyum", "Araştırma reaktörü plaka zarfı ve yapısı.",
+    "fecral": (N_("FeCrAl"), N_("Kazaya dayanıklı yakıt zarfı."), ["yogunluk", "sicaklik"]),
+    "ma956": (N_("MA956 — ODS FeCrAl"), N_("Yüksek sıcaklık zarf alaşımı."), ["yogunluk", "sicaklik"]),
+    "sic": (N_("SiC — silisyum karbür"), N_("Seramik zarf / yapısal malzeme."), ["yogunluk", "sicaklik"]),
+    "al6061": (N_("Al-6061 alüminyum"), N_("Araştırma reaktörü plaka zarfı ve yapısı."),
                ["yogunluk", "sicaklik"]),
-    "su": ("Hafif su (H₂O)", "Soğutucu ve moderatör; yoğunluk sıcaklıktan hesaplanır.",
+    "su": (N_("Hafif su (H₂O)"), N_("Soğutucu ve moderatör; yoğunluk sıcaklıktan hesaplanır."),
            [_SICAK_SU, "bor_ppm"]),
-    "agir_su": ("Ağır su (D₂O)", "Moderatör; kalanı hafif sudur.",
+    "agir_su": (N_("Ağır su (D₂O)"), N_("Moderatör; kalanı hafif sudur."),
                 ["saflik", ("yogunluk", {"en_az": 0.5, "en_cok": 1.2}),
                  ("sicaklik", {"en_az": 276.97, "en_cok": 640.0})]),
-    "sodyum": ("Sıvı sodyum (Na)", "Hızlı reaktör soğutucusu; yoğunluk sıcaklıktan hesaplanır.",
+    "sodyum": (N_("Sıvı sodyum (Na)"), N_("Hızlı reaktör soğutucusu; yoğunluk sıcaklıktan hesaplanır."),
                [("sicaklik", {"en_az": 371.0, "en_cok": 1200.0})]),
-    "lbe": ("Kurşun-bizmut ötektiği (LBE)", "Hızlı reaktör soğutucusu; yoğunluk sıcaklıktan hesaplanır.",
+    "lbe": (N_("Kurşun-bizmut ötektiği (LBE)"), N_("Hızlı reaktör soğutucusu; yoğunluk sıcaklıktan hesaplanır."),
             [("sicaklik", {"en_az": 400.0, "en_cok": 1300.0})]),
-    "grafit": ("Grafit (C)", "Moderatör ve yansıtıcı.", ["yogunluk", "sicaklik"]),
-    "berilyum": ("Berilyum (Be)", "Yansıtıcı ve moderatör.", ["yogunluk", "sicaklik"]),
-    "b4c": ("B₄C — bor karbür", "Kontrol çubuğu ve tambur emicisi.",
+    "grafit": (N_("Grafit (C)"), N_("Moderatör ve yansıtıcı."), ["yogunluk", "sicaklik"]),
+    "berilyum": (N_("Berilyum (Be)"), N_("Yansıtıcı ve moderatör."), ["yogunluk", "sicaklik"]),
+    "b4c": (N_("B₄C — bor karbür"), N_("Kontrol çubuğu ve tambur emicisi."),
             ["b10_zenginlik", "yogunluk", "sicaklik"]),
-    "agincd": ("Ag-In-Cd", "PWR kontrol çubuğu alaşımı.", ["yogunluk", "sicaklik"]),
-    "gd2o3": ("Gd₂O₃ — gadolinyum oksit", "Yanabilir zehir.", ["yogunluk", "sicaklik"]),
-    "helyum": ("Helyum (He)", "Yakıt-zarf aralığı dolgu gazı.",
+    "agincd": (N_("Ag-In-Cd"), N_("PWR kontrol çubuğu alaşımı."), ["yogunluk", "sicaklik"]),
+    "gd2o3": (N_("Gd₂O₃ — gadolinyum oksit"), N_("Yanabilir zehir."), ["yogunluk", "sicaklik"]),
+    "helyum": (N_("Helyum (He)"), N_("Yakıt-zarf aralığı dolgu gazı."),
                [("yogunluk", {"en_az": 1.0e-7, "en_cok": 0.01, "ondalik": 7,
                               "adim": 1.0e-5}),
                 ("sicaklik", {"en_cok": 2000.0})]),
@@ -566,12 +568,13 @@ SICAKLIKTAN_YOGUNLUK = ("su", "lbe", "sodyum")
 def okunur_ad(anahtar):
     """Kutuphane anahtarinin gorunen adi ("uo2" -> "UO₂ — uranyum dioksit")."""
     k = KATALOG.get(anahtar)
-    return k[0] if k else anahtar
+    return _(k[0]) if k else anahtar
 
 
 def katalog_aciklamasi(anahtar):
+    """Kutuphane anahtarinin tek cumle aciklamasi, etkin dilde."""
     k = KATALOG.get(anahtar)
-    return k[1] if k else ""
+    return _(k[1]) if k else ""
 
 
 def varsayilan_parametreler(anahtar):
@@ -597,6 +600,9 @@ def parametreler(anahtar):
         p.update(ezme)
         p["ad"] = ad
         p["varsayilan"] = imza[ad].default
+        for alan in ("etiket", "ipucu", "dogal_metin"):     # gorunen metin: etkin dilde
+            if p.get(alan):
+                p[alan] = _(p[alan])
         cikti.append(p)
     return cikti
 
@@ -659,9 +665,9 @@ def parametre_uyarilari(anahtar, param):
         # dogrula %5 ustunu zaten uyarir; formda yalnizca HEU (> %20) icin
         # soylenir -- HALEU (%19.75) yakitlarda her seferinde uyari gurultu olur.
         if z is not None and z > 20.0:
-            uyari.append("Zenginlik %%%.2f: OpenMC'nin zenginlik kısayolu U-234 "
-                         "oranını sabit varsayar; yüksek zenginlikte izotopları "
-                         "elle vermek daha doğrudur." % z)
+            uyari.append(_("Zenginlik %%%.2f: OpenMC'nin zenginlik kısayolu U-234 "
+                           "oranını sabit varsayar; yüksek zenginlikte izotopları "
+                           "elle vermek daha doğrudur.") % z)
             break
     if anahtar == "u3si2_al":
         u = float(p.get("u_yukleme") or 0.0)
@@ -673,7 +679,7 @@ def parametre_uyarilari(anahtar, param):
             beklenen = None
         yog = p.get("yogunluk")
         if beklenen is not None and yog is not None and abs(float(yog) / beklenen - 1.0) > 0.10:
-            uyari.append("Bu yüklemede U₃Si₂ (%.1f g/cm³) ile Al (%.2f g/cm³) "
-                         "karışımının yoğunluğu ≈ %.2f g/cm³; girilen %.2f g/cm³."
+            uyari.append(_("Bu yüklemede U₃Si₂ (%.1f g/cm³) ile Al (%.2f g/cm³) "
+                           "karışımının yoğunluğu ≈ %.2f g/cm³; girilen %.2f g/cm³.")
                          % (_U3SI2_YOGUNLUK, _AL_YOGUNLUK, beklenen, float(yog)))
     return uyari

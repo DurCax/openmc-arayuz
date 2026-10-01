@@ -24,6 +24,7 @@ import copy
 from collections import namedtuple
 
 from cekirdek.geometri.sema import BOLUMLER, BOSLUK, ad_bolumleri, tanimlar
+from cekirdek.ceviri import _
 
 Basvuru = namedtuple("Basvuru", "yol tur ad")
 KUTUPHANE_TURLERI = tuple(tur for _b, tur in BOLUMLER)
@@ -220,9 +221,9 @@ def ad_degistir(spec, tur, eski, yeni):
     tanim = tanimlar(kopya, kopya.get("geometri") or {})
     if tur in KUTUPHANE_TURLERI:
         if eski not in tanim.get(tur, {}):
-            raise KeyError("tanımsız %s: %s" % (tur, eski))
+            raise KeyError(_("tanımsız %s: %s") % (tur, eski))
         if ad_bolumleri(tanim, yeni) or yeni in tanim.get("malzeme", {}):
-            raise ValueError("'%s' adı zaten kullanılıyor" % yeni)
+            raise ValueError(_("'%s' adı zaten kullanılıyor") % yeni)
     agac, _yollar = agac_adini_degistir(kopya, tur, eski, yeni)
     if agac is not None:
         kopya["geometri"] = agac

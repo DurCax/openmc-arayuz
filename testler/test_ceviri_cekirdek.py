@@ -179,13 +179,20 @@ def _kullanici_adlari(modeller):
     adlar: metinden cikarilip denetlenir (kisa ASCII adlar -- "su" -- cikarilmaz,
     yoksa "result" gibi sozcukler bozulurdu)."""
     adlar = set()
+
+    def topla(d):
+        if isinstance(d, dict):
+            for k, v in d.items():
+                if k == "ad" and isinstance(v, str):
+                    adlar.add(v)
+                else:
+                    topla(v)
+        elif isinstance(d, list):
+            for v in d:
+                topla(v)
+
     for _ad, s in modeller:
-        for anahtar in ("malzemeler", "cubuklar", "demetler", "plakalar", "parcalar"):
-            for oge in s.get(anahtar) or []:
-                if isinstance(oge, dict) and oge.get("ad"):
-                    adlar.add(str(oge["ad"]))
-        if s.get("ad"):
-            adlar.add(str(s["ad"]))
+        topla(s)
     return sorted((a for a in adlar if TURKCE_HARF.search(a)), key=len, reverse=True)
 
 

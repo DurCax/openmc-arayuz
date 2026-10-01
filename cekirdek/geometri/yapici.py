@@ -25,6 +25,7 @@
 import re
 
 import openmc
+from cekirdek.ceviri import _
 
 # ----------------------------------------------------------------------------
 # ortak
@@ -72,7 +73,7 @@ class NesneYapici(object):
         if ad is None or ad == "bosluk":
             return None
         if ad not in self.nesneler:
-            raise KeyError("tanımsız malzeme: %s" % ad)
+            raise KeyError(_("tanımsız malzeme: %s") % ad)
         return self.nesneler[ad]
 
     # --- yuzeyler ---

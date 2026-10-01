@@ -19,7 +19,7 @@ import json
 import os
 from collections import Counter
 
-from cekirdek.ceviri import _
+from cekirdek.ceviri import _, N_
 from cekirdek.gunluk import kaydedici
 from cekirdek.uygunluk_denetimi.vv_arayuz import AOA_KATEGORILERI, VVOzeti
 from cekirdek.vv import aoa as _aoa
@@ -31,11 +31,11 @@ KOK = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))
 ORNEK = os.path.join(KOK, "ornekler")
 SAYISAL = ("zenginlik", "h_x", "ealf")
 DELTA_SM_VARSAYILAN = 0.05
-DELTA_SM_KAYNAK = ("ΔSM = 0.05: NUREG-1718 §6.4.3.3.4 / NUREG-1520 Bl. 5 Ek B'de ek gerekçesiz "
+DELTA_SM_KAYNAK = (N_("ΔSM = 0.05: NUREG-1718 §6.4.3.3.4 / NUREG-1520 Bl. 5 Ek B'de ek gerekçesiz "
                    "kabul edildiği bildirilen değer (DOĞRULANMADI); alt sınır 0.02 "
-                   "(NUREG/CR-6698 §2.4.5)")
-KAYNAK = ("NUREG/CR-6698 (2001) yöntemi; kriter modelleri mit-crpg/benchmarks (MIT lisansı) "
-          "ve ICSBEP E ± σ (uncertainties.csv)")
+                   "(NUREG/CR-6698 §2.4.5)"))
+KAYNAK = (N_("NUREG/CR-6698 (2001) yöntemi; kriter modelleri mit-crpg/benchmarks (MIT lisansı) "
+          "ve ICSBEP E ± σ (uncertainties.csv)"))
 
 
 def kriter_dosyalari():
@@ -129,7 +129,7 @@ def ozet(vlar=None, filtre=None, uygulama=None, delta_sm=DELTA_SM_VARSAYILAN,
         normallik=None if norm is None else dict(norm),
         egilim=d["egilim"], aralik=_aralik(vlar), aoa_kategorik=_kategorik(vlar),
         seriler=dict(Counter(v.seri for v in vlar)),
-        kaynak=KAYNAK + "; " + DELTA_SM_KAYNAK)
+        kaynak=_(KAYNAK) + "; " + _(DELTA_SM_KAYNAK))
 
 
 def uygulama(spec, kosu_dizini=None):
