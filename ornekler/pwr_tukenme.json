@@ -1,10 +1,10 @@
 {
   "surum": 1,
   "ad": "PWR pin hücre — tükenme",
-  "aciklama": "pwr_pinhucre ile aynı pin hücrenin (2B, yansıtıcı sınır) 40 W/gHM güç yoğunluğunda ~20 MWd/kg'a kadar yakılması (tükenme örneği).\nİlk iki adım kısa tutuldu (0.5 ve 1.5 gün): Xe-135 dengesi ~2 günde kurulur; ilk adım uzun olursa bu hızlı düşüş tek bir çizgiye ezilir ve görülmez. Sonrası ~20 MWd/kg'a kadar uzar.\nZincir otomatik seçilir: suda hidrojen var → termal (ENDF/B-VIII.0).\nHacim analitik: π × 0.39218² × 1 cm (2B modelde 1 cm yükseklik; güç yoğunluğu kullanıldığı için tutarlıdır).",
+  "aciklama": "pwr_pinhucre ile aynı pin hücrenin (2B, yansıtıcı sınır) 40 W/gHM güç yoğunluğunda ~20 MWd/kg'a kadar yakılması (tükenme örneği).\nİlk iki adım kısa tutuldu (0.5 ve 1.5 gün): Xe-135 dengesi ~2 günde kurulur; ilk adım uzun olursa bu hızlı düşüş tek bir çizgiye ezilir ve görülmez. Sonrası ~20 MWd/kg'a kadar uzar.\nZincir otomatik seçilir: suda hidrojen var → termal (ENDF/B-VIII.0).\nHacim analitik: π × 0.39218² × 1 cm (2B modelde 1 cm yükseklik; güç yoğunluğu kullanıldığı için tutarlıdır).\n\nBilinçli tutarsızlık (çıpa korunur): bütün malzemeler 293.6 K'dedir ama su yoğunluğu 0.70 g/cm³'tür — 293.6 K'de doymuş su ~0.998 g/cm³ olurdu, 0.70 ise ~580 K sıcak soğutucunun yoğunluğudur. Yani model gerçek bir soğuk ya da sıcak durum değildir: tesir kesitleri ve S(α,β) soğuk, moderatör yoğunluğu sıcaktır; bor yoktur. Çıpa değeri (k∞ 1.3570, testler/test_capa.py) bu tanıma bağlı olduğu için değiştirilmedi.",
   "baslik": "PWR pin hücre — tükenme",
   "baslik_en": "PWR pin cell — depletion",
-  "aciklama_en": "The pwr_pinhucre pin cell burned at 40 W/gHM to about 20 MWd/kg (depletion).",
+  "aciklama_en": "The pwr_pinhucre pin cell burned at 40 W/gHM to about 20 MWd/kg (depletion). Deliberate inconsistency (the anchor is kept): all materials are at 293.6 K but the water density is 0.70 g/cm³ (saturated water at 293.6 K would be ~0.998 g/cm³; 0.70 is the density of ~580 K hot coolant), and there is no boron: cold cross sections and S(α,β) with a hot moderator density, i.e. not a real cold or hot state. The anchor value is tied to this definition (testler/test_capa.py), so it is not changed.",
   "kategori": "pwr",
   "seviye": "ileri",
   "malzemeler": [
