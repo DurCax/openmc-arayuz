@@ -21,7 +21,8 @@ gelir (`pyproject.toml` → `cekirdek/surum.py`). Ayrıntılı değişiklikler `
 
 ### Neyi doğruladık (kanıtıyla)
 - Hızlı süit: `QT_QPA_PLATFORM=offscreen python -m pytest -m hizli -n 4 -q` — 0 kaldı
-  (bu adayın birleştirme öncesi sayısı dal raporunda; Dalga 3 sonu: 589 geçti / 0 kaldı).
+  — `v2-d4-16` dalında 597 geçti / 0 kaldı (01.10.2026; Dalga 3 sonu: 589 / 0). Birleştirme
+  sonrası sayı etikette yeniden alınır.
 - Paket denetimi (`testler/test_paket.py`, hızlı): `LICENSE` ve `THIRD_PARTY_LICENSES.md`
   var; sürüm tek kaynak; `openmc-arayuz-kosu --help` çalışır; izlenen dosyalarda `/home/`
   yolu ve e-posta adresi yok.
