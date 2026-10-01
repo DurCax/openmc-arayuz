@@ -2690,7 +2690,7 @@ msgstr "geometry could not be imported: %s"
 #: cekirdek/geometri/ice_aktar.py:455
 #, python-format
 msgid "geometri ağaca dönüştürüldü: %d parça, %d çubuk tanımı"
-msgstr "geometry converted to a tree: %d components, %d pin definitions"
+msgstr "geometry converted to a geometry tree: %d components, %d pin definitions"
 
 #: cekirdek/geometri/ice_aktar_kap.py:41
 #, python-format
@@ -4061,7 +4061,7 @@ msgstr ""
 
 #: cekirdek/kosucu.py:721
 msgid "      hesap    = sabit kaynak (k-eff tanımsız)"
-msgstr "      mode     = fixed source (k-eff undefined)"
+msgstr "      calculation = fixed source (k-eff undefined)"
 
 #: cekirdek/kosucu.py:722
 #, python-format
@@ -5787,7 +5787,7 @@ msgstr ""
 "Control rod worth. It should be negative: reactivity decreases as the absorber is "
 "inserted. Caution: the classic S-curve is seen only when the system is close to "
 "critical at every position. In an assembly with a high k∞ (e.g. a single assembly "
-"with a reflective boundary) the rodded-free region alone stays supercritical; so the "
+"with a reflective boundary) the rod-free region alone stays supercritical; so the "
 "worth accumulates late and the peak of the differential worth occurs near full "
 "insertion rather than at the centre."
 

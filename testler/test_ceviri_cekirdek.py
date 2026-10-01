@@ -373,6 +373,181 @@ def test_cekirdek_po_butun():
             "-> %s" % [m.id for m in kaynakli][:3])
 
 
+# ----------------------------------------------------------------------------
+# (c) SOZLUK.md terim tutarliligi
+# ----------------------------------------------------------------------------
+SOZLUK = os.path.join(KOK, "docs", "SOZLUK.md")
+# Kisa (<= 4 harf) Turkce terimler yalniz bu eklerle eslesir; uzunlar her
+# devamla (onek). Son unsuz yumusamasi (çubuk -> çubuğu) ayrica denenir.
+_KISA_EKLER = ("", "u", "ü", "ı", "i", "a", "e", "ya", "ye", "un", "ün", "ın", "in", "nın",
+               "nin", "nun", "nün", "da", "de", "ta", "te", "dan", "den", "tan", "ten", "na",
+               "ne", "nda", "nde", "ndan", "nden", "lar", "ler", "ları", "leri", "ların",
+               "lerin", "larda", "lerde", "daki", "deki", "nu", "nü", "yu", "yü", "la", "le",
+               "yla", "yle", "su", "sü", "sı", "si")
+_YUMUSAMA = {"k": "ğ", "p": "b", "t": "d", "ç": "c"}
+# Sozlukte olmayan ama terimin baglama gore dogru karsiligi (gerekceli).
+SOZLUK_EK_KARSILIK = {
+    "doğrulama": ("validation", "v&v"),     # NUREG/CR-6698: doğrulama kümesi = validation set
+    "kriter": ("criterion",),                # "kabul ölçütü" anlaminda (kriter deneyi = benchmark)
+    "kaynak": ("reference",),                # atif/kaynakca anlami ("kaynak belirtilmedi")
+    "adım": ("step",),                       # tükenme/zaman adımı (sozlukte: depletion step)
+    "dönme": ("rotat",),                     # tambur dönmesi = rotation (ad/fiil)
+    "bölge": ("region",),                    # genel geometri bölgesi ("pin region" yalniz cubukta)
+    "örnek": ("instance", "sampl"),          # distribcell/yerlesim ornegi, ornekleme
+    "grup": ("group",),                      # donme/daldirma grubu (Dalga G)
+    "tarama": ("sweep",),                    # "parameter sweep"in kisa bicimi
+    "hesap": ("comput", "calculat"),         # "hesaplanamadı" = could not be computed
+    "başlangıç": ("initial",),               # baslangic kaynagi/tahmini (arayuz "Start" degil)
+    "yinele": ("iterat", "repeat"),          # kritik arama yinelemesi; denetimi yinele
+    "bildirim": ("report",),                 # belirsizlik bildirimi = reporting (GUM)
+    "sözlük": ("dictionary",),               # JSON veri turu
+    "kılavuz": ("guide",),                   # "standart / kılavuz" (yonerge belgesi)
+    "kaydet": ("sav",),
+    "çizim": ("draw",),                      # harita çizimi (grafik), OpenMC plot degil
+}
+# Terimin bu msgid'de sozlukteki anlamda OLMADIGI girisler: (terim, msgid icindeki
+# ifade, kucuk harf). Gerekce yanda.
+SOZLUK_ISTISNA = (
+    ("kor", "kor sekmesi"),             # "Kor" sekmesi arayuzde "Geometry" adini aldi
+    ("demet", "tek yönlü demet"),       # parcacik demeti = beam
+    ("yüz", "yüzde"), ("yüz", "yüzden"), ("yüz", "birkaç yüz"),   # yuzde / sayi (hundred)
+    ("kap", "kaba "),                   # kaba = coarse
+    ("çevrim", "toryum çevrimi"), ("çevrim", "th çevrimi"),       # yakit cevrimi = fuel cycle
+    ("çubuk", "en değerli çubu"), ("çubuk", "çubuk çekildiğinde"),
+    ("çubuk", "çekilen çubu"),           # kontrol cubugu baglami: rod
+    ("aktif çevrim", "birkaç yüz aktif"),  # Brown 2009 alintisi ("active cycles")
+    ("kaynak", "not: tally değerleri mutlak"),  # iki msgid'e bolunmus cumle
+    ("eksenel dilim", "eksenel dilimler bitişik"),  # ice aktarma: z dilimi (slice), tally degil
+    ("hata", "hata ayıklama"),          # debug
+    ("çalıştır", "çalıştırılabilir"),   # executable
+    ("boşluk", "boşlukla başlayamaz"),  # bosluk karakteri (space)
+    ("parça", "uç parça"),              # end piece
+    ("çubuk", "çubuksuz"),              # kontrol cubugu baglami: rod-free
+    ("hesap", "hesap-hesap"),           # code-to-code (kod karsilastirmasi terimi)
+)
+
+
+def _tr_kucuk(metin):
+    return metin.replace("I", "ı").replace("İ", "i").lower()
+
+
+def _sozluk_satirlari():
+    with open(SOZLUK, encoding="utf-8") as f:
+        for satir in f:
+            if not satir.startswith("|") or satir.startswith("|---"):
+                continue
+            hucre = [h.strip() for h in satir.strip().strip("|").split("|")]
+            if len(hucre) >= 2 and hucre[0] != "Türkçe":
+                yield hucre[0], hucre[1]
+
+
+def _parcalar(metin):
+    metin = re.sub(r"\([^)]*\)", " ", metin.replace("*", ""))
+    return [p.strip() for p in metin.split(" / ") if p.strip()]
+
+
+def sozluk_terimleri():
+    """{turkce_terim: (ingilizce karsiliklar...)} -- ayni terimin butun
+    anlamlari birlesir (boşluk -> gap, void)."""
+    terimler = {}
+    for tr, en in _sozluk_satirlari():
+        tr_p, en_p = _parcalar(tr), _parcalar(en)
+        if not tr_p or not en_p:
+            continue
+        ciftler = (zip(tr_p, en_p) if len(tr_p) == len(en_p)
+                   else ((t, e) for t in tr_p for e in en_p))
+        for t, e in ciftler:
+            t = _tr_kucuk(t)
+            if len(t) < 3:
+                continue
+            terimler.setdefault(t, set()).add(e.lower())
+    for t, ekler in SOZLUK_EK_KARSILIK.items():
+        terimler.setdefault(t, set()).update(ekler)
+    return {t: tuple(sorted(e)) for t, e in terimler.items()}
+
+
+_IYELIK = re.compile(r"(?<=\w\w\w)(sı|si|su|sü|ı|i|u|ü)$")
+
+
+def _terim_deseni(terim):
+    """Turkce terim deseni. Cok sozcuklu terimin son sozcugundeki iyelik eki
+    (kontrol çubuğu -> kontrol çubu[ğk]) govdeden atilir."""
+    govdeler = {terim}
+    if " " in terim:
+        bas, son = terim.rsplit(" ", 1)
+        son = _IYELIK.sub("", son)
+        govdeler = {bas + " " + son}
+    for g in list(govdeler):
+        if g[-1] in _YUMUSAMA:
+            govdeler.add(g[:-1] + _YUMUSAMA[g[-1]])
+        if g[-1] in _YUMUSAMA.values():
+            govdeler.add(g[:-1] + {v: k for k, v in _YUMUSAMA.items()}[g[-1]])
+    govde = "|".join(re.escape(g) for g in sorted(govdeler, key=len, reverse=True))
+    if len(terim.replace(" ", "")) <= 4:
+        ek = "|".join(re.escape(e) for e in sorted(_KISA_EKLER, key=len, reverse=True))
+        return re.compile(r"(?<!\w)(?:%s)(?:%s)(?!\w)" % (govde, ek))
+    return re.compile(r"(?<!\w)(?:%s)\w*" % govde)
+
+
+def _ingilizce_var(ceviri, karsiliklar):
+    c = ceviri.lower()
+    for e in karsiliklar:
+        bicimler = {e}
+        if e.endswith("y") and len(e) > 4:
+            bicimler.add(e[:-1] + "i")          # assembly -> assemblies
+        if e.endswith("s") and len(e) > 4:
+            bicimler.add(e[:-1])                # results -> result
+        if any(b in c for b in bicimler):
+            return True
+    return False
+
+
+def sozluk_ihlalleri(girdiler):
+    """[(terim, msgid, ceviri)]: msgid sozluk terimini iceriyor ama ceviri
+    sozlukteki karsiligi icermiyor. Uzun terim once eslesir ve kapsadigi
+    kisa terim ayrica denetlenmez (kontrol çubuğu -> control rod, 'pin' aranmaz)."""
+    terimler = sozluk_terimleri()
+    desenler = [(t, _terim_deseni(t)) for t in sorted(terimler, key=len, reverse=True)]
+    ihlal = []
+    for mid, ceviri in girdiler:
+        kucuk = _tr_kucuk(mid)
+        # tanimlayicilar (tirnakli adlar, anahtar=deger) terim degildir
+        kalan = re.sub(r"'[\w.<>/ ]*'|\w+=\S*|[\w/]+\.\w+", " ", kucuk)
+        for terim, desen in desenler:
+            if not desen.search(kalan):
+                continue
+            kalan = desen.sub(" ", kalan)
+            if any(terim == t and o in kucuk for t, o in SOZLUK_ISTISNA):
+                continue
+            if not _ingilizce_var(ceviri, terimler[terim]):
+                ihlal.append((terim, mid, ceviri))
+    return ihlal
+
+
+@gereksinim("R-M9-01")
+def test_sozluk_terim_tutarliligi():
+    print("\n[CC9] cekirdek.po: SOZLUK.md terimini iceren msgid'in cevirisi sozlukteki "
+          "Ingilizce karsiligi icerir")
+    terimler = sozluk_terimleri()
+    kontrol("sozluk okundu (%d terim)" % len(terimler), len(terimler) > 150)
+    kontrol("ornek terimler: demet -> assembly, tükenme -> depletion",
+            "assembly" in terimler.get("demet", ()) and
+            "depletion" in terimler.get("tükenme", ()), "-> %s" % (terimler.get("demet"),))
+    kontrol("denetim yakalar: 'demet adımı' -> 'bundle pitch' ihlal, 'assembly pitch' degil",
+            len(sozluk_ihlalleri([("demet adımı", "bundle pitch")])) == 1
+            and not sozluk_ihlalleri([("demet adımı", "assembly pitch")])
+            and len(sozluk_ihlalleri([("kontrol çubuklarına", "control bars")])) == 1)
+    girdiler = []
+    for m in _po_girdileri():
+        kimlik = m.id if isinstance(m.id, tuple) else (m.id,)
+        ceviri = m.string if isinstance(m.string, tuple) else (m.string,)
+        girdiler += list(zip(kimlik, ceviri))
+    ihlal = sozluk_ihlalleri(girdiler)
+    kontrol("sozluk ihlali yok (%d giris tarandi)" % len(girdiler), not ihlal,
+            "-> %d: %s" % (len(ihlal), ["%s: %r -> %r" % (t, a[:50], b[:50])
+                                         for t, a, b in ihlal[:8]]))
+
+
 def _parca_yaz(yol, girdiler):
     from babel.messages.catalog import Catalog
     from babel.messages.pofile import write_po
@@ -431,5 +606,5 @@ def test_regresyon_listeleri_acik():
 HIZLI = [test_bulgular_ingilizce, test_uygunluk_ve_rapor_ingilizce, test_po_birlestir_cogul,
          test_regresyon_listeleri_acik,
          test_ayni_ceviri_eksik_sayilmaz, test_ceviri_okuma_tutarli,
-         test_tukenme_makine_isareti, test_cekirdek_po_butun]
+         test_tukenme_makine_isareti, test_cekirdek_po_butun, test_sozluk_terim_tutarliligi]
 YAVAS = []
