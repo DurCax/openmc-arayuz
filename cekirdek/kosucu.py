@@ -793,4 +793,6 @@ def _terminal(argv):
 
 
 if __name__ == "__main__":
+    from cekirdek.ceviri import terminal_dili
+    terminal_dili()                   # OPENMC_ARAYUZ_DIL verilmisse o dil
     sys.exit(_terminal(sys.argv[1:]))

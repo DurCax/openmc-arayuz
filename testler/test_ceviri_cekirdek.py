@@ -603,7 +603,23 @@ def test_regresyon_listeleri_acik():
     kontrol("kopru listeyi kullanir: ([], [])", conftest.test_listeleri(m) == ([], []))
 
 
+def test_terminal_dili():
+    print("\n[CC10] Terminal girisleri yalniz OPENMC_ARAYUZ_DIL ile dil degistirir "
+          "(LANG=en_US terminal ciktisini degistirmez)")
+    from cekirdek import ceviri
+    onceki = ceviri.etkin_dil()
+    try:
+        ceviri.dil_ayarla("tr")
+        kontrol("LANG=en_US, degisken yok -> tr kalir",
+                ceviri.terminal_dili({"LANG": "en_US.UTF-8"}) == "tr")
+        kontrol("OPENMC_ARAYUZ_DIL=en -> en",
+                ceviri.terminal_dili({"OPENMC_ARAYUZ_DIL": "en"}) == "en")
+    finally:
+        ceviri.dil_ayarla(onceki)
+
+
 HIZLI = [test_bulgular_ingilizce, test_uygunluk_ve_rapor_ingilizce, test_po_birlestir_cogul,
+         test_terminal_dili,
          test_regresyon_listeleri_acik,
          test_ayni_ceviri_eksik_sayilmaz, test_ceviri_okuma_tutarli,
          test_tukenme_makine_isareti, test_cekirdek_po_butun, test_sozluk_terim_tutarliligi]

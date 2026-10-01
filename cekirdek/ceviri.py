@@ -98,6 +98,18 @@ def varsayilan_dil(ayar=None, ortam=None):
     return sistem_dili(ortam)
 
 
+def terminal_dili(ortam=None):
+    """Komut satiri girisleri (openmc-arayuz-kosu, python -m cekirdek.*) icin:
+    YALNIZ OPENMC_ARAYUZ_DIL verilmisse o dil etkinlesir; yoksa kaynak dil
+    (Turkce) kalir -- sistem dili (LANG) terminal ciktisini degistirmez.
+    Arayuz alt surec baslatirken bu degiskeni gecirerek ciktiyi kendi diline
+    esitler. Etkin dil kodunu doner."""
+    ortam = os.environ if ortam is None else ortam
+    if ortam.get(ORTAM_DEGISKENI):
+        return dil_ayarla(ortam[ORTAM_DEGISKENI])
+    return etkin_dil()
+
+
 def _katalog_yukle(kod):
     if kod == KAYNAK_DIL:
         return gettext.NullTranslations()
