@@ -9,7 +9,7 @@
 ================================================================================
 """
 
-from cekirdek.ceviri import _, _n
+from cekirdek.ceviri import _, _n, pgettext
 from cekirdek.gunluk import kaydedici
 
 _log = kaydedici(__name__)
@@ -74,7 +74,7 @@ def _radyal_satirlari(faktorler, kategori=None):
                         for ad, v in tur.items()))
     # --- maksimumun yukari yanliligi: tepeye yakin cubuklar uzerinden ---
     satirlar += _yanlilik_satiri(faktorler.get("F_dH_tepe_yakini"),
-                                 faktorler.get("F_dH_yanlilik"), (_("çubuk"), "F_ΔH"))
+                                 faktorler.get("F_dH_yanlilik"), (pgettext("çoğul", "çubuk"), "F_ΔH"))
     return satirlar
 
 

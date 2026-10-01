@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
+"Project-Id-Version: openmc-arayuz 2.0.0rc1\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-01 19:34+0300\n"
+"POT-Creation-Date: 2026-10-01 20:48+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1161,32 +1161,33 @@ msgstr ""
 msgid "güç dağılımı okunamadı: %s"
 msgstr ""
 
-#: arayuz/calistir/ozet.py:76
+#: arayuz/calistir/ozet.py:78
 #, python-format
 msgid "F_ΔH     = %.4f   (en yüksek çubuk gücü / ortalama)%s"
 msgstr ""
 
-#: arayuz/calistir/ozet.py:77
+#: arayuz/calistir/ozet.py:79
+#, python-format
 msgid ""
-"⚠ istatistik zayıf: bu değer yukarı yanlı, güvenilir F_ΔH için Normal ya da Hassas "
-"hassasiyetle koşun"
+"⚠ maksimum yukarı yanlı: tepeye 2σ içinde %d çubuk, beklenen yanlılık ≈ +%.4f; "
+"güvenilir F_ΔH için çok tohumla harita ortalaması alın"
 msgstr ""
 
-#: arayuz/calistir/ozet.py:81
+#: arayuz/calistir/ozet.py:83
 #, python-format
 msgid "F_q      = %.4f   (en yüksek yerel güç yoğunluğu / ortalama)"
 msgstr ""
 
-#: arayuz/calistir/ozet.py:84
+#: arayuz/calistir/ozet.py:86
 msgid "F_q      = tanımsız (model 2B)"
 msgstr ""
 
-#: arayuz/calistir/ozet.py:85
+#: arayuz/calistir/ozet.py:87
 #, python-format
 msgid "en sıcak çubuk: %s%s"
 msgstr ""
 
-#: arayuz/calistir/ozet.py:88
+#: arayuz/calistir/ozet.py:90
 #, python-format
 msgid ", dilim %d"
 msgstr ""
@@ -3092,7 +3093,7 @@ msgstr ""
 msgid "Tek eksenel dilim (F_q)"
 msgstr ""
 
-#: arayuz/guc_harita.py:64 arayuz/guc_harita.py:273
+#: arayuz/guc_harita.py:64 arayuz/guc_harita.py:275
 #, python-format
 msgid "Dilim %d"
 msgstr ""
@@ -3172,118 +3173,118 @@ msgstr ""
 msgid "Toplamın korunumu denetlenemedi: %s"
 msgstr ""
 
-#: arayuz/guc_harita.py:198
+#: arayuz/guc_harita.py:199
 msgid "Tüm türler"
 msgstr ""
 
-#: arayuz/guc_harita.py:226
+#: arayuz/guc_harita.py:227
 msgid ""
 "Güç dağılımı hesaplanmadı. Hesap ayarları sekmesinde 'Çubuk bazlı güç dağılımı "
 "hesapla' kutusunu işaretleyip modeli yeniden çalıştırın."
 msgstr ""
 
-#: arayuz/guc_harita.py:235
+#: arayuz/guc_harita.py:236
 #, python-format
 msgid "%d çubuk, %d eksenel dilim"
 msgid_plural "%d çubuk, %d eksenel dilim"
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/guc_harita.py:237
+#: arayuz/guc_harita.py:238
 #, python-format
 msgid "en sıcak çubuk: %s"
 msgstr ""
 
-#: arayuz/guc_harita.py:240
+#: arayuz/guc_harita.py:241
 #, python-format
 msgid "en sıcak demet: %s (ortalama %.4f)"
 msgstr ""
 
-#: arayuz/guc_harita.py:243
+#: arayuz/guc_harita.py:244
 #, python-format
 msgid "en sıcak dilim: %d"
 msgstr ""
 
-#: arayuz/guc_harita.py:247
+#: arayuz/guc_harita.py:248
 #, python-format
 msgid "<br><span style='color:%s'>Toplamın korunumu: bağıl fark %.1e — %s</span>"
 msgstr ""
 
-#: arayuz/guc_harita.py:250
+#: arayuz/guc_harita.py:251
 msgid "tamam"
 msgstr ""
 
-#: arayuz/guc_harita.py:250
+#: arayuz/guc_harita.py:251
 msgid "bozuk, haritaya güvenmeyin"
 msgstr ""
 
-#: arayuz/guc_harita.py:265
+#: arayuz/guc_harita.py:267
 #, python-format
 msgid "dilim %d / %d"
 msgstr ""
 
-#: arayuz/guc_harita.py:266
+#: arayuz/guc_harita.py:268
 msgid "çubuk toplamı"
 msgstr ""
 
-#: arayuz/guc_harita.py:270
+#: arayuz/guc_harita.py:272
 msgid "Güç dağılımı hesaplanmadı"
 msgstr ""
 
-#: arayuz/guc_harita.py:294
+#: arayuz/guc_harita.py:296
 #, python-format
 msgid ""
 "Bağıl güç — %s\n"
 "○ en sıcak çubuk · beyaz: yakıtsız konum (kılavuz/ölçüm borusu)"
 msgstr ""
 
-#: arayuz/guc_harita.py:304 arayuz/guc_harita.py:317
+#: arayuz/guc_harita.py:306 arayuz/guc_harita.py:319
 msgid "bağıl güç"
 msgstr ""
 
-#: arayuz/guc_harita.py:305
+#: arayuz/guc_harita.py:307
 msgid "eksenel dilim"
 msgstr ""
 
-#: arayuz/guc_harita.py:308
+#: arayuz/guc_harita.py:310
 msgid "Eksenel profil"
 msgstr ""
 
-#: arayuz/guc_harita.py:341
+#: arayuz/guc_harita.py:343
 msgid "x (soldan)"
 msgstr ""
 
-#: arayuz/guc_harita.py:342
+#: arayuz/guc_harita.py:344
 msgid "y (alttan)"
 msgstr ""
 
-#: arayuz/guc_harita.py:381
+#: arayuz/guc_harita.py:383
 msgid "adım birimi"
 msgstr ""
 
-#: arayuz/guc_harita.py:462
+#: arayuz/guc_harita.py:464
 #, python-format
 msgid " · × kesik çubuk (%d, F_ΔH dışı)"
 msgid_plural " · × kesik çubuk (%d, F_ΔH dışı)"
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/guc_harita.py:464
+#: arayuz/guc_harita.py:466
 #, python-format
 msgid ""
 "Bağıl güç (kor ortalaması = 1) — %s · %s\n"
 "○ en sıcak çubuk · kalın çerçeve: en sıcak demet"
 msgstr ""
 
-#: arayuz/guc_harita.py:466
+#: arayuz/guc_harita.py:468
 msgid "demet ortalaması"
 msgstr ""
 
-#: arayuz/geometri/form_ortak.py:132 arayuz/guc_harita.py:466 arayuz/izgara.py:182
+#: arayuz/geometri/form_ortak.py:132 arayuz/guc_harita.py:468 arayuz/izgara.py:182
 msgid "çubuk"
 msgstr ""
 
-#: arayuz/guc_harita.py:478
+#: arayuz/guc_harita.py:480
 #, python-format
 msgid ""
 "demet %s\n"
@@ -3296,21 +3297,21 @@ msgid_plural ""
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/guc_harita.py:482
+#: arayuz/guc_harita.py:484
 #, python-format
 msgid ""
 "\n"
 "tepe %.4f ± %.4f (%s)"
 msgstr ""
 
-#: arayuz/guc_harita.py:517
+#: arayuz/guc_harita.py:519
 #, python-format
 msgid ""
 "%s\n"
 "kesik çubuk — üst hücre sınırıyla kırpılıyor; F_ΔH ve F_q dışında"
 msgstr ""
 
-#: arayuz/guc_harita.py:577
+#: arayuz/guc_harita.py:579
 msgid "Güç haritasını kaydet"
 msgstr ""
 
