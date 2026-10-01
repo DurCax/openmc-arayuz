@@ -210,7 +210,28 @@ def test_kosusuz_rapor_sessiz_degil():
         rapor.olustur, QtWidgets.QFileDialog.getSaveFileName = eski_olustur, eski_dlg
 
 
+def test_c_e_panoda():
+    print("\n[QA9] Referans degerli ornekte E ± σ, C/E, C − E (pcm), fark/σ")
+    from cekirdek import ornek_bilgi
+    from arayuz.calistir import ozet
+    from testler.ortak_test import ORNEK
+    with open(os.path.join(ORNEK, "godiva_kriter.json"), encoding="utf-8") as f:
+        godiva = json.load(f)
+    r = ornek_bilgi.c_e(godiva["referans"], 1.00038, 0.00025)
+    kontrol("C − E = +38 pcm, σ = 103 pcm, 0.37σ, gecti", round(r["fark_pcm"]) == 38
+            and round(r["fark_sigma_pcm"]) == 103 and abs(r["fark_sigma_sayisi"] - 0.37) < 0.01
+            and r["gecti"], "-> %r" % r)
+    kontrol("C/E = 1.00038", abs(r["C_E"] - 1.00038) < 1e-9)
+    s = ozet.referans_satirlari(godiva, (1.00038, 0.00025))
+    metin = "\n".join(s)
+    kontrol("satirlar: referans, C/E, C − E pcm, fark/σ", len(s) == 3 and "C/E" in metin
+            and "pcm (Δk × 10⁵)" in metin and "0.37" in metin, "-> %s" % metin)
+    kontrol("referanssiz ornekte satir yok", ozet.referans_satirlari(_spec(), (1.0, 0.001)) == [])
+    kontrol("3σ disi -> OLCUT DISINDA", "DIŞINDA" in "\n".join(
+        ozet.referans_satirlari(godiva, (1.01, 0.0002))))
+
+
 HIZLI = [test_elle_ealf_tally_vv_dusurmez, test_panel_gecersiz_tally_duzeltir,
          test_entropi_kisa_pasif_yakalanir, test_guc_yorumu_once_istatistik,
-         test_simge_dugmesi_adi_ipucunda, test_kosusuz_rapor_sessiz_degil]
+         test_simge_dugmesi_adi_ipucunda, test_kosusuz_rapor_sessiz_degil, test_c_e_panoda]
 YAVAS = []

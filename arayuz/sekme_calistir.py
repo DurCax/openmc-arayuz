@@ -785,6 +785,7 @@ class CalistirSekmesi(QtWidgets.QWidget):
         renk = self._keff_rengi(s["keff"][0], s["keff"][1], sonsuz)
         self._durum_yaz("%s\n%s" % (durum, ayrinti), renk)
         satirlar, yakinsadi = ozet.ozdeger_ozeti(s)
+        satirlar = ozet.referans_satirlari(self.spec, s["keff"]) + satirlar
         if yakinsadi is False:
             self.durum.emit(_("Dikkat: kaynak yakınsamamış olabilir — "
                               "pasif çevrim sayısını artırın"), False)

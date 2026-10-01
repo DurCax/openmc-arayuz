@@ -73,6 +73,11 @@ on, dollars ($ = ρ / β_eff) are also given. **Lost particles** and OpenMC warn
 and in color on this card; they are not silent. A lost particle means a gap or an overlap in the
 geometry (conformity rule K3). In a fixed source run the card shows the tally tables.
 
+**For examples with a reference value** (`kriter_*`, `godiva_kriter`; `referans.k` ± `sigma`)
+the summary lines start with the comparison: the **reference** E ± σ (experiment or calculated
+reference and its source), **C/E** ± σ and **C − E** in pcm (Δk × 10⁵) ± combined σ with
+|C − E| / σ; the criterion of the project is |C − E| ≤ 3σ ([7.4 V&V](07-uygunluk.md#vv)).
+
 <a id="calistir-guc-haritasi"></a>
 ### Power map
 
@@ -127,7 +132,9 @@ itself. It contains the raw OpenMC output (**Copy** puts it on the clipboard; th
 is written under the heading) and the full result text (statepoint and all tally tables).
 
 The report of the run is produced with **File › Create report... (Ctrl+R)** (the last successful
-run is used); the report contains the reproducibility information and the conformity annex of
+run of this session is used; if there is none but the project directory holds a saved run, you
+are asked whether to add it; with no run at all the notification says "the report contains only
+the model"); the report contains the reproducibility information and the conformity annex of
 the selected profiles. The terminal equivalent of the same job:
 
 ```bash
