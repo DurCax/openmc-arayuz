@@ -1,7 +1,28 @@
 {
-  "surum": 1,
-  "ad": "Çeyrek simetrik PWR koru (13 demet, 3B)",
-  "aciklama": "Çeyrek simetrik PWR koru: pwr_smr_kor.json'un sağ-alt çeyreği (13 demet). Sol (x = 0) ve üst (y = 0) yüzler SİMETRİ düzlemidir (yansıtıcı) — aynalandığında tam kor yeniden doğar (testler/test_ornekler.py OR9 bunu harita üzerinde sınar).\n\nSınır koşulu yüz başına verilir: iki simetri yüzü (sol −x ve üst +y) yansıtıcı, iki dış yüz (sağ +x ve alt −y) vakumdur; alt ve üst eksenel yüzler de vakumdur. Böylece çeyrek kor, tam korun (pwr_smr_kor.json, dört yüz vakum) aynısını çözer. Ölçülen (20000 parçacık × 160 çevrim, 60 pasif): tam kor k = 1.05881 ± 0.00059, çeyrek kor k = 1.05922 ± 0.00066; fark 0.5σ (YAVAS test OR12, 2σ ölçütü).\n\nAynı parçacık sayısında çeyrek kor tam kordan belirgin hızlı değildir (izlenen nötron sayısı aynıdır). Kazanç istatistiktedir: her demete düşen nötron sayısı dört kat artar; demet ve çubuk güçleri aynı sürede daha az belirsizlikle hesaplanır.\n\nDemetler pwr_17x17.json ile aynıdır (Westinghouse 17×17, 900/600/580 K, 1300 ppm bor); iki zenginlik eş merkezli kuşaklar hâlindedir: B = %3.1 dış kuşak, A = %2.4 iç bölge (dışarıdan içeriye yükleme). Desen EŞ MERKEZLİDİR çünkü çeyrek kor modeli simetri düzlemlerini yansıtıcı sınırla kurar, yani çeyreği AYNALAR: dama deseninin ayna simetrisi olmadığı için aynalanan kor başka bir yükleme olurdu (ölçüldü: +260 pcm). Demet adımı 21.42 cm, aktif yükseklik 200 cm, alt/üst 20 cm su. Tasarım EĞİTİM amaçlıdır (gerçek bir SMR değildir); referans k verilmez.\n",
+  "surum": 3,
+  "ad": "Kare çekirdek + altıgen yansıtıcı halka (2B)",
+  "baslik": "Kare çekirdek + altıgen yansıtıcı halka",
+  "baslik_en": "Square core inside a hexagonal reflector ring",
+  "aciklama": "Gelişmiş geometri (ağaç) örneği: 5×5 kare kafesli bir PWR çekirdeği, altıgen blok kafesinin ortasına oyulmuş kare bir deliğe yerleştirilmiştir. Demetler pwr_17x17.json ile aynı Westinghouse 17×17 demetleridir (%2.4 ve %3.1 zenginlik, dama deseni, 1300 ppm borlu su).\n\nÇekirdeği çevreleyen altıgen bloklar (5 halkalı kafes, adım 30 cm) SS-304 çelik yansıtıcıdır: her bloğun ortasında 6 cm çaplı bir su kanalı vardır, bloklar arasında 0.4 cm su kalır. En dışta 20 cm su kuşağı vardır ve dış yüzler vakumdur. Model 2B'dir (eksenel yönde sonsuz).\n\nKare deliğin kenarları bazı altıgen blokları keser. Doğrulama bu yüzden 16 'kesik blok' UYARISI verir. Bu beklenen bir davranıştır: kare bir çekirdeği altıgen bir kafesle kırpmadan çevrelemek mümkün değildir. Kesik blokların hacmi stokastik hesaplanır. Deliğin tamamen altında kalan bloklar haritada '.' ile gizlenmiştir.\n\nEğitim amaçlı bir düzenektir, gerçek bir reaktör değildir. Referans k bu aracın kendi ölçümüdür.",
+  "aciklama_en": "Advanced (tree) geometry example: a 5x5 square PWR core cut into a hexagonal lattice of steel reflector blocks, 20 cm water outside, 2D. Clipped blocks raise a 'clipped block' warning by design. Educational.",
+  "kategori": "pwr",
+  "seviye": "ileri",
+  "referans": {
+    "k": 1.06492,
+    "sigma": 0.00086,
+    "tur": "hesap",
+    "kaynak": "Bu aracın ölçümü (eğitim tasarımı; dış referans yok). Normal hassasiyet, 10000 parçacık × 150 çevrim (40 pasif), tohum 1.",
+    "olcum": {
+      "k": 1.06492,
+      "sigma": 0.00086,
+      "parcacik": 10000,
+      "sure_s": 56.0,
+      "is_parcacigi": 6,
+      "openmc": "0.16.0",
+      "kutuphane": "ENDF/B-VIII.0",
+      "tarih": "2026-10-01"
+    }
+  },
   "malzemeler": [
     {
       "ad": "uo2_24",
@@ -163,6 +184,47 @@
         50,
         30
       ]
+    },
+    {
+      "ad": "ss304",
+      "gorunen_ad": "SS-304",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 7.9
+      },
+      "sicaklik": 580.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "Fe",
+          "miktar": 69.5,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Cr",
+          "miktar": 19.0,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Ni",
+          "miktar": 9.5,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Mn",
+          "miktar": 2.0,
+          "birim": "wo"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        120,
+        120,
+        130
+      ]
     }
   ],
   "cubuklar": [
@@ -301,142 +363,27 @@
     }
   ],
   "kor": {
-    "tur": "kare_kafes",
-    "cubuk": null,
-    "demet": null,
-    "plaka": null,
-    "adim": 21.42,
-    "boyut": [
-      6,
-      6
-    ],
-    "harita": [
-      "AAABss",
-      "AABBss",
-      "ABBsss",
-      "BBssss",
-      "ssssss",
-      "ssssss"
-    ],
-    "halka_sayisi": 2,
-    "yonelim": "x",
-    "anahtar": {
-      "A": "demet_24",
-      "B": "demet_31",
-      "s": "su"
-    },
-    "yukseklik": null,
-    "yansitici": {
-      "var": false,
-      "kalinlik": 20.0,
-      "malzeme": null
-    },
-    "kabuklar": [],
-    "dolgu": null,
-    "kor_yaricap": 20.0,
-    "tambur": {
-      "sayi": 0,
-      "yaricap": 4.0,
-      "merkez_yaricap": 26.0,
-      "govde_malzeme": null,
-      "emici_malzeme": null,
-      "emici_ic_yaricap": 2.5,
-      "emici_aci": 120.0,
-      "donme": 0.0,
-      "baslangic_acisi": 0.0
-    },
-    "eksenel": {
-      "var": true,
-      "bolgeler": [
-        {
-          "ad": "alt su",
-          "yukseklik": 20.0,
-          "dolgu": "su"
-        },
-        {
-          "ad": "aktif",
-          "yukseklik": 200.0,
-          "dolgu": null
-        },
-        {
-          "ad": "üst su",
-          "yukseklik": 20.0,
-          "dolgu": "su"
-        }
-      ]
-    },
-    "sinir": {
-      "yan": "vacuum",
-      "alt": "vacuum",
-      "ust": "vacuum",
-      "yuzler": {
-        "-x": "reflective",
-        "+x": "vacuum",
-        "-y": "vacuum",
-        "+y": "reflective"
-      }
-    }
+    "tur": "agac"
   },
   "ayarlar": {
     "mod": "eigenvalue",
-    "parcacik": 1000,
-    "cevrim": 60,
-    "pasif": 20,
+    "parcacik": 10000,
+    "cevrim": 150,
+    "pasif": 40,
     "tohum": 1,
     "sicaklik_yontemi": "interpolation",
     "kaynak": {
       "tur": "kutu",
-      "konum": [
-        0.0,
-        0.0,
-        0.0
-      ],
-      "parcacik": "neutron",
-      "kuvvet": 1.0,
-      "enerji": {
-        "tur": "watt",
-        "a": 988000.0,
-        "b": 2.249e-06,
-        "theta": 1293200.0,
-        "enerji": 14100000.0,
-        "noktalar": [],
-        "kenarlar": [],
-        "degerler": [],
-        "e0": 14080000.0,
-        "kutle_orani": 5.0,
-        "iyon_sicaklik": 20000.0
-      },
-      "aci": {
-        "tur": "izotropik",
-        "yon": [
-          0.0,
-          0.0,
-          1.0
-        ],
-        "koni_aci": 30.0
-      },
-      "alt": [
-        -64.0,
-        -64.0,
-        -100.0
-      ],
-      "ust": [
-        22.0,
-        22.0,
-        100.0
-      ]
+      "alt": null,
+      "ust": null
     },
     "entropi_mesh": {
       "var": true,
       "boyut": [
-        6,
-        6,
-        6
+        10,
+        10,
+        1
       ]
-    },
-    "kinetik": {
-      "var": false,
-      "nesil": 10
     }
   },
   "tallyler": [
@@ -453,8 +400,7 @@
   ],
   "guc_dagilimi": {
     "var": false,
-    "cubuk": null,
-    "bolge": 0,
+    "cubuklar": [],
     "skor": "kappa-fission",
     "eksenel_dilim": 20,
     "toplam_guc": null
@@ -489,9 +435,149 @@
     "is_parcacigi": 8,
     "dizin": "kosu"
   },
-  "baslik": "Çeyrek simetrik PWR koru",
-  "kategori": "pwr",
-  "seviye": "ileri",
-  "baslik_en": "Quarter-symmetric PWR core",
-  "aciklama_en": "Quarter of the square SMR-like core: the two symmetry faces are reflective, the two outer faces vacuum (per-face boundary conditions); k matches the full core within statistics."
+  "geometri": {
+    "kok": {
+      "tur": "kap",
+      "id": "kok",
+      "kesit": {
+        "sekil": "altigen",
+        "yonelim": "x",
+        "apotem": 121.243557
+      },
+      "ic": {
+        "tur": "kafes",
+        "id": "blok_kafesi",
+        "sekil": "altigen",
+        "adim": 30.0,
+        "halka_sayisi": 5,
+        "yonelim": "x",
+        "anahtar": {
+          "B": {
+            "tur": "bilesen",
+            "ad": "yansitici_blok"
+          }
+        },
+        "dis": {
+          "tur": "malzeme",
+          "ad": "su"
+        },
+        "harita": [
+          "BBBBBBBBBBBBBBBBBBBBBBBB",
+          "BBBBBBBBBBBBBBBBBB",
+          "BBBBBBBBBBBB",
+          "......",
+          "."
+        ]
+      },
+      "yerlesimler": [
+        {
+          "ad": "kare_cekirdek",
+          "mod": "liste",
+          "konumlar": [
+            [
+              0.0,
+              0.0
+            ]
+          ],
+          "kesit": {
+            "sekil": "dikdortgen",
+            "boyut": [
+              107.10000000000001,
+              107.10000000000001
+            ]
+          },
+          "icerik": {
+            "tur": "kafes",
+            "id": "cekirdek_kafesi",
+            "sekil": "kare",
+            "adim": 21.42,
+            "boyut": [
+              5,
+              5
+            ],
+            "harita": [
+              "BABAB",
+              "ABABA",
+              "BABAB",
+              "ABABA",
+              "BABAB"
+            ],
+            "anahtar": {
+              "A": {
+                "tur": "bilesen",
+                "ad": "demet_24"
+              },
+              "B": {
+                "tur": "bilesen",
+                "ad": "demet_31"
+              }
+            },
+            "dis": {
+              "tur": "malzeme",
+              "ad": "su"
+            }
+          }
+        }
+      ],
+      "halkalar": [
+        {
+          "kalinlik": 20.0,
+          "icerik": {
+            "tur": "malzeme",
+            "ad": "su"
+          },
+          "yerlesimler": []
+        }
+      ],
+      "yukseklik": null,
+      "sinir": {
+        "yan": "vacuum"
+      }
+    },
+    "parcalar": [
+      {
+        "ad": "yansitici_blok",
+        "dugum": {
+          "tur": "kap",
+          "id": "blok",
+          "kesit": {
+            "sekil": "altigen",
+            "yonelim": "y",
+            "apotem": 14.8
+          },
+          "ic": {
+            "tur": "malzeme",
+            "ad": "ss304"
+          },
+          "yerlesimler": [
+            {
+              "ad": "blok_kanali",
+              "mod": "liste",
+              "konumlar": [
+                [
+                  0.0,
+                  0.0
+                ]
+              ],
+              "kesit": {
+                "sekil": "silindir",
+                "yaricap": 3.0
+              },
+              "icerik": {
+                "tur": "malzeme",
+                "ad": "su"
+              }
+            }
+          ],
+          "halkalar": [],
+          "dis": {
+            "tur": "malzeme",
+            "ad": "su"
+          }
+        }
+      }
+    ],
+    "gruplar": []
+  },
+  "tamburlar": []
 }

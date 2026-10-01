@@ -5,7 +5,7 @@
 ================================================================================
  Imzalar test_sozlesme.py'dedir; burada DAVRANIS sinanir.
 
-   [U1] Kahin tablolari   : 27 ornegin HER sorusu (sekmeler, 12 taramanin
+   [U1] Kahin tablolari   : 30 ornegin HER sorusu (sekmeler, 12 taramanin
                             hedefleri, kritik arama, sinirlar, ayarlar,
                             kaynak, guc, tukenme, parcalar, roller) elle
                             cikarilmis beklentiyle birebir.
@@ -428,15 +428,70 @@ KAHIN = {
 # pwr_tukenme, pwr_pinhucre ile ayni geometridir (tukenme bolumu eklenmis)
 KAHIN["pwr_tukenme"] = copy.deepcopy(KAHIN["pwr_pinhucre"])
 
+# G-4 gelismis mod (agac) ornekleri -- gercek uygunluk ciktisi incelenerek yazildi
+# (01.10.2026). Agacta kor_adim hedefi kafes id'sidir, yansitici_kalinlik halka
+# yoludur; tambur_donme grup_donme'nin takma adidir (§7), ikisi de sunulur.
+# altigen_tambur_halkasi'nda u10mo acik izotoplarla yazildi (zenginlik kisayolu
+# %19.75'te U-234 varsayimi yapar) -> zenginlik hedefi YOK (olculdu).
+_PWR_CUBUK = [('yakit_24', 0), ('yakit_24', 1), ('yakit_24', 2), ('kilavuz_boru', 0),
+              ('kilavuz_boru', 1), ('yakit_31', 0), ('yakit_31', 1), ('yakit_31', 2)]
+_PWR_ROL = {'uo2_24': {'yakit'}, 'helyum': {'gaz'}, 'zirkaloy4': {'yapisal'}, 'su': SM,
+            'uo2_31': {'yakit'}}
+_PWR_MALZ = ['uo2_24', 'helyum', 'zirkaloy4', 'su', 'uo2_31']
+KAHIN.update({
+    "pwr_kare_altigen_halka": dict(
+        ozet=_ozet('agac', '2B', kafes=True),
+        roller=dict(_PWR_ROL, ss304={'yapisal'}),
+        sekmeler=TUM_SEKME,
+        hedefler=_h(yakit_sicaklik=['uo2_24', 'uo2_31'], sogutucu_sicaklik=['su'],
+                    malzeme_yogunluk=_PWR_MALZ + ['ss304'], void_orani=['su'], bor_ppm=['su'],
+                    zenginlik=['uo2_24', 'uo2_31'], kafes_adim=['demet_24', 'demet_31'],
+                    kor_adim=['cekirdek_kafesi', 'blok_kafesi'], cubuk_yaricap=_PWR_CUBUK,
+                    yansitici_kalinlik=['kok/halkalar/0']),
+        kritik=['bor_ppm', 'zenginlik', 'yansitici_kalinlik'],
+        sinir=(KARE, [], []),
+        ayar=dict(OZDEGER, guc_dagilimi=True, eksenel_dilim=False),
+        kaynak=(['nokta', 'kutu'], ['neutron']),
+        guc=['yakit_24', 'yakit_31'], tukenme=True, parca=(True, True, False)),
+    "altigen_tambur_halkasi": dict(
+        ozet=_ozet('agac', '3B', kafes=True, tambur=True),
+        roller={'u10mo': {'yakit'}, 'ss316': {'yapisal'}, 'sodyum': {'sogutucu'},
+                'b4c': {'emici'}, 'berilyum': {'moderator'}},
+        sekmeler=TUM_SEKME,
+        hedefler=_h(yakit_sicaklik=['u10mo'], sogutucu_sicaklik=['sodyum'],
+                    malzeme_yogunluk=['u10mo', 'ss316', 'sodyum', 'b4c', 'berilyum'],
+                    void_orani=['sodyum'], kafes_adim=['demet_hex'], kor_adim=['kor_kafesi'],
+                    cubuk_yaricap=YAKIT_3, tambur_donme=[None], grup_donme=['tamburlar']),
+        kritik=['tambur_donme', 'grup_donme'],
+        sinir=(ALTIGEN, ZB, ZB),
+        ayar=dict(OZDEGER, guc_dagilimi=True, eksenel_dilim=True),
+        kaynak=(['nokta', 'kutu'], ['neutron']),
+        guc=['yakit_cubugu'], tukenme=True, parca=(True, True, True)),
+    "kafes_tamburlu_yansitici": dict(
+        ozet=_ozet('agac', '3B', kafes=True, tambur=True),
+        roller=dict(_PWR_ROL, berilyum={'moderator'}, b4c={'emici'}),
+        sekmeler=TUM_SEKME,
+        hedefler=_h(yakit_sicaklik=['uo2_24', 'uo2_31'], sogutucu_sicaklik=['su'],
+                    malzeme_yogunluk=_PWR_MALZ + ['berilyum', 'b4c'], void_orani=['su'],
+                    bor_ppm=['su'], zenginlik=['uo2_24', 'uo2_31'],
+                    kafes_adim=['demet_24', 'demet_31'], kor_adim=['kor_kafesi'],
+                    cubuk_yaricap=_PWR_CUBUK, tambur_donme=[None], grup_donme=['tamburlar']),
+        kritik=['bor_ppm', 'zenginlik', 'tambur_donme', 'grup_donme'],
+        sinir=(EGRI, ZB, ZB),
+        ayar=dict(OZDEGER, guc_dagilimi=True, eksenel_dilim=True),
+        kaynak=(['nokta', 'kutu'], ['neutron']),
+        guc=['yakit_24', 'yakit_31'], tukenme=True, parca=(True, True, True)),
+})
+
 
 def test_kahin_tablosu():
-    print("\n[U1] UYGUNLUK KAHIN TABLOSU: 27 ornek x butun sorular")
+    print("\n[U1] UYGUNLUK KAHIN TABLOSU: 30 ornek x butun sorular")
     from cekirdek import tarama
     u = _u()
     kontrol("kahin 14 tarama turunun hepsini kapsiyor (tarama.TURLER sirasi)",
             tuple(tarama.TURLER) == TURLER, "(%s)" % list(tarama.TURLER))
     orn = sorted(os.path.splitext(a)[0] for a in os.listdir(ORNEK) if a.endswith(".json"))
-    kontrol("kahin 27 ornegin hepsini kapsiyor", orn == sorted(KAHIN), "(%s)" % orn)
+    kontrol("kahin 30 ornegin hepsini kapsiyor", orn == sorted(KAHIN), "(%s)" % orn)
 
     for ad in sorted(KAHIN):
         k = KAHIN[ad]
@@ -917,6 +972,13 @@ def _bul(spec, seviye, parca, fn=None):
             and parca.lower() in x.mesaj.lower()]
 
 
+def _sinir(spec):
+    """Sinir sozlugu (yerinde): sablonda kor.sinir, agacta geometri.kok.sinir."""
+    if (spec.get("kor") or {}).get("tur") == "agac":
+        return spec["geometri"]["kok"].setdefault("sinir", {})
+    return spec["kor"]["sinir"]
+
+
 def test_dogrula_uyumu():
     print("\n[U5] DOGRULA: arayuzun sundugu = dogrulamanin kabul ettigi")
     from cekirdek import dogrula
@@ -924,8 +986,7 @@ def test_dogrula_uyumu():
     for ad in sorted(KAHIN):
         s = _yukle(ad)
         # ornegin kendi ayarlari sunulan secenekler icinde
-        kor = s["kor"]
-        yan_ok = kor["sinir"]["yan"] in (_g(u.sinir_secenekleri, s, "yan") or [])
+        yan_ok = _sinir(s)["yan"] in (_g(u.sinir_secenekleri, s, "yan") or [])
         ks = _g(u.kaynak_secenekleri, s) or {}
         k = s["ayarlar"]["kaynak"]
         kaynak_ok = (k.get("tur", "nokta") in ks.get("turler", [])
@@ -948,7 +1009,7 @@ def test_dogrula_uyumu():
                 if yon != "yan" and not secenek:
                     continue
                 x = copy.deepcopy(s)
-                x["kor"]["sinir"][yon] = bc
+                _sinir(x)[yon] = bc
                 if yon != "yan" and bc == "periodic":
                     continue                     # ayrica sinanir (tek/cift tarafli)
                 hatalar = [b for b in dogrula.kor_kontrol(x) if b.seviye == "hata"
