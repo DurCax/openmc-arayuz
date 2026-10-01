@@ -31,6 +31,8 @@ KOK = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, KOK)
 HEDEF = os.path.join(KOK, "ornekler", "vv")
 SIGMA_HEDEF = 28e-5
+# Varsayilan (100000, 200, 50) ile σc > 28 pcm cikan vakalar: (parcacik, cevrim, pasif)
+KOSU_AYARI = {"usi001": (200000, 200, 50)}
 
 # kimlik: (mit-crpg goreli dizin, ICSBEP adi, E, sigma_e, bicim, yansitici, kisa aciklama)
 VAKALAR = {
@@ -167,7 +169,7 @@ def spec_uret(depo, kimlik):
     spec["kor"]["kabuklar"] = _kabuklar(kok)
     spec["kor"]["sinir"] = {"yan": kok["sinir"]["yan"], "alt": "vacuum", "ust": "vacuum"}
     a = spec["ayarlar"]
-    a["parcacik"], a["cevrim"], a["pasif"] = 100000, 200, 50
+    a["parcacik"], a["cevrim"], a["pasif"] = KOSU_AYARI.get(kimlik, (100000, 200, 50))
     a["kaynak"]["tur"] = "kutu"
     # Kutu ilk dolu kabugu kapsar (merkezi bosluklu kabukta +/-1 cm kutu reddedilirdi);
     # "fissionable" kisiti yansiticidaki noktalari eler.
