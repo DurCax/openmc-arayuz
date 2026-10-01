@@ -526,7 +526,8 @@ def test_k5_belirsizlik():
     from cekirdek.uygunluk_denetimi.kurallar_rapor import belirsizlik_metni, pcm_tanimi
     kontrol("belirsizlik_metni", belirsizlik_metni(1.18218, 0.00286) == "1.1822 ± 0.0029 (1σ)"
             and belirsizlik_metni(1.0, 0.00996) == "1.000 ± 0.010 (1σ)"
-            and belirsizlik_metni(15432.0, 123.0) == "15432 ± 123 (1σ)"
+            and belirsizlik_metni(15432.0, 123.0) == "(154.3 ± 1.2) × 10² (1σ)"
+            and belirsizlik_metni(15432.0, 23.0, birim="pcm") == "15432 ± 23 pcm (1σ)"
             and belirsizlik_metni(2.5, 0) == "2.5", "-> %s" % belirsizlik_metni(1.0, 0.00996))
     kontrol("pcm tanimlari", "Δk" in pcm_tanimi("dk") and "Δρ" in pcm_tanimi())
     yesil = _denetle(FIXTURE, ("D",), spec=_spec(),

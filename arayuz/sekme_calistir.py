@@ -14,7 +14,10 @@
                    (arayuz/calistir/yakinsama.py). Sabit kaynakta k-eff
                    tanimsizdir: bu kartlar hic gosterilmez.
    guc haritasi  : yalnizca guc dagilimi etkin VE sonuc varsa
-   sonuc karti   : kritiklik yorumu, ozet (sabit kaynakta tally'ler)
+   sonuc karti   : kritiklik yorumu, kayip parcacik / OpenMC uyarilari (M5),
+                   ozet (sabit kaynakta tally'ler)
+   uygunluk      : uygunluk denetimi bulgulari ve profil secimi
+                   (arayuz/uygunluk_paneli.py; secim spec["calistirma"]'da)
    ayrintili cikti (katlanir, varsayilan kapali; hata olursa kendiliginden
                    acilir): ham OpenMC ciktisi ve tam sonuc metni
 
@@ -35,16 +38,17 @@ import os
 from PySide6 import QtCore, QtGui, QtWidgets
 
 from cekirdek import kosucu
-from cekirdek import dogrula, sema, uygunluk
+from cekirdek import dogrula, rapor_uygunluk, sema, uygunluk
 from cekirdek.ceviri import _
 from cekirdek.gunluk import kaydedici
 from arayuz import bilesenler as b
 from arayuz import tema
-from arayuz.calistir import gunluk_ozeti, ozet
+from arayuz.calistir import cikti, gunluk_ozeti, ozet
 from arayuz.calistir.kartlar import AyrintiCekmecesi, KosuKarti, SonucKarti
 from arayuz.calistir.pano import SonucPanosu
 from arayuz.calistir.yakinsama import EntropiKarti, YakinsamaKarti
 from arayuz.tasarim import tokenlar
+from arayuz.uygunluk_paneli import UygunlukPaneli
 
 A = tokenlar.ARALIK
 _log = kaydedici(__name__)
@@ -73,6 +77,7 @@ class CalistirSekmesi(QtWidgets.QWidget):
         self._surec = None
         self._dizin = None
         self._tampon = ""
+        self._gunluk = []                # QProcess ham ciktisi -> kosu.log
         self._cevrimler = []
         self._son_basarili = False
         self._basarisiz = False          # bu kusakta kosu basarisiz bitti
@@ -126,6 +131,9 @@ class CalistirSekmesi(QtWidgets.QWidget):
         self.kart = SonucKarti()
         self.durum_etiket, self.ozet_etiket = self.kart.durum_etiket, self.kart.ozet_etiket
         self.tally_baslik, self.tally_metin = self.kart.tally_baslik, self.kart.tally_metin
+        self.uygunluk = UygunlukPaneli()
+        self.uygunluk.profiller_degisti.connect(self._profiller_degisti)
+        self.uygunluk.git_istendi.connect(self._sayfaya_git)
 
         self.ayrinti_karti = AyrintiCekmecesi()
         c = self.ayrinti_karti
@@ -147,6 +155,7 @@ class CalistirSekmesi(QtWidgets.QWidget):
         duzen.addLayout(grafikler)
         duzen.addWidget(self.guc_karti)
         duzen.addWidget(self.kart)
+        duzen.addWidget(self.uygunluk)
         duzen.addWidget(self.ayrinti_karti)
         duzen.addStretch(0)
 
@@ -162,6 +171,7 @@ class CalistirSekmesi(QtWidgets.QWidget):
         self.spec = spec
         self.proje_yolu = proje_yolu
         self._calistirma_yukle()
+        self.uygunluk.profilleri_ayarla(rapor_uygunluk.secili_profiller(spec))
         self._gorunum_guncelle()
         self.kapi_guncelle()
 
@@ -208,6 +218,9 @@ class CalistirSekmesi(QtWidgets.QWidget):
         self.durum_etiket.setText("")
         self.durum_etiket.setStyleSheet("")
         self.ozet_etiket.setText("")
+        self._gunluk = []
+        self.kart.cikti_yaz([])
+        self.uygunluk.temizle()
         self.ilerleme.setRange(0, 1)
         self.ilerleme.setValue(0)
         self.ilerleme.resetFormat()
@@ -264,6 +277,23 @@ class CalistirSekmesi(QtWidgets.QWidget):
         # duzenleme geriden geliyordu).
         self._dizin_yolu_guncelle()
         self.degisti.emit(self.KONU)
+
+    def _profiller_degisti(self, profiller):
+        """Uygunluk profilleri -> spec["calistirma"] (editor sozlesmesi: yerinde
+        yazilir, degisti(KONU) ile kirli/gecmis isler); sonuc varsa yeniden denetler."""
+        if self.spec is None:
+            return
+        c = self.spec.setdefault("calistirma", {})
+        c[rapor_uygunluk.SPEC_ANAHTARI] = list(profiller)
+        self.degisti.emit(self.KONU)
+        if self._son_basarili and self._dizin:
+            self.uygunluk.denetle(self.spec, self._dizin)
+
+    def _sayfaya_git(self, anahtar):
+        """Uygunluk bulgusunun sayfasi (ana pencere varsa)."""
+        hedef = getattr(self.window(), "sekmeye_git", None)
+        if hedef is not None:
+            hedef(anahtar)
 
     def _kosu_dizini(self):
         """Kosunun yazilacagi mutlak dizin (spec'teki goreli yol projeye gore)."""
@@ -337,6 +367,7 @@ class CalistirSekmesi(QtWidgets.QWidget):
         self.yakinsama.setVisible(grafik)
         self.entropi_karti.setVisible(grafik and bool(self._entropi_grafik))
         self.kart.setVisible(kart)
+        self.uygunluk.setVisible(sonuc)
         tally = sonuc and sabit and bool(self.tally_metin.toPlainText())
         self.tally_baslik.setVisible(tally)
         self.tally_metin.setVisible(tally)
@@ -414,6 +445,8 @@ class CalistirSekmesi(QtWidgets.QWidget):
         self.sonuc_metin.clear()
         self.tally_metin.clear()
         self.ozet_etiket.setText("")
+        self.kart.cikti_yaz([])
+        self.uygunluk.temizle()
         self.guc_harita.sonuc_ayarla(None, None)
         self.pano.temizle()
         self.keff_etiket.setText(_("koşuyor…"))
@@ -423,6 +456,7 @@ class CalistirSekmesi(QtWidgets.QWidget):
             else _("Koşu sürüyor; k-eff kümülatif ortalamadır."))
         self._cevrimler = []
         self._tampon = ""
+        self._gunluk = []
         self._grafik_kur(self._entropi_acik(self.spec) and not sabit)
 
         toplam = int((self.spec.get("ayarlar") or {}).get("cevrim", 1) or 1)
@@ -509,6 +543,7 @@ class CalistirSekmesi(QtWidgets.QWidget):
     def _satir_isle(self, satir):
         """Tek bir gunluk satiri: loga yaz, cevrim/ilerleme bilgisini cikar."""
         self._yaz(satir)
+        self._gunluk.append(satir)
         bilgi = kosucu.cevrim_satiri(satir)
         if bilgi:
             self._cevrimler.append(bilgi)
@@ -548,8 +583,12 @@ class CalistirSekmesi(QtWidgets.QWidget):
             self.durum.emit(_("Önceki projenin koşusu bitti; sonucu bu projeye "
                               "yazılmadı (dosyalar: %s).") % self._dizin, True)
             return
+        if self._tampon:                 # son satir "\n" ile bitmemis olabilir
+            self._satir_isle(self._tampon.rstrip())
+            self._tampon = ""
         self._grafik_guncelle()
         self._zaman = self._zamanlama(self.log.toPlainText())
+        cikti.gunlugu_yaz(self._dizin, self._gunluk)    # rapor, K3, M5 bunu okur
         if self._durduruldu:
             self._durduruldu_goster()
             return
@@ -672,6 +711,8 @@ class CalistirSekmesi(QtWidgets.QWidget):
         self.sonuc_metin.setPlainText("\n".join(tam))
         self.tally_metin.setPlainText("\n".join(tally) if sabit else "")
         self.guc_harita.sonuc_ayarla(s, self.spec)
+        self.kart.cikti_yaz(*cikti.uyari_ozeti(self._dizin))     # M5
+        self.uygunluk.denetle(self.spec, self._dizin)
         self._guc_var = bool((s.get("guc") or {}).get("faktorler"))
         self._son_basarili = True
         self._basarisiz = False

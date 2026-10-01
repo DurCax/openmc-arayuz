@@ -20,6 +20,7 @@ kurallar denetlenir. VVOzeti yoksa K6 "USL hesaplanamadi" der.
 from cekirdek.ceviri import _, N_
 from cekirdek.uygunluk_denetimi.kurallar import STANDART, IYI_UYGULAMA, Kural
 from cekirdek.uygunluk_denetimi.profiller import NUREG_6698
+from cekirdek.uygunluk_denetimi.kurallar_rapor import belirsizlik_metni
 from cekirdek.uygunluk_denetimi.vv_arayuz import AOA_KATEGORILERI
 
 _VV_YOK = N_("Doğrulama (V&V) kümesi yok: bu kural değerlendirilemedi.")
@@ -43,9 +44,10 @@ def k6_usl(kural, baglam):
         neden = (vv.usl_neden if vv is not None and vv.usl_neden
                  else _("doğrulama (V&V) kümesi yok"))
         return [kural.uygulanamadi(
-            _("USL hesaplanamadı (%s). k = %.5f ± %.5f (1σ) bir alt-kritiklik "
+            _("USL hesaplanamadı (%s). k = %s bir alt-kritiklik "
               "sınırıyla karşılaştırılmadı; bu sonuç kritiklik güvenliği kanıtı "
-              "değildir.") % (neden, kosu.keff, kosu.sigma), _(_VV_ONERI))]
+              "değildir.") % (neden, belirsizlik_metni(kosu.keff, kosu.sigma)),
+            _(_VV_ONERI))]
     c = baglam.esik("kabul_carpani", 2.0)
     ust = kosu.keff + c * kosu.sigma
     if ust < vv.usl:

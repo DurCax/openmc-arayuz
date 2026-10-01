@@ -3,7 +3,8 @@
 kartlar.py -- Calistir sayfasinin kosu, sonuc ve ayrintili cikti kartlari.
 
     KosuKarti        : Calistir / Durdur / ilerleme + is parcacigi + kosu dizini
-    SonucKarti       : kritiklik yorumu, ozet metni, (sabit kaynakta) tally'ler
+    SonucKarti       : kritiklik yorumu, kayip parcacik / OpenMC uyarilari (M5),
+                       ozet metni, (sabit kaynakta) tally'ler
     AyrintiCekmecesi : katlanir ham OpenMC gunlugu + tam sonuc metni
                        (maket: sonuclar_cekmece_*; baslik altinda satir sayisi)
 
@@ -14,6 +15,7 @@ aralik ve yazi boyutu tasarim tokenlarindan gelir.
 from PySide6 import QtCore, QtGui, QtWidgets
 
 from arayuz import bilesenler as b
+from arayuz import tema
 from arayuz.ortak import GelismisBolum, tamsayi
 from arayuz.tasarim import tokenlar
 from cekirdek.ceviri import _
@@ -137,6 +139,12 @@ class SonucKarti(b.Kart):
         self.durum_etiket = QtWidgets.QLabel("")
         self.durum_etiket.setWordWrap(True)
         self.durum_etiket.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
+        # Kayip parcacik ve OpenMC uyarilari (ayristir.ozet_satirlari): sessiz kalmasin.
+        self.cikti_etiket = QtWidgets.QLabel("")
+        self.cikti_etiket.setWordWrap(True)
+        self.cikti_etiket.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
+        self.cikti_etiket.setAccessibleName(_("OpenMC uyarıları"))
+        self.cikti_etiket.hide()
         self.ozet_etiket = QtWidgets.QLabel("")
         self.ozet_etiket.setWordWrap(True)
         self.ozet_etiket.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
@@ -144,9 +152,16 @@ class SonucKarti(b.Kart):
         self.tally_baslik = QtWidgets.QLabel(_("Tally sonuçları"))
         self.tally_baslik.setObjectName("altBaslik")
         self.tally_metin = _salt_okunur_metin(_TALLY_EN_AZ)
-        for w in (self.durum_etiket, self.ozet_etiket, self.tally_baslik,
+        for w in (self.durum_etiket, self.cikti_etiket, self.ozet_etiket, self.tally_baslik,
                   self.tally_metin):
             self.ekle(w)
+
+    def cikti_yaz(self, satirlar, seviye="uyari"):
+        """Kayip parcacik / OpenMC uyari satirlari; bos liste etiketi gizler."""
+        self.cikti_etiket.setText("\n".join(satirlar))
+        self.cikti_etiket.setStyleSheet("color: %s; font-weight: bold;"
+                                        % tema.renk(seviye or "uyari"))
+        self.cikti_etiket.setVisible(bool(satirlar))
 
 
 class AyrintiCekmecesi(b.Kart):

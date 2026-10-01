@@ -23,6 +23,7 @@ uygunluk_girdisi.json'un "kor" anahtarindan alir):
 from cekirdek.ceviri import _, N_
 from cekirdek.uygunluk_denetimi.kurallar import (KULLANICI_SINIRI, STANDART, Kural)
 from cekirdek.uygunluk_denetimi.profiller import SRP_43
+from cekirdek.uygunluk_denetimi.kurallar_rapor import belirsizlik_metni
 
 _KAYNAK_TURU = {
     "guc": SRP_43 + " II.2 (GDC 11); IAEA SSG-52 (2019)",
@@ -94,7 +95,7 @@ def _sinirla_karsilastir(kural, baglam, ad, deger, sapma, esik_adi, kimlik):
     """deger <= sinir beklenir (F_dH, F_q). sinir yoksa uygulanamadi."""
     sinir = baglam.esik(esik_adi)
     kaynak = baglam.esik_kaynagi(esik_adi)
-    metin = "%s = %.3f ± %.3f (1σ)" % (ad, deger, sapma or 0.0)
+    metin = "%s = %s" % (ad, belirsizlik_metni(deger, sapma or 0.0))
     if sinir is None:
         return kural.uygulanamadi(metin + _("; sınır girilmedi, karşılaştırılamadı "
                                             "(tesise özel; varsayılan yok)."),
@@ -139,7 +140,8 @@ def k7_faktorler(kural, baglam):
 def _sdm_sinir(kural, baglam, deger, sapma):
     sinir = baglam.esik("sdm_siniri_pcm")
     kaynak = baglam.esik_kaynagi("sdm_siniri_pcm")
-    metin = _("Kapatma marjı = %.0f ± %.0f pcm (Δρ × 10⁵, 1σ)") % (deger, sapma)
+    metin = _("Kapatma marjı = %s (pcm = Δρ × 10⁵)") % belirsizlik_metni(
+        deger, sapma, birim="pcm")
     if sinir is None:
         return kural.uygulanamadi(metin + _("; sınır girilmedi, karşılaştırılamadı."),
                                   _("Profil C'de sdm_siniri_pcm eşiğini kaynağıyla girin."),
