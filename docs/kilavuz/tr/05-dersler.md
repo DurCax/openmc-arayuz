@@ -163,8 +163,11 @@ bir kor haritasına yerleştirmek.
 3. **Hesap ayarları** dosyadaki gibi kalsın (10 000 × 120, 30 pasif). **Çalıştır**.
 
 **Beklenen sonuç (demet).** k∞ = **1.46634 ± 0.00070** ([README.md](../../../README.md) "Ölçülen
-referans sonuçlar"; 24 iş parçacığıyla 53 s). Hızlı spektrumlu, U-10Mo yakıtlı, sodyum soğutmalı bir
-demet olduğu için k∞ PWR demetinden çok büyüktür.
+referans sonuçlar"; 24 iş parçacığıyla 53 s). k∞'un PWR demetinden (~1.18) çok büyük olmasının
+nedenleri: zenginlik **%19.75** (PWR demeti %3.2), yakıt **yoğun metal** (U-10Mo, 17 g/cm³; birim
+hacimde UO₂'den çok daha fazla uranyum) ve soğurucu yok — suda çözünmüş **bor** ve hidrojenli
+**moderatörün** soğurması bu demette bulunmaz. Hızlı tayf tek başına k∞'u büyütmez (hızlı tayfta
+U-235 fisyon tesir kesiti termaldekinden çok küçüktür).
 
 **Adımlar — altıgen kor.**
 
@@ -425,8 +428,10 @@ zincir, CECM, 5 000 × 60 parçacık, ~50 dakika):
 
 - Neden "hızlı zincir seçmek yetmez"? (Fisyon ürünü verimi ayrı bir ayardır; hızlı sistemde verim
   enerjisi 500 keV'e çekilir — [6.5 Bilinen tuzaklar](06-sonuclar.md#tuzaklar).)
-- Yanabilir malzeme hacmi f kat yanlış olsaydı ne olurdu? (Yanma hızı f kat yanlış olur, k-eff'te
-  iz bırakmadan; hacimler bu yüzden analitik hesaplanır.)
+- Yanabilir malzeme hacmi f kat yanlış olsaydı ne olurdu? (Malzemedeki atom sayısı N·V f kat
+  büyük sayılır, tally'deki toplam reaksiyon hızı ise aynı kalır: **atom başına reaksiyon hızı
+  1/f** kat olur ve malzeme o oranda yanlış hızda yanar — ilk adımın k-eff'inde iz bırakmadan.
+  Hacimler bu yüzden analitik hesaplanır.)
 - **Çubuk çubuk yanma** bu modelde neden bir şey değiştirmez? (Pin hücrede yakıtın tek örneği vardır.)
 
 ---

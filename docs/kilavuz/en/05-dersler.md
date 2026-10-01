@@ -165,8 +165,12 @@ assemblies on a hexagonal core map.
 3. Keep the **Run settings** as in the file (10 000 × 120, 30 inactive). **Run**.
 
 **Expected result (assembly).** k∞ = **1.46634 ± 0.00070** ([README.md](../../../README.md), table of
-measured reference results; 53 s with 24 threads). Because this is a fast-spectrum, U-10Mo fuelled,
-sodium-cooled assembly, k∞ is much larger than for the PWR assembly.
+measured reference results; 53 s with 24 threads). Why k∞ is much larger than for the PWR assembly
+(~1.18): the enrichment is **19.75 %** (PWR assembly 3.2 %), the fuel is a **dense metal** (U-10Mo,
+17 g/cm³; far more uranium per unit volume than UO₂) and there is no absorber of that kind - neither
+the dissolved **boron** in the water nor the absorption of a hydrogenous **moderator** is present in
+this assembly. The fast spectrum alone does not raise k∞ (the U-235 fission cross section is much
+smaller in a fast spectrum than in a thermal one).
 
 **Steps — hexagonal core.**
 
@@ -440,9 +444,11 @@ full ENDF/B-VIII.0 thermal chain, CECM, 5 000 × 60 particles, ~50 minutes):
 
 - Why is "choosing the fast chain not enough"? (The fission product yield is a separate setting;
   in a fast system the yield energy is set to 500 keV — [6.5 Known pitfalls](06-sonuclar.md#tuzaklar).)
-- What would happen if the volume of a depletable material were wrong by a factor f? (The burnup
-  rate would be wrong by f, without leaving a trace in k-eff; this is why volumes are computed
-  analytically.)
+- What would happen if the volume of a depletable material were wrong by a factor f? (The number
+  of atoms N·V in the material is counted f times too large while the total reaction rate in the
+  tally stays the same: the **reaction rate per atom becomes 1/f** and the material burns at a wrong
+  rate by that factor, without leaving a trace in the k-eff of the first step. This is why volumes
+  are computed analytically.)
 - Why does **Pin-by-pin burnup** change nothing in this model? (The pin cell has a single fuel
   instance.)
 

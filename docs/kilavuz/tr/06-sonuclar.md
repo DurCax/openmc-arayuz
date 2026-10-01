@@ -253,7 +253,7 @@ doğrulamaya bağlandı; burada, aynı tuzağa dışa aktarılan betikte ya da k
 - **Eksenel katmanlama üç hata ortaya çıkardı (hepsi ölçümle bulundu).** (1) "Fisil aralık"ın
   iki ayrı tanımı kurucu ile betik arasında farklı kaynak kutusu kurduruyordu → 1300 pcm (Δk × 10⁵);
   tek tanıma indirildi. (2) Güç korunum tally'si bütün modeli sayıyordu → sahte "BOZUK"; referans
-  tally aynı hücreye bağlandı. (3) Güç ağı hedef çubuktan taşıyordu → F_q %6 şişti
+  tally aynı hücreye bağlandı. (3) Güç ağı hedef çubuktan taşıyordu → F_q %10.4 şişti
   (1.6435 → 1.8150); ağ artık hedef çubuğun aralığını kullanır. Ayrıca entropi ağının z sınırları
   sabitti; düzeltilince `pwr_eksenel`'de 40 pasif çevrimin yetmediğini bu uyarı yakaladı.
   *Ders: aynı sayıyı iki yoldan hesaplayan iki kod er ya da geç ayrışır.*

@@ -265,7 +265,7 @@ in an exported script or in your own OpenMC work.
   the "fissile range" made the builder and the script build different source boxes → 1300 pcm
   (Δk × 10⁵); reduced to a single definition. (2) The power conservation tally counted the whole
   model → a false "BROKEN"; the reference tally was tied to the same cell. (3) The power mesh
-  extended beyond the target pin → F_q inflated by 6 % (1.6435 → 1.8150); the mesh now uses the range
+  extended beyond the target pin → F_q inflated by 10.4 % (1.6435 → 1.8150); the mesh now uses the range
   of the target pin. In addition, the z bounds of the entropy mesh were fixed; once corrected, this
   warning caught that 40 inactive batches were not enough in `pwr_eksenel`.
   *Lesson: two codes that compute the same number in two ways will sooner or later diverge.*
