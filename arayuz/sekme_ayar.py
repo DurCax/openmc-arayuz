@@ -44,6 +44,7 @@ from PySide6 import QtCore, QtWidgets
 
 from cekirdek import sema, uygunluk
 from cekirdek import kaynak as _kaynak
+from cekirdek.ceviri import _, _n, N_, pgettext
 from arayuz import tema
 from arayuz.ortak import (SekmeTabani, ayrac, baslik, ipucu, sayi, tamsayi,
                           EnerjiGirdi, BilimselGirdi, GelismisBolum)
@@ -61,6 +62,15 @@ from arayuz.ayar.guc_formu import (  # noqa: F401
     GucFormuMixin)
 from arayuz.ayar.tally_formu import (  # noqa: F401
     TallyFormuMixin)
+
+# Kaynak turu ve parcacik secim kutularinin gorunen adlari (gosterirken _()).
+_KAYNAK_TUR_ADLARI = {"nokta": N_("Nokta kaynak"), "kutu": N_("Kutu (yalnızca fisil bölgeler)")}
+_PARCACIK_ADLARI = {"neutron": N_("Nötron"), "photon": N_("Foton (gama)")}
+
+
+def _cevrili_ogeler(anahtarlar, adlar):
+    """[(anahtar, etkin dilde ad)] -- adi bilinmeyen anahtar oldugu gibi kalir."""
+    return [(t, _(adlar[t]) if t in adlar else t) for t in anahtarlar]
 
 
 class AyarSekmesi(YerlesimMixin, KaynakFormuMixin, GucFormuMixin, TallyFormuMixin, SekmeTabani):
@@ -87,56 +97,56 @@ class AyarSekmesi(YerlesimMixin, KaynakFormuMixin, GucFormuMixin, TallyFormuMixi
     def _hesap_alanlari_kur(self):
         """Hesap turu, hassasiyet onayari, parcacik/cevrim ve kinetik."""
         self.mod = QtWidgets.QComboBox()
-        self.mod.addItem("Özdeğer (k-eff)", "eigenvalue")
-        self.mod.addItem("Sabit kaynak", "fixed source")
-        self.mod.setToolTip(
+        self.mod.addItem(_("Özdeğer (k-eff)"), "eigenvalue")
+        self.mod.addItem(_("Sabit kaynak"), "fixed source")
+        self.mod.setToolTip(_(
             "Özdeğer: kendi kendini sürdüren zincir tepkimesi; sonuç k-eff.\n"
             "Sabit kaynak: dışarıdan verilen bir kaynağın taşınımı (zırhlama,\n"
-            "detektör); sonuç tally'lerdir, k-eff yoktur.")
+            "detektör); sonuç tally'lerdir, k-eff yoktur."))
         self.hassasiyet = QtWidgets.QComboBox()
-        for anahtar, ad, *_ in HASSASIYET:
-            self.hassasiyet.addItem(ad, anahtar)
-        self.hassasiyet.addItem("Özel", OZEL)
-        self.hassasiyet.setToolTip(
+        for anahtar, ad, *_degerler in HASSASIYET:
+            self.hassasiyet.addItem(_(ad), anahtar)
+        self.hassasiyet.addItem(_("Özel"), OZEL)
+        self.hassasiyet.setToolTip(_(
             "Hızlı deneme: modelin çalıştığını görmek için.\n"
             "Normal: ders ve ödev hesapları için.\n"
             "Hassas: küçük reaktivite farklarını ayırmak için (uzun sürer).\n"
-            "Özel: parçacık ve çevrim sayılarını kendiniz girin.")
+            "Özel: parçacık ve çevrim sayılarını kendiniz girin."))
         self.hassasiyet_ozet = QtWidgets.QLabel("-")
         self.hassasiyet_ozet.setWordWrap(True)
         self.parcacik = tamsayi(10000, 100, 10 ** 9, 1000)
         self.cevrim = tamsayi(150, 1, 100000, 10)
         self.pasif = tamsayi(40, 0, 100000, 5)
-        self.pasif.setToolTip(
+        self.pasif.setToolTip(_(
             "Pasif çevrimler kaynak dağılımı yakınsayana kadar atılır ve\n"
-            "istatistiğe katılmaz. Tipik olarak 20–50 pasif çevrim kullanılır.")
+            "istatistiğe katılmaz. Tipik olarak 20–50 pasif çevrim kullanılır."))
         self.kinetik_var = QtWidgets.QCheckBox(
-            "Kinetik parametreleri hesapla (β_eff ve üretim zamanı Λ)")
-        self.kinetik_var.setToolTip(
+            _("Kinetik parametreleri hesapla (β_eff ve üretim zamanı Λ)"))
+        self.kinetik_var.setToolTip(_(
             "IFP (Iterated Fission Probability) yöntemiyle hesaplanır.\n"
             "β_eff : gecikmiş nötron kesri — reaktivite biriminin ($) tanımı\n"
             "Λ     : nötron üretim zamanı — kinetik davranışın hızı\n\n"
-            "Koşuyu bir miktar yavaşlatır; gerekmedikçe kapalı bırakın.")
+            "Koşuyu bir miktar yavaşlatır; gerekmedikçe kapalı bırakın."))
 
     def _gelismis_alanlari_kur(self):
         """Tohum, sicaklik yontemi, entropi agi, IFP nesil sayisi."""
         self.tohum = tamsayi(1, 1, 2 ** 31 - 1, 1)
-        self.tohum.setToolTip("Aynı tohum ve aynı model aynı sonucu verir.")
+        self.tohum.setToolTip(_("Aynı tohum ve aynı model aynı sonucu verir."))
         self.sicaklik_yontemi = QtWidgets.QComboBox()
-        self.entropi_var = QtWidgets.QCheckBox("Shannon entropisi ile kaynak yakınsamasını ölç")
-        self.entropi_var.setToolTip(
+        self.entropi_var = QtWidgets.QCheckBox(_("Shannon entropisi ile kaynak yakınsamasını ölç"))
+        self.entropi_var.setToolTip(_(
             "Kaynak dağılımının pasif çevrimler içinde yakınsayıp yakınsamadığını\n"
             "ölçer. Yakınsamamış kaynak k-eff'i yanlı tahmin ettirir ve bu başka\n"
-            "türlü fark edilmez. Özdeğer hesaplarında açık tutun.")
-        self.entropi_oto = QtWidgets.QCheckBox("Ağ boyutu otomatik")
-        self.entropi_oto.setToolTip(
+            "türlü fark edilmez. Özdeğer hesaplarında açık tutun."))
+        self.entropi_oto = QtWidgets.QCheckBox(_("Ağ boyutu otomatik"))
+        self.entropi_oto.setToolTip(_(
             "8 × 8 radyal bölme; 3B modelde eksenel 8 bölme, 2B'de tek dilim.\n"
-            "Model 2B ↔ 3B değişince ağ da değişir.")
+            "Model 2B ↔ 3B değişince ağ da değişir."))
         self.entropi_nx = tamsayi(8, 1, 200)
         self.entropi_ny = tamsayi(8, 1, 200)
         self.entropi_nz = tamsayi(1, 1, 200)
-        self.kinetik_nesil = tamsayi(10, 1, 50, 1, "nesil")
-        self.kinetik_nesil.setToolTip("IFP'nin geriye doğru izlediği nesil sayısı.")
+        self.kinetik_nesil = tamsayi(10, 1, 50, 1, _("nesil"))
+        self.kinetik_nesil.setToolTip(_("IFP'nin geriye doğru izlediği nesil sayısı."))
 
     def _kaynak_alanlari_kur(self):
         """Kaynak turu, konumu, parcacigi ve siddeti."""
@@ -145,46 +155,46 @@ class AyarSekmesi(YerlesimMixin, KaynakFormuMixin, GucFormuMixin, TallyFormuMixi
         self.ky = sayi(0.0, 4, -1e5, 1e5, 0.1, "cm")
         self.kz = sayi(0.0, 4, -1e5, 1e5, 0.1, "cm")
         self.kaynak_parcacik = QtWidgets.QComboBox()
-        self.kaynak_parcacik.setToolTip(
+        self.kaynak_parcacik.setToolTip(_(
             "Foton seçilirse foton taşınımı da açılır ve kütüphanede foton\n"
-            "verisi bulunmalıdır.")
+            "verisi bulunmalıdır."))
         self.kaynak_kuvvet = BilimselGirdi(1.0)
-        self.kaynak_kuvvet.setToolTip(
+        self.kaynak_kuvvet.setToolTip(_(
             "Kaynak şiddeti [parçacık/s]. Tally sonuçları bununla çarpılır ve\n"
             "mutlak birime geçer (1/s, 1/cm²/s). 1 bırakılırsa sonuçlar kaynak\n"
-            "parçacığı başına kalır.")
+            "parçacığı başına kalır."))
 
     def _tayf_alanlari_kur(self):
         """Kaynak enerji tayfi: her tayf turu icin bir form sayfasi."""
         self.tayf = QtWidgets.QComboBox()
         for anahtar, ad in _kaynak.TAYFLAR:
-            self.tayf.addItem(ad, anahtar)
+            self.tayf.addItem(_(ad), anahtar)
         self.watt_a = EnerjiGirdi(988.0e3)
         self.watt_b = sayi(2.249e-6, 9, 1e-9, 1.0, 1e-7, " 1/eV")
         self.maxwell_theta = EnerjiGirdi(1.2932e6)
         self.tek_enerji = EnerjiGirdi(14.1e6)
         self.ayrik_metin = QtWidgets.QLineEdit("1.173e6:0.5, 1.333e6:0.5")
-        self.ayrik_metin.setToolTip("enerji[eV]:olasılık çiftleri, virgülle ayrılmış\n"
-                                    "Örnek (Co-60): 1.173e6:0.5, 1.333e6:0.5")
+        self.ayrik_metin.setToolTip(_("enerji[eV]:olasılık çiftleri, virgülle ayrılmış\n"
+                                      "Örnek (Co-60): 1.173e6:0.5, 1.333e6:0.5"))
         self.hist_kenar = QtWidgets.QLineEdit("1e5, 1e6, 1e7")
         self.hist_deger = QtWidgets.QLineEdit("1.0, 1.0")
-        self.hist_kenar.setToolTip("N+1 grup kenarı [eV], artan sırada")
-        self.hist_deger.setToolTip("N grup değeri (bağıl); kenar sayısından bir eksik olmalı")
+        self.hist_kenar.setToolTip(_("N+1 grup kenarı [eV], artan sırada"))
+        self.hist_deger.setToolTip(_("N grup değeri (bağıl); kenar sayısından bir eksik olmalı"))
         self.fuzyon_e0 = EnerjiGirdi(14.08e6)
         self.fuzyon_kutle = sayi(5.0, 2, 1.0, 100.0, 1.0)
-        self.fuzyon_kutle.setToolTip("Tepkimeye girenlerin kütleleri toplamı: D+T = 2+3 = 5, D+D = 4")
+        self.fuzyon_kutle.setToolTip(_("Tepkimeye girenlerin kütleleri toplamı: D+T = 2+3 = 5, D+D = 4"))
         self.fuzyon_kt = EnerjiGirdi(20.0e3)
-        self.fuzyon_kt.setToolTip("İyon sıcaklığı kT. D-T için genişleme:\n"
-                                  "FWHM = 177 × √kT[keV] keV")
+        self.fuzyon_kt.setToolTip(_("İyon sıcaklığı kT. D-T için genişleme:\n"
+                                    "FWHM = 177 × √kT[keV] keV"))
         self.tayf_yigin = QtWidgets.QStackedWidget()
         for alanlar in (
                 [("a (Watt):", self.watt_a), ("b:", self.watt_b)],
                 [("θ:", self.maxwell_theta)],
-                [("Enerji:", self.tek_enerji)],
-                [("Çizgiler:", self.ayrik_metin)],
-                [("Grup kenarları:", self.hist_kenar), ("Grup değerleri:", self.hist_deger)],
-                [("Ortalama E₀:", self.fuzyon_e0), ("Kütle toplamı:", self.fuzyon_kutle),
-                 ("İyon sıcaklığı:", self.fuzyon_kt)]):
+                [(_("Enerji:"), self.tek_enerji)],
+                [(_("Çizgiler:"), self.ayrik_metin)],
+                [(_("Grup kenarları:"), self.hist_kenar), (_("Grup değerleri:"), self.hist_deger)],
+                [(_("Ortalama E₀:"), self.fuzyon_e0), (_("Kütle toplamı:"), self.fuzyon_kutle),
+                 (_("İyon sıcaklığı:"), self.fuzyon_kt)]):
             sayfa = QtWidgets.QWidget()
             f = QtWidgets.QFormLayout(sayfa)
             f.setContentsMargins(0, 0, 0, 0)
@@ -198,34 +208,35 @@ class AyarSekmesi(YerlesimMixin, KaynakFormuMixin, GucFormuMixin, TallyFormuMixi
         """Kaynagin acisal dagilimi (yon ve koni acisi)."""
         self.aci_tur = QtWidgets.QComboBox()
         for anahtar, ad in _kaynak.ACILAR:
-            self.aci_tur.addItem(ad, anahtar)
+            self.aci_tur.addItem(_(ad), anahtar)
         self.ax = sayi(0.0, 4, -1e3, 1e3, 0.1)
         self.ay = sayi(0.0, 4, -1e3, 1e3, 0.1)
         self.az = sayi(1.0, 4, -1e3, 1e3, 0.1)
-        self.koni_aci = sayi(30.0, 2, 0.01, 180.0, 5.0, " derece")
-        self.koni_aci.setToolTip("Koninin yarı açılımı (eksenden kenara açı). Katı açıda düzgün dağılım kullanılır.")
+        self.koni_aci = sayi(30.0, 2, 0.01, 180.0, 5.0, _(" derece"))
+        self.koni_aci.setToolTip(_("Koninin yarı açılımı (eksenden kenara açı). "
+                                   "Katı açıda düzgün dağılım kullanılır."))
 
     def _guc_alanlari_kur(self):
         """Guc dagilimi alanlari (form mantigi: arayuz/ayar/guc_formu.py)."""
-        self.guc_var = QtWidgets.QCheckBox("Çubuk bazlı güç dağılımı hesapla (F_ΔH, 3B'de F_q)")
-        self.guc_var.setToolTip(
+        self.guc_var = QtWidgets.QCheckBox(_("Çubuk bazlı güç dağılımı hesapla (F_ΔH, 3B'de F_q)"))
+        self.guc_var.setToolTip(_(
             "Demette tekrarlanan yakıt çubuğunun her örneği ayrı sayılır\n"
             "(OpenMC: DistribcellFilter). Buradan tepe faktörleri çıkar:\n"
             "  F_ΔH = en yüksek çubuk gücü / ortalama        (radyal)\n"
-            "  F_q  = en yüksek yerel güç yoğunluğu / ortalama (3B gerekir)")
+            "  F_q  = en yüksek yerel güç yoğunluğu / ortalama (3B gerekir)"))
         self.guc_cubuk = QtWidgets.QComboBox()
         self.guc_bolge = QtWidgets.QComboBox()
         self.guc_skor = QtWidgets.QComboBox()
         for veri, ad in GUC_SKORLARI:
-            self.guc_skor.addItem(ad, veri)
-        self.guc_dilim = tamsayi(20, 1, 200, 1, "dilim")
+            self.guc_skor.addItem(_(ad), veri)
+        self.guc_dilim = tamsayi(20, 1, 200, 1, _("dilim"))
         self.guc_toplam = sayi(0.0, 1, 0.0, 1e12, 1e5, "W")
-        self.guc_toplam.setSpecialValueText("(boş — yalnızca bağıl)")
+        self.guc_toplam.setSpecialValueText(_("(boş — yalnızca bağıl)"))
         self.guc_etiketler = {}
-        self.guc_not = ipucu(
+        self.guc_not = ipucu(_(
             "Toplam güç, <b>modelin kapsadığı</b> bölgenin gücüdür — tüm korun değil. "
             "Örnek: 3400 MWth / 193 demet = 17.6 MW; tek demetlik modelde 17.6e6 W "
-            "girilir. Boş bırakılırsa yalnızca bağıl dağılım verilir.")
+            "girilir. Boş bırakılırsa yalnızca bağıl dağılım verilir."))
         self.guc_uyari = ipucu("")
 
     def _tally_alanlari_kur(self):
@@ -238,25 +249,25 @@ class AyarSekmesi(YerlesimMixin, KaynakFormuMixin, GucFormuMixin, TallyFormuMixi
         self.t_ad = QtWidgets.QLineEdit()
         self.t_set = QtWidgets.QComboBox()
         for anahtar, ad, _s in SKOR_SETLERI:
-            self.t_set.addItem(ad, anahtar)
-        self.t_set.addItem("Özel", OZEL)
+            self.t_set.addItem(_(ad), anahtar)
+        self.t_set.addItem(_("Özel"), OZEL)
         self.t_set_ozet = ipucu("")
         self.t_skor = QtWidgets.QListWidget()
         self.t_skor.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
         self._skor_listesi_kur([])
         self.t_skor.setMinimumHeight(150)
-        self.t_enerji_var = QtWidgets.QCheckBox("Enerji grupları")
+        self.t_enerji_var = QtWidgets.QCheckBox(_("Enerji grupları"))
         self.t_enerji = QtWidgets.QLineEdit("0.0, 0.625, 2.0e7")
-        self.t_enerji.setToolTip("Grup sınırları [eV], artan sırada, virgülle ayrılmış.\n"
-                                 "Örnek (iki grup): 0.0, 0.625, 2.0e7")
-        self.t_mesh_var = QtWidgets.QCheckBox("Akı haritası (düzenli ağ)")
-        self.t_mesh_var.setToolTip("Sınırlar model kurulurken modelin dış ölçüsünden alınır.")
+        self.t_enerji.setToolTip(_("Grup sınırları [eV], artan sırada, virgülle ayrılmış.\n"
+                                   "Örnek (iki grup): 0.0, 0.625, 2.0e7"))
+        self.t_mesh_var = QtWidgets.QCheckBox(_("Akı haritası (düzenli ağ)"))
+        self.t_mesh_var.setToolTip(_("Sınırlar model kurulurken modelin dış ölçüsünden alınır."))
         self.t_mesh_nx = tamsayi(10, 1, 1000)
         self.t_mesh_ny = tamsayi(10, 1, 1000)
         self.t_mesh_nz = tamsayi(1, 1, 1000)
         self.t_diger = ipucu("")
-        self.tally_bos = ipucu("Henüz tally yok. “+ Tally” ile ekleyin: ne ölçmek "
-                               "istediğinizi (akı, reaksiyon hızı, ısı) seçersiniz.")
+        self.tally_bos = ipucu(_("Henüz tally yok. “+ Tally” ile ekleyin: ne ölçmek "
+                                 "istediğinizi (akı, reaksiyon hızı, ısı) seçersiniz."))
 
     def _dar_alanlari_ayarla(self):
         """Uclu satirlardaki alanlar dar sutuna sigsin."""
@@ -299,9 +310,13 @@ class AyarSekmesi(YerlesimMixin, KaynakFormuMixin, GucFormuMixin, TallyFormuMixi
     # yardimcilar
     # ------------------------------------------------------------------
     @staticmethod
-    def _kutu_doldur(kutu, ogeler, secili, gecersiz_eki=" (bu modelde geçersiz)"):
+    def _kutu_doldur(kutu, ogeler, secili, gecersiz_eki=None):
         """Secim kutusunu (veri, etiket) ogeleriyle doldurur. Spec'teki deger
-        listede yoksa AYRI bir oge olarak eklenir -- sessizce degismesin."""
+        listede yoksa AYRI bir oge olarak eklenir -- sessizce degismesin.
+        Etiketler ve gecersiz_eki etkin dilde verilir (varsayilan ek: "bu
+        modelde gecersiz")."""
+        if gecersiz_eki is None:
+            gecersiz_eki = _(" (bu modelde geçersiz)")
         eski = kutu.blockSignals(True)
         try:
             kutu.clear()
@@ -356,21 +371,19 @@ class AyarSekmesi(YerlesimMixin, KaynakFormuMixin, GucFormuMixin, TallyFormuMixi
         self.pasif.setValue(a.get("pasif", 40))
         self._hassasiyeti_goster()
         self.tohum.setValue(a.get("tohum") or 1)
-        self._kutu_doldur(self.sicaklik_yontemi, SICAKLIK_YONTEMLERI,
-                          a.get("sicaklik_yontemi", "interpolation"), " (bilinmeyen)")
+        self._kutu_doldur(self.sicaklik_yontemi, [(v, _(e)) for v, e in SICAKLIK_YONTEMLERI],
+                          a.get("sicaklik_yontemi", "interpolation"), _(" (bilinmeyen)"))
 
         k = a.get("kaynak") or {}
         secenek = uygunluk.kaynak_secenekleri(self.spec)
-        tur_adlari = {"nokta": "Nokta kaynak", "kutu": "Kutu (yalnızca fisil bölgeler)"}
-        self._kutu_doldur(self.kaynak_tur, [(t, tur_adlari.get(t, t)) for t in secenek["turler"]],
+        self._kutu_doldur(self.kaynak_tur, _cevrili_ogeler(secenek["turler"], _KAYNAK_TUR_ADLARI),
                           k.get("tur", "nokta"))
         konum = k.get("konum") or [0.0, 0.0, 0.0]
         self.kx.setValue(konum[0])
         self.ky.setValue(konum[1])
         self.kz.setValue(konum[2])
-        parcacik_adlari = {"neutron": "Nötron", "photon": "Foton (gama)"}
         self._kutu_doldur(self.kaynak_parcacik,
-                          [(p, parcacik_adlari.get(p, p)) for p in secenek["parcaciklar"]],
+                          _cevrili_ogeler(secenek["parcaciklar"], _PARCACIK_ADLARI),
                           k.get("parcacik") or "neutron")
         self.kaynak_kuvvet.ayarla(k.get("kuvvet") or 1.0)
 
@@ -444,7 +457,8 @@ class AyarSekmesi(YerlesimMixin, KaynakFormuMixin, GucFormuMixin, TallyFormuMixi
         self._hassasiyet_ozet_guncelle()
 
         # kaynak
-        self.kaynak_baslik.setText("Başlangıç kaynağı" if ozdeger else "Kaynak")
+        self.kaynak_baslik.setText(_("Başlangıç kaynağı") if ozdeger
+                                   else pgettext("kaynak", "Kaynak"))
         kf = self._kaynak_form
         nokta = self.kaynak_tur.currentData() == "nokta"
         kf.setRowVisible(self.konum_satiri, nokta)
@@ -494,18 +508,22 @@ class AyarSekmesi(YerlesimMixin, KaynakFormuMixin, GucFormuMixin, TallyFormuMixi
         n, c, p = self.parcacik.value(), self.cevrim.value(), self.pasif.value()
         if self._ozdeger():
             aktif = c - p
-            metin = "%s parçacık × %d çevrim (%d pasif, %d aktif)" % (_binlik(n), c, p, aktif)
+            metin = _n("{n} parçacık × {c} çevrim ({p} pasif, {a} aktif)",
+                       "{n} parçacık × {c} çevrim ({p} pasif, {a} aktif)", c).format(
+                n=_binlik(n), c=c, p=p, a=aktif)
             s = belirsizlik_pcm(n, c, p)
             if s is None:
-                metin += " — aktif çevrim yok: pasif çevrim sayısını azaltın."
+                metin += _(" — aktif çevrim yok: pasif çevrim sayısını azaltın.")
                 self.hassasiyet_ozet.setStyleSheet("color: %s;" % tema.renk("hata"))
             else:
-                metin += (" — beklenen k-eff belirsizliği ≈ ±%d pcm (pin hücre ölçümü; "
-                          "büyük korlarda daha fazla olabilir)" % _pcm_yuvarla(s))
+                metin += _(" — beklenen k-eff belirsizliği ≈ ±{s} pcm (pin hücre ölçümü; "
+                           "büyük korlarda daha fazla olabilir)").format(s=_pcm_yuvarla(s))
                 self.hassasiyet_ozet.setStyleSheet("")
         else:
-            metin = ("%s parçacık × %d çevrim = %s kaynak parçacığı; tally belirsizliği "
-                     "1/√N ile azalır." % (_binlik(n), c, _binlik(n * c)))
+            metin = _n("{n} parçacık × {c} çevrim = {t} kaynak parçacığı; tally belirsizliği "
+                       "1/√N ile azalır.",
+                       "{n} parçacık × {c} çevrim = {t} kaynak parçacığı; tally belirsizliği "
+                       "1/√N ile azalır.", c).format(n=_binlik(n), c=c, t=_binlik(n * c))
             self.hassasiyet_ozet.setStyleSheet("")
         self.hassasiyet_ozet.setText(metin)
 
@@ -551,7 +569,7 @@ class AyarSekmesi(YerlesimMixin, KaynakFormuMixin, GucFormuMixin, TallyFormuMixi
             return []
         return [{"cubuk": ad, "bolge": int(self.guc_bolge.currentData() or 0)}]
 
-    def _kaydet(self, *_):
+    def _kaydet(self, *_a):
         if self._yukleniyor or self.spec is None:
             return
         a = self.spec["ayarlar"]
@@ -635,13 +653,11 @@ class AyarSekmesi(YerlesimMixin, KaynakFormuMixin, GucFormuMixin, TallyFormuMixi
         self._yukleniyor = True
         try:
             secenek = uygunluk.kaynak_secenekleri(self.spec)
-            tur_adlari = {"nokta": "Nokta kaynak", "kutu": "Kutu (yalnızca fisil bölgeler)"}
             self._kutu_doldur(self.kaynak_tur,
-                              [(t, tur_adlari.get(t, t)) for t in secenek["turler"]],
+                              _cevrili_ogeler(secenek["turler"], _KAYNAK_TUR_ADLARI),
                               kay.get("tur", "nokta"))
-            parcacik_adlari = {"neutron": "Nötron", "photon": "Foton (gama)"}
             self._kutu_doldur(self.kaynak_parcacik,
-                              [(p, parcacik_adlari.get(p, p)) for p in secenek["parcaciklar"]],
+                              _cevrili_ogeler(secenek["parcaciklar"], _PARCACIK_ADLARI),
                               kay.get("parcacik") or "neutron")
             if mod_degisti:
                 # sabit kaynakta pasif cevrim eslesmeye girmez

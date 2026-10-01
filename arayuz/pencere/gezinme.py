@@ -41,7 +41,7 @@ class GezinmeCephesi:
             if not sessiz:
                 self.bildir_mesaj(
                     _("{sekme} sayfası bu model türünde kullanılmıyor.").format(
-                        sekme=SEKME_ADLARI[anahtar]), "bilgi")
+                        sekme=_(SEKME_ADLARI[anahtar])), "bilgi")
             return False
         self.kenar.sec(anahtar)
         self.yigin_sekme.setCurrentWidget(self._sayfalar[anahtar])
@@ -66,7 +66,7 @@ class GezinmeCephesi:
 
     def sekme_basligi(self, anahtar):
         """Gorunen sekme adi, durum isareti OLMADAN."""
-        return SEKME_ADLARI[anahtar] if anahtar in self._sayfalar else ""
+        return _(SEKME_ADLARI[anahtar]) if anahtar in self._sayfalar else ""
 
     def sekme_isareti(self, anahtar):
         """(isaret, ipucu): isaret ISARETLER'den biri ya da "" (isaretsiz)."""

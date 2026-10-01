@@ -19,15 +19,15 @@ from arayuz.kor_altigen import AltigenKorHaritasi
 from arayuz.ortak import ipucu, sayi, tamsayi
 from arayuz.tasarim import tokenlar
 from arayuz.yardim_baglanti import sayfa_bolumu, yardim_dugmesi
-from cekirdek.ceviri import _
+from cekirdek.ceviri import N_, _, pgettext
 
 A = tokenlar.ARALIK
 
 # Yukseklik secimi: (veri, gorunen ad)
 YUKSEKLIK_MODLARI = [
-    ("2B", "2B (sonsuz yükseklik)"),
-    ("3B", "3B, tek bölge"),
-    ("katmanli", "3B, katmanlı (yansıtıcı / örtü / plenum)"),
+    ("2B", N_("2B (sonsuz yükseklik)")),
+    ("3B", N_("3B, tek bölge")),
+    ("katmanli", N_("3B, katmanlı (yansıtıcı / örtü / plenum)")),
 ]
 
 _PALET_EN_COK_GENISLIK = 230
@@ -82,7 +82,7 @@ class KorYerlesimMixin(object):
         self.tb_dolgu = QtWidgets.QComboBox()
         self.tb_kor_r = sayi(16.0, 4, 0.01, 10000.0, 0.5, "cm")
         # --- kuresel kabuklar (salt okunur) ---
-        self.kabuk_tablo = _tablo(["Dış yarıçap [cm]", "Malzeme"])
+        self.kabuk_tablo = _tablo([_("Dış yarıçap [cm]"), _("Malzeme")])
         self.kabuk_tablo.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
 
     def _harita_alanlari_kur(self):
@@ -92,13 +92,13 @@ class KorYerlesimMixin(object):
         self.izgara = izgara.KareIzgara()
         self.izgara.setMinimumHeight(_IZGARA_EN_AZ_YUKSEKLIK)
         self.izgara.etiketleri_goster(True)
-        self.nx = tamsayi(3, 1, 100, 1, "sütun")
-        self.ny = tamsayi(3, 1, 100, 1, "satır")
-        self.nx.setToolTip("Haritanın sütun sayısı. Büyütünce yeni hücreler "
-                           "paletteki seçili parçayla dolar.")
-        self.ny.setToolTip("Haritanın satır sayısı. Büyütünce yeni hücreler "
-                           "paletteki seçili parçayla dolar.")
-        self.d_doldur = b.ikincil_dugme("Tümünü seçili parçayla doldur", "paintbrush")
+        self.nx = tamsayi(3, 1, 100, 1, _("sütun"))
+        self.ny = tamsayi(3, 1, 100, 1, _("satır"))
+        self.nx.setToolTip(_("Haritanın sütun sayısı. Büyütünce yeni hücreler "
+                             "paletteki seçili parçayla dolar."))
+        self.ny.setToolTip(_("Haritanın satır sayısı. Büyütünce yeni hücreler "
+                             "paletteki seçili parçayla dolar."))
+        self.d_doldur = b.ikincil_dugme(_("Tümünü seçili parçayla doldur"), "paintbrush")
         # --- kor haritasi (altigen_kafes; arayuz/kor_altigen.py) ---
         # onay testlerde degistirilen self._onay_al'dan CAGRI ANINDA okunur
         self.altigen_harita = AltigenKorHaritasi(lambda b_, m: self._onay_al(b_, m))
@@ -111,26 +111,27 @@ class KorYerlesimMixin(object):
             QtWidgets.QComboBox.AdjustToMinimumContentsLengthWithIcon)
         self.yukseklik_modu.setMinimumContentsLength(14)
         for veri, ad in YUKSEKLIK_MODLARI:
-            self.yukseklik_modu.addItem(ad, veri)
-        self.yukseklik_modu.setToolTip(
+            self.yukseklik_modu.addItem(_(ad), veri)
+        self.yukseklik_modu.setToolTip(_(
             "2B: model eksenel yönde sonsuzdur (k∞ / kesit hesabı).\n"
             "3B, tek bölge: aktif yükseklik H boyunca tek eksenel bölge.\n"
             "3B, katmanlı: kor alttan üste katmanlara ayrılır; yükseklik\n"
-            "katmanların toplamıdır.")
+            "katmanların toplamıdır."))
         self.yukseklik = sayi(366.0, 3, 0.01, 10000.0, 1.0, "cm")
-        self.yukseklik.setToolTip("Modelin eksenel yüksekliği (z = −H/2 … +H/2).")
+        self.yukseklik.setToolTip(_("Modelin eksenel yüksekliği (z = −H/2 … +H/2)."))
 
     def _katman_alanlari_kur(self):
-        self.katman_tablo = _tablo(["Ad", "Yükseklik", "Dolgu"])
+        self.katman_tablo = _tablo([_("Ad"), _("Yükseklik"), _("Dolgu")])
         self.katman_tablo.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
         self.katman_tablo.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
         self.katman_tablo.setMinimumHeight(_KATMAN_TABLOSU_EN_AZ)
-        self.d_kat_ekle = b.ikincil_dugme("+ Katman", None, "En üste yeni bir katman ekler.")
-        self.d_kat_sil = b.duz_dugme("Sil", "trash", "Seçili katmanı siler.")
-        self.d_kat_yukari = b.duz_dugme("Yukarı taşı", "chevron-up",
-                                        "Seçili katmanı bir üste taşır")
-        self.d_kat_asagi = b.duz_dugme("Aşağı taşı", "chevron-down",
-                                       "Seçili katmanı bir alta taşır")
+        self.d_kat_ekle = b.ikincil_dugme(_("+ Katman"), None,
+                                          _("En üste yeni bir katman ekler."))
+        self.d_kat_sil = b.duz_dugme(_("Sil"), "trash", _("Seçili katmanı siler."))
+        self.d_kat_yukari = b.duz_dugme(_("Yukarı taşı"), "chevron-up",
+                                        _("Seçili katmanı bir üste taşır"))
+        self.d_kat_asagi = b.duz_dugme(_("Aşağı taşı"), "chevron-down",
+                                       _("Seçili katmanı bir alta taşır"))
         self.katman_ozet = QtWidgets.QLabel("-")
         self.katman_ozet.setWordWrap(True)
 
@@ -140,17 +141,17 @@ class KorYerlesimMixin(object):
         self.bc_ust = QtWidgets.QComboBox()
         self.sinir_notu = ipucu("")
         self.sinir_notu.setVisible(False)
-        self.yans_var = QtWidgets.QCheckBox("Yansıtıcı kuşak ekle")
+        self.yans_var = QtWidgets.QCheckBox(_("Yansıtıcı kuşak ekle"))
         self.yans_kal = sayi(20.0, 3, 0.01, 1000.0, 1.0, "cm")
         self.yans_mal = QtWidgets.QComboBox()
 
     def _tambur_alanlari_kur(self):
-        self.tb_sayi = tamsayi(8, 0, 64, 1, "tambur")
+        self.tb_sayi = tamsayi(8, 0, 64, 1, pgettext("sonek", "tambur"))
         self.tb_r = sayi(4.0, 4, 0.01, 1000.0, 0.1, "cm")
         self.tb_rm = sayi(21.5, 4, 0.01, 10000.0, 0.5, "cm")
         self.tb_emici_ric = sayi(2.6, 4, 0.0, 1000.0, 0.1, "cm")
-        self.tb_aci = sayi(120.0, 2, 1.0, 360.0, 5.0, "derece")
-        self.tb_donme = sayi(0.0, 2, -360.0, 360.0, 5.0, "derece")
+        self.tb_aci = sayi(120.0, 2, 1.0, 360.0, 5.0, _("derece"))
+        self.tb_donme = sayi(0.0, 2, -360.0, 360.0, 5.0, _("derece"))
         self.tb_donme_kaydirici = QtWidgets.QSlider(QtCore.Qt.Horizontal)
         self.tb_donme_kaydirici.setRange(0, _DONME_ADIMI)
         self.tb_govde = QtWidgets.QComboBox()
@@ -195,12 +196,12 @@ class KorYerlesimMixin(object):
         """Kor turu (degistirme baglantisi) ve ture ozgu tekil alanlar."""
         self.form = _form()
         self.form.addRow(_("Düzenek şablonu:"), self.sablon_secici)
-        self.satir_cubuk = self._satir("Çubuk:", self.cubuk)
-        self.satir_plaka = self._satir("Plaka elemanı:", self.plaka)
-        self.satir_demet = self._satir("Demet:", self.demet)
-        self.satir_tb_dolgu = self._satir("Kor dolgusu:", self.tb_dolgu)
-        self.satir_tb_kor_r = self._satir("Kor yarıçapı:", self.tb_kor_r)
-        self.satir_adim = self._satir("Hücre adımı:", self.adim)
+        self.satir_cubuk = self._satir(_("Çubuk:"), self.cubuk)
+        self.satir_plaka = self._satir(_("Plaka elemanı:"), self.plaka)
+        self.satir_demet = self._satir(_("Demet:"), self.demet)
+        self.satir_tb_dolgu = self._satir(_("Kor dolgusu:"), self.tb_dolgu)
+        self.satir_tb_kor_r = self._satir(_("Kor yarıçapı:"), self.tb_kor_r)
+        self.satir_adim = self._satir(_("Hücre adımı:"), self.adim)
         kart = b.Kart(_("Geometri"))
         kart.eylem_ekle(yardim_dugmesi(
             lambda: sayfa_bolumu("kor", gelismis=self.agac_modunda_mi()), kart))
@@ -210,7 +211,7 @@ class KorYerlesimMixin(object):
 
     def _harita_karti(self):
         """Kare ve altigen harita ayni kartta; ture gore biri gorunur."""
-        self.kafes_kutu = b.Kart("Kor haritası")
+        self.kafes_kutu = b.Kart(_("Kor haritası"))
         self.kare_harita = QtWidgets.QWidget()
         kd = QtWidgets.QVBoxLayout(self.kare_harita)
         kd.setContentsMargins(0, 0, 0, 0)
@@ -219,7 +220,7 @@ class KorYerlesimMixin(object):
         self.kafes_kutu.ekle(self.altigen_harita, 1)
         boyut = QtWidgets.QHBoxLayout()
         boyut.setSpacing(A["s"])
-        boyut.addWidget(QtWidgets.QLabel("Boyut:"))
+        boyut.addWidget(QtWidgets.QLabel(_("Boyut:")))
         boyut.addWidget(self.nx)
         boyut.addWidget(QtWidgets.QLabel("×"))
         boyut.addWidget(self.ny)
@@ -231,56 +232,56 @@ class KorYerlesimMixin(object):
         boya.addWidget(self.palet, 0)
         boya.addWidget(self.izgara, 1)
         kd.addLayout(boya, 1)
-        kd.addWidget(ipucu(
+        kd.addWidget(ipucu(_(
             "Paletten bir parça seçip ızgarada tıklayın ya da sürükleyin; sağ tık "
-            "o hücredeki parçayı seçer. İlk satır haritanın en üstüdür (+y)."))
+            "o hücredeki parçayı seçer. İlk satır haritanın en üstüdür (+y).")))
         return self.kafes_kutu
 
     def _tambur_karti(self):
-        self.tambur_kutu = b.Kart("Kontrol tamburları")
+        self.tambur_kutu = b.Kart(_("Kontrol tamburları"))
         tf = _form()
-        tf.addRow("Tambur sayısı:", self.tb_sayi)
-        tf.addRow("Tambur yarıçapı:", self.tb_r)
-        tf.addRow("Merkez yarıçapı:", self.tb_rm)
-        tf.addRow("Gövde malzemesi:", self.tb_govde)
-        tf.addRow("Emici malzemesi:", self.tb_emici)
-        tf.addRow("Emici iç yarıçapı:", self.tb_emici_ric)
-        tf.addRow("Emici yay açısı:", self.tb_aci)
+        tf.addRow(_("Tambur sayısı:"), self.tb_sayi)
+        tf.addRow(_("Tambur yarıçapı:"), self.tb_r)
+        tf.addRow(_("Merkez yarıçapı:"), self.tb_rm)
+        tf.addRow(_("Gövde malzemesi:"), self.tb_govde)
+        tf.addRow(_("Emici malzemesi:"), self.tb_emici)
+        tf.addRow(_("Emici iç yarıçapı:"), self.tb_emici_ric)
+        tf.addRow(_("Emici yay açısı:"), self.tb_aci)
         dn = QtWidgets.QWidget()
         dnl = QtWidgets.QHBoxLayout(dn)
         dnl.setContentsMargins(0, 0, 0, 0)
         dnl.addWidget(self.tb_donme)
         dnl.addWidget(self.tb_donme_kaydirici, 1)
-        tf.addRow("Dönme:", dn)
-        tf.addRow(ipucu(
+        tf.addRow(_("Dönme:"), dn)
+        tf.addRow(ipucu(_(
             "Dönme 0° = emici kora bakar (daldırılmış, en düşük k); 180° = emici "
             "dışa bakar (çekilmiş, en yüksek k). Kritik tambur konumu için: "
-            "Analiz sekmesi › Kritik arama › Kontrol tamburu dönmesi."))
-        tf.addRow("Yerleşim:", self.tb_durum)
+            "Analiz sekmesi › Kritik arama › Kontrol tamburu dönmesi.")))
+        tf.addRow(_("Yerleşim:"), self.tb_durum)
         self.tambur_kutu.govde.addLayout(tf)
         return self.tambur_kutu
 
     def _kabuk_karti(self):
-        self.kabuk_kutu = b.Kart("Küresel kabuklar (içten dışa)")
+        self.kabuk_kutu = b.Kart(_("Küresel kabuklar (içten dışa)"))
         self.kabuk_kutu.ekle(self.kabuk_tablo)
-        self.kabuk_kutu.ekle(ipucu("Kabuk düzenleyici henüz yok; kabukları model "
-                                   "dosyasında düzenleyin. En dıştaki kabuk modelin "
-                                   "sınır yüzeyidir."))
+        self.kabuk_kutu.ekle(ipucu(_("Kabuk düzenleyici henüz yok; kabukları model "
+                                     "dosyasında düzenleyin. En dıştaki kabuk modelin "
+                                     "sınır yüzeyidir.")))
         return self.kabuk_kutu
 
     def _eksen_karti(self):
-        self.eksen_kutu = b.Kart("Yükseklik ve sınır koşulları")
+        self.eksen_kutu = b.Kart(_("Yükseklik ve sınır koşulları"))
         ed = _form()
         self._eksen_form = ed
-        self.yukseklik_etiket = QtWidgets.QLabel("Model:")
+        self.yukseklik_etiket = QtWidgets.QLabel(_("Model:"))
         ed.addRow(self.yukseklik_etiket, self.yukseklik_modu)
-        self.h_etiket = QtWidgets.QLabel("Yükseklik:")
+        self.h_etiket = QtWidgets.QLabel(_("Yükseklik:"))
         ed.addRow(self.h_etiket, self.yukseklik)
-        self.yan_etiket = QtWidgets.QLabel("Yan sınır:")
+        self.yan_etiket = QtWidgets.QLabel(_("Yan sınır:"))
         ed.addRow(self.yan_etiket, self.bc_yan)
-        self.alt_etiket = QtWidgets.QLabel("Alt sınır:")
+        self.alt_etiket = QtWidgets.QLabel(_("Alt sınır:"))
         ed.addRow(self.alt_etiket, self.bc_alt)
-        self.ust_etiket = QtWidgets.QLabel("Üst sınır:")
+        self.ust_etiket = QtWidgets.QLabel(_("Üst sınır:"))
         ed.addRow(self.ust_etiket, self.bc_ust)
         ed.addRow(self.yuz_sinir)
         ed.addRow(self.sinir_notu)
@@ -288,23 +289,23 @@ class KorYerlesimMixin(object):
         return self.eksen_kutu
 
     def _yans_karti(self):
-        self.yans_kutu = b.Kart("Yansıtıcı kuşak")
+        self.yans_kutu = b.Kart(_("Yansıtıcı kuşak"))
         yd = _form()
         self._yans_form = yd
         yd.addRow(self.yans_var)
-        self.yans_kal_etiket = QtWidgets.QLabel("Kalınlık:")
+        self.yans_kal_etiket = QtWidgets.QLabel(_("Kalınlık:"))
         yd.addRow(self.yans_kal_etiket, self.yans_kal)
-        self.yans_mal_etiket = QtWidgets.QLabel("Malzeme:")
+        self.yans_mal_etiket = QtWidgets.QLabel(_("Malzeme:"))
         yd.addRow(self.yans_mal_etiket, self.yans_mal)
-        self.yans_notu = ipucu("Tamburlu korda yansıtıcı kuşak zorunludur; "
-                               "tamburlar bu kuşağın içine gömülür.")
+        self.yans_notu = ipucu(_("Tamburlu korda yansıtıcı kuşak zorunludur; "
+                                 "tamburlar bu kuşağın içine gömülür."))
         yd.addRow(self.yans_notu)
         self.yans_kutu.govde.addLayout(yd)
         return self.yans_kutu
 
     def _katman_karti(self):
-        self.katman_kutu = b.Kart("Eksenel katmanlar",
-                                  "En üstteki katman tabloda en üsttedir.")
+        self.katman_kutu = b.Kart(_("Eksenel katmanlar"),
+                                  _("En üstteki katman tabloda en üsttedir."))
         self.katman_kutu.ekle(self.katman_tablo)
         kat_dugme = QtWidgets.QHBoxLayout()
         kat_dugme.setSpacing(A["s"])
@@ -313,11 +314,11 @@ class KorYerlesimMixin(object):
         kat_dugme.addStretch(1)
         self.katman_kutu.govde.addLayout(kat_dugme)
         self.katman_kutu.ekle(self.katman_ozet)
-        self.katman_kutu.ekle(ipucu(
+        self.katman_kutu.ekle(ipucu(_(
             "Dolgusu “ana dolgu” olan katman korun kendi dolgusunu kullanır. "
             "Katmanlar arası yüzeyler geçirgendir; sınır koşulu yalnızca en alt ve "
             "en üst yüzeye uygulanır. Kontrol çubuğu daldırması ve doğrusal güç "
-            "aktif yakıt aralığına göre ölçülür."))
+            "aktif yakıt aralığına göre ölçülür.")))
         return self.katman_kutu
 
     def _ozet_satiri(self):
@@ -325,7 +326,7 @@ class KorYerlesimMixin(object):
         d = QtWidgets.QHBoxLayout(k)
         d.setContentsMargins(0, A["s"], 0, 0)
         d.setSpacing(A["s"])
-        e = QtWidgets.QLabel("Toplam model ölçüsü:")
+        e = QtWidgets.QLabel(_("Toplam model ölçüsü:"))
         e.setObjectName("ikincil")
         d.addWidget(e)
         d.addWidget(self.ozet)

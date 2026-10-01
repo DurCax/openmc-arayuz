@@ -10,7 +10,7 @@ import copy
 import math
 import os
 
-from cekirdek.ceviri import _
+from cekirdek.ceviri import _, _n, N_
 from cekirdek import sema, dogrula, surum, uygunluk
 
 
@@ -61,11 +61,11 @@ EDITOR_ANAHTARI = {
     "s_analiz": "analiz", "s_tukenme": "tukenme",
 }
 
-# Sekme basliklari (numarasiz).
+# Sekme basliklari (numarasiz). Yalniz isaretlenir (N_); gosterirken _().
 SEKME_ADLARI = {
-    "malzemeler": "Malzemeler", "parcalar": "Parçalar", "demet": "Demet",
-    "kor": "Geometri", "ayarlar": "Hesap ayarları", "calistir": "Çalıştır",
-    "analiz": "Analiz", "tukenme": "Tükenme",
+    "malzemeler": N_("Malzemeler"), "parcalar": N_("Parçalar"), "demet": N_("Demet"),
+    "kor": N_("Geometri"), "ayarlar": N_("Hesap ayarları"), "calistir": N_("Çalıştır"),
+    "analiz": N_("Analiz"), "tukenme": N_("Tükenme"),
 }
 
 # Onizleme + dogrulama paneli yalnizca TASARIM sekmelerinde; Hesap
@@ -100,22 +100,25 @@ def tur_ozeti(spec):
     kor = spec.get("kor") or {}
     tur = kor.get("tur")
     if tur == "tek_cubuk":
-        return "yakıt çubuğu (pin hücre)"
+        return _("yakıt çubuğu (pin hücre)")
     if tur == "tek_plaka":
         p = sema.plaka_bul(spec, kor.get("plaka") or "") if spec.get("plakalar") else None
         n = (p or {}).get("plaka_sayisi")
-        return "plaka elemanı (%d plaka)" % n if n else "plaka elemanı"
+        if not n:
+            return _("plaka elemanı")
+        return _n("plaka elemanı (%d plaka)", "plaka elemanı (%d plaka)", int(n)) % n
     if tur == "tek_demet":
         d = sema.demet_bul(spec, kor.get("demet") or "") if spec.get("demetler") else None
         if d is None:
-            return "yakıt demeti"
+            return _("yakıt demeti")
         if d.get("tur") == "altigen":
-            return "%d halkalı altıgen demet" % int(d.get("halka_sayisi") or d.get("boyut", [0])[0])
+            return _("%d halkalı altıgen demet") % int(
+                d.get("halka_sayisi") or d.get("boyut", [0])[0])
         nx, ny = (d.get("boyut") or [0, 0])[:2]
-        return "%d×%d yakıt demeti" % (nx, ny)
+        return _("%d×%d yakıt demeti") % (nx, ny)
     if tur == "kare_kafes":
         nx, ny = (kor.get("boyut") or [0, 0])[:2]
-        return "%d×%d tam kor" % (nx, ny)
+        return _("%d×%d tam kor") % (nx, ny)
     if tur == "altigen_kafes":
         from cekirdek import altigen
         n = int(kor.get("halka_sayisi") or 0)
@@ -123,29 +126,33 @@ def tur_ozeti(spec):
             _("altıgen tam kor")
     if tur == "tamburlu":
         n = int(((kor.get("tambur") or {}).get("sayi")) or 0)
-        return "tamburlu kor (%d tambur)" % n if n else "tamburlu kor"
+        return _n("tamburlu kor (%d tambur)", "tamburlu kor (%d tambur)", n) % n if n \
+            else _("tamburlu kor")
     if tur == "kuresel":
         n = len(kor.get("kabuklar") or [])
-        return "küresel düzenek (%d kabuk)" % n if n else "küresel düzenek"
-    return str(tur or "tanımsız kor")
+        return _n("küresel düzenek (%d kabuk)", "küresel düzenek (%d kabuk)", n) % n if n \
+            else _("küresel düzenek")
+    return str(tur or _("tanımsız kor"))
 
 
 def model_ozet_parcalari(spec):
     """{"ad", "tur", "boyut", "mod"} -- model basliginin parcalari (metin)."""
     oz = uygunluk.model_ozeti(spec)
     if oz["tur"] == "kuresel":
-        boyut = "3B"                      # kure eksensizdir ama 3 boyutludur
+        boyut = _("3B")                   # kure eksensizdir ama 3 boyutludur
     else:
-        boyut = {"2B": "2B", "3B": "3B", "3B_katmanli": "3B katmanlı"}.get(oz["boyut"], oz["boyut"])
-    mod = "Özdeğer (k-eff)" if oz["mod"] == "eigenvalue" else "Sabit kaynak"
-    return {"ad": spec.get("ad") or "adsız model", "tur": tur_ozeti(spec),
+        boyut = {"2B": _("2B"), "3B": _("3B"),
+                 "3B_katmanli": _("3B katmanlı")}.get(oz["boyut"], oz["boyut"])
+    mod = _("Özdeğer (k-eff)") if oz["mod"] == "eigenvalue" else _("Sabit kaynak")
+    return {"ad": spec.get("ad") or _("adsız model"), "tur": tur_ozeti(spec),
             "boyut": boyut, "mod": mod}
 
 
 def model_ozet_metni(spec):
     """"Model: ad · 17×17 yakıt demeti · 2B · Özdeğer (k-eff)" """
     p = model_ozet_parcalari(spec)
-    return "Model: %s · %s · %s · %s" % (p["ad"], p["tur"], p["boyut"], p["mod"])
+    return _("Model: {ad} · {tur} · {boyut} · {mod}").format(
+        ad=p["ad"], tur=p["tur"], boyut=p["boyut"], mod=p["mod"])
 
 
 def sekme_isaretleri(spec, hata_sayilari=None, kosu_basarili=False,
@@ -164,12 +171,15 @@ def sekme_isaretleri(spec, hata_sayilari=None, kosu_basarili=False,
     tur = kor.get("tur")
     sonuc = {}
 
-    def koy(anahtar, eksik=None, tamam="Tamam: bu adımda eksik ya da hata yok.",
-            istege_bagli=None):
+    def koy(anahtar, eksik=None, tamam=None, istege_bagli=None):
+        if tamam is None:
+            tamam = _("Tamam: bu adımda eksik ya da hata yok.")
         n = hata.get(anahtar, 0)
         if n:
-            sonuc[anahtar] = ("!", "Bu sekmede düzeltilmesi gereken %d hata var; "
-                                   "ayrıntısı doğrulama listesinde." % n)
+            sonuc[anahtar] = ("!", _n("Bu sekmede düzeltilmesi gereken %d hata var; "
+                                      "ayrıntısı doğrulama listesinde.",
+                                      "Bu sekmede düzeltilmesi gereken %d hata var; "
+                                      "ayrıntısı doğrulama listesinde.", n) % n)
         elif eksik:
             sonuc[anahtar] = ("•", eksik)
         elif istege_bagli:
@@ -178,39 +188,39 @@ def sekme_isaretleri(spec, hata_sayilari=None, kosu_basarili=False,
             sonuc[anahtar] = ("✓", tamam)
 
     koy("malzemeler", None if spec.get("malzemeler") else
-        "Eksik: henüz malzeme yok; yakıt, zarf ve soğutucu ekleyin.")
+        _("Eksik: henüz malzeme yok; yakıt, zarf ve soğutucu ekleyin."))
 
     eksik = None
     if tur in ("tek_cubuk", "tek_demet") + sema.HARITALI_KORLAR and not spec.get("cubuklar"):
-        eksik = "Eksik: bu kor türü için en az bir yakıt çubuğu tanımlanmalı."
+        eksik = _("Eksik: bu kor türü için en az bir yakıt çubuğu tanımlanmalı.")
     elif tur == "tek_plaka" and not spec.get("plakalar"):
-        eksik = "Eksik: bu kor türü için bir plaka elemanı tanımlanmalı."
+        eksik = _("Eksik: bu kor türü için bir plaka elemanı tanımlanmalı.")
     koy("parcalar", eksik)
 
-    koy("demet", "Eksik: bu kor türü için bir demet kurulmalı."
+    koy("demet", _("Eksik: bu kor türü için bir demet kurulmalı.")
         if tur in ("tek_demet",) + sema.HARITALI_KORLAR and not spec.get("demetler") else None)
 
     eksik = None
     alan = {"tek_cubuk": "cubuk", "tek_plaka": "plaka", "tek_demet": "demet",
             "tamburlu": "dolgu"}.get(tur)
     if alan and not kor.get(alan):
-        eksik = "Eksik: korun dolgusu henüz seçilmedi."
+        eksik = _("Eksik: korun dolgusu henüz seçilmedi.")
     elif tur in sema.HARITALI_KORLAR and not kor.get("harita"):
-        eksik = "Eksik: kor haritası boş; demetleri haritaya yerleştirin."
+        eksik = _("Eksik: kor haritası boş; demetleri haritaya yerleştirin.")
     elif tur == "kuresel" and not kor.get("kabuklar"):
-        eksik = "Eksik: küresel kabuk tanımlanmadı."
+        eksik = _("Eksik: küresel kabuk tanımlanmadı.")
     koy("kor", eksik)
 
     koy("ayarlar")
     koy("calistir", None if kosu_basarili else
-        "Model henüz çalıştırılmadı; hazır olduğunda ÇALIŞTIR (F9).",
-        tamam="Tamam: model bu oturumda başarıyla çalıştırıldı.")
+        _("Model henüz çalıştırılmadı; hazır olduğunda ÇALIŞTIR (F9)."),
+        tamam=_("Tamam: model bu oturumda başarıyla çalıştırıldı."))
     koy("analiz", istege_bagli=None if analiz_sonucu else
-        "İsteğe bağlı: reaktivite katsayıları ve kritik arama.",
-        tamam="Tamam: bu oturumda bir analiz sonucu var.")
+        _("İsteğe bağlı: reaktivite katsayıları ve kritik arama."),
+        tamam=_("Tamam: bu oturumda bir analiz sonucu var."))
     koy("tukenme", istege_bagli=None if tukenme_sonucu else
-        "İsteğe bağlı: yakıtın zamanla tükenmesi (yanma) hesabı.",
-        tamam="Tamam: tükenme sonucu görüntüleniyor.")
+        _("İsteğe bağlı: yakıtın zamanla tükenmesi (yanma) hesabı."),
+        tamam=_("Tamam: tükenme sonucu görüntüleniyor."))
     return sonuc
 
 
@@ -221,20 +231,22 @@ def sonraki_adim(isaretler, gorunur, cizildi=True):
     """
     for k in gorunur:
         if isaretler.get(k, ("", ""))[0] == "!":
-            return "%s sekmesinde hata var — sekmeye gidip düzeltin." % SEKME_ADLARI[k]
+            return _("{sekme} sekmesinde hata var — sekmeye gidip düzeltin.").format(
+                sekme=_(SEKME_ADLARI[k]))
     for k in gorunur:
         isaret, aciklama = isaretler.get(k, ("", ""))
         if isaret == "•" and k != "calistir":
-            return "Sonraki adım: %s — %s" % (SEKME_ADLARI[k],
-                                              aciklama.replace("Eksik: ", ""))
+            # "Eksik: " oneki etkin dilde soyulur (EN: "Missing: ").
+            return _("Sonraki adım: {sekme} — {aciklama}").format(
+                sekme=_(SEKME_ADLARI[k]), aciklama=aciklama.replace(_("Eksik: "), ""))
     if not cizildi:
-        return "Geometri çiziliyor; önizleme hazır olunca ÇALIŞTIR etkinleşir."
+        return _("Geometri çiziliyor; önizleme hazır olunca ÇALIŞTIR etkinleşir.")
     if isaretler.get("calistir", ("", ""))[0] != "✓":
-        return "Model hazır — ÇALIŞTIR (F9) ile hesaplayın."
+        return _("Model hazır — ÇALIŞTIR (F9) ile hesaplayın.")
     if "analiz" in gorunur:
-        return ("Koşu tamam — sonuçlar Çalıştır sekmesinde; Analiz sekmesinde "
-                "reaktivite katsayılarını hesaplayabilirsiniz.")
-    return "Koşu tamam — sonuçlar Çalıştır sekmesinde."
+        return _("Koşu tamam — sonuçlar Çalıştır sekmesinde; Analiz sekmesinde "
+                 "reaktivite katsayılarını hesaplayabilirsiniz.")
+    return _("Koşu tamam — sonuçlar Çalıştır sekmesinde.")
 
 
 def _alan_varsayilan_mi(kor, alan):
@@ -357,10 +369,12 @@ def _eksik_parcayi_kur(spec, tur, eklenen=None):
 
 # Bos sablonun varsayilan model adi; tur degisince ad da yeni ture uyar
 # (kullanici adi degistirmediyse). Ajan 9: "Yeni yakıt çubuğu" adli model
-# plakaya donunce de ayni adla kaliyordu.
-_SABLON_ADLARI = {"tek_cubuk": "Yeni yakıt çubuğu", "tek_demet": "Yeni kare yakıt demeti",
-                  "tek_plaka": "Yeni plaka elemanı", "tamburlu": "Yeni tamburlu kor",
-                  "kare_kafes": "Yeni tam kor", "altigen_kafes": "Yeni altıgen tam kor"}
+# plakaya donunce de ayni adla kaliyordu. Yalniz isaretlenir (N_): ad
+# spec'e yazilirken _() ile etkin dile cevrilir (ana_pencere.kor_turunu_degistir).
+_SABLON_ADLARI = {"tek_cubuk": N_("Yeni yakıt çubuğu"),
+                  "tek_demet": N_("Yeni kare yakıt demeti"),
+                  "tek_plaka": N_("Yeni plaka elemanı"), "tamburlu": N_("Yeni tamburlu kor"),
+                  "kare_kafes": N_("Yeni tam kor"), "altigen_kafes": N_("Yeni altıgen tam kor")}
 
 
 def kor_turu_degistir(spec, yeni_tur, hafiza=None, eklenen=None):

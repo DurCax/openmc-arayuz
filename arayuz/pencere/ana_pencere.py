@@ -40,7 +40,7 @@ import os
 
 from PySide6 import QtCore, QtGui, QtWidgets
 from cekirdek import sema, dogrula, uygunluk
-from cekirdek.ceviri import _
+from cekirdek.ceviri import _, _n, N_
 from cekirdek.gunluk import kaydedici
 from arayuz.bilesenler import KenarCubugu, bildir
 from arayuz.onizleme import OnizlemeWidget
@@ -74,7 +74,8 @@ def _seviye_renk(seviye):
     return tema.renk({"hata": "hata", "uyari": "uyari", "bilgi": "bilgi"}.get(seviye, "bilgi"))
 
 
-_SEVIYE_ADI = {"hata": "Hata", "uyari": "Uyarı", "bilgi": "Bilgi"}
+# Yalniz isaretlenir (N_); gosterirken _().
+_SEVIYE_ADI = {"hata": N_("Hata"), "uyari": N_("Uyarı"), "bilgi": N_("Bilgi")}
 _EN_KUCUK = (1280, 760)
 _VARSAYILAN_BOLUCU = (820, 360)      # [sayfa, onizleme] px, ilk acilis
 
@@ -118,7 +119,7 @@ class AnaPencere(GezinmeCephesi, MenulerMixin, ProjeMixin, GecmisMixin, QtWidget
 
     def _durum_kur(self):
         self.ayarlar = QtCore.QSettings("openmc_arayuz", "arayuz")
-        self.spec = sema.yeni_spec("yeni model")
+        self.spec = sema.yeni_spec(_("yeni model"))
         self.proje_yolu = None
         # Kopyasi acilmis ornek dosyasi. YALNIZCA OKUMA icin (tukenme
         # sekmesinin onceki sonuclari); kayit asla buraya yapilmaz.
@@ -159,7 +160,8 @@ class AnaPencere(GezinmeCephesi, MenulerMixin, ProjeMixin, GecmisMixin, QtWidget
         for anahtar in uygunluk.SEKMELER:
             if anahtar in gruplar:
                 self.kenar.grup_ekle(_(gruplar[anahtar]))
-            self.kenar.ekle(anahtar, SEKME_ADLARI[anahtar], kabuk.GEZINME_IKONLARI[anahtar])
+            self.kenar.ekle(anahtar, _(SEKME_ADLARI[anahtar]),
+                            kabuk.GEZINME_IKONLARI[anahtar])
             sayfa = self._kaydirma(editorler[anahtar])
             self._sayfalar[anahtar] = sayfa
             self._sayfa_editor[sayfa] = editorler[anahtar]
@@ -480,7 +482,7 @@ class AnaPencere(GezinmeCephesi, MenulerMixin, ProjeMixin, GecmisMixin, QtWidget
         for anahtar in self._sayfalar:
             isaret, aciklama = self._isaretler.get(anahtar, ("", ""))
             self.kenar.durum_ayarla(anahtar, kabuk.ISARET_DURUMU.get(isaret))
-            kabuk.kenar_ipucu(self.kenar, anahtar, aciklama or SEKME_ADLARI[anahtar])
+            kabuk.kenar_ipucu(self.kenar, anahtar, aciklama or _(SEKME_ADLARI[anahtar]))
         self._durum_ipucu_guncelle()
 
     def _durum_ipucu_guncelle(self):
@@ -598,8 +600,11 @@ class AnaPencere(GezinmeCephesi, MenulerMixin, ProjeMixin, GecmisMixin, QtWidget
         eklenen = []
         if not kor_turu_degistir(self.spec, tur, self._tur_hafizasi, eklenen):
             return False
-        if self.spec.get("ad") in _SABLON_ADLARI.values() and tur in _SABLON_ADLARI:
-            self.spec["ad"] = _SABLON_ADLARI[tur]
+        # Sablon adi Turkce msgid ya da etkin dildeki karsiligi olabilir.
+        sablon_adlari = set(_SABLON_ADLARI.values())
+        sablon_adlari |= {_(a) for a in sablon_adlari}
+        if self.spec.get("ad") in sablon_adlari and tur in _SABLON_ADLARI:
+            self.spec["ad"] = _(_SABLON_ADLARI[tur])
         self._kirli = True
         self._spec_uygula()
         self._gecmise_it()
@@ -652,14 +657,16 @@ class AnaPencere(GezinmeCephesi, MenulerMixin, ProjeMixin, GecmisMixin, QtWidget
         n = {s: sum(1 for b in self._bulgular if b.seviye == s)
              for s in ("hata", "uyari", "bilgi")}
         if n["hata"]:
-            seviye, ozet = "hata", _("Doğrulama: {n} hata").format(n=n["hata"])
+            seviye, ozet = "hata", _n("Doğrulama: {n} hata", "Doğrulama: {n} hata",
+                                      n["hata"]).format(n=n["hata"])
         elif n["uyari"]:
-            seviye, ozet = "uyari", _("Doğrulama: {n} uyarı").format(n=n["uyari"])
+            seviye, ozet = "uyari", _n("Doğrulama: {n} uyarı", "Doğrulama: {n} uyarı",
+                                       n["uyari"]).format(n=n["uyari"])
         else:
             seviye, ozet = "basari", _("Doğrulama: hata yok")
-        rozet = (_("{n} bilgi").format(n=n["bilgi"]) if n["bilgi"]
-                 else _("{n} uyarı").format(n=n["uyari"]) if n["uyari"]
-                 else _("Tamam"))
+        rozet = (_n("{n} bilgi", "{n} bilgi", n["bilgi"]).format(n=n["bilgi"]) if n["bilgi"]
+                 else _n("{n} uyarı", "{n} uyarı", n["uyari"]).format(n=n["uyari"])
+                 if n["uyari"] else _("Tamam"))
         onemli = [b for b in self._bulgular if b.seviye in ("hata", "uyari")]
         ilk = ("%s · %s" % (yer_etiketi(onemli[0].yer), cumle_basi(onemli[0].mesaj))
                if onemli else "")
@@ -727,17 +734,22 @@ class AnaPencere(GezinmeCephesi, MenulerMixin, ProjeMixin, GecmisMixin, QtWidget
         """CALISTIR kapisi: once geometri cizilmeli, sonra hata olmamali."""
         if dogrula.hata_var(self._bulgular):
             n = sum(1 for b in self._bulgular if b.seviye == "hata")
-            return False, _("Doğrulamada %d hata var — önce bunları giderin. Alttaki "
-                            "rozete tıklayıp bir bulguyu seçince ilgili sayfaya "
-                            "gidersiniz.") % n
+            return False, _n("Doğrulamada %d hata var — önce bunları giderin. Alttaki "
+                             "rozete tıklayıp bir bulguyu seçince ilgili sayfaya "
+                             "gidersiniz.",
+                             "Doğrulamada %d hata var — önce bunları giderin. Alttaki "
+                             "rozete tıklayıp bir bulguyu seçince ilgili sayfaya "
+                             "gidersiniz.", n) % n
         if not self.onizleme.cizildi_mi():
             return False, _("Geometri önizlemesi henüz çizilmedi. Önce çiz, "
                             "sonra çalıştır: yanlış geometriyle saatlerce koşmamak "
                             "için önizlemenin çizilmesi bekleniyor.")
         uyari = sum(1 for b in self._bulgular if b.seviye == "uyari")
         if uyari:
-            return True, _("Çalıştırılabilir. %d uyarı var — sonucu etkileyebilir, "
-                           "doğrulama listesini gözden geçirin.") % uyari
+            return True, _n("Çalıştırılabilir. %d uyarı var — sonucu etkileyebilir, "
+                            "doğrulama listesini gözden geçirin.",
+                            "Çalıştırılabilir. %d uyarı var — sonucu etkileyebilir, "
+                            "doğrulama listesini gözden geçirin.", uyari) % uyari
         return True, _("Model çalıştırılmaya hazır.")
 
     def _calistir_menuden(self):

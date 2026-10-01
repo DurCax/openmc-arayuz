@@ -13,6 +13,7 @@ import re
 from PySide6 import QtCore, QtGui, QtWidgets
 
 from arayuz.tasarim import tokenlar
+from cekirdek.ceviri import _, N_
 from cekirdek.gunluk import kaydedici
 
 _log = kaydedici(__name__)
@@ -146,7 +147,8 @@ def hata_metni(e):
     """
     metin = e.args[0] if isinstance(e, KeyError) and e.args else str(e)
     metin = str(metin)
-    metin = re.sub(r":\s*None\b", ": seçilmemiş", metin)
+    secilmemis = ": " + _("seçilmemiş")
+    metin = re.sub(r":\s*None\b", lambda _e: secilmemis, metin)
     return metin
 
 
@@ -205,7 +207,7 @@ class RenkDugmesi(QtWidgets.QPushButton):
 
     def _sec(self):
         renk = QtWidgets.QColorDialog.getColor(
-            QtGui.QColor(*self._rgb), self, "Malzeme rengi")
+            QtGui.QColor(*self._rgb), self, _("Malzeme rengi"))
         if renk.isValid():
             self.ayarla((renk.red(), renk.green(), renk.blue()))
             self.degisti.emit(self._rgb)
@@ -278,7 +280,7 @@ class EnerjiGirdi(QtWidgets.QWidget):
         self.kutu.setSingleStep(0.1)
         self.kutu.setMinimumWidth(80)
         self.birim = QtWidgets.QComboBox()
-        self.birim.addItems([b for b, _ in _BIRIMLER])
+        self.birim.addItems([b for b, _carpan in _BIRIMLER])
         d = QtWidgets.QHBoxLayout(self)
         d.setContentsMargins(0, 0, 0, 0)
         d.addWidget(self.kutu, 1)
@@ -306,7 +308,7 @@ class EnerjiGirdi(QtWidgets.QWidget):
         """eV cinsinden bir enerjiyi, okunakli bir birim secerek gosterir."""
         ev = float(ev or 0.0)
         i = 0
-        for j, (_, carpan) in enumerate(_BIRIMLER):
+        for j, (_birim, carpan) in enumerate(_BIRIMLER):
             if ev >= carpan:
                 i = j
         eski = self.blockSignals(True)
@@ -374,11 +376,12 @@ class GelismisBolum(QtWidgets.QWidget):
 
     acildi = QtCore.Signal(bool)
     AYAR_ONEKI = "gelismis/"
+    VARSAYILAN_BASLIK = N_("Gelişmiş")      # gosterirken _()
 
-    def __init__(self, anahtar=None, baslik="Gelişmiş", parent=None):
+    def __init__(self, anahtar=None, baslik=None, parent=None):
         super().__init__(parent)
         self._anahtar = anahtar
-        self._baslik = baslik
+        self._baslik = _(self.VARSAYILAN_BASLIK) if baslik is None else baslik
         self.dugme = QtWidgets.QToolButton()
         self.dugme.setObjectName("gelismisDugme")
         self.dugme.setCheckable(True)
@@ -426,7 +429,7 @@ class GelismisBolum(QtWidgets.QWidget):
     # -- gorunum --
     def _uygula(self, acik):
         self.dugme.setText(("▾  " if acik else "▸  ") + self._baslik)
-        self.dugme.setToolTip("Gizle" if acik else "Nadiren gereken ayarları göster")
+        self.dugme.setToolTip(_("Gizle") if acik else _("Nadiren gereken ayarları göster"))
         self.icerik.setVisible(acik)
 
     def _degisti(self, acik):

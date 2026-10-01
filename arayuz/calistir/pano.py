@@ -20,7 +20,7 @@ from arayuz.tasarim import tokenlar
 from arayuz.tasarim.ikon import ikon_bagla
 from arayuz.ayar.sabitler import belirsizlik_pcm
 from cekirdek import kosucu, uygunluk
-from cekirdek.ceviri import _
+from cekirdek.ceviri import _, _n
 from cekirdek.gunluk import kaydedici
 
 _log = kaydedici(__name__)
@@ -181,7 +181,8 @@ class SonucPanosu(QtWidgets.QWidget):
                  None: (_("Belirsiz"), "notr")}[yakinsadi]
         # Uzun degerlendirme metni ipucunda; kartta kisa ozet (maket).
         self.entropi.yaz("%.3f" % entropi[-1],
-                         _("%d çevrimin sonuncusu") % len(entropi), rozet)
+                         _n("%d çevrimin sonuncusu", "%d çevrimin sonuncusu", len(entropi))
+                         % len(entropi), rozet)
         self.entropi.setToolTip(mesaj)
 
     def _zaman_yaz(self, sonuc, spec, zaman):
@@ -189,10 +190,11 @@ class SonucPanosu(QtWidgets.QWidget):
         pasif = int(sonuc.get("pasif") or 0)
         sure = zaman.get("sure_s")
         self.sure.yaz(gunluk_ozeti.sure_metni(sure),
-                      _("%d etkin + %d pasif çevrim") % (max(cevrim - pasif, 0), pasif))
+                      _n("%d etkin + %d pasif çevrim", "%d etkin + %d pasif çevrim", pasif)
+                      % (max(cevrim - pasif, 0), pasif))
         hiz = zaman.get("hiz")
         if hiz is None and sure and sonuc.get("parcacik"):
             hiz = float(sonuc["parcacik"]) * cevrim / sure
         n = int(((spec or {}).get("calistirma") or {}).get("is_parcacigi") or 0)
         self.hiz.yaz(gunluk_ozeti.hiz_metni(hiz),
-                     (_("%d iş parçacığı") % n) if n else "")
+                     (_n("%d iş parçacığı", "%d iş parçacığı", n) % n) if n else "")
