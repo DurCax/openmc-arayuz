@@ -316,25 +316,18 @@ koşularınızın farkı bu mertebede olmalıdır.
 **Adımlar — C. Kare çekirdek + altıgen halkaya tambur yerleştirmek.**
 
 Bu bölüm 5.4 dersinin geometrisine (kare çekirdek, altıgen blok halkası, en dışta 20 cm su kuşağı)
-6 tambur ekler. Her adım doğrulamayla denetlendi; yalnız 9. adım arayüz dışında yapılır.
+6 tambur ekler. Her adım doğrulamayla denetlendi; bütün adımlar arayüzde yapılır.
 
 7. `ornekler/pwr_kare_altigen_halka.json`'u açın (ya da 5.4'te kurduğunuz modeli) ve
    **Dosya › Farklı kaydet…** ile kendi dosyanıza kaydedin (ör. `kare_altigen_tambur.json`).
 8. **Malzemeler › Kütüphaneden ekle…**: **Berilyum (Be)** (Ad: `berilyum`) ve
    **B₄C — bor karbür** (Ad: `b4c`) ekleyin. **Dosya › Kaydet**.
-9. **Tambur tanımı.** Bu sürümde tambur tanımlarını düzenleyen bir form yoktur
-   ([4.5.3](04e-geometri-gelismis.md#gg-icerik)); tanım model dosyasına eklenir. Dosyayı bir metin
-   düzenleyicide açın ve en üst düzeye (ör. `"malzemeler"` satırından önce) şu bölümü ekleyin
-   (`ornekler/kafes_tamburlu_yansitici.json`'daki tanımın aynısı):
-
-   ```json
-   "tamburlar": [
-     {"ad": "tambur_b4c", "yaricap": 8.0, "govde_malzeme": "berilyum",
-      "emici_malzeme": "b4c", "emici_ic_yaricap": 6.0, "emici_aci": 120.0}
-   ],
-   ```
-
-   Kaydedip uygulamada **Dosya › Aç…** ile dosyayı yeniden açın.
+9. **Tambur tanımı.** **Parçalar > Tamburlar** sayfasındaki tambur formuyla yeni bir tambur
+   tanımı ekleyin (`ornekler/kafes_tamburlu_yansitici.json`'daki tanımın aynısı): **Ad**
+   `tambur_b4c`, yarıçap 8 cm, gövde malzemesi `berilyum`, emici malzemesi `b4c`, emici iç
+   yarıçapı 6 cm, emici yay açısı 120°. Tanım `tamburlar[]` bölümüne yazılır (`ad`, `yaricap`,
+   `govde_malzeme`, `emici_malzeme`, `emici_ic_yaricap`, `emici_aci`); yerleşim alanları
+   (sayı, merkez, dönme) tanımda değil yerleşim ve gruptadır.
 10. **Geometri** sayfasında ağaçta **Halka 1 (20 cm)** satırını seçin ve araç çubuğunda
     **+ Yerleşim**'e basın. Modelde bir tambur tanımı olduğu için yeni yerleşimin içeriği
     kendiliğinden **Bileşen: tambur_b4c** olur ve **Doğal kesit (tambur dairesi)** işaretlidir.
@@ -435,3 +428,185 @@ zincir, CECM, 5 000 × 60 parçacık, ~50 dakika):
 - Yanabilir malzeme hacmi f kat yanlış olsaydı ne olurdu? (Yanma hızı f kat yanlış olur, k-eff'te
   iz bırakmadan; hacimler bu yüzden analitik hesaplanır.)
 - **Çubuk çubuk yanma** bu modelde neden bir şey değiştirmez? (Pin hücrede yakıtın tek örneği vardır.)
+
+---
+
+<a id="ders-guc"></a>
+## 5.7 Güç haritası ve F_ΔH
+
+**Örnek dosya:** `ornekler/pwr_3b.json` · **Seviye:** orta · **Tahmini süre:** 30 dakika
+(koşu ~2–5 dakika)
+
+**Amaç.** Çubuk çubuk güç dağılımını hesaplamak, **F_ΔH** ve **F_q** tepe faktörlerini okumak ve
+bu sayıların istatistik sınırlarını öğrenmek. Alanlar: [4.6 Hesap ayarları](04f-hesap-ayarlari.md#hesap-ayarlari),
+yorum: [6.3 Güç dağılımını yorumlamak](06-sonuclar.md#guc-dagilimi-yorum).
+
+**Adımlar.**
+
+1. **PWR 17×17 demet — 3B** örneğini açın: 366 cm yüksekliğinde tek demet; yan sınır
+   `reflective`, alt ve üst sınır `vacuum`.
+2. **Hesap ayarları** sayfasında güç dağılımı kartı açıktır: **Çubuk bazlı güç dağılımı hesapla
+   (F_ΔH, F_q)** işaretli, **Hedef çubuk** `yakit_cubugu`, **Skor** `kappa-fission`,
+   **Eksenel dilim** 20, **Toplam güç** 17.6e6 W (`guc_dagilimi.toplam_guc`).
+3. **Toplam güç neden 17.6 MW?** Bu alan **modelin kapsadığı bölgenin** gücüdür, bütün korun
+   değil: 3400 MWth / 193 demet ≈ 17.6 MW. Tek demetlik bir modele bütün korun gücünü girmek
+   lineer gücü 193 kat büyük gösterir.
+4. Örnekteki parçacık sayısı 20 000 × 150 çevrimdir (40 pasif). **Çalıştır**.
+5. Koşu bitince **Çalıştır** sayfasında güç haritası çıkar: 264 yakıt çubuğu renkli, kılavuz
+   borular boş. **Değerleri haritaya yaz** ile her hücrede bağıl güç yazar. Özet satırları F_ΔH,
+   F_q, ortalama ve en yüksek lineer gücü verir.
+6. Aynı modeli **Hızlı deneme** ile koşup F_ΔH'yi karşılaştırın: az istatistikle F_ΔH **yukarı**
+   çıkar.
+
+**Beklenen sonuç** ([README.md](../../../README.md) "Güç dağılımı ve tepe faktörleri"; 20 000
+parçacık, 20 eksenel dilim): **F_ΔH = 1.071**, **F_q = 1.885**, ortalama lineer güç **182 W/cm**.
+
+- **Belirsizlikler iyimserdir.** Raporlanan bin başına σ 0.003–0.008 iken üç bağımsız tohum arasındaki
+  gerçek saçılma 0.07–0.17 ölçüldü (~20 kat): özdeğer hesabında çevrimler arası ilinti tally
+  σ'sını küçümser. Gerçek belirsizlik için birkaç tohumla koşun.
+- **F_ΔH bir maksimumdur ve az istatistikte yukarı yanlıdır:** aynı modelde 3 000 parçacıkla 1.1455,
+  20 000 parçacıkla 1.0708 ölçüldü.
+- **F_q eksenel çözünürlüğe bağlıdır:** kaba dilimler tepeyi ortalar; en az 10–20 dilim kullanın
+  (saf kosinüs limiti π/2 = 1.571).
+
+**Ne öğrendik / kontrol soruları.**
+
+- Lineer güç ~182 W/cm değil de ~35 000 W/cm çıksaydı hangi alan yanlıştır? (**Toplam güç**:
+  bütün kor gücü girilmiş.)
+- Çubuk güçlerinin toplamı neden filtresiz tally'ye eşit olmalıdır? (Korunum denetimi;
+  haritalama hatasını yakalar.)
+- Eksenel katmanlı `ornekler/pwr_eksenel.json`'da F_ΔH neden aynı, F_q neden küçüktür?
+  (Katmanlama radyal dağılıma dokunmaz; su yansıtıcı eksenel profili düzleştirir.)
+
+<a id="ders-benchmark"></a>
+## 5.8 Benchmark ve C/E
+
+**Örnek dosyalar:** `ornekler/godiva_kriter.json`, `ornekler/kriter_jezebel.json`,
+`ornekler/kriter_flattop25.json`, `ornekler/kriter_lct008.json` · **Seviye:** giriş–ileri ·
+**Tahmini süre:** Godiva 10 dakika; LCT-008 uzun (referans koşusu ~450 s)
+
+**Amaç.** Hesabı ölçülmüş bir kritik düzenekle (ICSBEP) karşılaştırmak ve **C/E** ile
+**C − E** değerlerini doğru okumak. Arka plan: [7.4 V&V](07-uygunluk.md#vv).
+
+**Adımlar.**
+
+1. **Godiva kritik küresi** örneğini açın: çıplak HEU metal küresi (ICSBEP HEU-MET-FAST-001).
+   Kor türü `kuresel`; kabuklar yalnız JSON'dan düzenlenir.
+2. **Hesap ayarları**'nı dosyadaki gibi bırakın; referans koşusu 100 000 parçacık × 150 çevrim
+   (50 pasif). Süre kısıtlıysa **Normal** ile koşun ve σ'nın büyüdüğünü hesaba katın. **Çalıştır**.
+3. Sonucu deney değeriyle karşılaştırın: E ± σe = 1.0000 ± 0.0010. Hesaplayın:
+   C − E [pcm] = (C − E) × 10⁵ (**Δk × 10⁵**, reaktivite farkı değildir), fark/σ =
+   |C − E| / √(σc² + σe²), C/E = C / E.
+4. Aynısını Jezebel ve Flattop-25 için yapın. LCT-008 (LEU UO₂ kafes, borlu su) uzun sürer;
+   yalnız sonucu okuyun.
+
+**Beklenen sonuç** ([VV.md](../../VV.md) "Deney kriterleri" tablosu):
+
+| Örnek | Kriter | E ± σe | C ± σc | C − E [pcm] | fark/σ |
+|---|---|---|---|---|---|
+| `godiva_kriter.json` | HEU-MET-FAST-001 | 1.0000 ± 0.0010 | 1.00038 ± 0.00025 | +38 | 0.37 |
+| `kriter_jezebel.json` | PU-MET-FAST-001 | 1.0000 ± 0.0020 | 0.99996 ± 0.00023 | −4 | 0.02 |
+| `kriter_flattop25.json` | HEU-MET-FAST-028 | 1.0000 ± 0.0030 | 1.00106 ± 0.00026 | +106 | 0.35 |
+| `kriter_lct008.json` | LEU-COMP-THERM-008/1 | 1.0007 ± 0.0012 | 1.00067 ± 0.00021 | −3 | 0.02 |
+
+Kabul ölçütü |C − E| ≤ 3·√(σc² + σe²) ve σc ≤ 30 pcm **projenin kendi ölçütüdür**; bir standarttan
+gelmez.
+
+**Ne öğrendik / kontrol soruları.**
+
+- Regresyon çıpası (pin hücre k∞) ile Godiva testi arasındaki fark nedir? (Çıpa "kod kendiyle
+  tutarlı" der; kriter "sonuç ölçümle uyumlu" der.)
+- E = 1.0007 olan bir kriterde neden k_norm = C/E kullanılır? (NUREG/CR-6698 normalleştirmesi; K9.)
+- Dört kriter bir LWR tasarımının hesap yanlılığını kanıtlar mı? (Hayır: LWR/LEU kafes için yeterli
+  bağımsız vaka yoktur, USL hesaplanamaz — [7.4](07-uygunluk.md#vv).)
+
+<a id="ders-kritik-arama"></a>
+## 5.9 Kritik arama
+
+**Örnek dosyalar:** `ornekler/pwr_17x17.json`, `ornekler/pwr_kontrol.json`,
+`ornekler/tamburlu_kor.json` · **Seviye:** orta · **Tahmini süre:** her arama 5–30 dakika
+
+**Amaç.** Hedef k-eff'i veren parametre değerini (kritik bor, kritik çubuk konumu, kritik tambur
+açısı) bulmak ve sonucun belirsizliğini okumak. Yöntem: [4.8 Analiz](04h-analiz.md#analiz).
+
+**Adımlar.**
+
+1. `ornekler/pwr_17x17.json`'u açın. **Analiz** sayfasında **Ne hesaplanacak**: **Kritik arama
+   (hedef k-eff'i veren değer)**.
+2. **Parametre**: bor derişimi (`bor_ppm`); **Hedef malzeme** `su`; **Başlangıç** 0, **Bitiş**
+   5000 ppm; **Hedef k-eff** 1.0. **Tahmini süre**'ye bakıp **Kritik aramayı başlat**.
+3. Arama aralık uçlarını koşar, sonra parantez korumalı yanlış konum + ikiye bölme ile daralır.
+   Durma ölçütü |k − hedef| ≤ 2σ'dır. Kök aralıkta değilse **ekstrapolasyon yapmaz**; aralığı
+   genişletmenizi söyler.
+4. `ornekler/pwr_kontrol.json`: **Parametre** çubuk daldırma (`cubuk_daldirma`, %), aralık 0–100.
+5. `ornekler/tamburlu_kor.json`: **Parametre** tambur dönmesi (`tambur_donme`, derece), aralık
+   0–180.
+
+**Beklenen sonuç** ([README.md](../../../README.md) "Reaktivite katsayıları ve kritik arama"):
+
+| Model | Parametre | Kritik değer | Koşu sayısı |
+|---|---|---|---|
+| `pwr_17x17` | bor | **3430 ppm** | 7 |
+| `pwr_kontrol` | çubuk daldırma | **%87.85 ± 0.09** | 13 |
+| `tamburlu_kor` | tambur dönmesi | **122.46° ± 3.68** | 4 |
+
+Kökün belirsizliği yerel eğimden δx = σ_k / |dk/dx| olarak raporlanır.
+
+**Ne öğrendik / kontrol soruları.**
+
+- `pwr_17x17` k∞ modelidir; 3430 ppm bir **sonsuz kafesin** kritik borudur, bir korun değil. Neden?
+  (Yansıtıcı sınır: sızıntı yok.)
+- Kontrol çubuğu eğrisi neden klasik S şeklinde değil? (Tek demet, yüksek k∞: rodlanmamış alt
+  bölge tek başına süperkritik kalır; değer geç toplanır.)
+- Durma ölçütü neden 1σ değil 2σ? (Sonuç panelinin "kritik" dediği konfigürasyonu aramanın
+  reddetmemesi için aynı tanım.)
+
+<a id="ders-rapor"></a>
+## 5.10 Rapor ve uygunluk eki
+
+**Örnek dosya:** herhangi bir tamamlanmış koşu (ör. 5.1 ya da 5.8 dersinin koşusu) · **Seviye:** orta ·
+**Tahmini süre:** 10 dakika
+
+**Amaç.** Bir koşudan PDF/HTML rapor üretmek, raporun **uygunluk ekini** okumak ve ekin neyi
+kanıtladığını, neyi kanıtlamadığını ayırmak. Arka plan: [7. Uygunluk denetimi](07-uygunluk.md#uygunluk-denetimi).
+
+**Adımlar.**
+
+1. Bir koşu bitirin (ör. `ornekler/godiva_kriter.json`). **Çalıştır** sayfasındaki uygunluk
+   kartında profilleri seçin: **A · Monte Carlo iyi uygulaması** ve **D · Raporlama** her koşu
+   için; kriter düzeneğinde **B · Kritiklik güvenliği**, kor hesabında **C · Reaktör kor tasarımı**.
+2. **Dosya → Rapor oluştur…** (**Ctrl+R**). Dosya adı ve biçimi (`.pdf` ya da `.html`) seçin.
+   Bildirimdeki **Aç** raporu açar.
+3. Terminalden aynısı:
+
+   ```bash
+   openmc-arayuz-kosu rapor kosu/ -o rapor.pdf
+   openmc-arayuz-kosu uygunluk kosu/ --profil A,B,D
+   ```
+
+4. Raporda sırayla okuyun: model özeti, sonuçlar (k ± 1σ, "standart belirsizlik" etiketiyle),
+   tekrarlanabilirlik bloğu (OpenMC sürümü, kütüphane, sha256, tohum — `kapsul.json`) ve
+   **uygunluk eki**: her kural için **karşılandı / karşılanmadı / uygulanamadı**, etiketi
+   (iyi uygulama / standart / proje ölçütü / kullanıcı sınırı) ve kaynağı.
+
+**Beklenen sonuç.** Godiva koşusunda A ve D profillerinin kuralları çoğunlukla **karşılandı**;
+B profilinde USL için V&V kümesi gerekir; uygulamanın alt kümesinde yeterli bağımsız vaka yoksa ek
+"USL hesaplanamadı" yazar ([9.3](09-sorun-giderme.md#usl-hesaplanamadi)). "Uygulanamadı" satırları
+bir başarısızlık değildir (`--siki` verilmedikçe).
+
+**Ne kanıtlar, ne kanıtlamaz.**
+
+- **Kanıtlar:** koşunun girdisinin ve verisinin izlenebilir olduğunu, belirsizliğin doğru
+  bildirildiğini, kaynak yakınsamasının ve istatistiğin iyi uygulama eşiklerini geçtiğini; varsa
+  yanlılık/USL hesabını.
+- **Kanıtlamaz:** modelin gerçek tesisi doğru temsil ettiğini, sonucun lisanslamaya uygun
+  olduğunu, aracın bir standarda "uygun" ya da sertifikalı olduğunu. Bunlar kullanıcı kuruluşun
+  kalite güvence programı, bağımsız gözden geçirmesi ve kendi doğrulama raporu ister
+  ([7.3](07-uygunluk.md#ne-kanitlar)).
+
+**Ne öğrendik / kontrol soruları.**
+
+- "Karşılandı" ile "uygulanamadı" arasındaki fark nedir? (İkincisinde kuralı değerlendirecek veri
+  yoktur, ör. kullanıcı sınırı girilmemiş F_ΔH.)
+- `uygunluk` komutunun çıkış kodu CI'da neden işe yarar? (0 hata yok, 1 hata var, 2 kullanım hatası,
+  3 `--siki` ile değerlendirilemeyen kural.)
