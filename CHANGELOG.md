@@ -6,47 +6,51 @@ gelir (`pyproject.toml` → `cekirdek/surum.py`). Ayrıntılı değişiklikler `
 (conventional commits). Sürüm notunun kullanıcıya dönük özeti (TR + EN):
 `docs/SURUM_NOTLARI.md`.
 
-## 2.0.0rc1 — 01.10.2026 (sürüm adayı; nihai `v2.0.0` etiketi henüz atılmadı)
+## 2.0.0 — 02.10.2026
 
 ### Ortam
-- Uygulama commit: `v2-d4-16` dalı (birleştirme commit'i etikette yazılır).
+- Uygulama commit: `v2.0.0` etiketi.
 - OpenMC: 0.16.0 (conda-forge; sabit, `environment.yml`).
 - Python 3.13, PySide6/Qt 6.11.2, numpy 2.5, scipy 1.18, matplotlib 3.11, pandas 3.0, h5py 3.16.
 - Kütüphane: ENDF/B-VIII.0 HDF5 (openmc.org/data); zincirler: ENDF/B-VIII.0 termal/hızlı, CASL
   (bayt + sha256 `veri_indir.sh`'ta). `cross_sections.xml` sha256'sı her koşunun
-  `kapsul.json`'unda yazılır; bu sürüm notu için ayrıca alınmadı.
+  `kapsul.json`'unda yazılır.
 - Ortam kilidi: `conda list --export` sha256'sı her koşunun `kapsul.json`'unda; depoda tam
   kilit dosyası yok (`docs/YAZILIM_KALITE.md` §4 md. 7).
 - Platform: Linux (Ubuntu), x86-64.
 
 ### Neyi doğruladık (kanıtıyla)
-- Hızlı süit: `QT_QPA_PLATFORM=offscreen python -m pytest -m hizli -n 4 -q` — 0 kaldı
-  — `v2-d4-16` dalında 597 geçti / 0 kaldı (01.10.2026; Dalga 3 sonu: 589 / 0). Birleştirme
-  sonrası sayı etikette yeniden alınır.
-- Paket denetimi (`testler/test_paket.py`, hızlı): `LICENSE` ve `THIRD_PARTY_LICENSES.md`
-  var; sürüm tek kaynak; `openmc-arayuz-kosu --help` çalışır; izlenen dosyalarda `/home/`
-  yolu ve e-posta adresi yok.
-- İzlenebilirlik: 66 gereksinim (`docs/GEREKSINIMLER.md`); son matris (`docs/IZLENEBILIRLIK.md`,
-  01.10.2026, yalnız hızlı süit sonucu): 44 geçti, 12 kısmen, 4 inceleme, 6 çalıştırılmadı.
-- Benchmark C/E ve NUREG/CR-6698 yanlılık/USL: `docs/VV.md` (ör. Godiva 1.00038 ± 0.00025,
-  deneysel 1.0000 ± 0.0010; hızlı metal USL 0.9444, n = 13; termal USL 0.9388, n = 10).
-  Bu ölçümler Dalga S-3'te yapıldı; bu adayda yeniden koşulmadı.
-- Üçüncü taraf lisansları kurulu paketlerden doğrulandı (`THIRD_PARTY_LICENSES.md`).
-- Conda tarifi: `conda render` ve `conda build conda-recipe -c conda-forge --override-channels`
-  başarılı (01.10.2026, conda-build ayrı geçici ortamda): `openmc-arayuz-2.0.0rc1-py_0.conda`
-  (noarch, ~1.2 MB); tarifin testleri (içe aktarma, `openmc-arayuz-kosu --help`, sürüm =
-  pyproject, `share/openmc-arayuz/LICENSE`) yeni bir ortamda geçti.
+- **Tam süit** (hızlı + yavaş, Monte Carlo dahil; `-n 4`, OMP_NUM_THREADS=6): 724 geçti,
+  1 kaldı (`test_parca_demet::test_demet_yerlesim` — kılıflı altıgen demet kartı sayfayı
+  kaydırıyordu; düzeltildi, test tek başına ve hızlı süit yeniden geçti). Toplam kapsam
+  **%91.9** (çıktı: kapsam_tam_v2.txt, kısaltılmadan).
+- **Hızlı süit** (son durum): 650 geçti / 0 kaldı.
+- **Fizik çıpaları** (tam süit içinde): k∞ çıpası 1.35698 ± 0.00197 (referans 1.3570 ± 0.0020);
+  Godiva 0.99957 ± 0.00054 (kriter 1.0000 ± 0.0010); kurucu ile üretilen betik aynı k
+  (fark ≤ 1e-13); geometri parmak izi kapısı (30 örnek) geçti.
+- **İzlenebilirlik** (`docs/IZLENEBILIRLIK.md`, tam süit JUnit sonucundan): 66 gereksinim —
+  63 testle geçti, 3 inceleme; testsiz gereksinim 0.
+- **V&V** (`docs/VV.md`): 26 deneyli küme, C/E tablosu ve NUREG/CR-6698 istatistiği bağımsız
+  olarak (profesör denetimi, Ajan 15) yeniden hesaplandı. Uygulamanın alt kümesi bölünebilir
+  tür + fiziksel biçim + tayf + zenginlik sınıfıyla seçilir; **mevcut kümeyle hiçbir uygulama
+  USL almaz** (en büyük uygun alt küme < 10 vaka) ve araç bunu açıkça yazar.
+- **Bağımsız denetimler:** profesör/standart denetimi (Ajan 15; tek engelleyici — LEU kafese
+  USL verilmesi — düzeltildi) ve İngilizce arayüzle öğrenci QA (Ajan 14; 6 senaryo, çökme
+  yok; ÖNEMLİ bulgular düzeltildi).
+- Arayüz Türkçe ve İngilizce (3028 msgid); EN tarama (30 örnek × bütün sayfalar) Türkçe metin 0.
+- Paket denetimi (`testler/test_paket.py`): `LICENSE` ve `THIRD_PARTY_LICENSES.md` var; sürüm
+  tek kaynak; `openmc-arayuz-kosu --help` çalışır; izlenen dosyalarda `/home/` ve e-posta yok.
+- Conda tarifi: `conda build` başarılı ve tarif testleri yeni ortamda geçti (rc1 adayında).
 
 ### Neyi doğrulamadık
-- Yavaş (Monte Carlo) süit ve fizik çıpaları (R-FZ-01…03) bu adayda koşulmadı; matriste
-  "çalıştırılmadı" görünürler (`docs/YAZILIM_KALITE.md` §4 md. 4).
-- Docker imajı bu adayda **derlenmedi** (geliştirme makinesinde Docker yok); `Dockerfile`
-  gözden geçirildi ama `docker build` ile denenmedi. noVNC ve WSL2/WSLg kipleri denenmedi.
-- Conda paketiyle arayüzün (GUI) açılması ve bir Monte Carlo koşusu denenmedi (yalnız tarif testleri).
-- Windows ve macOS: doğrulanmadı.
-- ENDF/B-VIII.0 ve zincir dosyalarının resmî kullanım koşulları: doğrulanmadı
-  (`THIRD_PARTY_LICENSES.md` §3).
-- `docs/YAZILIM_KALITE.md` §4'te açık kalan eksiklikler: bağımsız V&V yok, gereksinimlerin
+- Docker imajı **derlenmedi** (geliştirme makinesinde Docker yok); noVNC ve WSL2/WSLg kipleri denenmedi.
+- Conda paketinden arayüzün (GUI) açılması ve bir Monte Carlo koşusu denenmedi.
+- Windows ve macOS: doğrulanmadı. Gerçek ekranda (başsız olmayan) tam tur: doğrulanmadı.
+- ENDF/B-VIII.0 ve zincir dosyalarının resmî kullanım koşulları: doğrulanmadı.
+- LWR/LEU kafes uygulamaları için kritiklik güvenliği USL'si: **yok** (açık bağımsız vaka
+  bulunamadı; ICSBEP'ten yeniden modelleme gerekir).
+- 1500 px genişlikte birkaç form kırpılması (görsel; QA KÜÇÜK).
+- `docs/YAZILIM_KALITE.md` §4'teki açık eksiklikler: bağımsız V&V kuruluşu yok, gereksinimlerin
   resmî gözden geçirme kaydı yok, numaralı hata kaydı yok, h5 içeriği karmalanmıyor.
 
 ### Değişiklikler (1.x → 2.0.0)

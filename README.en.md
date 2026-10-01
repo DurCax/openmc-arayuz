@@ -7,8 +7,7 @@ materials to the full core, is set up in one interface; the geometry is plotted 
 calculation is run; and the calculation is started and its results are read in the same place.
 A GUI-free core layer (`cekirdek/`) does the same work from the terminal.
 
-> **Status.** Development version `2.0.0.dev0`. The English interface is being completed in the
-> current development wave; until then some labels and messages still appear in Turkish.
+> **Status.** Version `2.0.0`. The interface is available in English and Turkish (View > Language).
 > Interface names in this document follow the binding glossary [docs/SOZLUK.md](docs/SOZLUK.md).
 
 ## What it is

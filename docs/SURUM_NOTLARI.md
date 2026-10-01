@@ -1,4 +1,4 @@
-# Sürüm notları / Release notes — 2.0.0rc1
+# Sürüm notları / Release notes — 2.0.0
 
 Ayrıntılı ve denetlenebilir liste ("neyi doğruladık / neyi doğrulamadık"): `CHANGELOG.md`.
 *The detailed, auditable list ("what we verified / what we did not"): `CHANGELOG.md`.*
@@ -7,7 +7,7 @@ Ayrıntılı ve denetlenebilir liste ("neyi doğruladık / neyi doğrulamadık")
 
 ## Türkçe
 
-**2.0.0rc1 (01.10.2026)** bir sürüm adayıdır; nihai `v2.0.0` etiketi son denetimden sonra atılır.
+**2.0.0 (02.10.2026).**
 
 ### Öne çıkanlar
 - **Esnek geometri.** Model artık bir geometri ağacıdır (beş düğüm türü): karışık kare/altıgen
@@ -52,13 +52,13 @@ kullanılabilir. Lisans anahtarı ya da telemetri yoktur. Üçüncü taraf bile�
 - Docker imajı bu adayda derlenmedi; conda paketi derlendi ve tarif testleri geçti, ama arayüz
   conda paketinden açılarak denenmedi (`CHANGELOG.md`).
 - Yalnız Linux'ta test edildi; Windows yalnız Docker/WSL2 üzerinden hedeflenir, doğrulanmadı.
-- Yavaş (Monte Carlo) süit ve fizik çıpaları bu adayda yeniden koşulmadı.
+- Tam süit (Monte Carlo dahil) 724/1 → kalan yerleşim testi düzeltildi; kapsam %91.9; fizik çıpaları geçti.
 
 ---
 
 ## English
 
-**2.0.0rc1 (2026-10-01)** is a release candidate; the final `v2.0.0` tag is set after the last review.
+**2.0.0 (2026-10-02).**
 
 ### Highlights
 - **Flexible geometry.** A model is now a geometry tree (five node types): mixed
@@ -105,4 +105,4 @@ permitted persons. There is no license key and no telemetry. Third-party compone
 - The Docker image was not built for this candidate; the conda package was built and its recipe
   tests passed, but the interface was not launched from the conda package (`CHANGELOG.md`).
 - Tested on Linux only; Windows is targeted only through Docker/WSL2 and is not verified.
-- The slow (Monte Carlo) suite and the physics anchors were not re-run for this candidate.
+- Full suite (Monte Carlo included) 724/1 → the remaining layout test was fixed; coverage 91.9 %; physics anchors passed.

@@ -58,6 +58,10 @@ class KilifMixin(object):
         f.addRow(_("Kalınlık"), self.kilif_kalinlik)
         f.addRow(_("Malzeme"), self._kilif_mal_yeri)
         f.addRow(_("Dış ölçü"), self.kilif_dis)
+        # Kilif kapaliyken yalniz onay kutusu gorunur: kilifsiz altigen demette
+        # sag sutun uzayip sayfa dikey kaydirmasin (test_demet_yerlesim P7,
+        # 1600x950 altigen 7 halka; olculdu 02.10.2026).
+        self._kilif_form = f
         self.kilif_karti = bl.Kart(_("Kılıf"))
         self.kilif_karti.govde.addLayout(f)
         self.kilif_karti.ekle(self.kilif_hata)
@@ -94,6 +98,8 @@ class KilifMixin(object):
 
     def _kilif_durum(self, d):
         acik = self.kilif_var.isChecked()
+        for satir in range(1, self._kilif_form.rowCount()):
+            self._kilif_form.setRowVisible(satir, acik)
         for w in (self.kilif_ic, self.kilif_kalinlik, self.kilif_malzeme):
             if w is not None:
                 w.setEnabled(acik)
