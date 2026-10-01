@@ -6,9 +6,10 @@ giris.py -- paket giris noktalari (pyproject.toml [project.scripts]).
   openmc-arayuz-kosu   -> kosu()  = python -m cekirdek.kosucu spec.json [...]
   openmc-arayuz-kosu rapor <kosu_dizini> [-o rapor.pdf] [--spec spec.json]
                        -> rapor_komutu() (cekirdek/rapor.py; kosucu'ya uğramaz)
-  openmc-arayuz-kosu uygunluk <kosu_dizini> [--profil A,B,C,D]
+  openmc-arayuz-kosu uygunluk <kosu_dizini> [--profil A,B,C,D] [--siki]
                        -> uygunluk_komutu(): bulgulari basar; cikis 1 = hata
-                          bulgusu var, 0 = yok, 2 = kullanim hatasi (CI / ders)
+                          bulgusu var, 0 = yok, 2 = kullanim hatasi, 3 = --siki
+                          ile degerlendirilemeyen kural var (CI / ders)
 
 Ince sarmalayicilar: davranis mevcut modul girislerinin aynisidir. GUI tarafi
 runpy ile `python -m arayuz.ana_pencere` gibi calistirilir; boylece pencere
@@ -113,22 +114,29 @@ def _uygunluk_yardimi():
     from cekirdek.ceviri import _
     return _(
         "KULLANIM\n"
-        "  openmc-arayuz-kosu uygunluk <koşu_dizini> [--profil A,B,C,D]\n\n"
+        "  openmc-arayuz-kosu uygunluk <koşu_dizini> [--profil A,B,C,D] [--siki]\n\n"
         "  --profil   denetim profilleri (virgülle). Verilmezse koşu dizinindeki\n"
         "             spec.json'un seçimi; o da yoksa A,D.\n"
         "             A Monte Carlo iyi uygulaması, B kritiklik güvenliği,\n"
-        "             C reaktör kor tasarımı, D raporlama.\n\n"
-        "  Çıkış kodu: 0 hata bulgusu yok, 1 hata bulgusu var, 2 kullanım hatası.")
+        "             C reaktör kor tasarımı, D raporlama.\n"
+        "  --siki     değerlendirilemeyen (uygulanamadı) kural da başarısızlıktır.\n\n"
+        "  Çıkış kodu: 0 hata bulgusu yok, 1 hata bulgusu var, 2 kullanım hatası,\n"
+        "  3 (--siki ile) değerlendirilemeyen kural var.")
 
 
 def _uygunluk_argumanlari(argv):
-    """(dizin, profiller | None) ya da hata metni (str)."""
+    """(dizin, profiller | None, siki) ya da hata metni (str)."""
     from cekirdek import rapor_uygunluk
     from cekirdek.ceviri import _
     dizin = profiller = None
+    siki = False
     i = 0
     while i < len(argv):
         a = argv[i]
+        if a == "--siki":
+            siki = True
+            i += 1
+            continue
         if a == "--profil":
             if i + 1 >= len(argv):
                 return _("%s bir değer bekliyor") % a
@@ -146,7 +154,7 @@ def _uygunluk_argumanlari(argv):
         return _("koşu dizini verilmedi")
     if not os.path.isdir(dizin):
         return _("koşu dizini bulunamadı: %s") % dizin
-    return dizin, profiller
+    return dizin, profiller, siki
 
 
 def _bulgu_satirlari(bulgular):
@@ -167,7 +175,8 @@ def _bulgu_satirlari(bulgular):
 
 def uygunluk_komutu(argv):
     """`openmc-arayuz-kosu uygunluk` alt komutu. Cikis: 0 hata bulgusu yok,
-    1 hata bulgusu var ya da denetim yapilamadi, 2 kullanim hatasi."""
+    1 hata bulgusu var ya da denetim yapilamadi, 2 kullanim hatasi, 3 --siki
+    ile degerlendirilemeyen kural var."""
     from cekirdek import rapor_uygunluk, sema
     from cekirdek.ceviri import _
     from cekirdek.uygunluk_denetimi.denetle import ozet
@@ -180,7 +189,7 @@ def uygunluk_komutu(argv):
         print(sonuc, file=sys.stderr)
         print(_uygunluk_yardimi(), file=sys.stderr)
         return 2
-    dizin, profiller = sonuc
+    dizin, profiller, siki = sonuc
     spec_yolu = _rapor_speci(dizin, None)
     spec = None
     try:
@@ -204,7 +213,7 @@ def uygunluk_komutu(argv):
     if notu:
         print(notu)
     print("\n" + durust_cerceve())
-    return rapor_uygunluk.cikis_kodu(bulgular)
+    return rapor_uygunluk.cikis_kodu(bulgular, siki=siki)
 
 
 def kosu(argv=None):

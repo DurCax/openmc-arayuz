@@ -400,7 +400,31 @@ def test_arayuz_sessiz_yedek_yok():
             "-> %d kayit" % len(kayitlar))
 
 
-TAMBUR_R = 6.0        # altigen_tambur_halkasi tambur yaricapi (cm)
+def test_cli_siki_cikis_kodu():
+    print("\n[GS9] uygunluk CLI --siki: degerlendirilemeyen kural -> cikis 3")
+    import contextlib
+    import io
+    import os
+    from cekirdek import giris, rapor_uygunluk
+    from testler.ortak_test import KOK
+    kontrol("cikis_kodu(siki): uygulanamadi -> 3",
+            rapor_uygunluk.cikis_kodu([_db("K1", "uygulanamadi")], siki=True) == 3
+            and rapor_uygunluk.cikis_kodu([_db("K1", "uygulanamadi")]) == 0)
+    kontrol("hata her zaman 1 (siki da)",
+            rapor_uygunluk.cikis_kodu([_db("K3", "karsilanmadi", "hata"),
+                                       _db("K1", "uygulanamadi")], siki=True) == 1)
+    fixture = os.path.join(KOK, "testler", "veri", "kosu_ornek")
+    cikti = io.StringIO()
+    with contextlib.redirect_stdout(cikti), contextlib.redirect_stderr(io.StringIO()):
+        kod = giris.kosu(["uygunluk", fixture, "--profil", "A", "--siki"])
+        kod0 = giris.kosu(["uygunluk", fixture, "--profil", "A"])
+        yardim = giris.kosu(["uygunluk", "--yardim"])
+    kontrol("CLI: fixture (σ hedefi yok -> uygulanamadi) --siki ile 3, siz 0",
+            kod == 3 and kod0 == 0 and yardim == 0 and "--siki" in cikti.getvalue(),
+            "-> %r %r" % (kod, kod0))
+
+
+TAMBUR_R = 6.0       # altigen_tambur_halkasi tambur yaricapi (cm)
 
 
 def _harita(spec, noktalar):
@@ -448,5 +472,5 @@ HIZLI = [test_periyodik_es_etkin_bc, test_betik_kesik_yakit_hacmi, test_k2_brown
          test_panel_rozeti_degerlendirilemedi, test_tek_tambur_yonu_asil_modelle_ayni,
          test_stokastik_hacim_sigma_denetimi, test_stokastik_hacim_chdir_yok,
          test_ice_aktar_ayni_adli_evrenler, test_ice_aktar_tambur_yonu_harf_sinir,
-         test_arayuz_sessiz_yedek_yok]
+         test_arayuz_sessiz_yedek_yok, test_cli_siki_cikis_kodu]
 YAVAS = [test_yavas_betik_kesik_hacim_kosucuyla_ayni]
