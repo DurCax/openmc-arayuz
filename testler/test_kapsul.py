@@ -165,7 +165,7 @@ def test_yeniden_kuru_calisma():
         kontrol("cikis 0", kod == 0, "-> %r\n%s" % (kod, metin))
         kontrol("kuru calisma yazildi", "kuru" in metin.lower(), metin)
         kontrol("hedef dizin olusmadi", not os.path.exists(hedef))
-        kontrol("ortam ayni denir", "fark yok" in metin, metin)
+        kontrol("ortam ayni denir", "farkı yok" in metin, metin)
         # kapsuldeki ortam farkli -> fark listelenir
         yol = os.path.join(dizin, kapsul.KAPSUL_ADI)
         k = kapsul.oku(dizin)
