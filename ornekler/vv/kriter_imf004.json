@@ -235,14 +235,14 @@
         "koni_aci": 30.0
       },
       "alt": [
-        -1.0,
-        -1.0,
-        -1.0
+        -14.0,
+        -14.0,
+        -14.0
       ],
       "ust": [
-        1.0,
-        1.0,
-        1.0
+        14.0,
+        14.0,
+        14.0
       ]
     },
     "entropi_mesh": {
@@ -630,6 +630,27 @@
     "seri": "IEU-MET-FAST-004",
     "aoa_girdi": {
       "fiziksel_bicim": "metal",
+      "yansitici": "grafit"
+    },
+    "olcum": {
+      "k": 1.00482,
+      "sigma": 0.0002,
+      "parcacik": 100000,
+      "cevrim": 200,
+      "pasif": 50,
+      "sure_s": 52.2,
+      "is_parcacigi": 12,
+      "openmc": "0.16.0",
+      "kutuphane": "ENDF/B-VIII.0",
+      "tarih": "2026-10-01"
+    },
+    "aoa": {
+      "bolunebilir": "U-235",
+      "zenginlik": 36.535353,
+      "h_x": 0.0,
+      "fiziksel_bicim": "metal",
+      "ealf": 579402.649548,
+      "tayf": "hizli",
       "yansitici": "grafit"
     }
   }
