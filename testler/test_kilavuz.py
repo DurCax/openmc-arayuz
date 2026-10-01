@@ -49,6 +49,7 @@ ETIKET_ORNEKLERI = ("pwr_17x17.json", "vver1000_kor.json", "godiva_kriter.json",
 _NOT_UZUNLUGU = 60          # bundan uzun etiket alan degil not/ipucudur
 TURKCE_HARFLER = "çğıİöşüÇĞÖŞÜ"
 EN_ISTISNALARI = ("Türkçe",)    # EN metinde izin verilen ozel adlar
+YARDIM_LOGU = "openmc_arayuz.arayuz.yardim"
 KOSU_ALT_KOMUTLARI = ("rapor", "uygunluk", "yeniden")
 KOSU_SECENEKLERI = {
     None: {"--dizin", "-s", "--is-parcacigi", "--sadece-dogrula", "--betik", "--help", "-h"},
@@ -428,11 +429,13 @@ def _resim_kontrolu(ky, ayr):
 # KL5 uygulama ici gosterim
 # ----------------------------------------------------------------------------
 class _KayitTutucu(object):
-    def __init__(self):
+    """WARNING ve ustu log kayitlari; onek verilirse yalniz o kaydediciler."""
+
+    def __init__(self, onek="openmc_arayuz"):
         import logging
         self.kayitlar = []
         self.isleyici = logging.Handler(logging.WARNING)
-        self.isleyici.emit = self.kayitlar.append
+        self.isleyici.emit = lambda r: (r.name.startswith(onek) and self.kayitlar.append(r))
 
     def __enter__(self):
         import logging
@@ -505,7 +508,7 @@ def test_uygulama_ici_gosterim():
 
 
 def _bilinmeyen_ve_en(uyg, pencere, yardim, g, ceviri):
-    with _KayitTutucu() as kt:
+    with _KayitTutucu(YARDIM_LOGU) as kt:
         sonuc = yardim.ac("yok-boyle-bolum", pencere)
         uyg.processEvents()
     kontrol("bilinmeyen bolum: False + bildirim + log (sessiz degil)",
@@ -527,7 +530,7 @@ def _bilinmeyen_ve_en(uyg, pencere, yardim, g, ceviri):
         k = ky.kilavuz("en", dizin=os.path.join(gecici, "k"))
         kontrol("EN eksik dosya TR'den alinir ve listelenir", k.eksik == ("09-sorun-giderme.md",)
                 and "sorun-giderme" in k.kimlikler)
-        with _KayitTutucu() as kt:
+        with _KayitTutucu(YARDIM_LOGU) as kt:
             gs.yukle("en", dizin=os.path.join(gecici, "k"))
             uyg.processEvents()
         kontrol("EN eksikse uyari seridi gorunur ve loglanir",
