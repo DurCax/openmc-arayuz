@@ -199,7 +199,8 @@ def uygunluk_komutu(argv):
               file=sys.stderr)
     if profiller is None:
         profiller = rapor_uygunluk.secili_profiller(spec)
-    bulgular, hata = rapor_uygunluk.denetle(spec, dizin, profiller)
+    vv, uygulama = rapor_uygunluk.vv_baglami(spec, dizin, profiller)
+    bulgular, hata = rapor_uygunluk.denetle(spec, dizin, profiller, vv=vv, uygulama=uygulama)
     if hata:
         print(hata, file=sys.stderr)
         return 1
@@ -209,7 +210,7 @@ def uygunluk_komutu(argv):
             "%d uygulanamadı") % (",".join(profiller), sayi["seviye"]["hata"],
                                   sayi["seviye"]["uyari"], sayi["durum"]["karsilandi"],
                                   sayi["durum"]["karsilanmadi"], sayi["durum"]["uygulanamadi"]))
-    notu = rapor_uygunluk.usl_notu(profiller)
+    notu = rapor_uygunluk.usl_notu(profiller, vv)
     if notu:
         print(notu)
     print("\n" + durust_cerceve())

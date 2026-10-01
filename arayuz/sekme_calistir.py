@@ -136,6 +136,7 @@ class CalistirSekmesi(QtWidgets.QWidget):
         self.uygunluk = UygunlukPaneli()
         self.uygunluk.profiller_degisti.connect(self._profiller_degisti)
         self.uygunluk.git_istendi.connect(self._sayfaya_git)
+        self.uygunluk.tally_eklensin.connect(self._tally_ekle)
 
         self.ayrinti_karti = AyrintiCekmecesi()
         c = self.ayrinti_karti
@@ -290,6 +291,18 @@ class CalistirSekmesi(QtWidgets.QWidget):
         self.degisti.emit(self.KONU)
         if self._son_basarili and self._dizin:
             self.uygunluk.denetle(self.spec, self._dizin)
+
+    def _tally_ekle(self, tally):
+        """Uygunluk panelinin ONAYLANMIS tally onerisi (EALF) -> spec["tallyler"]
+        (editor sozlesmesi: yerinde; ayni adli tally varsa eklenmez)."""
+        if self.spec is None:
+            return
+        liste = self.spec.setdefault("tallyler", [])
+        if any(t.get("ad") == tally.get("ad") for t in liste):
+            return
+        liste.append(dict(tally))
+        self.degisti.emit("genel")
+        self.uygunluk.d_ealf.hide()
 
     def _sayfaya_git(self, anahtar):
         """Uygunluk bulgusunun sayfasi (ana pencere varsa)."""
