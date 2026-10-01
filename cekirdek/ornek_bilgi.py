@@ -274,3 +274,37 @@ def kategori_sayilari(bilgiler):
     for b in bilgiler:
         sayilar[b.kategori] = sayilar.get(b.kategori, 0) + 1
     return sayilar
+
+
+# ----------------------------------------------------------------------------
+# Dil secimi (Dalga 3 / Ajan 12): galeri ve baslangic ekrani etkin dildeki
+# basligi/aciklamayi gosterir. EN'de _en alani yoksa Turkce metne duser ve bu
+# LOGLANIR (sessiz degil); test_dil EN modu eksik _en alanini KALDI sayar.
+# ----------------------------------------------------------------------------
+
+_BILDIRILEN_EN_EKSIKLERI = set()
+
+
+def _yerel_alan(bilgi, alan, turkce, dil):
+    if dil is None:
+        from cekirdek import ceviri
+        dil = ceviri.etkin_dil()
+    if dil == "tr":
+        return turkce
+    deger = getattr(bilgi, alan + "_en", None)
+    if deger and deger.strip():
+        return deger
+    if (bilgi.dosya, alan) not in _BILDIRILEN_EN_EKSIKLERI:
+        _BILDIRILEN_EN_EKSIKLERI.add((bilgi.dosya, alan))
+        _log.warning("örnek %s: %s_en yok; Türkçe metin gösteriliyor", bilgi.dosya, alan)
+    return turkce
+
+
+def yerel_baslik(bilgi, dil=None):
+    """Etkin dildeki (ya da `dil`) galeri basligi: EN'de baslik_en."""
+    return _yerel_alan(bilgi, "baslik", bilgi.baslik, dil)
+
+
+def yerel_aciklama(bilgi, dil=None):
+    """Etkin dildeki (ya da `dil`) aciklama: EN'de aciklama_en."""
+    return _yerel_alan(bilgi, "aciklama", bilgi.aciklama, dil)

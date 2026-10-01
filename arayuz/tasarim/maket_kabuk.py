@@ -73,12 +73,13 @@ def ust_cubuk(model=True):
     d.addWidget(dikey_ayirici())
     d.addSpacing(A["s"])
     if model:
-        ad = QtWidgets.QLabel(MODEL["ad"])
+        model_ad, model_tur, model_ozet = MODEL["ad"], MODEL["tur"], MODEL["ozet"]
+        ad = QtWidgets.QLabel(_(model_ad))
         ad.setObjectName("altBaslik")
         d.addWidget(ad)
         d.addSpacing(A["xs"])
-        d.addWidget(b.Rozet(_(MODEL["tur"]), "notr"))
-        ozet = QtWidgets.QLabel(_(MODEL["ozet"]))
+        d.addWidget(b.Rozet(_(model_tur), "notr"))
+        ozet = QtWidgets.QLabel(_(model_ozet))
         ozet.setObjectName("kucuk")
         d.addSpacing(A["xs"])
         d.addWidget(ozet)
@@ -152,7 +153,7 @@ def onizleme_paneli(dar=False):
     gosterge.setColumnStretch(1, 1)
     gosterge.setColumnStretch(3, 1)
     d.addLayout(gosterge)
-    olcu = QtWidgets.QLabel("%s · 289 %s" % (MODEL["olcu"], _("hücre")))
+    olcu = QtWidgets.QLabel(_("{olcu} · 289 hücre").format(olcu=MODEL["olcu"]))
     olcu.setObjectName("mono")
     d.addWidget(olcu)
     return panel

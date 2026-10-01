@@ -707,5 +707,5 @@
   "kategori": "pwr",
   "seviye": "orta",
   "baslik_en": "PWR MOX assembly (3 zones)",
-  "aciklama_en": "17x17 MOX assembly from the OECD/NEA-US NRC PWR MOX/UO2 core transient benchmark: 2.5/3.0/5.0 wt% fissile Pu zones, 24 WABA rods."
+  "aciklama_en": "17x17 MOX assembly from the OECD/NEA-US NRC PWR MOX/UO2 core transient benchmark: 2.5/3.0/5.0 wt% fissile Pu zones, 24 WABA burnable absorbers."
 }

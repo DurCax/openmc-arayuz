@@ -11,7 +11,7 @@ arka planda atanir (izgara.adlardan_harita), spec bicimi ayni kalir. Boyut
 from PySide6 import QtWidgets
 
 from arayuz import izgara
-from cekirdek.ceviri import _
+from cekirdek.ceviri import _, _n
 
 
 class KorHaritasiMixin(object):
@@ -103,8 +103,11 @@ class KorHaritasiMixin(object):
         if kaybolan:
             if not self._onay_al(
                     _("Kor haritası küçülüyor"),
-                    _("Harita %d×%d'den %d×%d'ye küçülüyor: sağdaki/alttaki %d dolu hücre "
-                      "silinecek (büyütmek onları geri getirmez).\n\nDevam edilsin mi?")
+                    _n("Harita %d×%d'den %d×%d'ye küçülüyor: sağdaki/alttaki %d dolu hücre "
+                       "silinecek (büyütmek onları geri getirmez).\n\nDevam edilsin mi?",
+                       "Harita %d×%d'den %d×%d'ye küçülüyor: sağdaki/alttaki %d dolu hücre "
+                       "silinecek (büyütmek onları geri getirmez).\n\nDevam edilsin mi?",
+                       kaybolan)
                     % (eski_nx, eski_ny, nx, ny, kaybolan)):
                 for kutu, deger in ((self.nx, eski_nx), (self.ny, eski_ny)):
                     eski = kutu.blockSignals(True)

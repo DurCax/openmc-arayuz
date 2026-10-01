@@ -8,6 +8,7 @@
 
 from PySide6 import QtCore, QtWidgets
 from cekirdek import sema
+from cekirdek.ceviri import _
 from arayuz.ayar.sabitler import OZEL, SKORLAR, SKOR_SETLERI, _FILTRE_ADI, _SKOR_ADI
 
 
@@ -37,7 +38,8 @@ class TallyFormuMixin(object):
         eski = self.t_skor.blockSignals(True)
         try:
             self.t_skor.clear()
-            for veri, ad in SKORLAR + [(s, s) for s in ekstra if s not in _SKOR_ADI]:
+            for veri, ad in ([(v, _(a)) for v, a in SKORLAR]
+                             + [(s, s) for s in ekstra if s not in _SKOR_ADI]):
                 oge = QtWidgets.QListWidgetItem(ad)
                 oge.setData(QtCore.Qt.UserRole, veri)
                 self.t_skor.addItem(oge)
@@ -110,8 +112,8 @@ class TallyFormuMixin(object):
         ozel = self.t_set.currentData() == OZEL
         tf.setRowVisible(self.t_skor, ozel)
         secili = self._secili_skorlar()
-        self.t_set_ozet.setText("" if ozel else
-                                "Skorlar: " + ", ".join(_SKOR_ADI.get(s, s) for s in secili))
+        self.t_set_ozet.setText("" if ozel else _("Skorlar: {s}").format(
+            s=", ".join(_(_SKOR_ADI[s]) if s in _SKOR_ADI else s for s in secili)))
         tf.setRowVisible(self.t_set_ozet, not ozel)
         tf.setRowVisible(self.t_enerji, self.t_enerji_var.isChecked())
         tf.setRowVisible(self.mesh_satiri, self.t_mesh_var.isChecked())
@@ -120,8 +122,9 @@ class TallyFormuMixin(object):
         self.t_mesh_nz._etiket.setVisible(uc_b)
         diger = [f.get("tur") for f in t.get("filtreler", [])
                  if f.get("tur") not in ("enerji", "mesh")]
-        self.t_diger.setText("Ayrıca dosyadan gelen filtre: %s (korunur)."
-                             % ", ".join(_FILTRE_ADI.get(d, d) for d in diger) if diger else "")
+        self.t_diger.setText(_("Ayrıca dosyadan gelen filtre: {f} (korunur).").format(
+            f=", ".join(_(_FILTRE_ADI[d]) if d in _FILTRE_ADI else d for d in diger))
+            if diger else "")
         tf.setRowVisible(self.t_diger, bool(diger))
 
     def _skor_seti_secildi(self, *_):

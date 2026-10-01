@@ -690,10 +690,10 @@
   "geometri": null,
   "tamburlar": [],
   "baslik": "LEU-SOL-THERM-003, durum 3 — %10 U-235 uranil nitrat çözeltisi küresi",
-  "baslik_en": "LEU-SOL-THERM-003, durum 3 (ICSBEP benchmark, V&V set)",
+  "baslik_en": "LEU-SOL-THERM-003, case 3 — Sphere of 10% U-235 uranyl nitrate solution",
   "kategori": "kriter",
   "seviye": "ileri",
-  "aciklama_en": "ICSBEP benchmark LEU-SOL-THERM-003, durum 3, k = 0.9995 ± 0.0042; model from mit-crpg/benchmarks (MIT license).",
+  "aciklama_en": "ICSBEP benchmark LEU-SOL-THERM-003, case 3: sphere of 10% U-235 uranyl nitrate solution. One case of the V&V set (NUREG/CR-6698 bias/USL). Experimental benchmark value k = 0.9995 ± 0.0042. Model: mit-crpg/benchmarks icsbep/leu-sol-therm-003/openmc/case-3 (MIT license); geometry and atom densities transferred one to one (concentric spherical shells).",
   "referans": {
     "k": 0.9995,
     "sigma": 0.0042,

@@ -80,7 +80,7 @@ class CubukSekmesi(SayfalarMixin, CubukFormuMixin, PlakaFormuMixin, SekmeTabani)
         sol = self._liste_karti()
 
         # --- sag: editor yigini ---
-        self.bos = BosDurum("Henüz parça yok", "", "Yakıt çubuğu ekle")
+        self.bos = BosDurum(_("Henüz parça yok"), "", _("Yakıt çubuğu ekle"))
         self.bos.eylem.connect(self._bos_eylem)
         self.yigin = QtWidgets.QStackedWidget()
         self.yigin.addWidget(self.bos)
@@ -100,7 +100,8 @@ class CubukSekmesi(SayfalarMixin, CubukFormuMixin, PlakaFormuMixin, SekmeTabani)
 
         duzen = sd.sayfa_duzeni(self)
         duzen.addWidget(sd.sayfa_basligi(
-            _("Parçalar"), _("Çubuklar ve plaka elemanları: radyal bölgeler ve malzemeler.")))
+            _("Parçalar"), _("Çubuklar ve plaka elemanları: radyal bölgeler ve malzemeler."),
+            bolum="parcalar"))
         duzen.addWidget(bolucu, 1)
 
     # ------------------------------------------------------------------
@@ -114,7 +115,7 @@ class CubukSekmesi(SayfalarMixin, CubukFormuMixin, PlakaFormuMixin, SekmeTabani)
         self.cubuk_menusu = QtWidgets.QMenu(self.d_cubuk)
         self.sablon_eylemleri = {}
         for anahtar, metin, _ad in CUBUK_SABLONLARI:
-            e = self.cubuk_menusu.addAction(metin)
+            e = self.cubuk_menusu.addAction(_(metin))
             e.triggered.connect(lambda _c=False, a=anahtar: self.cubuk_ekle(a))
             self.sablon_eylemleri[anahtar] = e
         self.sablon_eylemleri["yakit"].setToolTip(_(
@@ -145,7 +146,7 @@ class CubukSekmesi(SayfalarMixin, CubukFormuMixin, PlakaFormuMixin, SekmeTabani)
         self.liste.blockSignals(True)
         self.liste.clear()
         for c in self.spec.get("cubuklar", []):
-            ek = "  · kontrol" if c.get("tur") == "kontrol" else ""
+            ek = _("  · kontrol") if c.get("tur") == "kontrol" else ""
             oge = QtWidgets.QListWidgetItem(renk_simgesi(parca_rengi(self.spec, c)),
                                             c["ad"] + ek)
             oge.setData(QtCore.Qt.UserRole, ("cubuk", c["ad"]))
@@ -153,7 +154,7 @@ class CubukSekmesi(SayfalarMixin, CubukFormuMixin, PlakaFormuMixin, SekmeTabani)
             self.liste.addItem(oge)
         for p in self.spec.get("plakalar", []):
             oge = QtWidgets.QListWidgetItem(renk_simgesi(parca_rengi(self.spec, p)),
-                                            p["ad"] + "  · plaka")
+                                            p["ad"] + _("  · plaka"))
             oge.setData(QtCore.Qt.UserRole, ("plaka", p["ad"]))
             self._liste_isareti(oge, p)
             self.liste.addItem(oge)
@@ -172,7 +173,7 @@ class CubukSekmesi(SayfalarMixin, CubukFormuMixin, PlakaFormuMixin, SekmeTabani)
         if eksik:
             oge.setText(oge.text() + "  ⚠")
             oge.setForeground(QtGui.QColor(_renk("hata")))
-            oge.setToolTip("Malzemesi seçilmemiş: %s" % ", ".join(eksik))
+            oge.setToolTip(_("Malzemesi seçilmemiş: {eksik}").format(eksik=", ".join(eksik)))
 
     def _eylemleri_guncelle(self):
         """Ekleme dugmeleri yalnizca bu modelde anlamli parcalar icin."""
@@ -182,12 +183,12 @@ class CubukSekmesi(SayfalarMixin, CubukFormuMixin, PlakaFormuMixin, SekmeTabani)
         self.d_cubuk.setVisible(turler["cubuk"])
         self.d_plaka.setVisible(turler["plaka"])
         self.sablon_eylemleri["kontrol"].setVisible(turler["kontrol_cubugu"])
-        for d, metin in ((self.d_cubuk, "Şablondan çubuk ekler; malzemeler rollerine "
-                                       "göre otomatik seçilir."),
-                         (self.d_plaka, "MTR plaka elemanı ekler; malzemeler rollerine "
-                                        "göre otomatik seçilir.")):
+        for d, metin in ((self.d_cubuk, _("Şablondan çubuk ekler; malzemeler rollerine "
+                                         "göre otomatik seçilir.")),
+                         (self.d_plaka, _("MTR plaka elemanı ekler; malzemeler rollerine "
+                                          "göre otomatik seçilir."))):
             d.setEnabled(malzeme_var)
-            d.setToolTip(metin if malzeme_var else MALZEME_YOK_IPUCU)
+            d.setToolTip(metin if malzeme_var else _(MALZEME_YOK_IPUCU))
         secili = self._secili()[0] is not None
         self.d_kopya.setEnabled(secili)
         self.d_sil.setEnabled(secili)
@@ -195,24 +196,24 @@ class CubukSekmesi(SayfalarMixin, CubukFormuMixin, PlakaFormuMixin, SekmeTabani)
 
     def _bos_durum_guncelle(self, turler, malzeme_var):
         if not malzeme_var:
-            self.bos.ayarla("Önce malzeme gerekli",
-                            "Parçalar malzemelerden kurulur. Malzemeler sekmesinden "
-                            "yakıt, zarf ve soğutucu malzemelerini ekleyin.", "")
+            self.bos.ayarla(_("Önce malzeme gerekli"),
+                            _("Parçalar malzemelerden kurulur. Malzemeler sekmesinden "
+                              "yakıt, zarf ve soğutucu malzemelerini ekleyin."), "")
         elif self.liste.count():
-            self.bos.ayarla("Bir parça seçin",
-                            "Düzenlemek için soldaki listeden bir parça seçin.", "")
+            self.bos.ayarla(_("Bir parça seçin"),
+                            _("Düzenlemek için soldaki listeden bir parça seçin."), "")
         elif turler["plaka"]:
-            self.bos.ayarla("Henüz parça yok",
-                            "Plaka elemanı ekleyin; malzemeler rollerine göre "
-                            "otomatik seçilir.", "Plaka elemanı ekle")
+            self.bos.ayarla(_("Henüz parça yok"),
+                            _("Plaka elemanı ekleyin; malzemeler rollerine göre "
+                              "otomatik seçilir."), _("Plaka elemanı ekle"))
         elif turler["cubuk"]:
-            self.bos.ayarla("Henüz parça yok",
-                            "Soldaki '+ Çubuk' menüsünden bir şablon seçin; malzemeler "
-                            "rollerine göre (yakıt, zarf, soğutucu) otomatik seçilir.",
-                            "Yakıt çubuğu ekle")
+            self.bos.ayarla(_("Henüz parça yok"),
+                            _("Soldaki '+ Çubuk' menüsünden bir şablon seçin; malzemeler "
+                              "rollerine göre (yakıt, zarf, soğutucu) otomatik seçilir."),
+                            _("Yakıt çubuğu ekle"))
         else:
-            self.bos.ayarla("Bu model parça kullanmıyor",
-                            "Bu kor türünde çubuk ya da plaka tanımlanmaz.", "")
+            self.bos.ayarla(_("Bu model parça kullanmıyor"),
+                            _("Bu kor türünde çubuk ya da plaka tanımlanmaz."), "")
 
     def _bos_eylem(self):
         if uygunluk.parca_turleri(self.spec)["plaka"]:
@@ -259,7 +260,7 @@ class CubukSekmesi(SayfalarMixin, CubukFormuMixin, PlakaFormuMixin, SekmeTabani)
         hata = ad_hatasi(self.spec, yeni, ad)
         if hata:
             alan.setText(ad)
-            self._hata_goster(hata_etiketi, hata + " Ad değiştirilmedi.")
+            self._hata_goster(hata_etiketi, _("{hata} Ad değiştirilmedi.").format(hata=hata))
             return
         parca_adini_degistir(self.spec, ad, yeni)
         self.spec_yukle(self.spec)
@@ -306,10 +307,10 @@ class CubukSekmesi(SayfalarMixin, CubukFormuMixin, PlakaFormuMixin, SekmeTabani)
         """Sablonun rolunu karsilayan malzeme yoksa bunu ADIYLA soyle."""
         eksik = sablon_eksik_roller(self.spec, sablon)
         if eksik:
-            self._hata_goster(etiket, (
-                "Bu modelde %s rolünde malzeme yok; ilgili bölgeler kırmızı "
+            self._hata_goster(etiket, _(
+                "Bu modelde {roller} rolünde malzeme yok; ilgili bölgeler kırmızı "
                 "işaretli. Önce Malzemeler sekmesinden ekleyin, sonra burada seçin."
-                % " / ".join(eksik)))
+            ).format(roller=" / ".join(eksik)))
 
     def plaka_ekle(self):
         if not self.spec.get("malzemeler"):
@@ -363,10 +364,10 @@ class CubukSekmesi(SayfalarMixin, CubukFormuMixin, PlakaFormuMixin, SekmeTabani)
             return
         yerler = parca_kullanimlari(self.spec, ad)
         if yerler and not self._onay_al(
-                "Parça kullanılıyor",
-                "'%s' şurada kullanılıyor: %s.\n\nSilinirse bu yerler tanımsız bir "
-                "parçaya işaret eder ve doğrulama hata verir. Silinsin mi?"
-                % (ad, ", ".join(yerler))):
+                _("Parça kullanılıyor"),
+                _("'{ad}' şurada kullanılıyor: {yerler}.\n\nSilinirse bu yerler tanımsız bir "
+                  "parçaya işaret eder ve doğrulama hata verir. Silinsin mi?"
+                  ).format(ad=ad, yerler=", ".join(yerler))):
             return
         liste = self.spec["cubuklar"] if tur == "cubuk" else self.spec["plakalar"]
         for i, o in enumerate(liste):

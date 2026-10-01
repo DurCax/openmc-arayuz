@@ -35,11 +35,13 @@ def sayfa_duzeni(widget, dolgu=True):
     return d
 
 
-def sayfa_basligi(metin, aciklama=None, bosluk=None):
+def sayfa_basligi(metin, aciklama=None, bosluk=None, bolum=None):
     """
     Sayfa ust basligi: buyuk baslik + tek cumle aciklama (maket duzeni).
     aciklama: metin ya da sekmenin KENDI QLabel'i (gorunurlugunu sekme
-    yonetebilsin diye disaridan verilir); bosluk: baslik-aciklama araligi.
+    yonetebilsin diye disaridan verilir); bosluk: baslik-aciklama araligi;
+    bolum: kilavuz bolum kimligi -> basligin sagina "?" dugmesi
+    (arayuz/yardim_baglanti.py).
     """
     w = QtWidgets.QWidget()
     d = QtWidgets.QVBoxLayout(w)
@@ -47,7 +49,18 @@ def sayfa_basligi(metin, aciklama=None, bosluk=None):
     d.setSpacing(_BASLIK_ARALIGI if bosluk is None else bosluk)
     b = QtWidgets.QLabel(metin)
     b.setObjectName("baslik")
-    d.addWidget(b)
+    if bolum:
+        from arayuz.yardim_baglanti import yardim_dugmesi
+        ust = QtWidgets.QHBoxLayout()
+        ust.setContentsMargins(0, 0, 0, 0)
+        ust.setSpacing(A["xs"])
+        ust.addWidget(b)
+        w.yardim_dugmesi = yardim_dugmesi(bolum, w)
+        ust.addWidget(w.yardim_dugmesi)
+        ust.addStretch(1)
+        d.addLayout(ust)
+    else:
+        d.addWidget(b)
     a = aciklama
     if isinstance(aciklama, str):
         a = QtWidgets.QLabel(aciklama) if aciklama else None

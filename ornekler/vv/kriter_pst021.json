@@ -648,10 +648,10 @@
   "geometri": null,
   "tamburlar": [],
   "baslik": "PU-SOL-THERM-021, durum 3 — Yansıtıcısız Pu nitrat çözeltisi küresi",
-  "baslik_en": "PU-SOL-THERM-021, durum 3 (ICSBEP benchmark, V&V set)",
+  "baslik_en": "PU-SOL-THERM-021, case 3 — Unreflected sphere of Pu nitrate solution",
   "kategori": "kriter",
   "seviye": "ileri",
-  "aciklama_en": "ICSBEP benchmark PU-SOL-THERM-021, durum 3, k = 1.0000 ± 0.0065; model from mit-crpg/benchmarks (MIT license).",
+  "aciklama_en": "ICSBEP benchmark PU-SOL-THERM-021, case 3: unreflected sphere of Pu nitrate solution. One case of the V&V set (NUREG/CR-6698 bias/USL). Experimental benchmark value k = 1.0000 ± 0.0065. Model: mit-crpg/benchmarks icsbep/pu-sol-therm-021/openmc/case-3 (MIT license); geometry and atom densities transferred one to one (concentric spherical shells).",
   "referans": {
     "k": 1.0,
     "sigma": 0.0065,

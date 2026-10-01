@@ -18,7 +18,7 @@ from arayuz import bilesenler as b
 from arayuz import tema
 from arayuz.ortak import GelismisBolum, tamsayi
 from arayuz.tasarim import tokenlar
-from cekirdek.ceviri import _
+from cekirdek.ceviri import _, _n
 
 A = tokenlar.ARALIK
 _ES_ARALIKLI_PT = 8.5
@@ -191,4 +191,4 @@ class AyrintiCekmecesi(b.Kart):
     def _satir_sayisi_yaz(self, *_a):
         """Baslik altindaki "OpenMC gunlugu · N satir" ozeti."""
         n = self.log.blockCount() if self.log.toPlainText() else 0
-        self.satir_etiketi.setText(_("OpenMC günlüğü · %d satır") % n)
+        self.satir_etiketi.setText(_n("OpenMC günlüğü · %d satır", "OpenMC günlüğü · %d satır", n) % n)

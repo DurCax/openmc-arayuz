@@ -4,7 +4,7 @@
   "aciklama": "Westinghouse tipi 17×17 yakıt demeti: 264 yakıt çubuğu, 24 kılavuz boru, 1 merkezi enstrüman borusu. Sıcak koşullar (yakıt 900 K, zarf 600 K, soğutucu 580 K / 0.70 g/cm³), 1300 ppm çözünmüş bor. Yansıtıcı sınır → sonsuz kafes (k∞).",
   "baslik": "PWR 17×17 yakıt demeti",
   "baslik_en": "PWR 17×17 fuel assembly",
-  "aciklama_en": "Westinghouse-type 17×17 assembly: 264 fuel rods, 24 guide tubes, 1 central instrument tube.",
+  "aciklama_en": "Westinghouse-type 17×17 assembly: 264 fuel pins, 24 guide tubes, 1 central instrument tube.",
   "kategori": "pwr",
   "seviye": "giris",
   "malzemeler": [

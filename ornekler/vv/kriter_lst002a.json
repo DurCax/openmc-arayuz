@@ -671,10 +671,10 @@
   "geometri": null,
   "tamburlar": [],
   "baslik": "LEU-SOL-THERM-002, durum 1 — %4.9 U-235 uranil florür çözeltisi küresi",
-  "baslik_en": "LEU-SOL-THERM-002, durum 1 (ICSBEP benchmark, V&V set)",
+  "baslik_en": "LEU-SOL-THERM-002, case 1 — Sphere of 4.9% U-235 uranyl fluoride solution",
   "kategori": "kriter",
   "seviye": "ileri",
-  "aciklama_en": "ICSBEP benchmark LEU-SOL-THERM-002, durum 1, k = 1.0038 ± 0.0040; model from mit-crpg/benchmarks (MIT license).",
+  "aciklama_en": "ICSBEP benchmark LEU-SOL-THERM-002, case 1: sphere of 4.9% U-235 uranyl fluoride solution. One case of the V&V set (NUREG/CR-6698 bias/USL). Experimental benchmark value k = 1.0038 ± 0.0040. Model: mit-crpg/benchmarks icsbep/leu-sol-therm-002/openmc/case-1 (MIT license); geometry and atom densities transferred one to one (concentric spherical shells).",
   "referans": {
     "k": 1.0038,
     "sigma": 0.004,

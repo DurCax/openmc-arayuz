@@ -74,6 +74,7 @@ from PySide6 import QtCore, QtWidgets
 import openmc
 
 from cekirdek import onbellek, sema
+from cekirdek.ceviri import _, _n, N_
 from cekirdek.gunluk import kaydedici
 from arayuz import tema
 from arayuz.ortak import GelismisBolum
@@ -84,14 +85,16 @@ A = tokenlar.ARALIK
 
 # Cozunurluk secenekleri -- maliyet baslatmada oldugu icin yuksek varsayilan ucuz.
 # ("Hizli" adi "Hizli mod" ile karisiyordu: dusuk cozunurluk "Dusuk" oldu.)
-COZUNURLUK = [("Düşük (400)", 400), ("Normal (800)", 800), ("Yüksek (1400)", 1400)]
+# Etiketler yalniz isaretlenir (N_); kutuya _() ile yazilir, secim INDEKSLE okunur.
+COZUNURLUK = [(N_("Düşük (400)"), 400), (N_("Normal (800)"), 800),
+              (N_("Yüksek (1400)"), 1400)]
 
 # Gorunum secenekleri (3B modelde). Ogeler eksen adlaridir (xy, xz, yz).
 IKILI = "xy + xz"
 # Malzeme renklendirmesinde secili olmayan bolgenin soluk ortusunun saydamligi
 _SOLUK_ORTU = 0.6
 GORUNUMLER = [IKILI, "xy", "xz", "yz"]
-RENKLENDIRME = [("material", "Malzeme"), ("cell", "Hücre")]
+RENKLENDIRME = [("material", N_("Malzeme")), ("cell", N_("Hücre"))]   # veri, gorunen ad
 
 
 class _LibYoneticisi:
@@ -174,34 +177,34 @@ class OnizlemeWidget(QtWidgets.QWidget):
         # --- denetim satiri ---
         self.eksen = QtWidgets.QComboBox()
         self.eksen.addItems(GORUNUMLER)
-        self.eksen.setToolTip("xy: üstten kesit (z = 0) · xz: yandan kesit (y = 0) · "
-                              "yz: yandan kesit (x = 0)")
-        self.eksen_etiket = QtWidgets.QLabel("Kesit:")
+        self.eksen.setToolTip(_("xy: üstten kesit (z = 0) · xz: yandan kesit (y = 0) · "
+                                "yz: yandan kesit (x = 0)"))
+        self.eksen_etiket = QtWidgets.QLabel(_("Kesit:"))
         self.renklendirme = QtWidgets.QComboBox()
         for veri, ad in RENKLENDIRME:
-            self.renklendirme.addItem(ad, veri)
+            self.renklendirme.addItem(_(ad), veri)
         self.cozunurluk = QtWidgets.QComboBox()
-        for etiket, _ in COZUNURLUK:
-            self.cozunurluk.addItem(etiket)
+        for etiket, _piksel in COZUNURLUK:
+            self.cozunurluk.addItem(_(etiket))
         self.cozunurluk.setCurrentIndex(1)
-        self.gosterge = QtWidgets.QCheckBox("Gösterge")
+        self.gosterge = QtWidgets.QCheckBox(_("Gösterge"))
         self.gosterge.setChecked(True)
-        self.hizli_mod = QtWidgets.QCheckBox("Hızlı mod (kütüphaneyi açık tut)")
-        self.hizli_mod.setToolTip(
+        self.hizli_mod = QtWidgets.QCheckBox(_("Hızlı mod (kütüphaneyi açık tut)"))
+        self.hizli_mod.setToolTip(_(
             "Kapalı: her çizim ~0.3 s; model düzenlerken doğru seçim.\n"
             "Açık: ilk çizim ~3 s (tesir kesitleri belleğe yüklenir),\n"
             "sonraki çizimler ~40 ms.\n\n"
             "Bitmiş bir geometriyi incelerken (kesit değiştirme, yakınlaştırma)\n"
             "açın. Düzenlerken açmayın: her model değişikliği kütüphaneyi\n"
-            "yeniden başlatır ve değişiklik başına ~3 s sürer.")
-        self.yenile_dugme = QtWidgets.QPushButton("Yenile")
+            "yeniden başlatır ve değişiklik başına ~3 s sürer."))
+        self.yenile_dugme = QtWidgets.QPushButton(_("Yenile"))
 
         # Iki satir: 1280 genislikte dar panelde secim kutulari kirpilmasin.
         secim = QtWidgets.QHBoxLayout()
         secim.setSpacing(A["s"])
         secim.addWidget(self.eksen_etiket)
         secim.addWidget(self.eksen, 1)
-        secim.addWidget(QtWidgets.QLabel("Renk:"))
+        secim.addWidget(QtWidgets.QLabel(_("Renk:")))
         secim.addWidget(self.renklendirme, 1)
         eylem = QtWidgets.QHBoxLayout()
         eylem.addWidget(self.gosterge)
@@ -225,7 +228,7 @@ class OnizlemeWidget(QtWidgets.QWidget):
         gw = QtWidgets.QWidget()
         gl = QtWidgets.QHBoxLayout(gw)
         gl.setContentsMargins(0, 0, 0, 0)
-        gl.addWidget(QtWidgets.QLabel("Çözünürlük:"))
+        gl.addWidget(QtWidgets.QLabel(_("Çözünürlük:")))
         gl.addWidget(self.cozunurluk)
         gl.addWidget(self.hizli_mod)
         gl.addStretch(1)
@@ -255,7 +258,7 @@ class OnizlemeWidget(QtWidgets.QWidget):
         self.yenile_dugme.clicked.connect(lambda *_: self._ciz())
         self.tuval.mpl_connect("button_press_event", self._tiklandi)
 
-        self._bos_mesaj("Model bekleniyor")
+        self._bos_mesaj(_("Model bekleniyor"))
 
     # ------------------------------------------------------------------
     @staticmethod
@@ -293,7 +296,7 @@ class OnizlemeWidget(QtWidgets.QWidget):
     def _hizli_mod_degisti(self, acik):
         if not acik:
             _LIB.kapat()
-            self.durum.emit("Hızlı mod kapatıldı", True)
+            self.durum.emit(_("Hızlı mod kapatıldı"), True)
         self._ciz()
 
     # ------------------------------------------------------------------
@@ -310,7 +313,7 @@ class OnizlemeWidget(QtWidgets.QWidget):
 
     def _ciz(self):
         if self.spec is None:
-            self._bos_mesaj("Model bekleniyor")
+            self._bos_mesaj(_("Model bekleniyor"))
             return
         # Yeniden girme korumasi: Model.plot() OpenMC kutuphanesini acip
         # kapatiyor. Cizim surerken ikinci bir cizim baslarsa ayni surecte
@@ -396,15 +399,16 @@ class OnizlemeWidget(QtWidgets.QWidget):
             self._son_hata = None
             self.son_olcu = (gx, gy)
             self.olcu_bulundu.emit(gx, gy)
-            ek = "  [hızlı mod yeniden başlatıldı]" if yeniden_baslatildi else ""
+            ek = ("  " + _("[hızlı mod yeniden başlatıldı]")) if yeniden_baslatildi else ""
             self.son_sure = time.perf_counter() - t0
-            self.durum.emit("Önizleme güncel (%s, %d piksel)%s"
-                            % (" + ".join(kesitler), piksel, ek), True)
+            self.durum.emit(_n("Önizleme güncel ({kesit}, {n} piksel){ek}",
+                               "Önizleme güncel ({kesit}, {n} piksel){ek}", piksel).format(
+                kesit=" + ".join(kesitler), n=piksel, ek=ek), True)
         except Exception as e:
             self._son_hata = traceback.format_exc()
             from arayuz.ortak import hata_metni
-            self._bos_mesaj("Geometri kurulamadı:\n\n%s" % hata_metni(e), hata=True)
-            self.durum.emit("Önizleme başarısız: %s" % e, False)
+            self._bos_mesaj(_("Geometri kurulamadı:\n\n%s") % hata_metni(e), hata=True)
+            self.durum.emit(_("Önizleme başarısız: %s") % e, False)
         finally:
             self._ciziliyor = False
 
@@ -424,7 +428,7 @@ class OnizlemeWidget(QtWidgets.QWidget):
         else:
             baslik_ = "%s   %s" % (self.spec.get("ad", ""), olcu)
         # Ikili (xy + xz) gorunumde dar eksenin uzerine sigsin: not alt satirda.
-        ek = ("\n[ölçek 1:1 değil]" if ikili else "   [ölçek 1:1 değil]") if gerildi else ""
+        ek = (("\n" if ikili else "   ") + _("[ölçek 1:1 değil]")) if gerildi else ""
         ax.set_title(baslik_ + ek, fontsize=8)
         ax.tick_params(labelsize=7)
         ax.xaxis.label.set_size(8)

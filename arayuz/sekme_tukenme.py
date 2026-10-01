@@ -40,7 +40,8 @@ import time
 from PySide6 import QtCore, QtWidgets
 
 from cekirdek import tukenme as _tk
-from cekirdek.ceviri import _
+from cekirdek.tukenme_hacim import yontem_metni
+from cekirdek.ceviri import _, _n
 from cekirdek.gunluk import kaydedici
 from arayuz.analiz.adlar import renk
 from arayuz.ortak import SekmeTabani, cumle_basi
@@ -201,7 +202,7 @@ class TukenmeSekmesi(SekmeTabani, SonucBolumu, TukenmeArayuzu):
             tamam, mesaj, _ayrinti = veri_bilgi.zincir_kontrol(zs["yol"])
             metin = (_("%s  |  fisyon verimi %s eV (%s spektrum)\n%s")
                      % (os.path.basename(zs["yol"]), "%g" % zs["verim_enerjisi"],
-                        _tk.SPEKTRUM_ADLARI.get(zs["temel"], zs["temel"]),
+                        _tk.spektrum_adi(zs["temel"]),
                         cumle_basi(zs["gerekce"])))
             if not tamam:
                 metin += "\n" + mesaj
@@ -236,7 +237,9 @@ class TukenmeSekmesi(SekmeTabani, SonucBolumu, TukenmeArayuzu):
                 bu = sum(adimlar)
                 gun = bu * 1000.0 / p
             self.adim_ozet.setText(
-                _("%d adım · toplam %.4g gün = %.4g MWd/kg · %d transport çözümü")
+                _n("%d adım · toplam %.4g gün = %.4g MWd/kg · %d transport çözümü",
+                   "%d adım · toplam %.4g gün = %.4g MWd/kg · %d transport çözümü",
+                   len(adimlar))
                 % (len(adimlar), gun, bu, _tk.transport_sayisi(self.spec)))
         else:
             self.adim_ozet.setText(_("Adım yok — virgülle adım uzunlukları girin."))
@@ -251,7 +254,7 @@ class TukenmeSekmesi(SekmeTabani, SonucBolumu, TukenmeArayuzu):
                 for ad, v in hv.items():
                     satirlar.append("%s: %s  [%s]\n    %s"
                                     % (ad, ("%.6g cm³" % v["hacim"]) if v["hacim"]
-                                       else "hacim yok", v["yontem"], v["ayrinti"]))
+                                       else _("hacim yok"), yontem_metni(v["yontem"]), v["ayrinti"]))
                 self.malzeme_bilgi.setText("\n".join(satirlar))
         except Exception as e:
             self.malzeme_bilgi.setText(_("hesaplanamadı: %s") % e)
@@ -405,6 +408,8 @@ class TukenmeSekmesi(SekmeTabani, SonucBolumu, TukenmeArayuzu):
         ortam = QtCore.QProcessEnvironment.systemEnvironment()
         ortam.insert("PYTHONPATH", KOK)
         ortam.insert("PYTHONUNBUFFERED", "1")
+        from cekirdek import ceviri as _ceviri
+        ortam.insert(_ceviri.ORTAM_DEGISKENI, _ceviri.etkin_dil())   # alt surec ayni dilde
         self._surec.setProcessEnvironment(ortam)
         self._surec.setProcessChannelMode(QtCore.QProcess.MergedChannels)
         self._surec.readyReadStandardOutput.connect(self._cikti_oku)

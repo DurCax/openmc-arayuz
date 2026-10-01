@@ -130,7 +130,7 @@ class _XzCizici:
                 continue
             try:
                 harf = harita[r][i]
-            except IndexError:
+            except IndexError:   # kisa (elle yazilmis) harita satiri: hucre dis dolguyla kalir
                 continue
             if harf not in anahtar:
                 continue

@@ -40,12 +40,13 @@ _EDITOR_EN_AZ_YUKSEKLIK = 36 * A["l"]
 
 
 def sablon_ogeleri():
-    """[(anahtar, gorunen ad)] -- 7 kor turu + 3 yeni duzenek (§10 sirasi)."""
+    """[(anahtar, gorunen ad msgid'i)] -- 7 kor turu + 3 yeni duzenek (§10 sirasi).
+    Adlar cevrilmemistir (cekirdek/N_ sabitleri): gosteren _() cagirir."""
     from cekirdek import uygunluk
     ogeler = [(t, uygunluk.KOR_TURU_ADLARI.get(t, t)) for t in (
         "tek_cubuk", "tek_plaka", "tek_demet", "kare_kafes", "altigen_kafes", "kuresel",
         "tamburlu")]
-    ogeler += [(k, _(v)) for k, v in sablonlar.YENI_SABLONLAR.items()]
+    ogeler += list(sablonlar.YENI_SABLONLAR.items())     # msgid; gosterirken _()
     return ogeler
 
 

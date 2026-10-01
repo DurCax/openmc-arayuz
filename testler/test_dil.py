@@ -3,6 +3,10 @@
 test_dil.py -- Dalga 4 dil ve terim: kullaniciya GORUNEN metinler tek dilde
 (gercek Turkce karakterli), ham deger ve virgullu ondalik icermez.
 
+IKI MOD (Dalga 3): TR modu (D1-D5, asagida) ve EN modu (D6-D11, dosya sonunda:
+arayuz.po butunlugu, SOZLUK terim tutarliligi, ornek _en alanlari, 30 ornek x
+butun sayfalar Ingilizce taramasi; yardimcilar testler/dil_en_yardimci.py).
+
 Taranan metinler (11 ornekle kurulan ana pencere, her sekme acilarak):
   QLabel / QAbstractButton / QGroupBox / QTabBar / QComboBox ogeleri /
   QTableWidget basliklari / QListWidget ogeleri / menu eylemleri /
@@ -414,9 +418,321 @@ def test_qt_standart_metinleri():
                 os.path.join(KOK, "arayuz", "ana_pencere.py"), encoding="utf-8").read())
 
 
+# ============================================================================
+# EN MODU (Dalga 3 / Ajan 12): Ingilizce arayuz
+#   D6  arayuz.po butun arayuz msgid'lerini ceviriyor; yer tutucu/HTML esit,
+#       cevirilerde Turkce harf yok.
+#   D7  SOZLUK terim tutarliligi (Turkce terim -> sozlukteki Ingilizce terim).
+#   D8  ornek basliklari: baslik_en/aciklama_en; galeri EN'de _en gosterir.
+#   D9  baslangic ekrani, menuler, Yardim diyalogu, kilavuz baglantilari (EN).
+#   D10 30 ornek x butun sayfalar (1280x800, basliksiz): gorunen metinde
+#       Turkce yok (ARAYUZ kaynakli = 0 zorunlu; CEKIRDEK kaynakli = bilgi,
+#       Ajan 11 birlesince 0 olmali), cevrilmemis msgid yok, kirpilan metin
+#       yok; Ingilizcede uzayan dugmeler olculur (bilgi).
+# ============================================================================
+
+EN_BOYUT = (1280, 800)
+# Ingilizce cevirisi Turkce kalan gercek adlar (ozel ad / OpenMC degeri).
+EN_TURKCE_SERBEST = ()
+# Terim tutarliliginda bilerek farkli karsilik kullanan msgid'ler (gerekceli).
+TERIM_MUAF = {
+}
+
+
+def _en_pencere(dosya=None):
+    p = _pencere(dosya)
+    p.resize(*EN_BOYUT)
+    p.show()
+    return p
+
+
+def _turkce_sozcukler():
+    """Turkce kaynak metinlerin (arayuz msgid + cekirdek dizgileri) Ingilizce
+    cevirilerde HIC gecmeyen sozcukleri: EN ekranda gorulurse ceviri kacmistir
+    (Turkce harfsiz "Kaydet", "Demet" gibi)."""
+    from testler import dil_en_yardimci as de
+    sozcuk = re.compile(r"[a-zçğıöşü]{4,}")
+    tr_ = set()
+    for _b, m in de.arayuz_msgidleri():
+        tr_ |= set(sozcuk.findall(de._kucuk(m)))
+    pot = os.path.join(de.LOCALE, "cekirdek.pot")
+    if os.path.exists(pot):                      # cekirdek msgid'leri (Ajan 11)
+        for m in de.po_oku(pot):
+            for s in de._metinler(m)[0]:
+                tr_ |= set(sozcuk.findall(de._kucuk(s or "")))
+    en = set()
+    for ad in ("openmc_arayuz.po", "cekirdek.po", "arayuz.po"):
+        yol = os.path.join(de.EN_DIZINI, ad)
+        if os.path.exists(yol):
+            for m in de.po_oku(yol):
+                for s in de._metinler(m)[1]:
+                    en |= set(sozcuk.findall((s or "").lower()))
+    return {w for w in tr_ - en if not de.TR_HARF.search(w)}
+
+
+def _en_denetle(metinler, maske, parcalar, sozcukler):
+    """[(yer, metin)] -> (arayuz, cekirdek) Turkce kalan satirlar."""
+    from testler import dil_en_yardimci as de
+    arayuz, cekirdek = [], []
+    gorulen = set()
+    for yer, m in metinler:
+        # Maske isareti "◊": Turkce sozcuk icermesin (sozcuk denetimi onu da tarar).
+        for v in maske:
+            if v in m:
+                m = re.sub(r"(?<!\w)%s(?!\w)" % re.escape(v), "◊", m)
+        m = re.sub(r"(?<!\w)/\S*", "◊", m)
+        m = re.sub(r"'[a-z0-9_]+'", "◊", m)
+        m = re.sub(r"[\w\-]+\.json\b", "◊", m)          # ornek dosya adlari (veri)
+        m = re.sub(r"\b\w*_\w*\b", "◊", m)               # tanimlayicilar (yakit_cubugu)
+        # bulgu yer kodu (cekirdek dogrula.yer_etiketi'nin etiketlemedigi "geometri:yol")
+        m = re.sub(r"\bgeometri:[\w/\-]+", "◊", m)
+        for serbest in EN_TURKCE_SERBEST:
+            m = m.replace(serbest, "")
+        for satir in m.split("\n"):
+            satir = satir.strip()
+            if not satir or satir in gorulen:
+                continue
+            kucuk = de._kucuk(satir)
+            sozcuk = [w for w in re.findall(r"[a-zçğıöşü]{4,}", kucuk) if w in sozcukler]
+            if not (de.TR_HARF.search(satir) or sozcuk):
+                continue
+            gorulen.add(satir)
+            hedef = cekirdek if de.kaynak_sinifi(satir, parcalar) == "cekirdek" else arayuz
+            hedef.append((yer, satir[:100]))
+    return arayuz, cekirdek
+
+
+def _sayfa_olcumu(p, anahtar, ters):
+    """Gorunur sayfadaki kirpilan etiket/dugmeler ve Ingilizcede uzayan dugmeler."""
+    from PySide6 import QtWidgets
+    from testler import dil_en_yardimci as de
+    kirpik, uzayan = [], []
+    kok = p.sekme_sayfasi(anahtar)
+    for w in kok.findChildren(QtWidgets.QWidget):
+        if de.kirpik_mi(w):
+            kirpik.append((anahtar, type(w).__name__, w.text()[:50],
+                           w.sizeHint().width(), w.width()))
+        if isinstance(w, QtWidgets.QPushButton) and w.isVisible() and w.text().strip():
+            tr_ = ters.get(w.text())
+            if tr_:
+                oran = de.uzama_orani(w, tr_)
+                if oran > 1.3:
+                    uzayan.append((round(oran, 2), w.text()[:40], tr_[:40]))
+    return kirpik, uzayan
+
+
+def _ters_katalog():
+    """{ingilizce: turkce} -- dugme uzamasini olcmek icin."""
+    from testler import dil_en_yardimci as de
+    kat = de.arayuz_katalogu()
+    ters = {}
+    for m in kat or ():
+        ids, strs = de._metinler(m)
+        if m.id and strs and strs[0]:
+            ters.setdefault(strs[0], ids[0])
+    return ters
+
+
+def en_ornek_taramasi(ornekler=None):
+    """EN kipinde ornekler x gorunur sayfalar. Sonuc sozlugu (test ve ajanlar icin)."""
+    import json
+    from PySide6 import QtCore
+    from testler import dil_en_yardimci as de
+    uyg = _qt()
+    yollar = ornekler or sorted(glob.glob(os.path.join(ORNEK, "*.json")))
+    parcalar, sozcukler = de.cekirdek_parcalari(), _turkce_sozcukler()
+    msgidler = {m for _b, m in de.arayuz_msgidleri()}
+    ters = _ters_katalog()
+    sonuc = {"arayuz": [], "cekirdek": [], "kirpik": [], "uzayan": [], "metin": 0,
+             "eksik_arayuz": set(), "eksik_cekirdek": set(), "sayfa": 0}
+    with de.en_kipi() as top:
+        for yol in yollar:
+            ad = os.path.splitext(os.path.basename(yol))[0]
+            with open(yol, encoding="utf-8") as f:
+                maske = sorted(de.kullanici_verisi(json.load(f)), key=len, reverse=True)
+            p = _en_pencere(yol)
+            p.s_tukenme.bekle()
+            for anahtar in p.sekme_anahtarlari():
+                if not p.sekme_gorunur_mu(anahtar):
+                    continue
+                p.sekmeye_git(anahtar, sessiz=True)
+                for _i in range(3):
+                    uyg.processEvents()
+                k, u = _sayfa_olcumu(p, anahtar, ters)
+                sonuc["kirpik"] += [(ad,) + x for x in k]
+                sonuc["uzayan"] += u
+                sonuc["sayfa"] += 1
+            p.s_tukenme.bekle()
+            metinler = [("%s/%s" % (ad, n), m) for n, m in widget_metinleri(p)]
+            sonuc["metin"] += len(metinler)
+            a, c = _en_denetle(metinler, maske, parcalar, sozcukler)
+            sonuc["arayuz"] += a
+            sonuc["cekirdek"] += c
+            _kapat(p)
+            QtCore.QCoreApplication.sendPostedEvents(None, QtCore.QEvent.DeferredDelete)
+        for e in top.eksik:
+            kimlik = e.split("\x04", 1)[-1]
+            (sonuc["eksik_arayuz"] if kimlik in msgidler else sonuc["eksik_cekirdek"]).add(e)
+    return sonuc
+
+
+@gereksinim("R-M9-02")
+def test_en_katalog():
+    print("\n[D6] DIL-EN: arayuz.po butun arayuz metinlerini ceviriyor")
+    from testler import dil_en_yardimci as de
+    kat = de.arayuz_katalogu()
+    kontrol("locale/en/LC_MESSAGES/arayuz.po var", kat is not None)
+    if kat is None:
+        return
+    cevrili = {(m.context, m.id if not isinstance(m.id, tuple) else m.id[0])
+               for m in kat if m.id and de._dolu(m) and not m.fuzzy}
+    eksik = sorted(m for b, m in de.arayuz_msgidleri() - cevrili)
+    kontrol("arayuz/ msgid'lerinin hepsi cevrili (%d eksik)" % len(eksik), not eksik,
+            "-> %s" % eksik[:5])
+    bulanik = [m.id for m in kat if m.id and m.fuzzy]
+    kontrol("bulanik (fuzzy) ceviri yok", not bulanik, "-> %s" % bulanik[:5])
+    ihlal = de.yer_tutucu_ihlalleri(kat)
+    kontrol("yer tutucu ve HTML etiketleri korunmus", not ihlal, "-> %s" % ihlal[:5])
+    turkce = [(m.id, m.string) for m in kat if m.id and de._dolu(m)
+              and any(de.TR_HARF.search(s) for s in de._metinler(m)[1])]
+    kontrol("cevirilerde Turkce harf yok", not turkce, "-> %s" % turkce[:5])
+    ayni = [m.id for m in kat if m.id and isinstance(m.id, str) and m.string == m.id
+            and de.TR_HARF.search(m.id)]
+    kontrol("Turkce metin aynen kopyalanmamis", not ayni, "-> %s" % ayni[:5])
+
+
+def test_en_terim_tutarliligi():
+    print("\n[D7] DIL-EN: SOZLUK terim tutarliligi (arayuz.po)")
+    from testler import dil_en_yardimci as de
+    kat = de.arayuz_katalogu()
+    kontrol("arayuz.po var", kat is not None)
+    if kat is None:
+        return
+    terimler = de.sozluk_terimleri()
+    kontrol("sozlukten terim okundu (%d)" % len(terimler), len(terimler) > 100)
+    ihlal = de.terim_ihlalleri(kat, terimler, muaf=TERIM_MUAF)
+    for x in ihlal[:15]:
+        print("    %s" % (x,))
+    kontrol("Turkce terim -> sozlukteki Ingilizce terim (%d ihlal)" % len(ihlal), not ihlal)
+    bos = [m for m in TERIM_MUAF if not TERIM_MUAF[m]]
+    kontrol("her terim muafiyetinin gerekcesi var", not bos, "-> %s" % bos[:3])
+
+
+def test_en_ornek_basliklari():
+    print("\n[D8] DIL-EN: ornek basliklari (baslik_en / aciklama_en) ve galeri")
+    import json
+    from cekirdek import ornek_bilgi
+    from testler import dil_en_yardimci as de
+    yollar = sorted(glob.glob(os.path.join(ORNEK, "*.json"))
+                    + glob.glob(os.path.join(ORNEK, "vv", "*.json")))
+    eksik, turkce = [], []
+    for yol in yollar:
+        with open(yol, encoding="utf-8") as f:
+            s = json.load(f)
+        for alan in ("baslik_en", "aciklama_en"):
+            v = (s.get(alan) or "").strip()
+            if not v:
+                eksik.append((os.path.basename(yol), alan))
+            elif de.TR_HARF.search(v) or re.search(r"\b(durum|kriter|demet|çubuk)\b", v):
+                turkce.append((os.path.basename(yol), alan, v[:50]))
+    kontrol("%d ornegin hepsinde baslik_en ve aciklama_en var" % len(yollar), not eksik,
+            "-> %s" % eksik[:5])
+    kontrol("_en alanlarinda Turkce yok", not turkce, "-> %s" % turkce[:5])
+    b = ornek_bilgi.ornek_bilgisi(os.path.join(ORNEK, "pwr_pinhucre.json"))
+    kontrol("yerel_baslik: TR -> baslik, EN -> baslik_en",
+            ornek_bilgi.yerel_baslik(b, "tr") == b.baslik
+            and ornek_bilgi.yerel_baslik(b, "en") == b.baslik_en
+            and ornek_bilgi.yerel_aciklama(b, "en") == b.aciklama_en)
+    from arayuz import baslangic
+    with de.en_kipi():
+        e = baslangic.BaslangicEkrani()
+        metin = " ".join(m for _n, m in widget_metinleri(e))
+        e.deleteLater()
+    kontrol("galeri EN'de baslik_en gosteriyor", b.baslik_en in metin and b.baslik not in metin)
+
+
+def test_en_baslangic_ve_yardim():
+    print("\n[D9] DIL-EN: baslangic, menuler, Yardim ve kilavuz baglantilari")
+    from PySide6 import QtWidgets
+    from testler import dil_en_yardimci as de
+    from arayuz import yardim_baglanti as yb
+    parcalar, sozcukler = de.cekirdek_parcalari(), _turkce_sozcukler()
+    msgidler = {m for _b, m in de.arayuz_msgidleri()}
+    with de.en_kipi() as top:
+        p = _en_pencere()
+        metinler = [("baslangic/" + n, m) for n, m in widget_metinleri(p)]
+        y = p._yardim_diyalogu()
+        metinler += [("yardim/" + n, m) for n, m in widget_metinleri(y)]
+        metinler += [("yardim/metin", w.toPlainText()) for w in
+                     y.findChildren(QtWidgets.QTextBrowser)]
+        dugmeler = [b.text() for b in y.findChildren(QtWidgets.QPushButton)]
+        kilavuz = p.e_kilavuz.text(), p.e_kilavuz.shortcut().toString(), p.kilavuz_bolumu()
+        _kapat(p)
+        eksik = {e for e in top.eksik if e.split("\x04", 1)[-1] in msgidler}
+    arayuz, cekirdek = _en_denetle(metinler, (), parcalar, sozcukler)
+    kontrol("baslangic + menu + Yardim: arayuz kaynakli Turkce yok", not arayuz,
+            "-> %s" % arayuz[:5])
+    kontrol("cevrilmemis arayuz msgid'i yok", not eksik, "-> %s" % sorted(eksik)[:5])
+    kontrol("Yardim diyalogu 'Close'", dugmeler == ["Close"], "-> %s" % dugmeler)
+    kontrol("Help > User guide, F1 baglamsal (baslangic)",
+            kilavuz == ("User guide", "F1", "baslangic"), "-> %s" % (kilavuz,))
+    print("  [BILGI] cekirdek kaynakli Turkce: %d" % len(cekirdek))
+    bolumler = set(yb.SAYFA_BOLUMU.values()) | {b for _o, b in yb.BULGU_BOLUMU} | {
+        yb.GELISMIS_GEOMETRI_BOLUMU, yb.BULGU_VARSAYILAN}
+    kontrol("kilavuz eslemeleri yalniz ortak bolum kimliklerini kullaniyor",
+            bolumler <= set(yb.BOLUM_KIMLIKLERI), "-> %s" % (bolumler - set(yb.BOLUM_KIMLIKLERI)))
+    from arayuz.ortak import cumle_basi
+    with de.en_kipi():
+        en_bas = cumle_basi("in a duct")
+    kontrol("cumle_basi: EN'de 'In' (Turkce 'İ' degil), TR'de 'İ'",
+            en_bas == "In a duct" and cumle_basi("ince") == "İnce", "-> %r" % en_bas)
+    kontrol("bulgu yeri -> bolum", yb.bulgu_bolumu("malzeme:uo2") == "malzemeler"
+            and yb.bulgu_bolumu("kor/katman 2 (su)") == "geometri"
+            and yb.bulgu_bolumu("geometri:kok/0") == "geometri-gelismis"
+            and yb.bulgu_bolumu("bilinmeyen") == "sorun-giderme")
+
+
+def test_en_arayuz_metinleri(gecici=None):
+    print("\n[D10] DIL-EN: 30 ornek x butun sayfalar (1280x800, basliksiz)")
+    s = en_ornek_taramasi()
+    kontrol("taranan sayfa ve metin anlamli (%d sayfa, %d metin)" % (s["sayfa"], s["metin"]),
+            s["sayfa"] > 100 and s["metin"] > 5000)
+    kontrol("ARAYUZ kaynakli Turkce metin yok (%d)" % len(s["arayuz"]), not s["arayuz"],
+            "-> %s" % s["arayuz"][:5])
+    kontrol("cevrilmemis ARAYUZ msgid'i yok (%d)" % len(s["eksik_arayuz"]),
+            not s["eksik_arayuz"], "-> %s" % sorted(s["eksik_arayuz"])[:5])
+    kontrol("kirpilan etiket/dugme yok (%d)" % len(s["kirpik"]), not s["kirpik"],
+            "-> %s" % s["kirpik"][:5])
+    uzayan = sorted(set(s["uzayan"]), reverse=True)
+    print("  [BILGI] Ingilizcede %%30'dan fazla uzayan dugme: %d %s" % (len(uzayan), uzayan[:6]))
+    print("  [BILGI] CEKIRDEK kaynakli Turkce satir: %d, cevrilmemis cekirdek msgid'i: %d "
+          "(Ajan 11 birlesince 0 olmali)" % (len(s["cekirdek"]), len(s["eksik_cekirdek"])))
+    for yer, m in s["cekirdek"][:5]:
+        print("    %s: %s" % (yer, m))
+
+
+# Hizli suit icin temsilci alt kume: kare demet, altigen tam kor, sabit kaynak,
+# tukenme ve gelismis geometri (her sayfa turu en az bir kez gorulur).
+EN_HIZLI_ORNEKLER = ("pwr_17x17", "vver1000_kor", "zirh_kure", "pwr_tukenme",
+                     "altigen_tambur_halkasi", "mtr_plaka")
+
+
+def test_en_hizli_tarama():
+    print("\n[D11] DIL-EN: temsilci 6 ornek x butun sayfalar (hizli)")
+    s = en_ornek_taramasi([os.path.join(ORNEK, a + ".json") for a in EN_HIZLI_ORNEKLER])
+    kontrol("ARAYUZ kaynakli Turkce metin yok (%d)" % len(s["arayuz"]), not s["arayuz"],
+            "-> %s" % s["arayuz"][:5])
+    kontrol("cevrilmemis ARAYUZ msgid'i yok (%d)" % len(s["eksik_arayuz"]),
+            not s["eksik_arayuz"], "-> %s" % sorted(s["eksik_arayuz"])[:5])
+    kontrol("kirpilan etiket/dugme yok (%d)" % len(s["kirpik"]), not s["kirpik"],
+            "-> %s" % s["kirpik"][:5])
+    print("  [BILGI] CEKIRDEK kaynakli Turkce satir: %d" % len(s["cekirdek"]))
+
+
 HIZLI = [test_qt_standart_metinleri, test_bulgu_metinleri, test_cekirdek_yorumlari,
-         test_ornek_basliklari]
-YAVAS = [test_arayuz_metinleri]
+         test_ornek_basliklari, test_en_katalog, test_en_terim_tutarliligi,
+         test_en_ornek_basliklari, test_en_baslangic_ve_yardim, test_en_hizli_tarama]
+YAVAS = [test_arayuz_metinleri, test_en_arayuz_metinleri]
 
 
 if __name__ == "__main__":

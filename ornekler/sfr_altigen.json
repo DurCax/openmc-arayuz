@@ -4,7 +4,7 @@
   "aciklama": "Sodyum soğutmalı hızlı reaktör yakıt demeti: 7 halkalı altıgen demet, 127 U-10Mo yakıt çubuğu, SS316 zarf, sıvı sodyum 673 K. Altıgen prizma, yansıtıcı sınır → sonsuz kafes (k∞). 'e' harfi B4C emici çubuğa bağlı; kontrol demeti kurmak için haritada kullanılabilir.",
   "baslik": "SFR altıgen demet",
   "baslik_en": "SFR hexagonal assembly",
-  "aciklama_en": "Sodium-cooled fast reactor assembly: 7-ring hexagonal lattice, 127 U-10Mo fuel rods, SS316 duct.",
+  "aciklama_en": "Sodium-cooled fast reactor assembly: 7-ring hexagonal lattice, 127 U-10Mo fuel pins, SS316 duct.",
   "kategori": "sfr",
   "seviye": "orta",
   "malzemeler": [

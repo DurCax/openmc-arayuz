@@ -9,6 +9,7 @@
 import copy
 
 from PySide6 import QtCore, QtGui, QtWidgets
+from cekirdek.ceviri import N_, _
 from arayuz.malzeme.yardimcilar import (
     BIRIM_SECENEKLERI, TUR_SECENEKLERI, _isim_duzelt, _tema_renk)
 
@@ -16,6 +17,14 @@ from arayuz.malzeme.yardimcilar import (
 # ============================================================================
 # Bilesim tablosu
 # ============================================================================
+
+DOGAL_METNI = N_("doğal")          # zenginlik bos: dogal uranyum
+
+
+def _secenek_etiketi(secenekler, anahtar):
+    """(anahtar, N_ etiket) listesinden etkin dildeki etiket; bilinmeyen anahtar aynen."""
+    etiket = dict(secenekler).get(anahtar)
+    return _(etiket) if etiket else anahtar
 
 class BilesimModeli(QtCore.QAbstractTableModel):
     """
@@ -25,7 +34,7 @@ class BilesimModeli(QtCore.QAbstractTableModel):
     kosu sirasinda reddeder, nuklidde sessizce yok sayar.
     """
 
-    BASLIKLAR = ["Tür", "İsim", "Miktar", "Birim", "Zenginlik %"]
+    BASLIKLAR = [N_("Tür"), N_("İsim"), N_("Miktar"), N_("Birim"), N_("Zenginlik %")]
     S_TUR, S_ISIM, S_MIKTAR, S_BIRIM, S_ZENG = range(5)
 
     def __init__(self, bilesim, salt_okunur=False, parent=None):
@@ -46,7 +55,7 @@ class BilesimModeli(QtCore.QAbstractTableModel):
 
     def headerData(self, bolum, yon, rol=QtCore.Qt.DisplayRole):
         if rol == QtCore.Qt.DisplayRole and yon == QtCore.Qt.Horizontal:
-            return self.BASLIKLAR[bolum]
+            return _(self.BASLIKLAR[bolum])
         if rol == QtCore.Qt.DisplayRole and yon == QtCore.Qt.Vertical:
             return str(bolum + 1)
         return None
@@ -65,24 +74,24 @@ class BilesimModeli(QtCore.QAbstractTableModel):
                     b.get("birim", "ao"), b.get("zenginlik")][s]
         if rol == QtCore.Qt.DisplayRole:
             if s == self.S_TUR:
-                return dict(TUR_SECENEKLERI).get(b.get("tur", "element"), b.get("tur"))
+                return _secenek_etiketi(TUR_SECENEKLERI, b.get("tur", "element"))
             if s == self.S_ISIM:
                 return b.get("isim", "")
             if s == self.S_MIKTAR:
                 return "%.6g" % float(b.get("miktar") or 0.0)
             if s == self.S_BIRIM:
-                return dict(BIRIM_SECENEKLERI).get(b.get("birim", "ao"), b.get("birim"))
+                return _secenek_etiketi(BIRIM_SECENEKLERI, b.get("birim", "ao"))
             z = b.get("zenginlik")
             if z is None:
-                return "doğal" if self.zenginlik_uygun(ix.row()) else ""
+                return _(DOGAL_METNI) if self.zenginlik_uygun(ix.row()) else ""
             return "%g" % z
         if rol == QtCore.Qt.ForegroundRole and s == self.S_ZENG:
             if b.get("zenginlik") is None or not self.zenginlik_uygun(ix.row()):
                 return QtGui.QBrush(QtGui.QColor(_tema_renk("metin_soluk")))
         if rol == QtCore.Qt.ToolTipRole and s == self.S_ZENG:
             if not self.zenginlik_uygun(ix.row()):
-                return "Zenginlik yalnızca doğal element U satırında girilir."
-            return "U-235 ağırlıkça %; boş bırakılırsa doğal uranyum."
+                return _("Zenginlik yalnızca doğal element U satırında girilir.")
+            return _("U-235 ağırlıkça %; boş bırakılırsa doğal uranyum.")
         return None
 
     def _zenginlik_temizle(self, satir):
@@ -113,7 +122,8 @@ class BilesimModeli(QtCore.QAbstractTableModel):
                 b["birim"] = deger
             elif s == self.S_ZENG:
                 metin = "" if deger is None else str(deger).strip()
-                if metin in ("", "doğal"):
+                # gorunen "doğal" metni (her iki dilde) zenginligi siler
+                if metin in ("", DOGAL_METNI, _(DOGAL_METNI)):
                     b.pop("zenginlik", None)
                 elif not self.zenginlik_uygun(satir):
                     return False            # yalnizca silinebilir
@@ -160,7 +170,7 @@ class SecenekDelegesi(QtWidgets.QStyledItemDelegate):
     def createEditor(self, ebeveyn, secenek, ix):
         c = QtWidgets.QComboBox(ebeveyn)
         for anahtar, etiket in self.secenekler:
-            c.addItem(etiket, anahtar)
+            c.addItem(_(etiket), anahtar)
         c.activated.connect(lambda _i, c=c: (self.commitData.emit(c),
                                              self.closeEditor.emit(c)))
         return c

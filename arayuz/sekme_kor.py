@@ -42,7 +42,7 @@ import math
 from PySide6 import QtCore, QtWidgets
 
 from cekirdek import sema, uygunluk
-from cekirdek.ceviri import _
+from cekirdek.ceviri import N_, _
 from arayuz import tema
 from arayuz.kor.geometri_sayfasi import KorGeometriMixin, tur_etiketi_metni
 from arayuz.kor.harita import KorHaritasiMixin
@@ -56,21 +56,29 @@ _log = kaydedici("arayuz.sekme_kor")
 
 # Sinir kosullarinin gorunen adlari (OpenMC anahtar sozcugu parantezde).
 SINIR_ADLARI = {
-    "reflective": "Yansıtıcı (reflective)",
-    "vacuum": "Vakum (vacuum)",
-    "white": "Beyaz (white)",
-    "periodic": "Periyodik (periodic)",
+    "reflective": N_("Yansıtıcı (reflective)"),
+    "vacuum": N_("Vakum (vacuum)"),
+    "white": N_("Beyaz (white)"),
+    "periodic": N_("Periyodik (periodic)"),
 }
 _KABUK_EN_COK_SATIR = 6
 
 
 def _tur_adi(tur):
-    """Kor turunun model basligindaki "Turu degistir..." menusuyle AYNI adi."""
+    """Kor turunun model basligindaki "Turu degistir..." menusuyle AYNI adi
+    (cekirdek sabiti; gosterirken cevrilir)."""
     try:
         from arayuz.ana_pencere import TUR_ADLARI
-        return TUR_ADLARI.get(tur, tur or "tanımsız")
     except Exception:                                   # pragma: no cover
-        return tur or "tanımsız"
+        return tur or _("tanımsız")
+    ad = TUR_ADLARI.get(tur)
+    return _(ad) if ad else (tur or _("tanımsız"))
+
+
+def _sinir_adi(deger):
+    """Sinir kosulunun gorunen adi (etkin dilde); bilinmeyen deger aynen."""
+    ad = SINIR_ADLARI.get(deger)
+    return _(ad) if ad else deger
 
 
 class KorSekmesi(KorGeometriMixin, KorYerlesimMixin, KorHaritasiMixin, KorKatmanMixin,
@@ -129,9 +137,9 @@ class KorSekmesi(KorGeometriMixin, KorYerlesimMixin, KorHaritasiMixin, KorKatman
         self._kutu_doldur(self.yans_mal, malzemeler, (kor.get("yansitici") or {}).get("malzeme"))
 
         hedefler = [(sema.BOSLUK, _(_BOS_ETIKET))]
-        hedefler += [(d["ad"], "demet: %s" % d["ad"]) for d in self.spec.get("demetler", [])]
-        hedefler += [(c["ad"], "çubuk: %s" % c["ad"]) for c in self.spec.get("cubuklar", [])]
-        hedefler += [(m["ad"], "malzeme: %s" % sema.malzeme_etiketi(m))
+        hedefler += [(d["ad"], _("demet: %s") % d["ad"]) for d in self.spec.get("demetler", [])]
+        hedefler += [(c["ad"], _("çubuk: %s") % c["ad"]) for c in self.spec.get("cubuklar", [])]
+        hedefler += [(m["ad"], _("malzeme: %s") % sema.malzeme_etiketi(m))
                      for m in self.spec["malzemeler"]]
         self._kutu_doldur(self.tb_dolgu, hedefler, kor.get("dolgu"))
         self.tb_kor_r.setValue(kor.get("kor_yaricap") or 16.0)
@@ -196,8 +204,8 @@ class KorSekmesi(KorGeometriMixin, KorYerlesimMixin, KorHaritasiMixin, KorKatman
                 kutu.addItem(etiket, deger)
             i = kutu.findData(secili)
             if i < 0:
-                kutu.insertItem(0, "(seçilmedi)" if secili is None
-                                else "%s (tanımsız)" % secili, secili)
+                kutu.insertItem(0, _("(seçilmedi)") if secili is None
+                                else _("%s (tanımsız)") % secili, secili)
                 i = 0
             kutu.setCurrentIndex(i)
         finally:
@@ -213,12 +221,12 @@ class KorSekmesi(KorGeometriMixin, KorYerlesimMixin, KorHaritasiMixin, KorKatman
             try:
                 kutu.clear()
                 for s in secenek:
-                    kutu.addItem(SINIR_ADLARI.get(s, s), s)
+                    kutu.addItem(_sinir_adi(s), s)
                 i = kutu.findData(deger)
                 if i < 0 and secenek:
                     # Dosyadaki deger bu yuzeyde gecersiz (elle yazilmis): silinmez,
                     # gecersizligi gorunur; dogrulama ayrica bildirir.
-                    kutu.addItem("%s — bu yüzeyde geçersiz" % SINIR_ADLARI.get(deger, deger),
+                    kutu.addItem(_("%s — bu yüzeyde geçersiz") % _sinir_adi(deger),
                                  deger)
                     i = kutu.count() - 1
                 kutu.setCurrentIndex(i)
@@ -301,8 +309,8 @@ class KorSekmesi(KorGeometriMixin, KorYerlesimMixin, KorHaritasiMixin, KorKatman
                 (self.satir_adim, "adim" in alan)):
             for w in satir:
                 w.setVisible(gorunur)
-        self.satir_adim[0].setText("Demet adımı:" if tur in sema.HARITALI_KORLAR
-                                   else "Hücre adımı:")
+        self.satir_adim[0].setText(_("Demet adımı:") if tur in sema.HARITALI_KORLAR
+                                   else _("Hücre adımı:"))
         self.adim.setToolTip(_("Komşu demet merkezleri arası; altıgende düz yüzden düz "
                                "yüze. En az demetin dış ölçüsü (kılıf dahil) kadar.")
                              if tur == "altigen_kafes" else "")
@@ -330,10 +338,10 @@ class KorSekmesi(KorGeometriMixin, KorYerlesimMixin, KorHaritasiMixin, KorKatman
         form.setRowVisible(self.yukseklik, eksenli and mod == "3B")
         form.setRowVisible(self.bc_alt, ortak.get("sinir_alt", False))
         form.setRowVisible(self.bc_ust, ortak.get("sinir_ust", False))
-        self.yan_etiket.setText("Dış yüzey sınırı:" if uygunluk.yan_yuzey(self.spec) == "kure"
-                                else "Yan sınır:")
-        self.eksen_kutu.baslik_ayarla("Yükseklik ve sınır koşulları" if eksenli
-                                      else "Sınır koşulu")
+        self.yan_etiket.setText(_("Dış yüzey sınırı:") if uygunluk.yan_yuzey(self.spec) == "kure"
+                                else _("Yan sınır:"))
+        self.eksen_kutu.baslik_ayarla(_("Yükseklik ve sınır koşulları") if eksenli
+                                      else _("Sınır koşulu"))
         self.katman_kutu.setVisible(ortak.get("eksenel", False) and mod == "katmanli")
         self._sinir_notu_guncelle()
 
@@ -344,8 +352,8 @@ class KorSekmesi(KorGeometriMixin, KorYerlesimMixin, KorHaritasiMixin, KorKatman
             yans.get("var") and "yansitici" in uygunluk.kor_alanlari(kor.get("tur")))
         uyari = yansitici_var and (kor.get("sinir") or {}).get("yan") == "reflective"
         self.sinir_notu.setText(
-            "Yansıtıcı kuşak + yansıtıcı (reflective) yan sınır sonsuz bir dizi "
-            "modeller; tek, çevresi açık bir kor için Vakum seçin." if uyari else "")
+            _("Yansıtıcı kuşak + yansıtıcı (reflective) yan sınır sonsuz bir dizi "
+              "modeller; tek, çevresi açık bir kor için Vakum seçin.") if uyari else "")
         self._eksen_form.setRowVisible(self.sinir_notu, bool(uyari))
 
     def _ozet_guncelle(self):
@@ -353,16 +361,16 @@ class KorSekmesi(KorGeometriMixin, KorYerlesimMixin, KorHaritasiMixin, KorKatman
             return
         try:
             from cekirdek import onbellek
-            _, bilgi = onbellek.kur_onbellekli(self.spec)
+            _model, bilgi = onbellek.kur_onbellekli(self.spec)
             gx, gy = bilgi["sinir_kutu"]
             # sema.kor_yuksekligi(): katmanliyken yukseklik katman toplamidir.
             h = sema.kor_yuksekligi(self.spec["kor"])
-            ek = ("" if self.spec["kor"].get("tur") == "kuresel" else "  (2B)")
+            ek = ("" if self.spec["kor"].get("tur") == "kuresel" else "  (%s)" % _("2B"))
             metin = "%.4f × %.4f cm%s" % (gx, gy, (" × %.2f cm" % h) if h else ek)
             self.ozet.setText(metin)
         except Exception as e:
             from arayuz.ortak import hata_metni
-            self.ozet.setText("Kurulamadı: %s" % hata_metni(e)[:120])
+            self.ozet.setText(_("Kurulamadı: %s") % hata_metni(e)[:120])
 
     # ------------------------------------------------------------------
     # kayit
@@ -464,7 +472,7 @@ class KorSekmesi(KorGeometriMixin, KorYerlesimMixin, KorHaritasiMixin, KorKatman
         kor = self.spec["kor"]
         t = kor.get("tambur") or {}
         if int(t.get("sayi") or 0) <= 0:
-            self.tb_durum.setText("Tambur yok — düz yansıtıcı kuşak.")
+            self.tb_durum.setText(_("Tambur yok — düz yansıtıcı kuşak."))
             self.tb_durum.setObjectName("soluk")
             self.tb_durum.setStyleSheet("")
             return
@@ -477,6 +485,6 @@ class KorSekmesi(KorGeometriMixin, KorYerlesimMixin, KorHaritasiMixin, KorKatman
             n = int(t["sayi"])
             kiris = 2.0 * t["merkez_yaricap"] * math.sin(math.pi / n) if n > 1 else 0.0
             self.tb_durum.setText(
-                "Geçerli — komşu tambur merkezleri arası %.3f cm (iki yarıçap %.3f cm)."
+                _("Geçerli — komşu tambur merkezleri arası %.3f cm (iki yarıçap %.3f cm).")
                 % (kiris, 2 * t["yaricap"]))
             self.tb_durum.setStyleSheet("color: %s;" % tema.renk("basari"))

@@ -619,10 +619,10 @@
   "geometri": null,
   "tamburlar": [],
   "baslik": "IEU-MET-FAST-003, durum 2 — Çıplak %36 U-235 metal küresi (basitleştirilmiş model)",
-  "baslik_en": "IEU-MET-FAST-003, durum 2 (ICSBEP benchmark, V&V set)",
+  "baslik_en": "IEU-MET-FAST-003, case 2 — Bare 36% U-235 metal sphere (simplified model)",
   "kategori": "kriter",
   "seviye": "ileri",
-  "aciklama_en": "ICSBEP benchmark IEU-MET-FAST-003, durum 2, k = 1.0000 ± 0.0017; model from mit-crpg/benchmarks (MIT license).",
+  "aciklama_en": "ICSBEP benchmark IEU-MET-FAST-003, case 2: bare 36% U-235 metal sphere (simplified model). One case of the V&V set (NUREG/CR-6698 bias/USL). Experimental benchmark value k = 1.0000 ± 0.0017. Model: mit-crpg/benchmarks icsbep/ieu-met-fast-003/openmc/case-2 (MIT license); geometry and atom densities transferred one to one (concentric spherical shells).",
   "referans": {
     "k": 1.0,
     "sigma": 0.0017,

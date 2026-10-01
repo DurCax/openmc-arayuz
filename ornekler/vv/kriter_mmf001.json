@@ -556,10 +556,10 @@
   "geometri": null,
   "tamburlar": [],
   "baslik": "MIX-MET-FAST-001 (Planet) — HEU kabuklu Pu küresi",
-  "baslik_en": "MIX-MET-FAST-001 (Planet) (ICSBEP benchmark, V&V set)",
+  "baslik_en": "MIX-MET-FAST-001 (Planet) — Pu sphere with an HEU shell",
   "kategori": "kriter",
   "seviye": "ileri",
-  "aciklama_en": "ICSBEP benchmark MIX-MET-FAST-001 (Planet), k = 1.0000 ± 0.0016; model from mit-crpg/benchmarks (MIT license).",
+  "aciklama_en": "ICSBEP benchmark MIX-MET-FAST-001 (Planet): Pu sphere with an HEU shell. One case of the V&V set (NUREG/CR-6698 bias/USL). Experimental benchmark value k = 1.0000 ± 0.0016. Model: mit-crpg/benchmarks icsbep/mix-met-fast-001/openmc (MIT license); geometry and atom densities transferred one to one (concentric spherical shells).",
   "referans": {
     "k": 1.0,
     "sigma": 0.0016,

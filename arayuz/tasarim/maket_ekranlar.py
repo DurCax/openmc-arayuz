@@ -12,7 +12,7 @@ from arayuz.tasarim import maket_cizim as cz
 from arayuz.tasarim import tokenlar
 from arayuz.tasarim.maket_kabuk import ikon_etiketi, renk_kutusu, sayfa
 from arayuz.tasarim.maket_veri import (BILESIM, GUNLUK, MALZEMELER, PARCALAR, SONUC)
-from cekirdek.ceviri import _
+from cekirdek.ceviri import N_, _, pgettext
 
 A = tokenlar.ARALIK
 O = tokenlar.OKABE_ITO
@@ -60,6 +60,13 @@ def _liste_satiri(renk, ad, alt, rozet=None, sag=None, secili=False):
     return s
 
 
+def _rol_adi(rol):
+    """Malzeme rolu etiketi; maketteki 'boşluk' (He) gaz aralığıdır (gap), void değil."""
+    if rol == N_("boşluk"):
+        return pgettext("boşluk-gaz", "boşluk")
+    return _(rol)
+
+
 def _gri():
     from arayuz import tema
     return tema.renk("metin_soluk")
@@ -75,9 +82,9 @@ def malzemeler():
     liste.ekle(arama)
     for i, (ad, yog, sic, tur, _renk) in enumerate(MALZEMELER):
         liste.ekle(_liste_satiri(_MALZEME_RENK[i] or _gri(), ad, "%s · %s" % (yog, sic),
-                                 (_(tur), "notr"), secili=(i == 0)))
+                                 (_rol_adi(tur), "notr"), secili=(i == 0)))
     liste.setFixedWidth(320)
-    ozellik = b.Kart(_("UO2 %3.20"), aciklama=_("Yakıt · 3 çubukta kullanılıyor"),
+    ozellik = b.Kart("UO2 %3.20", aciklama=_("Yakıt · 3 çubukta kullanılıyor"),
                      eylem=b.duz_dugme(_("Çoğalt"), "copy"))
     ozellik.govde.addLayout(_form((
         (_("Ad"), QtWidgets.QLineEdit("UO2 %3.20")),
@@ -138,14 +145,14 @@ def demet():
     izgara.ekle(arac)
     izgara.ekle(cz.KafesCizimi(izgara=True), 1)
     # Ozet sag sutunda ayri kart degil, izgaranin altinda tek satir (dikey yer kazanir).
-    ozet = _mono("21.420 × 21.420 cm · 289 %s · 264 YÇ / 24 KB / 1 EN" % _("hücre"))
+    ozet = _mono(_("21.420 × 21.420 cm · 289 hücre · 264 YÇ / 24 KB / 1 EN"))
     ozet.setObjectName("monoSoluk")
     alt = _satir(b.duz_dugme(_("Tümünü doldur")), b.duz_dugme(_("Temizle"), "x"))
     alt.layout().addWidget(ozet)
     izgara.ekle(alt)
     palet = b.Kart(_("Parça paleti"), eylem=b.ikon_dugmesi("plus", _("Parça ekle")))
     for i, (anahtar, kisa, ad, sayi, _r) in enumerate(PARCALAR[:3]):
-        palet.ekle(_liste_satiri(cz.PARCA_RENGI[anahtar], _(ad), kisa, sag=str(sayi),
+        palet.ekle(_liste_satiri(cz.PARCA_RENGI[anahtar], _(ad), _(kisa), sag=str(sayi),
                                  secili=(i == 0)))
     ozellik = b.Kart(_("Demet"))
     boyut = _satir(QtWidgets.QSpinBox(), QtWidgets.QLabel("×"), QtWidgets.QSpinBox(), esnek=False)
@@ -171,7 +178,7 @@ def demet():
     govde.addWidget(izgara, 1)
     govde.addWidget(sag_w)
     demetler = QtWidgets.QComboBox()
-    demetler.addItems(["demet_17x17 · kare 17×17"])
+    demetler.addItems([_("{ad} · kare 17×17").format(ad="demet_17x17")])
     return sayfa(_("Demet"), _("Parçaları ızgaraya yerleştirin."), govde,
                  [demetler, b.ikincil_dugme(_("Yeni demet"), "plus")])
 

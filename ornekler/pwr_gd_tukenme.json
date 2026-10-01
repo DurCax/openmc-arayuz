@@ -557,6 +557,6 @@
   "baslik": "Gd'li çubukta tükenme",
   "kategori": "pwr",
   "seviye": "ileri",
-  "baslik_en": "Gadolinia rod depletion",
-  "aciklama_en": "Burnable-absorber burnout: a UO2-Gd2O3 rod split into 5 equal-area rings at the centre of a 5x5 supercell, depleted to ~16 MWd/kg."
+  "baslik_en": "Gadolinia pin depletion",
+  "aciklama_en": "Burnable-absorber burnout: a UO2-Gd2O3 pin split into 5 equal-area rings at the centre of a 5x5 supercell, depleted to ~16 MWd/kg."
 }

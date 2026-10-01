@@ -17,7 +17,7 @@ import string
 
 from PySide6 import QtWidgets
 
-from cekirdek.ceviri import N_, _
+from cekirdek.ceviri import N_, _, _n
 from cekirdek.gunluk import kaydedici
 from arayuz.geometri import renk as _renk
 from arayuz import izgara, tema
@@ -282,7 +282,9 @@ class EksenelFormu(FormTabani):
         self.ad.setText(e.get("ad") or "")
         katmanlar = e.get("katmanlar") or []
         toplam = sum(float(k.get("yukseklik") or 0.0) for k in katmanlar)
-        self.ozet.setText(_("{n} katman, toplam {h:g} cm").format(n=len(katmanlar), h=toplam))
+        n = len(katmanlar)
+        self.ozet.setText(_n("{n} katman, toplam {h:g} cm", "{n} katman, toplam {h:g} cm",
+                             n).format(n=n, h=toplam))
 
 
 class KatmanFormu(FormTabani):
@@ -334,7 +336,8 @@ class ParcaFormu(FormTabani):
     def doldur(self, p):
         self.ad.setText(p.get("ad") or "")
         n = _sayac(self.agac, p.get("ad"))
-        self.kullanim.setText(_("{n} yerde kullanılıyor").format(n=n))
+        self.kullanim.setText(_n("{n} yerde kullanılıyor", "{n} yerde kullanılıyor",
+                                 n).format(n=n))
 
     def _ad_degisti(self):
         if self._yukleniyor or self.ad.text().strip() == (self.oge() or {}).get("ad"):

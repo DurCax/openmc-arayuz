@@ -8,6 +8,7 @@
 
 from PySide6 import QtCore, QtGui, QtWidgets
 from cekirdek import malzeme_kutup as mk
+from cekirdek.ceviri import _
 from arayuz.ortak import sayi
 from arayuz.malzeme.yardimcilar import _KELVIN, _etiket, _sayi_metni, _tema_renk
 
@@ -119,11 +120,15 @@ class ParametreFormu(QtWidgets.QWidget):
                 w = sayi(p["en_az"] if deger is None else deger, p["ondalik"],
                          p["en_az"], p["en_cok"], p["adim"], p["sonek"])
                 if p["tur"] == "dogal_ya_da":
-                    w.setSpecialValueText(p["dogal_metin"])
+                    dogal_metin = p["dogal_metin"]
+                    w.setSpecialValueText(_(dogal_metin))
                 w.valueChanged.connect(self._degisti)
-            if p.get("ipucu"):
-                w.setToolTip(p["ipucu"])
-            etiket = _etiket(p["etiket"] + ":")
+            # Parametre metinleri cekirdekten (malzeme_kutup._PARAM) gelir; burada cevrilir.
+            ipucu = p.get("ipucu")
+            if ipucu:
+                w.setToolTip(_(ipucu))
+            etiket_metni = p["etiket"]
+            etiket = _etiket(_(etiket_metni) + ":")
             form.addRow(etiket, w)
             self.alanlar[ad] = w
             self.etiketler[ad] = etiket
@@ -132,8 +137,9 @@ class ParametreFormu(QtWidgets.QWidget):
         self.hesaplanan = None
         if anahtar in mk.SICAKLIKTAN_YOGUNLUK:
             self.hesaplanan = QtWidgets.QLabel()
-            self.hesaplanan.setToolTip("Sıcaklıktan hesaplanır; değiştirmek için sıcaklığı değiştirin.")
-            form.addRow(_etiket("Yoğunluk:"), self.hesaplanan)
+            self.hesaplanan.setToolTip(_("Sıcaklıktan hesaplanır; değiştirmek için "
+                                         "sıcaklığı değiştirin."))
+            form.addRow(_etiket(_("Yoğunluk:")), self.hesaplanan)
         self.uyari = QtWidgets.QLabel()
         self.uyari.setWordWrap(True)
         self.uyari.setStyleSheet("color: %s;" % _tema_renk("uyari"))

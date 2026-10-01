@@ -8,6 +8,7 @@
 
 from PySide6 import QtCore, QtWidgets
 from cekirdek import sema, uygunluk
+from cekirdek.ceviri import _
 from cekirdek.gunluk import kaydedici
 from arayuz.ortak import renk_simgesi, sayi
 from arayuz.cubuk.parca_islemleri import (
@@ -34,14 +35,14 @@ class CubukFormuMixin(object):
         self.c_ad.setText(c["ad"])
         self._hata_goster(self.c_ad_hata, "")
         kontrol = c.get("tur") == "kontrol"
-        self.c_baslik.setText("Kontrol çubuğu" if kontrol else "Çubuk")
+        self.c_baslik.setText(_("Kontrol çubuğu") if kontrol else _("Çubuk"))
         # Tur: kontrol cubugu yalnizca modelde anlamliysa (3B + kafes) ya da
         # zaten kontrol cubuguysa (dosyadaki veri gizlenmez).
         izin = uygunluk.parca_turleri(self.spec)["kontrol_cubugu"]
         self.c_tur.clear()
-        self.c_tur.addItem("Sabit çubuk", "silindirik")
+        self.c_tur.addItem(_("Sabit çubuk"), "silindirik")
         if izin or kontrol:
-            self.c_tur.addItem("Kontrol çubuğu (eksenel hareketli)", "kontrol")
+            self.c_tur.addItem(_("Kontrol çubuğu (eksenel hareketli)"), "kontrol")
         self.c_tur.setCurrentIndex(max(self.c_tur.findData(c.get("tur", "silindirik")), 0))
         tek = self.c_tur.count() < 2
         self.e_tur.setVisible(not tek)
@@ -79,12 +80,12 @@ class CubukFormuMixin(object):
         self.c_emici.clear()
         bolgeler = c.get("bolgeler") or []
         for j in range(max(len(bolgeler) - 1, 0)):
-            self.c_emici.addItem("%d. bölge — %s" % (
-                j + 1, malzeme_etiketi(self.spec, bolgeler[j].get("malzeme"))), j)
+            self.c_emici.addItem(_("{n}. bölge — {malzeme}").format(
+                n=j + 1, malzeme=malzeme_etiketi(self.spec, bolgeler[j].get("malzeme"))), j)
         ix = c.get("emici_bolge", 0)
         if c.get("tur") == "kontrol" and self.c_emici.findData(ix) < 0:
-            self.c_emici.addItem("%s. bölge — geçersiz (dış bölge daldırılamaz)"
-                                 % (ix + 1 if isinstance(ix, int) else ix), ix)
+            self.c_emici.addItem(_("{n}. bölge — geçersiz (dış bölge daldırılamaz)").format(
+                n=ix + 1 if isinstance(ix, int) else ix), ix)
         self.c_emici.setCurrentIndex(max(self.c_emici.findData(ix), 0))
 
     def _izleyici_doldur(self, c):
@@ -93,15 +94,15 @@ class CubukFormuMixin(object):
         secili = c.get("izleyici_malzeme")
         self.c_izleyici.clear()
         if secili is None:
-            self.c_izleyici.addItem(SECILMEDI_ETIKETI, None)
-        self.c_izleyici.addItem(BOS_ETIKETI, sema.BOSLUK)
+            self.c_izleyici.addItem(_(SECILMEDI_ETIKETI), None)
+        self.c_izleyici.addItem(_(BOS_ETIKETI), sema.BOSLUK)
         for m in self.spec.get("malzemeler", []):
             if m["ad"] in adaylar:
                 self.c_izleyici.addItem(malzeme_etiketi(self.spec, m["ad"], True, rol_tablosu),
                                         m["ad"])
         if secili is not None and self.c_izleyici.findData(secili) < 0:
-            self.c_izleyici.addItem("%s — izleyici olamaz"
-                                    % malzeme_etiketi(self.spec, secili), secili)
+            self.c_izleyici.addItem(_("{malzeme} — izleyici olamaz").format(
+                malzeme=malzeme_etiketi(self.spec, secili)), secili)
         self.c_izleyici.setCurrentIndex(max(self.c_izleyici.findData(secili), 0))
 
     def _tablo_doldur(self, c):
@@ -112,9 +113,9 @@ class CubukFormuMixin(object):
             son = i == n - 1
             self.c_tablo.insertRow(i)
             if son:
-                oge = QtWidgets.QTableWidgetItem("dış bölge")
+                oge = QtWidgets.QTableWidgetItem(_("dış bölge"))
                 oge.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
-                oge.setToolTip("Son bölgenin yarıçapı yoktur: hücrenin kalanını doldurur.")
+                oge.setToolTip(_("Son bölgenin yarıçapı yoktur: hücrenin kalanını doldurur."))
                 self.c_tablo.setItem(i, 0, oge)
             else:
                 w = sayi(b.get("r") or 0.0, YARICAP_ONDALIK, 0.00001, 1000.0, 0.01, "cm")
@@ -148,9 +149,9 @@ class CubukFormuMixin(object):
                 oge.setText(metin)
                 oge.setToolTip(metin)
         eksik = eksik_malzemeler(self.spec, c)
-        self._hata_goster(self.c_eksik, (
-            "Malzemesi seçilmemiş: %s. Uygun malzeme yoksa önce Malzemeler "
-            "sekmesinden ekleyin." % ", ".join(eksik)) if eksik else "")
+        self._hata_goster(self.c_eksik, _(
+            "Malzemesi seçilmemiş: {eksik}. Uygun malzeme yoksa önce Malzemeler "
+            "sekmesinden ekleyin.").format(eksik=", ".join(eksik)) if eksik else "")
 
     def _yaricap_kutulari(self):
         n = self.c_tablo.rowCount()
@@ -172,9 +173,9 @@ class CubukFormuMixin(object):
                     k.setRange(eps, 1000.0)
             finally:
                 k.blockSignals(False)
-        self._hata_goster(self.c_sira_uyari, "" if artan else (
-            "Yarıçaplar içten dışa artmalı: %s. Değerleri düzeltin."
-            % " → ".join("%.5g" % x for x in r)))
+        self._hata_goster(self.c_sira_uyari, "" if artan else _(
+            "Yarıçaplar içten dışa artmalı: {r}. Değerleri düzeltin.").format(
+                r=" → ".join("%.5g" % x for x in r)))
 
     def _bolge_dugmeleri(self):
         n = self.c_tablo.rowCount()
@@ -201,7 +202,7 @@ class CubukFormuMixin(object):
         """
         h = sema.model_yuksekligi(self.spec) if self.spec else None
         if not h:
-            self.c_uc_etiket.setText("Model 2B: Kor sekmesinde yükseklik tanımlayın")
+            self.c_uc_etiket.setText(_("Model 2B: Kor sekmesinde yükseklik tanımlayın"))
             self.c_uc_etiket.setStyleSheet("color: %s;" % _renk("hata"))
             return
         try:
@@ -213,7 +214,7 @@ class CubukFormuMixin(object):
                          exc_info=True)
             z_alt, z_ust = -h / 2.0, h / 2.0
         z = z_ust - (self.c_daldirma.value() / 100.0) * (z_ust - z_alt)
-        self.c_uc_etiket.setText("z = %+.2f cm   (aktif yakıt: %+.1f … %+.1f cm)"
+        self.c_uc_etiket.setText(_("z = %+.2f cm   (aktif yakıt: %+.1f … %+.1f cm)")
                                  % (z, z_alt, z_ust))
         self.c_uc_etiket.setStyleSheet("")
 
@@ -311,8 +312,8 @@ class CubukFormuMixin(object):
         if oge is None:
             return
         tur = oge.data(QtCore.Qt.UserRole)[0]
-        ek = ("  · plaka" if tur == "plaka"
-              else "  · kontrol" if parca.get("tur") == "kontrol" else "")
+        ek = (_("  · plaka") if tur == "plaka"
+              else _("  · kontrol") if parca.get("tur") == "kontrol" else "")
         oge.setText(parca["ad"] + ek)
         oge.setIcon(renk_simgesi(parca_rengi(self.spec, parca)))
         oge.setData(QtCore.Qt.ForegroundRole, None)

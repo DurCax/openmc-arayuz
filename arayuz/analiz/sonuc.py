@@ -9,7 +9,7 @@ satir sinirinin altinda kalir ve metinler tek yerde cevrilir.
 """
 
 from cekirdek import tarama
-from cekirdek.ceviri import _
+from cekirdek.ceviri import _, _n
 from arayuz.analiz.adlar import birim, katsayi_adi, katsayi_birimi, parametre_adi, renk
 
 YAZI_EKSEN = 8          # eksen etiketi [pt] (matplotlib; tema tokenlari piksel)
@@ -86,11 +86,14 @@ def tablo_satiri(s):
 def tarama_metni(tur, kats, notlar):
     """Tarama sonucu (zengin metin): katsayi +/- sapma, R^2, yorum, notlar."""
     if kats:
-        metin = (_("<b>%s = %+.3f &plusmn; %.3f %s</b><br>"
-                   "doğrusal uyum R&sup2; = %.4f, %d nokta<br><br>%s")
+        n_nokta = kats["nokta"]
+        metin = (_n("<b>%s = %+.3f &plusmn; %.3f %s</b><br>"
+                    "doğrusal uyum R&sup2; = %.4f, %d nokta<br><br>%s",
+                    "<b>%s = %+.3f &plusmn; %.3f %s</b><br>"
+                    "doğrusal uyum R&sup2; = %.4f, %d nokta<br><br>%s", n_nokta)
                  % (katsayi_adi(tur),
                     kats["egim"], kats["egim_sapma"], katsayi_birimi(tur),
-                    kats["r2"], kats["nokta"], tarama.yorumla(tur, kats)))
+                    kats["r2"], n_nokta, tarama.yorumla(tur, kats)))
     else:
         metin = _("Katsayı hesaplanamadı (yeterli geçerli nokta yok).")
     if notlar:
@@ -104,8 +107,10 @@ def arama_metni(tur, s):
     if not s.basarili:
         return _("<b>Çözüm bulunamadı.</b><br><br>%s") % s.mesaj
     bel = "" if s.cozum_belirsizlik is None else " &plusmn; %.4g" % s.cozum_belirsizlik
-    return (_("<b>Çözüm: %s = %.6g%s %s</b><br>"
-              "k = %.5f &plusmn; %.5f &nbsp;&nbsp; (%d koşu)<br><br>%s")
+    return (_n("<b>Çözüm: %s = %.6g%s %s</b><br>"
+               "k = %.5f &plusmn; %.5f &nbsp;&nbsp; (%d koşu)<br><br>%s",
+               "<b>Çözüm: %s = %.6g%s %s</b><br>"
+               "k = %.5f &plusmn; %.5f &nbsp;&nbsp; (%d koşu)<br><br>%s", len(s.adimlar))
             % (parametre_adi(tur), s.cozum, bel, birim(tur),
                s.cozum_keff, s.cozum_sapma, len(s.adimlar), s.mesaj))
 
@@ -113,5 +118,5 @@ def arama_metni(tur, s):
 def tahmin_metni(tek_saniye, adet, arama):
     """Baslamadan once: '~45 sn   (5 kosu x ~9 sn)'."""
     ek = _(" (arama genellikle 4–8 koşu sürer)") if arama else ""
-    return (_("~%s   (%d koşu × ~%s)%s")
+    return (_n("~%s   (%d koşu × ~%s)%s", "~%s   (%d koşu × ~%s)%s", adet)
             % (sure_metni(tek_saniye * adet), adet, sure_metni(tek_saniye), ek))

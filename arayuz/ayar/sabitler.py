@@ -8,12 +8,14 @@
 
 import math
 
+from cekirdek.ceviri import N_
+
 
 # Hesap hassasiyeti onayarlari: (anahtar, ad, parcacik, cevrim, pasif)
 HASSASIYET = [
-    ("hizli", "Hızlı deneme", 1000, 60, 20),
-    ("normal", "Normal", 10000, 150, 40),
-    ("hassas", "Hassas", 50000, 300, 80),
+    ("hizli", N_("Hızlı deneme"), 1000, 60, 20),
+    ("normal", N_("Normal"), 10000, 150, 40),
+    ("hassas", N_("Hassas"), 50000, 300, 80),
 ]
 OZEL = "ozel"
 
@@ -23,43 +25,43 @@ SIGMA_KATSAYISI = 9.0e4
 
 # Skorlar: (OpenMC adi, gorunen ad)
 SKORLAR = [
-    ("flux", "Akı (flux)"),
-    ("fission", "Fisyon (fission)"),
-    ("absorption", "Soğurma (absorption)"),
-    ("nu-fission", "Fisyon nötronu üretimi (nu-fission)"),
-    ("scatter", "Saçılma (scatter)"),
-    ("total", "Toplam etkileşim (total)"),
-    ("elastic", "Esnek saçılma (elastic)"),
-    ("(n,gamma)", "Işınımsal yakalama (n,gamma)"),
-    ("(n,2n)", "(n,2n) tepkimesi"),
-    ("heating", "Isınma (heating)"),
-    ("kappa-fission", "Fisyon enerjisi (kappa-fission)"),
-    ("fission-q-prompt", "Anlık fisyon enerjisi (fission-q-prompt)"),
-    ("damage-energy", "Hasar enerjisi (damage-energy)"),
+    ("flux", N_("Akı (flux)")),
+    ("fission", N_("Fisyon (fission)")),
+    ("absorption", N_("Soğurma (absorption)")),
+    ("nu-fission", N_("Fisyon nötronu üretimi (nu-fission)")),
+    ("scatter", N_("Saçılma (scatter)")),
+    ("total", N_("Toplam etkileşim (total)")),
+    ("elastic", N_("Esnek saçılma (elastic)")),
+    ("(n,gamma)", N_("Işınımsal yakalama (n,gamma)")),
+    ("(n,2n)", N_("(n,2n) tepkimesi")),
+    ("heating", N_("Isınma (heating)")),
+    ("kappa-fission", N_("Fisyon enerjisi (kappa-fission)")),
+    ("fission-q-prompt", N_("Anlık fisyon enerjisi (fission-q-prompt)")),
+    ("damage-energy", N_("Hasar enerjisi (damage-energy)")),
 ]
 _SKOR_ADI = dict(SKORLAR)
 
 # Skor setleri: (anahtar, ad, skorlar)
 SKOR_SETLERI = [
-    ("aki", "Akı", ["flux"]),
-    ("reaksiyon", "Reaksiyon hızları", ["fission", "absorption", "nu-fission"]),
-    ("isi", "Isı / güç", ["kappa-fission", "heating"]),
+    ("aki", N_("Akı"), ["flux"]),
+    ("reaksiyon", N_("Reaksiyon hızları"), ["fission", "absorption", "nu-fission"]),
+    ("isi", N_("Isı / güç"), ["kappa-fission", "heating"]),
 ]
 
 SICAKLIK_YONTEMLERI = [
-    ("interpolation", "Ara değer (interpolation)"),
-    ("nearest", "En yakın sıcaklık (nearest)"),
+    ("interpolation", N_("Ara değer (interpolation)")),
+    ("nearest", N_("En yakın sıcaklık (nearest)")),
 ]
 
 GUC_SKORLARI = [
-    ("kappa-fission", "Fisyon enerjisi (kappa-fission)"),
-    ("fission-q-recoverable", "Geri kazanılabilir fisyon enerjisi (fission-q-recoverable)"),
-    ("fission-q-prompt", "Anlık fisyon enerjisi (fission-q-prompt)"),
-    ("heating-local", "Yerel ısınma (heating-local)"),
+    ("kappa-fission", N_("Fisyon enerjisi (kappa-fission)")),
+    ("fission-q-recoverable", N_("Geri kazanılabilir fisyon enerjisi (fission-q-recoverable)")),
+    ("fission-q-prompt", N_("Anlık fisyon enerjisi (fission-q-prompt)")),
+    ("heating-local", N_("Yerel ısınma (heating-local)")),
 ]
 
-_FILTRE_ADI = {"malzeme": "malzeme", "hucre": "hücre", "enerji": "enerji",
-               "mesh": "mesh"}
+_FILTRE_ADI = {"malzeme": N_("malzeme"), "hucre": N_("hücre"), "enerji": N_("enerji"),
+               "mesh": N_("mesh")}
 
 
 def hassasiyet_bul(parcacik, cevrim, pasif, ozdeger=True):

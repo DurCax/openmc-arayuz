@@ -23,7 +23,7 @@ from matplotlib.patches import RegularPolygon
 from PySide6 import QtCore, QtWidgets
 
 from cekirdek import altigen, sema, guc as _guc
-from cekirdek.ceviri import _
+from cekirdek.ceviri import _, _n
 from cekirdek.gunluk import kaydedici
 from arayuz import guc_harita_kor as _kor, tema
 
@@ -57,13 +57,13 @@ class GucHaritaWidget(QtWidgets.QWidget):
 
         # --- denetimler ---
         self.gorunum = QtWidgets.QComboBox()
-        self.gorunum.addItem("Çubuk toplam gücü (F_ΔH)", "toplam")
-        self.gorunum.addItem("Tek eksenel dilim (F_q)", "dilim")
+        self.gorunum.addItem(_("Çubuk toplam gücü (F_ΔH)"), "toplam")
+        self.gorunum.addItem(_("Tek eksenel dilim (F_q)"), "dilim")
         self.dilim = QtWidgets.QSlider(QtCore.Qt.Horizontal)
         self.dilim.setMinimum(1); self.dilim.setMaximum(1); self.dilim.setValue(1)
-        self.dilim_etiket = QtWidgets.QLabel("Dilim 1")
-        self.degerler = QtWidgets.QCheckBox("Değerleri haritaya yaz")
-        self.d_kaydet = QtWidgets.QPushButton("PNG kaydet…")
+        self.dilim_etiket = QtWidgets.QLabel(_("Dilim %d") % 1)
+        self.degerler = QtWidgets.QCheckBox(_("Değerleri haritaya yaz"))
+        self.d_kaydet = QtWidgets.QPushButton(_("PNG kaydet…"))
         # Tam kor: kor olceginde demet ortalamasi / cubuk haritasi
         self.olcek = QtWidgets.QComboBox()
         self.olcek.addItem(_("Demet"), "demet")
@@ -93,14 +93,14 @@ class GucHaritaWidget(QtWidgets.QWidget):
         ust.addWidget(self.olcek)
         ust.addWidget(self.tur_etiket)
         ust.addWidget(self.tur)
-        ust.addWidget(QtWidgets.QLabel("Görünüm:"))
+        ust.addWidget(QtWidgets.QLabel(_("Görünüm:")))
         ust.addWidget(self.gorunum)
         ust.addWidget(self.dilim_etiket)
         ust.addWidget(self.dilim, 1)
         ust.addWidget(self.d_kaydet)
 
         # --- ozet ---
-        self.ozet = QtWidgets.QLabel("Güç dağılımı henüz hesaplanmadı.")
+        self.ozet = QtWidgets.QLabel(_("Güç dağılımı henüz hesaplanmadı."))
         self.ozet.setWordWrap(True)
         self.ozet.setTextFormat(QtCore.Qt.RichText)
         self.ozet.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
@@ -131,11 +131,11 @@ class GucHaritaWidget(QtWidgets.QWidget):
 
         duzen = QtWidgets.QVBoxLayout(self)
         duzen.setContentsMargins(0, 0, 0, 0)
-        duzen.addWidget(baslik("Çubuk güç dağılımı"))
-        aciklama = QtWidgets.QLabel(
+        duzen.addWidget(baslik(_("Çubuk güç dağılımı")))
+        aciklama = QtWidgets.QLabel(_(
             "F_ΔH = en yüksek çubuk gücü / ortalama (radyal). "
             "F_q = en yüksek yerel güç yoğunluğu / ortalama (radyal × eksenel, 3B gerekir). "
-            "Renk ölçeği ortalamaya göre bağıldır: 1.00 = ortalama çubuk.")
+            "Renk ölçeği ortalamaya göre bağıldır: 1.00 = ortalama çubuk."))
         aciklama.setObjectName("soluk")
         aciklama.setWordWrap(True)
         duzen.addWidget(aciklama)
@@ -145,7 +145,7 @@ class GucHaritaWidget(QtWidgets.QWidget):
         duzen.addWidget(self.belirsizlik)
         duzen.addWidget(self.gelismis)
         self._tam_kor_denetimleri(False)
-        self._bos("Henüz koşu yapılmadı")
+        self._bos(_("Henüz koşu yapılmadı"))
 
     # ==================================================================
     def sonuc_ayarla(self, sonuc, spec=None):
@@ -223,29 +223,31 @@ class GucHaritaWidget(QtWidgets.QWidget):
 
     def _ozet_yaz(self):
         if not self.faktorler:
-            self.ozet.setText("Güç dağılımı hesaplanmadı. Hesap ayarları sekmesinde "
-                              "'Çubuk bazlı güç dağılımı hesapla' kutusunu işaretleyip "
-                              "modeli yeniden çalıştırın.")
+            self.ozet.setText(_("Güç dağılımı hesaplanmadı. Hesap ayarları sekmesinde "
+                                "'Çubuk bazlı güç dağılımı hesapla' kutusunu işaretleyip "
+                                "modeli yeniden çalıştırın."))
             return
         f = self.faktorler
         p = ["<b>F_&Delta;H = %.4f</b>" % f["F_dH"]]
         if f["F_q"]:
             p.append("<b>F_q = %.4f</b>" % f["F_q"])
-        p.append("%d çubuk, %d eksenel dilim" % (f["cubuk_sayisi"], f["eksenel_dilim"]))
-        p.append("en sıcak çubuk: %s" % _guc.konum_metni(f["sicak_cubuk"], f.get("kafes_turu"),
-                                                        f.get("kafes_turleri")))
+        n_dilim = f["eksenel_dilim"]
+        p.append(_n("%d çubuk, %d eksenel dilim", "%d çubuk, %d eksenel dilim", n_dilim)
+                 % (f["cubuk_sayisi"], n_dilim))
+        p.append(_("en sıcak çubuk: %s") % _guc.konum_metni(
+            f["sicak_cubuk"], f.get("kafes_turu"), f.get("kafes_turleri")))
         if f.get("tam_kor"):
             p.append(_("en sıcak demet: %s (ortalama %.4f)")
                      % (_guc.demet_metni(f["sicak_demet"], f), f["F_demet"]))
         if f["sicak_dilim"]:
-            p.append("en sıcak dilim: %d" % (f["sicak_dilim"][1] + 1))
+            p.append(_("en sıcak dilim: %d") % (f["sicak_dilim"][1] + 1))
         metin = " &nbsp;|&nbsp; ".join(p)
         if self.korunum is not None:
             iyi = self.korunum < 1e-6
-            metin += ("<br><span style='color:%s'>Toplamın korunumu: bağıl fark "
-                      "%.1e — %s</span>"
+            metin += (_("<br><span style='color:%s'>Toplamın korunumu: bağıl fark "
+                        "%.1e — %s</span>")
                       % (tema.renk("basari") if iyi else tema.renk("hata"), self.korunum,
-                         "tamam" if iyi else "bozuk, haritaya güvenmeyin"))
+                         _("tamam") if iyi else _("bozuk, haritaya güvenmeyin")))
         for not_metni in getattr(self, "korunum_notlari", []):
             metin += "<br>" + html.escape(not_metni)
         satirlar = _guc.yorumla(f, self.mutlak, getattr(self, "hedef_payi", None),
@@ -260,15 +262,15 @@ class GucHaritaWidget(QtWidgets.QWidget):
         if self.gorunum.currentData() == "dilim" and f["bagil_eksenel"]:
             i = self.dilim.value() - 1
             return self._tur_suz({a: v[i][0] for a, v in f["bagil_eksenel"].items()}), \
-                "dilim %d / %d" % (i + 1, f["eksenel_dilim"])
-        return self._tur_suz({a: v[0] for a, v in f["bagil"].items()}), "çubuk toplamı"
+                _("dilim %d / %d") % (i + 1, f["eksenel_dilim"])
+        return self._tur_suz({a: v[0] for a, v in f["bagil"].items()}), _("çubuk toplamı")
 
     def _ciz(self):
         if not self.faktorler or not self.dagilim:
-            self._bos("Güç dağılımı hesaplanmadı")
+            self._bos(_("Güç dağılımı hesaplanmadı"))
             return
         f = self.faktorler
-        self.dilim_etiket.setText("Dilim %d" % self.dilim.value())
+        self.dilim_etiket.setText(_("Dilim %d") % self.dilim.value())
         veri, alt_baslik = self._veri()
 
         self.figur.clear()
@@ -289,8 +291,8 @@ class GucHaritaWidget(QtWidgets.QWidget):
             else:
                 self._ciz_kare(eks, veri)
             # Gosterge hucrelerin ustune biniyordu (Ajan 9): aciklama baslikta.
-            eks.set_title("Bağıl güç — %s\n○ en sıcak çubuk · beyaz: yakıtsız konum "
-                          "(kılavuz/ölçüm borusu)" % alt_baslik, fontsize=8)
+            eks.set_title(_("Bağıl güç — %s\n○ en sıcak çubuk · beyaz: yakıtsız konum "
+                            "(kılavuz/ölçüm borusu)") % alt_baslik, fontsize=8)
 
         if eks_p is not None and f["eksenel_profil"]:
             y = [p[0] for p in f["eksenel_profil"]]
@@ -299,11 +301,11 @@ class GucHaritaWidget(QtWidgets.QWidget):
             eks_p.axvline(1.0, color=tema.renk("kenar_guclu"), ls="--", lw=0.8)
             if self.gorunum.currentData() == "dilim":
                 eks_p.axhline(self.dilim.value(), color=tema.renk("hata"), ls="-", lw=1.2)
-            eks_p.set_xlabel("bağıl güç", fontsize=8)
-            eks_p.set_ylabel("eksenel dilim", fontsize=8)
+            eks_p.set_xlabel(_("bağıl güç"), fontsize=8)
+            eks_p.set_ylabel(_("eksenel dilim"), fontsize=8)
             eks_p.tick_params(labelsize=7)
             eks_p.grid(alpha=0.3)
-            eks_p.set_title("Eksenel profil", fontsize=9)
+            eks_p.set_title(_("Eksenel profil"), fontsize=9)
         self.tuval.draw_idle()
 
     def _renk_cubugu(self, eslenebilir, eks):
@@ -312,7 +314,7 @@ class GucHaritaWidget(QtWidgets.QWidget):
         bosluk kaliyordu (Ajan 9 bulgusu)."""
         from mpl_toolkits.axes_grid1 import make_axes_locatable
         cax = make_axes_locatable(eks).append_axes("right", size="4%", pad=0.08)
-        self.figur.colorbar(eslenebilir, cax=cax, label="bağıl güç")
+        self.figur.colorbar(eslenebilir, cax=cax, label=_("bağıl güç"))
 
     def _renk_olcegi(self, veri):
         d = list(veri.values())
@@ -336,7 +338,8 @@ class GucHaritaWidget(QtWidgets.QWidget):
         sicak = self.faktorler["sicak_cubuk"]
         eks.plot(sicak[0] + 1, sicak[1] + 1, marker="o", ms=11, mfc="none",
                  mec=tema.renk("vurgu"), mew=2.0)
-        eks.set_xlabel("x (soldan)", fontsize=8); eks.set_ylabel("y (alttan)", fontsize=8)
+        eks.set_xlabel(_("x (soldan)"), fontsize=8)
+        eks.set_ylabel(_("y (alttan)"), fontsize=8)
         eks.tick_params(labelsize=7)
         if self.degerler.isChecked() and nx * ny <= 400:
             for (x, y), v in veri.items():
@@ -375,7 +378,7 @@ class GucHaritaWidget(QtWidgets.QWidget):
         eks.set_xlim(min(p[0] for p in tum) - pay, max(p[0] for p in tum) + pay)
         eks.set_ylim(min(p[1] for p in tum) - pay, max(p[1] for p in tum) + pay)
         eks.set_aspect("equal")
-        eks.set_xlabel("adım birimi", fontsize=8)
+        eks.set_xlabel(_("adım birimi"), fontsize=8)
         eks.tick_params(labelsize=7)
         self._renk_cubugu(matplotlib.cm.ScalarMappable(norm=norm, cmap="inferno"), eks)
 
@@ -456,7 +459,8 @@ class GucHaritaWidget(QtWidgets.QWidget):
         self._sicak_cubugu_isaretle(eks, demet_modu)
         self._kor_eksenleri(eks)
         self._renk_cubugu(koleksiyon, eks)
-        ek = (_(" · × kesik çubuk (%d, F_ΔH dışı)") % kesik) if kesik else ""
+        ek = (_n(" · × kesik çubuk (%d, F_ΔH dışı)", " · × kesik çubuk (%d, F_ΔH dışı)", kesik)
+              % kesik) if kesik else ""
         eks.set_title(_("Bağıl güç (kor ortalaması = 1) — %s · %s\n"
                         "○ en sıcak çubuk · kalın çerçeve: en sıcak demet")
                       % (_("demet ortalaması") if demet_modu else _("çubuk"), alt_baslik)
@@ -471,7 +475,8 @@ class GucHaritaWidget(QtWidgets.QWidget):
             renkler.append(ort)
             kayit = (self.faktorler.get("demetler") or {}).get(d) or {}
             tepe = kayit.get("tepe")
-            metin = _("demet %s\nortalama %.4f ± %.4f\n%d çubuk") % (
+            metin = _n("demet %s\nortalama %.4f ± %.4f\n%d çubuk",
+                       "demet %s\nortalama %.4f ± %.4f\n%d çubuk", len(uyeler)) % (
                 _guc.demet_metni(d, self.faktorler), ort, sap, len(uyeler))
             if tepe and self.gorunum.currentData() != "dilim":
                 metin += _("\ntepe %.4f ± %.4f (%s)") % (
@@ -568,7 +573,7 @@ class GucHaritaWidget(QtWidgets.QWidget):
             QtWidgets.QToolTip.hideText()
 
     def _kaydet(self):
-        yol, _ = QtWidgets.QFileDialog.getSaveFileName(
-            self, "Güç haritasını kaydet", "guc_haritasi.png", "PNG (*.png)")
+        yol, _secilen = QtWidgets.QFileDialog.getSaveFileName(
+            self, _("Güç haritasını kaydet"), "guc_haritasi.png", "PNG (*.png)")
         if yol:
             self.figur.savefig(yol, dpi=150, bbox_inches="tight")

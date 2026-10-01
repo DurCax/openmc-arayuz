@@ -597,10 +597,10 @@
   "geometri": null,
   "tamburlar": [],
   "baslik": "PU-COMP-INTER-001 (HISS/HPG) — Pu + polietilen + grafit sonsuz homojen ortam",
-  "baslik_en": "PU-COMP-INTER-001 (HISS/HPG) (ICSBEP benchmark, V&V set)",
+  "baslik_en": "PU-COMP-INTER-001 (HISS/HPG) — Pu + polyethylene + graphite infinite homogeneous medium",
   "kategori": "kriter",
   "seviye": "ileri",
-  "aciklama_en": "ICSBEP benchmark PU-COMP-INTER-001 (HISS/HPG), k = 1.0000 ± 0.0110; model from mit-crpg/benchmarks (MIT license).",
+  "aciklama_en": "ICSBEP benchmark PU-COMP-INTER-001 (HISS/HPG): Pu + polyethylene + graphite infinite homogeneous medium. One case of the V&V set (NUREG/CR-6698 bias/USL). Experimental benchmark value k = 1.0000 ± 0.0110. Model: mit-crpg/benchmarks icsbep/pu-comp-inter-001/openmc (MIT license); geometry and atom densities transferred one to one (concentric spherical shells).",
   "referans": {
     "k": 1.0,
     "sigma": 0.011,

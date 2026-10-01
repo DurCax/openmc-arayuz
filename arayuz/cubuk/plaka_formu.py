@@ -7,6 +7,7 @@
 """
 
 from cekirdek import sema
+from cekirdek.ceviri import _
 from arayuz.cubuk.parca_islemleri import eksik_malzemeler, rol_listesi
 from arayuz.cubuk.malzeme_kutusu import MalzemeKutusu
 
@@ -50,7 +51,7 @@ class PlakaFormuMixin(object):
             s, p.get("sogutucu"), rol_listesi(s, "sogutucu"), bos=False))
         self.p_yan_mal = self._plaka_kutusu("yan_levha_malzeme", MalzemeKutusu(
             s, p.get("yan_levha_malzeme"), yapisal, bos=False,
-            yok_etiketi="Zarf ile aynı"))
+            yok_etiketi=_("Zarf ile aynı")))
         self._plaka_ozet(p)
 
     def _plaka_ozet(self, p):
@@ -62,12 +63,12 @@ class PlakaFormuMixin(object):
         if self.p_yan_mal is not None:
             self.p_yan_mal.setEnabled(yan_var)
             self.p_yan_mal.setToolTip("" if yan_var else
-                                      "Yan levha kalınlığı 0: yan levha kurulmaz.")
+                                      _("Yan levha kalınlığı 0: yan levha kurulmaz."))
         self.e_yan_mal.setEnabled(yan_var)
         eksik = eksik_malzemeler(self.spec, p)
-        self._hata_goster(self.p_eksik, (
-            "Malzemesi seçilmemiş: %s. Uygun malzeme yoksa önce Malzemeler "
-            "sekmesinden ekleyin." % ", ".join(eksik)) if eksik else "")
+        self._hata_goster(self.p_eksik, _(
+            "Malzemesi seçilmemiş: {eksik}. Uygun malzeme yoksa önce Malzemeler "
+            "sekmesinden ekleyin.").format(eksik=", ".join(eksik)) if eksik else "")
 
     def _plaka_kaydet(self, *_):
         if self._yukleniyor:
