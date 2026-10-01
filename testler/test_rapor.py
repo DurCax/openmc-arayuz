@@ -165,7 +165,10 @@ def test_rapor_sayilar_birebir():
             "-> %r / %r" % (f["F_q"], g["F_q"]))
     from cekirdek import rapor_sablon
     metin = rapor_sablon.html(icerik, gomulu=False)
-    for m in ("%.5f ± %.5f" % (g["k"], g["sigma"]), "%.4f" % g["F_dH"], "%.4f" % g["F_q"]):
+    # K5 (GUM §7.2.6): belirsizlik 2 anlamli rakam, deger ayni basamakta, (1σ)
+    from cekirdek.uygunluk_denetimi.kurallar_rapor import belirsizlik_metni as bm
+    for m in (bm(g["k"], g["sigma"]), bm(f["F_dH"], f["F_dH_sapma"]),
+              bm(f["F_q"], f["F_q_sapma"])):
         kontrol("HTML metni: %s" % m, m in metin)
 
 

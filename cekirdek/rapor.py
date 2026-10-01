@@ -23,6 +23,7 @@ YAPI
   rapor_sablon.html(icerik, gomulu)  -> HTML metni (stdlib string.Template)
   rapor_sablon.grafik                -> matplotlib Figure + Agg (pyplot YOK)
   rapor_pdf.yaz(icerik, yol)         -> QTextDocument + QPdfWriter
+  uygunluk_eki(...)                  -> cekirdek/rapor_uygunluk (Dalga S-2)
   Yeni bagimlilik yok: matplotlib, openmc, PySide6 zaten kurulu.
 
 KOMUT SATIRI
@@ -368,6 +369,7 @@ def bulgular(spec):
 
 def _kosu_ozeti(spec, sonuc, k_nesil):
     from cekirdek import kosucu, uygunluk
+    from cekirdek.rapor_sablon import bicim
     k, s = sonuc["keff"] if sonuc.get("keff") else (None, None)
     ozet = {"mod": sonuc["mod"], "keff": k, "sigma": s, "cevrim": sonuc["cevrim"],
             "pasif": sonuc["pasif"], "parcacik": sonuc["parcacik"],
@@ -375,8 +377,9 @@ def _kosu_ozeti(spec, sonuc, k_nesil):
             "kinetik": sonuc.get("kinetik"), "durum": "", "ayrinti": "", "yakinsama": ""}
     if k is not None:
         beta = (sonuc.get("kinetik") or {}).get("beta_eff")
-        ozet["durum"], ozet["ayrinti"] = kosucu.keff_yorumu(
-            k, s, beta, sonsuz=uygunluk.sonsuz_ortam(spec))
+        sonsuz = uygunluk.sonsuz_ortam(spec)
+        ozet["durum"], ayrinti = kosucu.keff_yorumu(k, s, beta, sonsuz=sonsuz)
+        ozet["ayrinti"] = bicim.kosu_ayrintisi(ayrinti, k, s, sonsuz)     # K5 (GUM)
         if ozet["entropi"]:
             ozet["yakinsama"] = kosucu.entropi_yakinsama(ozet["entropi"], ozet["pasif"])[1]
         elif sonuc.get("entropi_hata"):
@@ -385,7 +388,7 @@ def _kosu_ozeti(spec, sonuc, k_nesil):
             ozet["yakinsama"] = _("Shannon entropisi kapalı — kaynak yakınsaması doğrulanamıyor")
     if ozet["kinetik"]:
         kin = ozet["kinetik"]
-        ozet["lambda_metni"] = kosucu.lambda_metni(kin["lambda"], kin["lambda_sapma"])
+        ozet["lambda_metni"] = bicim.zaman_metni(kin["lambda"], kin["lambda_sapma"])
     return ozet
 
 
@@ -497,7 +500,8 @@ def icerik_topla(spec, kosu_dizini):
     Raporun butun verisi (YENI sozluk; spec degismez):
       kapak, tekrar [(etiket, deger)], malzemeler, ayarlar, spec_json,
       bulgular, kosu (None | keff, sigma, ...), guc (None | faktorler, ...),
-      tallyler, tukenme (None | ...), gorseller {ad: PNG bayt}, uyarilar
+      tallyler, tukenme (None | ...), gorseller {ad: PNG bayt}, uyarilar,
+      uygunluk (rapor_uygunluk.ek_verisi: profiller, gruplar, cerceve, ...)
     """
     from cekirdek.rapor_sablon import grafik
     spec = copy.deepcopy(spec)
@@ -514,7 +518,18 @@ def icerik_topla(spec, kosu_dizini):
         icerik["gorseller"] = dict(icerik["gorseller"], **kosu["gorseller"])
         uyarilar += kosu["uyarilar"]
     icerik["uyarilar"] = uyarilar
+    icerik["uygunluk"] = uygunluk_eki(spec, kosu_dizini, icerik)
+    if icerik["uygunluk"]["hata"]:
+        uyarilar.append(icerik["uygunluk"]["hata"])
     return icerik
+
+
+def uygunluk_eki(spec, kosu_dizini, icerik):
+    """Uygunluk eki verisi (cekirdek/rapor_uygunluk.ek_verisi). Profil D'nin K5
+    kurali EKSIZ rapor metnini denetler (ek, bulgularin kendisini aktarir)."""
+    from cekirdek import rapor_sablon, rapor_uygunluk
+    taslak = rapor_sablon.html(dict(icerik, uygunluk=None), gomulu=False)
+    return rapor_uygunluk.ek_verisi(spec, kosu_dizini, rapor_metni=taslak)
 
 
 def _girdileri_denetle(spec, kosu_dizini, bicim):

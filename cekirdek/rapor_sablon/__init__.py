@@ -19,6 +19,8 @@ import os
 from string import Template
 
 from cekirdek.ceviri import _, etkin_dil
+from cekirdek.rapor_sablon import uygunluk_eki
+from cekirdek.rapor_sablon.bicim import bm, gosterim_notu
 
 SABLON_DIZINI = os.path.dirname(os.path.abspath(__file__))
 _SEVIYE = {"hata": ("hata", "HATA"), "uyari": ("uyari", "UYARI"), "bilgi": ("bilgi", "BİLGİ")}
@@ -75,6 +77,7 @@ def _kapak(icerik):
     if k["aciklama"]:
         parca.append("<p>%s</p>" % _e(k["aciklama"]))
     parca.append(_anahtar_deger(satirlar))
+    parca.append('<p class="soluk">%s</p>' % _e(gosterim_notu()))
     if icerik["uyarilar"]:
         parca.append('<p class="kutu"><b>%s</b><br>%s</p>' % (
             _e(_("Uyarılar")), "<br>".join(_e(u) for u in icerik["uyarilar"])))
@@ -119,8 +122,8 @@ def _kosu(icerik, gomulu):
     if k["keff"] is None:
         parca.append("<p>%s</p>" % _e(_("Sabit kaynak hesabı — k-eff tanımsız.")))
     else:
-        parca.append('<p class="buyuk">k-eff = <span class="sayi">%.5f ± %.5f</span></p>'
-                     % (k["keff"], k["sigma"]))
+        parca.append('<p class="buyuk">k-eff = <span class="sayi">%s</span></p>'
+                     % _e(bm(k["keff"], k["sigma"])))
         parca.append("<p>%s<br>%s</p>" % (_e(k["durum"]), _e(k["ayrinti"])))
     satirlar = [(_("Çevrim (pasif)"), "%d (%d)" % (k["cevrim"], k["pasif"])),
                 (_("Parçacık / çevrim"), str(k["parcacik"]))]
@@ -128,8 +131,8 @@ def _kosu(icerik, gomulu):
         satirlar.append((_("Kaynak yakınsaması"), k["yakinsama"]))
     if k.get("kinetik"):
         kin = k["kinetik"]
-        satirlar += [("β_eff", "%.1f ± %.1f pcm" % (kin["beta_eff"] * 1e5,
-                                                    kin["beta_eff_sapma"] * 1e5)),
+        satirlar += [("β_eff", bm(kin["beta_eff"] * 1e5, kin["beta_eff_sapma"] * 1e5,
+                                  "pcm")),
                      ("Λ", k.get("lambda_metni", ""))]
     parca.append(_anahtar_deger(satirlar))
     parca.append(_gorsel(icerik, "yakinsama", gomulu, alt=_("yakınsama")))
@@ -144,8 +147,8 @@ def _guc(icerik, gomulu):
     if g.get("hata"):
         return parca[0] + '<p class="hata">%s</p>' % _e(_("okunamadı: %s") % g["hata"])
     f = g["faktorler"]
-    satirlar = [("F_ΔH", "%.4f ± %.4f" % (f["F_dH"], f["F_dH_sapma"])),
-                ("F_q", ("%.4f ± %.4f" % (f["F_q"], f["F_q_sapma"])) if f.get("F_q")
+    satirlar = [("F_ΔH", bm(f["F_dH"], f["F_dH_sapma"])),
+                ("F_q", bm(f["F_q"], f["F_q_sapma"]) if f.get("F_q")
                  else _("tanımsız (2B model)")),
                 (_("En sıcak çubuk"), g["sicak_cubuk"]),
                 (_("Çubuk / eksenel dilim"), "%d / %d" % (f["cubuk_sayisi"], f["eksenel_dilim"]))]
@@ -181,7 +184,7 @@ def _tukenme(icerik, gomulu):
     t = icerik["tukenme"]
     if not t:
         return ""
-    satirlar = [(str(i), "%.2f" % z, "%.3f" % y, "%.5f ± %.5f" % (k, s))
+    satirlar = [(str(i), "%.2f" % z, "%.3f" % y, bm(k, s))
                 for i, z, y, k, s in t["satirlar"]]
     parca = ["<h2>%s</h2>" % _e(_("Tükenme")),
              _tablo((_("Adım"), _("Zaman [gün]"), _("Yanma [MWd/kgHM]"), "k"), satirlar),
@@ -215,7 +218,8 @@ def html(icerik, gomulu=True):
     from cekirdek import surum
     govde = "".join((_kapak(icerik), _model(icerik, gomulu), _kosu(icerik, gomulu),
                      _guc(icerik, gomulu), _tallyler(icerik), _tukenme(icerik, gomulu),
-                     _bulgular(icerik), _ek(icerik)))
+                     _bulgular(icerik), uygunluk_eki.html(icerik.get("uygunluk")),
+                     _ek(icerik)))
     return _sablon("rapor.html").substitute(
         dil=_e(etkin_dil()), uretici=_e("%s %s" % (surum.UYGULAMA_ADI, surum.surum())),
         baslik=_e(icerik["kapak"]["baslik"]), stil=_stil(), govde=govde)
