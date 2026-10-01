@@ -138,6 +138,19 @@ def test_guc_yorumu_once_istatistik():
     kontrol("yeterli istatistikte PWR siniri yorumu yine var", "1.65" in " ".join(iyi))
 
 
+def test_simge_dugmesi_adi_ipucunda():
+    print("\n[QA6] Gelismis geometri: simge dugmelerinin adi ipucunun basinda")
+    from PySide6 import QtWidgets
+    QtWidgets.QApplication.instance() or QtWidgets.QApplication([])
+    from arayuz.geometri.editor import GelismisEditor
+    e = GelismisEditor()
+    for anahtar in ("yerlesim", "grup", "halka"):
+        d = e.dugmeler[anahtar]
+        kontrol("%s: ipucu adla baslar (%s)" % (anahtar, d.accessibleName()),
+                d.toolTip().startswith(d.accessibleName()), "-> %r" % d.toolTip())
+
+
 HIZLI = [test_elle_ealf_tally_vv_dusurmez, test_panel_gecersiz_tally_duzeltir,
-         test_entropi_kisa_pasif_yakalanir, test_guc_yorumu_once_istatistik]
+         test_entropi_kisa_pasif_yakalanir, test_guc_yorumu_once_istatistik,
+         test_simge_dugmesi_adi_ipucunda]
 YAVAS = []

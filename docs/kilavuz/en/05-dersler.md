@@ -303,7 +303,7 @@ core** (inserted, lowest k), **180° the absorber faces outwards** (withdrawn, h
 1. Open the **lattice core + drum reflector** example. In the tree: **Root — rectangle 64.26×64.26**,
    **Inside: lattice kor_kafesi (square 3×3)**, **Ring 1** (outer cross-section a cylinder,
    r = 80 cm; content `berilyum`) and under it **Placement: tamburlar_yansitici (ring, 4)** →
-   **Content: component tambur_b4c**. At the bottom **Groups (1)** → **Group: tamburlar
+   **Content: component tambur_b4c**. At the bottom **Control groups (1)** → **Group: tamburlar
    (rotation = 180)**.
 2. Select the placement row. Form: **Mode** Ring, **Count** 4, **Center radius** 42 cm,
    **Start angle** 0°, **Natural cross-section (drum circle)** checked, **Facing the core** towards the
@@ -372,7 +372,7 @@ interface.
     **error** appears for each one saying that the hole of 'tambur_halkasi' crosses the inner
     boundary of the region (the inner corner is 121.24 × 2/√3 ≈ 140.0 cm from the centre). Set it
     back to 30°.
-13. Press **+ Group** in the toolbar; a new rotation group appears under **Groups** (value 0). Select
+13. Press **+ Group** in the toolbar; a new rotation group appears under **Control groups** (value 0). Select
     the group: name `tamburlar`, type rotation, **Value** 180, and tick `tambur_halkasi` under
     **Members**. (The same link can be made with the **Group** box of the placement form.)
 14. In the xy cross-section see that the absorber arcs face outwards. **File › Save**. With Normal

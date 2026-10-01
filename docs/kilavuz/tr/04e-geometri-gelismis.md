@@ -29,6 +29,9 @@ gelişmiş modda kaydedilmiş bir dosyayı açmak (`ornekler/pwr_kare_altigen_ha
 | sağ: özellikler | seçili ögenin formu (aşağıda); sayı kutuları birimlidir (cm, °) |
 | alt şerit | kesik / gizli konum özeti ve **Git** (kesik konumu olan ilk kafesi seçer) |
 
+Araç çubuğundaki düğmeler simgedir (**+ Düğüm** ▾ dışında); aşağıdaki adları ipucunun
+başında ve ekran okuyucu için erişilebilir adda görünür.
+
 | Eylem | Ne zaman etkin | Ne yapar |
 |---|---|---|
 | **+ Düğüm** ▾ | bir düğüm seçiliyken | seçili yuvaya yeni düğüm koyar: Malzeme, Bileşen (kütüphaneden), Kafes, Kap (şekil + halkalar), Eksenel yığın; eskisi Geri Al ile döner |

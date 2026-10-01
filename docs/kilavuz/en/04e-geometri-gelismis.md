@@ -25,10 +25,13 @@ the top of the page reminds you: the template wizard is closed; to return to the
 | Area | What it does |
 |---|---|
 | top: toolbar | adding nodes and tree operations (table below); the right-click menu shows the same actions |
-| left: tree | nodes, rings, placements, layers, and the **Components** and **Groups** branches; drag and drop is allowed only onto a compatible slot (on an incompatible target the cursor shows "forbidden") |
+| left: tree | nodes, rings, placements, layers, and the **Components** and **Control groups** branches; drag and drop is allowed only onto a compatible slot (on an incompatible target the cursor shows "forbidden") |
 | center: cross-section | schematic **xy** or **xz** cross-section; a z box in xy; the mouse wheel zooms, dragging with the middle/right button pans, a double click fits; a click selects that node in the tree; the selected node is in color, the others faded; truncated positions hatched, hidden positions dotted; in xz the layer boundaries are dashed lines |
 | right: properties | the form of the selected item (below); number boxes carry units (cm, °) |
 | bottom strip | summary of truncated / hidden positions and **Go** (selects the first lattice with a truncated position) |
+
+The toolbar buttons are icons (except **+ Node** ▾); their names below appear at the start of
+the tooltip and as the accessible name for screen readers.
 
 | Action | When enabled | What it does |
 |---|---|---|

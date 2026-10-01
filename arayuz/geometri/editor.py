@@ -81,7 +81,9 @@ class GelismisEditor(QtWidgets.QWidget):
         self.bos_etiketi.setObjectName("soluk")
 
     def _eylem(self, ikon, metin, islev, ipucu=None):
-        d = b.ikon_dugmesi(ikon, ipucu or metin)
+        # Simge dugmesi: adi (kilavuzdaki "+ Yerlesim" vb.) ipucunun basinda ve
+        # erisilebilir adda gorunur (QA14-Q6)
+        d = b.ikon_dugmesi(ikon, "%s — %s" % (metin, ipucu) if ipucu else metin)
         d.setAccessibleName(metin)
         d.clicked.connect(islev)
         return d

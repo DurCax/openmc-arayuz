@@ -97,6 +97,27 @@ A plate element is a finite box. When it is used in a core lattice (for example
 otherwise the region outside the element stays undefined (`docs/ORNEKLER.md` "Changes needed
 in the core").
 
+### Drums card
+
+The library of control drum (rotating drum) **definitions** (`tamburlar[]`). The card is shown
+only in **advanced geometry** mode or when the model already has a drum definition; that it is
+hidden in template mode is deliberate: the drums of the **compact core with control drums**
+template do not use this library, their dimensions are the drum fields on the **Geometry** page
+(`kor.tambur`, [4.4 Geometry](04d-geometri.md#geometri)). To use a definition in the tree, switch
+to advanced geometry ([4.5](04e-geometri-gelismis.md#geometri-gelismis)).
+
+| Field | What | Unit | `spec` |
+|---|---|---|---|
+| **Name** | name of the definition (placements refer to it by this name) | - | `tamburlar[].ad` |
+| **Radius** | outer radius of the drum | cm | `yaricap` |
+| **Drum body material** | drum body (e.g. beryllium) | - | `govde_malzeme` |
+| **Absorber material** | absorber arc (e.g. B₄C) | - | `emici_malzeme` |
+| **Absorber inner radius** | inner radius of the absorber arc (< radius) | cm | `emici_ic_yaricap` |
+| **Absorber arc** | angular width of the absorber arc | ° | `emici_aci` |
+
+The number, the centre radius and the rotation are not in the definition but in the **placement**
+and the **rotation group** of the advanced geometry ([5.5](05-dersler.md#ders-tambur)).
+
 ### Common findings
 
 | Finding (summary) | Level | Cause and fix |
