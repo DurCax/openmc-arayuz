@@ -380,3 +380,255 @@ no axial leakage; the model check warns about it). For a more realistic value, u
   D = group value + offset.)
 - Why do Δk and Δρ give different numbers for the drum worth? (Δρ = Δk/(k₁·k₂); the difference
   grows as the k values move away from 1. Always state which quantity pcm is applied to.)
+
+---
+
+<a id="ders-tukenme"></a>
+## 5.6 Depletion and nuclide selection
+
+**Example file:** `ornekler/pwr_tukenme.json` · **Level:** advanced · **Estimated time:** full example
+~50 minutes of running; shortened class run ~5–10 minutes
+
+**Goal.** Compute how the fuel changes over time, see Xe-135 / Sm-149 poisoning, select the nuclides
+to track and export the result as CSV. Every field of the page:
+[4.9 Depletion](04i-tukenme.md#tukenme).
+
+**Steps.**
+
+1. Open the **PWR pin cell — depletion** example: the same pin cell as `pwr_pinhucre` (a k∞ model).
+2. **Depletion** page: **Enable depletion (burnup) calculation** is checked.
+   - **Power density** 40 W/gHM (not an absolute power: in a 2D model it would have to be "per cm").
+   - **Step unit** days; **Steps** 0.5, 1.5, 3, 5, 10, 30, 100, 350 (500 days in total =
+     20 MWd/kg). The first two steps are deliberately short: Xe-135 reaches equilibrium in about
+     2 days; a long first step would squash this drop into a single line. The line below gives the
+     number of steps, the total burnup and the number of transport solutions.
+   - **Chain** automatic (from the spectrum) → ENDF/B-VIII.0 thermal for this model; **Integrator**
+     CECM (2 transport solutions per step) → 8 × 2 + 1 = 17 transport solutions.
+3. **Tracked nuclides** card: type `xe` into the search box and find Xe-135 in the tree. From the
+   ready-made sets add the poisons and the Pu vector. Selected nuclides appear as chips and are
+   removed with ×. A name that is not in the chain becomes a **red chip**. Nuclide selection is not
+   physics: changing it after the run does not make the result stale.
+4. **Run settings** 5 000 × 60 batches (10 inactive). **Start depletion**. When the first transport
+   solution finishes, the remaining time is computed from its **measured** duration.
+5. **Shortened class run (optional).** If time is short, after **Save as** set the **Chain** to the
+   simplified CASL thermal chain (228 nuclides, ~3 times faster) and the **Steps** to `0.5, 1.5`
+   (5 transport solutions). The CASL chain is only for a preliminary look; the numbers may differ
+   slightly from the full chain.
+6. When the run ends, the result card shows a plot (k-eff and the selected nuclides versus time) and
+   a table (days, MWd/kg, k-eff, ρ [pcm]). **Export as CSV** saves time, burnup, k, σ and the atom
+   count and density of every selected nuclide.
+7. Change something in the model (for example **Power density** 38): the previous result line turns
+   into a red **stale result** and says which section changed. Undo with **Ctrl+Z**.
+
+**Expected result** ([README.md](../../../README.md), `pwr_tukenme` example in the depletion section;
+full ENDF/B-VIII.0 thermal chain, CECM, 5 000 × 60 particles, ~50 minutes):
+
+| days | MWd/kg | k∞ |
+|---|---|---|
+| 0 | 0 | 1.35930 ± 0.00184 |
+| 0.5 | 0.02 | 1.32788 ± 0.00179 |
+| 2 | 0.08 | 1.31232 ± 0.00211 |
+| 50 | 2 | 1.27547 ± 0.00175 |
+| 500 | 20 | 1.06545 ± 0.00168 |
+
+- 0 → 2 days (Xe-135 + early Sm-149): Δρ = **−2634 ± 158 pcm** (Δρ × 10⁵) — within the published
+  ~2500–3000 pcm band for a full-power PWR.
+- The value at day 0 is within 1σ of the regression anchor (k∞ = 1.3570 ± 0.0020).
+- At 20 MWd/kg about 40 % of the U-235 remains; Pu-239 is ~0.5 % of the heavy metal.
+
+**What we learned / check questions.**
+
+- Why is "choosing the fast chain not enough"? (The fission product yield is a separate setting;
+  in a fast system the yield energy is set to 500 keV — [6.5 Known pitfalls](06-sonuclar.md#tuzaklar).)
+- What would happen if the volume of a depletable material were wrong by a factor f? (The burnup
+  rate would be wrong by f, without leaving a trace in k-eff; this is why volumes are computed
+  analytically.)
+- Why does **Pin-by-pin burnup** change nothing in this model? (The pin cell has a single fuel
+  instance.)
+
+---
+
+<a id="ders-guc"></a>
+## 5.7 Power map and F_ΔH
+
+**Example file:** `ornekler/pwr_3b.json` · **Level:** intermediate · **Estimated time:** 30 minutes
+(run ~2–5 minutes)
+
+**Goal.** Compute the pin-by-pin power distribution, read the **F_ΔH** and **F_q** peaking factors and
+learn the statistical limits of these numbers. Fields: [4.6 Run settings](04f-hesap-ayarlari.md#hesap-ayarlari),
+interpretation: [6.3 Interpreting the power distribution](06-sonuclar.md#guc-dagilimi-yorum).
+
+**Steps.**
+
+1. Open the **PWR 17×17 assembly — 3D** example: a single assembly 366 cm high; radial boundary
+   `reflective`, bottom and top boundaries `vacuum`.
+2. On the **Run settings** page the power distribution card is on: pin-by-pin power distribution
+   (F_ΔH, F_q) is checked, **Target pin** `yakit_cubugu`, **Score** `kappa-fission`, **Axial bins**
+   20, **Total power** 17.6e6 W (`guc_dagilimi.toplam_guc`).
+3. **Why 17.6 MW of total power?** This field is the power of **the region covered by the model**,
+   not of the whole core: 3400 MWth / 193 assemblies ≈ 17.6 MW. Entering the power of the whole
+   core for a single-assembly model makes the linear power look 193 times too large.
+4. The example uses 20 000 particles × 150 batches (40 inactive). **Run**.
+5. When the run ends, the power map appears on the **Run** page: 264 fuel pins coloured, guide tubes
+   empty. **Write values on the map** writes the relative power in each cell. The summary lines give
+   F_ΔH, F_q, the mean and the highest linear power.
+6. Run the same model with **Quick test** and compare F_ΔH: with little statistics F_ΔH goes **up**.
+
+**Expected result** ([README.md](../../../README.md), power distribution and peaking factors section;
+20 000 particles, 20 axial bins): **F_ΔH = 1.071**, **F_q = 1.885**, mean linear power **182 W/cm**.
+
+- **The uncertainties are optimistic.** The reported σ per bin is 0.003–0.008, while the real spread
+  between three independent seeds was measured as 0.07–0.17 (~20 times larger): in an eigenvalue
+  calculation the correlation between batches makes the tally σ too small. Run with several seeds
+  for the real uncertainty.
+- **F_ΔH is a maximum and is biased upwards with little statistics:** in the same model 1.1455 was
+  measured with 3 000 particles and 1.0708 with 20 000 particles.
+- **F_q depends on the axial resolution:** coarse bins average the peak away; use at least 10–20 bins
+  (the pure cosine limit is π/2 = 1.571).
+
+**What we learned / check questions.**
+
+- If the linear power came out as ~35 000 W/cm instead of ~182 W/cm, which field is wrong?
+  (**Total power**: the power of the whole core was entered.)
+- Why must the sum of the pin powers equal the unfiltered tally? (Conservation check; it catches
+  mapping errors.)
+- Why is F_ΔH the same and F_q smaller in the axially layered `ornekler/pwr_eksenel.json`? (Layering
+  does not touch the radial distribution; the water reflector flattens the axial profile.)
+
+<a id="ders-benchmark"></a>
+## 5.8 Benchmark and C/E
+
+**Example files:** `ornekler/godiva_kriter.json`, `ornekler/kriter_jezebel.json`,
+`ornekler/kriter_flattop25.json`, `ornekler/kriter_lct008.json` · **Level:** introductory–advanced ·
+**Estimated time:** Godiva 10 minutes; LCT-008 long (reference run ~450 s)
+
+**Goal.** Compare the calculation with a measured critical assembly (ICSBEP) and read **C/E** and
+**C − E** correctly. Background: [7.4 V&V](07-uygunluk.md#vv).
+
+**Steps.**
+
+1. Open the **Godiva critical sphere** example: a bare HEU metal sphere (ICSBEP HEU-MET-FAST-001).
+   The core type is `kuresel`; the shells are edited only in JSON.
+2. Leave the **Run settings** as in the file; the reference run is 100 000 particles × 150 batches
+   (50 inactive). If time is short, run with **Normal** and take the larger σ into account. **Run**.
+3. Compare the result with the experimental value: E ± σe = 1.0000 ± 0.0010. Compute:
+   C − E [pcm] = (C − E) × 10⁵ (**Δk × 10⁵**, not a reactivity difference), difference/σ =
+   |C − E| / √(σc² + σe²), C/E = C / E.
+4. Do the same for Jezebel and Flattop-25. LCT-008 (LEU UO₂ lattice, borated water) takes long;
+   only read its result.
+
+**Expected result** ([VV.md](../../VV.md), table of experimental benchmarks):
+
+| Example | Benchmark | E ± σe | C ± σc | C − E [pcm] | difference/σ |
+|---|---|---|---|---|---|
+| `godiva_kriter.json` | HEU-MET-FAST-001 | 1.0000 ± 0.0010 | 1.00038 ± 0.00025 | +38 | 0.37 |
+| `kriter_jezebel.json` | PU-MET-FAST-001 | 1.0000 ± 0.0020 | 0.99996 ± 0.00023 | −4 | 0.02 |
+| `kriter_flattop25.json` | HEU-MET-FAST-028 | 1.0000 ± 0.0030 | 1.00106 ± 0.00026 | +106 | 0.35 |
+| `kriter_lct008.json` | LEU-COMP-THERM-008/1 | 1.0007 ± 0.0012 | 1.00067 ± 0.00021 | −3 | 0.02 |
+
+The acceptance criterion |C − E| ≤ 3·√(σc² + σe²) and σc ≤ 30 pcm is **the project's own criterion**;
+it does not come from a standard.
+
+**What we learned / check questions.**
+
+- What is the difference between the regression anchor (pin cell k∞) and the Godiva test? (The anchor
+  says "the code is consistent with itself"; the benchmark says "the result agrees with a
+  measurement".)
+- Why is k_norm = C/E used for a benchmark with E = 1.0007? (NUREG/CR-6698 normalisation; K9.)
+- Do four benchmarks demonstrate the calculational bias of an LWR design? (No: there are not enough
+  independent cases for LWR/LEU lattices, the USL cannot be computed — [7.4](07-uygunluk.md#vv).)
+
+<a id="ders-kritik-arama"></a>
+## 5.9 Critical search
+
+**Example files:** `ornekler/pwr_17x17.json`, `ornekler/pwr_kontrol.json`,
+`ornekler/tamburlu_kor.json` · **Level:** intermediate · **Estimated time:** 5–30 minutes per search
+
+**Goal.** Find the parameter value that gives the target k-eff (critical boron, critical rod
+position, critical drum angle) and read the uncertainty of the result. Method:
+[4.8 Analysis](04h-analiz.md#analiz).
+
+**Steps.**
+
+1. Open `ornekler/pwr_17x17.json`. On the **Analysis** page set **Calculate** to **Critical search
+   (value giving the target k-eff)**.
+2. **Parameter**: boron concentration (`bor_ppm`); **Target material** `su`; **Start** 0, **End**
+   5000 ppm; **Target k-eff** 1.0. Check the **Estimated time** and press **Start critical search**.
+3. The search runs the ends of the interval, then narrows with a bracket-protected false position
+   plus bisection. The stopping criterion is |k − target| ≤ 2σ. If the root is not in the interval
+   it does **not extrapolate**; it asks you to widen the interval.
+4. `ornekler/pwr_kontrol.json`: **Parameter** rod insertion (`cubuk_daldirma`, %), interval 0–100.
+5. `ornekler/tamburlu_kor.json`: **Parameter** drum rotation (`tambur_donme`, degrees), interval
+   0–180.
+
+**Expected result** ([README.md](../../../README.md), reactivity coefficients and critical search
+section):
+
+| Model | Parameter | Critical value | Number of runs |
+|---|---|---|---|
+| `pwr_17x17` | boron | **3430 ppm** | 7 |
+| `pwr_kontrol` | rod insertion | **87.85 ± 0.09 %** | 13 |
+| `tamburlu_kor` | drum rotation | **122.46° ± 3.68** | 4 |
+
+The uncertainty of the root is reported from the local slope as δx = σ_k / |dk/dx|.
+
+**What we learned / check questions.**
+
+- `pwr_17x17` is a k∞ model; 3430 ppm is the critical boron of an **infinite lattice**, not of a core.
+  Why? (Reflective boundary: no leakage.)
+- Why is the control rod curve not the classic S shape? (A single assembly with high k∞: the unrodded
+  lower part stays supercritical on its own; the worth accumulates late.)
+- Why is the stopping criterion 2σ and not 1σ? (The same definition as the result panel, so that the
+  search does not reject a configuration the panel calls critical.)
+
+<a id="ders-rapor"></a>
+## 5.10 Report and conformity annex
+
+**Example file:** any finished run (for example the run of lesson 5.1 or 5.8) · **Level:** intermediate ·
+**Estimated time:** 10 minutes
+
+**Goal.** Produce a PDF/HTML report from a run, read the **conformity annex** of the report and
+separate what the annex shows from what it does not. Background:
+[7. Conformity check](07-uygunluk.md#uygunluk-denetimi).
+
+**Steps.**
+
+1. Finish a run (for example `ornekler/godiva_kriter.json`). In the conformity card on the **Run**
+   page choose the profiles: **A** (Monte Carlo good practice) and **D** (reporting) for every run;
+   **B** (criticality safety) for a critical assembly, **C** (reactor core design) for a core
+   calculation.
+2. **File → Create report…** (**Ctrl+R**). Choose the file name and format (`.pdf` or `.html`).
+   **Open** in the notification opens the report.
+3. The same from the terminal:
+
+   ```bash
+   openmc-arayuz-kosu rapor kosu/ -o rapor.pdf
+   openmc-arayuz-kosu uygunluk kosu/ --profil A,B,D
+   ```
+
+4. Read the report in order: model summary, results (k ± 1σ, labelled "standard uncertainty"),
+   reproducibility block (OpenMC version, library, sha256, seed — `kapsul.json`) and the
+   **conformity annex**: for every rule **met / not met / not applicable**, its label (good practice /
+   standard / project criterion / user-defined limit) and its source.
+
+**Expected result.** For the Godiva run the rules of profiles A and D are mostly **met**; profile B
+needs the V&V set for the USL; if the application's subset has too few independent cases the annex
+says "USL could not be computed" ([9.3](09-sorun-giderme.md#usl-hesaplanamadi)). "Not applicable"
+lines are not a failure (unless `--siki` is given).
+
+**What it shows and what it does not.**
+
+- **It shows:** that the input and data of the run are traceable, that the uncertainty is reported
+  correctly, that source convergence and statistics pass the good-practice thresholds; and the
+  bias/USL calculation if present.
+- **It does not show:** that the model represents the real facility correctly, that the result is
+  fit for licensing, or that the tool "complies" with a standard or is certified. These need the user
+  organisation's quality assurance programme, an independent review and its own validation report
+  ([7.3](07-uygunluk.md#ne-kanitlar)).
+
+**What we learned / check questions.**
+
+- What is the difference between "met" and "not applicable"? (In the second there is no data to
+  evaluate the rule, for example F_ΔH with no user-defined limit.)
+- Why is the exit code of the `uygunluk` command useful in CI? (0 no error, 1 error findings,
+  2 usage error, 3 a rule that could not be evaluated with `--siki`.)
