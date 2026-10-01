@@ -283,7 +283,8 @@ def ad_hatasi(spec, yeni, eski=None):
         return None
     if yeni == sema.BOSLUK:
         return _("'{ad}' ayrılmış bir addır (Boş, madde yok).").format(ad=yeni)
-    diger = [x["ad"] for liste in ("cubuklar", "plakalar", "demetler", "malzemeler")
+    diger = [x["ad"] for liste in ("cubuklar", "plakalar", "demetler", "tamburlar",
+                                   "malzemeler")
              for x in spec.get(liste, []) if x.get("ad") != eski]
     if yeni in diger:
         return _("Bu ad zaten kullanılıyor: {ad}").format(ad=yeni)
