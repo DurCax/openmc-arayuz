@@ -42,7 +42,7 @@ Dal `v2-d3-13b` (worktree `agent-a300f841befd48df8`). Kota kararıyla DURDURULDU
 
 A–F (ilk tur) kota ile öldü; işleri dosyalarda/commit'lerde. F1 (04c, 04i TR + 04, 04a–c, 04i EN),
 F2 (04d–h EN), F4 (08 TR+EN, 07/09 EN), F5 (01, 03 EN) BİTTİ. F3 (05-dersler) durdurma mesajı
-aldı; yazdığını commit+push ediyor. Açık çatal kalmadı (F3 dışında).
+durdu; 5.1–5.6 commit'li (3c4d7f4, b82ffc4), yarım iş yok. Açık çatal YOK.
 
 ## Orkestratöre notlar (başkasının dosyası)
 
@@ -53,4 +53,7 @@ aldı; yazdığını commit+push ediyor. Açık çatal kalmadı (F3 dışında).
 - Ajan 12: menü öğesi "Yardım → Kullanım kılavuzu" ve F1 bağlamı kılavuz metninde böyle anıldı.
 - Gelişmiş editörde daldırma grubu değer kutusu "°" birimi gösteriyor ama değer yüzde (çatal F2).
 - `demetler[].kilif` ve `tukenme.ek_malzemeler` için arayüzde düzenleyici yok (kılavuzda "yalnız JSON").
+- Ders 5.5 Bölüm C (6 tamburu 5.4 modelinin su halkasına koymak) tek adımda JSON'a elle
+  `tamburlar` girişi istiyor: arayüzde tambur TANIMI formu yok (yalnız şablonla, Bölüm A).
+  Ajan 14 senaryosu tamamen arayüzde kalacaksa tambur tanımı formu gerekir (G-3/Ajan 12 alanı).
 - `arayuz/yardim/` yeni msgid'leri (pencere başlığı, arama, uyarı şeridi, BOLUMLER) EN .po'ya girmeli.
