@@ -52,6 +52,7 @@ from arayuz.demet.demet_islemleri import (  # noqa: F401
     palet_listesi, en_sik_parca, _plaka_olcusu, gerekli_adim, dis_dolgu_anlamli,
     _yakit_cubugu, yeni_demet)
 from arayuz.demet.yerlesim import YerlesimMixin  # noqa: F401
+from arayuz.demet.kilif import KilifMixin
 
 
 def _tip_ozeti(d):
@@ -67,7 +68,7 @@ def _tip_ozeti(d):
 # sekme
 # ============================================================================
 
-class DemetSekmesi(YerlesimMixin, SekmeTabani):
+class DemetSekmesi(YerlesimMixin, KilifMixin, SekmeTabani):
     """Demet listesi + boyanabilir kare/altigen harita + parca paleti."""
 
     KONU = "demet"
@@ -168,7 +169,7 @@ class DemetSekmesi(YerlesimMixin, SekmeTabani):
     def _temizle(self):
         """Demet secili degil: harita yerine bos durum; ozellikler devre disi ve gizli."""
         self.harita_yigin.setCurrentWidget(self.bos)
-        for w in (self.ozellik, self.palet_kutu, self.gelismis):
+        for w in (self.ozellik, self.palet_kutu, self.gelismis, self.kilif_karti):
             w.setEnabled(False)
             w.setVisible(False)
         self._bosluk.setVisible(True)
@@ -197,7 +198,7 @@ class DemetSekmesi(YerlesimMixin, SekmeTabani):
         if d is None:
             self._temizle()
             return
-        for w in (self.ozellik, self.palet_kutu, self.gelismis):
+        for w in (self.ozellik, self.palet_kutu, self.gelismis, self.kilif_karti):
             w.setEnabled(True)
             w.setVisible(True)
         self._bosluk.setVisible(False)
@@ -220,6 +221,7 @@ class DemetSekmesi(YerlesimMixin, SekmeTabani):
                       self.e_yonelim, self.yonelim):
                 w.setVisible(hex_mi)
             self._dis_doldur(d)
+            self._kilif_doldur(d)
             self._halka_secenekleri(d)
             self._harita_doldur(d)
             self._ozet_guncelle(d)

@@ -75,7 +75,8 @@ class YerlesimMixin(object):
     def _sag_sutun(self):
         # _bosluk bos durumda sutunu yukari iter (kartlar gizliyken).
         self._bosluk = QtWidgets.QWidget()
-        sag = sd.sutun(self._liste_karti(), self._ozellik_karti(), self._palet_karti(),
+        sag = sd.sutun(self._liste_karti(), self._ozellik_karti(), self._kilif_karti(),
+                       self._palet_karti(),
                        self._gelismis_kutusu(), self._bosluk,
                        genislik=SAG_SUTUN_GENISLIK, esnek=False)
         sag.layout().setStretchFactor(self._bosluk, 1)
