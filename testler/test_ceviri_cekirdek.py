@@ -321,6 +321,59 @@ def test_ceviri_okuma_tutarli():
             "-> %s" % toplayici.eksikler[:3])
 
 
+def _tukenme_suzgeci(satir):
+    """arayuz/sekme_tukenme._cikti_oku'nun satir suzgeci (ayni kosul): alt
+    surec ciktisindan loga gecen satirlar."""
+    bizim = satir.startswith("  ") and not satir.startswith("   ")
+    return (satir.startswith("[openmc.deplete]") or bizim
+            or "Combined k-effective" in satir or "TÜKENME" in satir
+            or "Error" in satir or "HATA" in satir or "Traceback" in satir)
+
+
+def test_tukenme_makine_isareti():
+    print("\n[CC5] Tukenme terminal basligi makine isaretini (TÜKENME) EN'de de tasir")
+    from cekirdek import tukenme, sema
+    spec = sema.yukle(os.path.join(ORNEK, "pwr_tukenme.json"))
+    tr = tukenme.kosu_basligi(spec)
+    with ingilizce():
+        en = tukenme.kosu_basligi(spec)
+        isaretli = _tukenme_suzgeci(en)
+    kontrol("baslik dilden bagimsiz ve isaretli", en == tr and tukenme.KOSU_ISARETI in en,
+            "-> %r / %r" % (tr, en))
+    kontrol("arayuz suzgeci EN basligini gecirir", isaretli)
+
+
+def _po_girdileri():
+    return [m for m in _po_oku() if m.id]
+
+
+def test_cekirdek_po_butun():
+    print("\n[CC6] cekirdek.po: her msgid cevrilmis, yer tutucular ve kenar bosluklari ayni")
+    yer = re.compile(r"%(?:\(\w+\))?[-#0 +]*\d*(?:\.\d+)?[sdifgeExXrc]|\{[^{}]*\}")
+    bos, uyumsuz, kenar = [], [], []
+    for m in _po_girdileri():
+        kimlik = m.id if isinstance(m.id, tuple) else (m.id,)
+        ceviri = m.string if isinstance(m.string, tuple) else (m.string,)
+        if not all(ceviri) or "fuzzy" in m.flags:
+            bos.append(kimlik[0][:60])
+            continue
+        for a, b in zip(kimlik, ceviri):
+            if yer.findall(a.replace("%%", "")) != yer.findall(b.replace("%%", "")):
+                uyumsuz.append("%r -> %r" % (a[:50], b[:50]))
+            if (a[:1].isspace(), a[-1:].isspace()) != (b[:1].isspace(), b[-1:].isspace()):
+                kenar.append(a[:50])
+    kontrol("cekirdek.po girdisi var (%d)" % len(_po_girdileri()), len(_po_girdileri()) > 1000)
+    kontrol("cevrilmemis / fuzzy giris yok", not bos, "-> %d: %s" % (len(bos), bos[:5]))
+    kontrol("yer tutucular (sira dahil) msgid ile ayni", not uyumsuz,
+            "-> %d: %s" % (len(uyumsuz), uyumsuz[:3]))
+    kontrol("bas/son bosluk msgid ile ayni", not kenar, "-> %s" % kenar[:3])
+    kaynakli = [m for m in _po_girdileri() if any(
+        not yol.startswith("cekirdek/") for yol, _s in m.locations)]
+    kontrol("butun girisler cekirdek/ kaynakli (arayuz.po ile karismaz)", not kaynakli,
+            "-> %s" % [m.id for m in kaynakli][:3])
+
+
 HIZLI = [test_bulgular_ingilizce, test_uygunluk_ve_rapor_ingilizce,
-         test_ayni_ceviri_eksik_sayilmaz, test_ceviri_okuma_tutarli]
+         test_ayni_ceviri_eksik_sayilmaz, test_ceviri_okuma_tutarli,
+         test_tukenme_makine_isareti, test_cekirdek_po_butun]
 YAVAS = []

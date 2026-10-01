@@ -18,7 +18,7 @@ import html as _html
 import os
 from string import Template
 
-from cekirdek.ceviri import _, N_, etkin_dil
+from cekirdek.ceviri import _, N_, etkin_dil, pgettext
 from cekirdek.rapor_sablon import uygunluk_eki
 from cekirdek.rapor_sablon.bicim import bm, gosterim_notu
 
@@ -188,7 +188,7 @@ def _tukenme(icerik, gomulu):
     satirlar = [(str(i), "%.2f" % z, "%.3f" % y, bm(k, s))
                 for i, z, y, k, s in t["satirlar"]]
     parca = ["<h2>%s</h2>" % _e(_("Tükenme")),
-             _tablo((_("Adım"), _("Zaman [gün]"), _("Yanma [MWd/kgHM]"), "k"), satirlar),
+             _tablo((pgettext("tükenme", "Adım"), _("Zaman [gün]"), _("Yanma [MWd/kgHM]"), "k"), satirlar),
              _gorsel(icerik, "tukenme", gomulu, alt=_("tükenme"))]
     if t["bulunamayan"]:
         parca.append('<p class="uyari">%s</p>' % _e(

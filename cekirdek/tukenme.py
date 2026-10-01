@@ -657,6 +657,17 @@ def transport_sayisi(spec):
 # Terminal
 # ============================================================================
 
+# MAKINE ISARETI -- CEVRILMEZ. arayuz/sekme_tukenme._cikti_oku alt surecin
+# ciktisini suzerken baslik satirini bu sabitle tanir ("TÜKENME" in satir);
+# Ingilizce arayuzde de ayni kalmali (testler/test_ceviri_cekirdek CC5).
+KOSU_ISARETI = "TÜKENME"
+
+
+def kosu_basligi(spec):
+    """Terminal ciktisinin baslik satiri: " TÜKENME: <model adi>" (isaret sabit)."""
+    return " %s: %s" % (KOSU_ISARETI, spec.get("ad", ""))
+
+
 def _terminal(argv):
     import argparse
     ap = argparse.ArgumentParser(prog="python3 -m cekirdek.tukenme")
@@ -681,7 +692,7 @@ def _terminal(argv):
     zs = zincir_secimi(spec)
     t = spec["tukenme"]
     print("=" * 74)
-    print(_(" TÜKENME: %s") % spec.get("ad", ""))
+    print(kosu_basligi(spec))
     print("=" * 74)
     print(_("  zincir        : %s  (%s)") % (os.path.basename(zs["yol"]), zs["gerekce"]))
     print(_("  fisyon verimi : %s eV (%s spektrum)")
