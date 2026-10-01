@@ -455,9 +455,11 @@ def _turkce_sozcukler():
     tr_ = set()
     for _b, m in de.arayuz_msgidleri():
         tr_ |= set(sozcuk.findall(de._kucuk(m)))
-    for s in de._sabitler(os.path.join(KOK, "cekirdek")):
-        if " " in s.strip():
-            tr_ |= set(sozcuk.findall(de._kucuk(s)))
+    pot = os.path.join(de.LOCALE, "cekirdek.pot")
+    if os.path.exists(pot):                      # cekirdek msgid'leri (Ajan 11)
+        for m in de.po_oku(pot):
+            for s in de._metinler(m)[0]:
+                tr_ |= set(sozcuk.findall(de._kucuk(s or "")))
     en = set()
     for ad in ("openmc_arayuz.po", "cekirdek.po", "arayuz.po"):
         yol = os.path.join(de.EN_DIZINI, ad)
@@ -474,10 +476,16 @@ def _en_denetle(metinler, maske, parcalar, sozcukler):
     arayuz, cekirdek = [], []
     gorulen = set()
     for yer, m in metinler:
+        # Maske isareti "◊": Turkce sozcuk icermesin (sozcuk denetimi onu da tarar).
         for v in maske:
-            m = m.replace(v, "⟨veri⟩")
-        m = re.sub(r"(?<!\w)/\S*", "⟨yol⟩", m)
-        m = re.sub(r"'[a-z0-9_]+'", "⟨kimlik⟩", m)
+            if v in m:
+                m = re.sub(r"(?<!\w)%s(?!\w)" % re.escape(v), "◊", m)
+        m = re.sub(r"(?<!\w)/\S*", "◊", m)
+        m = re.sub(r"'[a-z0-9_]+'", "◊", m)
+        m = re.sub(r"[\w\-]+\.json\b", "◊", m)          # ornek dosya adlari (veri)
+        m = re.sub(r"\b\w*_\w*\b", "◊", m)               # tanimlayicilar (yakit_cubugu)
+        # bulgu yer kodu (cekirdek dogrula.yer_etiketi'nin etiketlemedigi "geometri:yol")
+        m = re.sub(r"\bgeometri:[\w/\-]+", "◊", m)
         for serbest in EN_TURKCE_SERBEST:
             m = m.replace(serbest, "")
         for satir in m.split("\n"):
@@ -673,6 +681,11 @@ def test_en_baslangic_ve_yardim():
         yb.GELISMIS_GEOMETRI_BOLUMU, yb.BULGU_VARSAYILAN}
     kontrol("kilavuz eslemeleri yalniz ortak bolum kimliklerini kullaniyor",
             bolumler <= set(yb.BOLUM_KIMLIKLERI), "-> %s" % (bolumler - set(yb.BOLUM_KIMLIKLERI)))
+    from arayuz.ortak import cumle_basi
+    with de.en_kipi():
+        en_bas = cumle_basi("in a duct")
+    kontrol("cumle_basi: EN'de 'In' (Turkce 'İ' degil), TR'de 'İ'",
+            en_bas == "In a duct" and cumle_basi("ince") == "İnce", "-> %r" % en_bas)
     kontrol("bulgu yeri -> bolum", yb.bulgu_bolumu("malzeme:uo2") == "malzemeler"
             and yb.bulgu_bolumu("kor/katman 2 (su)") == "geometri"
             and yb.bulgu_bolumu("geometri:kok/0") == "geometri-gelismis"

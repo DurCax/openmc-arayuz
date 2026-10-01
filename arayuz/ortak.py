@@ -98,10 +98,12 @@ def qt_turkce_cevirisi(uygulama):
 
 
 def cumle_basi(metin):
-    """Ilk harfi buyuk (Turkce: i -> İ); bos metin oldugu gibi doner."""
+    """Ilk harfi buyuk (Turkce: i -> İ; Ingilizcede i -> I); bos metin oldugu gibi doner."""
     if not metin:
         return metin
-    ilk = "İ" if metin[0] == "i" else metin[0].upper()
+    from cekirdek import ceviri
+    turkce = ceviri.etkin_dil() == "tr"
+    ilk = "İ" if metin[0] == "i" and turkce else metin[0].upper()
     return ilk + metin[1:]
 
 
