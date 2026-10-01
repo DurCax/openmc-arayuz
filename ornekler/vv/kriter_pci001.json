@@ -216,14 +216,14 @@
         "koni_aci": 30.0
       },
       "alt": [
-        -1.0,
-        -1.0,
-        -1.0
+        -100.0,
+        -100.0,
+        -100.0
       ],
       "ust": [
-        1.0,
-        1.0,
-        1.0
+        100.0,
+        100.0,
+        100.0
       ]
     },
     "entropi_mesh": {
@@ -611,6 +611,27 @@
     "seri": "PU-COMP-INTER-001",
     "aoa_girdi": {
       "fiziksel_bicim": "bilesik",
+      "yansitici": "sonsuz"
+    },
+    "olcum": {
+      "k": 1.00739,
+      "sigma": 0.00016,
+      "parcacik": 100000,
+      "cevrim": 200,
+      "pasif": 50,
+      "sure_s": 582.4,
+      "is_parcacigi": 12,
+      "openmc": "0.16.0",
+      "kutuphane": "ENDF/B-VIII.0",
+      "tarih": "2026-10-01"
+    },
+    "aoa": {
+      "bolunebilir": "Pu",
+      "zenginlik": 94.619599,
+      "h_x": 0.392247,
+      "fiziksel_bicim": "bilesik",
+      "ealf": 294.342977,
+      "tayf": "ara",
       "yansitici": "sonsuz"
     }
   }
