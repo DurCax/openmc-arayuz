@@ -232,7 +232,18 @@
       "openmc": "0.16.0",
       "kutuphane": "ENDF/B-VIII.0",
       "tarih": "2026-09-29"
-    }
+    },
+    "seri": "PU-MET-FAST-001",
+    "aoa": {
+      "bolunebilir": "Pu",
+      "zenginlik": 95.482039,
+      "h_x": 0.0,
+      "fiziksel_bicim": "metal",
+      "ealf": 1266803.707187,
+      "tayf": "hizli",
+      "yansitici": "yok"
+    },
+    "aoa_not": "EALF 20000 parçacık × 60 çevrim kısa koşusundan; k ölçümü (olcum) ayrı referans koşusudur."
   },
   "baslik_en": "Jezebel plutonium sphere",
   "aciklama_en": "ICSBEP benchmark PU-MET-FAST-001 (Jezebel): bare delta-phase Pu-Ga metal sphere, r = 6.3849 cm, k-eff = 1.0000 ± 0.0020."

@@ -80,6 +80,15 @@ VAKALAR = {
                "metal", "berilyum", "Berilyum yansıtıcılı Pu küresi"),
 }
 
+# Mevcut (Ajan 9) kriterler: AOA eki icin (dosya, seri, fiziksel bicim, yansitici)
+MEVCUT = {
+    "godiva_kriter.json": ("HEU-MET-FAST-001", "metal", "yok"),
+    "kriter_jezebel.json": ("PU-MET-FAST-001", "metal", "yok"),
+    "kriter_flattop25.json": ("HEU-MET-FAST-028", "metal", "dogal_u"),
+    "kriter_lct008.json": ("LEU-COMP-THERM-008", "oksit", "su"),
+}
+AOA_AYAR = (20000, 60, 20)       # EALF icin kisa kosu (k olcumu DEGISMEZ)
+
 KAYNAK_MODEL = ("mit-crpg/benchmarks (MIT lisansı) icsbep/%s; E ± σ: aynı depo "
                 "icsbep/icsbep/uncertainties.csv (ICSBEP değeri)")
 LISANS = ("Model girdisi MIT lisanslıdır; ICSBEP el kitabı metni yeniden dağıtılmaz, "
@@ -218,13 +227,49 @@ def _yaz(spec, kimlik):
     return yol
 
 
+def aoa_ekle(ad, is_parcacigi):
+    """Mevcut kriterin referans.olcum'una DOKUNMADAN referans.aoa ve seri ekler."""
+    import copy
+    from cekirdek import kosucu, sema
+    from cekirdek.vv import aoa
+    yol = os.path.join(KOK, "ornekler", ad)
+    with open(yol, encoding="utf-8") as f:
+        ham = json.load(f)
+    seri, bicim, yansitici = MEVCUT[ad]
+    spec = sema.yukle(yol)
+    kisa = copy.deepcopy(spec)
+    kisa["tallyler"] = [aoa.ealf_tally_tanimi()]
+    kisa["ayarlar"]["parcacik"], kisa["ayarlar"]["cevrim"], kisa["ayarlar"]["pasif"] = AOA_AYAR
+    dizin = os.path.join("/tmp", "vv_kosu", "aoa_" + os.path.splitext(ad)[0])
+    r = kosucu.calistir(kisa, dizin, is_parcacigi=is_parcacigi)
+    if not r["basarili"]:
+        raise RuntimeError("%s EALF koşusu başarısız: %s" % (ad, r.get("log")))
+    param = aoa.parametreler(kisa, dizin)
+    param.update({"fiziksel_bicim": bicim, "yansitici": yansitici})
+    ham["referans"]["seri"] = seri
+    ham["referans"]["aoa"] = {a: (round(v, 6) if isinstance(v, float) else v)
+                              for a, v in param.items()}
+    ham["referans"]["aoa_not"] = ("EALF %d parçacık × %d çevrim kısa koşusundan; k ölçümü "
+                                  "(olcum) ayrı referans koşusudur." % (AOA_AYAR[0], AOA_AYAR[1]))
+    with open(yol, "w", encoding="utf-8") as f:
+        json.dump(ham, f, ensure_ascii=False, indent=2)
+        f.write("\n")
+    print("%s: %s" % (ad, ham["referans"]["aoa"]), flush=True)
+
+
 def main(argv=None):
     p = argparse.ArgumentParser()
     p.add_argument("depo")
     p.add_argument("kimlikler", nargs="*")
     p.add_argument("--yalniz-uret", action="store_true")
     p.add_argument("--is", type=int, default=12, dest="is_parcacigi")
+    p.add_argument("--aoa-mevcut", action="store_true",
+                   help="mevcut 4 kriterin JSON'una AOA ekle (k olcumu degismez)")
     a = p.parse_args(argv)
+    if a.aoa_mevcut:
+        for ad in sorted(MEVCUT):
+            aoa_ekle(ad, a.is_parcacigi)
+        return
     basarisiz = []
     for kimlik in a.kimlikler or sorted(VAKALAR):
         try:

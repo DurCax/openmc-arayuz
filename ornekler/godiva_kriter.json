@@ -21,7 +21,18 @@
       "openmc": "0.16.0",
       "kutuphane": "ENDF/B-VIII.0",
       "tarih": "2026-09-29"
-    }
+    },
+    "seri": "HEU-MET-FAST-001",
+    "aoa": {
+      "bolunebilir": "U-235",
+      "zenginlik": 93.709968,
+      "h_x": 0.0,
+      "fiziksel_bicim": "metal",
+      "ealf": 827678.887655,
+      "tayf": "hizli",
+      "yansitici": "yok"
+    },
+    "aoa_not": "EALF 20000 parçacık × 60 çevrim kısa koşusundan; k ölçümü (olcum) ayrı referans koşusudur."
   },
   "malzemeler": [
     {
