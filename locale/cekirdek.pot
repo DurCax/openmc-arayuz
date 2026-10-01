@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0rc1\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-01 21:37+0300\n"
+"POT-Creation-Date: 2026-10-01 21:43+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -3003,67 +3003,67 @@ msgid ""
 "harita ortalamasını kullanın."
 msgstr ""
 
-#: cekirdek/guc_yorum.py:58
+#: cekirdek/guc_yorum.py:60
 #, python-format
 msgid ""
-"  İstatistik yetersiz: %s = %.4f ± %.4f; 1'den farkı gürültü ve maksimum "
-"yanlılığından (2σ + %.4f) ayırt edilemiyor. Tasarım yorumu yapılmadı — önce çevrim "
-"başına parçacık ve aktif çevrim sayısını artırın."
+"  İstatistik yetersiz: %s = %s; 1'den farkı gürültü ve maksimum yanlılığından (2σ + "
+"%.2g) ayırt edilemiyor. Tasarım yorumu yapılmadı — önce çevrim başına parçacık ve "
+"aktif çevrim sayısını artırın."
 msgstr ""
 
-#: cekirdek/guc_yorum.py:66
+#: cekirdek/guc_yorum.py:68
 #, python-format
 msgid "F_ΔH = %.4f — en sıcak çubuk ortalamanın %%%.1f üstünde güç üretiyor."
 msgstr ""
 
-#: cekirdek/guc_yorum.py:72
+#: cekirdek/guc_yorum.py:74
 msgid ""
 "  Dağılım neredeyse düz. Yansıtıcı sınırlı tek demet hesaplarında beklenen budur; "
 "gerçek bir korda kenar etkileri ve yakıt yüklemesi tepeyi büyütür."
 msgstr ""
 
-#: cekirdek/guc_yorum.py:76
+#: cekirdek/guc_yorum.py:78
 msgid ""
 "  Yüksek: tipik PWR tasarım sınırı F_ΔH ≈ 1.65 civarındadır; yakıt yüklemesi "
 "düzeltilmeli."
 msgstr ""
 
-#: cekirdek/guc_yorum.py:80
+#: cekirdek/guc_yorum.py:82
 #, python-format
 msgid ""
 "Tam kor: %d demet, %d yakıt çubuğu. En sıcak demet %s; ortalaması kor ortalamasının "
 "%.4f katı (F_demet). F_ΔH ve F_q tüm kordaki yakıt çubukları üzerinden hesaplanır."
 msgstr ""
 
-#: cekirdek/guc_yorum.py:88
+#: cekirdek/guc_yorum.py:90
 #, python-format
 msgid "Çubuk türleri (bağıl ortalama / tepe; bütün yakıt çubuklarının ortalaması = 1): %s"
 msgstr ""
 
-#: cekirdek/guc_yorum.py:90
+#: cekirdek/guc_yorum.py:92
 #, python-format
 msgid "%s: %.4f / %.4f (%d çubuk)"
 msgid_plural "%s: %.4f / %.4f (%d çubuk)"
 msgstr[0] ""
 msgstr[1] ""
 
-#: cekirdek/guc_yorum.py:96
+#: cekirdek/guc_yorum.py:98
 msgctxt "çoğul"
 msgid "çubuk"
 msgstr ""
 
-#: cekirdek/guc_yorum.py:102
+#: cekirdek/guc_yorum.py:104
 msgid ""
 "F_q tanımsız — model 2B (eksenel yükseklik yok). Eksenel tepe olmadan yerel güç "
 "yoğunluğu hesaplanamaz; Kor sekmesinde yükseklik tanımlayın."
 msgstr ""
 
-#: cekirdek/guc_yorum.py:105
+#: cekirdek/guc_yorum.py:107
 #, python-format
 msgid "F_q = %.4f — yerel güç yoğunluğu tepesi (eksenel şekil dahil)."
 msgstr ""
 
-#: cekirdek/guc_yorum.py:109
+#: cekirdek/guc_yorum.py:111
 #, python-format
 msgid ""
 "  Dikkat: yalnızca %d eksenel dilim var. Kaba dilimler tepeyi ortalar ve F_q'yu "
@@ -3071,69 +3071,69 @@ msgid ""
 " En az 10–20 dilim kullanın."
 msgstr ""
 
-#: cekirdek/guc_yorum.py:116
+#: cekirdek/guc_yorum.py:118
 #, python-format
 msgid ""
 "  %d eksenel dilim boş (hedef çubuk o katmanlarda yok: %s); bu dilimler F_q "
 "ortalamasına katılmadı."
 msgstr ""
 
-#: cekirdek/guc_yorum.py:121
+#: cekirdek/guc_yorum.py:123
 msgid "(çubuk, dilim) çifti"
 msgstr ""
 
-#: cekirdek/guc_yorum.py:127
+#: cekirdek/guc_yorum.py:129
 msgid "  Yüksek: tipik PWR sınırı F_q ≈ 2.3–2.6."
 msgstr ""
 
-#: cekirdek/guc_yorum.py:136
+#: cekirdek/guc_yorum.py:138
 #, python-format
 msgid "Çubuk başına ortalama %.1f W, en sıcak çubuk %.1f W."
 msgstr ""
 
-#: cekirdek/guc_yorum.py:139
+#: cekirdek/guc_yorum.py:141
 #, python-format
 msgid ""
 "  Modelin fisyon enerjisinin %%%.1f'i bu çubuklarda (%.4g W); kalanı diğer fisil "
 "bölgelerde."
 msgstr ""
 
-#: cekirdek/guc_yorum.py:144
+#: cekirdek/guc_yorum.py:146
 #, python-format
 msgid ""
 "  Kesik çubukların gücü (hedef çubuk gücünün %%%.1f'i) ortalamaya dağıtılmadı; "
 "yukarıdaki güç yalnız kesik olmayan çubuklarındır."
 msgstr ""
 
-#: cekirdek/guc_yorum.py:148
+#: cekirdek/guc_yorum.py:150
 #, python-format
 msgid ""
 "  Uyarı: güç payı tally'si okunamadı: %s. Toplam gücün tamamı bu çubuklara yazıldı; "
 "başka fisil bölge varsa çubuk gücü olduğundan büyüktür."
 msgstr ""
 
-#: cekirdek/guc_yorum.py:152
+#: cekirdek/guc_yorum.py:154
 msgid ""
 "  Not: güç payı ölçülemedi (eski koşu); toplam gücün tamamı bu çubuklara yazıldı. "
 "Başka fisil bölge varsa çubuk gücü olduğundan büyüktür."
 msgstr ""
 
-#: cekirdek/guc_yorum.py:157
+#: cekirdek/guc_yorum.py:159
 #, python-format
 msgid "En yüksek çizgisel güç %.1f W/cm (tepe faktörü: %s)."
 msgstr ""
 
-#: cekirdek/guc_yorum.py:160
+#: cekirdek/guc_yorum.py:162
 msgid "  Sınırın üstünde: tipik PWR çizgisel güç sınırı ~400–500 W/cm."
 msgstr ""
 
-#: cekirdek/guc_yorum.py:162
+#: cekirdek/guc_yorum.py:164
 msgid ""
 "  Not: kappa-fission, gama ısınmasının yakıt dışında (zarf, soğutucu) bırakılan "
 "kısmını da (PWR'da ~%2–3) çubuklara yazar; çubuk gücü bu oranda büyük çıkar."
 msgstr ""
 
-#: cekirdek/guc_yorum.py:172
+#: cekirdek/guc_yorum.py:174
 #, python-format
 msgid ""
 "Not: F_ΔH ve F_q yalnız hedef çubuk türünü kapsar — modelin fisyon enerjisinin "
@@ -3141,11 +3141,11 @@ msgid ""
 "türü, blanket). En sıcak çubuk onlardan biri olabilir."
 msgstr ""
 
-#: cekirdek/guc_yorum.py:188
+#: cekirdek/guc_yorum.py:190
 msgid "Güç dağılımı hesaplanamadı."
 msgstr ""
 
-#: cekirdek/guc_yorum.py:195
+#: cekirdek/guc_yorum.py:197
 msgid ""
 "Not: çubuk başına sapmalar iyimserdir. Özdeğer hesabında ardışık çevrimler birbirine "
 "bağlıdır ve OpenMC'nin raporladığı tally belirsizliği bunu hesaba katmaz. Ölçülen "
@@ -3155,30 +3155,30 @@ msgid ""
 "bakın."
 msgstr ""
 
-#: cekirdek/guc_yorum.py:243
+#: cekirdek/guc_yorum.py:245
 #, python-format
 msgid "tohum %d: koşu başarısız"
 msgstr ""
 
-#: cekirdek/guc_yorum.py:248
+#: cekirdek/guc_yorum.py:250
 #, python-format
 msgid "tohum %d: güç dağılımı okunamadı"
 msgstr ""
 
-#: cekirdek/guc_yorum.py:317
+#: cekirdek/guc_yorum.py:319
 msgid "güç dağılımı yok"
 msgstr ""
 
-#: cekirdek/guc_yorum.py:321 cekirdek/rapor_sablon/__init__.py:153
+#: cekirdek/guc_yorum.py:323 cekirdek/rapor_sablon/__init__.py:153
 msgid "(tek koşu σ'sı iyimser)"
 msgstr ""
 
-#: cekirdek/guc_yorum.py:322
+#: cekirdek/guc_yorum.py:324
 #, python-format
 msgid "en sıcak çubuk: %s"
 msgstr ""
 
-#: cekirdek/guc_yorum.py:326
+#: cekirdek/guc_yorum.py:328
 #, python-format
 msgid "en sıcak demet: %s (F_demet = %.4f)"
 msgstr ""

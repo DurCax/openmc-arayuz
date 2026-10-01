@@ -276,7 +276,17 @@ def test_grup_basligi_tazelenir():
             and "90" in e.form_basligi.text(), "-> %r" % e.form_basligi.text())
 
 
-HIZLI = [test_elle_ealf_tally_vv_dusurmez, test_panel_gecersiz_tally_duzeltir,
+def test_ic_anahtar_gorunmez():
+    print("\n[QA-k3] EN metinde ic anahtar yok: tur rozeti 'agac', AOA adlari")
+    from arayuz.pencere.model_islemleri import tur_ozeti
+    from cekirdek.uygunluk_denetimi.vv_arayuz import aoa_adi, aoa_degeri
+    kontrol("agac -> okunur ad", tur_ozeti({"kor": {"tur": "agac"}}) != "agac"
+            and "ağaç" in tur_ozeti({"kor": {"tur": "agac"}}))
+    kontrol("AOA adlari okunur", aoa_adi("fiziksel_bicim") == "fiziksel biçim"
+            and aoa_degeri("cozelti") == "çözelti" and aoa_adi("h_x") == "H/X")
+
+
+HIZLI = [test_ic_anahtar_gorunmez, test_elle_ealf_tally_vv_dusurmez, test_panel_gecersiz_tally_duzeltir,
          test_entropi_kisa_pasif_yakalanir, test_guc_yorumu_once_istatistik,
          test_simge_dugmesi_adi_ipucunda, test_kosusuz_rapor_sessiz_degil, test_c_e_panoda,
          test_kucuk_bulgular_durum_ve_suzgec, test_grup_basligi_tazelenir]

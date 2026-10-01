@@ -132,6 +132,8 @@ def tur_ozeti(spec):
         n = len(kor.get("kabuklar") or [])
         return _n("küresel düzenek (%d kabuk)", "küresel düzenek (%d kabuk)", n) % n if n \
             else _("küresel düzenek")
+    if tur == "agac":
+        return _("gelişmiş geometri (ağaç)")
     return str(tur or _("tanımsız kor"))
 
 

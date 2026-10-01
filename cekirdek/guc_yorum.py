@@ -55,10 +55,12 @@ def istatistik_yetersiz(deger, sapma, yanlilik):
 
 
 def _yetersiz_satiri(ad, deger, sapma, yanlilik):
-    return [_("  İstatistik yetersiz: %s = %.4f ± %.4f; 1'den farkı gürültü ve maksimum "
-              "yanlılığından (2σ + %.4f) ayırt edilemiyor. Tasarım yorumu yapılmadı — önce "
+    # GUM bicimi (K5: belirsizlik en cok 2 anlamli rakam)
+    from cekirdek.uygunluk_denetimi.kurallar_rapor import belirsizlik_metni
+    return [_("  İstatistik yetersiz: %s = %s; 1'den farkı gürültü ve maksimum "
+              "yanlılığından (2σ + %.2g) ayırt edilemiyor. Tasarım yorumu yapılmadı — önce "
               "çevrim başına parçacık ve aktif çevrim sayısını artırın.")
-            % (ad, deger, sapma, yanlilik or 0.0)]
+            % (ad, belirsizlik_metni(deger, sapma), yanlilik or 0.0)]
 
 
 def _radyal_satirlari(faktorler, kategori=None):

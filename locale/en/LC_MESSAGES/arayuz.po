@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-01 21:37+0300\n"
+"POT-Creation-Date: 2026-10-01 21:43+0300\n"
 "PO-Revision-Date: 2026-10-01 18:14+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -852,11 +852,11 @@ msgstr "Shielding (fixed source)"
 msgid "Kaynaktan çıkan nötronların zırh katmanlarında zayıflaması."
 msgstr "Attenuation of source neutrons in shielding layers."
 
-#: arayuz/baslangic.py:243 arayuz/pencere/model_islemleri.py:381
+#: arayuz/baslangic.py:243 arayuz/pencere/model_islemleri.py:383
 msgid "Yeni yakıt çubuğu"
 msgstr "New fuel pin"
 
-#: arayuz/baslangic.py:245 arayuz/pencere/model_islemleri.py:382
+#: arayuz/baslangic.py:245 arayuz/pencere/model_islemleri.py:384
 msgid "Yeni kare yakıt demeti"
 msgstr "New square fuel assembly"
 
@@ -864,19 +864,19 @@ msgstr "New square fuel assembly"
 msgid "Yeni altıgen yakıt demeti"
 msgstr "New hexagonal fuel assembly"
 
-#: arayuz/baslangic.py:249 arayuz/pencere/model_islemleri.py:383
+#: arayuz/baslangic.py:249 arayuz/pencere/model_islemleri.py:385
 msgid "Yeni plaka elemanı"
 msgstr "New plate-type fuel element"
 
-#: arayuz/baslangic.py:251 arayuz/pencere/model_islemleri.py:383
+#: arayuz/baslangic.py:251 arayuz/pencere/model_islemleri.py:385
 msgid "Yeni tamburlu kor"
 msgstr "New drum-controlled core"
 
-#: arayuz/baslangic.py:267 arayuz/pencere/model_islemleri.py:384
+#: arayuz/baslangic.py:267 arayuz/pencere/model_islemleri.py:386
 msgid "Yeni tam kor"
 msgstr "New full core"
 
-#: arayuz/baslangic.py:269 arayuz/pencere/model_islemleri.py:384
+#: arayuz/baslangic.py:269 arayuz/pencere/model_islemleri.py:386
 msgid "Yeni altıgen tam kor"
 msgstr "New hexagonal full core"
 
@@ -5067,97 +5067,101 @@ msgstr[1] "spherical assembly (%d shells)"
 msgid "küresel düzenek"
 msgstr "spherical assembly"
 
-#: arayuz/pencere/model_islemleri.py:135
+#: arayuz/pencere/model_islemleri.py:136
+msgid "gelişmiş geometri (ağaç)"
+msgstr "advanced geometry (tree)"
+
+#: arayuz/pencere/model_islemleri.py:137
 msgid "tanımsız kor"
 msgstr "undefined core"
 
-#: arayuz/pencere/model_islemleri.py:142 arayuz/pencere/model_islemleri.py:144
+#: arayuz/pencere/model_islemleri.py:144 arayuz/pencere/model_islemleri.py:146
 #: arayuz/tasarim/galeri.py:84
 msgid "3B"
 msgstr "3D"
 
-#: arayuz/pencere/model_islemleri.py:145
+#: arayuz/pencere/model_islemleri.py:147
 msgid "3B katmanlı"
 msgstr "3D layered"
 
-#: arayuz/pencere/model_islemleri.py:147
+#: arayuz/pencere/model_islemleri.py:149
 msgid "adsız model"
 msgstr "untitled model"
 
-#: arayuz/pencere/model_islemleri.py:154
+#: arayuz/pencere/model_islemleri.py:156
 #, python-brace-format
 msgid "Model: {ad} · {tur} · {boyut} · {mod}"
 msgstr "Model: {ad} · {tur} · {boyut} · {mod}"
 
-#: arayuz/pencere/model_islemleri.py:176
+#: arayuz/pencere/model_islemleri.py:178
 msgid "Tamam: bu adımda eksik ya da hata yok."
 msgstr "OK: nothing missing and no errors in this step."
 
-#: arayuz/pencere/model_islemleri.py:179
+#: arayuz/pencere/model_islemleri.py:181
 #, python-format
 msgid "Bu sekmede düzeltilmesi gereken %d hata var; ayrıntısı doğrulama listesinde."
 msgid_plural "Bu sekmede düzeltilmesi gereken %d hata var; ayrıntısı doğrulama listesinde."
 msgstr[0] "This page has %d error to fix; details are in the model check list."
 msgstr[1] "This page has %d errors to fix; details are in the model check list."
 
-#: arayuz/pencere/model_islemleri.py:191
+#: arayuz/pencere/model_islemleri.py:193
 msgid "Eksik: henüz malzeme yok; yakıt, zarf ve soğutucu ekleyin."
 msgstr "Missing: no materials yet; add fuel, cladding and coolant."
 
-#: arayuz/pencere/model_islemleri.py:195
+#: arayuz/pencere/model_islemleri.py:197
 msgid "Eksik: bu kor türü için en az bir yakıt çubuğu tanımlanmalı."
 msgstr "Missing: this core type needs at least one fuel pin."
 
-#: arayuz/pencere/model_islemleri.py:197
+#: arayuz/pencere/model_islemleri.py:199
 msgid "Eksik: bu kor türü için bir plaka elemanı tanımlanmalı."
 msgstr "Missing: this core type needs a plate-type fuel element."
 
-#: arayuz/pencere/model_islemleri.py:200
+#: arayuz/pencere/model_islemleri.py:202
 msgid "Eksik: bu kor türü için bir demet kurulmalı."
 msgstr "Missing: this core type needs an assembly."
 
-#: arayuz/pencere/model_islemleri.py:207
+#: arayuz/pencere/model_islemleri.py:209
 msgid "Eksik: korun dolgusu henüz seçilmedi."
 msgstr "Missing: the core fill has not been selected yet."
 
-#: arayuz/pencere/model_islemleri.py:209
+#: arayuz/pencere/model_islemleri.py:211
 msgid "Eksik: kor haritası boş; demetleri haritaya yerleştirin."
 msgstr "Missing: the core map is empty; place assemblies on the map."
 
-#: arayuz/pencere/model_islemleri.py:211
+#: arayuz/pencere/model_islemleri.py:213
 msgid "Eksik: küresel kabuk tanımlanmadı."
 msgstr "Missing: no spherical shell is defined."
 
-#: arayuz/pencere/model_islemleri.py:216
+#: arayuz/pencere/model_islemleri.py:218
 msgid "Model henüz çalıştırılmadı; hazır olduğunda ÇALIŞTIR (F9)."
 msgstr "The model has not been run yet; press RUN (F9) when it is ready."
 
-#: arayuz/pencere/model_islemleri.py:217
+#: arayuz/pencere/model_islemleri.py:219
 msgid "Tamam: model bu oturumda başarıyla çalıştırıldı."
 msgstr "OK: the model ran successfully in this session."
 
-#: arayuz/pencere/model_islemleri.py:219
+#: arayuz/pencere/model_islemleri.py:221
 msgid "İsteğe bağlı: reaktivite katsayıları ve kritik arama."
 msgstr "Optional: reactivity coefficients and critical search."
 
-#: arayuz/pencere/model_islemleri.py:220
+#: arayuz/pencere/model_islemleri.py:222
 msgid "Tamam: bu oturumda bir analiz sonucu var."
 msgstr "OK: there is an analysis result in this session."
 
-#: arayuz/pencere/model_islemleri.py:222
+#: arayuz/pencere/model_islemleri.py:224
 msgid "İsteğe bağlı: yakıtın zamanla tükenmesi (yanma) hesabı."
 msgstr "Optional: fuel depletion (burnup) over time."
 
-#: arayuz/pencere/model_islemleri.py:223
+#: arayuz/pencere/model_islemleri.py:225
 msgid "Tamam: tükenme sonucu görüntüleniyor."
 msgstr "OK: a depletion result is shown."
 
-#: arayuz/pencere/model_islemleri.py:236
+#: arayuz/pencere/model_islemleri.py:238
 #, python-brace-format
 msgid "{sekme} sekmesinde hata var — sekmeye gidip düzeltin."
 msgstr "The {sekme} page has an error — go to the page and fix it."
 
-#: arayuz/pencere/model_islemleri.py:239
+#: arayuz/pencere/model_islemleri.py:241
 #, python-format
 msgid ""
 "Modelde %d doğrulama hatası var — doğrulama listesine bakın; hata giderilmeden koşu "
@@ -5172,24 +5176,24 @@ msgstr[1] ""
 "The model has %d model check errors — see the model check list; the run cannot start "
 "until they are fixed."
 
-#: arayuz/pencere/model_islemleri.py:247
+#: arayuz/pencere/model_islemleri.py:249
 #, python-brace-format
 msgid "Sonraki adım: {sekme} — {aciklama}"
 msgstr "Next step: {sekme} — {aciklama}"
 
-#: arayuz/pencere/model_islemleri.py:248
+#: arayuz/pencere/model_islemleri.py:250
 msgid "Eksik: "
 msgstr "Missing: "
 
-#: arayuz/pencere/model_islemleri.py:250
+#: arayuz/pencere/model_islemleri.py:252
 msgid "Geometri çiziliyor; önizleme hazır olunca ÇALIŞTIR etkinleşir."
 msgstr "Plotting the geometry; RUN is enabled once the preview is ready."
 
-#: arayuz/pencere/model_islemleri.py:252
+#: arayuz/pencere/model_islemleri.py:254
 msgid "Model hazır — ÇALIŞTIR (F9) ile hesaplayın."
 msgstr "Model ready — press RUN (F9) to calculate."
 
-#: arayuz/pencere/model_islemleri.py:254
+#: arayuz/pencere/model_islemleri.py:256
 msgid ""
 "Koşu tamam — sonuçlar Çalıştır sekmesinde; Analiz sekmesinde reaktivite katsayılarını"
 " hesaplayabilirsiniz."
@@ -5197,7 +5201,7 @@ msgstr ""
 "Run complete — results are on the Run page; you can calculate reactivity coefficients"
 " on the Analysis page."
 
-#: arayuz/pencere/model_islemleri.py:256
+#: arayuz/pencere/model_islemleri.py:258
 msgid "Koşu tamam — sonuçlar Çalıştır sekmesinde."
 msgstr "Run complete — results are on the Run page."
 
@@ -5809,12 +5813,12 @@ msgstr "Neutron"
 msgid "Foton (gama)"
 msgstr "Photon (gamma)"
 
-#: arayuz/pencere/model_islemleri.py:146 arayuz/sekme_ayar.py:100
+#: arayuz/pencere/model_islemleri.py:148 arayuz/sekme_ayar.py:100
 #: arayuz/tasarim/galeri.py:68 arayuz/tasarim/maket_ekranlar.py:197
 msgid "Özdeğer (k-eff)"
 msgstr "Eigenvalue (k-eff)"
 
-#: arayuz/pencere/model_islemleri.py:146 arayuz/pencere/yardim_metni.py:84
+#: arayuz/pencere/model_islemleri.py:148 arayuz/pencere/yardim_metni.py:84
 #: arayuz/sekme_ayar.py:101 arayuz/tasarim/galeri.py:68
 #: arayuz/tasarim/maket_ekranlar.py:197
 msgid "Sabit kaynak"
@@ -6748,7 +6752,7 @@ msgstr ""
 "A radial reflector with a reflective radial boundary models an infinite array; for a "
 "single core open to its surroundings, choose Vacuum."
 
-#: arayuz/geometri/sablon_diyalogu.py:139 arayuz/pencere/model_islemleri.py:144
+#: arayuz/geometri/sablon_diyalogu.py:139 arayuz/pencere/model_islemleri.py:146
 #: arayuz/sekme_kor.py:368 arayuz/tasarim/galeri.py:99
 msgid "2B"
 msgstr "2D"

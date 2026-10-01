@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0rc1\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-01 21:37+0300\n"
+"POT-Creation-Date: 2026-10-01 21:43+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -824,11 +824,11 @@ msgstr ""
 msgid "Kaynaktan çıkan nötronların zırh katmanlarında zayıflaması."
 msgstr ""
 
-#: arayuz/baslangic.py:243 arayuz/pencere/model_islemleri.py:381
+#: arayuz/baslangic.py:243 arayuz/pencere/model_islemleri.py:383
 msgid "Yeni yakıt çubuğu"
 msgstr ""
 
-#: arayuz/baslangic.py:245 arayuz/pencere/model_islemleri.py:382
+#: arayuz/baslangic.py:245 arayuz/pencere/model_islemleri.py:384
 msgid "Yeni kare yakıt demeti"
 msgstr ""
 
@@ -836,19 +836,19 @@ msgstr ""
 msgid "Yeni altıgen yakıt demeti"
 msgstr ""
 
-#: arayuz/baslangic.py:249 arayuz/pencere/model_islemleri.py:383
+#: arayuz/baslangic.py:249 arayuz/pencere/model_islemleri.py:385
 msgid "Yeni plaka elemanı"
 msgstr ""
 
-#: arayuz/baslangic.py:251 arayuz/pencere/model_islemleri.py:383
+#: arayuz/baslangic.py:251 arayuz/pencere/model_islemleri.py:385
 msgid "Yeni tamburlu kor"
 msgstr ""
 
-#: arayuz/baslangic.py:267 arayuz/pencere/model_islemleri.py:384
+#: arayuz/baslangic.py:267 arayuz/pencere/model_islemleri.py:386
 msgid "Yeni tam kor"
 msgstr ""
 
-#: arayuz/baslangic.py:269 arayuz/pencere/model_islemleri.py:384
+#: arayuz/baslangic.py:269 arayuz/pencere/model_islemleri.py:386
 msgid "Yeni altıgen tam kor"
 msgstr ""
 
@@ -4814,97 +4814,101 @@ msgstr[1] ""
 msgid "küresel düzenek"
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:135
+#: arayuz/pencere/model_islemleri.py:136
+msgid "gelişmiş geometri (ağaç)"
+msgstr ""
+
+#: arayuz/pencere/model_islemleri.py:137
 msgid "tanımsız kor"
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:142 arayuz/pencere/model_islemleri.py:144
+#: arayuz/pencere/model_islemleri.py:144 arayuz/pencere/model_islemleri.py:146
 #: arayuz/tasarim/galeri.py:84
 msgid "3B"
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:145
+#: arayuz/pencere/model_islemleri.py:147
 msgid "3B katmanlı"
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:147
+#: arayuz/pencere/model_islemleri.py:149
 msgid "adsız model"
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:154
+#: arayuz/pencere/model_islemleri.py:156
 #, python-brace-format
 msgid "Model: {ad} · {tur} · {boyut} · {mod}"
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:176
+#: arayuz/pencere/model_islemleri.py:178
 msgid "Tamam: bu adımda eksik ya da hata yok."
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:179
+#: arayuz/pencere/model_islemleri.py:181
 #, python-format
 msgid "Bu sekmede düzeltilmesi gereken %d hata var; ayrıntısı doğrulama listesinde."
 msgid_plural "Bu sekmede düzeltilmesi gereken %d hata var; ayrıntısı doğrulama listesinde."
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/pencere/model_islemleri.py:191
+#: arayuz/pencere/model_islemleri.py:193
 msgid "Eksik: henüz malzeme yok; yakıt, zarf ve soğutucu ekleyin."
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:195
+#: arayuz/pencere/model_islemleri.py:197
 msgid "Eksik: bu kor türü için en az bir yakıt çubuğu tanımlanmalı."
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:197
+#: arayuz/pencere/model_islemleri.py:199
 msgid "Eksik: bu kor türü için bir plaka elemanı tanımlanmalı."
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:200
+#: arayuz/pencere/model_islemleri.py:202
 msgid "Eksik: bu kor türü için bir demet kurulmalı."
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:207
+#: arayuz/pencere/model_islemleri.py:209
 msgid "Eksik: korun dolgusu henüz seçilmedi."
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:209
+#: arayuz/pencere/model_islemleri.py:211
 msgid "Eksik: kor haritası boş; demetleri haritaya yerleştirin."
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:211
+#: arayuz/pencere/model_islemleri.py:213
 msgid "Eksik: küresel kabuk tanımlanmadı."
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:216
+#: arayuz/pencere/model_islemleri.py:218
 msgid "Model henüz çalıştırılmadı; hazır olduğunda ÇALIŞTIR (F9)."
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:217
+#: arayuz/pencere/model_islemleri.py:219
 msgid "Tamam: model bu oturumda başarıyla çalıştırıldı."
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:219
+#: arayuz/pencere/model_islemleri.py:221
 msgid "İsteğe bağlı: reaktivite katsayıları ve kritik arama."
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:220
+#: arayuz/pencere/model_islemleri.py:222
 msgid "Tamam: bu oturumda bir analiz sonucu var."
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:222
+#: arayuz/pencere/model_islemleri.py:224
 msgid "İsteğe bağlı: yakıtın zamanla tükenmesi (yanma) hesabı."
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:223
+#: arayuz/pencere/model_islemleri.py:225
 msgid "Tamam: tükenme sonucu görüntüleniyor."
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:236
+#: arayuz/pencere/model_islemleri.py:238
 #, python-brace-format
 msgid "{sekme} sekmesinde hata var — sekmeye gidip düzeltin."
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:239
+#: arayuz/pencere/model_islemleri.py:241
 #, python-format
 msgid ""
 "Modelde %d doğrulama hatası var — doğrulama listesine bakın; hata giderilmeden koşu "
@@ -4915,30 +4919,30 @@ msgid_plural ""
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/pencere/model_islemleri.py:247
+#: arayuz/pencere/model_islemleri.py:249
 #, python-brace-format
 msgid "Sonraki adım: {sekme} — {aciklama}"
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:248
+#: arayuz/pencere/model_islemleri.py:250
 msgid "Eksik: "
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:250
+#: arayuz/pencere/model_islemleri.py:252
 msgid "Geometri çiziliyor; önizleme hazır olunca ÇALIŞTIR etkinleşir."
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:252
+#: arayuz/pencere/model_islemleri.py:254
 msgid "Model hazır — ÇALIŞTIR (F9) ile hesaplayın."
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:254
+#: arayuz/pencere/model_islemleri.py:256
 msgid ""
 "Koşu tamam — sonuçlar Çalıştır sekmesinde; Analiz sekmesinde reaktivite katsayılarını"
 " hesaplayabilirsiniz."
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:256
+#: arayuz/pencere/model_islemleri.py:258
 msgid "Koşu tamam — sonuçlar Çalıştır sekmesinde."
 msgstr ""
 
@@ -5454,12 +5458,12 @@ msgstr ""
 msgid "Foton (gama)"
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:146 arayuz/sekme_ayar.py:100
+#: arayuz/pencere/model_islemleri.py:148 arayuz/sekme_ayar.py:100
 #: arayuz/tasarim/galeri.py:68 arayuz/tasarim/maket_ekranlar.py:197
 msgid "Özdeğer (k-eff)"
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:146 arayuz/pencere/yardim_metni.py:84
+#: arayuz/pencere/model_islemleri.py:148 arayuz/pencere/yardim_metni.py:84
 #: arayuz/sekme_ayar.py:101 arayuz/tasarim/galeri.py:68
 #: arayuz/tasarim/maket_ekranlar.py:197
 msgid "Sabit kaynak"
@@ -6291,7 +6295,7 @@ msgid ""
 "çevresi açık bir kor için Vakum seçin."
 msgstr ""
 
-#: arayuz/geometri/sablon_diyalogu.py:139 arayuz/pencere/model_islemleri.py:144
+#: arayuz/geometri/sablon_diyalogu.py:139 arayuz/pencere/model_islemleri.py:146
 #: arayuz/sekme_kor.py:368 arayuz/tasarim/galeri.py:99
 msgid "2B"
 msgstr ""

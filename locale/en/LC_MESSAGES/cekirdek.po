@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-01 21:37+0300\n"
+"POT-Creation-Date: 2026-10-01 21:43+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -3319,24 +3319,23 @@ msgstr ""
 " %d values). The single-run σ is optimistic, so the real bias can be larger; use the "
 "map average of several seeds."
 
-#: cekirdek/guc_yorum.py:58
+#: cekirdek/guc_yorum.py:60
 #, python-format
 msgid ""
-"  İstatistik yetersiz: %s = %.4f ± %.4f; 1'den farkı gürültü ve maksimum "
-"yanlılığından (2σ + %.4f) ayırt edilemiyor. Tasarım yorumu yapılmadı — önce çevrim "
-"başına parçacık ve aktif çevrim sayısını artırın."
+"  İstatistik yetersiz: %s = %s; 1'den farkı gürültü ve maksimum yanlılığından (2σ + "
+"%.2g) ayırt edilemiyor. Tasarım yorumu yapılmadı — önce çevrim başına parçacık ve "
+"aktif çevrim sayısını artırın."
 msgstr ""
-"  Insufficient statistics: %s = %.4f ± %.4f; its difference from 1 cannot be told "
-"apart from the noise and the bias of the maximum (2σ + %.4f). No design "
-"interpretation was made - first increase the particles per batch and the number of "
-"active batches."
+"  Insufficient statistics: %s = %s; its difference from 1 cannot be told apart from "
+"the noise and the bias of the maximum (2σ + %.2g). No design interpretation was made "
+"- first increase the particles per batch and the number of active batches."
 
-#: cekirdek/guc_yorum.py:66
+#: cekirdek/guc_yorum.py:68
 #, python-format
 msgid "F_ΔH = %.4f — en sıcak çubuk ortalamanın %%%.1f üstünde güç üretiyor."
 msgstr "F_ΔH = %.4f — the hottest pin produces %.1f%% more power than the average."
 
-#: cekirdek/guc_yorum.py:72
+#: cekirdek/guc_yorum.py:74
 msgid ""
 "  Dağılım neredeyse düz. Yansıtıcı sınırlı tek demet hesaplarında beklenen budur; "
 "gerçek bir korda kenar etkileri ve yakıt yüklemesi tepeyi büyütür."
@@ -3345,7 +3344,7 @@ msgstr ""
 "with a reflective boundary; in a real core, edge effects and fuel loading increase "
 "the peak."
 
-#: cekirdek/guc_yorum.py:76
+#: cekirdek/guc_yorum.py:78
 msgid ""
 "  Yüksek: tipik PWR tasarım sınırı F_ΔH ≈ 1.65 civarındadır; yakıt yüklemesi "
 "düzeltilmeli."
@@ -3353,7 +3352,7 @@ msgstr ""
 "  High: the typical PWR design limit is about F_ΔH ≈ 1.65; the fuel loading should be"
 " corrected."
 
-#: cekirdek/guc_yorum.py:80
+#: cekirdek/guc_yorum.py:82
 #, python-format
 msgid ""
 "Tam kor: %d demet, %d yakıt çubuğu. En sıcak demet %s; ortalaması kor ortalamasının "
@@ -3362,24 +3361,24 @@ msgstr ""
 "Full core: %d assemblies, %d fuel pins. Hottest assembly %s; its mean is %.4f times "
 "the core mean (F_assembly). F_ΔH and F_q are computed over all fuel pins in the core."
 
-#: cekirdek/guc_yorum.py:88
+#: cekirdek/guc_yorum.py:90
 #, python-format
 msgid "Çubuk türleri (bağıl ortalama / tepe; bütün yakıt çubuklarının ortalaması = 1): %s"
 msgstr "Pin types (relative mean / peak; mean of all fuel pins = 1): %s"
 
-#: cekirdek/guc_yorum.py:90
+#: cekirdek/guc_yorum.py:92
 #, python-format
 msgid "%s: %.4f / %.4f (%d çubuk)"
 msgid_plural "%s: %.4f / %.4f (%d çubuk)"
 msgstr[0] "%s: %.4f / %.4f (%d pin)"
 msgstr[1] "%s: %.4f / %.4f (%d pins)"
 
-#: cekirdek/guc_yorum.py:96
+#: cekirdek/guc_yorum.py:98
 msgctxt "çoğul"
 msgid "çubuk"
 msgstr "pins"
 
-#: cekirdek/guc_yorum.py:102
+#: cekirdek/guc_yorum.py:104
 msgid ""
 "F_q tanımsız — model 2B (eksenel yükseklik yok). Eksenel tepe olmadan yerel güç "
 "yoğunluğu hesaplanamaz; Kor sekmesinde yükseklik tanımlayın."
@@ -3387,12 +3386,12 @@ msgstr ""
 "F_q undefined — the model is 2D (no axial height). Without an axial peak the local "
 "power density cannot be computed; define a height on the Geometry page."
 
-#: cekirdek/guc_yorum.py:105
+#: cekirdek/guc_yorum.py:107
 #, python-format
 msgid "F_q = %.4f — yerel güç yoğunluğu tepesi (eksenel şekil dahil)."
 msgstr "F_q = %.4f — local power density peak (including the axial shape)."
 
-#: cekirdek/guc_yorum.py:109
+#: cekirdek/guc_yorum.py:111
 #, python-format
 msgid ""
 "  Dikkat: yalnızca %d eksenel dilim var. Kaba dilimler tepeyi ortalar ve F_q'yu "
@@ -3403,7 +3402,7 @@ msgstr ""
 "F_q look smaller than it is (in a pure cosine profile the fine-bin limit is π/2 = "
 "1.571). Use at least 10–20 bins."
 
-#: cekirdek/guc_yorum.py:116
+#: cekirdek/guc_yorum.py:118
 #, python-format
 msgid ""
 "  %d eksenel dilim boş (hedef çubuk o katmanlarda yok: %s); bu dilimler F_q "
@@ -3412,20 +3411,20 @@ msgstr ""
 "  %d axial bins are empty (the target pin is absent from those layers: %s); these "
 "bins were excluded from the F_q average."
 
-#: cekirdek/guc_yorum.py:121
+#: cekirdek/guc_yorum.py:123
 msgid "(çubuk, dilim) çifti"
 msgstr "(pin, slice) pairs"
 
-#: cekirdek/guc_yorum.py:127
+#: cekirdek/guc_yorum.py:129
 msgid "  Yüksek: tipik PWR sınırı F_q ≈ 2.3–2.6."
 msgstr "  High: the typical PWR limit is F_q ≈ 2.3–2.6."
 
-#: cekirdek/guc_yorum.py:136
+#: cekirdek/guc_yorum.py:138
 #, python-format
 msgid "Çubuk başına ortalama %.1f W, en sıcak çubuk %.1f W."
 msgstr "Average per pin %.1f W, hottest pin %.1f W."
 
-#: cekirdek/guc_yorum.py:139
+#: cekirdek/guc_yorum.py:141
 #, python-format
 msgid ""
 "  Modelin fisyon enerjisinin %%%.1f'i bu çubuklarda (%.4g W); kalanı diğer fisil "
@@ -3434,7 +3433,7 @@ msgstr ""
 "  %.1f%% of the fission energy of the model is in these pins (%.4g W); the rest is in"
 " other fissile regions."
 
-#: cekirdek/guc_yorum.py:144
+#: cekirdek/guc_yorum.py:146
 #, python-format
 msgid ""
 "  Kesik çubukların gücü (hedef çubuk gücünün %%%.1f'i) ortalamaya dağıtılmadı; "
@@ -3443,7 +3442,7 @@ msgstr ""
 "  The power of the truncated pins (%.1f %% of the target pin power) was not spread "
 "over the average; the power above is that of the non-truncated pins only."
 
-#: cekirdek/guc_yorum.py:148
+#: cekirdek/guc_yorum.py:150
 #, python-format
 msgid ""
 "  Uyarı: güç payı tally'si okunamadı: %s. Toplam gücün tamamı bu çubuklara yazıldı; "
@@ -3453,7 +3452,7 @@ msgstr ""
 "assigned to these pins; if there are other fissile regions, the pin power is "
 "overstated."
 
-#: cekirdek/guc_yorum.py:152
+#: cekirdek/guc_yorum.py:154
 msgid ""
 "  Not: güç payı ölçülemedi (eski koşu); toplam gücün tamamı bu çubuklara yazıldı. "
 "Başka fisil bölge varsa çubuk gücü olduğundan büyüktür."
@@ -3462,16 +3461,16 @@ msgstr ""
 "assigned to these pins. If there are other fissile regions, the pin power is "
 "overstated."
 
-#: cekirdek/guc_yorum.py:157
+#: cekirdek/guc_yorum.py:159
 #, python-format
 msgid "En yüksek çizgisel güç %.1f W/cm (tepe faktörü: %s)."
 msgstr "Maximum linear power %.1f W/cm (peaking factor: %s)."
 
-#: cekirdek/guc_yorum.py:160
+#: cekirdek/guc_yorum.py:162
 msgid "  Sınırın üstünde: tipik PWR çizgisel güç sınırı ~400–500 W/cm."
 msgstr "  Above the limit: the typical PWR linear power limit is ~400–500 W/cm."
 
-#: cekirdek/guc_yorum.py:162
+#: cekirdek/guc_yorum.py:164
 msgid ""
 "  Not: kappa-fission, gama ısınmasının yakıt dışında (zarf, soğutucu) bırakılan "
 "kısmını da (PWR'da ~%2–3) çubuklara yazar; çubuk gücü bu oranda büyük çıkar."
@@ -3480,7 +3479,7 @@ msgstr ""
 "deposited outside the fuel (cladding, coolant) (in a PWR ~2–3%); the pin power is "
 "overstated by this fraction."
 
-#: cekirdek/guc_yorum.py:172
+#: cekirdek/guc_yorum.py:174
 #, python-format
 msgid ""
 "Not: F_ΔH ve F_q yalnız hedef çubuk türünü kapsar — modelin fisyon enerjisinin "
@@ -3491,11 +3490,11 @@ msgstr ""
 "the model is in these pins, the rest in other fissile regions not in the map (other "
 "pin types, blanket). The hottest pin may be one of them."
 
-#: cekirdek/guc_yorum.py:188
+#: cekirdek/guc_yorum.py:190
 msgid "Güç dağılımı hesaplanamadı."
 msgstr "The power distribution could not be computed."
 
-#: cekirdek/guc_yorum.py:195
+#: cekirdek/guc_yorum.py:197
 msgid ""
 "Not: çubuk başına sapmalar iyimserdir. Özdeğer hesabında ardışık çevrimler birbirine "
 "bağlıdır ve OpenMC'nin raporladığı tally belirsizliği bunu hesaba katmaz. Ölçülen "
@@ -3511,30 +3510,30 @@ msgstr ""
 " of inactive batches until the entropy flattens, and run the model with at least 5–10"
 " different seeds to look at the spread of the results."
 
-#: cekirdek/guc_yorum.py:243
+#: cekirdek/guc_yorum.py:245
 #, python-format
 msgid "tohum %d: koşu başarısız"
 msgstr "seed %d: run failed"
 
-#: cekirdek/guc_yorum.py:248
+#: cekirdek/guc_yorum.py:250
 #, python-format
 msgid "tohum %d: güç dağılımı okunamadı"
 msgstr "seed %d: power distribution could not be read"
 
-#: cekirdek/guc_yorum.py:317
+#: cekirdek/guc_yorum.py:319
 msgid "güç dağılımı yok"
 msgstr "no power distribution"
 
-#: cekirdek/guc_yorum.py:321 cekirdek/rapor_sablon/__init__.py:153
+#: cekirdek/guc_yorum.py:323 cekirdek/rapor_sablon/__init__.py:153
 msgid "(tek koşu σ'sı iyimser)"
 msgstr "(single-run σ is optimistic)"
 
-#: cekirdek/guc_yorum.py:322
+#: cekirdek/guc_yorum.py:324
 #, python-format
 msgid "en sıcak çubuk: %s"
 msgstr "hottest pin: %s"
 
-#: cekirdek/guc_yorum.py:326
+#: cekirdek/guc_yorum.py:328
 #, python-format
 msgid "en sıcak demet: %s (F_demet = %.4f)"
 msgstr "hottest assembly: %s (F_assembly = %.4f)"

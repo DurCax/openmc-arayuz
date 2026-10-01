@@ -275,7 +275,7 @@ class SonucBolumu:
             return
         dizin = os.path.dirname(self._onceki["h5"])
         durum, farklar = _tk.eskime(self.spec, dizin)
-        tarih = time.strftime("%d.%m.%Y %H:%M", time.localtime(self._onceki["tarih"]))
+        tarih = time.strftime("%Y-%m-%d %H:%M", time.localtime(self._onceki["tarih"]))  # ISO 8601
         kayit = _tk._kayit_oku(dizin) or {}
         beklenen = len((kayit.get("tukenme") or {}).get("adimlar") or [])
         yapilan = (self._onceki.get("sonuc") or {}).get("adim_sayisi")
