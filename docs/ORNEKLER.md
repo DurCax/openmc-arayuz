@@ -73,12 +73,17 @@ sfr_altigen demeti, tamburlu_kor berilyumu).
   berilyum yansıtıcı (r = 80 cm), 4 B4C (doğal) tambur (r = 8 cm, merkez 42 cm,
   kor yüzlerinin karşısında). Tasarım belgesindeki (§4.3) gibi korun
   **köşelerine** bakan tamburlar (merkez 60 cm, 45°) kaba ölçümde yalnız
-  ~600 pcm değer verdi. Yüzlere yaklaştırılınca değer ~3000 pcm oldu (kaba,
-  2000 × 40).
+  ~600 pcm (Δk) değer verdi. Yüzlere yaklaştırılınca değer ~3000 pcm (Δk) oldu
+  (kaba, 2000 × 40).
+
+**pcm tanımı (bu bölümün bütün tambur değerleri):** pcm = × 10⁵. Tambur değeri
+iki biçimde verilir: Δk = k₂ − k₁ (pcm = Δk × 10⁵; k farkı, reaktivite farkı
+değildir) ve Δρ = (k₂ − k₁)/(k₁k₂) = 1/k₁ − 1/k₂ (pcm = Δρ × 10⁵). Burada k₂
+tamburlar dışarıdayken (180°), k₁ içerideyken (0°) k'dır.
 
 Ölçülen tambur değerleri (G-4 fizik kabulleri, aşağıda):
 altigen_tambur_halkasi k(0°) = 0.95139 ± 0.00150, k(180°) = 1.04533 ± 0.00166 →
-toplam ~9400 pcm.
+toplam Δk = 9394 pcm, Δρ = 9446 pcm.
 
 ### Geometri ağacının fizik kabulleri (testler/test_geometri_fizik.py, 01.10.2026)
 
@@ -90,9 +95,9 @@ OpenMC 0.16.0, ENDF/B-VIII.0, 6 iş parçacığı. Ölçüt: k farkları 2σ, ha
 | Sonsuz ortam, kare: 3×3 kafes (iki harf, aynı demet) ile tek demet | 1.09889 ± 0.00095 / 1.09900 ± 0.00121 | 0.07σ, geçti |
 | Sonsuz ortam, altıgen: tek konumlu kor kafesinde demet ile tek demet | 1.46689 ± 0.00068 / 1.46634 ± 0.00070 | 0.56σ, geçti |
 | tamburlu_kor ağaçta (gelismise_gec) ile şablon, dönme 180° | 1.00719 ± 0.00110 (ikisi de) | 0σ (aynı model, aynı tohum), geçti |
-| aynısı, dönme 0° | 0.96346 ± 0.00092 (ikisi de) | 0σ, geçti; k(0) < k(180) 30σ, değer 4372 pcm |
+| aynısı, dönme 0° | 0.96346 ± 0.00092 (ikisi de) | 0σ, geçti; k(0) < k(180) 30σ, değer Δk = 4372 pcm, Δρ = 4506 pcm |
 | 6 tambur, dönme 0/60/120/180° | 0.95139 / 0.97516 / 1.02525 / 1.04533 (σ 0.0015–0.0019) | monoton (adımlar 9.9σ, 18.6σ, 7.9σ), geçti |
-| BİLGİ: tek tambur (biri 0°, beşi 180°) | 1.03251 ± 0.00163 → tek tambur 1282 pcm | toplam / (6 × tek) = 1.22 (kabul ölçütü değil) |
+| BİLGİ: tek tambur (biri 0°, beşi 180°) | 1.03251 ± 0.00163 → tek tambur Δk = 1282, Δρ = 1188 pcm | toplam / (6 × tek) = 1.22 (Δk), 1.33 (Δρ); istatistik ±0.23 (kabul ölçütü değil; sıkı yeniden ölçüm aşağıda) |
 | Simetri: bütün model 60° (donusum), tambur 90° (kiral) | asıl 1.00094 ± 0.00108, parça 0° 0.99960 ± 0.00138, parça 60° 0.99891 ± 0.00134 | 1.18σ / 0.77σ, geçti |
 | Hacim: kare+altıgen halka uo2_24 / uo2_31 | 1669.76 / 1660.1 ± 6.1; 1808.91 / 1812.1 ± 6.4 cm³ | 1.58σ / 0.49σ |
 | Hacim: altıgen+tambur u10mo | 62100.8 / 62143 ± 112 cm³ | 0.37σ |

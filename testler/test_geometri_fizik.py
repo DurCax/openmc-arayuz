@@ -294,6 +294,15 @@ def test_fiksturler():
 # YAVAS
 # ----------------------------------------------------------------------------
 
+def _deger_pcm(k_dis, k_ic):
+    """Tambur degeri: (dk, drho) pcm. pcm = x 1e5; dk = k_dis - k_ic,
+    drho = (k_dis - k_ic) / (k_dis k_ic) = 1/k_ic - 1/k_dis."""
+    return 1e5 * (k_dis - k_ic), 1e5 * (k_dis - k_ic) / (k_dis * k_ic)
+
+
+PCM_TANIMI = "pcm = x 1e5; dk = k2 - k1, drho = (k2 - k1)/(k1 k2)"
+
+
 def _kos(spec, gecici, etiket, n, c, p):
     """(k, sigma) ya da None (kosu basarisiz -> KALDI)."""
     import time
@@ -339,7 +348,8 @@ def test_yavas_tamburlu_kor_agacta(gecici):
     for tur in ("sablon", "agac"):
         z = (k[tur, 180][0] - k[tur, 0][0]) / math.hypot(k[tur, 180][1], k[tur, 0][1])
         kontrol("%s: k(0) < k(180), daldirilmis en dusuk (%.1f sigma)" % (tur, z), z > 3.0)
-    print("   tambur degeri (agac): %.0f pcm" % (1e5 * (k["agac", 180][0] - k["agac", 0][0])))
+    dk, dr = _deger_pcm(k["agac", 180][0], k["agac", 0][0])
+    print("   tambur degeri (agac): dk = %.0f pcm, drho = %.0f pcm  (%s)" % (dk, dr, PCM_TANIMI))
 
 
 def test_yavas_tambur_monoton(gecici):
@@ -355,11 +365,14 @@ def test_yavas_tambur_monoton(gecici):
     tek = _kos(tek_tambur(taban, 0.0), gecici, "tek_tambur_0", 4000, 80, 20)
     if tek is None:
         return
-    toplam = 1e5 * (k[-1][0] - k[0][0])
-    tek_deger = 1e5 * (k[-1][0] - tek[0])
-    print("   BILGI: toplam deger %.0f pcm; tek tambur %.0f pcm; tek x 6 = %.0f pcm; "
-          "oran toplam / (6 x tek) = %.2f (kabul olcutu DEGIL)"
-          % (toplam, tek_deger, 6 * tek_deger, toplam / (6 * tek_deger) if tek_deger else 0))
+    toplam, toplam_r = _deger_pcm(k[-1][0], k[0][0])
+    tek_deger, tek_r = _deger_pcm(k[-1][0], tek[0])
+    print("   BILGI (%s): toplam dk %.0f / drho %.0f pcm; tek tambur dk %.0f / drho %.0f "
+          "pcm; oran toplam / (6 x tek) = %.2f (dk), %.2f (drho) -- kabul olcutu DEGIL; "
+          "siki olcum: araclar/tambur_etkilesim.py"
+          % (PCM_TANIMI, toplam, toplam_r, tek_deger, tek_r,
+             toplam / (6 * tek_deger) if tek_deger else 0,
+             toplam_r / (6 * tek_r) if tek_r else 0))
 
 
 def test_yavas_simetri_60(gecici):

@@ -520,7 +520,18 @@ def test_k5_bolum_parantez_dosya():
         shutil.rmtree(kok, True)
 
 
-TAMBUR_R = 6.0    # altigen_tambur_halkasi tambur yaricapi (cm)
+def test_tambur_degeri_pcm_tanimi():
+    print("\n[GS13] tambur degeri: pcm = x 1e5, dk ve drho = (k2-k1)/(k1 k2) birlikte")
+    from testler import test_geometri_fizik as gf
+    dk, dr = gf._deger_pcm(1.04533, 1.03251)
+    kontrol("dk = 1282 pcm, drho = 1188 pcm", round(dk) == 1282 and round(dr) == 1188,
+            "-> %s %s" % (dk, dr))
+    belge = _belge("ORNEKLER.md")
+    kontrol("ORNEKLER.md pcm tanimini yazar (Δk × 10⁵ ve Δρ = (k₂ − k₁)/(k₁k₂))",
+            "Δk × 10⁵" in belge and "(k₂ − k₁)/(k₁k₂)" in belge)
+
+
+TAMBUR_R = 6.0   # altigen_tambur_halkasi tambur yaricapi (cm)
 
 
 def _harita(spec, noktalar):
@@ -569,5 +580,6 @@ HIZLI = [test_periyodik_es_etkin_bc, test_betik_kesik_yakit_hacmi, test_k2_brown
          test_stokastik_hacim_sigma_denetimi, test_stokastik_hacim_chdir_yok,
          test_ice_aktar_ayni_adli_evrenler, test_ice_aktar_tambur_yonu_harf_sinir,
          test_arayuz_sessiz_yedek_yok, test_cli_siki_cikis_kodu, test_k7_sigma_ve_dil,
-         test_rapor_eki_ve_panel_dili, test_k5_bolum_parantez_dosya]
+         test_rapor_eki_ve_panel_dili, test_k5_bolum_parantez_dosya,
+         test_tambur_degeri_pcm_tanimi]
 YAVAS = [test_yavas_betik_kesik_hacim_kosucuyla_ayni]
