@@ -9,7 +9,7 @@
 ================================================================================
 """
 
-from cekirdek.ceviri import _, _n
+from cekirdek.ceviri import _, _n, pgettext
 from cekirdek.gunluk import kaydedici
 
 _log = kaydedici(__name__)
@@ -24,15 +24,57 @@ def _g():
 _TAM_PAY = 0.999
 
 
-def _radyal_satirlari(faktorler):
+# Tipik PWR tasarim degerleri (F_dH ~1.65, F_q ~2.3-2.6, cizgisel guc ~400-500 W/cm)
+# yalniz basincli su reaktoru kategorisindeki modellerde yorumlanir.
+PWR_KATEGORILERI = ("pwr", "vver")
+
+
+def _pwr_mi(kategori):
+    return str(kategori or "").lower() in PWR_KATEGORILERI
+
+
+def _yanlilik_satiri(yakin, yanlilik, buyukluk):
+    """Maksimumun yukari yanliligi (guc_faktor.tepe_yanliligi)."""
+    if not yakin or yakin < 2 or yanlilik is None:
+        return []
+    return [_("  Dikkat: en yüksek değere istatistik olarak ayırt edilemeyen (birleşik 2σ "
+              "içinde) %d %s var. Bir en büyük değer hesaplandığı için %s yukarı "
+              "yanlıdır: bu tepelerin gerçek değeri eşitse beklenen yanlılık ≈ +%.4f "
+              "(σ_tepe × %d değerin beklenen en büyüğü). Tek koşu σ'sı iyimser olduğundan "
+              "gerçek yanlılık daha büyük olabilir; çok tohumla harita ortalamasını "
+              "kullanın.") % (yakin, buyukluk[0], buyukluk[1], yanlilik, yakin)]
+
+
+def istatistik_yetersiz(deger, sapma, yanlilik):
+    """Tepe faktorunun 1'den farki gurultu + maksimum yanliligindan ayirt
+    edilemiyorsa True: (deger − 1) ≤ 2σ + yanlilik. O zaman tasarim yorumu
+    (yukleme duzeltilmeli vb.) ertelenir (QA14-Q7)."""
+    if deger is None or sapma is None:
+        return False
+    return (deger - 1.0) <= 2.0 * sapma + (yanlilik or 0.0)
+
+
+def _yetersiz_satiri(ad, deger, sapma, yanlilik):
+    # GUM bicimi (K5: belirsizlik en cok 2 anlamli rakam)
+    from cekirdek.uygunluk_denetimi.kurallar_rapor import belirsizlik_metni
+    return [_("  İstatistik yetersiz: %s = %s; 1'den farkı gürültü ve maksimum "
+              "yanlılığından (2σ + %.2g) ayırt edilemiyor. Tasarım yorumu yapılmadı — önce "
+              "çevrim başına parçacık ve aktif çevrim sayısını artırın.")
+            % (ad, belirsizlik_metni(deger, sapma), yanlilik or 0.0)]
+
+
+def _radyal_satirlari(faktorler, kategori=None):
     f = faktorler["F_dH"]
     satirlar = [_("F_ΔH = %.4f — en sıcak çubuk ortalamanın %%%.1f üstünde güç üretiyor.")
                 % (f, (f - 1) * 100)]
-    if f < 1.02:
+    if istatistik_yetersiz(f, faktorler.get("F_dH_sapma"), faktorler.get("F_dH_yanlilik")):
+        satirlar += _yetersiz_satiri("F_ΔH", f, faktorler["F_dH_sapma"],
+                                     faktorler.get("F_dH_yanlilik"))
+    elif f < 1.02:
         satirlar.append(_("  Dağılım neredeyse düz. Yansıtıcı sınırlı tek demet "
                         "hesaplarında beklenen budur; gerçek bir korda kenar "
                         "etkileri ve yakıt yüklemesi tepeyi büyütür."))
-    elif f > 1.65:
+    elif f > 1.65 and _pwr_mi(kategori):
         satirlar.append(_("  Yüksek: tipik PWR tasarım sınırı F_ΔH ≈ 1.65 "
                         "civarındadır; yakıt yüklemesi düzeltilmeli."))
     if faktorler.get("tam_kor"):
@@ -51,19 +93,13 @@ def _radyal_satirlari(faktorler):
                            v["cubuk_sayisi"])
                         % (ad, v["ortalama"], v["tepe"], v["cubuk_sayisi"])
                         for ad, v in tur.items()))
-    # --- maksimumun yukari yanliligi ---
-    oran = faktorler.get("yanlilik_orani")
-    if oran is not None and oran > 0.3:
-        satirlar.append(
-            _("  Dikkat: çubuk başına istatistik sapma (%.4f) dağılımın gerçek "
-            "saçılmasının (%.4f) %%%.0f kadarı. Bir en büyük değer hesaplandığı "
-            "için F_ΔH bu durumda yukarı yanlıdır — gerçek tepe daha düşüktür. "
-            "Çevrim başına parçacık sayısını artırın.")
-            % (faktorler["istatistik_sapma"], faktorler["sacilma"], oran * 100))
+    # --- maksimumun yukari yanliligi: tepeye yakin cubuklar uzerinden ---
+    satirlar += _yanlilik_satiri(faktorler.get("F_dH_tepe_yakini"),
+                                 faktorler.get("F_dH_yanlilik"), (pgettext("çoğul", "çubuk"), "F_ΔH"))
     return satirlar
 
 
-def _eksenel_satirlari(faktorler):
+def _eksenel_satirlari(faktorler, kategori=None):
     if not faktorler["F_q"]:
         return [_("F_q tanımsız — model 2B (eksenel yükseklik yok). "
                 "Eksenel tepe olmadan yerel güç yoğunluğu hesaplanamaz; "
@@ -82,12 +118,19 @@ def _eksenel_satirlari(faktorler):
             _("  %d eksenel dilim boş (hedef çubuk o katmanlarda yok: %s); bu "
               "dilimler F_q ortalamasına katılmadı.")
             % (len(bos), ", ".join(str(i + 1) for i in bos)))
-    if faktorler["F_q"] > 2.6:
+    satirlar += _yanlilik_satiri(faktorler.get("F_q_tepe_yakini"),
+                                 faktorler.get("F_q_yanlilik"),
+                                 (_("(çubuk, dilim) çifti"), "F_q"))
+    if istatistik_yetersiz(faktorler["F_q"], faktorler.get("F_q_sapma"),
+                           faktorler.get("F_q_yanlilik")):
+        return satirlar + _yetersiz_satiri("F_q", faktorler["F_q"], faktorler["F_q_sapma"],
+                                           faktorler.get("F_q_yanlilik"))
+    if faktorler["F_q"] > 2.6 and _pwr_mi(kategori):
         satirlar.append(_("  Yüksek: tipik PWR sınırı F_q ≈ 2.3–2.6."))
     return satirlar
 
 
-def _mutlak_satirlari(mutlak, hedef_payi_hata=None):
+def _mutlak_satirlari(mutlak, hedef_payi_hata=None, kategori=None):
     """hedef_payi_hata: pay tally'si OKUNAMADI (kosucu guc["hedef_payi_hata"]);
     verilmezse pay yoklugu eski kosu (tally yok) sayilir."""
     if not mutlak:
@@ -98,6 +141,11 @@ def _mutlak_satirlari(mutlak, hedef_payi_hata=None):
         satirlar.append(_("  Modelin fisyon enerjisinin %%%.1f'i bu çubuklarda "
                           "(%.4g W); kalanı diğer fisil bölgelerde.")
                         % (100.0 * mutlak["hedef_payi"], mutlak["hedef_guc"]))
+    kesik_disi = mutlak.get("kesik_disi_pay", 1.0)
+    if kesik_disi < 1.0:
+        satirlar.append(_("  Kesik çubukların gücü (hedef çubuk gücünün %%%.1f'i) "
+                          "ortalamaya dağıtılmadı; yukarıdaki güç yalnız kesik olmayan "
+                          "çubuklarındır.") % (100.0 * (1.0 - kesik_disi)))
     elif hedef_payi_hata:
         satirlar.append(_("  Uyarı: güç payı tally'si okunamadı: %s. Toplam gücün "
                           "tamamı bu çubuklara yazıldı; başka fisil bölge varsa "
@@ -110,7 +158,7 @@ def _mutlak_satirlari(mutlak, hedef_payi_hata=None):
         lm = mutlak["lineer_maks_W_cm"]
         satirlar.append(_("En yüksek çizgisel güç %.1f W/cm (tepe faktörü: %s).")
                         % (lm, mutlak["lineer_tepe_kaynagi"]))
-        if lm > 500:
+        if lm > 500 and _pwr_mi(kategori):
             satirlar.append(_("  Sınırın üstünde: tipik PWR çizgisel güç "
                             "sınırı ~400–500 W/cm."))
     satirlar.append(_("  Not: kappa-fission, gama ısınmasının yakıt dışında (zarf, "
@@ -129,20 +177,22 @@ def _kapsam_satiri(hedef_payi):
               "onlardan biri olabilir.") % (100.0 * hedef_payi)]
 
 
-def yorumla(faktorler, mutlak=None, hedef_payi=None, hedef_payi_hata=None):
+def yorumla(faktorler, mutlak=None, hedef_payi=None, hedef_payi_hata=None, kategori=None):
     """
     Ogrenciye yonelik kisa yorum satirlari.
     hedef_payi: kappa_hedef / kappa_model (kosucu.sonuc_oku guc["hedef_payi"]);
     verilmezse mutlak["hedef_payi"] kullanilir.
     hedef_payi_hata: pay okunamadiysa hata metni (guc["hedef_payi_hata"]).
+    kategori: spec["kategori"]; tipik PWR sinirlari yalniz PWR_KATEGORILERI'nde
+    yazilir (SFR, arastirma reaktoru vb. icin anlamsizdir).
     """
     if not faktorler:
         return [_("Güç dağılımı hesaplanamadı.")]
     if hedef_payi is None and mutlak:
         hedef_payi = mutlak.get("hedef_payi")
-    satirlar = (_radyal_satirlari(faktorler) + _kapsam_satiri(hedef_payi)
-                + _eksenel_satirlari(faktorler)
-                + _mutlak_satirlari(mutlak, hedef_payi_hata))
+    satirlar = (_radyal_satirlari(faktorler, kategori) + _kapsam_satiri(hedef_payi)
+                + _eksenel_satirlari(faktorler, kategori)
+                + _mutlak_satirlari(mutlak, hedef_payi_hata, kategori))
     satirlar.append(_(
         "Not: çubuk başına sapmalar iyimserdir. Özdeğer hesabında ardışık çevrimler "
         "birbirine bağlıdır ve OpenMC'nin raporladığı tally belirsizliği bunu hesaba "
@@ -169,13 +219,22 @@ def coklu_tohum(spec, kok_dizin, tohumlar=(1, 2, 3, 4, 5), is_parcacigi=None,
     pasif donem sonunda hala kayiyorsa) tohumlar arasi fark sapma icerir;
     once pasif cevrim sayisi artirilir.
 
+    MAKSIMUMUN YANLILIGI: her tohumun F_dH'si bir maksimumdur ve yukari
+    yanlidir; ortalamalari da yanli kalir. Bu yuzden once tohumlarin bagil
+    haritalari (cubuk, ve 3B'de (cubuk, dilim)) ORTALANIR, sonra maksimum
+    alinir (harita_faktorleri). "F_dH" / "F_q" listeleri tohum basina
+    maksimumlardir (bilgi; ortalamalari yukari yanli).
+
     DONER {"F_dH": [...], "F_q": [...], "ozet": {...}}
+      ozet: F_dH_harita, F_dH_harita_sapma (tepe cubugun tohumlar arasi
+      sacilmasi / √N), F_dH_tepe_yakini, F_dH_yanlilik; F_q icin ayni alanlar;
+      F_dH_ort / F_dH_sacilma (tohum maksimumlarinin ortalamasi -- yanli).
     """
     import os
     import statistics as st
     from cekirdek import kosucu
 
-    f_dh, f_q, hatalar = [], [], []
+    f_dh, f_q, hatalar, haritalar = [], [], [], []
     for i, t in enumerate(tohumlar):
         alt = dict(spec)
         alt["ayarlar"] = dict(spec["ayarlar"], tohum=int(t))
@@ -193,6 +252,7 @@ def coklu_tohum(spec, kok_dizin, tohumlar=(1, 2, 3, 4, 5), is_parcacigi=None,
             f_dh.append(f["F_dH"])
             if f["F_q"]:
                 f_q.append(f["F_q"])
+            haritalar.append(f)
         except Exception as e:
             # tek tohumun hatasi olcumu durdurmaz; ozet["hatalar"]da gorunur
             _log.exception("çoklu tohum: tohum %d koşulamadı", t)
@@ -207,7 +267,50 @@ def coklu_tohum(spec, kok_dizin, tohumlar=(1, 2, 3, 4, 5), is_parcacigi=None,
     if len(f_q) >= 2:
         ozet["F_q_ort"] = st.mean(f_q)
         ozet["F_q_sacilma"] = st.stdev(f_q)
+    ozet.update(harita_faktorleri(haritalar))
     return {"F_dH": f_dh, "F_q": f_q, "ozet": ozet}
+
+
+def _ortalama_harita(haritalar):
+    """[{anahtar: deger}] -> {anahtar: (ortalama, ortalamanin σ'si)}; yalniz
+    butun tohumlarda bulunan anahtarlar. Tohum sayisi < 2 ise {}."""
+    import math
+    import statistics as st
+    if len(haritalar) < 2:
+        return {}
+    ortak = set(haritalar[0]).intersection(*haritalar[1:])
+    n = len(haritalar)
+    return {a: (st.mean(h[a] for h in haritalar),
+                st.stdev([h[a] for h in haritalar]) / math.sqrt(n)) for a in ortak}
+
+
+def _harita_tepesi(ort, ad):
+    from cekirdek.guc_faktor import tepe_yanliligi
+    if not ort:
+        return {}
+    tepe = max(ort.values(), key=lambda v: v[0])
+    yan = tepe_yanliligi(list(ort.values()))
+    return {ad + "_harita": tepe[0], ad + "_harita_sapma": tepe[1],
+            ad + "_tepe_yakini": yan["yakin"], ad + "_yanlilik": yan["yanlilik"]}
+
+
+def harita_faktorleri(faktorler_listesi):
+    """
+    Tohum basina tepe_faktorleri kayitlarindan, ORTALAMA haritanin tepesi.
+    F_dH: tohumlarin bagil cubuk gucleri ortalanir, en buyugu alinir.
+    F_q : bagil (cubuk, dilim) degerleri ortalanir; yalniz yakitli ciftler
+          (her tohumda deger > 0). Bagil degerler her tohumda kendi
+          ortalamasina gore oldugundan ortalama harita da ~1 ortalamalidir.
+    Ortalamanin σ'si tohumlar arasi sacilma / √N'dir (tohumlar bagimsiz).
+    """
+    cubuk = [{a: v[0] for a, v in (f.get("bagil") or {}).items()}
+             for f in faktorler_listesi if f.get("bagil")]
+    dilim = [{(a, i): d[0] for a, k in (f.get("bagil_eksenel") or {}).items()
+              for i, d in enumerate(k) if d[0] > 0.0}
+             for f in faktorler_listesi if f.get("bagil_eksenel")]
+    sonuc = _harita_tepesi(_ortalama_harita(cubuk), "F_dH")
+    sonuc.update(_harita_tepesi(_ortalama_harita(dilim), "F_q"))
+    return sonuc
 
 
 def ozet_metni(faktorler, mutlak=None):
@@ -217,6 +320,7 @@ def ozet_metni(faktorler, mutlak=None):
     p = ["F_ΔH = %.4f ± %.4f" % (faktorler["F_dH"], faktorler["F_dH_sapma"])]
     if faktorler["F_q"]:
         p.append("F_q = %.4f ± %.4f" % (faktorler["F_q"], faktorler["F_q_sapma"]))
+    p[-1] += " " + _("(tek koşu σ'sı iyimser)")
     p.append(_("en sıcak çubuk: %s") % _g().konum_metni(faktorler["sicak_cubuk"],
                                                  faktorler.get("kafes_turu"),
                                                  faktorler.get("kafes_turleri")))

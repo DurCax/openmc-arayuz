@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
+"Project-Id-Version: openmc-arayuz 2.0.0rc1\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-01 19:34+0300\n"
+"POT-Creation-Date: 2026-10-01 21:43+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -71,7 +71,7 @@ msgstr ""
 msgid "Çubuk"
 msgstr ""
 
-#: cekirdek/dogrula/_ortak.py:25 cekirdek/rapor_sablon/__init__.py:104
+#: cekirdek/dogrula/_ortak.py:25 cekirdek/rapor_sablon/__init__.py:105
 msgid "Malzemeler"
 msgstr ""
 
@@ -91,7 +91,7 @@ msgstr ""
 msgid "Kor"
 msgstr ""
 
-#: cekirdek/dogrula/_ortak.py:28 cekirdek/rapor_sablon/__init__.py:113
+#: cekirdek/dogrula/_ortak.py:28 cekirdek/rapor_sablon/__init__.py:114
 msgid "Hesap ayarları"
 msgstr ""
 
@@ -107,7 +107,7 @@ msgstr ""
 msgid "Doğrulama"
 msgstr ""
 
-#: cekirdek/dogrula/_ortak.py:41 cekirdek/rapor_sablon/__init__.py:105
+#: cekirdek/dogrula/_ortak.py:41 cekirdek/rapor_sablon/__init__.py:106
 msgid "Geometri"
 msgstr ""
 
@@ -1199,11 +1199,11 @@ msgstr ""
 msgid "polietilen / plastik"
 msgstr ""
 
-#: cekirdek/dogrula/malzeme.py:36
+#: cekirdek/dogrula/malzeme.py:36 cekirdek/uygunluk_denetimi/vv_arayuz.py:44
 msgid "grafit"
 msgstr ""
 
-#: cekirdek/dogrula/malzeme.py:37
+#: cekirdek/dogrula/malzeme.py:37 cekirdek/uygunluk_denetimi/vv_arayuz.py:45
 msgid "berilyum"
 msgstr ""
 
@@ -2729,7 +2729,7 @@ msgstr ""
 msgid "%s bir değer bekliyor"
 msgstr ""
 
-#: cekirdek/giris.py:57 cekirdek/giris.py:150 cekirdek/kosucu.py:646
+#: cekirdek/giris.py:57 cekirdek/giris.py:150 cekirdek/kosucu.py:651
 #: cekirdek/kritik_arama.py:257 cekirdek/tarama.py:440
 #, python-format
 msgid "bilinmeyen seçenek: %s"
@@ -2957,11 +2957,11 @@ msgstr ""
 msgid "demet %s · çubuk %s"
 msgstr ""
 
-#: cekirdek/guc.py:773
+#: cekirdek/guc.py:783
 msgid "F_ΔH (2B — eksenel tepe dahil değil)"
 msgstr ""
 
-#: cekirdek/guc_faktor.py:181
+#: cekirdek/guc_faktor.py:217
 #, python-format
 msgid ""
 "%d kesik çubuk (yakıt bölgesi üst hücre sınırıyla kırpılıyor) F_ΔH ve F_q dışında "
@@ -2993,62 +2993,77 @@ msgstr ""
 msgid "kök hücre %d ötelemesi (%.6g, %.6g) hiçbir demet konumuna denk gelmiyor"
 msgstr ""
 
-#: cekirdek/guc_yorum.py:29
+#: cekirdek/guc_yorum.py:40
+#, python-format
+msgid ""
+"  Dikkat: en yüksek değere istatistik olarak ayırt edilemeyen (birleşik 2σ içinde) %d"
+" %s var. Bir en büyük değer hesaplandığı için %s yukarı yanlıdır: bu tepelerin gerçek"
+" değeri eşitse beklenen yanlılık ≈ +%.4f (σ_tepe × %d değerin beklenen en büyüğü). "
+"Tek koşu σ'sı iyimser olduğundan gerçek yanlılık daha büyük olabilir; çok tohumla "
+"harita ortalamasını kullanın."
+msgstr ""
+
+#: cekirdek/guc_yorum.py:60
+#, python-format
+msgid ""
+"  İstatistik yetersiz: %s = %s; 1'den farkı gürültü ve maksimum yanlılığından (2σ + "
+"%.2g) ayırt edilemiyor. Tasarım yorumu yapılmadı — önce çevrim başına parçacık ve "
+"aktif çevrim sayısını artırın."
+msgstr ""
+
+#: cekirdek/guc_yorum.py:68
 #, python-format
 msgid "F_ΔH = %.4f — en sıcak çubuk ortalamanın %%%.1f üstünde güç üretiyor."
 msgstr ""
 
-#: cekirdek/guc_yorum.py:32
+#: cekirdek/guc_yorum.py:74
 msgid ""
 "  Dağılım neredeyse düz. Yansıtıcı sınırlı tek demet hesaplarında beklenen budur; "
 "gerçek bir korda kenar etkileri ve yakıt yüklemesi tepeyi büyütür."
 msgstr ""
 
-#: cekirdek/guc_yorum.py:36
+#: cekirdek/guc_yorum.py:78
 msgid ""
 "  Yüksek: tipik PWR tasarım sınırı F_ΔH ≈ 1.65 civarındadır; yakıt yüklemesi "
 "düzeltilmeli."
 msgstr ""
 
-#: cekirdek/guc_yorum.py:40
+#: cekirdek/guc_yorum.py:82
 #, python-format
 msgid ""
 "Tam kor: %d demet, %d yakıt çubuğu. En sıcak demet %s; ortalaması kor ortalamasının "
 "%.4f katı (F_demet). F_ΔH ve F_q tüm kordaki yakıt çubukları üzerinden hesaplanır."
 msgstr ""
 
-#: cekirdek/guc_yorum.py:48
+#: cekirdek/guc_yorum.py:90
 #, python-format
 msgid "Çubuk türleri (bağıl ortalama / tepe; bütün yakıt çubuklarının ortalaması = 1): %s"
 msgstr ""
 
-#: cekirdek/guc_yorum.py:50
+#: cekirdek/guc_yorum.py:92
 #, python-format
 msgid "%s: %.4f / %.4f (%d çubuk)"
 msgid_plural "%s: %.4f / %.4f (%d çubuk)"
 msgstr[0] ""
 msgstr[1] ""
 
-#: cekirdek/guc_yorum.py:58
-#, python-format
-msgid ""
-"  Dikkat: çubuk başına istatistik sapma (%.4f) dağılımın gerçek saçılmasının (%.4f) "
-"%%%.0f kadarı. Bir en büyük değer hesaplandığı için F_ΔH bu durumda yukarı yanlıdır —"
-" gerçek tepe daha düşüktür. Çevrim başına parçacık sayısını artırın."
+#: cekirdek/guc_yorum.py:98
+msgctxt "çoğul"
+msgid "çubuk"
 msgstr ""
 
-#: cekirdek/guc_yorum.py:68
+#: cekirdek/guc_yorum.py:104
 msgid ""
 "F_q tanımsız — model 2B (eksenel yükseklik yok). Eksenel tepe olmadan yerel güç "
 "yoğunluğu hesaplanamaz; Kor sekmesinde yükseklik tanımlayın."
 msgstr ""
 
-#: cekirdek/guc_yorum.py:71
+#: cekirdek/guc_yorum.py:107
 #, python-format
 msgid "F_q = %.4f — yerel güç yoğunluğu tepesi (eksenel şekil dahil)."
 msgstr ""
 
-#: cekirdek/guc_yorum.py:75
+#: cekirdek/guc_yorum.py:111
 #, python-format
 msgid ""
 "  Dikkat: yalnızca %d eksenel dilim var. Kaba dilimler tepeyi ortalar ve F_q'yu "
@@ -3056,58 +3071,69 @@ msgid ""
 " En az 10–20 dilim kullanın."
 msgstr ""
 
-#: cekirdek/guc_yorum.py:82
+#: cekirdek/guc_yorum.py:118
 #, python-format
 msgid ""
 "  %d eksenel dilim boş (hedef çubuk o katmanlarda yok: %s); bu dilimler F_q "
 "ortalamasına katılmadı."
 msgstr ""
 
-#: cekirdek/guc_yorum.py:86
+#: cekirdek/guc_yorum.py:123
+msgid "(çubuk, dilim) çifti"
+msgstr ""
+
+#: cekirdek/guc_yorum.py:129
 msgid "  Yüksek: tipik PWR sınırı F_q ≈ 2.3–2.6."
 msgstr ""
 
-#: cekirdek/guc_yorum.py:95
+#: cekirdek/guc_yorum.py:138
 #, python-format
 msgid "Çubuk başına ortalama %.1f W, en sıcak çubuk %.1f W."
 msgstr ""
 
-#: cekirdek/guc_yorum.py:98
+#: cekirdek/guc_yorum.py:141
 #, python-format
 msgid ""
 "  Modelin fisyon enerjisinin %%%.1f'i bu çubuklarda (%.4g W); kalanı diğer fisil "
 "bölgelerde."
 msgstr ""
 
-#: cekirdek/guc_yorum.py:102
+#: cekirdek/guc_yorum.py:146
+#, python-format
+msgid ""
+"  Kesik çubukların gücü (hedef çubuk gücünün %%%.1f'i) ortalamaya dağıtılmadı; "
+"yukarıdaki güç yalnız kesik olmayan çubuklarındır."
+msgstr ""
+
+#: cekirdek/guc_yorum.py:150
 #, python-format
 msgid ""
 "  Uyarı: güç payı tally'si okunamadı: %s. Toplam gücün tamamı bu çubuklara yazıldı; "
 "başka fisil bölge varsa çubuk gücü olduğundan büyüktür."
 msgstr ""
 
-#: cekirdek/guc_yorum.py:106
+#: cekirdek/guc_yorum.py:154
 msgid ""
 "  Not: güç payı ölçülemedi (eski koşu); toplam gücün tamamı bu çubuklara yazıldı. "
 "Başka fisil bölge varsa çubuk gücü olduğundan büyüktür."
 msgstr ""
 
-#: cekirdek/guc_yorum.py:111
+#: cekirdek/guc_yorum.py:159
 #, python-format
 msgid "En yüksek çizgisel güç %.1f W/cm (tepe faktörü: %s)."
 msgstr ""
 
-#: cekirdek/guc_yorum.py:114
+#: cekirdek/guc_yorum.py:162
 msgid "  Sınırın üstünde: tipik PWR çizgisel güç sınırı ~400–500 W/cm."
 msgstr ""
 
-#: cekirdek/guc_yorum.py:116
+#: cekirdek/guc_yorum.py:164
 msgid ""
 "  Not: kappa-fission, gama ısınmasının yakıt dışında (zarf, soğutucu) bırakılan "
 "kısmını da (PWR'da ~%2–3) çubuklara yazar; çubuk gücü bu oranda büyük çıkar."
 msgstr ""
 
-#: cekirdek/guc_yorum.py:126
+#: cekirdek/guc_yorum.py:174
 #, python-format
 msgid ""
 "Not: F_ΔH ve F_q yalnız hedef çubuk türünü kapsar — modelin fisyon enerjisinin "
@@ -3115,11 +3141,11 @@ msgid ""
 "türü, blanket). En sıcak çubuk onlardan biri olabilir."
 msgstr ""
 
-#: cekirdek/guc_yorum.py:140
+#: cekirdek/guc_yorum.py:190
 msgid "Güç dağılımı hesaplanamadı."
 msgstr ""
 
-#: cekirdek/guc_yorum.py:147
+#: cekirdek/guc_yorum.py:197
 msgid ""
 "Not: çubuk başına sapmalar iyimserdir. Özdeğer hesabında ardışık çevrimler birbirine "
 "bağlıdır ve OpenMC'nin raporladığı tally belirsizliği bunu hesaba katmaz. Ölçülen "
@@ -3129,26 +3155,30 @@ msgid ""
 "bakın."
 msgstr ""
 
-#: cekirdek/guc_yorum.py:186
+#: cekirdek/guc_yorum.py:245
 #, python-format
 msgid "tohum %d: koşu başarısız"
 msgstr ""
 
-#: cekirdek/guc_yorum.py:191
+#: cekirdek/guc_yorum.py:250
 #, python-format
 msgid "tohum %d: güç dağılımı okunamadı"
 msgstr ""
 
-#: cekirdek/guc_yorum.py:216
+#: cekirdek/guc_yorum.py:319
 msgid "güç dağılımı yok"
 msgstr ""
 
-#: cekirdek/guc_yorum.py:220
+#: cekirdek/guc_yorum.py:323 cekirdek/rapor_sablon/__init__.py:153
+msgid "(tek koşu σ'sı iyimser)"
+msgstr ""
+
+#: cekirdek/guc_yorum.py:324
 #, python-format
 msgid "en sıcak çubuk: %s"
 msgstr ""
 
-#: cekirdek/guc_yorum.py:224
+#: cekirdek/guc_yorum.py:328
 #, python-format
 msgid "en sıcak demet: %s (F_demet = %.4f)"
 msgstr ""
@@ -3445,24 +3475,20 @@ msgid ""
 "hesabında ise yakıtın taşıdığı reaktivite fazlasıdır (kontrol sistemiyle dengelenir)"
 msgstr ""
 
-#: cekirdek/kosucu.py:180
+#: cekirdek/kosucu.py:183
 #, python-format
 msgid ""
 "pasif çevrim sayısı (%d) kaynak yakınsamasını değerlendirmek için çok az — en az 4, "
 "pratikte 20–50 pasif çevrim kullanın"
 msgstr ""
 
-#: cekirdek/kosucu.py:184
+#: cekirdek/kosucu.py:187
 #, python-format
 msgid "aktif çevrim sayısı değerlendirme için yetersiz (%d çevrim, %d pasif)"
 msgstr ""
 
-#: cekirdek/kosucu.py:190
+#: cekirdek/kosucu.py:194
 msgid "entropi sabit; değerlendirilemedi"
-msgstr ""
-
-#: cekirdek/kosucu.py:195
-msgid "pasif çevrim sayısı bölünemeyecek kadar az"
 msgstr ""
 
 #: cekirdek/kosucu.py:200
@@ -3472,331 +3498,339 @@ msgid ""
 "%.4f). Pasif çevrim sayısını artırın — k-eff yanlı olabilir."
 msgstr ""
 
-#: cekirdek/kosucu.py:204
+#: cekirdek/kosucu.py:205
+#, python-format
+msgid ""
+"Kaynak dağılımı aktif dönemde de kaymaya devam etti (ilk aktif çeyrek ile plato farkı"
+" %.4f > 2σ = %.4f). Pasif çevrim sayısını artırın — k-eff ve tally'ler yanlı "
+"olabilir."
+msgstr ""
+
+#: cekirdek/kosucu.py:209
 #, python-format
 msgid "Kaynak dağılımı yakınsamış görünüyor (pasif dönem sonunda kayma %.4f ≤ 2σ = %.4f)."
 msgstr ""
 
-#: cekirdek/kosucu.py:283
+#: cekirdek/kosucu.py:288
 msgid "openmc çalıştırılabilir dosyası PATH'te bulunamadı (conda ortamı etkin mi?)"
 msgstr ""
 
-#: cekirdek/kosucu.py:334
+#: cekirdek/kosucu.py:339
 msgid "akı"
 msgstr ""
 
-#: cekirdek/kosucu.py:334
+#: cekirdek/kosucu.py:339
 msgid "soğurma"
 msgstr ""
 
-#: cekirdek/kosucu.py:334
+#: cekirdek/kosucu.py:339
 msgid "fisyon"
 msgstr ""
 
-#: cekirdek/kosucu.py:334
+#: cekirdek/kosucu.py:339
 msgid "fisyon nötronu üretimi"
 msgstr ""
 
-#: cekirdek/kosucu.py:335
+#: cekirdek/kosucu.py:340
 msgid "toplam tepkime"
 msgstr ""
 
-#: cekirdek/kosucu.py:335
+#: cekirdek/kosucu.py:340
 msgid "saçılma"
 msgstr ""
 
-#: cekirdek/kosucu.py:335
+#: cekirdek/kosucu.py:340
 msgid "ısınma"
 msgstr ""
 
-#: cekirdek/kosucu.py:336
+#: cekirdek/kosucu.py:341
 msgid "yerel ısınma"
 msgstr ""
 
-#: cekirdek/kosucu.py:336
+#: cekirdek/kosucu.py:341
 msgid "fisyon enerjisi"
 msgstr ""
 
-#: cekirdek/kosucu.py:336
+#: cekirdek/kosucu.py:341
 msgid "(n,γ) yakalama"
 msgstr ""
 
-#: cekirdek/kosucu.py:337
+#: cekirdek/kosucu.py:342
 msgid "esnek saçılma"
 msgstr ""
 
-#: cekirdek/kosucu.py:337
+#: cekirdek/kosucu.py:342
 msgid "akım"
 msgstr ""
 
-#: cekirdek/kosucu.py:359
+#: cekirdek/kosucu.py:364
 msgid "n·cm/s (hacim-integralli)"
 msgstr ""
 
-#: cekirdek/kosucu.py:359
+#: cekirdek/kosucu.py:364
 msgid "n·cm / kaynak nötronu"
 msgstr ""
 
-#: cekirdek/kosucu.py:361
+#: cekirdek/kosucu.py:366
 msgid "eV / kaynak nötronu"
 msgstr ""
 
-#: cekirdek/kosucu.py:362
+#: cekirdek/kosucu.py:367
 msgid "/ kaynak nötronu"
 msgstr ""
 
-#: cekirdek/kosucu.py:383
+#: cekirdek/kosucu.py:388
 #, python-format
 msgid "malzeme %s"
 msgstr ""
 
-#: cekirdek/kosucu.py:392
+#: cekirdek/kosucu.py:397
 msgid "tüm model"
 msgstr ""
 
-#: cekirdek/kosucu.py:402
+#: cekirdek/kosucu.py:407
 msgid "Bölge / enerji"
 msgstr ""
 
-#: cekirdek/kosucu.py:402
+#: cekirdek/kosucu.py:407
 msgid "Ölçülen"
 msgstr ""
 
-#: cekirdek/kosucu.py:402
+#: cekirdek/kosucu.py:407
 msgid "Değer"
 msgstr ""
 
-#: cekirdek/kosucu.py:402
+#: cekirdek/kosucu.py:407
 msgid "Bağıl hata"
 msgstr ""
 
-#: cekirdek/kosucu.py:402
+#: cekirdek/kosucu.py:407
 msgid "Birim"
 msgstr ""
 
-#: cekirdek/kosucu.py:447 cekirdek/rapor_sablon/__init__.py:149
+#: cekirdek/kosucu.py:452 cekirdek/rapor_sablon/__init__.py:151
 #, python-format
 msgid "okunamadı: %s"
 msgstr ""
 
-#: cekirdek/kosucu.py:508
+#: cekirdek/kosucu.py:513
 msgid "Referans tally yok — korunum denetlenemedi (eski statepoint ya da model regresyonu)."
 msgstr ""
 
-#: cekirdek/kosucu.py:512
+#: cekirdek/kosucu.py:517
 #, python-format
 msgid ""
 "Referans güç toplamı sıfır ya da negatif (%.3g): hedef bölgede fisyon sayılmadı, "
 "toplamın korunumu denetlenemedi."
 msgstr ""
 
-#: cekirdek/kosucu.py:519
+#: cekirdek/kosucu.py:524
 #, python-format
 msgid ""
 "Çubuk güçlerinin toplamı filtresiz tally'den %.2e bağıl fark gösteriyor. Haritalama "
 "bozuk olabilir — sonuçlara güvenmeyin."
 msgstr ""
 
-#: cekirdek/kosucu.py:572
+#: cekirdek/kosucu.py:577
 #, python-format
 msgid "toplamın korunumu: bağıl fark %.1e — %s"
 msgstr ""
 
-#: cekirdek/kosucu.py:573 cekirdek/kosucu.py:752
+#: cekirdek/kosucu.py:578 cekirdek/kosucu.py:757
 msgid "tamam"
 msgstr ""
 
-#: cekirdek/kosucu.py:574
+#: cekirdek/kosucu.py:579
 msgid "bozuk, haritaya güvenmeyin"
 msgstr ""
 
-#: cekirdek/kosucu.py:576
+#: cekirdek/kosucu.py:581
 #, python-format
 msgid "toplamın korunumu denetlenemedi: %s"
 msgstr ""
 
-#: cekirdek/kosucu.py:659 cekirdek/kosucu.py:664
+#: cekirdek/kosucu.py:664 cekirdek/kosucu.py:669
 #, python-format
 msgid ""
 "\n"
 "[1/3] Doğrulama: %s"
 msgstr ""
 
-#: cekirdek/kosucu.py:662
+#: cekirdek/kosucu.py:667
 #, python-format
 msgid ""
 "\n"
 "Hatalar giderilmeden koşu başlatılmaz (%s)."
 msgstr ""
 
-#: cekirdek/kosucu.py:674
+#: cekirdek/kosucu.py:679
 #, python-format
 msgid ""
 "\n"
 "      betik yazıldı: %s (%d satır)"
 msgstr ""
 
-#: cekirdek/kosucu.py:677
+#: cekirdek/kosucu.py:682
 msgid ""
 "\n"
 "(--sadece-dogrula verildi; koşu atlandı)"
 msgstr ""
 
-#: cekirdek/kosucu.py:684
+#: cekirdek/kosucu.py:689
 #, python-format
 msgid ""
 "\n"
 "[2/3] Koşu başlatılıyor → %s"
 msgstr ""
 
-#: cekirdek/kosucu.py:695
+#: cekirdek/kosucu.py:700
 #, python-format
 msgid "      çevrim %4d   k = %.5f ± %.5f"
 msgstr ""
 
-#: cekirdek/kosucu.py:707
+#: cekirdek/kosucu.py:712
 #, python-format
 msgid "      Koşu başarısız (çıkış kodu %d)"
 msgstr ""
 
-#: cekirdek/kosucu.py:708
+#: cekirdek/kosucu.py:713
 #, python-format
 msgid "      log: %s"
 msgstr ""
 
-#: cekirdek/kosucu.py:710
+#: cekirdek/kosucu.py:715
 #, python-format
 msgid "      tamamlandı: %.1f s"
 msgstr ""
 
-#: cekirdek/kosucu.py:715
+#: cekirdek/kosucu.py:720
 msgid ""
 "\n"
 "[3/3] Sonuçlar"
 msgstr ""
 
-#: cekirdek/kosucu.py:721
+#: cekirdek/kosucu.py:726
 msgid "      hesap    = sabit kaynak (k-eff tanımsız)"
 msgstr ""
 
-#: cekirdek/kosucu.py:722
+#: cekirdek/kosucu.py:727
 #, python-format
 msgid "      kaynak   = %s"
 msgstr ""
 
-#: cekirdek/kosucu.py:723
+#: cekirdek/kosucu.py:728
 #, python-format
 msgid "      şiddet   = %.4g parçacık/s"
 msgstr ""
 
-#: cekirdek/kosucu.py:724
+#: cekirdek/kosucu.py:729
 #, python-format
 msgid "      çevrim   = %d, %d parçacık/çevrim"
 msgstr ""
 
-#: cekirdek/kosucu.py:729
+#: cekirdek/kosucu.py:734
 msgid "      Not: tally değerleri kaynak parçacığı başınadır"
 msgstr ""
 
-#: cekirdek/kosucu.py:730
+#: cekirdek/kosucu.py:735
 msgid "           (şiddet 1 bırakıldı). Mutlak birim için şiddeti girin."
 msgstr ""
 
-#: cekirdek/kosucu.py:732
+#: cekirdek/kosucu.py:737
 msgid "      Not: tally değerleri mutlak birimdedir — OpenMC kaynak"
 msgstr ""
 
-#: cekirdek/kosucu.py:733
+#: cekirdek/kosucu.py:738
 msgid "           şiddetini zaten uygulamıştır, tekrar çarpmayın."
 msgstr ""
 
-#: cekirdek/kosucu.py:734
+#: cekirdek/kosucu.py:739
 msgid "           reaksiyon hızları: 1/s"
 msgstr ""
 
-#: cekirdek/kosucu.py:735
+#: cekirdek/kosucu.py:740
 msgid "           Dikkat: 'flux' skoru hacim üzerinden integrallidir (birim cm/s)."
 msgstr ""
 
-#: cekirdek/kosucu.py:736
+#: cekirdek/kosucu.py:741
 msgid "           Nokta akısı [1/cm²/s] için bölgenin hacmine bölün."
-msgstr ""
-
-#: cekirdek/kosucu.py:738
-#, python-format
-msgid "      k-eff    = %.5f ± %.5f"
 msgstr ""
 
 #: cekirdek/kosucu.py:743
 #, python-format
+msgid "      k-eff    = %.5f ± %.5f"
+msgstr ""
+
+#: cekirdek/kosucu.py:748
+#, python-format
 msgid "      durum    = %s"
 msgstr ""
 
-#: cekirdek/kosucu.py:744
+#: cekirdek/kosucu.py:749
 #, python-format
 msgid "                 %s"
 msgstr ""
 
-#: cekirdek/kosucu.py:745
+#: cekirdek/kosucu.py:750
 #, python-format
 msgid "      çevrim   = %d (%d pasif), %d parçacık/çevrim"
 msgstr ""
 
-#: cekirdek/kosucu.py:752
+#: cekirdek/kosucu.py:757
 msgid "uyarı"
 msgstr ""
 
-#: cekirdek/kosucu.py:753
+#: cekirdek/kosucu.py:758
 #, python-format
 msgid "      yakınsama= [%s] %s"
 msgstr ""
 
-#: cekirdek/kosucu.py:755
+#: cekirdek/kosucu.py:760
 #, python-format
 msgid "      yakınsama= [  ?  ] %s"
 msgstr ""
 
-#: cekirdek/kosucu.py:756 cekirdek/rapor.py:392
+#: cekirdek/kosucu.py:761 cekirdek/rapor.py:407
 #, python-format
 msgid "Shannon entropisi okunamadı: %s"
 msgstr ""
 
-#: cekirdek/kosucu.py:758
+#: cekirdek/kosucu.py:763
 msgid "      yakınsama= [  ?  ] Shannon entropisi kapalı — kaynak yakınsaması doğrulanamıyor"
 msgstr ""
 
-#: cekirdek/kosucu.py:762
+#: cekirdek/kosucu.py:767
 #, python-format
 msgid "      β_eff    = %.1f ± %.1f pcm"
 msgstr ""
 
-#: cekirdek/kosucu.py:764
+#: cekirdek/kosucu.py:769
 #, python-format
 msgid "      Λ        = %s"
 msgstr ""
 
-#: cekirdek/kosucu.py:775
+#: cekirdek/kosucu.py:780
 #, python-format
 msgid ""
 "\n"
 "      --- güç dağılımı (%d çubuk, %d eksenel dilim) ---"
 msgstr ""
 
-#: cekirdek/kosucu.py:783
+#: cekirdek/kosucu.py:789
 #, python-format
 msgid ""
 "\n"
 "      güç dağılımı okunamadı: %s"
 msgstr ""
 
-#: cekirdek/kosucu.py:790
+#: cekirdek/kosucu.py:796
 #, python-format
 msgid ""
 "\n"
 "      statepoint: %s"
 msgstr ""
 
-#: cekirdek/kosucu.py:791
+#: cekirdek/kosucu.py:797
 #, python-format
 msgid "      log       : %s"
 msgstr ""
@@ -4064,11 +4098,11 @@ msgid ""
 "hesaplanır: U₃Si₂ (12.2 g/cm³) + Al (2.70 g/cm³)."
 msgstr ""
 
-#: cekirdek/malzeme_kutup.py:489 cekirdek/rapor_sablon/__init__.py:91
+#: cekirdek/malzeme_kutup.py:489 cekirdek/rapor_sablon/__init__.py:92
 msgid "Yoğunluk"
 msgstr ""
 
-#: cekirdek/malzeme_kutup.py:491 cekirdek/rapor_sablon/__init__.py:91
+#: cekirdek/malzeme_kutup.py:491 cekirdek/rapor_sablon/__init__.py:92
 msgid "Sıcaklık"
 msgstr ""
 
@@ -4537,201 +4571,206 @@ msgstr ""
 msgid "; tükenme kapalı"
 msgstr ""
 
-#: cekirdek/rapor.py:198
+#: cekirdek/rapor.py:204
+#, python-format
+msgid "; seçim: %s zincir — %s"
+msgstr ""
+
+#: cekirdek/rapor.py:212
 #, python-format
 msgid "%s (commit edilmemiş değişiklik var)"
 msgstr ""
 
-#: cekirdek/rapor.py:207
+#: cekirdek/rapor.py:221
 #, python-format
 msgid "%s (kurulu; koşu yok)"
 msgstr ""
 
-#: cekirdek/rapor.py:229
+#: cekirdek/rapor.py:243
 msgid "Uygulama sürümü"
 msgstr ""
 
-#: cekirdek/rapor.py:229
+#: cekirdek/rapor.py:243
 msgid "uygulama"
 msgstr ""
 
-#: cekirdek/rapor.py:230
+#: cekirdek/rapor.py:244
 msgid "Git commit"
 msgstr ""
 
-#: cekirdek/rapor.py:231
+#: cekirdek/rapor.py:245
 msgid "Python / platform"
 msgstr ""
 
-#: cekirdek/rapor.py:232
+#: cekirdek/rapor.py:246
 msgid "OpenMC sürümü"
 msgstr ""
 
-#: cekirdek/rapor.py:233
+#: cekirdek/rapor.py:247
 msgid "Tesir kesiti kütüphanesi"
 msgstr ""
 
-#: cekirdek/rapor.py:234
+#: cekirdek/rapor.py:248
 msgid "Zincir dosyası"
 msgstr ""
 
-#: cekirdek/rapor.py:235 cekirdek/rapor.py:339
+#: cekirdek/rapor.py:249 cekirdek/rapor.py:353
 msgid "Tohum"
 msgstr ""
 
-#: cekirdek/rapor.py:236 cekirdek/rapor.py:337 cekirdek/rapor_sablon/__init__.py:130
+#: cekirdek/rapor.py:250 cekirdek/rapor.py:351 cekirdek/rapor_sablon/__init__.py:132
 msgid "Parçacık / çevrim"
 msgstr ""
 
-#: cekirdek/rapor.py:237
+#: cekirdek/rapor.py:251
 #, python-format
 msgid "%s (%s pasif)"
 msgstr ""
 
-#: cekirdek/rapor.py:237 cekirdek/rapor.py:338 cekirdek/rapor_sablon/__init__.py:129
+#: cekirdek/rapor.py:251 cekirdek/rapor.py:352 cekirdek/rapor_sablon/__init__.py:131
 msgid "Çevrim (pasif)"
 msgstr ""
 
-#: cekirdek/rapor.py:238
+#: cekirdek/rapor.py:252
 msgid "İş parçacığı"
 msgstr ""
 
-#: cekirdek/rapor.py:242
+#: cekirdek/rapor.py:256
 msgid "Koşu tarihi"
 msgstr ""
 
-#: cekirdek/rapor.py:243
+#: cekirdek/rapor.py:257
 msgid "Statepoint"
 msgstr ""
 
-#: cekirdek/rapor.py:248
+#: cekirdek/rapor.py:262
 msgid "Tekrarlanabilirlik kapsülü"
 msgstr ""
 
-#: cekirdek/rapor.py:262
+#: cekirdek/rapor.py:276
 #, python-format
 msgid "tekrarlanabilirlik: %s bilinmiyor"
 msgstr ""
 
-#: cekirdek/rapor.py:280
+#: cekirdek/rapor.py:294
 #, python-format
 msgid " (%%%s zengin)"
 msgstr ""
 
-#: cekirdek/rapor.py:333
+#: cekirdek/rapor.py:347
 msgid "Kor türü"
 msgstr ""
 
-#: cekirdek/rapor.py:334
+#: cekirdek/rapor.py:348
 msgid "Yükseklik"
 msgstr ""
 
-#: cekirdek/rapor.py:334
+#: cekirdek/rapor.py:348
 msgid "2B (eksenel sonsuz)"
 msgstr ""
 
-#: cekirdek/rapor.py:335
+#: cekirdek/rapor.py:349
 msgid "Sınır koşulları"
 msgstr ""
 
-#: cekirdek/rapor.py:336
+#: cekirdek/rapor.py:350
 msgid "Hesap modu"
 msgstr ""
 
-#: cekirdek/rapor.py:340
+#: cekirdek/rapor.py:354
 msgid "Sıcaklık yöntemi"
 msgstr ""
 
-#: cekirdek/dogrula/_ortak.py:30 cekirdek/rapor.py:341
+#: cekirdek/dogrula/_ortak.py:30 cekirdek/rapor.py:355
 #: cekirdek/rapor_sablon/uygunluk_eki.py:69
 msgid "Kaynak"
 msgstr ""
 
-#: cekirdek/rapor.py:342 cekirdek/rapor_sablon/grafik.py:97
+#: cekirdek/rapor.py:356 cekirdek/rapor_sablon/grafik.py:97
 msgid "Shannon entropisi"
 msgstr ""
 
-#: cekirdek/rapor.py:343 cekirdek/rapor.py:346 cekirdek/rapor.py:349
+#: cekirdek/rapor.py:357 cekirdek/rapor.py:360 cekirdek/rapor.py:363
 msgid "kapalı"
 msgstr ""
 
-#: cekirdek/rapor.py:344
+#: cekirdek/rapor.py:358
 #, python-format
 msgid "açık: %s, %s dilim, %s"
 msgstr ""
 
-#: cekirdek/dogrula/_ortak.py:30 cekirdek/dogrula/_ortak.py:31 cekirdek/rapor.py:344
-#: cekirdek/rapor_sablon/__init__.py:147
+#: cekirdek/dogrula/_ortak.py:30 cekirdek/dogrula/_ortak.py:31 cekirdek/rapor.py:358
+#: cekirdek/rapor_sablon/__init__.py:149
 msgid "Güç dağılımı"
 msgstr ""
 
-#: cekirdek/rapor.py:347
+#: cekirdek/rapor.py:361
 #, python-format
 msgid "açık: %s W/gHM, %d adım"
 msgstr ""
 
-#: cekirdek/dogrula/_ortak.py:31 cekirdek/dogrula/_ortak.py:32 cekirdek/rapor.py:347
-#: cekirdek/rapor_sablon/__init__.py:190
+#: cekirdek/dogrula/_ortak.py:31 cekirdek/dogrula/_ortak.py:32 cekirdek/rapor.py:361
+#: cekirdek/rapor_sablon/__init__.py:193
 msgid "Tükenme"
 msgstr ""
 
-#: cekirdek/rapor.py:367
+#: cekirdek/rapor.py:381
 #, python-format
 msgid "doğrulama çalıştırılamadı: %s"
 msgstr ""
 
-#: cekirdek/rapor.py:394
+#: cekirdek/rapor.py:409
 msgid "Shannon entropisi kapalı — kaynak yakınsaması doğrulanamıyor"
 msgstr ""
 
-#: cekirdek/rapor.py:432
+#: cekirdek/rapor.py:448
 msgid "bağıl hata"
 msgstr ""
 
-#: cekirdek/rapor.py:455
+#: cekirdek/rapor.py:471
 #, python-format
 msgid "tükenme sonucu okunamadı: %s"
 msgstr ""
 
-#: cekirdek/rapor.py:466
+#: cekirdek/rapor.py:482
 #, python-format
 msgid "tükenme sonucu bu modele ait olmayabilir (%s)"
 msgstr ""
 
-#: cekirdek/rapor.py:478
+#: cekirdek/rapor.py:494
 #, python-format
 msgid "Koşu dizininde statepoint dosyası yok: %s"
 msgstr ""
 
-#: cekirdek/rapor.py:483
+#: cekirdek/rapor.py:499
 #, python-format
 msgid "Statepoint okunamadı: %s (%s)"
 msgstr ""
 
-#: cekirdek/rapor.py:506
+#: cekirdek/rapor.py:525
 msgid "adsız model"
 msgstr ""
 
-#: cekirdek/rapor.py:551
+#: cekirdek/rapor.py:574
 #, python-format
 msgid "Bilinmeyen rapor biçimi: %s (geçerli: %s)"
 msgstr ""
 
-#: cekirdek/rapor.py:554
+#: cekirdek/rapor.py:577
 msgid "Rapor için model (spec) gerekli."
 msgstr ""
 
-#: cekirdek/rapor.py:556
+#: cekirdek/rapor.py:579
 #, python-format
 msgid "Koşu dizini bulunamadı: %s"
 msgstr ""
 
-#: cekirdek/rapor.py:565
+#: cekirdek/rapor.py:588
 #, python-format
 msgid "Rapor dizini oluşturulamadı: %s (%s)"
 msgstr ""
 
-#: cekirdek/rapor.py:576
+#: cekirdek/rapor.py:599
 #, python-format
 msgid "Rapor yazılamadı: %s (%s)"
 msgstr ""
@@ -4762,150 +4801,150 @@ msgstr ""
 msgid "yok (yalnız model)"
 msgstr ""
 
-#: cekirdek/rapor_sablon/__init__.py:84
+#: cekirdek/rapor_sablon/__init__.py:85
 msgid "Uyarılar"
 msgstr ""
 
-#: cekirdek/rapor_sablon/__init__.py:91
+#: cekirdek/rapor_sablon/__init__.py:92
 msgid "Ad"
 msgstr ""
 
-#: cekirdek/rapor_sablon/__init__.py:91
+#: cekirdek/rapor_sablon/__init__.py:92
 msgid "Kimlik"
 msgstr ""
 
-#: cekirdek/rapor_sablon/__init__.py:91
+#: cekirdek/rapor_sablon/__init__.py:92
 msgid "Bileşim"
 msgstr ""
 
-#: cekirdek/rapor_sablon/__init__.py:103
+#: cekirdek/rapor_sablon/__init__.py:104
 msgid "Tekrarlanabilirlik"
 msgstr ""
 
-#: cekirdek/rapor_sablon/__init__.py:106
+#: cekirdek/rapor_sablon/__init__.py:107
 msgid "xy kesiti"
 msgstr ""
 
-#: cekirdek/rapor_sablon/__init__.py:107
+#: cekirdek/rapor_sablon/__init__.py:108
 msgid "xz kesiti"
 msgstr ""
 
-#: cekirdek/rapor_sablon/__init__.py:110
+#: cekirdek/rapor_sablon/__init__.py:111
 msgid "Kesitler malzemeye göre renklidir; xz kesiti y = model merkezindedir."
 msgstr ""
 
-#: cekirdek/rapor_sablon/__init__.py:112
+#: cekirdek/rapor_sablon/__init__.py:113
 msgid "Geometri kesiti çizilemedi."
 msgstr ""
 
-#: cekirdek/rapor_sablon/__init__.py:121
+#: cekirdek/rapor_sablon/__init__.py:122
 msgid "Sonuçlar"
 msgstr ""
 
-#: cekirdek/rapor_sablon/__init__.py:121
+#: cekirdek/rapor_sablon/__init__.py:122
 msgid "koşu dizini verilmedi — yalnız model raporu"
 msgstr ""
 
-#: cekirdek/rapor_sablon/__init__.py:122
+#: cekirdek/rapor_sablon/__init__.py:123
 msgid "Koşu sonucu"
 msgstr ""
 
-#: cekirdek/rapor_sablon/__init__.py:124
+#: cekirdek/rapor_sablon/__init__.py:125
 msgid "Sabit kaynak hesabı — k-eff tanımsız."
 msgstr ""
 
-#: cekirdek/rapor_sablon/__init__.py:132
+#: cekirdek/rapor_sablon/__init__.py:134
 msgid "Kaynak yakınsaması"
 msgstr ""
 
-#: cekirdek/rapor_sablon/__init__.py:139
+#: cekirdek/rapor_sablon/__init__.py:141
 msgid "yakınsama"
 msgstr ""
 
-#: cekirdek/rapor_sablon/__init__.py:153
+#: cekirdek/rapor_sablon/__init__.py:156
 msgid "tanımsız (2B model)"
 msgstr ""
 
-#: cekirdek/rapor_sablon/__init__.py:154
+#: cekirdek/rapor_sablon/__init__.py:157
 msgid "En sıcak çubuk"
 msgstr ""
 
-#: cekirdek/rapor_sablon/__init__.py:155
+#: cekirdek/rapor_sablon/__init__.py:158
 msgid "Çubuk / eksenel dilim"
 msgstr ""
 
-#: cekirdek/rapor_sablon/__init__.py:158
+#: cekirdek/rapor_sablon/__init__.py:161
 msgid "Ortalama lineer güç"
 msgstr ""
 
-#: cekirdek/rapor_sablon/__init__.py:159
+#: cekirdek/rapor_sablon/__init__.py:162
 msgid "En yüksek lineer güç"
 msgstr ""
 
-#: cekirdek/rapor_sablon/__init__.py:163
+#: cekirdek/rapor_sablon/__init__.py:166
 msgid "güç haritası"
 msgstr ""
 
-#: cekirdek/rapor_sablon/__init__.py:164
+#: cekirdek/rapor_sablon/__init__.py:167
 msgid "eksenel profil"
 msgstr ""
 
-#: cekirdek/rapor_sablon/__init__.py:171
+#: cekirdek/rapor_sablon/__init__.py:174
 msgid "Tally özetleri"
 msgstr ""
 
-#: cekirdek/rapor_sablon/__init__.py:180
+#: cekirdek/rapor_sablon/__init__.py:183
 #, python-format
 msgid "… %d satır daha (tam tablo statepoint'te)"
 msgstr ""
 
-#: cekirdek/rapor_sablon/__init__.py:191
+#: cekirdek/rapor_sablon/__init__.py:194
 msgctxt "tükenme"
 msgid "Adım"
 msgstr ""
 
-#: cekirdek/rapor_sablon/__init__.py:191
+#: cekirdek/rapor_sablon/__init__.py:194
 msgid "Zaman [gün]"
 msgstr ""
 
-#: cekirdek/rapor_sablon/__init__.py:191
+#: cekirdek/rapor_sablon/__init__.py:194
 msgid "Yanma [MWd/kgHM]"
 msgstr ""
 
-#: cekirdek/rapor_sablon/__init__.py:192
+#: cekirdek/rapor_sablon/__init__.py:195
 msgid "tükenme"
 msgstr ""
 
-#: cekirdek/rapor_sablon/__init__.py:195
+#: cekirdek/rapor_sablon/__init__.py:198
 #, python-format
 msgid "Sonuçta bulunamayan nüklidler: %s"
 msgstr ""
 
-#: cekirdek/rapor_sablon/__init__.py:200
+#: cekirdek/rapor_sablon/__init__.py:203
 msgid "Doğrulama bulguları"
 msgstr ""
 
-#: cekirdek/rapor_sablon/__init__.py:202
+#: cekirdek/rapor_sablon/__init__.py:205
 msgid "Bulgu yok."
 msgstr ""
 
-#: cekirdek/rapor_sablon/__init__.py:208
+#: cekirdek/rapor_sablon/__init__.py:211
 msgid "Yer"
 msgstr ""
 
-#: cekirdek/rapor_sablon/__init__.py:208
+#: cekirdek/rapor_sablon/__init__.py:211
 msgid "Mesaj"
 msgstr ""
 
-#: cekirdek/rapor_sablon/__init__.py:208
+#: cekirdek/rapor_sablon/__init__.py:211
 msgid "Öneri"
 msgstr ""
 
-#: cekirdek/rapor_sablon/__init__.py:208 cekirdek/rapor_sablon/uygunluk_eki.py:69
+#: cekirdek/rapor_sablon/__init__.py:211 cekirdek/rapor_sablon/uygunluk_eki.py:69
 msgid "Seviye"
 msgstr ""
 
-#: cekirdek/rapor_sablon/__init__.py:214
+#: cekirdek/rapor_sablon/__init__.py:217
 msgid "Ek: model (JSON)"
 msgstr ""
 
@@ -5144,43 +5183,43 @@ msgstr ""
 msgid "OpenMC Reaktör Kuru Arayüzü"
 msgstr ""
 
-#: cekirdek/tambur.py:117
+#: cekirdek/tambur.py:120
 msgid "tambur sayısı en az 1 olmalı"
 msgstr ""
 
-#: cekirdek/tambur.py:119
+#: cekirdek/tambur.py:122
 msgid "tambur yarıçapı sıfırdan büyük olmalı"
 msgstr ""
 
-#: cekirdek/tambur.py:121
+#: cekirdek/tambur.py:124
 msgid "emici yay açısı 0–360° arasında olmalı"
 msgstr ""
 
-#: cekirdek/tambur.py:123
+#: cekirdek/tambur.py:126
 #, python-format
 msgid "emici iç yarıçapı (%.4f cm) tambur yarıçapından (%.4f cm) küçük olmalı"
 msgstr ""
 
-#: cekirdek/tambur.py:130
+#: cekirdek/tambur.py:133
 #, python-format
 msgid ""
 "tamburlar kora giriyor: merkez yarıçapı %.4f − tambur yarıçapı %.4f = %.4f cm < kor "
 "yarıçapı %.4f cm"
 msgstr ""
 
-#: cekirdek/tambur.py:135
+#: cekirdek/tambur.py:138
 #, python-format
 msgid "tamburlar yansıtıcı kuşaktan taşıyor: %.4f + %.4f = %.4f cm > dış sınır %.4f cm"
 msgstr ""
 
-#: cekirdek/tambur.py:143
+#: cekirdek/tambur.py:146
 #, python-format
 msgid ""
 "komşu tamburlar çakışıyor: merkezler arası %.4f cm, iki yarıçap toplamı %.4f cm. "
 "Tambur sayısını azaltın, yarıçapı küçültün ya da merkez yarıçapını büyütün."
 msgstr ""
 
-#: cekirdek/tambur.py:152
+#: cekirdek/tambur.py:155
 #, python-format
 msgid "%d tambur, yarıçap %.3f cm, merkez %.3f cm, yay %.0f°, dönme %.1f°"
 msgstr ""
@@ -5490,150 +5529,138 @@ msgstr ""
 msgid "'%s' kabında kalınlıkla tanımlı %d. halka yok"
 msgstr ""
 
-#: cekirdek/tukenme.py:93
-#, python-format
-msgid "'%s' malzemesinde %s var"
-msgstr ""
-
-#: cekirdek/tukenme.py:98
-#, python-format
-msgid "'%s' malzemesi hidrojen içeriyor"
-msgstr ""
-
-#: cekirdek/tukenme.py:99
-msgid "modelde hidrojen ya da grafit moderatör yok"
-msgstr ""
-
-#: cekirdek/tukenme.py:111
+#: cekirdek/tukenme.py:102
 #, python-format
 msgid "otomatik: %s"
 msgstr ""
 
-#: cekirdek/tukenme.py:114
+#: cekirdek/tukenme.py:105
 msgid "kullanıcı seçimi"
 msgstr ""
 
-#: cekirdek/tukenme.py:295
+#: cekirdek/tukenme.py:288
 #, python-format
 msgid ""
 "çubuk çubuk yanma kesin örnek hacmi gerektirir; hacmi kesin olmayan (kesik) yanabilir"
 " malzeme: %s"
 msgstr ""
 
-#: cekirdek/tukenme.py:333
+#: cekirdek/tukenme.py:326
 #, python-format
 msgid ""
 "hacmi analitik hesaplanamayan yanabilir malzeme: %s (%s). Tükenme kesin hacim "
 "gerektirir."
 msgstr ""
 
-#: cekirdek/dogrula/tukenme.py:135 cekirdek/tukenme.py:337
+#: cekirdek/dogrula/tukenme.py:135 cekirdek/tukenme.py:330
 msgid "modelde yanabilir (fisil) malzeme yok"
 msgstr ""
 
-#: cekirdek/tukenme.py:617
+#: cekirdek/tukenme.py:610
 msgid "malzemeler"
 msgstr ""
 
-#: cekirdek/tukenme.py:617
+#: cekirdek/tukenme.py:610
 msgid "çubuklar"
 msgstr ""
 
-#: cekirdek/tukenme.py:618
+#: cekirdek/tukenme.py:611
 msgid "plaka elemanları"
 msgstr ""
 
-#: cekirdek/tukenme.py:618
+#: cekirdek/tukenme.py:611
 msgid "demetler"
 msgstr ""
 
-#: cekirdek/tukenme.py:618
+#: cekirdek/tukenme.py:611
 msgid "kor"
 msgstr ""
 
-#: cekirdek/tukenme.py:619
+#: cekirdek/tukenme.py:612
 msgid "hesap ayarları"
 msgstr ""
 
-#: cekirdek/tukenme.py:619
+#: cekirdek/tukenme.py:612
 msgid "tally'ler"
 msgstr ""
 
-#: cekirdek/tukenme.py:620
+#: cekirdek/tukenme.py:613
 msgid "güç dağılımı"
 msgstr ""
 
-#: cekirdek/tukenme.py:620
+#: cekirdek/tukenme.py:613
 msgid "tükenme ayarları"
 msgstr ""
 
-#: cekirdek/dogrula/tukenme.py:23 cekirdek/tukenme.py:628 cekirdek/vv/kume.py:159
+#: cekirdek/dogrula/tukenme.py:23 cekirdek/tukenme.py:621
+#: cekirdek/uygunluk_denetimi/vv_arayuz.py:55 cekirdek/vv/kume.py:188
 msgctxt "spektrum"
 msgid "termal"
 msgstr ""
 
-#: cekirdek/dogrula/tukenme.py:24 cekirdek/tukenme.py:629 cekirdek/vv/kume.py:160
+#: cekirdek/dogrula/tukenme.py:24 cekirdek/tukenme.py:622
+#: cekirdek/uygunluk_denetimi/vv_arayuz.py:57 cekirdek/vv/kume.py:189
 msgctxt "spektrum"
 msgid "hızlı"
 msgstr ""
 
-#: cekirdek/tukenme.py:683
+#: cekirdek/tukenme.py:676
 msgid "koşmadan hacim, zincir ve ağır metal bilgisini yazdır"
 msgstr ""
 
-#: cekirdek/tukenme.py:685
+#: cekirdek/tukenme.py:678
 msgid "doğrulamada nüklid/kütüphane denetimini atla"
 msgstr ""
 
-#: cekirdek/tukenme.py:702
+#: cekirdek/tukenme.py:695
 #, python-format
 msgid "  zincir        : %s  (%s)"
 msgstr ""
 
-#: cekirdek/tukenme.py:703
+#: cekirdek/tukenme.py:696
 #, python-format
 msgid "  fisyon verimi : %s eV (%s spektrum)"
 msgstr ""
 
-#: cekirdek/tukenme.py:705
+#: cekirdek/tukenme.py:698
 #, python-format
 msgid "  güç yoğunluğu : %g W/gHM"
 msgstr ""
 
-#: cekirdek/tukenme.py:706
+#: cekirdek/tukenme.py:699
 #, python-format
 msgid "  adımlar       : %s %s  → %d transport"
 msgstr ""
 
-#: cekirdek/tukenme.py:708 cekirdek/tukenme.py:733
+#: cekirdek/tukenme.py:701 cekirdek/tukenme.py:726
 msgid "gün"
 msgstr ""
 
-#: cekirdek/tukenme.py:712
+#: cekirdek/tukenme.py:705
 #, python-format
 msgid "  hacim %-10s: %s cm³ [%s] %s"
 msgstr ""
 
-#: cekirdek/tukenme.py:716
+#: cekirdek/tukenme.py:709
 #, python-format
 msgid "  ağır metal    : %.6g g"
 msgstr ""
 
-#: cekirdek/tukenme.py:725
+#: cekirdek/tukenme.py:718
 #, python-format
 msgid ""
 "\n"
 "  DOĞRULAMA: koşu başlatılmadı (%d hata)"
 msgstr ""
 
-#: cekirdek/tukenme.py:732
+#: cekirdek/tukenme.py:725
 #, python-format
 msgid ""
 "\n"
 "  ağır metal: %.6g g"
 msgstr ""
 
-#: cekirdek/tukenme.py:736
+#: cekirdek/tukenme.py:729
 #, python-format
 msgid ""
 "\n"
@@ -5653,6 +5680,7 @@ msgid "stokastik"
 msgstr ""
 
 #: cekirdek/rapor_sablon/uygunluk_eki.py:67 cekirdek/tukenme_hacim.py:61
+#: cekirdek/uygunluk_denetimi/vv_arayuz.py:43
 msgid "yok"
 msgstr ""
 
@@ -5762,6 +5790,40 @@ msgstr ""
 msgid "'%s': örnek hacimleri toplamı %.8g cm³, analitik hacim %.8g cm³ — tutmuyor"
 msgstr ""
 
+#: cekirdek/tukenme_spektrum.py:35
+#, python-format
+msgid "'%s' malzemesinde %s var"
+msgstr ""
+
+#: cekirdek/tukenme_spektrum.py:40
+#, python-format
+msgid "'%s' malzemesi hidrojen içeriyor"
+msgstr ""
+
+#: cekirdek/tukenme_spektrum.py:84
+#, python-format
+msgid "koşudaki EALF = %.3g eV ('%s' tally'si; sınır %.0f eV)"
+msgstr ""
+
+#: cekirdek/tukenme_spektrum.py:99
+#, python-format
+msgid "yakıta komşu %s"
+msgstr ""
+
+#: cekirdek/tukenme_spektrum.py:102
+#, python-format
+msgid "yakıta komşu malzemelerde moderatör yok (%s yakıtla temas etmiyor)"
+msgstr ""
+
+#: cekirdek/tukenme_spektrum.py:104 cekirdek/tukenme_spektrum.py:109
+msgid "modelde hidrojen ya da grafit moderatör yok"
+msgstr ""
+
+#: cekirdek/tukenme_spektrum.py:108
+#, python-format
+msgid "%s (kaba kural: yakıt komşuluğu çıkarılamadı)"
+msgstr ""
+
 #: cekirdek/uygunluk.py:71
 msgid "Yakıt çubuğu (pin hücre)"
 msgstr ""
@@ -5865,189 +5927,209 @@ msgstr ""
 msgid "boşluk (void) katsayısı"
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kor.py:65
+#: cekirdek/uygunluk_denetimi/kurallar_kor.py:44
+msgid "soğutucu sıcaklık katsayısı"
+msgstr ""
+
+#: cekirdek/uygunluk_denetimi/kurallar_kor.py:79
 #, python-format
 msgid "%s = %+.3g %s: belirsizlik (σ) verilmedi ya da ≤ 0; işaretin anlamlılığı sınanamaz."
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kor.py:67
+#: cekirdek/uygunluk_denetimi/kurallar_kor.py:81
 msgid "Katsayıyı eğim belirsizliğiyle (tarama.katsayi) verin."
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kor.py:72
+#: cekirdek/uygunluk_denetimi/kurallar_kor.py:86
 msgid ": negatif — işaret beklentisiyle tutarlı (net geri besleme yargısı değildir)."
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kor.py:76
+#: cekirdek/uygunluk_denetimi/kurallar_kor.py:90
 #, python-format
 msgid ": işaret istatistiksel olarak belirlenemedi (|eğim| ≤ %gσ)."
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kor.py:78
+#: cekirdek/uygunluk_denetimi/kurallar_kor.py:92
 msgid "Tarama aralığını genişletin ya da istatistiği artırın."
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kor.py:80
+#: cekirdek/uygunluk_denetimi/kurallar_kor.py:94
 msgid ""
 ": POZİTİF — işaret beklentisiyle çelişiyor (GDC 11: güç işletme aralığında net anlık "
 "geri besleme reaktivite artışını karşılamalı)."
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kor.py:83
+#: cekirdek/uygunluk_denetimi/kurallar_kor.py:97
 msgid ""
 "Kor bileşimini ve tarama aralığını gözden geçirin; net geri besleme yargısı tasarım "
 "analizini gerektirir."
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kor.py:86
+#: cekirdek/uygunluk_denetimi/kurallar_kor.py:100
 msgid ": POZİTİF Doppler katsayısı olağan dışıdır."
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kor.py:87
+#: cekirdek/uygunluk_denetimi/kurallar_kor.py:101
 msgid "Yakıt bileşimini ve sıcaklık taramasını denetleyin; net güç katsayısını hesaplayın."
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kor.py:89
+#: cekirdek/uygunluk_denetimi/kurallar_kor.py:104
+msgid ""
+": pozitif. Tek başına hata değildir; net güç katsayısı ve geçici rejim analizinde "
+"değerlendirilmelidir."
+msgstr ""
+
+#: cekirdek/uygunluk_denetimi/kurallar_kor.py:106
 msgid ""
 ": pozitif. Tek başına hata değildir (SRP 4.3 pozitif MTC'yi dışlamaz); geçici rejim "
 "analizinde değerlendirilmelidir."
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kor.py:98
+#: cekirdek/uygunluk_denetimi/kurallar_kor.py:115
 msgid "Reaktivite katsayısı sonucu verilmedi."
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kor.py:99
+#: cekirdek/uygunluk_denetimi/kurallar_kor.py:116
 msgid "Analiz sekmesinde sıcaklık/boşluk taraması yapın."
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kor.py:104
+#: cekirdek/uygunluk_denetimi/kurallar_kor.py:121
 msgid ""
 "Net güç katsayısı verilmedi: GDC 11 (net geri besleme) yalnız bileşen katsayılarından"
 " yargılanamaz."
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kor.py:116
+#: cekirdek/uygunluk_denetimi/kurallar_kor.py:133
 msgid "; sınır girilmedi, karşılaştırılamadı (tesise özel; varsayılan yok)."
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kor.py:118
+#: cekirdek/uygunluk_denetimi/kurallar_kor.py:135
 #, python-format
 msgid "Profil C'de %s eşiğini kaynağıyla girin."
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kor.py:121
+#: cekirdek/uygunluk_denetimi/kurallar_kor.py:138
 #, python-format
 msgid " > sınır %.3f."
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kor.py:124
+#: cekirdek/uygunluk_denetimi/kurallar_kor.py:141
 #, python-format
 msgid ": sınırdan (%.3f) 2σ içinde; istatistiksel olarak ayırt edilemiyor."
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kor.py:126
+#: cekirdek/uygunluk_denetimi/kurallar_kor.py:143
 msgid "İstatistiği artırın."
-msgstr ""
-
-#: cekirdek/uygunluk_denetimi/kurallar_kor.py:127
-#, python-format
-msgid " ≤ sınır %.3f."
 msgstr ""
 
 #: cekirdek/uygunluk_denetimi/kurallar_kor.py:144
 #, python-format
+msgid " ≤ sınır %.3f."
+msgstr ""
+
+#: cekirdek/uygunluk_denetimi/kurallar_kor.py:161
+#, python-format
 msgid "Güç dağılımı okunamadı: %s"
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kor.py:146
+#: cekirdek/uygunluk_denetimi/kurallar_kor.py:163
 msgid "Güç dağılımı sonucu yok (F_ΔH / F_q)."
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kor.py:147
+#: cekirdek/uygunluk_denetimi/kurallar_kor.py:164
 msgid "Güç dağılımını açıp koşuyu yineleyin."
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kor.py:159
+#: cekirdek/uygunluk_denetimi/kurallar_kor.py:181
+msgid " (çok tohum: harita ortalamasının tepesi, σ tohumlar arası saçılmadan)"
+msgstr ""
+
+#: cekirdek/uygunluk_denetimi/kurallar_kor.py:183
+msgid ""
+" (tek koşu; σ iyimser: çevrimler arası korelasyonu görmez, çok tohum saçılması "
+"verilmedi)"
+msgstr ""
+
+#: cekirdek/uygunluk_denetimi/kurallar_kor.py:190
 #, python-format
 msgid "Kapatma marjı = %s (pcm = Δρ × 10⁵)"
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kor.py:162
+#: cekirdek/uygunluk_denetimi/kurallar_kor.py:193
 msgid "; sınır girilmedi, karşılaştırılamadı."
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kor.py:163
+#: cekirdek/uygunluk_denetimi/kurallar_kor.py:194
 msgid "Profil C'de sdm_siniri_pcm eşiğini kaynağıyla girin."
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kor.py:166
+#: cekirdek/uygunluk_denetimi/kurallar_kor.py:197
 #, python-format
 msgid " < sınır %.0f pcm."
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kor.py:168
+#: cekirdek/uygunluk_denetimi/kurallar_kor.py:199
 #, python-format
 msgid ": sınırdan (%.0f pcm) 2σ içinde."
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kor.py:170
+#: cekirdek/uygunluk_denetimi/kurallar_kor.py:201
 #, python-format
 msgid " ≥ sınır %.0f pcm."
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kor.py:176
+#: cekirdek/uygunluk_denetimi/kurallar_kor.py:207
 msgid "Kapatma marjı sonucu verilmedi."
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kor.py:179
+#: cekirdek/uygunluk_denetimi/kurallar_kor.py:210
 msgid ""
 "Kapatma marjı en değerli çubuk sıkışık (N−1) varsayımıyla hesaplanmamış ya da "
 "belirtilmemiş."
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kor.py:182
+#: cekirdek/uygunluk_denetimi/kurallar_kor.py:213
 msgid "En değerli çubuğu dışarıda bırakarak yeniden hesaplayın."
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kor.py:185
+#: cekirdek/uygunluk_denetimi/kurallar_kor.py:216
 msgid "Kapatma marjının belirsizliği (yöntem hatası dahil) verilmemiş."
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kor.py:195
+#: cekirdek/uygunluk_denetimi/kurallar_kor.py:226
 msgid "Kor hesap yönteminin hangi kriterlerle doğrulandığı ve uygulama aralığı belirtilmedi."
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kor.py:197
+#: cekirdek/uygunluk_denetimi/kurallar_kor.py:228
 msgid "Doğrulama referanslarını (IRPhEP / hesap-hesap karşılaştırması) girin."
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kor.py:199
+#: cekirdek/uygunluk_denetimi/kurallar_kor.py:230
 #, python-format
 msgid "Doğrulama referansları: %s"
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kor.py:203
+#: cekirdek/uygunluk_denetimi/kurallar_kor.py:234
 msgid "Reaktivite katsayılarının işareti (GDC 11)"
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kor.py:205
+#: cekirdek/uygunluk_denetimi/kurallar_kor.py:236
 msgid "Kapatma marjı (en değerli çubuk sıkışık)"
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kor.py:207
+#: cekirdek/uygunluk_denetimi/kurallar_kor.py:238
 msgid "Güç tepe faktörleri F_ΔH / F_q"
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kor.py:208
+#: cekirdek/uygunluk_denetimi/kurallar_kor.py:239
 msgid " (sınırlar tesise özel)"
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kor.py:210
+#: cekirdek/uygunluk_denetimi/kurallar_kor.py:241
 msgid "Kor yöntem doğrulaması referansı"
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kor.py:212
+#: cekirdek/uygunluk_denetimi/kurallar_kor.py:243
 msgid "(madde ayrıntısı DOĞRULANMADI)"
 msgstr ""
 
@@ -6072,231 +6154,245 @@ msgstr ""
 
 #: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:54
 #, python-format
-msgid "k + %gσ = %.5f < USL = %.5f."
+msgid "k + %gσ = %.5f < USL = %.5f (alt küme: %s; n = %d; yöntem: %s)."
 msgstr ""
 
 #: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:55
+msgid "tüm küme"
+msgstr ""
+
+#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:57
 #, python-format
 msgid "k + %gσ = %.5f, USL = %.5f: kabul koşulu sağlanmıyor."
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:57
+#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:59
 msgid ""
 "Sistem alt-kritiklik ölçütünü karşılamıyor; tasarımı ya da denetim parametrelerini "
 "değiştirin."
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:68
+#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:70
 msgid ""
 "Uygulamanın kategorik AOA özellikleri (bölünebilir element, fiziksel biçim, "
 "yansıtıcı, tayf) verilmedi."
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:75
+#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:77
 #, python-format
 msgid "%s: %s kümede var."
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:78
+#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:80
 #, python-format
 msgid ""
 "%s: uygulama '%s', doğrulama kümesi yalnız %s içeriyor — uygulanabilirlik alanının "
 "dışında."
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:80
+#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:83
 msgid "Bu özelliği taşıyan kriter deneyleri kümeye ekleyin."
-msgstr ""
-
-#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:90
-#, python-format
-msgid "USL'de pozitif yanlılık (%+.5f) kredilendirilmiş."
-msgstr ""
-
-#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:92
-msgid "Yanlılık > 0 ise USL hesabında 0 alınmalıdır."
 msgstr ""
 
 #: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:93
 #, python-format
+msgid "USL'de pozitif yanlılık (%+.5f) kredilendirilmiş."
+msgstr ""
+
+#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:95
+msgid "Yanlılık > 0 ise USL hesabında 0 alınmalıdır."
+msgstr ""
+
+#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:96
+#, python-format
 msgid "Kullanılan yanlılık %+.5f (ham %+.5f); pozitif yanlılık kredilendirilmedi."
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:102
+#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:105
 msgid "Kriter k_exp ≠ 1 olan vakalar k_calc / k_exp ile normalleştirilmemiş."
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:104
+#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:107
 msgid "k_norm = k_calc / k_exp ve σ = √(σ_calc² + σ_exp²) kullanın."
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:106
+#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:109
 msgid "k_calc / k_exp normalleştirmesi uygulandı."
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:116
+#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:119
 #, python-format
 msgid "Kümede %d vaka (< %d): teknik gerekçe gerekli."
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:118
+#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:121
 msgid "Kümeye bağımsız kriter deneyleri ekleyin."
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:120
+#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:123
 #, python-format
 msgid "Kümede %d vaka."
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:124
+#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:127
 msgid "Parametrik olmayan yöntemde güven düzeyi (β) bildirilmemiş."
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:129
+#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:132
 #, python-format
 msgid "β = %%%.1f ≤ %%%.0f iken USL verilmiş; ek veri gerekir, USL hesaplanamaz."
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:138
+#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:141
 msgid "doğrulama kümesi"
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:140
+#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:143
 msgid "profil"
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:142
+#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:145
 msgid "Alt-kritik pay (ΔSM) tanımlı değil."
-msgstr ""
-
-#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:144
-#, python-format
-msgid "ΔSM = %.3f (%s) mutlak alt sınırın (%.2f) altında: profil geçersiz."
-msgstr ""
-
-#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:146
-#, python-format
-msgid "ΔSM'yi en az %.2f yapın ve gerekçesini yazın."
 msgstr ""
 
 #: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:147
 #, python-format
+msgid "ΔSM = %.3f (%s) mutlak alt sınırın (%.2f) altında: profil geçersiz."
+msgstr ""
+
+#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:149
+#, python-format
+msgid "ΔSM'yi en az %.2f yapın ve gerekçesini yazın."
+msgstr ""
+
+#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:150
+#, python-format
 msgid "ΔSM = %.3f (%s) ≥ %.2f; seçilen değerin gerekçesi kullanıcı kuruluşa aittir."
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:165
+#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:168
 #, python-format
 msgid "%s = %g doğrulama aralığında [%g, %g]."
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:166
+#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:170
 #, python-format
 msgid "%s = %g doğrulama aralığının [%g, %g] dışında (taşma %%%.0f)."
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:169
+#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:173
 msgid "Tolerans sınırı yöntemi dış değerleme için kullanılamaz."
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:171
+#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:175
 msgid "Tolerans bandı yöntemini kullanın ya da kümeyi genişletin."
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:173
+#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:177
 msgid "Doğrulama kümesi genişletilmeli."
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:175
+#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:179
 msgid "Dış değerleme için ΔAOA payı ve gerekçesi girilmeli."
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:177
+#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:181
 #, python-format
 msgid "ΔAOA = %.3f uygulandı."
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:186
+#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:190
 msgid "Uygulamanın sayısal AOA parametreleri (zenginlik, H/X, EALF…) verilmedi."
 msgstr ""
 
+#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:195
+msgid ""
+"Uygulamanın H/X oranı çıkarılamadı (heterojen kafeste moderatör ayrı malzemede): H/X "
+"doğrulama aralığıyla karşılaştırılmadı."
+msgstr ""
+
 #: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:197
+msgid "H/X'i (hücre hacimleriyle) hesaplayıp uygunluk girdisinde verin."
+msgstr ""
+
+#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:208
 msgid "Normallik testi sonucu raporlanmamış."
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:200
+#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:211
 #, python-format
 msgid "Veri normal değil (%s) ama '%s' yöntemi kullanılmış."
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:203
+#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:214
 msgid "Parametrik olmayan yöntem zorunludur."
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:206
+#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:217
 msgid "Normallik sonucu yöntemle tutarlı."
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:210
+#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:221
 #, python-format
 msgid "Anlamlı eğilim var (%s) ama tolerans sınırı yöntemi kullanılmış."
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:212
+#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:223
 msgid "Eğilim varsa tolerans bandı yöntemini kullanın."
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:215
+#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:226
 msgid "Eğilim analizi sonucu raporlanmamış."
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:218
+#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:229
 msgid "Eğilim sonucu yöntemle tutarlı."
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:229
+#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:240
 #, python-format
 msgid ""
 "Aynı deney serisinden birden çok vaka: %s. Vakalar bağımsız değil; istatistik güveni "
 "abartılı olabilir."
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:231
+#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:242
 msgid "Her deney serisinden en çok bir vaka."
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:235
+#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:246
 msgid "Kabul koşulu k + 2σ < USL"
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:237
+#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:248
 msgid "Uygulanabilirlik alanı (kategorik)"
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:239
+#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:250
 msgid "Pozitif yanlılık kredilendirilmez"
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:241
+#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:252
 msgid "k_calc / k_exp normalleştirmesi"
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:243
+#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:254
 msgid "Vaka sayısı ve güven düzeyi"
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:245
+#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:256
 msgid "Alt-kritik pay ΔSM ≥ 0.02"
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:247
+#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:258
 msgid "Doğrulama aralığı dışına dış değerleme"
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:249
+#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:260
 msgid "Eğilim ve normallik"
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:251
+#: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:262
 msgid "Deneyler arası bağımsızlık"
 msgstr ""
 
@@ -6763,7 +6859,67 @@ msgstr ""
 msgid "profil dosyası bir JSON nesnesi olmalı: %s"
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/vv_arayuz.py:58
+#: cekirdek/uygunluk_denetimi/vv_arayuz.py:39
+msgid "bölünebilir tür"
+msgstr ""
+
+#: cekirdek/uygunluk_denetimi/vv_arayuz.py:39
+msgid "fiziksel biçim"
+msgstr ""
+
+#: cekirdek/uygunluk_denetimi/vv_arayuz.py:40
+msgid "yansıtıcı"
+msgstr ""
+
+#: cekirdek/uygunluk_denetimi/vv_arayuz.py:40
+msgid "nötron tayfı"
+msgstr ""
+
+#: cekirdek/uygunluk_denetimi/vv_arayuz.py:41
+msgid "zenginlik"
+msgstr ""
+
+#: cekirdek/uygunluk_denetimi/vv_arayuz.py:42 cekirdek/vv/kume.py:194
+msgid "metal"
+msgstr ""
+
+#: cekirdek/uygunluk_denetimi/vv_arayuz.py:42 cekirdek/vv/kume.py:194
+msgid "çözelti"
+msgstr ""
+
+#: cekirdek/uygunluk_denetimi/vv_arayuz.py:42 cekirdek/vv/kume.py:194
+msgid "oksit"
+msgstr ""
+
+#: cekirdek/uygunluk_denetimi/vv_arayuz.py:43
+msgid "karışık"
+msgstr ""
+
+#: cekirdek/uygunluk_denetimi/vv_arayuz.py:43 cekirdek/vv/kume.py:188
+msgid "ara enerji"
+msgstr ""
+
+#: cekirdek/uygunluk_denetimi/vv_arayuz.py:43 cekirdek/vv/kume.py:195
+msgid "bileşik"
+msgstr ""
+
+#: cekirdek/uygunluk_denetimi/vv_arayuz.py:44
+msgid "su"
+msgstr ""
+
+#: cekirdek/uygunluk_denetimi/vv_arayuz.py:44
+msgid "doğal U"
+msgstr ""
+
+#: cekirdek/uygunluk_denetimi/vv_arayuz.py:45
+msgid "toryum"
+msgstr ""
+
+#: cekirdek/uygunluk_denetimi/vv_arayuz.py:46
+msgid "sonsuz (yansıtıcı sınır)"
+msgstr ""
+
+#: cekirdek/uygunluk_denetimi/vv_arayuz.py:83
 #, python-format
 msgid "bilinmeyen V&V yöntemi: %r (geçerli: %s)"
 msgstr ""
@@ -6804,7 +6960,22 @@ msgstr ""
 msgid "zincir ayrıştırılamadı: %s"
 msgstr ""
 
-#: cekirdek/vv/aoa.py:223
+#: cekirdek/vv/aoa.py:205
+#, python-format
+msgid "'%s' tally'sinde enerji filtresi yok"
+msgstr ""
+
+#: cekirdek/vv/aoa.py:207
+#, python-format
+msgid "'%s' tally'sinde enerji filtresinden başka filtre var"
+msgstr ""
+
+#: cekirdek/vv/aoa.py:209
+#, python-format
+msgid "'%s' tally'sinde 'fission' skoru yok"
+msgstr ""
+
+#: cekirdek/vv/aoa.py:249
 msgid "modelde bölünebilir nüklid içeren malzeme yok: AOA parametresi yok"
 msgstr ""
 
@@ -6846,41 +7017,51 @@ msgid ""
 "verilmez (NUREG/CR-6698 §2.2); hesaplanan K_L = %.4f yalnız bilgi"
 msgstr ""
 
-#: cekirdek/vv/kume.py:46
+#: cekirdek/vv/kume.py:52
 msgid ""
 "ΔSM = 0.05: NUREG-1718 §6.4.3.3.4 / NUREG-1520 Bl. 5 Ek B'de ek gerekçesiz kabul "
 "edildiği bildirilen değer (DOĞRULANMADI); alt sınır 0.02 (NUREG/CR-6698 §2.4.5)"
 msgstr ""
 
-#: cekirdek/vv/kume.py:49
+#: cekirdek/vv/kume.py:55
 msgid ""
 "NUREG/CR-6698 (2001) yöntemi; kriter modelleri mit-crpg/benchmarks (MIT lisansı) ve "
 "ICSBEP E ± σ (uncertainties.csv)"
 msgstr ""
 
-#: cekirdek/vv/kume.py:66
+#: cekirdek/vv/kume.py:72
 #, python-format
 msgid "kriter dosyası okunamadı: %s (%s)"
 msgstr ""
 
-#: cekirdek/vv/kume.py:135
+#: cekirdek/vv/kume.py:141
 #, python-format
 msgid "USL tolerans bandından, %s noktasında"
 msgstr ""
 
-#: cekirdek/vv/kume.py:159
-msgid "ara enerji"
+#: cekirdek/vv/kume.py:214
+#, python-format
+msgid ""
+"bu uygulama için USL yok (AOA belirlenemedi): nötron tayfı bilinmiyor; %s — tally'yi "
+"silip Uygunluk kartındaki öneriyle ('%s') yeniden ekleyin ve koşun"
 msgstr ""
 
-#: cekirdek/vv/kume.py:180
+#: cekirdek/vv/kume.py:217
 #, python-format
 msgid ""
 "bu uygulama için USL yok (AOA belirlenemedi): nötron tayfı bilinmiyor; EALF "
 "tally'sini ('%s') ekleyip yeniden koşun"
 msgstr ""
 
-#: cekirdek/vv/kume.py:185
+#: cekirdek/vv/kume.py:219
 #, python-format
-msgid "bu uygulama için USL yok (AOA dışında): kümede tayfı %s olan %d vaka var; %s"
+msgid ""
+"bu uygulama için USL yok (AOA belirlenemedi): %s çıkarılamadı; uygunluk girdisinde "
+"verin"
+msgstr ""
+
+#: cekirdek/vv/kume.py:244
+#, python-format
+msgid "bu uygulama için USL yok (AOA dışında): kümede alt kümeye (%s) uyan %d vaka var; %s"
 msgstr ""
 

@@ -132,6 +132,8 @@ def tur_ozeti(spec):
         n = len(kor.get("kabuklar") or [])
         return _n("küresel düzenek (%d kabuk)", "küresel düzenek (%d kabuk)", n) % n if n \
             else _("küresel düzenek")
+    if tur == "agac":
+        return _("gelişmiş geometri (ağaç)")
     return str(tur or _("tanımsız kor"))
 
 
@@ -224,15 +226,22 @@ def sekme_isaretleri(spec, hata_sayilari=None, kosu_basarili=False,
     return sonuc
 
 
-def sonraki_adim(isaretler, gorunur, cizildi=True):
+def sonraki_adim(isaretler, gorunur, cizildi=True, hata_toplami=0):
     """
     Durum cubugundaki "simdi ne yapmali" ipucu (eski rehber seridinin ozu).
-    gorunur: gorunur sekme anahtarlari (sirali).
+    gorunur: gorunur sekme anahtarlari (sirali). hata_toplami: dogrulamadaki
+    BUTUN hata sayisi -- sekmeye baglanamayan hata varken "Model hazir"
+    denmez (QA14).
     """
     for k in gorunur:
         if isaretler.get(k, ("", ""))[0] == "!":
             return _("{sekme} sekmesinde hata var — sekmeye gidip düzeltin.").format(
                 sekme=_(SEKME_ADLARI[k]))
+    if hata_toplami:
+        return _n("Modelde %d doğrulama hatası var — doğrulama listesine bakın; hata "
+                  "giderilmeden koşu başlamaz.",
+                  "Modelde %d doğrulama hatası var — doğrulama listesine bakın; hata "
+                  "giderilmeden koşu başlamaz.", hata_toplami) % hata_toplami
     for k in gorunur:
         isaret, aciklama = isaretler.get(k, ("", ""))
         if isaret == "•" and k != "calistir":

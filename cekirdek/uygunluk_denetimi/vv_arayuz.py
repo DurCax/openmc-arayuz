@@ -23,15 +23,39 @@ ALANLAR
   aoa_kategorik      {"bolunebilir"|"fiziksel_bicim"|"yansitici"|"tayf": (degerler)}
   seriler            {deney serisi: vaka sayisi} (K14)
   kaynak             kume ve yontem atfi (ör. "NUREG/CR-6698; mit-crpg")
+  alt_kume           USL'nin hesaplandigi alt kumenin betimi (ör. "U-235, metal,
+                     hızlı, HEU (%60–100)"); bos = tum kume (K6 metnine yazilir)
 """
 
 from dataclasses import dataclass, field
 from typing import Mapping, Optional, Tuple
 
-from cekirdek.ceviri import _
+from cekirdek.ceviri import _, N_, pgettext
 
 YONTEMLER = ("tolerans_siniri", "tolerans_bandi", "parametrik_olmayan")
 AOA_KATEGORILERI = ("bolunebilir", "fiziksel_bicim", "yansitici", "tayf")
+
+# Kullaniciya gorunen adlar (ic anahtarlar EN metinde gorunmesin; QA14)
+AOA_ADLARI = {"bolunebilir": N_("bölünebilir tür"), "fiziksel_bicim": N_("fiziksel biçim"),
+              "yansitici": N_("yansıtıcı"), "tayf": N_("nötron tayfı"),
+              "zenginlik": N_("zenginlik"), "h_x": "H/X", "ealf": "EALF"}
+AOA_DEGERLERI = {"metal": N_("metal"), "cozelti": N_("çözelti"), "oksit": N_("oksit"),
+                 "bilesik": N_("bileşik"), "ara": N_("ara enerji"), "karisik": N_("karışık"), "yok": N_("yok"),
+                 "su": N_("su"), "dogal_u": N_("doğal U"), "grafit": N_("grafit"),
+                 "berilyum": N_("berilyum"), "toryum": N_("toryum"), "heu": "HEU",
+                 "sonsuz": N_("sonsuz (yansıtıcı sınır)")}
+
+
+def aoa_adi(anahtar):
+    return _(AOA_ADLARI[anahtar]) if anahtar in AOA_ADLARI else str(anahtar)
+
+
+def aoa_degeri(deger):
+    if deger == "termal":                             # baglamli (hizli != "Hızlı deneme")
+        return pgettext("spektrum", "termal")
+    if deger == "hizli":
+        return pgettext("spektrum", "hızlı")
+    return _(AOA_DEGERLERI[deger]) if deger in AOA_DEGERLERI else str(deger)
 
 
 @dataclass(frozen=True)
@@ -52,6 +76,7 @@ class VVOzeti:
     aoa_kategorik: Mapping[str, Tuple[str, ...]] = field(default_factory=dict)
     seriler: Mapping[str, int] = field(default_factory=dict)
     kaynak: str = ""
+    alt_kume: str = ""
 
     def __post_init__(self):
         if self.yontem not in YONTEMLER:

@@ -204,26 +204,48 @@ o alt kümelerde H/X eğilimi yok). Hiçbir alt kümede anlamlı eğilim çıkma
 (t < t₀.₉₇₅,ₙ₋₂), bu yüzden tolerans bandı yöntemi seçilmedi. Aynı deney serisinden
 iki vaka (LEU-SOL-THERM-002 durum 1 ve 2) vardır: K14 "bağımsız değil" notu verir.
 
-### Bu USL'ler hangi uygulamalar için geçerlidir
+### Araç hangi alt kümeyi kullanır (panel, rapor eki, CLI)
 
-- **Hızlı tayf, metal sistemler (USL = 0.9444, n = 13):** U-235 (%36–94), Pu (Pu-239
-  ağırlıklı, %79–95 bölünebilir), U-233 ve Pu + HEU metal küreler; çıplak ya da doğal U,
-  toryum, berilyum, grafit, HEU yansıtıcılı; EALF 0.58–1.28 MeV. Kümede yalnız metal biçim
-  vardır; bu AOA'da da bölünebilir türler karışıktır (6698 Tablo 2.3 bölünebilir türün aynı
-  olmasını önerir) → kullanıcı kuruluş tek tür alt kümesini gerekçelendirmelidir.
-- **Termal tayf (USL = 0.9388, n = 10):** homojen çözeltiler (HEU, LEU, Pu, U-233; H/X
-  36–1984) ve tek bir LEU UO₂ kafes vakası (LCT-008); EALF 0.03–0.52 eV. Bu küme de
-  bölünebilir tür ve biçim bakımından karışıktır; USL ancak bu karışımın temsil ettiği
-  uygulamalar için savunulabilir.
-- **U-235 (bütün biçimler, USL = 0.9418, n = 11):** hızlı ve termal vakaları birlikte
-  içerir; tayf ayrımı yapılmadığı için yalnız gösterim amaçlıdır.
+Yukarıdaki tablo kümenin **betimsel** dökümüdür. Uygunluk denetimi (K6) bir uygulama için
+USL'yi **yalnız** uygulamayla aynı bölünebilir türü, aynı fiziksel biçimi ve aynı nötron
+tayfını paylaşan vakalardan hesaplar; U-235'te ayrıca zenginlik sınıfı aynı olmalıdır
+(ICSBEP adlandırması: LEU ≤ %10, IEU %10–60, HEU ≥ %60) — `cekirdek/vv/kume.py`
+`aoa_filtresi`, 6698 §2.5 ve Tablo 2.3. Uygun alt kümede 10'dan az vaka varsa USL
+**verilmez** ve K6 "bu uygulama için USL yok (AOA dışında)" der. K6 geçtiğinde metinde alt
+küme, n ve yöntem yazılır. Yansıtıcı ve H/X alt kümeyi daraltmaz: K6-AOA ve K12 ayrıca
+denetler; heterojen kafeste H/X çıkarılamazsa K12 uyarır (H/X karşılaştırılmadı).
 
-### Bu USL'ler hangi uygulamalar için GEÇERLİ DEĞİLDİR
+Depodaki kümede (26 vaka) bu ölçütle en büyük alt küme 5 vakadır:
 
-- **LWR / LEU kafes uygulamaları** (üniversitede en sık kullanılan): LEU alt kümesinde
-  4 vaka var (1 kafes + 3 çözelti) → **USL hesaplanamadı**. Açık modeli bulunan bağımsız
-  LEU-COMP-THERM serileri (LCT-001, -002, -039 …) mit-crpg'de yoktur; ICSBEP el kitabından
-  yeniden modellenmeleri gerekir (STANDARTLAR.md §5).
+| Alt küme | n |
+|---|---|
+| Pu, metal, hızlı | 5 |
+| U-235, çözelti, termal, HEU | 3 |
+| U-233, metal, hızlı | 3 |
+| U-235, metal, hızlı, HEU (Godiva, Flattop-25) | 2 |
+| U-235, metal, hızlı, IEU (IMF-003, -004) | 2 |
+| U-235, çözelti, termal, LEU | 2 |
+| Pu, çözelti, termal | 2 |
+| U-235, oksit, termal, LEU (LCT-008) | 1 |
+| diğer 6 alt küme | birer vaka |
+
+Sonuç: **şu an depodaki küme hiçbir uygulama için USL vermez.** Bu bir hata değil, dürüst
+sonuçtur: LWR/LEU kafes (pwr_17x17 vb.) için uygun alt küme yalnız LCT-008'dir (n = 1);
+Godiva benzeri HEU hızlı metal için n = 2. Önceki sürüm alt kümeyi yalnız tayfla seçiyor ve
+pwr_17x17'ye 9 çözelti + 1 kafesten USL = 0.93877 veriyordu (6698 Tablo 2.3'e aykırı;
+düzeltildi, regresyon testi `testler/test_vv_altkume.py`). USL için ilgili alt kümeye en az
+10 bağımsız deney eklenmelidir (STANDARTLAR.md §5).
+
+### Tablodaki karışık alt kümeler neden USL için kullanılmaz
+
+- **Hızlı tayf (0.9444, n = 13)**, **termal tayf (0.9388, n = 10)** ve **U-235 (bütün
+  biçimler, 0.9418, n = 11)** satırları bölünebilir tür ve/veya biçim bakımından karışıktır;
+  6698 Tablo 2.3 bunların aynı olmasını ister. Bu satırlar yalnız bilgi içindir; araç bunları
+  hiçbir uygulamaya USL olarak vermez.
+- **LWR / LEU kafes uygulamaları** (üniversitede en sık kullanılan): LEU oksit kafes alt
+  kümesinde 1 vaka var (LCT-008) → **USL yok**. Açık modeli bulunan bağımsız LEU-COMP-THERM
+  serileri (LCT-001, -002, -039 …) mit-crpg'de yoktur; ICSBEP el kitabından yeniden
+  modellenmeleri gerekir (STANDARTLAR.md §5).
 - **Tek bölünebilir türlü AOA'lar:** Pu (n = 9, normal değil, β = %37.0) ve U-233
   (n = 5, β = %22.6) → **USL hesaplanamadı** (Tablo 2.2: ek veri gerekli).
 - **Ara tayf** (n = 3) → **USL hesaplanamadı**.
@@ -232,6 +254,9 @@ iki vaka (LEU-SOL-THERM-002 durum 1 ve 2) vardır: K14 "bağımsız değil" notu
   zenginlik/H/X/EALF değerleri — kümede temsil edilmiyor; K6-AOA ve K12 uyarır.
 - Bütün küme USL'si (0.9035, parametrik olmayan) farklı AOA'ları karıştırır; 6698 USL'nin
   her AOA için ayrı hesaplanmasını ister — bu satır yalnız bilgi içindir.
+- PU-COMP-INTER-001 (PCI-001) modelinde H için S(α,β) termal saçılma verisi yoktur
+  (mit-crpg modeli; bileşikteki H serbest gaz olarak taşınır). Ara tayfta etkisi küçük
+  beklenir ama ölçülmedi; vaka yalnız betimsel tabloda yer alır.
 
 ### Sınırlamalar
 

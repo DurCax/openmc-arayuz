@@ -308,3 +308,28 @@ def yerel_baslik(bilgi, dil=None):
 def yerel_aciklama(bilgi, dil=None):
     """Etkin dildeki (ya da `dil`) aciklama: EN'de aciklama_en."""
     return _yerel_alan(bilgi, "aciklama", bilgi.aciklama, dil)
+
+
+# Projenin C/E kabul olcutu (docs/VV.md): |C − E| ≤ 3·√(σc² + σe²)
+CE_KABUL_SIGMA = 3.0
+
+
+def c_e(referans, k, sigma):
+    """
+    Hesap (C = k ± sigma) ile referansin (E = referans k ± sigma) karsilastirmasi.
+    DONER {"tur", "kaynak", "E", "E_sigma", "C_E", "C_E_sigma", "fark_pcm",
+           "fark_sigma_pcm", "fark_sigma_sayisi", "gecti"} ya da referans
+    k/sigma tasimiyorsa None. pcm = Δk × 10⁵ (C − E).
+    """
+    ref = referans or {}
+    if ref.get("k") is None or ref.get("sigma") is None or k is None or sigma is None:
+        return None
+    e, se = float(ref["k"]), float(ref["sigma"])
+    c, sc = float(k), float(sigma)
+    birlesik = math.hypot(sc, se)
+    fark = c - e
+    return {"tur": ref.get("tur", "deney"), "kaynak": ref.get("kaynak", ""), "E": e,
+            "E_sigma": se, "C_E": c / e, "C_E_sigma": (c / e) * math.hypot(sc / c, se / e),
+            "fark_pcm": 1e5 * fark, "fark_sigma_pcm": 1e5 * birlesik,
+            "fark_sigma_sayisi": abs(fark) / birlesik if birlesik > 0 else float("inf"),
+            "gecti": abs(fark) <= CE_KABUL_SIGMA * birlesik}

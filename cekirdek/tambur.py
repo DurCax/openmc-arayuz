@@ -13,10 +13,13 @@
    donme = 0   ->  emici KORE bakiyor  = DALDIRILMIS (en dusuk k)
    donme = 180 ->  emici DISA bakiyor  = CEKILMIS   (en yuksek k)
 
-   Olculen (8 tambur, 120 derece yay, Be yansitici):
-     donme   0 -> k = 0.8858
-     donme  90 -> k = 0.9095
-     donme 180 -> k = 0.9371          toplam deger ~6200 pcm
+   Olculen (ornekler/tamburlu_kor.json: 8 tambur, 120 derece yay, Be yansitici;
+   docs/ORNEKLER.md G-4 tablosu, ornegin kendi ayari):
+     donme   0 -> k = 0.96346 ± 0.00092
+     donme 180 -> k = 1.00719 ± 0.00110
+     toplam tambur degeri Δk = 4372 pcm (Δk × 10⁵), Δρ = 4506 pcm
+     (Δρ = (k₂ − k₁)/(k₁k₂) × 10⁵). Eski "~6200 pcm" daha once kullanilan bir
+     modelin (k 0.8858 → 0.9371) Δρ'suydu (Δk = 5130 pcm); gecersizdir.
 
  DONME MATEMATIGI
    openmc.Cell.rotation = (0, 0, psi) emici yayi DOGRUDAN psi acisina koyar

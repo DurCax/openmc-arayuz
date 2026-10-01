@@ -261,8 +261,13 @@ The difference is 41 pcm, i.e. **0.46σ** (SLOW test OR12, criterion 2σ: passed
 - **pwr_gd_tukenme:** a single Gd pin cell is not representative (an infinite Gd lattice); the Gd
   pellet at the centre of a 5×5 supercell is divided into 5 rings of equal area. Measured (OR13,
   5 MWd/kg): remaining Gd-157 fraction from inside to outside
-  0.77 / 0.71 / 0.57 / 0.30 / 0.01 (01.10.2026, remeasured after the He correction; k∞ 1.1233 → 1.0697, 1500 × 40/15) — the spatial self-shielding ("onion skin")
-  is clearly visible; at 16 MWd/kg ~12 % of the Gd-157 still remains in the inner ring (old measurement, not rerun).
+  0.74 / 0.63 / 0.42 / 0.09 / 0.003 (01.10.2026; CECM, steps ≤ 1 MWd/kg; 1500 × 40/15; k∞
+  1.1233 → 1.0646 ± 0.0049) — the spatial self-shielding ("onion skin") is clearly visible.
+  **Step sensitivity:** the old settings (predictor, 0.02 / 0.08 / 0.9 / 2 / 2 MWd/kg) gave
+  0.77 / 0.71 / 0.60 / 0.33 / 0.014 with the same statistics: the predictor uses the
+  beginning-of-step rates (shielded by the outer ring) over the large step and under-burns the
+  inner rings. The example therefore uses CECM with steps ≤ 1 MWd/kg. The 16 MWd/kg value was
+  not remeasured.
   **k∞ does not peak in this model:** since only one of the 25 pins contains Gd, its reactivity
   hold-down is weak and fuel depletion dominates. In a real assembly (12–20 Gd pins) a peak is
   seen.

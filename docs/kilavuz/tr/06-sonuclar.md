@@ -61,9 +61,9 @@ verilir (1 $ = β_eff). ρ > 1 $ ise kart iki anlamı birlikte söyler: gerçek 
 bu anlık kritikliktir, sonsuz ortam (k∞) hesabında ise yakıtın taşıdığı reaktivite fazlasıdır.
 
 > **Örnek.** `ornekler/pwr_17x17.json` yansıtıcı yan sınırlı tek bir demettir; sonucu bir
-> k∞'dur (README ölçümü 1.18325 ± 0.00075). Reaktivitesi
-> ρ∞ = 0.18325 / 1.18325 = 0.15487 → **+15 487 pcm (Δρ × 10⁵)**, belirsizliği
-> 0.00075 / 1.18325² ≈ 54 pcm. Bu, "reaktör süperkritik" demek değildir: sonlu bir korda
+> k∞'dur (README ölçümü 1.18443 ± 0.00088). Reaktivitesi
+> ρ∞ = 0.18443 / 1.18443 = 0.15571 → **+15 571 pcm (Δρ × 10⁵)**, belirsizliği
+> 0.00088 / 1.18443² ≈ 63 pcm. Bu, "reaktör süperkritik" demek değildir: sonlu bir korda
 > sızıntı ve kontrol bu fazlayı dengeler.
 
 **İki sonucu karşılaştırmak.** İki k arasındaki fark ancak
@@ -99,11 +99,14 @@ düzleşmelidir.
 
 **Araç yakınsamayı nasıl değerlendirir?** (`cekirdek/kosucu.py`, `entropi_yakinsama`)
 
-1. Aktif çevrimlerdeki entropi saçılması (σ) gürültü ölçüsü alınır.
-2. Pasif dönemin yalnız **son yarısı** incelenir (başta hızlı yükselme normaldir: nokta
-   kaynaktan başlanırsa entropi sıfırdan başlar); o yarı ikiye bölünür.
-3. İki çeyreğin ortalamaları arasındaki **kayma 2σ'yı aşarsa** kaynak hâlâ kayıyordur:
-   "Pasif çevrim sayısını artırın — k-eff yanlı olabilir."
+1. **Plato**, aktif dönemin son yarısıdır: ortalaması plato değeri, saçılması (σ) çevrim başına
+   gürültü ölçüsüdür.
+2. Pasif dönemin **son çeyreğinin** ortalaması platodan **2σ'dan çok** uzaksa kaynak pasif dönem
+   sonunda hâlâ kayıyordur: "Pasif çevrim sayısını artırın — k-eff yanlı olabilir." Başta hızlı
+   yükselme normaldir (nokta kaynaktan başlanırsa entropi sıfırdan başlar).
+3. Aktif dönemin **ilk çeyreğinin** ortalaması platodan 2σ'dan çok uzaksa kaynak aktif dönemde de
+   kaymıştır (az pasif çevrim): "aktif dönemde de kaymaya devam etti". Eski sürüm σ'yı bütün aktif
+   dönemden aldığı için bu durumu kaçırıyordu (4 pasif çevrimli 3B kor "yakınsadı" çıkıyordu).
 
 Değerlendirme yapılamayan durumlar da açıkça söylenir: pasif çevrim 4'ten azsa, aktif çevrim
 çok azsa ya da entropi sabitse sonuç "değerlendirilemedi"dir — "yakınsadı" değil. Pratikte
@@ -142,11 +145,13 @@ ayrı sayar; 3B modelde buna eksenel dilimler eklenir. Adım adım ders:
 
 F_q yalnız 3B modelde tanımlıdır; 2B modelde araç "F_q tanımsız" yazar.
 
-**Ölçülen referans (README, `pwr_3b`, 20 000 parçacık, 20 eksenel dilim):** F_ΔH = 1.071,
-F_q = 1.885, ortalama çizgisel güç 182 W/cm (17.6 MW/demet). Eksenel katmanlı eşi
-`pwr_eksenel` ile aynı ayarla: F_ΔH iki modelde de **1.0674** (katmanlama radyal dağılıma
-dokunmaz — iyi bir tutarlılık kontrolü), F_q 1.7210 → 1.6435 (su yansıtıcı eksenel profili
-düzleştirir).
+**Ölçülen referans (README, `pwr_3b`, örneğin ayarı 20 000 × 150 / 40, 20 eksenel dilim, 5
+tohum, 01.10.2026):** tek koşuda F_ΔH 1.064–1.083, F_q 1.626–1.753; harita ortalamasının tepesi
+F_ΔH = 1.0620 ± 0.0055, F_q = 1.600 ± 0.032; ortalama çizgisel güç 182 W/cm (17.6 MW/demet).
+Eksenel katmanlı eşi `pwr_eksenel` ile aynı ayarla (20 000 × 250 / 100, 5 tohum): F_ΔH
+1.0603 ± 0.0039 ve 1.0618 ± 0.0028 — istatistik içinde aynı (katmanlama radyal dağılıma
+dokunmaz; iyi bir tutarlılık kontrolü); F_q 1.6362 ± 0.0147 → 1.5909 ± 0.0133 (−%2.8, 2.3σ;
+su yansıtıcı eksenel profili düzleştirir).
 
 **1. Raporlanan belirsizlikler iyimserdir.** Çubuk başına σ, çevrimler arası ilintiyi görmez.
 Bu modelde ölçüldü (`pwr_3b`, 4000 parçacık, 3 bağımsız tohum): raporlanan σ bin başına
@@ -253,7 +258,7 @@ doğrulamaya bağlandı; burada, aynı tuzağa dışa aktarılan betikte ya da k
 - **Eksenel katmanlama üç hata ortaya çıkardı (hepsi ölçümle bulundu).** (1) "Fisil aralık"ın
   iki ayrı tanımı kurucu ile betik arasında farklı kaynak kutusu kurduruyordu → 1300 pcm (Δk × 10⁵);
   tek tanıma indirildi. (2) Güç korunum tally'si bütün modeli sayıyordu → sahte "BOZUK"; referans
-  tally aynı hücreye bağlandı. (3) Güç ağı hedef çubuktan taşıyordu → F_q %6 şişti
+  tally aynı hücreye bağlandı. (3) Güç ağı hedef çubuktan taşıyordu → F_q %10.4 şişti
   (1.6435 → 1.8150); ağ artık hedef çubuğun aralığını kullanır. Ayrıca entropi ağının z sınırları
   sabitti; düzeltilince `pwr_eksenel`'de 40 pasif çevrimin yetmediğini bu uyarı yakaladı.
   *Ders: aynı sayıyı iki yoldan hesaplayan iki kod er ya da geç ayrışır.*

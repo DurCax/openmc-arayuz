@@ -1,10 +1,10 @@
 {
   "surum": 1,
   "ad": "PWR yakıt hücresi (pin) — regresyon çıpası",
-  "aciklama": "Klasik PWR yakıt hücresi. Bu model, arayüz geliştirilirken ölçülen referans sonucu üretmelidir: k∞ = 1.3570 ± 0.0020. 2σ dışına çıkarsa kurucu katmanında hata var demektir.",
+  "aciklama": "Klasik PWR yakıt hücresi. Bu model, arayüz geliştirilirken ölçülen referans sonucu üretmelidir: k∞ = 1.3570 ± 0.0020. 2σ dışına çıkarsa kurucu katmanında hata var demektir.\n\nBilinçli tutarsızlık (çıpa korunur): bütün malzemeler 293.6 K'dedir ama su yoğunluğu 0.70 g/cm³'tür — 293.6 K'de doymuş su ~0.998 g/cm³ olurdu, 0.70 ise ~580 K sıcak soğutucunun yoğunluğudur. Yani model gerçek bir soğuk ya da sıcak durum değildir: tesir kesitleri ve S(α,β) soğuk, moderatör yoğunluğu sıcaktır; bor yoktur. Çıpa değeri (k∞ 1.3570, testler/test_capa.py) bu tanıma bağlı olduğu için değiştirilmedi.",
   "baslik": "PWR yakıt hücresi (pin)",
   "baslik_en": "PWR fuel pin cell",
-  "aciklama_en": "Classic PWR fuel pin cell (2D, reflective boundaries); the regression anchor of this tool: k∞ = 1.3570 ± 0.0020.",
+  "aciklama_en": "Classic PWR fuel pin cell (2D, reflective boundaries); the regression anchor of this tool: k∞ = 1.3570 ± 0.0020. Deliberate inconsistency (the anchor is kept): all materials are at 293.6 K but the water density is 0.70 g/cm³ (saturated water at 293.6 K would be ~0.998 g/cm³; 0.70 is the density of ~580 K hot coolant), and there is no boron: cold cross sections and S(α,β) with a hot moderator density, i.e. not a real cold or hot state. The anchor value is tied to this definition (testler/test_capa.py), so it is not changed.",
   "kategori": "pwr",
   "seviye": "giris",
   "referans": {

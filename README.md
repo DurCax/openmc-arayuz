@@ -208,13 +208,13 @@ Asıl kanıtlar:
 | Örnek | k-eff | Koşu (24 iş parçacığı) |
 |---|---|---|
 | `pwr_pinhucre` | 1.35698 ± 0.00197 | 7 s |
-| `pwr_17x17` | 1.18325 ± 0.00075 | 44 s |
-| `mtr_plaka` | 1.65368 ± 0.00083 | 42 s |
+| `pwr_17x17` | 1.18443 ± 0.00088 | — (6 iş parçacığı, 01.10.2026; He 0.0018) |
+| `mtr_plaka` | 1.64576 ± 0.00087 | — (6 iş parçacığı, 01.10.2026; U₃Si₂-Al yoğunluk düzeltmesinden sonra) |
 | `sfr_altigen` | 1.46634 ± 0.00070 | 53 s |
-| `godiva_kriter` | 0.99900 ± 0.00045 | 6 s |
+| `godiva_kriter` | 1.00038 ± 0.00025 | — (100 000 × 150 / 50; [docs/VV.md](docs/VV.md)) |
 | `pwr_3b` (3B, güç dağılımı) | 1.17953 ± 0.00059 | 73 s |
-| `pwr_kontrol` (çubuk %0) | 1.17801 ± 0.00196 | 24 s |
-| `tamburlu_kor` (dönme 180°) | 1.01057 ± 0.00157 | 21 s |
+| `pwr_kontrol` (çubuk %0) | 1.18186 ± 0.00150 | — (6 iş parçacığı, 01.10.2026) |
+| `tamburlu_kor` (dönme 180°) | 1.00719 ± 0.00110 | — ([docs/ORNEKLER.md](docs/ORNEKLER.md) G-4) |
 | `zirh_kure` (sabit kaynak) | k-eff yok, tally | 24 s |
 | `pwr_eksenel` (katmanlı) | 1.17680 ± 0.00052 | 86 s |
 | `pwr_tukenme` (20 MWd/kg) | 1.35930 → 1.06545 | ~50 dk |
@@ -236,13 +236,16 @@ daldırma %100 → uç z = −H/2   (emici tüm yüksekliği kaplar)
 - *Parametre taraması* → integral çubuk değeri eğrisi
 - *Kritik arama* + hedef k=1 → **kritik çubuk konumu**
 
-Ölçülen (`pwr_kontrol`, 25 B4C çubuğu): kritik konum **%87.85 ± 0.09**, 13 koşuda.
+Ölçülen (`pwr_kontrol`, 25 B4C çubuğu): kritik konum **%87.85 ± 0.09**, 13 koşuda (He yoğunluğu 0.0018'e çekilmeden önce ölçüldü;
+yeniden koşulmadı).
 
 > ⚠ **Eğri şekli hakkında.** Klasik S eğrisi yalnızca sistem *her konumda
 > kritiğe yakınsa* görülür. Bu örnek yansıtıcı yan sınırlı tek bir demettir ve
-> k∞ yüksektir; rodlanmamış alt bölge tek başına süperkritik kalır. Bu yüzden
+> reaktivite fazlası büyüktür (eksenel uçlar vakum: sonuç k∞ değil k-eff); çubuksuz alt bölge
+> tek başına süperkritik kalır. Bu yüzden
 > değer geç toplanır ve diferansiyel değer tepesi merkezde değil tam daldırmaya
-> yakın çıkar. Ölçülen: %0 → k=1.165, %50 → k=1.131, %100 → k=0.588.
+> yakın çıkar. Ölçülen (01.10.2026; 8000 × 90 / 30 pasif, tohum 1, 6 iş parçacığı):
+> %0 → k = 1.18186 ± 0.00150, %50 → 1.16626 ± 0.00136, %100 → 0.59146 ± 0.00122.
 
 ## Kontrol tamburu (dönen)
 
@@ -258,8 +261,9 @@ dönme 0°   → emici KORA bakıyor  = daldırılmış (en düşük k)
 dönme 180° → emici DIŞA bakıyor  = çekilmiş   (en yüksek k)
 ```
 
-Ölçülen (`tamburlu_kor`, 8 B4C tamburu, 120° yay): k(0°)=0.963, k(180°)=1.012 →
-toplam tambur değeri ~5000 pcm. **Kritik tambur konumu = 122.46° ± 3.68**,
+Ölçülen (`tamburlu_kor`, 8 B4C tamburu, 120° yay; örneğin kendi ayarı, docs/ORNEKLER.md):
+k(0°) = 0.96346 ± 0.00092, k(180°) = 1.00719 ± 0.00110 → toplam tambur değeri
+Δk = 4372 pcm (Δk × 10⁵), Δρ = 4506 pcm (Δρ × 10⁵). **Kritik tambur konumu = 122.46° ± 3.68**,
 4 koşuda bulundu.
 
 > 📐 **Dönme matematiği ölçümle belirlendi.** `openmc.Cell.rotation = (0,0,ψ)`
@@ -331,25 +335,28 @@ olduğu için eski modeller bit düzeyinde aynı sonucu verir.
 ### Örnek: `pwr_eksenel`
 
 `pwr_3b` ile aynı 17×17 demet, katmanlı. **İkisi de aynı ayarla** koşuldu
-(250 çevrim / 100 pasif) — farklı ayarlardan gelen sayıları karşılaştırmak
-yanıltıcı olurdu:
+(20 000 × 250 çevrim / 100 pasif, 5 tohum, 6 iş parçacığı, 01.10.2026; He 0.0018) —
+farklı ayarlardan gelen sayıları karşılaştırmak yanıltıcı olurdu. F değerleri tohum
+haritalarının ortalamasının tepesidir (`guc.coklu_tohum`; σ = tohum saçılması / √5):
 
 | | `pwr_3b` (katmansız) | `pwr_eksenel` (katmanlı) |
 |---|---|---|
-| k-eff | 1.18002 ± 0.00051 | 1.17680 ± 0.00052 |
-| F_ΔH | 1.0674 | **1.0674** |
-| **F_q** | 1.7210 | **1.6435** |
+| k-eff (tohum 1) | 1.17939 ± 0.00053 | 1.17778 ± 0.00054 |
+| F_ΔH | 1.0603 ± 0.0039 | **1.0618 ± 0.0028** |
+| **F_q** | 1.6362 ± 0.0147 | **1.5909 ± 0.0133** |
 
-**F_ΔH dört hanede birebir aynı çıktı.** Eksenel katmanlama radyal dağılıma
-dokunmaz, dolayısıyla böyle olması gerekiyordu — iyi bir tutarlılık kontrolü.
-Değişen yalnızca F_q: 1.7210 → 1.6435 (−%4.5). Su yansıtıcı eksenel
-ekstrapolasyon mesafesini büyütüyor, yakıtın uçlarındaki akı yükseliyor ve
-eksenel profil düzleşiyor. Vakum uçlu `pwr_3b`'de profil kesilmiş kosinüstür.
+**F_ΔH istatistik içinde aynı** (fark 0.0015 ± 0.0048): eksenel katmanlama radyal
+dağılıma dokunmaz — iyi bir tutarlılık kontrolü. F_q katmanlı modelde
+**−%2.8** (−0.045 ± 0.020, 2.3σ) küçüktür: su yansıtıcı eksenel ekstrapolasyon
+mesafesini büyütüyor, yakıtın uçlarındaki akı yükseliyor ve eksenel profil
+düzleşiyor. Vakum uçlu `pwr_3b`'de profil kesilmiş kosinüstür. (Eski tek tohumlu
+tablo F_ΔH'yi "dört hanede aynı" ve F_q farkını −%4.5 veriyordu; tek tohumda F_q'nun
+tohum saçılması ~0.04 olduğu için bu fark çözülemezdi.)
 
 > **k-eff farkı temiz bir yansıtıcı kazancı ölçümü DEĞİL.** İki model birden
 > fazla yönden farklı: yakıt kolonu 366 cm %3.2 yerine 300 cm %3.2 + 30 cm doğal
 > UO2. Doğal uranyum termal spektrumda net soğurucudur, yansıtıcı ise sızıntıyı
-> azaltır; iki etki ters yönde çalışıyor ve net sonuç −232 pcm. Yansıtıcı
+> azaltır; iki etki ters yönde çalışıyor ve net sonuç −161 ± 76 pcm (Δk × 10⁵, tohum 1). Yansıtıcı
 > kazancını ayrı ölçmek isterseniz yalnızca su katmanlarını ekleyip blanket'i
 > çıkarın.
 
@@ -546,8 +553,11 @@ Hesap ayarları sekmesinden açılır (yalnız fisil çubuğu tekrarlanan modell
 | **F_ΔH** | maks çubuk gücü / ortalama | Sıcak kanalda soğutucu sıcaklık artışı (DNB marjı) |
 | **F_q** | maks yerel güç yoğunluğu / ortalama | Yakıt merkez sıcaklığı, lineer güç (~400–500 W/cm) |
 
-Ölçülen (`pwr_3b`, 20k parçacık, 20 eksenel dilim):
-**F_ΔH = 1.071**, **F_q = 1.885**, ortalama lineer güç **182 W/cm** (17.6 MW/demet).
+Ölçülen (`pwr_3b`, örneğin kendi ayarı 20 000 × 150 / 40 pasif, 20 eksenel dilim, 6 iş
+parçacığı, tohum 1–5, 01.10.2026): tek koşuda **F_ΔH 1.064–1.083**, **F_q 1.626–1.753**
+(tohum saçılması 1σ: 0.0071 ve 0.051); harita ortalamasının tepesi **F_ΔH = 1.0620 ± 0.0055**,
+**F_q = 1.600 ± 0.032** (`guc.coklu_tohum`; önce harita ortalaması, sonra maksimum). Ortalama
+lineer güç **182 W/cm** (17.6 MW/demet).
 
 > 🔴 **Belirsizlikler iyimserdir.** Özdeğer hesabında ardışık çevrimlerin fisyon
 > kaynakları korelasyonludur; OpenMC'nin raporladığı tally belirsizliği bu

@@ -162,6 +162,7 @@ class GucHaritaWidget(QtWidgets.QWidget):
             [g["korunum_notu"]] if g.get("korunum_notu") else [])
         self.hedef_payi = g.get("hedef_payi")
         self.hedef_payi_hata = g.get("hedef_payi_hata")
+        self.kategori = (spec or {}).get("kategori")
         self.mutlak = None
         if self.faktorler and spec:
             sg = spec.get("guc_dagilimi") or {}
@@ -251,7 +252,8 @@ class GucHaritaWidget(QtWidgets.QWidget):
         for not_metni in getattr(self, "korunum_notlari", []):
             metin += "<br>" + html.escape(not_metni)
         satirlar = _guc.yorumla(f, self.mutlak, getattr(self, "hedef_payi", None),
-                                hedef_payi_hata=getattr(self, "hedef_payi_hata", None))
+                                hedef_payi_hata=getattr(self, "hedef_payi_hata", None),
+                                kategori=getattr(self, "kategori", None))
         metin += "<br><br>" + "<br>".join("&bull; " + s.strip() for s in satirlar)
         self.ozet.setText(metin)
 

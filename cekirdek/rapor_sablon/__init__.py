@@ -76,7 +76,8 @@ def _kapak(icerik):
                 (_("Koşu dizini"), icerik.get("kosu_dizini") or _("yok (yalnız model)"))]
     parca = ["<h1>%s</h1>" % _e(k["baslik"])]
     if k["aciklama"]:
-        parca.append("<p>%s</p>" % _e(k["aciklama"]))
+        # Aciklamadaki satir sonlari korunur (PDF'de kacisli "\\n" basilmasin; QA14)
+        parca.append("<p>%s</p>" % "<br>".join(_e(s) for s in k["aciklama"].splitlines()))
     parca.append(_anahtar_deger(satirlar))
     parca.append('<p class="soluk">%s</p>' % _e(gosterim_notu()))
     if icerik["uyarilar"]:
@@ -123,8 +124,9 @@ def _kosu(icerik, gomulu):
     if k["keff"] is None:
         parca.append("<p>%s</p>" % _e(_("Sabit kaynak hesabı — k-eff tanımsız.")))
     else:
-        parca.append('<p class="buyuk">k-eff = <span class="sayi">%s</span></p>'
-                     % _e(bm(k["keff"], k["sigma"])))
+        # Butun dis sinirlar sizintisizsa (yansitici/periyodik) sonuc k∞'dur
+        parca.append('<p class="buyuk">%s = <span class="sayi">%s</span></p>'
+                     % ("k∞" if k.get("sonsuz") else "k-eff", _e(bm(k["keff"], k["sigma"]))))
         parca.append("<p>%s<br>%s</p>" % (_e(k["durum"]), _e(k["ayrinti"])))
     satirlar = [(_("Çevrim (pasif)"), "%d (%d)" % (k["cevrim"], k["pasif"])),
                 (_("Parçacık / çevrim"), str(k["parcacik"]))]
@@ -148,8 +150,9 @@ def _guc(icerik, gomulu):
     if g.get("hata"):
         return parca[0] + '<p class="hata">%s</p>' % _e(_("okunamadı: %s") % g["hata"])
     f = g["faktorler"]
-    satirlar = [("F_ΔH", bm(f["F_dH"], f["F_dH_sapma"])),
-                ("F_q", bm(f["F_q"], f["F_q_sapma"]) if f.get("F_q")
+    iyimser = " " + _("(tek koşu σ'sı iyimser)")
+    satirlar = [("F_ΔH", bm(f["F_dH"], f["F_dH_sapma"]) + iyimser),
+                ("F_q", bm(f["F_q"], f["F_q_sapma"]) + iyimser if f.get("F_q")
                  else _("tanımsız (2B model)")),
                 (_("En sıcak çubuk"), g["sicak_cubuk"]),
                 (_("Çubuk / eksenel dilim"), "%d / %d" % (f["cubuk_sayisi"], f["eksenel_dilim"]))]

@@ -51,6 +51,24 @@ def kaynak_satiri(s):
              "kaynak yakınsaması doğrulanamıyor"), None
 
 
+def referans_satirlari(spec, keff):
+    """Referans degerli orneklerde (kriter_*, godiva) E ± σ, C/E, C − E ve fark/σ
+    satirlari (QA14-Q9); referans yoksa []."""
+    from cekirdek import ornek_bilgi
+    if not keff:
+        return []
+    r = ornek_bilgi.c_e((spec or {}).get("referans"), keff[0], keff[1])
+    if r is None:
+        return []
+    etiket = _("deney (E)") if r["tur"] == "deney" else _("hesap referansı")
+    satirlar = [_("referans = %.5f ± %.5f  %s, %s") % (r["E"], r["E_sigma"], etiket, r["kaynak"]),
+                _("C/E      = %.5f ± %.5f") % (r["C_E"], r["C_E_sigma"]),
+                _("C − E    = %+.0f ± %.0f pcm (Δk × 10⁵); |C − E| / σ = %.2f → %s")
+                % (r["fark_pcm"], r["fark_sigma_pcm"], r["fark_sigma_sayisi"],
+                   _("ölçüt içinde (≤ 3σ)") if r["gecti"] else _("ÖLÇÜT DIŞINDA (> 3σ)"))]
+    return satirlar
+
+
 def ozdeger_ozeti(s):
     """(satirlar, yakinsadi) -- cevrim, kaynak yakinsamasi ve kinetik."""
     satirlar = [_("çevrim   = %d (%d pasif), %d parçacık/çevrim")
@@ -72,11 +90,13 @@ def guc_ozeti(s):
     gf = g.get("faktorler")
     if not gf:
         return [_("güç dağılımı okunamadı: %s") % s["guc_hata"]] if s.get("guc_hata") else []
-    zayif = (gf.get("yanlilik_orani") or 0.0) > 0.3
+    # Maksimumun yanliligi tepeye yakin cubuklardan (guc_faktor.tepe_yanliligi)
+    yakin, yan = gf.get("F_dH_tepe_yakini") or 0, gf.get("F_dH_yanlilik")
+    zayif = yakin >= 2 and yan is not None
     satirlar = [_("F_ΔH     = %.4f   (en yüksek çubuk gücü / ortalama)%s")
-                % (gf["F_dH"], "\n           " + _("⚠ istatistik zayıf: bu değer yukarı "
-                   "yanlı, güvenilir F_ΔH için Normal ya da Hassas hassasiyetle "
-                   "koşun") if zayif else "")]
+                % (gf["F_dH"], "\n           " + _("⚠ maksimum yukarı yanlı: tepeye 2σ "
+                   "içinde %d çubuk, beklenen yanlılık ≈ +%.4f; güvenilir F_ΔH için çok "
+                   "tohumla harita ortalaması alın") % (yakin, yan) if zayif else "")]
     if gf["F_q"]:
         satirlar.append(_("F_q      = %.4f   (en yüksek yerel güç yoğunluğu / ortalama)")
                         % gf["F_q"])

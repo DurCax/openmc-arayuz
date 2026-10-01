@@ -81,7 +81,9 @@ class GelismisEditor(QtWidgets.QWidget):
         self.bos_etiketi.setObjectName("soluk")
 
     def _eylem(self, ikon, metin, islev, ipucu=None):
-        d = b.ikon_dugmesi(ikon, ipucu or metin)
+        # Simge dugmesi: adi (kilavuzdaki "+ Yerlesim" vb.) ipucunun basinda ve
+        # erisilebilir adda gorunur (QA14-Q6)
+        d = b.ikon_dugmesi(ikon, "%s — %s" % (metin, ipucu) if ipucu else metin)
         d.setAccessibleName(metin)
         d.clicked.connect(islev)
         return d
@@ -197,6 +199,9 @@ class GelismisEditor(QtWidgets.QWidget):
         self._cizim_sayaci.start()
         for f in [self.icerik_formu] + list(self.formlar.values()):
             f.agaci_tazele(self.agac)
+        # Form basligi agac etiketinin aynisidir (ad/deger degisince tazelenir; QA14)
+        oge = self.agac_paneli.oge(self._secili)
+        self.form_basligi.setText(oge.text(0) if oge is not None else "-")
         self._kesik_ozeti()
         self._eylem_durumu()
 

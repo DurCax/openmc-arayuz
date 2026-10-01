@@ -10,7 +10,7 @@ amaç programın akışını tanımaktır: **Malzemeler → Parçalar → Demet 
 |---|---|
 | Örnek dosya | `ornekler/pwr_17x17.json` |
 | Süre | ~15 dakika (koşu 1–3 dakika; makineye göre) |
-| Beklenen sonuç | k∞ = 1.18325 ± 0.00075 (ölçüm: README "Ölçülen referans sonuçlar", aynı ayarlar) |
+| Beklenen sonuç | k∞ = 1.18443 ± 0.00088 (ölçüm: README "Ölçülen referans sonuçlar", aynı ayarlar) |
 | Önkoşul | [1. Kurulum](01-kurulum.md#kurulum) tamam; `OPENMC_CROSS_SECTIONS` ayarlı |
 
 ## 2.1 Modeli açın (1 dakika)
@@ -34,7 +34,7 @@ Modelde dört malzeme vardır:
 | Ad | Açıklama | Rol | Yoğunluk | Sıcaklık |
 |---|---|---|---|---|
 | `uo2` | UO2 %3.20 | yakıt | 10.4 g/cm³ | 900 K |
-| `helyum` | He (pelet–kılıf aralığı) | gaz | 0.0001785 g/cm³ | 600 K |
+| `helyum` | He (pelet–kılıf aralığı) | gaz | 0.0018 g/cm³ | 600 K |
 | `zirkaloy4` | Zircaloy-4 (kılıf) | yapısal | 6.55 g/cm³ | 600 K |
 | `su` | H2O 0.700 g/cm³ + 1300 ppm B | soğutucu, moderatör | 0.7 g/cm³ | 580 K |
 
@@ -102,13 +102,13 @@ Ayrıntı: [4.6 Hesap ayarları](04f-hesap-ayarlari.md#hesap-ayarlari).
 Koşu bitince sonuç kartı şunu benzeri bir değer gösterir:
 
 ```
-k∞ = 1.18325 ± 0.00075        (1σ standart belirsizlik)
+k∞ = 1.18443 ± 0.00088        (1σ standart belirsizlik)
 ```
 
 Sizin sayınız son iki hanede farklı olabilir; bu istatistiktir. Kontrol edin:
 
 1. **Belirsizlik** ~0.0008 mertebesinde mi? (Normal hassasiyetin beklenen değeri.) Fark
-   |k − 1.18325| ≤ 2·√(σ₁² + σ₂²) ≈ 0.002 ise sonuç README ölçümüyle tutarlıdır.
+   |k − 1.18443| ≤ 2·√(σ₁² + σ₂²) ≈ 0.002 ise sonuç README ölçümüyle tutarlıdır.
 2. **Kaynak yakınsaması** satırı "yakınsamış görünüyor" diyor mu? Demiyorsa pasif çevrimi
    artırın ([6.2 Kaynak yakınsaması](06-sonuclar.md#kaynak-yakinsamasi)).
 3. **Kayıp parçacık** sıfır mı? Sıfır değilse geometride boşluk ya da örtüşme vardır.

@@ -92,7 +92,11 @@ the density drops the absorber decreases too and the two effects cancel each oth
 > ⚠ **Shape of the rod worth curve.** The classic S curve is seen only if the system is close to
 > critical at every position. `ornekler/pwr_kontrol.json` is a single assembly with a reflective
 > side boundary; the worth accumulates late and the peak of the differential worth comes out close
-> to full insertion (measured: 0% → k = 1.165, 50% → 1.131, 100% → 0.588).
+> to full insertion (measured with the example's own
+> settings 8000 × 90 / 30 inactive, seed 1, 01.10.2026: 0% → k = 1.18186 ± 0.00150, 50% → 1.16626 ±
+> 0.00136, 100% → 0.59146 ± 0.00122). The axial ends are vacuum, so these are k-eff, not k∞; the
+> simplifications of the rod model (B4C without cladding, 25 positions as one group, sharp tip) are
+> in the description of the example.
 
 <a id="analiz-kritik-arama"></a>
 ### Critical search: method and stopping criterion

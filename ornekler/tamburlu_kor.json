@@ -1,10 +1,10 @@
 {
   "surum": 1,
   "ad": "Tamburlu kompakt hızlı reaktör",
-  "aciklama": "Dönen kontrol tamburlu kompakt hızlı reaktör. U-10Mo (%19.75) silindirik\nkor, berilyum yansıtıcı kuşak, kuşağa gömülü 8 adet B4C tamburu.\nKilopower/KRUSTY ve PETEK gibi tasarımlarda kontrol çubuğu yerine bu\nkullanılır.\n\nKural\n  dönme = 0°   → emici kora bakıyor = daldırılmış (en düşük k)\n  dönme = 180° → emici dışa bakıyor = çekilmiş    (en yüksek k)\nÖlçülen: k(0°) = 0.963, k(180°) = 1.012 → toplam tambur değeri ~5000 pcm\nKritik nokta arada kalır; Analiz sekmesinde 'Kritik arama' +\n'Kontrol tamburu dönmesi' ile kritik tambur konumu bulunabilir.\n\nMalzeme sıcaklıkları 400 K seçildi: berilyumun S(α,β) verisi 296–1200 K\naralığındadır ve ara değerler için sıcaklık yöntemi 'Ara değer (interpolation)' olmalı.",
+  "aciklama": "Dönen kontrol tamburlu kompakt kor (ölçülen EALF ≈ 123 keV: NUREG/CR-6698 sınıflamasında hızlı tayfın 100 keV alt sınırına yakın; berilyum yansıtıcı tayfı yumuşatır). U-10Mo (%19.75) silindirik\nkor, berilyum yansıtıcı kuşak, kuşağa gömülü 8 adet B4C tamburu.\nKilopower/KRUSTY ve PETEK gibi tasarımlarda kontrol çubuğu yerine bu\nkullanılır.\n\nKural\n  dönme = 0°   → emici kora bakıyor = daldırılmış (en düşük k)\n  dönme = 180° → emici dışa bakıyor = çekilmiş    (en yüksek k)\nÖlçülen (örneğin kendi ayarı, docs/ORNEKLER.md): k(0°) = 0.96346 ± 0.00092,\nk(180°) = 1.00719 ± 0.00110 → toplam tambur değeri Δk = 4372 pcm (Δk × 10⁵),\nΔρ = 4506 pcm (Δρ × 10⁵)\nKritik nokta arada kalır; Analiz sekmesinde 'Kritik arama' +\n'Kontrol tamburu dönmesi' ile kritik tambur konumu bulunabilir.\n\nMalzeme sıcaklıkları 400 K seçildi: berilyumun S(α,β) verisi 296–1200 K\naralığındadır ve ara değerler için sıcaklık yöntemi 'Ara değer (interpolation)' olmalı.",
   "baslik": "Tamburlu kompakt kor",
   "baslik_en": "Compact core with control drums",
-  "aciklama_en": "Compact fast reactor core: cylindrical U-10Mo core, beryllium reflector and 8 rotating control drums.",
+  "aciklama_en": "Compact core (measured EALF ≈ 123 keV, near the 100 keV lower bound of the fast spectrum in NUREG/CR-6698; the beryllium reflector softens the spectrum): cylindrical U-10Mo core, beryllium reflector and 8 rotating control drums.",
   "kategori": "arastirma",
   "seviye": "ileri",
   "malzemeler": [

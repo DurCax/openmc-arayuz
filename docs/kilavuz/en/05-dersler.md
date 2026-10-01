@@ -75,8 +75,9 @@ this lesson focuses on the physics of the same model.
 9. Watch the convergence plot during the run: after the inactive batches the cumulative mean should
    settle into a flat band. The **Shannon entropy** badge should say **Converged**.
 
-**Expected result.** k∞ = **1.18325 ± 0.00075** ([README.md](../../../README.md), table of measured
-reference results; 44 s with 24 threads). Your value should be within 2–3σ of this. A larger
+**Expected result.** k∞ = **1.18443 ± 0.00088** ([README.md](../../../README.md), table of measured
+reference results; the example's own settings 10 000 × 150 / 40 inactive, seed 1, 6 threads,
+01.10.2026). Your value should be within 2–3σ of this. A larger
 difference or a lost-particle warning signals a problem
 ([9. Troubleshooting](09-sorun-giderme.md#sorun-giderme)).
 
@@ -85,9 +86,14 @@ difference or a lost-particle warning signals a problem
 - If all side boundaries were `vacuum`, would the result be k∞ or k-eff? Would the value of a single
   assembly grow or shrink? (Leakage → k-eff, it shrinks.)
 - By roughly what factor must particles × active batches grow to halve σ? (σ ∝ 1/√N → about 4.)
-- Regression anchor: the pin cell of the same fuel, `ornekler/pwr_pinhucre.json`, must give
-  k∞ = 1.3570 ± 0.0020. Why is the assembly lower? (Water in the guide tubes and heterogeneity
-  inside the assembly.)
+- The regression anchor `ornekler/pwr_pinhucre.json` gives k∞ = 1.3570 ± 0.0020. It is **not the
+  same fuel** as this assembly: the pin cell is 3.0 %, all materials at 293.6 K, no boron in the
+  water; this assembly is 3.2 %, hot (fuel 900 K, cladding 600 K, water 580 K) with 1300 ppm boron.
+  Where does the k∞ difference (~0.17) come from? (Measured with the settings of this assembly:
+  without boron 1.34300 ± 0.00085 → **boron ≈ −15 900 pcm (Δk × 10⁵)**; without boron and all
+  materials at 293.6 K 1.37120 ± 0.00094 → **temperature ≈ −2 800 pcm**. The small remainder comes
+  from the enrichment, the pellet/cladding dimensions and the guide tubes. Boron and temperature
+  dominate, not the guide tubes.)
 
 ---
 
@@ -102,7 +108,7 @@ quarter-core symmetry with the right boundary condition.
 
 **Steps.**
 
-1. Open the **square SMR full core (52 assemblies)** example. The model header shows the type
+1. Open the **Square SMR-like full core (52 assemblies)** example. The model header shows the type
    "full core (square map)".
 2. The **Assembly** page has two assemblies: `demet_24` (2.4 %) and `demet_31` (3.1 %); both are
    PWR 17×17 assemblies.
@@ -135,8 +141,12 @@ quarter-core symmetry with the right boundary condition.
 
 **What we learned / check questions.**
 
-- Where does the difference between the k∞ of the same assemblies (lesson 5.1, ~1.18) and the k-eff
-  of the core (~1.06) come from? (Leakage and the lower enrichment of the inner zone.)
+- The assemblies of the core are **not** the assembly of lesson 5.1 (3.2 %, k∞ ≈ 1.18): they are
+  2.4 % and 3.1 %. Infinite-lattice values measured with the same geometry, temperatures and 1300 ppm
+  boron: k∞(2.4 %) = 1.09772 ± 0.00090 and k∞(3.1 %) = 1.17538 ± 0.00086 (`pwr_17x17` settings,
+  01.10.2026). The k-eff of the core (1.06005) is below both, not between them - why? (Leakage: the
+  side, bottom and top boundaries are vacuum and the water reflector is only 20 cm. The weight of the
+  2.4 % inner zone and the leakage together lower k-eff.)
 - Why can the quarter core not be built with a **checkerboard** loading? (The reflective symmetry
   plane **mirrors** the quarter; a checkerboard has no mirror symmetry, so the mirrored core is a
   different loading — measured difference +260 pcm. [ORNEKLER.md](../../ORNEKLER.md))
@@ -165,8 +175,12 @@ assemblies on a hexagonal core map.
 3. Keep the **Run settings** as in the file (10 000 × 120, 30 inactive). **Run**.
 
 **Expected result (assembly).** k∞ = **1.46634 ± 0.00070** ([README.md](../../../README.md), table of
-measured reference results; 53 s with 24 threads). Because this is a fast-spectrum, U-10Mo fuelled,
-sodium-cooled assembly, k∞ is much larger than for the PWR assembly.
+measured reference results; 53 s with 24 threads). Why k∞ is much larger than for the PWR assembly
+(~1.18): the enrichment is **19.75 %** (PWR assembly 3.2 %), the fuel is a **dense metal** (U-10Mo,
+17 g/cm³; far more uranium per unit volume than UO₂) and there is no absorber of that kind - neither
+the dissolved **boron** in the water nor the absorption of a hydrogenous **moderator** is present in
+this assembly. The fast spectrum alone does not raise k∞ (the U-235 fission cross section is much
+smaller in a fast spectrum than in a thermal one).
 
 **Steps — hexagonal core.**
 
@@ -210,7 +224,7 @@ template. Concepts: [4.5 Advanced geometry editor](04e-geometri-gelismis.md#geom
 
 **Steps — reading the example.**
 
-1. Open the **square core + hexagonal reflector ring** example. The **Geometry** page opens directly
+1. Open the **Square core inside a hexagonal reflector ring** example. The **Geometry** page opens directly
    in the advanced editor (tree + cross-section + property form); the note at the top says the
    template wizard is closed.
 2. Read the tree from top to bottom:
@@ -286,10 +300,10 @@ core** (inserted, lowest k), **180° the absorber faces outwards** (withdrawn, h
 
 **Steps — A. Lattice core + drum reflector (reading and rotating).**
 
-1. Open the **lattice core + drum reflector** example. In the tree: **Root — rectangle 64.26×64.26**,
+1. Open the **Lattice core with a drum-controlled reflector** example. In the tree: **Root — rectangle 64.26×64.26**,
    **Inside: lattice kor_kafesi (square 3×3)**, **Ring 1** (outer cross-section a cylinder,
    r = 80 cm; content `berilyum`) and under it **Placement: tamburlar_yansitici (ring, 4)** →
-   **Content: component tambur_b4c**. At the bottom **Groups (1)** → **Group: tamburlar
+   **Content: component tambur_b4c**. At the bottom **Control groups (1)** → **Group: tamburlar
    (rotation = 180)**.
 2. Select the placement row. Form: **Mode** Ring, **Count** 4, **Center radius** 42 cm,
    **Start angle** 0°, **Natural cross-section (drum circle)** checked, **Facing the core** towards the
@@ -310,7 +324,7 @@ difference of your own Normal runs should be of this order.
 
 **Steps — B. Hexagonal core + drum ring (group sweep).**
 
-5. Open the **hexagonal core + drum ring** example: 19 SFR assemblies (3-ring core, lattice `x`, pin
+5. Open the **Hexagonal core with a control-drum ring** example: 19 SFR assemblies (3-ring core, lattice `x`, pin
    lattice `y`), a hexagonal beryllium ring (outer apothem 48.7 cm) with 6 B₄C drums inside:
    **Count** 6, **Center radius** 36 cm, **Start angle** 30° (the drums face the flat sides of the
    core).
@@ -328,7 +342,7 @@ settings at 180° the `referans.olcum` value of the example is **1.04745 ± 0.00
 
 **Steps — C. Placing drums in the square core + hexagonal ring.**
 
-This part adds 6 drums to the geometry of lesson 5.4 (square core, hexagonal block ring, 20 cm water
+This part adds 4 drums to the geometry of lesson 5.4 (square core, hexagonal block ring, 20 cm water
 belt on the outside). Every step was checked with the model check; all steps are done in the
 interface.
 
@@ -342,39 +356,47 @@ interface.
    absorber arc angle 120°. The definition is written to the `tamburlar[]` section (`ad`, `yaricap`,
    `govde_malzeme`, `emici_malzeme`, `emici_ic_yaricap`, `emici_aci`); the placement fields (count,
    centre, rotation) belong to the placement and the group, not to the definition.
-10. On the **Geometry** page select the **Ring 1 (20 cm)** row in the tree and press **+ Placement**
-    in the toolbar. Because the model has a drum definition, the content of the new placement is
-    automatically **component tambur_b4c** and **Natural cross-section (drum circle)** is checked.
-11. Fill in the placement form: name `tambur_halkasi`, **Mode** Ring, **Count** 6, **Center radius**
-    131.2 cm, **Start angle** 30°, **Facing the core** towards the centre (centre x 0, centre y 0),
+10. On the **Geometry** page select the **root** container (top row) in the tree and press
+    **+ Placement** in the toolbar. Because the model has a drum definition, the content of the new
+    placement is automatically **component tambur_b4c** and **Natural cross-section (drum circle)**
+    is checked.
+11. Fill in the placement form: name `tambur_halkasi`, **Mode** Ring, **Count** 4, **Center radius**
+    63 cm, **Start angle** 0°, **Facing the core** towards the centre (centre x 0, centre y 0),
     **Offset** 0.
-    *Where do the numbers come from?* The inner apothem of the water belt is 121.24 cm and the outer
-    apothem 141.24 cm; the centre of a drum of radius 8 cm must lie between 129.24 and 133.24 cm along
-    the normal of a flat side. The flat-side normals of an `x`-oriented hexagon are at 30°, 90°, …,
-    330°; a start angle of 30° and 6 drums put one drum on each side.
-12. Only two **warnings** should remain in the model check panel: the 16 truncated positions (from
-    lesson 5.4) and "control drum in a 2D model: no axial leakage; the drum worth comes out too high".
-    Try it: set the **Start angle** to 0°; the drums move to the **corners** of the hexagon and an
-    **error** appears for each one saying that the hole of 'tambur_halkasi' crosses the inner
-    boundary of the region (the inner corner is 121.24 × 2/√3 ≈ 140.0 cm from the centre). Set it
-    back to 30°.
-13. Press **+ Group** in the toolbar; a new rotation group appears under **Groups** (value 0). Select
-    the group: name `tamburlar`, type rotation, **Value** 180, and tick `tambur_halkasi` under
-    **Members**. (The same link can be made with the **Group** box of the placement form.)
+    *Where do the numbers come from?* For its worth to be measurable the drum must sit **right next
+    to the core**. The face of the square core is 53.55 cm from the centre; with the centre of a drum
+    of radius 8 cm at 63 cm the drum covers 55-71 cm (1.45 cm of water to the face). 0°, 90°, 180°,
+    270° are the middles of the faces; there is no room at the corners (45°; the corner is 75.7 cm
+    away). The drums carve into the steel blocks (truncated position warning).
+    *Why not the water belt (Ring 1)?* The first version of this lesson put the drums into the
+    outermost water belt (centre radius 131.2 cm). Hardly any neutron reaches it through the ~70 cm
+    steel reflector in between: measured k(0°) = 1.06613 ± 0.00097, k(180°) = 1.06504 ± 0.00085 -
+    a difference of −109 ± 129 pcm (Δk × 10⁵), statistically zero.
+12. Only two **warnings** should remain in the model check panel: "20 truncated positions..." (the 16
+    of lesson 5.4 plus the blocks carved by the drums) and "control drum in a 2D model: no axial
+    leakage; the drum worth comes out too high". Try it: set the **Center radius** to 60; an
+    **error** appears for each drum saying that the holes 'kare_cekirdek#0' and 'tambur_halkasi#0'
+    overlap. Set it back to 63.
+13. Press **+ Group** in the toolbar; a new rotation group appears under **Control groups** (value 0).
+    Select the group: name `tamburlar`, type rotation, **Value** 180, and tick `tambur_halkasi`
+    under **Members**. (The same link can be made with the **Group** box of the placement form.)
 14. In the xy cross-section see that the absorber arcs face outwards. **File › Save**. With Normal
     settings do one run at 180° and one at 0°.
 
-**Expected result (C).** This is your design; there is **no** reference measurement. Check:
-k(0°) < k(180°) must hold and the difference must be statistically significant:
-|k₁₈₀ − k₀| > 2·√(σ₁₈₀² + σ₀²). Because the model is 2D, the drum worth comes out too high (there is
-no axial leakage; the model check warns about it). For a more realistic value, untick
-**2D (infinite height)** in the root form, give a **Height** and set the bottom/top boundaries to
-`vacuum`.
+**Expected result (C).** Measured (01.10.2026; Normal 10 000 × 150 / 40 inactive, seed 1, 6
+threads): k(0°) = **1.06255 ± 0.00090**, k(180°) = **1.06627 ± 0.00083** → total drum worth
+Δk = **372 ± 122 pcm** (Δk × 10⁵), about 3σ. Check: k(0°) < k(180°) and
+|k₁₈₀ − k₀| > 2·√(σ₁₈₀² + σ₀²). If the difference does not exceed 2σ (possible with another seed),
+increase the particles per batch and repeat. The worth is small: behind the drums there is steel
+and water, in front of them only one face of the core. Because the model is 2D, the drum worth
+comes out too high (there is no axial leakage; the model check warns about it). For a more
+realistic value, untick **2D (infinite height)** in the root form, give a **Height** and set the
+bottom/top boundaries to `vacuum`.
 
 **What we learned / check questions.**
 
-- Why does a larger drum (for example r = 12 cm) give a model check error? (The hole does not fit in
-  the water belt: a 24 cm diameter circle does not fit in a 20 cm belt.)
+- Why does a larger drum (for example r = 12 cm) give a model check error? (The hole overlaps the
+  core placement: 63 − 12 = 51 cm < 53.55 cm; the model check says the holes overlap.)
 - What sets the direction in which the drums face the core? (In ring mode ψᵢ = φᵢ + 180 + D; with
   the facing centre in the middle, the absorber arc of every instance turns to the centre,
   D = group value + offset.)
@@ -440,9 +462,11 @@ full ENDF/B-VIII.0 thermal chain, CECM, 5 000 × 60 particles, ~50 minutes):
 
 - Why is "choosing the fast chain not enough"? (The fission product yield is a separate setting;
   in a fast system the yield energy is set to 500 keV — [6.5 Known pitfalls](06-sonuclar.md#tuzaklar).)
-- What would happen if the volume of a depletable material were wrong by a factor f? (The burnup
-  rate would be wrong by f, without leaving a trace in k-eff; this is why volumes are computed
-  analytically.)
+- What would happen if the volume of a depletable material were wrong by a factor f? (The number
+  of atoms N·V in the material is counted f times too large while the total reaction rate in the
+  tally stays the same: the **reaction rate per atom becomes 1/f** and the material burns at a wrong
+  rate by that factor, without leaving a trace in the k-eff of the first step. This is why volumes
+  are computed analytically.)
 - Why does **Pin-by-pin burnup** change nothing in this model? (The pin cell has a single fuel
   instance.)
 
@@ -475,14 +499,21 @@ interpretation: [6.3 Interpreting the power distribution](06-sonuclar.md#guc-dag
 6. Run the same model with **Quick test** and compare F_ΔH: with little statistics F_ΔH goes **up**.
 
 **Expected result** ([README.md](../../../README.md), power distribution and peaking factors section;
-20 000 particles, 20 axial bins): **F_ΔH = 1.071**, **F_q = 1.885**, mean linear power **182 W/cm**.
+the example's own settings 20 000 × 150 / 40 inactive, 20 axial bins, 6 threads, 01.10.2026; seeds
+1-5): a single run gives **F_ΔH ≈ 1.06-1.08**, **F_q ≈ 1.63-1.75** (seed 1: 1.0732 and 1.6264); the
+scatter (1σ) of the 5 seeds is 0.0071 for F_ΔH and 0.051 for F_q. If the maps are averaged first and
+the maximum is taken afterwards, **F_ΔH = 1.0620 ± 0.0055** and **F_q = 1.600 ± 0.032** (σ: seed
+scatter / √5). Mean linear power **182 W/cm**.
 
 - **The uncertainties are optimistic.** The reported σ per bin is 0.003–0.008, while the real spread
   between three independent seeds was measured as 0.07–0.17 (~20 times larger): in an eigenvalue
   calculation the correlation between batches makes the tally σ too small. Run with several seeds
   for the real uncertainty.
-- **F_ΔH is a maximum and is biased upwards with little statistics:** in the same model 1.1455 was
-  measured with 3 000 particles and 1.0708 with 20 000 particles.
+- **F_ΔH is a maximum and is biased upwards:** the mean of the seed maxima (1.0718) is larger than
+  the peak of the averaged map (1.0620); in this model 31 pins are statistically indistinguishable
+  from the peak (the interpretation line states this and the expected bias). With little statistics
+  the difference grows: 1.1455 had been measured with 3 000 particles (old measurement, He
+  0.0001785).
 - **F_q depends on the axial resolution:** coarse bins average the peak away; use at least 10–20 bins
   (the pure cosine limit is π/2 = 1.571).
 
@@ -509,9 +540,13 @@ interpretation: [6.3 Interpreting the power distribution](06-sonuclar.md#guc-dag
 
 1. Open the **Godiva critical sphere** example: a bare HEU metal sphere (ICSBEP HEU-MET-FAST-001).
    The core type is `kuresel`; the shells are edited only in JSON.
-2. Leave the **Run settings** as in the file; the reference run is 100 000 particles × 150 batches
-   (50 inactive). If time is short, run with **Normal** and take the larger σ into account. **Run**.
-3. Compare the result with the experimental value: E ± σe = 1.0000 ± 0.0010. Compute:
+2. **Run settings**: the setting in the file, 20 000 particles × 160 batches (40 inactive), gives
+   σ ≈ 0.0005. The reference measurement in the table below was made with **100 000 × 150 batches
+   (50 inactive)** (σ = 0.00025); enter these values for the same σ. If time is short, run with the
+   setting of the file and take the larger σ into account. **Run**.
+3. Compare the result with the experimental value: E ± σe = 1.0000 ± 0.0010. For examples with a
+   reference the summary lines write this themselves (reference, C/E, C − E in pcm,
+   |C − E| / σ; [4.7 Result card](04g-calistir.md#calistir)). By hand:
    C − E [pcm] = (C − E) × 10⁵ (**Δk × 10⁵**, not a reactivity difference), difference/σ =
    |C − E| / √(σc² + σe²), C/E = C / E.
 4. Do the same for Jezebel and Flattop-25. LCT-008 (LEU UO₂ lattice, borated water) takes long;

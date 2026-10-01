@@ -215,26 +215,48 @@ significant trend (t < t₀.₉₇₅,ₙ₋₂), so the tolerance band method w
 cases from the same experimental series (LEU-SOL-THERM-002 cases 1 and 2): K14 gives the
 "not independent" note.
 
-### Applications for which these USLs are valid
+### Which subset the tool uses (panel, report annex, CLI)
 
-- **Fast spectrum, metal systems (USL = 0.9444, n = 13):** U-235 (36–94 %), Pu (mainly Pu-239,
-  79–95 % fissile), U-233 and Pu + HEU metal spheres; bare or reflected by natural U, thorium,
-  beryllium, graphite or HEU; EALF 0.58–1.28 MeV. Only the metal form is present in the set; the
-  fissile species in this AOA are also mixed (6698 Table 2.3 recommends the same fissile species)
-  → the user organisation must justify a single-species subset.
-- **Thermal spectrum (USL = 0.9388, n = 10):** homogeneous solutions (HEU, LEU, Pu, U-233; H/X
-  36–1984) and a single LEU UO₂ lattice case (LCT-008); EALF 0.03–0.52 eV. This set is also mixed
-  in fissile species and form; the USL is defensible only for the applications that this mixture
-  represents.
-- **U-235 (all forms, USL = 0.9418, n = 11):** contains fast and thermal cases together; because
-  no spectrum separation is made, it is for illustration only.
+The table above is a **descriptive** breakdown of the set. The compliance check (K6) calculates
+the USL for an application **only** from cases that share the application's fissile species,
+physical form and neutron spectrum; for U-235 the enrichment class must also match (ICSBEP
+naming: LEU ≤ 10 %, IEU 10–60 %, HEU ≥ 60 %) — `cekirdek/vv/kume.py` `aoa_filtresi`, 6698
+§2.5 and Table 2.3. If the matching subset has fewer than 10 cases, **no USL is given** and K6
+says "no USL for this application (outside the AOA)". When K6 passes, the message states the
+subset, n and the method. Reflector and H/X do not narrow the subset: K6-AOA and K12 check them
+separately; if H/X cannot be derived for a heterogeneous lattice, K12 warns (H/X not compared).
 
-### Applications for which these USLs are NOT valid
+With this criterion the largest subset in the repository set (26 cases) has 5 cases:
 
-- **LWR / LEU lattice applications** (the most frequent at universities): the LEU subset has
-  4 cases (1 lattice + 3 solutions) → **USL could not be calculated**. Independent
-  LEU-COMP-THERM series with open models (LCT-001, -002, -039 …) are not in mit-crpg; they would
-  have to be remodelled from the ICSBEP handbook (STANDARTLAR.en.md §5).
+| Subset | n |
+|---|---|
+| Pu, metal, fast | 5 |
+| U-235, solution, thermal, HEU | 3 |
+| U-233, metal, fast | 3 |
+| U-235, metal, fast, HEU (Godiva, Flattop-25) | 2 |
+| U-235, metal, fast, IEU (IMF-003, -004) | 2 |
+| U-235, solution, thermal, LEU | 2 |
+| Pu, solution, thermal | 2 |
+| U-235, oxide, thermal, LEU (LCT-008) | 1 |
+| 6 other subsets | one case each |
+
+Result: **at present the repository set gives no USL for any application.** This is not a bug
+but the honest result: for an LWR/LEU lattice (pwr_17x17 etc.) the matching subset is LCT-008
+alone (n = 1); for a Godiva-like HEU fast metal n = 2. The previous version selected the subset
+by spectrum only and gave pwr_17x17 a USL of 0.93877 from 9 solutions + 1 lattice (contrary to
+6698 Table 2.3; fixed, regression test `testler/test_vv_altkume.py`). A USL needs at least 10
+independent experiments added to the relevant subset (STANDARTLAR.en.md §5).
+
+### Why the mixed subsets of the table are not used for a USL
+
+- The **fast spectrum (0.9444, n = 13)**, **thermal spectrum (0.9388, n = 10)** and **U-235
+  (all forms, 0.9418, n = 11)** rows are mixed in fissile species and/or form; 6698 Table 2.3
+  asks for these to be the same. These rows are for information only; the tool does not give
+  them to any application as a USL.
+- **LWR / LEU lattice applications** (the most frequent at universities): the LEU oxide lattice
+  subset has 1 case (LCT-008) → **no USL**. Independent LEU-COMP-THERM series with open models
+  (LCT-001, -002, -039 …) are not in mit-crpg; they would have to be remodelled from the ICSBEP
+  handbook (STANDARTLAR.en.md §5).
 - **AOAs with a single fissile species:** Pu (n = 9, not normal, β = 37.0 %) and U-233
   (n = 5, β = 22.6 %) → **USL could not be calculated** (Table 2.2: additional data required).
 - **Intermediate spectrum** (n = 3) → **USL could not be calculated**.
@@ -243,6 +265,10 @@ cases from the same experimental series (LEU-SOL-THERM-002 cases 1 and 2): K14 g
   AOA range — not represented in the set; K6-AOA and K12 warn.
 - The whole-set USL (0.9035, non-parametric) mixes different AOAs; 6698 requires the USL to be
   calculated separately for each AOA — this row is for information only.
+- The PU-COMP-INTER-001 (PCI-001) model has no S(α,β) thermal scattering data for H (mit-crpg
+  model; the H in the compound is transported as a free gas). The effect is expected to be small
+  in an intermediate spectrum but was not measured; the case appears only in the descriptive
+  table.
 
 ### Limitations
 

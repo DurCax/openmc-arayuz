@@ -140,8 +140,11 @@ marked as such).
   calculation-to-calculation benchmarks (NEA VVER-1000, OECD/NEA SFR MET-1000); all experiments
   meet the project's acceptance criterion |C − E| ≤ 3·√(σc² + σe²).
 - **Bias and upper subcritical limit (USL)** by the NUREG/CR-6698 method, per area of
-  applicability (AOA): USL = 0.9444 for fast metal systems (n = 13) and 0.9388 for the thermal set
-  (n = 10), with ΔSM = 0.05.
+  applicability (AOA). The compliance check uses only cases with the application's fissile species,
+  physical form, spectrum and (U-235) enrichment class; no such subset in the current 26-case set has
+  10 cases, so **no USL is given for any application today** (e.g. LWR/LEU lattice: 1 matching case).
+  The mixed spectrum-only rows (fast 0.9444, n = 13; thermal 0.9388, n = 10; ΔSM = 0.05) are
+  descriptive only.
 
 See [docs/VV.en.md](docs/VV.en.md) for the tables and, importantly, for what these numbers do
 **not** cover.

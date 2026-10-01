@@ -75,7 +75,7 @@ import functools
 import math
 
 from cekirdek import guc_kor as _guc_kor
-from cekirdek.guc_faktor import _bos_dilimler, _eksenel_faktorler  # noqa: F401
+from cekirdek.guc_faktor import _bos_dilimler, _eksenel_faktorler, tepe_yanliligi  # noqa: F401
 from cekirdek.guc_faktor import kesikler as _kesikler
 from cekirdek.ceviri import _
 from cekirdek.gunluk import kaydedici
@@ -684,6 +684,8 @@ def tepe_faktorleri(dagilim):
     ort_bagil = sum(degerler) / n
     sacilma = math.sqrt(sum((d - ort_bagil) ** 2 for d in degerler) / n) if n > 1 else 0.0
     ist_sapma = sum(v[1] for v in bagil.values()) / n
+    yan = tepe_yanliligi(list(bagil.values()))      # tepeye yakin cubuklar (guc_faktor)
+    tum_toplam = sum(k["toplam"][0] for k in dagilim["konumlar"].values())
 
     tam_kor = bool(dagilim.get("tam_kor"))
     sonuc = {
@@ -697,8 +699,12 @@ def tepe_faktorleri(dagilim):
         "sacilma": sacilma,
         "istatistik_sapma": ist_sapma,
         "yanlilik_orani": (ist_sapma / sacilma) if sacilma > 0 else None,
+        "F_dH_tepe_yakini": yan["yakin"], "F_dH_yanlilik": yan["yanlilik"],
+        # mutlak_guc: kesik cubuklarin gucu ortalama cubuga dagitilmasin
+        "kesik_disi_pay": (n * ort_cubuk / tum_toplam) if tum_toplam > 0 else 1.0,
         "bagil": bagil,
         "F_q": None, "F_q_sapma": None, "sicak_dilim": None,
+        "F_q_tepe_yakini": None, "F_q_yanlilik": None,
         "bagil_eksenel": None, "eksenel_profil": None, "bos_dilimler": [],
         # --- tam kor (28.09.2026) ---
         "tam_kor": tam_kor,
@@ -756,12 +762,16 @@ def mutlak_guc(faktorler, toplam_guc, yukseklik=None, hedef_payi=None):
         return None
     n = faktorler["cubuk_sayisi"]
     pay = hedef_payi if (hedef_payi is not None and hedef_payi > 0) else None
-    hedef = toplam_guc * pay if pay is not None else toplam_guc
+    # Pay (kappa_hedef) kesik cubuklari da icerir, bolen n icermez: kesiklerin
+    # gucu cikarilir (kesik_disi_pay = kesik olmayanlarin toplami / hepsi).
+    hedef = (toplam_guc * pay if pay is not None else toplam_guc) \
+        * faktorler.get("kesik_disi_pay", 1.0)
     cubuk_ort = hedef / n
     sonuc = {
         "toplam_guc": toplam_guc,
         "hedef_payi": pay,
         "hedef_guc": hedef,
+        "kesik_disi_pay": faktorler.get("kesik_disi_pay", 1.0),
         "cubuk_ortalama_W": cubuk_ort,
         "cubuk_maks_W": cubuk_ort * faktorler["F_dH"],
     }

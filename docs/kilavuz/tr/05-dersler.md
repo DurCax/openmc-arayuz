@@ -75,8 +75,9 @@ bölümünü izleyin; bu ders aynı modelin fiziğine odaklanır.
 9. Koşu sürerken yakınsama grafiğini izleyin: pasif çevrimlerden sonra kümülatif ortalama
    düz bir banda oturmalıdır. **Shannon entropisi** rozeti **Yakınsadı** olmalıdır.
 
-**Beklenen sonuç.** k∞ = **1.18325 ± 0.00075** ([README.md](../../../README.md) "Ölçülen
-referans sonuçlar" tablosu; 24 iş parçacığıyla 44 s). Sizin değeriniz bu aralığın 2–3σ
+**Beklenen sonuç.** k∞ = **1.18443 ± 0.00088** ([README.md](../../../README.md) "Ölçülen
+referans sonuçlar" tablosu; örneğin kendi ayarı 10 000 × 150 / 40 pasif, tohum 1, 6 iş parçacığı,
+01.10.2026). Sizin değeriniz bu aralığın 2–3σ
 yakınında olmalıdır. Daha büyük bir fark ya da kayıp parçacık uyarısı bir sorun işaretidir
 ([9. Sorun giderme](09-sorun-giderme.md#sorun-giderme)).
 
@@ -86,8 +87,13 @@ yakınında olmalıdır. Daha büyük bir fark ya da kayıp parçacık uyarısı
   küçülür mü? (Sızıntı → k-eff, küçülür.)
 - σ'yı yarıya indirmek için parçacık × aktif çevrim sayısını yaklaşık kaç kat artırmak gerekir?
   (σ ∝ 1/√N → yaklaşık 4 kat.)
-- Regresyon çıpası: aynı yakıtın pin hücresi `ornekler/pwr_pinhucre.json` k∞ = 1.3570 ± 0.0020
-  vermelidir. Demet neden daha düşük? (Kılavuz borulardaki su ve demet içi heterojenlik.)
+- Regresyon çıpası `ornekler/pwr_pinhucre.json` k∞ = 1.3570 ± 0.0020 verir. Bu demetle **aynı
+  yakıt değildir**: pin hücre %3.0, bütün malzemeler 293.6 K, suda bor yok; bu demet %3.2, sıcak
+  (yakıt 900 K, zarf 600 K, su 580 K) ve 1300 ppm borlu. k∞ farkının (~0.17) kaynağı ne? (Ölçüldü,
+  bu demetin ayarıyla: borsuz 1.34300 ± 0.00085 → **bor ≈ −15 900 pcm (Δk × 10⁵)**; borsuz ve
+  bütün malzemeler 293.6 K 1.37120 ± 0.00094 → **sıcaklık ≈ −2 800 pcm**. Kalan küçük fark
+  zenginlik, pelet/zarf ölçüleri ve kılavuz borulardan gelir. Baskın neden bor ve sıcaklıktır,
+  kılavuz borular değil.)
 
 ---
 
@@ -135,8 +141,12 @@ düşürdüğünü görmek ve çeyrek kor simetrisini doğru sınır koşuluyla 
 
 **Ne öğrendik / kontrol soruları.**
 
-- Aynı demetlerin k∞'u (5.1 dersi, ~1.18) ile korun k-eff'i (~1.06) arasındaki fark nereden geliyor?
-  (Sızıntı ve iç bölgenin düşük zenginliği.)
+- Korun demetleri 5.1 dersinin demeti (%3.2, k∞ ≈ 1.18) **değildir**: %2.4 ve %3.1. Aynı
+  geometri, sıcaklık ve 1300 ppm borla ölçülen sonsuz kafes değerleri k∞(%2.4) = 1.09772 ± 0.00090
+  ve k∞(%3.1) = 1.17538 ± 0.00086 (`pwr_17x17` ayarı, 01.10.2026). Korun k-eff'i (1.06005)
+  ikisinin arasında değil, altındadır — neden? (Sızıntı: yan, alt ve üst sınır vakum, su yansıtıcı
+  yalnız 20 cm. İç bölgedeki %2.4 demetlerinin ağırlığı ve
+  sızıntı birlikte k-eff'i düşürür.)
 - Çeyrek kor neden **dama** desenli bir yüklemeyle kurulamaz? (Yansıtıcı simetri düzlemi çeyreği
   **aynalar**; dama deseninin ayna simetrisi yoktur, aynalanan kor başka bir yüklemedir —
   ölçülen fark +260 pcm. [ORNEKLER.md](../../ORNEKLER.md))
@@ -163,8 +173,11 @@ bir kor haritasına yerleştirmek.
 3. **Hesap ayarları** dosyadaki gibi kalsın (10 000 × 120, 30 pasif). **Çalıştır**.
 
 **Beklenen sonuç (demet).** k∞ = **1.46634 ± 0.00070** ([README.md](../../../README.md) "Ölçülen
-referans sonuçlar"; 24 iş parçacığıyla 53 s). Hızlı spektrumlu, U-10Mo yakıtlı, sodyum soğutmalı bir
-demet olduğu için k∞ PWR demetinden çok büyüktür.
+referans sonuçlar"; 24 iş parçacığıyla 53 s). k∞'un PWR demetinden (~1.18) çok büyük olmasının
+nedenleri: zenginlik **%19.75** (PWR demeti %3.2), yakıt **yoğun metal** (U-10Mo, 17 g/cm³; birim
+hacimde UO₂'den çok daha fazla uranyum) ve soğurucu yok — suda çözünmüş **bor** ve hidrojenli
+**moderatörün** soğurması bu demette bulunmaz. Hızlı tayf tek başına k∞'u büyütmez (hızlı tayfta
+U-235 fisyon tesir kesiti termaldekinden çok küçüktür).
 
 **Adımlar — altıgen kor.**
 
@@ -316,7 +329,7 @@ koşularınızın farkı bu mertebede olmalıdır.
 **Adımlar — C. Kare çekirdek + altıgen halkaya tambur yerleştirmek.**
 
 Bu bölüm 5.4 dersinin geometrisine (kare çekirdek, altıgen blok halkası, en dışta 20 cm su kuşağı)
-6 tambur ekler. Her adım doğrulamayla denetlendi; bütün adımlar arayüzde yapılır.
+4 tambur ekler. Her adım doğrulamayla denetlendi; bütün adımlar arayüzde yapılır.
 
 7. `ornekler/pwr_kare_altigen_halka.json`'u açın (ya da 5.4'te kurduğunuz modeli) ve
    **Dosya › Farklı kaydet…** ile kendi dosyanıza kaydedin (ör. `kare_altigen_tambur.json`).
@@ -328,21 +341,25 @@ Bu bölüm 5.4 dersinin geometrisine (kare çekirdek, altıgen blok halkası, en
    yarıçapı 6 cm, emici yay açısı 120°. Tanım `tamburlar[]` bölümüne yazılır (`ad`, `yaricap`,
    `govde_malzeme`, `emici_malzeme`, `emici_ic_yaricap`, `emici_aci`); yerleşim alanları
    (sayı, merkez, dönme) tanımda değil yerleşim ve gruptadır.
-10. **Geometri** sayfasında ağaçta **Halka 1 (20 cm)** satırını seçin ve araç çubuğunda
+10. **Geometri** sayfasında ağaçta **kök** kabını (en üst satır) seçin ve araç çubuğunda
     **+ Yerleşim**'e basın. Modelde bir tambur tanımı olduğu için yeni yerleşimin içeriği
     kendiliğinden **Bileşen: tambur_b4c** olur ve **Doğal kesit (tambur dairesi)** işaretlidir.
-11. Yerleşim formunu doldurun: **Ad** `tambur_halkasi`, **Mod** Halka, **Sayı** 6,
-    **Merkez yarıçapı** 131.2 cm, **Başlangıç açısı** 30°, **Kora bakış** Merkeze
-    (**Merkez x** 0, **Merkez y** 0), **Ofset** 0.
-    *Sayılar nereden?* Su kuşağının iç apotemi 121.24 cm, dış apotemi 141.24 cm'dir; 8 cm
-    yarıçaplı tamburun merkezi düz yüzün normali boyunca 129.24–133.24 cm arasında olmalıdır.
-    `x` yönelimli altıgenin düz yüz normalleri 30°, 90°, …, 330°'dedir; başlangıç 30° ve 6 tambur
-    her yüze bir tambur koyar.
-12. Doğrulama panelinde yalnız iki **uyarı** kalmalıdır: "16 kesik konum…" (5.4 dersindeki) ve
-    "2B modelde kontrol tamburu: eksenel sızıntı yok; tambur değeri fazla çıkar." Deneyin:
-    **Başlangıç açısı**'nı 0° yapın; tamburlar altıgenin **köşelerine** kayar ve her biri için
-    **hata** çıkar: "'tambur_halkasi' deliği bölgenin iç sınırına taşıyor." (iç köşe merkeze
-    121.24 × 2/√3 ≈ 140.0 cm uzaktadır). 30°'ye geri alın.
+11. Yerleşim formunu doldurun: **Ad** `tambur_halkasi`, **Mod** Halka, **Sayı** 4, **Merkez
+    yarıçapı** 63 cm, **Başlangıç açısı** 0°, **Kora bakış** Merkeze (**Merkez x** 0, **Merkez y**
+    0), **Ofset** 0.
+    *Sayılar nereden?* Tambur, değeri ölçülebilsin diye **çekirdeğin hemen yanında** olmalıdır.
+    Kare çekirdeğin yüzü merkeze 53.55 cm uzaktadır; 8 cm yarıçaplı tamburun merkezi 63 cm'de
+    olunca tambur 55–71 cm arasını kaplar (yüzle arasında 1.45 cm su). 0°, 90°, 180°, 270°
+    yüzlerin ortasıdır; köşelere (45°) yer yoktur (köşe 75.7 cm uzaktadır). Tamburlar çelik
+    blokları oyar (kesik konum uyarısı).
+    *Neden su kuşağı (Halka 1) değil?* Dersin ilk sürümü tamburları en dıştaki su kuşağına
+    (merkez yarıçapı 131.2 cm) koyuyordu. Aradaki ~70 cm çelik yansıtıcıdan oraya nötron
+    neredeyse ulaşmaz: ölçülen k(0°) = 1.06613 ± 0.00097, k(180°) = 1.06504 ± 0.00085 —
+    fark −109 ± 129 pcm (Δk × 10⁵), istatistik olarak sıfır.
+12. Doğrulama panelinde yalnız iki **uyarı** kalmalıdır: "20 kesik konum…" (5.4 dersindeki 16 ve
+    tamburların oyduğu bloklar) ve "2B modelde kontrol tamburu: eksenel sızıntı yok; tambur
+    değeri fazla çıkar." Deneyin: **Merkez yarıçapı**'nı 60 yapın; her tambur için **hata** çıkar:
+    "'kare_cekirdek#0' ve 'tambur_halkasi#0' delikleri örtüşüyor." 63'e geri alın.
 13. Araç çubuğunda **+ Grup**'a basın; **Gruplar** altında yeni bir dönme grubu çıkar (değer 0).
     Grubu seçin: **Ad** `tamburlar`, **Tür** Dönme, **Değer** 180, **Üyeler**'de
     `tambur_halkasi`'yı işaretleyin. (Aynı bağlantı yerleşim formundaki **Grup** kutusundan da
@@ -350,17 +367,19 @@ Bu bölüm 5.4 dersinin geometrisine (kare çekirdek, altıgen blok halkası, en
 14. Kesitte (xy) emici yayların dışa baktığını görün. **Dosya › Kaydet**. Normal ayarla bir koşu
     180°'de, bir koşu 0°'de yapın.
 
-**Beklenen sonuç (C).** Bu sizin tasarımınızdır; referans ölçümü **yoktur**. Denetleyin:
-k(0°) < k(180°) olmalı ve fark istatistik olarak anlamlı olmalıdır:
-|k₁₈₀ − k₀| > 2·√(σ₁₈₀² + σ₀²). Model 2B olduğu için tambur değeri olduğundan büyük çıkar
-(eksenel sızıntı yoktur; doğrulama bunu uyarır). Daha gerçekçi bir değer için kökün formunda
-**2B (sonsuz yükseklik)** işaretini kaldırıp **Yükseklik** verin ve **Alt**/**Üst** sınırı
-`vacuum` yapın.
+**Beklenen sonuç (C).** Ölçülen (01.10.2026; Normal 10 000 × 150 / 40 pasif, tohum 1, 6 iş
+parçacığı): k(0°) = **1.06255 ± 0.00090**, k(180°) = **1.06627 ± 0.00083** → toplam tambur değeri
+Δk = **372 ± 122 pcm** (Δk × 10⁵), yaklaşık 3σ. Denetleyin: k(0°) < k(180°) ve
+|k₁₈₀ − k₀| > 2·√(σ₁₈₀² + σ₀²). Fark 2σ'yı geçmezse (başka tohumda olabilir) çevrim başına
+parçacığı artırıp yineleyin. Değer küçüktür: tamburların arkası çelik/su, önü yalnız çekirdeğin
+bir yüzüdür. Model 2B olduğu için tambur değeri olduğundan büyük çıkar (eksenel sızıntı yoktur;
+doğrulama bunu uyarır). Daha gerçekçi bir değer için kökün formunda **2B (sonsuz yükseklik)**
+işaretini kaldırıp **Yükseklik** verin ve **Alt**/**Üst** sınırı `vacuum` yapın.
 
 **Ne öğrendik / kontrol soruları.**
 
-- Tamburu daha büyük yapmak (ör. r = 12 cm) neden doğrulama hatası verir? (Delik su kuşağına
-  sığmaz: 20 cm'lik kuşağa 24 cm çaplı daire girmez.)
+- Tamburu daha büyük yapmak (ör. r = 12 cm) neden doğrulama hatası verir? (Delik çekirdek
+  yerleşimiyle örtüşür: 63 − 12 = 51 cm < 53.55 cm; doğrulama "delikleri örtüşüyor" der.)
 - Tamburların kora bakan yönünü ne belirler? (Halka modunda ψᵢ = φᵢ + 180 + D; bakış merkezdeyken
   emici yay her örnekte merkeze döner, D = grup değeri + ofset.)
 - Tambur değerini Δk ve Δρ ile vermek neden farklı sayılar üretir? (Δρ = Δk/(k₁·k₂); k'lar
@@ -425,8 +444,10 @@ zincir, CECM, 5 000 × 60 parçacık, ~50 dakika):
 
 - Neden "hızlı zincir seçmek yetmez"? (Fisyon ürünü verimi ayrı bir ayardır; hızlı sistemde verim
   enerjisi 500 keV'e çekilir — [6.5 Bilinen tuzaklar](06-sonuclar.md#tuzaklar).)
-- Yanabilir malzeme hacmi f kat yanlış olsaydı ne olurdu? (Yanma hızı f kat yanlış olur, k-eff'te
-  iz bırakmadan; hacimler bu yüzden analitik hesaplanır.)
+- Yanabilir malzeme hacmi f kat yanlış olsaydı ne olurdu? (Malzemedeki atom sayısı N·V f kat
+  büyük sayılır, tally'deki toplam reaksiyon hızı ise aynı kalır: **atom başına reaksiyon hızı
+  1/f** kat olur ve malzeme o oranda yanlış hızda yanar — ilk adımın k-eff'inde iz bırakmadan.
+  Hacimler bu yüzden analitik hesaplanır.)
 - **Çubuk çubuk yanma** bu modelde neden bir şey değiştirmez? (Pin hücrede yakıtın tek örneği vardır.)
 
 ---
@@ -458,14 +479,20 @@ yorum: [6.3 Güç dağılımını yorumlamak](06-sonuclar.md#guc-dagilimi-yorum)
 6. Aynı modeli **Hızlı deneme** ile koşup F_ΔH'yi karşılaştırın: az istatistikle F_ΔH **yukarı**
    çıkar.
 
-**Beklenen sonuç** ([README.md](../../../README.md) "Güç dağılımı ve tepe faktörleri"; 20 000
-parçacık, 20 eksenel dilim): **F_ΔH = 1.071**, **F_q = 1.885**, ortalama lineer güç **182 W/cm**.
+**Beklenen sonuç** ([README.md](../../../README.md) "Güç dağılımı ve tepe faktörleri"; örneğin
+kendi ayarı 20 000 × 150 / 40 pasif, 20 eksenel dilim, 6 iş parçacığı, 01.10.2026; tohum 1–5):
+tek koşuda **F_ΔH ≈ 1.06–1.08**, **F_q ≈ 1.63–1.75** (tohum 1: 1.0732 ve 1.6264); 5 tohumun
+saçılması (1σ) F_ΔH için 0.0071, F_q için 0.051. Haritaların ortalaması alınıp sonra en büyüğü
+bulunursa **F_ΔH = 1.0620 ± 0.0055**, **F_q = 1.600 ± 0.032** (σ: tohumlar arası saçılma / √5).
+Ortalama lineer güç **182 W/cm**.
 
 - **Belirsizlikler iyimserdir.** Raporlanan bin başına σ 0.003–0.008 iken üç bağımsız tohum arasındaki
   gerçek saçılma 0.07–0.17 ölçüldü (~20 kat): özdeğer hesabında çevrimler arası ilinti tally
   σ'sını küçümser. Gerçek belirsizlik için birkaç tohumla koşun.
-- **F_ΔH bir maksimumdur ve az istatistikte yukarı yanlıdır:** aynı modelde 3 000 parçacıkla 1.1455,
-  20 000 parçacıkla 1.0708 ölçüldü.
+- **F_ΔH bir maksimumdur ve yukarı yanlıdır:** tohum maksimumlarının ortalaması (1.0718) harita
+  ortalamasının tepesinden (1.0620) büyüktür; bu modelde 31 çubuk tepeden istatistik olarak ayırt
+  edilemez (yorum satırı bunu ve beklenen yanlılığı yazar). Az istatistikte fark büyür: 3 000
+  parçacıkla 1.1455 ölçülmüştü (eski ölçüm, He 0.0001785).
 - **F_q eksenel çözünürlüğe bağlıdır:** kaba dilimler tepeyi ortalar; en az 10–20 dilim kullanın
   (saf kosinüs limiti π/2 = 1.571).
 
@@ -492,9 +519,13 @@ parçacık, 20 eksenel dilim): **F_ΔH = 1.071**, **F_q = 1.885**, ortalama line
 
 1. **Godiva kritik küresi** örneğini açın: çıplak HEU metal küresi (ICSBEP HEU-MET-FAST-001).
    Kor türü `kuresel`; kabuklar yalnız JSON'dan düzenlenir.
-2. **Hesap ayarları**'nı dosyadaki gibi bırakın; referans koşusu 100 000 parçacık × 150 çevrim
-   (50 pasif). Süre kısıtlıysa **Normal** ile koşun ve σ'nın büyüdüğünü hesaba katın. **Çalıştır**.
-3. Sonucu deney değeriyle karşılaştırın: E ± σe = 1.0000 ± 0.0010. Hesaplayın:
+2. **Hesap ayarları**: dosyadaki ayar 20 000 parçacık × 160 çevrim (40 pasif) σ ≈ 0.0005 verir.
+   Aşağıdaki tablonun referans ölçümü **100 000 × 150 çevrim (50 pasif)** ile yapıldı (σ = 0.00025);
+   aynı σ için bu değerleri girin. Süre kısıtlıysa dosyanın ayarıyla koşun ve σ'nın büyüdüğünü hesaba
+   katın. **Çalıştır**.
+3. Sonucu deney değeriyle karşılaştırın: E ± σe = 1.0000 ± 0.0010. Özet satırları referanslı
+   örneklerde bunu kendisi yazar (referans, C/E, C − E pcm, |C − E| / σ;
+   [4.7 Sonuç kartı](04g-calistir.md#calistir)). Elle hesap:
    C − E [pcm] = (C − E) × 10⁵ (**Δk × 10⁵**, reaktivite farkı değildir), fark/σ =
    |C − E| / √(σc² + σe²), C/E = C / E.
 4. Aynısını Jezebel ve Flattop-25 için yapın. LCT-008 (LEU UO₂ kafes, borlu su) uzun sürer;

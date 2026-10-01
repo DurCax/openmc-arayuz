@@ -177,8 +177,17 @@ def test_kosucu_kayip_parcacik():
 def test_k1_entropi():
     print("\n[U3] K1 entropi platosu: kirmizi (pasif sonunda kayan) -> yesil (fixture)")
     import numpy as np
-    temiz = _denetle(FIXTURE)
-    kontrol("yesil: fixture karsilandi", _durum(temiz, "K1") == ("bilgi", "karsilandi"))
+    # Fixture'in entropisi aktif donemde de duser (7.90 -> 7.84, σ ≈ 0.013): QA14-Q4'ten
+    # beri K1 bunu dogru olarak yakalar. Yesil durum duz platolu sentetik dizidir.
+    kontrol("fixture (aktifte kayan) -> uyari", _durum(_denetle(FIXTURE), "K1")
+            == ("uyari", "karsilanmadi"))
+    duz = np.concatenate([np.linspace(5.0, 7.9, 8), 7.9 + 0.002 * np.sin(np.arange(32))])
+    d = _kopya(h5={"entropy": duz})
+    try:
+        kontrol("yesil: pasifte duzlesen plato -> karsilandi",
+                _durum(_denetle(d), "K1") == ("bilgi", "karsilandi"))
+    finally:
+        shutil.rmtree(d, True)
     kayan = np.concatenate([np.linspace(5.0, 7.9, 15), 7.9 + 0.002 * np.sin(np.arange(25))])
     d = _kopya(h5={"entropy": kayan})
     try:
@@ -671,6 +680,8 @@ def test_yanlis_alarm_ornekler():
                                   if os.path.isdir(d))
     for d in dizinler:
         alarm = D.alarmlar(D.denetle(None, d, ("A",)))
+        if d == FIXTURE:   # fixture'in entropisi aktifte kayar: K1 alarmi GERCEKTIR (QA14-Q4)
+            alarm = [x for x in alarm if x.kural != "K1"]
         kontrol("%s alarmsiz" % os.path.relpath(d, KOK), not alarm,
                 "-> %s" % [(x.kural, x.mesaj) for x in alarm])
     print("  (%d kosu dizini denetlendi; ornekler/kosu* git'te yoktur, varsa denetlenir)"

@@ -1,0 +1,321 @@
+# -*- coding: utf-8 -*-
+"""
+test_qa14.py -- Ajan 14 (ogrenci QA) bulgulari (Dalga 4 duzeltme).
+
+  [QA3a] Elle eklenen 'vv_ealf' tally'si (fisyon skoru yok): EALF okunamaz ama
+         V&V ozeti DUSMEZ; USL nedeni tally sorununu acikca soyler (eskiden
+         ValueError yutuluyor, K6-K14 "V&V kumesi yok" oluyordu).
+  [QA3b] Panel: ayni adli gecersiz tally varken "EALF tally'sini duzelt" gorunur;
+         onaylaninca gecersiz tally gecerli tanimla degisir.
+
+Monte Carlo KOSULMAZ (openmc.Tally nesnesi bellekte kurulur; StatePoint taklit).
+"""
+
+import contextlib
+import json
+import os
+import tempfile
+
+from testler.ortak_test import kontrol, KOK
+
+os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
+FIXTURE = os.path.join(KOK, "testler", "veri", "kosu_ornek")
+
+
+def _elle_tally():
+    import openmc
+    t = openmc.Tally(name="vv_ealf")
+    t.filters = [openmc.EnergyFilter([1e-5, 0.625, 1e5, 2e7])]
+    t.scores = ["flux"]
+    return t
+
+
+@contextlib.contextmanager
+def _sahte_statepoint(tally):
+    import openmc
+
+    class _SP(object):
+        def __init__(self, _yol):
+            pass
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *a):
+            return False
+
+        def get_tally(self, name=None):
+            if name != tally.name:
+                raise LookupError(name)
+            return tally
+    eski = openmc.StatePoint
+    dizin = tempfile.mkdtemp(prefix="qa3_")
+    open(os.path.join(dizin, "statepoint.10.h5"), "w").close()
+    openmc.StatePoint = _SP
+    try:
+        yield dizin
+    finally:
+        openmc.StatePoint = eski
+
+
+def _spec():
+    with open(os.path.join(FIXTURE, "spec.json"), encoding="utf-8") as f:
+        return json.load(f)
+
+
+def test_elle_ealf_tally_vv_dusurmez():
+    print("\n[QA3a] Elle eklenmis vv_ealf (flux): V&V ozeti kurulur, neden acik")
+    from cekirdek.vv import aoa, kume
+    with _sahte_statepoint(_elle_tally()) as dizin:
+        ealf, neden = aoa.ealf_ayrintili(dizin)
+        kontrol("EALF None, neden 'fission' skoru", ealf is None and neden
+                and "fission" in neden, "-> %r %r" % (ealf, neden))
+        vv, _u = kume.uygulama_ozeti(_spec(), dizin)
+    kontrol("VVOzeti var (None degil)", vv is not None)
+    kontrol("USL nedeni tally sorununu ve duzeltmeyi soyler", vv.usl is None
+            and "fission" in vv.usl_neden and "vv_ealf" in vv.usl_neden, "-> %s" % vv.usl_neden)
+    with _sahte_statepoint(_elle_tally()) as dizin:
+        kontrol("tally yoksa (baska ad) neden None", aoa.ealf_ayrintili(
+            os.path.join(dizin, "yok"))[1] is None)
+    gecerli = aoa.ealf_tally_tanimi()
+    kontrol("tanim gecerliligi: oneri gecerli, flux gecersiz", aoa.ealf_tanimi_gecerli(gecerli)
+            and not aoa.ealf_tanimi_gecerli(dict(gecerli, skorlar=["flux"])))
+
+
+def test_panel_gecersiz_tally_duzeltir():
+    print("\n[QA3b] Panel: gecersiz vv_ealf -> 'duzelt'; onay -> degisir")
+    from PySide6 import QtWidgets
+    QtWidgets.QApplication.instance() or QtWidgets.QApplication([])
+    from arayuz.sekme_calistir import CalistirSekmesi
+    from cekirdek import sema
+    from cekirdek.vv import aoa
+    w = CalistirSekmesi()
+    spec = sema.tamamla(_spec())
+    elle = dict(aoa.ealf_tally_tanimi(), skorlar=["flux"])
+    spec["tallyler"] = list(spec.get("tallyler") or []) + [elle]
+    w.spec_ayarla(spec)
+    p = w.uygunluk
+    p.profilleri_ayarla(("A", "B"))
+    p.denetle(w.spec, FIXTURE)
+    kontrol("oneri gorunur ve 'düzelt' der", not p.d_ealf.isHidden()
+            and "düzelt" in p.d_ealf.text(), "-> %r" % p.d_ealf.text())
+    p._onay_al = lambda *_a: True
+    p.d_ealf.click()
+    adli = [t for t in w.spec["tallyler"] if t.get("ad") == aoa.EALF_TALLY]
+    kontrol("tek vv_ealf ve gecerli", len(adli) == 1 and aoa.ealf_tanimi_gecerli(adli[0]),
+            "-> %r" % adli)
+
+
+def test_entropi_kisa_pasif_yakalanir():
+    print("\n[QA4] K1: 4 pasif cevrim, entropi aktifte de dusuyor -> yakinsamadi")
+    import math
+    import random
+    from cekirdek.kosucu import entropi_yakinsama
+    random.seed(3)
+    # 3B tam kor benzeri: entropi 8.0'dan 6.0'a ~15 cevrim zaman sabitiyle iner
+    dusen = [6.0 + 2.0 * math.exp(-i / 15.0) + random.gauss(0, 0.01) for i in range(64)]
+    karar, mesaj = entropi_yakinsama(dusen, 4)
+    kontrol("4 pasif + aktifte kayma -> False", karar is False, "-> %r %s" % (karar, mesaj))
+    random.seed(4)
+    godiva = [6.0 * (1 - math.exp(-i / 2.0)) + random.gauss(0, 0.01) for i in range(80)]
+    kontrol("hizla yukselip pasifte duzlesen -> True", entropi_yakinsama(godiva, 30)[0] is True,
+            "-> %s" % (entropi_yakinsama(godiva, 30),))
+
+
+def test_guc_yorumu_once_istatistik():
+    print("\n[QA7] Guc yorumu: σ buyukse once istatistik yetersizligi, tasarim yorumu yok")
+    from cekirdek import guc
+    f = {"F_dH": 5.1, "F_dH_sapma": 2.4, "F_q": 45.0, "F_q_sapma": 30.0, "eksenel_dilim": 20,
+         "cubuk_sayisi": 100, "F_dH_tepe_yakini": 1, "F_dH_yanlilik": 0.0}
+    y = guc.yorumla(f, kategori="pwr")
+    metin = " ".join(y)
+    kontrol("istatistik yetersiz satiri (F_ΔH ve F_q)", metin.count("İstatistik yetersiz") == 2,
+            "-> %s" % metin[:400])
+    kontrol("'yakıt yüklemesi düzeltilmeli' ve F_q siniri yazilmaz",
+            "düzeltilmeli" not in metin and "2.3–2.6" not in metin)
+    iyi = guc.yorumla(dict(f, F_dH=1.8, F_dH_sapma=0.002, F_q=2.9, F_q_sapma=0.01),
+                      kategori="pwr")
+    kontrol("yeterli istatistikte PWR siniri yorumu yine var", "1.65" in " ".join(iyi))
+
+
+def test_simge_dugmesi_adi_ipucunda():
+    print("\n[QA6] Gelismis geometri: simge dugmelerinin adi ipucunun basinda")
+    from PySide6 import QtWidgets
+    QtWidgets.QApplication.instance() or QtWidgets.QApplication([])
+    from arayuz.geometri.editor import GelismisEditor
+    e = GelismisEditor()
+    for anahtar in ("yerlesim", "grup", "halka"):
+        d = e.dugmeler[anahtar]
+        kontrol("%s: ipucu adla baslar (%s)" % (anahtar, d.accessibleName()),
+                d.toolTip().startswith(d.accessibleName()), "-> %r" % d.toolTip())
+
+
+def _rapor_penceresi(son, aday, sor):
+    from PySide6 import QtWidgets
+    from arayuz.pencere.proje import ProjeMixin
+
+    class _Calistir(object):
+        def son_kosu_dizini(self):
+            return son
+
+        def _kosu_dizini(self):
+            return aday
+
+    class _P(ProjeMixin, QtWidgets.QWidget):
+        def __init__(self):
+            QtWidgets.QWidget.__init__(self)
+            self.spec, self.proje_yolu, self.s_calistir = _spec(), None, _Calistir()
+            self.bildirimler, self.sorular = [], []
+
+        def bildir_mesaj(self, metin, tur, *a, **k):
+            self.bildirimler.append((metin, tur))
+
+        def _rapor_kosusu_sor(self, dizin):
+            self.sorular.append(dizin)
+            return sor
+    return _P()
+
+
+def test_kosusuz_rapor_sessiz_degil():
+    print("\n[QA8] Rapor: kosu yuklu degilse kayitli kosu sorulur; yoksa acik uyari")
+    from PySide6 import QtWidgets
+    QtWidgets.QApplication.instance() or QtWidgets.QApplication([])
+    from cekirdek import rapor
+
+    class _Sonuc(object):
+        uyarilar = []
+
+        def __init__(self, yol):
+            self.yol = yol
+    cagri = []
+    eski_olustur, eski_dlg = rapor.olustur, QtWidgets.QFileDialog.getSaveFileName
+    rapor.olustur = lambda spec, kosu, yol, bicim: (cagri.append(kosu), _Sonuc(yol))[1]
+    QtWidgets.QFileDialog.getSaveFileName = staticmethod(
+        lambda *a, **k: ("/tmp/qa8_rapor.html", "HTML (*.html)"))
+    try:
+        p = _rapor_penceresi(None, FIXTURE, True)
+        p.rapor_olustur()
+        kontrol("kayitli kosu soruldu ve eklendi", p.sorular == [FIXTURE] and cagri[-1] == FIXTURE)
+        kontrol("bildirim: diskteki kosu notu (uyari)", p.bildirimler[-1][1] == "uyari"
+                and "kayıtlı koşu" in p.bildirimler[-1][0], "-> %r" % p.bildirimler[-1:])
+        p = _rapor_penceresi(None, tempfile.mkdtemp(prefix="qa8_"), True)
+        p.rapor_olustur()
+        kontrol("kosu yok: yalniz model + acik uyari", cagri[-1] is None
+                and p.bildirimler[-1][1] == "uyari" and "yalnız modeli" in p.bildirimler[-1][0],
+                "-> %r" % p.bildirimler[-1:])
+        p = _rapor_penceresi("/tmp/oturum_kosusu", FIXTURE, True)
+        p.rapor_olustur()
+        kontrol("oturum kosusu varsa sorulmaz", not p.sorular and cagri[-1] == "/tmp/oturum_kosusu")
+    finally:
+        rapor.olustur, QtWidgets.QFileDialog.getSaveFileName = eski_olustur, eski_dlg
+
+
+def test_c_e_panoda():
+    print("\n[QA9] Referans degerli ornekte E ± σ, C/E, C − E (pcm), fark/σ")
+    from cekirdek import ornek_bilgi
+    from arayuz.calistir import ozet
+    from testler.ortak_test import ORNEK
+    with open(os.path.join(ORNEK, "godiva_kriter.json"), encoding="utf-8") as f:
+        godiva = json.load(f)
+    r = ornek_bilgi.c_e(godiva["referans"], 1.00038, 0.00025)
+    kontrol("C − E = +38 pcm, σ = 103 pcm, 0.37σ, gecti", round(r["fark_pcm"]) == 38
+            and round(r["fark_sigma_pcm"]) == 103 and abs(r["fark_sigma_sayisi"] - 0.37) < 0.01
+            and r["gecti"], "-> %r" % r)
+    kontrol("C/E = 1.00038", abs(r["C_E"] - 1.00038) < 1e-9)
+    s = ozet.referans_satirlari(godiva, (1.00038, 0.00025))
+    metin = "\n".join(s)
+    kontrol("satirlar: referans, C/E, C − E pcm, fark/σ", len(s) == 3 and "C/E" in metin
+            and "pcm (Δk × 10⁵)" in metin and "0.37" in metin, "-> %s" % metin)
+    kontrol("referanssiz ornekte satir yok", ozet.referans_satirlari(_spec(), (1.0, 0.001)) == [])
+    kontrol("3σ disi -> OLCUT DISINDA", "DIŞINDA" in "\n".join(
+        ozet.referans_satirlari(godiva, (1.01, 0.0002))))
+
+
+def test_kucuk_bulgular_durum_ve_suzgec():
+    print("\n[QA-k1] Durum seridi hata varken 'Model hazir' demez; silinmis widget suzgeci")
+    from PySide6 import QtCore, QtWidgets
+    import shiboken6
+    QtWidgets.QApplication.instance() or QtWidgets.QApplication([])
+    from arayuz.pencere.model_islemleri import sonraki_adim
+    isaret = {"malzemeler": ("✓", ""), "calistir": ("•", "")}
+    m = sonraki_adim(isaret, ["malzemeler", "calistir"], True, hata_toplami=2)
+    kontrol("sekmesiz 2 hata -> 'doğrulama hatası'", "2 doğrulama hatası" in m, "-> %s" % m)
+    kontrol("hata yok -> Model hazir", "Model hazır" in sonraki_adim(
+        isaret, ["malzemeler", "calistir"], True))
+    from arayuz.ortak import _TekerlekSuzgeci
+    d = QtWidgets.QPushButton()
+    shiboken6.delete(d)
+    olay = QtCore.QEvent(QtCore.QEvent.Polish)
+    try:
+        sonuc = _TekerlekSuzgeci().eventFilter(d, olay)
+        hata = None
+    except RuntimeError as e:
+        sonuc, hata = None, e
+    kontrol("silinmis widget: RuntimeError yok, False", hata is None and sonuc is False,
+            "-> %r" % hata)
+
+
+def test_grup_basligi_tazelenir():
+    print("\n[QA-k2] Grup adi/degeri degisince form basligi tazelenir")
+    import copy
+    from PySide6 import QtWidgets
+    QtWidgets.QApplication.instance() or QtWidgets.QApplication([])
+    from arayuz.geometri.editor import GelismisEditor
+    from cekirdek import sema
+    from testler.ortak_test import ORNEK
+    spec = sema.yukle(os.path.join(ORNEK, "kafes_tamburlu_yansitici.json"))
+    e = GelismisEditor()
+    e._secili = ("gruplar", 0)
+    e.yukle(spec)
+    kontrol("baslangic basligi 'tamburlar'", "tamburlar" in e.form_basligi.text(),
+            "-> %r" % e.form_basligi.text())
+    yeni = copy.deepcopy(spec)
+    yeni["geometri"]["gruplar"][0].update(ad="tamburlar2", deger=90.0)
+    e.agaci_tazele(yeni)
+    kontrol("baslik yeni ad ve deger", "tamburlar2" in e.form_basligi.text()
+            and "90" in e.form_basligi.text(), "-> %r" % e.form_basligi.text())
+
+
+def test_ic_anahtar_gorunmez():
+    print("\n[QA-k3] EN metinde ic anahtar yok: tur rozeti 'agac', AOA adlari")
+    from arayuz.pencere.model_islemleri import tur_ozeti
+    from cekirdek.uygunluk_denetimi.vv_arayuz import aoa_adi, aoa_degeri
+    kontrol("agac -> okunur ad", tur_ozeti({"kor": {"tur": "agac"}}) != "agac"
+            and "ağaç" in tur_ozeti({"kor": {"tur": "agac"}}))
+    kontrol("AOA adlari okunur", aoa_adi("fiziksel_bicim") == "fiziksel biçim"
+            and aoa_degeri("cozelti") == "çözelti" and aoa_adi("h_x") == "H/X")
+
+
+def test_diyalogdan_sonra_kisayol():
+    print("\n[QA-k4] Modal diyalog kapaninca ana pencere yeniden etkin (kisayollar calisir)")
+    from PySide6 import QtCore, QtTest, QtWidgets
+    app = QtWidgets.QApplication.instance() or QtWidgets.QApplication([])
+    from arayuz.ortak import tekerlek_korumasi_kur
+    tekerlek_korumasi_kur(app)
+    p = QtWidgets.QMainWindow()
+    cagri = []
+    eylem = p.addAction("rapor")
+    eylem.setShortcut("Ctrl+R")
+    eylem.triggered.connect(lambda *a: cagri.append(1))
+    p.show()
+    p.activateWindow()
+    QtTest.QTest.qWait(100)
+    d = QtWidgets.QFileDialog(p)
+    d.setOption(QtWidgets.QFileDialog.DontUseNativeDialog, True)
+    QtCore.QTimer.singleShot(100, d.reject)
+    d.exec()
+    QtTest.QTest.qWait(100)
+    kontrol("diyalogdan sonra etkin pencere ana pencere",
+            QtWidgets.QApplication.activeWindow() is p,
+            "-> %r" % QtWidgets.QApplication.activeWindow())
+    QtTest.QTest.keyClick(p, QtCore.Qt.Key_R, QtCore.Qt.ControlModifier)
+    QtTest.QTest.qWait(50)
+    kontrol("Ctrl+R calisir", cagri == [1], "-> %r" % cagri)
+    p.close()
+
+
+HIZLI = [test_ic_anahtar_gorunmez, test_diyalogdan_sonra_kisayol, test_elle_ealf_tally_vv_dusurmez, test_panel_gecersiz_tally_duzeltir,
+         test_entropi_kisa_pasif_yakalanir, test_guc_yorumu_once_istatistik,
+         test_simge_dugmesi_adi_ipucunda, test_kosusuz_rapor_sessiz_degil, test_c_e_panoda,
+         test_kucuk_bulgular_durum_ve_suzgec, test_grup_basligi_tazelenir]
+YAVAS = []

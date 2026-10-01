@@ -71,6 +71,11 @@ açıksa ayrıca dolar ($ = ρ / β_eff) verilir. **Kayıp parçacık** ve OpenM
 kalın ve renkli görünür — sessiz kalmaz; kayıp parçacık geometride boşluk ya da örtüşme
 demektir (uygunluk kuralı K3). Sabit kaynakta kart tally tablolarını gösterir.
 
+**Referans değerli örneklerde** (`kriter_*`, `godiva_kriter`; `referans.k` ± `sigma`) özet
+satırlarının başında karşılaştırma yazar: **referans** E ± σ (deney ya da hesap referansı ve
+kaynağı), **C/E** ± σ ve **C − E** pcm cinsinden (Δk × 10⁵) ± birleşik σ ile |C − E| / σ;
+projenin ölçütü |C − E| ≤ 3σ'dır ([7.4 V&V](07-uygunluk.md#vv)).
+
 <a id="calistir-guc-haritasi"></a>
 ### Güç haritası
 
@@ -123,8 +128,9 @@ Kuralların tamamı, profil seçimi ve "ne kanıtlar, ne kanıtlamaz" için
 kendiliğinden açılır. İçinde ham OpenMC çıktısı (**Kopyala** ile panoya alınır; satır sayısı
 başlığın altında yazar) ve tam sonuç metni (statepoint ve bütün tally tabloları) vardır.
 
-Koşunun raporu **Dosya › Rapor oluştur… (Ctrl+R)** ile üretilir (son başarılı koşu
-kullanılır); rapor tekrarlanabilirlik bilgisini ve seçili profillerin uygunluk ekini içerir.
+Koşunun raporu **Dosya › Rapor oluştur… (Ctrl+R)** ile üretilir (bu oturumdaki son başarılı
+koşu kullanılır; yoksa ve proje dizininde kayıtlı bir koşu varsa rapora eklensin mi diye
+sorulur; hiç koşu yoksa bildirim "rapor yalnız modeli içerir" der); rapor tekrarlanabilirlik bilgisini ve seçili profillerin uygunluk ekini içerir.
 Aynı işin terminal karşılığı:
 
 ```bash

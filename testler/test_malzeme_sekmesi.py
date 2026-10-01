@@ -389,7 +389,8 @@ def test_parametrik_malzeme():
             not d.parametrik_kip() and d.model.rowCount() == 3)
     kontrol("eski malzeme: dokunmadan Tamam birebir ayni",
             _j(d.sonuc()) == _j(sema.malzeme_bul(p, "su")))
-    he = sema.malzeme_bul(p, "helyum")
+    # Ornek dosyalar artik 0.0018 kullanir; kucuk deger (STP He) yuvarlama icin acikca verilir
+    he = dict(sema.malzeme_bul(p, "helyum"), yogunluk={"birim": "g/cm3", "deger": 0.0001785})
     d = sm.MalzemeDiyalog(he, p)
     kontrol("helyum 0.0001785 g/cm3 yuvarlanmaz (eski spinbox 0.000179 yapiyordu)",
             d.sonuc()["yogunluk"]["deger"] == 0.0001785)

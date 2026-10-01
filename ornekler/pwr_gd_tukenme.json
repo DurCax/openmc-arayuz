@@ -1,7 +1,7 @@
 {
   "surum": 1,
   "ad": "Gd'li süper hücrede tükenme (yanabilir zehir)",
-  "aciklama": "Yanabilir zehirin (Gd2O3) yanması: 5×5 süper hücrenin merkezinde UO2 %2.0 + %8 Gd2O3 çubuğu, çevresinde 24 UO2 %4.0 çubuğu (Westinghouse 17×17 ölçüleri, pwr_17x17.json malzemeleri: 900/600/580 K, 1300 ppm bor). Tek Gd'li pin hücresi (sonsuz Gd kafesi) k∞ ≈ 0.3 verir ve spektrumu temsil etmez; süper hücre komşu yakıttan gelen termal akıyı sağlar.\n\nGd'li pelet eşit alanlı 5 halkaya bölündü ve her halka AYRI malzemedir: Gd-155/157 dıştan içe 'soğan kabuğu' gibi yanar; tükenme sonrasında halka halka Gd157 yoğunlukları bunu gösterir. Güç yoğunluğu 38 W/gHM, ~16 MWd/kg'a kadar.\nÖLÇÜLEN (testler/test_ornekler.py OR13): 5 MWd/kg'da kalan Gd-157 oranı içten dışa 0.79 / 0.71 / 0.58 / 0.30 / 0.01 — dış halka bitmiş, iç halka neredeyse dokunulmamış. 16 MWd/kg'da iç halkada hâlâ ~%12 Gd-157 vardır. 25 çubuktan yalnız biri Gd'li olduğu için reaktivite tutması zayıftır: k∞ bu modelde tepe YAPMAZ, yakıt tükenmesiyle düşer. Gerçek bir demette (ör. 12–20 Gd'li çubuk) tepe görülür.\nGd2O3 bileşimi ve UO2-Gd2O3 yoğunluğu (10.2 g/cm³) tipik değerlerdir; belirli bir kriterden alınmadı. Varsayılan hassasiyet hızlıdır (öğretim amaçlı).",
+  "aciklama": "Yanabilir zehirin (Gd2O3) yanması: 5×5 süper hücrenin merkezinde UO2 %2.0 + %8 Gd2O3 çubuğu, çevresinde 24 UO2 %4.0 çubuğu (Westinghouse 17×17 ölçüleri, pwr_17x17.json malzemeleri: 900/600/580 K, 1300 ppm bor). Tek Gd'li pin hücresi (sonsuz Gd kafesi) k∞ ≈ 0.3 verir ve spektrumu temsil etmez; süper hücre komşu yakıttan gelen termal akıyı sağlar.\n\nGd'li pelet eşit alanlı 5 halkaya bölündü ve her halka AYRI malzemedir: Gd-155/157 dıştan içe 'soğan kabuğu' gibi yanar; tükenme sonrasında halka halka Gd157 yoğunlukları bunu gösterir. Güç yoğunluğu 38 W/gHM, ~16 MWd/kg'a kadar.\nÖLÇÜLEN (01.10.2026; testler/test_ornekler.py OR13 istatistiği 1500 × 40 / 15, 6 iş parçacığı): 5 MWd/kg'da kalan Gd-157 oranı içten dışa 0.74 / 0.63 / 0.42 / 0.09 / 0.003 (CECM, adım ≤ 1 MWd/kg); k∞ 1.1233 → 1.0646 ± 0.0049. Adım duyarlılığı: aynı koşu eski ayarla (predictor, 0.02 / 0.08 / 0.9 / 2 / 2 MWd/kg) 0.77 / 0.71 / 0.60 / 0.33 / 0.014 verdi — öngörücü, adımın başındaki (dış halkanın perdelediği) reaksiyon hızlarını bütün büyük adım boyunca kullandığı için iç halkaların yanmasını eksik hesaplar (4. halkada 0.33'e karşı 0.09). Bu yüzden örnek CECM ve ≤ 1 MWd/kg adım kullanır. 16 MWd/kg değeri yeni ayarla yeniden ölçülmedi. 25 çubuktan yalnız biri Gd'li olduğu için reaktivite tutması zayıftır: k∞ bu modelde tepe YAPMAZ, yakıt tükenmesiyle düşer. Gerçek bir demette (ör. 12–20 Gd'li çubuk) tepe görülür.\nGd2O3 bileşimi ve UO2-Gd2O3 yoğunluğu (10.2 g/cm³) tipik değerlerdir; belirli bir kriterden alınmadı. Varsayılan hassasiyet hızlıdır (öğretim amaçlı).",
   "malzemeler": [
     {
       "ad": "uo2",
@@ -531,14 +531,21 @@
       1.0,
       1.0,
       1.0,
-      2.0,
-      2.0,
-      2.0,
-      2.0,
-      4.0
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
     ],
     "adim_birimi": "MWd/kg",
-    "entegrator": "predictor",
+    "entegrator": "cecm",
     "malzemeleri_ayir": false,
     "ek_malzemeler": [],
     "izlenen": [
@@ -558,5 +565,5 @@
   "kategori": "pwr",
   "seviye": "ileri",
   "baslik_en": "Gadolinia pin depletion",
-  "aciklama_en": "Burnable-absorber burnout: a UO2-Gd2O3 pin split into 5 equal-area rings at the centre of a 5x5 supercell, depleted to ~16 MWd/kg."
+  "aciklama_en": "Burnable-absorber burnout: a UO2-Gd2O3 pin split into 5 equal-area rings at the centre of a 5x5 supercell, depleted to ~16 MWd/kg. Measured (01.10.2026; OR13 statistics 1500 × 40 / 15, 6 threads): at 5 MWd/kg the remaining Gd-157 fraction from inside to outside is 0.74 / 0.63 / 0.42 / 0.09 / 0.003 (CECM, steps ≤ 1 MWd/kg); k∞ 1.1233 → 1.0646 ± 0.0049. Step sensitivity: the old settings (predictor, 0.02 / 0.08 / 0.9 / 2 / 2 MWd/kg) gave 0.77 / 0.71 / 0.60 / 0.33 / 0.014 - the predictor uses the beginning-of-step rates (shielded by the outer ring) over the whole large step and under-burns the inner rings. Hence CECM with steps ≤ 1 MWd/kg."
 }

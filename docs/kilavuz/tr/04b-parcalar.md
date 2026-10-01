@@ -90,6 +90,27 @@ Plaka elemanı sonlu bir kutudur. Kor kafesinde kullanıldığında (ör. `ornek
 kafes adımı eleman ölçüsüne eşit ve kare olmalıdır; aksi hâlde eleman dışı tanımsız kalır
 (`docs/ORNEKLER.md` "Çekirdekte gereken değişiklikler").
 
+### Tamburlar kartı
+
+Kontrol tamburu (dönen tambur) **tanımlarının** kütüphanesidir (`tamburlar[]`). Kart yalnız
+**gelişmiş geometri** modunda ya da modelde zaten bir tambur tanımı varken görünür; şablon
+modunda görünmemesi bilinçlidir: **Tamburlu kompakt kor** şablonunun tamburları bu kütüphaneyi
+kullanmaz, ölçüleri **Geometri** sayfasındaki tambur alanlarındadır (`kor.tambur`,
+[4.4 Geometri](04d-geometri.md#geometri)). Tanımı ağaçta kullanmak için gelişmiş geometriye geçin
+([4.5](04e-geometri-gelismis.md#geometri-gelismis)).
+
+| Alan | Ne | Birim | `spec` |
+|---|---|---|---|
+| **Ad** | tanımın adı (yerleşimler bu adla başvurur) | — | `tamburlar[].ad` |
+| **Yarıçap** | tamburun dış yarıçapı | cm | `yaricap` |
+| **Gövde malzemesi** | tambur gövdesi (ör. berilyum) | — | `govde_malzeme` |
+| **Emici malzemesi** | emici yay (ör. B₄C) | — | `emici_malzeme` |
+| **Emici iç yarıçapı** | emici yayın iç yarıçapı (< yarıçap) | cm | `emici_ic_yaricap` |
+| **Emici yayı** | emici yayın açısal genişliği | ° | `emici_aci` |
+
+Sayı, merkez yarıçapı ve dönme tanımda değil, gelişmiş geometrideki **yerleşim** ve **dönme
+grubundadır** ([5.5](05-dersler.md#ders-tambur)).
+
 ### Sık bulgular
 
 | Bulgu (özet) | Seviye | Neden ve çözüm |

@@ -176,7 +176,7 @@ def _kutuphane_metni(log):
     return None
 
 
-def _zincir_metni(spec, log):
+def _zincir_metni(spec, log, kosu_dizini=None):
     yol, kaynak = log.get("zincir"), ""
     if not yol:
         yol = os.environ.get("OPENMC_CHAIN_FILE")
@@ -186,8 +186,22 @@ def _zincir_metni(spec, log):
     ozet = _sha256(os.path.expanduser(yol))
     sha = ("sha256 %s" % ozet) if ozet else _("sha256 %s") % BILINMIYOR
     kullanim = "" if (spec.get("tukenme") or {}).get("var") else _("; tükenme kapalı")
-    return "%s (%s%s%s), %s" % (os.path.basename(yol), _kisa_yol(os.path.expanduser(yol)),
-                                kaynak, kullanim, sha)
+    return "%s (%s%s%s), %s%s" % (os.path.basename(yol), _kisa_yol(os.path.expanduser(yol)),
+                                  kaynak, kullanim, sha, _zincir_secim_metni(spec, kosu_dizini))
+
+
+def _zincir_secim_metni(spec, kosu_dizini=None):
+    """Tukenme aciksa zincir seciminin gerekcesi (tukenme.zincir_secimi)."""
+    if not (spec.get("tukenme") or {}).get("var"):
+        return ""
+    from cekirdek import tukenme
+    try:
+        zs = tukenme.zincir_secimi(spec, kosu_dizini)
+    except (KeyError, ValueError, OSError) as e:
+        from cekirdek.gunluk import kaydedici
+        kaydedici(__name__).warning("zincir seçimi rapora yazılamadı: %s", e)
+        return ""
+    return _("; seçim: %s zincir — %s") % (tukenme.spektrum_adi(zs["temel"]), zs["gerekce"])
 
 
 def _git_metni(derleme):
@@ -231,7 +245,7 @@ def _alan_listesi(spec, kosu_dizini):
         (_("Python / platform"), "%s / %s" % (derleme["python"], derleme["platform"])),
         (_("OpenMC sürümü"), _openmc_metni(meta, log)),
         (_("Tesir kesiti kütüphanesi"), _kutuphane_metni(log)),
-        (_("Zincir dosyası"), _zincir_metni(spec, log)),
+        (_("Zincir dosyası"), _zincir_metni(spec, log, kosu_dizini)),
         (_("Tohum"), kaynaktan("tohum", ayar.get("tohum"))),
         (_("Parçacık / çevrim"), kaynaktan("parcacik", ayar.get("parcacik"))),
         (_("Çevrim (pasif)"), (_("%s (%s pasif)") % (cevrim, pasif)) if cevrim else None),
@@ -384,6 +398,7 @@ def _kosu_ozeti(spec, sonuc, k_nesil):
     if k is not None:
         beta = (sonuc.get("kinetik") or {}).get("beta_eff")
         sonsuz = uygunluk.sonsuz_ortam(spec)
+        ozet["sonsuz"] = bool(sonsuz)
         ozet["durum"], ayrinti = kosucu.keff_yorumu(k, s, beta, sonsuz=sonsuz)
         ozet["ayrinti"] = bicim.kosu_ayrintisi(ayrinti, k, s, sonsuz)     # K5 (GUM)
         if ozet["entropi"]:
@@ -407,7 +422,8 @@ def _guc_ozeti(spec, sonuc):
     m = _guc.mutlak_guc(f, (spec.get("guc_dagilimi") or {}).get("toplam_guc"),
                         geometri.hedef_yuksekligi(spec), hedef_payi=g.get("hedef_payi"))
     yorum = kosucu.korunum_satirlari(g) + _guc.yorumla(
-        f, m, hedef_payi=g.get("hedef_payi"), hedef_payi_hata=g.get("hedef_payi_hata"))
+        f, m, hedef_payi=g.get("hedef_payi"), hedef_payi_hata=g.get("hedef_payi_hata"),
+        kategori=spec.get("kategori"))
     sicak = _guc.konum_metni(f["sicak_cubuk"], f.get("kafes_turu"), f.get("kafes_turleri"))
     return {"faktorler": f, "mutlak": m, "yorum": yorum, "sicak_cubuk": sicak,
             "dagilim": g["dagilim"], "korunum": g.get("korunum")}
@@ -502,8 +518,15 @@ def _yerel_aciklama(spec):
     return spec.get("aciklama") or ""
 
 
+def _yerel_baslik(spec):
+    """Rapor basligi etkin dilde: Turkce disinda `baslik_en` (ornek meta), yoksa `ad`."""
+    if etkin_dil() != KAYNAK_DIL and spec.get("baslik_en"):
+        return spec["baslik_en"]
+    return spec.get("ad") or _("adsız model")
+
+
 def _kapak(spec):
-    return {"baslik": spec.get("ad") or _("adsız model"),
+    return {"baslik": _yerel_baslik(spec),
             "aciklama": _yerel_aciklama(spec),
             "tarih": datetime.datetime.now().strftime("%Y-%m-%d %H:%M"),
             "kullanici": _kullanici()}

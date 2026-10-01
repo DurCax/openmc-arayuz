@@ -140,6 +140,8 @@ def _rapor_ortami(p, cagrilar, yol, suzgec="HTML (*.html)", hata=None):
     QtWidgets.QFileDialog.getSaveFileName = staticmethod(lambda *a, **k: (yol, suzgec))
     QtWidgets.QMessageBox.critical = staticmethod(
         lambda *a, **k: cagrilar.append(("diyalog",) + a[1:3]))
+    # Diskte kayitli kosu sorusu (QA14-Q8) modal acmasin: "Hayir" (yalniz model)
+    p._rapor_kosusu_sor = lambda dizin: False
 
     def geri():
         (rapor.olustur, QtWidgets.QFileDialog.getSaveFileName,

@@ -22,7 +22,7 @@ YAVAS
   [OR11] Yeni ornekler kosucu.calistir(dogrulama=True) ile kisa kosar.
   [OR12] Ceyrek kor k = tam kor k (2 sigma): yuz basina sinir (simetri yuzleri
          yansitici, dis yuzler vakum).
-  [OR13] Gd tukenmesi: dis halka ic halkadan hizli yanar (sogan kabugu), k yukselir.
+  [OR13] Gd tukenmesi: dis halka ic halkadan hizli yanar (sogan kabugu); k yakit tukenmesiyle duser (tek Gd cubugu: tepe yok).
 Sozlesme: testler/ortak_test.py (HIZLI / YAVAS).
 """
 
@@ -306,7 +306,7 @@ def test_yavas_gd_sogan_kabugu(gecici):
     s = _spec("pwr_gd_tukenme.json")
     a = s["ayarlar"]
     a["parcacik"], a["cevrim"], a["pasif"] = 1500, 40, 15
-    s["tukenme"]["adimlar"] = [0.02, 0.08, 0.9, 2.0, 2.0]        # 5 MWd/kg
+    s["tukenme"]["adimlar"] = [0.02, 0.08, 0.4, 0.5, 1.0, 1.0, 1.0, 1.0]  # 5 MWd/kg, CECM
     d = os.path.join(gecici, "gd")
     tukenme.calistir(s, d)
     r = tukenme.sonuc_oku(os.path.join(d, "depletion_results.h5"), s)

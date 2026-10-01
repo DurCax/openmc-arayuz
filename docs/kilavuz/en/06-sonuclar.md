@@ -63,9 +63,9 @@ is prompt criticality; in an infinite-medium (k∞) calculation it is the excess
 by the fuel.
 
 > **Example.** `ornekler/pwr_17x17.json` is a single assembly with reflective side boundaries; its
-> result is a k∞ (README measurement 1.18325 ± 0.00075). Its reactivity is
-> ρ∞ = 0.18325 / 1.18325 = 0.15487 → **+15 487 pcm (Δρ × 10⁵)**, with an uncertainty of
-> 0.00075 / 1.18325² ≈ 54 pcm. This does not mean "the reactor is supercritical": in a finite core
+> result is a k∞ (README measurement 1.18443 ± 0.00088). Its reactivity is
+> ρ∞ = 0.18443 / 1.18443 = 0.15571 → **+15 571 pcm (Δρ × 10⁵)**, with an uncertainty of
+> 0.00088 / 1.18443² ≈ 63 pcm. This does not mean "the reactor is supercritical": in a finite core
 > leakage and control balance this excess.
 
 **Comparing two results.** A difference between two k values is significant only if
@@ -102,11 +102,16 @@ The entropy plot on the Run page should flatten out during the inactive batches.
 
 **How does the tool judge convergence?** (`cekirdek/kosucu.py`, `entropi_yakinsama`)
 
-1. The scatter of the entropy over the active batches (σ) is taken as the noise level.
-2. Only the **last half** of the inactive period is examined (a fast rise at the start is normal:
-   starting from a point source the entropy starts from zero); that half is split in two.
-3. If the **drift** between the means of the two quarters **exceeds 2σ**, the source is still
-   moving: "Increase the number of inactive batches — k-eff may be biased."
+1. The **plateau** is the last half of the active period: its mean is the plateau value and its
+   scatter (σ) the noise level per batch.
+2. If the mean of the **last quarter** of the inactive period is **more than 2σ** away from the
+   plateau, the source is still moving at the end of the inactive period: "Increase the number of
+   inactive batches — k-eff may be biased." A fast rise at the start is normal (starting from a
+   point source the entropy starts from zero).
+3. If the mean of the **first quarter** of the active period is more than 2σ away from the plateau,
+   the source kept moving in the active period too (too few inactive batches): "kept drifting in
+   the active period". The old version took σ from the whole active period and missed this case (a
+   3D core with 4 inactive batches came out "converged").
 
 Cases that cannot be judged are stated explicitly: with fewer than 4 inactive batches, too few
 active batches or a constant entropy the result is "could not be evaluated" — not "converged". In
@@ -146,11 +151,13 @@ cell separately; in a 3D model axial bins are added. Step-by-step lesson:
 
 F_q is defined only in a 3D model; in a 2D model the tool prints "F_q undefined".
 
-**Measured reference (README, `pwr_3b`, 20 000 particles, 20 axial bins):** F_ΔH = 1.071,
-F_q = 1.885, average linear power 182 W/cm (17.6 MW per assembly). Its axially layered twin
-`pwr_eksenel` with the same settings: F_ΔH is **1.0674** in both models (layering does not touch
-the radial distribution — a good consistency check), F_q goes from 1.7210 to 1.6435 (the water
-reflector flattens the axial profile).
+**Measured reference (README, `pwr_3b`, the example's settings 20 000 × 150 / 40, 20 axial
+bins, 5 seeds, 01.10.2026):** a single run gives F_ΔH 1.064-1.083 and F_q 1.626-1.753; the peak
+of the averaged map is F_ΔH = 1.0620 ± 0.0055, F_q = 1.600 ± 0.032; average linear power 182 W/cm
+(17.6 MW per assembly). Its axially layered twin `pwr_eksenel` with the same settings (20 000 × 250
+/ 100, 5 seeds): F_ΔH 1.0603 ± 0.0039 and 1.0618 ± 0.0028 - the same within statistics (layering
+does not touch the radial distribution; a good consistency check); F_q 1.6362 ± 0.0147 →
+1.5909 ± 0.0133 (−2.8 %, 2.3σ; the water reflector flattens the axial profile).
 
 **1. The reported uncertainties are optimistic.** The per-pin σ does not see the batch-to-batch
 correlation. Measured in this model (`pwr_3b`, 4000 particles, 3 independent seeds): reported σ
@@ -265,7 +272,7 @@ in an exported script or in your own OpenMC work.
   the "fissile range" made the builder and the script build different source boxes → 1300 pcm
   (Δk × 10⁵); reduced to a single definition. (2) The power conservation tally counted the whole
   model → a false "BROKEN"; the reference tally was tied to the same cell. (3) The power mesh
-  extended beyond the target pin → F_q inflated by 6 % (1.6435 → 1.8150); the mesh now uses the range
+  extended beyond the target pin → F_q inflated by 10.4 % (1.6435 → 1.8150); the mesh now uses the range
   of the target pin. In addition, the z bounds of the entropy mesh were fixed; once corrected, this
   warning caught that 40 inactive batches were not enough in `pwr_eksenel`.
   *Lesson: two codes that compute the same number in two ways will sooner or later diverge.*

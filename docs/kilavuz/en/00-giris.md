@@ -110,10 +110,10 @@ particles); they are not translated because they are part of the file format.
 
 Numerical conventions:
 
-- The decimal separator is a **point** (1.18325); the number boxes in the interface also use the
+- The decimal separator is a **point** (1.18443); the number boxes in the interface also use the
   point.
 - Unless stated otherwise, an uncertainty is the **1σ standard uncertainty** (not an "error");
-  `k = 1.18325 ± 0.00075` is not a confidence interval.
+  `k = 1.18443 ± 0.00088` is not a confidence interval.
 - **pcm** is always given with its definition: either **Δk × 10⁵** (a k difference) or
   **Δρ × 10⁵** (a reactivity difference, ρ = (k − 1)/k). The two are not the same; the guide says
   which one is meant.

@@ -2,7 +2,7 @@
 """
 test_vv_baglanti.py -- V&V (cekirdek/vv) -> uygunluk denetimi baglantisi.
 
-  [VB1] kume.aoa_filtresi: uygulamanin tayfina gore alt kume; tayf yoksa None.
+  [VB1] kume.aoa_filtresi: tur + bicim + tayf (+ zenginlik sinifi); eksikse None.
   [VB2] kume.uygulama_ozeti: AOA'ya uygun alt kume -> USL; uygun alt kume
         yoksa durust "bu uygulama için USL yok (AOA dışında)".
   [VB3] rapor_uygunluk.denetle / ek_verisi: B secilince V&V ozeti ve uygulama
@@ -52,16 +52,43 @@ def _k6(bulgular):
     return [b for b in bulgular if b.kural == "K6"]
 
 
+def _leu_oksit_kume(n=12):
+    """Fixture uygulamasina (U-235 %3.2 oksit, termal) uyan sahte deney kumesi."""
+    from cekirdek.vv.istatistik import Vaka
+    return [Vaka("l%d" % i, 0.998 + 0.0004 * ((i * 5) % 7 - 3), 0.0003, 1.0, 0.002,
+                 {"bolunebilir": "U-235", "fiziksel_bicim": "oksit", "tayf": "termal",
+                  "zenginlik": 2.5 + 0.2 * i, "ealf": 0.2 + 0.01 * i, "yansitici": "su"},
+                 "LCT-%d" % i) for i in range(n)]
+
+
+@contextlib.contextmanager
+def _sahte_depo():
+    """kume.vakalar -> sahte LEU oksit kumesi (depodaki kume bu AOA'yi tutamaz)."""
+    from cekirdek.vv import kume
+    asil = kume.vakalar
+    kume.vakalar = lambda dosyalar=None, filtre=None: [
+        v for v in _leu_oksit_kume() if kume._uyar(v, filtre)]
+    try:
+        yield
+    finally:
+        kume.vakalar = asil
+
+
 def test_aoa_filtresi():
-    print("\n[VB1] AOA filtresi: tayfa gore alt kume")
+    print("\n[VB1] AOA filtresi: tur + bicim + tayf (+ zenginlik sinifi)")
     from cekirdek.vv import kume
     kontrol("tayf yok -> None", kume.aoa_filtresi({"bolunebilir": "U-235"}) is None)
     kontrol("bos -> None", kume.aoa_filtresi({}) is None)
-    f = kume.aoa_filtresi({"bolunebilir": "U-235", "tayf": "hizli", "zenginlik": 93.0})
-    kontrol("tayf -> {'tayf': 'hizli'}", f == {"tayf": "hizli"}, "-> %r" % f)
+    f = kume.aoa_filtresi({"bolunebilir": "U-235", "fiziksel_bicim": "metal",
+                           "tayf": "hizli", "zenginlik": 93.0})
+    kontrol("filtre -> U-235 metal hizli HEU", f == {
+        "bolunebilir": "U-235", "fiziksel_bicim": "metal", "tayf": "hizli",
+        "zenginlik": ("aralik", 60.0, 100.0)}, "-> %r" % f)
     hizli = kume.vakalar(filtre=f)
-    kontrol("hizli alt kume yalniz hizli vakalar", hizli and all(
-        v.parametreler.get("tayf") == "hizli" for v in hizli), "-> %d" % len(hizli))
+    kontrol("alt kume yalniz uyan vakalar", hizli and all(
+        v.parametreler.get("tayf") == "hizli" and v.parametreler.get("fiziksel_bicim")
+        == "metal" and v.parametreler.get("bolunebilir") == "U-235" for v in hizli),
+        "-> %d" % len(hizli))
 
 
 def test_uygulama_ozeti():
@@ -74,16 +101,15 @@ def test_uygulama_ozeti():
     kontrol("neden: bu uygulama icin USL yok + EALF onerisi",
             "bu uygulama için USL yok" in vv.usl_neden and "EALF" in vv.usl_neden,
             "-> %s" % vv.usl_neden)
-    vv, uyg = kume.uygulama_ozeti(spec, FIXTURE, uygulama={"tayf": "hizli"})
-    n_hizli = len(kume.vakalar(filtre={"tayf": "hizli"}))
-    kontrol("hizli tayf: alt kume n = %d" % n_hizli, vv.n == n_hizli and n_hizli >= 10,
-            "-> %d" % vv.n)
-    kontrol("hizli alt kume -> USL hesaplandi", vv.usl is not None and vv.usl < 1.0,
+    vv, uyg = kume.uygulama_ozeti(spec, FIXTURE, uygulama={"tayf": "termal"},
+                                  vlar=_leu_oksit_kume())
+    kontrol("termal LEU oksit: uyan alt kume n = 12", vv.n == 12, "-> %d" % vv.n)
+    kontrol("uyan alt kume n >= 10 -> USL hesaplandi", vv.usl is not None and vv.usl < 1.0,
             "-> %r (%s)" % (vv.usl, vv.usl_neden))
-    kontrol("uygulama birlesti (spec + verilen)", uyg.get("tayf") == "hizli"
+    kontrol("uygulama birlesti (spec + verilen)", uyg.get("tayf") == "termal"
             and uyg.get("bolunebilir") == "U-235")
-    vv, _u = kume.uygulama_ozeti(spec, FIXTURE, uygulama={"tayf": "ara"})
-    kontrol("ara tayf (n < 10) -> USL yok (AOA disinda)",
+    vv, _u = kume.uygulama_ozeti(spec, FIXTURE, uygulama={"tayf": "termal"})
+    kontrol("depodaki kume (LEU oksit termal n < 10) -> USL yok (AOA disinda)",
             vv.usl is None and "AOA dışında" in vv.usl_neden, "-> %s" % vv.usl_neden)
     kontrol("girdi spec degismedi", spec == _spec())
 
@@ -99,7 +125,7 @@ def test_rapor_uygunluk_vv_gecer():
             in k6[0].mesaj and "kümesi yok" not in k6[0].mesaj, "-> %s" % k6[0].mesaj)
     kontrol("K8 V&V ile degerlendirildi", any(
         x.kural == "K8" and x.durum == "karsilandi" for x in b))
-    with _gecici_kosu({"tayf": "hizli"}) as dizin:
+    with _gecici_kosu({"tayf": "termal"}) as dizin, _sahte_depo():
         b, _h = ru.denetle(spec, dizin, ("B",))
         k6 = _k6(b)
         kontrol("tayf verilince K6 USL ile karsilastirdi", k6 and "USL =" in k6[0].mesaj,
@@ -126,7 +152,7 @@ def test_cli_vv():
     kod, cikti, _h = _cli(["uygunluk", FIXTURE, "--profil", "A,B"])
     kontrol("cikis 0", kod == 0, "-> %r" % kod)
     kontrol("K6 AOA nedeni basildi", "bu uygulama için USL yok" in cikti, "-> %s" % cikti[-800:])
-    with _gecici_kosu({"tayf": "hizli"}) as dizin:
+    with _gecici_kosu({"tayf": "termal"}) as dizin, _sahte_depo():
         kod, cikti, _h = _cli(["uygunluk", dizin, "--profil", "B"])
         kontrol("tayf verilince K6 'USL =' basildi", "USL =" in cikti, "-> %s" % cikti[-800:])
         kontrol("USL notu basilmadi", "USL hesaplanamadı:" not in cikti)
