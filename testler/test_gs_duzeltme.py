@@ -225,7 +225,129 @@ def test_stokastik_hacim_chdir_yok():
             "-> %r %s" % (hata, gelen))
 
 
-TAMBUR_R = 6.0          # altigen_tambur_halkasi tambur yaricapi (cm)
+def _ia_malzemeler():
+    import openmc
+    yakit = openmc.Material(name="yakit")
+    yakit.add_nuclide("U235", 0.03)
+    yakit.add_nuclide("U238", 0.97)
+    su = openmc.Material(name="su")
+    su.add_nuclide("H1", 2.0)
+    su.add_nuclide("O16", 1.0)
+    b4c = openmc.Material(name="b4c")
+    b4c.add_nuclide("B10", 4.0)
+    b4c.add_nuclide("C12", 1.0)
+    return yakit, su, b4c
+
+
+def _ia_pin(ad, r, ic, dis):
+    import openmc
+    c = openmc.ZCylinder(r=r)
+    return openmc.Universe(name=ad, cells=[openmc.Cell(fill=ic, region=-c),
+                                           openmc.Cell(fill=dis, region=+c)])
+
+
+def _ia_kafes(evrenler, P=1.26):
+    import openmc
+    n = len(evrenler)
+    lat = openmc.RectLattice()
+    lat.pitch, lat.lower_left = (P, P), (-P * n / 2, -P * n / 2)
+    lat.universes = evrenler
+    kutu = openmc.model.RectangularPrism(P * n, P * n, boundary_type="reflective")
+    return openmc.Geometry(openmc.Universe(cells=[openmc.Cell(fill=lat, region=-kutu)]))
+
+
+def _ia_cevir(geo, malzemeler):
+    from cekirdek.geometri.ice_aktar import xml_den
+    return xml_den(geo, {m.id: m.name for m in malzemeler})
+
+
+def test_ice_aktar_ayni_adli_evrenler():
+    print("\n[GS7a] ice aktarma: ayni adli FARKLI evrenler birlesmez; ayni icerik tekil")
+    yakit, su, b4c = _ia_malzemeler()
+    a, b = _ia_pin("pin", 0.40, yakit, su), _ia_pin("pin", 0.50, yakit, su)
+    agac, notlar = _ia_cevir(_ia_kafes([[a, b], [b, a]]), (yakit, su, b4c))
+    yar = {c["ad"]: c["bolgeler"][0]["r"] for c in (agac or {}).get("cubuklar", [])}
+    kontrol("iki ayri cubuk (r 0.40 / 0.50), ad cakismaz",
+            sorted(yar.values()) == [0.40, 0.50] and len(yar) == 2, "-> %s %s" % (yar, notlar))
+    a2 = _ia_pin("pin", 0.40, yakit, su)
+    agac, _n = _ia_cevir(_ia_kafes([[a, a2], [a2, a]]), (yakit, su, b4c))
+    kontrol("ayni adli ayni icerikli iki evren -> tek cubuk",
+            len((agac or {}).get("cubuklar", [])) == 1, "-> %s" % (agac or {}).get("cubuklar"))
+    su_cubugu = _ia_pin("su_kanali", 0.5, su, su)
+    agac, _n = _ia_cevir(_ia_kafes([[a, su_cubugu], [su_cubugu, a]]), (yakit, su, b4c))
+    turler = {c["ad"]: c["tur"] for c in (agac or {}).get("cubuklar", [])}
+    kontrol("cubuk turu semadaki 'silindirik' (yakit rolu malzemeden gelir; 'yakit' tur degil)",
+            set(turler.values()) == {"silindirik"}, "-> %s" % turler)
+
+
+def _ia_tambur(ters):
+    import math
+    import openmc
+    yakit, su, b4c = _ia_malzemeler()
+    dis, ic = openmc.ZCylinder(r=5.0), openmc.ZCylinder(r=4.0)
+    yari = math.radians(60.0)
+    p1 = openmc.Plane(a=math.sin(yari), b=math.cos(yari), c=0.0, d=0.0)     # -yari
+    p2 = openmc.Plane(a=-math.sin(yari), b=math.cos(yari), c=0.0, d=0.0)    # +yari
+    kama = (-p1 & +p2) if ters else (+p1 & -p2)
+    emici = +ic & -dis & kama
+    u = openmc.Universe(name="tambur", cells=[openmc.Cell(fill=b4c, region=emici),
+                                              openmc.Cell(fill=su, region=-dis & ~emici),
+                                              openmc.Cell(fill=su, region=+dis)])
+    return u, (yakit, su, b4c)
+
+
+def test_ice_aktar_tambur_yonu_harf_sinir():
+    print("\n[GS7b] ice aktarma: tambur emici yonu noktasal; 62+ evren; periyodik karsit yuz")
+    import openmc
+    from cekirdek.geometri import ice_aktar_kap
+    from cekirdek.geometri.ice_aktar import Desteklenmez, _Donusturucu
+    for ters, beklenen in ((False, "kabul"), (True, "red")):
+        u, mal = _ia_tambur(ters)
+        d = _Donusturucu(openmc.Geometry(u), {m.id: m.name for m in mal})
+        try:
+            sonuc = d.tambur(u, list(u.cells.values()))
+            durum = "kabul" if sonuc else "taninmadi"
+        except Desteklenmez as e:
+            durum, sonuc = "red", str(e)
+        kontrol("emici %s -> %s" % ("-x (ters)" if ters else "+x", beklenen), durum == beklenen,
+                "-> %s %s" % (durum, sonuc))
+        if not ters:
+            kontrol("emici_aci 120", abs(d.tamburlar[0]["emici_aci"] - 120.0) < 1e-6)
+    d = _Donusturucu(openmc.Geometry(u), {m.id: m.name for m in mal})
+    anahtar = {}
+    try:
+        for i in range(70):
+            d._harita_harfi({"tur": "bilesen", "ad": "u%d" % i}, anahtar)
+        hata = None
+    except Desteklenmez as e:
+        hata = e
+    except StopIteration as e:
+        hata = e
+    kontrol("62'den cok farkli evren -> Desteklenmez (StopIteration degil)",
+            isinstance(hata, Desteklenmez), "-> %r" % hata)
+    x0 = openmc.XPlane(-5.0, boundary_type="periodic")
+    x1 = openmc.XPlane(5.0, boundary_type="vacuum")
+    y0 = openmc.YPlane(-5.0, boundary_type="periodic")
+    y1 = openmc.YPlane(5.0, boundary_type="vacuum")
+    x0.periodic_surface = y0
+    h = [openmc.Cell(region=+x0 & -x1 & +y0 & -y1)]
+    try:
+        ice_aktar_kap._sinir(h)
+        hata = None
+    except Desteklenmez as e:
+        hata = e
+    kontrol("periyodik es karsit yuz degil (x <-> y donel) -> Desteklenmez",
+            isinstance(hata, Desteklenmez), "-> %r" % hata)
+    x1b = openmc.XPlane(5.0, boundary_type="periodic")
+    y0b = openmc.YPlane(-5.0, boundary_type="vacuum")
+    x0b = openmc.XPlane(-5.0, boundary_type="periodic")
+    x0b.periodic_surface = x1b
+    s = ice_aktar_kap._sinir([openmc.Cell(region=+x0b & -x1b & +y0b & -y1)])
+    kontrol("karsit yuz esi (-x <-> +x) kabul", s.get("yuzler", {}).get("+x") == "periodic",
+            "-> %s" % s)
+
+
+TAMBUR_R = 6.0         # altigen_tambur_halkasi tambur yaricapi (cm)
 
 
 def _harita(spec, noktalar):
@@ -271,5 +393,6 @@ def test_tek_tambur_yonu_asil_modelle_ayni():
 
 HIZLI = [test_periyodik_es_etkin_bc, test_betik_kesik_yakit_hacmi, test_k2_brown_atiflari,
          test_panel_rozeti_degerlendirilemedi, test_tek_tambur_yonu_asil_modelle_ayni,
-         test_stokastik_hacim_sigma_denetimi, test_stokastik_hacim_chdir_yok]
+         test_stokastik_hacim_sigma_denetimi, test_stokastik_hacim_chdir_yok,
+         test_ice_aktar_ayni_adli_evrenler, test_ice_aktar_tambur_yonu_harf_sinir]
 YAVAS = [test_yavas_betik_kesik_hacim_kosucuyla_ayni]

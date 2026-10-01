@@ -141,6 +141,25 @@ def _z_araligi(gruplar):
     return alt, ust
 
 
+def _periyodik_es_dogrula(s):
+    """Periyodik yuzeyin esi karsit yuz olmali (-x <-> +x, -y <-> +y). Donel
+    periyodiklik (x <-> y) ya da baska es agacta temsil edilmez -> Desteklenmez."""
+    import openmc
+    if not isinstance(s, (openmc.XPlane, openmc.YPlane)):
+        raise Desteklenmez("periyodik sınır yalnız eksene dik düzlemlerde içe aktarılır "
+                           "(yüzey %d, %s)" % (s.id, s.type))
+    es = getattr(s, "periodic_surface", None)
+    if es is None:
+        return
+    eksen = "x0" if isinstance(s, openmc.XPlane) else "y0"
+    konum = float(getattr(s, eksen))
+    karsit = type(es) is type(s) and abs(konum) > PAY and \
+        abs(float(getattr(es, eksen)) + konum) <= PAY * max(1.0, abs(konum))
+    if not karsit:
+        raise Desteklenmez("periyodik eş karşıt yüz değil (yüzey %d <-> %d); dönel "
+                           "periyodiklik içe aktarılmaz" % (s.id, es.id))
+
+
 def _sinir(hucreler):
     """Kokun BC'leri: dis yuzeyler (BC'li silindir/duzlem) ve z duzlemleri."""
     import openmc
@@ -157,6 +176,8 @@ def _sinir(hucreler):
                     ust = bc
                 continue
             yan.add(bc)
+            if bc == "periodic":
+                _periyodik_es_dogrula(s)
             if isinstance(s, (openmc.XPlane, openmc.YPlane)):
                 eksen, konum = ("x", s.x0) if isinstance(s, openmc.XPlane) else ("y", s.y0)
                 yuz[("-" if konum < 0 else "+") + eksen] = bc

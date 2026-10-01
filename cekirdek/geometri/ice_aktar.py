@@ -28,6 +28,7 @@
 ================================================================================
 """
 
+import json
 import math
 import re
 
@@ -37,6 +38,10 @@ SQ3 = math.sqrt(3.0)
 PAY = 1.0e-6
 _log = kaydedici(__name__)
 _DELIK_ADI = re.compile(r"^g:(.+)#(\d+)$")
+HARITA_HARFLERI = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+# tambur emici yayi yoklamasi: aci adimi ve yay kenarindan uzak durma payi (derece)
+_YOKLAMA_ADIMI = 1.0
+_KENAR_PAYI = 0.5
 
 
 class Desteklenmez(ValueError):
@@ -152,6 +157,24 @@ def _olcu(k):
     return k.get("boyut") or [k.get("yaricap") or k.get("apotem")]
 
 
+def _emici_yayi_dogrula(hucre, r_ic, R, yari):
+    """Tambur emici hucresi gercekten yerel +x'te ortalanmis, yari acisi 'yari'
+    olan yay mi (geometri/bilesen.tambur kurali)? Iki yari duzlem ters yonde
+    secilmisse (emici -x'te) duzlem acisi aynidir; bu yuzden noktasal yoklanir.
+    Uymazsa Desteklenmez (yanlis yonlu tambur sessizce kurulmazdi)."""
+    r = (r_ic + R) / 2.0
+    n = int(round(360.0 / _YOKLAMA_ADIMI))
+    for i in range(n):
+        fi = -180.0 + (i + 0.5) * _YOKLAMA_ADIMI
+        if abs(abs(fi) - yari) < _KENAR_PAYI:
+            continue
+        t = math.radians(fi)
+        icinde = (r * math.cos(t), r * math.sin(t), 0.0) in hucre.region
+        if icinde != (abs(fi) < yari):
+            raise Desteklenmez("tambur emici yayı yerel +x yönünde ortalanmamış (hücre %d, "
+                               "%g° yoklaması)" % (hucre.id, fi))
+
+
 def _merkezde(sekil):
     return sekil is not None and math.hypot(*sekil[0]) <= PAY
 
@@ -176,6 +199,7 @@ class _Donusturucu(object):
         self.parca_adi = {}
         self.kullanim = self._kullanim_say()
         self._harf = {}
+        self._adlar = {}           # bilesen adi -> icerik (json); ad cakismasi denetimi
 
     def _kullanim_say(self):
         import openmc
@@ -188,6 +212,23 @@ class _Donusturucu(object):
             for u in _kafes_evrenleri(lat) + ([lat.outer] if lat.outer is not None else []):
                 sayi[("u", u.id)] = sayi.get(("u", u.id), 0) + 1
         return sayi
+
+    def tekil_ad(self, ad, icerik):
+        """Bilesen ad uzayinda (cubuk, tambur, parca) tekil ad. Ayni ad ayni
+        icerik -> (ad, False): yeniden kullanilir; ayni ad FARKLI icerik ->
+        son ekli yeni ad (bildirilir), (ad_2, True). Eskiden ikinci evren
+        sessizce birincisine birlesiyordu."""
+        anahtar = json.dumps(icerik, sort_keys=True)
+        aday, i = ad, 1
+        while aday in self._adlar:
+            if self._adlar[aday] == anahtar:
+                return aday, False
+            i += 1
+            aday = "%s_%d" % (ad, i)
+        self._adlar[aday] = anahtar
+        if aday != ad:
+            self.notlar.append("aynı adlı farklı evren: '%s' -> '%s' olarak alındı" % (ad, aday))
+        return aday, True
 
     def malzeme(self, m):
         if m is None:
@@ -211,8 +252,10 @@ class _Donusturucu(object):
         if fill.id not in self.parca_adi:
             dugum = self.evren(fill)
             if dugum.get("tur") != "bilesen":        # cubuk/tambur: kutuphane zaten tekil
-                ad = _temiz_ad(fill.name) or "parca_%d" % fill.id
-                self.parcalar.append({"ad": ad, "dugum": dugum})
+                ad, yeni = self.tekil_ad(_temiz_ad(fill.name) or "parca_%d" % fill.id,
+                                         {"parca": dugum})
+                if yeni:
+                    self.parcalar.append({"ad": ad, "dugum": dugum})
                 dugum = {"tur": "bilesen", "ad": ad}
             self.parca_adi[fill.id] = dugum
         return dict(self.parca_adi[fill.id])
@@ -258,12 +301,13 @@ class _Donusturucu(object):
         govde = [x for x in hucreler if x is not c]
         if govde[0].fill is not govde[1].fill:
             return None
-        ad = _temiz_ad(u.name) or "tambur_%d" % u.id
-        if not any(t["ad"] == ad for t in self.tamburlar):
-            self.tamburlar.append({"ad": ad, "yaricap": R, "emici_ic_yaricap": r_ic,
-                                   "emici_aci": 2.0 * yari,
-                                   "govde_malzeme": self.malzeme(govde[0].fill)["ad"],
-                                   "emici_malzeme": self.malzeme(c.fill)["ad"]})
+        _emici_yayi_dogrula(c, r_ic, R, yari)
+        tanim = {"yaricap": R, "emici_ic_yaricap": r_ic, "emici_aci": 2.0 * yari,
+                 "govde_malzeme": self.malzeme(govde[0].fill)["ad"],
+                 "emici_malzeme": self.malzeme(c.fill)["ad"]}
+        ad, yeni = self.tekil_ad(_temiz_ad(u.name) or "tambur_%d" % u.id, {"tambur": tanim})
+        if yeni:
+            self.tamburlar.append(dict(tanim, ad=ad))
         return {"tur": "bilesen", "ad": ad}
 
     def _donusumlu(self, hucre, dugum):
@@ -314,22 +358,25 @@ class _Donusturucu(object):
             onceki = r_dis
         if not math.isinf(kayit[-1][0]):
             return None
-        ad = _temiz_ad(u.name) or "cubuk_%d" % u.id
         bolgeler = [{"r": None if math.isinf(r) else r, "malzeme": self.malzeme(c.fill)["ad"]}
                     for r, _r0, c in kayit]
-        if not any(x["ad"] == ad for x in self.cubuklar):
-            self.cubuklar.append({"ad": ad, "tur": "yakit", "bolgeler": bolgeler})
+        ad, yeni = self.tekil_ad(_temiz_ad(u.name) or "cubuk_%d" % u.id, {"cubuk": bolgeler})
+        if yeni:
+            # semadaki cubuk turu (sema_yapici); yakit/zehir rolu malzemeden gelir
+            self.cubuklar.append({"ad": ad, "tur": "silindirik", "bolgeler": bolgeler})
         return {"tur": "bilesen", "ad": ad}
 
     # --- kafesler ---
     def _harita_harfi(self, dugum, anahtar):
-        import json
         k = json.dumps(dugum, sort_keys=True)
         if k not in self._harf:
-            harfler = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
             kullanilan = set(anahtar)
-            self._harf[k] = next(h for h in harfler if h not in kullanilan or
-                                 anahtar.get(h) == dugum)
+            h = next((h for h in HARITA_HARFLERI if h not in kullanilan or
+                      anahtar.get(h) == dugum), None)
+            if h is None:
+                raise Desteklenmez("kafeste %d'den çok farklı evren var; harita harfleri "
+                                   "yetmiyor" % len(HARITA_HARFLERI))
+            self._harf[k] = h
         h = self._harf[k]
         anahtar[h] = dugum
         return h
