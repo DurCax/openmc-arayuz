@@ -49,6 +49,7 @@ ETIKET_ORNEKLERI = ("pwr_17x17.json", "vver1000_kor.json", "godiva_kriter.json",
 _NOT_UZUNLUGU = 60          # bundan uzun etiket alan degil not/ipucudur
 TURKCE_HARFLER = "çğıİöşüÇĞÖŞÜ"
 EN_ISTISNALARI = ("Türkçe",)    # EN metinde izin verilen ozel adlar
+SOZLUK_DOSYASI = "10-sozluk.md"  # EN sozluk tablosunun "Turkish" sutunu istisnadir
 YARDIM_LOGU = "openmc_arayuz.arayuz.yardim"
 KOSU_ALT_KOMUTLARI = ("rapor", "uygunluk", "yeniden")
 KOSU_SECENEKLERI = {
@@ -397,9 +398,12 @@ def test_tr_en_esligi():
         for ozel in EN_ISTISNALARI:
             temiz = temiz.replace(ozel, "")
         for no, satir in enumerate(temiz.splitlines(), 1):
+            if ad == SOZLUK_DOSYASI and satir.startswith("|"):
+                continue            # sozluk tablosu bilerek iki dillidir (Turkish sutunu)
             if any(h in satir for h in TURKCE_HARFLER):
                 turkce.append("%s:%d %s" % (ad, no, satir.strip()[:60]))
-    kontrol("EN kilavuzda Turkce karakter yok (istisna: %s)" % ", ".join(EN_ISTISNALARI),
+    kontrol("EN kilavuzda Turkce karakter yok (istisna: %s, sozluk tablosu)"
+            % ", ".join(EN_ISTISNALARI),
             not turkce, "-> %d satir: %s" % (len(turkce), turkce[:6]))
 
 
@@ -526,15 +530,18 @@ def _bilinmeyen_ve_en(uyg, pencere, yardim, g, ceviri):
         ky = _ky()
         shutil.copytree(ky.KILAVUZ_DIZINI, os.path.join(gecici, "k"),
                         ignore=shutil.ignore_patterns("*.png"))
-        os.remove(os.path.join(gecici, "k", "en", "09-sorun-giderme.md"))
+        en_dizin = os.path.join(gecici, "k", "en")
+        silinen = "09-sorun-giderme.md"
+        if os.path.exists(os.path.join(en_dizin, silinen)):
+            os.remove(os.path.join(en_dizin, silinen))
         k = ky.kilavuz("en", dizin=os.path.join(gecici, "k"))
-        kontrol("EN eksik dosya TR'den alinir ve listelenir", k.eksik == ("09-sorun-giderme.md",)
-                and "sorun-giderme" in k.kimlikler)
+        kontrol("EN eksik dosya TR'den alinir ve listelenir", silinen in k.eksik
+                and "sorun-giderme" in k.kimlikler, "-> %s" % (k.eksik,))
         with _KayitTutucu(YARDIM_LOGU) as kt:
             gs.yukle("en", dizin=os.path.join(gecici, "k"))
             uyg.processEvents()
         kontrol("EN eksikse uyari seridi gorunur ve loglanir",
-                not gs.serit.isHidden() and "09-sorun-giderme.md" in gs.serit.text() and kt.kayitlar)
+                not gs.serit.isHidden() and silinen in gs.serit.text() and kt.kayitlar)
     finally:
         shutil.rmtree(gecici, True)
         ceviri.dil_ayarla("tr")
