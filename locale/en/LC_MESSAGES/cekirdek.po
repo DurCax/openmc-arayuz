@@ -3428,8 +3428,8 @@ msgid ""
 "  Kesik çubukların gücü (hedef çubuk gücünün %%%.1f'i) ortalamaya dağıtılmadı; "
 "yukarıdaki güç yalnız kesik olmayan çubuklarındır."
 msgstr ""
-"  The power of the cut pins (%.1f %% of the target pin power) was not spread over the"
-" average; the power above is that of the uncut pins only."
+"  The power of the truncated pins (%.1f %% of the target pin power) was not spread "
+"over the average; the power above is that of the non-truncated pins only."
 
 #: cekirdek/guc_yorum.py:125
 #, python-format
