@@ -17,14 +17,18 @@ NE SINANIR
     [BM5..] Her kriter azaltilmis istatistikle yeniden kosulur: hem referansla
           (3 sigma) hem kayitli olcumle (4 sigma) tutarli olmali.
 
+V&V kumesi (Dalga S-3): ornekler/vv/kriter_*.json dosyalari da (deney) bu
+denetimlerden gecer; VV.md deney tablosunda "vv/<dosya>" adiyla yer alir.
+
 Sozlesme: testler/ortak_test.py (HIZLI / YAVAS).
 """
 
+import glob
 import json
 import math
 import os
 
-from testler.ortak_test import kontrol, KOK, ORNEK, ISLEM_PARCACIGI
+from testler.ortak_test import kontrol, gereksinim, KOK, ORNEK, ISLEM_PARCACIGI
 
 VV = os.path.join(KOK, "docs", "VV.md")
 SIGMA_C_SINIRI = 30e-5                  # sigma_c <= 30 pcm
@@ -38,6 +42,9 @@ KRITERLER = {
     "kriter_lct008.json": "deney",
     "kriter_vver1000_ugd.json": "hesap",
 }
+# V&V kumesi (S-3; araclar/vv_kriter_uret.py): hepsi ICSBEP deney kriteri.
+KRITERLER.update({"vv/" + os.path.basename(y): "deney"
+                  for y in sorted(glob.glob(os.path.join(ORNEK, "vv", "kriter_*.json")))})
 
 # 3 sigma disinda kalan ve sapmasi docs/VV.md'de kutuphane yanliligi olarak
 # aciklanan kriterler (dosya -> VV.md'de gecmesi gereken aciklama basligi).
@@ -50,6 +57,8 @@ YAVAS_AYAR = {
     "kriter_flattop25.json": (20000, 100, 30),
     "kriter_lct008.json": (20000, 90, 30),
     "kriter_vver1000_ugd.json": (20000, 90, 30),
+    "vv/kriter_umf001.json": (20000, 100, 30),
+    "vv/kriter_lst002a.json": (20000, 90, 30),
 }
 
 
@@ -67,6 +76,7 @@ def _vv_metni():
         return f.read()
 
 
+@gereksinim("R-M2-01")
 def test_kriter_olcumleri_tam():
     print("\n[BM1] Kriter referanslari ve olcumleri tam, sigma_c <= 30 pcm")
     for ad in sorted(KRITERLER):
@@ -81,6 +91,7 @@ def test_kriter_olcumleri_tam():
                 "-> %.0f pcm" % (1e5 * olc.get("sigma", 1.0)))
 
 
+@gereksinim("R-M2-01")
 def test_kriter_kabul():
     print("\n[BM2] Kabul: |C-E| <= 3 sqrt(sc^2+se^2) ya da aciklanmis kutuphane yanliligi")
     metin = _vv_metni()
@@ -96,6 +107,7 @@ def test_kriter_kabul():
                 bool(baslik) and baslik in metin, "-> aciklama yok")
 
 
+@gereksinim("R-M2-01")
 def test_deney_hesap_ayri():
     print("\n[BM3] Deney (C/E) ve hesap-hesap referanslari ayri etiketli")
     for ad, tur in sorted(KRITERLER.items()):
@@ -110,6 +122,7 @@ def test_deney_hesap_ayri():
         kontrol("VV.md: %s yalniz kendi tablosunda" % ad, ad in bolum and ad not in oteki)
 
 
+@gereksinim("R-M2-01")
 def test_vv_tablosu_json_ile_ayni():
     print("\n[BM4] docs/VV.md tablosu JSON olcumleriyle ayni")
     metin = _vv_metni()
@@ -127,7 +140,8 @@ def _yeniden_kos(ad, gecici):
     spec = sema.yukle(os.path.join(ORNEK, ad))
     a = spec["ayarlar"]
     a["parcacik"], a["cevrim"], a["pasif"] = YAVAS_AYAR[ad]
-    r = kosucu.calistir(spec, os.path.join(gecici, "kriter_" + os.path.splitext(ad)[0]),
+    r = kosucu.calistir(spec, os.path.join(gecici, "kriter_" + os.path.splitext(
+                            os.path.basename(ad))[0]),
                         is_parcacigi=ISLEM_PARCACIGI)
     if not kontrol("%s: kosu basarili" % ad, r["basarili"], "-> %s" % r.get("log")):
         return None
@@ -149,7 +163,7 @@ def _yavas_kriter(ad):
         kontrol("%s: referansla tutarli (%.2f sigma)" % (ad, z_ref),
                 z_ref <= KABUL_SIGMA or ad in KUTUPHANE_YANLILIGI)
         kontrol("%s: kayitli olcumle tutarli (%.2f sigma)" % (ad, z_olc), z_olc <= 4.0)
-    test.__name__ = "test_yavas_" + os.path.splitext(ad)[0]
+    test.__name__ = "test_yavas_" + os.path.splitext(os.path.basename(ad))[0]
     return test
 
 
@@ -158,9 +172,12 @@ test_yavas_kriter_jezebel = _yavas_kriter("kriter_jezebel.json")
 test_yavas_kriter_flattop25 = _yavas_kriter("kriter_flattop25.json")
 test_yavas_kriter_lct008 = _yavas_kriter("kriter_lct008.json")
 test_yavas_kriter_vver1000_ugd = _yavas_kriter("kriter_vver1000_ugd.json")
+test_yavas_vv_umf001 = _yavas_kriter("vv/kriter_umf001.json")
+test_yavas_vv_lst002a = _yavas_kriter("vv/kriter_lst002a.json")
 
 
 HIZLI = [test_kriter_olcumleri_tam, test_kriter_kabul, test_deney_hesap_ayri,
          test_vv_tablosu_json_ile_ayni]
 YAVAS = [test_yavas_godiva_kriter, test_yavas_kriter_jezebel, test_yavas_kriter_flattop25,
-         test_yavas_kriter_lct008, test_yavas_kriter_vver1000_ugd]
+         test_yavas_kriter_lct008, test_yavas_kriter_vver1000_ugd, test_yavas_vv_umf001,
+         test_yavas_vv_lst002a]
