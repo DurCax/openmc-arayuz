@@ -277,7 +277,7 @@ class KapKurucu(object):
         """Kirik cizgi sinirinin yuz basina BC'si (yuz k: normal taban + 60 k)."""
         yuzler = self.yuzler
         if isinstance(yuzler, list) and len(yuzler) == 6:
-            return [b or self.yan for b in yuzler]
+            return list(yuzler)
         return [self.yan] * 6
 
     def _zarf_halkalari(self, kok, halkalar, merkezler, adim, yon, dis_halka):

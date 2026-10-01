@@ -471,7 +471,7 @@ class _Denetci(object):
         dis = self._en_dis_kesit(kok)
         sekil = (dis or {}).get("sekil")
         if sekil == "dikdortgen":
-            self._dikdortgen_yuzleri(yuzler)
+            self._dikdortgen_yuzleri(yuzler, s.get("yan") or "reflective")
         elif sekil in ("altigen", "kafes_zarfi"):
             self._altigen_yuzleri(yuzler)
         else:
@@ -485,7 +485,9 @@ class _Denetci(object):
                 dis = h["dis"]
         return dis if isinstance(dis, dict) else None
 
-    def _dikdortgen_yuzleri(self, yuzler):
+    def _dikdortgen_yuzleri(self, yuzler, yan):
+        # kurulum eksik yuze 'yan'i yazar (kurulum._dikdortgen_yuzleri): esler
+        # ETKIN sinir kosuluyla denetlenir
         if not isinstance(yuzler, dict) or set(yuzler) - set(DIKDORTGEN_YUZLERI):
             self.hata("kok/sinir", _("Dikdörtgen sınırda 'yuzler' anahtarları %s olmalı.")
                       % ", ".join(DIKDORTGEN_YUZLERI))
@@ -494,7 +496,7 @@ class _Denetci(object):
             if v not in SINIR_TURLERI:
                 self.hata("kok/sinir", _("Bilinmeyen sınır koşulu: %s = %r.") % (y, v))
         for a, b in (("-x", "+x"), ("-y", "+y")):
-            if (yuzler.get(a) == "periodic") != (yuzler.get(b) == "periodic"):
+            if (yuzler.get(a, yan) == "periodic") != (yuzler.get(b, yan) == "periodic"):
                 self.hata("kok/sinir", _("Periyodik sınır karşılıklı iki yüzde birlikte "
                                          "verilmeli (%s / %s).") % (a, b))
 
