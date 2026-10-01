@@ -170,6 +170,44 @@ def test_yerlesim_formu_kutuphaneden_secer():
     kontrol("yeni icerik agaca yazildi", (y.get("icerik") or {}).get("ad") == "tambur_iki"
             and y["icerik"].get("tur") == "bilesen", "-> %s" % (y.get("icerik"),))
     kontrol("dogal kesit tamburda etkin", f.dogal.isEnabled())
+    agac2 = duzenle.yaz(yayilan[-1], yol + ("icerik",), {"tur": "malzeme", "ad": "berilyum"})
+    f.yukle(spec, agac2, yol)
+    kontrol("bilesen olmayan icerik: secilemeyen ilk oge", f.icerik.currentData() is None
+            and f.icerik.currentIndex() == 0)
+    n = len(yayilan)
+    f.icerik.setCurrentIndex(0)
+    kontrol("bos secim agaci degistirmez", len(yayilan) == n)
+    f.icerik.setCurrentIndex(f.icerik.findData("yakit_cubugu"))
+    y = duzenle.al(yayilan[-1], yol)
+    kontrol("cubuk secilince dogal kesit kapali", not f.dogal.isEnabled()
+            and y["icerik"]["ad"] == "yakit_cubugu" and y.get("kesit") is not None,
+            "-> %s" % (y.get("icerik"), ))
+
+
+def test_yerlesim_formu_liste_ve_ad():
+    print("\n[TF5b] Yerlesim formu: liste modu konum ekle/sil, ad degisimi")
+    _qt()
+    from arayuz.geometri import duzenle
+    from arayuz.geometri.form_yerlesim import YerlesimFormu
+    spec = _yukle("altigen_tambur_halkasi")
+    agac = spec["geometri"]
+    yol = _yerlesim_yolu(agac, "tambur_halkasi")
+    f = YerlesimFormu()
+    f.yukle(spec, agac, yol)
+    f.mod.setCurrentIndex(f.mod.findData("liste"))
+    f.d_konum_ekle.click()
+    f.d_konum_ekle.click()
+    y = duzenle.al(f.agac, yol)
+    kontrol("liste modu: iki konum", y.get("mod") == "liste"
+            and y.get("konumlar") == [[0.0, 0.0], [0.0, 0.0]], "-> %s" % y.get("konumlar"))
+    f.konumlar.setCurrentCell(0, 0)
+    f.d_konum_sil.click()
+    kontrol("konum silindi", len(duzenle.al(f.agac, yol).get("konumlar")) == 1)
+    f.ad.setText("halka_yeni")
+    f.ad.editingFinished.emit()
+    kontrol("ad degisti (grup uyesi de)", duzenle.al(f.agac, yol).get("ad") == "halka_yeni"
+            and "halka_yeni" in (f.agac.get("gruplar") or [{}])[0].get("uyeler", []),
+            "-> %s" % f.agac.get("gruplar"))
 
 
 def test_spec_gidis_donusu_ornekler():
@@ -195,5 +233,6 @@ def test_spec_gidis_donusu_ornekler():
 
 HIZLI = [test_tambur_bolumu_gorunurluk, test_tambur_formu_okur_yazar, test_tambur_ekle_sil,
          test_tambur_ad_degisimi, test_yerlesim_formu_kutuphaneden_secer,
+         test_yerlesim_formu_liste_ve_ad,
          test_spec_gidis_donusu_ornekler]
 YAVAS = []
