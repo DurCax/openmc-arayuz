@@ -8,7 +8,7 @@
 
 from PySide6 import QtCore, QtWidgets
 from cekirdek import malzeme_kutup as mk
-from cekirdek.ceviri import _
+from cekirdek.ceviri import _, N_
 from cekirdek import sema
 from cekirdek.gunluk import kaydedici
 
@@ -138,7 +138,39 @@ _YOL_KALIPLARI = (
     (r"kor/eksenel/(\d+)/anahtar/.+$", lambda i: "%d. eksenel katmanın haritası" % (int(i) + 1)),
     (r"tallyler/(.+)/filtreler/\d+/adlar/\d+$", lambda a: "‘%s’ tally filtresi" % a),
     (r"tukenme/ek_malzemeler/\d+$", lambda: "tükenme ek malzemeleri"),
+    (r"tamburlar/(.+)/govde_malzeme$", lambda a: _("‘%s’ tamburunun gövdesi") % a),
+    (r"tamburlar/(.+)/emici_malzeme$", lambda a: _("‘%s’ tamburunun emicisi") % a),
+    (r"geometri/(.+)$", lambda y: _geometri_yolu(y)),
 )
+
+# Gelismis (agac) geometri yolunun parcalari -> okunur ad. Sayili parcalar
+# (halkalar/0) "1. halka" olur; "dugum" gibi yapisal parcalar atlanir.
+_GEOMETRI_PARCA = {
+    "kok": N_("kök"), "ic": N_("iç"), "dis": N_("dış"), "icerik": N_("içerik"),
+    "anahtar": N_("harita"), "sinir": N_("sınır"),
+}
+_GEOMETRI_SAYILI = {
+    "halkalar": N_("{n}. halka"), "yerlesimler": N_("{n}. yerleşim"),
+    "parcalar": N_("{n}. parça"), "katmanlar": N_("{n}. katman"),
+    "hucreler": N_("{n}. hücre"),
+}
+_GEOMETRI_ATLA = ("dugum",)
+
+
+def _geometri_yolu(yol):
+    """'kok/halkalar/0/icerik' -> 'geometri: kök › 1. halka › içerik'."""
+    parcalar, adimlar = [], yol.split("/")
+    i = 0
+    while i < len(adimlar):
+        a = adimlar[i]
+        if a in _GEOMETRI_SAYILI and i + 1 < len(adimlar) and adimlar[i + 1].isdigit():
+            parcalar.append(_(_GEOMETRI_SAYILI[a]).format(n=int(adimlar[i + 1]) + 1))
+            i += 2
+            continue
+        if a not in _GEOMETRI_ATLA:
+            parcalar.append(_(_GEOMETRI_PARCA[a]) if a in _GEOMETRI_PARCA else a)
+        i += 1
+    return _("geometri: %s") % " › ".join(parcalar)
 
 
 def yol_okunur(yol):

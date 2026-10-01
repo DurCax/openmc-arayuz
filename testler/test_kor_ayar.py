@@ -63,6 +63,15 @@ def _butun_specler():
     return _sablonlar() + [(ad, _ornek(ad)) for ad in _ornek_adlari()]
 
 
+def _sablon_modu_specler():
+    """Sablon (kor.tur) modundaki specler. Sablon formunu sinayan testler
+    bunlari kullanir: agac (gelismis) modunda sablon gorunumu gizlidir ve
+    alanlari doldurulmaz (arayuz/kor/geometri_sayfasi._geometri_doldur);
+    agac modunun sinir/alan davranisi test_geometri_ui/temizlik'te sinanir."""
+    from cekirdek import geometri
+    return [(ad, s) for ad, s in _butun_specler() if not geometri.agac_modu(s)]
+
+
 def _kor(spec):
     from arayuz.sekme_kor import KorSekmesi
     k = KorSekmesi()
@@ -138,7 +147,7 @@ def test_kor_gorunen_alanlar():
     if uyg is None:
         return
     from cekirdek import uygunluk
-    for ad, spec in _butun_specler():
+    for ad, spec in _sablon_modu_specler():
         k = _kor(spec)
         tur = spec["kor"]["tur"]
         alan = set(uygunluk.kor_alanlari(tur))
@@ -166,6 +175,12 @@ def test_kor_gorunen_alanlar():
                     k.yans_var.isVisibleTo(k) == (tur != "tamburlu"))
         if tur == "kuresel":
             kontrol("%s: kurede 'Dis yuzey siniri'" % ad, "Dış yüzey" in k.yan_etiket.text())
+    from cekirdek import geometri
+    for ad, spec in _butun_specler():
+        if geometri.agac_modu(spec):
+            k = _kor(spec)
+            kontrol("%s (agac): sablon gorunumu gizli, gelismis editor gorunur" % ad,
+                    not k.sablon_gorunumu.isVisibleTo(k) and k.gelismis_gorunumu.isVisibleTo(k))
     uyg  # noqa: B018
 
 
@@ -175,7 +190,7 @@ def test_kor_sinir_ogeleri():
     if uyg is None:
         return
     from cekirdek import uygunluk
-    for ad, spec in _butun_specler():
+    for ad, spec in _sablon_modu_specler():
         k = _kor(spec)
         for yuzey, kutu in (("yan", k.bc_yan), ("alt", k.bc_alt), ("ust", k.bc_ust)):
             beklenen = list(uygunluk.sinir_secenekleri(spec, yuzey))
@@ -426,7 +441,7 @@ def test_kor_yalniz_tur_alanlari_yazilir(gecici=None):
     if uyg is None:
         return
     from cekirdek import dogrula, kurucu, sema, uygunluk
-    for ad, spec in _butun_specler():
+    for ad, spec in _sablon_modu_specler():
         s0 = copy.deepcopy(spec)
         k = _kor(spec)
         kontrol("%s: spec_yukle spec'i degistirmedi" % ad, spec == s0)
