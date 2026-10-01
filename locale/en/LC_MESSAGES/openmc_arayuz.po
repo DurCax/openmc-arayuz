@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-01 19:10+0300\n"
+"POT-Creation-Date: 2026-10-01 19:19+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -2068,6 +2068,10 @@ msgstr "1000 lower end"
 msgid "14 MeV nötron, beton katmanlarda zayıflama."
 msgstr "14 MeV neutron, attenuation in concrete layers."
 
+#: arayuz/yardim/__init__.py:38
+msgid "15 dakikada ilk hesap"
+msgstr "First calculation in 15 minutes"
+
 #: arayuz/tasarim/maket_veri.py:81
 msgid "2 saat önce"
 msgstr "2 hours ago"
@@ -2581,7 +2585,7 @@ msgstr ""
 "volume calculation is used and its uncertainty is written to the report."
 
 #: arayuz/analiz/sekme.py:176 arayuz/pencere/model_islemleri.py:68
-#: arayuz/tasarim/maket_veri.py:19
+#: arayuz/tasarim/maket_veri.py:19 arayuz/yardim/__init__.py:50
 msgid "Analiz"
 msgstr "Analysis"
 
@@ -2917,6 +2921,10 @@ msgstr "They may be left over from another core type; the builder ignores these 
 msgid "Başlangıç açısı"
 msgstr "Start angle"
 
+#: arayuz/yardim/__init__.py:37
+msgid "Başlangıç ekranı"
+msgstr "Start screen"
+
 #: arayuz/pencere/menuler.py:132
 msgid "Başlangıç ekranı: ne modelleyeceğini seç"
 msgstr "Start screen: choose what to model"
@@ -3149,6 +3157,10 @@ msgstr "Info"
 #: arayuz/baslangic.py:563
 msgid "Bilgisayarınızdaki bir model dosyasını (.json) açar (Ctrl+O)."
 msgstr "Opens a model file (.json) from your computer (Ctrl+O)."
+
+#: arayuz/yardim/__init__.py:65
+msgid "Bilinen tuzaklar"
+msgstr "Known pitfalls"
 
 #: cekirdek/geometri/denetim.py:82
 #, python-format
@@ -3399,6 +3411,13 @@ msgstr "This name is already in use: {ad}"
 msgid "Bu bileşim modelde şöyle tanınıyor: {rol}"
 msgstr "The model recognizes this composition as: {rol}"
 
+#: arayuz/yardim/gosterici.py:147
+#, python-brace-format
+msgid "Bu bölümlerin bu dildeki çevirisi henüz yok; Türkçesi gösteriliyor: {liste}"
+msgstr ""
+"These sections are not yet available in this language; the Turkish version is shown: "
+"{liste}"
+
 #: arayuz/malzeme/yardimcilar.py:114
 #, python-brace-format
 msgid "Bu değerlerle malzeme kurulamıyor: {sorun}"
@@ -3424,6 +3443,10 @@ msgstr ""
 #: arayuz/sekme_cubuk.py:216
 msgid "Bu kor türünde çubuk ya da plaka tanımlanmaz."
 msgstr "Pins or plates are not defined for this core type."
+
+#: arayuz/yardim/__init__.py:34
+msgid "Bu kılavuz kime, nasıl okunur"
+msgstr "Who this guide is for and how to read it"
 
 #: arayuz/malzeme/malzeme_diyalog.py:111
 msgid ""
@@ -3605,6 +3628,10 @@ msgstr "No findings."
 msgid "Bulguya git"
 msgstr "Go to finding"
 
+#: arayuz/yardim/gosterici.py:220
+msgid "Bulunamadı"
+msgstr "Not found"
+
 #: arayuz/geometri/duzenle.py:259
 msgid "Buraya düğüm konamaz."
 msgstr "A node cannot be placed here."
@@ -3723,7 +3750,7 @@ msgstr "The hole must stay inside its position cell (smaller than the lattice pi
 #: arayuz/guc_harita.py:69 arayuz/pencere/model_islemleri.py:66 arayuz/sekme_demet.py:506
 #: arayuz/tasarim/maket_ekranlar.py:157 arayuz/tasarim/maket_ekranlar.py:182
 #: arayuz/tasarim/maket_ekranlar.py:319 arayuz/tasarim/maket_veri.py:14
-#: cekirdek/dogrula/_ortak.py:26
+#: arayuz/yardim/__init__.py:45 cekirdek/dogrula/_ortak.py:26
 msgid "Demet"
 msgstr "Assembly"
 
@@ -3873,6 +3900,46 @@ msgstr "Balanced"
 #: arayuz/tasarim/tokenlar.py:136
 msgid "Deniz yeşili"
 msgstr "Teal"
+
+#: arayuz/yardim/__init__.py:55
+msgid "Ders: altıgen kor"
+msgstr "Lesson: hexagonal core"
+
+#: arayuz/yardim/__init__.py:60
+msgid "Ders: benchmark ve C/E"
+msgstr "Lesson: benchmarks and C/E"
+
+#: arayuz/yardim/__init__.py:53
+msgid "Ders: demet k∞"
+msgstr "Lesson: assembly k∞"
+
+#: arayuz/yardim/__init__.py:59
+msgid "Ders: güç haritası ve F_ΔH"
+msgstr "Lesson: power map and F_ΔH"
+
+#: arayuz/yardim/__init__.py:56
+msgid "Ders: kare çekirdek + altıgen halka"
+msgstr "Lesson: square core + hexagonal ring"
+
+#: arayuz/yardim/__init__.py:61
+msgid "Ders: kritik arama"
+msgstr "Lesson: critical search"
+
+#: arayuz/yardim/__init__.py:62
+msgid "Ders: rapor ve uygunluk eki"
+msgstr "Lesson: report and conformity annex"
+
+#: arayuz/yardim/__init__.py:54
+msgid "Ders: tam kor"
+msgstr "Lesson: full core"
+
+#: arayuz/yardim/__init__.py:57
+msgid "Ders: tamburu herhangi bir geometriye yerleştirmek"
+msgstr "Lesson: placing a drum in any geometry"
+
+#: arayuz/yardim/__init__.py:58
+msgid "Ders: tükenme ve nüklid seçimi"
+msgstr "Lesson: depletion and nuclide selection"
 
 #: cekirdek/dogrula/eksenel.py:45
 #, python-format
@@ -4095,6 +4162,10 @@ msgstr "Validation references: %s"
 #: cekirdek/uygunluk_denetimi/kurallar_kor.py:197
 msgid "Doğrulama referanslarını (IRPhEP / hesap-hesap karşılaştırması) girin."
 msgstr "Enter the validation references (IRPhEP / code-to-code comparison)."
+
+#: arayuz/yardim/__init__.py:67
+msgid "Doğrulama ve geçerleme (V&V)"
+msgstr "Verification and validation (V&V)"
 
 #: arayuz/pencere/ana_pencere.py:656
 msgid "Doğrulama yenilendi (veri kütüphanesi dahil)."
@@ -4809,6 +4880,10 @@ msgstr "Lag-1 correlation r = %.2f ≤ %.2f."
 msgid "Gelişmiş"
 msgstr "Advanced"
 
+#: arayuz/yardim/__init__.py:47
+msgid "Gelişmiş geometri editörü"
+msgstr "Advanced geometry editor"
+
 #: arayuz/kor/geometri_sayfasi.py:83
 msgid ""
 "Gelişmiş geometri: model bir düğüm ağacıdır. Şablon sihirbazı kapalıdır; şablona "
@@ -4851,7 +4926,8 @@ msgid "Genişlik (x)"
 msgstr "Width (x)"
 
 #: arayuz/kor/yerlesim.py:205 arayuz/pencere/model_islemleri.py:67
-#: cekirdek/dogrula/_ortak.py:41 cekirdek/rapor_sablon/__init__.py:105
+#: arayuz/yardim/__init__.py:46 cekirdek/dogrula/_ortak.py:41
+#: cekirdek/rapor_sablon/__init__.py:105
 msgid "Geometri"
 msgstr "Geometry"
 
@@ -5414,6 +5490,10 @@ msgstr "The outer cross-section of the ring does not enclose the previous bounda
 msgid "Halkayı doldur"
 msgstr "Fill ring"
 
+#: arayuz/yardim/__init__.py:40
+msgid "Hangi düzenek, hangi düğümler"
+msgstr "Which arrangement, which nodes"
+
 #: arayuz/geometri/form_yerlesim.py:92
 msgid "Harf"
 msgstr "Letter"
@@ -5673,7 +5753,8 @@ msgid "Hesap"
 msgstr "Calculation"
 
 #: arayuz/pencere/model_islemleri.py:67 arayuz/tasarim/maket_ekranlar.py:244
-#: cekirdek/dogrula/_ortak.py:28 cekirdek/rapor_sablon/__init__.py:113
+#: arayuz/yardim/__init__.py:48 cekirdek/dogrula/_ortak.py:28
+#: cekirdek/rapor_sablon/__init__.py:113
 msgid "Hesap ayarları"
 msgstr "Run settings"
 
@@ -6160,6 +6241,10 @@ msgstr "The coefficient could not be computed (not enough points)."
 #: cekirdek/uygunluk_denetimi/kurallar_kor.py:67
 msgid "Katsayıyı eğim belirsizliğiyle (tarama.katsayi) verin."
 msgstr "Give the coefficient with the slope uncertainty (tarama.katsayi)."
+
+#: arayuz/yardim/__init__.py:39
+msgid "Kavramlar"
+msgstr "Concepts"
 
 #: arayuz/pencere/proje.py:151 arayuz/pencere/proje.py:295
 #, python-format
@@ -6907,7 +6992,8 @@ msgstr "Bias used %+.5f (raw %+.5f); positive bias not credited."
 msgid "Kullanım"
 msgstr "Usage"
 
-#: arayuz/pencere/menuler.py:107 arayuz/yardim_baglanti.py:106
+#: arayuz/pencere/menuler.py:107 arayuz/yardim/gosterici.py:56
+#: arayuz/yardim_baglanti.py:106
 msgid "Kullanım kılavuzu"
 msgstr "User guide"
 
@@ -6915,10 +7001,10 @@ msgstr "User guide"
 msgid "Kullanım kılavuzu (etkin sayfanın bölümü)"
 msgstr "User guide (section for the current page)"
 
-#: arayuz/yardim/__init__.py:37
+#: arayuz/yardim/__init__.py:103
 #, python-brace-format
-msgid "Kullanım kılavuzu henüz eklenmedi (bölüm: {b})."
-msgstr "The user guide has not been added yet (section: {b})."
+msgid "Kullanım kılavuzu bulunamadı: {yol}"
+msgstr "User guide not found: {yol}"
 
 #: arayuz/yardim_baglanti.py:105
 msgid "Kullanım kılavuzunda bu sayfanın bölümünü açar (F1)"
@@ -6953,6 +7039,10 @@ msgstr "Dry run (--kuru): the run was not started."
 #, python-format
 msgid "Kurulamadı: %s"
 msgstr "Could not be built: %s"
+
+#: arayuz/yardim/__init__.py:35
+msgid "Kurulum ve ilk açılış"
+msgstr "Installation and first start"
 
 #: cekirdek/malzeme_kutup.py:421
 msgid "Kurşun-bizmut ötektiği"
@@ -7114,9 +7204,26 @@ msgstr "Guide tube material is undefined."
 msgid "Kılavuz borusunda eksenel hareket eden emici çubuk (3B model)."
 msgstr "Absorber rod moving axially in the guide tube (3D model)."
 
+#: arayuz/yardim/gosterici.py:85
+msgid "Kılavuz metni"
+msgstr "User guide text"
+
+#: arayuz/yardim/gosterici.py:101
+msgid "Kılavuzda ara"
+msgstr "Search the user guide"
+
+#: arayuz/yardim/gosterici.py:99
+msgid "Kılavuzda ara…"
+msgstr "Search the user guide…"
+
 #: arayuz/pencere/menuler.py:79
 msgid "Kılavuzda aç"
 msgstr "Open in user guide"
+
+#: arayuz/yardim/__init__.py:123
+#, python-brace-format
+msgid "Kılavuzda bu bölüm yok: {b}"
+msgstr "This section is not in the user guide: {b}"
 
 #: cekirdek/dogrula/geometri.py:259
 msgid "Kılıf, dış halkadaki pinleri keser. İç ölçüyü büyütün ya da adımı küçültün."
@@ -7284,7 +7391,8 @@ msgstr "Material: {ad}"
 #: arayuz/pencere/model_islemleri.py:66 arayuz/sekme_malzeme.py:78
 #: arayuz/sekme_malzeme.py:112 arayuz/tasarim/maket_ekranlar.py:79
 #: arayuz/tasarim/maket_ekranlar.py:119 arayuz/tasarim/maket_veri.py:12
-#: cekirdek/dogrula/_ortak.py:25 cekirdek/rapor_sablon/__init__.py:104
+#: arayuz/yardim/__init__.py:43 cekirdek/dogrula/_ortak.py:25
+#: cekirdek/rapor_sablon/__init__.py:104
 msgid "Malzemeler"
 msgstr "Materials"
 
@@ -7688,6 +7796,10 @@ msgstr ""
 "Neutron generation time. About 20 &mu;s in a thermal reactor, about 6 ns in a fast "
 "metal system."
 
+#: arayuz/yardim/__init__.py:36
+msgid "Nükleer veri ve tükenme zinciri"
+msgstr "Nuclear data and depletion chain"
+
 #: arayuz/tasarim/galeri.py:109 arayuz/tasarim/maket_ekranlar.py:97
 msgid "Nüklid"
 msgstr "Nuclide"
@@ -8029,7 +8141,7 @@ msgid "Parçacık:"
 msgstr "Particle:"
 
 #: arayuz/pencere/model_islemleri.py:66 arayuz/sekme_cubuk.py:103 arayuz/sekme_cubuk.py:135
-#: arayuz/tasarim/maket_veri.py:13
+#: arayuz/tasarim/maket_veri.py:13 arayuz/yardim/__init__.py:44
 msgid "Parçalar"
 msgstr "Components"
 
@@ -8120,6 +8232,10 @@ msgid ""
 msgstr ""
 "The batches after the inactive batches; k-eff and tally results are computed from "
 "these only."
+
+#: arayuz/yardim/__init__.py:42
+msgid "Pencerenin düzeni"
+msgstr "Window layout"
 
 #: cekirdek/dogrula/kor.py:22
 msgid "Periyodik"
@@ -8413,6 +8529,10 @@ msgstr ""
 "No reference tally — conservation could not be checked (old statepoint or model "
 "regression)."
 
+#: arayuz/yardim/__init__.py:52
+msgid "Rehberli dersler"
+msgstr "Guided lessons"
+
 #: arayuz/sekme_malzeme.py:66
 msgid "Renk"
 msgstr "Color"
@@ -8565,6 +8685,10 @@ msgstr "Scattering (scatter)"
 #: arayuz/demet/yerlesim.py:205
 msgid "Sağ/sol yüzler düşey (sağda hücre)"
 msgstr "Right/left faces vertical (cell on the right)"
+
+#: arayuz/yardim/__init__.py:41
+msgid "Sekme sekme başvuru"
+msgstr "Tab-by-tab reference"
 
 #: cekirdek/malzeme_kutup.py:539
 msgid "Seramik zarf / yapısal malzeme."
@@ -8817,6 +8941,10 @@ msgstr ""
 msgid "Sonra (maket)"
 msgstr "After (mockup)"
 
+#: arayuz/yardim/gosterici.py:105
+msgid "Sonraki"
+msgstr "Next"
+
 #: arayuz/tasarim/maket_kabuk.py:182
 msgid "Sonraki adım: Kor sayfasında demetleri yerleştirin."
 msgstr "Next step: place the assemblies on the Geometry page."
@@ -8890,6 +9018,10 @@ msgstr ""
 "Results are in absolute units (OpenMC applies the strength itself; do not multiply "
 "again)."
 
+#: arayuz/yardim/__init__.py:63
+msgid "Sonuçları yorumlamak"
+msgstr "Interpreting results"
+
 #: arayuz/tukenme_sonuc.py:332
 #, python-format
 msgid "Sonuçta bulunamayan nüklidler (grafikte yok): %s"
@@ -8899,6 +9031,10 @@ msgstr "Nuclides not found in the result (not in the chart): %s"
 #, python-format
 msgid "Sonuçta bulunamayan nüklidler: %s"
 msgstr "Nuclides not found in the result: %s"
+
+#: arayuz/yardim/__init__.py:69
+msgid "Sorun giderme"
+msgstr "Troubleshooting"
 
 #: arayuz/uygunluk_paneli.py:262
 msgid "Sorun yok"
@@ -9428,6 +9564,10 @@ msgstr "Sum of the reactant masses: D+T = 2+3 = 5, D+D = 4"
 msgid "Tercihler"
 msgstr "Preferences"
 
+#: arayuz/yardim/__init__.py:71
+msgid "Terim sözlüğü"
+msgstr "Glossary"
+
 #: arayuz/malzeme/malzeme_diyalog.py:155
 msgid "Termal saçılma S(α,β):"
 msgstr "Thermal scattering S(α,β):"
@@ -9458,6 +9598,10 @@ msgid ""
 msgstr ""
 "The thermal/fast chain sets the capture branching ratios and the fission yields (e.g."
 " Am241(n,γ)→Am242m: 8.1% (thermal), 13.2% (fast))."
+
+#: arayuz/yardim/__init__.py:68
+msgid "Terminal ve HPC kullanımı"
+msgstr "Terminal and HPC use"
 
 #: arayuz/tasarim/maket_ekranlar.py:357
 msgid "Terminalde aç"
@@ -9536,8 +9680,9 @@ msgid "Toryum çevrimi (Th, Pa)"
 msgstr "Thorium cycle (Th, Pa)"
 
 #: arayuz/pencere/model_islemleri.py:68 arayuz/tasarim/maket_veri.py:20
-#: arayuz/tukenme_arayuz.py:211 cekirdek/dogrula/_ortak.py:31 cekirdek/dogrula/_ortak.py:32
-#: cekirdek/rapor.py:347 cekirdek/rapor_sablon/__init__.py:190
+#: arayuz/tukenme_arayuz.py:211 arayuz/yardim/__init__.py:51 cekirdek/dogrula/_ortak.py:31
+#: cekirdek/dogrula/_ortak.py:32 cekirdek/rapor.py:347
+#: cekirdek/rapor_sablon/__init__.py:190
 msgid "Tükenme"
 msgstr "Depletion"
 
@@ -9816,6 +9961,14 @@ msgstr "Conformity check"
 #: arayuz/uygunluk_paneli.py:113
 msgid "Uygunluk bulguları"
 msgstr "Conformity check findings"
+
+#: arayuz/yardim/__init__.py:66
+msgid "Uygunluk denetimi"
+msgstr "Conformity check"
+
+#: arayuz/yardim/__init__.py:70
+msgid "Uygunluk kuralları (K1–K16)"
+msgstr "Conformity rules (K1–K16)"
 
 #: cekirdek/nuklidler.py:273
 msgid "Uzun ömürlü (7 LLFP)"
@@ -13848,6 +14001,11 @@ msgid_plural "{n} dakika önce"
 msgstr[0] "{n} minute ago"
 msgstr[1] "{n} minutes ago"
 
+#: arayuz/yardim/gosterici.py:228
+#, python-brace-format
+msgid "{n} eşleşme"
+msgstr "{n} matches"
+
 #: arayuz/baslangic.py:352
 #, python-brace-format
 msgid "{n} gün önce"
@@ -14024,6 +14182,7 @@ msgstr "A simple working model was set up ({ad}). Use 'Save as' to save it."
 #: arayuz/tasarim/galeri.py:38 arayuz/tasarim/galeri.py:40 arayuz/tasarim/galeri.py:151
 #: arayuz/tasarim/galeri.py:203 arayuz/tasarim/maket.py:68
 #: arayuz/tasarim/maket_kabuk.py:105 arayuz/tasarim/maket_veri.py:17
+#: arayuz/yardim/__init__.py:49
 msgid "Çalıştır"
 msgstr "Run"
 
@@ -14388,9 +14547,17 @@ msgstr "Open a model first."
 msgid "Önce malzeme gerekli"
 msgstr "Materials needed first"
 
+#: arayuz/yardim/__init__.py:64
+msgid "Önce çiz, sonra çalıştır"
+msgstr "Draw first, then run"
+
 #: arayuz/sekme_demet.py:135 arayuz/sekme_demet.py:523
 msgid "Önce çubuk gerekli"
 msgstr "A pin is needed first"
+
+#: arayuz/yardim/gosterici.py:103
+msgid "Önceki"
+msgstr "Previous"
 
 #: arayuz/tukenme_sonuc.py:143
 #, python-format
@@ -14927,6 +15094,10 @@ msgstr "Content: "
 #: arayuz/geometri/form_yerlesim.py:97
 msgid "İçeriğin ön yüzü (tamburda emici) yerel +x'tir."
 msgstr "The front of the content (the absorber, for a drum) is local +x."
+
+#: arayuz/yardim/gosterici.py:80
+msgid "İçindekiler"
+msgstr "Contents"
 
 #: cekirdek/rapor.py:238
 msgid "İş parçacığı"

@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
+"Project-Id-Version: openmc-arayuz VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-01 19:03+0300\n"
+"POT-Creation-Date: 2026-10-01 19:13+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -208,7 +208,7 @@ msgid "Analiz ayarları"
 msgstr ""
 
 #: arayuz/analiz/sekme.py:176 arayuz/pencere/model_islemleri.py:68
-#: arayuz/tasarim/maket_veri.py:19
+#: arayuz/tasarim/maket_veri.py:19 arayuz/yardim/__init__.py:50
 msgid "Analiz"
 msgstr ""
 
@@ -3011,6 +3011,7 @@ msgstr ""
 #: arayuz/guc_harita.py:69 arayuz/pencere/model_islemleri.py:66 arayuz/sekme_demet.py:506
 #: arayuz/tasarim/maket_ekranlar.py:157 arayuz/tasarim/maket_ekranlar.py:182
 #: arayuz/tasarim/maket_ekranlar.py:319 arayuz/tasarim/maket_veri.py:14
+#: arayuz/yardim/__init__.py:45
 msgid "Demet"
 msgstr ""
 
@@ -3532,6 +3533,7 @@ msgid "Kor yarıçapı:"
 msgstr ""
 
 #: arayuz/kor/yerlesim.py:205 arayuz/pencere/model_islemleri.py:67
+#: arayuz/yardim/__init__.py:46
 msgid "Geometri"
 msgstr ""
 
@@ -4612,6 +4614,7 @@ msgid ""
 msgstr ""
 
 #: arayuz/pencere/model_islemleri.py:67 arayuz/tasarim/maket_ekranlar.py:244
+#: arayuz/yardim/__init__.py:48
 msgid "Hesap ayarları"
 msgstr ""
 
@@ -5557,6 +5560,7 @@ msgstr ""
 #: arayuz/tasarim/galeri.py:38 arayuz/tasarim/galeri.py:40 arayuz/tasarim/galeri.py:151
 #: arayuz/tasarim/galeri.py:203 arayuz/tasarim/maket.py:68
 #: arayuz/tasarim/maket_kabuk.py:105 arayuz/tasarim/maket_veri.py:17
+#: arayuz/yardim/__init__.py:49
 msgid "Çalıştır"
 msgstr ""
 
@@ -5766,7 +5770,7 @@ msgid "Çubuklar ve plaka elemanları: radyal bölgeler ve malzemeler."
 msgstr ""
 
 #: arayuz/pencere/model_islemleri.py:66 arayuz/sekme_cubuk.py:103 arayuz/sekme_cubuk.py:135
-#: arayuz/tasarim/maket_veri.py:13
+#: arayuz/tasarim/maket_veri.py:13 arayuz/yardim/__init__.py:44
 msgid "Parçalar"
 msgstr ""
 
@@ -6184,6 +6188,7 @@ msgstr ""
 #: arayuz/pencere/model_islemleri.py:66 arayuz/sekme_malzeme.py:78
 #: arayuz/sekme_malzeme.py:112 arayuz/tasarim/maket_ekranlar.py:79
 #: arayuz/tasarim/maket_ekranlar.py:119 arayuz/tasarim/maket_veri.py:12
+#: arayuz/yardim/__init__.py:43
 msgid "Malzemeler"
 msgstr ""
 
@@ -7306,7 +7311,7 @@ msgid "Sonuç"
 msgstr ""
 
 #: arayuz/pencere/model_islemleri.py:68 arayuz/tasarim/maket_veri.py:20
-#: arayuz/tukenme_arayuz.py:211
+#: arayuz/tukenme_arayuz.py:211 arayuz/yardim/__init__.py:51
 msgid "Tükenme"
 msgstr ""
 
@@ -7509,16 +7514,180 @@ msgstr ""
 msgid "Çift tıklayınca ilgili sayfaya gider."
 msgstr ""
 
+#: arayuz/yardim/__init__.py:34
+msgid "Bu kılavuz kime, nasıl okunur"
+msgstr ""
+
+#: arayuz/yardim/__init__.py:35
+msgid "Kurulum ve ilk açılış"
+msgstr ""
+
+#: arayuz/yardim/__init__.py:36
+msgid "Nükleer veri ve tükenme zinciri"
+msgstr ""
+
 #: arayuz/yardim/__init__.py:37
+msgid "Başlangıç ekranı"
+msgstr ""
+
+#: arayuz/yardim/__init__.py:38
+msgid "15 dakikada ilk hesap"
+msgstr ""
+
+#: arayuz/yardim/__init__.py:39
+msgid "Kavramlar"
+msgstr ""
+
+#: arayuz/yardim/__init__.py:40
+msgid "Hangi düzenek, hangi düğümler"
+msgstr ""
+
+#: arayuz/yardim/__init__.py:41
+msgid "Sekme sekme başvuru"
+msgstr ""
+
+#: arayuz/yardim/__init__.py:42
+msgid "Pencerenin düzeni"
+msgstr ""
+
+#: arayuz/yardim/__init__.py:47
+msgid "Gelişmiş geometri editörü"
+msgstr ""
+
+#: arayuz/yardim/__init__.py:52
+msgid "Rehberli dersler"
+msgstr ""
+
+#: arayuz/yardim/__init__.py:53
+msgid "Ders: demet k∞"
+msgstr ""
+
+#: arayuz/yardim/__init__.py:54
+msgid "Ders: tam kor"
+msgstr ""
+
+#: arayuz/yardim/__init__.py:55
+msgid "Ders: altıgen kor"
+msgstr ""
+
+#: arayuz/yardim/__init__.py:56
+msgid "Ders: kare çekirdek + altıgen halka"
+msgstr ""
+
+#: arayuz/yardim/__init__.py:57
+msgid "Ders: tamburu herhangi bir geometriye yerleştirmek"
+msgstr ""
+
+#: arayuz/yardim/__init__.py:58
+msgid "Ders: tükenme ve nüklid seçimi"
+msgstr ""
+
+#: arayuz/yardim/__init__.py:59
+msgid "Ders: güç haritası ve F_ΔH"
+msgstr ""
+
+#: arayuz/yardim/__init__.py:60
+msgid "Ders: benchmark ve C/E"
+msgstr ""
+
+#: arayuz/yardim/__init__.py:61
+msgid "Ders: kritik arama"
+msgstr ""
+
+#: arayuz/yardim/__init__.py:62
+msgid "Ders: rapor ve uygunluk eki"
+msgstr ""
+
+#: arayuz/yardim/__init__.py:63
+msgid "Sonuçları yorumlamak"
+msgstr ""
+
+#: arayuz/yardim/__init__.py:64
+msgid "Önce çiz, sonra çalıştır"
+msgstr ""
+
+#: arayuz/yardim/__init__.py:65
+msgid "Bilinen tuzaklar"
+msgstr ""
+
+#: arayuz/yardim/__init__.py:66
+msgid "Uygunluk denetimi"
+msgstr ""
+
+#: arayuz/yardim/__init__.py:67
+msgid "Doğrulama ve geçerleme (V&V)"
+msgstr ""
+
+#: arayuz/yardim/__init__.py:68
+msgid "Terminal ve HPC kullanımı"
+msgstr ""
+
+#: arayuz/yardim/__init__.py:69
+msgid "Sorun giderme"
+msgstr ""
+
+#: arayuz/yardim/__init__.py:70
+msgid "Uygunluk kuralları (K1–K16)"
+msgstr ""
+
+#: arayuz/yardim/__init__.py:71
+msgid "Terim sözlüğü"
+msgstr ""
+
+#: arayuz/yardim/__init__.py:103
 #, python-brace-format
-msgid "Kullanım kılavuzu henüz eklenmedi (bölüm: {b})."
+msgid "Kullanım kılavuzu bulunamadı: {yol}"
+msgstr ""
+
+#: arayuz/yardim/__init__.py:123
+#, python-brace-format
+msgid "Kılavuzda bu bölüm yok: {b}"
+msgstr ""
+
+#: arayuz/yardim/gosterici.py:80
+msgid "İçindekiler"
+msgstr ""
+
+#: arayuz/yardim/gosterici.py:85
+msgid "Kılavuz metni"
+msgstr ""
+
+#: arayuz/yardim/gosterici.py:99
+msgid "Kılavuzda ara…"
+msgstr ""
+
+#: arayuz/yardim/gosterici.py:101
+msgid "Kılavuzda ara"
+msgstr ""
+
+#: arayuz/yardim/gosterici.py:103
+msgid "Önceki"
+msgstr ""
+
+#: arayuz/yardim/gosterici.py:105
+msgid "Sonraki"
+msgstr ""
+
+#: arayuz/yardim/gosterici.py:147
+#, python-brace-format
+msgid "Bu bölümlerin bu dildeki çevirisi henüz yok; Türkçesi gösteriliyor: {liste}"
+msgstr ""
+
+#: arayuz/yardim/gosterici.py:220
+msgid "Bulunamadı"
+msgstr ""
+
+#: arayuz/yardim/gosterici.py:228
+#, python-brace-format
+msgid "{n} eşleşme"
 msgstr ""
 
 #: arayuz/yardim_baglanti.py:105
 msgid "Kullanım kılavuzunda bu sayfanın bölümünü açar (F1)"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:107 arayuz/yardim_baglanti.py:106
+#: arayuz/pencere/menuler.py:107 arayuz/yardim/gosterici.py:56
+#: arayuz/yardim_baglanti.py:106
 msgid "Kullanım kılavuzu"
 msgstr ""
 
