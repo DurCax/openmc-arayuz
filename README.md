@@ -213,7 +213,7 @@ Asıl kanıtlar:
 | `sfr_altigen` | 1.46634 ± 0.00070 | 53 s |
 | `godiva_kriter` | 0.99900 ± 0.00045 | 6 s |
 | `pwr_3b` (3B, güç dağılımı) | 1.17953 ± 0.00059 | 73 s |
-| `pwr_kontrol` (çubuk %0) | 1.17801 ± 0.00196 | 24 s |
+| `pwr_kontrol` (çubuk %0) | 1.18186 ± 0.00150 | — (6 iş parçacığı, 01.10.2026) |
 | `tamburlu_kor` (dönme 180°) | 1.01057 ± 0.00157 | 21 s |
 | `zirh_kure` (sabit kaynak) | k-eff yok, tally | 24 s |
 | `pwr_eksenel` (katmanlı) | 1.17680 ± 0.00052 | 86 s |
@@ -236,13 +236,16 @@ daldırma %100 → uç z = −H/2   (emici tüm yüksekliği kaplar)
 - *Parametre taraması* → integral çubuk değeri eğrisi
 - *Kritik arama* + hedef k=1 → **kritik çubuk konumu**
 
-Ölçülen (`pwr_kontrol`, 25 B4C çubuğu): kritik konum **%87.85 ± 0.09**, 13 koşuda.
+Ölçülen (`pwr_kontrol`, 25 B4C çubuğu): kritik konum **%87.85 ± 0.09**, 13 koşuda (He yoğunluğu 0.0018'e çekilmeden önce ölçüldü;
+yeniden koşulmadı).
 
 > ⚠ **Eğri şekli hakkında.** Klasik S eğrisi yalnızca sistem *her konumda
 > kritiğe yakınsa* görülür. Bu örnek yansıtıcı yan sınırlı tek bir demettir ve
-> k∞ yüksektir; rodlanmamış alt bölge tek başına süperkritik kalır. Bu yüzden
+> reaktivite fazlası büyüktür (eksenel uçlar vakum: sonuç k∞ değil k-eff); çubuksuz alt bölge
+> tek başına süperkritik kalır. Bu yüzden
 > değer geç toplanır ve diferansiyel değer tepesi merkezde değil tam daldırmaya
-> yakın çıkar. Ölçülen: %0 → k=1.165, %50 → k=1.131, %100 → k=0.588.
+> yakın çıkar. Ölçülen (01.10.2026; 8000 × 90 / 30 pasif, tohum 1, 6 iş parçacığı):
+> %0 → k = 1.18186 ± 0.00150, %50 → 1.16626 ± 0.00136, %100 → 0.59146 ± 0.00122.
 
 ## Kontrol tamburu (dönen)
 

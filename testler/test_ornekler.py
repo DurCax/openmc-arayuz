@@ -22,7 +22,7 @@ YAVAS
   [OR11] Yeni ornekler kosucu.calistir(dogrulama=True) ile kisa kosar.
   [OR12] Ceyrek kor k = tam kor k (2 sigma): yuz basina sinir (simetri yuzleri
          yansitici, dis yuzler vakum).
-  [OR13] Gd tukenmesi: dis halka ic halkadan hizli yanar (sogan kabugu), k yukselir.
+  [OR13] Gd tukenmesi: dis halka ic halkadan hizli yanar (sogan kabugu); k yakit tukenmesiyle duser (tek Gd cubugu: tepe yok).
 Sozlesme: testler/ortak_test.py (HIZLI / YAVAS).
 """
 

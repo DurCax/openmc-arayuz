@@ -89,8 +89,10 @@ azalır ve iki etki birbirini götürür.
 
 > ⚠ **Çubuk değeri eğrisinin şekli.** Klasik S eğrisi yalnızca sistem her konumda kritiğe
 > yakınsa görülür. `ornekler/pwr_kontrol.json` yansıtıcı yan sınırlı tek bir demettir; değer
-> geç toplanır ve diferansiyel değer tepesi tam daldırmaya yakın çıkar (ölçülen: %0 → k = 1.165,
-> %50 → 1.131, %100 → 0.588).
+> geç toplanır ve diferansiyel değer tepesi tam daldırmaya yakın çıkar (ölçülen, örneğin kendi ayarı
+> 8000 × 90 / 30 pasif, tohum 1, 01.10.2026: %0 → k = 1.18186 ± 0.00150, %50 → 1.16626 ± 0.00136,
+> %100 → 0.59146 ± 0.00122). Eksenel uçlar vakum olduğu için bunlar k∞ değil k-eff'tir; çubuk
+> modelinin basitleştirmeleri (zarfsız B4C, 25 konum tek grup, keskin uç) örneğin açıklamasında.
 
 <a id="analiz-kritik-arama"></a>
 ### Kritik arama: yöntem ve durma ölçütü
