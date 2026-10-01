@@ -255,14 +255,14 @@
         "koni_aci": 30.0
       },
       "alt": [
-        -1.0,
-        -1.0,
-        -1.0
+        -61.011,
+        -61.011,
+        -61.011
       ],
       "ust": [
-        1.0,
-        1.0,
-        1.0
+        61.011,
+        61.011,
+        61.011
       ]
     },
     "entropi_mesh": {
@@ -650,6 +650,27 @@
     "seri": "HEU-SOL-THERM-032",
     "aoa_girdi": {
       "fiziksel_bicim": "cozelti",
+      "yansitici": "yok"
+    },
+    "olcum": {
+      "k": 0.99851,
+      "sigma": 0.0002,
+      "parcacik": 100000,
+      "cevrim": 200,
+      "pasif": 50,
+      "sure_s": 449.5,
+      "is_parcacigi": 12,
+      "openmc": "0.16.0",
+      "kutuphane": "ENDF/B-VIII.0",
+      "tarih": "2026-10-01"
+    },
+    "aoa": {
+      "bolunebilir": "U-235",
+      "zenginlik": 93.210049,
+      "h_x": 1836.485741,
+      "fiziksel_bicim": "cozelti",
+      "ealf": 0.031262,
+      "tayf": "termal",
       "yansitici": "yok"
     }
   }
