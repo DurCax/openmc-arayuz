@@ -152,6 +152,50 @@ def test_panel_rozeti_degerlendirilemedi():
         p.deleteLater()
 
 
+TAMBUR_R = 6.0            # altigen_tambur_halkasi tambur yaricapi (cm)
+
+
+def _harita(spec, noktalar):
+    from cekirdek import geometri
+    from testler import geometri_iz as gi
+    kok, _kutu, mat_adi, _k = gi.kok_kur(geometri.kur, spec)
+    sayac = gi.OrnekSayaci()
+    return [gi.nokta_izi(kok, p, mat_adi, sayac)[0] for p in noktalar]
+
+
+def test_tek_tambur_yonu_asil_modelle_ayni():
+    print("\n[GS14] liste modunda 0 derece tek tambur = halka modu 0 derece (malzeme haritasi)")
+    import math
+    import random
+    from araclar import tambur_etkilesim as te
+    t = te.taban()
+    r = random.Random(14)
+    merkez = te.tambur_konumlari(t)[0]
+    yakin = []
+    while len(yakin) < 1500:
+        x, y = r.uniform(-TAMBUR_R, TAMBUR_R), r.uniform(-TAMBUR_R, TAMBUR_R)
+        if math.hypot(x, y) < TAMBUR_R - 0.05:
+            yakin.append((merkez[0] + x, merkez[1] + y, r.uniform(-39.9, 39.9)))
+    genel = []
+    while len(genel) < 1500:
+        p = (r.uniform(-48.6, 48.6), r.uniform(-48.6, 48.6), r.uniform(-39.9, 39.9))
+        if math.hypot(p[0] - merkez[0], p[1] - merkez[1]) > TAMBUR_R + 0.05 and all(
+                abs(p[0] * math.cos(a) + p[1] * math.sin(a)) < 48.69
+                for a in (math.radians(30 + 60 * i) for i in range(6))):
+            genel.append(p)
+    ic, dis = te.hepsi(t, te.ICERI), te.hepsi(t, te.DISARI)
+    tek = te.secili(t, (0,))
+    kontrol("tambur 0 diski: tek(0) = halka modu 0 derece",
+            _harita(tek, yakin) == _harita(ic, yakin))
+    kontrol("tambur 0 disinda: tek(0) = halka modu 180 derece",
+            _harita(tek, genel) == _harita(dis, genel))
+    kontrol("duyarlilik: disk icinde 0 ve 180 farkli (emici yayi doner)",
+            _harita(ic, yakin) != _harita(dis, yakin))
+    hepsi_ic = te.secili(t, tuple(range(6)))
+    kontrol("liste modunda 6 tambur iceri = halka modu iceri",
+            _harita(hepsi_ic, yakin + genel) == _harita(ic, yakin + genel))
+
+
 HIZLI = [test_periyodik_es_etkin_bc, test_betik_kesik_yakit_hacmi, test_k2_brown_atiflari,
-         test_panel_rozeti_degerlendirilemedi]
+         test_panel_rozeti_degerlendirilemedi, test_tek_tambur_yonu_asil_modelle_ayni]
 YAVAS = [test_yavas_betik_kesik_hacim_kosucuyla_ayni]
