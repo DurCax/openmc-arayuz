@@ -213,3 +213,41 @@ def ek_moduller():
                    for p in glob.glob(os.path.join(KOK, "testler", "test_*.py")))
     return [importlib.import_module("testler." + a) for a in adlar
             if a != "test_regresyon"]
+
+
+# ---------------------------------------------------------------------------
+# GEREKSINIM ISARETI (Dalga S-4: gereksinim -> test -> sonuc izlenebilirligi)
+# ---------------------------------------------------------------------------
+# Kullanim (test GOVDESI degismez; yalniz ust satira isaret eklenir):
+#     from testler.ortak_test import gereksinim
+#     @gereksinim("R-FZ-01")
+#     def test_regresyon_cipasi(gecici): ...
+# Isaret islevin KENDISINI dondurur (HIZLI/YAVAS listeleri ayni nesneyi
+# tutar) ve iki iz birakir:
+#   fn.gereksinimler  -> ("R-FZ-01", ...)  (araclar/izlenebilirlik.py okur)
+#   pytest isareti    -> @pytest.mark.gereksinim("R-FZ-01")  (`-m gereksinim`)
+# Kimliklerin tanimi docs/GEREKSINIMLER.md'dedir; tanimsiz kimlik
+# testler/test_izlenebilirlik.py'de KALIR.
+
+import re as _re
+
+GEREKSINIM_DESENI = _re.compile(r"^R-[A-Z0-9]+-[0-9]{2}$")
+
+
+def gereksinim(*kimlikler):
+    """Test islevini bir ya da birden cok gereksinim kimligine baglar."""
+    if not kimlikler:
+        raise ValueError("gereksinim(): en az bir kimlik gerekli")
+    for k in kimlikler:
+        if not isinstance(k, str) or not GEREKSINIM_DESENI.match(k):
+            raise ValueError("gecersiz gereksinim kimligi: %r (bicim R-XX-NN)" % (k,))
+
+    def isaretle(fn):
+        onceki = tuple(getattr(fn, "gereksinimler", ()))
+        fn.gereksinimler = onceki + tuple(k for k in kimlikler if k not in onceki)
+        try:
+            import pytest
+        except ImportError:      # eski calistirici pytest'siz de kosar
+            return fn
+        return pytest.mark.gereksinim(*kimlikler)(fn)
+    return isaretle

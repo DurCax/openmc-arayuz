@@ -66,6 +66,7 @@ markers = [
     "yavas: Monte Carlo / uzun test (eski calistiricida tam mod)",
     "veri: nukleer veri (OPENMC_CROSS_SECTIONS) gerektirir; yoksa atlanir",
     "zincir: tukenme zinciri (OPENMC_CHAIN_FILE ya da ~/nucdata/chain) gerektirir; yoksa atlanir",
+    "gereksinim(*kimlikler): testin dogruladigi gereksinim kimlikleri (docs/GEREKSINIMLER.md; testler/ortak_test.gereksinim)",
 ]
 filterwarnings = [
     "ignore::pytest.PytestReturnNotNoneWarning",
