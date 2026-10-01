@@ -171,14 +171,14 @@
         "koni_aci": 30.0
       },
       "alt": [
-        -1.0,
-        -1.0,
-        -1.0
+        -4.5999,
+        -4.5999,
+        -4.5999
       ],
       "ust": [
-        1.0,
-        1.0,
-        1.0
+        4.5999,
+        4.5999,
+        4.5999
       ]
     },
     "entropi_mesh": {
@@ -566,6 +566,27 @@
     "seri": "U233-MET-FAST-005",
     "aoa_girdi": {
       "fiziksel_bicim": "metal",
+      "yansitici": "berilyum"
+    },
+    "olcum": {
+      "k": 0.99689,
+      "sigma": 0.00021,
+      "parcacik": 100000,
+      "cevrim": 200,
+      "pasif": 50,
+      "sure_s": 63.5,
+      "is_parcacigi": 12,
+      "openmc": "0.16.0",
+      "kutuphane": "ENDF/B-VIII.0",
+      "tarih": "2026-10-01"
+    },
+    "aoa": {
+      "bolunebilir": "U-233",
+      "zenginlik": 98.200019,
+      "h_x": 0.0,
+      "fiziksel_bicim": "metal",
+      "ealf": 770577.565315,
+      "tayf": "hizli",
       "yansitici": "berilyum"
     }
   }

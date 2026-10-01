@@ -169,14 +169,14 @@
         "koni_aci": 30.0
       },
       "alt": [
-        -1.0,
-        -1.0,
-        -1.0
+        -4.2058,
+        -4.2058,
+        -4.2058
       ],
       "ust": [
-        1.0,
-        1.0,
-        1.0
+        4.2058,
+        4.2058,
+        4.2058
       ]
     },
     "entropi_mesh": {
@@ -564,6 +564,27 @@
     "seri": "U233-MET-FAST-006",
     "aoa_girdi": {
       "fiziksel_bicim": "metal",
+      "yansitici": "dogal_u"
+    },
+    "olcum": {
+      "k": 0.99985,
+      "sigma": 0.0002,
+      "parcacik": 100000,
+      "cevrim": 200,
+      "pasif": 50,
+      "sure_s": 132.4,
+      "is_parcacigi": 12,
+      "openmc": "0.16.0",
+      "kutuphane": "ENDF/B-VIII.0",
+      "tarih": "2026-10-01"
+    },
+    "aoa": {
+      "bolunebilir": "U-233",
+      "zenginlik": 98.12999,
+      "h_x": 0.0,
+      "fiziksel_bicim": "metal",
+      "ealf": 962443.323442,
+      "tayf": "hizli",
       "yansitici": "dogal_u"
     }
   }

@@ -183,14 +183,14 @@
         "koni_aci": 30.0
       },
       "alt": [
-        -1.0,
-        -1.0,
-        -1.0
+        -5.0419,
+        -5.0419,
+        -5.0419
       ],
       "ust": [
-        1.0,
-        1.0,
-        1.0
+        5.0419,
+        5.0419,
+        5.0419
       ]
     },
     "entropi_mesh": {
@@ -578,6 +578,27 @@
     "seri": "PU-MET-FAST-018",
     "aoa_girdi": {
       "fiziksel_bicim": "metal",
+      "yansitici": "berilyum"
+    },
+    "olcum": {
+      "k": 0.99789,
+      "sigma": 0.00018,
+      "parcacik": 100000,
+      "cevrim": 200,
+      "pasif": 50,
+      "sure_s": 65.6,
+      "is_parcacigi": 12,
+      "openmc": "0.16.0",
+      "kutuphane": "ENDF/B-VIII.0",
+      "tarih": "2026-10-01"
+    },
+    "aoa": {
+      "bolunebilir": "Pu",
+      "zenginlik": 95.080587,
+      "h_x": 0.0,
+      "fiziksel_bicim": "metal",
+      "ealf": 924175.582139,
+      "tayf": "hizli",
       "yansitici": "berilyum"
     }
   }
