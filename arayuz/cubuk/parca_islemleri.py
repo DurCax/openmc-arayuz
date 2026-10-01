@@ -301,47 +301,40 @@ def _parca_bul(spec, ad):
     return None
 
 
+_PARCA_TURU = {"cubuklar": "cubuk", "plakalar": "plaka", "demetler": "demet"}
+
+
+def _degisen_yaprak_sayisi(eski_deger, yeni_deger, eski, yeni):
+    """Iki ayni bicimli yapida 'eski' -> 'yeni' olan yaprak sayisi."""
+    if isinstance(eski_deger, dict) and isinstance(yeni_deger, dict):
+        return sum(_degisen_yaprak_sayisi(eski_deger[k], yeni_deger[k], eski, yeni)
+                   for k in eski_deger if k in yeni_deger)
+    if isinstance(eski_deger, list) and isinstance(yeni_deger, list):
+        return sum(_degisen_yaprak_sayisi(a, b, eski, yeni)
+                   for a, b in zip(eski_deger, yeni_deger))
+    return int(eski_deger == eski and yeni_deger == yeni)
+
+
 def parca_adini_degistir(spec, eski, yeni):
     """
-    Cubuk/plaka/demet adini ve ONA ISARET EDEN BUTUN referanslari degistirir:
-      demetler[].anahtar degerleri
-      kor.cubuk / kor.plaka / kor.demet / kor.dolgu
-      kor.anahtar (kor haritasi) degerleri
-      kor.eksenel.bolgeler[].dolgu ve .anahtar degerleri
-      guc_dagilimi.cubuk
-    (tukenme ve tallyler yalnizca MALZEME adi tutar.) Yerinde degistirir;
-    guncellenen referans sayisini dondurur. Parca yoksa KeyError.
+    Cubuk/plaka/demet adini ve ONA ISARET EDEN BUTUN referanslari degistirir
+    (geometri.ad_degistir): demetler[].anahtar, sablon kor alanlari (cubuk,
+    plaka, demet, dolgu, anahtar, eksenel bolgeler), guc_dagilimi hedefleri
+    ve agac modunda spec["geometri"] basvurulari. (tukenme ve tallyler
+    yalnizca MALZEME adi tutar.) Yerinde degistirir (sekmeler ayni spec
+    nesnesini paylasir); guncellenen referans sayisini dondurur (tanimin
+    kendisi haric). Parca yoksa KeyError, yeni ad cakisirsa ValueError.
     """
-    parca = _parca_bul(spec, eski)
-    if parca is None:
+    from cekirdek import geometri
+    tur = next((t for liste, t in _PARCA_TURU.items()
+                if any(x.get("ad") == eski for x in spec.get(liste) or [])), None)
+    if tur is None:
         raise KeyError("tanımsız parça: %s" % eski)
-    parca["ad"] = yeni
-    sayac = [0]
-
-    def esle(sozluk):
-        for h, hedef in list((sozluk or {}).items()):
-            if hedef == eski:
-                sozluk[h] = yeni
-                sayac[0] += 1
-
-    def alan(sozluk, anahtar):
-        if sozluk is not None and sozluk.get(anahtar) == eski:
-            sozluk[anahtar] = yeni
-            sayac[0] += 1
-
-    for d in spec.get("demetler", []):
-        esle(d.get("anahtar"))
-    kor = spec.get("kor") or {}
-    for a in ("cubuk", "plaka", "demet", "dolgu"):
-        alan(kor, a)
-    esle(kor.get("anahtar"))
-    for b in (kor.get("eksenel") or {}).get("bolgeler") or []:
-        alan(b, "dolgu")
-        esle(b.get("anahtar"))
-    alan(spec.get("guc_dagilimi"), "cubuk")
-    for h in (spec.get("guc_dagilimi") or {}).get("cubuklar") or []:
-        alan(h, "cubuk")
-    return sayac[0]
+    yeni_spec = geometri.ad_degistir(spec, tur, eski, yeni)
+    sayi = _degisen_yaprak_sayisi(spec, yeni_spec, eski, yeni) - 1
+    spec.clear()
+    spec.update(yeni_spec)
+    return sayi
 
 
 def parca_kullanimlari(spec, ad):

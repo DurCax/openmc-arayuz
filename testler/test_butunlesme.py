@@ -137,8 +137,17 @@ def test_betik_ad_cakismalari():
         sorun = anlamsal_fark(s, n=150)
         kontrol("'%s' adli malzeme betigi bozmuyor" % ad, not sorun, "-> %s" % sorun)
 
+    # eski dosya: cubuk malzemeyle ayni adli. parca_adini_degistir artik
+    # cakisan adi reddeder (geometri.ad_degistir ValueError); dosya metinden kurulur.
+    import json
     s = copy.deepcopy(taban)
-    parca_adini_degistir(s, s["cubuklar"][0]["ad"], "uo2")
+    try:
+        parca_adini_degistir(copy.deepcopy(s), s["cubuklar"][0]["ad"], "uo2")
+        reddetti = False
+    except ValueError:
+        reddetti = True
+    kontrol("malzemeyle cakisan cubuk adi reddedilir", reddetti)
+    s = json.loads(json.dumps(s).replace('"%s"' % s["cubuklar"][0]["ad"], '"uo2"'))
     kontrol("cubuk ile malzeme ayni adli (eski dosya) -> betik ayni",
             not anlamsal_fark(s, n=150))
 
