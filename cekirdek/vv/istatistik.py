@@ -35,6 +35,8 @@ KAPSAM = 0.95                # popülasyonun %95'i
 DELTA_SM_ASGARI = 0.02       # 6698 §2.4.5 mutlak alt sinir
 N_TABLO_UST = 50             # Tablo 2.1 n <= 50; n > 50 icin U(50) muhafazakar
 N_ASGARI = 3                 # regresyon ve Shapiro-Wilk icin
+N_USL_ASGARI = 10            # 6698 §2.2: < 10 deney teknik gerekce ister; arac gerekce
+#                              olmadan USL VERMEZ (STANDARTLAR.md §5: sahte guven yok)
 ALFA = 0.05                  # normallik ve egilim anlamlilik duzeyi
 SINIRDA_UST = 0.10           # 0.05 < p < 0.10 "sinirda" (iki yontem de raporlanmali)
 LOG_PARAMETRELER = ("ealf",)  # EALF egilimi log10 olceginde
@@ -223,9 +225,12 @@ def _bos_sonuc(n, delta_sm, delta_aoa, neden):
 
 
 def degerlendir(vakalar, delta_sm=0.05, delta_aoa=0.0,
-                egilim_parametreleri=("zenginlik", "h_x", "ealf"), uygulama=None):
+                egilim_parametreleri=("zenginlik", "h_x", "ealf"), uygulama=None,
+                n_usl_asgari=N_USL_ASGARI):
     """NUREG/CR-6698 akisi (modul basligi). DONER sozluk (vv_arayuz.VVOzeti alanlari +
-    K_L, S_p, k_ort, usl_noktasi). USL hesaplanamazsa usl None ve usl_neden dolu."""
+    K_L, S_p, k_ort, usl_noktasi). USL hesaplanamazsa usl None ve usl_neden dolu.
+    n < n_usl_asgari ise istatistikler raporlanir ama USL verilmez (kullanici teknik
+    gerekceyle n_usl_asgari'yi dusurebilir; K10 yine uyarir)."""
     usl(1.0, delta_sm, delta_aoa)            # ΔSM / ΔAOA girdisini en basta denetle
     n = len(vakalar)
     if n < N_ASGARI:
@@ -260,5 +265,11 @@ def degerlendir(vakalar, delta_sm=0.05, delta_aoa=0.0,
         sonuc.update(yontem="tolerans_bandi", K_L=kl, usl_noktasi=nokta, S_p=e["S_p"])
     else:
         sonuc.update(yontem="tolerans_siniri", K_L=tolerans_siniri(ag["k_ort"], ag["S_p"], n))
+    if n < n_usl_asgari:
+        sonuc["usl"] = None
+        sonuc["usl_neden"] = (_("kümede %d vaka var (< %d): bağımsız vaka yetersiz, teknik "
+                                "gerekçe olmadan USL verilmez (NUREG/CR-6698 §2.2); hesaplanan "
+                                "K_L = %.4f yalnız bilgi") % (n, n_usl_asgari, sonuc["K_L"]))
+        return sonuc
     sonuc["usl"] = usl(sonuc["K_L"], delta_sm, delta_aoa)
     return sonuc

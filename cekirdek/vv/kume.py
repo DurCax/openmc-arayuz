@@ -111,12 +111,13 @@ def _kategorik(vlar):
 
 
 def ozet(vlar=None, filtre=None, uygulama=None, delta_sm=DELTA_SM_VARSAYILAN,
-         delta_aoa=0.0, egilim_parametreleri=SAYISAL):
+         delta_aoa=0.0, egilim_parametreleri=SAYISAL, n_usl_asgari=_ist.N_USL_ASGARI):
     """Kume -> VVOzeti (NUREG/CR-6698). uygulama verilirse bant yonteminde USL
     uygulamanin parametre degerinde hesaplanir."""
     vlar = vakalar(filtre=filtre) if vlar is None else [v for v in vlar if _uyar(v, filtre)]
     d = _ist.degerlendir(vlar, delta_sm=delta_sm, delta_aoa=delta_aoa,
-                         egilim_parametreleri=egilim_parametreleri, uygulama=uygulama)
+                         egilim_parametreleri=egilim_parametreleri, uygulama=uygulama,
+                         n_usl_asgari=n_usl_asgari)
     neden = d["usl_neden"]
     if d.get("usl_noktasi"):
         neden = _("USL tolerans bandından, %s noktasında") % d["usl_noktasi"]

@@ -208,7 +208,121 @@ def test_aoa_spec_parametreleri():
             p.get("zenginlik", 0) > 95)
 
 
+def test_kucuk_kume_usl_yok():
+    print("\n[VV4b] n < 10: istatistik raporlanir, USL verilmez (gerekce olmadan)")
+    from cekirdek.vv import istatistik as ist
+    v = _vakalar(k=K[:8], sc=SC[:8], hx=HX[:8])
+    s = ist.degerlendir(v, delta_sm=0.05, egilim_parametreleri=())
+    kontrol("n = 8 -> USL None, neden dolu", s["usl"] is None and "8" in s["usl_neden"],
+            "-> %s" % s["usl_neden"])
+    kontrol("yanlilik yine raporlanir", s["bias"] < 0 and s["K_L"] is not None)
+    s2 = ist.degerlendir(v, delta_sm=0.05, egilim_parametreleri=(), n_usl_asgari=3)
+    kontrol("teknik gerekceyle esik dusurulurse USL verilir", s2["usl"] is not None)
+
+
+def _sahte_kume():
+    from cekirdek.vv.istatistik import Vaka
+    vlar = []
+    for i in range(12):
+        tur = "U-235" if i % 2 else "Pu"
+        vlar.append(Vaka("v%d" % i, 1.0 + 0.0004 * ((i * 5) % 7 - 3), 0.0002, 1.0, 0.002,
+                         {"bolunebilir": tur, "fiziksel_bicim": "metal", "tayf": "hizli",
+                          "yansitici": "yok", "zenginlik": 30.0 + 5 * i, "ealf": 1e6 + 1e4 * i},
+                         "SERI-%d" % (i // 3)))
+    return vlar
+
+
+def test_kume_ozeti():
+    print("\n[VV6] Kume -> VVOzeti (sahte kume ve depodaki kayitli kriterler)")
+    import json
+    from cekirdek.vv import kume
+    o = kume.ozet(_sahte_kume(), delta_sm=0.05)
+    kontrol("n = 12, gecerli yontem", o.n == 12 and o.yontem in ("tolerans_siniri",
+                                                               "tolerans_bandi",
+                                                               "parametrik_olmayan"))
+    kontrol("USL hesaplandi ve < 1 - ΔSM", o.usl is not None and o.usl < 0.95, "-> %s" % o.usl)
+    kontrol("aralik zenginlik [30, 85]", o.aralik.get("zenginlik") == (30.0, 85.0))
+    kontrol("kategorik bolunebilir (Pu, U-235)", o.aoa_kategorik.get("bolunebilir")
+            == ("Pu", "U-235"))
+    kontrol("seriler: 4 seri x 3 vaka", o.seriler == {"SERI-%d" % i: 3 for i in range(4)})
+    kontrol("normallik ve egilim raporlandi", o.normallik is not None and "zenginlik" in o.egilim)
+    kontrol("kaynak NUREG/CR-6698", "NUREG/CR-6698" in o.kaynak)
+    alt = kume.ozet(_sahte_kume(), filtre={"bolunebilir": "Pu"})
+    kontrol("filtre: yalniz Pu -> n = 6 -> USL hesaplanamadi", alt.n == 6 and alt.usl is None
+            and alt.usl_neden, "-> %s" % alt.usl_neden)
+    aralik = kume.ozet(_sahte_kume(), filtre={"zenginlik": ("aralik", 0.0, 50.0)})
+    kontrol("aralik filtresi zenginlik <= 50 -> n = 5", aralik.n == 5)
+    dosyalar = kume.kriter_dosyalari()
+    gercek = kume.vakalar()
+    deney = [y for y in dosyalar
+             if json.load(open(y, encoding="utf-8"))["referans"].get("tur") == "deney"
+             and "olcum" in json.load(open(y, encoding="utf-8"))["referans"]]
+    kontrol("depo: olcumlu deney kriterlerinin hepsi kumede (%d)" % len(deney),
+            len(gercek) == len(deney) and len(gercek) >= 5)
+    kontrol("hesap-hesap (VVER) kumede degil",
+            not any("vver" in v.ad for v in gercek))
+    kontrol("her vakada AOA parametreleri ve seri",
+            all(v.parametreler.get("bolunebilir") and v.seri for v in gercek),
+            "-> %s" % [v.ad for v in gercek if not v.parametreler.get("bolunebilir")])
+    o = kume.ozet()
+    print("   depo kumesi: n=%d yontem=%s USL=%s bias=%+.5f %s" % (
+        o.n, o.yontem, o.usl, o.bias, o.usl_neden))
+    kontrol("depo kumesi ozeti uretildi", o.n == len(gercek))
+
+
+def _profil_b(vv, uyg):
+    from cekirdek.uygunluk_denetimi.denetle import denetle
+    from testler.test_uygunluk_denetimi import FIXTURE
+    return denetle(None, FIXTURE, ("B",), vv=vv, uygulama=uyg)
+
+
+def _bul(bulgular, kimlik):
+    return [b for b in bulgular if b.kural == kimlik or b.kural.startswith(kimlik + "-")]
+
+
+def test_profil_b_uctan_uca():
+    print("\n[VV7] Profil B uctan uca: LEU ornegi (pwr_3b kosu fixture'i) + V&V kumesi")
+    from cekirdek import sema
+    from cekirdek.vv import kume
+    from testler.test_uygunluk_denetimi import FIXTURE
+    import os
+    spec = sema.yukle(os.path.join(FIXTURE, "spec.json"))
+    uyg = kume.uygulama(spec, FIXTURE)
+    kontrol("uygulama: U-235, oksit, zenginlik < %5", uyg.get("bolunebilir") == "U-235"
+            and uyg.get("fiziksel_bicim") == "oksit" and 0 < uyg.get("zenginlik", 0) < 5,
+            "-> %s" % uyg)
+    vv = kume.ozet(_sahte_kume_leu(), uygulama=uyg)
+    b = _profil_b(vv, uyg)
+    for kimlik in ("K6", "K6-AOA", "K8", "K9", "K10", "K11", "K12", "K13", "K14"):
+        kontrol("%s degerlendirildi (V&V var)" % kimlik,
+                _bul(b, kimlik) and all("V&V" not in x.mesaj or kimlik == "K6"
+                                        for x in _bul(b, kimlik)),
+                "-> %s" % [(x.seviye, x.durum, x.mesaj[:60]) for x in _bul(b, kimlik)])
+    k6 = _bul(b, "K6")[0]
+    kontrol("K6: k + 2σ USL ile karsilastirildi", "USL =" in k6.mesaj, "-> %s" % k6.mesaj)
+    kontrol("K8 karsilandi", _bul(b, "K8")[0].durum == "karsilandi")
+    kontrol("K14: ayni seriden cok vaka notu", _bul(b, "K14")[0].durum == "bilgi")
+    gercek = kume.ozet(filtre={"bolunebilir": "U-235", "zenginlik": ("aralik", 0.0, 20.0)},
+                       uygulama=uyg)
+    b2 = _profil_b(gercek, uyg)
+    k6 = _bul(b2, "K6")[0]
+    kontrol("depo LEU alt kumesi (n = %d < 10) -> K6 'USL hesaplanamadı'" % gercek.n,
+            k6.durum == "uygulanamadi" and "USL hesaplanamadı" in k6.mesaj, "-> %s" % k6.mesaj)
+    kontrol("K10 uyarisi (n < 10)", any(x.seviye == "uyari" for x in _bul(b2, "K10")))
+
+
+def _sahte_kume_leu():
+    """LEU oksit AOA'si icin bagimsiz 12 vakalik SAHTE kume (yalniz arayuz sinamasi)."""
+    from cekirdek.vv.istatistik import Vaka
+    return [Vaka("leu%d" % i, 0.9975 + 0.0005 * ((i * 5) % 7 - 3), 0.0002, 1.0, 0.0015,
+                 {"bolunebilir": "U-235", "fiziksel_bicim": "oksit", "tayf": "termal",
+                  "yansitici": "su", "zenginlik": 2.0 + 0.25 * i},
+                 "LEU-COMP-THERM-%03d" % (i // 2))
+            for i in range(12)]
+
+
 HIZLI = [test_nureg_ornegi_agirlikli, test_nureg_ornegi_egilim_bant,
          test_nureg_ornegi_parametrik_olmayan_normallik, test_tolerans_carpani_tablo,
-         test_kurallar, test_yontem_secimi, test_aoa_ealf_tayf, test_aoa_spec_parametreleri]
+         test_kurallar, test_yontem_secimi, test_kucuk_kume_usl_yok, test_aoa_ealf_tayf,
+         test_aoa_spec_parametreleri, test_kume_ozeti, test_profil_b_uctan_uca]
 YAVAS = []
