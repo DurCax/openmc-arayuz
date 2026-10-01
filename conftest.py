@@ -233,6 +233,32 @@ def _calisma_dizini_korumasi(request):
 
 
 @pytest.fixture(autouse=True)
+def _qt_pencere_temizligi():
+    """Testin acip biraktigi ust duzey Qt pencerelerini siler.
+
+    Olculdu (01.10.2026): sizan pencereler ayni xdist iscisinde birikiyor ve
+    QApplication.setStyleSheet her tema degisiminde HEPSINI yeniden
+    cilaliyordu -- test_tema_degisimi_ikon_ve_renk tek basina 0.04 s,
+    suitte 693 s; hizli suit 449 testte ~3.5 dk iken 532 testte 28 dk oldu.
+    Yalniz test SIRASINDA olusan pencereler silinir; onceden var olanlar
+    (modul duzeyi onbellek) dokunulmaz."""
+    from PySide6 import QtWidgets
+    uyg = QtWidgets.QApplication.instance()
+    once = {id(w) for w in uyg.topLevelWidgets()} if uyg else set()
+    yield
+    uyg = QtWidgets.QApplication.instance()
+    if uyg is None:
+        return
+    from PySide6 import QtCore
+    yeni = [w for w in uyg.topLevelWidgets() if id(w) not in once]
+    for w in yeni:
+        w.close()
+        w.deleteLater()
+    if yeni:
+        QtCore.QCoreApplication.sendPostedEvents(None, QtCore.QEvent.DeferredDelete)
+
+
+@pytest.fixture(autouse=True)
 def _verisiz_openmc_lib_korumasi(monkeypatch):
     """Veri yokken openmc.lib.init sureci C++ tarafinda SONLANDIRIR ve xdist
     iscisiyle birlikte baska testlerin sonucu da kaybolur. "veri" isareti
