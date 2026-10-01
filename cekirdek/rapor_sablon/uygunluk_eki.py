@@ -16,12 +16,12 @@ import html as _html
 from cekirdek.ceviri import _, N_
 
 _DURUM_BASLIKLARI = {
-    "karsilanmadi": N_("Karşılanmayan kurallar"),
+    "karsilanmadi": N_("Kontrolü geçmeyen kurallar"),
     "bilgi": N_("Notlar"),
     "uygulanamadi": N_("Uygulanamayan kurallar (değerlendirilemedi)"),
-    "karsilandi": N_("Karşılanan kurallar"),
+    "karsilandi": N_("Kontrolü geçen kurallar"),
 }
-_OZET_ADLARI = (("karsilandi", N_("karşılanan")), ("karsilanmadi", N_("karşılanmayan")),
+_OZET_ADLARI = (("karsilandi", N_("kontrolü geçen")), ("karsilanmadi", N_("kontrolü geçmeyen")),
                 ("uygulanamadi", N_("uygulanamayan")), ("bilgi", N_("not")))
 _SEVIYE = {"hata": ("hata", N_("HATA")), "uyari": ("uyari", N_("UYARI")),
            "bilgi": ("bilgi", N_("BİLGİ"))}
@@ -77,13 +77,18 @@ def _ozet(ek):
     return ", ".join("%d %s" % (durum.get(k, 0), _(ad)) for k, ad in _OZET_ADLARI)
 
 
+def ek_basligi():
+    return _("Standart ve iyi uygulama kontrol listesi — sertifika değildir")
+
+
 def html(ek):
     """Uygunluk eki HTML parcasi; ek None ise bos metin."""
     if not ek:
         return ""
     profiller = "; ".join("%s — %s" % (k, ad) for k, ad in ek["profiller"]) or _("seçilmedi")
     # Ek yeni sayfada baslar (QTextDocument page-break-before destekler).
-    parca = ['<h2 style="page-break-before: always">%s</h2>' % _e(_("Uygunluk eki")),
+    # Baslik bir uygunluk BEYANI degildir (STANDARTLAR.md §1): kontrol listesi.
+    parca = ['<h2 style="page-break-before: always">%s</h2>' % _e(ek_basligi()),
              '<p class="kutu">%s</p>' % _e(ek["cerceve"]),
              "<p><b>%s</b> %s</p>" % (_e(_("Seçilen denetim profilleri:")), _e(profiller)),
              "<p><b>%s</b> %s</p>" % (_e(_("Özet:")), _e(_ozet(ek)))]

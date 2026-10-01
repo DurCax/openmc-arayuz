@@ -451,7 +451,23 @@ def test_k7_sigma_ve_dil():
             "-> %s" % [x.mesaj for x in guc])
 
 
-TAMBUR_R = 6.0      # altigen_tambur_halkasi tambur yaricapi (cm)
+def test_rapor_eki_ve_panel_dili():
+    print("\n[GS11] rapor eki/panel: 'kontrol listesi — sertifika değildir', 'Kontrolü geçen'")
+    from cekirdek.rapor_sablon import uygunluk_eki
+    from arayuz import uygunluk_paneli
+    ek = {"profiller": [("A", "A")], "gruplar": {"karsilandi": [], "karsilanmadi": []},
+          "ozet": {"durum": {"karsilandi": 1, "karsilanmadi": 0, "uygulanamadi": 0, "bilgi": 0}},
+          "cerceve": "c", "usl_notu": "", "hata": ""}
+    metin = uygunluk_eki.html(ek)
+    kontrol("baslik", "Standart ve iyi uygulama kontrol listesi — sertifika değildir" in metin)
+    kontrol("'Kontrolü geçen', 'Karşılanan' yok", "Kontrolü geçen" in metin
+            and "Karşılan" not in metin and "karşılan" not in metin)
+    adlar = " ".join(uygunluk_paneli._DURUM_ADLARI.values())
+    kontrol("panel durum adlari 'kontrolü geçti'", "kontrolü geçti" in adlar
+            and "karşılan" not in adlar, "-> %s" % adlar)
+
+
+TAMBUR_R = 6.0     # altigen_tambur_halkasi tambur yaricapi (cm)
 
 
 def _harita(spec, noktalar):
@@ -499,5 +515,6 @@ HIZLI = [test_periyodik_es_etkin_bc, test_betik_kesik_yakit_hacmi, test_k2_brown
          test_panel_rozeti_degerlendirilemedi, test_tek_tambur_yonu_asil_modelle_ayni,
          test_stokastik_hacim_sigma_denetimi, test_stokastik_hacim_chdir_yok,
          test_ice_aktar_ayni_adli_evrenler, test_ice_aktar_tambur_yonu_harf_sinir,
-         test_arayuz_sessiz_yedek_yok, test_cli_siki_cikis_kodu, test_k7_sigma_ve_dil]
+         test_arayuz_sessiz_yedek_yok, test_cli_siki_cikis_kodu, test_k7_sigma_ve_dil,
+         test_rapor_eki_ve_panel_dili]
 YAVAS = [test_yavas_betik_kesik_hacim_kosucuyla_ayni]

@@ -117,9 +117,10 @@ def test_rapor_uygunluk_eki_html():
     from cekirdek.uygunluk_denetimi.profiller import durust_cerceve
     metin = _ek_metni(("A", "B", "D"))
     duz = " ".join(duz_metin(metin).split())
-    kontrol("baslik", "Uygunluk eki" in duz)
+    kontrol("baslik (kontrol listesi, sertifika degil)",
+            "Standart ve iyi uygulama kontrol listesi — sertifika değildir" in duz)
     kontrol("cerceve AYNEN", " ".join(durust_cerceve().split()) in duz)
-    for parca in ("Karşılanan", "Karşılanmayan", "Uygulanamayan", "K1", "K3", "K4",
+    for parca in ("Kontrolü geçen", "Kontrolü geçmeyen", "Uygulanamayan", "K1", "K3", "K4",
                   "K5", "K6", "Monte Carlo iyi uygulaması", "Kritiklik güvenliği",
                   etiket_metni(IYI_UYGULAMA), "LA-UR-09-03136", "NUREG/CR-6698"):
         kontrol("ek icerir: %s" % parca, parca in duz)
@@ -128,7 +129,7 @@ def test_rapor_uygunluk_eki_html():
     k5 = _k5_sorunlari(_spec(), metin)
     kontrol("ekli rapor da K5 temiz", not k5, "-> %s" % [b.mesaj for b in k5])
     a = " ".join(duz_metin(_ek_metni(("A",))).split())
-    kontrol("B secilmezse USL notu yok", "USL hesaplanamadı" not in a and "Uygunluk eki" in a)
+    kontrol("B secilmezse USL notu yok", "USL hesaplanamadı" not in a and "kontrol listesi" in a)
 
 
 def test_rapor_uygunluk_eki_pdf():
@@ -139,7 +140,7 @@ def test_rapor_uygunluk_eki_pdf():
     spec = rapor_uygunluk.profilleri_yaz(_spec(), ("A", "B", "D"))
     icerik = rapor.icerik_topla(spec, FIXTURE)
     duz = " ".join(rapor_pdf._belge(icerik).toPlainText().split())
-    kontrol("PDF belgesinde ek", "Uygunluk eki" in duz and "USL hesaplanamadı" in duz)
+    kontrol("PDF belgesinde ek", "kontrol listesi" in duz and "USL hesaplanamadı" in duz)
     kontrol("PDF belgesinde cerceve", " ".join(durust_cerceve().split()) in duz)
     kontrol("PDF yazildi", _ek_metni(("A", "B", "D"), "pdf") > 0)
 

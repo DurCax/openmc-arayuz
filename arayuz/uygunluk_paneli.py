@@ -47,7 +47,7 @@ _IKONLAR = {
     ("uygulanamadi", None): ("circle-dot", "metin_soluk"),
     ("karsilandi", None): ("circle-check", "basari"),
 }
-_DURUM_ADLARI = {"karsilandi": N_("karşılandı"), "karsilanmadi": N_("karşılanmadı"),
+_DURUM_ADLARI = {"karsilandi": N_("kontrolü geçti"), "karsilanmadi": N_("kontrolü geçmedi"),
                  "uygulanamadi": N_("uygulanamadı"), "bilgi": N_("not")}
 
 
@@ -208,7 +208,7 @@ class UygunlukPaneli(b.Kart):
         sayi = ozet(bulgular)
         self._rozet_yaz(sayi["seviye"], sayi["durum"]["karsilanmadi"],
                         sayi["durum"]["karsilandi"], _degerlendirilemeyen_kurallar(bulgular))
-        self.ozet.setText(_("Profiller %s · %d karşılandı · %d karşılanmadı · %d "
+        self.ozet.setText(_("Profiller %s · %d kontrolü geçti · %d kontrolü geçmedi · %d "
                             "uygulanamadı · %d not") % (
             ", ".join(profiller), sayi["durum"]["karsilandi"],
             sayi["durum"]["karsilanmadi"], sayi["durum"]["uygulanamadi"],

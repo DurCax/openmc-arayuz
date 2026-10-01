@@ -160,7 +160,7 @@ def _uygunluk_argumanlari(argv):
 def _bulgu_satirlari(bulgular):
     from cekirdek import rapor_uygunluk
     from cekirdek.ceviri import _
-    adlar = {"karsilandi": _("karşılandı"), "karsilanmadi": _("KARŞILANMADI"),
+    adlar = {"karsilandi": _("kontrolü geçti"), "karsilanmadi": _("KONTROLÜ GEÇMEDİ"),
              "uygulanamadi": _("uygulanamadı"), "bilgi": _("not")}
     seviyeler = {"hata": _("HATA"), "uyari": _("UYARI"), "bilgi": _("BİLGİ")}
     satirlar = []
@@ -205,7 +205,7 @@ def uygunluk_komutu(argv):
         return 1
     print("\n".join(_bulgu_satirlari(bulgular)))
     sayi = ozet(bulgular)
-    print(_("\nProfiller: %s · %d hata, %d uyarı · %d karşılandı, %d karşılanmadı, "
+    print(_("\nProfiller: %s · %d hata, %d uyarı · %d kontrolü geçti, %d kontrolü geçmedi, "
             "%d uygulanamadı") % (",".join(profiller), sayi["seviye"]["hata"],
                                   sayi["seviye"]["uyari"], sayi["durum"]["karsilandi"],
                                   sayi["durum"]["karsilanmadi"], sayi["durum"]["uygulanamadi"]))
