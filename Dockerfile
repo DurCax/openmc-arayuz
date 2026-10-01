@@ -8,8 +8,9 @@
 #      docker/calistir.sh veri-indir            # /veri hacmine indirir (~20 GB bos alan)
 #
 #  DERLEME
-#      docker build -t openmc-arayuz:2.0.0rc1 .
-#      docker build --build-arg NOVNC=1 -t openmc-arayuz:2.0.0rc1-web .   # tarayicidan erisim
+#      docker/derle.sh                          # etiket pyproject.toml surumunden
+#      docker/derle.sh --novnc                  # + tarayicidan erisim (noVNC)
+#  (elle: docker build [--build-arg NOVNC=1] -t openmc-arayuz:<surum> .)
 #
 #  CALISTIRMA (ayrintilar: docker/calistir.sh --yardim)
 #      docker/calistir.sh x11                   # Linux masaustu (X11 / XWayland)

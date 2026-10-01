@@ -10,7 +10,7 @@
 #    docker/calistir.sh veri-durum | test | kabuk
 #
 #  ORTAM DEGISKENLERI (hepsi istege bagli)
-#    IMAJ         imaj adi                      (varsayilan openmc-arayuz:2.0.0rc1)
+#    IMAJ         imaj adi                      (varsayilan openmc-arayuz:<pyproject surumu>)
 #    VERI         nukleer veri: ana makine dizini ya da adli hacim
 #                 (varsayilan: adli hacim openmc-veri). Var olan bir veri
 #                 dizini icin ornek: VERI=$HOME/nucdata (endfb-viii.0-hdf5/ ve
@@ -22,7 +22,10 @@
 # =============================================================================
 set -euo pipefail
 
-IMAJ="${IMAJ:-openmc-arayuz:2.0.0rc1}"
+KOK="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+# surum tek kaynaktan: pyproject.toml [project].version
+SURUM="$(sed -n 's/^version = "\(.*\)"/\1/p' "$KOK/pyproject.toml" | head -n 1)"
+IMAJ="${IMAJ:-openmc-arayuz:${SURUM:-latest}}"
 VERI="${VERI:-openmc-veri}"
 CALISMA="${CALISMA:-$PWD}"
 NOVNC_PORTU="${NOVNC_PORTU:-6080}"

@@ -35,6 +35,7 @@ classifiers = [
 # basarisiz olur. Testlerdeki referans degerler openmc 0.16.0 ile olculdu.
 dependencies = [
     "numpy>=1.24",
+    "scipy>=1.10",          # cekirdek/vv/istatistik.py (V&V istatistikleri); openmc'nin de bagimliligi
     "PySide6>=6.5",
     "matplotlib>=3.7",
     "pandas>=2.0",
