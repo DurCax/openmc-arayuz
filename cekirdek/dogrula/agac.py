@@ -20,7 +20,7 @@
 import json
 
 from cekirdek import sema, uygunluk
-from cekirdek.ceviri import _
+from cekirdek.ceviri import _, pgettext
 from cekirdek.dogrula._ortak import Bulgu, hata_var
 from cekirdek.geometri import kesit as _k
 from cekirdek.geometri import yerlesim as _yer
@@ -344,12 +344,12 @@ def _yoklama_bulgulari(spec, n):
     if sonuc.ortusmeler:
         bulgular.append(_b("hata", "kok", _("Nokta yoklaması: %s. %s")
                            % (yoklama.oran_metni(sonuc), "; ".join(
-                               t for t in metinler if t.startswith("örtüşme"))),
+                               t for t in metinler if t.startswith(pgettext("yoklama", "örtüşme")))),
                            _("Örtüşen hücreler kayıp parçacık üretir.")))
     if sonuc.bosluklar:
         bulgular.append(_b("hata", "kok", _("Nokta yoklaması: %s. %s")
                            % (yoklama.oran_metni(sonuc), "; ".join(
-                               t for t in metinler if t.startswith("boşluk"))),
+                               t for t in metinler if t.startswith(pgettext("yoklama", "boşluk")))),
                            _("Tanımsız bölge: parçacık kaybolur. Bölgeyi bir malzemeyle "
                              "doldurun.")))
     return bulgular

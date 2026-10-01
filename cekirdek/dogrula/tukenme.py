@@ -11,11 +11,17 @@ from cekirdek.sema import malzeme_bul
 from cekirdek import veri_bilgi
 from cekirdek import uygunluk
 from cekirdek import nuklidler
-from cekirdek.ceviri import _
+from cekirdek.ceviri import _, pgettext
 from cekirdek.dogrula._ortak import Bulgu
 
 
 _SPEKTRUM_ADI = {"termal": "termal", "hizli": "hızlı"}
+
+
+def _spektrum_adi(kod):
+    """Spektrum/zincir turunun gorunen adi, etkin dilde (_SPEKTRUM_ADI)."""
+    return {"termal": pgettext("spektrum", "termal"),
+            "hizli": pgettext("spektrum", "hızlı")}.get(kod, kod)
 
 
 def _izlenen_kontrol(izlenen, zincir_yolu, yer):
@@ -57,11 +63,11 @@ def tukenme_kontrol(spec, veri_kontrolu=True):
     if not uygun:
         if spec["ayarlar"].get("mod", "eigenvalue") != "eigenvalue":
             bulgular.append(Bulgu("hata", yer,
-                                  "tükenme Özdeğer (k-eff) hesabı gerektirir",
-                                  "Sabit kaynaklı tükenme (aktivasyon) bu sürümde yok."))
+                                  _("tükenme Özdeğer (k-eff) hesabı gerektirir"),
+                                  _("Sabit kaynaklı tükenme (aktivasyon) bu sürümde yok.")))
         else:
-            bulgular.append(Bulgu("hata", yer, "tükenme yapılamaz: %s" % sebep,
-                                  "Yanacak yakıt geometride yer almalı."))
+            bulgular.append(Bulgu("hata", yer, _("tükenme yapılamaz: %s") % sebep,
+                                  _("Yanacak yakıt geometride yer almalı.")))
 
     # --- zincir ---
     zs = _tk.zincir_secimi(spec)
@@ -70,39 +76,39 @@ def tukenme_kontrol(spec, veri_kontrolu=True):
     tamam, mesaj, _n = veri_bilgi.zincir_kontrol(zs["yol"])
     if not tamam:
         bulgular.append(Bulgu("hata", yer, mesaj,
-                              "Kaynak ve sha256: ~/nucdata/chain/KAYNAK.txt"))
+                              _("Kaynak ve sha256: ~/nucdata/chain/KAYNAK.txt")))
     if tamam:
         bulgular.extend(_izlenen_kontrol(t.get("izlenen") or [], zs["yol"], yer))
     if t.get("zincir", "otomatik") != "otomatik" and zs["temel"] != zs["spektrum"]:
         bulgular.append(Bulgu(
             "uyari", yer,
-            "%s zincir seçildi ama model %s spektrumlu görünüyor"
-            % (_SPEKTRUM_ADI.get(zs["temel"], zs["temel"]),
-               _SPEKTRUM_ADI.get(zs["spektrum"], zs["spektrum"])),
-            "Termal/hızlı zincir yakalama dallanma oranlarını ve fisyon "
+            _("%s zincir seçildi ama model %s spektrumlu görünüyor")
+            % (_spektrum_adi(zs["temel"]),
+               _spektrum_adi(zs["spektrum"])),
+            _("Termal/hızlı zincir yakalama dallanma oranlarını ve fisyon "
             "verimlerini belirler (ör. Am241(n,γ)→Am242m termalde %8.1, "
-            "hızlıda %13.2)."))
+            "hızlıda %13.2).")))
     if zs["tur"].startswith("casl"):
         bulgular.append(Bulgu(
             "bilgi", yer,
-            "basitleştirilmiş CASL zinciri: 228 nüklid (tam zincir 3820)",
-            "Yaklaşık 3 kat hızlı; ön inceleme içindir. Sonuçları tam zincirle "
-            "doğrulayın."))
+            _("basitleştirilmiş CASL zinciri: 228 nüklid (tam zincir 3820)"),
+            _("Yaklaşık 3 kat hızlı; ön inceleme içindir. Sonuçları tam zincirle "
+            "doğrulayın.")))
 
     # --- guc ve adimlar ---
     p = t.get("guc_yogunlugu")
     if p is None or float(p) <= 0:
-        bulgular.append(Bulgu("hata", yer, "güç yoğunluğu sıfırdan büyük olmalı [W/gHM]"))
+        bulgular.append(Bulgu("hata", yer, _("güç yoğunluğu sıfırdan büyük olmalı [W/gHM]")))
     elif not (1.0 <= float(p) <= 200.0):
         bulgular.append(Bulgu(
-            "uyari", yer, "güç yoğunluğu %g W/gHM olağan dışı" % float(p),
-            "Tipik: PWR 38–40, BWR ~25, SFR 50–100 W/gHM. Birim W/gHM'dir, "
-            "mutlak güç değil."))
+            "uyari", yer, _("güç yoğunluğu %g W/gHM olağan dışı") % float(p),
+            _("Tipik: PWR 38–40, BWR ~25, SFR 50–100 W/gHM. Birim W/gHM'dir, "
+            "mutlak güç değil.")))
     adimlar = t.get("adimlar") or []
     if not adimlar:
-        bulgular.append(Bulgu("hata", yer, "en az bir zaman adımı gerekli"))
+        bulgular.append(Bulgu("hata", yer, _("en az bir zaman adımı gerekli")))
     elif any(float(a) <= 0 for a in adimlar):
-        bulgular.append(Bulgu("hata", yer, "zaman adımları sıfırdan büyük olmalı"))
+        bulgular.append(Bulgu("hata", yer, _("zaman adımları sıfırdan büyük olmalı")))
     else:
         birim = t.get("adim_birimi") or "d"
         ilk_gun = float(adimlar[0])
@@ -111,22 +117,22 @@ def tukenme_kontrol(spec, veri_kontrolu=True):
         if ilk_gun > 2.0:
             bulgular.append(Bulgu(
                 "uyari", yer,
-                "ilk adım %.3g gün — Xe-135 dengesi (~2 gün) tek adıma eziliyor"
+                _("ilk adım %.3g gün — Xe-135 dengesi (~2 gün) tek adıma eziliyor")
                 % ilk_gun,
-                "İlk adımları kısa tutun (ör. 0.5 ve 1.5 gün). Xe-135 PWR'da "
+                _("İlk adımları kısa tutun (ör. 0.5 ve 1.5 gün). Xe-135 PWR'da "
                 "birkaç bin pcm'lik hızlı bir düşüş yaratır; uzun bir ilk adım "
-                "bunu görünmez kılar."))
+                "bunu görünmez kılar.")))
 
     # --- yanabilir malzemeler ve hacimler ---
     try:
         hv = _tk.hacimler(spec)
     except Exception as e:
         hv = None
-        bulgular.append(Bulgu("hata", yer, "hacimler hesaplanamadı: %s" % e))
+        bulgular.append(Bulgu("hata", yer, _("hacimler hesaplanamadı: %s") % e))
     if hv is not None:
         if not hv and uygun:
             bulgular.append(Bulgu("hata", yer,
-                                  "modelde yanabilir (fisil) malzeme yok"))
+                                  _("modelde yanabilir (fisil) malzeme yok")))
         if sema.agac_modu(spec):
             bulgular.extend(_agac_hacim_bulgulari(spec, t))
         else:
@@ -134,13 +140,13 @@ def tukenme_kontrol(spec, veri_kontrolu=True):
                 if not v["hacim"]:
                     bulgular.append(Bulgu(
                         "hata", "tukenme/%s" % ad,
-                        "hacim hesaplanamıyor: %s" % v["ayrinti"],
-                        "Tükenme kesin hacim gerektirir: yanlış hacim yanma hızını "
-                        "aynı oranda bozar ve k-eff'te iz bırakmaz."))
+                        _("hacim hesaplanamıyor: %s") % v["ayrinti"],
+                        _("Tükenme kesin hacim gerektirir: yanlış hacim yanma hızını "
+                        "aynı oranda bozar ve k-eff'te iz bırakmaz.")))
             bulgular.extend(_hacimsiz_zehir_bulgulari(spec))
     for ad in t.get("ek_malzemeler") or []:
         if malzeme_bul(spec, ad) is None:
-            bulgular.append(Bulgu("hata", yer, "tanımsız ek malzeme: '%s'" % ad))
+            bulgular.append(Bulgu("hata", yer, _("tanımsız ek malzeme: '%s'") % ad))
 
     # --- istatistik ---
     a = spec["ayarlar"]
@@ -148,11 +154,11 @@ def tukenme_kontrol(spec, veri_kontrolu=True):
     if int(a.get("parcacik", 0)) * max(aktif, 0) < 100000:
         bulgular.append(Bulgu(
             "uyari", yer,
-            "aktif istatistik az (%d parçacık × %d çevrim)"
+            _("aktif istatistik az (%d parçacık × %d çevrim)")
             % (int(a.get("parcacik", 0)), aktif),
-            "Tükenme her adımda reaksiyon hızlarını transport hesabından alır; "
+            _("Tükenme her adımda reaksiyon hızlarını transport hesabından alır; "
             "gürültü adımdan adıma birikir. Parçacık × aktif çevrim ≥ 100 000 "
-            "önerilir."))
+            "önerilir.")))
     if t.get("malzemeleri_ayir"):
         bulgular.append(Bulgu(
             "bilgi", yer, _("çubuk çubuk yanma açık"),

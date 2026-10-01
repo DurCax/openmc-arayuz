@@ -316,7 +316,7 @@ def hazirla(spec):
     from cekirdek.gunluk import kaydedici
     model, kbilgi = kurucu.kur(spec)
     zs = zincir_secimi(spec)
-    tamam, mesaj, _ = veri_bilgi.zincir_kontrol(zs["yol"])
+    tamam, mesaj, _zincir = veri_bilgi.zincir_kontrol(zs["yol"])
     if not tamam:
         raise ValueError(mesaj)
 

@@ -11,6 +11,7 @@ import os
 from cekirdek.sema import malzeme_bul
 from cekirdek import kurucu
 from cekirdek.dogrula._ortak import Bulgu
+from cekirdek.ceviri import _
 
 
 # ============================================================================
@@ -24,13 +25,13 @@ def veri_kutuphanesi_kontrol():
     if not yol:
         bulgular.append(Bulgu(
             "hata", "veri kutuphanesi",
-            "OPENMC_CROSS_SECTIONS ortam değişkeni ayarlı değil",
+            _("OPENMC_CROSS_SECTIONS ortam değişkeni ayarlı değil"),
             "export OPENMC_CROSS_SECTIONS=$HOME/nucdata/.../cross_sections.xml"))
     elif not os.path.exists(yol):
         bulgular.append(Bulgu(
             "hata", "veri kutuphanesi",
-            "cross_sections.xml bulunamadı: %s" % yol,
-            "Yolu denetleyin ya da nükleer veri kütüphanesini indirin."))
+            _("cross_sections.xml bulunamadı: %s") % yol,
+            _("Yolu denetleyin ya da nükleer veri kütüphanesini indirin.")))
     return bulgular
 
 
@@ -68,14 +69,14 @@ def nuklid_kontrol(spec):
     notron, termal = _kutuphane_icerigi()
     if notron is None:
         bulgular.append(Bulgu("uyari", "veri kutuphanesi",
-                              "cross_sections.xml okunamadı; nüklid denetimi atlandı"))
+                              _("cross_sections.xml okunamadı; nüklid denetimi atlandı")))
         return bulgular
 
     try:
-        nesneler, _, _ = kurucu.malzemeleri_kur(spec)
+        nesneler, _sab, _hacim = kurucu.malzemeleri_kur(spec)
     except Exception as e:
         bulgular.append(Bulgu("hata", "malzemeler",
-                              "malzemeler kurulamadı: %s" % e))
+                              _("malzemeler kurulamadı: %s") % e))
         return bulgular
 
     for ad, mat in nesneler.items():
@@ -83,18 +84,18 @@ def nuklid_kontrol(spec):
             istenen = set(mat.get_nuclides())
         except Exception as e:
             bulgular.append(Bulgu("uyari", "malzeme:%s" % ad,
-                                  "nüklid listesi çıkarılamadı: %s" % e))
+                                  _("nüklid listesi çıkarılamadı: %s") % e))
             continue
         eksik = sorted(istenen - notron)
         if eksik:
             bulgular.append(Bulgu(
                 "hata", "malzeme:%s" % ad,
-                "veri kütüphanesinde olmayan nüklid: %s" % ", ".join(eksik),
-                "Bileşimi değiştirin ya da bu nüklidleri içeren bir kütüphane kullanın."))
+                _("veri kütüphanesinde olmayan nüklid: %s") % ", ".join(eksik),
+                _("Bileşimi değiştirin ya da bu nüklidleri içeren bir kütüphane kullanın.")))
         for s in (malzeme_bul(spec, ad) or {}).get("sab", []):
             if s not in termal:
                 bulgular.append(Bulgu(
                     "hata", "malzeme:%s" % ad,
-                    "termal saçılma verisi (S(α,β)) kütüphanede yok: %s" % s,
-                    "Kütüphanede %d S(α,β) kaydı var; listeden birini seçin." % len(termal)))
+                    _("termal saçılma verisi (S(α,β)) kütüphanede yok: %s") % s,
+                    _("Kütüphanede %d S(α,β) kaydı var; listeden birini seçin.") % len(termal)))
     return bulgular

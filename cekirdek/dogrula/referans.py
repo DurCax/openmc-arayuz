@@ -10,6 +10,7 @@ from cekirdek.sema import malzeme_bul, cubuk_bul
 from cekirdek import sema
 from cekirdek import uygunluk
 from cekirdek.dogrula._ortak import Bulgu, _kor_turu_adi
+from cekirdek.ceviri import _
 
 
 # ----------------------------------------------------------------------------
@@ -40,15 +41,15 @@ def tally_kontrol(spec):
     for t in spec.get("tallyler", []):
         yer = "tally:%s" % t.get("ad", "?")
         if not t.get("skorlar"):
-            bulgular.append(Bulgu("hata", yer, "en az bir skor seçilmeli"))
+            bulgular.append(Bulgu("hata", yer, _("en az bir skor seçilmeli")))
         for s in t.get("skorlar", []):
             if s not in BILINEN_SKORLAR and not str(s).isdigit():
                 bulgular.append(Bulgu(
                     "uyari", yer,
-                    "'%s' bilinen skorlar arasında değil" % s,
-                    "OpenMC bu skoru tanımayabilir; hata ancak koşu sırasında çıkar. "
+                    _("'%s' bilinen skorlar arasında değil") % s,
+                    _("OpenMC bu skoru tanımayabilir; hata ancak koşu sırasında çıkar. "
                     "Liste elle tutulur (OpenMC geçerli skor listesi sunmuyor); "
-                    "yeni bir skor kullanıyorsanız bu uyarı yanlış alarm olabilir."))
+                    "yeni bir skor kullanıyorsanız bu uyarı yanlış alarm olabilir.")))
     return bulgular
 
 
@@ -64,7 +65,7 @@ def guc_dagilimi_kontrol(spec):
     yer = "guc dagilimi"
     hedefler = sema.guc_hedefleri(g)
     if not hedefler:
-        return [Bulgu("hata", yer, "hedef çubuk seçilmemiş")]
+        return [Bulgu("hata", yer, _("hedef çubuk seçilmemiş"))]
     bulgular, gecerli = _guc_hedef_kontrolleri(spec, hedefler, yer)
     if not gecerli:
         return bulgular
@@ -89,12 +90,12 @@ def _guc_hedef_kontrolleri(spec, hedefler, yer):
         cubuk_ad = h["cubuk"]
         c = cubuk_bul(spec, cubuk_ad) if cubuk_ad else None
         if c is None:
-            bulgular.append(Bulgu("hata", yer, "hedef çubuk tanımsız: %s" % cubuk_ad
-                                  if cubuk_ad else "hedef çubuk seçilmemiş"))
+            bulgular.append(Bulgu("hata", yer, _("hedef çubuk tanımsız: %s") % cubuk_ad
+                                  if cubuk_ad else _("hedef çubuk seçilmemiş")))
             return bulgular, []
         if (cubuk_ad, h["bolge"]) in gorulen:
-            bulgular.append(Bulgu("uyari", yer, "'%s' hedef listesinde iki kez var — "
-                                  "bir kez sayılır" % cubuk_ad))
+            bulgular.append(Bulgu("uyari", yer, _("'%s' hedef listesinde iki kez var — "
+                                  "bir kez sayılır") % cubuk_ad))
             continue
         gorulen.add((cubuk_ad, h["bolge"]))
         bulgular.extend(_guc_bolge_kontrol(spec, c, h["bolge"], yer))
@@ -105,8 +106,8 @@ def _guc_bolge_kontrol(spec, c, bolge, yer):
     """Hedef bolge numarasi gecerli mi ve malzemesi fisil mi."""
     if not isinstance(bolge, int) or not (0 <= bolge < len(c["bolgeler"])):
         return [Bulgu("hata", yer,
-                      "geçersiz bölge numarası %s (çubukta %d bölge var)"
-                      % (bolge + 1 if isinstance(bolge, int) else "(seçilmemiş)",
+                      _("geçersiz bölge numarası %s (çubukta %d bölge var)")
+                      % (bolge + 1 if isinstance(bolge, int) else _("(seçilmemiş)"),
                          len(c["bolgeler"])))]
     mal = c["bolgeler"][bolge].get("malzeme")
     m = malzeme_bul(spec, mal) if mal else None
@@ -116,9 +117,9 @@ def _guc_bolge_kontrol(spec, c, bolge, yer):
         return []
     return [Bulgu(
         "uyari", yer,
-        "seçilen bölgenin malzemesi ('%s') fisil görünmüyor" % mal,
-        "Güç dağılımı genellikle yakıt bölgesinde (1. bölge) ölçülür. "
-        "Zarf ya da soğutucu seçildiyse sonuç anlamsız olur.")]
+        _("seçilen bölgenin malzemesi ('%s') fisil görünmüyor") % mal,
+        _("Güç dağılımı genellikle yakıt bölgesinde (1. bölge) ölçülür. "
+        "Zarf ya da soğutucu seçildiyse sonuç anlamsız olur."))]
 
 
 def _guc_geometri_kontrol(spec, adlar, yer):
@@ -130,9 +131,9 @@ def _guc_geometri_kontrol(spec, adlar, yer):
     """
     uygun = uygunluk.guc_cubuklari(spec)
     geo = uygunluk.geometri_icerigi(spec)
-    liste = ("Uygun çubuklar: %s" % ", ".join(uygun) if uygun else
-             "Bu modelde uygun çubuk yok: fisil bölgeli bir çubuğun bir "
-             "demette tekrarlanması gerekir.")
+    liste = (_("Uygun çubuklar: %s") % ", ".join(uygun) if uygun else
+             _("Bu modelde uygun çubuk yok: fisil bölgeli bir çubuğun bir "
+             "demette tekrarlanması gerekir."))
     modelde = [a for a in adlar if a in geo["cubuk"]]
     bulgular = []
     for cubuk_ad in adlar:
@@ -155,9 +156,9 @@ def _guc_modelde_yok(cubuk_ad, digeri_var, liste, yer):
             _("Listedeki diğer türler hesaplanır; bu tür atlanır. ") + liste)
     return Bulgu(
         "hata", yer,
-        "'%s' çubuğu modelde kullanılmıyor — güç dağılımı yalnızca "
-        "geometride yer alan bir çubuk için hesaplanabilir" % cubuk_ad,
-        "Model kurulurken durur. " + liste)
+        _("'%s' çubuğu modelde kullanılmıyor — güç dağılımı yalnızca "
+        "geometride yer alan bir çubuk için hesaplanabilir") % cubuk_ad,
+        _("Model kurulurken durur. ") + liste)
 
 
 def _guc_tekrarlanmiyor(spec, cubuk_ad, liste, yer):
@@ -165,28 +166,28 @@ def _guc_tekrarlanmiyor(spec, cubuk_ad, liste, yer):
             and spec["kor"].get("cubuk") == cubuk_ad):
         return Bulgu(
             "hata", yer,
-            "'%s' bir demette tekrarlanmıyor (kor türü: '%s')"
+            _("'%s' bir demette tekrarlanmıyor (kor türü: '%s')")
             % (cubuk_ad, _kor_turu_adi("tek_cubuk")),
-            "Güç dağılımı tekrarlanan hücre örnekleri üzerinden "
-            "hesaplanır; tek bir çubukta dağılım yoktur. Bir demet kurun.")
+            _("Güç dağılımı tekrarlanan hücre örnekleri üzerinden "
+            "hesaplanır; tek bir çubukta dağılım yoktur. Bir demet kurun."))
     return Bulgu(
         "uyari", yer,
-        "'%s' hiçbir demet haritasında kullanılmıyor" % cubuk_ad,
-        "Tekrarlanan örnek yoksa dağılım tek bir değerden ibaret "
-        "kalır. " + liste)
+        _("'%s' hiçbir demet haritasında kullanılmıyor") % cubuk_ad,
+        _("Tekrarlanan örnek yoksa dağılım tek bir değerden ibaret "
+        "kalır. ") + liste)
 
 
 def _guc_skor_kontrol(g, yer):
     skor = g.get("skor") or "kappa-fission"
     if skor not in BILINEN_SKORLAR:
-        return [Bulgu("uyari", yer, "'%s' bilinen skorlar arasında değil" % skor)]
+        return [Bulgu("uyari", yer, _("'%s' bilinen skorlar arasında değil") % skor)]
     if skor not in ("kappa-fission", "fission-q-prompt", "fission-q-recoverable",
                     "heating", "heating-local"):
         return [Bulgu(
             "uyari", yer,
-            "'%s' bir enerji skoru değil" % skor,
-            "Güç dağılımı için enerji bırakan bir skor gerekir; standart seçim "
-            "'kappa-fission'dır. 'fission' yalnızca fisyon sayısını verir.")]
+            _("'%s' bir enerji skoru değil") % skor,
+            _("Güç dağılımı için enerji bırakan bir skor gerekir; standart seçim "
+            "'kappa-fission'dır. 'fission' yalnızca fisyon sayısını verir."))]
     return []
 
 
@@ -194,15 +195,15 @@ def _guc_eksenel_kontrol(spec, adlar, h, dilim, yer):
     if not h:
         return [Bulgu(
             "bilgi", yer,
-            "model 2B — F_q hesaplanamaz, yalnızca F_ΔH verilir",
-            "Yerel güç yoğunluğu tepesi eksenel şekle bağlıdır. Kor sekmesinde "
-            "aktif yükseklik tanımlayın.")]
+            _("model 2B — F_q hesaplanamaz, yalnızca F_ΔH verilir"),
+            _("Yerel güç yoğunluğu tepesi eksenel şekle bağlıdır. Kor sekmesinde "
+            "aktif yükseklik tanımlayın."))]
     bulgular = []
     if dilim < 10:
         bulgular.append(Bulgu(
             "uyari", yer,
-            "yalnızca %d eksenel dilim — F_q olduğundan küçük çıkar" % dilim,
-            "Kaba dilimler eksenel tepeyi ortalar. En az 10–20 dilim kullanın."))
+            _("yalnızca %d eksenel dilim — F_q olduğundan küçük çıkar") % dilim,
+            _("Kaba dilimler eksenel tepeyi ortalar. En az 10–20 dilim kullanın.")))
     if dilim > 1:
         bulgular.extend(_guc_dilim_hizasi(spec, adlar, dilim, yer))
     return bulgular
@@ -213,12 +214,12 @@ def _guc_toplam_kontrol(g, h, yer):
     if tg is None:
         return []
     if tg <= 0:
-        return [Bulgu("hata", yer, "toplam güç sıfırdan büyük olmalı")]
+        return [Bulgu("hata", yer, _("toplam güç sıfırdan büyük olmalı"))]
     if not h:
         return [Bulgu(
             "uyari", yer,
-            "toplam güç verilmiş ama model 2B — çizgisel güç [W/cm] hesaplanamaz",
-            "W/cm için Kor sekmesinde aktif yükseklik tanımlayın.")]
+            _("toplam güç verilmiş ama model 2B — çizgisel güç [W/cm] hesaplanamaz"),
+            _("W/cm için Kor sekmesinde aktif yükseklik tanımlayın."))]
     return []
 
 
@@ -435,16 +436,16 @@ def fisil_gereksinim_kontrol(spec):
             and uygunluk.model_boyutu(spec) != "3B_katmanli"):
         bulgular.append(Bulgu(
             "hata", "ayarlar",
-            "Özdeğer (k-eff) hesabı fisil malzeme gerektirir — geometride "
-            "fisil malzeme yok",
-            "OpenMC ilk çevrimde durur (\"No fission sites banked\"). "
-            "Zırhlama/aktivasyon hesabı için hesap türünü Sabit kaynak yapın."))
+            _("Özdeğer (k-eff) hesabı fisil malzeme gerektirir — geometride "
+            "fisil malzeme yok"),
+            _("OpenMC ilk çevrimde durur (\"No fission sites banked\"). "
+            "Zırhlama/aktivasyon hesabı için hesap türünü Sabit kaynak yapın.")))
     if (a.get("kaynak") or {}).get("tur") == "kutu":
         bulgular.append(Bulgu(
             "hata", "kaynak",
-            "kutu kaynağı fisil malzeme gerektirir — geometride fisil malzeme yok",
-            "Kutu kaynağı yalnızca fisil bölgelerde örneklenir; OpenMC hiç "
-            "örnek bulamaz ve durur. Nokta kaynak kullanın."))
+            _("kutu kaynağı fisil malzeme gerektirir — geometride fisil malzeme yok"),
+            _("Kutu kaynağı yalnızca fisil bölgelerde örneklenir; OpenMC hiç "
+            "örnek bulamaz ve durur. Nokta kaynak kullanın.")))
     return bulgular
 
 
@@ -456,8 +457,8 @@ def referans_kontrol(spec):
     kullanilan = kullanilan_malzemeler(spec)
 
     for ad in sorted(kullanilan - tanimli):
-        bulgular.append(Bulgu("hata", "malzemeler", "kullanılan ama tanımsız malzeme: %s" % ad))
+        bulgular.append(Bulgu("hata", "malzemeler", _("kullanılan ama tanımsız malzeme: %s") % ad))
     for ad in sorted(tanimli - kullanilan):
         bulgular.append(Bulgu("bilgi", "malzemeler",
-                              "tanımlı ama modelde kullanılmayan malzeme: %s" % ad))
+                              _("tanımlı ama modelde kullanılmayan malzeme: %s") % ad))
     return bulgular

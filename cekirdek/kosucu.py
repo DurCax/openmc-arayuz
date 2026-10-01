@@ -369,7 +369,7 @@ def tally_metni(ad, df, malzeme_adlari=None, sabit=False, kuvvet=1.0):
         return "tally: %s\n%s" % (ad, df)
     adlar = malzeme_adlari or {}
     satirlar = []
-    for _, r in df.iterrows():
+    for _sira, r in df.iterrows():
         etiket = []
         if "material" in df.columns:
             etiket.append(str(adlar.get(int(r["material"]), "malzeme %s" % r["material"])))

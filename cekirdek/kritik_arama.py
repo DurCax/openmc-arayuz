@@ -157,7 +157,7 @@ def ara(spec, tur, hedef, alt, ust, kok_dizin, hedef_keff=1.0,
         genislik = abs(ust - alt)
         return any(abs(x - o) < 1e-6 * max(genislik, 1.0) for o in olculen)
 
-    for _ in range(en_fazla):
+    for _adim in range(en_fazla):
         # kiris (yanlis konum) tahmini
         if abs(f_u - f_a) > 1e-12:
             x2 = x_alt + (x_ust - x_alt) * (-f_a) / (f_u - f_a)
