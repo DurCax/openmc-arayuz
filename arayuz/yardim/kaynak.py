@@ -20,6 +20,7 @@
    - "NN-ad.md#k" baglantilari "#k" olur (tek belge); "NN-ad.md" o dosyanin
      ilk kimligine gider; diger goreli yollar mutlak dosya adresine cevrilir.
    - EN resmi yoksa TR resmi kullanilir (Kilavuz.yedek_resimler).
+   - Tek satirlik HTML yorumlari (<!-- ... -->, ör. sozluk isaretleri) silinir.
 """
 
 import os
@@ -37,6 +38,7 @@ RESIM_DIZINI = "resimler"
 _KIMLIK = re.compile(r'^<a id="([a-z0-9][a-z0-9-]*)"></a>\s*$')
 _BASLIK = re.compile(r"^(#{1,6})\s+(.+?)\s*#*\s*$")
 _CIT = re.compile(r"^(```|~~~)")
+_YORUM = re.compile(r"^<!--.*-->\s*$")
 _BAGLANTI = re.compile(r'(!?)\[((?:[^\[\]]|\[[^\]]*\])*)\]\(\s*([^)\s]+)(?:\s+"[^"]*")?\s*\)')
 
 
@@ -173,7 +175,7 @@ def _donustur(metin, ilk, taban, dil, yedekler):
     for satir in metin.splitlines():
         if _CIT.match(satir.strip()):
             cit = not cit
-        elif not cit and _KIMLIK.match(satir.strip()):
+        elif not cit and (_KIMLIK.match(satir.strip()) or _YORUM.match(satir.strip())):
             continue
         elif not cit:
             satir = _BAGLANTI.sub(lambda e: "%s[%s](%s)" % (
