@@ -44,6 +44,7 @@ BUYUK_DOSYA_SINIRI = 64 * 1024 * 1024     # bayt; ustunde yalniz boyut + mtime
 OPENMC_VARSAYILAN_TOHUM = 1               # openmc.Settings.seed varsayilani
 _KOMUT_SURESI = 60.0                      # s; conda list ~2 s (olculdu 01.10.2026)
 _YOK_SAYILAN = ("olusturma",)             # farklar(): her kapsulde farkli
+_YUVARLAMA_TOLERANSI = 1e-9               # goreli; k-eff "ayni" esigi
 
 _SHA_ONBELLEK = {}
 _ORTAM_ONBELLEK = {}
@@ -299,6 +300,10 @@ def _k_farki_satiri(eski, yeni):
     if tuple(eski) == tuple(yeni):
         return _("k-eff birebir aynı: %.6f ± %.6f") % tuple(yeni)
     fark = yeni[0] - eski[0]
+    if abs(fark) <= _YUVARLAMA_TOLERANSI * abs(eski[0]):
+        # OpenMP indirgeme sirasi son bitleri oynatir (olculdu 01.10.2026: |Δ| 4e-16 .. 6e-15)
+        return _("k-eff aynı (yalnız kayan nokta yuvarlama düzeyinde fark, |Δ| = %.1e): "
+                 "%.6f ± %.6f") % (abs(fark), yeni[0], yeni[1])
     sigma = (eski[1] ** 2 + yeni[1] ** 2) ** 0.5
     return _("k-eff farkı: %.6f → %.6f (Δ = %+.6f, %.2fσ birleşik)") % (
         eski[0], yeni[0], fark, abs(fark) / sigma if sigma else float("inf"))

@@ -250,7 +250,7 @@ def test_rapor_kapsul_satiri():
 
 @gereksinim("R-S-17")
 def test_yavas_yeniden_kosu(gecici):
-    print("\n[KP8] kisa koşu + yeniden: ayni tohum ve ortamla k-eff birebir ayni")
+    print("\n[KP8] kisa koşu + yeniden: ayni tohum ve ortamla k-eff ayni")
     from cekirdek import kapsul, kosucu
     spec = _spec()
     spec["ayarlar"].update(parcacik=500, cevrim=12, pasif=4)
@@ -263,7 +263,8 @@ def test_yavas_yeniden_kosu(gecici):
     print(metin)
     kontrol("yeniden kosu cikis 0", kod == 0, "-> %r" % kod)
     kontrol("hedefte statepoint", kosucu.son_statepoint(hedef) is not None)
-    kontrol("k-eff birebir ayni denir", "birebir aynı" in metin, metin)
+    kontrol("k-eff ayni denir (birebir ya da yuvarlama duzeyinde)",
+            "birebir aynı" in metin or "k-eff aynı (yalnız kayan nokta" in metin, metin)
 
 
 HIZLI = [test_kapsul_icerigi, test_dosya_kimligi_ve_zincir, test_ortam_kilidi_yedekleri,
