@@ -32,14 +32,17 @@ gelir (`pyproject.toml` → `cekirdek/surum.py`). Ayrıntılı değişiklikler `
   deneysel 1.0000 ± 0.0010; hızlı metal USL 0.9444, n = 13; termal USL 0.9388, n = 10).
   Bu ölçümler Dalga S-3'te yapıldı; bu adayda yeniden koşulmadı.
 - Üçüncü taraf lisansları kurulu paketlerden doğrulandı (`THIRD_PARTY_LICENSES.md`).
-- Conda tarifi: `conda render conda-recipe` (sonuç dal raporunda).
+- Conda tarifi: `conda render` ve `conda build conda-recipe -c conda-forge --override-channels`
+  başarılı (01.10.2026, conda-build ayrı geçici ortamda): `openmc-arayuz-2.0.0rc1-py_0.conda`
+  (noarch, ~1.2 MB); tarifin testleri (içe aktarma, `openmc-arayuz-kosu --help`, sürüm =
+  pyproject, `share/openmc-arayuz/LICENSE`) yeni bir ortamda geçti.
 
 ### Neyi doğrulamadık
 - Yavaş (Monte Carlo) süit ve fizik çıpaları (R-FZ-01…03) bu adayda koşulmadı; matriste
   "çalıştırılmadı" görünürler (`docs/YAZILIM_KALITE.md` §4 md. 4).
 - Docker imajı bu adayda **derlenmedi** (geliştirme makinesinde Docker yok); `Dockerfile`
   gözden geçirildi ama `docker build` ile denenmedi. noVNC ve WSL2/WSLg kipleri denenmedi.
-- `conda build` ile tam paket derlemesi ve kurulum testi (render dışında) — dal raporuna bakın.
+- Conda paketiyle arayüzün (GUI) açılması ve bir Monte Carlo koşusu denenmedi (yalnız tarif testleri).
 - Windows ve macOS: doğrulanmadı.
 - ENDF/B-VIII.0 ve zincir dosyalarının resmî kullanım koşulları: doğrulanmadı
   (`THIRD_PARTY_LICENSES.md` §3).

@@ -49,7 +49,8 @@ kullanılabilir. Lisans anahtarı ya da telemetri yoktur. Üçüncü taraf bile�
 `THIRD_PARTY_LICENSES.md`.
 
 ### Bilinen sınırlamalar
-- Docker imajı ve conda paketinin tam derlemesi bu adayda denenmedi (`CHANGELOG.md`).
+- Docker imajı bu adayda derlenmedi; conda paketi derlendi ve tarif testleri geçti, ama arayüz
+  conda paketinden açılarak denenmedi (`CHANGELOG.md`).
 - Yalnız Linux'ta test edildi; Windows yalnız Docker/WSL2 üzerinden hedeflenir, doğrulanmadı.
 - Yavaş (Monte Carlo) süit ve fizik çıpaları bu adayda yeniden koşulmadı.
 
@@ -101,7 +102,7 @@ permitted persons. There is no license key and no telemetry. Third-party compone
 `THIRD_PARTY_LICENSES.md`.
 
 ### Known limitations
-- A full build of the Docker image and of the conda package was not tried for this candidate
-  (`CHANGELOG.md`).
+- The Docker image was not built for this candidate; the conda package was built and its recipe
+  tests passed, but the interface was not launched from the conda package (`CHANGELOG.md`).
 - Tested on Linux only; Windows is targeted only through Docker/WSL2 and is not verified.
 - The slow (Monte Carlo) suite and the physics anchors were not re-run for this candidate.
