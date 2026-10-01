@@ -77,15 +77,21 @@ _A = Profil(
         "sigma_hedef": Esik(None, N_("standart değeri yok — kullanıcı/proje hedefi "
                                      "(STANDARTLAR.md §3 satır 2)"),
                             N_("k-eff standart belirsizliği (1σ) üst hedefi")),
-        "parcacik_asgari": Esik(1000, BROWN_2009 + " §III.C",
+        # Brown 2009 birincil kaynaktan dogrulandi (01.10.2026, mcnpx.lanl.gov PDF):
+        # §III.C "1000s of neutrons/cycle be used for all calculations";
+        # §V "at least 5000 or more neutrons per cycle ... for long production
+        # runs ... as long as a few hundred active cycles are computed"
+        "parcacik_asgari": Esik(1000, BROWN_2009 + " §III.C ('1000s of neutrons/cycle … "
+                                                   "for all calculations'; 1000 alt uç)",
                                 N_("her hesap için çevrim başına binlerce nötron")),
-        "parcacik_uretim": Esik(5000, BROWN_2009 + " §V",
+        "parcacik_uretim": Esik(5000, BROWN_2009 + " §V ('at least 5000 or more neutrons "
+                                                   "per cycle … for long production runs')",
                                 N_("uzun üretim koşuları için çevrim başına en az 5000")),
         "aktif_asgari": Esik(None, BROWN_2009 + " §V ('birkaç yüz aktif çevrim'; sayı "
                                                 "verilmez → kullanıcı)"),
         "korelasyon_z": Esik(2.0, N_("Bartlett yaklaşımı: bağımsız dizide gecikme-1 öz "
                                      "ilinti ≈ N(0, 1/N); MC σ'sı çevrimler arası "
-                                     "ilintiyi yok sayar (") + BROWN_2009 + " §IV)"),
+                                     "ilintiyi yok sayar (") + BROWN_2009 + " §IV.A)"),
         "kayip_azami": Esik(0, N_("iyi uygulama (OpenMC): kayıp parçacık geometri "
                                   "hatası belirtisidir")),
     })

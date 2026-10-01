@@ -137,7 +137,9 @@ def _k2_ilinti(kural, baglam, kosu):
     if r1 > sinir:
         return kural.not_(
             _("Çevrimler arası ilinti belirgin (gecikme-1 r = %.2f > %.2f): bildirilen "
-              "σ gerçek belirsizliği küçümser (%s §IV: 2–5 kat olabilir).")
+              "σ bu ilintiyi yok sayar ve gerçek belirsizliği küçümser (%s §IV.A). "
+              "Kaynak, yerel tally'lerde (fisyon hızları) 1,7–4,7 kat küçümseme ölçer "
+              "(§IV.B Tablo 2); k-eff için büyüklük vermez.")
             % (r1, sinir, BROWN_2009),
             _("Bağımsız tohumlarla birkaç koşu yapıp sonuçların saçılımını "
               "karşılaştırın."), kimlik=kimlik, kaynak=kaynak)

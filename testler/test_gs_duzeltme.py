@@ -98,5 +98,30 @@ def test_yavas_betik_kesik_hacim_kosucuyla_ayni(gecici):
             "-> betik %s kosucu %s" % (betik, kosucu))
 
 
-HIZLI = [test_periyodik_es_etkin_bc, test_betik_kesik_yakit_hacmi]
+def _belge(ad):
+    import os
+    from testler.ortak_test import KOK
+    with open(os.path.join(KOK, "docs", ad), encoding="utf-8") as f:
+        return f.read()
+
+
+def test_k2_brown_atiflari():
+    print("\n[GS3] K2: Brown 2009 kaynakcada; bolum/sayi birincil kaynakla uyumlu")
+    import inspect
+    from cekirdek.uygunluk_denetimi import kurallar_mc, profiller
+    belge = _belge("STANDARTLAR.md")
+    kaynakca = belge[belge.index("## Kaynakça"):]
+    kontrol("STANDARTLAR.md kaynakcasinda LA-UR-09-03136 (URL ile)",
+            "LA-UR-09-03136" in kaynakca and "mcnpx.lanl.gov" in kaynakca)
+    e = profiller._A.esikler
+    kontrol("1000: §III.C ('1000s of neutrons/cycle')", e["parcacik_asgari"].deger == 1000
+            and "§III.C" in e["parcacik_asgari"].kaynak and "1000s" in e["parcacik_asgari"].kaynak)
+    kontrol("5000: §V ('at least 5000')", e["parcacik_uretim"].deger == 5000
+            and "§V" in e["parcacik_uretim"].kaynak and "5000" in e["parcacik_uretim"].kaynak)
+    kaynak = inspect.getsource(kurallar_mc)
+    kontrol("k-eff icin '2–5 kat' iddiasi yok (Brown bunu yerel tally'ler icin soyler)",
+            "2–5 kat" not in kaynak and "Tablo 2" in kaynak)
+
+
+HIZLI = [test_periyodik_es_etkin_bc, test_betik_kesik_yakit_hacmi, test_k2_brown_atiflari]
 YAVAS = [test_yavas_betik_kesik_hacim_kosucuyla_ayni]
