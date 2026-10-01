@@ -161,22 +161,21 @@ def _tayf_metni(tayf):
     return adlar.get(tayf, str(tayf))
 
 
-def _aoa_yok(neden):
-    return VVOzeti(n=0, yontem="tolerans_siniri", usl=None, usl_neden=neden,
-                   kaynak=_(KAYNAK) + "; " + _(DELTA_SM_KAYNAK))
-
-
 def uygulama_ozeti(spec, kosu_dizini=None, uygulama=None, vlar=None,
                    delta_sm=DELTA_SM_VARSAYILAN):
     """(VVOzeti, uygulama). uygulama: spec + kosu dizininden cikarilan AOA
     parametreleri, verilen sozlukle (kullanici girdisi) GUNCELLENIR. Alt kume
-    aoa_filtresi ile secilir; secilemiyorsa ya da USL cikmiyorsa usl None ve
-    neden durustce yazilir. Girdi spec DEGISMEZ."""
+    aoa_filtresi ile secilir; secilemiyorsa (tayf yok) butun kume betimsel
+    ozetlenir. Iki durumda da USL cikmiyorsa usl None ve neden durustce yazilir.
+    Girdi spec DEGISMEZ."""
     uyg = dict(_aoa.parametreler(spec, kosu_dizini) if spec is not None else {})
     uyg.update(uygulama or {})
     filtre = aoa_filtresi(uyg)
     if filtre is None:
-        return _aoa_yok(_(
+        # Alt kume secilemez: kumenin TAMAMI betimsel olarak ozetlenir (K6-AOA, K12
+        # uygulamayi yine kumeyle karsilastirir) ama USL VERILMEZ.
+        oz = ozet(vlar, uygulama=uyg, delta_sm=delta_sm)
+        return dataclasses.replace(oz, usl=None, usl_neden=_(
             "bu uygulama için USL yok (AOA belirlenemedi): nötron tayfı bilinmiyor; "
             "EALF tally'sini ('%s') ekleyip yeniden koşun") % _aoa.EALF_TALLY), uyg
     oz = ozet(vlar, filtre=filtre, uygulama=uyg, delta_sm=delta_sm)
