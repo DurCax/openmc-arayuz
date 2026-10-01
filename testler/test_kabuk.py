@@ -230,7 +230,7 @@ def test_sekme_gorunurlugu(gecici=None):
                 p.sekme_anahtarlari() == tuple(uygunluk.SEKMELER))
         adlar = [p.sekme_basligi(k) for k in p.sekme_anahtarlari()]
         kontrol("basliklar numarasiz ve Turkce",
-                adlar == ["Malzemeler", "Parçalar", "Demet", "Kor", "Hesap ayarları",
+                adlar == ["Malzemeler", "Parçalar", "Demet", "Geometri", "Hesap ayarları",
                           "Çalıştır", "Analiz", "Tükenme"], "-> %s" % adlar)
         for yol in sorted(glob.glob(os.path.join(ORNEK, "*.json"))):
             p.proje_ac(yol)
@@ -308,7 +308,7 @@ def test_sekme_isaretleri():
             all(yer_sekme_anahtari(y) == k for y, k in esleme.items()),
             "-> %s" % {y: yer_sekme_anahtari(y) for y in esleme})
     gorunur = ["malzemeler", "parcalar", "kor", "ayarlar", "calistir"]
-    kontrol("durum ipucu: once hata", "Kor sekmesinde hata" in sonraki_adim(
+    kontrol("durum ipucu: once hata", "Geometri sekmesinde hata" in sonraki_adim(
         sekme_isaretleri(s, {"kor": 1}), gorunur))
     kontrol("durum ipucu: sonra eksik adim",
             sonraki_adim(sekme_isaretleri(bos), gorunur).startswith("Sonraki adım: Malzemeler"))
@@ -331,7 +331,8 @@ def test_sekme_isaretleri():
         kontrol("kor hatasi -> Kor basligi '!'", p.sekme_isareti("kor")[0] == "!",
                 "-> %r" % (p.sekme_isareti("kor"),))
         kontrol("dogrulama seridi ipucu hatali sayfayi soyluyor",
-                "Kor sekmesinde hata" in p.serit.ipucu.text(), "-> %r" % p.serit.ipucu.text())
+                "Geometri sekmesinde hata" in p.serit.ipucu.text(),
+                "-> %r" % p.serit.ipucu.text())
         kontrol("seritte 'Bulguya git' ilk hatayi acikliyor",
                 p.serit.d_bulgu.isVisibleTo(p.serit) and bool(p.serit.d_bulgu.toolTip()))
     finally:

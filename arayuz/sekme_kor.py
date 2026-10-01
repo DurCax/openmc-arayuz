@@ -44,6 +44,7 @@ from PySide6 import QtCore, QtWidgets
 from cekirdek import sema, uygunluk
 from cekirdek.ceviri import _
 from arayuz import tema
+from arayuz.kor.geometri_sayfasi import KorGeometriMixin, tur_etiketi_metni
 from arayuz.kor.harita import KorHaritasiMixin
 from arayuz.kor.katmanlar import KorKatmanMixin, _BOS_ETIKET
 from arayuz.kor.katmanlar import tablo_yuksekligi as _tablo_yuksekligi
@@ -72,16 +73,23 @@ def _tur_adi(tur):
         return tur or "tanımsız"
 
 
-class KorSekmesi(KorYerlesimMixin, KorHaritasiMixin, KorKatmanMixin, SekmeTabani):
+class KorSekmesi(KorGeometriMixin, KorYerlesimMixin, KorHaritasiMixin, KorKatmanMixin,
+                 SekmeTabani):
+    """Geometri sayfasi (eski adiyla Kor): sablon gorunumu + gelismis editor."""
 
     KONU = "kor"
     # "Türü değiştir…" baglantisi: ana pencere model basligindaki tur
     # menusunu acar (tur yalnizca oradan degisir -- tek yol, tek kural).
     tur_degistir_istendi = QtCore.Signal()
+    # Duzenek sablonu secicisi (7 kor turu): pencere kor_turunu_degistir'e baglar.
+    tur_secildi = QtCore.Signal(str)
+    # Gelismis editorde secilen dugum yolu (onizleme vurgusu).
+    dugum_secildi = QtCore.Signal(object)
 
     def __init__(self, parent=None):
         super().__init__(parent)
         self._tur = None
+        self._geometri_alanlarini_kur()   # arayuz/kor/geometri_sayfasi.py
         self._alanlari_kur()           # arayuz/kor/yerlesim.py
         self._yerlesimi_kur()
         self._sinyalleri_bagla()
@@ -103,11 +111,11 @@ class KorSekmesi(KorYerlesimMixin, KorHaritasiMixin, KorKatmanMixin, SekmeTabani
     # doldurma
     # ------------------------------------------------------------------
     def doldur(self):
+        if self._geometri_doldur():       # gelismis (agac) mod: sablon alanlari yok
+            return
         kor = self.spec["kor"]
         self._tur = kor.get("tur", "tek_cubuk")
-        self.tur_etiket.setText(
-            "Kor türü: <b>%s</b> — <a href=\"tur\">Türü değiştir…</a> "
-            "(model başlığındaki menüyle aynı)" % _tur_adi(self._tur))
+        self.tur_etiket.setText(tur_etiketi_metni(_tur_adi(self._tur)))
 
         self._kutu_doldur(self.cubuk, [(c["ad"], c["ad"]) for c in self.spec.get("cubuklar", [])],
                           kor.get("cubuk"))
@@ -161,6 +169,7 @@ class KorSekmesi(KorYerlesimMixin, KorHaritasiMixin, KorKatmanMixin, SekmeTabani
         self._katman_doldur()
 
         self._sinirlari_doldur()
+        self._yuz_sinirini_doldur()
 
         yans = kor.get("yansitici") or {}
         self.yans_var.setChecked(bool(yans.get("var")))
@@ -239,7 +248,7 @@ class KorSekmesi(KorYerlesimMixin, KorHaritasiMixin, KorKatmanMixin, SekmeTabani
     # yukseklik secimi
     # ------------------------------------------------------------------
     def _yukseklik_modu_degisti(self, *_):
-        if self._yukleniyor:
+        if self._yukleniyor or self.agac_modunda_mi():
             return
         kor = self.spec["kor"]
         mod = self.yukseklik_modu.currentData()
@@ -277,7 +286,7 @@ class KorSekmesi(KorYerlesimMixin, KorHaritasiMixin, KorKatmanMixin, SekmeTabani
     # gorunurluk
     # ------------------------------------------------------------------
     def _gorunurluk(self):
-        if self.spec is None:
+        if self.spec is None or self.agac_modunda_mi():
             return
         kor = self.spec["kor"]
         tur = kor.get("tur")
@@ -340,6 +349,8 @@ class KorSekmesi(KorYerlesimMixin, KorHaritasiMixin, KorKatmanMixin, SekmeTabani
         self._eksen_form.setRowVisible(self.sinir_notu, bool(uyari))
 
     def _ozet_guncelle(self):
+        if self.agac_modunda_mi():
+            return
         try:
             from cekirdek import onbellek
             _, bilgi = onbellek.kur_onbellekli(self.spec)
@@ -357,7 +368,7 @@ class KorSekmesi(KorYerlesimMixin, KorHaritasiMixin, KorKatmanMixin, SekmeTabani
     # kayit
     # ------------------------------------------------------------------
     def _kaydet(self, *_):
-        if self._yukleniyor or self.spec is None:
+        if self._yukleniyor or self.spec is None or self.agac_modunda_mi():
             return
         kor = self.spec["kor"]
         tur = kor.get("tur")

@@ -64,7 +64,7 @@ EDITOR_ANAHTARI = {
 # Sekme basliklari (numarasiz).
 SEKME_ADLARI = {
     "malzemeler": "Malzemeler", "parcalar": "Parçalar", "demet": "Demet",
-    "kor": "Kor", "ayarlar": "Hesap ayarları", "calistir": "Çalıştır",
+    "kor": "Geometri", "ayarlar": "Hesap ayarları", "calistir": "Çalıştır",
     "analiz": "Analiz", "tukenme": "Tükenme",
 }
 

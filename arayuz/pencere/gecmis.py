@@ -4,6 +4,13 @@
 
  arayuz/ana_pencere.py'den bolundu (davranis degismedi). Eski yol
  `from arayuz import ana_pencere; ana_pencere.X` aynen calisir.
+
+ SPEC ISLEMI (Dalga G-3): spec_islemi_uygula(yeni_spec, mesaj) butun spec'i
+ degistiren TEK ADIMLIK islemdir -- gelismis geometriye gecis, yeni duzenek
+ sablonu, agac islemleri (ekle / sil / tasi / adlandir / parcaya cikar /
+ sarmala). Once bekleyen duzenleme kendi adimi olarak yigilir, sonra islem
+ ikinci adim olarak: Geri Al islemi (gecisin kendisi dahil) tek adimda
+ geri alir (§15 karar 1), Yinele yeniden uygular.
 """
 
 import copy
@@ -46,6 +53,20 @@ class GecmisMixin(object):
         finally:
             self._gecmis_yaziyor = False
         self._baslik_guncelle()
+
+    def spec_islemi_uygula(self, yeni_spec, mesaj=None):
+        """Butun spec'i degistiren islem: tek geri al adimi."""
+        self._gecmis_sayac.stop()
+        self._gecmise_it()
+        self.spec = copy.deepcopy(yeni_spec)
+        self._kirli = True
+        try:
+            self._spec_uygula()
+        finally:
+            self._gecmise_it()
+        if mesaj:
+            self.bildir_mesaj(mesaj, "basari", 6000)
+        return True
 
     def geri_al(self):
         self._gecmis_sayac.stop()

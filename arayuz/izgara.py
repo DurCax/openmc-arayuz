@@ -380,6 +380,7 @@ class _BoyaTuvali(QtWidgets.QWidget):
         self._son_nokta = None
         self._vurgulu = None
         self._salt_okunur = False
+        self._isaretler, self._isaret_rengi = {}, None     # kesik konumlar (Dalga G)
 
     # ---------------- API ----------------
     def adlar(self):
@@ -404,6 +405,12 @@ class _BoyaTuvali(QtWidgets.QWidget):
 
     def etiketleri_goster(self, acik):
         self._etiket_goster = bool(acik)
+        self.update()
+
+    def isaretleri_ayarla(self, isaretler, renk=None):
+        """Kesik / gizli konumlari tarar: {anahtar: "kesik"|"gizli"}; renk: QColor."""
+        self._isaretler = dict(isaretler or {})
+        self._isaret_rengi = QtGui.QColor(renk) if renk is not None else None
         self.update()
 
     def salt_okunur(self, acik=True):
@@ -523,6 +530,7 @@ class _BoyaTuvali(QtWidgets.QWidget):
                 r = self._olcek * 0.5
                 boya.drawText(QtCore.QRectF(merkez.x() - r, merkez.y() - r, 2 * r, 2 * r),
                               QtCore.Qt.AlignCenter, self._etiket_metni(anahtar, ad))
+        self._isaretleri_ciz(boya, geo, pal)
         if self._vurgulu is not None:
             for anahtar, cokgen, _m in geo:
                 if anahtar == self._vurgulu:
@@ -532,6 +540,18 @@ class _BoyaTuvali(QtWidgets.QWidget):
                     boya.setBrush(QtCore.Qt.NoBrush)
                     boya.drawPolygon(cokgen)
                     break
+
+    def _isaretleri_ciz(self, boya, geo, pal):
+        if not self._isaretler:
+            return
+        renk = self._isaret_rengi or pal.color(QtGui.QPalette.Highlight)
+        boya.setPen(QtCore.Qt.NoPen)
+        for anahtar, cokgen, _m in geo:
+            durum = self._isaretler.get(anahtar)
+            if durum:
+                desen = QtCore.Qt.BDiagPattern if durum == "kesik" else QtCore.Qt.Dense6Pattern
+                boya.setBrush(QtGui.QBrush(renk, desen))
+                boya.drawPolygon(cokgen)
 
     # ---------------- fare ----------------
     def _boya(self, nokta):
