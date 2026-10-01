@@ -616,10 +616,10 @@
   "geometri": null,
   "tamburlar": [],
   "baslik": "IEU-MET-FAST-004, durum 2 — Grafit yansıtıcılı %36 U-235 metal küresi",
-  "baslik_en": "IEU-MET-FAST-004, durum 2 (ICSBEP benchmark, V&V set)",
+  "baslik_en": "IEU-MET-FAST-004, case 2 — Graphite-reflected 36% U-235 metal sphere",
   "kategori": "kriter",
   "seviye": "ileri",
-  "aciklama_en": "ICSBEP benchmark IEU-MET-FAST-004, durum 2, k = 1.0000 ± 0.0030; model from mit-crpg/benchmarks (MIT license).",
+  "aciklama_en": "ICSBEP benchmark IEU-MET-FAST-004, case 2: graphite-reflected 36% U-235 metal sphere. One case of the V&V set (NUREG/CR-6698 bias/USL). Experimental benchmark value k = 1.0000 ± 0.0030. Model: mit-crpg/benchmarks icsbep/ieu-met-fast-004/openmc/case-2 (MIT license); geometry and atom densities transferred one to one (concentric spherical shells).",
   "referans": {
     "k": 1.0,
     "sigma": 0.003,

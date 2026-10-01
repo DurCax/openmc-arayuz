@@ -636,10 +636,10 @@
   "geometri": null,
   "tamburlar": [],
   "baslik": "HEU-SOL-THERM-032 (ORNL-10) — Büyük HEU uranil nitrat çözeltisi küresi",
-  "baslik_en": "HEU-SOL-THERM-032 (ORNL-10) (ICSBEP benchmark, V&V set)",
+  "baslik_en": "HEU-SOL-THERM-032 (ORNL-10) — Large sphere of HEU uranyl nitrate solution",
   "kategori": "kriter",
   "seviye": "ileri",
-  "aciklama_en": "ICSBEP benchmark HEU-SOL-THERM-032 (ORNL-10), k = 1.0015 ± 0.0026; model from mit-crpg/benchmarks (MIT license).",
+  "aciklama_en": "ICSBEP benchmark HEU-SOL-THERM-032 (ORNL-10): large sphere of HEU uranyl nitrate solution. One case of the V&V set (NUREG/CR-6698 bias/USL). Experimental benchmark value k = 1.0015 ± 0.0026. Model: mit-crpg/benchmarks icsbep/heu-sol-therm-032/openmc (MIT license); geometry and atom densities transferred one to one (concentric spherical shells).",
   "referans": {
     "k": 1.0015,
     "sigma": 0.0026,

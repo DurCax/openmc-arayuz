@@ -558,10 +558,10 @@
   "geometri": null,
   "tamburlar": [],
   "baslik": "PU-MET-FAST-011 — Su yansıtıcılı Pu küresi",
-  "baslik_en": "PU-MET-FAST-011 (ICSBEP benchmark, V&V set)",
+  "baslik_en": "PU-MET-FAST-011 — Water-reflected Pu sphere",
   "kategori": "kriter",
   "seviye": "ileri",
-  "aciklama_en": "ICSBEP benchmark PU-MET-FAST-011, k = 1.0000 ± 0.0010; model from mit-crpg/benchmarks (MIT license).",
+  "aciklama_en": "ICSBEP benchmark PU-MET-FAST-011: water-reflected Pu sphere. One case of the V&V set (NUREG/CR-6698 bias/USL). Experimental benchmark value k = 1.0000 ± 0.0010. Model: mit-crpg/benchmarks icsbep/pu-met-fast-011/openmc (MIT license); geometry and atom densities transferred one to one (concentric spherical shells).",
   "referans": {
     "k": 1.0,
     "sigma": 0.001,

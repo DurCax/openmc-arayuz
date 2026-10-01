@@ -677,10 +677,10 @@
   "geometri": null,
   "tamburlar": [],
   "baslik": "HEU-SOL-THERM-009, durum 1 — Su yansıtıcılı HEU uranil florür küresi",
-  "baslik_en": "HEU-SOL-THERM-009, durum 1 (ICSBEP benchmark, V&V set)",
+  "baslik_en": "HEU-SOL-THERM-009, case 1 — Water-reflected HEU uranyl fluoride sphere",
   "kategori": "kriter",
   "seviye": "ileri",
-  "aciklama_en": "ICSBEP benchmark HEU-SOL-THERM-009, durum 1, k = 0.9990 ± 0.0043; model from mit-crpg/benchmarks (MIT license).",
+  "aciklama_en": "ICSBEP benchmark HEU-SOL-THERM-009, case 1: water-reflected HEU uranyl fluoride sphere. One case of the V&V set (NUREG/CR-6698 bias/USL). Experimental benchmark value k = 0.9990 ± 0.0043. Model: mit-crpg/benchmarks icsbep/heu-sol-therm-009/openmc/case-1 (MIT license); geometry and atom densities transferred one to one (concentric spherical shells).",
   "referans": {
     "k": 0.999,
     "sigma": 0.0043,

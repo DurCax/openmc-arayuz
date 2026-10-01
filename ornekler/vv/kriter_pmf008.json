@@ -550,10 +550,10 @@
   "geometri": null,
   "tamburlar": [],
   "baslik": "PU-MET-FAST-008 (Thor), 1B model — Toryum yansıtıcılı Pu küresi",
-  "baslik_en": "PU-MET-FAST-008 (Thor), 1B model (ICSBEP benchmark, V&V set)",
+  "baslik_en": "PU-MET-FAST-008 (Thor), 1D model — Thorium-reflected Pu sphere",
   "kategori": "kriter",
   "seviye": "ileri",
-  "aciklama_en": "ICSBEP benchmark PU-MET-FAST-008 (Thor), 1B model, k = 1.0000 ± 0.0006; model from mit-crpg/benchmarks (MIT license).",
+  "aciklama_en": "ICSBEP benchmark PU-MET-FAST-008 (Thor), 1D model: thorium-reflected Pu sphere. One case of the V&V set (NUREG/CR-6698 bias/USL). Experimental benchmark value k = 1.0000 ± 0.0006. Model: mit-crpg/benchmarks icsbep/pu-met-fast-008/openmc/case-1 (MIT license); geometry and atom densities transferred one to one (concentric spherical shells).",
   "referans": {
     "k": 1.0,
     "sigma": 0.0006,
