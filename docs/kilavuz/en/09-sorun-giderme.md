@@ -297,3 +297,351 @@ The location of conformity findings has the form `uygunluk:<rule>` (`uygunluk:K1
 page; look up the rule identifier in [9.3 Conformity rules](#uygunluk-kurallari). In the panel a
 double click goes to Run settings for K1/K2, to Geometry for K3 and to Materials for `K4-sicaklik`.
 
+<a id="uygunluk-kurallari"></a>
+## 9.3 Conformity rules (K1-K16)
+
+The conformity check is **not a certification**: it produces the evidence that standards and good
+practice would ask for and makes the gaps visible (see [Conformity check](07-uygunluk.md#uygunluk-denetimi)
+and [What it proves and what it does not](07-uygunluk.md#ne-kanitlar)). The sources of the rules are
+in [docs/STANDARTLAR.md](../../STANDARTLAR.md) §3.
+
+**Statuses.** Every rule produces a row also when it passes:
+
+| Status | Meaning |
+|---|---|
+| passed | The rule was checked and met. |
+| not met | The rule was checked and not met; the level can be error, warning or info. |
+| not applicable | The data or threshold needed for the check is missing (e.g. no statepoint, no threshold entered). It does not count as a failure; with `--siki` it does. |
+| note | An information note; no met/not met judgement. |
+
+**Labels** (the kind of source): **good practice** (not a clause of a standard), **standard** (based on
+an explicit clause of a standard/guide), **project criterion** (the project's own criterion),
+**user-defined limit** (the threshold comes from the user/facility; no default).
+
+**Profiles:** A Monte Carlo good practice (K1, K2, K3), B criticality safety (K6, K6-AOA, K8-K14), C
+reactor core design (K7, K7-SDM, K7-F, K16), D reporting (K4, K5). The profiles are selected in the
+Conformity panel on the Run page and written to the `calistirma.uygunluk_profilleri` field (details:
+[Profiles](07-uygunluk.md#profiller)).
+
+**Thresholds.** No threshold without a source is built into the tool. Thresholds such as
+`sigma_hedef`, `aktif_asgari`, `F_dH_siniri`, `F_q_siniri`, `sdm_siniri_pcm` have **no** default; the
+sub-rules that depend on them say "not applicable". This is not an error. Today a threshold can only
+be given from Python (`cekirdek/uygunluk_denetimi/profiller.py`: `uyarla`, `dosyadan_uyarla`); the
+user interface has no field for it. Some inputs of profiles C and B are read from a
+`uygunluk_girdisi.json` file placed by hand in the run directory (keys `kor` and `uygulama`).
+
+### Profile A: Monte Carlo good practice
+
+<a id="kural-k1"></a>
+#### K1: Source convergence (Shannon entropy plateau)
+
+- **Label:** good practice. **Source:** F.B. Brown, LA-UR-09-03136 (2009) §II; NUREG/CR-6698 §2.4
+  footnote (convergence is a judgement of the user).
+- **What it checks:** the second half of the inactive period is split in two; does the drift between
+  the entropy means of the two halves exceed twice the scatter (σ) of the entropy in the active
+  batches.
+- **Typical findings:**
+  - "The source distribution is still drifting at the end of the inactive period (drift ..., active
+    scatter σ = ...). Increase the number of inactive batches; k-eff may be biased." → **warning**, not
+    met.
+  - "Shannon entropy is off: source convergence cannot be shown." → warning.
+  - "the number of inactive batches (...) is too small to judge source convergence" or "entropy is
+    constant; could not be evaluated" → not applicable.
+  - "Fixed source run: k-eff and source convergence are undefined." / "No statepoint in the run
+    directory." → not applicable.
+- **Fix:** step-by-step recipe below: [K1: source not converged](#yakinsamadi).
+
+<a id="kural-k2"></a>
+#### K2: Statistical adequacy
+
+- **Label:** good practice; the thresholds do not come from a standard (profile value). Sub-identifiers:
+- `K2-sigma`: σ_k ≤ `sigma_hedef`. No default target → "σ target not defined; k = ..., σ = ... (1σ)
+  not compared." (not applicable). If a target is given and exceeded, "σ_k = ... is above the target
+  (...)." (warning) → increase the active batches or the particles per batch.
+- `K2-parcacik`: particles per batch. Below 1000 is a **warning** ("bias is expected in k-eff and in
+  local tallies", Brown 2009 §III.C); between 1000 and 5000 a **note** ("at least 5000 is recommended
+  for a long production run", Brown 2009 §V).
+- `K2-aktif`: lower limit on active batches. The source gives no number, so there is no default →
+  not applicable.
+- `K2-ilinti`: if the lag-1 autocorrelation of the k values of the active batches exceeds 2/√N, a
+  **note**: the reported σ ignores the correlation between batches and underestimates the true
+  uncertainty. Fix: make a few runs with independent seeds and compare the scatter
+  ([Statistics](06-sonuclar.md#istatistik)).
+
+<a id="kural-k3"></a>
+#### K3: Lost particles = 0
+
+- **Label:** good practice (OpenMC). **What it checks:** the `kosu.log` and `particle_*.h5` files;
+  the allowed loss `kayip_azami` = 0.
+- **Typical finding:** "... lost particles (allowed 0). ..." → **error**. Cause: a gap in the geometry
+  (a point covered by no cell) or overlapping cells. Fix: check the cross-section plots and the boundary
+  conditions on the Geometry page; in advanced geometry run a point probe with "Probe".
+- `K3-hata`: error messages OpenMC wrote to its output (error). `K3-uyari`: OpenMC warnings other than
+  lost particles (note; check in the log whether they affect the result).
+- "No run log (kosu.log)" → not applicable: the run was not made with this application; run it again.
+
+### Profile B: Criticality safety
+
+The method source is NUREG/CR-6698 (2001) and, in this tool, [docs/VV.md](../../VV.md). The rules of B
+other than K6 need a **validation (V&V) set summary**. Today the Conformity panel of the user interface
+and the `openmc-arayuz-kosu uygunluk` command do **not** pass this summary to the check; therefore K6-AOA
+and K8-K14 say "No validation (V&V) set: this rule could not be evaluated." and K6 says "USL could not
+be calculated". A check with a V&V set is done from Python (see
+[USL could not be calculated](#usl-hesaplanamadi)).
+
+<a id="kural-k6"></a>
+#### K6: Acceptance condition k + 2σ < USL
+
+- **Label:** standard. **Source:** NUREG/CR-6698 eqs. (1), (35), (36). The inequality is strict; the
+  factor `kabul_carpani` = 2.
+- **Typical findings:** "k + 2σ = ..., USL = ...: the acceptance condition is not met." → **error** (the
+  system does not meet the subcriticality criterion; change the design or the control parameters).
+  "USL could not be calculated (...). k = ... was not compared with a subcriticality limit; this result
+  is not evidence of criticality safety." → not applicable. "No eigenvalue run result" → not
+  applicable.
+
+<a id="kural-k6-aoa"></a>
+#### K6-AOA: Area of applicability (categorical)
+
+- **Label:** standard (NUREG/CR-6698 §2.5, Table 2.3). **What it checks:** whether the fissile element,
+  physical form, reflector and spectrum class of the application are present in the validation set.
+- **Typical finding:** "...: application '...', the validation set contains only ...: outside the area
+  of applicability." → warning. Fix: add benchmark experiments with this property to the set. If the
+  properties of the application are not given, not applicable.
+
+<a id="kural-k8"></a>
+#### K8: A positive bias is not credited
+
+- **Label:** standard (eq. 8). "A positive bias (...) is credited in the USL." → error; if the bias is
+  > 0 it must be taken as 0 in the USL calculation. The tool applies this itself; this finding appears
+  only when an external summary is given.
+
+<a id="kural-k9"></a>
+#### K9: k_calc / k_exp normalization
+
+- **Label:** standard (eq. 9). "Cases with benchmark k_exp ≠ 1 are not normalized with k_calc / k_exp."
+  → warning. Fix: k_norm = k_calc / k_exp and σ = √(σ_calc² + σ_exp²).
+
+<a id="kural-k10"></a>
+#### K10: Number of cases and confidence level
+
+- **Label:** standard (§2.2, Table 2.2). "The set has ... cases (< 10): technical justification
+  needed." → warning; add independent benchmark experiments to the set.
+- `K10-guven`: in the non-parametric method a warning if the confidence β is not reported; an
+  **error** if a USL is given while β ≤ 40 % ("more data needed, the USL cannot be calculated").
+
+<a id="kural-k11"></a>
+#### K11: Margin of subcriticality ΔSM ≥ 0.02
+
+- **Label:** standard (§2.4.5). Default ΔSM = 0.05 (from NUREG-1520 / NUREG-1718; the value is **not
+  verified**). "ΔSM = ... is below the absolute lower limit (0.02): the profile is invalid." → error;
+  make ΔSM at least 0.02 and write its justification. The justification of the chosen value belongs
+  to the user organization.
+
+<a id="kural-k12"></a>
+#### K12: Extrapolation beyond the validation range
+
+- **Label:** standard (§5). Are the numeric AOA parameters of the application (enrichment, H/X, EALF)
+  within the range of the set. With the tolerance limit method a value out of range is an **error**
+  (it cannot be used for extrapolation); exceeding by more than 10 % is a **warning** ("the validation
+  set should be extended"); with ΔAOA = 0 a small excess is a warning ("a ΔAOA margin and its
+  justification should be entered").
+
+<a id="kural-k13"></a>
+#### K13: Trend and normality
+
+- **Label:** standard (§2.4.2-2.4.3).
+- `K13-normallik`: "The data are not normal (...) but method '...' was used." → error; the
+  non-parametric method is mandatory. If the result is not reported, a warning.
+- `K13-egilim`: "There is a significant trend (...) but the tolerance limit method was used." →
+  warning; use the tolerance band method. Without a trend analysis, a warning.
+
+<a id="kural-k14"></a>
+#### K14: Independence between experiments
+
+- **Label:** good practice (NEA/NSC/WPNCS/DOC(2013)7, UACSA). "Several cases from the same experimental
+  series: ... The cases are not independent; the statistical confidence may be overstated." → note.
+  Example: LEU-SOL-THERM-002 cases 1 and 2 in the V&V set.
+
+### Profile C: Reactor core design
+
+The inputs are read from the `kor` key of the `uygunluk_girdisi.json` file in the run directory
+(`katsayilar`, `kapatma_marji`, `faktorler`, `dogrulama`); if the power peaking factors are not given
+they are read from the statepoint. Today the coefficients of the Analysis tab are **not written
+automatically** to this file.
+
+<a id="kural-k7"></a>
+#### K7: Sign of the reactivity coefficients (GDC 11)
+
+- **Label:** standard (NUREG-0800 §4.3 Rev. 3 II.2, GDC 11). The rule only tests the expected sign; it
+  does **not** say "GDC 11 is met" (the judgement on the net feedback is a design analysis).
+  Significance `anlamlilik_carpani` = 2 (project criterion: |slope| > 2σ).
+- Sub-identifiers `K7-guc`, `K7-yakit_sicaklik`, `K7-sogutucu_sicaklik`, `K7-void_orani`:
+  - negative → passed;
+  - `K7-guc` positive → **error** (contradicts the expected sign);
+  - Doppler (`K7-yakit_sicaklik`) positive → warning (unusual);
+  - a positive MTC or void coefficient → **note**: not an error by itself (SRP 4.3 does not exclude a
+    positive MTC); it must be evaluated in a transient analysis;
+  - |slope| ≤ 2σ → sign could not be determined (warning for the power coefficient, info for the
+    others): widen the sweep range or increase the statistics;
+  - no σ given → not applicable.
+- `K7-guc` also appears as the note "No net power coefficient given": GDC 11 cannot be judged from the
+  component coefficients alone.
+- If no coefficient is given at all, "No reactivity coefficient result given." (not applicable) → do a
+  sweep in the Analysis tab and enter the result in `uygunluk_girdisi.json`.
+
+<a id="kural-k7-sdm"></a>
+#### K7-SDM: Shutdown margin (most reactive rod stuck out)
+
+- **Label:** user-defined limit (NUREG-0800 §4.3; GDC 26/27). The limit `sdm_siniri_pcm` is specific
+  to the facility; **there is no default** → "no limit entered, could not be compared" (not
+  applicable). Here pcm = Δρ × 10⁵.
+- `K7-SDM-N1`: the margin was not calculated with the most reactive rod stuck out (N−1) → warning.
+  `K7-SDM-sigma`: no uncertainty given for the margin → warning. Below the limit is an error, within
+  2σ of it a warning.
+
+<a id="kural-k7-f"></a>
+#### K7-F: Power peaking factors F_ΔH / F_q
+
+- **Label:** user-defined limit. `K7-FdH` and `K7-Fq` compare the value with `F_dH_siniri` /
+  `F_q_siniri`; without a limit, "no limit entered, could not be compared (facility specific; no
+  default)" (not applicable). Above the limit is an error, within 2σ of the limit a warning. "No power
+  distribution result" → turn the power distribution on and repeat the run.
+
+<a id="kural-k16"></a>
+#### K16: Reference for core method validation
+
+- **Label:** standard (ANSI/ANS-19.3-2022; ISO 18075:2018, clause details not verified). "It is not
+  stated against which benchmarks the core calculation method was validated, nor its range of
+  application." → info. Fix: write the references (an IRPhEP case, a code-to-code comparison) into the
+  `kor.dogrulama` list in `uygunluk_girdisi.json`.
+
+### Profile D: Reporting
+
+<a id="kural-k4"></a>
+#### K4: Data traceability
+
+- **Label:** standard (ANSI/ANS-10.4-2008 (R2021); NUREG/CR-6698 §2.3). If the reproducibility fields
+  of the report (OpenMC version, library, chain sha256, seed...) are unknown, a warning: run again with
+  this application; the version and the library are read from `kosu.log`.
+- `K4-sicaklik`: "Material with undefined temperature: ..." → warning; enter the temperature on the
+  Materials page.
+
+<a id="kural-k5"></a>
+#### K5: Uncertainty and unit statement
+
+- **Label:** standard (JCGM 100:2008 §7.2.2, §7.2.3, §7.2.6; BIPM SI Brochure). The `rapor.html` in the
+  run directory is checked; without a report, not applicable ("Create the report and repeat the
+  check"). With more than one `.html` it is ambiguous which one is the report: save the report as
+  `rapor.html`.
+- `K5-etiket`: it is not stated that values given with "±" are 1σ standard uncertainties (warning).
+- `K5-rakam`: the uncertainty has more than 2 significant digits (warning). Example of the correct
+  form: 1.1822 ± 0.0029 (1σ).
+- `K5-yuvarlama`: the value is not rounded to the same decimal place as its uncertainty (warning).
+- `K5-pcm`: "pcm" is used but its definition (Δk × 10⁵ or Δρ × 10⁵) is not written in that section or
+  at the beginning of the document (warning).
+- `K5-SI`: a non-SI unit (inch, ft, psi, BTU, lbm, °F) → warning.
+
+<a id="yakinsamadi"></a>
+### K1: "source not converged", step by step
+
+If the K1 row of the Conformity panel says "The source distribution is still drifting at the end of the
+inactive period ...":
+
+1. **What it means:** when the inactive batches end, the spatial distribution of the fission source has
+   not settled yet; the k-eff and tallies collected in the active batches are affected by this
+   unsettled source. It is usually not possible to notice this by looking at k-eff itself.
+2. **Look at the entropy plot:** if, in the convergence plot on the Run page, the entropy still has a
+   slope (rising or falling) at the end of the inactive period, the rule is right.
+3. **Increase the inactive batches:** in Run settings increase **Inactive batches** so that it is larger
+   than the batch at which the entropy flattens (typical: 20-50 in a single assembly, 100 and more in a
+   full core). Increase **Total batches** by the same amount; otherwise the active batches decrease.
+4. **Check the entropy mesh:** if the **Entropy mesh** is too coarse (e.g. 1 × 1 × 1) the drift is not
+   visible; in a 3D model use divisions in the z direction as well.
+5. **Number of particles:** with few particles per batch (`K2-parcacik`) the entropy is noisy; use a few
+   thousand particles.
+6. **Run again** and check that the K1 row in the panel says "passed".
+
+Detailed interpretation: [Source convergence](06-sonuclar.md#kaynak-yakinsamasi).
+
+<a id="usl-hesaplanamadi"></a>
+### "USL could not be calculated", step by step
+
+If, with profile B selected, the panel (and the report annex) says "USL could not be calculated: ...":
+
+1. **This is not a model error.** The USL (upper subcritical limit) comes from the validation of the
+   calculation method against benchmark experiments. When the limit cannot be calculated, the k value of
+   your run has **not been compared** with a subcriticality limit; the result cannot be used as evidence
+   of criticality safety, but the calculation itself is not wrong.
+2. **Read the reason:** the reason in parentheses is one of these:
+   - "no validation (V&V) set": the user interface and the `uygunluk` command do not pass the V&V summary
+     to the check today (see the profile B note);
+   - "the set has ... cases (< 10): not enough independent cases": there are not enough independent
+     benchmarks in that area of applicability (AOA) (NUREG/CR-6698 §2.2);
+   - "the data are not normal and the non-parametric confidence β ≤ 40 %: more benchmark data needed"
+     (Table 2.2).
+3. **Which AOAs have a USL:** see the table in [docs/VV.md](../../VV.md). The current set gives a USL for
+   fast spectrum metal systems and for the thermal spectrum; in the **LWR/LEU lattice**, Pu-only,
+   U-233-only and intermediate spectrum subsets the USL cannot be calculated. Details:
+   [Verification and validation](07-uygunluk.md#vv).
+4. **Check with a V&V summary (Python):** take a summary filtered for your own AOA and give it to the
+   checker:
+
+   ```bash
+   python -c "from cekirdek.vv import kume; print(kume.ozet(filtre={'tayf': 'termal'}))"
+   ```
+
+   In the checker: `denetle(spec, kosu_dizini, ("B",), vv=kume.ozet(...), uygulama=kume.uygulama(spec, kosu_dizini))`
+   (`cekirdek/uygunluk_denetimi/denetle.py`).
+5. **If the set is not sufficient:** independent benchmark experiments representing your application
+   (e.g. LEU-COMP-THERM series) have to be modeled from the ICSBEP handbook and added to the set
+   ([docs/STANDARTLAR.md](../../STANDARTLAR.md) §5). Lowering the minimum number of cases with a
+   technical justification is the decision of the user organization; K10 still warns.
+
+<a id="kurulum-sorunlari"></a>
+## 9.4 Installation and environment problems
+
+Source: [KURULUM.md](../../../KURULUM.md) "frequent problems" and `calistir.sh`.
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| `HATA: openmc PATH'te yok` (openmc is not in PATH) | The conda environment is not active. | `conda activate openmc-env` |
+| `openmc Python paketi bulunamadi` / `PySide6 bulunamadi` (package not found) | The environment is incomplete. | Rebuild the environment with `conda env create -f environment.yml`. |
+| `OPENMC_CROSS_SECTIONS ayarli degil` (not set; warning) and a `veri kutuphanesi` error in the model check | The nuclear data were not downloaded or no new terminal was opened. | `./veri_indir.sh --bashrc`, then `source ~/.bashrc` ([Nuclear data](01-kurulum.md#nukleer-veri)). |
+| `Grafik oturum yok (DISPLAY/WAYLAND_DISPLAY bos)` (no graphical session) | You are connected over SSH or WSL has no graphics. | Open it in a desktop session; for WSL, Windows 11 + `wsl --update`. Working without the user interface: [Terminal](08-terminal.md#terminal). |
+| The Depletion page says "chain file missing/incomplete" | The chain was not downloaded or the download was cut (once it was measured to stop silently at 13 %). | `./veri_indir.sh --yalniz-zincir` |
+| `conda env create` takes very long | Old solver. | `conda config --set solver libmamba` or `mamba env create -f environment.yml` |
+| Some tests are skipped (marked `veri`) | No `OPENMC_CROSS_SECTIONS`. | Expected behavior; they run once the data are downloaded. |
+| The application closed with an error code | An uncaught error. | Open the log file printed in the terminal (`~/.local/state/openmc_arayuz/openmc_arayuz.log`) and report the error with this file. |
+| Where were the results written? | — | In a saved project, the `kosu` directory next to the project; in an unsaved project, under `~/openmc_kosular`. The Run page shows the full path. |
+
+The `calistir.sh` messages above are printed in Turkish ASCII by the shell script; the English meaning
+is given in parentheses.
+
+<a id="kosu-sorunlari"></a>
+## 9.5 Run problems
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| RUN button disabled: "The model check has ... errors; fix them first." | There are findings at error level. | Click the badge, select the finding and fix it on the page concerned ([9.2](#bulgu-turleri)). |
+| RUN button disabled: "The geometry preview has not been plotted yet. Plot first, run later..." | The preview is still being plotted or could not be plotted. | Wait; if it could not be plotted see the next row ([Plot first, run later](06-sonuclar.md#once-ciz)). |
+| "Preview failed: ..." / "Geometry could not be built" in the preview | The model could not be converted to an OpenMC geometry (undefined name, a component that does not fit, missing fill). | Read the text in the message; usually the same issue is listed as an error in the findings list. |
+| "The run of the previous project is still running in the background..." | The old run had not finished when another project was opened. | End the old run with Stop. |
+| Lost particles at the end of a run (K3 error) | A gap or overlapping cells in the geometry. | Inspect the cross sections, check the boundary conditions; in advanced geometry use "Probe". |
+| The run stops with a temperature error | A material temperature is outside the data range. Neutron data cover 250-2500 K, water S(α,β) only 284-800 K. | Keep the temperature in range; check the end value of a temperature sweep ([Known pitfalls](06-sonuclar.md#tuzaklar)). |
+| Warning: "Can be run. ... warnings" | Findings at warning level. | Read the list; they may affect the result. |
+| k-eff very different from what you expect | Common causes: missing S(α,β), vacuum side boundary (k-eff instead of k∞), a 2D model, the enrichment shortcut above 5 %. | Read the warnings in the findings list; [Interpreting results](06-sonuclar.md#sonuclar). |
+| F_ΔH larger than expected | With little statistics F_ΔH is biased upward (it is a maximum). | Increase the number of particles; Normal or Accurate preset. |
+| Red "Outdated result (...): the model has changed since that run" on the Depletion page | The result shown does not belong to the current model. | Run again ([Depletion](04i-tukenme.md#tukenme)). |
+| "Incomplete run (...): ... / ... steps completed" | Depletion was stopped or is still running. | Run again for a complete result (no restart from where it stopped). |
+| "Result of the previous run (...). The run has no model record..." | No `tukenme_spec.json` in the run directory. | It cannot be verified that the result belongs to this model; run again if unsure. |
+| The Conformity panel says "Could not be checked" | `uygunluk_girdisi.json` is corrupt or unreadable. | Fix the file as JSON or delete it; details in the log. |
+| Many "not applicable" rows in the conformity check | No threshold or input (see "Thresholds" in 9.3). | Expected behavior; without `--siki` they do not count as failures. |
+| Exit code 1 / 3 of `openmc-arayuz-kosu uygunluk` in the terminal | 1: there is an error finding; 3: with `--siki` some rule could not be evaluated; 2: usage error. | Read the list in the output ([Terminal](08-terminal.md#terminal)). |
+
+The same check from the terminal:
+
+```bash
+openmc-arayuz-kosu uygunluk kosu/ --profil A,D
+openmc-arayuz-kosu uygunluk kosu/ --profil A,B,C,D --siki
+```
