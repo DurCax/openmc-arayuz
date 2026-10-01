@@ -114,7 +114,7 @@ When the program opens without a model, the **"What would you like to model?"** 
 
 **Model type cards.** Each card has a description and two actions:
 
-| Card | Start blank | From example | Model built (core type) |
+| Card | Start empty | From example | Model built (core type) |
 |---|---|---|---|
 | **Fuel pin (pin cell)** | yes | `ornekler/pwr_pinhucre.json` | `tek_cubuk` |
 | **Fuel assembly — square** | yes | `ornekler/pwr_17x17.json` | `tek_demet` (square) |
@@ -126,7 +126,7 @@ When the program opens without a model, the **"What would you like to model?"** 
 | **Shielding (fixed source)** | — | `ornekler/zirh_kure.json` | `kuresel` |
 | **Open from file** | **Open…** (Ctrl+O): a saved model (`.json`) or an OpenMC XML folder | | |
 
-- **Start blank** builds a simple, working model: materials, components and geometry are ready;
+- **Start empty** builds a simple, working model: materials, components and geometry are ready;
   the run settings use the "Normal" accuracy preset. You can run it right away with **F9**.
 - **From example** opens an **unsaved copy** of a ready example. `ornekler/*.json` are test
   references; they are never overwritten. For your own file use **File → Save as**.
@@ -146,7 +146,7 @@ returns to the model.
 
 ## 1.5 Checking the installation: the first run
 
-On the Start screen choose **Fuel pin (pin cell) → Start blank**, then **F9** (Run). Within half a
+On the Start screen choose **Fuel pin (pin cell) → Start empty**, then **F9** (Run). Within half a
 minute the result card should show **k∞ ≈ 1.323 ± 0.001** (UO₂ 3.0%, hot operating condition,
 "Normal" preset; measured 1.3227 ± 0.0008). Small differences in the last digit are statistics;
 a difference larger than ±0.003 points to an installation problem (wrong library, missing S(α,β)

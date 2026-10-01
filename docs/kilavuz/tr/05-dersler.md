@@ -519,9 +519,13 @@ Ortalama lineer güç **182 W/cm**.
 
 1. **Godiva kritik küresi** örneğini açın: çıplak HEU metal küresi (ICSBEP HEU-MET-FAST-001).
    Kor türü `kuresel`; kabuklar yalnız JSON'dan düzenlenir.
-2. **Hesap ayarları**'nı dosyadaki gibi bırakın; referans koşusu 100 000 parçacık × 150 çevrim
-   (50 pasif). Süre kısıtlıysa **Normal** ile koşun ve σ'nın büyüdüğünü hesaba katın. **Çalıştır**.
-3. Sonucu deney değeriyle karşılaştırın: E ± σe = 1.0000 ± 0.0010. Hesaplayın:
+2. **Hesap ayarları**: dosyadaki ayar 20 000 parçacık × 160 çevrim (40 pasif) σ ≈ 0.0005 verir.
+   Aşağıdaki tablonun referans ölçümü **100 000 × 150 çevrim (50 pasif)** ile yapıldı (σ = 0.00025);
+   aynı σ için bu değerleri girin. Süre kısıtlıysa dosyanın ayarıyla koşun ve σ'nın büyüdüğünü hesaba
+   katın. **Çalıştır**.
+3. Sonucu deney değeriyle karşılaştırın: E ± σe = 1.0000 ± 0.0010. Özet satırları referanslı
+   örneklerde bunu kendisi yazar (referans, C/E, C − E pcm, |C − E| / σ;
+   [4.7 Sonuç kartı](04g-calistir.md#calistir)). Elle hesap:
    C − E [pcm] = (C − E) × 10⁵ (**Δk × 10⁵**, reaktivite farkı değildir), fark/σ =
    |C − E| / √(σc² + σe²), C/E = C / E.
 4. Aynısını Jezebel ve Flattop-25 için yapın. LCT-008 (LEU UO₂ kafes, borlu su) uzun sürer;

@@ -24,11 +24,11 @@ same rules.
 ![Geometry page, template view (PWR 17x17 assembly)](../resimler/en/ilk-hesap-geometri.png)
 
 <a id="geo-sablon"></a>
-### 4.4.1 Assembly template and core type
+### 4.4.1 Configuration template and core type
 
 The **Geometry** card at the top of the page states the model type ("Assembly: ... - Change
 type..."). The **Change type...** link is the same as the menu in the model header; the type
-changes only through these two paths and the **Assembly template** list below. Every change can
+changes only through these two paths and the **Configuration template** list below. Every change can
 be undone with **Ctrl+Z**.
 
 | Name shown in the list | `kor.tur` | What it builds | Example file |
@@ -78,7 +78,7 @@ and [placing a drum in any geometry](05-dersler.md#ders-tambur).
 
 | Field | Meaning | Unit | Typical range | Common mistake | Spec key |
 |---|---|---|---|---|---|
-| **Assembly template** | the model type (table above) | — | 10 options | changing the type and expecting the fields of the old type to be kept (they return to defaults) | `kor.tur` |
+| **Configuration template** | the model type (table above) | — | 10 options | changing the type and expecting the fields of the old type to be kept (they return to defaults) | `kor.tur` |
 | **Pin** | the pin that fills the pin cell ([4.2 Components](04b-parcalar.md#parcalar)) | — | — | running without selecting a pin (ERROR "no pin selected") | `kor.cubuk` |
 | **Plate-type fuel element** | the element of the single plate model | — | — | trying to select it before defining it on the Components page | `kor.plaka` |
 | **Assembly** | the assembly of the single-assembly model ([4.3 Assembly](04c-demet.md#demet)) | — | — | looking for the assembly pitch here: for a single assembly the pitch is in the assembly's own form | `kor.demet` |

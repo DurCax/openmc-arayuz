@@ -11,7 +11,7 @@ single, well-known and checkable structure in OpenMC. Design document:
 [GEOMETRI_MODELI.md](../../GEOMETRI_MODELI.md) §2–§3, §8, §10, §15.
 
 There are three ways into advanced mode: **Switch to advanced geometry...** on the Geometry page
-([4.4.9](04d-geometri.md#geo-gecis)), the last three entries of the **Assembly template** list,
+([4.4.9](04d-geometri.md#geo-gecis)), the last three entries of the **Configuration template** list,
 or opening a file saved in advanced mode (`ornekler/pwr_kare_altigen_halka.json`,
 `ornekler/altigen_tambur_halkasi.json`, `ornekler/kafes_tamburlu_yansitici.json`). The note at
 the top of the page reminds you: the template wizard is closed; to return to the template use

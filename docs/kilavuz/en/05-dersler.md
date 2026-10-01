@@ -108,7 +108,7 @@ quarter-core symmetry with the right boundary condition.
 
 **Steps.**
 
-1. Open the **square SMR full core (52 assemblies)** example. The model header shows the type
+1. Open the **Square SMR-like full core (52 assemblies)** example. The model header shows the type
    "full core (square map)".
 2. The **Assembly** page has two assemblies: `demet_24` (2.4 %) and `demet_31` (3.1 %); both are
    PWR 17×17 assemblies.
@@ -224,7 +224,7 @@ template. Concepts: [4.5 Advanced geometry editor](04e-geometri-gelismis.md#geom
 
 **Steps — reading the example.**
 
-1. Open the **square core + hexagonal reflector ring** example. The **Geometry** page opens directly
+1. Open the **Square core inside a hexagonal reflector ring** example. The **Geometry** page opens directly
    in the advanced editor (tree + cross-section + property form); the note at the top says the
    template wizard is closed.
 2. Read the tree from top to bottom:
@@ -300,7 +300,7 @@ core** (inserted, lowest k), **180° the absorber faces outwards** (withdrawn, h
 
 **Steps — A. Lattice core + drum reflector (reading and rotating).**
 
-1. Open the **lattice core + drum reflector** example. In the tree: **Root — rectangle 64.26×64.26**,
+1. Open the **Lattice core with a drum-controlled reflector** example. In the tree: **Root — rectangle 64.26×64.26**,
    **Inside: lattice kor_kafesi (square 3×3)**, **Ring 1** (outer cross-section a cylinder,
    r = 80 cm; content `berilyum`) and under it **Placement: tamburlar_yansitici (ring, 4)** →
    **Content: component tambur_b4c**. At the bottom **Control groups (1)** → **Group: tamburlar
@@ -324,7 +324,7 @@ difference of your own Normal runs should be of this order.
 
 **Steps — B. Hexagonal core + drum ring (group sweep).**
 
-5. Open the **hexagonal core + drum ring** example: 19 SFR assemblies (3-ring core, lattice `x`, pin
+5. Open the **Hexagonal core with a control-drum ring** example: 19 SFR assemblies (3-ring core, lattice `x`, pin
    lattice `y`), a hexagonal beryllium ring (outer apothem 48.7 cm) with 6 B₄C drums inside:
    **Count** 6, **Center radius** 36 cm, **Start angle** 30° (the drums face the flat sides of the
    core).
@@ -540,9 +540,13 @@ scatter / √5). Mean linear power **182 W/cm**.
 
 1. Open the **Godiva critical sphere** example: a bare HEU metal sphere (ICSBEP HEU-MET-FAST-001).
    The core type is `kuresel`; the shells are edited only in JSON.
-2. Leave the **Run settings** as in the file; the reference run is 100 000 particles × 150 batches
-   (50 inactive). If time is short, run with **Normal** and take the larger σ into account. **Run**.
-3. Compare the result with the experimental value: E ± σe = 1.0000 ± 0.0010. Compute:
+2. **Run settings**: the setting in the file, 20 000 particles × 160 batches (40 inactive), gives
+   σ ≈ 0.0005. The reference measurement in the table below was made with **100 000 × 150 batches
+   (50 inactive)** (σ = 0.00025); enter these values for the same σ. If time is short, run with the
+   setting of the file and take the larger σ into account. **Run**.
+3. Compare the result with the experimental value: E ± σe = 1.0000 ± 0.0010. For examples with a
+   reference the summary lines write this themselves (reference, C/E, C − E in pcm,
+   |C − E| / σ; [4.7 Result card](04g-calistir.md#calistir)). By hand:
    C − E [pcm] = (C − E) × 10⁵ (**Δk × 10⁵**, not a reactivity difference), difference/σ =
    |C − E| / √(σc² + σe²), C/E = C / E.
 4. Do the same for Jezebel and Flattop-25. LCT-008 (LEU UO₂ lattice, borated water) takes long;
