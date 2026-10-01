@@ -582,8 +582,14 @@ If, with profile B selected, the panel (and the report annex) says "USL could no
    of criticality safety, but the calculation itself is not wrong.
 2. **Read the reason:** the reason in parentheses is one of these:
    - "no USL for this application (AOA could not be determined)": the neutron spectrum (EALF tally
-     `vv_ealf`) or the fissile species/form could not be derived; the card offers to add the EALF
-     tally;
+     `vv_ealf`) or the fissile species/form could not be derived. Example: when `godiva_kriter` is
+     run with profile B, the card says "AOA could not be determined ... add the EALF tally
+     ('vv_ealf') and run again". **Fix:** press **Add the EALF tally** on the Conformity card and
+     confirm (a 300-group fission/energy tally is added to the model; it is never added
+     automatically), then run again. If you added the tally by hand with **+ Tally** and it has no
+     fission score or not a single energy filter, the reason is "the 'vv_ealf' tally has no
+     'fission' score" and the button says **Fix the EALF tally**: pressing it replaces the hand-made
+     tally with the correct definition;
    - "no USL for this application (outside the AOA): the set has n cases matching the subset (...)":
      fewer than 10 independent benchmarks share the fissile species, form, spectrum (and, for U-235,
      the enrichment class) (NUREG/CR-6698 §2.2, Table 2.3);

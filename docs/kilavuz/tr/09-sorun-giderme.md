@@ -572,7 +572,13 @@ Profil B seçiliyken panel (ve rapor eki) "USL hesaplanamadı: …" diyorsa:
    kullanılamaz, ama hesap kendi içinde yanlış değildir.
 2. **Nedeni okuyun:** parantez içindeki neden şunlardan biridir:
    - "bu uygulama için USL yok (AOA belirlenemedi)" — nötron tayfı (EALF tally'si `vv_ealf`) ya
-     da bölünebilir tür/biçim çıkarılamadı; kart EALF tally'sini eklemeyi önerir;
+     da bölünebilir tür/biçim çıkarılamadı. Örnek: `godiva_kriter` B profiliyle koşulunca kart
+     "AOA belirlenemedi … EALF tally'sini ('vv_ealf') ekleyip yeniden koşun" der. **Çözüm:**
+     Uygunluk kartında **EALF tally'sini ekle** düğmesine basın ve onaylayın (modele 300 gruplu
+     fisyon/enerji tally'si eklenir; kendiliğinden eklenmez), sonra yeniden koşun. Tally'yi
+     **+ Tally** ile elle eklediyseniz ve fisyon skoru ya da tek enerji filtresi yoksa neden
+     "'vv_ealf' tally'sinde 'fission' skoru yok" olur ve düğme **EALF tally'sini düzelt** der:
+     basınca elle eklenen tally doğru tanımla değişir;
    - "bu uygulama için USL yok (AOA dışında): kümede alt kümeye (…) uyan n vaka var" — aynı
      bölünebilir tür, biçim, tayf (ve U-235'te zenginlik sınıfı) taşıyan bağımsız kriter 10'dan
      az (NUREG/CR-6698 §2.2, Tablo 2.3);
