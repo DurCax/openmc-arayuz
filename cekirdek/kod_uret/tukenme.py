@@ -22,9 +22,20 @@ def _tukenme(spec, satirlar):
         return False
     from cekirdek import tukenme as _tk
     zs = _tk.zincir_secimi(spec)
-    hv = _tk.hacimler(spec)
+    # kosucuyla (tukenme.hazirla) AYNI hacim kaynagi: agac modunda kesin
+    # olmayan hacim stokastik hacme duser; zorunlu malzemenin hacmi yoksa
+    # betik de uretilmez (eskiden 'm.volume = None' yazilirdi)
+    hv, _atlanan, stokastik = _tk._hazir_hacimler(spec)
+    eksik = [a for a, v in hv.items() if not v["hacim"]]
+    if eksik:
+        raise ValueError(
+            "hacmi hesaplanamayan yanabilir malzeme: %s (%s). Tükenme betiği kesin "
+            "hacim gerektirir." % (", ".join(eksik), "; ".join(hv[a]["ayrinti"] for a in eksik)))
     _bolum(satirlar, 6, "TÜKENME (YANMA)")
     satirlar.append("")
+    if stokastik:
+        satirlar.append("# Stokastik hacim (OpenMC VolumeCalculation; koşucuyla aynı hesap): %s"
+                        % yorum_metni(", ".join(sorted(stokastik))))
     satirlar.append("# Yanabilir malzemeler ve analitik hacimleri. Hacim yanlışsa yanma")
     satirlar.append("# hızı aynı oranda yanlış olur ve k-eff'te iz bırakmaz.")
     for ad, v in hv.items():

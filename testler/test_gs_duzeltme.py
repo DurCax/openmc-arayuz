@@ -34,5 +34,69 @@ def test_periyodik_es_etkin_bc():
     kontrol("yan=reflective, yalniz +y periodic -> HATA", _sinir_hatalari(u))
 
 
-HIZLI = [test_periyodik_es_etkin_bc]
-YAVAS = []
+def _tukenmeli(spec, ayir=False):
+    spec["tukenme"] = dict(spec.get("tukenme") or {}, var=True, malzemeleri_ayir=ayir)
+    return spec
+
+
+def _sahte_stokastik(sonuc):
+    """geometri.hacim.stokastik'i MC'siz sahtesiyle degistirir; eskiyi doner."""
+    from cekirdek.geometri import hacim
+    eski = hacim.stokastik
+    hacim.stokastik = lambda spec, adlar, orneklem=0, dizin=None: {
+        a: sonuc[a] for a in adlar if a in sonuc}
+    return eski
+
+
+def test_betik_kesik_yakit_hacmi():
+    print("\n[GS2] betik: kesik yakitta kosucunun (stokastik) hacmi; hacim yoksa acik hata")
+    from cekirdek import kod_uret
+    from cekirdek.geometri import hacim
+    spec = _tukenmeli(go.duzenek_a(yakit_blok=True))
+    eski = _sahte_stokastik({"uo2_24": (1234.5, 1.0)})
+    try:
+        kod = kod_uret.uret(spec, "model.py")
+    finally:
+        hacim.stokastik = eski
+    kontrol("betikte 'volume = None' yok", ".volume = None" not in kod)
+    kontrol("betik kosucunun stokastik hacmini yazar", "uo2_24.volume = 1234.5 " in kod,
+            "-> %s" % [s for s in kod.splitlines() if "uo2_24.volume" in s])
+    eski = _sahte_stokastik({})
+    try:
+        kod_uret.uret(spec, "model.py")
+        hata = None
+    except ValueError as e:
+        hata = str(e)
+    finally:
+        hacim.stokastik = eski
+    kontrol("zorunlu yakitin hacmi yoksa uretim acik hatayla durur",
+            hata is not None and "uo2_24" in hata, "-> %s" % hata)
+
+
+def test_yavas_betik_kesik_hacim_kosucuyla_ayni(gecici):
+    print("\n[GS2y] kesik yakitli agac modeli: betik calisir, hacimler kosucuyla ayni")
+    import importlib.util
+    import os
+    from cekirdek import kod_uret, tukenme
+    spec = _tukenmeli(go.duzenek_a(yakit_blok=True))
+    model, bilgi = tukenme.hazirla(spec)
+    kosucu = {m.name: m.volume for m in model.materials if m.depletable}
+    yol = os.path.join(gecici, "model.py")
+    with open(yol, "w", encoding="utf-8") as f:
+        f.write(kod_uret.uret(spec, "model.py"))
+    eski = os.getcwd()
+    try:
+        os.chdir(gecici)
+        sm = importlib.util.spec_from_file_location("uretilen_gs2", yol)
+        mod = importlib.util.module_from_spec(sm)
+        sm.loader.exec_module(mod)
+    finally:
+        os.chdir(eski)
+    betik = {m.name: m.volume for m in mod.model.materials if m.depletable}
+    kontrol("stokastik yedek kullanildi", "uo2_24" in bilgi["stokastik"], "-> %s" % bilgi)
+    kontrol("betik hacimleri = kosucu hacimleri", betik == kosucu,
+            "-> betik %s kosucu %s" % (betik, kosucu))
+
+
+HIZLI = [test_periyodik_es_etkin_bc, test_betik_kesik_yakit_hacmi]
+YAVAS = [test_yavas_betik_kesik_hacim_kosucuyla_ayni]
