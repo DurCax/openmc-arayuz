@@ -78,7 +78,9 @@ def test_altigen_sinir():
     print("\n[3c] Altigen duct olcusu -- yarim adim aciklik")
     import math
     import openmc
-    from cekirdek import altigen, kurucu
+    from cekirdek import altigen
+    from cekirdek.geometri.sablon import _altigen_demet_apotem
+    from cekirdek.geometri.yapici import NesneYapici
 
     def mesafeler(prizma, nokta):
         x, y = nokta
@@ -97,7 +99,9 @@ def test_altigen_sinir():
 
     for yonelim in ("y", "x"):
         for n, p in ((2, 0.9), (7, 0.9), (10, 1.3)):
-            prizma = kurucu._altigen_sinir(n, p, yonelim, "reflective")
+            apotem = _altigen_demet_apotem({"halka_sayisi": n, "adim": p})
+            prizma = NesneYapici({}).altigen_prizma(2.0 * apotem / math.sqrt(3.0), yonelim,
+                                                    bc="reflective")
             kon = altigen.konumlar(n, yonelim)
             en_yakin = min(min(mesafeler(prizma, (x * p, y * p)))
                            for x, y in kon.values())

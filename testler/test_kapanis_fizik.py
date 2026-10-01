@@ -20,6 +20,8 @@ import copy
 import os
 
 from testler.ortak_test import kontrol, ORNEK
+from cekirdek import geometri  # noqa: E402
+from cekirdek.geometri import eksenel as geo_eks  # noqa: E402,F401
 
 
 def _kesintili(dilim):
@@ -49,7 +51,7 @@ def test_dilim_katman_hizasi():
     from cekirdek import kurucu
     s = _kesintili(20)                   # dz = 300/20 = 15 cm; 100/15 tamsayi degil
     kontrol("mesh araligi 300 cm", abs(-(lambda a: a[0] - a[1])(
-        kurucu.cubuk_eksenel_aralik(s, "yakit_cubugu")) - 300.0) < 1e-9)
+        geo_eks.cubuk_araligi(s, "yakit_cubugu")) - 300.0) < 1e-9)
     b = _hiza_bulgulari(s)
     kontrol("20 dilim: uyari", len(b) == 1 and b[0].seviye == "uyari", "-> %r" % [str(x) for x in b])
     kontrol("metin F_q ve 'dilim sayısını' onerisi",

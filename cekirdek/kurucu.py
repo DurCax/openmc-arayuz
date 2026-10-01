@@ -29,16 +29,14 @@
 ================================================================================
 """
 
-import math
-
 import openmc
 
+from cekirdek import geometri
 from cekirdek import kaynak as _kaynak
-from cekirdek.geometri import eksenel as _geo_eks
-from cekirdek.geometri.kurulum import Kurucu as _GeoKurucu, kur as _geo_kur
+from cekirdek.geometri.kurulum import kur as _geo_kur
 from cekirdek.sema import model_yuksekligi as sema_model_yuksekligi
 from cekirdek.sema import guc_hedefleri as sema_guc_hedefleri
-from cekirdek.sema import BOSLUK, cubuk_bul, plaka_bul
+from cekirdek.sema import BOSLUK, cubuk_bul
 
 # Varsayilan renk (spec'te renk verilmemis malzemeler icin)
 _VARSAYILAN_RENK = (170, 170, 170)
@@ -92,77 +90,10 @@ def _mat(nesneler, ad):
 # 2. GEOMETRI -- cekirdek/geometri (tek kurucu, Dalga G-1)
 # ============================================================================
 #
-# Kor artik bir dugum agacindan kurulur: sablon modunda agac genislet(spec)
-# ile turetilir (cekirdek/geometri/sablon.py), gelismis modda
-# spec["geometri"]dir. Eski kor_kur esdegerlik kapisindan (27 ornek x 1e5
-# nokta) gectikten sonra silindi; kapi kayitli parmak izleriyle surer
-# (testler/test_geometri_esdegerlik.py). Asagidaki adlar geriye uyum icin
-# ince sarmalayicilardir (G-2 sonunda tuketiciler geometri API'sine gecer).
-
-def kor_kur(spec, nesneler, universeler):
-    """Kor duzenini kurar; (kok_universe, (genislik_x, genislik_y)) dondurur."""
-    kok, kutu, _dizin = _geo_kur(spec, nesneler, universeler)
-    return kok, kutu
-
-
-def _tek_bilesen(spec, nesneler):
-    """Kor gerektirmeyen bilesen kurucusu (cubuk/plaka tek basina)."""
-    from cekirdek.geometri import GeometriModeli
-    from cekirdek.geometri.sema import tanimlar
-    from cekirdek.geometri.yapici import NesneYapici
-    agac = spec.get("geometri") if isinstance(spec.get("geometri"), dict) else {}
-    m = GeometriModeli(kok={}, parcalar=(), gruplar=tuple(agac.get("gruplar") or ()),
-                       tanimlar=tanimlar(spec, agac))
-    k = _GeoKurucu(spec, m, NesneYapici(nesneler))
-    k.yukseklik = sema_model_yuksekligi(spec)
-    return k
-
-
-def cubuk_universe(spec, cubuk_ad, nesneler):
-    """Cubuk evreni (geometri.bilesen.cubuk; kontrol cubugu dahil)."""
-    from cekirdek.geometri import bilesen as _b
-    c = cubuk_bul(spec, cubuk_ad)
-    if c is None:
-        raise KeyError("tanımsız çubuk: %s" % cubuk_ad)
-    return _b.cubuk(_tek_bilesen(spec, nesneler), c, cubuk_ad)
-
-
-def plaka_universe(spec, plaka_ad, nesneler):
-    """MTR plaka elemani evreni (geometri.bilesen.plaka)."""
-    from cekirdek.geometri import bilesen as _b
-    p = plaka_bul(spec, plaka_ad)
-    if p is None:
-        raise KeyError("tanımsız plaka elemanı: %s" % plaka_ad)
-    return _b.plaka(_tek_bilesen(spec, nesneler), p, plaka_ad)
-
-
-def _altigen_sinir(halka_sayisi, adim, kafes_yonelimi, bc, buyutme=0.0):
-    """Altigen kafesi saran HexagonalPrism (yonelim = kafes yonelimi; olculdu)."""
-    ic_yaricap = (halka_sayisi - 1) * adim * math.sqrt(3.0) / 2.0 + adim / 2.0 + buyutme
-    kenar = 2.0 * ic_yaricap / math.sqrt(3.0)
-    return openmc.model.HexagonalPrism(edge_length=kenar, orientation=kafes_yonelimi,
-                                       boundary_type=bc)
-
-
-# eksenel araliklar: cekirdek/geometri/eksenel.py (sablon + agac modu)
-aktif_eksenel_aralik = _geo_eks.aktif_aralik
-cubuk_eksenel_aralik = _geo_eks.cubuk_araligi
-guc_eksenel_araligi = _geo_eks.hedef_araligi
-guc_yuksekligi = _geo_eks.hedef_yuksekligi
-_spec_fisil_mi = _geo_eks.fisil_mi
-_iceriyor_mu = _geo_eks.iceriyor_mu
-_guc_hedef_adlari = _geo_eks._guc_hedef_adlari
-
-
-def kor_ic_olcusu(spec, sinir_kutu):
-    """
-    Korun YANSITICI HARIC yanal olcusu (gx, gy) -- baslangic kaynagi kutusu.
-    Yansitici eklenince yakit kutunun kucuk bir kesrine dusuyor ve OpenMC
-    "Too few source sites" diyerek duruyordu (olculdu: 17x17 + 20 cm su).
-    Sablonda eski kurucunun degeri (genislet kok._ic_kutu), agacta kok kesiti.
-    """
-    from cekirdek import geometri
-    return tuple(geometri.ic_olcusu(geometri.model(spec)))
+# Kor bir dugum agacindan kurulur: sablon modunda agac genislet(spec) ile
+# turetilir (cekirdek/geometri/sablon.py), gelismis modda spec["geometri"]dir.
+# Eksenel araliklar, kaynak kutusu ve tek bilesen evrenleri cekirdek/geometri
+# API'sindedir (G-1 sarmalayicilari Dalga G temizliginde silindi).
 
 
 # ============================================================================
@@ -202,7 +133,9 @@ def ayarlari_kur(spec, sinir_kutu, fisil_aralik=None):
         else:
             yari_z = (h / 2.0) if h else 1.0
             z_alt, z_ust = -yari_z, +yari_z
-        kx, ky = kor_ic_olcusu(spec, sinir_kutu)
+        # yanal olcu YANSITICI HARIC: yansitici eklenince yakit kutunun kucuk
+        # bir kesrine dusuyor, OpenMC "Too few source sites" diyordu (olculdu).
+        kx, ky = geometri.ic_olcusu(geometri.model(spec))
         alt = k.get("alt") or [-kx / 2, -ky / 2, z_alt]
         ust = k.get("ust") or [+kx / 2, +ky / 2, z_ust]
         uzay = openmc.stats.Box(alt, ust)
@@ -361,7 +294,7 @@ def _guc_mesh_filtresi(spec, adlar, sinir_kutu, dilim):
       Mesh yakittan tasarsa bos bin'ler ortalamayi dusurur ve F_q yapay
       olarak siser. Sinirlar kor yuksekliginden TURETILIR, elle girilmez;
       yansitici/plenum katmanlari mesh'e girmez."""
-    aralik = guc_eksenel_araligi(spec, adlar)
+    aralik = geometri.hedef_araligi(spec, adlar)
     if not aralik or dilim <= 1:
         return None
     gx, gy = sinir_kutu
@@ -441,7 +374,7 @@ def kur(spec):
     # cubugu daldirmasi hep bu TEK tanimdan okur. Bir zamanlar geometriden
     # turetilen ikinci bir tanim daha vardi; uretilen betik onu bilemedigi
     # icin betik ile kurucu FARKLI kaynak kutusu kuruyordu (1300 pcm).
-    fisil = aktif_eksenel_aralik(spec)
+    fisil = geometri.aktif_aralik(spec)
     settings = ayarlari_kur(spec, sinir_kutu, fisil)
     tallies = tallyleri_kur(spec, nesneler, sinir_kutu)
 

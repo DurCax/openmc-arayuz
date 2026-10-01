@@ -162,8 +162,8 @@ class KorKatmanMixin(object):
             return
         satir = _("Toplam yükseklik = %g cm") % toplam
         try:
-            from cekirdek import kurucu
-            ar = kurucu.aktif_eksenel_aralik(self.spec)
+            from cekirdek import geometri
+            ar = geometri.aktif_aralik(self.spec)
             if ar:
                 satir += (_("   ·   aktif yakıt = %g cm  (z = %g … %g)")
                           % (ar[1] - ar[0], ar[0], ar[1]))
@@ -171,7 +171,7 @@ class KorKatmanMixin(object):
             adlar = list(dict.fromkeys(h["cubuk"] for h in sema.guc_hedefleri(g)
                                        if h["cubuk"]))
             if g.get("var") and adlar:
-                cr = kurucu.guc_eksenel_araligi(self.spec, adlar)
+                cr = geometri.hedef_araligi(self.spec, adlar)
                 if cr and not (ar and math.isclose(cr[1] - cr[0], ar[1] - ar[0])):
                     satir += (_("\n“%s” çubuğu = %g cm (z = %g … %g) — güç ağı bunu kullanır")
                               % ("”, “".join(adlar), cr[1] - cr[0], cr[0], cr[1]))

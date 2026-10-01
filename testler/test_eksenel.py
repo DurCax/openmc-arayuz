@@ -12,6 +12,8 @@ import os
 
 from cekirdek import sema, kurucu, kod_uret
 from testler.ortak_test import kontrol
+from cekirdek import geometri  # noqa: E402
+from cekirdek.geometri import eksenel as geo_eks  # noqa: E402,F401
 from testler.regresyon_ortak import ORNEK, _ornek_adlari
 
 
@@ -87,16 +89,16 @@ def test_eksenel_araliklar():
     spec = sema.yukle(os.path.join(ORNEK, "pwr_eksenel.json"))
     kontrol("toplam yukseklik 395 cm",
             abs(sema.kor_yuksekligi(spec["kor"]) - 395.0) < 1e-9)
-    ar = kurucu.aktif_eksenel_aralik(spec)
+    ar = geometri.aktif_aralik(spec)
     kontrol("fisil aralik (-177.5, 152.5) -- blanket dahil",
             ar is not None and abs(ar[0] + 177.5) < 1e-9 and abs(ar[1] - 152.5) < 1e-9,
             "-> %s" % (ar,))
-    cr = kurucu.cubuk_eksenel_aralik(spec, "yakit_cubugu")
+    cr = geo_eks.cubuk_araligi(spec, "yakit_cubugu")
     kontrol("yakit_cubugu araligi (-162.5, 137.5) -- blanket HARIC",
             cr is not None and abs(cr[0] + 162.5) < 1e-9 and abs(cr[1] - 137.5) < 1e-9,
             "-> %s" % (cr,))
     kontrol("blanket cubugu blanket katmanlarinda",
-            kurucu.cubuk_eksenel_aralik(spec, "blanket_cubugu") is not None)
+            geo_eks.cubuk_araligi(spec, "blanket_cubugu") is not None)
 
     # kaynak kutusu ve guc mesh'i dogru araligi kullaniyor mu
     model, bilgi = kurucu.kur(spec)
@@ -120,11 +122,11 @@ def test_eksenel_araliklar():
     duz = sema.yukle(os.path.join(ORNEK, "pwr_3b.json"))
     h = sema.kor_yuksekligi(duz["kor"])
     kontrol("katmansiz modelde fisil aralik = +/-H/2 (geriye donuk uyum)",
-            kurucu.aktif_eksenel_aralik(duz) == (-h / 2.0, h / 2.0))
+            geometri.aktif_aralik(duz) == (-h / 2.0, h / 2.0))
     kontrol("katmansiz modelde cubuk araligi = +/-H/2",
-            kurucu.cubuk_eksenel_aralik(duz, "yakit_cubugu") == (-h / 2.0, h / 2.0))
+            geo_eks.cubuk_araligi(duz, "yakit_cubugu") == (-h / 2.0, h / 2.0))
     kontrol("2B modelde aralik None",
-            kurucu.aktif_eksenel_aralik(
+            geometri.aktif_aralik(
                 sema.yukle(os.path.join(ORNEK, "pwr_pinhucre.json"))) is None)
 
 
@@ -180,17 +182,17 @@ def test_kontrol_cubugu_eksenel():
         sema.eksenel_bolge("aktif", 300.0, None),
         sema.eksenel_bolge("plenum", 30.0, "su"),
     ]}
-    ar = kurucu.aktif_eksenel_aralik(spec)
+    ar = geometri.aktif_aralik(spec)
     kontrol("aktif aralik plenumu disliyor (-152.5, 147.5)",
             abs(ar[0] + 152.5) < 1e-9 and abs(ar[1] - 147.5) < 1e-9, "-> %s" % (ar,))
 
     kontrol_cubugu = [c for c in spec["cubuklar"] if c.get("tur") == "kontrol"][0]
     for daldirma, beklenen in ((0.0, 147.5), (50.0, -2.5), (100.0, -152.5)):
         kontrol_cubugu["daldirma"] = daldirma
-        univ = kurucu.cubuk_universe(spec, kontrol_cubugu["ad"],
-                                     kurucu.malzemeleri_kur(spec)[0])
+        _m, bilgi = kurucu.kur(spec)
+        evrenler = bilgi["geometri_dizini"].kontrol_cubuklari[kontrol_cubugu["ad"]]
         z0lar = sorted({float(srf.z0)
-                        for c in univ.cells.values()
+                        for univ in evrenler for c in univ.cells.values()
                         for srf in c.region.get_surfaces().values()
                         if srf.type == "z-plane"})
         kontrol("daldirma %%%g -> uc z = %g" % (daldirma, beklenen),
@@ -399,7 +401,7 @@ def test_ana_dolgu_ture_gore():
     #     ve kontrol eski kodda da geciyordu -- hicbir sey kanitlamiyordu.
     sp = _eksenel_spec()
     sp["kor"]["cubuk"] = "kilavuz_boru"
-    ar = kurucu.aktif_eksenel_aralik(sp)
+    ar = geometri.aktif_aralik(sp)
     kontrol("eski kor.cubuk kalintisi aktif araligi bozmuyor (-183, 183)",
             ar == (-183.0, 183.0), "-> %s" % (ar,))
     # (b) kare_kafes + eksenel katman, aktif katmanin kendi dolgusu yok
@@ -410,10 +412,10 @@ def test_ana_dolgu_ture_gore():
         sema.eksenel_bolge("alt", 20.0, "su"),
         sema.eksenel_bolge("aktif", 100.0, None),
         sema.eksenel_bolge("ust", 20.0, "su")]}
-    ar = kurucu.aktif_eksenel_aralik(kk)
+    ar = geometri.aktif_aralik(kk)
     kontrol("kare_kafes: aktif aralik yalniz yakitli katman (-50, 50)",
             ar == (-50.0, 50.0), "-> %s" % (ar,))
-    cr = kurucu.cubuk_eksenel_aralik(kk, "yakit_cubugu")
+    cr = geo_eks.cubuk_araligi(kk, "yakit_cubugu")
     kontrol("kare_kafes: cubuk araligi haritadaki demetten bulunuyor (-50, 50)",
             cr == (-50.0, 50.0), "-> %s" % (cr,))
     kontrol("sema.ana_dolgu kare_kafes icin None", sema.ana_dolgu(kk["kor"]) is None)

@@ -28,6 +28,8 @@ import json
 import os
 
 from testler.ortak_test import kontrol, ORNEK, KOK
+from cekirdek import geometri  # noqa: E402
+from cekirdek.geometri import eksenel as geo_eks  # noqa: E402,F401
 from testler import geometri_iz as gi
 
 KAYIT = os.path.join(KOK, "testler", "veri", "geometri_parmak_izi.json.gz")
@@ -108,9 +110,9 @@ def test_yapi():
         spec = k["spec"]
         openmc.reset_auto_ids()
         n, _m, _r = kurucu.malzemeleri_kur(spec)
-        kutu = tuple(kurucu.kor_kur(spec, n, {})[1])
-        ar = kurucu.aktif_eksenel_aralik(spec)
-        yeni = [list(kutu), list(kurucu.kor_ic_olcusu(spec, kutu)), list(ar) if ar else None]
+        kutu = tuple(geometri.kur(spec, n, {})[1])
+        ar = geometri.aktif_aralik(spec)
+        yeni = [list(kutu), list(geometri.ic_olcusu(geometri.model(spec))), list(ar) if ar else None]
         kontrol("B %s" % ad, yeni == [k["kutu"], k["ic_kutu"], k["aktif"]],
                 "-> %s / %s" % (yeni, [k["kutu"], k["ic_kutu"], k["aktif"]]))
 

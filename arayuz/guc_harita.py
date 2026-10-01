@@ -32,10 +32,11 @@ _log = kaydedici(__name__)
 
 def _aktif_yukseklik(spec):
     """Lineer guc paydasi: hedef cubugun bulundugu katmanlarin yuksekligi
-    (kurucu.guc_yuksekligi; yansitici, plenum ve blanket haric)."""
+    (geometri.hedef_yuksekligi; yansitici, plenum ve blanket haric; sablon
+    ve agac modunda)."""
     try:
-        from cekirdek import kurucu
-        return kurucu.guc_yuksekligi(spec)
+        from cekirdek import geometri
+        return geometri.hedef_yuksekligi(spec)
     except Exception:
         _log.warning("aktif eksenel aralık okunamadı; kor yüksekliği kullanılıyor",
                      exc_info=True)
