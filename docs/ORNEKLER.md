@@ -256,8 +256,12 @@ Fark 41 pcm, yani **0.46σ** (YAVAS test OR12, ölçüt 2σ: geçti).
 - **pwr_gd_tukenme:** tek Gd'li pin hücresi temsil edici değildir (sonsuz Gd
   kafesi); 5×5 süper hücrenin merkezindeki Gd'li pelet eşit alanlı 5 halkaya
   bölünür. Ölçülen (OR13, 5 MWd/kg): kalan Gd-157 oranı içten dışa
-  0.77 / 0.71 / 0.57 / 0.30 / 0.01 (01.10.2026, He düzeltmesinden sonra yeniden ölçüldü; k∞ 1.1233 → 1.0697, 1500 × 40/15) — uzaysal öz-perdeleme ("soğan kabuğu")
-  açıkça görünür; 16 MWd/kg değerinde iç halkada hâlâ ~%12 Gd-157 kalır (eski ölçüm, yeniden koşulmadı).
+  0.74 / 0.63 / 0.42 / 0.09 / 0.003 (01.10.2026; CECM, adım ≤ 1 MWd/kg; 1500 × 40/15; k∞
+  1.1233 → 1.0646 ± 0.0049) — uzaysal öz-perdeleme ("soğan kabuğu") açıkça görünür.
+  **Adım duyarlılığı:** eski ayar (predictor, 0.02 / 0.08 / 0.9 / 2 / 2 MWd/kg) aynı
+  istatistikle 0.77 / 0.71 / 0.60 / 0.33 / 0.014 verdi: öngörücü adım başındaki (dış halkanın
+  perdelediği) hızları büyük adım boyunca kullanır ve iç halkaların yanmasını eksik hesaplar.
+  Örnek bu yüzden CECM ve ≤ 1 MWd/kg adım kullanır. 16 MWd/kg değeri yeniden ölçülmedi.
   **k∞ bu modelde tepe yapmaz:** 25 çubuktan yalnız biri Gd'li olduğu için
   reaktivite tutması zayıftır ve yakıt tükenmesi baskındır. Gerçek bir demette
   (12–20 Gd'li çubuk) tepe görülür.
