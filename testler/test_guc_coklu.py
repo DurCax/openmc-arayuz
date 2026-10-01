@@ -15,6 +15,7 @@ import json
 import os
 
 from testler.ortak_test import kontrol, ORNEK
+from testler.ortak_test import gereksinim  # S-4 izlenebilirlik
 
 
 def _eski_bicimli(cubuk="yakit_cubugu", bolge=0):
@@ -132,6 +133,7 @@ def _dc_hucresi(tal, model):
     return model.geometry.get_all_cells()[cid]
 
 
+@gereksinim("R-M1-03")
 def test_kurucu_tur_basina_tally():
     print("\n[GC5] kurucu: tur basina 'guc_dagilimi' tally'si, ortak ref ve adli hucreler")
     import openmc
@@ -323,6 +325,7 @@ def _iki_turlu_sp():
                            summary=SimpleNamespace(geometry=geo))
 
 
+@gereksinim("R-M1-03")
 def test_dagilim_birlestirme_sentetik():
     print("\n[GC11] dagilim_oku: iki tur tek haritada, normalizasyon TUM cubuklar")
     from cekirdek import guc
@@ -601,6 +604,7 @@ def _kor_konumu(anahtar):
     return (dx * DEMET_N + x, dy * DEMET_N + y)
 
 
+@gereksinim("R-M1-03")
 def test_uc_zenginlik_mc_fdh(gecici):
     """
     KABUL (plan, Ajan 8b): uc zenginlikli 3x3 kare korda cok tally F_dH,
@@ -650,6 +654,7 @@ def test_uc_zenginlik_mc_fdh(gecici):
     kontrol("cubuk cubuk bagil guc ayni (< 1e-9)", en_fark < 1e-9)
 
 
+@gereksinim("R-FZ-03")
 def test_cok_tur_betik_esdegerligi(gecici):
     """Cok turlu spec: kurucu ve uretilen betik ayni k ve ayni F_dH."""
     print("\n[GC15] cok turlu betik esdegerligi (kurucu vs kod_uret, Monte Carlo)")

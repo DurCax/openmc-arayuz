@@ -20,6 +20,7 @@ import subprocess
 import time
 
 from testler.ortak_test import kontrol, KOK, ORNEK, ISLEM_PARCACIGI
+from testler.ortak_test import gereksinim  # S-4 izlenebilirlik
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
@@ -100,6 +101,7 @@ def _onceki_h5():
 # 1. Ad normallestirme ve oneri (saf, zincirsiz)
 # ============================================================================
 
+@gereksinim("R-A2-01")
 def test_normallestirme_ve_oneri():
     print("\n[NS1] NUKLID ADI: normallestirme ve en yakin eslesme onerisi")
     from cekirdek import nuklidler as nk
@@ -213,6 +215,7 @@ def _izlenen_bulgulari(spec):
     return [b for b in dg.tukenme_kontrol(spec) if "izlenen" in b.mesaj]
 
 
+@gereksinim("R-A2-01")
 def test_dogrulama_yazim_hatasi():
     print("\n[NS4] DOGRULAMA: zincirde olmayan izlenen nuklid HATA + oneri")
     if _zincir_yolu() is None:
@@ -250,6 +253,7 @@ def test_dogrulama_yazim_hatasi():
 # 4. Sonuc okuma: bulunamayanlar sessizce atlanmaz; izlenen parametre
 # ============================================================================
 
+@gereksinim("R-A2-02")
 def test_sonuc_oku_bulunamayan():
     print("\n[NS5] SONUC OKUMA: yazim hatasi 'bulunamayan'da, secim h5'ten yeniden okunur")
     from cekirdek import sema, tukenme
@@ -282,6 +286,7 @@ def test_sonuc_oku_bulunamayan():
 # 5. Eski JSON'lar: izlenen aynen yuklenir ve kaydedilir
 # ============================================================================
 
+@gereksinim("R-A2-03")
 def test_eski_json_izlenen():
     print("\n[NS6] ESKI JSON: izlenen listesi aynen yukleniyor ve kaydediliyor")
     uyg = _qt()
@@ -398,6 +403,7 @@ SAHTE = {"zaman_d": [0.0, 0.5, 2.0], "yanma": [0.0, 0.02, 0.08],
          "adim_sayisi": 2, "bulunamayan": []}
 
 
+@gereksinim("R-A2-04")
 def test_csv_bicimi():
     print("\n[NS8] CSV: zaman, yanma, k, sigma, malzeme x nuklid atom ve yogunluk")
     from arayuz.tukenme_sonuc import csv_metni
@@ -479,6 +485,7 @@ def _sekme_yeni_secim(sekme, beklenen_satir):
             "-> %r" % _cizgi_etiketleri(sekme))
 
 
+@gereksinim("R-A2-03")
 def test_sekme_onceki_sonuc_yeni_secim():
     print("\n[NS9] SEKME: pwr_tukenme'nin onceki sonucu yeni secimle, kosu tekrarlanmadan")
     uyg = _qt()

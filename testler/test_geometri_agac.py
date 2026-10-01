@@ -15,6 +15,7 @@ import math
 import os
 
 from testler.ortak_test import kontrol, ISLEM_PARCACIGI
+from testler.ortak_test import gereksinim  # S-4 izlenebilirlik
 from testler import geometri_ortak as go
 
 DUZENEKLER = (("a", lambda: go.duzenek_a()), ("a-yakit", lambda: go.duzenek_a(True)),
@@ -30,6 +31,7 @@ def _sorgu(model, bilgi, x, y, z=0.0):
     return gi.nokta_izi(model.geometry.root_universe, (x, y, z), mat, gi.OrnekSayaci())
 
 
+@gereksinim("R-G-11")
 def test_duzenekler_kurulur():
     print("\n[GA1] (a)-(e) agac modunda kurulur; betik geometri XML'i kurucuyla ayni")
     from cekirdek import kurucu
@@ -46,6 +48,7 @@ def test_duzenekler_kurulur():
             kontrol("(%s) betik = kurucu (XML)" % ad, betik_xml_farki(spec))
 
 
+@gereksinim("R-G-04")
 def test_a_kesik_ve_nokta():
     print("\n[GA2] (a): 1. halka gizli, 2. halka kesik (UYARI), kare cekirdek merkezde")
     from cekirdek import geometri, kurucu
@@ -100,6 +103,7 @@ def _bc(model, tur, deger):
     return None
 
 
+@gereksinim("R-G-06")
 def test_yuz_basina_sinir():
     print("\n[GA4] yuz basina yan sinir: ceyrek kor -x,-y reflective; +x,+y vacuum; periodic cift")
     from cekirdek import kurucu
@@ -126,6 +130,7 @@ def test_yuz_basina_sinir():
     kontrol("altigen: 6 yuz ayri BC", bcler == sorted(yuzler), "-> %s" % bcler)
 
 
+@gereksinim("R-G-07")
 def test_kontrol_cubugu_ayri_ornek():
     print("\n[GA5] kontrol cubugu: her konum ayri evren/hucre (karar 5); grup daldirmasi")
     import openmc
@@ -187,6 +192,7 @@ def _k(spec, dizin, parcacik=3000, cevrim=60, pasif=20):
 OLCULEN = {}
 
 
+@gereksinim("R-G-11")
 def test_duzenekler_kosar(gecici):
     print("\n[GA7] (a)-(e) kisa MC kosar; k olculur")
     for ad, uret in DUZENEKLER:
@@ -196,6 +202,7 @@ def test_duzenekler_kosar(gecici):
                 0.05 < k.nominal_value < 2.0)
 
 
+@gereksinim("R-G-06")
 def test_ceyrek_tam_esit(gecici):
     print("\n[GA8] (e) ceyrek kor (2 reflective + 2 vacuum yuz) = tam kor (2 sigma)")
     kc = _k(go.duzenek_e_ceyrek(), os.path.join(gecici, "ceyrek"), 8000, 120, 30)

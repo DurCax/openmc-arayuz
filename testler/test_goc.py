@@ -13,6 +13,7 @@ import shutil
 import tempfile
 
 from testler.ortak_test import kontrol, ORNEK
+from testler.ortak_test import gereksinim  # S-4 izlenebilirlik
 
 
 def _yaz(dizin, ad, icerik):
@@ -34,6 +35,7 @@ def _eski_v1():
     return ham
 
 
+@gereksinim("R-G-02")
 def test_goc_zinciri_saf():
     print("\n[GOC1] goc zinciri: 1 -> 3, girdi degismez, alanlar eklenir")
     from cekirdek import goc
@@ -54,6 +56,7 @@ def test_goc_zinciri_saf():
     kontrol("surum 3 dosya: adim yok, ayni icerik", adim3 == [] and uc == yeni)
 
 
+@gereksinim("R-G-02")
 def test_goc_hatalari():
     print("\n[GOC2] bozuk / yeni surum dosyalari acik hata verir")
     from cekirdek import goc, sema
@@ -85,6 +88,7 @@ def test_goc_hatalari():
         shutil.rmtree(d, ignore_errors=True)
 
 
+@gereksinim("R-G-02")
 def test_goc_yukle_ve_yedek():
     print("\n[GOC3] yukle surum 3 dondurur; eski dosyanin ustune yazmadan .bak")
     from cekirdek import sema
@@ -117,6 +121,7 @@ def test_goc_yukle_ve_yedek():
         shutil.rmtree(d, ignore_errors=True)
 
 
+@gereksinim("R-G-02")
 def test_goc_ornekler():
     print("\n[GOC4] 30 ornek (27 sablon + 3 G-4 agac) goc ettirilip yuklenir; kor aynen kalir")
     from cekirdek import sema, goc

@@ -28,6 +28,7 @@ import json
 import os
 
 from testler.ortak_test import kontrol, ORNEK, KOK
+from testler.ortak_test import gereksinim  # S-4 izlenebilirlik
 from cekirdek import geometri  # noqa: E402
 from cekirdek.geometri import eksenel as geo_eks  # noqa: E402,F401
 from testler import geometri_iz as gi
@@ -81,27 +82,32 @@ def _grup(i):
         kontrol("A %s: %d noktada iz ayni" % (ad, n), not fark, "-> %s" % fark)
 
 
+@gereksinim("R-G-01")
 def test_iz_kayit_1():
     print("\n[GE1] A: kayitli parmak izi = yeni kurucu (1/4)")
     kontrol("kayit: 27 ornek + fikstürler", len(_kayit()) >= 27 + 16, "-> %d" % len(_kayit()))
     _grup(0)
 
 
+@gereksinim("R-G-01")
 def test_iz_kayit_2():
     print("\n[GE2] A: (2/4)")
     _grup(1)
 
 
+@gereksinim("R-G-01")
 def test_iz_kayit_3():
     print("\n[GE3] A: (3/4)")
     _grup(2)
 
 
+@gereksinim("R-G-01")
 def test_iz_kayit_4():
     print("\n[GE4] A: (4/4)")
     _grup(3)
 
 
+@gereksinim("R-G-01")
 def test_yapi():
     print("\n[GE6] B: sinir/kaynak kutusu ve aktif aralik kayitla ayni")
     import openmc
@@ -131,6 +137,7 @@ def ornek_hacimleri(kok, mat_adi, adlar):
     return {a: sorted(v) for a, v in sonuc.items()}
 
 
+@gereksinim("R-G-01")
 def test_hacim():
     print("\n[GE7] C: tukenen malzemelerin ornek hacimleri kayitla ayni")
     for ad, k in sorted(_kayit().items()):
@@ -167,6 +174,7 @@ def betik_xml_farki(spec):
         return fa.read() == fb.read()
 
 
+@gereksinim("R-FZ-04")
 def test_betik_xml_kucuk():
     print("\n[GE8] D: betik geometri XML'i = kurucu (kucuk ornekler + fikstürler)")
     for ad in ("pwr_pinhucre", "tamburlu_kor", "mtr_kor", "pwr_kontrol", "sfr_altigen",
@@ -177,6 +185,7 @@ def test_betik_xml_kucuk():
             kontrol("D %s" % ad, betik_xml_farki(k["spec"]))
 
 
+@gereksinim("R-FZ-04")
 def test_betik_xml_hepsi(gecici=None):
     print("\n[GE9] D: 27 ornek + fikstürler betik XML = kurucu")
     for ad in _ornek_adlari():
@@ -186,6 +195,7 @@ def test_betik_xml_hepsi(gecici=None):
             kontrol("D %s" % ad, betik_xml_farki(k["spec"]))
 
 
+@gereksinim("R-G-01")
 def test_yavas_kayit_tam(gecici=None):
     print("\n[GE10] A (yavas): kayittaki butun noktalar (R3b dahil)")
     for ad in sorted(_kayit()):

@@ -22,6 +22,7 @@ import tempfile
 import time
 
 from testler.ortak_test import kontrol, KOK
+from testler.ortak_test import gereksinim  # S-4 izlenebilirlik
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
@@ -125,6 +126,7 @@ def _gecici():
     return tempfile.mkdtemp(prefix="rapor_test_")
 
 
+@gereksinim("R-M10-01")
 def test_rapor_html_fixture():
     print("\n[R3] fixture kosu dizininden HTML rapor; spec degismez")
     from cekirdek import rapor
@@ -150,6 +152,7 @@ def test_rapor_html_fixture():
         shutil.rmtree(dizin, True)
 
 
+@gereksinim("R-M10-01")
 def test_rapor_sayilar_birebir():
     print("\n[R4] k, sigma, F_dH, F_q statepoint ile BIREBIR (sayi ve metin)")
     from cekirdek import rapor
@@ -172,6 +175,7 @@ def test_rapor_sayilar_birebir():
         kontrol("HTML metni: %s" % m, m in metin)
 
 
+@gereksinim("R-M10-02", "R-S-05")
 def test_tekrarlanabilirlik():
     print("\n[R5] tekrarlanabilirlik alanlari dolu; bilinmeyen -> 'bilinmiyor' + log + uyari")
     from cekirdek import rapor
@@ -273,6 +277,7 @@ def _kapsam_olcuyor():
         kapsam is not None and kapsam.Coverage.current() is not None)
 
 
+@gereksinim("R-M10-01")
 def test_rapor_pdf_ve_sure():
     print("\n[R8] fixture'dan PDF (sayfa > 0, metin icerir); HTML + PDF CPU < 5 s (offscreen)")
     from cekirdek import rapor
@@ -308,6 +313,7 @@ def test_rapor_pdf_ve_sure():
         shutil.rmtree(dizin, True)
 
 
+@gereksinim("R-M10-03", "R-M7-01")
 def test_cli_rapor():
     print("\n[R9] openmc-arayuz-kosu rapor <dizin> -o x.pdf (giris.kosu)")
     from cekirdek import giris, kosucu

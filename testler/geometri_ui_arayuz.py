@@ -12,6 +12,7 @@ import os
 import warnings
 
 from testler.ortak_test import kontrol, ORNEK
+from testler.ortak_test import gereksinim  # S-4 izlenebilirlik
 
 warnings.filterwarnings("ignore")
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
@@ -82,6 +83,7 @@ def _kurulur(spec):
 # gecis ve geri al
 # ============================================================================
 
+@gereksinim("R-G-03")
 def test_gelismise_gecis_tek_adimda_geri_alinir():
     print("\n[GU5] gelismise gecis tek yonlu; Geri Al tek adimda sablona doner")
     _qt()

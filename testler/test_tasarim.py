@@ -9,6 +9,7 @@ SegmentSecici, Rozet, Kart, BosDurum). Yalnizca offscreen; hepsi HIZLI.
 import os
 
 from testler.ortak_test import kontrol, AYAR_DIZINI   # noqa: F401
+from testler.ortak_test import gereksinim  # S-4 izlenebilirlik
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
@@ -34,6 +35,7 @@ def _sil(*widgetlar):
 # ============================================================================
 # 1. tokenlar
 # ============================================================================
+@gereksinim("R-A4-01")
 def test_kontrast_wcag():
     print("\n[T1] TOKEN: WCAG AA kontrast (iki tema x her vurgu)")
     from arayuz.tasarim import tokenlar

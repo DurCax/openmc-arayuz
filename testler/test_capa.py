@@ -10,6 +10,7 @@ import os
 
 from cekirdek import sema, kurucu
 from testler.ortak_test import kontrol, ISLEM_PARCACIGI
+from testler.ortak_test import gereksinim  # S-4 izlenebilirlik
 from testler.regresyon_ortak import ORNEK, REFERANS_K, REFERANS_SAPMA
 
 
@@ -17,6 +18,7 @@ from testler.regresyon_ortak import ORNEK, REFERANS_K, REFERANS_SAPMA
 # 5-6. MONTE CARLO (yavas)
 # ============================================================================
 
+@gereksinim("R-FZ-01")
 def test_regresyon_cipasi(gecici):
     print("\n[5] REGRESYON CIPASI -- pin hucre k-inf")
     import openmc
@@ -36,6 +38,7 @@ def test_regresyon_cipasi(gecici):
             fark < 2 * sigma, "-> %.2f sigma" % (fark / sigma))
 
 
+@gereksinim("R-FZ-02")
 def test_godiva_kriteri(gecici):
     """
     ICSBEP HEU-MET-FAST-001 (Godiva) kriteri: yayimlanmis k_eff = 1.0000 +/- 0.0010.

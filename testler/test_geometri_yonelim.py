@@ -19,6 +19,7 @@ import copy
 import math
 
 from testler.ortak_test import kontrol
+from testler.ortak_test import gereksinim  # S-4 izlenebilirlik
 from testler import geometri_iz as gi
 from testler import geometri_ortak as go
 
@@ -234,6 +235,7 @@ def test_kare_altigen_karisimi():
 # 3. pin kesiti
 # ----------------------------------------------------------------------------
 
+@gereksinim("R-G-05")
 def test_pin_kesiti_olcumu():
     print("\n[GY5] kare ve altigen kesitli pin: kose noktalari yakitta, disari sogutucu")
     for sekil in ("kare", "altigen"):

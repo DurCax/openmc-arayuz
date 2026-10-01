@@ -16,6 +16,7 @@ import random
 import tempfile
 
 from testler.ortak_test import kontrol, ORNEK
+from testler.ortak_test import gereksinim  # S-4 izlenebilirlik
 
 
 def _parcalar(isaret):
@@ -64,6 +65,7 @@ def _calistir(metin, dizin):
     return mo
 
 
+@gereksinim("R-G-10")
 def test_betik_ad_kacisi_fuzz():
     print("\n[M3] BETIK: tehlikeli adlarla 12 fuzz turu; derlenir, yan etki yok, adlar aynen")
     from cekirdek import kod_uret
@@ -93,6 +95,7 @@ def test_betik_ad_kacisi_fuzz():
                 spec["tallyler"][0]["ad"] in [t.name for t in mo.model.tallies])
 
 
+@gereksinim("R-G-10")
 def test_yorum_ve_dokuman_kacisi():
     print("\n[M3b] yorum_metni ve dokuman_metni tek satir / kapanmayan docstring")
     from cekirdek.geometri.yapici import yorum_metni
