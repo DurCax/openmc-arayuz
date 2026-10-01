@@ -294,12 +294,18 @@ class CalistirSekmesi(QtWidgets.QWidget):
 
     def _tally_ekle(self, tally):
         """Uygunluk panelinin ONAYLANMIS tally onerisi (EALF) -> spec["tallyler"]
-        (editor sozlesmesi: yerinde; ayni adli tally varsa eklenmez)."""
+        (editor sozlesmesi: yerinde; ayni adli GECERLI tally varsa eklenmez; ayni
+        adli ama EALF icin kullanilamayan tally -- elle eklenmis -- yenisiyle degisir)."""
+        from cekirdek.vv import aoa
         if self.spec is None:
             return
         liste = self.spec.setdefault("tallyler", [])
-        if any(t.get("ad") == tally.get("ad") for t in liste):
+        ayni = [i for i, t in enumerate(liste) if t.get("ad") == tally.get("ad")]
+        if ayni and not (tally.get("ad") == aoa.EALF_TALLY
+                         and not aoa.ealf_tanimi_gecerli(liste[ayni[0]])):
             return
+        for i in reversed(ayni):
+            del liste[i]
         liste.append(dict(tally))
         self.degisti.emit("genel")
         self.uygunluk.d_ealf.hide()

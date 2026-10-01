@@ -207,8 +207,13 @@ def alt_kume_metni(filtre):
     return ", ".join(parcalar)
 
 
-def _eksik_neden(eksik):
+def _eksik_neden(eksik, kosu_dizini=None):
     if "tayf" in eksik:
+        _ealf, tally_sorunu = _aoa.ealf_ayrintili(kosu_dizini)
+        if tally_sorunu:
+            return _("bu uygulama için USL yok (AOA belirlenemedi): nötron tayfı bilinmiyor; "
+                     "%s — tally'yi silip Uygunluk kartındaki öneriyle ('%s') yeniden ekleyin "
+                     "ve koşun") % (tally_sorunu, _aoa.EALF_TALLY)
         return _("bu uygulama için USL yok (AOA belirlenemedi): nötron tayfı bilinmiyor; "
                  "EALF tally'sini ('%s') ekleyip yeniden koşun") % _aoa.EALF_TALLY
     return _("bu uygulama için USL yok (AOA belirlenemedi): %s çıkarılamadı; "
@@ -230,7 +235,7 @@ def uygulama_ozeti(spec, kosu_dizini=None, uygulama=None, vlar=None,
         # uygulamayi yine kumeyle karsilastirir) ama USL VERILMEZ.
         oz = ozet(vlar, uygulama=uyg, delta_sm=delta_sm)
         return dataclasses.replace(oz, usl=None,
-                                   usl_neden=_eksik_neden(aoa_eksikleri(uyg))), uyg
+                                   usl_neden=_eksik_neden(aoa_eksikleri(uyg), kosu_dizini)), uyg
     metin = alt_kume_metni(filtre)
     oz = dataclasses.replace(ozet(vlar, filtre=filtre, uygulama=uyg, delta_sm=delta_sm),
                              alt_kume=metin)

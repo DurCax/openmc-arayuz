@@ -214,8 +214,12 @@ class UygunlukPaneli(b.Kart):
     # ------------------------------------------------------------------
     def _ealf_guncelle(self, spec, profiller):
         from cekirdek.vv import aoa
-        tally_var = any(t.get("ad") == aoa.EALF_TALLY for t in (spec or {}).get("tallyler") or [])
-        self.d_ealf.setVisible(spec is not None and "B" in profiller and not tally_var)
+        adli = [t for t in (spec or {}).get("tallyler") or [] if t.get("ad") == aoa.EALF_TALLY]
+        gecerli = any(aoa.ealf_tanimi_gecerli(t) for t in adli)
+        # Ayni adli ama kullanilamayan (elle eklenmis, fisyon skoru yok vb.) tally: duzeltme onerisi
+        self.d_ealf.setText(_("EALF tally'sini düzelt") if adli and not gecerli
+                            else _("EALF tally'sini ekle"))
+        self.d_ealf.setVisible(spec is not None and "B" in profiller and not gecerli)
 
     def _onay_al(self, baslik_, metin):
         """Spec degistiren oneri icin onay. Testler bunu degistirir (modal acilmaz)."""

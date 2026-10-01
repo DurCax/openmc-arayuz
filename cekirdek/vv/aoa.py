@@ -168,6 +168,14 @@ def ealf_tally_tanimi():
     return sema.tally(EALF_TALLY, ["fission"], [sema.filtre_enerji(gruplar)])
 
 
+def ealf_tanimi_gecerli(tanim):
+    """Spec'teki tally tanimi EALF icin kullanilabilir mi: tek enerji filtresi
+    ve 'fission' skoru (elle eklenmis olabilir; grup sayisi serbest)."""
+    filtreler = (tanim or {}).get("filtreler") or []
+    return ("fission" in ((tanim or {}).get("skorlar") or []) and len(filtreler) == 1
+            and filtreler[0].get("tur") == "enerji")
+
+
 def ealf_hesapla(kenarlar, fisyon):
     """EALF = exp(Σ F_g ln E_g / Σ F_g); E_g grup sinirlarinin geometrik ortasi."""
     toplam = float(sum(fisyon))
@@ -185,22 +193,40 @@ def _statepoint(kosu_dizini):
 
 def ealf_oku(kosu_dizini):
     """Kosu dizinindeki statepoint'ten EALF [eV]; tally ya da statepoint yoksa None."""
-    if not kosu_dizini:
-        return None
-    yol = _statepoint(kosu_dizini)
+    return ealf_ayrintili(kosu_dizini)[0]
+
+
+def _tally_verisi(t):
+    """(kenarlar, fisyon) ya da kullanilamazsa neden metni (str). Elle eklenen
+    tally de tanınır: tek EnergyFilter ve 'fission' skoru yeterlidir."""
+    import openmc
+    enerji = [f for f in t.filters if isinstance(f, openmc.EnergyFilter)]
+    if not enerji:
+        return _("'%s' tally'sinde enerji filtresi yok") % EALF_TALLY
+    if len(t.filters) != 1:
+        return _("'%s' tally'sinde enerji filtresinden başka filtre var") % EALF_TALLY
+    if "fission" not in list(t.scores):
+        return _("'%s' tally'sinde 'fission' skoru yok") % EALF_TALLY
+    return list(enerji[0].values), list(t.get_values(scores=["fission"]).ravel())
+
+
+def ealf_ayrintili(kosu_dizini):
+    """(EALF [eV] | None, neden | None). neden: tally VAR ama kullanilamiyorsa
+    (filtre/skor eksik) kullaniciya gosterilecek metin; tally hic yoksa None."""
+    yol = _statepoint(kosu_dizini) if kosu_dizini else None
     if yol is None:
-        return None
+        return None, None
     import openmc
     try:
         with openmc.StatePoint(yol) as sp:
-            t = sp.get_tally(name=EALF_TALLY)
-            ef = t.find_filter(openmc.EnergyFilter)
-            kenarlar = list(ef.values)
-            fisyon = list(t.get_values(scores=["fission"]).ravel())
+            veri = _tally_verisi(sp.get_tally(name=EALF_TALLY))
     except LookupError:
         _log.info("statepoint'te %s tally'si yok: EALF hesaplanmadı (%s)", EALF_TALLY, yol)
-        return None
-    return ealf_hesapla(kenarlar, fisyon)
+        return None, None
+    if isinstance(veri, str):
+        _log.warning("EALF hesaplanamadı (%s): %s", yol, veri)
+        return None, veri
+    return ealf_hesapla(*veri), None
 
 
 def parametreler(spec, kosu_dizini=None):
