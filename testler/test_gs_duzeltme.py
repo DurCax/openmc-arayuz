@@ -424,7 +424,34 @@ def test_cli_siki_cikis_kodu():
             "-> %r %r" % (kod, kod0))
 
 
-TAMBUR_R = 6.0       # altigen_tambur_halkasi tambur yaricapi (cm)
+def test_k7_sigma_ve_dil():
+    print("\n[GS10] K7: sigma yok/<=0 -> uygulanamadi; dil 'işaret beklentisi' (GDC yargisi degil)")
+    import os
+    from cekirdek.uygunluk_denetimi.denetle import denetle
+    from testler.ortak_test import KOK
+    fixture = os.path.join(KOK, "testler", "veri", "kosu_ornek")
+    for s in (None, 0.0, -1.0):
+        kats = {"egim": -5.0, "birim": "pcm/K"} if s is None else \
+            {"egim": -5.0, "egim_sapma": s, "birim": "pcm/K"}
+        b = denetle(None, fixture, ("C",), kor={"katsayilar": {"yakit_sicaklik": kats}})
+        dop = [x for x in b if "Doppler" in x.mesaj]
+        kontrol("Doppler σ=%r -> uygulanamadi (anlamli sayilmaz)" % s,
+                dop and dop[0].durum == "uygulanamadi", "-> %s" % [(x.durum, x.mesaj) for x in dop])
+    b = denetle(None, fixture, ("C",), kor={"katsayilar": {
+        "guc": {"egim": 5.0, "egim_sapma": 1.0, "birim": "pcm/%"}}})
+    guc = [x for x in b if "güç katsayısı" in x.mesaj]
+    metin = " ".join((x.mesaj or "") + " " + (x.oneri or "") for x in guc)
+    kontrol("pozitif guc: 'çelişiyor', 'GDC 11 çerçevesini karşılamıyor' YOK",
+            "çelişiyor" in metin and "karşılamıyor" not in metin, "-> %s" % metin)
+    b = denetle(None, fixture, ("C",), kor={"katsayilar": {
+        "guc": {"egim": -5.0, "egim_sapma": 1.0, "birim": "pcm/%"}}})
+    guc = [x for x in b if "güç katsayısı" in x.mesaj]
+    kontrol("negatif guc: 'işaret beklentisiyle tutarlı (net geri besleme yargısı değildir)'",
+            guc and "tutarlı" in guc[0].mesaj and "yargısı değildir" in guc[0].mesaj,
+            "-> %s" % [x.mesaj for x in guc])
+
+
+TAMBUR_R = 6.0      # altigen_tambur_halkasi tambur yaricapi (cm)
 
 
 def _harita(spec, noktalar):
@@ -472,5 +499,5 @@ HIZLI = [test_periyodik_es_etkin_bc, test_betik_kesik_yakit_hacmi, test_k2_brown
          test_panel_rozeti_degerlendirilemedi, test_tek_tambur_yonu_asil_modelle_ayni,
          test_stokastik_hacim_sigma_denetimi, test_stokastik_hacim_chdir_yok,
          test_ice_aktar_ayni_adli_evrenler, test_ice_aktar_tambur_yonu_harf_sinir,
-         test_arayuz_sessiz_yedek_yok, test_cli_siki_cikis_kodu]
+         test_arayuz_sessiz_yedek_yok, test_cli_siki_cikis_kodu, test_k7_sigma_ve_dil]
 YAVAS = [test_yavas_betik_kesik_hacim_kosucuyla_ayni]
