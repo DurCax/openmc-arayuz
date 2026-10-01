@@ -231,7 +231,32 @@ def test_c_e_panoda():
         ozet.referans_satirlari(godiva, (1.01, 0.0002))))
 
 
+def test_kucuk_bulgular_durum_ve_suzgec():
+    print("\n[QA-k1] Durum seridi hata varken 'Model hazir' demez; silinmis widget suzgeci")
+    from PySide6 import QtCore, QtWidgets
+    import shiboken6
+    QtWidgets.QApplication.instance() or QtWidgets.QApplication([])
+    from arayuz.pencere.model_islemleri import sonraki_adim
+    isaret = {"malzemeler": ("✓", ""), "calistir": ("•", "")}
+    m = sonraki_adim(isaret, ["malzemeler", "calistir"], True, hata_toplami=2)
+    kontrol("sekmesiz 2 hata -> 'doğrulama hatası'", "2 doğrulama hatası" in m, "-> %s" % m)
+    kontrol("hata yok -> Model hazir", "Model hazır" in sonraki_adim(
+        isaret, ["malzemeler", "calistir"], True))
+    from arayuz.ortak import _TekerlekSuzgeci
+    d = QtWidgets.QPushButton()
+    shiboken6.delete(d)
+    olay = QtCore.QEvent(QtCore.QEvent.Polish)
+    try:
+        sonuc = _TekerlekSuzgeci().eventFilter(d, olay)
+        hata = None
+    except RuntimeError as e:
+        sonuc, hata = None, e
+    kontrol("silinmis widget: RuntimeError yok, False", hata is None and sonuc is False,
+            "-> %r" % hata)
+
+
 HIZLI = [test_elle_ealf_tally_vv_dusurmez, test_panel_gecersiz_tally_duzeltir,
          test_entropi_kisa_pasif_yakalanir, test_guc_yorumu_once_istatistik,
-         test_simge_dugmesi_adi_ipucunda, test_kosusuz_rapor_sessiz_degil, test_c_e_panoda]
+         test_simge_dugmesi_adi_ipucunda, test_kosusuz_rapor_sessiz_degil, test_c_e_panoda,
+         test_kucuk_bulgular_durum_ve_suzgec]
 YAVAS = []

@@ -490,8 +490,9 @@ class AnaPencere(GezinmeCephesi, MenulerMixin, ProjeMixin, GecmisMixin, QtWidget
     def _durum_ipucu_guncelle(self):
         if self.baslangic_acik_mi():
             return
+        hata = sum(1 for b in self._bulgular if b.seviye == "hata")
         self._serit_guncelle(sonraki_adim(self._isaretler, self._gecerli_sekmeler(),
-                                          self.onizleme.cizildi_mi()))
+                                          self.onizleme.cizildi_mi(), hata_toplami=hata))
 
     def _sag_panel_guncelle(self):
         """Onizleme yalnizca tasarim sayfalarinda; kosu/sonuc sayfalari tum

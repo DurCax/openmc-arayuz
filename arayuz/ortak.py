@@ -10,6 +10,7 @@
 
 import re
 
+import shiboken6
 from PySide6 import QtCore, QtGui, QtWidgets
 
 from arayuz.tasarim import tokenlar
@@ -41,6 +42,10 @@ class _TekerlekSuzgeci(QtCore.QObject):
     """Uygulama geneli olay suzgeci -- bkz. tekerlek_korumasi_kur()."""
 
     def eventFilter(self, nesne, olay):
+        # Silinmekte olan widget'in Python sarmalayicisi C++ nesnesi olmadan gelebilir
+        # ("Internal C++ object already deleted", QA14): ona dokunulmaz.
+        if not shiboken6.isValid(nesne) or not shiboken6.isValid(olay):
+            return False
         tur = olay.type()
         if tur == QtCore.QEvent.Wheel:
             if isinstance(nesne, _TEKERLEK_HEDEFLERI) and not nesne.hasFocus():
