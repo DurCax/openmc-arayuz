@@ -28,6 +28,7 @@
 """
 
 import math
+from cekirdek.ceviri import _
 
 SQ3 = math.sqrt(3.0)
 PIN_SEKILLERI = ("silindir", "kare", "altigen")
@@ -58,13 +59,13 @@ def cubuk(k, c, ad):
     y = k.y
     bolgeler = c["bolgeler"]
     if not bolgeler:
-        raise ValueError("'%s' çubuğunda bölge yok" % ad)
+        raise ValueError(_("'%s' çubuğunda bölge yok") % ad)
     if bolgeler[-1].get("r") is not None:
-        raise ValueError("'%s' çubuğu: son bölgenin yarıçapı boş olmalı "
-                         "(son bölge çubuğun dışıdır)" % ad)
+        raise ValueError(_("'%s' çubuğu: son bölgenin yarıçapı boş olmalı "
+                         "(son bölge çubuğun dışıdır)") % ad)
     sekil = c.get("kesit") or "silindir"
     if sekil not in PIN_SEKILLERI:
-        raise ValueError("'%s' çubuğu: bilinmeyen kesit şekli %r" % (ad, sekil))
+        raise ValueError(_("'%s' çubuğu: bilinmeyen kesit şekli %r") % (ad, sekil))
     yon = c.get("kesit_yonelim") or "y"
     y.yorum("%s — %s kesitli, %d bölge" % (ad, sekil, len(bolgeler)))
     yuzeyler = [_pin_yuzeyi(y, sekil, b["r"], yon) for b in bolgeler[:-1]]
@@ -84,11 +85,11 @@ def _kontrol(k, c, ad, yuzeyler, dolgular):
     h = k.yukseklik
     if not h:
         raise ValueError(
-            "'%s' kontrol çubuğu 3B model gerektirir: kor yüksekliği tanımlı değil. "
-            "Eksenel bir uç konumu olmadan daldırma tanımlanamaz." % ad)
+            _("'%s' kontrol çubuğu 3B model gerektirir: kor yüksekliği tanımlı değil. "
+            "Eksenel bir uç konumu olmadan daldırma tanımlanamaz.") % ad)
     daldirma = k.daldirma(c)
     if not (0.0 <= daldirma <= 100.0):
-        raise ValueError("'%s' kontrol çubuğu: daldırma %%0–%%100 arasında olmalı (%s)"
+        raise ValueError(_("'%s' kontrol çubuğu: daldırma %%0–%%100 arasında olmalı (%s)")
                          % (ad, daldirma))
     z_alt, z_ust = k.aktif or (-h / 2.0, h / 2.0)
     z_uc = z_ust - (daldirma / 100.0) * (z_ust - z_alt)
@@ -98,7 +99,7 @@ def _kontrol(k, c, ad, yuzeyler, dolgular):
     bolgeler = c["bolgeler"]
     emici_ix = int(c.get("emici_bolge") or 0)
     if not (0 <= emici_ix < len(bolgeler)):
-        raise ValueError("'%s' kontrol çubuğu: geçersiz emici bölge %d" % (ad, emici_ix + 1))
+        raise ValueError(_("'%s' kontrol çubuğu: geçersiz emici bölge %d") % (ad, emici_ix + 1))
     izleyici = y.malzeme(c.get("izleyici_malzeme"))
     hucreler = []
     n = len(bolgeler)
@@ -175,27 +176,27 @@ def demet_kafesi(k, d, ad):
     if d["tur"] == "kare":
         nx, ny = d["boyut"]
         if len(harita) != ny:
-            raise ValueError("'%s' demeti: harita %d satır, boyut %d bekliyor"
+            raise ValueError(_("'%s' demeti: harita %d satır, boyut %d bekliyor")
                              % (ad, len(harita), ny))
         for satir in harita:
             if len(satir) != nx:
-                raise ValueError("'%s' demeti: '%s' satırı %d karakter, %d bekleniyor"
+                raise ValueError(_("'%s' demeti: '%s' satırı %d karakter, %d bekleniyor")
                                  % (ad, satir, len(satir), nx))
     elif d["tur"] == "altigen":
         halka = d.get("halka_sayisi") or d["boyut"][0]
         beklenen = altigen.halka_uzunluklari(halka)
         if len(harita) != len(beklenen):
-            raise ValueError("'%s' demeti: %d halka bekleniyor, haritada %d satır var"
+            raise ValueError(_("'%s' demeti: %d halka bekleniyor, haritada %d satır var")
                              % (ad, len(beklenen), len(harita)))
         for i, (satir, uzunluk) in enumerate(zip(harita, beklenen)):
             if len(satir) != uzunluk:
-                raise ValueError("'%s' demeti: %d. halka (yarıçap %d) %d öğe bekliyor, %d var"
+                raise ValueError(_("'%s' demeti: %d. halka (yarıçap %d) %d öğe bekliyor, %d var")
                                  % (ad, i + 1, halka - 1 - i, uzunluk, len(satir)))
     else:
-        raise ValueError("bilinmeyen demet türü: %s" % d["tur"])
+        raise ValueError(_("bilinmeyen demet türü: %s") % d["tur"])
     for harf in {h for s in harita for h in s}:
         if harf not in anahtar:
-            raise KeyError("'%s' demeti: haritada tanımsız harf '%s'" % (ad, harf))
+            raise KeyError(_("'%s' demeti: haritada tanımsız harf '%s'") % (ad, harf))
     esleme, ozel = k.harf_evrenleri(harita, {h: anahtar[h] for h in anahtar})
     dis = k.dis_evreni(d.get("dolgu_disi"))
     y.yorum("%s — %s demet, adım %r cm" % (ad, d["tur"], d["adim"]))

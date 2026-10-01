@@ -220,6 +220,8 @@ def kosu(argv=None):
     """Terminal kosucusu: cekirdek.kosucu'nun komut satiri. Ilk arguman
     `rapor` / `uygunluk` ise alt komut calisir (kosucu._terminal cagrilmaz)."""
     argv = list(sys.argv[1:] if argv is None else argv)
+    from cekirdek.ceviri import terminal_dili
+    terminal_dili()                   # OPENMC_ARAYUZ_DIL verilmisse o dil
     if argv and argv[0] == RAPOR_KOMUTU:
         return rapor_komutu(argv[1:])
     if argv and argv[0] == UYGUNLUK_KOMUTU:

@@ -8,6 +8,7 @@
 
 from cekirdek.sema import BOSLUK
 from cekirdek.dogrula._ortak import Bulgu
+from cekirdek.ceviri import _, N_
 
 
 # ----------------------------------------------------------------------------
@@ -28,14 +29,14 @@ from cekirdek.dogrula._ortak import Bulgu
 #   oneriliyordu -- hidrojensiz bir malzemeye hidrojen S(a,b)'si, yani yanlis
 #   fizik. Ayni mantikla B2O3 "borlu su" cikardi.
 _SAB_KURALLARI = [
-    ({"H", "O"},      {"H"},       "c_H_in_H2O",  "su (H₂O)"),
-    ({"H", "O", "B"}, {"H"},       "c_H_in_H2O",  "borlu su"),
-    ({"H", "Zr"},     {"H", "Zr"}, "c_H_in_ZrH",  "zirkonyum hidrür"),
-    ({"H", "C"},      {"H", "C"},  "c_H_in_CH2",  "polietilen / plastik"),
-    ({"C"},           {"C"},       "c_Graphite",  "grafit"),
-    ({"Be"},          {"Be"},      "c_Be",        "berilyum"),
-    ({"Be", "O"},     {"Be", "O"}, "c_Be_in_BeO", "berilyum oksit"),
-    ({"D", "O"},      {"D"},       "c_D_in_D2O",  "ağır su (D₂O)"),
+    ({"H", "O"},      {"H"},       "c_H_in_H2O",  N_("su (H₂O)")),
+    ({"H", "O", "B"}, {"H"},       "c_H_in_H2O",  N_("borlu su")),
+    ({"H", "Zr"},     {"H", "Zr"}, "c_H_in_ZrH",  N_("zirkonyum hidrür")),
+    ({"H", "C"},      {"H", "C"},  "c_H_in_CH2",  N_("polietilen / plastik")),
+    ({"C"},           {"C"},       "c_Graphite",  N_("grafit")),
+    ({"Be"},          {"Be"},      "c_Be",        N_("berilyum")),
+    ({"Be", "O"},     {"Be", "O"}, "c_Be_in_BeO", N_("berilyum oksit")),
+    ({"D", "O"},      {"D"},       "c_D_in_D2O",  N_("ağır su (D₂O)")),
 ]
 
 
@@ -56,21 +57,21 @@ def malzeme_kontrol(spec):
     for ad in set(adlar):
         if adlar.count(ad) > 1:
             bulgular.append(Bulgu("hata", "malzeme:%s" % ad,
-                                  "aynı ad %d kez tanımlanmış" % adlar.count(ad)))
+                                  _("aynı ad %d kez tanımlanmış") % adlar.count(ad)))
     if BOSLUK in adlar:
         bulgular.append(Bulgu("hata", "malzemeler",
-                              "'%s' ayrılmış bir addır (Boş, madde yok); malzeme adı olarak kullanılamaz" % BOSLUK))
+                              _("'%s' ayrılmış bir addır (Boş, madde yok); malzeme adı olarak kullanılamaz") % BOSLUK))
 
     for m in spec["malzemeler"]:
         yer = "malzeme:%s" % m["ad"]
         if not m.get("bilesim"):
-            bulgular.append(Bulgu("hata", yer, "bileşim boş"))
+            bulgular.append(Bulgu("hata", yer, _("bileşim boş")))
             continue
         yog = (m.get("yogunluk") or {}).get("deger")
         if yog is None:
-            bulgular.append(Bulgu("hata", yer, "yoğunluk verilmemiş"))
+            bulgular.append(Bulgu("hata", yer, _("yoğunluk verilmemiş")))
         elif yog <= 0:
-            bulgular.append(Bulgu("hata", yer, "yoğunluk sıfırdan büyük olmalı: %s" % yog))
+            bulgular.append(Bulgu("hata", yer, _("yoğunluk sıfırdan büyük olmalı: %s") % yog))
 
         for b in m["bilesim"]:
             # Kurucu "nuklid" disindaki her turu element sayar ve birimi
@@ -79,16 +80,16 @@ def malzeme_kontrol(spec):
             if b.get("tur", "element") not in ("element", "nuklid"):
                 bulgular.append(Bulgu(
                     "hata", yer,
-                    "'%s' satırının türü geçersiz: %s" % (b.get("isim"), b.get("tur")),
-                    "Tür 'element' (doğal element) ya da 'nuklid' (izotop) olmalı."))
+                    _("'%s' satırının türü geçersiz: %s") % (b.get("isim"), b.get("tur")),
+                    _("Tür 'element' (doğal element) ya da 'nuklid' (izotop) olmalı.")))
             if b.get("birim", "ao") not in ("ao", "wo"):
                 bulgular.append(Bulgu(
                     "hata", yer,
-                    "'%s' satırının birimi geçersiz: %s" % (b.get("isim"), b.get("birim")),
-                    "Birim 'ao' (atom oranı) ya da 'wo' (ağırlık oranı) olmalı."))
+                    _("'%s' satırının birimi geçersiz: %s") % (b.get("isim"), b.get("birim")),
+                    _("Birim 'ao' (atom oranı) ya da 'wo' (ağırlık oranı) olmalı.")))
             if b.get("miktar", 0) <= 0:
                 bulgular.append(Bulgu("hata", yer,
-                                      "'%s' miktarı sıfırdan büyük olmalı: %s"
+                                      _("'%s' miktarı sıfırdan büyük olmalı: %s")
                                       % (b.get("isim"), b.get("miktar"))))
             z = b.get("zenginlik")
             # OpenMC zenginligi yalnizca U ELEMENTINE uygular: baska bir
@@ -98,30 +99,30 @@ def malzeme_kontrol(spec):
             if z is not None and b.get("tur", "element") == "nuklid":
                 bulgular.append(Bulgu(
                     "hata", yer,
-                    "'%s' nüklid satırında zenginlik tanımlı — nüklidde zenginlik "
-                    "yok sayılır" % b.get("isim"),
-                    "Zenginlik yalnızca U elementi satırında kullanılabilir. "
-                    "İzotopları nüklid olarak giriyorsanız miktarları doğrudan verin."))
+                    _("'%s' nüklid satırında zenginlik tanımlı — nüklidde zenginlik "
+                    "yok sayılır") % b.get("isim"),
+                    _("Zenginlik yalnızca U elementi satırında kullanılabilir. "
+                    "İzotopları nüklid olarak giriyorsanız miktarları doğrudan verin.")))
             elif z is not None and b.get("isim") != "U":
                 bulgular.append(Bulgu(
                     "hata", yer,
-                    "'%s' elementinde zenginlik tanımlı — zenginlik yalnızca U "
-                    "elementinde kullanılabilir" % b.get("isim"),
-                    "OpenMC koşu sırasında reddeder (\"Unable to use enrichment for "
+                    _("'%s' elementinde zenginlik tanımlı — zenginlik yalnızca U "
+                    "elementinde kullanılabilir") % b.get("isim"),
+                    _("OpenMC koşu sırasında reddeder (\"Unable to use enrichment for "
                     "element %s which is not uranium\"). Zenginliği U satırına "
-                    "taşıyın ya da bu satırdan silin." % b.get("isim")))
+                    "taşıyın ya da bu satırdan silin.") % b.get("isim")))
             if z is not None and not (0.0 < z < 100.0):
                 bulgular.append(Bulgu("hata", yer,
-                                      "'%s' zenginliği %%0–100 aralığında olmalı: %s"
+                                      _("'%s' zenginliği %%0–100 aralığında olmalı: %s")
                                       % (b["isim"], z)))
             elif z is not None and b.get("isim") == "U" and z > 5.0:
                 bulgular.append(Bulgu(
                     "uyari", yer,
-                    "U zenginliği %%%.2f — OpenMC'nin zenginlik kısayolu U234/U235 "
+                    _("U zenginliği %%%.2f — OpenMC'nin zenginlik kısayolu U234/U235 "
                     "kütle oranını sabit 0.008 varsayar; bu yalnızca düşük "
-                    "zenginliklerde geçerlidir" % z,
-                    "Bileşimi nüklid bazında verin (U234/U235/U238) ya da sonucun "
-                    "U234'e duyarlılığını kabul edin."))
+                    "zenginliklerde geçerlidir") % z,
+                    _("Bileşimi nüklid bazında verin (U234/U235/U238) ya da sonucun "
+                    "U234'e duyarlılığını kabul edin.")))
 
         # --- S(a,b) unutulmus mu? termal spektrumun en klasik hatasi ---
         bulgular += _sab_kontrol(m, yer)
@@ -171,17 +172,17 @@ def _sab_kontrol(malzeme, yer):
                   for uygun, zorunlu, onerilen, tanim in _SAB_KURALLARI
                   if zorunlu <= elemanlar <= uygun]
     if eslesenler:
-        _, onerilen, tanim = min(eslesenler)
+        _uzaklik, onerilen, tanim = min(eslesenler)
         return [Bulgu(
             "uyari", yer,
-            "%s görünümünde ama termal saçılma verisi (S(α,β)) eklenmemiş" % tanim,
-            "Termal spektrumda k'yi yüzde mertebesinde kaydırır. Malzemeler "
-            "sekmesinde S(α,β) olarak %s ekleyin." % onerilen)]
+            _("%s görünümünde ama termal saçılma verisi (S(α,β)) eklenmemiş") % _(tanim),
+            _("Termal spektrumda k'yi yüzde mertebesinde kaydırır. Malzemeler "
+            "sekmesinde S(α,β) olarak %s ekleyin.") % onerilen)]
     # Kurala uymayan ama hidrojen iceren yogun malzeme -- yine de uyar
     if "H" in elemanlar:
         return [Bulgu(
             "uyari", yer,
-            "yoğun fazda hidrojen var ama termal saçılma verisi (S(α,β)) eklenmemiş",
-            "Hidrojenin bağlı olduğu faza uygun bir S(α,β) seçin "
-            "(ör. c_H_in_H2O, c_H_in_ZrH, c_H_in_CH2).")]
+            _("yoğun fazda hidrojen var ama termal saçılma verisi (S(α,β)) eklenmemiş"),
+            _("Hidrojenin bağlı olduğu faza uygun bir S(α,β) seçin "
+            "(ör. c_H_in_H2O, c_H_in_ZrH, c_H_in_CH2)."))]
     return []

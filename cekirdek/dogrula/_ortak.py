@@ -7,22 +7,29 @@
 """
 
 from cekirdek import uygunluk
+from cekirdek.ceviri import _, N_
 
 
 def _kor_turu_adi(tur):
-    """Kor turunun sade adi (uygunluk.KOR_TURU_ADLARI); bilinmiyorsa kendisi."""
-    return uygunluk.KOR_TURU_ADLARI.get(tur, str(tur))
+    """Kor turunun sade adi (uygunluk.KOR_TURU_ADLARI), etkin dilde;
+    bilinmiyorsa kendisi."""
+    ad = uygunluk.KOR_TURU_ADLARI.get(tur)
+    return _(ad) if ad else str(tur)
 
 
 # Bulgu "yer" kodunun kullaniciya gorunen adi. Kod degismez (sekme eslemesi
-# ona bakar); yalnizca listede okunur bir ad gosterilir.
+# ona bakar); yalnizca listede okunur bir ad gosterilir. Ad etkin dilde
+# verilir (N_ ile isaretli); onekin ardindaki ayrinti (malzeme adi, katman
+# numarasi) ayiricidan sonra eklenir: "/" ile biten onek ", ", digerleri " ".
 _YER_ETIKETI = [
-    ("malzemeler", "Malzemeler"), ("malzeme:", "Malzeme "), ("cubuk:", "Çubuk "),
-    ("plaka:", "Plaka elemanı "), ("demet:", "Demet "), ("kor/katman ", "Kor, katman "),
-    ("kor", "Kor"), ("ayarlar", "Hesap ayarları"), ("veri kutuphanesi", "Veri kütüphanesi"),
-    ("kaynak", "Kaynak"), ("tally:", "Tally "), ("guc dagilimi", "Güç dağılımı"),
-    ("guc_dagilimi", "Güç dağılımı"), ("tukenme/", "Tükenme, "), ("tukenme", "Tükenme"),
-    ("dogrulama", "Doğrulama"),
+    ("malzemeler", N_("Malzemeler")), ("malzeme:", N_("Malzeme")), ("cubuk:", N_("Çubuk")),
+    ("plaka:", N_("Plaka elemanı")), ("demet:", N_("Demet")),
+    ("kor/katman ", N_("Kor, katman")),
+    ("kor", N_("Kor")), ("ayarlar", N_("Hesap ayarları")),
+    ("veri kutuphanesi", N_("Veri kütüphanesi")),
+    ("kaynak", N_("Kaynak")), ("tally:", N_("Tally")), ("guc dagilimi", N_("Güç dağılımı")),
+    ("guc_dagilimi", N_("Güç dağılımı")), ("tukenme/", N_("Tükenme")),
+    ("tukenme", N_("Tükenme")), ("dogrulama", N_("Doğrulama")),
 ]
 
 
@@ -30,9 +37,16 @@ def yer_etiketi(yer):
     """Bulgu yerinin okunur adi: "malzeme:uo2" -> "Malzeme uo2". Kod degismez."""
     yer = yer or ""
     for onek, ad in _YER_ETIKETI:
-        if yer == onek or (onek.endswith((":", "/", " ")) and yer.startswith(onek)):
-            return ad + yer[len(onek):]
+        if yer == onek:
+            return _(ad)
+        if onek.endswith((":", "/", " ")) and yer.startswith(onek):
+            ayirici = ", " if onek.endswith("/") else " "
+            return _(ad) + ayirici + yer[len(onek):]
     return yer
+
+
+# Seviye etiketleri (terminal ciktisi, Bulgu.__str__)
+_SEVIYE_IMI = {"hata": N_("HATA"), "uyari": N_("UYARI"), "bilgi": N_("BİLGİ")}
 
 
 class Bulgu(object):
@@ -45,8 +59,8 @@ class Bulgu(object):
         self.oneri = oneri
 
     def __str__(self):
-        im = {"hata": "HATA ", "uyari": "UYARI", "bilgi": "BİLGİ"}[self.seviye]
-        s = "[%s] %-22s %s" % (im, yer_etiketi(self.yer), self.mesaj)
+        im = _(_SEVIYE_IMI[self.seviye])
+        s = "[%-5s] %-22s %s" % (im, yer_etiketi(self.yer), self.mesaj)
         if self.oneri:
             s += "\n                             -> %s" % self.oneri
         return s

@@ -28,6 +28,7 @@ import random
 from collections import namedtuple
 
 import numpy as np
+from cekirdek.ceviri import _, pgettext
 
 YoklamaSonucu = namedtuple("YoklamaSonucu", "n bosluklar ortusmeler")
 RAPOR_SINIRI = 5
@@ -132,14 +133,15 @@ def yokla(spec, n=20000, tohum=1):
 
 def _hucre_adi(h, dizin):
     yol = (getattr(dizin, "hucre_yolu", None) or {}).get(h.id)
-    return yol or h.name or "hücre %d" % h.id
+    return yol or h.name or _("hücre %d") % h.id
 
 
 def _metinler(sonuc, dizin):
     metinler = []
-    for tur, liste in (("örtüşme", sonuc.ortusmeler), ("boşluk", sonuc.bosluklar)):
+    for tur, liste in ((pgettext("yoklama", "örtüşme"), sonuc.ortusmeler),
+                       (pgettext("yoklama", "boşluk"), sonuc.bosluklar)):
         for p, hucreler in liste[:RAPOR_SINIRI]:
-            yol = " > ".join(_hucre_adi(h, dizin) for h in hucreler) or "kök"
+            yol = " > ".join(_hucre_adi(h, dizin) for h in hucreler) or _("kök")
             metinler.append("%s (%.4g, %.4g, %.4g): %s" % (tur, p[0], p[1], p[2], yol))
     return metinler
 
@@ -165,13 +167,13 @@ def derin_dogrulama(spec, dizin, parcacik=500, cevrim=3):
                    path_input=os.path.join(dizin, "model.xml"))
     except RuntimeError as e:
         return False, str(e).strip().splitlines()[-1] if str(e).strip() else repr(e)
-    return True, "geometri hata ayıklama koşusu temiz (%d × %d parçacık)" % (
+    return True, _("geometri hata ayıklama koşusu temiz (%d × %d parçacık)") % (
         int(parcacik), int(cevrim))
 
 
 def oran_metni(sonuc):
     """'n noktada k ortusme, b bosluk' ozeti."""
-    return "%d noktada %d örtüşme, %d boşluk" % (sonuc.n, len(sonuc.ortusmeler),
+    return _("%d noktada %d örtüşme, %d boşluk") % (sonuc.n, len(sonuc.ortusmeler),
                                                  len(sonuc.bosluklar))
 
 

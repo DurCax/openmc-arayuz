@@ -48,6 +48,13 @@ warnings.filterwarnings("ignore")
 # AYNI listelere yazsin ve ozet hepsini saysin. Bkz. testler/ortak_test.py.
 from testler.ortak_test import _gecti, _kaldi, ek_moduller   # noqa: E402
 
+# Bu modul yalniz calistiricidir; kendi testi yoktur. Listeler ACIKCA bos
+# verilir: conftest.py (pytest koprusu) listesi olmayan modulde main()
+# govdesini AST ile cozumlemeye duser -- main() yeniden duzenlenince bu
+# kirilgan yol test kaybettirebilirdi (M6). Listeler varken AST'ye bakilmaz.
+HIZLI = []
+YAVAS = []
+
 
 def main(argv):
     hizli = "--hizli" in argv

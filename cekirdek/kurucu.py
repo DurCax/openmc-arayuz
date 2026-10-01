@@ -37,6 +37,7 @@ from cekirdek.geometri.kurulum import kur as _geo_kur
 from cekirdek.sema import model_yuksekligi as sema_model_yuksekligi
 from cekirdek.sema import guc_hedefleri as sema_guc_hedefleri
 from cekirdek.sema import BOSLUK, cubuk_bul
+from cekirdek.ceviri import _
 
 # Varsayilan renk (spec'te renk verilmemis malzemeler icin)
 _VARSAYILAN_RENK = (170, 170, 170)
@@ -82,7 +83,7 @@ def _mat(nesneler, ad):
     if ad is None or ad == BOSLUK:
         return None
     if ad not in nesneler:
-        raise KeyError("tanımsız malzeme: %s" % ad)
+        raise KeyError(_("tanımsız malzeme: %s") % ad)
     return nesneler[ad]
 
 
@@ -193,7 +194,7 @@ def tally_mesh_sinirlari(spec, f, sinir_kutu):
     if not f.get("otomatik") and f.get("alt") and f.get("ust"):
         return list(f["alt"]), list(f["ust"])
     if sinir_kutu is None:
-        raise ValueError("otomatik ağ sınırları için modelin sınır kutusu gerekli")
+        raise ValueError(_("otomatik ağ sınırları için modelin sınır kutusu gerekli"))
     gx, gy = sinir_kutu
     h = sema_model_yuksekligi(spec)
     if h:
@@ -227,7 +228,7 @@ def tallyleri_kur(spec, nesneler, sinir_kutu=None):
                 filtreler.append(openmc.MaterialFilter(
                     [nesneler[a] for a in f["adlar"]]))
             else:
-                raise ValueError("bilinmeyen filtre türü: %s" % f["tur"])
+                raise ValueError(_("bilinmeyen filtre türü: %s") % f["tur"])
         tal.filters = filtreler
         liste.append(tal)
     return openmc.Tallies(liste)
@@ -245,15 +246,15 @@ def _guc_hedef_hucresi(spec, hedef, nesneler, universeler):
     cubuk_ad = hedef.get("cubuk")
     c = cubuk_bul(spec, cubuk_ad) if cubuk_ad else None
     if c is None:
-        raise ValueError("güç dağılımı için geçerli bir çubuk seçilmeli"
-                         + (" ('%s' tanımsız)" % cubuk_ad if cubuk_ad else ""))
+        raise ValueError(_("güç dağılımı için geçerli bir çubuk seçilmeli")
+                         + (_(" ('%s' tanımsız)") % cubuk_ad if cubuk_ad else ""))
     univ = universeler.get(cubuk_ad)
     if univ is None:
         return None
     hucreler = _guc.bolge_hucresi(univ, c, nesneler)
     bolge_no = int(hedef.get("bolge") or 0)
     if not (0 <= bolge_no < len(hucreler)):
-        raise ValueError("'%s': geçersiz bölge numarası %d (çubukta %d bölge var)"
+        raise ValueError(_("'%s': geçersiz bölge numarası %d (çubukta %d bölge var)")
                          % (cubuk_ad, bolge_no + 1, len(hucreler)))
     return hucreler[bolge_no]
 
@@ -268,7 +269,7 @@ def guc_hedef_hucreleri(spec, nesneler, universeler):
     """
     hedefler = sema_guc_hedefleri(spec.get("guc_dagilimi"))
     if not hedefler:
-        raise ValueError("güç dağılımı için geçerli bir çubuk seçilmeli")
+        raise ValueError(_("güç dağılımı için geçerli bir çubuk seçilmeli"))
     bulunan, eksik, gorulen = [], [], set()
     for h in hedefler:
         anahtar = (h["cubuk"], h["bolge"])
@@ -282,8 +283,8 @@ def guc_hedef_hucreleri(spec, nesneler, universeler):
             bulunan.append((h["cubuk"], hucre))
     if not bulunan:
         raise ValueError(
-            "'%s' çubuğu modelde kullanılmıyor. Güç dağılımı yalnızca geometride "
-            "yer alan bir çubuk için hesaplanabilir." % "', '".join(eksik))
+            _("'%s' çubuğu modelde kullanılmıyor. Güç dağılımı yalnızca geometride "
+            "yer alan bir çubuk için hesaplanabilir.") % "', '".join(eksik))
     return bulunan, eksik
 
 

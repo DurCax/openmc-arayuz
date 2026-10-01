@@ -41,35 +41,35 @@ def eksenel_kontrol(spec):
     if tur not in sema.EKSENEL_DESTEKLI:
         bulgular.append(Bulgu(
             "hata", "kor",
-            "eksenel katmanlar '%s' kor türünde desteklenmiyor" % _kor_turu_adi(tur),
-            "Destekleyen türler: %s. Küresel düzenekte eksen kavramı yoktur; "
-            "orada katmanı eş merkezli kabuklarla kurun."
+            _("eksenel katmanlar '%s' kor türünde desteklenmiyor") % _kor_turu_adi(tur),
+            _("Destekleyen türler: %s. Küresel düzenekte eksen kavramı yoktur; "
+            "orada katmanı eş merkezli kabuklarla kurun.")
             % ", ".join(_kor_turu_adi(x) for x in sema.EKSENEL_DESTEKLI)))
         return bulgular
 
     katmanlar = eks.get("bolgeler") or []
     if not katmanlar:
         bulgular.append(Bulgu("hata", "kor",
-                              "eksenel katmanlar açık ama hiç katman tanımlı değil"))
+                              _("eksenel katmanlar açık ama hiç katman tanımlı değil")))
         return bulgular
 
     adlar = set()
     for i, b in enumerate(katmanlar):
-        yer = "kor/katman %d (%s)" % (i + 1, b.get("ad") or "adsız")
+        yer = "kor/katman %d (%s)" % (i + 1, b.get("ad") or _("adsız"))
         h = b.get("yukseklik")
         if not h or float(h) <= 0:
-            bulgular.append(Bulgu("hata", yer, "katman yüksekliği sıfırdan büyük olmalı"))
+            bulgular.append(Bulgu("hata", yer, _("katman yüksekliği sıfırdan büyük olmalı")))
         ad = b.get("ad") or ""
         if ad and ad in adlar:
             bulgular.append(Bulgu("uyari", yer,
-                                  "aynı ad birden fazla katmanda kullanılmış: '%s'" % ad))
+                                  _("aynı ad birden fazla katmanda kullanılmış: '%s'") % ad))
         adlar.add(ad)
 
         dolgu = b.get("dolgu")
         if dolgu and not _ad_var(spec, dolgu):
             bulgular.append(Bulgu(
-                "hata", yer, "tanımsız dolgu adı: '%s'" % dolgu,
-                "Dolgu bir çubuk, plaka elemanı, demet ya da malzeme adı olmalı."))
+                "hata", yer, _("tanımsız dolgu adı: '%s'") % dolgu,
+                _("Dolgu bir çubuk, plaka elemanı, demet ya da malzeme adı olmalı.")))
 
         anahtar = b.get("anahtar") or {}
         # Katmana ozel harf eslemesi haritali her tam korda kurulur (kare:
@@ -83,17 +83,17 @@ def eksenel_kontrol(spec):
             if not any(harf in satir for satir in (kor.get("harita") or [])):
                 bulgular.append(Bulgu(
                     "uyari", yer,
-                    "'%s' harfi kor haritasında hiç geçmiyor" % harf))
+                    _("'%s' harfi kor haritasında hiç geçmiyor") % harf))
             if not _ad_var(spec, hedef):
                 bulgular.append(Bulgu("hata", yer,
-                                      "tanımsız demet/malzeme adı: '%s'" % hedef))
+                                      _("tanımsız demet/malzeme adı: '%s'") % hedef))
 
     if kor.get("yukseklik"):
         toplam = sema.kor_yuksekligi(kor)
         bulgular.append(Bulgu(
             "bilgi", "kor",
-            "eksenel katmanlar açıkken yükseklik alanı (%g cm) yok sayılır; "
-            "geçerli yükseklik katmanların toplamıdır (%g cm)"
+            _("eksenel katmanlar açıkken yükseklik alanı (%g cm) yok sayılır; "
+            "geçerli yükseklik katmanların toplamıdır (%g cm)")
             % (float(kor["yukseklik"]), toplam or 0.0)))
 
     # --- fisil katman var mi ---
@@ -116,18 +116,18 @@ def _aktif_bulgulari(aralik, toplam, fisil_var):
     if not fisil_var:
         return [Bulgu(
             "hata", "kor",
-            "hiçbir eksenel katmanda fisil malzeme yok — özdeğer koşusu "
-            "başlangıç kaynağı bulamaz")]
+            _("hiçbir eksenel katmanda fisil malzeme yok — özdeğer koşusu "
+            "başlangıç kaynağı bulamaz"))]
     if aralik and toplam and aralik[1] - aralik[0] < toplam:
         return [Bulgu(
             "bilgi", "kor",
-            "aktif yakıt yüksekliği %g cm / toplam %g cm "
-            "(z = %g … %g)" % (aralik[1] - aralik[0], toplam, aralik[0], aralik[1]),
-            "Başlangıç kaynağı kutusu ve kontrol çubuğu daldırması bu "
+            _("aktif yakıt yüksekliği %g cm / toplam %g cm "
+            "(z = %g … %g)") % (aralik[1] - aralik[0], toplam, aralik[0], aralik[1]),
+            _("Başlangıç kaynağı kutusu ve kontrol çubuğu daldırması bu "
             "fisil aralığa göre tanımlıdır. Güç dağılımının eksenel ağı "
             "ise hedef çubuğun bulunduğu aralığa göre — ikisi aynı "
             "olmak zorunda değil (doğal uranyum örtü fisildir ama "
-            "içinde yakıt çubuğu yoktur).")]
+            "içinde yakıt çubuğu yoktur)."))]
     return []
 
 
@@ -151,20 +151,20 @@ def _ortak_bulgular(spec):
         if ar and cr and (cr[1] - cr[0]) < (ar[1] - ar[0]) - 1e-9:
             bulgular.append(Bulgu(
                 "uyari", "guc_dagilimi",
-                "fisil aralık %g cm ama '%s' çubuğu yalnızca %g cm boyunca var"
+                _("fisil aralık %g cm ama '%s' çubuğu yalnızca %g cm boyunca var")
                 % (ar[1] - ar[0], "', '".join(adlar), cr[1] - cr[0]),
-                "Güç dağılımı yalnızca bu çubuğu sayar; toplam güç ise tüm "
+                _("Güç dağılımı yalnızca bu çubuğu sayar; toplam güç ise tüm "
                 "modelin gücüdür. Aradaki fisil katmanların (örtü gibi) gücü "
                 "de bu çubuklara paylaştırılmış olur ve W/cm olduğundan yüksek "
                 "çıkar. Mutlak sayıları kullanacaksanız toplam gücü yalnızca bu "
-                "çubukların ürettiği güç olarak girin."))
+                "çubukların ürettiği güç olarak girin.")))
 
     if any(c.get("tur") == "kontrol" for c in spec.get("cubuklar", [])):
         bulgular.append(Bulgu(
             "bilgi", "kor",
-            "kontrol çubuğu daldırması aktif yakıt aralığında ölçülür",
-            "%0 = uç aktif bölgenin tepesinde, %100 = dibinde; modelin toplam "
-            "yüksekliği değil."))
+            _("kontrol çubuğu daldırması aktif yakıt aralığında ölçülür"),
+            _("%0 = uç aktif bölgenin tepesinde, %100 = dibinde; modelin toplam "
+            "yüksekliği değil.")))
     return bulgular
 
 

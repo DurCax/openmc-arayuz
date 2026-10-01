@@ -25,6 +25,7 @@
 import math
 
 from cekirdek import altigen
+from cekirdek.ceviri import _
 
 # Merkez ile ornek merkezi arasinda bundan kisa mesafe: yon tanimsiz (HATA)
 MERKEZ_PAYI = 1.0e-9
@@ -80,7 +81,7 @@ def _kafes_bul(kap, kimlik):
             a = a.get("icerik")
         if isinstance(a, dict) and a.get("tur") == "kafes" and a.get("id") == kimlik:
             return a
-    raise ValueError("'kafes_konumu' yerleşimi: '%s' kimlikli kafes kabın içinde değil" % kimlik)
+    raise ValueError(_("'kafes_konumu' yerleşimi: '%s' kimlikli kafes kabın içinde değil") % kimlik)
 
 
 def merkezler(y, kap):
@@ -98,7 +99,7 @@ def merkezler(y, kap):
     if mod == "kafes_konumu":
         kon = kafes_konum_merkezleri(_kafes_bul(kap, y.get("kafes")), y.get("harf"))
         return kon, [None] * len(kon)
-    raise ValueError("bilinmeyen yerleşim modu: %s" % mod)
+    raise ValueError(_("bilinmeyen yerleşim modu: %s") % mod)
 
 
 def ornekler(y, kap, tanimlar, gruplar):
@@ -127,8 +128,8 @@ def _psi(bakis, D, x, y, fi, icerik):
     mx, my = (float(v) for v in bakis.get("merkez") or (0.0, 0.0))
     # cakisma denetimi halka kisayolundan ONCE: R = 0 halkasinda ornek merkezdedir
     if math.hypot(mx - x, my - y) < MERKEZ_PAYI:
-        raise ValueError("yerleşim örneği bakış merkeziyle çakışıyor (%.6g, %.6g): 'kora "
-                         "bakan' yön tanımsız; 'sabit' bakış seçin" % (x, y))
+        raise ValueError(_("yerleşim örneği bakış merkeziyle çakışıyor (%.6g, %.6g): 'kora "
+                         "bakan' yön tanımsız; 'sabit' bakış seçin") % (x, y))
     if fi is not None and mx == 0.0 and my == 0.0:
         return fi + 180.0 + D                      # tambur.yerlesim ile bit duzeyinde ayni
     return math.degrees(math.atan2(my - y, mx - x)) + D

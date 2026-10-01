@@ -39,6 +39,7 @@ import re
 
 from cekirdek.gunluk import kaydedici
 from cekirdek.sema import malzeme, bilesen
+from cekirdek.ceviri import _
 
 _log = kaydedici(__name__)
 
@@ -73,7 +74,7 @@ def malzemeleri_oku(yol):
     import openmc
 
     if not os.path.exists(yol):
-        raise IOError("dosya bulunamadı: %s" % yol)
+        raise IOError(_("dosya bulunamadı: %s") % yol)
 
     taban = os.path.basename(yol).lower()
     if taban == "model.xml" or taban.endswith("model.xml"):
@@ -108,7 +109,7 @@ def _malzeme_listesi(ham_malzemeler):
                 if toplam > 0:
                     bilesim.append(bilesen(nuklid, yog / toplam, tur="nuklid"))
         else:
-            notlar.append("%s: bileşim okunamadı, boş bırakıldı" % ad)
+            notlar.append(_("%s: bileşim okunamadı, boş bırakıldı") % ad)
 
         # --- yogunluk ---
         birim, deger = "g/cm3", None
@@ -122,13 +123,13 @@ def _malzeme_listesi(ham_malzemeler):
             try:
                 deger = float(mat.get_mass_density())
                 birim = "g/cm3"
-                notlar.append("%s: yoğunluk 'sum' olarak verilmiş, kütle "
-                              "yoğunluğuna çevrildi (%.4f g/cm³)" % (ad, deger))
+                notlar.append(_("%s: yoğunluk 'sum' olarak verilmiş, kütle "
+                              "yoğunluğuna çevrildi (%.4f g/cm³)") % (ad, deger))
             except Exception as e:
                 _log.debug("%s: kütle yoğunluğu hesaplanamadı: %s", ad, e)
                 deger = 1.0
-                notlar.append("%s: yoğunluk belirlenemedi, 1.0 g/cm³ varsayıldı "
-                              "— mutlaka düzeltin" % ad)
+                notlar.append(_("%s: yoğunluk belirlenemedi, 1.0 g/cm³ varsayıldı "
+                              "— mutlaka düzeltin") % ad)
 
         # --- sicaklik ---
         sicaklik = 293.6
@@ -147,8 +148,8 @@ def _malzeme_listesi(ham_malzemeler):
                 if isinstance(kayit, (tuple, list)):
                     sab.append(str(kayit[0]))
                     if len(kayit) > 1 and abs(float(kayit[1]) - 1.0) > 1e-9:
-                        notlar.append("%s: S(α,β) '%s' kesri %.3f — model dosyası "
-                                      "yalnızca adı taşır, kesir kayboldu"
+                        notlar.append(_("%s: S(α,β) '%s' kesri %.3f — model dosyası "
+                                      "yalnızca adı taşır, kesir kayboldu")
                                       % (ad, kayit[0], float(kayit[1])))
                 elif isinstance(kayit, dict):
                     sab.append(str(kayit.get("name", "")))
@@ -157,7 +158,7 @@ def _malzeme_listesi(ham_malzemeler):
             sab = [s for s in sab if s]
         except Exception as e:
             _log.warning("%s: S(α,β) okunamadı: %s", ad, e)
-            notlar.append("%s: S(α,β) okunamadı (%s)" % (ad, e))
+            notlar.append(_("%s: S(α,β) okunamadı (%s)") % (ad, e))
 
         sonuc.append(malzeme(
             ad, bilesim, deger, birim=birim, sicaklik=sicaklik, sab=sab,
@@ -165,9 +166,9 @@ def _malzeme_listesi(ham_malzemeler):
             gorunen_ad=(mat.name or ad)))
 
     if sonuc:
-        notlar.insert(0, "%d malzeme aktarıldı. Bileşimler nüklid bazında "
+        notlar.insert(0, _("%d malzeme aktarıldı. Bileşimler nüklid bazında "
                          "aktarılır (element kısayolları korunmaz); sonuç aynı "
-                         "olsa da tablo daha uzun görünür." % len(sonuc))
+                         "olsa da tablo daha uzun görünür.") % len(sonuc))
     return sonuc, notlar
 
 
@@ -185,7 +186,7 @@ def geometri_oku(yol):
     import openmc
     from cekirdek.geometri.ice_aktar import xml_den
     if not os.path.exists(yol):
-        raise IOError("dosya bulunamadı: %s" % yol)
+        raise IOError(_("dosya bulunamadı: %s") % yol)
     if os.path.basename(yol).lower().endswith("model.xml"):
         model = openmc.Model.from_model_xml(yol)
         ham, geo = list(model.materials), model.geometry
@@ -206,7 +207,7 @@ def geometri_oku(yol):
 def geometri_neden_aktarilamaz():
     """Arayuzde gosterilecek aciklama."""
     return (
-        "Geometri içe aktarılamaz.\n\n"
+        _("Geometri içe aktarılamaz.\n\n"
         "Bu arayüz rehberli bir kor kurucusudur: malzeme → çubuk → demet → "
         "kor katmanları üzerinden çalışır. OpenMC XML'i ise ham CSG'dir "
         "(yüzeyler, hücreler, universe'ler). Aynı geometri sonsuz farklı "
@@ -215,4 +216,4 @@ def geometri_neden_aktarilamaz():
         "Yanlış bir tahmin, sessizce yanlış bir model üretirdi; bu yüzden "
         "denenmiyor.\n\n"
         "Pratik yol: malzemeleri buradan aktarın, geometriyi arayüzde yeniden "
-        "kurun. Malzemeler bir modelin en zahmetli kısmıdır.")
+        "kurun. Malzemeler bir modelin en zahmetli kısmıdır."))

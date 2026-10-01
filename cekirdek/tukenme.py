@@ -49,6 +49,7 @@ import os
 import sys
 
 from cekirdek import sema, veri_bilgi
+from cekirdek.ceviri import N_, _, pgettext
 
 ZINCIRLER = {
     "termal":      "chain_endfb80_thermal.xml",
@@ -89,13 +90,13 @@ def spektrum_tahmini(spec):
     for m in spec.get("malzemeler", []):
         for s in m.get("sab") or []:
             if any(str(s).startswith(o) for o in _MODERATOR_SAB):
-                return "termal", "'%s' malzemesinde %s var" % (m["ad"], s)
+                return "termal", _("'%s' malzemesinde %s var") % (m["ad"], s)
         for b in m.get("bilesim", []):
             isim = b.get("isim") or ""
             eleman = isim.rstrip("0123456789") if b.get("tur") == "nuklid" else isim
             if eleman in ("H", "D") and float(b.get("miktar") or 0) > 0:
-                return "termal", "'%s' malzemesi hidrojen içeriyor" % m["ad"]
-    return "hizli", "modelde hidrojen ya da grafit moderatör yok"
+                return "termal", _("'%s' malzemesi hidrojen içeriyor") % m["ad"]
+    return "hizli", _("modelde hidrojen ya da grafit moderatör yok")
 
 
 def zincir_secimi(spec):
@@ -107,10 +108,10 @@ def zincir_secimi(spec):
     spektrum, gerekce = spektrum_tahmini(spec)
     if istek == "otomatik":
         tur = spektrum
-        gerekce = "otomatik: " + gerekce
+        gerekce = _("otomatik: %s") % gerekce
     else:
         tur = istek
-        gerekce = "kullanıcı seçimi"
+        gerekce = _("kullanıcı seçimi")
     temel = "hizli" if tur.endswith("hizli") else "termal"
     return {
         "tur": tur,
@@ -286,8 +287,8 @@ def _hazir_hacimler(spec):
     if kesin_degil and sema.agac_modu(spec) and (spec.get("tukenme") or {}).get(
             "malzemeleri_ayir"):
         raise ValueError(
-            "çubuk çubuk yanma kesin örnek hacmi gerektirir; hacmi kesin olmayan "
-            "(kesik) yanabilir malzeme: %s" % ", ".join(kesin_degil))
+            _("çubuk çubuk yanma kesin örnek hacmi gerektirir; hacmi kesin olmayan "
+            "(kesik) yanabilir malzeme: %s") % ", ".join(kesin_degil))
     tablo, dusen = tukenme_hacim.stokastik_tamamla(spec, tablo)
     hv = {ad: v for ad, v in tablo.items() if v["hacim"] or v["zorunlu"]}
     atlanan = {ad: v["ayrinti"] for ad, v in tablo.items()
@@ -316,7 +317,7 @@ def hazirla(spec):
     from cekirdek.gunluk import kaydedici
     model, kbilgi = kurucu.kur(spec)
     zs = zincir_secimi(spec)
-    tamam, mesaj, _ = veri_bilgi.zincir_kontrol(zs["yol"])
+    tamam, mesaj, _zincir = veri_bilgi.zincir_kontrol(zs["yol"])
     if not tamam:
         raise ValueError(mesaj)
 
@@ -324,11 +325,11 @@ def hazirla(spec):
     eksik = [a for a, v in hv.items() if not v["hacim"]]
     if eksik:
         raise ValueError(
-            "hacmi analitik hesaplanamayan yanabilir malzeme: %s (%s). "
-            "Tükenme kesin hacim gerektirir."
+            _("hacmi analitik hesaplanamayan yanabilir malzeme: %s (%s). "
+            "Tükenme kesin hacim gerektirir.")
             % (", ".join(eksik), "; ".join(hv[a]["ayrinti"] for a in eksik)))
     if not hv:
-        raise ValueError("modelde yanabilir (fisil) malzeme yok")
+        raise ValueError(_("modelde yanabilir (fisil) malzeme yok"))
     if stokastik:
         kaydedici(__name__).warning("stokastik hacimle tükenen malzemeler (kesik "
                                     "konum): %s", ", ".join(sorted(stokastik)))
@@ -608,16 +609,24 @@ def _kayit_oku(dizin):
 
 # Spec bolumlerinin kullaniciya gorunen adlari (eskime farklari icin).
 BOLUM_ADLARI = {
-    "malzemeler": "malzemeler", "cubuklar": "çubuklar", "plakalar": "plaka elemanları",
-    "demetler": "demetler", "kor": "kor", "ayarlar": "hesap ayarları",
-    "tallyler": "tally'ler", "guc_dagilimi": "güç dağılımı", "tukenme": "tükenme ayarları",
+    "malzemeler": N_("malzemeler"), "cubuklar": N_("çubuklar"),
+    "plakalar": N_("plaka elemanları"), "demetler": N_("demetler"), "kor": N_("kor"),
+    "ayarlar": N_("hesap ayarları"), "tallyler": N_("tally'ler"),
+    "guc_dagilimi": N_("güç dağılımı"), "tukenme": N_("tükenme ayarları"),
 }
+# Turkce adlar (geriye uyum); gosterirken spektrum_adi() etkin dilde verir.
 SPEKTRUM_ADLARI = {"termal": "termal", "hizli": "hızlı"}
+
+
+def spektrum_adi(kod):
+    """Spektrum turunun gorunen adi, etkin dilde (SPEKTRUM_ADLARI)."""
+    return {"termal": pgettext("spektrum", "termal"),
+            "hizli": pgettext("spektrum", "hızlı")}.get(kod, kod)
 
 
 def fark_metni(farklar):
     """Eskime farklarinin okunur listesi: "malzemeler, hesap ayarları"."""
-    return ", ".join(BOLUM_ADLARI.get(f, f) for f in farklar)
+    return ", ".join(_(BOLUM_ADLARI[f]) if f in BOLUM_ADLARI else f for f in farklar)
 
 
 def eskime(spec, dizin):
@@ -648,6 +657,17 @@ def transport_sayisi(spec):
 # Terminal
 # ============================================================================
 
+# MAKINE ISARETI -- CEVRILMEZ. arayuz/sekme_tukenme._cikti_oku alt surecin
+# ciktisini suzerken baslik satirini bu sabitle tanir ("TÜKENME" in satir);
+# Ingilizce arayuzde de ayni kalmali (testler/test_ceviri_cekirdek CC5).
+KOSU_ISARETI = "TÜKENME"
+
+
+def kosu_basligi(spec):
+    """Terminal ciktisinin baslik satiri: " TÜKENME: <model adi>" (isaret sabit)."""
+    return " %s: %s" % (KOSU_ISARETI, spec.get("ad", ""))
+
+
 def _terminal(argv):
     import argparse
     ap = argparse.ArgumentParser(prog="python3 -m cekirdek.tukenme")
@@ -655,9 +675,9 @@ def _terminal(argv):
     ap.add_argument("-s", "--is-parcacigi", type=int, default=None)
     ap.add_argument("--dizin", default=None)
     ap.add_argument("--hazirla", action="store_true",
-                    help="koşmadan hacim, zincir ve ağır metal bilgisini yazdır")
+                    help=_("koşmadan hacim, zincir ve ağır metal bilgisini yazdır"))
     ap.add_argument("--veri-kontrolu-yok", action="store_true",
-                    help="doğrulamada nüklid/kütüphane denetimini atla")
+                    help=_("doğrulamada nüklid/kütüphane denetimini atla"))
     a = ap.parse_args(argv)
 
     # libgomp OMP_NUM_THREADS'i KUTUPHANE YUKLENIRKEN okur; openmc.deplete'in
@@ -672,22 +692,23 @@ def _terminal(argv):
     zs = zincir_secimi(spec)
     t = spec["tukenme"]
     print("=" * 74)
-    print(" TÜKENME: %s" % spec.get("ad", ""))
+    print(kosu_basligi(spec))
     print("=" * 74)
-    print("  zincir        : %s  (%s)" % (os.path.basename(zs["yol"]), zs["gerekce"]))
-    print("  fisyon verimi : %s eV (%s spektrum)"
-          % (zs["verim_enerjisi"], SPEKTRUM_ADLARI.get(zs["temel"], zs["temel"])))
-    print("  güç yoğunluğu : %g W/gHM" % float(t["guc_yogunlugu"]))
-    print("  adımlar       : %s %s  → %d transport"
+    print(_("  zincir        : %s  (%s)") % (os.path.basename(zs["yol"]), zs["gerekce"]))
+    print(_("  fisyon verimi : %s eV (%s spektrum)")
+          % (zs["verim_enerjisi"], spektrum_adi(zs["temel"])))
+    print(_("  güç yoğunluğu : %g W/gHM") % float(t["guc_yogunlugu"]))
+    print(_("  adımlar       : %s %s  → %d transport")
           % (", ".join("%g" % float(x) for x in t["adimlar"]),
-             {"d": "gün"}.get(t.get("adim_birimi", "d"), t.get("adim_birimi", "d")),
+             {"d": _("gün")}.get(t.get("adim_birimi", "d"), t.get("adim_birimi", "d")),
              transport_sayisi(spec)))
+    from cekirdek import tukenme_hacim
     for ad, v in hacimler(spec).items():
-        print("  hacim %-10s: %s cm³ [%s] %s" % (ad, ("%.6g" % v["hacim"]) if v["hacim"] else "—",
-                                                  v["yontem"], v["ayrinti"]))
+        print(_("  hacim %-10s: %s cm³ [%s] %s") % (ad, ("%.6g" % v["hacim"]) if v["hacim"] else "—",
+                                                  tukenme_hacim.yontem_metni(v["yontem"]), v["ayrinti"]))
     if a.hazirla:
         _m, b = hazirla(spec)
-        print("  ağır metal    : %.6g g" % b["agir_metal_g"])
+        print(_("  ağır metal    : %.6g g") % b["agir_metal_g"])
         return 0
 
     dizin = a.dizin or os.path.join(os.path.dirname(os.path.abspath(a.spec)),
@@ -696,20 +717,22 @@ def _terminal(argv):
     try:
         h5, bilgi = calistir(spec, dizin, veri_kontrolu=not a.veri_kontrolu_yok)
     except dogrula.DogrulamaHatasi as e:
-        print("\n  DOĞRULAMA: koşu başlatılmadı (%d hata)" % len(e.bulgular))
+        print(_("\n  DOĞRULAMA: koşu başlatılmadı (%d hata)") % len(e.bulgular))
         for b in e.tum_bulgular:          # hatalar + uyari/bilgi (tek denetim)
             print("  %s" % b)
         return 2
     for b in bilgi["dogrulama"]:
         print("  %s" % b)
     s = sonuc_oku(h5, spec)
-    print("\n  ağır metal: %.6g g" % bilgi["agir_metal_g"])
-    print("  %8s %10s %18s" % ("gün", "MWd/kg", "k-eff"))
+    print(_("\n  ağır metal: %.6g g") % bilgi["agir_metal_g"])
+    print("  %8s %10s %18s" % (_("gün"), "MWd/kg", "k-eff"))
     for z, b, k, sk in zip(s["zaman_d"], s["yanma"], s["k"], s["k_sapma"]):
         print("  %8.2f %10.3f %10.5f ± %.5f" % (z, b, k, sk))
-    print("\n  sonuç: %s" % h5)
+    print(_("\n  sonuç: %s") % h5)
     return 0
 
 
 if __name__ == "__main__":
+    from cekirdek.ceviri import terminal_dili
+    terminal_dili()                   # OPENMC_ARAYUZ_DIL verilmisse o dil
     sys.exit(_terminal(sys.argv[1:]))

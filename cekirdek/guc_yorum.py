@@ -9,7 +9,7 @@
 ================================================================================
 """
 
-from cekirdek.ceviri import _
+from cekirdek.ceviri import _, _n
 from cekirdek.gunluk import kaydedici
 
 _log = kaydedici(__name__)
@@ -26,15 +26,15 @@ _TAM_PAY = 0.999
 
 def _radyal_satirlari(faktorler):
     f = faktorler["F_dH"]
-    satirlar = ["F_ΔH = %.4f — en sıcak çubuk ortalamanın %%%.1f üstünde güç üretiyor."
+    satirlar = [_("F_ΔH = %.4f — en sıcak çubuk ortalamanın %%%.1f üstünde güç üretiyor.")
                 % (f, (f - 1) * 100)]
     if f < 1.02:
-        satirlar.append("  Dağılım neredeyse düz. Yansıtıcı sınırlı tek demet "
+        satirlar.append(_("  Dağılım neredeyse düz. Yansıtıcı sınırlı tek demet "
                         "hesaplarında beklenen budur; gerçek bir korda kenar "
-                        "etkileri ve yakıt yüklemesi tepeyi büyütür.")
+                        "etkileri ve yakıt yüklemesi tepeyi büyütür."))
     elif f > 1.65:
-        satirlar.append("  Yüksek: tipik PWR tasarım sınırı F_ΔH ≈ 1.65 "
-                        "civarındadır; yakıt yüklemesi düzeltilmeli.")
+        satirlar.append(_("  Yüksek: tipik PWR tasarım sınırı F_ΔH ≈ 1.65 "
+                        "civarındadır; yakıt yüklemesi düzeltilmeli."))
     if faktorler.get("tam_kor"):
         satirlar.append(
             _("Tam kor: %d demet, %d yakıt çubuğu. En sıcak demet %s; ortalaması "
@@ -47,34 +47,35 @@ def _radyal_satirlari(faktorler):
         satirlar.append(
             _("Çubuk türleri (bağıl ortalama / tepe; bütün yakıt çubuklarının "
               "ortalaması = 1): %s")
-            % "; ".join("%s: %.4f / %.4f (%d çubuk)" % (ad, v["ortalama"], v["tepe"],
-                                                        v["cubuk_sayisi"])
+            % "; ".join(_n("%s: %.4f / %.4f (%d çubuk)", "%s: %.4f / %.4f (%d çubuk)",
+                           v["cubuk_sayisi"])
+                        % (ad, v["ortalama"], v["tepe"], v["cubuk_sayisi"])
                         for ad, v in tur.items()))
     # --- maksimumun yukari yanliligi ---
     oran = faktorler.get("yanlilik_orani")
     if oran is not None and oran > 0.3:
         satirlar.append(
-            "  Dikkat: çubuk başına istatistik sapma (%.4f) dağılımın gerçek "
+            _("  Dikkat: çubuk başına istatistik sapma (%.4f) dağılımın gerçek "
             "saçılmasının (%.4f) %%%.0f kadarı. Bir en büyük değer hesaplandığı "
             "için F_ΔH bu durumda yukarı yanlıdır — gerçek tepe daha düşüktür. "
-            "Çevrim başına parçacık sayısını artırın."
+            "Çevrim başına parçacık sayısını artırın.")
             % (faktorler["istatistik_sapma"], faktorler["sacilma"], oran * 100))
     return satirlar
 
 
 def _eksenel_satirlari(faktorler):
     if not faktorler["F_q"]:
-        return ["F_q tanımsız — model 2B (eksenel yükseklik yok). "
+        return [_("F_q tanımsız — model 2B (eksenel yükseklik yok). "
                 "Eksenel tepe olmadan yerel güç yoğunluğu hesaplanamaz; "
-                "Kor sekmesinde yükseklik tanımlayın."]
-    satirlar = ["F_q = %.4f — yerel güç yoğunluğu tepesi (eksenel şekil dahil)."
+                "Kor sekmesinde yükseklik tanımlayın.")]
+    satirlar = [_("F_q = %.4f — yerel güç yoğunluğu tepesi (eksenel şekil dahil).")
                 % faktorler["F_q"]]
     if faktorler["eksenel_dilim"] < 10:
         satirlar.append(
-            "  Dikkat: yalnızca %d eksenel dilim var. Kaba dilimler tepeyi "
+            _("  Dikkat: yalnızca %d eksenel dilim var. Kaba dilimler tepeyi "
             "ortalar ve F_q'yu olduğundan küçük gösterir (saf kosinüs "
             "profilinde ince dilim sınırı π/2 = 1.571'dir). En az 10–20 "
-            "dilim kullanın." % faktorler["eksenel_dilim"])
+            "dilim kullanın.") % faktorler["eksenel_dilim"])
     bos = faktorler.get("bos_dilimler") or []
     if bos:
         satirlar.append(
@@ -82,7 +83,7 @@ def _eksenel_satirlari(faktorler):
               "dilimler F_q ortalamasına katılmadı.")
             % (len(bos), ", ".join(str(i + 1) for i in bos)))
     if faktorler["F_q"] > 2.6:
-        satirlar.append("  Yüksek: tipik PWR sınırı F_q ≈ 2.3–2.6.")
+        satirlar.append(_("  Yüksek: tipik PWR sınırı F_q ≈ 2.3–2.6."))
     return satirlar
 
 
@@ -91,7 +92,7 @@ def _mutlak_satirlari(mutlak, hedef_payi_hata=None):
     verilmezse pay yoklugu eski kosu (tally yok) sayilir."""
     if not mutlak:
         return []
-    satirlar = ["Çubuk başına ortalama %.1f W, en sıcak çubuk %.1f W."
+    satirlar = [_("Çubuk başına ortalama %.1f W, en sıcak çubuk %.1f W.")
                 % (mutlak["cubuk_ortalama_W"], mutlak["cubuk_maks_W"])]
     if mutlak.get("hedef_payi") is not None:
         satirlar.append(_("  Modelin fisyon enerjisinin %%%.1f'i bu çubuklarda "
@@ -107,11 +108,11 @@ def _mutlak_satirlari(mutlak, hedef_payi_hata=None):
                           "çubuk gücü olduğundan büyüktür."))
     if "lineer_maks_W_cm" in mutlak:
         lm = mutlak["lineer_maks_W_cm"]
-        satirlar.append("En yüksek çizgisel güç %.1f W/cm (tepe faktörü: %s)."
+        satirlar.append(_("En yüksek çizgisel güç %.1f W/cm (tepe faktörü: %s).")
                         % (lm, mutlak["lineer_tepe_kaynagi"]))
         if lm > 500:
-            satirlar.append("  Sınırın üstünde: tipik PWR çizgisel güç "
-                            "sınırı ~400–500 W/cm.")
+            satirlar.append(_("  Sınırın üstünde: tipik PWR çizgisel güç "
+                            "sınırı ~400–500 W/cm."))
     satirlar.append(_("  Not: kappa-fission, gama ısınmasının yakıt dışında (zarf, "
                       "soğutucu) bırakılan kısmını da (PWR'da ~%2–3) çubuklara "
                       "yazar; çubuk gücü bu oranda büyük çıkar."))
@@ -136,7 +137,7 @@ def yorumla(faktorler, mutlak=None, hedef_payi=None, hedef_payi_hata=None):
     hedef_payi_hata: pay okunamadiysa hata metni (guc["hedef_payi_hata"]).
     """
     if not faktorler:
-        return ["Güç dağılımı hesaplanamadı."]
+        return [_("Güç dağılımı hesaplanamadı.")]
     if hedef_payi is None and mutlak:
         hedef_payi = mutlak.get("hedef_payi")
     satirlar = (_radyal_satirlari(faktorler) + _kapsam_satiri(hedef_payi)
@@ -182,12 +183,12 @@ def coklu_tohum(spec, kok_dizin, tohumlar=(1, 2, 3, 4, 5), is_parcacigi=None,
         try:
             kosu = kosucu.calistir(alt, dizin, is_parcacigi=is_parcacigi)
             if not kosu["basarili"]:
-                hatalar.append("tohum %d: koşu başarısız" % t)
+                hatalar.append(_("tohum %d: koşu başarısız") % t)
                 continue
             s = kosucu.sonuc_oku(kosu["statepoint"])
             f = (s.get("guc") or {}).get("faktorler")
             if not f:
-                hatalar.append("tohum %d: güç dağılımı okunamadı" % t)
+                hatalar.append(_("tohum %d: güç dağılımı okunamadı") % t)
                 continue
             f_dh.append(f["F_dH"])
             if f["F_q"]:
@@ -212,11 +213,11 @@ def coklu_tohum(spec, kok_dizin, tohumlar=(1, 2, 3, 4, 5), is_parcacigi=None,
 def ozet_metni(faktorler, mutlak=None):
     """Tek satirlik ozet (terminal ve durum cubugu icin)."""
     if not faktorler:
-        return "güç dağılımı yok"
+        return _("güç dağılımı yok")
     p = ["F_ΔH = %.4f ± %.4f" % (faktorler["F_dH"], faktorler["F_dH_sapma"])]
     if faktorler["F_q"]:
         p.append("F_q = %.4f ± %.4f" % (faktorler["F_q"], faktorler["F_q_sapma"]))
-    p.append("en sıcak çubuk: %s" % _g().konum_metni(faktorler["sicak_cubuk"],
+    p.append(_("en sıcak çubuk: %s") % _g().konum_metni(faktorler["sicak_cubuk"],
                                                  faktorler.get("kafes_turu"),
                                                  faktorler.get("kafes_turleri")))
     if faktorler.get("tam_kor"):

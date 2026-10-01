@@ -51,6 +51,10 @@ from cekirdek import sema
 from cekirdek.uygunluk_geometri import (  # noqa: F401 -- disa verilen adlar
     _ALTIGEN_PERIODIC, _bul, geometri_icerigi, model_boyutu, sinir_secenekleri,
     sonsuz_ortam, yan_yuzey, yuz_sinir_secenekleri)
+from cekirdek.ceviri import N_, _
+from cekirdek.gunluk import kaydedici, uyar_bir_kez
+
+_log = kaydedici(__name__)
 
 # Ana penceredeki sekmelerin sabit anahtarlari, SIRAYLA.
 SEKMELER = ("malzemeler", "parcalar", "demet", "kor", "ayarlar",
@@ -64,13 +68,13 @@ KOR_TURLERI = ("tek_cubuk", "tek_plaka", "tek_demet", "kare_kafes", "altigen_kaf
 # Kor turlerinin kullaniciya gorunen sade adlari (arayuz menusu, dogrulama
 # mesajlari). Anahtarlar spec'te ASCII kalir.
 KOR_TURU_ADLARI = {
-    "tek_cubuk": "Yakıt çubuğu (pin hücre)",
-    "tek_plaka": "Plaka elemanı (MTR)",
-    "tek_demet": "Tek yakıt demeti",
-    "kare_kafes": "Tam kor (kare harita)",
-    "altigen_kafes": "Tam kor (altıgen harita)",
-    "tamburlu": "Tamburlu kompakt kor",
-    "kuresel": "Küresel düzenek (kabuklar)",
+    "tek_cubuk": N_("Yakıt çubuğu (pin hücre)"),
+    "tek_plaka": N_("Plaka elemanı (MTR)"),
+    "tek_demet": N_("Tek yakıt demeti"),
+    "kare_kafes": N_("Tam kor (kare harita)"),
+    "altigen_kafes": N_("Tam kor (altıgen harita)"),
+    "tamburlu": N_("Tamburlu kompakt kor"),
+    "kuresel": N_("Küresel düzenek (kabuklar)"),
 }
 
 ROLLER = ("yakit", "sogutucu", "moderator", "emici", "yapisal", "gaz")
@@ -125,6 +129,8 @@ def _kutle(b):
                 return float(openmc.data.zam(isim)[1])
         return float(openmc.data.atomic_weight(isim))
     except Exception:
+        # bilinmeyen ad: dogrula ayrica bulgu verir; burada kutle 0 sayilir
+        uyar_bir_kez(_log, "atom kutlesi bilinmiyor: %r", isim)
         return 0.0
 
 
@@ -139,7 +145,7 @@ def _atom_kesirleri(m):
             continue
         try:
             miktar = float(b.get("miktar") or 0.0)
-        except (TypeError, ValueError):
+        except (TypeError, ValueError):   # sayi olmayan miktar: dogrula bulgu verir
             continue
         if miktar <= 0:
             continue
@@ -162,6 +168,7 @@ def _ortalama_kutle(m):
         try:
             A += f * float(openmc.data.atomic_weight(e))
         except Exception:
+            uyar_bir_kez(_log, "ortalama atom kutlesi: element %r bilinmiyor", e)
             return 0.0
     return A
 
@@ -171,7 +178,7 @@ def _yogunluk_gcm3(m):
     y = m.get("yogunluk") or {}
     try:
         deger = float(y.get("deger") or 0.0)
-    except (TypeError, ValueError):
+    except (TypeError, ValueError):       # sayi olmayan yogunluk: dogrula bulgu verir
         return None
     birim = y.get("birim") or "g/cm3"
     if birim in ("g/cm3", "g/cc"):
@@ -215,6 +222,7 @@ def _korelasyon(m):
     try:
         fonk, _aciklama = tarama._yogunluk_korelasyonu(m)
     except Exception:
+        uyar_bir_kez(_log, "yogunluk korelasyonu secilemedi: %r", m.get("ad"))
         return None
     return fonk
 
@@ -537,9 +545,9 @@ def guc_cubuklari(spec):
 
 def _tukenme_uygun(b):
     if not b.ozdeger:
-        return False, "tükenme özdeğer (k-eff) hesabı gerektirir"
+        return False, _("tükenme özdeğer (k-eff) hesabı gerektirir")
     if not b.fisil:
-        return False, "geometride fisil (yakıt) malzeme yok"
+        return False, _("geometride fisil (yakıt) malzeme yok")
     return True, ""
 
 
@@ -559,6 +567,8 @@ def tukenme_ayirma_anlamli(spec):
         from cekirdek import tukenme
         return tukenme.yakit_ornek_sayisi(spec) > 1
     except Exception:
+        uyar_bir_kez(_log, "yakit ornek sayisi sayilamadi; cubuk cubuk yanma secenegi "
+                           "gosteriliyor")
         return True
 
 
