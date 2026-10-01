@@ -329,7 +329,7 @@ koşularınızın farkı bu mertebede olmalıdır.
 **Adımlar — C. Kare çekirdek + altıgen halkaya tambur yerleştirmek.**
 
 Bu bölüm 5.4 dersinin geometrisine (kare çekirdek, altıgen blok halkası, en dışta 20 cm su kuşağı)
-6 tambur ekler. Her adım doğrulamayla denetlendi; bütün adımlar arayüzde yapılır.
+4 tambur ekler. Her adım doğrulamayla denetlendi; bütün adımlar arayüzde yapılır.
 
 7. `ornekler/pwr_kare_altigen_halka.json`'u açın (ya da 5.4'te kurduğunuz modeli) ve
    **Dosya › Farklı kaydet…** ile kendi dosyanıza kaydedin (ör. `kare_altigen_tambur.json`).
@@ -341,21 +341,25 @@ Bu bölüm 5.4 dersinin geometrisine (kare çekirdek, altıgen blok halkası, en
    yarıçapı 6 cm, emici yay açısı 120°. Tanım `tamburlar[]` bölümüne yazılır (`ad`, `yaricap`,
    `govde_malzeme`, `emici_malzeme`, `emici_ic_yaricap`, `emici_aci`); yerleşim alanları
    (sayı, merkez, dönme) tanımda değil yerleşim ve gruptadır.
-10. **Geometri** sayfasında ağaçta **Halka 1 (20 cm)** satırını seçin ve araç çubuğunda
+10. **Geometri** sayfasında ağaçta **kök** kabını (en üst satır) seçin ve araç çubuğunda
     **+ Yerleşim**'e basın. Modelde bir tambur tanımı olduğu için yeni yerleşimin içeriği
     kendiliğinden **Bileşen: tambur_b4c** olur ve **Doğal kesit (tambur dairesi)** işaretlidir.
-11. Yerleşim formunu doldurun: **Ad** `tambur_halkasi`, **Mod** Halka, **Sayı** 6,
-    **Merkez yarıçapı** 131.2 cm, **Başlangıç açısı** 30°, **Kora bakış** Merkeze
-    (**Merkez x** 0, **Merkez y** 0), **Ofset** 0.
-    *Sayılar nereden?* Su kuşağının iç apotemi 121.24 cm, dış apotemi 141.24 cm'dir; 8 cm
-    yarıçaplı tamburun merkezi düz yüzün normali boyunca 129.24–133.24 cm arasında olmalıdır.
-    `x` yönelimli altıgenin düz yüz normalleri 30°, 90°, …, 330°'dedir; başlangıç 30° ve 6 tambur
-    her yüze bir tambur koyar.
-12. Doğrulama panelinde yalnız iki **uyarı** kalmalıdır: "16 kesik konum…" (5.4 dersindeki) ve
-    "2B modelde kontrol tamburu: eksenel sızıntı yok; tambur değeri fazla çıkar." Deneyin:
-    **Başlangıç açısı**'nı 0° yapın; tamburlar altıgenin **köşelerine** kayar ve her biri için
-    **hata** çıkar: "'tambur_halkasi' deliği bölgenin iç sınırına taşıyor." (iç köşe merkeze
-    121.24 × 2/√3 ≈ 140.0 cm uzaktadır). 30°'ye geri alın.
+11. Yerleşim formunu doldurun: **Ad** `tambur_halkasi`, **Mod** Halka, **Sayı** 4, **Merkez
+    yarıçapı** 63 cm, **Başlangıç açısı** 0°, **Kora bakış** Merkeze (**Merkez x** 0, **Merkez y**
+    0), **Ofset** 0.
+    *Sayılar nereden?* Tambur, değeri ölçülebilsin diye **çekirdeğin hemen yanında** olmalıdır.
+    Kare çekirdeğin yüzü merkeze 53.55 cm uzaktadır; 8 cm yarıçaplı tamburun merkezi 63 cm'de
+    olunca tambur 55–71 cm arasını kaplar (yüzle arasında 1.45 cm su). 0°, 90°, 180°, 270°
+    yüzlerin ortasıdır; köşelere (45°) yer yoktur (köşe 75.7 cm uzaktadır). Tamburlar çelik
+    blokları oyar (kesik konum uyarısı).
+    *Neden su kuşağı (Halka 1) değil?* Dersin ilk sürümü tamburları en dıştaki su kuşağına
+    (merkez yarıçapı 131.2 cm) koyuyordu. Aradaki ~70 cm çelik yansıtıcıdan oraya nötron
+    neredeyse ulaşmaz: ölçülen k(0°) = 1.06613 ± 0.00097, k(180°) = 1.06504 ± 0.00085 —
+    fark −109 ± 129 pcm (Δk × 10⁵), istatistik olarak sıfır.
+12. Doğrulama panelinde yalnız iki **uyarı** kalmalıdır: "20 kesik konum…" (5.4 dersindeki 16 ve
+    tamburların oyduğu bloklar) ve "2B modelde kontrol tamburu: eksenel sızıntı yok; tambur
+    değeri fazla çıkar." Deneyin: **Merkez yarıçapı**'nı 60 yapın; her tambur için **hata** çıkar:
+    "'kare_cekirdek#0' ve 'tambur_halkasi#0' delikleri örtüşüyor." 63'e geri alın.
 13. Araç çubuğunda **+ Grup**'a basın; **Gruplar** altında yeni bir dönme grubu çıkar (değer 0).
     Grubu seçin: **Ad** `tamburlar`, **Tür** Dönme, **Değer** 180, **Üyeler**'de
     `tambur_halkasi`'yı işaretleyin. (Aynı bağlantı yerleşim formundaki **Grup** kutusundan da
@@ -363,17 +367,19 @@ Bu bölüm 5.4 dersinin geometrisine (kare çekirdek, altıgen blok halkası, en
 14. Kesitte (xy) emici yayların dışa baktığını görün. **Dosya › Kaydet**. Normal ayarla bir koşu
     180°'de, bir koşu 0°'de yapın.
 
-**Beklenen sonuç (C).** Bu sizin tasarımınızdır; referans ölçümü **yoktur**. Denetleyin:
-k(0°) < k(180°) olmalı ve fark istatistik olarak anlamlı olmalıdır:
-|k₁₈₀ − k₀| > 2·√(σ₁₈₀² + σ₀²). Model 2B olduğu için tambur değeri olduğundan büyük çıkar
-(eksenel sızıntı yoktur; doğrulama bunu uyarır). Daha gerçekçi bir değer için kökün formunda
-**2B (sonsuz yükseklik)** işaretini kaldırıp **Yükseklik** verin ve **Alt**/**Üst** sınırı
-`vacuum` yapın.
+**Beklenen sonuç (C).** Ölçülen (01.10.2026; Normal 10 000 × 150 / 40 pasif, tohum 1, 6 iş
+parçacığı): k(0°) = **1.06255 ± 0.00090**, k(180°) = **1.06627 ± 0.00083** → toplam tambur değeri
+Δk = **372 ± 122 pcm** (Δk × 10⁵), yaklaşık 3σ. Denetleyin: k(0°) < k(180°) ve
+|k₁₈₀ − k₀| > 2·√(σ₁₈₀² + σ₀²). Fark 2σ'yı geçmezse (başka tohumda olabilir) çevrim başına
+parçacığı artırıp yineleyin. Değer küçüktür: tamburların arkası çelik/su, önü yalnız çekirdeğin
+bir yüzüdür. Model 2B olduğu için tambur değeri olduğundan büyük çıkar (eksenel sızıntı yoktur;
+doğrulama bunu uyarır). Daha gerçekçi bir değer için kökün formunda **2B (sonsuz yükseklik)**
+işaretini kaldırıp **Yükseklik** verin ve **Alt**/**Üst** sınırı `vacuum` yapın.
 
 **Ne öğrendik / kontrol soruları.**
 
-- Tamburu daha büyük yapmak (ör. r = 12 cm) neden doğrulama hatası verir? (Delik su kuşağına
-  sığmaz: 20 cm'lik kuşağa 24 cm çaplı daire girmez.)
+- Tamburu daha büyük yapmak (ör. r = 12 cm) neden doğrulama hatası verir? (Delik çekirdek
+  yerleşimiyle örtüşür: 63 − 12 = 51 cm < 53.55 cm; doğrulama "delikleri örtüşüyor" der.)
 - Tamburların kora bakan yönünü ne belirler? (Halka modunda ψᵢ = φᵢ + 180 + D; bakış merkezdeyken
   emici yay her örnekte merkeze döner, D = grup değeri + ofset.)
 - Tambur değerini Δk ve Δρ ile vermek neden farklı sayılar üretir? (Δρ = Δk/(k₁·k₂); k'lar

@@ -342,7 +342,7 @@ settings at 180° the `referans.olcum` value of the example is **1.04745 ± 0.00
 
 **Steps — C. Placing drums in the square core + hexagonal ring.**
 
-This part adds 6 drums to the geometry of lesson 5.4 (square core, hexagonal block ring, 20 cm water
+This part adds 4 drums to the geometry of lesson 5.4 (square core, hexagonal block ring, 20 cm water
 belt on the outside). Every step was checked with the model check; all steps are done in the
 interface.
 
@@ -356,39 +356,47 @@ interface.
    absorber arc angle 120°. The definition is written to the `tamburlar[]` section (`ad`, `yaricap`,
    `govde_malzeme`, `emici_malzeme`, `emici_ic_yaricap`, `emici_aci`); the placement fields (count,
    centre, rotation) belong to the placement and the group, not to the definition.
-10. On the **Geometry** page select the **Ring 1 (20 cm)** row in the tree and press **+ Placement**
-    in the toolbar. Because the model has a drum definition, the content of the new placement is
-    automatically **component tambur_b4c** and **Natural cross-section (drum circle)** is checked.
-11. Fill in the placement form: name `tambur_halkasi`, **Mode** Ring, **Count** 6, **Center radius**
-    131.2 cm, **Start angle** 30°, **Facing the core** towards the centre (centre x 0, centre y 0),
+10. On the **Geometry** page select the **root** container (top row) in the tree and press
+    **+ Placement** in the toolbar. Because the model has a drum definition, the content of the new
+    placement is automatically **component tambur_b4c** and **Natural cross-section (drum circle)**
+    is checked.
+11. Fill in the placement form: name `tambur_halkasi`, **Mode** Ring, **Count** 4, **Center radius**
+    63 cm, **Start angle** 0°, **Facing the core** towards the centre (centre x 0, centre y 0),
     **Offset** 0.
-    *Where do the numbers come from?* The inner apothem of the water belt is 121.24 cm and the outer
-    apothem 141.24 cm; the centre of a drum of radius 8 cm must lie between 129.24 and 133.24 cm along
-    the normal of a flat side. The flat-side normals of an `x`-oriented hexagon are at 30°, 90°, …,
-    330°; a start angle of 30° and 6 drums put one drum on each side.
-12. Only two **warnings** should remain in the model check panel: the 16 truncated positions (from
-    lesson 5.4) and "control drum in a 2D model: no axial leakage; the drum worth comes out too high".
-    Try it: set the **Start angle** to 0°; the drums move to the **corners** of the hexagon and an
-    **error** appears for each one saying that the hole of 'tambur_halkasi' crosses the inner
-    boundary of the region (the inner corner is 121.24 × 2/√3 ≈ 140.0 cm from the centre). Set it
-    back to 30°.
-13. Press **+ Group** in the toolbar; a new rotation group appears under **Control groups** (value 0). Select
-    the group: name `tamburlar`, type rotation, **Value** 180, and tick `tambur_halkasi` under
-    **Members**. (The same link can be made with the **Group** box of the placement form.)
+    *Where do the numbers come from?* For its worth to be measurable the drum must sit **right next
+    to the core**. The face of the square core is 53.55 cm from the centre; with the centre of a drum
+    of radius 8 cm at 63 cm the drum covers 55-71 cm (1.45 cm of water to the face). 0°, 90°, 180°,
+    270° are the middles of the faces; there is no room at the corners (45°; the corner is 75.7 cm
+    away). The drums carve into the steel blocks (truncated position warning).
+    *Why not the water belt (Ring 1)?* The first version of this lesson put the drums into the
+    outermost water belt (centre radius 131.2 cm). Hardly any neutron reaches it through the ~70 cm
+    steel reflector in between: measured k(0°) = 1.06613 ± 0.00097, k(180°) = 1.06504 ± 0.00085 -
+    a difference of −109 ± 129 pcm (Δk × 10⁵), statistically zero.
+12. Only two **warnings** should remain in the model check panel: "20 truncated positions..." (the 16
+    of lesson 5.4 plus the blocks carved by the drums) and "control drum in a 2D model: no axial
+    leakage; the drum worth comes out too high". Try it: set the **Center radius** to 60; an
+    **error** appears for each drum saying that the holes 'kare_cekirdek#0' and 'tambur_halkasi#0'
+    overlap. Set it back to 63.
+13. Press **+ Group** in the toolbar; a new rotation group appears under **Control groups** (value 0).
+    Select the group: name `tamburlar`, type rotation, **Value** 180, and tick `tambur_halkasi`
+    under **Members**. (The same link can be made with the **Group** box of the placement form.)
 14. In the xy cross-section see that the absorber arcs face outwards. **File › Save**. With Normal
     settings do one run at 180° and one at 0°.
 
-**Expected result (C).** This is your design; there is **no** reference measurement. Check:
-k(0°) < k(180°) must hold and the difference must be statistically significant:
-|k₁₈₀ − k₀| > 2·√(σ₁₈₀² + σ₀²). Because the model is 2D, the drum worth comes out too high (there is
-no axial leakage; the model check warns about it). For a more realistic value, untick
-**2D (infinite height)** in the root form, give a **Height** and set the bottom/top boundaries to
-`vacuum`.
+**Expected result (C).** Measured (01.10.2026; Normal 10 000 × 150 / 40 inactive, seed 1, 6
+threads): k(0°) = **1.06255 ± 0.00090**, k(180°) = **1.06627 ± 0.00083** → total drum worth
+Δk = **372 ± 122 pcm** (Δk × 10⁵), about 3σ. Check: k(0°) < k(180°) and
+|k₁₈₀ − k₀| > 2·√(σ₁₈₀² + σ₀²). If the difference does not exceed 2σ (possible with another seed),
+increase the particles per batch and repeat. The worth is small: behind the drums there is steel
+and water, in front of them only one face of the core. Because the model is 2D, the drum worth
+comes out too high (there is no axial leakage; the model check warns about it). For a more
+realistic value, untick **2D (infinite height)** in the root form, give a **Height** and set the
+bottom/top boundaries to `vacuum`.
 
 **What we learned / check questions.**
 
-- Why does a larger drum (for example r = 12 cm) give a model check error? (The hole does not fit in
-  the water belt: a 24 cm diameter circle does not fit in a 20 cm belt.)
+- Why does a larger drum (for example r = 12 cm) give a model check error? (The hole overlaps the
+  core placement: 63 − 12 = 51 cm < 53.55 cm; the model check says the holes overlap.)
 - What sets the direction in which the drums face the core? (In ring mode ψᵢ = φᵢ + 180 + D; with
   the facing centre in the middle, the absorber arc of every instance turns to the centre,
   D = group value + offset.)
