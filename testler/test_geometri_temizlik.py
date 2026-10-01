@@ -256,7 +256,34 @@ def test_guc_haritasi_yeni_anahtarlar():
             kontrol("%s: eksenler butun cubuklari kapsar" % ad, x0 < min(xs) and x1 > max(xs))
 
 
+def test_onizleme_malzeme_vurgusu():
+    print("\n[GT7] onizleme: secili dugum 'Malzeme' renklendirmesinde de vurgulanir")
+    from PySide6 import QtWidgets
+    from arayuz.onizleme import OnizlemeWidget
+    QtWidgets.QApplication.instance() or QtWidgets.QApplication([])
+    spec = dict(agac_specleri())["kafes_tambur"]
+    w = OnizlemeWidget()
+    istenen = []
+    w.iste = lambda: istenen.append(w.renklendirme.currentData())
+    w.spec_ayarla(spec)
+    w.renklendirme.setCurrentIndex(w.renklendirme.findData("material"))
+    istenen.clear()
+    w.vurgula(("kok", "ic"))
+    kontrol("malzeme renklendirmesinde vurgula yeniden cizim ister", istenen == ["material"])
+    w._ciz()
+    eks = w.figur.axes[0]
+    vurgu = [a for a in eks.get_children() if getattr(a, "get_gid", lambda: None)() == "vurgu"]
+    kontrol("malzeme renkleri korunur + vurgu katmani cizildi",
+            w.cizildi_mi() and len(eks.images) >= 2 and vurgu, "-> %s %s" % (w._son_hata, vurgu))
+    w.vurgula(None)
+    w._ciz()
+    eks = w.figur.axes[0]
+    kontrol("vurgu kalkinca katman yok",
+            not [a for a in eks.get_children() if getattr(a, "get_gid", lambda: None)() == "vurgu"])
+
+
 HIZLI = [test_kurucu_sarmalayicilari_silindi, test_agac_modu_tuketicileri,
          test_yeniden_adlandirma_g2_api, test_parca_adi_agac_modunda,
-         test_grup_degeri_geri_alinir, test_guc_haritasi_yeni_anahtarlar]
+         test_grup_degeri_geri_alinir, test_guc_haritasi_yeni_anahtarlar,
+         test_onizleme_malzeme_vurgusu]
 YAVAS = []
