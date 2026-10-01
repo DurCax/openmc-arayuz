@@ -3,10 +3,26 @@
   "ad": "Altıgen kor + tambur halkası",
   "baslik": "Altıgen kor + tambur halkası",
   "baslik_en": "Hexagonal core with a control-drum ring",
-  "aciklama": "Gelişmiş geometri (ağaç) örneği: 19 altıgen demetten oluşan kompakt bir hızlı kor. Kor kafesi 3 halkalıdır ve 'x' yönelimlidir. Demetler sfr_altigen.json ile aynıdır: her birinde 127 U-10Mo çubuk vardır (%19.75 U-235), soğutucu sodyumdur ve pin kafesi 'y' yönelimlidir.\n\nKorun dışında altıgen bir berilyum yansıtıcı halka vardır (dış apotem 48.69 cm). Halkaya 6 adet B4C (%90 B-10) kontrol tamburu gömülüdür: yarıçap 6 cm, 120° emici yay, merkezleri 36 cm'de ve korun düz yüzlerine bakıyor. Kor yüksekliği 80 cm'dir ve bütün yüzler vakumdur.\n\nTambur kuralı:\n  dönme = 0°   → emici kora bakıyor = daldırılmış (en düşük k)\n  dönme = 180° → emici dışa bakıyor = çekilmiş    (en yüksek k)\nAltı tambur 'tamburlar' grubuyla birlikte döner. Analiz sekmesinde grup dönmesi taranabilir ya da kritik tambur açısı aranabilir.\n\nEğitim amaçlıdır: mikro reaktör fikrinden esinlenmiştir, gerçek bir tasarım değildir. Referans k bu aracın kendi ölçümüdür (tamburlar çekilmiş, 180°).",
+  "aciklama": "Gelişmiş geometri (ağaç) örneği: 19 altıgen demetten oluşan kompakt bir hızlı kor. Kor kafesi 3 halkalıdır ve 'x' yönelimlidir. Demetler sfr_altigen.json ile aynıdır: her birinde 127 U-10Mo çubuk vardır (%19.75 U-235), soğutucu sodyumdur ve pin kafesi 'y' yönelimlidir.\n\nKorun dışında altıgen bir berilyum yansıtıcı halka vardır (dış apotem 48.7 cm). Halkaya 6 adet B4C (%90 B-10) kontrol tamburu gömülüdür: yarıçap 6 cm, 120° emici yay, merkezleri 36 cm'de ve korun düz yüzlerine bakıyor. Kor yüksekliği 80 cm'dir ve bütün yüzler vakumdur.\n\nTambur kuralı:\n  dönme = 0°   → emici kora bakıyor = daldırılmış (en düşük k)\n  dönme = 180° → emici dışa bakıyor = çekilmiş    (en yüksek k)\nAltı tambur 'tamburlar' grubuyla birlikte döner. Analiz sekmesinde grup dönmesi taranabilir ya da kritik tambur açısı aranabilir.\n\nEğitim amaçlıdır: mikro reaktör fikrinden esinlenmiştir, gerçek bir tasarım değildir. Referans k bu aracın kendi ölçümüdür (tamburlar çekilmiş, 180°).",
   "aciklama_en": "Advanced (tree) geometry example: compact fast core of 19 hexagonal U-10Mo/Na assemblies inside a hexagonal beryllium reflector with 6 B4C control drums (0 deg = absorber facing the core). Educational.",
   "kategori": "arastirma",
   "seviye": "ileri",
+  "referans": {
+    "k": 1.04745,
+    "sigma": 0.00084,
+    "tur": "hesap",
+    "kaynak": "Bu aracın ölçümü (eğitim tasarımı; dış referans yok). Normal hassasiyet, 10000 parçacık × 150 çevrim (40 pasif), tohum 1.",
+    "olcum": {
+      "k": 1.04745,
+      "sigma": 0.00084,
+      "parcacik": 10000,
+      "sure_s": 177.3,
+      "is_parcacigi": 6,
+      "openmc": "0.16.0",
+      "kutuphane": "ENDF/B-VIII.0",
+      "tarih": "2026-10-01"
+    }
+  },
   "malzemeler": [
     {
       "ad": "u10mo",

@@ -7,6 +7,22 @@
   "aciklama_en": "Advanced (tree) geometry example: 3x3 square PWR core inside a cylindrical beryllium reflector with 4 B4C control drums facing the core flats. Educational.",
   "kategori": "arastirma",
   "seviye": "ileri",
+  "referans": {
+    "k": 1.05046,
+    "sigma": 0.00097,
+    "tur": "hesap",
+    "kaynak": "Bu aracın ölçümü (eğitim tasarımı; dış referans yok). Normal hassasiyet, 10000 parçacık × 150 çevrim (40 pasif), tohum 1.",
+    "olcum": {
+      "k": 1.05046,
+      "sigma": 0.00097,
+      "parcacik": 10000,
+      "sure_s": 60.2,
+      "is_parcacigi": 6,
+      "openmc": "0.16.0",
+      "kutuphane": "ENDF/B-VIII.0",
+      "tarih": "2026-10-01"
+    }
+  },
   "malzemeler": [
     {
       "ad": "uo2_24",
