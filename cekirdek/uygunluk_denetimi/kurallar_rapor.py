@@ -36,16 +36,35 @@ _PCM_OLCEK = re.compile(r"10\s*(⁵|⁻⁵|\^\s*-?5)|1e-?5", re.I)
 _SI_DISI = re.compile(r"(?<!\w)(inch|inç|feet|ft|psia?|BTU|lbm|°F)(?!\w)")
 
 
-def belirsizlik_metni(deger, sapma, rakam=2):
-    """GUM §7.2.6 bicimi: sapma `rakam` anlamli basamaga, deger ayni ondalik
-    basamaga yuvarlanir; "(1σ)" etiketi eklenir. sapma <= 0 ise deger %g."""
-    if not sapma or sapma <= 0 or not math.isfinite(sapma):
-        return "%g" % deger
+_UST_RAKAMLARI = str.maketrans("-0123456789", "⁻⁰¹²³⁴⁵⁶⁷⁸⁹")
+
+
+def _cift_metni(deger, sapma, rakam):
+    """(deger, sapma) -> ("d", "s") ayni ondalik basamakta; sapma `rakam`
+    anlamli rakamda. Sapmanin tam kismi `rakam`dan uzunsa None."""
     us = math.floor(math.log10(sapma))
     ondalik = max(rakam - 1 - us, 0)
     if round(sapma, ondalik) >= 10 ** (us + 1) and ondalik > 0:
         ondalik -= 1                      # 0.0096 -> 0.010 (3 rakam) olmasin
-    return "%.*f ± %.*f (1σ)" % (ondalik, deger, ondalik, sapma)
+    if ondalik == 0 and _anlamli_rakam("%.0f" % sapma) > rakam:
+        return None                       # 123 -> 3 rakam: olcekli yazilir
+    return "%.*f" % (ondalik, deger), "%.*f" % (ondalik, sapma)
+
+
+def belirsizlik_metni(deger, sapma, rakam=2, birim=""):
+    """GUM §7.2.6 bicimi: sapma `rakam` anlamli basamaga, deger ayni ondalik
+    basamaga yuvarlanir; "(1σ)" etiketi eklenir. sapma <= 0 ise deger %g.
+    Sapma 10^rakam'dan buyukse ortak kuvvetle yazilir:
+    (15432, 123) -> "(154.3 ± 1.2) × 10² (1σ)"; birim verilirse "... pcm (1σ)"."""
+    ek = (" " + birim) if birim else ""
+    if not sapma or sapma <= 0 or not math.isfinite(sapma):
+        return "%g%s" % (deger, ek)
+    cift = _cift_metni(deger, sapma, rakam)
+    if cift is not None:
+        return "%s ± %s%s (1σ)" % (cift[0], cift[1], ek)
+    us = math.floor(math.log10(sapma))
+    d, s = _cift_metni(deger / 10 ** us, sapma / 10 ** us, rakam)
+    return "(%s ± %s) × 10%s%s (1σ)" % (d, s, str(us).translate(_UST_RAKAMLARI), ek)
 
 
 def pcm_tanimi(tur="drho"):
