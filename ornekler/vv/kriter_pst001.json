@@ -302,14 +302,14 @@
         "koni_aci": 30.0
       },
       "alt": [
-        -1.0,
-        -1.0,
-        -1.0
+        -14.5151,
+        -14.5151,
+        -14.5151
       ],
       "ust": [
-        1.0,
-        1.0,
-        1.0
+        14.5151,
+        14.5151,
+        14.5151
       ]
     },
     "entropi_mesh": {
@@ -697,6 +697,27 @@
     "seri": "PU-SOL-THERM-001",
     "aoa_girdi": {
       "fiziksel_bicim": "cozelti",
+      "yansitici": "su"
+    },
+    "olcum": {
+      "k": 1.00119,
+      "sigma": 0.00027,
+      "parcacik": 100000,
+      "cevrim": 200,
+      "pasif": 50,
+      "sure_s": 304.5,
+      "is_parcacigi": 12,
+      "openmc": "0.16.0",
+      "kutuphane": "ENDF/B-VIII.0",
+      "tarih": "2026-10-01"
+    },
+    "aoa": {
+      "bolunebilir": "Pu",
+      "zenginlik": 95.316837,
+      "h_x": 370.175694,
+      "fiziksel_bicim": "cozelti",
+      "ealf": 0.086698,
+      "tayf": "termal",
       "yansitici": "su"
     }
   }
