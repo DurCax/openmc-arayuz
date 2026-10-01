@@ -196,7 +196,7 @@ class CubukFormuMixin(object):
         araliginda olculur, modelin toplam yuksekliginde degil:
             z_uc = z_ust - daldirma/100 * (z_ust - z_alt)
         """
-        h = sema.kor_yuksekligi((self.spec or {}).get("kor") or {})
+        h = sema.model_yuksekligi(self.spec) if self.spec else None
         if not h:
             self.c_uc_etiket.setText("Model 2B: Kor sekmesinde yükseklik tanımlayın")
             self.c_uc_etiket.setStyleSheet("color: %s;" % _renk("hata"))

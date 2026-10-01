@@ -39,7 +39,7 @@ def _aktif_yukseklik(spec):
     except Exception:
         _log.warning("aktif eksenel aralık okunamadı; kor yüksekliği kullanılıyor",
                      exc_info=True)
-        return sema.kor_yuksekligi(spec.get("kor") or {})
+        return sema.model_yuksekligi(spec)
 
 
 from arayuz.ortak import GelismisBolum, baslik  # noqa: E402

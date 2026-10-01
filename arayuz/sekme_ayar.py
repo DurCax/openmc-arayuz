@@ -330,7 +330,7 @@ class AyarSekmesi(YerlesimMixin, KaynakFormuMixin, GucFormuMixin, TallyFormuMixi
         return (self.spec["ayarlar"].get("mod") or "eigenvalue") == "eigenvalue"
 
     def _uc_boyutlu(self):
-        return bool(sema.kor_yuksekligi(self.spec.get("kor") or {}))
+        return bool(sema.model_yuksekligi(self.spec))
 
     def _mesh_nz_anlamli(self):
         """z yonu anlamli mi: 3B modelde ve kurede (tally aginda z = kure capi,
