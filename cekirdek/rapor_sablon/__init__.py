@@ -18,12 +18,13 @@ import html as _html
 import os
 from string import Template
 
-from cekirdek.ceviri import _, etkin_dil
+from cekirdek.ceviri import _, N_, etkin_dil
 from cekirdek.rapor_sablon import uygunluk_eki
 from cekirdek.rapor_sablon.bicim import bm, gosterim_notu
 
 SABLON_DIZINI = os.path.dirname(os.path.abspath(__file__))
-_SEVIYE = {"hata": ("hata", "HATA"), "uyari": ("uyari", "UYARI"), "bilgi": ("bilgi", "BİLGİ")}
+_SEVIYE = {"hata": ("hata", N_("HATA")), "uyari": ("uyari", N_("UYARI")),
+           "bilgi": ("bilgi", N_("BİLGİ"))}
 GORSEL_GENISLIK = 640        # px (A4 metin genisligi, ~96 dpi)
 
 
@@ -203,7 +204,7 @@ def _bulgular(icerik):
     for b in icerik["bulgular"]:
         css, ad = _SEVIYE.get(b["seviye"], ("", b["seviye"]))
         satirlar.append('<tr><td class="%s">%s</td><td>%s</td><td>%s</td><td>%s</td></tr>'
-                        % (css, _e(ad), _e(b["yer"]), _e(b["mesaj"]), _e(b["oneri"])))
+                        % (css, _e(_(ad)), _e(b["yer"]), _e(b["mesaj"]), _e(b["oneri"])))
     bas = "".join("<th>%s</th>" % _e(x) for x in (_("Seviye"), _("Yer"), _("Mesaj"), _("Öneri")))
     return parca[0] + ('<table border="1" cellspacing="0" cellpadding="3" width="100%%">'
                        "<tr>%s</tr>%s</table>" % (bas, "".join(satirlar)))

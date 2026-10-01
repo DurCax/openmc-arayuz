@@ -40,7 +40,7 @@ import re
 from dataclasses import dataclass
 from typing import Optional, Tuple
 
-from cekirdek.ceviri import _
+from cekirdek.ceviri import _, etkin_dil, KAYNAK_DIL
 from cekirdek.gunluk import kaydedici
 
 _log = kaydedici(__name__)
@@ -322,16 +322,17 @@ def _sinir_kosullari(spec, kor):
 
 
 def _ayar_satirlari(spec):
-    from cekirdek import kaynak as _kaynak, sema, uygunluk
+    from cekirdek import dogrula, kaynak as _kaynak, sema
+    from cekirdek.dogrula.kor import _yon_adi
     a, kor = spec.get("ayarlar") or {}, spec.get("kor") or {}
     ent = a.get("entropi_mesh") or {}
     g, t = spec.get("guc_dagilimi") or {}, spec.get("tukenme") or {}
     h = sema.model_yuksekligi(spec)
     sinir = _sinir_kosullari(spec, kor)
     satirlar = [
-        (_("Kor türü"), uygunluk.KOR_TURU_ADLARI.get(kor.get("tur"), str(kor.get("tur")))),
+        (_("Kor türü"), dogrula._kor_turu_adi(kor.get("tur"))),
         (_("Yükseklik"), ("%.2f cm" % h) if h else _("2B (eksenel sonsuz)")),
-        (_("Sınır koşulları"), ", ".join("%s: %s" % kv for kv in sinir.items())),
+        (_("Sınır koşulları"), ", ".join("%s: %s" % (_yon_adi(k), v) for k, v in sinir.items())),
         (_("Hesap modu"), str(a.get("mod", ""))),
         (_("Parçacık / çevrim"), str(a.get("parcacik", ""))),
         (_("Çevrim (pasif)"), "%s (%s)" % (a.get("cevrim", ""), a.get("pasif", ""))),
@@ -493,9 +494,17 @@ def kosu_bolumleri(spec, kosu_dizini):
 # ICERIK + YAZMA
 # ============================================================================
 
+def _yerel_aciklama(spec):
+    """Model aciklamasi etkin dilde: Turkce disinda varsa `aciklama_en`
+    (sema.META_ALANLARI), yoksa `aciklama` (kullanici verisi, cevrilmez)."""
+    if etkin_dil() != KAYNAK_DIL and spec.get("aciklama_en"):
+        return spec["aciklama_en"]
+    return spec.get("aciklama") or ""
+
+
 def _kapak(spec):
     return {"baslik": spec.get("ad") or _("adsız model"),
-            "aciklama": spec.get("aciklama") or "",
+            "aciklama": _yerel_aciklama(spec),
             "tarih": datetime.datetime.now().strftime("%Y-%m-%d %H:%M"),
             "kullanici": _kullanici()}
 
