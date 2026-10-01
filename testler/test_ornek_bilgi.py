@@ -13,6 +13,7 @@ import os
 import tempfile
 
 from testler.ortak_test import kontrol, ORNEK
+from testler.ortak_test import gereksinim  # S-4 izlenebilirlik
 
 
 def _ham(ad):
@@ -49,6 +50,7 @@ def test_ornek_meta_gidis_donus():
         kontrol("%s: gidis-donus esit" % ad, ikinci == spec)
 
 
+@gereksinim("R-A3-02")
 def test_ornekler_meta_temiz():
     print("\n[OB3] her ornegin meta'si dogrula_meta'dan temiz gecer")
     from cekirdek import ornek_bilgi
@@ -57,6 +59,7 @@ def test_ornekler_meta_temiz():
         kontrol("%s temiz" % os.path.basename(yol), sorun == [], "-> %s" % sorun)
 
 
+@gereksinim("R-A3-02")
 def test_dogrula_meta_hatalari():
     print("\n[OB4] dogrula_meta hatali alanlari adlandirir")
     from cekirdek import ornek_bilgi as ob

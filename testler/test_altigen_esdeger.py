@@ -25,6 +25,7 @@ import random
 import warnings
 
 from testler.ortak_test import kontrol, ISLEM_PARCACIGI
+from testler.ortak_test import gereksinim  # S-4 izlenebilirlik
 from testler import test_altigen_kor as T
 
 warnings.filterwarnings("ignore")
@@ -81,6 +82,7 @@ def _hucrede_nokta(rnd, cx, cy, P, kor_yonelim):
 # (a) deterministik esdegerlik
 # ============================================================================
 
+@gereksinim("R-A1-02")
 def test_altigen_nokta_esdegerligi():
     """Her kor hucresinin icerigi, tek konumlu korun otelenmis icerigidir."""
     print("\n[AE1] ALTIGEN KOR: kok hucresi = otelenmis tek konum (nokta testi)")
@@ -235,6 +237,7 @@ def test_altigen_sinir_uyarilari():
 MC_PARCACIK = 40000
 
 
+@gereksinim("R-A1-02")
 def test_altigen_kilifli_mc_esdegerligi(gecici):
     print("\n[AE4] MC: 7 kilifli demet + bosluk (reflective) = halka=1 tek konum")
     from cekirdek import kurucu

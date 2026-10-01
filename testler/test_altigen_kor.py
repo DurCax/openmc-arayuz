@@ -23,6 +23,7 @@ import os
 import warnings
 
 from testler.ortak_test import kontrol, ISLEM_PARCACIGI
+from testler.ortak_test import gereksinim  # S-4 izlenebilirlik
 from cekirdek import geometri  # noqa: E402
 from cekirdek.geometri import eksenel as geo_eks  # noqa: E402,F401
 
@@ -121,6 +122,7 @@ def _kok_hucresi(model, nokta):
 # 1. sema ve kurallar
 # ============================================================================
 
+@gereksinim("R-A1-01")
 def test_altigen_kor_sema_ve_kurallar():
     print("\n[AK1] ALTIGEN KOR: sema ve uygunluk kurallari")
     from cekirdek import sema, uygunluk
@@ -168,6 +170,7 @@ def test_altigen_kor_sema_ve_kurallar():
 # 2. dogrulama
 # ============================================================================
 
+@gereksinim("R-A1-01")
 def test_altigen_kor_dogrulama():
     print("\n[AK2] ALTIGEN KOR: dogrulama")
     from cekirdek import sema
@@ -220,6 +223,7 @@ def _merkezler(model):
             if c.translation is not None]
 
 
+@gereksinim("R-A1-01")
 def test_altigen_kor_geometri():
     print("\n[AK3] ALTIGEN KOR: demet merkezleri, kilif, sinir olculeri")
     from cekirdek import altigen, kurucu
@@ -271,6 +275,7 @@ def _sinir_bul(model, merkez, yon, r0, r1, adim=60):
     return 0.5 * (r0 + r1)
 
 
+@gereksinim("R-A1-03")
 def test_altigen_kor_yonelim_olcumu():
     print("\n[AK4] ALTIGEN KOR: yonelim nokta-hucre olcumu (olculdu)")
     from cekirdek import kurucu
@@ -623,6 +628,7 @@ def _kos(model, dizin, parcacik, cevrim=130, pasif=30):
 DUYARLILIK_PCM = 200       # analitik esdegerlik testinin 2 sigma ust siniri
 
 
+@gereksinim("R-A1-02")
 def test_altigen_analitik_esdegerlik(gecici):
     """7 ayni kilifsiz demet (adim = zarf, yan sinir reflective) = tek demet sonsuz kafes."""
     print("\n[AK13] ANALITIK ESDEGERLIK: 7 demet = tek demet sonsuz kafes")
@@ -649,6 +655,7 @@ def test_altigen_analitik_esdegerlik(gecici):
             "-> 2 sigma = %.0f pcm (olcut %d)" % (2e5 * sigma, DUYARLILIK_PCM))
 
 
+@gereksinim("R-FZ-03")
 def test_altigen_betik_esdegerligi(gecici):
     print("\n[AK14] BETIK ESDEGERLIGI: altigen kor (kilif + yansitici + katman)")
     from cekirdek import kurucu, sema
@@ -668,6 +675,7 @@ def test_altigen_betik_esdegerligi(gecici):
             fark < 1e-10, "-> fark %.2e" % fark)
 
 
+@gereksinim("R-TK-02")
 def test_altigen_tukenme_hacmi_stokastik(gecici):
     print("\n[AK15] TUKENME HACMI: analitik vs OpenMC stokastik hacim")
     from cekirdek import tukenme

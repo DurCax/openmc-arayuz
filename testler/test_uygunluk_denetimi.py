@@ -20,6 +20,7 @@ import stat
 import tempfile
 
 from testler.ortak_test import kontrol, KOK
+from testler.ortak_test import gereksinim  # S-4 izlenebilirlik
 
 FIXTURE = os.path.join(KOK, "testler", "veri", "kosu_ornek")
 
@@ -91,6 +92,7 @@ def _vv(**kw):
 # ayristir + kosucu (M5)
 # ----------------------------------------------------------------------------
 
+@gereksinim("R-S-04")
 def test_ayristir_log():
     print("\n[U1] OpenMC WARNING/ERROR ayristirma: kaydirilmis satirlar, kayip sayimi")
     from cekirdek.uygunluk_denetimi import ayristir
@@ -136,6 +138,7 @@ def _sahte_openmc(dizin):
     return yol
 
 
+@gereksinim("R-S-04")
 def test_kosucu_kayip_parcacik():
     print("\n[U2] kosucu.calistir: kayip parcacik sonucta; eski particle_*.h5 silinir; terminal")
     from cekirdek import kosucu, sema
@@ -170,6 +173,7 @@ def test_kosucu_kayip_parcacik():
 # Profil A
 # ----------------------------------------------------------------------------
 
+@gereksinim("R-S-02")
 def test_k1_entropi():
     print("\n[U3] K1 entropi platosu: kirmizi (pasif sonunda kayan) -> yesil (fixture)")
     import numpy as np
@@ -197,6 +201,7 @@ def test_k1_entropi():
         shutil.rmtree(d, True)
 
 
+@gereksinim("R-S-02")
 def test_k1_entropi_kapali_ve_bozuk():
     print("\n[U4] K1: entropi kapali -> uyari; statepoint bozuk -> uyari; statepoint yok")
     from cekirdek.uygunluk_denetimi import kurallar
@@ -218,6 +223,7 @@ def test_k1_entropi_kapali_ve_bozuk():
         shutil.rmtree(d, True)
 
 
+@gereksinim("R-S-03")
 def test_k2_istatistik():
     print("\n[U5] K2: sigma hedefi, parcacik alt siniri, aktif cevrim, cevrimler arasi ilinti")
     import numpy as np
@@ -261,6 +267,7 @@ def test_k2_istatistik():
             and gecikme1_ilinti([1.0]) is None)
 
 
+@gereksinim("R-S-04")
 def test_k3_kayip_parcacik():
     print("\n[U6] K3: kayip parcacik kirmizi -> yesil; log yok; OpenMC ERROR")
     temiz = _denetle(FIXTURE)
@@ -293,6 +300,7 @@ def test_k3_kayip_parcacik():
 # Profil B
 # ----------------------------------------------------------------------------
 
+@gereksinim("R-S-07")
 def test_k6_usl():
     print("\n[U7] K6: V&V yok -> 'USL hesaplanamadi'; k + 2σ < USL kati esitsizlik")
     b = _bul(_denetle(FIXTURE, ("B",)), "K6")[0]
@@ -317,6 +325,7 @@ def test_k6_usl():
         shutil.rmtree(d, True)
 
 
+@gereksinim("R-S-08")
 def test_k8_k9_k10_k11():
     print("\n[U8] K8 pozitif yanlilik, K9 normallestirme, K10 vaka/guven, K11 ΔSM")
     from cekirdek.uygunluk_denetimi import profiller as P
@@ -348,6 +357,7 @@ def test_k8_k9_k10_k11():
         FIXTURE, (P.uyarla(B, delta_sm=None),)), "K11") == ("bilgi", "uygulanamadi"))
 
 
+@gereksinim("R-S-09")
 def test_k12_k6aoa_k13_k14():
     print("\n[U9] K12 dis degerleme, K6-AOA kategorik, K13 egilim/normallik, K14 seri")
     def k12(uyg, **vv):
@@ -395,6 +405,7 @@ def _kats(e, s=0.1, birim="pcm/K"):
     return {"egim": e, "egim_sapma": s, "birim": birim}
 
 
+@gereksinim("R-S-10")
 def test_k7_katsayilar():
     print("\n[U10] K7 GDC 11: pozitif MTC HATA DEGIL; pozitif guc katsayisi HATA")
     kor = {"katsayilar": {"yakit_sicaklik": _kats(-2.5), "sogutucu_sicaklik": _kats(+3.0)}}
@@ -434,6 +445,7 @@ def test_k7_katsayilar():
         shutil.rmtree(d, True)
 
 
+@gereksinim("R-S-10")
 def test_k7_kapatma_ve_faktorler():
     print("\n[U11] K7-SDM (N-1, kullanici siniri) ve K7-F (F_ΔH/F_q; varsayilan sinir YOK)")
     from cekirdek.uygunluk_denetimi import profiller as P
@@ -485,6 +497,7 @@ def test_k7_kapatma_ve_faktorler():
 # Profil D
 # ----------------------------------------------------------------------------
 
+@gereksinim("R-S-05")
 def test_k4_izlenebilirlik():
     print("\n[U12] K4: sicakliksiz malzeme ve bilinmeyen kutuphane kirmizi; fixture tutarli")
     from cekirdek import rapor
@@ -521,6 +534,7 @@ UYGUN_METIN = ("k-eff = %s — belirsizlik 1σ standart belirsizliktir. Reaktivi
                "pcm = Δρ × 10⁵. Yükseklik 365.76 cm.")
 
 
+@gereksinim("R-S-06")
 def test_k5_belirsizlik():
     print("\n[U13] K5: 1σ etiketi, 2 anlamli rakam, yuvarlama, pcm tanimi, SI")
     from cekirdek.uygunluk_denetimi.kurallar_rapor import belirsizlik_metni, pcm_tanimi
@@ -557,6 +571,7 @@ def test_k5_belirsizlik():
 # API, profiller, yanlis alarm
 # ----------------------------------------------------------------------------
 
+@gereksinim("R-S-01")
 def test_api_sozlesmesi():
     print("\n[U14] denetle API: Bulgu alt sinifi, alanlar, ozet, kural istisnasi, profil hatasi")
     from cekirdek import dogrula
@@ -648,6 +663,7 @@ def test_profiller():
         "F_q_siniri"].kaynak == "x")
 
 
+@gereksinim("R-S-11")
 def test_yanlis_alarm_ornekler():
     print("\n[U16] Yanlis alarm: kayitli kosu dizinleri A profilinde alarmsiz (hata/uyari 0)")
     from cekirdek.uygunluk_denetimi import denetle as D

@@ -11,6 +11,7 @@ import os
 
 from cekirdek import sema, kurucu, dogrula, kod_uret
 from testler.ortak_test import kontrol, ISLEM_PARCACIGI
+from testler.ortak_test import gereksinim  # S-4 izlenebilirlik
 from testler.regresyon_ortak import ORNEK
 
 
@@ -58,6 +59,7 @@ def test_altigen_distribcell_koprusu():
                     cevrilen == set(altigen.konumlar(N, yonelim)))
 
 
+@gereksinim("R-M1-02")
 def test_tepe_faktorleri_sentetik():
     """tepe_faktorleri bilinen bir dagilimda dogru F_dH ve F_q vermeli."""
     print("\n[3r] Tepe faktorleri (sentetik)")
@@ -132,6 +134,7 @@ def test_guc_dogrulama():
          "bilinen skorlar")
 
 
+@gereksinim("R-M1-04")
 def test_guc_esdegerlik_ve_korunum(gecici):
     """
     Guc dagilimli bir modelde:

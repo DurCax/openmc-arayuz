@@ -11,9 +11,11 @@ import os
 
 from cekirdek import sema, kurucu, kod_uret
 from testler.ortak_test import kontrol, ISLEM_PARCACIGI
+from testler.ortak_test import gereksinim  # S-4 izlenebilirlik
 from testler.regresyon_ortak import ORNEK
 
 
+@gereksinim("R-FZ-03")
 def test_betik_esdegerligi(gecici):
     print("\n[6] BETIK ESDEGERLIGI -- kurucu.py ile uretilen betik ayni mi")
     import openmc
@@ -47,6 +49,7 @@ def test_betik_esdegerligi(gecici):
 # ANA GIRIS
 # ============================================================================
 
+@gereksinim("R-FZ-03")
 def test_altigen_betik_esdegerligi(gecici):
     print("\n[7] ALTIGEN BETIK ESDEGERLIGI")
     import openmc

@@ -11,6 +11,7 @@ import logging
 import os
 
 from testler.ortak_test import kontrol, KOK
+from testler.ortak_test import gereksinim  # S-4 izlenebilirlik
 
 
 class _Toplayici(logging.Handler):
@@ -32,6 +33,7 @@ def _dil_ile(ceviri, kod, fn):
         ceviri.dil_ayarla(onceki)
 
 
+@gereksinim("R-M9-01")
 def test_ceviri_temel():
     print("\n[C1] CEVIRI: tr'de msgid aynen, en'de katalogdan")
     from cekirdek import ceviri as c
@@ -48,6 +50,7 @@ def test_ceviri_temel():
     kontrol("N_ metni degistirmez (yalnizca isaretler)", c.N_("Türkçe") == "Türkçe")
 
 
+@gereksinim("R-M9-01")
 def test_ceviri_dil_secimi():
     print("\n[C2] CEVIRI: dil kodu normallestirme ve varsayilan dil")
     from cekirdek import ceviri as c
@@ -107,6 +110,7 @@ def test_ceviri_eksik_giris_loglanir():
             any(metin in k for k in toplayici.kayitlar), "-> %s" % toplayici.kayitlar)
 
 
+@gereksinim("R-M9-01")
 def test_katalog_derlenmis():
     print("\n[C5] CEVIRI: .mo katalogu .po ile guncel")
     po = os.path.join(KOK, "locale", "en", "LC_MESSAGES", "openmc_arayuz.po")

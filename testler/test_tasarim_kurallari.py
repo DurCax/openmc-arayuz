@@ -21,6 +21,7 @@ import os
 import re
 
 from testler.ortak_test import kontrol, KOK, ORNEK
+from testler.ortak_test import gereksinim  # S-4 izlenebilirlik
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
@@ -49,6 +50,7 @@ def renk_sayilari(kok=KOK):
     return sayim
 
 
+@gereksinim("R-A4-02")
 def test_sabit_renk_tabani():
     print("\n[TK1] arayuz/ (tasarim/ haric) #rrggbb sayisi tabani asmiyor")
     sayim = renk_sayilari()
@@ -85,6 +87,7 @@ def _sahipsiz_katmanlar(once):
     return sahipsiz
 
 
+@gereksinim("R-A4-03")
 def test_sahipsiz_qlayout_yok():
     print("\n[TK3] AnaPencere + 8 sekme: sahipsiz QLayout yok")
     from PySide6 import QtWidgets

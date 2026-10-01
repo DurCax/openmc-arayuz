@@ -17,8 +17,10 @@ import sys
 import threading
 
 from testler.ortak_test import kontrol, KOK, DURUM_DIZINI
+from testler.ortak_test import gereksinim  # S-4 izlenebilirlik
 
 
+@gereksinim("R-M7-01")
 def test_surum():
     print("\n[A1] SURUM: tek kaynak ve uygulama adi sabiti")
     import re
@@ -42,6 +44,7 @@ def test_surum():
             surum._pyproject_surumu(os.path.join(KOK, "yok.toml")) is None)
 
 
+@gereksinim("R-M5-02")
 def test_gunluk_yolu_ve_yazim():
     print("\n[A2] GUNLUK: log dosyasi XDG_STATE_HOME altinda ve donuyor")
     from cekirdek import gunluk
@@ -105,6 +108,7 @@ def _uygulama():
     return QtWidgets.QApplication.instance() or QtWidgets.QApplication([])
 
 
+@gereksinim("R-M5-02")
 def test_hata_yakalayici_loglar():
     print("\n[A4] HATA YAKALAYICI: excepthook loglar, diyalog engellemez")
     _uygulama()
@@ -140,6 +144,7 @@ def test_hata_yakalayici_loglar():
             sys.excepthook is eski_sys and threading.excepthook is eski_thr)
 
 
+@gereksinim("R-M5-02")
 def test_hata_diyalogu():
     print("\n[A5] HATA YAKALAYICI: diyalog metni, 'Logu ac' dugmesi, basssiz engel yok")
     _uygulama()

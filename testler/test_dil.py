@@ -28,6 +28,7 @@ import re
 import warnings
 
 from testler.ortak_test import kontrol, KOK, ORNEK   # noqa: F401
+from testler.ortak_test import gereksinim  # S-4 izlenebilirlik
 
 warnings.filterwarnings("ignore")
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
@@ -315,6 +316,7 @@ def test_arayuz_metinleri(gecici=None):
     kontrol("(c) virgullu ondalik yok", not virgul, "-> %s" % virgul[:5])
 
 
+@gereksinim("R-M9-02")
 def test_bulgu_metinleri():
     print("\n[D2] DIL: dogrulama bulgulari (bozuk modeller)")
     metinler = bulgu_metinleri()

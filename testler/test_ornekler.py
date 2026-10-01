@@ -32,6 +32,7 @@ import math
 import os
 
 from testler.ortak_test import kontrol, ORNEK, ISLEM_PARCACIGI
+from testler.ortak_test import gereksinim  # S-4 izlenebilirlik
 
 YENI = ("kriter_jezebel.json", "kriter_flattop25.json", "kriter_lct008.json",
         "kriter_vver1000_ugd.json", "vver1000_demet.json", "vver1000_kor.json",
@@ -57,6 +58,7 @@ def _bul(liste, ad):
     return next(x for x in liste if x["ad"] == ad)
 
 
+@gereksinim("R-A3-01")
 def test_butun_ornekler_kapidan_gecer():
     print("\n[OR1] Butun ornekler: meta temiz, kapi(veri_kontrolu=True) hatasiz")
     from cekirdek import dogrula, ornek_bilgi
@@ -266,6 +268,7 @@ def _kos(ad, gecici, n=500, c=30, p=10, spec=None):
     return kosucu.sonuc_oku(r["statepoint"])
 
 
+@gereksinim("R-M3-01")
 def test_yavas_yeni_ornekler_kosar(gecici):
     print("\n[OR11] Yeni ornekler kosucu.calistir(dogrulama=True) ile kisa kosar")
     for ad in YENI:
@@ -281,6 +284,7 @@ def test_yavas_yeni_ornekler_kosar(gecici):
             kontrol("%s: sabit kaynak tally'leri okundu" % ad, bool(sonuc["tallyler"]))
 
 
+@gereksinim("R-G-06")
 def test_yavas_ceyrek_tam_esit(gecici):
     print("\n[OR12] Ceyrek kor k = tam kor k (dosyalardaki sinirlarla, 2 sigma)")
     # Yuz basina sinir (G-4): ceyregin simetri yuzleri yansitici, dis yuzleri
