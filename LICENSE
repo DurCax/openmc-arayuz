@@ -1,0 +1,46 @@
+Copyright (c) 2026 Enes. Tüm hakları saklıdır. / All rights reserved.
+
+TÜRKÇE
+
+Bu yazılım ("OpenMC Reaktör Kuru Arayüzü", openmc-arayuz) ve ona eşlik eden
+belgeler, örnekler ve kaynak kodu telif hakkı sahibinin özel mülküdür. Açık
+kaynak lisansı altında DAĞITILMAZ.
+
+Telif hakkı sahibinin önceden verdiği yazılı izin olmadan bu yazılımın tamamı
+ya da bir bölümü kopyalanamaz, çoğaltılamaz, değiştirilemez, yayımlanamaz,
+dağıtılamaz, alt lisanslanamaz, kiralanamaz ya da satılamaz. Yazılım yalnızca
+telif hakkı sahibinin kullanım izni verdiği kişilerce ve o izinde belirtilen
+amaçla kullanılabilir. Bir kopyanın elde bulunması kullanım izni anlamına
+gelmez.
+
+Yazılım "OLDUĞU GİBİ" sağlanır; açık ya da örtük hiçbir garanti verilmez.
+Telif hakkı sahibi, yazılımın kullanımından doğan hiçbir zarardan sorumlu
+tutulamaz. Yazılım güvenlikle ilgili (safety-related) bir hesap aracı olarak
+geliştirilmemiştir; sonuçları tek başına bir güvenlik kararının dayanağı
+yapılamaz.
+
+Yazılımın içerdiği ya da kullandığı üçüncü taraf bileşenler kendi lisanslarına
+tabidir; listesi ve koşulları THIRD_PARTY_LICENSES.md dosyasındadır. Bu dosyadaki
+hiçbir hüküm o lisansların size tanıdığı hakları kısıtlamaz.
+
+ENGLISH
+
+This software ("OpenMC Reaktör Kuru Arayüzü", openmc-arayuz) and its
+accompanying documentation, examples and source code are the proprietary
+property of the copyright holder. It is NOT distributed under an open-source
+license.
+
+No part of this software may be copied, reproduced, modified, published,
+distributed, sublicensed, rented or sold without the prior written permission
+of the copyright holder. The software may be used only by persons to whom the
+copyright holder has granted permission, and only for the purpose stated in
+that permission. Possession of a copy does not constitute permission to use it.
+
+The software is provided "AS IS", without warranty of any kind, express or
+implied. The copyright holder shall not be liable for any damage arising from
+its use. The software was not developed as a safety-related calculation tool;
+its results must not be the sole basis of a safety decision.
+
+Third-party components included in or used by this software are subject to
+their own licenses, listed in THIRD_PARTY_LICENSES.md. Nothing in this file
+restricts the rights those licenses grant you.

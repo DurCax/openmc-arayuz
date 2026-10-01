@@ -2,7 +2,7 @@
 #  openmc-arayuz -- paket tanimi
 #
 #  SURUM TEK YERDE: [project].version. Kod surumu cekirdek/surum.py uzerinden
-#  okur (kuruluysa paket meta verisi, degilse bu dosya).
+#  okur (kaynak agacinda bu dosya, wheel/conda paketinde paket meta verisi).
 #
 #  KURULUM (conda ortaminda; OpenMC PyPI'da YOK, conda-forge'dan gelir):
 #      conda env create -f environment.yml && conda activate openmc-env
@@ -10,16 +10,21 @@
 #  Ayrintilar: KURULUM.md
 # =============================================================================
 [build-system]
-requires = ["setuptools>=68"]
+# >=77: PEP 639 lisans alanlari (license = SPDX ifadesi, license-files)
+requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "openmc-arayuz"
-version = "2.0.0.dev0"
+version = "2.0.0rc1"
 description = "OpenMC ile reaktor modeli kurma, calistirma ve sonuc okuma arayuzu"
 readme = "README.md"
 requires-python = ">=3.11"
-# Lisans: tum haklari saklidir (LICENSE dosyasi Dalga 4'te eklenir).
+# Lisans: tum haklari saklidir (ozel mulk; acik kaynak lisansi DEGIL).
+# Ucuncu taraf bilesenlerin lisanslari: THIRD_PARTY_LICENSES.md
+# (PEP 639: SPDX "LicenseRef-" = SPDX listesinde olmayan, kendine ozgu lisans)
+license = "LicenseRef-Proprietary"
+license-files = ["LICENSE", "THIRD_PARTY_LICENSES.md"]
 classifiers = [
     "Private :: Do Not Upload",
     "Programming Language :: Python :: 3",
