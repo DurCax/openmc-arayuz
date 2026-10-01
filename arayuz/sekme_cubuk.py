@@ -100,7 +100,8 @@ class CubukSekmesi(SayfalarMixin, CubukFormuMixin, PlakaFormuMixin, SekmeTabani)
 
         duzen = sd.sayfa_duzeni(self)
         duzen.addWidget(sd.sayfa_basligi(
-            _("Parçalar"), _("Çubuklar ve plaka elemanları: radyal bölgeler ve malzemeler.")))
+            _("Parçalar"), _("Çubuklar ve plaka elemanları: radyal bölgeler ve malzemeler."),
+            bolum="parcalar"))
         duzen.addWidget(bolucu, 1)
 
     # ------------------------------------------------------------------

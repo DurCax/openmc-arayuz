@@ -176,7 +176,7 @@ class AnalizSekmesi(QtWidgets.QWidget):
         duzen.addWidget(sd.sayfa_basligi(_("Analiz"), aciklama(_(
             "Bir parametreyi tarayıp eğimden reaktivite katsayısını ya da hedef k-eff'i "
             "veren değeri bulursunuz. Yalnızca bu modelde anlamlı parametreler listelenir; "
-            "her nokta ayrı bir OpenMC koşusudur.")), bosluk=A["xs"]))
+            "her nokta ayrı bir OpenMC koşusudur.")), bosluk=A["xs"], bolum="analiz"))
         duzen.addWidget(self.bos, 1)
         duzen.addWidget(self.icerik, 1)
 

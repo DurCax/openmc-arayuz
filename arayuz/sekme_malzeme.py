@@ -108,7 +108,8 @@ class MalzemeSekmesi(SekmeTabani):
 
         duzen = sd.sayfa_duzeni(self)
         duzen.addWidget(sd.sayfa_basligi(
-            _("Malzemeler"), _("Modeldeki malzemeler, yoğunluk ve bileşim.")))
+            _("Malzemeler"), _("Modeldeki malzemeler, yoğunluk ve bileşim."),
+            bolum="malzemeler"))
         duzen.addWidget(self.yigin, 1)
         self._dugmeleri_guncelle()
 

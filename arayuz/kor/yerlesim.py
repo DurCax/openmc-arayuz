@@ -18,6 +18,7 @@ from arayuz import izgara
 from arayuz.kor_altigen import AltigenKorHaritasi
 from arayuz.ortak import ipucu, sayi, tamsayi
 from arayuz.tasarim import tokenlar
+from arayuz.yardim_baglanti import sayfa_bolumu, yardim_dugmesi
 from cekirdek.ceviri import _
 
 A = tokenlar.ARALIK
@@ -201,6 +202,8 @@ class KorYerlesimMixin(object):
         self.satir_tb_kor_r = self._satir("Kor yarıçapı:", self.tb_kor_r)
         self.satir_adim = self._satir("Hücre adımı:", self.adim)
         kart = b.Kart(_("Geometri"))
+        kart.eylem_ekle(yardim_dugmesi(
+            lambda: sayfa_bolumu("kor", gelismis=self.agac_modunda_mi()), kart))
         kart.ekle(self.tur_etiket)
         kart.govde.addLayout(self.form)
         return kart

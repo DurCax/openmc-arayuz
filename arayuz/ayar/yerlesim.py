@@ -12,6 +12,7 @@ from PySide6 import QtCore, QtWidgets
 from arayuz import bilesenler as b
 from arayuz.ortak import baslik, ipucu, GelismisBolum
 from arayuz.tasarim import tokenlar
+from arayuz.yardim_baglanti import yardim_dugmesi
 
 A = tokenlar.ARALIK
 
@@ -82,6 +83,7 @@ class YerlesimMixin(object):
         hesap.addRow("Pasif çevrim:", self.pasif)
         hesap.addRow(self.kinetik_var)
         kart = b.Kart("Hesap")
+        kart.eylem_ekle(yardim_dugmesi("hesap-ayarlari", kart))
         kart.govde.addLayout(hesap)
         return kart
 

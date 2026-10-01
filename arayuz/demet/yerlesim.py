@@ -32,7 +32,7 @@ class YerlesimMixin(object):
     def _yerlesim_kur(self):
         duzen = sd.sayfa_duzeni(self)
         duzen.addWidget(sd.sayfa_basligi(
-            _("Demet"), _("Parçaları ızgaraya yerleştirin.")))
+            _("Demet"), _("Parçaları ızgaraya yerleştirin."), bolum="demet"))
         govde = QtWidgets.QHBoxLayout()
         govde.setSpacing(A["l"])
         govde.addWidget(self._izgara_karti(), 1)

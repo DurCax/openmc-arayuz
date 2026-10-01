@@ -49,6 +49,7 @@ from arayuz.calistir.pano import SonucPanosu
 from arayuz.calistir.yakinsama import EntropiKarti, YakinsamaKarti
 from arayuz.tasarim import tokenlar
 from arayuz.uygunluk_paneli import UygunlukPaneli
+from arayuz.yardim_baglanti import yardim_dugmesi
 
 A = tokenlar.ARALIK
 _log = kaydedici(__name__)
@@ -102,6 +103,7 @@ class CalistirSekmesi(QtWidgets.QWidget):
         """Kartlari kurar; eski ozellik adlari (testler, ana pencere) korunur."""
         self.kosu_karti = KosuKarti()
         k = self.kosu_karti
+        k.eylem_ekle(yardim_dugmesi("calistir", k))
         self.d_calistir, self.d_durdur, self.d_klasor = k.d_calistir, k.d_durdur, k.d_klasor
         self.ilerleme, self.kapi_etiket = k.ilerleme, k.kapi_etiket
         self.is_parcacigi, self.kosu_dizini = k.is_parcacigi, k.kosu_dizini

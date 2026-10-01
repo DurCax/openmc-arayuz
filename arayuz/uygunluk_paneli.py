@@ -13,8 +13,9 @@
    p.profiller_degisti -> tuple          # kullanici kutu degistirdi (spec'e yazilir)
    p.git_istendi -> str                  # sayfa anahtari (uygunluk.SEKMELER)
 
- Durust cerceve metni (profiller.durust_cerceve) AYNEN gosterilir. Kılavuz
- baglantisi icin KILAVUZ_BOLUMU ayrilmistir (yardim.ac henuz yok; simdilik metin).
+ Durust cerceve metni (profiller.durust_cerceve) AYNEN gosterilir. Kilavuz
+ baglantisi: baslikta "?" ve alttaki baglanti yardim.ac(KILAVUZ_BOLUMU) cagirir
+ (arayuz/yardim_baglanti.py).
  Renk/aralik tokenlardan; ikonlar tema renk tokenlariyla boyanir.
 ================================================================================
 """
@@ -28,11 +29,12 @@ from arayuz.tasarim.ikon import ikon
 from cekirdek import rapor_uygunluk
 from cekirdek.ceviri import _, N_
 from cekirdek.gunluk import kaydedici
+from arayuz import yardim_baglanti
 
 A = tokenlar.ARALIK
 _log = kaydedici(__name__)
 
-KILAVUZ_BOLUMU = "uygunluk-denetimi"     # ileride yardim.ac(KILAVUZ_BOLUMU)
+KILAVUZ_BOLUMU = "uygunluk-denetimi"     # yardim_baglanti.ac(KILAVUZ_BOLUMU)
 _IKON_BOYUT = 16
 _LISTE_EN_AZ = 160
 _ROL_KURAL = QtCore.Qt.UserRole
@@ -116,8 +118,14 @@ class UygunlukPaneli(b.Kart):
         self.usl_notu = self._metin("uyari")
         self.cerceve = self._metin(None)
         self.kilavuz = self._metin(None)
-        self.kilavuz.setText(_("Kuralların açıklaması: Kullanıcı kılavuzu → \"Uygunluk "
-                               "denetimi\" bölümü; kaynak tablosu docs/STANDARTLAR.md §3."))
+        self.kilavuz.setTextFormat(QtCore.Qt.RichText)
+        self.kilavuz.setTextInteractionFlags(QtCore.Qt.LinksAccessibleByMouse
+                                             | QtCore.Qt.LinksAccessibleByKeyboard)
+        self.kilavuz.setText(_("Kuralların açıklaması: <a href=\"kilavuz\">Kullanıcı kılavuzu → "
+                               "\"Uygunluk denetimi\" bölümü</a>; kaynak tablosu "
+                               "docs/STANDARTLAR.md §3."))
+        self.kilavuz.linkActivated.connect(self.kilavuzu_ac)
+        self.d_kilavuz = self.eylem_ekle(yardim_baglanti.yardim_dugmesi(KILAVUZ_BOLUMU, self))
         from cekirdek.uygunluk_denetimi.profiller import durust_cerceve
         self.cerceve.setText(durust_cerceve())
         self.usl_notu.hide()
@@ -147,6 +155,10 @@ class UygunlukPaneli(b.Kart):
         satir.addWidget(self.rozet)
         satir.addWidget(self.ozet, 1)
         return satir
+
+    def kilavuzu_ac(self, *_a):
+        """Kilavuzu "Uygunluk denetimi" bolumunde acar."""
+        return yardim_baglanti.ac(KILAVUZ_BOLUMU, self.window())
 
     def _metin(self, renk):
         w = QtWidgets.QLabel("")
