@@ -643,6 +643,17 @@ def test_derleme_ve_sozluk():
         yok = [r for r in resimler if not os.path.exists(os.path.join(gecici, "tr", r))]
         kontrol("HTML'deki resimler cikti dizininde", resimler and not yok, "-> %s" % yok[:3])
         kontrol("PDF bos degil (> 50 kB)", os.path.getsize(pdf) > 50 * 1024)
+        kontrol("derle CLI: bilinmeyen dil -> 2", derle.main(["--dil", "xx"]) == 2)
+        kontrol("derle CLI: EN yalniz HTML -> 0",
+                derle.main(["--dil", "en", "--cikti", gecici, "--bicim", "html"]) == 0
+                and os.path.exists(os.path.join(gecici, "en", "kilavuz.html")))
+        ky = _ky()
+        kopya = os.path.join(gecici, "kaynak")
+        shutil.copytree(ky.KILAVUZ_DIZINI, kopya, ignore=shutil.ignore_patterns("*.png"))
+        derle.sozluk_yenile(dizin=kopya)
+        ayni = all(ky.dosya_oku(d, derle.SOZLUK_DOSYASI, kopya) == ky.dosya_oku(d, derle.SOZLUK_DOSYASI)
+                   for d in ky.DILLER)
+        kontrol("10-sozluk.md tablolari SOZLUK.md ile guncel (araclar/kilavuz.sh --sozluk)", ayni)
     finally:
         shutil.rmtree(gecici, True)
     terimler = derle.sozluk_terimleri()
