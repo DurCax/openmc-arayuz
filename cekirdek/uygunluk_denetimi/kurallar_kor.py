@@ -38,6 +38,20 @@ _KATSAYI_ADLARI = {
     "sogutucu_sicaklik": N_("moderatör sıcaklık katsayısı (MTC)"),
     "void_orani": N_("boşluk (void) katsayısı"),
 }
+# Sogutucu ayni zamanda moderator olan (hafif su) kategoriler; digerlerinde
+# (SFR, gaz, arastirma tamburlu hizli kor) "MTC" denmez.
+SU_MODERATORLU = ("pwr", "vver", "bwr")
+_SOGUTUCU_ADI = N_("soğutucu sıcaklık katsayısı")
+
+
+def _su_moderatorlu(baglam):
+    return str((baglam.spec or {}).get("kategori") or "").lower() in SU_MODERATORLU
+
+
+def _katsayi_adi(baglam, ad):
+    if ad == "sogutucu_sicaklik" and baglam.spec and not _su_moderatorlu(baglam):
+        return _(_SOGUTUCU_ADI)
+    return _(_KATSAYI_ADLARI[ad])
 
 
 def _kaynak(baglam):
@@ -63,10 +77,10 @@ def _katsayi_bulgusu(kural, baglam, ad, kats):
     if not _sapma_gecerli(kats):
         return kural.uygulanamadi(
             _("%s = %+.3g %s: belirsizlik (σ) verilmedi ya da ≤ 0; işaretin anlamlılığı "
-              "sınanamaz.") % (_(_KATSAYI_ADLARI[ad]), kats["egim"], kats.get("birim", "")),
+              "sınanamaz.") % (_katsayi_adi(baglam, ad), kats["egim"], kats.get("birim", "")),
             _("Katsayıyı eğim belirsizliğiyle (tarama.katsayi) verin."), **kw)
     isaret = _isaret(kats, c)
-    metin = "%s = %+.3g ± %.2g %s (1σ)" % (_(_KATSAYI_ADLARI[ad]), kats["egim"],
+    metin = "%s = %+.3g ± %.2g %s (1σ)" % (_katsayi_adi(baglam, ad), kats["egim"],
                                           kats["egim_sapma"], kats.get("birim", ""))
     if isaret < 0:
         return kural.gecti(metin + _(": negatif — işaret beklentisiyle tutarlı (net geri "
@@ -86,6 +100,9 @@ def _katsayi_bulgusu(kural, baglam, ad, kats):
         return kural.ihlal("uyari", metin + _(": POZİTİF Doppler katsayısı olağan dışıdır."),
                            _("Yakıt bileşimini ve sıcaklık taramasını denetleyin; net güç "
                              "katsayısını hesaplayın."), **kw)
+    if ad == "sogutucu_sicaklik" and baglam.spec and not _su_moderatorlu(baglam):
+        return kural.not_(metin + _(": pozitif. Tek başına hata değildir; net güç katsayısı "
+                                    "ve geçici rejim analizinde değerlendirilmelidir."), **kw)
     return kural.not_(metin + _(": pozitif. Tek başına hata değildir (SRP 4.3 pozitif "
                                 "MTC'yi dışlamaz); geçici rejim analizinde "
                                 "değerlendirilmelidir."), **kw)
@@ -107,11 +124,11 @@ def k7_katsayilar(kural, baglam):
     return bulgular
 
 
-def _sinirla_karsilastir(kural, baglam, ad, deger, sapma, esik_adi, kimlik):
+def _sinirla_karsilastir(kural, baglam, ad, deger, sapma, esik_adi, kimlik, sigma_notu=""):
     """deger <= sinir beklenir (F_dH, F_q). sinir yoksa uygulanamadi."""
     sinir = baglam.esik(esik_adi)
     kaynak = baglam.esik_kaynagi(esik_adi)
-    metin = "%s = %s" % (ad, belirsizlik_metni(deger, sapma or 0.0))
+    metin = "%s = %s%s" % (ad, belirsizlik_metni(deger, sapma or 0.0), sigma_notu)
     if sinir is None:
         return kural.uygulanamadi(metin + _("; sınır girilmedi, karşılaştırılamadı "
                                             "(tesise özel; varsayılan yok)."),
@@ -145,12 +162,26 @@ def k7_faktorler(kural, baglam):
     if not f or f.get("F_dH") is None:
         return [kural.uygulanamadi(_("Güç dağılımı sonucu yok (F_ΔH / F_q)."),
                                    _("Güç dağılımını açıp koşuyu yineleyin."))]
-    bulgular = [_sinirla_karsilastir(kural, baglam, "F_ΔH", f["F_dH"], f.get("F_dH_sapma"),
-                                     "F_dH_siniri", "K7-FdH")]
-    if f.get("F_q") is not None:
-        bulgular.append(_sinirla_karsilastir(kural, baglam, "F_q", f["F_q"],
-                                             f.get("F_q_sapma"), "F_q_siniri", "K7-Fq"))
+    d, s, n = _f_degeri(f, "F_dH")
+    bulgular = [_sinirla_karsilastir(kural, baglam, "F_ΔH", d, s, "F_dH_siniri", "K7-FdH", n)]
+    if f.get("F_q") is not None or f.get("F_q_harita") is not None:
+        d, s, n = _f_degeri(f, "F_q")
+        bulgular.append(_sinirla_karsilastir(kural, baglam, "F_q", d, s, "F_q_siniri",
+                                             "K7-Fq", n))
     return bulgular
+
+
+def _f_degeri(f, ad):
+    """(deger, sapma, sigma_notu). Cok tohum ozeti (guc_yorum.coklu_tohum:
+    <ad>_harita, <ad>_harita_sapma) varsa o kullanilir -- tohumlar arasi
+    sacilma gercek belirsizliktir. Yoksa tek kosu σ'si: cevrimler arasi
+    korelasyonu gormez, IYIMSERDIR; bulgu bunu soyler."""
+    if f.get(ad + "_harita") is not None and f.get(ad + "_harita_sapma") is not None:
+        return (f[ad + "_harita"], f[ad + "_harita_sapma"],
+                _(" (çok tohum: harita ortalamasının tepesi, σ tohumlar arası saçılmadan)"))
+    return (f[ad], f.get(ad + "_sapma"),
+            _(" (tek koşu; σ iyimser: çevrimler arası korelasyonu görmez, çok tohum "
+              "saçılması verilmedi)"))
 
 
 def _sdm_sinir(kural, baglam, deger, sapma):
