@@ -61,9 +61,9 @@ verilir (1 $ = β_eff). ρ > 1 $ ise kart iki anlamı birlikte söyler: gerçek 
 bu anlık kritikliktir, sonsuz ortam (k∞) hesabında ise yakıtın taşıdığı reaktivite fazlasıdır.
 
 > **Örnek.** `ornekler/pwr_17x17.json` yansıtıcı yan sınırlı tek bir demettir; sonucu bir
-> k∞'dur (README ölçümü 1.18325 ± 0.00075). Reaktivitesi
-> ρ∞ = 0.18325 / 1.18325 = 0.15487 → **+15 487 pcm (Δρ × 10⁵)**, belirsizliği
-> 0.00075 / 1.18325² ≈ 54 pcm. Bu, "reaktör süperkritik" demek değildir: sonlu bir korda
+> k∞'dur (README ölçümü 1.18443 ± 0.00088). Reaktivitesi
+> ρ∞ = 0.18443 / 1.18443 = 0.15571 → **+15 571 pcm (Δρ × 10⁵)**, belirsizliği
+> 0.00088 / 1.18443² ≈ 63 pcm. Bu, "reaktör süperkritik" demek değildir: sonlu bir korda
 > sızıntı ve kontrol bu fazlayı dengeler.
 
 **İki sonucu karşılaştırmak.** İki k arasındaki fark ancak

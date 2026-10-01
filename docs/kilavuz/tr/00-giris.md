@@ -104,8 +104,8 @@ okunabilir. HTML ve PDF sürümü `araclar/kilavuz.sh` ile üretilir
 
 Sayısal kurallar:
 
-- Ondalık ayırıcı **noktadır** (1.18325); arayüzdeki sayı kutuları da noktayla çalışır.
-- Belirsizlik, aksi yazılmadıkça **1σ standart belirsizliktir** ("hata" değil); `k = 1.18325 ± 0.00075`
+- Ondalık ayırıcı **noktadır** (1.18443); arayüzdeki sayı kutuları da noktayla çalışır.
+- Belirsizlik, aksi yazılmadıkça **1σ standart belirsizliktir** ("hata" değil); `k = 1.18443 ± 0.00088`
   bir güven aralığı değildir.
 - **pcm** her yerde tanımıyla verilir: ya **Δk × 10⁵** (k farkı) ya da **Δρ × 10⁵**
   (reaktivite farkı, ρ = (k − 1)/k). İkisi aynı şey değildir; hangisi olduğu yazılır.

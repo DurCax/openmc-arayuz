@@ -10,7 +10,7 @@ Run settings → Run**.
 |---|---|
 | Example file | `ornekler/pwr_17x17.json` |
 | Time | ~15 minutes (the run takes 1–3 minutes, depending on the machine) |
-| Expected result | k∞ = 1.18325 ± 0.00075 (measured: README, table of measured reference results, same settings) |
+| Expected result | k∞ = 1.18443 ± 0.00088 (measured: README, table of measured reference results, same settings) |
 | Prerequisite | [1. Installation](01-kurulum.md#kurulum) done; `OPENMC_CROSS_SECTIONS` set |
 
 ## 2.1 Open the model (1 minute)
@@ -35,7 +35,7 @@ The model has four materials:
 | Name | Description | Role | Density | Temperature |
 |---|---|---|---|---|
 | `uo2` | UO2 3.20 % | fuel | 10.4 g/cm³ | 900 K |
-| `helyum` | He (pellet–cladding gap) | gas | 0.0001785 g/cm³ | 600 K |
+| `helyum` | He (pellet–cladding gap) | gas | 0.0018 g/cm³ | 600 K |
 | `zirkaloy4` | Zircaloy-4 (cladding) | structural | 6.55 g/cm³ | 600 K |
 | `su` | H2O 0.700 g/cm³ + 1300 ppm B | coolant, moderator | 0.7 g/cm³ | 580 K |
 
@@ -108,13 +108,13 @@ Details: [4.6 Run settings](04f-hesap-ayarlari.md#hesap-ayarlari).
 When the run ends, the result card shows a value like:
 
 ```
-k∞ = 1.18325 ± 0.00075        (1σ standard uncertainty)
+k∞ = 1.18443 ± 0.00088        (1σ standard uncertainty)
 ```
 
 Your number may differ in the last two digits; that is statistics. Check:
 
 1. Is the **uncertainty** of the order of 0.0008? (The expected value for the Normal preset.) If
-   |k − 1.18325| ≤ 2·√(σ₁² + σ₂²) ≈ 0.002, the result agrees with the README measurement.
+   |k − 1.18443| ≤ 2·√(σ₁² + σ₂²) ≈ 0.002, the result agrees with the README measurement.
 2. Does the **source convergence** line say the source "appears converged"? If not, increase the
    inactive batches ([6.2 Source convergence](06-sonuclar.md#kaynak-yakinsamasi)).
 3. Is the number of **lost particles** zero? If not, the geometry has a gap or an overlap.

@@ -63,9 +63,9 @@ is prompt criticality; in an infinite-medium (k∞) calculation it is the excess
 by the fuel.
 
 > **Example.** `ornekler/pwr_17x17.json` is a single assembly with reflective side boundaries; its
-> result is a k∞ (README measurement 1.18325 ± 0.00075). Its reactivity is
-> ρ∞ = 0.18325 / 1.18325 = 0.15487 → **+15 487 pcm (Δρ × 10⁵)**, with an uncertainty of
-> 0.00075 / 1.18325² ≈ 54 pcm. This does not mean "the reactor is supercritical": in a finite core
+> result is a k∞ (README measurement 1.18443 ± 0.00088). Its reactivity is
+> ρ∞ = 0.18443 / 1.18443 = 0.15571 → **+15 571 pcm (Δρ × 10⁵)**, with an uncertainty of
+> 0.00088 / 1.18443² ≈ 63 pcm. This does not mean "the reactor is supercritical": in a finite core
 > leakage and control balance this excess.
 
 **Comparing two results.** A difference between two k values is significant only if

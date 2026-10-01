@@ -75,8 +75,9 @@ this lesson focuses on the physics of the same model.
 9. Watch the convergence plot during the run: after the inactive batches the cumulative mean should
    settle into a flat band. The **Shannon entropy** badge should say **Converged**.
 
-**Expected result.** k∞ = **1.18325 ± 0.00075** ([README.md](../../../README.md), table of measured
-reference results; 44 s with 24 threads). Your value should be within 2–3σ of this. A larger
+**Expected result.** k∞ = **1.18443 ± 0.00088** ([README.md](../../../README.md), table of measured
+reference results; the example's own settings 10 000 × 150 / 40 inactive, seed 1, 6 threads,
+01.10.2026). Your value should be within 2–3σ of this. A larger
 difference or a lost-particle warning signals a problem
 ([9. Troubleshooting](09-sorun-giderme.md#sorun-giderme)).
 
@@ -85,9 +86,14 @@ difference or a lost-particle warning signals a problem
 - If all side boundaries were `vacuum`, would the result be k∞ or k-eff? Would the value of a single
   assembly grow or shrink? (Leakage → k-eff, it shrinks.)
 - By roughly what factor must particles × active batches grow to halve σ? (σ ∝ 1/√N → about 4.)
-- Regression anchor: the pin cell of the same fuel, `ornekler/pwr_pinhucre.json`, must give
-  k∞ = 1.3570 ± 0.0020. Why is the assembly lower? (Water in the guide tubes and heterogeneity
-  inside the assembly.)
+- The regression anchor `ornekler/pwr_pinhucre.json` gives k∞ = 1.3570 ± 0.0020. It is **not the
+  same fuel** as this assembly: the pin cell is 3.0 %, all materials at 293.6 K, no boron in the
+  water; this assembly is 3.2 %, hot (fuel 900 K, cladding 600 K, water 580 K) with 1300 ppm boron.
+  Where does the k∞ difference (~0.17) come from? (Measured with the settings of this assembly:
+  without boron 1.34300 ± 0.00085 → **boron ≈ −15 900 pcm (Δk × 10⁵)**; without boron and all
+  materials at 293.6 K 1.37120 ± 0.00094 → **temperature ≈ −2 800 pcm**. The small remainder comes
+  from the enrichment, the pellet/cladding dimensions and the guide tubes. Boron and temperature
+  dominate, not the guide tubes.)
 
 ---
 
@@ -135,8 +141,12 @@ quarter-core symmetry with the right boundary condition.
 
 **What we learned / check questions.**
 
-- Where does the difference between the k∞ of the same assemblies (lesson 5.1, ~1.18) and the k-eff
-  of the core (~1.06) come from? (Leakage and the lower enrichment of the inner zone.)
+- The assemblies of the core are **not** the assembly of lesson 5.1 (3.2 %, k∞ ≈ 1.18): they are
+  2.4 % and 3.1 %. Infinite-lattice values measured with the same geometry, temperatures and 1300 ppm
+  boron: k∞(2.4 %) = 1.09772 ± 0.00090 and k∞(3.1 %) = 1.17538 ± 0.00086 (`pwr_17x17` settings,
+  01.10.2026). The k-eff of the core (1.06005) is below both, not between them - why? (Leakage: the
+  side, bottom and top boundaries are vacuum and the water reflector is only 20 cm. The weight of the
+  2.4 % inner zone and the leakage together lower k-eff.)
 - Why can the quarter core not be built with a **checkerboard** loading? (The reflective symmetry
   plane **mirrors** the quarter; a checkerboard has no mirror symmetry, so the mirrored core is a
   different loading — measured difference +260 pcm. [ORNEKLER.md](../../ORNEKLER.md))

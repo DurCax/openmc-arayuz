@@ -75,8 +75,9 @@ bölümünü izleyin; bu ders aynı modelin fiziğine odaklanır.
 9. Koşu sürerken yakınsama grafiğini izleyin: pasif çevrimlerden sonra kümülatif ortalama
    düz bir banda oturmalıdır. **Shannon entropisi** rozeti **Yakınsadı** olmalıdır.
 
-**Beklenen sonuç.** k∞ = **1.18325 ± 0.00075** ([README.md](../../../README.md) "Ölçülen
-referans sonuçlar" tablosu; 24 iş parçacığıyla 44 s). Sizin değeriniz bu aralığın 2–3σ
+**Beklenen sonuç.** k∞ = **1.18443 ± 0.00088** ([README.md](../../../README.md) "Ölçülen
+referans sonuçlar" tablosu; örneğin kendi ayarı 10 000 × 150 / 40 pasif, tohum 1, 6 iş parçacığı,
+01.10.2026). Sizin değeriniz bu aralığın 2–3σ
 yakınında olmalıdır. Daha büyük bir fark ya da kayıp parçacık uyarısı bir sorun işaretidir
 ([9. Sorun giderme](09-sorun-giderme.md#sorun-giderme)).
 
@@ -86,8 +87,13 @@ yakınında olmalıdır. Daha büyük bir fark ya da kayıp parçacık uyarısı
   küçülür mü? (Sızıntı → k-eff, küçülür.)
 - σ'yı yarıya indirmek için parçacık × aktif çevrim sayısını yaklaşık kaç kat artırmak gerekir?
   (σ ∝ 1/√N → yaklaşık 4 kat.)
-- Regresyon çıpası: aynı yakıtın pin hücresi `ornekler/pwr_pinhucre.json` k∞ = 1.3570 ± 0.0020
-  vermelidir. Demet neden daha düşük? (Kılavuz borulardaki su ve demet içi heterojenlik.)
+- Regresyon çıpası `ornekler/pwr_pinhucre.json` k∞ = 1.3570 ± 0.0020 verir. Bu demetle **aynı
+  yakıt değildir**: pin hücre %3.0, bütün malzemeler 293.6 K, suda bor yok; bu demet %3.2, sıcak
+  (yakıt 900 K, zarf 600 K, su 580 K) ve 1300 ppm borlu. k∞ farkının (~0.17) kaynağı ne? (Ölçüldü,
+  bu demetin ayarıyla: borsuz 1.34300 ± 0.00085 → **bor ≈ −15 900 pcm (Δk × 10⁵)**; borsuz ve
+  bütün malzemeler 293.6 K 1.37120 ± 0.00094 → **sıcaklık ≈ −2 800 pcm**. Kalan küçük fark
+  zenginlik, pelet/zarf ölçüleri ve kılavuz borulardan gelir. Baskın neden bor ve sıcaklıktır,
+  kılavuz borular değil.)
 
 ---
 
@@ -135,8 +141,12 @@ düşürdüğünü görmek ve çeyrek kor simetrisini doğru sınır koşuluyla 
 
 **Ne öğrendik / kontrol soruları.**
 
-- Aynı demetlerin k∞'u (5.1 dersi, ~1.18) ile korun k-eff'i (~1.06) arasındaki fark nereden geliyor?
-  (Sızıntı ve iç bölgenin düşük zenginliği.)
+- Korun demetleri 5.1 dersinin demeti (%3.2, k∞ ≈ 1.18) **değildir**: %2.4 ve %3.1. Aynı
+  geometri, sıcaklık ve 1300 ppm borla ölçülen sonsuz kafes değerleri k∞(%2.4) = 1.09772 ± 0.00090
+  ve k∞(%3.1) = 1.17538 ± 0.00086 (`pwr_17x17` ayarı, 01.10.2026). Korun k-eff'i (1.06005)
+  ikisinin arasında değil, altındadır — neden? (Sızıntı: yan, alt ve üst sınır vakum, su yansıtıcı
+  yalnız 20 cm. İç bölgedeki %2.4 demetlerinin ağırlığı ve
+  sızıntı birlikte k-eff'i düşürür.)
 - Çeyrek kor neden **dama** desenli bir yüklemeyle kurulamaz? (Yansıtıcı simetri düzlemi çeyreği
   **aynalar**; dama deseninin ayna simetrisi yoktur, aynalanan kor başka bir yüklemedir —
   ölçülen fark +260 pcm. [ORNEKLER.md](../../ORNEKLER.md))
