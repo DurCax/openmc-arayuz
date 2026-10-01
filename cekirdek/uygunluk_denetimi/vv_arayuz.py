@@ -23,6 +23,8 @@ ALANLAR
   aoa_kategorik      {"bolunebilir"|"fiziksel_bicim"|"yansitici"|"tayf": (degerler)}
   seriler            {deney serisi: vaka sayisi} (K14)
   kaynak             kume ve yontem atfi (ör. "NUREG/CR-6698; mit-crpg")
+  alt_kume           USL'nin hesaplandigi alt kumenin betimi (ör. "U-235, metal,
+                     hızlı, HEU (%60–100)"); bos = tum kume (K6 metnine yazilir)
 """
 
 from dataclasses import dataclass, field
@@ -52,6 +54,7 @@ class VVOzeti:
     aoa_kategorik: Mapping[str, Tuple[str, ...]] = field(default_factory=dict)
     seriler: Mapping[str, int] = field(default_factory=dict)
     kaynak: str = ""
+    alt_kume: str = ""
 
     def __post_init__(self):
         if self.yontem not in YONTEMLER:

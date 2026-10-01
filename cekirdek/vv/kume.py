@@ -9,7 +9,8 @@ Hesap-hesap kriterleri (tur = "hesap") kumeye GIRMEZ: E olculmus bir deney degil
   vakalar(dosyalar=None, filtre=None) -> [istatistik.Vaka]
   ozet(vakalar=None, filtre=None, uygulama=None, delta_sm=0.05, delta_aoa=0.0) -> VVOzeti
   uygulama(spec, kosu_dizini=None) -> AOA parametreleri (aoa.parametreler)
-  aoa_filtresi(uygulama) -> {"tayf": ...} | None   (uygulamaya uygun alt kume)
+  aoa_filtresi(uygulama) -> {"bolunebilir", "fiziksel_bicim", "tayf"[, "zenginlik"]}
+      | None   (uygulamaya uygun alt kume; bir anahtar eksikse None)
   uygulama_ozeti(spec, kosu_dizini=None, uygulama=None) -> (VVOzeti, uygulama)
       arayuz paneli, rapor eki ve CLI'nin ortak yolu: uygulamanin AOA'sina
       uygun alt kumeden USL; uygun alt kume yoksa usl None ve neden
@@ -31,11 +32,16 @@ from cekirdek.uygunluk_denetimi.vv_arayuz import AOA_KATEGORILERI, VVOzeti
 from cekirdek.vv import aoa as _aoa
 from cekirdek.vv import istatistik as _ist
 
-# Alt kume secimi: 6698 §2.5 tayf sinifi (termal / ara / hizli) birincil AOA
-# olcutudur. Bolunebilir element, fiziksel bicim ve yansitici kategorileri
-# alt kumeyi daraltmaz (depodaki kume n >= 10'u tutamaz); onlari K6-AOA ayrica
-# denetler ve uyumsuzlukta uyarir.
-AOA_FILTRE_ANAHTARLARI = ("tayf",)
+# Alt kume secimi (6698 §2.5, Tablo 2.3): USL yalniz uygulamayla ayni bolunebilir
+# tur, fiziksel bicim ve notron tayfini paylasan kriterlerden hesaplanir; U-235'te
+# ayrica zenginlik sinifi (ZENGINLIK_SINIFLARI) ayni olmalidir. Uygun alt kume
+# n < 10 ise (6698 §2.2) USL VERILMEZ -- depodaki kume kucukse dogru cevap budur.
+# Yansitici ve H/X alt kumeyi daraltmaz; onlari K6-AOA ve K12 ayrica denetler.
+AOA_FILTRE_ANAHTARLARI = ("bolunebilir", "fiziksel_bicim", "tayf")
+# ICSBEP Handbook adlandirmasi (Introduction, "Fissile Material"): LEU <= %10,
+# IEU %10-60, HEU >= %60 kutlece U-235. (ad, alt, ust) -- aralik kapali.
+ZENGINLIK_SINIFLARI = {"U-235": (("LEU", 0.0, 10.0), ("IEU", 10.0, 60.0),
+                                 ("HEU", 60.0, 100.0))}
 
 _log = kaydedici(__name__)
 
@@ -149,10 +155,33 @@ def uygulama(spec, kosu_dizini=None):
     return _aoa.parametreler(spec, kosu_dizini)
 
 
+def zenginlik_sinifi(tur, zenginlik):
+    """(ad, alt, ust) -- tur icin sinif tanimli degilse None."""
+    for ad, alt, ust in ZENGINLIK_SINIFLARI.get(tur, ()):
+        if alt <= float(zenginlik) <= ust:
+            return ad, alt, ust
+    return None
+
+
+def aoa_eksikleri(uyg):
+    """Alt kume secimi icin uygulamada eksik AOA anahtarlari (sirali)."""
+    uyg = uyg or {}
+    eksik = [a for a in AOA_FILTRE_ANAHTARLARI if not uyg.get(a)]
+    if uyg.get("bolunebilir") in ZENGINLIK_SINIFLARI and uyg.get("zenginlik") is None:
+        eksik.append("zenginlik")
+    return eksik
+
+
 def aoa_filtresi(uyg):
-    """Uygulamanin AOA'sina uygun alt kume filtresi; tayf bilinmiyorsa None."""
-    filtre = {a: uyg[a] for a in AOA_FILTRE_ANAHTARLARI if (uyg or {}).get(a)}
-    return filtre or None
+    """Uygulamanin AOA'sina uygun alt kume filtresi: bolunebilir tur + fiziksel
+    bicim + tayf (+ U-235'te zenginlik sinifi). Bir anahtar eksikse None."""
+    if aoa_eksikleri(uyg):
+        return None
+    filtre = {a: uyg[a] for a in AOA_FILTRE_ANAHTARLARI}
+    sinif = zenginlik_sinifi(uyg["bolunebilir"], uyg.get("zenginlik") or 0.0)
+    if sinif is not None:
+        filtre["zenginlik"] = ("aralik", sinif[1], sinif[2])
+    return filtre
 
 
 def _tayf_metni(tayf):
@@ -161,12 +190,37 @@ def _tayf_metni(tayf):
     return adlar.get(tayf, str(tayf))
 
 
+def _bicim_metni(bicim):
+    adlar = {"metal": _("metal"), "cozelti": _("çözelti"), "oksit": _("oksit"),
+             "bilesik": _("bileşik")}
+    return adlar.get(bicim, str(bicim))
+
+
+def alt_kume_metni(filtre):
+    """Filtrenin okunur betimi: 'U-235, oksit, termal, LEU (%0–10)'."""
+    parcalar = [str(filtre.get("bolunebilir", "?")),
+                _bicim_metni(filtre.get("fiziksel_bicim")), _tayf_metni(filtre.get("tayf"))]
+    z = filtre.get("zenginlik")
+    if z:
+        sinif = zenginlik_sinifi(filtre["bolunebilir"], 0.5 * (z[1] + z[2]))
+        parcalar.append("%s (%%%g–%g)" % (sinif[0] if sinif else "?", z[1], z[2]))
+    return ", ".join(parcalar)
+
+
+def _eksik_neden(eksik):
+    if "tayf" in eksik:
+        return _("bu uygulama için USL yok (AOA belirlenemedi): nötron tayfı bilinmiyor; "
+                 "EALF tally'sini ('%s') ekleyip yeniden koşun") % _aoa.EALF_TALLY
+    return _("bu uygulama için USL yok (AOA belirlenemedi): %s çıkarılamadı; "
+             "uygunluk girdisinde verin") % ", ".join(eksik)
+
+
 def uygulama_ozeti(spec, kosu_dizini=None, uygulama=None, vlar=None,
                    delta_sm=DELTA_SM_VARSAYILAN):
     """(VVOzeti, uygulama). uygulama: spec + kosu dizininden cikarilan AOA
     parametreleri, verilen sozlukle (kullanici girdisi) GUNCELLENIR. Alt kume
-    aoa_filtresi ile secilir; secilemiyorsa (tayf yok) butun kume betimsel
-    ozetlenir. Iki durumda da USL cikmiyorsa usl None ve neden durustce yazilir.
+    aoa_filtresi ile secilir; secilemiyorsa butun kume betimsel ozetlenir.
+    Iki durumda da USL cikmiyorsa usl None ve neden durustce yazilir.
     Girdi spec DEGISMEZ."""
     uyg = dict(_aoa.parametreler(spec, kosu_dizini) if spec is not None else {})
     uyg.update(uygulama or {})
@@ -175,12 +229,15 @@ def uygulama_ozeti(spec, kosu_dizini=None, uygulama=None, vlar=None,
         # Alt kume secilemez: kumenin TAMAMI betimsel olarak ozetlenir (K6-AOA, K12
         # uygulamayi yine kumeyle karsilastirir) ama USL VERILMEZ.
         oz = ozet(vlar, uygulama=uyg, delta_sm=delta_sm)
-        return dataclasses.replace(oz, usl=None, usl_neden=_(
-            "bu uygulama için USL yok (AOA belirlenemedi): nötron tayfı bilinmiyor; "
-            "EALF tally'sini ('%s') ekleyip yeniden koşun") % _aoa.EALF_TALLY), uyg
-    oz = ozet(vlar, filtre=filtre, uygulama=uyg, delta_sm=delta_sm)
+        return dataclasses.replace(oz, usl=None,
+                                   usl_neden=_eksik_neden(aoa_eksikleri(uyg))), uyg
+    metin = alt_kume_metni(filtre)
+    oz = dataclasses.replace(ozet(vlar, filtre=filtre, uygulama=uyg, delta_sm=delta_sm),
+                             alt_kume=metin)
     if oz.usl is None:
         oz = dataclasses.replace(oz, usl_neden=_(
-            "bu uygulama için USL yok (AOA dışında): kümede tayfı %s olan %d vaka var; %s")
-            % (_tayf_metni(filtre["tayf"]), oz.n, oz.usl_neden))
+            "bu uygulama için USL yok (AOA dışında): kümede alt kümeye (%s) uyan %d vaka "
+            "var; %s") % (metin, oz.n, oz.usl_neden))
     return oz, uyg
+
+

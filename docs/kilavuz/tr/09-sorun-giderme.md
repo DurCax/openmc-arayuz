@@ -379,10 +379,11 @@ alanı yoktur. Profil C ve B'nin bazı girdileri koşu dizinine elle konan
 ### Profil B — Kritiklik güvenliği
 
 Yöntem kaynağı NUREG/CR-6698 (2001) ve bu araçta [docs/VV.md](../../VV.md). B'nin K6 dışındaki
-kuralları bir **doğrulama (V&V) kümesi özeti** ister. Arayüzdeki Uygunluk paneli ve
-`openmc-arayuz-kosu uygunluk` komutu bugün bu özeti denetime **vermez**; bu yüzden K6-AOA ve
-K8–K14 "Doğrulama (V&V) kümesi yok: bu kural değerlendirilemedi." der ve K6 "USL hesaplanamadı"
-der. V&V kümesiyle denetim Python'dan yapılır (bkz. [USL hesaplanamadı](#usl-hesaplanamadi)).
+kuralları bir **doğrulama (V&V) kümesi özeti** ister. Uygunluk paneli, rapor eki ve
+`openmc-arayuz-kosu uygunluk` komutu bu özeti depodaki kriter kümesinden kendiliğinden kurar
+(`kume.uygulama_ozeti`): USL yalnız uygulamayla aynı bölünebilir tür, biçim, tayf (U-235'te
+zenginlik sınıfı) taşıyan vakalardan hesaplanır; uygun alt kümede 10'dan az vaka varsa K6 "bu
+uygulama için USL yok" der (bkz. [USL hesaplanamadı](#usl-hesaplanamadi)).
 
 <a id="kural-k6"></a>
 #### K6 — Kabul koşulu k + 2σ < USL
@@ -392,7 +393,8 @@ der. V&V kümesiyle denetim Python'dan yapılır (bkz. [USL hesaplanamadı](#usl
 - **Tipik bulgular:** "k + 2σ = …, USL = …: kabul koşulu sağlanmıyor." → **hata** (sistem
   alt-kritiklik ölçütünü karşılamıyor; tasarımı ya da denetim parametrelerini değiştirin).
   "USL hesaplanamadı (…). k = … bir alt-kritiklik sınırıyla karşılaştırılmadı; bu sonuç
-  kritiklik güvenliği kanıtı değildir." → uygulanamadı. "Özdeğer koşusu sonucu yok" →
+  kritiklik güvenliği kanıtı değildir." → uygulanamadı. Geçtiğinde: "k + 2σ = … < USL = … (alt
+  küme: …; n = …; yöntem: …)". "Özdeğer koşusu sonucu yok" →
   uygulanamadı.
 
 <a id="kural-k6-aoa"></a>
@@ -440,6 +442,9 @@ der. V&V kümesiyle denetim Python'dan yapılır (bkz. [USL hesaplanamadı](#usl
   kümenin aralığında mı. Tolerans sınırı yönteminde aralık dışı **hata** (dış değerleme için
   kullanılamaz); %10'dan büyük taşma **uyarı** ("Doğrulama kümesi genişletilmeli"); ΔAOA = 0
   iken küçük taşma uyarı ("ΔAOA payı ve gerekçesi girilmeli").
+- `K12-h_x`: "Uygulamanın H/X oranı çıkarılamadı (heterojen kafeste moderatör ayrı malzemede)…"
+  → uyarı; kümede H/X aralığı varken uygulamanınki karşılaştırılmadı. Çözüm: H/X'i hücre
+  hacimleriyle hesaplayıp uygunluk girdisinde verin.
 
 <a id="kural-k13"></a>
 #### K13 — Eğilim ve normallik
@@ -564,24 +569,24 @@ Profil B seçiliyken panel (ve rapor eki) "USL hesaplanamadı: …" diyorsa:
    alt-kritiklik sınırıyla **karşılaştırılmamıştır**; sonuç kritiklik güvenliği kanıtı olarak
    kullanılamaz, ama hesap kendi içinde yanlış değildir.
 2. **Nedeni okuyun:** parantez içindeki neden şunlardan biridir:
-   - "doğrulama (V&V) kümesi yok" — arayüz ve `uygunluk` komutu V&V özetini bugün denetime
-     vermez (bkz. Profil B notu);
-   - "kümede … vaka var (< 10): bağımsız vaka yetersiz" — o uygulanabilirlik alanında (AOA)
-     yeterli bağımsız kriter yok (NUREG/CR-6698 §2.2);
+   - "bu uygulama için USL yok (AOA belirlenemedi)" — nötron tayfı (EALF tally'si `vv_ealf`) ya
+     da bölünebilir tür/biçim çıkarılamadı; kart EALF tally'sini eklemeyi önerir;
+   - "bu uygulama için USL yok (AOA dışında): kümede alt kümeye (…) uyan n vaka var" — aynı
+     bölünebilir tür, biçim, tayf (ve U-235'te zenginlik sınıfı) taşıyan bağımsız kriter 10'dan
+     az (NUREG/CR-6698 §2.2, Tablo 2.3);
    - "veri normal değil ve parametrik olmayan güven β ≤ %40: ek kriter verisi gerekli"
      (Tablo 2.2).
-3. **Hangi AOA'lar için USL var:** [docs/VV.md](../../VV.md) tablosuna bakın. Bugünkü küme
-   hızlı tayf metal sistemler ve termal tayf için USL verir; **LWR/LEU kafes**, yalnız Pu, yalnız
-   U-233 ve ara tayf alt kümelerinde USL hesaplanamaz. Ayrıntı:
+3. **Hangi AOA'lar için USL var:** [docs/VV.md](../../VV.md) "Araç hangi alt kümeyi kullanır"
+   tablosuna bakın. Bugünkü depodaki kümede en büyük uygun alt küme 5 vakadır; bu yüzden **hiçbir
+   uygulama için USL çıkmaz** (LWR/LEU kafes için uygun vaka yalnız LCT-008). Ayrıntı:
    [Doğrulama ve geçerleme](07-uygunluk.md#vv).
-4. **V&V özetiyle denetim (Python):** kendi AOA'nızın filtresiyle özet alıp denetçiye verin:
+4. **V&V özetiyle denetim (Python):** uygulamanızın alt kümesini ve nedenini görün:
 
    ```bash
-   python -c "from cekirdek.vv import kume; print(kume.ozet(filtre={'tayf': 'termal'}))"
+   python -c "from cekirdek.vv import kume; import json; print(kume.uygulama_ozeti(json.load(open('ornekler/pwr_17x17.json')), uygulama={'tayf': 'termal'})[0].usl_neden)"
    ```
 
-   Denetçide: `denetle(spec, kosu_dizini, ("B",), vv=kume.ozet(...), uygulama=kume.uygulama(spec, kosu_dizini))`
-   (`cekirdek/uygunluk_denetimi/denetle.py`).
+   Panel, rapor eki ve `uygunluk --profil B` aynı yolu (`kume.uygulama_ozeti`) kullanır.
 5. **Küme yetersizse:** uygulamanızı temsil eden bağımsız kriter deneylerini (ör.
    LEU-COMP-THERM serileri) ICSBEP el kitabından modelleyip kümeye eklemek gerekir
    ([docs/STANDARTLAR.md](../../STANDARTLAR.md) §5). Teknik gerekçeyle vaka alt sınırını

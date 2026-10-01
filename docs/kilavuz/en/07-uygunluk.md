@@ -229,20 +229,25 @@ The choice of ΔSM and its justification belong to the user organization.
 | U-233 | 5 | −0.00032 | non-parametric (β = 22.6 %) | **could not be calculated** |
 | LEU (U-235, ≤ 20 %) | 4 | −0.00056 | tolerance limit | **could not be calculated** |
 
-**Which applications are these USLs valid for?** Fast spectrum metal systems (U-235 36-94 %, Pu, U-233,
-Pu + HEU metal spheres; bare or with natural U, thorium, beryllium, graphite or HEU reflectors; EALF
-0.58-1.28 MeV) and, in the thermal spectrum, homogeneous solutions plus a single LEU UO₂ lattice case.
-Both AOAs are mixed with respect to the fissile species; NUREG/CR-6698 Table 2.3 recommends the same
-fissile species, so the user organization has to justify a single-species subset.
+**Which subset does the tool use?** The table above is descriptive. K6 calculates the USL of an
+application **only** from cases that share the application's fissile species, physical form and
+neutron spectrum; for U-235 the enrichment class must also match (ICSBEP: LEU ≤ 10 %, IEU 10-60 %,
+HEU ≥ 60 %; NUREG/CR-6698 §2.5, Table 2.3). If the matching subset has fewer than 10 cases, no USL
+is given. With this criterion the largest subset in the repository set has 5 cases (Pu, metal,
+fast); the LEU oxide lattice has 1 case (LCT-008) and a Godiva-like HEU fast metal 2 cases. **So the
+repository set at present gives no USL to any application** - that is the honest result. The fast
+spectrum, thermal spectrum and U-235 rows of the table are mixed in fissile species or form; they are
+for information only.
 
-**Which applications are they NOT valid for?**
-- **LWR / LEU lattice applications** (the most common at universities): the LEU subset has 4 cases →
-  the USL could not be calculated. Independent LEU-COMP-THERM series (LCT-001, -002, -039 ...) are not in
+**For which applications is there NO USL?**
+- **LWR / LEU lattice applications** (the most common at universities): the LEU oxide lattice subset
+  has 1 case → no USL. Independent LEU-COMP-THERM series (LCT-001, -002, -039 ...) are not in
   mit-crpg; they have to be modeled anew from the ICSBEP handbook.
-- Single-species AOAs (Pu, U-233) and the intermediate spectrum → the USL could not be calculated.
+- Single-species AOAs (Pu, U-233), the intermediate spectrum and every AOA with fewer than 10 matching
+  cases in the set.
 - MOX, oxide powders, heavy water, concrete/steel/lead reflectors, poisoned (B, Gd, Cd) systems, high
   Pu-240 (> 20 %) and enrichment/H/X/EALF values outside the AOA range are not represented in the set;
-  K6-AOA and K12 warn.
+  K6-AOA and K12 warn. If H/X cannot be derived for a heterogeneous lattice, K12 warns about that too.
 
 **Limitations.** The criterion and the formulas are from NUREG/CR-6698 (an NRC **guide**, not
 binding); correlation between experiments is not treated (for two cases of the same series K14 adds
@@ -250,15 +255,16 @@ the note "not independent"); the cases are the simplified (mostly 1D spherical) 
 was not compared with the current ICSBEP edition; only one code + one library has been validated (with
 another library or version the set has to be run again).
 
-**Using it in the tool.** In this version the V&V summary is **not connected automatically** to the
-Conformity card and the `uygunluk` command: when profile B is selected the card shows the "USL could
-not be calculated" note. To compare a run with the USL of an AOA subset, use the Python API
-(the reproduction section of `docs/VV.md`):
+**Using it in the tool.** When profile B is selected, the Conformity card, the report annex and the
+`uygunluk` command use the V&V summary automatically (`kume.uygulama_ozeti`): the application's AOA
+is derived from the model and the matching subset is selected; if there is a USL, the K6 message
+states the subset, n and the method, otherwise "no USL for this application" and the reason are
+shown. The spectrum needs the EALF tally (`vv_ealf`) in the run; without it the card offers to add
+it. With the Python API:
 
 ```bash
-python -c "from cekirdek.vv import kume; print(kume.ozet(filtre={'tayf': 'termal'}))"
+python -c "from cekirdek.vv import kume; import json; print(kume.uygulama_ozeti(json.load(open('ornekler/pwr_17x17.json')), uygulama={'tayf': 'termal'})[0].usl_neden)"
 ```
 
-In the checker: `denetle(spec, kosu_dizini, ("B",), vv=kume.ozet(...), uygulama=kume.uygulama(spec, kosu_dizini))`.
 The AOA parameters of the application (`kume.uygulama`) are derived from the model and from the EALF
 tally of the run; a parameter that cannot be derived is not in the dictionary.

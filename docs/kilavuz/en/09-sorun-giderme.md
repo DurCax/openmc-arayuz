@@ -383,10 +383,11 @@ user interface has no field for it. Some inputs of profiles C and B are read fro
 ### Profile B: Criticality safety
 
 The method source is NUREG/CR-6698 (2001) and, in this tool, [docs/VV.md](../../VV.md). The rules of B
-other than K6 need a **validation (V&V) set summary**. Today the Conformity panel of the user interface
-and the `openmc-arayuz-kosu uygunluk` command do **not** pass this summary to the check; therefore K6-AOA
-and K8-K14 say "No validation (V&V) set: this rule could not be evaluated." and K6 says "USL could not
-be calculated". A check with a V&V set is done from Python (see
+other than K6 need a **validation (V&V) set summary**. The Conformity panel, the report annex and the
+`openmc-arayuz-kosu uygunluk` command build this summary automatically from the benchmark set of the
+repository (`kume.uygulama_ozeti`): the USL is calculated only from cases with the same fissile
+species, form and spectrum (and, for U-235, enrichment class) as the application; if the matching
+subset has fewer than 10 cases, K6 says "no USL for this application" (see
 [USL could not be calculated](#usl-hesaplanamadi)).
 
 <a id="kural-k6"></a>
@@ -397,7 +398,8 @@ be calculated". A check with a V&V set is done from Python (see
 - **Typical findings:** "k + 2σ = ..., USL = ...: the acceptance condition is not met." → **error** (the
   system does not meet the subcriticality criterion; change the design or the control parameters).
   "USL could not be calculated (...). k = ... was not compared with a subcriticality limit; this result
-  is not evidence of criticality safety." → not applicable. "No eigenvalue run result" → not
+  is not evidence of criticality safety." → not applicable. When it passes: "k + 2σ = ... < USL = ...
+  (subset: ...; n = ...; method: ...)". "No eigenvalue run result" → not
   applicable.
 
 <a id="kural-k6-aoa"></a>
@@ -446,6 +448,9 @@ be calculated". A check with a V&V set is done from Python (see
   (it cannot be used for extrapolation); exceeding by more than 10 % is a **warning** ("the validation
   set should be extended"); with ΔAOA = 0 a small excess is a warning ("a ΔAOA margin and its
   justification should be entered").
+- `K12-h_x`: "The H/X ratio of the application could not be derived (in a heterogeneous lattice the
+  moderator is a separate material)..." → warning; the set has an H/X range but the application was
+  not compared. Fix: calculate H/X with the cell volumes and enter it in the conformity input.
 
 <a id="kural-k13"></a>
 #### K13: Trend and normality
@@ -574,25 +579,25 @@ If, with profile B selected, the panel (and the report annex) says "USL could no
    your run has **not been compared** with a subcriticality limit; the result cannot be used as evidence
    of criticality safety, but the calculation itself is not wrong.
 2. **Read the reason:** the reason in parentheses is one of these:
-   - "no validation (V&V) set": the user interface and the `uygunluk` command do not pass the V&V summary
-     to the check today (see the profile B note);
-   - "the set has ... cases (< 10): not enough independent cases": there are not enough independent
-     benchmarks in that area of applicability (AOA) (NUREG/CR-6698 §2.2);
+   - "no USL for this application (AOA could not be determined)": the neutron spectrum (EALF tally
+     `vv_ealf`) or the fissile species/form could not be derived; the card offers to add the EALF
+     tally;
+   - "no USL for this application (outside the AOA): the set has n cases matching the subset (...)":
+     fewer than 10 independent benchmarks share the fissile species, form, spectrum (and, for U-235,
+     the enrichment class) (NUREG/CR-6698 §2.2, Table 2.3);
    - "the data are not normal and the non-parametric confidence β ≤ 40 %: more benchmark data needed"
      (Table 2.2).
-3. **Which AOAs have a USL:** see the table in [docs/VV.md](../../VV.md). The current set gives a USL for
-   fast spectrum metal systems and for the thermal spectrum; in the **LWR/LEU lattice**, Pu-only,
-   U-233-only and intermediate spectrum subsets the USL cannot be calculated. Details:
+3. **Which AOAs have a USL:** see the table "Which subset the tool uses" in
+   [docs/VV.md](../../VV.md). In today's repository set the largest matching subset has 5 cases, so
+   **no application gets a USL** (for an LWR/LEU lattice the only matching case is LCT-008). Details:
    [Verification and validation](07-uygunluk.md#vv).
-4. **Check with a V&V summary (Python):** take a summary filtered for your own AOA and give it to the
-   checker:
+4. **Check with a V&V summary (Python):** see the subset of your application and the reason:
 
    ```bash
-   python -c "from cekirdek.vv import kume; print(kume.ozet(filtre={'tayf': 'termal'}))"
+   python -c "from cekirdek.vv import kume; import json; print(kume.uygulama_ozeti(json.load(open('ornekler/pwr_17x17.json')), uygulama={'tayf': 'termal'})[0].usl_neden)"
    ```
 
-   In the checker: `denetle(spec, kosu_dizini, ("B",), vv=kume.ozet(...), uygulama=kume.uygulama(spec, kosu_dizini))`
-   (`cekirdek/uygunluk_denetimi/denetle.py`).
+   The panel, the report annex and `uygunluk --profil B` use the same path (`kume.uygulama_ozeti`).
 5. **If the set is not sufficient:** independent benchmark experiments representing your application
    (e.g. LEU-COMP-THERM series) have to be modeled from the ICSBEP handbook and added to the set
    ([docs/STANDARTLAR.md](../../STANDARTLAR.md) §5). Lowering the minimum number of cases with a

@@ -51,7 +51,9 @@ def k6_usl(kural, baglam):
     c = baglam.esik("kabul_carpani", 2.0)
     ust = kosu.keff + c * kosu.sigma
     if ust < vv.usl:
-        return [kural.gecti(_("k + %gσ = %.5f < USL = %.5f.") % (c, ust, vv.usl))]
+        return [kural.gecti(_("k + %gσ = %.5f < USL = %.5f (alt küme: %s; n = %d; "
+                              "yöntem: %s).") % (c, ust, vv.usl, vv.alt_kume or _("tüm küme"),
+                                                 vv.n, vv.yontem))]
     return [kural.ihlal("hata", _("k + %gσ = %.5f, USL = %.5f: kabul koşulu "
                                   "sağlanmıyor.") % (c, ust, vv.usl),
                         _("Sistem alt-kritiklik ölçütünü karşılamıyor; tasarımı ya da "
@@ -185,7 +187,14 @@ def k12_aralik(kural, baglam):
     if not ortak:
         return [kural.uygulanamadi(_("Uygulamanın sayısal AOA parametreleri (zenginlik, "
                                      "H/X, EALF…) verilmedi."))]
-    return [_k12_parametre(kural, baglam, a, float(baglam.uygulama[a])) for a in ortak]
+    bulgular = [_k12_parametre(kural, baglam, a, float(baglam.uygulama[a])) for a in ortak]
+    if "h_x" in baglam.vv.aralik and "h_x" not in baglam.uygulama:
+        bulgular.append(kural.ihlal(
+            "uyari", _("Uygulamanın H/X oranı çıkarılamadı (heterojen kafeste moderatör ayrı "
+                       "malzemede): H/X doğrulama aralığıyla karşılaştırılmadı."),
+            _("H/X'i (hücre hacimleriyle) hesaplayıp uygunluk girdisinde verin."),
+            kimlik="K12-h_x"))
+    return bulgular
 
 
 def k13_egilim_normallik(kural, baglam):

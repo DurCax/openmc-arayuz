@@ -218,20 +218,23 @@ kuruluşa aittir.
 | U-233 | 5 | −0.00032 | parametrik olmayan (β = %22.6) | **hesaplanamadı** |
 | LEU (U-235, ≤ %20) | 4 | −0.00056 | tolerans sınırı | **hesaplanamadı** |
 
-**Bu USL'ler hangi uygulamalar için geçerli?** Hızlı tayf metal sistemler (U-235 %36–94, Pu, U-233,
-Pu + HEU metal küreler; çıplak ya da doğal U, toryum, berilyum, grafit, HEU yansıtıcılı; EALF
-0.58–1.28 MeV) ve termal tayf homojen çözeltiler + tek bir LEU UO₂ kafes vakası. İki AOA da
-bölünebilir tür bakımından karışıktır; NUREG/CR-6698 Tablo 2.3 bölünebilir türün aynı olmasını önerir,
-bu yüzden kullanıcı kuruluş tek tür alt kümesini gerekçelendirmelidir.
+**Araç hangi alt kümeyi kullanır?** Yukarıdaki tablo betimseldir. K6, bir uygulamanın USL'sini
+**yalnız** uygulamayla aynı bölünebilir türü, aynı fiziksel biçimi ve aynı nötron tayfını paylaşan
+vakalardan hesaplar; U-235'te zenginlik sınıfı da aynı olmalıdır (ICSBEP: LEU ≤ %10, IEU %10–60,
+HEU ≥ %60; NUREG/CR-6698 §2.5, Tablo 2.3). Uygun alt kümede 10'dan az vaka varsa USL verilmez.
+Depodaki kümede bu ölçütle en büyük alt küme 5 vakadır (Pu, metal, hızlı); LEU oksit kafeste
+1 vaka (LCT-008), Godiva benzeri HEU hızlı metalde 2 vaka vardır. **Bu yüzden depodaki küme şu an
+hiçbir uygulamaya USL vermez** — dürüst sonuç budur. Tablodaki hızlı tayf, termal tayf ve U-235
+satırları bölünebilir tür ya da biçim bakımından karışıktır; yalnız bilgi içindir.
 
-**Hangi uygulamalar için GEÇERLİ DEĞİL?**
-- **LWR / LEU kafes uygulamaları** (üniversitede en sık kullanılan): LEU alt kümesinde 4 vaka var →
-  USL hesaplanamadı. Bağımsız LEU-COMP-THERM serileri (LCT-001, -002, -039 …) mit-crpg'de yoktur;
+**Hangi uygulamalar için USL YOK?**
+- **LWR / LEU kafes uygulamaları** (üniversitede en sık kullanılan): LEU oksit kafes alt kümesinde
+  1 vaka var → USL yok. Bağımsız LEU-COMP-THERM serileri (LCT-001, -002, -039 …) mit-crpg'de yoktur;
   ICSBEP el kitabından yeniden modellenmeleri gerekir.
-- Tek bölünebilir türlü AOA'lar (Pu, U-233) ve ara tayf → USL hesaplanamadı.
+- Tek bölünebilir türlü AOA'lar (Pu, U-233), ara tayf ve kümede 10'dan az eşi olan her AOA.
 - MOX, oksit tozları, ağır su, beton/çelik/kurşun yansıtıcılar, zehirli (B, Gd, Cd) sistemler,
   yüksek Pu-240 (> %20) ve AOA aralığı dışındaki zenginlik/H/X/EALF değerleri — kümede temsil
-  edilmiyor; K6-AOA ve K12 uyarır.
+  edilmiyor; K6-AOA ve K12 uyarır. Heterojen kafeste H/X çıkarılamazsa K12 bunu da uyarır.
 
 **Sınırlamalar.** Ölçüt ve formüller NUREG/CR-6698'dendir (bir NRC **kılavuzu**, bağlayıcı değil);
 deneyler arası korelasyon ele alınmaz (aynı seriden iki vaka için K14 "bağımsız değil" notu düşer);
@@ -239,14 +242,15 @@ vakalar ICSBEP'in basitleştirilmiş (çoğu 1B küresel) modelleridir; E ± σ 
 karşılaştırılmadı; yalnız tek kod + tek kütüphane doğrulandı (başka kütüphane ya da sürümde küme
 yeniden koşulmalıdır).
 
-**Araçta kullanmak.** Bu sürümde V&V özeti Uygunluk kartına ve `uygunluk` komutuna **kendiliğinden
-bağlanmaz**: B profili seçildiğinde kart "USL hesaplanamadı" notunu gösterir. Bir koşuyu bir AOA
-alt kümesinin USL'siyle karşılaştırmak için Python API'si kullanılır (`docs/VV.md` "Yeniden üretme"):
+**Araçta kullanmak.** B profili seçildiğinde Uygunluk kartı, rapor eki ve `uygunluk` komutu V&V
+özetini kendiliğinden kullanır (`kume.uygulama_ozeti`): uygulamanın AOA'sı modelden çıkarılır,
+uygun alt küme seçilir; USL varsa K6 metninde alt küme, n ve yöntem yazar, yoksa "bu uygulama için
+USL yok" ve nedeni görünür. Tayf için koşuda EALF tally'si (`vv_ealf`) gerekir; yoksa kart onu
+eklemeyi önerir. Python API'siyle:
 
 ```bash
-python -c "from cekirdek.vv import kume; print(kume.ozet(filtre={'tayf': 'termal'}))"
+python -c "from cekirdek.vv import kume; import json; print(kume.uygulama_ozeti(json.load(open('ornekler/pwr_17x17.json')), uygulama={'tayf': 'termal'})[0].usl_neden)"
 ```
 
-Denetçide: `denetle(spec, kosu_dizini, ("B",), vv=kume.ozet(...), uygulama=kume.uygulama(spec, kosu_dizini))`.
 Uygulamanın AOA parametreleri (`kume.uygulama`) modelden ve koşudaki EALF tally'sinden çıkarılır;
 çıkarılamayan parametre sözlükte yer almaz.
