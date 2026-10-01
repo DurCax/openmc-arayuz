@@ -152,7 +152,50 @@ def test_panel_rozeti_degerlendirilemedi():
         p.deleteLater()
 
 
-TAMBUR_R = 6.0            # altigen_tambur_halkasi tambur yaricapi (cm)
+def test_stokastik_hacim_sigma_denetimi():
+    print("\n[GS5] stokastik yedek hacim: bagil sigma esigi; asilirsa orneklem artar ya da HATA")
+    from cekirdek import tukenme_hacim
+    from cekirdek.geometri import hacim
+    spec = _tukenmeli(go.duzenek_a(yakit_blok=True))
+    tablo = {"uo2_24": {"hacim": None, "yontem": hacim.KESIN_DEGIL, "ayrinti": "kesik",
+                        "zorunlu": True}}
+    eski = hacim.stokastik
+    cagri = []
+
+    def sahte(sonuclar):
+        def f(spec, adlar, orneklem=0, dizin=None):
+            cagri.append(orneklem)
+            return {a: sonuclar[min(len(cagri), len(sonuclar)) - 1] for a in adlar}
+        return f
+    try:
+        hacim.stokastik = sahte([(1000.0, 10.0), (1000.0, 2.0)])     # %1 -> %0.2
+        yeni, dusen = tukenme_hacim.stokastik_tamamla(spec, tablo, orneklem=1000)
+        kontrol("esik asildi -> orneklem artirilip yeniden olculdu",
+                len(cagri) == 2 and cagri[1] > cagri[0] and yeni["uo2_24"]["hacim"] == 1000.0
+                and dusen == ["uo2_24"], "-> %s %s" % (cagri, yeni["uo2_24"]))
+        cagri.clear()
+        hacim.stokastik = sahte([(1000.0, 10.0)])                    # hep %1
+        try:
+            tukenme_hacim.stokastik_tamamla(spec, tablo, orneklem=1000)
+            hata = None
+        except ValueError as e:
+            hata = str(e)
+        kontrol("artirmaya ragmen esik asiliyor -> ValueError", hata and "σ" in hata,
+                "-> %s" % hata)
+        cagri.clear()
+        hacim.stokastik = sahte([(0.0, 0.0)])
+        yeni, dusen = tukenme_hacim.stokastik_tamamla(spec, tablo, orneklem=1000)
+        kontrol("v = 0 -> nedeni ayrintida (sessiz KESIN_DEGIL degil)",
+                not dusen and "sıfır" in yeni["uo2_24"]["ayrinti"], "-> %s" % yeni["uo2_24"])
+        hacim.stokastik = lambda spec, adlar, orneklem=0, dizin=None: {}
+        k = hacim.hesapla(spec, "uo2_24", orneklem=1000)
+        kontrol("hesapla: malzeme olcum disi -> nedeni ayrintida",
+                k.yontem == hacim.KESIN_DEGIL and "stokastik" in k.ayrinti, "-> %s" % k.ayrinti[-120:])
+    finally:
+        hacim.stokastik = eski
+
+
+TAMBUR_R = 6.0           # altigen_tambur_halkasi tambur yaricapi (cm)
 
 
 def _harita(spec, noktalar):
@@ -197,5 +240,6 @@ def test_tek_tambur_yonu_asil_modelle_ayni():
 
 
 HIZLI = [test_periyodik_es_etkin_bc, test_betik_kesik_yakit_hacmi, test_k2_brown_atiflari,
-         test_panel_rozeti_degerlendirilemedi, test_tek_tambur_yonu_asil_modelle_ayni]
+         test_panel_rozeti_degerlendirilemedi, test_tek_tambur_yonu_asil_modelle_ayni,
+         test_stokastik_hacim_sigma_denetimi]
 YAVAS = [test_yavas_betik_kesik_hacim_kosucuyla_ayni]
