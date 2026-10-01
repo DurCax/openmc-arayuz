@@ -3,9 +3,12 @@
 surum.py -- surum ve uygulama adi TEK YERDEN.
 
 Surumun tek kaynagi pyproject.toml'daki [project].version'dir:
-  1. paket kuruluysa (pip install -e .) importlib.metadata,
-  2. degilse kaynak agacindaki pyproject.toml,
-  3. o da okunamazsa sabit geri donus (_GERI_DONUS_SURUMU).
+  1. kaynak agacindaki pyproject.toml (gelistirme, `pip install -e .`):
+     duzenlenebilir kurulumun meta verisi surum degisince yeniden kurulana
+     dek ESKI kalir; bu yuzden once dosyaya bakilir,
+  2. dosya yoksa (wheel / conda paketi) importlib.metadata,
+  3. ikisi de yoksa "bilinmiyor" isareti (_GERI_DONUS_SURUMU). Burada surum
+     numarasi YAZILMAZ: ikinci bir kopya tek kaynak kuralini bozar.
 
 Urun adi ve marka metni yalnizca UYGULAMA_ADI'ndadir; pencere basligi,
 Hakkinda penceresi ve rapor bu sabiti kullanir (ad degisirse tek satir).
@@ -19,7 +22,7 @@ from cekirdek.ceviri import N_
 # kapsul.json); gosterirken _(UYGULAMA_ADI) ile etkin dile cevrilir.
 UYGULAMA_ADI = N_("OpenMC Reaktör Kuru Arayüzü")
 PAKET_ADI = "openmc-arayuz"
-_GERI_DONUS_SURUMU = "2.0.0.dev0"
+_GERI_DONUS_SURUMU = "0+bilinmiyor"
 _PYPROJECT = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
                           "pyproject.toml")
 
@@ -41,13 +44,13 @@ def _meta_surumu():
     from importlib import metadata
     try:
         return metadata.version(PAKET_ADI)
-    except metadata.PackageNotFoundError:     # paket kurulu degil: pyproject'e dusulur
+    except metadata.PackageNotFoundError:     # paket kurulu degil: geri donus isareti
         return None
 
 
 def surum():
-    """Uygulama surumu (PEP 440 metni, ornek "2.0.0.dev0")."""
-    return _meta_surumu() or _pyproject_surumu() or _GERI_DONUS_SURUMU
+    """Uygulama surumu (PEP 440 metni, ornek "X.Y.ZrcN")."""
+    return _pyproject_surumu() or _meta_surumu() or _GERI_DONUS_SURUMU
 
 
 __version__ = surum()

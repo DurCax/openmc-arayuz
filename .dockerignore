@@ -1,0 +1,16 @@
+# Docker derleme baglamindan cikarilanlar (imaj kucuk kalsin; kisisel dosya girmesin)
+.git
+.github
+.claude
+graphify-out
+**/__pycache__
+**/*.py[cod]
+.pytest_cache
+*.egg-info
+.coverage
+.coverage.*
+coverage.xml
+kosu*/
+*.log
+DURUM_*.md
+conda-recipe

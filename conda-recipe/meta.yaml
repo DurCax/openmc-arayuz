@@ -1,0 +1,69 @@
+# =============================================================================
+#  openmc-arayuz -- conda paketi tarifi (conda-build)
+#
+#  Surum TEK KAYNAKTAN: ../pyproject.toml [project].version.
+#
+#  DENEME / DERLEME (depo kokunden; conda-build ayri bir ortamda olabilir)
+#      conda render conda-recipe                     # tarif cozumlenir mi
+#      conda build conda-recipe -c conda-forge --override-channels
+#  Paket yalniz izin verilen kisilere dagitilir (LICENSE): ozel bir kanala ya
+#  da dosya olarak; anaconda.org'un acik kanalina YUKLENMEZ.
+#
+#  Neden pip wheel degil: uygulama ikonlari, yazi tiplerini, ceviri katalogunu
+#  (locale/), ornekleri ve belgeleri kaynak agacina gore bulur. build.sh agaci
+#  $PREFIX/share/openmc-arayuz'a kopyalar ve site-packages'a bir .pth koyar.
+# =============================================================================
+{% set proje = load_file_data("pyproject.toml", from_recipe_dir=True, recipe_dir=RECIPE_DIR ~ "/..")["project"] %}
+
+package:
+  name: openmc-arayuz
+  version: {{ proje["version"] }}
+
+source:
+  path: ..
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    {% for ad, hedef in load_file_data("pyproject.toml", from_recipe_dir=True, recipe_dir=RECIPE_DIR ~ "/..")["project"]["scripts"].items() %}
+    - {{ ad }} = {{ hedef }}
+    {% endfor %}
+
+requirements:
+  host:
+    - python >=3.11
+  run:
+    - python >=3.11
+    # SABIT: testlerdeki referans degerler openmc 0.16.0 ile olculdu (environment.yml)
+    - openmc 0.16.0
+    - pyside6 >=6.5
+    - matplotlib-base >=3.7
+    - pandas >=2.0
+    - h5py >=3.8
+    - numpy >=1.24
+    - scipy
+    - uncertainties >=3.1
+    - curl
+
+test:
+  imports:
+    - cekirdek.surum
+    - cekirdek.giris
+  commands:
+    - openmc-arayuz-kosu --help
+    - python -c "from cekirdek import surum; assert surum.surum() == '{{ proje['version'] }}', surum.surum()"
+    - test -f "$PREFIX/share/openmc-arayuz/LICENSE"
+
+about:
+  summary: {{ proje["description"] }}
+  license: LicenseRef-Proprietary
+  license_family: Proprietary
+  license_file:
+    - LICENSE
+    - THIRD_PARTY_LICENSES.md
+  description: |
+    OpenMC ile reaktor modeli kurma, calistirma ve sonuc okuma arayuzu.
+    Tum haklari saklidir; yalniz izin verilen kisilere dagitilir.
+    Nukleer veri pakette YOKTUR: veri_indir.sh (paket icinde
+    share/openmc-arayuz/veri_indir.sh) ya da hazir bir veri dizini.
