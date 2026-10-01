@@ -29,6 +29,7 @@ import warnings
 from contextlib import redirect_stdout
 
 from testler.ortak_test import kontrol, ORNEK, ISLEM_PARCACIGI
+from testler.ortak_test import gereksinim  # S-4 izlenebilirlik
 from testler import test_altigen_kor as T
 
 warnings.filterwarnings("ignore")
@@ -217,6 +218,7 @@ def _ayrilmis(spec):
     return [x.volume for x in klonlar], hv["uo2"]["hacim"]
 
 
+@gereksinim("R-TK-02")
 def test_ornek_hacimleri():
     print("\n[TH3] CUBUK CUBUK YANMA: ornek basina hacim (katman + iki yaricap)")
     for ad, s, n_kalin, n_ince in (
@@ -460,6 +462,7 @@ def test_terminal_kapisi():
 # birim: bolge alani, dogrudan yerlesimli ornekler, nokta yolu, hazirla
 # ============================================================================
 
+@gereksinim("R-G-05")
 def test_bolge_alani():
     print("\n[TH12] BOLGE ALANI: halka, cokgen, altigen kor hucresi, desteklenmeyen")
     import openmc
@@ -637,6 +640,7 @@ def test_hazirla():
 # YAVAS
 # ============================================================================
 
+@gereksinim("R-TK-02")
 def test_hacim_stokastik(gecici):
     """Analitik hacim (dogrudan yerlesim dahil) = OpenMC stokastik hacim, 3 sigma."""
     print("\n[TH9] HACIM: analitik vs OpenMC stokastik (kare + altigen, dogrudan uo2)")

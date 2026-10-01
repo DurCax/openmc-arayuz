@@ -14,6 +14,7 @@ import copy
 import os
 
 from testler.ortak_test import kontrol, ORNEK
+from testler.ortak_test import gereksinim  # S-4 izlenebilirlik
 
 
 def _gecerli_spec():
@@ -61,6 +62,7 @@ def test_kapi_spec_degistirmez():
     kontrol("kapi sonrasi spec ayni", s == once)
 
 
+@gereksinim("R-A3-01")
 def test_ornekler_kapidan_gecer():
     print("\n[DK4] Butun ornekler kapidan gecer (kapi eklenince kosu kirilmaz)")
     import glob

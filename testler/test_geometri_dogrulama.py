@@ -15,6 +15,7 @@ import copy
 import os
 
 from testler.ortak_test import kontrol, ORNEK
+from testler.ortak_test import gereksinim  # S-4 izlenebilirlik
 from testler import geometri_ortak as go
 
 
@@ -63,6 +64,7 @@ def test_temiz_duzenekler():
         kontrol("(%s) HATA yok" % ad, not h, "-> %s" % _metin(h))
 
 
+@gereksinim("R-G-08")
 def test_ortusme_yakalanir():
     print("\n[GD2] kasitli ortusen model: analitik HATA + nokta yoklamasi ortusme bulur")
     from cekirdek.geometri import yoklama
@@ -78,6 +80,7 @@ def test_ortusme_yakalanir():
     kontrol("ortusmesiz asil model temiz", not temiz.ortusmeler and not temiz.bosluklar)
 
 
+@gereksinim("R-G-08")
 def test_bosluk_yakalanir():
     print("\n[GD3] kasitli bos model: plaka bolgeyi doldurmuyor -> HATA; yoklama bosluk bulur")
     from cekirdek.geometri import yoklama
@@ -90,6 +93,7 @@ def test_bosluk_yakalanir():
             "-> %s | %s" % (yoklama.oran_metni(sonuc), metin[:1]))
 
 
+@gereksinim("R-G-04")
 def test_kesik_ve_gizli():
     print("\n[GD4] (a): kesik blok UYARI, gizli konum BILGI; (a-yakit): kesik cubuk UYARI")
     b = _bulgular(go.duzenek_a())
@@ -150,6 +154,7 @@ def test_yapisal_once():
                                                         for x in h), "-> %s" % _metin(h))
 
 
+@gereksinim("R-G-08")
 def test_yavas_geometri_hata_ayikla(gecici):
     print("\n[GD7] kisa 'openmc --geometry-debug' kosusu ortusmeyi yakalar, temiz modeli gecirir")
     from cekirdek.geometri import yoklama

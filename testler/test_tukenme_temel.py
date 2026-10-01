@@ -14,6 +14,7 @@ import tempfile
 
 from cekirdek import sema, kod_uret
 from testler.ortak_test import kontrol
+from testler.ortak_test import gereksinim  # S-4 izlenebilirlik
 from testler.regresyon_ortak import KOK, ORNEK
 
 
@@ -21,6 +22,7 @@ from testler.regresyon_ortak import KOK, ORNEK
 # 17. TUKENME
 # ============================================================================
 
+@gereksinim("R-TK-03")
 def test_zincir_butunlugu():
     """
     Yarim indirilmis zincir ANINDA yakalanmali.
@@ -53,6 +55,7 @@ def test_zincir_butunlugu():
         shutil.rmtree(gecici, ignore_errors=True)
 
 
+@gereksinim("R-TK-01")
 def test_bateman_bozunum(gecici=None):
     """
     ANALITIK: zincirin bozunum verisi + OpenMC'nin CRAM cozucusu.
@@ -89,6 +92,7 @@ def test_bateman_bozunum(gecici=None):
                 abs(n2[i] / n0[i] - 0.25) < 1e-8)
 
 
+@gereksinim("R-TK-03")
 def test_tukenme_zincir_secimi():
     """Spektrum tahmini ve fisyon verimi enerjisi."""
     print("\n[17c] TUKENME: zincir ve fisyon verimi spektruma gore")
@@ -110,6 +114,7 @@ def test_tukenme_zincir_secimi():
             tukenme.zincir_secimi(sp)["tur"] == "termal")
 
 
+@gereksinim("R-TK-02")
 def test_tukenme_hacimleri():
     """
     Hacimler analitik ve geometrinin TAM karsiligi olmali.
@@ -274,6 +279,7 @@ def test_tukenme_kosu(gecici):
 
 
 
+@gereksinim("R-FZ-03")
 def test_tukenme_betik_esdegerligi(gecici):
     """
     Uretilen betigin tukenme_kos()'u ile cekirdek/tukenme.py AYNI sonucu vermeli.

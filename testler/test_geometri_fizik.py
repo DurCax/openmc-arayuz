@@ -34,6 +34,7 @@ import os
 import random
 
 from testler.ortak_test import kontrol, ORNEK, ISLEM_PARCACIGI
+from testler.ortak_test import gereksinim  # S-4 izlenebilirlik
 from testler import geometri_ortak as go
 
 YENI = ("pwr_kare_altigen_halka", "altigen_tambur_halkasi", "kafes_tamburlu_yansitici")
@@ -230,6 +231,7 @@ def test_yeni_ornekler():
                 [(x["ad"], x["tur"], x["deger"]) for x in g] == [("tamburlar", "donme", 180.0)])
 
 
+@gereksinim("R-G-09")
 def test_yeni_ornek_hacimleri_analitik():
     print("\n[GF2] Yeni orneklerde yakit hacmi analitik (kesin)")
     from cekirdek import geometri
@@ -313,6 +315,7 @@ def _kos(spec, gecici, etiket, n, c, p):
     return k
 
 
+@gereksinim("R-G-09")
 def test_yavas_sonsuz_ortam(gecici):
     print("\n[GF4] Sonsuz ortam: kafes (ayni demet) = tek demet k-sonsuz (2 sigma)")
     for ad, tek, kafes in (("kare", tek_kare_demet(), sonsuz_kare()),
@@ -324,6 +327,7 @@ def test_yavas_sonsuz_ortam(gecici):
             kontrol("%s: kafes = tek demet (%.2f sigma)" % (ad, z), z <= Z_KABUL)
 
 
+@gereksinim("R-G-09")
 def test_yavas_tamburlu_kor_agacta(gecici):
     print("\n[GF5] tamburlu_kor agacta: ayni k (2 sigma), donme 0 -> en dusuk k")
     k = {}
@@ -342,6 +346,7 @@ def test_yavas_tamburlu_kor_agacta(gecici):
     print("   tambur degeri (agac): %.0f pcm" % (1e5 * (k["agac", 180][0] - k["agac", 0][0])))
 
 
+@gereksinim("R-G-09")
 def test_yavas_tambur_monoton(gecici):
     print("\n[GF6] 6 tamburlu altigen kor: donme 0 -> 180 k monoton artar")
     taban = _spec("altigen_tambur_halkasi")
@@ -362,6 +367,7 @@ def test_yavas_tambur_monoton(gecici):
           % (toplam, tek_deger, 6 * tek_deger, toplam / (6 * tek_deger) if tek_deger else 0))
 
 
+@gereksinim("R-G-09")
 def test_yavas_simetri_60(gecici):
     print("\n[GF7] Butun model 60 derece dondurulur (tambur donmesi 90, kiral): ayni k (2 sigma)")
     taban = _grup(_spec("altigen_tambur_halkasi"), 90.0)
@@ -397,12 +403,14 @@ def _hacim_karsilastir(gecici, isler):
             zler and ic_bir >= (len(zler) + 1) // 2)
 
 
+@gereksinim("R-G-09")
 def test_yavas_yeni_ornek_hacimleri(gecici):
     print("\n[GF8] Yeni ornekler: yakit hacmi analitik = stokastik")
     _hacim_karsilastir(gecici, [(ad, _spec(ad), mal) for ad, mal in YAKIT.items()]
                        + [("pwr_kare_altigen_halka", _spec("pwr_kare_altigen_halka"), "uo2_31")])
 
 
+@gereksinim("R-G-05")
 def test_yavas_pin_kesiti_hacmi(gecici):
     print("\n[GF9] Kare ve altigen kesitli pin demetleri: yakit hacmi analitik = stokastik")
     _hacim_karsilastir(gecici, [("kare_pin", go.duzenek_d("kare"), "uo2_24"),

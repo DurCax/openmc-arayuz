@@ -41,6 +41,7 @@ import tokenize
 from collections import Counter
 
 from testler.ortak_test import kontrol, KOK
+from testler.ortak_test import gereksinim  # S-4 izlenebilirlik
 
 TARANAN_DIZINLER = ("cekirdek", "arayuz")
 GENIS_ISTISNALAR = {"Exception", "BaseException"}
@@ -274,6 +275,7 @@ def izin_farki(bulunan, izinli):
     return yeni, eski
 
 
+@gereksinim("R-M5-01")
 def test_tarayici_ornekleri():
     print("\n[HY1] Sessiz except tarayicisi: ornek kodda dogru siniflandirma")
     kaynak = (
@@ -394,6 +396,7 @@ def test_dar_tip_gerekcesiz_bilgi():
             _adlar(kayitlar) == ["ornek:g"], "-> %s" % _adlar(kayitlar))
 
 
+@gereksinim("R-M5-01")
 def test_sessiz_hata_yutma():
     print("\n[HY2] cekirdek/ ve arayuz/ icinde yeni sessiz 'except' yok")
     bulunan, yerler = sessiz_yakalayicilar()

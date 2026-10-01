@@ -24,6 +24,7 @@ import sys
 from types import SimpleNamespace
 
 from testler.ortak_test import kontrol, KOK, ORNEK, ISLEM_PARCACIGI
+from testler.ortak_test import gereksinim  # S-4 izlenebilirlik
 
 
 # ============================================================================
@@ -136,6 +137,7 @@ def _kare_2x2_sentetik():
 # HIZLI -- anahtar ve donusum mantigi
 # ============================================================================
 
+@gereksinim("R-M1-01")
 def test_kare_kor_anahtar_sentetik():
     """Kare korda her cubuk ayri anahtar almali; toplam korunmali."""
     print("\n[GK1] Kare kor: tam yol anahtari (sentetik)")
@@ -154,6 +156,7 @@ def test_kare_kor_anahtar_sentetik():
     kontrol("kafes_turleri [kare, kare]", d.get("kafes_turleri") == ["kare", "kare"])
 
 
+@gereksinim("R-M1-01")
 def test_altigen_ic_ice_anahtar_sentetik():
     """Altigen-icinde-altigen: her duzeyde get_universe_index; 49 ayri anahtar."""
     print("\n[GK2] Altigen ic ice: her duzeyde (halka, sira) (sentetik)")
@@ -233,6 +236,7 @@ def test_katmanli_ayni_konum_toplanir():
     kontrol("birlesme notu var", any("katman" in n for n in d["notlar"]))
 
 
+@gereksinim("R-M1-02")
 def test_tepe_faktorleri_tam_kor():
     """Demet ortalamalari, demet tepeleri ve kor geneli F_dH."""
     print("\n[GK5] Tepe faktorleri: tam kor (sentetik)")
@@ -501,6 +505,7 @@ def _nokta_hucre_dogrula(etiket, sp, dagilim, dizin, hucre_id):
             not hatali, "-> ilk hatalar %r" % hatali[:3])
 
 
+@gereksinim("R-M1-01")
 def test_kare_kor_2x2_mc(gecici):
     """
     2x2 kare kor, demetler FARKLI zenginlikte (ornek basina malzeme). Beklenen:
@@ -598,6 +603,7 @@ def _altigen_model(dizin):
     return model, kor, c_yakit
 
 
+@gereksinim("R-M1-01")
 def test_altigen_ic_ice_mc(gecici):
     print("\n[GK13] Altigen-icinde-altigen kor (Monte Carlo)")
     from cekirdek import guc

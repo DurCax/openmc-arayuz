@@ -241,6 +241,11 @@ def _alan_listesi(spec, kosu_dizini):
     if kosu_var:
         alanlar += [(_("Koşu tarihi"), meta.get("tarih")),
                     (_("Statepoint"), _kisa_yol(os.path.abspath(meta["statepoint"])))]
+    # S-4: koşu anındaki ortamın kapsülü (kapsul.json); eski koşularda yok -> satır yok
+    from cekirdek import kapsul as _kapsul
+    kapsul_metni = _kapsul.ozet_metni(kosu_dizini)
+    if kapsul_metni:
+        alanlar.append((_("Tekrarlanabilirlik kapsülü"), kapsul_metni))
     return alanlar
 
 

@@ -13,13 +13,15 @@
    python3 -m cekirdek.kosucu ornekler/pwr_pinhucre.json --dizin /tmp/deneme -s 24
    python3 -m cekirdek.kosucu ornekler/pwr_pinhucre.json --sadece-dogrula
    python3 -m cekirdek.kosucu ornekler/pwr_pinhucre.json --betik model.py
+   python3 -m cekirdek.kosucu yeniden <kosu_dizini> [--hedef D] [--kuru]   (kapsul.py)
 
  KULLANIM (kutuphane)
    from cekirdek import kosucu
    sonuc = kosucu.calistir(spec, "kosu", geri_cagir=lambda s: print(s))
 
  CIKTI DIZINI
-   Kosu dizininde model.xml, statepoint.*.h5, summary.h5 ve kosu.log yan yana
+   Kosu dizininde model.xml, spec.json, kapsul.json (tekrarlanabilirlik),
+   statepoint.*.h5, summary.h5 ve kosu.log yan yana
    durur -- mevcut projelerdeki "yerinde kosu" duzenine uygun.
 ================================================================================
 """
@@ -33,6 +35,7 @@ import time
 
 from cekirdek import sema, kurucu, dogrula
 from cekirdek import kaynak as _kaynak
+from cekirdek import kapsul as _kapsul
 from cekirdek.ceviri import _
 from cekirdek.gunluk import kaydedici
 from cekirdek.uygunluk_denetimi import ayristir as _ayristir
@@ -220,7 +223,7 @@ def dizin_hazirla(dizin, temizle=True):
             # yeni kosuya kayip parcacik (K3) diye yanlis alarm verirdi.
             if (ad.startswith(("statepoint", "particle_")) or ad in ("summary.h5", "tallies.out",
                                                       "model.xml", "kosu.log",
-                                                      "spec.json")):
+                                                      "spec.json", _kapsul.KAPSUL_ADI)):
                 try:
                     os.remove(os.path.join(dizin, ad))
                 except OSError:
@@ -229,7 +232,7 @@ def dizin_hazirla(dizin, temizle=True):
     return dizin
 
 
-def xml_yaz(spec, dizin):
+def xml_yaz(spec, dizin, is_parcacigi=None):
     """Modeli kurar ve model.xml'i kosu dizinine yazar. DONER (model, bilgi, yol)"""
     # Kosu icin DAIMA taze model -- onbellekteki nesne paylasilir, uzerinde
     # calisma dizinine bagli islemler yapilmamalidir (bkz. onbellek.py).
@@ -238,6 +241,7 @@ def xml_yaz(spec, dizin):
     model.export_to_model_xml(yol)
     # Kosunun modeli dizinde kalir: rapor (CLI ve arayuz) spec'i buradan okur.
     sema.kaydet(spec, os.path.join(dizin, "spec.json"))
+    _kapsul.yaz(dizin, spec, is_parcacigi=is_parcacigi)   # S-4: tekrarlanabilirlik
     return model, bilgi, yol
 
 
@@ -269,9 +273,9 @@ def calistir(spec, dizin, geri_cagir=None, is_parcacigi=None, temizle=True,
     if dogrulama:
         dogrula.kapi(spec, veri_kontrolu=veri_kontrolu)
     dizin = dizin_hazirla(dizin, temizle=temizle)
-    xml_yaz(spec, dizin)
-
     n = is_parcacigi or spec["calistirma"].get("is_parcacigi", 8)
+    xml_yaz(spec, dizin, is_parcacigi=n)
+
     exe = openmc_yolu()
     if exe is None:
         raise RuntimeError("openmc çalıştırılabilir dosyası PATH'te bulunamadı "
@@ -610,6 +614,8 @@ def _terminal(argv):
     if not argv or argv[0] in ("-h", "--yardim", "--help"):
         print(__doc__)
         return 0
+    if argv[0] == "yeniden":
+        return _kapsul.yeniden_komutu(argv[1:])
 
     spec_yolu = argv[0]
     dizin = None

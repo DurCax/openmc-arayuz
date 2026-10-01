@@ -25,6 +25,7 @@ import shutil
 import tempfile
 
 from testler.ortak_test import kontrol, KOK
+from testler.ortak_test import gereksinim  # S-4 izlenebilirlik
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
@@ -64,6 +65,7 @@ def _k5_sorunlari(spec, metin):
 # RAPOR
 # ============================================================================
 
+@gereksinim("R-S-06")
 def test_rapor_k5_temiz():
     print("\n[S2-1] uretilen rapor K5'ten (1σ, 2 anlamli rakam, pcm tanimi, SI) temiz")
     from cekirdek import rapor
@@ -110,6 +112,7 @@ def _ek_metni(profiller, bicim="html"):
         shutil.rmtree(dizin, True)
 
 
+@gereksinim("R-S-13", "R-S-01")
 def test_rapor_uygunluk_eki_html():
     print("\n[S2-3] HTML raporda Uygunluk eki: profiller, tablo, cerceve AYNEN, USL notu")
     from cekirdek.uygunluk_denetimi.kurallar import etiket_metni, IYI_UYGULAMA
@@ -131,6 +134,7 @@ def test_rapor_uygunluk_eki_html():
     kontrol("B secilmezse USL notu yok", "USL hesaplanamadı" not in a and "Uygunluk eki" in a)
 
 
+@gereksinim("R-S-13")
 def test_rapor_uygunluk_eki_pdf():
     print("\n[S2-4] PDF: ekli belge metni Uygunluk eki ve cerceveyi icerir")
     _qt()
@@ -144,6 +148,7 @@ def test_rapor_uygunluk_eki_pdf():
     kontrol("PDF yazildi", _ek_metni(("A", "B", "D"), "pdf") > 0)
 
 
+@gereksinim("R-S-13")
 def test_rapor_uygunluk_hatasi_raporu_durdurmaz():
     print("\n[S2-5] bozuk uygunluk_girdisi.json: rapor yazilir, ekte ve uyarida hata")
     from cekirdek import rapor
@@ -223,6 +228,7 @@ def _cli(argv):
     return kod, cikti.getvalue(), hata.getvalue()
 
 
+@gereksinim("R-S-12")
 def test_cli_uygunluk():
     print("\n[S2-8] openmc-arayuz-kosu uygunluk: 0 temiz, 1 hata, 2 kullanim")
     kod, cikti, _h = _cli(["uygunluk", FIXTURE])
@@ -311,6 +317,7 @@ def test_panel_profil_secimi():
     p.deleteLater()
 
 
+@gereksinim("R-S-04")
 def test_calistir_sayfasi_panel_ve_m5():
     print("\n[S2-11] Calistir: kosu yuklenince panel dolar; kayip parcacik gorunur (M5)")
     _qt()

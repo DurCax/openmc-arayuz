@@ -8,8 +8,10 @@ import os
 import re
 
 from testler.ortak_test import kontrol, KOK
+from testler.ortak_test import gereksinim  # S-4 izlenebilirlik
 
 
+@gereksinim("R-M6-01")
 def test_atlama_nedeni_eksikleri_birlikte_soyler():
     print("\n[KA1] conftest: hem veri hem zincir eksikse atlama metni ikisini de soyler")
     import conftest
@@ -34,6 +36,7 @@ def test_kapsam_betigi_oturumu_yalitir():
             and re.search(r"^export COVERAGE_FILE=", betik, re.M) is not None)
 
 
+@gereksinim("R-M6-01")
 def test_modul_basina_veri_listeleri():
     print("\n[KA3] conftest: modul basina VERI_GEREKEN / ZINCIR_GEREKEN")
     import importlib
