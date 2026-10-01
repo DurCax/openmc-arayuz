@@ -6,6 +6,7 @@ inceleme). Basliksiz (QT_QPA_PLATFORM=offscreen) calisir.
     python araclar/ekran_turu.py [--cikti DIZIN] [--alt d2_kabuk]
         [--ornek pwr_17x17.json] [--ornek sfr_altigen.json]
         [--sekme demet --sekme kor] [--tema acik,koyu] [--boyut 1280x800,1440x900]
+        [--dil tr|en]
 
 Cikti dizini: --cikti > $OPENMC_V2_CIKTI (ikisi de yoksa hata). --alt verilirse
 onun altina yazilir (ornek: $OPENMC_V2_CIKTI/d2_kabuk/).
@@ -14,12 +15,16 @@ Dosyalar:  baslangic_<tema>_<GxY>.png
            <ornek>_<sekme>_<tema>_<GxY>.png     (gorunur her sekme)
            tur_ozeti.txt   -- her ekran icin yatay kaydirma denetimi
                               ("YATAY KAYDIRMA" satiri = kabul disi)
+           --dil en: ayni adlar "_en" sonekiyle (<...>_<GxY>_en.png); Ingilizce
+           katalog locale/en/LC_MESSAGES/*.po'dan gecici dizine derlenir
+           (testler/dil_en_yardimci.en_kipi; cikista Turkceye donulur).
 
 Kullanicinin gercek QSettings'i DEGISMEZ (gecici dizine yonlendirilir).
 Pencereye yalniz gezinme cephesiyle (arayuz/pencere/gezinme.py) erisilir.
 """
 
 import argparse
+import contextlib
 import os
 import sys
 import tempfile
@@ -28,6 +33,7 @@ KOK = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ORTAM_DEGISKENI = "OPENMC_V2_CIKTI"
 TEMALAR = ("acik", "koyu")
 BOYUTLAR = ((1280, 800), (1440, 900))
+DILLER = ("tr", "en")
 VARSAYILAN_ORNEK = "pwr_17x17.json"
 _BEKLEME_TURU = 6
 
@@ -53,8 +59,22 @@ def boyutlari_coz(metin):
     return tuple(boyutlar)
 
 
-def dosya_adi(ekran, tema_adi, boyut):
-    return "%s_%s_%dx%d.png" % (ekran, tema_adi, boyut[0], boyut[1])
+def dosya_adi(ekran, tema_adi, boyut, dil="tr"):
+    sonek = "" if dil == "tr" else "_" + dil
+    return "%s_%s_%dx%d%s.png" % (ekran, tema_adi, boyut[0], boyut[1], sonek)
+
+
+def dil_baglami(dil):
+    """Turun dili: "tr" kaynak dildir (degisiklik yok); "en" Ingilizce katalogla
+    calistirir ve cikista Turkceye doner. Bilinmeyen dilde ValueError."""
+    if dil not in DILLER:
+        raise ValueError("dil %s olmali: %r" % (" | ".join(DILLER), dil))
+    if dil == "tr":
+        return contextlib.nullcontext()
+    if KOK not in sys.path:
+        sys.path.insert(0, KOK)
+    from testler import dil_en_yardimci
+    return dil_en_yardimci.en_kipi()
 
 
 def _ayarlari_yalit():
@@ -102,9 +122,9 @@ def _ornek_turu(app, pencere, ornek, sekmeler, son, cikti, ozet):
     return yollar
 
 
-def _tur(app, boyut, tema_adi, ornekler, sekmeler, cikti, ozet):
+def _tur(app, boyut, tema_adi, ornekler, sekmeler, cikti, ozet, dil="tr"):
     from arayuz import ana_pencere
-    son = "_" + dosya_adi("", tema_adi, boyut)[1:]
+    son = "_" + dosya_adi("", tema_adi, boyut, dil)[1:]
     pencere = ana_pencere.AnaPencere()
     pencere._kaydetme_sor = lambda: True          # kapanista modal soru acilmasin
     pencere.resize(*boyut)
@@ -121,8 +141,10 @@ def _tur(app, boyut, tema_adi, ornekler, sekmeler, cikti, ozet):
     return yollar
 
 
-def cek(cikti, ornekler=(VARSAYILAN_ORNEK,), sekmeler=(), temalar=TEMALAR, boyutlar=BOYUTLAR):
-    """Ekran turunu ceker; yazilan PNG yollari (tur_ozeti.txt ayrica yazilir)."""
+def cek(cikti, ornekler=(VARSAYILAN_ORNEK,), sekmeler=(), temalar=TEMALAR, boyutlar=BOYUTLAR,
+        dil="tr"):
+    """Ekran turunu ceker; yazilan PNG yollari (tur_ozeti.txt ayrica yazilir).
+    dil: dosya adlarinin soneki; dili kurmak cagiranin isidir (dil_baglami)."""
     from PySide6 import QtCore, QtWidgets
     QtCore.QLocale.setDefault(QtCore.QLocale.c())
     app = QtWidgets.QApplication.instance() or QtWidgets.QApplication(sys.argv[:1])
@@ -133,8 +155,9 @@ def cek(cikti, ornekler=(VARSAYILAN_ORNEK,), sekmeler=(), temalar=TEMALAR, boyut
     for tema_adi in temalar:
         tema.uygula(app, tema_adi)
         for boyut in boyutlar:
-            yollar += _tur(app, boyut, tema_adi, ornekler, sekmeler, cikti, ozet)
-    with open(os.path.join(cikti, "tur_ozeti.txt"), "w", encoding="utf-8") as f:
+            yollar += _tur(app, boyut, tema_adi, ornekler, sekmeler, cikti, ozet, dil)
+    ozet_adi = "tur_ozeti.txt" if dil == "tr" else "tur_ozeti_%s.txt" % dil
+    with open(os.path.join(cikti, ozet_adi), "w", encoding="utf-8") as f:
         f.write("\n".join(ozet) + "\n")
     return yollar
 
@@ -150,6 +173,8 @@ def _ayristirici():
                    help="yalniz bu sekmeler (anahtar; tekrarlanabilir)")
     a.add_argument("--tema", default=",".join(TEMALAR))
     a.add_argument("--boyut", default=",".join("%dx%d" % b for b in BOYUTLAR))
+    a.add_argument("--dil", default="tr", choices=DILLER,
+                   help="arayuz dili (varsayilan tr; en: Ingilizce katalog)")
     return a
 
 
@@ -169,8 +194,9 @@ def main(argv=None):
     ornekler = [o if os.path.isabs(o) else os.path.join(KOK, "ornekler", o)
                 for o in (a.ornek or [VARSAYILAN_ORNEK])]
     temalar = tuple(t.strip() for t in a.tema.split(",") if t.strip())
-    for yol in cek(cikti, ornekler, tuple(a.sekme or ()), temalar, boyutlar):
-        print(yol)
+    with dil_baglami(a.dil):
+        for yol in cek(cikti, ornekler, tuple(a.sekme or ()), temalar, boyutlar, a.dil):
+            print(yol)
     return 0
 
 
