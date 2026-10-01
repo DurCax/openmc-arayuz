@@ -22,7 +22,7 @@ from arayuz.tasarim import tokenlar
 from arayuz.bilesenler.kenar_cubugu import ROL_ANAHTAR
 from arayuz.tasarim.ikon import ikon_bagla
 from cekirdek import surum
-from cekirdek.ceviri import _, N_
+from cekirdek.ceviri import _, N_, pgettext
 
 A = tokenlar.ARALIK
 B = tokenlar.BOYUT
@@ -33,9 +33,19 @@ GEZINME_IKONLARI = {
     "kor": "hexagon", "ayarlar": "sliders-horizontal", "calistir": "play",
     "analiz": "activity", "tukenme": "hourglass",
 }
-# Grup adlari yalniz isaretlenir (N_); ana_pencere gosterirken _() ile cevirir.
+# Grup adlari yalniz isaretlenir (N_); ana_pencere gezinme_grup_adi() ile gosterir.
+# "Sonuç" gezinme_grup_adi()'nda BAGLAMLI isaretlidir (pgettext "gezinme").
 GEZINME_GRUPLARI = (("malzemeler", N_("Model")), ("ayarlar", N_("Hesap")),
-                    ("analiz", N_("Sonuç")))
+                    ("analiz", "Sonuç"))
+
+
+def gezinme_grup_adi(ad):
+    """Kenar cubugu grup basligi etkin dilde. Buradaki "Sonuç" cogul grup adidir
+    (EN "Results"); kart basliklarindaki "Sonuç" (EN "Result") ile karismasin
+    diye baglamli cevrilir."""
+    if ad == "Sonuç":
+        return pgettext("gezinme", "Sonuç")
+    return _(ad)
 
 # sekme_isaretleri() isareti -> KenarCubugu durumu
 ISARET_DURUMU = {"!": "hata", "•": "eksik", "✓": "tamam", "": None}
@@ -286,7 +296,8 @@ class DogrulamaSeridi(QtWidgets.QWidget):
         self.d_veri.clicked.connect(self.veri_denetle)
         d.addWidget(self.d_veri)
         d.addWidget(dikey_ayirici())
-        s = QtWidgets.QLabel("%s %s" % (surum.UYGULAMA_ADI, surum.surum()))
+        uygulama_adi = surum.UYGULAMA_ADI    # cekirdek sabiti; etkin dilde gosterilir
+        s = QtWidgets.QLabel("%s %s" % (_(uygulama_adi), surum.surum()))
         s.setObjectName("kucuk")
         s.setToolTip(_("Uygulama sürümü (Yardım > Hakkında)"))
         d.addWidget(s)

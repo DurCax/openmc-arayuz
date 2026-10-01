@@ -25,6 +25,7 @@ from typing import Any, Callable, Mapping, Optional
 
 from cekirdek.ceviri import _, N_
 from cekirdek.dogrula._ortak import Bulgu
+from cekirdek.uygunluk_denetimi.profiller import atif_metni
 
 # --- durumlar ---
 KARSILANDI = "karsilandi"
@@ -89,9 +90,10 @@ class Kural:
 
     def bulgu(self, seviye, durum, mesaj, oneri=None, kaynak=None, kimlik=None):
         """Bu kuralin kaynak/etiketiyle doldurulmus bulgu. kimlik: alt kural
-        (ör. "K2-parcacik"); kaynak: alt kuralin kendi atfi."""
+        (ör. "K2-parcacik"); kaynak: alt kuralin kendi atfi. Atif etkin
+        dilde yazilir (profiller.atif_metni)."""
         return DenetimBulgusu(seviye, kimlik or self.kimlik, mesaj, oneri,
-                              kaynak=kaynak or self.kaynak, etiket=self.etiket,
+                              kaynak=atif_metni(kaynak or self.kaynak), etiket=self.etiket,
                               durum=durum, profil=self.profil)
 
     def gecti(self, mesaj, **kw):

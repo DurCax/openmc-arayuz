@@ -461,6 +461,6 @@
   "baslik": "VVER-1000 demeti (Gd'li)",
   "kategori": "vver",
   "seviye": "orta",
-  "baslik_en": "VVER-1000 assembly (Gd rods)",
-  "aciklama_en": "VVER-1000 hexagonal assembly at hot full power: 312 fuel rods (12 UO2-Gd2O3), 18 guide channels, central tube, no wrapper."
+  "baslik_en": "VVER-1000 assembly (Gd pins)",
+  "aciklama_en": "VVER-1000 hexagonal assembly at hot full power: 312 fuel pins (12 UO2-Gd2O3), 18 guide channels, central tube, no duct."
 }

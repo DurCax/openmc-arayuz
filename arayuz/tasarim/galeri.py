@@ -177,8 +177,9 @@ class GaleriPenceresi(QtWidgets.QMainWindow):
         self.tema_secici = b.SegmentSecici([("acik", _("Açık")), ("koyu", _("Koyu"))],
                                            tema.etkin(), ikonlar={"acik": "sun", "koyu": "moon"})
         self.tema_secici.secildi.connect(self._tema)
+        vurgu_adlari = {k: v["ad"] for k, v in tokenlar.VURGULAR.items()}
         self.vurgu_secici = b.SegmentSecici(
-            [(k, _(v["ad"])) for k, v in tokenlar.VURGULAR.items()], tema.etkin_vurgu())
+            [(k, _(ad)) for k, ad in vurgu_adlari.items()], tema.etkin_vurgu())
         self.vurgu_secici.secildi.connect(self._vurgu)
         ust.addWidget(self.vurgu_secici)
         ust.addWidget(self.tema_secici)
@@ -237,7 +238,7 @@ def kaydet(dizin, boyut=(1440, 1280), vurgu=None):
         yol = os.path.join(dizin, "galeri_%s.png" % ad)
         g.grab().save(yol)
         g.palet.ac()
-        g.palet.arama.setText("kay")
+        g.palet.arama.setText(_("kay"))
         app.processEvents()
         yol2 = os.path.join(dizin, "galeri_palet_%s.png" % ad)
         g.grab(QtCore.QRect(0, 0, boyut[0], 640)).save(yol2)

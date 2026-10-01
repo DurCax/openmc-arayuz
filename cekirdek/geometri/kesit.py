@@ -21,6 +21,7 @@
 """
 
 import math
+from cekirdek.ceviri import _
 
 SQ3 = math.sqrt(3.0)
 SEKILLER = ("dikdortgen", "silindir", "altigen", "kure", "kafes_zarfi")
@@ -57,7 +58,7 @@ def kutu(kesit):
         a = float(kesit["apotem"])
         uzun = 2.0 * a * 2.0 / SQ3
         return (2.0 * a, uzun) if kesit.get("yonelim", "y") == "y" else (uzun, 2.0 * a)
-    raise ValueError("kutusu hesaplanamayan kesit: %s" % s)
+    raise ValueError(_("kutusu hesaplanamayan kesit: %s") % s)
 
 
 def buyut(kesit, kalinlik):
@@ -72,7 +73,7 @@ def buyut(kesit, kalinlik):
     if s == "altigen":
         return {"sekil": s, "apotem": float(kesit["apotem"]) + k,
                 "yonelim": kesit.get("yonelim", "y")}
-    raise ValueError("kalınlıkla büyütülemeyen kesit: %s" % s)
+    raise ValueError(_("kalınlıkla büyütülemeyen kesit: %s") % s)
 
 
 def icinde(kesit, x, y, merkez=(0.0, 0.0), pay=PAY):
@@ -91,7 +92,7 @@ def icinde(kesit, x, y, merkez=(0.0, 0.0), pay=PAY):
             if px * math.cos(t) + py * math.sin(t) > a + pay:
                 return False
         return True
-    raise ValueError("içerme denetimi yapılamayan kesit: %s" % s)
+    raise ValueError(_("içerme denetimi yapılamayan kesit: %s") % s)
 
 
 def sinir_noktalari(kesit, merkez=(0.0, 0.0), n_daire=72):
@@ -116,7 +117,7 @@ def sinir_noktalari(kesit, merkez=(0.0, 0.0), n_daire=72):
             k = math.radians(aci + 30.0)
             noktalar.append((cx + r * math.cos(k), cy + r * math.sin(k)))
         return noktalar
-    raise ValueError("sınır noktası üretilemeyen kesit: %s" % s)
+    raise ValueError(_("sınır noktası üretilemeyen kesit: %s") % s)
 
 
 def kapsar(dis, ic, ic_merkez=(0.0, 0.0), pay=PAY):
@@ -151,7 +152,7 @@ def alan(kesit):
         return math.pi * float(kesit["yaricap"]) ** 2
     if s == "altigen":
         return 2.0 * SQ3 * float(kesit["apotem"]) ** 2
-    raise ValueError("alanı hesaplanamayan kesit: %s" % s)
+    raise ValueError(_("alanı hesaplanamayan kesit: %s") % s)
 
 
 # ----------------------------------------------------------------------------

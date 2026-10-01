@@ -208,6 +208,7 @@ class TukenmeArayuzu:
             ic.addWidget(w)
         ic.addStretch(1)
         duzen = sd.sayfa_duzeni(self)
-        duzen.addWidget(sd.sayfa_basligi(_("Tükenme"), self.aciklama, bosluk=A["xs"]))
+        duzen.addWidget(sd.sayfa_basligi(_("Tükenme"), self.aciklama, bosluk=A["xs"],
+                                         bolum="tukenme"))
         duzen.addWidget(self.bos, 1)
         duzen.addWidget(self.icerik, 1)

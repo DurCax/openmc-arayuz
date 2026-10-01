@@ -47,7 +47,7 @@ from dataclasses import dataclass
 from typing import Optional
 
 from cekirdek import sema
-from cekirdek.ceviri import N_
+from cekirdek.ceviri import N_, _
 from cekirdek.gunluk import kaydedici
 
 _log = kaydedici(__name__)
@@ -131,46 +131,46 @@ def _sayi_mi(v):
 
 def _olcum_sorunlari(olcum):
     if not isinstance(olcum, dict):
-        return ["referans.olcum bir sözlük olmalı"]
-    sorunlar = ["referans.olcum.%s eksik" % a for a in _OLCUM_ZORUNLU if a not in olcum]
-    sorunlar += ["referans.olcum.%s bilinmeyen alan" % a
+        return [_("referans.olcum bir sözlük olmalı")]
+    sorunlar = [_("referans.olcum.%s eksik") % a for a in _OLCUM_ZORUNLU if a not in olcum]
+    sorunlar += [_("referans.olcum.%s bilinmeyen alan") % a
                  for a in sorted(olcum) if a not in _OLCUM_ALANLARI]
     for a in _OLCUM_SAYILAR:
         if a in olcum and not (_sayi_mi(olcum[a]) and olcum[a] >= 0):
-            sorunlar.append("referans.olcum.%s negatif olmayan bir sayı olmalı" % a)
+            sorunlar.append(_("referans.olcum.%s negatif olmayan bir sayı olmalı") % a)
     for a in _OLCUM_TAMSAYILAR:
         v = olcum.get(a)
         if a in olcum and not (isinstance(v, int) and not isinstance(v, bool) and v > 0):
-            sorunlar.append("referans.olcum.%s pozitif tamsayı olmalı" % a)
+            sorunlar.append(_("referans.olcum.%s pozitif tamsayı olmalı") % a)
     for a in _OLCUM_METINLER:
         if a in olcum and not (isinstance(olcum[a], str) and olcum[a].strip()):
-            sorunlar.append("referans.olcum.%s boş olmayan metin olmalı" % a)
+            sorunlar.append(_("referans.olcum.%s boş olmayan metin olmalı") % a)
     return sorunlar
 
 
 def _referans_sorunlari(ref):
     if not isinstance(ref, dict):
-        return ["referans bir sözlük olmalı"]
-    sorunlar = ["referans.%s eksik" % a for a in _REFERANS_ZORUNLU if a not in ref]
-    sorunlar += ["referans.%s bilinmeyen alan" % a
+        return [_("referans bir sözlük olmalı")]
+    sorunlar = [_("referans.%s eksik") % a for a in _REFERANS_ZORUNLU if a not in ref]
+    sorunlar += [_("referans.%s bilinmeyen alan") % a
                  for a in sorted(ref) if a not in _REFERANS_ALANLARI]
     if "k" in ref and not (_sayi_mi(ref["k"]) and ref["k"] >= 0):
-        sorunlar.append("referans.k negatif olmayan bir sayı olmalı")
+        sorunlar.append(_("referans.k negatif olmayan bir sayı olmalı"))
     if "sigma" in ref and not (_sayi_mi(ref["sigma"]) and ref["sigma"] >= 0):
-        sorunlar.append("referans.sigma negatif olmayan bir sayı olmalı")
+        sorunlar.append(_("referans.sigma negatif olmayan bir sayı olmalı"))
     if "tur" in ref and ref["tur"] not in REFERANS_TURLERI:
-        sorunlar.append("referans.tur %r geçersiz (geçerli: %s)"
+        sorunlar.append(_("referans.tur %r geçersiz (geçerli: %s)")
                         % (ref["tur"], ", ".join(REFERANS_TURLERI)))
     if "kaynak" in ref and not (isinstance(ref["kaynak"], str) and ref["kaynak"].strip()):
-        sorunlar.append("referans.kaynak boş olmayan metin olmalı")
+        sorunlar.append(_("referans.kaynak boş olmayan metin olmalı"))
     if "olcum" in ref:
         sorunlar += _olcum_sorunlari(ref["olcum"])
     for a in _REFERANS_VV_METIN:
         if a in ref and not (isinstance(ref[a], str) and ref[a].strip()):
-            sorunlar.append("referans.%s boş olmayan metin olmalı" % a)
+            sorunlar.append(_("referans.%s boş olmayan metin olmalı") % a)
     for a in _REFERANS_VV_SOZLUK:
         if a in ref and not isinstance(ref[a], dict):
-            sorunlar.append("referans.%s bir sözlük olmalı" % a)
+            sorunlar.append(_("referans.%s bir sözlük olmalı") % a)
     return sorunlar
 
 
@@ -179,19 +179,19 @@ def dogrula_meta(ham):
     baslik, kategori ve seviye ZORUNLUDUR; referans ve _en alanlari istege
     baglidir. `ham` ham JSON sozlugudur (sema.yukle ciktisi da olur)."""
     if not isinstance(ham, dict):
-        return ["örnek bir JSON nesnesi olmalı"]
+        return [_("örnek bir JSON nesnesi olmalı")]
     sorunlar = []
     for a in ("baslik", "kategori", "seviye"):
         if a not in ham:
             sorunlar.append("%s eksik" % a)
     for a in _METIN_ALANLARI:
         if a in ham and not (isinstance(ham[a], str) and ham[a].strip()):
-            sorunlar.append("%s boş olmayan metin olmalı" % a)
+            sorunlar.append(_("%s boş olmayan metin olmalı") % a)
     if "kategori" in ham and ham["kategori"] not in KATEGORILER:
-        sorunlar.append("kategori %r geçersiz (geçerli: %s)"
+        sorunlar.append(_("kategori %r geçersiz (geçerli: %s)")
                         % (ham["kategori"], ", ".join(KATEGORILER)))
     if "seviye" in ham and ham["seviye"] not in SEVIYELER:
-        sorunlar.append("seviye %r geçersiz (geçerli: %s)"
+        sorunlar.append(_("seviye %r geçersiz (geçerli: %s)")
                         % (ham["seviye"], ", ".join(SEVIYELER)))
     if "referans" in ham:
         sorunlar += _referans_sorunlari(ham["referans"])
@@ -246,7 +246,7 @@ def ornek_bilgisi(yol):
     with open(yol, encoding="utf-8") as f:
         ham = json.load(f)
     if not isinstance(ham, dict):
-        raise ValueError("%s: örnek bir JSON nesnesi değil" % yol)
+        raise ValueError(_("%s: örnek bir JSON nesnesi değil") % yol)
     return bilgi_olustur(ham, yol)
 
 
@@ -274,3 +274,37 @@ def kategori_sayilari(bilgiler):
     for b in bilgiler:
         sayilar[b.kategori] = sayilar.get(b.kategori, 0) + 1
     return sayilar
+
+
+# ----------------------------------------------------------------------------
+# Dil secimi (Dalga 3 / Ajan 12): galeri ve baslangic ekrani etkin dildeki
+# basligi/aciklamayi gosterir. EN'de _en alani yoksa Turkce metne duser ve bu
+# LOGLANIR (sessiz degil); test_dil EN modu eksik _en alanini KALDI sayar.
+# ----------------------------------------------------------------------------
+
+_BILDIRILEN_EN_EKSIKLERI = set()
+
+
+def _yerel_alan(bilgi, alan, turkce, dil):
+    if dil is None:
+        from cekirdek import ceviri
+        dil = ceviri.etkin_dil()
+    if dil == "tr":
+        return turkce
+    deger = getattr(bilgi, alan + "_en", None)
+    if deger and deger.strip():
+        return deger
+    if (bilgi.dosya, alan) not in _BILDIRILEN_EN_EKSIKLERI:
+        _BILDIRILEN_EN_EKSIKLERI.add((bilgi.dosya, alan))
+        _log.warning("örnek %s: %s_en yok; Türkçe metin gösteriliyor", bilgi.dosya, alan)
+    return turkce
+
+
+def yerel_baslik(bilgi, dil=None):
+    """Etkin dildeki (ya da `dil`) galeri basligi: EN'de baslik_en."""
+    return _yerel_alan(bilgi, "baslik", bilgi.baslik, dil)
+
+
+def yerel_aciklama(bilgi, dil=None):
+    """Etkin dildeki (ya da `dil`) aciklama: EN'de aciklama_en."""
+    return _yerel_alan(bilgi, "aciklama", bilgi.aciklama, dil)

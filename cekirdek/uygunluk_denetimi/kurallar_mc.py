@@ -18,7 +18,7 @@ import math
 
 from cekirdek.ceviri import _, N_
 from cekirdek.uygunluk_denetimi.kurallar import IYI_UYGULAMA, Kural
-from cekirdek.uygunluk_denetimi.profiller import BROWN_2009
+from cekirdek.uygunluk_denetimi.profiller import BROWN_2009, atif_parcasi
 
 _ORNEK = 3
 
@@ -211,12 +211,12 @@ def k3_kayip(kural, baglam):
 
 KURALLAR = (
     Kural("K1", "A", N_("Kaynak yakınsaması (Shannon entropisi platosu)"),
-          N_("iyi uygulama; ") + BROWN_2009 + N_(" §II; NUREG/CR-6698 §2.4 dipnotu "
-                                                  "(yakınsama kullanıcı yargısıdır)"),
+          atif_parcasi(N_("iyi uygulama; ")) + BROWN_2009 + atif_parcasi(N_(" §II; NUREG/CR-6698 §2.4 dipnotu "
+                                                  "(yakınsama kullanıcı yargısıdır)")),
           IYI_UYGULAMA, k1_entropi),
     Kural("K2", "A", N_("İstatistik yeterliliği"),
-          N_("iyi uygulama; eşik standarttan gelmez (profil değeri)"),
+          atif_parcasi(N_("iyi uygulama; eşik standarttan gelmez (profil değeri)")),
           IYI_UYGULAMA, k2_istatistik),
     Kural("K3", "A", N_("Kayıp parçacık = 0"),
-          N_("iyi uygulama (OpenMC)"), IYI_UYGULAMA, k3_kayip),
+          atif_parcasi(N_("iyi uygulama (OpenMC)")), IYI_UYGULAMA, k3_kayip),
 )

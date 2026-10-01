@@ -8,6 +8,7 @@
 
 from PySide6 import QtCore, QtWidgets
 from cekirdek import sema
+from cekirdek.ceviri import _
 from arayuz.cubuk.parca_islemleri import (
     BOS_ETIKETI, SECILMEDI_ETIKETI, _renk, malzeme_etiketi, roller)
 
@@ -37,15 +38,15 @@ class MalzemeKutusu(QtWidgets.QComboBox):
         if yok_etiketi is not None:
             self.addItem(yok_etiketi, None)
         elif secili is None:
-            self.addItem(SECILMEDI_ETIKETI, None)
+            self.addItem(_(SECILMEDI_ETIKETI), None)
         if bos:
-            self.addItem(BOS_ETIKETI, sema.BOSLUK)
+            self.addItem(_(BOS_ETIKETI), sema.BOSLUK)
         for ad in liste:
             self.addItem(malzeme_etiketi(spec, ad, rol_goster, rol_tablosu), ad)
             self.setItemData(self.count() - 1, ad, QtCore.Qt.ToolTipRole)
         if secili is not None and self.findData(secili) < 0:
             etiket = malzeme_etiketi(spec, secili, rol_goster, rol_tablosu)
-            self.addItem("%s — role uymuyor" % etiket
+            self.addItem(_("{etiket} — role uymuyor").format(etiket=etiket)
                          if sema.malzeme_bul(spec, secili) is not None else etiket, secili)
         i = self.findData(secili)
         self.setCurrentIndex(max(i, 0))

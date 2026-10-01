@@ -13,7 +13,11 @@ Hakkinda penceresi ve rapor bu sabiti kullanir (ad degisirse tek satir).
 
 import os
 
-UYGULAMA_ADI = "OpenMC Reaktör Kuru Arayüzü"
+from cekirdek.ceviri import N_
+
+# Urun adi kimlik olarak SABIT kalir (Qt applicationName -> ayar dosyasi yolu,
+# kapsul.json); gosterirken _(UYGULAMA_ADI) ile etkin dile cevrilir.
+UYGULAMA_ADI = N_("OpenMC Reaktör Kuru Arayüzü")
 PAKET_ADI = "openmc-arayuz"
 _GERI_DONUS_SURUMU = "2.0.0.dev0"
 _PYPROJECT = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
@@ -29,7 +33,7 @@ def _pyproject_surumu(yol=_PYPROJECT):
     try:
         with open(yol, "rb") as f:
             return tomllib.load(f)["project"]["version"]
-    except (OSError, KeyError, ValueError):
+    except (OSError, KeyError, ValueError):   # siradaki kaynaga dusulur (surum())
         return None
 
 
@@ -37,7 +41,7 @@ def _meta_surumu():
     from importlib import metadata
     try:
         return metadata.version(PAKET_ADI)
-    except metadata.PackageNotFoundError:
+    except metadata.PackageNotFoundError:     # paket kurulu degil: pyproject'e dusulur
         return None
 
 

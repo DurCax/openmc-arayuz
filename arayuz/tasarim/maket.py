@@ -29,7 +29,7 @@ import sys
 from PySide6 import QtCore, QtGui, QtWidgets
 
 from arayuz.tasarim import tokenlar
-from cekirdek.ceviri import _
+from cekirdek.ceviri import N_, _
 
 COZUNURLUKLER = ((1440, 900), (1280, 800))
 # maket ekrani -> mevcut uygulamadaki karsilik (once goruntusu dosya adi)
@@ -65,10 +65,10 @@ def _kabuk_dar():
 
 # (metin, ikon, kisayol) -- komut paletinde gorunen ornek eylemler
 _PALET_EYLEMLERI = (
-    ("Çalıştır", "play", "F5"), ("Kaydet", "save", "Ctrl+S"),
-    ("Farklı kaydet…", "save", "Ctrl+Shift+S"), ("Doğrula", "circle-check", "Ctrl+D"),
-    ("Kor türünü değiştir…", "hexagon", ""), ("Rapor oluştur…", "file-text", ""),
-    ("Koyu tema", "moon", ""), ("Veri kütüphanesini denetle", "atom", ""))
+    (N_("Çalıştır"), "play", "F5"), (N_("Kaydet"), "save", "Ctrl+S"),
+    (N_("Farklı kaydet…"), "save", "Ctrl+Shift+S"), (N_("Doğrula"), "circle-check", "Ctrl+D"),
+    (N_("Kor türünü değiştir…"), "hexagon", ""), (N_("Rapor oluştur…"), "file-text", ""),
+    (N_("Koyu tema"), "moon", ""), (N_("Veri kütüphanesini denetle"), "atom", ""))
 
 
 def _kabuk_palet():

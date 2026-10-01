@@ -32,6 +32,7 @@ from dataclasses import dataclass, field
 
 from cekirdek.geometri.gezinti import gez
 from cekirdek.geometri.sema import BOSLUK
+from cekirdek.ceviri import N_, _
 
 KESIN_DEGIL = "stokastik hesap gerekli"
 STOKASTIK = "stokastik"
@@ -40,11 +41,11 @@ YOK = "yok"
 AYRINTI_SINIRI = 6          # ayrintida gosterilen parca/sorun sayisi
 
 _NEDEN = {
-    "konum": "kesik kafes konumu",
-    "cubuk": "kesik çubuk (pin hücreye sığmıyor)",
-    "bilesen": "bileşen bölgesine sığmıyor",
-    "dis": "kafes dışı düzensiz bölge",
-    None: "alanı analitik hesaplanamayan bölge",
+    "konum": N_("kesik kafes konumu"),
+    "cubuk": N_("kesik çubuk (pin hücreye sığmıyor)"),
+    "bilesen": N_("bileşen bölgesine sığmıyor"),
+    "dis": N_("kafes dışı düzensiz bölge"),
+    None: N_("alanı analitik hesaplanamayan bölge"),
 }
 
 
@@ -68,8 +69,10 @@ def _uzunluk(z):
 
 
 def _kisa_yol(yol):
+    """Ayrinti metni icin yolun son uc parcasi, okunur bicimde (yol_metni)."""
+    from cekirdek.geometri.yol_metni import okunur
     parcalar = yol.split("/")
-    return "/".join(parcalar[-3:]) if len(parcalar) > 3 else yol
+    return okunur("/".join(parcalar[-3:]) if len(parcalar) > 3 else yol)
 
 
 def _ozet(satirlar):
@@ -100,7 +103,7 @@ def analitik(m, ad):
     V, ornek, parcalar, sorunlar = 0.0, 0, [], []
     for yol, v, n, neden in katkilar(m, ad):
         if v is None:
-            sorunlar.append("%s (%s)" % (_kisa_yol(yol), _NEDEN.get(neden, _NEDEN[None])))
+            sorunlar.append("%s (%s)" % (_kisa_yol(yol), _(_NEDEN.get(neden, _NEDEN[None]))))
             continue
         if v <= 0.0:
             parcalar.append("%s: 0 cm³" % _kisa_yol(yol))
@@ -109,13 +112,13 @@ def analitik(m, ad):
         ornek += n
         parcalar.append("%s: %d × %.4g cm³" % (_kisa_yol(yol), n, v / n))
     if sorunlar:
-        return HacimKaydi(None, KESIN_DEGIL, "hacmi kesin değil: " + _ozet(sorunlar),
+        return HacimKaydi(None, KESIN_DEGIL, _("hacmi kesin değil: ") + _ozet(sorunlar),
                           ornek, tuple(sorunlar))
     if V > 0:
         return HacimKaydi(V, ANALITIK, _ozet(parcalar), ornek)
     if parcalar:
-        return HacimKaydi(None, YOK, "hacmi sıfır: " + _ozet(parcalar), 0)
-    return HacimKaydi(None, YOK, "malzeme geometride bulunamadı", 0)
+        return HacimKaydi(None, YOK, _("hacmi sıfır: ") + _ozet(parcalar), 0)
+    return HacimKaydi(None, YOK, _("malzeme geometride bulunamadı"), 0)
 
 
 def ornek_sayisi(m, ad):
@@ -203,7 +206,7 @@ def denetimli_stokastik(spec, adlar, orneklem=2_000_000, dizin=None):
         kalan = [a for a in genis if _bagil(*olculen[a]) > BAGIL_SIGMA_SINIRI]
         if kalan:
             raise ValueError(
-                "stokastik hacmin bağıl σ'sı %%%.2f sınırını aşıyor (örneklem %d): %s"
+                _("stokastik hacmin bağıl σ'sı %%%.2f sınırını aşıyor (örneklem %d): %s")
                 % (100 * BAGIL_SIGMA_SINIRI, n, ", ".join(
                     "%s %.6g ± %.2g cm³" % (a, olculen[a][0], olculen[a][1]) for a in kalan)))
     sonuc, nedenler = {}, {}
@@ -212,9 +215,9 @@ def denetimli_stokastik(spec, adlar, orneklem=2_000_000, dizin=None):
         if v:
             sonuc[a] = (v, s)
         elif a in olculen:
-            nedenler[a] = "stokastik hacim sıfır (malzeme örnekleme kutusunda bulunamadı)"
+            nedenler[a] = _("stokastik hacim sıfır (malzeme örnekleme kutusunda bulunamadı)")
         else:
-            nedenler[a] = "stokastik hacim ölçülemedi (malzeme kurulan modelde yok)"
+            nedenler[a] = _("stokastik hacim ölçülemedi (malzeme kurulan modelde yok)")
     return sonuc, nedenler
 
 
@@ -230,5 +233,5 @@ def hesapla(spec, ad, stokastik_yedek=True, orneklem=2_000_000, dizin=None):
         return HacimKaydi(None, KESIN_DEGIL, "%s; %s" % (nedenler[ad], kayit.ayrinti),
                           kayit.ornek, kayit.sorunlar)
     v, s = sonuc[ad]
-    return HacimKaydi(v, STOKASTIK, "stokastik hacim %.6g ± %.2g cm³ (%s)"
+    return HacimKaydi(v, STOKASTIK, _("stokastik hacim %.6g ± %.2g cm³ (%s)")
                       % (v, s, kayit.ayrinti), kayit.ornek, kayit.sorunlar, s)

@@ -24,7 +24,7 @@ DURUMLAR = {"malzemeler": "tamam", "parcalar": "tamam", "demet": "tamam",
             "kor": "eksik", "hesap": "tamam", "calistir": "eksik",
             "sonuclar": None, "analiz": None, "tukenme": None}
 
-MODEL = {"ad": "PWR 17×17 yakıt demeti", "tur": N_("Yakıt demeti — kare"),
+MODEL = {"ad": N_("PWR 17×17 yakıt demeti"), "tur": N_("Yakıt demeti — kare"),
          "ozet": N_("2B · Özdeğer (k-eff)"), "olcu": "21.42 × 21.42 cm"}
 
 MALZEMELER = (
@@ -38,10 +38,10 @@ MALZEMELER = (
 BILESIM = (("U234", "0.000286"), ("U235", "0.032000"), ("U238", "0.967714"),
            ("O16", "2.000000"))
 
-PARCALAR = (("yakit_cubugu", "YÇ", N_("Yakıt çubuğu"), 264, 0),
-            ("kilavuz_boru", "KB", N_("Kılavuz boru"), 24, 1),
-            ("enstruman", "EN", N_("Enstrüman borusu"), 1, 2),
-            ("su", "SU", N_("Su hücresi"), 0, 5))
+PARCALAR = (("yakit_cubugu", N_("YÇ"), N_("Yakıt çubuğu"), 264, 0),
+            ("kilavuz_boru", N_("KB"), N_("Kılavuz boru"), 24, 1),
+            ("enstruman", N_("EN"), N_("Enstrüman borusu"), 1, 2),
+            ("su", N_("SU"), N_("Su hücresi"), 0, 5))
 
 # 17x17 Westinghouse: kilavuz boru konumlari (satir, sutun), merkez enstruman
 KILAVUZ = {(2, 5), (2, 8), (2, 11), (3, 3), (3, 13), (5, 2), (5, 5), (5, 8), (5, 11),

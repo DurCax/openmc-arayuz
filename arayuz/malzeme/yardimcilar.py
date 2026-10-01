@@ -8,7 +8,7 @@
 
 from PySide6 import QtCore, QtWidgets
 from cekirdek import malzeme_kutup as mk
-from cekirdek.ceviri import _, N_
+from cekirdek.ceviri import _, N_, pgettext
 from cekirdek import sema
 from cekirdek.gunluk import kaydedici
 
@@ -16,18 +16,19 @@ _log = kaydedici(__name__)
 
 
 # Spec degerleri AYNEN kalir; kullanici yalnizca okunur etiketi gorur.
-TUR_SECENEKLERI = (("element", "Doğal element"), ("nuklid", "İzotop (nüklid)"))
-BIRIM_SECENEKLERI = (("ao", "Atom oranı"), ("wo", "Ağırlık oranı"))
+# Gorunen etiketler yalnizca isaretli (N_); gosterirken _() (bilesim.py).
+TUR_SECENEKLERI = (("element", N_("Doğal element")), ("nuklid", N_("İzotop (nüklid)")))
+BIRIM_SECENEKLERI = (("ao", N_("Atom oranı")), ("wo", N_("Ağırlık oranı")))
 YOGUNLUK_BIRIMLERI = (("g/cm3", "g/cm³"), ("atom/b-cm", "atom/b-cm"),
                       ("kg/m3", "kg/m³"))
 _YOGUNLUK_ETIKETI = dict(YOGUNLUK_BIRIMLERI)
 
 # Kutuphane listesinin gruplari, SIRAYLA.
-GRUPLAR = (("yakit", "Yakıt"), ("yapisal", "Zarf ve yapısal"),
-           ("sogutucu", "Soğutucu ve moderatör"), ("emici", "Emici"),
-           ("gaz", "Gaz"))
-ROL_ETIKETLERI = {"yakit": "yakıt", "sogutucu": "soğutucu", "moderator": "moderatör",
-                  "emici": "emici", "yapisal": "yapısal", "gaz": "gaz"}
+GRUPLAR = (("yakit", N_("Yakıt")), ("yapisal", N_("Zarf ve yapısal")),
+           ("sogutucu", N_("Soğutucu ve moderatör")), ("emici", N_("Emici")),
+           ("gaz", N_("Gaz")))
+ROL_ETIKETLERI = {"yakit": N_("yakıt"), "sogutucu": N_("soğutucu"), "moderator": N_("moderatör"),
+                  "emici": N_("emici"), "yapisal": N_("yapısal"), "gaz": N_("gaz")}
 _ROL_SIRASI = ("yakit", "emici", "gaz", "sogutucu", "moderator", "yapisal")
 
 _KELVIN = 273.15
@@ -52,7 +53,7 @@ _GRUP_ONBELLEK = {}
 
 def kutuphane_gruplari():
     """
-    [(grup, etiket, [anahtar, ...]), ...] -- bos gruplar atlanir. Grup,
+    [(grup, etiket, [anahtar, ...]), ...] -- bos gruplar atlanir; etiket etkin dilde. Grup,
     kutuphanenin varsayilan malzemesinin uygunluk rollerinden turetilir;
     grup ici sira malzeme_kutup.KATALOG sirasidir (ilk: UO2).
     """
@@ -65,7 +66,7 @@ def kutuphane_gruplari():
     for grup, etiket in GRUPLAR:
         anahtarlar = [k for k in mk.KATALOG if _GRUP_ONBELLEK.get(k) == grup]
         if anahtarlar:
-            cikti.append((grup, etiket, anahtarlar))
+            cikti.append((grup, _(etiket), anahtarlar))
     return cikti
 
 
@@ -97,6 +98,25 @@ def sab_onerileri(m):
     return cikti
 
 
+def okunur_ad(anahtar):
+    """Kutuphane malzemesinin gorunen adi, etkin dilde (metin cekirdek KATALOG'unda)."""
+    return _(mk.okunur_ad(anahtar))
+
+
+def katalog_aciklamasi(anahtar):
+    """Kutuphane malzemesinin kisa aciklamasi, etkin dilde (bos olabilir)."""
+    return _(mk.katalog_aciklamasi(anahtar))
+
+
+def uretim_ozeti(m, sorun=None):
+    """Parametre formunun urettigi malzemenin ozeti (m) ya da kurulamama nedeni."""
+    if sorun:
+        return _("Bu değerlerle malzeme kurulamıyor: {sorun}").format(sorun=sorun)
+    sab = ", ".join(m.get("sab") or []) or pgettext("sab", "yok")
+    return _("Bileşim: {bilesim}   ·   S(α,β): {sab}\nAçıklama: {aciklama}").format(
+        bilesim=bilesim_ozeti(m), sab=sab, aciklama=m.get("gorunen_ad"))
+
+
 def sicaklik_metni(k):
     if not k:
         return "—"
@@ -114,67 +134,54 @@ def bilesim_ozeti(m):
     for b in m.get("bilesim") or []:
         isim = b.get("isim") or "?"
         z = b.get("zenginlik")
-        parca.append("%s (%%%.2f U-235)" % (isim, z) if z is not None else isim)
+        parca.append(_("{isim} (%{z:.2f} U-235)").format(isim=isim, z=z)
+                     if z is not None else isim)
     return ", ".join(parca)
 
 
-_PLAKA_ALANI = {"et_malzeme": "yakıt tabakası", "zarf_malzeme": "zarf",
-                "sogutucu": "soğutucu", "yan_levha_malzeme": "yan levha"}
+_PLAKA_ALANI = {"et_malzeme": N_("yakıt tabakası"), "zarf_malzeme": N_("zarf"),
+                "sogutucu": N_("soğutucu"), "yan_levha_malzeme": N_("yan levha")}
+
+
+def _plaka_alani(k):
+    """Plaka malzeme alaninin okunur adi (etkin dilde); bilinmeyen alan aynen."""
+    return _(_PLAKA_ALANI[k]) if k in _PLAKA_ALANI else k
+
+
+# Metinler lambda GOVDESINDE cevrilir (cagri aninda, etkin dilde).
 _YOL_KALIPLARI = (
-    (r"cubuklar/(.+)/bolgeler/(\d+)$", lambda a, i: "‘%s’ çubuğunun %d. bölgesi" % (a, int(i) + 1)),
-    (r"cubuklar/(.+)/izleyici_malzeme$", lambda a: "‘%s’ kontrol çubuğunun izleyicisi" % a),
-    (r"plakalar/(.+)/(\w+)$", lambda a, k: "‘%s’ plakasının %s malzemesi"
-     % (a, _PLAKA_ALANI.get(k, k))),
-    (r"demetler/(.+)/dolgu_disi$", lambda a: "‘%s’ demetinin dış dolgusu" % a),
-    (r"demetler/(.+)/anahtar/.+$", lambda a: "‘%s’ demet haritası" % a),
+    (r"cubuklar/(.+)/bolgeler/(\d+)$",
+     lambda a, i: _("‘{ad}’ çubuğunun {n}. bölgesi").format(ad=a, n=int(i) + 1)),
+    (r"cubuklar/(.+)/izleyici_malzeme$", lambda a: _("‘%s’ kontrol çubuğunun izleyicisi") % a),
+    (r"plakalar/(.+)/(\w+)$",
+     lambda a, k: _("‘{ad}’ plakasının {alan} malzemesi").format(ad=a, alan=_plaka_alani(k))),
+    (r"demetler/(.+)/dolgu_disi$", lambda a: _("‘%s’ demetinin dış dolgusu") % a),
+    (r"demetler/(.+)/anahtar/.+$", lambda a: _("‘%s’ demet haritası") % a),
     (r"demetler/(.+)/kilif$", lambda a: _("‘%s’ demetinin kılıfı") % a),
-    (r"kor/yansitici$", lambda: "kor yansıtıcısı"),
-    (r"kor/kabuklar/(\d+)$", lambda i: "%d. küresel kabuk" % (int(i) + 1)),
-    (r"kor/tambur/govde_malzeme$", lambda: "tambur gövdesi"),
-    (r"kor/tambur/emici_malzeme$", lambda: "tambur emicisi"),
-    (r"kor/anahtar/.+$", lambda: "kor haritası"),
-    (r"kor/dolgu$", lambda: "kor dolgusu"),
-    (r"kor/eksenel/(\d+)/dolgu$", lambda i: "%d. eksenel katman" % (int(i) + 1)),
-    (r"kor/eksenel/(\d+)/anahtar/.+$", lambda i: "%d. eksenel katmanın haritası" % (int(i) + 1)),
-    (r"tallyler/(.+)/filtreler/\d+/adlar/\d+$", lambda a: "‘%s’ tally filtresi" % a),
-    (r"tukenme/ek_malzemeler/\d+$", lambda: "tükenme ek malzemeleri"),
+    (r"kor/yansitici$", lambda: _("kor yansıtıcısı")),
+    (r"kor/kabuklar/(\d+)$", lambda i: _("{n}. küresel kabuk").format(n=int(i) + 1)),
+    (r"kor/tambur/govde_malzeme$", lambda: _("tambur gövdesi")),
+    (r"kor/tambur/emici_malzeme$", lambda: _("tambur emicisi")),
+    (r"kor/anahtar/.+$", lambda: _("kor haritası")),
+    (r"kor/dolgu$", lambda: _("kor dolgusu")),
+    (r"kor/eksenel/(\d+)/dolgu$", lambda i: _("{n}. eksenel katman").format(n=int(i) + 1)),
+    (r"kor/eksenel/(\d+)/anahtar/.+$",
+     lambda i: _("{n}. eksenel katmanın haritası").format(n=int(i) + 1)),
+    (r"tallyler/(.+)/filtreler/\d+/adlar/\d+$", lambda a: _("‘%s’ tally filtresi") % a),
+    (r"tukenme/ek_malzemeler/\d+$", lambda: _("tükenme ek malzemeleri")),
     (r"tamburlar/(.+)/govde_malzeme$", lambda a: _("‘%s’ tamburunun gövdesi") % a),
     (r"tamburlar/(.+)/emici_malzeme$", lambda a: _("‘%s’ tamburunun emicisi") % a),
     (r"geometri/(.+)$", lambda y: _geometri_yolu(y)),
 )
 
-# Gelismis (agac) geometri yolunun parcalari -> okunur ad. Sayili parcalar
-# (halkalar/0) "1. halka" olur; "dugum" gibi yapisal parcalar atlanir.
-_GEOMETRI_PARCA = {
-    "kok": N_("kök"), "ic": N_("iç"), "dis": N_("dış"), "icerik": N_("içerik"),
-    "anahtar": N_("harita"), "sinir": N_("sınır"),
-}
-_GEOMETRI_SAYILI = {
-    "halkalar": N_("{n}. halka"), "yerlesimler": N_("{n}. yerleşim"),
-    "parcalar": N_("{n}. parça"), "katmanlar": N_("{n}. katman"),
-    "hucreler": N_("{n}. hücre"),
-}
-_GEOMETRI_ATLA = ("dugum",)
-
-
 def _geometri_yolu(yol):
-    """'kok/halkalar/0/icerik' -> 'geometri: kök › 1. halka › içerik'."""
-    parcalar, adimlar = [], yol.split("/")
-    i = 0
-    while i < len(adimlar):
-        a = adimlar[i]
-        if a in _GEOMETRI_SAYILI and i + 1 < len(adimlar) and adimlar[i + 1].isdigit():
-            parcalar.append(_(_GEOMETRI_SAYILI[a]).format(n=int(adimlar[i + 1]) + 1))
-            i += 2
-            continue
-        if a not in _GEOMETRI_ATLA:
-            parcalar.append(_(_GEOMETRI_PARCA[a]) if a in _GEOMETRI_PARCA else a)
-        i += 1
-    return _("geometri: %s") % " › ".join(parcalar)
+    """'kok/halkalar/0/icerik' -> 'geometri: kök › 1. halka › içerik' (cekirdek.geometri.yol_metni)."""
+    from cekirdek.geometri.yol_metni import okunur
+    return _("geometri: %s") % okunur(yol)
 
 
 def yol_okunur(yol):
-    """sema.malzeme_adini_degistir yolunu okunur Turkceye cevirir."""
+    """sema.malzeme_adini_degistir yolunu okunur metne (etkin dilde) cevirir."""
     import re
     for kalip, metin in _YOL_KALIPLARI:
         e = re.match(kalip, yol)

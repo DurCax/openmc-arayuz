@@ -529,10 +529,10 @@
   "geometri": null,
   "tamburlar": [],
   "baslik": "PU-MET-FAST-002 (Jezebel-240) — Çıplak Pu küresi, %20 Pu-240",
-  "baslik_en": "PU-MET-FAST-002 (Jezebel-240) (ICSBEP benchmark, V&V set)",
+  "baslik_en": "PU-MET-FAST-002 (Jezebel-240) — Bare Pu sphere, 20% Pu-240",
   "kategori": "kriter",
   "seviye": "ileri",
-  "aciklama_en": "ICSBEP benchmark PU-MET-FAST-002 (Jezebel-240), k = 1.0000 ± 0.0020; model from mit-crpg/benchmarks (MIT license).",
+  "aciklama_en": "ICSBEP benchmark PU-MET-FAST-002 (Jezebel-240): bare Pu sphere, 20% Pu-240. One case of the V&V set (NUREG/CR-6698 bias/USL). Experimental benchmark value k = 1.0000 ± 0.0020. Model: mit-crpg/benchmarks icsbep/pu-met-fast-002/openmc (MIT license); geometry and atom densities transferred one to one (concentric spherical shells).",
   "referans": {
     "k": 1.0,
     "sigma": 0.002,

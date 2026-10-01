@@ -9,6 +9,7 @@
 from PySide6 import QtWidgets
 from cekirdek import kaynak as _kaynak
 from arayuz import tema
+from cekirdek.ceviri import _
 
 
 class KaynakFormuMixin(object):
@@ -91,15 +92,15 @@ class KaynakFormuMixin(object):
         try:
             _kaynak.enerji_dagilimi(e)
             ort = _kaynak.ortalama_enerji(e)
-            metin = ("Ortalama enerji: %s" % _kaynak.enerji_metni(ort)) if ort else ""
+            metin = (_("Ortalama enerji: {e}").format(e=_kaynak.enerji_metni(ort))) if ort else ""
             if sabit:
                 if self.kaynak_kuvvet.deger(1.0) == 1.0:
-                    metin += "\nŞiddet 1 — sonuçlar kaynak parçacığı başına kalır."
+                    metin += "\n" + _("Şiddet 1 — sonuçlar kaynak parçacığı başına kalır.")
                 else:
-                    metin += ("\nSonuçlar mutlak birimde olur (OpenMC şiddeti kendisi "
-                              "uygular, ayrıca çarpmayın).")
+                    metin += "\n" + _("Sonuçlar mutlak birimde olur (OpenMC şiddeti kendisi "
+                                     "uygular, ayrıca çarpmayın).")
             self.tayf_ozet.setText(metin.strip())
             self.tayf_ozet.setStyleSheet("")
         except Exception as hata:
-            self.tayf_ozet.setText("Tayf kurulamadı: %s" % hata)
+            self.tayf_ozet.setText(_("Tayf kurulamadı: {hata}").format(hata=hata))
             self.tayf_ozet.setStyleSheet("color: %s;" % tema.renk("hata"))

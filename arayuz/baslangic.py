@@ -44,7 +44,7 @@ from arayuz.tasarim.ikon import ikon_bagla
 from arayuz.tasarim.maket_cizim import KucukResim
 
 from cekirdek import kaynak, ornek_bilgi, sema
-from cekirdek.ceviri import _
+from cekirdek.ceviri import N_, _, _n
 from cekirdek.gunluk import kaydedici
 
 _log = kaydedici(__name__)
@@ -52,30 +52,32 @@ KOK = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ORNEKLER = os.path.join(KOK, "ornekler")
 
 # (anahtar, baslik, aciklama, ornek dosyasi | None, bos sablon var mi, ilk sekme)
+# baslik/aciklama yalnizca ISARETLI (N_): ice aktarma aninda dil belli degil;
+# gosterim yerleri (_TurKarti, ana pencere) _() ile cevirir.
 KARTLAR = [
-    {"anahtar": "pin", "baslik": "Yakıt çubuğu (pin hücre)",
-     "aciklama": "Tek yakıt çubuğu ve çevresindeki soğutucu; en hızlı başlangıç.",
+    {"anahtar": "pin", "baslik": N_("Yakıt çubuğu (pin hücre)"),
+     "aciklama": N_("Tek yakıt çubuğu ve çevresindeki soğutucu; en hızlı başlangıç."),
      "ornek": "pwr_pinhucre.json", "bos": True, "sekme": "parcalar", "ikon": "circle-dot"},
-    {"anahtar": "demet_kare", "baslik": "Yakıt demeti — kare",
-     "aciklama": "Kare ızgarada yakıt çubukları ve kılavuz borular (PWR tipi).",
+    {"anahtar": "demet_kare", "baslik": N_("Yakıt demeti — kare"),
+     "aciklama": N_("Kare ızgarada yakıt çubukları ve kılavuz borular (PWR tipi)."),
      "ornek": "pwr_17x17.json", "bos": True, "sekme": "demet", "ikon": "grid-3x3"},
-    {"anahtar": "demet_altigen", "baslik": "Yakıt demeti — altıgen",
-     "aciklama": "Altıgen ızgarada çubuk demeti (VVER, hızlı reaktör).",
+    {"anahtar": "demet_altigen", "baslik": N_("Yakıt demeti — altıgen"),
+     "aciklama": N_("Altıgen ızgarada çubuk demeti (VVER, hızlı reaktör)."),
      "ornek": "sfr_altigen.json", "bos": True, "sekme": "demet", "ikon": "hexagon"},
-    {"anahtar": "tam_kor", "baslik": "Tam kor (kare harita)",
-     "aciklama": "Demetlerden oluşan kor haritası, çevresinde su yansıtıcı.",
+    {"anahtar": "tam_kor", "baslik": N_("Tam kor (kare harita)"),
+     "aciklama": N_("Demetlerden oluşan kor haritası, çevresinde su yansıtıcı."),
      "ornek": None, "bos": True, "sekme": "kor", "ikon": "layers"},
-    {"anahtar": "tam_kor_altigen", "baslik": _("Tam kor — altıgen"),
-     "aciklama": _("Kılıflı altıgen demetlerden kor haritası (SFR / VVER tipi)."),
+    {"anahtar": "tam_kor_altigen", "baslik": N_("Tam kor — altıgen"),
+     "aciklama": N_("Kılıflı altıgen demetlerden kor haritası (SFR / VVER tipi)."),
      "ornek": None, "bos": True, "sekme": "kor", "ikon": "hexagon"},
-    {"anahtar": "plaka", "baslik": "MTR plaka elemanı",
-     "aciklama": "Araştırma reaktörünün düz plakalı yakıt elemanı.",
+    {"anahtar": "plaka", "baslik": N_("MTR plaka elemanı"),
+     "aciklama": N_("Araştırma reaktörünün düz plakalı yakıt elemanı."),
      "ornek": "mtr_plaka.json", "bos": True, "sekme": "parcalar", "ikon": "list"},
-    {"anahtar": "tamburlu", "baslik": "Tamburlu kompakt kor",
-     "aciklama": "Silindirik kor, yansıtıcı kuşak ve dönen kontrol tamburları.",
+    {"anahtar": "tamburlu", "baslik": N_("Tamburlu kompakt kor"),
+     "aciklama": N_("Silindirik kor, yansıtıcı kuşak ve dönen kontrol tamburları."),
      "ornek": "tamburlu_kor.json", "bos": True, "sekme": "kor", "ikon": "refresh-cw"},
-    {"anahtar": "zirh", "baslik": "Zırhlama (sabit kaynak)",
-     "aciklama": "Kaynaktan çıkan nötronların zırh katmanlarında zayıflaması.",
+    {"anahtar": "zirh", "baslik": N_("Zırhlama (sabit kaynak)"),
+     "aciklama": N_("Kaynaktan çıkan nötronların zırh katmanlarında zayıflaması."),
      "ornek": "zirh_kure.json", "bos": False, "sekme": "kor", "ikon": "shield"},
 ]
 
@@ -238,15 +240,15 @@ def bos_sablon(anahtar):
 
 def _bos_sablon_ham(anahtar):
     if anahtar == "pin":
-        return _sadelestir(_yukle("pwr_pinhucre.json"), "Yeni yakıt çubuğu")
+        return _sadelestir(_yukle("pwr_pinhucre.json"), _("Yeni yakıt çubuğu"))
     if anahtar == "demet_kare":
-        return _sadelestir(_yukle("pwr_17x17.json"), "Yeni kare yakıt demeti")
+        return _sadelestir(_yukle("pwr_17x17.json"), _("Yeni kare yakıt demeti"))
     if anahtar == "demet_altigen":
-        return _sadelestir(_yukle("sfr_altigen.json"), "Yeni altıgen yakıt demeti")
+        return _sadelestir(_yukle("sfr_altigen.json"), _("Yeni altıgen yakıt demeti"))
     if anahtar == "plaka":
-        return _sadelestir(_yukle("mtr_plaka.json"), "Yeni plaka elemanı")
+        return _sadelestir(_yukle("mtr_plaka.json"), _("Yeni plaka elemanı"))
     if anahtar == "tamburlu":
-        return _sadelestir(_yukle("tamburlu_kor.json"), "Yeni tamburlu kor")
+        return _sadelestir(_yukle("tamburlu_kor.json"), _("Yeni tamburlu kor"))
     if anahtar == "tam_kor":
         # ornekler/ altinda kare_kafes ornegi yok: 17x17 demetinden 3x3 kor
         # kurulur (su yansitici kusak, yanlarda vakum). Harf atamasi palet
@@ -258,14 +260,15 @@ def _bos_sablon_ham(anahtar):
         kor["tur"] = "kare_kafes"
         kor["adim"] = round(d["adim"] * d["boyut"][0], 6)
         kor["boyut"] = [3, 3]
-        kor["harita"], kor["anahtar"] = adlardan_harita([[d["ad"]] * 3 for _ in range(3)])
+        kor["harita"], kor["anahtar"] = adlardan_harita([[d["ad"]] * 3 for _s in range(3)])
         kor["yansitici"] = {"var": True, "kalinlik": 20.0, "malzeme": "su"}
         kor["sinir"] = {"yan": "vacuum", "alt": "reflective", "ust": "reflective"}
         sema.kor_alanlarini_ayikla(kor)
-        return _sadelestir(spec, "Yeni tam kor")
+        return _sadelestir(spec, _("Yeni tam kor"))
     if anahtar == "tam_kor_altigen":
         return _sadelestir(_altigen_tam_kor(), _("Yeni altıgen tam kor"))
-    raise KeyError("boş şablonu olmayan kart: %s" % anahtar)
+    # ana pencere bu hatayi kullaniciya gosterir (Şablon kurulamadı)
+    raise KeyError(_("boş şablonu olmayan kart: %s") % anahtar)
 
 
 def _altigen_tam_kor():
@@ -340,15 +343,18 @@ def zaman_metni(saniye, simdi=None):
     if dakika < 1:
         return _("az önce")
     if dakika < 60:
-        return _("{n} dakika önce").format(n=int(dakika))
+        n = int(dakika)
+        return _n("{n} dakika önce", "{n} dakika önce", n).format(n=n)
     if dakika < 60 * 24:
-        return _("{n} saat önce").format(n=int(dakika // 60))
+        n = int(dakika // 60)
+        return _n("{n} saat önce", "{n} saat önce", n).format(n=n)
     gun = int(dakika // (60 * 24))
-    return _("dün") if gun == 1 else _("{n} gün önce").format(n=gun)
+    return _("dün") if gun == 1 else _n("{n} gün önce", "{n} gün önce", gun).format(n=gun)
 
 
 def ornek_eslesiyor(bilgi, metin="", kategori=_TUM, seviye=_TUM):
-    """Galeri suzgeci: arama metni basligi/aciklamayi, secimler meta alanlarini tutar."""
+    """Galeri suzgeci: arama metni basligi/aciklamayi (Turkce ve Ingilizce alanlar,
+    iki dilde arama), secimler meta alanlarini tutar."""
     if kategori != _TUM and bilgi.kategori != kategori:
         return False
     if seviye != _TUM and bilgi.seviye != seviye:
@@ -356,7 +362,8 @@ def ornek_eslesiyor(bilgi, metin="", kategori=_TUM, seviye=_TUM):
     ara = (metin or "").strip().lower()
     if not ara:
         return True
-    havuz = " ".join(x for x in (bilgi.baslik, bilgi.aciklama, bilgi.ad, bilgi.dosya) if x)
+    havuz = " ".join(x for x in (bilgi.baslik, bilgi.aciklama, bilgi.baslik_en,
+                                 bilgi.aciklama_en, bilgi.ad, bilgi.dosya) if x)
     return ara in havuz.lower()
 
 
@@ -401,11 +408,13 @@ class _TurKarti(b.Kart):
         ust.addWidget(simge, 0, QtCore.Qt.AlignTop)
         metin = QtWidgets.QVBoxLayout()
         metin.setSpacing(2)
-        self.baslik = QtWidgets.QLabel(_(bilgi["baslik"]))
+        # anahtar once degiskene: _() icinde dizgi sabiti sahte msgid uretir
+        baslik, aciklama = bilgi["baslik"], bilgi["aciklama"]
+        self.baslik = QtWidgets.QLabel(_(baslik))
         self.baslik.setObjectName("altBaslik")
         self.baslik.setWordWrap(True)
         metin.addWidget(self.baslik)
-        self.aciklama = QtWidgets.QLabel(_(bilgi["aciklama"]))
+        self.aciklama = QtWidgets.QLabel(_(aciklama))
         self.aciklama.setObjectName("kucuk")
         self.aciklama.setWordWrap(True)
         metin.addWidget(self.aciklama)
@@ -413,10 +422,11 @@ class _TurKarti(b.Kart):
         self.govde.addLayout(ust)
         self.govde.addStretch(1)
         self._eylemleri_kur()
-        self.setAccessibleName(_(bilgi["baslik"]))
+        self.setAccessibleName(_(baslik))
 
     def _eylemleri_kur(self):
         bilgi = self.bilgi
+        baslik = bilgi["baslik"]
         self.d_bos = b.ikincil_dugme(_("Boş başla"))
         self.d_ornek = b.duz_dugme(_("Örnekten"))
         # Diyalog disinda QPushButton Enter/Return'e tepki vermez; autoDefault
@@ -427,7 +437,7 @@ class _TurKarti(b.Kart):
             self.d_bos.setToolTip(
                 _("Çalışır durumda, sade bir {ad} modeli kurar (malzemeler, "
                   "parçalar ve kor hazır).").format(
-                      ad=_kucuk_bas(_(bilgi["baslik"]).split(" (")[0])))
+                      ad=_kucuk_bas(_(baslik).split(" (")[0])))
         else:
             self.d_bos.setVisible(False)
         if bilgi["ornek"]:
@@ -453,14 +463,15 @@ class _OrnekKarti(_TiklanirKart):
         self.ekle(KucukResim(ornek_motifi(bilgi)))
         ust = QtWidgets.QHBoxLayout()
         ust.setSpacing(A["s"])
-        baslik = QtWidgets.QLabel(bilgi.baslik)
+        baslik_metni = ornek_bilgi.yerel_baslik(bilgi)
+        baslik = QtWidgets.QLabel(baslik_metni)
         baslik.setObjectName("govdeVurgulu")
         baslik.setWordWrap(True)
         ust.addWidget(baslik, 1)
         if bilgi.kategori:
             ust.addWidget(b.Rozet(_(ornek_bilgi.KATEGORI_ADLARI[bilgi.kategori]), "notr"))
         self.govde.addLayout(ust)
-        alt = ilk_cumle(bilgi.aciklama)
+        alt = ilk_cumle(ornek_bilgi.yerel_aciklama(bilgi))
         if bilgi.seviye:
             alt = "%s · %s" % (_(ornek_bilgi.SEVIYE_ADLARI[bilgi.seviye]), alt) if alt \
                 else _(ornek_bilgi.SEVIYE_ADLARI[bilgi.seviye])
@@ -469,7 +480,7 @@ class _OrnekKarti(_TiklanirKart):
         a.setWordWrap(True)
         self.ekle(a)
         self.setToolTip(_("{dosya} — kopya olarak açılır").format(dosya=bilgi.dosya))
-        self.setAccessibleName(bilgi.baslik)
+        self.setAccessibleName(baslik_metni)
 
 
 # ============================================================================
@@ -545,8 +556,8 @@ class BaslangicEkrani(QtWidgets.QWidget):
         d.addLayout(self._izgara)
 
     def _dosya_karti(self):
-        k = _TurKarti({"anahtar": "dosya", "baslik": "Dosyadan aç",
-                       "aciklama": "Kaydedilmiş bir model (.json) ya da OpenMC XML klasörü.",
+        k = _TurKarti({"anahtar": "dosya", "baslik": N_("Dosyadan aç"),
+                       "aciklama": N_("Kaydedilmiş bir model (.json) ya da OpenMC XML klasörü."),
                        "ornek": None, "bos": True, "sekme": None, "ikon": "folder-open"})
         k.d_bos.setText(_("Aç…"))
         k.d_bos.setToolTip(_("Bilgisayarınızdaki bir model dosyasını (.json) açar (Ctrl+O)."))
@@ -659,8 +670,10 @@ class BaslangicEkrani(QtWidgets.QWidget):
 
     def _galeri_sayisi(self, n):
         toplam = len(self._ornekler)
-        metin = (_("{n} örnek · kategoriye göre süzün").format(n=toplam) if n == toplam
-                 else _("{n} / {toplam} örnek").format(n=n, toplam=toplam))
+        metin = (_n("{n} örnek · kategoriye göre süzün", "{n} örnek · kategoriye göre süzün",
+                    toplam).format(n=toplam) if n == toplam
+                 else _n("{n} / {toplam} örnek", "{n} / {toplam} örnek",
+                         toplam).format(n=n, toplam=toplam))
         self._galeri_basligi.setToolTip(metin)
         self._galeri_basligi.etiket.setToolTip(metin)
         self._galeri_basligi.setAccessibleDescription(metin)

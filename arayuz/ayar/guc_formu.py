@@ -48,11 +48,11 @@ class GucFormuMixin(object):
         self.guc_var.setChecked(bool(g.get("var")))
         ogeler, secili = self._guc_hedef_ogeleri()
         self._kutu_doldur(self.guc_cubuk, ogeler, secili,
-                          " (fisil değil ya da demette değil)")
+                          _(" (fisil değil ya da demette değil)"))
         hedefler = sema.guc_hedefleri(g)
         self._guc_bolgeleri_doldur(hedefler[0]["bolge"] if len(hedefler) == 1 else None)
-        self._kutu_doldur(self.guc_skor, GUC_SKORLARI, g.get("skor") or "kappa-fission",
-                          " (bilinmeyen)")
+        self._kutu_doldur(self.guc_skor, [(v, _(a)) for v, a in GUC_SKORLARI],
+                          g.get("skor") or "kappa-fission", _(" (bilinmeyen)"))
         self.guc_dilim.setValue(g.get("eksenel_dilim") or 20)
         self.guc_toplam.setValue(g.get("toplam_guc") or 0.0)
 
@@ -67,12 +67,13 @@ class GucFormuMixin(object):
             if c:
                 for i, b in enumerate(c["bolgeler"]):
                     m_ad = b.get("malzeme")
-                    etiket = "%d. bölge — %s" % (i + 1, m_ad if m_ad and m_ad != sema.BOSLUK
-                                                   else "Boş (madde yok)")
+                    etiket = _("{i}. bölge — {ad}").format(
+                        i=i + 1, ad=(m_ad if m_ad and m_ad != sema.BOSLUK
+                                     else _("Boş (madde yok)")))
                     if b.get("r"):
                         etiket += "  (r = %.4f cm)" % b["r"]
                     else:
-                        etiket += "  (dış bölge)"
+                        etiket += _("  (dış bölge)")
                     self.guc_bolge.addItem(etiket, i)
             if secili is not None:
                 j = self.guc_bolge.findData(secili)
@@ -134,12 +135,12 @@ class GucFormuMixin(object):
         self.guc_bolge.setEnabled(acik and self.guc_bolge.count() > 0)
         uyari = ""
         if acik and not alan["guc_dagilimi"]:
-            uyari = ("Bu modelde güç dağılımı hesaplanamaz: demette tekrarlanan "
-                     "fisil bir çubuk yok. Kutuyu kapatın.")
+            uyari = _("Bu modelde güç dağılımı hesaplanamaz: demette tekrarlanan "
+                      "fisil bir çubuk yok. Kutuyu kapatın.")
         self.guc_uyari.setText(uyari)
         self.guc_uyari.setVisible(bool(uyari))
-        self.guc_var.setText("Çubuk bazlı güç dağılımı hesapla (F_ΔH%s)"
-                             % (", F_q" if alan["eksenel_dilim"] else ""))
+        self.guc_var.setText(_("Çubuk bazlı güç dağılımı hesapla (F_ΔH{fq})").format(
+            fq=", F_q" if alan["eksenel_dilim"] else ""))
 
     def _guc_cubuk_degisti(self, *_a):
         if self._yukleniyor:

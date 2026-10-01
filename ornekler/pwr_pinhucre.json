@@ -3,8 +3,8 @@
   "ad": "PWR yakıt hücresi (pin) — regresyon çıpası",
   "aciklama": "Klasik PWR yakıt hücresi. Bu model, arayüz geliştirilirken ölçülen referans sonucu üretmelidir: k∞ = 1.3570 ± 0.0020. 2σ dışına çıkarsa kurucu katmanında hata var demektir.",
   "baslik": "PWR yakıt hücresi (pin)",
-  "baslik_en": "PWR fuel cell (pin)",
-  "aciklama_en": "Classic PWR fuel pin cell (2D, reflective boundaries); the regression anchor of this tool: k-inf = 1.3570 ± 0.0020.",
+  "baslik_en": "PWR fuel pin cell",
+  "aciklama_en": "Classic PWR fuel pin cell (2D, reflective boundaries); the regression anchor of this tool: k∞ = 1.3570 ± 0.0020.",
   "kategori": "pwr",
   "seviye": "giris",
   "referans": {

@@ -290,7 +290,7 @@ class _Cizici:
         for (r, i), (x, y) in kon:
             try:
                 harf = harita[r][i]
-            except IndexError:
+            except IndexError:   # kisa (elle yazilmis) harita satiri: hucre dis dolguyla kalir
                 continue
             ad = anahtar.get(harf)
             if ad is None:
@@ -306,7 +306,7 @@ class _Cizici:
         sekil = d.get("sekil", "kare")
         P = float(d.get("adim") or 0.0)
         if P <= 0:
-            self.ekle(yol, bolge, None, etiket="kafes")
+            self.ekle(yol, bolge, None, etiket=_("kafes"))
             return
         dis = d.get("dis")
         self.dugum(dis, yol + ("dis",), T, bolge, derinlik + 1)
@@ -318,7 +318,7 @@ class _Cizici:
         for (r, i), (x, y) in kon:
             try:
                 harf = harita[r][i]
-            except IndexError:
+            except IndexError:   # kisa (elle yazilmis) harita satiri: hucre dis dolguyla kalir
                 continue
             hucre = T.map(kafes_hucresi(sekil, P, d.get("yonelim", "y"), (x, y)))
             alt = self.kirp(bolge, hucre)

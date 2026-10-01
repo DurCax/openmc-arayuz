@@ -41,6 +41,7 @@ import string
 from PySide6 import QtCore, QtGui, QtWidgets
 
 from cekirdek import altigen, sema
+from cekirdek.ceviri import N_, _
 
 # Tanimsiz (anahtarda karsiligi olmayan) hucre icin harita karakteri.
 BOS_HARF = "."
@@ -86,8 +87,7 @@ def _yeni_harf(ad, kullanilan):
     for h in adaylar:
         if h not in kullanilan:
             return h
-    raise ValueError("haritada en fazla %d farklı parça kullanılabilir"
-                     % len(_HARF_ADAYLARI))
+    raise ValueError(_("haritada en fazla %d farklı parça kullanılabilir") % len(_HARF_ADAYLARI))
 
 
 def adlardan_harita(adlar, eski_anahtar=None, eski_harita=None):
@@ -179,8 +179,8 @@ def _parca_rengi(spec, ad, derinlik=0):
     return _malzeme_rengi(spec, ad)
 
 
-_TUR_ETIKETI = {"cubuk": "çubuk", "plaka": "plaka", "demet": "kafes",
-                "malzeme": "malzeme", "bosluk": "boşluk"}
+_TUR_ETIKETI = {"cubuk": N_("çubuk"), "plaka": N_("plaka"), "demet": N_("kafes"),
+                "malzeme": N_("malzeme"), "bosluk": N_("boşluk")}   # anahtar; gosterirken _()
 
 
 def palet_ogeleri(spec, turler=("cubuk", "plaka", "demet", "malzeme", "bosluk"),
@@ -195,7 +195,7 @@ def palet_ogeleri(spec, turler=("cubuk", "plaka", "demet", "malzeme", "bosluk"),
     ogeler = []
     for tur in turler:
         if tur == "bosluk":
-            ogeler.append(("bosluk", "Boş (madde yok)", "bosluk"))
+            ogeler.append(("bosluk", _("Boş (madde yok)"), "bosluk"))
             continue
         liste = {"cubuk": "cubuklar", "plaka": "plakalar", "demet": "demetler",
                  "malzeme": "malzemeler"}[tur]
@@ -303,8 +303,8 @@ class ParcaPaleti(QtWidgets.QWidget):
                 self._etiket[ad] = etiket
                 w = QtWidgets.QListWidgetItem(_renk_karesi(rgb), etiket)
                 w.setData(QtCore.Qt.UserRole, ad)
-                w.setToolTip("%s%s — seçip ızgarada tıklayın ya da sürükleyin"
-                             % (etiket, (" (%s)" % tur) if tur else ""))
+                w.setToolTip(_("%s%s — seçip ızgarada tıklayın ya da sürükleyin")
+                             % (etiket, (" (%s)" % _(tur)) if tur else ""))
                 self.liste.addItem(w)
             hedef = self._satir(onceki)
             if hedef < 0 and self.liste.count():
@@ -347,7 +347,7 @@ class ParcaPaleti(QtWidgets.QWidget):
         return {ad: _qrenk(rgb) for ad, rgb in self._rgb.items()}
 
     def etiket(self, ad):
-        return self._etiket.get(ad, ad or "tanımsız")
+        return self._etiket.get(ad, ad or _("tanımsız"))
 
 
 # ============================================================================
@@ -456,7 +456,7 @@ class _BoyaTuvali(QtWidgets.QWidget):
         raise NotImplementedError
 
     def _bos_metin(self):
-        return "Izgara boş"
+        return _("Izgara boş")
 
     def _ipucu(self, anahtar):
         return ""
@@ -640,7 +640,7 @@ class KareIzgara(_BoyaTuvali):
         return nx, ny
 
     def _bos_metin(self):
-        return "Demet tanımlı değil"
+        return _("Demet tanımlı değil")
 
     def _yerlesim(self):
         nx, ny = self.boyut()
@@ -689,7 +689,7 @@ class KareIzgara(_BoyaTuvali):
     def _ipucu(self, anahtar):
         r, c = anahtar
         ad = self._ad_al(anahtar)
-        return "satır %d, sütun %d: %s" % (r + 1, c + 1, ad if ad else "tanımsız")
+        return _("satır %d, sütun %d: %s") % (r + 1, c + 1, ad or _("tanımsız"))
 
 
 # ============================================================================
@@ -723,7 +723,7 @@ class AltigenIzgara(_BoyaTuvali):
         self._gecersiz()
 
     def _bos_metin(self):
-        return "Altıgen demet tanımlı değil"
+        return _("Altıgen demet tanımlı değil")
 
     def _yerlesim(self):
         if not self._konumlar:
@@ -784,7 +784,7 @@ class AltigenIzgara(_BoyaTuvali):
     def _ipucu(self, anahtar):
         r, i = anahtar
         ad = self._ad_al(anahtar)
-        return "%d. halka (dıştan), %d. hücre: %s" % (r + 1, i + 1, ad if ad else "tanımsız")
+        return _("%d. halka (dıştan), %d. hücre: %s") % (r + 1, i + 1, ad or _("tanımsız"))
 
     def halkayi_doldur(self, halka_indeksi, ad):
         """Bir halkanin tamamini boyar (DISTAN ICE indeks); degisti yayilir."""

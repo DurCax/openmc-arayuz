@@ -642,10 +642,10 @@
   "geometri": null,
   "tamburlar": [],
   "baslik": "HEU-SOL-THERM-013, durum 1 — Yansıtıcısız HEU uranil nitrat küresi",
-  "baslik_en": "HEU-SOL-THERM-013, durum 1 (ICSBEP benchmark, V&V set)",
+  "baslik_en": "HEU-SOL-THERM-013, case 1 — Unreflected HEU uranyl nitrate sphere",
   "kategori": "kriter",
   "seviye": "ileri",
-  "aciklama_en": "ICSBEP benchmark HEU-SOL-THERM-013, durum 1, k = 1.0012 ± 0.0026; model from mit-crpg/benchmarks (MIT license).",
+  "aciklama_en": "ICSBEP benchmark HEU-SOL-THERM-013, case 1: unreflected HEU uranyl nitrate sphere. One case of the V&V set (NUREG/CR-6698 bias/USL). Experimental benchmark value k = 1.0012 ± 0.0026. Model: mit-crpg/benchmarks icsbep/heu-sol-therm-013/openmc/case-1 (MIT license); geometry and atom densities transferred one to one (concentric spherical shells).",
   "referans": {
     "k": 1.0012,
     "sigma": 0.0026,

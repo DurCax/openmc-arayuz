@@ -60,7 +60,7 @@ def _yazici(yol):
     yazici.setPageSize(QtGui.QPageSize(QtGui.QPageSize.A4))
     yazici.setPageMargins(QtCore.QMarginsF(KENAR_MM, KENAR_MM, KENAR_MM, KENAR_MM),
                           QtGui.QPageLayout.Millimeter)
-    yazici.setCreator("%s %s" % (surum.UYGULAMA_ADI, surum.surum()))
+    yazici.setCreator("%s %s" % (_(surum.UYGULAMA_ADI), surum.surum()))
     return yazici
 
 

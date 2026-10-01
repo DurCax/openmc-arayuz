@@ -677,10 +677,10 @@
   "geometri": null,
   "tamburlar": [],
   "baslik": "U233-SOL-INTER-001, durum 1 — Be yansıtıcılı U-233 uranil florür çözeltisi",
-  "baslik_en": "U233-SOL-INTER-001, durum 1 (ICSBEP benchmark, V&V set)",
+  "baslik_en": "U233-SOL-INTER-001, case 1 — Be-reflected U-233 uranyl fluoride solution",
   "kategori": "kriter",
   "seviye": "ileri",
-  "aciklama_en": "ICSBEP benchmark U233-SOL-INTER-001, durum 1, k = 1.0000 ± 0.0083; model from mit-crpg/benchmarks (MIT license).",
+  "aciklama_en": "ICSBEP benchmark U233-SOL-INTER-001, case 1: Be-reflected U-233 uranyl fluoride solution. One case of the V&V set (NUREG/CR-6698 bias/USL). Experimental benchmark value k = 1.0000 ± 0.0083. Model: mit-crpg/benchmarks icsbep/u233-sol-inter-001/openmc/case-1 (MIT license); geometry and atom densities transferred one to one (concentric spherical shells).",
   "referans": {
     "k": 1.0,
     "sigma": 0.0083,

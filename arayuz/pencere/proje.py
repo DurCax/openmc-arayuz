@@ -10,16 +10,17 @@ import os
 
 from PySide6 import QtCore, QtGui, QtWidgets
 from cekirdek import sema, ice_aktar, kod_uret, onbellek
-from cekirdek.ceviri import _
+from cekirdek.ceviri import _, _n, N_
 from cekirdek.gunluk import kaydedici
 from arayuz.pencere.model_islemleri import ORNEKLER
 
 _log = kaydedici(__name__)
 
 
-_ICE_AKTAR_NOTU = ("Yalnızca malzemeler aktarılır: OpenMC geometrisi ham CSG'dir "
-                   "ve bu arayüzün malzeme → parça → demet → kor katmanlarına "
-                   "güvenle çevrilemez; geometriyi arayüzde yeniden kurun.")
+# Yalniz isaretlenir (N_); gosterirken _(_ICE_AKTAR_NOTU).
+_ICE_AKTAR_NOTU = N_("Yalnızca malzemeler aktarılır: OpenMC geometrisi ham CSG'dir "
+                     "ve bu arayüzün malzeme → parça → demet → kor katmanlarına "
+                     "güvenle çevrilemez; geometriyi arayüzde yeniden kurun.")
 
 
 class ProjeMixin(object):
@@ -51,7 +52,7 @@ class ProjeMixin(object):
         self.m_son.clear()
         liste = self._son_listesi()
         if not liste:
-            e = self.m_son.addAction("(boş)")
+            e = self.m_son.addAction(_("(boş)"))
             e.setEnabled(False)
             return
         for yol in liste:
@@ -67,14 +68,14 @@ class ProjeMixin(object):
         if not self._kirli:
             return True
         soru = QtWidgets.QMessageBox(
-            QtWidgets.QMessageBox.Question, "Kaydedilmemiş değişiklikler",
-            "Değişiklikler kaydedilmedi. Kaydedilsin mi?",
+            QtWidgets.QMessageBox.Question, _("Kaydedilmemiş değişiklikler"),
+            _("Değişiklikler kaydedilmedi. Kaydedilsin mi?"),
             QtWidgets.QMessageBox.Save | QtWidgets.QMessageBox.Discard
             | QtWidgets.QMessageBox.Cancel, self)
         # Qt'nin Turkce cevirisinde "Discard" -> "At"; burada acik adlar.
-        for dugme, ad in ((QtWidgets.QMessageBox.Save, "Kaydet"),
-                          (QtWidgets.QMessageBox.Discard, "Kaydetme"),
-                          (QtWidgets.QMessageBox.Cancel, "Vazgeç")):
+        for dugme, ad in ((QtWidgets.QMessageBox.Save, _("Kaydet")),
+                          (QtWidgets.QMessageBox.Discard, _("Kaydetme")),
+                          (QtWidgets.QMessageBox.Cancel, _("Vazgeç"))):
             soru.button(dugme).setText(ad)
         soru.exec()
         c = soru.standardButton(soru.clickedButton())
@@ -89,7 +90,7 @@ class ProjeMixin(object):
 
     def _ac_diyalog(self):
         yol, _suzgec = QtWidgets.QFileDialog.getOpenFileName(
-            self, "Model aç", ORNEKLER, "JSON model (*.json);;Tüm dosyalar (*)")
+            self, _("Model aç"), ORNEKLER, _("JSON model (*.json);;Tüm dosyalar (*)"))
         if yol:
             self.proje_ac(yol)
 
@@ -112,7 +113,7 @@ class ProjeMixin(object):
             yeni = sema.yukle(yol)
         except Exception as e:
             _log.exception("proje islemi basarisiz: %s", "Açılamadı")
-            QtWidgets.QMessageBox.critical(self, "Açılamadı", str(e))
+            QtWidgets.QMessageBox.critical(self, _("Açılamadı"), str(e))
             return False
         self._proje_kur(yeni, proje_yolu=os.path.abspath(yol), ornek_kaynagi=None)
         self._sona_ekle(yol)
@@ -127,7 +128,7 @@ class ProjeMixin(object):
             yeni = sema.yukle(yol)
         except Exception as e:
             _log.exception("proje islemi basarisiz: %s", "Açılamadı")
-            QtWidgets.QMessageBox.critical(self, "Açılamadı", str(e))
+            QtWidgets.QMessageBox.critical(self, _("Açılamadı"), str(e))
             return False
         self._proje_kur(yeni, proje_yolu=None, ornek_kaynagi=os.path.abspath(yol))
         self.bildir_mesaj(
@@ -142,7 +143,7 @@ class ProjeMixin(object):
             sema.kaydet(self.spec, self.proje_yolu)
         except Exception as e:
             _log.exception("proje islemi basarisiz: %s", "Kaydedilemedi")
-            QtWidgets.QMessageBox.critical(self, "Kaydedilemedi", str(e))
+            QtWidgets.QMessageBox.critical(self, _("Kaydedilemedi"), str(e))
             return False
         self._kirli = False
         self._baslik_guncelle()
@@ -160,7 +161,7 @@ class ProjeMixin(object):
         else:
             varsayilan = os.path.join(os.path.expanduser("~"), "model.json")
         yol, _suzgec = QtWidgets.QFileDialog.getSaveFileName(
-            self, "Modeli kaydet", varsayilan, "JSON model (*.json)")
+            self, _("Modeli kaydet"), varsayilan, _("JSON model (*.json)"))
         if not yol:
             return False
         if not yol.endswith(".json"):
@@ -208,19 +209,20 @@ class ProjeMixin(object):
 
     def malzeme_ice_aktar(self):
         yol, _suzgec = QtWidgets.QFileDialog.getOpenFileName(
-            self, "Malzeme içeren OpenMC XML dosyası",
+            self, _("Malzeme içeren OpenMC XML dosyası"),
             os.path.dirname(self.proje_yolu) if self.proje_yolu else os.path.expanduser("~"),
-            "OpenMC XML (materials.xml model.xml *.xml);;Tüm dosyalar (*)")
+            _("OpenMC XML (materials.xml model.xml *.xml);;Tüm dosyalar (*)"))
         if not yol:
             return
         try:
             yeni_malzemeler, notlar = ice_aktar.malzemeleri_oku(yol)
         except Exception as e:
             _log.exception("proje islemi basarisiz: %s", "Okunamadı")
-            QtWidgets.QMessageBox.critical(self, "Okunamadı", str(e))
+            QtWidgets.QMessageBox.critical(self, _("Okunamadı"), str(e))
             return
         if not yeni_malzemeler:
-            QtWidgets.QMessageBox.information(self, "Boş", "Dosyada malzeme bulunamadı.")
+            QtWidgets.QMessageBox.information(self, _("Boş"),
+                                              _("Dosyada malzeme bulunamadı."))
             return
         # Geri alinabilir tek adim: bekleyen duzenleme once kendi adimi olsun.
         self._gecmis_sayac.stop()
@@ -237,18 +239,21 @@ class ProjeMixin(object):
         self._kirli = True
         self._spec_uygula()
         self._gecmise_it()
-        mesaj = "%d malzeme eklendi.\n\n" % len(yeni_malzemeler)
+        k = len(yeni_malzemeler)
+        mesaj = _n("%d malzeme eklendi.", "%d malzeme eklendi.", k) % k + "\n\n"
         if notlar:
-            mesaj += "Notlar:\n" + "\n".join("  - " + n for n in notlar) + "\n\n"
-        mesaj += _ICE_AKTAR_NOTU
-        self.bildir_mesaj(_("%d malzeme içe aktarıldı — geometri aktarılmaz, "
-                            "arayüzde kurulur.") % len(yeni_malzemeler), "basari", 8000)
-        QtWidgets.QMessageBox.information(self, "İçe aktarıldı", mesaj)
+            mesaj += _("Notlar:") + "\n" + "\n".join("  - " + n for n in notlar) + "\n\n"
+        mesaj += _(_ICE_AKTAR_NOTU)
+        self.bildir_mesaj(_n("%d malzeme içe aktarıldı — geometri aktarılmaz, "
+                             "arayüzde kurulur.",
+                             "%d malzeme içe aktarıldı — geometri aktarılmaz, "
+                             "arayüzde kurulur.", k) % k, "basari", 8000)
+        QtWidgets.QMessageBox.information(self, _("İçe aktarıldı"), mesaj)
 
     def betik_disa_aktar(self):
         varsayilan = os.path.splitext(self.proje_yolu or "model.json")[0] + ".py"
         yol, _suzgec = QtWidgets.QFileDialog.getSaveFileName(
-            self, "Python betiği olarak dışa aktar", varsayilan, "Python (*.py)")
+            self, _("Python betiği olarak dışa aktar"), varsayilan, "Python (*.py)")
         if not yol:
             return
         try:
@@ -257,16 +262,19 @@ class ProjeMixin(object):
                 f.write(kod)
         except Exception as e:
             _log.exception("proje islemi basarisiz: %s", "Üretilemedi")
-            QtWidgets.QMessageBox.critical(self, "Üretilemedi", str(e))
+            QtWidgets.QMessageBox.critical(self, _("Üretilemedi"), str(e))
             return
+        satir = len(kod.splitlines())
         QtWidgets.QMessageBox.information(
-            self, "Dışa aktarıldı",
-            "Betik yazıldı:\n%s\n\n%d satır. Tek başına çalışır; arayüze geri "
-            "yüklenemez." % (yol, len(kod.splitlines())))
+            self, _("Dışa aktarıldı"),
+            _n("Betik yazıldı:\n%s\n\n%d satır. Tek başına çalışır; arayüze geri "
+               "yüklenemez.",
+               "Betik yazıldı:\n%s\n\n%d satır. Tek başına çalışır; arayüze geri "
+               "yüklenemez.", satir) % (yol, satir))
 
     def xml_disa_aktar(self):
         dizin = QtWidgets.QFileDialog.getExistingDirectory(
-            self, "XML'lerin yazılacağı dizin",
+            self, _("XML'lerin yazılacağı dizin"),
             os.path.dirname(self.proje_yolu) if self.proje_yolu else os.path.expanduser("~"))
         if not dizin:
             return
@@ -275,13 +283,13 @@ class ProjeMixin(object):
             model.export_to_model_xml(os.path.join(dizin, "model.xml"))
         except Exception as e:
             _log.exception("proje islemi basarisiz: %s", "Üretilemedi")
-            QtWidgets.QMessageBox.critical(self, "Üretilemedi", str(e))
+            QtWidgets.QMessageBox.critical(self, _("Üretilemedi"), str(e))
             return
         self.bildir_mesaj(_("XML yazıldı: %s/model.xml") % dizin, "basari", 6000)
 
     def png_kaydet(self):
         yol, _suzgec = QtWidgets.QFileDialog.getSaveFileName(
-            self, "Önizlemeyi kaydet", "geometri.png", "PNG (*.png)")
+            self, _("Önizlemeyi kaydet"), "geometri.png", "PNG (*.png)")
         if yol:
             self.onizleme.kaydet(yol)
             self.bildir_mesaj(_("Kaydedildi: %s") % yol, "basari", 5000)

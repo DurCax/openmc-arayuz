@@ -10,23 +10,25 @@ import json
 import re
 
 from cekirdek import sema, uygunluk
+from cekirdek.ceviri import N_, _, pgettext
 from cekirdek.gunluk import kaydedici
 
 _log = kaydedici(__name__)
 
 
-BOS_ETIKETI = "Boş (madde yok)"
-SECILMEDI_ETIKETI = "— Malzeme seçin —"
-MALZEME_YOK_IPUCU = "Önce Malzemeler sekmesinden malzeme ekleyin."
+# Modul duzeyi gorunen metinler yalnizca ISARETLENIR (N_); gosterirken _().
+BOS_ETIKETI = N_("Boş (madde yok)")
+SECILMEDI_ETIKETI = N_("— Malzeme seçin —")
+MALZEME_YOK_IPUCU = N_("Önce Malzemeler sekmesinden malzeme ekleyin.")
 
-ROL_ADI = {"yakit": "yakıt", "sogutucu": "soğutucu", "moderator": "moderatör",
-           "emici": "emici", "yapisal": "yapısal", "gaz": "gaz"}
+ROL_ADI = {"yakit": N_("yakıt"), "sogutucu": N_("soğutucu"), "moderator": N_("moderatör"),
+           "emici": N_("emici"), "yapisal": N_("yapısal"), "gaz": N_("gaz")}
 
 # (anahtar, menu metni, varsayilan ad) -- "+ Cubuk" menusu bu sirayla.
 CUBUK_SABLONLARI = (
-    ("yakit", "PWR yakıt çubuğu", "yakit_cubugu"),
-    ("kilavuz", "Kılavuz boru", "kilavuz_boru"),
-    ("kontrol", "Kontrol çubuğu", "kontrol_cubugu"),
+    ("yakit", N_("PWR yakıt çubuğu"), "yakit_cubugu"),
+    ("kilavuz", N_("Kılavuz boru"), "kilavuz_boru"),
+    ("kontrol", N_("Kontrol çubuğu"), "kontrol_cubugu"),
 )
 
 
@@ -124,17 +126,21 @@ def cubuk_sablonu(spec, anahtar, ad):
 
 
 # Sablonlarin istedigi roller (eksik olanlar kullaniciya adiyla soylenir).
+_ZARF_ROLU = N_("zarf (yapısal)")
 _SABLON_ROLLERI = {
-    "yakit": (("yakit", "yakıt"), ("yapisal", "zarf (yapısal)"), ("sogutucu", "soğutucu")),
-    "kilavuz": (("yapisal", "zarf (yapısal)"), ("sogutucu", "soğutucu")),
-    "kontrol": (("emici", "emici"), ("yapisal", "zarf (yapısal)"), ("sogutucu", "soğutucu")),
-    "plaka": (("yakit", "yakıt"), ("yapisal", "zarf (yapısal)"), ("sogutucu", "soğutucu")),
+    "yakit": (("yakit", ROL_ADI["yakit"]), ("yapisal", _ZARF_ROLU),
+              ("sogutucu", ROL_ADI["sogutucu"])),
+    "kilavuz": (("yapisal", _ZARF_ROLU), ("sogutucu", ROL_ADI["sogutucu"])),
+    "kontrol": (("emici", ROL_ADI["emici"]), ("yapisal", _ZARF_ROLU),
+                ("sogutucu", ROL_ADI["sogutucu"])),
+    "plaka": (("yakit", ROL_ADI["yakit"]), ("yapisal", _ZARF_ROLU),
+              ("sogutucu", ROL_ADI["sogutucu"])),
 }
 
 
 def sablon_eksik_roller(spec, anahtar):
     """Sablonun istedigi ama spec'te karsiligi olmayan roller (okunur adlarla)."""
-    return [etiket for rol, etiket in _SABLON_ROLLERI[anahtar]
+    return [_(etiket) for rol, etiket in _SABLON_ROLLERI[anahtar]
             if not rol_listesi(spec, rol)]
 
 
@@ -161,32 +167,33 @@ def eksik_malzemeler(spec, parca):
     if parca is None:
         return eksik
     if parca.get("tur") == "plaka":
-        for alan, etiket in (("et_malzeme", "yakıt tabakası"), ("zarf_malzeme", "zarf"),
-                             ("sogutucu", "soğutucu")):
+        for alan, etiket in (("et_malzeme", _("yakıt tabakası")), ("zarf_malzeme", _("zarf")),
+                             ("sogutucu", _("soğutucu"))):
             ad = parca.get(alan)
             if ad is None or not _tanimli(spec, ad):
                 eksik.append(etiket)
         yan = parca.get("yan_levha_malzeme")
         if yan is not None and not _tanimli(spec, yan) and \
                 float(parca.get("yan_levha_kalinlik") or 0.0) > 0:
-            eksik.append("yan levha")
+            eksik.append(_("yan levha"))
         return eksik
     bolgeler = parca.get("bolgeler") or []
     for i, b in enumerate(bolgeler):
         ad = b.get("malzeme")
         if ad is None or not _tanimli(spec, ad):
-            eksik.append("%d. bölge (%s)" % (i + 1, bolge_aciklamasi(spec, parca, i)
-                                             if ad is not None else _konum_adi(parca, i)))
+            eksik.append(_("{n}. bölge ({ad})").format(
+                n=i + 1, ad=bolge_aciklamasi(spec, parca, i)
+                if ad is not None else _konum_adi(parca, i)))
     if parca.get("tur") == "kontrol":
         iz = parca.get("izleyici_malzeme")
         if iz is None or not _tanimli(spec, iz):
-            eksik.append("izleyici malzeme")
+            eksik.append(_("izleyici malzeme"))
     return eksik
 
 
 def _konum_adi(c, i):
     n = len(c.get("bolgeler") or [])
-    return "dış bölge" if i == n - 1 else "iç bölge"
+    return _("dış bölge") if i == n - 1 else _("iç bölge")
 
 
 def bolge_aciklamasi(spec, c, i):
@@ -195,9 +202,9 @@ def bolge_aciklamasi(spec, c, i):
     n = len(bolgeler)
     ad = bolgeler[i].get("malzeme") if 0 <= i < n else None
     if i == n - 1:
-        return "Dış bölge — hücrenin kalanını doldurur"
+        return _("Dış bölge — hücrenin kalanını doldurur")
     if ad is None:
-        return "Malzeme seçilmedi"
+        return _("Malzeme seçilmedi")
     rol_tablosu = roller(spec)
 
     def rol(j):
@@ -208,25 +215,29 @@ def bolge_aciklamasi(spec, c, i):
             return {"bos"}
         return rol_tablosu.get(a, set())
 
-    r = rol(i)
-    ek = ""
+    metin = _rol_metni(rol(i), rol(i - 1))
     if c.get("tur") == "kontrol" and c.get("emici_bolge") == i:
-        ek = " (daldırılan)"
+        return _("{rol} (daldırılan)").format(rol=metin)
+    return metin
+
+
+def _rol_metni(r, ic_rol):
+    """Bolge rolunun okunur adi (r: bolgenin rolleri, ic_rol: bir icteki bolgenin)."""
     if "yakit" in r:
-        return "Yakıt" + ek
-    if ("gaz" in r or "bos" in r) and "yakit" in rol(i - 1):
-        return "Yakıt-zarf aralığı" + ek
+        return _("Yakıt")
+    if ("gaz" in r or "bos" in r) and "yakit" in ic_rol:
+        return _("Yakıt-zarf aralığı")
     if "emici" in r:
-        return "Emici" + ek
+        return _("Emici")
     if "yapisal" in r:
-        return "Zarf / yapı" + ek
+        return _("Zarf / yapı")
     if "sogutucu" in r or "moderator" in r:
-        return "Soğutucu" + ek
+        return _("Soğutucu")
     if "gaz" in r:
-        return "Gaz" + ek
+        return _("Gaz")
     if "bos" in r:
-        return "Boş" + ek
-    return "Bölge" + ek
+        return pgettext("madde", "Boş")
+    return _("Bölge")
 
 
 def malzeme_etiketi(spec, ad, rol_goster=False, rol_tablosu=None):
@@ -234,16 +245,16 @@ def malzeme_etiketi(spec, ad, rol_goster=False, rol_tablosu=None):
     "ad — aciklama" bicimi (sema.malzeme_etiketi; ad benzersiz oldugu icin
     etiket de benzersizdir)."""
     if ad is None:
-        return SECILMEDI_ETIKETI
+        return _(SECILMEDI_ETIKETI)
     if ad == sema.BOSLUK:
-        return BOS_ETIKETI
+        return _(BOS_ETIKETI)
     m = sema.malzeme_bul(spec, ad)
     if m is None:
-        return "%s (tanımsız)" % ad
+        return _("{ad} (tanımsız)").format(ad=ad)
     metin = sema.malzeme_etiketi(m)
     if rol_goster:
         r = (rol_tablosu if rol_tablosu is not None else roller(spec)).get(ad, set())
-        adlar = [ROL_ADI[x] for x in uygunluk.ROLLER if x in r]
+        adlar = [_(ROL_ADI[x]) for x in uygunluk.ROLLER if x in r]
         if adlar:
             metin = "%s · %s" % (metin, ", ".join(adlar))
     return metin
@@ -267,20 +278,20 @@ def ad_hatasi(spec, yeni, eski=None):
     """
     yeni = (yeni or "").strip()
     if not yeni:
-        return "Ad boş olamaz."
+        return _("Ad boş olamaz.")
     if yeni == eski:
         return None
     if yeni == sema.BOSLUK:
-        return "'%s' ayrılmış bir addır (Boş, madde yok)." % yeni
+        return _("'{ad}' ayrılmış bir addır (Boş, madde yok).").format(ad=yeni)
     diger = [x["ad"] for liste in ("cubuklar", "plakalar", "demetler", "malzemeler")
              for x in spec.get(liste, []) if x.get("ad") != eski]
     if yeni in diger:
-        return "Bu ad zaten kullanılıyor: %s" % yeni
+        return _("Bu ad zaten kullanılıyor: {ad}").format(ad=yeni)
     betik = _betik_adi(yeni)
     for a in diger:
         if _betik_adi(a) == betik:
-            return ("'%s' adı üretilen betikte '%s' ile aynı değişkene düşer; "
-                    "başka bir ad seçin." % (yeni, a))
+            return _("'{ad}' adı üretilen betikte '{diger}' ile aynı değişkene düşer; "
+                     "başka bir ad seçin.").format(ad=yeni, diger=a)
     return None
 
 
@@ -342,15 +353,15 @@ def parca_kullanimlari(spec, ad):
     yerler = []
     for d in spec.get("demetler", []):
         if d.get("ad") != ad and ad in (d.get("anahtar") or {}).values():
-            yerler.append("'%s' demeti" % d["ad"])
+            yerler.append(_("'{ad}' demeti").format(ad=d["ad"]))
     kor = spec.get("kor") or {}
     if sema.ana_dolgu(kor) == ad or ad in (kor.get("anahtar") or {}).values():
-        yerler.append("kor")
+        yerler.append(_("kor"))
     for b in (kor.get("eksenel") or {}).get("bolgeler") or []:
         if b.get("dolgu") == ad or ad in (b.get("anahtar") or {}).values():
-            yerler.append("'%s' eksenel katmanı" % (b.get("ad") or "adsız"))
+            yerler.append(_("'{ad}' eksenel katmanı").format(ad=b.get("ad") or _("adsız")))
     if ad in [h["cubuk"] for h in sema.guc_hedefleri(spec.get("guc_dagilimi"))]:
-        yerler.append("güç dağılımı")
+        yerler.append(_("güç dağılımı"))
     return yerler
 
 

@@ -34,11 +34,13 @@ surum() {
 cikar() {
     local s; s="$(surum)"
     for parca in "${PARCALAR[@]}"; do
-        pybabel extract --no-default-keywords \
+        # Depo kokunden GORELI yol: .pot/.po kaynak yorumlarina makineye ozgu
+        # mutlak yol (/home/...) yazilmasin (ticari hazirlik kurali).
+        (cd "$KOK" && pybabel extract --no-default-keywords \
             -k _ -k _n:1,2 -k N_ -k pgettext:1c,2 \
             --project=openmc-arayuz --version="$s" \
             --sort-by-file --width=88 \
-            -o "$LOCALE/$parca.pot" "$KOK/$parca"
+            -o "locale/$parca.pot" "$parca")
     done
 }
 

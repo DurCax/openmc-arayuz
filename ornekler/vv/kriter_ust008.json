@@ -636,10 +636,10 @@
   "geometri": null,
   "tamburlar": [],
   "baslik": "U233-SOL-THERM-008 (ORNL-11) — Büyük U-233 uranil nitrat küresi",
-  "baslik_en": "U233-SOL-THERM-008 (ORNL-11) (ICSBEP benchmark, V&V set)",
+  "baslik_en": "U233-SOL-THERM-008 (ORNL-11) — Large U-233 uranyl nitrate sphere",
   "kategori": "kriter",
   "seviye": "ileri",
-  "aciklama_en": "ICSBEP benchmark U233-SOL-THERM-008 (ORNL-11), k = 1.0006 ± 0.0029; model from mit-crpg/benchmarks (MIT license).",
+  "aciklama_en": "ICSBEP benchmark U233-SOL-THERM-008 (ORNL-11): large U-233 uranyl nitrate sphere. One case of the V&V set (NUREG/CR-6698 bias/USL). Experimental benchmark value k = 1.0006 ± 0.0029. Model: mit-crpg/benchmarks icsbep/u233-sol-therm-008/openmc (MIT license); geometry and atom densities transferred one to one (concentric spherical shells).",
   "referans": {
     "k": 1.0006,
     "sigma": 0.0029,

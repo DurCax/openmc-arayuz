@@ -30,6 +30,7 @@ import copy
 
 from cekirdek import geometri
 from cekirdek.geometri.sema import cocuklar
+from cekirdek.ceviri import _
 
 GRUP_TURLERI = ("grup_donme", "grup_daldirma")
 AGAC_TURLERI = ("tambur_donme", "cubuk_daldirma", "kor_adim", "yansitici_kalinlik")
@@ -41,14 +42,14 @@ def _grup(spec, ad, tur):
     for g in geometri.gruplar(geometri.model(spec)):
         if g.get("ad") == ad:
             if g.get("tur") != tur:
-                raise ValueError("'%s' grubu bir %s grubu değil" % (ad, tur))
+                raise ValueError(_("'%s' grubu bir %s grubu değil") % (ad, tur))
             return g
-    raise KeyError("tanımsız grup: %s" % ad)
+    raise KeyError(_("tanımsız grup: %s") % ad)
 
 
 def _daldirma_siniri(deger):
     if not (0.0 <= float(deger) <= 100.0):
-        raise ValueError("daldırma %%0–%%100 arasında olmalı: %s" % deger)
+        raise ValueError(_("daldırma %%0–%%100 arasında olmalı: %s") % deger)
 
 
 def uygula(spec, tur, hedef, deger):
@@ -68,15 +69,15 @@ def uygula(spec, tur, hedef, deger):
         return _kafes_adimi(spec, hedef, float(deger))
     if tur == "yansitici_kalinlik":
         return _halka_kalinligi(spec, hedef, float(deger))
-    raise ValueError("bilinmeyen tarama türü: %s" % tur)
+    raise ValueError(_("bilinmeyen tarama türü: %s") % tur)
 
 
 def _tambur_donme(spec, deger):
     donme = [g for g in geometri.gruplar(geometri.model(spec)) if g.get("tur") == "donme"]
     if not donme:
-        raise ValueError("modelde kontrol tamburu (dönme grubu) yok")
+        raise ValueError(_("modelde kontrol tamburu (dönme grubu) yok"))
     if len(donme) > 1:
-        raise ValueError("modelde %d dönme grubu var (%s); 'grup_donme' ile bir grup seçin"
+        raise ValueError(_("modelde %d dönme grubu var (%s); 'grup_donme' ile bir grup seçin")
                          % (len(donme), ", ".join(g["ad"] for g in donme)))
     return geometri.grup_degeri_yaz(spec, donme[0]["ad"], float(deger))
 
@@ -85,16 +86,16 @@ def _cubuk_daldirma(spec, hedef, deger):
     from cekirdek import sema
     for g in geometri.gruplar(geometri.model(spec)):
         if g.get("tur") == "daldirma" and hedef in (g.get("uyeler") or []):
-            raise ValueError("'%s' çubuğu '%s' daldırma grubunun üyesi; grubun değeri "
-                             "çubuğun daldırmasını ezer — 'grup_daldirma' ile tarayın"
+            raise ValueError(_("'%s' çubuğu '%s' daldırma grubunun üyesi; grubun değeri "
+                             "çubuğun daldırmasını ezer — 'grup_daldirma' ile tarayın")
                              % (hedef, g["ad"]))
     yeni = copy.deepcopy(spec)
     c = sema.cubuk_bul(yeni, hedef)
     if c is None:
-        raise KeyError("tanımsız çubuk: %s" % hedef)
+        raise KeyError(_("tanımsız çubuk: %s") % hedef)
     if c.get("tur") != "kontrol":
-        raise ValueError("'%s' bir kontrol çubuğu değil; daldırma taraması "
-                         "yalnızca kontrol çubuklarına uygulanır" % hedef)
+        raise ValueError(_("'%s' bir kontrol çubuğu değil; daldırma taraması "
+                         "yalnızca kontrol çubuklarına uygulanır") % hedef)
     _daldirma_siniri(deger)
     c["daldirma"] = float(deger)
     return yeni
@@ -124,7 +125,7 @@ def _kimlikli(agac, kimlik, tur):
     for d, ata in _dugumler(agac):
         if d.get("tur") == tur and d.get("id") == kimlik:
             return d, ata
-    raise KeyError("ağaçta '%s' kimlikli %s yok" % (kimlik, tur))
+    raise KeyError(_("ağaçta '%s' kimlikli %s yok") % (kimlik, tur))
 
 
 def _kafes_olcusu(kafes):
@@ -150,7 +151,7 @@ def _ayni_kesit(a, b):
 
 def _kafes_adimi(spec, kimlik, adim):
     if adim <= 0:
-        raise ValueError("kafes adımı sıfırdan büyük olmalı: %s" % adim)
+        raise ValueError(_("kafes adımı sıfırdan büyük olmalı: %s") % adim)
     yeni = copy.deepcopy(spec)
     agac = yeni.get("geometri") or {}
     kafes, _ata = _kimlikli(agac, kimlik, "kafes")
@@ -167,17 +168,17 @@ def _kafes_adimi(spec, kimlik, adim):
 
 def _halka_kalinligi(spec, hedef, kalinlik):
     if kalinlik <= 0:
-        raise ValueError("halka kalınlığı sıfırdan büyük olmalı: %s" % kalinlik)
+        raise ValueError(_("halka kalınlığı sıfırdan büyük olmalı: %s") % kalinlik)
     try:
         kimlik, _h, sira = str(hedef).rsplit("/", 2)
         sira = int(sira)
     except ValueError:
-        raise ValueError("halka hedefi '<kap id>/halkalar/<i>' biçiminde olmalı: %r"
+        raise ValueError(_("halka hedefi '<kap id>/halkalar/<i>' biçiminde olmalı: %r")
                          % (hedef,)) from None
     yeni = copy.deepcopy(spec)
     kap, _ata = _kimlikli(yeni.get("geometri") or {}, kimlik, "kap")
     halkalar = kap.get("halkalar") or []
     if not 0 <= sira < len(halkalar) or halkalar[sira].get("kalinlik") is None:
-        raise ValueError("'%s' kabında kalınlıkla tanımlı %d. halka yok" % (kimlik, sira))
+        raise ValueError(_("'%s' kabında kalınlıkla tanımlı %d. halka yok") % (kimlik, sira))
     halkalar[sira]["kalinlik"] = kalinlik
     return yeni

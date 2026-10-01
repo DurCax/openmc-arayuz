@@ -10,11 +10,17 @@
 from collections import Counter
 
 from cekirdek import altigen, sema, uygunluk
+from cekirdek.ceviri import N_, _
 from arayuz import izgara
 from arayuz.cubuk.parca_islemleri import BOS_ETIKETI, rol_listesi
 
 
-TUR_ADI = {"kare": "Kare demet", "altigen": "Altıgen demet"}
+TUR_ADI = {"kare": N_("Kare demet"), "altigen": N_("Altıgen demet")}
+
+
+def tur_adi(tur):
+    """Demet tipinin gorunen adi, etkin dilde (TUR_ADI yalnizca isaretli)."""
+    return _(TUR_ADI[tur])
 
 
 # ============================================================================
@@ -101,7 +107,7 @@ def palet_listesi(spec, d, tum_malzemeler=False):
     if sema.BOSLUK in istenen:
         turler.append("bosluk")
     ogeler = izgara.palet_ogeleri(spec, turler=tuple(turler), haric=tuple(haric))
-    return [(ad, BOS_ETIKETI if ad == sema.BOSLUK else etiket, rgb, tur_e)
+    return [(ad, _(BOS_ETIKETI) if ad == sema.BOSLUK else etiket, rgb, tur_e)
             for ad, etiket, rgb, tur_e in ogeler]
 
 
@@ -141,14 +147,14 @@ def gerekli_adim(spec, d):
         c = sema.cubuk_bul(spec, ad)
         if c is not None:
             olcu = dogrula._cubuk_dis_capi(c) or 0.0
-            metin = "'%s' çubuğunun dış çapı" % ad
+            metin = _("'{ad}' çubuğunun dış çapı").format(ad=ad)
         elif sema.plaka_bul(spec, ad) is not None:
             olcu = max(_plaka_olcusu(sema.plaka_bul(spec, ad)))
-            metin = "'%s' plaka elemanının ölçüsü" % ad
+            metin = _("'{ad}' plaka elemanının ölçüsü").format(ad=ad)
         elif sema.demet_bul(spec, ad) is not None:
             gx, gy, dar = dogrula._kafes_olculeri(sema.demet_bul(spec, ad))
             olcu = dar if tur == "altigen" else max(gx, gy)
-            metin = "iç demet '%s' ölçüsü" % ad
+            metin = _("iç demet '{ad}' ölçüsü").format(ad=ad)
         if olcu > en:
             en, sebep = olcu, metin
     return en, sebep

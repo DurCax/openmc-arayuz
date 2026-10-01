@@ -49,6 +49,7 @@ from cekirdek import kaynak as _kaynak
 # secenekleri gizler/suzer; burada ayni kurali ihlal eden (elle yazilmis)
 # dosyalar yakalanir. Kural burada TEKRAR YAZILMAZ.
 from cekirdek import uygunluk
+from cekirdek.ceviri import _n
 
 # Alt moduller (bolunme: Dalga 0). Bugunku butun herkese acik ve testlerin/
 # arayuzun kullandigi ozel adlar burada yeniden dis verilir; boylece
@@ -133,7 +134,9 @@ class DogrulamaHatasi(ValueError):
         self.bulgular = list(bulgular)
         self.tum_bulgular = list(self.bulgular if tum_bulgular is None else tum_bulgular)
         ilk = self.bulgular[0] if self.bulgular else None
-        metin = "%d doğrulama hatası; önce bunları giderin" % len(self.bulgular)
+        n = len(self.bulgular)
+        metin = _n("%d doğrulama hatası; önce bunları giderin",
+                   "%d doğrulama hatası; önce bunları giderin", n) % n
         if ilk is not None:
             metin += ": %s" % ilk.mesaj
         super().__init__(metin)
@@ -159,4 +162,7 @@ def ozet(bulgular):
     say = {"hata": 0, "uyari": 0, "bilgi": 0}
     for b in bulgular:
         say[b.seviye] += 1
-    return "%d hata, %d uyarı, %d bilgi" % (say["hata"], say["uyari"], say["bilgi"])
+    return ", ".join((
+        _n("%d hata", "%d hata", say["hata"]) % say["hata"],
+        _n("%d uyarı", "%d uyarı", say["uyari"]) % say["uyari"],
+        _n("%d bilgi", "%d bilgi", say["bilgi"]) % say["bilgi"]))

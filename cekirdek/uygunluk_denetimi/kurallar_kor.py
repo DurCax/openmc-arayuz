@@ -25,12 +25,13 @@ uygunluk_girdisi.json'un "kor" anahtarindan alir):
 
 from cekirdek.ceviri import _, N_
 from cekirdek.uygunluk_denetimi.kurallar import (KULLANICI_SINIRI, STANDART, Kural)
-from cekirdek.uygunluk_denetimi.profiller import SRP_43
+from cekirdek.uygunluk_denetimi.profiller import SRP_43, atif_parcasi
 from cekirdek.uygunluk_denetimi.kurallar_rapor import belirsizlik_metni
 
 _KAYNAK_TURU = {
     "guc": SRP_43 + " II.2 (GDC 11); IAEA SSG-52 (2019)",
-    "arastirma": "IAEA SSR-3 (2016) Bölüm 6; IAEA SSG-22 (Rev. 1) (madde no. DOĞRULANMADI)",
+    "arastirma": atif_parcasi(N_("IAEA SSR-3 (2016) Bölüm 6; IAEA SSG-22 (Rev. 1) "
+                                 "(madde no. DOĞRULANMADI)")),
 }
 _KATSAYI_ADLARI = {
     "guc": N_("güç katsayısı"), "yakit_sicaklik": N_("Doppler (yakıt sıcaklık) katsayısı"),
@@ -204,8 +205,10 @@ KURALLAR = (
     Kural("K7-SDM", "C", N_("Kapatma marjı (en değerli çubuk sıkışık)"),
           SRP_43 + "; GDC 26/27", KULLANICI_SINIRI, k7_kapatma),
     Kural("K7-F", "C", N_("Güç tepe faktörleri F_ΔH / F_q"),
-          SRP_43 + N_(" (sınırlar tesise özel)"), KULLANICI_SINIRI, k7_faktorler),
+          SRP_43 + atif_parcasi(N_(" (sınırlar tesise özel)")), KULLANICI_SINIRI,
+          k7_faktorler),
     Kural("K16", "C", N_("Kor yöntem doğrulaması referansı"),
-          "ANSI/ANS-19.3-2022; ISO 18075:2018 (madde ayrıntısı DOĞRULANMADI)",
+          "ANSI/ANS-19.3-2022; ISO 18075:2018 "
+          + atif_parcasi(N_("(madde ayrıntısı DOĞRULANMADI)")),
           STANDART, k16_dogrulama),
 )

@@ -232,6 +232,24 @@ def _calisma_dizini_korumasi(request):
                   pytest.PytestWarning)
 
 
+# Testler kaynak dilde (Turkce) kosar: ana_pencere.main() dili sistem diline
+# (LANG) gore ayarliyor; LANG=en_US makinede pencere kuran testten sonra ayni
+# iscideki butun testler Ingilizce kosuyordu (olculdu 01.10.2026, 20 test).
+# EN testleri dili acikca ceviri.dil_ayarla("en") ile secer; ortam degiskeni
+# yalniz varsayilan_dil()'i sabitler.
+os.environ.setdefault("OPENMC_ARAYUZ_DIL", "tr")
+
+
+@pytest.fixture(autouse=True)
+def _dil_korumasi():
+    """Testin degistirdigi arayuz dilini geri alir (ayni iscide sizmasin)."""
+    from cekirdek import ceviri
+    once = ceviri.etkin_dil()
+    yield
+    if ceviri.etkin_dil() != once:
+        ceviri.dil_ayarla(once)
+
+
 @pytest.fixture(autouse=True)
 def _qt_pencere_temizligi():
     """Testin acip biraktigi ust duzey Qt pencerelerini siler.

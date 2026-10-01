@@ -13,8 +13,9 @@
    p.profiller_degisti -> tuple          # kullanici kutu degistirdi (spec'e yazilir)
    p.git_istendi -> str                  # sayfa anahtari (uygunluk.SEKMELER)
 
- Durust cerceve metni (profiller.durust_cerceve) AYNEN gosterilir. Kılavuz
- baglantisi icin KILAVUZ_BOLUMU ayrilmistir (yardim.ac henuz yok; simdilik metin).
+ Durust cerceve metni (profiller.durust_cerceve) AYNEN gosterilir. Kilavuz
+ baglantisi: baslikta "?" ve alttaki baglanti yardim.ac(KILAVUZ_BOLUMU) cagirir
+ (arayuz/yardim_baglanti.py).
  Renk/aralik tokenlardan; ikonlar tema renk tokenlariyla boyanir.
 ================================================================================
 """
@@ -26,13 +27,14 @@ from arayuz import tema
 from arayuz.tasarim import tokenlar
 from arayuz.tasarim.ikon import ikon
 from cekirdek import rapor_uygunluk
-from cekirdek.ceviri import _, N_
+from cekirdek.ceviri import _, _n, N_
 from cekirdek.gunluk import kaydedici
+from arayuz import yardim_baglanti
 
 A = tokenlar.ARALIK
 _log = kaydedici(__name__)
 
-KILAVUZ_BOLUMU = "uygunluk-denetimi"     # ileride yardim.ac(KILAVUZ_BOLUMU)
+KILAVUZ_BOLUMU = "uygunluk-denetimi"     # yardim_baglanti.ac(KILAVUZ_BOLUMU)
 _IKON_BOYUT = 16
 _LISTE_EN_AZ = 160
 _ROL_KURAL = QtCore.Qt.UserRole
@@ -116,8 +118,14 @@ class UygunlukPaneli(b.Kart):
         self.usl_notu = self._metin("uyari")
         self.cerceve = self._metin(None)
         self.kilavuz = self._metin(None)
-        self.kilavuz.setText(_("Kuralların açıklaması: Kullanıcı kılavuzu → \"Uygunluk "
-                               "denetimi\" bölümü; kaynak tablosu docs/STANDARTLAR.md §3."))
+        self.kilavuz.setTextFormat(QtCore.Qt.RichText)
+        self.kilavuz.setTextInteractionFlags(QtCore.Qt.LinksAccessibleByMouse
+                                             | QtCore.Qt.LinksAccessibleByKeyboard)
+        self.kilavuz.setText(_("Kuralların açıklaması: <a href=\"kilavuz\">Kullanıcı kılavuzu → "
+                               "\"Uygunluk denetimi\" bölümü</a>; kaynak tablosu "
+                               "docs/STANDARTLAR.md §3."))
+        self.kilavuz.linkActivated.connect(self.kilavuzu_ac)
+        self.d_kilavuz = self.eylem_ekle(yardim_baglanti.yardim_dugmesi(KILAVUZ_BOLUMU, self))
         from cekirdek.uygunluk_denetimi.profiller import durust_cerceve
         self.cerceve.setText(durust_cerceve())
         self.usl_notu.hide()
@@ -147,6 +155,10 @@ class UygunlukPaneli(b.Kart):
         satir.addWidget(self.rozet)
         satir.addWidget(self.ozet, 1)
         return satir
+
+    def kilavuzu_ac(self, *_a):
+        """Kilavuzu "Uygunluk denetimi" bolumunde acar."""
+        return yardim_baglanti.ac(KILAVUZ_BOLUMU, self.window())
 
     def _metin(self, renk):
         w = QtWidgets.QLabel("")
@@ -208,11 +220,14 @@ class UygunlukPaneli(b.Kart):
         sayi = ozet(bulgular)
         self._rozet_yaz(sayi["seviye"], sayi["durum"]["karsilanmadi"],
                         sayi["durum"]["karsilandi"], _degerlendirilemeyen_kurallar(bulgular))
-        self.ozet.setText(_("Profiller %s · %d kontrolü geçti · %d kontrolü geçmedi · %d "
-                            "uygulanamadı · %d not") % (
+        n_not = sayi["durum"]["bilgi"]
+        self.ozet.setText(_n("Profiller %s · %d kontrolü geçti · %d kontrolü geçmedi · %d "
+                             "uygulanamadı · %d not",
+                             "Profiller %s · %d kontrolü geçti · %d kontrolü geçmedi · %d "
+                             "uygulanamadı · %d not", n_not) % (
             ", ".join(profiller), sayi["durum"]["karsilandi"],
             sayi["durum"]["karsilanmadi"], sayi["durum"]["uygulanamadi"],
-            sayi["durum"]["bilgi"]))
+            n_not))
         notu = rapor_uygunluk.usl_notu(profiller, vv)
         self.usl_notu.setText(notu)
         self.usl_notu.setVisible(bool(notu))
@@ -229,17 +244,20 @@ class UygunlukPaneli(b.Kart):
     def _rozet_yaz(self, seviye, karsilanmayan, karsilanan=1, degerlendirilemeyen=0):
         """Hata > uyari > not > degerlendirme kapsami. Hicbir kural
         degerlendirilmediyse (statepoint yok vb.) yesil 'Sorun yok' DEGIL."""
-        if seviye["hata"]:
-            metin, tur = _("%d hata") % seviye["hata"], "hata"
-        elif seviye["uyari"]:
-            metin, tur = _("%d uyarı") % seviye["uyari"], "uyari"
+        n_hata, n_uyari = seviye["hata"], seviye["uyari"]
+        if n_hata:
+            metin, tur = _n("%d hata", "%d hata", n_hata) % n_hata, "hata"
+        elif n_uyari:
+            metin, tur = _n("%d uyarı", "%d uyarı", n_uyari) % n_uyari, "uyari"
         elif karsilanmayan:
-            metin, tur = _("%d not") % karsilanmayan, "bilgi"
+            metin, tur = _n("%d not", "%d not", karsilanmayan) % karsilanmayan, "bilgi"
         elif not karsilanan:
-            metin, tur = _("Değerlendirilemedi: %d kural") % degerlendirilemeyen, "notr"
+            metin, tur = (_n("Değerlendirilemedi: %d kural", "Değerlendirilemedi: %d kural",
+                             degerlendirilemeyen) % degerlendirilemeyen, "notr")
         elif degerlendirilemeyen:
-            metin, tur = (_("%d kontrol geçti · %d kural değerlendirilemedi")
-                          % (karsilanan, degerlendirilemeyen), "notr")
+            metin, tur = (_n("%d kontrol geçti · %d kural değerlendirilemedi",
+                             "%d kontrol geçti · %d kural değerlendirilemedi",
+                             degerlendirilemeyen) % (karsilanan, degerlendirilemeyen), "notr")
         else:
             metin, tur = _("Sorun yok"), "basari"
         self.rozet.setText(metin)

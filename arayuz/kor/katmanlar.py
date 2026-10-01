@@ -138,7 +138,7 @@ class KorKatmanMixin(object):
             ad_w = self.katman_tablo.cellWidget(satir, 0)
             h_w = self.katman_tablo.cellWidget(satir, 1)
             d_w = self.katman_tablo.cellWidget(satir, 2)
-            b["ad"] = ad_w.text().strip() or ("katman %d" % (i + 1))
+            b["ad"] = ad_w.text().strip() or (_("katman %d") % (i + 1))
             b["yukseklik"] = h_w.value()
             if not b.get("anahtar"):
                 b["dolgu"] = d_w.currentData()
@@ -197,7 +197,7 @@ class KorKatmanMixin(object):
     def _katman_ekle(self):
         eks = self.spec["kor"].setdefault("eksenel", {})
         bolgeler = eks.setdefault("bolgeler", [])
-        bolgeler.append(sema.eksenel_bolge("katman %d" % (len(bolgeler) + 1), 20.0, None))
+        bolgeler.append(sema.eksenel_bolge(_("katman %d") % (len(bolgeler) + 1), 20.0, None))
         self._katmanlari_yenile(len(bolgeler) - 1)          # en ust = ilk satir
         self.bildir()
 

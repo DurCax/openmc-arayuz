@@ -17,7 +17,7 @@
 
 from PySide6 import QtCore, QtWidgets
 
-from cekirdek.ceviri import _
+from cekirdek.ceviri import _, _n, pgettext
 from arayuz.geometri import duzenle
 
 ROL_YOL = QtCore.Qt.UserRole + 1
@@ -29,8 +29,8 @@ def kesit_ozeti(kes):
     if s == "dikdortgen":
         return _("dikdörtgen %g×%g") % tuple(kes.get("boyut") or (0, 0))
     if s in ("silindir", "kure"):
-        return _("{s} r={r:g}").format(s=_("küre") if s == "kure" else _("silindir"),
-                                       r=float(kes.get("yaricap") or 0))
+        return "{s} r={r:g}".format(s=_("küre") if s == "kure" else _("silindir"),
+                                    r=float(kes.get("yaricap") or 0))
     if s == "altigen":
         return _("altıgen a={a:g} ({y})").format(a=float(kes.get("apotem") or 0),
                                                  y=kes.get("yonelim", "y"))
@@ -51,7 +51,9 @@ def dugum_ozeti(d):
         return _("Bileşen: {ad}").format(ad=d.get("ad"))
     if tur == "kafes":
         if d.get("sekil") == "altigen":
-            olcu = _("altıgen, {n} halka").format(n=d.get("halka_sayisi"))
+            n = d.get("halka_sayisi")
+            olcu = _n("altıgen, {n} halka", "altıgen, {n} halka",
+                      int(n or 0)).format(n=n)
         else:
             olcu = _("kare {nx}×{ny}").format(nx=(d.get("boyut") or ("?", "?"))[0],
                                               ny=(d.get("boyut") or ("?", "?"))[1])
@@ -59,8 +61,17 @@ def dugum_ozeti(d):
     if tur == "kap":
         return _("Kap {ad} ({kesit})").format(ad=ad, kesit=kesit_ozeti(d.get("kesit")))
     if tur == "eksenel":
-        return _("Eksenel yığın ({n} katman)").format(n=len(d.get("katmanlar") or []))
+        n = len(d.get("katmanlar") or [])
+        return _n("Eksenel yığın ({n} katman)", "Eksenel yığın ({n} katman)", n).format(n=n)
     return str(tur)
+
+
+def _mod_adi(mod):
+    """Yerlesim modunun agacta gorunen kisa adi (etkin dilde); bilinmeyen aynen."""
+    adlar = {"halka": pgettext("yerlesim-modu", "halka"),
+             "liste": pgettext("yerlesim-modu", "liste"),
+             "kafes_konumu": pgettext("yerlesim-modu", "kafes_konumu")}
+    return adlar.get(mod, mod)
 
 
 class AgacGorunumu(QtWidgets.QTreeWidget):
@@ -216,7 +227,7 @@ class AgacPaneli(QtWidgets.QWidget):
         self._yerlesimler(ebeveyn, d.get("yerlesimler"), yol)
         for i, h in enumerate(d.get("halkalar") or []):
             hy = yol + ("halkalar", i)
-            tanim = (_("{k:g} cm").format(k=float(h.get("kalinlik") or 0))
+            tanim = ("{k:g} cm".format(k=float(h.get("kalinlik") or 0))
                      if h.get("dis") is None else kesit_ozeti(h.get("dis")))
             ho = self._oge(ebeveyn, _("Halka {n} ({t})").format(n=i + 1, t=tanim), hy)
             self._yuva(ho, _("İçerik: "), h.get("icerik"), hy + ("icerik",))
@@ -230,7 +241,7 @@ class AgacPaneli(QtWidgets.QWidget):
             n = y.get("sayi") if y.get("mod") == "halka" else len(y.get("konumlar") or []) \
                 if y.get("mod") == "liste" else y.get("harf")
             yo = self._oge(ebeveyn, _("Yerleşim: {ad} ({mod}, {n})").format(
-                ad=y.get("ad"), mod=y.get("mod"), n=n), yy)
+                ad=y.get("ad"), mod=_mod_adi(y.get("mod")), n=n), yy)
             self._yuva(yo, _("İçerik: "), y.get("icerik"), yy + ("icerik",))
 
     def _yuva(self, ebeveyn, onek, d, yol):

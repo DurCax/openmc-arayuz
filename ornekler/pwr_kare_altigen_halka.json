@@ -4,7 +4,7 @@
   "baslik": "Kare çekirdek + altıgen yansıtıcı halka",
   "baslik_en": "Square core inside a hexagonal reflector ring",
   "aciklama": "Gelişmiş geometri (ağaç) örneği: 5×5 kare kafesli bir PWR çekirdeği, altıgen blok kafesinin ortasına oyulmuş kare bir deliğe yerleştirilmiştir. Demetler pwr_17x17.json ile aynı Westinghouse 17×17 demetleridir (%2.4 ve %3.1 zenginlik, dama deseni, 1300 ppm borlu su).\n\nÇekirdeği çevreleyen altıgen bloklar (5 halkalı kafes, adım 30 cm) SS-304 çelik yansıtıcıdır: her bloğun ortasında 6 cm çaplı bir su kanalı vardır, bloklar arasında 0.4 cm su kalır. En dışta 20 cm su kuşağı vardır ve dış yüzler vakumdur. Model 2B'dir (eksenel yönde sonsuz).\n\nKare deliğin kenarları bazı altıgen blokları keser. Doğrulama bu yüzden 16 'kesik blok' UYARISI verir. Bu beklenen bir davranıştır: kare bir çekirdeği altıgen bir kafesle kırpmadan çevrelemek mümkün değildir. Kesik blokların hacmi stokastik hesaplanır. Deliğin tamamen altında kalan bloklar haritada '.' ile gizlenmiştir.\n\nEğitim amaçlı bir düzenektir, gerçek bir reaktör değildir. Referans k bu aracın kendi ölçümüdür.",
-  "aciklama_en": "Advanced (tree) geometry example: a 5x5 square PWR core cut into a hexagonal lattice of steel reflector blocks, 20 cm water outside, 2D. Clipped blocks raise a 'clipped block' warning by design. Educational.",
+  "aciklama_en": "Advanced (tree) geometry example: a 5x5 square PWR core cut into a hexagonal lattice of steel reflector blocks, 20 cm water outside, 2D. Truncated blocks raise a 'truncated block' warning by design. Educational.",
   "kategori": "pwr",
   "seviye": "ileri",
   "referans": {

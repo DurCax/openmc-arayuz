@@ -17,6 +17,7 @@
 import copy
 
 from cekirdek.sema import BOSLUK, malzeme_bul
+from cekirdek.ceviri import N_, _
 
 
 def kullanilan_malzemeler(spec):
@@ -93,8 +94,8 @@ def _agac_malzemeleri(spec):
 #  Yeni bir alan eklenirse BURAYA da eklenmeli; testler/test_malzeme_sekmesi.py
 #  11 ornekte her malzemeyi yeniden adlandirip modelin ayni kuruldugunu olcer.
 
-_MALZEME_BOLUMLERI = (("cubuklar", "çubuk"), ("plakalar", "plaka"),
-                      ("demetler", "demet"))
+_MALZEME_BOLUMLERI = (("cubuklar", N_("çubuk")), ("plakalar", N_("plaka")),
+                      ("demetler", N_("demet")))
 
 
 def malzeme_etiketi(m):
@@ -120,18 +121,18 @@ def malzeme_adi_sorunu(spec, ad, haric=None):
     if haric is not None and ad == haric:
         return None
     if not ad.strip():
-        return "Malzeme adı boş olamaz."
+        return _("Malzeme adı boş olamaz.")
     if ad != ad.strip():
-        return "Ad boşlukla başlayamaz ya da bitemez."
+        return _("Ad boşlukla başlayamaz ya da bitemez.")
     if ad == BOSLUK:
-        return ("'%s' ayrılmış bir addır: geometride Boş (madde yok) anlamına "
-                "gelir." % BOSLUK)
+        return (_("'%s' ayrılmış bir addır: geometride Boş (madde yok) anlamına "
+                "gelir.") % BOSLUK)
     if any(m.get("ad") == ad for m in spec.get("malzemeler") or []):
-        return "'%s' adında başka bir malzeme var." % ad
+        return _("'%s' adında başka bir malzeme var.") % ad
     for bolum, etiket in _MALZEME_BOLUMLERI:
         if any(x.get("ad") == ad for x in spec.get(bolum) or []):
-            return ("'%s' adı bir %s için kullanılıyor. Demet ve katman "
-                    "seçimlerinde aynı ad iki şeyi gösterirdi." % (ad, etiket))
+            return (_("'%s' adı bir %s için kullanılıyor. Demet ve katman "
+                    "seçimlerinde aynı ad iki şeyi gösterirdi.") % (ad, _(etiket)))
     return None
 
 
@@ -152,10 +153,10 @@ def malzeme_adini_degistir(spec, eski, yeni):
         return []
     adli = [m for m in spec.get("malzemeler") or [] if m.get("ad") == eski]
     if not adli:
-        raise KeyError("tanımsız malzeme: %s" % eski)
+        raise KeyError(_("tanımsız malzeme: %s") % eski)
     if len(adli) > 1:
-        raise ValueError("'%s' adında %d malzeme var; önce birini yeniden "
-                         "adlandırın." % (eski, len(adli)))
+        raise ValueError(_("'%s' adında %d malzeme var; önce birini yeniden "
+                         "adlandırın.") % (eski, len(adli)))
     sorun = malzeme_adi_sorunu(spec, yeni)
     if sorun:
         raise ValueError(sorun)

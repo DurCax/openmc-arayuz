@@ -214,7 +214,7 @@ class KesitGorunumu(QtWidgets.QWidget):
         self.eksen = b.SegmentSecici([("xy", "xy"), ("xz", "xz")], "xy")
         self.z = b.SayiBirim("cm", deger=0.0, en_az=-1e5, en_cok=1e5, ondalik=2, adim=1.0,
                              erisilebilir_ad=_("kesit yüksekliği z"))
-        self.z_etiket = QtWidgets.QLabel(_("z ="))
+        self.z_etiket = QtWidgets.QLabel("z =")
         self.d_sigdir = b.ikon_dugmesi("refresh-cw", _("Sığdır (çift tık)"))
         self.tuval = KesitTuvali()
         self.z.kutu.setMinimumWidth(5 * A["l"])

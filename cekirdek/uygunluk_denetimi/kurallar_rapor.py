@@ -29,7 +29,10 @@ import re
 
 from cekirdek.ceviri import _, N_
 from cekirdek.uygunluk_denetimi.kurallar import STANDART, Kural
-from cekirdek.uygunluk_denetimi.profiller import GUM
+from cekirdek.uygunluk_denetimi.profiller import GUM, atif_parcasi
+
+BIPM_SI_KISA = atif_parcasi(N_("BIPM SI Broşürü"))
+BIPM_SI = atif_parcasi(N_("BIPM SI Broşürü 9. baskı"))
 
 _ORNEK = 3
 _CIFT = re.compile(r"(?<![\w.+\-])([-+]?\d+(?:\.\d+)?)\s*(?:±|\+/-)\s*(\d+(?:\.\d+)?)"
@@ -154,13 +157,13 @@ def _k5_bulgulari(kural, metin, rakam, ham=None):
         b.append(kural.ihlal("uyari", _("'pcm' kullanılmış ama tanımı (Δk × 10⁵ mi Δρ × 10⁵ "
                                         "mi) o bölümde ya da belge başında yazılmamış: %s")
                              % _ornek(eksik), pcm_tanimi(),
-                             kimlik="K5-pcm", kaynak="BIPM SI Broşürü 9. baskı (tanımsal "
-                                                     "terimler); STANDARTLAR.md §6 madde 15"))
+                             kimlik="K5-pcm", kaynak=BIPM_SI + " " + atif_parcasi(N_(
+                                 "(tanımsal terimler); STANDARTLAR.md §6 madde 15"))))
     si = sorted(set(_SI_DISI.findall(metin)))
     if si:
         b.append(kural.ihlal("uyari", _("SI dışı birim: %s") % ", ".join(si),
                              _("SI birimlerini kullanın."), kimlik="K5-SI",
-                             kaynak="BIPM SI Broşürü 9. baskı"))
+                             kaynak=BIPM_SI))
     return b
 
 
@@ -234,5 +237,5 @@ KURALLAR = (
     Kural("K4", "D", N_("Veri izlenebilirliği"),
           "ANSI/ANS-10.4-2008 (R2021); NUREG/CR-6698 §2.3", STANDART, k4_izlenebilirlik),
     Kural("K5", "D", N_("Belirsizlik ve birim bildirimi"),
-          GUM + " §7.2.2, §7.2.3, §7.2.6; BIPM SI Broşürü", STANDART, k5_belirsizlik),
+          GUM + " §7.2.2, §7.2.3, §7.2.6; " + BIPM_SI_KISA, STANDART, k5_belirsizlik),
 )

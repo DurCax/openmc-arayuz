@@ -473,5 +473,5 @@
     }
   },
   "baslik_en": "VVER-1000 LEU assembly benchmark (NEA)",
-  "aciklama_en": "NEA/NSC/DOC(2002)10 UGD variant, cold state S5, zero burnup: 331-cell hexagonal assembly with 12 U-Gd rods; code-to-code reference (participant mean)."
+  "aciklama_en": "NEA/NSC/DOC(2002)10 UGD variant, cold state S5, zero burnup: 331-cell hexagonal assembly with 12 U-Gd pins; code-to-code reference (participant mean)."
 }

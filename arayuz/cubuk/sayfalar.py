@@ -7,7 +7,7 @@
 """
 
 from PySide6 import QtCore, QtWidgets
-from cekirdek.ceviri import N_, _
+from cekirdek.ceviri import N_, _, pgettext
 from arayuz import bilesenler as bl
 from arayuz import sekme_duzen as sd
 from arayuz.ortak import baslik, ipucu, sayi, tamsayi
@@ -114,7 +114,7 @@ class SayfalarMixin(object):
 
     def _bolge_tablosu(self):
         self.c_tablo = QtWidgets.QTableWidget(0, 3)
-        self.c_tablo.setHorizontalHeaderLabels(["Dış yarıçap", "Malzeme", "Bölge"])
+        self.c_tablo.setHorizontalHeaderLabels([_("Dış yarıçap"), _("Malzeme"), _("Bölge")])
         bas = self.c_tablo.horizontalHeader()
         # Yaricap kutusunun sizeHint'i ust sinirdan (1000.000000 cm) gelir ve
         # sutunu sisirir; "0.000000 cm" sigacak sabit genislik yeter.
@@ -187,7 +187,7 @@ class SayfalarMixin(object):
         self.p_ad = QtWidgets.QLineEdit()
         self.p_ad.editingFinished.connect(lambda: self._ad_degisti("plaka"))
         self.p_ad_hata = self._hata_etiketi()
-        self.p_sayi = tamsayi(23, 1, 500, 1, "plaka")
+        self.p_sayi = tamsayi(23, 1, 500, 1, pgettext("birim", "plaka"))
         self.p_et = sayi(0.051, 5, 0.0001, 10.0, 0.001, "cm")
         self.p_zarf = sayi(0.038, 5, 0.0001, 10.0, 0.001, "cm")
         self.p_kanal = sayi(0.200, 5, 0.0001, 10.0, 0.001, "cm")
@@ -200,30 +200,30 @@ class SayfalarMixin(object):
 
         self.p_form = sd.form()
         f = self.p_form
-        f.addRow("Ad:", self.p_ad)
+        f.addRow(_("Ad:"), self.p_ad)
         f.addRow("", self.p_ad_hata)
-        f.addRow("Plaka sayısı:", self.p_sayi)
-        f.addRow("Yakıt tabakası kalınlığı:", self.p_et)
-        f.addRow("Zarf kalınlığı (her yüz):", self.p_zarf)
-        f.addRow("Soğutucu kanal aralığı:", self.p_kanal)
-        f.addRow("Aktif genişlik (y):", self.p_genislik)
+        f.addRow(_("Plaka sayısı:"), self.p_sayi)
+        f.addRow(_("Yakıt tabakası kalınlığı:"), self.p_et)
+        f.addRow(_("Zarf kalınlığı (her yüz):"), self.p_zarf)
+        f.addRow(_("Soğutucu kanal aralığı:"), self.p_kanal)
+        f.addRow(_("Aktif genişlik (y):"), self.p_genislik)
         self._p_satir = {}
-        for anahtar, etiket in (("et_malzeme", "Yakıt malzemesi:"),
-                                ("zarf_malzeme", "Zarf malzemesi:"),
-                                ("sogutucu", "Soğutucu:")):
+        for anahtar, etiket in (("et_malzeme", _("Yakıt malzemesi:")),
+                                ("zarf_malzeme", _("Zarf malzemesi:")),
+                                ("sogutucu", _("Soğutucu:"))):
             yer = QtWidgets.QWidget()
             yd = QtWidgets.QHBoxLayout(yer)
             yd.setContentsMargins(0, 0, 0, 0)
             self._p_satir[anahtar] = yd
             f.addRow(etiket, yer)
-        f.addRow("Yan levha kalınlığı:", self.p_yan)
+        f.addRow(_("Yan levha kalınlığı:"), self.p_yan)
         yer = QtWidgets.QWidget()
         yd = QtWidgets.QHBoxLayout(yer)
         yd.setContentsMargins(0, 0, 0, 0)
         self._p_satir["yan_levha_malzeme"] = yd
-        self.e_yan_mal = QtWidgets.QLabel("Yan levha malzemesi:")
+        self.e_yan_mal = QtWidgets.QLabel(_("Yan levha malzemesi:"))
         f.addRow(self.e_yan_mal, yer)
-        f.addRow("Eleman dış ölçüsü (x × y):", self.p_ozet)
+        f.addRow(_("Eleman dış ölçüsü (x × y):"), self.p_ozet)
 
         for alan in (self.p_sayi, self.p_et, self.p_zarf, self.p_kanal,
                      self.p_genislik, self.p_yan):

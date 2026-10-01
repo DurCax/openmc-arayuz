@@ -757,7 +757,13 @@ def _ad_degisimi_olc(spec, eski, yeni, baslik):
     # adi olarak kalir (pwr_mox_demet: malzeme 'mox_25' + cubuk 'mox_25').
     golgeli = any(x.get("ad") == eski for bolum in ("cubuklar", "plakalar", "demetler")
                   for x in s2.get(bolum) or [])
-    if eski in set(_dizeler(s2)) and not golgeli:
+    # Meta veri (referans.aoa kategori sozcukleri "su", "dogal_u", baslik,
+    # aciklama...) malzeme basvurusu degildir; Flattop-25'te aoa.yansitici
+    # kategori sozcugu tesadufen malzeme adiyla ayni (S-3, 01.10.2026).
+    model_alanlari = {k: v for k, v in s2.items()
+                      if k not in ("referans", "baslik", "baslik_en", "aciklama",
+                                   "aciklama_en", "kategori", "seviye", "ad")}
+    if eski in set(_dizeler(model_alanlari)) and not golgeli:
         return "%s: eski ad spec'te kaldi" % baslik
     return None
 

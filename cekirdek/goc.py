@@ -152,7 +152,7 @@ def _diskteki_surum(dosya):
     try:
         with open(dosya, encoding="utf-8") as f:
             return surum_oku(json.load(f))
-    except (OSError, ValueError):
+    except (OSError, ValueError):     # bozuk/okunamayan dosya: belgelenen donus None
         return None
 
 

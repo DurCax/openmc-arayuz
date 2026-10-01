@@ -37,7 +37,7 @@ from collections import Counter
 from PySide6 import QtCore, QtWidgets
 
 from cekirdek import altigen, sema
-from cekirdek.ceviri import _
+from cekirdek.ceviri import _, _n
 from arayuz import izgara
 from arayuz import sekme_duzen as sd
 from arayuz.ortak import SekmeTabani, renk_simgesi
@@ -48,10 +48,19 @@ from arayuz.cubuk.parca_islemleri import rol_listesi
 
 # Bolunen parcalar (Dalga 2 / Ajan 7): eski ad alani aynen korunur.
 from arayuz.demet.demet_islemleri import (  # noqa: F401
-    TUR_ADI, demet_turleri, _harita_adlari, iceriyor, ic_demet_adaylari, palet_izinli,
+    TUR_ADI, tur_adi, demet_turleri, _harita_adlari, iceriyor, ic_demet_adaylari, palet_izinli,
     palet_listesi, en_sik_parca, _plaka_olcusu, gerekli_adim, dis_dolgu_anlamli,
     _yakit_cubugu, yeni_demet)
 from arayuz.demet.yerlesim import YerlesimMixin  # noqa: F401
+
+
+def _tip_ozeti(d):
+    """Listede demet adinin yanindaki tip/boyut ozeti ("kare 17×17", "altıgen, 7 halka")."""
+    if d.get("tur") == "altigen":
+        halka = int(d.get("halka_sayisi") or 1)
+        return _n("altıgen, {n} halka", "altıgen, {n} halka", halka).format(n=halka)
+    nx, ny = (d.get("boyut") or [1, 1])[:2]
+    return _("kare {nx}×{ny}").format(nx=int(nx), ny=int(ny))
 
 
 # ============================================================================
@@ -81,13 +90,8 @@ class DemetSekmesi(YerlesimMixin, SekmeTabani):
             self.liste.clear()
             renk = {o[0]: o[2] for o in izgara.palet_ogeleri(self.spec, turler=("demet",))}
             for d in self.spec.get("demetler", []):
-                if d.get("tur") == "altigen":
-                    ek = "altıgen, %d halka" % (d.get("halka_sayisi") or 1)
-                else:
-                    nx, ny = (d.get("boyut") or [1, 1])[:2]
-                    ek = "kare %d×%d" % (nx, ny)
                 oge = QtWidgets.QListWidgetItem(renk_simgesi(renk.get(d["ad"])),
-                                                "%s  · %s" % (d["ad"], ek))
+                                                "%s  · %s" % (d["ad"], _tip_ozeti(d)))
                 oge.setData(QtCore.Qt.UserRole, d["ad"])
                 self.liste.addItem(oge)
             hedef = 0
@@ -109,11 +113,14 @@ class DemetSekmesi(YerlesimMixin, SekmeTabani):
         cubuk_var = bool(self.spec.get("cubuklar"))
         self.d_kare.setVisible("kare" in turler)
         self.d_hex.setVisible("altigen" in turler)
+        ekleme_ipucu = {
+            "kare": _("Kare demet ekler; çubukları paletten seçip ızgaraya yerleştirirsiniz."),
+            "altigen": _("Altıgen demet ekler; çubukları paletten seçip ızgaraya "
+                         "yerleştirirsiniz.")}
         for d, tur in ((self.d_kare, "kare"), (self.d_hex, "altigen")):
             d.setEnabled(cubuk_var)
-            d.setToolTip(("%s ekler; çubukları paletten seçip ızgaraya yerleştirirsiniz."
-                          % TUR_ADI[tur]) if cubuk_var else
-                         "Önce Parçalar sekmesinde en az bir çubuk tanımlayın.")
+            d.setToolTip(ekleme_ipucu[tur] if cubuk_var else
+                         _("Önce Parçalar sekmesinde en az bir çubuk tanımlayın."))
         secili = self._secili() is not None
         self.d_kopya.setEnabled(secili)
         self.d_sil.setEnabled(secili)
@@ -121,18 +128,18 @@ class DemetSekmesi(YerlesimMixin, SekmeTabani):
         # yuklenir: tip listesi bos olabilir.
         self._bos_tipi = turler[0] if turler else None
         if not turler:
-            self.bos.ayarla("Bu modelde demet kullanılmıyor",
-                            "Bu kor türü demet içermez. Demet gerekiyorsa kor türünü "
-                            "model başlığındaki “Türü değiştir…” ile değiştirin.", "")
+            self.bos.ayarla(_("Bu modelde demet kullanılmıyor"),
+                            _("Bu kor türü demet içermez. Demet gerekiyorsa kor türünü "
+                              "model başlığındaki “Türü değiştir…” ile değiştirin."), "")
         elif not cubuk_var:
-            self.bos.ayarla("Önce çubuk gerekli",
-                            "Demet, Parçalar sekmesinde tanımlanan çubuklardan kurulur. "
-                            "Önce bir yakıt çubuğu ekleyin.", "")
+            self.bos.ayarla(_("Önce çubuk gerekli"),
+                            _("Demet, Parçalar sekmesinde tanımlanan çubuklardan kurulur. "
+                              "Önce bir yakıt çubuğu ekleyin."), "")
         else:
-            self.bos.ayarla("Henüz demet yok",
-                            "Bir demet ekleyin; çubukları sağdaki paletten seçip ızgaraya "
-                            "tıklayarak ya da sürükleyerek yerleştirin.",
-                            "+ " + TUR_ADI[self._bos_tipi])
+            self.bos.ayarla(_("Henüz demet yok"),
+                            _("Bir demet ekleyin; çubukları sağdaki paletten seçip ızgaraya "
+                              "tıklayarak ya da sürükleyerek yerleştirin."),
+                            "+ " + tur_adi(self._bos_tipi))
 
     def _onay_al(self, baslik_, metin):
         """Veri silen islemler icin onay. Testler bunu degistirir (modal acilmaz)."""
@@ -198,7 +205,7 @@ class DemetSekmesi(YerlesimMixin, SekmeTabani):
         self._yukleniyor = True
         try:
             hex_mi = d.get("tur") == "altigen"
-            self.oz_baslik.setText(TUR_ADI["altigen" if hex_mi else "kare"])
+            self.oz_baslik.setText(tur_adi("altigen" if hex_mi else "kare"))
             self.ad.setText(d["ad"])
             self.ad_hata.setVisible(False)
             self._adim_siniri(d)
@@ -245,9 +252,12 @@ class DemetSekmesi(YerlesimMixin, SekmeTabani):
         n = d.get("halka_sayisi") or 1
         for k in range(n):
             if k == 0:
-                metin = "Merkez hücre"
+                metin = _("Merkez hücre")
             else:
-                metin = "%d. halka · %d hücre%s" % (k, 6 * k, " (en dış)" if k == n - 1 else "")
+                metin = _n("{k}. halka · {n} hücre", "{k}. halka · {n} hücre",
+                           6 * k).format(k=k, n=6 * k)
+                if k == n - 1:
+                    metin = _("{halka} (en dış)").format(halka=metin)
             # izgara.halkayi_doldur DISTAN ICE indeks kullanir.
             self.halka_secim.addItem(metin, n - 1 - k)
         self.halka_secim.setCurrentIndex(self.halka_secim.count() - 1)
@@ -263,8 +273,9 @@ class DemetSekmesi(YerlesimMixin, SekmeTabani):
         finally:
             self.adim.blockSignals(eski)
         self.adim.setToolTip(
-            "Komşu hücre merkezleri arası uzaklık (pitch)."
-            + ("\nEn az %.5f cm: %s." % (gerekli, sebep) if gerekli else ""))
+            _("Komşu hücre merkezleri arası uzaklık (pitch).\nEn az {d:.5f} cm: {sebep}."
+              ).format(d=gerekli, sebep=sebep) if gerekli else
+            _("Komşu hücre merkezleri arası uzaklık (pitch)."))
 
     def _palet_yenile(self, d=None, firca=None):
         d = d or self._secili()
@@ -278,10 +289,11 @@ class DemetSekmesi(YerlesimMixin, SekmeTabani):
         self._firca_demeti = d["ad"]
         sigmayan = ic_demet_adaylari(self.spec, d)[1]
         self.palet_notu.setText(
-            "Adıma sığmayan iç demetler: %s" % ", ".join(sigmayan) if sigmayan else "")
+            _("Adıma sığmayan iç demetler: {adlar}").format(adlar=", ".join(sigmayan))
+            if sigmayan else "")
         self.palet_notu.setToolTip(
-            "Bir demeti iç demet olarak yerleştirmek için adım en az o demetin "
-            "ölçüsü kadar olmalı." if sigmayan else "")
+            _("Bir demeti iç demet olarak yerleştirmek için adım en az o demetin "
+              "ölçüsü kadar olmalı.") if sigmayan else "")
         self.palet_notu.setVisible(bool(sigmayan))
         self.palet.parcalari_ayarla(ogeler, secili=firca)
         self._palet_boyu()
@@ -306,12 +318,14 @@ class DemetSekmesi(YerlesimMixin, SekmeTabani):
         if d.get("tur") == "altigen":
             halka = d.get("halka_sayisi") or 1
             gx, gy = altigen.kapsayan_olcu(halka, d["adim"], d.get("yonelim", "y"))
-            self.ozet.setText("%.3f × %.3f cm · %d hücre, %d halka"
-                              % (gx, gy, altigen.toplam_hucre(halka), halka))
+            self.ozet.setText(_n("{gx:.3f} × {gy:.3f} cm · {n} hücre, {h} halka",
+                                 "{gx:.3f} × {gy:.3f} cm · {n} hücre, {h} halka", halka
+                                 ).format(gx=gx, gy=gy, n=altigen.toplam_hucre(halka), h=halka))
         else:
             nx, ny = d["boyut"]
-            self.ozet.setText("%.3f × %.3f cm · %d hücre"
-                              % (d["adim"] * nx, d["adim"] * ny, nx * ny))
+            self.ozet.setText(_n("{gx:.3f} × {gy:.3f} cm · {n} hücre",
+                                 "{gx:.3f} × {gy:.3f} cm · {n} hücre", nx * ny
+                                 ).format(gx=d["adim"] * nx, gy=d["adim"] * ny, n=nx * ny))
 
     # ==================================================================
     # firca ve boyama
@@ -336,7 +350,7 @@ class DemetSekmesi(YerlesimMixin, SekmeTabani):
         try:
             harita, anahtar = izgara.adlardan_harita(adlar, d.get("anahtar"), d.get("harita"))
         except ValueError as e:
-            self._bilgi("Çok fazla parça", str(e))
+            self._bilgi(_("Çok fazla parça"), str(e))
             self._harita_doldur(d)
             return
         d["harita"], d["anahtar"] = harita, anahtar
@@ -398,7 +412,7 @@ class DemetSekmesi(YerlesimMixin, SekmeTabani):
         harfler = sorted((d.get("anahtar") or {}).keys())
         return harfler[0] if harfler else izgara.BOS_HARF
 
-    def _boyut_degisti(self, *_):
+    def _boyut_degisti(self, *_arg):          # '_' gettext'i golgelemesin
         if self._yukleniyor:
             return
         d = self._secili()
@@ -411,10 +425,11 @@ class DemetSekmesi(YerlesimMixin, SekmeTabani):
         if nx < eski_nx or ny < eski_ny:
             # Kucultme haritanin sag/alt kismini KIRPAR; eskiden sessizdi.
             if not self._onay_al(
-                    "Harita küçülüyor",
-                    "Demet %d×%d'den %d×%d'ye küçülüyor: haritanın sağ/alt kısmındaki "
-                    "hücreler silinecek (büyütmek onları geri getirmez).\n\n"
-                    "Devam edilsin mi?" % (eski_nx, eski_ny, nx, ny)):
+                    _("Harita küçülüyor"),
+                    _("Demet {eski_nx}×{eski_ny}'den {nx}×{ny}'ye küçülüyor: haritanın "
+                      "sağ/alt kısmındaki hücreler silinecek (büyütmek onları geri "
+                      "getirmez).\n\nDevam edilsin mi?").format(
+                          eski_nx=int(eski_nx), eski_ny=int(eski_ny), nx=nx, ny=ny)):
                 self._geri_al_kutu(self.nx, eski_nx)
                 self._geri_al_kutu(self.ny, eski_ny)
                 return
@@ -436,7 +451,7 @@ class DemetSekmesi(YerlesimMixin, SekmeTabani):
         self._liste_metni(d)
         self.bildir()
 
-    def _halka_degisti(self, *_):
+    def _halka_degisti(self, *_arg):
         if self._yukleniyor:
             return
         d = self._secili()
@@ -448,11 +463,14 @@ class DemetSekmesi(YerlesimMixin, SekmeTabani):
             return
         if halka < eski_halka:
             # Halka azaltmak DIS halkalari siler; eskiden sessizdi.
+            silinen = eski_halka - halka
             if not self._onay_al(
-                    "Halka sayısı azalıyor",
-                    "Halka sayısı %d'den %d'ye iniyor: dıştaki %d halka silinecek "
-                    "(artırmak onları geri getirmez).\n\nDevam edilsin mi?"
-                    % (eski_halka, halka, eski_halka - halka)):
+                    _("Halka sayısı azalıyor"),
+                    _n("Halka sayısı {eski}'den {yeni}'ye iniyor: dıştaki {n} halka silinecek "
+                       "(artırmak onları geri getirmez).\n\nDevam edilsin mi?",
+                       "Halka sayısı {eski}'den {yeni}'ye iniyor: dıştaki {n} halka silinecek "
+                       "(artırmak onları geri getirmez).\n\nDevam edilsin mi?",
+                       silinen).format(eski=eski_halka, yeni=halka, n=silinen)):
                 self._geri_al_kutu(self.halka, eski_halka)
                 return
         d["halka_sayisi"] = halka
@@ -473,11 +491,7 @@ class DemetSekmesi(YerlesimMixin, SekmeTabani):
         oge = self.liste.currentItem()
         if oge is None:
             return
-        if d.get("tur") == "altigen":
-            ek = "altıgen, %d halka" % (d.get("halka_sayisi") or 1)
-        else:
-            ek = "kare %d×%d" % tuple((d.get("boyut") or [1, 1])[:2])
-        oge.setText("%s  · %s" % (d["ad"], ek))
+        oge.setText("%s  · %s" % (d["ad"], _tip_ozeti(d)))
 
     # ==================================================================
     # liste islemleri
@@ -506,9 +520,9 @@ class DemetSekmesi(YerlesimMixin, SekmeTabani):
         if tur not in demet_turleri(self.spec):
             return None
         if not self.spec.get("cubuklar"):
-            self._bilgi("Önce çubuk gerekli",
-                        "Demet kurmadan önce Parçalar sekmesinde en az bir çubuk "
-                        "tanımlayın.")
+            self._bilgi(_("Önce çubuk gerekli"),
+                        _("Demet kurmadan önce Parçalar sekmesinde en az bir çubuk "
+                          "tanımlayın."))
             return None
         ad = benzersiz_ad(self.spec, "demet_altigen" if tur == "altigen" else "demet_kare")
         self.spec.setdefault("demetler", []).append(yeni_demet(self.spec, tur, ad))
@@ -540,10 +554,10 @@ class DemetSekmesi(YerlesimMixin, SekmeTabani):
             return
         yerler = parca_kullanimlari(self.spec, ad)
         if yerler and not self._onay_al(
-                "Demet kullanılıyor",
-                "'%s' şurada kullanılıyor: %s.\n\nSilinirse bu yerler tanımsız bir "
-                "demete işaret eder ve doğrulama hata verir. Silinsin mi?"
-                % (ad, ", ".join(yerler))):
+                _("Demet kullanılıyor"),
+                _("'{ad}' şurada kullanılıyor: {yerler}.\n\nSilinirse bu yerler tanımsız bir "
+                  "demete işaret eder ve doğrulama hata verir. Silinsin mi?"
+                  ).format(ad=ad, yerler=", ".join(yerler))):
             return
         self.spec["demetler"] = [d for d in self.spec["demetler"] if d["ad"] != ad]
         self.spec_yukle(self.spec)
@@ -561,7 +575,7 @@ class DemetSekmesi(YerlesimMixin, SekmeTabani):
         hata = ad_hatasi(self.spec, yeni, eski)
         if hata:
             self.ad.setText(eski)
-            self.ad_hata.setText(hata + " Ad değiştirilmedi.")
+            self.ad_hata.setText(_("{hata} Ad değiştirilmedi.").format(hata=hata))
             self.ad_hata.setStyleSheet("color: %s;" % _renk("hata"))
             self.ad_hata.setVisible(True)
             return
