@@ -106,5 +106,22 @@ def test_panel_gecersiz_tally_duzeltir():
             "-> %r" % adli)
 
 
-HIZLI = [test_elle_ealf_tally_vv_dusurmez, test_panel_gecersiz_tally_duzeltir]
+def test_entropi_kisa_pasif_yakalanir():
+    print("\n[QA4] K1: 4 pasif cevrim, entropi aktifte de dusuyor -> yakinsamadi")
+    import math
+    import random
+    from cekirdek.kosucu import entropi_yakinsama
+    random.seed(3)
+    # 3B tam kor benzeri: entropi 8.0'dan 6.0'a ~15 cevrim zaman sabitiyle iner
+    dusen = [6.0 + 2.0 * math.exp(-i / 15.0) + random.gauss(0, 0.01) for i in range(64)]
+    karar, mesaj = entropi_yakinsama(dusen, 4)
+    kontrol("4 pasif + aktifte kayma -> False", karar is False, "-> %r %s" % (karar, mesaj))
+    random.seed(4)
+    godiva = [6.0 * (1 - math.exp(-i / 2.0)) + random.gauss(0, 0.01) for i in range(80)]
+    kontrol("hizla yukselip pasifte duzlesen -> True", entropi_yakinsama(godiva, 30)[0] is True,
+            "-> %s" % (entropi_yakinsama(godiva, 30),))
+
+
+HIZLI = [test_elle_ealf_tally_vv_dusurmez, test_panel_gecersiz_tally_duzeltir,
+         test_entropi_kisa_pasif_yakalanir]
 YAVAS = []

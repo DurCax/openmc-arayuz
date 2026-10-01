@@ -102,11 +102,16 @@ The entropy plot on the Run page should flatten out during the inactive batches.
 
 **How does the tool judge convergence?** (`cekirdek/kosucu.py`, `entropi_yakinsama`)
 
-1. The scatter of the entropy over the active batches (σ) is taken as the noise level.
-2. Only the **last half** of the inactive period is examined (a fast rise at the start is normal:
-   starting from a point source the entropy starts from zero); that half is split in two.
-3. If the **drift** between the means of the two quarters **exceeds 2σ**, the source is still
-   moving: "Increase the number of inactive batches — k-eff may be biased."
+1. The **plateau** is the last half of the active period: its mean is the plateau value and its
+   scatter (σ) the noise level per batch.
+2. If the mean of the **last quarter** of the inactive period is **more than 2σ** away from the
+   plateau, the source is still moving at the end of the inactive period: "Increase the number of
+   inactive batches — k-eff may be biased." A fast rise at the start is normal (starting from a
+   point source the entropy starts from zero).
+3. If the mean of the **first quarter** of the active period is more than 2σ away from the plateau,
+   the source kept moving in the active period too (too few inactive batches): "kept drifting in
+   the active period". The old version took σ from the whole active period and missed this case (a
+   3D core with 4 inactive batches came out "converged").
 
 Cases that cannot be judged are stated explicitly: with fewer than 4 inactive batches, too few
 active batches or a constant entropy the result is "could not be evaluated" — not "converged". In

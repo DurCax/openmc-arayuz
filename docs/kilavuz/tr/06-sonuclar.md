@@ -99,11 +99,14 @@ düzleşmelidir.
 
 **Araç yakınsamayı nasıl değerlendirir?** (`cekirdek/kosucu.py`, `entropi_yakinsama`)
 
-1. Aktif çevrimlerdeki entropi saçılması (σ) gürültü ölçüsü alınır.
-2. Pasif dönemin yalnız **son yarısı** incelenir (başta hızlı yükselme normaldir: nokta
-   kaynaktan başlanırsa entropi sıfırdan başlar); o yarı ikiye bölünür.
-3. İki çeyreğin ortalamaları arasındaki **kayma 2σ'yı aşarsa** kaynak hâlâ kayıyordur:
-   "Pasif çevrim sayısını artırın — k-eff yanlı olabilir."
+1. **Plato**, aktif dönemin son yarısıdır: ortalaması plato değeri, saçılması (σ) çevrim başına
+   gürültü ölçüsüdür.
+2. Pasif dönemin **son çeyreğinin** ortalaması platodan **2σ'dan çok** uzaksa kaynak pasif dönem
+   sonunda hâlâ kayıyordur: "Pasif çevrim sayısını artırın — k-eff yanlı olabilir." Başta hızlı
+   yükselme normaldir (nokta kaynaktan başlanırsa entropi sıfırdan başlar).
+3. Aktif dönemin **ilk çeyreğinin** ortalaması platodan 2σ'dan çok uzaksa kaynak aktif dönemde de
+   kaymıştır (az pasif çevrim): "aktif dönemde de kaymaya devam etti". Eski sürüm σ'yı bütün aktif
+   dönemden aldığı için bu durumu kaçırıyordu (4 pasif çevrimli 3B kor "yakınsadı" çıkıyordu).
 
 Değerlendirme yapılamayan durumlar da açıkça söylenir: pasif çevrim 4'ten azsa, aktif çevrim
 çok azsa ya da entropi sabitse sonuç "değerlendirilemedi"dir — "yakınsadı" değil. Pratikte

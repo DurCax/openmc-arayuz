@@ -162,16 +162,19 @@ def entropi_yakinsama(entropiler, pasif):
     degerlendirir.
 
     YONTEM
-      Aktif cevrimlerdeki entropi sacilmasi (sigma) gurultu olcusu olarak
-      alinir. Onemli olan kaynagin pasif donemin SONUNDA durmus olmasidir;
-      basta hizla yukselmesi normaldir (nokta kaynaktan baslanirsa entropi
-      sifirdan baslar). Bu yuzden yalnizca pasif donemin SON YARISI incelenir,
-      o yari ikiye bolunur ve iki ceyregin ortalamalari karsilastirilir.
-      Fark 2 sigmayi asiyorsa kaynak hala kayiyordur.
+      Plato: aktif donemin SON YARISI. Onun ortalamasi plato degeri, sacilmasi
+      (sigma) cevrim basina gurultu olcusudur. Iki denetim (2 sigma; proje yontemi):
+        (a) pasif donemin son ceyreginin (en az 1 cevrim) ortalamasi platodan
+            2 sigma'dan cok uzaksa kaynak pasif donem sonunda hala kayiyordur;
+        (b) aktif donemin ILK ceyreginin ortalamasi platodan 2 sigma'dan cok
+            uzaksa kaynak aktif donemde de kaymaya devam etmistir (az pasif
+            cevrim; k-eff ve tally'ler yanlidir).
+      Basta hizla degisip pasif donemde duzlesen kosu yakinsamis sayilir
+      (nokta kaynaktan baslanirsa entropi sifirdan baslar; Godiva).
 
-      (Ilk surumde pasif donemin TAMAMI ikiye bolunuyordu; bu, basta hizla
-      yukselip sonra duzlesen -- yani yakinsamis -- kosulara yanlis alarm
-      veriyordu. Godiva kriterinde tam olarak bu oldu.)
+      (Eski surum sigma'yi BUTUN aktif donemden aliyordu: kayma aktif doneme
+      tasinca sigma da buyuyor ve 4 pasif cevrimli, entropisi acikca dusen bir
+      3B kor "yakinsadi" cikiyordu -- QA14-Q4.)
 
     DONER (yakinsadi_mi, mesaj) -- degerlendirilemezse (None, aciklama)
     """
@@ -184,23 +187,25 @@ def entropi_yakinsama(entropiler, pasif):
         return None, (_("aktif çevrim sayısı değerlendirme için yetersiz "
                       "(%d çevrim, %d pasif)") % (len(dizi), pasif))
     aktif = dizi[pasif:]
-    ortalama = sum(aktif) / len(aktif)
-    sigma = (sum((x - ortalama) ** 2 for x in aktif) / max(len(aktif) - 1, 1)) ** 0.5
+    plato = aktif[len(aktif) // 2:]
+    ortalama = sum(plato) / len(plato)
+    sigma = (sum((x - ortalama) ** 2 for x in plato) / max(len(plato) - 1, 1)) ** 0.5
     if sigma <= 0:
         return None, _("entropi sabit; değerlendirilemedi")
-    # Yalnizca pasif donemin son yarisi; o da ikiye bolunur.
-    bas = pasif // 2
-    orta = bas + (pasif - bas) // 2
-    if orta <= bas or pasif <= orta:
-        return None, _("pasif çevrim sayısı bölünemeyecek kadar az")
-    ceyrek1 = sum(dizi[bas:orta]) / (orta - bas)
-    ceyrek2 = sum(dizi[orta:pasif]) / (pasif - orta)
-    kayma = abs(ceyrek2 - ceyrek1)
+    son_pasif = dizi[pasif - max(1, pasif // 4):pasif]
+    ilk_aktif = aktif[:max(2, len(aktif) // 4)]
+    kayma = abs(sum(son_pasif) / len(son_pasif) - ortalama)
+    aktif_kayma = abs(sum(ilk_aktif) / len(ilk_aktif) - ortalama)
     if kayma > 2.0 * sigma:
         return False, (_("Kaynak dağılımı pasif dönemin sonunda hâlâ kayıyor "
                        "(kayma %.4f, aktif saçılma σ = %.4f). Pasif çevrim "
                        "sayısını artırın — k-eff yanlı olabilir.")
                        % (kayma, sigma))
+    if aktif_kayma > 2.0 * sigma:
+        return False, (_("Kaynak dağılımı aktif dönemde de kaymaya devam etti (ilk aktif "
+                         "çeyrek ile plato farkı %.4f > 2σ = %.4f). Pasif çevrim sayısını "
+                         "artırın — k-eff ve tally'ler yanlı olabilir.")
+                       % (aktif_kayma, 2 * sigma))
     return True, (_("Kaynak dağılımı yakınsamış görünüyor "
                   "(pasif dönem sonunda kayma %.4f ≤ 2σ = %.4f).")
                   % (kayma, 2 * sigma))

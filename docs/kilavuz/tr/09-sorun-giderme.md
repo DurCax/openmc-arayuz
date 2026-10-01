@@ -335,11 +335,13 @@ alanı yoktur. Profil C ve B'nin bazı girdileri koşu dizinine elle konan
 
 - **Etiket:** iyi uygulama. **Kaynak:** F.B. Brown, LA-UR-09-03136 (2009) §II; NUREG/CR-6698
   §2.4 dipnotu (yakınsama kullanıcı yargısıdır).
-- **Ne denetler:** Pasif dönemin son yarısı ikiye bölünür; iki yarının entropi ortalamaları
-  arasındaki kayma, aktif çevrimlerdeki entropi saçılmasının (σ) iki katını aşıyor mu.
+- **Ne denetler:** Plato aktif dönemin son yarısıdır (σ: onun saçılması). Pasif dönemin son
+  çeyreğinin ya da aktif dönemin ilk çeyreğinin entropi ortalaması platodan 2σ'dan çok uzak mı
+  ([6.2](06-sonuclar.md#kaynak-yakinsamasi)).
 - **Tipik bulgular:**
   - "Kaynak dağılımı pasif dönemin sonunda hâlâ kayıyor (kayma …, aktif saçılma σ = …). Pasif
     çevrim sayısını artırın — k-eff yanlı olabilir." → **uyarı**, kontrolü geçmedi.
+  - "Kaynak dağılımı aktif dönemde de kaymaya devam etti (…)" → **uyarı**: pasif çevrim çok az.
   - "Shannon entropisi kapalı — kaynak yakınsaması gösterilemiyor." → uyarı.
   - "pasif çevrim sayısı (…) kaynak yakınsamasını değerlendirmek için çok az" ya da "entropi
     sabit; değerlendirilemedi" → uygulanamadı.

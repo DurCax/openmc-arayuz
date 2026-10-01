@@ -337,13 +337,15 @@ user interface has no field for it. Some inputs of profiles C and B are read fro
 
 - **Label:** good practice. **Source:** F.B. Brown, LA-UR-09-03136 (2009) §II; NUREG/CR-6698 §2.4
   footnote (convergence is a judgement of the user).
-- **What it checks:** the second half of the inactive period is split in two; does the drift between
-  the entropy means of the two halves exceed twice the scatter (σ) of the entropy in the active
-  batches.
+- **What it checks:** the plateau is the last half of the active period (σ: its scatter). Is the
+  entropy mean of the last quarter of the inactive period or of the first quarter of the active
+  period more than 2σ away from the plateau ([6.2](06-sonuclar.md#kaynak-yakinsamasi)).
 - **Typical findings:**
   - "The source distribution is still drifting at the end of the inactive period (drift ..., active
     scatter σ = ...). Increase the number of inactive batches; k-eff may be biased." → **warning**, not
     met.
+  - "The source distribution kept drifting in the active period (...)" → **warning**: too few
+    inactive batches.
   - "Shannon entropy is off: source convergence cannot be shown." → warning.
   - "the number of inactive batches (...) is too small to judge source convergence" or "entropy is
     constant; could not be evaluated" → not applicable.
