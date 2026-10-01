@@ -160,7 +160,10 @@ def spec_uret(depo, kimlik):
     a = spec["ayarlar"]
     a["parcacik"], a["cevrim"], a["pasif"] = 100000, 200, 50
     a["kaynak"]["tur"] = "kutu"
-    a["kaynak"]["alt"], a["kaynak"]["ust"] = [-1.0, -1.0, -1.0], [1.0, 1.0, 1.0]
+    # Kutu ilk dolu kabugu kapsar (merkezi bosluklu kabukta +/-1 cm kutu reddedilirdi);
+    # "fissionable" kisiti yansiticidaki noktalari eler.
+    r = next(k["r"] for k in spec["kor"]["kabuklar"] if k["malzeme"])
+    a["kaynak"]["alt"], a["kaynak"]["ust"] = [-r, -r, -r], [r, r, r]
     spec["tallyler"] = [aoa.ealf_tally_tanimi()]
     spec["baslik"] = "%s — %s" % (icsbep, kisa)
     spec["baslik_en"] = "%s (ICSBEP benchmark, V&V set)" % icsbep
@@ -222,17 +225,28 @@ def main(argv=None):
     p.add_argument("--yalniz-uret", action="store_true")
     p.add_argument("--is", type=int, default=12, dest="is_parcacigi")
     a = p.parse_args(argv)
+    basarisiz = []
     for kimlik in a.kimlikler or sorted(VAKALAR):
-        spec = spec_uret(a.depo, kimlik)
-        if not a.yalniz_uret:
-            olcum, param = kos(spec, kimlik, a.is_parcacigi)
-            spec["referans"]["olcum"], spec["referans"]["aoa"] = olcum, param
-            print("%s: C = %.5f ± %.5f, %.0f s, %s" % (kimlik, olcum["k"], olcum["sigma"],
-                                                       olcum["sure_s"], param), flush=True)
-            if olcum["sigma"] > SIGMA_HEDEF:
-                print("  UYARI: σc > %.0f pcm" % (1e5 * SIGMA_HEDEF), flush=True)
-        print(_yaz(spec, kimlik), flush=True)
+        try:
+            _isle(a, kimlik)
+        except (RuntimeError, ValueError, OSError) as e:
+            print("HATA %s: %s" % (kimlik, e), file=sys.stderr, flush=True)
+            basarisiz.append(kimlik)
+    if basarisiz:
+        print("başarısız vakalar: %s" % ", ".join(basarisiz), file=sys.stderr)
+        sys.exit(1)
 
+
+def _isle(a, kimlik):
+    spec = spec_uret(a.depo, kimlik)
+    if not a.yalniz_uret:
+        olcum, param = kos(spec, kimlik, a.is_parcacigi)
+        spec["referans"]["olcum"], spec["referans"]["aoa"] = olcum, param
+        print("%s: C = %.5f ± %.5f, %.0f s, %s" % (kimlik, olcum["k"], olcum["sigma"],
+                                                   olcum["sure_s"], param), flush=True)
+        if olcum["sigma"] > SIGMA_HEDEF:
+            print("  UYARI: σc > %.0f pcm" % (1e5 * SIGMA_HEDEF), flush=True)
+    print(_yaz(spec, kimlik), flush=True)
 
 if __name__ == "__main__":
     main()
