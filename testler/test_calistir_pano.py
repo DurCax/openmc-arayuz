@@ -161,7 +161,8 @@ def _guc(zayif=False, f_q=1.5, dilim=(0, 2)):
     return {"faktorler": {"F_dH": 1.12, "F_q": f_q, "sicak_cubuk": (1, 2),
                           "kafes_turu": "kare", "kafes_turleri": None,
                           "sicak_dilim": dilim,
-                          "yanlilik_orani": 0.5 if zayif else 0.1}}
+                          "F_dH_tepe_yakini": 8 if zayif else 1,
+                          "F_dH_yanlilik": 0.004 if zayif else 0.0}}
 
 
 def test_ozet_satirlari():
@@ -187,7 +188,7 @@ def test_ozet_satirlari():
     kontrol("guc hatasi yazilir", "okunamadı" in ozet.guc_ozeti(dict(s, guc_hata="x"))[0])
     g = ozet.guc_ozeti(dict(s, guc=_guc(zayif=True)))
     kontrol("guc: F_dH + zayif istatistik uyarisi + dilim",
-            "F_ΔH" in g[0] and "istatistik zayıf" in g[0] and "dilim 3" in g[2])
+            "F_ΔH" in g[0] and "yukarı yanlı" in g[0] and "dilim 3" in g[2])
     g2 = ozet.guc_ozeti(dict(s, guc=_guc(f_q=None, dilim=None)))
     kontrol("2B: F_q tanimsiz", "tanımsız" in g2[1] and "dilim" not in g2[2])
     kontrol("tally yok: bos liste", ozet.tally_metinleri(s, False) == [])

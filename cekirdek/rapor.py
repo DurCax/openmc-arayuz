@@ -407,7 +407,8 @@ def _guc_ozeti(spec, sonuc):
     m = _guc.mutlak_guc(f, (spec.get("guc_dagilimi") or {}).get("toplam_guc"),
                         geometri.hedef_yuksekligi(spec), hedef_payi=g.get("hedef_payi"))
     yorum = kosucu.korunum_satirlari(g) + _guc.yorumla(
-        f, m, hedef_payi=g.get("hedef_payi"), hedef_payi_hata=g.get("hedef_payi_hata"))
+        f, m, hedef_payi=g.get("hedef_payi"), hedef_payi_hata=g.get("hedef_payi_hata"),
+        kategori=spec.get("kategori"))
     sicak = _guc.konum_metni(f["sicak_cubuk"], f.get("kafes_turu"), f.get("kafes_turleri"))
     return {"faktorler": f, "mutlak": m, "yorum": yorum, "sicak_cubuk": sicak,
             "dagilim": g["dagilim"], "korunum": g.get("korunum")}

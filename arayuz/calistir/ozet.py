@@ -72,11 +72,13 @@ def guc_ozeti(s):
     gf = g.get("faktorler")
     if not gf:
         return [_("güç dağılımı okunamadı: %s") % s["guc_hata"]] if s.get("guc_hata") else []
-    zayif = (gf.get("yanlilik_orani") or 0.0) > 0.3
+    # Maksimumun yanliligi tepeye yakin cubuklardan (guc_faktor.tepe_yanliligi)
+    yakin, yan = gf.get("F_dH_tepe_yakini") or 0, gf.get("F_dH_yanlilik")
+    zayif = yakin >= 2 and yan is not None
     satirlar = [_("F_ΔH     = %.4f   (en yüksek çubuk gücü / ortalama)%s")
-                % (gf["F_dH"], "\n           " + _("⚠ istatistik zayıf: bu değer yukarı "
-                   "yanlı, güvenilir F_ΔH için Normal ya da Hassas hassasiyetle "
-                   "koşun") if zayif else "")]
+                % (gf["F_dH"], "\n           " + _("⚠ maksimum yukarı yanlı: tepeye 2σ "
+                   "içinde %d çubuk, beklenen yanlılık ≈ +%.4f; güvenilir F_ΔH için çok "
+                   "tohumla harita ortalaması alın") % (yakin, yan) if zayif else "")]
     if gf["F_q"]:
         satirlar.append(_("F_q      = %.4f   (en yüksek yerel güç yoğunluğu / ortalama)")
                         % gf["F_q"])

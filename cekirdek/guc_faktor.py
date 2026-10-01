@@ -21,10 +21,41 @@
 """
 
 import math
+from statistics import NormalDist
 
 KESIK_YOKLAMA_SINIRI = 30000     # bundan cok cubukta yoklama atlanir (sure)
 _NOKTA_SAYISI = 8
 _ICERI = 0.999                  # sinir noktalari yaricapin bu kesrinde
+# Aracin TANIMI (gecti/kaldi esigi degil): bir deger tepeden "istatistik olarak
+# ayirt edilemez" sayilir, tepeyle farki birlesik 2σ icindeyse.
+TEPE_YAKINLIK_SIGMA = 2.0
+_BLOM_A = 0.375                 # Blom (1958) sira istatistigi yaklasimi
+
+
+def beklenen_maks(m):
+    """m bagimsiz N(0, 1) degerin beklenen maksimumu (Blom yaklasimi:
+    Φ⁻¹((m − 0.375) / (m + 0.25))); m = 1 -> 0."""
+    if m <= 1:
+        return 0.0
+    return NormalDist().inv_cdf((m - _BLOM_A) / (m + 1.0 - 2.0 * _BLOM_A))
+
+
+def tepe_yanliligi(cifter):
+    """
+    Maksimumun yukari yanliligi, tepeye yakin degerler uzerinden.
+    cifter: [(deger, sigma)] (ayni birimde). Tepeyle farki birlesik
+    TEPE_YAKINLIK_SIGMA·σ icindeki m deger tepeden ayirt edilemez; bunlarin
+    gercek degeri esitse maksimumun beklenen yanliligi σ_tepe · beklenen_maks(m)
+    olur (ust kestirim: gercek degerler farkliysa yanlilik daha kucuktur).
+    Tek kosunun σ'si iyimser oldugu icin (guc.py basligi) gercek yanlilik daha
+    buyuk olabilir. DONER {"yakin": m, "yanlilik": Δ | None}
+    """
+    if not cifter:
+        return {"yakin": 0, "yanlilik": None}
+    tepe, s_tepe = max(cifter, key=lambda c: c[0])
+    m = sum(1 for d, s in cifter
+            if tepe - d <= TEPE_YAKINLIK_SIGMA * math.hypot(s, s_tepe))
+    return {"yakin": m, "yanlilik": s_tepe * beklenen_maks(m)}
 
 
 def _bos_dilimler(konumlar, eksenel_dilim):
@@ -40,20 +71,25 @@ def _bos_dilimler(konumlar, eksenel_dilim):
 
 def _eksenel_faktorler(sonuc, konumlar, eksenel_dilim):
     """F_q, sicak dilim, bagil eksenel harita ve eksenel profil (3B).
-    Bos dilimler (bkz. _bos_dilimler) ortalamalara katilmaz; bos dilim
-    yoksa sonuc eskisiyle bit duzeyinde aynidir."""
+    Bos dilimler (bkz. _bos_dilimler) ortalamalara katilmaz. Ortalama yalniz
+    YAKITLI (cubuk, dilim) ciftleri uzerindendir: skoru tam 0 olan cift (o
+    cubuk o dilimde yok: kisa boy cubuk, katmanli model) paydaya girmez --
+    girerse ortalama duser ve F_q yapay siser."""
     bos = _bos_dilimler(konumlar, eksenel_dilim)
     dolu = set(range(eksenel_dilim)) - set(bos)
     hepsi = []
     for a, k in konumlar.items():
         for i, d in enumerate(k["eksenel"]):
-            if i in dolu:
+            if i in dolu and d[0] > 0.0:
                 hepsi.append((a, i, d[0], d[1]))
     ort_yerel = sum(h[2] for h in hepsi) / len(hepsi) if hepsi else 0.0
     sicak = max(hepsi, key=lambda h: h[2]) if hepsi else (None, None, 0.0, 0.0)
     f_q = sicak[2] / ort_yerel if ort_yerel > 0 else None
     sonuc["F_q"] = f_q
     sonuc["F_q_sapma"] = (f_q * sicak[3] / sicak[2]) if (f_q and sicak[2]) else None
+    yan = tepe_yanliligi([(h[2] / ort_yerel, h[3] / ort_yerel) for h in hepsi]
+                         if ort_yerel > 0 else [])
+    sonuc["F_q_tepe_yakini"], sonuc["F_q_yanlilik"] = yan["yakin"], yan["yanlilik"]
     sonuc["sicak_dilim"] = (sicak[0], sicak[1]) if f_q else None
     sonuc["ortalama_yerel"] = ort_yerel
     sonuc["bos_dilimler"] = bos
