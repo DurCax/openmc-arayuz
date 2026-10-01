@@ -259,7 +259,7 @@
   },
   "ayarlar": {
     "mod": "eigenvalue",
-    "parcacik": 100000,
+    "parcacik": 200000,
     "cevrim": 200,
     "pasif": 50,
     "tohum": 1,
@@ -296,14 +296,14 @@
         "koni_aci": 30.0
       },
       "alt": [
-        -1.0,
-        -1.0,
-        -1.0
+        -7.8726,
+        -7.8726,
+        -7.8726
       ],
       "ust": [
-        1.0,
-        1.0,
-        1.0
+        7.8726,
+        7.8726,
+        7.8726
       ]
     },
     "entropi_mesh": {
@@ -691,6 +691,27 @@
     "seri": "U233-SOL-INTER-001",
     "aoa_girdi": {
       "fiziksel_bicim": "cozelti",
+      "yansitici": "berilyum"
+    },
+    "olcum": {
+      "k": 0.98178,
+      "sigma": 0.00022,
+      "parcacik": 200000,
+      "cevrim": 200,
+      "pasif": 50,
+      "sure_s": 196.2,
+      "is_parcacigi": 12,
+      "openmc": "0.16.0",
+      "kutuphane": "ENDF/B-VIII.0",
+      "tarih": "2026-10-01"
+    },
+    "aoa": {
+      "bolunebilir": "U-233",
+      "zenginlik": 98.561968,
+      "h_x": 24.648517,
+      "fiziksel_bicim": "cozelti",
+      "ealf": 6.996903,
+      "tayf": "ara",
       "yansitici": "berilyum"
     }
   }
