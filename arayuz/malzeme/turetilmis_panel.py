@@ -31,6 +31,8 @@ class TuretilmisPanel(QtWidgets.QWidget):
         self.hata = _hata_etiketi()
         for e in (self.ozet, self.hata):          # metin dosyadan gelebilir (PNNL, kutuphane)
             e.setTextFormat(QtCore.Qt.PlainText)
+        self.ozet.setToolTip(_("H/X yalnızca homojen bir yakıt-moderatör karışımında anlamlıdır; "
+                               "heterojen kafeste moderatör ayrı bir malzemedir."))
         self.tablo = QtWidgets.QTableWidget(0, len(self.BASLIKLAR))
         self.tablo.setHorizontalHeaderLabels([_(b) for b in self.BASLIKLAR])
         self.tablo.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
