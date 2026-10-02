@@ -51,6 +51,11 @@ _GECIKME_MS = 250                 # ardisik degisiklikler tek istege duser
 _PANEL_GENISLIGI = 320
 _KAYDET_DPI = 150
 _TEKIL = {}
+# Istek bekcisi: H2'nin 120 s'si yerine 30 s. En agir olculen kesit (SFR + cakisma
+# denetimi) ~12 s (H2); OpenMC 0.16 isin izleyicisi bazi kor modellerinde (VVER-1000,
+# BEAVRS kor; olculdu 02.10.2026) "pure virtual method called" ile ASILI kalir --
+# 30 s'de isci oldurulur, acik hata verilir, isci yeniden baslar.
+BEKCI_MS = 30_000
 
 
 def _tanimsiz_rengi():
@@ -77,7 +82,7 @@ class GoruntuleyiciPenceresi(QtWidgets.QMainWindow):
         self._istenen_cakisma = False     # son kesit isteginde cakisma denetimi
         self._istenen_kaynak = None       # son kaynak isteginin anahtari
         self._kaynak_bilgisi = None
-        self._istemci = istemci or CizimIstemcisi(self)
+        self._istemci = istemci or CizimIstemcisi(self, zaman_asimi_ms=BEKCI_MS)
         self._istemci.cerceve_geldi.connect(self._cerceve_geldi)
         self._istemci.coktu.connect(self._coktu)
         self._sira = IstekSirasi(self._istemci.iste)
@@ -314,6 +319,11 @@ class GoruntuleyiciPenceresi(QtWidgets.QMainWindow):
         self.istek_bitti.emit(tur, False)
 
     def _coktu(self, mesaj):
+        tur = self._sira.suren_tur()
+        if tur == ISIN:
+            self.uc_tuvali.mesaj(_("3B ışın izleme bu modelde başarısız oldu (OpenMC 0.16 "
+                                   "SolidRayTracePlot sınırlaması; bazı tam kor modellerinde "
+                                   "süreç çöker ya da asılı kalır).\n\n%s") % mesaj, hata=True)
         self._sira.sifirla()
         self.durum.setText(mesaj)
         self.istek_bitti.emit("", False)

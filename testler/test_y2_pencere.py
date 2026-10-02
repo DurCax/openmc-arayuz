@@ -248,7 +248,8 @@ def test_gercek_iscide_kesit_kaynak_3b():
 
 
 def test_arayuz_donmaz():
-    print("\n[Y2P-5] goruntuleyici: VVER-1000 kor kesit + kaynak + 3B sirasinda olay dongusu "
+    print("\n[Y2P-5] goruntuleyici: VVER-1000/BEAVRS kor kesiti + tamburlu kor 3B sirasinda "
+          "olay dongusu "
           "%d ms'den uzun durmaz" % (_DONMA_SINIRI * 1000))
     p = _pencere(None)
     try:
@@ -261,6 +262,9 @@ def test_arayuz_donmaz():
             p.spec_ayarla(_spec("vver1000_kor" if deneme % 2 == 0 else "pwr_beavrs_kor"))
             p._kesit_iste()
             cagri = time.perf_counter() - t0
+            p.bekle(_ZAMAN_ASIMI)
+            # 3B: OpenMC 0.16 isin izleyicisi VVER/BEAVRS korunda asili kalir (pencere.py)
+            p.spec_ayarla(_spec("tamburlu_kor"))
             p.bekle(_ZAMAN_ASIMI)
             p.uc_boyut_iste()
             p.bekle(_ZAMAN_ASIMI)
@@ -290,6 +294,13 @@ def test_hata_ve_cokme_gosterilir():
         kontrol("cokme: sira bos, ileti", not p._sira.mesgul_mu() and "coktu" in p.durum.text())
         p.uc_boyut_iste()
         kontrol("model bilgisi yokken 3B istenmez", ist.giden[-1]["tur"] == "ciz")
+        p._kesit_iste()
+        _sahte_kesit(ist, _cakismali_geom())
+        p.uc_boyut_iste()
+        kontrol("3B istegi isciye gider", ist.giden[-1]["tur"] == "isin")
+        ist.coktu.emit("isci asili kaldi")
+        metin = p.uc_tuvali.ax.texts[0].get_text() if p.uc_tuvali.ax.texts else ""
+        kontrol("3B cokmesi 3B tuvalinde aciklanir", "SolidRayTracePlot" in metin, "-> %s" % metin)
     finally:
         p.kapat()
 

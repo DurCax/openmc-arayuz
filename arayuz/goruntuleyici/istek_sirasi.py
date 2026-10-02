@@ -35,6 +35,10 @@ class IstekSirasi:
             return self._suren[0]
         return None
 
+    def suren_tur(self) -> Optional[str]:
+        """Iscide suren istegin turu (yoksa None)."""
+        return self._suren[0] if self._suren is not None else None
+
     def bitti(self, no: Any) -> None:
         """Guncel istek bitti ('son'): siradakini gonderir."""
         if self._suren is not None and self._suren[1] == no:
