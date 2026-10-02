@@ -58,6 +58,7 @@ class DemetKinfPaneli(QtWidgets.QWidget):
         self._kendi_kuyrugu = cekirdek_kuyrugu is None
         self.kq = KuyrukBagdastirici(cekirdek_kuyrugu or kuyruk.Kuyruk(), self)
         self._satirlar: Dict[str, int] = {}
+        self._son: Dict[str, kuyruk.IsDurumu] = {}      # kimlik -> son gelen durum
         self._kur()
         self.kq.durum_degisti.connect(self._durum_geldi)
         self.spec_ayarla(spec)
@@ -95,7 +96,7 @@ class DemetKinfPaneli(QtWidgets.QWidget):
     def _ayar_formu(self) -> QtWidgets.QWidget:
         kutu = QtWidgets.QGroupBox(_("Koşu ayarları (her demet için)"))
         form = QtWidgets.QFormLayout(kutu)
-        form.addRow(_("Parçacık / çevrim:"), self.parcacik)
+        form.addRow(_("Parçacık:"), self.parcacik)
         form.addRow(_("Çevrim:"), self.cevrim)
         form.addRow(_("Pasif çevrim:"), self.pasif)
         form.addRow(_("Tohum:"), self.tohum)
@@ -195,7 +196,8 @@ class DemetKinfPaneli(QtWidgets.QWidget):
             satir = self.sonuclar.rowCount()
             self.sonuclar.insertRow(satir)
             self._satirlar[d.kimlik] = satir
-        k = d.k if d.asama in (kuyruk.Asama.BITTI, kuyruk.Asama.KOSUYOR) else None
+        self._son[d.kimlik] = d
+        k = d.k if d.asama == kuyruk.Asama.BITTI else None     # CSV ile ayni kural
         cevrim = "%d / %s" % (d.cevrim, d.toplam_cevrim or "?")
         for j, metin in enumerate((ad, asama_adi(d.asama), k_metni(k), cevrim)):
             self.sonuclar.setItem(satir, j, QtWidgets.QTableWidgetItem(metin))
@@ -206,7 +208,8 @@ class DemetKinfPaneli(QtWidgets.QWidget):
         self._ilerlemeyi_guncelle()
 
     def _durumlar(self) -> List[kuyruk.IsDurumu]:
-        return [self.kq.kuyruk.durum(k) for k in self._satirlar]
+        """Bu panelin islerinin son durumlari (ekleme sirasiyla)."""
+        return [self._son[k] for k in self._satirlar]
 
     def _ilerlemeyi_guncelle(self) -> None:
         durumlar = self._durumlar()
@@ -231,20 +234,33 @@ class DemetKinfPaneli(QtWidgets.QWidget):
                 QtWidgets.QMessageBox.warning(self, _("Demet k∞"), _("Kaydedilemedi: %s") % e)
 
     def _iptal(self) -> None:
-        for d in self._durumlar():
-            if not d.bitti_mi:
+        for d in self.bitmemis():
+            try:
                 self.kq.kuyruk.iptal(d.kimlik)
+            except KeyError:
+                _log.warning("iptal: '%s' işi kuyrukta yok (kaldırılmış)", d.kimlik)
+
+    def bitmemis(self) -> List[kuyruk.IsDurumu]:
+        """Bu panelin ekledigi, henuz son asamada olmayan isler."""
+        return [d for d in self._durumlar() if not d.bitti_mi]
 
     def kapat(self) -> None:
-        """Kendi kuyruguysa kapatir (kosanlar iptal); paylasilansa yalniz ayrilir."""
+        """Bu panelin bitmemis islerini iptal eder; kendi kuyruguysa kapatir,
+        paylasilansa yalniz ayrilir (kuyruktaki baska isler surer)."""
+        self._iptal()
         if self._kendi_kuyrugu:
             self.kq.kapat()
         else:
-            # Paylasilan kuyruk: yalniz bu bagdastiricinin dinleyicisi cikar (kuyruk
-            # surer). KuyrukBagdastirici'da "ayril" yok; Y10'a oneri olarak raporlandi.
-            self.kq.kuyruk.dinleyici_cikar(self.kq._olay)
+            self.kq.ayril()
 
     def closeEvent(self, olay: Any) -> None:
+        kalan = self.bitmemis()
+        if kalan and QtWidgets.QMessageBox.question(
+                self, _("Demet k∞"),
+                _("%d demet koşusu bitmedi; kapatılırsa iptal edilir. Kapatılsın mı?")
+                % len(kalan)) != QtWidgets.QMessageBox.Yes:
+            olay.ignore()
+            return
         self.kapat()
         _TEKIL.pop("pencere", None)
         super().closeEvent(olay)

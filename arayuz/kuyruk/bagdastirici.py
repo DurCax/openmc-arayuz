@@ -37,7 +37,10 @@ class KuyrukBagdastirici(QtCore.QObject):
         self._son_seq: Dict[str, int] = {}
         self._kilit = threading.Lock()
         self._bitti_yayildi = False       # hepsi_bitti yeni bir is gelene kadar bir kez
-        self.kuyruk.dinleyici_ekle(self._olay)
+        # TEK bagli yontem nesnesi: Kuyruk.dinleyici_cikar 'is' ile karsilastirir;
+        # her self._olay erisimi yeni bir nesne uretir ve hic cikarilamazdi.
+        self._dinleyici = self._olay
+        self.kuyruk.dinleyici_ekle(self._dinleyici)
 
     def _olay(self, durum: _kuyruk.IsDurumu) -> None:
         # isci ipliginde: eski olayi at, yalniz sinyal yay (Qt kuyruklu iletir)
@@ -51,7 +54,13 @@ class KuyrukBagdastirici(QtCore.QObject):
         if bitti:
             self.hepsi_bitti.emit()
 
+    def ayril(self) -> None:
+        """Yalniz dinleyiciyi cikarir; kuyruk (paylasilan) calismayi surdurur.
+        Bagdastirici silinmeden once cagrilir: aksi halde isci ipligi silinmis
+        QObject'in sinyalini yaymaya calisir. Tekrar cagrilabilir."""
+        self.kuyruk.dinleyici_cikar(self._dinleyici)
+
     def kapat(self) -> None:
         """Dinleyiciyi cikarir ve kuyrugu kapatir (pencere kapanirken)."""
-        self.kuyruk.dinleyici_cikar(self._olay)
+        self.ayril()
         self.kuyruk.kapat()

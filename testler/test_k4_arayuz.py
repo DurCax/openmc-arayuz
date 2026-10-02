@@ -163,9 +163,183 @@ def test_sihirbaz_kuyrukla_kosar_tablo_ve_csv(tmp_path, monkeypatch):
     p.kapat()
 
 
+# ---------------------------------------------------------------------------
+# duzeltme turu: ayril, kapanista iptal, kancalar, etiketler
+# ---------------------------------------------------------------------------
+
+def test_bagdastirici_ayril_dinleyiciyi_cikarir_kuyrugu_kapatmaz():
+    # Arrange
+    _uyg()
+    from cekirdek import kuyruk
+    from arayuz.kuyruk.bagdastirici import KuyrukBagdastirici
+    k = kuyruk.Kuyruk()
+    kq = KuyrukBagdastirici(k)
+    # Act
+    kq.ayril()
+    kq.ayril()                                   # ikinci cagri zararsiz
+    # Assert
+    assert kq._olay not in k._dinleyiciler and k._dinleyiciler == []
+    assert not k._kapali, "ayril kuyrugu kapatmamali"
+    k.kapat()
+
+
+def test_panel_kapaninca_kendi_bitmemis_islerini_iptal_eder(tmp_path, monkeypatch):
+    # Arrange: paylasilan kuyruk + uzun suren SAHTE kosu
+    _uyg()
+    from cekirdek import kuyruk
+    from arayuz.analiz import demet_kinf as ekran
+    exe = yo.sahte_openmc(tmp_path)
+    monkeypatch.setenv("SAHTE_SURE", "1.0")
+    kq = kuyruk.Kuyruk(en_fazla_paralel=1, is_parcacigi_butcesi=1, openmc=exe)
+    p = ekran.DemetKinfPaneli(_ornek("pwr_ceyrek_kor"), cekirdek_kuyrugu=kq,
+                              kok_dizin=str(tmp_path / "kinf"))
+    monkeypatch.setattr(p, "_is_ayari", lambda i: dict(sonuc_kancasi=yo.sahte_sonuc,
+                                                       dogrulama=False, veri_kontrolu=False))
+    p.is_parcacigi.setValue(1)
+    kimlikler = p.baslat()
+    # Act
+    p.kapat()
+    # Assert
+    assert kq.bekle(_BEKLEME)
+    assert all(kq.durum(k).asama == kuyruk.Asama.IPTAL for k in kimlikler)
+    kq.kapat()
+
+
+def test_panel_form_etiketi_parcacik_ve_bitmemiste_k_yok():
+    _uyg()
+    from cekirdek import kuyruk
+    from arayuz.analiz.demet_kinf import DemetKinfPaneli
+    p = DemetKinfPaneli(_ornek("pwr_ceyrek_kor"))
+    etiketler = [w.text() for w in p.findChildren(QtWidgets_label())]
+    assert "Parçacık:" in etiketler
+    d = kuyruk.IsDurumu(kimlik="a", ad="x", dizin="/tmp/a", asama=kuyruk.Asama.KOSUYOR,
+                        k=(1.0, 0.1), etiket={"k4_demet": "demet_24"})
+    p._durum_geldi(d)
+    assert p.sonuclar.item(0, 2).text() == "—", "ara k tabloda gosterilmez (CSV ile ayni)"
+    p.kapat()
+
+
+def QtWidgets_label():
+    from PySide6 import QtWidgets
+    return QtWidgets.QLabel
+
+
+def test_harita_etiketi_uretim_yok_olma_orani_ve_sizinti_denetimi():
+    # Arrange
+    _uyg()
+    import dataclasses
+    from cekirdek import yerel_k
+    from arayuz.sonuc.yerel_k import YerelKHaritasi
+    s = dataclasses.replace(_sonuc(), model_uretim=(1.1765, 0.0), model_yok_olma=(0.95, 0.0),
+                            denge=yerel_k.Denge((1.1765, 0.003), (0.05, 0.001)))
+    w = YerelKHaritasi()
+    # Act
+    w.sonuclari_ayarla([s])
+    # Assert
+    metin = w.ozet.text()
+    assert "üretim / yok olma" in metin and "k∞ değildir" in metin
+    assert "çoğalma" not in metin
+    assert "1.17650" in metin and "P/(D+L)" in metin
+
+
+def test_ayar_karti_pin_secince_tally_ekler_kapali_kaldirir():
+    # Arrange
+    _uyg()
+    from cekirdek import yerel_k
+    from arayuz.ayar.yerel_k_karti import YerelKAyarKarti
+    spec = _ornek("pwr_17x17")
+    kart = YerelKAyarKarti()
+    kart.doldur(spec)
+    sayac = []
+    kart.degisti.connect(lambda: sayac.append(1))
+    # Act
+    kart.duzey.setCurrentIndex(kart.duzey.findData("pin"))
+    # Assert
+    adlar = [t["ad"] for t in spec["tallyler"]]
+    assert yerel_k.TALLY_ADLARI["pin"] in adlar and sayac
+    kart.duzey.setCurrentIndex(kart.duzey.findData(None))
+    assert not any(t.get("uretici") == yerel_k.URETICI for t in spec["tallyler"])
+
+
+def test_ayar_karti_desteksiz_modelde_hata_gosterir_spec_degismez():
+    _uyg()
+    import copy
+    from arayuz.ayar.yerel_k_karti import YerelKAyarKarti
+    spec = _ornek("vver1000_demet")
+    once = copy.deepcopy(spec)
+    kart = YerelKAyarKarti()
+    kart.doldur(spec)
+    kart.duzey.setCurrentIndex(kart.duzey.findData("pin"))
+    assert spec == once
+    assert kart.duzey.currentData() is None
+    assert not kart.uyari.isHidden() and "altıgen" in kart.uyari.text()
+
+
+def test_ayar_sekmesi_yerel_k_kartini_doldurur():
+    _uyg()
+    from cekirdek import yerel_k
+    from arayuz.sekme_ayar import AyarSekmesi
+    a = AyarSekmesi()
+    a.spec_yukle(yerel_k.tally_ekle(_ornek("pwr_17x17"), "demet"))
+    assert a.yerel_k_karti.duzey.currentData() == "demet"
+
+
+def test_calistir_sekmesi_yerel_k_kartini_yalniz_tally_varken_gosterir():
+    # Arrange
+    _uyg()
+    from cekirdek import yerel_k
+    from arayuz.sekme_calistir import CalistirSekmesi
+    spec = yerel_k.tally_ekle(_ornek("pwr_17x17"), "demet")
+    c = CalistirSekmesi()
+    c.spec_ayarla(spec, None)
+    temel = {"keff": (1.18, 0.001), "cevrim": 10, "pasif": 5, "parcacik": 100,
+             "entropi": None}
+    from testler.test_k4_yerel_k import _sentetik_df
+    df = _sentetik_df({(0, 0): {"nu-fission": (1.18, 0.01), "absorption": (1.0, 0.01)}})
+    # Act / Assert
+    c._sonuc_goster(dict(temel, tallyler={}), None)
+    assert c.yerel_k_karti.isHidden()
+    c._sonuc_goster(dict(temel, tallyler={yerel_k.TALLY_ADLARI["demet"]: df}), None)
+    assert not c.yerel_k_karti.isHidden()
+    assert c.yerel_k.secili().duzey == "demet"
+
+
+def test_araclar_menusu_demet_kinf_sihirbazini_acar(tmp_path, monkeypatch):
+    # Arrange
+    from arayuz.ana_pencere import AnaPencere
+    from arayuz.analiz import demet_kinf as ekran
+    _uyg()
+    monkeypatch.setenv("XDG_DATA_HOME", str(tmp_path / "veri"))
+    p = AnaPencere()
+    p._kaydetme_sor = lambda: True
+    p.onizleme._ciz = lambda *a, **k: None
+    try:
+        # Act
+        p.e_demet_kinf.trigger()
+        acik = ekran._TEKIL.get("pencere")
+        # Assert
+        assert acik is not None and acik.isVisible()
+        acik.close()
+        assert ekran._TEKIL == {}
+    finally:
+        p.s_tukenme.bekle()
+        p._kirli = False
+        p.close()
+        p.deleteLater()
+
+
 HIZLI = [test_harita_ozeti_etiket_ve_ortalama_gosterir, test_harita_ipucu_bin_degerini_verir,
          test_iki_duzey_varsa_secici_gorunur_ve_degistirir, test_harita_csv_kaydeder,
          test_tally_yoksa_ve_desteksiz_modelde_aciklama_gosterir,
          test_sihirbaz_demet_turlerini_listeler_hepsi_secili,
-         test_sihirbaz_ayar_okur_ve_denetler, test_sihirbaz_kuyrukla_kosar_tablo_ve_csv]
+         test_sihirbaz_ayar_okur_ve_denetler, test_sihirbaz_kuyrukla_kosar_tablo_ve_csv,
+         test_bagdastirici_ayril_dinleyiciyi_cikarir_kuyrugu_kapatmaz,
+         test_panel_kapaninca_kendi_bitmemis_islerini_iptal_eder,
+         test_panel_form_etiketi_parcacik_ve_bitmemiste_k_yok,
+         test_harita_etiketi_uretim_yok_olma_orani_ve_sizinti_denetimi,
+         test_ayar_karti_pin_secince_tally_ekler_kapali_kaldirir,
+         test_ayar_karti_desteksiz_modelde_hata_gosterir_spec_degismez,
+         test_ayar_sekmesi_yerel_k_kartini_doldurur,
+         test_calistir_sekmesi_yerel_k_kartini_yalniz_tally_varken_gosterir,
+         test_araclar_menusu_demet_kinf_sihirbazini_acar]
 YAVAS = []
