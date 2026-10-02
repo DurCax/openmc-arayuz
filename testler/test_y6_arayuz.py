@@ -152,6 +152,43 @@ def test_son_kosudan_al(monkeypatch):
             and p.son_cozum is None)
 
 
+def test_kosu_uyarilari_gosterilir(monkeypatch):
+    print("\n[Y6A-6b] kosudan al: grup_hata, grup_uyari, lambda_uyari kullaniciya yazilir")
+    from cekirdek import kosucu
+    p = _panel()
+    p.kosu_kaynagi_ayarla(lambda: FIXTURE)
+    hata = {"keff": (1.0, 1e-4), "kinetik": {"beta_eff": 0.0065, "lambda": 2e-5,
+                                             "grup_hata": "bozuk h5"}}
+    monkeypatch.setattr(kosucu, "sonuc_oku", lambda yol: hata)
+    p.kosudan_al()
+    kontrol("grup_hata metni gosterildi", "bozuk h5" in p.uyari_etiketi.text(),
+            "-> %s" % p.uyari_etiketi.text())
+    uyarili = {"keff": (1.0, 1e-4), "kinetik": {
+        "beta_eff": 0.0056, "lambda": 2e-5, "beta_i": [1e-3] * 6, "lambda_i": [0.0133, 0.0327,
+                                                                               0.121, 0.303,
+                                                                               0.851, 2.86],
+        "grup_uyari": "kapsam eksik", "lambda_uyari": "k yok"}}
+    monkeypatch.setattr(kosucu, "sonuc_oku", lambda yol: uyarili)
+    p.kosudan_al()
+    metin = p.uyari_etiketi.text()
+    kontrol("veri yuklendi ve kapsam + lambda uyarisi gosterildi",
+            p.kaynak.currentData() == "kosu" and "kapsam eksik" in metin and "k yok" in metin,
+            "-> %s" % metin)
+
+
+def test_elle_varsayilan_satir_beta_sifir():
+    print("\n[Y6A-6c] elle: yeni satir (beta=0, lambda=1) Inhour'u bozmaz")
+    p = _panel()
+    p.kaynak.setCurrentIndex(p.kaynak.findData("keepin"))
+    p.kaynak.setCurrentIndex(p.kaynak.findData("elle"))
+    p.grup_sayisi.setValue(7)
+    kontrol("7. satir varsayilani 0 / 1", p.tablo.item(6, 1).text() == "0")
+    p.sure.setValue(10.0)
+    p.hesapla()
+    kontrol("cozum var, periyot yazildi", p.son_cozum is not None
+            and "T =" in p.sonuc_etiketi.text(), "-> %s" % p.uyari_etiketi.text())
+
+
 def test_geri_besleme_sicaklik_ekseni():
     print("\n[Y6A-7] adiyabatik geri besleme: sicaklik ekseni")
     p = _panel()
@@ -211,6 +248,7 @@ def test_ana_pencere_kosu_kaynagi():
 
 HIZLI = [test_ana_pencere_kosu_kaynagi, test_keepin_hazir_veri, test_elle_tek_grup_periyot, test_birim_donusumu,
          test_rampa_alanlari_ve_ani_kritik, test_gecersiz_veri_hata_metni, test_son_kosudan_al,
+         test_kosu_uyarilari_gosterilir, test_elle_varsayilan_satir_beta_sifir,
          test_geri_besleme_sicaklik_ekseni, test_hesap_ayari_grup_sayisi,
          test_analiz_sekmesinde_kart]
 YAVAS = []

@@ -70,7 +70,8 @@ class KinetikKarti(bil.Kart):
         self.tablo.setMaximumHeight(TABLO_YUKSEKLIGI)
         self.nesil_suresi = sayi(20.0, 6, 1e-5, 1e5, 1.0, "μs")
         self.nesil_suresi.setToolTip(_(
-            "Λ: ani nötron üretim zamanı. LWR ~ 10–30 μs, hızlı sistem ~ ns (Godiva ~ 5.6 ns)."))
+            "Λ: ani nötron üretim zamanı. Örnek değerler (bu programla ölçülen):\n"
+            "PWR 17×17 demeti 18.9 μs, Godiva 5.6 ns."))
         self.tur = QtWidgets.QComboBox()
         self.tur.addItem(_("Basamak"), "basamak")
         self.tur.addItem(_("Rampa"), "rampa")
@@ -174,15 +175,21 @@ class KinetikKarti(bil.Kart):
             self._uyari(_("Koşudan kinetik veri okunamadı: %s") % e, "hata")
             return
         if veri is None:
-            self._uyari(_("Son koşuda grup başına veri yok. Hesap ayarlarında kinetik "
-                          "parametreleri ve gecikmeli nötron gruplarını (6 ya da 8) açıp "
-                          "yeniden koşun."), "uyari")
+            neden = kin_sonuc.get("grup_hata")
+            self._uyari((_("Koşudan grup verisi okunamadı: %s") % neden) if neden else _(
+                "Son koşuda grup başına veri yok. Hesap ayarlarında kinetik parametreleri ve "
+                "gecikmeli nötron gruplarını (6 ya da 8) açıp yeniden koşun."),
+                "hata" if neden else "uyari")
             return
         self._kosu_verisi = veri
         self.kaynak.setCurrentIndex(self.kaynak.findData("kosu"))
         self._kaynak_degisti()
-        self._uyari(_("Koşudan alındı: %d grup, β_eff = %.1f pcm, Λ = %.4g s.")
-                    % (len(veri.beta), kin.pcm_e(veri.beta_toplam), veri.nesil_suresi))
+        ekler = [kin_sonuc[a] for a in ("grup_uyari", "lambda_uyari") if kin_sonuc.get(a)]
+        self._uyari(" ".join([_("Koşudan alındı: %d grup, Σβ_i = %.1f pcm ($ ve ani kritik "
+                                "eşiği bununla), Λ = %.4g s.")
+                              % (len(veri.beta), kin.pcm_e(veri.beta_toplam),
+                                 veri.nesil_suresi)] + ekler),
+                    "uyari" if ekler else "metin_soluk")
 
     # ==================================================================
     # girdi -> veri
