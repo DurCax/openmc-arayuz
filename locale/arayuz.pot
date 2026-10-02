@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 07:13+0300\n"
+"POT-Creation-Date: 2026-10-02 07:22+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -214,86 +214,86 @@ msgid ""
 "Doppler benzeri hızlı bir negatif geri beslemenin en basit modeli."
 msgstr ""
 
-#: arayuz/analiz/kinetik.py:109
+#: arayuz/analiz/kinetik.py:110
 msgid "Veri kaynağı:"
 msgstr ""
 
-#: arayuz/analiz/kinetik.py:110
+#: arayuz/analiz/kinetik.py:111
 msgid "Grup sayısı:"
 msgstr ""
 
-#: arayuz/analiz/kinetik.py:112
+#: arayuz/analiz/kinetik.py:113
 msgid "Üretim zamanı Λ:"
 msgstr ""
 
-#: arayuz/analiz/kinetik.py:113
+#: arayuz/analiz/kinetik.py:114
 msgid "Reaktivite türü:"
 msgstr ""
 
-#: arayuz/analiz/kinetik.py:114
+#: arayuz/analiz/kinetik.py:115
 msgid "Birim:"
 msgstr ""
 
-#: arayuz/analiz/kinetik.py:115
+#: arayuz/analiz/kinetik.py:116
 msgid "Reaktivite:"
 msgstr ""
 
-#: arayuz/analiz/kinetik.py:116
+#: arayuz/analiz/kinetik.py:117
 msgid "Rampa süresi:"
 msgstr ""
 
-#: arayuz/analiz/kinetik.py:117
+#: arayuz/analiz/kinetik.py:118
 msgid "Benzetim süresi:"
 msgstr ""
 
-#: arayuz/analiz/kinetik.py:120
+#: arayuz/analiz/kinetik.py:121
 msgid "Isı kapasitesi C:"
 msgstr ""
 
-#: arayuz/analiz/kinetik.py:121
+#: arayuz/analiz/kinetik.py:122
 msgid "Başlangıç gücü P₀:"
 msgstr ""
 
-#: arayuz/analiz/kinetik.py:130 arayuz/analiz/kinetik.py:154
+#: arayuz/analiz/kinetik.py:131 arayuz/analiz/kinetik.py:155
 msgid "Henüz hesaplanmadı."
 msgstr ""
 
-#: arayuz/analiz/kinetik.py:165
+#: arayuz/analiz/kinetik.py:166
 msgid ""
 "Bu projede başarılı bir koşu yok: önce Çalıştır'da kinetik parametreleri açık bir "
 "özdeğer koşusu yapın."
 msgstr ""
 
-#: arayuz/analiz/kinetik.py:173
+#: arayuz/analiz/kinetik.py:174
 #, python-format
 msgid "Koşudan kinetik veri okunamadı: %s"
 msgstr ""
 
-#: arayuz/analiz/kinetik.py:176
+#: arayuz/analiz/kinetik.py:177
 msgid ""
 "Son koşuda grup başına veri yok. Hesap ayarlarında kinetik parametreleri ve gecikmeli"
 " nötron gruplarını (6 ya da 8) açıp yeniden koşun."
 msgstr ""
 
-#: arayuz/analiz/kinetik.py:183
+#: arayuz/analiz/kinetik.py:184
 #, python-format
 msgid "Koşudan alındı: %d grup, β_eff = %.1f pcm, Λ = %.4g s."
 msgstr ""
 
-#: arayuz/analiz/kinetik.py:197
+#: arayuz/analiz/kinetik.py:198
 #, python-format
 msgid "Tablo satırı %d: β_i ve λ_i sayı olmalı."
 msgstr ""
 
-#: arayuz/analiz/kinetik.py:200 arayuz/analiz/kinetik_gosterim.py:68
+#: arayuz/analiz/kinetik.py:201 arayuz/analiz/kinetik_gosterim.py:71
 msgid "elle"
 msgstr ""
 
-#: arayuz/analiz/kinetik.py:234
+#: arayuz/analiz/kinetik.py:235
 msgid "Hesaplanamadı."
 msgstr ""
 
-#: arayuz/analiz/kinetik.py:254
+#: arayuz/analiz/kinetik.py:255
 msgid "Önce \"Son koşudan al\" ile koşu verisini yükleyin."
 msgstr ""
 
@@ -306,32 +306,37 @@ msgstr ""
 msgid "ρ = %.1f pcm = %.4f $ (β_eff = %.1f pcm)"
 msgstr ""
 
-#: arayuz/analiz/kinetik_gosterim.py:55
+#: arayuz/analiz/kinetik_gosterim.py:56
 #, python-format
-msgid "Inhour kararlı periyot: T = %s"
+msgid "Inhour kararlı periyot (geri beslemesiz, dış ρ ile): T = %s"
 msgstr ""
 
 #: arayuz/analiz/kinetik_gosterim.py:58
 #, python-format
-msgid "Çözümden ölçülen periyot (son %%10): %s"
+msgid "Inhour kararlı periyot: T = %s"
 msgstr ""
 
 #: arayuz/analiz/kinetik_gosterim.py:61
 #, python-format
-msgid "Çözümden periyot ölçülemedi: %s"
-msgstr ""
-
-#: arayuz/analiz/kinetik_gosterim.py:62
-#, python-format
-msgid "P(%.4g s) / P₀ = %.4g"
+msgid "Çözümden ölçülen periyot (son %%10): %s"
 msgstr ""
 
 #: arayuz/analiz/kinetik_gosterim.py:64
 #, python-format
+msgid "Çözümden periyot ölçülemedi: %s"
+msgstr ""
+
+#: arayuz/analiz/kinetik_gosterim.py:65
+#, python-format
+msgid "P(%.4g s) / P₀ = %.4g"
+msgstr ""
+
+#: arayuz/analiz/kinetik_gosterim.py:67
+#, python-format
 msgid "ΔT(%.4g s) = %.4g K; toplam ρ = %.1f pcm"
 msgstr ""
 
-#: arayuz/analiz/kinetik_gosterim.py:66
+#: arayuz/analiz/kinetik_gosterim.py:69
 #, python-format
 msgid ""
 "Veri: %s; çözücü: %s (katı ODE). Nokta kinetiği uzaysal etkileri içermez; eğitim "

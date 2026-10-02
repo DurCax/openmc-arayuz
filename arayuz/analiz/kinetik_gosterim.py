@@ -51,9 +51,12 @@ def _reaktivite_satiri(rho, beta):
 
 def sonuc_metni(veri, rho_dis, cozum):
     """Zengin metin ozet (HTML kacisli)."""
-    satirlar = [_reaktivite_satiri(rho_dis, veri.beta_toplam),
-                _("Inhour kararlı periyot: T = %s") % periyot_metni(
-                    kin.kararli_periyot(veri, rho_dis))]
+    t_inhour = periyot_metni(kin.kararli_periyot(veri, rho_dis))
+    if cozum.sicaklik is not None:
+        inhour = _("Inhour kararlı periyot (geri beslemesiz, dış ρ ile): T = %s") % t_inhour
+    else:
+        inhour = _("Inhour kararlı periyot: T = %s") % t_inhour
+    satirlar = [_reaktivite_satiri(rho_dis, veri.beta_toplam), inhour]
     try:
         satirlar.append(_("Çözümden ölçülen periyot (son %%10): %s")
                         % periyot_metni(kin.periyot_tahmini(cozum)))

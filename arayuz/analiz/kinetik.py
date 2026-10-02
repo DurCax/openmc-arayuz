@@ -28,7 +28,7 @@ from arayuz.ortak import sayi, tamsayi
 
 _log = kaydedici(__name__)
 TUVAL_YUKSEKLIGI = 260          # P(t) grafigi [px]
-TABLO_YUKSEKLIGI = 210          # 8 grup + baslik sigar [px]
+TABLO_YUKSEKLIGI = 250          # 7 satir + baslik; 8 grupta kaydirma [px]
 MIKRO = 1e-6                    # Lambda kutusu mikrosaniye
 _SUTUN_BETA, _SUTUN_LAMBDA = 1, 2
 _KAYNAKLAR = (("keepin", N_("Keepin U-235 termal (6 grup)")), ("kosu", N_("Son koşu (IFP)")),
@@ -104,6 +104,7 @@ class KinetikKarti(bil.Kart):
         kaynak_satiri = QtWidgets.QWidget()
         ks = QtWidgets.QHBoxLayout(kaynak_satiri)
         ks.setContentsMargins(0, 0, 0, 0)
+        kaynak_satiri.setSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
         ks.addWidget(self.kaynak, 1)
         ks.addWidget(self.d_kosudan)
         f.addRow(_("Veri kaynağı:"), kaynak_satiri)
