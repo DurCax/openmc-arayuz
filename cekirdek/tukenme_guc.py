@@ -29,21 +29,19 @@
  Bu modul YALNIZ okur ve tablo kurar (guc.dagilim_oku, guc.tepe_faktorleri,
  kosucu guc korunumu, guc_tablo.pin_tablosu yeniden kullanilir). Kosuya
  dokunan iki parca tukenme.calistir'dan cagrilir: olcum_spec (guc tally'si
- acik model) ve onceki_adimlari_sil (eski adim dosyalari yeni sonuca
+ acik model) ve tukenme_temizlik.onceki_sonucu_temizle (eski adim dosyalari yeni sonuca
  karismasin).
 ================================================================================
 """
 
 import copy
 import os
-import re
 
 from cekirdek.ceviri import _, pgettext
 from cekirdek.gunluk import kaydedici
 
 _log = kaydedici(__name__)
 
-ADIM_DESENI = re.compile(r"^openmc_simulation_n(\d+)\.h5$")
 IKI_BOYUT_YUKSEKLIGI = 1.0          # cm: 2B tukenme hacmi 1 cm icin (tukenme.hacimler)
 _ONBELLEK = {}
 _ONBELLEK_EN_COK = 2
@@ -104,26 +102,9 @@ def olcumlu_hazirla(hazirla, spec):
 
 
 def adim_dosyalari(dizin):
-    """[(adim, yol)] sayisal sirayla; dizin yoksa bos liste."""
-    try:
-        adlar = os.listdir(dizin)
-    except FileNotFoundError:
-        return []
-    bulunan = []
-    for ad in adlar:
-        m = ADIM_DESENI.match(ad)
-        if m:
-            bulunan.append((int(m.group(1)), os.path.join(dizin, ad)))
-    return sorted(bulunan)
-
-
-def onceki_adimlari_sil(dizin):
-    """Onceki kosunun adim statepoint'lerini siler. DONER silinen yollar."""
-    silinen = []
-    for _i, yol in adim_dosyalari(dizin):
-        os.remove(yol)
-        silinen.append(yol)
-    return silinen
+    """[(adim, yol)] sayisal sirayla (tukenme_temizlik.adim_dosyalari)."""
+    from cekirdek import tukenme_temizlik
+    return tukenme_temizlik.adim_dosyalari(dizin)
 
 
 # ============================================================================

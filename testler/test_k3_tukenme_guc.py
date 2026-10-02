@@ -190,9 +190,10 @@ class _Dur(Exception):
 
 
 def test_calistir_eski_adimlari_siler(gecici, monkeypatch):
-    print("\n[TG6] calistir onceki adim statepoint'lerini siler")
+    print("\n[TG6] calistir (kayitli dizinde) onceki adim statepoint'lerini siler")
     import openmc.deplete
     from cekirdek import tukenme
+    shutil.copy(os.path.join(FIXTURE, "tukenme_spec.json"), gecici)    # onceki kosunun kaydi
     for i in range(4):
         open(os.path.join(gecici, "openmc_simulation_n%d.h5" % i), "w").close()
     yakalanan = {}

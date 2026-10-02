@@ -431,10 +431,9 @@ def calistir(spec, dizin, geri_cagir=None, veri_kontrolu=True):
     # Eski sonuc SILINIR, sonra spec kaydi yazilir. Sira onemli: kosu yarida
     # kalirsa dizinde eski bir sonuc ile YENI bir spec kaydi yan yana kalir
     # ve eski sonuc "guncel" diye gosterilirdi.
-    onceki = os.path.join(dizin, "depletion_results.h5")
-    if os.path.exists(onceki):
-        os.remove(onceki)
-    tukenme_guc.onceki_adimlari_sil(dizin)     # eski adim gucu yeni sonuca karismasin
+    # (v3 K3) adim statepoint'leri yalniz bu arayuzun kayitli dizininde silinir.
+    from cekirdek import tukenme_temizlik
+    tukenme_temizlik.onceki_sonucu_temizle(dizin)
     spec_kaydet(spec, dizin)
     eski = os.getcwd()
     try:
@@ -581,7 +580,7 @@ def sonuc_oku(h5, spec, izlenen=None):
 #   kimlikleri ve hacimler kosudaki modelden gelsin).
 # ============================================================================
 
-SPEC_KAYDI = "tukenme_spec.json"
+from cekirdek.tukenme_temizlik import SPEC_KAYDI  # noqa: E402 (tek tanim)
 
 # Fizigi etkilemeyen bolumler: bunlar degisti diye sonuc eskimez.
 _FIZIK_DISI = ("ad", "aciklama", "calistirma") + sema.META_ALANLARI
