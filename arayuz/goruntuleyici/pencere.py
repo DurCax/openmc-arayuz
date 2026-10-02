@@ -223,6 +223,8 @@ class GoruntuleyiciPenceresi(QtWidgets.QMainWindow):
         if self.spec is None or anahtar == self._noktalar_anahtari:
             self._yeniden_boya()
             return
+        if anahtar == self._istenen_kaynak and self._sira.mesgul_mu():
+            return                          # ayni istek zaten iscide ya da sirada
         istek = {"tur": cg.ISTEK_KAYNAK, "spec": self.spec, "sayi": self.p_kaynak.sayi.value(),
                  "tohum": 1}
         if self.p_kaynak.kaynak.currentData() == KAYNAK_STATEPOINT:
@@ -312,6 +314,8 @@ class GoruntuleyiciPenceresi(QtWidgets.QMainWindow):
 
     def _hata(self, tur, metin):
         self.durum.setText(_("Görüntüleyici: %s") % metin)
+        if tur == KAYNAK:
+            self._istenen_kaynak = None     # sonraki secim yeniden denesin
         if tur == ISIN:
             self.uc_tuvali.mesaj(_("3B görünüm üretilemedi:\n\n%s") % metin, hata=True)
         elif tur == KESIT:
@@ -325,6 +329,7 @@ class GoruntuleyiciPenceresi(QtWidgets.QMainWindow):
             self.uc_tuvali.mesaj(_("3B ışın izleme bu modelde başarısız oldu (OpenMC 0.16 "
                                    "SolidRayTracePlot sınırlaması; bazı tam kor modellerinde "
                                    "süreç çöker ya da asılı kalır).\n\n%s") % mesaj, hata=True)
+        self._istenen_kaynak = None
         self._sira.sifirla()
         self.durum.setText(mesaj)
         self.istek_bitti.emit("", False)
