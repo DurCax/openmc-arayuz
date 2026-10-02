@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 09:38+0300\n"
+"POT-Creation-Date: 2026-10-02 09:49+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -1762,7 +1762,7 @@ msgstr "material defined but not used in the model: %s"
 #: cekirdek/dogrula/spektrum.py:25
 #, python-format
 msgid "'%s' öneki spektrum/dört faktör tally'lerine ayrılmıştır"
-msgstr "the '%s' prefix is reserved for the spectrum/four-factor tallies"
+msgstr "the '%s' prefix is reserved for the tallies of the spectrum and the four factors"
 
 #: cekirdek/dogrula/spektrum.py:27
 msgid "Tally'yi yeniden adlandırın."
@@ -1770,11 +1770,11 @@ msgstr "Rename the tally."
 
 #: cekirdek/dogrula/spektrum.py:39
 msgid "tükenme koşusunda spektrum ve dört faktör tally'leri kapatılır"
-msgstr "the spectrum and four-factor tallies are turned off in a depletion run"
+msgstr "the tallies of the spectrum and the four factors are turned off in a depletion run"
 
 #: cekirdek/dogrula/spektrum.py:40
 msgid ""
-"Çubuk çubuk yanma malzemeleri klonlar; spektrumu ayrı bir özdeğer koşusunda "
+"Çubuk çubuk tükenme malzemeleri klonlar; spektrumu ayrı bir özdeğer koşusunda "
 "hesaplayın."
 msgstr ""
 "Pin-by-pin depletion clones the materials; compute the spectrum in a separate "

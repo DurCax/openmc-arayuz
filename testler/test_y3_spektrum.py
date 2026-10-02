@@ -21,6 +21,9 @@ from testler.regresyon_ortak import ORNEK
 _GOR_TOL = 1e-12            # ayni sayilardan cebirsel ozdeslik (kayan nokta)
 _K_SIGMA = 2.0              # "belirsizlik icinde": 2 sigma (yaklasik %95)
 _TL_TOL = 1e-6              # ayni tahminci, ayni normalizasyon: yalniz yuvarlama farki
+_DENGE_SIGMA = 3.0          # korelasyonu yok sayan birlesik sapma ile denge siniri
+_ANALOG_TOL = 1e-9          # analog denge cevrim basina tamdir: yalniz yuvarlama
+_ANALOG = "test_analog_denge"
 
 
 def _pin(var=True, grup="XMAS-172"):
@@ -292,7 +295,7 @@ def test_pin_hucre_dort_faktor_k_sonsuz(gecici):
     # Arrange
     spec = _pin()
     spec["ayarlar"].update(parcacik=5000, cevrim=60, pasif=15)
-    model, _b = kurucu.kur(spec)
+    model = _analog_ekle(kurucu.kur(spec)[0])
     # Act
     yol = _kos(model, os.path.join(gecici, "pin"))
     sonuc = s.oku(yol)
@@ -339,9 +342,11 @@ def _normalizasyon_ve_denge(sp, s):
     Kabulun SIKI kisimlari (korelasyonsuz 2 sigma siniri gevsektir):
       1. filtresiz nu-fission tracklength tally'si = global k-tracklength
          (ikisi de kaynak notronu basina AYNI tahminci; ~1e-6 bagil)
-      2. notron dengesi (kaynak notronu basina): A - X + L = 1 (2 sigma)
-    c_xn (X/A ~ %0.14) MC belirsizligiyle COZULEMEZ (A'nin sapmasi ~%0.2):
-    yalniz analitik (el hesabi) testte dogrulanir.
+      2. notron dengesi (kaynak notronu basina): A - X + L = 1 (Y3 tally'leri, 3 sigma)
+      3. ayni denge ANALOG tahminciyle tam (1e-9): L ile tally'ler ayni
+         normalizasyonda ve X'in kanal kumesi bu modelde eksiksiz
+    c_xn'in k uzerindeki etkisi (X/A ~ %0.14) MC belirsizligiyle COZULEMEZ
+    (A'nin sapmasi ~%0.2): degeri yalniz analitik (el hesabi) testte dogrulanir.
     """
     df = sp.get_tally(name=s.T_TOPLAM).get_pandas_dataframe()
     nf = float(df[df["score"] == "nu-fission"]["mean"].iloc[0])
@@ -351,10 +356,30 @@ def _normalizasyon_ve_denge(sp, s):
             abs(nf / ktl - 1.0) < _TL_TOL, "-> %.3e" % abs(nf / ktl - 1.0))
     h = s._hizlar_oku(sp, df, sp.get_tally(name=s.T_TERMAL).get_pandas_dataframe())
     denge = s.toplam(s.fark(h["A"], h["X"]), h["L"])
-    print("  A - X + L = %.5f +- %.5f" % denge)
-    kontrol("notron dengesi: A - X + L = 1 (2 sigma)",
-            abs(denge.ort - 1.0) <= _K_SIGMA * denge.sapma,
+    print("  A - X + L = %.5f +- %.5f (tracklength A)" % denge)
+    # Tracklength A ile sayilan L arasindaki korelasyon yok sayildigindan sinir 3 sigma.
+    kontrol("notron dengesi (Y3 tally'leri): A - X + L = 1 (3 sigma)",
+            abs(denge.ort - 1.0) <= _DENGE_SIGMA * denge.sapma,
             "-> %.5f +- %.5f" % denge)
+    # Analog tahminci: her gecmis ya sogurulur ya kacar -> cevrim basina TAM denge.
+    # L'nin (global) ve tally'lerin AYNI normalizasyonda oldugunun kesin kaniti.
+    an = sp.get_tally(name=_ANALOG).get_pandas_dataframe()
+    a_an = float(an[an["score"] == "absorption"]["mean"].iloc[0])
+    x_an = sum(c * float(an[an["score"] == k]["mean"].iloc[0]) for k, c in s.XN_SKORLARI)
+    kesin = a_an - x_an + h["L"].ort
+    kontrol("analog denge: A - X + L = 1 (1e-9)", abs(kesin - 1.0) < _ANALOG_TOL,
+            "-> %.3e" % abs(kesin - 1.0))
+
+
+def _analog_ekle(model):
+    """Yalniz test: analog absorption + (n,xn) tally'si (kesin denge denetimi)."""
+    import openmc
+    from cekirdek import spektrum as s
+    t = openmc.Tally(name=_ANALOG)
+    t.scores = ["absorption"] + [k for k, _c in s.XN_SKORLARI]
+    t.estimator = "analog"
+    model.tallies = openmc.Tallies(list(model.tallies) + [t])
+    return model
 
 
 def test_godiva_sizinti_carpani(gecici):
@@ -364,7 +389,7 @@ def test_godiva_sizinti_carpani(gecici):
     spec = sema.yukle(os.path.join(ORNEK, "godiva_kriter.json"))
     spec["ayarlar"].update(parcacik=4000, cevrim=50, pasif=15)
     spec["ayarlar"]["spektrum"] = {"var": True, "grup_yapisi": "CASMO-70"}
-    model, _b = kurucu.kur(spec)
+    model = _analog_ekle(kurucu.kur(spec)[0])
     # Act
     yol = _kos(model, os.path.join(gecici, "godiva"))
     sonuc = s.oku(yol)

@@ -37,7 +37,7 @@ def spektrum_kontrol(spec):
         bulgular.append(Bulgu(
             "bilgi", _YER,
             _("tükenme koşusunda spektrum ve dört faktör tally'leri kapatılır"),
-            _("Çubuk çubuk yanma malzemeleri klonlar; spektrumu ayrı bir özdeğer "
+            _("Çubuk çubuk tükenme malzemeleri klonlar; spektrumu ayrı bir özdeğer "
               "koşusunda hesaplayın.")))
     if spec["ayarlar"].get("mod", "eigenvalue") != "eigenvalue":
         bulgular.append(Bulgu(

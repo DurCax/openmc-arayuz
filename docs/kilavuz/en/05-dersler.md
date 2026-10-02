@@ -715,9 +715,11 @@ textbook: the textbook ε counts only fast fission above the U-238 threshold (ty
   16, 17, 24, 25, 30, 37, 41, 42 channels; higher channels (MT 152+, (n,5n) ...) are not counted.
   In models containing Be or D₂O, (n,2n) matters. **c_xn is verified only by the analytic
   (hand-calculation) test;** X/A of about 0.14 % is smaller than the Monte Carlo uncertainty of A
-  (~0.2 %), so it is not resolved by Monte Carlo. Verified by Monte Carlo: the unfiltered
-  nu-fission tally = global k-tracklength (~1e-6 relative) and the neutron balance A − X + L = 1
-  (2σ).
+  (~0.2 %), so its effect on k is not resolved by Monte Carlo. Verified by Monte Carlo: the
+  unfiltered nu-fission tally = global k-tracklength (~1e-6 relative); with the Y3 tallies the
+  neutron balance A − X + L = 1 (3σ, since the correlation is neglected); with the analog estimator
+  the same balance holds **exactly** (1e-9) — this shows that L and the tallies share one
+  normalization and that the channel set of X is complete for these models (pin cell, Godiva).
 - **Spectral indices (CSEWG benchmark definitions; BNL-19302/ENDF-202, TRX-1/2 lattices):**
   ρ28 = U-238 capture epithermal/thermal, δ25 = U-235 fission epithermal/thermal, δ28 = U-238
   fission / U-235 fission, C* = U-238 capture / U-235 fission. Experiments measure them in the

@@ -687,9 +687,11 @@ ders kitabındaki ε yalnız U-238 eşiği üstündeki hızlı fisyonu sayar (ti
   formülünde bu etki ε'nin içinde varsayılır. X yalnız MT 11, 16, 17, 24, 25, 30, 37, 41, 42
   kanallarını sayar; daha yüksek kanallar (MT 152+, (n,5n) …) sayılmaz. Be ya da D₂O içeren
   modellerde (n,2n) önemlidir. **c_xn yalnız analitik (el hesabı) testle doğrulandı;** X/A ≈ %0.14,
-  A'nın MC belirsizliğinden (~%0.2) küçük olduğundan Monte Carlo ile ayrıştırılamaz. MC ile
-  doğrulanan: filtresiz nu-fission tally'si = global k-tracklength (~1e-6 bağıl) ve nötron dengesi
-  A − X + L = 1 (2σ).
+  A'nın MC belirsizliğinden (~%0.2) küçük olduğundan k üzerindeki etkisi Monte Carlo ile
+  ayrıştırılamaz. MC ile doğrulanan: filtresiz nu-fission tally'si = global k-tracklength (~1e-6
+  bağıl); Y3 tally'leriyle nötron dengesi A − X + L = 1 (3σ, korelasyon yok sayıldığından); analog
+  tahminciyle aynı denge **tam** (1e-9) tutar — bu, L ile tally'lerin aynı normalizasyonda olduğunu
+  ve X'in kanal kümesinin bu modeller (pin hücre, Godiva) için eksiksiz olduğunu gösterir.
 - **Spektral indeksler (CSEWG benchmark tanımları; BNL-19302/ENDF-202, TRX-1/2 kafesleri):**
   ρ28 = U-238 yakalama epitermal/termal, δ25 = U-235 fisyon epitermal/termal, δ28 = U-238
   fisyon / U-235 fisyon, C* = U-238 yakalama / U-235 fisyon. Deneyler merkez çubukta ölçer;
