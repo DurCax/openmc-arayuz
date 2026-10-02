@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 05:26+0300\n"
+"POT-Creation-Date: 2026-10-02 07:20+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -3982,47 +3982,48 @@ msgstr "eV / source neutron"
 msgid "/ kaynak nötronu"
 msgstr "/ source neutron"
 
-#: cekirdek/kosucu.py:389
+#: cekirdek/kosucu.py:400
 #, python-format
 msgid "malzeme %s"
 msgstr "material %s"
 
-#: cekirdek/kosucu.py:398
+#: cekirdek/kosucu.py:409
 msgid "tüm model"
 msgstr "whole model"
 
-#: cekirdek/kosucu.py:408
+#: cekirdek/kosucu.py:417
 msgid "Bölge / enerji"
 msgstr "Region / energy"
 
-#: cekirdek/kosucu.py:408
+#: cekirdek/kosucu.py:417
 msgid "Ölçülen"
 msgstr "Quantity"
 
-#: cekirdek/kosucu.py:408
+#: cekirdek/kosucu.py:417
 msgid "Değer"
 msgstr "Value"
 
-#: cekirdek/kosucu.py:408
+#: cekirdek/kosucu.py:417
 msgid "Bağıl hata"
 msgstr "Relative error"
 
-#: cekirdek/kosucu.py:408
+#: cekirdek/kosucu.py:417
 msgid "Birim"
 msgstr "Unit"
 
-#: cekirdek/kosucu.py:453 cekirdek/rapor_sablon/__init__.py:152
+#: cekirdek/kosucu.py:462 cekirdek/mesh_tally/sonuc.py:144
+#: cekirdek/rapor_sablon/__init__.py:152
 #, python-format
 msgid "okunamadı: %s"
 msgstr "could not be read: %s"
 
-#: cekirdek/kosucu.py:514
+#: cekirdek/kosucu.py:523
 msgid "Referans tally yok — korunum denetlenemedi (eski statepoint ya da model regresyonu)."
 msgstr ""
 "No reference tally — conservation could not be checked (old statepoint or model "
 "regression)."
 
-#: cekirdek/kosucu.py:518
+#: cekirdek/kosucu.py:527
 #, python-format
 msgid ""
 "Referans güç toplamı sıfır ya da negatif (%.3g): hedef bölgede fisyon sayılmadı, "
@@ -4031,7 +4032,7 @@ msgstr ""
 "The reference power sum is zero or negative (%.3g): no fissions were counted in the "
 "target region, the conservation of the total could not be checked."
 
-#: cekirdek/kosucu.py:525
+#: cekirdek/kosucu.py:534
 #, python-format
 msgid ""
 "Çubuk güçlerinin toplamı filtresiz tally'den %.2e bağıl fark gösteriyor. Haritalama "
@@ -4040,20 +4041,20 @@ msgstr ""
 "The sum of the pin powers differs from the unfiltered tally by a relative %.2e. The "
 "mapping may be broken — do not trust the results."
 
-#: cekirdek/kosucu.py:578
+#: cekirdek/kosucu.py:587
 #, python-format
 msgid "toplamın korunumu: bağıl fark %.1e — %s"
 msgstr "conservation of the total: relative difference %.1e — %s"
 
-#: cekirdek/kosucu.py:579 cekirdek/kosucu_terminal.py:157
+#: cekirdek/kosucu.py:588 cekirdek/kosucu_terminal.py:157
 msgid "tamam"
 msgstr "ok"
 
-#: cekirdek/kosucu.py:580
+#: cekirdek/kosucu.py:589
 msgid "bozuk, haritaya güvenmeyin"
 msgstr "broken, do not trust the map"
 
-#: cekirdek/kosucu.py:582
+#: cekirdek/kosucu.py:591
 #, python-format
 msgid "toplamın korunumu denetlenemedi: %s"
 msgstr "conservation of the total could not be checked: %s"
@@ -4399,26 +4400,26 @@ msgstr "undefined material: %s"
 msgid "otomatik ağ sınırları için modelin sınır kutusu gerekli"
 msgstr "automatic mesh boundaries require the bounding box of the model"
 
-#: cekirdek/kurucu.py:231
+#: cekirdek/kurucu.py:228
 #, python-format
 msgid "bilinmeyen filtre türü: %s"
 msgstr "unknown filter type: %s"
 
-#: cekirdek/kurucu.py:249 cekirdek/kurucu.py:272
+#: cekirdek/kurucu.py:246 cekirdek/kurucu.py:269
 msgid "güç dağılımı için geçerli bir çubuk seçilmeli"
 msgstr "a valid pin must be selected for the power distribution"
 
-#: cekirdek/kurucu.py:250
+#: cekirdek/kurucu.py:247
 #, python-format
 msgid " ('%s' tanımsız)"
 msgstr " ('%s' undefined)"
 
-#: cekirdek/kurucu.py:257
+#: cekirdek/kurucu.py:254
 #, python-format
 msgid "'%s': geçersiz bölge numarası %d (çubukta %d bölge var)"
 msgstr "'%s': invalid pin region number %d (the pin has %d regions)"
 
-#: cekirdek/kurucu.py:286
+#: cekirdek/kurucu.py:283
 #, python-format
 msgid ""
 "'%s' çubuğu modelde kullanılmıyor. Güç dağılımı yalnızca geometride yer alan bir "
@@ -4790,6 +4791,178 @@ msgid ""
 msgstr ""
 "At this loading the density of the U₃Si₂ (%.1f g/cm³) and Al (%.2f g/cm³) mixture is "
 "≈ %.2f g/cm³; %.2f g/cm³ was entered."
+
+#: cekirdek/mesh_tally/geometri.py:28
+#, python-format
+msgid "desteklenmeyen ağ sınıfı: %s"
+msgstr "unsupported mesh class: %s"
+
+#: cekirdek/mesh_tally/geometri.py:55 cekirdek/mesh_tally/tanim.py:179
+#, python-format
+msgid "bilinmeyen ağ türü: %s"
+msgstr "unknown mesh type: %s"
+
+#: cekirdek/mesh_tally/geometri.py:120
+#, python-format
+msgid "geçersiz dilim: eksen %s, indeks %s"
+msgstr "invalid slice: axis %s, index %s"
+
+#: cekirdek/mesh_tally/sonuc.py:46
+msgid "Kaynak nötronu başına"
+msgstr "Per source neutron"
+
+#: cekirdek/mesh_tally/sonuc.py:47
+msgid "Hacim başına (/cm³)"
+msgstr "Per volume (/cm³)"
+
+#: cekirdek/mesh_tally/sonuc.py:48
+msgid "Ortalamaya bağıl (1 = ortalama)"
+msgstr "Relative to the mean (1 = mean)"
+
+#: cekirdek/mesh_tally/sonuc.py:49
+msgid "Mutlak (toplam güçten)"
+msgstr "Absolute (from total power)"
+
+#: cekirdek/mesh_tally/sonuc.py:87
+msgid "birden çok ağ filtresi"
+msgstr "more than one mesh filter"
+
+#: cekirdek/mesh_tally/sonuc.py:89
+#, python-format
+msgid "ağ ve enerji dışında filtre var: %s"
+msgstr "filter other than mesh and energy present: %s"
+
+#: cekirdek/mesh_tally/sonuc.py:159
+#, python-format
+msgid "'%s' skoru bu tally'de yok (%s)"
+msgstr "score '%s' is not in this tally (%s)"
+
+#: cekirdek/mesh_tally/sonuc.py:167
+#, python-format
+msgid "geçersiz enerji grubu: %s"
+msgstr "invalid energy group: %s"
+
+#: cekirdek/mesh_tally/sonuc.py:182
+msgid "mutlak normalizasyon için toplam güç sıfırdan büyük olmalı"
+msgstr "total power must be greater than zero for absolute normalization"
+
+#: cekirdek/mesh_tally/sonuc.py:184
+msgid ""
+"mutlak normalizasyon için ağda ısınma skoru (kappa-fission, heating …) sıfırdan büyük"
+" olmalı"
+msgstr ""
+"for absolute normalization a heating score (kappa-fission, heating …) on the mesh "
+"must be greater than zero"
+
+#: cekirdek/mesh_tally/sonuc.py:194
+msgid "bağıl (1 = ortalama)"
+msgstr "relative (1 = mean)"
+
+#: cekirdek/mesh_tally/sonuc.py:196
+msgid "1/cm³·s"
+msgstr "1/cm³·s"
+
+#: cekirdek/mesh_tally/sonuc.py:197
+msgid "tepkime"
+msgstr "reactions"
+
+#: cekirdek/mesh_tally/sonuc.py:199
+msgid "tepkime/cm³"
+msgstr "reactions/cm³"
+
+#: cekirdek/mesh_tally/sonuc.py:200
+msgid " / kaynak nötronu"
+msgstr " / source neutron"
+
+#: cekirdek/mesh_tally/sonuc.py:200
+msgid " (kaynak şiddetiyle)"
+msgstr " (with source strength)"
+
+#: cekirdek/mesh_tally/sonuc.py:206
+#, python-format
+msgid "bilinmeyen normalizasyon: %s"
+msgstr "unknown normalization: %s"
+
+#: cekirdek/mesh_tally/sonuc.py:215
+msgid "bağıl normalizasyon: ağda skorlu hücre yok"
+msgstr "relative normalization: no scored cell on the mesh"
+
+#: cekirdek/mesh_tally/sonuc.py:219
+msgid ""
+"mutlak normalizasyon yalnız özdeğer hesabında; sabit kaynakta değerler kaynak "
+"şiddetiyle zaten ölçeklidir"
+msgstr ""
+"absolute normalization only in an eigenvalue calculation; in fixed source the values "
+"are already scaled by the source strength"
+
+#: cekirdek/mesh_tally/sonuc.py:222
+msgid "mutlak normalizasyon için kaynak hızı gerekli"
+msgstr "absolute normalization needs the source rate"
+
+#: cekirdek/mesh_tally/tanim.py:35
+msgid "Düzenli (x, y, z)"
+msgstr "Regular (x, y, z)"
+
+#: cekirdek/mesh_tally/tanim.py:36
+msgid "Silindirik (r, φ, z)"
+msgstr "Cylindrical (r, φ, z)"
+
+#: cekirdek/mesh_tally/tanim.py:37
+msgid "Küresel (r, θ, φ)"
+msgstr "Spherical (r, θ, φ)"
+
+#: cekirdek/mesh_tally/tanim.py:46
+msgid ""
+"Altıgen ağ kapsam dışı: kurulu OpenMC 0.16.0'da HexagonalMesh sınıfı yok "
+"(openmc/mesh.py yalnız RegularMesh, RectilinearMesh, CylindricalMesh, SphericalMesh, "
+"UnstructuredMesh sunar). Altıgen demette düzenli ya da silindirik ağ kullanın."
+msgstr ""
+"Hexagonal mesh is out of scope: the installed OpenMC 0.16.0 has no HexagonalMesh "
+"class (openmc/mesh.py offers only RegularMesh, RectilinearMesh, CylindricalMesh, "
+"SphericalMesh, UnstructuredMesh). Use a regular or cylindrical mesh for a hexagonal "
+"assembly."
+
+#: cekirdek/mesh_tally/tanim.py:66
+#, python-format
+msgid "bilinmeyen ağ türü: %s (geçerli: %s)"
+msgstr "unknown mesh type: %s (valid: %s)"
+
+#: cekirdek/mesh_tally/tanim.py:113
+#, python-format
+msgid "ağ bölme sayısı üç değer olmalı (%s)"
+msgstr "mesh bin count must be three values (%s)"
+
+#: cekirdek/mesh_tally/tanim.py:116
+#, python-format
+msgid "ağ bölme sayıları pozitif tam sayı olmalı (%s)"
+msgstr "mesh bin counts must be positive integers (%s)"
+
+#: cekirdek/mesh_tally/tanim.py:118
+#, python-format
+msgid "ağ bölme sayıları sayı olmalı (%s)"
+msgstr "mesh bin counts must be numbers (%s)"
+
+#: cekirdek/mesh_tally/tanim.py:130
+msgid "ağ alt sınırı her eksende üst sınırdan küçük olmalı"
+msgstr "mesh lower bound must be smaller than the upper bound on every axis"
+
+#: cekirdek/mesh_tally/tanim.py:135
+msgid "ağ dış yarıçapı sıfırdan büyük olmalı"
+msgstr "mesh outer radius must be greater than zero"
+
+#: cekirdek/mesh_tally/tanim.py:137
+msgid "ağın z alt sınırı üst sınırdan küçük olmalı"
+msgstr "mesh z lower bound must be smaller than the upper bound"
+
+#: cekirdek/mesh_tally/tanim.py:292
+#, python-format
+msgid "bilinmeyen enerji grup yapısı: %s"
+msgstr "unknown energy group structure: %s"
+
+#: cekirdek/mesh_tally/vtk.py:101
+#, python-format
+msgid "VTK dosya adı .vtk ile bitmeli: %s"
+msgstr "VTK file name must end with .vtk: %s"
 
 #: cekirdek/nuklidler.py:51
 msgid "Uranyum"
