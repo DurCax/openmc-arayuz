@@ -199,6 +199,19 @@ class TukenmeSekmesi(SekmeTabani, SonucBolumu, TukenmeArayuzu):
             "düşünün."))
         self.gelismis_form.addRow("", self.adim_gucu)
 
+    def _sogutma_ozeti(self, t):
+        """v3 Y4: adim ozetine sogutma adimlari ve kritik arama notu eklenir."""
+        from cekirdek import tukenme_ayar
+        ekler = []
+        n = len(tukenme_ayar.sogutma(t)[0])
+        if n:
+            ekler.append(_n("%d soğuma adımı (transport yok)", "%d soğuma adımı (transport yok)",
+                            n) % n)
+        if tukenme_ayar.kritik_arama(t).var:
+            ekler.append(_("kritiklik araması adım başına ek transport koşar"))
+        if ekler:
+            self.adim_ozet.setText(self.adim_ozet.text() + " · " + " · ".join(ekler))
+
     def _adim_gucu_anlamli(self):
         """Guc tally'si kurulabilen modelde (cubuklar bir kafeste) anlamli."""
         try:
@@ -282,6 +295,7 @@ class TukenmeSekmesi(SekmeTabani, SonucBolumu, TukenmeArayuzu):
                    "%d adım · toplam %.4g gün = %.4g MWd/kg · %d transport çözümü",
                    len(adimlar))
                 % (len(adimlar), gun, bu, _tk.transport_sayisi(self.spec)))
+            self._sogutma_ozeti(t)
         else:
             self.adim_ozet.setText(_("Adım yok — virgülle adım uzunlukları girin."))
 
