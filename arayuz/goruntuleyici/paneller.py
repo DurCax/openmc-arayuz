@@ -35,7 +35,7 @@ def _form(kutu):
     return f
 
 
-def _kutu_doldur(kutu, ogeler):
+def _kutu_doldur(kutu, ogeler) -> None:
     kutu.blockSignals(True)
     eski = kutu.currentData()
     kutu.clear()
@@ -106,7 +106,7 @@ class TallyPaneli(QtWidgets.QGroupBox):
     degisti = QtCore.Signal()
     statepoint_sec = QtCore.Signal()
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None) -> None:
         super().__init__(_("Ağ (mesh) tally bindirmesi"), parent)
         self.setCheckable(True)
         self.setChecked(False)
@@ -154,7 +154,7 @@ class TallyPaneli(QtWidgets.QGroupBox):
         _kutu_doldur(self.tally, [(s.ad, i) for i, s in enumerate(self.sonuclar)])
         self._tally_secildi()
 
-    def _tally_secildi(self, *_a):
+    def _tally_secildi(self, *_a) -> None:
         s = self.secili()
         _kutu_doldur(self.skor, [(k, k) for k in (s.skorlar if s else ())])
         gruplar = [(_("Toplam (tüm gruplar)"), None)]
@@ -206,7 +206,7 @@ class KaynakPaneli(QtWidgets.QGroupBox):
 class UcBoyutPaneli(QtWidgets.QGroupBox):
     ciz = QtCore.Signal()
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None) -> None:
         super().__init__(_("3B görünüm"), parent)
         varsayilan = km.Kamera()
         self.renk = QtWidgets.QComboBox()

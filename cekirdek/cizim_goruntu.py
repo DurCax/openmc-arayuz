@@ -70,6 +70,18 @@ _PARTI = 4096                              # tek seferde uretilen aday nokta
 GIZLI_EN_COK = 10_000                      # gizlenen alan kimligi sayisi (sinir)
 _AKTINIT_Z = 90                            # Th ve sonrasi (modul belgesi)
 _SIFIR = 1.0e-12
+# Buyukluk sinirlari (arayuz/goruntuleyici/gorunum.py ayni sabitleri kullanir):
+# 10 km'den buyuk koordinat ya da 1 um'den kucuk pencere reaktor modelinde anlamsizdir,
+# kayan nokta gurultusu ve kacak istek (bellek/sure) uretir.
+KOORDINAT_SINIRI = 1.0e6                   # cm
+GENISLIK_EN_AZ = 1.0e-4                    # cm
+_PARALEL_ESIGI = 1.0e-6                    # |a x b| / (|a| |b|): yukari bakisa paralel
+# Kaynak ornekleme deneme butcesi: kabul orani esigindeki en kotu durum (sayi / oran).
+KAYNAK_DENEME_EN_COK = int(KAYNAK_EN_COK / KABUL_ORANI_EN_AZ)
+
+
+class Iptal(Exception):
+    """Uzun is (kaynak ornekleme) yeni istek geldigi icin birakildi."""
 
 
 def _hata(metin):
@@ -90,6 +102,8 @@ def vektor(deger, ad: str, sifir_olabilir: bool = True) -> tuple:
     if not isinstance(deger, list) or len(deger) != 3 or not all(map(_sayi_mi, deger)):
         raise _hata(_("%s üç sonlu sayı olmalı: %r") % (ad, deger))
     v = tuple(float(x) for x in deger)
+    if max(abs(x) for x in v) > KOORDINAT_SINIRI:
+        raise _hata(_("%s bileşenleri ±%g cm içinde olmalı: %r") % (ad, KOORDINAT_SINIRI, deger))
     if not sifir_olabilir and math.hypot(*v) < _SIFIR:
         raise _hata(_("%s sıfır vektör olamaz") % ad)
     return v
@@ -111,8 +125,9 @@ def kesit_ekleri(k: dict) -> dict:
     if "genislik" in k:
         g = k["genislik"]
         if (not isinstance(g, list) or len(g) != 2 or not all(map(_sayi_mi, g))
-                or min(g) <= 0):
-            raise _hata(_("genişlik iki pozitif sayı olmalı: %r") % (g,))
+                or min(g) < GENISLIK_EN_AZ or max(g) > KOORDINAT_SINIRI):
+            raise _hata(_("genişlik iki sayı olmalı (%g-%g cm): %r")
+                        % (GENISLIK_EN_AZ, KOORDINAT_SINIRI, g))
         ek["genislik"] = (float(g[0]), float(g[1]))
     if "piksel_dikey" in k:
         ek["piksel_dikey"] = _piksel(k["piksel_dikey"], "piksel_dikey")
@@ -129,9 +144,13 @@ def isin_dogrula(b: dict) -> None:
     """'isin' isteginin alanlarini denetler (ProtokolHatasi)."""
     kamera = vektor(b.get("kamera"), "kamera")
     bakis = vektor(b.get("bakis"), "bakis")
-    vektor(b.get("yukari"), "yukari", sifir_olabilir=False)
+    yukari = vektor(b.get("yukari"), "yukari", sifir_olabilir=False)
     if math.dist(kamera, bakis) < _SIFIR:
         raise _hata(_("kamera bakış noktasıyla aynı yerde olamaz"))
+    yon = np.subtract(bakis, kamera)
+    capraz = np.linalg.norm(np.cross(yon, yukari))
+    if capraz < _PARALEL_ESIGI * np.linalg.norm(yon) * np.linalg.norm(yukari):
+        raise _hata(_("yukarı vektörü bakış yönüne paralel olamaz"))
     if "isik" in b:
         vektor(b["isik"], "isik")
     gorus = b.get("gorus")
@@ -157,8 +176,8 @@ def kaynak_dogrula(b: dict) -> None:
     if not _tamsayi_mi(b.get("tohum", 1)) or b.get("tohum", 1) < 0:
         raise _hata(_("tohum negatif olmayan tamsayı olmalı"))
     yol = b.get("statepoint")
-    if yol is not None and (not isinstance(yol, str) or not yol):
-        raise _hata(_("statepoint yolu metin olmalı"))
+    if yol is not None and (not isinstance(yol, str) or not os.path.isabs(yol)):
+        raise _hata(_("statepoint yolu mutlak bir yol olmalı"))
 
 
 # ----------------------------------------------------------------------------
@@ -170,7 +189,8 @@ def _aktinit_mi(nuklid: str) -> bool:
     try:
         return openmc.data.zam(nuklid)[0] >= _AKTINIT_Z
     except ValueError:                      # element adi (or. "C") ya da tanimsiz
-        _log.debug("nuklid adi cozulemedi: %s", nuklid)
+        # Fisil bir nuklid bu yolla fisilsiz sayilirsa kaynak noktalari eksik kalir.
+        _log.warning("nuklid adi cozulemedi, fisil sayilmadi: %s", nuklid)
         return False
 
 
@@ -229,11 +249,19 @@ def _uzay_ornekle(uzay, n, rng):
     if ad == "Box":
         alt = np.asarray(uzay.lower_left, dtype=float)
         ust = np.asarray(uzay.upper_right, dtype=float)
+        _sonlu(np.concatenate([alt, ust]), _("kaynak kutusu sınırları"))
         return alt + (ust - alt) * rng.random((n, 3))
     if ad == "Point":
-        return np.tile(np.asarray(uzay.xyz, dtype=float), (n, 1))
+        xyz = np.asarray(uzay.xyz, dtype=float)
+        _sonlu(xyz, _("kaynak noktası"))
+        return np.tile(xyz, (n, 1))
     raise ValueError(_("kaynak noktaları gösterilemiyor: desteklenmeyen uzay dağılımı %s")
                      % ad)
+
+
+def _sonlu(dizi, ad: str) -> None:
+    if not np.all(np.isfinite(dizi)):
+        raise ValueError(_("kaynak noktaları gösterilemiyor: %s sonlu olmalı") % ad)
 
 
 def _kisit_fisil_mi(kaynak) -> bool:
@@ -260,43 +288,76 @@ def _fisil_noktalar(noktalar, fisil):
 
 def _kaynak_secimi(kaynaklar, rng, n):
     """Her aday icin kaynak sirasi (siddetle agirlikli)."""
-    guc = np.array([max(float(getattr(k, "strength", 1.0)), 0.0) for k in kaynaklar])
+    guc = np.array([float(getattr(k, "strength", 1.0)) for k in kaynaklar])
+    if not np.all(np.isfinite(guc)) or np.any(guc < 0):
+        raise ValueError(_("kaynak şiddetleri sonlu ve negatif olmayan sayılar olmalı"))
     if guc.sum() <= 0:
         raise ValueError(_("kaynak şiddetlerinin toplamı sıfır"))
     return rng.choice(len(kaynaklar), size=n, p=guc / guc.sum())
 
 
-def ayar_kaynagi(kaynaklar, fisil, sayi: int, tohum: int):
-    """settings.source'tan sayi nokta: ((n, 3) dizi, deneme sayisi)."""
+def _parti(kaynaklar, fisil_kisit: list, fisil: frozenset, rng) -> tuple:
+    """Bir parti aday nokta ve kabul maskesi."""
+    secim = _kaynak_secimi(kaynaklar, rng, _PARTI)
+    aday = np.empty((_PARTI, 3))
+    for i, k in enumerate(kaynaklar):
+        yer = secim == i
+        aday[yer] = _uzay_ornekle(k.space, int(yer.sum()), rng)
+    kisitli = np.array([fisil_kisit[i] for i in secim])
+    kabul = ~kisitli
+    if kisitli.any():
+        kabul[kisitli] = _fisil_noktalar(aday[kisitli], fisil)
+    return aday, kabul
+
+
+def _oran_denetimi(toplam: int, deneme: int) -> None:
+    if deneme >= _EN_AZ_DENEME and toplam < KABUL_ORANI_EN_AZ * deneme:
+        raise ValueError(_("kaynak örneklemesinde kabul oranı %%%.1f (< %%%g): kaynak kutusu "
+                           "fisil malzemeyi kapsamıyor olabilir")
+                         % (100.0 * toplam / deneme, 100.0 * KABUL_ORANI_EN_AZ))
+    if deneme >= KAYNAK_DENEME_EN_COK:
+        raise ValueError(_("kaynak örneklemesi %d denemede bitmedi (çok fazla ret)") % deneme)
+
+
+def ayar_kaynagi(kaynaklar, fisil: frozenset, sayi: int, tohum: int, iptal=None) -> tuple:
+    """settings.source'tan sayi nokta: ((n, 3) dizi, deneme sayisi).
+    iptal: partiler arasinda cagrilan islev; True donerse Iptal (yeni istek)."""
     if not kaynaklar:
         raise ValueError(_("modelde kaynak tanımı yok"))
     rng = np.random.default_rng(tohum)
     fisil_kisit = [_kisit_fisil_mi(k) for k in kaynaklar]
-    kabul_edilen, deneme = [], 0
-    toplam = 0
+    kabul_edilen, deneme, toplam = [], 0, 0
     while toplam < sayi:
-        secim = _kaynak_secimi(kaynaklar, rng, _PARTI)
-        aday = np.empty((_PARTI, 3))
-        for i, k in enumerate(kaynaklar):
-            yer = secim == i
-            aday[yer] = _uzay_ornekle(k.space, int(yer.sum()), rng)
-        kisitli = np.array([fisil_kisit[i] for i in secim])
-        kabul = ~kisitli
-        if kisitli.any():
-            kabul[kisitli] = _fisil_noktalar(aday[kisitli], fisil)
+        if iptal is not None and iptal():
+            raise Iptal()
+        aday, kabul = _parti(kaynaklar, fisil_kisit, fisil, rng)
         deneme += _PARTI
         kabul_edilen.append(aday[kabul])
         toplam += int(kabul.sum())
-        if deneme >= _EN_AZ_DENEME and toplam < KABUL_ORANI_EN_AZ * deneme:
-            raise ValueError(_("kaynak örneklemesinde kabul oranı %%%.1f (< %%%g): kaynak kutusu "
-                               "fisil malzemeyi kapsamıyor olabilir")
-                             % (100.0 * toplam / deneme, 100.0 * KABUL_ORANI_EN_AZ))
+        if toplam < sayi:
+            _oran_denetimi(toplam, deneme)
     return np.concatenate(kabul_edilen)[:sayi], deneme
 
 
-def statepoint_kaynagi(yol: str, sayi: int, tohum: int):
-    """Statepoint kaynak bankasindan en cok sayi nokta (rastgele alt kume):
-    ((n, 3) dizi, bankadaki toplam)."""
+def _banka_noktalari(banka, sayi: int, tohum: int) -> np.ndarray:
+    """Bankadan en cok sayi nokta: hepsi ya da rastgele baslangicli esit adim
+    (tek okuma dilimi; h5py'de rastgele indeks listesi buyuk bankta yavastir)."""
+    adlar = banka.dtype.names or ()
+    if "r" not in adlar:
+        raise ValueError(_("statepoint kaynak bankasında 'r' (konum) alanı yok: %s")
+                         % ", ".join(adlar))
+    toplam = int(banka.shape[0])
+    if toplam <= sayi:
+        dilim = slice(None)
+    else:
+        adim = toplam // sayi
+        bas = int(np.random.default_rng(tohum).integers(0, adim))
+        dilim = slice(bas, bas + adim * sayi, adim)
+    return np.asarray(banka.fields("r")[dilim])
+
+
+def statepoint_kaynagi(yol: str, sayi: int, tohum: int) -> tuple:
+    """Statepoint kaynak bankasindan en cok sayi nokta: ((n, 3) dizi, bankadaki toplam)."""
     import h5py
     if not os.path.isfile(yol):
         raise ValueError(_("statepoint dosyası bulunamadı: %s") % yol)
@@ -308,16 +369,12 @@ def statepoint_kaynagi(yol: str, sayi: int, tohum: int):
         toplam = int(banka.shape[0])
         if toplam == 0:
             raise ValueError(_("statepoint kaynak bankası boş"))
-        secim = np.arange(toplam)
-        if toplam > sayi:
-            secim = np.sort(np.random.default_rng(tohum).choice(toplam, sayi, replace=False))
-        r = banka.fields("r")[secim] if hasattr(banka, "fields") else banka[secim]["r"]
-    r = np.asarray(r)
+        r = _banka_noktalari(banka, sayi, tohum)
     noktalar = np.stack([r["x"], r["y"], r["z"]], axis=-1) if r.dtype.names else r
     return np.ascontiguousarray(noktalar, dtype=np.float64).reshape(-1, 3), toplam
 
 
-def kaynak_noktalari(oturum, istek: dict):
+def kaynak_noktalari(oturum, istek: dict, iptal=None) -> tuple:
     """(yanit basligi, {"r": dizi}) -- 'kaynak' istegi (modul belgesi)."""
     t0 = time.perf_counter()
     sayi, tohum = istek["sayi"], istek.get("tohum", 1)
@@ -325,7 +382,7 @@ def kaynak_noktalari(oturum, istek: dict):
         r, toplam = statepoint_kaynagi(istek["statepoint"], sayi, tohum)
         tur, deneme = KAYNAK_STATEPOINT, toplam
     else:
-        r, deneme = ayar_kaynagi(oturum.kaynaklar, oturum.fisil, sayi, tohum)
+        r, deneme = ayar_kaynagi(oturum.kaynaklar, oturum.fisil, sayi, tohum, iptal)
         tur, toplam = KAYNAK_AYAR, len(r)
     return ({"tur": YANIT_KAYNAK, "no": istek["no"], "kaynak": tur, "toplam": toplam,
              "deneme": deneme, "sure": time.perf_counter() - t0}, {"r": r})

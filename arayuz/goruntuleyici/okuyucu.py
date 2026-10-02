@@ -19,11 +19,11 @@ class TallyOkuyucu(QtCore.QThread):
 
     bitti = QtCore.Signal(str, object, object, str)
 
-    def __init__(self, yol: str, parent=None):
+    def __init__(self, yol: str, parent=None) -> None:
         super().__init__(parent)
         self.yol = yol
 
-    def run(self):                                   # noqa: D401 (QThread API)
+    def run(self) -> None:                                   # noqa: D401 (QThread API)
         try:
             sonuclar, atlanan = mt.oku(self.yol)
         except Exception as e:  # noqa: BLE001 -- is parcacigi siniri: hata sinyalle gider

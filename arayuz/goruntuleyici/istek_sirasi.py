@@ -24,7 +24,13 @@ class IstekSirasi:
     def iste(self, tur: str, istek: dict) -> None:
         if self._suren is None or self._suren[0] == tur:
             self._bekleyen.pop(tur, None)
-            self._suren = (tur, self._gonder(istek))
+            # Gonderim sirasinda istemci cokmeyi (coktu -> sifirla) ESZAMANLI yayabilir:
+            # suren once jetonla yazilir; donuste hala o jeton degilse dokunulmaz.
+            jeton = object()
+            self._suren = (tur, jeton)
+            no = self._gonder(istek)
+            if self._suren is not None and self._suren[1] is jeton:
+                self._suren = (tur, no)
             return
         self._bekleyen.pop(tur, None)
         self._bekleyen[tur] = istek                  # sona eklenir (gelis sirasi)

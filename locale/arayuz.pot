@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 15:12+0300\n"
+"POT-Creation-Date: 2026-10-02 15:31+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -486,7 +486,7 @@ msgstr ""
 msgid "nokta"
 msgstr ""
 
-#: arayuz/analiz/sekme.py:104
+#: arayuz/analiz/sekme.py:104 arayuz/goruntuleyici/paneller.py:195
 msgid "Nokta sayısı:"
 msgstr ""
 
@@ -1208,7 +1208,8 @@ msgstr ""
 msgid "Toplam güç:"
 msgstr ""
 
-#: arayuz/ayar/yerlesim.py:172 arayuz/sonuc/mesh_harita.py:130
+#: arayuz/ayar/yerlesim.py:172 arayuz/goruntuleyici/paneller.py:136
+#: arayuz/sonuc/mesh_harita.py:130
 msgid "Skor:"
 msgstr ""
 
@@ -1413,7 +1414,7 @@ msgstr ""
 msgid "Kaydedilmiş bir model (.json) ya da OpenMC XML klasörü."
 msgstr ""
 
-#: arayuz/baslangic.py:456 arayuz/pencere/menuler.py:143
+#: arayuz/baslangic.py:456 arayuz/pencere/menuler.py:146
 msgid "Aç…"
 msgstr ""
 
@@ -1421,7 +1422,7 @@ msgstr ""
 msgid "Bilgisayarınızdaki bir model dosyasını (.json) açar (Ctrl+O)."
 msgstr ""
 
-#: arayuz/baslangic.py:464 arayuz/pencere/menuler.py:145
+#: arayuz/baslangic.py:464 arayuz/pencere/menuler.py:148
 msgid "Son kullanılanlar"
 msgstr ""
 
@@ -1594,7 +1595,7 @@ msgid "boş şablonu olmayan kart: %s"
 msgstr ""
 
 #: arayuz/bilesenler/bildirim.py:98 arayuz/malzeme/kutuphane_tarayici.py:53
-#: arayuz/pencere/menuler.py:362
+#: arayuz/pencere/menuler.py:365
 msgid "Kapat"
 msgstr ""
 
@@ -1929,7 +1930,8 @@ msgstr ""
 msgid "Grafiği kaydet"
 msgstr ""
 
-#: arayuz/calistir/yakinsama.py:77 arayuz/pencere/proje.py:146
+#: arayuz/calistir/yakinsama.py:77 arayuz/goruntuleyici/pencere.py:507
+#: arayuz/pencere/proje.py:146
 msgid "Kaydedilemedi"
 msgstr ""
 
@@ -2293,6 +2295,7 @@ msgid ""
 msgstr ""
 
 #: arayuz/cubuk/sayfalar.py:162 arayuz/geometri/formlar.py:148
+#: arayuz/goruntuleyici/paneller.py:55 arayuz/goruntuleyici/pencere.py:126
 msgid "Kesit"
 msgstr ""
 
@@ -3717,6 +3720,298 @@ msgstr ""
 
 #: arayuz/geometri/sinir_formu.py:229
 msgid "Sınır koşulları"
+msgstr ""
+
+#: arayuz/goruntuleyici/__init__.py:17
+msgid "Malzeme/hücre/çakışma kesiti, ağ tally bindirmesi, kaynak noktaları, 3B görünüm (Y2)"
+msgstr ""
+
+#: arayuz/goruntuleyici/gorunum.py:173
+msgid "ÇAKIŞMA: nokta birden çok hücrede"
+msgstr ""
+
+#: arayuz/goruntuleyici/gorunum.py:175
+msgid "hücre yok (geometri dışı ya da tanımsız bölge)"
+msgstr ""
+
+#: arayuz/goruntuleyici/gorunum.py:176
+#, python-format
+msgid "hücre %d"
+msgstr ""
+
+#: arayuz/goruntuleyici/gorunum.py:178
+#, python-format
+msgid ", örnek %d"
+msgstr ""
+
+#: arayuz/goruntuleyici/gorunum.py:179
+msgid "boşluk (void)"
+msgstr ""
+
+#: arayuz/goruntuleyici/gorunum.py:180
+#, python-format
+msgid "malzeme %d"
+msgstr ""
+
+#: arayuz/goruntuleyici/paneller.py:68
+msgid "Çakışma denetimi"
+msgstr ""
+
+#: arayuz/goruntuleyici/paneller.py:69
+msgid "Tüm modeli göster"
+msgstr ""
+
+#: arayuz/goruntuleyici/paneller.py:71
+msgid "Kesit ekseni:"
+msgstr ""
+
+#: arayuz/goruntuleyici/paneller.py:72
+msgid "Kesit konumu:"
+msgstr ""
+
+#: arayuz/goruntuleyici/paneller.py:73
+msgid "Görünür genişlik:"
+msgstr ""
+
+#: arayuz/goruntuleyici/paneller.py:75 arayuz/goruntuleyici/paneller.py:223
+msgid "Renklendirme:"
+msgstr ""
+
+#: arayuz/goruntuleyici/paneller.py:78
+msgid ""
+"Tekerlek: yakınlaştır · sol tuşla sürükle: kaydır. Çakışma kipi denetimi "
+"kendiliğinden açar."
+msgstr ""
+
+#: arayuz/goruntuleyici/paneller.py:110
+msgid "Ağ (mesh) tally bindirmesi"
+msgstr ""
+
+#: arayuz/goruntuleyici/paneller.py:114 arayuz/goruntuleyici/paneller.py:153
+msgid "(statepoint yok)"
+msgstr ""
+
+#: arayuz/goruntuleyici/paneller.py:116
+msgid "Statepoint seç…"
+msgstr ""
+
+#: arayuz/goruntuleyici/paneller.py:125
+msgid "Güvenilmez hücreleri gizle (σ maskesi)"
+msgstr ""
+
+#: arayuz/goruntuleyici/paneller.py:135 arayuz/sonuc/mesh_harita.py:130
+msgid "Tally:"
+msgstr ""
+
+#: arayuz/goruntuleyici/paneller.py:137 arayuz/sonuc/mesh_harita.py:131
+msgid "Enerji grubu:"
+msgstr ""
+
+#: arayuz/goruntuleyici/paneller.py:138 arayuz/sonuc/mesh_harita.py:134
+msgid "Normalizasyon:"
+msgstr ""
+
+#: arayuz/goruntuleyici/paneller.py:139
+msgid "Opaklık:"
+msgstr ""
+
+#: arayuz/goruntuleyici/paneller.py:141
+msgid "Bağıl hata eşiği:"
+msgstr ""
+
+#: arayuz/goruntuleyici/paneller.py:160
+msgid "Toplam (tüm gruplar)"
+msgstr ""
+
+#: arayuz/goruntuleyici/paneller.py:162
+#, python-format
+msgid "Grup %d"
+msgstr ""
+
+#: arayuz/goruntuleyici/paneller.py:181
+msgid "Kaynak noktaları"
+msgstr ""
+
+#: arayuz/goruntuleyici/paneller.py:186
+msgid "Model kaynağı (settings.source)"
+msgstr ""
+
+#: arayuz/goruntuleyici/paneller.py:187
+msgid "Statepoint kaynak bankası"
+msgstr ""
+
+#: arayuz/goruntuleyici/paneller.py:192
+msgid "tümü (izdüşüm)"
+msgstr ""
+
+#: arayuz/goruntuleyici/paneller.py:194
+msgid "Kaynak:"
+msgstr ""
+
+#: arayuz/goruntuleyici/paneller.py:196
+msgid "Dilim kalınlığı:"
+msgstr ""
+
+#: arayuz/goruntuleyici/paneller.py:210 arayuz/goruntuleyici/pencere.py:127
+msgid "3B görünüm"
+msgstr ""
+
+#: arayuz/goruntuleyici/paneller.py:221
+msgid "Çiz"
+msgstr ""
+
+#: arayuz/goruntuleyici/paneller.py:224
+msgid "Azimut:"
+msgstr ""
+
+#: arayuz/goruntuleyici/paneller.py:225
+msgid "Yükselti:"
+msgstr ""
+
+#: arayuz/goruntuleyici/paneller.py:226
+msgid "Uzaklık katı:"
+msgstr ""
+
+#: arayuz/goruntuleyici/paneller.py:227
+msgid "Görüş açısı:"
+msgstr ""
+
+#: arayuz/goruntuleyici/paneller.py:228
+msgid "Gizlenen malzemeler:"
+msgstr ""
+
+#: arayuz/goruntuleyici/paneller.py:230
+msgid "2B modelde geometri eksenel sonsuzdur: 3B görünüm sonsuz prizmayı gösterir."
+msgstr ""
+
+#: arayuz/goruntuleyici/pencere.py:77
+msgid "Görüntüleyici"
+msgstr ""
+
+#: arayuz/goruntuleyici/pencere.py:112
+msgid "Modeli yenile"
+msgstr ""
+
+#: arayuz/goruntuleyici/pencere.py:113
+msgid "PNG olarak kaydet…"
+msgstr ""
+
+#: arayuz/goruntuleyici/pencere.py:172
+msgid "Açık model yok: önce bir model açın."
+msgstr ""
+
+#: arayuz/goruntuleyici/pencere.py:254
+msgid "Kaynak bankası için statepoint seçin (Ağ tally bindirmesi > Statepoint seç…)."
+msgstr ""
+
+#: arayuz/goruntuleyici/pencere.py:273
+msgid "Önce kesit çizilmeli (model bilgisi bekleniyor)."
+msgstr ""
+
+#: arayuz/goruntuleyici/pencere.py:282
+msgid "3B görünüm çiziliyor…"
+msgstr ""
+
+#: arayuz/goruntuleyici/pencere.py:341
+#, python-format
+msgid "Görüntüleyici: %s"
+msgstr ""
+
+#: arayuz/goruntuleyici/pencere.py:345
+#, python-format
+msgid ""
+"3B görünüm üretilemedi:\n"
+"\n"
+"%s"
+msgstr ""
+
+#: arayuz/goruntuleyici/pencere.py:348
+#, python-format
+msgid ""
+"Kesit çizilemedi:\n"
+"\n"
+"%s"
+msgstr ""
+
+#: arayuz/goruntuleyici/pencere.py:354
+#, python-format
+msgid ""
+"3B ışın izleme bu modelde başarısız oldu (OpenMC 0.16 SolidRayTracePlot sınırlaması; "
+"bazı tam kor modellerinde süreç çöker ya da asılı kalır).\n"
+"\n"
+"%s"
+msgstr ""
+
+#: arayuz/goruntuleyici/pencere.py:396
+#, python-format
+msgid "Bindirme yapılamadı: %s"
+msgstr ""
+
+#: arayuz/goruntuleyici/pencere.py:408
+msgid "Kesit güncel."
+msgstr ""
+
+#: arayuz/goruntuleyici/pencere.py:410
+#, python-format
+msgid "ÇAKIŞMA: %d piksel birden çok hücrede."
+msgstr ""
+
+#: arayuz/goruntuleyici/pencere.py:412
+#, python-format
+msgid "Hücresiz (geometri dışı ya da tanımsız): %d piksel."
+msgstr ""
+
+#: arayuz/goruntuleyici/pencere.py:415
+#, python-format
+msgid "Kaynak noktası: %d / %d gösteriliyor."
+msgstr ""
+
+#: arayuz/goruntuleyici/pencere.py:464
+#, python-format
+msgid "tally: %.4g"
+msgstr ""
+
+#: arayuz/goruntuleyici/pencere.py:479
+#, python-format
+msgid "Statepoint okunamadı: %s"
+msgstr ""
+
+#: arayuz/goruntuleyici/pencere.py:481
+msgid "Statepoint'te ağ (mesh) tally'si yok."
+msgstr ""
+
+#: arayuz/goruntuleyici/pencere.py:487
+msgid "Statepoint seç"
+msgstr ""
+
+#: arayuz/goruntuleyici/pencere.py:488
+msgid "Statepoint (statepoint*.h5);;HDF5 (*.h5)"
+msgstr ""
+
+#: arayuz/goruntuleyici/pencere.py:499
+msgid "PNG olarak kaydet"
+msgstr ""
+
+#: arayuz/goruntuleyici/pencere.py:499
+msgid "PNG resmi (*.png)"
+msgstr ""
+
+#: arayuz/goruntuleyici/pencere.py:504 arayuz/pencere/proje.py:151
+#: arayuz/pencere/proje.py:320
+#, python-format
+msgid "Kaydedildi: %s"
+msgstr ""
+
+#: arayuz/goruntuleyici/renk_kipi.py:24
+msgid "Çakışma ve tanımsız bölge"
+msgstr ""
+
+#: arayuz/goruntuleyici/tuval.py:81
+msgid "kaynak noktaları"
+msgstr ""
+
+#: arayuz/goruntuleyici/tuval.py:136
+msgid "3B görünüm için “Çiz”e basın"
 msgstr ""
 
 #: arayuz/guc_harita.py:62
@@ -5564,29 +5859,31 @@ msgstr[1] ""
 msgid "aşağıdan işaretleyin ya da hazır set seçin"
 msgstr ""
 
-#: arayuz/onizleme.py:72
+#: arayuz/goruntuleyici/paneller.py:21 arayuz/onizleme.py:72
 msgid "Düşük (400)"
 msgstr ""
 
-#: arayuz/onizleme.py:72
+#: arayuz/goruntuleyici/paneller.py:21 arayuz/onizleme.py:72
 msgid "Normal (800)"
 msgstr ""
 
-#: arayuz/onizleme.py:73
+#: arayuz/goruntuleyici/paneller.py:22 arayuz/onizleme.py:73
 msgid "Yüksek (1400)"
 msgstr ""
 
+#: arayuz/goruntuleyici/paneller.py:214 arayuz/goruntuleyici/renk_kipi.py:23
 #: arayuz/onizleme.py:77
 msgid "Hücre"
 msgstr ""
 
 #: arayuz/cubuk/sayfalar.py:117 arayuz/demet/kilif.py:59 arayuz/geometri/formlar.py:30
-#: arayuz/geometri/formlar.py:87 arayuz/kor/yerlesim.py:85 arayuz/onizleme.py:77
+#: arayuz/geometri/formlar.py:87 arayuz/goruntuleyici/paneller.py:213
+#: arayuz/goruntuleyici/renk_kipi.py:23 arayuz/kor/yerlesim.py:85 arayuz/onizleme.py:77
 #: arayuz/sekme_malzeme.py:237
 msgid "Malzeme"
 msgstr ""
 
-#: arayuz/onizleme.py:162 arayuz/onizleme.py:332
+#: arayuz/goruntuleyici/tuval.py:57 arayuz/onizleme.py:162 arayuz/onizleme.py:332
 msgid "Model bekleniyor"
 msgstr ""
 
@@ -5620,11 +5917,11 @@ msgstr ""
 msgid "Renk:"
 msgstr ""
 
-#: arayuz/onizleme.py:237
+#: arayuz/goruntuleyici/paneller.py:74 arayuz/onizleme.py:237
 msgid "Çözünürlük:"
 msgstr ""
 
-#: arayuz/onizleme.py:362
+#: arayuz/goruntuleyici/pencere.py:237 arayuz/onizleme.py:362
 msgid "Çiziliyor…"
 msgstr ""
 
@@ -5676,48 +5973,48 @@ msgstr ""
 msgid "Hücre renkleri yalnız hücreleri ayırt etmek içindir."
 msgstr ""
 
-#: arayuz/onizleme_boyama.py:108
+#: arayuz/onizleme_boyama.py:113
 msgid "Çakışma"
 msgstr ""
 
-#: arayuz/onizleme_istemci.py:159
+#: arayuz/onizleme_istemci.py:167
 #, python-format
 msgid "Önizleme isteği gönderilemedi: %s"
 msgstr ""
 
-#: arayuz/onizleme_istemci.py:263
+#: arayuz/onizleme_istemci.py:286
 #, python-format
 msgid ""
 "Önizleme %d s içinde bitmedi; model çizim için çok ağır olabilir, süreç durduruldu. "
 "Çözünürlüğü düşürün ya da çakışma denetimini kapatın."
 msgstr ""
 
-#: arayuz/onizleme_istemci.py:267
+#: arayuz/onizleme_istemci.py:290
 msgid "çöktü"
 msgstr ""
 
-#: arayuz/onizleme_istemci.py:268
+#: arayuz/onizleme_istemci.py:291
 #, python-format
 msgid "çıkış kodu %d"
 msgstr ""
 
-#: arayuz/onizleme_istemci.py:269
+#: arayuz/onizleme_istemci.py:292
 #, python-format
 msgid "Önizleme süreci beklenmedik biçimde sonlandı (%s)."
 msgstr ""
 
-#: arayuz/onizleme_istemci.py:271
+#: arayuz/onizleme_istemci.py:294
 #, python-format
 msgid ""
 "Üst üste %d kez sonlandı; otomatik yeniden başlatma durduruldu, bir sonraki çizimde "
 "yeniden denenir."
 msgstr ""
 
-#: arayuz/onizleme_istemci.py:274
+#: arayuz/onizleme_istemci.py:297
 msgid "Yeniden başlatıldı; model değişince önizleme yeniden çizilir."
 msgstr ""
 
-#: arayuz/onizleme_istemci.py:287
+#: arayuz/onizleme_istemci.py:310
 #, python-format
 msgid "Önizleme süreci başlatılamadı: %s"
 msgstr ""
@@ -6074,11 +6371,11 @@ msgstr ""
 msgid "D&üzen"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:104 arayuz/pencere/menuler.py:331
+#: arayuz/pencere/menuler.py:104 arayuz/pencere/menuler.py:334
 msgid "Geri al"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:105 arayuz/pencere/menuler.py:331
+#: arayuz/pencere/menuler.py:105 arayuz/pencere/menuler.py:334
 msgid "Yinele"
 msgstr ""
 
@@ -6107,160 +6404,164 @@ msgid "Her demet türü için yansıtıcı sınırlı tek demet k∞ koşusu (K4
 msgstr ""
 
 #: arayuz/pencere/menuler.py:115
-msgid "&Yardım"
+msgid "Görüntüleyici…"
 msgstr ""
 
 #: arayuz/pencere/menuler.py:118
+msgid "&Yardım"
+msgstr ""
+
+#: arayuz/pencere/menuler.py:121
 msgid "Kullanım kılavuzunu etkin sayfanın bölümünde açar"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:119 arayuz/pencere/menuler.py:356
+#: arayuz/pencere/menuler.py:122 arayuz/pencere/menuler.py:359
 #: arayuz/pencere/yardim_metni.py:14
 msgid "Yardım ve terimler"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:120 arayuz/pencere/menuler.py:376
+#: arayuz/pencere/menuler.py:123 arayuz/pencere/menuler.py:379
 msgid "Hakkında"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:124 arayuz/pencere/menuler.py:333
+#: arayuz/pencere/menuler.py:127 arayuz/pencere/menuler.py:336
 msgid "Doğrulamayı yenile (veri kütüphanesi dahil)"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:127 arayuz/pencere/menuler.py:334
+#: arayuz/pencere/menuler.py:130 arayuz/pencere/menuler.py:337
 msgid "Önizlemeyi yenile"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:129 arayuz/pencere/menuler.py:336
+#: arayuz/pencere/menuler.py:132 arayuz/pencere/menuler.py:339
 msgid "ÇALIŞTIR"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:130
+#: arayuz/pencere/menuler.py:133
 msgid "Modeli çalıştır (F9) — önce geometri çizilmiş ve doğrulama hatasız olmalı"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:140
+#: arayuz/pencere/menuler.py:143
 msgid "Yeni…"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:142
+#: arayuz/pencere/menuler.py:145
 msgid "Başlangıç ekranı: ne modelleyeceğini seç"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:144
+#: arayuz/pencere/menuler.py:147
 msgid "Bir model dosyası (.json) aç"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:147 arayuz/pencere/menuler.py:330 arayuz/pencere/proje.py:76
+#: arayuz/pencere/menuler.py:150 arayuz/pencere/menuler.py:333 arayuz/pencere/proje.py:76
 msgid "Kaydet"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:149
+#: arayuz/pencere/menuler.py:152
 msgid "Farklı kaydet…"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:152
+#: arayuz/pencere/menuler.py:155
 msgid "Malzemeleri içe aktar (OpenMC XML)…"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:154
+#: arayuz/pencere/menuler.py:157
 msgid "Python betiği olarak dışa aktar…"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:156
+#: arayuz/pencere/menuler.py:159
 msgid "Tek başına çalışan bir Python betiği üretir"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:157
+#: arayuz/pencere/menuler.py:160
 msgid "OpenMC XML olarak dışa aktar…"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:159
+#: arayuz/pencere/menuler.py:162
 msgid "Önizlemeyi PNG olarak kaydet…"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:160
+#: arayuz/pencere/menuler.py:163
 msgid "Rapor oluştur…"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:161
+#: arayuz/pencere/menuler.py:164
 msgid "Model ve son koşu için HTML ya da PDF rapor yazar"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:163
+#: arayuz/pencere/menuler.py:166
 msgid "Çıkış"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:181 arayuz/pencere/menuler.py:345
+#: arayuz/pencere/menuler.py:184 arayuz/pencere/menuler.py:348
 msgid "Tam ekran"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:188
+#: arayuz/pencere/menuler.py:191
 msgid "Önizlemeyi göster"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:192
+#: arayuz/pencere/menuler.py:195
 msgid ""
 "Önizleme panelini gizler ya da gösterir; gizliyken çizim yapılmaz (Çalıştır kapısı "
 "için model yine denetlenir)"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:280
+#: arayuz/pencere/menuler.py:283
 #, python-brace-format
 msgid "Tema: {ad}"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:299
+#: arayuz/pencere/menuler.py:302
 msgid "Dil"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:299
+#: arayuz/pencere/menuler.py:302
 msgid "Dil değişikliği uygulama yeniden başlatılınca geçerli olur."
 msgstr ""
 
-#: arayuz/pencere/menuler.py:329
+#: arayuz/pencere/menuler.py:332
 msgid "Yeni model (başlangıç ekranı)"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:329 arayuz/pencere/proje.py:204
+#: arayuz/pencere/menuler.py:332 arayuz/pencere/proje.py:204
 msgid "Aç"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:330
+#: arayuz/pencere/menuler.py:333
 msgid "Farklı kaydet"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:332 arayuz/pencere/proje.py:281
+#: arayuz/pencere/menuler.py:335 arayuz/pencere/proje.py:281
 msgid "Python betiği olarak dışa aktar"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:335
+#: arayuz/pencere/menuler.py:338
 msgid "Önizlemeyi gizle / göster"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:337
+#: arayuz/pencere/menuler.py:340
 msgid "Kullanım kılavuzu (etkin sayfanın bölümü)"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:338
+#: arayuz/pencere/menuler.py:341
 msgid "Bu yardım"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:340
+#: arayuz/pencere/menuler.py:343
 msgid "Klavye kısayolları"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:346
+#: arayuz/pencere/menuler.py:349
 msgid "Başlangıç ekranında: açık modele dön"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:349
+#: arayuz/pencere/menuler.py:352
 msgid ""
 "Demet ve kor haritasında sol tık boyar, sağ tık o hücrenin parçasını fırça yapar; "
 "altıgen haritada tekerlek yakınlaştırır."
 msgstr ""
 
-#: arayuz/pencere/menuler.py:377
+#: arayuz/pencere/menuler.py:380
 #, python-brace-format
 msgid ""
 "{ad}\n"
@@ -6518,11 +6819,6 @@ msgstr ""
 msgid ""
 "Örnek kopya olarak açıldı: %s — kaydetmek için 'Farklı kaydet' kullanın (örnek "
 "dosyası değişmez)"
-msgstr ""
-
-#: arayuz/pencere/proje.py:151 arayuz/pencere/proje.py:320
-#, python-format
-msgid "Kaydedildi: %s"
 msgstr ""
 
 #: arayuz/pencere/proje.py:164
@@ -8168,20 +8464,8 @@ msgid ""
 "dosyasını ParaView'de açın."
 msgstr ""
 
-#: arayuz/sonuc/mesh_harita.py:130
-msgid "Tally:"
-msgstr ""
-
-#: arayuz/sonuc/mesh_harita.py:131
-msgid "Enerji grubu:"
-msgstr ""
-
 #: arayuz/sonuc/mesh_harita.py:132
 msgid "Dilim ekseni:"
-msgstr ""
-
-#: arayuz/sonuc/mesh_harita.py:134
-msgid "Normalizasyon:"
 msgstr ""
 
 #: arayuz/sonuc/mesh_harita.py:135
@@ -9481,7 +9765,7 @@ msgstr ""
 msgid "Kullanım kılavuzunda bu sayfanın bölümünü açar (F1)"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:117 arayuz/yardim/gosterici.py:56
+#: arayuz/pencere/menuler.py:120 arayuz/yardim/gosterici.py:56
 #: arayuz/yardim_baglanti.py:106
 msgid "Kullanım kılavuzu"
 msgstr ""

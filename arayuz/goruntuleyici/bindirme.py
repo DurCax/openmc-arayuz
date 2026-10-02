@@ -23,6 +23,7 @@ from dataclasses import dataclass
 
 import numpy as np
 
+from cekirdek import cizim_sureci as cs
 from cekirdek.mesh_tally.tanim import DUZENLI, KURESEL, SILINDIRIK
 from arayuz.goruntuleyici import gorunum as gr
 
@@ -84,10 +85,24 @@ def ag_indeksleri(sonuc, x, y, z) -> tuple:
     return tuple(_indeks(g, v) for g, v in zip(sonuc.izgaralar, (a, b, c)))
 
 
-def raster(sonuc, deger3b, maske3b, g: gr.Gorunum, sigma_maskesi: bool = True) -> Raster:
+def raster_boyutu(g: gr.Gorunum, sekil=None) -> tuple:
+    """(nv, nh) ornekleme boyutu: geometri dizisinin sekli (v, h) verilirse ondan,
+    yoksa gorunum oranindan; her eksen [1, PIKSEL_EN_COK] icinde (ince-uzun modelde
+    400:1 oran 160 000 satir demekti)."""
+    if sekil is not None:
+        v, h = int(sekil[0]), int(sekil[1])
+    else:
+        h = int(g.piksel)
+        v = int(round(h * g.genislik[1] / g.genislik[0]))
+    nh = max(1, min(h, BINDIRME_PIKSEL))
+    nv = int(round(nh * v / max(h, 1)))
+    return max(1, min(nv, cs.PIKSEL_EN_COK)), nh
+
+
+def raster(sonuc, deger3b, maske3b, g: gr.Gorunum, sigma_maskesi: bool = True,
+           sekil=None) -> Raster:
     """Ag degerini (n1, n2, n3) kesit gorunumunun piksel izgarasinda orneklenir."""
-    nh = min(int(g.piksel), BINDIRME_PIKSEL)
-    nv = max(1, int(round(nh * g.genislik[1] / g.genislik[0])))
+    nv, nh = raster_boyutu(g, sekil)
     x, y, z = _piksel_noktalari(g, nh, nv)
     i, j, k = ag_indeksleri(sonuc, x, y, z)
     icerde = (i >= 0) & (j >= 0) & (k >= 0)

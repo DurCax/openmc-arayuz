@@ -23,6 +23,9 @@ _SAYDAM = (0.0, 0.0, 0.0, 0.0)
 _KAYDIRMA = -CAKISMA                # en kucuk kod (-3) tablonun 0. satiri
 _LUT_SINIRI = 1 << 22               # daha buyuk kimlikte np.unique yoluna dusulur
 _RASTGELE_TOHUM = 1                 # openmc.plots._id_map_to_rgb ile ayni
+# Cakisma denetiminde HUCRE kanalinin cakisma kodu: malzeme kanali -3 iken hucre
+# kanali -4 (olculdu, OpenMC 0.16.0; testler/test_y2_isci.py bilinen cakismali model).
+HUCRE_CAKISMA = -4
 
 
 def tema_rgb01(ad):
@@ -98,7 +101,9 @@ def malzeme_goruntusu(geom, renkler, cakisma_rengi):
 def hucre_goruntusu(geom, renkler=None, varsayilan=None, cakisma_rengi=(1.0, 0.0, 0.0)):
     """Hucre renklendirmesi. renkler {hucre id: (R,G,B)} (vurgu); sozlukte
     olmayan hucre `varsayilan`, o da yoksa openmc'nin rastgele rengi."""
-    return _boya(np.asarray(geom)[..., 0], renkler or {}, varsayilan, cakisma_rengi)
+    kanal = np.asarray(geom)[..., 0]
+    kanal = np.where(kanal == HUCRE_CAKISMA, CAKISMA, kanal)    # yeni dizi (girdi degismez)
+    return _boya(kanal, renkler or {}, varsayilan, cakisma_rengi)
 
 
 def gosterge_ogeleri(gosterge, cakisma_var, cakisma_rengi):

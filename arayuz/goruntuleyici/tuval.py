@@ -26,7 +26,7 @@ _NOKTA_BOYU = 4              # kaynak noktasi (pt^2)
 _YAZI = 8
 
 
-def _bos(figur, ax, metin, hata=False):
+def _bos(figur, ax, metin, hata=False) -> None:
     ax.clear()
     ax.set_axis_off()
     ax.text(0.5, 0.5, metin, ha="center", va="center", wrap=True, fontsize=_YAZI + 1,
@@ -40,7 +40,7 @@ class KesitTuvali(QtWidgets.QWidget):
     yakinlastir = QtCore.Signal(float, float, float)     # kat, u, v
     kaydir = QtCore.Signal(float, float)                 # du, dv (merkez kaymasi)
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None) -> None:
         super().__init__(parent)
         self.figur = Figure(figsize=(6, 6))
         self.tuval = Tuval(self.figur)
@@ -57,17 +57,17 @@ class KesitTuvali(QtWidgets.QWidget):
         self.mesaj(_("Model bekleniyor"))
 
     # ------------------------------------------------------------------
-    def mesaj(self, metin, hata=False):
+    def mesaj(self, metin, hata=False) -> None:
         self._renk_cubugu_kaldir()
         _bos(self.figur, self.ax, metin, hata)
         self.tuval.draw_idle()
 
-    def _renk_cubugu_kaldir(self):
+    def _renk_cubugu_kaldir(self) -> None:
         if self._renk_cubugu is not None:
             self._renk_cubugu.remove()
             self._renk_cubugu = None
 
-    def ciz(self, img, g: gr.Gorunum, baslik_metni, bindirme=None, noktalar=None):
+    def ciz(self, img, g: gr.Gorunum, baslik_metni, bindirme=None, noktalar=None) -> None:
         """img RGBA; bindirme (Raster, saydamlik, birim) | None; noktalar (u, v) | None."""
         self._renk_cubugu_kaldir()
         ax = self.ax
@@ -88,7 +88,7 @@ class KesitTuvali(QtWidgets.QWidget):
         ax.tick_params(labelsize=_YAZI - 1)
         self.tuval.draw_idle()
 
-    def _bindir(self, ax, raster, saydamlik, birim):
+    def _bindir(self, ax, raster, saydamlik, birim) -> None:
         if not np.isfinite(raster.aralik[0]):
             return
         im = ax.imshow(np.ma.masked_invalid(raster.deger), extent=raster.kapsam,
@@ -99,17 +99,17 @@ class KesitTuvali(QtWidgets.QWidget):
         self._renk_cubugu.ax.tick_params(labelsize=_YAZI - 1)
 
     # ------------------------------------------------------------------
-    def _teker(self, olay):
+    def _teker(self, olay) -> None:
         if olay.inaxes is not self.ax or olay.xdata is None:
             return
         kat = TEKER_KATI if olay.button == "up" else 1.0 / TEKER_KATI
         self.yakinlastir.emit(kat, float(olay.xdata), float(olay.ydata))
 
-    def _bas(self, olay):
+    def _bas(self, olay) -> None:
         if olay.inaxes is self.ax and olay.button == 1 and olay.xdata is not None:
             self._surukle = (float(olay.xdata), float(olay.ydata))
 
-    def _birak(self, olay):
+    def _birak(self, olay) -> None:
         bas, self._surukle = self._surukle, None
         if bas is None or olay.xdata is None or olay.inaxes is not self.ax:
             return
@@ -117,7 +117,7 @@ class KesitTuvali(QtWidgets.QWidget):
         if du or dv:
             self.kaydir.emit(du, dv)
 
-    def _hareket(self, olay):
+    def _hareket(self, olay) -> None:
         if olay.inaxes is self.ax and olay.xdata is not None:
             self.fare_hareketi.emit(float(olay.xdata), float(olay.ydata))
 
@@ -125,7 +125,7 @@ class KesitTuvali(QtWidgets.QWidget):
 class GoruntuTuvali(QtWidgets.QWidget):
     """3B golgeli goruntu tuvali."""
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None) -> None:
         super().__init__(parent)
         self.figur = Figure(figsize=(6, 5))
         self.tuval = Tuval(self.figur)
@@ -139,11 +139,11 @@ class GoruntuTuvali(QtWidgets.QWidget):
         """Tuvalin ekran pikseli (genislik, yukseklik)."""
         return max(self.tuval.width(), 1), max(self.tuval.height(), 1)
 
-    def mesaj(self, metin, hata=False):
+    def mesaj(self, metin, hata=False) -> None:
         _bos(self.figur, self.ax, metin, hata)
         self.tuval.draw_idle()
 
-    def ciz(self, rgb):
+    def ciz(self, rgb) -> None:
         self.ax.clear()
         self.ax.set_axis_off()
         self.ax.imshow(rgb, interpolation="nearest")

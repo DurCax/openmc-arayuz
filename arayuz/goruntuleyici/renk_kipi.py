@@ -7,9 +7,8 @@
    Cakisma   model soluk gri; cakisma (-3) ve tanimsiz bolge (-2) opak vurgu
 
  Cakisma kodu (olculdu, OpenMC 0.16.0, testler/test_y2_isci.py): cakisma
- denetiminde MALZEME kanali -3, HUCRE kanali -4 olur. onizleme_boyama hucre
- kanalinda -3'ten kucugu tanimsiz sayar; burada hucre kipinde cakisma ayrica
- -3'e cevrilir ki cakisma her kipte gorunsun.
+ denetiminde MALZEME kanali -3, HUCRE kanali -4 (onizleme_boyama.HUCRE_CAKISMA)
+ olur; ikisi de onizleme_boyama'da cakisma rengiyle boyanir.
  -2 "hucre yok" demektir: geometri disi YA DA tanimsiz bolge (OpenMC ayirmaz);
  silindirik/altigen modelin sinir kutusu koselerinde olagandir.
 """
@@ -31,7 +30,7 @@ _BAYT = 255
 def cakisma_maskesi(geom) -> np.ndarray:
     """Cakisma pikselleri (bool, (v, h))."""
     geom = np.asarray(geom)
-    return (geom[..., 2] == cs.CAKISMA) | (geom[..., 0] < cs.TANIMSIZ)
+    return (geom[..., 2] == cs.CAKISMA) | (geom[..., 0] == boyama.HUCRE_CAKISMA)
 
 
 def tanimsiz_maskesi(geom) -> np.ndarray:
@@ -50,7 +49,8 @@ def _rgba(renk01) -> tuple:
     return tuple(int(round(_BAYT * v)) for v in renk01[:3]) + (_BAYT,)
 
 
-def goruntu(geom, kip: str, renkler: dict, cakisma_rengi, tanimsiz_rengi) -> np.ndarray:
+def goruntu(geom: np.ndarray, kip: str, renkler: dict, cakisma_rengi: tuple,
+            tanimsiz_rengi: tuple) -> np.ndarray:
     """geom (v, h, 3) -> RGBA (v, h, 4) uint8 (yeni dizi; girdi degismez).
     renkler {malzeme id: (R, G, B) 0-255}; cakisma/tanimsiz rengi (r, g, b) 0-1."""
     geom = np.asarray(geom)
@@ -58,9 +58,7 @@ def goruntu(geom, kip: str, renkler: dict, cakisma_rengi, tanimsiz_rengi) -> np.
     if kip == MALZEME:
         return boyama.malzeme_goruntusu(geom, renkler, cakisma_rengi)
     if kip == HUCRE:
-        duzeltilmis = geom.copy()
-        duzeltilmis[..., 0][cak] = cs.CAKISMA
-        return boyama.hucre_goruntusu(duzeltilmis, None, None, cakisma_rengi)
+        return boyama.hucre_goruntusu(geom, None, None, cakisma_rengi)
     if kip != CAKISMA_KIPI:
         raise ValueError("bilinmeyen renk kipi: %r" % (kip,))
     img = np.zeros(geom.shape[:2] + (4,), dtype=np.uint8)

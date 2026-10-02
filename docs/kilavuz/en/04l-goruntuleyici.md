@@ -25,6 +25,11 @@ does not affect the preview session or the **Run** gate. Step by step:
 | **Overlap check** | `slice_data(show_overlaps=True)`: finds points that lie in more than one cell. The overlap mode turns it on by itself. | — | off | Slow on large models (SFR ~12 s). |
 | **Show whole model** | Returns the view to the bounding box. | — | — | — |
 
+The default slice centre and the point the 3D camera looks at are the **origin** (0, 0, 0): the
+model builder centres models at the origin (H2 `KESIT_MERKEZI`, measured on 30 examples). For a
+geometry not centred at the origin **Show whole model** and the 3D camera show the model offset; pan
+the slice with the mouse.
+
 Mouse: the **wheel** zooms in/out, **dragging with the left button** pans; the point under the
 cursor is written below the window: coordinates (x, y, z), cell id and name, instance, material id
 and name. Special codes (OpenMC `slice_data`, 0.16.0):

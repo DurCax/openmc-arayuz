@@ -112,7 +112,7 @@ class _SahteOturum:
         w, h = istek["piksel"]
         return np.zeros((h, w, 3), np.uint8)
 
-    def kaynak(self, istek):
+    def kaynak(self, istek, iptal=None):
         from cekirdek import cizim_goruntu as cg
         return ({"tur": cg.YANIT_KAYNAK, "no": istek["no"], "kaynak": "ayar", "toplam": 2,
                  "deneme": 2, "sure": 0.0}, {"r": np.zeros((2, 3))})

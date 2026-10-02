@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 15:12+0300\n"
+"POT-Creation-Date: 2026-10-02 15:31+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -86,107 +86,246 @@ msgctxt "menü"
 msgid "Dil"
 msgstr "Language"
 
-#: cekirdek/cizim_sureci.py:125
+#: cekirdek/cizim_goruntu.py:103
+#, python-format
+msgid "%s üç sonlu sayı olmalı: %r"
+msgstr "%s must be three finite numbers: %r"
+
+#: cekirdek/cizim_goruntu.py:106
+#, python-format
+msgid "%s bileşenleri ±%g cm içinde olmalı: %r"
+msgstr "%s components must be within ±%g cm: %r"
+
+#: cekirdek/cizim_goruntu.py:108
+#, python-format
+msgid "%s sıfır vektör olamaz"
+msgstr "%s cannot be a zero vector"
+
+#: cekirdek/cizim_goruntu.py:115
+#, python-format
+msgid "%s %d-%d arası tamsayı olmalı: %r"
+msgstr "%s must be an integer between %d and %d: %r"
+
+#: cekirdek/cizim_goruntu.py:129
+#, python-format
+msgid "genişlik iki sayı olmalı (%g-%g cm): %r"
+msgstr "width must be two numbers (%g-%g cm): %r"
+
+#: cekirdek/cizim_goruntu.py:140
+msgid "gizli kimlik listesi tamsayılardan oluşmalı"
+msgstr "the hidden id list must consist of integers"
+
+#: cekirdek/cizim_goruntu.py:149
+msgid "kamera bakış noktasıyla aynı yerde olamaz"
+msgstr "the camera cannot be at the look-at point"
+
+#: cekirdek/cizim_goruntu.py:153
+msgid "yukarı vektörü bakış yönüne paralel olamaz"
+msgstr "the up vector cannot be parallel to the view direction"
+
+#: cekirdek/cizim_goruntu.py:158
+#, python-format
+msgid "görüş açısı %g-%g derece olmalı: %r"
+msgstr "field of view must be %g-%g degrees: %r"
+
+#: cekirdek/cizim_goruntu.py:161
+#, python-format
+msgid "piksel [genişlik, yükseklik] olmalı: %r"
+msgstr "pixels must be [width, height]: %r"
+
+#: cekirdek/cizim_goruntu.py:165
+#, python-format
+msgid "bilinmeyen renk kipi: %r"
+msgstr "unknown color mode: %r"
+
+#: cekirdek/cizim_goruntu.py:168
+msgid "dağınık yansıma oranı 0-1 arası olmalı"
+msgstr "diffuse fraction must be between 0 and 1"
+
+#: cekirdek/cizim_goruntu.py:175
+#, python-format
+msgid "nokta sayısı 1-%d arası tamsayı olmalı: %r"
+msgstr "number of points must be an integer between 1 and %d: %r"
+
+#: cekirdek/cizim_goruntu.py:177
+msgid "tohum negatif olmayan tamsayı olmalı"
+msgstr "seed must be a non-negative integer"
+
+#: cekirdek/cizim_goruntu.py:180
+msgid "statepoint yolu mutlak bir yol olmalı"
+msgstr "statepoint path must be an absolute path"
+
+#: cekirdek/cizim_goruntu.py:252
+msgid "kaynak kutusu sınırları"
+msgstr "source box bounds"
+
+#: cekirdek/cizim_goruntu.py:256
+msgid "kaynak noktası"
+msgstr "source point"
+
+#: cekirdek/cizim_goruntu.py:258
+#, python-format
+msgid "kaynak noktaları gösterilemiyor: desteklenmeyen uzay dağılımı %s"
+msgstr "source points cannot be shown: unsupported spatial distribution %s"
+
+#: cekirdek/cizim_goruntu.py:264
+#, python-format
+msgid "kaynak noktaları gösterilemiyor: %s sonlu olmalı"
+msgstr "source points cannot be shown: %s must be finite"
+
+#: cekirdek/cizim_goruntu.py:270
+msgid "kaynak noktaları gösterilemiyor: domain kısıtı desteklenmiyor"
+msgstr "source points cannot be shown: domain constraint is not supported"
+
+#: cekirdek/cizim_goruntu.py:293
+msgid "kaynak şiddetleri sonlu ve negatif olmayan sayılar olmalı"
+msgstr "source strengths must be finite, non-negative numbers"
+
+#: cekirdek/cizim_goruntu.py:295
+msgid "kaynak şiddetlerinin toplamı sıfır"
+msgstr "the sum of source strengths is zero"
+
+#: cekirdek/cizim_goruntu.py:315
+#, python-format
+msgid ""
+"kaynak örneklemesinde kabul oranı %%%.1f (< %%%g): kaynak kutusu fisil malzemeyi "
+"kapsamıyor olabilir"
+msgstr ""
+"source sampling acceptance fraction %.1f%% (< %g%%): the source box may not cover "
+"fissionable material"
+
+#: cekirdek/cizim_goruntu.py:319
+#, python-format
+msgid "kaynak örneklemesi %d denemede bitmedi (çok fazla ret)"
+msgstr "source sampling did not finish in %d attempts (too many rejections)"
+
+#: cekirdek/cizim_goruntu.py:326
+msgid "modelde kaynak tanımı yok"
+msgstr "the model has no source definition"
+
+#: cekirdek/cizim_goruntu.py:347
+#, python-format
+msgid "statepoint kaynak bankasında 'r' (konum) alanı yok: %s"
+msgstr "the statepoint source bank has no 'r' (position) field: %s"
+
+#: cekirdek/cizim_goruntu.py:363
+#, python-format
+msgid "statepoint dosyası bulunamadı: %s"
+msgstr "statepoint file not found: %s"
+
+#: cekirdek/cizim_goruntu.py:366
+msgid "statepoint dosyasında kaynak bankası yok (koşu sourcepoint yazmamış)"
+msgstr "no source bank in the statepoint file (the run did not write source points)"
+
+#: cekirdek/cizim_goruntu.py:371
+msgid "statepoint kaynak bankası boş"
+msgstr "statepoint source bank is empty"
+
+#: cekirdek/cizim_sureci.py:130
 #, python-format
 msgid "izinsiz dizi türü: %s"
 msgstr "array type not allowed: %s"
 
-#: cekirdek/cizim_sureci.py:132
+#: cekirdek/cizim_sureci.py:137
 #, python-format
 msgid "çerçeve başlığı JSON'a çevrilemedi: %s"
 msgstr "frame header could not be converted to JSON: %s"
 
-#: cekirdek/cizim_sureci.py:134
+#: cekirdek/cizim_sureci.py:139
 msgid "çerçeve çok büyük"
 msgstr "frame too large"
 
-#: cekirdek/cizim_sureci.py:147 cekirdek/cizim_sureci.py:150
+#: cekirdek/cizim_sureci.py:152 cekirdek/cizim_sureci.py:155
 #, python-format
 msgid "geçersiz dizi şekli: %r"
 msgstr "invalid array shape: %r"
 
-#: cekirdek/cizim_sureci.py:156
+#: cekirdek/cizim_sureci.py:161
 #, python-format
 msgid "bozuk dizi tanımı: %r"
 msgstr "malformed array descriptor: %r"
 
-#: cekirdek/cizim_sureci.py:158 cekirdek/cizim_sureci.py:163
+#: cekirdek/cizim_sureci.py:163 cekirdek/cizim_sureci.py:168
 #, python-format
 msgid "geçersiz dizi tanımı: %r"
 msgstr "invalid array descriptor: %r"
 
-#: cekirdek/cizim_sureci.py:170
+#: cekirdek/cizim_sureci.py:175
 msgid "dizi tanımı liste değil"
 msgstr "array descriptor is not a list"
 
-#: cekirdek/cizim_sureci.py:174
+#: cekirdek/cizim_sureci.py:179
 msgid "dizi verisi eksik"
 msgstr "array data incomplete"
 
-#: cekirdek/cizim_sureci.py:179
+#: cekirdek/cizim_sureci.py:184
 #, python-format
 msgid "bozuk dizi tanımı: %s"
 msgstr "malformed array descriptor: %s"
 
-#: cekirdek/cizim_sureci.py:182
+#: cekirdek/cizim_sureci.py:187
 msgid "dizi verisi tanımla uyuşmuyor"
 msgstr "array data does not match its descriptor"
 
-#: cekirdek/cizim_sureci.py:190
+#: cekirdek/cizim_sureci.py:195
 #, python-format
 msgid "çerçeve başlığı okunamadı: %s"
 msgstr "frame header could not be read: %s"
 
-#: cekirdek/cizim_sureci.py:192
+#: cekirdek/cizim_sureci.py:197
 msgid "çerçeve başlığı JSON nesnesi değil"
 msgstr "frame header is not a JSON object"
 
-#: cekirdek/cizim_sureci.py:208
+#: cekirdek/cizim_sureci.py:213
 msgid "bozuk çerçeve başı"
 msgstr "malformed frame start"
 
-#: cekirdek/cizim_sureci.py:212
+#: cekirdek/cizim_sureci.py:217
 msgid "çerçeve sınırı aşıldı"
 msgstr "frame size limit exceeded"
 
-#: cekirdek/cizim_sureci.py:235
+#: cekirdek/cizim_sureci.py:240
 #, python-format
 msgid "kesit listesi 1-%d öğe olmalı"
 msgstr "slice list must have 1-%d items"
 
-#: cekirdek/cizim_sureci.py:238
+#: cekirdek/cizim_sureci.py:243
 #, python-format
 msgid "geçersiz kesit: %r"
 msgstr "invalid slice: %r"
 
-#: cekirdek/cizim_sureci.py:241
+#: cekirdek/cizim_sureci.py:246
 #, python-format
 msgid "piksel %d-%d arası tamsayı olmalı: %r"
 msgstr "pixels must be an integer between %d and %d: %r"
 
-#: cekirdek/cizim_sureci.py:249
+#: cekirdek/cizim_sureci.py:256
 #, python-format
 msgid "bilinmeyen istek: %r"
 msgstr "unknown request: %r"
 
-#: cekirdek/cizim_sureci.py:251
+#: cekirdek/cizim_sureci.py:258
 msgid "istek numarası tamsayı olmalı"
 msgstr "request number must be an integer"
 
-#: cekirdek/cizim_sureci.py:253
+#: cekirdek/cizim_sureci.py:260
 msgid "istekte model (spec) yok"
 msgstr "request has no model (spec)"
 
-#: cekirdek/cizim_sureci.py:257
+#: cekirdek/cizim_sureci.py:262
+msgid "adlar mantıksal değer olmalı"
+msgstr "adlar must be a boolean"
+
+#: cekirdek/cizim_sureci.py:267
 msgid "cakisma mantıksal değer olmalı"
 msgstr "cakisma must be a boolean"
 
-#: cekirdek/cizim_sureci.py:268
+#: cekirdek/cizim_sureci.py:282
 #, python-format
 msgid "bilinmeyen eksen: %r"
 msgstr "unknown axis: %r"
 
-#: cekirdek/cizim_sureci.py:533
+#: cekirdek/cizim_sureci.py:615
 #, python-format
 msgid "cizim alt süreci argüman almaz: %s"
 msgstr "the drawing subprocess takes no arguments: %s"

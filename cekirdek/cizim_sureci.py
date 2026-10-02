@@ -391,10 +391,10 @@ class Oturum:
         renkler = {m.id: rgb for m, rgb in self.bilgi["renkler"].items()}
         return cg.isin_goruntusu(self._isin_cizimi, renkler, istek)
 
-    def kaynak(self, istek):
-        """Kaynak noktalari: (yanit basligi, diziler) (Y2)."""
+    def kaynak(self, istek, iptal=None):
+        """Kaynak noktalari: (yanit basligi, diziler) (Y2); iptal: yeni istek var mi."""
         from cekirdek import cizim_goruntu as cg
-        return cg.kaynak_noktalari(self, istek)
+        return cg.kaynak_noktalari(self, istek, iptal)
 
     def kapat(self):
         """Kutuphaneyi kapatir, gecici dizini siler (tekrar cagrilabilir).
@@ -511,7 +511,7 @@ def _ek_isle(istek, oturum, kanal):
         kanal.gonder({"tur": cg.YANIT_GORUNTU, "no": istek["no"], "piksel": istek["piksel"],
                       "sure": time.perf_counter() - t1}, {"rgb": rgb})
         return
-    baslik, diziler = oturum.kaynak(istek)
+    baslik, diziler = oturum.kaynak(istek, iptal=kanal.yeni_var)
     kanal.gonder(baslik, diziler)
 
 
@@ -526,7 +526,12 @@ def isle(istek, oturum, kanal):
             model.update(oturum.adlar())
         kanal.gonder(model)
         if istek["tur"] in (ISTEK_ISIN, ISTEK_KAYNAK):
-            _ek_isle(istek, oturum, kanal)
+            from cekirdek import cizim_goruntu as cg
+            try:
+                _ek_isle(istek, oturum, kanal)
+            except cg.Iptal:
+                kanal.gonder(_son(no, DURUM_IPTAL, t0))
+                return DURUM_IPTAL
         elif istek["tur"] == ISTEK_CIZ and not _kesitleri_isle(istek, oturum, kanal):
             kanal.gonder(_son(no, DURUM_IPTAL, t0))
             return DURUM_IPTAL

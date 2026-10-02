@@ -312,7 +312,8 @@ def test_okuyucu_kapanisi_ve_tekil():
         p2.p_tally.sonuclari_ayarla = lambda yol, s: sonuclar.append(yol)
         p2.statepoint_ayarla("/yok/a.h5")
         p2.statepoint_ayarla("/yok/a.h5")
-        _bekle(lambda: not p2.mesgul_mu(), 5)
+        p2.bekle(5)
+        _bekle(lambda: False, 0.2)
         kontrol("ayni yol iki okuma: yalniz son kusak teslim", sonuclar.count("/yok/a.h5") == 1,
                 "-> %s" % sonuclar)
         p2.close()

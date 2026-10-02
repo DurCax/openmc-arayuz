@@ -14,14 +14,17 @@
 
 from dataclasses import dataclass, replace
 
+from cekirdek import cizim_goruntu as cg
 from cekirdek import cizim_sureci as cs
 from cekirdek.ceviri import _
+from arayuz.onizleme_boyama import HUCRE_CAKISMA
 
 # (yatay, dikey, normal) eksen sirasi
 EKSENLER = {"xy": (0, 1, 2), "xz": (0, 2, 1), "yz": (1, 2, 0)}
 EKSEN_ADLARI = ("x", "y", "z")
-EN_KUCUK_GENISLIK = 1.0e-4          # cm (1 um): daha kucugu kayan nokta gurultusu
-EN_BUYUK_GENISLIK = 1.0e6           # cm (10 km): kacak yakinlastirma/uzaklastirma siniri
+# Isci ile ayni sinirlar (cekirdek/cizim_goruntu.py): 1 um - 10 km
+EN_KUCUK_GENISLIK = cg.GENISLIK_EN_AZ
+EN_BUYUK_GENISLIK = cg.KOORDINAT_SINIRI
 
 DURUM_NORMAL, DURUM_BOSLUK, DURUM_TANIMSIZ, DURUM_CAKISMA = (
     "normal", "bosluk", "tanimsiz", "cakisma")
@@ -140,7 +143,7 @@ class NoktaBilgisi:
 
 
 def _durum(hucre: int, malzeme: int) -> str:
-    if malzeme == cs.CAKISMA or hucre < cs.TANIMSIZ:
+    if malzeme == cs.CAKISMA or hucre == HUCRE_CAKISMA:
         return DURUM_CAKISMA
     if hucre == cs.TANIMSIZ:
         return DURUM_TANIMSIZ

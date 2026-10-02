@@ -25,6 +25,10 @@ dilimleme, 3B ışın izleme ve kaynak örneklemesi bu süreçte yapılır, aray
 | **Çakışma denetimi** | `slice_data(show_overlaps=True)`: bir noktanın birden çok hücrede olduğunu bulur. Çakışma kipi kendiliğinden açar. | — | kapalı | Büyük modelde yavaştır (SFR ~12 s). |
 | **Tüm modeli göster** | Görünümü sınır kutusuna döndürür. | — | — | — |
 
+Varsayılan kesit merkezi ve 3B kameranın baktığı nokta **orijindir** (0, 0, 0): model kurucusu
+modelleri orijinde merkezler (H2 `KESIT_MERKEZI`, 30 örnekte ölçüldü). Orijinde merkezlenmemiş bir
+geometride **Tüm modeli göster** ve 3B kamera modeli kaydırılmış gösterir; kesiti fareyle kaydırın.
+
 Fare: **tekerlek** yakınlaştırır/uzaklaştırır, **sol tuşla sürükleme** kaydırır; imlecin altındaki
 nokta pencerenin altında yazılır: koordinat (x, y, z), hücre kimliği ve adı, örnek (instance),
 malzeme kimliği ve adı. Özel kodlar (OpenMC `slice_data`, 0.16.0):
