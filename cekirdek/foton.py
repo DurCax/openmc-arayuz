@@ -36,14 +36,12 @@
 ================================================================================
 """
 
-import os
 import re
-import xml.etree.ElementTree as ET
 from dataclasses import dataclass
 from typing import FrozenSet, List, Optional
 
 from cekirdek.ceviri import _
-from cekirdek.gunluk import kaydedici, uyar_bir_kez
+from cekirdek.gunluk import kaydedici
 
 _log = kaydedici(__name__)
 
@@ -114,20 +112,12 @@ def betik_satirlari(spec: dict) -> List[str]:
 
 def kutuphane_elementleri(yol: Optional[str] = None) -> Optional[FrozenSet[str]]:
     """cross_sections.xml'deki type="photon" element adlari; dosya yok ya da
-    okunamazsa None (bilinmiyor; loglanir)."""
-    yol = yol if yol is not None else os.environ.get("OPENMC_CROSS_SECTIONS")
-    if not yol or not os.path.exists(yol):
+    okunamazsa None (bilinmiyor; sicaklik.kutuphane_kayitlari loglar)."""
+    from cekirdek import sicaklik
+    harita = sicaklik.kutuphane_kayitlari(yol)
+    if harita is None:
         return None
-    try:
-        kok = ET.parse(yol).getroot()
-    except (ET.ParseError, OSError):
-        uyar_bir_kez(_log, "cross_sections.xml foton kayitlari okunamadi: %s", yol)
-        return None
-    adlar = set()
-    for lib in kok.findall("library"):
-        if lib.get("type") == "photon":
-            adlar.update((lib.get("materials") or "").split())
-    return frozenset(adlar)
+    return frozenset(ad for tur, ad in harita if tur == "photon")
 
 
 def model_elementleri(spec: dict) -> FrozenSet[str]:

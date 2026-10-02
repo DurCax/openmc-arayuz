@@ -192,7 +192,7 @@ def _kutuphane_yolu(yol: Optional[str]) -> Optional[str]:
     return yol if yol and os.path.exists(yol) else None
 
 
-def _kayitlar(yol: Optional[str]) -> Optional[Dict[Tuple[str, str], str]]:
+def kutuphane_kayitlari(yol: Optional[str]) -> Optional[Dict[Tuple[str, str], str]]:
     """{(tur, ad): mutlak h5 yolu}; okunamazsa None (loglanir)."""
     yol = _kutuphane_yolu(yol)
     if yol is None:
@@ -212,7 +212,7 @@ def _kayitlar(yol: Optional[str]) -> Optional[Dict[Tuple[str, str], str]]:
 
 def wmp_nuklidleri(yol: Optional[str] = None) -> Optional[FrozenSet[str]]:
     """type="wmp" kaydi olan nuklidler; kutuphane okunamazsa None."""
-    harita = _kayitlar(yol)
+    harita = kutuphane_kayitlari(yol)
     if harita is None:
         return None
     return frozenset(ad for tur, ad in harita if tur == "wmp")
@@ -247,7 +247,7 @@ def kutuphane_sicakliklari(tur: str, ad: str,
     anahtar = (tur, ad)
     if yol is None and anahtar in _SICAKLIK_ONBELLEK:
         return _SICAKLIK_ONBELLEK[anahtar]
-    harita = _kayitlar(yol) or {}
+    harita = kutuphane_kayitlari(yol) or {}
     dosya = harita.get(anahtar)
     sonuc = _h5_sicakliklari(dosya, ad) if dosya else None
     if yol is None:
