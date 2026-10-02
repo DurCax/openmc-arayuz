@@ -344,7 +344,7 @@ def yeni_spec(ad: str = "adsız model", kor_turu: str = "tek_cubuk") -> dict:
     yoksa tamamla() kullanicinin sectigi boyutu ezerdi.
     """
     if kor_turu not in KOR_TUR_ALANLARI:
-        raise ValueError("bilinmeyen kor türü: %r" % (kor_turu,))
+        raise ValueError(_("bilinmeyen kor türü: %r") % (kor_turu,))
     kor = copy.deepcopy(VARSAYILAN_KOR)
     kor["tur"] = kor_turu
     kor_alanlarini_ayikla(kor)

@@ -28,18 +28,26 @@ ACILISTA_GOSTER_AYARI = "baslangic/acilista_goster"
 _SIFIRDAN_ADI = N_("Yeni model")
 
 
+_KAPALI_DEGERLER = ("false", "0", "no")
+
+
 def acilista_goster_mi(ayarlar: QtCore.QSettings) -> bool:
-    """QSettings'teki tercih; yoksa ya da okunamazsa True (eski davranis)."""
-    deger = ayarlar.value(ACILISTA_GOSTER_AYARI, True)
-    return str(deger).strip().lower() not in ("false", "0", "no", "")
+    """QSettings'teki tercih. Yalniz acik "kapali" degerleri (false/0/no)
+    False doner; yok, bos ("") ya da okunamayan deger varsayilan True'dur
+    (eski davranis: baslangic ekrani)."""
+    try:
+        deger = ayarlar.value(ACILISTA_GOSTER_AYARI, True)
+    except (RuntimeError, TypeError, ValueError):
+        _log.warning("acilista goster ayari okunamadi; varsayilan (goster)", exc_info=True)
+        return True
+    return str(deger).strip().lower() not in _KAPALI_DEGERLER
 
 
 def sifirdan_spec(kor_turu: str) -> dict:
     """Gercekten bos model; yalniz kor turu (rehberli turlerden biri)."""
     if kor_turu not in baslangic_adim.SIFIRDAN_TURLERI:
         raise ValueError(_("sıfırdan başlatılamayan kor türü: %s") % kor_turu)
-    ad = _SIFIRDAN_ADI
-    return sema.yeni_spec(_(ad), kor_turu=kor_turu)
+    return sema.yeni_spec(_(_SIFIRDAN_ADI), kor_turu=kor_turu)
 
 
 class BaslangicAkisi(object):
@@ -48,6 +56,9 @@ class BaslangicAkisi(object):
     def _baslangic_akisini_kur(self) -> None:
         """Rehber seridini dogrulama seridinin ustune yerlestirir, sinyalleri baglar.
         _yerlesim_kur'dan SONRA cagrilir."""
+        # Acilis on kancalari (K2: "veri yoksa Veri sayfasi"): acilis_akisi
+        # baslangic secimine gecmeden ONCE sirayla cagirir.
+        self._acilis_on_kancalari = []
         self.adim_rehberi = AdimRehberi()
         duzen = self.centralWidget().layout()
         duzen.insertWidget(duzen.indexOf(self.serit), self.adim_rehberi)
@@ -58,9 +69,15 @@ class BaslangicAkisi(object):
         self.baslangic.acilista_goster_degisti.connect(
             lambda acik: self.ayarlar.setValue(ACILISTA_GOSTER_AYARI, bool(acik)))
 
-    def acilis_akisi(self) -> None:
-        """Dosyasiz acilis: tercih kapaliysa son proje, degilse baslangic ekrani."""
-        if not acilista_goster_mi(self.ayarlar):
+    def acilis_akisi(self, dosya_verildi: bool = False) -> None:
+        """Acilis: once on kancalar; sonra model yoksa baslangic secimi.
+        Komut satirinda dosya verildiyse (acilsin acilmasin) son proje
+        DENENMEZ; tercih kapaliysa son proje, aksi halde baslangic ekrani."""
+        for kanca in list(self._acilis_on_kancalari):
+            kanca()
+        if self._model_var:
+            return
+        if not dosya_verildi and not acilista_goster_mi(self.ayarlar):
             son = self._son_listesi()
             if son and self.proje_ac(son[0]):
                 return
@@ -96,12 +113,12 @@ class BaslangicAkisi(object):
             rehber.guncelle(self.spec, editorde=not self.baslangic_acik_mi())
 
     def _adim_hatalarini_ayikla(self, hata: dict) -> dict:
-        """Kenar cubugu hata sayilari ({sekme: n}) eksik adimin bulgulari
-        dusulmus olarak (YENI sozluk): eksik adimin sayfasi "!" (hata) degil
-        "•" (eksik) gorunur -- adim tamamlaninca ayni bulgu yine hata sayilir."""
+        """Kenar cubugu hata sayilari ({sekme: n}) kodlu bosluk bulgulari
+        dusulmus olarak (YENI sozluk): eksik asamanin sayfasi "!" (hata) degil
+        "•" (eksik) gorunur. Gercek hatalar (kodsuz) aynen sayilir."""
         dusen = {}
         for bulgu in self._bulgular:
-            if bulgu.seviye == "hata" and baslangic_adim.adim_bulgusu_mu(self.spec, bulgu):
+            if bulgu.seviye == "hata" and baslangic_adim.adim_bulgusu_mu(bulgu):
                 sekme = yer_sekme_anahtari(bulgu.yer)
                 dusen[sekme] = dusen.get(sekme, 0) + 1
         return {s: n - dusen.get(s, 0) for s, n in hata.items() if n - dusen.get(s, 0) > 0}

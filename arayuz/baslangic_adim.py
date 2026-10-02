@@ -15,12 +15,15 @@ ile ayni "eksik" olcutleri)
   parca    : en az bir cubuk (plaka turunde plaka)    -> Parcalar
   demet    : yalniz demet/kafes turlerinde, en az bir demet -> Demet
   geometri : korun dolgusu secili / kor haritasi dolu -> Geometri
-Rehberi olmayan turlerde (kuresel, tamburlu, agac) adim listesi bostur.
+Bosluk bulgulari (Bulgu.kod = "bos_adim:<asama>") cekirdek/dogrula'da kodlanir;
+burada yalniz koda bakilir. Rehberi olmayan turlerde (kuresel, tamburlu, agac)
+adim listesi bostur.
 """
 
 from dataclasses import dataclass
 
 from cekirdek import sema
+from cekirdek.dogrula import BOS_ADIM_ONEKI, Bulgu
 from cekirdek.ceviri import _, N_
 
 # Sifirdan secilebilen (rehberli) kor turleri, baslangic ekranindaki sirayla.
@@ -28,12 +31,12 @@ SIFIRDAN_TURLERI = ("tek_cubuk", "tek_demet", "kare_kafes", "altigen_kafes", "te
 _DEMETLI = ("tek_demet",) + sema.HARITALI_KORLAR
 _DOLGU_ALANI = {"tek_cubuk": "cubuk", "tek_plaka": "plaka", "tek_demet": "demet"}
 
-# (anahtar, baslik, sayfa, bulgu yeri onekleri) -- baslik yalniz isaretli (N_).
+# anahtar -> (baslik, sayfa) -- baslik yalniz isaretli (N_).
 _ADIM_TANIMI = {
-    "malzeme": (N_("Malzeme ekle"), "malzemeler", ("malzeme",)),
-    "parca": (N_("Parça ekle"), "parcalar", ("cubuk", "plaka")),
-    "demet": (N_("Demet kur"), "demet", ("demet",)),
-    "geometri": (N_("Geometriyi kur"), "kor", ("kor",)),
+    "malzeme": (N_("Malzeme ekle"), "malzemeler"),
+    "parca": (N_("Parça ekle"), "parcalar"),
+    "demet": (N_("Demet kur"), "demet"),
+    "geometri": (N_("Geometriyi kur"), "kor"),
 }
 
 
@@ -73,11 +76,11 @@ def _geometri_aciklamasi(tur: str) -> str:
 
 
 def _adim(anahtar: str, aciklama: str, tamam: bool) -> Adim:
-    baslik, sekme, _yerler = _ADIM_TANIMI[anahtar]
+    baslik, sekme = _ADIM_TANIMI[anahtar]
     return Adim(anahtar, _(baslik), aciklama, sekme, bool(tamam))
 
 
-def adimlar(spec: dict) -> tuple:
+def adimlar(spec: dict) -> tuple[Adim, ...]:
     """Modelin kor turune uyan adimlar (sirali); rehbersiz turde ()."""
     tur = _tur(spec)
     if tur not in SIFIRDAN_TURLERI:
@@ -96,7 +99,7 @@ def adimlar(spec: dict) -> tuple:
     return tuple(sonuc)
 
 
-def eksik_adimlar(spec: dict) -> tuple:
+def eksik_adimlar(spec: dict) -> tuple[Adim, ...]:
     """Henuz tamamlanmamis adimlar (sirali)."""
     return tuple(a for a in adimlar(spec) if not a.tamam)
 
@@ -107,18 +110,22 @@ def siradaki(spec: dict) -> Adim | None:
     return eksik[0] if eksik else None
 
 
-def adim_bulgusu_mu(spec: dict, bulgu) -> bool:
-    """Bulgu, henuz atilmamis bir adimin DOGAL sonucu mu? (eksik adimin
-    sayfasindaki hata/uyari). Boyle bulgular kirmizi hata degil "eksik adim"
-    olarak sunulur; adim tamamlaninca ayni bulgu gercek hata sayilir."""
-    yer = (getattr(bulgu, "yer", "") or "").lower()
-    for adim in eksik_adimlar(spec):
-        if any(yer.startswith(onek) for onek in _ADIM_TANIMI[adim.anahtar][2]):
-            return True
-    return False
+def adim_bulgusu_mu(bulgu: Bulgu) -> bool:
+    """Bulgu bilinen bir BOSLUK bulgusu mu (henuz atilmamis bir asamanin dogal
+    sonucu; or. bos modelde "cubuk secilmemis")? YALNIZ dogrulayicinin verdigi
+    sabit koda bakar (Bulgu.kod, BOS_ADIM_ONEKI) -- yer onekine ya da metne
+    degil: eksik asamanin sayfasindaki GERCEK hatalar (or. negatif adim)
+    kodsuzdur ve hata olarak kalir."""
+    kod = getattr(bulgu, "kod", None) or ""
+    return kod.startswith(BOS_ADIM_ONEKI)
 
 
-def ilerleme(spec: dict) -> tuple:
+def gercek_bulgular(bulgular: list) -> list:
+    """Bosluk bulgulari cikarilmis YENI liste (sira korunur)."""
+    return [b for b in bulgular if not adim_bulgusu_mu(b)]
+
+
+def ilerleme(spec: dict) -> tuple[int, int]:
     """(tamamlanan, toplam) adim sayisi."""
     hepsi = adimlar(spec)
     return sum(1 for a in hepsi if a.tamam), len(hepsi)

@@ -115,14 +115,14 @@ def test_eksik_adim_yerleri():
     spec = sema.yeni_spec("p")
     bulgular = dogrula.tum_kontroller(spec)
     # Act
-    adim_bulgusu = [b for b in bulgular if ba.adim_bulgusu_mu(spec, b)]
+    adim_bulgusu = [b for b in bulgular if ba.adim_bulgusu_mu(b)]
     # Assert
     kontrol("bos pin modelinde 'cubuk secilmemis' eksik adim sayilir",
             any("çubuk seçilmemiş" in b.mesaj for b in adim_bulgusu), "-> %s" % bulgular)
     tam = bos_sablon("pin")
     tam["kor"]["adim"] = -1.0
     kontrol("tamam modelde hata adim bulgusu sayilmaz",
-            not any(ba.adim_bulgusu_mu(tam, b) for b in dogrula.tum_kontroller(tam)))
+            not any(ba.adim_bulgusu_mu(b) for b in dogrula.tum_kontroller(tam)))
 
 
 # ============================================================================

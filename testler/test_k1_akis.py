@@ -91,9 +91,11 @@ def _kontrol_hazir(p):
     kontrol("adim rehberi tamamlaninca gizlendi", p.adim_rehberi.isHidden())
     kontrol("dogrulama temiz (hata yok)", not dogrula.hata_var(p._bulgular),
             "-> %s" % [(b.yer, b.mesaj) for b in p._bulgular if b.seviye == "hata"])
-    kontrol("serit eksik adim kipinden cikti",
-            p.serit.rozet.property("rozet") in ("basari", "uyari", "bilgi")
-            and "aşama" not in p.serit.ozet.text(), "-> %s" % p.serit.ozet.text())
+    from arayuz import baslangic_adim
+    kontrol("serit eksik asama kipinden cikti (siradaki asama yok)",
+            baslangic_adim.siradaki(p.spec) is None
+            and p.serit.rozet.property("rozet") in ("basari", "uyari", "bilgi"),
+            "-> %s" % p.serit.ozet.text())
     kontrol("onizleme cizildi", p.onizleme.cizildi_mi())
     izin, neden = p._kosu_izni()
     kontrol("Calistir acik", izin and p.e_calistir.isEnabled(), "-> %s" % neden)

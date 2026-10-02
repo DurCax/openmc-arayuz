@@ -103,8 +103,7 @@ class AnaPencere(DogrulamaMixin, BaslangicAkisi, GezinmeCephesi, MenulerMixin, P
         self._gecmise_it(ilk=True)
         if acilis_dosyasi:
             self.proje_ac(acilis_dosyasi)
-        if not self._model_var:
-            self.acilis_akisi()          # v3 K1: ayar kapaliysa son proje
+        self.acilis_akisi(dosya_verildi=bool(acilis_dosyasi))   # v3 K1 (+ on kancalar)
 
     # ------------------------------------------------------------------ kurucular
     def _boyut_kur(self):

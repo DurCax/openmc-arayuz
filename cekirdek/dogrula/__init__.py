@@ -61,7 +61,8 @@ from cekirdek.ceviri import _n
 #   tukenme  : tukenme                            ayar     : hesap ayarlari
 #   kaynak   : kaynak                             referans : tally, guc, fisil, referans
 from cekirdek.dogrula._ortak import (  # noqa: F401
-    _kor_turu_adi, _YER_ETIKETI, yer_etiketi, Bulgu, hata_var)
+    _kor_turu_adi, _YER_ETIKETI, yer_etiketi, Bulgu, hata_var,
+    BOS_ADIM_ONEKI, BOS_ADIM_GEOMETRI)
 from cekirdek.dogrula.veri import (  # noqa: F401
     veri_kutuphanesi_kontrol, _kutuphane_icerigi, nuklid_kontrol)
 from cekirdek.dogrula.malzeme import (  # noqa: F401
