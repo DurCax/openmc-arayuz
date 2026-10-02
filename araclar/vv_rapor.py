@@ -5,7 +5,8 @@ araclar/vv_rapor.py -- V&V kumesinin docs/VV*.md tablolarini JSON olcumlerinden 
 
   python araclar/vv_rapor.py satirlar [--dil tr|en] [desen]   # deney tablosu satirlari
   python araclar/vv_rapor.py aoa [--dil tr|en] [desen]        # AOA tablosu satirlari
-  python araclar/vv_rapor.py usl [--dil tr|en]                # alt kume yanlilik/USL tablosu
+  python araclar/vv_rapor.py usl [--dil tr|en]                # LEU kafes alt kumesi yanlilik/USL
+  python araclar/vv_rapor.py betimsel [--dil tr|en]           # v2 betimsel alt kumeler (yalniz bilgi)
   python araclar/vv_rapor.py grafik [--cikti D]               # C/E - H/X ve EALF (PNG)
   python araclar/vv_rapor.py guncelle [desen]                 # VV.md + VV.en.md tablolarina yaz
 
@@ -142,6 +143,29 @@ def usl_satiri(ad: str, d: Mapping[str, Any], dil: str = "tr") -> str:
         norm_metni, _egilim_metni(d["egilim"], dil), yontem, k_l, usl)
 
 
+# v2 betimsel alt kumeleri (VV.md "Sonuclar" tablosu); karisik AOA'lar YALNIZ bilgi icindir.
+BETIMSEL = (("Bütün küme", "All cases", {}),
+            ("Hızlı tayf (EALF ≥ 100 keV)", "Fast spectrum (EALF ≥ 100 keV)", {"tayf": "hizli"}),
+            ("Termal tayf (EALF < 1 eV)", "Thermal spectrum (EALF < 1 eV)", {"tayf": "termal"}),
+            ("Ara tayf", "Intermediate spectrum", {"tayf": "ara"}),
+            ("Çözelti (termal + ara)", "Solution (thermal + intermediate)",
+             {"fiziksel_bicim": "cozelti"}),
+            ("U-235 (bütün biçimler)", "U-235 (all forms)", {"bolunebilir": "U-235"}),
+            ("Pu (bütün biçimler)", "Pu (all forms)", {"bolunebilir": "Pu"}),
+            ("U-233", "U-233", {"bolunebilir": "U-233"}),
+            ("LEU (U-235, zenginlik ≤ %20)", "LEU (U-235, enrichment ≤ 20%)",
+             {"bolunebilir": "U-235", "zenginlik": ("aralik", 0.0, 20.0)}))
+
+
+def betimsel_tablo(dil: str = "tr", delta_sm: float = 0.05) -> List[str]:
+    from cekirdek.vv import istatistik, kume
+    satirlar = []
+    for ad_tr, ad_en, filtre in BETIMSEL:
+        d = istatistik.degerlendir(kume.vakalar(filtre=filtre), delta_sm=delta_sm)
+        satirlar.append(usl_satiri(ad_tr if dil == "tr" else ad_en, d, dil))
+    return satirlar
+
+
 ALT_KUMELER = (("U-235, oksit, termal, LEU (LCT-006 + LCT-008)", None),
                ("LCT-006 (TCA)", "LEU-COMP-THERM-006"),
                ("LCT-008 (B&W Core XI)", "LEU-COMP-THERM-008"))
@@ -213,7 +237,7 @@ def belgeleri_guncelle(desen: str) -> List[str]:
 
 def main(argv: Optional[List[str]] = None) -> int:
     p = argparse.ArgumentParser()
-    p.add_argument("is_", choices=("satirlar", "aoa", "usl", "grafik", "guncelle"))
+    p.add_argument("is_", choices=("satirlar", "aoa", "usl", "betimsel", "grafik", "guncelle"))
     p.add_argument("desen", nargs="?", default="vv/kriter_lct*.json")
     p.add_argument("--dil", choices=("tr", "en"), default="tr")
     p.add_argument("--cikti", default=CIKTI)
@@ -224,6 +248,8 @@ def main(argv: Optional[List[str]] = None) -> int:
         satirlar = belgeleri_guncelle(a.desen)
     elif a.is_ == "usl":
         satirlar = usl_tablosu(a.dil)
+    elif a.is_ == "betimsel":
+        satirlar = betimsel_tablo(a.dil)
     else:
         bicim = deney_satiri if a.is_ == "satirlar" else aoa_satiri
         satirlar = [bicim(g, h, a.dil) for g, h in dosyalar(a.desen)]
