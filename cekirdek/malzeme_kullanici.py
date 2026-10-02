@@ -273,6 +273,16 @@ def _bul(kayitlar, ad):
     raise KeyError(_("kütüphanede yok: %s") % ad)
 
 
+def benzersiz_kayit_adi(kayitlar, taban):
+    """Kutuphanede olmayan ad: taban, taban_2, taban_3 ..."""
+    adlar = {k["ad"] for k in kayitlar}
+    ad, i = taban, 2
+    while ad in adlar:
+        ad = "%s_%d" % (taban, i)
+        i += 1
+    return ad
+
+
 def ekle(kayitlar, kayit):
     if any(k["ad"] == kayit["ad"] for k in kayitlar):
         raise ValueError(_("'%s' adında bir kayıt zaten var") % kayit["ad"])

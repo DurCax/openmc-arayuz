@@ -179,7 +179,14 @@ def test_projeye_aktar_benzersiz_ad_ve_kopya():
     assert sema.malzeme_adi_sorunu(spec, m["ad"]) is None
 
 
-HIZLI = [test_yol_xdg_veri_dizininden, test_dosya_yoksa_bos_kutuphane,
+def test_benzersiz_kayit_adi():
+    from cekirdek import malzeme_kullanici as mku
+    k = mku.ekle(mku.ekle((), mku.kayit_olustur(_uo2("a"))), mku.kayit_olustur(_uo2("a_2")))
+    assert mku.benzersiz_kayit_adi(k, "b") == "b"
+    assert mku.benzersiz_kayit_adi(k, "a") == "a_3"
+
+
+HIZLI = [test_benzersiz_kayit_adi, test_yol_xdg_veri_dizininden, test_dosya_yoksa_bos_kutuphane,
          test_kaydet_yukle_gidis_donus_ve_surum, test_degismez_islemler,
          test_onceki_surum_yedegi, test_bozuk_json_acik_hata_silinmez_yedeklenir,
          test_sema_dogrulama_hatali_kayitlari_reddeder,

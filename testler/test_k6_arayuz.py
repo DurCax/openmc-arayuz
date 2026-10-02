@@ -64,7 +64,7 @@ def test_asistan_adimlari_uo2_katalogla_ayni():
         assert a.yigin.currentIndex() == 1 and a.tarif_secici.currentData() == "uo2"
         a.form.deger_ayarla({"zenginlik": 3.2, "yogunluk_yolu": "dogrudan",
                              "yogunluk": 10.40, "sicaklik": 900.0})
-        assert "0.0751" in a.panel.metin() or "7.516e-04" in a.panel.metin()   # N(U235)
+        assert "U235 7.5161e-04" in a.panel.metin()          # N(U235), el hesabi 7.51606e-4
         assert a.d_ileri.isEnabled()
         a.ileri()
         assert a.yigin.currentIndex() == 2
