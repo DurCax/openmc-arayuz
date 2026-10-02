@@ -122,6 +122,71 @@ def test_kapi_kapaliyken_uret_kapali():
     kontrol("neden yazili", "veri yok" in k.durum_etiketi.text())
 
 
+class _SahteKuyruk:
+    def __init__(self):
+        self.isler, self.iptaller, self.basladi = [], [], 0
+
+    def ekle(self, is_):
+        self.isler.append(is_)
+        return "k%d" % len(self.isler)
+
+    def baslat(self):
+        self.basladi += 1
+
+    def iptal(self, kimlik):
+        self.iptaller.append(kimlik)
+
+
+def test_uret_mg_rr_kuyruga_ekler():
+    print("\n[Y8A-6] uret -> CE isi kuyrukta (kusak etiketi); CE bitti -> RR ayari dolar; MG/RR isleri")
+    import tempfile
+    from types import SimpleNamespace
+    from cekirdek import kuyruk, mgxs_is, random_ray
+    k = _kart()
+    sahte = _SahteKuyruk()
+    k._kq = SimpleNamespace(kuyruk=sahte, kapat=lambda: None)
+    eski = (mgxs_is.rr_varsayilan, mgxs_is.mg_isi, mgxs_is.rr_isi)
+    try:
+        k.uret()
+        kontrol("CE isi eklendi", len(sahte.isler) == 1 and sahte.isler[0].etiket["y8"] == "ce")
+        kontrol("kusak etiketi", sahte.isler[0].etiket["kusak"] == k._kusak)
+        kontrol("kopya spec'te mgxs acik", sahte.isler[0].spec["ayarlar"]["mgxs"]["var"])
+        with tempfile.TemporaryDirectory() as d:
+            sonuc = _sonuc(d)
+            mgxs_is.rr_varsayilan = lambda *_a: random_ray.RRAyar(40.0, 200.0, isin=77, bolme=3)
+            d_ce = _durum("ce", k._kusak, sonuc={"keff": (1.3, 0.001), "mgxs": sonuc})
+            k._olay(d_ce)
+            kontrol("sonuc gosterildi", k.sonuc is sonuc)
+            kontrol("RR ayari doldu", (k.rr_isin.value(), k.rr_bolme.value()) == (77, 3))
+            kontrol("rr_ayari geri okur", k.rr_ayari().olu_mesafe == 40.0)
+            mgxs_is.mg_isi = lambda *a: kuyruk.KosuIsi(ad="mg", dizin=d + "/mg", etiket={"y8": "mg"})
+            mgxs_is.rr_isi = lambda *a: kuyruk.KosuIsi(ad="rr", dizin=d + "/rr", etiket={"y8": "rr"})
+            k.mg_kos()
+            k.rr_kos()
+            kontrol("MG ve RR isleri", [i.etiket["y8"] for i in sahte.isler] == ["ce", "mg", "rr"])
+            kosan = kuyruk.IsDurumu(kimlik="x", ad="mg", dizin="/x", asama=kuyruk.Asama.KOSUYOR,
+                                    cevrim=5, toplam_cevrim=60, etiket={"y8": "mg", "kusak": k._kusak})
+            k._olay(kosan)
+            kontrol("kosarken uret kapali", not k.d_uret.isEnabled() and k.d_dur.isEnabled())
+            k.durdur()
+            kontrol("durdur iptal eder", sahte.iptaller == ["x"])
+            def _patla(*_a):
+                raise ValueError("bozuk")
+            mgxs_is.mg_isi = _patla
+            from PySide6 import QtWidgets
+            eski_uyari = QtWidgets.QMessageBox.warning
+            QtWidgets.QMessageBox.warning = staticmethod(lambda *a, **k2: None)
+            try:
+                k._durumlar = {}
+                k.mg_kos()
+                kontrol("hata durum satirinda", "bozuk" in k.durum_etiketi.text())
+                kontrol("CSV hedef dizin yoksa None", k.csv_kaydet("/yok/dizin/x.csv") is None)
+            finally:
+                QtWidgets.QMessageBox.warning = eski_uyari
+    finally:
+        mgxs_is.rr_varsayilan, mgxs_is.mg_isi, mgxs_is.rr_isi = eski
+
+
 HIZLI = [test_kart_analiz_sekmesinde, test_girdiler_ayara, test_sonuc_gosterimi_ve_dugmeler,
-         test_karsilastirma_ve_kusak, test_kapi_kapaliyken_uret_kapali]
+         test_karsilastirma_ve_kusak, test_kapi_kapaliyken_uret_kapali, test_uret_mg_rr_kuyruga_ekler]
 YAVAS = []
