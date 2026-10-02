@@ -34,7 +34,7 @@
    3B modelde varsayilan gorunum "xy + xz"; 2B modelde yalnizca xy cizilir
    (xz/yz sonsuz seritlerdir) ve gorunum secimi gizlenir.
 
- GELISMIS GEOMETRI (Dalga G-3)
+ GELISMIS GEOMETRI (Dalga G-3; arayuz/onizleme_vurgu.py)
    Sol tik noktadaki hucreyi openmc.Geometry.find ile bulur; GeometriDizini onu
    agactaki dugume cevirir ve dugum_secildi(yol) yayilir. vurgula(yol): "Hucre"
    renklendirmesinde secili dugumun hucreleri vurgu, digerleri soluk; "Malzeme"
@@ -60,6 +60,7 @@ from cekirdek.gunluk import kaydedici
 from arayuz import onizleme_boyama as boyama
 from arayuz import tema
 from arayuz.onizleme_istemci import CizimIstemcisi
+from arayuz.onizleme_vurgu import VurguMixin
 from arayuz.ortak import GelismisBolum
 from arayuz.tasarim import tokenlar
 
@@ -73,7 +74,6 @@ COZUNURLUK = [(N_("Düşük (400)"), 400), (N_("Normal (800)"), 800),
 IKILI = "xy + xz"
 GORUNUMLER = [IKILI, "xy", "xz", "yz"]
 RENKLENDIRME = [("material", N_("Malzeme")), ("cell", N_("Hücre"))]   # veri, gorunen ad
-_SOLUK_ORTU = 0.6                 # secili olmayan bolgenin soluk ortusu (saydamlik)
 _GECIKME_MS = 300                 # ardisik degisiklikler tek istege duser (v2'den)
 _ISITMA_MS = 1500                 # acilistan sonra isci sicak baslatilir (ilk cizimde import yok)
 _GOSTERGE_SATIRI = 3              # gosterge alaninin en cok satiri (fazlasi kaydirilir)
@@ -106,7 +106,7 @@ def _kapsam(genislik):
     return (-w / 2.0, w / 2.0, -h / 2.0, h / 2.0)
 
 
-class OnizlemeWidget(QtWidgets.QWidget):
+class OnizlemeWidget(VurguMixin, QtWidgets.QWidget):
     """Geometri kesiti gosteren matplotlib tuvali + denetimler."""
 
     durum = QtCore.Signal(str, bool)
@@ -586,95 +586,6 @@ class OnizlemeWidget(QtWidgets.QWidget):
         self.gosterge_etiketi.setText("&nbsp;&nbsp; ".join(
             "<span style='color:%s'>&#9632;</span>&nbsp;%s" % (to_hex(renk), html.escape(ad))
             for ad, renk in ogeler))
-
-    # ------------------------------------------------------------------
-    # gelismis geometri: tiklama -> dugum, vurgu
-    # ------------------------------------------------------------------
-    def vurgula(self, yol):
-        """Secili dugum (Geometri sayfasi). Yeniden cizim ister."""
-        self._vurgu = tuple(yol) if yol else None
-        if self.spec is not None:
-            self.iste()
-
-    def _model(self):
-        """Ana surecteki (onbellekli) model: yalniz vurgu ve tiklama icin."""
-        try:
-            model, bilgi = onbellek.kur_onbellekli(self.spec)
-        except Exception:                   # cizim hatasi iscide ayrica bildirilir
-            _log.info("onizleme modeli ana surecte kurulamadi", exc_info=True)
-            return None, None
-        return model, bilgi
-
-    def _vurgu_renkleri(self):
-        """Hucre renklendirmesinde (renkler {hucre id: RGB}, soluk RGB) ya da (None, None)."""
-        if not self._vurgu:
-            return None, None
-        model, bilgi = self._model()
-        if model is None:
-            return None, None
-        from arayuz.geometri.onizleme_secim import vurgu_renkleri
-        vurgu = tuple(int(255 * v) for v in _rgb01("vurgu"))
-        soluk = tuple(int(255 * v) for v in _rgb01("yuzey3"))
-        renkler = vurgu_renkleri(model, bilgi.get("geometri_dizini"), self._agac(),
-                                 self._vurgu, vurgu, soluk) or {}
-        return {h.id: r for h, r in renkler.items()}, soluk
-
-    def _malzeme_vurgusu(self, ax, geom, kapsam):
-        """Malzeme renklendirmesinde secili dugum: soluk ortu + vurgu kontur."""
-        if not self._vurgu:
-            return
-        import numpy as np
-        from arayuz.geometri.onizleme_secim import secili_hucreler, vurgu_maskesi
-        model, bilgi = self._model()
-        if model is None:
-            return
-        secili = secili_hucreler(model, bilgi.get("geometri_dizini"), self._agac(), self._vurgu)
-        if not secili:
-            return
-        maske = vurgu_maskesi(model, geom, secili)
-        ortu = np.zeros(maske.shape + (4,))
-        ortu[..., :3] = _rgb01("yuzey3")
-        ortu[..., 3] = np.where(maske, 0.0, _SOLUK_ORTU)
-        ax.imshow(ortu, extent=kapsam, interpolation="nearest", zorder=2).set_gid("vurgu")
-        if maske.any() and not maske.all():
-            kontur = ax.contour(maske.astype(float), levels=[0.5], extent=kapsam,
-                                origin="upper", colors=[tema.renk("vurgu")],
-                                linewidths=1.6, zorder=3)
-            kontur.set_gid("vurgu")
-
-    def _agac(self):
-        from cekirdek import geometri
-        try:
-            return geometri.genislet(self.spec)
-        except Exception:
-            _log.info("onizleme agaci kurulamadi", exc_info=True)
-            return {}
-
-    def nokta_sec(self, eksen, a, b):
-        """Kesit duzlemindeki (a, b) noktasinin dugum yolu; bulunursa yayar."""
-        if not self._son_eksenler:
-            return None
-        from arayuz.geometri.onizleme_secim import nokta_yolu
-        nokta = {"xy": (a, b, 0.0), "xz": (a, 0.0, b), "yz": (0.0, a, b)}.get(eksen)
-        if nokta is None:
-            return None
-        model, bilgi = self._model()
-        if model is None:
-            return None
-        yol = nokta_yolu(model, bilgi.get("geometri_dizini"), self._agac(), nokta)
-        if yol is not None:
-            self.dugum_secildi.emit(yol)
-        return yol
-
-    def _tiklandi(self, olay):
-        if olay.button != 1 or olay.inaxes is None or olay.xdata is None:
-            return
-        if getattr(self.arac_cubugu, "mode", ""):
-            return                        # kaydirma / yakinlastirma araci acik
-        for eksen, ax in self._son_eksenler:
-            if ax is olay.inaxes:
-                self.nokta_sec(eksen, olay.xdata, olay.ydata)
-                return
 
     # ------------------------------------------------------------------
     def cizildi_mi(self):
