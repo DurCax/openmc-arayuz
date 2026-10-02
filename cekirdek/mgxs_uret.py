@@ -430,7 +430,7 @@ def isle(statepoint: str, spec: Mapping, dizin: str) -> MgxsSonuc:
     (dizin'e). Kuyruk iscisinden cagrilir: openmc Python API'si is parcacigi
     guvenli olmadigi icin model kurulumu kuyrugun hazirlik kilidiyle seri."""
     from cekirdek import kuyruk
-    with kuyruk._HAZIRLIK_KILIDI:      # noqa: SLF001 (Y10 kilidi; bkz. kuyruk._hazirla)
+    with kuyruk.hazirlik_kilidi():     # Y10 hazirlik kilidi (bkz. kuyruk._hazirla)
         return _isle(statepoint, spec, dizin)
 
 

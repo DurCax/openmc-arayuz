@@ -50,7 +50,7 @@
    sonuc_kancasi      f(statepoint_yolu, KosuIsi) -> herhangi bir deger.
                       Mapping dondurur ve "keff" = (k, sigma) icerirse
                       IsDurumu.k bundan alinir. Istisna -> BASARISIZ (hata metni).
-   Yardimcilar        ayri_dizin(kok, ad, alinmis=()), komut_olustur(...),
+   Yardimcilar        ayri_dizin(kok, ad, alinmis=()), komut_olustur(...), hazirlik_kilidi(),
                       mpiexec_yolu(ortam, python), mpi_destegi(openmc_yolu),
                       varsayilan_sonuc_okuyucu(statepoint, is_).
 
@@ -109,7 +109,17 @@ LOG_ADI = "kosu.log"                 # kosucu.calistir ve arayuz ile ayni ad
 IPTAL_SURESI = 5.0                   # s; SIGTERM'den sonra SIGKILL'e kadar
 _KAPAT_SURESI = 10.0                 # s; kapat() iscileri bu kadar bekler
 _AD_SINIRI = 60                      # ayri_dizin: dizin adinin en uzun hali
-_HAZIRLIK_KILIDI = threading.Lock()   # model hazirligi (openmc Python API) seri
+# Model hazirligi (openmc Python API) seri: API is parcacigi guvenli degil.
+# Kuyruk disinda openmc nesnesi kuran isciler (Y8 sonuc kancasi, MG/RR modeli)
+# AYNI kilidi hazirlik_kilidi() ile alir.
+HAZIRLIK_KILIDI = threading.Lock()
+_HAZIRLIK_KILIDI = HAZIRLIK_KILIDI    # eski ic ad (geriye uyum)
+
+
+def hazirlik_kilidi() -> threading.Lock:
+    """openmc Python API'siyle model kuran kodun kullanacagi ortak kilit."""
+    return HAZIRLIK_KILIDI
+
 
 
 

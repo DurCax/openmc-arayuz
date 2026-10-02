@@ -168,6 +168,19 @@ def test_mg_modeli_hucre_demet_ve_random_ray():
                 == (a.isin, a.cevrim, a.pasif))
 
 
+def test_hazirlik_kilidi_genel_ve_ayni_nesne():
+    print("\n[Y8-I7] kuyruk.hazirlik_kilidi() genel ad; kuyrugun ic kilidiyle AYNI nesne; Y8 ozel adi kullanmaz")
+    import inspect
+    from cekirdek import kuyruk, mgxs_is, mgxs_uret
+    # Act
+    kilit = kuyruk.hazirlik_kilidi()
+    # Assert
+    kontrol("genel sabit ile ayni", kilit is kuyruk.HAZIRLIK_KILIDI)
+    kontrol("ic kullanim ayni nesne", kilit is kuyruk._HAZIRLIK_KILIDI)
+    kod = inspect.getsource(mgxs_is) + inspect.getsource(mgxs_uret)
+    kontrol("Y8 ozel adi kullanmaz", "_HAZIRLIK_KILIDI" not in kod)
+
+
 # ---------------------------------------------------------------------------
 # YAVAS
 # ---------------------------------------------------------------------------
@@ -251,5 +264,5 @@ def test_ince_grup_mg_ve_random_ray(gecici):
 
 HIZLI = [test_karsilastirma_tablosu, test_random_ray_ayar_dogrulama, test_rr_varsayilan_ve_mg_sarti,
          test_kapsam_secenekleri_ve_demet_alt_modeli, test_mg_modeli_kosusuz,
-         test_mg_modeli_hucre_demet_ve_random_ray]
+         test_mg_modeli_hucre_demet_ve_random_ray, test_hazirlik_kilidi_genel_ve_ayni_nesne]
 YAVAS = [test_iki_grup_homojen_k_inf, test_ince_grup_mg_ve_random_ray]

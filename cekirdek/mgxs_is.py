@@ -99,7 +99,7 @@ def _mg_kur(ce_spec: Mapping, ce_dizin: str) -> "openmc.Model":
 
 def mg_isi(ce_spec: Mapping, ce_dizin: str, dizin: str, is_parcacigi: int) -> kuyruk.KosuIsi:
     """Ayni geometrinin MG MC koşusu (model.xml simdi yazilir)."""
-    with kuyruk._HAZIRLIK_KILIDI:          # noqa: SLF001 (openmc API is parcacigi guvenli degil)
+    with kuyruk.hazirlik_kilidi():         # openmc API is parcacigi guvenli degil
         model = _mg_kur(ce_spec, ce_dizin)
         model.export_to_model_xml(os.path.join(_hazir_dizin(dizin), "model.xml"))
     return kuyruk.KosuIsi(ad=_("MG MC"), dizin=dizin, spec=None,
@@ -108,14 +108,14 @@ def mg_isi(ce_spec: Mapping, ce_dizin: str, dizin: str, is_parcacigi: int) -> ku
 
 
 def rr_varsayilan(ce_spec: Mapping, ce_dizin: str) -> random_ray.RRAyar:
-    with kuyruk._HAZIRLIK_KILIDI:          # noqa: SLF001
+    with kuyruk.hazirlik_kilidi():
         return random_ray.varsayilan(_mg_kur(ce_spec, ce_dizin))
 
 
 def rr_isi(ce_spec: Mapping, ce_dizin: str, dizin: str, is_parcacigi: int,
            a: Optional[random_ray.RRAyar] = None) -> kuyruk.KosuIsi:
     """Random ray koşusu (ayni mgxs.h5). a None ise varsayilan ayar."""
-    with kuyruk._HAZIRLIK_KILIDI:          # noqa: SLF001
+    with kuyruk.hazirlik_kilidi():
         mg = _mg_kur(ce_spec, ce_dizin)
         model = random_ray.rr_modeli(mg, a or random_ray.varsayilan(mg))
         model.export_to_model_xml(os.path.join(_hazir_dizin(dizin), "model.xml"))
