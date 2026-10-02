@@ -526,6 +526,46 @@ scatter / √5). Mean linear power **182 W/cm**.
 - Why is F_ΔH the same and F_q smaller in the axially layered `ornekler/pwr_eksenel.json`? (Layering
   does not touch the radial distribution; the water reflector flattens the axial profile.)
 
+<a id="ders-guc-yanma"></a>
+### 5.7.1 Pin power table and pin power versus burnup
+
+**Example file:** `ornekler/pwr_3b.json` (table), `ornekler/pwr_17x17.json` (burnup) ·
+**Level:** intermediate. Fields: [pin power table](04g-calistir.md#calistir-pin-tablosu),
+[pin power versus burnup](04i-tukenme.md#tukenme-pin-gucu).
+
+**A. Table (the run of 5.7).**
+
+1. The **Pin power table** under the power map has 264 rows (guide/instrument tubes are not in
+   the table). Click the **Relative power** header to sort descending: the first row is the
+   hottest pin and its value equals F_ΔH in the summary (table = map).
+2. Click a pin on the map: its row is selected and its values are shown above the table.
+3. **Fold to quarter**: enabled because the single assembly is mirror-symmetric; 264 pins become
+   72 orbits (81 positions in the quarter − 9 guide/instrument positions). The **Asymmetry**
+   column is the difference between the pins of one orbit: in a symmetric model it is only
+   statistical noise.
+4. Write a CSV with **Save table…**; the sum of the **Power [W]** column is Total power × target
+   share (in this model all fission energy is in the target pins: 17.6 MW).
+
+**B. Versus burnup.**
+
+1. Open the `pwr_17x17` example and enable the calculation on the **Depletion** page. You do not
+   have to switch on the power distribution in Run settings: the depletion run tallies the pin
+   power in every step by itself. To shorten the run you can choose the **CASL simple thermal**
+   chain under Advanced.
+2. When the run finishes, a **Step** selector appears below the result card. The table shows
+   the values of the selected step; pins selected in the table are tracked in the left plot as
+   relative power versus burnup, the right plot shows F_ΔH per step.
+3. **Save step × pin…** gives the pin table of every step in one CSV.
+
+**What did we learn / check questions.**
+
+- Relative power is relative to the average of that step: if a pin's relative power drops, must
+  its absolute power drop too? (No; the total power is held constant, the distribution changes.)
+- As burnup proceeds the hottest pins burn faster; how does the trend of F_ΔH show this? Judge
+  the difference with the seed-to-seed spread, not with the single-run σ (optimistic).
+- Why is the distribution shown the one at the **beginning** of the step? (OpenMC writes the
+  step statepoint after the predictor transport.)
+
 <a id="ders-benchmark"></a>
 ## 5.8 Benchmark and C/E
 

@@ -505,6 +505,44 @@ Ortalama lineer güç **182 W/cm**.
 - Eksenel katmanlı `ornekler/pwr_eksenel.json`'da F_ΔH neden aynı, F_q neden küçüktür?
   (Katmanlama radyal dağılıma dokunmaz; su yansıtıcı eksenel profili düzleştirir.)
 
+<a id="ders-guc-yanma"></a>
+### 5.7.1 Pin gücü tablosu ve yanmaya göre pin gücü
+
+**Örnek dosya:** `ornekler/pwr_3b.json` (tablo), `ornekler/pwr_17x17.json` (yanma) ·
+**Seviye:** orta. Alanlar: [pin gücü tablosu](04g-calistir.md#calistir-pin-tablosu),
+[yanmaya göre pin gücü](04i-tukenme.md#tukenme-pin-gucu).
+
+**A. Tablo (5.7'nin koşusu).**
+
+1. Güç haritasının altındaki **Pin gücü tablosu**nda 264 satır vardır (kılavuz/ölçüm boruları
+   tabloda yoktur). **Bağıl güç** başlığına tıklayıp azalan sıralayın: ilk satır en sıcak
+   çubuktur ve değeri özetteki F_ΔH ile aynıdır (tablo = harita).
+2. Haritada bir çubuğa tıklayın: satırı seçilir, tablonun üstünde değerleri yazar.
+3. **Çeyrek katla**: tek demet ayna simetrik olduğu için etkindir; 264 çubuk 72 yörüngeye iner
+   (çeyrekte 81 konum − 9 kılavuz/ölçüm konumu). **Asimetri** sütunu aynı yörüngedeki çubukların
+   farkıdır: simetrik modelde bu fark yalnız istatistik gürültüdür.
+4. **Tabloyu kaydet…** ile CSV yazın; **Güç [W]** sütununun toplamı Toplam güç × hedef payıdır
+   (bu modelde bütün fisyon enerjisi hedef çubuklarda: 17.6 MW).
+
+**B. Yanmaya göre.**
+
+1. `pwr_17x17` örneğini açın; **Tükenme** sayfasında hesabı etkinleştirin. Güç dağılımını Hesap
+   ayarlarında açmanız gerekmez: tükenme koşusu her adımda pin gücünü kendiliğinden sayar.
+   Süreyi kısaltmak için Gelişmiş'te **CASL basit termal** zincirini seçebilirsiniz.
+2. Koşu bitince sonuç kartının altında **Adım** seçicisi çıkar. Adım değiştikçe tablo o adımın
+   değerlerini gösterir; tablodan seçtiğiniz çubuklar soldaki grafikte bağıl güç – yanma olarak
+   izlenir, sağda adım başına F_ΔH çizilir.
+3. **Adım × pin kaydet…** her adımın pin tablosunu tek CSV'de verir.
+
+**Ne öğrendik / kontrol soruları.**
+
+- Bağıl güç her adımda o adımın ortalamasına göredir: bir çubuğun bağıl gücü düşüyorsa mutlak
+  gücü de düşmüş olmak zorunda mıdır? (Hayır; toplam güç sabit tutulur, dağılım değişir.)
+- Yanma ilerledikçe en sıcak çubuklar daha hızlı yanar; F_ΔH'nin seyri bunu nasıl gösterir?
+  Farkı tek koşu σ'sıyla (iyimser) değil tohum saçılmasıyla değerlendirin.
+- Gösterilen dağılım neden adımın **başındaki** dağılımdır? (OpenMC adım statepoint'ini
+  öngörücü transporttan sonra yazar.)
+
 <a id="ders-benchmark"></a>
 ## 5.8 Benchmark ve C/E
 
