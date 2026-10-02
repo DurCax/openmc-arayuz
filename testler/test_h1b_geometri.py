@@ -144,3 +144,50 @@ def test_yavas_sfr_gezintisi_hizlandi():
 HIZLI = [test_icinde_islevi_eski_icinde_ile_ayni, test_sinir_noktalari_bit_duzeyinde_ayni,
          test_bilinmeyen_kesit_cagrida_hata_verir, test_kapsar_daire_cokgende_eski_formulle_ayni]
 YAVAS = [test_yavas_sfr_gezintisi_hizlandi]
+
+
+def test_ziyaretler_bellekli_ve_gez_ile_ayni():
+    print("\n[H1b-G6] gezinti.ziyaretler: gez ile ayni, ayni icerikte ikinci cagri gezmez")
+    from cekirdek import geometri, sema, uygunluk_bellek
+    from cekirdek.geometri import gezinti
+    from testler.ortak_test import ORNEK
+    import os
+    s = geometri.gelismise_gec(sema.yukle(os.path.join(ORNEK, "pwr_kare_altigen_halka.json")))
+    uygunluk_bellek.temizle()
+    m = geometri.model(s)
+    ilk = gezinti.ziyaretler(m)
+    kontrol("gez ile ayni ziyaretler", [(z.yol, z.carpan, z.kesik) for z in ilk]
+            == [(z.yol, z.carpan, z.kesik) for z in gezinti.gez(m)])
+    sayi = [0]
+    asil = gezinti.gez
+
+    def sayan(mm):
+        sayi[0] += 1
+        return asil(mm)
+    gezinti.gez = sayan
+    try:
+        ikinci = gezinti.ziyaretler(geometri.model(s))
+    finally:
+        gezinti.gez = asil
+    kontrol("ikinci cagri gezmez ve ayni demet", sayi[0] == 0 and ikinci is ilk)
+
+
+def test_yavas_sfr_zamanlayici_dogrulamasi_hizli():
+    print("\n[H1b-G7] SFR gelismis: tus sonrasi dogrulama (yoklama arka planda) <= 0.2 s CPU")
+    import os
+    import time
+    from cekirdek import dogrula, geometri, sema, uygunluk
+    from cekirdek.geometri import yoklama
+    from testler.ortak_test import ORNEK
+    s = geometri.gelismise_gec(sema.yukle(os.path.join(ORNEK, "sfr_met1000_kor.json")))
+    uygunluk.gecerli_sekmeler(s)            # tusun kendi gezintisi (arayuzdeki sira)
+    t = time.process_time()
+    with yoklama.arka_planda(lambda: None):
+        dogrula.tum_kontroller(s, veri_kontrolu=False)
+    sure = time.process_time() - t
+    # gerekce: plan hedefi "hicbir islemde > 200 ms donma"; taban 12.4 s
+    kontrol("dogrulama <= 0.2 s", sure <= 0.2, "%.3f s" % sure)
+
+
+HIZLI.append(test_ziyaretler_bellekli_ve_gez_ile_ayni)
+YAVAS.append(test_yavas_sfr_zamanlayici_dogrulamasi_hizli)

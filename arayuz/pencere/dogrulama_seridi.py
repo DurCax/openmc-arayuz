@@ -9,9 +9,11 @@ turer, yani yontem cozumu ve adlar aynidir. _seviye_renk ve _SEVIYE_ADI da
 buradadir; ana_pencere'den yeniden disa aktarilir.
 """
 
+import shiboken6
 from PySide6 import QtCore, QtGui, QtWidgets
 
 from cekirdek import dogrula
+from cekirdek.geometri import yoklama
 from cekirdek.ceviri import _, _n, N_
 from cekirdek.gunluk import kaydedici
 from arayuz import baslangic_adim, tema
@@ -34,6 +36,11 @@ _EKSIK_ADIM = N_("Eksik aşama")
 # Adim sayfasi -> o sayfaya goturen bulgu yeri (model_islemleri._YER_SEKME).
 _ADIM_YERI = {"malzemeler": "malzemeler", "parcalar": "cubuk", "demet": "demet",
               "kor": "kor"}
+
+
+class _YoklamaHabercisi(QtCore.QObject):
+    """Arka plan yoklamasinin bitis sinyali (ana is parcacigindaki nesne)."""
+    geldi = QtCore.Signal()
 
 
 class DogrulamaMixin(object):
@@ -74,9 +81,27 @@ class DogrulamaMixin(object):
             oge.setToolTip(_("Tıklayınca ilgili sayfaya gider."))
             liste.addItem(oge)
 
+    def _yoklama_bildirimi(self):
+        """Arka plan yoklamasi bitince (isci is parcacigindan) ana is parcaciginda
+        yeniden dogrular: kuyruklu sinyal (H1b, cekirdek/geometri/yoklama_arka.py)."""
+        haberci = getattr(self, "_yoklama_haberci", None)
+        if haberci is None:
+            haberci = _YoklamaHabercisi(self)
+            haberci.geldi.connect(lambda: self._dogrula(veri=False))
+            self._yoklama_haberci = haberci
+
+        def bildir():
+            if shiboken6.isValid(haberci):
+                haberci.geldi.emit()
+        return bildir
+
     def _dogrula(self, veri=False):
         try:
-            self._bulgular = dogrula.tum_kontroller(self.spec, veri_kontrolu=veri)
+            if veri:        # F5 / veri denetimi: tam, esli dogrulama
+                self._bulgular = dogrula.tum_kontroller(self.spec, veri_kontrolu=True)
+            else:           # zamanlayici: nokta yoklamasi ayri surecte (donma yok)
+                with yoklama.arka_planda(self._yoklama_bildirimi()):
+                    self._bulgular = dogrula.tum_kontroller(self.spec, veri_kontrolu=False)
         except Exception as e:                                  # noqa: BLE001
             _log.exception("dogrulama sirasinda hata")
             self._bulgular = [dogrula.Bulgu("hata", "dogrulama",

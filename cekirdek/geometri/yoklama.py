@@ -23,6 +23,8 @@
 ================================================================================
 """
 
+import contextlib
+import contextvars
 import functools
 import random
 from collections import namedtuple
@@ -241,13 +243,36 @@ _YOKLAMALAR = Bellek("yoklama")
 
 
 def yokla(spec: dict, n: int = 20000, tohum: int = 1) -> tuple:
-    """spec -> (YoklamaSonucu, [okunur sorun metni]) (ilk RAPOR_SINIRI sorun).
+    """spec -> (YoklamaSonucu, [okunur sorun metni]) (ilk RAPOR_SINIRI sorun);
+    arka_planda() blogunda sonuc henuz yoksa None.
     H1b: model onbellek.kur_onbellekli'den (salt okunur: yalniz bolge/kafes
     sorgulanir); sonuc icerik anahtariyla bellekte (degismez demetler), metin
     her cagrida etkin dilde uretilir."""
     anahtar = icerik_anahtari([spec, int(n), tohum])
+    bildir = _ARKA_PLAN.get()
+    if bildir is not None:
+        from cekirdek.geometri import yoklama_arka
+        hazir = yoklama_arka.sonuc_al(anahtar)
+        if hazir is not None:
+            return hazir[0], _metinler(*hazir)
+        if yoklama_arka.istek(anahtar, spec, n, tohum, bildir):
+            return None
     sonuc, dizin = _YOKLAMALAR.al(anahtar, lambda: _yokla_hesapla(spec, n, tohum))
     return sonuc, _metinler(sonuc, dizin)
+
+
+_ARKA_PLAN = contextvars.ContextVar("yoklama_arka_plan", default=None)
+
+
+@contextlib.contextmanager
+def arka_planda(bildir):
+    """Bu blokta yokla() sonucu hazir degilse AYRI SURECTE baslatir ve None doner;
+    sonuc gelince bildir() (isci is parcacigindan) cagrilir (yoklama_arka.py)."""
+    belirtec = _ARKA_PLAN.set(bildir)
+    try:
+        yield
+    finally:
+        _ARKA_PLAN.reset(belirtec)
 
 
 def _yokla_hesapla(spec, n, tohum):

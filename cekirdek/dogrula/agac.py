@@ -44,7 +44,8 @@ def agac_kontrol(spec, yoklama_n=YOKLAMA_N):
         return bulgular
     try:
         m = geometri.model(spec)
-        ziyaretler = list(geometri.gez(m))
+        from cekirdek.geometri.gezinti import ziyaretler as _ziyaretler
+        ziyaretler = list(_ziyaretler(m))     # H1b: tusun gezintisiyle paylasilir
     except (KeyError, ValueError, TypeError) as e:
         return bulgular + [_b("hata", "kok", _("Geometri gezilemedi: %s") % e)]
     except Exception as e:      # beklenmeyen: dogrulama cokmesin, ayrinti gunlukte
@@ -339,9 +340,12 @@ def _kopya_bulgulari(_spec, m, ziyaretler):
 def _yoklama_bulgulari(spec, n):
     from cekirdek.geometri import yoklama
     try:
-        sonuc, metinler = yoklama.yokla(spec, n=n, tohum=1)
+        hazir = yoklama.yokla(spec, n=n, tohum=1)
     except (KeyError, ValueError, RuntimeError) as e:
         return [_b("hata", "kok", _("Model kurulamadı: %s") % e)]
+    if hazir is None:       # arayuz: yoklama ayri surecte suruyor (yoklama_arka.py)
+        return [_b("bilgi", "kok", _("Nokta yoklaması arka planda sürüyor…"))]
+    sonuc, metinler = hazir
     bulgular = []
     if sonuc.ortusmeler:
         bulgular.append(_b("hata", "kok", _("Nokta yoklaması: %s. %s")
