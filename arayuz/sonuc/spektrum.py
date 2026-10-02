@@ -174,7 +174,7 @@ class SpektrumKarti(GrafikKarti):
         self.eksen.axvline(spektrum.TERMAL_KESIM_EV, ls="--", lw=1.0,
                            color=tema.renk("metin_soluk"))
         self.eksen.set_xlabel(_("enerji [eV]"), fontsize=8)
-        self.eksen.set_ylabel(_("akı / letarji [bağıl]"), fontsize=8)
+        self.eksen.set_ylabel(_("φ·V / Δu [cm / kaynak nötronu]"), fontsize=8)
         self.eksen.tick_params(labelsize=7)
         self.eksen.grid(True, which="major", alpha=0.3, lw=0.6)
         self.eksen.legend(fontsize=7, loc="best")

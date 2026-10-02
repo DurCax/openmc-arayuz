@@ -126,6 +126,20 @@ adım adım örnek için [güç haritası dersine](05-dersler.md#ders-guc) bakı
 > arasındaki ilintiyi görmez; `pwr_3b`'de gerçek saçılma ~20 kat büyük ölçüldü. Güç haritası
 > için en az **Normal**, tercihen birkaç farklı **Rastgele tohum** kullanın.
 
+<a id="ayar-spektrum"></a>
+### Spektrum ve dört faktör kartı
+
+Koşuya altı tally ekler (adları `y3_` ile başlar; `cekirdek/spektrum.py`): enerji spektrumu
+(model geneli ve yakıt), dört faktör (ε, p, f, η) ve spektral indeksler (ρ28, δ25, δ28, C*).
+Sonuç [Çalıştır](04g-calistir.md#calistir-spektrum) sayfasındaki **Spektrum ve dört faktör**
+kartında görünür; tanımlar ve adım adım örnek: [5.11 dersi](05-dersler.md#ders-spektrum).
+Termal kesim sabit **0.625 eV**'tur. Üretilen betik aynı tally'leri kurar.
+
+| Alan | Anlamı | Birim | Tipik aralık | Yaygın yanlış kullanım | Spec anahtarı |
+|---|---|---|---|---|---|
+| **Spektrum ve dört faktörü hesapla** | Y3 tally'lerini açar. Dört faktör ve k yalnızca özdeğer hesabında; spektrum sabit kaynakta da hesaplanır. | — | kapalı | Sızıntılı (vakum sınırlı) modelde ε·p·f·η'yı k-eff sanmak: k-eff için ayrıca P_NL çarpanı gerekir (kart ayrı verir). | `ayarlar.spektrum.var` |
+| **Enerji grup yapısı** | Akı spektrumunun grupları (OpenMC hazır yapıları): CASMO-70, XMAS-172, SHEM-361, CCFE-709. Dört faktör ve indeksler gruptan bağımsızdır (kendi iki grubunu kullanır). | grup | XMAS-172 | Az parçacıkla CCFE-709 seçmek: grup başına gürültü artar. | `ayarlar.spektrum.grup_yapisi` |
+
 <a id="ayar-tally"></a>
 ### Tally'ler kartı
 

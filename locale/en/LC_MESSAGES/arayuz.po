@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 07:11+0300\n"
+"POT-Creation-Date: 2026-10-02 07:15+0300\n"
 "PO-Revision-Date: 2026-10-01 18:14+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -7165,11 +7165,11 @@ msgid ""
 " merkez çubukta ölçer."
 msgstr ""
 "Spectral indices (CSEWG definitions) are averages over all fuel materials; "
-"experiments measure them in the central rod."
+"experiments measure them in the central fuel pin."
 
 #: arayuz/sonuc/spektrum.py:90
 msgid "Sabit kaynak hesabı: dört faktör ve k tanımsız; yalnız spektrum."
-msgstr "Fixed-source calculation: four factors and k are undefined; spectrum only."
+msgstr "Fixed source calculation: four factors and k are undefined; spectrum only."
 
 #: arayuz/sonuc/spektrum.py:92
 msgid ""
@@ -7201,8 +7201,8 @@ msgid "enerji [eV]"
 msgstr "energy [eV]"
 
 #: arayuz/sonuc/spektrum.py:177
-msgid "akı / letarji [bağıl]"
-msgstr "flux / lethargy [relative]"
+msgid "φ·V / Δu [cm / kaynak nötronu]"
+msgstr "φ·V / Δu [cm / source neutron]"
 
 #: arayuz/tasarim/tokenlar.py:129
 msgid "Kobalt"
@@ -8437,4 +8437,7 @@ msgstr "User guide"
 #~ " net üretim; “yakıt” = fisil nüklid içeren"
 #~ " malzemeler."
 #~ msgstr ""
+
+#~ msgid "akı / letarji [bağıl]"
+#~ msgstr "flux / lethargy [relative]"
 

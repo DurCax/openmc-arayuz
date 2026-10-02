@@ -78,7 +78,7 @@ def test_dort_faktor_el_hesabi():
     kontrol("carpim sapmasi nF/A oranindan",
             _yakin(f["carpim"].sapma, s.oran(h["nF"], h["A"]).sapma))
     kontrol("c_xn = A / (A - X)", _yakin(f["c_xn"].ort, 1.0 / 0.998))
-    kontrol("sizintisiz: P_NL = 1", _yakin(f["p_nl"].ort, 1.0))
+    kontrol("sizintisiz: P_NL = 1 kesin (sapma 0)", f["p_nl"] == s.Deger(1.0, 0.0))
     kontrol("k = nF / (A - X + L)", _yakin(f["k"].ort, 1.30 / 0.998))
     kontrol("k = carpim * c_xn * P_NL",
             _yakin(f["k"].ort, f["carpim"].ort * f["c_xn"].ort * f["p_nl"].ort))

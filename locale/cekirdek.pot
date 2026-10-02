@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 07:11+0300\n"
+"POT-Creation-Date: 2026-10-02 07:15+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -5194,7 +5194,7 @@ msgstr ""
 msgid "bilinmeyen enerji grup yapısı: %s (geçerli: %s)"
 msgstr ""
 
-#: cekirdek/spektrum.py:255
+#: cekirdek/spektrum.py:258
 msgid "enerji kenarlarının hepsi sıfır ya da negatif"
 msgstr ""
 

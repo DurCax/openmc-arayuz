@@ -217,6 +217,7 @@ def faktorleri_hesapla(h: dict) -> dict:
     net = fark(h["A"], h["X"])
     payda = toplam(net, h["L"])
     termal_var = h["nF_th"].ort > 0 and h["A_th"].ort > 0
+    sizintisiz = h["L"].ort == 0.0 and h["L"].sapma == 0.0
     yakit = h.get("A_yakit_th") if termal_var else None
     return {
         "eps": oran(h["nF"], h["nF_th"]) if termal_var else None,
@@ -225,7 +226,9 @@ def faktorleri_hesapla(h: dict) -> dict:
         "eta": oran(h["nF_th"], yakit) if yakit else None,
         "carpim": oran(h["nF"], h["A"]),
         "c_xn": oran(h["A"], net),
-        "p_nl": oran(net, payda),
+        # Sizinti tam sifirsa (yansitici sinir) P_NL = 1 KESIN: ayni sayinin
+        # kendine orani; korelasyonsuz formul burada sahte bir sapma uretirdi.
+        "p_nl": Deger(1.0, 0.0) if sizintisiz else oran(net, payda),
         "k": oran(h["nF"], payda),
     }
 
