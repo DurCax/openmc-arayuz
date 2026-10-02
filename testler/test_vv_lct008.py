@@ -10,6 +10,8 @@ test_vv_lct008.py -- LEU-COMP-THERM-008 ek durumlari (v3 Y11; cekirdek/vv/lct008
          eklenir; referans E = 1.0007 +- 0.0012, seri, MIT lisansi, h_x.
   [VL8c] birim hucre h_x: H / U-235 (kafes birim hucresi) pozitif ve TCA ile
          ayni mertebede.
+  [VL8d] kume.kriter_dosyalari: yeniden uretilmis durum 1 (vv/kriter_lct008_01.json)
+         olcumluyse v2 dosyasi (kriter_lct008.json) V&V kumesinde iki kez sayilmaz.
 """
 
 import copy
@@ -89,5 +91,29 @@ def test_birim_hucre_hx():
     kontrol("h_x 100-1000", 100.0 < hx < 1000.0, "-> %g" % hx)
 
 
-HIZLI = [test_harita_uret, test_spec_olustur, test_birim_hucre_hx]
+def test_vv_yerine():
+    print("\n[VL8d] kume: vv/kriter_lct008_01.json olcumluyse kriter_lct008.json kumeden cikar")
+    import tempfile
+    from cekirdek.vv import kume
+    with tempfile.TemporaryDirectory() as kok:
+        os.makedirs(os.path.join(kok, "vv"))
+
+        def yaz(goreli, olcumlu):
+            ref = {"k": 1.0, "sigma": 0.001, "tur": "deney", "kaynak": "x"}
+            if olcumlu:
+                ref["olcum"] = {"k": 1.0, "sigma": 0.0002}
+            with open(os.path.join(kok, goreli), "w", encoding="utf-8") as f:
+                json.dump({"referans": ref}, f)
+
+        yaz("kriter_lct008.json", True)
+        yaz("vv/kriter_lct008_01.json", False)
+        adlar = [os.path.relpath(y, kok) for y in kume.kriter_dosyalari(kok)]
+        kontrol("yerine gecen olcumsuz: ikisi de aday", "kriter_lct008.json" in adlar, "-> %s" % adlar)
+        yaz("vv/kriter_lct008_01.json", True)
+        adlar = [os.path.relpath(y, kok) for y in kume.kriter_dosyalari(kok)]
+        kontrol("olcumlu: eski cikar", "kriter_lct008.json" not in adlar
+                and os.path.join("vv", "kriter_lct008_01.json") in adlar, "-> %s" % adlar)
+
+
+HIZLI = [test_harita_uret, test_spec_olustur, test_birim_hucre_hx, test_vv_yerine]
 YAVAS = []

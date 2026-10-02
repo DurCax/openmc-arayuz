@@ -26,7 +26,10 @@ from cekirdek.ceviri import _
 
 SERI = "LEU-COMP-THERM-008"
 E, SIGMA_E = 1.0007, 0.0012                      # mit-crpg uncertainties.csv
-DURUMLAR = {2: "case-2", 5: "case-5", 7: "case-7", 8: "case-8", 11: "case-11"}
+# Durum 1 de yeniden uretilir (ornekler/vv/kriter_lct008_01.json): v2 dosyasi
+# (ornekler/kriter_lct008.json) AOA'da h_x tasimaz; V&V kumesinde onun yerine
+# bu dosya kullanilir (cekirdek/vv/kume.py VV_YERINE).
+DURUMLAR = {1: "case-1", 2: "case-2", 5: "case-5", 7: "case-7", 8: "case-8", 11: "case-11"}
 N_KAFES, ADIM = 93, 1.63576                      # sablonla ayni (kriter_lct008.json)
 SABLON = "kriter_lct008.json"
 # mit-crpg geometry.xml evren kimligi -> harita harfi
