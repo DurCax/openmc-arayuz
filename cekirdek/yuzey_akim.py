@@ -91,7 +91,7 @@ def yuzey_tally_mi(t: dict) -> bool:
 def kosu_yuzey_tallysi_mi(tally) -> bool:
     """Statepoint tally'si (openmc.Tally) yuzey filtreli mi (Calistir karti okur)."""
     return any(type(f).__name__ in ("SurfaceFilter", "MeshSurfaceFilter")
-               for f in tally.filters)
+               for f in getattr(tally, "filters", None) or ())
 
 
 def denge_adi(ad: str) -> str:
