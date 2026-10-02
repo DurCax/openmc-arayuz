@@ -908,55 +908,69 @@ Interpretation: [6.7 Local k and assembly k∞](06-sonuclar.md#yerel-k).
 
 **Steps.**
 
-1. Add the local k tally to the model (a new file is written, the example is unchanged):
-
-   ```bash
-   python -m cekirdek.yerel_k ekle ornekler/pwr_17x17.json pin -o pwr_17x17_yk.json
-   ```
-
-   The model gains two tallies: `yerel_k_pin` (17×17 mesh aligned to the pin pitch;
-   `nu-fission`, `absorption` and (n,xn) scores) and `yerel_k_toplam` (no filter, same scores).
-2. Open `pwr_17x17_yk.json`, set 3 000 particles × 40 batches / 15 inactive in **Run
-   settings** and **Run**.
-3. Open the map: `python -m arayuz.sonuc.yerel_k kosu/statepoint.40.h5 pwr_17x17_yk.json`.
-   White cells are guide tubes (no fuel, k = 0); the mouse pointer shows the cell's k ± σ and
-   the ratio without the (n,xn) correction.
-4. In the summary line compare the **mean k** with the **k-eff of the run**. Then compute the
-   plain (unweighted) mean of the local k values from the CSV (**Save CSV…**).
-5. Assembly k∞ wizard: `python -m arayuz.analiz.demet_kinf ornekler/pwr_ceyrek_kor.json`.
-   The two assembly types (`demet_24`, `demet_31`) are listed with their count in the core.
-   2 000 particles × 40 / 15, **Add to queue and start**. Each type enters the run queue
-   ([4.10](04j-is-akisi.md#is-akisi)) as a separate run; the table fills with k∞ ± σ,
-   **Save CSV…**.
-6. Add assembly-level local k to the quarter core and run it
-   (`python -m cekirdek.yerel_k ekle ornekler/pwr_ceyrek_kor.json demet -o kor_yk.json`);
-   compare the local k of the inner assemblies with the wizard's k∞ values.
+1. Open the **PWR 17×17 assembly** example. In **Run settings** › **Local k map
+   (pin/assembly)** set **Level** = **Pin**. Two tallies are added to the model:
+   `yerel_k_pin` (17×17 mesh aligned to the pin pitch; `nu-fission`, `absorption` and (n,xn)
+   scores) and `yerel_k_toplam` (no filter, same scores). The same from the terminal:
+   `python -m cekirdek.yerel_k ekle ornekler/pwr_17x17.json pin -o pwr_17x17_yk.json`.
+2. Set 3 000 particles × 40 batches / 15 inactive and **Run**.
+3. On the **Run** page the **Local k map** card opens. White cells are guide tubes (no fuel,
+   k = 0); the mouse pointer shows the cell's k ± σ and the ratio without the (n,xn)
+   correction.
+4. In the summary line compare the **mean k**, the **k-eff of the run** and **P/(D+L)**.
+   Then take the table with **Save CSV…** and compute the plain (unweighted) mean of the
+   `fisil = 1` rows only.
+5. Assembly k∞ wizard: open the **Quarter-symmetric PWR core** example, **Tools › Assembly
+   k∞ wizard…**. The two assembly types (`demet_24`, `demet_31`) are listed with their count
+   in the core. 2 000 particles × 40 / 15, seed 1, **Add to queue and start**. Each type
+   enters the run queue ([4.10](04j-is-akisi.md#is-akisi)) as a separate run; the table fills
+   with the k∞ ± σ of finished runs, **Save CSV…**.
+6. Add assembly-level local k to the same core and run 4 000 × 40 / 20. Compare the local k
+   (± σ) of the inner assemblies with the wizard's k∞ values.
 
 ![Local k map: reflective 17×17 assembly, pin level](../resimler/en/k4_yerel_k_demet_pin.png)
 
 ![Assembly k∞ wizard: two assembly types, done in the queue](../resimler/en/k4_demet_kinf.png)
 
-**Expected result** (02.10.2026, ENDF/B-VIII.0, 6 threads, seed 1/3):
+**Expected result** (02.10.2026, ENDF/B-VIII.0, 6 threads):
 
-- 17×17 assembly, 3 000 × 40 / 15: k-eff **1.19109 ± 0.00348**, mean local k
-  **1.18521 ± 0.00450** (difference below 1σ), map coverage 1.0000, c_xn = 1.00158. Plain
-  mean **1.2108**: the choice of weighting shifts the result by 2 500 pcm. The pin-to-pin
-  scatter (1.10–1.31) is mostly noise at this statistics; it narrows with more particles.
-- Wizard (2 000 × 40 / 15, seed 1): `demet_24` **k∞ = 1.0948 ± 0.0040**, `demet_31`
-  **1.1756 ± 0.0045**. A single-assembly model built by hand with the same settings and seed
-  (core type **single assembly**, all boundaries `reflective`) gives the **same** k (difference
-  of order 10⁻¹⁴).
-- Quarter core (4 000 × 40 / 20), assembly level: inner `demet_24` ~1.085–1.088, `demet_31`
-  1.16–1.20; map mean 1.0644, k-eff of the run 1.0595: because the core has vacuum boundaries
-  the mean is **larger** than k-eff — the difference is leakage.
+- **17×17, 3 000 × 40 / 15, seed 1.** Mean local k **1.18521**, combined k-eff of the run
+  **1.19109 ± 0.00348**. They are **two correlated estimates** (same histories); their
+  difference (−590 pcm) splits as follows: ΣP = global k-tracklength = **1.18941** (same
+  estimator, identical), ΣD_model = **1.0035 ± 0.0040** (expected value 1: no leakage, per
+  source neutron). k_map = k_tl / D_model → the deviation of D from 1 gives −420 pcm
+  (≈ 0.9 σ_D), the combined vs tracklength estimator −170 pcm. Map coverage 1.0000,
+  c_xn = 1.00158.
+- **Plain mean** (the 264 fuelled pins only) **1.2108**: almost all of the 2 500 pcm shift
+  is the absorption of the guide tubes (2.1% of D) being left out — ΣP/ΣD of the fuelled pins
+  is 1.2107 as well. The pin-to-pin scatter (1.10–1.31) is mostly noise at this statistics.
+- **Wizard** (2 000 × 40 / 15, seed 1): `demet_24` **k∞ = 1.0948 ± 0.0040**, `demet_31`
+  **1.1715 ± 0.0045**. A single-assembly model built by hand (core type **single assembly**,
+  all boundaries `reflective`) is **physically identical** (material composition, surface,
+  cell and lattice signature fixed by a test); because the wizard prunes the library to the
+  parts in use, the random realization may differ: `demet_24` 1.0948 (identical), `demet_31`
+  by hand 1.1756 ± 0.0045 — a difference of 0.65 σ_diff (σ_diff = √(σ₁² + σ₂²)).
+- **Quarter core, assembly level** (4 000 × 40 / 20): inner `demet_24` 1.085–1.088
+  (± 0.02–0.03), `demet_31` 1.16–1.20 (± 0.02–0.06). The bin σ values are large because the
+  correlation is ignored (conservative). Map mean 1.0644, P/(D+L) = 1.0628, k-tracklength
+  1.0633, combined k-eff 1.0595 ± 0.0025. Leakage is only L = 0.00155 (1 − ℓ = 0.9985:
+  −155 pcm): the water reflector cells are inside the map and most neutrons are absorbed
+  there. Most of the gap between the mean and k-eff is not leakage but the estimator
+  difference (combined − tracklength −380 pcm). In a 3D model the assembly bins also contain
+  the axial water layers (±h/2); for the active zone only, set **Axial extent** = **active
+  (fissile) zone only** on the card (coverage becomes < 1).
 
 **What we learned / check questions.**
 
 - Which mean of the local k values equals k∞ in an infinite lattice? (The arithmetic mean
-  weighted by net removal — Σ_aφ − X; equivalently the production-weighted harmonic mean. The
-  absorption in the guide tubes also enters the denominator.)
-- Why is local k not k∞? (It ignores neutron exchange with neighbouring cells; an assembly at
-  the core edge shows a high local k but leakage brings it down to criticality.)
+  weighted by net removal — Σ_aφ − X. The production-weighted harmonic mean is equivalent
+  only when all bins are fissile; the D of P = 0 bins such as guide tubes is added to the
+  denominator separately.)
+- Why is local k not k∞? (It is a local production / removal ratio; the net current across
+  the bin boundaries and leakage are not part of the definition. The flux includes neutrons
+  coming from neighbours; the ratio is set by the spectrum in the bin: the local k of an
+  inner assembly is close to its k∞ in the in-core spectrum. Criticality is global:
+  k_eff = ΣP / (ΣD + L) = k_map (1 − ℓ).)
 - What would change without the (n,2n) correction? (OpenMC `absorption` does not count (n,xn);
   a difference of c_xn − 1 ≈ 0.16% would remain between P/A and k∞.)
 - Why is the pin level rejected for the BEAVRS core? (Assembly pitch 21.50 cm, 17 × 1.26 =

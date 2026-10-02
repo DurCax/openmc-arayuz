@@ -324,34 +324,52 @@ results.
   k_local = νΣ_f φ / (Σ_a φ − X),  X = Σ (x − 1) R_(n,xn)
 
 The cells are the bins of a mesh aligned to the pitch of the square lattice; the tallies are
-named `yerel_k_pin` / `yerel_k_demet` plus the unfiltered `yerel_k_toplam`
-(`python -m cekirdek.yerel_k ekle model.json pin|demet -o new.json`).
+named `yerel_k_pin` / `yerel_k_demet` plus the unfiltered `yerel_k_toplam` (**Run settings ›
+Local k map** or `python -m cekirdek.yerel_k ekle model.json pin|demet -o new.json`).
 
-- **It is not k∞: it is a leakage-free local multiplication ratio.** Net neutron exchange
-  with neighbouring cells is ignored.
+- **It is a local production / removal ratio, not k∞.** The net current across the bin
+  boundaries and leakage are not part of the definition. The flux includes neutrons coming
+  from neighbours; the ratio is set by the spectrum in the bin (the local k of an inner
+  assembly is close to its k∞ in the in-core spectrum). Criticality is global:
+  k_eff = ΣP / (ΣD + L) = k_map (1 − ℓ), ℓ = L / (ΣD + L) (Duderstadt & Hamilton,
+  *Nuclear Reactor Analysis*, 1976). When the statepoint can be read, the summary also gives
+  P/(D+L).
 - **(n,xn) is in the denominator.** OpenMC `absorption` does not count channels such as
   (n,2n) as removal, and the neutrons they produce do not enter `nu-fission`. In leakage-free
-  balance P + X = A, hence k = P/(A − X); c_xn = A/(A − X). The uncorrected P/A is shown in the
-  tooltip as well. Counted channels: MT 11, 16, 17, 24, 25, 30, 37, 41, 42 (same list as the
-  four-factor lesson).
-- **Mean:** ΣP / Σ(A − X) — the arithmetic mean weighted by net removal (= the
-  production-weighted harmonic mean). It equals k∞ only in an **infinite lattice** (single
-  pin/assembly with reflective boundaries) with map coverage 1. The plain or volume-weighted
-  mean does not.
+  balance P + X = A, hence k = P/(A − X); c_xn = A/(A − X). The uncorrected P/A is shown in
+  the tooltip as well. The channels come from the same list as the four-factor lesson
+  (MT 11, 16, 17, 24, 25, 30, 37, 41, 42).
+- **Mean:** ΣP / Σ(A − X) — the arithmetic mean weighted by net removal. The
+  production-weighted harmonic mean is equivalent only when all bins are fissile; the D of
+  P = 0 bins is added to the denominator separately. It is a k∞ estimate only in an
+  **infinite lattice** (single pin/assembly with reflective boundaries) with map coverage 1.
+  The plain or volume-weighted mean is not.
+- **Comparison with the k-eff of the run:** ΣP_model is identical to the global
+  k-tracklength; the expected value of ΣD_model is 1 − L (per source neutron), but being a
+  tracklength estimate it deviates statistically. The map mean therefore differs from the
+  combined k-eff by the deviation of D_model plus the estimator difference; the two are
+  correlated estimates.
 - **Map coverage** = Σ_map (A − X) / (A − X)_model. It drops below 1 when a channel box,
-  water gap or reflector lies outside the map.
+  water gap or reflector lies outside the map. In a 3D model the **whole model** extent also
+  contains the axial reflector; with **active zone only** coverage is < 1.
 - **Uncertainty:** σ is propagated ignoring the correlation between numerator and
-  denominator (conservative); bin σ values do not see the batch-to-batch correlation
-  (optimistic, see [6.3](#guc-dagilimi-yorum)). For the true uncertainty use several seeds.
-- **Limits:** square lattices only; on a hexagonal lattice (OpenMC has no hexagonal mesh) and
-  in a core with gaps between assemblies the pin level is rejected with a clear error. A
-  single axial bin (radial map).
+  denominator (conservative; this is why assembly-level bin σ values are large). With
+  coverage 1 the σ of the mean is taken from the unfiltered tally (correlation between bins
+  included); otherwise it is the quadrature sum of the bins (correlation between bins is also
+  ignored). Bin σ values do not see the batch-to-batch correlation (optimistic, see
+  [6.3](#guc-dagilimi-yorum)): for the true uncertainty use several seeds and check
+  convergence with Shannon entropy.
+- **Limits:** square lattices only; on a hexagonal lattice (OpenMC has no hexagonal mesh), a
+  translated/rotated lattice and in a core with gaps between assemblies the pin level is
+  rejected with a clear error. A single axial bin (radial map).
 
-The **assembly k∞ wizard** (`python -m arayuz.analiz.demet_kinf model.json`) runs every
-assembly type separately through the run queue as a single-assembly model with reflective
-boundaries (2D, tallies/power/depletion off, fissile box source) and gives an "assembly type
-× k∞ ± σ" table. The result is the infinite-lattice k∞: no water gap, reflector, spectral
-effect of neighbouring assemblies or leakage. k∞ versus burnup is not available in this
-version.
+The **assembly k∞ wizard** (**Tools › Assembly k∞ wizard…**) runs every assembly type
+separately through the run queue as a single-assembly model with reflective boundaries (2D,
+tallies/power/depletion off, fissile box source, library pruned to the parts in use) and
+gives an "assembly type × k∞ ± σ" table. The model is physically identical to a
+single-assembly model built by hand; because pruning can change the random realization, the
+results agree within statistics (σ_diff = √(σ₁² + σ₂²)). The result is the infinite-lattice
+k∞: no water gap, reflector, spectral effect of neighbouring assemblies or leakage. k∞ versus
+burnup is not available in this version.
 
 ![Quarter core, local k at assembly level](../resimler/en/k4_yerel_k_kor_demet.png)
