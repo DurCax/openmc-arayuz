@@ -91,18 +91,6 @@ def _ortak_zduzlem(a, b):
     return ortak[0] if len(ortak) == 1 else None
 
 
-def _radyal_bolge(hucre, uc):
-    """Hucre bolgesinden uc duzlemi cikarilmis radyal kisim (Intersection)."""
-    import openmc
-    bolge = hucre.region
-    if isinstance(bolge, openmc.Halfspace):
-        return None
-    parcalar = [p for p in bolge if not (isinstance(p, openmc.Halfspace) and p.surface is uc)]
-    if len(parcalar) == len(list(bolge)):
-        raise ValueError(_("kontrol çubuğu hücresinin bölgesi beklenen biçimde değil"))
-    return openmc.Intersection(parcalar) if len(parcalar) > 1 else parcalar[0]
-
-
 def _cubuk_ciftleri(model, emici, izleyici):
     """[(evren, emici_hucre, izleyici_hucre, uc_duzlemi)]: kontrol cubugu evrenleri."""
     ciftler = []
@@ -116,41 +104,57 @@ def _cubuk_ciftleri(model, emici, izleyici):
     return ciftler
 
 
+def uc_konumu(daldirma: float, z_alt: float, z_ust: float) -> float:
+    """Cubuk ucunun z'si: z_ust - d/100 (z_ust - z_alt); d %0-100'e kirpilir
+    (geometri/bilesen._kontrol ile ayni tanim)."""
+    d = min(max(float(daldirma), 0.0), 100.0)
+    return z_ust - d / 100.0 * (z_ust - z_alt)
+
+
+def hareketli_yap(model, emici, izleyici) -> list:
+    """
+    Kontrol cubugu evrenlerinde emici + izleyici hucre ciftini tek bir dis
+    hucreye cevirir; doner [dis hucre id]. Dis hucrenin bolgesi iki ORIJINAL
+    hucrenin BIRLESIMIDIR (a.region | f.region): uc duzleminin iki yari uzayi
+    birbirini tamamlar, emicinin ust ve izleyicinin alt sinirlari korunur --
+    evrendeki baska eksenel hucrelerle (plenum, uc tipasi) cakisma olmaz. Ic
+    evrende uc z = 0'dadir: emici z > 0, izleyici z < 0; dis hucre bunlari
+    kendi bolgesiyle kirpar. translation = (0, 0, uc z'si).
+    """
+    import openmc
+    idler = []
+    for u, a, f, uc in _cubuk_ciftleri(model, emici, izleyici):
+        sifir = openmc.ZPlane(0.0)
+        ic = openmc.Universe(cells=[openmc.Cell(fill=emici, region=+sifir),
+                                    openmc.Cell(fill=izleyici, region=-sifir)])
+        dis = openmc.Cell(fill=ic, region=a.region | f.region)
+        dis.translation = (0.0, 0.0, uc.z0)
+        u.remove_cell(a)
+        u.remove_cell(f)
+        u.add_cell(dis)
+        idler.append(dis.id)
+    return idler
+
+
 def cubuk_islevi(model, nesneler: dict, spec: dict, hedef: str, aralik: tuple):
     """
     Arama islevi f(daldirma %). Cubuk evrenleri hareketli yapilir; doner
     (islev, [emici malzeme]). aralik: (z_alt, z_ust) aktif bolge.
     """
-    import openmc
     from cekirdek import sema
     c = sema.cubuk_bul(spec, hedef)
-    bolgeler = c["bolgeler"]
-    emici_ad = bolgeler[int(c.get("emici_bolge") or 0)]["malzeme"]
-    emici = _malzeme(nesneler, emici_ad)
+    emici = _malzeme(nesneler, c["bolgeler"][int(c.get("emici_bolge") or 0)]["malzeme"])
     izleyici = _malzeme(nesneler, c.get("izleyici_malzeme"))
-    ciftler = _cubuk_ciftleri(model, emici, izleyici)
-    if not ciftler:
+    hucre_idler = hareketli_yap(model, emici, izleyici)
+    if not hucre_idler:
         raise ValueError(_("kritiklik araması: '%s' kontrol çubuğunun hareketli hücresi bulunamadı "
                            "(3B model ve kontrol çubuğu gerekli)") % hedef)
-    z_alt, z_ust = aralik
-    hucre_idler = []
-    for u, a, f, uc in ciftler:
-        radyal = _radyal_bolge(a, uc)
-        sifir = openmc.ZPlane(0.0)
-        ic = openmc.Universe(cells=[openmc.Cell(fill=emici, region=+sifir),
-                                    openmc.Cell(fill=izleyici, region=-sifir)])
-        dis = openmc.Cell(fill=ic, region=radyal) if radyal is not None else openmc.Cell(fill=ic)
-        dis.translation = (0.0, 0.0, uc.z0)
-        u.remove_cell(a)
-        u.remove_cell(f)
-        u.add_cell(dis)
-        hucre_idler.append(dis.id)
     _log.info("çubuk araması: %d hareketli çubuk evreni (%s)", len(hucre_idler), hedef)
+    z_alt, z_ust = aralik
 
     def ayarla(daldirma: float) -> None:
         import openmc.lib
-        d = min(max(float(daldirma), 0.0), 100.0)
-        z = z_ust - d / 100.0 * (z_ust - z_alt)
+        z = uc_konumu(daldirma, z_alt, z_ust)
         for i in hucre_idler:
             openmc.lib.cells[i].translation = (0.0, 0.0, z)
     return ayarla, [emici]

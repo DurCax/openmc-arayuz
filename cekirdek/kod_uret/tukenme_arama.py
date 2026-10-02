@@ -86,15 +86,11 @@ def _arama_hazirla(model):
                 if len(ortak) != 1:
                     continue
                 uc = ortak[0]
-                parca = ([p for p in a.region if not (isinstance(p, openmc.Halfspace)
-                                                     and p.surface is uc)]
-                         if not isinstance(a.region, openmc.Halfspace) else [])
                 sifir = openmc.ZPlane(0.0)
                 ic = openmc.Universe(cells=[openmc.Cell(fill=emici, region=+sifir),
                                             openmc.Cell(fill=izleyici, region=-sifir)])
-                bolge = (openmc.Intersection(parca) if len(parca) > 1
-                         else (parca[0] if parca else None))
-                dis = openmc.Cell(fill=ic, region=bolge) if bolge is not None else openmc.Cell(fill=ic)
+                # dis bolge = iki ORIJINAL hucrenin birlesimi: plenum/tipa ile cakismaz
+                dis = openmc.Cell(fill=ic, region=a.region | f.region)
                 dis.translation = (0.0, 0.0, uc.z0)
                 u.remove_cell(a)
                 u.remove_cell(f)

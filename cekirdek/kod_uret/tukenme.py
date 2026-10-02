@@ -112,6 +112,7 @@ def _operator_satirlari(t, zs, satirlar):
 
 def _entegrator_satirlari(t, satirlar):
     from cekirdek import tukenme_ayar as _ta
+    from cekirdek.geometri.yapici import yorum_metni   # tembel: openmc (H1b)
     e = _ta.entegrator(t)
     satirlar.append("    # Entegratör: %s" % yorum_metni(e.gorunen_ad()))
     satirlar.append("    integ = openmc.deplete.%s(" % e.sinif)
