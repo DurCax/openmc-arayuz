@@ -1,0 +1,130 @@
+# -*- coding: utf-8 -*-
+"""
+==============================================================================
+ PWR yakıt hücresi (pin) — regresyon çıpası
+==============================================================================
+ Klasik PWR yakıt hücresi. Bu model, arayüz geliştirilirken ölçülen referans sonucu üretmelidir: k∞ = 1.3570 ± 0.0020. 2σ dışına çıkarsa kurucu katmanında hata var demektir.
+ 
+ Bilinçli tutarsızlık (çıpa korunur): bütün malzemeler 293.6 K'dedir ama su yoğunluğu 0.70 g/cm³'tür — 293.6 K'de doymuş su ~0.998 g/cm³ olurdu, 0.70 ise ~580 K sıcak soğutucunun yoğunluğudur. Yani model gerçek bir soğuk ya da sıcak durum değildir: tesir kesitleri ve S(α,β) soğuk, moderatör yoğunluğu sıcaktır; bor yoktur. Çıpa değeri (k∞ 1.3570, testler/test_capa.py) bu tanıma bağlı olduğu için değiştirilmedi.
+
+ Bu betik openmc_arayuz tarafından üretilmiştir (2026-10-02).
+ Kaynak model dosyası: model.py
+
+ Betik tek başına çalışır; openmc_arayuz'a bağımlı değildir.
+ Elle düzenlenebilir, ancak arayüze geri yüklenemez.
+
+ Kullanım
+   python3 model.py
+==============================================================================
+"""
+
+import openmc
+
+# ==========================================================================
+# 1. MALZEMELER
+# ==========================================================================
+
+m_uo2 = openmc.Material(name='UO2 %3.0')
+m_uo2.add_element('U', 1.0, percent_type='ao', enrichment=3.0)
+m_uo2.add_element('O', 2.0, percent_type='ao')
+m_uo2.set_density('g/cm3', 10.0)
+m_uo2.temperature = 293.6
+
+m_zirkaloy = openmc.Material(name='Zircaloy kılıf')
+m_zirkaloy.add_element('Zr', 1.0, percent_type='ao')
+m_zirkaloy.set_density('g/cm3', 6.55)
+m_zirkaloy.temperature = 293.6
+
+m_su = openmc.Material(name='Hafif su 0.7 g/cm³')
+m_su.add_element('H', 2.0, percent_type='ao')
+m_su.add_element('O', 1.0, percent_type='ao')
+m_su.set_density('g/cm3', 0.7)
+m_su.temperature = 293.6
+m_su.add_s_alpha_beta('c_H_in_H2O')      # termal saçılma
+
+malzemeler = openmc.Materials([m_uo2, m_zirkaloy, m_su])
+
+# ==========================================================================
+# 2. GEOMETRİ
+# ==========================================================================
+
+# Kurucu ile aynı gezintiden üretildi (cekirdek/geometri/kurulum.py).
+_s1 = openmc.model.RectangularPrism(1.26, 1.26, boundary_type='reflective')
+# yakit_cubugu — silindir kesitli, 3 bölge
+_s2 = openmc.ZCylinder(r=0.39218)
+_s3 = openmc.ZCylinder(r=0.4572)
+c_yakit_cubugu = openmc.model.pin([_s2, _s3], [m_uo2, m_zirkaloy, m_su])
+_h1 = openmc.Cell(fill=c_yakit_cubugu, region=-_s1)
+kok = openmc.Universe(cells=[_h1])
+
+geometri = openmc.Geometry(kok)
+
+# ==========================================================================
+# 3. AYARLAR
+# ==========================================================================
+
+ayar = openmc.Settings()
+ayar.run_mode  = 'eigenvalue'
+ayar.particles = 5000       # çevrim başına parçacık
+ayar.batches   = 60         # toplam çevrim
+ayar.inactive  = 10         # pasif çevrim
+ayar.seed      = 1
+ayar.temperature = {'method': 'interpolation'}
+
+_uzay = openmc.stats.Point((0.0, 0.0, 0.0))
+_kisit = None
+_enerji = openmc.stats.Watt(a=988000.0, b=2.249e-06)
+_aci    = openmc.stats.Isotropic()
+ayar.source = openmc.IndependentSource(space=_uzay,
+                                       angle=_aci,
+                                       energy=_enerji,
+                                       strength=1.0,
+                                       particle='neutron',
+                                       constraints=_kisit)
+
+# Shannon entropisi ağı — kaynak yakınsamasını ölçer.
+# Entropi pasif çevrimler boyunca kayıyorsa pasif çevrim
+# sayısı yetersizdir ve k-eff yanlı çıkar.
+_ent_mesh = openmc.RegularMesh()
+_ent_mesh.dimension = [8, 8, 1]
+_ent_mesh.lower_left  = (-0.63, -0.63, -10000000000.0)
+_ent_mesh.upper_right = (0.63, 0.63, 10000000000.0)
+ayar.entropy_mesh = _ent_mesh
+
+# ==========================================================================
+# 4. TALLY'LER
+# ==========================================================================
+
+tally_1 = openmc.Tally(name='reaksiyonlar')
+tally_1.scores = ['fission', 'absorption', 'nu-fission']
+
+tallyler = openmc.Tallies([tally_1])
+
+# ==========================================================================
+# 5. MODEL VE ÇALIŞTIRMA
+# ==========================================================================
+
+model = openmc.Model(geometry=geometri, materials=malzemeler,
+                     settings=ayar, tallies=tallyler)
+
+# Model.plot() SVG renk adı ya da (R,G,B) demeti ister — hex dize kabul etmez
+renkler = {
+    m_uo2: (222, 93, 40),
+    m_zirkaloy: (150, 150, 160),
+    m_su: (90, 150, 220),
+}
+
+if __name__ == '__main__':
+    import matplotlib.pyplot as plt
+
+    # --- Önce çiz, sonra çalıştır ---
+    # Geometri doğru görünmeden koşu başlatmak zaman kaybıdır.
+    for _eksen in ('xy',):
+        _ax = model.plot(basis=_eksen, color_by='material',
+                         colors=renkler, pixels=(600, 600))
+        _ax.get_figure().savefig('geometri_%s.png' % _eksen, dpi=110)
+        print('çizildi: geometri_%s.png' % _eksen)
+
+    # Çizimler doğruysa aşağıdaki satırın yorumunu kaldırın.
+    # sp = model.run(threads=8)
+    # print(openmc.StatePoint(sp).keff)

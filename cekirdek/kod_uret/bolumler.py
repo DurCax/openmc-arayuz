@@ -13,6 +13,7 @@ from cekirdek.kod_uret.ad import _ad, _f, _bolum, _mat_ifade  # noqa: F401
 from cekirdek import kaynak as _kaynak
 from cekirdek.kod_uret.tukenme import _tukenme
 from cekirdek.kod_uret.spektrum import _spektrum_tallyleri
+from cekirdek.kod_uret.ayarlar_y7 import _y7_ayar_satirlari
 
 
 def _malzemeler(spec, satirlar):
@@ -93,6 +94,7 @@ def _ayarlar(spec, satirlar, gx, gy):
     satirlar.append("                                       constraints=_kisit)")
     if (k.get("parcacik") or "neutron") == "photon":
         satirlar.append("ayar.photon_transport = True   # foton kaynağı foton taşınımı gerektirir")
+    _y7_ayar_satirlari(spec, satirlar)            # Y7 (cekirdek/kod_uret/ayarlar_y7.py)
     ent = a.get("entropi_mesh") or {}
     if ent.get("var") and a.get("mod", "eigenvalue") == "eigenvalue":
         satirlar.append("")

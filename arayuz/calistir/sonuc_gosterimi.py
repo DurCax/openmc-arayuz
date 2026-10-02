@@ -100,6 +100,7 @@ class SonucGosterimiMixin(object):
         self.mesh_harita.statepoint_ayarla(sp, self.spec)       # v3 Y1
         self.spektrum_karti.sonuc_ayarla(sp)                 # Y3
         self._yerel_k_goster(s, sp)                          # K4
+        self.yuzey_karti.sonuc_ayarla(sp, self.spec)         # Y7
         self.kart.cikti_yaz(*cikti.uyari_ozeti(self._dizin))     # M5
         self.uygunluk.denetle(self.spec, self._dizin)
         self._guc_var = bool((s.get("guc") or {}).get("faktorler"))

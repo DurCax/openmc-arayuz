@@ -97,6 +97,12 @@ ortalama enerji yazılır (sabit kaynakta şiddet notu da).
 |---|---|---|---|---|---|
 | **Rastgele tohum** | Rastgele sayı üretecinin tohumu. Aynı tohum ve aynı model aynı sonucu verir (kapsül ile yeniden üretim buna dayanır). | — | 1 (varsayılan); bağımsız tekrarlar için farklı tohumlar | Tek tohumla koşup çubuk güçlerinin σ'sına güvenmek: güç tally'si belirsizliği iyimserdir, birkaç tohumla koşun (bkz. [güç dağılımını yorumlamak](06-sonuclar.md#guc-dagilimi-yorum)). | `ayarlar.tohum` |
 | **Sıcaklık yöntemi** | Kütüphanede olmayan bir sıcaklıkta tesir kesitinin nasıl alınacağı: **Ara değer (interpolation)** ya da **En yakın sıcaklık (nearest)**. | — | ara değer | Su için S(α,β) yalnızca 284–800 K arasındadır; aralık dışı bir sıcaklık taraması koşunun ortasında patlar (README "Bilinen tuzaklar"). | `ayarlar.sicaklik_yontemi` (`interpolation` \| `nearest`) |
+| **Foton taşınımı (gama ısınması)** | Nötronlardan doğan fotonlar da taşınır (`settings.photon_transport`). `heating` skoru böylece nötron + gama ısınmasını verir; kapalıyken gama enerjisi hiç sayılmaz. Foton kaynağı seçiliyse taşınım zaten açıktır. Koşu belirgin uzar. Ayrıntı: [5.16 dersi](05d-ders-foton-sicaklik-yuzey.md#ders-foton-sicaklik-yuzey). | — | kapalı; gama ısınması isteniyorsa açık | Kütüphanede modeldeki bir elementin foton verisi yok (**hata**: OpenMC koşu başında durur). Foton açıkken `heating-local` ile fotonların `heating`'ini toplamak (**uyarı**: gama iki kez sayılır; `heating-local` tek başına gamayı bir kez sayar). | `ayarlar.foton.var` |
+| **Elektron işlemi** | Fotonların ürettiği elektron/pozitronların işlenişi: **Kalın hedef frenleme (ttb)** — enerji doğduğu yerde bırakılır, frenleme fotonları taşınır (OpenMC varsayılanı); **Yerel bırakım (led)** — frenleme fotonu da üretilmez; yerel ısınmayı fazla, uzak doz/ısınmayı az verir. | — | ttb | Ağır elementli zırhta led seçip frenleme gamalarını kaybetmek. | `ayarlar.foton.elektron` (`ttb` \| `led`) |
+| **Sıcaklık toleransı** | En yakın yöntemde kütüphane sıcaklığının kabul edileceği uzaklık (\|T_k − T\| < tolerans); ara değer yönteminde kütüphane aralığının dışında uç sıcaklığa izin verilen pay. OpenMC kuralı: `src/nuclide.cpp`. | K | 10 (OpenMC varsayılanı) | Toleransı çok büyütüp 750 K yakıtı 600 K verisiyle koşmak: doğrulama **uyarı** "yalnız kütüphane sıcaklığı kullanılır" der. | `ayarlar.sicaklik.tolerans` |
+| **Varsayılan sıcaklık** | Sıcaklığı verilmemiş malzemelerin sıcaklığı. | K | 293.6 | — | `ayarlar.sicaklik.varsayilan` |
+| **Windowed multipole (rezonans bölgesinde her sıcaklık)** | Çözülmüş rezonans bölgesinde Doppler genişlemesi her sıcaklıkta analitik hesaplanır (WMP). Kütüphanede `type="wmp"` kaydı gerekir; yoksa OpenMC yalnızca uyarır ve noktasal veriye döner. | — | kapalı | wmp verisi olmayan kütüphaneyle açmak (**uyarı**); multipole yalnız rezonans bölgesini kapsar, başka enerjilerde yöntem ve tolerans yine geçerlidir. | `ayarlar.sicaklik.multipole` |
+| **Yüklenecek aralık** | İşaretliyse aralıktaki **tüm** kütüphane sıcaklıkları yüklenir (geri beslemeli hesaplar). Seçim kuralını değiştirmez. | K | kapalı; ör. 294–1200 | — | `ayarlar.sicaklik.aralik` ([alt, üst]) |
 | **Shannon entropisi ile kaynak yakınsamasını ölç** | Fisyon kaynağı dağılımının pasif çevrimler içinde yakınsayıp yakınsamadığını ölçer. Koşu sonunda otomatik değerlendirilir (bkz. [kaynak yakınsaması](06-sonuclar.md#kaynak-yakinsamasi)). Yalnızca özdeğerde görünür. | — | **açık** | Kapatmak: doğrulama **uyarı** verir; yakınsamamış kaynak k-eff'i yanlı tahmin ettirir ve bu başka türlü fark edilmez. | `ayarlar.entropi_mesh.var` |
 | **Entropi ağı** | Entropinin hesaplandığı düzenli ağın bölme sayıları nx, ny (3B'de nz). **Ağ boyutu otomatik** işaretliyken 8 × 8 radyal bölme, 3B modelde 8 eksenel bölme, 2B'de tek dilim kullanılır; model 2B ↔ 3B değişince ağ da değişir. | bölme | 8 × 8 × 1 (2B), 8 × 8 × 8 (3B) | 3B modelde nz = 1 bırakmak: eksenel yakınsama hiç ölçülmez. Sıfır bölme (**hata**). | `ayarlar.entropi_mesh.boyut`; otomatik işareti `ayarlar.entropi_mesh.otomatik` |
 | **Ağ boyutu otomatik** | Entropi ağının modelden türetilmesi (yukarı bakın). | — | açık | — | `ayarlar.entropi_mesh.otomatik` |
@@ -178,6 +184,23 @@ Sonuçlar [Çalıştır](04g-calistir.md#calistir) sayfasındaki **Sonuç** kart
 Arayüzün düzenlemediği filtre türleri (ör. `malzeme` filtresi, `adlar` listesiyle; `hucre`
 filtresi) dosyadan gelirse **korunur** ve formda "Ayrıca dosyadan gelen filtre: … (korunur)."
 notu görünür. Nüklid bazlı tally için `tallyler[].nuklidler` alanı yalnızca JSON'dan girilir.
+
+
+<a id="ayar-yuzey"></a>
+### Yüzey akımı tally'leri
+
+Tally formundaki **Tür** kutusu bir tally'yi yüzey akımına çevirir (`cekirdek/yuzey_akim.py`).
+Yüzey tally'sinde skor yalnızca `current`'tır (OpenMC kuralı); **Enerji grupları** açıksa
+sonuç **kaçak spektrumu** olur; malzeme ve ağ filtreleri kaldırılır. Akım kaynak parçacığına
+süzülür (foton taşınımı açıkken fotonlar nötron akımına karışmaz). Sonuç
+[Çalıştır](04g-calistir.md#calistir-yuzey) sayfasındaki **Yüzey akımı ve kaçak** kartındadır;
+fizik ve ölçülen değerler: [5.16 dersi](05d-ders-foton-sicaklik-yuzey.md#ders-foton-sicaklik-yuzey).
+
+| Alan | Anlamı | Birim | Tipik aralık | Yaygın yanlış kullanım | Spec anahtarı |
+|---|---|---|---|---|---|
+| **Tür** | **Hacim (akı, tepkime)**: eski davranış. **Yüzey: model sınırı (kaçak)**: modelin vakum sınır yüzeyleri (`SurfaceFilter`); yüzey başına \|J\| = o yüzeyden kaçak, toplam = OpenMC global sızıntısı. **Yüzey: kutu ağı (giren / çıkan)**: düzenli ağın hücre yüzlerinden ayrı giren ve çıkan kısmi akım (`MeshSurfaceFilter`) ve aynı ağda analog nötron dengesi tally'si (`y7_denge:<ad>`). | — | Hacim | Yansıtıcı sınırlı modelde model sınırı istemek (**uyarı**: kaçak tanımca sıfır, tally kurulmaz). Yüzey tally'sine `current` dışında skor (**hata**). | `tallyler[].filtreler[]` (`tur`: `yuzey_sinir` \| `yuzey_kutu`) |
+| **Kutu bölmeleri** | Kutu ağının nx, ny, nz bölmesi; iç yüzler birbirini götürür, giren/çıkan dış yüzlerden sayılır. | bölme | 1 × 1 × 1 | Sıfır bölme (**hata**). | `tallyler[].filtreler[].boyut` |
+| **Kutu sınırları [cm]** | alt ve üst köşe `x, y, z`; ikisi de boşsa model kutusu (`otomatik`, tally ağıyla aynı kural). Okunamayan metin mevcut sınırı silmez. | cm | boş (otomatik) | Bir eksende alt ≥ üst (**hata**). Nokta kaynağı tam kutu yüzüne koymak: kaynak payı belirsiz, denge hesaplanmaz. | `tallyler[].filtreler[].alt`, `.ust`, `.otomatik` |
 
 <a id="ayar-hatalar"></a>
 ### Bu sayfanın sık bulguları

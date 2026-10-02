@@ -138,6 +138,7 @@ class YerlesimMixin(object):
         gf.addRow(_("IFP nesil sayısı:"), self.kinetik_nesil)
         gf.addRow(_("Gecikmeli nötron grupları:"), self.kinetik_gruplar)
         self.gelismis.ekle(self._sar(gf))
+        self.gelismis.ekle(self._y7_formu())       # Y7: foton ve sicaklik (arayuz/ayar/foton_sicaklik.py)
         self.gelismis_tayf_baslik = baslik(_("Başlangıç kaynağının enerjisi ve yönü"))
         self.gelismis.ekle(self.gelismis_tayf_baslik)
         self.gelismis_tayf_not = ipucu(_(
@@ -192,6 +193,13 @@ class YerlesimMixin(object):
         self.yerel_k_karti.degisti.connect(lambda: (self._tallyleri_doldur(), self.bildir()))
         return self.yerel_k_karti
 
+    def _y7_formu(self):
+        """Y7: foton tasinimi ve sicaklik isleme formu (Gelismis icinde)."""
+        from arayuz.ayar.foton_sicaklik import FotonSicaklikFormu
+        self.y7_formu = FotonSicaklikFormu()
+        self.y7_formu.degisti.connect(self.bildir)
+        return self.y7_formu
+
     def _tally_formu(self):
         t_form = QtWidgets.QFormLayout()
         self._t_form = t_form
@@ -209,6 +217,7 @@ class YerlesimMixin(object):
         t_form.addRow(_("Ağ bölmeleri:"), self.mesh_satiri)
         self._mesh_satirlari_ekle(t_form)
         t_form.addRow(self.t_diger)
+        self._yuzey_satirlari_ekle(t_form)          # Y7 (arayuz/ayar/yuzey_tally.py)
         self.tally_duzenleyici = self._sar(t_form)
 
     def _tally_karti(self):

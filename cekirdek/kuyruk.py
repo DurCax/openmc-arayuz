@@ -325,7 +325,8 @@ class Kuyruk:
 
     def dinleyici_cikar(self, dinleyici: Callable[[IsDurumu], None]) -> None:
         with self._kosul:
-            self._dinleyiciler = [d for d in self._dinleyiciler if d is not dinleyici]
+            # == : bagli yontem her erisimde YENI nesnedir (obj._olay is obj._olay -> False)
+            self._dinleyiciler = [d for d in self._dinleyiciler if d != dinleyici]
 
     def _yay(self, olaylar: Iterable[IsDurumu]) -> None:
         """Olaylari dinleyicilere iletir (kilit DISINDA cagrilmali). Bir isin

@@ -92,6 +92,8 @@ from cekirdek.dogrula.eksenel import (  # noqa: F401
 from cekirdek.dogrula.tukenme import (  # noqa: F401
     _SPEKTRUM_ADI, tukenme_kontrol)
 from cekirdek.dogrula.spektrum import spektrum_kontrol  # noqa: F401  (Y3)
+from cekirdek.dogrula.y7 import y7_kontrol  # noqa: F401  (Y7)
+from cekirdek.dogrula.yuzey import yuzey_kontrol  # noqa: F401  (Y7)
 from cekirdek.dogrula.ayar import (  # noqa: F401
     ayar_kontrol)
 from cekirdek.dogrula.kaynak import (  # noqa: F401
@@ -126,6 +128,8 @@ def tum_kontroller(spec, veri_kontrolu=True):
     bulgular += tukenme_kontrol(spec, veri_kontrolu)
     bulgular += tally_kontrol(spec)
     bulgular += spektrum_kontrol(spec)            # Y3
+    bulgular += y7_kontrol(spec, veri_kontrolu)   # Y7: foton, sicaklik
+    bulgular += yuzey_kontrol(spec)               # Y7: yuzey akimi tally'leri
     bulgular += guc_dagilimi_kontrol(spec)
     bulgular += referans_kontrol(spec)
     # nuklid kontrolu malzemeleri kurmayi gerektirir; once temel hatalar temiz olmali
