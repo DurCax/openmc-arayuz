@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 09:38+0300\n"
+"POT-Creation-Date: 2026-10-02 09:43+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -3943,8 +3943,8 @@ msgid "β_i negatif olamaz ve toplamı pozitif olmalı."
 msgstr "β_i cannot be negative and their sum must be positive."
 
 #: cekirdek/kinetik.py:178
-msgid "Keepin (1965), U-235 termal, 6 grup"
-msgstr "Keepin (1965), U-235 thermal, 6 groups"
+msgid "Keepin, Wimett & Zeigler (1957), U-235 termal, 6 grup"
+msgstr "Keepin, Wimett & Zeigler (1957), U-235 thermal, 6 groups"
 
 #: cekirdek/kinetik.py:210
 msgid "rampa süresi"

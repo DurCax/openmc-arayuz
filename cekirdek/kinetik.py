@@ -175,7 +175,7 @@ class GrupVerisi:
 
 KEEPIN_U235_TERMAL = GrupVerisi(
     beta=_KEEPIN_BETA, lam=_KEEPIN_LAMBDA, nesil_suresi=_TIPIK_LWR_LAMBDA,
-    kaynak=N_("Keepin (1965), U-235 termal, 6 grup"))   # gosterimde _() ile cevrilir
+    kaynak=N_("Keepin, Wimett & Zeigler (1957), U-235 termal, 6 grup"))   # gosterimde _() ile cevrilir
 
 
 @dataclass(frozen=True)
