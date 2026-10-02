@@ -529,28 +529,32 @@ def _bashrc(satirlar) -> None:
     print(_("~/.bashrc'ye eklendi. Yeni bir terminal açın ya da: source ~/.bashrc"))
 
 
-def _kur_hepsi(kutup, zincirler, hedef, kat):
+def _kur_hepsi(kutup, zincirler, hedef, kat, politika):
     """(cross_sections.xml | None, ayara yazilacak zincir | None)."""
     from cekirdek import veri_yolu
     yaz = _ilerleme_yazici()
     zincir_yollari = []
     for z in zincirler:
-        print(_("== zincir: %s") % z.ad)
-        zincir_yollari.append(zincir_kur(z, hedef, ilerleme=yaz).yol)
+        print(_("== zincir: %s") % z.gorunen_ad())
+        zincir_yollari.append(zincir_kur(z, hedef, politika=politika, ilerleme=yaz).yol)
     xml = None
     if kutup is not None:
         print(_("== kütüphane: %s (%.2f GB)") % (kutup.ad, kutup.bayt / veri_arsiv.GB))
-        xml = kutuphane_kur(kutup, hedef, kat.oran, ilerleme=yaz).yol
+        xml = kutuphane_kur(kutup, hedef, kat.oran, politika=politika, ilerleme=yaz).yol
     varsayilan = [y for y in zincir_yollari
                   if os.path.basename(y) == veri_yolu.VARSAYILAN_ZINCIR]
     return xml, (varsayilan or zincir_yollari or [None])[0]
 
 
-def main(argv=None) -> int:
-    """Cikis: 0 tamam, 1 indirme/kurma hatasi, 2 kullanim hatasi."""
+def main(argv=None, katalog: Optional[Katalog] = None,
+         politika: Optional[UrlPolitikasi] = None) -> int:
+    """Cikis: 0 tamam, 1 indirme/kurma hatasi, 2 kullanim hatasi.
+    katalog/politika yalniz Python'dan (test) verilir; komut satiri her zaman
+    paket katalogunu ve uretim politikasini (yalniz https) kullanir."""
     from cekirdek import veri_yolu
     a = _argumanlar().parse_args(argv)
-    kat = katalog_yukle()
+    kat = katalog or katalog_yukle()
+    politika = politika or katalog_politikasi(kat)
     if a.liste:
         _liste(kat)
         return 0
@@ -560,7 +564,7 @@ def main(argv=None) -> int:
         return 2
     try:
         hedef = veri_arsiv.hedef_dogrula(a.hedef or veri_yolu.varsayilan_indirme_hedefi())
-        xml, zincir_yolu = _kur_hepsi(secim[0], secim[1], hedef, kat)
+        xml, zincir_yolu = _kur_hepsi(secim[0], secim[1], hedef, kat, politika)
     except VeriHatasi as e:
         print(_("HATA: %s") % e, file=sys.stderr)
         return 1

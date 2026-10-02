@@ -442,11 +442,65 @@ def test_komut_satiri_hatali_secim():
     kontrol("cikis 2", kod == 2)
 
 
+def test_komut_satiri_uctan_uca():
+    print("\n[K2-K5] main(): sahte katalogla zincir + kutuphane, ayar yazilir, --bashrc eklenir")
+    from cekirdek import veri_indir, veri_yolu
+    eski = {k: os.environ.get(k) for k in ("HOME", "XDG_CONFIG_HOME")}
+    with SahteSunucu() as s, tempfile.TemporaryDirectory() as d:
+        try:
+            os.environ.update(HOME=d, XDG_CONFIG_HOME=os.path.join(d, "cfg"))
+            arsiv = _tar_xz(os.path.join(d, "a.tar.xz"), [("x/cross_sections.xml", _XS)])
+            with open(arsiv, "rb") as f:
+                veri = f.read()
+            s.dosyalar.update({"/k.xz": veri, "/z.xml": _VERI})
+            kutup = _oge(veri_indir, s.url("/k.xz"), len(veri))
+            zincir = veri_indir.Oge(kimlik="z", ad="Z termal", tur="zincir", url=s.url("/z.xml"),
+                                    bayt=len(_VERI), sha256=_SHA, kutuphane="sahte",
+                                    spektrum="termal", dosya_adi="chain_endfb80_thermal.xml",
+                                    uygulamada_kullanilir=True)
+            kat = veri_indir.Katalog((kutup,), (zincir,), frozenset({"127.0.0.1"}), 4.0, "t",
+                                     {"sayfa": "https://openmc.org/data/"})
+            hedef = os.path.join(d, "nucdata")
+            kod = veri_indir.main(["--hedef", hedef, "--kutuphane", "sahte", "--bashrc"],
+                                  katalog=kat, politika=_test_politikasi())
+            kontrol("cikis 0", kod == 0)
+            ayar = veri_yolu.ayar_oku()
+            kontrol("ayar kutuphane", ayar.get("cross_sections") == os.path.join(
+                hedef, "sahte-hdf5", "cross_sections.xml"), repr(ayar))
+            kontrol("ayar zincir", ayar.get("zincir") == os.path.join(
+                hedef, "chain", "chain_endfb80_thermal.xml"))
+            with open(os.path.join(d, ".bashrc"), encoding="utf-8") as f:
+                kontrol("bashrc satirlari", "OPENMC_CROSS_SECTIONS" in f.read())
+            kod = veri_indir.main(["--hedef", hedef, "--kutuphane", "sahte", "--bashrc"],
+                                  katalog=kat, politika=_test_politikasi())
+            with open(os.path.join(d, ".bashrc"), encoding="utf-8") as f:
+                kontrol("bashrc ikinci kez eklenmez", f.read().count("openmc_arayuz") == 1)
+            kontrol("bilinmeyen zincir cikis 2", veri_indir.main(
+                ["--hedef", hedef, "--zincir", "yok"], katalog=kat) == 2)
+            kontrol("uretim politikasiyla http reddi cikis 1", veri_indir.main(
+                ["--hedef", os.path.join(d, "b"), "--yalniz-zincir"], katalog=kat) == 1)
+        finally:
+            for k, v in eski.items():
+                if v is None:
+                    os.environ.pop(k, None)
+                else:
+                    os.environ[k] = v
+
+
+def test_katalog_paket_verisinde():
+    print("\n[K2-K6] pyproject package-data katalogu kapsar (kurulu pakette de bulunur)")
+    import tomllib
+    with open(os.path.join(KOK, "pyproject.toml"), "rb") as f:
+        paket = tomllib.load(f)["tool"]["setuptools"]["package-data"]
+    kontrol("cekirdek veri_katalogu.json", "veri_katalogu.json" in paket.get("cekirdek", []))
+
+
 HIZLI = [test_katalog_kaynakli_ve_gecerli, test_katalog_gecersiz_reddedilir, test_url_politikasi,
          test_tam_indirme_atomik, test_kesinti_ve_surdurme, test_sha256_hatasi,
          test_aralik_yok_sayilirsa_bastan, test_boyut_tutmazsa_hata, test_iptal_parcayi_korur,
          test_yonlendirme_politikasi, test_uretimde_http_reddi, test_disk_alani_denetimi,
          test_hedef_klasor_dogrulama, test_arsiv_guvenli_acma, test_arsiv_kotu_uyeler,
          test_arsiv_uye_sayisi_siniri, test_kutuphane_kur_uctan_uca, test_zincir_kur,
-         test_komut_satiri_liste_ve_betik, test_komut_satiri_hatali_secim]
+         test_komut_satiri_liste_ve_betik, test_komut_satiri_hatali_secim,
+         test_komut_satiri_uctan_uca, test_katalog_paket_verisinde]
 YAVAS = []

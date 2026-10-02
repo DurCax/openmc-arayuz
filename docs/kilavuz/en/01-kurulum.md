@@ -63,39 +63,93 @@ something is missing it tells you what to do (see
 
 A Monte Carlo calculation reads the **cross sections** of the nuclides from a library. This
 program is validated with the OpenMC HDF5 version of the **ENDF/B-VIII.0** library (all
-measurement anchors and benchmark results were obtained with it). `veri_indir.sh` downloads and
-checks the following under `~/nucdata`:
+measurement anchors and benchmark results were obtained with it). The data does not ship with
+the program (~13 GB unpacked); install it in one of two ways: the **Data** page in the interface
+or `veri_indir.sh`. Both use **the same code** (`cekirdek/veri_indir.py`).
 
 | Data | Size | Used for |
 |---|---|---|
-| ENDF/B-VIII.0 HDF5 cross sections (`endfb-viii.0-hdf5/cross_sections.xml`) | ~13 GB unpacked | every calculation |
+| ENDF/B-VIII.0 HDF5 cross sections (`endfb-viii.0-hdf5/cross_sections.xml`) | archive 3.4 GB, ~13.7 GB unpacked | every calculation |
 | Depletion chains: ENDF/B-VIII.0 thermal + fast (3820 nuclides) | ~27 MB each | depletion |
 | CASL thermal + fast (228 nuclides) | ~1 MB each | quick preliminary depletion studies |
 
-Options:
+### The Data and libraries page
+
+The **Setup › Data** page at the bottom of the sidebar. If the program opens without finding any
+data, this page opens **by itself** with a "Before you start: nuclear data" banner at the top;
+the banner disappears once data is selected, and **Go to the start screen** takes you on to
+building a model. While data is missing, the model check strip shows the error
+`Data library · nuclear data library not found` and **Run is disabled**; **Go to finding** on the
+strip brings you to this page.
+
+- **Requirements** — the OpenMC executable and its version (`openmc --version`), the OpenMC
+  Python API (same version as the executable?), HDF5 (h5py), the cross-section library and the
+  depletion chain in one table: ✓ ok, ! warning, ✗ missing; for a missing item it says what to do.
+- **Choose folder** — if a library is already on your computer, choose the folder that contains
+  `cross_sections.xml` (or its parent). **Check and use** reads the XML and shows the number of
+  neutron nuclides, S(α,β) tables and photon elements, sample temperature ranges (U235, H1,
+  water S(α,β)) and entries whose file is missing. A folder with missing files (a half-unpacked
+  archive) is **not accepted**. The depletion chain is chosen separately; the fast and CASL
+  chains are read from the same folder as the thermal chain.
+- **Download library** — the 12 libraries on the official openmc.org list (ENDF/B-VII.1,
+  ENDF/B-VIII.0, ENDF/B-VIII.1, JEFF-3.3, JEFF-4.0, JENDL-5, the LANL and NEA versions,
+  FENDL-3.2): archive size, temperatures, content and usage note, link to the evaluation page.
+  Chain boxes (ENDF/B-VIII.0 thermal/fast, CASL thermal/fast), target folder (default
+  `~/nucdata`), required and free disk space. The download runs **in the background** (the
+  interface does not freeze); after **Cancel** the partial file stays and the button becomes
+  **Resume** — it continues where it stopped.
+
+The choice is written to `~/.config/openmc_arayuz/veri.json` and **persists**; no environment
+variable is needed. Run, depletion and preview subprocesses get the same path.
+
+**Which data is used (order).** (1) If the `OPENMC_CROSS_SECTIONS` environment variable is set,
+**that one** (even if the file is missing; the page notes this, and your choice is not used until
+the variable is removed), (2) the choice on the Data page, (3) `~/nucdata/*/cross_sections.xml`
+or `~/.local/share/openmc_arayuz/nucdata/*/cross_sections.xml`. For the chain the same order
+starts with `OPENMC_CHAIN_FILE`; without a choice the `chain/` folder next to the library is
+used. The report, the experiment capsule and the model check all read from this single resolver
+(`cekirdek/veri_yolu.py`).
+
+**Security and integrity.** Only `https` and the domains in the catalogue (`anl.box.com`,
+`anl.app.box.com`, `public.boxcloud.com`); every redirect is checked too. The byte count is
+compared with the catalogue and the sha256 (when known); the file is first written as `.part` and
+moved into place only after it checks out. **openmc.org does not publish sha256 values:** the
+chains' sha256 was measured once in this project and is kept in the catalogue; for libraries only
+the byte count is checked and the computed sha256 is written to the `KAYNAK.json` receipt in the
+installed folder. When unpacking, links (symlink/hardlink), absolute paths and members containing
+`..` are rejected; the unpacked size and member count are limited; unpacking stops if the disk
+runs low. System directories (`/usr`, `/etc` …) cannot be chosen as the target.
+
+The catalogue is `cekirdek/veri_katalogu.json`: source `https://openmc.org/data` (access date,
+the sha256 of the source file and the measurement method are written in the catalogue). Licence:
+the openmc.org page states no separate licence for the libraries; the distribution terms of the
+source evaluation (ENDF/B, JEFF, JENDL …) apply — check the evaluation page before use.
+
+### From the terminal: `veri_indir.sh`
 
 ```bash
+./veri_indir.sh --liste                                # catalogue
+./veri_indir.sh                                        # ENDF/B-VIII.0 + 4 chains -> ~/nucdata
 ./veri_indir.sh --hedef /baska/disk/nucdata --bashrc   # to another disk
+./veri_indir.sh --kutuphane jendl-5                    # another library
 ./veri_indir.sh --yalniz-zincir                        # chains only (~57 MB)
 ```
 
-`--bashrc` adds two environment variables to `~/.bashrc`:
+When it finishes, the script writes the choice to the application settings. `--bashrc` also adds
+two environment variables to `~/.bashrc` (needed only if you use `openmc` from the terminal):
 
 ```
 OPENMC_CROSS_SECTIONS = ~/nucdata/endfb-viii.0-hdf5/cross_sections.xml
 OPENMC_CHAIN_FILE     = ~/nucdata/chain/chain_endfb80_thermal.xml
 ```
 
-- `OPENMC_CROSS_SECTIONS` is **required**; without it no run starts and the model check panel
-  shows a `veri kutuphanesi` error.
-- `OPENMC_CHAIN_FILE` is only for the terminal and the exported script. The interface **chooses**
-  the chain for each model itself (thermal or fast; see [4.9 Depletion](04i-tukenme.md#tukenme)).
+- The interface **chooses** the chain for each model itself (thermal or fast; see
+  [4.9 Depletion](04i-tukenme.md#tukenme)); `OPENMC_CHAIN_FILE` only sets the chains' folder.
 
-**A partial download is not accepted.** The byte count and sha256 of the chains are compared
-with the table in the script. (The first download in this project silently stopped at 13%; the
-file name and location were right, nobody looking at it could have seen the problem.) If the
-download is interrupted, run the script again; it resumes. The interface also shows a partial
-chain as an **error** in the model check panel and does not start depletion.
+**A partial download is not accepted.** (The first download in this project silently stopped at
+13%; the file name and location were right, nobody looking at it could have seen the problem.) If
+the download is interrupted, start it again; it resumes. The interface also shows a partial chain
+as an **error** in the model check panel and does not start depletion.
 
 > **WMP (windowed multipole) data is deliberately not downloaded.** The 1.7 GB file on
 > openmc.org is the complete ENDF/B-VII.1 library; mixing it with VIII.0 cross sections would
