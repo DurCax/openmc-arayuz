@@ -372,7 +372,17 @@ class AnaPencere(DogrulamaMixin, GezinmeCephesi, MenulerMixin, ProjeMixin, Gecmi
         self._editoru_goster()
 
     def _spec_uygula(self):
-        """Spec bastan yuklendi -- tum sekmeleri tazele."""
+        """
+        Spec bastan yuklendi -- tum sekmeleri tazele.
+
+        BILEREK HEVESLI (v3 H1, olculdu): bellekleme sonrasi SFR'de gizli
+        editorlerin hepsi birlikte ~0.9 s (soguk) / ~0.15 s (sicak) tutar.
+        Yalniz gorunur sekmeyi doldurmak denendi; gizli sayfalarin durumu
+        (Kor tur satiri, Tukenme'nin onceki sonuc okumasi ve kenar cubugundaki
+        ✓ isareti, kosu/okuma dizini) gozlenebilir bicimde degisti -- kazanc
+        davranis degisikligine degmedi. Tembellik _degisti'dedir (konuya bagli
+        sekmeler kirli; testler/test_h1_bellek.py).
+        """
         self._hafizayi_esitle()
         self.s_tukenme.proje_ayarla(self.proje_yolu, self.ornek_kaynagi)
         for e in self.editorler:

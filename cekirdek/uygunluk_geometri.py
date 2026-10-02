@@ -22,7 +22,14 @@
 ================================================================================
 """
 
+import types
+
 from cekirdek import sema
+from cekirdek.uygunluk_bellek import Bellek, icerik_anahtari
+
+# Spec icerigine gore bellek (v3 H1; bkz. uygunluk_bellek.py)
+_ICERIK = Bellek("geometri_icerigi")
+_BOYUT = Bellek("model_boyutu")
 
 
 def _agac(spec):
@@ -45,14 +52,31 @@ def geometri_icerigi(spec):
     Agac modunda geometri.icerik (agac gezintisi), sablonda
     _sablon_geometri_icerigi (kurallar orada).
     """
+    return {k: set(v) for k, v in dondurulmus_icerik(spec).items()}
+
+
+def dondurulmus_icerik(spec, anahtar=None):
+    """geometri_icerigi'nin DEGISMEZ bicimi (salt okunur esleme, frozenset);
+    spec icerigine gore bellekli. anahtar: icerik_anahtari(spec) (verilmezse
+    hesaplanir)."""
+    return _ICERIK.al(anahtar or icerik_anahtari(spec), lambda: types.MappingProxyType(
+        {k: frozenset(v) for k, v in _icerik_hesapla(spec).items()}))
+
+
+def _icerik_hesapla(spec):
     if _agac(spec):
         from cekirdek import geometri
         return geometri.icerik(_model(spec))
     return _sablon_geometri_icerigi(spec)
 
 
-def model_boyutu(spec):
-    """"2B" | "3B" | "3B_katmanli" -- eksenel boyut (kurede "2B")."""
+def model_boyutu(spec, anahtar=None):
+    """"2B" | "3B" | "3B_katmanli" -- eksenel boyut (kurede "2B"); bellekli.
+    anahtar: icerik_anahtari(spec) (verilmezse hesaplanir)."""
+    return _BOYUT.al(anahtar or icerik_anahtari(spec), lambda: _model_boyutu(spec))
+
+
+def _model_boyutu(spec):
     if _agac(spec):
         from cekirdek import geometri
         from cekirdek.geometri.eksenel import yiginlar
