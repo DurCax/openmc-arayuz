@@ -154,6 +154,7 @@ class GoruntuleyiciPenceresi(QtWidgets.QMainWindow):
         self.spec = spec
         self.gorunum, self._kesit, self._raster = None, None, None
         self._noktalar, self._noktalar_anahtari = None, None
+        self.bilgi.setText("")
         if statepoint != self.statepoint:
             self.statepoint_ayarla(statepoint)
         if spec is None:
