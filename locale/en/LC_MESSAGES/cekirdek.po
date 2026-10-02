@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 05:26+0300\n"
+"POT-Creation-Date: 2026-10-02 07:11+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -4011,18 +4011,18 @@ msgstr "Relative error"
 msgid "Birim"
 msgstr "Unit"
 
-#: cekirdek/kosucu.py:453 cekirdek/rapor_sablon/__init__.py:152
+#: cekirdek/kosucu.py:455 cekirdek/rapor_sablon/__init__.py:152
 #, python-format
 msgid "okunamadı: %s"
 msgstr "could not be read: %s"
 
-#: cekirdek/kosucu.py:514
+#: cekirdek/kosucu.py:516
 msgid "Referans tally yok — korunum denetlenemedi (eski statepoint ya da model regresyonu)."
 msgstr ""
 "No reference tally — conservation could not be checked (old statepoint or model "
 "regression)."
 
-#: cekirdek/kosucu.py:518
+#: cekirdek/kosucu.py:520
 #, python-format
 msgid ""
 "Referans güç toplamı sıfır ya da negatif (%.3g): hedef bölgede fisyon sayılmadı, "
@@ -4031,7 +4031,7 @@ msgstr ""
 "The reference power sum is zero or negative (%.3g): no fissions were counted in the "
 "target region, the conservation of the total could not be checked."
 
-#: cekirdek/kosucu.py:525
+#: cekirdek/kosucu.py:527
 #, python-format
 msgid ""
 "Çubuk güçlerinin toplamı filtresiz tally'den %.2e bağıl fark gösteriyor. Haritalama "
@@ -4040,20 +4040,20 @@ msgstr ""
 "The sum of the pin powers differs from the unfiltered tally by a relative %.2e. The "
 "mapping may be broken — do not trust the results."
 
-#: cekirdek/kosucu.py:578
+#: cekirdek/kosucu.py:580
 #, python-format
 msgid "toplamın korunumu: bağıl fark %.1e — %s"
 msgstr "conservation of the total: relative difference %.1e — %s"
 
-#: cekirdek/kosucu.py:579 cekirdek/kosucu_terminal.py:157
+#: cekirdek/kosucu.py:581 cekirdek/kosucu_terminal.py:157
 msgid "tamam"
 msgstr "ok"
 
-#: cekirdek/kosucu.py:580
+#: cekirdek/kosucu.py:582
 msgid "bozuk, haritaya güvenmeyin"
 msgstr "broken, do not trust the map"
 
-#: cekirdek/kosucu.py:582
+#: cekirdek/kosucu.py:584
 #, python-format
 msgid "toplamın korunumu denetlenemedi: %s"
 msgstr "conservation of the total could not be checked: %s"
@@ -4389,36 +4389,36 @@ msgstr "         local slope dk/dx = %.4g / %s"
 msgid "  Çözüm bulunamadı."
 msgstr "  No solution found."
 
-#: cekirdek/dogrula/geometri.py:72 cekirdek/geometri/yapici.py:76 cekirdek/kurucu.py:86
+#: cekirdek/dogrula/geometri.py:72 cekirdek/geometri/yapici.py:76 cekirdek/kurucu.py:87
 #: cekirdek/sema_basvuru.py:156 cekirdek/tarama.py:170 cekirdek/tarama.py:176
 #, python-format
 msgid "tanımsız malzeme: %s"
 msgstr "undefined material: %s"
 
-#: cekirdek/kurucu.py:197
+#: cekirdek/kurucu.py:198
 msgid "otomatik ağ sınırları için modelin sınır kutusu gerekli"
 msgstr "automatic mesh boundaries require the bounding box of the model"
 
-#: cekirdek/kurucu.py:231
+#: cekirdek/kurucu.py:232
 #, python-format
 msgid "bilinmeyen filtre türü: %s"
 msgstr "unknown filter type: %s"
 
-#: cekirdek/kurucu.py:249 cekirdek/kurucu.py:272
+#: cekirdek/kurucu.py:250 cekirdek/kurucu.py:273
 msgid "güç dağılımı için geçerli bir çubuk seçilmeli"
 msgstr "a valid pin must be selected for the power distribution"
 
-#: cekirdek/kurucu.py:250
+#: cekirdek/kurucu.py:251
 #, python-format
 msgid " ('%s' tanımsız)"
 msgstr " ('%s' undefined)"
 
-#: cekirdek/kurucu.py:257
+#: cekirdek/kurucu.py:258
 #, python-format
 msgid "'%s': geçersiz bölge numarası %d (çubukta %d bölge var)"
 msgstr "'%s': invalid pin region number %d (the pin has %d regions)"
 
-#: cekirdek/kurucu.py:286
+#: cekirdek/kurucu.py:287
 #, python-format
 msgid ""
 "'%s' çubuğu modelde kullanılmıyor. Güç dağılımı yalnızca geometride yer alan bir "
@@ -5641,6 +5641,15 @@ msgstr ""
 #, python-format
 msgid "'%s' adında %d malzeme var; önce birini yeniden adlandırın."
 msgstr "Material name '%s' is used by %d materials; rename one of them first."
+
+#: cekirdek/spektrum.py:101
+#, python-format
+msgid "bilinmeyen enerji grup yapısı: %s (geçerli: %s)"
+msgstr "unknown energy group structure: %s (valid: %s)"
+
+#: cekirdek/spektrum.py:255
+msgid "enerji kenarlarının hepsi sıfır ya da negatif"
+msgstr "all energy edges are zero or negative"
 
 #: cekirdek/surum.py:22
 msgid "OpenMC Reaktör Kuru Arayüzü"

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 05:26+0300\n"
+"POT-Creation-Date: 2026-10-02 07:11+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -3618,43 +3618,43 @@ msgstr ""
 msgid "Birim"
 msgstr ""
 
-#: cekirdek/kosucu.py:453 cekirdek/rapor_sablon/__init__.py:152
+#: cekirdek/kosucu.py:455 cekirdek/rapor_sablon/__init__.py:152
 #, python-format
 msgid "okunamadı: %s"
 msgstr ""
 
-#: cekirdek/kosucu.py:514
+#: cekirdek/kosucu.py:516
 msgid "Referans tally yok — korunum denetlenemedi (eski statepoint ya da model regresyonu)."
 msgstr ""
 
-#: cekirdek/kosucu.py:518
+#: cekirdek/kosucu.py:520
 #, python-format
 msgid ""
 "Referans güç toplamı sıfır ya da negatif (%.3g): hedef bölgede fisyon sayılmadı, "
 "toplamın korunumu denetlenemedi."
 msgstr ""
 
-#: cekirdek/kosucu.py:525
+#: cekirdek/kosucu.py:527
 #, python-format
 msgid ""
 "Çubuk güçlerinin toplamı filtresiz tally'den %.2e bağıl fark gösteriyor. Haritalama "
 "bozuk olabilir — sonuçlara güvenmeyin."
 msgstr ""
 
-#: cekirdek/kosucu.py:578
+#: cekirdek/kosucu.py:580
 #, python-format
 msgid "toplamın korunumu: bağıl fark %.1e — %s"
 msgstr ""
 
-#: cekirdek/kosucu.py:579 cekirdek/kosucu_terminal.py:157
+#: cekirdek/kosucu.py:581 cekirdek/kosucu_terminal.py:157
 msgid "tamam"
 msgstr ""
 
-#: cekirdek/kosucu.py:580
+#: cekirdek/kosucu.py:582
 msgid "bozuk, haritaya güvenmeyin"
 msgstr ""
 
-#: cekirdek/kosucu.py:582
+#: cekirdek/kosucu.py:584
 #, python-format
 msgid "toplamın korunumu denetlenemedi: %s"
 msgstr ""
@@ -3956,36 +3956,36 @@ msgstr ""
 msgid "  Çözüm bulunamadı."
 msgstr ""
 
-#: cekirdek/dogrula/geometri.py:72 cekirdek/geometri/yapici.py:76 cekirdek/kurucu.py:86
+#: cekirdek/dogrula/geometri.py:72 cekirdek/geometri/yapici.py:76 cekirdek/kurucu.py:87
 #: cekirdek/sema_basvuru.py:156 cekirdek/tarama.py:170 cekirdek/tarama.py:176
 #, python-format
 msgid "tanımsız malzeme: %s"
 msgstr ""
 
-#: cekirdek/kurucu.py:197
+#: cekirdek/kurucu.py:198
 msgid "otomatik ağ sınırları için modelin sınır kutusu gerekli"
 msgstr ""
 
-#: cekirdek/kurucu.py:231
+#: cekirdek/kurucu.py:232
 #, python-format
 msgid "bilinmeyen filtre türü: %s"
 msgstr ""
 
-#: cekirdek/kurucu.py:249 cekirdek/kurucu.py:272
+#: cekirdek/kurucu.py:250 cekirdek/kurucu.py:273
 msgid "güç dağılımı için geçerli bir çubuk seçilmeli"
 msgstr ""
 
-#: cekirdek/kurucu.py:250
+#: cekirdek/kurucu.py:251
 #, python-format
 msgid " ('%s' tanımsız)"
 msgstr ""
 
-#: cekirdek/kurucu.py:257
+#: cekirdek/kurucu.py:258
 #, python-format
 msgid "'%s': geçersiz bölge numarası %d (çubukta %d bölge var)"
 msgstr ""
 
-#: cekirdek/kurucu.py:286
+#: cekirdek/kurucu.py:287
 #, python-format
 msgid ""
 "'%s' çubuğu modelde kullanılmıyor. Güç dağılımı yalnızca geometride yer alan bir "
@@ -5187,6 +5187,15 @@ msgstr ""
 #: cekirdek/sema_basvuru.py:158
 #, python-format
 msgid "'%s' adında %d malzeme var; önce birini yeniden adlandırın."
+msgstr ""
+
+#: cekirdek/spektrum.py:101
+#, python-format
+msgid "bilinmeyen enerji grup yapısı: %s (geçerli: %s)"
+msgstr ""
+
+#: cekirdek/spektrum.py:255
+msgid "enerji kenarlarının hepsi sıfır ya da negatif"
 msgstr ""
 
 #: cekirdek/surum.py:22

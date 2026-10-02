@@ -18,7 +18,7 @@ from arayuz import tema
 from arayuz.calistir.yakinsama import GrafikKarti
 from arayuz.ortak import ipucu
 from cekirdek import spektrum
-from cekirdek.ceviri import _
+from cekirdek.ceviri import _, N_
 from cekirdek.gunluk import kaydedici
 
 _log = kaydedici(__name__)
@@ -26,20 +26,20 @@ _YUKSEKLIK = 240            # grafik [px]
 
 # (anahtar, sembol, ad, tanim) -- tanimlar cekirdek/spektrum.py modul belgesiyle ayni
 _FAKTORLER = (
-    ("eps", "ε", "hızlı fisyon çarpanı", "νF / νF_th"),
-    ("p", "p", "rezonanstan kaçma olasılığı", "A_th / A"),
-    ("f", "f", "termal yararlanma", "A_yakıt,th / A_th"),
-    ("eta", "η", "termal soğurma başına nötron", "νF_th / A_yakıt,th"),
-    ("carpim", "ε·p·f·η", "dört faktör çarpımı", "νF / A"),
-    ("c_xn", "c_xn", "(n,xn) düzeltmesi", "A / (A − X)"),
-    ("p_nl", "P_NL", "sızmama olasılığı (P_FNL·P_TNL)", "(A − X) / (A − X + L)"),
-    ("k", "k", "tally'lerden k", "νF / (A − X + L)"),
+    ("eps", "ε", N_("hızlı fisyon çarpanı"), "νF / νF_th"),
+    ("p", "p", N_("rezonanstan kaçma olasılığı"), "A_th / A"),
+    ("f", "f", N_("termal yararlanma"), "A_F,th / A_th"),
+    ("eta", "η", N_("termal soğurma başına nötron"), "νF_th / A_F,th"),
+    ("carpim", "ε·p·f·η", N_("dört faktör çarpımı"), "νF / A"),
+    ("c_xn", "c_xn", N_("(n,xn) düzeltmesi"), "A / (A − X)"),
+    ("p_nl", "P_NL", N_("sızmama olasılığı (P_FNL·P_TNL)"), "(A − X) / (A − X + L)"),
+    ("k", "k", N_("tally'lerden k"), "νF / (A − X + L)"),
 )
 _INDEKSLER = (
-    ("rho28", "ρ28", "U-238 yakalama, epitermal / termal"),
-    ("delta25", "δ25", "U-235 fisyon, epitermal / termal"),
-    ("delta28", "δ28", "U-238 fisyon / U-235 fisyon"),
-    ("C*", "C*", "U-238 yakalama / U-235 fisyon"),
+    ("rho28", "ρ28", N_("U-238 yakalama, epitermal / termal")),
+    ("delta25", "δ25", N_("U-235 fisyon, epitermal / termal")),
+    ("delta28", "δ28", N_("U-238 fisyon / U-235 fisyon")),
+    ("C*", "C*", N_("U-238 yakalama / U-235 fisyon")),
 )
 
 
@@ -76,7 +76,7 @@ def varsayim_notlari(sonuc, sonsuz):
         _("Termal kesim %g eV (OpenMC tally-arithmetic örneği, CASMO-2 sınırı, CSEWG "
           "kadmiyum kesimi).") % sonuc.get("termal_kesim", spektrum.TERMAL_KESIM_EV),
         _("ε, p, f, η sızıntısız (k∞) tanımlardır: νF nu-fission, A absorption, X = (n,xn) net "
-          "üretim; “yakıt” = fisil nüklid içeren malzemeler."),
+          "üretim; F (yakıt) = fisil nüklid içeren malzemeler."),
         _("Belirsizlik birinci derece, tally'ler arası korelasyon yok sayıldı (ihtiyatlı; "
           "çarpımın sapması νF/A oranından)."),
     ]

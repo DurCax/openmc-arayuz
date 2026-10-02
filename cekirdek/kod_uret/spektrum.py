@@ -31,7 +31,7 @@ def _spektrum_tallyleri(spec, satirlar):
     satirlar.append("# --- spektrum ve dört faktör (ε, p, f, η) tally'leri ---")
     satirlar.append("# Termal kesim %g eV (OpenMC tally-arithmetic örneği, CASMO-2 sınırı)."
                     % spektrum.TERMAL_KESIM_EV)
-    satirlar.append("# ε = νF/νF_th, p = A_th/A, f = A_yakıt,th/A_th, η = νF_th/A_yakıt,th")
+    satirlar.append("# ε = νF/νF_th, p = A_th/A, f = A_F,th/A_th, η = νF_th/A_F,th")
     satirlar.append("# (sızıntısız tanım; k = ε·p·f·η · A/(A−X) · P_NL, X = (n,xn) net üretim)")
     satirlar.append("_y3_tallyler = []")
     for t in tanimlar:
