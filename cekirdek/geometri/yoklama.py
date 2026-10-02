@@ -112,6 +112,13 @@ def _iceren_matrisi(hucreler, P):
     return np.vstack(satirlar) if satirlar else np.zeros((0, len(P)), dtype=bool)
 
 
+def _iceren_hucreler(evren, p):
+    """Tek noktayi iceren hucreler (evren sirasiyla); guc_faktor de kullanir."""
+    hucreler = list(evren.cells.values())
+    matris = _iceren_matrisi(hucreler, np.array([p], dtype=float))
+    return [hucreler[j] for j in np.flatnonzero(matris[:, 0])]
+
+
 def _bos_durum(p, kok, icinde):
     if kok and icinde is not None and not icinde(p[0], p[1]):
         return "dis"

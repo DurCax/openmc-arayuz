@@ -237,3 +237,22 @@ def test_yokla_bellekli_ve_paylasilan_modeli_kullanir(monkeypatch):
 
 
 HIZLI.append(test_yokla_bellekli_ve_paylasilan_modeli_kullanir)
+
+
+def test_iceren_hucreler_kahinle_ayni():
+    print("\n[H1b-Y7] _iceren_hucreler (guc_faktor kullanir) tekil kahinle ayni")
+    import numpy as np
+    from cekirdek.geometri import yoklama
+    from testler.test_geometri_dogrulama import ortusen_model
+    geo, kutu, _i = _girdi(ortusen_model())
+    rnd = random.Random(9)
+    (x0, y0, _z0), (x1, y1, _z1) = kutu
+    fark = 0
+    for _k in range(300):
+        p = np.array([rnd.uniform(x0, x1), rnd.uniform(y0, y1), 0.0])
+        fark += [c.id for c in yoklama._iceren_hucreler(geo.root_universe, p)] != \
+            [c.id for c in _kahin_iceren(geo.root_universe, p)]
+    kontrol("300 noktada fark yok", fark == 0, "fark=%d" % fark)
+
+
+HIZLI.append(test_iceren_hucreler_kahinle_ayni)
