@@ -33,6 +33,11 @@ hesap sonucudur ve "doğru" değer değildir.
 | vv/kriter_hst032.json | HEU-SOL-THERM-032 (ORNL-10) | 1.0015 ± 0.0026 | 0.99851 ± 0.00020 | −299 | 1.15 | 0.99701 | 100000 | 200/50 | 449.5 | geçti |
 | vv/kriter_imf003.json | IEU-MET-FAST-003, durum 2 | 1.0000 ± 0.0017 | 1.00013 ± 0.00018 | +13 | 0.08 | 1.00013 | 100000 | 200/50 | 63.3 | geçti |
 | vv/kriter_imf004.json | IEU-MET-FAST-004, durum 2 | 1.0000 ± 0.0030 | 1.00482 ± 0.00020 | +482 | 1.60 | 1.00482 | 100000 | 200/50 | 52.2 | geçti |
+| vv/kriter_lct006_01.json | LEU-COMP-THERM-006, durum 1 | 1.0000 ± 0.0020 | 1.00085 ± 0.00027 | +85 | 0.42 | 1.00085 | 100000 | 200/50 | 640.6 | geçti |
+| vv/kriter_lct006_02.json | LEU-COMP-THERM-006, durum 2 | 1.0000 ± 0.0020 | 1.00119 ± 0.00027 | +119 | 0.59 | 1.00119 | 100000 | 200/50 | 559.3 | geçti |
+| vv/kriter_lct006_03.json | LEU-COMP-THERM-006, durum 3 | 1.0000 ± 0.0020 | 1.00116 ± 0.00030 | +116 | 0.57 | 1.00116 | 100000 | 200/50 | 706.0 | geçti |
+| vv/kriter_lct006_04.json | LEU-COMP-THERM-006, durum 4 | 1.0000 ± 0.0020 | 1.00108 ± 0.00026 | +108 | 0.54 | 1.00108 | 100000 | 200/50 | 711.2 | geçti |
+| vv/kriter_lct006_05.json | LEU-COMP-THERM-006, durum 5 | 1.0000 ± 0.0020 | 1.00084 ± 0.00025 | +84 | 0.42 | 1.00084 | 100000 | 200/50 | 525.1 | geçti |
 | vv/kriter_lst002a.json | LEU-SOL-THERM-002, durum 1 | 1.0038 ± 0.0040 | 0.99994 ± 0.00020 | −386 | 0.96 | 0.99615 | 100000 | 200/50 | 322.4 | geçti |
 | vv/kriter_lst002b.json | LEU-SOL-THERM-002, durum 2 | 1.0024 ± 0.0037 | 0.99578 ± 0.00023 | −662 | 1.79 | 0.99340 | 100000 | 200/50 | 226.8 | geçti |
 | vv/kriter_lst003c.json | LEU-SOL-THERM-003, durum 3 | 0.9995 ± 0.0042 | 1.00396 ± 0.00028 | +446 | 1.06 | 1.00446 | 100000 | 200/50 | 221.6 | geçti |
@@ -127,6 +132,11 @@ bölünebilir atom, yalnız H bölünebilir malzemenin içindeyse; H yalnız ayr
 | vv/kriter_hst032.json | HEU-SOL-THERM-032 | U-235 | 93.21 | çözelti | yok | 1.84e+03 | 0.0313 | termal |
 | vv/kriter_imf003.json | IEU-MET-FAST-003 | U-235 | 36.53 | metal | yok | 0 | 6.18e+05 | hızlı |
 | vv/kriter_imf004.json | IEU-MET-FAST-004 | U-235 | 36.54 | metal | grafit | 0 | 5.79e+05 | hızlı |
+| vv/kriter_lct006_01.json | LEU-COMP-THERM-006 | U-235 | 2.60 | oksit | su | 165 | 0.24 | termal |
+| vv/kriter_lct006_02.json | LEU-COMP-THERM-006 | U-235 | 2.60 | oksit | su | 165 | 0.246 | termal |
+| vv/kriter_lct006_03.json | LEU-COMP-THERM-006 | U-235 | 2.60 | oksit | su | 165 | 0.253 | termal |
+| vv/kriter_lct006_04.json | LEU-COMP-THERM-006 | U-235 | 2.60 | oksit | su | 201 | 0.185 | termal |
+| vv/kriter_lct006_05.json | LEU-COMP-THERM-006 | U-235 | 2.60 | oksit | su | 201 | 0.191 | termal |
 | vv/kriter_lst002a.json | LEU-SOL-THERM-002 | U-235 | 4.89 | çözelti | su | 1.1e+03 | 0.0385 | termal |
 | vv/kriter_lst002b.json | LEU-SOL-THERM-002 | U-235 | 4.89 | çözelti | yok | 1e+03 | 0.0404 | termal |
 | vv/kriter_lst003c.json | LEU-SOL-THERM-003 | U-235 | 10.07 | çözelti | yok | 897 | 0.039 | termal |

@@ -7,6 +7,7 @@ araclar/vv_rapor.py -- V&V kumesinin docs/VV*.md tablolarini JSON olcumlerinden 
   python araclar/vv_rapor.py aoa [--dil tr|en] [desen]        # AOA tablosu satirlari
   python araclar/vv_rapor.py usl [--dil tr|en]                # alt kume yanlilik/USL tablosu
   python araclar/vv_rapor.py grafik [--cikti D]               # C/E - H/X ve EALF (PNG)
+  python araclar/vv_rapor.py guncelle [desen]                 # VV.md + VV.en.md tablolarina yaz
 
 Sayilar dosyalardan okunur; elle yazilmaz (test_benchmark BM4 ayni sayilari arar).
 """
@@ -71,6 +72,41 @@ def aoa_satiri(goreli: str, ham: Mapping[str, Any], dil: str = "tr") -> str:
         goreli, ref["seri"], a["bolunebilir"], a["zenginlik"],
         m.get(a["fiziksel_bicim"], a["fiziksel_bicim"]), m.get(a["yansitici"], a["yansitici"]),
         a["h_x"], a["ealf"], m.get(a["tayf"], a["tayf"]))
+
+
+def _anahtar(satir: str) -> str:
+    return satir.split("|")[1].strip()
+
+
+def _tablo_araligi(satirlar: List[str], baslik: str) -> Tuple[int, int]:
+    """baslik satirindan sonraki ilk tablonun veri satirlari [bas, son)."""
+    if baslik not in satirlar:
+        raise ValueError("başlık bulunamadı: %s" % baslik)
+    i = satirlar.index(baslik) + 1
+    while i < len(satirlar) and not satirlar[i].startswith("|"):
+        i += 1
+    bas = i + 2                                   # baslik + ayirici satiri
+    son = bas
+    while son < len(satirlar) and satirlar[son].startswith("|"):
+        son += 1
+    return bas, son
+
+
+def tabloya_yerlestir(metin: str, baslik: str, yeni_satirlar: Sequence[str]) -> str:
+    """Bolumdeki tabloda ayni dosyanin satirini degistirir; olmayani, anahtari kendisinden
+    kucuk son satirin arkasina ekler. Tablo disi metin degismez (YENI metin doner)."""
+    satirlar = metin.split("\n")
+    bas, son = _tablo_araligi(satirlar, baslik)
+    veri = satirlar[bas:son]
+    for yeni in yeni_satirlar:
+        anahtar = _anahtar(yeni)
+        konum = next((i for i, x in enumerate(veri) if _anahtar(x) == anahtar), None)
+        if konum is not None:
+            veri[konum] = yeni
+            continue
+        once = [i for i, x in enumerate(veri) if _anahtar(x) < anahtar]
+        veri.insert(once[-1] + 1 if once else 0, yeni)
+    return "\n".join(satirlar[:bas] + veri + satirlar[son:])
 
 
 def dosyalar(desen: str = "vv/kriter_lct*.json") -> List[Tuple[str, Dict[str, Any]]]:
@@ -154,15 +190,38 @@ def grafik(cikti: str = CIKTI) -> List[str]:
     return yollar
 
 
+BELGELER = {"tr": (os.path.join(KOK, "docs", "VV.md"), "## Deney kriterleri (C/E)",
+                   "## V&V kümesi: AOA parametreleri"),
+            "en": (os.path.join(KOK, "docs", "VV.en.md"), "## Experimental benchmarks (C/E)",
+                   "## V&V set: AOA parameters")}
+
+
+def belgeleri_guncelle(desen: str) -> List[str]:
+    """docs/VV.md ve VV.en.md deney ve AOA tablolarina desenin satirlarini yerlestirir."""
+    secili = dosyalar(desen)
+    yazilan = []
+    for dil, (yol, deney_baslik, aoa_baslik) in BELGELER.items():
+        with open(yol, encoding="utf-8") as f:
+            metin = f.read()
+        metin = tabloya_yerlestir(metin, deney_baslik, [deney_satiri(g, h, dil) for g, h in secili])
+        metin = tabloya_yerlestir(metin, aoa_baslik, [aoa_satiri(g, h, dil) for g, h in secili])
+        with open(yol, "w", encoding="utf-8") as f:
+            f.write(metin)
+        yazilan.append(yol)
+    return yazilan
+
+
 def main(argv: Optional[List[str]] = None) -> int:
     p = argparse.ArgumentParser()
-    p.add_argument("is_", choices=("satirlar", "aoa", "usl", "grafik"))
+    p.add_argument("is_", choices=("satirlar", "aoa", "usl", "grafik", "guncelle"))
     p.add_argument("desen", nargs="?", default="vv/kriter_lct*.json")
     p.add_argument("--dil", choices=("tr", "en"), default="tr")
     p.add_argument("--cikti", default=CIKTI)
     a = p.parse_args(argv)
     if a.is_ == "grafik":
         satirlar = grafik(a.cikti)
+    elif a.is_ == "guncelle":
+        satirlar = belgeleri_guncelle(a.desen)
     elif a.is_ == "usl":
         satirlar = usl_tablosu(a.dil)
     else:
