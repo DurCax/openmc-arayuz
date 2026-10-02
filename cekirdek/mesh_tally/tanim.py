@@ -49,13 +49,22 @@ HEKSAGONAL_NOTU = N_(
     "silindirik ağ kullanın.")
 
 # 2B (eksenel yonde SONSUZ, z sinirsiz) modelde otomatik agin z yari yuksekligi [cm].
-# Eskiden +/-1 cm idi: parcaciklar z'de serbestce dolastigi icin iz uzunlugunun
-# cogu agin disinda kaliyor, sayim ~1/10'a dusuyordu (olculdu, pwr_mesh_aki
-# 5000 x 40 aktif: kappa-fission bagil hata medyani %21). Eksenel sonsuz modelde
-# akı z'de duzgun oldugundan hacim basina deger degismez, varyans duser.
-# 1e4 cm, kaynagin 60-300 cevrimdeki z rastgele yuruyusunden (~sqrt(cevrim) x goc
-# uzunlugu ~ 1e2 cm) iki mertebe buyuktur.
+# Ag butun z kolonunu kapsar: tally degeri z UZERINDEN INTEGRALDIR (kaynak
+# dagiliminin z'deki kaymasindan bagimsiz). v2'de +/-1 cm idi: 2 cm'lik dilim
+# iz uzunlugunun kucuk bir kesrini sayiyordu (olculdu, pwr_mesh_aki 5000 x 40
+# aktif: kappa-fission bagil hata medyani %21 -> %2.7, ayni gecmis sayisi).
+# Bu yuzden 2B'de hacim basina deger AG YUKSEKLIGINE gore ortalamadir ve mutlak
+# anlami yoktur; sonuc.olcu() 2B'de hucre ALANINI verir (z integrali / cm2),
+# mutlak kip cizgisel guc [W/cm] ister. 1e4 cm, kaynagin 60-300 cevrimdeki z
+# rastgele yuruyusunden (~sqrt(cevrim) x goc uzunlugu ~ 1e2 cm) iki mertebe buyuk.
 Z_2B_YARI = 1.0e4
+
+# Ozdeger hesabinda mesh tally varsa eklenen FILTRESIZ isinma tally'si: mutlak
+# normalizasyonun H'si buradan alinir (ag fisil bolgeyi kapsamasa da dogru).
+# kappa-fission: guc.py ile ayni tanim; heating-local: yakalanma gamalari dahil
+# (foton tasinimi kapaliyken yerel birakim) -- aki/tepkime normalizasyonu icin.
+GENEL_ISI_TALLY = "mesh_genel_isi"
+GENEL_ISI_SKORLARI = ("kappa-fission", "heating-local")
 
 TAM_TUR = 2.0 * math.pi           # phi araligi [rad]
 YARIM_TUR = math.pi               # theta araligi [rad]
@@ -167,20 +176,23 @@ def model_sinir_kutusu(spec):
     return tuple(float(x) for x in geometri.sinir_kutusu(geometri.model(spec)))
 
 
-def sinir_onerisi(spec, sinir_kutu, tur):
+def sinir_onerisi(spec, sinir_kutu, tur, z_aralik=None):
     """
     Modelin sinir kutusundan (gx, gy) [cm] otomatik sinir onerisi.
       duzenli    : x, y kurucu.tally_mesh_sinirlari ile ayni (sinir kutusu); z kor
                    yuksekligi, kurede kure capi, 2B (eksenel sonsuz) modelde
-                   +/-Z_2B_YARI (bkz. sabitin notu)
-      silindirik : r = max(gx, gy)/2 (yuvarlak modelde tam; kare modelde koseler
-                   agin disinda kalir), z duzenli ile ayni
-      kuresel    : r = max(gx, gy)/2
+                   +/-Z_2B_YARI (bkz. sabitin notu) -- ya da z_aralik verilmisse
+                   (geometri z'de sinirliysa; genel.geometri_z_araligi) o aralik
+      silindirik : r = max(gx, gy)/2: yuvarlak modelde tam; KARE/ALTIGEN modelde
+                   koseler agin DISINDA kalir (kare demette ~%21.5 alan), z duzenli
+                   ile ayni
+      kuresel    : r = max(gx, gy)/2 (ayni not)
     """
     from cekirdek import kurucu
     alt, ust = kurucu.tally_mesh_sinirlari(spec, {"otomatik": True}, sinir_kutu)
-    if _eksenel_sonsuz(spec):
-        alt, ust = alt[:2] + [-Z_2B_YARI], ust[:2] + [Z_2B_YARI]
+    if eksenel_sonsuz(spec):
+        z0, z1 = z_aralik if z_aralik is not None else (-Z_2B_YARI, Z_2B_YARI)
+        alt, ust = alt[:2] + [float(z0)], ust[:2] + [float(z1)]
     if tur == DUZENLI:
         return {"alt": alt, "ust": ust}
     r = max(float(sinir_kutu[0]), float(sinir_kutu[1])) / 2.0
@@ -191,28 +203,31 @@ def sinir_onerisi(spec, sinir_kutu, tur):
     raise ValueError(_("bilinmeyen ağ türü: %s") % tur)
 
 
-def _eksenel_sonsuz(spec):
-    """2B model: kor yuksekligi yok ve kure degil (z ekseninde sinir yok)."""
+def eksenel_sonsuz(spec) -> bool:
+    """2B model: kor yuksekligi yok ve kure degil (spec'e gore z ekseninde sinir
+    yok). Geometri yine de z'de sinirliysa kurucu/betik z_aralik ile kirpar
+    (genel.geometri_z_araligi); butun orneklerde iki olcut ayni (test D7)."""
     from cekirdek import kurucu, sema
     return not sema.model_yuksekligi(spec) and not kurucu._kure_mu(spec)
 
 
-def _sinirlar(spec, f, tur, sinir_kutu):
+def _sinirlar(spec, f, tur, sinir_kutu, z_aralik):
     if tur == DUZENLI:
         if not f.get("otomatik") and f.get("alt") and f.get("ust"):
             return {"alt": list(f["alt"]), "ust": list(f["ust"])}
-        return sinir_onerisi(spec, sinir_kutu, tur)
+        return sinir_onerisi(spec, sinir_kutu, tur, z_aralik)
     if not f.get("otomatik") and f.get("r_ust") is not None:
         return {k: float(f[k]) for k in ("r_ust", "z_alt", "z_ust") if k in f}
-    return sinir_onerisi(spec, sinir_kutu, tur)
+    return sinir_onerisi(spec, sinir_kutu, tur, z_aralik)
 
 
-def mesh_tanimi(spec, f, sinir_kutu):
+def mesh_tanimi(spec, f, sinir_kutu, z_aralik=None) -> dict:
     """
     Filtre -> mesh tanimi (yeni sozluk; girdi degismez):
       {"tur", "boyut": (3 tam sayi), "merkez": (x, y, z),
        duzenli: "alt", "ust" | silindirik: "r", "phi", "z" | kuresel: "r", "theta", "phi"}
-    (her eksen (alt, ust) cifti). Gecersiz filtre ValueError.
+    (her eksen (alt, ust) cifti). Gecersiz filtre ValueError. z_aralik: 2B
+    modelde geometrinin sonlu z sinirlari (yoksa None -> +/-Z_2B_YARI).
     """
     hatalar = filtre_hatalari(f)
     if hatalar:
@@ -220,7 +235,7 @@ def mesh_tanimi(spec, f, sinir_kutu):
     tur = mesh_turu(f)
     boyut = tuple(int(n) for n in f["boyut"])
     merkez = tuple(float(x) for x in (f.get("merkez") or (0.0, 0.0, 0.0)))
-    s = _sinirlar(spec, f, tur, sinir_kutu)
+    s = _sinirlar(spec, f, tur, sinir_kutu, z_aralik)
     tanim = {"tur": tur, "boyut": boyut, "merkez": merkez}
     if tur == DUZENLI:
         tanim.update(alt=tuple(s["alt"]), ust=tuple(s["ust"]))
@@ -279,25 +294,32 @@ def betik_satirlari(tanim, degisken):
                        if tur == SILINDIRIK else
                        ("SphericalMesh", (("r_grid", "r"), ("theta_grid", "theta"),
                                           ("phi_grid", "phi"))))
-    satirlar = ["import numpy as np", "%s = openmc.%s(" % (degisken, sinif)]
+    satirlar = ["%s = openmc.%s(" % (degisken, sinif)]
     for (arg, e), n in zip(eksenler, b):
         satirlar.append("    %s=%s," % (arg, _linspace_ifadesi(tanim[e], n)))
     satirlar.append("    origin=%r)" % [float(x) for x in tanim["merkez"]])
     return satirlar
 
 
-def betik_filtresi(spec, f, sinir_kutu, degisken):
-    """kod_uret kancasi: mesh filtresinin betik satirlari (aciklama dahil)."""
+NUMPY_SATIRI = "import numpy as np"
+
+
+def betik_filtresi(spec, f, sinir_kutu, degisken, z_aralik=None, onceki=()):
+    """kod_uret kancasi: mesh filtresinin betik satirlari (aciklama dahil).
+    onceki: betigin o ana kadarki satirlari -- numpy ice aktarimi BIR KEZ yazilir."""
+    tanim = mesh_tanimi(spec, f, sinir_kutu, z_aralik)
     satirlar = []
     if f.get("otomatik"):
         satirlar.append("# mesh sınırları modelin sınır kutusundan türetildi")
-    return satirlar + betik_satirlari(mesh_tanimi(spec, f, sinir_kutu), degisken)
+    if tanim["tur"] != DUZENLI and NUMPY_SATIRI not in onceki:
+        satirlar.append(NUMPY_SATIRI)
+    return satirlar + betik_satirlari(tanim, degisken)
 
 
-def mesh_filtresi_kur(spec, f, sinir_kutu):
+def mesh_filtresi_kur(spec, f, sinir_kutu, z_aralik=None):
     """kurucu kancasi: spec filtresi -> openmc.MeshFilter."""
     import openmc
-    return openmc.MeshFilter(mesh_kur(mesh_tanimi(spec, f, sinir_kutu)))
+    return openmc.MeshFilter(mesh_kur(mesh_tanimi(spec, f, sinir_kutu, z_aralik)))
 
 
 # ---------------------------------------------------------------------------

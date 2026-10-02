@@ -134,14 +134,19 @@ def _tallyler(spec, satirlar, ek_tallyler=None, on_satirlar=None, sinir_kutu=Non
                 filtre_ifadeleri.append("openmc.EnergyFilter(%r)" % list(f["gruplar"]))
             elif f["tur"] == "mesh":
                 mv = "%s_mesh_%d" % (v, j)
-                # v3 Y1: kurucu ile AYNI tanim (cekirdek/mesh_tally/tanim.py)
+                # v3 Y1: kurucu ile AYNI tanim ve z kirpmasi (cekirdek/mesh_tally/)
                 from cekirdek import mesh_tally as _mt
-                satirlar.extend(_mt.betik_filtresi(spec, f, sinir_kutu, mv))
+                satirlar.extend(_mt.betik_filtresi(spec, f, sinir_kutu, mv,
+                                                   _mt.model_z_araligi(spec), satirlar))
                 filtre_ifadeleri.append("openmc.MeshFilter(%s)" % mv)
             elif f["tur"] == "malzeme":
                 filtre_ifadeleri.append("openmc.MaterialFilter([%s])"
                                         % ", ".join(_ad(a) for a in f["adlar"]))
         if filtre_ifadeleri:
             satirlar.append("%s.filters = [%s]" % (v, ", ".join(filtre_ifadeleri)))
+    from cekirdek import mesh_tally as _mt          # v3 Y1: genel isinma (kurucu ile ayni)
+    genel_satir, genel = _mt.genel_isi_betik(spec)
+    satirlar.extend(genel_satir)
+    adlar += [genel] if genel else []
     satirlar.append("")
     satirlar.append("tallyler = openmc.Tallies([%s])" % ", ".join(adlar + ek_tallyler))
