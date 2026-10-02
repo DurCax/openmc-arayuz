@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 15:36+0300\n"
+"POT-Creation-Date: 2026-10-02 15:42+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -2124,12 +2124,12 @@ msgstr ""
 "equal division is not used: it would be wrong for unequal layers and for pins that "
 "use the same fuel with different radii)."
 
-#: cekirdek/dogrula/tukenme.py:188
+#: cekirdek/dogrula/tukenme.py:191
 #, python-format
 msgid "çubuk çubuk yanmada örnek hacmi kesin değil: %s"
 msgstr "instance volume is not exact in pin-by-pin burnup: %s"
 
-#: cekirdek/dogrula/tukenme.py:189
+#: cekirdek/dogrula/tukenme.py:192
 msgid ""
 "Kesik (kırpılan) konumlardaki örneklerin hacmi analitik bilinmez. Çubuk çubuk yanmayı"
 " kapatın ya da kesik konumları kaldırın."
@@ -2137,12 +2137,12 @@ msgstr ""
 "The volume of instances in truncated (clipped) positions is not known analytically. "
 "Turn off pin-by-pin burnup or remove the truncated positions."
 
-#: cekirdek/dogrula/tukenme.py:194
+#: cekirdek/dogrula/tukenme.py:197
 #, python-format
 msgid "'%s' hacmi stokastik hesaplanacak: %s"
 msgstr "the volume of '%s' will be computed stochastically: %s"
 
-#: cekirdek/dogrula/tukenme.py:195
+#: cekirdek/dogrula/tukenme.py:198
 msgid ""
 "Analitik hacim kesin değil (kesik konum ya da çubuk); OpenMC stokastik hacim hesabı "
 "kullanılır ve belirsizliği rapora yazılır."
@@ -2150,12 +2150,12 @@ msgstr ""
 "The analytical volume is not exact (truncated position or pin); OpenMC stochastic "
 "volume calculation is used and its uncertainty is written to the report."
 
-#: cekirdek/dogrula/tukenme.py:204
+#: cekirdek/dogrula/tukenme.py:207
 #, python-format
 msgid "yanabilir zehir '%s' tükenmeye katılmıyor: %s"
 msgstr "burnable absorber '%s' does not take part in depletion: %s"
 
-#: cekirdek/dogrula/tukenme.py:205
+#: cekirdek/dogrula/tukenme.py:208
 msgid ""
 "Hacmi analitik hesaplanamıyor; bu malzeme koşu boyunca taze kalır. Taze kalan emici "
 "ömür sonunda kontrol değerini olduğundan büyük gösterir (kapanma payı açısından "
@@ -4267,7 +4267,7 @@ msgstr ""
 "depletable material whose volume cannot be computed: %s (%s). The depletion script "
 "requires exact volumes."
 
-#: cekirdek/kod_uret/tukenme.py:142
+#: cekirdek/kod_uret/tukenme.py:143
 #, python-format
 msgid ""
 "'%s' malzemesinin bir örneğinin hacmi hesaplanamıyor; çubuk çubuk yanma kesin hacim "
@@ -7854,16 +7854,12 @@ msgstr ""
 msgid "modelde yanabilir (fisil) malzeme yok"
 msgstr "the model contains no depletable (fissile) material"
 
-#: cekirdek/tukenme_arama.py:78
+#: cekirdek/tukenme_arama.py:98
 #, python-format
 msgid "kritiklik araması: modelde '%s' malzemesi yok"
 msgstr "criticality search: the model has no material '%s'"
 
-#: cekirdek/tukenme_arama.py:102
-msgid "kontrol çubuğu hücresinin bölgesi beklenen biçimde değil"
-msgstr "the control rod cell region does not have the expected form"
-
-#: cekirdek/tukenme_arama.py:133
+#: cekirdek/tukenme_arama.py:170
 #, python-format
 msgid ""
 "kritiklik araması: '%s' kontrol çubuğunun hareketli hücresi bulunamadı (3B model ve "
@@ -7872,7 +7868,7 @@ msgstr ""
 "criticality search: no movable cell found for control rod '%s' (a 3D model and a "
 "control rod are needed)"
 
-#: cekirdek/tukenme_arama.py:195
+#: cekirdek/tukenme_arama.py:219
 msgid "kontrol çubuğu araması 3B model gerektirir"
 msgstr "the control rod search needs a 3D model"
 
@@ -8000,34 +7996,54 @@ msgstr ""
 "Criticality search: OpenMC Integrator.add_keff_search_control (Model.keff_search, "
 "GRsecant)."
 
-#: cekirdek/tukenme_ayar.py:258
+#: cekirdek/tukenme_ayar.py:269
+#, python-format
+msgid "çubuk araması: hareketli emici '%s' tükenmeden çıkarılır"
+msgstr "rod search: the moving absorber '%s' is excluded from depletion"
+
+#: cekirdek/tukenme_ayar.py:270
+msgid ""
+"Emici hareket ettiği için çekirdekteki hacmi sabit değildir; bileşimi taze kalır "
+"(B-10 yanması izlenmez)."
+msgstr ""
+"Because the absorber moves its volume in the core is not constant; its composition "
+"stays fresh (B-10 burnout is not followed)."
+
+#: cekirdek/tukenme_ayar.py:278
 msgid "SI-* entegratörleri kritiklik aramasını desteklemez (OpenMC 0.16)"
 msgstr "the SI-* integrators do not support the criticality search (OpenMC 0.16)"
 
-#: cekirdek/tukenme_ayar.py:260
+#: cekirdek/tukenme_ayar.py:280
 msgid "hızlı kipte (MicroXS) kritiklik araması yapılamaz: transport yok"
 msgstr "no criticality search in fast mode (MicroXS): there is no transport"
 
-#: cekirdek/tukenme_ayar.py:262
+#: cekirdek/tukenme_ayar.py:282
 msgid "kontrol çubuğu araması çubuk çubuk yanma ile birlikte desteklenmiyor"
 msgstr "the control rod search is not supported together with pin-by-pin burnup"
 
-#: cekirdek/tukenme_ayar.py:271
+#: cekirdek/tukenme_ayar.py:291
 #, python-format
 msgid "bor araması: tanımsız malzeme '%s'"
 msgstr "boron search: undefined material '%s'"
 
-#: cekirdek/tukenme_ayar.py:274
+#: cekirdek/tukenme_ayar.py:294
 #, python-format
 msgid "bor araması yalnız su (soğutucu/moderatör) malzemesine uygulanır: '%s'"
 msgstr "the boron search applies only to a water (coolant/moderator) material: '%s'"
 
-#: cekirdek/tukenme_ayar.py:279
+#: cekirdek/tukenme_ayar.py:299
+#, python-format
+msgid "bor araması hedefi tükenen bir malzeme olamaz: '%s' (ek yanan malzemelerden çıkarın)"
+msgstr ""
+"the boron search target cannot be a depleted material: '%s' (remove it from the extra"
+" burnable materials)"
+
+#: cekirdek/tukenme_ayar.py:304
 #, python-format
 msgid "kontrol çubuğu araması: '%s' bir kontrol çubuğu değil"
 msgstr "control rod search: '%s' is not a control rod"
 
-#: cekirdek/tukenme_ayar.py:281
+#: cekirdek/tukenme_ayar.py:306
 msgid "kontrol çubuğu araması sınırı 0–100 daldırma yüzdesi içinde olmalı"
 msgstr "the control rod search bounds must lie within 0–100 percent insertion"
 
@@ -10412,4 +10428,7 @@ msgstr "the output file cannot be the input file: %s"
 
 #~ msgid "%s (%s; rapor anındaki ortam)"
 #~ msgstr "%s (%s; environment at report time)"
+
+#~ msgid "kontrol çubuğu hücresinin bölgesi beklenen biçimde değil"
+#~ msgstr "the control rod cell region does not have the expected form"
 

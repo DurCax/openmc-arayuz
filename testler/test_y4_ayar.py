@@ -106,4 +106,32 @@ def test_denetim():
     kontrol("tanimsiz kontrol cubugu hata", any("kontrol" in m for m in _hatalar(b)))
 
 
-HIZLI = [test_varsayilanlar, test_zaman_plani, test_transport_sayisi, test_denetim]
+def test_canli_dogrulama():
+    print("\n[Y4-A5] canli dogrulama (dogrula.tum_kontroller) Y4 bulgularini icerir; kapi tekrarlamaz")
+    from cekirdek import dogrula, tukenme
+    s = _spec()
+    s["tukenme"]["entegrator"] = "yok"
+    mesajlar = [b.mesaj for b in dogrula.tum_kontroller(s, veri_kontrolu=False)]
+    kontrol("bilinmeyen entegrator canli listede",
+            sum("bilinmeyen entegratör" in m for m in mesajlar) == 1, repr(mesajlar))
+    try:
+        tukenme.kapi(s, veri_kontrolu=False)
+        tum = []
+    except dogrula.DogrulamaHatasi as e:
+        tum = [b.mesaj for b in e.tum_bulgular]
+    kontrol("kapida bir kez", sum("bilinmeyen entegratör" in m for m in tum) == 1, repr(tum))
+
+
+def test_cubuk_emici_uyarisi():
+    print("\n[Y4-A6] cubuk aramasi: yanan emici tukenmeden cikarilir -> gorunur UYARI")
+    from cekirdek import sema, tukenme_ayar as ta
+    s = sema.yukle(os.path.join(ORNEK, "pwr_kontrol.json"))
+    s["tukenme"].update(var=True, kritik_arama={
+        "var": True, "tur": "cubuk", "hedef": "kontrol_cubugu", "alt": 20.0, "ust": 80.0,
+        "sinir": [0.0, 100.0]})
+    uyarilar = [b.mesaj for b in ta.ayar_bulgulari(s) if b.seviye == "uyari"]
+    kontrol("b4c icin uyari", any("b4c" in m and "tükenme" in m for m in uyarilar), repr(uyarilar))
+
+
+HIZLI = [test_varsayilanlar, test_zaman_plani, test_transport_sayisi, test_denetim,
+         test_canli_dogrulama, test_cubuk_emici_uyarisi]

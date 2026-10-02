@@ -101,8 +101,13 @@ class TukenmeCiktiPaneli(bil.Kart):
             return
         finally:
             QtWidgets.QApplication.restoreOverrideCursor()
-        self.durum.setText(_("%d zaman noktası, %d malzeme.")
-                           % (len(self._seriler["zaman_d"]), len(self._seriler["malzeme"])))
+        metin = (_("%d zaman noktası, %d malzeme.")
+                 % (len(self._seriler["zaman_d"]), len(self._seriler["malzeme"])))
+        if "casl" in os.path.basename(self._seriler.get("zincir") or "").lower():
+            metin += " " + _("Basitleştirilmiş CASL zinciri: birçok aktivasyon ürünü (ör. Co-60) "
+                             "yok; aktivite ve bozunma ısısı eksik çıkar. Bu çıktılar için tam "
+                             "ENDF/B-VIII.0 zincirini seçin.")
+        self.durum.setText(metin)
         self._tablo_doldur()
         self._doz_yaz(doz)
         self._ciz()

@@ -248,7 +248,27 @@ def _arama_bulgulari(spec: dict, t: dict) -> list:
         hatalar.append(_("k toleransı ve σ sınırı sıfırdan büyük olmalı"))
     oneri = _("Kritiklik araması: OpenMC Integrator.add_keff_search_control "
               "(Model.keff_search, GRsecant).")
-    return [_bulgu("hata", h, oneri) for h in hatalar]
+    return [_bulgu("hata", h, oneri) for h in hatalar] + _hareketli_emici_bulgusu(spec, k)
+
+
+def _hareketli_emici_bulgusu(spec: dict, k: KritikArama) -> list:
+    """Cubuk aramasinda yanan emici tukenmeden cikarilir (hacmi sabit degil):
+    kullaniciya gorunur UYARI (yalniz log degil)."""
+    from cekirdek import sema
+    if k.tur != "cubuk":
+        return []
+    c = sema.cubuk_bul(spec, k.hedef) or {}
+    bolgeler = c.get("bolgeler") or []
+    i = int(c.get("emici_bolge") or 0)
+    if not bolgeler or i >= len(bolgeler):
+        return []
+    from cekirdek import tukenme
+    emici = bolgeler[i].get("malzeme")
+    if emici not in tukenme.yanabilir_adlar(spec):
+        return []
+    return [_bulgu("uyari", _("çubuk araması: hareketli emici '%s' tükenmeden çıkarılır") % emici,
+                   _("Emici hareket ettiği için çekirdekteki hacmi sabit değildir; bileşimi "
+                     "taze kalır (B-10 yanması izlenmez)."))]
 
 
 def _arama_uyum_hatalari(t: dict, k: KritikArama) -> list:

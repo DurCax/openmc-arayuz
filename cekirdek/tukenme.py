@@ -407,17 +407,8 @@ def kapi(spec, veri_kontrolu=True):
     from cekirdek import dogrula
     denetlenen = copy.deepcopy(spec)
     denetlenen.setdefault("tukenme", {})["var"] = True
-    from cekirdek import tukenme_ayar
-    ek = tukenme_ayar.ayar_bulgulari(denetlenen)          # v3 Y4 ayarlari
-    hatalar = [b for b in ek if b.seviye == "hata"]
-    try:
-        bulgular = dogrula.kapi(denetlenen, veri_kontrolu=veri_kontrolu)
-    except dogrula.DogrulamaHatasi as e:
-        raise dogrula.DogrulamaHatasi(e.bulgular + hatalar,
-                                      tum_bulgular=e.tum_bulgular + ek) from None
-    if hatalar:
-        raise dogrula.DogrulamaHatasi(hatalar, tum_bulgular=bulgular + ek)
-    return bulgular + ek
+    # v3 Y4 ayarlari dogrula/tukenme.tukenme_kontrol icinde (canli liste ile ayni)
+    return dogrula.kapi(denetlenen, veri_kontrolu=veri_kontrolu)
 
 
 def calistir(spec, dizin, geri_cagir=None, veri_kontrolu=True):

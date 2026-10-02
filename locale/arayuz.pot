@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 15:36+0300\n"
+"POT-Creation-Date: 2026-10-02 15:42+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -8764,30 +8764,36 @@ msgstr ""
 msgid "%d zaman noktası, %d malzeme."
 msgstr ""
 
-#: arayuz/tukenme_cikti_panel.py:127
+#: arayuz/tukenme_cikti_panel.py:107
+msgid ""
+"Basitleştirilmiş CASL zinciri: birçok aktivasyon ürünü (ör. Co-60) yok; aktivite ve "
+"bozunma ısısı eksik çıkar. Bu çıktılar için tam ENDF/B-VIII.0 zincirini seçin."
+msgstr ""
+
+#: arayuz/tukenme_cikti_panel.py:132
 #, python-format
 msgid "%s: hesaplanamadı (%s)"
 msgstr ""
 
-#: arayuz/tukenme_cikti_panel.py:129
+#: arayuz/tukenme_cikti_panel.py:134
 #, python-format
 msgid "%s: temas doz hızı %.4g Gy/h · atık sınıfı (10 CFR 61.55) %s"
 msgstr ""
 
-#: arayuz/tukenme_cikti_panel.py:131
+#: arayuz/tukenme_cikti_panel.py:136
 msgid "Son adımda:\n"
 msgstr ""
 
-#: arayuz/tukenme_cikti_panel.py:148 arayuz/tukenme_sonuc.py:58
+#: arayuz/tukenme_cikti_panel.py:153 arayuz/tukenme_sonuc.py:58
 msgid "zaman [gün]"
 msgstr ""
 
-#: arayuz/tukenme_cikti_panel.py:160
+#: arayuz/tukenme_cikti_panel.py:165
 msgid "Çıktıları kaydet"
 msgstr ""
 
 #: arayuz/calistir/yakinsama.py:77 arayuz/pencere/proje.py:146
-#: arayuz/tukenme_cikti_panel.py:167
+#: arayuz/tukenme_cikti_panel.py:172
 msgid "Kaydedilemedi"
 msgstr ""
 
