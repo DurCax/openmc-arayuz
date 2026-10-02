@@ -40,7 +40,6 @@ dependencies = [
     "matplotlib>=3.7",
     "pandas>=2.0",
     "h5py>=3.8",
-    "uncertainties>=3.1",
 ]
 
 [project.optional-dependencies]

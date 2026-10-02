@@ -22,7 +22,6 @@ dependencies:
   - matplotlib
   - pandas
   - h5py
-  - uncertainties
   - curl
   - pip
   # test ve ceviri araclari
