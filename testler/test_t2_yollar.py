@@ -26,7 +26,7 @@ _ALT_SUREC_SURESI = 120     # s; alt surec (import openmc dahil) en kotu durumda
 _KOPYALANMAYAN = (".git", ".claude", ".env*", "__pycache__", "build", "dist", "*.egg-info",
                   "graphify-out", "htmlcov", ".ruff_cache")
 # Kopyada OLMAMASI gereken (gizli bilgi / depo gecmisi tasiyabilen) adlar
-_GIZLI_ADLAR = (".git", ".claude", ".env")
+_GIZLI_ADLAR = (".git", ".claude")          # tam ad; .env* on eki ayrica
 
 
 def _kaynak_dosyalari():
@@ -494,7 +494,7 @@ def test_kurulu_paket(gecici):
     kaynak = os.path.join(gecici, "kaynak")
     shutil.copytree(KOK, kaynak, ignore=shutil.ignore_patterns(*_KOPYALANMAYAN))
     sizan = [os.path.relpath(os.path.join(k, a), kaynak) for k, dizinler, dosyalar in os.walk(kaynak)
-             for a in dizinler + dosyalar if a.startswith(_GIZLI_ADLAR)]
+             for a in dizinler + dosyalar if a in _GIZLI_ADLAR or a.startswith(".env")]
     kontrol("kopyada .git/.claude/.env* yok", not sizan, "-> %s" % sizan[:5])
     r = subprocess.run([py, "-m", "pip", "install", "-q", "--no-deps", kaynak],
                        capture_output=True, text=True, cwd=gecici)
