@@ -3,10 +3,11 @@
 kayit.py -- Veri sayfasinin ana pencereye baglanmasi (v3 K2).
 
   kur(pencere)        AnaPencere.__init__ sonunda: sayfayi kenar cubuguna
-                      ("Kurulum" grubu, anahtar "veri") ve sayfa yiginina ekler,
-                      surec ortamini cozulen veriyle gunceller
-                      (veri_yolu.surece_uygula) ve secim degisince dogrulamayi
-                      / Calistir kapisini yeniler.
+                      ("Kurulum" grubu, anahtar "veri") ve sayfa yiginina ekler;
+                      secim degisince surec ortamini, dogrulamayi ve Calistir
+                      kapisini yeniler. aboutToQuit'te arka plan islerini durdurur.
+  kapat(pencere)      closeEvent'te (kaydetme onayindan SONRA): indirme iptal,
+                      isler sinirli sure beklenir.
   ilk_acilis(pencere) uygulama acilisinda (arayuz/ana_pencere.main): veri
                       yoksa editoru Veri sayfasinda acar ve ustte "Başlamadan
                       önce" bandini gosterir. Doner: acildi mi.
@@ -16,7 +17,7 @@ Veri sayfasi `_ek_sayfalar`da durur, `_sayfalar`da degil (model turune gore
 gizlenmez, isaretlenmez). Gezinme: arayuz/pencere/gezinme.py.
 """
 
-from PySide6 import QtCore
+from PySide6 import QtWidgets
 
 from cekirdek import veri_bilgi, veri_yolu
 from cekirdek.ceviri import _, N_
@@ -31,11 +32,10 @@ IKON = "atom"
 
 
 def kur(pencere, sayfa=None):
-    """Sayfayi pencereye kaydeder (modul belgesi). Doner: VeriSayfasi."""
+    """Sayfayi pencereye kaydeder (modul belgesi). Doner: VeriSayfasi. Surec
+    ortamina DOKUNMAZ (widget kurucusunda global yan etki yok): uygulama
+    acilisinda arayuz/ana_pencere.main() veri_yolu.surece_uygula() cagirir."""
     from arayuz.veri.sayfa import VeriSayfasi
-    yazilan = veri_yolu.surece_uygula()
-    if yazilan:
-        _log.info("nukleer veri surec ortamina yazildi: %s", sorted(yazilan))
     sayfa = sayfa or VeriSayfasi()
     pencere.kenar.grup_ekle(_(GRUP))
     pencere.kenar.ekle(ANAHTAR, _(BASLIK), IKON)
@@ -49,26 +49,16 @@ def kur(pencere, sayfa=None):
     sayfa.baslangica_don.connect(pencere.baslangici_goster)
     sayfa.durum.connect(lambda metin, iyi: pencere.bildir_mesaj(
         metin, "basari" if iyi else "uyari", 8000))
-    pencere._veri_kapanis_suzgeci = _KapanisSuzgeci(sayfa, pencere)
-    pencere.installEventFilter(pencere._veri_kapanis_suzgeci)
+    uygulama = QtWidgets.QApplication.instance()
+    if uygulama is not None:
+        uygulama.aboutToQuit.connect(sayfa.kapat)
     return sayfa
 
 
-class _KapanisSuzgeci(QtCore.QObject):
-    """Pencere kapanirken suren indirmeyi iptal edip isciyi bekler: canli bir
-    QThread'in yok edilmesi sureci cokertirdi. Yarim indirme .part olarak kalir
-    ve sonra surdurulur, yani iptal ucuzdur."""
-
-    def __init__(self, sayfa, parent):
-        super().__init__(parent)
-        self._sayfa = sayfa
-
-    def eventFilter(self, nesne, olay):                  # noqa: N802 (Qt adi)
-        if olay.type() == QtCore.QEvent.Close and self._sayfa.indirme.indiriyor_mu():
-            _log.info("pencere kapaniyor: suren veri indirmesi iptal edildi")
-            self._sayfa.indirme.iptal()
-            self._sayfa.bekle()
-        return False
+def kapat(pencere) -> bool:
+    """Pencere kapanisi onaylandiktan SONRA (closeEvent): indirme iptal, isler beklenir."""
+    sayfa = getattr(pencere, "veri_sayfasi", None)
+    return sayfa.kapat() if sayfa is not None else True
 
 
 def _kenardan(pencere, anahtar):
@@ -88,12 +78,21 @@ def veri_degisti(pencere):
     pencere._kosu_dugmesi_guncelle()
 
 
-def ilk_acilis(pencere):
-    """Veri yoksa editoru Veri sayfasinda acar (bant gorunur). Doner: acildi mi."""
+def ilk_acilis(pencere, proje_acik: bool = False) -> bool:
+    """Veri yoksa editoru Veri sayfasinda acar (bant gorunur). Komut satirindan
+    bir proje acildiysa (proje_acik) sayfaya GECILMEZ: yalniz "Veri sayfasi"
+    eylemli bir bildirim gosterilir (model ekrani korunur). Doner: sayfa acildi mi."""
     if veri_yolu.veri_hazir_mi():
+        return False
+    pencere.veri_sayfasi.ilk_acilis_goster(True)
+    if proje_acik:
+        pencere.bildir_mesaj(_("Nükleer veri kütüphanesi bulunamadı; koşu için Veri "
+                               "sayfasından seçin ya da indirin."), "uyari", 12000,
+                             eylem_metni=_("Veri sayfası"),
+                             eylem=lambda: pencere.sekmeye_git(ANAHTAR))
+        _log.info("nukleer veri bulunamadi: proje acik, yalniz bildirim")
         return False
     pencere._editoru_goster()
     pencere.sekmeye_git(ANAHTAR, sessiz=True)
-    pencere.veri_sayfasi.ilk_acilis_goster(True)
     _log.info("nukleer veri bulunamadi: Veri sayfasi acildi")
     return True

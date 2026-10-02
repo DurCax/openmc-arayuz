@@ -123,7 +123,11 @@ def test_ilk_acilis_veri_yokken():
             # Act 2: klasor sec
             xml = _kutuphane(os.path.join(y.kok, "baska", "kutup"))
             p.veri_sayfasi.klasor.yol.setText(os.path.dirname(os.path.dirname(xml)))
-            d = p.veri_sayfasi.klasor.kullan()
+            sonuc = []
+            p.veri_sayfasi.klasor.denetlendi.connect(sonuc.append)
+            kontrol("denetim arka planda basladi", p.veri_sayfasi.klasor.kullan())
+            kontrol("denetim bitti", _bekle(lambda: sonuc))
+            d = sonuc[0]
             kontrol("klasor denetimi tamam", d.tamam, repr(d.hatalar))
             kontrol("secim ayarda", veri_yolu.ayar_oku().get("cross_sections") == xml)
             kontrol("surec ortamina yazildi", os.environ.get("OPENMC_CROSS_SECTIONS") == xml)
@@ -210,28 +214,82 @@ def test_arka_planda_indirme_iptal_surdurme():
         sayfa.deleteLater()
 
 
+def _yavas_sayfa(veri_indir, VeriSayfasi, y, s, gecikme=0.05):
+    buyuk = b"0" * (veri_indir.PARCA_BOYUTU * 16)
+    arsiv = _arsiv(y.kok)
+    s.dosyalar.update({"/kutup.xz": arsiv, "/zincir.xml": buyuk})
+    s.ayar["/zincir.xml"] = {"gecikme": gecikme}
+    politika = veri_indir.UrlPolitikasi(semalar=frozenset({"http"}),
+                                        alanlar=frozenset({"127.0.0.1"}), port_serbest=True)
+    sayfa = VeriSayfasi(katalog=_sahte_katalog(veri_indir, s, arsiv, buyuk, None),
+                        politika=politika)
+    sayfa.indirme.hedef.setText(os.path.join(y.kok, "nucdata"))
+    return sayfa
+
+
 def test_iptal_dugmesi():
-    print("\n[K2-S4] Iptal: isci durur, 'Sürdür' kalir, hata degil iptal bildirilir")
+    print("\n[K2-S4] ilk ilerlemede Iptal: iptal_edildi, .part kalir, 'Sürdür' tamamlar")
     from cekirdek import veri_indir
     from arayuz.veri.sayfa import VeriSayfasi
     _uyg()
     with VeriYalitimi() as y, SahteSunucu() as s:
-        buyuk = b"0" * (veri_indir.PARCA_BOYUTU * 40)
-        arsiv = _arsiv(y.kok)
-        s.dosyalar.update({"/kutup.xz": arsiv, "/zincir.xml": buyuk})
-        politika = veri_indir.UrlPolitikasi(semalar=frozenset({"http"}),
-                                            alanlar=frozenset({"127.0.0.1"}), port_serbest=True)
-        sayfa = VeriSayfasi(katalog=_sahte_katalog(veri_indir, s, arsiv, buyuk, None),
-                            politika=politika)
+        sayfa = _yavas_sayfa(veri_indir, VeriSayfasi, y, s)
         k = sayfa.indirme
-        k.hedef.setText(os.path.join(y.kok, "nucdata"))
+        iptaller = []
         k.indir()
-        k.iptal()
+        k._isci.iptal_edildi.connect(lambda: iptaller.append(True))
+        k._isci.ilerleme.connect(lambda *a: k.iptal())
         kontrol("isci bitti", _bekle(lambda: not k.indiriyor_mu()))
-        kontrol("iptal metni", "İptal" in k.durum_etiketi.text() or "Tamam" in
-                k.durum_etiketi.text(), k.durum_etiketi.text())
+        kontrol("iptal_edildi sinyali", iptaller == [True], k.durum_etiketi.text())
+        parca = os.path.join(y.kok, "nucdata", "chain", "chain_endfb80_thermal.xml"
+                             + veri_indir.PARCA_UZANTISI)
+        kontrol(".part kaldi", os.path.isfile(parca))
+        kontrol("dugme 'Sürdür'", k.d_indir.text() == "Sürdür", k.d_indir.text())
         kontrol("dugmeler yeniden etkin", k.d_indir.isEnabled() and not k.d_iptal.isEnabled())
+        s.ayar["/zincir.xml"] = {}
+        kontrol("surdur basladi", k.indir())
+        kontrol("surdur bitti", _bekle(lambda: not k.indiriyor_mu()))
+        kontrol("tamamlandi", "Tamam" in k.durum_etiketi.text() and not os.path.exists(parca),
+                k.durum_etiketi.text())
         sayfa.deleteLater()
+
+
+def test_kapanista_suren_indirme():
+    print("\n[K2-S7] pencere kapanirken suren indirme iptal edilir, isci beklenir")
+    from cekirdek import veri_indir
+    from arayuz.veri.sayfa import VeriSayfasi
+    from arayuz.veri import kayit
+    _uyg()
+    with VeriYalitimi() as y, SahteSunucu() as s:
+        p = _pencere()
+        sayfa = _yavas_sayfa(veri_indir, VeriSayfasi, y, s, gecikme=0.2)
+        k = sayfa.indirme
+        k.indir()
+        kontrol("calisiyor", k.indiriyor_mu())
+        p.veri_sayfasi = sayfa
+        p._kirli = False
+        p.close()
+        kontrol("isci durdu", k._isci is None or k._isci.isFinished())
+        kontrol("kapat True (sinirli bekleme)", kayit.kapat(p))
+        _kapat(p)
+        sayfa.deleteLater()
+
+
+def test_proje_acikken_ilk_acilis():
+    print("\n[K2-S8] komut satirindan proje acildiysa veri yokken sayfaya gecilmez")
+    from arayuz.veri import kayit
+    _uyg()
+    with VeriYalitimi():
+        p = _pencere()
+        try:
+            gosterilen = []
+            p.bildir_mesaj = lambda metin, *a, **k: gosterilen.append((metin, k))
+            kontrol("sayfa acilmadi", not kayit.ilk_acilis(p, proje_acik=True))
+            kontrol("baslangic/model ekrani korundu", p.gecerli_sekme() != "veri")
+            kontrol("bildirim + eylem", gosterilen and gosterilen[0][1].get("eylem_metni"),
+                    repr(gosterilen))
+        finally:
+            _kapat(p)
 
 
 def test_gecersiz_hedef_ve_disk():
@@ -260,6 +318,7 @@ def test_gereksinim_karti():
     _uyg()
     with VeriYalitimi():
         sayfa = VeriSayfasi()
+        kontrol("arka planda doldu", _bekle(lambda: sayfa.gereksinim.satirlar))
         satirlar = {g.anahtar: g for g in sayfa.gereksinim.satirlar}
         kontrol("bes satir", len(satirlar) == 5)
         kontrol("kutuphane eksik", satirlar["kutuphane"].durum == "eksik")
@@ -270,5 +329,6 @@ def test_gereksinim_karti():
 
 HIZLI = [test_sayfa_kenar_cubugunda, test_ilk_acilis_veri_yokken,
          test_arka_planda_indirme_iptal_surdurme, test_iptal_dugmesi,
-         test_gecersiz_hedef_ve_disk, test_gereksinim_karti]
+         test_gecersiz_hedef_ve_disk, test_gereksinim_karti, test_kapanista_suren_indirme,
+         test_proje_acikken_ilk_acilis]
 YAVAS = []

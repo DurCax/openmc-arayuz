@@ -6,6 +6,7 @@ hizli / CASL), hedef klasor, disk alani, arka planda indirme (ilerleme, iptal,
 surdurme). Isi cekirdek/veri_indir.py yapar; bu kart yalniz sunar.
 """
 
+import html
 import os
 
 from PySide6 import QtCore, QtWidgets
@@ -167,11 +168,13 @@ class IndirmeKarti(b.Kart):
         if o is None:
             self.not_etiketi.setText("")
         else:
-            esc = lambda s: (s or "").replace("&", "&amp;").replace("<", "&lt;")  # noqa: E731
+            esc = lambda s: html.escape(s or "", quote=True)  # noqa: E731
             parcalar = [esc(o.metin(a)) for a in ("icerik", "notu", "lisans_notu")]
-            if o.degerlendirme_sayfasi:
-                parcalar.append("<a href='%s'>%s</a>" % (esc(o.degerlendirme_sayfasi),
-                                                         _("Değerlendirme sayfası")))
+            if not o.sha256:
+                parcalar.append(esc(_("sha256 yayımlanmamış: indirmede yalnız boyut denetlenir.")))
+            if o.degerlendirme_sayfasi:         # katalog yuklenirken https + izinli alan
+                parcalar.append('<a href="%s">%s</a>' % (esc(o.degerlendirme_sayfasi),
+                                                         esc(_("Değerlendirme sayfası"))))
             self.not_etiketi.setText("<br>".join(p for p in parcalar if p))
         self._alan_guncelle()
 
@@ -292,7 +295,9 @@ class IndirmeKarti(b.Kart):
             return
         self.cubuk.setValue(_ILERLEME_OLCEGI)
         self.cubuk.setFormat("100%")
-        self._bitti(_("Tamam: %s") % ", ".join(o.gorunen_ad() for o, _k in sonuclar), True)
+        etiketler = sorted({veri_indir.dogrulama_etiketi(k) for _o, k in sonuclar} - {""})
+        self._bitti(_("Tamam: %s") % ", ".join(o.gorunen_ad() for o, _k in sonuclar)
+                    + "".join(" · " + e for e in etiketler), True)
         self.kuruldu.emit(sonuclar)
 
 

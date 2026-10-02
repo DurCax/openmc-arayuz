@@ -66,9 +66,11 @@ def main(argv=None):
     app.setApplicationVersion(surum.surum())
     tema.uygula(app)
     tekerlek_korumasi_kur(app)
+    from cekirdek import veri_yolu
+    veri_yolu.surece_uygula()           # K2: Veri sayfasi secimi -> surec ortami
     pencere = AnaPencere(argv[0] if argv else None)
     pencere.show()
-    veri_kayit.ilk_acilis(pencere)      # K2: nukleer veri yoksa Veri sayfasi acilir
+    veri_kayit.ilk_acilis(pencere, proje_acik=bool(argv))   # K2: veri yoksa Veri sayfasi
 
     # Pencereyi buyutme:
     #   showMaximized() bu makinedeki pencere yoneticisinde yok sayiliyor,

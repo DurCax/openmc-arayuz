@@ -11,6 +11,7 @@ Bayt sayilari 2^31'i asar (10 GB): sinyaller `object` tasir (Qt int 32 bit).
 """
 
 import threading
+from typing import Callable
 
 from PySide6 import QtCore
 
@@ -19,6 +20,28 @@ from cekirdek.ceviri import _
 from cekirdek.gunluk import kaydedici
 
 _log = kaydedici(__name__)
+
+
+class ArkaPlanIsi(QtCore.QThread):
+    """Tek bir islevi arka planda calistirir (gereksinim denetimi, klasor
+    denetimi: `openmc --version`, h5 okuma, binlerce isfile -- GUI donmasin).
+    Sonuc `bitti(object)`, hata `basarisiz(str)` ile gelir."""
+
+    bitti = QtCore.Signal(object)
+    basarisiz = QtCore.Signal(str)
+
+    def __init__(self, islev: Callable[[], object], parent=None):
+        super().__init__(parent)
+        self._islev = islev
+
+    def run(self):                                       # noqa: D401 (QThread)
+        try:
+            sonuc = self._islev()
+        except Exception as e:                           # noqa: BLE001 -- is parcacigi siniri
+            _log.exception("arka plan veri denetimi basarisiz")
+            self.basarisiz.emit(_("beklenmeyen hata: %s") % e)
+            return
+        self.bitti.emit(sonuc)
 
 
 class IndirmeIscisi(QtCore.QThread):

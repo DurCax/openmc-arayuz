@@ -19,14 +19,14 @@ _DEGISKENLER = ("OPENMC_CROSS_SECTIONS", "OPENMC_CHAIN_FILE", "HOME", "XDG_CONFI
 _CONFIG = ("cross_sections", "chain_file")
 
 
-def _config_al():
+def config_al():
     if "openmc" not in sys.modules:
         return None
     import openmc
     return {k: openmc.config[k] for k in _CONFIG if k in openmc.config}
 
 
-def _config_geri(eski):
+def config_geri(eski):
     if eski is None or "openmc" not in sys.modules:
         return
     import openmc
@@ -45,7 +45,7 @@ class VeriYalitimi:
         self._dizin = tempfile.TemporaryDirectory()
         self.kok = self._dizin.name
         self._ortam = {k: os.environ.get(k) for k in _DEGISKENLER}
-        self._config = _config_al()
+        self._config = config_al()
         self._enjekte = dict(veri_yolu._ENJEKTE)
         for k in ("OPENMC_CROSS_SECTIONS", "OPENMC_CHAIN_FILE"):
             os.environ.pop(k, None)
@@ -56,7 +56,7 @@ class VeriYalitimi:
 
     def __exit__(self, *a):
         from cekirdek import veri_bilgi, veri_yolu
-        _config_geri(self._config)            # os.environ'u da yazar; asagida duzelir
+        config_geri(self._config)            # os.environ'u da yazar; asagida duzelir
         for k, v in self._ortam.items():
             if v is None:
                 os.environ.pop(k, None)

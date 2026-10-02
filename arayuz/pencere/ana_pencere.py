@@ -633,6 +633,7 @@ class AnaPencere(DogrulamaMixin, GezinmeCephesi, MenulerMixin, ProjeMixin, Gecmi
             self.onizleme.kapat()      # openmc kutuphanesini serbest birak
             # Onceki tukenme sonucu arka planda okunuyor olabilir (~3 s).
             self.s_tukenme.bekle()
+            veri_kayit.kapat(self)     # K2: suren veri indirmesi iptal + bekle
             olay.accept()
         else:
             olay.ignore()
