@@ -3317,7 +3317,7 @@ msgstr "root cell %d: translation (%.6g, %.6g) does not match any assembly posit
 #: cekirdek/guc_tablo.py:189
 #, python-format
 msgid "kare olmayan kafes (%s)"
-msgstr "non-square lattice (%s)"
+msgstr "non-rectangular lattice (%s)"
 
 #: cekirdek/guc_tablo.py:193
 #, python-format
@@ -3339,7 +3339,7 @@ msgstr "a core with control drums is not treated as symmetric"
 
 #: cekirdek/guc_tablo.py:223
 msgid "çeyrek katlama yalnız kare kafeste"
-msgstr "quarter folding only on square lattices"
+msgstr "quarter folding only on rectangular lattices"
 
 #: cekirdek/guc_tablo.py:225
 msgid "kesik çubuklu modelde katlanmaz"
