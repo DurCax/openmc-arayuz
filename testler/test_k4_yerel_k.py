@@ -282,6 +282,26 @@ def test_csv_satirlari_her_bin_icin_bir_satir():
     assert len(satirlar) == 3 and satirlar[0].startswith("x,y")
 
 
+def test_terminal_ekle_yeni_model_dosyasi_yazar(tmp_path):
+    # Arrange
+    from cekirdek import sema, yerel_k
+    cikti = tmp_path / "yk.json"
+    # Act
+    kod = yerel_k.terminal(["ekle", os.path.join(ORNEK, "pwr_17x17.json"), "pin",
+                            "-o", str(cikti)])
+    # Assert
+    assert kod == 0
+    adlar = [t["ad"] for t in sema.yukle(str(cikti))["tallyler"]]
+    assert yerel_k.TALLY_ADLARI["pin"] in adlar
+
+
+def test_terminal_desteksiz_modelde_hata_kodu(tmp_path, capsys):
+    from cekirdek import yerel_k
+    kod = yerel_k.terminal(["ekle", os.path.join(ORNEK, "vver1000_demet.json"), "pin",
+                            "-o", str(tmp_path / "x.json")])
+    assert kod == 1 and "altıgen" in capsys.readouterr().err
+
+
 # ---------------------------------------------------------------------------
 # YAVAS: sonsuz kafeste ortalama = k-sonsuz
 # ---------------------------------------------------------------------------
@@ -325,5 +345,6 @@ HIZLI = [test_pin_hucresinde_tek_bin_adim_kadar,
          test_net_yok_olma_agirlikli_ortalama_uretim_toplami_oranina_esit,
          test_model_toplami_ve_kapsama_orani, test_eksik_skor_acik_hata,
          test_sonuctan_tally_yoksa_none_varsa_sonuc,
-         test_csv_satirlari_her_bin_icin_bir_satir]
+         test_csv_satirlari_her_bin_icin_bir_satir,
+         test_terminal_ekle_yeni_model_dosyasi_yazar, test_terminal_desteksiz_modelde_hata_kodu]
 YAVAS = [test_sonsuz_kafeste_yerel_k_ortalamasi_k_sonsuza_esit]

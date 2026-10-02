@@ -63,6 +63,7 @@ import copy
 import csv
 import io
 import math
+import sys
 from dataclasses import dataclass
 from typing import Any, Mapping, Optional, Sequence, Tuple
 
@@ -208,7 +209,11 @@ def kafes_duzeni(spec: Mapping[str, Any], duzey: str) -> KafesDuzeni:
         raise YerelKHatasi(_("bilinmeyen yerel k düzeyi: %s") % duzey)
     from cekirdek import geometri
     kok = geometri.model(spec).kok
-    if (kok.get("kesit") or {}).get("sekil") not in ("dikdortgen", None):
+    sekil = (kok.get("kesit") or {}).get("sekil")
+    if sekil == "altigen":
+        raise YerelKHatasi(_("altıgen kesitli model: yerel k haritası yalnız kare kafeste "
+                             "kurulabilir (altıgen mesh OpenMC'de yok)"))
+    if sekil not in ("dikdortgen", None):
         raise YerelKHatasi(_("yerel k haritası yalnız kare kafeste kurulabilir"))
     dugum = _ic_dugum(kok)
     z = _z_siniri(spec)
@@ -380,3 +385,63 @@ def csv_metni(s: YerelKSonucu) -> str:
                          "%.6f" % h.k_xn_siz, "%.6e" % h.uretim[0], "%.6e" % h.yok_olma[0],
                          int(h.fisil)])
     return tampon.getvalue()
+
+
+# ============================================================================
+# 4. TERMINAL
+#   python -m cekirdek.yerel_k ekle model.json pin|demet -o yeni.json
+#   python -m cekirdek.yerel_k oku statepoint.h5 model.json [--csv yol]
+# ============================================================================
+
+def _ozet_satiri(s: YerelKSonucu) -> str:
+    parca = ["%s: %s = %.5f +- %.5f" % (s.duzey, _("ortalama k"), *s.ortalama),
+             "c_xn = %.5f" % s.c_xn]
+    if s.keff:
+        parca.append("k-eff = %.5f +- %.5f" % tuple(s.keff))
+    if s.kapsama is not None:
+        parca.append("%s = %.4f" % (_("kapsam"), s.kapsama))
+    return " | ".join(parca)
+
+
+def _oku(sp: str, model: str, csv_yolu: Optional[str]) -> None:
+    from cekirdek import kosucu
+    sonuclar = sonuctan(kosucu.sonuc_oku(sp), sema.yukle(model))
+    if not sonuclar:
+        raise YerelKHatasi(_("bu koşuda yerel k tally'si yok"))
+    for s in sonuclar:
+        sys.stdout.write(_ozet_satiri(s) + "\n")
+    if csv_yolu:
+        with open(csv_yolu, "w", encoding="utf-8", newline="") as f:
+            f.write(csv_metni(sonuclar[0]))
+
+
+def terminal(argv: Sequence[str]) -> int:
+    """Komut satiri; DONER cikis kodu (0 tamam, 1 hata)."""
+    import argparse
+    ap = argparse.ArgumentParser(prog="python -m cekirdek.yerel_k")
+    alt = ap.add_subparsers(dest="komut", required=True)
+    e = alt.add_parser("ekle")
+    e.add_argument("model")
+    e.add_argument("duzey", choices=DUZEYLER)
+    e.add_argument("-o", "--cikti", required=True)
+    o = alt.add_parser("oku")
+    o.add_argument("statepoint")
+    o.add_argument("model")
+    o.add_argument("--csv")
+    a = ap.parse_args(list(argv))
+    try:
+        if a.komut == "ekle":
+            sema.kaydet(tally_ekle(sema.yukle(a.model), a.duzey), a.cikti)
+        else:
+            _oku(a.statepoint, a.model, a.csv)
+    except (ValueError, OSError) as h:          # YerelKHatasi, GocHatasi dahil
+        _log.warning("yerel k terminal: %s", h)
+        sys.stderr.write("%s\n" % h)
+        return 1
+    return 0
+
+
+if __name__ == "__main__":
+    from cekirdek.ceviri import terminal_dili
+    terminal_dili()
+    sys.exit(terminal(sys.argv[1:]))
