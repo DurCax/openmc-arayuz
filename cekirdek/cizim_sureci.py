@@ -17,9 +17,16 @@
  OLCUM (SFR-MET1000, bu makine, 800 px; .h2_olcum betikleri, rapor H2)
    eski Model.plot yolu (ana is parcacigi, xy + xz): 10.8 s
      -- Model.plot her cagrida Geometry.bounding_box hesaplar (SFR: 2.0 s/kesit)
-   iscide: kurulum 0.25 s + openmc.lib.init 1.6 s + xy 0.43 s + xz 0.42 s
+   iscide: kurulum 0.24 s + XML 0.15 s + openmc.lib.init 0.24 s + xy 0.4 s + xz 0.4 s
    oturum ACIK tutulur: model degismedikce (spec ozeti ayni) kesit/cozunurluk/
    renk degisikligi yalniz dilimleme maliyetidir (init tekrarlanmaz).
+
+ INIT KIPI
+   openmc.lib.init "-p" (cizim kipi) ile baslatilir. Eski yol (Model.plot /
+   TemporarySession) "-c" (hacim kipi) kullaniyordu: SFR'de init 1.6 s -> 0.24 s,
+   VVER 0.8 -> 0.2 s; 10 ornekte xy + xz id haritalari bit bit ayni (olculdu,
+   0.16.0). "-p" nukleer veri (cross_sections.xml) istemez: veri yokken "-c"
+   sureci C++ tarafinda sonlandiriyordu; onizleme artik verisiz de cizer.
 
  KESIT MERKEZI
    Model.plot origin vermeyince sinir kutusunun merkezini (nan -> 0) kullanir;
@@ -84,6 +91,7 @@ EKSENLER = ("xy", "xz", "yz")
 EN_COK_KESIT = 3
 PIKSEL_EN_AZ, PIKSEL_EN_COK = 16, 4096     # arayuz secenekleri 400-1400
 KESIT_MERKEZI = (0.0, 0.0, 0.0)            # gerekce: modul belgesi (KESIT MERKEZI)
+_INIT_KIPI = "-p"                          # cizim kipi; gerekce: modul belgesi (INIT KIPI)
 
 BOSLUK, TANIMSIZ, CAKISMA = -1, -2, -3      # id haritasi kodlari (OpenMC plot.cpp)
 
@@ -110,7 +118,10 @@ def cerceve(baslik, diziler=None):
             raise ProtokolHatasi(_("izinsiz dizi türü: %s") % dizi.dtype)
         tanimlar.append({"ad": ad, "dtype": dizi.dtype.name, "sekil": list(dizi.shape)})
         parcalar.append(dizi.tobytes())
-    ham = json.dumps(dict(baslik, _diziler=tanimlar), ensure_ascii=False).encode("utf-8")
+    try:
+        ham = json.dumps(dict(baslik, _diziler=tanimlar), ensure_ascii=False).encode("utf-8")
+    except (TypeError, ValueError) as e:
+        raise ProtokolHatasi(_("çerçeve başlığı JSON'a çevrilemedi: %s") % e) from e
     veri = b"".join(parcalar)
     if len(ham) > BASLIK_SINIRI or len(veri) > VERI_SINIRI:
         raise ProtokolHatasi(_("çerçeve çok büyük"))
@@ -274,7 +285,7 @@ class Oturum:
             self._eski_dizin = os.getcwd()
             os.chdir(self._dizin)
             cizim_modeli(model).export_to_model_xml()
-            openmc.lib.init(args=["-c"], output=False)
+            openmc.lib.init(args=[_INIT_KIPI], output=False)
         except Exception:
             self.kapat()
             raise
@@ -419,6 +430,13 @@ def dongu(kanal, oturum):
         isle(istek, oturum, kanal)
 
 
+def _isit():
+    """Agir modulleri 'hazir'dan ONCE yukler: ilk istek import (~1.2 s, olculdu)
+    beklemesin; isci arayuz acilirken arka planda isinir."""
+    import openmc.lib  # noqa: F401
+    from cekirdek import kurucu, onbellek, sema  # noqa: F401
+
+
 def ana(argv=None):
     """`python -m cekirdek.giris --alt cizim` girisi. stdout YALNIZ protokole
     ayrilir: C/C++ tarafinin yazdiklari stderr'e yonlendirilir (fd 1 -> fd 2)."""
@@ -427,6 +445,7 @@ def ana(argv=None):
         return 2
     cikis = os.fdopen(os.dup(sys.stdout.fileno()), "wb", buffering=0)
     os.dup2(sys.stderr.fileno(), sys.stdout.fileno())
+    _isit()
     oturum = Oturum()
     try:
         return dongu(Kanal(sys.stdin.fileno(), cikis), oturum)

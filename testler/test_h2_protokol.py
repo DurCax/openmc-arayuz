@@ -129,10 +129,12 @@ def test_malzeme_boyama():
     geom2 = _geom([[-2]], hucre=[[-2]])
     renkler = {1: (255, 0, 0), 2: (0, 0, 255)}
     # Act
-    img = ob.malzeme_goruntusu(geom, renkler, cakisma_rengi=(0.0, 1.0, 0.0))
-    img2 = ob.malzeme_goruntusu(geom2, renkler, cakisma_rengi=(0.0, 1.0, 0.0))
+    img = ob.malzeme_goruntusu(geom, renkler, cakisma_rengi=(0.0, 1.0, 0.0)) / 255.0
+    img2 = ob.malzeme_goruntusu(geom2, renkler, cakisma_rengi=(0.0, 1.0, 0.0)) / 255.0
     # Assert
     kontrol("RGBA sekli", img.shape == (2, 2, 4))
+    kontrol("uint8 (bellek: float64'in sekizde biri)",
+            ob.malzeme_goruntusu(geom, renkler, (0, 1, 0)).dtype == np.uint8)
     kontrol("malzeme 1 kirmizi, 2 mavi", np.allclose(img[0, 0], (1, 0, 0, 1))
             and np.allclose(img[0, 1], (0, 0, 1, 1)))
     kontrol("bosluk (-1) beyaz (Model.plot ile ayni)", np.allclose(img[1, 0], (1, 1, 1, 1)))
@@ -144,12 +146,12 @@ def test_hucre_boyama_model_plot_ile_ayni():
     print("\n[H2P-7] boyama: hucre renkleri openmc'nin varsayilan rastgele renkleriyle ayni")
     from arayuz import onizleme_boyama as ob
     geom = _geom([[1, 1, 1]], hucre=[[12, 3, 40]])
-    img = ob.hucre_goruntusu(geom)
+    img = ob.hucre_goruntusu(geom) / 255.0
     rng = np.random.RandomState(1)            # openmc.plots._id_map_to_rgb sirasi
     beklenen = {k: rng.randint(0, 256, (3,)) / 255.0 for k in (3, 12, 40)}
     kontrol("siralanmis kimlik sirasinda RandomState(1) renkleri",
             all(np.allclose(img[0, i, :3], beklenen[k]) for i, k in enumerate((12, 3, 40))))
-    vurgu = ob.hucre_goruntusu(geom, renkler={3: (0, 255, 0)}, varsayilan=(0, 0, 0))
+    vurgu = ob.hucre_goruntusu(geom, renkler={3: (0, 255, 0)}, varsayilan=(0, 0, 0)) / 255.0
     kontrol("verilen renk sozlugu + varsayilan renk", np.allclose(vurgu[0, 1, :3], (0, 1, 0))
             and np.allclose(vurgu[0, 0, :3], (0, 0, 0)))
 
