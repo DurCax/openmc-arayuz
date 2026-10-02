@@ -125,6 +125,10 @@ Kaynak tablo depodaki [SOZLUK.md](../../SOZLUK.md) dosyasıdır; aşağıdaki ta
 | akı | flux |  |  |
 | tesir kesiti | cross section |  |  |
 | tesir kesiti kütüphanesi | cross section library | XS library |  |
+| grup sabiti (çok gruplu tesir kesiti) | group constant (multigroup cross section) |  | `openmc.mgxs`; çoğulu group constants |
+| taşıma düzeltmesi | transport correction |  | P0 (out-scatter) |
+| bölge türü (homojenleştirme) | region type | domain type | OpenMC `domain_type` |
+| kaynak bölgesi (random ray) | source region | flat source region, FSR |  |
 | termal saçılma (S(α,β)) | thermal scattering (S(α,β)) |  |  |
 | koşu | run | job, execution |  |
 | koşu dizini | run directory | output folder |  |

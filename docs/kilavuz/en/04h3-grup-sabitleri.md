@@ -66,6 +66,8 @@ and 13). V is the region, g the energy group (g = 1 is the highest energy), φ t
 ± (the runs are independent: root sum of squares), for random ray **Δk vs MG** (same `mgxs.h5`: the
 method difference only) and run time.
 
+**Acceptance thresholds.** The thresholds come from these measurements and the expected method error: 500 pcm for CE↔MG in 70 groups (homogenization + condensation + isotropic scattering are a few hundred pcm, ~3 times the combined σ ≈ 180 pcm), 300 pcm for RR↔MG with the same `mgxs.h5` (spatial discretization only, ~3 times the MG MC σ ≈ 100 pcm); they are not certification limits.
+
 **Measured values** (`ornekler/pwr_pinhucre.json`, 10 000 particles × 40 active batches,
 ENDF/B-VIII.0, 6 threads; `testler/test_y8_kosu.py`):
 

@@ -63,6 +63,8 @@ V bölge, g enerji grubu (g = 1 en yüksek enerji), φ skaler akı:
 10⁵ pcm ve ± (koşular bağımsız: σ'ların karekök toplamı), random ray için **Δk MG'ye** (aynı
 `mgxs.h5`: yalnız yöntem farkı) ve koşu süresi.
 
+**Kabul eşikleri.** Eşikler bu ölçümlerden ve beklenen yöntem hatasından gelir: 70 grupta CE↔MG için 500 pcm (homojenleştirme + yoğunlaştırma + izotropik saçılma birkaç yüz pcm, birleşik σ ≈ 180 pcm'in ~3 katı), aynı `mgxs.h5` ile RR↔MG için 300 pcm (yalnız uzay ayrıklaştırma, MG MC σ ≈ 100 pcm'in ~3 katı); bir sertifika eşiği değildir.
+
 **Ölçülen değerler** (`ornekler/pwr_pinhucre.json`, 10 000 parçacık × 40 aktif çevrim,
 ENDF/B-VIII.0, 6 iş parçacığı; `testler/test_y8_kosu.py`):
 
