@@ -96,20 +96,55 @@ Tasarım sekmelerinde (Malzemeler, Parçalar, Demet, Geometri) sağdaki panel he
 değişiklikten sonra geometri kesitini yeniden çizer. Kesit OpenMC'nin kendi
 kütüphanesiyle (`openmc.lib.slice_data`) dilimlenir, yani gördüğünüz kesit OpenMC'nin
 gerçekten kuracağı geometridir. Önizleme tally'siz bir modeli çizer (tally'ler çizimi
-etkilemez). Çizim sürerken ÇALIŞTIR kapalıdır; çizim başarıyla bitince açılır.
+etkilemez). Tam model çizilirken ya da denetlenirken ÇALIŞTIR kapalıdır; tam model
+başarıyla kurulunca açılır.
 
 | Denetim | Anlamı |
 |---|---|
 | **Kesit** | xy (üstten, z = 0), xz (yandan, y = 0), yz (yandan, x = 0). 3B modelde varsayılan "xy + xz": iki kesit yan yana. 2B modelde yalnız xy çizilir. |
 | **Renk** | Malzeme ya da Hücre renklendirmesi. Gelişmiş geometride seçili düğüm vurgulanır, diğerleri soluk görünür. |
-| **Gösterge** | Malzeme renklerinin açıklaması. |
+| **Gösterge** | Malzeme renklerinin açıklaması. Kapsamlı çizimde yalnız kesitte gerçekten bulunan malzemeler listelenir. |
+| **Kapsam** | **Otomatik**: sayfada seçili öğe çizilir (aşağıdaki tablo). **Tam model**: her sayfada bütün model. Yanındaki yazı çizilen kapsamı söyler (ör. "çubuk ‘yakit_cubugu’"). |
 | **Yenile** | Önizlemeyi yeniden çizer (F6). |
 | **Çözünürlük** (Gelişmiş) | Düşük (400) / Normal (800) / Yüksek (1400) piksel. |
 | **Çakışmaları göster** (Gelişmiş) | Birden fazla hücrenin kapladığı noktaları ayrı renkle gösterir ve sayısını bildirir. Büyük korlarda çizimi birkaç kat yavaşlatır. |
 
+#### Önizleme kapsamı
+
+Büyük bir korda tek bir pini düzenlerken bütün koru çizmek hem yavaştır hem de pin
+kesitte birkaç piksel kalır. **Otomatik** kapsamda önizleme, sayfada seçili öğeyi tek
+başına çizer:
+
+| Sayfa | Çizilen |
+|---|---|
+| Parçalar | seçili çubuk, plaka ya da tambur |
+| Demet | seçili demet |
+| Geometri (gelişmiş) | seçili düğüm: kafes, kap ya da bir bileşen (çubuk, demet, tambur); kök ya da malzeme düğümü seçiliyse tam kor |
+| Geometri (şablon), Malzemeler | tam model |
+
+Seçili öğe, **dış sınırları yansıtıcı tek evrenli bir alt modelde** çizilir
+(`cekirdek/alt_model.py`): çubuk kendi hücre adımında (onu kullanan ilk demetin adımı),
+demet kendi kafes sınırında, yansıtıcı kuşak ve eksenel katmanlar olmadan; 3B modelde
+alt model aynı yükseklikte kalır. Alt modelin malzeme listesi yalnız o öğenin
+malzemelerine budanır; gösterge de yalnız kesitteki malzemeleri gösterir. Alt model
+yalnız görsel denetim içindir: koşulan model her zaman tam modeldir.
+
+**ÇALIŞTIR kapısı yalnız tam modele bakar.** Kapsamlı çizim tam modeli denetlemez; tam
+model değiştiyse kapsamlı çizimin ardından tam model ayrıca (kesit çizilmeden) kurulur
+ve kapı onun sonucuyla açılır ya da kapanır. Aynı tam modelde başka bir pin seçmek bu
+denetimi yinelemez; tam model zaten başarıyla denetlenmişse kapsamlı çizim sürerken de
+ÇALIŞTIR açık kalır (yalnız tam modelin çizimi ya da denetimi sürerken kapalıdır). 3B
+eksenel katmanlı ya da kontrol çubuklu modelde alt model tek eksenel bölgedir; kapsam
+yazısında "eksenel olarak birebir değil" notu çıkar. Kapsamlı çizim başarısız olsa bile (ör. kullanılmayan bir pinin
+malzemesi seçilmemiş) kapı tam modelin sonucunu gösterir; tam model kurulamıyorsa
+kapsamlı çizim başarılı olsa da kapı kapalıdır. Kapsamlı çizimde önizlemeye tıklayıp
+düğüm seçmek ve düğüm vurgusu kapalıdır.
+
 Önizleme arka planda, ayrı bir süreçte çizilir; arayüz beklemez ("Çiziliyor…" yazısı). Model değişmedikçe OpenMC açık kalır: kesit, renk ya da çözünürlük değişimi hızlıdır. Panel daraltılmışken çizim yapılmaz, yalnız model denetlenir (ÇALIŞTIR kapısı yine çalışır); panel açılınca çizilir. Çizim süreci beklenmedik biçimde kapanırsa önizlemede açık bir hata görünür ve süreç yeniden başlatılır.
 
-Panelin altındaki satır modelin dış ölçüsünü yazar. Panel sağ üstteki düğmeyle daraltılır.
+Panelin altındaki satır tam modelin dış ölçüsünü yazar. Panel sağ üstteki düğmeyle ya da
+**Görünüm > Önizlemeyi göster** (F7) ile gizlenir; durum hatırlanır. Gizliyken çizim
+yapılmaz, model yalnız ÇALIŞTIR kapısı için denetlenir.
 
 ### Doğrulama şeridi ve bulgu listesi
 
@@ -153,6 +188,7 @@ gezer, Enter çalıştırır, Esc kapatır. Yalnız o an etkin olan eylemler lis
 | Düzen | Geri al / Yinele | Ctrl+Z / Ctrl+Y (ya da Ctrl+Shift+Z) | |
 | Görünüm | Açık tema / Koyu tema | — | Grafikler de aynı paleti kullanır; seçim hatırlanır. |
 | Görünüm | Dil (Türkçe / İngilizce) | — | Uygulama yeniden başlatılınca geçerli olur. |
+| Görünüm | Önizlemeyi göster | F7 | Önizleme panelini gizler / gösterir; durum hatırlanır. Gizliyken çizim yapılmaz. |
 | Görünüm | Tam ekran | F11 | |
 | Yardım | Yardım ve terimler (kılavuz), Hakkında | F1 | F1 kılavuzun o anki sayfaya ait bölümünü açar. |
 
@@ -167,6 +203,7 @@ gösterir ([4.7](04g-calistir.md#calistir)).
 | F1 | Kılavuz (o anki sayfanın bölümü) |
 | F5 | Doğrulamayı yenile (veri kütüphanesi dahil) |
 | F6 | Önizlemeyi yenile |
+| F7 | Önizlemeyi gizle / göster |
 | F9 | Çalıştır |
 | F11 | Tam ekran |
 | Ctrl+K | Komut paleti |

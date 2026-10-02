@@ -259,8 +259,11 @@ _SU_TABLO = [
 def su_yogunluk(sicaklik):
     """
     Doymus sivi su yogunlugu [g/cm3], T [K].
-    GECERLILIK 273-623 K. Doymus egri degerleridir; basincli su (PWR, 15.5 MPa)
-    icin yaklasik %1 dusuk kalir. Kritik hesaplarda elle dogrulayin.
+    GECERLILIK 273-623 K. Doymus egri degerleridir; basincli suda dusuk kalir:
+    580 K, 15.5 MPa'da IAPWS-IF97 sikistirilmis sivi 0.71187 g/cm3, bu tablo
+    0.69648 (%2.2 dusuk) = basinc etkisi %2.0 (IF97 doymus sivi 0.69763) +
+    dogrusal interpolasyon %0.17. Basinc gerekiyorsa malzeme asistaninin
+    "Hafif su" tarifini (malzeme_tarif, IF97) kullanin.
     """
     if sicaklik <= _SU_TABLO[0][0]:
         return _SU_TABLO[0][1]
@@ -387,6 +390,47 @@ def gd2o3(yogunluk=7.41, sicaklik=900.0, ad=None):
                    gorunen_ad="Gd2O3")
 
 
+def m5(yogunluk=6.50, sicaklik=600.0, ad=None):
+    """
+    M5 -- Zr-1Nb-O zarf alasimi (Mardon vd., ASTM STP 1354 (2000) 505):
+    Nb %1.0, O %0.125, Fe ~%0.03 (agirlikca nominal), Zr kalan.
+    Yogunluk 6.50 g/cm3 (Zr-1Nb; saf Zr 6.52 g/cm3, CRC Handbook).
+    """
+    return malzeme(
+        ad or "m5",
+        [bilesen("Zr", 98.845, birim="wo"), bilesen("Nb", 1.0, birim="wo"),
+         bilesen("O", 0.125, birim="wo"), bilesen("Fe", 0.03, birim="wo")],
+        yogunluk, sicaklik=sicaklik, renk=RENK["zarf"], gorunen_ad="M5",
+    )
+
+
+def ss304(yogunluk=7.94, sicaklik=600.0, ad=None):
+    """SS-304 -- SCALE 6.2 Standard Composition Library (ORNL/TM-2005/39), agirlikca %."""
+    return malzeme(
+        ad or "ss304",
+        [bilesen("C", 0.08, birim="wo"), bilesen("Si", 1.0, birim="wo"),
+         bilesen("P", 0.045, birim="wo"), bilesen("Cr", 19.0, birim="wo"),
+         bilesen("Mn", 2.0, birim="wo"), bilesen("Fe", 68.375, birim="wo"),
+         bilesen("Ni", 9.5, birim="wo")],
+        yogunluk, sicaklik=sicaklik, renk=RENK["yapisal"], gorunen_ad="SS-304",
+    )
+
+
+def uo2_gd2o3(zenginlik=3.2, gd2o3_yuzde=8.0, yogunluk=10.03, sicaklik=900.0, ad=None):
+    """
+    (U,Gd)O2 yanabilir zehirli yakit. gd2o3_yuzde: Gd2O3 agirlikca %.
+    Bilesim kutle dengesinden (malzeme_hesap.uo2_gd2o3_bilesimi); varsayilan
+    yogunluk 10.03 g/cm3 = %95 x ideal karisim TD (10.558 g/cm3, %8 Gd2O3;
+    malzeme_hesap.karisim_td, UO2 10.963 + Gd2O3 7.407).
+    """
+    from cekirdek import malzeme_hesap as mh
+    return malzeme(
+        ad or "uo2_gd2o3", mh.uo2_gd2o3_bilesimi(zenginlik, gd2o3_yuzde / 100.0),
+        yogunluk, sicaklik=sicaklik, renk=RENK["yakit2"],
+        gorunen_ad="UO2 %%%.2f + %%%.1f Gd2O3" % (zenginlik, gd2o3_yuzde),
+    )
+
+
 def agincd(yogunluk=10.16, sicaklik=600.0, ad=None):
     """Ag-In-Cd kontrol cubugu alasimi (agirlikca 80/15/5)."""
     return malzeme(ad or "agincd",
@@ -427,6 +471,9 @@ KUTUPHANE = {
     "b4c": (b4c, N_("Bor karbür")),
     "gd2o3": (gd2o3, N_("Gadolinyum oksit yanabilir zehir")),
     "agincd": (agincd, N_("Ag-In-Cd kontrol alaşımı")),
+    "m5": (m5, N_("M5 Zr-1Nb-O zarf")),
+    "ss304": (ss304, N_("AISI 304 paslanmaz çelik")),
+    "uo2_gd2o3": (uo2_gd2o3, N_("UO₂-Gd₂O₃ yanabilir zehirli yakıt")),
 }
 
 
@@ -506,6 +553,9 @@ _PARAM = {
                     "ipucu": N_("MOX'taki uranyumun (çoğunlukla fakir U) U-235 ağırlık yüzdesi.")},
     "u_yukleme": {"etiket": N_("Uranyum yüklemesi"), "en_az": 0.1, "en_cok": 10.0,
                   "ondalik": 2, "adim": 0.1, "sonek": "gU/cm³"},
+    "gd2o3_yuzde": {"etiket": N_("Gd₂O₃ ağırlıkça %"), "en_az": 0.0, "en_cok": 30.0,
+                    "ondalik": 2, "adim": 0.5, "sonek": "%",
+                    "ipucu": N_("Yakıttaki gadolinyum oksidin ağırlık yüzdesi (tipik %2–10; IAEA-TECDOC-844, 1995).")},
     "saflik": {"etiket": N_("D₂O saflığı (mol %)"), "en_az": 50.0, "en_cok": 100.0,
                "ondalik": 2, "adim": 0.05, "sonek": "%"},
     "b10_zenginlik": {"etiket": N_("B-10 atomca %"), "tur": "dogal_ya_da",
@@ -554,6 +604,12 @@ KATALOG = {
             ["b10_zenginlik", "yogunluk", "sicaklik"]),
     "agincd": (N_("Ag-In-Cd"), N_("PWR kontrol çubuğu alaşımı."), ["yogunluk", "sicaklik"]),
     "gd2o3": (N_("Gd₂O₃ — gadolinyum oksit"), N_("Yanabilir zehir."), ["yogunluk", "sicaklik"]),
+    "m5": (N_("M5 — Zr-1Nb-O"), N_("PWR yakıt zarfı alaşımı (nominal bileşim)."),
+           ["yogunluk", "sicaklik"]),
+    "ss304": (N_("SS-304 paslanmaz çelik"), N_("SCALE standart bileşim kütüphanesi değerleri."),
+              ["yogunluk", "sicaklik"]),
+    "uo2_gd2o3": (N_("UO₂-Gd₂O₃ — gadolinyumlu yakıt"), N_("Yanabilir zehirli seramik yakıt."),
+                  ["zenginlik", "gd2o3_yuzde", "yogunluk", "sicaklik"]),
     "helyum": (N_("Helyum (He)"), N_("Yakıt-zarf aralığı dolgu gazı."),
                [("yogunluk", {"en_az": 1.0e-7, "en_cok": 0.01, "ondalik": 7,
                               "adim": 1.0e-5}),

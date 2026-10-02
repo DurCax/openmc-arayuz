@@ -20,6 +20,8 @@ from arayuz.pencere.model_islemleri import UYGULAMA_ADI
 from arayuz.pencere.proje import _ICE_AKTAR_NOTU
 from arayuz.pencere.yardim_metni import YARDIM_HTML, yardim_html  # noqa: F401 (eski ad)
 
+ONIZLEME_KISAYOLU = "F7"            # F6 onizlemeyi yeniler; gizle/goster yaninda (K5)
+
 
 # ============================================================================
 # bulgu acilir listesi (durum cubugu rozeti)
@@ -167,7 +169,24 @@ class MenulerMixin(object):
         m_gorunum.addSeparator()
         self._dil_menusu_kur(m_gorunum)
         m_gorunum.addSeparator()
+        self._onizleme_eylemi_kur(m_gorunum)
         self._eylem(m_gorunum, _("Tam ekran"), self._tam_ekran, "F11")
+
+    def _onizleme_eylemi_kur(self, m_gorunum):
+        """Gorunum > Onizlemeyi goster (F7, v3 K5): paneli daraltir/acar. Durum
+        panelin daraltildi sinyaliyle QSettings'e yazilir (kabuk.ONIZLEME_AYARI);
+        gizliyken cizim yapilmaz, yalniz tam model denetlenir (Calistir kapisi).
+        """
+        e = QtGui.QAction(_("Önizlemeyi göster"), self)
+        e.setCheckable(True)
+        e.setChecked(not self.onizleme_paneli.dar_mi())
+        e.setShortcut(ONIZLEME_KISAYOLU)
+        e.setToolTip(_("Önizleme panelini gizler ya da gösterir; gizliyken çizim yapılmaz "
+                       "(Çalıştır kapısı için model yine denetlenir)"))
+        e.triggered.connect(lambda acik: self.onizleme_paneli.daralt(not acik))
+        self.onizleme_paneli.daraltildi.connect(lambda dar: e.setChecked(not dar))
+        m_gorunum.addAction(e)
+        self.e_onizleme_goster = e
 
     def _pencere_eylemi(self, ad, islev, kisayol):
         e = QtGui.QAction(ad, self)
@@ -294,7 +313,9 @@ class MenulerMixin(object):
             (self.e_geri, _("Geri al")), (self.e_yinele, _("Yinele")),
             (self.e_betik, _("Python betiği olarak dışa aktar")),
             (self.e_dogrula, _("Doğrulamayı yenile (veri kütüphanesi dahil)")),
-            (self.e_onizle, _("Önizlemeyi yenile")), (self.e_calistir, _("ÇALIŞTIR")),
+            (self.e_onizle, _("Önizlemeyi yenile")),
+            (self.e_onizleme_goster, _("Önizlemeyi gizle / göster")),
+            (self.e_calistir, _("ÇALIŞTIR")),
             (self.e_kilavuz, _("Kullanım kılavuzu (etkin sayfanın bölümü)")),
             (self.e_yardim, _("Bu yardım")),
         ]
