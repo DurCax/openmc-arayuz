@@ -120,6 +120,8 @@ class CizimIstemcisi(QtCore.QObject):
         """Istegi gonderir (kopyasina yeni no yazilir); no'yu dondurur."""
         self._son_no += 1
         self.baslat()
+        if self._surec is None:             # baslatma hemen basarisiz oldu (coktu yayildi)
+            return self._son_no
         self._bitmedi = True
         try:
             self._surec.write(cs.cerceve(dict(istek, no=self._son_no)))

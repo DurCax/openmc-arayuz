@@ -178,7 +178,7 @@ class CerceveCozucu:
             except (UnicodeDecodeError, json.JSONDecodeError) as e:
                 raise ProtokolHatasi(_("çerçeve başlığı okunamadı: %s") % e) from e
             if not isinstance(baslik, dict):
-                raise ProtokolHatasi(_("çerçeve başlığı sözlük değil"))
+                raise ProtokolHatasi(_("çerçeve başlığı JSON nesnesi değil"))
             diziler = _dizileri_coz(baslik.pop("_diziler", []), veri)
             cikan.append(Cerceve(baslik, diziler))
         return cikan

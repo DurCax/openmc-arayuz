@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 06:20+0300\n"
+"POT-Creation-Date: 2026-10-02 06:38+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -86,8 +86,8 @@ msgid "çerçeve başlığı okunamadı: %s"
 msgstr "frame header could not be read: %s"
 
 #: cekirdek/cizim_sureci.py:181
-msgid "çerçeve başlığı sözlük değil"
-msgstr "frame header is not a mapping"
+msgid "çerçeve başlığı JSON nesnesi değil"
+msgstr "frame header is not a JSON object"
 
 #: cekirdek/cizim_sureci.py:197
 #, python-format

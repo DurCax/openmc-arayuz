@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 06:20+0300\n"
+"POT-Creation-Date: 2026-10-02 06:38+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -85,7 +85,7 @@ msgid "çerçeve başlığı okunamadı: %s"
 msgstr ""
 
 #: cekirdek/cizim_sureci.py:181
-msgid "çerçeve başlığı sözlük değil"
+msgid "çerçeve başlığı JSON nesnesi değil"
 msgstr ""
 
 #: cekirdek/cizim_sureci.py:197
