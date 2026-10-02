@@ -80,8 +80,8 @@ def test_etkin_turler_mg_icin_zorunlulari_icerir():
     p0 = mu.ayar(_pin(turler=["kappa-fission"]))
     yok = mu.ayar(_pin(duzeltme="yok"))
     # Assert
-    for t in ("total", "absorption", "nu-fission", "chi", "nu-scatter matrix",
-              "scatter matrix"):
+    for t in ("total", "absorption", "nu-fission", "chi", "consistent nu-scatter matrix",
+              "consistent scatter matrix"):
         kontrol("zorunlu: %s" % t, t in p0.etkin_turler)
     kontrol("P0 -> nu-transport", "nu-transport" in p0.etkin_turler)
     kontrol("duzeltme yok -> nu-transport yok", "nu-transport" not in yok.etkin_turler)

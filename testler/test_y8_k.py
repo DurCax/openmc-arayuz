@@ -104,6 +104,24 @@ def test_ozdeger_belirsizligi_tek_grupta_analitik():
     kontrol("yalniz nuSf %1 -> k %1", _yakin(d.sapma, 0.013, 1e-5), "-> %r" % (d,))
 
 
+def test_kaldirma_bicimi_tutarli_sabitlerde_ayni_k():
+    print("\n[Y8-K7] St = Sa + sum S iken kaldirma bicimi k = St bicimi k ((n,2n) dahil)")
+    import numpy as np
+    from cekirdek import mgxs_k as mk
+    # Arrange: nuS kosegeni S'den buyuk ((n,2n)); St tutarli
+    s_nusuz = np.array([[0.480, 0.020], [0.004, 1.200]])
+    nus = s_nusuz + np.array([[0.002, 0.0], [0.0, 0.0]])
+    sa = np.array([0.010, 0.095])
+    st = sa + s_nusuz.sum(axis=1)
+    sab = mk.GrupSabitleri(toplam=tuple(st), absorpsiyon=tuple(sa), nu_fisyon=(0.007, 0.15),
+                           chi=(1.0, 0.0), sacilma=tuple(map(tuple, nus)))
+    # Act
+    k_st = mk.k_ozdeger(sab)
+    k_kal = mk.kaldirma_k(sa, np.array([0.007, 0.15]), np.array([1.0, 0.0]), nus, s_nusuz)
+    # Assert
+    kontrol("iki bicim ayni", _yakin(k_st, k_kal, 1e-12), "-> %r / %r" % (k_st, k_kal))
+
+
 def test_girdi_dogrulama():
     print("\n[Y8-K6] boyut, negatif, chi toplami ve sacilma sekli denetlenir")
     from cekirdek import mgxs_k as mk
@@ -124,5 +142,6 @@ def test_girdi_dogrulama():
 
 HIZLI = [test_tek_grup_k_nusf_bolu_sa, test_iki_grup_yukari_sacilmasiz_el_formulu,
          test_iki_grup_yukari_sacilmali_determinant, test_reaksiyon_hizi_orani_ve_belirsizlik,
-         test_ozdeger_belirsizligi_tek_grupta_analitik, test_girdi_dogrulama]
+         test_ozdeger_belirsizligi_tek_grupta_analitik, test_kaldirma_bicimi_tutarli_sabitlerde_ayni_k,
+         test_girdi_dogrulama]
 YAVAS = []

@@ -33,7 +33,7 @@
 from __future__ import annotations
 
 import math
-from dataclasses import dataclass, replace
+from dataclasses import dataclass
 from typing import NamedTuple, Optional, Sequence, Tuple
 
 import numpy as np
@@ -117,14 +117,6 @@ def k_ozdeger(s: GrupSabitleri) -> float:
               np.array(s.chi))
 
 
-def _kaydir(s: GrupSabitleri, ad: str, indeks: Tuple[int, ...], adim: float) -> GrupSabitleri:
-    """s'nin bir ogesi adim kadar degismis YENI kopyasi (chi adimi toleransin cok altinda)."""
-    dizi = np.array(getattr(s, ad), dtype=float)
-    dizi[indeks] += adim
-    deger = tuple(map(tuple, dizi)) if dizi.ndim == 2 else tuple(dizi)
-    return replace(s, **{ad: deger})
-
-
 @dataclass(frozen=True)
 class GrupSapmalari:
     """GrupSabitleri ile ayni alanlarin 1 sigma sapmalari (dogrulama yok)."""
@@ -133,24 +125,51 @@ class GrupSapmalari:
     nu_fisyon: Dizi
     chi: Dizi
     sacilma: Tuple[Dizi, ...]
+    sacilma_nusuz: Optional[Tuple[Dizi, ...]] = None
 
 
-def k_ozdeger_belirsiz(s: GrupSabitleri, sapma: GrupSapmalari) -> Deger:
-    """k_ozdeger + birinci derece belirsizlik (parametreler bagimsiz varsayilir)."""
+def kaldirma_k(sa: np.ndarray, nusf: np.ndarray, chi: np.ndarray, nus: np.ndarray,
+                s: np.ndarray) -> float:
+    """KALDIRMA bicimi: M_gg = Sa_g + sum_{g'!=g} S(g->g') - (nuS_gg - S_gg),
+    M_gg' = -nuS(g'->g). Tutarli sabitlerde (St = Sa + sum_g' S) k_ozdeger ile
+    ayni sayi; her terim dusuk gurultulu tally'den gelir (belirsizlik icin)."""
+    disari = s.sum(axis=1) - np.diag(s)
+    m = -nus.T.copy()
+    np.fill_diagonal(m, sa + disari - (np.diag(nus) - np.diag(s)))
+    return float(nusf @ np.linalg.solve(m, chi))
+
+
+def k_ozdeger_belirsiz(s: GrupSabitleri, sapma: GrupSapmalari,
+                       sacilma_nusuz: Optional[Sequence[Sequence[float]]] = None) -> Deger:
+    """k_ozdeger + birinci derece belirsizlik.
+
+    Deger St bicimindendir (random ray ile ayni denklem). Sapma KALDIRMA
+    biciminden yayilir: St - S(g->g) iki buyuk ve iliskili sayinin farkidir;
+    ogeleri bagimsiz saymak sapmayi kat kat sisirirdi. Yayilan: Sa, nuSf, chi
+    ve kosegen DISI sacilma; kosegendeki (n,xn) cogalma farki (nuS_gg - S_gg)
+    kucuk oldugu icin sapmasiz alinir. Bagimsizlik varsayimi -- yaklasik."""
     k0 = k_ozdeger(s)
+    nus = np.array(s.sacilma, dtype=float)
+    snusuz = nus if sacilma_nusuz is None else np.array(sacilma_nusuz, dtype=float)
+    parametreler = {"sa": np.array(s.absorpsiyon), "nusf": np.array(s.nu_fisyon),
+                    "chi": np.array(s.chi), "nus": nus, "s": snusuz}
+    sapmalar = {"sa": np.array(sapma.absorpsiyon), "nusf": np.array(sapma.nu_fisyon),
+                "chi": np.array(sapma.chi), "nus": np.array(sapma.sacilma),
+                "s": np.array(sapma.sacilma if sapma.sacilma_nusuz is None
+                              else sapma.sacilma_nusuz)}
+    if sacilma_nusuz is None:
+        sapmalar["s"] = np.zeros_like(snusuz)       # ayni matris iki kez sayilmasin
+    taban = kaldirma_k(**parametreler)
     varyans = 0.0
-    for ad in ("toplam", "nu_fisyon", "chi", "sacilma"):
-        degerler = np.array(getattr(s, ad), dtype=float)
-        sapmalar = np.array(getattr(sapma, ad), dtype=float)
-        for indeks in np.ndindex(degerler.shape):
-            if sapmalar[indeks] <= 0.0:
+    for ad, deger in parametreler.items():
+        for ix in np.ndindex(deger.shape):
+            if sapmalar[ad][ix] <= 0.0 or (deger.ndim == 2 and ix[0] == ix[1]):
                 continue
-            adim = _TUREV_ADIMI * max(abs(degerler[indeks]), 1e-12)
-            turev = (k_ozdeger(_kaydir(s, ad, indeks, adim)) - k0) / adim
-            varyans += (turev * sapmalar[indeks]) ** 2
+            adim = _TUREV_ADIMI * max(abs(deger[ix]), 1e-12)
+            kayik = {a: d.copy() for a, d in parametreler.items()}
+            kayik[ad][ix] += adim
+            varyans += ((kaldirma_k(**kayik) - taban) / adim * sapmalar[ad][ix]) ** 2
     return Deger(k0, math.sqrt(varyans))
-
-
 def k_oran(nu_fisyon_hizlari: Sequence[Tuple[float, float]],
            absorpsiyon_hizlari: Sequence[Tuple[float, float]]) -> Optional[Deger]:
     """k = sum nuF / sum A (reaksiyon hizlari (ort, sapma)). (n,xn) icermez.

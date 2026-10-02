@@ -66,15 +66,19 @@ VARSAYILAN_GRUP = "CASMO-2"
 DUZELTMELER = ("P0", "yok")
 # MG kutuphanesi (create_mg_library) icin her zaman: toplam + sogurma +
 # nu-fisyon + chi + nu-sacilma ve sacilma matrisi (cogalma matrisi).
-ZORUNLU_TURLER = ("total", "absorption", "nu-fission", "chi", "scatter matrix",
-                  "nu-scatter matrix")
+SACILMA_TURU = "consistent nu-scatter matrix"
+NUSUZ_SACILMA_TURU = "consistent scatter matrix"
+ZORUNLU_TURLER = ("total", "absorption", "nu-fission", "chi", NUSUZ_SACILMA_TURU,
+                  SACILMA_TURU)
 SECMELI_TURLER = ("fission", "kappa-fission", "capture", "inverse-velocity",
                   "diffusion-coefficient")
 TUR_ADLARI = {
     "total": N_("Toplam Σt"), "nu-transport": N_("Taşıma Σtr (P0, ν)"),
     "absorption": N_("Soğurma Σa"), "nu-fission": N_("ν-fisyon νΣf"),
     "chi": N_("Fisyon tayfı χ"), "scatter matrix": N_("Saçılma matrisi Σs(g→g')"),
-    "nu-scatter matrix": N_("ν-saçılma matrisi νΣs(g→g')"), "fission": N_("Fisyon Σf"),
+    "nu-scatter matrix": N_("ν-saçılma matrisi νΣs(g→g')"),
+    "consistent scatter matrix": N_("Saçılma matrisi Σs(g→g') (tutarlı)"),
+    "consistent nu-scatter matrix": N_("ν-saçılma matrisi νΣs(g→g') (tutarlı)"), "fission": N_("Fisyon Σf"),
     "kappa-fission": N_("κ-fisyon κΣf [eV/cm]"), "capture": N_("Yakalama Σc"),
     "inverse-velocity": N_("Ters hız 1/v [s/cm]"),
     "diffusion-coefficient": N_("Difüzyon katsayısı D [cm]"),
@@ -312,17 +316,19 @@ def _hiz(lib: "openmc.mgxs.Library", tur: str) -> List[Tuple[float, float]]:
 
 
 def _sabitler(lib: "openmc.mgxs.Library", a: MgxsAyar):
-    """Tek bolgenin (GrupSabitleri, GrupSapmalari)."""
+    """Tek bolgenin (GrupSabitleri, GrupSapmalari, nu'suz sacilma matrisi)."""
     d = lib.domains[0]
     toplam_turu = "nu-transport" if a.duzeltme == "P0" else "total"
     alanlar = {"toplam": toplam_turu, "absorpsiyon": "absorption",
-               "nu_fisyon": "nu-fission", "chi": "chi", "sacilma": "nu-scatter matrix"}
+               "nu_fisyon": "nu-fission", "chi": "chi", "sacilma": SACILMA_TURU,
+               "sacilma_nusuz": NUSUZ_SACILMA_TURU}
     ort, sap = {}, {}
     for alan, tur in alanlar.items():
         o, s = _diziler(lib.get_mgxs(d, tur))
         ort[alan] = tuple(map(tuple, o)) if o.ndim == 2 else tuple(o)
         sap[alan] = tuple(map(tuple, s)) if s.ndim == 2 else tuple(s)
-    return mgxs_k.GrupSabitleri(**ort), mgxs_k.GrupSapmalari(**sap)
+    nusuz = ort.pop("sacilma_nusuz")
+    return mgxs_k.GrupSabitleri(**ort), mgxs_k.GrupSapmalari(**sap), nusuz
 
 
 def k_tahminleri(lib: "openmc.mgxs.Library", a: MgxsAyar) -> Tuple[Optional[mgxs_k.Deger],
@@ -334,7 +340,8 @@ def k_tahminleri(lib: "openmc.mgxs.Library", a: MgxsAyar) -> Tuple[Optional[mgxs
     k_oz = None
     if len(lib.domains) == 1:
         try:
-            k_oz = mgxs_k.k_ozdeger_belirsiz(*_sabitler(lib, a))
+            sab, sap, nusuz = _sabitler(lib, a)
+            k_oz = mgxs_k.k_ozdeger_belirsiz(sab, sap, nusuz)
         except ValueError as e:
             notlar.append(_("k∞ özdeğeri hesaplanamadı: %s") % e)
     return k_oran, k_oz, tuple(notlar)
