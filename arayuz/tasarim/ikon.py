@@ -20,11 +20,11 @@ from PySide6 import QtCore, QtGui
 from PySide6.QtSvg import QSvgRenderer
 
 from arayuz.tasarim import tokenlar
+from cekirdek import yollar
 from cekirdek.gunluk import kaydedici
 
 _log = kaydedici("arayuz.tasarim.ikon")
-IKON_DIZINI = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-                           "kaynaklar", "ikonlar")
+IKON_DIZINI = yollar.ikon_dizini()
 _ONBELLEK_BOYUTU = 512
 
 

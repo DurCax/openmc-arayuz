@@ -14,8 +14,7 @@ Urun adi ve marka metni yalnizca UYGULAMA_ADI'ndadir; pencere basligi,
 Hakkinda penceresi ve rapor bu sabiti kullanir (ad degisirse tek satir).
 """
 
-import os
-
+from cekirdek import yollar
 from cekirdek.ceviri import N_
 
 # Urun adi kimlik olarak SABIT kalir (Qt applicationName -> ayar dosyasi yolu,
@@ -23,8 +22,7 @@ from cekirdek.ceviri import N_
 UYGULAMA_ADI = N_("OpenMC Reaktör Kuru Arayüzü")
 PAKET_ADI = "openmc-arayuz"
 _GERI_DONUS_SURUMU = "0+bilinmiyor"
-_PYPROJECT = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-                          "pyproject.toml")
+_PYPROJECT = yollar.pyproject_yolu()
 
 
 def _pyproject_surumu(yol=_PYPROJECT):
@@ -59,7 +57,7 @@ __version__ = surum()
 # ----------------------------------------------------------------------------
 # Derleme / kaynak bilgisi (rapor tekrarlanabilirlik blogu, Hakkinda)
 # ----------------------------------------------------------------------------
-_KOK = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+_KOK = yollar.paket_koku()
 _GIT = "git"                 # testler var olmayan bir komutla degistirir
 _GIT_SURESI = 5.0            # s; takilan bir git komutu raporu bekletmesin
 

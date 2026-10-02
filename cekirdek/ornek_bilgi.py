@@ -46,14 +46,13 @@ import os
 from dataclasses import dataclass
 from typing import Optional
 
-from cekirdek import sema
+from cekirdek import sema, yollar
 from cekirdek.ceviri import N_, _
 from cekirdek.gunluk import kaydedici
 
 _log = kaydedici(__name__)
 
-ORNEK_DIZINI = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-                            "ornekler")
+ORNEK_DIZINI = yollar.ornekler_dizini()
 
 KATEGORILER = ("pwr", "bwr", "vver", "sfr", "arastirma", "kriter", "zirh")
 SEVIYELER = ("giris", "orta", "ileri")

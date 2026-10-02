@@ -25,15 +25,15 @@ import logging
 import os
 import threading
 
+from cekirdek import yollar as _yollar
+
 ALAN = "openmc_arayuz"
 KAYNAK_DIL = "tr"
 DESTEKLENEN_DILLER = ("tr", "en")
 YEDEK_DIL = "en"
 ORTAM_DEGISKENI = "OPENMC_ARAYUZ_DIL"
 KAYDEDICI_ADI = "openmc_arayuz.ceviri"
-LOCALE_DIZINI = os.environ.get(
-    "OPENMC_ARAYUZ_LOCALE",
-    os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "locale"))
+LOCALE_DIZINI = _yollar.locale_dizini()     # OPENMC_ARAYUZ_LOCALE > <veri koku>/locale
 
 # gettext.pgettext'in baglam ayiricisi (GNU gettext: EOT karakteri)
 _BAGLAM_AYIRICI = "\x04"

@@ -38,15 +38,21 @@ def test_ayristirma_ve_yorum_dallari():
     kontrol("kayan kaynak False", kosucu.entropi_yakinsama(kayan, 20)[0] is False)
 
 
-def test_dizin_ve_yol():
+def test_dizin_ve_yol(tmp_path, monkeypatch):
     print("\n[KK2] openmc_yolu, dizin_hazirla (silinemeyen eski cikti)")
-    from cekirdek import kosucu
-    eski = kosucu.shutil.which
-    kosucu.shutil.which = lambda ad: "/x/openmc" if ad == "openmc" else None
-    try:
-        kontrol("openmc_yolu which'ten", kosucu.openmc_yolu() == "/x/openmc")
-    finally:
-        kosucu.shutil.which = eski
+    import stat
+    from cekirdek import kosucu, yollar
+    # Kukla which yerine gercek gecici calistirilabilir + PATH ortami (T2 inceleme)
+    bin_dizini = tmp_path / "bin"
+    bin_dizini.mkdir()
+    exe = bin_dizini / "openmc"
+    exe.write_text("#!/bin/sh\nexit 0\n")
+    exe.chmod(exe.stat().st_mode | stat.S_IEXEC)
+    monkeypatch.delenv(yollar.OPENMC_ORTAM_DEGISKENI, raising=False)
+    monkeypatch.delenv("CONDA_PREFIX", raising=False)
+    monkeypatch.setenv("PATH", str(bin_dizini))
+    monkeypatch.setattr(kosucu.sys, "executable", str(tmp_path / "python"))
+    kontrol("openmc_yolu PATH'ten", kosucu.openmc_yolu() == str(exe), kosucu.openmc_yolu())
     d = tempfile.mkdtemp(prefix="kapsam_kosucu_")
     try:
         os.makedirs(os.path.join(d, "statepoint.5.h5"))     # dizin: os.remove basarisiz

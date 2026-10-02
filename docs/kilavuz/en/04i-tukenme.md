@@ -17,8 +17,9 @@ description are shown.
 
 ![Depletion tab: burnup settings, tracked nuclides and result plot](../resimler/en/tukenme.png)
 
-The run is not made in the process of the interface itself but as a `python -m
-cekirdek.tukenme` **subprocess** (a `terminate()` on the OpenMC C++ side can kill the whole
+The run is not made in the process of the interface itself but as an `openmc-arayuz-kosu
+--alt tukenme` **subprocess** (the interface starts it with the same Python as `python -m
+cekirdek.giris --alt tukenme`; a `terminate()` on the OpenMC C++ side can kill the whole
 process; this happened in the preview). The same from the terminal:
 `python3 -m cekirdek.tukenme ornekler/pwr_tukenme.json -s 16`
 ([8. Terminal](08-terminal.md#terminal)).

@@ -26,6 +26,7 @@ import json
 import os
 from collections import Counter
 
+from cekirdek import yollar
 from cekirdek.ceviri import _, N_, pgettext
 from cekirdek.gunluk import kaydedici
 from cekirdek.uygunluk_denetimi.vv_arayuz import AOA_KATEGORILERI, VVOzeti
@@ -45,8 +46,8 @@ ZENGINLIK_SINIFLARI = {"U-235": (("LEU", 0.0, 10.0), ("IEU", 10.0, 60.0),
 
 _log = kaydedici(__name__)
 
-KOK = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-ORNEK = os.path.join(KOK, "ornekler")
+KOK = yollar.veri_koku()
+ORNEK = yollar.ornekler_dizini()
 SAYISAL = ("zenginlik", "h_x", "ealf")
 DELTA_SM_VARSAYILAN = 0.05
 DELTA_SM_KAYNAK = (N_("ΔSM = 0.05: NUREG-1718 §6.4.3.3.4 / NUREG-1520 Bl. 5 Ek B'de ek gerekçesiz "

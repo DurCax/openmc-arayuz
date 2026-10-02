@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 04:26+0300\n"
+"POT-Creation-Date: 2026-10-02 05:26+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -207,7 +207,7 @@ msgstr ""
 msgid "Analiz ayarları"
 msgstr ""
 
-#: arayuz/analiz/sekme.py:176 arayuz/pencere/model_islemleri.py:68
+#: arayuz/analiz/sekme.py:176 arayuz/pencere/model_islemleri.py:67
 #: arayuz/yardim/__init__.py:50
 msgid "Analiz"
 msgstr ""
@@ -758,240 +758,240 @@ msgstr ""
 msgid "Ölçülecek büyüklükler"
 msgstr ""
 
-#: arayuz/baslangic.py:58
+#: arayuz/baslangic.py:60
 msgid "Yakıt çubuğu (pin hücre)"
 msgstr ""
 
-#: arayuz/baslangic.py:59
+#: arayuz/baslangic.py:61
 msgid "Tek yakıt çubuğu ve çevresindeki soğutucu; en hızlı başlangıç."
 msgstr ""
 
-#: arayuz/baslangic.py:61
+#: arayuz/baslangic.py:63
 msgid "Yakıt demeti — kare"
 msgstr ""
 
-#: arayuz/baslangic.py:62
+#: arayuz/baslangic.py:64
 msgid "Kare ızgarada yakıt çubukları ve kılavuz borular (PWR tipi)."
 msgstr ""
 
-#: arayuz/baslangic.py:64
+#: arayuz/baslangic.py:66
 msgid "Yakıt demeti — altıgen"
 msgstr ""
 
-#: arayuz/baslangic.py:65
+#: arayuz/baslangic.py:67
 msgid "Altıgen ızgarada çubuk demeti (VVER, hızlı reaktör)."
 msgstr ""
 
-#: arayuz/baslangic.py:67
+#: arayuz/baslangic.py:69
 msgid "Tam kor (kare harita)"
 msgstr ""
 
-#: arayuz/baslangic.py:68
+#: arayuz/baslangic.py:70
 msgid "Demetlerden oluşan kor haritası, çevresinde su yansıtıcı."
 msgstr ""
 
-#: arayuz/baslangic.py:70
+#: arayuz/baslangic.py:72
 msgid "Tam kor — altıgen"
 msgstr ""
 
-#: arayuz/baslangic.py:71
+#: arayuz/baslangic.py:73
 msgid "Kılıflı altıgen demetlerden kor haritası (SFR / VVER tipi)."
 msgstr ""
 
-#: arayuz/baslangic.py:73
+#: arayuz/baslangic.py:75
 msgid "MTR plaka elemanı"
 msgstr ""
 
-#: arayuz/baslangic.py:74
+#: arayuz/baslangic.py:76
 msgid "Araştırma reaktörünün düz plakalı yakıt elemanı."
 msgstr ""
 
-#: arayuz/baslangic.py:76
+#: arayuz/baslangic.py:78
 msgid "Tamburlu kompakt kor"
 msgstr ""
 
-#: arayuz/baslangic.py:77
+#: arayuz/baslangic.py:79
 msgid "Silindirik kor, yansıtıcı kuşak ve dönen kontrol tamburları."
 msgstr ""
 
-#: arayuz/baslangic.py:79
+#: arayuz/baslangic.py:81
 msgid "Zırhlama (sabit kaynak)"
 msgstr ""
 
-#: arayuz/baslangic.py:80
+#: arayuz/baslangic.py:82
 msgid "Kaynaktan çıkan nötronların zırh katmanlarında zayıflaması."
 msgstr ""
 
-#: arayuz/baslangic.py:243 arayuz/pencere/model_islemleri.py:383
-msgid "Yeni yakıt çubuğu"
-msgstr ""
-
-#: arayuz/baslangic.py:245 arayuz/pencere/model_islemleri.py:384
-msgid "Yeni kare yakıt demeti"
-msgstr ""
-
-#: arayuz/baslangic.py:247
-msgid "Yeni altıgen yakıt demeti"
-msgstr ""
-
-#: arayuz/baslangic.py:249 arayuz/pencere/model_islemleri.py:385
-msgid "Yeni plaka elemanı"
-msgstr ""
-
-#: arayuz/baslangic.py:251 arayuz/pencere/model_islemleri.py:385
-msgid "Yeni tamburlu kor"
-msgstr ""
-
-#: arayuz/baslangic.py:267 arayuz/pencere/model_islemleri.py:386
-msgid "Yeni tam kor"
-msgstr ""
-
-#: arayuz/baslangic.py:269 arayuz/pencere/model_islemleri.py:386
-msgid "Yeni altıgen tam kor"
-msgstr ""
-
-#: arayuz/baslangic.py:271
-#, python-format
-msgid "boş şablonu olmayan kart: %s"
-msgstr ""
-
-#: arayuz/baslangic.py:344
+#: arayuz/baslangic.py:158
 msgid "az önce"
 msgstr ""
 
-#: arayuz/baslangic.py:347
+#: arayuz/baslangic.py:161
 #, python-brace-format
 msgid "{n} dakika önce"
 msgid_plural "{n} dakika önce"
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/baslangic.py:350
+#: arayuz/baslangic.py:164
 #, python-brace-format
 msgid "{n} saat önce"
 msgid_plural "{n} saat önce"
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/baslangic.py:352
+#: arayuz/baslangic.py:166
 msgid "dün"
 msgstr ""
 
-#: arayuz/baslangic.py:352
+#: arayuz/baslangic.py:166
 #, python-brace-format
 msgid "{n} gün önce"
 msgid_plural "{n} gün önce"
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/baslangic.py:430
+#: arayuz/baslangic.py:244
 msgid "Boş başla"
 msgstr ""
 
-#: arayuz/baslangic.py:431
+#: arayuz/baslangic.py:245
 msgid "Örnekten"
 msgstr ""
 
-#: arayuz/baslangic.py:438
+#: arayuz/baslangic.py:252
 #, python-brace-format
 msgid "Çalışır durumda, sade bir {ad} modeli kurar (malzemeler, parçalar ve kor hazır)."
 msgstr ""
 
-#: arayuz/baslangic.py:445
+#: arayuz/baslangic.py:259
 #, python-brace-format
 msgid "Hazır örneğin bir kopyasını açar: {dosya} (örnek dosyası değişmez)."
 msgstr ""
 
-#: arayuz/baslangic.py:482
+#: arayuz/baslangic.py:296
 #, python-brace-format
 msgid "{dosya} — kopya olarak açılır"
 msgstr ""
 
-#: arayuz/baslangic.py:527
+#: arayuz/baslangic.py:341
 msgid "Ne modellemek istiyorsunuz?"
 msgstr ""
 
-#: arayuz/baslangic.py:530
+#: arayuz/baslangic.py:344
 msgid "Açık modele dön"
 msgstr ""
 
-#: arayuz/baslangic.py:531
+#: arayuz/baslangic.py:345
 msgid "Başlangıç ekranını kapatıp üzerinde çalıştığınız modele döner (Esc)."
 msgstr ""
 
-#: arayuz/baslangic.py:537
+#: arayuz/baslangic.py:351
 msgid "Bir model türüyle boş başlayın ya da hazır bir örneğin kopyasını açın."
 msgstr ""
 
-#: arayuz/baslangic.py:559
+#: arayuz/baslangic.py:373
 msgid "Dosyadan aç"
 msgstr ""
 
-#: arayuz/baslangic.py:560
+#: arayuz/baslangic.py:374
 msgid "Kaydedilmiş bir model (.json) ya da OpenMC XML klasörü."
 msgstr ""
 
-#: arayuz/baslangic.py:562 arayuz/pencere/menuler.py:133
+#: arayuz/baslangic.py:376 arayuz/pencere/menuler.py:133
 msgid "Aç…"
 msgstr ""
 
-#: arayuz/baslangic.py:563
+#: arayuz/baslangic.py:377
 msgid "Bilgisayarınızdaki bir model dosyasını (.json) açar (Ctrl+O)."
 msgstr ""
 
-#: arayuz/baslangic.py:570 arayuz/pencere/menuler.py:135
+#: arayuz/baslangic.py:384 arayuz/pencere/menuler.py:135
 msgid "Son kullanılanlar"
 msgstr ""
 
-#: arayuz/baslangic.py:572
+#: arayuz/baslangic.py:386
 msgid "Henüz kaydedilmiş bir model yok."
 msgstr ""
 
-#: arayuz/baslangic.py:581 arayuz/baslangic.py:668
+#: arayuz/baslangic.py:395 arayuz/baslangic.py:482
 msgid "Örnekler"
 msgstr ""
 
-#: arayuz/baslangic.py:584
+#: arayuz/baslangic.py:398
 msgid "Örneklerde ara…"
 msgstr ""
 
-#: arayuz/baslangic.py:593
+#: arayuz/baslangic.py:407
 msgid "Seviye"
 msgstr ""
 
-#: arayuz/baslangic.py:594
+#: arayuz/baslangic.py:408
 msgid "Örnekleri zorluk seviyesine göre süzer."
 msgstr ""
 
-#: arayuz/baslangic.py:595
+#: arayuz/baslangic.py:409
 msgid "Her seviye"
 msgstr ""
 
-#: arayuz/baslangic.py:602
+#: arayuz/baslangic.py:416
 msgid "Tümü"
 msgstr ""
 
-#: arayuz/baslangic.py:615
+#: arayuz/baslangic.py:429
 msgid "Eşleşen örnek yok"
 msgstr ""
 
-#: arayuz/baslangic.py:616
+#: arayuz/baslangic.py:430
 msgid "Aramayı ya da kategori süzgecini değiştirin."
 msgstr ""
 
-#: arayuz/baslangic.py:673
+#: arayuz/baslangic.py:487
 #, python-brace-format
 msgid "{n} örnek · kategoriye göre süzün"
 msgid_plural "{n} örnek · kategoriye göre süzün"
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/baslangic.py:675
+#: arayuz/baslangic.py:489
 #, python-brace-format
 msgid "{n} / {toplam} örnek"
 msgid_plural "{n} / {toplam} örnek"
 msgstr[0] ""
 msgstr[1] ""
+
+#: arayuz/baslangic_sablon.py:153 arayuz/pencere/model_islemleri.py:382
+msgid "Yeni yakıt çubuğu"
+msgstr ""
+
+#: arayuz/baslangic_sablon.py:155 arayuz/pencere/model_islemleri.py:383
+msgid "Yeni kare yakıt demeti"
+msgstr ""
+
+#: arayuz/baslangic_sablon.py:157
+msgid "Yeni altıgen yakıt demeti"
+msgstr ""
+
+#: arayuz/baslangic_sablon.py:159 arayuz/pencere/model_islemleri.py:384
+msgid "Yeni plaka elemanı"
+msgstr ""
+
+#: arayuz/baslangic_sablon.py:161 arayuz/pencere/model_islemleri.py:384
+msgid "Yeni tamburlu kor"
+msgstr ""
+
+#: arayuz/baslangic_sablon.py:177 arayuz/pencere/model_islemleri.py:385
+msgid "Yeni tam kor"
+msgstr ""
+
+#: arayuz/baslangic_sablon.py:179 arayuz/pencere/model_islemleri.py:385
+msgid "Yeni altıgen tam kor"
+msgstr ""
+
+#: arayuz/baslangic_sablon.py:181
+#, python-format
+msgid "boş şablonu olmayan kart: %s"
+msgstr ""
 
 #: arayuz/bilesenler/bildirim.py:98 arayuz/pencere/menuler.py:323
 msgid "Kapat"
@@ -1283,6 +1283,38 @@ msgid "%d iş parçacığı"
 msgid_plural "%d iş parçacığı"
 msgstr[0] ""
 msgstr[1] ""
+
+#: arayuz/calistir/sonuc_gosterimi.py:38
+#, python-format
+msgid "Koşu dizininde statepoint dosyası yok: %s"
+msgstr ""
+
+#: arayuz/calistir/sonuc_gosterimi.py:52
+msgid "Diskten yüklendi"
+msgstr ""
+
+#: arayuz/calistir/sonuc_gosterimi.py:53
+msgid "Kayıtlı koşu gösteriliyor; koşu öncesi doğrulama bu oturumda yapılmadı."
+msgstr ""
+
+#: arayuz/calistir/sonuc_gosterimi.py:107
+msgid "Koşu tamamlandı (sabit kaynak) — sonuçlar tally'lerde"
+msgstr ""
+
+#: arayuz/calistir/sonuc_gosterimi.py:110
+#, python-format
+msgid "Koşu tamamlandı: k-eff = %.5f ± %.5f"
+msgstr ""
+
+#: arayuz/calistir/sonuc_gosterimi.py:122
+msgid ""
+"Sabit kaynak — k-eff tanımsız\n"
+"Sonuç tally'lerdir (aşağıda)."
+msgstr ""
+
+#: arayuz/calistir/sonuc_gosterimi.py:149
+msgid "Dikkat: kaynak yakınsamamış olabilir — pasif çevrim sayısını artırın"
+msgstr ""
 
 #: arayuz/calistir/yakinsama.py:33
 msgid "Grafiği PNG olarak kaydet"
@@ -3124,7 +3156,7 @@ msgid "PNG kaydet…"
 msgstr ""
 
 #: arayuz/demet/yerlesim.py:35 arayuz/geometri/sablon_diyalogu.py:23
-#: arayuz/guc_harita.py:69 arayuz/pencere/model_islemleri.py:66 arayuz/sekme_demet.py:508
+#: arayuz/guc_harita.py:69 arayuz/pencere/model_islemleri.py:65 arayuz/sekme_demet.py:508
 #: arayuz/yardim/__init__.py:45
 msgid "Demet"
 msgstr ""
@@ -3295,7 +3327,7 @@ msgstr ""
 msgid "demet ortalaması"
 msgstr ""
 
-#: arayuz/geometri/form_ortak.py:132 arayuz/guc_harita.py:468 arayuz/izgara.py:182
+#: arayuz/geometri/form_ortak.py:132 arayuz/guc_harita.py:468 arayuz/izgara_yardimci.py:157
 msgid "çubuk"
 msgstr ""
 
@@ -3362,62 +3394,63 @@ msgstr[1] ""
 msgid "Logu aç"
 msgstr ""
 
-#: arayuz/izgara.py:90
-#, python-format
-msgid "haritada en fazla %d farklı parça kullanılabilir"
-msgstr ""
-
-#: arayuz/geometri/cizim.py:309 arayuz/izgara.py:182
-msgid "kafes"
-msgstr ""
-
-#: arayuz/geometri/form_ortak.py:132 arayuz/izgara.py:182
-msgid "plaka"
-msgstr ""
-
-#: arayuz/ayar/sabitler.py:63 arayuz/geometri/formlar.py:79 arayuz/izgara.py:183
-msgid "malzeme"
-msgstr ""
-
-#: arayuz/izgara.py:183 arayuz/kor/katmanlar.py:63
-msgid "boşluk"
-msgstr ""
-
-#: arayuz/analiz/sekme.py:443 arayuz/ayar/guc_formu.py:72
-#: arayuz/cubuk/parca_islemleri.py:20 arayuz/izgara.py:198 arayuz/kor/katmanlar.py:22
-msgid "Boş (madde yok)"
-msgstr ""
-
-#: arayuz/izgara.py:306
+#: arayuz/izgara.py:95
 #, python-format
 msgid "%s%s — seçip ızgarada tıklayın ya da sürükleyin"
 msgstr ""
 
-#: arayuz/izgara.py:350 arayuz/izgara.py:692 arayuz/izgara.py:787 arayuz/sekme_kor.py:73
+#: arayuz/izgara.py:139 arayuz/izgara.py:481 arayuz/izgara.py:576 arayuz/sekme_kor.py:73
 #: arayuz/sekme_kor.py:75
 msgid "tanımsız"
 msgstr ""
 
-#: arayuz/izgara.py:459
+#: arayuz/izgara.py:248
 msgid "Izgara boş"
 msgstr ""
 
-#: arayuz/izgara.py:643
+#: arayuz/izgara.py:432
 msgid "Demet tanımlı değil"
 msgstr ""
 
-#: arayuz/izgara.py:692
+#: arayuz/izgara.py:481
 #, python-format
 msgid "satır %d, sütun %d: %s"
 msgstr ""
 
-#: arayuz/izgara.py:726
+#: arayuz/izgara.py:515
 msgid "Altıgen demet tanımlı değil"
 msgstr ""
 
-#: arayuz/izgara.py:787
+#: arayuz/izgara.py:576
 #, python-format
 msgid "%d. halka (dıştan), %d. hücre: %s"
+msgstr ""
+
+#: arayuz/izgara_yardimci.py:65
+#, python-format
+msgid "haritada en fazla %d farklı parça kullanılabilir"
+msgstr ""
+
+#: arayuz/geometri/cizim.py:309 arayuz/izgara_yardimci.py:157
+msgid "kafes"
+msgstr ""
+
+#: arayuz/geometri/form_ortak.py:132 arayuz/izgara_yardimci.py:157
+msgid "plaka"
+msgstr ""
+
+#: arayuz/ayar/sabitler.py:63 arayuz/geometri/formlar.py:79 arayuz/izgara_yardimci.py:158
+msgid "malzeme"
+msgstr ""
+
+#: arayuz/izgara_yardimci.py:158 arayuz/kor/katmanlar.py:63
+msgid "boşluk"
+msgstr ""
+
+#: arayuz/analiz/sekme.py:443 arayuz/ayar/guc_formu.py:72
+#: arayuz/cubuk/parca_islemleri.py:20 arayuz/izgara_yardimci.py:173
+#: arayuz/kor/katmanlar.py:22
+msgid "Boş (madde yok)"
 msgstr ""
 
 #: arayuz/kor/geometri_sayfasi.py:61
@@ -3645,7 +3678,7 @@ msgstr ""
 msgid "Kor yarıçapı:"
 msgstr ""
 
-#: arayuz/kor/yerlesim.py:205 arayuz/pencere/model_islemleri.py:67
+#: arayuz/kor/yerlesim.py:205 arayuz/pencere/model_islemleri.py:66
 #: arayuz/yardim/__init__.py:46
 msgid "Geometri"
 msgstr ""
@@ -3972,7 +4005,7 @@ msgstr ""
 msgid "Elle düzenlemeye geçince malzeme kütüphane parametrelerinden ayrılır."
 msgstr ""
 
-#: arayuz/malzeme/malzeme_diyalog.py:206 arayuz/pencere/ana_pencere.py:673
+#: arayuz/malzeme/malzeme_diyalog.py:206 arayuz/pencere/dogrulama_seridi.py:88
 msgid "Tamam"
 msgstr ""
 
@@ -4318,115 +4351,115 @@ msgstr ""
 msgid "Nadiren gereken ayarları göster"
 msgstr ""
 
-#: arayuz/pencere/ana_pencere.py:78
-msgid "Hata"
-msgstr ""
-
-#: arayuz/pencere/ana_pencere.py:78
-msgid "Uyarı"
-msgstr ""
-
-#: arayuz/pencere/ana_pencere.py:78
-msgid "Bilgi"
-msgstr ""
-
-#: arayuz/pencere/ana_pencere.py:123
+#: arayuz/pencere/ana_pencere.py:119
 msgid "yeni model"
 msgstr ""
 
-#: arayuz/pencere/ana_pencere.py:155
+#: arayuz/pencere/ana_pencere.py:151
 msgid "Sayfalar"
 msgstr ""
 
-#: arayuz/pencere/ana_pencere.py:339
+#: arayuz/pencere/ana_pencere.py:335
 msgid "Şablon kurulamadı"
 msgstr ""
 
-#: arayuz/pencere/ana_pencere.py:346
+#: arayuz/pencere/ana_pencere.py:342
 #, python-brace-format
 msgid "Çalışan sade bir model kuruldu ({ad}). Kaydetmek için 'Farklı kaydet' kullanın."
 msgstr ""
 
-#: arayuz/pencere/ana_pencere.py:543
+#: arayuz/pencere/ana_pencere.py:539
 #, python-brace-format
 msgid "adsız — örnek: {ornek}"
 msgstr ""
 
-#: arayuz/pencere/ana_pencere.py:546
+#: arayuz/pencere/ana_pencere.py:542
 msgid "kaydedilmemiş"
 msgstr ""
 
-#: arayuz/pencere/ana_pencere.py:571
+#: arayuz/pencere/ana_pencere.py:567
 msgid "Boyuta tıklayınca Kor sayfasına, hesap türüne tıklayınca Hesap ayarlarına gider."
 msgstr ""
 
-#: arayuz/pencere/ana_pencere.py:615
+#: arayuz/pencere/ana_pencere.py:611
 #, python-brace-format
 msgid ""
 " Model bu türün gerektirdiği parçayı içermiyordu; şablondan eklendi: {parca} "
 "(Parçalar/Demet sayfasında düzenleyin)."
 msgstr ""
 
-#: arayuz/pencere/ana_pencere.py:618
+#: arayuz/pencere/ana_pencere.py:614
 #, python-brace-format
 msgid "Kor türü: {tur} — geri almak için Ctrl+Z.{ek}"
 msgstr ""
 
-#: arayuz/pencere/ana_pencere.py:634
+#: arayuz/pencere/dogrulama_seridi.py:32
+msgid "Hata"
+msgstr ""
+
+#: arayuz/pencere/dogrulama_seridi.py:32
+msgid "Uyarı"
+msgstr ""
+
+#: arayuz/pencere/dogrulama_seridi.py:32
+msgid "Bilgi"
+msgstr ""
+
+#: arayuz/pencere/dogrulama_seridi.py:49
 msgid "Tıklayınca ilgili sayfaya gider; sağ tık: kılavuzda aç."
 msgstr ""
 
-#: arayuz/pencere/ana_pencere.py:638
+#: arayuz/pencere/dogrulama_seridi.py:53
 msgid "✓ Bulgu yok — model tutarlı görünüyor."
 msgstr ""
 
-#: arayuz/pencere/ana_pencere.py:649
+#: arayuz/pencere/dogrulama_seridi.py:64
 #, python-format
 msgid "doğrulama sırasında hata: %s"
 msgstr ""
 
-#: arayuz/pencere/ana_pencere.py:657
+#: arayuz/pencere/dogrulama_seridi.py:72
 msgid "Doğrulama yenilendi (veri kütüphanesi dahil)."
 msgstr ""
 
-#: arayuz/pencere/ana_pencere.py:664
+#: arayuz/pencere/dogrulama_seridi.py:79
 #, python-brace-format
 msgid "Doğrulama: {n} hata"
 msgid_plural "Doğrulama: {n} hata"
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/pencere/ana_pencere.py:667
+#: arayuz/pencere/dogrulama_seridi.py:82
 #, python-brace-format
 msgid "Doğrulama: {n} uyarı"
 msgid_plural "Doğrulama: {n} uyarı"
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/pencere/ana_pencere.py:670
+#: arayuz/pencere/dogrulama_seridi.py:85
 msgid "Doğrulama: hata yok"
 msgstr ""
 
-#: arayuz/pencere/ana_pencere.py:671
+#: arayuz/pencere/dogrulama_seridi.py:86
 #, python-brace-format
 msgid "{n} bilgi"
 msgid_plural "{n} bilgi"
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/pencere/ana_pencere.py:672
+#: arayuz/pencere/dogrulama_seridi.py:87
 #, python-brace-format
 msgid "{n} uyarı"
 msgid_plural "{n} uyarı"
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/pencere/ana_pencere.py:681
+#: arayuz/pencere/dogrulama_seridi.py:96
 #, python-brace-format
 msgid "{h} hata, {u} uyarı, {b} bilgi"
 msgstr ""
 
-#: arayuz/pencere/ana_pencere.py:741
+#: arayuz/pencere/dogrulama_seridi.py:156
 #, python-format
 msgid ""
 "Doğrulamada %d hata var — önce bunları giderin. Alttaki rozete tıklayıp bir bulguyu "
@@ -4437,13 +4470,13 @@ msgid_plural ""
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/pencere/ana_pencere.py:748
+#: arayuz/pencere/dogrulama_seridi.py:163
 msgid ""
 "Geometri önizlemesi henüz çizilmedi. Önce çiz, sonra çalıştır: yanlış geometriyle "
 "saatlerce koşmamak için önizlemenin çizilmesi bekleniyor."
 msgstr ""
 
-#: arayuz/pencere/ana_pencere.py:753
+#: arayuz/pencere/dogrulama_seridi.py:168
 #, python-format
 msgid ""
 "Çalıştırılabilir. %d uyarı var — sonucu etkileyebilir, doğrulama listesini gözden "
@@ -4454,7 +4487,7 @@ msgid_plural ""
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/pencere/ana_pencere.py:757
+#: arayuz/pencere/dogrulama_seridi.py:172
 msgid "Model çalıştırılmaya hazır."
 msgstr ""
 
@@ -4720,169 +4753,169 @@ msgid ""
 "edebilirsiniz."
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:67 arayuz/yardim/__init__.py:48
+#: arayuz/pencere/model_islemleri.py:66 arayuz/yardim/__init__.py:48
 msgid "Hesap ayarları"
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:103
+#: arayuz/pencere/model_islemleri.py:102
 msgid "yakıt çubuğu (pin hücre)"
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:108
+#: arayuz/pencere/model_islemleri.py:107
 msgid "plaka elemanı"
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:109
+#: arayuz/pencere/model_islemleri.py:108
 #, python-format
 msgid "plaka elemanı (%d plaka)"
 msgid_plural "plaka elemanı (%d plaka)"
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/pencere/model_islemleri.py:113
+#: arayuz/pencere/model_islemleri.py:112
 msgid "yakıt demeti"
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:115
+#: arayuz/pencere/model_islemleri.py:114
 #, python-format
 msgid "%d halkalı altıgen demet"
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:118
+#: arayuz/pencere/model_islemleri.py:117
 #, python-format
 msgid "%d×%d yakıt demeti"
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:121
+#: arayuz/pencere/model_islemleri.py:120
 #, python-format
 msgid "%d×%d tam kor"
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:125
+#: arayuz/pencere/model_islemleri.py:124
 #, python-format
 msgid "%d demetli altıgen tam kor"
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:126
+#: arayuz/pencere/model_islemleri.py:125
 msgid "altıgen tam kor"
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:129
+#: arayuz/pencere/model_islemleri.py:128
 #, python-format
 msgid "tamburlu kor (%d tambur)"
 msgid_plural "tamburlu kor (%d tambur)"
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/pencere/model_islemleri.py:130
+#: arayuz/pencere/model_islemleri.py:129
 msgid "tamburlu kor"
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:133
+#: arayuz/pencere/model_islemleri.py:132
 #, python-format
 msgid "küresel düzenek (%d kabuk)"
 msgid_plural "küresel düzenek (%d kabuk)"
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/pencere/model_islemleri.py:134
+#: arayuz/pencere/model_islemleri.py:133
 msgid "küresel düzenek"
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:136
+#: arayuz/pencere/model_islemleri.py:135
 msgid "gelişmiş geometri (ağaç)"
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:137
+#: arayuz/pencere/model_islemleri.py:136
 msgid "tanımsız kor"
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:144 arayuz/pencere/model_islemleri.py:146
+#: arayuz/pencere/model_islemleri.py:143 arayuz/pencere/model_islemleri.py:145
 msgid "3B"
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:147
+#: arayuz/pencere/model_islemleri.py:146
 msgid "3B katmanlı"
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:149
+#: arayuz/pencere/model_islemleri.py:148
 msgid "adsız model"
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:156
+#: arayuz/pencere/model_islemleri.py:155
 #, python-brace-format
 msgid "Model: {ad} · {tur} · {boyut} · {mod}"
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:178
+#: arayuz/pencere/model_islemleri.py:177
 msgid "Tamam: bu adımda eksik ya da hata yok."
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:181
+#: arayuz/pencere/model_islemleri.py:180
 #, python-format
 msgid "Bu sekmede düzeltilmesi gereken %d hata var; ayrıntısı doğrulama listesinde."
 msgid_plural "Bu sekmede düzeltilmesi gereken %d hata var; ayrıntısı doğrulama listesinde."
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/pencere/model_islemleri.py:193
+#: arayuz/pencere/model_islemleri.py:192
 msgid "Eksik: henüz malzeme yok; yakıt, zarf ve soğutucu ekleyin."
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:197
+#: arayuz/pencere/model_islemleri.py:196
 msgid "Eksik: bu kor türü için en az bir yakıt çubuğu tanımlanmalı."
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:199
+#: arayuz/pencere/model_islemleri.py:198
 msgid "Eksik: bu kor türü için bir plaka elemanı tanımlanmalı."
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:202
+#: arayuz/pencere/model_islemleri.py:201
 msgid "Eksik: bu kor türü için bir demet kurulmalı."
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:209
+#: arayuz/pencere/model_islemleri.py:208
 msgid "Eksik: korun dolgusu henüz seçilmedi."
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:211
+#: arayuz/pencere/model_islemleri.py:210
 msgid "Eksik: kor haritası boş; demetleri haritaya yerleştirin."
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:213
+#: arayuz/pencere/model_islemleri.py:212
 msgid "Eksik: küresel kabuk tanımlanmadı."
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:218
+#: arayuz/pencere/model_islemleri.py:217
 msgid "Model henüz çalıştırılmadı; hazır olduğunda ÇALIŞTIR (F9)."
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:219
+#: arayuz/pencere/model_islemleri.py:218
 msgid "Tamam: model bu oturumda başarıyla çalıştırıldı."
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:221
+#: arayuz/pencere/model_islemleri.py:220
 msgid "İsteğe bağlı: reaktivite katsayıları ve kritik arama."
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:222
+#: arayuz/pencere/model_islemleri.py:221
 msgid "Tamam: bu oturumda bir analiz sonucu var."
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:224
+#: arayuz/pencere/model_islemleri.py:223
 msgid "İsteğe bağlı: yakıtın zamanla tükenmesi (yanma) hesabı."
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:225
+#: arayuz/pencere/model_islemleri.py:224
 msgid "Tamam: tükenme sonucu görüntüleniyor."
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:238
+#: arayuz/pencere/model_islemleri.py:237
 #, python-brace-format
 msgid "{sekme} sekmesinde hata var — sekmeye gidip düzeltin."
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:241
+#: arayuz/pencere/model_islemleri.py:240
 #, python-format
 msgid ""
 "Modelde %d doğrulama hatası var — doğrulama listesine bakın; hata giderilmeden koşu "
@@ -4893,30 +4926,30 @@ msgid_plural ""
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/pencere/model_islemleri.py:249
+#: arayuz/pencere/model_islemleri.py:248
 #, python-brace-format
 msgid "Sonraki adım: {sekme} — {aciklama}"
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:250
+#: arayuz/pencere/model_islemleri.py:249
 msgid "Eksik: "
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:252
+#: arayuz/pencere/model_islemleri.py:251
 msgid "Geometri çiziliyor; önizleme hazır olunca ÇALIŞTIR etkinleşir."
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:254
+#: arayuz/pencere/model_islemleri.py:253
 msgid "Model hazır — ÇALIŞTIR (F9) ile hesaplayın."
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:256
+#: arayuz/pencere/model_islemleri.py:255
 msgid ""
 "Koşu tamam — sonuçlar Çalıştır sekmesinde; Analiz sekmesinde reaktivite katsayılarını"
 " hesaplayabilirsiniz."
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:258
+#: arayuz/pencere/model_islemleri.py:257
 msgid "Koşu tamam — sonuçlar Çalıştır sekmesinde."
 msgstr ""
 
@@ -5432,11 +5465,11 @@ msgstr ""
 msgid "Foton (gama)"
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:148 arayuz/sekme_ayar.py:100
+#: arayuz/pencere/model_islemleri.py:147 arayuz/sekme_ayar.py:100
 msgid "Özdeğer (k-eff)"
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:148 arayuz/pencere/yardim_metni.py:84
+#: arayuz/pencere/model_islemleri.py:147 arayuz/pencere/yardim_metni.py:84
 #: arayuz/sekme_ayar.py:101
 msgid "Sabit kaynak"
 msgstr ""
@@ -5678,215 +5711,183 @@ msgid_plural "{n} parçacık × {c} çevrim = {t} kaynak parçacığı; tally be
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/analiz/sekme.py:69 arayuz/sekme_calistir.py:77 arayuz/sekme_tukenme.py:73
+#: arayuz/analiz/sekme.py:69 arayuz/sekme_calistir.py:78 arayuz/sekme_tukenme.py:76
 msgid "hazır değil"
 msgstr ""
 
-#: arayuz/sekme_calistir.py:117
+#: arayuz/sekme_calistir.py:118
 msgid "Henüz koşu yok"
 msgstr ""
 
-#: arayuz/sekme_calistir.py:118
+#: arayuz/sekme_calistir.py:119
 msgid "Çalıştır'a basın; k-eff yakınsaması ve sonuçlar bu sayfada görünür."
 msgstr ""
 
 #: arayuz/calistir/kartlar.py:85 arayuz/pencere/kabuk.py:132 arayuz/pencere/kabuk.py:191
-#: arayuz/pencere/model_islemleri.py:67 arayuz/sekme_calistir.py:119
+#: arayuz/pencere/model_islemleri.py:66 arayuz/sekme_calistir.py:120
 #: arayuz/yardim/__init__.py:49
 msgid "Çalıştır"
 msgstr ""
 
-#: arayuz/sekme_calistir.py:199
+#: arayuz/sekme_calistir.py:200
 msgid "OpenMC çıktısı panoya kopyalandı"
 msgstr ""
 
-#: arayuz/calistir/pano.py:98 arayuz/calistir/pano.py:114 arayuz/sekme_calistir.py:219
+#: arayuz/calistir/pano.py:98 arayuz/calistir/pano.py:114 arayuz/sekme_calistir.py:220
 msgid "Denetlenmedi"
 msgstr ""
 
-#: arayuz/calistir/pano.py:115 arayuz/sekme_calistir.py:220
+#: arayuz/calistir/pano.py:115 arayuz/sekme_calistir.py:221
 msgid "Çalıştır'a basınca koşu öncesi doğrulama yapılır."
 msgstr ""
 
-#: arayuz/sekme_calistir.py:239
+#: arayuz/sekme_calistir.py:240
 msgid ""
 "Önceki projenin koşusu arka planda sürüyor; sonucu bu projeye yazılmayacak. Yeni koşu"
 " için Durdur ile sonlandırın."
 msgstr ""
 
-#: arayuz/analiz/sekme.py:539 arayuz/sekme_calistir.py:429 arayuz/sekme_calistir.py:526
+#: arayuz/analiz/sekme.py:539 arayuz/sekme_calistir.py:430 arayuz/sekme_calistir.py:527
 msgid "Çalıştırılamaz"
 msgstr ""
 
-#: arayuz/sekme_calistir.py:443
+#: arayuz/sekme_calistir.py:444
 msgid "Model kurulamadı"
 msgstr ""
 
-#: arayuz/sekme_calistir.py:449
+#: arayuz/sekme_calistir.py:450
 msgid "openmc bulunamadı"
 msgstr ""
 
-#: arayuz/sekme_calistir.py:450
+#: arayuz/sekme_calistir.py:451
 msgid ""
 "openmc çalıştırılabilir dosyası PATH'te yok.\n"
 "Conda ortamının etkin olduğundan emin olun (openmc-env)."
 msgstr ""
 
-#: arayuz/sekme_calistir.py:473
+#: arayuz/sekme_calistir.py:474
 msgid "koşuyor…"
 msgstr ""
 
-#: arayuz/calistir/pano.py:154 arayuz/sekme_calistir.py:476
+#: arayuz/calistir/pano.py:154 arayuz/sekme_calistir.py:477
 msgid "Sabit kaynak — k-eff tanımsız; sonuç tally'lerdir."
 msgstr ""
 
-#: arayuz/sekme_calistir.py:477
+#: arayuz/sekme_calistir.py:478
 msgid "Koşu sürüyor; k-eff kümülatif ortalamadır."
 msgstr ""
 
-#: arayuz/sekme_calistir.py:486
+#: arayuz/sekme_calistir.py:487
 msgid "%v / %m çevrim"
-msgstr ""
-
-#: arayuz/sekme_calistir.py:496
-#, python-format
-msgid "# komut: %s -s %d"
 msgstr ""
 
 #: arayuz/sekme_calistir.py:497
 #, python-format
+msgid "# komut: %s -s %d"
+msgstr ""
+
+#: arayuz/sekme_calistir.py:498
+#, python-format
 msgid "# dizin: %s"
 msgstr ""
 
-#: arayuz/sekme_calistir.py:503
+#: arayuz/sekme_calistir.py:504
 #, python-format
 msgid "Koşu sürüyor (%d iş parçacığı) → %s"
 msgid_plural "Koşu sürüyor (%d iş parçacığı) → %s"
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/sekme_calistir.py:507
+#: arayuz/sekme_calistir.py:508
 #, python-format
 msgid "Koşu başladı → %s"
 msgstr ""
 
-#: arayuz/sekme_calistir.py:523 arayuz/uygunluk_paneli.py:303
+#: arayuz/sekme_calistir.py:524 arayuz/uygunluk_paneli.py:303
 #, python-format
 msgid "%d hata"
 msgid_plural "%d hata"
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/sekme_calistir.py:525
+#: arayuz/sekme_calistir.py:526
 msgid "Koşu başlatılmadı; önceki sonuç silinmedi."
 msgstr ""
 
-#: arayuz/sekme_calistir.py:530
+#: arayuz/sekme_calistir.py:531
 msgid "Hata yok"
 msgstr ""
 
-#: arayuz/sekme_calistir.py:537
+#: arayuz/sekme_calistir.py:538
 #, python-format
 msgid "Doğrulama hataları giderilmeden koşu başlatılmaz (%d hata); önceki sonuç silinmedi."
 msgid_plural "Doğrulama hataları giderilmeden koşu başlatılmaz (%d hata); önceki sonuç silinmedi."
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/sekme_calistir.py:544
+#: arayuz/sekme_calistir.py:545
 #, python-format
 msgid "… ve %d hata daha."
 msgid_plural "… ve %d hata daha."
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/sekme_calistir.py:552 arayuz/sekme_tukenme.py:435
+#: arayuz/sekme_calistir.py:553 arayuz/sekme_tukenme.py:442
 msgid ""
 "\n"
 "# kullanıcı tarafından durduruldu"
 msgstr ""
 
-#: arayuz/sekme_calistir.py:592
+#: arayuz/sekme_calistir.py:593
 #, python-format
 msgid ""
 "\n"
 "# Süreç hatası: %s"
 msgstr ""
 
-#: arayuz/sekme_calistir.py:609
+#: arayuz/sekme_calistir.py:610
 #, python-format
 msgid "Önceki projenin koşusu bitti; sonucu bu projeye yazılmadı (dosyalar: %s)."
 msgstr ""
 
-#: arayuz/sekme_calistir.py:622
+#: arayuz/sekme_calistir.py:623
 #, python-format
 msgid "Koşu başarısız (çıkış kodu %d). OpenMC çıktısı aşağıda, 'Ayrıntılı çıktı' bölümünde."
 msgstr ""
 
-#: arayuz/sekme_calistir.py:624
+#: arayuz/sekme_calistir.py:625
 #, python-format
 msgid "Koşu başarısız (çıkış kodu %d)"
 msgstr ""
 
-#: arayuz/sekme_calistir.py:637
+#: arayuz/sekme_calistir.py:638
 msgid "durduruldu"
 msgstr ""
 
-#: arayuz/sekme_calistir.py:639
+#: arayuz/sekme_calistir.py:640
 msgid "Koşu kullanıcı tarafından durduruldu; sonuç yok."
 msgstr ""
 
-#: arayuz/sekme_calistir.py:642
+#: arayuz/sekme_calistir.py:643
 msgid "Koşu durduruldu"
 msgstr ""
 
-#: arayuz/sekme_calistir.py:648
+#: arayuz/sekme_calistir.py:649
 msgid "Koşu bitti ama statepoint dosyası bulunamadı."
 msgstr ""
 
-#: arayuz/sekme_calistir.py:649
+#: arayuz/sekme_calistir.py:650
 msgid "Koşu bitti ama statepoint bulunamadı"
 msgstr ""
 
-#: arayuz/sekme_calistir.py:654 arayuz/sekme_calistir.py:655 arayuz/sekme_calistir.py:689
-#: arayuz/sekme_tukenme.py:513
+#: arayuz/calistir/sonuc_gosterimi.py:48 arayuz/sekme_calistir.py:655
+#: arayuz/sekme_calistir.py:656 arayuz/sekme_tukenme.py:520
 #, python-format
 msgid "Sonuç okunamadı: %s"
 msgstr ""
 
-#: arayuz/analiz/sonuc.py:83 arayuz/sekme_calistir.py:663
+#: arayuz/analiz/sonuc.py:83 arayuz/sekme_calistir.py:664
 msgid "başarısız"
-msgstr ""
-
-#: arayuz/sekme_calistir.py:679
-#, python-format
-msgid "Koşu dizininde statepoint dosyası yok: %s"
-msgstr ""
-
-#: arayuz/sekme_calistir.py:693
-msgid "Diskten yüklendi"
-msgstr ""
-
-#: arayuz/sekme_calistir.py:694
-msgid "Kayıtlı koşu gösteriliyor; koşu öncesi doğrulama bu oturumda yapılmadı."
-msgstr ""
-
-#: arayuz/sekme_calistir.py:748
-msgid "Koşu tamamlandı (sabit kaynak) — sonuçlar tally'lerde"
-msgstr ""
-
-#: arayuz/sekme_calistir.py:751
-#, python-format
-msgid "Koşu tamamlandı: k-eff = %.5f ± %.5f"
-msgstr ""
-
-#: arayuz/sekme_calistir.py:763
-msgid ""
-"Sabit kaynak — k-eff tanımsız\n"
-"Sonuç tally'lerdir (aşağıda)."
-msgstr ""
-
-#: arayuz/sekme_calistir.py:790
-msgid "Dikkat: kaynak yakınsamamış olabilir — pasif çevrim sayısını artırın"
 msgstr ""
 
 #: arayuz/sekme_cubuk.py:92 arayuz/sekme_cubuk.py:219 arayuz/sekme_cubuk.py:223
@@ -5901,7 +5902,7 @@ msgstr ""
 msgid "Çubuklar ve plaka elemanları: radyal bölgeler ve malzemeler."
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:66 arayuz/sekme_cubuk.py:114 arayuz/sekme_cubuk.py:146
+#: arayuz/pencere/model_islemleri.py:65 arayuz/sekme_cubuk.py:114 arayuz/sekme_cubuk.py:146
 #: arayuz/yardim/__init__.py:44
 msgid "Parçalar"
 msgstr ""
@@ -6262,7 +6263,7 @@ msgid ""
 "çevresi açık bir kor için Vakum seçin."
 msgstr ""
 
-#: arayuz/geometri/sablon_diyalogu.py:139 arayuz/pencere/model_islemleri.py:146
+#: arayuz/geometri/sablon_diyalogu.py:139 arayuz/pencere/model_islemleri.py:145
 #: arayuz/sekme_kor.py:368
 msgid "2B"
 msgstr ""
@@ -6314,7 +6315,7 @@ msgstr ""
 msgid "Bileşim"
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:66 arayuz/sekme_malzeme.py:78
+#: arayuz/pencere/model_islemleri.py:65 arayuz/sekme_malzeme.py:78
 #: arayuz/sekme_malzeme.py:112 arayuz/yardim/__init__.py:43
 msgid "Malzemeler"
 msgstr ""
@@ -6389,158 +6390,158 @@ msgid_plural ""
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/sekme_tukenme.py:175
+#: arayuz/sekme_tukenme.py:178
 msgid "model yok"
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:205
+#: arayuz/sekme_tukenme.py:208
 #, python-format
 msgid ""
 "%s  |  fisyon verimi %s eV (%s spektrum)\n"
 "%s"
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:212
+#: arayuz/sekme_tukenme.py:215
 #, python-format
 msgid "Zincir dosyası kullanılamıyor: %s (Gelişmiş › Zincir)"
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:218
+#: arayuz/sekme_tukenme.py:221
 #, python-format
 msgid "zincir seçilemedi: %s"
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:229
+#: arayuz/sekme_tukenme.py:232
 #, python-format
 msgid "sayı olmayan: %s"
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:230
+#: arayuz/sekme_tukenme.py:233
 msgid "her adım sıfırdan büyük olmalı"
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:231
+#: arayuz/sekme_tukenme.py:234
 #, python-format
 msgid "Adımlar geçersiz — %s. Virgülle ayrılmış pozitif sayılar girin (ör. 1, 5, 30)."
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:242
+#: arayuz/sekme_tukenme.py:245
 #, python-format
 msgid "%d adım · toplam %.4g gün = %.4g MWd/kg · %d transport çözümü"
 msgid_plural "%d adım · toplam %.4g gün = %.4g MWd/kg · %d transport çözümü"
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/sekme_tukenme.py:247
+#: arayuz/sekme_tukenme.py:250
 msgid "Adım yok — virgülle adım uzunlukları girin."
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:253
+#: arayuz/sekme_tukenme.py:256
 msgid "Yanabilir (fisil) malzeme bulunamadı."
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:259
+#: arayuz/sekme_tukenme.py:262
 msgid "hacim yok"
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:262
+#: arayuz/sekme_tukenme.py:265
 #, python-format
 msgid "hesaplanamadı: %s"
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:280
+#: arayuz/sekme_tukenme.py:283
 msgid "model uygun değil"
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:345
+#: arayuz/sekme_tukenme.py:348
 msgid ""
 "Önceki projenin tükenme koşusu arka planda sürüyor; sonucu bu projeye yazılmayacak. "
 "Yeni koşu için Durdur ile sonlandırın."
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:355 arayuz/sekme_tukenme.py:370
+#: arayuz/sekme_tukenme.py:358 arayuz/sekme_tukenme.py:373
 #, python-format
 msgid "Bu modelde yapılamaz: %s"
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:357
+#: arayuz/sekme_tukenme.py:360
 msgid "Tükenme kapalı — yukarıdan etkinleştirin."
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:369 arayuz/sekme_tukenme.py:373
+#: arayuz/sekme_tukenme.py:372 arayuz/sekme_tukenme.py:376
 msgid "Başlatılamaz"
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:403
+#: arayuz/sekme_tukenme.py:406
 msgid "%v / %m transport"
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:404
+#: arayuz/sekme_tukenme.py:407
 msgid "İlk transport bekleniyor — kalan süre ondan ölçülecek."
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:426
+#: arayuz/sekme_tukenme.py:433
 #, python-format
 msgid "Tükenme koşusu sürüyor → %s"
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:429
+#: arayuz/sekme_tukenme.py:436
 #, python-format
 msgid "Tükenme başladı → %s"
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:468
+#: arayuz/sekme_tukenme.py:475
 #, python-format
 msgid "geçen %s  |  transport başına %.0f s (ölçülen)  |  kalan ~%s"
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:475
+#: arayuz/sekme_tukenme.py:482
 #, python-format
 msgid ""
 "\n"
 "# Süreç başlatılamadı: %s"
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:497
+#: arayuz/sekme_tukenme.py:504
 #, python-format
 msgid "Önceki projenin tükenme koşusu bitti; sonucu bu projeye yazılmadı (dosyalar: %s)."
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:503
+#: arayuz/sekme_tukenme.py:510
 #, python-format
 msgid "Tükenme başarısız (çıkış kodu %d)"
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:504
+#: arayuz/sekme_tukenme.py:511
 msgid "Başarısız — ayrıntılı çıktı aşağıda açıldı."
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:514
+#: arayuz/sekme_tukenme.py:521
 msgid "Sonuç okunamadı — ayrıntılı çıktıya bakın."
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:515
+#: arayuz/sekme_tukenme.py:522
 #, python-format
 msgid ""
 "\n"
 "# Sonuç okunamadı: %s"
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:521
+#: arayuz/sekme_tukenme.py:528
 #, python-format
 msgid "Tamamlandı: %s"
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:522
+#: arayuz/sekme_tukenme.py:529
 msgid "Tükenme tamamlandı"
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:553
+#: arayuz/sekme_tukenme.py:560
 #, python-format
 msgid "%d dk"
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:554
+#: arayuz/sekme_tukenme.py:561
 #, python-format
 msgid "%.1f sa"
 msgstr ""
@@ -6722,7 +6723,7 @@ msgstr ""
 msgid "Sonuç"
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:68 arayuz/tukenme_arayuz.py:214
+#: arayuz/pencere/model_islemleri.py:67 arayuz/tukenme_arayuz.py:214
 #: arayuz/yardim/__init__.py:51
 msgid "Tükenme"
 msgstr ""

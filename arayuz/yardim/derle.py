@@ -20,11 +20,24 @@ import shutil
 import sys
 
 from arayuz.yardim import kaynak
+from cekirdek import yollar
 from cekirdek.gunluk import kaydedici
 
 _log = kaydedici(__name__)
 
-VARSAYILAN_CIKTI = os.path.join(kaynak.KOK, "build", "kilavuz")
+
+def varsayilan_cikti(kaynak_agaci=None):
+    """Varsayilan cikti dizini: kaynak agacinda <kok>/build/kilavuz; kurulu
+    pakette kurulum onekine (share/, site-packages) YAZILMAZ ->
+    yollar.onbellek_dizini()/kilavuz. kaynak_agaci: None -> yollar.kaynak_agaci_mi()."""
+    if kaynak_agaci is None:
+        kaynak_agaci = yollar.kaynak_agaci_mi()
+    if kaynak_agaci:
+        return os.path.join(kaynak.KOK, "build", "kilavuz")
+    return os.path.join(yollar.onbellek_dizini(), "kilavuz")
+
+
+VARSAYILAN_CIKTI = varsayilan_cikti()
 SOZLUK_KAYNAGI = os.path.join(kaynak.KOK, "docs", "SOZLUK.md")
 SOZLUK_DOSYASI = "10-sozluk.md"
 SOZLUK_BASI = "<!-- sozluk:baslangic (araclar/kilavuz.sh --sozluk uretir; elle duzenlemeyin) -->"
@@ -119,8 +132,14 @@ def _hucreler(satir):
     return [h.strip() for h in satir.strip().strip("|").split("|")]
 
 
-def sozluk_terimleri(yol=SOZLUK_KAYNAGI):
-    """SOZLUK.md tablolari: [(turkce, english, kacin, not, kategori_no, kategori)]."""
+def sozluk_terimleri(yol=None):
+    """SOZLUK.md tablolari: [(turkce, english, kacin, not, kategori_no, kategori)].
+    SOZLUK.md yalniz kaynak agacinda vardir (kurulu pakete girmez): yoksa
+    acik FileNotFoundError."""
+    yol = yol or SOZLUK_KAYNAGI
+    if not os.path.isfile(yol):
+        raise FileNotFoundError("%s yok: sozluk yalniz kaynak agacindan (docs/SOZLUK.md) "
+                                "uretilir" % yol)
     terimler, kategori, no = [], "", ""
     with open(yol, encoding="utf-8") as f:
         for satir in f:
@@ -187,7 +206,12 @@ def _ayristirici():
 def main(argv=None):
     arg = _ayristirici().parse_args(argv)
     if arg.sozluk:
-        for yol in sozluk_yenile():
+        try:
+            yazilan = sozluk_yenile()
+        except FileNotFoundError as e:
+            print(e, file=sys.stderr)
+            return 2
+        for yol in yazilan:
             print(yol)
         return 0
     diller = tuple(d for d in arg.dil.split(",") if d)

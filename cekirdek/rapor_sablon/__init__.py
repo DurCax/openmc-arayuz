@@ -18,11 +18,12 @@ import html as _html
 import os
 from string import Template
 
+from cekirdek import yollar
 from cekirdek.ceviri import _, N_, etkin_dil, pgettext
 from cekirdek.rapor_sablon import uygunluk_eki
 from cekirdek.rapor_sablon.bicim import bm, gosterim_notu
 
-SABLON_DIZINI = os.path.dirname(os.path.abspath(__file__))
+SABLON_DIZINI = yollar.rapor_sablon_dizini()
 _SEVIYE = {"hata": ("hata", N_("HATA")), "uyari": ("uyari", N_("UYARI")),
            "bilgi": ("bilgi", N_("BİLGİ"))}
 GORSEL_GENISLIK = 640        # px (A4 metin genisligi, ~96 dpi)
