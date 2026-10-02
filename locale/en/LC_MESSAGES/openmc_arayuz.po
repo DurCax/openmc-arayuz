@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 10:40+0300\n"
+"POT-Creation-Date: 2026-10-02 10:46+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -108,7 +108,7 @@ msgstr ""
 "\n"
 "# Process could not be started: %s"
 
-#: arayuz/sekme_calistir.py:598
+#: arayuz/sekme_calistir.py:606
 #, python-format
 msgid ""
 "\n"
@@ -117,7 +117,7 @@ msgstr ""
 "\n"
 "# Process error: %s"
 
-#: arayuz/sekme_calistir.py:558 arayuz/sekme_tukenme.py:474
+#: arayuz/sekme_calistir.py:566 arayuz/sekme_tukenme.py:474
 msgid ""
 "\n"
 "# kullanıcı tarafından durduruldu"
@@ -583,7 +583,7 @@ msgstr ""
 msgid " (%%%s zengin)"
 msgstr " (%s%% enriched)"
 
-#: cekirdek/kurucu.py:251
+#: cekirdek/kurucu.py:255
 #, python-format
 msgid " ('%s' tanımsız)"
 msgstr " ('%s' undefined)"
@@ -609,6 +609,10 @@ msgstr " (insertion %g%%: %.4g%% of the length)"
 msgid " (fisil değil ya da demette değil)"
 msgstr " (not fissile or not in the assembly)"
 
+#: cekirdek/mesh_tally/normalizasyon.py:108
+msgid " (kaynak şiddetiyle)"
+msgstr " (with source strength)"
+
 #: cekirdek/kaynak.py:257
 #, python-format
 msgid " (ortalama %s)"
@@ -629,6 +633,10 @@ msgstr ""
 #: cekirdek/uygunluk_denetimi/kurallar_kor.py:181
 msgid " (çok tohum: harita ortalamasının tepesi, σ tohumlar arası saçılmadan)"
 msgstr " (several seeds: peak of the map average, σ from the seed-to-seed scatter)"
+
+#: cekirdek/mesh_tally/normalizasyon.py:108
+msgid " / kaynak nötronu"
+msgstr " / source neutron"
 
 #: cekirdek/uygunluk_denetimi/kurallar_kor.py:197
 #, python-format
@@ -719,12 +727,12 @@ msgstr " ≤ limit %.3f."
 msgid " ≥ sınır %.0f pcm."
 msgstr " ≥ limit %.0f pcm."
 
-#: arayuz/sekme_calistir.py:503
+#: arayuz/sekme_calistir.py:511
 #, python-format
 msgid "# dizin: %s"
 msgstr "# directory: %s"
 
-#: arayuz/sekme_calistir.py:502
+#: arayuz/sekme_calistir.py:510
 #, python-format
 msgid "# komut: %s -s %d"
 msgstr "# command: %s -s %d"
@@ -863,7 +871,7 @@ msgstr "%d rings expected, the map has %d rows"
 msgid "%d halkalı altıgen demet"
 msgstr "%d-ring hexagonal assembly"
 
-#: arayuz/sekme_calistir.py:529 arayuz/uygunluk_paneli.py:303
+#: arayuz/sekme_calistir.py:537 arayuz/uygunluk_paneli.py:303
 #: cekirdek/dogrula/__init__.py:169
 #, python-format
 msgid "%d hata"
@@ -1295,6 +1303,11 @@ msgstr "%s must be positive and finite: %r"
 msgid "%s profilinde bilinmeyen eşik: %s"
 msgstr "unknown threshold in profile %s: %s"
 
+#: arayuz/sonuc/mesh_harita.py:255
+#, python-format
+msgid "%s sabit"
+msgstr "%s fixed"
+
 #: cekirdek/malzeme_hesap.py:145
 #, python-format
 msgid "%s sayı olmalı: %r"
@@ -1357,6 +1370,11 @@ msgstr "%s missing"
 #, python-format
 msgid "%s yok (%s)"
 msgstr "%s missing (%s)"
+
+#: arayuz/sonuc/mesh_harita.py:392
+#, python-format
+msgid "%s zaten var. Üzerine yazılsın mı?"
+msgstr "%s already exists. Overwrite it?"
 
 #: cekirdek/dogrula/tukenme.py:85
 #, python-format
@@ -1489,7 +1507,7 @@ msgstr "%s: the example is not a JSON object"
 msgid "%v / %m transport"
 msgstr "%v / %m transport"
 
-#: arayuz/sekme_calistir.py:492
+#: arayuz/sekme_calistir.py:500
 msgid "%v / %m çevrim"
 msgstr "%v / %m batches"
 
@@ -1917,6 +1935,11 @@ msgstr "the type of row '%s' is invalid: %s"
 msgid "'%s' sayısal bir alan değil"
 msgstr "'%s' is not a numeric field"
 
+#: cekirdek/mesh_tally/sonuc.py:171
+#, python-format
+msgid "'%s' skoru bu tally'de yok (%s)"
+msgstr "score '%s' is not in this tally (%s)"
+
 #: cekirdek/vv/aoa.py:209
 #, python-format
 msgid "'%s' tally'sinde 'fission' skoru yok"
@@ -1989,7 +2012,7 @@ msgstr ""
 "pin '%s' is not used in the model — the power distribution can be computed only for a"
 " pin that is present in the geometry"
 
-#: cekirdek/kurucu.py:287
+#: cekirdek/kurucu.py:291
 #, python-format
 msgid ""
 "'%s' çubuğu modelde kullanılmıyor. Güç dağılımı yalnızca geometride yer alan bir "
@@ -2079,7 +2102,7 @@ msgstr "'%s': %s"
 msgid "'%s': döndürülen delik daire olmalı ve her örnek dönmeli"
 msgstr "'%s': a rotated hole must be a circle and every instance must rotate"
 
-#: cekirdek/kurucu.py:258
+#: cekirdek/kurucu.py:262
 #, python-format
 msgid "'%s': geçersiz bölge numarası %d (çubukta %d bölge var)"
 msgstr "'%s': invalid pin region number %d (the pin has %d regions)"
@@ -2285,7 +2308,7 @@ msgstr "(not a component — edit it in the tree)"
 msgid "(boş — yalnızca bağıl)"
 msgstr "(empty — relative only)"
 
-#: arayuz/pencere/proje.py:55
+#: arayuz/pencere/proje.py:55 arayuz/sonuc/mesh_harita.py:78
 msgid "(boş)"
 msgstr "(empty)"
 
@@ -2382,7 +2405,7 @@ msgstr "+ Layer"
 msgid "+ Konum"
 msgstr "+ Position"
 
-#: arayuz/ayar/yerlesim.py:203
+#: arayuz/ayar/yerlesim.py:206
 msgid "+ Tally"
 msgstr "+ Tally"
 
@@ -2406,6 +2429,11 @@ msgstr ", axial bin %d"
 #: cekirdek/dogrula/kor.py:490
 msgid ", kılıf dahil"
 msgstr ", including the duct"
+
+#: arayuz/ayar/mesh_formu.py:135
+#, python-brace-format
+msgid ", z = {a:.4g} … {u:.4g} cm"
+msgstr ", z = {a:.4g} … {u:.4g} cm"
 
 #: cekirdek/giris.py:288
 #, python-format
@@ -2466,6 +2494,14 @@ msgstr "2D"
 msgid "2B (eksenel sonsuz)"
 msgstr "2D (axially infinite)"
 
+#: arayuz/sonuc/mesh_harita.py:213
+msgid ""
+"2B (eksenel sonsuz) modelde mutlak normalizasyon için çizgisel güç [W/cm] (ör. demet "
+"gücü / aktif yükseklik)."
+msgstr ""
+"Linear power [W/cm] for absolute normalization in a 2D (axially infinite) model (e.g."
+" assembly power / active height)."
+
 #: arayuz/geometri/formlar.py:139 arayuz/kor/yerlesim.py:28
 msgid "2B (sonsuz yükseklik)"
 msgstr "2D (infinite height)"
@@ -2481,6 +2517,18 @@ msgstr ""
 #: cekirdek/tukenme_guc.py:276
 msgid "2B model: güç ve q′ 1 cm yükseklik başınadır (tükenme hacmi gibi)."
 msgstr "2D model: power and q′ are per 1 cm of height (like the depletion volume)."
+
+#: arayuz/sonuc/mesh_harita.py:288
+msgid "2B modelde ağ z kolonunun yalnız bir dilimini kapsıyor"
+msgstr "in a 2D model the mesh covers only one slice of the z column"
+
+#: cekirdek/mesh_tally/normalizasyon.py:147
+msgid ""
+"2B modelde ağ z kolonunun yalnız bir dilimini kapsıyor; mutlak değer tanımsız "
+"(otomatik sınırları kullanın)"
+msgstr ""
+"in a 2D model the mesh covers only one slice of the z column; the absolute value is "
+"undefined (use automatic bounds)"
 
 #: cekirdek/dogrula/agac.py:248
 msgid "2B modelde eksenel yığın kurulamaz; kök yüksekliği verin."
@@ -2719,7 +2767,7 @@ msgstr "Could not rename: {neden}"
 msgid "Ad ya da formül ara…"
 msgstr "Search by name or formula…"
 
-#: arayuz/ayar/yerlesim.py:189 arayuz/cubuk/sayfalar.py:203 arayuz/malzeme/asistan.py:131
+#: arayuz/ayar/yerlesim.py:190 arayuz/cubuk/sayfalar.py:203 arayuz/malzeme/asistan.py:131
 #: arayuz/malzeme/kutuphane_diyalog.py:65 arayuz/malzeme/malzeme_diyalog.py:83
 msgid "Ad:"
 msgstr "Name:"
@@ -2840,7 +2888,7 @@ msgstr "No lower limit for active batches defined (%d active batches)."
 msgid "Aktif çevrim ya da çevrim başı parçacık sayısını artırın."
 msgstr "Increase the number of active batches or particles per batch."
 
-#: arayuz/ayar/sabitler.py:46
+#: arayuz/ayar/sabitler.py:48
 msgid "Akı"
 msgstr "Flux"
 
@@ -2876,7 +2924,7 @@ msgstr "Bottom"
 msgid "Alt ağacı bir parçaya çevirip iki yerde 'bilesen' olarak kullanın."
 msgstr "Turn the subtree into a component and use it in both places as a 'bilesen' node."
 
-#: arayuz/kor/yerlesim.py:282
+#: arayuz/ayar/mesh_formu.py:79 arayuz/kor/yerlesim.py:282
 msgid "Alt sınır:"
 msgstr "Bottom boundary:"
 
@@ -2906,6 +2954,17 @@ msgid ""
 msgstr ""
 "Hexagonal assembly '%s' has the same orientation ('%s') as the hexagonal lattice "
 "element; the assembly does not fit the element."
+
+#: cekirdek/mesh_tally/tanim.py:46
+msgid ""
+"Altıgen ağ kapsam dışı: kurulu OpenMC 0.16.0'da HexagonalMesh sınıfı yok "
+"(openmc/mesh.py yalnız RegularMesh, RectilinearMesh, CylindricalMesh, SphericalMesh, "
+"UnstructuredMesh sunar). Altıgen demette düzenli ya da silindirik ağ kullanın."
+msgstr ""
+"Hexagonal mesh is out of scope: the installed OpenMC 0.16.0 has no HexagonalMesh "
+"class (openmc/mesh.py offers only RegularMesh, RectilinearMesh, CylindricalMesh, "
+"SphericalMesh, UnstructuredMesh). Use a regular or cylindrical mesh for a hexagonal "
+"assembly."
 
 #: arayuz/demet/demet_islemleri.py:18 arayuz/demet/yerlesim.py:92
 msgid "Altıgen demet"
@@ -3028,7 +3087,7 @@ msgstr "Analysis in progress: %s — each point is a separate run."
 msgid "Anlamlı eğilim var (%s) ama tolerans sınırı yöntemi kullanılmış."
 msgstr "There is a significant trend (%s) but the tolerance limit method was used."
 
-#: arayuz/ayar/sabitler.py:39 arayuz/ayar/sabitler.py:59
+#: arayuz/ayar/sabitler.py:41 arayuz/ayar/sabitler.py:61
 msgid "Anlık fisyon enerjisi (fission-q-prompt)"
 msgstr "Prompt fission energy (fission-q-prompt)"
 
@@ -3036,7 +3095,7 @@ msgstr "Prompt fission energy (fission-q-prompt)"
 msgid "Apotem (merkez–yüz)"
 msgstr "Apothem (center–face)"
 
-#: arayuz/ayar/sabitler.py:52
+#: arayuz/ayar/sabitler.py:54
 msgid "Ara değer (interpolation)"
 msgstr "Interpolation"
 
@@ -3161,7 +3220,7 @@ msgstr "The same seed and the same model give the same result."
 msgid "Ayrıca %s ekleyin."
 msgstr "Also add %s."
 
-#: arayuz/ayar/tally_formu.py:125
+#: arayuz/ayar/tally_formu.py:126
 #, python-brace-format
 msgid "Ayrıca dosyadan gelen filtre: {f} (korunur)."
 msgstr "Additional filter from the file: {f} (kept)."
@@ -3251,13 +3310,40 @@ msgstr "Angular distribution:"
 msgid "Aç…"
 msgstr "Open…"
 
+#: arayuz/sonuc/mesh_harita.py:124
+msgid "Ağ (mesh) haritası"
+msgstr "Mesh map"
+
+#: arayuz/ayar/mesh_formu.py:37
+msgid "Ağ (mesh) tally'si"
+msgstr "Mesh tally"
+
 #: arayuz/sekme_ayar.py:141
 msgid "Ağ boyutu otomatik"
 msgstr "Automatic mesh size"
 
-#: arayuz/ayar/yerlesim.py:198
+#: arayuz/ayar/yerlesim.py:200
 msgid "Ağ bölmeleri:"
 msgstr "Mesh divisions:"
+
+#: arayuz/sonuc/mesh_harita.py:176
+#, python-format
+msgid "Ağ tally'leri okunamadı: %s"
+msgstr "Mesh tallies could not be read: %s"
+
+#: arayuz/sonuc/mesh_harita.py:125
+msgid ""
+"Ağ tally'lerinin dilim haritası. Renk ölçeği seçilen normalizasyondadır; × işaretli "
+"hücrelerin bağıl hatası eşiği aşar ya da hiç skor almamıştır. 3B görünüm için VTK "
+"dosyasını ParaView'de açın."
+msgstr ""
+"Slice map of the mesh tallies. The colour scale is in the selected normalization; "
+"cells marked × exceed the relative error threshold or received no score at all. For a"
+" 3D view open the VTK file in ParaView."
+
+#: arayuz/ayar/mesh_formu.py:73
+msgid "Ağ türü:"
+msgstr "Mesh type:"
 
 #: cekirdek/malzeme_kutup.py:546
 msgid "Ağır metal (U + Pu) içindeki plütonyumun ağırlık yüzdesi."
@@ -3388,9 +3474,17 @@ msgstr ""
 "Relative power — %s\n"
 "○ hottest pin · white: position without fuel (guide/instrument tube)"
 
-#: cekirdek/kosucu.py:411
+#: cekirdek/kosucu.py:420
 msgid "Bağıl hata"
 msgstr "Relative error"
+
+#: arayuz/sonuc/mesh_harita.py:42
+msgid "Bağıl hata (σ / değer)"
+msgstr "Relative error (σ / value)"
+
+#: arayuz/sonuc/mesh_harita.py:81
+msgid "Bağıl hata eşiği. Varsayılan %10 — "
+msgstr "Relative error threshold. Default 10% — "
 
 #: cekirdek/uygunluk_denetimi/kurallar_mc.py:155
 msgid "Bağımsız tohumlarla birkaç koşu yapıp sonuçların saçılımını karşılaştırın."
@@ -3817,7 +3911,7 @@ msgid ""
 "belirleyin."
 msgstr "Several libraries found (%s); choose which one to use with Choose folder."
 
-#: arayuz/malzeme/bilesim.py:37 cekirdek/kosucu.py:411
+#: arayuz/malzeme/bilesim.py:37 cekirdek/kosucu.py:420
 msgid "Birim"
 msgstr "Unit"
 
@@ -4279,7 +4373,7 @@ msgstr "A node cannot be placed here."
 msgid "Bölge"
 msgstr "Region"
 
-#: cekirdek/kosucu.py:411
+#: cekirdek/kosucu.py:420
 msgid "Bölge / enerji"
 msgstr "Region / energy"
 
@@ -4558,7 +4652,7 @@ msgstr "Could not be checked"
 msgid "Denetleniyor…"
 msgstr "Checking…"
 
-#: arayuz/calistir/pano.py:98 arayuz/calistir/pano.py:114 arayuz/sekme_calistir.py:223
+#: arayuz/calistir/pano.py:98 arayuz/calistir/pano.py:114 arayuz/sekme_calistir.py:228
 msgid "Denetlenmedi"
 msgstr "Not checked"
 
@@ -4623,7 +4717,8 @@ msgstr ""
 "Supported types: %s. A spherical assembly has no axis; build the layers there as "
 "concentric shells."
 
-#: arayuz/analiz/sekme.py:151 arayuz/geometri/form_yerlesim.py:339 cekirdek/kosucu.py:411
+#: arayuz/analiz/sekme.py:151 arayuz/geometri/form_yerlesim.py:339
+#: arayuz/sonuc/mesh_harita.py:41 cekirdek/kosucu.py:420
 msgid "Değer"
 msgstr "Value"
 
@@ -4643,6 +4738,10 @@ msgstr[1] "Not evaluated: %d rules"
 msgid "Değerlendirme sayfası"
 msgstr "Evaluation page"
 
+#: arayuz/ayar/mesh_formu.py:38
+msgid "Değerleri bir ağın hücrelerine böler: 2B harita ve ParaView için VTK."
+msgstr "Splits the values over the cells of a mesh: 2D map and VTK for ParaView."
+
 #: arayuz/guc_harita.py:67
 msgid "Değerleri haritaya yaz"
 msgstr "Write values on the map"
@@ -4660,7 +4759,7 @@ msgstr "Rectangle"
 msgid "Dikdörtgen sınırda 'yuzler' anahtarları %s olmalı."
 msgstr "On a rectangular boundary the 'yuzler' keys must be %s."
 
-#: arayuz/calistir/sonuc_gosterimi.py:150
+#: arayuz/calistir/sonuc_gosterimi.py:151
 msgid "Dikkat: kaynak yakınsamamış olabilir — pasif çevrim sayısını artırın"
 msgstr "Caution: the source may not have converged — increase the number of inactive batches"
 
@@ -4693,9 +4792,18 @@ msgstr "Bin %d relative"
 msgid "Dilim %d q′ [W/cm]"
 msgstr "Bin %d q′ [W/cm]"
 
+#: arayuz/sonuc/mesh_harita.py:347
+#, python-format
+msgid "Dilim %d/%d: %s = %.4g … %.4g %s"
+msgstr "Slice %d/%d: %s = %.4g … %.4g %s"
+
 #: arayuz/guc_harita_tablo.py:47
 msgid "Dilim bağıl"
 msgstr "Bin relative"
+
+#: arayuz/sonuc/mesh_harita.py:132
+msgid "Dilim ekseni:"
+msgstr "Slice axis:"
 
 #: arayuz/guc_harita_tablo.py:48
 msgid "Dilim q′ [W/cm]"
@@ -4844,7 +4952,7 @@ msgstr "Model check findings"
 msgid "Doğrulama bulgularını göster"
 msgstr "Show model check findings"
 
-#: arayuz/sekme_calistir.py:543
+#: arayuz/sekme_calistir.py:551
 #, python-format
 msgid "Doğrulama hataları giderilmeden koşu başlatılmaz (%d hata); önceki sonuç silinmedi."
 msgid_plural "Doğrulama hataları giderilmeden koşu başlatılmaz (%d hata); önceki sonuç silinmedi."
@@ -5054,6 +5162,10 @@ msgstr "Select a component in the list on the left to edit it."
 msgid "Düzenle…"
 msgstr "Edit…"
 
+#: cekirdek/mesh_tally/tanim.py:35
+msgid "Düzenli (x, y, z)"
+msgstr "Regular (x, y, z)"
+
 #: arayuz/kuyruk/slurm_paneli.py:74
 msgid "Düğüm"
 msgstr "Nodes"
@@ -5098,6 +5210,10 @@ msgstr "Outer radius"
 #: arayuz/kor/yerlesim.py:85
 msgid "Dış yarıçap [cm]"
 msgstr "Outer radius [cm]"
+
+#: arayuz/ayar/mesh_formu.py:81
+msgid "Dış yarıçap:"
+msgstr "Outer radius:"
 
 #: arayuz/sekme_kor.py:341
 msgid "Dış yüzey sınırı:"
@@ -5278,7 +5394,7 @@ msgstr "Missing: no spherical shell is defined."
 msgid "Eleman dış ölçüsü (x × y):"
 msgstr "Element outer size (x × y):"
 
-#: arayuz/analiz/kinetik.py:35
+#: arayuz/analiz/kinetik.py:35 arayuz/ayar/mesh_formu.py:55
 msgid "Elle"
 msgstr "Manual"
 
@@ -5373,7 +5489,7 @@ msgstr "The smallest value means natural boron."
 msgid "En sıcak çubuk"
 msgstr "Hottest pin"
 
-#: arayuz/ayar/sabitler.py:53
+#: arayuz/ayar/sabitler.py:55
 msgid "En yakın sıcaklık (nearest)"
 msgstr "Nearest temperature (nearest)"
 
@@ -5402,6 +5518,10 @@ msgstr "Adds a new layer at the top."
 #: arayuz/kor/yerlesim.py:308
 msgid "En üstteki katman tabloda en üsttedir."
 msgstr "The topmost layer is at the top of the table."
+
+#: arayuz/sonuc/mesh_harita.py:131
+msgid "Enerji grubu:"
+msgstr "Energy group:"
 
 #: arayuz/ayar/spektrum_karti.py:43
 msgid "Enerji grup yapısı:"
@@ -5527,6 +5647,10 @@ msgstr ""
 "A fuel, control or empty-channel pin made of concentric regions: fuel, fuel–cladding "
 "gap, cladding and the surrounding coolant."
 
+#: arayuz/sonuc/mesh_harita.py:137
+msgid "Eşik:"
+msgstr "Threshold:"
+
 #: arayuz/bilesenler/komut_paleti.py:113
 msgid "Eşleşen komut yok"
 msgstr "No matching commands"
@@ -5636,7 +5760,7 @@ msgstr ""
 msgid "Fisyon (fission)"
 msgstr "Fission"
 
-#: arayuz/ayar/sabitler.py:38 arayuz/ayar/sabitler.py:57
+#: arayuz/ayar/sabitler.py:39 arayuz/ayar/sabitler.py:59
 msgid "Fisyon enerjisi (kappa-fission)"
 msgstr "Fission energy (kappa-fission)"
 
@@ -5908,7 +6032,7 @@ msgstr "Undo"
 msgid "Geri alındı ({i}/{n})"
 msgstr "Undone ({i}/{n})"
 
-#: arayuz/ayar/sabitler.py:58
+#: arayuz/ayar/sabitler.py:40 arayuz/ayar/sabitler.py:60
 msgid "Geri kazanılabilir fisyon enerjisi (fission-q-recoverable)"
 msgstr "Recoverable fission energy (fission-q-recoverable)"
 
@@ -6001,6 +6125,11 @@ msgstr "Save chart"
 msgid "Grup"
 msgstr "Group"
 
+#: arayuz/sonuc/mesh_harita.py:251
+#, python-format
+msgid "Grup %d: %.4g – %.4g eV"
+msgstr "Group %d: %.4g – %.4g eV"
+
 #: arayuz/sekme_ayar.py:156
 msgid ""
 "Grup başına β_i ve λ_i (nokta kinetiği için). Grup sayısı nükleer veri\n"
@@ -6050,13 +6179,25 @@ msgstr ""
 "Group boundaries [eV], in increasing order, comma-separated.\n"
 "Example (two groups): 0.0, 0.625, 2.0e7"
 
-#: arayuz/ayar/yerlesim.py:194
+#: arayuz/ayar/yerlesim.py:196
 msgid "Grup sınırları [eV]:"
 msgstr "Group boundaries [eV]:"
+
+#: cekirdek/mesh_tally/sonuc.py:26
+msgid ""
+"Grup toplamında σ, gruplar bağımsız varsayılarak (σ² toplamı) hesaplanır; gruplar "
+"pozitif ilişkili olduğundan bu iyimser bir tahmindir."
+msgstr ""
+"For the group total, σ is computed assuming independent groups (sum of σ²); the "
+"groups are positively correlated, so this is an optimistic estimate."
 
 #: cekirdek/geometri/denetim.py:542
 msgid "Grup türü 'donme' ya da 'daldirma' olmalı."
 msgstr "The group type must be 'donme' or 'daldirma'."
+
+#: arayuz/ayar/mesh_formu.py:86
+msgid "Grup yapısı:"
+msgstr "Group structure:"
 
 #: arayuz/geometri/agac_paneli.py:264
 #, python-brace-format
@@ -6083,6 +6224,14 @@ msgstr "View:"
 #: arayuz/onizleme.py:178
 msgid "Gösterge"
 msgstr "Legend"
+
+#: arayuz/sonuc/mesh_harita.py:317
+msgid "Gösterilecek değer yok"
+msgstr "No value to display"
+
+#: arayuz/sonuc/mesh_harita.py:135
+msgid "Gösterim:"
+msgstr "Display:"
 
 #: arayuz/cubuk/tambur_formu.py:97
 msgid "Gövde malzemesi"
@@ -6123,6 +6272,10 @@ msgstr "See the log file and report the error."
 #: arayuz/uygunluk_paneli.py:293
 msgid "Günlük dosyasında ayrıntı var."
 msgstr "Details are in the log file."
+
+#: arayuz/sonuc/mesh_harita.py:82
+msgid "Güvenilmez hücreleri işaretle"
+msgstr "Mark unreliable cells"
 
 #: arayuz/guc_harita_tablo.py:117
 msgid "Güç [W/cm yükseklik]"
@@ -6337,6 +6490,10 @@ msgstr "ERROR: downloaded, but the choice could not be saved: %s"
 msgid "HDF5 (h5py)"
 msgstr "HDF5 (h5py)"
 
+#: cekirdek/mesh_tally/normalizasyon.py:54
+msgid "Hacim başına (/cm³)"
+msgstr "Per volume (/cm³)"
+
 #: cekirdek/dogrula/tukenme.py:205
 msgid ""
 "Hacmi analitik hesaplanamıyor; bu malzeme koşu boyunca taze kalır. Taze kalan emici "
@@ -6546,9 +6703,19 @@ msgstr "Map row %d: %d characters, %d expected."
 msgid "Harita yazılamadı"
 msgstr "Map could not be written"
 
+#: arayuz/sonuc/mesh_harita.py:315
+#, python-format
+msgid "Harita çizilemedi: %s"
+msgstr "Map could not be drawn: %s"
+
 #: arayuz/guc_harita_tablo.py:209
 msgid "Haritada bir çubuğa tıklayın ya da tablodan seçin."
 msgstr "Click a pin on the map or select it in the table."
+
+#: arayuz/sonuc/mesh_harita.py:180
+#, python-format
+msgid "Haritada gösterilmeyen ağ tally'si: %s"
+msgstr "Mesh tally not shown on the map: %s"
 
 #: cekirdek/geometri/denetim.py:196
 #, python-format
@@ -6567,7 +6734,7 @@ msgstr ""
 "Number of map columns. When enlarged, new cells are filled with the component "
 "selected in the palette."
 
-#: arayuz/ayar/sabitler.py:40
+#: arayuz/ayar/sabitler.py:42
 msgid "Hasar enerjisi (damage-energy)"
 msgstr "Damage energy (damage-energy)"
 
@@ -6579,9 +6746,13 @@ msgstr "Accurate"
 msgid "Hata"
 msgstr "Error"
 
-#: arayuz/sekme_calistir.py:536
+#: arayuz/sekme_calistir.py:544
 msgid "Hata yok"
 msgstr "No errors"
+
+#: arayuz/ayar/mesh_formu.py:58
+msgid "Hazır grup yapıları OpenMC'den (openmc.mgxs.GROUP_STRUCTURES) alınır."
+msgstr "Predefined group structures are taken from OpenMC (openmc.mgxs.GROUP_STRUCTURES)."
 
 #: arayuz/nuklid_secici.py:187
 msgid "Hazır setler:"
@@ -6922,7 +7093,7 @@ msgstr "Inhour root lies beyond %g 1/s."
 msgid "Inhour kökü aralıkta bulunamadı: [%g, %g]"
 msgstr "Inhour root not found in the interval: [%g, %g]"
 
-#: arayuz/ayar/sabitler.py:48
+#: arayuz/ayar/sabitler.py:50
 msgid "Isı / güç"
 msgstr "Heat / power"
 
@@ -7388,6 +7559,10 @@ msgstr "Convergence of the source distribution"
 #: arayuz/calistir/yakinsama.py:127
 msgid "Kaynak entropisi"
 msgstr "Source entropy"
+
+#: cekirdek/mesh_tally/normalizasyon.py:53
+msgid "Kaynak nötronu başına"
+msgstr "Per source neutron"
 
 #: cekirdek/dogrula/kaynak.py:156
 msgid ""
@@ -7856,22 +8031,22 @@ msgstr "Dark"
 msgid "Koşu"
 msgstr "Run"
 
-#: arayuz/sekme_calistir.py:632
+#: arayuz/sekme_calistir.py:640
 #, python-format
 msgid "Koşu başarısız (çıkış kodu %d)"
 msgstr "Run failed (exit code %d)"
 
-#: arayuz/sekme_calistir.py:630
+#: arayuz/sekme_calistir.py:638
 #, python-format
 msgid "Koşu başarısız (çıkış kodu %d). OpenMC çıktısı aşağıda, 'Ayrıntılı çıktı' bölümünde."
 msgstr "Run failed (exit code %d). The OpenMC output is below, under 'Detailed output'."
 
-#: arayuz/sekme_calistir.py:513
+#: arayuz/sekme_calistir.py:521
 #, python-format
 msgid "Koşu başladı → %s"
 msgstr "Run started → %s"
 
-#: arayuz/sekme_calistir.py:531
+#: arayuz/sekme_calistir.py:539
 msgid "Koşu başlatılmadı; önceki sonuç silinmedi."
 msgstr "Run not started; the previous result was not deleted."
 
@@ -7879,11 +8054,11 @@ msgstr "Run not started; the previous result was not deleted."
 msgid "Koşu başına iş parçacığı (OMP)"
 msgstr "Threads per run (OMP)"
 
-#: arayuz/sekme_calistir.py:657
+#: arayuz/sekme_calistir.py:665
 msgid "Koşu bitti ama statepoint bulunamadı"
 msgstr "Run finished but no statepoint found"
 
-#: arayuz/sekme_calistir.py:656
+#: arayuz/sekme_calistir.py:664
 msgid "Koşu bitti ama statepoint dosyası bulunamadı."
 msgstr "The run finished but no statepoint file was found."
 
@@ -7924,7 +8099,7 @@ msgstr ""
 "Directory for the run files. A relative path is placed next to the project file; its "
 "contents are cleared on every run."
 
-#: arayuz/sekme_calistir.py:650
+#: arayuz/sekme_calistir.py:658
 msgid "Koşu durduruldu"
 msgstr "Run stopped"
 
@@ -7944,7 +8119,7 @@ msgstr "Run folder (every run in its own subdirectory)"
 msgid "Koşu klasörünü hazırla…"
 msgstr "Prepare run folder…"
 
-#: arayuz/sekme_calistir.py:647
+#: arayuz/sekme_calistir.py:655
 msgid "Koşu kullanıcı tarafından durduruldu; sonuç yok."
 msgstr "Run stopped by the user; no result."
 
@@ -7972,14 +8147,14 @@ msgstr "Run result"
 msgid "Koşu sonucu yüklü değil: rapor yalnız modeli içerir."
 msgstr "No run result is loaded: the report contains only the model."
 
-#: arayuz/sekme_calistir.py:509
+#: arayuz/sekme_calistir.py:517
 #, python-format
 msgid "Koşu sürüyor (%d iş parçacığı) → %s"
 msgid_plural "Koşu sürüyor (%d iş parçacığı) → %s"
 msgstr[0] "Running (%d thread) → %s"
 msgstr[1] "Running (%d threads) → %s"
 
-#: arayuz/sekme_calistir.py:483
+#: arayuz/sekme_calistir.py:491
 msgid "Koşu sürüyor; k-eff kümülatif ortalamadır."
 msgstr "Run in progress; k-eff is the cumulative mean."
 
@@ -7995,11 +8170,11 @@ msgstr ""
 "Run complete — results are on the Run page; you can calculate reactivity coefficients"
 " on the Analysis page."
 
-#: arayuz/calistir/sonuc_gosterimi.py:108
+#: arayuz/calistir/sonuc_gosterimi.py:109
 msgid "Koşu tamamlandı (sabit kaynak) — sonuçlar tally'lerde"
 msgstr "Run complete (fixed source) — results are in the tallies"
 
-#: arayuz/calistir/sonuc_gosterimi.py:111
+#: arayuz/calistir/sonuc_gosterimi.py:112
 #, python-format
 msgid "Koşu tamamlandı: k-eff = %.5f ± %.5f"
 msgstr "Run complete: k-eff = %.5f ± %.5f"
@@ -8293,6 +8468,10 @@ msgstr ""
 "The sphere geometry is fully determined by the shell radii; the height enters the "
 "source box, the entropy mesh and the tally meshes. The field is cleared when the "
 "spherical type is selected on the Geometry page."
+
+#: cekirdek/mesh_tally/tanim.py:37
+msgid "Küresel (r, θ, φ)"
+msgstr "Spherical (r, θ, φ)"
 
 #: cekirdek/uygunluk.py:89
 msgid "Küresel düzenek (kabuklar)"
@@ -8847,7 +9026,7 @@ msgstr[1] ""
 msgid "Model henüz çalıştırılmadı; hazır olduğunda ÇALIŞTIR (F9)."
 msgstr "The model has not been run yet; press RUN (F9) when it is ready."
 
-#: arayuz/sekme_calistir.py:448
+#: arayuz/sekme_calistir.py:455
 msgid "Model kurulamadı"
 msgstr "Model could not be built"
 
@@ -8996,9 +9175,26 @@ msgstr "Monte Carlo good practice"
 msgid "Monte Carlo terimleri"
 msgstr "Monte Carlo terms"
 
+#: cekirdek/mesh_tally/normalizasyon.py:56
+msgid "Mutlak (toplam güçten)"
+msgstr "Absolute (from total power)"
+
 #: arayuz/veri/indirme_karti.py:202
 msgid "Mutlak bir hedef klasör yolu girin."
 msgstr "Enter an absolute target folder path."
+
+#: arayuz/sonuc/mesh_harita.py:220
+msgid ""
+"Mutlak normalizasyon için modelin kapsadığı bölgenin toplam gücü (Hesap ayarları > "
+"Güç dağılımı > Toplam güç)."
+msgstr ""
+"Total power of the region covered by the model, for absolute normalization (Run "
+"settings > Power distribution > Total power)."
+
+#: arayuz/sonuc/mesh_harita.py:291
+#, python-format
+msgid "Mutlak normalizasyon yapılamadı (%s); hacim başına gösteriliyor."
+msgstr "Absolute normalization not possible (%s); showing per volume."
 
 #: arayuz/sekme_ayar.py:190
 msgid "N grup değeri (bağıl); kenar sayısından bir eksik olmalı"
@@ -9044,7 +9240,7 @@ msgstr "What do you want to model?"
 msgid "Ne tasarlıyorsun?"
 msgstr "What are you designing?"
 
-#: arayuz/ayar/yerlesim.py:190
+#: arayuz/ayar/yerlesim.py:191
 msgid "Ne ölçülsün:"
 msgstr "Measure:"
 
@@ -9088,6 +9284,10 @@ msgstr "Normal"
 #: arayuz/onizleme.py:72
 msgid "Normal (800)"
 msgstr "Normal (800)"
+
+#: arayuz/sonuc/mesh_harita.py:134
+msgid "Normalizasyon:"
+msgstr "Normalization:"
 
 #: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:217
 msgid "Normallik sonucu yöntemle tutarlı."
@@ -9338,7 +9538,7 @@ msgstr "OpenMC warnings"
 msgid "OpenMC çıktısı"
 msgstr "OpenMC output"
 
-#: arayuz/sekme_calistir.py:203
+#: arayuz/sekme_calistir.py:208
 msgid "OpenMC çıktısı panoya kopyalandı"
 msgstr "OpenMC output copied to the clipboard"
 
@@ -9395,6 +9595,10 @@ msgstr "Mean energy: {e}"
 #: cekirdek/rapor_sablon/__init__.py:162
 msgid "Ortalama lineer güç"
 msgstr "Average linear power"
+
+#: cekirdek/mesh_tally/normalizasyon.py:55
+msgid "Ortalamaya bağıl (1 = ortalama)"
+msgstr "Relative to the mean (1 = mean)"
 
 #: cekirdek/kapsul.py:317
 msgid "Ortam farkı yok: kapsül ile bugünkü ortam aynı."
@@ -9552,6 +9756,10 @@ msgid ""
 msgstr ""
 "Select a component in the palette, then click or drag on the grid; right-click picks "
 "the component in that cell. The first row is the top of the map (+y)."
+
+#: arayuz/sonuc/mesh_harita.py:85
+msgid "ParaView ile açılır: bütün skorlar ve gruplar; değer, σ ve bağıl hata alanları."
+msgstr "Opens in ParaView: all scores and groups; value, σ and relative error fields."
 
 #: arayuz/kuyruk/panel.py:105
 msgid "Paralellik ve kaynaklar"
@@ -10050,7 +10258,7 @@ msgstr "Save the report as rapor.html."
 msgid "Rastgele tohum:"
 msgstr "Random seed:"
 
-#: arayuz/ayar/sabitler.py:47
+#: arayuz/ayar/sabitler.py:49
 msgid "Reaksiyon hızları"
 msgstr "Reaction rates"
 
@@ -10113,7 +10321,7 @@ msgstr "Reactivity:"
 msgid "Reaktör kor tasarımı"
 msgstr "Reactor core design"
 
-#: cekirdek/kosucu.py:525
+#: cekirdek/kosucu.py:534
 #, python-format
 msgid ""
 "Referans güç toplamı sıfır ya da negatif (%.3g): hedef bölgede fisyon sayılmadı, "
@@ -10122,7 +10330,7 @@ msgstr ""
 "The reference power sum is zero or negative (%.3g): no fissions were counted in the "
 "target region, the conservation of the total could not be checked."
 
-#: cekirdek/kosucu.py:521
+#: cekirdek/kosucu.py:530
 msgid "Referans tally yok — korunum denetlenemedi (eski statepoint ya da model regresyonu)."
 msgstr ""
 "No reference tally — conservation could not be checked (old statepoint or model "
@@ -10234,7 +10442,7 @@ msgstr ""
 msgid "Sabit kaynak koşusu: k-eff ve kaynak yakınsaması tanımsız."
 msgstr "Fixed source run: k-eff and source convergence are undefined."
 
-#: arayuz/calistir/sonuc_gosterimi.py:123
+#: arayuz/calistir/sonuc_gosterimi.py:124
 msgid ""
 "Sabit kaynak — k-eff tanımsız\n"
 "Sonuç tally'lerdir (aşağıda)."
@@ -10242,7 +10450,7 @@ msgstr ""
 "Fixed source — k-eff undefined\n"
 "The results are tallies (below)."
 
-#: arayuz/calistir/pano.py:154 arayuz/sekme_calistir.py:482
+#: arayuz/calistir/pano.py:154 arayuz/sekme_calistir.py:490
 msgid "Sabit kaynak — k-eff tanımsız; sonuç tally'lerdir."
 msgstr "Fixed source — k-eff undefined; the results are tallies."
 
@@ -10493,7 +10701,7 @@ msgstr "Shannon entropy is not used in a fixed source calculation"
 msgid "SiC — silisyum karbür"
 msgstr "SiC — silicon carbide"
 
-#: arayuz/ayar/yerlesim.py:204 arayuz/cubuk/tambur_formu.py:71 arayuz/demet/yerlesim.py:94
+#: arayuz/ayar/yerlesim.py:207 arayuz/cubuk/tambur_formu.py:71 arayuz/demet/yerlesim.py:94
 #: arayuz/geometri/editor.py:116 arayuz/geometri/form_yerlesim.py:60
 #: arayuz/kor/yerlesim.py:130 arayuz/malzeme/kutuphane_tarayici.py:87
 #: arayuz/sekme_cubuk.py:143 arayuz/sekme_malzeme.py:150
@@ -10511,6 +10719,10 @@ msgstr "Cylinder (circle)"
 #: arayuz/cubuk/sayfalar.py:24
 msgid "Silindir (eş merkezli daireler)"
 msgstr "Cylinder (concentric circles)"
+
+#: cekirdek/mesh_tally/tanim.py:36
+msgid "Silindirik (r, φ, z)"
+msgstr "Cylindrical (r, φ, z)"
 
 #: arayuz/baslangic.py:90
 msgid "Silindirik kor, yansıtıcı kuşak ve dönen kontrol tamburları."
@@ -10532,15 +10744,15 @@ msgstr ""
 "The system does not meet the subcriticality criterion; change the design or the "
 "control parameters."
 
-#: arayuz/ayar/yerlesim.py:171
+#: arayuz/ayar/yerlesim.py:171 arayuz/sonuc/mesh_harita.py:130
 msgid "Skor:"
 msgstr "Score:"
 
-#: arayuz/ayar/yerlesim.py:192
+#: arayuz/ayar/yerlesim.py:193
 msgid "Skorlar:"
 msgstr "Scores:"
 
-#: arayuz/ayar/tally_formu.py:115
+#: arayuz/ayar/tally_formu.py:118
 #, python-brace-format
 msgid "Skorlar: {s}"
 msgstr "Scores: {s}"
@@ -10646,8 +10858,8 @@ msgstr ""
 msgid "Sonuç okunamadı — ayrıntılı çıktıya bakın."
 msgstr "Result could not be read — see the detailed output."
 
-#: arayuz/calistir/sonuc_gosterimi.py:48 arayuz/sekme_calistir.py:662
-#: arayuz/sekme_calistir.py:663 arayuz/sekme_tukenme.py:552
+#: arayuz/calistir/sonuc_gosterimi.py:48 arayuz/sekme_calistir.py:670
+#: arayuz/sekme_calistir.py:671 arayuz/sekme_tukenme.py:552
 #, python-format
 msgid "Sonuç okunamadı: %s"
 msgstr "Result could not be read: %s"
@@ -10781,6 +10993,10 @@ msgstr "Spectrum and four factors"
 #: arayuz/ayar/spektrum_karti.py:31
 msgid "Spektrum ve dört faktörü hesapla"
 msgstr "Compute spectrum and four factors"
+
+#: arayuz/sonuc/mesh_harita.py:41
+msgid "Standart sapma (σ)"
+msgstr "Standard deviation (σ)"
 
 #: cekirdek/rapor_sablon/uygunluk_eki.py:81
 msgid "Standart ve iyi uygulama kontrol listesi — sertifika değildir"
@@ -10938,6 +11154,18 @@ msgstr "Boundary condition"
 msgid "Sınırlar model kurulurken modelin dış ölçüsünden alınır."
 msgstr "The bounds are taken from the model's outer dimensions when the model is built."
 
+#: arayuz/ayar/mesh_formu.py:46
+msgid ""
+"Sınırlar model kurulurken modelin dış ölçüsünden türetilir; yansıtıcı eklenirse ağ da"
+" büyür."
+msgstr ""
+"Bounds are derived from the model's outer dimensions when the model is built; if a "
+"reflector is added the mesh grows too."
+
+#: arayuz/ayar/mesh_formu.py:44
+msgid "Sınırları modelden al"
+msgstr "Take bounds from the model"
+
 #: arayuz/geometri/editor.py:379
 msgid "Sıra değişti"
 msgstr "Order changed"
@@ -11017,13 +11245,17 @@ msgstr "Tally results"
 msgid "Tally özetleri"
 msgstr "Tally summaries"
 
-#: arayuz/ayar/yerlesim.py:223
+#: arayuz/ayar/yerlesim.py:226
 msgid "Tally'ler"
 msgstr "Tallies"
 
 #: cekirdek/dogrula/spektrum.py:27
 msgid "Tally'yi yeniden adlandırın."
 msgstr "Rename the tally."
+
+#: arayuz/sonuc/mesh_harita.py:130
+msgid "Tally:"
+msgstr "Tally:"
 
 #: arayuz/pencere/menuler.py:178 arayuz/pencere/menuler.py:337
 msgid "Tam ekran"
@@ -11467,6 +11699,10 @@ msgstr "Use the tolerance band method or extend the set."
 msgid "Tolerans sınırı yöntemi dış değerleme için kullanılamaz."
 msgstr "The tolerance limit method cannot be used for extrapolation."
 
+#: arayuz/sonuc/mesh_harita.py:249
+msgid "Toplam (bütün gruplar)"
+msgstr "Total (all groups)"
+
 #: arayuz/ayar/sabitler.py:33
 msgid "Toplam etkileşim (total)"
 msgstr "Total interaction (total)"
@@ -11481,7 +11717,8 @@ msgstr ""
 " core. Example: 3400 MWth / 193 assemblies = 17.6 MW; for a single-assembly model "
 "enter 17.6e6 W. If left empty, only the relative distribution is given."
 
-#: arayuz/ayar/yerlesim.py:160
+#: arayuz/ayar/yerlesim.py:160 arayuz/sonuc/mesh_harita.py:79
+#: arayuz/sonuc/mesh_harita.py:218
 msgid "Toplam güç:"
 msgstr "Total power:"
 
@@ -11900,6 +12137,38 @@ msgstr "U₃Si₂-Al — MTR dispersion fuel"
 #: cekirdek/malzeme_kutup.py:582
 msgid "U₃Si₂-Al — dispersiyon yakıtı"
 msgstr "U₃Si₂-Al — dispersion fuel"
+
+#: cekirdek/mesh_tally/vtk.py:120
+#, python-format
+msgid "VTK dizini yok ya da yazılamıyor: %s"
+msgstr "VTK directory does not exist or is not writable: %s"
+
+#: cekirdek/mesh_tally/vtk.py:117
+#, python-format
+msgid "VTK dosya adı .vtk ile bitmeli: %s"
+msgstr "VTK file name must end with .vtk: %s"
+
+#: arayuz/sonuc/mesh_harita.py:408
+msgid "VTK dosyası (*.vtk)"
+msgstr "VTK file (*.vtk)"
+
+#: arayuz/sonuc/mesh_harita.py:392 arayuz/sonuc/mesh_harita.py:407
+msgid "VTK dışa aktar"
+msgstr "Export VTK"
+
+#: arayuz/sonuc/mesh_harita.py:84
+msgid "VTK dışa aktar…"
+msgstr "Export VTK…"
+
+#: arayuz/sonuc/mesh_harita.py:378
+#, python-format
+msgid "VTK yazılamadı: %s"
+msgstr "VTK could not be written: %s"
+
+#: arayuz/sonuc/mesh_harita.py:380
+#, python-format
+msgid "VTK yazıldı: %s (%d alan)"
+msgstr "VTK written: %s (%d fields)"
 
 #: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:254
 msgid "Vaka sayısı ve güven düzeyi"
@@ -12509,7 +12778,7 @@ msgstr ""
 "The local power density peak depends on the axial shape. Define an active height on "
 "the Geometry page."
 
-#: arayuz/ayar/sabitler.py:60
+#: arayuz/ayar/sabitler.py:38 arayuz/ayar/sabitler.py:62
 msgid "Yerel ısınma (heating-local)"
 msgstr "Local heating (heating-local)"
 
@@ -12935,6 +13204,10 @@ msgstr "region whose area cannot be computed analytically"
 msgid "alanı hesaplanamayan kesit: %s"
 msgstr "cross-section whose area cannot be computed: %s"
 
+#: arayuz/ayar/mesh_formu.py:77
+msgid "alt"
+msgstr "lower"
+
 #: cekirdek/dogrula/kor.py:27
 msgctxt "sınır yönü"
 msgid "alt"
@@ -13116,10 +13389,47 @@ msgstr "unpacking"
 msgid "açısal dağılım"
 msgstr "angular distribution"
 
+#: cekirdek/mesh_tally/sonuc.py:84
+#, python-format
+msgid "ağ %d boyutlu; yalnız 3 boyutlu ağ gösterilir"
+msgstr "mesh is %d-dimensional; only 3D meshes are shown"
+
+#: cekirdek/mesh_tally/tanim.py:148
+msgid "ağ alt sınırı her eksende üst sınırdan küçük olmalı"
+msgstr "mesh lower bound must be smaller than the upper bound on every axis"
+
+#: cekirdek/mesh_tally/tanim.py:134
+#, python-format
+msgid "ağ bölme sayıları pozitif tam sayı olmalı (%s)"
+msgstr "mesh bin counts must be positive integers (%s)"
+
+#: cekirdek/mesh_tally/tanim.py:136
+#, python-format
+msgid "ağ bölme sayıları sayı olmalı (%s)"
+msgstr "mesh bin counts must be numbers (%s)"
+
+#: cekirdek/mesh_tally/tanim.py:131
+#, python-format
+msgid "ağ bölme sayısı üç değer olmalı (%s)"
+msgstr "mesh bin count must be three values (%s)"
+
+#: cekirdek/mesh_tally/tanim.py:153
+msgid "ağ dış yarıçapı sıfırdan büyük olmalı"
+msgstr "mesh outer radius must be greater than zero"
+
+#: cekirdek/mesh_tally/sonuc.py:81
+#, python-format
+msgid "ağ ve enerji dışında filtre var: %s"
+msgstr "filter other than mesh and energy present: %s"
+
 #: cekirdek/tarama_agac.py:128
 #, python-format
 msgid "ağaçta '%s' kimlikli %s yok"
 msgstr "no node with ID '%s' of type %s in the tree"
+
+#: cekirdek/mesh_tally/tanim.py:155
+msgid "ağın z alt sınırı üst sınırdan küçük olmalı"
+msgstr "mesh z lower bound must be smaller than the upper bound"
 
 #: cekirdek/dogrula/malzeme.py:39
 msgid "ağır su (D₂O)"
@@ -13170,6 +13480,10 @@ msgstr "pressure must be within 0–%.0f MPa: %r MPa"
 msgid "bağlantı kurulamadı: %s"
 msgstr "could not connect: %s"
 
+#: cekirdek/mesh_tally/normalizasyon.py:99
+msgid "bağıl (1 = ortalama)"
+msgstr "relative (1 = mean)"
+
 #: arayuz/guc_harita.py:325 arayuz/guc_harita.py:339 arayuz/tukenme_pin_gucu.py:192
 #: cekirdek/rapor_sablon/grafik.py:156
 msgid "bağıl güç"
@@ -13184,6 +13498,14 @@ msgstr "relative power %.4f ± %.4f"
 msgid "bağıl hata"
 msgstr "relative error"
 
+#: arayuz/sonuc/mesh_harita.py:331
+msgid "bağıl hata (oran)"
+msgstr "relative error (ratio)"
+
+#: cekirdek/mesh_tally/normalizasyon.py:136
+msgid "bağıl normalizasyon: ağda skorlu hücre yok"
+msgstr "relative normalization: no scored cell on the mesh"
+
 #: cekirdek/rapor_sablon/grafik.py:157
 msgid "bağıl yükseklik (alt → üst)"
 msgstr "relative height (bottom → top)"
@@ -13192,7 +13514,7 @@ msgstr "relative height (bottom → top)"
 msgid "bağıl çubuk gücü"
 msgstr "relative pin power"
 
-#: arayuz/analiz/sonuc.py:83 arayuz/kuyruk/panel.py:34 arayuz/sekme_calistir.py:679
+#: arayuz/analiz/sonuc.py:83 arayuz/kuyruk/panel.py:34 arayuz/sekme_calistir.py:687
 msgid "başarısız"
 msgstr "failed"
 
@@ -13307,6 +13629,16 @@ msgstr "unknown subprocess: %r"
 msgid "bilinmeyen açısal dağılım türü: %s"
 msgstr "unknown angular distribution type: %s"
 
+#: cekirdek/mesh_tally/geometri.py:55 cekirdek/mesh_tally/tanim.py:203
+#, python-format
+msgid "bilinmeyen ağ türü: %s"
+msgstr "unknown mesh type: %s"
+
+#: cekirdek/mesh_tally/tanim.py:84
+#, python-format
+msgid "bilinmeyen ağ türü: %s (geçerli: %s)"
+msgstr "unknown mesh type: %s (valid: %s)"
+
 #: cekirdek/geometri/bilesen.py:196
 #, python-format
 msgid "bilinmeyen demet türü: %s"
@@ -13337,6 +13669,11 @@ msgstr "unknown axis: %r"
 msgid "bilinmeyen element: %r"
 msgstr "unknown element: %r"
 
+#: cekirdek/mesh_tally/tanim.py:333
+#, python-format
+msgid "bilinmeyen enerji grup yapısı: %s"
+msgstr "unknown energy group structure: %s"
+
 #: cekirdek/spektrum.py:120
 #, python-format
 msgid "bilinmeyen enerji grup yapısı: %s (geçerli: %s)"
@@ -13347,7 +13684,7 @@ msgstr "unknown energy group structure: %s (valid: %s)"
 msgid "bilinmeyen enerji tayfı türü: %s"
 msgstr "unknown energy spectrum type: %s"
 
-#: cekirdek/kurucu.py:232
+#: cekirdek/kurucu.py:233
 #, python-format
 msgid "bilinmeyen filtre türü: %s"
 msgstr "unknown filter type: %s"
@@ -13376,6 +13713,11 @@ msgstr "unknown core type: %s (valid: %s)"
 #, python-format
 msgid "bilinmeyen kütüphane: %s (--liste)"
 msgstr "unknown library: %s (--liste)"
+
+#: cekirdek/mesh_tally/normalizasyon.py:127
+#, python-format
+msgid "bilinmeyen normalizasyon: %s"
+msgstr "unknown normalization: %s"
 
 #: cekirdek/alt_model.py:338
 #, python-format
@@ -13431,6 +13773,10 @@ msgstr "a sphere"
 msgid "bir silindir"
 msgstr "a cylinder"
 
+#: cekirdek/mesh_tally/sonuc.py:79
+msgid "birden çok ağ filtresi"
+msgstr "more than one mesh filter"
+
 #: cekirdek/veri_bilgi.py:347
 #, python-format
 msgid "birden çok kütüphane bulundu (%s); birinin klasörünü seçin"
@@ -13479,7 +13825,7 @@ msgstr "malformed array descriptor: %s"
 msgid "bozuk çerçeve başı"
 msgstr "malformed frame start"
 
-#: arayuz/guc_harita.py:267 cekirdek/kosucu.py:600
+#: arayuz/guc_harita.py:267 cekirdek/kosucu.py:609
 msgid "bozuk, haritaya güvenmeyin"
 msgstr "broken, do not trust the map"
 
@@ -13699,6 +14045,11 @@ msgstr "experiment (E)"
 msgid "derece"
 msgstr "degrees"
 
+#: cekirdek/mesh_tally/geometri.py:28
+#, python-format
+msgid "desteklenmeyen ağ sınıfı: %s"
+msgstr "unsupported mesh class: %s"
+
 #: cekirdek/geometri/ice_aktar.py:70
 #, python-format
 msgid "desteklenmeyen yüzey türü: %s"
@@ -13839,7 +14190,7 @@ msgstr "skip the nuclide/library check in the model check"
 msgid "doğrusal uyum"
 msgstr "linear fit"
 
-#: arayuz/sekme_calistir.py:645
+#: arayuz/sekme_calistir.py:653
 msgid "durduruldu"
 msgstr "stopped"
 
@@ -13892,6 +14243,10 @@ msgstr "ring %d from the outside, position %d"
 #: cekirdek/kosucu.py:370
 msgid "eV / kaynak nötronu"
 msgstr "eV / source neutron"
+
+#: cekirdek/mesh_tally/normalizasyon.py:104
+msgid "eV/cm² (z integrali)"
+msgstr "eV/cm² (z integral)"
 
 #: arayuz/guc_harita.py:326
 msgid "eksenel dilim"
@@ -14026,7 +14381,7 @@ msgstr "hottest pin: %s%s"
 msgid "en yüksek q′ [W/cm]"
 msgstr "peak q′ [W/cm]"
 
-#: arayuz/ayar/sabitler.py:63
+#: arayuz/ayar/sabitler.py:65
 msgid "enerji"
 msgstr "energy"
 
@@ -14218,6 +14573,11 @@ msgstr "invalid pin region number %s (the pin has %d regions)"
 msgid "geçersiz conda ortamı adı: %r"
 msgstr "invalid conda environment name: %r"
 
+#: cekirdek/mesh_tally/geometri.py:120
+#, python-format
+msgid "geçersiz dilim: eksen %s, indeks %s"
+msgstr "invalid slice: axis %s, index %s"
+
 #: cekirdek/cizim_sureci.py:158 cekirdek/cizim_sureci.py:163
 #, python-format
 msgid "geçersiz dizi tanımı: %r"
@@ -14232,6 +14592,11 @@ msgstr "invalid array shape: %r"
 #, python-format
 msgid "geçersiz emici bölge: %s"
 msgstr "invalid absorber region: %s"
+
+#: cekirdek/mesh_tally/sonuc.py:179
+#, python-format
+msgid "geçersiz enerji grubu: %s"
+msgstr "invalid energy group: %s"
 
 #: cekirdek/kosucu.py:110
 msgid "geçersiz k-eff"
@@ -14331,7 +14696,7 @@ msgstr "security: %s is a symbolic link; delete it or choose another target"
 msgid "güç dağılımı"
 msgstr "power distribution"
 
-#: cekirdek/kurucu.py:250 cekirdek/kurucu.py:273
+#: cekirdek/kurucu.py:254 cekirdek/kurucu.py:277
 msgid "güç dağılımı için geçerli bir çubuk seçilmeli"
 msgstr "a valid pin must be selected for the power distribution"
 
@@ -14566,7 +14931,7 @@ msgstr ""
 "no axial layer contains fissile material — the eigenvalue run cannot find an initial "
 "source"
 
-#: arayuz/ayar/sabitler.py:63 arayuz/demet/yerlesim.py:187
+#: arayuz/ayar/sabitler.py:65 arayuz/demet/yerlesim.py:187
 msgid "hücre"
 msgstr "cell"
 
@@ -14798,6 +15163,14 @@ msgstr "No k_eff: the prompt neutron lifetime ℓ was written instead of Λ."
 #: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:107
 msgid "k_norm = k_calc / k_exp ve σ = √(σ_calc² + σ_exp²) kullanın."
 msgstr "Use k_norm = k_calc / k_exp and σ = √(σ_calc² + σ_exp²)."
+
+#: cekirdek/mesh_tally/normalizasyon.py:39
+msgid ""
+"kaba yönerge (MCNP, tek tally için): MCNP5 Manual Vol. I (LA-UR-03-1987), Bölüm 2, "
+"'relative error R' tablosu: R < 0.10 genellikle güvenilir."
+msgstr ""
+"rough guideline (MCNP, for a single tally): MCNP5 Manual Vol. I (LA-UR-03-1987), "
+"Chapter 2, 'relative error R' table: R < 0.10 generally reliable."
 
 #: cekirdek/tukenme_hacim.py:322
 #, python-format
@@ -15256,7 +15629,7 @@ msgstr "the run name cannot be empty"
 msgid "koşuyor"
 msgstr "running"
 
-#: arayuz/sekme_calistir.py:479
+#: arayuz/sekme_calistir.py:487
 msgid "koşuyor…"
 msgstr "running…"
 
@@ -15491,11 +15864,11 @@ msgstr "list"
 msgid "liste sınırı negatif olamaz: %d"
 msgstr "the list limit cannot be negative: %d"
 
-#: arayuz/ayar/sabitler.py:63 arayuz/geometri/formlar.py:79 arayuz/izgara_yardimci.py:158
+#: arayuz/ayar/sabitler.py:65 arayuz/geometri/formlar.py:79 arayuz/izgara_yardimci.py:158
 msgid "malzeme"
 msgstr "material"
 
-#: cekirdek/kosucu.py:392
+#: cekirdek/kosucu.py:403
 #, python-format
 msgid "malzeme %s"
 msgstr "material %s"
@@ -15561,7 +15934,7 @@ msgstr "sphere not centred at (0, 0, 0)"
 msgid "merkezlenmemiş kare kafes (lower_left %s)"
 msgstr "rectangular lattice not centred (lower_left %s)"
 
-#: arayuz/ayar/sabitler.py:64
+#: arayuz/ayar/sabitler.py:66
 msgid "mesh"
 msgstr "mesh"
 
@@ -15594,6 +15967,14 @@ msgstr "2D model — F_q cannot be computed, only F_ΔH is given"
 #: arayuz/sonuc/spektrum.py:200
 msgid "model geneli"
 msgstr "whole model"
+
+#: cekirdek/mesh_tally/normalizasyon.py:81
+msgid ""
+"model geneli ısınma tally'si yok (bu sürümden önceki koşu); mutlak normalizasyon için"
+" koşuyu tekrar çalıştırın"
+msgstr ""
+"no model-wide heating tally (run from before this version); run the case again for "
+"absolute normalization"
 
 #: arayuz/sekme_tukenme.py:315
 msgid "model uygun değil"
@@ -15645,6 +16026,38 @@ msgstr "moderator"
 #: cekirdek/uygunluk_denetimi/kurallar_kor.py:38
 msgid "moderatör sıcaklık katsayısı (MTC)"
 msgstr "moderator temperature coefficient (MTC)"
+
+#: cekirdek/mesh_tally/normalizasyon.py:90
+msgid ""
+"mutlak normalizasyon için ağda ısınma skoru (kappa-fission, heating …) sıfırdan büyük"
+" olmalı"
+msgstr ""
+"for absolute normalization a heating score (kappa-fission, heating …) on the mesh "
+"must be greater than zero"
+
+#: cekirdek/mesh_tally/normalizasyon.py:150
+msgid "mutlak normalizasyon için kaynak hızı gerekli"
+msgstr "absolute normalization needs the source rate"
+
+#: cekirdek/mesh_tally/normalizasyon.py:88
+msgid "mutlak normalizasyon için toplam güç sıfırdan büyük olmalı"
+msgstr "total power must be greater than zero for absolute normalization"
+
+#: arayuz/sonuc/mesh_harita.py:275
+msgid "mutlak normalizasyon yalnız özdeğer hesabında"
+msgstr "absolute normalization only in an eigenvalue calculation"
+
+#: cekirdek/mesh_tally/normalizasyon.py:144
+msgid ""
+"mutlak normalizasyon yalnız özdeğer hesabında; sabit kaynakta değerler kaynak "
+"şiddetiyle zaten ölçeklidir"
+msgstr ""
+"absolute normalization only in an eigenvalue calculation; in fixed source the values "
+"are already scaled by the source strength"
+
+#: cekirdek/mesh_tally/normalizasyon.py:105
+msgid "n/cm (z integrali)"
+msgstr "n/cm (z integral)"
 
 #: cekirdek/tarama.py:345
 msgid "negatif"
@@ -15721,12 +16134,13 @@ msgstr "nuclide list could not be extracted: %s"
 msgid "oksit"
 msgstr "oxide"
 
-#: cekirdek/kosucu.py:458 cekirdek/rapor_sablon/__init__.py:152
+#: cekirdek/kosucu.py:467 cekirdek/mesh_tally/sonuc.py:130
+#: cekirdek/rapor_sablon/__init__.py:152
 #, python-format
 msgid "okunamadı: %s"
 msgstr "could not be read: %s"
 
-#: arayuz/sekme_calistir.py:454
+#: arayuz/sekme_calistir.py:461
 msgid "openmc bulunamadı"
 msgstr "openmc not found"
 
@@ -15742,7 +16156,7 @@ msgstr "the openmc path cannot be empty"
 msgid "openmc çalıştırılabilir dosyası PATH'te bulunamadı (conda ortamı etkin mi?)"
 msgstr "the openmc executable was not found in PATH (is the conda environment active?)"
 
-#: arayuz/sekme_calistir.py:455
+#: arayuz/sekme_calistir.py:462
 msgid ""
 "openmc çalıştırılabilir dosyası PATH'te yok.\n"
 "Conda ortamının etkin olduğundan emin olun (openmc-env)."
@@ -15789,7 +16203,7 @@ msgstr "environment variable"
 msgid "ortam kilidi yok"
 msgstr "no environment lock"
 
-#: cekirdek/kurucu.py:198
+#: cekirdek/kurucu.py:200
 msgid "otomatik ağ sınırları için modelin sınır kutusu gerekli"
 msgstr "automatic mesh boundaries require the bounding box of the model"
 
@@ -16406,7 +16820,7 @@ msgstr "k from tallies"
 msgid "tam model (alt model kurulamadı)"
 msgstr "full model (sub-model could not be built)"
 
-#: arayuz/guc_harita.py:267 cekirdek/kosucu.py:599 cekirdek/kosucu_terminal.py:157
+#: arayuz/guc_harita.py:267 cekirdek/kosucu.py:608 cekirdek/kosucu_terminal.py:157
 msgid "tamam"
 msgstr "ok"
 
@@ -16655,6 +17069,22 @@ msgstr "peaking factor"
 msgid "tepeden istatistik olarak ayırt edilemez (birleşik 2σ içinde)"
 msgstr "statistically indistinguishable from the peak (within a combined 2σ)"
 
+#: cekirdek/mesh_tally/normalizasyon.py:102
+msgid "tepkime"
+msgstr "reactions"
+
+#: cekirdek/mesh_tally/normalizasyon.py:105
+msgid "tepkime/cm² (z integrali)"
+msgstr "reactions/cm² (z integral)"
+
+#: cekirdek/mesh_tally/normalizasyon.py:107
+msgid "tepkime/cm³"
+msgstr "reactions/cm³"
+
+#: cekirdek/mesh_tally/normalizasyon.py:101
+msgid "tepkime/cm³·s"
+msgstr "reactions/cm³·s"
+
 #: cekirdek/veri_indir.py:124
 msgid "termal"
 msgstr "thermal"
@@ -16704,12 +17134,12 @@ msgstr "total power is given but the model is 2D — linear power [W/cm] cannot 
 msgid "toplam tepkime"
 msgstr "total reaction"
 
-#: cekirdek/kosucu.py:602
+#: cekirdek/kosucu.py:611
 #, python-format
 msgid "toplamın korunumu denetlenemedi: %s"
 msgstr "conservation of the total could not be checked: %s"
 
-#: cekirdek/kosucu.py:598
+#: cekirdek/kosucu.py:607
 #, python-format
 msgid "toplamın korunumu: bağıl fark %.1e — %s"
 msgstr "conservation of the total: relative difference %.1e — %s"
@@ -16761,7 +17191,7 @@ msgstr "depletion requires an eigenvalue (k-eff) calculation"
 msgid "tüm küme"
 msgstr "whole set"
 
-#: cekirdek/kosucu.py:401
+#: cekirdek/kosucu.py:412
 msgid "tüm model"
 msgstr "whole model"
 
@@ -17158,6 +17588,10 @@ msgstr "z = %+.2f cm   (active fuel: %+.1f … %+.1f cm)"
 msgid "z = Δk / √(σ1² + σ2²) = %+.2f → %s"
 msgstr "z = Δk / √(σ1² + σ2²) = %+.2f → %s"
 
+#: arayuz/ayar/mesh_formu.py:82
+msgid "z aralığı:"
+msgstr "z range:"
+
 #: cekirdek/geometri/ice_aktar.py:319
 #, python-format
 msgid "z yönünde öteleme desteklenmiyor (hücre %d)"
@@ -17363,6 +17797,15 @@ msgstr "{hata} The name was not changed."
 #, python-brace-format
 msgid "{h} hata, {u} uyarı, {b} bilgi"
 msgstr "Errors: {h}, warnings: {u}, info: {b}"
+
+#: arayuz/sonuc/mesh_harita.py:354
+#, python-brace-format
+msgid ""
+"{h} hücre · skorsuz {s} · bağıl hata > %{e:.0f}: {y} · en büyük bağıl hata %{m:.1f}. "
+"± değerleri OpenMC'nin raporladığı (iyimser) sapmalardır."
+msgstr ""
+"{h} cells · without score {s} · relative error > {e:.0f}%: {y} · largest relative "
+"error {m:.1f}%. The ± values are the (optimistic) deviations reported by OpenMC."
 
 #: arayuz/malzeme/yardimcilar.py:137
 #, python-brace-format
@@ -17609,7 +18052,7 @@ msgstr "Run"
 msgid "Çalıştır'a basın; k-eff yakınsaması ve sonuçlar bu sayfada görünür."
 msgstr "Press Run; k-eff convergence and the results appear on this page."
 
-#: arayuz/calistir/pano.py:115 arayuz/sekme_calistir.py:224
+#: arayuz/calistir/pano.py:115 arayuz/sekme_calistir.py:229
 msgid "Çalıştır'a basınca koşu öncesi doğrulama yapılır."
 msgstr "The model is checked before the run when you press Run."
 
@@ -17632,7 +18075,7 @@ msgstr[1] ""
 "Ready to run. There are %d warnings — they may affect the result; review the model "
 "check list."
 
-#: arayuz/analiz/sekme.py:544 arayuz/sekme_calistir.py:434 arayuz/sekme_calistir.py:532
+#: arayuz/analiz/sekme.py:544 arayuz/sekme_calistir.py:441 arayuz/sekme_calistir.py:540
 msgid "Çalıştırılamaz"
 msgstr "Cannot run"
 
@@ -17758,6 +18201,10 @@ msgstr "Indigo"
 msgid "Çizgiler:"
 msgstr "Lines:"
 
+#: arayuz/sonuc/mesh_harita.py:211
+msgid "Çizgisel güç:"
+msgstr "Linear power:"
+
 #: arayuz/geometri/kesit_gorunumu.py:102
 msgid "Çizilecek öğe yok"
 msgstr "Nothing to draw"
@@ -17859,7 +18306,7 @@ msgstr "Rod worth (differential)"
 msgid "Çubuk güç dağılımı"
 msgstr "Pin power distribution"
 
-#: cekirdek/kosucu.py:532
+#: cekirdek/kosucu.py:541
 #, python-format
 msgid ""
 "Çubuk güçlerinin toplamı filtresiz tally'den %.2e bağıl fark gösteriyor. Haritalama "
@@ -17986,11 +18433,11 @@ msgstr "OUTSIDE THE CRITERION (> 3σ)"
 msgid "Ölçek:"
 msgstr "Scale:"
 
-#: arayuz/ayar/yerlesim.py:223
+#: arayuz/ayar/yerlesim.py:226
 msgid "Ölçülecek büyüklükler"
 msgstr "Quantities to measure"
 
-#: cekirdek/kosucu.py:411
+#: cekirdek/kosucu.py:420
 msgid "Ölçülen"
 msgstr "Quantity"
 
@@ -18056,7 +18503,7 @@ msgstr ""
 msgid "Önceki projenin analizi bitti; sonucu bu projeye yazılmadı."
 msgstr "The previous project's analysis finished; its result was not written to this project."
 
-#: arayuz/sekme_calistir.py:244
+#: arayuz/sekme_calistir.py:250
 msgid ""
 "Önceki projenin koşusu arka planda sürüyor; sonucu bu projeye yazılmayacak. Yeni koşu"
 " için Durdur ile sonlandırın."
@@ -18064,7 +18511,7 @@ msgstr ""
 "A run from the previous project is still going in the background; its result will not"
 " be written to this project. Use Stop to end it before a new run."
 
-#: arayuz/sekme_calistir.py:615
+#: arayuz/sekme_calistir.py:623
 #, python-format
 msgid "Önceki projenin koşusu bitti; sonucu bu projeye yazılmadı (dosyalar: %s)."
 msgstr ""
@@ -18100,6 +18547,15 @@ msgstr "Previous depletion output could not be deleted: %s (%s)"
 msgid "Öneri"
 msgstr "Suggestion"
 
+#: arayuz/ayar/mesh_formu.py:129
+#, python-brace-format
+msgid "Öneri (modelin sınır kutusu): x, y, z alt {a} · üst {u} cm"
+msgstr "Suggestion (model bounding box): x, y, z lower {a} · upper {u} cm"
+
+#: arayuz/ayar/mesh_formu.py:127
+msgid "Öneri yok: modelin dış ölçüsü okunamadı."
+msgstr "No suggestion: the model's outer dimensions could not be read."
+
 #: cekirdek/rapor_sablon/uygunluk_eki.py:57
 msgid "Öneri:"
 msgstr "Suggestion:"
@@ -18108,6 +18564,11 @@ msgstr "Suggestion:"
 #, python-format
 msgid "Öneri: %s"
 msgstr "Suggestion: %s"
+
+#: arayuz/ayar/mesh_formu.py:132
+#, python-brace-format
+msgid "Öneri: r = {r:.4g} cm (modelin dış ölçüsünün yarısı)"
+msgstr "Suggestion: r = {r:.4g} cm (half of the model's outer dimension)"
 
 #: arayuz/pencere/kabuk.py:223
 msgid "Önizleme"
@@ -18330,7 +18791,7 @@ msgstr "Neutron generation time Λ:"
 msgid "Üst"
 msgstr "Top"
 
-#: arayuz/kor/yerlesim.py:284
+#: arayuz/ayar/mesh_formu.py:80 arayuz/kor/yerlesim.py:284
 msgid "Üst sınır:"
 msgstr "Top boundary:"
 
@@ -18546,6 +19007,10 @@ msgstr "the source strength (%g) is ignored in an eigenvalue calculation"
 #, python-format
 msgid "üretilen SLURM betiği sözdizimi denetiminden geçmedi: %s"
 msgstr "the generated SLURM script failed the syntax check: %s"
+
+#: arayuz/ayar/mesh_formu.py:78
+msgid "üst"
+msgstr "upper"
 
 #: cekirdek/dogrula/kor.py:28
 msgctxt "sınır yönü"
@@ -19096,7 +19561,7 @@ msgstr "Letter “{harf}” is used in the map; remove it from the map first."
 msgid "… %d satır daha (tam tablo statepoint'te)"
 msgstr "… %d more rows (full table in the statepoint)"
 
-#: arayuz/sekme_calistir.py:550
+#: arayuz/sekme_calistir.py:558
 #, python-format
 msgid "… ve %d hata daha."
 msgid_plural "… ve %d hata daha."

@@ -427,6 +427,8 @@ KAHIN = {
 }
 # pwr_tukenme, pwr_pinhucre ile ayni geometridir (tukenme bolumu eklenmis)
 KAHIN["pwr_tukenme"] = copy.deepcopy(KAHIN["pwr_pinhucre"])
+# v3 Y1: pwr_mesh_aki, pwr_17x17 ile ayni geometridir (yalniz tally'ler farkli)
+KAHIN["pwr_mesh_aki"] = copy.deepcopy(KAHIN["pwr_17x17"])
 
 # G-4 gelismis mod (agac) ornekleri -- gercek uygunluk ciktisi incelenerek yazildi
 # (01.10.2026). Agacta kor_adim hedefi kafes id'sidir, yansitici_kalinlik halka

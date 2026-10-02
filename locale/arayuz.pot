@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 10:40+0300\n"
+"POT-Creation-Date: 2026-10-02 10:46+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -155,7 +155,7 @@ msgstr ""
 msgid "Son koşu (IFP)"
 msgstr ""
 
-#: arayuz/analiz/kinetik.py:35
+#: arayuz/analiz/kinetik.py:35 arayuz/ayar/mesh_formu.py:55
 msgid "Elle"
 msgstr ""
 
@@ -403,6 +403,7 @@ msgid "Henüz analiz yapılmadı."
 msgstr ""
 
 #: arayuz/analiz/sekme.py:151 arayuz/geometri/form_yerlesim.py:339
+#: arayuz/sonuc/mesh_harita.py:41
 msgid "Değer"
 msgstr ""
 
@@ -712,6 +713,79 @@ msgstr ""
 msgid "Tayf kurulamadı: {hata}"
 msgstr ""
 
+#: arayuz/ayar/mesh_formu.py:37
+msgid "Ağ (mesh) tally'si"
+msgstr ""
+
+#: arayuz/ayar/mesh_formu.py:38
+msgid "Değerleri bir ağın hücrelerine böler: 2B harita ve ParaView için VTK."
+msgstr ""
+
+#: arayuz/ayar/mesh_formu.py:44
+msgid "Sınırları modelden al"
+msgstr ""
+
+#: arayuz/ayar/mesh_formu.py:46
+msgid ""
+"Sınırlar model kurulurken modelin dış ölçüsünden türetilir; yansıtıcı eklenirse ağ da"
+" büyür."
+msgstr ""
+
+#: arayuz/ayar/mesh_formu.py:58
+msgid "Hazır grup yapıları OpenMC'den (openmc.mgxs.GROUP_STRUCTURES) alınır."
+msgstr ""
+
+#: arayuz/ayar/mesh_formu.py:73
+msgid "Ağ türü:"
+msgstr ""
+
+#: arayuz/ayar/mesh_formu.py:77
+msgid "alt"
+msgstr ""
+
+#: arayuz/ayar/mesh_formu.py:78
+msgid "üst"
+msgstr ""
+
+#: arayuz/ayar/mesh_formu.py:79 arayuz/kor/yerlesim.py:282
+msgid "Alt sınır:"
+msgstr ""
+
+#: arayuz/ayar/mesh_formu.py:80 arayuz/kor/yerlesim.py:284
+msgid "Üst sınır:"
+msgstr ""
+
+#: arayuz/ayar/mesh_formu.py:81
+msgid "Dış yarıçap:"
+msgstr ""
+
+#: arayuz/ayar/mesh_formu.py:82
+msgid "z aralığı:"
+msgstr ""
+
+#: arayuz/ayar/mesh_formu.py:86
+msgid "Grup yapısı:"
+msgstr ""
+
+#: arayuz/ayar/mesh_formu.py:127
+msgid "Öneri yok: modelin dış ölçüsü okunamadı."
+msgstr ""
+
+#: arayuz/ayar/mesh_formu.py:129
+#, python-brace-format
+msgid "Öneri (modelin sınır kutusu): x, y, z alt {a} · üst {u} cm"
+msgstr ""
+
+#: arayuz/ayar/mesh_formu.py:132
+#, python-brace-format
+msgid "Öneri: r = {r:.4g} cm (modelin dış ölçüsünün yarısı)"
+msgstr ""
+
+#: arayuz/ayar/mesh_formu.py:135
+#, python-brace-format
+msgid ", z = {a:.4g} … {u:.4g} cm"
+msgstr ""
+
 #: arayuz/ayar/sabitler.py:16
 msgid "Hızlı deneme"
 msgstr ""
@@ -764,55 +838,55 @@ msgstr ""
 msgid "Isınma (heating)"
 msgstr ""
 
-#: arayuz/ayar/sabitler.py:38 arayuz/ayar/sabitler.py:57
-msgid "Fisyon enerjisi (kappa-fission)"
-msgstr ""
-
-#: arayuz/ayar/sabitler.py:39 arayuz/ayar/sabitler.py:59
-msgid "Anlık fisyon enerjisi (fission-q-prompt)"
-msgstr ""
-
-#: arayuz/ayar/sabitler.py:40
-msgid "Hasar enerjisi (damage-energy)"
-msgstr ""
-
-#: arayuz/ayar/sabitler.py:46
-msgid "Akı"
-msgstr ""
-
-#: arayuz/ayar/sabitler.py:47
-msgid "Reaksiyon hızları"
-msgstr ""
-
-#: arayuz/ayar/sabitler.py:48
-msgid "Isı / güç"
-msgstr ""
-
-#: arayuz/ayar/sabitler.py:52
-msgid "Ara değer (interpolation)"
-msgstr ""
-
-#: arayuz/ayar/sabitler.py:53
-msgid "En yakın sıcaklık (nearest)"
-msgstr ""
-
-#: arayuz/ayar/sabitler.py:58
-msgid "Geri kazanılabilir fisyon enerjisi (fission-q-recoverable)"
-msgstr ""
-
-#: arayuz/ayar/sabitler.py:60
+#: arayuz/ayar/sabitler.py:38 arayuz/ayar/sabitler.py:62
 msgid "Yerel ısınma (heating-local)"
 msgstr ""
 
-#: arayuz/ayar/sabitler.py:63
+#: arayuz/ayar/sabitler.py:39 arayuz/ayar/sabitler.py:59
+msgid "Fisyon enerjisi (kappa-fission)"
+msgstr ""
+
+#: arayuz/ayar/sabitler.py:40 arayuz/ayar/sabitler.py:60
+msgid "Geri kazanılabilir fisyon enerjisi (fission-q-recoverable)"
+msgstr ""
+
+#: arayuz/ayar/sabitler.py:41 arayuz/ayar/sabitler.py:61
+msgid "Anlık fisyon enerjisi (fission-q-prompt)"
+msgstr ""
+
+#: arayuz/ayar/sabitler.py:42
+msgid "Hasar enerjisi (damage-energy)"
+msgstr ""
+
+#: arayuz/ayar/sabitler.py:48
+msgid "Akı"
+msgstr ""
+
+#: arayuz/ayar/sabitler.py:49
+msgid "Reaksiyon hızları"
+msgstr ""
+
+#: arayuz/ayar/sabitler.py:50
+msgid "Isı / güç"
+msgstr ""
+
+#: arayuz/ayar/sabitler.py:54
+msgid "Ara değer (interpolation)"
+msgstr ""
+
+#: arayuz/ayar/sabitler.py:55
+msgid "En yakın sıcaklık (nearest)"
+msgstr ""
+
+#: arayuz/ayar/sabitler.py:65
 msgid "enerji"
 msgstr ""
 
-#: arayuz/ayar/sabitler.py:63 arayuz/demet/yerlesim.py:187
+#: arayuz/ayar/sabitler.py:65 arayuz/demet/yerlesim.py:187
 msgid "hücre"
 msgstr ""
 
-#: arayuz/ayar/sabitler.py:64
+#: arayuz/ayar/sabitler.py:66
 msgid "mesh"
 msgstr ""
 
@@ -864,12 +938,12 @@ msgid ""
 "başlamaz)."
 msgstr ""
 
-#: arayuz/ayar/tally_formu.py:115
+#: arayuz/ayar/tally_formu.py:118
 #, python-brace-format
 msgid "Skorlar: {s}"
 msgstr ""
 
-#: arayuz/ayar/tally_formu.py:125
+#: arayuz/ayar/tally_formu.py:126
 #, python-brace-format
 msgid "Ayrıca dosyadan gelen filtre: {f} (korunur)."
 msgstr ""
@@ -972,44 +1046,45 @@ msgstr ""
 msgid "Eksenel dilim:"
 msgstr ""
 
-#: arayuz/ayar/yerlesim.py:160
+#: arayuz/ayar/yerlesim.py:160 arayuz/sonuc/mesh_harita.py:79
+#: arayuz/sonuc/mesh_harita.py:218
 msgid "Toplam güç:"
 msgstr ""
 
-#: arayuz/ayar/yerlesim.py:171
+#: arayuz/ayar/yerlesim.py:171 arayuz/sonuc/mesh_harita.py:130
 msgid "Skor:"
 msgstr ""
 
-#: arayuz/ayar/yerlesim.py:189 arayuz/cubuk/sayfalar.py:203 arayuz/malzeme/asistan.py:131
+#: arayuz/ayar/yerlesim.py:190 arayuz/cubuk/sayfalar.py:203 arayuz/malzeme/asistan.py:131
 #: arayuz/malzeme/kutuphane_diyalog.py:65 arayuz/malzeme/malzeme_diyalog.py:83
 msgid "Ad:"
 msgstr ""
 
-#: arayuz/ayar/yerlesim.py:190
+#: arayuz/ayar/yerlesim.py:191
 msgid "Ne ölçülsün:"
 msgstr ""
 
-#: arayuz/ayar/yerlesim.py:192
+#: arayuz/ayar/yerlesim.py:193
 msgid "Skorlar:"
 msgstr ""
 
-#: arayuz/ayar/yerlesim.py:194
+#: arayuz/ayar/yerlesim.py:196
 msgid "Grup sınırları [eV]:"
 msgstr ""
 
-#: arayuz/ayar/yerlesim.py:198
+#: arayuz/ayar/yerlesim.py:200
 msgid "Ağ bölmeleri:"
 msgstr ""
 
-#: arayuz/ayar/yerlesim.py:203
+#: arayuz/ayar/yerlesim.py:206
 msgid "+ Tally"
 msgstr ""
 
-#: arayuz/ayar/yerlesim.py:223
+#: arayuz/ayar/yerlesim.py:226
 msgid "Tally'ler"
 msgstr ""
 
-#: arayuz/ayar/yerlesim.py:223
+#: arayuz/ayar/yerlesim.py:226
 msgid "Ölçülecek büyüklükler"
 msgstr ""
 
@@ -1666,22 +1741,22 @@ msgstr ""
 msgid "Kayıtlı koşu gösteriliyor; koşu öncesi doğrulama bu oturumda yapılmadı."
 msgstr ""
 
-#: arayuz/calistir/sonuc_gosterimi.py:108
+#: arayuz/calistir/sonuc_gosterimi.py:109
 msgid "Koşu tamamlandı (sabit kaynak) — sonuçlar tally'lerde"
 msgstr ""
 
-#: arayuz/calistir/sonuc_gosterimi.py:111
+#: arayuz/calistir/sonuc_gosterimi.py:112
 #, python-format
 msgid "Koşu tamamlandı: k-eff = %.5f ± %.5f"
 msgstr ""
 
-#: arayuz/calistir/sonuc_gosterimi.py:123
+#: arayuz/calistir/sonuc_gosterimi.py:124
 msgid ""
 "Sabit kaynak — k-eff tanımsız\n"
 "Sonuç tally'lerdir (aşağıda)."
 msgstr ""
 
-#: arayuz/calistir/sonuc_gosterimi.py:150
+#: arayuz/calistir/sonuc_gosterimi.py:151
 msgid "Dikkat: kaynak yakınsamamış olabilir — pasif çevrim sayısını artırın"
 msgstr ""
 
@@ -3952,7 +4027,7 @@ msgstr ""
 msgid "plaka"
 msgstr ""
 
-#: arayuz/ayar/sabitler.py:63 arayuz/geometri/formlar.py:79 arayuz/izgara_yardimci.py:158
+#: arayuz/ayar/sabitler.py:65 arayuz/geometri/formlar.py:79 arayuz/izgara_yardimci.py:158
 msgid "malzeme"
 msgstr ""
 
@@ -4398,14 +4473,6 @@ msgstr ""
 
 #: arayuz/kor/yerlesim.py:278
 msgid "Yükseklik:"
-msgstr ""
-
-#: arayuz/kor/yerlesim.py:282
-msgid "Alt sınır:"
-msgstr ""
-
-#: arayuz/kor/yerlesim.py:284
-msgid "Üst sınır:"
 msgstr ""
 
 #: arayuz/kor/yerlesim.py:292
@@ -6262,7 +6329,7 @@ msgid ""
 "kurun."
 msgstr ""
 
-#: arayuz/pencere/proje.py:55
+#: arayuz/pencere/proje.py:55 arayuz/sonuc/mesh_harita.py:78
 msgid "(boş)"
 msgstr ""
 
@@ -7049,164 +7116,164 @@ msgstr ""
 msgid "Çalıştır"
 msgstr ""
 
-#: arayuz/sekme_calistir.py:203
+#: arayuz/sekme_calistir.py:208
 msgid "OpenMC çıktısı panoya kopyalandı"
 msgstr ""
 
-#: arayuz/calistir/pano.py:98 arayuz/calistir/pano.py:114 arayuz/sekme_calistir.py:223
+#: arayuz/calistir/pano.py:98 arayuz/calistir/pano.py:114 arayuz/sekme_calistir.py:228
 msgid "Denetlenmedi"
 msgstr ""
 
-#: arayuz/calistir/pano.py:115 arayuz/sekme_calistir.py:224
+#: arayuz/calistir/pano.py:115 arayuz/sekme_calistir.py:229
 msgid "Çalıştır'a basınca koşu öncesi doğrulama yapılır."
 msgstr ""
 
-#: arayuz/sekme_calistir.py:244
+#: arayuz/sekme_calistir.py:250
 msgid ""
 "Önceki projenin koşusu arka planda sürüyor; sonucu bu projeye yazılmayacak. Yeni koşu"
 " için Durdur ile sonlandırın."
 msgstr ""
 
-#: arayuz/analiz/sekme.py:544 arayuz/sekme_calistir.py:434 arayuz/sekme_calistir.py:532
+#: arayuz/analiz/sekme.py:544 arayuz/sekme_calistir.py:441 arayuz/sekme_calistir.py:540
 msgid "Çalıştırılamaz"
 msgstr ""
 
-#: arayuz/sekme_calistir.py:448
+#: arayuz/sekme_calistir.py:455
 msgid "Model kurulamadı"
 msgstr ""
 
-#: arayuz/sekme_calistir.py:454
+#: arayuz/sekme_calistir.py:461
 msgid "openmc bulunamadı"
 msgstr ""
 
-#: arayuz/sekme_calistir.py:455
+#: arayuz/sekme_calistir.py:462
 msgid ""
 "openmc çalıştırılabilir dosyası PATH'te yok.\n"
 "Conda ortamının etkin olduğundan emin olun (openmc-env)."
 msgstr ""
 
-#: arayuz/sekme_calistir.py:479
+#: arayuz/sekme_calistir.py:487
 msgid "koşuyor…"
 msgstr ""
 
-#: arayuz/calistir/pano.py:154 arayuz/sekme_calistir.py:482
+#: arayuz/calistir/pano.py:154 arayuz/sekme_calistir.py:490
 msgid "Sabit kaynak — k-eff tanımsız; sonuç tally'lerdir."
 msgstr ""
 
-#: arayuz/sekme_calistir.py:483
+#: arayuz/sekme_calistir.py:491
 msgid "Koşu sürüyor; k-eff kümülatif ortalamadır."
 msgstr ""
 
-#: arayuz/sekme_calistir.py:492
+#: arayuz/sekme_calistir.py:500
 msgid "%v / %m çevrim"
 msgstr ""
 
-#: arayuz/sekme_calistir.py:502
+#: arayuz/sekme_calistir.py:510
 #, python-format
 msgid "# komut: %s -s %d"
 msgstr ""
 
-#: arayuz/sekme_calistir.py:503
+#: arayuz/sekme_calistir.py:511
 #, python-format
 msgid "# dizin: %s"
 msgstr ""
 
-#: arayuz/sekme_calistir.py:509
+#: arayuz/sekme_calistir.py:517
 #, python-format
 msgid "Koşu sürüyor (%d iş parçacığı) → %s"
 msgid_plural "Koşu sürüyor (%d iş parçacığı) → %s"
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/sekme_calistir.py:513
+#: arayuz/sekme_calistir.py:521
 #, python-format
 msgid "Koşu başladı → %s"
 msgstr ""
 
-#: arayuz/sekme_calistir.py:529 arayuz/uygunluk_paneli.py:303
+#: arayuz/sekme_calistir.py:537 arayuz/uygunluk_paneli.py:303
 #, python-format
 msgid "%d hata"
 msgid_plural "%d hata"
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/sekme_calistir.py:531
+#: arayuz/sekme_calistir.py:539
 msgid "Koşu başlatılmadı; önceki sonuç silinmedi."
 msgstr ""
 
-#: arayuz/sekme_calistir.py:536
+#: arayuz/sekme_calistir.py:544
 msgid "Hata yok"
 msgstr ""
 
-#: arayuz/sekme_calistir.py:543
+#: arayuz/sekme_calistir.py:551
 #, python-format
 msgid "Doğrulama hataları giderilmeden koşu başlatılmaz (%d hata); önceki sonuç silinmedi."
 msgid_plural "Doğrulama hataları giderilmeden koşu başlatılmaz (%d hata); önceki sonuç silinmedi."
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/sekme_calistir.py:550
+#: arayuz/sekme_calistir.py:558
 #, python-format
 msgid "… ve %d hata daha."
 msgid_plural "… ve %d hata daha."
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/sekme_calistir.py:558 arayuz/sekme_tukenme.py:474
+#: arayuz/sekme_calistir.py:566 arayuz/sekme_tukenme.py:474
 msgid ""
 "\n"
 "# kullanıcı tarafından durduruldu"
 msgstr ""
 
-#: arayuz/sekme_calistir.py:598
+#: arayuz/sekme_calistir.py:606
 #, python-format
 msgid ""
 "\n"
 "# Süreç hatası: %s"
 msgstr ""
 
-#: arayuz/sekme_calistir.py:615
+#: arayuz/sekme_calistir.py:623
 #, python-format
 msgid "Önceki projenin koşusu bitti; sonucu bu projeye yazılmadı (dosyalar: %s)."
 msgstr ""
 
-#: arayuz/sekme_calistir.py:630
+#: arayuz/sekme_calistir.py:638
 #, python-format
 msgid "Koşu başarısız (çıkış kodu %d). OpenMC çıktısı aşağıda, 'Ayrıntılı çıktı' bölümünde."
 msgstr ""
 
-#: arayuz/sekme_calistir.py:632
+#: arayuz/sekme_calistir.py:640
 #, python-format
 msgid "Koşu başarısız (çıkış kodu %d)"
 msgstr ""
 
-#: arayuz/sekme_calistir.py:645
+#: arayuz/sekme_calistir.py:653
 msgid "durduruldu"
 msgstr ""
 
-#: arayuz/sekme_calistir.py:647
+#: arayuz/sekme_calistir.py:655
 msgid "Koşu kullanıcı tarafından durduruldu; sonuç yok."
 msgstr ""
 
-#: arayuz/sekme_calistir.py:650
+#: arayuz/sekme_calistir.py:658
 msgid "Koşu durduruldu"
 msgstr ""
 
-#: arayuz/sekme_calistir.py:656
+#: arayuz/sekme_calistir.py:664
 msgid "Koşu bitti ama statepoint dosyası bulunamadı."
 msgstr ""
 
-#: arayuz/sekme_calistir.py:657
+#: arayuz/sekme_calistir.py:665
 msgid "Koşu bitti ama statepoint bulunamadı"
 msgstr ""
 
-#: arayuz/calistir/sonuc_gosterimi.py:48 arayuz/sekme_calistir.py:662
-#: arayuz/sekme_calistir.py:663 arayuz/sekme_tukenme.py:552
+#: arayuz/calistir/sonuc_gosterimi.py:48 arayuz/sekme_calistir.py:670
+#: arayuz/sekme_calistir.py:671 arayuz/sekme_tukenme.py:552
 #, python-format
 msgid "Sonuç okunamadı: %s"
 msgstr ""
 
-#: arayuz/analiz/sonuc.py:83 arayuz/kuyruk/panel.py:34 arayuz/sekme_calistir.py:679
+#: arayuz/analiz/sonuc.py:83 arayuz/kuyruk/panel.py:34 arayuz/sekme_calistir.py:687
 msgid "başarısız"
 msgstr ""
 
@@ -7248,7 +7315,7 @@ msgstr ""
 msgid "Kopyala"
 msgstr ""
 
-#: arayuz/ayar/yerlesim.py:204 arayuz/cubuk/tambur_formu.py:71 arayuz/demet/yerlesim.py:94
+#: arayuz/ayar/yerlesim.py:207 arayuz/cubuk/tambur_formu.py:71 arayuz/demet/yerlesim.py:94
 #: arayuz/geometri/editor.py:116 arayuz/geometri/form_yerlesim.py:60
 #: arayuz/kor/yerlesim.py:130 arayuz/malzeme/kutuphane_tarayici.py:87
 #: arayuz/sekme_cubuk.py:143 arayuz/sekme_malzeme.py:150
@@ -7913,6 +7980,166 @@ msgstr ""
 #: arayuz/sekme_tukenme.py:593
 #, python-format
 msgid "%.1f sa"
+msgstr ""
+
+#: arayuz/sonuc/mesh_harita.py:41
+msgid "Standart sapma (σ)"
+msgstr ""
+
+#: arayuz/sonuc/mesh_harita.py:42
+msgid "Bağıl hata (σ / değer)"
+msgstr ""
+
+#: arayuz/sonuc/mesh_harita.py:81
+msgid "Bağıl hata eşiği. Varsayılan %10 — "
+msgstr ""
+
+#: arayuz/sonuc/mesh_harita.py:82
+msgid "Güvenilmez hücreleri işaretle"
+msgstr ""
+
+#: arayuz/sonuc/mesh_harita.py:84
+msgid "VTK dışa aktar…"
+msgstr ""
+
+#: arayuz/sonuc/mesh_harita.py:85
+msgid "ParaView ile açılır: bütün skorlar ve gruplar; değer, σ ve bağıl hata alanları."
+msgstr ""
+
+#: arayuz/sonuc/mesh_harita.py:124
+msgid "Ağ (mesh) haritası"
+msgstr ""
+
+#: arayuz/sonuc/mesh_harita.py:125
+msgid ""
+"Ağ tally'lerinin dilim haritası. Renk ölçeği seçilen normalizasyondadır; × işaretli "
+"hücrelerin bağıl hatası eşiği aşar ya da hiç skor almamıştır. 3B görünüm için VTK "
+"dosyasını ParaView'de açın."
+msgstr ""
+
+#: arayuz/sonuc/mesh_harita.py:130
+msgid "Tally:"
+msgstr ""
+
+#: arayuz/sonuc/mesh_harita.py:131
+msgid "Enerji grubu:"
+msgstr ""
+
+#: arayuz/sonuc/mesh_harita.py:132
+msgid "Dilim ekseni:"
+msgstr ""
+
+#: arayuz/sonuc/mesh_harita.py:134
+msgid "Normalizasyon:"
+msgstr ""
+
+#: arayuz/sonuc/mesh_harita.py:135
+msgid "Gösterim:"
+msgstr ""
+
+#: arayuz/sonuc/mesh_harita.py:137
+msgid "Eşik:"
+msgstr ""
+
+#: arayuz/sonuc/mesh_harita.py:176
+#, python-format
+msgid "Ağ tally'leri okunamadı: %s"
+msgstr ""
+
+#: arayuz/sonuc/mesh_harita.py:180
+#, python-format
+msgid "Haritada gösterilmeyen ağ tally'si: %s"
+msgstr ""
+
+#: arayuz/sonuc/mesh_harita.py:211
+msgid "Çizgisel güç:"
+msgstr ""
+
+#: arayuz/sonuc/mesh_harita.py:213
+msgid ""
+"2B (eksenel sonsuz) modelde mutlak normalizasyon için çizgisel güç [W/cm] (ör. demet "
+"gücü / aktif yükseklik)."
+msgstr ""
+
+#: arayuz/sonuc/mesh_harita.py:220
+msgid ""
+"Mutlak normalizasyon için modelin kapsadığı bölgenin toplam gücü (Hesap ayarları > "
+"Güç dağılımı > Toplam güç)."
+msgstr ""
+
+#: arayuz/sonuc/mesh_harita.py:249
+msgid "Toplam (bütün gruplar)"
+msgstr ""
+
+#: arayuz/sonuc/mesh_harita.py:251
+#, python-format
+msgid "Grup %d: %.4g – %.4g eV"
+msgstr ""
+
+#: arayuz/sonuc/mesh_harita.py:255
+#, python-format
+msgid "%s sabit"
+msgstr ""
+
+#: arayuz/sonuc/mesh_harita.py:275
+msgid "mutlak normalizasyon yalnız özdeğer hesabında"
+msgstr ""
+
+#: arayuz/sonuc/mesh_harita.py:288
+msgid "2B modelde ağ z kolonunun yalnız bir dilimini kapsıyor"
+msgstr ""
+
+#: arayuz/sonuc/mesh_harita.py:291
+#, python-format
+msgid "Mutlak normalizasyon yapılamadı (%s); hacim başına gösteriliyor."
+msgstr ""
+
+#: arayuz/sonuc/mesh_harita.py:315
+#, python-format
+msgid "Harita çizilemedi: %s"
+msgstr ""
+
+#: arayuz/sonuc/mesh_harita.py:317
+msgid "Gösterilecek değer yok"
+msgstr ""
+
+#: arayuz/sonuc/mesh_harita.py:331
+msgid "bağıl hata (oran)"
+msgstr ""
+
+#: arayuz/sonuc/mesh_harita.py:347
+#, python-format
+msgid "Dilim %d/%d: %s = %.4g … %.4g %s"
+msgstr ""
+
+#: arayuz/sonuc/mesh_harita.py:354
+#, python-brace-format
+msgid ""
+"{h} hücre · skorsuz {s} · bağıl hata > %{e:.0f}: {y} · en büyük bağıl hata %{m:.1f}. "
+"± değerleri OpenMC'nin raporladığı (iyimser) sapmalardır."
+msgstr ""
+
+#: arayuz/sonuc/mesh_harita.py:378
+#, python-format
+msgid "VTK yazılamadı: %s"
+msgstr ""
+
+#: arayuz/sonuc/mesh_harita.py:380
+#, python-format
+msgid "VTK yazıldı: %s (%d alan)"
+msgstr ""
+
+#: arayuz/sonuc/mesh_harita.py:392
+#, python-format
+msgid "%s zaten var. Üzerine yazılsın mı?"
+msgstr ""
+
+#: arayuz/sonuc/mesh_harita.py:392 arayuz/sonuc/mesh_harita.py:407
+msgid "VTK dışa aktar"
+msgstr ""
+
+#: arayuz/sonuc/mesh_harita.py:408
+msgid "VTK dosyası (*.vtk)"
 msgstr ""
 
 #: arayuz/sonuc/spektrum.py:29

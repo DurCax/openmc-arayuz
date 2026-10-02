@@ -1,0 +1,217 @@
+# -*- coding: utf-8 -*-
+"""
+==============================================================================
+ PWR 17×17 demet — 3B (güç dağılımı)
+==============================================================================
+ 17×17 yakıt demetinin 3 boyutlu hali: 366 cm aktif yükseklik.
+ 
+ Eksenel sınır Vakum (vacuum) seçildi.
+ Eksenel sınır Yansıtıcı (reflective) bırakılırsa eksenel güç profili düz çıkar ve
+ F_q ≈ F_ΔH olur — yani özellik çalışır ama hiçbir şey göstermez. Gerçek
+ bir kosinüs profili ve anlamlı bir F_q için üst/alt sınır Vakum olmalı.
+ Yan sınır yansıtıcı bırakıldı (sonsuz kafes, tek demet).
+ 
+ Toplam güç = 17.6 MW: 3400 MWth bir PWR'ın 193 demetinden biri.
+ Bu, modelin kapsadığı bölgenin gücüdür — tüm korun değil.
+ Doğru girdiyle ortalama çizgisel güç ~180 W/cm çıkmalıdır.
+
+ Bu betik openmc_arayuz tarafından üretilmiştir (TARIH).
+ Kaynak model dosyası: model.py
+
+ Betik tek başına çalışır; openmc_arayuz'a bağımlı değildir.
+ Elle düzenlenebilir, ancak arayüze geri yüklenemez.
+
+ Kullanım
+   python3 model.py
+==============================================================================
+"""
+
+import openmc
+
+# ==========================================================================
+# 1. MALZEMELER
+# ==========================================================================
+
+m_uo2 = openmc.Material(name='UO2 %3.20')
+m_uo2.add_element('U', 1.0, percent_type='ao', enrichment=3.2)
+m_uo2.add_element('O', 2.0, percent_type='ao')
+m_uo2.set_density('g/cm3', 10.4)
+m_uo2.temperature = 900.0
+
+m_helyum = openmc.Material(name='He')
+m_helyum.add_element('He', 1.0, percent_type='ao')
+m_helyum.set_density('g/cm3', 0.0018)
+m_helyum.temperature = 600.0
+
+m_zirkaloy4 = openmc.Material(name='Zircaloy-4')
+m_zirkaloy4.add_element('Zr', 98.23, percent_type='wo')
+m_zirkaloy4.add_element('Sn', 1.45, percent_type='wo')
+m_zirkaloy4.add_element('Fe', 0.21, percent_type='wo')
+m_zirkaloy4.add_element('Cr', 0.11, percent_type='wo')
+m_zirkaloy4.set_density('g/cm3', 6.55)
+m_zirkaloy4.temperature = 600.0
+
+m_su = openmc.Material(name='H2O 0.700 g/cm³ + 1300 ppm B')
+m_su.add_element('H', 11.176126561199002, percent_type='wo')
+m_su.add_element('O', 88.69941715237303, percent_type='wo')
+m_su.add_element('B', 0.13, percent_type='wo')
+m_su.set_density('g/cm3', 0.7)
+m_su.temperature = 580.0
+m_su.add_s_alpha_beta('c_H_in_H2O')      # termal saçılma
+
+malzemeler = openmc.Materials([m_uo2, m_helyum, m_zirkaloy4, m_su])
+
+# ==========================================================================
+# 2. GEOMETRİ
+# ==========================================================================
+
+# Kurucu ile aynı gezintiden üretildi (cekirdek/geometri/kurulum.py).
+_s1 = openmc.ZPlane(-183.0, boundary_type='vacuum')
+_s2 = openmc.ZPlane(183.0, boundary_type='vacuum')
+_s3 = openmc.model.RectangularPrism(21.42, 21.42, boundary_type='reflective')
+# yakit_cubugu — silindir kesitli, 4 bölge
+_s4 = openmc.ZCylinder(r=0.4096)
+_s5 = openmc.ZCylinder(r=0.418)
+_s6 = openmc.ZCylinder(r=0.475)
+c_yakit_cubugu = openmc.model.pin([_s4, _s5, _s6], [m_uo2, m_helyum, m_zirkaloy4, m_su])
+# kilavuz_boru — silindir kesitli, 3 bölge
+_s7 = openmc.ZCylinder(r=0.561)
+_s8 = openmc.ZCylinder(r=0.602)
+c_kilavuz_boru = openmc.model.pin([_s7, _s8], [m_su, m_zirkaloy4, m_su])
+_h1 = openmc.Cell(fill=m_su)
+_u1 = openmc.Universe(cells=[_h1])
+# demet_17x17 — kare demet, adım 1.26 cm
+d_demet_17x17 = openmc.RectLattice()
+d_demet_17x17.pitch = (1.26, 1.26)
+d_demet_17x17.lower_left = (-10.71, -10.71)
+d_demet_17x17.outer = _u1
+_anahtar = {'e': c_kilavuz_boru, 'k': c_kilavuz_boru, 'y': c_yakit_cubugu}
+_harita = [
+    'yyyyyyyyyyyyyyyyy',
+    'yyyyyyyyyyyyyyyyy',
+    'yyyyykyykyykyyyyy',
+    'yyykyyyyyyyyykyyy',
+    'yyyyyyyyyyyyyyyyy',
+    'yykyykyykyykyykyy',
+    'yyyyyyyyyyyyyyyyy',
+    'yyyyyyyyyyyyyyyyy',
+    'yykyykyyeyykyykyy',
+    'yyyyyyyyyyyyyyyyy',
+    'yyyyyyyyyyyyyyyyy',
+    'yykyykyykyykyykyy',
+    'yyyyyyyyyyyyyyyyy',
+    'yyykyyyyyyyyykyyy',
+    'yyyyykyykyykyyyyy',
+    'yyyyyyyyyyyyyyyyy',
+    'yyyyyyyyyyyyyyyyy',
+]
+_matris = [[_anahtar[_c] for _c in _s] for _s in _harita]
+d_demet_17x17.universes = _matris
+_h2 = openmc.Cell(fill=d_demet_17x17, region=-_s3 & (+_s1 & -_s2))
+kok = openmc.Universe(cells=[_h2])
+
+geometri = openmc.Geometry(kok)
+
+# ==========================================================================
+# 3. AYARLAR
+# ==========================================================================
+
+ayar = openmc.Settings()
+ayar.run_mode  = 'eigenvalue'
+ayar.particles = 20000      # çevrim başına parçacık
+ayar.batches   = 150        # toplam çevrim
+ayar.inactive  = 40         # pasif çevrim
+ayar.seed      = 1
+ayar.temperature = {'method': 'interpolation'}
+
+_uzay = openmc.stats.Box([-10.71, -10.71, -183.0], [10.71, 10.71, 183.0])
+_kisit = {'fissionable': True}   # kaynak yalnızca fisil bölgelerde
+_enerji = openmc.stats.Watt(a=988000.0, b=2.249e-06)
+_aci    = openmc.stats.Isotropic()
+ayar.source = openmc.IndependentSource(space=_uzay,
+                                       angle=_aci,
+                                       energy=_enerji,
+                                       strength=1.0,
+                                       particle='neutron',
+                                       constraints=_kisit)
+
+# Shannon entropisi ağı — kaynak yakınsamasını ölçer.
+# Entropi pasif çevrimler boyunca kayıyorsa pasif çevrim
+# sayısı yetersizdir ve k-eff yanlı çıkar.
+_ent_mesh = openmc.RegularMesh()
+_ent_mesh.dimension = [8, 8, 8]
+_ent_mesh.lower_left  = (-10.71, -10.71, -183.0)
+_ent_mesh.upper_right = (10.71, 10.71, 183.0)
+ayar.entropy_mesh = _ent_mesh
+
+# ==========================================================================
+# 4. TALLY'LER
+# ==========================================================================
+
+# --- çubuk bazlı güç dağılımı ---
+# pin() hücreleri bölge sırasında oluşturur, bu yüzden id'ye
+# göre sıralamak bölge sırasını verir.
+_guc_hucreler = sorted(c_yakit_cubugu.cells.values(), key=lambda c: c.id)
+_guc_hedef = _guc_hucreler[0]
+guc_tally = openmc.Tally(name='guc_dagilimi')
+guc_tally.scores = ['kappa-fission']
+_guc_filtreler = [openmc.DistribcellFilter(_guc_hedef)]
+
+# Eksenel mesh aktif yakıt yüksekliğiyle tam örtüşmelidir;
+# taşarsa boş bin'ler ortalamayı düşürür ve F_q şişer.
+_guc_mesh = openmc.RegularMesh()
+_guc_mesh.dimension   = [1, 1, 20]
+_guc_mesh.lower_left  = (-21.42, -21.42, -183.0)
+_guc_mesh.upper_right = (21.42, 21.42, 183.0)
+_guc_filtreler.append(openmc.MeshFilter(_guc_mesh))
+guc_tally.filters = _guc_filtreler
+
+# Toplam korunumu kontrolü: aynı hücre, bölünmemiş.
+# Eksenel mesh'in hücrenin tamamını kapsayıp kapsamadığını da sınar.
+guc_ref = openmc.Tally(name='guc_toplam_ref')
+guc_ref.scores = list(guc_tally.scores)
+guc_ref.filters = [openmc.CellFilter(_guc_hedef)]
+
+# Mutlak güç payı: hedef bölgenin model geneli fisyon enerjisindeki
+# payı = guc_toplam_ref / guc_model_toplam (filtresiz, aynı skor).
+guc_model = openmc.Tally(name='guc_model_toplam')
+guc_model.scores = list(guc_tally.scores)
+
+tally_1 = openmc.Tally(name='reaksiyonlar')
+tally_1.scores = ['fission', 'absorption', 'nu-fission']
+
+tally_2 = openmc.Tally(name='iki_grup_aki')
+tally_2.scores = ['flux']
+tally_2.filters = [openmc.EnergyFilter([0.0, 0.625, 20000000.0])]
+
+tallyler = openmc.Tallies([tally_1, tally_2, guc_tally, guc_ref, guc_model])
+
+# ==========================================================================
+# 5. MODEL VE ÇALIŞTIRMA
+# ==========================================================================
+
+model = openmc.Model(geometry=geometri, materials=malzemeler,
+                     settings=ayar, tallies=tallyler)
+
+# Model.plot() SVG renk adı ya da (R,G,B) demeti ister — hex dize kabul etmez
+renkler = {
+    m_uo2: (222, 93, 40),
+    m_helyum: (235, 235, 245),
+    m_zirkaloy4: (150, 150, 160),
+    m_su: (90, 150, 220),
+}
+
+if __name__ == '__main__':
+    import matplotlib.pyplot as plt
+
+    # --- Önce çiz, sonra çalıştır ---
+    # Geometri doğru görünmeden koşu başlatmak zaman kaybıdır.
+    for _eksen in ('xy',):
+        _ax = model.plot(basis=_eksen, color_by='material',
+                         colors=renkler, pixels=(600, 600))
+        _ax.get_figure().savefig('geometri_%s.png' % _eksen, dpi=110)
+        print('çizildi: geometri_%s.png' % _eksen)
+
+    # Çizimler doğruysa aşağıdaki satırın yorumunu kaldırın.
+    # sp = model.run(threads=24)
+    # print(openmc.StatePoint(sp).keff)
