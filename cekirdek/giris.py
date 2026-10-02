@@ -238,14 +238,15 @@ def _tukenme_alt_sureci(argv):
 _ALT_SURECLER = {ALT_TUKENME: _tukenme_alt_sureci}
 
 
-def alt_surec_komutu(ad, argumanlar):
+def alt_surec_komutu(ad, argumanlar, python=None):
     """Arayuzun `ad` alt surecini baslatan (program, argumanlar); QProcess.start
-    ve subprocess icin. Gerekce: modul belgesi (ALT SURECLER). Bilinmeyen ad
-    ValueError. Kaynak agacindan calisirken cagiran PYTHONPATH'e
-    yollar.paket_koku()'nu koyar."""
+    ve subprocess icin. Gerekce: modul belgesi (ALT SURECLER). python:
+    yorumlayici (varsayilan sys.executable). Bilinmeyen ad ValueError. Kaynak
+    agacindan calisirken cagiran PYTHONPATH'e yollar.paket_koku()'nu koyar."""
     if ad not in _ALT_SURECLER:
         raise ValueError("bilinmeyen alt surec: %r" % (ad,))
-    return sys.executable, ["-m", "cekirdek.giris", ALT_SECENEGI, ad] + list(argumanlar)
+    return (python or sys.executable,
+            ["-m", "cekirdek.giris", ALT_SECENEGI, ad] + list(argumanlar))
 
 
 def alt_komutu(argv):

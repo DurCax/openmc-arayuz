@@ -35,6 +35,7 @@
 import copy
 import json
 import os
+import sys
 import time
 
 from PySide6 import QtCore, QtWidgets
@@ -420,7 +421,8 @@ class TukenmeSekmesi(SekmeTabani, SonucBolumu, TukenmeArayuzu):
         self._surec.finished.connect(self._bitti)
         self._surec.errorOccurred.connect(self._surec_hatasi)
         program, arg = _giris.alt_surec_komutu(
-            _giris.ALT_TUKENME, [spec_yolu, "-s", str(int(n)), "--dizin", dizin])
+            _giris.ALT_TUKENME, [spec_yolu, "-s", str(int(n)), "--dizin", dizin],
+            python=sys.executable)
         self.log.appendPlainText("# %s %s\n" % (program, " ".join(arg)))
         self._surec.start(program, arg)
         self.d_baslat.setEnabled(False)

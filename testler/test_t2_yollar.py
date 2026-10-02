@@ -217,6 +217,8 @@ def test_alt_surec_komutu():
     kontrol("program sys.executable", program == sys.executable)
     kontrol("argumanlar", arg == ["-m", "cekirdek.giris", "--alt", "tukenme", "a.json", "-s", "4"],
             "-> %r" % arg)
+    kontrol("python verilirse o yorumlayici",
+            giris.alt_surec_komutu("tukenme", [], python="/x/py")[0] == "/x/py")
     try:
         giris.alt_surec_komutu("yok", [])
         kontrol("bilinmeyen alt surec ValueError", False)
