@@ -140,7 +140,9 @@ görünür. **Model sınırı** tally'sinde yüzey başına kaçak \|J\|, toplam
 sızıntısı (aynı olaylar; sabit kaynakta kaynak şiddetiyle çarpılmış) yan yana yazılır.
 **Kutu ağı** tally'sinde dış yüzlerden giren, çıkan, net çıkan, yüz başına değerler ve nötron
 dengesi S + J_giren − J_çıkan + U − A satırı vardır (S kutudaki kaynak, U = nu-scatter − scatter
-[+ nu-fission sabit kaynakta], A soğurma; analog tahminci olduğundan artık yalnız yuvarlamadır).
+[+ nu-fission sabit kaynakta], A soğurma). Sabit kaynakta analog tahminciyle artık yalnız
+yuvarlamadır; özdeğerde S = nu-fission/k beklenen değerdir ve artık istatistikseldir (~σ). Foton
+taşınımı açıkken global sızıntı karşılaştırması gösterilmez (fotonları da sayar).
 Enerji grupları varsa grafik **kaçak spektrumunu** (J/Δu, log x) çizer. Birim ve işaret notları
 kartın altındadır. Grafik **PNG kaydet** ile kaydedilir.
 

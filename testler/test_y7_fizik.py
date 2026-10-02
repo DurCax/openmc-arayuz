@@ -10,8 +10,11 @@
       sizinti x siddet (ayni olaylar). Birim: kaynak parcacigi basina
       (siddet 1) -> siddet ile carpim birebir.
    2. Foton tasinimi acikken heating skorlari (pin hucre, yansitici):
-      H_gama > 0, H = H_n + H_gama, sonsuz kafeste H ~ heating-local,
-      H / kappa-fission olculur ve etiketlenir (yakalama gamalari).
+      H_gama > 0, H = H_n + H_gama; temiz olcut H_gama / H (olculur, etiketli).
+      heating-local ile esitlik SINANMAZ: OpenMC ozdegerde heating-local'i
+      keff*kerma_fisyon-disi + kerma_fisyon ile agirliklandirir (Griesheimer
+      vd., PHYSOR 2020), MT301 almaz; uyum garanti degildir. H / kappa-fission
+      yalniz olculur (butce: ders 5.16).
    3. Sicaklik interpolasyonu: yakit 600 / 750 (ara) / 900 K;
       k(600) > k(750) > k(900) ve k(750) dogrusal ortadan 3 sigma icinde.
    4. Betik esdegerligi: foton + sicaklik + yuzey tally'leri acikken kurucu ve
@@ -29,7 +32,6 @@ from testler.regresyon_ortak import ORNEK
 _SIGMA = 3.0
 _ANALOG_TOL = 1e-9          # analog denge her gecmiste tam: yalniz yuvarlama
 _AYNI_TOL = 1e-9            # ayni olaylar, iki tahmin yolu
-_ISINMA_YEREL_TOL = 0.02    # sonsuz kafeste H(n+gama) ile heating-local farki (olculen ~0.3%)
 _KUTU_IC = ([-10.0, -10.0, -10.0], [10.0, 10.0, 10.0])      # kaynak icerde (su)
 _KUTU_DIS = ([12.0, -6.0, -6.0], [24.0, 6.0, 6.0])         # kaynak disarida (su)
 _SIDDET = 1.0e12
@@ -188,6 +190,9 @@ def test_foton_acik_isinma_skorlari(gecici):
     hn, hg = acik["H_neutron"], acik["H_photon"]
     print("  foton acik : H=%.4e H_n=%.4e H_g=%.4e (pay %.3f) H_local=%.4e kF=%.4e H/kF=%.4f"
           % (h[0], hn[0], hg[0], hg[0] / h[0], hl[0], kf[0], h[0] / kf[0]))
+    for etiket, d in (("acik", acik), ("kapali", kapali)):
+        print("  sigma %s: " % etiket + ", ".join("%s %.4e+-%.1e" % (a, v[0], v[1])
+                                                  for a, v in sorted(d.items())))
     print("  foton kapali: H=%.4e H_local=%.4e kF=%.4e H/H_local=%.4f"
           % (kapali["heating"][0], kapali["heating-local"][0], kapali["kappa-fission"][0],
              kapali["heating"][0] / kapali["heating-local"][0]))
@@ -197,11 +202,11 @@ def test_foton_acik_isinma_skorlari(gecici):
     kontrol("H = H_n + H_gama (3 sigma; carpisma/iz tahmincileri)",
             abs(h[0] - hn[0] - hg[0]) <= sinir, "-> fark %.3e sinir %.3e" % (h[0] - hn[0] - hg[0],
                                                                             sinir))
-    kontrol("sonsuz kafeste H(n+gama) ~ heating-local (%%%g)" % (100 * _ISINMA_YEREL_TOL),
-            abs(h[0] - hl[0]) <= _ISINMA_YEREL_TOL * hl[0])
-    kontrol("foton kapali: heating < heating-local (gama yok)",
-            kapali["heating"][0] < kapali["heating-local"][0])
-    kontrol("H / kappa-fission > 1 (yakalama gamalari; kF yakalamayi saymaz)", h[0] > kf[0])
+    pay = hg[0] / h[0]
+    pay_s = pay * math.hypot(hg[1] / hg[0], h[1] / h[0])
+    print("  temiz olcut H_gama / H = %.4f +- %.4f (heating-local / kF yalniz olculur)"
+          % (pay, pay_s))
+    kontrol("0 < H_gama / H < 1", 0.0 < pay < 1.0)
     kontrol("damage-energy foton kipinden bagimsiz (3 sigma)",
             abs(acik["damage-energy"][0] - kapali["damage-energy"][0])
             <= _SIGMA * math.hypot(acik["damage-energy"][1], kapali["damage-energy"][1]))
@@ -241,10 +246,17 @@ def test_sicaklik_interpolasyonu_ara_sicaklik(gecici):
     kontrol("monoton: k(750) > k(900) (3 sigma)", d2 > _SIGMA * s2, "-> %.5f / %.5f" % (d2, s2))
     orta = 0.5 * (k[600.0][0] + k[900.0][0])
     so = math.sqrt(0.25 * (k[600.0][1] ** 2 + k[900.0][1] ** 2) + k[750.0][1] ** 2)
-    kontrol("k(750) dogrusal ortadan 3 sigma icinde", abs(k[750.0][0] - orta) <= _SIGMA * so,
+    # Bu sinama interpolasyonun UYGULANDIGINI gosterir, fizik dogrulugunu degil:
+    # sqrt(T) egrilik farki ~-25 pcm cozunurluk altinda; stokastik karisim gercek
+    # Doppler genislemesi degildir (profesor D7).
+    kontrol("k(750) dogrusal ortadan 3 sigma icinde (interpolasyon uygulandi)",
+            abs(k[750.0][0] - orta) <= _SIGMA * so,
             "-> fark %.5f sinir %.5f" % (k[750.0][0] - orta, _SIGMA * so))
-    print("  Doppler katsayisi (600-900 K): %.2f pcm/K"
-          % (1e5 * (k[900.0][0] - k[600.0][0]) / (k[900.0][0] * k[600.0][0]) / 300.0))
+    print("  adimlar: %.1f sigma, %.1f sigma (sigma_fark = sqrt(s1^2 + s2^2))" % (d1 / s1, d2 / s2))
+    k6, k9 = k[600.0][0], k[900.0][0]
+    alfa = 1e5 * (k9 - k6) / (k9 * k6) / 300.0
+    alfa_s = 1e5 * math.hypot(k[900.0][1] / k9 ** 2, k[600.0][1] / k6 ** 2) / 300.0
+    print("  Doppler katsayisi (600-900 K): %.2f +- %.2f pcm/K" % (alfa, alfa_s))
 
 
 def _betik_modeli(spec, dizin):

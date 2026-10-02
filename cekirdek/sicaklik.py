@@ -301,6 +301,8 @@ class Degerlendirme(NamedTuple):
 
 
 def _bilesenler(spec: dict, a: SicaklikAyari, yol: Optional[str]) -> list:
+    if not spec.get("malzemeler"):
+        return []         # bos model: openmc yuklenmez (H1b tembel import)
     from cekirdek import kurucu
     nesneler, _m, _r = kurucu.malzemeleri_kur(spec)
     sonuc = []

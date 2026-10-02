@@ -62,6 +62,7 @@ BOLUMLER = {
     "ders-kritik-arama": N_("Ders: kritik arama"),
     "ders-rapor": N_("Ders: rapor ve uygunluk eki"),
     "ders-kinetik": N_("Ders: nokta kinetiği"),
+    "ders-foton-sicaklik-yuzey": N_("Ders: foton ısınması, sıcaklık interpolasyonu, yüzey akımı"),
     "sonuclar": N_("Sonuçları yorumlamak"),
     "once-ciz": N_("Önce çiz, sonra çalıştır"),
     "tuzaklar": N_("Bilinen tuzaklar"),

@@ -20,16 +20,22 @@
    heating        foton KAPALI: yalniz notron KERMA'si (MT301); fisyon ve
                   yakalama gamalarinin enerjisi YOKTUR (kayip).
                   foton ACIK  : notron KERMA'si (gama haric) + fotonlarin
-                  carpisma basina birakimi (carpisma tahmincisi) -- toplam.
+                  carpisma basina birakimi (analog enerji dengesi) -- toplam.
    heating-local  yalniz notron icin; gama enerjisi carpisma yerinde
-                  birakilmis sayilir (MT901). Foton acikken heating ile
-                  birlikte toplamak gamayi IKI KEZ sayar.
+                  birakilmis sayilir (MT901); tek basina gamayi bir kez sayar.
+                  Foton acikken fotonlarin heating'iyle TOPLANIRSA iki kez.
+                  Ozdegerde OpenMC heating-local'i keff*kerma_fisyon-disi +
+                  kerma_fisyon ile agirliklandirir (Griesheimer vd., PHYSOR
+                  2020): heating ile birebir karsilastirma garanti degildir.
    damage-energy  MT444 (NJOY HEATR) hasar enerjisi; yalniz notron, foton
                   kipinden bagimsiz.
-   kappa-fission  geri kazanilabilir fisyon enerjisi (notrinosuz; gamalar
-                  yerel); yakalama gamalarini ICERMEZ. Bu yuzden H_n+γ / κF
-                  birden biraz buyuktur (yakalama gamalari) -- olculen deger
-                  ders 5.16'da.
+   kappa-fission  geri kazanilabilir fisyon enerjisi: MT18 Q-degeri tabanli
+                  (MT458 karsiligi fission-q-recoverable), notrinosuz, gamalar
+                  yerel; yakalama gamalarini ICERMEZ. Pin hucrede H_n+γ / κF =
+                  1.030 olculdu; butce yaklasik: yakalama gamalari ~+%1.9, κF'nin
+                  (k∞-1) fazladan fisyon notronu kinetik enerjisi ~-%0.6, kalan
+                  ~%1.7 foton verisi / MT458 tutarsizligi (James 1969, J. Nucl.
+                  Energy 23, 517; Sher 1981). Ders 5.16.
 
  VERI: foton tasinimi modeldeki HER element icin cross_sections.xml'de
  type="photon" kaydi ister; yoksa OpenMC koşu basinda durur.

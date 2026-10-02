@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 15:18+0300\n"
+"POT-Creation-Date: 2026-10-02 15:29+0300\n"
 "PO-Revision-Date: 2026-10-01 18:14+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -9178,7 +9178,7 @@ msgstr "No spectrum tally"
 msgid "model geneli"
 msgstr "whole model"
 
-#: arayuz/sonuc/spektrum.py:210 arayuz/sonuc/yuzey.py:170
+#: arayuz/sonuc/spektrum.py:210 arayuz/sonuc/yuzey.py:187
 msgid "enerji [eV]"
 msgstr "energy [eV]"
 
@@ -9300,59 +9300,64 @@ msgstr "Local k"
 msgid "Yerel k haritasını kaydet"
 msgstr "Save local k map"
 
-#: arayuz/sonuc/yuzey.py:32
+#: arayuz/sonuc/yuzey.py:33
 msgid "bilinmiyor"
 msgstr "unknown"
 
-#: arayuz/sonuc/yuzey.py:37
+#: arayuz/sonuc/yuzey.py:38
 msgid "kaçak (vakum sınırı, |J| toplamı)"
 msgstr "leakage (vacuum boundary, sum of |J|)"
 
-#: arayuz/sonuc/yuzey.py:39
+#: arayuz/sonuc/yuzey.py:41
 #, python-format
 msgid "  yüzey %d"
 msgstr "  surface %d"
 
-#: arayuz/sonuc/yuzey.py:40
+#: arayuz/sonuc/yuzey.py:43
+#, python-format
+msgid "%d yüzey daha"
+msgstr "%d more surfaces"
+
+#: arayuz/sonuc/yuzey.py:45
 msgid "global sızıntı (OpenMC)"
 msgstr "global leakage (OpenMC)"
 
-#: arayuz/sonuc/yuzey.py:45
+#: arayuz/sonuc/yuzey.py:50
 msgid "giren (dış yüzler)"
 msgstr "in (outer faces)"
 
-#: arayuz/sonuc/yuzey.py:45
+#: arayuz/sonuc/yuzey.py:50
 msgid "çıkan (dış yüzler)"
 msgstr "out (outer faces)"
 
-#: arayuz/sonuc/yuzey.py:46
+#: arayuz/sonuc/yuzey.py:51
 msgid "net çıkan"
 msgstr "net out"
 
-#: arayuz/sonuc/yuzey.py:49
+#: arayuz/sonuc/yuzey.py:54
 #, python-format
 msgid "giren %s · çıkan %s"
 msgstr "in %s · out %s"
 
-#: arayuz/sonuc/yuzey.py:53
+#: arayuz/sonuc/yuzey.py:58
 msgid "kaynak S · üretim U · soğurma A"
 msgstr "source S · production U · absorption A"
 
-#: arayuz/sonuc/yuzey.py:57
+#: arayuz/sonuc/yuzey.py:62
 #, python-format
 msgid "  (bağıl %.1e)"
 msgstr "  (relative %.1e)"
 
-#: arayuz/sonuc/yuzey.py:66
+#: arayuz/sonuc/yuzey.py:71
 msgid "model sınırı"
 msgstr "model boundary"
 
-#: arayuz/sonuc/yuzey.py:69
+#: arayuz/sonuc/yuzey.py:74
 #, python-format
 msgid "kutu ağı %s, %s … %s cm"
 msgstr "box mesh %s, %s … %s cm"
 
-#: arayuz/sonuc/yuzey.py:85
+#: arayuz/sonuc/yuzey.py:90
 #, python-format
 msgid ""
 "Birim 1/s: kaynak şiddeti %g ile çarpılmış (kaynak parçacığı başına değer için "
@@ -9361,15 +9366,15 @@ msgstr ""
 "Unit 1/s: multiplied by the source strength %g (divide by the strength for values per"
 " source particle)."
 
-#: arayuz/sonuc/yuzey.py:88
+#: arayuz/sonuc/yuzey.py:93
 msgid "Birim: kaynak parçacığı başına."
 msgstr "Unit: per source particle."
 
-#: arayuz/sonuc/yuzey.py:90
+#: arayuz/sonuc/yuzey.py:95
 msgid "Birim: kaynak nötronu başına (özdeğer; mutlak değer için güç normalizasyonu gerekir)."
 msgstr "Unit: per source neutron (eigenvalue; absolute values need power normalization)."
 
-#: arayuz/sonuc/yuzey.py:93
+#: arayuz/sonuc/yuzey.py:98
 msgid ""
 "Sınır: OpenMC net akımı yüzey normaline göre işaretler (+ normal yönü); vakum "
 "yüzeyinden her geçiş dışarı olduğundan yüzey başına |J| kaçaktır. Toplam global "
@@ -9379,20 +9384,29 @@ msgstr ""
 "every crossing of a vacuum surface goes out, so |J| per surface is the leakage. The "
 "total is the same events as the global leakage."
 
-#: arayuz/sonuc/yuzey.py:97
+#: arayuz/sonuc/yuzey.py:102
+msgid ""
+"Foton taşınımı açık: OpenMC global sızıntısı fotonları da sayar; sınır tally'si "
+"kaynak parçacığına süzüldüğü için karşılaştırılmadı."
+msgstr ""
+"Photon transport on: the OpenMC global leakage also counts photons; the boundary "
+"tally is filtered to the source particle, so they are not compared."
+
+#: arayuz/sonuc/yuzey.py:105
 msgid ""
 "Kutu: OpenMC 'out' hücreden çıkan, 'in' giren kısmi akımdır; iç yüzler birbirini "
 "götürür. Denge S + J_giren − J_çıkan + U = A; U = nu-scatter − scatter ((n,xn) ve "
-"MT5), sabit kaynakta + nu-fission; özdeğerde S = nu-fission/k. Analog tahminci: denge"
-" her geçmişte tamdır; ± korelasyonsuz üst sınırdır."
+"MT5), sabit kaynakta + nu-fission."
 msgstr ""
 "Box: OpenMC 'out' is the partial current leaving a cell, 'in' the one entering; inner"
 " faces cancel. Balance S + J_in - J_out + U = A; U = nu-scatter - scatter ((n,xn) and"
-" MT5), + nu-fission in fixed source; in eigenvalue S = nu-fission/k. Analog "
-"estimator: the balance holds in every history; +- is an upper bound without "
-"correlation."
+" MT5), + nu-fission in fixed source."
 
-#: arayuz/sonuc/yuzey.py:103
+#: arayuz/sonuc/yuzey.py:109
+msgid "± birinci derece, terimler arası korelasyon yok sayıldı: yaklaşık."
+msgstr "+- first order, correlation between terms ignored: approximate."
+
+#: arayuz/sonuc/yuzey.py:111
 msgid ""
 "Kaçak spektrumu: grup akımı / Δu (letarji genişliği), kutuda yalnız dış yüzlerden "
 "çıkan akım."
@@ -9400,24 +9414,40 @@ msgstr ""
 "Leakage spectrum: group current / du (lethargy width); for a box only the current "
 "leaving through the outer faces."
 
-#: arayuz/sonuc/yuzey.py:112
+#: arayuz/sonuc/yuzey.py:118
+msgid ""
+"Sabit kaynak, analog tahminci: denge her geçmişte tamdır (survival biasing, ağırlık "
+"penceresi ve enerji/zaman kesmesi kapalıyken); artık yalnız yuvarlamadır."
+msgstr ""
+"Fixed source, analog estimator: the balance holds in every history (with survival "
+"biasing, weight windows and energy/time cutoffs off); the residual is round-off only."
+
+#: arayuz/sonuc/yuzey.py:121
+msgid ""
+"Özdeğer: S = nu-fission/k yalnız beklenen değerdir; artık istatistiksel, yakınsamış "
+"kaynakta ~σ mertebesindedir (tam değildir)."
+msgstr ""
+"Eigenvalue: S = nu-fission/k is only an expected value; the residual is statistical, "
+"about sigma with a converged source (not exact)."
+
+#: arayuz/sonuc/yuzey.py:129
 msgid "Yüzey akımı ve kaçak"
 msgstr "Surface current and leakage"
 
-#: arayuz/sonuc/yuzey.py:113
+#: arayuz/sonuc/yuzey.py:130
 msgid "Sınırdan kaçak, kutu yüzlerinden giren/çıkan, nötron dengesi"
 msgstr "Boundary leakage, in/out through box faces, neutron balance"
 
-#: arayuz/sonuc/yuzey.py:140
+#: arayuz/sonuc/yuzey.py:157
 #, python-format
 msgid "Yüzey akımı sonucu okunamadı: %s"
 msgstr "Surface current result could not be read: %s"
 
-#: arayuz/sonuc/yuzey.py:161
+#: arayuz/sonuc/yuzey.py:178
 msgid "Kaçak spektrumu için yüzey tally'sine enerji grupları ekleyin"
 msgstr "Add energy groups to the surface tally for a leakage spectrum"
 
-#: arayuz/sonuc/yuzey.py:171
+#: arayuz/sonuc/yuzey.py:188
 msgid "J / Δu"
 msgstr "J / Δu"
 
@@ -10336,47 +10366,51 @@ msgid "Ders: nokta kinetiği"
 msgstr "Lesson: point kinetics"
 
 #: arayuz/yardim/__init__.py:65
+msgid "Ders: foton ısınması, sıcaklık interpolasyonu, yüzey akımı"
+msgstr "Lesson: photon heating, temperature interpolation, surface current"
+
+#: arayuz/yardim/__init__.py:66
 msgid "Sonuçları yorumlamak"
 msgstr "Interpreting results"
 
-#: arayuz/yardim/__init__.py:66
+#: arayuz/yardim/__init__.py:67
 msgid "Önce çiz, sonra çalıştır"
 msgstr "Draw first, then run"
 
-#: arayuz/yardim/__init__.py:67
+#: arayuz/yardim/__init__.py:68
 msgid "Bilinen tuzaklar"
 msgstr "Known pitfalls"
 
-#: arayuz/yardim/__init__.py:68
+#: arayuz/yardim/__init__.py:69
 msgid "Uygunluk denetimi"
 msgstr "Conformity check"
 
-#: arayuz/yardim/__init__.py:69
+#: arayuz/yardim/__init__.py:70
 msgid "Doğrulama ve geçerleme (V&V)"
 msgstr "Verification and validation (V&V)"
 
-#: arayuz/yardim/__init__.py:70
+#: arayuz/yardim/__init__.py:71
 msgid "Terminal ve HPC kullanımı"
 msgstr "Terminal and HPC use"
 
-#: arayuz/yardim/__init__.py:71
+#: arayuz/yardim/__init__.py:72
 msgid "Sorun giderme"
 msgstr "Troubleshooting"
 
-#: arayuz/yardim/__init__.py:72
+#: arayuz/yardim/__init__.py:73
 msgid "Uygunluk kuralları (K1–K16)"
 msgstr "Conformity rules (K1–K16)"
 
-#: arayuz/yardim/__init__.py:73
+#: arayuz/yardim/__init__.py:74
 msgid "Terim sözlüğü"
 msgstr "Glossary"
 
-#: arayuz/yardim/__init__.py:105
+#: arayuz/yardim/__init__.py:106
 #, python-brace-format
 msgid "Kullanım kılavuzu bulunamadı: {yol}"
 msgstr "User guide not found: {yol}"
 
-#: arayuz/yardim/__init__.py:125
+#: arayuz/yardim/__init__.py:126
 #, python-brace-format
 msgid "Kılavuzda bu bölüm yok: {b}"
 msgstr "This section is not in the user guide: {b}"

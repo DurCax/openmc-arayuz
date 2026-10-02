@@ -19,6 +19,17 @@ gelir (`pyproject.toml` → `cekirdek/surum.py`). Ayrıntılı değişiklikler `
 - Özdeğer hesabında ağ tally'si varsa filtresiz `mesh_genel_isi` tally'si (`kappa-fission`,
   `heating-local`) eklenir; mutlak normalizasyonun paydası buradan okunur.
 
+### Davranış değişikliği — foton, sıcaklık, yüzey (v3 Y7)
+- **Geçersiz `ayarlar.sicaklik_yontemi`** (ör. `spline`) artık doğrulamada **hata** verir;
+  önceden değer OpenMC'ye geçer ve koşu başında OpenMC durdururdu.
+- Doğrulama malzeme sıcaklığını kütüphaneyle karşılaştırır: `nearest` + tolerans dışı sıcaklık
+  **hata** (OpenMC zaten dururdu), "yalnız kütüphane sıcaklığı kullanılır" **uyarı**, ara
+  sıcaklıklar tek **bilgi** bulgusu.
+- `kosucu.tally_metni`: ağ filtreli (MultiIndex) tablolar ham döküm yerine biçimli tablo
+  (`ağ N (x=…, y=…, z=…)` etiketi; en çok 200 satır).
+- `foton`, `sicaklik` ayar alanları yoksa kurulan model ve üretilen betik değişmez
+  (`testler/veri/y7_altin_pinhucre.py`).
+
 ## 2.0.0 — 02.10.2026
 
 ### Ortam

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 15:18+0300\n"
+"POT-Creation-Date: 2026-10-02 15:29+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -1957,7 +1957,7 @@ msgstr "material defined but not used in the model: %s"
 msgid "'%s' öneki spektrum/dört faktör tally'lerine ayrılmıştır"
 msgstr "the '%s' prefix is reserved for the tallies of the spectrum and the four factors"
 
-#: cekirdek/dogrula/spektrum.py:27 cekirdek/dogrula/yuzey.py:98
+#: cekirdek/dogrula/spektrum.py:27 cekirdek/dogrula/yuzey.py:109
 msgid "Tally'yi yeniden adlandırın."
 msgstr "Rename the tally."
 
@@ -2231,11 +2231,11 @@ msgstr ""
 "A type='photon' entry in cross_sections.xml is required; OpenMC stops at the start of"
 " the run. Install a library with photon data or turn photon transport off."
 
-#: cekirdek/dogrula/y7.py:72
+#: cekirdek/dogrula/y7.py:74
 msgid "'heating' skoru foton taşınımı kapalıyken gama enerjisini içermez"
 msgstr "the 'heating' score does not include gamma energy while photon transport is off"
 
-#: cekirdek/dogrula/y7.py:73
+#: cekirdek/dogrula/y7.py:75
 msgid ""
 "Yalnız nötron KERMA'sı (MT301) sayılır; fisyon ve yakalama gamaları kaybolur. Toplam "
 "ısınma için foton taşınımını açın ya da 'heating-local' kullanın."
@@ -2243,23 +2243,25 @@ msgstr ""
 "Only neutron KERMA (MT301) is counted; fission and capture gammas are lost. For total"
 " heating turn photon transport on or use 'heating-local'."
 
-#: cekirdek/dogrula/y7.py:78
-msgid "'heating-local' foton taşınımı açıkken gamayı ikinci kez sayar"
-msgstr "'heating-local' counts gammas a second time while photon transport is on"
+#: cekirdek/dogrula/y7.py:80
+msgid "'heating-local' ile fotonların 'heating'i toplanırsa gama iki kez sayılır"
+msgstr "adding 'heating-local' to the photon 'heating' counts gammas twice"
 
-#: cekirdek/dogrula/y7.py:79
+#: cekirdek/dogrula/y7.py:81
 msgid ""
-"heating-local gama enerjisini çarpışma yerinde bırakır (MT901); fotonlar ayrıca "
-"taşınırken toplam ısınma için 'heating' kullanın."
+"heating-local gama enerjisini çarpışma yerinde bırakır (MT901); tek başına doğrudur. "
+"Foton taşınımı açıkken toplam ısınma için yalnız 'heating' kullanın, ikisini "
+"toplamayın."
 msgstr ""
-"heating-local deposits gamma energy at the collision site (MT901); while photons are "
-"transported as well, use 'heating' for total heating."
+"heating-local deposits gamma energy at the collision site (MT901); on its own it is "
+"correct. With photon transport on, use only 'heating' for total heating; do not add "
+"the two."
 
-#: cekirdek/dogrula/y7.py:92
+#: cekirdek/dogrula/y7.py:95
 msgid "windowed multipole açık ama kütüphanede wmp verisi yok"
 msgstr "windowed multipole is on but the library has no wmp data"
 
-#: cekirdek/dogrula/y7.py:93
+#: cekirdek/dogrula/y7.py:96
 msgid ""
 "OpenMC yalnız uyarır ve noktasal veriye döner; sıcaklık yöntemi ve toleransı yine "
 "geçerlidir."
@@ -2267,14 +2269,14 @@ msgstr ""
 "OpenMC only issues a warning and falls back to pointwise data; temperature method and"
 " tolerance still apply."
 
-#: cekirdek/dogrula/y7.py:122
+#: cekirdek/dogrula/y7.py:125
 #, python-format
 msgid "ara sıcaklık, komşu kütüphane sıcaklıkları arasında stokastik interpolasyon: %s"
 msgstr ""
 "intermediate temperature, stochastic interpolation between neighbouring library "
 "temperatures: %s"
 
-#: cekirdek/dogrula/y7.py:124
+#: cekirdek/dogrula/y7.py:127
 msgid ""
 "Her çarpışmada iki komşu sıcaklıktan biri kT'ye göre doğrusal olasılıkla seçilir "
 "(OpenMC 0.16). Sonuç, iki sıcaklıktaki koşuların arasında kalır."
@@ -2283,12 +2285,12 @@ msgstr ""
 "probability linear in kT (OpenMC 0.16). The result lies between the runs at the two "
 "temperatures."
 
-#: cekirdek/dogrula/y7.py:137
+#: cekirdek/dogrula/y7.py:140
 #, python-format
 msgid "%g K için kütüphanede veri yok (%s; yöntem %s, tolerans %g K)"
 msgstr "no data in the library for %g K (%s; method %s, tolerance %g K)"
 
-#: cekirdek/dogrula/y7.py:139
+#: cekirdek/dogrula/y7.py:142
 #, python-format
 msgid ""
 "Mevcut sıcaklıklar: %s K. Sıcaklığı değiştirin, toleransı artırın ya da ara değer "
@@ -2297,29 +2299,49 @@ msgstr ""
 "Available temperatures: %s K. Change the temperature, increase the tolerance or "
 "choose the interpolation method."
 
-#: cekirdek/dogrula/y7.py:143
+#: cekirdek/dogrula/y7.py:146
 #, python-format
 msgid "%g K istendi, yalnız kütüphane sıcaklığı kullanılır: %s (%s)"
 msgstr "%g K requested, only a library temperature is used: %s (%s)"
 
-#: cekirdek/dogrula/y7.py:145
+#: cekirdek/dogrula/y7.py:148
 #, python-format
 msgid "En yakın sıcaklık yöntemi ara sıcaklık üretmez. Mevcut: %s K."
 msgstr ""
 "The nearest temperature method does not produce intermediate temperatures. Available:"
 " %s K."
 
-#: cekirdek/dogrula/y7.py:148
+#: cekirdek/dogrula/y7.py:151
 #, python-format
 msgid "%g K kütüphane aralığı dışında, uç sıcaklık kullanılır: %s (%s)"
 msgstr "%g K is outside the library range, the end temperature is used: %s (%s)"
 
-#: cekirdek/dogrula/y7.py:150
+#: cekirdek/dogrula/y7.py:153
 #, python-format
 msgid "Tolerans (%g K) içinde uca yapışır; fizik o sıcaklığınkidir."
 msgstr ""
 "Within the tolerance (%g K) it snaps to the end; the physics is that of that "
 "temperature."
+
+#: cekirdek/dogrula/y7.py:175
+#, python-format
+msgid "tek sıcaklıklı veri (%s): OpenMC tüm model için nearest yöntemine döner"
+msgstr ""
+"single-temperature data (%s): OpenMC switches to the nearest method for the whole "
+"model"
+
+#: cekirdek/dogrula/y7.py:177
+msgid ""
+"src/nuclide.cpp: bir nüklidin verisi tek sıcaklıktaysa ara değer yöntemi küresel "
+"olarak kapatılır; aşağıdaki kararlar nearest ile verilmiştir."
+msgstr ""
+"src/nuclide.cpp: if one nuclide has data at a single temperature, interpolation is "
+"switched off globally; the decisions below use nearest."
+
+#: cekirdek/dogrula/y7.py:194
+#, python-format
+msgid "wmp verisi olmayan nüklidler noktasal veriyle: %s"
+msgstr "nuclides without wmp data use pointwise data: %s"
 
 #: cekirdek/dogrula/yuzey.py:42
 #, python-format
@@ -2364,10 +2386,15 @@ msgstr ""
 
 #: cekirdek/dogrula/yuzey.py:97
 #, python-format
+msgid "'%s' adı birden çok tally'de var; yüzey tally'sinin adı tekil olmalı"
+msgstr "the name '%s' is used by more than one tally; a surface tally name must be unique"
+
+#: cekirdek/dogrula/yuzey.py:108
+#, python-format
 msgid "'%s' öneki yüzey akımı denge tally'lerine ayrılmıştır"
 msgstr "the '%s' prefix is reserved for surface current balance tallies"
 
-#: cekirdek/foton.py:70
+#: cekirdek/foton.py:76
 #, python-format
 msgid "bilinmeyen elektron işlemi: %s (geçerli: %s)"
 msgstr "unknown electron treatment: %s (valid: %s)"
@@ -4631,48 +4658,58 @@ msgstr "eV / source neutron"
 msgid "/ kaynak nötronu"
 msgstr "/ source neutron"
 
-#: cekirdek/kosucu.py:405
+#: cekirdek/kosucu.py:406
+#, python-format
+msgid "ağ %s (%s)"
+msgstr "mesh %s (%s)"
+
+#: cekirdek/kosucu.py:432
 #, python-format
 msgid "malzeme %s"
 msgstr "material %s"
 
-#: cekirdek/kosucu.py:414
+#: cekirdek/kosucu.py:441
 msgid "tüm model"
 msgstr "whole model"
 
-#: cekirdek/kosucu.py:422
+#: cekirdek/kosucu.py:450
 msgid "Bölge / enerji"
 msgstr "Region / energy"
 
-#: cekirdek/kosucu.py:422
+#: cekirdek/kosucu.py:450
 msgid "Ölçülen"
 msgstr "Quantity"
 
-#: cekirdek/kosucu.py:422
+#: cekirdek/kosucu.py:450
 msgid "Değer"
 msgstr "Value"
 
-#: cekirdek/kosucu.py:422
+#: cekirdek/kosucu.py:450
 msgid "Bağıl hata"
 msgstr "Relative error"
 
-#: cekirdek/kosucu.py:422
+#: cekirdek/kosucu.py:450
 msgid "Birim"
 msgstr "Unit"
 
-#: cekirdek/kosucu.py:471 cekirdek/mesh_tally/sonuc.py:130
+#: cekirdek/kosucu.py:457
+#, python-format
+msgid "… %d satır daha (tamamı statepoint'te)"
+msgstr "… %d more rows (all in the statepoint)"
+
+#: cekirdek/kosucu.py:501 cekirdek/mesh_tally/sonuc.py:130
 #: cekirdek/rapor_sablon/__init__.py:152
 #, python-format
 msgid "okunamadı: %s"
 msgstr "could not be read: %s"
 
-#: cekirdek/kosucu.py:534
+#: cekirdek/kosucu.py:564
 msgid "Referans tally yok — korunum denetlenemedi (eski statepoint ya da model regresyonu)."
 msgstr ""
 "No reference tally — conservation could not be checked (old statepoint or model "
 "regression)."
 
-#: cekirdek/kosucu.py:538
+#: cekirdek/kosucu.py:568
 #, python-format
 msgid ""
 "Referans güç toplamı sıfır ya da negatif (%.3g): hedef bölgede fisyon sayılmadı, "
@@ -4681,7 +4718,7 @@ msgstr ""
 "The reference power sum is zero or negative (%.3g): no fissions were counted in the "
 "target region, the conservation of the total could not be checked."
 
-#: cekirdek/kosucu.py:545
+#: cekirdek/kosucu.py:575
 #, python-format
 msgid ""
 "Çubuk güçlerinin toplamı filtresiz tally'den %.2e bağıl fark gösteriyor. Haritalama "
@@ -4690,20 +4727,20 @@ msgstr ""
 "The sum of the pin powers differs from the unfiltered tally by a relative %.2e. The "
 "mapping may be broken — do not trust the results."
 
-#: cekirdek/kosucu.py:611
+#: cekirdek/kosucu.py:641
 #, python-format
 msgid "toplamın korunumu: bağıl fark %.1e — %s"
 msgstr "conservation of the total: relative difference %.1e — %s"
 
-#: cekirdek/kosucu.py:612 cekirdek/kosucu_terminal.py:157
+#: cekirdek/kosucu.py:642 cekirdek/kosucu_terminal.py:157
 msgid "tamam"
 msgstr "ok"
 
-#: cekirdek/kosucu.py:613
+#: cekirdek/kosucu.py:643
 msgid "bozuk, haritaya güvenmeyin"
 msgstr "broken, do not trust the map"
 
-#: cekirdek/kosucu.py:615
+#: cekirdek/kosucu.py:645
 #, python-format
 msgid "toplamın korunumu denetlenemedi: %s"
 msgstr "conservation of the total could not be checked: %s"
@@ -5103,56 +5140,56 @@ msgstr "the number of parallel runs and the budget must be at least 1"
 msgid "bütçe %d, bekleyen koşulardan küçük: %s"
 msgstr "the budget %d is smaller than pending runs: %s"
 
-#: cekirdek/kuyruk.py:359
+#: cekirdek/kuyruk.py:360
 msgid "koşunun adı boş olamaz"
 msgstr "the run name cannot be empty"
 
-#: cekirdek/kuyruk.py:361
+#: cekirdek/kuyruk.py:362
 msgid "koşu dizini boş olamaz"
 msgstr "the run directory cannot be empty"
 
-#: cekirdek/kuyruk.py:363
+#: cekirdek/kuyruk.py:364
 msgid "iş parçacığı en az 1, MPI süreç sayısı negatif olamaz"
 msgstr "threads must be at least 1 and the MPI process count cannot be negative"
 
-#: cekirdek/kuyruk.py:365
+#: cekirdek/kuyruk.py:366
 #, python-format
 msgid "'%s' %d iş parçacığı istiyor; bütçe %d"
 msgstr "'%s' needs %d threads; the budget is %d"
 
-#: cekirdek/kuyruk.py:370
+#: cekirdek/kuyruk.py:371
 #, python-format
 msgid "'%s' dizini zaten kuyruktaki bir koşunun (%s)"
 msgstr "the directory '%s' already belongs to a queued run (%s)"
 
-#: cekirdek/kuyruk.py:380 cekirdek/kuyruk.py:460
+#: cekirdek/kuyruk.py:381 cekirdek/kuyruk.py:461
 msgid "kuyruk kapatıldı"
 msgstr "the queue is closed"
 
-#: cekirdek/kuyruk.py:414
+#: cekirdek/kuyruk.py:415
 msgid "koşan iş kaldırılamaz; önce iptal edin"
 msgstr "a running entry cannot be removed; cancel it first"
 
-#: cekirdek/kuyruk.py:593
+#: cekirdek/kuyruk.py:594
 #, python-format
 msgid "openmc çıkış kodu %d (günlük: %s)"
 msgstr "openmc exit code %d (log: %s)"
 
-#: cekirdek/kuyruk.py:598
+#: cekirdek/kuyruk.py:599
 msgid "koşu bitti ama statepoint dosyası bulunamadı"
 msgstr "the run finished but no statepoint file was found"
 
-#: cekirdek/kuyruk.py:613
+#: cekirdek/kuyruk.py:614
 #, python-format
 msgid "'%s' dizininde model.xml yok"
 msgstr "no model.xml in the directory '%s'"
 
-#: cekirdek/kuyruk.py:632
+#: cekirdek/kuyruk.py:633
 #, python-format
 msgid "openmc çalıştırılabilir dosyası bulunamadı (%s)"
 msgstr "the openmc executable was not found (%s)"
 
-#: cekirdek/kuyruk.py:637
+#: cekirdek/kuyruk.py:638
 msgid "Bu openmc MPI desteksiz derlenmiş (MPI enabled: no); MPI süreç sayısını 0 yapın"
 msgstr "This openmc was built without MPI (MPI enabled: no); set the MPI process count to 0"
 
@@ -5184,7 +5221,7 @@ msgstr "element with no natural isotopes: %s (enter the isotopes individually)"
 msgid "kesirlerin toplamı sıfır"
 msgstr "the fractions sum to zero"
 
-#: cekirdek/malzeme_hesap.py:145 cekirdek/sicaklik.py:81
+#: cekirdek/malzeme_hesap.py:145 cekirdek/sicaklik.py:85
 #, python-format
 msgid "%s sayı olmalı: %r"
 msgstr "%s must be a number: %r"
@@ -7534,49 +7571,49 @@ msgstr ""
 msgid "'%s' adında %d malzeme var; önce birini yeniden adlandırın."
 msgstr "Material name '%s' is used by %d materials; rename one of them first."
 
-#: cekirdek/sicaklik.py:83
+#: cekirdek/sicaklik.py:87
 #, python-format
 msgid "%s sonlu olmalı: %r"
 msgstr "%s must be finite: %r"
 
-#: cekirdek/sicaklik.py:91
+#: cekirdek/sicaklik.py:95
 #, python-format
 msgid "sıcaklık aralığı iki sayı olmalı: %r"
 msgstr "temperature range must be two numbers: %r"
 
-#: cekirdek/sicaklik.py:92
+#: cekirdek/sicaklik.py:96
 msgid "sıcaklık aralığı"
 msgstr "temperature range"
 
-#: cekirdek/sicaklik.py:94
+#: cekirdek/sicaklik.py:98
 #, python-format
 msgid "sıcaklık aralığı 0 ≤ alt < üst olmalı: %g – %g"
 msgstr "temperature range must satisfy 0 <= low < high: %g - %g"
 
-#: cekirdek/sicaklik.py:103
+#: cekirdek/sicaklik.py:107
 #, python-format
 msgid "bilinmeyen sıcaklık yöntemi: %s (geçerli: %s)"
 msgstr "unknown temperature method: %s (valid: %s)"
 
-#: cekirdek/sicaklik.py:106
+#: cekirdek/sicaklik.py:110
 msgid "sıcaklık toleransı"
 msgstr "temperature tolerance"
 
-#: cekirdek/sicaklik.py:108
+#: cekirdek/sicaklik.py:112
 #, python-format
 msgid "sıcaklık toleransı negatif olamaz: %g"
 msgstr "temperature tolerance cannot be negative: %g"
 
-#: cekirdek/sicaklik.py:109
+#: cekirdek/sicaklik.py:113
 msgid "varsayılan sıcaklık"
 msgstr "default temperature"
 
-#: cekirdek/sicaklik.py:111
+#: cekirdek/sicaklik.py:115
 #, python-format
 msgid "varsayılan sıcaklık pozitif olmalı: %g K"
 msgstr "default temperature must be positive: %g K"
 
-#: cekirdek/sicaklik.py:172
+#: cekirdek/sicaklik.py:176
 msgid "kütüphane sıcaklık listesi boş"
 msgstr "library temperature list is empty"
 
@@ -10357,10 +10394,20 @@ msgstr "this run has no local k tally"
 msgid "çıktı dosyası girdiyle aynı olamaz: %s"
 msgstr "the output file cannot be the input file: %s"
 
-#: cekirdek/yuzey_akim.py:146
+#: cekirdek/kod_uret/yuzey.py:35 cekirdek/yuzey_akim.py:158
 #, python-format
 msgid "yüzey tally'sinde desteklenmeyen filtre: %s"
 msgstr "unsupported filter in a surface tally: %s"
+
+#: cekirdek/yuzey_akim.py:243
+#, python-format
+msgid "yüzey ağı tablosunda mesh sütunu yok: %s"
+msgstr "no mesh column in the mesh surface table: %s"
+
+#: cekirdek/yuzey_akim.py:253
+#, python-format
+msgid "beklenmeyen yüzey ağı bini: %r"
+msgstr "unexpected mesh surface bin: %r"
 
 #~ msgid "termal"
 #~ msgstr "thermal"

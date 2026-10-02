@@ -22,44 +22,59 @@ dengelenir. Alanlar: [Gelişmiş](04f-hesap-ayarlari.md#ayar-gelismis),
 **Tanımlar** (OpenMC `docs/methods/energy_deposition.rst`):
 - `heating`, foton **kapalı**: yalnız nötron KERMA'sı (MT301); fisyon ve yakalama gamalarının
   enerjisi yoktur. Foton **açık**: nötron KERMA'sı (gama hariç) + fotonların çarpışma başına
-  bıraktığı enerji (çarpışma tahmincisi).
-- `heating-local`: nötron için, gama enerjisi çarpışma yerinde bırakılmış sayılır (MT901).
-- `kappa-fission`: geri kazanılabilir fisyon enerjisi (nötrinosuz, gamalar yerel); **yakalama
-  gamalarını içermez**.
+  bıraktığı enerji (analog enerji dengesi).
+- `heating-local`: nötron için, gama enerjisi çarpışma yerinde bırakılmış sayılır (MT901);
+  tek başına gamayı bir kez sayar. Foton açıkken fotonların `heating`'iyle **toplanırsa** gama
+  iki kez sayılır. Özdeğerde OpenMC `heating-local`'i keff·kerma(fisyon dışı) + kerma(fisyon)
+  ile ağırlıklandırır ve MT301'i almaz (Griesheimer vd., PHYSOR 2020).
+- `kappa-fission`: geri kazanılabilir fisyon enerjisi, MT18 Q-değeri tabanlı (MT458 karşılığı
+  `fission-q-recoverable`); nötrinosuz, gamalar yerel; **yakalama gamalarını içermez**.
 
 **Ölçülen** (pin hücre, yansıtıcı sınır; 2 000 × 30 / 10, ENDF/B-VIII.0, OpenMC 0.16,
 `testler/test_y7_fizik.py`):
 
 | Büyüklük [eV / kaynak nötronu] | foton kapalı | foton açık |
 |---|---|---|
-| heating (H) | 9.97e7 | 1.101e8 |
-| — nötron payı H_n | 9.97e7 | 9.90e7 |
-| — gama payı H_γ | 0 | 1.11e7 (%10.1) |
-| heating-local | 1.107e8 | 1.099e8 |
-| kappa-fission (κF) | 1.076e8 | 1.069e8 |
+| heating (H) | 9.97e7 ± 0.07e7 | 1.101e8 ± 0.004e8 |
+| — nötron payı H_n | 9.97e7 ± 0.07e7 | 9.90e7 ± 0.04e7 |
+| — gama payı H_γ | 0 | 1.111e7 ± 0.003e7 |
+| heating-local | 1.107e8 ± 0.008e8 | 1.099e8 ± 0.004e8 |
+| kappa-fission (κF) | 1.076e8 ± 0.008e8 | 1.069e8 ± 0.004e8 |
 
-Yorum: foton kapalıyken `heating` toplam ısının yaklaşık %10'unu kaybeder (H / H_local = 0.90).
-Foton açıkken H = H_n + H_γ ve sonsuz kafeste hiçbir gama kaçmadığı için H ≈ `heating-local`
-(fark %0.2). H / κF = **1.030**: fark başlıca (n,γ) yakalama gamalarıdır (κF onları saymaz).
-Bu oran modele bağlıdır; eşit beklenmez ve **sertifika değildir**. `damage-energy` (MT444) foton
-kipinden bağımsızdır (3σ içinde).
+Yorum. Temiz ölçüt foton açıkken **H_γ / H = %10.1 ± 0.05**: gama ısınmasının payı. H = H_n +
+H_γ birebirdir. `heating` ile `heating-local`'in yakınlığı (foton açıkta %0.2) bir eşitlik
+değildir: özdeğerde `heating-local` keff ağırlıklıdır (yukarı bakın) ve bu uyum kısmen
+telafidendir; foton kapalıyken H / H_local = 0.90 de yalnız gama kaybı değildir.
+H / κF = **1.030**; yaklaşık bütçe: (n,γ) yakalama gamaları ~+%1.9, κF'nin (k∞ − 1) fazladan
+fisyon nötronu kinetik enerjisi ~−%0.6, kalan ~%1.7 foton verisi / MT458 tutarsızlığı (James
+1969, *J. Nucl. Energy* 23, 517; Sher 1981). Bu oran modele bağlıdır ve **sertifika değildir**.
+`damage-energy` (MT444) foton kipinden bağımsızdır (3σ içinde).
 
 ### B. Sıcaklık interpolasyonu ile ara sıcaklık
 
-ENDF/B-VIII.0 nötron verisi yalnız 250, 294, 600, 900, 1200, 2500 K'de vardır.
+OpenMC'nin dağıttığı ENDF/B-VIII.0 HDF5 kütüphanesi yalnız 250, 294, 600, 900, 1200,
+2500 K'de işlenmiştir.
 
 3. **Malzemeler**'de `uo2` sıcaklığını 750 K yapın. **Hesap ayarları** › **Sıcaklık yöntemi**
    **En yakın sıcaklık**: doğrulama **hata** verir ("750 K için kütüphanede veri yok …"; OpenMC
-   koşu başında durur). **Sıcaklık toleransı**'nı 200 K yaparsanız hata **uyarı**ya döner: "yalnız
-   kütüphane sıcaklığı kullanılır: 600 K" — fizik 750 K'nin değildir.
+   koşu başında durur; 750 K her iki komşudan da tolerans dışındadır). **Sıcaklık toleransı**'nı
+   200 K yaparsanız hata **uyarı**ya döner: "yalnız kütüphane sıcaklığı kullanılır: 600 K" —
+   fizik 750 K'nin değildir.
 4. **Ara değer (interpolation)** seçin: doğrulama **bilgi** yazar ("600–900 K arasında stokastik
    interpolasyon"). Her çarpışmada iki komşu sıcaklıktan biri kT'ye göre doğrusal olasılıkla seçilir.
 5. Yakıt 600, 750, 900 K ile üç koşu yapın (30 000 × 100 / 20).
 
 **Ölçülen:** k(600) = 1.34498 ± 0.00067, k(750) = 1.34029 ± 0.00067, k(900) = 1.33541 ± 0.00063.
-Monoton (her adım ~7σ); k(750) iki komşunun doğrusal ortasından 10 pcm (sınır 3σ = 243 pcm).
-Yakıt Doppler katsayısı (600–900 K) ≈ **−1.8 pcm/K**. Su S(α,β) verisi 284–800 K'dir; suyu bu
-aralığın dışına çıkarmak koşuyu durdurur.
+Monoton: adımlar 4.9σ ve 5.3σ (σ_fark = √(σ₁² + σ₂²)). k(750) iki komşunun doğrusal ortasından
+10 pcm (sınır 3σ = 243 pcm): bu, interpolasyonun **uygulandığını** gösterir, fizik doğruluğunu
+değil — √T eğriliği ~−25 pcm çözünürlük altındadır ve iki sıcaklığın stokastik karışımı gerçek
+Doppler genişlemesi değildir. Yakıt Doppler katsayısı (600–900 K) **−1.78 ± 0.17 pcm/K**
+(Δρ/ΔT; k = 1 eşdeğeri ~−2.4 pcm/K, 1/k² ölçeklemesi). Rezonans saçılması düzeltmesi
+(DBRC/RVS) kapalıdır; açıkken Doppler katsayısı ~%10–15 daha negatif çıkar (Becker, Dagan &
+Lohnert 2009; Mosteller Doppler-defect benchmark). Değer bu pin hücreye (UO₂, yansıtıcı sınır,
+yalnız yakıt sıcaklığı değişir) özgüdür. Su S(α,β) verisi 284–800 K'dir; suyu bu aralığın
+dışına çıkarmak koşuyu durdurur. Bir nüklidin verisi tek sıcaklıktaysa OpenMC ara değer
+yöntemini **tüm model** için kapatır (doğrulama uyarır).
 
 ### C. Yüzey akımı ve korunum (sabit kaynak)
 
@@ -88,8 +103,13 @@ normaline göre işaretler (+ normal yönü); vakumdan her geçiş dışarı old
 | dışında | 0 | 1.470e11 | 1.3545e11 | 0 | 1.155e10 | 0 (yuvarlama) |
 
 Model sınırı kaçağı 2.557e11 1/s = OpenMC global sızıntısı × şiddet (aynı olaylar); kaynak
-parçacığı başına **0.245**. Tüm model: S − L + U − A = 0 (bağıl 1e−14). Denge analog
-tahminciyle her geçmişte tamdır; kartta yazan ± korelasyonsuz üst sınırdır.
+parçacığı başına **0.245**. Tüm model: S − L + U − A = 0 (bağıl 1e−14). Sabit kaynakta denge
+analog tahminciyle her geçmişte tamdır — koşul: survival biasing kapalı, ağırlık penceresi yok,
+enerji/zaman kesmesi yok (OpenMC varsayılanları). **Özdeğerde tam değildir**: S = nu-fission/k
+yalnız beklenen değerdir; yakınsamış kaynakta artık istatistikseldir (pin hücrede küçük bir
+kutu: artık −0.0002 ± 0.005, |artık| < 3σ). Kartta yazan ± birinci derece, korelasyonsuz:
+yaklaşıktır. Foton taşınımı açıkken global sızıntı fotonları da sayar; kart karşılaştırmayı
+gizler.
 
 > ⚠ **Neden yalnız (n,xn) yetmez?** ENDF/B-VIII.0'da Fe56'nın MT5 (n,anything) kanalının nötron
 > verimi 14 MeV'de 0.46'dır (Fe54 0.84, Mn55 0.65): bu tepkime "absorption" sayılmaz ama nötron

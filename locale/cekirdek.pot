@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 15:18+0300\n"
+"POT-Creation-Date: 2026-10-02 15:29+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1761,7 +1761,7 @@ msgstr ""
 msgid "'%s' öneki spektrum/dört faktör tally'lerine ayrılmıştır"
 msgstr ""
 
-#: cekirdek/dogrula/spektrum.py:27 cekirdek/dogrula/yuzey.py:98
+#: cekirdek/dogrula/spektrum.py:27 cekirdek/dogrula/yuzey.py:109
 msgid "Tally'yi yeniden adlandırın."
 msgstr ""
 
@@ -2004,77 +2004,94 @@ msgid ""
 "verisi içeren kütüphane kurun ya da foton taşınımını kapatın."
 msgstr ""
 
-#: cekirdek/dogrula/y7.py:72
+#: cekirdek/dogrula/y7.py:74
 msgid "'heating' skoru foton taşınımı kapalıyken gama enerjisini içermez"
 msgstr ""
 
-#: cekirdek/dogrula/y7.py:73
+#: cekirdek/dogrula/y7.py:75
 msgid ""
 "Yalnız nötron KERMA'sı (MT301) sayılır; fisyon ve yakalama gamaları kaybolur. Toplam "
 "ısınma için foton taşınımını açın ya da 'heating-local' kullanın."
 msgstr ""
 
-#: cekirdek/dogrula/y7.py:78
-msgid "'heating-local' foton taşınımı açıkken gamayı ikinci kez sayar"
+#: cekirdek/dogrula/y7.py:80
+msgid "'heating-local' ile fotonların 'heating'i toplanırsa gama iki kez sayılır"
 msgstr ""
 
-#: cekirdek/dogrula/y7.py:79
+#: cekirdek/dogrula/y7.py:81
 msgid ""
-"heating-local gama enerjisini çarpışma yerinde bırakır (MT901); fotonlar ayrıca "
-"taşınırken toplam ısınma için 'heating' kullanın."
+"heating-local gama enerjisini çarpışma yerinde bırakır (MT901); tek başına doğrudur. "
+"Foton taşınımı açıkken toplam ısınma için yalnız 'heating' kullanın, ikisini "
+"toplamayın."
 msgstr ""
 
-#: cekirdek/dogrula/y7.py:92
+#: cekirdek/dogrula/y7.py:95
 msgid "windowed multipole açık ama kütüphanede wmp verisi yok"
 msgstr ""
 
-#: cekirdek/dogrula/y7.py:93
+#: cekirdek/dogrula/y7.py:96
 msgid ""
 "OpenMC yalnız uyarır ve noktasal veriye döner; sıcaklık yöntemi ve toleransı yine "
 "geçerlidir."
 msgstr ""
 
-#: cekirdek/dogrula/y7.py:122
+#: cekirdek/dogrula/y7.py:125
 #, python-format
 msgid "ara sıcaklık, komşu kütüphane sıcaklıkları arasında stokastik interpolasyon: %s"
 msgstr ""
 
-#: cekirdek/dogrula/y7.py:124
+#: cekirdek/dogrula/y7.py:127
 msgid ""
 "Her çarpışmada iki komşu sıcaklıktan biri kT'ye göre doğrusal olasılıkla seçilir "
 "(OpenMC 0.16). Sonuç, iki sıcaklıktaki koşuların arasında kalır."
 msgstr ""
 
-#: cekirdek/dogrula/y7.py:137
+#: cekirdek/dogrula/y7.py:140
 #, python-format
 msgid "%g K için kütüphanede veri yok (%s; yöntem %s, tolerans %g K)"
 msgstr ""
 
-#: cekirdek/dogrula/y7.py:139
+#: cekirdek/dogrula/y7.py:142
 #, python-format
 msgid ""
 "Mevcut sıcaklıklar: %s K. Sıcaklığı değiştirin, toleransı artırın ya da ara değer "
 "(interpolation) yöntemini seçin."
 msgstr ""
 
-#: cekirdek/dogrula/y7.py:143
+#: cekirdek/dogrula/y7.py:146
 #, python-format
 msgid "%g K istendi, yalnız kütüphane sıcaklığı kullanılır: %s (%s)"
 msgstr ""
 
-#: cekirdek/dogrula/y7.py:145
+#: cekirdek/dogrula/y7.py:148
 #, python-format
 msgid "En yakın sıcaklık yöntemi ara sıcaklık üretmez. Mevcut: %s K."
 msgstr ""
 
-#: cekirdek/dogrula/y7.py:148
+#: cekirdek/dogrula/y7.py:151
 #, python-format
 msgid "%g K kütüphane aralığı dışında, uç sıcaklık kullanılır: %s (%s)"
 msgstr ""
 
-#: cekirdek/dogrula/y7.py:150
+#: cekirdek/dogrula/y7.py:153
 #, python-format
 msgid "Tolerans (%g K) içinde uca yapışır; fizik o sıcaklığınkidir."
+msgstr ""
+
+#: cekirdek/dogrula/y7.py:175
+#, python-format
+msgid "tek sıcaklıklı veri (%s): OpenMC tüm model için nearest yöntemine döner"
+msgstr ""
+
+#: cekirdek/dogrula/y7.py:177
+msgid ""
+"src/nuclide.cpp: bir nüklidin verisi tek sıcaklıktaysa ara değer yöntemi küresel "
+"olarak kapatılır; aşağıdaki kararlar nearest ile verilmiştir."
+msgstr ""
+
+#: cekirdek/dogrula/y7.py:194
+#, python-format
+msgid "wmp verisi olmayan nüklidler noktasal veriyle: %s"
 msgstr ""
 
 #: cekirdek/dogrula/yuzey.py:42
@@ -2116,10 +2133,15 @@ msgstr ""
 
 #: cekirdek/dogrula/yuzey.py:97
 #, python-format
+msgid "'%s' adı birden çok tally'de var; yüzey tally'sinin adı tekil olmalı"
+msgstr ""
+
+#: cekirdek/dogrula/yuzey.py:108
+#, python-format
 msgid "'%s' öneki yüzey akımı denge tally'lerine ayrılmıştır"
 msgstr ""
 
-#: cekirdek/foton.py:70
+#: cekirdek/foton.py:76
 #, python-format
 msgid "bilinmeyen elektron işlemi: %s (geçerli: %s)"
 msgstr ""
@@ -4188,73 +4210,83 @@ msgstr ""
 msgid "/ kaynak nötronu"
 msgstr ""
 
-#: cekirdek/kosucu.py:405
+#: cekirdek/kosucu.py:406
+#, python-format
+msgid "ağ %s (%s)"
+msgstr ""
+
+#: cekirdek/kosucu.py:432
 #, python-format
 msgid "malzeme %s"
 msgstr ""
 
-#: cekirdek/kosucu.py:414
+#: cekirdek/kosucu.py:441
 msgid "tüm model"
 msgstr ""
 
-#: cekirdek/kosucu.py:422
+#: cekirdek/kosucu.py:450
 msgid "Bölge / enerji"
 msgstr ""
 
-#: cekirdek/kosucu.py:422
+#: cekirdek/kosucu.py:450
 msgid "Ölçülen"
 msgstr ""
 
-#: cekirdek/kosucu.py:422
+#: cekirdek/kosucu.py:450
 msgid "Değer"
 msgstr ""
 
-#: cekirdek/kosucu.py:422
+#: cekirdek/kosucu.py:450
 msgid "Bağıl hata"
 msgstr ""
 
-#: cekirdek/kosucu.py:422
+#: cekirdek/kosucu.py:450
 msgid "Birim"
 msgstr ""
 
-#: cekirdek/kosucu.py:471 cekirdek/mesh_tally/sonuc.py:130
+#: cekirdek/kosucu.py:457
+#, python-format
+msgid "… %d satır daha (tamamı statepoint'te)"
+msgstr ""
+
+#: cekirdek/kosucu.py:501 cekirdek/mesh_tally/sonuc.py:130
 #: cekirdek/rapor_sablon/__init__.py:152
 #, python-format
 msgid "okunamadı: %s"
 msgstr ""
 
-#: cekirdek/kosucu.py:534
+#: cekirdek/kosucu.py:564
 msgid "Referans tally yok — korunum denetlenemedi (eski statepoint ya da model regresyonu)."
 msgstr ""
 
-#: cekirdek/kosucu.py:538
+#: cekirdek/kosucu.py:568
 #, python-format
 msgid ""
 "Referans güç toplamı sıfır ya da negatif (%.3g): hedef bölgede fisyon sayılmadı, "
 "toplamın korunumu denetlenemedi."
 msgstr ""
 
-#: cekirdek/kosucu.py:545
+#: cekirdek/kosucu.py:575
 #, python-format
 msgid ""
 "Çubuk güçlerinin toplamı filtresiz tally'den %.2e bağıl fark gösteriyor. Haritalama "
 "bozuk olabilir — sonuçlara güvenmeyin."
 msgstr ""
 
-#: cekirdek/kosucu.py:611
+#: cekirdek/kosucu.py:641
 #, python-format
 msgid "toplamın korunumu: bağıl fark %.1e — %s"
 msgstr ""
 
-#: cekirdek/kosucu.py:612 cekirdek/kosucu_terminal.py:157
+#: cekirdek/kosucu.py:642 cekirdek/kosucu_terminal.py:157
 msgid "tamam"
 msgstr ""
 
-#: cekirdek/kosucu.py:613
+#: cekirdek/kosucu.py:643
 msgid "bozuk, haritaya güvenmeyin"
 msgstr ""
 
-#: cekirdek/kosucu.py:615
+#: cekirdek/kosucu.py:645
 #, python-format
 msgid "toplamın korunumu denetlenemedi: %s"
 msgstr ""
@@ -4618,56 +4650,56 @@ msgstr ""
 msgid "bütçe %d, bekleyen koşulardan küçük: %s"
 msgstr ""
 
-#: cekirdek/kuyruk.py:359
+#: cekirdek/kuyruk.py:360
 msgid "koşunun adı boş olamaz"
 msgstr ""
 
-#: cekirdek/kuyruk.py:361
+#: cekirdek/kuyruk.py:362
 msgid "koşu dizini boş olamaz"
 msgstr ""
 
-#: cekirdek/kuyruk.py:363
+#: cekirdek/kuyruk.py:364
 msgid "iş parçacığı en az 1, MPI süreç sayısı negatif olamaz"
 msgstr ""
 
-#: cekirdek/kuyruk.py:365
+#: cekirdek/kuyruk.py:366
 #, python-format
 msgid "'%s' %d iş parçacığı istiyor; bütçe %d"
 msgstr ""
 
-#: cekirdek/kuyruk.py:370
+#: cekirdek/kuyruk.py:371
 #, python-format
 msgid "'%s' dizini zaten kuyruktaki bir koşunun (%s)"
 msgstr ""
 
-#: cekirdek/kuyruk.py:380 cekirdek/kuyruk.py:460
+#: cekirdek/kuyruk.py:381 cekirdek/kuyruk.py:461
 msgid "kuyruk kapatıldı"
 msgstr ""
 
-#: cekirdek/kuyruk.py:414
+#: cekirdek/kuyruk.py:415
 msgid "koşan iş kaldırılamaz; önce iptal edin"
 msgstr ""
 
-#: cekirdek/kuyruk.py:593
+#: cekirdek/kuyruk.py:594
 #, python-format
 msgid "openmc çıkış kodu %d (günlük: %s)"
 msgstr ""
 
-#: cekirdek/kuyruk.py:598
+#: cekirdek/kuyruk.py:599
 msgid "koşu bitti ama statepoint dosyası bulunamadı"
 msgstr ""
 
-#: cekirdek/kuyruk.py:613
+#: cekirdek/kuyruk.py:614
 #, python-format
 msgid "'%s' dizininde model.xml yok"
 msgstr ""
 
-#: cekirdek/kuyruk.py:632
+#: cekirdek/kuyruk.py:633
 #, python-format
 msgid "openmc çalıştırılabilir dosyası bulunamadı (%s)"
 msgstr ""
 
-#: cekirdek/kuyruk.py:637
+#: cekirdek/kuyruk.py:638
 msgid "Bu openmc MPI desteksiz derlenmiş (MPI enabled: no); MPI süreç sayısını 0 yapın"
 msgstr ""
 
@@ -4699,7 +4731,7 @@ msgstr ""
 msgid "kesirlerin toplamı sıfır"
 msgstr ""
 
-#: cekirdek/malzeme_hesap.py:145 cekirdek/sicaklik.py:81
+#: cekirdek/malzeme_hesap.py:145 cekirdek/sicaklik.py:85
 #, python-format
 msgid "%s sayı olmalı: %r"
 msgstr ""
@@ -6992,49 +7024,49 @@ msgstr ""
 msgid "'%s' adında %d malzeme var; önce birini yeniden adlandırın."
 msgstr ""
 
-#: cekirdek/sicaklik.py:83
+#: cekirdek/sicaklik.py:87
 #, python-format
 msgid "%s sonlu olmalı: %r"
 msgstr ""
 
-#: cekirdek/sicaklik.py:91
+#: cekirdek/sicaklik.py:95
 #, python-format
 msgid "sıcaklık aralığı iki sayı olmalı: %r"
 msgstr ""
 
-#: cekirdek/sicaklik.py:92
+#: cekirdek/sicaklik.py:96
 msgid "sıcaklık aralığı"
 msgstr ""
 
-#: cekirdek/sicaklik.py:94
+#: cekirdek/sicaklik.py:98
 #, python-format
 msgid "sıcaklık aralığı 0 ≤ alt < üst olmalı: %g – %g"
 msgstr ""
 
-#: cekirdek/sicaklik.py:103
+#: cekirdek/sicaklik.py:107
 #, python-format
 msgid "bilinmeyen sıcaklık yöntemi: %s (geçerli: %s)"
 msgstr ""
 
-#: cekirdek/sicaklik.py:106
+#: cekirdek/sicaklik.py:110
 msgid "sıcaklık toleransı"
 msgstr ""
 
-#: cekirdek/sicaklik.py:108
+#: cekirdek/sicaklik.py:112
 #, python-format
 msgid "sıcaklık toleransı negatif olamaz: %g"
 msgstr ""
 
-#: cekirdek/sicaklik.py:109
+#: cekirdek/sicaklik.py:113
 msgid "varsayılan sıcaklık"
 msgstr ""
 
-#: cekirdek/sicaklik.py:111
+#: cekirdek/sicaklik.py:115
 #, python-format
 msgid "varsayılan sıcaklık pozitif olmalı: %g K"
 msgstr ""
 
-#: cekirdek/sicaklik.py:172
+#: cekirdek/sicaklik.py:176
 msgid "kütüphane sıcaklık listesi boş"
 msgstr ""
 
@@ -9618,8 +9650,18 @@ msgstr ""
 msgid "çıktı dosyası girdiyle aynı olamaz: %s"
 msgstr ""
 
-#: cekirdek/yuzey_akim.py:146
+#: cekirdek/kod_uret/yuzey.py:35 cekirdek/yuzey_akim.py:158
 #, python-format
 msgid "yüzey tally'sinde desteklenmeyen filtre: %s"
+msgstr ""
+
+#: cekirdek/yuzey_akim.py:243
+#, python-format
+msgid "yüzey ağı tablosunda mesh sütunu yok: %s"
+msgstr ""
+
+#: cekirdek/yuzey_akim.py:253
+#, python-format
+msgid "beklenmeyen yüzey ağı bini: %r"
 msgstr ""
 

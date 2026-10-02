@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 15:18+0300\n"
+"POT-Creation-Date: 2026-10-02 15:29+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -8550,7 +8550,7 @@ msgstr ""
 msgid "model geneli"
 msgstr ""
 
-#: arayuz/sonuc/spektrum.py:210 arayuz/sonuc/yuzey.py:170
+#: arayuz/sonuc/spektrum.py:210 arayuz/sonuc/yuzey.py:187
 msgid "enerji [eV]"
 msgstr ""
 
@@ -8660,112 +8660,138 @@ msgstr ""
 msgid "Yerel k haritasını kaydet"
 msgstr ""
 
-#: arayuz/sonuc/yuzey.py:32
+#: arayuz/sonuc/yuzey.py:33
 msgid "bilinmiyor"
 msgstr ""
 
-#: arayuz/sonuc/yuzey.py:37
+#: arayuz/sonuc/yuzey.py:38
 msgid "kaçak (vakum sınırı, |J| toplamı)"
 msgstr ""
 
-#: arayuz/sonuc/yuzey.py:39
+#: arayuz/sonuc/yuzey.py:41
 #, python-format
 msgid "  yüzey %d"
 msgstr ""
 
-#: arayuz/sonuc/yuzey.py:40
+#: arayuz/sonuc/yuzey.py:43
+#, python-format
+msgid "%d yüzey daha"
+msgstr ""
+
+#: arayuz/sonuc/yuzey.py:45
 msgid "global sızıntı (OpenMC)"
 msgstr ""
 
-#: arayuz/sonuc/yuzey.py:45
+#: arayuz/sonuc/yuzey.py:50
 msgid "giren (dış yüzler)"
 msgstr ""
 
-#: arayuz/sonuc/yuzey.py:45
+#: arayuz/sonuc/yuzey.py:50
 msgid "çıkan (dış yüzler)"
 msgstr ""
 
-#: arayuz/sonuc/yuzey.py:46
+#: arayuz/sonuc/yuzey.py:51
 msgid "net çıkan"
 msgstr ""
 
-#: arayuz/sonuc/yuzey.py:49
+#: arayuz/sonuc/yuzey.py:54
 #, python-format
 msgid "giren %s · çıkan %s"
 msgstr ""
 
-#: arayuz/sonuc/yuzey.py:53
+#: arayuz/sonuc/yuzey.py:58
 msgid "kaynak S · üretim U · soğurma A"
 msgstr ""
 
-#: arayuz/sonuc/yuzey.py:57
+#: arayuz/sonuc/yuzey.py:62
 #, python-format
 msgid "  (bağıl %.1e)"
 msgstr ""
 
-#: arayuz/sonuc/yuzey.py:66
+#: arayuz/sonuc/yuzey.py:71
 msgid "model sınırı"
 msgstr ""
 
-#: arayuz/sonuc/yuzey.py:69
+#: arayuz/sonuc/yuzey.py:74
 #, python-format
 msgid "kutu ağı %s, %s … %s cm"
 msgstr ""
 
-#: arayuz/sonuc/yuzey.py:85
+#: arayuz/sonuc/yuzey.py:90
 #, python-format
 msgid ""
 "Birim 1/s: kaynak şiddeti %g ile çarpılmış (kaynak parçacığı başına değer için "
 "şiddete bölün)."
 msgstr ""
 
-#: arayuz/sonuc/yuzey.py:88
+#: arayuz/sonuc/yuzey.py:93
 msgid "Birim: kaynak parçacığı başına."
 msgstr ""
 
-#: arayuz/sonuc/yuzey.py:90
+#: arayuz/sonuc/yuzey.py:95
 msgid "Birim: kaynak nötronu başına (özdeğer; mutlak değer için güç normalizasyonu gerekir)."
 msgstr ""
 
-#: arayuz/sonuc/yuzey.py:93
+#: arayuz/sonuc/yuzey.py:98
 msgid ""
 "Sınır: OpenMC net akımı yüzey normaline göre işaretler (+ normal yönü); vakum "
 "yüzeyinden her geçiş dışarı olduğundan yüzey başına |J| kaçaktır. Toplam global "
 "sızıntıyla aynı olaylardır."
 msgstr ""
 
-#: arayuz/sonuc/yuzey.py:97
+#: arayuz/sonuc/yuzey.py:102
+msgid ""
+"Foton taşınımı açık: OpenMC global sızıntısı fotonları da sayar; sınır tally'si "
+"kaynak parçacığına süzüldüğü için karşılaştırılmadı."
+msgstr ""
+
+#: arayuz/sonuc/yuzey.py:105
 msgid ""
 "Kutu: OpenMC 'out' hücreden çıkan, 'in' giren kısmi akımdır; iç yüzler birbirini "
 "götürür. Denge S + J_giren − J_çıkan + U = A; U = nu-scatter − scatter ((n,xn) ve "
-"MT5), sabit kaynakta + nu-fission; özdeğerde S = nu-fission/k. Analog tahminci: denge"
-" her geçmişte tamdır; ± korelasyonsuz üst sınırdır."
+"MT5), sabit kaynakta + nu-fission."
 msgstr ""
 
-#: arayuz/sonuc/yuzey.py:103
+#: arayuz/sonuc/yuzey.py:109
+msgid "± birinci derece, terimler arası korelasyon yok sayıldı: yaklaşık."
+msgstr ""
+
+#: arayuz/sonuc/yuzey.py:111
 msgid ""
 "Kaçak spektrumu: grup akımı / Δu (letarji genişliği), kutuda yalnız dış yüzlerden "
 "çıkan akım."
 msgstr ""
 
-#: arayuz/sonuc/yuzey.py:112
+#: arayuz/sonuc/yuzey.py:118
+msgid ""
+"Sabit kaynak, analog tahminci: denge her geçmişte tamdır (survival biasing, ağırlık "
+"penceresi ve enerji/zaman kesmesi kapalıyken); artık yalnız yuvarlamadır."
+msgstr ""
+
+#: arayuz/sonuc/yuzey.py:121
+msgid ""
+"Özdeğer: S = nu-fission/k yalnız beklenen değerdir; artık istatistiksel, yakınsamış "
+"kaynakta ~σ mertebesindedir (tam değildir)."
+msgstr ""
+
+#: arayuz/sonuc/yuzey.py:129
 msgid "Yüzey akımı ve kaçak"
 msgstr ""
 
-#: arayuz/sonuc/yuzey.py:113
+#: arayuz/sonuc/yuzey.py:130
 msgid "Sınırdan kaçak, kutu yüzlerinden giren/çıkan, nötron dengesi"
 msgstr ""
 
-#: arayuz/sonuc/yuzey.py:140
+#: arayuz/sonuc/yuzey.py:157
 #, python-format
 msgid "Yüzey akımı sonucu okunamadı: %s"
 msgstr ""
 
-#: arayuz/sonuc/yuzey.py:161
+#: arayuz/sonuc/yuzey.py:178
 msgid "Kaçak spektrumu için yüzey tally'sine enerji grupları ekleyin"
 msgstr ""
 
-#: arayuz/sonuc/yuzey.py:171
+#: arayuz/sonuc/yuzey.py:188
 msgid "J / Δu"
 msgstr ""
 
@@ -9627,47 +9653,51 @@ msgid "Ders: nokta kinetiği"
 msgstr ""
 
 #: arayuz/yardim/__init__.py:65
-msgid "Sonuçları yorumlamak"
+msgid "Ders: foton ısınması, sıcaklık interpolasyonu, yüzey akımı"
 msgstr ""
 
 #: arayuz/yardim/__init__.py:66
-msgid "Önce çiz, sonra çalıştır"
+msgid "Sonuçları yorumlamak"
 msgstr ""
 
 #: arayuz/yardim/__init__.py:67
-msgid "Bilinen tuzaklar"
+msgid "Önce çiz, sonra çalıştır"
 msgstr ""
 
 #: arayuz/yardim/__init__.py:68
-msgid "Uygunluk denetimi"
+msgid "Bilinen tuzaklar"
 msgstr ""
 
 #: arayuz/yardim/__init__.py:69
-msgid "Doğrulama ve geçerleme (V&V)"
+msgid "Uygunluk denetimi"
 msgstr ""
 
 #: arayuz/yardim/__init__.py:70
-msgid "Terminal ve HPC kullanımı"
+msgid "Doğrulama ve geçerleme (V&V)"
 msgstr ""
 
 #: arayuz/yardim/__init__.py:71
-msgid "Sorun giderme"
+msgid "Terminal ve HPC kullanımı"
 msgstr ""
 
 #: arayuz/yardim/__init__.py:72
-msgid "Uygunluk kuralları (K1–K16)"
+msgid "Sorun giderme"
 msgstr ""
 
 #: arayuz/yardim/__init__.py:73
+msgid "Uygunluk kuralları (K1–K16)"
+msgstr ""
+
+#: arayuz/yardim/__init__.py:74
 msgid "Terim sözlüğü"
 msgstr ""
 
-#: arayuz/yardim/__init__.py:105
+#: arayuz/yardim/__init__.py:106
 #, python-brace-format
 msgid "Kullanım kılavuzu bulunamadı: {yol}"
 msgstr ""
 
-#: arayuz/yardim/__init__.py:125
+#: arayuz/yardim/__init__.py:126
 #, python-brace-format
 msgid "Kılavuzda bu bölüm yok: {b}"
 msgstr ""
