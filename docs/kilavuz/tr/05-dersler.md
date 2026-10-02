@@ -19,6 +19,7 @@ için **Dosya › Farklı kaydet…** kullanın.
 | [5.8](#ders-benchmark) | Benchmark ve C/E | `ornekler/godiva_kriter.json` ve `kriter_*` | giriş–ileri |
 | [5.9](#ders-kritik-arama) | Kritik arama | `ornekler/pwr_17x17.json`, `ornekler/pwr_kontrol.json`, `ornekler/tamburlu_kor.json` | orta |
 | [5.10](#ders-rapor) | Rapor ve uygunluk eki | herhangi bir koşu | orta |
+| [5.11](05a-ders-mesh.md#ders-mesh) | Ağ (mesh) akı ve güç haritası, ParaView | `ornekler/pwr_mesh_aki.json` | orta |
 
 **Beklenen sonuçlar nereden geliyor?** Her değer bir kaynağa dayanır: örnek dosyasının
 `referans.olcum` alanı, [VV.md](../../VV.md), [ORNEKLER.md](../../ORNEKLER.md) ya da
