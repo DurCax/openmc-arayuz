@@ -351,7 +351,7 @@ Local k map** or `python -m cekirdek.yerel_k ekle model.json pin|demet -o new.js
   correlated estimates.
 - **Map coverage** = Σ_map (A − X) / (A − X)_model. It drops below 1 when a channel box,
   water gap or reflector lies outside the map. In a 3D model the **whole model** extent also
-  contains the axial reflector; with **active zone only** coverage is < 1.
+  contains the axial reflector; with **active region only** coverage is < 1.
 - **Uncertainty:** σ is propagated ignoring the correlation between numerator and
   denominator (conservative; this is why assembly-level bin σ values are large). With
   coverage 1 the σ of the mean is taken from the unfiltered tally (correlation between bins

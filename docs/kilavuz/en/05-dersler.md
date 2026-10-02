@@ -957,8 +957,8 @@ Interpretation: [6.7 Local k and assembly k∞](06-sonuclar.md#yerel-k).
   −155 pcm): the water reflector cells are inside the map and most neutrons are absorbed
   there. Most of the gap between the mean and k-eff is not leakage but the estimator
   difference (combined − tracklength −380 pcm). In a 3D model the assembly bins also contain
-  the axial water layers (±h/2); for the active zone only, set **Axial extent** = **active
-  (fissile) zone only** on the card (coverage becomes < 1).
+  the axial water layers (±h/2); for the active region only, set **Axial extent** = **active
+  (fissile) region only** on the card (coverage becomes < 1).
 
 **What we learned / check questions.**
 

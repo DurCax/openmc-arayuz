@@ -1061,7 +1061,7 @@ msgstr "whole model height"
 
 #: arayuz/ayar/yerel_k_karti.py:23
 msgid "yalnız aktif (fisil) bölge"
-msgstr "active (fissile) zone only"
+msgstr "active (fissile) region only"
 
 #: arayuz/ayar/yerel_k_karti.py:32
 msgid "Yerel k haritası (pin/demet)"
