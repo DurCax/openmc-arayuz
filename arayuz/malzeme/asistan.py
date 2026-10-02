@@ -213,7 +213,7 @@ class MalzemeAsistani(QtWidgets.QDialog):
             self._taslak, self._sorun = None, str(e)
         self.hata.setText(self._sorun or "")
         self.hata.setVisible(bool(self._sorun))
-        self.panel.guncelle(self._taslak, self._sorun)
+        self.panel.guncelle(self._taslak)          # neden self.hata etiketinde (tek yerde)
         self._adim_guncelle()
 
     def ileri(self):

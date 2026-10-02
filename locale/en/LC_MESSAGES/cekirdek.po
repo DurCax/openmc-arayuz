@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 07:34+0300\n"
+"POT-Creation-Date: 2026-10-02 07:42+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -4783,7 +4783,7 @@ msgid "Hafif su (S(α,β) dahil, sıcaklığa bağlı yoğunluk)"
 msgstr "Light water (with S(α,β), temperature-dependent density)"
 
 #: cekirdek/malzeme_kutup.py:420 cekirdek/malzeme_kutup.py:544
-#: cekirdek/malzeme_tarif.py:254
+#: cekirdek/malzeme_tarif.py:256
 msgid "Ağır su (D₂O)"
 msgstr "Heavy water (D₂O)"
 
@@ -4848,7 +4848,7 @@ msgstr ""
 "Void volume fraction in the fuel layer (0–0.3). The density is computed from the U "
 "loading and this value: U₃Si₂ (12.2 g/cm³) + Al (2.70 g/cm³)."
 
-#: cekirdek/malzeme_kutup.py:489 cekirdek/malzeme_tarif.py:77 cekirdek/malzeme_tarif.py:82
+#: cekirdek/malzeme_kutup.py:489 cekirdek/malzeme_tarif.py:82
 #: cekirdek/rapor_sablon/__init__.py:93
 msgid "Yoğunluk"
 msgstr "Density"
@@ -4922,7 +4922,7 @@ msgstr "The density is computed from saturated liquid water at this temperature 
 msgid "Hafif su reaktörlerinin seramik yakıtı."
 msgstr "Ceramic fuel of light water reactors."
 
-#: cekirdek/malzeme_kutup.py:524 cekirdek/malzeme_tarif.py:232
+#: cekirdek/malzeme_kutup.py:524 cekirdek/malzeme_tarif.py:234
 msgid "UO₂ — uranyum dioksit"
 msgstr "UO₂ — uranium dioxide"
 
@@ -5018,7 +5018,7 @@ msgstr "Moderator; the rest is light water."
 msgid "Hızlı reaktör soğutucusu; yoğunluk sıcaklıktan hesaplanır."
 msgstr "Fast reactor coolant; the density is computed from the temperature."
 
-#: cekirdek/malzeme_kutup.py:547 cekirdek/malzeme_tarif.py:258
+#: cekirdek/malzeme_kutup.py:547 cekirdek/malzeme_tarif.py:260
 msgid "Sıvı sodyum (Na)"
 msgstr "Liquid sodium (Na)"
 
@@ -5046,7 +5046,7 @@ msgstr "Reflector and moderator."
 msgid "Kontrol çubuğu ve tambur emicisi."
 msgstr "Control rod and control drum absorber."
 
-#: cekirdek/malzeme_kutup.py:553 cekirdek/malzeme_tarif.py:260
+#: cekirdek/malzeme_kutup.py:553 cekirdek/malzeme_tarif.py:262
 msgid "B₄C — bor karbür"
 msgstr "B₄C — boron carbide"
 
@@ -5201,6 +5201,10 @@ msgstr "Custom mixture"
 msgid "U-234 ve U-236 ORNL/CSD/TM-244 bağıntısıyla eklenir (OpenMC ile aynı)."
 msgstr "U-234 and U-236 are added with the ORNL/CSD/TM-244 correlation (same as OpenMC)."
 
+#: cekirdek/malzeme_tarif.py:77
+msgid "Yoğunluk girişi"
+msgstr "Density input"
+
 #: cekirdek/malzeme_tarif.py:78
 msgid "kuramsal yoğunluk yüzdesinden"
 msgstr "from percent of theoretical density"
@@ -5275,114 +5279,114 @@ msgstr "Example value; enter the measured vector."
 msgid "Pu vektörünün toplamı %%100 olmalı (şu an %%%.3f)"
 msgstr "the Pu vector must sum to 100%% (now %%%.3f)"
 
-#: cekirdek/malzeme_tarif.py:232
+#: cekirdek/malzeme_tarif.py:234
 msgid "Zenginlik, %TD ve O/M'den seramik yakıt."
 msgstr "Ceramic fuel from enrichment, %TD and O/M."
 
-#: cekirdek/malzeme_tarif.py:234
+#: cekirdek/malzeme_tarif.py:236
 msgid "UO₂-Gd₂O₃ — gadolinyumlu yakıt"
 msgstr "UO₂-Gd₂O₃ — gadolinia fuel"
 
-#: cekirdek/malzeme_tarif.py:235
+#: cekirdek/malzeme_tarif.py:237
 msgid "Yanabilir zehirli yakıt; kuramsal yoğunluk ideal karışımdan."
 msgstr "Fuel with a burnable absorber; theoretical density from ideal mixing."
 
-#: cekirdek/malzeme_tarif.py:237
+#: cekirdek/malzeme_tarif.py:239
 msgid "MOX — (U,Pu)O₂"
 msgstr "MOX — (U,Pu)O₂"
 
-#: cekirdek/malzeme_tarif.py:238
+#: cekirdek/malzeme_tarif.py:240
 msgid "Pu vektörü, Pu/HM ve Am-241 yaşlanmasıyla karışık oksit."
 msgstr "Mixed oxide from the Pu vector, Pu/HM and Am-241 ageing."
 
-#: cekirdek/malzeme_tarif.py:241
+#: cekirdek/malzeme_tarif.py:243
 msgid "U-Mo — metalik alaşım"
 msgstr "U-Mo — metallic alloy"
 
-#: cekirdek/malzeme_tarif.py:241
+#: cekirdek/malzeme_tarif.py:243
 msgid "Araştırma reaktörü metalik yakıtı."
 msgstr "Metallic research-reactor fuel."
 
-#: cekirdek/malzeme_tarif.py:243
+#: cekirdek/malzeme_tarif.py:245
 msgid "M5 — Zr-1Nb-O"
 msgstr "M5 — Zr-1Nb-O"
 
-#: cekirdek/malzeme_tarif.py:243
+#: cekirdek/malzeme_tarif.py:245
 msgid "PWR yakıt zarfı alaşımı (nominal bileşim)."
 msgstr "PWR fuel cladding alloy (nominal composition)."
 
-#: cekirdek/malzeme_tarif.py:246
+#: cekirdek/malzeme_tarif.py:248
 msgid "SS-304 paslanmaz çelik"
 msgstr "SS-304 stainless steel"
 
-#: cekirdek/malzeme_tarif.py:247
+#: cekirdek/malzeme_tarif.py:249
 msgid "SCALE standart bileşim kütüphanesi değerleri."
 msgstr "Values from the SCALE standard composition library."
 
-#: cekirdek/malzeme_tarif.py:250
+#: cekirdek/malzeme_tarif.py:252
 msgid "Hafif su (H₂O), isteğe bağlı borlu"
 msgstr "Light water (H₂O), optionally borated"
 
-#: cekirdek/malzeme_tarif.py:251
+#: cekirdek/malzeme_tarif.py:253
 msgid "Yoğunluk IAPWS-IF97 ile sıcaklık ve basınçtan."
 msgstr "Density from temperature and pressure with IAPWS-IF97."
 
-#: cekirdek/malzeme_tarif.py:255
+#: cekirdek/malzeme_tarif.py:257
 msgid "Yoğunluk IAPWS R16-17 (NIST) tablosundan; kalanı hafif su."
 msgstr "Density from an IAPWS R16-17 (NIST) table; the remainder is light water."
 
-#: cekirdek/malzeme_tarif.py:258
+#: cekirdek/malzeme_tarif.py:260
 msgid "Yoğunluk Fink & Leibowitz (ANL/RE-95/2)."
 msgstr "Density from Fink & Leibowitz (ANL/RE-95/2)."
 
-#: cekirdek/malzeme_tarif.py:260
+#: cekirdek/malzeme_tarif.py:262
 msgid "B-10 zenginliği ve %TD ile emici."
 msgstr "Absorber from B-10 enrichment and %TD."
 
-#: cekirdek/malzeme_tarif.py:288
+#: cekirdek/malzeme_tarif.py:290
 #, python-format
 msgid "bilinmeyen tarif: %r"
 msgstr "unknown recipe: %r"
 
-#: cekirdek/malzeme_tarif.py:315
+#: cekirdek/malzeme_tarif.py:317
 #, python-format
 msgid "%s: geçersiz seçim %r"
 msgstr "%s: invalid choice %r"
 
-#: cekirdek/malzeme_tarif.py:322
+#: cekirdek/malzeme_tarif.py:324
 #, python-format
 msgid "%s: sayı olmalı (%r)"
 msgstr "%s: must be a number (%r)"
 
-#: cekirdek/malzeme_tarif.py:324
+#: cekirdek/malzeme_tarif.py:326
 #, python-format
 msgid "%s: %g, %g–%g aralığında olmalı"
 msgstr "%s: %g must be within %g–%g"
 
-#: cekirdek/malzeme_tarif.py:364
+#: cekirdek/malzeme_tarif.py:366
 msgid "cross_sections.xml okunamadı; eksik nüklid denetimi atlandı."
 msgstr "cross_sections.xml could not be read; missing-nuclide check skipped."
 
-#: cekirdek/malzeme_tarif.py:375
+#: cekirdek/malzeme_tarif.py:377
 #, python-format
 msgid "%s elementi bu kütüphaneyle açılamıyor: %s"
 msgstr "element %s cannot be expanded with this library: %s"
 
-#: cekirdek/malzeme_tarif.py:377
+#: cekirdek/malzeme_tarif.py:379
 #, python-format
 msgid "Tesir kesiti kütüphanesinde olmayan nüklid: %s"
 msgstr "Nuclide not in the cross section library: %s"
 
-#: cekirdek/malzeme_tarif.py:380
+#: cekirdek/malzeme_tarif.py:382
 #, python-format
 msgid "S(α,β) tablosu kütüphanede yok: %s"
 msgstr "S(α,β) table not in the library: %s"
 
-#: cekirdek/malzeme_tarif.py:389
+#: cekirdek/malzeme_tarif.py:391
 msgid "Kütüphanenin sıcaklık aralığı okunamadı; sıcaklık denetimi atlandı."
 msgstr "The library's temperature range could not be read; temperature check skipped."
 
-#: cekirdek/malzeme_tarif.py:392
+#: cekirdek/malzeme_tarif.py:394
 #, python-format
 msgid ""
 "Sıcaklık %.1f K, kütüphane aralığının (%.0f–%.0f K, %s) dışında; koşu sıcaklık "
@@ -5391,7 +5395,7 @@ msgstr ""
 "Temperature %.1f K is outside the library range (%.0f–%.0f K, %s); the run may stop "
 "with an error depending on the temperature setting."
 
-#: cekirdek/malzeme_tarif.py:416
+#: cekirdek/malzeme_tarif.py:418
 msgid ""
 "Tesir kesiti kütüphanesi yolu tanımlı değil (OPENMC_CROSS_SECTIONS); eksik nüklid "
 "denetimi atlandı."

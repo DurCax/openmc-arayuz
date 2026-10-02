@@ -74,7 +74,7 @@ _ALAN = {
     "zenginlik": _a(N_("U-235 ağırlıkça %"), 0.0, 98.0, 3.2, 3, 0.1, "%",
                     N_("U-234 ve U-236 ORNL/CSD/TM-244 bağıntısıyla eklenir (OpenMC ile aynı).")),
     "u_zenginlik": _a(N_("Taşıyıcı U'da U-235 %"), 0.0, 98.0, 0.25, 3, 0.05, "%"),
-    "yogunluk_yolu": _a(N_("Yoğunluk"), None, None, "td", tur="secim",
+    "yogunluk_yolu": _a(N_("Yoğunluk girişi"), None, None, "td", tur="secim",
                         secenekler=(("td", N_("kuramsal yoğunluk yüzdesinden")),
                                     ("dogrudan", N_("doğrudan g/cm³")))),
     "td_yuzde": _a(N_("Kuramsal yoğunluk (%TD)"), 1.0, 100.0, 95.0, 2, 0.5, "%",
