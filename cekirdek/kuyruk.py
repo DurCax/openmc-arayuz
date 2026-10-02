@@ -37,7 +37,10 @@
    IsDurumu (frozen)  kimlik, ad, dizin, asama, cevrim, toplam_cevrim, k
                       (kosu sirasinda canli ortalama; bitince sonuc_kancasi'nin
                       "keff"i), sonuc (kancanin dondurdugu), hata, cikis_kodu,
-                      statepoint, baslangic / bitis (time.time), etiket.
+                      statepoint, baslangic / bitis (time.time), etiket,
+                      seq (kuyruk genelinde tekil, artan; dinleyiciye bir isin
+                      olaylari seq sirasiyla gelir, eskisi atilir).
+   Baglam yoneticisi  `with Kuyruk(...) as k:` cikista kapat().
    Kuyruk             ekle(is) -> kimlik; tasi(kimlik, sira); iptal(kimlik);
                       kaldir(kimlik) (yalniz son asamadaki ya da bekleyen);
                       baslat(); duraklat() (kosanlar surer, yenisi baslamaz);
@@ -59,7 +62,8 @@
    Her is AYRI dizinde kosar: bitmemis iki is ayni dizini paylasamaz.
 
  IPLIKLER VE BILDIRIM
-   Her kosu kendi is parcaciginda (threading) alt surec olarak kosar; alt
+   Surec yasam dongusu cekirdek/kuyruk_surec.py (SurecGrubu). Her kosu kendi
+   is parcaciginda (threading) alt surec olarak kosar; alt
    surec liste argumanla baslar (shell yok) ve kendi oturumunda (yeni surec
    grubu) calisir -- iptal SIGTERM'i mpiexec'in cocuklarina da ulastirir,
    IPTAL_SURESI sonra SIGKILL. Dinleyiciler kilit DISINDA ve cagri yapan
@@ -81,34 +85,31 @@ from __future__ import annotations
 import copy
 import dataclasses
 import enum
+import itertools
 import os
 import re
-import signal
-import subprocess
-import sys
 import threading
 import time
 import uuid
 from dataclasses import dataclass, field
-from typing import Any, Callable, Iterable, Iterator, List, Mapping, Optional, Tuple
+from typing import Any, Callable, Iterable, List, Mapping, Optional, Tuple
 
 from cekirdek import kosucu
 from cekirdek import yollar
+# MPI ve surec yardimcilari kuyruk_surec.py'dedir; genel API burada da kalir.
+from cekirdek.kuyruk_surec import (  # noqa: F401  (yeniden disa aktarim)
+    MPIEXEC_ADI, MPIEXEC_ORTAM_DEGISKENI, SURUM_SURESI, KuyrukHatasi, SurecGrubu,
+    _calistirilabilir_mi, komut_olustur, mpi_destegi, mpiexec_yolu)
 from cekirdek.ceviri import _
 from cekirdek.gunluk import kaydedici
 
 _log = kaydedici(__name__)
 
-MPIEXEC_ORTAM_DEGISKENI = "OPENMC_ARAYUZ_MPIEXEC"
-MPIEXEC_ADI = "mpiexec"
 LOG_ADI = "kosu.log"                 # kosucu.calistir ve arayuz ile ayni ad
 IPTAL_SURESI = 5.0                   # s; SIGTERM'den sonra SIGKILL'e kadar
-SURUM_SURESI = 15.0                  # s; `openmc --version` ust siniri
 _KAPAT_SURESI = 10.0                 # s; kapat() iscileri bu kadar bekler
 _AD_SINIRI = 60                      # ayri_dizin: dizin adinin en uzun hali
-_MPI_DESEN = re.compile(r"MPI enabled:\s*(yes|no)", re.IGNORECASE)
 
-Ortam = Optional[Mapping[str, str]]
 
 
 class Asama(str, enum.Enum):
@@ -121,10 +122,6 @@ class Asama(str, enum.Enum):
 
 
 SON_ASAMALAR = frozenset({Asama.BITTI, Asama.BASARISIZ, Asama.IPTAL})
-
-
-class KuyrukHatasi(RuntimeError):
-    """Kosu hazirlanamadi / baslatilamadi (metin kullaniciya gosterilir)."""
 
 
 class _Iptal(Exception):
@@ -173,6 +170,7 @@ class IsDurumu:
     baslangic: Optional[float] = None
     bitis: Optional[float] = None
     etiket: Mapping[str, Any] = field(default_factory=dict)
+    seq: int = 0          # kuyruk genelinde tekil, artan: eski olay yeniyi ezmesin
 
     @property
     def bitti_mi(self) -> bool:
@@ -183,84 +181,31 @@ class IsDurumu:
 # YARDIMCILAR
 # ============================================================================
 
-def ayri_dizin(kok: str, ad: str, alinmis: Iterable[str] = ()) -> str:
+def ayri_dizin(kok: str, ad: str, alinmis: Iterable[str] = (), olustur: bool = False) -> str:
     """kok altinda ad'dan turetilmis, VAR OLMAYAN ve alinmis'ta bulunmayan
-    bir kosu dizini yolu (olusturmaz). Ad guvenli karakterlere indirgenir."""
+    bir kosu dizini yolu. Ad guvenli karakterlere indirgenir ("/" ve ".."
+    kalmaz: yol her zaman kok'un dogrudan alt dizinidir). olustur=True ise
+    dizin os.makedirs(exist_ok=False) ile ATOMIK ayrilir (es zamanli iki
+    cagiran ayni dizini alamaz); varsayilan olusturmaz (eski davranis)."""
+    if not str(kok or "").strip():
+        raise ValueError(_("koşu kök dizini boş olamaz"))
     temiz = re.sub(r"[^\w.-]+", "_", str(ad), flags=re.UNICODE).strip("._")
     temiz = temiz[:_AD_SINIRI] or "kosu"
     kok = os.path.abspath(kok)
     alinan = {os.path.abspath(a) for a in alinmis}
-    aday, n = os.path.join(kok, temiz), 1
-    while os.path.exists(aday) or aday in alinan:
+    n = 1
+    while True:
+        aday = os.path.join(kok, temiz if n == 1 else "%s_%d" % (temiz, n))
         n += 1
-        aday = os.path.join(kok, "%s_%d" % (temiz, n))
-    return aday
-
-
-def komut_olustur(openmc: str, is_parcacigi: int, mpi_surec: int = 0,
-                  mpiexec: Optional[str] = None) -> List[str]:
-    """openmc komutu (liste; shell yok). mpi_surec > 1 ise mpiexec ile."""
-    komut = [openmc, "-s", str(int(is_parcacigi))]
-    if int(mpi_surec) <= 1:
-        return komut
-    if not mpiexec:
-        raise KuyrukHatasi(_("MPI koşusu için mpiexec bulunamadı (OPENMC_ARAYUZ_MPIEXEC "
-                             "ya da PATH)"))
-    return [mpiexec, "-n", str(int(mpi_surec))] + komut
-
-
-def _calistirilabilir_mi(yol: str) -> bool:
-    return os.path.isfile(yol) and os.access(yol, os.X_OK)
-
-
-def _mpiexec_adaylari(ortam: Mapping[str, str], python: str) -> Iterator[str]:
-    deger = ortam.get(MPIEXEC_ORTAM_DEGISKENI)
-    if deger:
-        yol = os.path.expanduser(deger)
-        if os.path.isabs(yol):
-            yield yol
-        else:
-            _log.warning("%s=%s yok sayildi: mutlak yol olmali", MPIEXEC_ORTAM_DEGISKENI, deger)
-    if os.path.isabs(python):
-        yield os.path.join(os.path.dirname(python), MPIEXEC_ADI)
-    for oge in ortam.get("PATH", "").split(os.pathsep):
-        if oge and os.path.isabs(oge):            # bos / "." / goreli: CWD'yi aratirdi
-            yield os.path.join(oge, MPIEXEC_ADI)
-    onek = ortam.get("CONDA_PREFIX")
-    if onek and os.path.isabs(onek):
-        yield os.path.join(onek, "bin", MPIEXEC_ADI)
-
-
-def mpiexec_yolu(ortam: Ortam = None, python: Optional[str] = None) -> Optional[str]:
-    """mpiexec'in mutlak yolu ya da None (sira: modul belgesi, MPI)."""
-    ortam = os.environ if ortam is None else ortam
-    for aday in _mpiexec_adaylari(ortam, python or sys.executable):
-        yol = os.path.normpath(aday)
-        if _calistirilabilir_mi(yol):
-            return yol
-    return None
-
-
-_MPI_ONBELLEK: dict = {}
-
-
-def mpi_destegi(openmc: Optional[str]) -> Optional[bool]:
-    """openmc MPI ile derlenmis mi: True / False; anlasilamazsa None."""
-    if not openmc or not _calistirilabilir_mi(openmc):
-        return None
-    anahtar = (openmc, os.stat(openmc).st_mtime)
-    if anahtar in _MPI_ONBELLEK:
-        return _MPI_ONBELLEK[anahtar]
-    try:
-        cikti = subprocess.run([openmc, "--version"], capture_output=True, text=True,
-                               timeout=SURUM_SURESI, check=False).stdout
-    except (OSError, subprocess.TimeoutExpired):
-        _log.warning("openmc --version calistirilamadi: %s", openmc, exc_info=True)
-        return None
-    m = _MPI_DESEN.search(cikti or "")
-    destek = None if m is None else m.group(1).lower() == "yes"
-    _MPI_ONBELLEK[anahtar] = destek
-    return destek
+        if os.path.exists(aday) or aday in alinan:
+            continue
+        if not olustur:
+            return aday
+        try:
+            os.makedirs(aday, exist_ok=False)
+            return aday
+        except FileExistsError:
+            continue
 
 
 def varsayilan_sonuc_okuyucu(statepoint: str, is_: KosuIsi) -> Any:
@@ -279,7 +224,10 @@ def _toplam_cevrim(spec: Optional[Mapping[str, Any]]) -> Optional[int]:
     if not spec:
         return None
     deger = (spec.get("ayarlar") or {}).get("cevrim")
-    return int(deger) if deger else None
+    try:
+        return int(deger) if deger else None
+    except (TypeError, ValueError):
+        raise ValueError(_("spec'te çevrim sayısı geçersiz: %r") % (deger,)) from None
 
 
 def _son_statepoint(dizin: str, baslangic: float) -> Optional[str]:
@@ -325,6 +273,15 @@ class Kuyruk:
         self._etkin = False
         self._kapali = False
         self._bildirim = 0          # dinleyicilere henuz iletilmemis son asama olayi
+        self._seq = itertools.count(1)
+        self._son_seq: dict = {}    # kimlik -> yayilan en buyuk seq
+        self._yay_kilidi = threading.RLock()
+
+    def __enter__(self) -> "Kuyruk":
+        return self
+
+    def __exit__(self, *_hata: Any) -> None:
+        self.kapat()
 
     # ------------------------------------------------------------------
     # ozellikler
@@ -346,6 +303,13 @@ class Kuyruk:
         if int(en_fazla_paralel) < 1 or int(is_parcacigi_butcesi) < 1:
             raise ValueError(_("paralel koşu sayısı ve bütçe en az 1 olmalı"))
         with self._kosul:
+            sigmayan = [self._isler[k].ad for k in self._sira
+                        if not self._durumlar[k].bitti_mi
+                        and self._isler[k].maliyet > int(is_parcacigi_butcesi)]
+            if sigmayan:
+                # kucuk butce bastaki isi hic sigdirmazdi: kuyruk sessizce tikanirdi
+                raise ValueError(_("bütçe %d, bekleyen koşulardan küçük: %s")
+                                 % (int(is_parcacigi_butcesi), ", ".join(sigmayan)))
             self._paralel = int(en_fazla_paralel)
             self._butce = int(is_parcacigi_butcesi)
             olaylar = self._dagit()
@@ -363,14 +327,28 @@ class Kuyruk:
             self._dinleyiciler = [d for d in self._dinleyiciler if d is not dinleyici]
 
     def _yay(self, olaylar: Iterable[IsDurumu]) -> None:
-        """Olaylari dinleyicilere iletir (kilit DISINDA cagrilmali)."""
+        """Olaylari dinleyicilere iletir (kilit DISINDA cagrilmali). Bir isin
+        daha yeni (buyuk seq) olayi yayildiysa eskisi ATILIR: KOSUYOR'u yayan
+        iplik gecikirse BITTI'nin ustune yazilamaz. Dinleyiciler sirayla
+        (_yay_kilidi altinda) cagrilir; dinleyici icinden bekle() cagirmayin
+        (son olay bildirimi bitmeden bekle donmez -> kilitlenir)."""
         dinleyiciler = self._dinleyiciler
-        for olay in olaylar:
-            for d in dinleyiciler:
-                try:
-                    d(olay)
-                except Exception:
-                    _log.exception("kuyruk dinleyicisi hata verdi (%s)", olay.ad)
+        with self._yay_kilidi:
+            for olay in olaylar:
+                if self._son_seq.get(olay.kimlik, 0) >= olay.seq:
+                    continue
+                self._son_seq[olay.kimlik] = olay.seq
+                for d in dinleyiciler:
+                    try:
+                        d(olay)
+                    except Exception:
+                        _log.exception("kuyruk dinleyicisi hata verdi (%s)", olay.ad)
+
+    def _yaz(self, durum: IsDurumu, **alanlar: Any) -> IsDurumu:
+        """Yeni durumu tekil seq ile kaydeder (kilit ICINDE). DONER yeni durum."""
+        yeni = dataclasses.replace(durum, seq=next(self._seq), **alanlar)
+        self._durumlar[yeni.kimlik] = yeni
+        return yeni
 
     # ------------------------------------------------------------------
     # is ekleme / sira
@@ -401,12 +379,13 @@ class Kuyruk:
                 raise RuntimeError(_("kuyruk kapatıldı"))
             is_ = self._dogrula(is_)
             kimlik = uuid.uuid4().hex[:12]
-            self._isler[kimlik] = is_
-            self._sira.append(kimlik)
+            # once her sey kurulur (hata -> hicbir sozluge yazilmaz), sonra kayit
             durum = IsDurumu(kimlik=kimlik, ad=is_.ad, dizin=is_.dizin,
                              is_parcacigi=int(is_.is_parcacigi), mpi_surec=int(is_.mpi_surec),
                              toplam_cevrim=_toplam_cevrim(is_.spec), etiket=is_.etiket)
-            self._durumlar[kimlik] = durum
+            self._isler[kimlik] = is_
+            self._sira.append(kimlik)
+            durum = self._yaz(durum)
             olaylar = [durum] + self._dagit()
         self._yay(olaylar)
         return kimlik
@@ -423,7 +402,7 @@ class Kuyruk:
             self._sira.remove(kimlik)
             sira = max(0, min(int(sira), len(self._sira)))
             self._sira.insert(sira, kimlik)
-            olaylar = [durum] + self._dagit()
+            olaylar = [self._yaz(durum)] + self._dagit()
         self._yay(olaylar)
 
     def kaldir(self, kimlik: str) -> None:
@@ -495,20 +474,23 @@ class Kuyruk:
             if durum.bitti_mi:
                 return
             if durum.asama == Asama.BEKLIYOR:
-                yeni = dataclasses.replace(durum, asama=Asama.IPTAL, bitis=time.time())
-                self._durumlar[kimlik] = yeni
-                olaylar = [yeni]
+                olaylar = [self._yaz(durum, asama=Asama.IPTAL, bitis=time.time())]
                 self._bildirim += 1
             else:
+                # Kosan is: bayrak + SIGTERM (zamanlayici tekil). Surec bu arada
+                # kendiliginden 0 ile biterse is yine IPTAL sayilir (bayrak once
+                # denetlenir) -- iptal istegi sonucun onundedir.
                 self._iptal_istenen.add(kimlik)
-                surec = self._surecler.get(kimlik)
-                if surec is not None:
-                    self._sonlandir(surec)
+                grup = self._surecler.get(kimlik)
+                if grup is not None:
+                    grup.sonlandir(self._iptal_suresi)
         if olaylar:
             self._son_yay(olaylar)
 
     def kapat(self) -> None:
-        """Yeni is alinmaz; bekleyenler ve kosanlar iptal edilir, isciler beklenir."""
+        """Yeni is alinmaz; bekleyenler ve kosanlar iptal edilir, isciler TOPLAM
+        _KAPAT_SURESI icinde beklenir (is basina degil). Suresinde bitmeyen
+        iscinin sureci SIGKILL'i iptal_suresi sonra alir (SurecGrubu)."""
         with self._kosul:
             self._kapali = True
             self._etkin = False
@@ -516,22 +498,9 @@ class Kuyruk:
             iplikler = list(self._iplikler.values())
         for kimlik in kimlikler:
             self.iptal(kimlik)
+        son_an = time.monotonic() + _KAPAT_SURESI
         for iplik in iplikler:
-            iplik.join(_KAPAT_SURESI)
-
-    def _sonlandir(self, surec: subprocess.Popen) -> None:
-        """Surec grubuna SIGTERM; iptal_suresi sonra hala yasiyorsa SIGKILL."""
-        def gonder(sinyal: int) -> None:
-            if surec.poll() is not None:
-                return
-            try:
-                os.killpg(surec.pid, sinyal)
-            except (ProcessLookupError, PermissionError):
-                _log.debug("surec grubu %d sinyal %d alamadi", surec.pid, sinyal)
-        gonder(signal.SIGTERM)
-        zamanlayici = threading.Timer(self._iptal_suresi, gonder, args=(signal.SIGKILL,))
-        zamanlayici.daemon = True
-        zamanlayici.start()
+            iplik.join(max(0.0, son_an - time.monotonic()))
 
     # ------------------------------------------------------------------
     # zamanlama (kilit ICINDE cagrilir)
@@ -552,21 +521,26 @@ class Kuyruk:
             if (len(self._calisan) >= self._paralel
                     or self._kullanilan() + is_.maliyet > self._butce):
                 break                                   # FIFO: arkadaki one gecmez
-            yeni = dataclasses.replace(durum, asama=Asama.KOSUYOR, baslangic=time.time())
-            self._durumlar[kimlik] = yeni
-            self._calisan.add(kimlik)
-            olaylar.append(yeni)
             iplik = threading.Thread(target=self._isci, args=(kimlik,),
                                      name="kuyruk-%s" % kimlik, daemon=True)
+            # isci baslamadan once KOSUYOR + butce ayrilir (isci durumu okur)
+            self._calisan.add(kimlik)
             self._iplikler[kimlik] = iplik
-            iplik.start()
+            olaylar.append(self._yaz(durum, asama=Asama.KOSUYOR, baslangic=time.time()))
+            try:
+                iplik.start()
+            except RuntimeError as e:
+                # iplik acilamadi (kaynak siniri): is acik nedenle BASARISIZ
+                _log.exception("kuyruk iscisi baslatilamadi (%s)", is_.ad)
+                self._calisan.discard(kimlik)
+                self._iplikler.pop(kimlik, None)
+                olaylar.append(self._yaz(self._durumlar[kimlik], asama=Asama.BASARISIZ,
+                                         hata=str(e), bitis=time.time()))
         return olaylar
 
     def _guncelle(self, kimlik: str, **alanlar: Any) -> IsDurumu:
         with self._kosul:
-            yeni = dataclasses.replace(self._durumlar[kimlik], **alanlar)
-            self._durumlar[kimlik] = yeni
-            return yeni
+            return self._yaz(self._durumlar[kimlik], **alanlar)
 
     # ------------------------------------------------------------------
     # isci (kendi is parcaciginda)
@@ -581,8 +555,7 @@ class Kuyruk:
             _log.exception("kuyruk isi '%s' basarisiz", is_.ad)
             son = {"asama": Asama.BASARISIZ, "hata": str(e) or type(e).__name__}
         with self._kosul:
-            yeni = dataclasses.replace(self._durumlar[kimlik], bitis=time.time(), **son)
-            self._durumlar[kimlik] = yeni
+            yeni = self._yaz(self._durumlar[kimlik], bitis=time.time(), **son)
             self._calisan.discard(kimlik)
             self._surecler.pop(kimlik, None)
             self._iptal_istenen.discard(kimlik)
@@ -668,18 +641,20 @@ class Kuyruk:
         os.makedirs(is_.dizin, exist_ok=True)
         with open(os.path.join(is_.dizin, LOG_ADI), "w", encoding="utf-8") as log:
             log.write("# komut: %s\n# dizin: %s\n\n" % (" ".join(komut), is_.dizin))
-            surec = subprocess.Popen(komut, cwd=is_.dizin, stdout=subprocess.PIPE,
-                                     stderr=subprocess.STDOUT, text=True, bufsize=1,
-                                     env=self._surec_ortami(is_), start_new_session=True)
-            with self._kosul:
-                self._surecler[kimlik] = surec
-                if kimlik in self._iptal_istenen:
-                    self._sonlandir(surec)
-            with surec.stdout:
-                for satir in surec.stdout:
+            grup = SurecGrubu(komut, is_.dizin, self._surec_ortami(is_))
+            try:
+                with self._kosul:
+                    self._surecler[kimlik] = grup
+                    if kimlik in self._iptal_istenen:
+                        grup.sonlandir(self._iptal_suresi)
+                for satir in grup.satirlar():
                     log.write(satir)
                     self._satir_isle(kimlik, satir.rstrip("\n"))
-            return surec.wait()
+                return grup.bekle()
+            finally:
+                # okuma hatasi (disk dolu ...) dahil: grupta yasayan kalmaz, lider
+                # toplanir -- yetim/zombi yok, butce dogru kalir
+                grup.kapat(self._iptal_suresi)
 
     def _satir_isle(self, kimlik: str, satir: str) -> None:
         bilgi = kosucu.cevrim_satiri(satir)
