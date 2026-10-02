@@ -9,7 +9,6 @@
 import os
 
 from cekirdek.sema import malzeme_bul
-from cekirdek import kurucu
 from cekirdek.dogrula._ortak import Bulgu
 from cekirdek.ceviri import _
 from cekirdek.gunluk import kaydedici, uyar_bir_kez
@@ -77,6 +76,9 @@ def nuklid_kontrol(spec):
                               _("cross_sections.xml okunamadı; nüklid denetimi atlandı")))
         return bulgular
 
+    if spec.get("malzemeler") == []:
+        return bulgular     # bos liste: kurulacak malzeme yok (acilis: openmc yuklenmez)
+    from cekirdek import kurucu     # tembel: openmc (H1b)
     try:
         nesneler, _sab, _hacim = kurucu.malzemeleri_kur(spec)
     except Exception as e:

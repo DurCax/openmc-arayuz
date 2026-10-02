@@ -32,7 +32,7 @@ import subprocess
 import sys
 import time
 
-from cekirdek import sema, kurucu, dogrula
+from cekirdek import sema, dogrula
 from cekirdek import kapsul as _kapsul
 from cekirdek import yollar as _yollar
 from cekirdek.ceviri import _, N_
@@ -244,6 +244,7 @@ def xml_yaz(spec, dizin, is_parcacigi=None):
     """Modeli kurar ve model.xml'i kosu dizinine yazar. DONER (model, bilgi, yol)"""
     # Kosu icin DAIMA taze model -- onbellekteki nesne paylasilir, uzerinde
     # calisma dizinine bagli islemler yapilmamalidir (bkz. onbellek.py).
+    from cekirdek import kurucu     # tembel: openmc (H1b)
     model, bilgi = kurucu.kur(spec)
     yol = os.path.join(dizin, "model.xml")
     model.export_to_model_xml(yol)

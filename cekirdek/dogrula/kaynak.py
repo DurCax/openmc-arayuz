@@ -8,7 +8,7 @@
 
 import os
 
-from cekirdek import kurucu, veri_bilgi, sema
+from cekirdek import veri_bilgi, sema
 from cekirdek import kaynak as _kaynak
 from cekirdek import uygunluk
 from cekirdek.dogrula._ortak import Bulgu
@@ -17,6 +17,13 @@ from cekirdek.gunluk import kaydedici, uyar_bir_kez
 from cekirdek.ceviri import _
 
 _log = kaydedici(__name__)
+
+
+def _varsayilan_mi(ad, arg):
+    """Sema varsayilani (ya da bos): kurulabilirligi sabit, testle guvenceli
+    (test_h1b_ithal). Bu durumda openmc.stats kurulmaz: acilistaki bos model
+    dogrulamasi openmc'yi yuklemez (H1b)."""
+    return not arg or arg == sema.VARSAYILAN_AYARLAR["kaynak"].get(ad)
 
 
 # ============================================================================
@@ -45,8 +52,11 @@ def kaynak_kontrol(spec, veri_kontrolu=True):
     secenek = uygunluk.kaynak_secenekleri(spec)
 
     # --- dagilimlar gercekten kurulabiliyor mu ---
-    for ad, fn, arg in ((_("enerji tayfı"), _kaynak.enerji_dagilimi, e),
-                        (_("açısal dağılım"), _kaynak.aci_dagilimi, k.get("aci"))):
+    for ad, fn, arg, alan_adi in ((_("enerji tayfı"), _kaynak.enerji_dagilimi, e, "enerji"),
+                                  (_("açısal dağılım"), _kaynak.aci_dagilimi, k.get("aci"),
+                                   "aci")):
+        if _varsayilan_mi(alan_adi, arg):
+            continue
         try:
             fn(arg)
         except Exception as hata:
@@ -91,6 +101,7 @@ def kaynak_kontrol(spec, veri_kontrolu=True):
     tepe = _kaynak.en_yuksek_enerji(e)
     if tepe is not None and veri_kontrolu and parca == "neutron":
         try:
+            from cekirdek import kurucu     # tembel: openmc (H1b)
             nesneler, _sab, _hacim = kurucu.malzemeleri_kur(spec)
             nuklidler = set()
             for mat in nesneler.values():

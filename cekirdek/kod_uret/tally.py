@@ -5,7 +5,6 @@
 
 from cekirdek import sema
 from cekirdek.kod_uret.ad import _ad, _f, _bolum, _mat_ifade  # noqa: F401
-from cekirdek.geometri.yapici import yorum_metni
 
 
 def _guc_dagilimi(spec, satirlar, uretilen, gx, gy):
@@ -13,6 +12,7 @@ def _guc_dagilimi(spec, satirlar, uretilen, gx, gy):
     g = spec.get("guc_dagilimi") or {}
     if not g.get("var"):
         return []
+    from cekirdek.geometri.yapici import yorum_metni   # tembel: openmc (H1b)
     hedefler, eksik = _guc_hedefleri(spec, uretilen)
     for cubuk_ad in eksik:
         satirlar.append("")

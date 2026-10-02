@@ -25,7 +25,6 @@
 
 import math
 
-import openmc
 from cekirdek.ceviri import _, N_
 
 # Arayuzde ve dogrulamada kullanilan tayf listesi: (anahtar, gorunen ad)
@@ -80,6 +79,7 @@ def _f(d, ad, vars_=0.0):
 
 def enerji_dagilimi(e):
     """spec ayarlar.kaynak.enerji -> openmc.stats dagilimi"""
+    import openmc       # tembel: acilista openmc yuklenmez (H1b)
     e = e or {}
     tur = e.get("tur", "watt")
 
@@ -146,6 +146,7 @@ def _dik_referans(yon):
 
 def aci_dagilimi(a):
     """spec ayarlar.kaynak.aci -> openmc.stats yon dagilimi (None = izotropik)"""
+    import openmc
     a = a or {}
     tur = a.get("tur", "izotropik")
     if tur == "izotropik":
@@ -233,6 +234,7 @@ def en_yuksek_enerji(e):
 
 def kaynak_kur(k, uzay, kisit):
     """spec ayarlar.kaynak + hazir uzay dagilimi -> openmc.IndependentSource"""
+    import openmc
     k = k or {}
     return openmc.IndependentSource(
         space=uzay,
