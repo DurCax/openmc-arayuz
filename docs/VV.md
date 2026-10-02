@@ -43,6 +43,14 @@ hesap sonucudur ve "doğru" değer değildir.
 | vv/kriter_lct006_08.json | LEU-COMP-THERM-006, durum 8 | 1.0000 ± 0.0020 | 1.00078 ± 0.00023 | +78 | 0.39 | 1.00078 | 100000 | 200/50 | 482.9 | geçti |
 | vv/kriter_lct006_09.json | LEU-COMP-THERM-006, durum 9 | 1.0000 ± 0.0020 | 1.00134 ± 0.00027 | +134 | 0.66 | 1.00134 | 100000 | 200/50 | 472.3 | geçti |
 | vv/kriter_lct006_10.json | LEU-COMP-THERM-006, durum 10 | 1.0000 ± 0.0020 | 1.00099 ± 0.00025 | +99 | 0.49 | 1.00099 | 100000 | 200/50 | 451.3 | geçti |
+| vv/kriter_lct006_11.json | LEU-COMP-THERM-006, durum 11 | 1.0000 ± 0.0020 | 1.00152 ± 0.00023 | +152 | 0.76 | 1.00152 | 100000 | 200/50 | 408.9 | geçti |
+| vv/kriter_lct006_12.json | LEU-COMP-THERM-006, durum 12 | 1.0000 ± 0.0020 | 1.00075 ± 0.00026 | +75 | 0.37 | 1.00075 | 100000 | 200/50 | 397.8 | geçti |
+| vv/kriter_lct006_13.json | LEU-COMP-THERM-006, durum 13 | 1.0000 ± 0.0020 | 1.00081 ± 0.00026 | +81 | 0.40 | 1.00081 | 100000 | 200/50 | 394.4 | geçti |
+| vv/kriter_lct006_14.json | LEU-COMP-THERM-006, durum 14 | 1.0000 ± 0.0020 | 1.00126 ± 0.00027 | +126 | 0.62 | 1.00126 | 100000 | 200/50 | 423.9 | geçti |
+| vv/kriter_lct006_15.json | LEU-COMP-THERM-006, durum 15 | 1.0000 ± 0.0020 | 1.00090 ± 0.00027 | +90 | 0.45 | 1.00090 | 100000 | 200/50 | 417.5 | geçti |
+| vv/kriter_lct006_16.json | LEU-COMP-THERM-006, durum 16 | 1.0000 ± 0.0020 | 1.00063 ± 0.00027 | +63 | 0.31 | 1.00063 | 100000 | 200/50 | 407.1 | geçti |
+| vv/kriter_lct006_17.json | LEU-COMP-THERM-006, durum 17 | 1.0000 ± 0.0020 | 1.00119 ± 0.00022 | +119 | 0.59 | 1.00119 | 100000 | 200/50 | 401.0 | geçti |
+| vv/kriter_lct006_18.json | LEU-COMP-THERM-006, durum 18 | 1.0000 ± 0.0020 | 1.00070 ± 0.00026 | +70 | 0.35 | 1.00070 | 100000 | 200/50 | 394.3 | geçti |
 | vv/kriter_lst002a.json | LEU-SOL-THERM-002, durum 1 | 1.0038 ± 0.0040 | 0.99994 ± 0.00020 | −386 | 0.96 | 0.99615 | 100000 | 200/50 | 322.4 | geçti |
 | vv/kriter_lst002b.json | LEU-SOL-THERM-002, durum 2 | 1.0024 ± 0.0037 | 0.99578 ± 0.00023 | −662 | 1.79 | 0.99340 | 100000 | 200/50 | 226.8 | geçti |
 | vv/kriter_lst003c.json | LEU-SOL-THERM-003, durum 3 | 0.9995 ± 0.0042 | 1.00396 ± 0.00028 | +446 | 1.06 | 1.00446 | 100000 | 200/50 | 221.6 | geçti |
@@ -147,6 +155,14 @@ bölünebilir atom, yalnız H bölünebilir malzemenin içindeyse; H yalnız ayr
 | vv/kriter_lct006_08.json | LEU-COMP-THERM-006 | U-235 | 2.60 | oksit | su | 201 | 0.206 | termal |
 | vv/kriter_lct006_09.json | LEU-COMP-THERM-006 | U-235 | 2.60 | oksit | su | 272 | 0.139 | termal |
 | vv/kriter_lct006_10.json | LEU-COMP-THERM-006 | U-235 | 2.60 | oksit | su | 272 | 0.142 | termal |
+| vv/kriter_lct006_11.json | LEU-COMP-THERM-006 | U-235 | 2.60 | oksit | su | 272 | 0.145 | termal |
+| vv/kriter_lct006_12.json | LEU-COMP-THERM-006 | U-235 | 2.60 | oksit | su | 272 | 0.149 | termal |
+| vv/kriter_lct006_13.json | LEU-COMP-THERM-006 | U-235 | 2.60 | oksit | su | 272 | 0.152 | termal |
+| vv/kriter_lct006_14.json | LEU-COMP-THERM-006 | U-235 | 2.60 | oksit | su | 329 | 0.117 | termal |
+| vv/kriter_lct006_15.json | LEU-COMP-THERM-006 | U-235 | 2.60 | oksit | su | 329 | 0.12 | termal |
+| vv/kriter_lct006_16.json | LEU-COMP-THERM-006 | U-235 | 2.60 | oksit | su | 329 | 0.123 | termal |
+| vv/kriter_lct006_17.json | LEU-COMP-THERM-006 | U-235 | 2.60 | oksit | su | 329 | 0.125 | termal |
+| vv/kriter_lct006_18.json | LEU-COMP-THERM-006 | U-235 | 2.60 | oksit | su | 329 | 0.128 | termal |
 | vv/kriter_lst002a.json | LEU-SOL-THERM-002 | U-235 | 4.89 | çözelti | su | 1.1e+03 | 0.0385 | termal |
 | vv/kriter_lst002b.json | LEU-SOL-THERM-002 | U-235 | 4.89 | çözelti | yok | 1e+03 | 0.0404 | termal |
 | vv/kriter_lst003c.json | LEU-SOL-THERM-003 | U-235 | 10.07 | çözelti | yok | 897 | 0.039 | termal |

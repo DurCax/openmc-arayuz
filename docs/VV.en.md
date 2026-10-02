@@ -47,6 +47,14 @@ benchmark E is the result of other codes and is not the "true" value.
 | vv/kriter_lct006_08.json | LEU-COMP-THERM-006, case 8 | 1.0000 ± 0.0020 | 1.00078 ± 0.00023 | +78 | 0.39 | 1.00078 | 100000 | 200/50 | 482.9 | passed |
 | vv/kriter_lct006_09.json | LEU-COMP-THERM-006, case 9 | 1.0000 ± 0.0020 | 1.00134 ± 0.00027 | +134 | 0.66 | 1.00134 | 100000 | 200/50 | 472.3 | passed |
 | vv/kriter_lct006_10.json | LEU-COMP-THERM-006, case 10 | 1.0000 ± 0.0020 | 1.00099 ± 0.00025 | +99 | 0.49 | 1.00099 | 100000 | 200/50 | 451.3 | passed |
+| vv/kriter_lct006_11.json | LEU-COMP-THERM-006, case 11 | 1.0000 ± 0.0020 | 1.00152 ± 0.00023 | +152 | 0.76 | 1.00152 | 100000 | 200/50 | 408.9 | passed |
+| vv/kriter_lct006_12.json | LEU-COMP-THERM-006, case 12 | 1.0000 ± 0.0020 | 1.00075 ± 0.00026 | +75 | 0.37 | 1.00075 | 100000 | 200/50 | 397.8 | passed |
+| vv/kriter_lct006_13.json | LEU-COMP-THERM-006, case 13 | 1.0000 ± 0.0020 | 1.00081 ± 0.00026 | +81 | 0.40 | 1.00081 | 100000 | 200/50 | 394.4 | passed |
+| vv/kriter_lct006_14.json | LEU-COMP-THERM-006, case 14 | 1.0000 ± 0.0020 | 1.00126 ± 0.00027 | +126 | 0.62 | 1.00126 | 100000 | 200/50 | 423.9 | passed |
+| vv/kriter_lct006_15.json | LEU-COMP-THERM-006, case 15 | 1.0000 ± 0.0020 | 1.00090 ± 0.00027 | +90 | 0.45 | 1.00090 | 100000 | 200/50 | 417.5 | passed |
+| vv/kriter_lct006_16.json | LEU-COMP-THERM-006, case 16 | 1.0000 ± 0.0020 | 1.00063 ± 0.00027 | +63 | 0.31 | 1.00063 | 100000 | 200/50 | 407.1 | passed |
+| vv/kriter_lct006_17.json | LEU-COMP-THERM-006, case 17 | 1.0000 ± 0.0020 | 1.00119 ± 0.00022 | +119 | 0.59 | 1.00119 | 100000 | 200/50 | 401.0 | passed |
+| vv/kriter_lct006_18.json | LEU-COMP-THERM-006, case 18 | 1.0000 ± 0.0020 | 1.00070 ± 0.00026 | +70 | 0.35 | 1.00070 | 100000 | 200/50 | 394.3 | passed |
 | vv/kriter_lst002a.json | LEU-SOL-THERM-002, case 1 | 1.0038 ± 0.0040 | 0.99994 ± 0.00020 | −386 | 0.96 | 0.99615 | 100000 | 200/50 | 322.4 | passed |
 | vv/kriter_lst002b.json | LEU-SOL-THERM-002, case 2 | 1.0024 ± 0.0037 | 0.99578 ± 0.00023 | −662 | 1.79 | 0.99340 | 100000 | 200/50 | 226.8 | passed |
 | vv/kriter_lst003c.json | LEU-SOL-THERM-003, case 3 | 0.9995 ± 0.0042 | 1.00396 ± 0.00028 | +446 | 1.06 | 1.00446 | 100000 | 200/50 | 221.6 | passed |
@@ -155,6 +163,14 @@ In `referans.aoa` the form, reflector and spectrum values are stored as Turkish 
 | vv/kriter_lct006_08.json | LEU-COMP-THERM-006 | U-235 | 2.60 | oxide | water | 201 | 0.206 | thermal |
 | vv/kriter_lct006_09.json | LEU-COMP-THERM-006 | U-235 | 2.60 | oxide | water | 272 | 0.139 | thermal |
 | vv/kriter_lct006_10.json | LEU-COMP-THERM-006 | U-235 | 2.60 | oxide | water | 272 | 0.142 | thermal |
+| vv/kriter_lct006_11.json | LEU-COMP-THERM-006 | U-235 | 2.60 | oxide | water | 272 | 0.145 | thermal |
+| vv/kriter_lct006_12.json | LEU-COMP-THERM-006 | U-235 | 2.60 | oxide | water | 272 | 0.149 | thermal |
+| vv/kriter_lct006_13.json | LEU-COMP-THERM-006 | U-235 | 2.60 | oxide | water | 272 | 0.152 | thermal |
+| vv/kriter_lct006_14.json | LEU-COMP-THERM-006 | U-235 | 2.60 | oxide | water | 329 | 0.117 | thermal |
+| vv/kriter_lct006_15.json | LEU-COMP-THERM-006 | U-235 | 2.60 | oxide | water | 329 | 0.12 | thermal |
+| vv/kriter_lct006_16.json | LEU-COMP-THERM-006 | U-235 | 2.60 | oxide | water | 329 | 0.123 | thermal |
+| vv/kriter_lct006_17.json | LEU-COMP-THERM-006 | U-235 | 2.60 | oxide | water | 329 | 0.125 | thermal |
+| vv/kriter_lct006_18.json | LEU-COMP-THERM-006 | U-235 | 2.60 | oxide | water | 329 | 0.128 | thermal |
 | vv/kriter_lst002a.json | LEU-SOL-THERM-002 | U-235 | 4.89 | solution | water | 1.1e+03 | 0.0385 | thermal |
 | vv/kriter_lst002b.json | LEU-SOL-THERM-002 | U-235 | 4.89 | solution | none | 1e+03 | 0.0404 | thermal |
 | vv/kriter_lst003c.json | LEU-SOL-THERM-003 | U-235 | 10.07 | solution | none | 897 | 0.039 | thermal |
