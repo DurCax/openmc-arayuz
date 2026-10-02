@@ -232,14 +232,20 @@ def _guvenli(metin: str) -> str:
     return re.sub(r"[^A-Za-z0-9_]", "_", metin or "")[:40].strip("_")
 
 
+_ONEK = {"material": "m", "cell": "c", "universe": "u"}
+
+
+def xsdata_adi(domain: Any, domain_type: str) -> str:
+    """Bolgenin xsdata adi: onek + kimlik + guvenli ad (kimlik VE ad birlikte:
+    MG modeli eslemesi ikisini de denetler)."""
+    govde = _guvenli(getattr(domain, "name", ""))
+    taban = "%s%d" % (_ONEK[domain_type], domain.id)
+    return "%s_%s" % (taban, govde) if govde else taban
+
+
 def xsdata_adlari(lib: "openmc.mgxs.Library") -> Dict[int, str]:
     """{domain kimligi: xsdata adi} -- HDF5 guvenli, kimlikle tekil."""
-    onek = {"material": "m", "cell": "c", "universe": "u"}[lib.domain_type]
-    adlar = {}
-    for d in lib.domains:
-        govde = _guvenli(getattr(d, "name", ""))
-        adlar[d.id] = "%s%d_%s" % (onek, d.id, govde) if govde else "%s%d" % (onek, d.id)
-    return adlar
+    return {d.id: xsdata_adi(d, lib.domain_type) for d in lib.domains}
 
 
 def bolge_adi(domain: Any) -> str:
@@ -279,6 +285,7 @@ class MgxsSonuc:
     k_ozdeger: Optional[mgxs_k.Deger]
     dizin: str
     notlar: Tuple[str, ...] = field(default_factory=tuple)
+    spec_ozeti: str = ""                       # onbellek.ozet(spec): MG eslemesi denetimi
 
     @property
     def h5(self) -> str:
@@ -386,7 +393,7 @@ def _ozet_yaz(sonuc: MgxsSonuc) -> None:
     veri = {"ayar": sonuc.ayar.sozluk(), "grup_kenarlari": list(sonuc.grup_kenarlari),
             "adlar": {str(k): v for k, v in sonuc.adlar.items()}, "k_ce": _d(sonuc.k_ce),
             "k_oran": _d(sonuc.k_oran), "k_ozdeger": _d(sonuc.k_ozdeger),
-            "notlar": list(sonuc.notlar)}
+            "notlar": list(sonuc.notlar), "spec_ozeti": sonuc.spec_ozeti}
     with open(os.path.join(sonuc.dizin, OZET_ADI), "w", encoding="utf-8") as f:
         json.dump(veri, f, ensure_ascii=False, indent=1)
 
@@ -418,8 +425,9 @@ def _isle(statepoint: str, spec: Mapping, dizin: str) -> MgxsSonuc:
                              "MG Monte Carlo bunu doğru işleyemez, random ray "
                              "köşegen kararlılaştırması uygular") % negatif,)
     satirlar = tuple(_satirlar(lib, adlar))
+    from cekirdek import onbellek
     sonuc = MgxsSonuc(a, tuple(float(e) for e in lib.energy_groups.group_edges), adlar,
-                      satirlar, k_ce, k_oran, k_oz, dizin, notlar)
+                      satirlar, k_ce, k_oran, k_oz, dizin, notlar, onbellek.ozet(spec))
     csv_yaz(satirlar, sonuc.csv, a)
     _ozet_yaz(sonuc)
     return sonuc

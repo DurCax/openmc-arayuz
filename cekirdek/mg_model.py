@@ -70,9 +70,34 @@ def _adlar(ozet: Mapping) -> dict:
     return {int(k): v for k, v in (ozet.get("adlar") or {}).items()}
 
 
+def _eslesme_denetle(geo: "openmc.Geometry", bolge: str, adlar: dict) -> None:
+    """Ozetteki {kimlik: xsdata} bu modelin bolgeleriyle kimlik VE adca ayni mi.
+    Spec MGXS kosusundan sonra degistiyse (kimlikler kaydi) sessiz yanlis atama
+    yerine acik hata."""
+    from cekirdek import mgxs_uret
+    a = mgxs_uret.MgxsAyar(True, bolge)
+    beklenen = {d.id: mgxs_uret.xsdata_adi(d, a.domain_turu)
+                for d in mgxs_uret.domainler(a, geo)}
+    if beklenen != adlar:
+        fark = sorted(set(beklenen.items()) ^ set(adlar.items()))[:4]
+        raise ValueError(_("MGXS özeti bu modelle eşleşmiyor (model, grup sabitleri "
+                           "üretildikten sonra değişmiş); grup sabitlerini yeniden üretin. "
+                           "Fark: %s") % fark)
+
+
+def _spec_denetle(spec: Mapping, ozet: Mapping) -> None:
+    """Ozet, bu spec'in MGXS kosusundan mi (onbellek.ozet ile ayni parmak izi)."""
+    from cekirdek import onbellek
+    beklenen = ozet.get("spec_ozeti")
+    if beklenen and beklenen != onbellek.ozet(spec):
+        raise ValueError(_("MGXS özeti bu modelle eşleşmiyor (spec, grup sabitleri "
+                           "üretildikten sonra değişmiş); grup sabitlerini yeniden üretin."))
+
+
 def _malzemeleri_cevir(model: "openmc.Model", bolge: str, adlar: dict) -> list:
     import openmc
     geo = model.geometry
+    _eslesme_denetle(geo, bolge, adlar)
     if bolge == "hucre":
         yeni = []
         for hucre in sorted(geo.get_all_material_cells().values(), key=lambda c: c.id):
@@ -120,6 +145,7 @@ def mg_modeli(spec: Mapping, ozet: Mapping, h5: str) -> "openmc.Model":
     from cekirdek import kurucu
     if not os.path.isfile(h5):
         raise FileNotFoundError(_("MG kütüphanesi bulunamadı: %s") % h5)
+    _spec_denetle(spec, ozet)
     uyari = surum_uyarisi()
     if uyari:
         _log.warning("%s", uyari)

@@ -111,7 +111,9 @@ def _mg_kur(bolge, gecici):
     adlar = mu.xsdata_adlari(b["mgxs"])
     h5 = os.path.join(gecici, "mgxs.h5")
     open(h5, "wb").close()                  # icerigi model kurulumunda okunmaz
-    ozet = {"ayar": {"bolge": bolge}, "adlar": {str(k): v for k, v in adlar.items()}}
+    from cekirdek import onbellek
+    ozet = {"ayar": {"bolge": bolge}, "adlar": {str(k): v for k, v in adlar.items()},
+            "spec_ozeti": onbellek.ozet(spec)}
     return spec, ozet, h5, adlar, mg_model
 
 
@@ -199,6 +201,37 @@ def test_openmc_ic_ayrinti_varsayimlari():
     kontrol("surum uyarisi uyumlu surumde yok", mg_model.surum_uyarisi() is None)
 
 
+def test_mg_modeli_eski_ozet_acik_hata():
+    print("\n[Y8-I9] spec'e malzeme eklenip ozet eskiyse (kimlik kaydi) MG modeli ACIK hata verir")
+    import copy
+    import tempfile
+    for bolge in ("malzeme", "hucre"):
+        with tempfile.TemporaryDirectory() as d:
+            # Arrange
+            spec, ozet, h5, _adlar, mg_model = _mg_kur(bolge, d)
+            yeni = copy.deepcopy(spec)
+            ek = copy.deepcopy(yeni["malzemeler"][0])
+            ek["ad"] = "yeni_malzeme"
+            yeni["malzemeler"].insert(0, ek)       # kimlikler kayar
+            # Act / Assert
+            try:
+                mg_model.mg_modeli(yeni, ozet, h5)
+                kontrol("%s: eski ozet ValueError" % bolge, False)
+            except ValueError as e:
+                kontrol("%s: eski ozet ValueError" % bolge, "eşleşmiyor" in str(e), "-> %s" % e)
+        # parmak izi olmayan (eski) ozette kimlik+ad denetimi tek basina yakalar
+        with tempfile.TemporaryDirectory() as d:
+            spec, ozet, h5, _adlar, mg_model = _mg_kur("malzeme", d)
+            yeni = copy.deepcopy(spec)
+            yeni["malzemeler"].insert(0, dict(copy.deepcopy(yeni["malzemeler"][0]), ad="ek"))
+            eski = {k: v for k, v in ozet.items() if k != "spec_ozeti"}
+            try:
+                mg_model.mg_modeli(yeni, eski, h5)
+                kontrol("parmak izsiz: kimlik/ad ValueError", False)
+            except ValueError as e:
+                kontrol("parmak izsiz: kimlik/ad ValueError", "eşleşmiyor" in str(e))
+
+
 # ---------------------------------------------------------------------------
 # YAVAS
 # ---------------------------------------------------------------------------
@@ -283,5 +316,5 @@ def test_ince_grup_mg_ve_random_ray(gecici):
 HIZLI = [test_karsilastirma_tablosu, test_random_ray_ayar_dogrulama, test_rr_varsayilan_ve_mg_sarti,
          test_kapsam_secenekleri_ve_demet_alt_modeli, test_mg_modeli_kosusuz,
          test_mg_modeli_hucre_demet_ve_random_ray, test_hazirlik_kilidi_genel_ve_ayni_nesne,
-         test_openmc_ic_ayrinti_varsayimlari]
+         test_openmc_ic_ayrinti_varsayimlari, test_mg_modeli_eski_ozet_acik_hata]
 YAVAS = [test_iki_grup_homojen_k_inf, test_ince_grup_mg_ve_random_ray]
