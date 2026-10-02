@@ -299,7 +299,40 @@ def test_pu_yaslandirma_am241():
         mh.pu_yaslandir(pu, -1.0)
 
 
-HIZLI = [test_td_ve_gozeneklilikten_yogunluk, test_uranyum_vektoru_ornl_bagintisi,
+def test_nan_ve_sonsuz_girdiler_degerhatasi():
+    from cekirdek import malzeme_hesap as mh
+    from cekirdek.sema import malzeme, bilesen
+    nan, inf = float("nan"), float("inf")
+    a, b = ({"H1": 1.0}, 1.0), ({"O16": 1.0}, 3.0)
+    hatali = [
+        lambda: mh.karistir([a, b], [nan, 0.5], "vo"),
+        lambda: mh.karistir([a, ({"O16": 1.0}, inf)], [0.5, 0.5], "wo"),
+        lambda: mh.karistir([a, ({"O16": 1.0}, 0.0)], [0.5, 0.5], "wo"),     # sifira bolme
+        lambda: mh.ao_to_wo({"H1": nan}),
+        lambda: mh.turetilmis(malzeme("x", [bilesen("H", inf)], 1.0)),
+        lambda: mh.yogunluk_td(nan, td_orani=0.9),
+        lambda: mh.pu_yaslandir({"Pu239": 1.0}, inf),
+        lambda: mh.mox_bilesimi(nan, {"Pu239": 1.0}, 0.25),
+        lambda: mh.mox_bilesimi(0.1, {"Pu239": 1.0}, 0.25, om=nan),
+        lambda: mh.kutle("Xx999"),
+    ]
+    for i, f in enumerate(hatali):
+        with pytest.raises(ValueError):
+            f()
+
+
+def test_sifir_miktarli_satir_atlanir():
+    from cekirdek import malzeme_hesap as mh
+    from cekirdek.sema import malzeme, bilesen
+    m = malzeme("x", [bilesen("H1", 2.0, tur="nuklid"), bilesen("O16", 1.0, tur="nuklid"),
+                      bilesen("B10", 0.0, tur="nuklid")], 1.0)
+    assert "B10" not in mh.turetilmis(m)["nuklidler"]
+    with pytest.raises(ValueError):
+        mh.turetilmis(malzeme("x", [bilesen("H1", 0.0, tur="nuklid")], 1.0))
+
+
+HIZLI = [test_nan_ve_sonsuz_girdiler_degerhatasi, test_sifir_miktarli_satir_atlanir,
+         test_td_ve_gozeneklilikten_yogunluk, test_uranyum_vektoru_ornl_bagintisi,
          test_uranyum_vektoru_openmc_ile_ayni, test_bor_lityum_gadolinyum_zenginlestirme,
          test_uo2_turetilmis_degerler_el_hesabi, test_turetilmis_openmc_ile_ayni,
          test_yogunluk_birimleri_ve_sum, test_karisik_birim_ve_negatif_reddedilir,

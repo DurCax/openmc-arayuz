@@ -128,9 +128,20 @@ def _normalize(vektor):
     return {k: v / toplam for k, v in vektor.items()}
 
 
+def _sonlu(x, etiket):
+    """Sonlu sayi (NaN/sonsuz ValueError) -- sinirdaki her hesap girdisi icin."""
+    try:
+        x = float(x)
+    except (TypeError, ValueError):
+        raise ValueError(_("%s sayı olmalı: %r") % (etiket, x)) from None
+    if not math.isfinite(x):
+        raise ValueError(_("%s sonlu bir sayı olmalı: %r") % (etiket, x))
+    return x
+
+
 def _negatif_yok(vektor):
     for k, v in vektor.items():
-        if v < 0.0 or math.isnan(v):
+        if not math.isfinite(v) or v < 0.0:
             raise ValueError(_("negatif ya da geçersiz kesir: %s = %r") % (k, v))
 
 
@@ -176,7 +187,7 @@ def yogunluk_td(td_yogunluk, td_orani=None, gozeneklilik=None):
     """
     if (td_orani is None) == (gozeneklilik is None):
         raise ValueError(_("%TD ya da gözeneklilikten yalnız biri verilmeli"))
-    if td_yogunluk <= 0.0:
+    if not _sonlu(td_yogunluk, _("kuramsal yoğunluk")) > 0.0:
         raise ValueError(_("kuramsal yoğunluk pozitif olmalı"))
     if gozeneklilik is not None:
         if not 0.0 <= gozeneklilik < 1.0:
@@ -255,9 +266,11 @@ def element_vektoru(element, zenginlik_yuzde=None):
 
 def _satir_mol(satir, birim):
     """Bir bilesim satirinin {nuklid: mol katkisi}; wo'da miktar/M_ort."""
-    miktar = float(satir["miktar"])
-    if miktar < 0.0 or math.isnan(miktar):
+    miktar = _sonlu(satir["miktar"], satir.get("isim") or "?")
+    if miktar < 0.0:
         raise ValueError(_("negatif miktar: %s = %r") % (satir.get("isim"), miktar))
+    if miktar == 0.0:
+        return {}                         # bilesime katkisi yok (OpenMC de 0 kesri yok sayar)
     if satir.get("tur") == "nuklid":
         vek = {satir["isim"]: 1.0}
     else:
@@ -428,7 +441,7 @@ _TOPLAM_TOLERANSI = 1.0e-6
 def _oranlari_dogrula(oranlar, n):
     if len(oranlar) != n or n == 0:
         raise ValueError(_("bileşen ve oran sayısı eşit olmalı"))
-    if any(f < 0.0 for f in oranlar):
+    if any(not math.isfinite(f) or f < 0.0 for f in oranlar):
         raise ValueError(_("oranlar negatif olamaz"))
     if abs(sum(oranlar) - 1.0) > _TOPLAM_TOLERANSI:
         raise ValueError(_("oranların toplamı %%100 olmalı (şu an %%%.4f)") % (100.0 * sum(oranlar)))
@@ -444,6 +457,8 @@ def karistir(bilesenler, oranlar, tur):
     if tur not in ORAN_TURLERI:
         raise ValueError(_("karışım oranı ao, wo ya da vo olmalı: %r") % tur)
     _oranlari_dogrula(oranlar, len(bilesenler))
+    if any(not (math.isfinite(r) and r > 0.0) for _v, r in bilesenler):
+        raise ValueError(_("bileşen yoğunlukları pozitif ve sonlu olmalı"))
     kutleler = [ortalama_kutle(v) for v, _r in bilesenler]
     if tur == "vo":
         hacim = list(oranlar)
@@ -517,9 +532,9 @@ def mox_bilesimi(pu_hm_wo, pu_vektor_wo, u_zenginlik_yuzde, om=2.0):
       U = 1 - p ;  Pu_i = p w_i ;  O = x M_O [ (1-p)/M_U + sum p w_i / M_i ]
     p = Pu/HM kutle kesri, w = Pu(+Am) vektoru (kutle, toplam 1), x = O/M.
     """
-    if not 0.0 < pu_hm_wo <= 1.0:
+    if not 0.0 < _sonlu(pu_hm_wo, "Pu/HM") <= 1.0:
         raise ValueError(_("Pu/HM kütle kesri 0 ile 1 arasında olmalı: %r") % pu_hm_wo)
-    if om <= 0.0:
+    if not _sonlu(om, "O/M") > 0.0:
         raise ValueError(_("O/M oranı pozitif olmalı"))
     _pu_vektoru_dogrula(pu_vektor_wo)
     mol_hm = ((1.0 - pu_hm_wo) / _uranyum_kutlesi(u_zenginlik_yuzde)
@@ -551,7 +566,7 @@ def pu_yaslandir(vektor_wo, yil):
     sonuc kutle kesirleri yeniden normalize edilir. Yarilanma omurleri
     openmc.data.half_life (ENDF/B-VIII.0).
     """
-    if yil < 0.0:
+    if _sonlu(yil, _("yaşlanma süresi")) < 0.0:
         raise ValueError(_("yaşlanma süresi negatif olamaz"))
     _pu_vektoru_dogrula(vektor_wo)
     atom = {n: w / kutle(n) for n, w in vektor_wo.items()}
