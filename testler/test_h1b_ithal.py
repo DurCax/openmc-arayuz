@@ -104,7 +104,39 @@ def test_malzeme_anahtari_yoksa_hata_aynen():
     kontrol("bos liste: bulgu yok", veri.nuklid_kontrol({"malzemeler": []}) == [])
 
 
-HIZLI = [test_cekirdek_modulleri_openmc_yuklemez, test_bos_model_dogrulamasi_openmc_yuklemez,
+def test_ana_pencere_acilisi_openmc_yuklemez():
+    print("\n[H1b-I7] AnaPencere kurulumu + gosterim (bos model) openmc'yi yuklemez")
+    kod = ("import os, sys\nos.environ['QT_QPA_PLATFORM'] = 'offscreen'\n"
+           "from PySide6 import QtWidgets\napp = QtWidgets.QApplication([])\n"
+           "from arayuz import tema\nfrom arayuz.ana_pencere import AnaPencere\n"
+           "tema.uygula(app)\np = AnaPencere()\np.show()\n"
+           "[app.processEvents() for _i in range(5)]\n"
+           "print('openmc' in sys.modules)")
+    kodu, cikti, hata = _alt_surec(kod)
+    kontrol("alt surec basarili", kodu == 0, hata[-300:])
+    kontrol("openmc yuklenmedi", cikti == "False", "-> %r" % cikti)
+
+
+def test_kor_ozeti_kurucu_olcusuyle_ayni():
+    print("\n[H1b-I8] Kor ozeti olcusu (openmc'siz) kurucu sinir_kutu ile tum orneklerde ayni")
+    from cekirdek import geometri, kurucu, sema
+    specler = [("yeni", sema.yeni_spec("x"))] + [
+        (ad, sema.yukle(os.path.join(KOK, "ornekler", ad)))
+        for ad in sorted(os.listdir(os.path.join(KOK, "ornekler"))) if ad.endswith(".json")]
+
+    def sonuc(islev):
+        try:
+            return tuple(islev())
+        except Exception as e:      # noqa: BLE001 -- hata metni de karsilastirilir
+            return ("hata", str(e))
+    fark = [ad for ad, s in specler
+            if sonuc(lambda: kurucu.kur(s)[1]["sinir_kutu"])
+            != sonuc(lambda: geometri.sinir_kutusu(geometri.model(s)))]
+    kontrol("%d spec: fark yok" % len(specler), not fark, "-> %s" % fark)
+
+
+HIZLI = [test_ana_pencere_acilisi_openmc_yuklemez, test_kor_ozeti_kurucu_olcusuyle_ayni,
+         test_cekirdek_modulleri_openmc_yuklemez, test_bos_model_dogrulamasi_openmc_yuklemez,
          test_varsayilan_kaynak_dagilimlari_kurulur,
          test_varsayilan_disi_hatali_dagilim_yine_yakalanir, test_dogrula_kurucu_ad_alani_korunur,
          test_malzeme_anahtari_yoksa_hata_aynen]

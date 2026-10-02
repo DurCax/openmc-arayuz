@@ -360,9 +360,9 @@ class KorSekmesi(KorGeometriMixin, KorYerlesimMixin, KorHaritasiMixin, KorKatman
         if self.agac_modunda_mi():
             return
         try:
-            from cekirdek import onbellek
-            _model, bilgi = onbellek.kur_onbellekli(self.spec)
-            gx, gy = bilgi["sinir_kutu"]
+            # H1b: olcu openmc'siz (kurucu sinir_kutu ile ayni; test_h1b_ithal)
+            from cekirdek import geometri
+            gx, gy = geometri.sinir_kutusu(geometri.model(self.spec))
             # sema.kor_yuksekligi(): katmanliyken yukseklik katman toplamidir.
             h = sema.kor_yuksekligi(self.spec["kor"])
             ek = ("" if self.spec["kor"].get("tur") == "kuresel" else "  (%s)" % _("2B"))

@@ -19,13 +19,6 @@ from cekirdek.ceviri import _
 _log = kaydedici(__name__)
 
 
-def _varsayilan_mi(ad, arg):
-    """Sema varsayilani (ya da bos): kurulabilirligi sabit, testle guvenceli
-    (test_h1b_ithal). Bu durumda openmc.stats kurulmaz: acilistaki bos model
-    dogrulamasi openmc'yi yuklemez (H1b)."""
-    return not arg or arg == sema.VARSAYILAN_AYARLAR["kaynak"].get(ad)
-
-
 # ============================================================================
 # 5. REFERANS TUTARLILIGI
 # ============================================================================
@@ -55,7 +48,7 @@ def kaynak_kontrol(spec, veri_kontrolu=True):
     for ad, fn, arg, alan_adi in ((_("enerji tayfı"), _kaynak.enerji_dagilimi, e, "enerji"),
                                   (_("açısal dağılım"), _kaynak.aci_dagilimi, k.get("aci"),
                                    "aci")):
-        if _varsayilan_mi(alan_adi, arg):
+        if _kaynak.varsayilan_dagilim_mi(alan_adi, arg):
             continue
         try:
             fn(arg)

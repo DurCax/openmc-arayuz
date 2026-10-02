@@ -77,6 +77,14 @@ def _f(d, ad, vars_=0.0):
     return float(vars_ if v is None else v)
 
 
+def varsayilan_dagilim_mi(alan, arg):
+    """'enerji' / 'aci' degeri sema varsayilani (ya da bos) mu? Varsayilanin
+    kurulabildigi testle guvenceli (test_h1b_ithal); boyleyse openmc.stats
+    kurulmadan gecilebilir: acilistaki bos model openmc'yi yuklemez (H1b)."""
+    from cekirdek import sema
+    return not arg or arg == sema.VARSAYILAN_AYARLAR["kaynak"].get(alan)
+
+
 def enerji_dagilimi(e):
     """spec ayarlar.kaynak.enerji -> openmc.stats dagilimi"""
     import openmc       # tembel: acilista openmc yuklenmez (H1b)
