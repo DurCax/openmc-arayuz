@@ -34,8 +34,11 @@
 ================================================================================
 """
 
+import collections
 import copy
 import os
+import threading
+import types
 
 from cekirdek.ceviri import _, pgettext
 from cekirdek.gunluk import kaydedici
@@ -43,7 +46,8 @@ from cekirdek.gunluk import kaydedici
 _log = kaydedici(__name__)
 
 IKI_BOYUT_YUKSEKLIGI = 1.0          # cm: 2B tukenme hacmi 1 cm icin (tukenme.hacimler)
-_ONBELLEK = {}
+_ONBELLEK = collections.OrderedDict()
+_KILIT = threading.Lock()
 _ONBELLEK_EN_COK = 2
 
 
@@ -121,19 +125,28 @@ def _yukseklik(spec):
     return float(h) if h else IKI_BOYUT_YUKSEKLIGI
 
 
-def _adim_oku(yol):
-    """Tek adim statepoint'i: kosucu'nun guc okumasi (dagilim, faktorler,
-    korunum, hedef_payi) ya da hata metni."""
+class Iptal(Exception):
+    """adim_gucleri iptal edildi (kapanis / yeni proje)."""
+
+
+def _ozet(dizin):
+    """Adimlarin ORTAK summary'si (geometri + distribcell yollari bir kez); yoksa None."""
+    import openmc
+    yol = os.path.join(dizin, "summary.h5")
+    return openmc.Summary(yol) if os.path.isfile(yol) else None
+
+
+def _adim_oku(yol, ozet=None):
+    """Tek adim statepoint'i: kosucu.guc_oku -> (guc | None, hata | None)."""
     import openmc
     from cekirdek import kosucu
-    sonuc = {}
-    with openmc.StatePoint(yol) as sp:
-        kosucu._guc_oku(sp, sonuc)
-    if "guc_hata" in sonuc:
-        return None, sonuc["guc_hata"]
-    if "guc" not in sonuc:
+    with openmc.StatePoint(yol, autolink=ozet is None) as sp:
+        if ozet is not None:
+            sp.link_with_summary(ozet)
+        g, hata = kosucu.guc_oku(sp)
+    if g is None and hata is None:
         return None, _("bu adımda güç dağılımı tally'si yok")
-    return sonuc["guc"], None
+    return g, hata
 
 
 def _zamanlar(h5, spec):
@@ -146,11 +159,20 @@ def _zamanlar(h5, spec):
     return gun, kaynak, [tukenme.yanma(z, p) for z in gun]
 
 
-def _adim_kaydi(i, yol, gun, kaynak, yanma, h):
+def _kaynak_gucu(kaynak, i):
+    """Adim i'nin kaynak gucu [W]. Results N adim icin N oran saklar, N+1 zaman
+    noktasi: son nokta (son transport, "final operator evaluation") ayrica bir
+    oran tasimaz -- OpenMC o transportu son araligin oraniyla normalize eder
+    (Integrator.integrate: res_final = operator(n, source_rate)). Bu yuzden
+    son adim son araligin oranini alir."""
+    return kaynak[min(i, len(kaynak) - 1)] if kaynak else None
+
+
+def _adim_kaydi(i, yol, gun, kaynak, yanma, h, ozet=None):
     from cekirdek import guc, guc_tablo
-    g, hata = _adim_oku(yol)
+    g, hata = _adim_oku(yol, ozet)
     kayit = {"adim": i, "zaman_d": gun[i], "yanma": yanma[i], "yol": yol, "yukseklik": h,
-             "kaynak_W": kaynak[min(i, len(kaynak) - 1)] if kaynak else None,
+             "kaynak_W": _kaynak_gucu(kaynak, i),
              "guc": g, "hata": hata, "tablo": [], "mutlak": None}
     if g and g.get("faktorler"):
         m = guc.mutlak_guc(g["faktorler"], kayit["kaynak_W"], h, hedef_payi=g.get("hedef_payi"))
@@ -159,42 +181,63 @@ def _adim_kaydi(i, yol, gun, kaynak, yanma, h):
     return kayit
 
 
-def _anahtar(dizin, h5, spec):
+def imza(dizin, h5, spec):
+    """Sonucun icerik imzasi: adim dosyalari (yol, mtime, boyut), sonuc dosyasi ve
+    spec. Onbellek ve arayuz ayni anahtari kullanir; dosya degisince yeniden okunur."""
     import json
-    imza = [(y, os.path.getmtime(y), os.path.getsize(y)) for _i, y in adim_dosyalari(dizin)]
-    return (os.path.abspath(dizin), tuple(imza), os.path.getmtime(h5),
+    adimlar = [(y, os.path.getmtime(y), os.path.getsize(y)) for _i, y in adim_dosyalari(dizin)]
+    return (os.path.abspath(dizin), tuple(adimlar), os.path.getmtime(h5), os.path.getsize(h5),
             json.dumps(spec, sort_keys=True, default=str))
 
 
-def adim_gucleri(dizin, spec, h5=None):
+def _dondur(x):
+    """Sozluk -> MappingProxyType, liste -> demet (ozyinelemeli); diger nesneler aynen.
+    Onbellekteki sonuc paylasilir: cagiran onu degistiremez."""
+    if isinstance(x, dict):
+        return types.MappingProxyType({k: _dondur(v) for k, v in x.items()})
+    if isinstance(x, (list, tuple)):
+        return tuple(_dondur(v) for v in x)
+    return x
+
+
+def onbellegi_bosalt():
+    with _KILIT:
+        _ONBELLEK.clear()
+
+
+def adim_gucleri(dizin, spec, h5=None, iptal=None):
     """
     Tukenme dizinindeki adim basina guc dagilimi; adim dosyasi ya da sonuc
     dosyasi yoksa None.
-    DONER {"adimlar": [{"adim", "zaman_d", "yanma", "kaynak_W", "yukseklik",
-                        "guc" (kosucu guc sozlugu | None), "hata" (metin | None),
-                        "mutlak", "tablo" (guc_tablo satirlari)}],
-           "notlar": [metin]}
+    DONER (DEGISMEZ: MappingProxyType / demet)
+          {"adimlar": ({"adim", "zaman_d", "yanma", "kaynak_W", "yukseklik",
+                        "guc" (kosucu.guc_oku sozlugu | None), "hata" (metin | None),
+                        "mutlak", "tablo" (guc_tablo satirlari)}, ...),
+           "notlar": (metin, ...), "imza": imza()}
     Hatali adim (tally yok / okunamadi) "hata" ile doner, sessizce atlanmaz;
     dosyasi olmayan adim ve sonuctan fazla (eski) dosya notlara yazilir.
-    Sonuc (dosyalar degismedikce) onbellekten gelir: DEGISTIRMEYIN.
+    iptal: cagrilabilir; True donerse adimlar arasinda Iptal yukselir.
+    Onbellek kilitli LRU; hesap kilit DISINDA yapilir.
     """
     h5 = h5 or os.path.join(dizin, "depletion_results.h5")
     dosyalar = adim_dosyalari(dizin)
     if not dosyalar or not os.path.exists(h5):
         return None
-    anahtar = _anahtar(dizin, h5, spec)
-    if anahtar in _ONBELLEK:
-        return _ONBELLEK[anahtar]
-    sonuc = _hesapla(dosyalar, h5, spec)
-    while len(_ONBELLEK) >= _ONBELLEK_EN_COK:
-        _ONBELLEK.pop(next(iter(_ONBELLEK)))
-    _ONBELLEK[anahtar] = sonuc
+    anahtar = imza(dizin, h5, spec)
+    with _KILIT:
+        if anahtar in _ONBELLEK:
+            _ONBELLEK.move_to_end(anahtar)
+            return _ONBELLEK[anahtar]
+    sonuc = _dondur(dict(_hesapla(dizin, dosyalar, h5, spec, iptal), imza=anahtar))
+    with _KILIT:
+        _ONBELLEK[anahtar] = sonuc
+        _ONBELLEK.move_to_end(anahtar)
+        while len(_ONBELLEK) > _ONBELLEK_EN_COK:
+            _ONBELLEK.popitem(last=False)
     return sonuc
 
 
-def _hesapla(dosyalar, h5, spec):
-    gun, kaynak, yanma = _zamanlar(h5, spec)
-    h = _yukseklik(spec)
+def _notlar_dosya(dosyalar, gun):
     notlar = []
     fazla = [i for i, _y in dosyalar if i >= len(gun)]
     if fazla:
@@ -204,12 +247,22 @@ def _hesapla(dosyalar, h5, spec):
     eksik = [i for i in range(len(gun)) if i not in var]
     if eksik:
         notlar.append(_("Güç dosyası bulunmayan adımlar: %s") % ", ".join(str(i) for i in eksik))
+    return notlar
+
+
+def _hesapla(dizin, dosyalar, h5, spec, iptal=None):
+    gun, kaynak, yanma = _zamanlar(h5, spec)
+    h = _yukseklik(spec)
+    notlar = _notlar_dosya(dosyalar, gun)
+    ozet = _ozet(dizin)
     adimlar = []
     for i, yol in dosyalar:
+        if iptal is not None and iptal():
+            raise Iptal()
         if i >= len(gun):
             continue
         try:
-            adimlar.append(_adim_kaydi(i, yol, gun, kaynak, yanma, h))
+            adimlar.append(_adim_kaydi(i, yol, gun, kaynak, yanma, h, ozet))
         except Exception as e:
             _log.exception("tükenme adımı %d gücü okunamadı (%s)", i, yol)
             adimlar.append({"adim": i, "zaman_d": gun[i], "yanma": yanma[i], "yol": yol,
@@ -221,7 +274,8 @@ def _hesapla(dosyalar, h5, spec):
                       % ", ".join(str(i) for i in hatali))
     if h == IKI_BOYUT_YUKSEKLIGI and not _uc_boyut(adimlar):
         notlar.append(_("2B model: güç ve q′ 1 cm yükseklik başınadır (tükenme hacmi gibi)."))
-    return {"adimlar": adimlar, "notlar": notlar}
+    return {"adimlar": adimlar, "notlar": notlar, "iki_boyut": h == IKI_BOYUT_YUKSEKLIGI
+            and not _uc_boyut(adimlar)}
 
 
 def _uc_boyut(adimlar):

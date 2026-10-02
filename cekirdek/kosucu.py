@@ -547,27 +547,40 @@ def _hedef_payi(sp):
     return {"hedef_payi": hedef / model}
 
 
-def _guc_oku(sp, sonuc):
-    """Cubuk bazli guc dagilimi: sonuc['guc'] ya da sonuc['guc_hata']."""
+def guc_oku(sp):
+    """
+    Statepoint'in cubuk bazli guc dagilimi (genel API; tukenme_guc adim
+    basina kullanir). DONER (guc | None, hata metni | None):
+      guc  {"dagilim", "faktorler", korunum alanlari, "hedef_payi", ...}
+      (None, None)   guc dagilimi tally'si yok (istenmemis)
+      (None, metin)  okuma ya da tepe faktoru hatasi (kaydedildi)
+    """
     from cekirdek import guc as _guc
     try:
         dagilim = _guc.dagilim_oku(sp)
     except Exception as e:
         _log.exception("güç dağılımı okunamadı")
-        sonuc["guc_hata"] = str(e)
-        return
+        return None, str(e)
     if not dagilim:
-        return
+        return None, None
     try:
         faktorler = _guc.tepe_faktorleri(dagilim)
     except Exception as e:
         _log.exception("güç tepe faktörleri hesaplanamadı")
-        sonuc["guc_hata"] = str(e)
-        return
+        return None, str(e)
     g = {"dagilim": dagilim, "faktorler": faktorler}
     g.update(_guc_korunumu(sp, dagilim))
     g.update(_hedef_payi(sp))
-    sonuc["guc"] = g
+    return g, None
+
+
+def _guc_oku(sp, sonuc):
+    """Cubuk bazli guc dagilimi: sonuc['guc'] ya da sonuc['guc_hata'] (guc_oku)."""
+    g, hata = guc_oku(sp)
+    if hata is not None:
+        sonuc["guc_hata"] = hata
+    elif g is not None:
+        sonuc["guc"] = g
 
 
 def korunum_satirlari(g):
