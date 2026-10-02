@@ -45,7 +45,8 @@
 import csv
 import io
 import math
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
+from typing import Optional, TypedDict
 
 from cekirdek import guc as _guc
 from cekirdek.ceviri import _
@@ -53,6 +54,38 @@ from cekirdek.gunluk import kaydedici
 
 _log = kaydedici(__name__)
 
+
+
+class DilimSatiri(TypedDict):
+    """3B dilim kaydi (pin_tablosu satirinin "dilimler" ogesi)."""
+    dilim: int
+    z_alt: float
+    z_ust: float
+    bagil: Optional[float]
+    sigma: Optional[float]
+    W: Optional[float]
+    q: Optional[float]
+
+
+class PinSatiri(TypedDict, total=False):
+    """pin_tablosu satiri (alanlar modul basliginda). Katli satirda ek:
+    uyeler, asimetri, asimetri_sigma (cekirdek/guc_katlama.py)."""
+    anahtar: tuple
+    demet: str
+    konum: str
+    x: float
+    y: float
+    tur: str
+    kesik: bool
+    sicak: bool
+    tepe_yakini: bool
+    bagil: float
+    sigma: float
+    W: Optional[float]
+    W_sigma: Optional[float]
+    q: Optional[float]
+    dilimler: Sequence[DilimSatiri]
+    tepe_q: Optional[float]
 
 
 # ============================================================================
