@@ -81,7 +81,7 @@ def test_genel_tally_yoksa_uyari():
     w = MeshHaritaWidget()
     w.sonuclari_ayarla([_sonuc()], toplam_guc=1e6, genel_isi={}, eksenel_sonsuz=False)
     _kutu(w.normalizasyon, "mutlak")
-    kontrol("uyari yazildi", "yineleyin" in w.uyari.text() or "genel" in w.uyari.text(),
+    kontrol("uyari yazildi", "tekrar" in w.uyari.text() or "genel" in w.uyari.text(),
             "-> %s" % w.uyari.text())
     kontrol("hacim basina cizildi", w.gosterilen is not None and "/kaynak" not in w.birim_metni
             or "cm" in w.birim_metni)

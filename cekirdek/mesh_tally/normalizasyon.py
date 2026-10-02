@@ -79,7 +79,7 @@ def isi_payi(genel: dict, skor: str):
         if aday in (genel or {}):
             return float(genel[aday]), aday
     raise ValueError(_("model geneli ısınma tally'si yok (bu sürümden önceki koşu); "
-                       "mutlak normalizasyon için koşuyu yineleyin"))
+                       "mutlak normalizasyon için koşuyu tekrar çalıştırın"))
 
 
 def kaynak_hizi(toplam_guc: float, isi_ev: float) -> float:

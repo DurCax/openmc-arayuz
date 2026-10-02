@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 10:19+0300\n"
+"POT-Creation-Date: 2026-10-02 10:28+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -5101,10 +5101,10 @@ msgstr "Absolute (from total power)"
 #: cekirdek/mesh_tally/normalizasyon.py:81
 msgid ""
 "model geneli ısınma tally'si yok (bu sürümden önceki koşu); mutlak normalizasyon için"
-" koşuyu yineleyin"
+" koşuyu tekrar çalıştırın"
 msgstr ""
-"no global heating tally (run from before this version); rerun the case for absolute "
-"normalization"
+"no model-wide heating tally (run from before this version); run the case again for "
+"absolute normalization"
 
 #: cekirdek/mesh_tally/normalizasyon.py:88
 msgid "mutlak normalizasyon için toplam güç sıfırdan büyük olmalı"
@@ -5270,17 +5270,17 @@ msgstr "mesh outer radius must be greater than zero"
 msgid "ağın z alt sınırı üst sınırdan küçük olmalı"
 msgstr "mesh z lower bound must be smaller than the upper bound"
 
-#: cekirdek/mesh_tally/tanim.py:332
+#: cekirdek/mesh_tally/tanim.py:333
 #, python-format
 msgid "bilinmeyen enerji grup yapısı: %s"
 msgstr "unknown energy group structure: %s"
 
-#: cekirdek/mesh_tally/vtk.py:116
+#: cekirdek/mesh_tally/vtk.py:117
 #, python-format
 msgid "VTK dosya adı .vtk ile bitmeli: %s"
 msgstr "VTK file name must end with .vtk: %s"
 
-#: cekirdek/mesh_tally/vtk.py:119
+#: cekirdek/mesh_tally/vtk.py:120
 #, python-format
 msgid "VTK dizini yok ya da yazılamıyor: %s"
 msgstr "VTK directory does not exist or is not writable: %s"

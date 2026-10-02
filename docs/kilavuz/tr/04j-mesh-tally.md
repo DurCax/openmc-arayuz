@@ -85,7 +85,7 @@ tepkime ~%3–4 yüksek çıkar. `fission-q-prompt` H olarak kullanılmaz (gecik
 ve payda hücre **alanı**: değer · S / A — ağın yüksekliği sonuca girmez. 2B'de elle dar bir z
 dilimi tanımlanmışsa mutlak kip reddedilir (dilim değeri kolonun bilinmeyen bir kesridir).
 Bu sürümden önceki koşularda genel tally yoktur: mutlak kip uyarıyla hacim başına gösterilir,
-koşuyu yineleyin. Normalizasyon çarpanının kendi belirsizliği σ'ya katılmaz.
+koşuyu tekrar çalıştırın. Normalizasyon çarpanının kendi belirsizliği σ'ya katılmaz.
 
 <a id="mesh-vtk"></a>
 ### VTK ve ParaView
@@ -115,7 +115,7 @@ tally_2_mesh_0 = openmc.CylindricalMesh(
 | Bulgu | Neden | Ne yapmalı |
 |---|---|---|
 | Haritada çok sayıda × | Hücre başına geçmiş az (ince ağ, çok grup) | Parçacık/çevrim sayısını artırın ya da ağı kabalaştırın; bağıl hata ≈ 1/√N. |
-| "Mutlak normalizasyon yapılamadı …" | Güç kutusu boş; bu sürümden önceki koşu (genel ısınma tally'si yok); 2B'de dar z dilimi; sabit kaynak hesabı | Toplam/çizgisel gücü girin; koşuyu yineleyin; otomatik sınırları kullanın; sabit kaynakta "Kaynak nötronu başına" kullanın. |
+| "Mutlak normalizasyon yapılamadı …" | Güç kutusu boş; bu sürümden önceki koşu (genel ısınma tally'si yok); 2B'de dar z dilimi; sabit kaynak hesabı | Toplam/çizgisel gücü girin; koşuyu tekrar çalıştırın; otomatik sınırları kullanın; sabit kaynakta "Kaynak nötronu başına" kullanın. |
 | "Harita çizilemedi: bağıl normalizasyon: ağda skorlu hücre yok" | Ağ hiç skor almadı (ağ modelin dışında, skor uygun değil) | Sınırları ve skoru denetleyin. |
 | "Haritada gösterilmeyen ağ tally'si: …" | Tally'de ağ ve enerji dışında filtre (malzeme, hücre) var | Ayrı bir ağ tally'si tanımlayın. |
 | "bilinmeyen ağ türü: …" | JSON'da `mesh_turu` yanlış (ör. altıgen) | `duzenli`, `silindirik` ya da `kuresel` yazın. |

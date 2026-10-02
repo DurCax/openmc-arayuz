@@ -13,6 +13,7 @@
                           yalniz gercekten sinirsiz modelde.
 """
 
+import contextlib
 import math
 
 from cekirdek.mesh_tally.tanim import (GENEL_ISI_SKORLARI, GENEL_ISI_TALLY,
@@ -57,13 +58,31 @@ def geometri_z_araligi(evren):
     return (z0, z1) if math.isfinite(z0) and math.isfinite(z1) else None
 
 
+@contextlib.contextmanager
+def _kimlikler_korunur():
+    """OpenMC otomatik kimlik sayaclarini (kurucu.kur reset_auto_ids yapar) geri
+    yukler: betik uretimi ayni surecte sonra kurulan nesnelerin kimligini kaydirmasin."""
+    from openmc.mixin import IDManagerMixin
+    siniflar = list(IDManagerMixin.__subclasses__())
+    durum = [(c, c.next_id, set(c.used_ids)) for c in siniflar]
+    try:
+        yield
+    finally:
+        for c, sonraki, kullanilan in durum:
+            c.next_id = sonraki
+            c.used_ids.clear()
+            c.used_ids.update(kullanilan)
+
+
 def model_z_araligi(spec, evren=None):
     """2B modelde (eksenel_sonsuz) geometrinin sonlu z araligi; degilse None.
-    evren verilmezse model kurulur (betik yolu; yalniz mesh tally varken)."""
+    evren verilmezse model kurulur (betik yolu; yalniz mesh tally varken; kimlik
+    sayaclari korunur)."""
     if not (_mesh_filtreli(spec) and eksenel_sonsuz(spec)):
         return None
     if evren is None:
         from cekirdek import kurucu
-        model, _bilgi = kurucu.kur(spec)
-        evren = model.geometry
+        with _kimlikler_korunur():
+            model, _bilgi = kurucu.kur(spec)
+            return geometri_z_araligi(model.geometry)
     return geometri_z_araligi(evren)
