@@ -6275,7 +6275,7 @@ msgstr "step"
 
 #: cekirdek/tukenme_guc.py:263
 msgid "zaman [gün]"
-msgstr "time [d]"
+msgstr "time [days]"
 
 #: cekirdek/tukenme_guc.py:263
 msgid "yanma [MWd/kg]"

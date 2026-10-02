@@ -313,8 +313,8 @@ class GucHaritaWidget(QtWidgets.QWidget):
 
         self._ipucu_ogeleri, self._ipucu_dizi = [], None
         self._tik_ogeleri, self._ana_eksen, self.secim_isareti = [], eks, None
-        dilim_gorunumu = uc_boyut and self.gorunum.currentData() == "dilim"
-        self.pin_tablosu.dilim_ayarla(self.dilim.value() - 1 if dilim_gorunumu else None)
+        # 3B: tablonun dilim sutunlari kaydiricidaki dilimi gosterir (iki gorunumde de)
+        self.pin_tablosu.dilim_ayarla(self.dilim.value() - 1 if uc_boyut else None)
         if f.get("tam_kor"):
             self._ciz_kor(eks, veri, alt_baslik)
         else:

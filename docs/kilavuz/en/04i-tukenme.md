@@ -111,6 +111,32 @@ come from the model of the run). Reading is done in the background (~3 s).
 **Detailed output** (collapsible) shows the output of OpenMC and `cekirdek.tukenme`; it opens
 by itself on an error.
 
+<a id="tukenme-pin-gucu"></a>
+#### Pin power versus burnup
+
+If a power tally can be built for the model (the pins repeat in a lattice) the depletion run
+also tallies the pin power distribution in every step — even if the power distribution is off in
+Run settings (all fuel pins if no target is chosen). To switch it off set `tukenme.adim_gucu` to
+`false` in the spec. OpenMC writes `openmc_simulation_n<i>.h5` after the transport at the
+**beginning** of every step; these correspond one to one to the time points of
+`depletion_results.h5` (the CECM corrector transport is not written: the distribution shown is
+the beginning-of-step one). A new run deletes the old step files.
+
+Below the result card (if step files exist):
+
+| Element | What it shows |
+|---|---|
+| **Step:** | Step selector (step, days, MWd/kg); the pin table below is the table of that step (same as the [pin power table](04g-calistir.md#calistir-pin-tablosu): sort, filter, **Fold to quarter**). |
+| Plot (left) | Relative power versus burnup (± 1σ) of the pins selected in the table; each selection is added to the list (at most 6). Initially the hottest pin. **Clear selection** empties the list. |
+| Plot (right) and table | F_ΔH and F_q (3D) ± σ per step and the peak q′. |
+| **Save step × pin…** | The pin table of every step in one file: step, time [d], burnup [MWd/kg] + pin columns (CSV; Excel if openpyxl is installed). |
+| **Peaking factors CSV…** | F_ΔH, F_q, their σ and the peak q′ per step. |
+
+The absolute power is the source power of the step (power density × heavy metal;
+`Results.get_source_rates`); in a 2D model power and q′ are per 1 cm of height (like the
+depletion volume). The relative power is relative to that step's fuel pin average. Lesson:
+[5.7](05-dersler.md#ders-guc-yanma).
+
 ### Example and verification
 
 `ornekler/pwr_tukenme.json`: the same pin as `pwr_pinhucre`, 40 W/gHM, 500 days (20 MWd/kg),

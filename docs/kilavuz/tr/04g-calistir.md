@@ -98,6 +98,29 @@ gerçek belirsizlik için önce entropiyle yakınsamayı doğrulayın, sonra mod
 tohumla koşun. Ayrıntı: [güç dağılımını yorumlamak](06-sonuclar.md#guc-dagilimi-yorum) ve
 [güç haritası dersi](05-dersler.md#ders-guc).
 
+<a id="calistir-pin-tablosu"></a>
+#### Pin gücü tablosu
+
+Haritanın altında, haritadaki **aynı** değerlerin satır satır hali (yeni hesap yapılmaz: tablo =
+harita). Her satır bir yakıt çubuğudur: demet (tam korda), konum (1'den numaralı, x soldan /
+y alttan), x/y [cm], çubuk türü, **bağıl güç** ± σ, **Güç [W]** ve **q′ [W/cm]** (Toplam güç
+girildiyse), 3B'de **En yüksek q′** ile seçili dilimin bağıl gücü ve q′'su. En sıcak çubuk
+(F_ΔH'nin çubuğu) kalın ve renkli satırdır; kesik çubuklar soluk yazılır.
+
+| Öğe | Ne yapar |
+|---|---|
+| Haritada tıklama | Tıklanan çubuğun satırını seçer; tablonun üstündeki satır değerlerini yazar, haritada kare işaret çıkar. Demet görünümünde demetin en sıcak çubuğu seçilir. |
+| Sütun başlığı | Ham sayıya göre sıralar (bağıl güç azalan → ilk satır en sıcak çubuk). |
+| **Süz: demet, konum ya da tür…** | Görünen metinde arar (ör. `x = 17, y = 17`). |
+| **Çeyrek katla** | Yalnız simetri **doğrulanırsa** etkin: geometrideki her kare kafes x ve y'de ayna simetrik ve ortalanmış, tablonun konumları aynalamaya kapalı (aynı çubuk türüyle). Dört ayna görüntüsünün ortalaması alınır (σ = √Σσ² / m) ve **Asimetri** sütunu yörüngedeki en büyük sapmayı yazar. Altıgen kafeste, gelişmiş (ağaç) modelde, tamburlu korda ve kesik çubukta kapalıdır; ipucu nedenini söyler. |
+| **Tabloyu kaydet…** | Gösterilen tabloyu (katlı ya da tam) CSV olarak yazar: ondalık nokta, virgül ayırıcı, tam hassasiyet; 3B'de her dilimin q′'su ve bağıl gücü ayrı sütunlardadır. openpyxl kuruluysa Excel (.xlsx) de seçilebilir (uygulama bunu kurmaz). |
+
+Normalizasyon F_ΔH ile aynıdır: bağıl güç = çubuk gücü / kesik olmayan yakıt çubuklarının
+ortalaması; W = bağıl × (Toplam güç × hedef payı / çubuk sayısı); bütün çubukların toplamı
+(kesikler dahil) **Toplam güç × hedef payı**dır. q′ = W / aktif yükseklik; dilim q′'su = dilim
+gücü / dilim kalınlığı. Belirsizlikler haritadaki gibi tek koşu σ'sıdır (iyimser). Ders:
+[5.7](05-dersler.md#ders-guc).
+
 <a id="calistir-uygunluk"></a>
 ### Uygunluk kartı
 

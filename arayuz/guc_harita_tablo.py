@@ -53,6 +53,10 @@ _SUTUNLAR = (
 )
 
 
+_DILIM_BASLIKLARI = {"dilim_bagil": N_("Dilim %d bağıl"),
+                     "dilim_q": N_("Dilim %d q′ [W/cm]")}
+
+
 def _gorunur_sutunlar(satirlar, katli):
     """Bu tabloda anlamli sutunlar (bos sutun gosterilmez)."""
     if not satirlar:
@@ -86,6 +90,8 @@ class PinModeli(QtCore.QAbstractTableModel):
 
     def dilim_ayarla(self, k):
         self._dilim = k
+        if self._sutunlar:
+            self.headerDataChanged.emit(QtCore.Qt.Horizontal, 0, len(self._sutunlar) - 1)
         if self._satirlar:
             self.dataChanged.emit(self.index(0, 0),
                                   self.index(len(self._satirlar) - 1, len(self._sutunlar) - 1))
@@ -105,6 +111,9 @@ class PinModeli(QtCore.QAbstractTableModel):
     def headerData(self, bolum, yon, rol=QtCore.Qt.DisplayRole):
         if rol != QtCore.Qt.DisplayRole or yon != QtCore.Qt.Horizontal:
             return None
+        kimlik = self._sutunlar[bolum][0]
+        if kimlik in _DILIM_BASLIKLARI and self._dilim is not None:
+            return _(_DILIM_BASLIKLARI[kimlik]) % (self._dilim + 1)
         return _(self._sutunlar[bolum][1])
 
     def _ham(self, r, kimlik):
@@ -229,17 +238,27 @@ class PinTablosu(QtWidgets.QWidget):
             _("Simetri doğrulandı: dört ayna görüntüsünün ortalaması (gürültü azalır)")
             if self._katli is not None else _("Çeyrek katlama yapılamaz: %s") % neden)
         self._model.ayarla(self._tablo)
+        self._dilim_sutunlari()
         self.gorunum.resizeColumnsToContents()
         self.d_kaydet.setEnabled(bool(self._tablo))
 
     def _katla_degisti(self, acik):
         self._model.ayarla(self._katli if (acik and self._katli) else self._tablo,
                            katli=bool(acik and self._katli))
+        self._dilim_sutunlari()
         self.gorunum.resizeColumnsToContents()
 
     def dilim_ayarla(self, k):
-        """3B: dilim sutunlari k. dilimi (0 tabanli) gosterir; None: gizli deger."""
+        """3B: dilim sutunlari k. dilimi (0 tabanli) gosterir; None: sutunlar gizli."""
         self._model.dilim_ayarla(k)
+        self._dilim_sutunlari()
+
+    def _dilim_sutunlari(self):
+        """Dilim secilmemisse dilim sutunlari gizlenir (bos "—" sutunu gosterilmez)."""
+        for kimlik in _DILIM_BASLIKLARI:
+            no = self.sutun_no(kimlik)
+            if no is not None:
+                self.gorunum.setColumnHidden(no, self._model._dilim is None)
 
     def satirlar(self):
         """Gosterilen satirlar (katli ya da tam)."""

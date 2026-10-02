@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 07:26+0300\n"
+"POT-Creation-Date: 2026-10-02 07:34+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -3207,7 +3207,7 @@ msgid ""
 " = ortalama çubuk."
 msgstr ""
 
-#: arayuz/guc_harita.py:158 arayuz/guc_harita_tablo.py:194
+#: arayuz/guc_harita.py:158 arayuz/guc_harita_tablo.py:203
 msgid "Pin gücü tablosu"
 msgstr ""
 
@@ -3399,94 +3399,104 @@ msgstr ""
 msgid "Asimetri"
 msgstr ""
 
-#: arayuz/guc_harita_tablo.py:153
+#: arayuz/guc_harita_tablo.py:56
+#, python-format
+msgid "Dilim %d bağıl"
+msgstr ""
+
+#: arayuz/guc_harita_tablo.py:57
+#, python-format
+msgid "Dilim %d q′ [W/cm]"
+msgstr ""
+
+#: arayuz/guc_harita_tablo.py:162
 msgid "en sıcak çubuk (F_ΔH)"
 msgstr ""
 
-#: arayuz/guc_harita_tablo.py:155
+#: arayuz/guc_harita_tablo.py:164
 msgid "kesik çubuk — F_ΔH ve F_q dışında"
 msgstr ""
 
-#: arayuz/guc_harita_tablo.py:178
+#: arayuz/guc_harita_tablo.py:187
 msgid "Süz: demet, konum ya da tür…"
 msgstr ""
 
-#: arayuz/guc_harita_tablo.py:181
+#: arayuz/guc_harita_tablo.py:190
 msgid "Çeyrek katla"
 msgstr ""
 
-#: arayuz/guc_harita_tablo.py:183
+#: arayuz/guc_harita_tablo.py:192
 msgid "Tabloyu kaydet…"
 msgstr ""
 
-#: arayuz/guc_harita_tablo.py:184
+#: arayuz/guc_harita_tablo.py:193
 msgid "CSV (ondalık nokta); openpyxl kuruluysa Excel de"
 msgstr ""
 
-#: arayuz/guc_harita_tablo.py:196
+#: arayuz/guc_harita_tablo.py:205
 msgid "Haritada bir çubuğa tıklayın ya da tablodan seçin."
 msgstr ""
 
-#: arayuz/guc_harita_tablo.py:215
+#: arayuz/guc_harita_tablo.py:224
 msgid "güç dağılımı yok"
 msgstr ""
 
-#: arayuz/guc_harita_tablo.py:229
+#: arayuz/guc_harita_tablo.py:238
 msgid "Simetri doğrulandı: dört ayna görüntüsünün ortalaması (gürültü azalır)"
 msgstr ""
 
-#: arayuz/guc_harita_tablo.py:230
+#: arayuz/guc_harita_tablo.py:239
 #, python-format
 msgid "Çeyrek katlama yapılamaz: %s"
 msgstr ""
 
-#: arayuz/guc_harita_tablo.py:297 arayuz/tukenme_pin_gucu.py:216
+#: arayuz/guc_harita_tablo.py:306 arayuz/tukenme_pin_gucu.py:216
 #: arayuz/tukenme_sonuc.py:118
 msgid "CSV dosyası (*.csv)"
 msgstr ""
 
-#: arayuz/guc_harita_tablo.py:299
+#: arayuz/guc_harita_tablo.py:308
 msgid "Excel çalışma kitabı (*.xlsx)"
 msgstr ""
 
-#: arayuz/guc_harita_tablo.py:307
+#: arayuz/guc_harita_tablo.py:316
 msgid "Pin gücü tablosunu kaydet"
 msgstr ""
 
-#: arayuz/guc_harita_tablo.py:314 arayuz/tukenme_pin_gucu.py:226
+#: arayuz/guc_harita_tablo.py:323 arayuz/tukenme_pin_gucu.py:226
 msgid "Tablo yazılamadı"
-msgstr ""
-
-#: arayuz/guc_harita_tablo.py:330
-#, python-format
-msgid "demet %s"
-msgstr ""
-
-#: arayuz/guc_harita_tablo.py:331
-#, python-format
-msgid "çubuk %s"
-msgstr ""
-
-#: arayuz/guc_harita_tablo.py:332
-#, python-format
-msgid "bağıl güç %.4f ± %.4f"
 msgstr ""
 
 #: arayuz/guc_harita_tablo.py:339
 #, python-format
-msgid "dilim %d: bağıl %.4f"
+msgid "demet %s"
+msgstr ""
+
+#: arayuz/guc_harita_tablo.py:340
+#, python-format
+msgid "çubuk %s"
 msgstr ""
 
 #: arayuz/guc_harita_tablo.py:341
 #, python-format
+msgid "bağıl güç %.4f ± %.4f"
+msgstr ""
+
+#: arayuz/guc_harita_tablo.py:348
+#, python-format
+msgid "dilim %d: bağıl %.4f"
+msgstr ""
+
+#: arayuz/guc_harita_tablo.py:350
+#, python-format
 msgid "%d konumun ortalaması"
 msgstr ""
 
-#: arayuz/guc_harita_tablo.py:343
+#: arayuz/guc_harita_tablo.py:352
 msgid "en sıcak çubuk"
 msgstr ""
 
-#: arayuz/guc_harita_tablo.py:345
+#: arayuz/guc_harita_tablo.py:354
 msgid "kesik çubuk (F_ΔH dışı)"
 msgstr ""
 

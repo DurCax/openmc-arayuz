@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 07:26+0300\n"
+"POT-Creation-Date: 2026-10-02 07:34+0300\n"
 "PO-Revision-Date: 2026-10-01 18:14+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -3337,7 +3337,7 @@ msgstr ""
 "average (radial × axial, requires 3D). The colour scale is relative to the average: "
 "1.00 = average pin."
 
-#: arayuz/guc_harita.py:158 arayuz/guc_harita_tablo.py:194
+#: arayuz/guc_harita.py:158 arayuz/guc_harita_tablo.py:203
 msgid "Pin gücü tablosu"
 msgstr "Pin power table"
 
@@ -3547,94 +3547,104 @@ msgstr "Folded"
 msgid "Asimetri"
 msgstr "Asymmetry"
 
-#: arayuz/guc_harita_tablo.py:153
+#: arayuz/guc_harita_tablo.py:56
+#, python-format
+msgid "Dilim %d bağıl"
+msgstr "Bin %d relative"
+
+#: arayuz/guc_harita_tablo.py:57
+#, python-format
+msgid "Dilim %d q′ [W/cm]"
+msgstr "Bin %d q′ [W/cm]"
+
+#: arayuz/guc_harita_tablo.py:162
 msgid "en sıcak çubuk (F_ΔH)"
 msgstr "hottest pin (F_ΔH)"
 
-#: arayuz/guc_harita_tablo.py:155
+#: arayuz/guc_harita_tablo.py:164
 msgid "kesik çubuk — F_ΔH ve F_q dışında"
 msgstr "truncated pin — excluded from F_ΔH and F_q"
 
-#: arayuz/guc_harita_tablo.py:178
+#: arayuz/guc_harita_tablo.py:187
 msgid "Süz: demet, konum ya da tür…"
 msgstr "Filter: assembly, position or type…"
 
-#: arayuz/guc_harita_tablo.py:181
+#: arayuz/guc_harita_tablo.py:190
 msgid "Çeyrek katla"
 msgstr "Fold to quarter"
 
-#: arayuz/guc_harita_tablo.py:183
+#: arayuz/guc_harita_tablo.py:192
 msgid "Tabloyu kaydet…"
 msgstr "Save table…"
 
-#: arayuz/guc_harita_tablo.py:184
+#: arayuz/guc_harita_tablo.py:193
 msgid "CSV (ondalık nokta); openpyxl kuruluysa Excel de"
 msgstr "CSV (decimal point); also Excel if openpyxl is installed"
 
-#: arayuz/guc_harita_tablo.py:196
+#: arayuz/guc_harita_tablo.py:205
 msgid "Haritada bir çubuğa tıklayın ya da tablodan seçin."
 msgstr "Click a pin on the map or select it in the table."
 
-#: arayuz/guc_harita_tablo.py:215
+#: arayuz/guc_harita_tablo.py:224
 msgid "güç dağılımı yok"
 msgstr "no power distribution"
 
-#: arayuz/guc_harita_tablo.py:229
+#: arayuz/guc_harita_tablo.py:238
 msgid "Simetri doğrulandı: dört ayna görüntüsünün ortalaması (gürültü azalır)"
 msgstr "Symmetry verified: average of the four mirror images (reduces noise)"
 
-#: arayuz/guc_harita_tablo.py:230
+#: arayuz/guc_harita_tablo.py:239
 #, python-format
 msgid "Çeyrek katlama yapılamaz: %s"
 msgstr "Quarter folding not possible: %s"
 
-#: arayuz/guc_harita_tablo.py:297 arayuz/tukenme_pin_gucu.py:216
+#: arayuz/guc_harita_tablo.py:306 arayuz/tukenme_pin_gucu.py:216
 #: arayuz/tukenme_sonuc.py:118
 msgid "CSV dosyası (*.csv)"
 msgstr "CSV file (*.csv)"
 
-#: arayuz/guc_harita_tablo.py:299
+#: arayuz/guc_harita_tablo.py:308
 msgid "Excel çalışma kitabı (*.xlsx)"
 msgstr "Excel workbook (*.xlsx)"
 
-#: arayuz/guc_harita_tablo.py:307
+#: arayuz/guc_harita_tablo.py:316
 msgid "Pin gücü tablosunu kaydet"
 msgstr "Save pin power table"
 
-#: arayuz/guc_harita_tablo.py:314 arayuz/tukenme_pin_gucu.py:226
+#: arayuz/guc_harita_tablo.py:323 arayuz/tukenme_pin_gucu.py:226
 msgid "Tablo yazılamadı"
 msgstr "Table could not be written"
 
-#: arayuz/guc_harita_tablo.py:330
+#: arayuz/guc_harita_tablo.py:339
 #, python-format
 msgid "demet %s"
 msgstr "assembly %s"
 
-#: arayuz/guc_harita_tablo.py:331
+#: arayuz/guc_harita_tablo.py:340
 #, python-format
 msgid "çubuk %s"
 msgstr "pin %s"
 
-#: arayuz/guc_harita_tablo.py:332
+#: arayuz/guc_harita_tablo.py:341
 #, python-format
 msgid "bağıl güç %.4f ± %.4f"
 msgstr "relative power %.4f ± %.4f"
 
-#: arayuz/guc_harita_tablo.py:339
+#: arayuz/guc_harita_tablo.py:348
 #, python-format
 msgid "dilim %d: bağıl %.4f"
 msgstr "bin %d: relative %.4f"
 
-#: arayuz/guc_harita_tablo.py:341
+#: arayuz/guc_harita_tablo.py:350
 #, python-format
 msgid "%d konumun ortalaması"
 msgstr "average of %d positions"
 
-#: arayuz/guc_harita_tablo.py:343
+#: arayuz/guc_harita_tablo.py:352
 msgid "en sıcak çubuk"
 msgstr "hottest pin"
 
-#: arayuz/guc_harita_tablo.py:345
+#: arayuz/guc_harita_tablo.py:354
 msgid "kesik çubuk (F_ΔH dışı)"
 msgstr "truncated pin (excluded from F_ΔH)"
 

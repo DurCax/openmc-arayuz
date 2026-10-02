@@ -33,7 +33,7 @@ from arayuz.guc_harita_tablo import PinTablosu, dosya_sor
 _log = kaydedici(__name__)
 
 SECILI_EN_COK = 6           # grafikte ayni anda izlenen pin sayisi (okunurluk)
-TUVAL_YUKSEKLIGI = 300      # px
+TUVAL_YUKSEKLIGI = 340      # px
 FAKTOR_TABLOSU_EN_AZ = 120  # px
 
 
@@ -59,7 +59,7 @@ class PinGucuYanma(QtWidgets.QWidget):
         self.notlar.setWordWrap(True)
         self.pin_tablosu = PinTablosu(dosya_adi="pin_gucu_adim")
         self.pin_tablosu.pin_secildi.connect(self._pin_secildi)
-        self.figur = Figure(figsize=(6, 3), tight_layout=True)
+        self.figur = Figure(figsize=(6, 3.4), tight_layout=True)
         self.tuval = Tuval(self.figur)
         self.tuval.setFixedHeight(TUVAL_YUKSEKLIGI)
         self.eksen_pin = self.figur.add_subplot(121)
@@ -188,7 +188,7 @@ class PinGucuYanma(QtWidgets.QWidget):
                                     capsize=2, color=palet[i % len(palet)],
                                     label=_guc.konum_metni(anahtar, None, turler))
         if self._secili:
-            self.eksen_pin.legend(fontsize=6, loc="best")
+            self.eksen_pin.legend(fontsize=6, loc="best", ncol=2)
         fs = _tg.faktor_serisi(self._sonuc)
         if fs:
             bu = [x["yanma"] for x in fs]
