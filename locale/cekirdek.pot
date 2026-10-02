@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 10:46+0300\n"
+"POT-Creation-Date: 2026-10-02 14:49+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -189,21 +189,15 @@ msgstr ""
 msgid "cizim alt süreci argüman almaz: %s"
 msgstr ""
 
-#: cekirdek/demet_kinf.py:79
+#: cekirdek/demet_kinf.py:82
 msgid "parçacık, tohum ve iş parçacığı sayısı pozitif olmalı"
 msgstr ""
 
-#: cekirdek/demet_kinf.py:81
+#: cekirdek/demet_kinf.py:84
 msgid "çevrim sayısı pasif çevrim sayısından büyük olmalı"
 msgstr ""
 
-#: cekirdek/demet_kinf.py:140 cekirdek/dogrula/kor.py:85 cekirdek/geometri/sablon.py:141
-#: cekirdek/tarama.py:226
-#, python-format
-msgid "tanımsız demet: %s"
-msgstr ""
-
-#: cekirdek/demet_kinf.py:198
+#: cekirdek/demet_kinf.py:177
 #, python-format
 msgid "k∞ — %s"
 msgstr ""
@@ -6838,6 +6832,11 @@ msgstr ""
 msgid "'%s' malzemesinde zenginlik tanımlı bir bileşen yok"
 msgstr ""
 
+#: cekirdek/dogrula/kor.py:85 cekirdek/geometri/sablon.py:141 cekirdek/tarama.py:226
+#, python-format
+msgid "tanımsız demet: %s"
+msgstr ""
+
 #: cekirdek/dogrula/kor.py:66 cekirdek/geometri/sablon.py:105 cekirdek/tarama.py:235
 #: cekirdek/tarama.py:247 cekirdek/tarama_agac.py:95
 #, python-format
@@ -9098,79 +9097,132 @@ msgstr ""
 msgid "bu uygulama için USL yok (AOA dışında): kümede alt kümeye (%s) uyan %d vaka var; %s"
 msgstr ""
 
-#: cekirdek/yerel_k.py:149
+#: cekirdek/yerel_k.py:183
+msgid "kafes ötelenmiş ya da döndürülmüş: yerel k mesh'i hizalanamaz"
+msgstr ""
+
+#: cekirdek/yerel_k.py:191
 #, python-format
 msgid "'%s' bir demet değil; yerel k için kare demet gerekir"
 msgstr ""
 
-#: cekirdek/yerel_k.py:151
+#: cekirdek/yerel_k.py:193
 #, python-format
 msgid ""
 "'%s' altıgen demet: yerel k haritası yalnız kare kafeste kurulabilir (altıgen mesh "
 "OpenMC'de yok)"
 msgstr ""
 
-#: cekirdek/yerel_k.py:175
+#: cekirdek/yerel_k.py:200
+#, python-format
+msgid "bilinmeyen eksenel kapsam: %s"
+msgstr ""
+
+#: cekirdek/yerel_k.py:224
 msgid "tek pin modelinde kare hücre gerekir"
 msgstr ""
 
-#: cekirdek/yerel_k.py:190
-msgid "kor kafesinde demet yok: pin düzeyi kurulamaz"
+#: cekirdek/yerel_k.py:241
+#, python-format
+msgid "kor kafesinde demet yok (%s): pin düzeyi kurulamaz; demet düzeyini kullanın"
 msgstr ""
 
-#: cekirdek/yerel_k.py:196
+#: cekirdek/yerel_k.py:244
+#, python-format
+msgid ""
+"kor kafesinde demet olmayan parça var (%s): pin düzeyi tek mesh'e hizalanamaz; demet "
+"düzeyini kullanın"
+msgstr ""
+
+#: cekirdek/yerel_k.py:252
 msgid ""
 "kordaki demetlerin pin adımı/boyutu farklı: pin düzeyi tek mesh'e hizalanamaz; demet "
 "düzeyini kullanın"
 msgstr ""
 
-#: cekirdek/yerel_k.py:202
+#: cekirdek/yerel_k.py:258
 #, python-format
 msgid ""
 "demet adımı (%.5g cm) pin sayısı × pin adımına (%d × %.5g cm) eşit değil (demetler "
 "arası boşluk): pin düzeyi mesh'e hizalanamaz; demet düzeyini kullanın"
 msgstr ""
 
-#: cekirdek/yerel_k.py:211
-#, python-format
-msgid "bilinmeyen yerel k düzeyi: %s"
-msgstr ""
-
-#: cekirdek/yerel_k.py:216
+#: cekirdek/yerel_k.py:269
 msgid ""
 "altıgen kesitli model: yerel k haritası yalnız kare kafeste kurulabilir (altıgen mesh"
 " OpenMC'de yok)"
 msgstr ""
 
-#: cekirdek/yerel_k.py:219
+#: cekirdek/yerel_k.py:272
 msgid "yerel k haritası yalnız kare kafeste kurulabilir"
 msgstr ""
 
-#: cekirdek/yerel_k.py:232
+#: cekirdek/yerel_k.py:285
 #, python-format
 msgid ""
 "bu geometride (%s) pin/demet kafesi bulunamadı; yerel k haritası kare kafesli "
 "modellerde kurulur"
 msgstr ""
 
-#: cekirdek/yerel_k.py:286
+#: cekirdek/yerel_k.py:292
+#, python-format
+msgid "bilinmeyen yerel k düzeyi: %s"
+msgstr ""
+
+#: cekirdek/yerel_k.py:299
+#, python-format
+msgid "modelin kafes tanımı okunamadı: %s"
+msgstr ""
+
+#: cekirdek/yerel_k.py:333
+#, python-format
+msgid "'%s' adlı bir kullanıcı tally'si zaten var; yeniden adlandırın ya da silin"
+msgstr ""
+
+#: cekirdek/yerel_k.py:357
+#, python-format
+msgid "'%s' tally'sinin mesh tanımı okunamadı"
+msgstr ""
+
+#: cekirdek/yerel_k.py:377
 msgid "yerel k tally'sinde mesh filtresi yok"
 msgstr ""
 
-#: cekirdek/yerel_k.py:294
+#: cekirdek/yerel_k.py:385
 #, python-format
 msgid "yerel k tally'sinde '%s' skoru yok"
 msgstr ""
 
-#: cekirdek/yerel_k.py:399
+#: cekirdek/yerel_k.py:439
+#, python-format
+msgid ""
+"yerel k tally'si %d×%d mesh'le uyuşmuyor (%d bin); model koşudan sonra değişmiş "
+"olabilir — yeniden koşun"
+msgstr ""
+
+#: cekirdek/yerel_k.py:476
+msgid "statepoint'te global k-tracklength/leakage yok"
+msgstr ""
+
+#: cekirdek/yerel_k.py:499
+#, python-format
+msgid "modelde '%s' tally tanımı yok; koşunun modeliyle açın"
+msgstr ""
+
+#: cekirdek/yerel_k.py:533
 msgid "ortalama k"
 msgstr ""
 
-#: cekirdek/yerel_k.py:404
+#: cekirdek/yerel_k.py:538
 msgid "kapsam"
 msgstr ""
 
-#: cekirdek/yerel_k.py:412
+#: cekirdek/yerel_k.py:558
 msgid "bu koşuda yerel k tally'si yok"
+msgstr ""
+
+#: cekirdek/yerel_k.py:569
+#, python-format
+msgid "çıktı dosyası girdiyle aynı olamaz: %s"
 msgstr ""
 

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 10:46+0300\n"
+"POT-Creation-Date: 2026-10-02 14:49+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -191,21 +191,15 @@ msgstr "unknown axis: %r"
 msgid "cizim alt süreci argüman almaz: %s"
 msgstr "the drawing subprocess takes no arguments: %s"
 
-#: cekirdek/demet_kinf.py:79
+#: cekirdek/demet_kinf.py:82
 msgid "parçacık, tohum ve iş parçacığı sayısı pozitif olmalı"
 msgstr "particles, seed and thread count must be positive"
 
-#: cekirdek/demet_kinf.py:81
+#: cekirdek/demet_kinf.py:84
 msgid "çevrim sayısı pasif çevrim sayısından büyük olmalı"
 msgstr "the number of batches must exceed the number of inactive batches"
 
-#: cekirdek/demet_kinf.py:140 cekirdek/dogrula/kor.py:85 cekirdek/geometri/sablon.py:141
-#: cekirdek/tarama.py:226
-#, python-format
-msgid "tanımsız demet: %s"
-msgstr "undefined assembly: %s"
-
-#: cekirdek/demet_kinf.py:198
+#: cekirdek/demet_kinf.py:177
 #, python-format
 msgid "k∞ — %s"
 msgstr "k∞ — %s"
@@ -7352,6 +7346,11 @@ msgstr "void fraction must be between 0% and 100%"
 msgid "'%s' malzemesinde zenginlik tanımlı bir bileşen yok"
 msgstr "material '%s' has no component with an enrichment"
 
+#: cekirdek/dogrula/kor.py:85 cekirdek/geometri/sablon.py:141 cekirdek/tarama.py:226
+#, python-format
+msgid "tanımsız demet: %s"
+msgstr "undefined assembly: %s"
+
 #: cekirdek/dogrula/kor.py:66 cekirdek/geometri/sablon.py:105 cekirdek/tarama.py:235
 #: cekirdek/tarama.py:247 cekirdek/tarama_agac.py:95
 #, python-format
@@ -9781,12 +9780,16 @@ msgstr ""
 "no USL for this application (outside the AOA): cases in the set matching the subset "
 "(%s): %d; %s"
 
-#: cekirdek/yerel_k.py:149
+#: cekirdek/yerel_k.py:183
+msgid "kafes ötelenmiş ya da döndürülmüş: yerel k mesh'i hizalanamaz"
+msgstr "the lattice is translated or rotated: the local k mesh cannot be aligned"
+
+#: cekirdek/yerel_k.py:191
 #, python-format
 msgid "'%s' bir demet değil; yerel k için kare demet gerekir"
 msgstr "'%s' is not an assembly; local k needs a square assembly"
 
-#: cekirdek/yerel_k.py:151
+#: cekirdek/yerel_k.py:193
 #, python-format
 msgid ""
 "'%s' altıgen demet: yerel k haritası yalnız kare kafeste kurulabilir (altıgen mesh "
@@ -9795,15 +9798,32 @@ msgstr ""
 "'%s' is a hexagonal assembly: the local k map can only be built on a rectangular "
 "lattice (OpenMC has no hexagonal mesh)"
 
-#: cekirdek/yerel_k.py:175
+#: cekirdek/yerel_k.py:200
+#, python-format
+msgid "bilinmeyen eksenel kapsam: %s"
+msgstr "unknown axial extent: %s"
+
+#: cekirdek/yerel_k.py:224
 msgid "tek pin modelinde kare hücre gerekir"
 msgstr "a single-pin model needs a square cell"
 
-#: cekirdek/yerel_k.py:190
-msgid "kor kafesinde demet yok: pin düzeyi kurulamaz"
-msgstr "the core lattice contains no assembly: the pin level cannot be built"
+#: cekirdek/yerel_k.py:241
+#, python-format
+msgid "kor kafesinde demet yok (%s): pin düzeyi kurulamaz; demet düzeyini kullanın"
+msgstr ""
+"the core lattice contains no assembly (%s): the pin level cannot be built; use the "
+"assembly level"
 
-#: cekirdek/yerel_k.py:196
+#: cekirdek/yerel_k.py:244
+#, python-format
+msgid ""
+"kor kafesinde demet olmayan parça var (%s): pin düzeyi tek mesh'e hizalanamaz; demet "
+"düzeyini kullanın"
+msgstr ""
+"the core lattice contains components that are not assemblies (%s): the pin level cannot be"
+" aligned to a single mesh; use the assembly level"
+
+#: cekirdek/yerel_k.py:252
 msgid ""
 "kordaki demetlerin pin adımı/boyutu farklı: pin düzeyi tek mesh'e hizalanamaz; demet "
 "düzeyini kullanın"
@@ -9811,7 +9831,7 @@ msgstr ""
 "the assemblies in the core differ in pin pitch/size: the pin level cannot be aligned "
 "to a single mesh; use the assembly level"
 
-#: cekirdek/yerel_k.py:202
+#: cekirdek/yerel_k.py:258
 #, python-format
 msgid ""
 "demet adımı (%.5g cm) pin sayısı × pin adımına (%d × %.5g cm) eşit değil (demetler "
@@ -9821,12 +9841,7 @@ msgstr ""
 "(gap between assemblies): the pin level cannot be aligned to a mesh; use the assembly"
 " level"
 
-#: cekirdek/yerel_k.py:211
-#, python-format
-msgid "bilinmeyen yerel k düzeyi: %s"
-msgstr "unknown local k level: %s"
-
-#: cekirdek/yerel_k.py:216
+#: cekirdek/yerel_k.py:269
 msgid ""
 "altıgen kesitli model: yerel k haritası yalnız kare kafeste kurulabilir (altıgen mesh"
 " OpenMC'de yok)"
@@ -9834,11 +9849,11 @@ msgstr ""
 "model with a hexagonal cross-section: the local k map can only be built on a "
 "rectangular lattice (OpenMC has no hexagonal mesh)"
 
-#: cekirdek/yerel_k.py:219
+#: cekirdek/yerel_k.py:272
 msgid "yerel k haritası yalnız kare kafeste kurulabilir"
 msgstr "the local k map can only be built on a rectangular lattice"
 
-#: cekirdek/yerel_k.py:232
+#: cekirdek/yerel_k.py:285
 #, python-format
 msgid ""
 "bu geometride (%s) pin/demet kafesi bulunamadı; yerel k haritası kare kafesli "
@@ -9847,26 +9862,69 @@ msgstr ""
 "no rectangular pin/assembly lattice found in this geometry (%s); the local k map is "
 "built for models with a rectangular lattice"
 
-#: cekirdek/yerel_k.py:286
+#: cekirdek/yerel_k.py:292
+#, python-format
+msgid "bilinmeyen yerel k düzeyi: %s"
+msgstr "unknown local k level: %s"
+
+#: cekirdek/yerel_k.py:299
+#, python-format
+msgid "modelin kafes tanımı okunamadı: %s"
+msgstr "the model's lattice definition could not be read: %s"
+
+#: cekirdek/yerel_k.py:333
+#, python-format
+msgid "'%s' adlı bir kullanıcı tally'si zaten var; yeniden adlandırın ya da silin"
+msgstr "a user tally named '%s' already exists; rename or delete it"
+
+#: cekirdek/yerel_k.py:357
+#, python-format
+msgid "'%s' tally'sinin mesh tanımı okunamadı"
+msgstr "the mesh definition of tally '%s' could not be read"
+
+#: cekirdek/yerel_k.py:377
 msgid "yerel k tally'sinde mesh filtresi yok"
 msgstr "the local k tally has no mesh filter"
 
-#: cekirdek/yerel_k.py:294
+#: cekirdek/yerel_k.py:385
 #, python-format
 msgid "yerel k tally'sinde '%s' skoru yok"
 msgstr "the local k tally has no '%s' score"
 
-#: cekirdek/yerel_k.py:399
+#: cekirdek/yerel_k.py:439
+#, python-format
+msgid ""
+"yerel k tally'si %d×%d mesh'le uyuşmuyor (%d bin); model koşudan sonra değişmiş "
+"olabilir — yeniden koşun"
+msgstr ""
+"the local k tally does not match the %d×%d mesh (%d bins); the model may have changed"
+" after the run — run it again"
+
+#: cekirdek/yerel_k.py:476
+msgid "statepoint'te global k-tracklength/leakage yok"
+msgstr "the statepoint has no global k-tracklength/leakage"
+
+#: cekirdek/yerel_k.py:499
+#, python-format
+msgid "modelde '%s' tally tanımı yok; koşunun modeliyle açın"
+msgstr "the model has no '%s' tally definition; open it with the model of the run"
+
+#: cekirdek/yerel_k.py:533
 msgid "ortalama k"
 msgstr "mean k"
 
-#: cekirdek/yerel_k.py:404
+#: cekirdek/yerel_k.py:538
 msgid "kapsam"
 msgstr "coverage"
 
-#: cekirdek/yerel_k.py:412
+#: cekirdek/yerel_k.py:558
 msgid "bu koşuda yerel k tally'si yok"
 msgstr "this run has no local k tally"
+
+#: cekirdek/yerel_k.py:569
+#, python-format
+msgid "çıktı dosyası girdiyle aynı olamaz: %s"
+msgstr "the output file cannot be the input file: %s"
 
 #~ msgid "termal"
 #~ msgstr "thermal"
