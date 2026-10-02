@@ -20,6 +20,7 @@ from testler.regresyon_ortak import ORNEK
 
 _GOR_TOL = 1e-12            # ayni sayilardan cebirsel ozdeslik (kayan nokta)
 _K_SIGMA = 2.0              # "belirsizlik icinde": 2 sigma (yaklasik %95)
+_TL_TOL = 1e-6              # ayni tahminci, ayni normalizasyon: yalniz yuvarlama farki
 
 
 def _pin(var=True, grup="XMAS-172"):
@@ -181,9 +182,9 @@ def test_tally_tanimlari():
     kontrol("alti tally", set(tanim) == {s.T_TOPLAM, s.T_TERMAL, s.T_YAKIT_TERMAL,
                                          s.T_INDEKS, s.T_SPEKTRUM, s.T_SPEKTRUM_YAKIT},
             "-> %s" % sorted(tanim))
-    kontrol("toplam: nu-fission, absorption, (n,xn)",
-            set(tanim[s.T_TOPLAM]["skorlar"]) == {"nu-fission", "absorption",
-                                                 "(n,2n)", "(n,3n)", "(n,4n)"})
+    kontrol("toplam: nu-fission, absorption ve (n,xn) kanallari (MT 11,16,17,24,25,30,37,41,42)",
+            set(tanim[s.T_TOPLAM]["skorlar"]) == {"nu-fission", "absorption"}
+            | {k for k, _x in s.XN_SKORLARI} and len(s.XN_SKORLARI) == 9)
     kontrol("termal sinirlar [0, 0.625]", tanim[s.T_TERMAL]["enerji"] == (0.0, 0.625))
     kontrol("yakit termal: uo2 malzemesi", tanim[s.T_YAKIT_TERMAL]["malzemeler"] == ("uo2",))
     kontrol("indeks: U235 + U238, fission + (n,gamma)",
@@ -330,6 +331,30 @@ def test_pin_hucre_dort_faktor_k_sonsuz(gecici):
     spk = sonuc["spektrum"]
     kontrol("spektrum: 172 grup, pozitif aki",
             len(spk["model"][0]) == 172 and float(spk["model"][0].sum()) > 0)
+    _normalizasyon_ve_denge(sp, s)
+
+
+def _normalizasyon_ve_denge(sp, s):
+    """
+    Kabulun SIKI kisimlari (korelasyonsuz 2 sigma siniri gevsektir):
+      1. filtresiz nu-fission tracklength tally'si = global k-tracklength
+         (ikisi de kaynak notronu basina AYNI tahminci; ~1e-6 bagil)
+      2. notron dengesi (kaynak notronu basina): A - X + L = 1 (2 sigma)
+    c_xn (X/A ~ %0.14) MC belirsizligiyle COZULEMEZ (A'nin sapmasi ~%0.2):
+    yalniz analitik (el hesabi) testte dogrulanir.
+    """
+    df = sp.get_tally(name=s.T_TOPLAM).get_pandas_dataframe()
+    nf = float(df[df["score"] == "nu-fission"]["mean"].iloc[0])
+    ktl = [float(g["mean"]) for g in sp.global_tallies if g["name"] in (b"k-tracklength",
+                                                                         "k-tracklength")][0]
+    kontrol("nu-fission tally = global k-tracklength (1e-6 bagil)",
+            abs(nf / ktl - 1.0) < _TL_TOL, "-> %.3e" % abs(nf / ktl - 1.0))
+    h = s._hizlar_oku(sp, df, sp.get_tally(name=s.T_TERMAL).get_pandas_dataframe())
+    denge = s.toplam(s.fark(h["A"], h["X"]), h["L"])
+    print("  A - X + L = %.5f +- %.5f" % denge)
+    kontrol("notron dengesi: A - X + L = 1 (2 sigma)",
+            abs(denge.ort - 1.0) <= _K_SIGMA * denge.sapma,
+            "-> %.5f +- %.5f" % denge)
 
 
 def test_godiva_sizinti_carpani(gecici):
@@ -341,7 +366,8 @@ def test_godiva_sizinti_carpani(gecici):
     spec["ayarlar"]["spektrum"] = {"var": True, "grup_yapisi": "CASMO-70"}
     model, _b = kurucu.kur(spec)
     # Act
-    sonuc = s.oku(_kos(model, os.path.join(gecici, "godiva")))
+    yol = _kos(model, os.path.join(gecici, "godiva"))
+    sonuc = s.oku(yol)
     f, k = sonuc["faktorler"], sonuc["keff"]
     # Assert
     print("  P_NL=%.4f  k_tally=%.5f+-%.5f  keff=%.5f+-%.5f"
@@ -356,6 +382,9 @@ def test_godiva_sizinti_carpani(gecici):
             "-> fark %.5f, sinir %.5f" % (fark, _K_SIGMA * k.sapma))
     kontrol("hizli sistem: eta (termal) tanimsiz ya da termal pay ihmal",
             f["eta"] is None or sonuc["termal_fisyon_payi"] < 1e-3)
+    import openmc
+    with openmc.StatePoint(yol) as sp:
+        _normalizasyon_ve_denge(sp, s)
 
 
 def test_betik_esdegerligi_spektrum_acik(gecici):

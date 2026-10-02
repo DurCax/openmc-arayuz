@@ -11,13 +11,18 @@
  TERMAL KESIM  E_c = 0.625 eV
    OpenMC'nin resmi "tally arithmetic" ornegi (openmc-notebooks,
    tally-arithmetic.ipynb) dort/alti faktoru EnergyFilter([0, 0.625]) ile
-   hesaplar; CASMO-2 iki grup siniri ve CSEWG TRX kafes olcumlerinin kadmiyum
-   kesimi de 0.625 eV'tur. Kesim degisirse faktorlerin hepsi degisir (tanim
-   geregi): yalniz carpim kesimden bagimsizdir.
+   hesaplar; CASMO-2 iki grup siniri da 0.625 eV'tur. CSEWG/ENDF-202 TRX
+   hesaplarinda 0.625 eV HESAP kesimidir; deneydeki etkin kadmiyum kesimi
+   kadmiyum kalinligina baglidir (~0.4-0.5 eV). Kesim degisirse faktorlerin
+   hepsi degisir (tanim geregi): yalniz carpim kesimden bagimsizdir.
 
- DORT FAKTOR (OpenMC ornegi ile birebir; ders kitabi: Lamarsh & Baratta,
- Introduction to Nuclear Engineering, Bol. 6; Duderstadt & Hamilton, Nuclear
- Reactor Analysis, 1976 -- notron yasam dongusu / dort faktor formulu)
+ DORT FAKTOR (OpenMC ornegiyle SIZINTISIZ SINIRDA ayni; p farkli: ornegin p'si
+ termal sizintiyi icerir. Ders kitabi: Lamarsh & Baratta, Introduction to
+ Nuclear Engineering, Bol. 6; Duderstadt & Hamilton, Nuclear Reactor Analysis,
+ 1976). IKI GRUP TANIMI: ders kitabindaki eps yalniz hizli (U-238 esigi ustu)
+ fisyonu sayar (tipik 1.02-1.08); burada "hizli" = E > 0.625 eV oldugundan eps
+ epitermal/rezonans U-235 fisyonunu da icerir (LWR pin ~1.2) ve p buna karsilik
+ kucuktur. Carpim ayni kalir.
    eps = nuF / nuF_th                 hizli fisyon carpani
    p   = A_th / A                     rezonanstan kacma olasiligi
    f   = A_yakit,th / A_th            termal yararlanma (yakit = fisil malzemeler)
@@ -34,7 +39,9 @@
    P_FNL ve P_TNL'yi AYRI vermek enerjiye bagli sizinti (yuzey akimi) ister;
    kapsam disi, etiketlenir.
    OpenMC'de "absorption" (n,xn) ile dogan notronlari saymaz; net uretim
-   X = (n,2n) + 2(n,3n) + 3(n,4n). Bu yuzden
+   X = sum (x-1) R_x, XN_SKORLARI'ndaki kanallar: MT 11, 16, 17, 24, 25, 30,
+   37, 41, 42. Daha yuksek kanallar (MT 152+; (n,5n) ...) SAYILMAZ: yalniz
+   yuksek enerjili (TENDL turu) degerlendirmelerde vardir. Bu yuzden
        c_xn = A / (A - X)       ve   k = eps*p*f*eta * c_xn * P_NL = nuF/(A - X + L)
    Sizintisiz modelde k = k-sonsuz (test: testler/test_y3_spektrum.py).
 
@@ -56,11 +63,11 @@
 """
 
 import math
-from typing import NamedTuple
+from typing import NamedTuple, Optional
 
 from cekirdek.ceviri import _
 from cekirdek.gunluk import kaydedici
-from cekirdek.tukenme_spektrum import _fisil_mi
+from cekirdek.tukenme_spektrum import fisil_mi
 
 _log = kaydedici(__name__)
 
@@ -80,7 +87,11 @@ T_YAKIT_TERMAL = "y3_yakit_termal"
 T_INDEKS = "y3_indeks"
 T_SPEKTRUM = "y3_spektrum"
 T_SPEKTRUM_YAKIT = "y3_spektrum_yakit"
-XN_SKORLARI = (("(n,2n)", 1), ("(n,3n)", 2), ("(n,4n)", 3))   # (skor, net ek notron)
+# (skor, net ek notron x-1): OpenMC "absorption"inin disinda kalan, notron
+# ureten kanallar (openmc.data.REACTION_NAME; MT 11, 16, 17, 24, 25, 30, 37, 41, 42)
+XN_SKORLARI = (("(n,2nd)", 1), ("(n,2n)", 1), ("(n,3n)", 2), ("(n,2na)", 1),
+               ("(n,3na)", 2), ("(n,2n2a)", 1), ("(n,4n)", 3), ("(n,2np)", 1),
+               ("(n,3np)", 2))
 
 
 class Deger(NamedTuple):
@@ -94,13 +105,41 @@ class Deger(NamedTuple):
 # ----------------------------------------------------------------------------
 
 def ayar(spec: dict) -> dict:
-    """spec["ayarlar"]["spektrum"] -> dogrulanmis YENI sozluk; bilinmeyen grup ValueError."""
-    ham = ((spec or {}).get("ayarlar") or {}).get("spektrum") or {}
+    """
+    spec["ayarlar"]["spektrum"] -> dogrulanmis YENI sozluk {"var", "grup_yapisi"}.
+    Alan sozluk degilse kapali varsayilan. Acikken bilinmeyen grup ValueError;
+    kapaliyken grup kullanilmaz ve varsayilana duser (kosu etkilenmez).
+    """
+    ham = ((spec or {}).get("ayarlar") or {}).get("spektrum")
+    if not isinstance(ham, dict):
+        return {"var": False, "grup_yapisi": VARSAYILAN_GRUP}
+    var = bool(ham.get("var"))
     grup = ham.get("grup_yapisi") or VARSAYILAN_GRUP
     if grup not in GRUP_YAPILARI:
-        raise ValueError(_("bilinmeyen enerji grup yapısı: %s (geçerli: %s)")
-                         % (grup, ", ".join(GRUP_YAPILARI)))
-    return {"var": bool(ham.get("var")), "grup_yapisi": grup}
+        if var:
+            raise ValueError(_("bilinmeyen enerji grup yapısı: %s (geçerli: %s)")
+                             % (grup, ", ".join(GRUP_YAPILARI)))
+        grup = VARSAYILAN_GRUP
+    return {"var": var, "grup_yapisi": grup}
+
+
+def kapali_kopya(spec: dict) -> dict:
+    """Y3 kapali YENI spec (sig kopya; yalniz "ayarlar" yeni sozluk). Tukenme
+    bunu kullanir: cubuk cubuk yanma malzemeleri klonlar ve MaterialFilter
+    eski malzemeye bagli kalirdi."""
+    ayarlar = dict(spec.get("ayarlar") or {})
+    ayarlar["spektrum"] = {"var": False, "grup_yapisi": ayar(spec)["grup_yapisi"]}
+    return dict(spec, ayarlar=ayarlar)
+
+
+def tukenme_icin(spec: dict) -> dict:
+    """Tukenme modeli icin spec: Y3 aciksa kapali kopya (loglanir; kullaniciya
+    dogrula/spektrum.py bilgi bulgusu gosterir), degilse ayni spec."""
+    if not ayar(spec)["var"]:
+        return spec
+    _log.warning("tükenme koşusunda spektrum/dört faktör tally'leri kapatıldı "
+                 "(çubuk çubuk yanma malzemeleri klonlar)")
+    return kapali_kopya(spec)
 
 
 def etkin_mi(spec: dict) -> bool:
@@ -109,7 +148,7 @@ def etkin_mi(spec: dict) -> bool:
 
 def yakit_malzemeleri(spec: dict) -> tuple:
     """Fisil nuklid iceren malzeme adlari (f ve eta'daki "yakit")."""
-    return tuple(m["ad"] for m in spec.get("malzemeler", []) if _fisil_mi(m))
+    return tuple(m["ad"] for m in spec.get("malzemeler", []) if fisil_mi(m))
 
 
 def _nuklid_var_mi(m: dict, nuklid: str) -> bool:
@@ -147,7 +186,7 @@ def tally_tanimlari(spec: dict) -> tuple:
                 _tanim(T_TERMAL, ("nu-fission", "absorption"), enerji=termal),
                 _tanim(T_SPEKTRUM, ("flux",), grup_yapisi=a["grup_yapisi"])]
     yakit = yakit_malzemeleri(spec)
-    if yakit:
+    if yakit:            # bos demet: yakitsiz modelde f, eta ve indeks tally'si yok
         tanimlar.append(_tanim(T_YAKIT_TERMAL, ("absorption",), enerji=termal, malzemeler=yakit))
         tanimlar.append(_tanim(T_SPEKTRUM_YAKIT, ("flux",), malzemeler=yakit,
                                grup_yapisi=a["grup_yapisi"]))
@@ -159,7 +198,7 @@ def tally_tanimlari(spec: dict) -> tuple:
     return tuple(tanimlar)
 
 
-def tally_ekle(spec: dict, model, nesneler: dict) -> tuple:
+def tally_ekle(spec: dict, model: "openmc.Model", nesneler: dict) -> tuple:
     """kurucu.kur kancasi: tanimlari openmc.Tally'ye cevirip modele ekler.
     DONER eklenen tally adlari."""
     tanimlar = tally_tanimlari(spec)
@@ -189,7 +228,7 @@ def tally_ekle(spec: dict, model, nesneler: dict) -> tuple:
 # saf hesaplar (birinci derece, korelasyonsuz belirsizlik)
 # ----------------------------------------------------------------------------
 
-def oran(a, b):
+def oran(a: Optional[Deger], b: Optional[Deger]) -> Optional[Deger]:
     """a / b; payda sifir/None ya da pay None ise None."""
     if a is None or b is None or b.ort == 0:
         return None
@@ -199,31 +238,40 @@ def oran(a, b):
     return Deger(r, abs(r) * math.hypot(a.sapma / a.ort, b.sapma / b.ort))
 
 
-def fark(a, b):
+def fark(a: Optional[Deger], b: Optional[Deger]) -> Optional[Deger]:
+    if a is None or b is None:
+        return None
     return Deger(a.ort - b.ort, math.hypot(a.sapma, b.sapma))
 
 
-def toplam(a, b):
+def toplam(a: Optional[Deger], b: Optional[Deger]) -> Optional[Deger]:
+    if a is None or b is None:
+        return None
     return Deger(a.ort + b.ort, math.hypot(a.sapma, b.sapma))
+
+
+def _pozitif(d: Optional[Deger]) -> bool:
+    return d is not None and d.ort > 0
 
 
 def faktorleri_hesapla(h: dict) -> dict:
     """
-    h: {"nF", "A", "X", "nF_th", "A_th", "A_yakit_th" (None: yakit yok), "L"} (Deger)
+    h: {"nF", "A", "X", "nF_th", "A_th", "A_yakit_th", "L"} (Deger; None = okunamadi:
+    A_yakit_th yakit yoksa, L global sizinti tally'si yoksa -- o zaman P_NL ve k None)
     DONER {"eps", "p", "f", "eta", "carpim", "c_xn", "p_nl", "k"} -- tanimsiz olan None.
     carpim = nF / A (eps*p*f*eta ozdesligi); sapmasi bu orandan (ara tally'ler
     sadelesir, dort ayri sapmanin birlesimi buyuk tahmin olurdu).
     """
     net = fark(h["A"], h["X"])
     payda = toplam(net, h["L"])
-    termal_var = h["nF_th"].ort > 0 and h["A_th"].ort > 0
-    sizintisiz = h["L"].ort == 0.0 and h["L"].sapma == 0.0
+    termal_var = _pozitif(h["nF_th"]) and _pozitif(h["A_th"])
+    sizintisiz = h["L"] is not None and h["L"].ort == 0.0 and h["L"].sapma == 0.0
     yakit = h.get("A_yakit_th") if termal_var else None
     return {
         "eps": oran(h["nF"], h["nF_th"]) if termal_var else None,
         "p": oran(h["A_th"], h["A"]) if termal_var else None,
-        "f": oran(yakit, h["A_th"]) if yakit else None,
-        "eta": oran(h["nF_th"], yakit) if yakit else None,
+        "f": oran(yakit, h["A_th"]) if yakit is not None else None,
+        "eta": oran(h["nF_th"], yakit) if _pozitif(yakit) else None,
         "carpim": oran(h["nF"], h["A"]),
         "c_xn": oran(h["A"], net),
         # Sizinti tam sifirsa (yansitici sinir) P_NL = 1 KESIN: ayni sayinin
@@ -264,13 +312,21 @@ def letarji_basina(kenarlar, aki, sapma):
 # statepoint okuma
 # ----------------------------------------------------------------------------
 
-def _satir_degeri(df, **kosul):
-    """Kosula uyan satirlarin toplami; sapmalar karesel toplanir (korelasyonsuz)."""
+ZORUNLU_TALLYLER = (T_TOPLAM, T_TERMAL)      # faktorler icin; ikisi her zaman kurulur
+
+
+def _satir_degeri(df, **kosul) -> Optional[Deger]:
+    """Kosula uyan satirlarin toplami (sapmalar karesel, korelasyonsuz).
+    Satir yoksa None (eksik skor/nuklid sessizce 0 SAYILMAZ; loglanir)."""
     sat = df
     for sutun, deger in kosul.items():
+        if sutun not in sat.columns:
+            _log.warning("Y3 tally'sinde '%s' sütunu yok (koşul %s)", sutun, kosul)
+            return None
         sat = sat[sat[sutun] == deger]
     if sat.empty:
-        return Deger(0.0, 0.0)
+        _log.warning("Y3 tally'sinde %s satırı yok", kosul)
+        return None
     return Deger(float(sat["mean"].sum()), math.sqrt(float((sat["std. dev."] ** 2).sum())))
 
 
@@ -282,31 +338,37 @@ def _tally_df(sp, ad):
         return None
 
 
-def _global_sizinti(sp):
+def _global_sizinti(sp) -> Optional[Deger]:
+    """Global 'leakage' (kaynak notronu basina); yoksa None -- 0 SAYILMAZ."""
     for satir in sp.global_tallies:
         if satir["name"] in (b"leakage", "leakage"):
             return Deger(float(satir["mean"]), float(satir["std_dev"]))
-    _log.warning("statepoint'te global 'leakage' tally'si yok; sızıntı 0 sayıldı")
-    return Deger(0.0, 0.0)
+    _log.warning("statepoint'te global 'leakage' tally'si yok; sızıntı bilinmiyor")
+    return None
 
 
-def _hizlar_oku(sp, toplam_df, termal_df):
-    hiz = {"nF": _satir_degeri(toplam_df, score="nu-fission"),
-           "A": _satir_degeri(toplam_df, score="absorption"),
-           "nF_th": _satir_degeri(termal_df, score="nu-fission"),
-           "A_th": _satir_degeri(termal_df, score="absorption"),
-           "L": _global_sizinti(sp)}
+def _xn_uretimi(toplam_df) -> Optional[Deger]:
     x = Deger(0.0, 0.0)
     for skor, carpan in XN_SKORLARI:
         d = _satir_degeri(toplam_df, score=skor)
+        if d is None:
+            return None
         x = toplam(x, Deger(carpan * d.ort, carpan * d.sapma))
-    hiz["X"] = x
+    return x
+
+
+def _hizlar_oku(sp, toplam_df, termal_df) -> dict:
     yakit = _tally_df(sp, T_YAKIT_TERMAL)
-    hiz["A_yakit_th"] = _satir_degeri(yakit, score="absorption") if yakit is not None else None
-    return hiz
+    return {"nF": _satir_degeri(toplam_df, score="nu-fission"),
+            "A": _satir_degeri(toplam_df, score="absorption"),
+            "X": _xn_uretimi(toplam_df),
+            "nF_th": _satir_degeri(termal_df, score="nu-fission"),
+            "A_th": _satir_degeri(termal_df, score="absorption"),
+            "A_yakit_th": _satir_degeri(yakit, score="absorption") if yakit is not None else None,
+            "L": _global_sizinti(sp)}
 
 
-def _indeksler_oku(sp):
+def _indeksler_oku(sp) -> Optional[dict]:
     df = _tally_df(sp, T_INDEKS)
     if df is None:
         return None
@@ -316,10 +378,24 @@ def _indeksler_oku(sp):
                             ("C28", "U238", "(n,gamma)")):
         d[kisa + "_th"] = _satir_degeri(df, nuclide=nuk, score=skor, **{eb: 0.0})
         d[kisa + "_epi"] = _satir_degeri(df, nuclide=nuk, score=skor, **{eb: TERMAL_KESIM_EV})
+    if any(v is None for v in d.values()):
+        return None
     return indeksleri_hesapla(d)
 
 
-def _spektrum_oku(sp):
+def spektrum_dizisi(ortalama, sapma, grup_sayisi: int):
+    """
+    Tally dizisi -> (aki, sapma), uzunluk grup_sayisi. Enerji filtresi SON
+    filtredir (en hizli degisen indeks); onundeki bin'ler (or. birden cok yakit
+    malzemesi) uzerinden toplanir, varyanslar toplanir (bin'ler ayri olaylar).
+    """
+    import numpy as np
+    m = np.asarray(ortalama, dtype=float).reshape(-1, grup_sayisi)
+    s = np.asarray(sapma, dtype=float).reshape(-1, grup_sayisi)
+    return m.sum(axis=0), np.sqrt((s ** 2).sum(axis=0))
+
+
+def _spektrum_oku(sp) -> dict:
     import openmc
     sonuc = {}
     for anahtar, ad in (("model", T_SPEKTRUM), ("yakit", T_SPEKTRUM_YAKIT)):
@@ -327,32 +403,50 @@ def _spektrum_oku(sp):
             tal = sp.get_tally(name=ad)
         except LookupError:
             continue
-        kenar = tal.find_filter(openmc.EnergyFilter).values
-        sonuc[anahtar] = (tal.mean.ravel().copy(), tal.std_dev.ravel().copy())
-        sonuc["kenarlar"] = kenar.copy()
+        kenar = tal.find_filter(openmc.EnergyFilter).values.copy()
+        sonuc[anahtar] = spektrum_dizisi(tal.mean, tal.std_dev, len(kenar) - 1)
+        sonuc["kenarlar"] = kenar
     return sonuc
 
 
-def oku(statepoint) -> dict | None:
+def y3_tally_adlari(sp) -> set:
+    return {t.name for t in sp.tallies.values() if (t.name or "").startswith(TALLY_ONEKI)}
+
+
+def oku(statepoint) -> Optional[dict]:
     """
-    Statepoint yolundan (ya da openmc.StatePoint'ten) Y3 sonuclari; Y3 tally'si
-    yoksa None. DONER {"faktorler" (ozdeger degilse None), "indeksler" | None,
-    "spektrum": {"kenarlar", "model": (aki, sapma), "yakit": ...},
-    "keff" | None, "sizinti", "termal_fisyon_payi", "termal_kesim"}.
+    Statepoint yolundan (ya da acik openmc.StatePoint'ten) Y3 sonuclari.
+    Y3 tally'si hic yoksa None. Kismi ise (zorunlu tally eksik) uyari loglanir,
+    "eksik" listesi dolar ve faktorler None olur.
+    DONER {"faktorler" | None, "indeksler" | None, "spektrum", "keff" | None,
+           "sizinti" | None (bilinmiyor), "termal_fisyon_payi", "termal_kesim", "eksik"}.
     """
+    if hasattr(statepoint, "get_tally"):
+        return _oku(statepoint)
     import openmc
-    sp = statepoint if hasattr(statepoint, "get_tally") else openmc.StatePoint(statepoint)
-    toplam_df, termal_df = _tally_df(sp, T_TOPLAM), _tally_df(sp, T_TERMAL)
-    if toplam_df is None or termal_df is None:
+    with openmc.StatePoint(statepoint) as sp:
+        return _oku(sp)
+
+
+def _oku(sp) -> Optional[dict]:
+    adlar = y3_tally_adlari(sp)
+    if not adlar:
         return None
-    hiz = _hizlar_oku(sp, toplam_df, termal_df)
+    eksik = [a for a in ZORUNLU_TALLYLER if a not in adlar]
     ozdeger = sp.run_mode == "eigenvalue"
+    hiz = None
+    if eksik:
+        _log.warning("Y3 tally'leri kısmi (eksik: %s); dört faktör hesaplanmadı",
+                     ", ".join(eksik))
+    else:
+        hiz = _hizlar_oku(sp, _tally_df(sp, T_TOPLAM), _tally_df(sp, T_TERMAL))
     keff = Deger(float(sp.keff.nominal_value), float(sp.keff.std_dev)) if ozdeger else None
-    pay = oran(hiz["nF_th"], hiz["nF"])
-    return {"faktorler": faktorleri_hesapla(hiz) if ozdeger else None,
+    pay = oran(hiz["nF_th"], hiz["nF"]) if hiz else None
+    return {"faktorler": faktorleri_hesapla(hiz) if (ozdeger and hiz) else None,
             "indeksler": _indeksler_oku(sp),
             "spektrum": _spektrum_oku(sp),
             "keff": keff,
-            "sizinti": hiz["L"],
-            "termal_fisyon_payi": pay.ort if pay else 0.0,
-            "termal_kesim": TERMAL_KESIM_EV}
+            "sizinti": hiz["L"] if hiz else _global_sizinti(sp),
+            "termal_fisyon_payi": pay.ort if pay else None,
+            "termal_kesim": TERMAL_KESIM_EV,
+            "eksik": eksik}

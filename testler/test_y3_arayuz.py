@@ -69,7 +69,7 @@ def test_ayar_karti_spec_yazar():
 
 
 def test_ayar_karti_doldurur_ve_gecersizi_duzeltir():
-    print("\n[Y3-A2] ayar karti: spec'ten doldurur (sinyalsiz); gecersiz grup varsayilana")
+    print("\n[Y3-A2] ayar karti: spec'ten doldurur (sinyalsiz); gecersiz grup uyarilir")
     if _qt() is None:
         return
     from arayuz.ayar.spektrum_karti import SpektrumAyarKarti
@@ -87,8 +87,9 @@ def test_ayar_karti_doldurur_ve_gecersizi_duzeltir():
     kontrol("doldurma sinyal yaymaz", not sinyal)
     spec["ayarlar"]["spektrum"] = {"var": True, "grup_yapisi": "BOZUK"}
     kart.doldur(spec)
-    kontrol("gecersiz grup -> varsayilan XMAS-172, kapali",
-            kart.grup.currentData() == "XMAS-172" and not kart.var.isChecked())
+    kontrol("gecersiz grup -> kutu varsayilan XMAS-172, onay spec gibi acik, uyari",
+            kart.grup.currentData() == "XMAS-172" and kart.var.isChecked()
+            and not kart.uyari.isHidden())
     kart.deleteLater()
 
 
@@ -115,8 +116,9 @@ def test_sonuc_karti_tablo_ve_notlar():
     kontrol("sizintisizda P_FNL notu yok", "P_FNL" not in notlar)
     kontrol("grafik log-log", kart.eksen.get_xscale() == "log"
             and kart.eksen.get_yscale() == "log")
-    kontrol("iki egri (model, yakit)", len(kart.eksen.patches) >= 2 or
-            len(kart.eksen.get_legend().get_texts()) == 2)
+    kontrol("iki basamak egrisi (model, yakit)", len(kart.eksen.patches) == 2,
+            "-> %d" % len(kart.eksen.patches))
+    kontrol("efsanede iki etiket", len(kart.eksen.get_legend().get_texts()) == 2)
     kart.deleteLater()
 
 
@@ -144,19 +146,21 @@ def test_sonuc_karti_sizinti_ve_sabit_kaynak():
 
 
 def test_calistir_sekmesinde_kart_gizli_baslar():
-    print("\n[Y3-A5] Calistir sekmesi: kart var, sonuc yokken gizli; statepoint yoksa gizli")
+    print("\n[Y3-A5] Calistir sekmesi: gosterilen spektrum sonucu proje sifirlaninca gizlenir")
     if _qt() is None:
         return
     from arayuz.sekme_calistir import CalistirSekmesi
     # Arrange
     sekme = CalistirSekmesi()
     sekme.spec_ayarla(_pin(var=True))
+    sekme.spektrum_karti.goster(_sahte_sonuc())
+    gorunurdu = not sekme.spektrum_karti.isHidden()
     # Act
     sekme.sifirla()
-    sekme.spektrum_karti.sonuc_ayarla(None)
     # Assert
-    kontrol("spektrum_karti ozniteligi", hasattr(sekme, "spektrum_karti"))
-    kontrol("sonucsuz gizli", sekme.spektrum_karti.isHidden())
+    kontrol("sonuc gosterilince gorunur", gorunurdu)
+    kontrol("sifirla sonrasi gizli ve sonucsuz",
+            sekme.spektrum_karti.isHidden() and sekme.spektrum_karti.sonuc is None)
     sekme.deleteLater()
 
 
@@ -169,7 +173,12 @@ def test_y3siz_statepoint_karti_gizler():
     from arayuz.sonuc.spektrum import SpektrumKarti
     from testler.ortak_test import KOK
     # Arrange
-    sp = sorted(glob.glob(os.path.join(KOK, "testler", "veri", "kosu_ornek", "statepoint.*.h5")))[-1]
+    adaylar = sorted(glob.glob(os.path.join(KOK, "testler", "veri", "kosu_ornek",
+                                            "statepoint.*.h5")))
+    kontrol("fixture statepoint var", bool(adaylar))
+    if not adaylar:
+        return
+    sp = adaylar[-1]
     kart = SpektrumKarti()
     kart.goster(_sahte_sonuc())
     # Act

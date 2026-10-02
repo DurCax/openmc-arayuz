@@ -46,24 +46,36 @@ class SpektrumAyarKarti(b.Kart):
             "Termal kesim %g eV. Dört faktör yalnızca özdeğer hesabında anlamlıdır; "
             "k∞ için sızıntısız (yansıtıcı sınırlı) model gerekir, sızıntı varsa "
             "ayrı bir P_NL çarpanı verilir.") % spektrum.TERMAL_KESIM_EV))
+        self.uyari = ipucu("")
+        self.uyari.setVisible(False)
+        self.ekle(self.uyari)
         self.var.toggled.connect(self._kaydet)
         self.grup.currentIndexChanged.connect(self._kaydet)
 
     def doldur(self, spec):
-        """Spec'ten doldurur (sinyal yaymadan); gecersiz grup varsayilana duser."""
+        """Spec'ten doldurur (sinyal yaymadan). Dosyadaki grup yapisi gecersizse
+        onay kutusu dosyadaki gibi kalir (arayuz ile spec celismesin), kutu
+        varsayilani gosterir ve uyari yazilir; dogrulama ayrica hata verir."""
         self._spec = spec
-        try:
-            a = spektrum.ayar(spec)
-        except ValueError:
-            _log.warning("spektrum ayarı geçersiz; varsayılan gösteriliyor", exc_info=True)
-            a = {"var": False, "grup_yapisi": spektrum.VARSAYILAN_GRUP}
+        ham = (spec.get("ayarlar") or {}).get("spektrum")
+        ham = ham if isinstance(ham, dict) else {}
+        var = bool(ham.get("var"))
+        grup = ham.get("grup_yapisi") or spektrum.VARSAYILAN_GRUP
+        gecersiz = grup not in spektrum.GRUP_YAPILARI
         self._yukleniyor = True
         try:
-            self.var.setChecked(a["var"])
-            self.grup.setCurrentIndex(max(self.grup.findData(a["grup_yapisi"]), 0))
+            self.var.setChecked(var)
+            self.grup.setCurrentIndex(
+                max(self.grup.findData(spektrum.VARSAYILAN_GRUP if gecersiz else grup), 0))
         finally:
             self._yukleniyor = False
-        self.grup.setEnabled(a["var"])
+        self.grup.setEnabled(var)
+        self.uyari.setText(_("Dosyadaki grup yapısı '%s' geçersiz; düzeltmek için listeden "
+                             "seçin (koşu bu haliyle başlamaz).") % grup
+                           if (gecersiz and var) else "")
+        self.uyari.setVisible(gecersiz and var)
+        if gecersiz:
+            _log.warning("spektrum grup yapısı geçersiz: %r", grup)
 
     def _kaydet(self, *_a):
         self.grup.setEnabled(self.var.isChecked())
@@ -71,4 +83,5 @@ class SpektrumAyarKarti(b.Kart):
             return
         self._spec["ayarlar"]["spektrum"] = {"var": self.var.isChecked(),
                                              "grup_yapisi": self.grup.currentData()}
+        self.uyari.setVisible(False)
         self.degisti.emit()

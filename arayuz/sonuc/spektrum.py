@@ -50,15 +50,21 @@ def deger_metni(d):
     return "%.5f ± %.5f" % (d.ort, d.sapma)
 
 
+def _k_sembolu(sonsuz):
+    if sonsuz is None:
+        return "k"                      # sizinti bilinmiyor: k∞/k-eff denmez
+    return "k∞" if sonsuz else "k-eff"
+
+
 def tablo_satirlari(sonuc, sonsuz):
     """[(sembol, ad, tanim, deger metni)] -- faktorler (ozdegerde) + indeksler.
-    sonsuz: model sizintisiz mi (k -> k∞ etiketi)."""
+    sonsuz: True sizintisiz (k∞), False sizintili (k-eff), None bilinmiyor (k)."""
     satirlar = []
     f = sonuc.get("faktorler")
     if f:
         for anahtar, sembol, ad, tanim in _FAKTORLER:
             if anahtar == "k":
-                sembol = "k∞" if sonsuz else "k-eff"
+                sembol = _k_sembolu(sonsuz)
             satirlar.append((sembol, _(ad), tanim, deger_metni(f.get(anahtar))))
         if sonuc.get("keff") is not None:
             satirlar.append(("k (OpenMC)", _("birleşik k tahmincisi"), "",
@@ -73,24 +79,44 @@ def tablo_satirlari(sonuc, sonsuz):
 def varsayim_notlari(sonuc, sonsuz):
     """Kartta gosterilen varsayim ve kaynak notlari (liste)."""
     notlar = [
-        _("Termal kesim %g eV (OpenMC tally-arithmetic örneği, CASMO-2 sınırı, CSEWG "
-          "kadmiyum kesimi).") % sonuc.get("termal_kesim", spektrum.TERMAL_KESIM_EV),
+        _("Termal kesim %g eV: OpenMC tally-arithmetic örneği, CASMO-2 sınırı, CSEWG/ENDF-202 "
+          "hesap kesimi (deneydeki etkin kadmiyum kesimi kalınlığa bağlı, ~0.4–0.5 eV).")
+        % sonuc.get("termal_kesim", spektrum.TERMAL_KESIM_EV),
         _("ε, p, f, η sızıntısız (k∞) tanımlardır: νF nu-fission, A absorption, X = (n,xn) net "
           "üretim; F (yakıt) = fisil nüklid içeren malzemeler."),
         _("Belirsizlik birinci derece, tally'ler arası korelasyon yok sayıldı (ihtiyatlı; "
           "çarpımın sapması νF/A oranından)."),
+        _("X yalnız MT 11, 16, 17, 24, 25, 30, 37, 41, 42 kanallarını sayar; Be ya da D₂O "
+          "içeren modellerde (n,2n) önemlidir, c_xn'e bakın."),
     ]
-    if not sonsuz:
+    notlar += _durum_notlari(sonuc, sonsuz)
+    return notlar
+
+
+def _durum_notlari(sonuc, sonsuz):
+    """Sonuca ozgu notlar: sizinti, eksik tally, homojen yakit, hizli sistem."""
+    notlar = []
+    if sonsuz is None:
+        notlar.append(_("Sızıntı bilinmiyor (global sızıntı tally'si yok): P_NL ve k "
+                        "hesaplanmadı; sonuç k∞ olarak etiketlenmedi."))
+    elif not sonsuz:
         notlar.append(_("Sızıntı var: P_NL global sızıntı tally'sinden tek çarpan; P_FNL ve "
                         "P_TNL ayrı verilmez (enerjiye bağlı sızıntı tally'si gerekir)."))
     if sonuc.get("indeksler") is not None:
         notlar.append(_("Spektral indeksler (CSEWG tanımları) tüm yakıt malzemelerinin "
                         "ortalamasıdır; deneyler merkez çubukta ölçer."))
-    if sonuc.get("faktorler") is None:
+    if sonuc.get("eksik"):
+        notlar.append(_("Y3 tally'leri eksik (%s): dört faktör hesaplanmadı.")
+                      % ", ".join(sonuc["eksik"]))
+    f = sonuc.get("faktorler")
+    if f is None and not sonuc.get("eksik"):
         notlar.append(_("Sabit kaynak hesabı: dört faktör ve k tanımsız; yalnız spektrum."))
-    elif sonuc["faktorler"].get("eta") is None:
+    elif f is not None and f.get("eta") is None:
         notlar.append(_("Termal fisyon yok (hızlı sistem): ε, p, f, η termal reaktör "
                         "tanımlarıdır ve burada tanımsızdır."))
+    elif f is not None and f.get("f") is not None and f["f"].ort == 1.0:
+        notlar.append(_("f = 1: termal soğurmanın tamamı yakıt malzemesinde (homojen karışım); "
+                        "η yakıt + moderatör karışımına aittir, ders kitabı anlamını yitirir."))
     return notlar
 
 
@@ -129,22 +155,27 @@ class SpektrumKarti(GrafikKarti):
             return
         try:
             sonuc = spektrum.oku(statepoint)
+            if sonuc is None:             # kosuda Y3 tally'si yok (ayar kapali)
+                self.goster(None)
+                return
+            self.goster(sonuc, self._sonsuz(sonuc))
         except Exception as e:
-            _log.exception("spektrum/dört faktör sonucu okunamadı: %s", statepoint)
-            self.goster(None)
-            self.setVisible(True)
-            self.tablo.setText(_("Spektrum sonucu okunamadı: %s") % html.escape(str(e)))
-            return
-        if sonuc is None:                 # kosuda Y3 tally'si yok (ayar kapali)
-            self.goster(None)
-            return
-        self.goster(sonuc, self._sonsuz(sonuc))
+            # Kart hatasi Calistir sayfasinin geri kalanini dusurmez (k-eff, guc ...).
+            _log.exception("spektrum/dört faktör sonucu gösterilemedi: %s", statepoint)
+            self._hata_goster(e)
+
+    def _hata_goster(self, hata):
+        self.goster(None)
+        self.setVisible(True)
+        self.tablo.setText(_("Spektrum sonucu okunamadı: %s") % html.escape(str(hata)))
 
     @staticmethod
     def _sonsuz(sonuc):
         """Olculen global sizinti tam sifirsa sizintisiz (k∞): yansitici/periyodik
-        sinirda hicbir parcacik kacmaz; tek bir kacis bile k-eff demektir."""
-        return (sonuc.get("sizinti") or spektrum.Deger(0.0, 0.0)).ort == 0.0
+        sinirda hicbir parcacik kacmaz; tek bir kacis bile k-eff demektir.
+        Sizinti tally'si yoksa None (bilinmiyor)."""
+        sizinti = sonuc.get("sizinti")
+        return None if sizinti is None else sizinti.ort == 0.0
 
     def goster(self, sonuc, sonsuz=True):
         self.sonuc = sonuc

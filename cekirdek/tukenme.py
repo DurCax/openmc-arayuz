@@ -50,6 +50,7 @@ import sys
 
 from cekirdek import sema, veri_bilgi
 from cekirdek import tukenme_spektrum as _spektrum
+from cekirdek import spektrum as _y3          # Y3: tukenmede spektrum tally'leri kapali
 from cekirdek.ceviri import N_, _, pgettext
 
 ZINCIRLER = {
@@ -303,7 +304,7 @@ def hazirla(spec):
     """
     from cekirdek import kurucu, tukenme_hacim
     from cekirdek.gunluk import kaydedici
-    model, kbilgi = kurucu.kur(spec)
+    model, kbilgi = kurucu.kur(_y3.tukenme_icin(spec))   # Y3 tukenmede kapali
     zs = zincir_secimi(spec)
     tamam, mesaj, _zincir = veri_bilgi.zincir_kontrol(zs["yol"])
     if not tamam:
@@ -451,7 +452,7 @@ def _malzeme_haritasi(spec):
     Cubuk cubuk yanmada klonlar da (ad ve kendi hacmiyle) haritaya girer.
     """
     from cekirdek import kurucu
-    model, kb = kurucu.kur(spec)
+    model, kb = kurucu.kur(_y3.tukenme_icin(spec))      # Y3 tukenmede kapali
     hv = hacimler(spec)
     ad_by_id = {str(m.id): ad for ad, m in kb["malzemeler"].items()}
     hacim_by_ad = {ad: v.get("hacim") for ad, v in hv.items()}
