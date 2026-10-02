@@ -115,5 +115,34 @@ def test_vv_yerine():
                 and os.path.join("vv", "kriter_lct008_01.json") in adlar, "-> %s" % adlar)
 
 
-HIZLI = [test_harita_uret, test_spec_olustur, test_birim_hucre_hx, test_vv_yerine]
+# mit-crpg/benchmarks klonu (MIT): VV_MITCRPG ortam degiskeni ya da Y11 calisma kopyasi.
+MITCRPG = os.environ.get("VV_MITCRPG",
+                         os.path.expanduser("~/openmc_v3_ciktilar/y11/kaynak/benchmarks"))
+
+
+def test_depodan_spec():
+    print("\n[VL8e] mit-crpg girdisinden durum 1 ve 11 (klon yoksa atlanir)")
+    from cekirdek.vv import lct008
+    if not os.path.isdir(os.path.join(MITCRPG, "icsbep", "leu-comp-therm-008")):
+        print("  [ATLANDI] mit-crpg klonu yok: %s" % MITCRPG)
+        return
+    s1 = lct008.spec(MITCRPG, 1)
+    kontrol("durum 1 haritasi v2 sablonuyla ayni",
+            s1["demetler"][0]["harita"] == _sablon()["demetler"][0]["harita"])
+    s11 = lct008.spec(MITCRPG, 11)
+    j = "".join(s11["demetler"][0]["harita"])
+    kontrol("durum 11: 4808 yakit + 144 Al2O3", (j.count("y"), j.count("a")) == (4808, 144),
+            "-> %d, %d" % (j.count("y"), j.count("a")))
+    adlar = [m["ad"] for m in s11["malzemeler"]]
+    kontrol("Al2O3 ve kilifi eklendi", "al2o3" in adlar and "al2o3_kilif" in adlar, "-> %s" % adlar)
+    try:
+        lct008.spec(MITCRPG, 3)
+        reddedildi = False
+    except ValueError:
+        reddedildi = True
+    kontrol("acik modeli olmayan durum 3 reddedilir", reddedildi)
+
+
+HIZLI = [test_harita_uret, test_spec_olustur, test_birim_hucre_hx, test_vv_yerine,
+         test_depodan_spec]
 YAVAS = []
