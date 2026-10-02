@@ -5,8 +5,9 @@ The **Workflow** window manages many runs at once: it puts runs in a **queue**, 
 order or with limited parallelism, writes every finished run to the **run history**, shows the
 k-eff and pin power difference of two runs together with its statistical significance, and
 generates a **SLURM batch script** to take the model to a compute cluster (HPC). The window has
-three tabs: **Run queue**, **History and comparison**, **SLURM script**. It can also be opened
-on its own with `python -m arayuz.kuyruk model.json`.
+three tabs: **Run queue**, **History and comparison**, **SLURM script**. It is opened from the
+main window with **Tools > Workflow...** (the current model goes to the queue and to the SLURM
+form); it can also be opened on its own with `python -m arayuz.kuyruk model.json`.
 
 Every run uses its own **run directory** (`model.xml`, `spec.json`, `kapsul.json`,
 `statepoint.*.h5`, `kosu.log` side by side, the same layout as the Run tab); two unfinished
@@ -41,7 +42,8 @@ updated live.
 <a id="is-akisi-gecmis"></a>
 ### History and comparison
 
-Every queued run that is done, failed or cancelled is written to
+Every queued run that is done, failed or cancelled (and every single run of the Run tab) is
+written to
 `~/.local/share/openmc_arayuz/kosu_gecmisi.sqlite3` (every write is a single SQLite
 transaction; no half-written record remains). Removing a history row does not delete the run
 directory.

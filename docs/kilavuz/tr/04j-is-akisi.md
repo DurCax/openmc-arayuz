@@ -5,8 +5,9 @@
 sırayla ya da sınırlı paralel çalıştırır, biten her koşuyu **koşu geçmişine** yazar, iki
 koşunun k-eff ve pin gücü farkını istatistik anlamlılığıyla gösterir ve modeli bir hesaplama
 kümesine (HPC) götürmek için **SLURM betiği** üretir. Pencere üç sekmedir: **Koşu kuyruğu**,
-**Geçmiş ve karşılaştırma**, **SLURM betiği**. Tek başına `python -m arayuz.kuyruk model.json`
-ile de açılır.
+**Geçmiş ve karşılaştırma**, **SLURM betiği**. Ana pencerede **Araçlar → İş akışı…** ile açılır
+(geçerli model kuyruğa ve SLURM formuna gelir); tek başına
+`python -m arayuz.kuyruk model.json` ile de açılabilir.
 
 Her koşu kendi **koşu dizininde** çalışır (`model.xml`, `spec.json`, `kapsul.json`,
 `statepoint.*.h5`, `kosu.log` yan yana — Çalıştır sekmesindeki düzenle aynı); iki bitmemiş koşu
@@ -38,8 +39,8 @@ başarısız, iptal), çevrim, kümülatif k ± σ ve süre canlı güncellenir.
 <a id="is-akisi-gecmis"></a>
 ### Geçmiş ve karşılaştırma
 
-Biten, başarısız ya da iptal edilen her kuyruk koşusu `~/.local/share/openmc_arayuz/
-kosu_gecmisi.sqlite3` dosyasına yazılır (her yazma tek bir SQLite işlemidir; yarım kayıt
+Biten, başarısız ya da iptal edilen her kuyruk koşusu — ve Çalıştır sekmesinin tek koşuları —
+`~/.local/share/openmc_arayuz/kosu_gecmisi.sqlite3` dosyasına yazılır (her yazma tek bir SQLite işlemidir; yarım kayıt
 kalmaz). Geçmiş satırı koşu dizinini silmez; dizin yerinde kalır.
 
 ![İki koşunun karşılaştırması: k farkı, pin gücü fark tablosu ve haritası](../resimler/tr/is_akisi_karsilastir.png)

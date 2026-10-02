@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 09:43+0300\n"
+"POT-Creation-Date: 2026-10-02 10:14+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -3925,33 +3925,42 @@ msgstr ""
 "the volume of an instance of material '%s' cannot be computed; pin-by-pin burnup "
 "requires exact volumes"
 
-#: cekirdek/kosu_gecmisi.py:136
+#: cekirdek/kosu_gecmisi.py:157
 #, python-format
 msgid "kosu gecmisi daha yeni bir sürümle yazılmış (%d > %d): %s"
 msgstr "the run history was written by a newer version (%d > %d): %s"
 
-#: cekirdek/kosu_gecmisi.py:151
+#: cekirdek/kosu_gecmisi.py:172
 msgid "kayıt kimliği ve adı boş olamaz"
 msgstr "the record id and name cannot be empty"
 
-#: cekirdek/kosu_gecmisi.py:250
+#: cekirdek/kosu_gecmisi.py:188
+#, python-format
+msgid "liste sınırı negatif olamaz: %d"
+msgstr "the list limit cannot be negative: %d"
+
+#: cekirdek/kosu_gecmisi.py:295
+msgid "k ve σ sonlu olmalı"
+msgstr "k and σ must be finite"
+
+#: cekirdek/kosu_gecmisi.py:297
 msgid "k > 0 ve σ ≥ 0 olmalı"
 msgstr "k > 0 and σ ≥ 0 are required"
 
-#: cekirdek/kosu_gecmisi.py:365
+#: cekirdek/kosu_gecmisi.py:412
 #, python-format
 msgid "statepoint bulunamadı: %s"
 msgstr "statepoint not found: %s"
 
-#: cekirdek/kosu_gecmisi.py:379
+#: cekirdek/kosu_gecmisi.py:426
 msgid "En az bir koşu sabit kaynak: k-eff karşılaştırılmadı."
 msgstr "At least one run is fixed source: k-eff was not compared."
 
-#: cekirdek/kosu_gecmisi.py:383
+#: cekirdek/kosu_gecmisi.py:430
 msgid "İki koşuda da güç dağılımı yok: pin gücü karşılaştırılmadı."
 msgstr "The power distribution is not available in both runs: pin power was not compared."
 
-#: cekirdek/kosu_gecmisi.py:385
+#: cekirdek/kosu_gecmisi.py:432
 msgid "Güç haritalarında ortak konum yok (farklı geometri?)."
 msgstr "The power maps have no common position (different geometry?)."
 
@@ -4562,74 +4571,88 @@ msgstr ""
 "pin '%s' is not used in the model. The power distribution can be computed only for a "
 "pin that is present in the geometry."
 
-#: cekirdek/kuyruk.py:207
-msgid "MPI koşusu için mpiexec bulunamadı (OPENMC_ARAYUZ_MPIEXEC ya da PATH)"
-msgstr "mpiexec was not found for the MPI run (OPENMC_ARAYUZ_MPIEXEC or PATH)"
+#: cekirdek/kuyruk.py:192
+msgid "koşu kök dizini boş olamaz"
+msgstr "the run root directory cannot be empty"
 
-#: cekirdek/kuyruk.py:306
+#: cekirdek/kuyruk.py:231
+#, python-format
+msgid "spec'te çevrim sayısı geçersiz: %r"
+msgstr "invalid batch count in the spec: %r"
+
+#: cekirdek/kuyruk.py:255
 msgid "en fazla paralel koşu sayısı en az 1 olmalı"
 msgstr "the maximum number of parallel runs must be at least 1"
 
-#: cekirdek/kuyruk.py:309
+#: cekirdek/kuyruk.py:258
 msgid "iş parçacığı bütçesi en az 1 olmalı"
 msgstr "the thread budget must be at least 1"
 
-#: cekirdek/kuyruk.py:347
+#: cekirdek/kuyruk.py:305
 msgid "paralel koşu sayısı ve bütçe en az 1 olmalı"
 msgstr "the number of parallel runs and the budget must be at least 1"
 
-#: cekirdek/kuyruk.py:380
+#: cekirdek/kuyruk.py:312
+#, python-format
+msgid "bütçe %d, bekleyen koşulardan küçük: %s"
+msgstr "the budget %d is smaller than pending runs: %s"
+
+#: cekirdek/kuyruk.py:359
 msgid "koşunun adı boş olamaz"
 msgstr "the run name cannot be empty"
 
-#: cekirdek/kuyruk.py:382
+#: cekirdek/kuyruk.py:361
 msgid "koşu dizini boş olamaz"
 msgstr "the run directory cannot be empty"
 
-#: cekirdek/kuyruk.py:384
+#: cekirdek/kuyruk.py:363
 msgid "iş parçacığı en az 1, MPI süreç sayısı negatif olamaz"
 msgstr "threads must be at least 1 and the MPI process count cannot be negative"
 
-#: cekirdek/kuyruk.py:386
+#: cekirdek/kuyruk.py:365
 #, python-format
 msgid "'%s' %d iş parçacığı istiyor; bütçe %d"
 msgstr "'%s' needs %d threads; the budget is %d"
 
-#: cekirdek/kuyruk.py:391
+#: cekirdek/kuyruk.py:370
 #, python-format
 msgid "'%s' dizini zaten kuyruktaki bir koşunun (%s)"
 msgstr "the directory '%s' already belongs to a queued run (%s)"
 
-#: cekirdek/kuyruk.py:401 cekirdek/kuyruk.py:480
+#: cekirdek/kuyruk.py:380 cekirdek/kuyruk.py:460
 msgid "kuyruk kapatıldı"
 msgstr "the queue is closed"
 
-#: cekirdek/kuyruk.py:434
+#: cekirdek/kuyruk.py:414
 msgid "koşan iş kaldırılamaz; önce iptal edin"
 msgstr "a running entry cannot be removed; cancel it first"
 
-#: cekirdek/kuyruk.py:619
+#: cekirdek/kuyruk.py:593
 #, python-format
 msgid "openmc çıkış kodu %d (günlük: %s)"
 msgstr "openmc exit code %d (log: %s)"
 
-#: cekirdek/kuyruk.py:624
+#: cekirdek/kuyruk.py:598
 msgid "koşu bitti ama statepoint dosyası bulunamadı"
 msgstr "the run finished but no statepoint file was found"
 
-#: cekirdek/kuyruk.py:639
+#: cekirdek/kuyruk.py:613
 #, python-format
 msgid "'%s' dizininde model.xml yok"
 msgstr "no model.xml in the directory '%s'"
 
-#: cekirdek/kuyruk.py:650
+#: cekirdek/kuyruk.py:632
 #, python-format
 msgid "openmc çalıştırılabilir dosyası bulunamadı (%s)"
 msgstr "the openmc executable was not found (%s)"
 
-#: cekirdek/kuyruk.py:655
+#: cekirdek/kuyruk.py:637
 msgid "Bu openmc MPI desteksiz derlenmiş (MPI enabled: no); MPI süreç sayısını 0 yapın"
 msgstr "This openmc was built without MPI (MPI enabled: no); set the MPI process count to 0"
+
+#: cekirdek/kuyruk_surec.py:63
+msgid "MPI koşusu için mpiexec bulunamadı (OPENMC_ARAYUZ_MPIEXEC ya da PATH)"
+msgstr "mpiexec was not found for the MPI run (OPENMC_ARAYUZ_MPIEXEC or PATH)"
 
 #: cekirdek/malzeme_kutup.py:145
 #, python-format
@@ -5212,89 +5235,109 @@ msgstr "level %r is invalid (valid: %s)"
 msgid "%s: örnek bir JSON nesnesi değil"
 msgstr "%s: the example is not a JSON object"
 
-#: cekirdek/parametre.py:69
+#: cekirdek/parametre.py:74
 #, python-format
 msgid "sayısal değer bekleniyordu: %r"
 msgstr "a numeric value was expected: %r"
 
-#: cekirdek/parametre.py:88
+#: cekirdek/parametre.py:76
+#, python-format
+msgid "sonlu bir sayı bekleniyordu: %r"
+msgstr "a finite number was expected: %r"
+
+#: cekirdek/parametre.py:95
 #, python-format
 msgid "değişken adı bir tanımlayıcı olmalı (harf/_ ile başlar): %r"
 msgstr "the variable name must be an identifier (starting with a letter or _): %r"
 
-#: cekirdek/parametre.py:91
+#: cekirdek/parametre.py:98
 #, python-format
 msgid "bilinmeyen değişken türü: %s"
 msgstr "unknown variable type: %s"
 
-#: cekirdek/parametre.py:93
+#: cekirdek/parametre.py:100
 #, python-format
 msgid "'%s' değişkeninin spec yolu boş"
 msgstr "the spec path of variable '%s' is empty"
 
-#: cekirdek/parametre.py:106
+#: cekirdek/parametre.py:113
 #, python-format
 msgid "tarama biçimi %s olmalı: %s"
 msgstr "the sweep mode must be %s: %s"
 
-#: cekirdek/parametre.py:110
+#: cekirdek/parametre.py:117
 msgid "taranan her değişkenin en az bir değeri olmalı"
 msgstr "every swept variable needs at least one value"
 
-#: cekirdek/parametre.py:112
+#: cekirdek/parametre.py:119
 msgid "eşli taramada bütün değer listeleri aynı uzunlukta olmalı"
 msgstr "in a paired sweep all value lists must have the same length"
 
-#: cekirdek/parametre.py:126
+#: cekirdek/parametre.py:133
 #, python-format
 msgid "değişken adları benzersiz olmalı: %s"
 msgstr "variable names must be unique: %s"
 
-#: cekirdek/parametre.py:130
+#: cekirdek/parametre.py:137
 #, python-format
 msgid "taramada tanımsız değişken: %s"
 msgstr "undefined variable in the sweep: %s"
 
-#: cekirdek/parametre.py:142
+#: cekirdek/parametre.py:140
+#, python-format
+msgid "tarama %d nokta üretir; en çok %d"
+msgstr "the sweep gives %d points; at most %d"
+
+#: cekirdek/parametre.py:159
 #, python-format
 msgid "geçersiz spec yolu: %r"
 msgstr "invalid spec path: %r"
 
-#: cekirdek/parametre.py:150
+#: cekirdek/parametre.py:168
 #, python-format
 msgid "spec yolunda liste öğesi yok: %s"
 msgstr "no list element at the spec path: %s"
 
-#: cekirdek/parametre.py:154
+#: cekirdek/parametre.py:172
 #, python-format
 msgid "spec yolunda alan yok: %s"
 msgstr "no field at the spec path: %s"
 
-#: cekirdek/parametre.py:168
+#: cekirdek/parametre.py:186
 #, python-format
 msgid "'%s' sayısal bir alan değil"
 msgstr "'%s' is not a numeric field"
 
-#: cekirdek/parametre.py:181
+#: cekirdek/parametre.py:199
 #, python-format
 msgid "tanımsız değişken: %s"
 msgstr "undefined variable: %s"
 
-#: cekirdek/parametre.py:229
+#: cekirdek/parametre.py:250
+#, python-format
+msgid "parametrik model biçimi bozuk: %s"
+msgstr "the parametric model format is broken: %s"
+
+#: cekirdek/parametre.py:255
 #, python-format
 msgid "parametrik model dosyası değil (bicim = %r)"
 msgstr "not a parametric model file (bicim = %r)"
 
-#: cekirdek/parametre.py:231
+#: cekirdek/parametre.py:258
+#, python-format
+msgid "parametrik model sürümü geçersiz: %r"
+msgstr "invalid parametric model version: %r"
+
+#: cekirdek/parametre.py:260
 #, python-format
 msgid "parametrik model daha yeni bir sürümle yazılmış (%s)"
 msgstr "the parametric model was written by a newer version (%s)"
 
-#: cekirdek/parametre.py:234
+#: cekirdek/parametre.py:263
 msgid "parametrik modelde taban spec yok"
 msgstr "the parametric model has no base spec"
 
-#: cekirdek/parametre.py:277
+#: cekirdek/parametre.py:310
 msgid "taban"
 msgstr "base"
 
@@ -5932,50 +5975,50 @@ msgstr ""
 msgid "'%s' adında %d malzeme var; önce birini yeniden adlandırın."
 msgstr "Material name '%s' is used by %d materials; rename one of them first."
 
-#: cekirdek/slurm.py:73
+#: cekirdek/slurm.py:74
 #, python-format
 msgid "%s en az %d olan bir tam sayı olmalı: %r"
 msgstr "%s must be an integer of at least %d: %r"
 
-#: cekirdek/slurm.py:79
+#: cekirdek/slurm.py:80
 #, python-format
 msgid "%s yeni satır içeremez"
 msgstr "%s cannot contain a new line"
 
-#: cekirdek/slurm.py:107
+#: cekirdek/slurm.py:108
 #, python-format
 msgid "geçersiz SLURM alanı %s: %r"
 msgstr "invalid SLURM field %s: %r"
 
-#: cekirdek/slurm.py:117
+#: cekirdek/slurm.py:118
 #, python-format
 msgid "geçersiz modül adı: %r"
 msgstr "invalid module name: %r"
 
-#: cekirdek/slurm.py:119
+#: cekirdek/slurm.py:120
 #, python-format
 msgid "geçersiz conda ortamı adı: %r"
 msgstr "invalid conda environment name: %r"
 
-#: cekirdek/slurm.py:122
+#: cekirdek/slurm.py:123
 #, python-format
 msgid "geçersiz ortam değişkeni adı: %r"
 msgstr "invalid environment variable name: %r"
 
-#: cekirdek/slurm.py:125
+#: cekirdek/slurm.py:126
 msgid "openmc yolu boş olamaz"
 msgstr "the openmc path cannot be empty"
 
-#: cekirdek/slurm.py:128
+#: cekirdek/slurm.py:129
 msgid "koşu dizini"
 msgstr "run directory"
 
-#: cekirdek/slurm.py:130
+#: cekirdek/slurm.py:131
 #, python-format
 msgid "MPI başlatıcı %s olmalı: %r"
 msgstr "the MPI launcher must be %s: %r"
 
-#: cekirdek/slurm.py:205
+#: cekirdek/slurm.py:212
 #, python-format
 msgid "üretilen SLURM betiği sözdizimi denetiminden geçmedi: %s"
 msgstr "the generated SLURM script failed the syntax check: %s"

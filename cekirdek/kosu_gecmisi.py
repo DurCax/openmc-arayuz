@@ -242,6 +242,26 @@ def durumdan_kayit(durum: Any) -> KosuKaydi:
         etiket=dict(durum.etiket or {}))
 
 
+def tek_kosu_kaydet(dizin: str, ad: str, durum: str, keff: Optional[Tuple[float, float]] = None,
+                    baslangic: Optional[float] = None, is_parcacigi: int = 1,
+                    depo: Optional[GecmisDeposu] = None) -> Optional[KosuKaydi]:
+    """Calistir sekmesinin tek kosusunu gecmise yazar (kuyruk disi). Hata
+    YUKARI cikmaz (gecmis yazilamadi diye kosu sonucu gizlenmez); loglanir.
+    DONER yazilan kayit ya da None."""
+    import uuid
+    try:
+        depo = depo or GecmisDeposu()
+        k = keff or (None, None)
+        return depo.kaydet(KosuKaydi(
+            kimlik=uuid.uuid4().hex[:12], ad=str(ad or os.path.basename(dizin)),
+            dizin=os.path.abspath(dizin), durum=durum, baslangic=baslangic, bitis=time.time(),
+            keff=k[0], sapma=k[1], is_parcacigi=int(is_parcacigi or 1),
+            spec_sha=_spec_sha(dizin), etiket={"kaynak": "calistir"}))
+    except (OSError, sqlite3.Error, ValueError, RuntimeError):
+        _log.warning("tek kosu gecmise yazilamadi: %s", dizin, exc_info=True)
+        return None
+
+
 def gecmis_dinleyicisi(depo: GecmisDeposu) -> Callable[[Any], None]:
     """Kuyruk dinleyicisi: son asamaya gelen her isi gecmise yazar."""
     def dinle(durum: Any) -> None:

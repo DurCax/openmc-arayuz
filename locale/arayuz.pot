@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 09:43+0300\n"
+"POT-Creation-Date: 2026-10-02 10:14+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -898,7 +898,7 @@ msgstr ""
 msgid "Kaydedilmiş bir model (.json) ya da OpenMC XML klasörü."
 msgstr ""
 
-#: arayuz/baslangic.py:376 arayuz/pencere/menuler.py:133
+#: arayuz/baslangic.py:376 arayuz/pencere/menuler.py:138
 msgid "Aç…"
 msgstr ""
 
@@ -906,7 +906,7 @@ msgstr ""
 msgid "Bilgisayarınızdaki bir model dosyasını (.json) açar (Ctrl+O)."
 msgstr ""
 
-#: arayuz/baslangic.py:384 arayuz/pencere/menuler.py:135
+#: arayuz/baslangic.py:384 arayuz/pencere/menuler.py:140
 msgid "Son kullanılanlar"
 msgstr ""
 
@@ -993,7 +993,7 @@ msgstr ""
 msgid "boş şablonu olmayan kart: %s"
 msgstr ""
 
-#: arayuz/bilesenler/bildirim.py:98 arayuz/pencere/menuler.py:323
+#: arayuz/bilesenler/bildirim.py:98 arayuz/pencere/menuler.py:333
 msgid "Kapat"
 msgstr ""
 
@@ -4057,7 +4057,7 @@ msgstr ""
 msgid "Parametrik model ekle…"
 msgstr ""
 
-#: arayuz/kuyruk/panel.py:146 arayuz/kuyruk/panel.py:341
+#: arayuz/kuyruk/panel.py:146 arayuz/kuyruk/panel.py:342
 msgid "Başlat"
 msgstr ""
 
@@ -4096,44 +4096,44 @@ msgstr ""
 msgid "model"
 msgstr ""
 
-#: arayuz/kuyruk/panel.py:206
+#: arayuz/kuyruk/panel.py:207
 #, python-format
 msgid "Kuyruğa eklenemedi: %s"
 msgstr ""
 
-#: arayuz/kuyruk/panel.py:211
+#: arayuz/kuyruk/panel.py:212
 msgid "Parametrik model"
 msgstr ""
 
-#: arayuz/kuyruk/panel.py:211
+#: arayuz/kuyruk/panel.py:212
 msgid "Parametrik model (*.json)"
 msgstr ""
 
-#: arayuz/kuyruk/panel.py:217
+#: arayuz/kuyruk/panel.py:218
 #, python-format
 msgid "Parametrik model okunamadı: %s"
 msgstr ""
 
-#: arayuz/kuyruk/panel.py:221
+#: arayuz/kuyruk/panel.py:222
 #, python-format
 msgid "%d nokta kuyruğa eklendi."
 msgstr ""
 
-#: arayuz/kuyruk/panel.py:224
+#: arayuz/kuyruk/panel.py:225
 msgid "Koşu klasörü"
 msgstr ""
 
-#: arayuz/kuyruk/panel.py:283
+#: arayuz/kuyruk/panel.py:284
 #, python-format
 msgid "'%s' başarısız: %s"
 msgstr ""
 
-#: arayuz/kuyruk/panel.py:325
+#: arayuz/kuyruk/panel.py:326
 #, python-format
 msgid "Kuyruk tamamlandı: %d / %d koşu başarılı."
 msgstr ""
 
-#: arayuz/kuyruk/panel.py:341
+#: arayuz/kuyruk/panel.py:342
 msgid "Duraklat"
 msgstr ""
 
@@ -4162,99 +4162,99 @@ msgstr ""
 msgid "Kuyrukta %d bitmemiş koşu var; kapatılırsa iptal edilir. Kapatılsın mı?"
 msgstr ""
 
-#: arayuz/kuyruk/slurm_paneli.py:56
+#: arayuz/kuyruk/slurm_paneli.py:65
 msgid "birden çok modül: openmpi/4.1 hdf5"
 msgstr ""
 
-#: arayuz/kuyruk/slurm_paneli.py:60
+#: arayuz/kuyruk/slurm_paneli.py:69
 msgid "kümedeki cross_sections.xml yolu (isteğe bağlı)"
 msgstr ""
 
-#: arayuz/kuyruk/slurm_paneli.py:64
+#: arayuz/kuyruk/slurm_paneli.py:73
 msgid "İş adı"
 msgstr ""
 
-#: arayuz/kuyruk/slurm_paneli.py:64
+#: arayuz/kuyruk/slurm_paneli.py:73
 msgid "Süre (ss:dd:sn)"
 msgstr ""
 
-#: arayuz/kuyruk/slurm_paneli.py:65
+#: arayuz/kuyruk/slurm_paneli.py:74
 msgid "Düğüm"
 msgstr ""
 
-#: arayuz/kuyruk/slurm_paneli.py:65
+#: arayuz/kuyruk/slurm_paneli.py:74
 msgid "MPI görev (ntasks)"
 msgstr ""
 
-#: arayuz/kuyruk/slurm_paneli.py:66
+#: arayuz/kuyruk/slurm_paneli.py:75
 msgid "Görev başına CPU (OMP)"
 msgstr ""
 
-#: arayuz/kuyruk/slurm_paneli.py:66
+#: arayuz/kuyruk/slurm_paneli.py:75
 msgid "Bölüm (partition)"
 msgstr ""
 
-#: arayuz/kuyruk/slurm_paneli.py:67
+#: arayuz/kuyruk/slurm_paneli.py:76
 msgid "Hesap (account)"
 msgstr ""
 
-#: arayuz/kuyruk/slurm_paneli.py:67
+#: arayuz/kuyruk/slurm_paneli.py:76
 msgid "Bellek (ör. 16G)"
 msgstr ""
 
-#: arayuz/kuyruk/slurm_paneli.py:68
+#: arayuz/kuyruk/slurm_paneli.py:77
 msgid "E-posta"
 msgstr ""
 
-#: arayuz/kuyruk/slurm_paneli.py:68
+#: arayuz/kuyruk/slurm_paneli.py:77
 msgid "Modüller"
 msgstr ""
 
-#: arayuz/kuyruk/slurm_paneli.py:69
+#: arayuz/kuyruk/slurm_paneli.py:78
 msgid "Conda ortamı"
 msgstr ""
 
-#: arayuz/kuyruk/slurm_paneli.py:69
+#: arayuz/kuyruk/slurm_paneli.py:78
 msgid "openmc yolu"
 msgstr ""
 
-#: arayuz/kuyruk/slurm_paneli.py:70
+#: arayuz/kuyruk/slurm_paneli.py:79
 msgid "OPENMC_CROSS_SECTIONS"
 msgstr ""
 
-#: arayuz/kuyruk/slurm_paneli.py:71
+#: arayuz/kuyruk/slurm_paneli.py:79
 msgid "MPI başlatıcı"
 msgstr ""
 
-#: arayuz/kuyruk/slurm_paneli.py:77
+#: arayuz/kuyruk/slurm_paneli.py:89
 msgid "Koşu klasörünü hazırla…"
 msgstr ""
 
-#: arayuz/kuyruk/slurm_paneli.py:127
+#: arayuz/kuyruk/slurm_paneli.py:141
 #, python-format
 msgid "Geçersiz alan: %s"
 msgstr ""
 
-#: arayuz/kuyruk/slurm_paneli.py:133
+#: arayuz/kuyruk/slurm_paneli.py:147
 #, python-format
 msgid "bash -n: sözdizimi geçerli. Kümede: sbatch %s"
 msgstr ""
 
-#: arayuz/kuyruk/slurm_paneli.py:136
+#: arayuz/kuyruk/slurm_paneli.py:150
 #, python-format
 msgid "bash -n hatası: %s"
 msgstr ""
 
-#: arayuz/kuyruk/slurm_paneli.py:143
+#: arayuz/kuyruk/slurm_paneli.py:157
 msgid "Küme koşu klasörü"
 msgstr ""
 
-#: arayuz/kuyruk/slurm_paneli.py:151
+#: arayuz/kuyruk/slurm_paneli.py:166
 #, python-format
 msgid "Hazırlanamadı: %s"
 msgstr ""
 
-#: arayuz/kuyruk/slurm_paneli.py:153
+#: arayuz/kuyruk/slurm_paneli.py:168
 #, python-format
 msgid "Yazıldı: %s — kümeye kopyalayıp 'sbatch %s' ile gönderin."
 msgstr ""
@@ -5031,11 +5031,11 @@ msgstr ""
 msgid "D&üzen"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:102 arayuz/pencere/menuler.py:294
+#: arayuz/pencere/menuler.py:102 arayuz/pencere/menuler.py:304
 msgid "Geri al"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:103 arayuz/pencere/menuler.py:294
+#: arayuz/pencere/menuler.py:103 arayuz/pencere/menuler.py:304
 msgid "Yinele"
 msgstr ""
 
@@ -5044,146 +5044,158 @@ msgid "&Görünüm"
 msgstr ""
 
 #: arayuz/pencere/menuler.py:105
-msgid "&Yardım"
+msgid "&Araçlar"
 msgstr ""
 
 #: arayuz/pencere/menuler.py:108
+msgid "İş akışı…"
+msgstr ""
+
+#: arayuz/pencere/menuler.py:109
+msgid "Koşu kuyruğu, koşu geçmişi ve karşılaştırma, SLURM betiği (Y10)"
+msgstr ""
+
+#: arayuz/pencere/menuler.py:110
+msgid "&Yardım"
+msgstr ""
+
+#: arayuz/pencere/menuler.py:113
 msgid "Kullanım kılavuzunu etkin sayfanın bölümünde açar"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:109 arayuz/pencere/menuler.py:317
+#: arayuz/pencere/menuler.py:114 arayuz/pencere/menuler.py:327
 #: arayuz/pencere/yardim_metni.py:14
 msgid "Yardım ve terimler"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:110 arayuz/pencere/menuler.py:337
+#: arayuz/pencere/menuler.py:115 arayuz/pencere/menuler.py:347
 msgid "Hakkında"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:114 arayuz/pencere/menuler.py:296
+#: arayuz/pencere/menuler.py:119 arayuz/pencere/menuler.py:306
 msgid "Doğrulamayı yenile (veri kütüphanesi dahil)"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:117 arayuz/pencere/menuler.py:297
+#: arayuz/pencere/menuler.py:122 arayuz/pencere/menuler.py:307
 msgid "Önizlemeyi yenile"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:119 arayuz/pencere/menuler.py:297
+#: arayuz/pencere/menuler.py:124 arayuz/pencere/menuler.py:307
 msgid "ÇALIŞTIR"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:120
+#: arayuz/pencere/menuler.py:125
 msgid "Modeli çalıştır (F9) — önce geometri çizilmiş ve doğrulama hatasız olmalı"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:130
+#: arayuz/pencere/menuler.py:135
 msgid "Yeni…"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:132
+#: arayuz/pencere/menuler.py:137
 msgid "Başlangıç ekranı: ne modelleyeceğini seç"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:134
+#: arayuz/pencere/menuler.py:139
 msgid "Bir model dosyası (.json) aç"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:137 arayuz/pencere/menuler.py:293 arayuz/pencere/proje.py:76
+#: arayuz/pencere/menuler.py:142 arayuz/pencere/menuler.py:303 arayuz/pencere/proje.py:76
 msgid "Kaydet"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:139
+#: arayuz/pencere/menuler.py:144
 msgid "Farklı kaydet…"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:142
+#: arayuz/pencere/menuler.py:147
 msgid "Malzemeleri içe aktar (OpenMC XML)…"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:144
+#: arayuz/pencere/menuler.py:149
 msgid "Python betiği olarak dışa aktar…"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:146
+#: arayuz/pencere/menuler.py:151
 msgid "Tek başına çalışan bir Python betiği üretir"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:147
+#: arayuz/pencere/menuler.py:152
 msgid "OpenMC XML olarak dışa aktar…"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:149
+#: arayuz/pencere/menuler.py:154
 msgid "Önizlemeyi PNG olarak kaydet…"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:150
+#: arayuz/pencere/menuler.py:155
 msgid "Rapor oluştur…"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:151
+#: arayuz/pencere/menuler.py:156
 msgid "Model ve son koşu için HTML ya da PDF rapor yazar"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:153
+#: arayuz/pencere/menuler.py:158
 msgid "Çıkış"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:170 arayuz/pencere/menuler.py:306
+#: arayuz/pencere/menuler.py:175 arayuz/pencere/menuler.py:316
 msgid "Tam ekran"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:243
+#: arayuz/pencere/menuler.py:253
 #, python-brace-format
 msgid "Tema: {ad}"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:262
+#: arayuz/pencere/menuler.py:272
 msgid "Dil"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:262
+#: arayuz/pencere/menuler.py:272
 msgid "Dil değişikliği uygulama yeniden başlatılınca geçerli olur."
 msgstr ""
 
-#: arayuz/pencere/menuler.py:292
+#: arayuz/pencere/menuler.py:302
 msgid "Yeni model (başlangıç ekranı)"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:292 arayuz/pencere/proje.py:204
+#: arayuz/pencere/menuler.py:302 arayuz/pencere/proje.py:204
 msgid "Aç"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:293
+#: arayuz/pencere/menuler.py:303
 msgid "Farklı kaydet"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:295 arayuz/pencere/proje.py:281
+#: arayuz/pencere/menuler.py:305 arayuz/pencere/proje.py:281
 msgid "Python betiği olarak dışa aktar"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:298
+#: arayuz/pencere/menuler.py:308
 msgid "Kullanım kılavuzu (etkin sayfanın bölümü)"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:299
+#: arayuz/pencere/menuler.py:309
 msgid "Bu yardım"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:301
+#: arayuz/pencere/menuler.py:311
 msgid "Klavye kısayolları"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:307
+#: arayuz/pencere/menuler.py:317
 msgid "Başlangıç ekranında: açık modele dön"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:310
+#: arayuz/pencere/menuler.py:320
 msgid ""
 "Demet ve kor haritasında sol tık boyar, sağ tık o hücrenin parçasını fırça yapar; "
 "altıgen haritada tekerlek yakınlaştırır."
 msgstr ""
 
-#: arayuz/pencere/menuler.py:338
+#: arayuz/pencere/menuler.py:348
 #, python-brace-format
 msgid ""
 "{ad}\n"
@@ -6293,43 +6305,43 @@ msgstr ""
 msgid "Önceki projenin koşusu bitti; sonucu bu projeye yazılmadı (dosyalar: %s)."
 msgstr ""
 
-#: arayuz/sekme_calistir.py:623
+#: arayuz/sekme_calistir.py:625
 #, python-format
 msgid "Koşu başarısız (çıkış kodu %d). OpenMC çıktısı aşağıda, 'Ayrıntılı çıktı' bölümünde."
 msgstr ""
 
-#: arayuz/sekme_calistir.py:625
+#: arayuz/sekme_calistir.py:627
 #, python-format
 msgid "Koşu başarısız (çıkış kodu %d)"
 msgstr ""
 
-#: arayuz/sekme_calistir.py:638
+#: arayuz/sekme_calistir.py:640
 msgid "durduruldu"
 msgstr ""
 
-#: arayuz/sekme_calistir.py:640
+#: arayuz/sekme_calistir.py:642
 msgid "Koşu kullanıcı tarafından durduruldu; sonuç yok."
 msgstr ""
 
-#: arayuz/sekme_calistir.py:643
+#: arayuz/sekme_calistir.py:645
 msgid "Koşu durduruldu"
 msgstr ""
 
-#: arayuz/sekme_calistir.py:649
+#: arayuz/sekme_calistir.py:651
 msgid "Koşu bitti ama statepoint dosyası bulunamadı."
 msgstr ""
 
-#: arayuz/sekme_calistir.py:650
+#: arayuz/sekme_calistir.py:652
 msgid "Koşu bitti ama statepoint bulunamadı"
 msgstr ""
 
-#: arayuz/calistir/sonuc_gosterimi.py:48 arayuz/sekme_calistir.py:655
-#: arayuz/sekme_calistir.py:656 arayuz/sekme_tukenme.py:520
+#: arayuz/calistir/sonuc_gosterimi.py:48 arayuz/sekme_calistir.py:657
+#: arayuz/sekme_calistir.py:658 arayuz/sekme_tukenme.py:520
 #, python-format
 msgid "Sonuç okunamadı: %s"
 msgstr ""
 
-#: arayuz/analiz/sonuc.py:83 arayuz/kuyruk/panel.py:34 arayuz/sekme_calistir.py:664
+#: arayuz/analiz/sonuc.py:83 arayuz/kuyruk/panel.py:34 arayuz/sekme_calistir.py:674
 msgid "başarısız"
 msgstr ""
 
@@ -7591,7 +7603,7 @@ msgstr ""
 msgid "Kullanım kılavuzunda bu sayfanın bölümünü açar (F1)"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:107 arayuz/yardim/gosterici.py:56
+#: arayuz/pencere/menuler.py:112 arayuz/yardim/gosterici.py:56
 #: arayuz/yardim_baglanti.py:106
 msgid "Kullanım kılavuzu"
 msgstr ""
