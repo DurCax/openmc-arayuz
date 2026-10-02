@@ -329,12 +329,14 @@ def test_cakismali_modelde_kodlar(monkeypatch):
         _g, temiz, _c = oturum.kesit("xy", 10, cakisma=False)
     finally:
         oturum.kapat()
-    hucre = geom[..., 0]
+    # Olculdu (0.16.0): cakisma MALZEME kanalinda -3; hucre kanalinda -4 (< -2).
+    hucre, malzeme = geom[..., 0], geom[..., 2]
     beklenen = np.zeros((10, 10), dtype=bool)
     beklenen[2:, 4:6] = True                       # y = 2.5 .. -4.5, x = -0.5, 0.5
-    kontrol("cakisma pikselleri tam olarak bilinen bolge", np.array_equal(hucre == cs.CAKISMA,
-                                                                         beklenen),
-            "-> %s" % (hucre == cs.CAKISMA).astype(int).tolist())
+    kontrol("cakisma pikselleri (malzeme -3) tam olarak bilinen bolge",
+            np.array_equal(malzeme == cs.CAKISMA, beklenen),
+            "-> %s" % (malzeme == cs.CAKISMA).astype(int).tolist())
+    kontrol("hucre kanalinda ayni bolge < -2", np.array_equal(hucre < cs.TANIMSIZ, beklenen))
     kontrol("y > 3 satirlari tanimsiz (-2)", (hucre[:2] == cs.TANIMSIZ).all())
     kontrol("cakisma bilgisi A ve B hucreleri", len(cakismalar) == 1
             and sorted(cakismalar[0][1:]) == [1, 2], "-> %s" % cakismalar)

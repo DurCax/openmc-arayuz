@@ -53,6 +53,9 @@
    IPTAL: isci her kesitten once girdiye bakar; yeni istek geldiyse isi birakir
    ("iptal") ve kuyruktaki EN SON istege gecer (aradakiler atlanir). Arayuz de
    no'su guncel olmayan her yaniti atar.
+   Y2 ekleri (geri uyumlu, istege bagli alanlar; cekirdek/cizim_goruntu.py):
+     kesit ogesine "merkez"/"genislik"/"piksel_dikey", "adlar": true, istekler
+     "isin" (3B golgeli goruntu) ve "kaynak" (kaynak noktalari).
    id haritasi kodlari (OpenMC plot.cpp): -1 bosluk malzemesi, -2 hucre yok
    (tanimsiz bolge / geometri disi), -3 cakisma (yalniz cakisma denetiminde).
 ================================================================================
@@ -87,6 +90,8 @@ _EN_COK_BOYUT = 4                          # (v, h, kanal) + pay
 _OKUMA_BOYU = 1 << 20
 
 ISTEK_CIZ, ISTEK_KONTROL, ISTEK_CIK, ISTEK_IPTAL = "ciz", "kontrol", "cik", "iptal"
+ISTEK_ISIN, ISTEK_KAYNAK = "isin", "kaynak"           # Y2 (cekirdek/cizim_goruntu.py)
+_MODELLI = (ISTEK_CIZ, ISTEK_KONTROL, ISTEK_ISIN, ISTEK_KAYNAK)
 YANIT_HAZIR, YANIT_MODEL, YANIT_KESIT, YANIT_SON = "hazir", "model", "kesit", "son"
 DURUM_TAMAM, DURUM_HATA, DURUM_IPTAL = "tamam", "hata", "iptal"
 
@@ -240,21 +245,30 @@ def _kesitleri_dogrula(kesitler):
         if not _tamsayi_mi(piksel) or not PIKSEL_EN_AZ <= piksel <= PIKSEL_EN_COK:
             raise ProtokolHatasi(_("piksel %d-%d arası tamsayı olmalı: %r")
                                  % (PIKSEL_EN_AZ, PIKSEL_EN_COK, piksel))
+        from cekirdek import cizim_goruntu as cg
+        cg.kesit_ekleri(k)
 
 
 def istegi_dogrula(baslik):
     """Sinir denetimi: gecerli istegin kopyasi; aksi halde ProtokolHatasi."""
     tur = baslik.get("tur")
-    if tur not in (ISTEK_CIZ, ISTEK_KONTROL, ISTEK_CIK, ISTEK_IPTAL):
+    if tur not in _MODELLI + (ISTEK_CIK, ISTEK_IPTAL):
         raise ProtokolHatasi(_("bilinmeyen istek: %r") % (tur,))
     if not _tamsayi_mi(baslik.get("no")):
         raise ProtokolHatasi(_("istek numarası tamsayı olmalı"))
-    if tur in (ISTEK_CIZ, ISTEK_KONTROL) and not isinstance(baslik.get("spec"), dict):
+    if tur in _MODELLI and not isinstance(baslik.get("spec"), dict):
         raise ProtokolHatasi(_("istekte model (spec) yok"))
+    if not isinstance(baslik.get("adlar", False), bool):
+        raise ProtokolHatasi(_("adlar mantıksal değer olmalı"))
+    from cekirdek import cizim_goruntu as cg
     if tur == ISTEK_CIZ:
         _kesitleri_dogrula(baslik.get("kesitler"))
         if not isinstance(baslik.get("cakisma", False), bool):
             raise ProtokolHatasi(_("cakisma mantıksal değer olmalı"))
+    elif tur == ISTEK_ISIN:
+        cg.isin_dogrula(baslik)
+    elif tur == ISTEK_KAYNAK:
+        cg.kaynak_dogrula(baslik)
     return dict(baslik)
 
 
@@ -308,6 +322,10 @@ class Oturum:
         self.yukseklik = None
         self._dizin = None
         self._eski_dizin = None
+        self._model = None                 # Y2: adlar, kaynak ornekleme
+        self.kaynaklar = ()
+        self.fisil = frozenset()
+        self._isin_cizimi = None           # Y2: tek SolidRayTracePlot (oturum boyunca)
 
     def hazirla(self, spec):
         """Spec icin kutuphaneyi hazirlar; yeniden baslatildiysa True."""
@@ -328,6 +346,10 @@ class Oturum:
             self.kapat()
             raise
         self.ozet, self.bilgi, self.yukseklik = ozet, bilgi, _model_yuksekligi(spec)
+        from cekirdek import cizim_goruntu as cg
+        self._model = model
+        self.kaynaklar = tuple(model.settings.source or ())
+        self.fisil = cg.fisil_malzemeler(model.materials)
         return True
 
     def ozellikler(self):
@@ -340,15 +362,39 @@ class Oturum:
         return {"sinir_kutu": [float(v) for v in self.bilgi["sinir_kutu"]],
                 "yukseklik": self.yukseklik, "renkler": renkler, "gosterge": gosterge}
 
-    def kesit(self, eksen, piksel, cakisma=False):
-        """(genislik, geom (v, h, 3) int32, cakismalar [[evren, hucre1, hucre2]])."""
+    def kesit(self, eksen, piksel, cakisma=False, merkez=None, genislik=None,
+              piksel_dikey=None):
+        """(genislik, geom (v, h, 3) int32, cakismalar [[evren, hucre1, hucre2]]).
+        Y2: merkez/genislik/piksel_dikey verilmezse H2 davranisi (orijin, sinir kutusu,
+        kare)."""
         import openmc.lib
-        genislik = kesit_genisligi(eksen, self.bilgi["sinir_kutu"], self.yukseklik)
+        if genislik is None:
+            genislik = kesit_genisligi(eksen, self.bilgi["sinir_kutu"], self.yukseklik)
+        dikey = piksel if piksel_dikey is None else piksel_dikey
         geom, _ozellik = openmc.lib.slice_data(
-            KESIT_MERKEZI, width=genislik, basis=eksen, pixels=(piksel, piksel),
+            merkez or KESIT_MERKEZI, width=genislik, basis=eksen, pixels=(piksel, dikey),
             show_overlaps=bool(cakisma), include_properties=False)
         cakismalar = openmc.lib.slice_data_overlap_info().tolist() if cakisma else []
-        return genislik, geom, cakismalar
+        return tuple(genislik), geom, cakismalar
+
+    def adlar(self):
+        """Malzeme ve hucre adlari (Y2: fare altindaki bilgi)."""
+        from cekirdek import cizim_goruntu as cg
+        return cg.adlar(self._model)
+
+    def isin(self, istek):
+        """3B golgeli goruntu (Y2; cekirdek/cizim_goruntu.py)."""
+        import openmc.lib
+        from cekirdek import cizim_goruntu as cg
+        if self._isin_cizimi is None:
+            self._isin_cizimi = openmc.lib.SolidRayTracePlot()
+        renkler = {m.id: rgb for m, rgb in self.bilgi["renkler"].items()}
+        return cg.isin_goruntusu(self._isin_cizimi, renkler, istek)
+
+    def kaynak(self, istek):
+        """Kaynak noktalari: (yanit basligi, diziler) (Y2)."""
+        from cekirdek import cizim_goruntu as cg
+        return cg.kaynak_noktalari(self, istek)
 
     def kapat(self):
         """Kutuphaneyi kapatir, gecici dizini siler (tekrar cagrilabilir).
@@ -365,6 +411,8 @@ class Oturum:
                 shutil.rmtree(self._dizin, ignore_errors=True)
             self.ozet = self.bilgi = self.yukseklik = None
             self._dizin = self._eski_dizin = None
+            self._model, self._isin_cizimi = None, None
+            self.kaynaklar, self.fisil = (), frozenset()
 
 
 # ----------------------------------------------------------------------------
@@ -434,25 +482,54 @@ def _son(no, durum, t0, **ek):
                  "sure": time.perf_counter() - t0}, **ek)
 
 
+def _kesitleri_isle(istek, oturum, kanal):
+    """Kesitleri tek tek yollar; araya yeni istek girerse False (iptal)."""
+    from cekirdek import cizim_goruntu as cg
+    no = istek["no"]
+    for sira, k in enumerate(istek.get("kesitler") or []):
+        if kanal.yeni_var():
+            return False
+        t1 = time.perf_counter()
+        ek = cg.kesit_ekleri(k)
+        genislik, geom, cakismalar = oturum.kesit(k["eksen"], k["piksel"],
+                                                  istek.get("cakisma", False), **ek)
+        yanit = {"tur": YANIT_KESIT, "no": no, "sira": sira, "eksen": k["eksen"],
+                 "genislik": list(genislik), "piksel": k["piksel"],
+                 "cakismalar": cakismalar, "sure": time.perf_counter() - t1}
+        if "merkez" in ek:
+            yanit["merkez"] = list(ek["merkez"])
+        kanal.gonder(yanit, {"geom": geom})
+    return True
+
+
+def _ek_isle(istek, oturum, kanal):
+    """Y2 istekleri (isin, kaynak): tek yanit."""
+    from cekirdek import cizim_goruntu as cg
+    t1 = time.perf_counter()
+    if istek["tur"] == ISTEK_ISIN:
+        rgb = oturum.isin(istek)
+        kanal.gonder({"tur": cg.YANIT_GORUNTU, "no": istek["no"], "piksel": istek["piksel"],
+                      "sure": time.perf_counter() - t1}, {"rgb": rgb})
+        return
+    baslik, diziler = oturum.kaynak(istek)
+    kanal.gonder(baslik, diziler)
+
+
 def isle(istek, oturum, kanal):
     """Tek istegi isler; yanitlari kanala yazar. Hata yanit olur (yutulmaz)."""
     no, t0 = istek["no"], time.perf_counter()
     try:
         yeniden = oturum.hazirla(istek["spec"])
-        kanal.gonder(dict(oturum.ozellikler(), tur=YANIT_MODEL, no=no, yeniden=yeniden,
-                          sure=time.perf_counter() - t0))
-        kesitler = (istek.get("kesitler") or []) if istek["tur"] == ISTEK_CIZ else []
-        for sira, k in enumerate(kesitler):
-            if kanal.yeni_var():
-                kanal.gonder(_son(no, DURUM_IPTAL, t0))
-                return DURUM_IPTAL
-            t1 = time.perf_counter()
-            genislik, geom, cakismalar = oturum.kesit(k["eksen"], k["piksel"],
-                                                      istek.get("cakisma", False))
-            kanal.gonder({"tur": YANIT_KESIT, "no": no, "sira": sira, "eksen": k["eksen"],
-                          "genislik": list(genislik), "piksel": k["piksel"],
-                          "cakismalar": cakismalar, "sure": time.perf_counter() - t1},
-                         {"geom": geom})
+        model = dict(oturum.ozellikler(), tur=YANIT_MODEL, no=no, yeniden=yeniden,
+                     sure=time.perf_counter() - t0)
+        if istek.get("adlar"):
+            model.update(oturum.adlar())
+        kanal.gonder(model)
+        if istek["tur"] in (ISTEK_ISIN, ISTEK_KAYNAK):
+            _ek_isle(istek, oturum, kanal)
+        elif istek["tur"] == ISTEK_CIZ and not _kesitleri_isle(istek, oturum, kanal):
+            kanal.gonder(_son(no, DURUM_IPTAL, t0))
+            return DURUM_IPTAL
     except Exception as e:                  # sinir: her hata arayuze yanit olarak gider
         _log.warning("onizleme istegi %s basarisiz", no, exc_info=True)
         kanal.gonder(_son(no, DURUM_HATA, t0, hata=hata_metni(e), iz=traceback.format_exc()))
