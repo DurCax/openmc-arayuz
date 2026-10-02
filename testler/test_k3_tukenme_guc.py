@@ -61,7 +61,7 @@ def test_adim_dosyalari(gecici):
                 os.path.join(kopya, "openmc_simulation_n3.h5"))
     s = tukenme_guc.adim_gucleri(kopya, _spec())
     kontrol("sonuctan fazla adim yok sayilir (3 adim) ve not dusulur",
-            len(s["adimlar"]) == 3 and any("3" in n for n in s["notlar"]), "-> %r" % s["notlar"])
+            len(s["adimlar"]) == 3 and any("3" in n for n in s["notlar"]), "-> %r" % (s["notlar"],))
 
 
 def test_adim_basina_tablo():
@@ -231,7 +231,7 @@ def test_tally_olmayan_adim(gecici):
     os.remove(os.path.join(kopya, "openmc_simulation_n1.h5"))
     s = tukenme_guc.adim_gucleri(kopya, _spec())
     kontrol("eksik adim atlanir, not dusulur", [a["adim"] for a in s["adimlar"]] == [0, 2]
-            and any("1" in n for n in s["notlar"]), "-> %r" % s["notlar"])
+            and any("1" in n for n in s["notlar"]), "-> %r" % (s["notlar"],))
     bos = os.path.join(gecici, "bos")
     os.makedirs(bos)
     kontrol("adim dosyasi yoksa None", tukenme_guc.adim_gucleri(bos, _spec()) is None)

@@ -274,6 +274,12 @@ def _hesapla(dizin, dosyalar, h5, spec, iptal=None):
                       % ", ".join(str(i) for i in hatali))
     if h == IKI_BOYUT_YUKSEKLIGI and not _uc_boyut(adimlar):
         notlar.append(_("2B model: güç ve q′ 1 cm yükseklik başınadır (tükenme hacmi gibi)."))
+    if adimlar:
+        notlar.append(_("Bağıl güç kappa-fission tally'sinden, adımın mutlak gücü tükenmenin "
+                        "fission-q normalizasyonundan gelir; iki enerji tanımı biraz farklıdır."))
+        if not (spec.get("tukenme") or {}).get("malzemeleri_ayir"):
+            notlar.append(_("Çubuk çubuk yanma kapalı: bütün çubuklar aynı ortalama bileşimle "
+                            "yanar; dağılımın yanmayla değişimi pin başına yanmayı yansıtmaz."))
     return {"adimlar": adimlar, "notlar": notlar, "iki_boyut": h == IKI_BOYUT_YUKSEKLIGI
             and not _uc_boyut(adimlar)}
 

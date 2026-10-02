@@ -26,10 +26,10 @@ from cekirdek import altigen, sema, guc as _guc
 from cekirdek.ceviri import _, _n
 from cekirdek.gunluk import kaydedici
 from arayuz import guc_harita_kor as _kor, tema
+from arayuz.guc_harita_secim import PinSecimi
 from arayuz.guc_harita_tablo import PinTablosu
 
 _log = kaydedici(__name__)
-_TIK_PAYI = 1.05     # tiklama: eleman yaricapinin bu kati icinde (ipucu_metni ile ayni)
 
 
 def _aktif_yukseklik(spec):
@@ -48,7 +48,7 @@ def _aktif_yukseklik(spec):
 from arayuz.ortak import GelismisBolum, baslik  # noqa: E402
 
 
-class GucHaritaWidget(QtWidgets.QWidget):
+class GucHaritaWidget(PinSecimi, QtWidgets.QWidget):
     """Guc dagilimi haritasi ve tepe faktorleri."""
 
     def __init__(self, parent=None):
@@ -198,21 +198,6 @@ class GucHaritaWidget(QtWidgets.QWidget):
         self._tur_secicisini_doldur()
         self._ozet_yaz()
         self._ciz()
-
-    def _tablo_kur(self, spec, yukseklik):
-        """Pin tablosu haritanin AYNI degerlerinden (cekirdek/guc_tablo)."""
-        from cekirdek import guc_tablo
-        self.secili_pin = None
-        try:
-            self.tablo = guc_tablo.pin_tablosu(self.dagilim, self.faktorler, self.mutlak,
-                                               yukseklik)
-        except Exception as e:
-            _log.exception("pin gücü tablosu kurulamadı")
-            self.tablo = []
-            self.pin_tablosu.ayarla([])
-            self.pin_tablosu.ayrinti.setText(_("Pin gücü tablosu kurulamadı: %s") % e)
-            return
-        self.pin_tablosu.ayarla(self.tablo, self.dagilim, spec)
 
     def _tam_kor_denetimleri(self, tam_kor):
         """Olcek anahtari ve belirsizlik etiketi yalnizca tam korda gorunur;
@@ -619,51 +604,3 @@ class GucHaritaWidget(QtWidgets.QWidget):
             self, _("Güç haritasını kaydet"), "guc_haritasi.png", "PNG (*.png)")
         if yol:
             self.figur.savefig(yol, dpi=150, bbox_inches="tight")
-
-    # ==================================================================
-    # K3: haritada tikla -> pin; tablodan secim -> haritada isaret
-    # ==================================================================
-    def _tiklandi(self, olay):
-        if olay.inaxes is not self._ana_eksen or olay.xdata is None:
-            return
-        if getattr(self.arac, "mode", ""):
-            return                      # yakinlastirma/kaydirma kipinde tiklama secim degil
-        self.haritada_tikla(olay.xdata, olay.ydata)
-
-    def haritada_tikla(self, x, y):
-        """(x, y) haritanin veri koordinati. Bir cubuga dustuyse onu secer
-        (tablo ve ayrinti satiri izler). DONER secilen anahtar ya da None."""
-        import numpy as np
-        if not self._tik_ogeleri:
-            return None
-        dizi = np.asarray([o[:3] for o in self._tik_ogeleri], dtype=float)
-        uzak = np.hypot(dizi[:, 0] - x, dizi[:, 1] - y)
-        i = int(np.argmin(uzak))
-        if uzak[i] > dizi[i, 2] * _TIK_PAYI:
-            return None
-        anahtar = self._tik_ogeleri[i][3]
-        if not self.pin_tablosu.sec(anahtar):
-            self._pin_secildi(anahtar)      # tabloda yok (tur suzgeci): yine isaretle
-        return anahtar
-
-    def _pin_secildi(self, anahtar):
-        self.secili_pin = anahtar
-        self._secimi_ciz()
-        self.tuval.draw_idle()
-
-    def _secimi_ciz(self):
-        """Secili pin kare isaretle (sicak pin halkasindan ayri renk)."""
-        if self.secim_isareti is not None:
-            try:
-                self.secim_isareti.remove()
-            except (ValueError, NotImplementedError):
-                _log.debug("eski seçim işareti kaldırılamadı (eksen temizlenmiş)")
-            self.secim_isareti = None
-        if self.secili_pin is None or self._ana_eksen is None:
-            return
-        for x, y, r, a in self._tik_ogeleri:
-            if a == self.secili_pin:
-                self.secim_isareti = self._ana_eksen.plot(
-                    x, y, marker="s", ms=12, mfc="none", mec=tema.renk("bilgi"), mew=2.0,
-                    zorder=6)[0]
-                return

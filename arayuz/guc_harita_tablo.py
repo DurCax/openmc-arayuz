@@ -20,8 +20,6 @@
 ================================================================================
 """
 
-import os
-
 from PySide6 import QtCore, QtGui, QtWidgets
 
 from cekirdek import guc_tablo
@@ -81,6 +79,7 @@ class PinModeli(QtCore.QAbstractTableModel):
     def __init__(self, parent=None):
         super().__init__(parent)
         self._satirlar, self._sutunlar, self._dilim = [], [], None
+        self.iki_boyut = False        # 2B tukenme: guc 1 cm yukseklik basina
 
     def ayarla(self, satirlar, katli=False):
         self.beginResetModel()
@@ -114,12 +113,14 @@ class PinModeli(QtCore.QAbstractTableModel):
         kimlik = self._sutunlar[bolum][0]
         if kimlik in _DILIM_BASLIKLARI and self._dilim is not None:
             return _(_DILIM_BASLIKLARI[kimlik]) % (self._dilim + 1)
+        if kimlik == "W" and self.iki_boyut:
+            return _("Güç [W/cm yükseklik]")
         return _(self._sutunlar[bolum][1])
 
     def _ham(self, r, kimlik):
         if kimlik in ("dilim_bagil", "dilim_q"):
             d = r["dilimler"]
-            k = self._dilim if self._dilim is not None else None
+            k = self._dilim
             if k is None or not (0 <= k < len(d)):
                 return None
             return d[k]["bagil" if kimlik == "dilim_bagil" else "q"]
@@ -145,9 +146,10 @@ class PinModeli(QtCore.QAbstractTableModel):
             return QtGui.QColor(tema.renk("uyari_soluk"))
         if rol == QtCore.Qt.ForegroundRole and r.get("kesik"):
             return QtGui.QColor(tema.renk("metin_pasif"))
-        if rol == QtCore.Qt.FontRole and r.get("sicak"):
+        if rol == QtCore.Qt.FontRole and (r.get("sicak") or r.get("tepe_yakini")):
             f = QtGui.QFont()
-            f.setBold(True)
+            f.setBold(bool(r.get("sicak")))
+            f.setItalic(bool(r.get("tepe_yakini")) and not r.get("sicak"))
             return f
         if rol == QtCore.Qt.ToolTipRole:
             return self._ipucu(r)
@@ -160,6 +162,8 @@ class PinModeli(QtCore.QAbstractTableModel):
         notlar = []
         if r.get("sicak"):
             notlar.append(_("en sıcak çubuk (F_ΔH)"))
+        if r.get("tepe_yakini") and not r.get("sicak"):
+            notlar.append(_("tepeden istatistik olarak ayırt edilemez (birleşik 2σ içinde)"))
         if r.get("kesik"):
             notlar.append(_("kesik çubuk — F_ΔH ve F_q dışında"))
         return "; ".join(notlar) or None
@@ -206,6 +210,11 @@ class PinTablosu(QtWidgets.QWidget):
         self.ayrinti.setObjectName("soluk")
         self.ayrinti.setWordWrap(True)
         self.ayrinti.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
+        self.notlar = QtWidgets.QLabel("")
+        self.notlar.setObjectName("soluk")
+        self.notlar.setWordWrap(True)
+        self.notlar.setVisible(False)
+        self._not_metinleri, self._katla_notu = [], ""
         ust = QtWidgets.QHBoxLayout()
         ust.setContentsMargins(0, 0, 0, 0)
         ust.addWidget(self.suzgec, 1)
@@ -215,12 +224,17 @@ class PinTablosu(QtWidgets.QWidget):
         duzen.setContentsMargins(0, 0, 0, 0)
         duzen.addLayout(ust)
         duzen.addWidget(self.ayrinti)
+        duzen.addWidget(self.notlar)
         duzen.addWidget(self.gorunum, 1)
 
     # ------------------------------------------------------------------
-    def ayarla(self, tablo, dagilim=None, spec=None):
-        """Yeni pin satirlari. Ceyrek katlama yalniz simetri dogrulanirsa etkin."""
+    def ayarla(self, tablo, dagilim=None, spec=None, notlar=(), iki_boyut=False):
+        """Yeni pin satirlari. Ceyrek katlama yalniz simetri dogrulanirsa etkin.
+        notlar: tablonun altinda gosterilecek yorum notlari (guc_tablo.yorum_notlari);
+        iki_boyut: 2B tukenme (guc 1 cm yukseklik basina)."""
         self._tablo, self._dagilim, self._spec = list(tablo or []), dagilim, spec
+        self._model.iki_boyut = self._iki_boyut = bool(iki_boyut)
+        self._not_metinleri = list(notlar or ())
         self._katli, neden = (None, _("güç dağılımı yok"))
         if self._tablo and dagilim:
             try:
@@ -237,6 +251,8 @@ class PinTablosu(QtWidgets.QWidget):
         self.katla.setToolTip(
             _("Simetri doğrulandı: dört ayna görüntüsünün ortalaması (gürültü azalır)")
             if self._katli is not None else _("Çeyrek katlama yapılamaz: %s") % neden)
+        self._katla_notu = neden if self._katli is not None else ""
+        self._notlari_yaz()
         self._model.ayarla(self._tablo)
         self._dilim_sutunlari()
         self.gorunum.resizeColumnsToContents()
@@ -245,8 +261,16 @@ class PinTablosu(QtWidgets.QWidget):
     def _katla_degisti(self, acik):
         self._model.ayarla(self._katli if (acik and self._katli) else self._tablo,
                            katli=bool(acik and self._katli))
+        self._notlari_yaz()
         self._dilim_sutunlari()
         self.gorunum.resizeColumnsToContents()
+
+    def _notlari_yaz(self):
+        metinler = list(self._not_metinleri)
+        if self.katla.isChecked() and self._katla_notu:
+            metinler.append(self._katla_notu)
+        self.notlar.setText("<br>".join(metinler))
+        self.notlar.setVisible(bool(metinler))
 
     def dilim_ayarla(self, k):
         """3B: dilim sutunlari k. dilimi (0 tabanli) gosterir; None: sutunlar gizli."""
@@ -320,7 +344,8 @@ class PinTablosu(QtWidgets.QWidget):
 
     def kaydet_yola(self, yol):
         """Gosterilen tabloyu (katli ya da tam) yaza; uzanti bicimi secer."""
-        return guc_tablo.dosyaya_yaz(yol, guc_tablo.satirlar(self.satirlar()))
+        return guc_tablo.dosyaya_yaz(yol, guc_tablo.satirlar(self.satirlar(),
+                                                             getattr(self, "_iki_boyut", False)))
 
     def _kaydet_sor(self):
         yol = dosya_sor(self, _("Pin gücü tablosunu kaydet"), self._dosya_adi, self.dosya_suzgeci())
@@ -333,13 +358,23 @@ class PinTablosu(QtWidgets.QWidget):
             QtWidgets.QMessageBox.warning(self, _("Tablo yazılamadı"), str(e))
 
 
+def _uzanti(suzgec_metni):
+    return "xlsx" if "xlsx" in (suzgec_metni or "") else "csv"
+
+
 def dosya_sor(ebeveyn, baslik, ad, suzgec):
-    """Kayit yolu (uzanti secilen suzgece gore eklenir) ya da None."""
-    yol, secilen = QtWidgets.QFileDialog.getSaveFileName(ebeveyn, baslik, ad + ".csv", suzgec)
-    if not yol:
+    """Kayit yolu ya da None. Uzanti secili suzgecten (setDefaultSuffix): ad uzantisiz
+    yazilirsa eklenir ve uzerine yazma onayi o SON ad icin sorulur (Qt). Yazim bicimi
+    dosya uzantisina gore secilir (guc_tablo.dosyaya_yaz)."""
+    dlg = QtWidgets.QFileDialog(ebeveyn, baslik)
+    dlg.setAcceptMode(QtWidgets.QFileDialog.AcceptSave)
+    dlg.setNameFilters(suzgec.split(";;"))
+    dlg.setDefaultSuffix("csv")
+    dlg.selectFile(ad + ".csv")
+    dlg.filterSelected.connect(lambda f: dlg.setDefaultSuffix(_uzanti(f)))
+    if dlg.exec() != QtWidgets.QDialog.Accepted or not dlg.selectedFiles():
         return None
-    uzanti = ".xlsx" if "xlsx" in (secilen or "") else ".csv"
-    return yol if os.path.splitext(yol)[1].lower() in (".csv", ".xlsx") else yol + uzanti
+    return dlg.selectedFiles()[0]
 
 
 def ayrinti_metni(r, dilim=None):

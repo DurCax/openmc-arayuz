@@ -617,6 +617,7 @@ def _fizik_kismi(spec):
             if k not in _FIZIK_DISI}
     sade.get("tukenme", {}).pop("var", None)
     sade.get("tukenme", {}).pop("izlenen", None)
+    sade.get("tukenme", {}).pop("adim_gucu", None)   # yalniz olcum (K3): fizik degil
     sade.pop("surum", None)
     return sade
 

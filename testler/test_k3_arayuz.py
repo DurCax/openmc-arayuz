@@ -213,6 +213,68 @@ def test_tam_kor_tiklama():
     kontrol("secim isareti yeniden cizimde korunur", w.secim_isareti is not None)
 
 
-HIZLI = [test_tam_kor_tiklama, test_tablo_haritayla_ayni, test_tikla_ve_sec, test_sirala_filtrele,
+def _tukenme_sekmesi(gecici):
+    _uyg()
+    from arayuz.sekme_tukenme import TukenmeSekmesi
+    with open(os.path.join(TUKENME, "tukenme_spec.json"), encoding="utf-8") as f:
+        spec = json.load(f)
+    spec["calistirma"]["dizin"] = os.path.join(gecici, "k")
+    shutil.copytree(TUKENME, os.path.join(gecici, "k_tukenme"))
+    t = TukenmeSekmesi()
+    t.spec_yukle(spec)
+    t.bekle()
+    return t
+
+
+def test_adim_gucu_kutusu_ve_eskime(gecici):
+    print("\n[PA9] 'Adim basina pin gucu' kutusu; eski sonucta pin gucu de 'eski'")
+    t = _tukenme_sekmesi(gecici)
+    kontrol("kutu var, varsayilan acik, satir gorunur",
+            t.adim_gucu.isChecked() and t.gelismis_form.isRowVisible(t.adim_gucu))
+    t.adim_gucu.setChecked(False)
+    kontrol("kapatinca tukenme.adim_gucu = false", t.spec["tukenme"]["adim_gucu"] is False)
+    kontrol("guncel sonucta eski etiketi gizli", t.pin_gucu.eski_etiket.isHidden())
+    t.spec["tukenme"]["guc_yogunlugu"] = 55.0          # fizik degisti -> sonuc eski
+    t._onceki_durum_guncelle()
+    kontrol("eski etiketi gorunur", not t.pin_gucu.eski_etiket.isHidden())
+
+
+def test_kapanista_isciler_durur(gecici):
+    print("\n[PA10] isleri_durdur: calisan pin iscisi iptal edilip beklenir")
+    from PySide6 import QtCore
+    from cekirdek import tukenme_guc
+    t = _tukenme_sekmesi(gecici)
+    tukenme_guc.onbellegi_bosalt()
+    t._pin_anahtari = None
+    t._pin_gucu_yukle(t._kaynak)
+    kontrol("okuma iscisi listede", len(t._pin_iscileri) >= 1)
+    t.isleri_durdur()
+    kontrol("calisan isci kalmadi", not any(i.isRunning() for i in t._pin_iscileri))
+    uyg = _uyg()
+    kontrol("aboutToQuit baglantisi kurulu",
+            uyg.receivers(QtCore.SIGNAL("aboutToQuit()")) > 0)
+
+
+def test_tablo_notlari_ve_iki_boyut():
+    print("\n[PA11] tablo yorum notlari; 2B tukenmede guc basligi W/cm yukseklik")
+    w, s = _harita()
+    metin = w.pin_tablosu.notlar.text()
+    kontrol("tek demet yansitici notu ve F_q dilim notu",
+            "demet içi" in metin and "dilim ortalaması" in metin, metin[:200])
+    from arayuz.guc_harita_tablo import PinTablosu
+    t = PinTablosu()
+    t.ayarla(w.tablo, iki_boyut=True)
+    m = t.gorunum.model()
+    kontrol("2B baslik", m.headerData(t.sutun_no("W"), QtCore_yatay())
+            == "Güç [W/cm yükseklik]")
+
+
+def QtCore_yatay():
+    from PySide6 import QtCore
+    return QtCore.Qt.Horizontal
+
+
+HIZLI = [test_adim_gucu_kutusu_ve_eskime, test_kapanista_isciler_durur,
+         test_tablo_notlari_ve_iki_boyut, test_tam_kor_tiklama, test_tablo_haritayla_ayni, test_tikla_ve_sec, test_sirala_filtrele,
          test_katlama_ve_dilim, test_disa_aktar, test_yanmaya_gore, test_tukenme_sekmesinde]
 YAVAS = []

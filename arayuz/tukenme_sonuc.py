@@ -9,10 +9,7 @@
  onbellekte). Izlenen nuklidler fizik degildir: secim degisti diye sonuc
  "eski" sayilmaz (cekirdek.tukenme._fizik_kismi izlenen'i dislar).
 
- YANMAYA GORE PIN GUCU (v3 K3): sonuc gosterilince (onceki ya da yeni kosu)
- ayni dizindeki adim statepoint'leri arka planda okunur
- (cekirdek/tukenme_guc.adim_gucleri) ve sonuc kartinin altinda
- arayuz/tukenme_pin_gucu.PinGucuYanma gosterilir; adim dosyasi yoksa gizli.
+ YANMAYA GORE PIN GUCU (v3 K3): arayuz/tukenme_pin_bolumu.PinGucuBolumu karisimi.
 
  CSV: zaman [gun], yanma [MWd/kg], k, sigma ve her malzeme x nuklid icin atom
  sayisi ve yogunluk [atom/b-cm]. Ondalik ayirici NOKTA, alan ayirici virgul;
@@ -30,6 +27,7 @@ from PySide6 import QtCore, QtWidgets
 
 from arayuz.analiz.adlar import renk
 from arayuz.analiz.tuval import canli_mi
+from arayuz.tukenme_pin_bolumu import PinGucuBolumu
 from cekirdek import nuklidler as _nk
 from cekirdek import tukenme as _tk
 from cekirdek.ceviri import _
@@ -165,20 +163,20 @@ class _Isci(QtCore.QThread):
     """
     bitti = QtCore.Signal(object, object)      # (anahtar, sonuc | Exception)
 
-    def __init__(self, is_, anahtar, parent=None):
+    def __init__(self, islev, anahtar, parent=None):
         super().__init__(parent)
-        self._is = is_
+        self._islev = islev
         self._anahtar = anahtar
 
     def run(self):
         try:
-            self.bitti.emit(self._anahtar, self._is())
+            self.bitti.emit(self._anahtar, self._islev())
         except Exception as e:
             _log.exception("tükenme sonucu okunamadı")
             self.bitti.emit(self._anahtar, e)
 
 
-class SonucBolumu:
+class SonucBolumu(PinGucuBolumu):
     """
     TukenmeSekmesi'nin sonuc bolumu (karisim): onceki kosunun okunmasi,
     grafik/tablo, izlenen secimi degisince h5'ten yeniden okuma, CSV.
@@ -228,12 +226,8 @@ class SonucBolumu:
         spec, izlenen = copy.deepcopy(self.spec), self.izlenen.secim()
         self._isci = _Isci(lambda: _onceki_oku(spec, dizin, izlenen), anahtar, self)
         self._isci.bitti.connect(self._onceki_geldi)
-        # Pencere disi bir cikis yolunda da (or. uygulama kapanirken) calisan
-        # is parcacigi yok edilmesin -- Qt bu durumda sureci dusurur.
-        uyg = QtWidgets.QApplication.instance()
-        if uyg is not None and not getattr(self, "_cikis_bagli", False):
-            uyg.aboutToQuit.connect(self.bekle)
-            self._cikis_bagli = True
+        # Kapanista calisan isci yok edilmesin (Qt sureci dusurur): aboutToQuit ->
+        # isleri_durdur baglantisi TukenmeSekmesi.__init__'te kurulur.
         self._gorunum_guncelle()
         self._isci.start()
 
@@ -269,10 +263,8 @@ class SonucBolumu:
             self._isci.wait(ms)
         QtWidgets.QApplication.processEvents()
         # Onceki sonuc gelince adim basina pin gucu okumasi baslar (K3): o da beklenir.
-        pin = getattr(self, "_pin_isci", None)
-        if pin is not None:
-            pin.wait(max(int((son - time.monotonic()) * 1000), 1))
-            QtWidgets.QApplication.processEvents()
+        self.pin_iscilerini_bekle(max(int((son - time.monotonic()) * 1000), 1))
+        QtWidgets.QApplication.processEvents()
         # Secim okumasi zincirlenebilir (sirada bekleyen secim): bitene kadar.
         while self._secim_okunuyor and time.monotonic() < son:
             if self._secim_isci is not None:
@@ -295,6 +287,7 @@ class SonucBolumu:
             stil += " font-weight: bold;"
         self.onceki_etiket.setText(metin)
         self.onceki_etiket.setStyleSheet(stil)
+        self._pin_eskime_yaz()
 
     # ==================================================================
     # sonuclar
@@ -400,54 +393,3 @@ class SonucBolumu:
             return
         if yol:
             self.durum.emit(_("CSV kaydedildi: %s") % yol, True)
-
-    # ==================================================================
-    # yanmaya gore pin gucu (v3 K3)
-    # ==================================================================
-    def _pin_gucu_bolumu(self):
-        """PinGucuYanma bolumu (ilk gerektiginde kurulur, sonuc kartina eklenir)."""
-        w = getattr(self, "pin_gucu", None)
-        if w is None:
-            from arayuz.tukenme_pin_gucu import PinGucuYanma
-            w = self.pin_gucu = PinGucuYanma()
-            w.setVisible(False)
-            self.sonuc_kutusu.ekle(w)
-        return w
-
-    def _pin_gucu_unut(self):
-        w = getattr(self, "pin_gucu", None)
-        self._pin_anahtari = None
-        if w is not None:
-            w.ayarla(None)
-            w.setVisible(False)
-
-    def _pin_gucu_yukle(self, kaynak):
-        """Sonucun dizinindeki adim basina gucu arka planda okur."""
-        from cekirdek import tukenme_guc as _tg
-        h5, spec = kaynak
-        dizin = os.path.dirname(h5)
-        if not _tg.adim_dosyalari(dizin):
-            self._pin_gucu_unut()
-            return
-        anahtar = (self._kusak, h5, os.path.getmtime(h5) if os.path.exists(h5) else None)
-        if anahtar == getattr(self, "_pin_anahtari", None):
-            return
-        self._pin_anahtari = anahtar
-        spec = copy.deepcopy(spec)
-        isci = _Isci(lambda: _tg.adim_gucleri(dizin, spec, h5), (anahtar, spec), self)
-        isci.bitti.connect(self._pin_gucu_geldi)
-        self._pin_isci = isci
-        isci.start()
-
-    def _pin_gucu_geldi(self, anahtar, sonuc):
-        if not self.canli_mi():
-            _log.debug("tükenme sekmesi silindi; pin gücü yok sayıldı")
-            return
-        kimlik, spec = anahtar
-        if kimlik != getattr(self, "_pin_anahtari", None) or kimlik[0] != self._kusak:
-            return                                   # eski okuma
-        w = self._pin_gucu_bolumu()
-        if isinstance(sonuc, Exception):
-            sonuc = {"adimlar": [], "notlar": [_("Adım başına güç okunamadı: %s") % sonuc]}
-        w.ayarla(sonuc, spec)
-        w.setVisible(w.gosterilecek_mi())

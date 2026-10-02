@@ -57,6 +57,11 @@ class PinGucuYanma(QtWidgets.QWidget):
         self.notlar = QtWidgets.QLabel("")
         self.notlar.setObjectName("soluk")
         self.notlar.setWordWrap(True)
+        self.eski_etiket = QtWidgets.QLabel(_(
+            "Eski sonuç: model bu koşudan beri değişti; adım başına güç bu modele ait değil."))
+        self.eski_etiket.setWordWrap(True)
+        self.eski_etiket.setStyleSheet("color: %s; font-weight: bold;" % tema.renk("hata"))
+        self.eski_etiket.setVisible(False)
         self.pin_tablosu = PinTablosu(dosya_adi="pin_gucu_adim")
         self.pin_tablosu.pin_secildi.connect(self._pin_secildi)
         self.figur = Figure(figsize=(6, 3.4), tight_layout=True)
@@ -91,6 +96,7 @@ class PinGucuYanma(QtWidgets.QWidget):
         aciklama.setWordWrap(True)
         duzen.addWidget(aciklama)
         duzen.addLayout(ust)
+        duzen.addWidget(self.eski_etiket)
         duzen.addWidget(self.notlar)
         duzen.addWidget(self.tuval)
         duzen.addWidget(self.faktor_tablosu)
@@ -120,6 +126,10 @@ class PinGucuYanma(QtWidgets.QWidget):
         self._faktor_tablosu_doldur()
         self._adim_degisti()
 
+    def eski_ayarla(self, eski):
+        """Gosterilen tukenme sonucu su anki modele ait degilse uyari."""
+        self.eski_etiket.setVisible(bool(eski))
+
     def gosterilecek_mi(self):
         """Gosterilecek adim ya da not var mi (gorunurlugu ev sahibi ayarlar)."""
         return bool(_tg.gecerli_adimlar(self._sonuc) or (self._sonuc or {}).get("notlar"))
@@ -136,7 +146,12 @@ class PinGucuYanma(QtWidgets.QWidget):
         if a is None:
             self.pin_tablosu.ayarla([])
         else:
-            self.pin_tablosu.ayarla(a["tablo"], a["guc"]["dagilim"], self._spec)
+            g = a["guc"]
+            self.pin_tablosu.ayarla(
+                a["tablo"], g["dagilim"], self._spec,
+                notlar=guc_tablo.yorum_notlari(g["dagilim"], g["faktorler"],
+                                               g.get("hedef_payi"), self._spec),
+                iki_boyut=bool((self._sonuc or {}).get("iki_boyut")))
         self._ciz()
 
     def _pin_secildi(self, anahtar):
@@ -204,7 +219,7 @@ class PinGucuYanma(QtWidgets.QWidget):
     # ------------------------------------------------------------------
     def kaydet_yola(self, yol):
         """Adim × pin tablosu (.csv / .xlsx)."""
-        return guc_tablo.dosyaya_yaz(yol, _tg.satirlar(self._sonuc), _("adım × pin"))
+        return guc_tablo.dosyaya_yaz(yol, _tg.satirlar(self._sonuc), "adim_x_pin")
 
     def _kaydet_sor(self):
         yol = dosya_sor(self, _("Adım × pin tablosunu kaydet"), "pin_gucu_adimlar",

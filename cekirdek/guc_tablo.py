@@ -292,3 +292,34 @@ def dosyaya_yaz(yol, veri, sayfa_adi=None):
     with open(yol, "w", encoding="utf-8-sig", newline="") as f:
         f.write(satirlar_csv(veri))
     return yol
+
+
+# ============================================================================
+# 4. YORUM NOTLARI (tablonun altinda; profesor onerileri)
+# ============================================================================
+
+_PAY_TOLERANSI = 1e-3        # hedef payi 1'den bu kadar kucukse "kismi hedef"
+
+
+def _yan_yansitici(spec):
+    sinir = ((spec or {}).get("kor") or {}).get("sinir") or {}
+    return sinir.get("yan") == "reflective"
+
+
+def yorum_notlari(dagilim, faktorler, hedef_payi=None, spec=None):
+    """Pin tablosunun yorum notlari (metin listesi): kismi hedef, tek demet
+    yansitici sinir, F_q dilim ortalamasi ve "degerlendirme degildir" cercevesi."""
+    notlar = []
+    if hedef_payi is not None and hedef_payi < 1.0 - _PAY_TOLERANSI:
+        notlar.append(_("Seçili hedefler modelin fisyon enerjisinin %%%.1f'ini taşıyor: F_ΔH ve "
+                        "ortalama yalnız seçili çubuklar üzerindendir.") % (100.0 * hedef_payi))
+    if dagilim and not dagilim.get("tam_kor") and _yan_yansitici(spec):
+        notlar.append(_("Tek demet, yansıtıcı yan sınır: F_ΔH demet içi radyal faktördür; kor "
+                        "F_ΔH'si değildir."))
+    sinirlar = (dagilim or {}).get("eksenel_sinirlar")
+    n = (faktorler or {}).get("eksenel_dilim") or 1
+    if sinirlar and n > 1:
+        notlar.append(_("F_q dilim ortalamasıdır (Δz = %.1f cm); daha ince dilimde yerel tepe "
+                        "büyüyebilir.") % ((sinirlar[1] - sinirlar[0]) / n))
+    notlar.append(_("Bu tablo bir tasarım ya da lisans değerlendirmesi değildir."))
+    return notlar
