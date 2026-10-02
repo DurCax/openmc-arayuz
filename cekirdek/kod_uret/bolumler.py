@@ -13,6 +13,7 @@ from cekirdek.kod_uret.ad import _ad, _f, _bolum, _mat_ifade  # noqa: F401
 from cekirdek import kaynak as _kaynak
 from cekirdek.kod_uret.tukenme import _tukenme
 from cekirdek.kod_uret.spektrum import _spektrum_tallyleri
+from cekirdek.kod_uret.mgxs import _mgxs_tallyleri
 
 
 def _malzemeler(spec, satirlar):
@@ -126,6 +127,7 @@ def _kapanis(spec, satirlar, renkli):
         from cekirdek import kinetik_oku
         satirlar.extend(kinetik_oku.betik_satirlari(kin))
     _spektrum_tallyleri(spec, satirlar)          # Y3 (cekirdek/kod_uret/spektrum.py)
+    _mgxs_tallyleri(spec, satirlar)              # Y8 (cekirdek/kod_uret/mgxs.py)
     if renkli:
         satirlar.append("")
         satirlar.append("# Model.plot() SVG renk adı ya da (R,G,B) demeti ister — hex dize kabul etmez")
