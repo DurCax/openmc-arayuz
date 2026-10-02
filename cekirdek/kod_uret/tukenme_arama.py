@@ -16,16 +16,9 @@ from cekirdek.kod_uret.ad import _ad
 
 
 def bor_tablosu(spec, hedef, ust_ppm):
-    """(y0, egim): {nuklid: atom/b-cm} 0 ppm'e dogrusal uzatma ve ppm basina degisim.
-    Iki nokta ppm > 0 dalindan (ust/2, ust): tarif ppm = 0'da agirlikca degil
-    atomca H2O'dur (malzeme_kutup.su) ve H yogunlugu 1.2e-5 oraninda farklidir;
-    dogrusal tablo bu kucuk sicramayi tasimaz (kilavuzda yazili)."""
+    """Cekirdekle AYNI dogrusal tablo (cekirdek/tukenme_arama.bor_tablosu)."""
     from cekirdek import tukenme_arama
-    ya = tukenme_arama.bor_yogunluklari(spec, hedef, ust_ppm / 2.0)
-    yb = tukenme_arama.bor_yogunluklari(spec, hedef, ust_ppm)
-    adlar = sorted(set(ya) | set(yb))
-    egim = {n: (yb.get(n, 0.0) - ya.get(n, 0.0)) / (ust_ppm / 2.0) for n in adlar}
-    return {n: yb.get(n, 0.0) - ust_ppm * egim[n] for n in adlar}, egim
+    return tukenme_arama.bor_tablosu(spec, hedef, ust_ppm)
 
 
 def arama_satirlari(spec, arama, satirlar):

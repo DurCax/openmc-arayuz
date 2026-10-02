@@ -273,6 +273,11 @@ def _arama_hedef_hatalari(spec: dict, k: KritikArama) -> list:
         if not uygunluk.tek_malzeme_rolleri(m) & {"sogutucu", "moderator"}:
             return [_("bor araması yalnız su (soğutucu/moderatör) malzemesine uygulanır: '%s'")
                     % k.hedef]
+        from cekirdek import tukenme
+        if k.hedef in tukenme.yanabilir_adlar(spec):
+            # arama set_densities ile tukenmis bilesimi her adimda ezerdi
+            return [_("bor araması hedefi tükenen bir malzeme olamaz: '%s' (ek yanan "
+                      "malzemelerden çıkarın)") % k.hedef]
         return []
     c = sema.cubuk_bul(spec, k.hedef)
     if c is None or c.get("tur") != "kontrol":

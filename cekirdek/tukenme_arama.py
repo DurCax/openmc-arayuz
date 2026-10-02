@@ -49,6 +49,23 @@ def bor_yogunluklari(spec: dict, hedef: str, ppm: float) -> dict:
     return {n: float(v) for n, v in nesneler[hedef].get_nuclide_atom_densities().items()}
 
 
+def bor_tablosu(spec: dict, hedef: str, ust_ppm: float) -> tuple:
+    """
+    (y0, egim): {nuklid: atom/b-cm} dogrusal tablo, y(ppm) = y0 + ppm egim.
+    Su bilesimi sabit kutle yogunlugunda ppm'le DOGRUSALDIR (agirlikca kesirler
+    ppm'le dogrusal; N_i = rho N_A w_i / A_i). Tablo ppm > 0 dalinin iki
+    noktasindan (ust/2, ust) kurulur: tarif ppm = 0'da atomca H2O'dur
+    (malzeme_kutup.su) ve H yogunlugu 1.2e-5 oraninda farklidir; tablo bu
+    sicramayi tasimaz. Tarif (kurucu.malzemeleri_kur) yalniz burada, KURULUMDA
+    iki kez cozulur; arama sirasinda openmc.Material olusturulmaz.
+    """
+    ya = bor_yogunluklari(spec, hedef, ust_ppm / 2.0)
+    yb = bor_yogunluklari(spec, hedef, ust_ppm)
+    adlar = sorted(set(ya) | set(yb))
+    egim = {n: (yb.get(n, 0.0) - ya.get(n, 0.0)) / (ust_ppm / 2.0) for n in adlar}
+    return {n: yb.get(n, 0.0) - ust_ppm * egim[n] for n in adlar}, egim
+
+
 def _malzemeyi_doldur(m, yogunluk: dict) -> None:
     """openmc.Material'in nuklidlerini yogunluk ile degistirir (kurulum, lib oncesi)."""
     for n in list(m.get_nuclides()):
@@ -62,12 +79,15 @@ def bor_islevi(nesneler: dict, spec: dict, hedef: str, baslangic_ppm: float):
     """Arama islevi f(ppm). Modelin su malzemesi baslangic_ppm ile kurulur."""
     m = _malzeme(nesneler, hedef)
     _malzemeyi_doldur(m, bor_yogunluklari(spec, hedef, baslangic_ppm))
+    y0, egim = bor_tablosu(spec, hedef, baslangic_ppm)
+    adlar = list(y0)
     mid = m.id
 
     def ayarla(ppm: float) -> None:
         import openmc.lib
-        y = bor_yogunluklari(spec, hedef, max(float(ppm), 0.0))
-        openmc.lib.materials[mid].set_densities(list(y), [float(v) for v in y.values()])
+        x = max(float(ppm), 0.0)
+        openmc.lib.materials[mid].set_densities(
+            adlar, [max(y0[n] + x * egim[n], 0.0) for n in adlar])
     return ayarla
 
 
