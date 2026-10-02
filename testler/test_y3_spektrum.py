@@ -196,10 +196,12 @@ def test_tally_tanimlari():
     kontrol("Godiva (HEU, U elementi): indeks tally'si var", s.T_INDEKS in adlar)
 
 
-def _tally_ozeti(tallies):
-    """{ad: (skorlar, nuklidler, [(filtre turu, bins)])} -- karsilastirma icin."""
+def _tally_ozeti(model):
+    """{ad: (skorlar, nuklidler, [(filtre turu, bins)])} -- karsilastirma icin.
+    Malzeme filtresi kimlik yerine malzeme ADIYLA (iki yolda kimlikler farkli)."""
+    adlar = {m.id: m.name for m in model.materials}
     ozet = {}
-    for t in tallies:
+    for t in model.tallies:
         if not (t.name or "").startswith("y3_"):
             continue
         filtreler = []
@@ -208,7 +210,7 @@ def _tally_ozeti(tallies):
                 filtreler.append(("enerji", tuple(round(float(v), 9) for v in f.values)))
             else:
                 filtreler.append((type(f).__name__,
-                                  tuple(sorted(getattr(b, "name", str(b)) for b in f.bins))))
+                                  tuple(sorted(adlar.get(int(b), str(b)) for b in f.bins))))
         ozet[t.name] = (tuple(t.scores), tuple(t.nuclides), tuple(filtreler))
     return ozet
 
@@ -239,7 +241,7 @@ def test_kurucu_ve_betik_ayni_tallyler():
             betik = _betik_modeli(spec, d)
         finally:
             os.chdir(eski)
-    a, b = _tally_ozeti(model.tallies), _tally_ozeti(betik.tallies)
+    a, b = _tally_ozeti(model), _tally_ozeti(betik)
     # Assert
     kontrol("kurucu 6 y3 tally'si", len(a) == 6, "-> %s" % sorted(a))
     kontrol("betik = kurucu (skor, nuklid, filtre)", a == b,
@@ -256,7 +258,7 @@ def test_kapaliyken_model_degismez():
     model, _b = kurucu.kur(spec)
     kod = kod_uret.uret(spec, "model.py")
     # Assert
-    kontrol("kurucuda y3 tally'si yok", not _tally_ozeti(model.tallies))
+    kontrol("kurucuda y3 tally'si yok", not _tally_ozeti(model))
     kontrol("betikte y3 yok", "y3_" not in kod)
 
 
@@ -304,8 +306,12 @@ def test_pin_hucre_dort_faktor_k_sonsuz(gecici):
     print("  eps=%.4f p=%.4f f=%.4f eta=%.4f c_xn=%.5f  k_tally=%.5f+-%.5f  keff=%.5f+-%.5f"
           % (f["eps"].ort, f["p"].ort, f["f"].ort, f["eta"].ort, f["c_xn"].ort,
              f["k"].ort, f["k"].sapma, k.ort, k.sapma))
-    kontrol("eps*p*f*eta*c_xn = k-sonsuz (2 sigma)", fark <= sinir,
-            "-> fark %.5f > %.5f" % (fark, sinir))
+    kontrol("eps*p*f*eta*c_xn = k-sonsuz (2 sigma, korelasyonsuz birlesik)", fark <= sinir,
+            "-> fark %.5f, sinir %.5f" % (fark, sinir))
+    # Iki tahminci AYNI gecmislerden: farklari tek basina k-eff sapmasindan bile
+    # kucuk dalgalanir. Korelasyonsuz sinir gevsek oldugu icin ek, siki denetim.
+    kontrol("siki: fark <= 2 sigma(k-eff)", fark <= _K_SIGMA * k.sapma,
+            "-> fark %.5f, sinir %.5f" % (fark, _K_SIGMA * k.sapma))
     kontrol("fiziksel aralik: 1 < eps < 1.5, 0.5 < p < 1, 0.8 < f < 1, 1.5 < eta < 2.2",
             1.0 < f["eps"].ort < 1.5 and 0.5 < f["p"].ort < 1.0 and 0.8 < f["f"].ort < 1.0
             and 1.5 < f["eta"].ort < 2.2)
@@ -345,7 +351,9 @@ def test_godiva_sizinti_carpani(gecici):
     fark = abs(f["k"].ort - k.ort)
     sinir = _K_SIGMA * math.hypot(f["k"].sapma, k.sapma)
     kontrol("k = carpim*c_xn*P_NL = k-eff (2 sigma)", fark <= sinir,
-            "-> fark %.5f > %.5f" % (fark, sinir))
+            "-> fark %.5f, sinir %.5f" % (fark, sinir))
+    kontrol("siki: fark <= 2 sigma(k-eff)", fark <= _K_SIGMA * k.sapma,
+            "-> fark %.5f, sinir %.5f" % (fark, _K_SIGMA * k.sapma))
     kontrol("hizli sistem: eta (termal) tanimsiz ya da termal pay ihmal",
             f["eta"] is None or sonuc["termal_fisyon_payi"] < 1e-3)
 
