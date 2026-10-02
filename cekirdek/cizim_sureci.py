@@ -59,7 +59,9 @@
 """
 
 import json
+import math
 import os
+import signal
 import select
 import shutil
 import sys
@@ -79,17 +81,21 @@ PROTOKOL_SURUMU = 1
 _SIHIR = b"OMZ1"
 _ON_EK = 16                                # sihir + baslik boyu + veri boyu
 BASLIK_SINIRI = 16 * 1024 * 1024           # en buyuk spec ~63 KB (sfr_met1000_kor)
-VERI_SINIRI = 512 * 1024 * 1024            # tek kesit cercevesi: 4096^2 x 3 x int32 = 201 MB
+VERI_SINIRI = 64 * 1024 * 1024             # tek kesit: 2048^2 x 3 x int32 = 48 MB
 _IZINLI_DTYPE = frozenset({"int32", "uint8", "float64"})
+_EN_COK_BOYUT = 4                          # (v, h, kanal) + pay
 _OKUMA_BOYU = 1 << 20
 
-ISTEK_CIZ, ISTEK_KONTROL, ISTEK_CIK = "ciz", "kontrol", "cik"
+ISTEK_CIZ, ISTEK_KONTROL, ISTEK_CIK, ISTEK_IPTAL = "ciz", "kontrol", "cik", "iptal"
 YANIT_HAZIR, YANIT_MODEL, YANIT_KESIT, YANIT_SON = "hazir", "model", "kesit", "son"
 DURUM_TAMAM, DURUM_HATA, DURUM_IPTAL = "tamam", "hata", "iptal"
 
 EKSENLER = ("xy", "xz", "yz")
 EN_COK_KESIT = 3
-PIKSEL_EN_AZ, PIKSEL_EN_COK = 16, 4096     # arayuz secenekleri 400-1400
+PIKSEL_EN_AZ, PIKSEL_EN_COK = 16, 2048     # arayuz secenekleri 400-1400 (+ K5/Y2 payi)
+BELLEK_ORTAMI = "OPENMC_ARAYUZ_CIZIM_BELLEK_MB"
+_GB = 1024 ** 3
+_BELLEK_TABAN_GB, _BELLEK_CEKIRDEK_GB = 4, 1  # gerekce: bellek_siniri belgesi
 KESIT_MERKEZI = (0.0, 0.0, 0.0)            # gerekce: modul belgesi (KESIT MERKEZI)
 _INIT_KIPI = "-p"                          # cizim kipi; gerekce: modul belgesi (INIT KIPI)
 
@@ -109,23 +115,53 @@ class Cerceve(NamedTuple):
 # cerceve
 # ----------------------------------------------------------------------------
 
-def cerceve(baslik, diziler=None):
-    """baslik (JSON'a cevrilebilir sozluk) + {ad: numpy dizisi} -> bayt."""
-    tanimlar, parcalar = [], []
+def cerceve_parcalari(baslik, diziler=None):
+    """baslik + {ad: numpy dizisi} -> yazilacak parcalar (bayt + dizi bellek
+    gorunumleri). Diziler kopyalanmaz: buyuk kesit dogrudan boruya yazilir."""
+    tanimlar, parcalar, toplam = [], [], 0
     for ad, dizi in (diziler or {}).items():
         dizi = np.ascontiguousarray(dizi)
         if dizi.dtype.name not in _IZINLI_DTYPE:
             raise ProtokolHatasi(_("izinsiz dizi türü: %s") % dizi.dtype)
         tanimlar.append({"ad": ad, "dtype": dizi.dtype.name, "sekil": list(dizi.shape)})
-        parcalar.append(dizi.tobytes())
+        parcalar.append(memoryview(dizi).cast("B"))
+        toplam += dizi.nbytes
     try:
         ham = json.dumps(dict(baslik, _diziler=tanimlar), ensure_ascii=False).encode("utf-8")
     except (TypeError, ValueError) as e:
         raise ProtokolHatasi(_("çerçeve başlığı JSON'a çevrilemedi: %s") % e) from e
-    veri = b"".join(parcalar)
-    if len(ham) > BASLIK_SINIRI or len(veri) > VERI_SINIRI:
+    if len(ham) > BASLIK_SINIRI or toplam > VERI_SINIRI:
         raise ProtokolHatasi(_("çerçeve çok büyük"))
-    return _SIHIR + len(ham).to_bytes(4, "big") + len(veri).to_bytes(8, "big") + ham + veri
+    on_ek = _SIHIR + len(ham).to_bytes(4, "big") + toplam.to_bytes(8, "big")
+    return [on_ek + ham] + parcalar
+
+
+def cerceve(baslik, diziler=None):
+    """baslik (JSON'a cevrilebilir sozluk) + {ad: numpy dizisi} -> bayt."""
+    return b"".join(bytes(p) for p in cerceve_parcalari(baslik, diziler))
+
+
+def _sekil_coz(ham_sekil):
+    """JSON sekil listesi -> demet; yalniz gercek, sinirli, negatif olmayan int."""
+    if not isinstance(ham_sekil, list) or len(ham_sekil) > _EN_COK_BOYUT:
+        raise ProtokolHatasi(_("geçersiz dizi şekli: %r") % (ham_sekil,))
+    for s in ham_sekil:
+        if not _tamsayi_mi(s) or not 0 <= s <= VERI_SINIRI:
+            raise ProtokolHatasi(_("geçersiz dizi şekli: %r") % (ham_sekil,))
+    return tuple(ham_sekil)
+
+
+def _dizi_tanimi(t, adlar):
+    if not isinstance(t, dict) or not isinstance(t.get("ad"), str) or t["ad"] in adlar:
+        raise ProtokolHatasi(_("bozuk dizi tanımı: %r") % (t,))
+    if t.get("dtype") not in _IZINLI_DTYPE:
+        raise ProtokolHatasi(_("geçersiz dizi tanımı: %r") % (t,))
+    sekil = _sekil_coz(t.get("sekil"))
+    dtype = np.dtype(t["dtype"])
+    boy = math.prod(sekil) * dtype.itemsize          # Python int: tasma yok
+    if boy > VERI_SINIRI:
+        raise ProtokolHatasi(_("geçersiz dizi tanımı: %r") % (t,))
+    return t["ad"], dtype, sekil, boy
 
 
 def _dizileri_coz(tanimlar, veri):
@@ -133,21 +169,28 @@ def _dizileri_coz(tanimlar, veri):
     if not isinstance(tanimlar, list):
         raise ProtokolHatasi(_("dizi tanımı liste değil"))
     for t in tanimlar:
-        try:
-            ad, dtype, sekil = str(t["ad"]), np.dtype(t["dtype"]), tuple(int(s) for s in t["sekil"])
-        except (KeyError, TypeError, ValueError) as e:
-            raise ProtokolHatasi(_("bozuk dizi tanımı: %s") % e) from e
-        if dtype.name not in _IZINLI_DTYPE or any(s < 0 for s in sekil):
-            raise ProtokolHatasi(_("geçersiz dizi tanımı: %s") % (t,))
-        boy = int(np.prod(sekil, dtype=np.int64)) * dtype.itemsize
+        ad, dtype, sekil, boy = _dizi_tanimi(t, diziler)
         if konum + boy > len(veri):
             raise ProtokolHatasi(_("dizi verisi eksik"))
-        diziler[ad] = np.frombuffer(veri, dtype=dtype, count=boy // dtype.itemsize,
-                                    offset=konum).reshape(sekil)
+        try:
+            diziler[ad] = np.frombuffer(veri, dtype=dtype, count=boy // dtype.itemsize,
+                                        offset=konum).reshape(sekil)
+        except (ValueError, TypeError) as e:
+            raise ProtokolHatasi(_("bozuk dizi tanımı: %s") % e) from e
         konum += boy
     if konum != len(veri):
         raise ProtokolHatasi(_("dizi verisi tanımla uyuşmuyor"))
     return diziler
+
+
+def _baslik_coz(ham):
+    try:
+        baslik = json.loads(ham.decode("utf-8"))
+    except (UnicodeDecodeError, ValueError, RecursionError, OverflowError, TypeError) as e:
+        raise ProtokolHatasi(_("çerçeve başlığı okunamadı: %s") % type(e).__name__) from e
+    if not isinstance(baslik, dict):
+        raise ProtokolHatasi(_("çerçeve başlığı JSON nesnesi değil"))
+    return baslik
 
 
 class CerceveCozucu:
@@ -173,12 +216,7 @@ class CerceveCozucu:
             ham = bytes(self._tampon[_ON_EK:_ON_EK + bboy])
             veri = bytes(self._tampon[_ON_EK + bboy:son])
             del self._tampon[:son]
-            try:
-                baslik = json.loads(ham.decode("utf-8"))
-            except (UnicodeDecodeError, json.JSONDecodeError) as e:
-                raise ProtokolHatasi(_("çerçeve başlığı okunamadı: %s") % e) from e
-            if not isinstance(baslik, dict):
-                raise ProtokolHatasi(_("çerçeve başlığı JSON nesnesi değil"))
+            baslik = _baslik_coz(ham)
             diziler = _dizileri_coz(baslik.pop("_diziler", []), veri)
             cikan.append(Cerceve(baslik, diziler))
         return cikan
@@ -207,11 +245,11 @@ def _kesitleri_dogrula(kesitler):
 def istegi_dogrula(baslik):
     """Sinir denetimi: gecerli istegin kopyasi; aksi halde ProtokolHatasi."""
     tur = baslik.get("tur")
-    if tur not in (ISTEK_CIZ, ISTEK_KONTROL, ISTEK_CIK):
+    if tur not in (ISTEK_CIZ, ISTEK_KONTROL, ISTEK_CIK, ISTEK_IPTAL):
         raise ProtokolHatasi(_("bilinmeyen istek: %r") % (tur,))
     if not _tamsayi_mi(baslik.get("no")):
         raise ProtokolHatasi(_("istek numarası tamsayı olmalı"))
-    if tur != ISTEK_CIK and not isinstance(baslik.get("spec"), dict):
+    if tur in (ISTEK_CIZ, ISTEK_KONTROL) and not isinstance(baslik.get("spec"), dict):
         raise ProtokolHatasi(_("istekte model (spec) yok"))
     if tur == ISTEK_CIZ:
         _kesitleri_dogrula(baslik.get("kesitler"))
@@ -313,16 +351,20 @@ class Oturum:
         return genislik, geom, cakismalar
 
     def kapat(self):
-        """Kutuphaneyi kapatir, gecici dizini siler (tekrar cagrilabilir)."""
+        """Kutuphaneyi kapatir, gecici dizini siler (tekrar cagrilabilir).
+        finalize hata verse de calisma dizini doner ve gecici dizin silinir
+        (hata yutulmaz, cagirana gider)."""
         import openmc.lib
-        if openmc.lib.is_initialized:
-            openmc.lib.finalize()
-        if self._eski_dizin:
-            os.chdir(self._eski_dizin)
-        if self._dizin:
-            shutil.rmtree(self._dizin, ignore_errors=True)
-        self.ozet = self.bilgi = self.yukseklik = None
-        self._dizin = self._eski_dizin = None
+        try:
+            if openmc.lib.is_initialized:
+                openmc.lib.finalize()
+        finally:
+            if self._eski_dizin:
+                os.chdir(self._eski_dizin)
+            if self._dizin:
+                shutil.rmtree(self._dizin, ignore_errors=True)
+            self.ozet = self.bilgi = self.yukseklik = None
+            self._dizin = self._eski_dizin = None
 
 
 # ----------------------------------------------------------------------------
@@ -375,7 +417,15 @@ class Kanal:
         return secilen
 
     def gonder(self, baslik, diziler=None):
-        self._cikis.write(cerceve(baslik, diziler))
+        """Cerceveyi EKSIKSIZ yazar: ham (tamponsuz) akis kismi yazabilir."""
+        for parca in cerceve_parcalari(baslik, diziler):
+            kalan = memoryview(parca).cast("B")
+            while kalan:
+                yazilan = self._cikis.write(kalan)
+                if yazilan is None:           # engellemeyen akis: hazir degil
+                    select.select([], [self._cikis], [])
+                    continue
+                kalan = kalan[yazilan:]
         self._cikis.flush()
 
 
@@ -427,6 +477,8 @@ def dongu(kanal, oturum):
             continue
         if istek["tur"] == ISTEK_CIK:
             return 0
+        if istek["tur"] == ISTEK_IPTAL:     # suren is zaten birakildi (isle)
+            continue
         isle(istek, oturum, kanal)
 
 
@@ -437,6 +489,43 @@ def _isit():
     from cekirdek import kurucu, onbellek, sema  # noqa: F401
 
 
+def bellek_siniri(ortam, cekirdek_sayisi):
+    """Iscinin sanal bellek siniri (bayt) ya da None (sinirsiz).
+    Olcum (SFR, 1400 px, 24 cekirdek): VmPeak 6.05 GB, RSS 0.28 GB; sanal bellek
+    OpenMP is parcacigi basina buyur (~0.25 GB). Varsayilan 4 GB + cekirdek basina
+    1 GB (egimin 4 kati pay): kacak bir model makineyi kilitlemez, olagan cizim
+    sinira yaklasmaz. Ortam: OPENMC_ARAYUZ_CIZIM_BELLEK_MB (0 = sinirsiz)."""
+    varsayilan = (_BELLEK_TABAN_GB + _BELLEK_CEKIRDEK_GB * max(1, cekirdek_sayisi)) * _GB
+    ham = ortam.get(BELLEK_ORTAMI)
+    if ham is None:
+        return varsayilan
+    try:
+        mb = int(ham)
+    except ValueError:
+        _log.warning("%s gecersiz (%r); varsayilan sinir kullanilir", BELLEK_ORTAMI, ham)
+        return varsayilan
+    return None if mb <= 0 else mb * 1024 * 1024
+
+
+def _bellek_sinirla():
+    import resource
+    sinir = bellek_siniri(os.environ, os.cpu_count() or 1)
+    if sinir is None:
+        return
+    try:
+        _yumusak, sert = resource.getrlimit(resource.RLIMIT_AS)
+        if sert != resource.RLIM_INFINITY:
+            sinir = min(sinir, sert)
+        resource.setrlimit(resource.RLIMIT_AS, (sinir, sert))
+    except (ValueError, OSError):
+        _log.warning("onizleme iscisine bellek siniri konamadi", exc_info=True)
+
+
+def _sigterm(_imza, _cerceve):
+    """SIGTERM -> SystemExit: ana()'nin finally'si oturumu kapatir, gecici dizini siler."""
+    raise SystemExit(128 + signal.SIGTERM)
+
+
 def ana(argv=None):
     """`python -m cekirdek.giris --alt cizim` girisi. stdout YALNIZ protokole
     ayrilir: C/C++ tarafinin yazdiklari stderr'e yonlendirilir (fd 1 -> fd 2)."""
@@ -445,6 +534,8 @@ def ana(argv=None):
         return 2
     cikis = os.fdopen(os.dup(sys.stdout.fileno()), "wb", buffering=0)
     os.dup2(sys.stderr.fileno(), sys.stdout.fileno())
+    signal.signal(signal.SIGTERM, _sigterm)
+    _bellek_sinirla()
     _isit()
     oturum = Oturum()
     try:
