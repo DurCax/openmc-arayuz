@@ -16,11 +16,21 @@
            DelayedGroupFilter(1..G) uzerinde "decay-rate" ve "delayed-nu-fission"
            skorlanir; openmc.mgxs.DecayRate ile ayni tanim:
                lambda_i = <lambda_i nu_d,i Sigma_f phi> / <nu_d,i Sigma_f phi>
-           Bu, grup i'nin fisyon kaynakli (eslenik agirliksiz) karisim
-           ortalamasidir; lambda_i nukleer veridir (ENDF/B-VIII.0: 6 grup ve
-           nuklide gore farkli lambda; JEFF-3.1+: 8 grup, tum nuklidlerde ayni).
+           Bu, grup i icinde nuklidlerin lambda'larinin ONCUL URETIM HIZI
+           (nu_d,i Sigma_f phi) agirlikli aritmetik ortalamasidir: ileri
+           (eslenik agirliksiz) bir ortalama. beta_i ise eslenik agirliklidir;
+           iki agirlik farklidir (tek baskin fisil nuklidde fark sifira gider).
+           Envanteri koruyan harmonik ortalama (sum nu_d / sum nu_d/lambda)
+           nuklid basina skor ister; burada yapilmaz. lambda_i nukleer veridir
+           (ENDF/B-VIII.0: 6 grup, nuklide gore farkli lambda; JEFF-3.1+: 8 grup,
+           tum nuklidlerde ayni).
  Grup sayisi kutuphaneyle eslesmelidir: ENDF/B -> 6, JEFF -> 8. Kutuphanede
- olmayan gruplar sifir skorlar ve okunurken atilir (kutuphane_grup).
+ olmayan gruplar sifir skorlar ve okunurken atilir (kutuphane_grup). Ters
+ durum (kutuphanede istenenden COK grup) filtresiz bir delayed-nu-fission
+ tally'si (TOPLAM_TALLY_ADI) ile yakalanir: sum_i dnf_i / toplam < 1 ise
+ beta_eff eksiktir ve "grup_uyari" yazilir.
+ $ ve ani kritik esigi her yerde AYNI beta ile: sum_i beta_i (= gruplu IFP
+ tally'sinin toplami = sonuc["kinetik"]["beta_eff"]).
 ================================================================================
 """
 
@@ -34,6 +44,8 @@ _log = kaydedici(__name__)
 
 # "IFP " oneki: kosucu._tallyleri_oku bu tally'yi kullanici tally'si gibi listelemez.
 GRUP_TALLY_ADI = "IFP gruplar lambda"
+TOPLAM_TALLY_ADI = "IFP gruplar toplam"
+_KAPSAM_TOLERANSI = 1e-6            # sum dnf_i / toplam bundan fazla 1'in altindaysa uyari
 GECERLI_GRUP_SAYILARI = (0, 6, 8)   # 0: yalniz toplam beta; 6: ENDF/B; 8: JEFF
 _GRUP_SKORLARI = ("delayed-nu-fission", "decay-rate")
 
@@ -55,8 +67,14 @@ def tallyleri_ekle(model, kin_ayari):
         t = openmc.Tally(name=GRUP_TALLY_ADI)
         t.filters = [openmc.DelayedGroupFilter(list(range(1, g + 1)))]
         t.scores = list(_GRUP_SKORLARI)
-        model.tallies.append(t)
-    model.settings.ifp_n_generation = int(kin_ayari.get("nesil") or 10)
+        toplam = openmc.Tally(name=TOPLAM_TALLY_ADI)
+        toplam.scores = [_GRUP_SKORLARI[0]]
+        model.tallies.extend([t, toplam])
+    model.settings.ifp_n_generation = _nesil(kin_ayari)
+
+
+def _nesil(kin_ayari):
+    return int((kin_ayari or {}).get("nesil") or 10)
 
 
 def betik_satirlari(kin_ayari):
@@ -69,9 +87,12 @@ def betik_satirlari(kin_ayari):
             "_kin_grup = openmc.Tally(name=%r)" % GRUP_TALLY_ADI,
             "_kin_grup.filters = [openmc.DelayedGroupFilter(list(range(1, %d)))]" % (g + 1),
             "_kin_grup.scores = %r" % list(_GRUP_SKORLARI),
-            "model.tallies.append(_kin_grup)",
+            "# Grup kapsami denetimi: filtresiz delayed-nu-fission (kutuphanede daha cok grup?)",
+            "_kin_toplam = openmc.Tally(name=%r)" % TOPLAM_TALLY_ADI,
+            "_kin_toplam.scores = [%r]" % _GRUP_SKORLARI[0],
+            "model.tallies.extend([_kin_grup, _kin_toplam])",
         ]
-    satirlar.append("model.settings.ifp_n_generation = %d" % int(kin_ayari.get("nesil") or 10))
+    satirlar.append("model.settings.ifp_n_generation = %d" % _nesil(kin_ayari))
     return satirlar
 
 
@@ -99,26 +120,60 @@ def _oran(pay, sp_pay, payda, sp_payda):
     return r, r * math.hypot(sp_pay / pay, sp_payda / payda)
 
 
+def _tek_kutu(d, ad):
+    """Payda/zaman/toplam tally'leri filtresizdir: TEK kutu beklenir."""
+    if d is not None and len(d[0]) != 1:
+        _log.warning("'%s' tally'si tek kutulu değil (%d); grup verisi okunmadı", ad, len(d[0]))
+        return None
+    return d
+
+
+def _ham_degerler(sp):
+    """Gerekli tally degerleri; biri eksik/uyumsuzsa None."""
+    d = {"beta": _degerler(sp, "IFP beta numerator", "ifp-beta-numerator"),
+         "payda": _tek_kutu(_degerler(sp, "IFP denominator", "ifp-denominator"), "payda"),
+         "zaman": _tek_kutu(_degerler(sp, "IFP time numerator", "ifp-time-numerator"), "zaman"),
+         "dnf": _degerler(sp, GRUP_TALLY_ADI, _GRUP_SKORLARI[0]),
+         "dr": _degerler(sp, GRUP_TALLY_ADI, _GRUP_SKORLARI[1]),
+         "toplam": _tek_kutu(_degerler(sp, TOPLAM_TALLY_ADI, _GRUP_SKORLARI[0]), "toplam")}
+    if any(v is None for v in d.values()) or len(d["beta"][0]) < 2:
+        return None
+    if len(d["dnf"][0]) != len(d["beta"][0]):
+        _log.warning("IFP beta ve lambda tally'lerinin grup sayısı farklı: %d / %d",
+                     len(d["beta"][0]), len(d["dnf"][0]))
+        return None
+    if getattr(sp, "keff", None) is None:
+        _log.warning("statepoint'te k_eff yok; Λ = ℓ/k hesaplanamaz, grup verisi okunmadı")
+        return None
+    return d
+
+
+def _kapsam(dnf, toplam, istenen):
+    """(sum dnf_i / toplam, uyari metni ya da None)."""
+    if toplam <= 0:
+        return 1.0, None
+    oran = math.fsum(dnf) / toplam
+    if oran >= 1.0 - _KAPSAM_TOLERANSI:
+        return 1.0, None
+    return oran, _(
+        "İstenen %d grup gecikmeli nötron üretiminin yalnızca %%%.1f'ini kapsıyor: kütüphanede "
+        "daha çok grup var (JEFF: 8). β_eff ve $ eksik çıkar; grup sayısını 8 yapıp yeniden "
+        "koşun.") % (istenen, 100.0 * oran)
+
+
 def statepoint_oku(sp):
     """
     Grup verisi: {"beta_i", "beta_i_sapma", "lambda_i", "lambda_i_sapma",
-    "nesil_suresi", "nesil_suresi_sapma", "istenen_grup", "kutuphane_grup"};
-    gruplu IFP ya da lambda tally'si yoksa None.
+    "nesil_suresi", "nesil_suresi_sapma", "istenen_grup", "kutuphane_grup",
+    "grup_kapsami" (+ "grup_uyari")}; gruplu IFP ya da lambda tally'si yoksa None.
     """
-    beta = _degerler(sp, "IFP beta numerator", "ifp-beta-numerator")
-    payda = _degerler(sp, "IFP denominator", "ifp-denominator")
-    zaman = _degerler(sp, "IFP time numerator", "ifp-time-numerator")
-    dnf = _degerler(sp, GRUP_TALLY_ADI, _GRUP_SKORLARI[0])
-    dr = _degerler(sp, GRUP_TALLY_ADI, _GRUP_SKORLARI[1])
-    if None in (beta, payda, zaman, dnf, dr) or len(beta[0]) < 2:
+    d = _ham_degerler(sp)
+    if d is None:
         return None
-    if len(dnf[0]) != len(beta[0]):
-        _log.warning("IFP beta ve lambda tally'lerinin grup sayısı farklı: %d / %d",
-                     len(beta[0]), len(dnf[0]))
-        return None
-    pd, spd = payda[0][0], payda[1][0]
+    (beta, sbeta), (dnf, sdnf), (dr, sdr) = d["beta"], d["dnf"], d["dr"]
+    pd, spd = d["payda"][0][0], d["payda"][1][0]
     gruplar = [(_oran(b, sb, pd, spd), _oran(r, sr, n, sn))
-               for b, sb, n, sn, r, sr in zip(beta[0], beta[1], dnf[0], dnf[1], dr[0], dr[1])]
+               for b, sb, n, sn, r, sr in zip(beta, sbeta, dnf, sdnf, dr, sdr)]
     istenen = len(gruplar)
     while gruplar and gruplar[-1][1][0] == 0.0:
         gruplar.pop()          # kutuphanede olmayan grup: skor yok
@@ -126,32 +181,47 @@ def statepoint_oku(sp):
         _log.warning("gecikmeli nötron grubu skorlanmadı (fisyon yok ya da veri eksik)")
         return None
     k = sp.keff
-    lam_top, sp_lam = _oran(zaman[0][0], zaman[1][0], pd * k.nominal_value,
+    lam_top, sp_lam = _oran(d["zaman"][0][0], d["zaman"][1][0], pd * k.nominal_value,
                             pd * k.nominal_value * math.hypot(spd / pd, k.std_dev / k.nominal_value))
-    return {
+    kapsam, uyari = _kapsam(dnf, d["toplam"][0][0], istenen)
+    sonuc = {
         "beta_i": [b for (b, _s), _l in gruplar],
         "beta_i_sapma": [s for (_b, s), _l in gruplar],
         "lambda_i": [lam for _b, (lam, _s) in gruplar],
         "lambda_i_sapma": [s for _b, (_l, s) in gruplar],
         "nesil_suresi": lam_top, "nesil_suresi_sapma": sp_lam,
-        "istenen_grup": istenen, "kutuphane_grup": len(gruplar),
+        "istenen_grup": istenen, "kutuphane_grup": len(gruplar), "grup_kapsami": kapsam,
     }
+    if uyari:
+        _log.warning("gecikmeli nötron grup kapsamı eksik: %.4f", kapsam)
+        sonuc["grup_uyari"] = uyari
+    return sonuc
+
+
+# statepoint okuma hatalari (bozuk/eksik HDF5, beklenmeyen tally bicimi). Bunlarin
+# disindaki istisnalar program hatasidir ve yukari cikar.
+_OKUMA_HATALARI = (KeyError, ValueError, OSError, AttributeError, IndexError)
 
 
 def kosu_kinetigi(temel, sp, keff):
     """
-    kosucu._kinetik sonucu (temel) + grup verisi -> YENI sozluk.
-    Lambda: temel["lambda"] IFP zaman payi/payda'dir (= l, ani omur); OpenMC
-    tanimiyla uretim zamani Lambda = l / k olarak duzeltilir.
+    kosucu._kinetik sonucu (temel: beta_eff, omur = l) + grup verisi -> YENI sozluk.
+    Uretim zamani OpenMC tanimiyla Lambda = l / k ("lambda"); "omur" korunur.
+    keff yoksa Lambda yerine l yazilir ve "lambda_uyari" eklenir.
     """
-    k, sk = keff if keff else (1.0, 0.0)
     yeni = dict(temel)
-    yeni["lambda"] = temel["lambda"] / k
-    yeni["lambda_sapma"] = yeni["lambda"] * math.hypot(
-        temel["lambda_sapma"] / temel["lambda"], sk / k)
+    omur, somur = temel["omur"], temel["omur_sapma"]
+    if keff:
+        k, sk = keff
+        yeni["lambda"] = omur / k
+        yeni["lambda_sapma"] = yeni["lambda"] * math.hypot(somur / omur, sk / k)
+    else:
+        _log.warning("k_eff yok: Λ = ℓ/k yerine ℓ yazıldı")
+        yeni["lambda"], yeni["lambda_sapma"] = omur, somur
+        yeni["lambda_uyari"] = _("k_eff yok: Λ yerine ani nötron ömrü ℓ yazıldı.")
     try:
         gruplar = statepoint_oku(sp)
-    except Exception as e:
+    except _OKUMA_HATALARI as e:
         _log.exception("gecikmeli nötron grupları okunamadı")
         yeni["grup_hata"] = str(e)
         gruplar = None

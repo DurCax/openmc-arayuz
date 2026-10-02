@@ -120,9 +120,11 @@ VARSAYILAN_AYARLAR = {
     "entropi_mesh": {"var": True, "boyut": [8, 8, 1]},
     # Kinetik parametreler (IFP yontemi): beta_eff ve uretim zamani Lambda.
     # Kosuyu bir miktar yavaslatir, bu yuzden varsayilan olarak kapalidir.
-    # gruplar: gecikmis notron grup sayisi (beta_i, lambda_i; cekirdek/kinetik_oku.py)
-    #   0 = yalniz toplam beta_eff; 6 = ENDF/B-VII.1/VIII.0; 8 = JEFF-3.1+
-    "kinetik": {"var": False, "nesil": 10, "gruplar": 6},
+    # Istege bagli "gruplar": gecikmeli notron grup sayisi (beta_i, lambda_i) --
+    #   0 = yalniz toplam beta_eff; 6 = ENDF/B-VII.1/VIII.0; 8 = JEFF-3.1+.
+    #   Varsayilana YAZILMAZ (kinetik kapali modellerin spec'i/onbellek ozeti
+    #   degismesin); yoksa cekirdek/kinetik_oku.grup_sayisi 6 kabul eder.
+    "kinetik": {"var": False, "nesil": 10},
 }
 
 # Cubuk bazli guc dagilimi (DistribcellFilter). Kafeste tekrarlanan bir

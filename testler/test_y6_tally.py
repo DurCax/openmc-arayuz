@@ -47,11 +47,30 @@ def _ozet(tallies):
 
 
 def test_varsayilan_grup_sayisi():
-    print("\n[Y6T-1] sema varsayilani: 6 grup (ENDF/B-VIII.0)")
-    kontrol("VARSAYILAN_AYARLAR kinetik.gruplar = 6",
-            sema.VARSAYILAN_AYARLAR["kinetik"].get("gruplar") == kin.VARSAYILAN_GRUP == 6)
+    print("\n[Y6T-1] gruplar varsayilani 6 (ENDF/B-VIII.0); sema varsayilanina YAZILMAZ")
+    kontrol("VARSAYILAN_AYARLAR kinetik'te 'gruplar' yok (kinetik kapali modelin spec'i "
+            "ve onbellek ozeti degismez)", "gruplar" not in sema.VARSAYILAN_AYARLAR["kinetik"])
     eski = sema.tamamla({"ayarlar": {"kinetik": {"var": True, "nesil": 10}}})
-    kontrol("eski dosya tamamlaninca gruplar = 6", eski["ayarlar"]["kinetik"]["gruplar"] == 6)
+    kontrol("eski dosya: anahtar eklenmez, okuyucu 6 kabul eder",
+            "gruplar" not in eski["ayarlar"]["kinetik"]
+            and ko.grup_sayisi(eski["ayarlar"]["kinetik"]) == kin.VARSAYILAN_GRUP == 6)
+    kontrol("grup_sayisi(None) = 6", ko.grup_sayisi(None) == 6)
+
+
+def test_dogrula_grup_sayisi():
+    print("\n[Y6T-1b] dogrula: gecersiz kinetik.gruplar -> HATA (kurucudan once)")
+    from cekirdek import dogrula
+    for g, beklenen in ((7, True), ("alti", True), (6, False), (0, False), (8, False)):
+        s = _spec(g)
+        bulgu = [b for b in dogrula.tum_kontroller(s, veri_kontrolu=False)
+                 if b.seviye == "hata" and "grup sayısı" in b.mesaj]
+        kontrol("gruplar=%r -> hata %s" % (g, beklenen), bool(bulgu) == beklenen,
+                "-> %s" % [b.mesaj for b in bulgu])
+    s = _spec(7)
+    s["ayarlar"]["kinetik"]["var"] = False
+    kontrol("kinetik kapaliyken grup sayisi denetlenmez",
+            not [b for b in dogrula.tum_kontroller(s, veri_kontrolu=False)
+                 if "grup sayısı" in b.mesaj])
 
 
 def test_kurucu_grup_tallyleri():
@@ -67,6 +86,9 @@ def test_kurucu_grup_tallyleri():
             oz.get(ko.GRUP_TALLY_ADI) == (("delayed-nu-fission", "decay-rate"),
                                           [("DelayedGroupFilter", (1, 2, 3, 4, 5, 6))]),
             "-> %r" % (oz.get(ko.GRUP_TALLY_ADI),))
+    kontrol("toplam dnf tally'si (filtresiz): kapsam denetimi",
+            oz.get(ko.TOPLAM_TALLY_ADI) == (("delayed-nu-fission",), []),
+            "-> %r" % (oz.get(ko.TOPLAM_TALLY_ADI),))
     kontrol("IFP nesil sayisi", model.settings.ifp_n_generation == 5)
     model0, _b = kurucu.kur(_spec(0))
     oz0 = _ozet(model0.tallies)
@@ -134,8 +156,10 @@ class _SahteSP:
         return self._t[name]
 
 
-def _sahte(beta_i, dnf, dr, k=1.25):
+def _sahte(beta_i, dnf, dr, k=1.25, dnf_toplam=None):
+    toplam = float(np.sum(dnf)) if dnf_toplam is None else dnf_toplam
     return _SahteSP({
+        ko.TOPLAM_TALLY_ADI: _Tally({"delayed-nu-fission": ([toplam], [0.0])}),
         "IFP beta numerator": _Tally({"ifp-beta-numerator": (beta_i, [1e-6] * len(beta_i))}),
         "IFP denominator": _Tally({"ifp-denominator": ([2.0], [0.0])}),
         "IFP time numerator": _Tally({"ifp-time-numerator": ([5e-5], [0.0])}),
@@ -163,6 +187,54 @@ def test_statepoint_oku_sahte():
     kontrol("grup tally'leri yoksa None", ko.statepoint_oku(eksik) is None)
     tek = _sahte([1e-3], [1.0], [0.08])
     kontrol("tek gruplu (filtresiz) beta payi: grup verisi yok", ko.statepoint_oku(tek) is None)
+    kontrol("kapsam tam: uyari yok", o["grup_kapsami"] == 1.0 and "grup_uyari" not in o)
+
+
+def test_grup_kapsami_uyarisi():
+    print("\n[Y6T-4b] kutuphanede istenenden cok grup: sum dnf_i < toplam -> uyari")
+    dnf = np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0])
+    sp = _sahte([2e-4, 1e-3, 1e-3, 2e-3, 1e-3, 4e-4], dnf, np.array(_U235_LAMBDA) * dnf,
+                dnf_toplam=21.0 / 0.9)
+    o = ko.statepoint_oku(sp)
+    kontrol("kapsam %90", math.isclose(o["grup_kapsami"], 0.9), "-> %r" % o.get("grup_kapsami"))
+    kontrol("uyari metni grup sayisini soyler", "6" in o.get("grup_uyari", "")
+            and "8" in o.get("grup_uyari", ""), "-> %r" % o.get("grup_uyari"))
+    temel = {"beta_eff": 0.0056, "beta_eff_sapma": 1e-5, "omur": 5e-5, "omur_sapma": 0.0}
+    kin_s = ko.kosu_kinetigi(temel, sp, (1.25, 0.0))
+    kontrol("uyari sonuc sozlugune tasinir", kin_s.get("grup_uyari") == o["grup_uyari"])
+
+
+def test_kosu_kinetigi_hata_yollari():
+    print("\n[Y6T-4c] kosu_kinetigi: dar istisna, keff yok, tek kutu denetimi")
+    temel = {"beta_eff": 0.0065, "beta_eff_sapma": 1e-5, "omur": 2e-5, "omur_sapma": 1e-7}
+
+    class _Bozuk(_SahteSP):
+        def __init__(self, istisna):
+            super().__init__({})
+            self._i = istisna
+
+        def get_tally(self, name):
+            raise self._i
+
+    k = ko.kosu_kinetigi(temel, _Bozuk(OSError("bozuk h5")), (1.0, 0.0))
+    kontrol("okuma hatasi -> grup_hata, lambda yine var",
+            "bozuk h5" in k.get("grup_hata", "") and k["lambda"] == 2e-5)
+    try:
+        ko.kosu_kinetigi(temel, _Bozuk(ZeroDivisionError("program hatasi")), (1.0, 0.0))
+        kontrol("beklenmeyen istisna yutulmaz", False)
+    except ZeroDivisionError:
+        kontrol("beklenmeyen istisna yutulmaz", True)
+    yok = ko.kosu_kinetigi(temel, _SahteSP({}), None)
+    kontrol("keff yok: Lambda = omur (ozgun), uyari", yok["lambda"] == 2e-5
+            and bool(yok.get("lambda_uyari")) and yok["omur"] == 2e-5)
+    kontrol("girdi sozlugu degismedi", temel == {"beta_eff": 0.0065, "beta_eff_sapma": 1e-5,
+                                                 "omur": 2e-5, "omur_sapma": 1e-7})
+    cift = _sahte([1e-3, 2e-3], [1.0, 2.0], [0.0133, 0.0654])
+    cift._t["IFP denominator"] = _Tally({"ifp-denominator": ([2.0, 3.0], [0.0, 0.0])})
+    kontrol("payda tek kutulu degilse grup verisi yok", ko.statepoint_oku(cift) is None)
+    sifirk = _sahte([1e-3, 2e-3], [1.0, 2.0], [0.0133, 0.0654])
+    sifirk.keff = None
+    kontrol("sp.keff None: grup verisi yok (cokmez)", ko.statepoint_oku(sifirk) is None)
 
 
 def test_kosucu_lambda_k_ile_bolunur():
@@ -170,7 +242,7 @@ def test_kosucu_lambda_k_ile_bolunur():
     from cekirdek import kosucu
     eski = kosucu._kinetik
     kosucu._kinetik = lambda ifp: {"beta_eff": 0.0065, "beta_eff_sapma": 1e-5,
-                                   "lambda": 2e-5, "lambda_sapma": 1e-7}
+                                   "omur": 2e-5, "omur_sapma": 1e-7}
     try:
         s = kosucu.sonuc_oku(kosucu.son_statepoint(FIXTURE))
     finally:
@@ -178,7 +250,12 @@ def test_kosucu_lambda_k_ile_bolunur():
     k = s["keff"][0]
     kontrol("Lambda = 2e-5 / k", math.isclose(s["kinetik"]["lambda"], 2e-5 / k),
             "-> %.4e (k = %.5f)" % (s["kinetik"]["lambda"], k))
-    kontrol("beta_eff degismedi", s["kinetik"]["beta_eff"] == 0.0065)
+    kontrol("beta_eff degismedi, omur (l) korunur", s["kinetik"]["beta_eff"] == 0.0065
+            and s["kinetik"]["omur"] == 2e-5)
+    gercek = kosucu._kinetik({"IFP beta numerator": (0.0065, 0.0),
+                              "IFP time numerator": (2e-5, 0.0), "IFP denominator": (1.0, 0.0)})
+    kontrol("kosucu._kinetik ara degeri 'omur' (l) anahtariyla doner",
+            gercek["omur"] == 2e-5 and "lambda" not in gercek)
     kontrol("grup tally'si yoksa grup alani yok", "beta_i" not in s["kinetik"])
 
 
@@ -217,7 +294,8 @@ def test_godiva_ifp_gruplari(gecici):
     kontrol("kosudan alinan veriyle cozum (Lambda ~ ns: kati)", coz.basarili and not coz.uyarilar)
 
 
-HIZLI = [test_varsayilan_grup_sayisi, test_kurucu_grup_tallyleri, test_betik_ayni_tallyler,
-         test_statepoint_oku_sahte, test_kosucu_lambda_k_ile_bolunur]
+HIZLI = [test_varsayilan_grup_sayisi, test_dogrula_grup_sayisi, test_kurucu_grup_tallyleri, test_betik_ayni_tallyler,
+         test_statepoint_oku_sahte, test_grup_kapsami_uyarisi, test_kosu_kinetigi_hata_yollari,
+         test_kosucu_lambda_k_ile_bolunur]
 YAVAS = [test_godiva_ifp_gruplari]
 VERI_GEREKEN = [test_godiva_ifp_gruplari]
