@@ -118,7 +118,7 @@ with the **Assembly outer fill** material (the inter-assembly gap). A duct is bu
 hexagonal assembly (warning "ignored" in a rectangular assembly); the pins must fit into the
 duct: the outermost pin centres are at a distance (rings − 1)·pitch·√3/2, and the inner size
 must be at least twice this plus two pin radii (error "pins do not fit into the duct"). The
-**Empty start** template of the **Full core — hexagonal** card on the start screen builds a
+**From template** model of the **Full core — hexagonal** card on the start screen builds a
 7-assembly core by adding an SS-316 duct (inner size 10.30 cm, 0.30 cm wall) to the SFR
 hexagonal assembly.
 

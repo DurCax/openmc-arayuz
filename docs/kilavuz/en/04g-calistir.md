@@ -100,6 +100,18 @@ for the real uncertainty first confirm convergence with the entropy, then run th
 different seeds. Details: [interpreting the power distribution](06-sonuclar.md#guc-dagilimi-yorum)
 and the [power map lesson](05-dersler.md#ders-guc).
 
+<a id="calistir-spektrum"></a>
+### Spectrum and four factors card
+
+Shown only if the run has the Y3 tallies ([Run settings](04f-hesap-ayarlari.md#ayar-spektrum)).
+On top, the **flux per unit lethargy** (φ·V/Δu, log-log; whole model and fuel; dashed line at the
+0.625 eV thermal cutoff); below, a table: ε, p, f, η, ε·p·f·η, the (n,xn) correction c_xn, the
+non-leakage probability P_NL, k from tallies (labelled **k∞** in a leakage-free model) and
+OpenMC's combined k estimator; then ρ28, δ25, δ28, C*. Every value is ± 1σ and the notes below it
+state the assumptions (leakage-free definitions, uncorrelated first-order uncertainty, fuel
+average). Physics and interpretation: [lesson 5.11](05-dersler.md#ders-spektrum). The plot is
+saved with **Save PNG**.
+
 <a id="calistir-uygunluk"></a>
 ### Conformity card
 

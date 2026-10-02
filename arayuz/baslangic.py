@@ -10,9 +10,19 @@
    program ona CALISAN, sade bir model kurar ve yalnizca o modele uyan
    sekmeleri gosterir (bkz. cekirdek/uygunluk.py).
 
+ UC YOL (v3 K1)
+   "Sifirdan"   -> ilk kart: kor turu secici + "Sifirdan basla". GERCEKTEN bos
+                   model (sema.yeni_spec, yalniz kor turu); editorde adim
+                   rehberi "malzeme -> parca -> demet -> geometri" gorunur
+                   (baslangic_adim.py, baslangic_rehber.py).
+   "Sablondan"  -> tur kartlarinin ilk eylemi (eski "Bos basla").
+   "Ornekten"   -> tur kartlarinin ikinci eylemi ve galeri.
+   "Acilista bu ekrani goster" kutusu QSettings'e yazilir (baslangic_akis.py):
+   kapaliysa uygulama son kullanilan projeyle acilir.
+
  KARTLAR
    Her kart: tek satir aciklama + iki eylem
-     "Bos basla"      -> bos_sablon(anahtar): o turun ASGARI ama TAM, gecerli
+     "Sablondan"      -> bos_sablon(anahtar): o turun ASGARI ama TAM, gecerli
                          ve kosulabilir modeli (malzeme + parca + kor hazir).
                          Sablonlar ornekler/ altindaki ilgili ornekten
                          TURETILIR (yalnizca gereken kisim tutulur): ornek
@@ -42,9 +52,10 @@ from arayuz.tasarim import tokenlar
 from arayuz.tasarim.ikon import ikon_bagla
 from arayuz.tasarim.maket_cizim import KucukResim
 
-from cekirdek import ornek_bilgi, yollar
+from cekirdek import ornek_bilgi, uygunluk, yollar
 from cekirdek.ceviri import N_, _, _n
 from cekirdek.gunluk import kaydedici
+from arayuz.baslangic_adim import SIFIRDAN_TURLERI
 from arayuz.baslangic_sablon import (  # noqa: F401 -- tasindi (T2), adlar burada da
     SABLON_MALZEMELERI, _PWR, _altigen_tam_kor, _bos_sablon_ham, _kullanilmayanlari_at,
     _normal_hassasiyet, _parametrik_malzemeler, _sadelestir, _yukle, bos_sablon)
@@ -241,7 +252,7 @@ class _TurKarti(b.Kart):
     def _eylemleri_kur(self):
         bilgi = self.bilgi
         baslik = bilgi["baslik"]
-        self.d_bos = b.ikincil_dugme(_("Boş başla"))
+        self.d_bos = b.ikincil_dugme(_("Şablondan"))
         self.d_ornek = b.duz_dugme(_("Örnekten"))
         # Diyalog disinda QPushButton Enter/Return'e tepki vermez; autoDefault
         # ile klavyeyle kart secilebilir (odak Tab ile dugmeler arasinda gezer).
@@ -264,6 +275,65 @@ class _TurKarti(b.Kart):
         eylem.setSpacing(A["s"])
         eylem.addWidget(self.d_bos)
         eylem.addWidget(self.d_ornek)
+        eylem.addStretch(1)
+        self.govde.addLayout(eylem)
+
+
+class _SifirdanKarti(b.Kart):
+    """"Sifirdan" karti: kor turu secici + "Sifirdan basla" (v3 K1).
+
+    _TurKarti ile ayni arayuz (bilgi, d_bos, d_ornek): izgara yerlesimi ve
+    sekme sirasi tum kartlarda ayni dongudur. Burada d_bos tur secicisi,
+    d_ornek "Sifirdan basla" dugmesidir.
+    """
+
+    def __init__(self, parent: QtWidgets.QWidget | None = None) -> None:
+        super().__init__(parent=parent, dolgu="l")
+        self.bilgi = {"anahtar": "sifirdan", "ikon": "plus"}
+        ust = QtWidgets.QHBoxLayout()
+        ust.setSpacing(A["m"])
+        simge = QtWidgets.QToolButton()
+        simge.setFocusPolicy(QtCore.Qt.NoFocus)
+        simge.setAttribute(QtCore.Qt.WA_TransparentForMouseEvents)
+        simge.setProperty("tur", "ikon")
+        ikon_bagla(simge, "plus", "vurgu", tokenlar.BOYUT["ikon_buyuk"])
+        ust.addWidget(simge, 0, QtCore.Qt.AlignTop)
+        metin = QtWidgets.QVBoxLayout()
+        metin.setSpacing(2)
+        self.baslik = QtWidgets.QLabel(_("Sıfırdan (boş model)"))
+        self.baslik.setObjectName("altBaslik")
+        self.baslik.setWordWrap(True)
+        metin.addWidget(self.baslik)
+        self.aciklama = QtWidgets.QLabel(_("Hiçbir şey hazır gelmez: kor türünü seçin, "
+                                           "malzemeden başlayıp sırayla kurun."))
+        self.aciklama.setObjectName("kucuk")
+        self.aciklama.setWordWrap(True)
+        metin.addWidget(self.aciklama)
+        ust.addLayout(metin, 1)
+        self.govde.addLayout(ust)
+        self.govde.addStretch(1)
+        self._eylemleri_kur()
+        self.setAccessibleName(self.baslik.text())
+
+    def _eylemleri_kur(self) -> None:
+        self.sifirdan_turu = QtWidgets.QComboBox()
+        self.sifirdan_turu.setAccessibleName(_("Kor türü"))
+        self.sifirdan_turu.setToolTip(_("Boş modelin kor türü; sonradan 'Türü değiştir…' "
+                                        "ile değiştirilebilir."))
+        for tur in SIFIRDAN_TURLERI:
+            ad = uygunluk.KOR_TURU_ADLARI[tur]
+            self.sifirdan_turu.addItem(_(ad), tur)
+        self.d_sifirdan = b.ikincil_dugme(_("Sıfırdan başla"))
+        self.d_sifirdan.setAutoDefault(True)
+        self.d_sifirdan.setToolTip(_("Malzemesi, parçası ve geometrisi olmayan boş bir "
+                                     "model açar; aşama rehberi sizi sırayla ilgili "
+                                     "sayfalara götürür."))
+        self.d_bos, self.d_ornek = self.sifirdan_turu, self.d_sifirdan
+        # Alt alta: yan yana kart en az genisligi 1280 px'te 4 sutunu bozuyordu.
+        self.govde.addWidget(self.sifirdan_turu)
+        eylem = QtWidgets.QHBoxLayout()
+        eylem.setSpacing(A["s"])
+        eylem.addWidget(self.d_sifirdan)
         eylem.addStretch(1)
         self.govde.addLayout(eylem)
 
@@ -307,11 +377,13 @@ class BaslangicEkrani(QtWidgets.QWidget):
     yuklemez (test edilebilir, modal degil).
     """
 
-    bos_istendi = QtCore.Signal(str)        # kart anahtari
+    sifirdan_istendi = QtCore.Signal(str)   # kor turu (gercekten bos model)
+    bos_istendi = QtCore.Signal(str)        # kart anahtari (sablondan)
     ornek_istendi = QtCore.Signal(str)      # ornek dosya yolu (kopya acilir)
     dosya_istendi = QtCore.Signal(str)      # son kullanilan dosya yolu
     ac_istendi = QtCore.Signal()            # "Baska bir dosya ac..."
     geri_istendi = QtCore.Signal()          # acik modele don
+    acilista_goster_degisti = QtCore.Signal(bool)
 
     def __init__(self, bilgiler=None, parent=None):
         super().__init__(parent)
@@ -330,10 +402,11 @@ class BaslangicEkrani(QtWidgets.QWidget):
         self._son_kullanilanlari_kur(d)
         self._galeriyi_kur(d)
         d.addStretch(1)
+        self._acilis_tercihi_kur(d)
         self._kaydirmaya_koy(icerik)
         self._yerlestir(4)
         self.son_dosyalari_ayarla([])
-        self.setFocusProxy(self._kartlar[0].d_bos)
+        self.setFocusProxy(self.d_sifirdan)
 
     # ------------------------------------------------------------------ kurucular
     def _baslik_kur(self, d):
@@ -348,8 +421,9 @@ class BaslangicEkrani(QtWidgets.QWidget):
         self.d_geri.setVisible(False)
         ust.addWidget(self.d_geri, 0, QtCore.Qt.AlignTop)
         d.addLayout(ust)
-        alt = QtWidgets.QLabel(_("Bir model türüyle boş başlayın ya da hazır bir "
-                                 "örneğin kopyasını açın."))
+        alt = QtWidgets.QLabel(_("Sıfırdan boş bir modelle, bir türün çalışan "
+                                 "şablonuyla ya da hazır bir örneğin kopyasıyla "
+                                 "başlayın."))
         alt.setObjectName("ikincil")
         alt.setWordWrap(True)
         d.addWidget(alt)
@@ -357,6 +431,12 @@ class BaslangicEkrani(QtWidgets.QWidget):
     def _turleri_kur(self, d):
         self._izgara = QtWidgets.QGridLayout()
         self._izgara.setSpacing(A["m"])
+        self.sifirdan_karti = _SifirdanKarti()
+        self.sifirdan_turu = self.sifirdan_karti.sifirdan_turu
+        self.d_sifirdan = self.sifirdan_karti.d_sifirdan
+        self.d_sifirdan.clicked.connect(
+            lambda _c=False: self.sifirdan_istendi.emit(self.sifirdan_turu.currentData()))
+        self._kartlar.append(self.sifirdan_karti)
         for bilgi in KARTLAR:
             k = _TurKarti(bilgi)
             k.d_bos.clicked.connect(
@@ -432,6 +512,16 @@ class BaslangicEkrani(QtWidgets.QWidget):
         d.addWidget(self.galeri_bos)
         self.filtrele()
 
+    def _acilis_tercihi_kur(self, d: QtWidgets.QVBoxLayout) -> None:
+        """Alttaki "Acilista bu ekrani goster" kutusu (QSettings: baslangic_akis)."""
+        self.acilista_goster = QtWidgets.QCheckBox(_("Açılışta bu ekranı göster"))
+        self.acilista_goster.setChecked(True)
+        self.acilista_goster.setToolTip(_("Kapalıyken uygulama son kullanılan projeyle "
+                                          "açılır; bu ekrana Dosya > Yeni (Ctrl+N) ile "
+                                          "dönülür."))
+        self.acilista_goster.toggled.connect(self.acilista_goster_degisti)
+        d.addWidget(self.acilista_goster)
+
     def _kaydirmaya_koy(self, icerik):
         sarici = QtWidgets.QWidget()
         sarici.setObjectName("sayfa")
@@ -452,7 +542,7 @@ class BaslangicEkrani(QtWidgets.QWidget):
 
     # ------------------------------------------------------------------ herkese acik
     def kart_dugmesi(self, anahtar, tur="bos"):
-        """Kartin dugmesi (tur: "bos" | "ornek") -- testler ve klavye odagi icin."""
+        """Kartin dugmesi (tur: "bos" = Sablondan | "ornek") -- testler ve klavye odagi."""
         for k in self._kartlar:
             if k.bilgi["anahtar"] == anahtar:
                 return k.d_bos if tur == "bos" else k.d_ornek

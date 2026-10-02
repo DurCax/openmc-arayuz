@@ -43,7 +43,7 @@ Run options (threads, run directory) are **not** on this page; they are on the
 | **Particles per batch** | Number of source particles followed in each batch (OpenMC `particles`). | particles | 1 000 – 100 000 (benchmarks 100 000) | going below 1 000: the model check gives a **warning** ("source convergence may suffer") | `ayarlar.parcacik` |
 | **Total batches** | Number of inactive + active batches (OpenMC `batches`). | batches | 60 – 300 | entering fewer than or as many as the inactive batches (**error**); leaving fewer than 20 active batches (**warning**: weak statistics) | `ayarlar.cevrim` |
 | **Inactive batches** | The first batches, which do not enter the statistics: discarded until the source distribution converges (OpenMC `inactive`). Visible only in an eigenvalue calculation. | batches | 20 – 100 (more for full cores and axially layered models) | entering fewer than 5 (**warning**); leaving 40 in a layered model: in `pwr_eksenel` 40 inactive batches were not enough, 100 were needed (README). Deciding without looking at the Shannon entropy. | `ayarlar.pasif` |
-| **Compute kinetics parameters (β_eff and generation time Λ)** | The IFP (Iterated Fission Probability) method computes the effective delayed neutron fraction β_eff and the neutron generation time Λ; reactivity is also written in **dollars** ($). Visible in an eigenvalue model with fissile material. | — | off (turn on when needed); measured: PWR 17×17 β_eff = 696 ± 48 pcm, Λ = 22.4 μs; Godiva β_eff = 681 ± 27 pcm, Λ = 5.62 ns (README) | leaving it on when not needed (the run slows down); turning it on in a fixed source run (ignored, **info**) | `ayarlar.kinetik.var` |
+| **Compute kinetics parameters (β_eff and generation time Λ)** | The IFP (Iterated Fission Probability) method computes the effective delayed neutron fraction β_eff and the neutron generation time Λ; reactivity is also written in **dollars** ($). Visible in an eigenvalue model with fissile material. | — | off (turn on when needed); measured: PWR 17×17 β_eff = 692.9 ± 25.7 pcm, Λ = 18.85 ± 0.07 μs (v3 rerun, Λ = ℓ/k, k∞ = 1.18443; before v3 22.4 μs = ℓ was written); for Godiva k ≈ 1, so ℓ ≈ Λ; Godiva β_eff = 681 ± 27 pcm, Λ = 5.62 ns (README) | leaving it on when not needed (the run slows down); turning it on in a fixed source run (ignored, **info**) | `ayarlar.kinetik.var` |
 
 **How is the expected uncertainty computed?** The "≈ ±N pcm" value in the summary line is
 derived from a measurement: σ_k · √(particles × active batches) ≈ 9.0 × 10⁴ pcm (pin cell,
@@ -103,6 +103,7 @@ note on the strength).
 | **Entropy mesh** | Number of divisions nx, ny (nz in 3D) of the regular mesh on which the entropy is computed. While **Automatic mesh size** is checked, 8 × 8 radial divisions are used, 8 axial divisions in a 3D model and a single slice in 2D; when the model changes 2D ↔ 3D the mesh changes too. | divisions | 8 × 8 × 1 (2D), 8 × 8 × 8 (3D) | leaving nz = 1 in a 3D model: axial convergence is never measured. Zero divisions (**error**). | `ayarlar.entropi_mesh.boyut`; the automatic flag `ayarlar.entropi_mesh.otomatik` |
 | **Automatic mesh size** | The entropy mesh is derived from the model (see above). | — | on | — | `ayarlar.entropi_mesh.otomatik` |
 | **IFP generations** | Number of generations IFP follows backward; visible only while kinetics is on. | generations | 10 (1–50) | a very small value biases β_eff; a very large value inflates memory | `ayarlar.kinetik.nesil` |
+| **Delayed neutron groups** | Per-group β_i (a `DelayedGroupFilter` on the IFP beta numerator) and λ_i (a separate `decay-rate` / `delayed-nu-fission` tally) are scored; the [point kinetics card](04h2-kinetik.md#kinetik) reads them with **Take from last run**. **6 groups (ENDF/B)**, **8 groups (JEFF)** or **total β_eff only**. Visible only while kinetics is on. | groups | 6 (with the ENDF/B-VIII.0 library) | a number that does not match the library: with ENDF/B data and 8 groups, groups 7 and 8 stay empty and are dropped on reading; with JEFF data and 6 groups the last two groups are **not counted** (β_eff comes out too small) | `ayarlar.kinetik.gruplar` (0, 6, 8) |
 
 <a id="ayar-guc"></a>
 ### Power distribution card
@@ -128,6 +129,21 @@ example the [power map lesson](05-dersler.md#ders-guc).
 > not see the correlation between successive batches; in `pwr_3b` the real scatter was measured
 > to be ~20 times larger. For a power map use at least **Normal**, preferably several different
 > **Random seed** values.
+
+<a id="ayar-spektrum"></a>
+### Spectrum and four factors card
+
+Adds six tallies to the run (names start with `y3_`; `cekirdek/spektrum.py`): the energy
+spectrum (whole model and fuel), the four factors (ε, p, f, η) and the spectral indices (ρ28, δ25,
+δ28, C*). The result appears in the **Spectrum and four factors** card on the
+[Run](04g-calistir.md#calistir-spektrum) page; definitions and a step-by-step example:
+[lesson 5.11](05-dersler.md#ders-spektrum). The thermal cutoff is fixed at **0.625 eV**. The
+generated script builds the same tallies.
+
+| Field | Meaning | Unit | Typical range | Common misuse | Spec key |
+|---|---|---|---|---|---|
+| **Compute spectrum and four factors** | Turns on the Y3 tallies. The four factors and k only in an eigenvalue calculation; the spectrum is also computed in fixed source. | — | off | Taking ε·p·f·η for k-eff in a leaking (vacuum-bounded) model: k-eff additionally needs the P_NL factor (the card gives it separately). | `ayarlar.spektrum.var` |
+| **Energy group structure** | Groups of the flux spectrum (OpenMC built-in structures): CASMO-70, XMAS-172, SHEM-361, CCFE-709. The four factors and indices do not depend on it (they use their own two groups). | group | XMAS-172 | Choosing CCFE-709 with few particles: more noise per group. | `ayarlar.spektrum.grup_yapisi` |
 
 <a id="ayar-tally"></a>
 ### Tallies card

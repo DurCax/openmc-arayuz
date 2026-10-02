@@ -43,7 +43,7 @@ görünen alanlar kaydedilir.
 | **Parçacık / çevrim** | Her çevrimde (batch) izlenen kaynak parçacığı sayısı (OpenMC `particles`). | parçacık | 1 000 – 100 000 (kriterler 100 000) | 1 000'in altına inmek: doğrulama **uyarı** verir ("kaynak yakınsaması bozulabilir"). | `ayarlar.parcacik` |
 | **Toplam çevrim** | Pasif + aktif çevrim sayısı (OpenMC `batches`). | çevrim | 60 – 300 | Pasif çevrimden az ya da eşit girmek (**hata**); aktif çevrimi 20'nin altında bırakmak (**uyarı**: istatistik zayıf). | `ayarlar.cevrim` |
 | **Pasif çevrim** | Baştaki, istatistiğe katılmayan çevrimler: kaynak dağılımı yakınsayana kadar atılır (OpenMC `inactive`). Yalnızca özdeğer hesabında görünür. | çevrim | 20 – 100 (tam korda ve eksenel katmanlı modelde daha fazla) | 5'ten az girmek (**uyarı**); katmanlı modelde 40'ta bırakmak — `pwr_eksenel`'de 40 pasif çevrim yetmedi, 100 gerekti (README). Shannon entropisine bakmadan karar vermek. | `ayarlar.pasif` |
-| **Kinetik parametreleri hesapla (β_eff ve üretim zamanı Λ)** | IFP (Iterated Fission Probability) yöntemiyle etkin gecikmiş nötron kesri β_eff ve nötron üretim zamanı Λ hesaplanır; reaktivite ayrıca **dolar** ($) cinsinden yazılır. Özdeğer + fisil modelde görünür. | — | kapalı (gerekince açın); ölçülen: PWR 17×17 β_eff = 696 ± 48 pcm, Λ = 22.4 μs; Godiva β_eff = 681 ± 27 pcm, Λ = 5.62 ns (README) | Gerekmediği hâlde açık bırakmak (koşu yavaşlar); sabit kaynakta açmak (yok sayılır, **bilgi**). | `ayarlar.kinetik.var` |
+| **Kinetik parametreleri hesapla (β_eff ve üretim zamanı Λ)** | IFP (Iterated Fission Probability) yöntemiyle etkin gecikmiş nötron kesri β_eff ve nötron üretim zamanı Λ hesaplanır; reaktivite ayrıca **dolar** ($) cinsinden yazılır. Özdeğer + fisil modelde görünür. | — | kapalı (gerekince açın); ölçülen: PWR 17×17 β_eff = 692.9 ± 25.7 pcm, Λ = 18.85 ± 0.07 μs (v3 yeniden koşu, Λ = ℓ/k, k∞ = 1.18443; v3 öncesi 22.4 μs = ℓ yazılıyordu); Godiva için k ≈ 1 olduğundan ℓ ≈ Λ; Godiva β_eff = 681 ± 27 pcm, Λ = 5.62 ns (README) | Gerekmediği hâlde açık bırakmak (koşu yavaşlar); sabit kaynakta açmak (yok sayılır, **bilgi**). | `ayarlar.kinetik.var` |
 
 **Beklenen belirsizlik nasıl hesaplanır?** Özet satırındaki "≈ ±N pcm" değeri bir ölçümden
 türetilir: σ_k · √(parçacık × aktif çevrim) ≈ 9.0 × 10⁴ pcm (pin hücre, `pwr_pinhucre`). Buna
@@ -101,6 +101,7 @@ ortalama enerji yazılır (sabit kaynakta şiddet notu da).
 | **Entropi ağı** | Entropinin hesaplandığı düzenli ağın bölme sayıları nx, ny (3B'de nz). **Ağ boyutu otomatik** işaretliyken 8 × 8 radyal bölme, 3B modelde 8 eksenel bölme, 2B'de tek dilim kullanılır; model 2B ↔ 3B değişince ağ da değişir. | bölme | 8 × 8 × 1 (2B), 8 × 8 × 8 (3B) | 3B modelde nz = 1 bırakmak: eksenel yakınsama hiç ölçülmez. Sıfır bölme (**hata**). | `ayarlar.entropi_mesh.boyut`; otomatik işareti `ayarlar.entropi_mesh.otomatik` |
 | **Ağ boyutu otomatik** | Entropi ağının modelden türetilmesi (yukarı bakın). | — | açık | — | `ayarlar.entropi_mesh.otomatik` |
 | **IFP nesil sayısı** | IFP'nin geriye doğru izlediği nesil sayısı; yalnızca kinetik açıkken görünür. | nesil | 10 (1–50) | Çok küçük değer β_eff'i yanlı verir; çok büyük değer belleği şişirir. | `ayarlar.kinetik.nesil` |
+| **Gecikmeli nötron grupları** | Grup başına β_i (IFP beta payına `DelayedGroupFilter`) ve λ_i (ayrı `decay-rate` / `delayed-nu-fission` tally'si) sayılır; [nokta kinetiği kartı](04h2-kinetik.md#kinetik) bunları **Son koşudan al** ile okur. **6 grup (ENDF/B)**, **8 grup (JEFF)** ya da **yalnız toplam β_eff**. Yalnızca kinetik açıkken görünür. | grup | 6 (ENDF/B-VIII.0 kütüphanesiyle) | Kütüphaneyle eşleşmeyen sayı: ENDF/B verisiyle 8 seçilirse 7. ve 8. gruplar boş kalır ve okunurken atılır; JEFF verisiyle 6 seçilirse son iki grup **toplama girmez** (β_eff eksik çıkar). | `ayarlar.kinetik.gruplar` (0, 6, 8) |
 
 <a id="ayar-guc"></a>
 ### Güç dağılımı kartı
@@ -125,6 +126,20 @@ adım adım örnek için [güç haritası dersine](05-dersler.md#ders-guc) bakı
 > 1.1455, 20 000 parçacıkla 1.0708 ölçüldü (README). Raporlanan çubuk σ'ları ardışık çevrimler
 > arasındaki ilintiyi görmez; `pwr_3b`'de gerçek saçılma ~20 kat büyük ölçüldü. Güç haritası
 > için en az **Normal**, tercihen birkaç farklı **Rastgele tohum** kullanın.
+
+<a id="ayar-spektrum"></a>
+### Spektrum ve dört faktör kartı
+
+Koşuya altı tally ekler (adları `y3_` ile başlar; `cekirdek/spektrum.py`): enerji spektrumu
+(model geneli ve yakıt), dört faktör (ε, p, f, η) ve spektral indeksler (ρ28, δ25, δ28, C*).
+Sonuç [Çalıştır](04g-calistir.md#calistir-spektrum) sayfasındaki **Spektrum ve dört faktör**
+kartında görünür; tanımlar ve adım adım örnek: [5.11 dersi](05-dersler.md#ders-spektrum).
+Termal kesim sabit **0.625 eV**'tur. Üretilen betik aynı tally'leri kurar.
+
+| Alan | Anlamı | Birim | Tipik aralık | Yaygın yanlış kullanım | Spec anahtarı |
+|---|---|---|---|---|---|
+| **Spektrum ve dört faktörü hesapla** | Y3 tally'lerini açar. Dört faktör ve k yalnızca özdeğer hesabında; spektrum sabit kaynakta da hesaplanır. | — | kapalı | Sızıntılı (vakum sınırlı) modelde ε·p·f·η'yı k-eff sanmak: k-eff için ayrıca P_NL çarpanı gerekir (kart ayrı verir). | `ayarlar.spektrum.var` |
+| **Enerji grup yapısı** | Akı spektrumunun grupları (OpenMC hazır yapıları): CASMO-70, XMAS-172, SHEM-361, CCFE-709. Dört faktör ve indeksler gruptan bağımsızdır (kendi iki grubunu kullanır). | grup | XMAS-172 | Az parçacıkla CCFE-709 seçmek: grup başına gürültü artar. | `ayarlar.spektrum.grup_yapisi` |
 
 <a id="ayar-tally"></a>
 ### Tally'ler kartı

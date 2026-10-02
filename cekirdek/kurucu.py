@@ -33,6 +33,7 @@ import openmc
 
 from cekirdek import geometri
 from cekirdek import kaynak as _kaynak
+from cekirdek import spektrum
 from cekirdek.geometri.kurulum import kur as _geo_kur
 from cekirdek.sema import model_yuksekligi as sema_model_yuksekligi
 from cekirdek.sema import guc_hedefleri as sema_guc_hedefleri
@@ -387,8 +388,9 @@ def kur(spec):
     # kurulurken yapilmalidir, sonradan degil (onbellek kimliginin parcasi).
     kin = spec["ayarlar"].get("kinetik") or {}
     if kin.get("var") and settings.run_mode == "eigenvalue":
-        model.add_kinetics_parameters_tallies()
-        model.settings.ifp_n_generation = int(kin.get("nesil") or 10)
+        # beta_i (DelayedGroupFilter) + lambda_i tally'si: cekirdek/kinetik_oku.py
+        from cekirdek import kinetik_oku
+        kinetik_oku.tallyleri_ekle(model, kin)
     bilgi = {
         "malzemeler": nesneler,
         "renkler": renkler,
@@ -406,4 +408,5 @@ def kur(spec):
     if g.get("var"):
         bilgi["guc_hucre"] = guc_tally_ekle(spec, model, nesneler, universeler,
                                             sinir_kutu, fisil, bilgi=bilgi)
+    spektrum.tally_ekle(spec, model, nesneler)   # Y3: spektrum/dort faktor (cekirdek/spektrum.py)
     return model, bilgi

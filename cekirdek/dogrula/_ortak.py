@@ -52,14 +52,24 @@ def yer_etiketi(yer):
 _SEVIYE_IMI = {"hata": N_("HATA"), "uyari": N_("UYARI"), "bilgi": N_("BİLGİ")}
 
 
-class Bulgu(object):
-    """Tek bir dogrulama bulgusu."""
+# Bilinen BOSLUK bulgularinin sabit kodu (v3 K1): henuz atilmamis bir model
+# kurma asamasinin dogal sonucu (or. bos modelde "cubuk secilmemis"). Arayuz
+# bunlari metne ya da yere gore degil YALNIZ bu koda gore "eksik asama"
+# olarak sunar; gercek hatalar kodsuzdur.
+BOS_ADIM_ONEKI = "bos_adim:"
+BOS_ADIM_GEOMETRI = BOS_ADIM_ONEKI + "geometri"
 
-    def __init__(self, seviye, yer, mesaj, oneri=None):
+
+class Bulgu(object):
+    """Tek bir dogrulama bulgusu. kod: istege bagli sabit kimlik (bkz.
+    BOS_ADIM_ONEKI); eski cagrilar kodsuz kalir (None)."""
+
+    def __init__(self, seviye, yer, mesaj, oneri=None, kod=None):
         self.seviye = seviye        # "hata" | "uyari" | "bilgi"
         self.yer = yer              # "malzeme:uo2", "kor", "ayarlar" ...
         self.mesaj = mesaj
         self.oneri = oneri
+        self.kod = kod
 
     def __str__(self):
         im = _(_SEVIYE_IMI[self.seviye])

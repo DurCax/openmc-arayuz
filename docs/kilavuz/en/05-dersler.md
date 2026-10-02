@@ -19,6 +19,7 @@ overwritten. Use **File › Save as…** to keep your own changes.
 | [5.8](#ders-benchmark) | Benchmark and C/E | `ornekler/godiva_kriter.json` and `kriter_*` | introductory–advanced |
 | [5.9](#ders-kritik-arama) | Critical search | `ornekler/pwr_17x17.json`, `ornekler/pwr_kontrol.json`, `ornekler/tamburlu_kor.json` | intermediate |
 | [5.10](#ders-rapor) | Report and conformity annex | any run | intermediate |
+| [5.11](#ders-spektrum) | Spectrum and four factors | `ornekler/pwr_pinhucre.json` | intermediate |
 
 **Where do the expected results come from?** Every value has a source: the `referans.olcum` field
 of the example file, [VV.md](../../VV.md), [ORNEKLER.md](../../ORNEKLER.md) or the measurement tables
@@ -667,3 +668,115 @@ lines are not a failure (unless `--siki` is given).
   evaluate the rule, for example F_ΔH with no user-defined limit.)
 - Why is the exit code of the `uygunluk` command useful in CI? (0 no error, 1 error findings,
   2 usage error, 3 a rule that could not be evaluated with `--siki`.)
+
+<a id="ders-spektrum"></a>
+## 5.11 Spectrum, four factors and spectral indices
+
+**Example file:** `ornekler/pwr_pinhucre.json` · **Level:** intermediate · **Estimated time:** 15
+minutes
+
+**Goal.** In a reflective-boundary (infinite lattice) PWR pin cell, plot the neutron energy
+spectrum, split k∞ into the four factors (ε, p, f, η), see that the product ε·p·f·η·c_xn equals
+k∞, and read the CSEWG spectral indices.
+
+**Definitions (which tally ratio).** All are tallies of the same run; νF = `nu-fission`,
+A = `absorption`, _th = E < E_c, F = fuel (materials containing fissile nuclides), X = Σ (x−1)·R_x
+((n,xn)-type channels, see below). The definitions agree with OpenMC's official tally-arithmetic
+example (openmc-notebooks, `tally-arithmetic.ipynb`) **in the leakage-free limit**; p differs: the
+example's p also contains thermal leakage. Textbook frame: Lamarsh & Baratta, *Introduction to
+Nuclear Engineering*, Chapter 6; Duderstadt & Hamilton, *Nuclear Reactor Analysis* (1976), neutron
+life cycle and the four-factor formula — but the **two-group definition** differs from the
+textbook: the textbook ε counts only fast fission above the U-238 threshold (typically
+1.02–1.08); here "fast" = E > 0.625 eV, so ε also contains epithermal and resonance U-235 fission
+(1.225 in this pin cell) and p is correspondingly smaller. The product does not change.
+
+| Symbol | Name | Tally ratio |
+|---|---|---|
+| ε | fast fission factor | νF / νF_th |
+| p | resonance escape probability | A_th / A |
+| f | thermal utilization | A_F,th / A_th |
+| η | neutrons per thermal absorption | νF_th / A_F,th |
+| ε·p·f·η | product | νF / A (intermediate tallies cancel) |
+| c_xn | (n,xn) correction | A / (A − X) |
+| P_NL | non-leakage probability (P_FNL·P_TNL) | (A − X) / (A − X + L) |
+| k | k from tallies | νF / (A − X + L) = ε·p·f·η·c_xn·P_NL |
+
+- **Thermal cutoff E_c = 0.625 eV:** the value of the OpenMC example, the CASMO-2 two-group
+  boundary and the **calculational** cutoff of the CSEWG/ENDF-202 TRX calculations; the effective
+  cadmium cutoff in the experiment depends on the cadmium thickness (~0.4–0.5 eV). Changing the
+  cutoff changes all four factors (by definition); only the product stays the same.
+- **Leakage-free assumption:** p = A_th/A is the k∞ definition. The p of the OpenMC example also
+  contains thermal leakage; there is no thermal leakage tally here. With leakage, L is taken from
+  the global `leakage` tally of the statepoint and given as a **single** factor P_NL; giving P_FNL
+  and P_TNL separately needs an energy-dependent surface current tally (out of scope).
+- **(n,xn):** OpenMC's `absorption` score does not count the neutrons born in (n,2n); hence
+  ε·p·f·η = νF/A underestimates k∞ by X/A (about 0.14 % in the pin cell). c_xn corrects for it. In
+  the classical four-factor formula this effect is assumed to be inside ε. X counts only the MT 11,
+  16, 17, 24, 25, 30, 37, 41, 42 channels; higher channels (MT 152+, (n,5n) ...) are not counted.
+  In models containing Be or D₂O, (n,2n) matters. **c_xn is verified only by the analytic
+  (hand-calculation) test;** X/A of about 0.14 % is smaller than the Monte Carlo uncertainty of A
+  (~0.2 %), so its effect on k is not resolved by Monte Carlo. Verified by Monte Carlo: the
+  unfiltered nu-fission tally = global k-tracklength (~1e-6 relative); with the Y3 tallies the
+  neutron balance A − X + L = 1 (3σ, since the correlation is neglected); with the analog estimator
+  the same balance holds **exactly** (1e-9) — this shows that L and the tallies share one
+  normalization and that the channel set of X is complete for these models (pin cell, Godiva).
+- **Spectral indices (CSEWG benchmark definitions; BNL-19302/ENDF-202, TRX-1/2 lattices):**
+  ρ28 = U-238 capture epithermal/thermal, δ25 = U-235 fission epithermal/thermal, δ28 = U-238
+  fission / U-235 fission, C* = U-238 capture / U-235 fission. Experiments measure them in the
+  central fuel pin; here they are averages over **all fuel materials**. In a homogeneous model (fuel
+  and moderator in the same material) f = 1 and η belongs to the fuel + moderator mixture, so it
+  loses its textbook meaning.
+- **Uncertainty:** first order, **correlation between tallies neglected**: for r = a/b,
+  (σ_r/r)² = (σ_a/a)² + (σ_b/b)². When the numerator is a subset of the denominator (p, f) the
+  true correlation is positive, so the given σ is an **overestimate** (conservative). The σ of the
+  product is computed from the νF/A ratio.
+- **Spectrum:** OpenMC's `flux` score is a volume integral (φ·V, cm per source neutron); the plot
+  divides it by the lethargy width: φ_g·V / ln(E_g,upper / E_g,lower).
+
+**Steps.**
+
+1. Open `ornekler/pwr_pinhucre.json`. In **Run settings › Spectrum and four factors**, tick
+   **Compute spectrum and four factors**; **Energy group structure**: XMAS-172.
+2. **Run**. When the run ends, the **Spectrum and four factors** card appears.
+3. In the plot, find the thermal peak (about 0.05–0.1 eV, depending on the moderator temperature), the 1/E slowing-down plateau and the U-238
+   resonance dips (6.67 eV, 20.9 eV, 36.7 eV ...) on the fuel curve; the fission peak per unit
+   lethargy is at ~1–2 MeV.
+4. Compare the product ε·p·f·η·c_xn in the table with OpenMC's k.
+
+**Expected result** (source run: the example file's own settings — 5 000 particles × 60 batches /
+10 inactive, seed 1 — ENDF/B-VIII.0, OpenMC 0.16.0, XMAS-172; the acceptance test runs the same
+model with 15 inactive batches, its values differ from this table by a few σ):
+
+| Quantity | Value ± 1σ |
+|---|---|
+| ε | 1.2250 ± 0.0048 |
+| p | 0.6543 ± 0.0024 |
+| f | 0.9276 ± 0.0040 |
+| η | 1.8251 ± 0.0078 |
+| ε·p·f·η | 1.3570 ± 0.0044 |
+| c_xn | 1.0015 |
+| k∞ (tallies) | 1.3589 ± 0.0044 |
+| k∞ (OpenMC combined) | 1.3570 ± 0.0020 |
+| ρ28 / δ25 / δ28 / C* | 2.795 ± 0.014 / 0.1528 ± 0.0006 / 0.0545 ± 0.0002 / 0.5109 ± 0.0020 |
+
+The two k come from the same histories and agree within 2σ (test: `testler/test_y3_spektrum.py`,
+`test_pin_hucre_dort_faktor_k_sonsuz`). These indices belong to this pin cell; they are not
+compared with the TRX measurements (different lattice: the 3 % enrichment and the 0.70 g/cm³ water
+harden the spectrum, so ρ28 and δ25 are clearly larger than in the TRX/BAPL lattices — roughly a
+factor of two; this ratio was not verified against the ENDF-202 tables, no reference value is
+given). The example file is a teaching model: its cross
+sections are taken at 293.6 K while the water density is 0.70 g/cm³ (hot condition); this
+inconsistency is deliberate and does not make the results design values.
+
+**What we learned / check questions.**
+
+- Why is f < 1 and η < ν (about 2.43)? (f leaves out the thermal absorption of the clad and the
+  water; η is the production per thermal absorption in the fuel, and U-235 capture and U-238
+  absorption are in the denominator too.)
+- Which factors change if the thermal cutoff is moved to 1 eV? (All of them; the product νF/A
+  stays the same.)
+- Why are ε, p, f, η meaningless for Godiva (`ornekler/godiva_kriter.json`) and why is P_NL about
+  0.43? (No or negligible thermal fission: ε = νF/νF_th is either undefined or excessively large;
+  the four factors are a thermal-reactor definition. Bare sphere, large leakage.)
+- This result is not a validation or a certificate; it only shows that the definitions are
+  consistent.

@@ -35,10 +35,12 @@ cd ~/openmc_arayuz
 ./calistir.sh ornekler/pwr_17x17.json  # doğrudan bir modelle (örnekler KOPYA açılır)
 ```
 
-Başlangıç ekranında her model türü için bir kart vardır (yakıt çubuğu, kare/altıgen
-yakıt demeti, tam kor, MTR plaka elemanı, tamburlu kor, zırhlama). **Boş başla**
-çalışır durumda sade bir model kurar; **Örnekten başla** hazır bir örneğin
-kaydedilmemiş kopyasını açar — `ornekler/*.json` test referansıdır, üzerine
+Açılışta hiçbir örnek kendiliğinden yüklenmez; başlangıç ekranında üç yol vardır.
+**Sıfırdan** gerçekten boş bir model açar (yalnız kor türü seçilir) ve aşama rehberi
+malzeme → parça → demet → geometri sırasıyla ilgili sayfalara götürür. Her model türü
+kartında (yakıt çubuğu, kare/altıgen yakıt demeti, tam kor, MTR plaka elemanı, tamburlu
+kor, zırhlama) **Şablondan** çalışır durumda sade bir model kurar; **Örnekten** hazır bir
+örneğin kaydedilmemiş kopyasını açar — `ornekler/*.json` test referansıdır, üzerine
 yazılmaz ("Farklı kaydet" ile kendi dosyanıza kaydedin).
 
 GUI istemiyorsan çekirdek katman terminalden de çalışır:
@@ -625,12 +627,18 @@ tambur konumu **122.46° ± 3.68** (4 koşu).
 
 Hesap ayarlarından açılır (IFP yöntemi; dışa aktarılan betik de aynı IFP ayarını yazar). Ölçülen:
 
-| Model | β_eff | Λ |
-|---|---|---|
-| PWR 17×17 | 696 ± 48 pcm | 22.4 μs |
-| Godiva | 681 ± 27 pcm | 5.62 ns |
+| Model | k | β_eff | Λ = ℓ/k |
+|---|---|---|---|
+| PWR 17×17 (k∞, yansıtıcı sınır) | 1.18443 ± 0.00088 | 692.9 ± 25.7 pcm | 18.85 ± 0.07 μs |
+| Godiva | 0.99900 ± 0.00045 | 680.7 ± 24.5 pcm | 5.62 ns |
 
-β_eff sayesinde reaktivite **dolar** cinsinden de raporlanır (1 $ = β_eff).
+Λ, OpenMC `StatePoint.get_kinetics_parameters` tanımıyla Λ = ℓ/k'dir (ℓ ani nötron ömrü).
+v3 öncesi sürüm ℓ'yi Λ diye yazıyordu (PWR 17×17: 22.4 μs); Godiva'da k ≈ 1 olduğundan fark
+yoktur. Ölçüm: 6 iş parçacığı, 02.10.2026, ENDF/B-VIII.0, 6 gecikmeli nötron grubu.
+
+β_eff sayesinde reaktivite **dolar** cinsinden de raporlanır (1 $ = β_eff). Grup başına
+β_i, λ_i ve nokta kinetiği (basamak/rampa → P(t), periyot): **Analiz > Nokta kinetiği**
+(kılavuz 4.8, ders 5.12).
 
 ## Bilimsel doğrulama — Godiva kriteri
 
@@ -748,16 +756,14 @@ Kısayol: **F11** tam ekran.
 |---|---|---|---|
 | Bir düzenlemenin anlık maliyeti | 19–34 ms | **0.01 ms** | Konu bazlı sekme geçersizleştirme |
 | `openmc.Model` kurulumu (tekrar) | 21.9 ms | **0.07 ms** | İçerik özetine dayalı model önbelleği |
-| Önizleme (görüntü değişikliği) | 292 ms | **66 ms** | İsteğe bağlı "hızlı mod" |
+| Önizleme, SFR-MET1000 kor (xy + xz) | 10.8 s donma | **1.6 s arka planda, en uzun donma ~0.1 s** | v3 H2: ayrı çizim süreci, `openmc.lib.slice_data`, `-p` kipi |
 
-**Çözünürlük neredeyse bedava.** Ölçüm: tek seferlik çizimde 200 px → 632 ms,
-1200 px → 387 ms. Maliyet ışın izlemede değil, `Model.plot()`'un her çağrıda
-OpenMC kütüphanesini yeniden başlatıp tesir kesitlerini okumasında. Bu yüzden
-varsayılan çözünürlük yüksek tutuldu.
-
-**Hızlı mod** kütüphaneyi açık tutar: ilk çizim ~3 s, sonrakiler ~40 ms.
-Bitmiş bir geometriyi incelerken (eksen değiştirme, yakınlaştırma) açın;
-**düzenlerken açmayın** — her spec değişikliği yeniden başlatma gerektirir.
+**Önizleme arka planda çizilir** (v3 H2, `cekirdek/cizim_sureci.py`): kalıcı bir
+işçi süreç `openmc.lib`'i çizim kipinde (`-p`) başlatır ve model değişmedikçe açık
+tutar; eski `Model.plot()` her çağrıda sınır kutusunu hesaplayıp kütüphaneyi `-c`
+kipinde yeniden başlatıyordu (SFR: kesit başına ~2 s). Yeni istek eskisini iptal
+eder; renk/gösterge değişimi eldeki dilimden yeniden boyanır. Eski "hızlı mod"
+seçeneği bu yüzden kaldırıldı.
 
 ## Bilinen tuzaklar
 

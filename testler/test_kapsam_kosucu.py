@@ -131,7 +131,7 @@ def test_tally_ifp_ve_kinetik():
     kontrol("adsiz tally_5", "tally_5" in sonuc["tallyler"])
     kontrol("guc tally'si atlandi", "guc_dagilimi" not in sonuc["tallyler"])
     kin = kosucu._kinetik(ifp)
-    kontrol("beta_eff", abs(kin["beta_eff"] - 0.0065) < 1e-12 and kin["lambda"] == 2e-5)
+    kontrol("beta_eff", abs(kin["beta_eff"] - 0.0065) < 1e-12 and kin["omur"] == 2e-5)
     kontrol("eksik pay None", kosucu._kinetik({"IFP denominator": (1.0, 0.0)}) is None)
     kontrol("sifir payda None", kosucu._kinetik({"IFP beta numerator": (1.0, 0.0),
                                                 "IFP time numerator": (1.0, 0.0),
@@ -171,7 +171,7 @@ def test_sonuc_oku_kinetik():
     from cekirdek import kosucu
     eski = kosucu._kinetik
     kosucu._kinetik = lambda ifp: {"beta_eff": 0.0065, "beta_eff_sapma": 1e-5,
-                                   "lambda": 2e-5, "lambda_sapma": 1e-7}
+                                   "omur": 2e-5, "omur_sapma": 1e-7}
     try:
         s = kosucu.sonuc_oku(kosucu.son_statepoint(FIXTURE))
     finally:

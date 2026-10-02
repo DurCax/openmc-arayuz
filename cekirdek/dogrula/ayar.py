@@ -51,4 +51,19 @@ def ayar_kontrol(spec):
             bulgular.append(Bulgu(
                 "uyari", "ayarlar",
                 _("çevrim başına parçacık az (%d) — kaynak yakınsaması bozulabilir") % parcacik))
+        bulgular += _kinetik_grup_kontrol(a.get("kinetik") or {})
     return bulgular
+
+
+def _kinetik_grup_kontrol(kin):
+    """Y6: kinetik aciksa gecikmeli notron grup sayisi 0/6/8 olmali (kurucudan once)."""
+    if not kin.get("var"):
+        return []
+    from cekirdek import kinetik_oku
+    try:
+        kinetik_oku.grup_sayisi(kin)
+    except ValueError as e:
+        return [Bulgu("hata", "ayarlar", str(e), _(
+            "Grup sayısı nükleer veri kütüphanesiyle eşleşmeli: ENDF/B 6, JEFF 8; 0 yalnız "
+            "toplam β_eff verir."))]
+    return []
