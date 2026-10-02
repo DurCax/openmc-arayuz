@@ -51,8 +51,8 @@ N_H2O = 3.338e-2
 SICAKLIK_K = 293.15                       # 20 C (Tablo 8-1 20 C'ye indirgenmis)
 O_DOGAL = (("O16", 0.99757), ("O17", 0.00038), ("O18", 0.00205))  # IUPAC; openmc.data
 
-# Kosu ayari: sigma_c ~ 20 pcm << sigma_e = 200 pcm (olculdu, docs/VV.md)
-KOSU = {"parcacik": 100000, "cevrim": 250, "pasif": 50}
+# Kosu ayari: 7.5e6 aktif oykude sigma_c ~ 40 pcm << sigma_e = 200 pcm (docs/VV.md)
+KOSU = {"parcacik": 50000, "cevrim": 200, "pasif": 50}
 
 TCA_BASITLESTIRMELERI = (
     "Alt yansıtıcı (30 cm) yalnız su: alt ızgara plakası, Al alt uç tapası (16.83 cm) "
