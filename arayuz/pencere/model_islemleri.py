@@ -8,7 +8,6 @@
 
 import copy
 import math
-import os
 
 from cekirdek.ceviri import _, _n, N_
 from cekirdek import sema, dogrula, surum, uygunluk, yollar

@@ -14,8 +14,6 @@ Urun adi ve marka metni yalnizca UYGULAMA_ADI'ndadir; pencere basligi,
 Hakkinda penceresi ve rapor bu sabiti kullanir (ad degisirse tek satir).
 """
 
-import os
-
 from cekirdek import yollar
 from cekirdek.ceviri import N_
 

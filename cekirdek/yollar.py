@@ -234,7 +234,8 @@ def openmc_ikilisi(ayar=None, ortam=None, python=None):
     """
     ortam = _ortam(ortam)
     for kaynak, yol in _openmc_adaylari(ayar, ortam, python or sys.executable):
-        if _calistirilabilir_mi(yol):
+        # shutil.which calistirilabilirligi zaten denetledi (PATH adayi)
+        if yol and (kaynak == "PATH" or _calistirilabilir_mi(yol)):
             return yol
         if yol and kaynak in ("ayar", OPENMC_ORTAM_DEGISKENI):
             _log.warning("openmc yolu (%s) calistirilabilir degil, atlandi: %s", kaynak, yol)
