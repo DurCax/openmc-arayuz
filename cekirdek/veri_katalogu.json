@@ -32,7 +32,12 @@
    "lisans_notu": "openmc.org sayfası kütüphaneye ayrı bir lisans yazmaz (sayfa metni CC-BY-4.0); kaynak değerlendirmenin dağıtım koşulları geçerlidir — kullanmadan önce değerlendirme sayfasına bakın.",
    "degerlendirme_sayfasi": "https://www.nndc.bnl.gov/endf-b7.1/",
    "acik_bayt": null,
-   "dizin_adi": "endfb-vii.1-hdf5"
+   "dizin_adi": "endfb-vii.1-hdf5",
+   "en": {
+    "icerik": "neutron, photon, thermal scattering, windowed multipole (NJOY 2016.68)",
+    "not": "",
+    "lisans_notu": "The openmc.org page states no separate licence for the library (page text is CC-BY-4.0); the distribution terms of the source evaluation apply — check the evaluation page before use."
+   }
   },
   {
    "kimlik": "endfb-viii.0",
@@ -48,7 +53,12 @@
    "lisans_notu": "openmc.org sayfası kütüphaneye ayrı bir lisans yazmaz (sayfa metni CC-BY-4.0); kaynak değerlendirmenin dağıtım koşulları geçerlidir — kullanmadan önce değerlendirme sayfasına bakın.",
    "degerlendirme_sayfasi": "https://www.nndc.bnl.gov/endf-b8.0/",
    "acik_bayt": 13673683196,
-   "dizin_adi": "endfb-viii.0-hdf5"
+   "dizin_adi": "endfb-viii.0-hdf5",
+   "en": {
+    "icerik": "neutron, photon, atomic relaxation, thermal scattering (NJOY 2016.68)",
+    "not": "The examples and tests of this application were verified with this library.",
+    "lisans_notu": "The openmc.org page states no separate licence for the library (page text is CC-BY-4.0); the distribution terms of the source evaluation apply — check the evaluation page before use."
+   }
   },
   {
    "kimlik": "endfb-viii.1",
@@ -64,7 +74,12 @@
    "lisans_notu": "openmc.org sayfası kütüphaneye ayrı bir lisans yazmaz (sayfa metni CC-BY-4.0); kaynak değerlendirmenin dağıtım koşulları geçerlidir — kullanmadan önce değerlendirme sayfasına bakın.",
    "degerlendirme_sayfasi": "https://www.nndc.bnl.gov/",
    "acik_bayt": null,
-   "dizin_adi": "endfb-viii.1-hdf5"
+   "dizin_adi": "endfb-viii.1-hdf5",
+   "en": {
+    "icerik": "neutron, photon, atomic relaxation, thermal scattering (NJOY 2016.78)",
+    "not": "",
+    "lisans_notu": "The openmc.org page states no separate licence for the library (page text is CC-BY-4.0); the distribution terms of the source evaluation apply — check the evaluation page before use."
+   }
   },
   {
    "kimlik": "jeff-3.3",
@@ -80,7 +95,12 @@
    "lisans_notu": "openmc.org sayfası kütüphaneye ayrı bir lisans yazmaz (sayfa metni CC-BY-4.0); kaynak değerlendirmenin dağıtım koşulları geçerlidir — kullanmadan önce değerlendirme sayfasına bakın.",
    "degerlendirme_sayfasi": "https://www.oecd-nea.org/dbdata/jeff/jeff33/",
    "acik_bayt": null,
-   "dizin_adi": "jeff-3.3-hdf5"
+   "dizin_adi": "jeff-3.3-hdf5",
+   "en": {
+    "icerik": "neutron, thermal scattering; photon and atomic relaxation from ENDF/B-VIII.0 (NJOY 2016.68)",
+    "not": "C13 and O17 taken from TENDL-2019 because of an NJOY bug (openmc.org).",
+    "lisans_notu": "The openmc.org page states no separate licence for the library (page text is CC-BY-4.0); the distribution terms of the source evaluation apply — check the evaluation page before use."
+   }
   },
   {
    "kimlik": "jeff-4.0",
@@ -96,7 +116,12 @@
    "lisans_notu": "openmc.org sayfası kütüphaneye ayrı bir lisans yazmaz (sayfa metni CC-BY-4.0); kaynak değerlendirmenin dağıtım koşulları geçerlidir — kullanmadan önce değerlendirme sayfasına bakın.",
    "degerlendirme_sayfasi": "https://www.oecd-nea.org/dbdata/jeff/",
    "acik_bayt": null,
-   "dizin_adi": "jeff-4.0-hdf5"
+   "dizin_adi": "jeff-4.0-hdf5",
+   "en": {
+    "icerik": "neutron, thermal scattering; photon and atomic relaxation from ENDF/B-VIII.1 (NJOY 2016.78)",
+    "not": "",
+    "lisans_notu": "The openmc.org page states no separate licence for the library (page text is CC-BY-4.0); the distribution terms of the source evaluation apply — check the evaluation page before use."
+   }
   },
   {
    "kimlik": "jendl-5",
@@ -112,7 +137,12 @@
    "lisans_notu": "openmc.org sayfası kütüphaneye ayrı bir lisans yazmaz (sayfa metni CC-BY-4.0); kaynak değerlendirmenin dağıtım koşulları geçerlidir — kullanmadan önce değerlendirme sayfasına bakın.",
    "degerlendirme_sayfasi": "https://wwwndc.jaea.go.jp/jendl/j5/j5.html",
    "acik_bayt": null,
-   "dizin_adi": "jendl-5-hdf5"
+   "dizin_adi": "jendl-5-hdf5",
+   "en": {
+    "icerik": "neutron, photon, atomic relaxation, thermal scattering; errata through update-16 (NJOY 2016.78)",
+    "not": "",
+    "lisans_notu": "The openmc.org page states no separate licence for the library (page text is CC-BY-4.0); the distribution terms of the source evaluation apply — check the evaluation page before use."
+   }
   },
   {
    "kimlik": "lanl-endfb-vii.0",
@@ -128,7 +158,12 @@
    "lisans_notu": "openmc.org sayfası kütüphaneye ayrı bir lisans yazmaz (sayfa metni CC-BY-4.0); kaynak değerlendirmenin dağıtım koşulları geçerlidir — kullanmadan önce değerlendirme sayfasına bakın.",
    "degerlendirme_sayfasi": "https://www.nndc.bnl.gov/",
    "acik_bayt": null,
-   "dizin_adi": "lanl-endfb-vii.0-hdf5"
+   "dizin_adi": "lanl-endfb-vii.0-hdf5",
+   "en": {
+    "icerik": "from LANL ACE files distributed with MCNP5/6 (endf70, endf70sab, eprdata14)",
+    "not": "Source: LA-UR-08-1999, LA-UR-08-3628 (openmc.org).",
+    "lisans_notu": "The openmc.org page states no separate licence for the library (page text is CC-BY-4.0); the distribution terms of the source evaluation apply — check the evaluation page before use."
+   }
   },
   {
    "kimlik": "lanl-endfb-vii.1",
@@ -144,7 +179,12 @@
    "lisans_notu": "openmc.org sayfası kütüphaneye ayrı bir lisans yazmaz (sayfa metni CC-BY-4.0); kaynak değerlendirmenin dağıtım koşulları geçerlidir — kullanmadan önce değerlendirme sayfasına bakın.",
    "degerlendirme_sayfasi": "https://www.nndc.bnl.gov/endf-b7.1/",
    "acik_bayt": null,
-   "dizin_adi": "lanl-endfb-vii.1-hdf5"
+   "dizin_adi": "lanl-endfb-vii.1-hdf5",
+   "en": {
+    "icerik": "from LANL endf71x, ENDF71SaB, eprdata14 ACE files",
+    "not": "Source: LA-UR-13-20137, LA-UR-14-21878 (openmc.org).",
+    "lisans_notu": "The openmc.org page states no separate licence for the library (page text is CC-BY-4.0); the distribution terms of the source evaluation apply — check the evaluation page before use."
+   }
   },
   {
    "kimlik": "lanl-endfb-viii.0",
@@ -160,7 +200,12 @@
    "lisans_notu": "openmc.org sayfası kütüphaneye ayrı bir lisans yazmaz (sayfa metni CC-BY-4.0); kaynak değerlendirmenin dağıtım koşulları geçerlidir — kullanmadan önce değerlendirme sayfasına bakın.",
    "degerlendirme_sayfasi": "https://www.nndc.bnl.gov/endf-b8.0/",
    "acik_bayt": null,
-   "dizin_adi": "lanl-endfb-viii.0-hdf5"
+   "dizin_adi": "lanl-endfb-viii.0-hdf5",
+   "en": {
+    "icerik": "from LANL Lib80x and ENDF80SaB2 ACE files",
+    "not": "Source: LA-UR-18-24034, LA-UR-20-24456 (openmc.org).",
+    "lisans_notu": "The openmc.org page states no separate licence for the library (page text is CC-BY-4.0); the distribution terms of the source evaluation apply — check the evaluation page before use."
+   }
   },
   {
    "kimlik": "nea-jeff-3.2",
@@ -176,7 +221,12 @@
    "lisans_notu": "openmc.org sayfası kütüphaneye ayrı bir lisans yazmaz (sayfa metni CC-BY-4.0); kaynak değerlendirmenin dağıtım koşulları geçerlidir — kullanmadan önce değerlendirme sayfasına bakın.",
    "degerlendirme_sayfasi": "https://www.oecd-nea.org/dbforms/data/eva/evatapes/jeff_32/",
    "acik_bayt": null,
-   "dizin_adi": "nea-jeff-3.2-hdf5"
+   "dizin_adi": "nea-jeff-3.2-hdf5",
+   "en": {
+    "icerik": "from NEA ACE files; neutron and thermal scattering for 10 compounds",
+    "not": "Requires OpenMC built with HDF5 1.10+ (openmc.org).",
+    "lisans_notu": "The openmc.org page states no separate licence for the library (page text is CC-BY-4.0); the distribution terms of the source evaluation apply — check the evaluation page before use."
+   }
   },
   {
    "kimlik": "nea-jeff-3.3",
@@ -192,7 +242,12 @@
    "lisans_notu": "openmc.org sayfası kütüphaneye ayrı bir lisans yazmaz (sayfa metni CC-BY-4.0); kaynak değerlendirmenin dağıtım koşulları geçerlidir — kullanmadan önce değerlendirme sayfasına bakın.",
    "degerlendirme_sayfasi": "https://www.oecd-nea.org/dbdata/jeff/jeff33/",
    "acik_bayt": null,
-   "dizin_adi": "nea-jeff-3.3-hdf5"
+   "dizin_adi": "nea-jeff-3.3-hdf5",
+   "en": {
+    "icerik": "from NEA ACE files; neutron and thermal scattering for 21 compounds",
+    "not": "",
+    "lisans_notu": "The openmc.org page states no separate licence for the library (page text is CC-BY-4.0); the distribution terms of the source evaluation apply — check the evaluation page before use."
+   }
   },
   {
    "kimlik": "fendl-3.2",
@@ -208,7 +263,12 @@
    "lisans_notu": "openmc.org sayfası kütüphaneye ayrı bir lisans yazmaz (sayfa metni CC-BY-4.0); kaynak değerlendirmenin dağıtım koşulları geçerlidir — kullanmadan önce değerlendirme sayfasına bakın.",
    "degerlendirme_sayfasi": "https://www-nds.iaea.org/fendl_library/websites/fendl32/",
    "acik_bayt": null,
-   "dizin_adi": "fendl-3.2-hdf5"
+   "dizin_adi": "fendl-3.2-hdf5",
+   "en": {
+    "icerik": "from IAEA NDS ACE files; neutron data for 192 nuclides, photon data for 61 elements",
+    "not": "",
+    "lisans_notu": "The openmc.org page states no separate licence for the library (page text is CC-BY-4.0); the distribution terms of the source evaluation apply — check the evaluation page before use."
+   }
   }
  ],
  "zincirler": [

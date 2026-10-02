@@ -59,6 +59,7 @@ from arayuz.pencere.menuler import MenulerMixin
 from arayuz.pencere.proje import ProjeMixin
 from arayuz.pencere.gecmis import GecmisMixin
 from arayuz.pencere.gezinme import GezinmeCephesi
+from arayuz.veri import kayit as veri_kayit
 from arayuz.pencere.dogrulama_seridi import (  # noqa: F401 -- tasindi (T2)
     _SEVIYE_ADI, DogrulamaMixin, _seviye_renk)
 from arayuz.pencere.model_islemleri import (
@@ -104,6 +105,7 @@ class AnaPencere(DogrulamaMixin, GezinmeCephesi, MenulerMixin, ProjeMixin, Gecmi
             self.proje_ac(acilis_dosyasi)
         if not self._model_var:
             self.baslangici_goster()
+        veri_kayit.kur(self)            # K2: Veri sayfasi (kenar cubugu) + surec ortami
 
     # ------------------------------------------------------------------ kurucular
     def _boyut_kur(self):

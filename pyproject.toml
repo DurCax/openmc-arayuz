@@ -57,6 +57,8 @@ include = ["cekirdek*", "arayuz*"]
 # Paket ICI veri (cekirdek/yollar.py: ikon_dizini, font_dizini, rapor_sablon_dizini).
 # rapor sablonlari (string.Template) wheel icinde olmali
 "cekirdek.rapor_sablon" = ["*.html", "*.css"]
+# nukleer veri katalogu (cekirdek/veri_indir.py: katalog_yolu)
+"cekirdek" = ["veri_katalogu.json"]
 "arayuz" = ["kaynaklar/*.txt", "kaynaklar/fontlar/*", "kaynaklar/ikonlar/*"]
 
 [tool.setuptools.data-files]

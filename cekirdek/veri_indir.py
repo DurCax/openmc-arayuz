@@ -98,6 +98,25 @@ class Oge:
     spektrum: Optional[str] = None        # zincir: "termal" | "hizli"
     nuklid: Optional[int] = None
     uygulamada_kullanilir: bool = False   # zincir: tukenme.ZINCIRLER'deki adlardan mi
+    en: tuple = ()                        # ((alan, Ingilizce metin), ...) katalogdan
+
+    def metin(self, alan: str) -> str:
+        """icerik / notu / lisans_notu etkin dilde (katalogun "en" alanlari)."""
+        from cekirdek.ceviri import etkin_dil
+        if etkin_dil() == "en":
+            ceviri = dict(self.en).get("not" if alan == "notu" else alan)
+            if ceviri is not None:
+                return ceviri
+        return getattr(self, alan)
+
+    def gorunen_ad(self) -> str:
+        """Zincirde "<kutuphane> — termal/hizli" (CASL: "CASL (sadelestirilmis)"),
+        etkin dilde; kutuphanede adin kendisi (ozel ad, cevrilmez)."""
+        if self.tur != "zincir":
+            return self.ad
+        spektrum = {"termal": _("termal"), "hizli": _("hızlı")}.get(self.spektrum, "")
+        kaynak = self.ad.rsplit(" ", 1)[0] if self.kutuphane else _("CASL (sadeleştirilmiş)")
+        return "%s — %s" % (kaynak, spektrum)
 
 
 @dataclass(frozen=True)
@@ -169,7 +188,8 @@ def _oge_kur(kayit: dict, tur: str, politika: UrlPolitikasi) -> Oge:
                degerlendirme_sayfasi=kayit.get("degerlendirme_sayfasi", ""),
                kutuphane=kayit.get("kutuphane"), spektrum=kayit.get("spektrum"),
                nuklid=kayit.get("nuklid"),
-               uygulamada_kullanilir=bool(kayit.get("uygulamada_kullanilir")))
+               uygulamada_kullanilir=bool(kayit.get("uygulamada_kullanilir")),
+               en=tuple(sorted((kayit.get("en") or {}).items())))
 
 
 def katalog_yukle(yol: Optional[str] = None) -> Katalog:
