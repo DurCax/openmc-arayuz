@@ -262,7 +262,7 @@ class OnizlemeWidget(KapsamMixin, VurguMixin, QtWidgets.QWidget):
 
     def spec_ayarla(self, spec):
         self.spec = spec
-        self._son_basarili = False
+        self._kapi_bilinmez()               # ayni icerik olsa da yeniden denetlenir
         self._tam_kirli = True
         # 3B modelde xy ve xz yan yana; 2B'de yalnizca xy -- secim gizlenir.
         # 2B -> 3B gecisinde gorunum "xy + xz"ye doner; 3B icindeki secim korunur.
@@ -341,7 +341,7 @@ class OnizlemeWidget(KapsamMixin, VurguMixin, QtWidgets.QWidget):
         kapsam = TAM_MODEL if kontrol else self._kapsam_coz()
         cizilen = kapsam.spec or self.spec
         if kapsam.spec is None:
-            self._son_basarili = False      # tam model istegi: kapi sonucuyla acilir
+            self._kapi_bilinmez()           # tam model istegi: kapi sonucuyla acilir
         if not kontrol:
             self.etkin_kapsam = kapsam
             self._kapsam_bilgisi(kapsam)
@@ -485,8 +485,7 @@ class OnizlemeWidget(KapsamMixin, VurguMixin, QtWidgets.QWidget):
             self._kapi_denetle()            # kapsamli cizim: kapi tam modele bakar
             return
         if not ist["kapsam"]:
-            self._son_hata, self._son_basarili = None, True
-            self._kapi_ozet = ist["tam_ozet"]
+            self._kapi_kaydet(ist["tam_ozet"], True)
         if ist["toplanan"]:
             self._kesit_onbellegi = {"anahtar": ist["anahtar"], "meta": self._meta,
                                      "kesitler": dict(ist["toplanan"])}
@@ -517,14 +516,13 @@ class OnizlemeWidget(KapsamMixin, VurguMixin, QtWidgets.QWidget):
                            "Önizleme güncel ({kesit}, {n} piksel){ek}", piksel).format(
             kesit=" + ".join(ist["kesitler"]), n=piksel, ek=ek), True)
 
-    def _hata_goster(self, metin, iz, kapi=True):
+    def _hata_goster(self, metin, iz, kapi=True, gecici=False):
         """Tuvalde hata. kapi=False: kapsamli (alt model) cizim -- Calistir
-        kapisi tam model sonucunda kalir (K5)."""
+        kapisi tam model sonucunda kalir (K5). gecici: cokme/zaman asimi,
+        kapi sonucu olarak hatirlanmaz."""
         from arayuz.ortak import hata_metni
         if kapi:
-            self._son_hata = iz or metin
-            self._son_basarili = False
-            self._kapi_ozet = self._tam_ozet
+            self._kapi_kaydet(self._tam_ozet, False, iz or metin, gecici=gecici)
         self._son_eksenler = []
         self.gosterge_etiketi.setText("")
         self._bos_mesaj(_("Geometri kurulamadı:\n\n%s") % hata_metni(RuntimeError(metin)),
@@ -543,10 +541,13 @@ class OnizlemeWidget(KapsamMixin, VurguMixin, QtWidgets.QWidget):
         ist, self._istek = self._istek, None
         self.calisiyor.setText("")
         if ist["kapi"]:                     # tam model denetimi coktu: kapi kapali, cizim kalir
-            self._kapi_sonucu(ist, {"durum": cs.DURUM_HATA, "hata": mesaj, "iz": mesaj})
+            self._kapi_sonucu(ist, {"durum": cs.DURUM_HATA, "hata": mesaj, "iz": mesaj},
+                              gecici=True)
             return
         self._kesit_onbellegi = None
-        self._hata_goster(mesaj, mesaj, kapi=not ist["kapsam"])
+        self._hata_goster(mesaj, mesaj, kapi=not ist["kapsam"], gecici=True)
+        if ist["kapsam"]:
+            self._kapi_denetle()            # kapi bekleyen istek olmadan kapali kalmasin
 
     # ------------------------------------------------------------------
     def _bos_mesaj(self, metin, hata=False):

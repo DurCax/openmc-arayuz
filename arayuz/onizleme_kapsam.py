@@ -30,7 +30,9 @@
 ================================================================================
 """
 
+import time
 from dataclasses import dataclass
+from typing import Callable
 
 import numpy as np
 from PySide6 import QtCore, QtWidgets
@@ -126,15 +128,32 @@ class KapsamMixin(object):
             self.kapsam_bilgi.setToolTip("")
 
     # ------------------------------------------------------------------ kapi
+    # Kapi durumu TEK yerden yazilir: _kapi_bilinmez() ya da _kapi_kaydet().
+    # _son_basarili hic tek basina sifirlanmaz; aksi halde (inceleme bulgusu)
+    # basarisi silinmis ama ozeti "biliniyor" kalan kapi kapsamli cizimden
+    # sonra yeniden denetlenmez ve kalici kapali kalirdi.
+    def _kapi_bilinmez(self) -> None:
+        """Kapi sonucu artik gecerli degil: kapali, ilk firsatta yeniden denetlenir."""
+        self._son_basarili = False
+        self._kapi_ozet = None
+
+    def _kapi_kaydet(self, ozet: str | None, basarili: bool, hata: str | None = None,
+                     gecici: bool = False) -> None:
+        """Tam modelin sonucu. gecici (cokme, zaman asimi): kapi kapali ama sonuc
+        hatirlanmaz -- sonraki kapsamli cizim yeniden dener."""
+        self._son_basarili = basarili
+        self._son_hata = None if basarili else (hata or "")
+        self._kapi_ozet = None if gecici else ozet
+
     def _tam_ozet_guncelle(self, ozet: str) -> None:
         """Tam model degistiyse kapi bilinmez olur (kapali)."""
         self._tam_kirli = False
         if ozet != self._tam_ozet:
             self._tam_ozet = ozet
-            self._son_basarili = False
+            self._kapi_bilinmez()
 
     def _kapi_bilinmiyor(self) -> bool:
-        return self._kapi_ozet != self._tam_ozet
+        return self._kapi_ozet is None or self._kapi_ozet != self._tam_ozet
 
     def _kapi_acik(self) -> bool:
         tam_suruyor = self._istek is not None and not self._istek.get("kapsam")
@@ -145,19 +164,16 @@ class KapsamMixin(object):
         """Kapsamli cizimden sonra: tam model bu ozet icin denetlenmediyse 'kontrol'."""
         if self._kapandi or self.spec is None or not self._kapi_bilinmiyor():
             return
-        import time
         self._istek = {"kontrol": True, "kapi": True, "kapsam": False, "kesitler": [],
                        "t0": time.perf_counter(), "tam_ozet": self._tam_ozet, "toplanan": {}}
         self._istek["no"] = self._istemci.iste({"tur": cs.ISTEK_KONTROL, "spec": self.spec})
 
-    def _kapi_sonucu(self, ist: dict, b: dict) -> None:
-        self._kapi_ozet = ist["tam_ozet"]
+    def _kapi_sonucu(self, ist: dict, b: dict, gecici: bool = False) -> None:
         if b.get("durum") == cs.DURUM_TAMAM:
-            self._son_basarili, self._son_hata = True, None
+            self._kapi_kaydet(ist["tam_ozet"], True)
             self.durum.emit(_("Önizleme: tam model denetlendi."), True)
             return
-        self._son_basarili = False
-        self._son_hata = b.get("iz") or b.get("hata") or ""
+        self._kapi_kaydet(ist["tam_ozet"], False, b.get("iz") or b.get("hata"), gecici=gecici)
         self.durum.emit(_("Tam model kurulamadı (Çalıştır kapalı): %s") % (b.get("hata") or ""),
                         False)
 
