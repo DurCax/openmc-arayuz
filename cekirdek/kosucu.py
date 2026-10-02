@@ -297,7 +297,9 @@ def calistir(spec, dizin, geri_cagir=None, is_parcacigi=None, temizle=True,
 
     with open(log_yolu, "w", encoding="utf-8") as log:
         log.write("# komut: %s\n# dizin: %s\n\n" % (" ".join(komut), dizin))
-        surec = subprocess.Popen(komut, cwd=dizin, stdout=subprocess.PIPE,
+        from cekirdek import veri_yolu       # K2: Veri sayfasi secimi alt surece
+        surec = subprocess.Popen(komut, cwd=dizin, env=veri_yolu.alt_surec_ortami(),
+                                 stdout=subprocess.PIPE,
                                  stderr=subprocess.STDOUT, text=True,
                                  bufsize=1, universal_newlines=True)
         for satir in surec.stdout:

@@ -161,7 +161,7 @@ def test_arayuz_bulgu_sekme():
             "malzeme:uo2": "malzemeler", "malzemeler": "malzemeler",
             "cubuk:yakit_cubugu": "parcalar", "plaka:mtr_eleman": "parcalar",
             "demet:demet_17x17": "demet", "kor": "kor", "kor/katman 1 (aktif)": "kor",
-            "ayarlar": "ayarlar", "veri kutuphanesi": "ayarlar", "kaynak": "ayarlar",
+            "ayarlar": "ayarlar", "veri kutuphanesi": "veri", "kaynak": "ayarlar",
             "tally:aki": "ayarlar", "guc dagilimi": "ayarlar", "guc_dagilimi": "ayarlar",
             "tukenme": "tukenme", "tukenme/uo2": "tukenme",
         }

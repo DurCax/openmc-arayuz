@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 10:26+0300\n"
+"POT-Creation-Date: 2026-10-02 10:31+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -4536,7 +4536,7 @@ msgstr ""
 msgid "Elle düzenlemeye geçince malzeme kütüphane parametrelerinden ayrılır."
 msgstr ""
 
-#: arayuz/malzeme/malzeme_diyalog.py:206 arayuz/pencere/dogrulama_seridi.py:122
+#: arayuz/malzeme/malzeme_diyalog.py:206 arayuz/pencere/dogrulama_seridi.py:123
 msgid "Tamam"
 msgstr ""
 
@@ -4868,7 +4868,7 @@ msgid ""
 "sayısını bildirir. Büyük korlarda çizimi birkaç kat yavaşlatır."
 msgstr ""
 
-#: arayuz/onizleme.py:184
+#: arayuz/onizleme.py:184 arayuz/veri/sayfa.py:54
 msgid "Yenile"
 msgstr ""
 
@@ -5031,44 +5031,44 @@ msgstr ""
 msgid "Nadiren gereken ayarları göster"
 msgstr ""
 
-#: arayuz/pencere/ana_pencere.py:121
+#: arayuz/pencere/ana_pencere.py:128
 msgid "yeni model"
 msgstr ""
 
-#: arayuz/pencere/ana_pencere.py:153
+#: arayuz/pencere/ana_pencere.py:160
 msgid "Sayfalar"
 msgstr ""
 
-#: arayuz/pencere/ana_pencere.py:339
+#: arayuz/pencere/ana_pencere.py:346
 msgid "Şablon kurulamadı"
 msgstr ""
 
-#: arayuz/pencere/ana_pencere.py:346
+#: arayuz/pencere/ana_pencere.py:353
 #, python-brace-format
 msgid "Çalışan sade bir model kuruldu ({ad}). Kaydetmek için 'Farklı kaydet' kullanın."
 msgstr ""
 
-#: arayuz/pencere/ana_pencere.py:554
+#: arayuz/pencere/ana_pencere.py:561
 #, python-brace-format
 msgid "adsız — örnek: {ornek}"
 msgstr ""
 
-#: arayuz/pencere/ana_pencere.py:557
+#: arayuz/pencere/ana_pencere.py:564
 msgid "kaydedilmemiş"
 msgstr ""
 
-#: arayuz/pencere/ana_pencere.py:582
+#: arayuz/pencere/ana_pencere.py:589
 msgid "Boyuta tıklayınca Kor sayfasına, hesap türüne tıklayınca Hesap ayarlarına gider."
 msgstr ""
 
-#: arayuz/pencere/ana_pencere.py:626
+#: arayuz/pencere/ana_pencere.py:633
 #, python-brace-format
 msgid ""
 " Model bu türün gerektirdiği parçayı içermiyordu; şablondan eklendi: {parca} "
 "(Parçalar/Demet sayfasında düzenleyin)."
 msgstr ""
 
-#: arayuz/pencere/ana_pencere.py:629
+#: arayuz/pencere/ana_pencere.py:636
 #, python-brace-format
 msgid "Kor türü: {tur} — geri almak için Ctrl+Z.{ek}"
 msgstr ""
@@ -5106,66 +5106,66 @@ msgstr ""
 msgid "doğrulama sırasında hata: %s"
 msgstr ""
 
-#: arayuz/pencere/dogrulama_seridi.py:91
+#: arayuz/pencere/dogrulama_seridi.py:92
 msgid "Doğrulama yenilendi (veri kütüphanesi dahil)."
 msgstr ""
 
-#: arayuz/pencere/dogrulama_seridi.py:113
+#: arayuz/pencere/dogrulama_seridi.py:114
 #, python-brace-format
 msgid "Doğrulama: {n} hata"
 msgid_plural "Doğrulama: {n} hata"
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/pencere/dogrulama_seridi.py:116
+#: arayuz/pencere/dogrulama_seridi.py:117
 #, python-brace-format
 msgid "Doğrulama: {n} uyarı"
 msgid_plural "Doğrulama: {n} uyarı"
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/pencere/dogrulama_seridi.py:119
+#: arayuz/pencere/dogrulama_seridi.py:120
 msgid "Doğrulama: hata yok"
 msgstr ""
 
-#: arayuz/pencere/dogrulama_seridi.py:120
+#: arayuz/pencere/dogrulama_seridi.py:121
 #, python-brace-format
 msgid "{n} bilgi"
 msgid_plural "{n} bilgi"
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/pencere/dogrulama_seridi.py:121
+#: arayuz/pencere/dogrulama_seridi.py:122
 #, python-brace-format
 msgid "{n} uyarı"
 msgid_plural "{n} uyarı"
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/pencere/dogrulama_seridi.py:127
+#: arayuz/pencere/dogrulama_seridi.py:128
 #, python-brace-format
 msgid "{h} hata, {u} uyarı, {b} bilgi"
 msgstr ""
 
-#: arayuz/pencere/dogrulama_seridi.py:132
+#: arayuz/pencere/dogrulama_seridi.py:133
 #, python-brace-format
 msgid "Sıradaki aşama: {baslik} — {aciklama}"
 msgstr ""
 
-#: arayuz/pencere/dogrulama_seridi.py:140
+#: arayuz/pencere/dogrulama_seridi.py:141
 #, python-brace-format
 msgid "Model kuruluyor: {tamam}/{toplam} aşama"
 msgstr ""
 
-#: arayuz/pencere/dogrulama_seridi.py:142
+#: arayuz/pencere/dogrulama_seridi.py:143
 msgid "Çalıştır, eksik aşamalar tamamlanınca açılır."
 msgstr ""
 
-#: arayuz/pencere/dogrulama_seridi.py:143
+#: arayuz/pencere/dogrulama_seridi.py:144
 msgid "Eksik aşamalar tamamlanınca doğrulama sonucu burada görünür."
 msgstr ""
 
-#: arayuz/pencere/dogrulama_seridi.py:211
+#: arayuz/pencere/dogrulama_seridi.py:212
 #, python-format
 msgid ""
 "Doğrulamada %d hata var — önce bunları giderin. Alttaki rozete tıklayıp bir bulguyu "
@@ -5176,7 +5176,7 @@ msgid_plural ""
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/pencere/dogrulama_seridi.py:229
+#: arayuz/pencere/dogrulama_seridi.py:230
 #, python-brace-format
 msgid ""
 "Model henüz kurulmadı: {n} aşama eksik. Sıradaki aşama: {baslik} — {aciklama} Alttaki"
@@ -5187,13 +5187,13 @@ msgid_plural ""
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/pencere/dogrulama_seridi.py:239
+#: arayuz/pencere/dogrulama_seridi.py:240
 msgid ""
 "Geometri önizlemesi henüz çizilmedi. Önce çiz, sonra çalıştır: yanlış geometriyle "
 "saatlerce koşmamak için önizlemenin çizilmesi bekleniyor."
 msgstr ""
 
-#: arayuz/pencere/dogrulama_seridi.py:244
+#: arayuz/pencere/dogrulama_seridi.py:245
 #, python-format
 msgid ""
 "Çalıştırılabilir. %d uyarı var — sonucu etkileyebilir, doğrulama listesini gözden "
@@ -5204,7 +5204,7 @@ msgid_plural ""
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/pencere/dogrulama_seridi.py:248
+#: arayuz/pencere/dogrulama_seridi.py:249
 msgid "Model çalıştırılmaya hazır."
 msgstr ""
 
@@ -5218,7 +5218,32 @@ msgstr ""
 msgid "Yinelendi ({i}/{n})"
 msgstr ""
 
-#: arayuz/pencere/gezinme.py:43
+#: arayuz/pencere/gezinme.py:30 arayuz/veri/kayit.py:29
+msgid "Veri"
+msgstr ""
+
+#: arayuz/pencere/gezinme.py:74
+#, python-format
+msgid "kütüphane otomatik bulundu: %s"
+msgstr ""
+
+#: arayuz/pencere/gezinme.py:75
+msgid "Doğruysa Veri sayfasında 'Denetle ve kullan' ile onaylayın."
+msgstr ""
+
+#: arayuz/pencere/gezinme.py:76
+msgid "birden çok kütüphane bulundu; hangisinin kullanılacağı seçilmedi"
+msgstr ""
+
+#: arayuz/pencere/gezinme.py:77
+msgid "nükleer veri kütüphanesi bulunamadı"
+msgstr ""
+
+#: arayuz/pencere/gezinme.py:80
+msgid "Veri sayfasından cross_sections.xml içeren klasörü seçin ya da bir kütüphane indirin."
+msgstr ""
+
+#: arayuz/pencere/gezinme.py:95
 #, python-brace-format
 msgid "{sekme} sayfası bu model türünde kullanılmıyor."
 msgstr ""
@@ -7899,6 +7924,289 @@ msgstr ""
 
 #: arayuz/uygunluk_paneli.py:333
 msgid "Çift tıklayınca ilgili sayfaya gider."
+msgstr ""
+
+#: arayuz/veri/indirme_karti.py:25
+msgid "indiriliyor"
+msgstr ""
+
+#: arayuz/veri/indirme_karti.py:25
+msgid "açılıyor"
+msgstr ""
+
+#: arayuz/veri/indirme_karti.py:29
+#, python-format
+msgid "%.2f GB"
+msgstr ""
+
+#: arayuz/veri/indirme_karti.py:39
+msgid "Kütüphane indir"
+msgstr ""
+
+#: arayuz/veri/indirme_karti.py:40
+msgid ""
+"openmc.org resmî listesinden seçin; indirme arka planda sürer, iptal edilirse kaldığı"
+" yerden devam eder."
+msgstr ""
+
+#: arayuz/veri/indirme_karti.py:56
+msgid "Kütüphane"
+msgstr ""
+
+#: arayuz/veri/indirme_karti.py:56
+msgid "Arşiv"
+msgstr ""
+
+#: arayuz/veri/indirme_karti.py:56
+msgid "Sıcaklıklar"
+msgstr ""
+
+#: arayuz/veri/indirme_karti.py:77
+msgid "Seçili kütüphaneyi indir"
+msgstr ""
+
+#: arayuz/veri/indirme_karti.py:83
+msgid "Tükenme zincirleri"
+msgstr ""
+
+#: arayuz/veri/indirme_karti.py:84
+msgid "Yalnız tükenme hesabı için gerekir."
+msgstr ""
+
+#: arayuz/veri/indirme_karti.py:107
+msgid "Hedef klasör:"
+msgstr ""
+
+#: arayuz/veri/indirme_karti.py:109 arayuz/veri/indirme_karti.py:182
+msgid "Hedef klasör"
+msgstr ""
+
+#: arayuz/veri/indirme_karti.py:112 arayuz/veri/sayfa.py:134 arayuz/veri/sayfa.py:148
+msgid "Gözat…"
+msgstr ""
+
+#: arayuz/veri/indirme_karti.py:126 arayuz/veri/indirme_karti.py:217
+msgid "İndir"
+msgstr ""
+
+#: arayuz/veri/indirme_karti.py:128
+msgid "İptal"
+msgstr ""
+
+#: arayuz/veri/indirme_karti.py:174
+msgid "sha256 yayımlanmamış: indirmede yalnız boyut denetlenir."
+msgstr ""
+
+#: arayuz/veri/indirme_karti.py:177
+msgid "Değerlendirme sayfası"
+msgstr ""
+
+#: arayuz/veri/indirme_karti.py:202
+msgid "Mutlak bir hedef klasör yolu girin."
+msgstr ""
+
+#: arayuz/veri/indirme_karti.py:209
+#, python-format
+msgid "Boş alan ölçülemedi: %s"
+msgstr ""
+
+#: arayuz/veri/indirme_karti.py:213
+#, python-format
+msgid "Gerekli: %s (indirme + açılmış kütüphane%s) · boş: %s"
+msgstr ""
+
+#: arayuz/veri/indirme_karti.py:215
+msgid "; açılmış boyut tahmini"
+msgstr ""
+
+#: arayuz/veri/indirme_karti.py:217
+msgid "Sürdür"
+msgstr ""
+
+#: arayuz/veri/indirme_karti.py:228
+msgid "İndirilecek bir şey seçilmedi."
+msgstr ""
+
+#: arayuz/veri/indirme_karti.py:242
+msgid "İptal edildi. 'Sürdür' kaldığı yerden devam eder."
+msgstr ""
+
+#: arayuz/veri/indirme_karti.py:244
+msgid "Başlıyor…"
+msgstr ""
+
+#: arayuz/veri/indirme_karti.py:270
+#, python-format
+msgid "%s — %s %s / %s"
+msgstr ""
+
+#: arayuz/veri/indirme_karti.py:294
+#, python-format
+msgid "İndirildi ama seçim kaydedilemedi: %s"
+msgstr ""
+
+#: arayuz/veri/indirme_karti.py:299
+#, python-format
+msgid "Tamam: %s"
+msgstr ""
+
+#: arayuz/veri/isci.py:42 arayuz/veri/isci.py:92
+#, python-format
+msgid "beklenmeyen hata: %s"
+msgstr ""
+
+#: arayuz/veri/kayit.py:30
+msgid "Kurulum"
+msgstr ""
+
+#: arayuz/veri/kayit.py:89
+msgid "Nükleer veri kütüphanesi bulunamadı; koşu için Veri sayfasından seçin ya da indirin."
+msgstr ""
+
+#: arayuz/veri/kayit.py:91
+msgid "Veri sayfası"
+msgstr ""
+
+#: arayuz/veri/sayfa.py:55
+msgid "Gereksinimler"
+msgstr ""
+
+#: arayuz/veri/sayfa.py:55
+msgid "Koşu için gerekenlerin durumu."
+msgstr ""
+
+#: arayuz/veri/sayfa.py:64 arayuz/veri/sayfa.py:75 arayuz/veri/sayfa.py:200
+msgid "Denetleniyor…"
+msgstr ""
+
+#: arayuz/veri/sayfa.py:128
+msgid "Klasör seç"
+msgstr ""
+
+#: arayuz/veri/sayfa.py:129
+msgid "Bilgisayarınızda zaten bir kütüphane varsa cross_sections.xml içeren klasörü seçin."
+msgstr ""
+
+#: arayuz/veri/sayfa.py:132 arayuz/veri/sayfa.py:166
+msgid "Kütüphane klasörü"
+msgstr ""
+
+#: arayuz/veri/sayfa.py:133
+msgid "…/endfb-viii.0-hdf5"
+msgstr ""
+
+#: arayuz/veri/sayfa.py:136
+msgid "Denetle ve kullan"
+msgstr ""
+
+#: arayuz/veri/sayfa.py:146
+msgid "Tükenme zinciri dosyası"
+msgstr ""
+
+#: arayuz/veri/sayfa.py:147
+msgid "…/chain/chain_endfb80_thermal.xml"
+msgstr ""
+
+#: arayuz/veri/sayfa.py:150
+msgid "Zinciri kullan"
+msgstr ""
+
+#: arayuz/veri/sayfa.py:152 arayuz/veri/sayfa.py:173
+msgid "Tükenme zinciri"
+msgstr ""
+
+#: arayuz/veri/sayfa.py:153
+msgid "Termal zincirin yanındaki hızlı ve CASL zincirleri aynı klasörden okunur."
+msgstr ""
+
+#: arayuz/veri/sayfa.py:174
+msgid "Zincir (*.xml)"
+msgstr ""
+
+#: arayuz/veri/sayfa.py:185
+#, python-format
+msgid "%d nötron nüklidi · %d S(α,β) tablosu · %d foton elementi"
+msgstr ""
+
+#: arayuz/veri/sayfa.py:188
+#, python-format
+msgid "Sıcaklıklar: %s"
+msgstr ""
+
+#: arayuz/veri/sayfa.py:190
+#, python-format
+msgid "S(α,β): %s"
+msgstr ""
+
+#: arayuz/veri/sayfa.py:231
+#, python-format
+msgid "Bu klasör kullanılamaz: %s"
+msgstr ""
+
+#: arayuz/veri/sayfa.py:238 arayuz/veri/sayfa.py:254
+#, python-format
+msgid "Seçim kaydedilemedi: %s"
+msgstr ""
+
+#: arayuz/veri/sayfa.py:240
+#, python-format
+msgid "Kütüphane seçildi: %s"
+msgstr ""
+
+#: arayuz/veri/sayfa.py:248
+#, python-format
+msgid "Zincir kullanılamaz: %s"
+msgstr ""
+
+#: arayuz/veri/sayfa.py:256
+#, python-format
+msgid "Zincir seçildi: %s"
+msgstr ""
+
+#: arayuz/veri/sayfa.py:272
+msgid "Veri ve kütüphaneler"
+msgstr ""
+
+#: arayuz/veri/sayfa.py:273
+msgid ""
+"OpenMC tesir kesiti kütüphanesi ve tükenme zinciri olmadan koşu yapılamaz. Var olan "
+"bir klasörü seçin ya da openmc.org'dan indirin."
+msgstr ""
+
+#: arayuz/veri/sayfa.py:275
+msgid "Kılavuz: Nükleer veri ve tükenme zinciri"
+msgstr ""
+
+#: arayuz/veri/sayfa.py:298
+msgid "Başlamadan önce: nükleer veri"
+msgstr ""
+
+#: arayuz/veri/sayfa.py:299
+msgid ""
+"Bu bilgisayarda OpenMC nükleer veri kütüphanesi bulunamadı. Aşağıdan bir klasör seçin"
+" ya da bir kütüphane indirin; sonra başlangıç ekranından modelinizi kurun."
+msgstr ""
+
+#: arayuz/veri/sayfa.py:302
+msgid "Başlangıç ekranına geç"
+msgstr ""
+
+#: arayuz/veri/sayfa.py:321
+msgid ""
+"OPENMC_CROSS_SECTIONS ortam değişkeni ayarlı ve önceliklidir: burada yapılan seçim, "
+"değişken kaldırılana dek kullanılmaz."
+msgstr ""
+
+#: arayuz/veri/sayfa.py:323
+#, python-format
+msgid ""
+"Birden çok kütüphane bulundu (%s); hangisinin kullanılacağını Klasör seç ile "
+"belirleyin."
+msgstr ""
+
+#: arayuz/veri/sayfa.py:326
+#, python-format
+msgid "Kütüphane otomatik bulundu (%s); doğruysa 'Denetle ve kullan' ile onaylayın."
 msgstr ""
 
 #: arayuz/yardim/__init__.py:34

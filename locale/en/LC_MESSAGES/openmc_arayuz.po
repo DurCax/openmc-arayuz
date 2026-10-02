@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 10:21+0300\n"
+"POT-Creation-Date: 2026-10-02 10:27+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -696,6 +696,11 @@ msgstr "# directory: %s"
 msgid "# komut: %s -s %d"
 msgstr "# command: %s -s %d"
 
+#: cekirdek/malzeme_hesap.py:207
+#, python-format
+msgid "%%TD kesri 0 ile 1 arasında olmalı: %r"
+msgstr "%%TD fraction must be between 0 and 1: %r"
+
 #: cekirdek/kosucu.py:132
 #, python-format
 msgid "%+.2f $ (β_eff = %.0f pcm)"
@@ -721,6 +726,15 @@ msgstr "%.1f h"
 msgid "%.1f saat"
 msgstr "%.1f h"
 
+#: cekirdek/malzeme_sogutucu.py:110
+#, python-format
+msgid ""
+"%.2f K'de %.4g MPa buhar bölgesidir (doyma basıncı %.4g MPa); sıvı için basıncı "
+"artırın"
+msgstr ""
+"at %.2f K, %.4g MPa is in the steam region (saturation pressure %.4g MPa); raise the "
+"pressure for liquid"
+
 #: cekirdek/dogrula/eksenel.py:166
 msgid "%0 = uç aktif bölgenin tepesinde, %100 = dibinde; modelin toplam yüksekliği değil."
 msgstr ""
@@ -730,6 +744,10 @@ msgstr ""
 #: arayuz/analiz/adlar.py:74
 msgid "%0 tamamen çekilmiş, %100 tamamen dalmış."
 msgstr "0% fully withdrawn, 100% fully inserted."
+
+#: cekirdek/malzeme_hesap.py:199
+msgid "%TD ya da gözeneklilikten yalnız biri verilmeli"
+msgstr "give either %TD or porosity, not both"
 
 #: arayuz/sekme_tukenme.py:245
 #, python-format
@@ -823,6 +841,11 @@ msgstr "%d lattice positions are fully hidden (under a hole): '.' can be written
 msgid "%d kayıp parçacık (izin verilen %d). %s"
 msgstr "%d lost particles (%d allowed). %s"
 
+#: arayuz/malzeme/kutuphane_tarayici.py:282
+#, python-format
+msgid "%d kayıt atlandı (ayrıntı günlükte)."
+msgstr "%d records skipped (details in the log)."
+
 #: cekirdek/dogrula/agac.py:180
 #, python-format
 msgid "%d kesik konum/bileşen üst bölgeyle kırpılıyor (ilk %d: %s)."
@@ -871,6 +894,11 @@ msgid "%d malzeme içe aktarıldı — geometri aktarılmaz, arayüzde kurulur."
 msgid_plural "%d malzeme içe aktarıldı — geometri aktarılmaz, arayüzde kurulur."
 msgstr[0] "%d material imported — geometry is not imported; build it in the interface."
 msgstr[1] "%d materials imported — geometry is not imported; build it in the interface."
+
+#: arayuz/malzeme/kutuphane_tarayici.py:280
+#, python-format
+msgid "%d malzeme okundu: %s"
+msgstr "%d materials read: %s"
 
 #: cekirdek/geometri/yoklama.py:175
 #, python-format
@@ -1026,6 +1054,11 @@ msgstr "%s (%s); spec sha256 %s… %s; %s"
 msgid "%s (%s; rapor anındaki ortam)"
 msgstr "%s (%s; environment at report time)"
 
+#: cekirdek/malzeme_tarif.py:96
+#, python-format
+msgid "%s (Pu+Am içinde ağırlıkça %%)"
+msgstr "%s (weight %% of Pu+Am)"
+
 #: arayuz/kor/katmanlar.py:118
 #, python-format
 msgid "%s (bu kor türünde uygun değil)"
@@ -1078,6 +1111,11 @@ msgstr "%s must be a JSON object"
 msgid "%s bir değer bekliyor"
 msgstr "%s expects a value"
 
+#: cekirdek/malzeme_kullanici.py:110
+#, python-format
+msgid "%s boş"
+msgstr "%s is empty"
+
 #: cekirdek/ornek_bilgi.py:188
 #, python-format
 msgid "%s boş olmayan metin olmalı"
@@ -1093,7 +1131,17 @@ msgstr "%s not found: %s"
 msgid "%s doğrulama aralığındaki en küçük değer"
 msgstr "smallest value in the %s validation range"
 
-#: cekirdek/dogrula/malzeme.py:178
+#: cekirdek/malzeme_tarif.py:363
+#, python-format
+msgid "%s elementi bu kütüphaneyle açılamıyor: %s"
+msgstr "element %s cannot be expanded with this library: %s"
+
+#: cekirdek/malzeme_kullanici.py:112
+#, python-format
+msgid "%s en çok %d karakter olabilir"
+msgstr "%s may have at most %d characters"
+
+#: cekirdek/dogrula/malzeme.py:202
 #, python-format
 msgid "%s görünümünde ama termal saçılma verisi (S(α,β)) eklenmemiş"
 msgstr "looks like %s but no thermal scattering data (S(α,β)) is added"
@@ -1107,6 +1155,11 @@ msgstr "undefined material for %s: %s"
 #, python-format
 msgid "%s kapsülden sonra değişmiş (sha256 farklı); yeniden üretim reddedildi"
 msgstr "%s has changed since the capsule (sha256 differs); reproduction refused"
+
+#: cekirdek/malzeme_kullanici.py:114
+#, python-format
+msgid "%s kontrol karakteri içeremez"
+msgstr "%s cannot contain control characters"
 
 #: cekirdek/guc.py:434
 #, python-format
@@ -1145,12 +1198,28 @@ msgstr "%s must be positive and finite: %r"
 msgid "%s profilinde bilinmeyen eşik: %s"
 msgstr "unknown threshold in profile %s: %s"
 
+#: cekirdek/malzeme_hesap.py:145
+#, python-format
+msgid "%s sayı olmalı: %r"
+msgstr "%s must be a number: %r"
+
+#: cekirdek/malzeme_kullanici.py:326
+#, python-format
+msgid "%s sembolik bağlantı; yedek yazılmadı"
+msgstr "%s is a symbolic link; the backup was not written"
+
 #: cekirdek/dogrula/geometri.py:143
 #, python-format
 msgid "%s seçilmemiş"
 msgstr "%s not selected"
 
+#: cekirdek/malzeme_pnnl.py:86
+#, python-format
+msgid "%s sonlu bir sayı değil: %r"
+msgstr "%s is not a finite number: %r"
+
 #: cekirdek/kinetik.py:109 cekirdek/kinetik.py:113 cekirdek/kinetik.py:126
+#: cekirdek/malzeme_hesap.py:147
 #, python-format
 msgid "%s sonlu bir sayı olmalı: %r"
 msgstr "%s must be a finite number: %r"
@@ -1206,6 +1275,11 @@ msgstr ""
 msgid "%s, %d. bölge: %d adet × %g cm%s"
 msgstr "%s, region %d: %d × %g cm%s"
 
+#: cekirdek/malzeme_hesap.py:250
+#, python-format
+msgid "%s, %s elementinin doğal izotopu değil"
+msgstr "%s is not a natural isotope of %s"
+
 #: cekirdek/guc_yorum.py:92
 #, python-format
 msgid "%s: %.4f / %.4f (%d çubuk)"
@@ -1222,6 +1296,11 @@ msgstr "%s: %d elements × %g cm"
 #, python-format
 msgid "%s: %d konum × %d demet × %g cm"
 msgstr "%s: %d positions × %d assemblies × %g cm"
+
+#: cekirdek/malzeme_tarif.py:311
+#, python-format
+msgid "%s: %g, %g–%g aralığında olmalı"
+msgstr "%s: %g must be within %g–%g"
 
 #: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:77
 #, python-format
@@ -1244,6 +1323,16 @@ msgstr "%s: S(α,β) could not be read (%s)"
 #, python-format
 msgid "%s: bileşim okunamadı, boş bırakıldı"
 msgstr "%s: composition could not be read, left empty"
+
+#: cekirdek/malzeme_tarif.py:302
+#, python-format
+msgid "%s: geçersiz seçim %r"
+msgstr "%s: invalid choice %r"
+
+#: cekirdek/malzeme_tarif.py:309
+#, python-format
+msgid "%s: sayı olmalı (%r)"
+msgstr "%s: must be a number (%r)"
 
 #: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:80
 #, python-format
@@ -1298,6 +1387,11 @@ msgstr ""
 "The name '%s' is used for a %s. In assembly and layer selections the same name would "
 "refer to two things."
 
+#: cekirdek/malzeme_kullanici.py:242
+#, python-format
+msgid "'%s' adı iki kez kayıtlı"
+msgstr "the name '%s' is recorded twice"
+
 #: cekirdek/geometri/basvuru.py:226
 #, python-format
 msgid "'%s' adı zaten kullanılıyor"
@@ -1313,6 +1407,21 @@ msgstr "Material name '%s' is used by %d materials; rename one of them first."
 msgid "'%s' adında başka bir malzeme var."
 msgstr "There is another material named '%s'."
 
+#: cekirdek/malzeme_kullanici.py:445 cekirdek/malzeme_kullanici.py:453
+#, python-format
+msgid "'%s' adında bir kayıt zaten var"
+msgstr "a record named '%s' already exists"
+
+#: cekirdek/malzeme_kullanici.py:174 cekirdek/malzeme_kullanici.py:212
+#, python-format
+msgid "'%s' alanı metin olmalı"
+msgstr "field '%s' must be text"
+
+#: cekirdek/malzeme_kullanici.py:176
+#, python-format
+msgid "'%s' alanı sözlük olmalı"
+msgstr "field '%s' must be a dictionary"
+
 #: cekirdek/dogrula/kor.py:460
 #, python-format
 msgid "'%s' altıgen kor haritasına konamaz: altıgen demet ya da malzeme olmalı"
@@ -1325,7 +1434,7 @@ msgstr ""
 msgid "'%s' aynı türden iki grupta (%s, %s)."
 msgstr "'%s' is in two groups of the same type (%s, %s)."
 
-#: cekirdek/dogrula/malzeme.py:63
+#: cekirdek/dogrula/malzeme.py:87
 #, python-format
 msgid "'%s' ayrılmış bir addır (Boş, madde yok); malzeme adı olarak kullanılamaz"
 msgstr "'%s' is a reserved name (void, no material); it cannot be used as a material name"
@@ -1445,7 +1554,7 @@ msgstr ""
 "axial layer '%s': a layer-specific letter mapping can be used only in a full core "
 "with a rectangular or hexagonal map"
 
-#: cekirdek/dogrula/malzeme.py:109
+#: cekirdek/dogrula/malzeme.py:133
 #, python-format
 msgid "'%s' elementinde zenginlik tanımlı — zenginlik yalnızca U elementinde kullanılabilir"
 msgstr "enrichment is defined for element '%s' — enrichment can be used only for the U element"
@@ -1570,6 +1679,16 @@ msgstr "unused fields are set for core type '%s': %s — ignored"
 msgid "'%s' kor türünde yansıtıcı kuşak kurulmaz — dosyada açık ama yok sayılır"
 msgstr "no radial reflector is built for core type '%s' — on in the file but ignored"
 
+#: arayuz/malzeme/kutuphane_tarayici.py:204
+#, python-format
+msgid "'%s' kütüphanenizden silinsin mi?"
+msgstr "Delete '%s' from your library?"
+
+#: arayuz/sekme_malzeme.py:317
+#, python-format
+msgid "'%s' kütüphanenize kaydedildi."
+msgstr "'%s' was saved to your library."
+
 #: cekirdek/tukenme_spektrum.py:40
 #, python-format
 msgid "'%s' malzemesi hidrojen içeriyor"
@@ -1603,12 +1722,12 @@ msgstr ""
 "the volume of an instance of material '%s' cannot be computed; pin-by-pin burnup "
 "requires exact volumes"
 
-#: cekirdek/dogrula/malzeme.py:92
+#: cekirdek/dogrula/malzeme.py:116
 #, python-format
 msgid "'%s' miktarı sıfırdan büyük olmalı: %s"
 msgstr "the amount of '%s' must be greater than zero: %s"
 
-#: cekirdek/dogrula/malzeme.py:102
+#: cekirdek/dogrula/malzeme.py:126
 #, python-format
 msgid "'%s' nüklid satırında zenginlik tanımlı — nüklidde zenginlik yok sayılır"
 msgstr "enrichment is defined in nuclide row '%s' — enrichment is ignored for a nuclide"
@@ -1627,12 +1746,12 @@ msgstr ""
 "Plate-type fuel element '%s' does not fill its region (%.4g × %.4g cm; region %.4g "
 "cm²): the points in between are undefined (lost particles)."
 
-#: cekirdek/dogrula/malzeme.py:88
+#: cekirdek/dogrula/malzeme.py:112
 #, python-format
 msgid "'%s' satırının birimi geçersiz: %s"
 msgstr "the unit of row '%s' is invalid: %s"
 
-#: cekirdek/dogrula/malzeme.py:83
+#: cekirdek/dogrula/malzeme.py:107
 #, python-format
 msgid "'%s' satırının türü geçersiz: %s"
 msgstr "the type of row '%s' is invalid: %s"
@@ -1686,7 +1805,7 @@ msgstr "the instances of placement '%s' have different contents"
 msgid "'%s' yüzünde %s sınır bu dış sınırda kullanılamaz (%s)."
 msgstr "%s boundary on face '%s' cannot be used on this outer boundary (%s)."
 
-#: cekirdek/dogrula/malzeme.py:116
+#: cekirdek/dogrula/malzeme.py:140
 #, python-format
 msgid "'%s' zenginliği %%0–100 aralığında olmalı: %s"
 msgstr "the enrichment of '%s' must be within 0–100%%: %s"
@@ -1789,6 +1908,11 @@ msgstr "the '%s' prefix is reserved for the tallies of the spectrum and the four
 msgid "'%s' örneklerinin dönmesi 'kora bakan' desene uymuyor"
 msgstr "the rotation of the instances of '%s' does not match the 'facing the core' pattern"
 
+#: cekirdek/malzeme_kullanici.py:215
+#, python-format
+msgid "'%s': %s"
+msgstr "'%s': %s"
+
 #: cekirdek/geometri/ice_aktar_kap.py:111
 #, python-format
 msgid "'%s': döndürülen delik daire olmalı ve her örnek dönmeli"
@@ -1798,6 +1922,11 @@ msgstr "'%s': a rotated hole must be a circle and every instance must rotate"
 #, python-format
 msgid "'%s': geçersiz bölge numarası %d (çubukta %d bölge var)"
 msgstr "'%s': invalid pin region number %d (the pin has %d regions)"
+
+#: cekirdek/malzeme_kullanici.py:217
+#, python-format
+msgid "'%s': kayıt adı malzeme adıyla aynı olmalı"
+msgstr "'%s': the record name must equal the material name"
 
 #: cekirdek/tukenme_hacim.py:601
 #, python-format
@@ -1854,6 +1983,14 @@ msgstr "'kalinlik' cannot be used on 'kafes_zarfi'; give a 'dis' cross-section"
 msgid "'kafes_zarfi' üzerinde 'kalinlik' kullanılamaz; 'dis' kesiti verin."
 msgstr "'kalinlik' cannot be used on 'kafes_zarfi'; give a 'dis' cross-section."
 
+#: cekirdek/malzeme_hesap.py:329
+msgid "'macro' yoğunluğu çok gruplu veri içindir; türetilmiş değer yok"
+msgstr "'macro' density is for multigroup data; no derived values"
+
+#: cekirdek/malzeme_kullanici.py:233
+msgid "'malzemeler' alanı liste değil"
+msgstr "the 'malzemeler' (materials) field is not a list"
+
 #: cekirdek/uygunluk_denetimi/kurallar_rapor.py:157
 #, python-format
 msgid ""
@@ -1862,6 +1999,10 @@ msgid ""
 msgstr ""
 "'pcm' is used but its definition (Δk × 10⁵ or Δρ × 10⁵) is not written in that "
 "section or at the start of the document: %s"
+
+#: cekirdek/malzeme_kullanici.py:227
+msgid "'surum' alanı eksik ya da tamsayı değil"
+msgstr "the 'surum' (version) field is missing or not an integer"
 
 #: arayuz/cubuk/parca_islemleri.py:294
 #, python-brace-format
@@ -1885,7 +2026,7 @@ msgstr "assembly '{ad}'"
 msgid "'{ad}' eksenel katmanı"
 msgstr "axial layer '{ad}'"
 
-#: arayuz/sekme_malzeme.py:324
+#: arayuz/sekme_malzeme.py:377
 #, python-brace-format
 msgid ""
 "'{ad}' modelde {n} yerde kullanılıyor ({ornek}).\n"
@@ -2356,7 +2497,11 @@ msgstr ""
 "<br><span style='color:%s'>Conservation of the total: relative difference %.1e — "
 "%s</span>"
 
-#: cekirdek/malzeme_kutup.py:413
+#: cekirdek/malzeme_kutup.py:475
+msgid "AISI 304 paslanmaz çelik"
+msgstr "AISI 304 stainless steel"
+
+#: cekirdek/malzeme_kutup.py:457
 msgid "AISI 316 paslanmaz çelik"
 msgstr "AISI 316 stainless steel"
 
@@ -2383,7 +2528,11 @@ msgstr "The name cannot start or end with a space."
 msgid "Ad değiştirilemedi: {neden}"
 msgstr "Could not rename: {neden}"
 
-#: arayuz/ayar/yerlesim.py:189 arayuz/cubuk/sayfalar.py:203
+#: arayuz/malzeme/kutuphane_tarayici.py:231
+msgid "Ad ya da formül ara…"
+msgstr "Search by name or formula…"
+
+#: arayuz/ayar/yerlesim.py:189 arayuz/cubuk/sayfalar.py:203 arayuz/malzeme/asistan.py:131
 #: arayuz/malzeme/kutuphane_diyalog.py:65 arayuz/malzeme/malzeme_diyalog.py:83
 msgid "Ad:"
 msgstr "Name:"
@@ -2409,6 +2558,14 @@ msgstr "Step"
 #: arayuz/pencere/yardim_metni.py:122
 msgid "Adım (pitch)"
 msgstr "Pitch"
+
+#: arayuz/sekme_malzeme.py:153
+msgid ""
+"Adım adım malzeme tasarımı: zenginlik, %TD, bor, sıcaklık ve basınçtan bileşim ve "
+"yoğunluk; türetilmiş değerler anında hesaplanır."
+msgstr ""
+"Material design step by step: composition and density from enrichment, %TD, boron, "
+"temperature and pressure; derived values are computed instantly."
 
 #: arayuz/tukenme_arayuz.py:100
 msgid "Adım birimi:"
@@ -2450,11 +2607,11 @@ msgstr "Invalid steps — %s. Enter comma-separated positive numbers (e.g. 1, 5,
 msgid "Adımlar:"
 msgstr "Steps:"
 
-#: cekirdek/malzeme_kutup.py:555
+#: cekirdek/malzeme_kutup.py:605
 msgid "Ag-In-Cd"
 msgstr "Ag-In-Cd"
 
-#: cekirdek/malzeme_kutup.py:429
+#: cekirdek/malzeme_kutup.py:473
 msgid "Ag-In-Cd kontrol alaşımı"
 msgstr "Ag-In-Cd control alloy"
 
@@ -2495,11 +2652,11 @@ msgstr ""
 "Energy groups of the flux spectrum (OpenMC built-in structures).\n"
 "More groups = finer detail but more noise per group."
 
-#: cekirdek/malzeme_kutup.py:540
+#: cekirdek/malzeme_kutup.py:590
 msgid "Al-6061 alüminyum"
 msgstr "Al-6061 aluminium"
 
-#: cekirdek/malzeme_kutup.py:417
+#: cekirdek/malzeme_kutup.py:461
 msgid "Al-6061 plaka zarfı"
 msgstr "Al-6061 plate cladding"
 
@@ -2724,7 +2881,11 @@ msgstr "Research"
 msgid "Araştırma reaktörlerindeki (MTR) düz plakalı yakıt elemanı."
 msgstr "The flat-plate fuel element of research reactors (MTR)."
 
-#: cekirdek/malzeme_kutup.py:540
+#: cekirdek/malzeme_tarif.py:234
+msgid "Araştırma reaktörü metalik yakıtı."
+msgstr "Metallic research-reactor fuel."
+
+#: cekirdek/malzeme_kutup.py:590
 msgid "Araştırma reaktörü plaka zarfı ve yapısı."
 msgstr "Research reactor plate cladding and structure."
 
@@ -2732,9 +2893,26 @@ msgstr "Research reactor plate cladding and structure."
 msgid "Araştırma reaktörünün düz plakalı yakıt elemanı."
 msgstr "The flat plate-type fuel element of a research reactor."
 
+#: arayuz/malzeme/kutuphane_tarayici.py:78
+msgid "Ara…"
+msgstr "Search…"
+
+#: arayuz/sekme_malzeme.py:152
+msgid "Asistan…"
+msgstr "Assistant…"
+
+#: arayuz/malzeme/turetilmis_panel.py:83
+#, python-brace-format
+msgid "Atom başına ortalama molar kütle: {m:.4f} g/mol"
+msgstr "Mean molar mass per atom: {m:.4f} g/mol"
+
 #: arayuz/malzeme/yardimcilar.py:21
 msgid "Atom oranı"
 msgstr "Atom fraction"
+
+#: arayuz/malzeme/turetilmis_panel.py:26
+msgid "Atomca %"
+msgstr "Atom %"
 
 #: cekirdek/nuklidler.py:277 cekirdek/nuklidler.py:325
 msgid "Atık / ısı"
@@ -2761,6 +2939,11 @@ msgstr ""
 #: arayuz/sekme_ayar.py:134
 msgid "Aynı tohum ve aynı model aynı sonucu verir."
 msgstr "The same seed and the same model give the same result."
+
+#: cekirdek/dogrula/malzeme.py:61
+#, python-format
+msgid "Ayrıca %s ekleyin."
+msgstr "Also add %s."
 
 #: arayuz/ayar/tally_formu.py:125
 #, python-brace-format
@@ -2794,6 +2977,10 @@ msgstr ""
 msgid "Ayrıntılı çıktı"
 msgstr "Detailed output"
 
+#: cekirdek/malzeme_tarif.py:82
+msgid "Ayrıştırmadan bu yana süre"
+msgstr "Time since separation"
+
 #: arayuz/pencere/menuler.py:311 arayuz/pencere/proje.py:204
 msgid "Aç"
 msgstr "Open"
@@ -2823,7 +3010,7 @@ msgstr ""
 msgid "Açıklama"
 msgstr "Description"
 
-#: arayuz/malzeme/malzeme_diyalog.py:139
+#: arayuz/malzeme/asistan.py:135 arayuz/malzeme/malzeme_diyalog.py:139
 msgid "Açıklama:"
 msgstr "Description:"
 
@@ -2856,7 +3043,7 @@ msgstr "Automatic mesh size"
 msgid "Ağ bölmeleri:"
 msgstr "Mesh divisions:"
 
-#: cekirdek/malzeme_kutup.py:499
+#: cekirdek/malzeme_kutup.py:546
 msgid "Ağır metal (U + Pu) içindeki plütonyumun ağırlık yüzdesi."
 msgstr "Weight percentage of plutonium in the heavy metal (U + Pu)."
 
@@ -2864,15 +3051,29 @@ msgstr "Weight percentage of plutonium in the heavy metal (U + Pu)."
 msgid "Ağır metal gramı başına güç [W/gHM]."
 msgstr "Power per gram of heavy metal [W/gHM]."
 
-#: cekirdek/malzeme_kutup.py:420 cekirdek/malzeme_kutup.py:544
+#: arayuz/malzeme/turetilmis_panel.py:86
+#, python-brace-format
+msgid "Ağır metal: {hm:.4f} gHM/cm³"
+msgstr "Heavy metal: {hm:.4f} gHM/cm³"
+
+#: cekirdek/malzeme_kutup.py:464 cekirdek/malzeme_kutup.py:594
+#: cekirdek/malzeme_tarif.py:240
 msgid "Ağır su (D₂O)"
 msgstr "Heavy water (D₂O)"
+
+#: cekirdek/dogrula/malzeme.py:53
+msgid "Ağır sudaki artık hafif su hidrojeni için ayrıca c_H_in_H2O gerekebilir."
+msgstr "The residual light-water hydrogen in heavy water may also need c_H_in_H2O."
 
 #: arayuz/malzeme/yardimcilar.py:21
 msgid "Ağırlık oranı"
 msgstr "Weight fraction"
 
-#: cekirdek/malzeme_kutup.py:530
+#: arayuz/malzeme/turetilmis_panel.py:26
+msgid "Ağırlıkça %"
+msgstr "Weight %"
+
+#: cekirdek/malzeme_kutup.py:580
 msgid "Ağırlıkça %10 molibdenli metalik yakıt."
 msgstr "Metallic fuel with 10 wt% molybdenum."
 
@@ -2884,9 +3085,13 @@ msgstr "Step guide"
 msgid "Aşağı taşı"
 msgstr "Move down"
 
-#: cekirdek/malzeme_kutup.py:511
+#: cekirdek/malzeme_kutup.py:561 cekirdek/malzeme_tarif.py:91
 msgid "B-10 atomca %"
 msgstr "B-10 at%"
+
+#: cekirdek/malzeme_tarif.py:246
+msgid "B-10 zenginliği ve %TD ile emici."
+msgstr "Absorber from B-10 enrichment and %TD."
 
 #: cekirdek/uygunluk_denetimi/kurallar_rapor.py:34
 msgid "BIPM SI Broşürü"
@@ -2919,6 +3124,10 @@ msgid ""
 msgstr ""
 "Step: ρ inserted at t = 0; ramp: ρ reached at the end of the ramp.\n"
 "1 pcm = 10⁻⁵ Δk/k; 1 $ = β_eff. ρ ≥ 1 $ is PROMPT CRITICAL."
+
+#: cekirdek/malzeme_tarif.py:87
+msgid "Basınç"
+msgstr "Pressure"
 
 #: arayuz/guc_harita.py:466
 #, python-format
@@ -3087,11 +3296,11 @@ msgstr "State that the uncertainty is the 1σ standard uncertainty."
 msgid "Benzetim süresi:"
 msgstr "Simulated time:"
 
-#: cekirdek/malzeme_kutup.py:552
+#: cekirdek/malzeme_kutup.py:602
 msgid "Berilyum (Be)"
 msgstr "Beryllium (Be)"
 
-#: cekirdek/malzeme_kutup.py:425
+#: cekirdek/malzeme_kutup.py:469
 msgid "Berilyum yansıtıcı"
 msgstr "Beryllium reflector"
 
@@ -3130,6 +3339,11 @@ msgstr "White"
 msgid "Bileşen"
 msgstr "Library component"
 
+#: arayuz/malzeme/tarif_formu.py:148
+#, python-format
+msgid "Bileşen %d:"
+msgstr "Component %d:"
+
 #: arayuz/geometri/formlar.py:31
 msgid "Bileşen (kütüphaneden)"
 msgstr "Library component"
@@ -3153,6 +3367,17 @@ msgstr ""
 "Composition: {bilesim}   ·   S(α,β): {sab}\n"
 "Description: {aciklama}"
 
+#: arayuz/malzeme/kutuphane_tarayici.py:162
+#, python-brace-format
+msgid ""
+"Bileşim: {b}\n"
+"Yoğunluk: {y}\n"
+"Kaynak: {k}   ·   Güncelleme: {g}"
+msgstr ""
+"Composition: {b}\n"
+"Density: {y}\n"
+"Source: {k}   ·   Updated: {g}"
+
 #: arayuz/malzeme/malzeme_diyalog.py:378
 msgid "Bileşime en az bir satır ekleyin."
 msgstr "Add at least one row to the composition."
@@ -3169,7 +3394,7 @@ msgstr ""
 msgid "Bileşimi değiştirin ya da bu nüklidleri içeren bir kütüphane kullanın."
 msgstr "Change the composition or use a library containing these nuclides."
 
-#: arayuz/sekme_malzeme.py:142
+#: arayuz/sekme_malzeme.py:147
 msgid "Bileşimi element/izotop satırlarıyla kendiniz girin."
 msgstr "Enter the composition yourself as element/nuclide rows."
 
@@ -3177,7 +3402,7 @@ msgstr "Enter the composition yourself as element/nuclide rows."
 msgid "Bileşimi elle düzenle"
 msgstr "Edit composition manually"
 
-#: cekirdek/dogrula/malzeme.py:124
+#: cekirdek/dogrula/malzeme.py:148
 msgid ""
 "Bileşimi nüklid bazında verin (U234/U235/U238) ya da sonucun U234'e duyarlılığını "
 "kabul edin."
@@ -3318,7 +3543,7 @@ msgstr ""
 msgid "Birim"
 msgstr "Unit"
 
-#: cekirdek/dogrula/malzeme.py:89
+#: cekirdek/dogrula/malzeme.py:113
 msgid "Birim 'ao' (atom oranı) ya da 'wo' (ağırlık oranı) olmalı."
 msgstr "The unit must be 'ao' (atom fraction) or 'wo' (weight fraction)."
 
@@ -3333,6 +3558,10 @@ msgstr "Unit:"
 #: cekirdek/geometri/denetim.py:138
 msgid "Birini yeniden adlandırın."
 msgstr "Rename one of them."
+
+#: arayuz/malzeme/asistan.py:145
+msgid "Bitir"
+msgstr "Finish"
 
 #: arayuz/analiz/sekme.py:107 arayuz/analiz/sekme.py:367
 msgid "Bitiş:"
@@ -3374,7 +3603,7 @@ msgstr "Boron worth"
 msgid "Bor değeri (worth). Negatif olması beklenir: bor nötron emicidir."
 msgstr "Boron worth. It is expected to be negative: boron is a neutron absorber."
 
-#: cekirdek/malzeme_kutup.py:427
+#: cekirdek/malzeme_kutup.py:471
 msgid "Bor karbür"
 msgstr "Boron carbide"
 
@@ -3391,6 +3620,19 @@ msgid "Boyuta tıklayınca Kor sayfasına, hesap türüne tıklayınca Hesap aya
 msgstr ""
 "Click the dimension to go to the Geometry page, the calculation type to go to Run "
 "settings."
+
+#: arayuz/malzeme/kutuphane_tarayici.py:217
+#, python-format
+msgid ""
+"Bozuk dosyanın kopyası alındı:\n"
+"%s"
+msgstr ""
+"A copy of the damaged file was saved:\n"
+"%s"
+
+#: arayuz/malzeme/kutuphane_tarayici.py:71
+msgid "Bozuk dosyanın kopyasını al ve yeni kütüphane başlat"
+msgstr "Back up the damaged file and start a new library"
 
 #: arayuz/pencere/yardim_metni.py:139
 msgid ""
@@ -3414,6 +3656,10 @@ msgstr "Void"
 #: arayuz/kor/katmanlar.py:22
 msgid "Boş (madde yok)"
 msgstr "Void (no material)"
+
+#: cekirdek/malzeme_tarif.py:92
+msgid "Boş bırakılırsa doğal bor (IUPAC 2013: %19.82)."
+msgstr "Natural boron if left blank (IUPAC 2013: 19.82%)."
 
 #: arayuz/baslangic_akis.py:101
 msgid "Boş model açıldı. Alttaki aşama rehberini izleyin: malzeme → parça → geometri."
@@ -3458,6 +3704,10 @@ msgstr "This name is already in use: {ad}"
 #, python-brace-format
 msgid "Bu bileşim modelde şöyle tanınıyor: {rol}"
 msgstr "The model recognizes this composition as: {rol}"
+
+#: arayuz/sekme_malzeme.py:157
+msgid "Bu bilgisayarda sakladığınız malzemeler ve PNNL-15870 içe aktarımı."
+msgstr "Materials you keep on this computer, and PNNL-15870 import."
 
 #: arayuz/yardim/gosterici.py:147
 #, python-brace-format
@@ -3643,7 +3893,7 @@ msgstr ""
 msgid "Bu yardım"
 msgstr "This help"
 
-#: cekirdek/malzeme_kutup.py:682
+#: cekirdek/malzeme_kutup.py:738
 #, python-format
 msgid ""
 "Bu yüklemede U₃Si₂ (%.1f g/cm³) ile Al (%.2f g/cm³) karışımının yoğunluğu ≈ %.2f "
@@ -3751,7 +4001,7 @@ msgstr "Clears the whole selection"
 msgid "BİLGİ"
 msgstr "INFO"
 
-#: cekirdek/malzeme_kutup.py:553
+#: cekirdek/malzeme_kutup.py:603 cekirdek/malzeme_tarif.py:246
 msgid "B₄C — bor karbür"
 msgstr "B₄C — boron carbide"
 
@@ -4143,6 +4393,15 @@ msgstr "The file is not UTF-8 text: %s"
 msgid "Dosya bozuk (JSON çözülemedi): %s, satır %d sütun %d: %s"
 msgstr "The file is corrupt (JSON could not be decoded): %s, line %d column %d: %s"
 
+#: arayuz/malzeme/kutuphane_tarayici.py:228
+msgid "Dosya seç…"
+msgstr "Choose file…"
+
+#: cekirdek/malzeme_pnnl.py:248
+#, python-format
+msgid "Dosyada PNNL-15870 biçiminde malzeme bulunamadı: %s"
+msgstr "No materials in PNNL-15870 format found in the file: %s"
+
 #: arayuz/pencere/proje.py:250
 msgid "Dosyada malzeme bulunamadı."
 msgstr "No materials were found in the file."
@@ -4240,6 +4499,10 @@ msgstr "Enter the validation references (IRPhEP / code-to-code comparison)."
 msgid "Doğrulama ve geçerleme (V&V)"
 msgstr "Verification and validation (V&V)"
 
+#: arayuz/malzeme/asistan.py:137
+msgid "Doğrulama ve kaydetme"
+msgstr "Check and save"
+
 #: arayuz/pencere/dogrulama_seridi.py:91
 msgid "Doğrulama yenilendi (veri kütüphanesi dahil)."
 msgstr "Model check refreshed (including data library)."
@@ -4280,6 +4543,10 @@ msgstr[0] ""
 msgstr[1] ""
 "The model check found %d errors — fix them first. Click the badge below and pick a "
 "finding to go to its page."
+
+#: arayuz/malzeme/asistan.py:244
+msgid "Doğrulamada hata var; Geri dönüp değerleri düzeltin."
+msgstr "The check found errors; go Back and correct the values."
 
 #: arayuz/pencere/menuler.py:116 arayuz/pencere/menuler.py:315
 msgid "Doğrulamayı yenile (veri kütüphanesi dahil)"
@@ -4398,7 +4665,7 @@ msgstr ""
 msgid "Düzenlemek için soldaki listeden bir parça seçin."
 msgstr "Select a component in the list on the left to edit it."
 
-#: arayuz/sekme_malzeme.py:143
+#: arayuz/malzeme/kutuphane_tarayici.py:86 arayuz/sekme_malzeme.py:148
 msgid "Düzenle…"
 msgstr "Edit…"
 
@@ -4463,9 +4730,33 @@ msgstr "Exported"
 msgid "Dışa taşı"
 msgstr "Move out"
 
-#: cekirdek/malzeme_kutup.py:509
+#: cekirdek/malzeme_sogutucu.py:255
+#, python-format
+msgid "D₂O mol kesri 0 ile 1 arasında olmalı: %r"
+msgstr "D₂O mole fraction must be between 0 and 1: %r"
+
+#: cekirdek/malzeme_kutup.py:559 cekirdek/malzeme_tarif.py:93
 msgid "D₂O saflığı (mol %)"
 msgstr "D₂O purity (mol %)"
+
+#: cekirdek/malzeme_sogutucu.py:193
+#, python-format
+msgid "D₂O tablosu %.1f–%.0f MPa aralığında: %r MPa"
+msgstr "the D₂O table covers %.1f–%.0f MPa: %r MPa"
+
+#: cekirdek/malzeme_sogutucu.py:182
+#, python-format
+msgid "D₂O tablosu %.4g MPa'da %.1f–%.1f K (sıvı) aralığında: %.2f K"
+msgstr "at %.4g MPa the D₂O table covers %.1f–%.1f K (liquid): %.2f K"
+
+#: cekirdek/malzeme_sogutucu.py:217
+#, python-format
+msgid ""
+"D₂O tablosu %.4g MPa'da (komşu izobarlar %g ve %g MPa) en çok %.2f K'e kadar sıvı "
+"verir: %.2f K"
+msgstr ""
+"at %.4g MPa (neighbouring isobars %g and %g MPa) the D₂O table gives liquid up to "
+"%.2f K: %.2f K"
 
 #: arayuz/uygunluk_paneli.py:233
 msgid "EALF tally'si eklensin mi?"
@@ -4607,15 +4898,16 @@ msgstr "Switching to manual editing detaches the material from the library param
 msgid "Elle girilen: {sab}"
 msgstr "Entered manually: {sab}"
 
-#: arayuz/sekme_malzeme.py:141
+#: arayuz/sekme_malzeme.py:146
 msgid "Elle tanımla…"
 msgstr "Define manually…"
 
-#: arayuz/sekme_malzeme.py:203
+#: arayuz/sekme_malzeme.py:220
 msgid "Elle tanımlı bileşim"
 msgstr "Manually defined composition"
 
 #: arayuz/cubuk/parca_islemleri.py:231 arayuz/malzeme/yardimcilar.py:28
+#: cekirdek/malzeme_tarif.py:33
 msgid "Emici"
 msgstr "Absorber"
 
@@ -4659,6 +4951,10 @@ msgstr "Absorber arc angle:"
 msgid "Emici yayı"
 msgstr "Absorber arc"
 
+#: arayuz/malzeme/asistan.py:206
+msgid "En az iki bileşen seçin."
+msgstr "Select at least two components."
+
 #: cekirdek/kinetik.py:468
 #, python-format
 msgid "En az iki zaman noktası gerekir (tam sayı): %r"
@@ -4668,7 +4964,7 @@ msgstr "At least two time points are required (integer): %r"
 msgid "En değerli çubuğu dışarıda bırakarak yeniden hesaplayın."
 msgstr "Recompute leaving the most reactive rod out."
 
-#: cekirdek/malzeme_kutup.py:514
+#: cekirdek/malzeme_kutup.py:564
 msgid "En küçük değer doğal bor demektir."
 msgstr "The smallest value means natural boron."
 
@@ -4889,15 +5185,15 @@ msgstr "Save as"
 msgid "Farklı kaydet…"
 msgstr "Save as…"
 
-#: cekirdek/malzeme_kutup.py:537
+#: cekirdek/malzeme_kutup.py:587
 msgid "FeCrAl"
 msgstr "FeCrAl"
 
-#: cekirdek/malzeme_kutup.py:415
+#: cekirdek/malzeme_kutup.py:459
 msgid "FeCrAl kazaya dayanıklı zarf"
 msgstr "FeCrAl accident-tolerant cladding"
 
-#: cekirdek/malzeme_kutup.py:500
+#: cekirdek/malzeme_kutup.py:547
 msgid "Fisil Pu %"
 msgstr "Fissile Pu %"
 
@@ -4960,7 +5256,7 @@ msgstr ""
 msgid "Füzyon tayfı (D-T / D-D, Muir)"
 msgstr "Fusion spectrum (D-T / D-D, Muir)"
 
-#: cekirdek/malzeme_kutup.py:428
+#: cekirdek/malzeme_kutup.py:472
 msgid "Gadolinyum oksit yanabilir zehir"
 msgstr "Gadolinium oxide burnable absorber"
 
@@ -4968,7 +5264,16 @@ msgstr "Gadolinium oxide burnable absorber"
 msgid "Gaz"
 msgstr "Gas"
 
-#: cekirdek/malzeme_kutup.py:556
+#: cekirdek/malzeme_kutup.py:556 cekirdek/malzeme_tarif.py:78
+msgid "Gd₂O₃ ağırlıkça %"
+msgstr "Gd₂O₃ weight %"
+
+#: cekirdek/malzeme_hesap.py:518
+#, python-format
+msgid "Gd₂O₃ kütle kesri 0 ile 1 arasında olmalı: %r"
+msgstr "Gd₂O₃ mass fraction must be between 0 and 1: %r"
+
+#: cekirdek/malzeme_kutup.py:606
 msgid "Gd₂O₃ — gadolinyum oksit"
 msgstr "Gd₂O₃ — gadolinium oxide"
 
@@ -5157,6 +5462,10 @@ msgstr ""
 msgid "Geometriyi kur"
 msgstr "Build the geometry"
 
+#: arayuz/malzeme/asistan.py:143
+msgid "Geri"
+msgstr "Back"
+
 #: arayuz/pencere/menuler.py:104 arayuz/pencere/menuler.py:313
 msgid "Geri al"
 msgstr "Undo"
@@ -5225,11 +5534,11 @@ msgstr ""
 "Nuclides to track in the chart, table and CSV. When the selection changes, the "
 "previous result is updated without rerunning."
 
-#: cekirdek/malzeme_kutup.py:551
+#: cekirdek/malzeme_kutup.py:601
 msgid "Grafit (C)"
 msgstr "Graphite (C)"
 
-#: cekirdek/malzeme_kutup.py:424
+#: cekirdek/malzeme_kutup.py:468
 msgid "Grafit yansıtıcı/moderatör"
 msgstr "Graphite reflector/moderator"
 
@@ -5333,9 +5642,25 @@ msgstr "Drum body material"
 msgid "Gövde malzemesi:"
 msgstr "Drum body material:"
 
-#: cekirdek/malzeme_kutup.py:484
+#: cekirdek/dogrula/malzeme.py:51
+msgid ""
+"Gözenekli nükleer grafit için c_Graphite_10p ya da c_Graphite_30p (%10 / %30 "
+"gözeneklilik) da kullanılabilir."
+msgstr ""
+"For porous nuclear graphite, c_Graphite_10p or c_Graphite_30p (10% / 30% porosity) "
+"can also be used."
+
+#: cekirdek/malzeme_kutup.py:531
 msgid "Gözeneklilik"
 msgstr "Porosity"
+
+#: cekirdek/malzeme_tarif.py:72
+msgid ""
+"Gözeneklilik = 1 − %TD/100. Kuramsal yoğunluk oda sıcaklığı değeridir; ısıl genleşme "
+"uygulanmaz."
+msgstr ""
+"Porosity = 1 − %TD/100. The theoretical density is a room-temperature value; no "
+"thermal expansion is applied."
 
 #: cekirdek/uygunluk_denetimi/denetle.py:107
 msgid "Günlük dosyasına bakın ve hatayı bildirin."
@@ -5500,6 +5825,19 @@ msgstr ""
 msgid "Güç yoğunluğu:"
 msgstr "Power density:"
 
+#: arayuz/malzeme/turetilmis_panel.py:88
+#, python-brace-format
+msgid "H/X (hidrojen / fisil atom): {hx:.4g}"
+msgstr "H/X (hydrogen / fissile atom): {hx:.4g}"
+
+#: arayuz/malzeme/turetilmis_panel.py:34
+msgid ""
+"H/X yalnızca homojen bir yakıt-moderatör karışımında anlamlıdır; heterojen kafeste "
+"moderatör ayrı bir malzemedir."
+msgstr ""
+"H/X is meaningful only for a homogeneous fuel-moderator mixture; in a heterogeneous "
+"lattice the moderator is a separate material."
+
 #: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:197
 msgid "H/X'i (hücre hacimleriyle) hesaplayıp uygunluk girdisinde verin."
 msgstr "Calculate H/X (with the cell volumes) and enter it in the conformity input."
@@ -5520,19 +5858,23 @@ msgstr ""
 " shutdown margin). If its burnup matters, place it in a pin region with an exact "
 "volume."
 
-#: cekirdek/malzeme_kutup.py:542
+#: cekirdek/malzeme_kutup.py:592
 msgid "Hafif su (H₂O)"
 msgstr "Light water (H₂O)"
 
-#: cekirdek/malzeme_kutup.py:419
+#: cekirdek/malzeme_tarif.py:236
+msgid "Hafif su (H₂O), isteğe bağlı borlu"
+msgstr "Light water (H₂O), optionally borated"
+
+#: cekirdek/malzeme_kutup.py:463
 msgid "Hafif su (S(α,β) dahil, sıcaklığa bağlı yoğunluk)"
 msgstr "Light water (with S(α,β), temperature-dependent density)"
 
-#: cekirdek/malzeme_kutup.py:524
+#: cekirdek/malzeme_kutup.py:574
 msgid "Hafif su reaktörlerinin seramik yakıtı."
 msgstr "Ceramic fuel of light water reactors."
 
-#: cekirdek/malzeme_kutup.py:534
+#: cekirdek/malzeme_kutup.py:584
 msgid "Hafif su reaktörü yakıt zarfı."
 msgstr "Light water reactor fuel cladding."
 
@@ -5752,7 +6094,7 @@ msgstr "Preset sets:"
 msgid "Hazır örneğin bir kopyasını açar: {dosya} (örnek dosyası değişmez)."
 msgstr "Opens a copy of the ready-made example: {dosya} (the example file is not changed)."
 
-#: arayuz/sekme_malzeme.py:138
+#: arayuz/sekme_malzeme.py:143
 msgid ""
 "Hazır, doğrulanmış bileşimler. Zenginlik, sıcaklık ve bor gibi değerler sonradan "
 "değiştirilebilir."
@@ -5806,11 +6148,11 @@ msgstr "Target pin:"
 msgid "Hedef:"
 msgstr "Target:"
 
-#: cekirdek/malzeme_kutup.py:557
+#: cekirdek/malzeme_kutup.py:613
 msgid "Helyum (He)"
 msgstr "Helium (He)"
 
-#: cekirdek/malzeme_kutup.py:423
+#: cekirdek/malzeme_kutup.py:467
 msgid "Helyum dolgu gazı"
 msgstr "Helium fill gas"
 
@@ -5842,7 +6184,7 @@ msgstr "No run yet"
 msgid "Henüz koşu yok"
 msgstr "No run yet"
 
-#: arayuz/sekme_malzeme.py:91
+#: arayuz/sekme_malzeme.py:96
 msgid "Henüz malzeme yok"
 msgstr "No materials yet"
 
@@ -5919,7 +6261,7 @@ msgstr "Compute"
 msgid "Hesaplanamadı."
 msgstr "Could not be computed."
 
-#: cekirdek/dogrula/malzeme.py:186
+#: cekirdek/dogrula/malzeme.py:212
 msgid ""
 "Hidrojenin bağlı olduğu faza uygun bir S(α,β) seçin (ör. c_H_in_H2O, c_H_in_ZrH, "
 "c_H_in_CH2)."
@@ -5969,11 +6311,11 @@ msgstr ""
 "Accurate: to resolve small reactivity differences (slow).\n"
 "Custom: enter the particle and batch counts yourself."
 
-#: cekirdek/malzeme_kutup.py:547 cekirdek/malzeme_kutup.py:549
+#: cekirdek/malzeme_kutup.py:597 cekirdek/malzeme_kutup.py:599
 msgid "Hızlı reaktör soğutucusu; yoğunluk sıcaklıktan hesaplanır."
 msgstr "Fast reactor coolant; the density is computed from the temperature."
 
-#: cekirdek/malzeme_kutup.py:535
+#: cekirdek/malzeme_kutup.py:585
 msgid "Hızlı reaktör zarfı ve yapısal malzeme."
 msgstr "Fast reactor cladding and structural material."
 
@@ -6078,6 +6420,11 @@ msgstr "JSON model (*.json)"
 #: arayuz/pencere/proje.py:93
 msgid "JSON model (*.json);;Tüm dosyalar (*)"
 msgstr "JSON model (*.json);;All files (*)"
+
+#: cekirdek/malzeme_kullanici.py:260
+#, python-format
+msgid "JSON okunamadı: %s"
+msgstr "could not read JSON: %s"
 
 #: cekirdek/rapor_sablon/uygunluk_eki.py:30
 msgid "K"
@@ -6266,7 +6613,8 @@ msgstr ""
 "When off, the application opens with the most recently used project; return to this "
 "screen with File > New (Ctrl+N)."
 
-#: arayuz/bilesenler/bildirim.py:98 arayuz/pencere/menuler.py:344
+#: arayuz/bilesenler/bildirim.py:98 arayuz/malzeme/kutuphane_tarayici.py:53
+#: arayuz/pencere/menuler.py:344
 msgid "Kapat"
 msgstr "Close"
 
@@ -6545,7 +6893,7 @@ msgstr "Saved run"
 msgid "Kayıtlı koşu gösteriliyor; koşu öncesi doğrulama bu oturumda yapılmadı."
 msgstr "Showing a saved run; the pre-run model check was not done in this session."
 
-#: cekirdek/malzeme_kutup.py:537
+#: cekirdek/malzeme_kutup.py:587
 msgid "Kazaya dayanıklı yakıt zarfı."
 msgstr "Accident-tolerant fuel cladding."
 
@@ -6783,7 +7131,7 @@ msgstr ""
 "worth accumulates late and the peak of the differential worth occurs near full "
 "insertion rather than at the centre."
 
-#: cekirdek/malzeme_kutup.py:553
+#: cekirdek/malzeme_kutup.py:603
 msgid "Kontrol çubuğu ve tambur emicisi."
 msgstr "Control rod and control drum absorber."
 
@@ -6816,7 +7164,7 @@ msgid "Konumlar"
 msgstr "Positions"
 
 #: arayuz/calistir/kartlar.py:175 arayuz/demet/yerlesim.py:93 arayuz/sekme_cubuk.py:142
-#: arayuz/sekme_malzeme.py:144
+#: arayuz/sekme_malzeme.py:149
 msgid "Kopyala"
 msgstr "Copy"
 
@@ -7162,6 +7510,14 @@ msgstr "Bias used %+.5f (raw %+.5f); positive bias not credited."
 msgid "Kullanım"
 msgstr "Usage"
 
+#: cekirdek/malzeme_tarif.py:80
+msgid ""
+"Kullanım anındaki (yaşlanmadan SONRA) Pu + Am kütlesinin ağır metale oranı; ağır "
+"metal Z ≥ 90 (Am dahil)."
+msgstr ""
+"Ratio of the Pu + Am mass at the time of use (AFTER ageing) to the heavy metal; heavy"
+" metal is Z ≥ 90 (Am included)."
+
 #: arayuz/pencere/menuler.py:109 arayuz/yardim/gosterici.py:56
 #: arayuz/yardim_baglanti.py:106
 msgid "Kullanım kılavuzu"
@@ -7201,6 +7557,10 @@ msgstr ""
 "Rule descriptions: <a href=\"kilavuz\">User guide → \"Conformity check\" section</a>;"
 " source table docs/STANDARTLAR.md §3."
 
+#: cekirdek/malzeme_tarif.py:71
+msgid "Kuramsal yoğunluk (%TD)"
+msgstr "Theoretical density (%TD)"
+
 #: cekirdek/kapsul.py:357
 msgid "Kuru çalışma (--kuru): koşu başlatılmadı."
 msgstr "Dry run (--kuru): the run was not started."
@@ -7214,11 +7574,11 @@ msgstr "Could not be built: %s"
 msgid "Kurulum ve ilk açılış"
 msgstr "Installation and first start"
 
-#: cekirdek/malzeme_kutup.py:421
+#: cekirdek/malzeme_kutup.py:465
 msgid "Kurşun-bizmut ötektiği"
 msgstr "Lead-bismuth eutectic"
 
-#: cekirdek/malzeme_kutup.py:549
+#: cekirdek/malzeme_kutup.py:599
 msgid "Kurşun-bizmut ötektiği (LBE)"
 msgstr "Lead-bismuth eutectic (LBE)"
 
@@ -7331,23 +7691,66 @@ msgstr ""
 "Library components (pin, assembly, control drum) are defined on the "
 "Components/Assembly pages."
 
+#: arayuz/malzeme/kutuphane_tarayici.py:124
+#, python-format
+msgid ""
+"Kütüphane dosyası okunamadı ve değiştirilmedi:\n"
+"%s"
+msgstr ""
+"The library file could not be read and was left unchanged:\n"
+"%s"
+
 #: cekirdek/dogrula/veri.py:105
 #, python-format
 msgid "Kütüphanede %d S(α,β) kaydı var; listeden birini seçin."
 msgstr "The library has %d S(α,β) entries; select one from the list."
 
-#: arayuz/sekme_malzeme.py:205
+#: arayuz/sekme_malzeme.py:222
 #, python-brace-format
 msgid "Kütüphaneden ({ad}) — Düzenle parametre formunu açar"
 msgstr "From the library ({ad}) — Edit opens the parameter form"
 
-#: arayuz/sekme_malzeme.py:94 arayuz/sekme_malzeme.py:137
+#: arayuz/sekme_malzeme.py:99 arayuz/sekme_malzeme.py:142
 msgid "Kütüphaneden ekle…"
 msgstr "Add from library…"
 
 #: arayuz/malzeme/kutuphane_diyalog.py:30
 msgid "Kütüphaneden malzeme ekle"
 msgstr "Add material from library"
+
+#: arayuz/malzeme/kutuphane_tarayici.py:203
+msgid "Kütüphaneden sil"
+msgstr "Delete from library"
+
+#: arayuz/malzeme/kutuphane_tarayici.py:50
+msgid "Kütüphanem"
+msgstr "My library"
+
+#: arayuz/malzeme/asistan.py:42
+#, python-format
+msgid "Kütüphanem: %s"
+msgstr "My library: %s"
+
+#: arayuz/malzeme/asistan.py:125
+#, python-format
+msgid "Kütüphaneme de kaydet (yalnız bu bilgisayarda: %s)"
+msgstr "Also save to my library (this computer only: %s)"
+
+#: arayuz/malzeme/kutuphane_tarayici.py:238 arayuz/sekme_malzeme.py:159
+msgid "Kütüphaneme kaydet"
+msgstr "Save to my library"
+
+#: arayuz/sekme_malzeme.py:156
+msgid "Kütüphanem…"
+msgstr "My library…"
+
+#: cekirdek/malzeme_tarif.py:377
+msgid "Kütüphanenin sıcaklık aralığı okunamadı; sıcaklık denetimi atlandı."
+msgstr "The library's temperature range could not be read; temperature check skipped."
+
+#: arayuz/malzeme/asistan.py:266 arayuz/sekme_malzeme.py:315
+msgid "Kütüphaneye kaydedilemedi"
+msgstr "Could not save to the library"
 
 #: arayuz/cubuk/parca_islemleri.py:30
 msgid "Kılavuz boru"
@@ -7386,6 +7789,10 @@ msgstr "Duct"
 msgid "Kılıf (duct) var"
 msgstr "Has a duct"
 
+#: cekirdek/malzeme_tarif.py:32
+msgid "Kılıf (zarf)"
+msgstr "Cladding"
+
 #: arayuz/demet/kilif.py:47
 msgid "Kılıf duvarının kalınlığı."
 msgstr "Thickness of the duct wall."
@@ -7420,6 +7827,10 @@ msgstr ""
 "neighbours; in a mixed map this is not a true symmetry plane. For a full core use a "
 "radial reflector and a Vacuum boundary."
 
+#: arayuz/malzeme/asistan.py:127
+msgid "Kısa açıklama (isteğe bağlı)"
+msgstr "Short description (optional)"
+
 #: arayuz/geometri/agac_paneli.py:45
 #, python-brace-format
 msgid "Kısaltma: {ad}"
@@ -7450,23 +7861,35 @@ msgstr "Could not write to the log file ({yol}); copy the details below."
 msgid "Logu aç"
 msgstr "Open log"
 
-#: cekirdek/malzeme_kutup.py:414
+#: cekirdek/malzeme_kutup.py:474
+msgid "M5 Zr-1Nb-O zarf"
+msgstr "M5 Zr-1Nb-O cladding"
+
+#: cekirdek/malzeme_kutup.py:607
+msgid "M5 — Zr-1Nb-O"
+msgstr "M5 — Zr-1Nb-O"
+
+#: cekirdek/malzeme_kutup.py:458
 msgid "MA956 ODS FeCrAl"
 msgstr "MA956 ODS FeCrAl"
 
-#: cekirdek/malzeme_kutup.py:538
+#: cekirdek/malzeme_kutup.py:588
 msgid "MA956 — ODS FeCrAl"
 msgstr "MA956 — ODS FeCrAl"
 
-#: cekirdek/malzeme_kutup.py:409
+#: cekirdek/malzeme_tarif.py:230
+msgid "MOX — (U,Pu)O₂"
+msgstr "MOX — (U,Pu)O₂"
+
+#: cekirdek/malzeme_kutup.py:453
 msgid "MOX — karışık oksit"
 msgstr "MOX — mixed oxide"
 
-#: cekirdek/malzeme_kutup.py:526
+#: cekirdek/malzeme_kutup.py:576
 msgid "MOX — karışık oksit (U, Pu)O₂"
 msgstr "MOX — mixed oxide (U, Pu)O₂"
 
-#: cekirdek/malzeme_kutup.py:506
+#: cekirdek/malzeme_kutup.py:553
 msgid "MOX'taki uranyumun (çoğunlukla fakir U) U-235 ağırlık yüzdesi."
 msgstr "U-235 weight percentage of the uranium in MOX (mostly depleted U)."
 
@@ -7478,7 +7901,7 @@ msgstr "MTR plate-type fuel element"
 msgid "MTR plaka elemanı ekler; malzemeler rollerine göre otomatik seçilir."
 msgstr "Adds an MTR plate-type fuel element; materials are chosen automatically by role."
 
-#: cekirdek/malzeme_kutup.py:532
+#: cekirdek/malzeme_kutup.py:582
 msgid "MTR tipi araştırma reaktörü plakalarının yakıt tabakası."
 msgstr "Fuel layer of MTR-type research reactor plates."
 
@@ -7492,13 +7915,17 @@ msgstr "MWd/kg (burnup)"
 
 #: arayuz/cubuk/sayfalar.py:117 arayuz/demet/kilif.py:59 arayuz/geometri/formlar.py:30
 #: arayuz/geometri/formlar.py:87 arayuz/kor/yerlesim.py:85 arayuz/onizleme.py:77
-#: arayuz/sekme_malzeme.py:220 cekirdek/dogrula/_ortak.py:25
+#: arayuz/sekme_malzeme.py:237 cekirdek/dogrula/_ortak.py:25
 msgid "Malzeme"
 msgstr "Material"
 
-#: cekirdek/sema_basvuru.py:124
+#: arayuz/malzeme/asistan.py:240 cekirdek/sema_basvuru.py:124
 msgid "Malzeme adı boş olamaz."
 msgstr "The material name cannot be empty."
+
+#: arayuz/malzeme/asistan.py:52
+msgid "Malzeme asistanı"
+msgstr "Material assistant"
 
 #: cekirdek/geometri/denetim.py:106
 msgid "Malzeme düğümüne dönüşüm uygulanamaz: OpenMC malzeme dolgulu hücreyi döndürmez."
@@ -7514,7 +7941,7 @@ msgstr "Add materials"
 msgid "Malzeme içeren OpenMC XML dosyası"
 msgstr "OpenMC XML file with materials"
 
-#: arayuz/sekme_malzeme.py:323
+#: arayuz/sekme_malzeme.py:376
 msgid "Malzeme kullanımda"
 msgstr "Material in use"
 
@@ -7526,6 +7953,19 @@ msgstr ""
 "The material is detached from the library parameters; values such as enrichment and "
 "temperature are no longer computed automatically."
 
+#: arayuz/malzeme/kutuphane_tarayici.py:44 arayuz/malzeme/kutuphane_tarayici.py:346
+msgid "Malzeme kütüphanem"
+msgstr "My material library"
+
+#: cekirdek/malzeme_kullanici.py:87
+#, python-format
+msgid ""
+"Malzeme kütüphanesi: %s\n"
+"%s"
+msgstr ""
+"Material library: %s\n"
+"%s"
+
 #: arayuz/ortak.py:233
 msgid "Malzeme rengi"
 msgstr "Material color"
@@ -7533,6 +7973,10 @@ msgstr "Material color"
 #: arayuz/cubuk/parca_islemleri.py:207
 msgid "Malzeme seçilmedi"
 msgstr "No material selected"
+
+#: arayuz/malzeme/asistan.py:96
+msgid "Malzeme türü:"
+msgstr "Material type:"
 
 #: arayuz/geometri/duzenle.py:524
 msgid "Malzeme ve bileşen başvurusu adlandırılmaz; formdan başka bir içerik seçin."
@@ -7558,7 +8002,7 @@ msgid "Malzeme: {ad}"
 msgstr "Material: {ad}"
 
 #: arayuz/pencere/model_islemleri.py:65 arayuz/sekme_malzeme.py:78
-#: arayuz/sekme_malzeme.py:112 arayuz/yardim/__init__.py:43 cekirdek/dogrula/_ortak.py:25
+#: arayuz/sekme_malzeme.py:117 arayuz/yardim/__init__.py:43 cekirdek/dogrula/_ortak.py:25
 #: cekirdek/rapor_sablon/__init__.py:106
 msgid "Malzemeler"
 msgstr "Materials"
@@ -7570,6 +8014,14 @@ msgstr "On the Materials page add fuel, cladding and coolant from the library."
 #: arayuz/pencere/menuler.py:144
 msgid "Malzemeleri içe aktar (OpenMC XML)…"
 msgstr "Import materials (OpenMC XML)…"
+
+#: arayuz/malzeme/asistan.py:72
+msgid ""
+"Malzemenin rolünü seçin; sonraki adımda yalnızca o role uygun alanlar sorulur ve "
+"türetilmiş değerler anında hesaplanır."
+msgstr ""
+"Choose the material's role; the next step asks only for the fields that fit that role"
+" and computes derived values instantly."
 
 #: arayuz/sekme_cubuk.py:190
 #, python-brace-format
@@ -7662,6 +8114,10 @@ msgstr "Amount"
 #: cekirdek/nuklidler.py:324
 msgid "Minör aktinitler"
 msgstr "Minor actinides"
+
+#: cekirdek/malzeme_tarif.py:86
+msgid "Mo ağırlıkça %"
+msgstr "Mo weight %"
 
 #: arayuz/geometri/form_yerlesim.py:80
 msgid "Mod"
@@ -7768,7 +8224,7 @@ msgstr[1] ""
 "The model has %d model check errors — see the model check list; the run cannot start "
 "until they are fixed."
 
-#: arayuz/sekme_malzeme.py:112
+#: arayuz/sekme_malzeme.py:117
 msgid "Modeldeki malzemeler, yoğunluk ve bileşim."
 msgstr "Materials in the model, density and composition."
 
@@ -7823,6 +8279,10 @@ msgstr ""
 "Moderation ratio effect. Its sign tells whether the assembly is under- or over-"
 "moderated: on the under-moderated side an increase in pitch increases k (positive)."
 
+#: cekirdek/malzeme_tarif.py:33
+msgid "Moderatör / soğutucu"
+msgstr "Moderator / coolant"
+
 #: arayuz/analiz/adlar.py:93 arayuz/pencere/yardim_metni.py:52
 msgid "Moderatör sıcaklık katsayısı"
 msgstr "Moderator temperature coefficient"
@@ -7835,11 +8295,11 @@ msgstr ""
 "Moderator temperature coefficient. In a thermal reactor it should be negative. If "
 "positive, power rises as the coolant heats up — instability."
 
-#: cekirdek/malzeme_kutup.py:551
+#: cekirdek/malzeme_kutup.py:601
 msgid "Moderatör ve yansıtıcı."
 msgstr "Moderator and reflector."
 
-#: cekirdek/malzeme_kutup.py:544
+#: cekirdek/malzeme_kutup.py:594
 msgid "Moderatör; kalanı hafif sudur."
 msgstr "Moderator; the rest is light water."
 
@@ -7890,6 +8350,10 @@ msgstr "Calculate:"
 #: arayuz/baslangic.py:414
 msgid "Ne modellemek istiyorsunuz?"
 msgstr "What do you want to model?"
+
+#: arayuz/malzeme/asistan.py:71
+msgid "Ne tasarlıyorsun?"
+msgstr "What are you designing?"
 
 #: arayuz/ayar/yerlesim.py:190
 msgid "Ne ölçülsün:"
@@ -8014,6 +8478,18 @@ msgstr ""
 msgid "Nükleer veri ve tükenme zinciri"
 msgstr "Nuclear data and depletion chain"
 
+#: arayuz/malzeme/turetilmis_panel.py:26
+msgid "Nüklid"
+msgstr "Nuclide"
+
+#: cekirdek/malzeme_tarif.py:75
+msgid "O/M oranı"
+msgstr "O/M ratio"
+
+#: cekirdek/malzeme_hesap.py:557
+msgid "O/M oranı pozitif olmalı"
+msgstr "O/M ratio must be positive"
+
 #: cekirdek/dogrula/veri.py:31
 msgid "OPENMC_CROSS_SECTIONS ortam değişkeni ayarlı değil"
 msgstr "the OPENMC_CROSS_SECTIONS environment variable is not set"
@@ -8021,6 +8497,10 @@ msgstr "the OPENMC_CROSS_SECTIONS environment variable is not set"
 #: arayuz/geometri/form_yerlesim.py:108
 msgid "Ofset"
 msgstr "Offset"
+
+#: cekirdek/malzeme_tarif.py:76
+msgid "Oksijen / ağır metal atom oranı; stokiyometrik oksit 2.000."
+msgstr "Oxygen-to-heavy-metal atom ratio; a stoichiometric oxide is 2.000."
 
 #: arayuz/pencere/proje.py:246
 msgid "Okunamadı"
@@ -8099,7 +8579,7 @@ msgstr ""
 "OpenMC stops before the run starts (\"Found only one periodic surface without a "
 "specified partner\"). Select Reflective or Vacuum for bottom/top."
 
-#: cekirdek/dogrula/malzeme.py:111
+#: cekirdek/dogrula/malzeme.py:135
 #, python-format
 msgid ""
 "OpenMC koşu sırasında reddeder (\"Unable to use enrichment for element %s which is "
@@ -8165,6 +8645,10 @@ msgid ""
 msgstr ""
 "Number of OpenMP threads (openmc -s N). This computer has %d logical cores; using all"
 " of them can slow down the interface."
+
+#: arayuz/malzeme/tarif_formu.py:157
+msgid "Oranlar:"
+msgstr "Fractions:"
 
 #: cekirdek/ornek_bilgi.py:65
 msgid "Orta"
@@ -8240,9 +8724,83 @@ msgstr "PDF could not be written: %s"
 msgid "PNG kaydet…"
 msgstr "Save PNG…"
 
-#: cekirdek/malzeme_kutup.py:555
+#: cekirdek/malzeme_pnnl.py:243
+#, python-format
+msgid "PNNL dosyası CSV olarak okunamadı: %s (%s)"
+msgstr "could not read the PNNL file as CSV: %s (%s)"
+
+#: cekirdek/malzeme_pnnl.py:241
+#, python-format
+msgid "PNNL dosyası açılamadı: %s (%s)"
+msgstr "could not open the PNNL file: %s (%s)"
+
+#: cekirdek/malzeme_pnnl.py:223
+#, python-format
+msgid "PNNL dosyası çok büyük (%d bayt; sınır %d)"
+msgstr "the PNNL file is too large (%d bytes; limit %d)"
+
+#: cekirdek/malzeme_pnnl.py:161
+#, python-format
+msgid "PNNL dosyasında %d karakterden uzun hücre var"
+msgstr "the PNNL file has a cell longer than %d characters"
+
+#: cekirdek/malzeme_pnnl.py:153
+#, python-format
+msgid "PNNL dosyasında %d kayıttan fazlası var"
+msgstr "the PNNL file has more than %d records"
+
+#: cekirdek/malzeme_pnnl.py:231
+#, python-format
+msgid "PNNL dosyasının kodlaması okunamadı: %s"
+msgstr "could not decode the PNNL file: %s"
+
+#: cekirdek/malzeme_pnnl.py:144
+#, python-format
+msgid "PNNL kaydı %d (%s) atlandı: %s"
+msgstr "PNNL record %d (%s) skipped: %s"
+
+#: cekirdek/malzeme_pnnl.py:204
+#, python-format
+msgid "PNNL kaydı %d: %d bileşenden fazlası var"
+msgstr "PNNL record %d: more than %d components"
+
+#: cekirdek/malzeme_pnnl.py:178
+#, python-format
+msgid "PNNL kaydı %d: %d kaynak satırından fazlası var"
+msgstr "PNNL record %d: more than %d source lines"
+
+#: arayuz/malzeme/kutuphane_tarayici.py:313
+#, python-brace-format
+msgid ""
+"PNNL-15870 #{no}: {ad}\n"
+"Yoğunluk: {y:.6g} g/cm³\n"
+"Kaynak: {k}"
+msgstr ""
+"PNNL-15870 #{no}: {ad}\n"
+"Density: {y:.6g} g/cm³\n"
+"Source: {k}"
+
+#: arayuz/malzeme/kutuphane_tarayici.py:267
+msgid "PNNL-15870 CSV dosyası"
+msgstr "PNNL-15870 CSV file"
+
+#: arayuz/malzeme/kutuphane_tarayici.py:225
+msgid ""
+"PNNL-15870 malzeme derlemesi açık bir lisansla yayımlanmadığı için programla "
+"dağıtılmaz. Derlemenin CSV dosyasını (Rev. 1 biçimi, ör. PyNE "
+"materials_compendium.csv) kendiniz indirip seçin; dosya yalnızca okunur."
+msgstr ""
+"The PNNL-15870 material compendium is not published under an open licence, so it is "
+"not distributed with the program. Download the compendium CSV file yourself (Rev. 1 "
+"format, e.g. PyNE materials_compendium.csv) and select it; the file is only read."
+
+#: cekirdek/malzeme_kutup.py:605
 msgid "PWR kontrol çubuğu alaşımı."
 msgstr "PWR control rod alloy."
+
+#: cekirdek/malzeme_kutup.py:607
+msgid "PWR yakıt zarfı alaşımı (nominal bileşim)."
+msgstr "PWR fuel cladding alloy (nominal composition)."
 
 #: arayuz/cubuk/parca_islemleri.py:29
 msgid "PWR yakıt çubuğu"
@@ -8529,11 +9087,11 @@ msgstr "Plan: seed %s, threads %s, target %s"
 msgid "Plütonyum"
 msgstr "Plutonium"
 
-#: cekirdek/malzeme_kutup.py:502
+#: cekirdek/malzeme_kutup.py:549
 msgid "Plütonyum içindeki Pu-239 + Pu-241 ağırlık yüzdesi; kalanı Pu-240 ve Pu-242."
 msgstr "Weight percentage of Pu-239 + Pu-241 in plutonium; the rest is Pu-240 and Pu-242."
 
-#: cekirdek/malzeme_kutup.py:526
+#: cekirdek/malzeme_kutup.py:576
 msgid "Plütonyumlu seramik yakıt; basitleştirilmiş Pu vektörü."
 msgstr "Ceramic fuel with plutonium; simplified Pu vector."
 
@@ -8585,13 +9143,66 @@ msgstr[1] "Profiles %s · %d passed · %d not met · %d not applicable · %d not
 msgid "Profiller:"
 msgstr "Profiles:"
 
-#: cekirdek/malzeme_kutup.py:497
+#: arayuz/malzeme/asistan.py:168
+msgid ""
+"Projedeki ya da kütüphanenizdeki malzemeleri ağırlık, atom ya da hacim oranıyla "
+"karıştırın (ideal karışım: hacimler toplanır)."
+msgstr ""
+"Mix materials from the project or your library by weight, atom or volume fraction "
+"(ideal mixture: volumes add)."
+
+#: arayuz/malzeme/asistan.py:122 arayuz/malzeme/kutuphane_tarayici.py:85
+#: arayuz/malzeme/kutuphane_tarayici.py:237
+msgid "Projeye ekle"
+msgstr "Add to project"
+
+#: arayuz/malzeme/asistan.py:242
+msgid "Projeye ekleyin ya da kütüphanenize kaydedin."
+msgstr "Add it to the project or save it to your library."
+
+#: cekirdek/malzeme_tarif.py:79
+msgid "Pu / ağır metal (ağırlıkça %)"
+msgstr "Pu / heavy metal (weight %)"
+
+#: cekirdek/malzeme_kutup.py:544
 msgid "Pu ağırlıkça %"
 msgstr "Pu wt%"
 
 #: cekirdek/nuklidler.py:322
 msgid "Pu vektörü"
 msgstr "Pu vector"
+
+#: cekirdek/malzeme_tarif.py:231
+msgid "Pu vektörü, Pu/HM ve Am-241 yaşlanmasıyla karışık oksit."
+msgstr "Mixed oxide from the Pu vector, Pu/HM and Am-241 ageing."
+
+#: cekirdek/malzeme_hesap.py:540
+#, python-format
+msgid "Pu vektöründe beklenmeyen nüklid: %s"
+msgstr "unexpected nuclide in the Pu vector: %s"
+
+#: cekirdek/malzeme_tarif.py:140
+#, python-format
+msgid "Pu vektörünün toplamı %%100 olmalı (şu an %%%.3f)"
+msgstr "the Pu vector must sum to 100%% (now %%%.3f)"
+
+#: cekirdek/malzeme_hesap.py:543
+#, python-format
+msgid "Pu vektörünün toplamı %%100 olmalı (şu an %%%.4f)"
+msgstr "the Pu vector must sum to 100%% (now %%%.4f)"
+
+#: cekirdek/malzeme_tarif.py:83
+msgid ""
+"Pu-241 (T½ = 14.29 yıl; NUBASE2020 14.290(6) yıl) Am-241'e bozunur; Bateman çözümü. "
+"Diğer ürünler (Pu-238 → U-234, Am-241 → Np-237) vektörden çıkar."
+msgstr ""
+"Pu-241 (T½ = 14.29 years; NUBASE2020 14.290(6) years) decays to Am-241; Bateman "
+"solution. Other products (Pu-238 → U-234, Am-241 → Np-237) leave the vector."
+
+#: cekirdek/malzeme_hesap.py:555
+#, python-format
+msgid "Pu/HM kütle kesri 0 ile 1 arasında olmalı: %r"
+msgstr "Pu/HM mass fraction must be between 0 and 1: %r"
 
 #: cekirdek/rapor.py:245
 msgid "Python / platform"
@@ -8778,6 +9389,19 @@ msgstr "S"
 msgid "S(α,β) (elle):"
 msgstr "S(α,β) (manual):"
 
+#: cekirdek/malzeme_kullanici.py:167
+msgid "S(α,β) listesi metinlerden oluşmalı"
+msgstr "the S(α,β) list must contain text entries"
+
+#: cekirdek/malzeme_tarif.py:368
+#, python-format
+msgid "S(α,β) tablosu kütüphanede yok: %s"
+msgstr "S(α,β) table not in the library: %s"
+
+#: cekirdek/malzeme_kutup.py:609
+msgid "SCALE standart bileşim kütüphanesi değerleri."
+msgstr "Values from the SCALE standard composition library."
+
 #: cekirdek/dogrula/kor.py:413
 msgid ""
 "SFR tek demet için halka=1 altigen_kafes kullanın (demetler arası boşluk): demet "
@@ -8797,7 +9421,11 @@ msgstr "Use SI units."
 msgid "SI dışı birim: %s"
 msgstr "Non-SI unit: %s"
 
-#: cekirdek/malzeme_kutup.py:535
+#: cekirdek/malzeme_kutup.py:609
+msgid "SS-304 paslanmaz çelik"
+msgstr "SS-304 stainless steel"
+
+#: cekirdek/malzeme_kutup.py:585
 msgid "SS-316 paslanmaz çelik"
 msgstr "SS-316 stainless steel"
 
@@ -8854,6 +9482,15 @@ msgstr "Depletion with a fixed source (activation) is not available in this vers
 msgid "Sabit çubuk"
 msgstr "Fixed pin"
 
+#: cekirdek/malzeme_sogutucu.py:265
+#, python-format
+msgid ""
+"Saflık %%%.2f < %%%.0f: H₂O payının yoğunluğu IAPWS-IF97 ile hesaplanır ve bu koşulda"
+" bulunamadı (%s)"
+msgstr ""
+"Purity %%%.2f < %%%.0f: the density of the H₂O fraction is computed with IAPWS-IF97 "
+"and is not available at this condition (%s)"
+
 #: arayuz/geometri/editor.py:113
 msgid "Sarmala"
 msgstr "Wrap"
@@ -8902,7 +9539,7 @@ msgstr "Right/left faces vertical (cell on the right)"
 msgid "Sekme sekme başvuru"
 msgstr "Tab-by-tab reference"
 
-#: cekirdek/malzeme_kutup.py:539
+#: cekirdek/malzeme_kutup.py:589
 msgid "Seramik zarf / yapısal malzeme."
 msgstr "Ceramic cladding / structural material."
 
@@ -8981,6 +9618,10 @@ msgstr "Moves the selected layer up one position"
 msgid "Seçili katmanı siler."
 msgstr "Deletes the selected layer."
 
+#: arayuz/sekme_malzeme.py:160
+msgid "Seçili malzemeyi yalnız bu bilgisayardaki kütüphanenize kaydeder."
+msgstr "Saves the selected material to your library on this computer only."
+
 #: arayuz/geometri/editor.py:95
 msgid "Seçili yuvaya yeni düğüm koyar (eskisi Geri Al ile döner)."
 msgstr "Puts a new node in the selected slot (Undo restores the old one)."
@@ -9046,13 +9687,14 @@ msgstr "Shannon entropy could not be read: %s"
 msgid "Shannon entropisi sabit kaynak hesabında kullanılmaz"
 msgstr "Shannon entropy is not used in a fixed source calculation"
 
-#: cekirdek/malzeme_kutup.py:539
+#: cekirdek/malzeme_kutup.py:589
 msgid "SiC — silisyum karbür"
 msgstr "SiC — silicon carbide"
 
 #: arayuz/ayar/yerlesim.py:204 arayuz/cubuk/tambur_formu.py:71 arayuz/demet/yerlesim.py:94
 #: arayuz/geometri/editor.py:116 arayuz/geometri/form_yerlesim.py:60
-#: arayuz/kor/yerlesim.py:130 arayuz/sekme_cubuk.py:143 arayuz/sekme_malzeme.py:145
+#: arayuz/kor/yerlesim.py:130 arayuz/malzeme/kutuphane_tarayici.py:87
+#: arayuz/sekme_cubuk.py:143 arayuz/sekme_malzeme.py:150
 msgid "Sil"
 msgstr "Delete"
 
@@ -9072,7 +9714,7 @@ msgstr "Cylinder (concentric circles)"
 msgid "Silindirik kor, yansıtıcı kuşak ve dönen kontrol tamburları."
 msgstr "Cylindrical core, radial reflector and rotating control drums."
 
-#: cekirdek/malzeme_kutup.py:416
+#: cekirdek/malzeme_kutup.py:460
 msgid "Silisyum karbür"
 msgstr "Silicon carbide"
 
@@ -9227,6 +9869,10 @@ msgstr "Nuclides not found in the result (not in the chart): %s"
 msgid "Sonuçta bulunamayan nüklidler: %s"
 msgstr "Nuclides not found in the result: %s"
 
+#: arayuz/malzeme/asistan.py:225
+msgid "Sorun bulunmadı."
+msgstr "No problems found."
+
 #: arayuz/yardim/__init__.py:71
 msgid "Sorun giderme"
 msgstr "Troubleshooting"
@@ -9276,7 +9922,7 @@ msgstr "Coolant temperature — density changes with a correlation"
 msgid "Soğutucu ve moderatör"
 msgstr "Coolant and moderator"
 
-#: cekirdek/malzeme_kutup.py:542
+#: cekirdek/malzeme_kutup.py:592
 msgid "Soğutucu ve moderatör; yoğunluk sıcaklıktan hesaplanır."
 msgstr "Coolant and moderator; the density is computed from the temperature."
 
@@ -9352,7 +9998,7 @@ msgstr ""
 msgid "Suda çözünmüş doğal bor"
 msgstr "Natural boron dissolved in water"
 
-#: cekirdek/malzeme_kutup.py:496
+#: cekirdek/malzeme_kutup.py:543
 msgid "Suda çözünmüş doğal borun ağırlıkça ppm'i (PWR kimyasal kontrolü)."
 msgstr "Weight ppm of natural boron dissolved in water (PWR chemical shim)."
 
@@ -9376,10 +10022,19 @@ msgstr "Columns"
 msgid "Sütun sayısı (x)"
 msgstr "Number of columns (x)"
 
-#: arayuz/sekme_malzeme.py:67 cekirdek/malzeme_kutup.py:491
+#: arayuz/sekme_malzeme.py:67 cekirdek/malzeme_kutup.py:538 cekirdek/malzeme_tarif.py:77
 #: cekirdek/rapor_sablon/__init__.py:93
 msgid "Sıcaklık"
 msgstr "Temperature"
+
+#: cekirdek/malzeme_tarif.py:380
+#, python-format
+msgid ""
+"Sıcaklık %.1f K, kütüphane aralığının (%.0f–%.0f K, %s) dışında; koşu sıcaklık "
+"ayarına göre hata verebilir."
+msgstr ""
+"Temperature %.1f K is outside the library range (%.0f–%.0f K, %s); the run may stop "
+"with an error depending on the temperature setting."
 
 #: cekirdek/rapor.py:354
 msgid "Sıcaklık yöntemi"
@@ -9389,7 +10044,7 @@ msgstr "Temperature method"
 msgid "Sıcaklık yöntemi:"
 msgstr "Temperature method:"
 
-#: arayuz/malzeme/malzeme_diyalog.py:149
+#: arayuz/malzeme/malzeme_diyalog.py:149 arayuz/malzeme/tarif_formu.py:160
 msgid "Sıcaklık:"
 msgstr "Temperature:"
 
@@ -9457,11 +10112,11 @@ msgstr "Next step: {baslik} — {aciklama}"
 msgid "Sıradaki: {aciklama}"
 msgstr "Next: {aciklama}"
 
-#: cekirdek/malzeme_kutup.py:422
+#: cekirdek/malzeme_kutup.py:466
 msgid "Sıvı sodyum"
 msgstr "Liquid sodium"
 
-#: cekirdek/malzeme_kutup.py:547
+#: cekirdek/malzeme_kutup.py:597 cekirdek/malzeme_tarif.py:244
 msgid "Sıvı sodyum (Na)"
 msgstr "Liquid sodium (Na)"
 
@@ -9754,7 +10409,7 @@ msgstr "Spectrum could not be built: {hata}"
 msgid "Taşındı"
 msgstr "Moved"
 
-#: cekirdek/malzeme_kutup.py:504
+#: cekirdek/malzeme_kutup.py:551 cekirdek/malzeme_tarif.py:67
 msgid "Taşıyıcı U'da U-235 %"
 msgstr "U-235 in the carrier U (%)"
 
@@ -9862,7 +10517,7 @@ msgstr ""
 "off a <b>bound</b> molecule (like hydrogen in water). If it is forgotten, k in a "
 "thermal reactor shifts by about a percent."
 
-#: cekirdek/dogrula/malzeme.py:179
+#: cekirdek/dogrula/malzeme.py:204
 #, python-format
 msgid ""
 "Termal spektrumda k'yi yüzde mertebesinde kaydırır. Malzemeler sekmesinde S(α,β) "
@@ -9887,7 +10542,20 @@ msgstr "Terminal and HPC use"
 msgid "Tesir kesiti kütüphanesi"
 msgstr "Cross section library"
 
-#: cekirdek/malzeme_kutup.py:493
+#: cekirdek/malzeme_tarif.py:404
+msgid ""
+"Tesir kesiti kütüphanesi yolu tanımlı değil (OPENMC_CROSS_SECTIONS); eksik nüklid "
+"denetimi atlandı."
+msgstr ""
+"No cross section library path is set (OPENMC_CROSS_SECTIONS); missing-nuclide check "
+"skipped."
+
+#: cekirdek/malzeme_tarif.py:365
+#, python-format
+msgid "Tesir kesiti kütüphanesinde olmayan nüklid: %s"
+msgstr "Nuclide not in the cross section library: %s"
+
+#: cekirdek/malzeme_kutup.py:540
 msgid "Tesir kesiti verisi bu sıcaklıkta kullanılır."
 msgstr "Cross section data are used at this temperature."
 
@@ -10047,9 +10715,13 @@ msgstr "Fill all with selected component"
 msgid "Tür"
 msgstr "Type"
 
-#: cekirdek/dogrula/malzeme.py:84
+#: cekirdek/dogrula/malzeme.py:108
 msgid "Tür 'element' (doğal element) ya da 'nuklid' (izotop) olmalı."
 msgstr "The type must be 'element' (natural element) or 'nuklid' (nuclide)."
+
+#: arayuz/malzeme/turetilmis_panel.py:43
+msgid "Türetilmiş değerler"
+msgstr "Derived values"
 
 #: cekirdek/ceviri.py:60
 msgid "Türkçe"
@@ -10088,7 +10760,7 @@ msgstr ""
 "With a U loading of %.2f gU/cm³ and a porosity of %.1f%% there is no room left for "
 "aluminium (U₃Si₂ volume fraction %.2f)."
 
-#: cekirdek/dogrula/malzeme.py:121
+#: cekirdek/dogrula/malzeme.py:145
 #, python-format
 msgid ""
 "U zenginliği %%%.2f — OpenMC'nin zenginlik kısayolu U234/U235 kütle oranını sabit "
@@ -10097,15 +10769,19 @@ msgstr ""
 "U enrichment %.2f%% — OpenMC's enrichment shortcut assumes a constant U234/U235 mass "
 "ratio of 0.008; this is valid only at low enrichments"
 
-#: cekirdek/malzeme_kutup.py:408
+#: cekirdek/malzeme_kutup.py:452
 msgid "U-10Mo — metalik alaşım yakıt"
 msgstr "U-10Mo — metallic alloy fuel"
 
-#: cekirdek/malzeme_kutup.py:530
+#: cekirdek/malzeme_kutup.py:580
 msgid "U-10Mo — metalik uranyum alaşımı"
 msgstr "U-10Mo — metallic uranium alloy"
 
-#: cekirdek/malzeme_kutup.py:480
+#: cekirdek/malzeme_tarif.py:66
+msgid "U-234 ve U-236 ORNL/CSD/TM-244 bağıntısıyla eklenir (OpenMC ile aynı)."
+msgstr "U-234 and U-236 are added with the ORNL/CSD/TM-244 correlation (same as OpenMC)."
+
+#: cekirdek/malzeme_kutup.py:527 cekirdek/malzeme_tarif.py:65
 msgid "U-235 ağırlıkça %"
 msgstr "U-235 wt%"
 
@@ -10117,11 +10793,16 @@ msgstr "U-235 weight %; leave empty for natural uranium."
 msgid "U-235 fisyon, epitermal / termal"
 msgstr "U-235 fission, epithermal / thermal"
 
+#: cekirdek/malzeme_hesap.py:229
+#, python-format
+msgid "U-235 zenginliği 0 ile %%%.2f arasında olmalı: %r"
+msgstr "U-235 enrichment must be between 0 and %%%.2f: %r"
+
 #: arayuz/analiz/adlar.py:72
 msgid "U-235'in ağırlıkça yüzdesi."
 msgstr "Weight percent of U-235."
 
-#: cekirdek/malzeme_kutup.py:482
+#: cekirdek/malzeme_kutup.py:529
 msgid ""
 "U-235'in uranyum içindeki ağırlık yüzdesi. OpenMC'nin zenginlik kısayolu %97'nin "
 "üstünde tanımsızdır."
@@ -10141,17 +10822,29 @@ msgstr "U-238 capture / U-235 fission"
 msgid "U-238 yakalama, epitermal / termal"
 msgstr "U-238 capture, epithermal / thermal"
 
-#: cekirdek/malzeme_kutup.py:407 cekirdek/malzeme_kutup.py:528
+#: cekirdek/malzeme_tarif.py:234
+msgid "U-Mo — metalik alaşım"
+msgstr "U-Mo — metallic alloy"
+
+#: cekirdek/malzeme_kutup.py:451 cekirdek/malzeme_kutup.py:578
 msgid "UN — uranyum nitrür"
 msgstr "UN — uranium nitride"
 
-#: cekirdek/malzeme_kutup.py:524
+#: cekirdek/malzeme_kutup.py:574 cekirdek/malzeme_tarif.py:225
 msgid "UO₂ — uranyum dioksit"
 msgstr "UO₂ — uranium dioxide"
 
-#: cekirdek/malzeme_kutup.py:406
+#: cekirdek/malzeme_kutup.py:450
 msgid "UO₂ — zenginlik parametreli uranyum dioksit"
 msgstr "UO₂ — uranium dioxide with enrichment parameter"
+
+#: cekirdek/malzeme_kutup.py:476
+msgid "UO₂-Gd₂O₃ yanabilir zehirli yakıt"
+msgstr "UO₂-Gd₂O₃ fuel with a burnable absorber"
+
+#: cekirdek/malzeme_kutup.py:611 cekirdek/malzeme_tarif.py:227
+msgid "UO₂-Gd₂O₃ — gadolinyumlu yakıt"
+msgstr "UO₂-Gd₂O₃ — gadolinia fuel"
 
 #: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:47
 #, python-format
@@ -10190,7 +10883,7 @@ msgstr "WARNING"
 msgid "Uranyum"
 msgstr "Uranium"
 
-#: cekirdek/malzeme_kutup.py:507
+#: cekirdek/malzeme_kutup.py:554
 msgid "Uranyum yüklemesi"
 msgstr "Uranium loading"
 
@@ -10281,11 +10974,11 @@ msgstr "Long-lived (7 LLFP)"
 msgid "Uç konumu"
 msgstr "Tip position"
 
-#: cekirdek/malzeme_kutup.py:410
+#: cekirdek/malzeme_kutup.py:454
 msgid "U₃Si₂-Al — MTR dispersiyon yakıtı"
 msgstr "U₃Si₂-Al — MTR dispersion fuel"
 
-#: cekirdek/malzeme_kutup.py:532
+#: cekirdek/malzeme_kutup.py:582
 msgid "U₃Si₂-Al — dispersiyon yakıtı"
 msgstr "U₃Si₂-Al — dispersion fuel"
 
@@ -10311,8 +11004,8 @@ msgstr "By default the palette shows only pins, inner assemblies and coolant/mod
 msgid "Varsayılan: "
 msgstr "Default: "
 
-#: arayuz/malzeme/kutuphane_diyalog.py:74 arayuz/malzeme/malzeme_diyalog.py:208
-#: arayuz/pencere/proje.py:78
+#: arayuz/malzeme/asistan.py:146 arayuz/malzeme/kutuphane_diyalog.py:74
+#: arayuz/malzeme/malzeme_diyalog.py:208 arayuz/pencere/proje.py:78
 msgid "Vazgeç"
 msgstr "Cancel"
 
@@ -10424,6 +11117,7 @@ msgstr ""
 " way. Keep it on in eigenvalue calculations."
 
 #: arayuz/cubuk/parca_islemleri.py:227 arayuz/malzeme/yardimcilar.py:27
+#: cekirdek/malzeme_tarif.py:32
 msgid "Yakıt"
 msgstr "Fuel"
 
@@ -10478,7 +11172,7 @@ msgstr ""
 msgid "Yakıt tabakası kalınlığı:"
 msgstr "Fuel meat thickness:"
 
-#: cekirdek/malzeme_kutup.py:486
+#: cekirdek/malzeme_kutup.py:533
 msgid ""
 "Yakıt tabakasındaki boşluk hacim kesri (0–0.3). Yoğunluk, U yüklemesi ve bu değerden "
 "hesaplanır: U₃Si₂ (12.2 g/cm³) + Al (2.70 g/cm³)."
@@ -10498,7 +11192,7 @@ msgstr "Add fuel pin"
 msgid "Yakıt, yakıt-zarf aralığı, zarf ve soğutucu; malzemeler rollerine göre seçilir."
 msgstr "Fuel, fuel-cladding gap, cladding and coolant; materials are chosen by role."
 
-#: arayuz/sekme_malzeme.py:92
+#: arayuz/sekme_malzeme.py:97
 msgid ""
 "Yakıt, zarf ve soğutucuyu hazır kütüphaneden ekleyin. Zenginlik, sıcaklık ve bor gibi"
 " değerleri sonradan değiştirebilirsiniz."
@@ -10510,7 +11204,7 @@ msgstr ""
 msgid "Yakıt-zarf aralığı"
 msgstr "Fuel-cladding gap"
 
-#: cekirdek/malzeme_kutup.py:557
+#: cekirdek/malzeme_kutup.py:613
 msgid "Yakıt-zarf aralığı dolgu gazı."
 msgstr "Fuel-cladding gap fill gas."
 
@@ -10518,6 +11212,12 @@ msgstr "Fuel-cladding gap fill gas."
 #, python-brace-format
 msgid "Yakıt: {ad}"
 msgstr "Fuel: {ad}"
+
+#: cekirdek/malzeme_kutup.py:558
+msgid "Yakıttaki gadolinyum oksidin ağırlık yüzdesi (tipik %2–10; IAEA-TECDOC-844, 1995)."
+msgstr ""
+"Weight percentage of gadolinium oxide in the fuel (typically 2–10%; IAEA-TECDOC-844, "
+"1995)."
 
 #: arayuz/pencere/yardim_metni.py:134
 msgid ""
@@ -10546,6 +11246,11 @@ msgid ""
 msgstr ""
 "Computes fuel depletion over time and how k-eff changes with burnup. Each step is at "
 "least one OpenMC run; the time grows with the number of steps."
+
+#: arayuz/malzeme/kutuphane_tarayici.py:92
+#, python-format
+msgid "Yalnız bu bilgisayarda saklanır: %s"
+msgstr "Stored on this computer only: %s"
 
 #: arayuz/geometri/duzenle.py:548
 msgid "Yalnızca bir yuvadaki düğüm parçaya çıkarılır."
@@ -10601,13 +11306,21 @@ msgstr "Radial boundary:"
 msgid "Yanabilir (fisil) malzeme bulunamadı."
 msgstr "No depletable (fissile) material found."
 
-#: cekirdek/malzeme_kutup.py:556
+#: cekirdek/malzeme_kutup.py:606
 msgid "Yanabilir zehir."
 msgstr "Burnable absorber."
 
 #: cekirdek/nuklidler.py:297
 msgid "Yanabilir zehirler (Gd, Er)"
 msgstr "Burnable absorbers (Gd, Er)"
+
+#: cekirdek/malzeme_kutup.py:611
+msgid "Yanabilir zehirli seramik yakıt."
+msgstr "Ceramic fuel with a burnable absorber."
+
+#: cekirdek/malzeme_tarif.py:228
+msgid "Yanabilir zehirli yakıt; kuramsal yoğunluk ideal karışımdan."
+msgstr "Fuel with a burnable absorber; theoretical density from ideal mixing."
 
 #: cekirdek/dogrula/tukenme.py:70
 msgid "Yanacak yakıt geometride yer almalı."
@@ -10712,13 +11425,17 @@ msgstr ""
 "A reflective boundary means an infinite medium; critical sphere assemblies are bare "
 "(Vacuum)."
 
-#: cekirdek/malzeme_kutup.py:552
+#: cekirdek/malzeme_kutup.py:602
 msgid "Yansıtıcı ve moderatör."
 msgstr "Reflector and moderator."
 
 #: arayuz/geometri/sablon_diyalogu.py:30
 msgid "Yansıtıcı yarıçapı"
 msgstr "Reflector radius"
+
+#: cekirdek/malzeme_tarif.py:34
+msgid "Yapı malzemesi"
+msgstr "Structural material"
 
 #: arayuz/pencere/menuler.py:111 arayuz/pencere/menuler.py:338
 #: arayuz/pencere/yardim_metni.py:14
@@ -10905,18 +11622,34 @@ msgstr "None (do not add thermal scattering data)"
 msgid "Yolu denetleyin ya da nükleer veri kütüphanesini indirin."
 msgstr "Check the path or download the nuclear data library."
 
-#: arayuz/sekme_malzeme.py:66 cekirdek/malzeme_kutup.py:489
+#: arayuz/sekme_malzeme.py:66 cekirdek/malzeme_kutup.py:536 cekirdek/malzeme_tarif.py:74
 #: cekirdek/rapor_sablon/__init__.py:93
 msgid "Yoğunluk"
 msgstr "Density"
+
+#: cekirdek/malzeme_tarif.py:244
+msgid "Yoğunluk Fink & Leibowitz (ANL/RE-95/2)."
+msgstr "Density from Fink & Leibowitz (ANL/RE-95/2)."
+
+#: cekirdek/malzeme_tarif.py:241
+msgid "Yoğunluk IAPWS R16-17 (NIST) tablosundan; kalanı hafif su."
+msgstr "Density from an IAPWS R16-17 (NIST) table; the remainder is light water."
+
+#: cekirdek/malzeme_tarif.py:237
+msgid "Yoğunluk IAPWS-IF97 ile sıcaklık ve basınçtan."
+msgstr "Density from temperature and pressure with IAPWS-IF97."
 
 #: arayuz/malzeme/malzeme_diyalog.py:172
 msgid "Yoğunluk birimi:"
 msgstr "Density unit:"
 
-#: cekirdek/malzeme_kutup.py:521
+#: cekirdek/malzeme_kutup.py:571
 msgid "Yoğunluk bu sıcaklıktaki doymuş sıvı sudan hesaplanır (273–623 K)."
 msgstr "The density is computed from saturated liquid water at this temperature (273–623 K)."
+
+#: cekirdek/malzeme_tarif.py:68
+msgid "Yoğunluk girişi"
+msgstr "Density input"
 
 #: arayuz/malzeme/malzeme_diyalog.py:376
 msgid "Yoğunluk pozitif bir sayı olmalı."
@@ -10925,6 +11658,11 @@ msgstr "Density must be a positive number."
 #: arayuz/malzeme/girdiler.py:142 arayuz/malzeme/malzeme_diyalog.py:144
 msgid "Yoğunluk:"
 msgstr "Density:"
+
+#: arayuz/malzeme/turetilmis_panel.py:81
+#, python-brace-format
+msgid "Yoğunluk: {rho:.5g} g/cm³  =  {n:.4e} atom/b-cm"
+msgstr "Density: {rho:.5g} g/cm³  =  {n:.4e} atom/b-cm"
 
 #: arayuz/geometri/editor.py:117 arayuz/kor/yerlesim.py:131
 msgid "Yukarı taşı"
@@ -10957,11 +11695,11 @@ msgstr "Method must be Radau or BDF: %r"
 msgid "Yüksek (1400)"
 msgstr "High (1400)"
 
-#: cekirdek/malzeme_kutup.py:538
+#: cekirdek/malzeme_kutup.py:588
 msgid "Yüksek sıcaklık zarf alaşımı."
 msgstr "High-temperature cladding alloy."
 
-#: cekirdek/malzeme_kutup.py:528
+#: cekirdek/malzeme_kutup.py:578
 msgid "Yüksek yoğunluklu seramik yakıt."
 msgstr "High-density ceramic fuel."
 
@@ -11039,7 +11777,7 @@ msgstr "Poisons"
 msgid "Zenginlik %"
 msgstr "Enrichment %"
 
-#: cekirdek/malzeme_kutup.py:668
+#: cekirdek/malzeme_kutup.py:724
 #, python-format
 msgid ""
 "Zenginlik %%%.2f: OpenMC'nin zenginlik kısayolu U-234 oranını sabit varsayar; yüksek "
@@ -11056,7 +11794,7 @@ msgstr "Enrichment sensitivity"
 msgid "Zenginlik duyarlılığı. Pozitif olması beklenir."
 msgstr "Enrichment sensitivity. It is expected to be positive."
 
-#: cekirdek/dogrula/malzeme.py:104
+#: cekirdek/dogrula/malzeme.py:128
 msgid ""
 "Zenginlik yalnızca U elementi satırında kullanılabilir. İzotopları nüklid olarak "
 "giriyorsanız miktarları doğrudan verin."
@@ -11067,6 +11805,10 @@ msgstr ""
 #: arayuz/malzeme/bilesim.py:93
 msgid "Zenginlik yalnızca doğal element U satırında girilir."
 msgstr "Enrichment is entered only on a natural-element U row."
+
+#: cekirdek/malzeme_tarif.py:225
+msgid "Zenginlik, %TD ve O/M'den seramik yakıt."
+msgstr "Ceramic fuel from enrichment, %TD and O/M."
 
 #: arayuz/pencere/yardim_metni.py:138
 msgid "Zincir (chain)"
@@ -11095,11 +11837,11 @@ msgstr "Chain:"
 msgid "Zincirde en yakın ad: %s"
 msgstr "Closest name in the chain: %s"
 
-#: cekirdek/malzeme_kutup.py:534
+#: cekirdek/malzeme_kutup.py:584
 msgid "Zircaloy-4"
 msgstr "Zircaloy-4"
 
-#: cekirdek/malzeme_kutup.py:412
+#: cekirdek/malzeme_kutup.py:456
 msgid "Zircaloy-4 zarf"
 msgstr "Zircaloy-4 cladding"
 
@@ -11272,11 +12014,16 @@ msgstr "apothem"
 msgid "ara enerji"
 msgstr "intermediate"
 
+#: cekirdek/malzeme_hesap.py:116
+#, python-format
+msgid "atom kütlesi bilinmiyor: %s"
+msgstr "atomic mass unknown: %s"
+
 #: cekirdek/rapor_sablon/grafik.py:176
 msgid "atom sayısı"
 msgstr "number of atoms"
 
-#: cekirdek/dogrula/malzeme.py:60
+#: cekirdek/dogrula/malzeme.py:84
 #, python-format
 msgid "aynı ad %d kez tanımlanmış"
 msgstr "the same name is defined %d times"
@@ -11322,6 +12069,15 @@ msgstr "no node with ID '%s' of type %s in the tree"
 msgid "ağır su (D₂O)"
 msgstr "heavy water (D₂O)"
 
+#: cekirdek/malzeme_pnnl.py:123
+#, python-format
+msgid "ağırlık kesirlerinin toplamı %.6f (1'den sapma > %g)"
+msgstr "the weight fractions sum to %.6f (deviation from 1 > %g)"
+
+#: cekirdek/malzeme_pnnl.py:207
+msgid "ağırlık kesri"
+msgstr "weight fraction"
+
 #: arayuz/nuklid_secici.py:372
 msgid "aşağıdan işaretleyin ya da hazır set seçin"
 msgstr "check below or pick a preset set"
@@ -11337,6 +12093,11 @@ msgstr "facing center y"
 #: cekirdek/dogrula/tukenme.py:94
 msgid "basitleştirilmiş CASL zinciri: 228 nüklid (tam zincir 3820)"
 msgstr "simplified CASL chain: 228 nuclides (full chain 3820)"
+
+#: cekirdek/malzeme_sogutucu.py:107
+#, python-format
+msgid "basınç 0–%.0f MPa aralığında olmalı: %r MPa"
+msgstr "pressure must be within 0–%.0f MPa: %r MPa"
 
 #: arayuz/guc_harita.py:306 arayuz/guc_harita.py:319 cekirdek/rapor_sablon/grafik.py:156
 msgid "bağıl güç"
@@ -11378,13 +12139,67 @@ msgstr "library component"
 msgid "bileşen bölgesine sığmıyor"
 msgstr "does not fit the component region"
 
+#: cekirdek/malzeme_hesap.py:459
+msgid "bileşen ve oran sayısı eşit olmalı"
+msgstr "the numbers of components and fractions must match"
+
+#: cekirdek/malzeme_hesap.py:478
+msgid "bileşen yoğunlukları pozitif ve sonlu olmalı"
+msgstr "component densities must be positive and finite"
+
 #: cekirdek/uygunluk_denetimi/vv_arayuz.py:43 cekirdek/vv/kume.py:196
 msgid "bileşik"
 msgstr "compound"
 
-#: cekirdek/dogrula/malzeme.py:68
+#: cekirdek/dogrula/malzeme.py:92 cekirdek/malzeme_hesap.py:306
+#: cekirdek/malzeme_kullanici.py:191
 msgid "bileşim boş"
 msgstr "composition is empty"
+
+#: cekirdek/malzeme_kullanici.py:134
+#, python-format
+msgid "bileşim satırı %d sözlük değil"
+msgstr "composition row %d is not a dictionary"
+
+#: cekirdek/malzeme_kullanici.py:136
+#, python-format
+msgid "bileşim satırı %d: bilinmeyen alan %s"
+msgstr "composition row %d: unknown field %s"
+
+#: cekirdek/malzeme_kullanici.py:144
+#, python-format
+msgid "bileşim satırı %d: birim ao ya da wo olmalı"
+msgstr "composition row %d: unit must be ao or wo"
+
+#: cekirdek/malzeme_kullanici.py:140
+#, python-format
+msgid "bileşim satırı %d: isim eksik"
+msgstr "composition row %d: name missing"
+
+#: cekirdek/malzeme_kullanici.py:142
+#, python-format
+msgid "bileşim satırı %d: miktar negatif olmayan bir sayı olmalı"
+msgstr "composition row %d: amount must be a non-negative number"
+
+#: cekirdek/malzeme_kullanici.py:138
+#, python-format
+msgid "bileşim satırı %d: tür element ya da nuklid olmalı"
+msgstr "composition row %d: type must be element or nuclide"
+
+#: cekirdek/malzeme_kullanici.py:147
+#, python-format
+msgid "bileşim satırı %d: zenginlik 0–100 olmalı"
+msgstr "composition row %d: enrichment must be 0–100"
+
+#: cekirdek/malzeme_hesap.py:298
+#, python-format
+msgid "bileşimde atom ve ağırlık oranları karışık ya da geçersiz: %s"
+msgstr "the composition mixes atom and weight fractions, or a unit is invalid: %s"
+
+#: cekirdek/malzeme_kullanici.py:193
+#, python-format
+msgid "bileşimde en çok %d satır olabilir"
+msgstr "the composition may have at most %d rows"
 
 #: cekirdek/uygunluk_denetimi/vv_arayuz.py:83
 #, python-format
@@ -11420,6 +12235,11 @@ msgstr "unknown conformity check profile: %s (valid: %s)"
 #, python-format
 msgid "bilinmeyen eksen: %r"
 msgstr "unknown axis: %r"
+
+#: cekirdek/malzeme_hesap.py:107
+#, python-format
+msgid "bilinmeyen element: %r"
+msgstr "unknown element: %r"
 
 #: cekirdek/spektrum.py:120
 #, python-format
@@ -11477,6 +12297,11 @@ msgstr "unknown option: %s"
 msgid "bilinmeyen tarama türü: %s"
 msgstr "unknown sweep type: %s"
 
+#: cekirdek/malzeme_tarif.py:275
+#, python-format
+msgid "bilinmeyen tarif: %r"
+msgstr "unknown recipe: %r"
+
 #: cekirdek/tarama.py:448
 #, python-format
 msgid "bilinmeyen tür: %s"
@@ -11486,6 +12311,11 @@ msgstr "unknown type: %s"
 #, python-format
 msgid "bilinmeyen yerleşim modu: %s"
 msgstr "unknown placement mode: %s"
+
+#: cekirdek/malzeme_hesap.py:350
+#, python-format
+msgid "bilinmeyen yoğunluk birimi: %r"
+msgstr "unknown density unit: %r"
 
 #: cekirdek/dogrula/kor.py:270
 msgid "bir küre"
@@ -11614,6 +12444,10 @@ msgstr "cross_sections.xml not found: %s"
 msgid "cross_sections.xml içinde type='photon' kaydı bulunamadı."
 msgstr "No type='photon' entry was found in cross_sections.xml."
 
+#: cekirdek/malzeme_tarif.py:352
+msgid "cross_sections.xml okunamadı; eksik nüklid denetimi atlandı."
+msgstr "cross_sections.xml could not be read; missing-nuclide check skipped."
+
 #: cekirdek/dogrula/veri.py:77
 msgid "cross_sections.xml okunamadı; nüklid denetimi atlandı"
 msgstr "cross_sections.xml could not be read; nuclide check skipped"
@@ -11736,16 +12570,40 @@ msgstr "array data does not match its descriptor"
 msgid "dk:sn"
 msgstr "min:s"
 
+#: cekirdek/malzeme_kullanici.py:271
+#, python-format
+msgid "dosya açılamadı: %s"
+msgstr "could not open the file: %s"
+
 #: cekirdek/ice_aktar.py:77 cekirdek/ice_aktar.py:189
 #, python-format
 msgid "dosya bulunamadı: %s"
 msgstr "file not found: %s"
 
+#: cekirdek/malzeme_kullanici.py:229
+#, python-format
+msgid "dosya daha yeni bir sürümle yazılmış (sürüm %d, bu program %d); değiştirilmedi"
+msgstr "the file was written by a newer version (version %d, this program %d); left unchanged"
+
+#: cekirdek/malzeme_kullanici.py:351
+msgid "dosya daha yeni bir sürümle yazılmış; üzerine yazılmadı"
+msgstr "the file was written by a newer version; not overwritten"
+
+#: cekirdek/malzeme_kullanici.py:255
+#, python-format
+msgid "dosya çok büyük (%d bayt; sınır %d)"
+msgstr "the file is too large (%d bytes; limit %d)"
+
+#: cekirdek/malzeme_sogutucu.py:81
+#, python-format
+msgid "doyma basıncı %.2f–%.3f K aralığında tanımlı: %.2f K"
+msgstr "saturation pressure is defined for %.2f–%.3f K: %.2f K"
+
 #: cekirdek/tarama.py:134
 msgid "doymuş sıvı su tablosu (273–623 K)"
 msgstr "saturated liquid water table (273–623 K)"
 
-#: arayuz/malzeme/bilesim.py:21
+#: arayuz/malzeme/bilesim.py:21 arayuz/malzeme/tarif_formu.py:31
 msgid "doğal"
 msgstr "natural"
 
@@ -11753,9 +12611,18 @@ msgstr "natural"
 msgid "doğal U"
 msgstr "natural U"
 
-#: cekirdek/malzeme_kutup.py:513
+#: cekirdek/malzeme_kutup.py:563
 msgid "doğal bor (%19.9)"
 msgstr "natural boron (19.9%)"
+
+#: cekirdek/malzeme_hesap.py:123
+#, python-format
+msgid "doğal izotopu olmayan element: %s (izotopları tek tek verin)"
+msgstr "element with no natural isotopes: %s (enter the isotopes individually)"
+
+#: cekirdek/malzeme_tarif.py:70
+msgid "doğrudan g/cm³"
+msgstr "directly in g/cm³"
 
 #: cekirdek/rapor_uygunluk.py:96 cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:45
 msgid "doğrulama (V&V) kümesi yok"
@@ -12142,6 +13009,11 @@ msgstr "invalid k-eff"
 msgid "geçersiz kesit: %r"
 msgstr "invalid slice: %r"
 
+#: cekirdek/malzeme_hesap.py:96
+#, python-format
+msgid "geçersiz nüklid adı: %r"
+msgstr "invalid nuclide name: %r"
+
 #: cekirdek/dogrula/kor.py:244
 #, python-format
 msgid "geçersiz sınır koşulu (%s): %s"
@@ -12171,6 +13043,11 @@ msgstr "display name"
 #: arayuz/cubuk/tambur_formu.py:208 cekirdek/geometri/yol_metni.py:20
 msgid "gövde"
 msgstr "drum body"
+
+#: cekirdek/malzeme_hesap.py:204
+#, python-format
+msgid "gözeneklilik 0 ile 1 arasında olmalı: %r"
+msgstr "porosity must be between 0 and 1: %r"
 
 #: arayuz/tukenme_arayuz.py:75 arayuz/tukenme_arayuz.py:173 cekirdek/tukenme.py:733
 #: cekirdek/tukenme.py:758
@@ -12647,6 +13524,11 @@ msgstr "rectangular {nx}×{ny}"
 msgid "karışık"
 msgstr "mixed"
 
+#: cekirdek/malzeme_hesap.py:475
+#, python-format
+msgid "karışım oranı ao, wo ya da vo olmalı: %r"
+msgstr "mixture fraction type must be ao, wo or vo: %r"
+
 #: cekirdek/ornek_bilgi.py:190
 #, python-format
 msgid "kategori %r geçersiz (geçerli: %s)"
@@ -12718,6 +13600,19 @@ msgstr "the source direction cannot be a zero vector"
 msgid "kaynak şiddeti sıfırdan büyük olmalı (%s)"
 msgstr "source strength must be greater than zero (%s)"
 
+#: cekirdek/malzeme_kullanici.py:206
+msgid "kayıt adı"
+msgstr "record name"
+
+#: cekirdek/malzeme_kullanici.py:203 cekirdek/malzeme_kullanici.py:421
+msgid "kayıt adı eksik"
+msgstr "record name missing"
+
+#: cekirdek/malzeme_kullanici.py:205
+#, python-format
+msgid "kayıtta bilinmeyen alan: %s"
+msgstr "unknown field in the record: %s"
+
 #: cekirdek/geometri/hacim.py:49
 msgid "kesik kafes konumu"
 msgstr "truncated lattice position"
@@ -12725,6 +13620,10 @@ msgstr "truncated lattice position"
 #: cekirdek/geometri/hacim.py:50
 msgid "kesik çubuk (pin hücreye sığmıyor)"
 msgstr "truncated pin (does not fit the pin cell)"
+
+#: cekirdek/malzeme_hesap.py:136
+msgid "kesirlerin toplamı sıfır"
+msgstr "the fractions sum to zero"
 
 #: cekirdek/cizim_sureci.py:235
 #, python-format
@@ -12738,6 +13637,11 @@ msgstr "cross-section height z"
 #: arayuz/geometri/form_ortak.py:155
 msgid "kesit şekli"
 msgstr "cross-section shape"
+
+#: cekirdek/malzeme_kullanici.py:371
+#, python-format
+msgid "kilit dosyası açılamadı: %s"
+msgstr "could not open the lock file: %s"
 
 #: cekirdek/dogrula/kaynak.py:133
 msgid ""
@@ -12932,6 +13836,18 @@ msgstr "user selection"
 msgid "kullanılan ama tanımsız malzeme: %s"
 msgstr "material used but undefined: %s"
 
+#: cekirdek/malzeme_hesap.py:200
+msgid "kuramsal yoğunluk"
+msgstr "theoretical density"
+
+#: cekirdek/malzeme_hesap.py:201 cekirdek/malzeme_hesap.py:214
+msgid "kuramsal yoğunluk pozitif olmalı"
+msgstr "theoretical density must be positive"
+
+#: cekirdek/malzeme_tarif.py:69
+msgid "kuramsal yoğunluk yüzdesinden"
+msgstr "from percent of theoretical density"
+
 #: cekirdek/geometri/kurulum.py:201
 #, python-format
 msgid "kurulamayan düğüm türü: %r"
@@ -12978,6 +13894,10 @@ msgstr ""
 #: cekirdek/geometri/ice_aktar_kap.py:70
 msgid "kök olmayan kabın dış hücresi yok"
 msgstr "the non-root container has no outer cell"
+
+#: cekirdek/malzeme_kullanici.py:224
+msgid "kök öğe sözlük değil"
+msgstr "the root element is not a dictionary"
 
 #: cekirdek/geometri/ice_aktar_kap.py:68
 msgid "kökte dış (sınırsız) hücre var"
@@ -13029,7 +13949,17 @@ msgstr "a height cannot be defined for a spherical assembly (%g cm)"
 msgid "kütüphane"
 msgstr "library"
 
-#: cekirdek/malzeme_kutup.py:436
+#: cekirdek/malzeme_kullanici.py:235
+#, python-format
+msgid "kütüphanede en çok %d kayıt olabilir"
+msgstr "the library may hold at most %d records"
+
+#: cekirdek/malzeme_kullanici.py:429
+#, python-format
+msgid "kütüphanede yok: %s"
+msgstr "not in the library: %s"
+
+#: cekirdek/malzeme_kutup.py:483
 #, python-format
 msgid "kütüphanede yok: %s  (mevcut: %s)"
 msgstr "not in the library: %s  (available: %s)"
@@ -13090,6 +14020,10 @@ msgstr "material"
 msgid "malzeme %s"
 msgstr "material %s"
 
+#: cekirdek/malzeme_kullanici.py:186
+msgid "malzeme adı"
+msgstr "material name"
+
 #: cekirdek/geometri/ice_aktar.py:328
 msgid "malzeme dolgulu hücre döndürülemez/ötelenemez"
 msgstr "a material-filled cell cannot be rotated/translated"
@@ -13107,10 +14041,19 @@ msgstr "material not found in the geometry"
 msgid "malzeme kimliği %d aktarılan malzemelerde yok"
 msgstr "material ID %d is not among the imported materials"
 
+#: cekirdek/malzeme_kullanici.py:183
+msgid "malzeme sözlük değil"
+msgstr "the material is not a dictionary"
+
 #: arayuz/kor/katmanlar.py:81 arayuz/sekme_kor.py:142
 #, python-format
 msgid "malzeme: %s"
 msgstr "material: %s"
+
+#: cekirdek/malzeme_kullanici.py:185
+#, python-format
+msgid "malzemede bilinmeyen alan: %s"
+msgstr "unknown field in the material: %s"
 
 #: cekirdek/tukenme.py:642
 msgid "malzemeler"
@@ -13223,6 +14166,21 @@ msgstr "moderator temperature coefficient (MTC)"
 msgid "negatif"
 msgstr "negative"
 
+#: cekirdek/malzeme_pnnl.py:209
+#, python-format
+msgid "negatif ağırlık kesri: %s = %g"
+msgstr "negative weight fraction: %s = %g"
+
+#: cekirdek/malzeme_hesap.py:281
+#, python-format
+msgid "negatif miktar: %s = %r"
+msgstr "negative amount: %s = %r"
+
+#: cekirdek/malzeme_hesap.py:154
+#, python-format
+msgid "negatif ya da geçersiz kesir: %s = %r"
+msgstr "negative or invalid fraction: %s = %r"
+
 #: arayuz/sekme_ayar.py:148
 msgid "nesil"
 msgstr "generations"
@@ -13240,6 +14198,11 @@ msgstr "point source z = %g is outside the model (height %g, boundary ±%g)"
 #: cekirdek/rapor_sablon/uygunluk_eki.py:25
 msgid "not"
 msgstr "note"
+
+#: cekirdek/malzeme_pnnl.py:142
+#, python-format
+msgid "numara %d daha önce kullanıldı"
+msgstr "number %d was already used"
 
 #: cekirdek/kosucu.py:366
 msgid "n·cm / kaynak nötronu"
@@ -13286,6 +14249,19 @@ msgid ""
 msgstr ""
 "The openmc executable is not on PATH.\n"
 "Make sure the conda environment is active (openmc-env)."
+
+#: cekirdek/malzeme_hesap.py:461
+msgid "oranlar negatif olamaz"
+msgstr "fractions cannot be negative"
+
+#: cekirdek/malzeme_hesap.py:463
+#, python-format
+msgid "oranların toplamı %%100 olmalı (şu an %%%.4f)"
+msgstr "the fractions must sum to 100%% (now %%%.4f)"
+
+#: cekirdek/malzeme_hesap.py:178
+msgid "ortalama molar kütle pozitif olmalı"
+msgstr "mean molar mass must be positive"
 
 #: cekirdek/kapsul.py:248
 msgid "ortam kilidi yok"
@@ -13431,6 +14407,20 @@ msgstr "polyethylene / plastic"
 msgid "pozitif"
 msgstr "positive"
 
+#: cekirdek/malzeme_hesap.py:388
+#, python-format
+msgid "ppm 0 ile 1e6 arasında olmalı: %r"
+msgstr "ppm must be between 0 and 1e6: %r"
+
+#: cekirdek/malzeme_tarif.py:89
+msgid ""
+"ppm = mg B / kg çözelti. Yoğunluk saf suyunkidir: borik asidin (H₃BO₃) yoğunluğa "
+"etkisi (~+%0.2–0.3) ihmal edilir; bor yalnız bileşime girer."
+msgstr ""
+"ppm = mg B per kg of solution. The density is that of pure water: the effect of boric"
+" acid (H₃BO₃) on density (~+0.2–0.3%) is neglected; boron enters only the "
+"composition."
+
 #: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:143
 msgid "profil"
 msgstr "profile"
@@ -13561,6 +14551,10 @@ msgstr "referans.sigma must be a non-negative number"
 msgid "referans.tur %r geçersiz (geçerli: %s)"
 msgstr "referans.tur %r is invalid (valid: %s)"
 
+#: cekirdek/malzeme_kullanici.py:171
+msgid "renk üç tamsayı (0–255) olmalı"
+msgstr "colour must be three integers (0–255)"
+
 #: arayuz/sonuc/spektrum.py:30
 msgid "rezonanstan kaçma olasılığı"
 msgstr "resonance escape probability"
@@ -13635,6 +14629,11 @@ msgstr "sha256 %s"
 msgid "silindir"
 msgstr "cylinder"
 
+#: cekirdek/malzeme_sogutucu.py:282
+#, python-format
+msgid "sodyum yoğunluğu %.0f–%.1f K aralığında tanımlı: %.2f K"
+msgstr "sodium density is defined for %.0f–%.1f K: %.2f K"
+
 #: cekirdek/dogrula/geometri.py:48
 msgid "son bölgenin yarıçapı boş olmalı"
 msgstr "the radius of the last pin region must be empty"
@@ -13707,6 +14706,11 @@ msgstr "water"
 msgid "su (H₂O)"
 msgstr "water (H₂O)"
 
+#: cekirdek/malzeme_sogutucu.py:104
+#, python-format
+msgid "su yoğunluğu (IAPWS-IF97 Bölge 1) %.2f–%.2f K aralığında: %.2f K"
+msgstr "water density (IAPWS-IF97 Region 1) is valid for %.2f–%.2f K: %.2f K"
+
 #: cekirdek/guc.py:409
 msgid ""
 "summary.h5 bulunamadı; güç dağılımının hücre konumları okunamaz. Koşu dizininde "
@@ -13726,6 +14730,10 @@ msgstr "columns"
 #: cekirdek/veri_bilgi.py:194
 msgid "sıcaklık aralığı okunamadı"
 msgstr "temperature range could not be read"
+
+#: cekirdek/malzeme_kullanici.py:164
+msgid "sıcaklık pozitif bir sayı olmalı"
+msgstr "temperature must be a positive number"
 
 #: arayuz/baslangic_akis.py:49
 #, python-format
@@ -13943,6 +14951,16 @@ msgstr "undefined plate-type fuel element: %s"
 #, python-format
 msgid "tanımsız çubuk: %s"
 msgstr "undefined pin: %s"
+
+#: cekirdek/malzeme_kullanici.py:128
+#, python-format
+msgid "tanınmayan %s adı: %r"
+msgstr "unrecognised %s name: %r"
+
+#: cekirdek/malzeme_pnnl.py:107
+#, python-format
+msgid "tanınmayan bileşen: %r"
+msgstr "unrecognised component: %r"
 
 #: cekirdek/geometri/ice_aktar_kap.py:205
 #, python-format
@@ -14167,7 +15185,7 @@ msgstr "y — neighboring assemblies above/below"
 msgid "y — komşular yukarıda"
 msgstr "y — neighbors above"
 
-#: arayuz/sekme_malzeme.py:97
+#: arayuz/sekme_malzeme.py:102
 msgid "ya da bileşimi elle tanımlayın"
 msgstr "or define the composition manually"
 
@@ -14282,6 +15300,11 @@ msgstr "no material selected for the radial reflector (void)"
 msgid "yapısal"
 msgstr "structural"
 
+#: cekirdek/malzeme_hesap.py:575
+#, python-format
+msgid "yarılanma ömrü bilinmiyor: %s"
+msgstr "half-life unknown: %s"
+
 #: arayuz/geometri/form_ortak.py:158
 msgid "yarıçap"
 msgstr "radius"
@@ -14290,6 +15313,24 @@ msgstr "radius"
 #, python-format
 msgid "yarıçaplar artan sırada olmalı: r%d = %.5f ≥ r%d = %.5f"
 msgstr "radii must be in increasing order: r%d = %.5f ≥ r%d = %.5f"
+
+#: cekirdek/malzeme_kullanici.py:357
+#, python-format
+msgid "yazılamadı: %s"
+msgstr "could not write: %s"
+
+#: cekirdek/malzeme_hesap.py:588
+msgid "yaşlanma süresi"
+msgstr "ageing time"
+
+#: cekirdek/malzeme_hesap.py:589
+msgid "yaşlanma süresi negatif olamaz"
+msgstr "ageing time cannot be negative"
+
+#: cekirdek/malzeme_kullanici.py:398
+#, python-format
+msgid "yedeklenemedi: %s"
+msgstr "could not back up: %s"
 
 #: cekirdek/kapsul.py:284
 msgid "yeni koşu dizini (varsayılan <koşu_dizini>_yeniden)"
@@ -14344,18 +15385,52 @@ msgstr "none"
 msgid "yok (yalnız model)"
 msgstr "none (model only)"
 
-#: cekirdek/dogrula/malzeme.py:185
+#: cekirdek/dogrula/malzeme.py:211
 msgid "yoğun fazda hidrojen var ama termal saçılma verisi (S(α,β)) eklenmemiş"
 msgstr "hydrogen in a condensed phase but no thermal scattering data (S(α,β)) is added"
 
-#: cekirdek/dogrula/malzeme.py:74
+#: cekirdek/malzeme_pnnl.py:94
+msgid "yoğunluk"
+msgstr "density"
+
+#: cekirdek/malzeme_pnnl.py:120
+#, python-format
+msgid "yoğunluk 0–%g g/cm³ aralığında değil: %g"
+msgstr "density is not within 0–%g g/cm³: %g"
+
+#: cekirdek/malzeme_kullanici.py:154
+msgid "yoğunluk birimi geçersiz"
+msgstr "invalid density unit"
+
+#: cekirdek/malzeme_pnnl.py:95
+msgid "yoğunluk değeri yok"
+msgstr "no density value"
+
+#: cekirdek/malzeme_kullanici.py:158
+msgid "yoğunluk pozitif olmalı"
+msgstr "density must be positive"
+
+#: cekirdek/malzeme_hesap.py:343
+#, python-format
+msgid "yoğunluk pozitif olmalı: %r"
+msgstr "density must be positive: %r"
+
+#: cekirdek/malzeme_kullanici.py:156
+msgid "yoğunluk sayı olmalı"
+msgstr "density must be a number"
+
+#: cekirdek/dogrula/malzeme.py:98
 #, python-format
 msgid "yoğunluk sıfırdan büyük olmalı: %s"
 msgstr "density must be greater than zero: %s"
 
-#: cekirdek/dogrula/malzeme.py:72
+#: cekirdek/dogrula/malzeme.py:96
 msgid "yoğunluk verilmemiş"
 msgstr "density not given"
+
+#: cekirdek/malzeme_pnnl.py:118
+msgid "yoğunluk ya da bileşim eksik"
+msgstr "density or composition missing"
 
 #: cekirdek/dogrula/geometri.py:195
 #, python-format
@@ -14369,6 +15444,10 @@ msgstr "height"
 #: cekirdek/dogrula/agac.py:286 cekirdek/dogrula/kor.py:366
 msgid "yükseklik verilmemiş — model eksenel yönde sonsuz (2B) kabul ediliyor"
 msgstr "height not given — the model is treated as infinite in the axial direction (2D)"
+
+#: cekirdek/malzeme_tarif.py:82
+msgid "yıl"
+msgstr "years"
 
 #: arayuz/cubuk/cubuk_formu.py:217
 #, python-format
@@ -14411,6 +15490,21 @@ msgstr "cladding material"
 #: cekirdek/uygunluk_denetimi/vv_arayuz.py:41
 msgid "zenginlik"
 msgstr "enrichment"
+
+#: cekirdek/malzeme_hesap.py:245
+#, python-format
+msgid "zenginlik birimi ao ya da wo olmalı: %r"
+msgstr "enrichment unit must be ao or wo: %r"
+
+#: cekirdek/malzeme_hesap.py:247
+#, python-format
+msgid "zenginlik kesri 0 ile 1 arasında olmalı: %r"
+msgstr "enrichment fraction must be between 0 and 1: %r"
+
+#: cekirdek/malzeme_hesap.py:273
+#, python-format
+msgid "zenginlik kısayolu yalnız uranyum içindir (%s)"
+msgstr "the enrichment shortcut is for uranium only (%s)"
 
 #: cekirdek/veri_bilgi.py:262
 #, python-format
@@ -15113,7 +16207,11 @@ msgstr "Period measured from the solution (last 10%%): %s"
 msgid "Çözünmüş bor"
 msgstr "Dissolved boron"
 
-#: cekirdek/malzeme_kutup.py:494
+#: cekirdek/malzeme_tarif.py:88
+msgid "Çözünmüş bor (kütlece ppm)"
+msgstr "Dissolved boron (ppm by mass)"
+
+#: cekirdek/malzeme_kutup.py:541
 msgid "Çözünmüş bor [ppm]"
 msgstr "Dissolved boron [ppm]"
 
@@ -15359,6 +16457,10 @@ msgstr "Refresh preview (F6)"
 msgid "Örnek biçim: %s"
 msgstr "Example format: %s"
 
+#: cekirdek/malzeme_tarif.py:97
+msgid "Örnek değer; ölçülmüş vektörü girin."
+msgstr "Example value; enter the measured vector."
+
 #: arayuz/pencere/proje.py:135
 #, python-format
 msgid ""
@@ -15443,6 +16545,10 @@ msgstr ""
 #: arayuz/sekme_ayar.py:109 arayuz/sekme_ayar.py:261
 msgid "Özel"
 msgstr "Custom"
+
+#: cekirdek/malzeme_tarif.py:34
+msgid "Özel karışım"
+msgstr "Custom mixture"
 
 #: cekirdek/rapor_sablon/uygunluk_eki.py:94
 msgid "Özet:"
@@ -15683,6 +16789,11 @@ msgstr "GP"
 #: cekirdek/ornek_bilgi.py:65
 msgid "İleri"
 msgstr "Advanced"
+
+#: arayuz/malzeme/asistan.py:144
+msgctxt "asistan adımı"
+msgid "İleri"
+msgstr "Next"
 
 #: cekirdek/dogrula/tukenme.py:122
 msgid ""
@@ -16038,6 +17149,10 @@ msgstr "ω = −λ_i is a pole; the inhour equation is undefined there."
 #: arayuz/cubuk/parca_islemleri.py:21
 msgid "— Malzeme seçin —"
 msgstr "— Select material —"
+
+#: arayuz/malzeme/tarif_formu.py:139
+msgid "— seçilmedi —"
+msgstr "— not selected —"
 
 #: arayuz/malzeme/yardimcilar.py:159
 #, python-format

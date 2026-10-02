@@ -709,6 +709,8 @@ def _terminal(argv):
     ap.add_argument("--veri-kontrolu-yok", action="store_true",
                     help=_("doğrulamada nüklid/kütüphane denetimini atla"))
     a = ap.parse_args(argv)
+    from cekirdek import veri_yolu
+    veri_yolu.surece_uygula()   # K2: Veri sayfasi secimi (openmc.deplete ortami okur)
 
     # libgomp OMP_NUM_THREADS'i KUTUPHANE YUKLENIRKEN okur; openmc.deplete'in
     # ice aktarilmasi kutuphaneyi yukler. Bu yuzden once ortam, sonra import.

@@ -81,6 +81,7 @@ class DogrulamaMixin(object):
             _log.exception("dogrulama sirasinda hata")
             self._bulgular = [dogrula.Bulgu("hata", "dogrulama",
                                             _("doğrulama sırasında hata: %s") % e)]
+        self._bulgular = self.veri_bulgusu_ekle(self._bulgular)     # K2: veri yoksa hata
         self._bulgu_ogeleri(self.dogrulama)
         self._serit_guncelle()
         self.s_calistir.kapi_guncelle()
@@ -168,7 +169,7 @@ class DogrulamaMixin(object):
 
     def sekmeye_gitmeyi_dene(self, yer):
         """Bulgunun yerinden sayfaya gider; sayfa destekliyorsa odaklar."""
-        anahtar = yer_sekme_anahtari(yer)
+        anahtar = self.ek_sayfa_anahtari(yer) or yer_sekme_anahtari(yer)   # K2: veri once
         if anahtar is None:
             return False
         if self.baslangic_acik_mi():
