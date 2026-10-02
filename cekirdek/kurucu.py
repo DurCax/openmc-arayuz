@@ -34,6 +34,7 @@ import openmc
 from cekirdek import geometri
 from cekirdek import kaynak as _kaynak
 from cekirdek import spektrum
+from cekirdek import foton as _foton, sicaklik as _sicaklik
 from cekirdek.geometri.kurulum import kur as _geo_kur
 from cekirdek.sema import model_yuksekligi as sema_model_yuksekligi
 from cekirdek.sema import guc_hedefleri as sema_guc_hedefleri
@@ -150,6 +151,8 @@ def ayarlari_kur(spec, sinir_kutu, fisil_aralik=None):
     # etkilesime girmeden gecer ve sonuc sessizce ANLAMSIZ olur.
     if (k.get("parcacik") or "neutron") == "photon":
         s.photon_transport = True
+    _foton.uygula(s, spec)          # Y7: foton tasinimi (cekirdek/foton.py)
+    _sicaklik.uygula(s, spec)       # Y7: sicaklik isleme (cekirdek/sicaklik.py)
 
     # --- Shannon entropisi mesh'i (kaynak yakinsamasi olcumu) ---
     ent = a.get("entropi_mesh") or {}

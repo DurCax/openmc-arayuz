@@ -420,7 +420,8 @@ def test_tum_kontrollere_bagli():
     # Act
     b = dogrula.tum_kontroller(spec, veri_kontrolu=False)
     # Assert
-    kontrol("Y7 hatasi listede", any(x.yer == "sicaklik" and x.seviye == "hata" for x in b))
+    kontrol("Y7 hatasi listede", any(x.yer == "ayarlar" and x.seviye == "hata"
+                                         and "sıcaklık" in x.mesaj for x in b))
 
 
 HIZLI = [test_foton_ayari_yoksa_kapali_ve_openmc_varsayilani,
