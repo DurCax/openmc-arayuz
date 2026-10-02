@@ -87,6 +87,14 @@ CREATE INDEX IF NOT EXISTS kosular_bitis ON kosular (kayit_ani);
 _SUTUNLAR = ("kimlik", "ad", "dizin", "durum", "baslangic", "bitis", "keff", "sapma",
              "is_parcacigi", "mpi_surec", "spec_sha", "statepoint", "hata", "etiket",
              "kayit_ani")
+# Sorgular modul SABITLERINDEN bir kez kurulur (sutun adlari koddadir, kullanici
+# girdisi degildir); butun DEGERLER "?" parametresiyle gecer.
+_SUTUN_METNI = ", ".join(_SUTUNLAR)
+_YAZ = "INSERT OR REPLACE INTO kosular (%s) VALUES (%s)" % (  # nosec B608 -- sabit sutunlar
+    _SUTUN_METNI, ", ".join("?" * len(_SUTUNLAR)))
+_GETIR = "SELECT %s FROM kosular WHERE kimlik = ?" % _SUTUN_METNI  # nosec B608 -- sabit
+_LISTELE = ("SELECT %s FROM kosular ORDER BY kayit_ani DESC LIMIT ?"  # nosec B608 -- sabit
+            % _SUTUN_METNI)
 
 
 @dataclass(frozen=True)
@@ -153,21 +161,18 @@ class GecmisDeposu:
         degerler = [getattr(yazilan, s) for s in _SUTUNLAR]
         degerler[_SUTUNLAR.index("etiket")] = _etiket_json(yazilan.etiket)
         with self._islem() as bag:
-            bag.execute("INSERT OR REPLACE INTO kosular (%s) VALUES (%s)"
-                        % (", ".join(_SUTUNLAR), ", ".join("?" * len(_SUTUNLAR))), degerler)
+            bag.execute(_YAZ, degerler)
         return yazilan
 
     def getir(self, kimlik: str) -> Optional[KosuKaydi]:
         with self._islem() as bag:
-            satir = bag.execute("SELECT %s FROM kosular WHERE kimlik = ?" % ", ".join(_SUTUNLAR),
-                                (kimlik,)).fetchone()
+            satir = bag.execute(_GETIR, (kimlik,)).fetchone()
         return _satirdan(satir) if satir else None
 
     def listele(self, sinir: int = _VARSAYILAN_SINIR) -> List[KosuKaydi]:
         """En yeni kayit once."""
         with self._islem() as bag:
-            satirlar = bag.execute("SELECT %s FROM kosular ORDER BY kayit_ani DESC LIMIT ?"
-                                   % ", ".join(_SUTUNLAR), (int(sinir),)).fetchall()
+            satirlar = bag.execute(_LISTELE, (int(sinir),)).fetchall()
         return [_satirdan(s) for s in satirlar]
 
     def sil(self, kimlik: str) -> bool:
