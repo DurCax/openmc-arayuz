@@ -34,7 +34,7 @@ from cekirdek.mesh_tally.tanim import KURESEL, Z_2B_YARI
 EV_JOULE = 1.602176634e-19
 
 # Kaba yonerge (tek tally icin): R < 0.10 "genellikle guvenilir" (nokta
-# dedektorleri haric). Pin gucu icin hedef <= %1-2 (kilavuz 4.10, ders 5.13).
+# dedektorleri haric). Pin gucu icin hedef <= %1-2 (kilavuz 4.11, ders 5.13).
 BAGIL_HATA_ESIGI = 0.10
 BAGIL_HATA_KAYNAGI = N_("kaba yönerge (MCNP, tek tally için): MCNP5 Manual Vol. I "
                       "(LA-UR-03-1987), Bölüm 2, 'relative error R' tablosu: R < 0.10 "

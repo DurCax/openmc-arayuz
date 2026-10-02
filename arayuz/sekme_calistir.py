@@ -629,6 +629,8 @@ class CalistirSekmesi(SonucGosterimiMixin, QtWidgets.QWidget):
         self._grafik_guncelle()
         self._zaman = self._zamanlama(self.log.toPlainText())
         cikti.gunlugu_yaz(self._dizin, self._gunluk)    # rapor, K3, M5 bunu okur
+        if self._durduruldu or cikis_kodu != 0:         # Y10: kosu gecmisi
+            self._gecmise_yaz("iptal" if self._durduruldu else "basarisiz")
         if self._durduruldu:
             self._durduruldu_goster()
             return
@@ -669,6 +671,14 @@ class CalistirSekmesi(SonucGosterimiMixin, QtWidgets.QWidget):
             self.durum.emit(_("Sonuç okunamadı: %s") % e, False)
             return
         self._sonuc_goster(s, sp)
+        self._gecmise_yaz("bitti", s.get("keff"))
+
+    def _gecmise_yaz(self, durum, keff=None):
+        """Y10: tek kosuyu kosu gecmisine yazar (hata loglanir, kosuyu etkilemez)."""
+        from cekirdek import kosu_gecmisi
+        kosu_gecmisi.tek_kosu_kaydet(
+            self._dizin, (self.spec or {}).get("ad") or "", durum, keff,
+            is_parcacigi=int((self.spec or {}).get("calistirma", {}).get("is_parcacigi", 8) or 8))
 
     def _basarisiz_goster(self, metin):
         self._son_basarili = False

@@ -61,6 +61,7 @@ from arayuz.pencere.menuler import MenulerMixin
 from arayuz.pencere.proje import ProjeMixin
 from arayuz.pencere.gecmis import GecmisMixin
 from arayuz.pencere.gezinme import GezinmeCephesi
+from arayuz.veri import kayit as veri_kayit
 from arayuz.pencere.dogrulama_seridi import (  # noqa: F401 -- tasindi (T2)
     _SEVIYE_ADI, DogrulamaMixin, _seviye_renk)
 from arayuz.pencere.model_islemleri import (
@@ -105,6 +106,7 @@ class AnaPencere(DogrulamaMixin, BaslangicAkisi, GezinmeCephesi, MenulerMixin, P
         self._gecmise_it(ilk=True)
         if acilis_dosyasi:
             self.proje_ac(acilis_dosyasi)
+        veri_kayit.kur(self)            # K2: Veri sayfasi (kenar cubugu) + surec ortami
         self.acilis_akisi(dosya_verildi=bool(acilis_dosyasi))   # v3 K1 (+ on kancalar)
 
     # ------------------------------------------------------------------ kurucular
@@ -636,6 +638,7 @@ class AnaPencere(DogrulamaMixin, BaslangicAkisi, GezinmeCephesi, MenulerMixin, P
             self.onizleme.kapat()      # openmc kutuphanesini serbest birak
             # Onceki tukenme sonucu arka planda okunuyor olabilir (~3 s).
             self.s_tukenme.bekle()
+            veri_kayit.kapat(self)     # K2: suren veri indirmesi iptal + bekle
             olay.accept()
         else:
             olay.ignore()

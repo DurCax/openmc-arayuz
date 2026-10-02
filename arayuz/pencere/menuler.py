@@ -104,6 +104,11 @@ class MenulerMixin(object):
         self.e_geri = self._eylem(m_duzen, _("Geri al"), self.geri_al, QtGui.QKeySequence.Undo)
         self.e_yinele = self._eylem(m_duzen, _("Yinele"), self.yinele, QtGui.QKeySequence.Redo)
         self._gorunum_menusu_kur(self.menuBar().addMenu(_("&Görünüm")))
+        m_araclar = self.menuBar().addMenu(_("&Araçlar"))
+        m_araclar.setToolTipsVisible(True)
+        self.e_is_akisi = self._eylem(
+            m_araclar, _("İş akışı…"), self._is_akisi_ac, None,
+            _("Koşu kuyruğu, koşu geçmişi ve karşılaştırma, SLURM betiği (Y10)"))
         m_yardim = self.menuBar().addMenu(_("&Yardım"))
         m_yardim.setToolTipsVisible(True)
         self.e_kilavuz = self._eylem(m_yardim, _("Kullanım kılavuzu"), self.kilavuzu_ac, "F1",
@@ -239,6 +244,11 @@ class MenulerMixin(object):
         self.bulgu_acilir.liste.itemActivated.connect(self._acilirdan_git)
         # Dogrulama listesi artik yalnizca acilir pencerededir.
         self.dogrulama = self.bulgu_acilir.liste
+
+    def _is_akisi_ac(self) -> None:
+        """Araclar -> Is akisi: tekil pencere, gecerli modelle (Y10)."""
+        from arayuz.kuyruk import pencere as is_akisi
+        is_akisi.ac(self, self.spec)
 
     def _eylem(self, menu, ad, islev, kisayol=None, ipucu=None):
         e = QtGui.QAction(ad, self)

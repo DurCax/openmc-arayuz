@@ -20,7 +20,7 @@ Sekmeler, kenar çubuğundaki sırayla:
 | [4.7](04g-calistir.md#calistir) | Çalıştır | koşu, canlı k-eff, sonuç kartı, uygunluk paneli |
 | [4.8](04h-analiz.md#analiz) | Analiz | parametre taraması, reaktivite katsayıları, kritik arama |
 | [4.9](04i-tukenme.md#tukenme) | Tükenme | yanma hesabı ve izlenen nüklidler |
-| [4.10](04j-mesh-tally.md#mesh-tally) | Ağ (mesh) tally'si | ağ türü, sınırlar, 2B harita, VTK |
+| [4.11](04k-mesh-tally.md#mesh-tally) | Ağ (mesh) tally'si | ağ türü, sınırlar, 2B harita, VTK |
 
 ## Bu bölüm nasıl okunur
 

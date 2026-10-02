@@ -1,5 +1,5 @@
 <a id="mesh-tally"></a>
-## 4.10 Ağ (mesh) tally'si ve VTK
+## 4.11 Ağ (mesh) tally'si ve VTK
 
 Ağ tally'si bir büyüklüğü (akı, fisyon, ısınma, soğurma …) modelin geometrisinden bağımsız bir
 ağın hücrelerine böler: pin pin güç haritası, radyal akı profili, zırhta doz haritası. Ağ,

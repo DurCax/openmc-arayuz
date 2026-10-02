@@ -1,5 +1,5 @@
 <a id="mesh-tally"></a>
-## 4.10 Mesh tally and VTK
+## 4.11 Mesh tally and VTK
 
 A mesh tally splits a quantity (flux, fission, heating, absorption ...) over the cells of a mesh
 that is independent of the model geometry: pin-by-pin power map, radial flux profile, dose map

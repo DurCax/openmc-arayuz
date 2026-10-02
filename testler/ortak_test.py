@@ -85,6 +85,21 @@ def _gunlugu_yalit():
 DURUM_DIZINI = _gunlugu_yalit()
 
 
+def _veriyi_yalit():
+    """Testler kullanicinin GERCEK veri dizinine (~/.local/share/..., Y10 kosu
+    gecmisi) yazmasin: yollar.kullanici_veri_dizini XDG_DATA_HOME'dan okur."""
+    import atexit
+    import shutil
+    import tempfile
+    dizin = tempfile.mkdtemp(prefix="openmc_arayuz_veri_")
+    os.environ["XDG_DATA_HOME"] = dizin
+    atexit.register(shutil.rmtree, dizin, True)
+    return dizin
+
+
+VERI_DIZINI = _veriyi_yalit()
+
+
 # ---------------------------------------------------------------------------
 # TEST_SURE=1: test islevi basina sure olcumu (calistiriciya dokunmadan)
 # ---------------------------------------------------------------------------

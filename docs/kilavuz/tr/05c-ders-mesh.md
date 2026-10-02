@@ -2,7 +2,7 @@
 ## 5.13 Ağ (mesh) akı ve güç haritası, ParaView
 
 **Örnek:** `ornekler/pwr_mesh_aki.json` · **Seviye:** orta · **Ön koşul:** [5.1](05-dersler.md#ders-demet)
-· **Başvuru:** [4.10 Ağ (mesh) tally'si](04j-mesh-tally.md#mesh-tally)
+· **Başvuru:** [4.11 Ağ (mesh) tally'si](04k-mesh-tally.md#mesh-tally)
 
 Amaç: 17 × 17 PWR demetinde pin pin güç haritası ve iki grup akı haritası çıkarmak, istatistiğin
 yeterli olup olmadığını σ haritasıyla sınamak ve sonucu ParaView'e aktarmak.

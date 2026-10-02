@@ -511,7 +511,7 @@ def test_kaldirilanlar_ve_kisayollar():
         kontrol("SablonDiyalog / SABLONLAR yok",
                 not hasattr(ana_pencere, "SablonDiyalog") and not hasattr(ana_pencere, "SABLONLAR"))
         menuler = [a.text().replace("&", "") for a in p.menuBar().actions()]
-        kontrol("menu cubugu sade ve Turkce", menuler == ["Dosya", "Düzen", "Görünüm", "Yardım"],
+        kontrol("menu cubugu sade ve Turkce", menuler == ["Dosya", "Düzen", "Görünüm", "Araçlar", "Yardım"],
                 "-> %s" % menuler)
         metinler = [e.text() for e in p.findChildren(QtGui.QAction)]
         for yasak in ("Pencereyi", "Neden geometri", "Örnek aç", "Ornek ac", "Kısayollar",

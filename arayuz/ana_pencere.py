@@ -34,6 +34,7 @@ from arayuz import baslangic, tema  # noqa: F401
 from arayuz.ortak import (  # noqa: F401
     DurumRozeti, cumle_basi, qt_cevirisi_kur, qt_turkce_cevirisi, tekerlek_korumasi_kur)
 from arayuz import hata_yakalayici
+from arayuz.veri import kayit as veri_kayit
 from cekirdek import ceviri, gunluk, surum
 
 from arayuz.pencere.model_islemleri import (  # noqa: F401
@@ -65,8 +66,11 @@ def main(argv=None):
     app.setApplicationVersion(surum.surum())
     tema.uygula(app)
     tekerlek_korumasi_kur(app)
+    from cekirdek import veri_yolu
+    veri_yolu.surece_uygula()           # K2: Veri sayfasi secimi -> surec ortami
     pencere = AnaPencere(argv[0] if argv else None)
     pencere.show()
+    veri_kayit.ilk_acilis(pencere, proje_acik=bool(argv))   # K2: veri yoksa Veri sayfasi
 
     # Pencereyi buyutme:
     #   showMaximized() bu makinedeki pencere yoneticisinde yok sayiliyor,

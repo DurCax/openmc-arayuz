@@ -298,6 +298,8 @@ def kosu(argv=None):
     argv = list(sys.argv[1:] if argv is None else argv)
     from cekirdek.ceviri import terminal_dili
     terminal_dili()                   # OPENMC_ARAYUZ_DIL verilmisse o dil
+    from cekirdek import veri_yolu
+    veri_yolu.surece_uygula()         # K2: Veri sayfasi secimi terminalde de gecerli
     if argv and argv[0] == ALT_SECENEGI:
         return alt_komutu(argv[1:])
     if argv and argv[0] == RAPOR_KOMUTU:

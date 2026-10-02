@@ -2,7 +2,7 @@
 ## 5.13 Mesh flux and power map, ParaView
 
 **Example:** `ornekler/pwr_mesh_aki.json` · **Level:** intermediate · **Prerequisite:** [5.1](05-dersler.md#ders-demet)
-· **Reference:** [4.10 Mesh tally](04j-mesh-tally.md#mesh-tally)
+· **Reference:** [4.11 Mesh tally](04k-mesh-tally.md#mesh-tally)
 
 Goal: produce a pin-by-pin power map and a two-group flux map of a 17 x 17 PWR assembly, check
 with the σ map whether the statistics are sufficient, and export the result to ParaView.
