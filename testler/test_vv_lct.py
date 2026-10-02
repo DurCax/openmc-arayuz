@@ -81,8 +81,13 @@ def test_tca_spec_referans():
             (ref["k"], ref["sigma"], ref["tur"]) == (1.0, 0.0020, "deney"))
     kontrol("seri", ref["seri"] == "LEU-COMP-THERM-006")
     kontrol("birincil kaynak yazili", "JAERI 1254" in ref["kaynak_model"])
-    kontrol("E kaynagi yazili", "van der Marck" in ref["kaynak_e"])
-    kontrol("basitlestirmeler listelenir", len(ref["basitlestirmeler"]) >= 4)
+    kontrol("E kaynagi yazili", "van der Marck" in ref["kaynak"])
+    aciklama = lct.tca_spec(1)["aciklama"]
+    kontrol("basitlestirmeler aciklamada", len(lct.TCA_BASITLESTIRMELERI) >= 4
+            and all(b in aciklama for b in lct.TCA_BASITLESTIRMELERI))
+    from cekirdek import ornek_bilgi
+    kontrol("meta sozlesmesi temiz", not ornek_bilgi.dogrula_meta(lct.tca_spec(1)),
+            "-> %s" % ornek_bilgi.dogrula_meta(lct.tca_spec(1)))
     girdi = ref["aoa_girdi"]
     kontrol("AOA girdisi oksit/su", (girdi["fiziksel_bicim"], girdi["yansitici"])
             == ("oksit", "su"))

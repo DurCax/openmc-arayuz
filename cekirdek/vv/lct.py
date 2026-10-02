@@ -51,8 +51,8 @@ N_H2O = 3.338e-2
 SICAKLIK_K = 293.15                       # 20 C (Tablo 8-1 20 C'ye indirgenmis)
 O_DOGAL = (("O16", 0.99757), ("O17", 0.00038), ("O18", 0.00205))  # IUPAC; openmc.data
 
-# Kosu ayari: 7.5e6 aktif oykude sigma_c ~ 40 pcm << sigma_e = 200 pcm (docs/VV.md)
-KOSU = {"parcacik": 50000, "cevrim": 200, "pasif": 50}
+# Kosu ayari: 1.5e7 aktif oyku -> sigma_c ~ 27 pcm (proje olcutu <= 30 pcm, VV.md) << sigma_e = 200 pcm
+KOSU = {"parcacik": 100000, "cevrim": 200, "pasif": 50}
 
 TCA_BASITLESTIRMELERI = (
     "Alt yansıtıcı (30 cm) yalnız su: alt ızgara plakası, Al alt uç tapası (16.83 cm) "
@@ -240,24 +240,25 @@ def _aciklama(d: TcaDurumu, hucre: BirimHucre) -> str:
             "Al kılıf, kare adım %.3f cm (Vsu/Vyakıt = %.2f, H/U = %.2f), 20 °C kritik su "
             "seviyesi %.2f cm. Deneysel kriter değeri k = %.4f ± %.4f.\nModel birincil "
             "rapordan (JAERI 1254, JAEA açık arşiv) kurulmuştur; ICSBEP basitleştirilmiş "
-            "modeli DEĞİLDİR — basitleştirmeler referans.basitlestirmeler alanında."
+            "modeli DEĞİLDİR. Basitleştirmeler:\n- %s"
             % (SERI_TCA, d.no, d.kafes, d.n, d.n, d.adim, hucre.su_yakit_hacim_orani,
-               hucre.h_u, d.su_seviyesi, E_TCA, SIGMA_E_TCA))
+               hucre.h_u, d.su_seviyesi, E_TCA, SIGMA_E_TCA, "\n- ".join(TCA_BASITLESTIRMELERI)))
 
 
 def _referans(d: TcaDurumu, hucre: BirimHucre, varyant: Optional[str]) -> dict:
+    """ornek_bilgi meta sozlesmesinin referans alanlari (bilinmeyen alan yok);
+    kaynaklar metinde, basitlestirmeler aciklamada."""
+    varyant_notu = "" if varyant is None else "; DUYARLILIK VARYANTI: %s" % varyant
     return {
-        "k": E_TCA, "sigma": SIGMA_E_TCA, "tur": "deney",
-        "kaynak": "ICSBEP %s, durum %d" % (SERI_TCA, d.no), "seri": SERI_TCA,
-        "kaynak_model": ("JAERI 1254 (Tsuruta vd., 1978; JAEA açık arşiv) Tablo 1, 2, 8-1, "
+        "k": E_TCA, "sigma": SIGMA_E_TCA, "tur": "deney", "seri": SERI_TCA,
+        "kaynak": ("ICSBEP %s, durum %d (TCA %s, %dx%d, desen %d)%s; E ± σ: S.C. van der "
+                   "Marck, Nucl. Data Sheets 107 (2006) 3061, Tablo IX"
+                   % (SERI_TCA, d.no, d.kafes, d.n, d.n, d.desen, varyant_notu)),
+        "kaynak_model": ("JAERI 1254 (Tsuruta vd., 1978; JAEA açık arşiv "
+                         "https://jopss.jaea.go.jp/pdfdata/JAERI-1254.pdf) Tablo 1, 2, 8-1, "
                          "Ek A1, A3; durum eşlemesi JAERI-Conf 2003-006 Tablo 1"),
-        "kaynak_e": ("ICSBEP değeri, S.C. van der Marck, Nucl. Data Sheets 107 (2006) 3061, "
-                     "Tablo IX"),
         "lisans": ("Birincil rapor kamuya açık (JAEA); ICSBEP el kitabı metni kullanılmadı ve "
                    "yeniden dağıtılmaz (STANDARTLAR.md §6 md. 13)."),
-        "basitlestirmeler": list(TCA_BASITLESTIRMELERI), "varyant": varyant,
-        "tca": {"kafes": d.kafes, "desen": d.desen, "n": d.n, "adim": d.adim,
-                "su_seviyesi": d.su_seviyesi},
         "aoa_girdi": {"fiziksel_bicim": "oksit", "yansitici": "su",
                       "h_x": round(hucre.h_x, 6), "h_x_not": "birim hücre H/U-235 (heterojen)"},
     }

@@ -42,7 +42,7 @@ PERTURBE = {"p": ("pyrex_cubugu", ((0.585, "pyrex"), (None, "su_borlu"))),
 MALZEME_ADI = {4: {"p": "pyrex", "a": "al2o3"}, 5: {"a": "al2o3_kilif"}}
 RENK = {"pyrex": [240, 200, 60], "al2o3": [200, 200, 200], "al2o3_kilif": [150, 150, 160]}
 SICAKLIK_K = 293.6
-KOSU = {"parcacik": 50000, "cevrim": 200, "pasif": 50}
+KOSU = {"parcacik": 100000, "cevrim": 200, "pasif": 50}   # sigma_c ~ 24 pcm (<= 30 pcm)
 KAYNAK_MODEL = ("mit-crpg/benchmarks (MIT lisansı) icsbep/leu-comp-therm-008/openmc/%s; "
                 "E ± σ: aynı depo icsbep/icsbep/uncertainties.csv (ICSBEP değeri)")
 LISANS = ("Model girdisi MIT lisanslıdır; ICSBEP el kitabı metni yeniden dağıtılmaz, "

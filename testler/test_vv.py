@@ -346,9 +346,11 @@ def test_vv_kriterleri_kapidan_gecer():
         kontrol("%s: meta temiz" % ad, not ornek_bilgi.dogrula_meta(ham),
                 "-> %s" % ornek_bilgi.dogrula_meta(ham))
         ref = ham["referans"]
-        kontrol("%s: kaynak modeli, lisans notu, seri" % ad,
-                "mit-crpg" in ref.get("kaynak_model", "") and "MIT" in ref.get("lisans", "")
-                and ref.get("seri"))
+        # Acik model kaynagi: mit-crpg/benchmarks (MIT) ya da kamuya acik birincil
+        # deney raporu (v3 Y11: TCA, JAERI 1254); her ikisinde lisans notu zorunlu.
+        acik = (("mit-crpg" in ref.get("kaynak_model", "") and "MIT" in ref.get("lisans", ""))
+                or ("JAERI" in ref.get("kaynak_model", "") and "açık" in ref.get("lisans", "")))
+        kontrol("%s: kaynak modeli, lisans notu, seri" % ad, acik and ref.get("seri"))
         try:
             hatalar = [b for b in dogrula.kapi(sema.yukle(yol)) if b.seviye == "hata"]
         except dogrula.DogrulamaHatasi as e:
