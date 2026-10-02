@@ -84,6 +84,7 @@ def test_dogrula_kurucu_ad_alani_korunur():
     print("\n[H1b-I5] dogrula.kurucu eski ad alani tembel olarak erisilebilir")
     from cekirdek import dogrula, kurucu
     kontrol("dogrula.kurucu is cekirdek.kurucu", dogrula.kurucu is kurucu)
+    kontrol("ad alaninda ve dir() icinde", "kurucu" in vars(dogrula) and "kurucu" in dir(dogrula))
     try:
         dogrula.boyle_bir_ad_yok
         kontrol("bilinmeyen ad AttributeError", False)

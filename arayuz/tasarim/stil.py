@@ -28,6 +28,7 @@ QSS `image:` yalnizca dosya yolu kabul eder.
 import contextlib
 import os
 import tempfile
+from typing import Iterator
 
 from arayuz.tasarim import tokenlar
 from cekirdek.gunluk import kaydedici
@@ -101,14 +102,18 @@ def uret(p, aile=None, mono=None):
 
 
 @contextlib.contextmanager
-def sonradan_uygula(uygulama=None):
+def sonradan_uygula(uygulama=None) -> Iterator[None]:
     """
     Toplu widget kurulumunda (ana pencere) uygulama stil sayfasini askiya alir,
     cikista BIR kez uygular. QSS etkinken her addWidget/setWidget yeni widget'i
     QStyleSheetStyle ile cilalar (17 KB, ~900 kural): pencere kurulumu 4.4 s'den
-    1.65 s'ye iner (H1 olcumu). Renk/token degismez; kurulum sirasinda sizeHint'ten
-    alinan birkac olcu (bolucu, arac dugmesi) birkac piksel farkli olabilir
-    (orkestrator karari: kabul, H1b raporunda once/sonra ekranlari).
+    ~1.2 s'ye iner (H1b olcumu). Renk/token degismez; kurulum sirasinda sizeHint'ten
+    alinan birkac olcu (bolucu) ~11 px farkli olabilir (orkestrator karari: kabul,
+    H1b raporunda once/sonra ekranlari).
+
+    Ilk (tek) ana pencere icindir: cikistaki setStyleSheet uygulamadaki BUTUN canli
+    widget'lari yeniden cilalar; cok pencereli surecte maliyet onlarla buyur.
+    Blok icinde yeni bir stil sayfasi kurulduysa (tema degisti) o korunur.
     """
     if uygulama is None:
         from PySide6 import QtWidgets
@@ -121,7 +126,8 @@ def sonradan_uygula(uygulama=None):
     try:
         yield
     finally:
-        uygulama.setStyleSheet(qss)
+        if not uygulama.styleSheet():
+            uygulama.setStyleSheet(qss)
 
 
 def durum_ayarla(widget, ad, deger):

@@ -143,3 +143,17 @@ HIZLI = [test_sonradan_uygula_askiya_alir_ve_geri_koyar,
          test_sonradan_uygula_istisnada_da_geri_koyar, test_qss_yoksa_dokunmaz,
          test_pencere_kurulumdan_sonra_stilli]
 YAVAS = [test_yavas_qss_sonradan_pencere_kurulumu_hizli]
+
+
+def test_blok_icinde_yeni_qss_ezilmez():
+    print("\n[H1b-S6] blok icinde yeni stil sayfasi kurulduysa (tema degisti) cikista ezilmez")
+    from arayuz.tasarim import stil
+    app = _uygulama()
+    with _qss(app, _ORNEK_QSS):
+        with stil.sonradan_uygula():
+            app.setStyleSheet("QLabel { color: red; }")
+        kontrol("yeni QSS korunur", app.styleSheet() == "QLabel { color: red; }",
+                "-> %r" % app.styleSheet())
+
+
+HIZLI.append(test_blok_icinde_yeni_qss_ezilmez)

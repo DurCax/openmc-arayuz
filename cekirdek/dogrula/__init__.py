@@ -57,8 +57,14 @@ def __getattr__(ad):
     gerekmez -- H1b). PEP 562."""
     if ad == "kurucu":
         from cekirdek import kurucu
+        globals()["kurucu"] = kurucu        # sonraki erisim dogrudan
         return kurucu
     raise AttributeError("module %r has no attribute %r" % (__name__, ad))
+
+
+def __dir__():
+    return sorted(set(globals()) | {"kurucu"})
+
 
 # Alt moduller (bolunme: Dalga 0). Bugunku butun herkese acik ve testlerin/
 # arayuzun kullandigi ozel adlar burada yeniden dis verilir; boylece

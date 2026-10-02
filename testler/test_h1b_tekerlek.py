@@ -164,3 +164,36 @@ def test_yavas_pencere_kurulumu_suzgecsiz_kadar_hizli():
 HIZLI = [test_askida_kurulan_kutular_korunur, test_askidan_sonra_suzgec_geri_kurulur,
          test_askida_hata_olsa_da_suzgec_geri_kurulur, test_pencere_kurulumunda_suzgec_askida]
 YAVAS = [test_yavas_pencere_kurulumu_suzgecsiz_kadar_hizli]
+
+
+def test_ic_ice_askida_yalniz_kaldiran_geri_kurar():
+    print("\n[H1b-T6] ic ice askida: ic blok cikisinda suzgec hala askida, dis cikista geri")
+    from arayuz import ortak
+    _uygulama()
+    with ortak.tekerlek_suzgeci_askida():
+        with ortak.tekerlek_suzgeci_askida():
+            pass
+        ic_sonrasi = _suzgec_etkin_mi()
+    kontrol("ic cikistan sonra suzgec askida", ic_sonrasi is False)
+    kontrol("dis cikistan sonra suzgec etkin", _suzgec_etkin_mi())
+
+
+def test_silinmis_kok_asil_hatayi_maskelemez():
+    print("\n[H1b-T7] kok widget blok icinde silinirse: cikis hata vermez, asil hata korunur")
+    import shiboken6
+    from PySide6 import QtWidgets
+    from arayuz import ortak
+    _uygulama()
+    kok = QtWidgets.QWidget()
+    try:
+        with ortak.tekerlek_suzgeci_askida(kok):
+            shiboken6.delete(kok)
+            raise KeyError("asil")
+    except KeyError as e:
+        kontrol("asil hata yukari cikar", str(e) == "'asil'", "-> %r" % e)
+    except RuntimeError as e:
+        kontrol("asil hata yukari cikar", False, "-> RuntimeError %s" % e)
+    kontrol("suzgec yine etkin", _suzgec_etkin_mi())
+
+
+HIZLI += [test_ic_ice_askida_yalniz_kaldiran_geri_kurar, test_silinmis_kok_asil_hatayi_maskelemez]

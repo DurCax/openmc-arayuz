@@ -240,7 +240,7 @@ def _dis_sinir(m):
 _YOKLAMALAR = Bellek("yoklama")
 
 
-def yokla(spec, n=20000, tohum=1):
+def yokla(spec: dict, n: int = 20000, tohum: int = 1) -> tuple:
     """spec -> (YoklamaSonucu, [okunur sorun metni]) (ilk RAPOR_SINIRI sorun).
     H1b: model onbellek.kur_onbellekli'den (salt okunur: yalniz bolge/kafes
     sorgulanir); sonuc icerik anahtariyla bellekte (degismez demetler), metin

@@ -21,6 +21,8 @@
 """
 
 import math
+from typing import Callable
+
 from cekirdek.ceviri import _
 
 SQ3 = math.sqrt(3.0)
@@ -128,7 +130,7 @@ def icinde(kesit, x, y, merkez=(0.0, 0.0), pay=PAY):
     raise ValueError(_("içerme denetimi yapılamayan kesit: %s") % s)
 
 
-def icinde_islevi(kesit, merkez=(0.0, 0.0)):
+def icinde_islevi(kesit: dict, merkez=(0.0, 0.0)) -> Callable[[float, float, float], bool]:
     """f(x, y, pay) == icinde(kesit, x, y, merkez, pay); olculer bir kez okunur.
     Kesit sonradan degistirilmemeli (gezinti kesitleri degismez kabul eder)."""
     cx, cy = merkez
