@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 10:46+0300\n"
+"POT-Creation-Date: 2026-10-02 14:38+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -613,7 +613,7 @@ msgstr " (not fissile or not in the assembly)"
 msgid " (kaynak şiddetiyle)"
 msgstr " (with source strength)"
 
-#: cekirdek/kaynak.py:257
+#: cekirdek/kaynak.py:267
 #, python-format
 msgid " (ortalama %s)"
 msgstr " (mean %s)"
@@ -821,7 +821,7 @@ msgstr "%d active batches ≥ %d."
 msgid "%d aktif çevrim, alt sınır %d."
 msgstr "%d active batches, lower limit %d."
 
-#: cekirdek/dogrula/__init__.py:171
+#: cekirdek/dogrula/__init__.py:186
 #, python-format
 msgid "%d bilgi"
 msgid_plural "%d bilgi"
@@ -847,7 +847,7 @@ msgstr "%d-assembly hexagonal full core"
 msgid "%d dk"
 msgstr "%d min"
 
-#: cekirdek/dogrula/__init__.py:141
+#: cekirdek/dogrula/__init__.py:156
 #, python-format
 msgid "%d doğrulama hatası; önce bunları giderin"
 msgid_plural "%d doğrulama hatası; önce bunları giderin"
@@ -872,7 +872,7 @@ msgid "%d halkalı altıgen demet"
 msgstr "%d-ring hexagonal assembly"
 
 #: arayuz/sekme_calistir.py:537 arayuz/uygunluk_paneli.py:303
-#: cekirdek/dogrula/__init__.py:169
+#: cekirdek/dogrula/__init__.py:184
 #, python-format
 msgid "%d hata"
 msgid_plural "%d hata"
@@ -886,7 +886,7 @@ msgid_plural "%d iş parçacığı"
 msgstr[0] "%d thread"
 msgstr[1] "%d threads"
 
-#: cekirdek/dogrula/agac.py:193
+#: cekirdek/dogrula/agac.py:210
 #, python-format
 msgid "%d kafes konumu tamamen gizli (delik altında): haritada '.' yazılabilir."
 msgstr "%d lattice positions are fully hidden (under a hole): '.' can be written in the map."
@@ -906,7 +906,7 @@ msgstr "%d lost particles (%d allowed). %s"
 msgid "%d kayıt atlandı (ayrıntı günlükte)."
 msgstr "%d records skipped (details in the log)."
 
-#: cekirdek/dogrula/agac.py:180
+#: cekirdek/dogrula/agac.py:197
 #, python-format
 msgid "%d kesik konum/bileşen üst bölgeyle kırpılıyor (ilk %d: %s)."
 msgstr "%d truncated positions/components are clipped by the parent region (first %d: %s)."
@@ -920,7 +920,7 @@ msgstr ""
 "%d truncated pins (fuel region clipped by the parent cell boundary) were excluded "
 "from F_ΔH and F_q."
 
-#: cekirdek/dogrula/agac.py:186
+#: cekirdek/dogrula/agac.py:203
 #, python-format
 msgid "%d kesik çubuk: pin bölgesi hücre sınırıyla kesiliyor (ilk %d: %s)."
 msgstr "%d truncated pins: the pin region is cut by the cell boundary (first %d: %s)."
@@ -970,7 +970,7 @@ msgstr "%d materials read: %s"
 msgid "%d nokta kuyruğa eklendi."
 msgstr "%d points added to the queue."
 
-#: cekirdek/geometri/yoklama.py:175
+#: cekirdek/geometri/yoklama.py:336
 #, python-format
 msgid "%d noktada %d örtüşme, %d boşluk"
 msgstr "at %d points %d overlaps, %d gaps"
@@ -997,12 +997,12 @@ msgstr "%d common positions; RMS Δ = %.4f; largest difference: %s"
 msgid "%d tambur emici yayı %g° (r = %g…%g cm) × %g cm"
 msgstr "%d drum absorber arcs of %g° (r = %g…%g cm) × %g cm"
 
-#: cekirdek/tambur.py:155
+#: cekirdek/tambur.py:156
 #, python-format
 msgid "%d tambur, yarıçap %.3f cm, merkez %.3f cm, yay %.0f°, dönme %.1f°"
 msgstr "%d drums, radius %.3f cm, centre %.3f cm, arc %.0f°, rotation %.1f°"
 
-#: arayuz/uygunluk_paneli.py:305 cekirdek/dogrula/__init__.py:170
+#: arayuz/uygunluk_paneli.py:305 cekirdek/dogrula/__init__.py:185
 #, python-format
 msgid "%d uyarı"
 msgid_plural "%d uyarı"
@@ -1273,7 +1273,7 @@ msgstr ""
 msgid "%s konumunun aynası tabloda yok ya da farklı türde"
 msgstr "the mirror of position %s is missing from the table or of a different type"
 
-#: cekirdek/dogrula/kaynak.py:53
+#: cekirdek/dogrula/kaynak.py:56
 #, python-format
 msgid "%s kurulamadı: %s"
 msgstr "%s could not be built: %s"
@@ -1346,7 +1346,7 @@ msgstr ""
 "%s boundary is Periodic but the %s boundary is not — the periodic surface has no "
 "partner"
 
-#: cekirdek/dogrula/agac.py:282
+#: cekirdek/dogrula/agac.py:299
 #, python-format
 msgid "%s sınır periyodik olamaz: sonlu bir korda eksenel periyodiklik fiziksel değildir."
 msgstr "%s boundary cannot be periodic: axial periodicity is not physical in a finite core."
@@ -1635,17 +1635,17 @@ msgstr "'%s' is no longer valid for this model."
 msgid "'%s' bölümünün türü yanlış (%s bekleniyordu)."
 msgstr "The '%s' section has the wrong type (%s expected)."
 
-#: cekirdek/dogrula/agac.py:117
+#: cekirdek/dogrula/agac.py:134
 #, python-format
 msgid "'%s' deliği bölgenin iç sınırına taşıyor."
 msgstr "Hole '%s' extends into the inner boundary of the region."
 
-#: cekirdek/dogrula/agac.py:113
+#: cekirdek/dogrula/agac.py:130
 #, python-format
 msgid "'%s' deliği bölgesinden taşıyor (dış sınıra değiyor)."
 msgstr "Hole '%s' extends beyond its region (touches the outer boundary)."
 
-#: cekirdek/dogrula/agac.py:130
+#: cekirdek/dogrula/agac.py:147
 #, python-format
 msgid "'%s' deliği kafes konumu hücresinden taşıyor."
 msgstr "Hole '%s' extends beyond its lattice position cell."
@@ -1911,7 +1911,7 @@ msgstr "enrichment is defined in nuclide row '%s' — enrichment is ignored for 
 msgid "'%s' parçası kullanılmıyor."
 msgstr "Component '%s' is not used."
 
-#: cekirdek/dogrula/agac.py:228
+#: cekirdek/dogrula/agac.py:245
 #, python-format
 msgid ""
 "'%s' plaka elemanı bulunduğu bölgeyi doldurmuyor (%.4g × %.4g cm; bölge %.4g cm²): "
@@ -1955,7 +1955,7 @@ msgstr "the '%s' tally has no energy filter"
 msgid "'%s' tally'sinde enerji filtresinden başka filtre var"
 msgstr "the '%s' tally has a filter other than the energy filter"
 
-#: cekirdek/dogrula/agac.py:154
+#: cekirdek/dogrula/agac.py:171
 #, python-format
 msgid "'%s' ve '%s' delikleri örtüşüyor."
 msgstr "Holes '%s' and '%s' overlap."
@@ -1984,7 +1984,7 @@ msgstr "placement '%s': a non-circular hole cannot be rotated by facing or rotat
 msgid "'%s' yerleşiminin örnekleri farklı içerikli"
 msgstr "the instances of placement '%s' have different contents"
 
-#: cekirdek/dogrula/agac.py:275
+#: cekirdek/dogrula/agac.py:292
 #, python-format
 msgid "'%s' yüzünde %s sınır bu dış sınırda kullanılamaz (%s)."
 msgstr "%s boundary on face '%s' cannot be used on this outer boundary (%s)."
@@ -2344,7 +2344,7 @@ msgstr "(n,2n) reaction"
 msgid "(n,xn) düzeltmesi"
 msgstr "(n,xn) correction"
 
-#: cekirdek/kosucu.py:345
+#: cekirdek/kosucu.py:346
 msgid "(n,γ) yakalama"
 msgstr "(n,γ) capture"
 
@@ -2448,11 +2448,11 @@ msgstr "--tur, --alt and --ust are required."
 msgid "--tur, --bas ve --son zorunlu."
 msgstr "--tur, --bas and --son are required."
 
-#: cekirdek/kosucu.py:371
+#: cekirdek/kosucu.py:372
 msgid "/ kaynak nötronu"
 msgstr "/ source neutron"
 
-#: cekirdek/dogrula/agac.py:254
+#: cekirdek/dogrula/agac.py:271
 #, python-format
 msgid "0 cm katman atlandı: %s"
 msgstr "0 cm layer skipped: %s"
@@ -2530,11 +2530,11 @@ msgstr ""
 "in a 2D model the mesh covers only one slice of the z column; the absolute value is "
 "undefined (use automatic bounds)"
 
-#: cekirdek/dogrula/agac.py:248
+#: cekirdek/dogrula/agac.py:265
 msgid "2B modelde eksenel yığın kurulamaz; kök yüksekliği verin."
 msgstr "An axial stack cannot be built in a 2D model; give the root a height."
 
-#: cekirdek/dogrula/agac.py:302
+#: cekirdek/dogrula/agac.py:319
 msgid "2B modelde kontrol tamburu: eksenel sızıntı yok; tambur değeri fazla çıkar."
 msgstr ""
 "Control drum in a 2D model: there is no axial leakage; the drum worth comes out too "
@@ -2920,7 +2920,7 @@ msgstr "Al-6061 plate cladding"
 msgid "Alt"
 msgstr "Bottom"
 
-#: cekirdek/dogrula/agac.py:330
+#: cekirdek/dogrula/agac.py:347
 msgid "Alt ağacı bir parçaya çevirip iki yerde 'bilesen' olarak kullanın."
 msgstr "Turn the subtree into a component and use it in both places as a 'bilesen' node."
 
@@ -2946,7 +2946,7 @@ msgstr "Margin of subcriticality ΔSM ≥ 0.02"
 msgid "Altıgen"
 msgstr "Hexagonal"
 
-#: cekirdek/dogrula/agac.py:212
+#: cekirdek/dogrula/agac.py:229
 #, python-format
 msgid ""
 "Altıgen '%s' demeti altıgen kafes elemanında aynı yönelimle ('%s'); demet elemana "
@@ -3202,7 +3202,7 @@ msgstr ""
 "More than one case from the same experiment series: %s. The cases are not "
 "independent; the statistical confidence may be overstated."
 
-#: cekirdek/dogrula/agac.py:328
+#: cekirdek/dogrula/agac.py:345
 #, python-format
 msgid ""
 "Aynı içerikli iki satır içi alt ağaç ('%s'): ayrı evrenler olur, distribcell ve "
@@ -3225,7 +3225,7 @@ msgstr "Also add %s."
 msgid "Ayrıca dosyadan gelen filtre: {f} (korunur)."
 msgstr "Additional filter from the file: {f} (kept)."
 
-#: cekirdek/kaynak.py:36
+#: cekirdek/kaynak.py:35
 msgid "Ayrık çizgiler"
 msgstr "Discrete lines"
 
@@ -3474,7 +3474,7 @@ msgstr ""
 "Relative power — %s\n"
 "○ hottest pin · white: position without fuel (guide/instrument tube)"
 
-#: cekirdek/kosucu.py:420
+#: cekirdek/kosucu.py:421
 msgid "Bağıl hata"
 msgstr "Relative error"
 
@@ -3745,7 +3745,7 @@ msgstr ""
 "Thermal scattering tables that match the composition. Leaving them out in a thermal "
 "spectrum shifts k by about a percent."
 
-#: cekirdek/dogrula/veri.py:100
+#: cekirdek/dogrula/veri.py:106
 msgid "Bileşimi değiştirin ya da bu nüklidleri içeren bir kütüphane kullanın."
 msgstr "Change the composition or use a library containing these nuclides."
 
@@ -3911,7 +3911,7 @@ msgid ""
 "belirleyin."
 msgstr "Several libraries found (%s); choose which one to use with Choose folder."
 
-#: arayuz/malzeme/bilesim.py:37 cekirdek/kosucu.py:420
+#: arayuz/malzeme/bilesim.py:37 cekirdek/kosucu.py:421
 msgid "Birim"
 msgstr "Unit"
 
@@ -4373,7 +4373,7 @@ msgstr "A node cannot be placed here."
 msgid "Bölge"
 msgstr "Region"
 
-#: cekirdek/kosucu.py:420
+#: cekirdek/kosucu.py:421
 msgid "Bölge / enerji"
 msgstr "Region / energy"
 
@@ -4498,7 +4498,7 @@ msgstr ""
 "The hole cross-section ('kesit') is required: only a control drum content has a "
 "natural cross-section."
 
-#: cekirdek/dogrula/agac.py:131
+#: cekirdek/dogrula/agac.py:148
 msgid "Delik konum hücresinin içinde kalmalı (kafes adımından küçük)."
 msgstr "The hole must stay inside its position cell (smaller than the lattice pitch)."
 
@@ -4565,7 +4565,7 @@ msgstr ""
 "In the assembly and core maps, left-click paints and right-click picks that cell's "
 "component as the brush; on the hexagonal map the mouse wheel zooms."
 
-#: cekirdek/dogrula/agac.py:214
+#: cekirdek/dogrula/agac.py:231
 msgid "Demet yönelimi kafes yönelimine dik olmalı: ters(kafes.yonelim)."
 msgstr ""
 "The assembly orientation must be perpendicular to the lattice orientation: "
@@ -4718,7 +4718,7 @@ msgstr ""
 "concentric shells."
 
 #: arayuz/analiz/sekme.py:151 arayuz/geometri/form_yerlesim.py:339
-#: arayuz/sonuc/mesh_harita.py:41 cekirdek/kosucu.py:420
+#: arayuz/sonuc/mesh_harita.py:41 cekirdek/kosucu.py:421
 msgid "Değer"
 msgstr "Value"
 
@@ -5547,7 +5547,7 @@ msgstr "Integrator:"
 msgid "Entropi ağı:"
 msgstr "Entropy mesh:"
 
-#: cekirdek/dogrula/kaynak.py:141
+#: cekirdek/dogrula/kaynak.py:145
 msgid ""
 "Entropi fisyon kaynağı dağılımının yakınsamasını ölçer; sabit kaynakta kaynak zaten "
 "sabittir. OpenMC bunu yok sayar."
@@ -5794,13 +5794,13 @@ msgstr ""
 "Selecting photon also enables photon transport; the library\n"
 "must contain photon data."
 
-#: cekirdek/dogrula/kaynak.py:80
+#: cekirdek/dogrula/kaynak.py:83
 msgid "Fotonlar fisyon zincirini taşımaz. Foton kaynağı için hesap türünü Sabit kaynak yapın."
 msgstr ""
 "Photons do not carry the fission chain. For a photon source set the calculation type "
 "to Fixed source."
 
-#: cekirdek/kaynak.py:38
+#: cekirdek/kaynak.py:37
 msgid "Füzyon tayfı (D-T / D-D, Muir)"
 msgstr "Fusion spectrum (D-T / D-D, Muir)"
 
@@ -5903,7 +5903,7 @@ msgstr "Geometry tree"
 msgid "Geometri bölümü bir nesne olmalı."
 msgstr "The geometry section must be an object."
 
-#: cekirdek/dogrula/kaynak.py:119
+#: cekirdek/dogrula/kaynak.py:123
 msgid "Geometri dışında başlayan parçacıklar anında kaybolur."
 msgstr "Particles starting outside the geometry are lost immediately."
 
@@ -6151,7 +6151,7 @@ msgstr "Group values:"
 msgid "Grup eklendi"
 msgstr "Group added"
 
-#: cekirdek/kaynak.py:37
+#: cekirdek/kaynak.py:36
 msgid "Grup grup tayf (histogram)"
 msgstr "Group-wise spectrum (histogram)"
 
@@ -7061,7 +7061,7 @@ msgstr ""
 msgid "IFP nesil sayısı:"
 msgstr "IFP generations:"
 
-#: cekirdek/dogrula/kaynak.py:135
+#: cekirdek/dogrula/kaynak.py:139
 msgid ""
 "IFP yöntemi fisyon zincirini nesiller boyunca izler; sabit kaynak hesabında k-eff ve "
 "nesil kavramı yoktur."
@@ -7564,7 +7564,7 @@ msgstr "Source entropy"
 msgid "Kaynak nötronu başına"
 msgstr "Per source neutron"
 
-#: cekirdek/dogrula/kaynak.py:156
+#: cekirdek/dogrula/kaynak.py:160
 msgid ""
 "Kaynak parçacıkları yalnızca fisil malzemede başlar; kutunun geri kalanı boş kalır. "
 "Dış bir kaynak modelliyorsanız nokta kaynak kullanın."
@@ -7672,7 +7672,7 @@ msgstr "Truncated positions could not be computed (details in the log)."
 msgid "Kesik konumu olan ilk kafesi seçer"
 msgstr "Selects the first lattice with truncated positions"
 
-#: cekirdek/dogrula/agac.py:188
+#: cekirdek/dogrula/agac.py:205
 msgid ""
 "Kesik çubuk F_ΔH'ye girmez ve hacmi stokastik hesaplanır; çubuk çubuk yanmada HATA "
 "verir."
@@ -7801,7 +7801,7 @@ msgstr ""
 msgid "Komşu iki hücre merkezi arası mesafe."
 msgstr "The distance between the centres of two neighbouring cells."
 
-#: cekirdek/kaynak.py:44
+#: cekirdek/kaynak.py:43
 msgid "Koni"
 msgstr "Cone"
 
@@ -8394,14 +8394,14 @@ msgstr "Could not be added to the queue: %s"
 msgid "Kök düğüm bir 'kap' olmalı."
 msgstr "The root node must be a 'kap' (container)."
 
-#: cekirdek/dogrula/agac.py:257
+#: cekirdek/dogrula/agac.py:274
 #, python-format
 msgid "Kök dışındaki eksenel yığının toplamı (%g cm) model yüksekliğine (%g cm) eşit değil."
 msgstr ""
 "The sum of the axial stack outside the root (%g cm) is not equal to the model height "
 "(%g cm)."
 
-#: cekirdek/dogrula/agac.py:297
+#: cekirdek/dogrula/agac.py:314
 msgid "Kök içinde boş (void) bölge: nötron burada etkileşmeden geçer."
 msgstr "Void region inside the root: neutrons pass through it without interacting."
 
@@ -8526,7 +8526,7 @@ msgstr "Library found automatically (%s); if it is correct, confirm it with 'Che
 msgid "Kütüphane seçildi: %s"
 msgstr "Library chosen: %s"
 
-#: cekirdek/dogrula/veri.py:106
+#: cekirdek/dogrula/veri.py:112
 #, python-format
 msgid "Kütüphanede %d S(α,β) kaydı var; listeden birini seçin."
 msgstr "The library has %d S(α,β) entries; select one from the list."
@@ -8639,7 +8639,7 @@ msgstr "A core map of ducted hexagonal assemblies (SFR / VVER type)."
 msgid "Kılıfın iç düz yüzden düz yüze ölçüsü."
 msgstr "Inner flat-to-flat size of the duct."
 
-#: cekirdek/dogrula/agac.py:182
+#: cekirdek/dogrula/agac.py:199
 msgid ""
 "Kırpılan bileşenin hacmi stokastik hesaplanır; güç haritasında 'kesik' olarak "
 "işaretlenir."
@@ -8910,7 +8910,7 @@ msgstr ""
 msgid "Malzemeyi düzenle"
 msgstr "Edit material"
 
-#: cekirdek/kaynak.py:34
+#: cekirdek/kaynak.py:33
 msgid "Maxwell tayfı"
 msgstr "Maxwell spectrum"
 
@@ -8951,11 +8951,11 @@ msgstr "Center radius"
 msgid "Merkez yarıçapı:"
 msgstr "Center radius:"
 
-#: cekirdek/dogrula/agac.py:118
+#: cekirdek/dogrula/agac.py:135
 msgid "Merkez yarıçapını büyütün ya da deliği küçültün."
 msgstr "Increase the centre radius or reduce the hole."
 
-#: cekirdek/dogrula/agac.py:114
+#: cekirdek/dogrula/agac.py:131
 msgid "Merkez yarıçapını ya da delik ölçüsünü küçültün."
 msgstr "Reduce the centre radius or the hole size."
 
@@ -9030,7 +9030,7 @@ msgstr "The model has not been run yet; press RUN (F9) when it is ready."
 msgid "Model kurulamadı"
 msgstr "Model could not be built"
 
-#: cekirdek/dogrula/agac.py:344
+#: cekirdek/dogrula/agac.py:361
 #, python-format
 msgid "Model kurulamadı: %s"
 msgstr "Model could not be built: %s"
@@ -9272,7 +9272,11 @@ msgstr "Point position:"
 msgid "Nokta sayısı:"
 msgstr "Number of points:"
 
-#: cekirdek/dogrula/agac.py:347 cekirdek/dogrula/agac.py:352
+#: cekirdek/dogrula/agac.py:363
+msgid "Nokta yoklaması arka planda sürüyor…"
+msgstr "Point sampling is running in the background…"
+
+#: cekirdek/dogrula/agac.py:367 cekirdek/dogrula/agac.py:372
 #, python-format
 msgid "Nokta yoklaması: %s. %s"
 msgstr "Point sampling: %s. %s"
@@ -9901,7 +9905,7 @@ msgstr "Extracted to component: {ad}"
 msgid "Pasif çevrim"
 msgstr "Inactive batch"
 
-#: cekirdek/dogrula/kaynak.py:148
+#: cekirdek/dogrula/kaynak.py:152
 msgid ""
 "Pasif çevrim fisyon kaynağının yakınsaması içindir; sabit kaynak hesabında hiç "
 "yazılmaz. Bütün çevrimler sayılır."
@@ -9917,7 +9921,7 @@ msgstr "Increase the number of inactive batches until the entropy plateau begins
 msgid "Pasif çevrim:"
 msgstr "Inactive batches:"
 
-#: cekirdek/dogrula/kaynak.py:166
+#: cekirdek/dogrula/kaynak.py:170
 msgid ""
 "Pasif çevrimler içinde gerçek fisyon tayfıyla değişir; k-eff'i etkilemez. Tayf asıl "
 "sabit kaynak hesabında belirleyicidir."
@@ -9972,7 +9976,7 @@ msgstr "A periodic boundary must be given on two opposite faces together (%s / %
 msgid "Periyodik sınır karşılıklı iki yüzde birlikte verilmeli (yüz %d / %d)."
 msgstr "A periodic boundary must be given on two opposite faces together (face %d / %d)."
 
-#: cekirdek/dogrula/agac.py:277
+#: cekirdek/dogrula/agac.py:294
 msgid ""
 "Periyodik sınır yalnız dikdörtgen/altıgen dış sınırda ve sınıra değen delik yokken "
 "kullanılabilir."
@@ -10041,7 +10045,7 @@ msgstr "Add a plate-type fuel element; materials are chosen automatically by rol
 msgid "Plaka elemanı:"
 msgstr "Plate-type fuel element:"
 
-#: cekirdek/dogrula/agac.py:231
+#: cekirdek/dogrula/agac.py:248
 msgid "Plaka elemanını ölçüsüne eşit bir kafes konumuna ya da kaba koyun."
 msgstr "Place the plate-type fuel element in a lattice position or container of equal size."
 
@@ -10321,7 +10325,7 @@ msgstr "Reactivity:"
 msgid "Reaktör kor tasarımı"
 msgstr "Reactor core design"
 
-#: cekirdek/kosucu.py:534
+#: cekirdek/kosucu.py:535
 #, python-format
 msgid ""
 "Referans güç toplamı sıfır ya da negatif (%.3g): hedef bölgede fisyon sayılmadı, "
@@ -10330,7 +10334,7 @@ msgstr ""
 "The reference power sum is zero or negative (%.3g): no fissions were counted in the "
 "target region, the conservation of the total could not be checked."
 
-#: cekirdek/kosucu.py:530
+#: cekirdek/kosucu.py:531
 msgid "Referans tally yok — korunum denetlenemedi (eski statepoint ya da model regresyonu)."
 msgstr ""
 "No reference tally — conservation could not be checked (old statepoint or model "
@@ -10430,7 +10434,7 @@ msgstr "Fixed source calculation — k-eff is undefined."
 msgid "Sabit kaynak hesabı: dört faktör ve k tanımsız; yalnız spektrum."
 msgstr "Fixed source calculation: four factors and k are undefined; spectrum only."
 
-#: cekirdek/dogrula/kaynak.py:128
+#: cekirdek/dogrula/kaynak.py:132
 msgid ""
 "Sabit kaynak hesabında k-eff yoktur; ne ölçülecekse bir tally olarak tanımlanmalıdır "
 "(akı, doz, reaksiyon hızı)."
@@ -10693,7 +10697,7 @@ msgstr "Shannon entropy is off — source convergence cannot be shown."
 msgid "Shannon entropisi okunamadı: %s"
 msgstr "Shannon entropy could not be read: %s"
 
-#: cekirdek/dogrula/kaynak.py:140
+#: cekirdek/dogrula/kaynak.py:144
 msgid "Shannon entropisi sabit kaynak hesabında kullanılmaz"
 msgstr "Shannon entropy is not used in a fixed source calculation"
 
@@ -11439,7 +11443,7 @@ msgstr ""
 msgid "Tanımsız bileşen: '%s'."
 msgstr "Undefined component: '%s'."
 
-#: cekirdek/dogrula/agac.py:355
+#: cekirdek/dogrula/agac.py:375
 msgid "Tanımsız bölge: parçacık kaybolur. Bölgeyi bir malzemeyle doldurun."
 msgstr "Undefined region: particles are lost. Fill the region with a material."
 
@@ -11481,7 +11485,7 @@ msgstr "Start sweep"
 msgid "Tarih"
 msgstr "Date"
 
-#: cekirdek/dogrula/kaynak.py:107
+#: cekirdek/dogrula/kaynak.py:111
 msgid ""
 "Tavanı, modeldeki nüklidler içinde en düşük üst sınıra sahip olan belirler. OpenMC "
 "koşu sırasında hata verir."
@@ -11516,7 +11520,7 @@ msgstr ""
 msgid "Tek eksenel dilim (F_q)"
 msgstr "Single axial bin (F_q)"
 
-#: cekirdek/kaynak.py:35
+#: cekirdek/kaynak.py:34
 msgid "Tek enerjili (monoenerjetik)"
 msgstr "Monoenergetic"
 
@@ -11528,7 +11532,7 @@ msgstr "Single fuel assembly"
 msgid "Tek yakıt çubuğu ve çevresindeki soğutucu; en hızlı başlangıç."
 msgstr "A single fuel pin and its surrounding coolant; the quickest start."
 
-#: cekirdek/kaynak.py:43
+#: cekirdek/kaynak.py:42
 msgid "Tek yönlü demet"
 msgstr "Monodirectional beam"
 
@@ -12242,7 +12246,7 @@ msgstr "Data page"
 msgid "Veri sayfası seçimi"
 msgstr "Data page choice"
 
-#: arayuz/pencere/gezinme.py:80 cekirdek/dogrula/veri.py:32
+#: arayuz/pencere/gezinme.py:80 cekirdek/dogrula/veri.py:35
 msgid "Veri sayfasından cross_sections.xml içeren klasörü seçin ya da bir kütüphane indirin."
 msgstr ""
 "On the Data page, choose the folder that contains cross_sections.xml or download a "
@@ -12273,7 +12277,7 @@ msgstr ""
 msgid "W/cm için Kor sekmesinde aktif yükseklik tanımlayın."
 msgstr "For W/cm define an active height on the Geometry page."
 
-#: cekirdek/kaynak.py:33
+#: cekirdek/kaynak.py:32
 msgid "Watt fisyon tayfı"
 msgstr "Watt fission spectrum"
 
@@ -12854,7 +12858,7 @@ msgstr "None"
 msgid "Yok (termal saçılma verisi ekleme)"
 msgstr "None (do not add thermal scattering data)"
 
-#: cekirdek/dogrula/veri.py:38
+#: cekirdek/dogrula/veri.py:41
 msgid "Yolu denetleyin ya da nükleer veri kütüphanesini indirin."
 msgstr "Check the path or download the nuclear data library."
 
@@ -13187,11 +13191,11 @@ msgstr "few active batches (%d) — the statistics remain weak"
 msgid "aktif çevrim sayısı değerlendirme için yetersiz (%d çevrim, %d pasif)"
 msgstr "not enough active batches for the assessment (%d batches, %d inactive)"
 
-#: cekirdek/kosucu.py:343
+#: cekirdek/kosucu.py:344
 msgid "akı"
 msgstr "flux"
 
-#: cekirdek/kosucu.py:346
+#: cekirdek/kosucu.py:347
 msgid "akım"
 msgstr "current"
 
@@ -13199,7 +13203,7 @@ msgstr "current"
 msgid "alanı analitik hesaplanamayan bölge"
 msgstr "region whose area cannot be computed analytically"
 
-#: cekirdek/geometri/kesit.py:155
+#: cekirdek/geometri/kesit.py:255
 #, python-format
 msgid "alanı hesaplanamayan kesit: %s"
 msgstr "cross-section whose area cannot be computed: %s"
@@ -13349,7 +13353,7 @@ msgstr "the same name is used in more than one layer: '%s'"
 msgid "aynı adlı farklı evren: '%s' -> '%s' olarak alındı"
 msgstr "different universe with the same name: '%s' -> imported as '%s'"
 
-#: cekirdek/kaynak.py:98
+#: cekirdek/kaynak.py:106
 msgid "ayrık tayf: en az bir (enerji, olasılık) çifti gerekli"
 msgstr "discrete spectrum: at least one (energy, probability) pair is required"
 
@@ -13624,7 +13628,7 @@ msgstr "unknown V&V method: %r (valid: %s)"
 msgid "bilinmeyen alt süreç: %r"
 msgstr "unknown subprocess: %r"
 
-#: cekirdek/kaynak.py:173 cekirdek/kaynak.py:338
+#: cekirdek/kaynak.py:182 cekirdek/kaynak.py:348
 #, python-format
 msgid "bilinmeyen açısal dağılım türü: %s"
 msgstr "unknown angular distribution type: %s"
@@ -13679,7 +13683,7 @@ msgstr "unknown energy group structure: %s"
 msgid "bilinmeyen enerji grup yapısı: %s (geçerli: %s)"
 msgstr "unknown energy group structure: %s (valid: %s)"
 
-#: cekirdek/kaynak.py:121 cekirdek/kaynak.py:318
+#: cekirdek/kaynak.py:129 cekirdek/kaynak.py:328
 #, python-format
 msgid "bilinmeyen enerji tayfı türü: %s"
 msgstr "unknown energy spectrum type: %s"
@@ -13724,7 +13728,7 @@ msgstr "unknown normalization: %s"
 msgid "bilinmeyen parça türü: %s"
 msgstr "unknown component type: %s"
 
-#: cekirdek/dogrula/kaynak.py:74
+#: cekirdek/dogrula/kaynak.py:77
 #, python-format
 msgid "bilinmeyen parçacık türü: %s"
 msgstr "unknown particle type: %s"
@@ -13825,7 +13829,7 @@ msgstr "malformed array descriptor: %s"
 msgid "bozuk çerçeve başı"
 msgstr "malformed frame start"
 
-#: arayuz/guc_harita.py:267 cekirdek/kosucu.py:609
+#: arayuz/guc_harita.py:267 cekirdek/kosucu.py:610
 msgid "bozuk, haritaya güvenmeyin"
 msgstr "broken, do not trust the map"
 
@@ -13838,7 +13842,7 @@ msgstr "card without an empty template: %s"
 msgid "boşluk"
 msgstr "void"
 
-#: cekirdek/dogrula/agac.py:354 cekirdek/geometri/yoklama.py:141
+#: cekirdek/dogrula/agac.py:374 cekirdek/geometri/yoklama.py:302
 msgctxt "yoklama"
 msgid "boşluk"
 msgstr "gap"
@@ -13935,12 +13939,12 @@ msgstr "cakisma must be a boolean"
 msgid "cizim alt süreci argüman almaz: %s"
 msgstr "the drawing subprocess takes no arguments: %s"
 
-#: cekirdek/dogrula/veri.py:37
+#: cekirdek/dogrula/veri.py:40
 #, python-format
 msgid "cross_sections.xml bulunamadı: %s"
 msgstr "cross_sections.xml not found: %s"
 
-#: cekirdek/dogrula/kaynak.py:88
+#: cekirdek/dogrula/kaynak.py:91
 msgid "cross_sections.xml içinde type='photon' kaydı bulunamadı."
 msgstr "No type='photon' entry was found in cross_sections.xml."
 
@@ -13953,7 +13957,7 @@ msgstr "cross_sections.xml could not be read: %s"
 msgid "cross_sections.xml okunamadı; eksik nüklid denetimi atlandı."
 msgstr "cross_sections.xml could not be read; missing-nuclide check skipped."
 
-#: cekirdek/dogrula/veri.py:78
+#: cekirdek/dogrula/veri.py:81
 msgid "cross_sections.xml okunamadı; nüklid denetimi atlandı"
 msgstr "cross_sections.xml could not be read; nuclide check skipped"
 
@@ -14240,7 +14244,7 @@ msgstr "outer region"
 msgid "dıştan %d. halka, %d. konum"
 msgstr "ring %d from the outside, position %d"
 
-#: cekirdek/kosucu.py:370
+#: cekirdek/kosucu.py:371
 msgid "eV / kaynak nötronu"
 msgstr "eV / source neutron"
 
@@ -14317,14 +14321,14 @@ msgstr "absorber"
 msgid "emici bölgenin malzemesi ('%s') güçlü bir nötron emici içermiyor"
 msgstr "the material of the absorber region ('%s') does not contain a strong neutron absorber"
 
-#: cekirdek/tambur.py:126
+#: cekirdek/tambur.py:127
 #, python-format
 msgid "emici iç yarıçapı (%.4f cm) tambur yarıçapından (%.4f cm) küçük olmalı"
 msgstr ""
 "the inner radius of the absorber (%.4f cm) must be smaller than the drum radius (%.4f"
 " cm)"
 
-#: cekirdek/tambur.py:124
+#: cekirdek/tambur.py:125
 msgid "emici yay açısı 0–360° arasında olmalı"
 msgstr "absorber arc angle must be between 0 and 360°"
 
@@ -14413,7 +14417,7 @@ msgstr "entropy mesh dimensions must be greater than zero"
 msgid "entropi sabit; değerlendirilemedi"
 msgstr "entropy is constant; could not be assessed"
 
-#: cekirdek/kosucu.py:346
+#: cekirdek/kosucu.py:347
 msgid "esnek saçılma"
 msgstr "elastic scattering"
 
@@ -14448,15 +14452,15 @@ msgstr ""
 msgid "fisil aralık %g cm ama '%s' çubuğu yalnızca %g cm boyunca var"
 msgstr "the fissile range is %g cm but pin '%s' is present over only %g cm"
 
-#: cekirdek/kosucu.py:343
+#: cekirdek/kosucu.py:344
 msgid "fisyon"
 msgstr "fission"
 
-#: cekirdek/kosucu.py:345
+#: cekirdek/kosucu.py:346
 msgid "fisyon enerjisi"
 msgstr "fission energy"
 
-#: cekirdek/kosucu.py:343
+#: cekirdek/kosucu.py:344
 msgid "fisyon nötronu üretimi"
 msgstr "fission neutron production"
 
@@ -14464,15 +14468,15 @@ msgstr "fission neutron production"
 msgid "fiziksel biçim"
 msgstr "physical form"
 
-#: cekirdek/kaynak.py:254
+#: cekirdek/kaynak.py:264
 msgid "foton"
 msgstr "photon"
 
-#: cekirdek/dogrula/kaynak.py:87
+#: cekirdek/dogrula/kaynak.py:90
 msgid "foton kaynağı seçildi ama kütüphanede foton verisi yok"
 msgstr "a photon source is selected but the library has no photon data"
 
-#: cekirdek/dogrula/kaynak.py:79
+#: cekirdek/dogrula/kaynak.py:82
 msgid "foton kaynağı Özdeğer (k-eff) hesabında anlamsız"
 msgstr "a photon source is meaningless in an eigenvalue (k-eff) calculation"
 
@@ -14501,7 +14505,7 @@ msgstr "width y"
 msgid "geometri ağaca dönüştürüldü: %d parça, %d çubuk tanımı"
 msgstr "geometry converted to a geometry tree: %d components, %d pin definitions"
 
-#: cekirdek/geometri/yoklama.py:169
+#: cekirdek/geometri/yoklama.py:330
 #, python-format
 msgid "geometri hata ayıklama koşusu temiz (%d × %d parçacık)"
 msgstr "geometry debug run is clean (%d × %d particles)"
@@ -14916,12 +14920,12 @@ msgstr "calculated reference"
 msgid "hesaplanamadı: %s"
 msgstr "could not be computed: %s"
 
-#: cekirdek/kaynak.py:109
+#: cekirdek/kaynak.py:117
 #, python-format
 msgid "histogram tayf: %d kenar için %d değer olmalı, %d verildi"
 msgstr "histogram spectrum: %d edges require %d values, %d were given"
 
-#: cekirdek/kaynak.py:107
+#: cekirdek/kaynak.py:115
 msgid "histogram tayf: en az iki grup kenarı gerekli"
 msgstr "histogram spectrum: at least two group edges are required"
 
@@ -14935,7 +14939,7 @@ msgstr ""
 msgid "hücre"
 msgstr "cell"
 
-#: cekirdek/geometri/yoklama.py:135
+#: cekirdek/geometri/yoklama.py:296
 #, python-format
 msgid "hücre %d"
 msgstr "cell %d"
@@ -15076,7 +15080,7 @@ msgstr "content"
 msgid "içerik türü"
 msgstr "content type"
 
-#: cekirdek/geometri/kesit.py:95
+#: cekirdek/geometri/kesit.py:130 cekirdek/geometri/kesit.py:165
 #, python-format
 msgid "içerme denetimi yapılamayan kesit: %s"
 msgstr "cross-section for which containment cannot be checked: %s"
@@ -15243,7 +15247,7 @@ msgstr "lattice position"
 msgid "kafeste %d'den çok farklı evren var; harita harfleri yetmiyor"
 msgstr "the lattice has more than %d different universes; the map letters are not enough"
 
-#: cekirdek/geometri/kesit.py:76
+#: cekirdek/geometri/kesit.py:112
 #, python-format
 msgid "kalınlıkla büyütülemeyen kesit: %s"
 msgstr "cross-section that cannot be grown by a thickness: %s"
@@ -15345,16 +15349,16 @@ msgstr "source   = [  ?  ] Shannon entropy is off — source convergence cannot 
 msgid "kaynak   = [  ?  ] Shannon entropisi okunamadı: %s"
 msgstr "source   = [  ?  ] Shannon entropy could not be read: %s"
 
-#: cekirdek/dogrula/kaynak.py:105
+#: cekirdek/dogrula/kaynak.py:109
 #, python-format
 msgid "kaynak enerjisi %s, veri tavanı %s (%s)"
 msgstr "source energy %s, data upper limit %s (%s)"
 
-#: cekirdek/kaynak.py:156
+#: cekirdek/kaynak.py:165
 msgid "kaynak yönü sıfır vektör olamaz"
 msgstr "the source direction cannot be a zero vector"
 
-#: cekirdek/dogrula/kaynak.py:59
+#: cekirdek/dogrula/kaynak.py:62
 #, python-format
 msgid "kaynak şiddeti sıfırdan büyük olmalı (%s)"
 msgstr "source strength must be greater than zero (%s)"
@@ -15418,7 +15422,7 @@ msgstr "cross-section shape"
 msgid "kilit dosyası açılamadı: %s"
 msgstr "could not open the lock file: %s"
 
-#: cekirdek/dogrula/kaynak.py:133
+#: cekirdek/dogrula/kaynak.py:137
 msgid ""
 "kinetik parametreler (β_eff, Λ) yalnızca özdeğer hesabında bulunur — sabit kaynak "
 "hesabında yok sayılır"
@@ -15431,7 +15435,7 @@ msgstr ""
 msgid "klasör oluşturulamadı: %s (%s)"
 msgstr "the folder could not be created: %s (%s)"
 
-#: cekirdek/tambur.py:146
+#: cekirdek/tambur.py:147
 #, python-format
 msgid ""
 "komşu tamburlar çakışıyor: merkezler arası %.4f cm, iki yarıçap toplamı %.4f cm. "
@@ -15441,7 +15445,7 @@ msgstr ""
 " radii %.4f cm. Reduce the number of drums, reduce the radius or increase the centre "
 "radius."
 
-#: cekirdek/kaynak.py:164
+#: cekirdek/kaynak.py:173
 #, python-format
 msgid "koninin yarı açılımı 0–180° arasında olmalı (%s)"
 msgstr "the cone half-angle must be between 0 and 180° (%s)"
@@ -15691,7 +15695,7 @@ msgstr ""
 "the box source requires fissile material — there is no fissile material in the "
 "geometry"
 
-#: cekirdek/geometri/kesit.py:61
+#: cekirdek/geometri/kesit.py:97
 #, python-format
 msgid "kutusu hesaplanamayan kesit: %s"
 msgstr "cross-section whose bounding box cannot be computed: %s"
@@ -15700,7 +15704,7 @@ msgstr "cross-section whose bounding box cannot be computed: %s"
 msgid "kuyruk kapatıldı"
 msgstr "the queue is closed"
 
-#: cekirdek/geometri/yoklama.py:143 cekirdek/geometri/yol_metni.py:17
+#: cekirdek/geometri/yoklama.py:304 cekirdek/geometri/yol_metni.py:17
 msgid "kök"
 msgstr "root"
 
@@ -15868,7 +15872,7 @@ msgstr "the list limit cannot be negative: %d"
 msgid "malzeme"
 msgstr "material"
 
-#: cekirdek/kosucu.py:403
+#: cekirdek/kosucu.py:404
 #, python-format
 msgid "malzeme %s"
 msgstr "material %s"
@@ -15912,7 +15916,7 @@ msgstr "unknown field in the material: %s"
 msgid "malzemeler"
 msgstr "materials"
 
-#: cekirdek/dogrula/veri.py:85
+#: cekirdek/dogrula/veri.py:91
 #, python-format
 msgid "malzemeler kurulamadı: %s"
 msgstr "materials could not be built: %s"
@@ -16086,7 +16090,7 @@ msgstr "generations"
 msgid "nokta"
 msgstr "points"
 
-#: cekirdek/dogrula/kaynak.py:117
+#: cekirdek/dogrula/kaynak.py:121
 #, python-format
 msgid "nokta kaynak z = %g modelin dışında (yükseklik %g, sınır ±%g)"
 msgstr "point source z = %g is outside the model (height %g, boundary ±%g)"
@@ -16101,15 +16105,15 @@ msgstr "note"
 msgid "numara %d daha önce kullanıldı"
 msgstr "number %d was already used"
 
-#: cekirdek/kosucu.py:368
+#: cekirdek/kosucu.py:369
 msgid "n·cm / kaynak nötronu"
 msgstr "n·cm / source neutron"
 
-#: cekirdek/kosucu.py:368
+#: cekirdek/kosucu.py:369
 msgid "n·cm/s (hacim-integralli)"
 msgstr "n·cm/s (volume-integrated)"
 
-#: cekirdek/kaynak.py:254
+#: cekirdek/kaynak.py:264
 msgid "nötron"
 msgstr "neutron"
 
@@ -16121,11 +16125,11 @@ msgstr "neutron spectrum"
 msgid "nükleer veri kütüphanesi bulunamadı"
 msgstr "nuclear data library not found"
 
-#: cekirdek/dogrula/veri.py:31
+#: cekirdek/dogrula/veri.py:34
 msgid "nükleer veri kütüphanesi seçilmedi (OPENMC_CROSS_SECTIONS da yok)"
 msgstr "no nuclear data library chosen (OPENMC_CROSS_SECTIONS is not set either)"
 
-#: cekirdek/dogrula/veri.py:93
+#: cekirdek/dogrula/veri.py:99
 #, python-format
 msgid "nüklid listesi çıkarılamadı: %s"
 msgstr "nuclide list could not be extracted: %s"
@@ -16134,7 +16138,7 @@ msgstr "nuclide list could not be extracted: %s"
 msgid "oksit"
 msgstr "oxide"
 
-#: cekirdek/kosucu.py:467 cekirdek/mesh_tally/sonuc.py:130
+#: cekirdek/kosucu.py:468 cekirdek/mesh_tally/sonuc.py:130
 #: cekirdek/rapor_sablon/__init__.py:152
 #, python-format
 msgid "okunamadı: %s"
@@ -16152,7 +16156,7 @@ msgstr "openmc path"
 msgid "openmc yolu boş olamaz"
 msgstr "the openmc path cannot be empty"
 
-#: cekirdek/kosucu.py:290
+#: cekirdek/kosucu.py:291
 msgid "openmc çalıştırılabilir dosyası PATH'te bulunamadı (conda ortamı etkin mi?)"
 msgstr "the openmc executable was not found in PATH (is the conda environment active?)"
 
@@ -16541,17 +16545,17 @@ msgstr ""
 "in a fixed source calculation the four factors and k are undefined; only the spectrum"
 " is given"
 
-#: cekirdek/dogrula/kaynak.py:126
+#: cekirdek/dogrula/kaynak.py:130
 msgid "sabit kaynak hesabında hiçbir tally tanımlı değil — koşu hiçbir sonuç üretmez"
 msgstr "no tally is defined in the fixed source calculation — the run produces no results"
 
-#: cekirdek/dogrula/kaynak.py:154
+#: cekirdek/dogrula/kaynak.py:158
 msgid "sabit kaynak hesabında kutu kaynağı 'yalnızca fisil bölgeler' kısıtıyla örneklenir"
 msgstr ""
 "in a fixed source calculation the box source is sampled with the 'fissile regions "
 "only' constraint"
 
-#: cekirdek/dogrula/kaynak.py:146
+#: cekirdek/dogrula/kaynak.py:150
 #, python-format
 msgid "sabit kaynak hesabında pasif çevrim (%d) yok sayılır"
 msgstr "inactive batches (%d) are ignored in a fixed source calculation"
@@ -16575,7 +16579,7 @@ msgstr "not a number: %s"
 msgid "sayısal değer bekleniyordu: %r"
 msgstr "a numeric value was expected: %r"
 
-#: cekirdek/kosucu.py:344
+#: cekirdek/kosucu.py:345
 msgid "saçılma"
 msgstr "scattering"
 
@@ -16647,7 +16651,7 @@ msgstr "infinite (reflective boundary)"
 msgid "sonuç ± σ"
 msgstr "result ± σ"
 
-#: cekirdek/kosucu.py:343
+#: cekirdek/kosucu.py:344
 msgid "soğurma"
 msgstr "absorption"
 
@@ -16795,7 +16799,7 @@ msgstr "core type cannot be started from scratch: %s"
 msgid "sınır"
 msgstr "boundary"
 
-#: cekirdek/geometri/kesit.py:120
+#: cekirdek/geometri/kesit.py:221
 #, python-format
 msgid "sınır noktası üretilemeyen kesit: %s"
 msgstr "cross-section for which boundary points cannot be generated: %s"
@@ -16820,7 +16824,7 @@ msgstr "k from tallies"
 msgid "tam model (alt model kurulamadı)"
 msgstr "full model (sub-model could not be built)"
 
-#: arayuz/guc_harita.py:267 cekirdek/kosucu.py:608 cekirdek/kosucu_terminal.py:157
+#: arayuz/guc_harita.py:267 cekirdek/kosucu.py:609 cekirdek/kosucu_terminal.py:157
 msgid "tamam"
 msgstr "ok"
 
@@ -16865,11 +16869,11 @@ msgstr "drum body"
 msgid "tambur sayısı 0 — kontrol tamburu olmadan düz yansıtıcı kuşak"
 msgstr "number of control drums is 0 — a plain radial reflector without control drums"
 
-#: cekirdek/tambur.py:120
+#: cekirdek/tambur.py:121
 msgid "tambur sayısı en az 1 olmalı"
 msgstr "number of control drums must be at least 1"
 
-#: cekirdek/tambur.py:122
+#: cekirdek/tambur.py:123
 msgid "tambur yarıçapı sıfırdan büyük olmalı"
 msgstr "drum radius must be greater than zero"
 
@@ -16882,7 +16886,7 @@ msgstr "drum radius must be greater than zero: %s"
 msgid "tambur yerleşimi geçersiz: "
 msgstr "invalid control drum placement: "
 
-#: cekirdek/tambur.py:133
+#: cekirdek/tambur.py:134
 #, python-format
 msgid ""
 "tamburlar kora giriyor: merkez yarıçapı %.4f − tambur yarıçapı %.4f = %.4f cm < kor "
@@ -16891,7 +16895,7 @@ msgstr ""
 "the control drums extend into the core: centre radius %.4f − drum radius %.4f = %.4f "
 "cm < core radius %.4f cm"
 
-#: cekirdek/tambur.py:138
+#: cekirdek/tambur.py:139
 #, python-format
 msgid "tamburlar yansıtıcı kuşaktan taşıyor: %.4f + %.4f = %.4f cm > dış sınır %.4f cm"
 msgstr ""
@@ -17095,7 +17099,7 @@ msgctxt "spektrum"
 msgid "termal"
 msgstr "thermal"
 
-#: cekirdek/dogrula/veri.py:105
+#: cekirdek/dogrula/veri.py:111
 #, python-format
 msgid "termal saçılma verisi (S(α,β)) kütüphanede yok: %s"
 msgstr "thermal scattering data (S(α,β)) not in the library: %s"
@@ -17130,16 +17134,16 @@ msgstr "total power must be greater than zero"
 msgid "toplam güç verilmiş ama model 2B — çizgisel güç [W/cm] hesaplanamaz"
 msgstr "total power is given but the model is 2D — linear power [W/cm] cannot be computed"
 
-#: cekirdek/kosucu.py:344
+#: cekirdek/kosucu.py:345
 msgid "toplam tepkime"
 msgstr "total reaction"
 
-#: cekirdek/kosucu.py:611
+#: cekirdek/kosucu.py:612
 #, python-format
 msgid "toplamın korunumu denetlenemedi: %s"
 msgstr "conservation of the total could not be checked: %s"
 
-#: cekirdek/kosucu.py:607
+#: cekirdek/kosucu.py:608
 #, python-format
 msgid "toplamın korunumu: bağıl fark %.1e — %s"
 msgstr "conservation of the total: relative difference %.1e — %s"
@@ -17191,7 +17195,7 @@ msgstr "depletion requires an eigenvalue (k-eff) calculation"
 msgid "tüm küme"
 msgstr "whole set"
 
-#: cekirdek/kosucu.py:412
+#: cekirdek/kosucu.py:413
 msgid "tüm model"
 msgstr "whole model"
 
@@ -17235,7 +17239,7 @@ msgstr "at least 5000 per batch for long production runs"
 msgid "varsayılan dışı porta izin yok: %s"
 msgstr "non-default ports are not allowed: %s"
 
-#: cekirdek/dogrula/veri.py:99
+#: cekirdek/dogrula/veri.py:105
 #, python-format
 msgid "veri kütüphanesinde olmayan nüklid: %s"
 msgstr "nuclide not in the data library: %s"
@@ -17461,7 +17465,7 @@ msgstr "new run directory (default <run_directory>_yeniden)"
 msgid "yeni model"
 msgstr "new model"
 
-#: cekirdek/kosucu.py:345
+#: cekirdek/kosucu.py:346
 msgid "yerel ısınma"
 msgstr "local heating"
 
@@ -17566,7 +17570,7 @@ msgstr "could not be loaded"
 msgid "yükseklik"
 msgstr "height"
 
-#: cekirdek/dogrula/agac.py:286 cekirdek/dogrula/kor.py:366
+#: cekirdek/dogrula/agac.py:303 cekirdek/dogrula/kor.py:366
 msgid "yükseklik verilmemiş — model eksenel yönde sonsuz (2B) kabul ediliyor"
 msgstr "height not given — the model is treated as infinite in the axial direction (2D)"
 
@@ -18306,7 +18310,7 @@ msgstr "Rod worth (differential)"
 msgid "Çubuk güç dağılımı"
 msgstr "Pin power distribution"
 
-#: cekirdek/kosucu.py:541
+#: cekirdek/kosucu.py:542
 #, python-format
 msgid ""
 "Çubuk güçlerinin toplamı filtresiz tally'den %.2e bağıl fark gösteriyor. Haritalama "
@@ -18437,7 +18441,7 @@ msgstr "Scale:"
 msgid "Ölçülecek büyüklükler"
 msgstr "Quantities to measure"
 
-#: cekirdek/kosucu.py:420
+#: cekirdek/kosucu.py:421
 msgid "Ölçülen"
 msgstr "Quantity"
 
@@ -18707,11 +18711,11 @@ msgstr "Filters the examples by difficulty level."
 msgid "Örnekten"
 msgstr "From example"
 
-#: cekirdek/dogrula/agac.py:350
+#: cekirdek/dogrula/agac.py:370
 msgid "Örtüşen hücreler kayıp parçacık üretir."
 msgstr "Overlapping cells produce lost particles."
 
-#: cekirdek/dogrula/agac.py:156
+#: cekirdek/dogrula/agac.py:173
 msgid "Örtüşen hücreler kayıp parçacık üretir; yerleşimleri ayırın."
 msgstr "Overlapping cells produce lost particles; separate the placements."
 
@@ -18741,7 +18745,7 @@ msgstr ""
 "In an eigenvalue calculation these are only an initial guess; the source relaxes to "
 "the true fission spectrum during the inactive batches and does not affect k-eff."
 
-#: cekirdek/dogrula/kaynak.py:65
+#: cekirdek/dogrula/kaynak.py:68
 msgid ""
 "Özdeğer hesabında sonuçlar fisyon kaynağına normalize edilir; mutlak ölçek için güç "
 "dağılımındaki toplam gücü kullanın."
@@ -18976,7 +18980,7 @@ msgstr "the example must be a JSON object"
 msgid "örtü, uç parçası"
 msgstr "blanket, end piece"
 
-#: cekirdek/dogrula/agac.py:349 cekirdek/geometri/yoklama.py:140
+#: cekirdek/dogrula/agac.py:369 cekirdek/geometri/yoklama.py:301
 msgctxt "yoklama"
 msgid "örtüşme"
 msgstr "overlap"
@@ -18989,16 +18993,16 @@ msgstr "translation x"
 msgid "öteleme y"
 msgstr "translation y"
 
-#: cekirdek/dogrula/kaynak.py:171
+#: cekirdek/dogrula/kaynak.py:175
 msgid "özdeğer hesabında açısal dağılım da yalnızca başlangıç tahminidir"
 msgstr "in an eigenvalue calculation the angular distribution is also only an initial guess"
 
-#: cekirdek/dogrula/kaynak.py:164
+#: cekirdek/dogrula/kaynak.py:168
 #, python-format
 msgid "özdeğer hesabında enerji tayfı (%s) yalnızca başlangıç tahminidir"
 msgstr "in an eigenvalue calculation the energy spectrum (%s) is only an initial guess"
 
-#: cekirdek/dogrula/kaynak.py:64
+#: cekirdek/dogrula/kaynak.py:67
 #, python-format
 msgid "özdeğer hesabında kaynak şiddeti (%g) yok sayılır"
 msgstr "the source strength (%g) is ignored in an eigenvalue calculation"
@@ -19162,7 +19166,7 @@ msgstr "Follower material"
 msgid "İzotop (nüklid)"
 msgstr "Nuclide"
 
-#: cekirdek/kaynak.py:42
+#: cekirdek/kaynak.py:41
 msgid "İzotropik"
 msgstr "Isotropic"
 
@@ -19241,7 +19245,7 @@ msgstr "Threads:"
 msgid "ısı kapasitesi"
 msgstr "heat capacity"
 
-#: cekirdek/kosucu.py:344
+#: cekirdek/kosucu.py:345
 msgid "ısınma"
 msgstr "heating"
 
