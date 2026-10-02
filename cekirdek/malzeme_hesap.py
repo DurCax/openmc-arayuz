@@ -292,3 +292,271 @@ def nuklid_mol(bilesim):
 def nuklid_atom_kesirleri(bilesim):
     """Spec bilesimi -> {nuklid: atom kesri} (toplam 1)."""
     return _normalize(nuklid_mol(bilesim))
+
+
+# ============================================================================
+# 6. Turetilmis degerler
+# ============================================================================
+
+def _sayi_ve_kutle_yogunlugu(m, kesirler, mol):
+    """(N_toplam [atom/b-cm], rho [g/cm3]) -- yogunluk birimine gore."""
+    y = m.get("yogunluk") or {}
+    birim = y.get("birim") or "g/cm3"
+    if birim == "macro":
+        raise ValueError(_("'macro' yoğunluğu çok gruplu veri içindir; türetilmiş değer yok"))
+    m_ort = ortalama_kutle(kesirler)
+    if birim == "sum":
+        if bilesim_birimi(m["bilesim"]) == "ao":       # satirlar atom/b-cm
+            n = sum(mol.values())
+            return n, atom_bcm_to_gcm3(n, m_ort)
+        rho = sum(float(s["miktar"]) for s in m["bilesim"])   # satirlar g/cm3
+        return gcm3_to_atom_bcm(rho, m_ort), rho
+    deger = float(y.get("deger"))
+    if not deger > 0.0:
+        raise ValueError(_("yoğunluk pozitif olmalı: %r") % deger)
+    if birim in ("g/cm3", "g/cc", "kg/m3"):
+        rho = deger / 1000.0 if birim == "kg/m3" else deger
+        return gcm3_to_atom_bcm(rho, m_ort), rho
+    if birim in ("atom/b-cm", "atom/cm3"):
+        n = deger * _BARN_CM2 if birim == "atom/cm3" else deger
+        return n, atom_bcm_to_gcm3(n, m_ort)
+    raise ValueError(_("bilinmeyen yoğunluk birimi: %r") % birim)
+
+
+def turetilmis(m):
+    """
+    Spec malzemesinden turetilmis degerler (yeni sozluk):
+      nuklidler        {nuklid: N_i [atom/b-cm]}
+      N_toplam         sum N_i
+      yogunluk_gcm3    rho
+      ortalama_kutle   atom basina ortalama molar kutle [g/mol]
+      agir_metal_gcm3  Z >= 90 nuklidlerin kutle yogunlugu (gHM/cm3)
+      H_X              N_H / N_fisil (FISIL); H ya da fisil yoksa None
+    """
+    mol = nuklid_mol(m.get("bilesim") or [])
+    kesirler = _normalize(mol)
+    n_top, rho = _sayi_ve_kutle_yogunlugu(m, kesirler, mol)
+    nuklidler = {n: a * n_top for n, a in kesirler.items()}
+    na_b = avogadro_barn()
+    hm = sum(v * kutle(n) / na_b for n, v in nuklidler.items()
+             if atom_numarasi(n) >= _AGIR_METAL_Z)
+    n_h = sum(v for n, v in nuklidler.items() if element_adi(n) == "H")
+    n_x = sum(nuklidler.get(n, 0.0) for n in FISIL)
+    return {"nuklidler": nuklidler, "N_toplam": n_top, "yogunluk_gcm3": rho,
+            "ortalama_kutle": ortalama_kutle(kesirler), "agir_metal_gcm3": hm,
+            "H_X": (n_h / n_x) if (n_h > 0.0 and n_x > 0.0) else None}
+
+
+# ============================================================================
+# 7. Cozunmus bor (ppm)
+# ============================================================================
+
+def _su_atom_kutlesi():
+    """H2O'da atom basina ortalama kutle: (2 M_H + M_O) / 3."""
+    return (2.0 * ortalama_kutle(dogal_vektor("H")) + ortalama_kutle(dogal_vektor("O"))) / 3.0
+
+
+def _ppm_dogrula(ppm):
+    if not 0.0 <= ppm < 1.0 / _PPM:
+        raise ValueError(_("ppm 0 ile 1e6 arasında olmalı: %r") % ppm)
+
+
+def ppm_wo_to_ao(ppm_wo, cozunen_vektor=None, cozucu_atom_kutlesi=None):
+    """
+    Kutlece ppm -> atomca ppm (cozeltinin BUTUN atomlarina gore):
+      x = (w/M_B) / (w/M_B + (1-w)/M_c) ;  M_c = cozucu atom basina kutle
+    Varsayilan: dogal bor, cozucu H2O.
+    """
+    _ppm_dogrula(ppm_wo)
+    m_b = ortalama_kutle(cozunen_vektor or dogal_vektor("B"))
+    m_c = cozucu_atom_kutlesi or _su_atom_kutlesi()
+    w = ppm_wo * _PPM
+    return (w / m_b) / (w / m_b + (1.0 - w) / m_c) / _PPM
+
+
+def ppm_ao_to_wo(ppm_ao, cozunen_vektor=None, cozucu_atom_kutlesi=None):
+    """Atomca ppm -> kutlece ppm: w = x M_B / (x M_B + (1-x) M_c)."""
+    _ppm_dogrula(ppm_ao)
+    m_b = ortalama_kutle(cozunen_vektor or dogal_vektor("B"))
+    m_c = cozucu_atom_kutlesi or _su_atom_kutlesi()
+    x = ppm_ao * _PPM
+    return x * m_b / (x * m_b + (1.0 - x) * m_c) / _PPM
+
+
+def bor_sayi_yogunlugu(ppm_wo, yogunluk, b10_ao=None):
+    """Cozeltideki bor sayi yogunlugu: N_B = rho w N_A 1e-24 / M_B [atom/b-cm]."""
+    _ppm_dogrula(ppm_wo)
+    vek = zenginlestir("B", "B10", b10_ao) if b10_ao is not None else dogal_vektor("B")
+    return gcm3_to_atom_bcm(yogunluk * ppm_wo * _PPM, ortalama_kutle(vek))
+
+
+def _satir(isim, yuzde, tur="element", zenginlik_=None):
+    d = {"tur": tur, "isim": isim, "miktar": yuzde, "birim": "wo"}
+    if zenginlik_ is not None:
+        d["zenginlik"] = zenginlik_
+    return d
+
+
+def borlu_su_bilesimi(ppm_wo, b10_ao=None):
+    """
+    Borlu hafif su, agirlikca YUZDE satirlar (sema.bilesen bicimi):
+      B = w ; H = (1-w) 2M_H/M_H2O ; O = (1-w) M_O/M_H2O.
+    b10_ao verilirse bor B10/B11 nuklid satirlari olur (zenginlestirilmis bor).
+    """
+    _ppm_dogrula(ppm_wo)
+    w = ppm_wo * _PPM
+    m_h = ortalama_kutle(dogal_vektor("H"))
+    m_o = ortalama_kutle(dogal_vektor("O"))
+    m_su = 2.0 * m_h + m_o
+    satirlar = [_satir("H", 100.0 * (1.0 - w) * 2.0 * m_h / m_su),
+                _satir("O", 100.0 * (1.0 - w) * m_o / m_su)]
+    if w == 0.0:
+        return satirlar
+    if b10_ao is None:
+        return satirlar + [_satir("B", 100.0 * w)]
+    bw = ao_to_wo(zenginlestir("B", "B10", b10_ao))
+    return satirlar + [_satir(n, 100.0 * w * f, tur="nuklid") for n, f in sorted(bw.items())]
+
+
+# ============================================================================
+# 8. Karisim (wo / ao / vo) -- openmc.Material.mix_materials ile ayni model
+# ============================================================================
+
+_TOPLAM_TOLERANSI = 1.0e-6
+
+
+def _oranlari_dogrula(oranlar, n):
+    if len(oranlar) != n or n == 0:
+        raise ValueError(_("bileşen ve oran sayısı eşit olmalı"))
+    if any(f < 0.0 for f in oranlar):
+        raise ValueError(_("oranlar negatif olamaz"))
+    if abs(sum(oranlar) - 1.0) > _TOPLAM_TOLERANSI:
+        raise ValueError(_("oranların toplamı %%100 olmalı (şu an %%%.4f)") % (100.0 * sum(oranlar)))
+
+
+def karistir(bilesenler, oranlar, tur):
+    """
+    bilesenler: [(vektor_ao, yogunluk_gcm3), ...]; oranlar toplami 1.
+    Hacim toplanabilirligi (ideal karisim): bilesenin hacim kesri
+      vo: v_i = f_i ; wo: v_i ~ f_i/rho_i ; ao: v_i ~ f_i M_i/rho_i
+    N_n = sum v_i N_i,n ; rho = sum v_i rho_i.  DONER (vektor_ao, rho).
+    """
+    if tur not in ORAN_TURLERI:
+        raise ValueError(_("karışım oranı ao, wo ya da vo olmalı: %r") % tur)
+    _oranlari_dogrula(oranlar, len(bilesenler))
+    kutleler = [ortalama_kutle(v) for v, _r in bilesenler]
+    if tur == "vo":
+        hacim = list(oranlar)
+    else:
+        ham = [f * (kutleler[i] if tur == "ao" else 1.0) / bilesenler[i][1]
+               for i, f in enumerate(oranlar)]
+        hacim = [h / sum(ham) for h in ham]
+    sayi = {}
+    for (vek, rho), m_i, v_i in zip(bilesenler, kutleler, hacim):
+        n_i = gcm3_to_atom_bcm(rho, m_i)
+        for nk, a in _normalize(vek).items():
+            sayi[nk] = sayi.get(nk, 0.0) + v_i * n_i * a
+    return _normalize(sayi), sum(v * r for v, (_vek, r) in zip(hacim, bilesenler))
+
+
+def karisim_td(kesirler_wo, td_yogunluklari):
+    """Ideal karisim kuramsal yogunlugu: 1/rho = sum(w_i/rho_i)."""
+    _oranlari_dogrula(kesirler_wo, len(td_yogunluklari))
+    return 1.0 / sum(w / r for w, r in zip(kesirler_wo, td_yogunluklari))
+
+
+# ============================================================================
+# 9. Yakit bilesimleri: UO2-Gd2O3, MOX, Am-241 yaslanmasi
+# ============================================================================
+
+def _uranyum_kutlesi(zenginlik_yuzde):
+    return 1.0 / sum(w / kutle(n) for n, w in uranyum_vektoru(zenginlik_yuzde).items())
+
+
+def uo2_gd2o3_bilesimi(zenginlik_yuzde, gd2o3_wo, gd_vektor_ao=None):
+    """
+    (U,Gd)O2 yakiti, agirlikca YUZDE satirlar. Kutle dengesi (1 g yakit):
+      U  = (1-g) M_U / (M_U + 2 M_O)
+      Gd = g 2M_Gd / (2M_Gd + 3M_O)
+      O  = kalan
+    g: Gd2O3 kutle kesri (0-1). gd_vektor_ao verilirse Gd nuklid satirlari.
+    """
+    if not 0.0 <= gd2o3_wo < 1.0:
+        raise ValueError(_("Gd₂O₃ kütle kesri 0 ile 1 arasında olmalı: %r") % gd2o3_wo)
+    m_u = _uranyum_kutlesi(zenginlik_yuzde)
+    m_o = ortalama_kutle(dogal_vektor("O"))
+    gd_vek = gd_vektor_ao or dogal_vektor("Gd")
+    m_gd = ortalama_kutle(gd_vek)
+    w_u = (1.0 - gd2o3_wo) * m_u / (m_u + 2.0 * m_o)
+    w_gd = gd2o3_wo * 2.0 * m_gd / (2.0 * m_gd + 3.0 * m_o)
+    satirlar = [_satir("U", 100.0 * w_u, zenginlik_=zenginlik_yuzde)]
+    if gd_vektor_ao is None:
+        satirlar.append(_satir("Gd", 100.0 * w_gd))
+    else:
+        satirlar += [_satir(n, 100.0 * w_gd * f, tur="nuklid")
+                     for n, f in sorted(ao_to_wo(gd_vek).items())]
+    return satirlar + [_satir("O", 100.0 * (1.0 - w_u - w_gd))]
+
+
+PU_VEKTOR_NUKLIDLERI = ("Pu238", "Pu239", "Pu240", "Pu241", "Pu242", "Am241")
+
+
+def _pu_vektoru_dogrula(vektor_wo):
+    bilinmeyen = set(vektor_wo) - set(PU_VEKTOR_NUKLIDLERI)
+    if bilinmeyen:
+        raise ValueError(_("Pu vektöründe beklenmeyen nüklid: %s") % ", ".join(sorted(bilinmeyen)))
+    _negatif_yok(vektor_wo)
+    if abs(sum(vektor_wo.values()) - 1.0) > _TOPLAM_TOLERANSI:
+        raise ValueError(_("Pu vektörünün toplamı %%100 olmalı (şu an %%%.4f)")
+                         % (100.0 * sum(vektor_wo.values())))
+
+
+def mox_bilesimi(pu_hm_wo, pu_vektor_wo, u_zenginlik_yuzde, om=2.0):
+    """
+    (U,Pu)O_x yakiti, agirlikca YUZDE satirlar. 1 g agir metal (HM) icin:
+      U = 1 - p ;  Pu_i = p w_i ;  O = x M_O [ (1-p)/M_U + sum p w_i / M_i ]
+    p = Pu/HM kutle kesri, w = Pu(+Am) vektoru (kutle, toplam 1), x = O/M.
+    """
+    if not 0.0 < pu_hm_wo <= 1.0:
+        raise ValueError(_("Pu/HM kütle kesri 0 ile 1 arasında olmalı: %r") % pu_hm_wo)
+    if om <= 0.0:
+        raise ValueError(_("O/M oranı pozitif olmalı"))
+    _pu_vektoru_dogrula(pu_vektor_wo)
+    mol_hm = ((1.0 - pu_hm_wo) / _uranyum_kutlesi(u_zenginlik_yuzde)
+              + sum(pu_hm_wo * w / kutle(n) for n, w in pu_vektor_wo.items()))
+    m_o = om * ortalama_kutle(dogal_vektor("O")) * mol_hm
+    toplam = 1.0 + m_o
+    satirlar = []
+    if pu_hm_wo < 1.0:
+        satirlar.append(_satir("U", 100.0 * (1.0 - pu_hm_wo) / toplam,
+                               zenginlik_=u_zenginlik_yuzde))
+    satirlar += [_satir(n, 100.0 * pu_hm_wo * pu_vektor_wo[n] / toplam, tur="nuklid")
+                 for n in PU_VEKTOR_NUKLIDLERI if pu_vektor_wo.get(n)]
+    return satirlar + [_satir("O", 100.0 * m_o / toplam)]
+
+
+def _bozunma_sabiti_yil(nuklid):
+    t12 = _veri().half_life(nuklid)
+    if not t12:
+        raise ValueError(_("yarılanma ömrü bilinmiyor: %s") % nuklid)
+    return math.log(2.0) / (t12 / _YIL_S)
+
+
+def pu_yaslandir(vektor_wo, yil):
+    """
+    Pu(+Am) vektorunu 'yil' boyunca bozundurur (Bateman):
+      N_i(t) = N_i(0) e^(-l_i t)                         (her nuklid)
+      Am(t) += N_241(0) l_p/(l_a - l_p) (e^(-l_p t) - e^(-l_a t))   (Pu-241 -> Am-241)
+    Diger urunler (Pu-238 -> U-234, Am-241 -> Np-237) vektorden cikar;
+    sonuc kutle kesirleri yeniden normalize edilir. Yarilanma omurleri
+    openmc.data.half_life (ENDF/B-VIII.0).
+    """
+    if yil < 0.0:
+        raise ValueError(_("yaşlanma süresi negatif olamaz"))
+    _pu_vektoru_dogrula(vektor_wo)
+    atom = {n: w / kutle(n) for n, w in vektor_wo.items()}
+    sonra = {n: a * math.exp(-_bozunma_sabiti_yil(n) * yil) for n, a in atom.items()}
+    lp, la = _bozunma_sabiti_yil("Pu241"), _bozunma_sabiti_yil("Am241")
+    olusan = atom.get("Pu241", 0.0) * lp / (la - lp) * (math.exp(-lp * yil) - math.exp(-la * yil))
+    sonra["Am241"] = sonra.get("Am241", 0.0) + olusan
+    return _normalize({n: a * kutle(n) for n, a in sonra.items()})
