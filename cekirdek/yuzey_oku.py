@@ -15,7 +15,7 @@
 
 from typing import List, Optional
 
-from cekirdek import spektrum, yuzey_akim as _y
+from cekirdek import foton, spektrum, yuzey_akim as _y
 from cekirdek.gunluk import kaydedici
 from cekirdek.spektrum import Deger
 
@@ -56,6 +56,11 @@ def _denge_terimleri(sp, ad: str, sabit: bool) -> Optional[dict]:
     except LookupError:
         _log.info("'%s' denge tally'si yok", ad)
         return None
+    eksik = set(_y.DENGE_SKORLARI) - set(_y.sutun(df, "score"))
+    if eksik:
+        _log.warning("'%s' denge tally'sinde skor eksik: %s; denge hesaplanmadı",
+                     ad, ", ".join(sorted(eksik)))
+        return None
     nuf = _skor_toplami(df, "nu-fission")
     sacilma = spektrum.fark(_skor_toplami(df, "nu-scatter"), _skor_toplami(df, "scatter"))
     uretim = _y.toplam_degerleri([sacilma, nuf]) if sabit else sacilma
@@ -66,10 +71,14 @@ def _filtre(t, tur_adi: str):
     return next((f for f in t.filters if type(f).__name__ == tur_adi), None)
 
 
-def _sinir_sonucu(t, sizinti: Optional[Deger], olcek: float) -> dict:
+def _sinir_sonucu(t, sizinti: Optional[Deger], olcek: float, foton_var: bool) -> dict:
+    """Foton tasinimi acikken global "leakage" fotonlari da sayar; sinir
+    tally'si kaynak parcacigina suzuldugu icin karsilastirilmaz."""
     r = _y.sinir_akimlari(t.get_pandas_dataframe())
-    global_ = None if sizinti is None else Deger(sizinti.ort * olcek, sizinti.sapma * olcek)
-    return dict(r, ad=t.name, tur=_y.FILTRE_SINIR, global_sizinti=global_)
+    global_ = (None if sizinti is None or foton_var
+               else Deger(sizinti.ort * olcek, sizinti.sapma * olcek))
+    return dict(r, ad=t.name, tur=_y.FILTRE_SINIR, global_sizinti=global_,
+                global_foton_karisik=foton_var)
 
 
 def _kutu_sonucu(sp, t, f, spec: dict, keff: Optional[Deger], sabit: bool) -> dict:
@@ -95,11 +104,12 @@ def oku(statepoint: str, spec: dict) -> Optional[List[dict]]:
     sonuclar = []
     with openmc.StatePoint(statepoint) as sp:
         sizinti, keff = _global_sizinti(sp), (None if sabit else _keff(sp))
+        foton_var = foton.tasinim_var_mi(spec)
         for t in sp.tallies.values():
             if (t.name or "").startswith(_y.TALLY_ONEKI):
                 continue
             if _filtre(t, "SurfaceFilter") is not None:
-                sonuclar.append(_sinir_sonucu(t, sizinti, olcek))
+                sonuclar.append(_sinir_sonucu(t, sizinti, olcek, foton_var))
             else:
                 f = _filtre(t, "MeshSurfaceFilter")
                 if f is not None:

@@ -23,6 +23,7 @@ from cekirdek.gunluk import kaydedici
 
 _log = kaydedici(__name__)
 _YUKSEKLIK = 220            # grafik [px]
+_EN_COK_YUZEY = 12          # tabloda listelenen sinir yuzeyi (gerisi toplamda)
 _ALT_ENERJI_EV = 1.0e-5     # log eksende sifir kenar yerine: OpenMC notron verisinin alt siniri
 
 
@@ -36,8 +37,12 @@ def _d(deger):
 def _sinir_satirlari(r):
     satirlar = [(_("kaçak (vakum sınırı, |J| toplamı)"), _d(r["toplam"]))]
     if len(r["yuzeyler"]) > 1:
-        satirlar += [(_("  yüzey %d") % k, _d(v)) for k, v in r["yuzeyler"].items()]
-    satirlar.append((_("global sızıntı (OpenMC)"), _d(r.get("global_sizinti"))))
+        ogeler = list(r["yuzeyler"].items())
+        satirlar += [(_("  yüzey %d") % k, _d(v)) for k, v in ogeler[:_EN_COK_YUZEY]]
+        if len(ogeler) > _EN_COK_YUZEY:
+            satirlar.append(("  …", _("%d yüzey daha") % (len(ogeler) - _EN_COK_YUZEY)))
+    if not r.get("global_foton_karisik"):
+        satirlar.append((_("global sızıntı (OpenMC)"), _d(r.get("global_sizinti"))))
     return satirlar
 
 
@@ -93,16 +98,28 @@ def notlar(sonuclar, sabit, kuvvet):
              _("Sınır: OpenMC net akımı yüzey normaline göre işaretler (+ normal yönü); vakum "
                "yüzeyinden her geçiş dışarı olduğundan yüzey başına |J| kaçaktır. Toplam global "
                "sızıntıyla aynı olaylardır.")]
+    if any(r.get("global_foton_karisik") for r in sonuclar):
+        liste.append(_("Foton taşınımı açık: OpenMC global sızıntısı fotonları da sayar; sınır "
+                       "tally'si kaynak parçacığına süzüldüğü için karşılaştırılmadı."))
     if any(r["tur"] == _y.FILTRE_KUTU for r in sonuclar):
         liste.append(_("Kutu: OpenMC 'out' hücreden çıkan, 'in' giren kısmi akımdır; iç yüzler "
                        "birbirini götürür. Denge S + J_giren − J_çıkan + U = A; U = nu-scatter − "
-                       "scatter ((n,xn) ve MT5), sabit kaynakta + nu-fission; özdeğerde S = "
-                       "nu-fission/k. Analog tahminci: denge her geçmişte tamdır; ± korelasyonsuz "
-                       "üst sınırdır."))
+                       "scatter ((n,xn) ve MT5), sabit kaynakta + nu-fission."))
+        liste.append(_denge_notu(sabit))
+        liste.append(_("± birinci derece, terimler arası korelasyon yok sayıldı: yaklaşık."))
     if any(r.get("spektrum") for r in sonuclar):
         liste.append(_("Kaçak spektrumu: grup akımı / Δu (letarji genişliği), kutuda yalnız dış "
                        "yüzlerden çıkan akım."))
     return liste
+
+
+def _denge_notu(sabit):
+    if sabit:
+        return _("Sabit kaynak, analog tahminci: denge her geçmişte tamdır (survival biasing, "
+                 "ağırlık penceresi ve enerji/zaman kesmesi kapalıyken); artık yalnız "
+                 "yuvarlamadır.")
+    return _("Özdeğer: S = nu-fission/k yalnız beklenen değerdir; artık istatistiksel, "
+             "yakınsamış kaynakta ~σ mertebesindedir (tam değildir).")
 
 
 class YuzeyKarti(GrafikKarti):

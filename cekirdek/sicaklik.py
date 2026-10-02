@@ -33,10 +33,13 @@ import math
 import os
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass
-from typing import Dict, FrozenSet, List, Optional, Sequence, Tuple
+from typing import TYPE_CHECKING, Dict, FrozenSet, List, NamedTuple, Optional, Sequence, Tuple
 
 from cekirdek.ceviri import _
 from cekirdek.gunluk import kaydedici, uyar_bir_kez
+
+if TYPE_CHECKING:          # tur aciklamasi icin; calisma aninda openmc tembel (H1b)
+    import openmc
 
 _log = kaydedici(__name__)
 
@@ -46,6 +49,7 @@ VARSAYILAN_TOLERANS = 10.0           # K, src/settings.cpp temperature_tolerance
 VARSAYILAN_SICAKLIK = 293.6          # K, src/settings.cpp temperature_default
 K_BOLTZMANN_EV = 8.617333262e-5      # eV/K, CODATA 2018 (openmc.data.K_BOLTZMANN)
 TAM_ESIK = 0.5                       # K: OpenMC tamsayiya yuvarlar; daha yakini "tam"
+XML_EN_BUYUK_BAYT = 50 * 1024 * 1024  # cross_sections.xml ust siniri (ENDF/B-VIII.0: ~100 kB)
 
 
 @dataclass(frozen=True)
@@ -192,14 +196,19 @@ def _kutuphane_yolu(yol: Optional[str]) -> Optional[str]:
     return yol if yol and os.path.exists(yol) else None
 
 
-def kutuphane_kayitlari(yol: Optional[str]) -> Optional[Dict[Tuple[str, str], str]]:
-    """{(tur, ad): mutlak h5 yolu}; okunamazsa None (loglanir)."""
-    yol = _kutuphane_yolu(yol)
-    if yol is None:
+_XML_ONBELLEK: Dict[Tuple[str, float], Dict[Tuple[str, str], str]] = {}
+
+
+def _xml_oku(yol: str) -> Optional[Dict[Tuple[str, str], str]]:
+    if os.path.getsize(yol) > XML_EN_BUYUK_BAYT:
+        uyar_bir_kez(_log, "cross_sections.xml cok buyuk (> %d bayt), okunmadi: %s",
+                     XML_EN_BUYUK_BAYT, yol)
         return None
     try:
-        kok = ET.parse(yol).getroot()
-    except (ET.ParseError, OSError):
+        # nosec B314: kullanicinin kendi yerel veri kutuphanesi (OPENMC_CROSS_SECTIONS);
+        # boyut sinirli, Python >= 3.7.1 expat varlik genislemesine karsi korumali.
+        kok = ET.parse(yol).getroot()  # nosec B314
+    except (ET.ParseError, OSError, UnicodeDecodeError):
         uyar_bir_kez(_log, "cross_sections.xml okunamadi: %s", yol)
         return None
     taban = os.path.dirname(yol)
@@ -210,6 +219,23 @@ def kutuphane_kayitlari(yol: Optional[str]) -> Optional[Dict[Tuple[str, str], st
     return harita
 
 
+def kutuphane_kayitlari(yol: Optional[str]) -> Optional[Dict[Tuple[str, str], str]]:
+    """{(tur, ad): mutlak h5 yolu}; okunamazsa None (loglanir). Sonuc
+    (cozulmus yol, mtime) ile onbellekli: dosya degisirse yeniden okunur.
+    Surec ici; ayni anahtarla iki iplik ayni sonucu yazar (kilit gerekmez)."""
+    yol = _kutuphane_yolu(yol)
+    if yol is None:
+        return None
+    yol = os.path.realpath(yol)
+    anahtar = (yol, os.path.getmtime(yol))
+    if anahtar not in _XML_ONBELLEK:
+        harita = _xml_oku(yol)
+        if harita is None:
+            return None
+        _XML_ONBELLEK[anahtar] = harita
+    return dict(_XML_ONBELLEK[anahtar])
+
+
 def wmp_nuklidleri(yol: Optional[str] = None) -> Optional[FrozenSet[str]]:
     """type="wmp" kaydi olan nuklidler; kutuphane okunamazsa None."""
     harita = kutuphane_kayitlari(yol)
@@ -218,7 +244,7 @@ def wmp_nuklidleri(yol: Optional[str] = None) -> Optional[FrozenSet[str]]:
     return frozenset(ad for tur, ad in harita if tur == "wmp")
 
 
-_SICAKLIK_ONBELLEK: Dict[Tuple[str, str], Optional[Tuple[float, ...]]] = {}
+_SICAKLIK_ONBELLEK: Dict[Tuple[str, str, str, float], Optional[Tuple[float, ...]]] = {}
 
 
 def _h5_sicakliklari(dosya: str, ad: str) -> Optional[Tuple[float, ...]]:
@@ -237,22 +263,22 @@ def _h5_sicakliklari(dosya: str, ad: str) -> Optional[Tuple[float, ...]]:
     except (OSError, KeyError, ValueError):
         uyar_bir_kez(_log, "HDF5 sicakliklari okunamadi: %s (%s)", dosya, ad)
         return None
-    return tuple(sorted(k / K_BOLTZMANN_EV for k in kt if k > 0)) or None
+    # 0 K dahil: OpenMC temps_available'a katar (rezonans sacilmasi verisi)
+    return tuple(sorted(k / K_BOLTZMANN_EV for k in kt if k >= 0)) or None
 
 
 def kutuphane_sicakliklari(tur: str, ad: str,
                            yol: Optional[str] = None) -> Optional[Tuple[float, ...]]:
     """Notron ("neutron") ya da S(a,b) ("thermal") verisinin sicakliklari
     [K, kT/k_B, artan]; bulunamazsa None. Surec omru boyunca onbellekli."""
-    anahtar = (tur, ad)
-    if yol is None and anahtar in _SICAKLIK_ONBELLEK:
-        return _SICAKLIK_ONBELLEK[anahtar]
     harita = kutuphane_kayitlari(yol) or {}
-    dosya = harita.get(anahtar)
-    sonuc = _h5_sicakliklari(dosya, ad) if dosya else None
-    if yol is None:
-        _SICAKLIK_ONBELLEK[anahtar] = sonuc
-    return sonuc
+    dosya = harita.get((tur, ad))
+    if not dosya or not os.path.exists(dosya):
+        return None
+    anahtar = (tur, ad, os.path.realpath(dosya), os.path.getmtime(dosya))
+    if anahtar not in _SICAKLIK_ONBELLEK:
+        _SICAKLIK_ONBELLEK[anahtar] = _h5_sicakliklari(dosya, ad)
+    return _SICAKLIK_ONBELLEK[anahtar]
 
 
 @dataclass(frozen=True)
@@ -265,22 +291,40 @@ class MalzemeSicakligi:
     mevcut: Tuple[float, ...]
 
 
-def model_degerlendirmesi(spec: dict, yol: Optional[str] = None) -> List[MalzemeSicakligi]:
-    """Her malzemenin her nuklidi ve S(a,b) tablosu icin OpenMC karari.
-    Verisi okunamayan bilesen atlanir (nuklid denetimi ayrica raporlar)."""
+class Degerlendirme(NamedTuple):
+    """satirlar: bilesen basina karar; yontem: OpenMC'nin FIILI yontemi;
+    tek_sicaklik: tek sicaklikli notron verisi (OpenMC bunlar yuzunden TUM
+    model icin nearest'e doner, src/nuclide.cpp)."""
+    satirlar: List[MalzemeSicakligi]
+    yontem: str
+    tek_sicaklik: Tuple[str, ...]
+
+
+def _bilesenler(spec: dict, a: SicaklikAyari, yol: Optional[str]) -> list:
     from cekirdek import kurucu
-    a = ayar(spec)
     nesneler, _m, _r = kurucu.malzemeleri_kur(spec)
     sonuc = []
     for m in spec.get("malzemeler") or []:
         t = float(m.get("sicaklik") or a.varsayilan)
-        bilesenler = [("neutron", n) for n in nesneler[m["ad"]].get_nuclides()]
-        bilesenler += [("thermal", s) for s in m.get("sab") or []]
-        for tur, ad in bilesenler:
+        adlar = [("neutron", n) for n in nesneler[m["ad"]].get_nuclides()]
+        adlar += [("thermal", s) for s in m.get("sab") or []]
+        for tur, ad in adlar:
             mevcut = kutuphane_sicakliklari(tur, ad, yol)
-            if not mevcut:
-                continue
-            sonuc.append(MalzemeSicakligi(m["ad"], tur, ad, t,
-                                          degerlendir(t, mevcut, a.yontem, a.tolerans),
-                                          mevcut))
+            if mevcut:
+                sonuc.append((m["ad"], tur, ad, t, mevcut))
     return sonuc
+
+
+def model_degerlendirmesi(spec: dict, yol: Optional[str] = None) -> Degerlendirme:
+    """Her malzemenin her nuklidi ve S(a,b) tablosu icin OpenMC karari.
+    Verisi okunamayan bilesen atlanir (nuklid denetimi ayrica raporlar).
+    Interpolation secili ve bir notron verisi tek sicakliksa OpenMC yontemi
+    KURESEL olarak nearest'e cevirir; kararlar o yontemle verilir."""
+    a = ayar(spec)
+    ham = _bilesenler(spec, a, yol)
+    tek = tuple(sorted({ad for _m, tur, ad, _t, mev in ham
+                        if tur == "neutron" and len({int(round(x)) for x in mev}) == 1}))
+    yontem = "nearest" if (a.yontem == "interpolation" and tek) else a.yontem
+    satirlar = [MalzemeSicakligi(m, tur, ad, t, degerlendir(t, mev, yontem, a.tolerans), mev)
+                for m, tur, ad, t, mev in ham]
+    return Degerlendirme(satirlar, yontem, tek)

@@ -228,8 +228,9 @@ def test_tally_metni_mesh_ve_enerji():
         hata = None
     except ValueError as e:
         metin, hata = "", e
-    kontrol("metin uretildi (tam tablo)", hata is None and "mesh_aki" in metin
-            and "flux" in metin, "-> %s" % hata)
+    # Y7 kok duzeltmesi: MultiIndex tablo artik bicimli (skor adi cevrilir: flux -> akı)
+    kontrol("metin uretildi (bicimli tablo)", hata is None and "mesh_aki" in metin
+            and "akı" in metin and "ağ 1" in metin, "-> %s / %s" % (hata, metin[:200]))
 
 
 def test_yavas_ornek_kosu_mesh_haritasi(gecici):

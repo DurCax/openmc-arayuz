@@ -330,7 +330,7 @@ def test_dogrula_foton_verisi_yoksa_hata(gecici):
 
 
 def test_dogrula_isinma_skoru_foton_uyumu():
-    print("\n[Y7-17] heating foton kapali -> uyari; heating-local foton acik -> uyari")
+    print("\n[Y7-17] heating foton kapali -> uyari; heating-local foton acik TEK BASINA uyari degil")
     # Arrange
     spec = _pin()
     spec["tallyler"] = [sema.tally("isi", ["heating", "kappa-fission"])]
@@ -343,9 +343,9 @@ def test_dogrula_isinma_skoru_foton_uyumu():
     kontrol("heating + foton kapali -> uyari",
             any(x.seviye == "uyari" and "heating" in x.mesaj for x in kapali),
             "-> %s" % [x.mesaj for x in kapali])
-    kontrol("heating-local + foton acik -> uyari",
-            any(x.seviye == "uyari" and "heating-local" in x.mesaj for x in acik),
-            "-> %s" % [x.mesaj for x in acik])
+    # profesor D2: heating-local tek basina gamayi bir kez sayar (yerel birakim)
+    kontrol("heating-local tek basina + foton acik -> uyari yok",
+            not any("heating-local" in x.mesaj for x in acik), "-> %s" % [x.mesaj for x in acik])
 
 
 def test_dogrula_multipole_wmp_yoksa_uyari(gecici):

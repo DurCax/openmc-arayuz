@@ -33,24 +33,36 @@
       bozuyordu, olculdu) + sabit kaynakta fisyon notronlari (nu-fission;
       ozdegerde fisyon S'nin icindedir).
    A: absorption (OpenMC "absorption" (n,xn)'i icermez).
-   Analog tahminciyle denge HER GECMISTE tamdir (yalniz yuvarlama; test 1e-9).
+   SABIT KAYNAKTA analog tahminciyle denge HER GECMISTE tamdir (yalniz
+   yuvarlama; test 1e-9) -- kosul: survival biasing kapali, agirlik penceresi
+   yok, enerji/zaman kesmesi yok (OpenMC varsayilanlari; bunlar parcacik
+   agirligini olaysiz degistirir). OZDEGERDE tam DEGILDIR: S = nu-fission/k
+   yalniz beklenen degerdir (analog nu-fission = k_ort * banka agirligi, bir
+   cevrimin kaynak noktalari onceki cevrimin bankasidir); yakinsamis kaynakta
+   artik istatistiksel, ~sigma mertebesinde (test: test_y7_duzeltme.py).
+   Belirsizlik birinci derece, terimler arasi korelasyon yok sayilir: YAKLASIK.
    Birim: kaynak parcacigi basina (siddet 1) ya da siddetle [1/s].
 ================================================================================
 """
 
 import math
-from typing import Dict, List, Optional, Sequence, Tuple
+from typing import TYPE_CHECKING, Dict, List, Optional, Sequence, Tuple
 
 from cekirdek import spektrum
 from cekirdek.ceviri import _
 from cekirdek.gunluk import kaydedici
 from cekirdek.spektrum import Deger
 
+if TYPE_CHECKING:          # tur aciklamasi icin; calisma aninda openmc tembel (H1b)
+    import openmc
+
 _log = kaydedici(__name__)
 
 FILTRE_SINIR = "yuzey_sinir"
 FILTRE_KUTU = "yuzey_kutu"
 YUZEY_FILTRELERI = (FILTRE_SINIR, FILTRE_KUTU)
+IZINLI_FILTRELER = YUZEY_FILTRELERI + ("enerji",)   # yuzey tally'sinde gecerli filtreler
+_YONLER = {"out": "cikan", "in": "giren"}            # OpenMC MeshSurfaceFilter bin yonu
 YUZEY_SKORU = "current"
 TALLY_ONEKI = "y7_"
 _DENGE_ONEKI = "y7_denge:"
@@ -225,8 +237,21 @@ def sinir_akimlari(df) -> dict:
 
 
 def _mesh_sutunu(df, eksen: str):
-    mesh = next(c[0] for c in df.columns if isinstance(c, tuple) and str(c[0]).startswith("mesh"))
+    mesh = next((c[0] for c in df.columns
+                 if isinstance(c, tuple) and str(c[0]).startswith("mesh")), None)
+    if mesh is None or (mesh, eksen) not in df.columns:
+        raise ValueError(_("yüzey ağı tablosunda mesh sütunu yok: %s") % eksen)
     return df[(mesh, eksen)]
+
+
+def _bin_ayir(ad: str) -> Tuple[str, str]:
+    """'x-min out' -> ('x-min', 'cikan'); bilinmeyen bin adi ValueError."""
+    parcalar = str(ad).split()
+    gecerli = (len(parcalar) == 2 and parcalar[1] in _YONLER
+               and parcalar[0] in {"%s-%s" % (e, u) for e in EKSENLER for u in ("min", "max")})
+    if not gecerli:
+        raise ValueError(_("beklenmeyen yüzey ağı bini: %r") % ad)
+    return parcalar[0], _YONLER[parcalar[1]]
 
 
 def _dis_yuz_mu(yuz: str, indeks: Sequence[int], boyut: Sequence[int]) -> bool:
@@ -245,12 +270,12 @@ def kutu_akimlari(df, boyut: Sequence[int]) -> dict:
     yuzler = {"%s-%s" % (e, u): {"giren": [], "cikan": []} for e in EKSENLER for u in ("min", "max")}
     cikan_satirlar: Dict[int, Deger] = {}
     for i in range(len(df)):
-        yuz, yon = str(yuzey.iloc[i]).split()
+        yuz, yon = _bin_ayir(yuzey.iloc[i])
         if not _dis_yuz_mu(yuz, [int(s.iloc[i]) for s in indeksler], boyut):
             continue
         d = Deger(float(ort.iloc[i]), float(sap.iloc[i]))
-        yuzler[yuz]["cikan" if yon == "out" else "giren"].append(d)
-        if yon == "out":
+        yuzler[yuz][yon].append(d)
+        if yon == "cikan":
             cikan_satirlar[i] = d
     ozet = {y: {k: toplam_degerleri(v) for k, v in g.items()} for y, g in yuzler.items()}
     giren = toplam_degerleri([g["giren"] for g in ozet.values()])

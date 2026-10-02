@@ -71,7 +71,7 @@ def _tally_kontrol(spec: dict, t: dict) -> List[Bulgu]:
     if len(yuzeyler) > 1:
         bulgular.append(Bulgu("hata", yer, _("bir tally'de yalnız bir yüzey filtresi olabilir")))
     diger = sorted({f.get("tur") for f in filtreler
-                    if f.get("tur") not in _y.YUZEY_FILTRELERI + ("enerji",)})
+                    if f.get("tur") not in _y.IZINLI_FILTRELER})
     if diger:
         bulgular.append(Bulgu("hata", yer, _("yüzey tally'sine yalnız enerji filtresi eklenebilir "
                                              "(bulunan: %s)") % ", ".join(map(str, diger))))
@@ -89,8 +89,19 @@ def _tally_kontrol(spec: dict, t: dict) -> List[Bulgu]:
     return bulgular
 
 
+def _ad_tekilligi(spec: dict) -> List[Bulgu]:
+    """Yuzey tally'sinin adi tekil olmali: denge tally'si y7_denge:<ad> ve
+    sonuc karti adla eslesir."""
+    adlar = [t.get("ad") for t in spec.get("tallyler") or []]
+    return [Bulgu("hata", "tally:%s" % t.get("ad"),
+                  _("'%s' adı birden çok tally'de var; yüzey tally'sinin adı tekil olmalı")
+                  % t.get("ad"))
+            for t in spec.get("tallyler") or []
+            if _y.yuzey_tally_mi(t) and adlar.count(t.get("ad")) > 1]
+
+
 def yuzey_kontrol(spec: dict) -> List[Bulgu]:
-    bulgular = []
+    bulgular = _ad_tekilligi(spec)
     for t in spec.get("tallyler") or []:
         if str(t.get("ad") or "").startswith(_y.TALLY_ONEKI):
             bulgular.append(Bulgu("hata", "tally:%s" % t.get("ad"),

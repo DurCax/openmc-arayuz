@@ -63,8 +63,10 @@ def _tally_skorlari(spec: dict) -> List[Tuple[str, str]]:
 
 def _isinma_kontrol(spec: dict) -> List[Bulgu]:
     tasinim = foton.tasinim_var_mi(spec)
+    skorlar = _tally_skorlari(spec)
+    heating_var = any(s == "heating" for _a, s in skorlar)
     bulgular = []
-    for ad, skor in _tally_skorlari(spec):
+    for ad, skor in skorlar:
         yer = "tally:%s" % ad if ad is not None else "guc dagilimi"
         if skor == "heating" and not tasinim:
             bulgular.append(Bulgu(
@@ -72,12 +74,13 @@ def _isinma_kontrol(spec: dict) -> List[Bulgu]:
                 _("'heating' skoru foton taşınımı kapalıyken gama enerjisini içermez"),
                 _("Yalnız nötron KERMA'sı (MT301) sayılır; fisyon ve yakalama gamaları kaybolur. "
                   "Toplam ısınma için foton taşınımını açın ya da 'heating-local' kullanın.")))
-        elif skor == "heating-local" and tasinim:
+        elif skor == "heating-local" and tasinim and heating_var:
             bulgular.append(Bulgu(
                 "uyari", yer,
-                _("'heating-local' foton taşınımı açıkken gamayı ikinci kez sayar"),
-                _("heating-local gama enerjisini çarpışma yerinde bırakır (MT901); fotonlar ayrıca "
-                  "taşınırken toplam ısınma için 'heating' kullanın.")))
+                _("'heating-local' ile fotonların 'heating'i toplanırsa gama iki kez sayılır"),
+                _("heating-local gama enerjisini çarpışma yerinde bırakır (MT901); tek başına "
+                  "doğrudur. Foton taşınımı açıkken toplam ısınma için yalnız 'heating' "
+                  "kullanın, ikisini toplamayın.")))
     return bulgular
 
 
@@ -161,12 +164,35 @@ def _sicaklik_kontrol(spec: dict, veri_kontrolu: bool, kutuphane: Optional[str],
     if not (veri_kontrolu and sicaklik_denetimi):
         return bulgular
     try:
-        satirlar = sicaklik.model_degerlendirmesi(spec, kutuphane)
+        d = sicaklik.model_degerlendirmesi(spec, kutuphane)
     except (ValueError, KeyError, TypeError):
         # bozuk malzeme tanimi: dogrula/malzeme.py ayrica raporlar
         _log.info("Y7 sıcaklık denetimi atlandı (malzemeler kurulamadı)", exc_info=True)
         return bulgular
-    return bulgular + _sicaklik_bulgulari(satirlar, a)
+    if d.tek_sicaklik:
+        bulgular.append(Bulgu(
+            "uyari", _YER,
+            _("tek sıcaklıklı veri (%s): OpenMC tüm model için nearest yöntemine döner")
+            % _adlar(list(d.tek_sicaklik)),
+            _("src/nuclide.cpp: bir nüklidin verisi tek sıcaklıktaysa ara değer yöntemi küresel "
+              "olarak kapatılır; aşağıdaki kararlar nearest ile verilmiştir.")))
+    bulgular += _wmp_kapsami(a, veri_kontrolu, kutuphane, d.satirlar)
+    return bulgular + _sicaklik_bulgulari(d.satirlar, sicaklik.SicaklikAyari(
+        d.yontem, a.tolerans, a.multipole, a.aralik, a.varsayilan))
+
+
+def _wmp_kapsami(a, veri_kontrolu: bool, kutuphane: Optional[str], satirlar: list) -> List[Bulgu]:
+    """multipole acik, wmp kismi: kapsanmayan nuklidler noktasal veriyle (bilgi)."""
+    if not (a.multipole and veri_kontrolu):
+        return []
+    wmp = sicaklik.wmp_nuklidleri(kutuphane)
+    if not wmp:
+        return []
+    eksik = sorted({s.ad for s in satirlar if s.tur == "neutron"} - wmp)
+    if not eksik:
+        return []
+    return [Bulgu("bilgi", _YER, _("wmp verisi olmayan nüklidler noktasal veriyle: %s")
+                  % _adlar(eksik))]
 
 
 def y7_kontrol(spec: dict, veri_kontrolu: bool = True, kutuphane: Optional[str] = None,

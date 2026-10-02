@@ -11,6 +11,7 @@
 from typing import List
 
 from cekirdek import yuzey_akim as _y
+from cekirdek.ceviri import _
 
 
 def _filtre_satirlari(spec: dict, t: dict, sinir_kutu, satirlar: List[str]) -> List[str]:
@@ -30,6 +31,8 @@ def _filtre_satirlari(spec: dict, t: dict, sinir_kutu, satirlar: List[str]) -> L
             ifadeler.append("openmc.MeshSurfaceFilter(_ag)")
         elif f["tur"] == "enerji":
             ifadeler.append("openmc.EnergyFilter(%r)" % list(f["gruplar"]))
+        else:       # kurucu (yuzey_akim._yuzey_filtreleri) ile ayni
+            raise ValueError(_("yüzey tally'sinde desteklenmeyen filtre: %s") % f["tur"])
     ifadeler.append("openmc.ParticleFilter([%r])" % _y.kaynak_parcacigi(spec))
     return ifadeler
 
@@ -45,7 +48,8 @@ def _tally_satirlari(spec: dict, t: dict, islev: str, sinir_kutu, satirlar: List
         satirlar.append("    return [_t]")
         return
     satirlar.append("    # Denge: S + giren − çıkan + U = A (aynı ağ, analog; U = nu-scatter − scatter")
-    satirlar.append("    # [+ nu-fission sabit kaynakta]); her geçmişte tam.")
+    satirlar.append("    # [+ nu-fission sabit kaynakta]). Sabit kaynakta her geçmişte tam;")
+    satirlar.append("    # özdeğerde S = nu-fission/k beklenen değerdir, artık istatistikseldir.")
     satirlar.append("    _d = openmc.Tally(name=%r)" % _y.denge_adi(t["ad"]))
     satirlar.append("    _d.scores = %r" % list(_y.DENGE_SKORLARI))
     satirlar.append("    _d.filters = [openmc.MeshFilter(_ag), openmc.ParticleFilter(['neutron'])]")
