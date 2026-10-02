@@ -217,8 +217,8 @@ def test_gercek_iki_kosu_karsilastirma(gecici):
     for tohum in (1, 2):
         spec = yo.kisa_spec(taban, parcacik=2000, cevrim=25, pasif=10)
         spec["ayarlar"]["tohum"] = tohum
-        spec["guc_dagilimi"] = dict(spec.get("guc_dagilimi") or {}, var=True, eksenel_dilim=1,
-                                    cubuk=spec.get("guc_dagilimi", {}).get("cubuk") or "yakit")
+        spec["guc_dagilimi"] = {"var": True, "cubuk": "yakit_cubugu", "bolge": 0,
+                                "skor": "kappa-fission", "eksenel_dilim": 1}
         dizinler.append(os.path.join(gecici, "tohum_%d" % tohum))
         k.ekle(kuyruk.KosuIsi(ad="t%d" % tohum, spec=spec, dizin=dizinler[-1],
                               is_parcacigi=min(ISLEM_PARCACIGI, 6)))
