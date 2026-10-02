@@ -124,7 +124,12 @@ Sonuç kartının altında (adım dosyası varsa):
 | **Tepe faktörleri CSV…** | Adım başına F_ΔH, F_q, σ'ları ve en yüksek q′. |
 
 Mutlak güç adımın kaynak gücüdür (güç yoğunluğu × ağır metal; `Results.get_source_rates`);
-2B modelde güç ve q′ 1 cm yükseklik başınadır (tükenme hacmi gibi). Bağıl güç her adımda o
+2B modelde güç ve q′ 1 cm yükseklik başınadır (tükenme hacmi gibi; tablo başlığı
+"Güç [W/cm yükseklik]", dosyada `W_per_cm`). **Çubuk çubuk yanma kapalıyken** bütün çubuklar
+aynı ortalama bileşimle yanar: dağılımın yanmayla değişimi pin başına yanmayı yansıtmaz
+(sıcak çubukların daha hızlı yanması görülmez). Pin gücü çubuğun bütün yakıt bölgelerinin
+(Gd pininde bütün halkaların) toplamıdır. Gelişmiş'teki **Adım başına pin gücü** kutusu
+(`tukenme.adim_gucu`) ölçümü kapatır; sonucu eskitmez. Bağıl güç her adımda o
 adımın yakıt çubuğu ortalamasına göredir. Ders: [5.7](05-dersler.md#ders-guc-yanma).
 
 ### Örnek ve doğrulama

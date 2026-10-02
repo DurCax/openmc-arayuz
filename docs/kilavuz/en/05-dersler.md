@@ -543,8 +543,12 @@ scatter / √5). Mean linear power **182 W/cm**.
    72 orbits (81 positions in the quarter − 9 guide/instrument positions). The **Asymmetry**
    column is the difference between the pins of one orbit: in a symmetric model it is only
    statistical noise.
-4. Write a CSV with **Save table…**; the sum of the **Power [W]** column is Total power × target
-   share (in this model all fission energy is in the target pins: 17.6 MW).
+4. Switch folding **off** and write a CSV with **Save table…**; the sum of the `W` column is
+   Total power × target share (in this model all fission energy is in the target pins:
+   17.6 MW). In the folded table each row is the average of m members (`katlanan_m` column):
+   the total is Σ m·W.
+5. Rows in italics cannot be told apart statistically from the hottest pin (within a combined
+   2σ): "the hottest pin" is a group, not a single pin.
 
 **B. Versus burnup.**
 
@@ -560,11 +564,28 @@ scatter / √5). Mean linear power **182 W/cm**.
 **What did we learn / check questions.**
 
 - Relative power is relative to the average of that step: if a pin's relative power drops, must
-  its absolute power drop too? (No; the total power is held constant, the distribution changes.)
-- As burnup proceeds the hottest pins burn faster; how does the trend of F_ΔH show this? Judge
-  the difference with the seed-to-seed spread, not with the single-run σ (optimistic).
+  its absolute power drop too? (Yes, by the same ratio — if total power and target share are
+  constant.)
+- In `pwr_17x17` **Pin-by-pin depletion** is off: all pins burn with the same average
+  composition. Why is the flattening of the distribution by the faster burning of hot pins
+  therefore **not seen**? (No per-pin burnup feedback; to see it switch on **Pin-by-pin
+  depletion** under Advanced — every pin becomes its own material, memory and time grow with
+  the number of pins.) Judge differences with the seed-to-seed spread, not with the single-run
+  σ (optimistic).
 - Why is the distribution shown the one at the **beginning** of the step? (OpenMC writes the
   step statepoint after the predictor transport.)
+
+**Measured (B, small settings).** 02.10.2026, `pwr_17x17` + Depletion: **2000 × 30 / 10
+inactive** (the example's own 10 000 × 150 setting was not measured), CASL simple thermal, CECM,
+40 W/gHM, steps 1, 4, 5, 10 MWd/kg (9 transports, 6 threads, 518 s). Mean q′ **193.3 W/cm**
+(2D: per 1 cm of height). F_ΔH per step: 1.222, 1.207, 1.258, 1.262, 1.240 (single-run σ
+0.06–0.10); the hottest pin is at a different position in every step (x = 5, y = 6 → x = 14,
+y = 9 → …). With these statistics the step-to-step difference **cannot be told apart** from
+noise and F_ΔH is pushed up by the bias of the maximum (5.7): to read a burnup trend increase
+the number of particles and use several seeds. k-eff 1.1773 → 0.9648 (20 MWd/kg).
+
+These numbers are not a design or licensing assessment; for the limits see
+[6.6 Known limits](06-sonuclar.md#bilinen-sinirlar).
 
 <a id="ders-benchmark"></a>
 ## 5.8 Benchmark and C/E

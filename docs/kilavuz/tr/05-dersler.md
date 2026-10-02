@@ -521,8 +521,11 @@ Ortalama lineer güç **182 W/cm**.
 3. **Çeyrek katla**: tek demet ayna simetrik olduğu için etkindir; 264 çubuk 72 yörüngeye iner
    (çeyrekte 81 konum − 9 kılavuz/ölçüm konumu). **Asimetri** sütunu aynı yörüngedeki çubukların
    farkıdır: simetrik modelde bu fark yalnız istatistik gürültüdür.
-4. **Tabloyu kaydet…** ile CSV yazın; **Güç [W]** sütununun toplamı Toplam güç × hedef payıdır
-   (bu modelde bütün fisyon enerjisi hedef çubuklarda: 17.6 MW).
+4. Katlamayı **kapatıp** **Tabloyu kaydet…** ile CSV yazın; `W` sütununun toplamı Toplam güç ×
+   hedef payıdır (bu modelde bütün fisyon enerjisi hedef çubuklarda: 17.6 MW). Katlı tabloda
+   her satır m üyenin ortalamasıdır (`katlanan_m` sütunu): toplam Σ m·W'dir.
+5. İtalik satırlar en sıcak çubuktan istatistik olarak **ayırt edilemez** (birleşik 2σ içinde):
+   "en sıcak çubuk" tek bir çubuk değil, bir gruptur.
 
 **B. Yanmaya göre.**
 
@@ -537,11 +540,26 @@ Ortalama lineer güç **182 W/cm**.
 **Ne öğrendik / kontrol soruları.**
 
 - Bağıl güç her adımda o adımın ortalamasına göredir: bir çubuğun bağıl gücü düşüyorsa mutlak
-  gücü de düşmüş olmak zorunda mıdır? (Hayır; toplam güç sabit tutulur, dağılım değişir.)
-- Yanma ilerledikçe en sıcak çubuklar daha hızlı yanar; F_ΔH'nin seyri bunu nasıl gösterir?
-  Farkı tek koşu σ'sıyla (iyimser) değil tohum saçılmasıyla değerlendirin.
+  gücü de düşmüş olmak zorunda mıdır? (Evet, aynı oranda — toplam güç ve hedef payı sabitse.)
+- `pwr_17x17`'de **Çubuk çubuk yanma** kapalıdır: bütün çubuklar aynı ortalama bileşimle yanar.
+  Bu yüzden sıcak çubukların daha hızlı yanıp dağılımı düzleştirmesi neden **görülmez**?
+  (Pin başına yanma geri beslemesi yok; görmek için Gelişmiş'te **Çubuk çubuk yanma**'yı açın —
+  her çubuk ayrı malzeme olur, bellek ve süre çubuk sayısıyla artar.) Farkları tek koşu
+  σ'sıyla (iyimser) değil tohum saçılmasıyla değerlendirin.
 - Gösterilen dağılım neden adımın **başındaki** dağılımdır? (OpenMC adım statepoint'ini
   öngörücü transporttan sonra yazar.)
+
+**Ölçülen (B, küçük ayar).** 02.10.2026, `pwr_17x17` + Tükenme: **2000 × 30 / 10 pasif**
+(örneğin kendi 10 000 × 150 ayarı ölçülmedi), CASL basit termal, CECM, 40 W/gHM, adımlar 1, 4, 5,
+10 MWd/kg (9 transport, 6 iş parçacığı, 518 s). Ortalama q′ **193.3 W/cm** (2B: 1 cm yükseklik
+başına). Adım başına F_ΔH: 1.222, 1.207, 1.258, 1.262, 1.240 (tek koşu σ 0.06–0.10); en sıcak
+çubuk her adımda başka bir konumda (x = 5, y = 6 → x = 14, y = 9 → …). Bu istatistikte adımlar
+arası fark gürültüden **ayırt edilemez** ve F_ΔH maksimum yanlılığıyla yukarı çıkar (5.7):
+yanmaya göre eğilim okumak için parçacık sayısını artırın ve birkaç tohum kullanın. k-eff
+1.1773 → 0.9648 (20 MWd/kg).
+
+Bu sayılar bir tasarım ya da lisans değerlendirmesi değildir; sınırlar için
+[6.6 Bilinen sınırlar](06-sonuclar.md#bilinen-sinirlar).
 
 <a id="ders-benchmark"></a>
 ## 5.8 Benchmark ve C/E

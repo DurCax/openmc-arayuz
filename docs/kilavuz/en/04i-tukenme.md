@@ -134,7 +134,12 @@ Below the result card (if step files exist):
 
 The absolute power is the source power of the step (power density × heavy metal;
 `Results.get_source_rates`); in a 2D model power and q′ are per 1 cm of height (like the
-depletion volume). The relative power is relative to that step's fuel pin average. Lesson:
+depletion volume; table header "Power [W/cm height]", `W_per_cm` in the file). **With pin-by-pin
+depletion off** all pins burn with the same average composition: the change of the
+distribution with burnup does not reflect per-pin burnup (the faster burning of hot pins is not
+seen). The pin power is the sum over all fuel regions of the pin (all rings of a Gd pin). The
+**Pin power per step** box under Advanced (`tukenme.adim_gucu`) switches the measurement off;
+it does not make the result stale. The relative power is relative to that step's fuel pin average. Lesson:
 [5.7](05-dersler.md#ders-guc-yanma).
 
 ### Example and verification
