@@ -40,7 +40,7 @@ import os
 import threading
 import types
 
-from cekirdek.ceviri import _, pgettext
+from cekirdek.ceviri import _
 from cekirdek.gunluk import kaydedici
 
 _log = kaydedici(__name__)
@@ -319,8 +319,12 @@ def faktor_serisi(sonuc):
     return seri
 
 
+# Dosya sutun anahtarlari sabittir (cevrilmez; bkz. guc_tablo._TEMEL_SUTUNLAR).
+_ADIM_SUTUNLARI = ("adim", "zaman_gun", "yanma_MWd_kg")
+
+
 def _bas():
-    return [pgettext("tükenme", "adım"), _("zaman [gün]"), _("yanma [MWd/kg]")]
+    return list(_ADIM_SUTUNLARI)
 
 
 def satirlar(sonuc):
@@ -329,9 +333,10 @@ def satirlar(sonuc):
     adimlar = gecerli_adimlar(sonuc)
     if not adimlar:
         return []
-    cikti = [_bas() + guc_tablo.basliklar(adimlar[0]["tablo"])]
+    iki = bool((sonuc or {}).get("iki_boyut"))
+    cikti = [_bas() + guc_tablo.basliklar(adimlar[0]["tablo"], iki)]
     for a in adimlar:
-        for s in guc_tablo.satirlar(a["tablo"])[1:]:
+        for s in guc_tablo.satirlar(a["tablo"], iki)[1:]:
             cikti.append([a["adim"], a["zaman_d"], a["yanma"]] + s)
     return cikti
 
@@ -344,7 +349,7 @@ def csv_metni(sonuc):
 
 def faktor_satirlari(sonuc):
     """Adim basina tepe faktorleri: baslik + satirlar."""
-    cikti = [_bas() + ["F_ΔH", "σ(F_ΔH)", "F_q", "σ(F_q)", _("en yüksek q′ [W/cm]")]]
+    cikti = [_bas() + ["F_dH", "F_dH_sigma", "F_q", "F_q_sigma", "q_maks_W_cm"]]
     for x in faktor_serisi(sonuc):
         cikti.append([x["adim"], x["zaman_d"], x["yanma"], x["F_dH"], x["F_dH_sapma"],
                       x["F_q"], x["F_q_sapma"], x["lineer_maks"]])

@@ -524,6 +524,7 @@ def dagilim_oku(sp, tally_adi="guc_dagilimi"):
         # --- v3 K3 (pin tablosu): dilim z araliklari ve ceyrek simetri denetimi
         "eksenel_sinirlar": _eksenel_sinirlar(taller[0]),
         "tum_kafesler": geometri.get_all_lattices(),
+        "geometri": geometri,          # ceyrek katlama: dolgu otelemesi, duzey sekilleri
     }
     sonuc["kesik_cubuklar"] = _kesikler(sonuc, geometri, taller, notlar)
     return sonuc

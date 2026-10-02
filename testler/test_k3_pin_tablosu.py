@@ -227,10 +227,10 @@ def test_csv():
     satirlar = list(csv.reader(io.StringIO(metin)))
     kontrol("baslik + 264 satir", len(satirlar) == 265, "-> %d" % len(satirlar))
     baslik = satirlar[0]
-    kontrol("baslikta bagil guc, W, q′ ve dilim sutunlari",
-            "bağıl güç" in baslik and "W" in baslik and "q′ [W/cm]" in baslik
-            and "q′_10 [W/cm]" in baslik, "-> %r" % baslik[:12])
-    i_b = baslik.index("bağıl güç")
+    kontrol("baslikta bagil guc, W, q′ ve dilim sutunlari (sabit anahtarlar)",
+            "bagil" in baslik and "W" in baslik and "q_W_cm" in baslik
+            and "q_W_cm_10" in baslik, "-> %r" % baslik[:12])
+    i_b = baslik.index("bagil")
     r0 = satirlar[1]
     kontrol("bagil guc tam hassasiyet (repr)", float(r0[i_b]) == tablo[0]["bagil"])
     sayisal = r0[2:4] + r0[i_b:]
@@ -238,13 +238,27 @@ def test_csv():
             all("," not in x for x in sayisal) and "." in r0[i_b], "-> %r" % sayisal[:4])
 
 
+class _SahteHucre:
+    def __init__(self, deger):
+        self.value = deger
+        self.data_type = "n"
+
+
 class _SahteSayfa:
     def __init__(self):
-        self.satirlar = []
+        self.hucreler = {}
         self.title = ""
 
-    def append(self, satir):
-        self.satirlar.append(list(satir))
+    def cell(self, row, column, value=None):
+        h = self.hucreler[(row, column)] = _SahteHucre(value)
+        return h
+
+    @property
+    def satirlar(self):
+        n = max((r for r, _c in self.hucreler), default=0)
+        m = max((c for _r, c in self.hucreler), default=0)
+        return [[getattr(self.hucreler.get((r, c)), "value", None) for c in range(1, m + 1)]
+                for r in range(1, n + 1)]
 
 
 class _SahteKitap:
@@ -278,6 +292,8 @@ def test_excel_istege_bagli():
                 len(k.active.satirlar) == 265 and isinstance(k.active.satirlar[1][-1], float)
                 and k.kaydedilen == "/tmp/k3_sahte.xlsx",
                 "-> %d" % len(k.active.satirlar))
+        kontrol("metin hucreleri data_type 's'",
+                k.active.hucreler[(2, 2)].data_type == "s")
     finally:
         if eski is None:
             sys.modules.pop("openpyxl", None)

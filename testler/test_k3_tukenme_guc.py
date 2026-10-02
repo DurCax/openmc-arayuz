@@ -116,7 +116,8 @@ def test_csv():
     satirlar = list(csv.reader(io.StringIO(tukenme_guc.csv_metni(s))))
     kontrol("baslik + 72 satir", len(satirlar) == 73, "-> %d" % len(satirlar))
     b = satirlar[0]
-    kontrol("ilk sutunlar adim, gun, MWd/kg", b[:3] == ["adım", "zaman [gün]", "yanma [MWd/kg]"],
+    kontrol("ilk sutunlar adim, gun, MWd/kg (sabit anahtar)",
+            b[:3] == ["adim", "zaman_gun", "yanma_MWd_kg"],
             "-> %r" % b[:4])
     son = satirlar[-1]
     kontrol("son satir adim 2, 10 gun", son[0] == "2" and float(son[1]) == 10.0)

@@ -45,6 +45,7 @@
 import csv
 import io
 import math
+from collections.abc import Mapping
 
 from cekirdek import guc as _guc
 from cekirdek.ceviri import _
@@ -52,7 +53,6 @@ from cekirdek.gunluk import kaydedici
 
 _log = kaydedici(__name__)
 
-_MERKEZ_TOLERANSI = 1e-6     # kafes ortalanmis mi [cm] (yuvarlama payi)
 
 
 # ============================================================================
@@ -133,8 +133,8 @@ def pin_tablosu(dagilim, faktorler, mutlak=None, yukseklik=None):
         return []
     cubuk_W = (mutlak or {}).get("cubuk_ortalama_W")
     kesikler = set(faktorler.get("kesik_cubuklar") or ())
-    return [_satir(dagilim, faktorler, a, k, cubuk_W, yukseklik, kesikler)
-            for a, k in dagilim["konumlar"].items()]
+    return _tepe_isaretle([_satir(dagilim, faktorler, a, k, cubuk_W, yukseklik, kesikler)
+                           for a, k in dagilim["konumlar"].items()])
 
 
 def satir_bul(tablo, anahtar):
@@ -178,116 +178,11 @@ def demet_ozeti(tablo):
 
 
 # ============================================================================
-# 2. CEYREK KATLAMA
+# 2. CEYREK KATLAMA -- cekirdek/guc_katlama.py (adlar buradan da erisilir)
 # ============================================================================
 
-def _kafes_simetrik(kafes):
-    """(bool, neden): kare kafes x ve y'de ayna simetrik ve ortalanmis mi."""
-    import numpy as np
-    import openmc
-    if not isinstance(kafes, openmc.RectLattice):
-        return False, _("kare olmayan kafes (%s)") % type(kafes).__name__
-    kimlik = np.vectorize(lambda u: u.id)(np.asarray(kafes.universes, dtype=object))
-    if not (np.array_equal(kimlik, kimlik[..., ::-1]) and
-            np.array_equal(kimlik, kimlik[..., ::-1, :])):
-        return False, _("kafes %d ayna simetrik değil") % kafes.id
-    adim = np.asarray(kafes.pitch, dtype=float)[:2]
-    boyut = np.asarray(kafes.shape, dtype=float)[:2]
-    if np.any(np.abs(np.asarray(kafes.lower_left, dtype=float)[:2] + adim * boyut / 2.0)
-              > _MERKEZ_TOLERANSI):
-        return False, _("kafes %d elemanında ortalanmamış") % kafes.id
-    return True, ""
-
-
-def _ayna(anahtar, boyutlar, eksen):
-    """Anahtarin x (eksen 0) ya da y (eksen 1) aynasi; duzey basina boyutla."""
-    tek = not isinstance(anahtar[0], tuple)
-    parcalar = [anahtar] if tek else list(anahtar)
-    yeni = []
-    for p, (nx, ny) in zip(parcalar, boyutlar):
-        p = list(p)
-        p[eksen] = (nx if eksen == 0 else ny) - 1 - p[eksen]
-        yeni.append(tuple(p))
-    return yeni[0] if tek else tuple(yeni)
-
-
-def _model_reddi(dagilim, spec):
-    """Katlamayi geometriye bakmadan reddeden durumlar; yoksa None."""
-    from cekirdek import sema
-    if spec is not None and sema.agac_modu(spec):
-        return _("gelişmiş (ağaç) modelde simetri doğrulanamıyor")
-    if spec is not None and int(((spec.get("kor") or {}).get("tambur") or {}).get("sayi") or 0):
-        return _("kontrol tamburlu kor simetrik sayılmaz")
-    turler = dagilim.get("kafes_turleri") or [dagilim.get("kafes_turu")]
-    if any(t != "kare" for t in turler):
-        return _("çeyrek katlama yalnız kare kafeste")
-    if dagilim.get("kesik_cubuklar"):
-        return _("kesik çubuklu modelde katlanmaz")
-    return None
-
-
-def ceyrek_simetri(tablo, dagilim, spec=None):
-    """(bool, neden) -- ceyrek katlama yapilabilir mi (bkz. modul basligi)."""
-    red = _model_reddi(dagilim, spec)
-    if red:
-        return False, red
-    tum = dagilim.get("tum_kafesler") or {}
-    if not tum:
-        return False, _("geometri kafesleri okunamadı")
-    for kafes in tum.values():
-        tamam, neden = _kafes_simetrik(kafes)
-        if not tamam:
-            return False, neden
-    boyutlar = [tuple(k.shape[:2]) for k in dagilim["kafesler"]]
-    turler = {r["anahtar"]: r["tur"] for r in tablo}
-    for a, tur in turler.items():
-        for eksen in (0, 1):
-            ayna = _ayna(a, boyutlar, eksen)
-            if turler.get(ayna) != tur:
-                return False, _("%s konumunun aynası tabloda yok ya da farklı türde") % (
-                    _guc.konum_metni(a, None, dagilim.get("kafes_turleri")))
-    return True, ""
-
-
-def _yorunge(a, boyutlar):
-    ax = _ayna(a, boyutlar, 0)
-    return sorted({a, ax, _ayna(a, boyutlar, 1), _ayna(ax, boyutlar, 1)}, key=repr)
-
-
-def _katli_satir(uyeler):
-    m = len(uyeler)
-    ort = sum(u["bagil"] for u in uyeler) / m
-    W = [u["W"] for u in uyeler]
-    q = [u["q"] for u in uyeler]
-    temsilci = max(uyeler, key=lambda u: (u["x"], u["y"]))      # sag ust ceyrek
-    return dict(temsilci, uyeler=[u["anahtar"] for u in uyeler], bagil=ort,
-                sigma=math.sqrt(sum(u["sigma"] ** 2 for u in uyeler)) / m,
-                W=(sum(W) / m) if None not in W else None,
-                q=(sum(q) / m) if None not in q else None,
-                sicak=any(u["sicak"] for u in uyeler),
-                asimetri=(max(abs(u["bagil"] - ort) for u in uyeler) / ort) if ort else 0.0,
-                dilimler=[], tepe_q=None)
-
-
-def ceyrek_katla(tablo, dagilim, spec=None):
-    """
-    (katli tablo | None, neden). Katli satir: temsilci (sag ust ceyrek)
-    konumuyla, "uyeler" [anahtar], yorunge ortalamasi bagil/W/q, σ = √Σσ² / m,
-    "asimetri". Dilim ayrintisi katlanmaz (bos). Simetri yoksa (None, neden).
-    """
-    tamam, neden = ceyrek_simetri(tablo, dagilim, spec)
-    if not tamam:
-        return None, neden
-    boyutlar = [tuple(k.shape[:2]) for k in dagilim["kafesler"]]
-    satirlar = {r["anahtar"]: r for r in tablo}
-    goruldu, katli = set(), []
-    for r in tablo:
-        if r["anahtar"] in goruldu:
-            continue
-        yorunge = _yorunge(r["anahtar"], boyutlar)
-        goruldu.update(yorunge)
-        katli.append(_katli_satir([satirlar[a] for a in yorunge]))
-    return katli, ""
+from cekirdek.guc_katlama import ceyrek_katla, ceyrek_simetri  # noqa: E402,F401
+from cekirdek.guc_katlama import _tepe_isaretle  # noqa: E402
 
 
 # ============================================================================
@@ -298,36 +193,59 @@ def _sayi(x):
     return "" if x is None else repr(float(x))
 
 
-def basliklar(tablo):
-    """Disa aktarma sutun basliklari (dilim sayisina gore)."""
+# Dosya sutun ANAHTARLARI sabittir (cevrilmez): CSV/Excel'i okuyan betikler dilden
+# bagimsiz calissin. Ekrandaki basliklar arayuzde cevrilir.
+_TEMEL_SUTUNLAR = ("demet", "konum", "x_cm", "y_cm", "tur", "kesik", "sicak", "tepe_yakini",
+                   "bagil", "sigma")
+# Formul enjeksiyonu: elektronik tablo bu karakterlerle baslayan metni formul sayar.
+_FORMUL_BASLARI = ("=", "+", "-", "@", "\t", "\r")
+
+
+def hucre_guvenli(h):
+    """Metin hucresi formul gibi baslarsa ' oneki (CSV/Excel enjeksiyonu); diger aynen."""
+    if isinstance(h, str) and h.startswith(_FORMUL_BASLARI):
+        return "'" + h
+    return h
+
+
+def basliklar(tablo, iki_boyut=False):
+    """Disa aktarma sutun anahtarlari (dilim sayisina ve katlamaya gore).
+    iki_boyut: 2B tukenmede guc 1 cm yukseklik basinadir -> "W_per_cm"."""
     n = max((len(r["dilimler"]) for r in tablo), default=0)
-    temel = [_("demet"), _("konum"), "x [cm]", "y [cm]", _("tür"), _("kesik"), _("sıcak"),
-             _("bağıl güç"), "σ", "W", "σ(W)", "q′ [W/cm]"]
-    return temel + ["q′_%d [W/cm]" % (k + 1) for k in range(n)] + \
-        [_("bağıl_%d") % (k + 1) for k in range(n)]
+    w = "W_per_cm" if iki_boyut else "W"
+    temel = list(_TEMEL_SUTUNLAR) + [w, w + "_sigma", "q_W_cm"]
+    if any(r.get("uyeler") for r in tablo):
+        temel += ["katlanan_m", "asimetri", "asimetri_sigma"]
+    return temel + ["q_W_cm_%d" % (k + 1) for k in range(n)] + \
+        ["bagil_%d" % (k + 1) for k in range(n)]
 
 
-def _hucreler(r, n):
-    dq = [d["q"] for d in r["dilimler"]] + [None] * (n - len(r["dilimler"]))
-    db = [d["bagil"] for d in r["dilimler"]] + [None] * (n - len(r["dilimler"]))
+def _hucreler(r, n, katli):
+    d = list(r["dilimler"])
+    dq = [x["q"] for x in d] + [None] * (n - len(d))
+    db = [x["bagil"] for x in d] + [None] * (n - len(d))
+    ek = [len(r.get("uyeler") or ()), r.get("asimetri"), r.get("asimetri_sigma")] if katli else []
     return ([r["demet"], r["konum"], r["x"], r["y"], r["tur"], int(r["kesik"]), int(r["sicak"]),
-             r["bagil"], r["sigma"], r["W"], r["W_sigma"], r["q"]] + dq + db)
+             int(bool(r.get("tepe_yakini"))), r["bagil"], r["sigma"], r["W"], r["W_sigma"],
+             r["q"]] + ek + dq + db)
 
 
-def satirlar(tablo):
+def satirlar(tablo, iki_boyut=False):
     """Baslik + veri satirlari (sayilar float / None)."""
     n = max((len(r["dilimler"]) for r in tablo), default=0)
-    return [basliklar(tablo)] + [_hucreler(r, n) for r in tablo]
+    katli = any(r.get("uyeler") for r in tablo)
+    return [basliklar(tablo, iki_boyut)] + [_hucreler(r, n, katli) for r in tablo]
 
 
 def satirlar_csv(veri):
     """Baslik + satirlar -> CSV metni: alan ayirici virgul, ondalik NOKTA,
-    sayilar repr() hassasiyetinde (yerel ayardan bagimsiz), None bos."""
+    sayilar repr() hassasiyetinde (yerel ayardan bagimsiz), None bos, metin
+    hucreleri formul enjeksiyonuna karsi korunur (hucre_guvenli)."""
     tampon = io.StringIO()
     yazici = csv.writer(tampon, lineterminator="\n")
     for s in veri:
-        yazici.writerow([_sayi(h) if isinstance(h, float) else ("" if h is None else h)
-                         for h in s])
+        yazici.writerow([_sayi(h) if isinstance(h, float) else
+                         ("" if h is None else hucre_guvenli(h)) for h in s])
     return tampon.getvalue()
 
 
@@ -351,13 +269,16 @@ def excel_yaz(tablo_satirlari, yol, sayfa_adi=None):
     sozlukleri verilirse satirlar() ile cevrilir. openpyxl yoksa ImportError.
     """
     import openpyxl
-    veri = (satirlar(tablo_satirlari) if tablo_satirlari and isinstance(tablo_satirlari[0], dict)
-            else tablo_satirlari)
+    veri = (satirlar(tablo_satirlari) if tablo_satirlari
+            and isinstance(tablo_satirlari[0], Mapping) else tablo_satirlari)
     kitap = openpyxl.Workbook()
     sayfa = kitap.active
-    sayfa.title = sayfa_adi or _("pin gücü")
-    for s in veri:
-        sayfa.append(list(s))
+    sayfa.title = sayfa_adi or "pin_gucu"
+    for i, s in enumerate(veri, 1):
+        for j, h in enumerate(s, 1):
+            hucre = sayfa.cell(row=i, column=j, value=hucre_guvenli(h))
+            if isinstance(h, str):
+                hucre.data_type = "s"          # metin: formul olarak yorumlanmaz
     kitap.save(yol)
     return yol
 
@@ -367,6 +288,7 @@ def dosyaya_yaz(yol, veri, sayfa_adi=None):
     gerekir), diger -> CSV (UTF-8). DONER yol."""
     if yol.lower().endswith(".xlsx"):
         return excel_yaz(veri, yol, sayfa_adi)
-    with open(yol, "w", encoding="utf-8", newline="") as f:
+    # utf-8-sig: Excel/LibreOffice Turkce karakterleri BOM ile dogru tanir
+    with open(yol, "w", encoding="utf-8-sig", newline="") as f:
         f.write(satirlar_csv(veri))
     return yol
