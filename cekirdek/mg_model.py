@@ -27,14 +27,33 @@ import os
 from typing import TYPE_CHECKING, Mapping
 
 from cekirdek.ceviri import _
+from cekirdek.gunluk import kaydedici
 
 if TYPE_CHECKING:                     # yalniz tur aciklamalari (openmc tembel yuklenir)
     import openmc
     import openmc.mgxs  # noqa: F401
 
+_log = kaydedici(__name__)
+
+# Bu modul ve random_ray.rr_modeli OpenMC'nin IC ayrintilarina dayanir
+# (Material._nuclides/_sab, Settings._entropy_mesh); 0.16.0'da dogrulandi:
+# openmc/model/model.py Model.convert_to_multigroup, satir 2881-2887 ("Convert
+# all continuous energy materials to multigroup" blogu) ayni yazimi yapar.
+# Surum degisince testler/test_y8_kosu.py::test_openmc_ic_ayrinti_varsayimlari
+# KIRMIZI olur ve calisma aninda surum_uyarisi() kaydedilir.
+DOGRULANAN_OPENMC = "0.16"
 MG_KIPI = "multi-group"
 _KOPYALANAN_AYARLAR = ("run_mode", "particles", "batches", "inactive", "seed",
                        "generations_per_batch")
+
+
+def surum_uyarisi() -> "str | None":
+    """Kurulu OpenMC dogrulanan surum degilse uyari metni (ic ayrinti degismis olabilir)."""
+    import openmc
+    if openmc.__version__.startswith(DOGRULANAN_OPENMC):
+        return None
+    return _("OpenMC %s: MG/random ray dönüşümü %s.x iç ayrıntılarıyla doğrulandı") % (
+        openmc.__version__, DOGRULANAN_OPENMC)
 
 
 def _makro(malzeme: "openmc.Material", xsdata: str) -> None:
@@ -101,6 +120,9 @@ def mg_modeli(spec: Mapping, ozet: Mapping, h5: str) -> "openmc.Model":
     from cekirdek import kurucu
     if not os.path.isfile(h5):
         raise FileNotFoundError(_("MG kütüphanesi bulunamadı: %s") % h5)
+    uyari = surum_uyarisi()
+    if uyari:
+        _log.warning("%s", uyari)
     model, _bilgi = kurucu.kur(spec)
     bolge = (ozet.get("ayar") or {}).get("bolge", "malzeme")
     malzemeler = _malzemeleri_cevir(model, bolge, _adlar(ozet))

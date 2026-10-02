@@ -122,5 +122,7 @@ def rr_modeli(mg: "openmc.Model", a: RRAyar) -> "openmc.Model":
     s.random_ray = rr
     s.particles, s.batches, s.inactive = int(a.isin), int(a.cevrim), int(a.pasif)
     s.source = []
-    s._entropy_mesh = None     # noqa: SLF001 -- setter None kabul etmez; RR entropiyi FSR'lerden hesaplar; kullanici mesh'i reddedilir
+    # RR entropiyi FSR'lerden hesaplar ve kullanici mesh'ini reddeder; setter None
+    # kabul etmez -> ic alan (OpenMC 0.16; bkz. mg_model.DOGRULANAN_OPENMC).
+    s._entropy_mesh = None     # noqa: SLF001
     return model

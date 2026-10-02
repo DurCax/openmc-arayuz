@@ -181,6 +181,24 @@ def test_hazirlik_kilidi_genel_ve_ayni_nesne():
     kontrol("Y8 ozel adi kullanmaz", "_HAZIRLIK_KILIDI" not in kod)
 
 
+def test_openmc_ic_ayrinti_varsayimlari():
+    print("\n[Y8-I8] OpenMC ic ayrintilari (0.16): Material._nuclides/_sab, Settings._entropy_mesh;"
+          " surum degisince KIRMIZI")
+    import openmc
+    from cekirdek import mg_model
+    # Arrange
+    m = openmc.Material()
+    m.add_nuclide("H1", 1.0)
+    s = openmc.Settings()
+    # Act / Assert
+    kontrol("dogrulanan surum", openmc.__version__.startswith(mg_model.DOGRULANAN_OPENMC),
+            "-> %s (bkz. mg_model._makro, random_ray.rr_modeli)" % openmc.__version__)
+    kontrol("Material._nuclides liste", isinstance(m._nuclides, list) and len(m._nuclides) == 1)
+    kontrol("Material._sab liste", isinstance(m._sab, list))
+    kontrol("Settings._entropy_mesh okunur", s._entropy_mesh is None and s.entropy_mesh is None)
+    kontrol("surum uyarisi uyumlu surumde yok", mg_model.surum_uyarisi() is None)
+
+
 # ---------------------------------------------------------------------------
 # YAVAS
 # ---------------------------------------------------------------------------
@@ -264,5 +282,6 @@ def test_ince_grup_mg_ve_random_ray(gecici):
 
 HIZLI = [test_karsilastirma_tablosu, test_random_ray_ayar_dogrulama, test_rr_varsayilan_ve_mg_sarti,
          test_kapsam_secenekleri_ve_demet_alt_modeli, test_mg_modeli_kosusuz,
-         test_mg_modeli_hucre_demet_ve_random_ray, test_hazirlik_kilidi_genel_ve_ayni_nesne]
+         test_mg_modeli_hucre_demet_ve_random_ray, test_hazirlik_kilidi_genel_ve_ayni_nesne,
+         test_openmc_ic_ayrinti_varsayimlari]
 YAVAS = [test_iki_grup_homojen_k_inf, test_ince_grup_mg_ve_random_ray]
