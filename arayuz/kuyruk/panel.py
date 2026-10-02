@@ -92,6 +92,8 @@ class KuyrukPaneli(QtWidgets.QWidget):
         self.tablo.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
         self.tablo.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.tablo.horizontalHeader().setStretchLastSection(True)
+        self.tablo.horizontalHeader().setSectionResizeMode(
+            QtWidgets.QHeaderView.ResizeToContents)
         self.tablo.verticalHeader().setVisible(False)
         self.tablo.itemSelectionChanged.connect(self._dugmeleri_guncelle)
         duzen.addWidget(self.tablo, 1)

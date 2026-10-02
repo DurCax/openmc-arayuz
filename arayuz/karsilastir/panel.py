@@ -101,6 +101,8 @@ class KarsilastirmaPaneli(QtWidgets.QWidget):
         t.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
         t.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         t.horizontalHeader().setStretchLastSection(True)
+        t.horizontalHeader().setSectionResizeMode(
+            QtWidgets.QHeaderView.ResizeToContents)
         t.verticalHeader().setVisible(False)
         return t
 
@@ -206,5 +208,11 @@ class KarsilastirmaPaneli(QtWidgets.QWidget):
                         interpolation="nearest", extent=(0.5, iz.nx + 0.5, 0.5, iz.ny + 0.5))
         self.figur.colorbar(im, ax=eks, label=_("Δ bağıl güç (2 − 1)"))
         eks.set_title(_("Pin gücü farkı (kırmızı: 2. koşu yüksek)"), fontsize=9)
+        from matplotlib.ticker import MaxNLocator
+        eks.xaxis.set_major_locator(MaxNLocator(integer=True))
+        eks.yaxis.set_major_locator(MaxNLocator(integer=True))
+        eks.set_xlabel(_("x (soldan)"), fontsize=8)
+        eks.set_ylabel(_("y (alttan)"), fontsize=8)
         eks.tick_params(labelsize=7)
+        self.figur.tight_layout()
         self.tuval.draw_idle()
