@@ -143,6 +143,35 @@ def test_tca_varyantlari():
     kontrol("varyant kaynakta yazar", "u234" in u234["referans"]["kaynak"])
 
 
+YAVAS_AYAR = (20000, 100, 30)          # azaltilmis istatistik (test_benchmark BM5 gibi)
+TUTARLILIK_SIGMA = 4.0                 # kayitli olcumle tutarlilik (BM5 ile ayni)
+KABUL_SIGMA = 3.0                      # VV.md kabul olcutu
+
+
+def test_yavas_tca_durum14(gecici):
+    print("\n[VL9] TCA durum 14 yeniden kosulur (azaltilmis istatistik)")
+    import json
+    import os
+    from cekirdek import kosucu, sema
+    from testler.ortak_test import ORNEK, ISLEM_PARCACIGI
+    yol = os.path.join(ORNEK, "vv", "kriter_lct006_14.json")
+    if not kontrol("olcumlu dosya var", os.path.exists(yol), "-> %s" % yol):
+        return
+    with open(yol, encoding="utf-8") as f:
+        ref = json.load(f)["referans"]
+    spec = sema.yukle(yol)
+    spec["ayarlar"]["parcacik"], spec["ayarlar"]["cevrim"], spec["ayarlar"]["pasif"] = YAVAS_AYAR
+    r = kosucu.calistir(spec, os.path.join(str(gecici), "lct006_14"), is_parcacigi=ISLEM_PARCACIGI)
+    if not kontrol("kosu basarili", r["basarili"], "-> %s" % r.get("log")):
+        return
+    k, s = kosucu.sonuc_oku(r["statepoint"])["keff"]
+    olc = ref["olcum"]
+    z_olc = abs(k - olc["k"]) / math.hypot(s, olc["sigma"])
+    z_ref = abs(k - ref["k"]) / math.hypot(s, ref["sigma"])
+    kontrol("kayitli olcumle tutarli (%.2f σ)" % z_olc, z_olc <= TUTARLILIK_SIGMA)
+    kontrol("E ile kabul olcutu (%.2f σ)" % z_ref, z_ref <= KABUL_SIGMA)
+
+
 HIZLI = [test_tca_varyantlari, test_tca_durum_tablosu, test_tca_birim_hucre, test_tca_spec_eksenel_kafes,
          test_tca_spec_referans, test_tca_spec_saf, test_tca_spec_kurulur]
-YAVAS = []
+YAVAS = [test_yavas_tca_durum14]
