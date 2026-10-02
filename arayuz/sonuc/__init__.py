@@ -1,2 +1,2 @@
 # -*- coding: utf-8 -*-
-"""arayuz/sonuc -- sonuc gorunumleri (v3 Y1: mesh_harita; Y3: spektrum)."""
+"""arayuz/sonuc/  --  koşu sonucu gösterim kartları (v3 Dalga Y)."""

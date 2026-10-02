@@ -12,6 +12,7 @@ from cekirdek import sema
 from cekirdek.kod_uret.ad import _ad, _f, _bolum, _mat_ifade  # noqa: F401
 from cekirdek import kaynak as _kaynak
 from cekirdek.kod_uret.tukenme import _tukenme
+from cekirdek.kod_uret.spektrum import _spektrum_tallyleri
 
 
 def _malzemeler(spec, satirlar):
@@ -122,8 +123,9 @@ def _kapanis(spec, satirlar, renkli):
         satirlar.append("")
         satirlar.append("# Kinetik parametreler (IFP): etkin gecikmiş nötron kesri (beta_eff)")
         satirlar.append("# ve ortalama nötron nesil süresi. Koşu süresini biraz uzatır.")
-        satirlar.append("model.add_kinetics_parameters_tallies()")
-        satirlar.append("model.settings.ifp_n_generation = %d" % int(kin.get("nesil") or 10))
+        from cekirdek import kinetik_oku
+        satirlar.extend(kinetik_oku.betik_satirlari(kin))
+    _spektrum_tallyleri(spec, satirlar)          # Y3 (cekirdek/kod_uret/spektrum.py)
     if renkli:
         satirlar.append("")
         satirlar.append("# Model.plot() SVG renk adı ya da (R,G,B) demeti ister — hex dize kabul etmez")

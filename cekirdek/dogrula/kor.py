@@ -12,7 +12,7 @@ from cekirdek import altigen
 from cekirdek import altigen_kor as akor
 from cekirdek import sema
 from cekirdek import uygunluk
-from cekirdek.dogrula._ortak import Bulgu, _kor_turu_adi
+from cekirdek.dogrula._ortak import BOS_ADIM_GEOMETRI, Bulgu, _kor_turu_adi
 from cekirdek.dogrula.geometri import _kafes_icerik_kontrol
 from cekirdek.ceviri import _, N_, pgettext
 
@@ -61,7 +61,7 @@ def kor_kontrol(spec):
 def _tek_cubuk_kontrol(spec, kor):
     bulgular = []
     if not kor.get("cubuk"):
-        bulgular.append(Bulgu("hata", "kor", _("çubuk seçilmemiş")))
+        bulgular.append(Bulgu("hata", "kor", _("çubuk seçilmemiş"), kod=BOS_ADIM_GEOMETRI))
     elif cubuk_bul(spec, kor["cubuk"]) is None:
         bulgular.append(Bulgu("hata", "kor", _("tanımsız çubuk: %s") % kor["cubuk"]))
     if kor.get("adim", 0) <= 0:
@@ -79,16 +79,18 @@ def _tek_cubuk_kontrol(spec, kor):
 
 
 def _tek_demet_kontrol(spec, kor):
-    if not kor.get("demet") or demet_bul(spec, kor.get("demet")) is None:
-        return [Bulgu("hata", "kor", _("tanımsız demet: %s") % kor.get("demet")
-                      if kor.get("demet") else _("demet seçilmemiş"))]
+    if not kor.get("demet"):
+        return [Bulgu("hata", "kor", _("demet seçilmemiş"), kod=BOS_ADIM_GEOMETRI)]
+    if demet_bul(spec, kor.get("demet")) is None:
+        return [Bulgu("hata", "kor", _("tanımsız demet: %s") % kor.get("demet"))]
     return []
 
 
 def _tek_plaka_kontrol(spec, kor):
-    if not kor.get("plaka") or plaka_bul(spec, kor.get("plaka")) is None:
-        return [Bulgu("hata", "kor", _("tanımsız plaka elemanı: %s") % kor.get("plaka")
-                      if kor.get("plaka") else _("plaka elemanı seçilmemiş"))]
+    if not kor.get("plaka"):
+        return [Bulgu("hata", "kor", _("plaka elemanı seçilmemiş"), kod=BOS_ADIM_GEOMETRI)]
+    if plaka_bul(spec, kor.get("plaka")) is None:
+        return [Bulgu("hata", "kor", _("tanımsız plaka elemanı: %s") % kor.get("plaka"))]
     return []
 
 
@@ -199,7 +201,7 @@ def _kuresel_alanlar(kor):
 def _kare_kafes_kontrol(spec, kor):
     harita = kor.get("harita") or []
     if not harita:
-        return [Bulgu("hata", "kor", _("kor haritası boş"))]
+        return [Bulgu("hata", "kor", _("kor haritası boş"), kod=BOS_ADIM_GEOMETRI)]
     bulgular = []
     nx, ny = kor["boyut"]
     if len(harita) != ny:
@@ -428,7 +430,7 @@ def _altigen_harita_kontrol(kor, n):
     beklenen = altigen.halka_uzunluklari(n)
     harita = kor.get("harita") or []
     if not harita:
-        return [Bulgu("hata", "kor", _("kor haritası boş"))], False
+        return [Bulgu("hata", "kor", _("kor haritası boş"), kod=BOS_ADIM_GEOMETRI)], False
     if len(harita) != len(beklenen):
         return [Bulgu("hata", "kor",
                       _("%d halka bekleniyor, haritada %d satır var")

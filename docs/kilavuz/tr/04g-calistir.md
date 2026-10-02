@@ -98,6 +98,17 @@ gerçek belirsizlik için önce entropiyle yakınsamayı doğrulayın, sonra mod
 tohumla koşun. Ayrıntı: [güç dağılımını yorumlamak](06-sonuclar.md#guc-dagilimi-yorum) ve
 [güç haritası dersi](05-dersler.md#ders-guc).
 
+<a id="calistir-spektrum"></a>
+### Spektrum ve dört faktör kartı
+
+Yalnızca koşuda Y3 tally'leri varsa ([Hesap ayarları](04f-hesap-ayarlari.md#ayar-spektrum))
+görünür. Üstte **letarji başına akı** (φ·V/Δu, log-log; model geneli ve yakıt; kesikli çizgi
+0.625 eV termal kesim), altta tablo: ε, p, f, η, ε·p·f·η, (n,xn) düzeltmesi c_xn, sızmama
+olasılığı P_NL, tally'lerden k (sızıntısız modelde **k∞** etiketiyle) ve OpenMC'nin birleşik k
+tahmincisi; ardından ρ28, δ25, δ28, C*. Her değer ± 1σ'dır ve altındaki notlar varsayımları
+yazar (sızıntısız tanım, korelasyonsuz birinci derece belirsizlik, yakıt ortalaması). Fizik ve
+yorum: [5.11 dersi](05-dersler.md#ders-spektrum). Grafik **PNG kaydet** ile kaydedilir.
+
 <a id="calistir-uygunluk"></a>
 ### Uygunluk kartı
 

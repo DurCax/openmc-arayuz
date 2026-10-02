@@ -10,7 +10,7 @@ kartında 2B dilim olarak görünür ve ParaView için **VTK** dosyasına aktar�
 Python betiği aynı ağı kurar (aynı tanım işlevi; `testler/test_y1_mesh_tanim.py`).
 
 Örnek: `ornekler/pwr_mesh_aki.json` (17 × 17 düzenli ağda iki grup akı ve kappa-fission,
-8 × 12 silindirik ağda akı). Adım adım kullanım: [5.11 Ders](05a-ders-mesh.md#ders-mesh).
+8 × 12 silindirik ağda akı). Adım adım kullanım: [5.13 Ders](05c-ders-mesh.md#ders-mesh).
 
 ![Tally formunda silindirik ağ: bölmeler, ağ türü, açık sınırlar ve öneri](../resimler/tr/mesh-formu.png)
 

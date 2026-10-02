@@ -11,7 +11,7 @@ built by the interface and the Python script exported with **Script** build the 
 same definition function; `testler/test_y1_mesh_tanim.py`).
 
 Example: `ornekler/pwr_mesh_aki.json` (two-group flux and kappa-fission on a 17 x 17 regular
-mesh, flux on an 8 x 12 cylindrical mesh). Step by step: [5.11 Lesson](05a-ders-mesh.md#ders-mesh).
+mesh, flux on an 8 x 12 cylindrical mesh). Step by step: [5.13 Lesson](05c-ders-mesh.md#ders-mesh).
 
 ![Cylindrical mesh in the tally form: bins, mesh type, explicit bounds and suggestion](../resimler/en/mesh-formu.png)
 

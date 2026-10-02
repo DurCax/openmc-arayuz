@@ -53,6 +53,7 @@ from arayuz.sekme_demet import DemetSekmesi
 from arayuz.sekme_kor import KorSekmesi
 from arayuz.sekme_malzeme import MalzemeSekmesi
 from arayuz import baslangic, tema
+from arayuz.baslangic_akis import BaslangicAkisi
 from arayuz.ortak import tekerlek_korumasi_kur
 from arayuz.pencere import kabuk
 from arayuz.pencere.menuler import MenulerMixin
@@ -79,8 +80,8 @@ _VARSAYILAN_BOLUCU = (820, 360)      # [sayfa, onizleme] px, ilk acilis
 # ana pencere
 # ============================================================================
 
-class AnaPencere(DogrulamaMixin, GezinmeCephesi, MenulerMixin, ProjeMixin, GecmisMixin,
-                 QtWidgets.QMainWindow):
+class AnaPencere(DogrulamaMixin, BaslangicAkisi, GezinmeCephesi, MenulerMixin, ProjeMixin,
+                 GecmisMixin, QtWidgets.QMainWindow):
 
     def __init__(self, acilis_dosyasi=None):
         super().__init__()
@@ -102,8 +103,7 @@ class AnaPencere(DogrulamaMixin, GezinmeCephesi, MenulerMixin, ProjeMixin, Gecmi
         self._gecmise_it(ilk=True)
         if acilis_dosyasi:
             self.proje_ac(acilis_dosyasi)
-        if not self._model_var:
-            self.baslangici_goster()
+        self.acilis_akisi(dosya_verildi=bool(acilis_dosyasi))   # v3 K1 (+ on kancalar)
 
     # ------------------------------------------------------------------ kurucular
     def _boyut_kur(self):
@@ -259,6 +259,7 @@ class AnaPencere(DogrulamaMixin, GezinmeCephesi, MenulerMixin, ProjeMixin, Gecmi
         self.baslangic.geri_istendi.connect(self._editoru_goster)
         self.s_calistir.kapi_ayarla(self._kosu_izni)
         self.s_analiz.kapi_ayarla(self._kosu_izni)
+        self.s_analiz.kinetik.kosu_kaynagi_ayarla(self.s_calistir.son_kosu_dizini)  # Y6
         self.s_tukenme.kapi_ayarla(self._kosu_izni)
         for s in (self.s_calistir, self.s_analiz, self.s_tukenme):
             s.durum.connect(self._sekme_durum_mesaji)
@@ -273,6 +274,7 @@ class AnaPencere(DogrulamaMixin, GezinmeCephesi, MenulerMixin, ProjeMixin, Gecmi
         self.s_kor.islem_uygulayici = self.spec_islemi_uygula
         self.s_kor.dugum_secildi.connect(self.onizleme.vurgula)
         self.onizleme.dugum_secildi.connect(self.s_kor.dugum_sec)
+        self._baslangic_akisini_kur()    # v3 K1: Sifirdan + adim rehberi
 
     def _sayaclari_kur(self):
         self._dog_sayac = QtCore.QTimer(self)
@@ -482,6 +484,7 @@ class AnaPencere(DogrulamaMixin, GezinmeCephesi, MenulerMixin, ProjeMixin, Gecmi
                 k = yer_sekme_anahtari(b.yer)
                 if k:
                     hata[k] = hata.get(k, 0) + 1
+        hata = self._adim_hatalarini_ayikla(hata)    # eksik adim "!" degil "•"
         self._isaretler = sekme_isaretleri(
             self.spec, hata,
             kosu_basarili=self.s_calistir.sonuc_var(),

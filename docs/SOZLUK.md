@@ -145,9 +145,23 @@ Kurallar:
 | kinetik parametreler | kinetics parameters | | β_eff, Λ |
 | gecikmeli nötron oranı | delayed neutron fraction | | β_eff |
 | üretim zamanı | neutron generation time | production time | Λ |
+| ani nötron ömrü | prompt neutron lifetime | | ℓ = Λ·k |
+| nokta kinetiği | point kinetics | | |
+| gecikmeli nötron grubu | delayed neutron group | | β_i, λ_i |
+| öncül | precursor | predecessor | gecikmeli nötron öncülü |
+| ani kritik | prompt critical | instant critical | ρ ≥ 1 $ |
+| ters saat denklemi | inhour equation | inverse clock equation | Inhour |
+| kararlı periyot | stable period | | T = 1/ω₀ |
 | belirsizlik | uncertainty | error | "hata" demeyin; 1σ yazılır |
 | standart sapma | standard deviation | | σ |
 | kapsama faktörü | coverage factor | | GUM |
+| dört faktör | four factors (four-factor) | | ε·p·f·η (Y3; Lamarsh, Duderstadt & Hamilton) |
+| hızlı fisyon çarpanı | fast fission factor | fast fission ratio | ε |
+| rezonanstan kaçma olasılığı | resonance escape probability | resonance escape factor | p |
+| termal yararlanma | thermal utilization | thermal usage | f |
+| sızmama olasılığı | non-leakage probability | no-leak probability | P_NL = P_FNL·P_TNL |
+| letarji | lethargy | | u = ln(E₀/E) |
+| spektral indeks | spectral index (spectral indices) | spectrum index | ρ28, δ25, δ28, C* (CSEWG) |
 
 ## 5. Tükenme
 

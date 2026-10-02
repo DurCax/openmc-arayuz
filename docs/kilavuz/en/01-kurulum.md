@@ -109,12 +109,41 @@ warning/error in the model check (see [6.5 Known pitfalls](06-sonuclar.md#tuzakl
 ## 1.4 First start: the Start screen
 
 When the program opens without a model, the **"What would you like to model?"** screen appears.
+No example is loaded automatically; you choose one of three ways:
+
+| Way | Where | What it builds |
+|---|---|---|
+| **From scratch** | first card: core type selector + **Start from scratch** | A truly empty model: no materials, components, assemblies or geometry; only the core type is set. |
+| **From template** | **From template** on the type cards | The working, simple model of that type (formerly "Start empty"). |
+| **From example** | **From example** on the type cards, or the gallery below | An unsaved copy of a ready-made example. |
 
 ![Start screen: model type cards, recent files and example gallery](../resimler/en/baslangic.png)
 
+**From scratch.** Choose a core type (fuel pin, single fuel assembly, full core with a square or
+hexagonal map, MTR plate-type fuel element) and press **Start from scratch**. The editor opens
+on the **Materials** page and a **step guide** appears above the validation strip:
+
+| Step | Page | Counts as done when |
+|---|---|---|
+| 1. **Add materials** | Materials | there is at least one material (fuel, cladding, coolant from the library) |
+| 2. **Add a component** | Components | there is at least one pin (a plate-type element for the plate type) |
+| 3. **Build an assembly** (assembly and full-core types only) | Assembly | there is at least one assembly |
+| 4. **Build the geometry** | Geometry | the cell fill is chosen / the core map is filled |
+
+Clicking a step opens its page; a finished step is marked with ✓, the next one is highlighted.
+In a pin cell the first fuel pin is placed in the cell automatically, so the geometry step is
+finished as well. When all steps are done the guide hides itself.
+
+While the model is being built, validation findings are shown as **"Missing step" (info tone),
+not as errors (red)**: in an empty model "pin not selected" is not an error but a step not yet
+taken. The strip says "Building the model: 1/3 steps"; **Go to finding** opens the page of the
+next step. Meanwhile **Run is disabled** and its tooltip says why ("The model is not built yet:
+2 steps are missing. Next step: …"). Once the steps are done validation is back to normal; real
+errors that remain are red as usual.
+
 **Model type cards.** Each card has a description and two actions:
 
-| Card | Start empty | From example | Model built (core type) |
+| Card | From template | From example | Model built (core type) |
 |---|---|---|---|
 | **Fuel pin (pin cell)** | yes | `ornekler/pwr_pinhucre.json` | `tek_cubuk` |
 | **Fuel assembly — square** | yes | `ornekler/pwr_17x17.json` | `tek_demet` (square) |
@@ -126,14 +155,20 @@ When the program opens without a model, the **"What would you like to model?"** 
 | **Shielding (fixed source)** | — | `ornekler/zirh_kure.json` | `kuresel` |
 | **Open from file** | **Open…** (Ctrl+O): a saved model (`.json`) or an OpenMC XML folder | | |
 
-- **Start empty** builds a simple, working model: materials, components and geometry are ready;
+- **From template** builds a simple, working model: materials, components and geometry are ready;
   the run settings use the "Normal" accuracy preset. You can run it right away with **F9**.
 - **From example** opens an **unsaved copy** of a ready example. `ornekler/*.json` are test
   references; they are never overwritten. For your own file use **File → Save as**.
-- A spherical assembly (shielding, Godiva-type benchmarks) cannot be started blank: its shells are
+- A spherical assembly (shielding, Godiva-type benchmarks) cannot be started from a template or from scratch: its shells are
   edited only in JSON ([4.4 Geometry](04d-geometri.md#geometri)).
 
-**Recent.** The models you saved appear in this strip (file name, directory, time of last change).
+**Recent.** The models you saved or opened appear in this strip (file name, directory, time of
+last change).
+
+**Show this screen at startup.** The check box at the bottom of the screen (default: on) is
+stored in the settings. When it is off, the program opens next time with the **most recently
+used project** (the project stays in the recent list); if the file cannot be found the Start
+screen appears as usual.
 
 **Example gallery.** All examples in the repository; at the top a search box (**Search
 examples…**), a level selector (introductory / intermediate / advanced) and category buttons
@@ -146,7 +181,7 @@ returns to the model.
 
 ## 1.5 Checking the installation: the first run
 
-On the Start screen choose **Fuel pin (pin cell) → Start empty**, then **F9** (Run). Within half a
+On the Start screen choose **Fuel pin (pin cell) → From template**, then **F9** (Run). Within half a
 minute the result card should show **k∞ ≈ 1.323 ± 0.001** (UO₂ 3.0%, hot operating condition,
 "Normal" preset; measured 1.3227 ± 0.0008). Small differences in the last digit are statistics;
 a difference larger than ±0.003 points to an installation problem (wrong library, missing S(α,β)

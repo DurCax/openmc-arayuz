@@ -171,6 +171,10 @@ class AnalizSekmesi(QtWidgets.QWidget):
         ic.setSpacing(A["l"])
         ic.addWidget(self.ayar_karti)
         ic.addWidget(self.sonuc_karti)
+        # Y6: nokta kinetigi (modelden bagimsiz; beta_i/Lambda son kosudan alinabilir)
+        from arayuz.analiz.kinetik import KinetikKarti
+        self.kinetik = KinetikKarti()
+        ic.addWidget(self.kinetik)
         ic.addStretch(1)
         duzen = sd.sayfa_duzeni(self)
         duzen.addWidget(sd.sayfa_basligi(_("Analiz"), aciklama(_(
@@ -218,6 +222,7 @@ class AnalizSekmesi(QtWidgets.QWidget):
         self.ilerleme.setRange(0, 1)
         self.ilerleme.setValue(0)
         self.hedef.clear()         # onceki projenin hedefi yeni projeye tasinmasin
+        self.kinetik.sifirla()
         self._sonuc_gorunumu()
         self.kapi_guncelle()
         self.sonuc_degisti.emit()
