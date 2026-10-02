@@ -82,6 +82,11 @@ class YuzeyTallyMixin(object):
             for w in (self.t_set, self.t_set_ozet, self.t_skor, self.t_mesh_var,
                       self.mesh_satiri):
                 tf.setRowVisible(w, False)
+            # yuzey filtresi "dosyadan gelen filtre" degildir: bu form yonetir
+            diger = [f for f in (t or {}).get("filtreler") or []
+                     if f.get("tur") not in _y.YUZEY_FILTRELERI + ("enerji", "mesh")]
+            if not diger:
+                tf.setRowVisible(self.t_diger, False)
         tf.setRowVisible(self.kutu_satiri, tur == _y.FILTRE_KUTU)
         tf.setRowVisible(self.kutu_sinir_satiri, tur == _y.FILTRE_KUTU)
         tf.setRowVisible(self.t_yuzey_not, yuzey)
