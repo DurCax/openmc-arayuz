@@ -108,12 +108,23 @@ def test_sinir_onerisi_sinir_kutusundan():
     s = mt.sinir_onerisi(spec, kutu, mt.SILINDIRIK)
     k = mt.sinir_onerisi(spec, kutu, mt.KURESEL)
     alt, ust = kurucu.tally_mesh_sinirlari(spec, {"otomatik": True}, kutu)
+    z2 = mt.Z_2B_YARI
     # Assert
-    kontrol("duzenli = kurucu.tally_mesh_sinirlari", d == {"alt": alt, "ust": ust}, "-> %s" % d)
+    kontrol("duzenli x, y = kurucu.tally_mesh_sinirlari",
+            d["alt"][:2] == alt[:2] and d["ust"][:2] == ust[:2], "-> %s" % d)
+    kontrol("2B (eksenel sonsuz) modelde z = +/-Z_2B_YARI (butun iz uzunlugu sayilir)",
+            (d["alt"][2], d["ust"][2]) == (-z2, z2) and z2 >= 1.0e3, "-> %s" % d)
     kontrol("silindirik r = max(gx, gy)/2", math.isclose(s["r_ust"], 10.71), "-> %s" % s)
-    kontrol("2B modelde z = +/-1 cm (duzenli ile ayni)",
-            (s["z_alt"], s["z_ust"]) == (alt[2], ust[2]))
+    kontrol("silindirik z duzenli ile ayni", (s["z_alt"], s["z_ust"]) == (-z2, z2))
     kontrol("kuresel r = max(gx, gy)/2", math.isclose(k["r_ust"], 10.71))
+    s3 = _spec("pwr_3b.json")
+    d3 = mt.sinir_onerisi(s3, kutu, mt.DUZENLI)
+    a3, u3 = kurucu.tally_mesh_sinirlari(s3, {"otomatik": True}, kutu)
+    kontrol("3B modelde z = kor yuksekligi (kurucu ile ayni)", d3 == {"alt": a3, "ust": u3})
+    sk = _spec("godiva_kriter.json")
+    ak, uk = kurucu.tally_mesh_sinirlari(sk, {"otomatik": True}, kutu)
+    kontrol("kurede z = kure capi (kurucu ile ayni)",
+            mt.sinir_onerisi(sk, kutu, mt.DUZENLI) == {"alt": ak, "ust": uk})
     for ad in ("pwr_17x17.json", "godiva_kriter.json", "vver1000_kor.json"):
         s = _spec(ad)
         _m, bilgi = kurucu.kur(s)
@@ -132,7 +143,8 @@ def test_tanim_ve_mesh_kurulumu():
     m = mt.mesh_kur(mt.mesh_tanimi(spec, mt.filtre_duzenli([4, 2, 1]), kutu))
     kontrol("RegularMesh", isinstance(m, openmc.RegularMesh))
     kontrol("duzenli sinirlar kutudan",
-            list(m.lower_left) == [-10.0, -5.0, -1.0] and list(m.upper_right) == [10.0, 5.0, 1.0])
+            list(m.lower_left) == [-10.0, -5.0, -mt.Z_2B_YARI]
+            and list(m.upper_right) == [10.0, 5.0, mt.Z_2B_YARI])
     # silindirik acik sinirlar
     f = mt.filtre_silindirik([5, 8, 2], r_ust=7.5, z_alt=-3.0, z_ust=3.0)
     c = mt.mesh_kur(mt.mesh_tanimi(spec, f, kutu))

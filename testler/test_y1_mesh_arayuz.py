@@ -74,8 +74,9 @@ def test_form_ag_turu_ve_sinirlar():
     # duzenli acik sinir
     _kutu_sec(a.t_mesh_tur, mt.DUZENLI)
     f = _mesh(spec)
-    kontrol("duzenliye donus: acik alt/ust = oneri", f.get("alt") == [-10.71, -10.71, -1.0]
-            and f.get("ust") == [10.71, 10.71, 1.0] and "mesh_turu" not in f, "-> %s" % f)
+    z2 = mt.Z_2B_YARI
+    kontrol("duzenliye donus: acik alt/ust = oneri", f.get("alt") == [-10.71, -10.71, -z2]
+            and f.get("ust") == [10.71, 10.71, z2] and "mesh_turu" not in f, "-> %s" % f)
     kontrol("hata yok", mt.filtre_hatalari(f) == [])
 
 

@@ -48,6 +48,15 @@ HEKSAGONAL_NOTU = N_(
     "SphericalMesh, UnstructuredMesh sunar). Altıgen demette düzenli ya da "
     "silindirik ağ kullanın.")
 
+# 2B (eksenel yonde SONSUZ, z sinirsiz) modelde otomatik agin z yari yuksekligi [cm].
+# Eskiden +/-1 cm idi: parcaciklar z'de serbestce dolastigi icin iz uzunlugunun
+# cogu agin disinda kaliyor, sayim ~1/10'a dusuyordu (olculdu, pwr_mesh_aki
+# 5000 x 40 aktif: kappa-fission bagil hata medyani %21). Eksenel sonsuz modelde
+# akı z'de duzgun oldugundan hacim basina deger degismez, varyans duser.
+# 1e4 cm, kaynagin 60-300 cevrimdeki z rastgele yuruyusunden (~sqrt(cevrim) x goc
+# uzunlugu ~ 1e2 cm) iki mertebe buyuktur.
+Z_2B_YARI = 1.0e4
+
 TAM_TUR = 2.0 * math.pi           # phi araligi [rad]
 YARIM_TUR = math.pi               # theta araligi [rad]
 _EKSEN_SAYISI = 3
@@ -161,14 +170,17 @@ def model_sinir_kutusu(spec):
 def sinir_onerisi(spec, sinir_kutu, tur):
     """
     Modelin sinir kutusundan (gx, gy) [cm] otomatik sinir onerisi.
-      duzenli    : kurucu.tally_mesh_sinirlari ile AYNI (x, y kutu; z kor yuksekligi,
-                   kurede kure capi, 2B'de +/-1 cm)
+      duzenli    : x, y kurucu.tally_mesh_sinirlari ile ayni (sinir kutusu); z kor
+                   yuksekligi, kurede kure capi, 2B (eksenel sonsuz) modelde
+                   +/-Z_2B_YARI (bkz. sabitin notu)
       silindirik : r = max(gx, gy)/2 (yuvarlak modelde tam; kare modelde koseler
                    agin disinda kalir), z duzenli ile ayni
       kuresel    : r = max(gx, gy)/2
     """
     from cekirdek import kurucu
     alt, ust = kurucu.tally_mesh_sinirlari(spec, {"otomatik": True}, sinir_kutu)
+    if _eksenel_sonsuz(spec):
+        alt, ust = alt[:2] + [-Z_2B_YARI], ust[:2] + [Z_2B_YARI]
     if tur == DUZENLI:
         return {"alt": alt, "ust": ust}
     r = max(float(sinir_kutu[0]), float(sinir_kutu[1])) / 2.0
@@ -179,11 +191,17 @@ def sinir_onerisi(spec, sinir_kutu, tur):
     raise ValueError(_("bilinmeyen ağ türü: %s") % tur)
 
 
+def _eksenel_sonsuz(spec):
+    """2B model: kor yuksekligi yok ve kure degil (z ekseninde sinir yok)."""
+    from cekirdek import kurucu, sema
+    return not sema.model_yuksekligi(spec) and not kurucu._kure_mu(spec)
+
+
 def _sinirlar(spec, f, tur, sinir_kutu):
     if tur == DUZENLI:
-        from cekirdek import kurucu
-        alt, ust = kurucu.tally_mesh_sinirlari(spec, f, sinir_kutu)
-        return {"alt": list(alt), "ust": list(ust)}
+        if not f.get("otomatik") and f.get("alt") and f.get("ust"):
+            return {"alt": list(f["alt"]), "ust": list(f["ust"])}
+        return sinir_onerisi(spec, sinir_kutu, tur)
     if not f.get("otomatik") and f.get("r_ust") is not None:
         return {k: float(f[k]) for k in ("r_ust", "z_alt", "z_ust") if k in f}
     return sinir_onerisi(spec, sinir_kutu, tur)
