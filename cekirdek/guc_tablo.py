@@ -319,16 +319,20 @@ def satirlar(tablo):
     return [basliklar(tablo)] + [_hucreler(r, n) for r in tablo]
 
 
-def csv_metni(tablo):
-    """Pin tablosu CSV'si: alan ayirici virgul, ondalik NOKTA, repr hassasiyeti."""
+def satirlar_csv(veri):
+    """Baslik + satirlar -> CSV metni: alan ayirici virgul, ondalik NOKTA,
+    sayilar repr() hassasiyetinde (yerel ayardan bagimsiz), None bos."""
     tampon = io.StringIO()
     yazici = csv.writer(tampon, lineterminator="\n")
-    hepsi = satirlar(tablo)
-    yazici.writerow(hepsi[0])
-    for s in hepsi[1:]:
+    for s in veri:
         yazici.writerow([_sayi(h) if isinstance(h, float) else ("" if h is None else h)
                          for h in s])
     return tampon.getvalue()
+
+
+def csv_metni(tablo):
+    """Pin tablosu CSV'si (satirlar_csv bicimi)."""
+    return satirlar_csv(satirlar(tablo))
 
 
 def excel_var():
@@ -354,4 +358,14 @@ def excel_yaz(tablo_satirlari, yol, sayfa_adi=None):
     for s in veri:
         sayfa.append(list(s))
     kitap.save(yol)
+    return yol
+
+
+def dosyaya_yaz(yol, veri, sayfa_adi=None):
+    """Baslik + satirlari uzantiya gore yazar: .xlsx -> Excel (openpyxl
+    gerekir), diger -> CSV (UTF-8). DONER yol."""
+    if yol.lower().endswith(".xlsx"):
+        return excel_yaz(veri, yol, sayfa_adi)
+    with open(yol, "w", encoding="utf-8", newline="") as f:
+        f.write(satirlar_csv(veri))
     return yol

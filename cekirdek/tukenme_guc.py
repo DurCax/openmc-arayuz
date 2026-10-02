@@ -35,8 +35,6 @@
 """
 
 import copy
-import csv
-import io
 import os
 import re
 
@@ -278,19 +276,10 @@ def satirlar(sonuc):
     return cikti
 
 
-def _csv(veri):
-    from cekirdek.guc_tablo import _sayi
-    tampon = io.StringIO()
-    yazici = csv.writer(tampon, lineterminator="\n")
-    for s in veri:
-        yazici.writerow([_sayi(h) if isinstance(h, float) else ("" if h is None else h)
-                         for h in s])
-    return tampon.getvalue()
-
-
 def csv_metni(sonuc):
     """Adim × pin CSV (ondalik nokta, repr hassasiyeti)."""
-    return _csv(satirlar(sonuc))
+    from cekirdek.guc_tablo import satirlar_csv
+    return satirlar_csv(satirlar(sonuc))
 
 
 def faktor_satirlari(sonuc):
@@ -303,4 +292,5 @@ def faktor_satirlari(sonuc):
 
 
 def faktor_csv_metni(sonuc):
-    return _csv(faktor_satirlari(sonuc))
+    from cekirdek.guc_tablo import satirlar_csv
+    return satirlar_csv(faktor_satirlari(sonuc))

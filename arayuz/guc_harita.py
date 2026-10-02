@@ -26,6 +26,7 @@ from cekirdek import altigen, sema, guc as _guc
 from cekirdek.ceviri import _, _n
 from cekirdek.gunluk import kaydedici
 from arayuz import guc_harita_kor as _kor, tema
+from arayuz.guc_harita_tablo import PinTablosu
 
 _log = kaydedici(__name__)
 
@@ -80,6 +81,13 @@ class GucHaritaWidget(QtWidgets.QWidget):
                               "gösterilir; bağıl güç yine bütün yakıt çubuklarına göredir."))
         self.tur_etiket = QtWidgets.QLabel(_("Çubuk türü:"))
         self._ipucu_ogeleri = []      # [(x, y, yaricap, metin)] fare ipucu icin
+        # K3: tikla -> pin. [(x, y, yaricap, anahtar)] cizilen her cubuk (demet
+        # gorunumunde demetin tepe cubugu); secili pin haritada kare isaretle.
+        self._tik_ogeleri = []
+        self.secili_pin = None
+        self.secim_isareti = None
+        self._ana_eksen = None
+        self.tablo = []
 
         self.gorunum.currentIndexChanged.connect(self._ciz)
         self.dilim.valueChanged.connect(self._ciz)
@@ -114,6 +122,9 @@ class GucHaritaWidget(QtWidgets.QWidget):
         self.tuval.setMinimumHeight(380)
         self.arac = NavigationToolbar2QT(self.tuval, self)
         self.tuval.mpl_connect("motion_notify_event", self._fare_hareketi)
+        self.tuval.mpl_connect("button_press_event", self._tiklandi)
+        self.pin_tablosu = PinTablosu(dosya_adi="pin_gucu")
+        self.pin_tablosu.pin_secildi.connect(self._pin_secildi)
 
         # Belirsizlik notu kor olceginde haritanin hemen altinda da gorunur
         self.belirsizlik = QtWidgets.QLabel(_(
@@ -144,6 +155,8 @@ class GucHaritaWidget(QtWidgets.QWidget):
         duzen.addWidget(self.tuval, 1)
         duzen.addWidget(self.belirsizlik)
         duzen.addWidget(self.gelismis)
+        duzen.addWidget(baslik(_("Pin gücü tablosu")))
+        duzen.addWidget(self.pin_tablosu)
         self._tam_kor_denetimleri(False)
         self._bos(_("Henüz koşu yapılmadı"))
 
@@ -164,11 +177,12 @@ class GucHaritaWidget(QtWidgets.QWidget):
         self.hedef_payi_hata = g.get("hedef_payi_hata")
         self.kategori = (spec or {}).get("kategori")
         self.mutlak = None
+        yukseklik = _aktif_yukseklik(spec) if (self.faktorler and spec) else None
         if self.faktorler and spec:
             sg = spec.get("guc_dagilimi") or {}
-            self.mutlak = _guc.mutlak_guc(self.faktorler, sg.get("toplam_guc"),
-                                          _aktif_yukseklik(spec),
+            self.mutlak = _guc.mutlak_guc(self.faktorler, sg.get("toplam_guc"), yukseklik,
                                           hedef_payi=g.get("hedef_payi"))
+        self._tablo_kur(spec, yukseklik)
         if self.faktorler:
             n = self.faktorler["eksenel_dilim"]
             self.dilim.setMaximum(max(n, 1))
@@ -183,6 +197,18 @@ class GucHaritaWidget(QtWidgets.QWidget):
         self._tur_secicisini_doldur()
         self._ozet_yaz()
         self._ciz()
+
+    def _tablo_kur(self, spec, yukseklik):
+        """Pin tablosu haritanin AYNI degerlerinden (cekirdek/guc_tablo)."""
+        from cekirdek import guc_tablo
+        self.secili_pin = None
+        try:
+            self.tablo = guc_tablo.pin_tablosu(self.dagilim, self.faktorler, self.mutlak,
+                                               yukseklik)
+        except Exception:
+            _log.exception("pin gücü tablosu kurulamadı")
+            self.tablo = []
+        self.pin_tablosu.ayarla(self.tablo, self.dagilim, spec)
 
     def _tam_kor_denetimleri(self, tam_kor):
         """Olcek anahtari ve belirsizlik etiketi yalnizca tam korda gorunur;
@@ -215,6 +241,7 @@ class GucHaritaWidget(QtWidgets.QWidget):
 
     def _bos(self, metin):
         self._ipucu_ogeleri, self._ipucu_dizi = [], None
+        self._tik_ogeleri, self._ana_eksen, self.secim_isareti = [], None, None
         self.figur.clear()
         eks = self.figur.add_subplot(111)
         eks.set_axis_off()
@@ -285,6 +312,9 @@ class GucHaritaWidget(QtWidgets.QWidget):
             eks_p = None
 
         self._ipucu_ogeleri, self._ipucu_dizi = [], None
+        self._tik_ogeleri, self._ana_eksen, self.secim_isareti = [], eks, None
+        dilim_gorunumu = uc_boyut and self.gorunum.currentData() == "dilim"
+        self.pin_tablosu.dilim_ayarla(self.dilim.value() - 1 if dilim_gorunumu else None)
         if f.get("tam_kor"):
             self._ciz_kor(eks, veri, alt_baslik)
         else:
@@ -308,6 +338,7 @@ class GucHaritaWidget(QtWidgets.QWidget):
             eks_p.tick_params(labelsize=7)
             eks_p.grid(alpha=0.3)
             eks_p.set_title(_("Eksenel profil"), fontsize=9)
+        self._secimi_ciz()
         self.tuval.draw_idle()
 
     def _renk_cubugu(self, eslenebilir, eks):
@@ -331,6 +362,7 @@ class GucHaritaWidget(QtWidgets.QWidget):
         izgara = np.full((ny, nx), np.nan)
         for (x, y), v in veri.items():
             izgara[y, x] = v
+            self._tik_ogeleri.append((x + 1.0, y + 1.0, 0.5, (x, y)))
         alt, ust = self._renk_olcegi(veri)
         # Eksenler 1'den numarali (x soldan, y alttan): hucre (x, y) -> (x+1, y+1)
         im = eks.imshow(izgara, origin="lower", cmap="inferno",
@@ -364,6 +396,7 @@ class GucHaritaWidget(QtWidgets.QWidget):
             if anahtar not in konum:
                 continue
             x, y = konum[anahtar]
+            self._tik_ogeleri.append((x, y, yaricap, anahtar))
             eks.add_patch(RegularPolygon(
                 (x, y), numVertices=6, radius=yaricap,
                 orientation=math.radians(kose_aci - 30.0),
@@ -485,6 +518,8 @@ class GucHaritaWidget(QtWidgets.QWidget):
                     tepe[0], tepe[1], _guc.konum_metni(kayit["tepe_cubuk"], None,
                                                       self.faktorler["kafes_turleri"]))
             self._ipucu_ogeleri.append((merkez[0], merkez[1], yaricap, metin))
+            if kayit.get("tepe_cubuk") is not None:
+                self._tik_ogeleri.append((merkez[0], merkez[1], yaricap, kayit["tepe_cubuk"]))
         return yamalar, renkler
 
     def _cubuk_yamasi(self, anahtar, **stil):
@@ -502,6 +537,7 @@ class GucHaritaWidget(QtWidgets.QWidget):
             metin = "%s\n%.4f ± %.4f" % (
                 _guc.konum_metni(a, None, dag["kafes_turleri"]), v, sigma[a])
             self._ipucu_ogeleri.append((merkez[0], merkez[1], yaricap, metin))
+            self._tik_ogeleri.append((merkez[0], merkez[1], yaricap, a))
         return yamalar, renkler
 
     def _kesikleri_isaretle(self, eks, demet_modu):
@@ -579,3 +615,51 @@ class GucHaritaWidget(QtWidgets.QWidget):
             self, _("Güç haritasını kaydet"), "guc_haritasi.png", "PNG (*.png)")
         if yol:
             self.figur.savefig(yol, dpi=150, bbox_inches="tight")
+
+    # ==================================================================
+    # K3: haritada tikla -> pin; tablodan secim -> haritada isaret
+    # ==================================================================
+    def _tiklandi(self, olay):
+        if olay.inaxes is not self._ana_eksen or olay.xdata is None:
+            return
+        if getattr(self.arac, "mode", ""):
+            return                      # yakinlastirma/kaydirma kipinde tiklama secim degil
+        self.haritada_tikla(olay.xdata, olay.ydata)
+
+    def haritada_tikla(self, x, y):
+        """(x, y) haritanin veri koordinati. Bir cubuga dustuyse onu secer
+        (tablo ve ayrinti satiri izler). DONER secilen anahtar ya da None."""
+        import numpy as np
+        if not self._tik_ogeleri:
+            return None
+        dizi = np.asarray([o[:3] for o in self._tik_ogeleri], dtype=float)
+        uzak = np.hypot(dizi[:, 0] - x, dizi[:, 1] - y)
+        i = int(np.argmin(uzak))
+        if uzak[i] > dizi[i, 2] * 1.05:
+            return None
+        anahtar = self._tik_ogeleri[i][3]
+        if not self.pin_tablosu.sec(anahtar):
+            self._pin_secildi(anahtar)      # tabloda yok (tur suzgeci): yine isaretle
+        return anahtar
+
+    def _pin_secildi(self, anahtar):
+        self.secili_pin = anahtar
+        self._secimi_ciz()
+        self.tuval.draw_idle()
+
+    def _secimi_ciz(self):
+        """Secili pin kare isaretle (sicak pin halkasindan ayri renk)."""
+        if self.secim_isareti is not None:
+            try:
+                self.secim_isareti.remove()
+            except (ValueError, NotImplementedError):
+                _log.debug("eski seçim işareti kaldırılamadı (eksen temizlenmiş)")
+            self.secim_isareti = None
+        if self.secili_pin is None or self._ana_eksen is None:
+            return
+        for x, y, r, a in self._tik_ogeleri:
+            if a == self.secili_pin:
+                self.secim_isareti = self._ana_eksen.plot(
+                    x, y, marker="s", ms=12, mfc="none", mec=tema.renk("bilgi"), mew=2.0,
+                    zorder=6)[0]
+                return
