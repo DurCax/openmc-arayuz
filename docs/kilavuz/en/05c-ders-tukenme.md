@@ -40,7 +40,7 @@ concentration changes during depletion. Fields:
 |---|---|
 | k during cooling | "—" (no transport); burnup constant |
 | Decay heat | falls after 1 day of burnup: 0.53 → 0.095 → 0.014 W (1 cm pin; days 1, 2, 12) |
-| CE/CM − CE/LI | differences up to a few hundred pcm, 1σ about 500 pcm (no threshold) |
+| CE/CM − CE/LI | k difference ~1100 pcm (combined 1σ ≈ 1000 pcm); U-235 relative difference after 6 days 1.3e-5 (no threshold) |
 | Fast mode (MicroXS) − full | U-235 relative difference ~3e-6 (2 days) |
 | Critical boron (fresh pin) | ~3300 ppm; step k within \|k − 1\| ≤ 0.005 + 3σ |
 

@@ -38,7 +38,7 @@ bor derişiminin nasıl değiştiğini izlemek. Alanlar:
 |---|---|
 | Soğumada k | "—" (transport yok); yanma sabit |
 | Bozunma ısısı | 1 gün yanmadan sonra azalır: 0.53 → 0.095 → 0.014 W (1 cm pin; 1, 2, 12. gün) |
-| CE/CM − CE/LI | birkaç yüz pcm'e kadar fark, 1σ ≈ 500 pcm düzeyinde (eşik yok) |
+| CE/CM − CE/LI | k farkı ~1100 pcm (birleşik 1σ ≈ 1000 pcm); 6 günde U-235 bağıl farkı 1.3e-5 (eşik yok) |
 | Hızlı kip (MicroXS) − tam | U-235 bağıl farkı ~3e-6 (2 gün) |
 | Kritik bor (taze pin) | ~3300 ppm; adım k'si \|k − 1\| ≤ 0.005 + 3σ |
 
