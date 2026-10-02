@@ -104,6 +104,70 @@ def test_kapsam_secenekleri_ve_demet_alt_modeli():
     kontrol("tum model: ayni spec", mgxs_is.kapsam_spec(kor, None) is kor)
 
 
+def _mg_kur(bolge, gecici):
+    from cekirdek import kurucu, mg_model, mgxs_uret as mu
+    spec = mu.ile(_pin(), mu.MgxsAyar(True, bolge, "CASMO-2"))
+    _m, b = kurucu.kur(spec)
+    adlar = mu.xsdata_adlari(b["mgxs"])
+    h5 = os.path.join(gecici, "mgxs.h5")
+    open(h5, "wb").close()                  # icerigi model kurulumunda okunmaz
+    ozet = {"ayar": {"bolge": bolge}, "adlar": {str(k): v for k, v in adlar.items()}}
+    return spec, ozet, h5, adlar, mg_model
+
+
+def test_mg_modeli_kosusuz():
+    print("\n[Y8-I5] MG model: makroskopik malzemeler, tally yok, MG kipi; eksik ad ValueError")
+    import tempfile
+    with tempfile.TemporaryDirectory() as d:
+        # Arrange
+        spec, ozet, h5, adlar, mg_model = _mg_kur("malzeme", d)
+        # Act
+        m = mg_model.mg_modeli(spec, ozet, h5)
+        # Assert
+        makro = sorted(mat._macroscopic for mat in m.materials)
+        kontrol("MG kipi", m.settings.energy_mode == "multi-group")
+        kontrol("tally yok", len(m.tallies) == 0)
+        kontrol("her malzeme kendi xsdata'si", makro == sorted(adlar.values()), "-> %r" % makro)
+        kontrol("kutuphane yolu mutlak", str(m.materials.cross_sections) == os.path.abspath(h5))
+        eksik = dict(ozet, adlar={})
+        try:
+            mg_model.mg_modeli(spec, eksik, h5)
+            kontrol("eksik ad ValueError", False)
+        except ValueError:
+            kontrol("eksik ad ValueError", True)
+        try:
+            mg_model.mg_modeli(spec, ozet, os.path.join(d, "yok.h5"))
+            kontrol("kutuphane yok FileNotFoundError", False)
+        except FileNotFoundError:
+            kontrol("kutuphane yok FileNotFoundError", True)
+
+
+def test_mg_modeli_hucre_demet_ve_random_ray():
+    print("\n[Y8-I6] hucre: hucre basina yeni malzeme; demet: tek xsdata; RR ayarlari yazilir")
+    import tempfile
+    from cekirdek import random_ray as rr
+    with tempfile.TemporaryDirectory() as d:
+        # Arrange / Act
+        spec, ozet, h5, adlar, mg_model = _mg_kur("hucre", d)
+        mh = mg_model.mg_modeli(spec, ozet, h5)
+        spec_d, ozet_d, h5_d, adlar_d, _mm = _mg_kur("demet", d)
+        md = mg_model.mg_modeli(spec_d, ozet_d, h5_d)
+        a = rr.ayar_degistir(rr.varsayilan(md), bolme=4, kaynak_sekli="linear")
+        r = rr.rr_modeli(md, a)
+        # Assert
+        hucre_adlari = sorted(m._macroscopic for m in mh.materials)
+        kontrol("hucre adlari", hucre_adlari == sorted(adlar.values()), "-> %r" % hucre_adlari)
+        kontrol("demet tek xsdata", {m._macroscopic for m in md.materials} == set(adlar_d.values()))
+        anahtar = set(r.settings.random_ray)
+        kontrol("RR anahtarlari", {"distance_inactive", "distance_active", "ray_source",
+                                    "source_shape", "source_region_meshes"} <= anahtar, "-> %r" % anahtar)
+        kontrol("RR: entropi mesh'i yok, kaynak bos", r.settings.entropy_mesh is None
+                and len(r.settings.source) == 0)
+        kontrol("RR girdisi degismedi", not md.settings.random_ray)
+        kontrol("isin/cevrim", (r.settings.particles, r.settings.batches, r.settings.inactive)
+                == (a.isin, a.cevrim, a.pasif))
+
+
 # ---------------------------------------------------------------------------
 # YAVAS
 # ---------------------------------------------------------------------------
@@ -186,5 +250,6 @@ def test_ince_grup_mg_ve_random_ray(gecici):
 
 
 HIZLI = [test_karsilastirma_tablosu, test_random_ray_ayar_dogrulama, test_rr_varsayilan_ve_mg_sarti,
-         test_kapsam_secenekleri_ve_demet_alt_modeli]
+         test_kapsam_secenekleri_ve_demet_alt_modeli, test_mg_modeli_kosusuz,
+         test_mg_modeli_hucre_demet_ve_random_ray]
 YAVAS = [test_iki_grup_homojen_k_inf, test_ince_grup_mg_ve_random_ray]
