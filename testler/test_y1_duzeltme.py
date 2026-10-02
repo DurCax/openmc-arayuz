@@ -306,6 +306,20 @@ def test_vtk_skorsuz_cok_nuklid_atomik():
         kontrol("olmayan dizin: hesaptan once acik hata", isinstance(hata, (OSError, ValueError)))
 
 
+def test_meshsiz_altin_betik():
+    print("\n[Y1-D14] mesh'siz orneklerde betik Y1 oncesiyle (ana) birebir ayni")
+    import re
+    from cekirdek import kod_uret
+    for ad in ("pwr_pinhucre", "pwr_17x17", "pwr_3b", "godiva_kriter"):
+        metin = kod_uret.uret(_spec(ad + ".json"), "model.py")
+        metin = re.sub(r"tarafından üretilmiştir \(\d{4}-\d{2}-\d{2}\)",
+                       "tarafından üretilmiştir (TARIH)", metin)
+        with open(os.path.join(KOK, "testler", "veri", "y1_altin_%s.py.txt" % ad),
+                  encoding="utf-8") as f:
+            altin = f.read()
+        kontrol("%s: altin betikle ayni" % ad, metin == altin)
+
+
 def test_yavas_genel_isi_ve_kapsama(gecici):
     print("\n[Y1-D13] YAVAS: genel H; silindirik ag koseleri kacirir ama S genel H'den dogru")
     from cekirdek import kurucu, mesh_tally as mt
@@ -336,5 +350,5 @@ HIZLI = [test_2b_mutlak_alan_ve_cizgisel_guc, test_2b_dar_dilim_mutlak_reddedili
          test_isi_payi_secimi, test_v2_otomatik_2b_proje_betik_farki,
          test_z_sinirli_geometride_kirpma, test_bozuk_v2_filtre_kullaniciya_mesaj,
          test_bagil_hacim_agirlikli, test_dizi_salt_okunur, test_vtk_bagimsiz_beklenen_dosya,
-         test_vtk_skorsuz_cok_nuklid_atomik]
+         test_vtk_skorsuz_cok_nuklid_atomik, test_meshsiz_altin_betik]
 YAVAS = [test_yavas_genel_isi_ve_kapsama]
