@@ -1,0 +1,129 @@
+# -*- coding: utf-8 -*-
+"""
+==============================================================================
+ Godiva kritik küresi (HEU-MET-FAST-001)
+==============================================================================
+ ICSBEP kriteri HEU-MET-FAST-001 (Godiva): çıplak, yüksek zenginlikli uranyum metal küresi. Yayımlanmış kriter değeri k_eff = 1.0000 ± 0.0010.
+ 
+ Bu örnek aracın bilimsel doğrulamasıdır: regresyon çıpası 'kod kendi kendisiyle tutarlı' der, bu örnek 'sonuç gerçekten doğru' der. Malzeme bileşimi, geometri, tesir kesiti kütüphanesi ve taşıma zincirinin tamamı bağımsız bir ölçüme karşı sınanır.
+ 
+ Atom yoğunlukları [atom/b-cm]: U234 4.91840e-04, U235 4.49940e-02, U238 2.49840e-03
+ Küre yarıçapı: 8.7407 cm, çıplak (Vakum sınır), 293.6 K.
+
+ Bu betik openmc_arayuz tarafından üretilmiştir (TARIH).
+ Kaynak model dosyası: model.py
+
+ Betik tek başına çalışır; openmc_arayuz'a bağımlı değildir.
+ Elle düzenlenebilir, ancak arayüze geri yüklenemez.
+
+ Kullanım
+   python3 model.py
+==============================================================================
+"""
+
+import openmc
+
+# ==========================================================================
+# 1. MALZEMELER
+# ==========================================================================
+
+m_heu = openmc.Material(name='HEU metal (Godiva)')
+m_heu.add_nuclide('U234', 0.00049184, percent_type='ao')
+m_heu.add_nuclide('U235', 0.044994, percent_type='ao')
+m_heu.add_nuclide('U238', 0.0024984, percent_type='ao')
+m_heu.set_density('atom/b-cm', 0.04798424)
+m_heu.temperature = 293.6
+
+malzemeler = openmc.Materials([m_heu])
+
+# ==========================================================================
+# 2. GEOMETRİ
+# ==========================================================================
+
+# Kurucu ile aynı gezintiden üretildi (cekirdek/geometri/kurulum.py).
+_s1 = openmc.Sphere(r=8.7407, boundary_type='vacuum')
+_h1 = openmc.Cell(fill=m_heu, region=-_s1)
+kok = openmc.Universe(cells=[_h1])
+
+geometri = openmc.Geometry(kok)
+
+# ==========================================================================
+# 3. AYARLAR
+# ==========================================================================
+
+ayar = openmc.Settings()
+ayar.run_mode  = 'eigenvalue'
+ayar.particles = 20000      # çevrim başına parçacık
+ayar.batches   = 160        # toplam çevrim
+ayar.inactive  = 40         # pasif çevrim
+ayar.seed      = 1
+ayar.temperature = {'method': 'interpolation'}
+
+_uzay = openmc.stats.Point((0.0, 0.0, 0.0))
+_kisit = None
+_enerji = openmc.stats.Watt(a=988000.0, b=2.249e-06)
+_aci    = openmc.stats.Isotropic()
+ayar.source = openmc.IndependentSource(space=_uzay,
+                                       angle=_aci,
+                                       energy=_enerji,
+                                       strength=1.0,
+                                       particle='neutron',
+                                       constraints=_kisit)
+
+# Shannon entropisi ağı — kaynak yakınsamasını ölçer.
+# Entropi pasif çevrimler boyunca kayıyorsa pasif çevrim
+# sayısı yetersizdir ve k-eff yanlı çıkar.
+_ent_mesh = openmc.RegularMesh()
+_ent_mesh.dimension = [6, 6, 6]
+_ent_mesh.lower_left  = (-8.7407, -8.7407, -10000000000.0)
+_ent_mesh.upper_right = (8.7407, 8.7407, 10000000000.0)
+ayar.entropy_mesh = _ent_mesh
+
+# ==========================================================================
+# 4. TALLY'LER
+# ==========================================================================
+
+tally_1 = openmc.Tally(name='reaksiyonlar')
+tally_1.scores = ['fission', 'absorption', 'nu-fission']
+
+tallyler = openmc.Tallies([tally_1])
+
+# ==========================================================================
+# 5. MODEL VE ÇALIŞTIRMA
+# ==========================================================================
+
+model = openmc.Model(geometry=geometri, materials=malzemeler,
+                     settings=ayar, tallies=tallyler)
+
+# Kinetik parametreler (IFP): etkin gecikmiş nötron kesri (beta_eff)
+# ve ortalama nötron nesil süresi. Koşu süresini biraz uzatır.
+model.add_kinetics_parameters_tallies(num_groups=6)
+# λ_i (öncül bozunma sabitleri): decay-rate / delayed-nu-fission, grup başına
+_kin_grup = openmc.Tally(name='IFP gruplar lambda')
+_kin_grup.filters = [openmc.DelayedGroupFilter(list(range(1, 7)))]
+_kin_grup.scores = ['delayed-nu-fission', 'decay-rate']
+# Grup kapsami denetimi: filtresiz delayed-nu-fission (kutuphanede daha cok grup?)
+_kin_toplam = openmc.Tally(name='IFP gruplar toplam')
+_kin_toplam.scores = ['delayed-nu-fission']
+model.tallies.extend([_kin_grup, _kin_toplam])
+model.settings.ifp_n_generation = 10
+
+# Model.plot() SVG renk adı ya da (R,G,B) demeti ister — hex dize kabul etmez
+renkler = {
+    m_heu: (222, 93, 40),
+}
+
+if __name__ == '__main__':
+    import matplotlib.pyplot as plt
+
+    # --- Önce çiz, sonra çalıştır ---
+    # Geometri doğru görünmeden koşu başlatmak zaman kaybıdır.
+    for _eksen in ('xy',):
+        _ax = model.plot(basis=_eksen, color_by='material',
+                         colors=renkler, pixels=(600, 600))
+        _ax.get_figure().savefig('geometri_%s.png' % _eksen, dpi=110)
+        print('çizildi: geometri_%s.png' % _eksen)
+
+    # Çizimler doğruysa aşağıdaki satırın yorumunu kaldırın.
+    # sp = model.run(threads=24)
+    # print(openmc.StatePoint(sp).keff)

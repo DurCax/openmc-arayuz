@@ -46,7 +46,8 @@ class YerlesimMixin(object):
         sagda guc dagilimi ve tally'ler."""
         sol = self._sutun((self._hesap_karti(), self._kaynak_karti(),
                            self._gelismis_karti()))
-        sag = self._sutun((self._guc_karti(), self._spektrum_karti(), self._tally_karti()))
+        sag = self._sutun((self._guc_karti(), self._spektrum_karti(), self._yerel_k_karti(),
+                           self._tally_karti()))
         bolucu = QtWidgets.QSplitter(QtCore.Qt.Horizontal)
         bolucu.addWidget(sol)
         bolucu.addWidget(sag)
@@ -183,19 +184,30 @@ class YerlesimMixin(object):
         self.spektrum_karti.degisti.connect(self.bildir)
         return self.spektrum_karti
 
+    def _yerel_k_karti(self):
+        """K4: yerel k haritasi karti (arayuz/ayar/yerel_k_karti.py). Tally
+        listesi degisir: liste tazelenir, sonra ana pencereye bildirilir."""
+        from arayuz.ayar.yerel_k_karti import YerelKAyarKarti
+        self.yerel_k_karti = YerelKAyarKarti()
+        self.yerel_k_karti.degisti.connect(lambda: (self._tallyleri_doldur(), self.bildir()))
+        return self.yerel_k_karti
+
     def _tally_formu(self):
         t_form = QtWidgets.QFormLayout()
         self._t_form = t_form
+        self._mesh_alanlari_kur()           # v3 Y1 (arayuz/ayar/mesh_formu.py)
         t_form.addRow(_("Ad:"), self.t_ad)
         t_form.addRow(_("Ne ölçülsün:"), self.t_set)
         t_form.addRow("", self.t_set_ozet)
         t_form.addRow(_("Skorlar:"), self.t_skor)
         t_form.addRow(self.t_enerji_var)
+        self._enerji_satiri_ekle(t_form)
         t_form.addRow(_("Grup sınırları [eV]:"), self.t_enerji)
         t_form.addRow(self.t_mesh_var)
         self.mesh_satiri = self._uclu((("nx", self.t_mesh_nx), ("ny", self.t_mesh_ny),
                                        ("nz", self.t_mesh_nz)))
         t_form.addRow(_("Ağ bölmeleri:"), self.mesh_satiri)
+        self._mesh_satirlari_ekle(t_form)
         t_form.addRow(self.t_diger)
         self.tally_duzenleyici = self._sar(t_form)
 

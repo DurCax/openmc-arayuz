@@ -5,7 +5,6 @@
 
 from cekirdek import sema
 from cekirdek.kod_uret.ad import _ad, _f, _bolum, _mat_ifade  # noqa: F401
-from cekirdek.geometri.yapici import yorum_metni
 
 
 def _guc_dagilimi(spec, satirlar, uretilen, gx, gy):
@@ -13,6 +12,7 @@ def _guc_dagilimi(spec, satirlar, uretilen, gx, gy):
     g = spec.get("guc_dagilimi") or {}
     if not g.get("var"):
         return []
+    from cekirdek.geometri.yapici import yorum_metni   # tembel: openmc (H1b)
     hedefler, eksik = _guc_hedefleri(spec, uretilen)
     for cubuk_ad in eksik:
         satirlar.append("")
@@ -134,21 +134,19 @@ def _tallyler(spec, satirlar, ek_tallyler=None, on_satirlar=None, sinir_kutu=Non
                 filtre_ifadeleri.append("openmc.EnergyFilter(%r)" % list(f["gruplar"]))
             elif f["tur"] == "mesh":
                 mv = "%s_mesh_%d" % (v, j)
-                # kurucu.py ile AYNI fonksiyon: otomatik sinirlar modelin sinir
-                # kutusundan ve kor yuksekliginden turetilir.
-                from cekirdek import kurucu as _kur
-                alt, ust = _kur.tally_mesh_sinirlari(spec, f, sinir_kutu)
-                if f.get("otomatik"):
-                    satirlar.append("# mesh sınırları modelin sınır kutusundan türetildi")
-                satirlar.append("%s = openmc.RegularMesh()" % mv)
-                satirlar.append("%s.dimension  = %r" % (mv, list(f["boyut"])))
-                satirlar.append("%s.lower_left = %r" % (mv, list(alt)))
-                satirlar.append("%s.upper_right = %r" % (mv, list(ust)))
+                # v3 Y1: kurucu ile AYNI tanim ve z kirpmasi (cekirdek/mesh_tally/)
+                from cekirdek import mesh_tally as _mt
+                satirlar.extend(_mt.betik_filtresi(spec, f, sinir_kutu, mv,
+                                                   _mt.model_z_araligi(spec), satirlar))
                 filtre_ifadeleri.append("openmc.MeshFilter(%s)" % mv)
             elif f["tur"] == "malzeme":
                 filtre_ifadeleri.append("openmc.MaterialFilter([%s])"
                                         % ", ".join(_ad(a) for a in f["adlar"]))
         if filtre_ifadeleri:
             satirlar.append("%s.filters = [%s]" % (v, ", ".join(filtre_ifadeleri)))
+    from cekirdek import mesh_tally as _mt          # v3 Y1: genel isinma (kurucu ile ayni)
+    genel_satir, genel = _mt.genel_isi_betik(spec)
+    satirlar.extend(genel_satir)
+    adlar += [genel] if genel else []
     satirlar.append("")
     satirlar.append("tallyler = openmc.Tallies([%s])" % ", ".join(adlar + ek_tallyler))

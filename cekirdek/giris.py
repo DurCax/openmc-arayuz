@@ -39,6 +39,7 @@ UYGUNLUK_KOMUTU = "uygunluk"
 ALT_SECENEGI = "--alt"
 ALT_TUKENME = "tukenme"
 ALT_CIZIM = "cizim"
+ALT_YOKLAMA = "yoklama"          # H1b: nokta yoklamasi iscisi (geometri/yoklama_arka.py)
 # -P (Python >= 3.11): `-m` calisma dizinini sys.path'in basina KOYMAZ; aksi halde
 # cwd'deki sahte bir `cekirdek/` paketi gercegin yerine yuklenirdi (modul kacirma).
 # Kaynak agacinda paket koku PYTHONPATH ile gelir (alt_surec_pythonpath).
@@ -248,7 +249,13 @@ def _cizim_alt_sureci(argv):
     return cizim_sureci.ana(argv)
 
 
-_ALT_SURECLER = {ALT_TUKENME: _tukenme_alt_sureci, ALT_CIZIM: _cizim_alt_sureci}
+def _yoklama_alt_sureci(argv):
+    from cekirdek.geometri import yoklama_arka
+    return yoklama_arka.ana(argv)
+
+
+_ALT_SURECLER = {ALT_TUKENME: _tukenme_alt_sureci, ALT_CIZIM: _cizim_alt_sureci,
+                 ALT_YOKLAMA: _yoklama_alt_sureci}
 
 
 def alt_surec_komutu(ad, argumanlar, python=None):

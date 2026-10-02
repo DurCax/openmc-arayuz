@@ -109,6 +109,9 @@ class MenulerMixin(object):
         self.e_is_akisi = self._eylem(
             m_araclar, _("İş akışı…"), self._is_akisi_ac, None,
             _("Koşu kuyruğu, koşu geçmişi ve karşılaştırma, SLURM betiği (Y10)"))
+        self.e_demet_kinf = self._eylem(
+            m_araclar, _("Demet k∞ sihirbazı…"), self._demet_kinf_ac, None,
+            _("Her demet türü için yansıtıcı sınırlı tek demet k∞ koşusu (K4)"))
         m_yardim = self.menuBar().addMenu(_("&Yardım"))
         m_yardim.setToolTipsVisible(True)
         self.e_kilavuz = self._eylem(m_yardim, _("Kullanım kılavuzu"), self.kilavuzu_ac, "F1",
@@ -249,6 +252,11 @@ class MenulerMixin(object):
         """Araclar -> Is akisi: tekil pencere, gecerli modelle (Y10)."""
         from arayuz.kuyruk import pencere as is_akisi
         is_akisi.ac(self, self.spec)
+
+    def _demet_kinf_ac(self) -> None:
+        """Araclar -> Demet k-sonsuz sihirbazi: tekil pencere, gecerli modelle (K4)."""
+        from arayuz.analiz import demet_kinf
+        demet_kinf.ac(self, self.spec, self.proje_yolu)
 
     def _eylem(self, menu, ad, islev, kisayol=None, ipucu=None):
         e = QtGui.QAction(ad, self)

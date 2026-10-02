@@ -32,7 +32,7 @@ import subprocess
 import sys
 import time
 
-from cekirdek import sema, kurucu, dogrula
+from cekirdek import sema, dogrula
 from cekirdek import kapsul as _kapsul
 from cekirdek import yollar as _yollar
 from cekirdek import spektrum as _spektrum
@@ -245,6 +245,7 @@ def xml_yaz(spec, dizin, is_parcacigi=None):
     """Modeli kurar ve model.xml'i kosu dizinine yazar. DONER (model, bilgi, yol)"""
     # Kosu icin DAIMA taze model -- onbellekteki nesne paylasilir, uzerinde
     # calisma dizinine bagli islemler yapilmamalidir (bkz. onbellek.py).
+    from cekirdek import kurucu     # tembel: openmc (H1b)
     model, bilgi = kurucu.kur(spec)
     yol = os.path.join(dizin, "model.xml")
     model.export_to_model_xml(yol)
@@ -371,6 +372,13 @@ def _birim(skor, sabit, kuvvet):
     return "1/s" if mutlak else _("/ kaynak nötronu")
 
 
+def _tam_tablo(ad, df, pd):
+    """Tanimadigimiz filtreli tally'nin ham tablosu (satir siniri 60)."""
+    with pd.option_context("display.max_columns", None, "display.width", 200,
+                           "display.max_rows", 60):
+        return "tally: %s\n%s" % (ad, df.to_string())
+
+
 def tally_metni(ad, df, malzeme_adlari=None, sabit=False, kuvvet=1.0):
     """
     Tally DataFrame'ini okunur metin tablosuna cevirir: malzeme kimligi
@@ -384,6 +392,10 @@ def tally_metni(ad, df, malzeme_adlari=None, sabit=False, kuvvet=1.0):
         return "tally: %s\n%s" % (ad, df)
     if not isinstance(df, pd.DataFrame):
         return "tally: %s\n%s" % (ad, df)
+    if isinstance(df.columns, pd.MultiIndex):
+        # Mesh filtreli tally (sutunlar ("mesh 1", "x") ...): satir okuyucusu
+        # r["energy low [eV]"] Series doner; tam tablo basilir (v3 Y1 bulgusu).
+        return _tam_tablo(ad, df, pd)
     adlar = malzeme_adlari or {}
     satirlar = []
     for _sira, r in df.iterrows():
@@ -404,9 +416,7 @@ def tally_metni(ad, df, malzeme_adlari=None, sabit=False, kuvvet=1.0):
         "material", "energy low [eV]", "energy high [eV]", "nuclide", "score", "mean", "std. dev.")]
     if ek_sutun or not satirlar:
         # tanimadigimiz filtre (mesh vb.): tam tabloyu kirpmadan bas
-        with pd.option_context("display.max_columns", None, "display.width", 200,
-                               "display.max_rows", 60):
-            return "tally: %s\n%s" % (ad, df.to_string())
+        return _tam_tablo(ad, df, pd)
     genislik = [max(len(s[i]) for s in satirlar) for i in range(5)]
     baslik = (_("Bölge / enerji"), _("Ölçülen"), _("Değer"), _("Bağıl hata"), _("Birim"))
     genislik = [max(g, len(b)) for g, b in zip(genislik, baslik)]
