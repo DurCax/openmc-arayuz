@@ -19,6 +19,7 @@ overwritten. Use **File › Save as…** to keep your own changes.
 | [5.8](#ders-benchmark) | Benchmark and C/E | `ornekler/godiva_kriter.json` and `kriter_*` | introductory–advanced |
 | [5.9](#ders-kritik-arama) | Critical search | `ornekler/pwr_17x17.json`, `ornekler/pwr_kontrol.json`, `ornekler/tamburlu_kor.json` | intermediate |
 | [5.10](#ders-rapor) | Report and conformity annex | any run | intermediate |
+| [5.11](#ders-malzeme-asistani) | Material assistant and my library | `ornekler/pwr_17x17.json` | introductory |
 
 **Where do the expected results come from?** Every value has a source: the `referans.olcum` field
 of the example file, [VV.md](../../VV.md), [ORNEKLER.md](../../ORNEKLER.md) or the measurement tables
@@ -667,3 +668,51 @@ lines are not a failure (unless `--siki` is given).
   evaluate the rule, for example F_ΔH with no user-defined limit.)
 - Why is the exit code of the `uygunluk` command useful in CI? (0 no error, 1 error findings,
   2 usage error, 3 a rule that could not be evaluated with `--siki`.)
+
+<a id="ders-malzeme-asistani"></a>
+## 5.11 Material assistant and my library
+
+**Example file:** `ornekler/pwr_17x17.json` · **Level:** introductory · **Estimated time:** 15 minutes
+(no Monte Carlo run)
+
+**Goal.** Build a fuel and a coolant with the assistant, compare the derived values with a hand
+calculation, see how an invalid input is stopped, and save the material to the library on this
+computer. Background: [Material assistant](04a-malzemeler.md#malzeme-asistani).
+
+**Steps.**
+
+1. Open `ornekler/pwr_17x17.json`. On the **Materials** page, click **Assistant…**.
+2. **What are you designing?** → **Fuel**. **Material type** UO₂; **U-235 weight %** 3.2;
+   **Density** "directly in g/cm³", 10.40; **O/M ratio** 2.000; **Temperature** 900 K.
+3. Read the **Derived values** panel and compare it with the hand calculation below.
+4. **Next**. If a cross section library is set, the check list shows no missing nuclides; if not,
+   the warning "missing-nuclide check skipped" appears. The suggested **Name** is `uo2_2` (the
+   example already has `uo2`). Tick **Also save to my library** and click **Finish**.
+5. Open **Assistant…** again → **Moderator / coolant** → **Light water**: 580 K, 15.5 MPa,
+   1000 ppm boron. Then lower the pressure to 5 MPa and raise the temperature to 600 K.
+6. **My library…**: the material saved in step 4 is in the list; **Add to project** adds it again
+   with a `_2` name.
+
+**Expected result** (hand calculation; `testler/test_k6_hesap.py` and `testler/test_k6_sogutucu.py`):
+
+| Value | Hand calculation | Panel |
+|---|---|---|
+| M_U (3.2%, ORNL/CSD/TM-244 vector) | 1 / Σ(w_i/M_i) = 237.9519 g/mol | — |
+| N_total = 3 · ρ N_A / (M_U + 2 M_O) | 3 · 10.40 · 0.602214 / 269.9505 = 0.069602 atom/b-cm | 6.9602e-02 |
+| N(U-235) | 0.023201 · 0.032396 = 7.5161e-04 atom/b-cm | 7.5161e-04 |
+| Heavy metal | 10.40 · 237.9519 / 269.9505 = 9.1672 gHM/cm³ | 9.1672 |
+| Water ρ(580 K, 15.5 MPa), IAPWS-IF97 | 0.71187 g/cm³ (NIST IAPWS-95: 0.711869) | 0.71187 |
+| 600 K, 5 MPa | p_s(600 K) = 12.34 MPa > 5 MPa: steam region | red error, **Next** disabled |
+
+The assistant's UO₂ has the same composition as the UO₂ of the library (U, enrichment 3.2; O 2;
+10.40 g/cm³; 900 K); with the same seed k is also the same.
+
+**What we learned / check questions.**
+
+- Why do U-234 and U-236 appear besides U-235? (Enrichment also enriches U-234; the
+  ORNL/CSD/TM-244 correlation gives U-234 = 0.0089·e and U-236 = 0.0046·e by weight.)
+- Why does the saturated-water table (the library's **Light water**) come out 2.2% lower at 580 K and
+  15.5 MPa (0.6965 g/cm³)? (At 15.5 MPa the liquid is compressed; the assistant also accounts for pressure
+  through IF97.)
+- Why is my library not connected to a network? (User decision: material data stays on this
+  computer only; the file is written atomically and is not deleted if it gets damaged.)

@@ -19,6 +19,7 @@ için **Dosya › Farklı kaydet…** kullanın.
 | [5.8](#ders-benchmark) | Benchmark ve C/E | `ornekler/godiva_kriter.json` ve `kriter_*` | giriş–ileri |
 | [5.9](#ders-kritik-arama) | Kritik arama | `ornekler/pwr_17x17.json`, `ornekler/pwr_kontrol.json`, `ornekler/tamburlu_kor.json` | orta |
 | [5.10](#ders-rapor) | Rapor ve uygunluk eki | herhangi bir koşu | orta |
+| [5.11](#ders-malzeme-asistani) | Malzeme asistanı ve kütüphanem | `ornekler/pwr_17x17.json` | giriş |
 
 **Beklenen sonuçlar nereden geliyor?** Her değer bir kaynağa dayanır: örnek dosyasının
 `referans.olcum` alanı, [VV.md](../../VV.md), [ORNEKLER.md](../../ORNEKLER.md) ya da
@@ -641,3 +642,50 @@ bir başarısızlık değildir (`--siki` verilmedikçe).
   yoktur, ör. kullanıcı sınırı girilmemiş F_ΔH.)
 - `uygunluk` komutunun çıkış kodu CI'da neden işe yarar? (0 hata yok, 1 hata var, 2 kullanım hatası,
   3 `--siki` ile değerlendirilemeyen kural.)
+
+<a id="ders-malzeme-asistani"></a>
+## 5.11 Malzeme asistanı ve kütüphanem
+
+**Örnek dosya:** `ornekler/pwr_17x17.json` · **Seviye:** giriş · **Tahmini süre:** 15 dakika
+(Monte Carlo koşusu yok)
+
+**Amaç.** Bir yakıtı ve bir soğutucuyu asistanla kurmak, türetilmiş değerleri el hesabıyla
+karşılaştırmak, geçersiz bir girdinin nasıl durdurulduğunu görmek ve malzemeyi bu bilgisayardaki
+kütüphaneye kaydetmek. Arka plan: [Malzeme asistanı](04a-malzemeler.md#malzeme-asistani).
+
+**Adımlar.**
+
+1. `ornekler/pwr_17x17.json`'u açın. **Malzemeler** sayfasında **Asistan…**.
+2. **Ne tasarlıyorsun?** → **Yakıt**. **Malzeme türü** UO₂; **U-235 ağırlıkça %** 3.2;
+   **Yoğunluk** "doğrudan g/cm³", 10.40; **O/M oranı** 2.000; **Sıcaklık** 900 K.
+3. **Türetilmiş değerler** panelini okuyun ve aşağıdaki el hesabıyla karşılaştırın.
+4. **İleri**. Doğrulama listesinde tesir kesiti kütüphanesi tanımlıysa eksik nüklid yoktur;
+   tanımlı değilse "eksik nüklid denetimi atlandı" uyarısı görünür. **Ad** `uo2_2` önerilir
+   (örnekte `uo2` var). **Kütüphaneme de kaydet**'i işaretleyip **Bitir**.
+5. Yeniden **Asistan…** → **Moderatör / soğutucu** → **Hafif su**: 580 K, 15.5 MPa, 1000 ppm bor.
+   Sonra basıncı 5 MPa'ya, sıcaklığı 600 K'e çekin.
+6. **Kütüphanem…**: 4. adımda kaydettiğiniz malzeme listededir; **Projeye ekle** onu `_2` ekli
+   bir adla yeniden ekler.
+
+**Beklenen sonuç** (el hesabı; `testler/test_k6_hesap.py` ve `testler/test_k6_sogutucu.py`):
+
+| Değer | El hesabı | Panel |
+|---|---|---|
+| M_U (3.2 %, ORNL/CSD/TM-244 vektörü) | 1 / Σ(w_i/M_i) = 237.9519 g/mol | — |
+| N_toplam = 3 · ρ N_A / (M_U + 2 M_O) | 3 · 10.40 · 0.602214 / 269.9505 = 0.069602 atom/b-cm | 6.9602e-02 |
+| N(U-235) | 0.023201 · 0.032396 = 7.5161e-04 atom/b-cm | 7.5161e-04 |
+| Ağır metal | 10.40 · 237.9519 / 269.9505 = 9.1672 gHM/cm³ | 9.1672 |
+| Su ρ(580 K, 15.5 MPa), IAPWS-IF97 | 0.71187 g/cm³ (NIST IAPWS-95: 0.711869) | 0.71187 |
+| 600 K, 5 MPa | p_s(600 K) = 12.34 MPa > 5 MPa: buhar bölgesi | kırmızı hata, **İleri** kapalı |
+
+Asistanın UO₂'si kütüphanedeki UO₂ ile aynı bileşimdir (U, zenginlik 3.2; O 2; 10.40 g/cm³;
+900 K); aynı tohumla k da aynıdır.
+
+**Ne öğrendik / kontrol soruları.**
+
+- Neden U-235 dışında U-234 ve U-236 da çıkıyor? (Zenginleştirme U-234'ü de zenginleştirir;
+  ORNL/CSD/TM-244 bağıntısı U-234 = 0.0089·e, U-236 = 0.0046·e ağırlıkça.)
+- Doymuş su tablosu (kütüphanedeki **Hafif su**) 580 K, 15.5 MPa koşulunda neden %2.2 düşük kalır (0.6965 g/cm³)?
+  (15.5 MPa'da sıvı sıkıştırılmıştır; asistan IF97 ile basıncı da hesaba katar.)
+- Kütüphanem neden ağa bağlı değil? (Kullanıcı kararı: malzeme verisi yalnız bu bilgisayarda
+  kalır; dosya atomik yazılır, bozulursa silinmez.)

@@ -166,6 +166,8 @@ def _alasim(ad, gorunen, satirlar, renk):
 
 
 def _h2o(p):
+    # Cozunmus borun yogunluga etkisi ihmal edilir: yogunluk saf suyun IF97
+    # degeridir (katalogdaki su() ile ayni yaklasim); bor yalnizca bilesime girer.
     rho = ms.su_yogunlugu(p["sicaklik"], p["basinc"])
     b10 = None if p.get("b10_yuzde") is None else p["b10_yuzde"] / _YUZDE
     if p["bor_ppm"] > 0.0:
