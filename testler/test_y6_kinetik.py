@@ -235,8 +235,65 @@ def test_adiyabatik_nordheim_fuchs():
         kontrol("sifir isi kapasitesi reddedildi", True)
 
 
+def test_sifir_beta_grubu_ve_esit_lambda():
+    print("\n[Y6-11] beta_i = 0 grubu (kaldirilabilir kutup) ve neredeyse esit lambda")
+    sifirli = kin.GrupVerisi(beta=(0.0065, 0.0), lam=(0.0767, 1.0), nesil_suresi=1e-4)
+    for rho in (0.001, -0.002):
+        kok = kin.inhour_kokleri(sifirli, rho)
+        kontrol("rho=%g: beta=0 grubu atilir, tek grupla ayni kokler" % rho,
+                _hata(kok, kin.inhour_kokleri(_BIR_GRUP, rho)) < 1e-12, "-> %s" % (kok,))
+    coz = kin.coz(sifirli, kin.Basamak(0.001), 20.0, nokta=21)
+    duz = kin.coz(_BIR_GRUP, kin.Basamak(0.001), 20.0, nokta=21)
+    kontrol("beta=0 grubu cozumu degistirmez", _hata(coz.guc, duz.guc) < 1e-7)
+    yakin = kin.GrupVerisi(beta=(0.003, 0.0035), lam=(0.0767, 0.0767 * (1 + 1e-10)),
+                           nesil_suresi=1e-4)
+    kok = kin.inhour_kokleri(yakin, 0.001)
+    kontrol("neredeyse esit lambda birlesir: 2 kok, tek grupla ayni",
+            len(kok) == 2 and _hata(kok, kin.inhour_kokleri(_BIR_GRUP, 0.001)) < 1e-8,
+            "-> %s" % (kok,))
+    try:
+        kin.inhour_rho(_BIR_GRUP, -0.0767)
+        kontrol("kutupta inhour_rho ValueError", False)
+    except ValueError:
+        kontrol("kutupta inhour_rho ValueError", True)
+
+
+def test_gecikmeli_basamak_ve_girdi_turleri():
+    print("\n[Y6-12] t0 > 0 basamak = kaydirilmis analitik; t0/nokta tur denetimi")
+    v = kin.KEEPIN_U235_TERMAL.nesil_suresi_ile(2e-5)
+    coz = kin.coz(v, kin.Basamak(0.001, t0=2), 12.0, nokta=121)
+    t = np.asarray(coz.t)
+    once = t < 2.0
+    kontrol("t < t0: P = P0", np.allclose(np.asarray(coz.guc)[once], 1.0, rtol=1e-9))
+    sonra = ~once
+    tam = kin.analitik_basamak(v, 0.001, t[sonra] - 2.0)
+    e = _hata(np.asarray(coz.guc)[sonra], tam)
+    kontrol("t >= t0: kaydirilmis matris ustel ile ayni (< 1e-6)", e < 1e-6, "-> %.2e" % e)
+    kontrol("t0 float'a zorlanir", isinstance(kin.Basamak(0.001, t0=2).t0, float))
+    for hatali in (lambda: kin.coz(v, kin.Basamak(1e-3), 1.0, nokta="abc"),
+                   lambda: kin.coz(v, kin.Basamak(1e-3), 1.0, nokta=1),
+                   lambda: kin.Basamak(1e-3, t0="x")):
+        try:
+            hatali()
+            kontrol("gecersiz tur reddedildi", False)
+        except (ValueError, TypeError):
+            kontrol("gecersiz tur reddedildi", True)
+
+
+def test_uzun_scram_bagil_dogruluk():
+    print("\n[Y6-13] uzun scram: P/P0 ~ 1e-16 duzeyinde bagil dogruluk (atol tabani)")
+    v = kin.KEEPIN_U235_TERMAL.nesil_suresi_ile(2e-5)
+    rho = -kin.dolar_dan(10.0, v.beta_toplam)
+    coz = kin.coz(v, kin.Basamak(rho), 3000.0, nokta=31)
+    tam = kin.analitik_basamak(v, rho, coz.t)
+    kontrol("son guc < 1e-14 (gercekten derin)", tam[-1] < 1e-14, "-> %.2e" % tam[-1])
+    e = _hata(coz.guc, tam)
+    kontrol("bagil hata < 1e-5 butun eksende", e < 1e-5, "-> %.2e" % e)
+
+
 HIZLI = [test_birim_donusumleri, test_grup_verisi_dogrulama, test_inhour_tek_grup_kapali_bicim,
          test_inhour_cok_grup, test_tek_grup_basamak_analitik, test_alti_grup_basamak_matris_ustel,
          test_kati_durum_ani_sicrama, test_rampa, test_ani_kritik_ve_tasma,
-         test_adiyabatik_nordheim_fuchs]
+         test_adiyabatik_nordheim_fuchs, test_sifir_beta_grubu_ve_esit_lambda,
+         test_gecikmeli_basamak_ve_girdi_turleri, test_uzun_scram_bagil_dogruluk]
 YAVAS = []

@@ -48,7 +48,13 @@ VARSAYILAN_GRUP = 6             # ENDF/B-VII.1 ve ENDF/B-VIII.0: 6 grup (JEFF-3.
 # modelin fiziksel anlami coktan bitmistir; ustel buyume float tasmasina gitmesin.
 AZAMI_GUC_ORANI = 1e10
 VARSAYILAN_NOKTA = 401
-_RTOL, _ATOL = 1e-9, 1e-12      # solve_ivp toleranslari (testlerde 1e-6 dogruluk)
+_RTOL = 1e-9                    # solve_ivp bagil tolerans (testlerde 1e-6 dogruluk)
+# Mutlak tolerans tabani: n ve c_i hep pozitiftir; taban cok kucuk tutulunca hata
+# denetimi BAGIL kalir (uzun scram'da n ~ 1e-16 da dogru). DT 0'dan basladigi icin
+# sicakliga ayri, fiziksel bir taban [K] verilir.
+_ATOL_TABAN = 1e-30
+_ATOL_SICAKLIK = 1e-9
+_ESIT_LAMBDA = 1e-9             # bagil farki bundan kucuk lambda'lar tek kutup sayilir
 _YONTEMLER = ("Radau", "BDF")
 _KOK_UST_SINIR = 1e12           # Inhour koku aramasi [1/s]; Lambda >= 1e-10 s icin yeter
 _PERIYOT_PENCERESI = 0.1        # periyot tahmini: zaman ekseninin son %10'u
@@ -57,10 +63,12 @@ _KOK_XTOL = 1e-15               # brentq mutlak tolerans, kok olcegine bagil
 _KOK_YINELEME = 500
 _EGIM_SIFIR = 1e-14             # |d ln P/dt| [1/s] bunun altindaysa periyot sonsuz
 
-# Keepin, Wimett & Zeigler (1957), Phys. Rev. 107, 1044; Keepin (1965) Tablo 4-7:
-# U-235 termal fisyon, 6 grup. Lamarsh & Baratta (2001) Tablo 7.4 ile ayni.
-# beta = 0.0065. Lambda bu hazir veride TIPIK bir LWR degeridir (2e-5 s);
-# kullanici kendi Lambda'sini girer ya da kosudan alir.
+# Keepin, Wimett & Zeigler, "Delayed neutrons from fissionable isotopes of
+# uranium, plutonium, and thorium", Phys. Rev. 107, 1044 (1957): U-235 termal
+# fisyon, 6 grup; Lamarsh & Baratta, "Introduction to Nuclear Engineering"
+# (3. bs., 2001) Tablo 7.4 ile ayni. beta = 0.0065. Lambda bu hazir veride
+# ORNEK bir degerdir (2e-5 s, LWR mertebesi); kullanici kendi Lambda'sini girer
+# ya da kosudan alir.
 _KEEPIN_BETA = (0.000215, 0.001424, 0.001274, 0.002568, 0.000748, 0.000273)
 _KEEPIN_LAMBDA = (0.0124, 0.0305, 0.111, 0.301, 1.14, 3.01)
 _TIPIK_LWR_LAMBDA = 2e-5
@@ -70,43 +78,61 @@ _TIPIK_LWR_LAMBDA = 2e-5
 # birimler
 # ============================================================================
 
-def pcm_den(pcm):
+def pcm_den(pcm: float) -> float:
     """pcm -> rho (Delta k/k)."""
     return float(pcm) * PCM
 
 
-def pcm_e(rho):
+def pcm_e(rho: float) -> float:
     """rho (Delta k/k) -> pcm."""
     return float(rho) / PCM
 
 
-def dolar_dan(dolar, beta):
+def dolar_dan(dolar: float, beta: float) -> float:
     """$ -> rho; 1 $ = beta_eff."""
     return float(dolar) * _pozitif(beta, "beta")
 
 
-def dolar_a(rho, beta):
+def dolar_a(rho: float, beta: float) -> float:
     """rho -> $."""
     return float(rho) / _pozitif(beta, "beta")
 
 
-def k_den_rho(k):
+def k_den_rho(k: float) -> float:
     """k_eff -> rho = (k - 1)/k."""
     return (float(k) - 1.0) / _pozitif(k, "k")
 
 
+def _sayi(x, ad):
+    """float(x); sayi degilse cevrilmis ValueError (bool reddedilir)."""
+    if isinstance(x, bool):
+        raise ValueError(_("%s sonlu bir sayı olmalı: %r") % (ad, x))
+    try:
+        return float(x)
+    except (TypeError, ValueError):
+        raise ValueError(_("%s sonlu bir sayı olmalı: %r") % (ad, x)) from None
+
+
 def _pozitif(x, ad):
-    x = float(x)
+    x = _sayi(x, ad)
     if not (math.isfinite(x) and x > 0):
         raise ValueError(_("%s pozitif ve sonlu olmalı: %r") % (ad, x))
     return x
 
 
 def _sonlu(x, ad):
-    x = float(x)
+    x = _sayi(x, ad)
     if not math.isfinite(x):
         raise ValueError(_("%s sonlu bir sayı olmalı: %r") % (ad, x))
     return x
+
+
+def _baslangic(t0):
+    """Baslangic zamani: sonlu, >= 0, float (ValueError)."""
+    t0 = _sonlu(t0, "t0")
+    if t0 < 0:
+        raise ValueError(_("Başlangıç zamanı negatif olamaz."))
+    return t0
 
 
 # ============================================================================
@@ -116,8 +142,8 @@ def _sonlu(x, ad):
 @dataclass(frozen=True)
 class GrupVerisi:
     """beta_i (Delta k/k), lambda_i (1/s), nesil_suresi = Lambda (s)."""
-    beta: tuple
-    lam: tuple
+    beta: tuple[float, ...]
+    lam: tuple[float, ...]
     nesil_suresi: float
     kaynak: str = ""
 
@@ -139,10 +165,10 @@ class GrupVerisi:
         object.__setattr__(self, "nesil_suresi", float(self.nesil_suresi))
 
     @property
-    def beta_toplam(self):
+    def beta_toplam(self) -> float:
         return math.fsum(self.beta)
 
-    def nesil_suresi_ile(self, nesil_suresi):
+    def nesil_suresi_ile(self, nesil_suresi: float) -> "GrupVerisi":
         """Ayni gruplar, baska Lambda (YENI nesne)."""
         return replace(self, nesil_suresi=nesil_suresi)
 
@@ -159,9 +185,8 @@ class Basamak:
     t0: float = 0.0
 
     def __post_init__(self):
-        _sonlu(self.rho, "ρ")
-        if not (math.isfinite(self.t0) and self.t0 >= 0):
-            raise ValueError(_("Başlangıç zamanı negatif olamaz."))
+        object.__setattr__(self, "rho", _sonlu(self.rho, "ρ"))
+        object.__setattr__(self, "t0", _baslangic(self.t0))
 
     def deger(self, t):
         return self.rho if t >= self.t0 else 0.0
@@ -181,10 +206,9 @@ class Rampa:
     t0: float = 0.0
 
     def __post_init__(self):
-        _sonlu(self.hiz, "ρ̇")
-        _pozitif(self.sure, _("rampa süresi"))
-        if not (math.isfinite(self.t0) and self.t0 >= 0):
-            raise ValueError(_("Başlangıç zamanı negatif olamaz."))
+        object.__setattr__(self, "hiz", _sonlu(self.hiz, "ρ̇"))
+        object.__setattr__(self, "sure", _pozitif(self.sure, _("rampa süresi")))
+        object.__setattr__(self, "t0", _baslangic(self.t0))
 
     def deger(self, t):
         return self.hiz * min(max(t - self.t0, 0.0), self.sure)
@@ -221,8 +245,8 @@ class Cozum:
     t: np.ndarray
     guc: np.ndarray
     rho: np.ndarray
-    sicaklik: object
-    uyarilar: tuple
+    sicaklik: np.ndarray | None
+    uyarilar: tuple[Uyari, ...]
     basarili: bool
     yontem: str
 
@@ -231,21 +255,34 @@ class Cozum:
 # ters saat (Inhour) denklemi
 # ============================================================================
 
-def inhour_rho(veri, omega):
-    """rho(w) = w Lambda + sum beta_i w/(w + lambda_i)."""
+def inhour_rho(veri: GrupVerisi, omega: float) -> float:
+    """rho(w) = w Lambda + sum beta_i w/(w + lambda_i); kutupta (w = -lambda_i) ValueError."""
     w = float(omega)
-    return w * veri.nesil_suresi + math.fsum(b * w / (w + lam)
-                                             for b, lam in zip(veri.beta, veri.lam))
+    terimler = []
+    for b, lam in zip(veri.beta, veri.lam):
+        if b == 0.0:
+            continue                  # beta_i = 0: kaldirilabilir kutup, terim yok
+        if w + lam == 0.0:
+            raise ValueError(_("ω = −λ_i bir kutuptur; ters saat denklemi tanımsız."))
+        terimler.append(b * w / (w + lam))
+    return w * veri.nesil_suresi + math.fsum(terimler)
 
 
 def _birlesik_gruplar(veri):
-    """Ayni lambda'li gruplari birlestirir (kok sayisi = farkli lambda + 1)."""
-    birlesik = {}
-    for b, lam in zip(veri.beta, veri.lam):
-        birlesik[lam] = birlesik.get(lam, 0.0) + b
-    lams = sorted(birlesik)
-    return GrupVerisi(beta=tuple(birlesik[x] for x in lams), lam=tuple(lams),
-                      nesil_suresi=veri.nesil_suresi, kaynak=veri.kaynak)
+    """
+    (beta, lambda) listeleri: beta_i = 0 gruplari ATILIR (kaldirilabilir kutup;
+    birakilsa kok araligi isaret degistirmezdi) ve bagil farki _ESIT_LAMBDA'dan
+    kucuk lambda'lar beta agirlikli birlesir. Kok sayisi = kalan grup + 1.
+    """
+    beta, lams = [], []
+    for lam, b in sorted((lam, b) for b, lam in zip(veri.beta, veri.lam) if b > 0.0):
+        if lams and abs(lam - lams[-1]) <= _ESIT_LAMBDA * lams[-1]:
+            lams[-1] = (lams[-1] * beta[-1] + lam * b) / (beta[-1] + b)
+            beta[-1] += b
+        else:
+            lams.append(lam)
+            beta.append(b)
+    return beta, lams
 
 
 def _kok(f, a, b):
@@ -274,18 +311,21 @@ def _genislet(f, bas, yon):
     return x
 
 
-def inhour_kokleri(veri, rho):
+def inhour_kokleri(veri: GrupVerisi, rho: float) -> tuple[float, ...]:
     """Ters saat denkleminin tum kokleri, buyukten kucuge (1/s)."""
     rho = _sonlu(rho, "ρ")
-    v = _birlesik_gruplar(veri)
+    beta, lams = _birlesik_gruplar(veri)
+    nesil = veri.nesil_suresi
+    if not lams:
+        return (rho / nesil,)         # gecikmeli grup yok: w = rho/Lambda (ani)
 
     def f(w):
-        return inhour_rho(v, w) - rho
+        return w * nesil + math.fsum(b * w / (w + lam) for b, lam in zip(beta, lams)) - rho
 
     def pay(kutup_degeri):
         return abs(kutup_degeri) * _KUTUP_PAYI
 
-    kutup = [-x for x in v.lam]                   # azalan: -l1 > -l2 > ...
+    kutup = [-x for x in lams]                    # azalan: -l1 > -l2 > ...
     kokler = [_kok(f, kutup[0] + pay(kutup[0]), _genislet(f, kutup[0], +1))]
     for ust, alt in zip(kutup, kutup[1:]):
         kokler.append(_kok(f, alt + pay(alt), ust - pay(ust)))
@@ -293,7 +333,7 @@ def inhour_kokleri(veri, rho):
     return tuple(sorted(kokler, reverse=True))
 
 
-def kararli_periyot(veri, rho):
+def kararli_periyot(veri: GrupVerisi, rho: float) -> float:
     """Basamak rho icin kararli (asimptotik) periyot T = 1/w_0 [s]; rho = 0 -> inf."""
     if float(rho) == 0.0:
         return math.inf
@@ -320,7 +360,7 @@ def _denge(veri):
     return np.concatenate(([1.0], np.array(veri.beta) / np.array(veri.lam)))
 
 
-def analitik_basamak(veri, rho, t):
+def analitik_basamak(veri: GrupVerisi, rho: float, t) -> np.ndarray:
     """Basamak rho icin TAM cozum n(t) = [exp(A t) y0]_0 (matris ustel; dogrulama)."""
     from scipy.linalg import expm
     a, y0 = _sistem_matrisi(veri, _sonlu(rho, "ρ")), _denge(veri)
@@ -376,7 +416,9 @@ def _parcalar(profil, t_son):
     return list(zip(sinirlar, sinirlar[1:]))
 
 
-def coz(veri, reaktivite, t_son, geri_besleme=None, nokta=VARSAYILAN_NOKTA, yontem="Radau"):
+def coz(veri: GrupVerisi, reaktivite: "Basamak | Rampa", t_son: float,
+        geri_besleme: "GeriBesleme | None" = None, nokta: int = VARSAYILAN_NOKTA,
+        yontem: str = "Radau") -> Cozum:
     """
     Nokta kinetigi denklemlerini [0, t_son] s'de cozer (kati ODE; Radau/BDF).
     reaktivite: Basamak ya da Rampa (dis reaktivite, Delta k/k).
@@ -386,15 +428,14 @@ def coz(veri, reaktivite, t_son, geri_besleme=None, nokta=VARSAYILAN_NOKTA, yont
     t_son = _pozitif(t_son, _("süre"))
     if yontem not in _YONTEMLER:
         raise ValueError(_("Yöntem Radau ya da BDF olmalı: %r") % yontem)
-    if int(nokta) < 2:
-        raise ValueError(_("En az iki zaman noktası gerekir."))
+    nokta = _nokta_sayisi(nokta)
     f, jac, rho_t = _turevler(veri, reaktivite, geri_besleme)
 
     def tasma(t, y):
         return y[0] - AZAMI_GUC_ORANI
 
     tasma.terminal, tasma.direction = True, 1
-    izgara = np.linspace(0.0, t_son, int(nokta))
+    izgara = np.linspace(0.0, t_son, nokta)
     y = np.concatenate((_denge(veri), [0.0] if geri_besleme else []))
     ts, ys = [0.0], [y]
     uyarilar = _baslangic_uyarilari(veri, reaktivite, geri_besleme)
@@ -402,7 +443,7 @@ def coz(veri, reaktivite, t_son, geri_besleme=None, nokta=VARSAYILAN_NOKTA, yont
     for a, b in _parcalar(reaktivite, t_son):
         ara = np.unique(np.concatenate((izgara[(izgara > a) & (izgara < b)], [b])))
         s = solve_ivp(f, (a, b), y, method=yontem, t_eval=ara, jac=jac, events=tasma,
-                      rtol=_RTOL, atol=_ATOL)
+                      rtol=_RTOL, atol=_atol(len(y), geri_besleme is not None))
         if s.status == -1:
             basarili = False
             uyarilar.append(Uyari("cozucu", _("Çözücü başarısız: %s") % s.message))
@@ -421,6 +462,21 @@ def coz(veri, reaktivite, t_son, geri_besleme=None, nokta=VARSAYILAN_NOKTA, yont
                       geri_besleme is not None)
 
 
+def _nokta_sayisi(nokta):
+    """Zaman izgarasi nokta sayisi: tam sayi >= 2 (ValueError)."""
+    if isinstance(nokta, bool) or not isinstance(nokta, (int, np.integer)) or nokta < 2:
+        raise ValueError(_("En az iki zaman noktası gerekir (tam sayı): %r") % (nokta,))
+    return int(nokta)
+
+
+def _atol(boyut, gb_var):
+    """Bilesen basina mutlak tolerans: n, c_i icin bagil denetim; DT icin [K]."""
+    atol = np.full(boyut, _ATOL_TABAN)
+    if gb_var:
+        atol[-1] = _ATOL_SICAKLIK
+    return atol
+
+
 def _cozum_kur(ts, ys, rho_t, izgara, uyarilar, basarili, yontem, gb_var):
     """Ara kirilma noktalarini atar (yalniz izgara + son nokta), salt-okunur diziler."""
     t, y = np.array(ts), np.array(ys)
@@ -435,7 +491,7 @@ def _cozum_kur(ts, ys, rho_t, izgara, uyarilar, basarili, yontem, gb_var):
                  basarili=basarili, yontem=yontem)
 
 
-def periyot_tahmini(cozum):
+def periyot_tahmini(cozum: Cozum) -> float:
     """Cozumun son %10'unda ln(P) egiminden periyot [s]; egim ~0 ise inf."""
     t, n = np.asarray(cozum.t), np.asarray(cozum.guc)
     if len(t) < 3:
