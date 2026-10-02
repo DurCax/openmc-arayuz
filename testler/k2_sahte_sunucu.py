@@ -8,11 +8,17 @@ port) calisir; icerik bellektedir. Davranis dugmeleri (dosya basina):
              yalniz ILK istekte, sonrakiler tam gonderir)
   aralik   : False ise Range basligini yok sayar (200 + tam govde)
   yonlendir: bu URL'ye 302 verir
+  kodlama  : Content-Encoding basligi (ör. "gzip"; reddedilmeli)
+  uzunluk  : Content-Length yerine bu metin (bozuk baslik)
+  gecikme  : her 64 KiB'den sonra bu kadar saniye bekler (yavas sunucu)
 Gelen her istegin (yol, Range) cifti `istekler`e yazilir.
 """
 
 import http.server
 import threading
+import time
+
+_YAVAS_PARCA = 64 * 1024
 
 
 class SahteSunucu:
@@ -80,7 +86,9 @@ class SahteSunucu:
         else:
             h.send_response(200)
         govde = veri[bas:]
-        h.send_header("Content-Length", str(len(govde)))
+        h.send_header("Content-Length", ayar.get("uzunluk", str(len(govde))))
+        if ayar.get("kodlama"):
+            h.send_header("Content-Encoding", ayar["kodlama"])
         h.end_headers()
         kes = ayar.get("kes")
         if kes is not None and yol not in self._kesildi:
@@ -89,4 +97,13 @@ class SahteSunucu:
             h.wfile.flush()
             h.close_connection = True
             return
-        h.wfile.write(govde)
+        if not ayar.get("gecikme"):
+            h.wfile.write(govde)
+            return
+        try:
+            for i in range(0, len(govde), _YAVAS_PARCA):
+                h.wfile.write(govde[i:i + _YAVAS_PARCA])
+                h.wfile.flush()
+                time.sleep(ayar["gecikme"])
+        except (BrokenPipeError, ConnectionResetError):
+            return                          # istemci iptal etti

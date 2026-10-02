@@ -29,7 +29,6 @@ KOMUT SATIRI
   Basarida secim uygulama ayarina yazilir (cekirdek/veri_yolu.py).
 """
 
-import argparse
 import hashlib
 import http.client
 import json
@@ -64,6 +63,14 @@ EN_COK_YONLENDIRME = 5                # anl.box.com -> anl.app.box.com -> boxclo
 BOMBA_CARPANI = 3.0
 VARSAYILAN_KUTUPHANE = "endfb-viii.0"
 _SHA256_DESENI = re.compile(r"^[0-9a-f]{64}$")
+_AD_DESENI = re.compile(r"^[A-Za-z0-9._-]+$")       # katalog dizin_adi / dosya_adi
+# Katalogdaki "degerlendirme sayfasi" baglantilarinin izinli alanlari (yalniz
+# gosterilir, indirilmez): NNDC, OECD-NEA, JAEA, IAEA.
+DEGERLENDIRME_ALANLARI = frozenset({"www.nndc.bnl.gov", "www.oecd-nea.org",
+                                    "wwwndc.jaea.go.jp", "www-nds.iaea.org"})
+_PARCA_MODU = 0o600                                 # .part: yalniz sahibi
+_INDIRME_MODU = 0o700                               # .indirilen/
+_ZINCIR_MODU = 0o755                                # chain/ (digerleri okuyabilir)
 _KUTUPHANE_ALANLARI = ("kimlik", "ad", "url", "bayt", "dizin_adi")
 _ZINCIR_ALANLARI = ("kimlik", "ad", "url", "bayt", "dosya_adi")
 
@@ -160,7 +167,18 @@ def katalog_yolu() -> str:
 
 
 def _ad_guvenli(ad) -> bool:
-    return isinstance(ad, str) and veri_arsiv._guvenli_ad_mi(ad)
+    return (isinstance(ad, str) and bool(_AD_DESENI.match(ad))
+            and veri_arsiv._guvenli_ad_mi(ad))
+
+
+def _degerlendirme_denetle(kayit: dict) -> None:
+    url = kayit.get("degerlendirme_sayfasi")
+    if not url:
+        return
+    try:
+        UrlPolitikasi(alanlar=DEGERLENDIRME_ALANLARI).denetle(url)
+    except IndirmeHatasi as e:
+        raise ValueError("degerlendirme sayfasi gecersiz (%s): %s" % (kayit["kimlik"], e)) from e
 
 
 def _oge_kur(kayit: dict, tur: str, politika: UrlPolitikasi) -> Oge:
@@ -180,6 +198,7 @@ def _oge_kur(kayit: dict, tur: str, politika: UrlPolitikasi) -> Oge:
     ad_alani = "dizin_adi" if tur == "kutuphane" else "dosya_adi"
     if not _ad_guvenli(kayit[ad_alani]):
         raise ValueError("katalog %s gecersiz: %r" % (ad_alani, kayit[ad_alani]))
+    _degerlendirme_denetle(kayit)
     return Oge(kimlik=kayit["kimlik"], ad=kayit["ad"], tur=tur, url=kayit["url"], bayt=bayt,
                sha256=sha, dizin_adi=kayit.get("dizin_adi"), dosya_adi=kayit.get("dosya_adi"),
                acik_bayt=kayit.get("acik_bayt"), grup=kayit.get("grup", ""),
@@ -241,12 +260,30 @@ def _istek(url: str, bas: int) -> urllib.request.Request:
     return urllib.request.Request(url, headers=basliklar)
 
 
-def _dosya_sha256(yol: str, hasher=None):
+def _dosya_sha256(yol: str, hasher=None, iptal=None):
+    """Dosyanin sha256'si (surdurmede var olan parca icin); iptal dinlenir."""
     hasher = hasher or hashlib.sha256()
     with open(yol, "rb") as f:
         for parca in iter(lambda: f.read(PARCA_BOYUTU), b""):
+            if iptal is not None and iptal.is_set():
+                raise IptalEdildi(_("indirme iptal edildi; kaldığı yerden sürdürülebilir"))
             hasher.update(parca)
     return hasher
+
+
+def _baglanti_degil(yol: str) -> None:
+    if os.path.islink(yol):
+        raise IndirmeHatasi(_("güvenlik: %s bir sembolik bağlantı; silin ya da başka hedef "
+                              "seçin") % yol)
+
+
+def _parca_ac(parca: str, ekle: bool) -> int:
+    """.part dosyasini symlink izlemeden, 0600 ile acar (os.open O_NOFOLLOW)."""
+    bayrak = os.O_WRONLY | os.O_CREAT | os.O_NOFOLLOW | (os.O_APPEND if ekle else os.O_TRUNC)
+    try:
+        return os.open(parca, bayrak, _PARCA_MODU)
+    except OSError as e:
+        raise IndirmeHatasi(_("geçici dosya açılamadı: %s (%s)") % (parca, e)) from e
 
 
 def _sil(yol: str) -> None:
@@ -261,7 +298,7 @@ def _sil(yol: str) -> None:
 def _aralik_baslangici(yanit, beklenen: int) -> int:
     """206 yanitinin Content-Range baslangici; toplam katalogdan farkliysa hata."""
     m = re.match(r"bytes (\d+)-(\d+)/(\d+)", yanit.headers.get("Content-Range", ""))
-    if not m or int(m.group(3)) != beklenen:
+    if not m or int(m.group(3)) != beklenen or int(m.group(2)) != beklenen - 1:
         raise IndirmeHatasi(_("sunucunun bildirdiği boyut katalogdan farklı (%s, beklenen %d)")
                             % (yanit.headers.get("Content-Range"), beklenen))
     return int(m.group(1))
@@ -281,6 +318,9 @@ def _ac(url, bas, politika, zaman_asimi):
 
 
 def _yanit_baslangici(yanit, bas: int, beklenen: int) -> int:
+    if yanit.headers.get("Content-Encoding", "identity").lower() != "identity":
+        raise IndirmeHatasi(_("sunucu sıkıştırılmış aktarım gönderdi (Content-Encoding: %s); "
+                              "bayt sayısı denetlenemez") % yanit.headers.get("Content-Encoding"))
     if yanit.status == 206:
         gercek = _aralik_baslangici(yanit, beklenen)
         if gercek != bas:
@@ -290,7 +330,7 @@ def _yanit_baslangici(yanit, bas: int, beklenen: int) -> int:
     if yanit.status != 200:
         raise IndirmeHatasi(_("beklenmeyen HTTP yanıtı: %d") % yanit.status)
     uzunluk = yanit.headers.get("Content-Length")
-    if uzunluk is not None and int(uzunluk) != beklenen:
+    if uzunluk is not None and (not uzunluk.strip().isdigit() or int(uzunluk) != beklenen):
         raise IndirmeHatasi(_("sunucunun bildirdiği boyut katalogdan farklı (%s, beklenen %d)")
                             % (uzunluk, beklenen))
     return 0                                    # aralik yok sayildi: bastan
@@ -298,7 +338,7 @@ def _yanit_baslangici(yanit, bas: int, beklenen: int) -> int:
 
 def _akit(yanit, parca, bas, beklenen, hasher, ilerleme, iptal) -> int:
     alinan = bas
-    with open(parca, "ab" if bas else "wb") as f:
+    with os.fdopen(_parca_ac(parca, ekle=bool(bas)), "ab" if bas else "wb") as f:
         try:
             for blok in iter(lambda: yanit.read(PARCA_BOYUTU), b""):
                 alinan += len(blok)
@@ -319,10 +359,14 @@ def _akit(yanit, parca, bas, beklenen, hasher, ilerleme, iptal) -> int:
     return alinan
 
 
-def _hazir_mi(hedef, beklenen, sha256) -> Optional[str]:
+def _hazir_mi(hedef, beklenen, sha256, iptal=None) -> Optional[str]:
+    """Hedef zaten tam mi: sha256 biliniyorsa karma, BILINMIYORSA YALNIZ BOYUT
+    denetlenir (ayni boyutta bozuk dosya yakalanmaz; makbuzda/arayuzde
+    "sha256 yok" etiketi bunu soyler). Symlink reddedilir."""
+    _baglanti_degil(hedef)
     if not os.path.isfile(hedef) or os.path.getsize(hedef) != beklenen:
         return None
-    ozet = _dosya_sha256(hedef).hexdigest()
+    ozet = _dosya_sha256(hedef, iptal=iptal).hexdigest()
     return ozet if sha256 is None or ozet == sha256 else None
 
 
@@ -335,11 +379,13 @@ def dosya_indir(url: str, hedef: str, beklenen_bayt: int, sha256: Optional[str] 
     IptalEdildi (yarim .part surdurme icin kalir; sha256 hatasinda silinir)."""
     politika = politika or katalog_politikasi(katalog_yukle())
     politika.denetle(url)
-    hazir = _hazir_mi(hedef, beklenen_bayt, sha256)
+    hazir = _hazir_mi(hedef, beklenen_bayt, sha256, iptal)
     if hazir:
         return hazir
     parca = hedef + PARCA_UZANTISI
+    _baglanti_degil(parca)
     bas = os.path.getsize(parca) if os.path.isfile(parca) else 0
+    hasher = _dosya_sha256(parca, iptal=iptal) if bas else None   # agdan once: iptal ucuz
     if bas > beklenen_bayt:
         _sil(parca)
         bas = 0
@@ -349,11 +395,12 @@ def dosya_indir(url: str, hedef: str, beklenen_bayt: int, sha256: Optional[str] 
             _sil(parca)
             raise IndirmeHatasi(_("sunucu aralığı reddetti; yarım dosya silindi, yeniden "
                                   "deneyin"))
-        alinan, hasher = bas, _dosya_sha256(parca)
+        alinan = bas
     else:
         with yanit:
             bas = _yanit_baslangici(yanit, bas, beklenen_bayt)
-            hasher = _dosya_sha256(parca) if bas else hashlib.sha256()
+            if not bas:
+                hasher = hashlib.sha256()
             alinan = _akit(yanit, parca, bas, beklenen_bayt, hasher, ilerleme, iptal)
     if alinan != beklenen_bayt:
         raise IndirmeHatasi(_("indirme yarım kaldı (%d / %d bayt); yeniden deneyin, kaldığı "
@@ -376,6 +423,14 @@ class Kurulum:
     yol: str                     # cross_sections.xml ya da zincir dosyasi
     sha256: Optional[str]
     atlandi: bool = False        # zaten kuruluydu; indirme yapilmadi
+    dogrulandi: bool = False     # katalogdaki sha256 ile dogrulandi (False: yalniz boyut)
+
+
+def dogrulama_etiketi(kurulum: "Kurulum") -> str:
+    """sha256 dogrulanmadiysa kullaniciya gosterilen etiket, yoksa ""."""
+    if kurulum.dogrulandi:
+        return ""
+    return _("sha256 yok: yalnız boyut denetlendi (openmc.org sha256 yayımlamıyor)")
 
 
 Asamali = Optional[Callable[[str, int, int], None]]   # (asama, alinan, toplam)
@@ -405,18 +460,21 @@ def gereken_alan(oge: Oge, oran: float, hedef: str) -> int:
 def _makbuz_yaz(dizin: str, oge: Oge, sha: str) -> None:
     from datetime import datetime, timezone
     kayit = {"kimlik": oge.kimlik, "ad": oge.ad, "url": oge.url, "bayt": oge.bayt,
-             "sha256": sha, "indirme": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+             "sha256": sha, "sha256_dogrulandi": bool(oge.sha256),
+             "indirme": datetime.now(timezone.utc).isoformat(timespec="seconds"),
              "katalog_kaynagi": katalog_yukle().kaynak.get("sayfa")}
     with open(os.path.join(dizin, MAKBUZ), "w", encoding="utf-8") as f:
         json.dump(kayit, f, ensure_ascii=False, indent=1)
 
 
-def _makbuz_sha(dizin: str) -> Optional[str]:
+def _makbuz(dizin: str) -> dict:
     try:
         with open(os.path.join(dizin, MAKBUZ), encoding="utf-8") as f:
-            return json.load(f).get("sha256")
+            veri = json.load(f)
+        return veri if isinstance(veri, dict) else {}
     except (OSError, ValueError):
-        return None
+        _log.info("makbuz okunamadi: %s", dizin)
+        return {}
 
 
 def kutuphane_kur(oge: Oge, hedef_dizin: str, oran: float,
@@ -429,160 +487,51 @@ def kutuphane_kur(oge: Oge, hedef_dizin: str, oran: float,
     dizin = os.path.join(hedef, oge.dizin_adi)
     xml = os.path.join(dizin, veri_arsiv.XS_DOSYASI)
     if os.path.isfile(xml):
-        return Kurulum(xml, _makbuz_sha(dizin), atlandi=True)
+        makbuz = _makbuz(dizin)
+        return Kurulum(xml, makbuz.get("sha256"), atlandi=True,
+                       dogrulandi=bool(makbuz.get("sha256_dogrulandi")))
     if os.path.lexists(dizin):
         raise veri_arsiv.ArsivHatasi(_("%s var ama içinde cross_sections.xml yok; klasörü "
                                        "taşıyın ya da başka hedef seçin") % dizin)
     veri_arsiv.disk_denetle(hedef, gereken_alan(oge, oran, hedef), kullanim)
-    indirme = os.path.join(hedef, INDIRME_DIZINI)
-    os.makedirs(indirme, exist_ok=True)
+    indirme = veri_arsiv.guvenli_dizin(os.path.join(hedef, INDIRME_DIZINI), _INDIRME_MODU)
     arsiv = os.path.join(indirme, oge.kimlik + ".tar.xz")
     sha = dosya_indir(oge.url, arsiv, oge.bayt, oge.sha256, politika,
                       _asama(ilerleme, "indirme"), iptal)
     tahmin = acik_tahmini(oge, oran)
-    xml = veri_arsiv.arsiv_ac(arsiv, hedef, oge.dizin_adi, int(tahmin * BOMBA_CARPANI),
-                              iptal=iptal, ilerleme=_asama(ilerleme, "acma"), tahmini=tahmin,
-                              kullanim=kullanim)
+    try:
+        xml = veri_arsiv.arsiv_ac(arsiv, hedef, oge.dizin_adi, int(tahmin * BOMBA_CARPANI),
+                                  iptal=iptal, ilerleme=_asama(ilerleme, "acma"),
+                                  tahmini=tahmin, kullanim=kullanim)
+    except veri_arsiv.BozukArsiv as e:
+        _sil(arsiv)                 # ayni bozuk dosya her denemede yeniden acilmasin
+        raise veri_arsiv.ArsivHatasi(_("%s — arşiv silindi; yeniden indirin") % e) from e
     _makbuz_yaz(dizin, oge, sha)
     _sil(arsiv)
-    return Kurulum(xml, sha)
+    return Kurulum(xml, sha, dogrulandi=bool(oge.sha256))
 
 
 def zincir_kur(oge: Oge, hedef_dizin: str, politika: Optional[UrlPolitikasi] = None,
                ilerleme: Asamali = None, iptal=None, kullanim=shutil.disk_usage) -> Kurulum:
     """Zinciri <hedef>/chain/<dosya_adi> olarak indirir (sha256 biliniyorsa dogrulanir)."""
     hedef = veri_arsiv.hedef_dogrula(hedef_dizin)
-    dizin = os.path.join(hedef, ZINCIR_DIZINI)
-    os.makedirs(dizin, exist_ok=True)
+    dizin = veri_arsiv.guvenli_dizin(os.path.join(hedef, ZINCIR_DIZINI), _ZINCIR_MODU)
     yol = os.path.join(dizin, oge.dosya_adi)
     veri_arsiv.disk_denetle(hedef, gereken_alan(oge, 1.0, hedef), kullanim)
     sha = dosya_indir(oge.url, yol, oge.bayt, oge.sha256, politika,
                       _asama(ilerleme, "indirme"), iptal)
-    return Kurulum(yol, sha)
+    return Kurulum(yol, sha, dogrulandi=bool(oge.sha256))
 
 
 # ---------------------------------------------------------------------------
-# komut satiri
+# komut satiri: cekirdek/veri_indir_komut.py (dosya boyu)
 # ---------------------------------------------------------------------------
-
-def _argumanlar():
-    p = argparse.ArgumentParser(
-        prog="veri_indir", description=_("OpenMC nükleer verisini openmc.org kataloğundan "
-                                         "güvenli indirir (sürdürülebilir, sha256)."))
-    p.add_argument("--liste", action="store_true", help=_("katalogu listele ve çık"))
-    p.add_argument("--hedef", help=_("hedef klasör (varsayılan: ~/nucdata ya da son seçim)"))
-    p.add_argument("--kutuphane", default=VARSAYILAN_KUTUPHANE,
-                   help=_("kütüphane kimliği (--liste)"))
-    p.add_argument("--zincir", action="append",
-                   help=_("zincir kimliği; birden çok verilebilir (varsayılan: uygulamanın "
-                          "kullandığı termal/hızlı/CASL zincirleri)"))
-    p.add_argument("--yalniz-zincir", action="store_true", help=_("yalnız zincirleri indir"))
-    p.add_argument("--bashrc", action="store_true",
-                   help=_("bitince ortam değişkenlerini ~/.bashrc'ye ekle"))
-    return p
-
-
-def _liste(kat: Katalog) -> None:
-    print(_("Kaynak: %s (erişim %s)") % (kat.kaynak.get("sayfa"), kat.kaynak.get("erisim_tarihi")))
-    print(_("\nKütüphaneler:"))
-    for o in kat.kutuphaneler:
-        print("  %-18s %-26s %6.2f GB  %s" % (o.kimlik, o.ad, o.bayt / veri_arsiv.GB, o.grup))
-    print(_("\nZincirler:"))
-    for o in kat.zincirler:
-        print("  %-20s %-32s %7.1f MB%s" % (o.kimlik, o.ad, o.bayt / 1e6,
-                                             "  *" if o.uygulamada_kullanilir else ""))
-    print(_("\n* uygulamanın tükenme hesabında kullandığı zincirler"))
-
-
-def _ilerleme_yazici():
-    son = {}
-
-    def yaz(asama, alinan, toplam):
-        yuzde = int(100 * alinan / toplam) if toplam else 0
-        if son.get(asama) != yuzde // 5:
-            son[asama] = yuzde // 5
-            print("   %s %3d%%" % (asama, yuzde), flush=True)
-    return yaz
-
-
-def _secimler(a, kat: Katalog):
-    """(kutuphane | None, [zincirler]) ya da hata metni."""
-    kutup = None if a.yalniz_zincir else kat.bul(a.kutuphane)
-    if not a.yalniz_zincir and (kutup is None or kutup.tur != "kutuphane"):
-        return _("bilinmeyen kütüphane: %s (--liste)") % a.kutuphane
-    kimlikler = a.zincir or [o.kimlik for o in kat.zincirler if o.uygulamada_kullanilir]
-    zincirler = [kat.bul(k) for k in kimlikler]
-    if any(z is None or z.tur != "zincir" for z in zincirler):
-        return _("bilinmeyen zincir: %s (--liste)") % ", ".join(kimlikler)
-    return kutup, zincirler
-
-
-def _bashrc(satirlar) -> None:
-    yol = os.path.expanduser("~/.bashrc")
-    isaret = "# OpenMC verisi (openmc_arayuz veri_indir)"
-    mevcut = ""
-    if os.path.isfile(yol):
-        with open(yol, encoding="utf-8") as f:
-            mevcut = f.read()
-    if isaret in mevcut:
-        print(_("~/.bashrc'de zaten bir openmc_arayuz bölümü var; değiştirilmedi."))
-        return
-    with open(yol, "a", encoding="utf-8") as f:
-        f.write("\n%s\n%s\n" % (isaret, "\n".join(satirlar)))
-    print(_("~/.bashrc'ye eklendi. Yeni bir terminal açın ya da: source ~/.bashrc"))
-
-
-def _kur_hepsi(kutup, zincirler, hedef, kat, politika):
-    """(cross_sections.xml | None, ayara yazilacak zincir | None)."""
-    from cekirdek import veri_yolu
-    yaz = _ilerleme_yazici()
-    zincir_yollari = []
-    for z in zincirler:
-        print(_("== zincir: %s") % z.gorunen_ad())
-        zincir_yollari.append(zincir_kur(z, hedef, politika=politika, ilerleme=yaz).yol)
-    xml = None
-    if kutup is not None:
-        print(_("== kütüphane: %s (%.2f GB)") % (kutup.ad, kutup.bayt / veri_arsiv.GB))
-        xml = kutuphane_kur(kutup, hedef, kat.oran, politika=politika, ilerleme=yaz).yol
-    varsayilan = [y for y in zincir_yollari
-                  if os.path.basename(y) == veri_yolu.VARSAYILAN_ZINCIR]
-    return xml, (varsayilan or zincir_yollari or [None])[0]
-
 
 def main(argv=None, katalog: Optional[Katalog] = None,
          politika: Optional[UrlPolitikasi] = None) -> int:
-    """Cikis: 0 tamam, 1 indirme/kurma hatasi, 2 kullanim hatasi.
-    katalog/politika yalniz Python'dan (test) verilir; komut satiri her zaman
-    paket katalogunu ve uretim politikasini (yalniz https) kullanir."""
-    from cekirdek import veri_yolu
-    a = _argumanlar().parse_args(argv)
-    kat = katalog or katalog_yukle()
-    politika = politika or katalog_politikasi(kat)
-    if a.liste:
-        _liste(kat)
-        return 0
-    secim = _secimler(a, kat)
-    if isinstance(secim, str):
-        print(secim, file=sys.stderr)
-        return 2
-    try:
-        hedef = veri_arsiv.hedef_dogrula(a.hedef or veri_yolu.varsayilan_indirme_hedefi())
-        xml, zincir_yolu = _kur_hepsi(secim[0], secim[1], hedef, kat, politika)
-    except VeriHatasi as e:
-        print(_("HATA: %s") % e, file=sys.stderr)
-        return 1
-    ayar = {"indirme_hedefi": hedef, "zincir": zincir_yolu}
-    if xml:
-        ayar.update(cross_sections=xml, kutuphane=secim[0].kimlik)
-    veri_yolu.ayar_yaz({k: v for k, v in ayar.items() if v})
-    satirlar = (['export OPENMC_CROSS_SECTIONS="%s"' % xml] if xml else []) + (
-        ['export OPENMC_CHAIN_FILE="%s"' % zincir_yolu] if zincir_yolu else [])
-    print(_("\nBitti. Seçim uygulama ayarına yazıldı (%s).") % veri_yolu.ayar_yolu())
-    if a.bashrc:
-        _bashrc(satirlar)
-    else:
-        print(_("Terminalden openmc kullanacaksanız:\n%s") % "\n".join(satirlar))
-    return 0
+    """Komut satiri (veri_indir_komut.main); cikis 0/1/2."""
+    from cekirdek import veri_indir_komut
+    return veri_indir_komut.main(argv, katalog=katalog, politika=politika)
 
 
 if __name__ == "__main__":
