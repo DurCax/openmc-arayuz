@@ -134,16 +134,9 @@ def _tallyler(spec, satirlar, ek_tallyler=None, on_satirlar=None, sinir_kutu=Non
                 filtre_ifadeleri.append("openmc.EnergyFilter(%r)" % list(f["gruplar"]))
             elif f["tur"] == "mesh":
                 mv = "%s_mesh_%d" % (v, j)
-                # kurucu.py ile AYNI fonksiyon: otomatik sinirlar modelin sinir
-                # kutusundan ve kor yuksekliginden turetilir.
-                from cekirdek import kurucu as _kur
-                alt, ust = _kur.tally_mesh_sinirlari(spec, f, sinir_kutu)
-                if f.get("otomatik"):
-                    satirlar.append("# mesh sınırları modelin sınır kutusundan türetildi")
-                satirlar.append("%s = openmc.RegularMesh()" % mv)
-                satirlar.append("%s.dimension  = %r" % (mv, list(f["boyut"])))
-                satirlar.append("%s.lower_left = %r" % (mv, list(alt)))
-                satirlar.append("%s.upper_right = %r" % (mv, list(ust)))
+                # v3 Y1: kurucu ile AYNI tanim (cekirdek/mesh_tally/tanim.py)
+                from cekirdek import mesh_tally as _mt
+                satirlar.extend(_mt.betik_filtresi(spec, f, sinir_kutu, mv))
                 filtre_ifadeleri.append("openmc.MeshFilter(%s)" % mv)
             elif f["tur"] == "malzeme":
                 filtre_ifadeleri.append("openmc.MaterialFilter([%s])"

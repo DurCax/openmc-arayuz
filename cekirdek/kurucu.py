@@ -218,12 +218,9 @@ def tallyleri_kur(spec, nesneler, sinir_kutu=None):
         for f in t.get("filtreler", []):
             if f["tur"] == "enerji":
                 filtreler.append(openmc.EnergyFilter(f["gruplar"]))
-            elif f["tur"] == "mesh":
-                mesh = openmc.RegularMesh()
-                mesh.dimension = f["boyut"]
-                mesh.lower_left, mesh.upper_right = tally_mesh_sinirlari(
-                    spec, f, sinir_kutu)
-                filtreler.append(openmc.MeshFilter(mesh))
+            elif f["tur"] == "mesh":   # v3 Y1: duzenli/silindirik/kuresel (tek kaynak)
+                from cekirdek import mesh_tally as _mt
+                filtreler.append(_mt.mesh_filtresi_kur(spec, f, sinir_kutu))
             elif f["tur"] == "malzeme":
                 filtreler.append(openmc.MaterialFilter(
                     [nesneler[a] for a in f["adlar"]]))
