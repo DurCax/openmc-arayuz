@@ -41,6 +41,11 @@ def _moderator_nedeni(m):
     return None
 
 
+def fisil_mi(m):
+    """Malzemede pozitif miktarda fisil nuklid (ya da U/Pu elementi) var mi (Y3 de kullanir)."""
+    return _fisil_mi(m)
+
+
 def _fisil_mi(m):
     for b in m.get("bilesim", []):
         isim = b.get("isim") or ""

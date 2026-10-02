@@ -1,12 +1,13 @@
 # English translation of openmc-arayuz.
 # Kaynak dil Turkce: msgid Turkce metnin kendisidir.
 # Uretim/derleme: araclar/ceviri.sh (Babel). Parca kataloglar (cekirdek.po,
-# arayuz.po) varsa bu dosya onlardan BIRLESTIRILIR; o zaman parcalari duzenleyin.
+# arayuz.po) varsa bu dosya onlardan BIRLESTIRILIR; o zaman parcalari
+# duzenleyin.
 msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 07:43+0300\n"
+"POT-Creation-Date: 2026-10-02 10:07+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -181,28 +182,28 @@ msgstr "unknown axis: %r"
 msgid "cizim alt süreci argüman almaz: %s"
 msgstr "the drawing subprocess takes no arguments: %s"
 
-#: cekirdek/dogrula/__init__.py:138
+#: cekirdek/dogrula/__init__.py:141
 #, python-format
 msgid "%d doğrulama hatası; önce bunları giderin"
 msgid_plural "%d doğrulama hatası; önce bunları giderin"
 msgstr[0] "%d model check error; fix it first"
 msgstr[1] "%d model check errors; fix them first"
 
-#: cekirdek/dogrula/__init__.py:166
+#: cekirdek/dogrula/__init__.py:169
 #, python-format
 msgid "%d hata"
 msgid_plural "%d hata"
 msgstr[0] "%d error"
 msgstr[1] "%d errors"
 
-#: cekirdek/dogrula/__init__.py:167
+#: cekirdek/dogrula/__init__.py:170
 #, python-format
 msgid "%d uyarı"
 msgid_plural "%d uyarı"
 msgstr[0] "%d warning"
 msgstr[1] "%d warnings"
 
-#: cekirdek/dogrula/__init__.py:168
+#: cekirdek/dogrula/__init__.py:171
 #, python-format
 msgid "%d bilgi"
 msgid_plural "%d bilgi"
@@ -396,7 +397,7 @@ msgstr ""
 msgid "%s sınır periyodik olamaz: sonlu bir korda eksenel periyodiklik fiziksel değildir."
 msgstr "%s boundary cannot be periodic: axial periodicity is not physical in a finite core."
 
-#: cekirdek/dogrula/agac.py:286 cekirdek/dogrula/kor.py:364
+#: cekirdek/dogrula/agac.py:286 cekirdek/dogrula/kor.py:366
 msgid "yükseklik verilmemiş — model eksenel yönde sonsuz (2B) kabul ediliyor"
 msgstr "height not given — the model is treated as infinite in the axial direction (2D)"
 
@@ -498,6 +499,14 @@ msgstr "entropy mesh dimensions must be greater than zero"
 #, python-format
 msgid "çevrim başına parçacık az (%d) — kaynak yakınsaması bozulabilir"
 msgstr "few particles per batch (%d) — source convergence may suffer"
+
+#: cekirdek/dogrula/ayar.py:67
+msgid ""
+"Grup sayısı nükleer veri kütüphanesiyle eşleşmeli: ENDF/B 6, JEFF 8; 0 yalnız toplam "
+"β_eff verir."
+msgstr ""
+"The number of groups must match the nuclear data library: ENDF/B 6, JEFF 8; 0 gives "
+"the total β_eff only."
 
 #: cekirdek/dogrula/eksenel.py:44
 #, python-format
@@ -742,7 +751,7 @@ msgstr "%s not selected"
 msgid "Seçilmeyen malzeme boş (madde yok) kurulurdu."
 msgstr "An unselected material would be built as void."
 
-#: cekirdek/dogrula/geometri.py:148 cekirdek/dogrula/kor.py:137
+#: cekirdek/dogrula/geometri.py:148 cekirdek/dogrula/kor.py:139
 #, python-format
 msgid "%s için tanımsız malzeme: %s"
 msgstr "undefined material for %s: %s"
@@ -765,18 +774,18 @@ msgstr "row %d has %d characters but %d are expected"
 msgid "halka sayısı en az 1 olmalı"
 msgstr "number of rings must be at least 1"
 
-#: cekirdek/dogrula/geometri.py:182 cekirdek/dogrula/kor.py:434
+#: cekirdek/dogrula/geometri.py:182 cekirdek/dogrula/kor.py:436
 #, python-format
 msgid "%d halka bekleniyor, haritada %d satır var"
 msgstr "%d rings expected, the map has %d rows"
 
-#: cekirdek/dogrula/geometri.py:184 cekirdek/dogrula/kor.py:436
+#: cekirdek/dogrula/geometri.py:184 cekirdek/dogrula/kor.py:438
 msgid "Halkalar dıştan içe sıralanır; yarıçapı k olan halkada 6k öğe, merkezde 1 öğe bulunur."
 msgstr ""
 "Rings are listed from the outside in; a ring of radius k has 6k elements, the centre "
 "has 1 element."
 
-#: cekirdek/dogrula/geometri.py:191 cekirdek/dogrula/kor.py:438
+#: cekirdek/dogrula/geometri.py:191 cekirdek/dogrula/kor.py:440
 #, python-format
 msgid "%d. halka (yarıçap %d) %d öğe bekliyor, %d var"
 msgstr "ring %d (radius %d) expects %d elements, has %d"
@@ -790,7 +799,7 @@ msgstr "orientation must be 'x' or 'y': %s"
 msgid "adım sıfırdan büyük olmalı"
 msgstr "pitch must be greater than zero"
 
-#: cekirdek/dogrula/geometri.py:203 cekirdek/dogrula/kor.py:215 cekirdek/dogrula/kor.py:449
+#: cekirdek/dogrula/geometri.py:203 cekirdek/dogrula/kor.py:217 cekirdek/dogrula/kor.py:451
 #, python-format
 msgid "haritada tanımsız harf: '%s'"
 msgstr "undefined letter in the map: '%s'"
@@ -1081,100 +1090,100 @@ msgstr "cell pitch must be greater than zero"
 msgid "çubuğun dış çapı (%.5f cm) hücre adımından (%.5f cm) büyük"
 msgstr "the outer diameter of the pin (%.5f cm) is larger than the cell pitch (%.5f cm)"
 
-#: cekirdek/dogrula/kor.py:84
+#: cekirdek/dogrula/kor.py:83
 msgid "demet seçilmemiş"
 msgstr "no assembly selected"
-
-#: cekirdek/dogrula/kor.py:90 cekirdek/geometri/sablon.py:124
-#, python-format
-msgid "tanımsız plaka elemanı: %s"
-msgstr "undefined plate-type fuel element: %s"
 
 #: cekirdek/dogrula/kor.py:91
 msgid "plaka elemanı seçilmemiş"
 msgstr "no plate-type fuel element selected"
 
-#: cekirdek/dogrula/kor.py:102
+#: cekirdek/dogrula/kor.py:93 cekirdek/geometri/sablon.py:124
+#, python-format
+msgid "tanımsız plaka elemanı: %s"
+msgstr "undefined plate-type fuel element: %s"
+
+#: cekirdek/dogrula/kor.py:104
 msgid "kor yarıçapı sıfırdan büyük olmalı"
 msgstr "core radius must be greater than zero"
 
-#: cekirdek/dogrula/kor.py:105
+#: cekirdek/dogrula/kor.py:107
 msgid "tamburlu korda yansıtıcı kuşak kalınlığı sıfırdan büyük olmalı"
 msgstr "in a core with control drums the radial reflector thickness must be greater than zero"
 
-#: cekirdek/dogrula/kor.py:108
+#: cekirdek/dogrula/kor.py:110
 msgid "yansıtıcı kuşağın malzemesi seçilmemiş (boş, madde yok)"
 msgstr "no material selected for the radial reflector (void)"
 
-#: cekirdek/dogrula/kor.py:111
+#: cekirdek/dogrula/kor.py:113
 msgid "kor dolgusu seçilmemiş"
 msgstr "no core fill selected"
 
-#: cekirdek/dogrula/kor.py:115
+#: cekirdek/dogrula/kor.py:117
 #, python-format
 msgid "kor dolgusu tanımsız: %s"
 msgstr "undefined core fill: %s"
 
-#: cekirdek/dogrula/kor.py:120
+#: cekirdek/dogrula/kor.py:122
 msgid "tambur sayısı 0 — kontrol tamburu olmadan düz yansıtıcı kuşak"
 msgstr "number of control drums is 0 — a plain radial reflector without control drums"
 
-#: cekirdek/dogrula/kor.py:130
+#: cekirdek/dogrula/kor.py:132
 msgid "tambur gövdesi"
 msgstr "drum body"
 
-#: cekirdek/dogrula/kor.py:131
+#: cekirdek/dogrula/kor.py:133
 msgid "tambur emicisi"
 msgstr "drum absorber"
 
-#: cekirdek/dogrula/kor.py:134
+#: cekirdek/dogrula/kor.py:136
 #, python-format
 msgid "%s malzemesi seçilmemiş"
 msgstr "no %s material selected"
 
-#: cekirdek/dogrula/kor.py:142
+#: cekirdek/dogrula/kor.py:144
 #, python-format
 msgid "tambur emicisi ('%s') güçlü bir nötron emici içermiyor"
 msgstr "the drum absorber ('%s') does not contain a strong neutron absorber"
 
-#: cekirdek/dogrula/kor.py:147
+#: cekirdek/dogrula/kor.py:149
 #, python-format
 msgid "tambur dönme açısı −360…360° aralığında olmalı: %s"
 msgstr "drum rotation angle must be within −360…360°: %s"
 
-#: cekirdek/dogrula/kor.py:151
+#: cekirdek/dogrula/kor.py:153
 msgid "tamburlu kor 2B — eksenel sızıntı yok, k-eff olduğundan yüksek çıkar"
 msgstr "core with control drums is 2D — no axial leakage, k-eff comes out too high"
 
-#: cekirdek/dogrula/kor.py:152
+#: cekirdek/dogrula/kor.py:154
 msgid "Gerçekçi bir tambur değeri için Kor sekmesinde aktif yükseklik tanımlayın."
 msgstr "For a realistic drum worth define an active height on the Geometry page."
 
-#: cekirdek/dogrula/kor.py:161 cekirdek/geometri/sablon.py:219
+#: cekirdek/dogrula/kor.py:163 cekirdek/geometri/sablon.py:219
 msgid "küresel düzenekte en az bir kabuk gerekir"
 msgstr "a spherical assembly needs at least one shell"
 
-#: cekirdek/dogrula/kor.py:165
+#: cekirdek/dogrula/kor.py:167
 #, python-format
 msgid "%d. kabuğun yarıçapı sıfırdan büyük olmalı"
 msgstr "the radius of shell %d must be greater than zero"
 
-#: cekirdek/dogrula/kor.py:169
+#: cekirdek/dogrula/kor.py:171
 #, python-format
 msgid "%d. kabukta tanımsız malzeme: %s"
 msgstr "undefined material in shell %d: %s"
 
-#: cekirdek/dogrula/kor.py:175 cekirdek/geometri/sablon.py:223
+#: cekirdek/dogrula/kor.py:177 cekirdek/geometri/sablon.py:223
 #, python-format
 msgid "kabuk yarıçapları artan sırada olmalı: r%d = %.5f ≥ r%d = %.5f"
 msgstr "shell radii must be in increasing order: r%d = %.5f ≥ r%d = %.5f"
 
-#: cekirdek/dogrula/kor.py:185
+#: cekirdek/dogrula/kor.py:187
 #, python-format
 msgid "küresel düzenekte yükseklik tanımlanamaz (%g cm)"
 msgstr "a height cannot be defined for a spherical assembly (%g cm)"
 
-#: cekirdek/dogrula/kor.py:186
+#: cekirdek/dogrula/kor.py:188
 msgid ""
 "Küre geometrisi kabuk yarıçaplarıyla tamamen belirlenir; yükseklik kaynak kutusuna, "
 "entropi ağına ve tally ağlarına girer. Kor sekmesinde küresel tür seçiliyken alan "
@@ -1184,7 +1193,7 @@ msgstr ""
 "source box, the entropy mesh and the tally meshes. The field is cleared when the "
 "spherical type is selected on the Geometry page."
 
-#: cekirdek/dogrula/kor.py:192
+#: cekirdek/dogrula/kor.py:194
 msgid ""
 "küresel düzenekte dış sınır Yansıtıcı (reflective) — çıplak (bare) bir kritiklik "
 "düzeneği modelliyorsanız Vakum (vacuum) olmalı"
@@ -1192,48 +1201,48 @@ msgstr ""
 "the outer boundary of the spherical assembly is Reflective — if you are modelling a "
 "bare critical assembly it should be Vacuum"
 
-#: cekirdek/dogrula/kor.py:194
+#: cekirdek/dogrula/kor.py:196
 msgid "Yansıtıcı sınır sonsuz bir ortam demektir; kritik küre düzenekleri çıplaktır (Vakum)."
 msgstr ""
 "A reflective boundary means an infinite medium; critical sphere assemblies are bare "
 "(Vacuum)."
 
-#: cekirdek/dogrula/kor.py:202 cekirdek/dogrula/kor.py:431
+#: cekirdek/dogrula/kor.py:204 cekirdek/dogrula/kor.py:433
 msgid "kor haritası boş"
 msgstr "core map is empty"
 
-#: cekirdek/dogrula/kor.py:207
+#: cekirdek/dogrula/kor.py:209
 #, python-format
 msgid "harita %d satır, boyut %d bekliyor"
 msgstr "the map has %d rows, the size expects %d"
 
-#: cekirdek/dogrula/kor.py:210
+#: cekirdek/dogrula/kor.py:212
 #, python-format
 msgid "%d. satır %d karakter, %d bekleniyor"
 msgstr "row %d has %d characters, %d expected"
 
-#: cekirdek/dogrula/kor.py:242
+#: cekirdek/dogrula/kor.py:244
 #, python-format
 msgid "geçersiz sınır koşulu (%s): %s"
 msgstr "invalid boundary condition (%s): %s"
 
-#: cekirdek/dogrula/kor.py:257
+#: cekirdek/dogrula/kor.py:259
 msgid "demetlerin dış yüzlerinden geçen kırık bir çizgi"
 msgstr "a broken line through the outer faces of the assemblies"
 
-#: cekirdek/dogrula/kor.py:258
+#: cekirdek/dogrula/kor.py:260
 msgid "Altıgen tam korda eşleşen düzlem çifti yoktur."
 msgstr "A hexagonal full core has no matching pairs of planes."
 
-#: cekirdek/dogrula/kor.py:260
+#: cekirdek/dogrula/kor.py:262
 msgid "Sonsuz kafes için Yansıtıcı (reflective) sınır aynı sonucu verir."
 msgstr "For an infinite lattice a Reflective boundary gives the same result."
 
-#: cekirdek/dogrula/kor.py:263
+#: cekirdek/dogrula/kor.py:265
 msgid "altıgen bir prizma"
 msgstr "a hexagonal prism"
 
-#: cekirdek/dogrula/kor.py:264
+#: cekirdek/dogrula/kor.py:266
 msgid ""
 "Bu sürüm periyodik sınırı yalnızca kare kesitte (x/y düzlem çiftleri) sunuyor. "
 "Simetrik bir demette sonsuz kafes için Yansıtıcı (reflective) sınır aynı k'yı verir."
@@ -1242,19 +1251,19 @@ msgstr ""
 "plane pairs). For an infinite lattice of a symmetric assembly a Reflective boundary "
 "gives the same k."
 
-#: cekirdek/dogrula/kor.py:268
+#: cekirdek/dogrula/kor.py:270
 msgid "bir küre"
 msgstr "a sphere"
 
-#: cekirdek/dogrula/kor.py:268
+#: cekirdek/dogrula/kor.py:270
 msgid "bir silindir"
 msgstr "a cylinder"
 
-#: cekirdek/dogrula/kor.py:269
+#: cekirdek/dogrula/kor.py:271
 msgid "düzlemsel değil"
 msgstr "not planar"
 
-#: cekirdek/dogrula/kor.py:270
+#: cekirdek/dogrula/kor.py:272
 msgid ""
 "OpenMC periyodik yüzeyin eşini bulamaz (\"Found only one periodic surface without a "
 "specified partner\") ve koşu başlamadan durur. Yansıtıcı ya da Vakum seçin."
@@ -1263,7 +1272,7 @@ msgstr ""
 "surface without a specified partner\") and stops before the run starts. Select "
 "Reflective or Vacuum."
 
-#: cekirdek/dogrula/kor.py:275
+#: cekirdek/dogrula/kor.py:277
 #, python-format
 msgid ""
 "Periyodik (periodic) sınır yalnızca düzlemsel sınırlarda (x/y düzlem çiftleri) "
@@ -1272,12 +1281,12 @@ msgstr ""
 "A periodic boundary can be used only on planar boundaries (x/y plane pairs) — the "
 "radial surface of this core type is %s"
 
-#: cekirdek/dogrula/kor.py:291
+#: cekirdek/dogrula/kor.py:293
 #, python-format
 msgid "model 2B — %s sınır koşulu (%s) yok sayılır"
 msgstr "2D model — the %s boundary condition (%s) is ignored"
 
-#: cekirdek/dogrula/kor.py:293
+#: cekirdek/dogrula/kor.py:295
 msgid ""
 "2B model eksenel yönde sonsuzdur (yansıtıcı alt/üst ile eşdeğer). Eksenel sızıntı "
 "için Kor sekmesinde yükseklik tanımlayın."
@@ -1285,14 +1294,14 @@ msgstr ""
 "A 2D model is infinite in the axial direction (equivalent to reflective bottom/top). "
 "For axial leakage define a height on the Geometry page."
 
-#: cekirdek/dogrula/kor.py:307
+#: cekirdek/dogrula/kor.py:309
 #, python-format
 msgid "%s sınır Periyodik (periodic) ama %s sınır değil — periyodik yüzeyin eşi yok"
 msgstr ""
 "%s boundary is Periodic but the %s boundary is not — the periodic surface has no "
 "partner"
 
-#: cekirdek/dogrula/kor.py:309
+#: cekirdek/dogrula/kor.py:311
 msgid ""
 "OpenMC koşu başlamadan durur (\"Found only one periodic surface without a specified "
 "partner\"). Alt/üst için Yansıtıcı ya da Vakum seçin."
@@ -1300,13 +1309,13 @@ msgstr ""
 "OpenMC stops before the run starts (\"Found only one periodic surface without a "
 "specified partner\"). Select Reflective or Vacuum for bottom/top."
 
-#: cekirdek/dogrula/kor.py:315
+#: cekirdek/dogrula/kor.py:317
 msgid "alt ve üst sınır Periyodik (periodic) — korun tepesi dibine bağlanır"
 msgstr ""
 "bottom and top boundaries are Periodic — the top of the core is connected to its "
 "bottom"
 
-#: cekirdek/dogrula/kor.py:316
+#: cekirdek/dogrula/kor.py:318
 msgid ""
 "Sonlu yükseklikteki bir korda eksenel periyodiklik fiziksel değildir (üst "
 "yansıtıcıdan çıkan nötron alt yansıtıcıya girer). Eksenel simetri için Yansıtıcı "
@@ -1316,12 +1325,12 @@ msgstr ""
 "top reflector enters the bottom reflector). For axial symmetry use a Reflective "
 "boundary; the interface does not offer this option."
 
-#: cekirdek/dogrula/kor.py:332
+#: cekirdek/dogrula/kor.py:334
 #, python-format
 msgid "'%s' kor türünde yansıtıcı kuşak kurulmaz — dosyada açık ama yok sayılır"
 msgstr "no radial reflector is built for core type '%s' — on in the file but ignored"
 
-#: cekirdek/dogrula/kor.py:334
+#: cekirdek/dogrula/kor.py:336
 msgid ""
 "Yansıtıcı kuşak yalnızca tek yakıt demeti ve haritalı tam korda (isteğe bağlı) ve "
 "tamburlu korda (zorunlu) kurulur. Model yansıtıcısız çalışır."
@@ -1330,16 +1339,16 @@ msgstr ""
 "map (optional) and for a core with control drums (required). The model runs without a"
 " reflector."
 
-#: cekirdek/dogrula/kor.py:344
+#: cekirdek/dogrula/kor.py:346
 #, python-format
 msgid "'%s' kor türünde kullanılmayan alanlar dolu: %s — yok sayılır"
 msgstr "unused fields are set for core type '%s': %s — ignored"
 
-#: cekirdek/dogrula/kor.py:346
+#: cekirdek/dogrula/kor.py:348
 msgid "Başka bir kor türünden kalmış olabilir; kurucu bu alanlara bakmaz."
 msgstr "They may be left over from another core type; the builder ignores these fields."
 
-#: cekirdek/dogrula/kor.py:355
+#: cekirdek/dogrula/kor.py:357
 msgid ""
 "tek hücre/demet modelinde yan sınır Vakum (vacuum) — sızıntı sonsuz kafes varsayımını"
 " bozar"
@@ -1347,11 +1356,11 @@ msgstr ""
 "radial boundary is Vacuum in a single cell/assembly model — leakage breaks the "
 "infinite lattice assumption"
 
-#: cekirdek/dogrula/kor.py:357
+#: cekirdek/dogrula/kor.py:359
 msgid "Sonsuz kafes (k∞) istiyorsanız Yansıtıcı (reflective) sınır kullanın."
 msgstr "If you want an infinite lattice (k∞) use a Reflective boundary."
 
-#: cekirdek/dogrula/kor.py:409
+#: cekirdek/dogrula/kor.py:411
 msgid ""
 "kılıflı tek demette sınır kılıfın dış yüzündedir — demetler arası boşluk (soğutucu) "
 "modelde yok"
@@ -1359,7 +1368,7 @@ msgstr ""
 "in a single assembly with a duct the boundary is on the outer face of the duct — the "
 "inter-assembly gap (coolant) is missing from the model"
 
-#: cekirdek/dogrula/kor.py:411
+#: cekirdek/dogrula/kor.py:413
 msgid ""
 "SFR tek demet için halka=1 altigen_kafes kullanın (demetler arası boşluk): demet "
 "adımı kılıf dış ölçüsünden büyük verilir ve aradaki boşluk demetin dış dolgusuyla "
@@ -1369,7 +1378,7 @@ msgstr ""
 "assembly pitch is given larger than the outer size of the duct and the gap in between"
 " is filled by the outer fill of the assembly."
 
-#: cekirdek/dogrula/kor.py:418
+#: cekirdek/dogrula/kor.py:420
 msgid ""
 "yan sınır Yansıtıcı ve haritada birden fazla demet türü var — sonsuz kafes "
 "eşdeğerliği yalnız aynı ve simetrik demetlerde geçerli"
@@ -1377,7 +1386,7 @@ msgstr ""
 "the radial boundary is Reflective and the map contains more than one assembly type — "
 "infinite lattice equivalence holds only for identical and symmetric assemblies"
 
-#: cekirdek/dogrula/kor.py:420
+#: cekirdek/dogrula/kor.py:422
 msgid ""
 "Kırık çizgi sınırda her demet komşusunun aynadaki görüntüsüyle çevrilir; karışık bir "
 "haritada bu gerçek bir simetri düzlemi değildir. Tam kor için yansıtıcı kuşak ve "
@@ -1387,14 +1396,14 @@ msgstr ""
 "neighbours; in a mixed map this is not a true symmetry plane. For a full core use a "
 "radial reflector and a Vacuum boundary."
 
-#: cekirdek/dogrula/kor.py:458
+#: cekirdek/dogrula/kor.py:460
 #, python-format
 msgid "'%s' altıgen kor haritasına konamaz: altıgen demet ya da malzeme olmalı"
 msgstr ""
 "'%s' cannot be placed in a hexagonal core map: it must be a hexagonal assembly or a "
 "material"
 
-#: cekirdek/dogrula/kor.py:460
+#: cekirdek/dogrula/kor.py:462
 msgid ""
 "Çubuk ya da plaka tek başına bir demet hücresini doldurmaz; önce bir altıgen demete "
 "yerleştirin."
@@ -1402,14 +1411,14 @@ msgstr ""
 "A pin or plate on its own does not fill an assembly cell; first place it in a "
 "hexagonal assembly."
 
-#: cekirdek/dogrula/kor.py:465
+#: cekirdek/dogrula/kor.py:467
 #, python-format
 msgid "'%s' kare bir demet; altıgen kor haritasına yalnızca altıgen demet konabilir"
 msgstr ""
 "'%s' is a rectangular assembly; only hexagonal assemblies can be placed in a "
 "hexagonal core map"
 
-#: cekirdek/dogrula/kor.py:478
+#: cekirdek/dogrula/kor.py:480
 #, python-format
 msgid ""
 "'%s' demetinin yönelimi ('%s') kor yönelimiyle aynı — demet köşeleri komşu hücreye "
@@ -1418,7 +1427,7 @@ msgstr ""
 "the orientation of assembly '%s' ('%s') is the same as the core orientation — the "
 "assembly corners extend into the neighbouring cell"
 
-#: cekirdek/dogrula/kor.py:480
+#: cekirdek/dogrula/kor.py:482
 #, python-format
 msgid ""
 "Kor kafesi pin kafesine göre 90° dönüktür: demet '%s' ise kor yönelimi '%s' olmalı "
@@ -1427,18 +1436,18 @@ msgstr ""
 "The core lattice is rotated by 90° relative to the pin lattice: if the assembly is "
 "'%s' the core orientation must be '%s' (VVER / SFR full cores are built this way)."
 
-#: cekirdek/dogrula/kor.py:487
+#: cekirdek/dogrula/kor.py:489
 #, python-format
 msgid "demet adımı (%.5f cm) '%s' demetinin dış ölçüsünden (%.5f cm%s) küçük"
 msgstr ""
 "the assembly pitch (%.5f cm) is smaller than the outer size of assembly '%s' (%.5f "
 "cm%s)"
 
-#: cekirdek/dogrula/kor.py:488
+#: cekirdek/dogrula/kor.py:490
 msgid ", kılıf dahil"
 msgstr ", including the duct"
 
-#: cekirdek/dogrula/kor.py:489
+#: cekirdek/dogrula/kor.py:491
 msgid ""
 "Demet adımı düz yüzden düz yüze ölçülür ve en az demetin dış ölçüsü kadar olmalı; "
 "yoksa kor hücresi demeti keser."
@@ -1446,17 +1455,17 @@ msgstr ""
 "The assembly pitch is measured flat to flat and must be at least the outer size of "
 "the assembly; otherwise the core cell cuts the assembly."
 
-#: cekirdek/dogrula/kor.py:500
+#: cekirdek/dogrula/kor.py:502
 #, python-format
 msgid "kor halka sayısı en az 1 olmalı: %s"
 msgstr "number of core rings must be at least 1: %s"
 
-#: cekirdek/dogrula/kor.py:502
+#: cekirdek/dogrula/kor.py:504
 #, python-format
 msgid "kor yönelimi 'x' ya da 'y' olmalı: %s"
 msgstr "core orientation must be 'x' or 'y': %s"
 
-#: cekirdek/dogrula/kor.py:505
+#: cekirdek/dogrula/kor.py:507
 msgid "demet adımı sıfırdan büyük olmalı"
 msgstr "assembly pitch must be greater than zero"
 
@@ -1903,6 +1912,33 @@ msgstr "material used but undefined: %s"
 #, python-format
 msgid "tanımlı ama modelde kullanılmayan malzeme: %s"
 msgstr "material defined but not used in the model: %s"
+
+#: cekirdek/dogrula/spektrum.py:25
+#, python-format
+msgid "'%s' öneki spektrum/dört faktör tally'lerine ayrılmıştır"
+msgstr "the '%s' prefix is reserved for the tallies of the spectrum and the four factors"
+
+#: cekirdek/dogrula/spektrum.py:27
+msgid "Tally'yi yeniden adlandırın."
+msgstr "Rename the tally."
+
+#: cekirdek/dogrula/spektrum.py:39
+msgid "tükenme koşusunda spektrum ve dört faktör tally'leri kapatılır"
+msgstr "the tallies of the spectrum and the four factors are turned off in a depletion run"
+
+#: cekirdek/dogrula/spektrum.py:40
+msgid ""
+"Çubuk çubuk tükenme malzemeleri klonlar; spektrumu ayrı bir özdeğer koşusunda "
+"hesaplayın."
+msgstr ""
+"Pin-by-pin depletion clones the materials; compute the spectrum in a separate "
+"eigenvalue run."
+
+#: cekirdek/dogrula/spektrum.py:45
+msgid "sabit kaynak hesabında dört faktör ve k tanımsızdır; yalnız spektrum verilir"
+msgstr ""
+"in a fixed source calculation the four factors and k are undefined; only the spectrum"
+" is given"
 
 #: cekirdek/dogrula/tukenme.py:38
 #, python-format
@@ -3947,6 +3983,132 @@ msgstr "neutron"
 msgid " (ortalama %s)"
 msgstr " (mean %s)"
 
+#: cekirdek/kinetik.py:109 cekirdek/kinetik.py:113 cekirdek/kinetik.py:126
+#, python-format
+msgid "%s sonlu bir sayı olmalı: %r"
+msgstr "%s must be a finite number: %r"
+
+#: cekirdek/kinetik.py:119
+#, python-format
+msgid "%s pozitif ve sonlu olmalı: %r"
+msgstr "%s must be positive and finite: %r"
+
+#: cekirdek/kinetik.py:134
+msgid "Başlangıç zamanı negatif olamaz."
+msgstr "Start time cannot be negative."
+
+#: cekirdek/kinetik.py:154
+msgid "β_i ve λ_i aynı sayıda (en az bir) grup içermeli."
+msgstr "β_i and λ_i must have the same number of groups (at least one)."
+
+#: cekirdek/kinetik.py:156
+#, python-format
+msgid "En çok %d gecikmeli nötron grubu desteklenir."
+msgstr "At most %d delayed neutron groups are supported."
+
+#: cekirdek/kinetik.py:159
+msgid "β_i negatif olamaz ve toplamı pozitif olmalı."
+msgstr "β_i cannot be negative and their sum must be positive."
+
+#: cekirdek/kinetik.py:178
+msgid "Keepin, Wimett & Zeigler (1957), U-235 termal, 6 grup"
+msgstr "Keepin, Wimett & Zeigler (1957), U-235 thermal, 6 groups"
+
+#: cekirdek/kinetik.py:210
+msgid "rampa süresi"
+msgstr "ramp duration"
+
+#: cekirdek/kinetik.py:232
+msgid "ısı kapasitesi"
+msgstr "heat capacity"
+
+#: cekirdek/kinetik.py:266
+msgid "ω = −λ_i bir kutuptur; ters saat denklemi tanımsız."
+msgstr "ω = −λ_i is a pole; the inhour equation is undefined there."
+
+#: cekirdek/kinetik.py:296
+#, python-format
+msgid "Inhour kökü aralıkta bulunamadı: [%g, %g]"
+msgstr "Inhour root not found in the interval: [%g, %g]"
+
+#: cekirdek/kinetik.py:309
+#, python-format
+msgid "Inhour kökü %g 1/s ötesinde."
+msgstr "Inhour root lies beyond %g 1/s."
+
+#: cekirdek/kinetik.py:404
+#, python-format
+msgid ""
+"ρ = %.3f $ ≥ 1 $: ANİ KRİTİK. Güç gecikmeli nötronları beklemeden Λ ölçeğinde artar; "
+"bu bölgede nokta kinetiği yalnız nitel bir tablo verir."
+msgstr ""
+"ρ = %.3f $ ≥ 1 $: PROMPT CRITICAL. Power rises on the Λ time scale without waiting "
+"for delayed neutrons; in this region point kinetics gives only a qualitative picture."
+
+#: cekirdek/kinetik.py:409
+msgid ""
+"α_T > 0: pozitif sıcaklık katsayısı gücü kendiliğinden artırır (kararsız geri "
+"besleme)."
+msgstr ""
+"α_T > 0: a positive temperature coefficient drives the power up by itself (unstable "
+"feedback)."
+
+#: cekirdek/kinetik.py:428
+msgid "süre"
+msgstr "duration"
+
+#: cekirdek/kinetik.py:430
+#, python-format
+msgid "Yöntem Radau ya da BDF olmalı: %r"
+msgstr "Method must be Radau or BDF: %r"
+
+#: cekirdek/kinetik.py:449
+#, python-format
+msgid "Çözücü başarısız: %s"
+msgstr "Solver failed: %s"
+
+#: cekirdek/kinetik.py:457
+#, python-format
+msgid "P/P0 %.0e'yi aştı (t = %.4g s); çözüm burada durduruldu."
+msgstr "P/P0 exceeded %.0e (t = %.4g s); the solution was stopped here."
+
+#: cekirdek/kinetik.py:468
+#, python-format
+msgid "En az iki zaman noktası gerekir (tam sayı): %r"
+msgstr "At least two time points are required (integer): %r"
+
+#: cekirdek/kinetik.py:498
+msgid "Periyot için en az üç nokta gerekir."
+msgstr "At least three points are required for the period."
+
+#: cekirdek/kinetik.py:501
+msgid "Periyot tahmini için pozitif güç noktaları gerekir."
+msgstr "Period estimation requires positive power values."
+
+#: cekirdek/kinetik_oku.py:57
+#, python-format
+msgid "Gecikmeli nötron grup sayısı 0, 6 ya da 8 olmalı: %r"
+msgstr "Number of delayed neutron groups must be 0, 6 or 8: %r"
+
+#: cekirdek/kinetik_oku.py:159
+#, python-format
+msgid ""
+"İstenen %d grup gecikmeli nötron üretiminin yalnızca %%%.1f'ini kapsıyor: kütüphanede"
+" daha çok grup var (JEFF: 8). β_eff ve $ eksik çıkar; grup sayısını 8 yapıp yeniden "
+"koşun."
+msgstr ""
+"The requested %d groups cover only %.1f%% of the delayed neutron production: the "
+"library has more groups (JEFF: 8). β_eff and $ come out too small; set the number of "
+"groups to 8 and run again."
+
+#: cekirdek/kinetik_oku.py:221
+msgid "k_eff yok: Λ yerine ani nötron ömrü ℓ yazıldı."
+msgstr "No k_eff: the prompt neutron lifetime ℓ was written instead of Λ."
+
+#: cekirdek/kinetik_oku.py:238
+msgid "OpenMC koşusu (IFP)"
+msgstr "OpenMC run (IFP)"
+
 #: cekirdek/kod_uret/tukenme.py:33
 #, python-format
 msgid ""
@@ -3965,11 +4127,11 @@ msgstr ""
 "the volume of an instance of material '%s' cannot be computed; pin-by-pin burnup "
 "requires exact volumes"
 
-#: cekirdek/kosucu.py:109
+#: cekirdek/kosucu.py:110
 msgid "geçersiz k-eff"
 msgstr "invalid k-eff"
 
-#: cekirdek/kosucu.py:116
+#: cekirdek/kosucu.py:117
 msgid ""
 "k∞ (sonsuz ortam) — sızıntı yok, kritiklik hükmü verilmez; sonlu bir reaktörde k-eff "
 "daha küçüktür"
@@ -3977,34 +4139,34 @@ msgstr ""
 "k∞ (infinite medium) — no leakage, no criticality verdict is given; in a finite "
 "reactor k-eff is smaller"
 
-#: cekirdek/kosucu.py:119
+#: cekirdek/kosucu.py:120
 msgid "Kritik (k = 1'den istatistiksel olarak ayırt edilemez)"
 msgstr "Critical (statistically indistinguishable from k = 1)"
 
-#: cekirdek/kosucu.py:121
+#: cekirdek/kosucu.py:122
 msgid "Kritik üstü (k > 1 — güç artar)"
 msgstr "Supercritical (k > 1 — power rises)"
 
-#: cekirdek/kosucu.py:123
+#: cekirdek/kosucu.py:124
 msgid "Kritik altı (k < 1 — güç söner)"
 msgstr "Subcritical (k < 1 — power decays)"
 
-#: cekirdek/kosucu.py:126
+#: cekirdek/kosucu.py:127
 #, python-format
 msgid "ρ∞ = %+.0f ± %.0f pcm (yakıtın taşıdığı reaktivite fazlası)"
 msgstr "ρ∞ = %+.0f ± %.0f pcm (excess reactivity carried by the fuel)"
 
-#: cekirdek/kosucu.py:128
+#: cekirdek/kosucu.py:129
 #, python-format
 msgid "reaktivite = %+.0f ± %.0f pcm"
 msgstr "reactivity = %+.0f ± %.0f pcm"
 
-#: cekirdek/kosucu.py:131
+#: cekirdek/kosucu.py:132
 #, python-format
 msgid "%+.2f $ (β_eff = %.0f pcm)"
 msgstr "%+.2f $ (β_eff = %.0f pcm)"
 
-#: cekirdek/kosucu.py:138
+#: cekirdek/kosucu.py:139
 msgid ""
 "ρ > 1 $: gerçek bir geçici rejimde bu anlık kritiklik demektir; sonsuz ortam (k∞) "
 "hesabında ise yakıtın taşıdığı reaktivite fazlasıdır (kontrol sistemiyle dengelenir)"
@@ -4013,7 +4175,7 @@ msgstr ""
 "(k∞) calculation it is the excess reactivity carried by the fuel (balanced by the "
 "control system)"
 
-#: cekirdek/kosucu.py:182
+#: cekirdek/kosucu.py:183
 #, python-format
 msgid ""
 "pasif çevrim sayısı (%d) kaynak yakınsamasını değerlendirmek için çok az — en az 4, "
@@ -4022,16 +4184,16 @@ msgstr ""
 "the number of inactive batches (%d) is too small to assess source convergence — use "
 "at least 4, in practice 20–50 inactive batches"
 
-#: cekirdek/kosucu.py:186
+#: cekirdek/kosucu.py:187
 #, python-format
 msgid "aktif çevrim sayısı değerlendirme için yetersiz (%d çevrim, %d pasif)"
 msgstr "not enough active batches for the assessment (%d batches, %d inactive)"
 
-#: cekirdek/kosucu.py:193
+#: cekirdek/kosucu.py:194
 msgid "entropi sabit; değerlendirilemedi"
 msgstr "entropy is constant; could not be assessed"
 
-#: cekirdek/kosucu.py:199
+#: cekirdek/kosucu.py:200
 #, python-format
 msgid ""
 "Kaynak dağılımı pasif dönemin sonunda hâlâ kayıyor (kayma %.4f, aktif saçılma σ = "
@@ -4041,7 +4203,7 @@ msgstr ""
 "%.4f, active spread σ = %.4f). Increase the number of inactive batches — k-eff may be"
 " biased."
 
-#: cekirdek/kosucu.py:204
+#: cekirdek/kosucu.py:205
 #, python-format
 msgid ""
 "Kaynak dağılımı aktif dönemde de kaymaya devam etti (ilk aktif çeyrek ile plato farkı"
@@ -4052,122 +4214,122 @@ msgstr ""
 "first active quarter and the plateau %.4f > 2σ = %.4f). Increase the number of "
 "inactive batches — k-eff and the tallies may be biased."
 
-#: cekirdek/kosucu.py:208
+#: cekirdek/kosucu.py:209
 #, python-format
 msgid "Kaynak dağılımı yakınsamış görünüyor (pasif dönem sonunda kayma %.4f ≤ 2σ = %.4f)."
 msgstr ""
 "The source distribution appears converged (drift at the end of the inactive batches "
 "%.4f ≤ 2σ = %.4f)."
 
-#: cekirdek/kosucu.py:289
+#: cekirdek/kosucu.py:290
 msgid "openmc çalıştırılabilir dosyası PATH'te bulunamadı (conda ortamı etkin mi?)"
 msgstr "the openmc executable was not found in PATH (is the conda environment active?)"
 
-#: cekirdek/kosucu.py:340
+#: cekirdek/kosucu.py:341
 msgid "akı"
 msgstr "flux"
 
-#: cekirdek/kosucu.py:340
+#: cekirdek/kosucu.py:341
 msgid "soğurma"
 msgstr "absorption"
 
-#: cekirdek/kosucu.py:340
+#: cekirdek/kosucu.py:341
 msgid "fisyon"
 msgstr "fission"
 
-#: cekirdek/kosucu.py:340
+#: cekirdek/kosucu.py:341
 msgid "fisyon nötronu üretimi"
 msgstr "fission neutron production"
 
-#: cekirdek/kosucu.py:341
+#: cekirdek/kosucu.py:342
 msgid "toplam tepkime"
 msgstr "total reaction"
 
-#: cekirdek/kosucu.py:341
+#: cekirdek/kosucu.py:342
 msgid "saçılma"
 msgstr "scattering"
 
-#: cekirdek/kosucu.py:341
+#: cekirdek/kosucu.py:342
 msgid "ısınma"
 msgstr "heating"
 
-#: cekirdek/kosucu.py:342
+#: cekirdek/kosucu.py:343
 msgid "yerel ısınma"
 msgstr "local heating"
 
-#: cekirdek/kosucu.py:342
+#: cekirdek/kosucu.py:343
 msgid "fisyon enerjisi"
 msgstr "fission energy"
 
-#: cekirdek/kosucu.py:342
+#: cekirdek/kosucu.py:343
 msgid "(n,γ) yakalama"
 msgstr "(n,γ) capture"
 
-#: cekirdek/kosucu.py:343
+#: cekirdek/kosucu.py:344
 msgid "esnek saçılma"
 msgstr "elastic scattering"
 
-#: cekirdek/kosucu.py:343
+#: cekirdek/kosucu.py:344
 msgid "akım"
 msgstr "current"
 
-#: cekirdek/kosucu.py:365
+#: cekirdek/kosucu.py:366
 msgid "n·cm/s (hacim-integralli)"
 msgstr "n·cm/s (volume-integrated)"
 
-#: cekirdek/kosucu.py:365
+#: cekirdek/kosucu.py:366
 msgid "n·cm / kaynak nötronu"
 msgstr "n·cm / source neutron"
 
-#: cekirdek/kosucu.py:367
+#: cekirdek/kosucu.py:368
 msgid "eV / kaynak nötronu"
 msgstr "eV / source neutron"
 
-#: cekirdek/kosucu.py:368
+#: cekirdek/kosucu.py:369
 msgid "/ kaynak nötronu"
 msgstr "/ source neutron"
 
-#: cekirdek/kosucu.py:389
+#: cekirdek/kosucu.py:390
 #, python-format
 msgid "malzeme %s"
 msgstr "material %s"
 
-#: cekirdek/kosucu.py:398
+#: cekirdek/kosucu.py:399
 msgid "tüm model"
 msgstr "whole model"
 
-#: cekirdek/kosucu.py:408
+#: cekirdek/kosucu.py:409
 msgid "Bölge / enerji"
 msgstr "Region / energy"
 
-#: cekirdek/kosucu.py:408
+#: cekirdek/kosucu.py:409
 msgid "Ölçülen"
 msgstr "Quantity"
 
-#: cekirdek/kosucu.py:408
+#: cekirdek/kosucu.py:409
 msgid "Değer"
 msgstr "Value"
 
-#: cekirdek/kosucu.py:408
+#: cekirdek/kosucu.py:409
 msgid "Bağıl hata"
 msgstr "Relative error"
 
-#: cekirdek/kosucu.py:408
+#: cekirdek/kosucu.py:409
 msgid "Birim"
 msgstr "Unit"
 
-#: cekirdek/kosucu.py:453 cekirdek/rapor_sablon/__init__.py:152
+#: cekirdek/kosucu.py:456 cekirdek/rapor_sablon/__init__.py:152
 #, python-format
 msgid "okunamadı: %s"
 msgstr "could not be read: %s"
 
-#: cekirdek/kosucu.py:514
+#: cekirdek/kosucu.py:519
 msgid "Referans tally yok — korunum denetlenemedi (eski statepoint ya da model regresyonu)."
 msgstr ""
 "No reference tally — conservation could not be checked (old statepoint or model "
 "regression)."
 
-#: cekirdek/kosucu.py:518
+#: cekirdek/kosucu.py:523
 #, python-format
 msgid ""
 "Referans güç toplamı sıfır ya da negatif (%.3g): hedef bölgede fisyon sayılmadı, "
@@ -4176,7 +4338,7 @@ msgstr ""
 "The reference power sum is zero or negative (%.3g): no fissions were counted in the "
 "target region, the conservation of the total could not be checked."
 
-#: cekirdek/kosucu.py:525
+#: cekirdek/kosucu.py:530
 #, python-format
 msgid ""
 "Çubuk güçlerinin toplamı filtresiz tally'den %.2e bağıl fark gösteriyor. Haritalama "
@@ -4185,20 +4347,20 @@ msgstr ""
 "The sum of the pin powers differs from the unfiltered tally by a relative %.2e. The "
 "mapping may be broken — do not trust the results."
 
-#: cekirdek/kosucu.py:578
+#: cekirdek/kosucu.py:583
 #, python-format
 msgid "toplamın korunumu: bağıl fark %.1e — %s"
 msgstr "conservation of the total: relative difference %.1e — %s"
 
-#: cekirdek/kosucu.py:579 cekirdek/kosucu_terminal.py:157
+#: cekirdek/kosucu.py:584 cekirdek/kosucu_terminal.py:157
 msgid "tamam"
 msgstr "ok"
 
-#: cekirdek/kosucu.py:580
+#: cekirdek/kosucu.py:585
 msgid "bozuk, haritaya güvenmeyin"
 msgstr "broken, do not trust the map"
 
-#: cekirdek/kosucu.py:582
+#: cekirdek/kosucu.py:587
 #, python-format
 msgid "toplamın korunumu denetlenemedi: %s"
 msgstr "conservation of the total could not be checked: %s"
@@ -4534,36 +4696,36 @@ msgstr "         local slope dk/dx = %.4g / %s"
 msgid "  Çözüm bulunamadı."
 msgstr "  No solution found."
 
-#: cekirdek/dogrula/geometri.py:72 cekirdek/geometri/yapici.py:76 cekirdek/kurucu.py:86
+#: cekirdek/dogrula/geometri.py:72 cekirdek/geometri/yapici.py:76 cekirdek/kurucu.py:87
 #: cekirdek/sema_basvuru.py:156 cekirdek/tarama.py:170 cekirdek/tarama.py:176
 #, python-format
 msgid "tanımsız malzeme: %s"
 msgstr "undefined material: %s"
 
-#: cekirdek/kurucu.py:197
+#: cekirdek/kurucu.py:198
 msgid "otomatik ağ sınırları için modelin sınır kutusu gerekli"
 msgstr "automatic mesh boundaries require the bounding box of the model"
 
-#: cekirdek/kurucu.py:231
+#: cekirdek/kurucu.py:232
 #, python-format
 msgid "bilinmeyen filtre türü: %s"
 msgstr "unknown filter type: %s"
 
-#: cekirdek/kurucu.py:249 cekirdek/kurucu.py:272
+#: cekirdek/kurucu.py:250 cekirdek/kurucu.py:273
 msgid "güç dağılımı için geçerli bir çubuk seçilmeli"
 msgstr "a valid pin must be selected for the power distribution"
 
-#: cekirdek/kurucu.py:250
+#: cekirdek/kurucu.py:251
 #, python-format
 msgid " ('%s' tanımsız)"
 msgstr " ('%s' undefined)"
 
-#: cekirdek/kurucu.py:257
+#: cekirdek/kurucu.py:258
 #, python-format
 msgid "'%s': geçersiz bölge numarası %d (çubukta %d bölge var)"
 msgstr "'%s': invalid pin region number %d (the pin has %d regions)"
 
-#: cekirdek/kurucu.py:286
+#: cekirdek/kurucu.py:287
 #, python-format
 msgid ""
 "'%s' çubuğu modelde kullanılmıyor. Güç dağılımı yalnızca geometride yer alan bir "
@@ -5734,7 +5896,12 @@ msgstr ""
 msgid "uygunluk denetimi yapılamadı: %s"
 msgstr "conformity check could not be performed: %s"
 
-#: cekirdek/sema.py:376
+#: cekirdek/sema.py:351
+#, python-format
+msgid "bilinmeyen kor türü: %r"
+msgstr "unknown core type: %r"
+
+#: cekirdek/sema.py:387
 #, python-format
 msgid ""
 "%s() gelişmiş (ağaç) geometri modunda kullanılamaz: kor alanları yok; "
@@ -5774,6 +5941,15 @@ msgstr ""
 #, python-format
 msgid "'%s' adında %d malzeme var; önce birini yeniden adlandırın."
 msgstr "Material name '%s' is used by %d materials; rename one of them first."
+
+#: cekirdek/spektrum.py:120
+#, python-format
+msgid "bilinmeyen enerji grup yapısı: %s (geçerli: %s)"
+msgstr "unknown energy group structure: %s (valid: %s)"
+
+#: cekirdek/spektrum.py:306
+msgid "enerji kenarlarının hepsi sıfır ya da negatif"
+msgstr "all energy edges are zero or negative"
 
 #: cekirdek/surum.py:22
 msgid "OpenMC Reaktör Kuru Arayüzü"
@@ -5915,7 +6091,7 @@ msgstr "void fraction must be between 0% and 100%"
 msgid "'%s' malzemesinde zenginlik tanımlı bir bileşen yok"
 msgstr "material '%s' has no component with an enrichment"
 
-#: cekirdek/dogrula/kor.py:83 cekirdek/geometri/sablon.py:141 cekirdek/tarama.py:222
+#: cekirdek/dogrula/kor.py:85 cekirdek/geometri/sablon.py:141 cekirdek/tarama.py:222
 #, python-format
 msgid "tanımsız demet: %s"
 msgstr "undefined assembly: %s"
@@ -6161,16 +6337,16 @@ msgstr "the ring target must have the form '<container id>/halkalar/<i>': %r"
 msgid "'%s' kabında kalınlıkla tanımlı %d. halka yok"
 msgstr "container '%s' has no ring %d defined by thickness"
 
-#: cekirdek/tukenme.py:99
+#: cekirdek/tukenme.py:100
 #, python-format
 msgid "otomatik: %s"
 msgstr "automatic: %s"
 
-#: cekirdek/tukenme.py:102
+#: cekirdek/tukenme.py:103
 msgid "kullanıcı seçimi"
 msgstr "user selection"
 
-#: cekirdek/tukenme.py:319
+#: cekirdek/tukenme.py:320
 #, python-format
 msgid ""
 "çubuk çubuk yanma kesin örnek hacmi gerektirir; hacmi kesin olmayan (kesik) yanabilir"
@@ -6179,7 +6355,7 @@ msgstr ""
 "pin-by-pin burnup requires exact instance volumes; depletable material with inexact "
 "(truncated) volume: %s"
 
-#: cekirdek/tukenme.py:357
+#: cekirdek/tukenme.py:358
 #, python-format
 msgid ""
 "hacmi analitik hesaplanamayan yanabilir malzeme: %s (%s). Tükenme kesin hacim "
@@ -6188,101 +6364,101 @@ msgstr ""
 "depletable material whose volume cannot be computed analytically: %s (%s). Depletion "
 "requires exact volumes."
 
-#: cekirdek/dogrula/tukenme.py:135 cekirdek/tukenme.py:361
+#: cekirdek/dogrula/tukenme.py:135 cekirdek/tukenme.py:362
 msgid "modelde yanabilir (fisil) malzeme yok"
 msgstr "the model contains no depletable (fissile) material"
 
-#: cekirdek/tukenme.py:641
+#: cekirdek/tukenme.py:642
 msgid "malzemeler"
 msgstr "materials"
 
-#: cekirdek/tukenme.py:641
+#: cekirdek/tukenme.py:642
 msgid "çubuklar"
 msgstr "pins"
 
-#: cekirdek/tukenme.py:642
+#: cekirdek/tukenme.py:643
 msgid "plaka elemanları"
 msgstr "plate-type fuel elements"
 
-#: cekirdek/tukenme.py:642
+#: cekirdek/tukenme.py:643
 msgid "demetler"
 msgstr "assemblies"
 
-#: cekirdek/tukenme.py:642
+#: cekirdek/tukenme.py:643
 msgid "kor"
 msgstr "core"
 
-#: cekirdek/tukenme.py:643
+#: cekirdek/tukenme.py:644
 msgid "hesap ayarları"
 msgstr "run settings"
 
-#: cekirdek/tukenme.py:643
+#: cekirdek/tukenme.py:644
 msgid "tally'ler"
 msgstr "tallies"
 
-#: cekirdek/tukenme.py:644
+#: cekirdek/tukenme.py:645
 msgid "güç dağılımı"
 msgstr "power distribution"
 
-#: cekirdek/tukenme.py:644
+#: cekirdek/tukenme.py:645
 msgid "tükenme ayarları"
 msgstr "depletion settings"
 
-#: cekirdek/dogrula/tukenme.py:23 cekirdek/tukenme.py:652
+#: cekirdek/dogrula/tukenme.py:23 cekirdek/tukenme.py:653
 #: cekirdek/uygunluk_denetimi/vv_arayuz.py:55 cekirdek/vv/kume.py:189
 msgctxt "spektrum"
 msgid "termal"
 msgstr "thermal"
 
-#: cekirdek/dogrula/tukenme.py:24 cekirdek/tukenme.py:653
+#: cekirdek/dogrula/tukenme.py:24 cekirdek/tukenme.py:654
 #: cekirdek/uygunluk_denetimi/vv_arayuz.py:57 cekirdek/vv/kume.py:190
 msgctxt "spektrum"
 msgid "hızlı"
 msgstr "fast"
 
-#: cekirdek/tukenme.py:707
+#: cekirdek/tukenme.py:708
 msgid "koşmadan hacim, zincir ve ağır metal bilgisini yazdır"
 msgstr "print the volume, chain and heavy metal information without running"
 
-#: cekirdek/tukenme.py:709
+#: cekirdek/tukenme.py:710
 msgid "doğrulamada nüklid/kütüphane denetimini atla"
 msgstr "skip the nuclide/library check in the model check"
 
-#: cekirdek/tukenme.py:726
+#: cekirdek/tukenme.py:727
 #, python-format
 msgid "  zincir        : %s  (%s)"
 msgstr "  chain         : %s  (%s)"
 
-#: cekirdek/tukenme.py:727
+#: cekirdek/tukenme.py:728
 #, python-format
 msgid "  fisyon verimi : %s eV (%s spektrum)"
 msgstr "  fission yield : %s eV (%s spectrum)"
 
-#: cekirdek/tukenme.py:729
+#: cekirdek/tukenme.py:730
 #, python-format
 msgid "  güç yoğunluğu : %g W/gHM"
 msgstr "  power density : %g W/gHM"
 
-#: cekirdek/tukenme.py:730
+#: cekirdek/tukenme.py:731
 #, python-format
 msgid "  adımlar       : %s %s  → %d transport"
 msgstr "  steps         : %s %s  → %d transports"
 
-#: cekirdek/tukenme.py:732 cekirdek/tukenme.py:757
+#: cekirdek/tukenme.py:733 cekirdek/tukenme.py:758
 msgid "gün"
 msgstr "days"
 
-#: cekirdek/tukenme.py:736
+#: cekirdek/tukenme.py:737
 #, python-format
 msgid "  hacim %-10s: %s cm³ [%s] %s"
 msgstr "  volume %-10s: %s cm³ [%s] %s"
 
-#: cekirdek/tukenme.py:740
+#: cekirdek/tukenme.py:741
 #, python-format
 msgid "  ağır metal    : %.6g g"
 msgstr "  heavy metal   : %.6g g"
 
-#: cekirdek/tukenme.py:749
+#: cekirdek/tukenme.py:750
 #, python-format
 msgid ""
 "\n"
@@ -6291,7 +6467,7 @@ msgstr ""
 "\n"
 "  MODEL CHECK: the run was not started (%d errors)"
 
-#: cekirdek/tukenme.py:756
+#: cekirdek/tukenme.py:757
 #, python-format
 msgid ""
 "\n"
@@ -6300,7 +6476,7 @@ msgstr ""
 "\n"
 "  heavy metal: %.6g g"
 
-#: cekirdek/tukenme.py:760
+#: cekirdek/tukenme.py:761
 #, python-format
 msgid ""
 "\n"
@@ -6446,26 +6622,26 @@ msgstr "material '%s' contains %s"
 msgid "'%s' malzemesi hidrojen içeriyor"
 msgstr "material '%s' contains hydrogen"
 
-#: cekirdek/tukenme_spektrum.py:84
+#: cekirdek/tukenme_spektrum.py:89
 #, python-format
 msgid "koşudaki EALF = %.3g eV ('%s' tally'si; sınır %.0f eV)"
 msgstr "EALF of the run = %.3g eV ('%s' tally; boundary %.0f eV)"
 
-#: cekirdek/tukenme_spektrum.py:99
+#: cekirdek/tukenme_spektrum.py:104
 #, python-format
 msgid "yakıta komşu %s"
 msgstr "next to the fuel, %s"
 
-#: cekirdek/tukenme_spektrum.py:102
+#: cekirdek/tukenme_spektrum.py:107
 #, python-format
 msgid "yakıta komşu malzemelerde moderatör yok (%s yakıtla temas etmiyor)"
 msgstr "no moderator in the materials next to the fuel (%s does not touch the fuel)"
 
-#: cekirdek/tukenme_spektrum.py:104 cekirdek/tukenme_spektrum.py:109
+#: cekirdek/tukenme_spektrum.py:109 cekirdek/tukenme_spektrum.py:114
 msgid "modelde hidrojen ya da grafit moderatör yok"
 msgstr "the model has no hydrogen or graphite moderator"
 
-#: cekirdek/tukenme_spektrum.py:108
+#: cekirdek/tukenme_spektrum.py:113
 #, python-format
 msgid "%s (kaba kural: yakıt komşuluğu çıkarılamadı)"
 msgstr "%s (coarse rule: the fuel neighbourhood could not be derived)"

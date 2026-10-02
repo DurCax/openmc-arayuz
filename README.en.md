@@ -53,8 +53,10 @@ ANSI/ANS-10.4 (verification and validation of non-safety-related scientific prog
   palette; square and hexagonal core maps use the same palette. Axial layers (reflectors,
   blankets, plenum, enrichment zones) are set up in a table.
 - **Start screen.** One card per model type (fuel pin, square/hexagonal assembly, full core, MTR
-  plate element, core with control drums, shielding). A new model can start empty or from a copy
-  of an example; examples are never overwritten.
+  plate element, core with control drums, shielding). No example is loaded at startup: start **from
+  scratch** (a truly empty model with a step guide: material → component → assembly → geometry),
+  **from template** (a working, simple model of that type) or **from example** (an unsaved copy;
+  examples are never overwritten).
 
 ### Flexible geometry tree
 
@@ -89,7 +91,7 @@ positions, overlaps and gaps before a run. See
   Run button stays disabled until the geometry preview has been produced and no errors remain.
 - **Source convergence.** The Shannon entropy mesh is on by default; after the run the tool
   checks whether the source had settled by the end of the inactive batches.
-- **Kinetics parameters** (β_eff, Λ) by the iterated fission probability method.
+- **Kinetics parameters** (β_eff, Λ = ℓ/k; per-group β_i and λ_i) by the iterated fission probability method, and a **point kinetics** solver (step/ramp reactivity → P(t), Inhour period, adiabatic feedback) under Analysis.
 
 ### Results and analysis
 
@@ -160,7 +162,7 @@ cd openmc_arayuz
 ./calistir.sh ornekler/pwr_17x17.json  # open a model directly (examples open as a copy)
 ```
 
-A first check: on the start screen choose **Fuel pin → start empty**, then press **F9** (Run).
+A first check: on the start screen choose **Fuel pin → From template**, then press **F9** (Run).
 Within about half a minute the result card should show **k∞ ≈ 1.323 ± 0.001** (UO₂ 3.0 %, hot
 operating conditions, *Normal* accuracy preset; measured 1.3227 ± 0.0008).
 

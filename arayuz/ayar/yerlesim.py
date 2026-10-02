@@ -46,7 +46,7 @@ class YerlesimMixin(object):
         sagda guc dagilimi ve tally'ler."""
         sol = self._sutun((self._hesap_karti(), self._kaynak_karti(),
                            self._gelismis_karti()))
-        sag = self._sutun((self._guc_karti(), self._tally_karti()))
+        sag = self._sutun((self._guc_karti(), self._spektrum_karti(), self._tally_karti()))
         bolucu = QtWidgets.QSplitter(QtCore.Qt.Horizontal)
         bolucu.addWidget(sol)
         bolucu.addWidget(sag)
@@ -135,6 +135,7 @@ class YerlesimMixin(object):
         self.entropi_agi = self._sar(ent)
         gf.addRow(_("Entropi ağı:"), self.entropi_agi)
         gf.addRow(_("IFP nesil sayısı:"), self.kinetik_nesil)
+        gf.addRow(_("Gecikmeli nötron grupları:"), self.kinetik_gruplar)
         self.gelismis.ekle(self._sar(gf))
         self.gelismis_tayf_baslik = baslik(_("Başlangıç kaynağının enerjisi ve yönü"))
         self.gelismis.ekle(self.gelismis_tayf_baslik)
@@ -174,6 +175,13 @@ class YerlesimMixin(object):
         self.guc_gelismis.ekle(self._sar(ggf))
         self.guc_kutu.ekle(self.guc_gelismis)
         return self.guc_kutu
+
+    def _spektrum_karti(self):
+        """Y3: spektrum ve dort faktor karti (arayuz/ayar/spektrum_karti.py)."""
+        from arayuz.ayar.spektrum_karti import SpektrumAyarKarti
+        self.spektrum_karti = SpektrumAyarKarti()
+        self.spektrum_karti.degisti.connect(self.bildir)
+        return self.spektrum_karti
 
     def _tally_formu(self):
         t_form = QtWidgets.QFormLayout()

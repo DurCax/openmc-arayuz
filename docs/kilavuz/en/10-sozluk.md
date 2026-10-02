@@ -153,9 +153,23 @@ add the term to SOZLUK.md).
 | kinetics parameters | kinetik parametreler |  |
 | delayed neutron fraction | gecikmeli nötron oranı |  |
 | neutron generation time | üretim zamanı | production time |
+| prompt neutron lifetime | ani nötron ömrü |  |
+| point kinetics | nokta kinetiği |  |
+| delayed neutron group | gecikmeli nötron grubu |  |
+| precursor | öncül | predecessor |
+| prompt critical | ani kritik | instant critical |
+| inhour equation | ters saat denklemi | inverse clock equation |
+| stable period | kararlı periyot |  |
 | uncertainty | belirsizlik | error |
 | standard deviation | standart sapma |  |
 | coverage factor | kapsama faktörü |  |
+| four factors (four-factor) | dört faktör |  |
+| fast fission factor | hızlı fisyon çarpanı | fast fission ratio |
+| resonance escape probability | rezonanstan kaçma olasılığı | resonance escape factor |
+| thermal utilization | termal yararlanma | thermal usage |
+| non-leakage probability | sızmama olasılığı | no-leak probability |
+| lethargy | letarji |  |
+| spectral index (spectral indices) | spektral indeks | spectrum index |
 
 ### 10.5 Depletion
 
