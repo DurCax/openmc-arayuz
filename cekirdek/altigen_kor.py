@@ -262,12 +262,6 @@ def z_dilimleri(kor):
     return dilimler, +duz[0] & -duz[-1]
 
 
-def katman_adlari(dilimler):
-    """z_dilimleri -> [(z_bolgesi, hucre adi)]."""
-    return [(z, ((k or {}).get("ad") or "katman %d" % (i + 1)) if k else "")
-            for i, (z, k) in enumerate(dilimler)]
-
-
 def konum_dolgu_adlari(kor, dilimler):
     """
     Konum basina, dilim basina dolgu: ("ad", ad) ana/katmana ozel anahtarla

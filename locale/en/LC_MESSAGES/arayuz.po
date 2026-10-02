@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-01 21:43+0300\n"
+"POT-Creation-Date: 2026-10-02 04:26+0300\n"
 "PO-Revision-Date: 2026-10-01 18:14+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -211,7 +211,7 @@ msgid "Analiz ayarları"
 msgstr "Analysis settings"
 
 #: arayuz/analiz/sekme.py:176 arayuz/pencere/model_islemleri.py:68
-#: arayuz/tasarim/maket_veri.py:19 arayuz/yardim/__init__.py:50
+#: arayuz/yardim/__init__.py:50
 msgid "Analiz"
 msgstr "Analysis"
 
@@ -543,8 +543,7 @@ msgstr "Quick test"
 msgid "Normal"
 msgstr "Normal"
 
-#: arayuz/ayar/sabitler.py:18 arayuz/tasarim/galeri.py:50
-#: arayuz/tasarim/maket_ekranlar.py:204
+#: arayuz/ayar/sabitler.py:18
 msgid "Hassas"
 msgstr "Accurate"
 
@@ -612,7 +611,7 @@ msgstr "Reaction rates"
 msgid "Isı / güç"
 msgstr "Heat / power"
 
-#: arayuz/ayar/sabitler.py:52 arayuz/tasarim/maket_ekranlar.py:217
+#: arayuz/ayar/sabitler.py:52
 msgid "Ara değer (interpolation)"
 msgstr "Interpolation"
 
@@ -670,8 +669,7 @@ msgstr "Total batches:"
 msgid "Pasif çevrim:"
 msgstr "Inactive batches:"
 
-#: arayuz/ayar/yerlesim.py:86 arayuz/pencere/kabuk.py:38 arayuz/tasarim/maket_veri.py:16
-#: arayuz/tasarim/maket_veri.py:17
+#: arayuz/ayar/yerlesim.py:86 arayuz/pencere/kabuk.py:38
 msgid "Hesap"
 msgstr "Calculation"
 
@@ -735,7 +733,7 @@ msgstr ""
 "In an eigenvalue calculation these are only an initial guess; the source relaxes to "
 "the true fission spectrum during the inactive batches and does not affect k-eff."
 
-#: arayuz/ayar/yerlesim.py:153 arayuz/tasarim/maket_ekranlar.py:318
+#: arayuz/ayar/yerlesim.py:153
 msgid "Güç dağılımı"
 msgstr "Power distribution"
 
@@ -788,7 +786,7 @@ msgstr "Tallies"
 msgid "Ölçülecek büyüklükler"
 msgstr "Quantities to measure"
 
-#: arayuz/baslangic.py:58 arayuz/tasarim/maket_veri.py:54
+#: arayuz/baslangic.py:58
 msgid "Yakıt çubuğu (pin hücre)"
 msgstr "Fuel pin (pin cell)"
 
@@ -796,7 +794,7 @@ msgstr "Fuel pin (pin cell)"
 msgid "Tek yakıt çubuğu ve çevresindeki soğutucu; en hızlı başlangıç."
 msgstr "A single fuel pin and its surrounding coolant; the quickest start."
 
-#: arayuz/baslangic.py:61 arayuz/tasarim/maket_veri.py:27 arayuz/tasarim/maket_veri.py:55
+#: arayuz/baslangic.py:61
 msgid "Yakıt demeti — kare"
 msgstr "Fuel assembly — square"
 
@@ -804,7 +802,7 @@ msgstr "Fuel assembly — square"
 msgid "Kare ızgarada yakıt çubukları ve kılavuz borular (PWR tipi)."
 msgstr "Fuel pins and guide tubes on a square grid (PWR type)."
 
-#: arayuz/baslangic.py:64 arayuz/tasarim/maket_veri.py:56
+#: arayuz/baslangic.py:64
 msgid "Yakıt demeti — altıgen"
 msgstr "Fuel assembly — hexagonal"
 
@@ -828,7 +826,7 @@ msgstr "Full core — hexagonal"
 msgid "Kılıflı altıgen demetlerden kor haritası (SFR / VVER tipi)."
 msgstr "A core map of ducted hexagonal assemblies (SFR / VVER type)."
 
-#: arayuz/baslangic.py:73 arayuz/tasarim/maket_veri.py:58 arayuz/tasarim/maket_veri.py:74
+#: arayuz/baslangic.py:73
 msgid "MTR plaka elemanı"
 msgstr "MTR plate-type fuel element"
 
@@ -836,7 +834,7 @@ msgstr "MTR plate-type fuel element"
 msgid "Araştırma reaktörünün düz plakalı yakıt elemanı."
 msgstr "The flat plate-type fuel element of a research reactor."
 
-#: arayuz/baslangic.py:76 arayuz/tasarim/maket_veri.py:59
+#: arayuz/baslangic.py:76
 msgid "Tamburlu kompakt kor"
 msgstr "Compact core with control drums"
 
@@ -904,21 +902,21 @@ msgstr[0] "{n} hour ago"
 msgstr[1] "{n} hours ago"
 
 #: arayuz/baslangic.py:352
+msgid "dün"
+msgstr "yesterday"
+
+#: arayuz/baslangic.py:352
 #, python-brace-format
 msgid "{n} gün önce"
 msgid_plural "{n} gün önce"
 msgstr[0] "{n} day ago"
 msgstr[1] "{n} days ago"
 
-#: arayuz/baslangic.py:352 arayuz/tasarim/maket_veri.py:82
-msgid "dün"
-msgstr "yesterday"
-
-#: arayuz/baslangic.py:430 arayuz/tasarim/maket_baslangic.py:24
+#: arayuz/baslangic.py:430
 msgid "Boş başla"
 msgstr "Start empty"
 
-#: arayuz/baslangic.py:431 arayuz/tasarim/maket_baslangic.py:24
+#: arayuz/baslangic.py:431
 msgid "Örnekten"
 msgstr "From example"
 
@@ -937,7 +935,7 @@ msgstr "Opens a copy of the ready-made example: {dosya} (the example file is not
 msgid "{dosya} — kopya olarak açılır"
 msgstr "{dosya} — opens as a copy"
 
-#: arayuz/baslangic.py:527 arayuz/tasarim/maket_baslangic.py:107
+#: arayuz/baslangic.py:527
 msgid "Ne modellemek istiyorsunuz?"
 msgstr "What do you want to model?"
 
@@ -949,20 +947,19 @@ msgstr "Back to open model"
 msgid "Başlangıç ekranını kapatıp üzerinde çalıştığınız modele döner (Esc)."
 msgstr "Closes the start screen and returns to the model you are working on (Esc)."
 
-#: arayuz/baslangic.py:537 arayuz/tasarim/maket_baslangic.py:110
+#: arayuz/baslangic.py:537
 msgid "Bir model türüyle boş başlayın ya da hazır bir örneğin kopyasını açın."
 msgstr "Start empty with a model type, or open a copy of a ready-made example."
 
-#: arayuz/baslangic.py:559 arayuz/tasarim/maket_baslangic.py:72
+#: arayuz/baslangic.py:559
 msgid "Dosyadan aç"
 msgstr "Open from file"
 
-#: arayuz/baslangic.py:560 arayuz/tasarim/maket_baslangic.py:73
+#: arayuz/baslangic.py:560
 msgid "Kaydedilmiş bir model (.json) ya da OpenMC XML klasörü."
 msgstr "A saved model (.json) or an OpenMC XML folder."
 
-#: arayuz/baslangic.py:562 arayuz/pencere/menuler.py:133 arayuz/tasarim/galeri.py:203
-#: arayuz/tasarim/maket_baslangic.py:74
+#: arayuz/baslangic.py:562 arayuz/pencere/menuler.py:133
 msgid "Aç…"
 msgstr "Open…"
 
@@ -971,7 +968,6 @@ msgid "Bilgisayarınızdaki bir model dosyasını (.json) açar (Ctrl+O)."
 msgstr "Opens a model file (.json) from your computer (Ctrl+O)."
 
 #: arayuz/baslangic.py:570 arayuz/pencere/menuler.py:135
-#: arayuz/tasarim/maket_baslangic.py:82
 msgid "Son kullanılanlar"
 msgstr "Recent"
 
@@ -979,11 +975,11 @@ msgstr "Recent"
 msgid "Henüz kaydedilmiş bir model yok."
 msgstr "No saved models yet."
 
-#: arayuz/baslangic.py:581 arayuz/baslangic.py:668 arayuz/tasarim/maket_baslangic.py:126
+#: arayuz/baslangic.py:581 arayuz/baslangic.py:668
 msgid "Örnekler"
 msgstr "Examples"
 
-#: arayuz/baslangic.py:584 arayuz/tasarim/maket_baslangic.py:128
+#: arayuz/baslangic.py:584
 msgid "Örneklerde ara…"
 msgstr "Search examples…"
 
@@ -999,7 +995,7 @@ msgstr "Filters the examples by difficulty level."
 msgid "Her seviye"
 msgstr "All levels"
 
-#: arayuz/baslangic.py:602 arayuz/tasarim/galeri.py:102 arayuz/tasarim/maket_veri.py:64
+#: arayuz/baslangic.py:602
 msgid "Tümü"
 msgstr "All"
 
@@ -1042,7 +1038,6 @@ msgid "Kenar çubuğunu genişlet"
 msgstr "Expand sidebar"
 
 #: arayuz/bilesenler/komut_paleti.py:100 arayuz/pencere/kabuk.py:159
-#: arayuz/tasarim/maket_kabuk.py:93
 msgid "Komut ara…"
 msgstr "Search commands…"
 
@@ -1058,7 +1053,7 @@ msgstr "Commands"
 msgid "Eşleşen komut yok"
 msgstr "No matching commands"
 
-#: arayuz/calistir/kartlar.py:82 arayuz/tasarim/maket_ekranlar.py:333
+#: arayuz/calistir/kartlar.py:82
 msgid "Klasörü aç"
 msgstr "Open folder"
 
@@ -1263,24 +1258,23 @@ msgstr "hottest pin: %s%s"
 msgid ", dilim %d"
 msgstr ", axial bin %d"
 
-#: arayuz/calistir/pano.py:86 arayuz/pencere/yardim_metni.py:72 arayuz/tasarim/galeri.py:79
-#: arayuz/tasarim/maket_ekranlar.py:308
+#: arayuz/calistir/pano.py:86 arayuz/pencere/yardim_metni.py:72
 msgid "Shannon entropisi"
 msgstr "Shannon entropy"
 
-#: arayuz/calistir/pano.py:87 arayuz/tasarim/maket_ekranlar.py:310
+#: arayuz/calistir/pano.py:87
 msgid "Süre"
 msgstr "Time"
 
-#: arayuz/calistir/pano.py:87 arayuz/tasarim/maket_ekranlar.py:311
+#: arayuz/calistir/pano.py:87
 msgid "dk:sn"
 msgstr "min:s"
 
-#: arayuz/calistir/pano.py:88 arayuz/tasarim/maket_ekranlar.py:312
+#: arayuz/calistir/pano.py:88
 msgid "Hız"
 msgstr "Rate"
 
-#: arayuz/calistir/pano.py:88 arayuz/tasarim/maket_ekranlar.py:312
+#: arayuz/calistir/pano.py:88
 msgid "parçacık/s"
 msgstr "particles/s"
 
@@ -1298,12 +1292,12 @@ msgid "Shannon entropisi kapalı — kaynak yakınsaması doğrulanamıyor"
 msgstr "Shannon entropy is off — source convergence cannot be checked"
 
 #: arayuz/calistir/pano.py:180
-msgid "Yakınsamadı"
-msgstr "Not converged"
-
-#: arayuz/calistir/pano.py:180 arayuz/tasarim/maket_ekranlar.py:309
 msgid "Yakınsadı"
 msgstr "Converged"
+
+#: arayuz/calistir/pano.py:180
+msgid "Yakınsamadı"
+msgstr "Not converged"
 
 #: arayuz/calistir/pano.py:181
 msgid "Belirsiz"
@@ -1334,12 +1328,11 @@ msgstr[1] "%d threads"
 msgid "Grafiği PNG olarak kaydet"
 msgstr "Save chart as PNG"
 
-#: arayuz/calistir/yakinsama.py:50 arayuz/tasarim/maket_cizim.py:242
-#: arayuz/tasarim/maket_cizim.py:258
+#: arayuz/calistir/yakinsama.py:50
 msgid "çevrim"
 msgstr "batch"
 
-#: arayuz/calistir/yakinsama.py:65 arayuz/tasarim/maket_ekranlar.py:314
+#: arayuz/calistir/yakinsama.py:65
 msgid "Grafiği kaydet"
 msgstr "Save chart"
 
@@ -1347,33 +1340,33 @@ msgstr "Save chart"
 msgid "Kaydedilemedi"
 msgstr "Could not save"
 
-#: arayuz/calistir/yakinsama.py:86 arayuz/tasarim/maket_ekranlar.py:313
+#: arayuz/calistir/yakinsama.py:86
 msgid "Yakınsama"
 msgstr "Convergence"
 
-#: arayuz/calistir/yakinsama.py:86 arayuz/tasarim/maket_ekranlar.py:313
+#: arayuz/calistir/yakinsama.py:86
 msgid "Çevrim başına k ve etkin ortalama ± 1σ"
 msgstr "k per batch and active mean ± 1σ"
 
-#: arayuz/calistir/yakinsama.py:101 arayuz/tasarim/maket_cizim.py:235
+#: arayuz/calistir/yakinsama.py:101
 msgid "k (çevrim)"
 msgstr "k (batch)"
 
-#: arayuz/calistir/yakinsama.py:108 arayuz/tasarim/maket_cizim.py:237
+#: arayuz/calistir/yakinsama.py:108
 msgid "k ort."
 msgstr "k mean"
 
-#: arayuz/calistir/yakinsama.py:113 arayuz/tasarim/maket_cizim.py:240
+#: arayuz/calistir/yakinsama.py:113
 msgid " etkin çevrimler"
 msgstr " active batches"
 
 #: arayuz/calistir/yakinsama.py:127
-msgid "Kaynak dağılımının yakınsaması"
-msgstr "Convergence of the source distribution"
-
-#: arayuz/calistir/yakinsama.py:127 arayuz/tasarim/maket_ekranlar.py:316
 msgid "Kaynak entropisi"
 msgstr "Source entropy"
+
+#: arayuz/calistir/yakinsama.py:127
+msgid "Kaynak dağılımının yakınsaması"
+msgstr "Convergence of the source distribution"
 
 #: arayuz/calistir/yakinsama.py:132
 msgid "Shannon entropisi kapalı"
@@ -1457,18 +1450,16 @@ msgstr "Add materials in the Materials tab first."
 
 #: arayuz/cubuk/parca_islemleri.py:24 arayuz/cubuk/parca_islemleri.py:171
 #: arayuz/malzeme/yardimcilar.py:30 arayuz/malzeme/yardimcilar.py:143
-#: arayuz/tasarim/maket_veri.py:34
 msgid "soğutucu"
 msgstr "coolant"
 
 #: arayuz/cubuk/parca_islemleri.py:24 arayuz/malzeme/yardimcilar.py:30
-msgid "moderatör"
-msgstr "moderator"
-
-#: arayuz/cubuk/parca_islemleri.py:24 arayuz/malzeme/yardimcilar.py:30
-#: arayuz/tasarim/maket_veri.py:31
 msgid "yakıt"
 msgstr "fuel"
+
+#: arayuz/cubuk/parca_islemleri.py:24 arayuz/malzeme/yardimcilar.py:30
+msgid "moderatör"
+msgstr "moderator"
 
 #: arayuz/cubuk/parca_islemleri.py:25 arayuz/cubuk/tambur_formu.py:208
 #: arayuz/malzeme/yardimcilar.py:31
@@ -1487,8 +1478,7 @@ msgstr "gas"
 msgid "PWR yakıt çubuğu"
 msgstr "PWR fuel pin"
 
-#: arayuz/cubuk/parca_islemleri.py:30 arayuz/tasarim/maket_kabuk.py:146
-#: arayuz/tasarim/maket_veri.py:42
+#: arayuz/cubuk/parca_islemleri.py:30
 msgid "Kılavuz boru"
 msgstr "Guide tube"
 
@@ -1501,7 +1491,6 @@ msgid "yakıt tabakası"
 msgstr "fuel meat"
 
 #: arayuz/cubuk/parca_islemleri.py:170 arayuz/malzeme/yardimcilar.py:142
-#: arayuz/tasarim/maket_veri.py:32
 msgid "zarf"
 msgstr "cladding"
 
@@ -1536,7 +1525,6 @@ msgid "{rol} (daldırılan)"
 msgstr "{rol} (inserted)"
 
 #: arayuz/cubuk/parca_islemleri.py:227 arayuz/malzeme/yardimcilar.py:27
-#: arayuz/tasarim/maket_ekranlar.py:219
 msgid "Yakıt"
 msgstr "Fuel"
 
@@ -1730,7 +1718,7 @@ msgstr ""
 "in place. It cannot move into the outer region."
 
 #: arayuz/cubuk/sayfalar.py:160 arayuz/geometri/form_yerlesim.py:338
-#: arayuz/geometri/formlar.py:86 arayuz/malzeme/bilesim.py:37 arayuz/tasarim/galeri.py:109
+#: arayuz/geometri/formlar.py:86 arayuz/malzeme/bilesim.py:37
 msgid "Tür"
 msgstr "Type"
 
@@ -1850,7 +1838,6 @@ msgstr ""
 "from this library."
 
 #: arayuz/cubuk/tambur_formu.py:96 arayuz/geometri/form_ortak.py:167
-#: arayuz/tasarim/galeri.py:65
 msgid "Yarıçap"
 msgstr "Radius"
 
@@ -1969,11 +1956,11 @@ msgstr "Thickness"
 msgid "Dış ölçü"
 msgstr "Outer size"
 
-#: arayuz/demet/kilif.py:61
+#: arayuz/demet/kilif.py:65
 msgid "Kılıf"
 msgstr "Duct"
 
-#: arayuz/demet/yerlesim.py:35 arayuz/tasarim/maket_ekranlar.py:182
+#: arayuz/demet/yerlesim.py:35
 msgid "Parçaları ızgaraya yerleştirin."
 msgstr "Place components on the grid."
 
@@ -1981,11 +1968,11 @@ msgstr "Place components on the grid."
 msgid "+ Kare demet"
 msgstr "+ Square assembly"
 
-#: arayuz/demet/yerlesim.py:69 arayuz/tasarim/maket_ekranlar.py:139
+#: arayuz/demet/yerlesim.py:69
 msgid "Izgara"
 msgstr "Grid"
 
-#: arayuz/demet/yerlesim.py:69 arayuz/tasarim/maket_ekranlar.py:139
+#: arayuz/demet/yerlesim.py:69
 msgid "Tıklayın ya da sürükleyin · sağ tık: parçayı seç"
 msgstr "Click or drag · right-click: pick component"
 
@@ -2009,11 +1996,11 @@ msgstr "Ring to fill (numbered from the center outward)"
 msgid "Halkayı doldur"
 msgstr "Fill ring"
 
-#: arayuz/demet/yerlesim.py:122 arayuz/tasarim/maket_ekranlar.py:153
+#: arayuz/demet/yerlesim.py:122
 msgid "Parça paleti"
 msgstr "Component palette"
 
-#: arayuz/demet/yerlesim.py:126 arayuz/tasarim/maket_ekranlar.py:150
+#: arayuz/demet/yerlesim.py:126
 msgid "Tümünü doldur"
 msgstr "Fill all"
 
@@ -2022,8 +2009,7 @@ msgid "Bütün hücreleri seçili parçayla doldurur (Ctrl+Z geri alır)."
 msgstr "Fills every cell with the selected component (Ctrl+Z undoes)."
 
 #: arayuz/demet/yerlesim.py:153 arayuz/demet/yerlesim.py:172
-#: arayuz/geometri/form_kafes.py:96 arayuz/tasarim/galeri.py:64
-#: arayuz/tasarim/maket_ekranlar.py:165
+#: arayuz/geometri/form_kafes.py:96
 msgid "Adım"
 msgstr "Pitch"
 
@@ -2043,7 +2029,7 @@ msgstr "Number of columns (x)"
 msgid "Satır sayısı (y)"
 msgstr "Number of rows (y)"
 
-#: arayuz/demet/yerlesim.py:188 arayuz/tasarim/maket_ekranlar.py:166
+#: arayuz/demet/yerlesim.py:188
 msgid "Boyut"
 msgstr "Size"
 
@@ -2780,7 +2766,7 @@ msgstr "Toward center"
 msgid "Sabit"
 msgstr "Fixed"
 
-#: arayuz/geometri/form_yerlesim.py:66 arayuz/tasarim/maket_ekranlar.py:162
+#: arayuz/geometri/form_yerlesim.py:66
 msgid "Yok"
 msgstr "None"
 
@@ -3258,14 +3244,12 @@ msgstr "Save PNG…"
 
 #: arayuz/demet/yerlesim.py:35 arayuz/geometri/sablon_diyalogu.py:23
 #: arayuz/guc_harita.py:69 arayuz/pencere/model_islemleri.py:66 arayuz/sekme_demet.py:508
-#: arayuz/tasarim/maket_ekranlar.py:157 arayuz/tasarim/maket_ekranlar.py:182
-#: arayuz/tasarim/maket_ekranlar.py:319 arayuz/tasarim/maket_veri.py:14
 #: arayuz/yardim/__init__.py:45
 msgid "Demet"
 msgstr "Assembly"
 
 #: arayuz/cubuk/cubuk_formu.py:38 arayuz/cubuk/sayfalar.py:63 arayuz/guc_harita.py:70
-#: arayuz/sekme_cubuk.py:125 arayuz/tasarim/maket_ekranlar.py:319
+#: arayuz/sekme_cubuk.py:125
 msgid "Çubuk"
 msgstr "Pin"
 
@@ -3543,8 +3527,7 @@ msgstr "plate"
 msgid "malzeme"
 msgstr "material"
 
-#: arayuz/izgara.py:183 arayuz/kor/katmanlar.py:63 arayuz/tasarim/maket_ekranlar.py:65
-#: arayuz/tasarim/maket_veri.py:33
+#: arayuz/izgara.py:183 arayuz/kor/katmanlar.py:63
 msgid "boşluk"
 msgstr "void"
 
@@ -4128,7 +4111,7 @@ msgstr ""
 "This material was changed outside the parameter form after it was added from the "
 "library; it is edited with the composition table."
 
-#: arayuz/malzeme/malzeme_diyalog.py:120 arayuz/tasarim/galeri.py:107
+#: arayuz/malzeme/malzeme_diyalog.py:120
 msgid "Satır ekle"
 msgstr "Add row"
 
@@ -4386,7 +4369,7 @@ msgstr "Search: Xe-135, pu, am242m…"
 msgid "Hazır setler:"
 msgstr "Preset sets:"
 
-#: arayuz/nuklid_secici.py:193 arayuz/tasarim/maket_ekranlar.py:150
+#: arayuz/nuklid_secici.py:193
 msgid "Temizle"
 msgstr "Clear"
 
@@ -4487,7 +4470,7 @@ msgstr ""
 "zooming). Do not turn it on while editing: every model change restarts\n"
 "the library and takes ~3 s per change."
 
-#: arayuz/onizleme.py:200 arayuz/tasarim/maket_kabuk.py:132
+#: arayuz/onizleme.py:200
 msgid "Yenile"
 msgstr "Refresh"
 
@@ -4538,23 +4521,23 @@ msgstr "Preview failed: %s"
 msgid "[ölçek 1:1 değil]"
 msgstr "[scale not 1:1]"
 
-#: arayuz/ortak.py:157
+#: arayuz/ortak.py:173
 msgid "seçilmemiş"
 msgstr "not selected"
 
-#: arayuz/ortak.py:217
+#: arayuz/ortak.py:233
 msgid "Malzeme rengi"
 msgstr "Material color"
 
-#: arayuz/ortak.py:372 arayuz/tasarim/maket_ekranlar.py:229
+#: arayuz/ortak.py:388
 msgid "Gelişmiş"
 msgstr "Advanced"
 
-#: arayuz/ortak.py:443
+#: arayuz/ortak.py:459
 msgid "Gizle"
 msgstr "Hide"
 
-#: arayuz/ortak.py:443
+#: arayuz/ortak.py:459
 msgid "Nadiren gereken ayarları göster"
 msgstr "Show rarely needed settings"
 
@@ -4647,7 +4630,7 @@ msgid_plural "Doğrulama: {n} uyarı"
 msgstr[0] "Model check: {n} warning"
 msgstr[1] "Model check: {n} warnings"
 
-#: arayuz/pencere/ana_pencere.py:670 arayuz/tasarim/maket_kabuk.py:171
+#: arayuz/pencere/ana_pencere.py:670
 msgid "Doğrulama: hata yok"
 msgstr "Model check: no errors"
 
@@ -4727,9 +4710,7 @@ msgstr "Redone ({i}/{n})"
 msgid "{sekme} sayfası bu model türünde kullanılmıyor."
 msgstr "The {sekme} page is not used for this model type."
 
-#: arayuz/pencere/kabuk.py:38 arayuz/tasarim/maket_veri.py:12
-#: arayuz/tasarim/maket_veri.py:13 arayuz/tasarim/maket_veri.py:14
-#: arayuz/tasarim/maket_veri.py:15
+#: arayuz/pencere/kabuk.py:38
 msgid "Model"
 msgstr "Model"
 
@@ -4738,7 +4719,7 @@ msgctxt "gezinme"
 msgid "Sonuç"
 msgstr "Results"
 
-#: arayuz/pencere/kabuk.py:153 arayuz/tasarim/maket_kabuk.py:87
+#: arayuz/pencere/kabuk.py:153
 msgid "Türü değiştir…"
 msgstr "Change type…"
 
@@ -4754,8 +4735,7 @@ msgstr ""
 msgid "Komut paletini açar (Ctrl+K)"
 msgstr "Opens the command palette (Ctrl+K)"
 
-#: arayuz/pencere/kabuk.py:223 arayuz/tasarim/galeri.py:48
-#: arayuz/tasarim/maket_kabuk.py:120 arayuz/tasarim/maket_kabuk.py:128
+#: arayuz/pencere/kabuk.py:223
 msgid "Önizleme"
 msgstr "Preview"
 
@@ -4764,11 +4744,10 @@ msgid "Önizlemeyi yenile (F6)"
 msgstr "Refresh preview (F6)"
 
 #: arayuz/pencere/kabuk.py:230 arayuz/pencere/kabuk.py:250
-#: arayuz/tasarim/maket_kabuk.py:133
 msgid "Önizlemeyi daralt"
 msgstr "Collapse preview"
 
-#: arayuz/pencere/kabuk.py:250 arayuz/tasarim/maket_kabuk.py:119
+#: arayuz/pencere/kabuk.py:250
 msgid "Önizlemeyi aç"
 msgstr "Expand preview"
 
@@ -4776,7 +4755,7 @@ msgstr "Expand preview"
 msgid "Doğrulama bulgularını göster"
 msgstr "Show model check findings"
 
-#: arayuz/pencere/kabuk.py:293 arayuz/tasarim/maket.py:71 arayuz/tasarim/maket_kabuk.py:186
+#: arayuz/pencere/kabuk.py:293
 msgid "Veri kütüphanesini denetle"
 msgstr "Check data library"
 
@@ -4809,7 +4788,7 @@ msgstr "Click a row to go to its page; right-click: open in the user guide."
 msgid "Kılavuzda aç"
 msgstr "Open in user guide"
 
-#: arayuz/pencere/menuler.py:100 arayuz/tasarim/maket_kabuk.py:56
+#: arayuz/pencere/menuler.py:100
 msgid "&Dosya"
 msgstr "&File"
 
@@ -4817,19 +4796,19 @@ msgstr "&File"
 msgid "D&üzen"
 msgstr "&Edit"
 
-#: arayuz/pencere/menuler.py:102 arayuz/pencere/menuler.py:294 arayuz/tasarim/galeri.py:47
+#: arayuz/pencere/menuler.py:102 arayuz/pencere/menuler.py:294
 msgid "Geri al"
 msgstr "Undo"
 
-#: arayuz/pencere/menuler.py:103 arayuz/pencere/menuler.py:294 arayuz/tasarim/galeri.py:47
+#: arayuz/pencere/menuler.py:103 arayuz/pencere/menuler.py:294
 msgid "Yinele"
 msgstr "Redo"
 
-#: arayuz/pencere/menuler.py:104 arayuz/tasarim/maket_kabuk.py:56
+#: arayuz/pencere/menuler.py:104
 msgid "&Görünüm"
 msgstr "&View"
 
-#: arayuz/pencere/menuler.py:105 arayuz/tasarim/maket_kabuk.py:56
+#: arayuz/pencere/menuler.py:105
 msgid "&Yardım"
 msgstr "&Help"
 
@@ -4877,12 +4856,10 @@ msgid "Bir model dosyası (.json) aç"
 msgstr "Open a model file (.json)"
 
 #: arayuz/pencere/menuler.py:137 arayuz/pencere/menuler.py:293 arayuz/pencere/proje.py:76
-#: arayuz/tasarim/galeri.py:38 arayuz/tasarim/galeri.py:46 arayuz/tasarim/galeri.py:203
-#: arayuz/tasarim/maket.py:68
 msgid "Kaydet"
 msgstr "Save"
 
-#: arayuz/pencere/menuler.py:139 arayuz/tasarim/galeri.py:203 arayuz/tasarim/maket.py:69
+#: arayuz/pencere/menuler.py:139
 msgid "Farklı kaydet…"
 msgstr "Save as…"
 
@@ -4906,8 +4883,7 @@ msgstr "Export as OpenMC XML…"
 msgid "Önizlemeyi PNG olarak kaydet…"
 msgstr "Save preview as PNG…"
 
-#: arayuz/pencere/menuler.py:150 arayuz/tasarim/galeri.py:204 arayuz/tasarim/maket.py:70
-#: arayuz/tasarim/maket_ekranlar.py:334
+#: arayuz/pencere/menuler.py:150
 msgid "Rapor oluştur…"
 msgstr "Create report…"
 
@@ -4940,7 +4916,7 @@ msgstr "The language change takes effect after the application restarts."
 msgid "Yeni model (başlangıç ekranı)"
 msgstr "New model (start screen)"
 
-#: arayuz/pencere/menuler.py:292 arayuz/pencere/proje.py:204 arayuz/tasarim/galeri.py:46
+#: arayuz/pencere/menuler.py:292 arayuz/pencere/proje.py:204
 msgid "Aç"
 msgstr "Open"
 
@@ -4997,8 +4973,7 @@ msgstr ""
 "script (Ctrl+E) you can take the model and keep editing it\n"
 "by hand."
 
-#: arayuz/pencere/model_islemleri.py:67 arayuz/tasarim/maket_ekranlar.py:244
-#: arayuz/yardim/__init__.py:48
+#: arayuz/pencere/model_islemleri.py:67 arayuz/yardim/__init__.py:48
 msgid "Hesap ayarları"
 msgstr "Run settings"
 
@@ -5076,7 +5051,6 @@ msgid "tanımsız kor"
 msgstr "undefined core"
 
 #: arayuz/pencere/model_islemleri.py:144 arayuz/pencere/model_islemleri.py:146
-#: arayuz/tasarim/galeri.py:84
 msgid "3B"
 msgstr "3D"
 
@@ -5544,7 +5518,7 @@ msgstr "Batch"
 msgid "Bir grup nötronun izlendiği tur."
 msgstr "One round in which a group of neutrons is tracked."
 
-#: arayuz/pencere/yardim_metni.py:66 arayuz/tasarim/maket_ekranlar.py:211
+#: arayuz/pencere/yardim_metni.py:66
 msgid "Pasif çevrim"
 msgstr "Inactive batch"
 
@@ -5814,13 +5788,11 @@ msgid "Foton (gama)"
 msgstr "Photon (gamma)"
 
 #: arayuz/pencere/model_islemleri.py:148 arayuz/sekme_ayar.py:100
-#: arayuz/tasarim/galeri.py:68 arayuz/tasarim/maket_ekranlar.py:197
 msgid "Özdeğer (k-eff)"
 msgstr "Eigenvalue (k-eff)"
 
 #: arayuz/pencere/model_islemleri.py:148 arayuz/pencere/yardim_metni.py:84
-#: arayuz/sekme_ayar.py:101 arayuz/tasarim/galeri.py:68
-#: arayuz/tasarim/maket_ekranlar.py:197
+#: arayuz/sekme_ayar.py:101
 msgid "Sabit kaynak"
 msgstr "Fixed source"
 
@@ -5834,8 +5806,7 @@ msgstr ""
 "Fixed source: transport from an external source (shielding,\n"
 "detectors); the results are tallies, there is no k-eff."
 
-#: arayuz/sekme_ayar.py:109 arayuz/sekme_ayar.py:253 arayuz/tasarim/galeri.py:50
-#: arayuz/tasarim/maket_ekranlar.py:204
+#: arayuz/sekme_ayar.py:109 arayuz/sekme_ayar.py:253
 msgid "Özel"
 msgstr "Custom"
 
@@ -6069,7 +6040,7 @@ msgstr " (invalid in this model)"
 msgid " (bilinmeyen)"
 msgstr " (unknown)"
 
-#: arayuz/sekme_ayar.py:460 arayuz/tasarim/maket_ekranlar.py:212
+#: arayuz/sekme_ayar.py:460
 msgid "Başlangıç kaynağı"
 msgstr "Initial source"
 
@@ -6121,9 +6092,6 @@ msgstr "Press Run; k-eff convergence and the results appear on this page."
 
 #: arayuz/calistir/kartlar.py:85 arayuz/pencere/kabuk.py:132 arayuz/pencere/kabuk.py:191
 #: arayuz/pencere/model_islemleri.py:67 arayuz/sekme_calistir.py:119
-#: arayuz/tasarim/galeri.py:38 arayuz/tasarim/galeri.py:40 arayuz/tasarim/galeri.py:151
-#: arayuz/tasarim/galeri.py:203 arayuz/tasarim/maket.py:68
-#: arayuz/tasarim/maket_kabuk.py:105 arayuz/tasarim/maket_veri.py:17
 #: arayuz/yardim/__init__.py:49
 msgid "Çalıştır"
 msgstr "Run"
@@ -6217,7 +6185,7 @@ msgstr[1] "%d errors"
 msgid "Koşu başlatılmadı; önceki sonuç silinmedi."
 msgstr "Run not started; the previous result was not deleted."
 
-#: arayuz/sekme_calistir.py:530 arayuz/tasarim/galeri.py:98
+#: arayuz/sekme_calistir.py:530
 msgid "Hata yok"
 msgstr "No errors"
 
@@ -6350,7 +6318,7 @@ msgid "Çubuklar ve plaka elemanları: radyal bölgeler ve malzemeler."
 msgstr "Pins and plate-type fuel elements: radial regions and materials."
 
 #: arayuz/pencere/model_islemleri.py:66 arayuz/sekme_cubuk.py:114 arayuz/sekme_cubuk.py:146
-#: arayuz/tasarim/maket_veri.py:13 arayuz/yardim/__init__.py:44
+#: arayuz/yardim/__init__.py:44
 msgid "Parçalar"
 msgstr "Components"
 
@@ -6371,14 +6339,13 @@ msgid "Plaka"
 msgstr "Plate"
 
 #: arayuz/calistir/kartlar.py:175 arayuz/demet/yerlesim.py:93 arayuz/sekme_cubuk.py:141
-#: arayuz/sekme_malzeme.py:144 arayuz/tasarim/maket_ekranlar.py:357
+#: arayuz/sekme_malzeme.py:144
 msgid "Kopyala"
 msgstr "Copy"
 
 #: arayuz/ayar/yerlesim.py:196 arayuz/cubuk/tambur_formu.py:71 arayuz/demet/yerlesim.py:94
 #: arayuz/geometri/editor.py:116 arayuz/geometri/form_yerlesim.py:60
 #: arayuz/kor/yerlesim.py:130 arayuz/sekme_cubuk.py:142 arayuz/sekme_malzeme.py:145
-#: arayuz/tasarim/galeri.py:39
 msgid "Sil"
 msgstr "Delete"
 
@@ -6753,7 +6720,7 @@ msgstr ""
 "single core open to its surroundings, choose Vacuum."
 
 #: arayuz/geometri/sablon_diyalogu.py:139 arayuz/pencere/model_islemleri.py:146
-#: arayuz/sekme_kor.py:368 arayuz/tasarim/galeri.py:99
+#: arayuz/sekme_kor.py:368
 msgid "2B"
 msgstr "2D"
 
@@ -6783,34 +6750,29 @@ msgstr "Description"
 msgid "Rol"
 msgstr "Role"
 
+#: arayuz/sekme_malzeme.py:66
+msgid "Yoğunluk"
+msgstr "Density"
+
 #: arayuz/cubuk/sayfalar.py:158 arayuz/cubuk/tambur_formu.py:94
 #: arayuz/demet/yerlesim.py:169 arayuz/geometri/form_kafes.py:93
 #: arayuz/geometri/form_kafes.py:274 arayuz/geometri/form_kafes.py:299
 #: arayuz/geometri/form_kafes.py:330 arayuz/geometri/form_yerlesim.py:78
 #: arayuz/geometri/form_yerlesim.py:337 arayuz/geometri/formlar.py:146
-#: arayuz/kor/yerlesim.py:124 arayuz/sekme_malzeme.py:66 arayuz/tasarim/galeri.py:59
-#: arayuz/tasarim/maket_ekranlar.py:90 arayuz/tasarim/maket_ekranlar.py:164
+#: arayuz/kor/yerlesim.py:124 arayuz/sekme_malzeme.py:66
 msgid "Ad"
 msgstr "Name"
 
-#: arayuz/sekme_malzeme.py:66 arayuz/tasarim/maket_ekranlar.py:91
-msgid "Yoğunluk"
-msgstr "Density"
-
-#: arayuz/malzeme/malzeme_diyalog.py:116 arayuz/sekme_malzeme.py:67
-#: arayuz/tasarim/maket_ekranlar.py:94
-msgid "Bileşim"
-msgstr "Composition"
-
-#: arayuz/sekme_malzeme.py:67 arayuz/tasarim/galeri.py:66
-#: arayuz/tasarim/maket_ekranlar.py:92 arayuz/tasarim/maket_ekranlar.py:215
+#: arayuz/sekme_malzeme.py:67
 msgid "Sıcaklık"
 msgstr "Temperature"
 
+#: arayuz/malzeme/malzeme_diyalog.py:116 arayuz/sekme_malzeme.py:67
+msgid "Bileşim"
+msgstr "Composition"
+
 #: arayuz/pencere/model_islemleri.py:66 arayuz/sekme_malzeme.py:78
-#: arayuz/sekme_malzeme.py:112 arayuz/tasarim/maket_ekranlar.py:79
-#: arayuz/tasarim/maket_ekranlar.py:119 arayuz/tasarim/maket_veri.py:12
-#: arayuz/yardim/__init__.py:43
+#: arayuz/sekme_malzeme.py:112 arayuz/yardim/__init__.py:43
 msgid "Malzemeler"
 msgstr "Materials"
 
@@ -6842,7 +6804,7 @@ msgstr "Add from library…"
 msgid "ya da bileşimi elle tanımlayın"
 msgstr "or define the composition manually"
 
-#: arayuz/sekme_malzeme.py:112 arayuz/tasarim/maket_ekranlar.py:119
+#: arayuz/sekme_malzeme.py:112
 msgid "Modeldeki malzemeler, yoğunluk ve bileşim."
 msgstr "Materials in the model, density and composition."
 
@@ -6875,11 +6837,11 @@ msgstr "Manually defined composition"
 msgid "Kütüphaneden ({ad}) — Düzenle parametre formunu açar"
 msgstr "From the library ({ad}) — Edit opens the parameter form"
 
-#: arayuz/sekme_malzeme.py:327
+#: arayuz/sekme_malzeme.py:323
 msgid "Malzeme kullanımda"
 msgstr "Material in use"
 
-#: arayuz/sekme_malzeme.py:328
+#: arayuz/sekme_malzeme.py:324
 #, python-brace-format
 msgid ""
 "'{ad}' modelde {n} yerde kullanılıyor ({ornek}).\n"
@@ -7062,730 +7024,6 @@ msgstr "%d min"
 msgid "%.1f sa"
 msgstr "%.1f h"
 
-#: arayuz/tasarim/galeri.py:37
-msgid "Düğmeler"
-msgstr "Buttons"
-
-#: arayuz/tasarim/galeri.py:37
-msgid "Birincil eylem ekranda bir tane olur."
-msgstr "A screen has only one primary action."
-
-#: arayuz/tasarim/galeri.py:39
-msgid "İptal"
-msgstr "Cancel"
-
-#: arayuz/tasarim/galeri.py:42 arayuz/tasarim/galeri.py:72
-msgid "Pasif"
-msgstr "Disabled"
-
-#: arayuz/tasarim/galeri.py:44
-msgid "Belgeleri aç"
-msgstr "Open documentation"
-
-#: arayuz/tasarim/galeri.py:46 arayuz/tasarim/galeri.py:100
-msgid "Yeni"
-msgstr "New"
-
-#: arayuz/tasarim/galeri.py:47
-msgid "Ara"
-msgstr "Search"
-
-#: arayuz/tasarim/galeri.py:48
-msgid "Ayarlar"
-msgstr "Settings"
-
-#: arayuz/tasarim/galeri.py:49 arayuz/tasarim/maket_ekranlar.py:203
-msgid "Hızlı"
-msgstr "Quick"
-
-#: arayuz/tasarim/galeri.py:49 arayuz/tasarim/maket_ekranlar.py:203
-msgid "Dengeli"
-msgstr "Balanced"
-
-#: arayuz/tasarim/galeri.py:55
-msgid "Girişler"
-msgstr "Inputs"
-
-#: arayuz/tasarim/galeri.py:55
-msgid "Ondalık ayırıcı nokta; birim sağda."
-msgstr "Decimal separator is a point; unit on the right."
-
-#: arayuz/tasarim/galeri.py:62
-msgid "Yoğunluk pozitif olmalı"
-msgstr "Density must be positive"
-
-#: arayuz/tasarim/galeri.py:63
-msgid "Yoğunluk (hata)"
-msgstr "Density (error)"
-
-#: arayuz/tasarim/galeri.py:69 arayuz/tasarim/maket_ekranlar.py:196
-msgid "Koşu türü"
-msgstr "Run type"
-
-#: arayuz/tasarim/galeri.py:70
-msgid "salt okunur"
-msgstr "read-only"
-
-#: arayuz/tasarim/galeri.py:78
-msgid "Seçimler ve ilerleme"
-msgstr "Selections and progress"
-
-#: arayuz/tasarim/galeri.py:81
-msgid "Aki tally'si"
-msgstr "Flux tally"
-
-#: arayuz/tasarim/galeri.py:82
-msgid "2B (sonsuz eksenel)"
-msgstr "2D (infinite axial)"
-
-#: arayuz/tasarim/galeri.py:97
-msgid "Rozetler"
-msgstr "Badges"
-
-#: arayuz/tasarim/galeri.py:98
-msgid "2 uyarı"
-msgstr "2 warnings"
-
-#: arayuz/tasarim/galeri.py:99
-msgid "1 hata"
-msgstr "1 error"
-
-#: arayuz/tasarim/galeri.py:100
-msgid "Özdeğer"
-msgstr "Eigenvalue"
-
-#: arayuz/tasarim/galeri.py:101
-msgid "Bölüm başlığı"
-msgstr "Section heading"
-
-#: arayuz/tasarim/galeri.py:101
-msgid "Kısa açıklama bir satır."
-msgstr "A short description is one line."
-
-#: arayuz/tasarim/galeri.py:107
-msgid "Tablo ve liste"
-msgstr "Table and list"
-
-#: arayuz/tasarim/galeri.py:109 arayuz/tasarim/maket_ekranlar.py:97
-msgid "Nüklid"
-msgstr "Nuclide"
-
-#: arayuz/tasarim/galeri.py:109 arayuz/tasarim/maket_ekranlar.py:97
-msgid "Oran"
-msgstr "Fraction"
-
-#: arayuz/tasarim/galeri.py:121
-msgid "Örnek"
-msgstr "Example"
-
-#: arayuz/tasarim/galeri.py:121
-msgid "Kategori"
-msgstr "Category"
-
-#: arayuz/tasarim/galeri.py:122
-msgid "PWR"
-msgstr "PWR"
-
-#: arayuz/tasarim/galeri.py:122
-msgid "Kriter"
-msgstr "Benchmark"
-
-#: arayuz/tasarim/galeri.py:137
-msgid "Kenar çubuğu"
-msgstr "Sidebar"
-
-#: arayuz/tasarim/galeri.py:137
-msgid "Geniş ve dar; durum: ✓ tamam, ! hata, • eksik."
-msgstr "Wide and narrow; status: ✓ done, ! error, • missing."
-
-#: arayuz/tasarim/galeri.py:148
-msgid "Boş durum"
-msgstr "Empty state"
-
-#: arayuz/tasarim/galeri.py:149
-msgid "Henüz sonuç yok"
-msgstr "No results yet"
-
-#: arayuz/tasarim/galeri.py:150
-msgid "Modeli çalıştırdığınızda k-eff ve yakınsama burada görünür."
-msgstr "k-eff and convergence appear here when you run the model."
-
-#: arayuz/tasarim/galeri.py:161
-msgid "Tasarım galerisi"
-msgstr "Design gallery"
-
-#: arayuz/tasarim/galeri.py:172
-msgid "Tasarım sistemi"
-msgstr "Design system"
-
-#: arayuz/tasarim/galeri.py:177 arayuz/tasarim/tokenlar.py:152
-msgid "Açık"
-msgstr "Light"
-
-#: arayuz/tasarim/galeri.py:177 arayuz/tasarim/tokenlar.py:152
-msgid "Koyu"
-msgstr "Dark"
-
-#: arayuz/tasarim/galeri.py:203
-msgid "Yeni model…"
-msgstr "New model…"
-
-#: arayuz/tasarim/galeri.py:204
-msgid "Açık tema"
-msgstr "Light theme"
-
-#: arayuz/tasarim/galeri.py:204 arayuz/tasarim/maket.py:69
-msgid "Doğrula"
-msgstr "Check model"
-
-#: arayuz/tasarim/galeri.py:204 arayuz/tasarim/maket.py:71
-#: arayuz/tasarim/maket_kabuk.py:243
-msgid "Koyu tema"
-msgstr "Dark theme"
-
-#: arayuz/tasarim/galeri.py:218 arayuz/tasarim/maket.py:90
-msgid "Model kaydedildi: pwr_17x17.json"
-msgstr "Model saved: pwr_17x17.json"
-
-#: arayuz/tasarim/galeri.py:219
-msgid "Kılavuz boru malzemesi tanımsız."
-msgstr "Guide tube material is undefined."
-
-#: arayuz/tasarim/galeri.py:220
-msgid "Doğrulama"
-msgstr "Model check"
-
-#: arayuz/tasarim/galeri.py:221
-msgid "OpenMC süreci beklenmedik biçimde sonlandı."
-msgstr "The OpenMC process ended unexpectedly."
-
-#: arayuz/tasarim/galeri.py:241 arayuz/tasarim/maket.py:89
-msgid "kay"
-msgstr "sav"
-
-#: arayuz/tasarim/galeri.py:253
-msgid "Tasarım sistemi galerisi"
-msgstr "Design system gallery"
-
-#: arayuz/tasarim/galeri.py:254
-msgid "iki temanın PNG'sini yazar"
-msgstr "writes PNGs for both themes"
-
-#: arayuz/tasarim/maket.py:70
-msgid "Kor türünü değiştir…"
-msgstr "Core: change type…"
-
-#: arayuz/tasarim/maket.py:192
-msgid "Önce"
-msgstr "Before"
-
-#: arayuz/tasarim/maket.py:193
-msgid "Sonra (maket)"
-msgstr "After (mockup)"
-
-#: arayuz/tasarim/maket.py:228
-msgid "Tasarım maketleri (KAPI G1)"
-msgstr "Design mockups (gate G1)"
-
-#: arayuz/tasarim/maket.py:230
-msgid "önce görüntülerinin dizini"
-msgstr "directory of the before images"
-
-#: arayuz/tasarim/maket.py:231
-msgid "vurgu seçeneklerini de yaz"
-msgstr "also write the accent options"
-
-#: arayuz/tasarim/maket_baslangic.py:74
-msgid "XML içe aktar…"
-msgstr "Import XML…"
-
-#: arayuz/tasarim/maket_baslangic.py:126
-#, python-format
-msgid "%d örnek · kategoriye göre süzün"
-msgstr "%d examples · filter by category"
-
-#: arayuz/tasarim/maket_baslangic.py:154
-msgid "OpenMC arayüzü — başlangıç (maket)"
-msgstr "OpenMC interface — start (mockup)"
-
-#: arayuz/tasarim/maket_cizim.py:95 arayuz/tasarim/maket_veri.py:41
-msgid "YÇ"
-msgstr "FP"
-
-#: arayuz/tasarim/maket_cizim.py:95 arayuz/tasarim/maket_veri.py:42
-msgid "KB"
-msgstr "GT"
-
-#: arayuz/tasarim/maket_cizim.py:95 arayuz/tasarim/maket_veri.py:43
-msgid "EN"
-msgstr "IT"
-
-#: arayuz/tasarim/maket_cizim.py:300
-msgid "göreli güç (ort. = 1)"
-msgstr "relative power (mean = 1)"
-
-#: arayuz/tasarim/maket_ekranlar.py:66
-msgctxt "boşluk-gaz"
-msgid "boşluk"
-msgstr "gap"
-
-#: arayuz/tasarim/maket_ekranlar.py:79
-msgid "Malzeme ekle"
-msgstr "Add material"
-
-#: arayuz/tasarim/maket_ekranlar.py:81
-msgid "Ara…"
-msgstr "Search…"
-
-#: arayuz/tasarim/maket_ekranlar.py:87
-msgid "Yakıt · 3 çubukta kullanılıyor"
-msgstr "Fuel · used in 3 pins"
-
-#: arayuz/tasarim/maket_ekranlar.py:88
-msgid "Çoğalt"
-msgstr "Duplicate"
-
-#: arayuz/tasarim/maket_ekranlar.py:93
-msgid "Zenginlik"
-msgstr "Enrichment"
-
-#: arayuz/tasarim/maket_ekranlar.py:94
-msgid "Atom oranı (ao); toplam 3.000000"
-msgstr "Atom fraction (ao); total 3.000000"
-
-#: arayuz/tasarim/maket_ekranlar.py:108
-msgid "Nüklid ekle"
-msgstr "Add nuclide"
-
-#: arayuz/tasarim/maket_ekranlar.py:109
-msgid "Doğal element ekle"
-msgstr "Add natural element"
-
-#: arayuz/tasarim/maket_ekranlar.py:120
-msgid "Kütüphaneden ekle"
-msgstr "Add from library"
-
-#: arayuz/tasarim/maket_ekranlar.py:140
-msgid "Boya"
-msgstr "Paint"
-
-#: arayuz/tasarim/maket_ekranlar.py:140
-msgid "Doldur"
-msgstr "Fill"
-
-#: arayuz/tasarim/maket_ekranlar.py:141
-msgid "Seç"
-msgstr "Select"
-
-#: arayuz/tasarim/maket_ekranlar.py:144
-msgid "1/8 simetri"
-msgstr "1/8 symmetry"
-
-#: arayuz/tasarim/maket_ekranlar.py:144
-msgid "3 hücre seçili"
-msgstr "3 cells selected"
-
-#: arayuz/tasarim/maket_ekranlar.py:148
-msgid "21.420 × 21.420 cm · 289 hücre · 264 YÇ / 24 KB / 1 EN"
-msgstr "21.420 × 21.420 cm · 289 cells · 264 FP / 24 GT / 1 IT"
-
-#: arayuz/tasarim/maket_ekranlar.py:153
-msgid "Parça ekle"
-msgstr "Add component"
-
-#: arayuz/tasarim/maket_ekranlar.py:162
-msgid "1/8 (oktant)"
-msgstr "1/8 (octant)"
-
-#: arayuz/tasarim/maket_ekranlar.py:162
-msgid "1/4"
-msgstr "1/4"
-
-#: arayuz/tasarim/maket_ekranlar.py:166
-msgid "Simetri"
-msgstr "Symmetry"
-
-#: arayuz/tasarim/maket_ekranlar.py:181
-#, python-brace-format
-msgid "{ad} · kare 17×17"
-msgstr "{ad} · rectangular 17×17"
-
-#: arayuz/tasarim/maket_ekranlar.py:183
-msgid "Yeni demet"
-msgstr "New assembly"
-
-#: arayuz/tasarim/maket_ekranlar.py:199
-msgid "Kritiklik hesabı: k-eff ve güç dağılımı."
-msgstr "Eigenvalue calculation: k-eff and power distribution."
-
-#: arayuz/tasarim/maket_ekranlar.py:202
-msgid "İstatistik"
-msgstr "Statistics"
-
-#: arayuz/tasarim/maket_ekranlar.py:202
-msgid "Önayar parçacık ve çevrim sayısını birlikte ayarlar."
-msgstr "The preset sets the number of particles and batches together."
-
-#: arayuz/tasarim/maket_ekranlar.py:206
-msgid "Beklenen belirsizlik ≈ ±40 pcm · süre ≈ 3 dk (6 iş parçacığı)"
-msgstr "Expected uncertainty ≈ ±40 pcm · time ≈ 3 min (6 threads)"
-
-#: arayuz/tasarim/maket_ekranlar.py:209
-msgid "Parçacık / çevrim"
-msgstr "Particles / batch"
-
-#: arayuz/tasarim/maket_ekranlar.py:210
-msgid "Etkin çevrim"
-msgstr "Active batch"
-
-#: arayuz/tasarim/maket_ekranlar.py:212
-msgid "Kutu içinde düzgün; yalnız bölünebilir."
-msgstr "Uniform within the box; fissionable regions only."
-
-#: arayuz/tasarim/maket_ekranlar.py:214
-msgid "Alt köşe (x, y, z)"
-msgstr "Lower corner (x, y, z)"
-
-#: arayuz/tasarim/maket_ekranlar.py:214
-msgid "Üst köşe (x, y, z)"
-msgstr "Upper corner (x, y, z)"
-
-#: arayuz/tasarim/maket_ekranlar.py:215
-msgid "Kütüphane: 293–1200 K"
-msgstr "Library: 293–1200 K"
-
-#: arayuz/tasarim/maket_ekranlar.py:217
-msgid "En yakın"
-msgstr "Nearest"
-
-#: arayuz/tasarim/maket_ekranlar.py:220
-msgid "Soğutucu / zarf"
-msgstr "Coolant / cladding"
-
-#: arayuz/tasarim/maket_ekranlar.py:221
-msgid "Yöntem"
-msgstr "Method"
-
-#: arayuz/tasarim/maket_ekranlar.py:222
-msgid "Çıktılar"
-msgstr "Outputs"
-
-#: arayuz/tasarim/maket_ekranlar.py:223
-msgid "Shannon entropisi (kaynak yakınsaması)"
-msgstr "Shannon entropy (source convergence)"
-
-#: arayuz/tasarim/maket_ekranlar.py:224
-msgid "Pin güç dağılımı"
-msgstr "Pin power distribution"
-
-#: arayuz/tasarim/maket_ekranlar.py:224
-msgid "Aki spektrumu (70 grup)"
-msgstr "Flux spectrum (70 groups)"
-
-#: arayuz/tasarim/maket_ekranlar.py:225
-msgid "Tepkime hızları"
-msgstr "Reaction rates"
-
-#: arayuz/tasarim/maket_ekranlar.py:229
-msgid "Rastgele tohum, ağırlık pencereleri, çıktı ayrıntısı"
-msgstr "Random seed, weight windows, output detail"
-
-#: arayuz/tasarim/maket_ekranlar.py:230
-msgid "Gelişmişi aç"
-msgstr "Show advanced"
-
-#: arayuz/tasarim/maket_ekranlar.py:244
-msgid "Monte Carlo koşusunun parametreleri."
-msgstr "Parameters of the Monte Carlo run."
-
-#: arayuz/tasarim/maket_ekranlar.py:245
-msgid "Varsayılana dön"
-msgstr "Reset to default"
-
-#: arayuz/tasarim/maket_ekranlar.py:306
-#, python-format
-msgid "hedef ≤ %s pcm"
-msgstr "target ≤ %s pcm"
-
-#: arayuz/tasarim/maket_ekranlar.py:308
-msgid "50. çevrimden beri durağan"
-msgstr "stationary since batch 50"
-
-#: arayuz/tasarim/maket_ekranlar.py:309
-msgid "bit"
-msgstr "bit"
-
-#: arayuz/tasarim/maket_ekranlar.py:310
-#, python-format
-msgid "%s etkin + 50 pasif çevrim"
-msgstr "%s active + 50 inactive batches"
-
-#: arayuz/tasarim/maket_ekranlar.py:312
-msgid "6 iş parçacığı"
-msgstr "6 threads"
-
-#: arayuz/tasarim/maket_ekranlar.py:318
-msgid "Pin başına göreli güç"
-msgstr "Relative power per pin"
-
-#: arayuz/tasarim/maket_ekranlar.py:332
-msgid "Koşu tamamlandı · 28.09.2026 14:32 · statepoint.250.h5"
-msgstr "Run completed · 28.09.2026 14:32 · statepoint.250.h5"
-
-#: arayuz/tasarim/maket_ekranlar.py:332 arayuz/tasarim/maket_veri.py:18
-msgid "Sonuçlar"
-msgstr "Results"
-
-#: arayuz/tasarim/maket_ekranlar.py:343
-#, python-format
-msgid "tepe: satır %d, sütun %d (kılavuz boru komşusu)"
-msgstr "peak: row %d, column %d (next to guide tube)"
-
-#: arayuz/tasarim/maket_ekranlar.py:348
-msgid "OpenMC günlüğü · 412 satır"
-msgstr "OpenMC log · 412 lines"
-
-#: arayuz/tasarim/maket_ekranlar.py:350
-msgid "Çekmeceyi kapat"
-msgstr "Close drawer"
-
-#: arayuz/tasarim/maket_ekranlar.py:350
-msgid "Çekmeceyi aç"
-msgstr "Open drawer"
-
-#: arayuz/tasarim/maket_ekranlar.py:357
-msgid "Terminalde aç"
-msgstr "Open in terminal"
-
-#: arayuz/tasarim/maket_kabuk.py:56
-msgid "Dü&zen"
-msgstr "&Edit"
-
-#: arayuz/tasarim/maket_kabuk.py:67
-msgid "Yeni model (Ctrl+N)"
-msgstr "New model (Ctrl+N)"
-
-#: arayuz/tasarim/maket_kabuk.py:67
-msgid "Aç (Ctrl+O)"
-msgstr "Open (Ctrl+O)"
-
-#: arayuz/tasarim/maket_kabuk.py:68
-msgid "Kaydet (Ctrl+S)"
-msgstr "Save (Ctrl+S)"
-
-#: arayuz/tasarim/maket_kabuk.py:71
-msgid "Geri al (Ctrl+Z)"
-msgstr "Undo (Ctrl+Z)"
-
-#: arayuz/tasarim/maket_kabuk.py:71
-msgid "Yinele (Ctrl+Y)"
-msgstr "Redo (Ctrl+Y)"
-
-#: arayuz/tasarim/maket_kabuk.py:89
-msgid "Yeni model"
-msgstr "New model"
-
-#: arayuz/tasarim/maket_kabuk.py:105
-msgid "Modeli OpenMC ile çalıştırır (F5)"
-msgstr "Runs the model with OpenMC (F5)"
-
-#: arayuz/tasarim/maket_kabuk.py:139
-msgid "Malzemeye göre"
-msgstr "By material"
-
-#: arayuz/tasarim/maket_kabuk.py:139
-msgid "Hücreye göre"
-msgstr "By cell"
-
-#: arayuz/tasarim/maket_kabuk.py:145
-msgid "Yakıt (UO2)"
-msgstr "Fuel (UO2)"
-
-#: arayuz/tasarim/maket_kabuk.py:147
-msgid "Enstrüman"
-msgstr "Instrument"
-
-#: arayuz/tasarim/maket_kabuk.py:148
-msgid "Su (H2O + B)"
-msgstr "Water (H2O + B)"
-
-#: arayuz/tasarim/maket_kabuk.py:156
-#, python-brace-format
-msgid "{olcu} · 289 hücre"
-msgstr "{olcu} · 289 cells"
-
-#: arayuz/tasarim/maket_kabuk.py:172
-msgid "1 bilgi"
-msgstr "1 info"
-
-#: arayuz/tasarim/maket_kabuk.py:175
-msgid "Doğrulama: 1 uyarı"
-msgstr "Model check: 1 warning"
-
-#: arayuz/tasarim/maket_kabuk.py:176
-msgid "Parçalar · “su” hücresi tanımlı ama ızgarada kullanılmıyor."
-msgstr "Components · the “water” cell is defined but not used in the grid."
-
-#: arayuz/tasarim/maket_kabuk.py:182
-msgid "Sonraki adım: Kor sayfasında demetleri yerleştirin."
-msgstr "Next step: place the assemblies on the Geometry page."
-
-#: arayuz/tasarim/maket_kabuk.py:233
-msgid "OpenMC arayüzü — maket"
-msgstr "OpenMC interface — mockup"
-
-#: arayuz/tasarim/maket_kabuk.py:244
-msgid "Tercihler"
-msgstr "Preferences"
-
-#: arayuz/tasarim/maket_veri.py:15
-msgid "Kor"
-msgstr "Core"
-
-#: arayuz/tasarim/maket_veri.py:27 arayuz/tasarim/maket_veri.py:70
-msgid "PWR 17×17 yakıt demeti"
-msgstr "PWR 17×17 fuel assembly"
-
-#: arayuz/tasarim/maket_veri.py:28
-msgid "2B · Özdeğer (k-eff)"
-msgstr "2D · Eigenvalue (k-eff)"
-
-#: arayuz/tasarim/maket_veri.py:35
-msgid "soğurucu"
-msgstr "absorber"
-
-#: arayuz/tasarim/maket_veri.py:41
-msgid "Yakıt çubuğu"
-msgstr "Fuel pin"
-
-#: arayuz/tasarim/maket_veri.py:43
-msgid "Enstrüman borusu"
-msgstr "Instrument tube"
-
-#: arayuz/tasarim/maket_veri.py:44
-msgid "SU"
-msgstr "W"
-
-#: arayuz/tasarim/maket_veri.py:44
-msgid "Su hücresi"
-msgstr "Water cell"
-
-#: arayuz/tasarim/maket_veri.py:54
-msgid "Tek çubuk ve soğutucu; en hızlı başlangıç."
-msgstr "A single pin and coolant; the fastest start."
-
-#: arayuz/tasarim/maket_veri.py:55
-msgid "Kare ızgarada çubuklar ve kılavuz borular (PWR)."
-msgstr "Pins and guide tubes on a square grid (PWR)."
-
-#: arayuz/tasarim/maket_veri.py:56
-msgid "Altıgen ızgarada demet (VVER, hızlı reaktör)."
-msgstr "Assembly on a hexagonal grid (VVER, fast reactor)."
-
-#: arayuz/tasarim/maket_veri.py:57
-msgid "Tam kor"
-msgstr "Full core"
-
-#: arayuz/tasarim/maket_veri.py:57
-msgid "Demetlerden oluşan kor haritası ve yansıtıcı."
-msgstr "A core map of assemblies, plus a reflector."
-
-#: arayuz/tasarim/maket_veri.py:58
-msgid "Araştırma reaktörünün düz plakalı yakıtı."
-msgstr "Flat-plate fuel of a research reactor."
-
-#: arayuz/tasarim/maket_veri.py:59
-msgid "Dönen kontrol tamburlu hızlı kor."
-msgstr "Fast core with rotating control drums."
-
-#: arayuz/tasarim/maket_veri.py:60
-msgid "Zırhlama"
-msgstr "Shielding"
-
-#: arayuz/tasarim/maket_veri.py:60
-msgid "Sabit kaynaktan zırh katmanlarında zayıflama."
-msgstr "Attenuation in shield layers from a fixed source."
-
-#: arayuz/tasarim/maket_veri.py:69
-msgid "PWR yakıt hücresi"
-msgstr "PWR fuel pin cell"
-
-#: arayuz/tasarim/maket_veri.py:69
-msgid "Klasik PWR pin hücresi, 2B."
-msgstr "Classic PWR pin cell, 2D."
-
-#: arayuz/tasarim/maket_veri.py:70
-msgid "264 yakıt çubuğu, 24 kılavuz boru."
-msgstr "264 fuel pins, 24 guide tubes."
-
-#: arayuz/tasarim/maket_veri.py:71
-msgid "PWR demeti — 3B"
-msgstr "PWR assembly — 3D"
-
-#: arayuz/tasarim/maket_veri.py:71
-msgid "366 cm aktif yükseklik, eksenel yansıtıcı."
-msgstr "366 cm active height, axial reflector."
-
-#: arayuz/tasarim/maket_veri.py:72
-msgid "VVER-1000 demeti"
-msgstr "VVER-1000 assembly"
-
-#: arayuz/tasarim/maket_veri.py:72
-msgid "331 konum, 312 yakıt çubuğu."
-msgstr "331 positions, 312 fuel pins."
-
-#: arayuz/tasarim/maket_veri.py:73
-msgid "SFR altıgen demet"
-msgstr "SFR hexagonal assembly"
-
-#: arayuz/tasarim/maket_veri.py:73
-msgid "Sodyum soğutmalı, 127 çubuk."
-msgstr "Sodium-cooled, 127 pins."
-
-#: arayuz/tasarim/maket_veri.py:74
-msgid "23 düz plaka, U3Si2-Al."
-msgstr "23 flat plates, U3Si2-Al."
-
-#: arayuz/tasarim/maket_veri.py:75
-msgid "TRIGA kor"
-msgstr "TRIGA core"
-
-#: arayuz/tasarim/maket_veri.py:75
-msgid "Havuz tipi araştırma reaktörü koru."
-msgstr "Pool-type research reactor core."
-
-#: arayuz/tasarim/maket_veri.py:76
-msgid "Godiva kritik küresi"
-msgstr "Godiva critical sphere"
-
-#: arayuz/tasarim/maket_veri.py:76
-msgid "ICSBEP HEU-MET-FAST-001."
-msgstr "ICSBEP HEU-MET-FAST-001."
-
-#: arayuz/tasarim/maket_veri.py:77
-msgid "Jezebel"
-msgstr "Jezebel"
-
-#: arayuz/tasarim/maket_veri.py:77
-msgid "ICSBEP PU-MET-FAST-001."
-msgstr "ICSBEP PU-MET-FAST-001."
-
-#: arayuz/tasarim/maket_veri.py:78
-msgid "Beton zırh"
-msgstr "Concrete shield"
-
-#: arayuz/tasarim/maket_veri.py:78
-msgid "14 MeV nötron, beton katmanlarda zayıflama."
-msgstr "14 MeV neutron, attenuation in concrete layers."
-
-#: arayuz/tasarim/maket_veri.py:81
-msgid "2 saat önce"
-msgstr "2 hours ago"
-
-#: arayuz/tasarim/maket_veri.py:83
-msgid "3 gün önce"
-msgstr "3 days ago"
-
 #: arayuz/tasarim/tokenlar.py:129
 msgid "Kobalt"
 msgstr "Cobalt"
@@ -7797,6 +7035,14 @@ msgstr "Teal"
 #: arayuz/tasarim/tokenlar.py:143
 msgid "Çivit"
 msgstr "Indigo"
+
+#: arayuz/tasarim/tokenlar.py:152
+msgid "Açık"
+msgstr "Light"
+
+#: arayuz/tasarim/tokenlar.py:152
+msgid "Koyu"
+msgstr "Dark"
 
 #: arayuz/tukenme_arayuz.py:42
 msgid "Otomatik (spektrumdan)"
@@ -7954,8 +7200,7 @@ msgstr ""
 "Time, burnup, k, σ and the atom count and density of each selected nuclide (decimal "
 "point)"
 
-#: arayuz/calistir/kartlar.py:176 arayuz/tasarim/maket_ekranlar.py:348
-#: arayuz/tukenme_arayuz.py:185
+#: arayuz/calistir/kartlar.py:176 arayuz/tukenme_arayuz.py:185
 msgid "Ayrıntılı çıktı"
 msgstr "Detailed output"
 
@@ -7971,14 +7216,12 @@ msgstr "Tracked nuclides"
 msgid "Koşu"
 msgstr "Run"
 
-#: arayuz/analiz/sekme.py:165 arayuz/calistir/kartlar.py:138
-#: arayuz/tasarim/maket_veri.py:18 arayuz/tasarim/maket_veri.py:19
-#: arayuz/tasarim/maket_veri.py:20 arayuz/tukenme_arayuz.py:201
+#: arayuz/analiz/sekme.py:165 arayuz/calistir/kartlar.py:138 arayuz/tukenme_arayuz.py:201
 msgid "Sonuç"
 msgstr "Result"
 
-#: arayuz/pencere/model_islemleri.py:68 arayuz/tasarim/maket_veri.py:20
-#: arayuz/tukenme_arayuz.py:214 arayuz/yardim/__init__.py:51
+#: arayuz/pencere/model_islemleri.py:68 arayuz/tukenme_arayuz.py:214
+#: arayuz/yardim/__init__.py:51
 msgid "Tükenme"
 msgstr "Depletion"
 
@@ -8108,8 +7351,7 @@ msgstr "not applicable"
 msgid "not"
 msgstr "note"
 
-#: arayuz/pencere/kabuk.py:283 arayuz/tasarim/galeri.py:220
-#: arayuz/tasarim/maket_kabuk.py:179 arayuz/uygunluk_paneli.py:106
+#: arayuz/pencere/kabuk.py:283 arayuz/uygunluk_paneli.py:106
 msgid "Bulguya git"
 msgstr "Go to finding"
 
@@ -8476,4 +7718,536 @@ msgstr "User guide"
 #~ "⚠ weak statistics: this value is biased "
 #~ "high; for a reliable F_ΔH run with the"
 #~ " Normal or Accurate preset"
+
+#~ msgid "Düğmeler"
+#~ msgstr "Buttons"
+
+#~ msgid "Birincil eylem ekranda bir tane olur."
+#~ msgstr "A screen has only one primary action."
+
+#~ msgid "İptal"
+#~ msgstr "Cancel"
+
+#~ msgid "Pasif"
+#~ msgstr "Disabled"
+
+#~ msgid "Belgeleri aç"
+#~ msgstr "Open documentation"
+
+#~ msgid "Yeni"
+#~ msgstr "New"
+
+#~ msgid "Ara"
+#~ msgstr "Search"
+
+#~ msgid "Ayarlar"
+#~ msgstr "Settings"
+
+#~ msgid "Hızlı"
+#~ msgstr "Quick"
+
+#~ msgid "Dengeli"
+#~ msgstr "Balanced"
+
+#~ msgid "Girişler"
+#~ msgstr "Inputs"
+
+#~ msgid "Ondalık ayırıcı nokta; birim sağda."
+#~ msgstr "Decimal separator is a point; unit on the right."
+
+#~ msgid "Yoğunluk pozitif olmalı"
+#~ msgstr "Density must be positive"
+
+#~ msgid "Yoğunluk (hata)"
+#~ msgstr "Density (error)"
+
+#~ msgid "Koşu türü"
+#~ msgstr "Run type"
+
+#~ msgid "salt okunur"
+#~ msgstr "read-only"
+
+#~ msgid "Seçimler ve ilerleme"
+#~ msgstr "Selections and progress"
+
+#~ msgid "Aki tally'si"
+#~ msgstr "Flux tally"
+
+#~ msgid "2B (sonsuz eksenel)"
+#~ msgstr "2D (infinite axial)"
+
+#~ msgid "Rozetler"
+#~ msgstr "Badges"
+
+#~ msgid "2 uyarı"
+#~ msgstr "2 warnings"
+
+#~ msgid "1 hata"
+#~ msgstr "1 error"
+
+#~ msgid "Özdeğer"
+#~ msgstr "Eigenvalue"
+
+#~ msgid "Bölüm başlığı"
+#~ msgstr "Section heading"
+
+#~ msgid "Kısa açıklama bir satır."
+#~ msgstr "A short description is one line."
+
+#~ msgid "Tablo ve liste"
+#~ msgstr "Table and list"
+
+#~ msgid "Nüklid"
+#~ msgstr "Nuclide"
+
+#~ msgid "Oran"
+#~ msgstr "Fraction"
+
+#~ msgid "Örnek"
+#~ msgstr "Example"
+
+#~ msgid "Kategori"
+#~ msgstr "Category"
+
+#~ msgid "PWR"
+#~ msgstr "PWR"
+
+#~ msgid "Kriter"
+#~ msgstr "Benchmark"
+
+#~ msgid "Kenar çubuğu"
+#~ msgstr "Sidebar"
+
+#~ msgid "Geniş ve dar; durum: ✓ tamam, ! hata, • eksik."
+#~ msgstr "Wide and narrow; status: ✓ done, ! error, • missing."
+
+#~ msgid "Boş durum"
+#~ msgstr "Empty state"
+
+#~ msgid "Henüz sonuç yok"
+#~ msgstr "No results yet"
+
+#~ msgid "Modeli çalıştırdığınızda k-eff ve yakınsama burada görünür."
+#~ msgstr "k-eff and convergence appear here when you run the model."
+
+#~ msgid "Tasarım galerisi"
+#~ msgstr "Design gallery"
+
+#~ msgid "Tasarım sistemi"
+#~ msgstr "Design system"
+
+#~ msgid "Yeni model…"
+#~ msgstr "New model…"
+
+#~ msgid "Açık tema"
+#~ msgstr "Light theme"
+
+#~ msgid "Doğrula"
+#~ msgstr "Check model"
+
+#~ msgid "Koyu tema"
+#~ msgstr "Dark theme"
+
+#~ msgid "Model kaydedildi: pwr_17x17.json"
+#~ msgstr "Model saved: pwr_17x17.json"
+
+#~ msgid "Kılavuz boru malzemesi tanımsız."
+#~ msgstr "Guide tube material is undefined."
+
+#~ msgid "Doğrulama"
+#~ msgstr "Model check"
+
+#~ msgid "OpenMC süreci beklenmedik biçimde sonlandı."
+#~ msgstr "The OpenMC process ended unexpectedly."
+
+#~ msgid "kay"
+#~ msgstr "sav"
+
+#~ msgid "Tasarım sistemi galerisi"
+#~ msgstr "Design system gallery"
+
+#~ msgid "iki temanın PNG'sini yazar"
+#~ msgstr "writes PNGs for both themes"
+
+#~ msgid "Kor türünü değiştir…"
+#~ msgstr "Core: change type…"
+
+#~ msgid "Önce"
+#~ msgstr "Before"
+
+#~ msgid "Sonra (maket)"
+#~ msgstr "After (mockup)"
+
+#~ msgid "Tasarım maketleri (KAPI G1)"
+#~ msgstr "Design mockups (gate G1)"
+
+#~ msgid "önce görüntülerinin dizini"
+#~ msgstr "directory of the before images"
+
+#~ msgid "vurgu seçeneklerini de yaz"
+#~ msgstr "also write the accent options"
+
+#~ msgid "XML içe aktar…"
+#~ msgstr "Import XML…"
+
+#~ msgid "%d örnek · kategoriye göre süzün"
+#~ msgstr "%d examples · filter by category"
+
+#~ msgid "OpenMC arayüzü — başlangıç (maket)"
+#~ msgstr "OpenMC interface — start (mockup)"
+
+#~ msgid "YÇ"
+#~ msgstr "FP"
+
+#~ msgid "KB"
+#~ msgstr "GT"
+
+#~ msgid "EN"
+#~ msgstr "IT"
+
+#~ msgid "göreli güç (ort. = 1)"
+#~ msgstr "relative power (mean = 1)"
+
+#~ msgctxt "boşluk-gaz"
+#~ msgid "boşluk"
+#~ msgstr "gap"
+
+#~ msgid "Malzeme ekle"
+#~ msgstr "Add material"
+
+#~ msgid "Ara…"
+#~ msgstr "Search…"
+
+#~ msgid "Yakıt · 3 çubukta kullanılıyor"
+#~ msgstr "Fuel · used in 3 pins"
+
+#~ msgid "Çoğalt"
+#~ msgstr "Duplicate"
+
+#~ msgid "Zenginlik"
+#~ msgstr "Enrichment"
+
+#~ msgid "Atom oranı (ao); toplam 3.000000"
+#~ msgstr "Atom fraction (ao); total 3.000000"
+
+#~ msgid "Nüklid ekle"
+#~ msgstr "Add nuclide"
+
+#~ msgid "Doğal element ekle"
+#~ msgstr "Add natural element"
+
+#~ msgid "Kütüphaneden ekle"
+#~ msgstr "Add from library"
+
+#~ msgid "Boya"
+#~ msgstr "Paint"
+
+#~ msgid "Doldur"
+#~ msgstr "Fill"
+
+#~ msgid "Seç"
+#~ msgstr "Select"
+
+#~ msgid "1/8 simetri"
+#~ msgstr "1/8 symmetry"
+
+#~ msgid "3 hücre seçili"
+#~ msgstr "3 cells selected"
+
+#~ msgid "21.420 × 21.420 cm · 289 hücre · 264 YÇ / 24 KB / 1 EN"
+#~ msgstr "21.420 × 21.420 cm · 289 cells · 264 FP / 24 GT / 1 IT"
+
+#~ msgid "Parça ekle"
+#~ msgstr "Add component"
+
+#~ msgid "1/8 (oktant)"
+#~ msgstr "1/8 (octant)"
+
+#~ msgid "1/4"
+#~ msgstr "1/4"
+
+#~ msgid "Simetri"
+#~ msgstr "Symmetry"
+
+#~ msgid "{ad} · kare 17×17"
+#~ msgstr "{ad} · rectangular 17×17"
+
+#~ msgid "Yeni demet"
+#~ msgstr "New assembly"
+
+#~ msgid "Kritiklik hesabı: k-eff ve güç dağılımı."
+#~ msgstr "Eigenvalue calculation: k-eff and power distribution."
+
+#~ msgid "İstatistik"
+#~ msgstr "Statistics"
+
+#~ msgid "Önayar parçacık ve çevrim sayısını birlikte ayarlar."
+#~ msgstr "The preset sets the number of particles and batches together."
+
+#~ msgid "Beklenen belirsizlik ≈ ±40 pcm · süre ≈ 3 dk (6 iş parçacığı)"
+#~ msgstr "Expected uncertainty ≈ ±40 pcm · time ≈ 3 min (6 threads)"
+
+#~ msgid "Parçacık / çevrim"
+#~ msgstr "Particles / batch"
+
+#~ msgid "Etkin çevrim"
+#~ msgstr "Active batch"
+
+#~ msgid "Kutu içinde düzgün; yalnız bölünebilir."
+#~ msgstr "Uniform within the box; fissionable regions only."
+
+#~ msgid "Alt köşe (x, y, z)"
+#~ msgstr "Lower corner (x, y, z)"
+
+#~ msgid "Üst köşe (x, y, z)"
+#~ msgstr "Upper corner (x, y, z)"
+
+#~ msgid "Kütüphane: 293–1200 K"
+#~ msgstr "Library: 293–1200 K"
+
+#~ msgid "En yakın"
+#~ msgstr "Nearest"
+
+#~ msgid "Soğutucu / zarf"
+#~ msgstr "Coolant / cladding"
+
+#~ msgid "Yöntem"
+#~ msgstr "Method"
+
+#~ msgid "Çıktılar"
+#~ msgstr "Outputs"
+
+#~ msgid "Shannon entropisi (kaynak yakınsaması)"
+#~ msgstr "Shannon entropy (source convergence)"
+
+#~ msgid "Pin güç dağılımı"
+#~ msgstr "Pin power distribution"
+
+#~ msgid "Aki spektrumu (70 grup)"
+#~ msgstr "Flux spectrum (70 groups)"
+
+#~ msgid "Tepkime hızları"
+#~ msgstr "Reaction rates"
+
+#~ msgid "Rastgele tohum, ağırlık pencereleri, çıktı ayrıntısı"
+#~ msgstr "Random seed, weight windows, output detail"
+
+#~ msgid "Gelişmişi aç"
+#~ msgstr "Show advanced"
+
+#~ msgid "Monte Carlo koşusunun parametreleri."
+#~ msgstr "Parameters of the Monte Carlo run."
+
+#~ msgid "Varsayılana dön"
+#~ msgstr "Reset to default"
+
+#~ msgid "hedef ≤ %s pcm"
+#~ msgstr "target ≤ %s pcm"
+
+#~ msgid "50. çevrimden beri durağan"
+#~ msgstr "stationary since batch 50"
+
+#~ msgid "bit"
+#~ msgstr "bit"
+
+#~ msgid "%s etkin + 50 pasif çevrim"
+#~ msgstr "%s active + 50 inactive batches"
+
+#~ msgid "6 iş parçacığı"
+#~ msgstr "6 threads"
+
+#~ msgid "Pin başına göreli güç"
+#~ msgstr "Relative power per pin"
+
+#~ msgid "Koşu tamamlandı · 28.09.2026 14:32 · statepoint.250.h5"
+#~ msgstr "Run completed · 28.09.2026 14:32 · statepoint.250.h5"
+
+#~ msgid "Sonuçlar"
+#~ msgstr "Results"
+
+#~ msgid "tepe: satır %d, sütun %d (kılavuz boru komşusu)"
+#~ msgstr "peak: row %d, column %d (next to guide tube)"
+
+#~ msgid "OpenMC günlüğü · 412 satır"
+#~ msgstr "OpenMC log · 412 lines"
+
+#~ msgid "Çekmeceyi kapat"
+#~ msgstr "Close drawer"
+
+#~ msgid "Çekmeceyi aç"
+#~ msgstr "Open drawer"
+
+#~ msgid "Terminalde aç"
+#~ msgstr "Open in terminal"
+
+#~ msgid "Dü&zen"
+#~ msgstr "&Edit"
+
+#~ msgid "Yeni model (Ctrl+N)"
+#~ msgstr "New model (Ctrl+N)"
+
+#~ msgid "Aç (Ctrl+O)"
+#~ msgstr "Open (Ctrl+O)"
+
+#~ msgid "Kaydet (Ctrl+S)"
+#~ msgstr "Save (Ctrl+S)"
+
+#~ msgid "Geri al (Ctrl+Z)"
+#~ msgstr "Undo (Ctrl+Z)"
+
+#~ msgid "Yinele (Ctrl+Y)"
+#~ msgstr "Redo (Ctrl+Y)"
+
+#~ msgid "Yeni model"
+#~ msgstr "New model"
+
+#~ msgid "Modeli OpenMC ile çalıştırır (F5)"
+#~ msgstr "Runs the model with OpenMC (F5)"
+
+#~ msgid "Malzemeye göre"
+#~ msgstr "By material"
+
+#~ msgid "Hücreye göre"
+#~ msgstr "By cell"
+
+#~ msgid "Yakıt (UO2)"
+#~ msgstr "Fuel (UO2)"
+
+#~ msgid "Enstrüman"
+#~ msgstr "Instrument"
+
+#~ msgid "Su (H2O + B)"
+#~ msgstr "Water (H2O + B)"
+
+#~ msgid "{olcu} · 289 hücre"
+#~ msgstr "{olcu} · 289 cells"
+
+#~ msgid "1 bilgi"
+#~ msgstr "1 info"
+
+#~ msgid "Doğrulama: 1 uyarı"
+#~ msgstr "Model check: 1 warning"
+
+#~ msgid "Parçalar · “su” hücresi tanımlı ama ızgarada kullanılmıyor."
+#~ msgstr "Components · the “water” cell is defined but not used in the grid."
+
+#~ msgid "Sonraki adım: Kor sayfasında demetleri yerleştirin."
+#~ msgstr "Next step: place the assemblies on the Geometry page."
+
+#~ msgid "OpenMC arayüzü — maket"
+#~ msgstr "OpenMC interface — mockup"
+
+#~ msgid "Tercihler"
+#~ msgstr "Preferences"
+
+#~ msgid "Kor"
+#~ msgstr "Core"
+
+#~ msgid "PWR 17×17 yakıt demeti"
+#~ msgstr "PWR 17×17 fuel assembly"
+
+#~ msgid "2B · Özdeğer (k-eff)"
+#~ msgstr "2D · Eigenvalue (k-eff)"
+
+#~ msgid "soğurucu"
+#~ msgstr "absorber"
+
+#~ msgid "Yakıt çubuğu"
+#~ msgstr "Fuel pin"
+
+#~ msgid "Enstrüman borusu"
+#~ msgstr "Instrument tube"
+
+#~ msgid "SU"
+#~ msgstr "W"
+
+#~ msgid "Su hücresi"
+#~ msgstr "Water cell"
+
+#~ msgid "Tek çubuk ve soğutucu; en hızlı başlangıç."
+#~ msgstr "A single pin and coolant; the fastest start."
+
+#~ msgid "Kare ızgarada çubuklar ve kılavuz borular (PWR)."
+#~ msgstr "Pins and guide tubes on a square grid (PWR)."
+
+#~ msgid "Altıgen ızgarada demet (VVER, hızlı reaktör)."
+#~ msgstr "Assembly on a hexagonal grid (VVER, fast reactor)."
+
+#~ msgid "Tam kor"
+#~ msgstr "Full core"
+
+#~ msgid "Demetlerden oluşan kor haritası ve yansıtıcı."
+#~ msgstr "A core map of assemblies, plus a reflector."
+
+#~ msgid "Araştırma reaktörünün düz plakalı yakıtı."
+#~ msgstr "Flat-plate fuel of a research reactor."
+
+#~ msgid "Dönen kontrol tamburlu hızlı kor."
+#~ msgstr "Fast core with rotating control drums."
+
+#~ msgid "Zırhlama"
+#~ msgstr "Shielding"
+
+#~ msgid "Sabit kaynaktan zırh katmanlarında zayıflama."
+#~ msgstr "Attenuation in shield layers from a fixed source."
+
+#~ msgid "PWR yakıt hücresi"
+#~ msgstr "PWR fuel pin cell"
+
+#~ msgid "Klasik PWR pin hücresi, 2B."
+#~ msgstr "Classic PWR pin cell, 2D."
+
+#~ msgid "264 yakıt çubuğu, 24 kılavuz boru."
+#~ msgstr "264 fuel pins, 24 guide tubes."
+
+#~ msgid "PWR demeti — 3B"
+#~ msgstr "PWR assembly — 3D"
+
+#~ msgid "366 cm aktif yükseklik, eksenel yansıtıcı."
+#~ msgstr "366 cm active height, axial reflector."
+
+#~ msgid "VVER-1000 demeti"
+#~ msgstr "VVER-1000 assembly"
+
+#~ msgid "331 konum, 312 yakıt çubuğu."
+#~ msgstr "331 positions, 312 fuel pins."
+
+#~ msgid "SFR altıgen demet"
+#~ msgstr "SFR hexagonal assembly"
+
+#~ msgid "Sodyum soğutmalı, 127 çubuk."
+#~ msgstr "Sodium-cooled, 127 pins."
+
+#~ msgid "23 düz plaka, U3Si2-Al."
+#~ msgstr "23 flat plates, U3Si2-Al."
+
+#~ msgid "TRIGA kor"
+#~ msgstr "TRIGA core"
+
+#~ msgid "Havuz tipi araştırma reaktörü koru."
+#~ msgstr "Pool-type research reactor core."
+
+#~ msgid "Godiva kritik küresi"
+#~ msgstr "Godiva critical sphere"
+
+#~ msgid "ICSBEP HEU-MET-FAST-001."
+#~ msgstr "ICSBEP HEU-MET-FAST-001."
+
+#~ msgid "Jezebel"
+#~ msgstr "Jezebel"
+
+#~ msgid "ICSBEP PU-MET-FAST-001."
+#~ msgstr "ICSBEP PU-MET-FAST-001."
+
+#~ msgid "Beton zırh"
+#~ msgstr "Concrete shield"
+
+#~ msgid "14 MeV nötron, beton katmanlarda zayıflama."
+#~ msgstr "14 MeV neutron, attenuation in concrete layers."
+
+#~ msgid "2 saat önce"
+#~ msgstr "2 hours ago"
+
+#~ msgid "3 gün önce"
+#~ msgstr "3 days ago"
 
