@@ -196,9 +196,29 @@ def test_bellek_tahmini():
     kontrol("70 grup 2 gruptan >= 35^2/2 kat", b70 > b2 * 35 ** 2 / 2, "-> %d / %d" % (b2, b70))
 
 
+def test_csv_formul_enjeksiyonu_ve_bom():
+    print("\n[Y8-M10] CSV: '=' ile baslayan bolge adi ' onekli; utf-8-sig (BOM)")
+    import csv
+    from cekirdek import mgxs_uret as mu
+    # Arrange
+    satirlar = (mu.Satir("=HYPERLINK(1)", "m1", "total", 1, None, 0.5, 0.001),
+                mu.Satir("-uo2", "m2", "total", 1, None, 0.5, 0.001))
+    with tempfile.TemporaryDirectory() as d:
+        yol = os.path.join(d, "x.csv")
+        # Act
+        mu.csv_yaz(satirlar, yol, mu.MgxsAyar(True))
+        ham = open(yol, "rb").read()
+        with open(yol, encoding="utf-8-sig", newline="") as f:
+            rows = list(csv.reader(f))
+    # Assert
+    kontrol("BOM", ham.startswith(b"\xef\xbb\xbf"))
+    kontrol("formul onekli", rows[2][0] == "'=HYPERLINK(1)" and rows[3][0] == "'-uo2",
+            "-> %r" % rows[2:])
+
+
 HIZLI = [test_ayar_varsayilan_ve_dogrulama, test_etkin_turler_mg_icin_zorunlulari_icerir,
          test_kurucu_kancasi_tally_ekler_kullanici_tallysi_birlesmez, test_bolge_turu_domainleri,
          test_xsdata_adlari_guvenli_ve_tekil, test_kurucu_ve_betik_ayni_tallyler,
          test_kapaliyken_model_ve_betik_degismez, test_tukenmede_kapatilir_ve_dogrulama_bulgulari,
-         test_bellek_tahmini]
+         test_bellek_tahmini, test_csv_formul_enjeksiyonu_ve_bom]
 YAVAS = []

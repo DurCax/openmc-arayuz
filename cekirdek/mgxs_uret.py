@@ -375,14 +375,16 @@ def negatif_kosegen(lib: "openmc.mgxs.Library") -> int:
 
 
 def csv_yaz(satirlar: Tuple[Satir, ...], yol: str, a: MgxsAyar) -> str:
-    with open(yol, "w", encoding="utf-8", newline="") as f:
+    from cekirdek.guc_tablo import hucre_guvenli    # K3: formul enjeksiyonu korumasi
+    # utf-8-sig: Excel/LibreOffice Turkce karakterleri BOM ile dogru tanir (K3 ile ayni)
+    with open(yol, "w", encoding="utf-8-sig", newline="") as f:
         w = csv.writer(f)
         w.writerow(["# grup_yapisi=%s duzeltme=%s bolge=%s (grup 1 = en yuksek enerji)"
                     % (a.grup_yapisi, a.duzeltme, a.bolge)])
         w.writerow(["bolge", "xsdata", "tur", "grup", "giden_grup", "deger", "sapma",
                     "bagil_sapma"])
         for s in satirlar:
-            w.writerow([s.bolge, s.xsdata, s.tur, s.grup, "" if s.giden is None else s.giden,
+            w.writerow([hucre_guvenli(s.bolge), s.xsdata, s.tur, s.grup, "" if s.giden is None else s.giden,
                         "%.8e" % s.deger, "%.8e" % s.sapma, "%.4e" % s.bagil])
     return yol
 
