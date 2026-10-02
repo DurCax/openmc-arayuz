@@ -85,8 +85,8 @@ class VurguMixin(object):
 
     def nokta_sec(self, eksen, a, b):
         """Kesit duzlemindeki (a, b) noktasinin dugum yolu; bulunursa yayar."""
-        if not self._son_eksenler:
-            return None
+        if not self._son_eksenler or self._son_kapsamli:
+            return None                     # kapsamli cizim: nokta alt modelindir (K5)
         from arayuz.geometri.onizleme_secim import nokta_yolu
         nokta = {"xy": (a, b, 0.0), "xz": (a, 0.0, b), "yz": (0.0, a, b)}.get(eksen)
         if nokta is None:

@@ -60,6 +60,7 @@ from cekirdek.gunluk import kaydedici
 from arayuz import onizleme_boyama as boyama
 from arayuz import tema
 from arayuz.onizleme_istemci import CizimIstemcisi
+from arayuz.onizleme_kapsam import KapsamMixin, TAM_MODEL, kullanilan_gosterge
 from arayuz.onizleme_vurgu import VurguMixin
 from arayuz.ortak import GelismisBolum
 from arayuz.tasarim import tokenlar
@@ -106,7 +107,7 @@ def _kapsam(genislik):
     return (-w / 2.0, w / 2.0, -h / 2.0, h / 2.0)
 
 
-class OnizlemeWidget(VurguMixin, QtWidgets.QWidget):
+class OnizlemeWidget(KapsamMixin, VurguMixin, QtWidgets.QWidget):
     """Geometri kesiti gosteren matplotlib tuvali + denetimler."""
 
     durum = QtCore.Signal(str, bool)
@@ -130,6 +131,7 @@ class OnizlemeWidget(VurguMixin, QtWidgets.QWidget):
         self._meta = None                 # iscinin model bilgisi (renkler, gosterge)
         self._gorunum_kirli = False       # gizliyken degisti: gorunur olunca ciz
         self._kesit_onbellegi = None      # son dilimler: renk/gosterge degisimi isciye gitmez
+        self._kapsam_kur()                # K5: kapsam secici + tam model kapi durumu
         self._denetimleri_kur()
         self._duzeni_kur()
 
@@ -208,9 +210,15 @@ class OnizlemeWidget(VurguMixin, QtWidgets.QWidget):
         secim.addWidget(QtWidgets.QLabel(_("Renk:")))
         secim.addWidget(self.renklendirme, 1)
         eylem = QtWidgets.QHBoxLayout()
+        eylem.setSpacing(A["s"])
         eylem.addWidget(self.gosterge)
+        eylem.addWidget(self.kapsam_etiket)
+        eylem.addWidget(self.kapsam)
+        # Uzun kapsam adi dar panelde dugmeleri itmesin: etiket kirpilir.
+        self.kapsam_bilgi.setSizePolicy(QtWidgets.QSizePolicy.Ignored,
+                                        QtWidgets.QSizePolicy.Preferred)
+        eylem.addWidget(self.kapsam_bilgi, 1)
         eylem.addWidget(self.calisiyor)
-        eylem.addStretch(1)
         eylem.addWidget(self.yenile_dugme)
         ust = QtWidgets.QVBoxLayout()
         ust.setContentsMargins(A["xs"], A["xs"], A["xs"], 0)
@@ -255,6 +263,7 @@ class OnizlemeWidget(VurguMixin, QtWidgets.QWidget):
     def spec_ayarla(self, spec):
         self.spec = spec
         self._son_basarili = False
+        self._tam_kirli = True
         # 3B modelde xy ve xz yan yana; 2B'de yalnizca xy -- secim gizlenir.
         # 2B -> 3B gecisinde gorunum "xy + xz"ye doner; 3B icindeki secim korunur.
         uc_b = self._uc_boyutlu(spec)
@@ -275,8 +284,10 @@ class OnizlemeWidget(VurguMixin, QtWidgets.QWidget):
         return ["xy", "xz"] if secim == IKILI else [secim]
 
     def iste(self):
-        """Cizimi gecikmeli ister; ardarda cagrilar tek istege duser."""
+        """Cizimi gecikmeli ister; ardarda cagrilar tek istege duser. Model
+        degismis olabilir: kapi tam model yeniden bilinene dek kapali (K5)."""
         if not self._kapandi:
+            self._tam_kirli = True
             self._sayac.start()
 
     def mesgul_mu(self):
@@ -322,19 +333,30 @@ class OnizlemeWidget(VurguMixin, QtWidgets.QWidget):
         if self.spec is None:
             self._bos_mesaj(_("Model bekleniyor"))
             return
-        self._son_basarili = False
+        tam_ozet = onbellek.ozet(self.spec)
+        self._tam_ozet_guncelle(tam_ozet)
         kontrol = self._gizli_mi()
         self._gorunum_kirli = kontrol
+        # Gizliyken yalniz TAM model denetlenir (kapi); kapsam cizimde secilir (K5).
+        kapsam = TAM_MODEL if kontrol else self._kapsam_coz()
+        cizilen = kapsam.spec or self.spec
+        if kapsam.spec is None:
+            self._son_basarili = False      # tam model istegi: kapi sonucuyla acilir
+        if not kontrol:
+            self.etkin_kapsam = kapsam
+            self._kapsam_bilgisi(kapsam)
         kesitler = [] if kontrol else self.gorunum()
         piksel = COZUNURLUK[self.cozunurluk.currentIndex()][1]
+        ozet = tam_ozet if kapsam.spec is None else onbellek.ozet(cizilen)
         ist = {"kontrol": kontrol, "kesitler": kesitler, "piksel": piksel,
                "renk": self.renklendirme.currentData(), "t0": time.perf_counter(),
                "gosterge": self.gosterge.isChecked(), "eksenler": None, "cakisma": 0,
-               "anahtar": (onbellek.ozet(self.spec), piksel, self.cakisma.isChecked()),
-               "toplanan": {}}
+               "anahtar": (ozet, piksel, self.cakisma.isChecked()), "toplanan": {},
+               "spec": cizilen, "kapsam": kapsam.spec is not None, "kapi": False,
+               "tam_ozet": tam_ozet, "etiket": kapsam.etiket}
         if not kontrol and self._onbellekten_ciz(ist):
             return
-        istek = {"tur": cs.ISTEK_KONTROL if kontrol else cs.ISTEK_CIZ, "spec": self.spec}
+        istek = {"tur": cs.ISTEK_KONTROL if kontrol else cs.ISTEK_CIZ, "spec": cizilen}
         if not kontrol:
             istek["kesitler"] = [{"eksen": e, "piksel": piksel} for e in kesitler]
             istek["cakisma"] = self.cakisma.isChecked()
@@ -378,10 +400,12 @@ class OnizlemeWidget(VurguMixin, QtWidgets.QWidget):
             return
         tur = c.baslik.get("tur")
         if tur == cs.YANIT_MODEL:
-            self._meta = c.baslik
-            gx, gy = c.baslik["sinir_kutu"]
-            self.son_olcu = (gx, gy)
-            self.olcu_bulundu.emit(gx, gy)
+            if not ist["kapi"]:
+                self._meta = c.baslik
+            if not ist["kapsam"]:            # olcu yalniz TAM modelin (alt modelin degil)
+                gx, gy = c.baslik["sinir_kutu"]
+                self.son_olcu = (gx, gy)
+                self.olcu_bulundu.emit(gx, gy)
         elif tur == cs.YANIT_KESIT:
             self._kesit_geldi(ist, c.baslik, c.diziler["geom"])
         elif tur == cs.YANIT_SON:
@@ -409,7 +433,7 @@ class OnizlemeWidget(VurguMixin, QtWidgets.QWidget):
         self.eksenler = eksenler[0]
         self.eksenler2 = eksenler[1] if n > 1 else None
         if n == 2:
-            self.figur.suptitle(self.spec.get("ad", ""), fontsize=9)
+            self.figur.suptitle(ist["spec"].get("ad", ""), fontsize=9)
 
     def _kesit_ciz(self, ax, ist, eksen, genislik, geom):
         kapsam = _kapsam(genislik)
@@ -418,12 +442,14 @@ class OnizlemeWidget(VurguMixin, QtWidgets.QWidget):
             renkler = {int(k): v for k, v in (self._meta or {}).get("renkler", {}).items()}
             img = boyama.malzeme_goruntusu(geom, renkler, cakisma_rengi)
         else:
-            renkler, soluk = self._vurgu_renkleri()
+            # Kapsamli cizimde vurgu yok: id haritasi alt modelin hucreleridir.
+            renkler, soluk = (None, None) if ist["kapsam"] else self._vurgu_renkleri()
             img = boyama.hucre_goruntusu(geom, renkler, soluk, cakisma_rengi)
         self._goruntu_koy(ax, img, kapsam, len(ist["kesitler"]))
-        if ist["renk"] == "material":
+        if ist["renk"] == "material" and not ist["kapsam"]:
             self._malzeme_vurgusu(ax, geom, kapsam)
-        self._eksen_bicimle(ax, eksen, genislik, len(ist["kesitler"]) == 2)
+        self._eksen_bicimle(ax, eksen, genislik, len(ist["kesitler"]) == 2,
+                            ist["spec"].get("ad", ""))
 
     def _goruntu_koy(self, ax, img, kapsam, n):
         """Tam gorunumde seyreltilmis goruntu (ekran pikselinin en az
@@ -449,12 +475,18 @@ class OnizlemeWidget(VurguMixin, QtWidgets.QWidget):
         self.calisiyor.setText("")
         self.son_sure = time.perf_counter() - ist["t0"]
         # Not: isci eski istek icin "iptal" yollar; no'su guncel olmadigindan buraya gelmez.
+        if ist["kapi"]:
+            self._kapi_sonucu(ist, b)
+            return
         if b.get("durum") != cs.DURUM_TAMAM:
             self._kesit_onbellegi = None
-            self._hata_goster(b.get("hata") or "", b.get("iz") or b.get("hata") or "")
+            self._hata_goster(b.get("hata") or "", b.get("iz") or b.get("hata") or "",
+                              kapi=not ist["kapsam"])
+            self._kapi_denetle()            # kapsamli cizim: kapi tam modele bakar
             return
-        self._son_hata = None
-        self._son_basarili = True
+        if not ist["kapsam"]:
+            self._son_hata, self._son_basarili = None, True
+            self._kapi_ozet = ist["tam_ozet"]
         if ist["toplanan"]:
             self._kesit_onbellegi = {"anahtar": ist["anahtar"], "meta": self._meta,
                                      "kesitler": dict(ist["toplanan"])}
@@ -464,10 +496,12 @@ class OnizlemeWidget(VurguMixin, QtWidgets.QWidget):
             self.cizim_bitti.emit(True)
             return
         self._son_eksenler = list(zip(ist["kesitler"], ist["eksenler"] or []))
+        self._son_kapsamli = ist["kapsam"]
         self._gosterge_goster(ist)
         self._sonra(self._yerlesim_ve_ciz)
         self._basari_bildir(ist)
         self.cizim_bitti.emit(True)
+        self._kapi_denetle()
 
     def _basari_bildir(self, ist):
         if ist["cakisma"]:
@@ -478,19 +512,26 @@ class OnizlemeWidget(VurguMixin, QtWidgets.QWidget):
                                ist["cakisma"]) % ist["cakisma"], False)
             return
         piksel = ist["piksel"]
+        ek = " — " + ist["etiket"] if ist["kapsam"] and ist["etiket"] else ""
         self.durum.emit(_n("Önizleme güncel ({kesit}, {n} piksel){ek}",
                            "Önizleme güncel ({kesit}, {n} piksel){ek}", piksel).format(
-            kesit=" + ".join(ist["kesitler"]), n=piksel, ek=""), True)
+            kesit=" + ".join(ist["kesitler"]), n=piksel, ek=ek), True)
 
-    def _hata_goster(self, metin, iz):
+    def _hata_goster(self, metin, iz, kapi=True):
+        """Tuvalde hata. kapi=False: kapsamli (alt model) cizim -- Calistir
+        kapisi tam model sonucunda kalir (K5)."""
         from arayuz.ortak import hata_metni
-        self._son_hata = iz or metin
-        self._son_basarili = False
+        if kapi:
+            self._son_hata = iz or metin
+            self._son_basarili = False
+            self._kapi_ozet = self._tam_ozet
         self._son_eksenler = []
         self.gosterge_etiketi.setText("")
         self._bos_mesaj(_("Geometri kurulamadı:\n\n%s") % hata_metni(RuntimeError(metin)),
                         hata=True)
-        self.durum.emit(_("Önizleme başarısız: %s") % metin, False)
+        self.durum.emit((_("Önizleme başarısız: %s") if kapi else
+                         _("Kapsamlı önizleme başarısız (Çalıştır kapısı tam modele bakar): %s"))
+                        % metin, False)
         self.cizim_bitti.emit(False)
 
     def _coktu(self, mesaj):
@@ -499,10 +540,13 @@ class OnizlemeWidget(VurguMixin, QtWidgets.QWidget):
             # son cizim gecerli kalir, yalniz bildirilir.
             self.durum.emit(mesaj, False)
             return
-        self._istek = None
-        self._kesit_onbellegi = None
+        ist, self._istek = self._istek, None
         self.calisiyor.setText("")
-        self._hata_goster(mesaj, mesaj)
+        if ist["kapi"]:                     # tam model denetimi coktu: kapi kapali, cizim kalir
+            self._kapi_sonucu(ist, {"durum": cs.DURUM_HATA, "hata": mesaj, "iz": mesaj})
+            return
+        self._kesit_onbellegi = None
+        self._hata_goster(mesaj, mesaj, kapi=not ist["kapsam"])
 
     # ------------------------------------------------------------------
     def _bos_mesaj(self, metin, hata=False):
@@ -516,7 +560,7 @@ class OnizlemeWidget(VurguMixin, QtWidgets.QWidget):
                            color=tema.renk("hata" if hata else "metin_soluk"))
         self.tuval.draw_idle()
 
-    def _eksen_bicimle(self, ax, eksen, genislik, ikili):
+    def _eksen_bicimle(self, ax, eksen, genislik, ikili, ad):
         """Baslik ve en-boy orani. Eksenel kesitte model cok ince ve uzun
         olabilir (or. 21 x 395 cm); 1:1'de okunamaz bir serit olur. Oran 3'u
         asarsa eksen gerilir ve baslikta BELIRTILIR (sessizce carpitmak
@@ -529,7 +573,7 @@ class OnizlemeWidget(VurguMixin, QtWidgets.QWidget):
         if ikili:
             baslik_ = "%s (%s)   %s" % (eksen, _KESIM[eksen], olcu)
         else:
-            baslik_ = "%s   %s" % (self.spec.get("ad", ""), olcu)
+            baslik_ = "%s   %s" % (ad, olcu)
         # Ikili (xy + xz) gorunumde dar eksenin uzerine sigsin: not alt satirda.
         ek = (("\n" if ikili else "   ") + _("[ölçek 1:1 değil]")) if gerildi else ""
         ax.set_title(baslik_ + ek, fontsize=8)
@@ -540,14 +584,18 @@ class OnizlemeWidget(VurguMixin, QtWidgets.QWidget):
         girdi girebilsin: yerlesim ~70 ms + cizim ~110 ms ayni turda donma olurdu)."""
         QtCore.QTimer.singleShot(_ADIM_ARASI_MS, self, islev)
 
+    def _bosta_mi(self):
+        """Cizecek istek yok mu (tam model kapi denetimi tuvali cizmez)."""
+        return self._istek is None or self._istek["kapi"]
+
     def _yerlesim_ve_ciz(self):
-        if self._istek is None:             # arada yeni istek geldiyse o cizer
+        if self._bosta_mi():                # arada yeni istek geldiyse o cizer
             self._yerlesim()
             self._sonra(self.tuval.draw_idle)
 
     def _yeniden_yerlestir(self):
         # Suren istek varsa yerlesim + cizim zaten sonda yapilir (cift cizim donmasi).
-        if self._son_eksenler and self._istek is None:
+        if self._son_eksenler and self._bosta_mi():
             self._yerlesim()
             self.tuval.draw_idle()
 
@@ -566,8 +614,10 @@ class OnizlemeWidget(VurguMixin, QtWidgets.QWidget):
     def _gosterge_ogeleri(self, ist):
         if ist["renk"] != "material" or not ist["gosterge"] or not self._meta:
             return []
-        return boyama.gosterge_ogeleri(self._meta.get("gosterge", []), ist["cakisma"] > 0,
-                                       _rgb01("hata"))
+        gosterge = self._meta.get("gosterge", [])
+        if ist["kapsam"]:                   # alt model: yalniz kesitteki malzemeler
+            gosterge = kullanilan_gosterge(self._meta, [g for _b, g in ist["toplanan"].values()])
+        return boyama.gosterge_ogeleri(gosterge, ist["cakisma"] > 0, _rgb01("hata"))
 
     def _gosterge_goster(self, ist):
         """Gosterge tuvalin ALTINDA bir Qt etiketidir: matplotlib gostergesi
@@ -589,11 +639,11 @@ class OnizlemeWidget(VurguMixin, QtWidgets.QWidget):
 
     # ------------------------------------------------------------------
     def cizildi_mi(self):
-        """Gecerli spec icin son istek BASARIYLA bitti mi? (CALISTIR kapisi)
-        Istek surerken (gecikme dahil) ya da son istek basarisizken False:
-        eszamansiz cizimde kapi, denetlenmemis modele acik kalmasin."""
-        return (self.spec is not None and self._son_basarili and self._son_hata is None
-                and not self.mesgul_mu())
+        """TAM model bu haliyle BASARIYLA kuruldu mu? (CALISTIR kapisi)
+        Tam model istegi surerken (gecikme dahil) ya da basarisizken False:
+        eszamansiz cizimde kapi, denetlenmemis modele acik kalmasin. Kapsamli
+        (alt model) cizim kapiyi ne acar ne kapatir (onizleme_kapsam.py)."""
+        return self.spec is not None and self._kapi_acik()
 
     def son_hata(self):
         return self._son_hata
