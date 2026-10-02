@@ -20,6 +20,7 @@
 """
 
 import os
+from typing import List, Optional, Sequence, Tuple
 
 from cekirdek import malzeme_hesap as mh
 from cekirdek import malzeme_kutup as mk
@@ -256,16 +257,16 @@ for _k, _kat in (("zirkaloy4", ("kilif", "yapi")), ("m5", ("kilif",)), ("ss304",
 # Genel arayuz
 # ============================================================================
 
-def tarifler(kategori):
+def tarifler(kategori: str) -> List[str]:
     """Kategorideki tarif anahtarlari (kayit sirasiyla)."""
     return [k for k, t in _TARIFLER.items() if kategori in t[0]]
 
 
-def etiket(anahtar):
+def etiket(anahtar: str) -> str:
     return _(_TARIFLER[anahtar][1])
 
 
-def aciklama(anahtar):
+def aciklama(anahtar: str) -> str:
     return _(_TARIFLER[anahtar][2])
 
 
@@ -275,7 +276,7 @@ def _tarif(anahtar):
     return _TARIFLER[anahtar]
 
 
-def alanlar(anahtar):
+def alanlar(anahtar: str) -> List[dict]:
     """Sirali alan tanimlari [{ad, etiket, en_az, en_cok, varsayilan, ...}] (etkin dilde)."""
     cikti = []
     for oge in _tarif(anahtar)[3]:
@@ -291,7 +292,7 @@ def alanlar(anahtar):
     return cikti
 
 
-def varsayilanlar(anahtar):
+def varsayilanlar(anahtar: str) -> dict:
     return {a["ad"]: a["varsayilan"] for a in alanlar(anahtar)}
 
 
@@ -312,7 +313,7 @@ def _deger_dogrula(a, deger):
     return x
 
 
-def uret(anahtar, param):
+def uret(anahtar: str, param: Optional[dict]) -> dict:
     """Tarifin malzemesi (yeni sozluk). Eksik parametre varsayilandir; aralik
     disi ya da fiziksel gecersiz deger ValueError (alan adiyla)."""
     tarif = _tarif(anahtar)
@@ -322,7 +323,8 @@ def uret(anahtar, param):
     return tarif[4](p)
 
 
-def karisim_malzemesi(malzemeler, oranlar, tur, ad="karisim", sicaklik=293.6):
+def karisim_malzemesi(malzemeler: Sequence[dict], oranlar: Sequence[float], tur: str,
+                      ad: str = "karisim", sicaklik: float = 293.6) -> dict:
     """
     Malzemelerin wo/ao/vo karisimi -> nuklid (ao) satirli yeni malzeme, g/cm3.
     Ideal karisim (hacim toplanabilir; malzeme_hesap.karistir). S(a,b) tasinmaz:
@@ -380,7 +382,7 @@ def _sicaklik_bulgulari(m):
     return []
 
 
-def dogrula_malzeme(m):
+def dogrula_malzeme(m: dict) -> List[Tuple[str, str]]:
     """
     Asistanin dogrulama adimi: [(seviye, metin)], seviye hata|uyari|bilgi.
     Sema, turetilmis degerler, dogrula.malzeme_kontrol (bilesim + S(a,b)

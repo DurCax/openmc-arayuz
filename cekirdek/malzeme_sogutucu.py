@@ -75,7 +75,7 @@ _KG_M3_G_CM3 = 1.0e-3
 _DOYMA_TOLERANSI = 1.0e-4
 
 
-def doyma_basinci(sicaklik):
+def doyma_basinci(sicaklik: float) -> float:
     """IF97 Bolge 4, Denklem 30: p_s(T) [MPa]; 273.15 K <= T <= 647.096 K."""
     if not _T_EN_AZ <= sicaklik <= _T_KRITIK:
         raise ValueError(_("doyma basıncı %.2f–%.3f K aralığında tanımlı: %.2f K")
@@ -94,7 +94,7 @@ def _bolge1_gamma_pi(pi, tau):
                for i, j, n in _BOLGE1 if i)
 
 
-def su_yogunlugu(sicaklik, basinc):
+def su_yogunlugu(sicaklik: float, basinc: float) -> float:
     """
     Sikistirilmis sivi su yogunlugu [g/cm3], IF97 Bolge 1:
       v = pi gamma_pi R T / p ;  pi = p/16.53 MPa, tau = 1386 K/T
@@ -197,13 +197,13 @@ def _komsu_izobarlar(basinc):
     return ps[j], ps[j + 1]
 
 
-def ust_sicaklik_d2o(basinc):
+def ust_sicaklik_d2o(basinc: float) -> float:
     """Bu basincta tablonun ust sicakligi [K]: komsu izobarlarin doyma
     noktalarinin KUCUGU (arada tablo dogrusal interpolasyondur)."""
     return min(_D2O[p][-1][0] for p in _komsu_izobarlar(basinc))
 
 
-def agir_su_yogunlugu(sicaklik, basinc):
+def agir_su_yogunlugu(sicaklik: float, basinc: float) -> float:
     """Saf sivi D2O yogunlugu [g/cm3], tablo interpolasyonu (T [K], p [MPa]).
     Tam dugum basincinda yalniz o izobar; arada iki komsu izobar arasinda
     dogrusal. Ust sicaklik ust_sicaklik_d2o(p)'dir (ara basincta kucuk olan
@@ -224,12 +224,12 @@ def _ortalama(element):
     return mh.ortalama_kutle(mh.dogal_vektor(element))
 
 
-def molar_kutle_h2o():
+def molar_kutle_h2o() -> float:
     """Dogal H2O molar kutlesi [g/mol] (openmc.data AME2020 + IUPAC 2013)."""
     return 2.0 * _ortalama("H") + _ortalama("O")
 
 
-def molar_kutle_d2o():
+def molar_kutle_d2o() -> float:
     """D2O molar kutlesi [g/mol]: 2 M(H2) + M_dogal(O)."""
     from cekirdek import malzeme_hesap as mh
     return 2.0 * mh.kutle("H2") + _ortalama("O")
@@ -243,7 +243,7 @@ def molar_kutle_d2o():
 D2O_YUKSEK_SAFLIK = 0.99
 
 
-def agir_su_karisim_yogunlugu(sicaklik, basinc, d2o_mol_kesri):
+def agir_su_karisim_yogunlugu(sicaklik: float, basinc: float, d2o_mol_kesri: float) -> float:
     """
     D2O-H2O sivi karisimi [g/cm3], IDEAL KARISIM (molar hacimler toplanir):
       rho = (x M_D + (1-x) M_H) / (x V_D + (1-x) V_H)
@@ -276,7 +276,7 @@ _NA_T_KRITIK = 2503.7     # K
 _NA_T_ERIME = 371.0       # K (370.98 K)
 
 
-def sodyum_yogunlugu(sicaklik):
+def sodyum_yogunlugu(sicaklik: float) -> float:
     """Doymus sivi sodyum yogunlugu [g/cm3], 371 K <= T <= 2503.7 K."""
     if not _NA_T_ERIME <= sicaklik <= _NA_T_KRITIK:
         raise ValueError(_("sodyum yoğunluğu %.0f–%.1f K aralığında tanımlı: %.2f K")

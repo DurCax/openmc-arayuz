@@ -31,6 +31,7 @@
 
 import math
 import re
+from typing import Dict, List, Optional, Sequence, Tuple
 
 from cekirdek.ceviri import _
 
@@ -68,6 +69,9 @@ _YIL_S = 365.25 * 86400.0
 
 _NUKLID_KALIBI = re.compile(r"^([A-Z][a-z]?)(\d+)(_m\d+)?$")
 
+Vektor = Dict[str, float]          # {nuklid: kesir}
+Bilesim = Sequence[dict]           # sema.bilesen satirlari
+
 ORAN_TURLERI = ("ao", "wo", "vo")
 
 
@@ -80,12 +84,12 @@ def _veri():
     return openmc.data
 
 
-def avogadro_barn():
+def avogadro_barn() -> float:
     """N_A x 1e-24 = 0.602214076 (atom/b-cm) / (mol/cm3)."""
     return _veri().AVOGADRO * _BARN_CM2
 
 
-def element_adi(nuklid):
+def element_adi(nuklid: str) -> str:
     """'U235' -> 'U', 'Am242_m1' -> 'Am'. Gecersiz adda ValueError."""
     e = _NUKLID_KALIBI.match(nuklid or "")
     if not e:
@@ -93,7 +97,7 @@ def element_adi(nuklid):
     return e.group(1)
 
 
-def atom_numarasi(nuklid_ya_da_element):
+def atom_numarasi(nuklid_ya_da_element: str) -> int:
     """Z (element ya da nuklid adindan)."""
     ad = nuklid_ya_da_element
     if _NUKLID_KALIBI.match(ad or ""):
@@ -104,7 +108,7 @@ def atom_numarasi(nuklid_ya_da_element):
     return z
 
 
-def kutle(nuklid):
+def kutle(nuklid: str) -> float:
     """Nuklid atom kutlesi [g/mol] (AME2020)."""
     try:
         return float(_veri().atomic_mass(nuklid))
@@ -112,7 +116,7 @@ def kutle(nuklid):
         raise ValueError(_("atom kütlesi bilinmiyor: %s") % nuklid) from e
 
 
-def dogal_vektor(element):
+def dogal_vektor(element: str) -> Vektor:
     """Elementin dogal izotopik bileşimi {nuklid: atom kesri} (toplam 1)."""
     izo = _veri().isotopes(element)
     if not izo:
@@ -150,32 +154,32 @@ def _negatif_yok(vektor):
             raise ValueError(_("negatif ya da geçersiz kesir: %s = %r") % (k, v))
 
 
-def ao_to_wo(vektor_ao):
+def ao_to_wo(vektor_ao: Vektor) -> Vektor:
     """Atom kesirleri -> agirlik kesirleri: w_i = a_i M_i / sum(a_j M_j)."""
     _negatif_yok(vektor_ao)
     return _normalize({n: a * kutle(n) for n, a in vektor_ao.items()})
 
 
-def wo_to_ao(vektor_wo):
+def wo_to_ao(vektor_wo: Vektor) -> Vektor:
     """Agirlik kesirleri -> atom kesirleri: a_i = (w_i/M_i) / sum(w_j/M_j)."""
     _negatif_yok(vektor_wo)
     return _normalize({n: w / kutle(n) for n, w in vektor_wo.items()})
 
 
-def ortalama_kutle(vektor_ao):
+def ortalama_kutle(vektor_ao: Vektor) -> float:
     """Atom basina ortalama molar kutle [g/mol]: sum(a_i M_i), a normalize."""
     a = _normalize(vektor_ao)
     return sum(f * kutle(n) for n, f in a.items())
 
 
-def gcm3_to_atom_bcm(yogunluk, ortalama_molar_kutle):
+def gcm3_to_atom_bcm(yogunluk: float, ortalama_molar_kutle: float) -> float:
     """g/cm3 -> atom/b-cm: N = rho N_A 1e-24 / M."""
     if ortalama_molar_kutle <= 0.0:
         raise ValueError(_("ortalama molar kütle pozitif olmalı"))
     return yogunluk * avogadro_barn() / ortalama_molar_kutle
 
 
-def atom_bcm_to_gcm3(sayi_yogunlugu, ortalama_molar_kutle):
+def atom_bcm_to_gcm3(sayi_yogunlugu: float, ortalama_molar_kutle: float) -> float:
     """atom/b-cm -> g/cm3: rho = N M / (N_A 1e-24)."""
     return sayi_yogunlugu * ortalama_molar_kutle / avogadro_barn()
 
@@ -184,7 +188,8 @@ def atom_bcm_to_gcm3(sayi_yogunlugu, ortalama_molar_kutle):
 # 3. Kuramsal yogunluk, gozeneklilik
 # ============================================================================
 
-def yogunluk_td(td_yogunluk, td_orani=None, gozeneklilik=None):
+def yogunluk_td(td_yogunluk: float, td_orani: Optional[float] = None,
+                gozeneklilik: Optional[float] = None) -> float:
     """
     Kuramsal yogunluk (TD) kesrinden ya da gozeneklilikten yogunluk:
       rho = rho_TD * f_TD       veya   rho = rho_TD * (1 - p)
@@ -203,7 +208,7 @@ def yogunluk_td(td_yogunluk, td_orani=None, gozeneklilik=None):
     return td_yogunluk * td_orani
 
 
-def td_orani(yogunluk, td_yogunluk):
+def td_orani(yogunluk: float, td_yogunluk: float) -> float:
     """Yogunlugun kuramsal yogunluga orani (f_TD)."""
     if td_yogunluk <= 0.0:
         raise ValueError(_("kuramsal yoğunluk pozitif olmalı"))
@@ -214,7 +219,7 @@ def td_orani(yogunluk, td_yogunluk):
 # 4. Zenginlik <-> izotopik vektor
 # ============================================================================
 
-def uranyum_vektoru(zenginlik):
+def uranyum_vektoru(zenginlik: float) -> Vektor:
     """
     U-235 agirlikca % zenginlikten uranyum izotopik vektoru (agirlik kesri),
     ORNL/CSD/TM-244: w234 = 0.0089 e, w236 = 0.0046 e, w238 = kalan.
@@ -228,7 +233,7 @@ def uranyum_vektoru(zenginlik):
             "U238": 1.0 - (1.0 + _U234_KATSAYI + _U236_KATSAYI) * e}
 
 
-def zenginlestir(element, hedef, oran, birim="ao"):
+def zenginlestir(element: str, hedef: str, oran: float, birim: str = "ao") -> Vektor:
     """
     Dogal elementin 'hedef' izotopunu 'oran'a (0-1, ao ya da wo) cikarir; diger
     izotoplar DOGAL ORANLARINI koruyarak kalan paya bolunur:
@@ -250,7 +255,7 @@ def zenginlestir(element, hedef, oran, birim="ao"):
     return wo_to_ao(yeni) if birim == "wo" else _normalize(yeni)
 
 
-def zenginlik(vektor_ao, hedef, birim="ao"):
+def zenginlik(vektor_ao: Vektor, hedef: str, birim: str = "ao") -> float:
     """Ters islem: vektordeki 'hedef'in kesri (ao ya da wo)."""
     v = ao_to_wo(vektor_ao) if birim == "wo" else _normalize(vektor_ao)
     return v.get(hedef, 0.0)
@@ -260,7 +265,7 @@ def zenginlik(vektor_ao, hedef, birim="ao"):
 # 5. Bilesim acilimi (spec satirlari -> nuklid atom kesirleri)
 # ============================================================================
 
-def element_vektoru(element, zenginlik_yuzde=None):
+def element_vektoru(element: str, zenginlik_yuzde: Optional[float] = None) -> Vektor:
     """Element satirinin atom kesirleri (U'da zenginlik ORNL/CSD/TM-244)."""
     if zenginlik_yuzde is None:
         return dogal_vektor(element)
@@ -286,7 +291,7 @@ def _satir_mol(satir, birim):
     return {n: miktar * a / m_ort for n, a in vek.items()}
 
 
-def bilesim_birimi(bilesim):
+def bilesim_birimi(bilesim: Bilesim) -> str:
     """Bilesimin tek orani (ao ya da wo); karisiksa ValueError (OpenMC de reddeder)."""
     birimler = {b.get("birim", "ao") for b in bilesim}
     if len(birimler) != 1 or not birimler <= {"ao", "wo"}:
@@ -295,7 +300,7 @@ def bilesim_birimi(bilesim):
     return birimler.pop()
 
 
-def nuklid_mol(bilesim):
+def nuklid_mol(bilesim: Bilesim) -> Vektor:
     """Normalize EDILMEMIS {nuklid: mol} ('sum' biriminde atom/b-cm toplami)."""
     if not bilesim:
         raise ValueError(_("bileşim boş"))
@@ -307,7 +312,7 @@ def nuklid_mol(bilesim):
     return toplam
 
 
-def nuklid_atom_kesirleri(bilesim):
+def nuklid_atom_kesirleri(bilesim: Bilesim) -> Vektor:
     """Spec bilesimi -> {nuklid: atom kesri} (toplam 1)."""
     return _normalize(nuklid_mol(bilesim))
 
@@ -345,7 +350,7 @@ def _sayi_ve_kutle_yogunlugu(m, kesirler, mol):
     raise ValueError(_("bilinmeyen yoğunluk birimi: %r") % birim)
 
 
-def turetilmis(m):
+def turetilmis(m: dict) -> dict:
     """
     Spec malzemesinden turetilmis degerler (yeni sozluk):
       nuklidler        {nuklid: N_i [atom/b-cm]}
@@ -383,7 +388,8 @@ def _ppm_dogrula(ppm):
         raise ValueError(_("ppm 0 ile 1e6 arasında olmalı: %r") % ppm)
 
 
-def ppm_wo_to_ao(ppm_wo, cozunen_vektor=None, cozucu_atom_kutlesi=None):
+def ppm_wo_to_ao(ppm_wo: float, cozunen_vektor: Optional[Vektor] = None,
+                 cozucu_atom_kutlesi: Optional[float] = None) -> float:
     """
     Kutlece ppm -> atomca ppm (cozeltinin BUTUN atomlarina gore):
       x = (w/M_B) / (w/M_B + (1-w)/M_c) ;  M_c = cozucu atom basina kutle
@@ -396,7 +402,8 @@ def ppm_wo_to_ao(ppm_wo, cozunen_vektor=None, cozucu_atom_kutlesi=None):
     return (w / m_b) / (w / m_b + (1.0 - w) / m_c) / _PPM
 
 
-def ppm_ao_to_wo(ppm_ao, cozunen_vektor=None, cozucu_atom_kutlesi=None):
+def ppm_ao_to_wo(ppm_ao: float, cozunen_vektor: Optional[Vektor] = None,
+                 cozucu_atom_kutlesi: Optional[float] = None) -> float:
     """Atomca ppm -> kutlece ppm: w = x M_B / (x M_B + (1-x) M_c)."""
     _ppm_dogrula(ppm_ao)
     m_b = ortalama_kutle(cozunen_vektor or dogal_vektor("B"))
@@ -405,7 +412,7 @@ def ppm_ao_to_wo(ppm_ao, cozunen_vektor=None, cozucu_atom_kutlesi=None):
     return x * m_b / (x * m_b + (1.0 - x) * m_c) / _PPM
 
 
-def bor_sayi_yogunlugu(ppm_wo, yogunluk, b10_ao=None):
+def bor_sayi_yogunlugu(ppm_wo: float, yogunluk: float, b10_ao: Optional[float] = None) -> float:
     """Cozeltideki bor sayi yogunlugu: N_B = rho w N_A 1e-24 / M_B [atom/b-cm]."""
     _ppm_dogrula(ppm_wo)
     vek = zenginlestir("B", "B10", b10_ao) if b10_ao is not None else dogal_vektor("B")
@@ -419,7 +426,7 @@ def _satir(isim, yuzde, tur="element", zenginlik_=None):
     return d
 
 
-def borlu_su_bilesimi(ppm_wo, b10_ao=None):
+def borlu_su_bilesimi(ppm_wo: float, b10_ao: Optional[float] = None) -> List[dict]:
     """
     Borlu hafif su, agirlikca YUZDE satirlar (sema.bilesen bicimi):
       B = w ; H = (1-w) 2M_H/M_H2O ; O = (1-w) M_O/M_H2O.
@@ -456,7 +463,8 @@ def _oranlari_dogrula(oranlar, n):
         raise ValueError(_("oranların toplamı %%100 olmalı (şu an %%%.4f)") % (100.0 * sum(oranlar)))
 
 
-def karistir(bilesenler, oranlar, tur):
+def karistir(bilesenler: Sequence[Tuple[Vektor, float]], oranlar: Sequence[float],
+             tur: str) -> Tuple[Vektor, float]:
     """
     bilesenler: [(vektor_ao, yogunluk_gcm3), ...]; oranlar toplami 1.
     Hacim toplanabilirligi (ideal karisim): bilesenin hacim kesri
@@ -483,7 +491,7 @@ def karistir(bilesenler, oranlar, tur):
     return _normalize(sayi), sum(v * r for v, (_vek, r) in zip(hacim, bilesenler))
 
 
-def karisim_td(kesirler_wo, td_yogunluklari):
+def karisim_td(kesirler_wo: Sequence[float], td_yogunluklari: Sequence[float]) -> float:
     """Ideal karisim kuramsal yogunlugu: 1/rho = sum(w_i/rho_i)."""
     _oranlari_dogrula(kesirler_wo, len(td_yogunluklari))
     return 1.0 / sum(w / r for w, r in zip(kesirler_wo, td_yogunluklari))
@@ -497,7 +505,8 @@ def _uranyum_kutlesi(zenginlik_yuzde):
     return 1.0 / sum(w / kutle(n) for n, w in uranyum_vektoru(zenginlik_yuzde).items())
 
 
-def uo2_gd2o3_bilesimi(zenginlik_yuzde, gd2o3_wo, gd_vektor_ao=None):
+def uo2_gd2o3_bilesimi(zenginlik_yuzde: float, gd2o3_wo: float,
+                       gd_vektor_ao: Optional[Vektor] = None) -> List[dict]:
     """
     (U,Gd)O2 yakiti, agirlikca YUZDE satirlar. Kutle dengesi (1 g yakit):
       U  = (1-g) M_U / (M_U + 2 M_O)
@@ -535,7 +544,8 @@ def _pu_vektoru_dogrula(vektor_wo):
                          % (100.0 * sum(vektor_wo.values())))
 
 
-def mox_bilesimi(pu_hm_wo, pu_vektor_wo, u_zenginlik_yuzde, om=2.0):
+def mox_bilesimi(pu_hm_wo: float, pu_vektor_wo: Vektor, u_zenginlik_yuzde: float,
+                 om: float = 2.0) -> List[dict]:
     """
     (U,Pu)O_x yakiti, agirlikca YUZDE satirlar. 1 g agir metal (HM) icin:
       U = 1 - p ;  Pu_i = p w_i ;  O = x M_O [ (1-p)/M_U + sum p w_i / M_i ]
@@ -566,7 +576,7 @@ def _bozunma_sabiti_yil(nuklid):
     return math.log(2.0) / (t12 / _YIL_S)
 
 
-def pu_yaslandir(vektor_wo, yil):
+def pu_yaslandir(vektor_wo: Vektor, yil: float) -> Vektor:
     """
     Pu(+Am) vektorunu 'yil' boyunca bozundurur (Bateman):
       N_i(t) = N_i(0) e^(-l_i t)                         (her nuklid)
