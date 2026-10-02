@@ -190,6 +190,29 @@ def test_tukenme_sekmesinde(gecici):
     kontrol("3 adim okundu", w is not None and w.adim.count() == 3)
 
 
-HIZLI = [test_tablo_haritayla_ayni, test_tikla_ve_sec, test_sirala_filtrele,
+def test_tam_kor_tiklama():
+    print("\n[PA8] tam kor: cubuk ve demet gorunumunde tikla")
+    _uyg()
+    from cekirdek import guc
+    from arayuz.guc_harita import GucHaritaWidget
+    from testler.test_guc_kor import _kare_2x2_sentetik
+    d = guc.dagilim_oku(_kare_2x2_sentetik())
+    f = guc.tepe_faktorleri(d)
+    w = GucHaritaWidget()
+    w.sonuc_ayarla({"guc": {"dagilim": d, "faktorler": f, "korunum": 0.0}})
+    t = w.pin_tablosu
+    kontrol("tam kor tablosunda demet sutunu", t.sutun_no("demet") is not None)
+    w.olcek.setCurrentIndex(w.olcek.findData("cubuk"))
+    x, y = guc.cubuk_merkezi(d, f["sicak_cubuk"])
+    kontrol("cubuk gorunumu: tiklanan sicak cubuk", w.haritada_tikla(x, y) == f["sicak_cubuk"])
+    w.olcek.setCurrentIndex(w.olcek.findData("demet"))
+    demet = f["demetler"][f["sicak_demet"]]
+    x, y = guc.demet_merkezi(d, f["sicak_demet"])
+    kontrol("demet gorunumu: demetin tepe cubugu secilir",
+            w.haritada_tikla(x, y) == demet["tepe_cubuk"] and w.secili_pin == demet["tepe_cubuk"])
+    kontrol("secim isareti yeniden cizimde korunur", w.secim_isareti is not None)
+
+
+HIZLI = [test_tam_kor_tiklama, test_tablo_haritayla_ayni, test_tikla_ve_sec, test_sirala_filtrele,
          test_katlama_ve_dilim, test_disa_aktar, test_yanmaya_gore, test_tukenme_sekmesinde]
 YAVAS = []

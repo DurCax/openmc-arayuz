@@ -202,7 +202,32 @@ def test_tally_olmayan_adim(gecici):
     kontrol("adim dosyasi yoksa None", tukenme_guc.adim_gucleri(bos, _spec()) is None)
 
 
+def test_gercek_kosu_adim_basina_guc(gecici):
+    print("\n[TG8] gercek tukenme kosusu: guc kapali spec'te adim basina tablo uretilir")
+    import importlib.util
+    from cekirdek import guc_tablo, tukenme, tukenme_guc
+    yol = os.path.join(FIXTURE, "uret.py")
+    tanim = importlib.util.spec_from_file_location("k3_uret", yol)
+    uret = importlib.util.module_from_spec(tanim)
+    tanim.loader.exec_module(uret)
+    s = uret.fixture_spec()
+    s["guc_dagilimi"]["var"] = False             # kullanici guc dagilimini acmamis
+    s["ayarlar"].update({"parcacik": 400, "cevrim": 12, "pasif": 4})
+    s["tukenme"]["adimlar"] = [2.0]
+    dizin = os.path.join(gecici, "k")
+    tukenme.calistir(s, dizin)
+    sonuc = tukenme_guc.adim_gucleri(dizin, s)
+    kontrol("2 zaman noktasi = 2 adim dosyasi",
+            [a["adim"] for a in sonuc["adimlar"]] == [0, 1], "-> %r" % sonuc)
+    kontrol("her adimda 24 pin ve Σ W = kaynak × pay",
+            all(len(a["tablo"]) == 24 and abs(guc_tablo.tablo_toplami(a["tablo"])
+                / (a["kaynak_W"] * a["guc"]["hedef_payi"]) - 1.0) < 1e-12
+                for a in sonuc["adimlar"]))
+    kontrol("spec kaydi guc kapali (kullanicinin spec'i)",
+            tukenme._kayit_oku(dizin)["guc_dagilimi"]["var"] is False)
+
+
 HIZLI = [test_adim_dosyalari, test_adim_basina_tablo, test_seriler, test_csv, test_olcum_spec,
          test_calistir_eski_adimlari_siler, test_tally_olmayan_adim]
-YAVAS = []
-ZINCIR_GEREKEN = []
+YAVAS = [test_gercek_kosu_adim_basina_guc]
+ZINCIR_GEREKEN = [test_gercek_kosu_adim_basina_guc]
