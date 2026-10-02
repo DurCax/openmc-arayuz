@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 07:26+0300\n"
+"POT-Creation-Date: 2026-10-02 07:40+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -3314,76 +3314,76 @@ msgstr ""
 msgid "kök hücre %d ötelemesi (%.6g, %.6g) hiçbir demet konumuna denk gelmiyor"
 msgstr "root cell %d: translation (%.6g, %.6g) does not match any assembly position"
 
-#: cekirdek/guc_tablo.py:188
+#: cekirdek/guc_tablo.py:189
 #, python-format
 msgid "kare olmayan kafes (%s)"
 msgstr "non-square lattice (%s)"
 
-#: cekirdek/guc_tablo.py:192
+#: cekirdek/guc_tablo.py:193
 #, python-format
 msgid "kafes %d ayna simetrik değil"
 msgstr "lattice %d is not mirror-symmetric"
 
-#: cekirdek/guc_tablo.py:197
+#: cekirdek/guc_tablo.py:198
 #, python-format
 msgid "kafes %d elemanında ortalanmamış"
 msgstr "lattice %d is not centred in its element"
 
-#: cekirdek/guc_tablo.py:217
+#: cekirdek/guc_tablo.py:218
 msgid "gelişmiş (ağaç) modelde simetri doğrulanamıyor"
 msgstr "symmetry cannot be verified in an advanced (tree) model"
 
-#: cekirdek/guc_tablo.py:219
+#: cekirdek/guc_tablo.py:220
 msgid "kontrol tamburlu kor simetrik sayılmaz"
 msgstr "a core with control drums is not treated as symmetric"
 
-#: cekirdek/guc_tablo.py:222
+#: cekirdek/guc_tablo.py:223
 msgid "çeyrek katlama yalnız kare kafeste"
 msgstr "quarter folding only on square lattices"
 
-#: cekirdek/guc_tablo.py:224
+#: cekirdek/guc_tablo.py:225
 msgid "kesik çubuklu modelde katlanmaz"
 msgstr "not folded in a model with truncated pins"
 
-#: cekirdek/guc_tablo.py:235
+#: cekirdek/guc_tablo.py:236
 msgid "geometri kafesleri okunamadı"
 msgstr "geometry lattices could not be read"
 
-#: cekirdek/guc_tablo.py:246
+#: cekirdek/guc_tablo.py:247
 #, python-format
 msgid "%s konumunun aynası tabloda yok ya da farklı türde"
 msgstr "the mirror of position %s is missing from the table or of a different type"
 
-#: cekirdek/guc_tablo.py:303
+#: cekirdek/guc_tablo.py:304
 msgid "konum"
 msgstr "position"
 
-#: cekirdek/guc_tablo.py:303
+#: cekirdek/guc_tablo.py:304
 msgid "tür"
 msgstr "type"
 
-#: cekirdek/guc_tablo.py:303
+#: cekirdek/guc_tablo.py:304
 msgid "kesik"
 msgstr "truncated"
 
-#: cekirdek/guc_tablo.py:303
+#: cekirdek/guc_tablo.py:304
 msgid "sıcak"
 msgstr "hot"
 
-#: cekirdek/guc_tablo.py:303 cekirdek/sema_basvuru.py:98
+#: cekirdek/guc_tablo.py:304 cekirdek/sema_basvuru.py:98
 msgid "demet"
 msgstr "assembly"
 
-#: cekirdek/guc_tablo.py:304 cekirdek/rapor_sablon/grafik.py:156
+#: cekirdek/guc_tablo.py:305 cekirdek/rapor_sablon/grafik.py:156
 msgid "bağıl güç"
 msgstr "relative power"
 
-#: cekirdek/guc_tablo.py:306
+#: cekirdek/guc_tablo.py:307
 #, python-format
 msgid "bağıl_%d"
 msgstr "relative_%d"
 
-#: cekirdek/guc_tablo.py:357
+#: cekirdek/guc_tablo.py:358
 msgid "pin gücü"
 msgstr "pin power"
 
@@ -6241,11 +6241,11 @@ msgstr ""
 "\n"
 "  result: %s"
 
-#: cekirdek/tukenme_guc.py:129
+#: cekirdek/tukenme_guc.py:154
 msgid "bu adımda güç dağılımı tally'si yok"
 msgstr "no power distribution tally in this step"
 
-#: cekirdek/tukenme_guc.py:195
+#: cekirdek/tukenme_guc.py:220
 #, python-format
 msgid ""
 "Sonuç dosyasında karşılığı olmayan adım dosyaları yok sayıldı (önceki koşudan "
@@ -6254,34 +6254,34 @@ msgstr ""
 "Step files without a counterpart in the results file were ignored (left over from a "
 "previous run): %s"
 
-#: cekirdek/tukenme_guc.py:200
+#: cekirdek/tukenme_guc.py:225
 #, python-format
 msgid "Güç dosyası bulunmayan adımlar: %s"
 msgstr "Steps without a power file: %s"
 
-#: cekirdek/tukenme_guc.py:214
+#: cekirdek/tukenme_guc.py:239
 #, python-format
 msgid "Güç tablosu okunamayan adımlar: %s"
 msgstr "Steps whose power table could not be read: %s"
 
-#: cekirdek/tukenme_guc.py:217
+#: cekirdek/tukenme_guc.py:242
 msgid "2B model: güç ve q′ 1 cm yükseklik başınadır (tükenme hacmi gibi)."
 msgstr "2D model: power and q′ are per 1 cm of height (like the depletion volume)."
 
-#: cekirdek/tukenme_guc.py:263
+#: cekirdek/tukenme_guc.py:288
 msgctxt "tükenme"
 msgid "adım"
 msgstr "step"
 
-#: cekirdek/tukenme_guc.py:263
+#: cekirdek/tukenme_guc.py:288
 msgid "zaman [gün]"
 msgstr "time [days]"
 
-#: cekirdek/tukenme_guc.py:263
+#: cekirdek/tukenme_guc.py:288
 msgid "yanma [MWd/kg]"
 msgstr "burnup [MWd/kg]"
 
-#: cekirdek/tukenme_guc.py:287
+#: cekirdek/tukenme_guc.py:312
 msgid "en yüksek q′ [W/cm]"
 msgstr "peak q′ [W/cm]"
 

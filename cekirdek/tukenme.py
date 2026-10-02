@@ -423,19 +423,8 @@ def calistir(spec, dizin, geri_cagir=None, veri_kontrolu=True):
     from cekirdek import tukenme_guc
     t = spec["tukenme"]
     # v3 K3: guc tally'si kurulabilen modelde her adimda pin gucu sayilir
-    # (tukenme_guc.olcum_spec; spec kaydi kullanicinin spec'idir).
-    olcum = tukenme_guc.olcum_spec(spec)
-    try:
-        model, bilgi = hazirla(olcum)
-    except ValueError:
-        if olcum is spec:
-            raise
-        # Guc tally'si kurulamadi: tukenme guc olcumsuz kosar (gercek bir model
-        # hatasiysa ikinci hazirla ayni hatayi verir).
-        from cekirdek.gunluk import kaydedici
-        kaydedici(__name__).warning("adım başına güç tally'si kurulamadı; tükenme "
-                                    "pin gücü olmadan koşuyor", exc_info=True)
-        model, bilgi = hazirla(spec)
+    # (spec kaydi kullanicinin spec'idir).
+    model, bilgi = tukenme_guc.olcumlu_hazirla(hazirla, spec)
     bilgi["dogrulama"] = bulgular
     zs = bilgi["zincir"]
     os.makedirs(dizin, exist_ok=True)

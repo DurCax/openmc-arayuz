@@ -29,6 +29,7 @@ from arayuz import guc_harita_kor as _kor, tema
 from arayuz.guc_harita_tablo import PinTablosu
 
 _log = kaydedici(__name__)
+_TIK_PAYI = 1.05     # tiklama: eleman yaricapinin bu kati icinde (ipucu_metni ile ayni)
 
 
 def _aktif_yukseklik(spec):
@@ -205,9 +206,12 @@ class GucHaritaWidget(QtWidgets.QWidget):
         try:
             self.tablo = guc_tablo.pin_tablosu(self.dagilim, self.faktorler, self.mutlak,
                                                yukseklik)
-        except Exception:
+        except Exception as e:
             _log.exception("pin gücü tablosu kurulamadı")
             self.tablo = []
+            self.pin_tablosu.ayarla([])
+            self.pin_tablosu.ayrinti.setText(_("Pin gücü tablosu kurulamadı: %s") % e)
+            return
         self.pin_tablosu.ayarla(self.tablo, self.dagilim, spec)
 
     def _tam_kor_denetimleri(self, tam_kor):
@@ -635,7 +639,7 @@ class GucHaritaWidget(QtWidgets.QWidget):
         dizi = np.asarray([o[:3] for o in self._tik_ogeleri], dtype=float)
         uzak = np.hypot(dizi[:, 0] - x, dizi[:, 1] - y)
         i = int(np.argmin(uzak))
-        if uzak[i] > dizi[i, 2] * 1.05:
+        if uzak[i] > dizi[i, 2] * _TIK_PAYI:
             return None
         anahtar = self._tik_ogeleri[i][3]
         if not self.pin_tablosu.sec(anahtar):

@@ -86,6 +86,23 @@ def olcum_spec(spec):
     return yeni
 
 
+def olcumlu_hazirla(hazirla, spec):
+    """
+    hazirla(olcum_spec(spec)); guc tally'si kurulamazsa (ValueError) tukenme
+    guc olcumsuz kurulur ve UYARI kaydedilir. Gercek bir model hatasiysa
+    ikinci hazirla(spec) ayni hatayi verir (gizlenmez).
+    """
+    olcum = olcum_spec(spec)
+    try:
+        return hazirla(olcum)
+    except ValueError:
+        if olcum is spec:
+            raise
+        _log.warning("adım başına güç tally'si kurulamadı; tükenme pin gücü olmadan "
+                     "koşuyor", exc_info=True)
+        return hazirla(spec)
+
+
 def adim_dosyalari(dizin):
     """[(adim, yol)] sayisal sirayla; dizin yoksa bos liste."""
     try:

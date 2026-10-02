@@ -152,6 +152,36 @@ def test_olcum_spec():
             adlar.count("guc_dagilimi") == 2 and "guc_toplam_ref" in adlar, "-> %r" % adlar)
 
 
+def test_olcumlu_hazirla_geri_duser():
+    print("\n[TG5b] guc tally'si kurulamazsa tukenme olcumsuz kurulur; model hatasi gizlenmez")
+    from cekirdek import tukenme_guc
+    s = _spec()
+    s["guc_dagilimi"]["var"] = False
+    cagrilar = []
+
+    def guc_varsa_hata(spec):
+        cagrilar.append(spec["guc_dagilimi"]["var"])
+        if spec["guc_dagilimi"]["var"]:
+            raise ValueError("guc tally'si kurulamadi")
+        return "model", {}
+
+    sonuc = tukenme_guc.olcumlu_hazirla(guc_varsa_hata, s)
+    kontrol("once olcumlu, sonra olcumsuz denendi", cagrilar == [True, False]
+            and sonuc == ("model", {}), "-> %r" % cagrilar)
+
+    def hep_hata(spec):
+        raise ValueError("model bozuk")
+
+    s2 = copy.deepcopy(s)
+    s2["tukenme"]["adim_gucu"] = False          # olcum spec'i = spec: yeniden denenmez
+    try:
+        tukenme_guc.olcumlu_hazirla(hep_hata, s2)
+        yukseldi = False
+    except ValueError:
+        yukseldi = True
+    kontrol("olcum yoksa hata yukari cikar", yukseldi)
+
+
 class _Dur(Exception):
     pass
 
@@ -228,6 +258,7 @@ def test_gercek_kosu_adim_basina_guc(gecici):
 
 
 HIZLI = [test_adim_dosyalari, test_adim_basina_tablo, test_seriler, test_csv, test_olcum_spec,
+         test_olcumlu_hazirla_geri_duser,
          test_calistir_eski_adimlari_siler, test_tally_olmayan_adim]
 YAVAS = [test_gercek_kosu_adim_basina_guc]
 ZINCIR_GEREKEN = [test_gercek_kosu_adim_basina_guc]

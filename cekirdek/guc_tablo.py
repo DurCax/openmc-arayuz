@@ -92,7 +92,7 @@ def _dilim_satirlari(kayit, faktorler, anahtar, W, sinirlar, n):
     return satirlar
 
 
-def _satir(dagilim, faktorler, anahtar, kayit, cubuk_W, yukseklik):
+def _satir(dagilim, faktorler, anahtar, kayit, cubuk_W, yukseklik, kesikler):
     turler = faktorler.get("kafes_turleri")
     ort = faktorler["ortalama_cubuk"]
     if anahtar in faktorler["bagil"]:
@@ -112,7 +112,7 @@ def _satir(dagilim, faktorler, anahtar, kayit, cubuk_W, yukseklik):
         "konum": _cubuk_metni(anahtar, dagilim, turler),
         "x": x, "y": y,
         "tur": ((dagilim.get("cubuk_turleri") or {}).get(anahtar) or ""),
-        "kesik": anahtar in set(faktorler.get("kesik_cubuklar") or ()),
+        "kesik": anahtar in kesikler,
         "sicak": anahtar == faktorler.get("sicak_cubuk"),
         "bagil": bagil, "sigma": sigma,
         "W": W, "W_sigma": sigma * cubuk_W if cubuk_W is not None else None,
@@ -132,7 +132,8 @@ def pin_tablosu(dagilim, faktorler, mutlak=None, yukseklik=None):
     if not dagilim or not faktorler:
         return []
     cubuk_W = (mutlak or {}).get("cubuk_ortalama_W")
-    return [_satir(dagilim, faktorler, a, k, cubuk_W, yukseklik)
+    kesikler = set(faktorler.get("kesik_cubuklar") or ())
+    return [_satir(dagilim, faktorler, a, k, cubuk_W, yukseklik, kesikler)
             for a, k in dagilim["konumlar"].items()]
 
 
