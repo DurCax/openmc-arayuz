@@ -22,9 +22,13 @@
      - Isci coker ya da baslatilamazsa acik hata gosterilir, kapi kapanir,
        isci yeniden baslatilir; arayuz donmaz.
 
- OLCUM (SFR-MET1000 kor, xy + xz, 800 px; testler/test_h2_onizleme.py)
-   once (Model.plot, ana is parcacigi): 10.8 s donma
-   sonra: rapor H2 / test cikti satiri "OLCUM sfr_met1000_kor".
+ OLCUM (xy + xz, 800 px, sicak isci; .h2_olcum/olc_sonra.py, 02.10.2026)
+                  once (Model.plot, ana is parcacigi)   sonra (istek -> son, en uzun donma)
+   sfr_met1000_kor        10.8 s donma                      1.6 s, 108 ms
+   vver1000_kor            2.9 s donma                      1.4 s, 121 ms
+   pwr_beavrs_kor          0.7 s donma                      0.5 s, 116 ms
+   Renk/gosterge/gorunum degisimi eldeki dilimden yeniden boyanir (~0.15 s).
+   1400 px'te tam gorunum seyreltilir (_goruntu_koy), yakinlastirinca tam.
 
  3B MODELDE IKI KESIT YAN YANA
    3B modelde varsayilan gorunum "xy + xz"; 2B modelde yalnizca xy cizilir
@@ -73,6 +77,7 @@ _SOLUK_ORTU = 0.6                 # secili olmayan bolgenin soluk ortusu (saydam
 _GECIKME_MS = 300                 # ardisik degisiklikler tek istege duser (v2'den)
 _ISITMA_MS = 1500                 # acilistan sonra isci sicak baslatilir (ilk cizimde import yok)
 _GOSTERGE_SATIRI = 3              # gosterge alaninin en cok satiri (fazlasi kaydirilir)
+_GORUNUM_KATI = 2                 # tam gorunumde goruntu pikseli / ekran pikseli (en az)
 _ADIM_ARASI_MS = 1                # 0 olursa Qt adimlari tek turda (araya girdi almadan) yurutur
 _YERLESIM_GECIKMESI_MS = 150     # boyut degisimi durulunca yerlesim (cizimle ayni olayda degil)
 _EN_BOY_SINIRI = 3.0              # bu orani asan eksenel kesit gerilir ve baslikta yazar
@@ -408,10 +413,29 @@ class OnizlemeWidget(QtWidgets.QWidget):
         else:
             renkler, soluk = self._vurgu_renkleri()
             img = boyama.hucre_goruntusu(geom, renkler, soluk, cakisma_rengi)
-        ax.imshow(img, extent=kapsam)
+        self._goruntu_koy(ax, img, kapsam, len(ist["kesitler"]))
         if ist["renk"] == "material":
             self._malzeme_vurgusu(ax, geom, kapsam)
         self._eksen_bicimle(ax, eksen, genislik, len(ist["kesitler"]) == 2)
+
+    def _goruntu_koy(self, ax, img, kapsam, n):
+        """Tam gorunumde seyreltilmis goruntu (ekran pikselinin en az
+        _GORUNUM_KATI kati), yakinlastirinca tam cozunurluk. 1400 px'te tam
+        goruntunun her cizimde yeniden orneklenmesi ~230 ms suruyordu (olculdu);
+        yakinlastirmada matplotlib yalniz gorunen parcayi ornekler."""
+        hedef = max(1, _GORUNUM_KATI * self.tuval.width() // max(n, 1))
+        adim = max(1, img.shape[0] // hedef)
+        im = ax.imshow(img[::adim, ::adim] if adim > 1 else img, extent=kapsam)
+        if adim == 1:
+            return
+        genislik = kapsam[1] - kapsam[0]
+
+        def gorunum_degisti(eks):
+            x0, x1 = eks.get_xlim()
+            yakin = abs(x1 - x0) < genislik / adim
+            im.set_data(img if yakin else img[::adim, ::adim])
+
+        ax.callbacks.connect("xlim_changed", gorunum_degisti)
 
     def _son_geldi(self, ist, b):
         self._istek = None

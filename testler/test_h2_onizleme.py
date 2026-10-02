@@ -252,8 +252,34 @@ def test_sfr_onizleme_suresi(gecici=None):
         w.kapat()
 
 
+def test_widget_yuksek_cozunurlukte_seyrek_gorunum():
+    print("\n[H2W-8] onizleme: 1400 px (iki kesit) tam gorunumde seyreltilir, yakinlastirinca tam cozunurluk")
+    _uyg()
+    from arayuz.onizleme import OnizlemeWidget
+    w = OnizlemeWidget()
+    w.resize(700, 600)
+    try:
+        w.cozunurluk.setCurrentIndex(2)
+        w.spec_ayarla(_spec("pwr_3b"))                # xy + xz: kesit basina ~350 px
+        w._ciz()
+        w.bekle(_ZAMAN_ASIMI)
+        ax = w.figur.axes[0]
+        tam_gorunum = ax.images[0].get_array().shape[0]
+        kontrol("tam gorunumde goruntu seyrek (< 1400 satir)", tam_gorunum < 1400,
+                "-> %d" % tam_gorunum)
+        x0, x1 = ax.get_xlim()
+        ax.set_xlim(x0 / 10, x1 / 10)
+        kontrol("yakinlastirinca tam cozunurluk (1400 satir)",
+                ax.images[0].get_array().shape[0] == 1400)
+        ax.set_xlim(x0, x1)
+        kontrol("geri uzaklasinca yine seyrek", ax.images[0].get_array().shape[0] == tam_gorunum)
+    finally:
+        w.kapat()
+
+
 HIZLI = [test_widget_arka_planda_cizer, test_widget_gizliyken_cizmez,
          test_widget_bozuk_model_kapiyi_kapatir, test_widget_cokmede_acik_hata,
-         test_widget_ana_is_parcacigi_bloklanmaz, test_widget_cakisma_secenegi]
+         test_widget_ana_is_parcacigi_bloklanmaz, test_widget_cakisma_secenegi,
+         test_widget_yuksek_cozunurlukte_seyrek_gorunum]
 YAVAS = [test_sfr_onizleme_suresi]
 # Nukleer veri GEREKMEZ: isci openmc.lib'i '-p' (cizim) kipinde baslatir.
