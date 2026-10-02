@@ -36,6 +36,7 @@ from cekirdek import sema, kurucu, dogrula
 from cekirdek import kapsul as _kapsul
 from cekirdek import yollar as _yollar
 from cekirdek import spektrum as _spektrum
+from cekirdek import yuzey_akim as _yuzey
 from cekirdek.ceviri import _, N_
 from cekirdek.gunluk import kaydedici
 from cekirdek.uygunluk_denetimi import ayristir as _ayristir
@@ -449,6 +450,8 @@ def _tallyleri_oku(sp, sonuc):
             continue          # guc bolumunde ayrica islenir
         if ad.startswith(_spektrum.TALLY_ONEKI):
             continue          # Y3 spektrum karti okur (cekirdek/spektrum.py)
+        if ad.startswith(_yuzey.TALLY_ONEKI) or _yuzey.kosu_yuzey_tallysi_mi(t):
+            continue          # Y7 yuzey karti okur (cekirdek/yuzey_oku.py)
         try:
             df = t.get_pandas_dataframe()
         except Exception as e:

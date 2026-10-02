@@ -250,7 +250,7 @@ def test_sonuc_karti_tablo_ve_spektrum():
     metin = kart.tablo.text()
     # Assert
     kontrol("gorunur", not kart.isHidden())
-    kontrol("kacak ve global sizinti", "kacak" in metin and "0.25" in metin)
+    kontrol("kacak ve global sizinti", "kacak" in metin and "2.5000e-01" in metin)
     kontrol("denge satiri", "S + J" in metin, "-> %s" % metin[:300])
     kontrol("isaret/birim notu", "kaynak parçacığı" in kart.notlar.text()
             or "1/s" in kart.notlar.text())

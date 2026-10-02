@@ -97,6 +97,7 @@ class SonucGosterimiMixin(object):
         self.tally_metin.setPlainText("\n".join(tally) if sabit else "")
         self.guc_harita.sonuc_ayarla(s, self.spec)
         self.spektrum_karti.sonuc_ayarla(sp)                 # Y3
+        self.yuzey_karti.sonuc_ayarla(sp, self.spec)         # Y7
         self.kart.cikti_yaz(*cikti.uyari_ozeti(self._dizin))     # M5
         self.uygunluk.denetle(self.spec, self._dizin)
         self._guc_var = bool((s.get("guc") or {}).get("faktorler"))

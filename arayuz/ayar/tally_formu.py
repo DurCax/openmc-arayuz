@@ -96,6 +96,7 @@ class TallyFormuMixin(object):
                 self.t_mesh_nx.setValue(mesh["boyut"][0])
                 self.t_mesh_ny.setValue(mesh["boyut"][1])
                 self.t_mesh_nz.setValue(mesh["boyut"][2])
+            self._yuzey_doldur(t)            # Y7 (arayuz/ayar/yuzey_tally.py)
         finally:
             self._yukleniyor = eski
         self._tally_gorunurluk()
@@ -126,6 +127,7 @@ class TallyFormuMixin(object):
             f=", ".join(_(_FILTRE_ADI[d]) if d in _FILTRE_ADI else d for d in diger))
             if diger else "")
         tf.setRowVisible(self.t_diger, bool(diger))
+        self._yuzey_gorunurluk(t)            # Y7 (arayuz/ayar/yuzey_tally.py)
 
     def _skor_seti_secildi(self, *_):
         if self._yukleniyor:
@@ -142,6 +144,8 @@ class TallyFormuMixin(object):
             return
         t = self._secili_tally()
         if t is None:
+            return
+        if self._yuzey_kaydet(t):            # Y7: yuzey tally'si (arayuz/ayar/yuzey_tally.py)
             return
         t["ad"] = self.t_ad.text().strip() or t["ad"]
         secili = self._secili_skorlar() or ["flux"]
