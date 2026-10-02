@@ -30,7 +30,7 @@ def _seviye_renk(seviye):
 
 # Yalniz isaretlenir (N_); gosterirken _().
 _SEVIYE_ADI = {"hata": N_("Hata"), "uyari": N_("Uyarı"), "bilgi": N_("Bilgi")}
-_EKSIK_ADIM = N_("Eksik adım")
+_EKSIK_ADIM = N_("Eksik aşama")
 # Adim sayfasi -> o sayfaya goturen bulgu yeri (model_islemleri._YER_SEKME).
 _ADIM_YERI = {"malzemeler": "malzemeler", "parcalar": "cubuk", "demet": "demet",
               "kor": "kor"}
@@ -93,7 +93,10 @@ class DogrulamaMixin(object):
         if ipucu is None:
             ipucu = self._sonraki_ipucu
         self._sonraki_ipucu = ipucu
-        self._rehber_guncelle()
+        self._adim_rehberini_guncelle()
+        # Kapi her serit tazelenisinde: editore donuste ust cubuk dugmesi
+        # (model_gorunur) onizleme sinyali gelene dek acik kaliyordu.
+        self._kosu_dugmesi_guncelle()
         if self._eksik_adim_seridi():
             return
         n = {s: sum(1 for b in self._bulgular if b.seviye == s)
@@ -123,11 +126,12 @@ class DogrulamaMixin(object):
         if adim is None:
             return False
         tamam, toplam = baslangic_adim.ilerleme(self.spec)
-        sira = _("Sıradaki adım: {baslik} — {aciklama}").format(
+        sira = _("Sıradaki aşama: {baslik} — {aciklama}").format(
             baslik=adim.baslik, aciklama=adim.aciklama)
-        self.serit.ayarla("bilgi", _("Model kuruluyor: {tamam}/{toplam} adım").format(
-            tamam=tamam, toplam=toplam), _(_EKSIK_ADIM), sira, sira)
-        self.serit.setToolTip(_("Eksik adımlar tamamlanınca doğrulama sonucu burada "
+        self.serit.ayarla("bilgi", _("Model kuruluyor: {tamam}/{toplam} aşama").format(
+            tamam=tamam, toplam=toplam), _(_EKSIK_ADIM), sira,
+            _("Çalıştır, eksik aşamalar tamamlanınca açılır."))
+        self.serit.setToolTip(_("Eksik aşamalar tamamlanınca doğrulama sonucu burada "
                                 "görünür."))
         return True
 
@@ -195,10 +199,10 @@ class DogrulamaMixin(object):
         if adim is not None:
             n = len(baslangic_adim.eksik_adimlar(self.spec))
             return False, _n(
-                "Model henüz kurulmadı: {n} adım eksik. Sıradaki adım: {baslik} — "
-                "{aciklama} Alttaki adım rehberinden ilgili sayfaya gidin.",
-                "Model henüz kurulmadı: {n} adım eksik. Sıradaki adım: {baslik} — "
-                "{aciklama} Alttaki adım rehberinden ilgili sayfaya gidin.", n).format(
+                "Model henüz kurulmadı: {n} aşama eksik. Sıradaki aşama: {baslik} — "
+                "{aciklama} Alttaki aşama rehberinden ilgili sayfaya gidin.",
+                "Model henüz kurulmadı: {n} aşama eksik. Sıradaki aşama: {baslik} — "
+                "{aciklama} Alttaki aşama rehberinden ilgili sayfaya gidin.", n).format(
                     n=n, baslik=adim.baslik, aciklama=adim.aciklama)
         if dogrula.hata_var(self._bulgular):
             n = sum(1 for b in self._bulgular if b.seviye == "hata")

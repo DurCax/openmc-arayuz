@@ -93,7 +93,7 @@ def _kontrol_hazir(p):
             "-> %s" % [(b.yer, b.mesaj) for b in p._bulgular if b.seviye == "hata"])
     kontrol("serit eksik adim kipinden cikti",
             p.serit.rozet.property("rozet") in ("basari", "uyari", "bilgi")
-            and "adım" not in p.serit.ozet.text(), "-> %s" % p.serit.ozet.text())
+            and "aşama" not in p.serit.ozet.text(), "-> %s" % p.serit.ozet.text())
     kontrol("onizleme cizildi", p.onizleme.cizildi_mi())
     izin, neden = p._kosu_izni()
     kontrol("Calistir acik", izin and p.e_calistir.isEnabled(), "-> %s" % neden)

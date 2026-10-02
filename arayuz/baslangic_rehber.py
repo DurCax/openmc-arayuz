@@ -32,7 +32,7 @@ class AdimRehberi(b.Kart):
     def __init__(self, parent: QtWidgets.QWidget | None = None) -> None:
         super().__init__(parent=parent, dolgu="s")
         self.setObjectName("yuzeyKart")
-        self.setAccessibleName(_("Adım rehberi"))
+        self.setAccessibleName(_("Aşama rehberi"))
         self.dugmeler = {}
         self._anahtarlar = ()
         self._satir = QtWidgets.QHBoxLayout()

@@ -305,7 +305,7 @@ class _SifirdanKarti(b.Kart):
         self.baslik.setWordWrap(True)
         metin.addWidget(self.baslik)
         self.aciklama = QtWidgets.QLabel(_("Hiçbir şey hazır gelmez: kor türünü seçin, "
-                                           "malzemeden başlayıp adım adım kurun."))
+                                           "malzemeden başlayıp sırayla kurun."))
         self.aciklama.setObjectName("kucuk")
         self.aciklama.setWordWrap(True)
         metin.addWidget(self.aciklama)
@@ -318,21 +318,23 @@ class _SifirdanKarti(b.Kart):
     def _eylemleri_kur(self) -> None:
         self.sifirdan_turu = QtWidgets.QComboBox()
         self.sifirdan_turu.setAccessibleName(_("Kor türü"))
-        self.sifirdan_turu.setToolTip(_("Boş modelin kor türü; sonradan üst çubuktaki "
-                                        "'Türü değiştir…' ile değiştirilebilir."))
+        self.sifirdan_turu.setToolTip(_("Boş modelin kor türü; sonradan 'Türü değiştir…' "
+                                        "ile değiştirilebilir."))
         for tur in SIFIRDAN_TURLERI:
             ad = uygunluk.KOR_TURU_ADLARI[tur]
             self.sifirdan_turu.addItem(_(ad), tur)
         self.d_sifirdan = b.ikincil_dugme(_("Sıfırdan başla"))
         self.d_sifirdan.setAutoDefault(True)
         self.d_sifirdan.setToolTip(_("Malzemesi, parçası ve geometrisi olmayan boş bir "
-                                     "model açar; adım rehberi sizi sırayla ilgili "
+                                     "model açar; aşama rehberi sizi sırayla ilgili "
                                      "sayfalara götürür."))
         self.d_bos, self.d_ornek = self.sifirdan_turu, self.d_sifirdan
+        # Alt alta: yan yana kart en az genisligi 1280 px'te 4 sutunu bozuyordu.
+        self.govde.addWidget(self.sifirdan_turu)
         eylem = QtWidgets.QHBoxLayout()
         eylem.setSpacing(A["s"])
-        eylem.addWidget(self.sifirdan_turu, 1)
         eylem.addWidget(self.d_sifirdan)
+        eylem.addStretch(1)
         self.govde.addLayout(eylem)
 
 

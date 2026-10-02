@@ -80,8 +80,8 @@ _VARSAYILAN_BOLUCU = (820, 360)      # [sayfa, onizleme] px, ilk acilis
 # ana pencere
 # ============================================================================
 
-class AnaPencere(DogrulamaMixin, BaslangicAkisi, GezinmeCephesi, MenulerMixin, ProjeMixin, GecmisMixin,
-                 QtWidgets.QMainWindow):
+class AnaPencere(DogrulamaMixin, BaslangicAkisi, GezinmeCephesi, MenulerMixin, ProjeMixin,
+                 GecmisMixin, QtWidgets.QMainWindow):
 
     def __init__(self, acilis_dosyasi=None):
         super().__init__()

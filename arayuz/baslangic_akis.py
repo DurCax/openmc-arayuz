@@ -52,7 +52,7 @@ class BaslangicAkisi(object):
         duzen = self.centralWidget().layout()
         duzen.insertWidget(duzen.indexOf(self.serit), self.adim_rehberi)
         self.adim_rehberi.adim_secildi.connect(self._adima_git)
-        self.yigin.currentChanged.connect(lambda *_a: self._rehber_guncelle())
+        self.yigin.currentChanged.connect(lambda *_a: self._adim_rehberini_guncelle())
         self.baslangic.sifirdan_istendi.connect(self._sifirdan_basla)
         self.baslangic.acilista_goster.setChecked(acilista_goster_mi(self.ayarlar))
         self.baslangic.acilista_goster_degisti.connect(
@@ -80,8 +80,8 @@ class BaslangicAkisi(object):
             return False
         self._proje_kur(spec, proje_yolu=None, ornek_kaynagi=None)
         self.sekmeye_git("malzemeler", sessiz=True)
-        self._rehber_guncelle()
-        self.bildir_mesaj(_("Boş model açıldı. Alttaki adım rehberini izleyin: malzeme → "
+        self._adim_rehberini_guncelle()
+        self.bildir_mesaj(_("Boş model açıldı. Alttaki aşama rehberini izleyin: malzeme → "
                             "parça → geometri."), "bilgi", 8000)
         return True
 
@@ -90,7 +90,7 @@ class BaslangicAkisi(object):
             self._editoru_goster()
         self.sekmeye_git(sekme)
 
-    def _rehber_guncelle(self) -> None:
+    def _adim_rehberini_guncelle(self) -> None:
         rehber = getattr(self, "adim_rehberi", None)
         if rehber is not None:
             rehber.guncelle(self.spec, editorde=not self.baslangic_acik_mi())

@@ -177,11 +177,16 @@ def test_sifirdan_eksik_adim_sunumu_ve_kapi():
                 not p.spec["malzemeler"] and not p.spec["cubuklar"] and p.ornek_kaynagi is None)
         kontrol("serit bilgi tonunda (hata kirmizisi degil)",
                 p.serit.rozet.property("rozet") == "bilgi", "-> %s" % p.serit.rozet.property("rozet"))
-        kontrol("serit 'eksik adim' soyler", "adım" in p.serit.ozet.text(),
+        kontrol("serit 'eksik adim' soyler", "aşama" in p.serit.ozet.text(),
                 "-> %s" % p.serit.ozet.text())
         izin, neden = p._kosu_izni()
         kontrol("Calistir kapali", not izin)
-        kontrol("neden acik: eksik adim + siradaki", "Malzeme" in neden and "adım" in neden,
+        kontrol("ust cubuktaki Calistir dugmesi de kapali, ipucu nedeni soyler",
+                not p.ust.d_kosu.isEnabled() and p.ust.d_kosu.toolTip() == neden,
+                "-> %s / %s" % (p.ust.d_kosu.isEnabled(), p.ust.d_kosu.toolTip()))
+        kontrol("seritte Calistir'in neden kapali oldugu yazar",
+                "Çalıştır" in p.serit.ipucu.text(), "-> %s" % p.serit.ipucu.text())
+        kontrol("neden acik: eksik adim + siradaki", "Malzeme" in neden and "aşama" in neden,
                 "-> %s" % neden)
         renkler = {p.dogrulama.item(i).foreground().color().name()
                    for i in range(p.dogrulama.count())}
