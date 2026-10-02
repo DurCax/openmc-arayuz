@@ -53,7 +53,7 @@ from arayuz.sekme_demet import DemetSekmesi
 from arayuz.sekme_kor import KorSekmesi
 from arayuz.sekme_malzeme import MalzemeSekmesi
 from arayuz import baslangic, tema
-from arayuz.ortak import tekerlek_korumasi_kur
+from arayuz.ortak import tekerlek_korumasi_kur, tekerlek_suzgeci_askida
 from arayuz.pencere import kabuk
 from arayuz.pencere.menuler import MenulerMixin
 from arayuz.pencere.proje import ProjeMixin
@@ -88,18 +88,20 @@ class AnaPencere(DogrulamaMixin, GezinmeCephesi, MenulerMixin, ProjeMixin, Gecmi
         tekerlek_korumasi_kur()
         uygulama_adi = UYGULAMA_ADI        # cekirdek sabiti; etkin dilde gosterilir
         self.setWindowTitle(_(uygulama_adi))
-        self._boyut_kur()
-        self._durum_kur()
-        self._sayfalari_kur()
-        self._onizleme_kur()
-        self._menu_kur()
-        self._arac_cubugu_kur()
-        self._durum_cubugu_kur()
-        self._yerlesim_kur()
-        self._baglantilari_kur()
-        self._sayaclari_kur()
-        self._spec_uygula()
-        self._gecmise_it(ilk=True)
+        # H1b: kurulumda suzgec askida (her olayda Python'a gecis ~1.4 s CPU)
+        with tekerlek_suzgeci_askida():
+            self._boyut_kur()
+            self._durum_kur()
+            self._sayfalari_kur()
+            self._onizleme_kur()
+            self._menu_kur()
+            self._arac_cubugu_kur()
+            self._durum_cubugu_kur()
+            self._yerlesim_kur()
+            self._baglantilari_kur()
+            self._sayaclari_kur()
+            self._spec_uygula()
+            self._gecmise_it(ilk=True)
         if acilis_dosyasi:
             self.proje_ac(acilis_dosyasi)
         if not self._model_var:

@@ -8,6 +8,7 @@
 ================================================================================
 """
 
+import contextlib
 import re
 
 import shiboken6
@@ -85,6 +86,41 @@ def tekerlek_korumasi_kur(uygulama=None):
     suzgec = _TekerlekSuzgeci(uygulama)
     uygulama.installEventFilter(suzgec)
     _SUZGEC[id(uygulama)] = suzgec
+
+
+def odak_politikalarini_duzelt(kok=None):
+    """Polish suzgecinin isini toplu yapar: WheelFocus'lu hedef kutular StrongFocus
+    olur. kok verilirse yalniz onun altindaki widget'lar, yoksa uygulamanin tumu."""
+    if kok is not None:
+        adaylar = [w for sinif in _TEKERLEK_HEDEFLERI for w in kok.findChildren(sinif)]
+    else:
+        adaylar = [w for w in QtWidgets.QApplication.allWidgets()
+                   if isinstance(w, _TEKERLEK_HEDEFLERI)]
+    for w in adaylar:
+        if w.focusPolicy() == QtCore.Qt.WheelFocus:
+            w.setFocusPolicy(QtCore.Qt.StrongFocus)
+
+
+@contextlib.contextmanager
+def tekerlek_suzgeci_askida(kok=None, uygulama=None):
+    """
+    Toplu widget kurulumu (ana pencere) sirasinda uygulama geneli suzgeci askiya
+    alir. Python suzgeci HER olayda (kurulumda ~170 bin: ChildAdded, Polish,
+    LayoutRequest ...) C++ -> Python gecisi demekti: pencere kurulumunun ~1.4 s'si
+    (olculdu, H1b). Kurulumda tekerlek/diyalog olayi olmaz; Polish'in isi
+    (odak politikasi) cikista toplu yapilir ve suzgec geri kurulur.
+    """
+    uygulama = uygulama or QtWidgets.QApplication.instance()
+    suzgec = _SUZGEC.get(id(uygulama)) if uygulama is not None else None
+    if suzgec is None:
+        yield
+        return
+    uygulama.removeEventFilter(suzgec)
+    try:
+        yield
+    finally:
+        uygulama.installEventFilter(suzgec)
+        odak_politikalarini_duzelt(kok)
 
 
 _QT_CEVIRMEN = {}
