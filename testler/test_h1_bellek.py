@@ -177,27 +177,41 @@ def test_hacim_katkilar_tek_gezinti(monkeypatch):
 
 
 def test_hacim_model_degisince_yeniden_hesaplar():
-    print("\n[H1-B6] hacim: agac degisince katkilar yeniden hesaplanir")
+    print("\n[H1-B6] hacim: agac yerinde degisince katkilar yeniden hesaplanir")
     from cekirdek import geometri
     from cekirdek.geometri import hacim
     _bos_bellek()
     spec = _yukle(_HACIM_ORNEGI)
-    ad = next(a for a in (m["ad"] for m in spec["malzemeler"])
-              if hacim.analitik(geometri.model(spec), a).hacim)
-    once = hacim.analitik(geometri.model(spec), ad).hacim
-    kok = spec["geometri"]["kok"]
-    kesit = kok.get("kesit") or {}
-    anahtar = "yaricap" if "yaricap" in kesit else None
-    if anahtar is None:                     # dis halka kalinligi
-        h = next(h for h in kok.get("halkalar") or [] if h.get("kalinlik") is not None)
-        h["kalinlik"] = h["kalinlik"] * 1.5
-    else:
-        kesit[anahtar] = kesit[anahtar] * 1.5
-    sonra = hacim.analitik(geometri.model(spec), ad).hacim
+    adlar = [m["ad"] for m in spec["malzemeler"]]
+
+    def hacimler():
+        m = geometri.model(spec)
+        return {ad: hacim.analitik(m, ad).hacim for ad in adlar}
+    once = hacimler()
+    sahip, anahtar = _ilk_yaricap(spec["geometri"]["kok"])
+    sahip[anahtar] = sahip[anahtar] * 1.5          # yerinde degisiklik
+    sonra = hacimler()
     _bos_bellek()
-    taze = hacim.analitik(geometri.model(spec), ad).hacim
-    kontrol("yerinde degisiklik sonrasi bellekli = taze", sonra == taze,
-            "%s %s %s" % (once, sonra, taze))
+    taze = hacimler()
+    kontrol("yaricap bir hacmi degistirdi", sonra != once)
+    kontrol("yerinde degisiklik sonrasi bellekli = taze", sonra == taze)
+
+
+def _ilk_yaricap(d):
+    """(sozluk, "yaricap") -- agactaki ilk yaricap alani (derinlik oncelikli)."""
+    if isinstance(d, dict):
+        if isinstance(d.get("yaricap"), (int, float)):
+            return d, "yaricap"
+        ogeler = d.values()
+    elif isinstance(d, list):
+        ogeler = d
+    else:
+        return None
+    for v in ogeler:
+        r = _ilk_yaricap(v)
+        if r:
+            return r
+    return None
 
 
 def test_yakit_ornek_sayisi_bellegi(monkeypatch):

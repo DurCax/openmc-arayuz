@@ -51,6 +51,10 @@ import sys
 from cekirdek import sema, veri_bilgi
 from cekirdek import tukenme_spektrum as _spektrum
 from cekirdek.ceviri import N_, _, pgettext
+from cekirdek.uygunluk_bellek import Bellek, icerik_anahtari
+
+# Spec icerigine gore bellek (v3 H1): sekme her doldurmada yeniden sayiyordu.
+_ORNEK_SAYISI = Bellek("yakit_ornek_sayisi")
 
 ZINCIRLER = {
     "termal":      "chain_endfb80_thermal.xml",
@@ -217,6 +221,10 @@ def yakit_ornek_sayisi(spec):
     hicbir sey degistirmez. uygunluk.tukenme_ayirma_anlamli bunu kullanir.
     Sayim tukenme_hacim.ornek_sayisi'ndadir (sablon ve agac modu).
     """
+    return _ORNEK_SAYISI.al(icerik_anahtari(spec), lambda: _yakit_ornek_sayisi(spec))
+
+
+def _yakit_ornek_sayisi(spec):
     from cekirdek import tukenme_hacim
     return max([tukenme_hacim.ornek_sayisi(spec, ad) for ad in yanabilir_adlar(spec)] or [0])
 
