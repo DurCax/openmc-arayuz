@@ -228,6 +228,45 @@ def test_surece_uygula_openmc_config():
         kontrol("config silindi", "cross_sections" not in openmc.config)
 
 
+def test_sembolik_bagli_yolda_enjekte_taninir():
+    print("\n[K2-Y10] symlink'li yol: openmc.config yolu cozse de enjekte deger 'ortam' sayilmaz")
+    import openmc  # noqa: F401 -- surece_uygula openmc.config'i de yazsin
+    from cekirdek import veri_yolu
+    with VeriYalitimi() as y:
+        gercek = os.path.join(y.kok, "gercek")
+        _kutuphane(os.path.join(gercek, "a"))
+        os.makedirs(os.path.join(y.kok, "nucdata"))
+        os.symlink(os.path.join(gercek, "a"), os.path.join(y.kok, "nucdata", "a"))
+        veri_yolu.surece_uygula()
+        kontrol("ortamda cozulmus yol", os.path.realpath(os.environ["OPENMC_CROSS_SECTIONS"])
+                == os.path.realpath(os.path.join(gercek, "a", "cross_sections.xml")))
+        ikinci = _kutuphane(os.path.join(y.kok, "b"))
+        veri_yolu.ayar_yaz({"cross_sections": ikinci})
+        sonuc = veri_yolu.cross_sections()
+        kontrol("yeni secim kullanilir (ortam degil)", sonuc.kaynak == "ayar"
+                and sonuc.deger == ikinci, repr(sonuc))
+
+
+def test_birden_cok_aday():
+    print("\n[K2-Y11] adaylar: varsayilan endfb-viii.0 once; tek aday secilir; coklu -> secim ister")
+    from cekirdek import veri_yolu
+    with tempfile.TemporaryDirectory() as kok:
+        ortam = _ortam(kok)
+        nuc = os.path.join(kok, "nucdata")
+        _kutuphane(os.path.join(nuc, "jeff-3.3-hdf5"))
+        tek = veri_yolu.cross_sections(ortam)
+        kontrol("tek aday secilir", tek.kaynak == "aday" and "jeff-3.3" in tek.deger, repr(tek))
+        _kutuphane(os.path.join(nuc, "endfb-vii.1-hdf5"))
+        coklu = veri_yolu.cross_sections(ortam)
+        kontrol("coklu: otomatik secilmez", coklu.kaynak == "coklu" and coklu.deger is None
+                and not coklu.gecerli and len(coklu.adaylar) == 2, repr(coklu))
+        kontrol("coklu: veri hazir degil", not veri_yolu.veri_hazir_mi(ortam))
+        varsayilan = _kutuphane(os.path.join(nuc, "endfb-viii.0-hdf5"))
+        sonuc = veri_yolu.cross_sections(ortam)
+        kontrol("varsayilan ENDF/B-VIII.0 (alfabetik VII.1 degil)",
+                sonuc.kaynak == "aday" and sonuc.deger == varsayilan, repr(sonuc))
+
+
 def test_varsayilan_zincir_adi_tukenmeyle_ayni():
     print("\n[K2-Y9] VARSAYILAN_ZINCIR = tukenme.ZINCIRLER['termal']")
     from cekirdek import tukenme, veri_yolu
@@ -252,5 +291,6 @@ HIZLI = [test_ortam_degiskeni_once_gelir, test_ayar_sonra_aday, test_hicbiri_yok
          test_alt_surec_ortami_yeni_sozluk, test_surece_uygula,
          test_surece_uygulanan_sonraki_secimi_engellemez, test_surece_uygula_openmc_config,
          test_ayar_dosyasi_json_bicimi,
-         test_varsayilan_zincir_adi_tukenmeyle_ayni]
+         test_varsayilan_zincir_adi_tukenmeyle_ayni, test_sembolik_bagli_yolda_enjekte_taninir,
+         test_birden_cok_aday]
 YAVAS = []

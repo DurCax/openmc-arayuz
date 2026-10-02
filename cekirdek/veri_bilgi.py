@@ -301,20 +301,16 @@ class KutuphaneDenetimi:
 
 
 def _xml_bul(yol):
-    """Dosya verilmisse o; dizinse <dizin>/cross_sections.xml ya da bir alt
-    dizindeki ilk (alfabetik) cross_sections.xml; yoksa None."""
+    """(xml | None, adaylar). Dosya verilmisse o; dizinse <dizin>/cross_sections.xml
+    ya da alt dizinlerdekiler arasindan veri_yolu.aday_sec (VIII.0 once; tek
+    aday o; birden cok ise None -- kullanici secer)."""
+    from cekirdek import veri_yolu
     if os.path.isfile(yol):
-        return os.path.abspath(yol)
+        return os.path.abspath(yol), ()
     if not os.path.isdir(yol):
-        return None
-    dogrudan = os.path.join(yol, _XS_DOSYASI)
-    if os.path.isfile(dogrudan):
-        return os.path.abspath(dogrudan)
-    for ad in sorted(os.listdir(yol)):
-        aday = os.path.join(yol, ad, _XS_DOSYASI)
-        if os.path.isfile(aday):
-            return os.path.abspath(aday)
-    return None
+        return None, ()
+    secilen, adaylar = veri_yolu.aday_sec(veri_yolu.kok_adaylari(os.path.abspath(yol)))
+    return secilen, adaylar
 
 
 def _kayitlar(xml):
@@ -344,7 +340,11 @@ def klasor_denetle(yol):
     mi: XML okunur mu, notron kaydi var mi, kayitlarin dosyalari var mi;
     nuklid/termal/foton sayilari, S(a,b) adlari, ornek sicaklik araliklari.
     Hata firlatmaz; sorunlar `hatalar`dadir."""
-    xml = _xml_bul(yol) if yol else None
+    xml, adaylar = _xml_bul(yol) if yol else (None, ())
+    if xml is None and len(adaylar) > 1:
+        adlar = ", ".join(os.path.basename(os.path.dirname(a)) for a in adaylar)
+        return KutuphaneDenetimi(None, False, hatalar=(
+            _("birden çok kütüphane bulundu (%s); birinin klasörünü seçin") % adlar,))
     if xml is None:
         return KutuphaneDenetimi(None, False, hatalar=(
             _("%s içinde cross_sections.xml bulunamadı") % (yol or "?"),))
@@ -389,8 +389,21 @@ class Gereksinim:
     oneri: str = ""
 
 
+_SURUM_ONBELLEK = {}            # (exe, mtime) -> (surum | None, hata)
+
+
 def _openmc_ikili_surumu(exe, calistir):
-    """(surum ya da None, hata metni ya da "")."""
+    """(surum ya da None, hata metni ya da ""); ikili degismedikce onbellekten."""
+    try:
+        anahtar = (exe, os.path.getmtime(exe))
+    except OSError:
+        anahtar = (exe, None)
+    if anahtar not in _SURUM_ONBELLEK:
+        _SURUM_ONBELLEK[anahtar] = _surum_calistir(exe, calistir)
+    return _SURUM_ONBELLEK[anahtar]
+
+
+def _surum_calistir(exe, calistir):
     try:
         r = calistir([exe, "--version"], capture_output=True, text=True,
                      timeout=_SURUM_ZAMAN_ASIMI, check=False)
@@ -455,6 +468,10 @@ def _g_kutuphane(ortam):
     xs = veri_yolu.cross_sections(ortam)
     if xs.gecerli:
         return Gereksinim("kutuphane", ad, "tamam", "%s (%s)" % (xs.deger, _kaynak_adi(xs.kaynak)))
+    if xs.kaynak == "coklu":
+        return Gereksinim("kutuphane", ad, "eksik", _("birden çok kütüphane bulundu: %s") % ", ".join(
+            os.path.basename(os.path.dirname(a)) for a in xs.adaylar),
+            _("Hangisinin kullanılacağını Klasör seç ile belirleyin."))
     deger = (_("%s yok (%s)") % (xs.deger, _kaynak_adi(xs.kaynak))) if xs.deger \
         else _("seçilmedi")
     return Gereksinim("kutuphane", ad, "eksik", deger,
@@ -470,14 +487,68 @@ def _g_zincir(ortam):
         return Gereksinim("zincir", ad, "uyari",
                           (_("%s yok") % z.deger) if z.deger else _("seçilmedi"), oneri)
     tamam, mesaj, _sayi = zincir_kontrol(z.deger)
-    return Gereksinim("zincir", ad, "tamam" if tamam else "uyari",
-                      "%s — %s" % (z.deger, mesaj), "" if tamam else oneri)
+    deger = "%s — %s" % (z.deger, mesaj)
+    if not tamam:
+        return Gereksinim("zincir", ad, "uyari", deger, oneri)
+    uyum = zincir_uyumu(z.deger, veri_yolu.cross_sections(ortam).deger)
+    return Gereksinim("zincir", ad, "uyari" if uyum else "tamam", deger, uyum)
 
 
-def gereksinimler(ortam=None, calistir=None, python=None):
+# Zincir dosya adi oneki -> uyumlu kutuphane kimlikleri (veri_katalogu.json).
+_ZINCIR_KUTUPHANESI = {"chain_endfb80_": ("endfb-viii.0", "lanl-endfb-viii.0")}
+_DIZIN_SONEKI = "-hdf5"
+
+
+def kutuphane_kimligi(xs_yolu):
+    """Kutuphanenin katalog kimligi: makbuz (KAYNAK.json) > Veri sayfasi secimi >
+    dizin adi ("-hdf5" soneki atilir); bilinmiyorsa None."""
+    if not xs_yolu:
+        return None
+    import json
+    from cekirdek import veri_yolu
+    dizin = os.path.dirname(os.path.abspath(xs_yolu))
+    try:
+        with open(os.path.join(dizin, "KAYNAK.json"), encoding="utf-8") as f:
+            kimlik = json.load(f).get("kimlik")
+        if kimlik:
+            return kimlik
+    except (OSError, ValueError, AttributeError):
+        _log.debug("makbuz yok/okunamadi: %s", dizin)
+    ayar = veri_yolu.ayar_oku()
+    if ayar.get("kutuphane") and veri_yolu._ayni_yol(ayar.get("cross_sections"), xs_yolu):
+        return ayar["kutuphane"]
+    ad = os.path.basename(dizin)
+    return ad[:-len(_DIZIN_SONEKI)] if ad.endswith(_DIZIN_SONEKI) else ad
+
+
+def _katalog_kimlikleri():
+    """Katalogdaki kutuphane kimlikleri (bilinmeyen kimlikle uyari verilmez)."""
+    from cekirdek import veri_indir
+    try:
+        return {o.kimlik for o in veri_indir.katalog_yukle().kutuphaneler}
+    except (OSError, ValueError, KeyError) as e:
+        _log.warning("veri katalogu okunamadi: %s", e)
+        return set()
+
+
+def zincir_uyumu(zincir_yolu, xs_yolu):
+    """Zincir secilen kutuphaneyle ayni degerlendirmeden degilse uyari metni, yoksa ""."""
+    ad = os.path.basename(zincir_yolu or "")
+    kimlik = kutuphane_kimligi(xs_yolu)
+    for onek, uyumlu in _ZINCIR_KUTUPHANESI.items():
+        if ad.startswith(onek) and kimlik in _katalog_kimlikleri() and kimlik not in uyumlu:
+            return _("Bu zincir ENDF/B-VIII.0 verisinden üretildi; seçili kütüphane %s. "
+                     "Tükenme sonuçları iki farklı değerlendirmeyi karıştırır.") % kimlik
+    return ""
+
+
+def gereksinimler(ortam=None, calistir=None, python=None, tazele=False):
     """Veri sayfasinin durum tablosu: openmc ikilisi + surumu, Python API,
     HDF5, kutuphane, zincir. calistir: subprocess.run yerine (test);
-    python: openmc aranirken yanina bakilan yorumlayici. Hata firlatmaz."""
+    python: openmc aranirken yanina bakilan yorumlayici; tazele: surum
+    onbellegini bosalt (Yenile dugmesi). Hata firlatmaz."""
+    if tazele:
+        _SURUM_ONBELLEK.clear()
     calistir = calistir or subprocess.run
     openmc_satiri, ikili_surum = _g_openmc(ortam, calistir, python)
     return (openmc_satiri, _g_python_api(ikili_surum), _g_hdf5(), _g_kutuphane(ortam),

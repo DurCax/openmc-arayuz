@@ -66,12 +66,20 @@ METIN_ANAHTARLARI = ("kutuphane",)
 _EV_ADAY_DIZINI = "nucdata"            # veri_indir.sh'nin v2'den beri varsayilani
 
 
+# Birden cok aday kutuphane varken tercih edilen dizin adi: uygulamanin
+# dogrulandigi kutuphane (veri_katalogu.json "endfb-viii.0" dizin_adi).
+VARSAYILAN_KUTUPHANE_DIZINI = "endfb-viii.0-hdf5"
+
+
 @dataclass(frozen=True)
 class Yol:
-    """Bir cozum sonucu. kaynak: "ortam" | "ayar" | "aday" | "yok"."""
+    """Bir cozum sonucu. kaynak: "ortam" | "ayar" | "aday" | "coklu" | "yok".
+    "coklu": birden cok aday bulundu, hicbiri varsayilan degil -- otomatik
+    secilmez (adaylar listesi Veri sayfasinda gosterilir)."""
     deger: Optional[str]
     kaynak: str
     gecerli: bool
+    adaylar: Tuple[str, ...] = ()
 
 
 _YOK = Yol(None, "yok", False)
@@ -86,9 +94,14 @@ def _ortam(ortam: Ortam) -> Mapping[str, str]:
     return os.environ if ortam is None else ortam
 
 
+def _ayni_yol(a: Optional[str], b: Optional[str]) -> bool:
+    """Iki yol ayni dosyayi mi gosteriyor (symlink / openmc.config Path.resolve)."""
+    return bool(a) and bool(b) and os.path.realpath(a) == os.path.realpath(b)
+
+
 def _ortam_degeri(o: Mapping[str, str], degisken: str) -> Optional[str]:
     deger = o.get(degisken)
-    if not deger or (o is os.environ and _ENJEKTE.get(degisken) == deger):
+    if not deger or (o is os.environ and _ayni_yol(_ENJEKTE.get(degisken), deger)):
         return None
     return deger
 
@@ -188,14 +201,23 @@ def _sil(yol: str) -> None:
 # cozum
 # ---------------------------------------------------------------------------
 
-def _aday_xs(kok: str) -> Optional[str]:
+def kok_adaylari(kok: str) -> Tuple[str, ...]:
+    """kok/cross_sections.xml ya da kok/*/cross_sections.xml (alfabetik)."""
     dogrudan = os.path.join(kok, XS_DOSYASI)
     if os.path.isfile(dogrudan):
-        return dogrudan
-    for yol in sorted(glob.glob(os.path.join(glob.escape(kok), "*", XS_DOSYASI))):
-        if os.path.isfile(yol):
-            return yol
-    return None
+        return (dogrudan,)
+    return tuple(y for y in sorted(glob.glob(os.path.join(glob.escape(kok), "*", XS_DOSYASI)))
+                 if os.path.isfile(y))
+
+
+def aday_sec(adaylar) -> Tuple[Optional[str], Tuple[str, ...]]:
+    """(secilen | None, adaylar): varsayilan dizin (VIII.0) once; tek aday o;
+    birden cok ve hicbiri varsayilan degilse None (kullanici secer)."""
+    adaylar = tuple(adaylar)
+    for yol in adaylar:
+        if os.path.basename(os.path.dirname(yol)) == VARSAYILAN_KUTUPHANE_DIZINI:
+            return yol, adaylar
+    return (adaylar[0] if len(adaylar) == 1 else None), adaylar
 
 
 def cross_sections(ortam: Ortam = None) -> Yol:
@@ -207,11 +229,13 @@ def cross_sections(ortam: Ortam = None) -> Yol:
     ayarli = ayar_oku(o).get("cross_sections")
     if ayarli:
         return Yol(ayarli, "ayar", os.path.isfile(ayarli))
-    for kok in aday_kokleri(o):
-        yol = _aday_xs(kok)
-        if yol:
-            return Yol(yol, "aday", True)
-    return _YOK
+    adaylar = tuple(y for kok in aday_kokleri(o) for y in kok_adaylari(kok))
+    if not adaylar:
+        return _YOK
+    secilen, adaylar = aday_sec(adaylar)
+    if secilen is None:
+        return Yol(None, "coklu", False, adaylar)
+    return Yol(secilen, "aday", True, adaylar)
 
 
 def _zincir_adaylari(o: Mapping[str, str]):
@@ -280,14 +304,14 @@ def surece_uygula(ortam: Ortam = None,
     o = _ortam(ortam)
     hedef = os.environ if hedef is None else hedef
     cozulen = _cozulen(o)
-    yazilan = {k: v for k, v in cozulen.items() if hedef.get(k) != v}
+    yazilan = {k: v for k, v in cozulen.items() if not _ayni_yol(hedef.get(k), v)}
     hedef.update(yazilan)
     if hedef is not os.environ:
         return yazilan
     # Onceden bizim yazdigimiz ama artik cozulmeyen deger (secim kaldirildi /
     # dosya silindi) ortamda birakilmaz.
     for degisken in [k for k in _ENJEKTE if k not in cozulen]:
-        if os.environ.get(degisken) == _ENJEKTE.pop(degisken):
+        if _ayni_yol(os.environ.get(degisken), _ENJEKTE.pop(degisken)):
             del os.environ[degisken]
             _openmc_config_sil(degisken)
     _ENJEKTE.update(yazilan)

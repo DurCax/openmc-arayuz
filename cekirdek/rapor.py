@@ -170,10 +170,13 @@ def _kutuphane_metni(log):
         d = log["kutuphane_dizini"]
         return "%s (%s)" % (os.path.basename(d.rstrip("/")), _kisa_yol(d))
     from cekirdek import veri_yolu
-    xs = veri_yolu.cross_sections().deger
+    cozum = veri_yolu.cross_sections()
+    xs = cozum.deger
     if xs:
         d = os.path.dirname(os.path.abspath(xs))
-        return _("%s (%s; rapor anındaki ortam)") % (os.path.basename(d), _kisa_yol(xs))
+        kaynak = {"ortam": _("rapor anındaki ortam"), "ayar": _("Veri sayfası seçimi"),
+                  "aday": _("otomatik bulunan aday")}.get(cozum.kaynak, cozum.kaynak)
+        return "%s (%s; %s)" % (os.path.basename(d), _kisa_yol(xs), kaynak)
     return None
 
 

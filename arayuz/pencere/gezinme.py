@@ -64,11 +64,19 @@ class GezinmeCephesi:
         """Nukleer veri cozulemiyorsa "veri kutuphanesi" hata bulgusu eklenmis
         YENI liste (zaten varsa ayni icerik). Calistir kapisi hata_var ile kapanir."""
         from cekirdek import dogrula, veri_yolu
-        if veri_yolu.veri_hazir_mi() or any(
-                (b.yer or "").startswith("veri kutuphanesi") for b in bulgular):
+        if any((b.yer or "").startswith("veri kutuphanesi") for b in bulgular):
             return list(bulgular)
+        xs = veri_yolu.cross_sections()
+        if xs.gecerli and xs.kaynak != "aday":
+            return list(bulgular)
+        if xs.gecerli:
+            return list(bulgular) + [dogrula.Bulgu(
+                "bilgi", "veri kutuphanesi", _("kütüphane otomatik bulundu: %s") % xs.deger,
+                _("Doğruysa Veri sayfasında 'Denetle ve kullan' ile onaylayın."))]
+        metin = (_("birden çok kütüphane bulundu; hangisinin kullanılacağı seçilmedi")
+                 if xs.kaynak == "coklu" else _("nükleer veri kütüphanesi bulunamadı"))
         return list(bulgular) + [dogrula.Bulgu(
-            "hata", "veri kutuphanesi", _("nükleer veri kütüphanesi bulunamadı"),
+            "hata", "veri kutuphanesi", metin,
             _("Veri sayfasından cross_sections.xml içeren klasörü seçin ya da bir "
               "kütüphane indirin."))]
 

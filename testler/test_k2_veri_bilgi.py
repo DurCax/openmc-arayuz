@@ -161,6 +161,54 @@ def test_gereksinimler_eksik():
         kontrol("zaman asimi -> uyari", g["openmc"].durum == "uyari", repr(g["openmc"]))
 
 
+def test_klasorde_birden_cok_kutuphane():
+    print("\n[K2-B6] ust klasorde birden cok kutuphane: VIII.0 varsa o, yoksa secim istenir")
+    from cekirdek import veri_bilgi
+    with tempfile.TemporaryDirectory() as kok:
+        _kutuphane(os.path.join(kok, "endfb-vii.1-hdf5"))
+        _kutuphane(os.path.join(kok, "jeff-3.3-hdf5"))
+        d = veri_bilgi.klasor_denetle(kok)
+        kontrol("otomatik secilmez", not d.tamam and d.xml is None
+                and any("jeff-3.3-hdf5" in h for h in d.hatalar), repr(d.hatalar))
+        xml = _kutuphane(os.path.join(kok, "endfb-viii.0-hdf5"))
+        kontrol("varsayilan secilir", veri_bilgi.klasor_denetle(kok).xml == xml)
+
+
+def test_zincir_kutuphane_uyumu():
+    print("\n[K2-B7] ENDF/B-VIII.0 zinciri baska kutuphaneyle -> uyari")
+    from cekirdek import veri_bilgi
+    with tempfile.TemporaryDirectory() as kok:
+        _kutuphane(os.path.join(kok, "nucdata", "jendl-5-hdf5"))
+        zdir = os.path.join(kok, "nucdata", "chain")
+        os.makedirs(zdir)
+        with open(os.path.join(zdir, "chain_endfb80_thermal.xml"), "w") as f:
+            f.write("<depletion_chain>\n</depletion_chain>\n")
+        ortam = {"HOME": kok, "PATH": "", "XDG_CONFIG_HOME": kok + "/c",
+                 "XDG_DATA_HOME": kok + "/d"}
+        g = {x.anahtar: x for x in veri_bilgi.gereksinimler(ortam, calistir=_Calistirici(),
+                                                            python="/yok/python")}
+        kontrol("uyumsuz zincir uyarisi", g["zincir"].durum == "uyari"
+                and "ENDF/B-VIII.0" in g["zincir"].oneri, repr(g["zincir"]))
+        kontrol("kutuphane kimligi dizin adindan",
+                veri_bilgi.kutuphane_kimligi(os.path.join(kok, "nucdata", "jendl-5-hdf5",
+                                                          "cross_sections.xml")) == "jendl-5")
+
+
+def test_surum_onbellegi():
+    print("\n[K2-B8] openmc --version sonucu onbellekte; Yenile (tazele) yeniden calistirir")
+    from cekirdek import veri_bilgi
+    with tempfile.TemporaryDirectory() as kok:
+        exe = _sahte_openmc(kok)
+        ortam = {"HOME": kok, "PATH": os.path.dirname(exe), "XDG_CONFIG_HOME": kok + "/c",
+                 "XDG_DATA_HOME": kok + "/d"}
+        c = _Calistirici()
+        veri_bilgi.gereksinimler(ortam, calistir=c, python="/yok/python", tazele=True)
+        veri_bilgi.gereksinimler(ortam, calistir=c, python="/yok/python")
+        kontrol("bir kez calisti", len(c.cagrilar) == 1, repr(len(c.cagrilar)))
+        veri_bilgi.gereksinimler(ortam, calistir=c, python="/yok/python", tazele=True)
+        kontrol("tazele yeniden calistirir", len(c.cagrilar) == 2)
+
+
 def test_onbellek_temizle():
     print("\n[K2-B5] secim degisince sicaklik/yol onbellegi bosaltilir")
     from cekirdek import veri_bilgi
@@ -171,5 +219,6 @@ def test_onbellek_temizle():
 
 
 HIZLI = [test_klasor_denetle_gecerli_kutuphane, test_klasor_denetle_hatalar,
-         test_gereksinimler_tam, test_gereksinimler_eksik, test_onbellek_temizle]
+         test_gereksinimler_tam, test_gereksinimler_eksik, test_onbellek_temizle,
+         test_klasorde_birden_cok_kutuphane, test_zincir_kutuphane_uyumu, test_surum_onbellegi]
 YAVAS = []
