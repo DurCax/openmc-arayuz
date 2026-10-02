@@ -65,5 +65,5 @@ def sonuc_metni(veri, rho_dis, cozum):
                         % (cozum.t[-1], cozum.sicaklik[-1], kin.pcm_e(cozum.rho[-1])))
     satirlar.append(_("Veri: %s; çözücü: %s (katı ODE). Nokta kinetiği uzaysal etkileri "
                       "içermez; eğitim amaçlıdır, sertifika değildir.")
-                    % (veri.kaynak or _("elle"), cozum.yontem))
+                    % (_(veri.kaynak) if veri.kaynak else _("elle"), cozum.yontem))
     return "<br>".join(html.escape(s) for s in satirlar)

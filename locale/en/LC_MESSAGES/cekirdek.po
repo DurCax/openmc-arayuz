@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 05:26+0300\n"
+"POT-Creation-Date: 2026-10-02 07:13+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -3802,6 +3802,112 @@ msgstr "neutron"
 msgid " (ortalama %s)"
 msgstr " (mean %s)"
 
+#: cekirdek/kinetik.py:97
+#, python-format
+msgid "%s pozitif ve sonlu olmalı: %r"
+msgstr "%s must be positive and finite: %r"
+
+#: cekirdek/kinetik.py:104
+#, python-format
+msgid "%s sonlu bir sayı olmalı: %r"
+msgstr "%s must be a finite number: %r"
+
+#: cekirdek/kinetik.py:124
+msgid "β_i ve λ_i aynı sayıda (en az bir) grup içermeli."
+msgstr "β_i and λ_i must have the same number of groups (at least one)."
+
+#: cekirdek/kinetik.py:126
+#, python-format
+msgid "En çok %d gecikmeli nötron grubu desteklenir."
+msgstr "At most %d delayed neutron groups are supported."
+
+#: cekirdek/kinetik.py:129
+msgid "β_i negatif olamaz ve toplamı pozitif olmalı."
+msgstr "β_i cannot be negative and their sum must be positive."
+
+#: cekirdek/kinetik.py:148
+msgid "Keepin (1965), U-235 termal, 6 grup"
+msgstr "Keepin (1965), U-235 thermal, 6 groups"
+
+#: cekirdek/kinetik.py:160 cekirdek/kinetik.py:183
+msgid "Başlangıç zamanı negatif olamaz."
+msgstr "Start time cannot be negative."
+
+#: cekirdek/kinetik.py:181
+msgid "rampa süresi"
+msgstr "ramp duration"
+
+#: cekirdek/kinetik.py:204
+msgid "ısı kapasitesi"
+msgstr "heat capacity"
+
+#: cekirdek/kinetik.py:255
+#, python-format
+msgid "Inhour kökü aralıkta bulunamadı: [%g, %g]"
+msgstr "Inhour root not found in the interval: [%g, %g]"
+
+#: cekirdek/kinetik.py:267
+#, python-format
+msgid "Inhour kökü %g 1/s ötesinde."
+msgstr "Inhour root lies beyond %g 1/s."
+
+#: cekirdek/kinetik.py:354
+#, python-format
+msgid ""
+"ρ = %.3f $ ≥ 1 $: ANİ KRİTİK. Güç gecikmeli nötronları beklemeden Λ ölçeğinde artar; "
+"bu bölgede nokta kinetiği yalnız nitel bir tablo verir."
+msgstr ""
+"ρ = %.3f $ ≥ 1 $: PROMPT CRITICAL. Power rises on the Λ time scale without waiting "
+"for delayed neutrons; in this region point kinetics gives only a qualitative picture."
+
+#: cekirdek/kinetik.py:359
+msgid ""
+"α_T > 0: pozitif sıcaklık katsayısı gücü kendiliğinden artırır (kararsız geri "
+"besleme)."
+msgstr ""
+"α_T > 0: a positive temperature coefficient drives the power up by itself (unstable "
+"feedback)."
+
+#: cekirdek/kinetik.py:376
+msgid "süre"
+msgstr "duration"
+
+#: cekirdek/kinetik.py:378
+#, python-format
+msgid "Yöntem Radau ya da BDF olmalı: %r"
+msgstr "Method must be Radau or BDF: %r"
+
+#: cekirdek/kinetik.py:380
+msgid "En az iki zaman noktası gerekir."
+msgstr "At least two time points are required."
+
+#: cekirdek/kinetik.py:395
+#, python-format
+msgid "Çözücü başarısız: %s"
+msgstr "Solver failed: %s"
+
+#: cekirdek/kinetik.py:403
+#, python-format
+msgid "P/P0 %.0e'yi aştı (t = %.4g s); çözüm burada durduruldu."
+msgstr "P/P0 exceeded %.0e (t = %.4g s); the solution was stopped here."
+
+#: cekirdek/kinetik.py:429
+msgid "Periyot için en az üç nokta gerekir."
+msgstr "At least three points are required for the period."
+
+#: cekirdek/kinetik.py:432
+msgid "Periyot tahmini için pozitif güç noktaları gerekir."
+msgstr "Period estimation requires positive power values."
+
+#: cekirdek/kinetik_oku.py:45
+#, python-format
+msgid "Gecikmeli nötron grup sayısı 0, 6 ya da 8 olmalı: %r"
+msgstr "Number of delayed neutron groups must be 0, 6 or 8: %r"
+
+#: cekirdek/kinetik_oku.py:168
+msgid "OpenMC koşusu (IFP)"
+msgstr "OpenMC run (IFP)"
+
 #: cekirdek/kod_uret/tukenme.py:33
 #, python-format
 msgid ""
@@ -5589,7 +5695,7 @@ msgstr ""
 msgid "uygunluk denetimi yapılamadı: %s"
 msgstr "conformity check could not be performed: %s"
 
-#: cekirdek/sema.py:376
+#: cekirdek/sema.py:378
 #, python-format
 msgid ""
 "%s() gelişmiş (ağaç) geometri modunda kullanılamaz: kor alanları yok; "
@@ -7705,4 +7811,17 @@ msgstr ""
 #~ msgctxt "spektrum"
 #~ msgid "termaltermal"
 #~ msgstr "thermal"
+
+#~ msgid "En çok %d gecikmiş nötron grubu desteklenir."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "ρ = %.3f $ ≥ 1 $: ANİ KRİTİK. "
+#~ "Güç gecikmiş nötronları beklemeden Λ ölçeğinde "
+#~ "artar; bu bölgede nokta kinetiği yalnız nitel"
+#~ " bir tablo verir."
+#~ msgstr ""
+
+#~ msgid "Gecikmiş nötron grup sayısı 0, 6 ya da 8 olmalı: %r"
+#~ msgstr ""
 

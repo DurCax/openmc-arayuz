@@ -18,7 +18,7 @@ from matplotlib.figure import Figure
 
 from cekirdek import kinetik as kin
 from cekirdek import kinetik_oku, kosucu
-from cekirdek.ceviri import _
+from cekirdek.ceviri import _, N_
 from cekirdek.gunluk import kaydedici
 from arayuz import bilesenler as bil
 from arayuz.analiz import kinetik_gosterim as gos
@@ -31,15 +31,15 @@ TUVAL_YUKSEKLIGI = 260          # P(t) grafigi [px]
 TABLO_YUKSEKLIGI = 210          # 8 grup + baslik sigar [px]
 MIKRO = 1e-6                    # Lambda kutusu mikrosaniye
 _SUTUN_BETA, _SUTUN_LAMBDA = 1, 2
-_KAYNAKLAR = (("keepin", "Keepin U-235 termal (6 grup)"), ("kosu", "Son koşu (IFP)"),
-              ("elle", "Elle"))
+_KAYNAKLAR = (("keepin", N_("Keepin U-235 termal (6 grup)")), ("kosu", N_("Son koşu (IFP)")),
+              ("elle", N_("Elle")))
 
 
 class KinetikKarti(bil.Kart):
 
     def __init__(self, parent=None):
         super().__init__(_("Nokta kinetiği"), _(
-            "Gecikmiş nötron grupları (β_i, λ_i) ve üretim zamanı Λ ile basamak ya da rampa "
+            "Gecikmeli nötron grupları (β_i, λ_i) ve üretim zamanı Λ ile basamak ya da rampa "
             "reaktivitesine güç yanıtı P(t). β_i ve Λ kinetik açık bir koşudan (IFP) "
             "alınabilir."), parent=parent)
         self._kosu_kaynagi = lambda: None
@@ -174,7 +174,7 @@ class KinetikKarti(bil.Kart):
             return
         if veri is None:
             self._uyari(_("Son koşuda grup başına veri yok. Hesap ayarlarında kinetik "
-                          "parametreleri ve gecikmiş nötron gruplarını (6 ya da 8) açıp "
+                          "parametreleri ve gecikmeli nötron gruplarını (6 ya da 8) açıp "
                           "yeniden koşun."), "uyari")
             return
         self._kosu_verisi = veri

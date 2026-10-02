@@ -39,7 +39,7 @@ from dataclasses import dataclass, replace
 
 import numpy as np
 
-from cekirdek.ceviri import _
+from cekirdek.ceviri import _, N_
 
 PCM = 1e-5                      # 1 pcm = 1e-5 Delta k/k
 AZAMI_GECIKMIS_GRUP = 8         # OpenMC DelayedGroupFilter: 1..8 (mgxs.MAX_DELAYED_GROUPS)
@@ -123,7 +123,7 @@ class GrupVerisi:
         if not beta or len(beta) != len(lam):
             raise ValueError(_("β_i ve λ_i aynı sayıda (en az bir) grup içermeli."))
         if len(beta) > AZAMI_GECIKMIS_GRUP:
-            raise ValueError(_("En çok %d gecikmiş nötron grubu desteklenir.")
+            raise ValueError(_("En çok %d gecikmeli nötron grubu desteklenir.")
                              % AZAMI_GECIKMIS_GRUP)
         if not all(math.isfinite(b) and b >= 0 for b in beta) or sum(beta) <= 0:
             raise ValueError(_("β_i negatif olamaz ve toplamı pozitif olmalı."))
@@ -145,7 +145,7 @@ class GrupVerisi:
 
 KEEPIN_U235_TERMAL = GrupVerisi(
     beta=_KEEPIN_BETA, lam=_KEEPIN_LAMBDA, nesil_suresi=_TIPIK_LWR_LAMBDA,
-    kaynak="Keepin (1965), U-235 termal, 6 grup")
+    kaynak=N_("Keepin (1965), U-235 termal, 6 grup"))   # gosterimde _() ile cevrilir
 
 
 @dataclass(frozen=True)
@@ -351,7 +351,7 @@ def _baslangic_uyarilari(veri, profil, gb):
     en_buyuk = profil.en_buyuk()
     if en_buyuk >= veri.beta_toplam:
         uy.append(Uyari("ani_kritik", _(
-            "ρ = %.3f $ ≥ 1 $: ANİ KRİTİK. Güç gecikmiş nötronları beklemeden Λ "
+            "ρ = %.3f $ ≥ 1 $: ANİ KRİTİK. Güç gecikmeli nötronları beklemeden Λ "
             "ölçeğinde artar; bu bölgede nokta kinetiği yalnız nitel bir tablo verir.")
             % (en_buyuk / veri.beta_toplam)))
     if gb and gb.alfa > 0:

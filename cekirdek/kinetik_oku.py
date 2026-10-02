@@ -26,7 +26,7 @@
 
 import math
 
-from cekirdek.ceviri import _
+from cekirdek.ceviri import _, N_
 from cekirdek.gunluk import kaydedici
 from cekirdek.kinetik import GrupVerisi, VARSAYILAN_GRUP
 
@@ -42,7 +42,7 @@ def grup_sayisi(kin_ayari):
     """spec['ayarlar']['kinetik'] -> gecerli grup sayisi (ValueError)."""
     g = (kin_ayari or {}).get("gruplar", VARSAYILAN_GRUP)
     if isinstance(g, bool) or not isinstance(g, int) or g not in GECERLI_GRUP_SAYILARI:
-        raise ValueError(_("Gecikmiş nötron grup sayısı 0, 6 ya da 8 olmalı: %r") % (g,))
+        raise ValueError(_("Gecikmeli nötron grup sayısı 0, 6 ya da 8 olmalı: %r") % (g,))
     return g
 
 
@@ -123,7 +123,7 @@ def statepoint_oku(sp):
     while gruplar and gruplar[-1][1][0] == 0.0:
         gruplar.pop()          # kutuphanede olmayan grup: skor yok
     if not gruplar or any(lam == 0.0 for _b, (lam, _s) in gruplar):
-        _log.warning("gecikmiş nötron grubu skorlanmadı (fisyon yok ya da veri eksik)")
+        _log.warning("gecikmeli nötron grubu skorlanmadı (fisyon yok ya da veri eksik)")
         return None
     k = sp.keff
     lam_top, sp_lam = _oran(zaman[0][0], zaman[1][0], pd * k.nominal_value,
@@ -152,7 +152,7 @@ def kosu_kinetigi(temel, sp, keff):
     try:
         gruplar = statepoint_oku(sp)
     except Exception as e:
-        _log.exception("gecikmiş nötron grupları okunamadı")
+        _log.exception("gecikmeli nötron grupları okunamadı")
         yeni["grup_hata"] = str(e)
         gruplar = None
     if gruplar:
@@ -165,4 +165,4 @@ def grup_verisine(okunan, kaynak=None):
     """statepoint_oku / sonuc['kinetik'] sozlugu -> GrupVerisi."""
     lam = okunan.get("nesil_suresi", okunan.get("lambda"))
     return GrupVerisi(beta=tuple(okunan["beta_i"]), lam=tuple(okunan["lambda_i"]),
-                      nesil_suresi=lam, kaynak=kaynak or _("OpenMC koşusu (IFP)"))
+                      nesil_suresi=lam, kaynak=kaynak or N_("OpenMC koşusu (IFP)"))
