@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 10:14+0300\n"
+"POT-Creation-Date: 2026-10-02 10:19+0300\n"
 "PO-Revision-Date: 2026-10-01 18:14+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -7623,7 +7623,7 @@ msgstr "Relative error (σ / value)"
 
 #: arayuz/sonuc/mesh_harita.py:81
 msgid "Bağıl hata eşiği. Varsayılan %10 — "
-msgstr ""
+msgstr "Relative error threshold. Default 10% — "
 
 #: arayuz/sonuc/mesh_harita.py:82
 msgid "Güvenilmez hücreleri işaretle"
@@ -7686,15 +7686,16 @@ msgid "Haritada gösterilmeyen ağ tally'si: %s"
 msgstr "Mesh tally not shown on the map: %s"
 
 #: arayuz/sonuc/mesh_harita.py:211
-#, fuzzy
 msgid "Çizgisel güç:"
-msgstr "Lines:"
+msgstr "Linear power:"
 
 #: arayuz/sonuc/mesh_harita.py:213
 msgid ""
 "2B (eksenel sonsuz) modelde mutlak normalizasyon için çizgisel güç [W/cm] (ör. demet "
 "gücü / aktif yükseklik)."
 msgstr ""
+"Linear power [W/cm] for absolute normalization in a 2D (axially infinite) model (e.g."
+" assembly power / active height)."
 
 #: arayuz/sonuc/mesh_harita.py:220
 msgid ""
@@ -7724,22 +7725,21 @@ msgstr "absolute normalization only in an eigenvalue calculation"
 
 #: arayuz/sonuc/mesh_harita.py:288
 msgid "2B modelde ağ z kolonunun yalnız bir dilimini kapsıyor"
-msgstr ""
+msgstr "in a 2D model the mesh covers only one slice of the z column"
 
 #: arayuz/sonuc/mesh_harita.py:291
 #, python-format
 msgid "Mutlak normalizasyon yapılamadı (%s); hacim başına gösteriliyor."
-msgstr ""
+msgstr "Absolute normalization not possible (%s); showing per volume."
 
 #: arayuz/sonuc/mesh_harita.py:315
 #, python-format
 msgid "Harita çizilemedi: %s"
-msgstr ""
+msgstr "Map could not be drawn: %s"
 
 #: arayuz/sonuc/mesh_harita.py:317
-#, fuzzy
 msgid "Gösterilecek değer yok"
-msgstr "Nothing to draw"
+msgstr "No value to display"
 
 #: arayuz/sonuc/mesh_harita.py:331
 msgid "bağıl hata (oran)"
@@ -7772,7 +7772,7 @@ msgstr "VTK written: %s (%d fields)"
 #: arayuz/sonuc/mesh_harita.py:392
 #, python-format
 msgid "%s zaten var. Üzerine yazılsın mı?"
-msgstr ""
+msgstr "%s already exists. Overwrite it?"
 
 #: arayuz/sonuc/mesh_harita.py:392 arayuz/sonuc/mesh_harita.py:407
 msgid "VTK dışa aktar"

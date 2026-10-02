@@ -33,11 +33,22 @@ kaydırır; form bu alanı korur. Otomatik öneri:
 
 * **x, y**: modelin sınır kutusu (yansıtıcı dahil).
 * **z**: 3B modelde kor yüksekliği, kürede küre çapı. **2B modelde** (eksenel yönde sonsuz,
-  z sınırsız) ±10⁴ cm (`Z_2B_YARI`): parçacıklar z'de serbestçe dolaştığından ±1 cm'lik bir ağ
-  iz uzunluğunun çoğunu kaçırıyordu. Ölçüldü (`pwr_mesh_aki`, 5000 parçacık × 40 aktif çevrim):
-  kappa-fission bağıl hata medyanı ±1 cm'de %21, ±10⁴ cm'de %2.7. Eksenel sonsuz modelde akı
-  z'de düzgün olduğundan hacim başına değer değişmez.
-* **r**: silindirik ve küresel ağda sınır kutusunun büyük kenarının yarısı.
+  z sınırsız) ±10⁴ cm (`Z_2B_YARI`): ağ bütün z kolonunu kapsar ve değer **z üzerinden
+  integraldir** (kaynağın z'deki kaymasından bağımsız). v2'de ±1 cm idi; 2 cm'lik dilim iz
+  uzunluğunun küçük bir kesrini sayıyordu. Ölçüldü (`pwr_mesh_aki`, 5000 parçacık × 40 aktif
+  çevrim): kappa-fission bağıl hata medyanı ±1 cm'de %21, ±10⁴ cm'de %2.7. Bu yüzden 2B'de
+  **hacim başına değerin mutlak anlamı yoktur** (ağın keyfi yüksekliğine bölünmüş olurdu):
+  2B'de **Hacim başına** kipi hücre **alanına** böler (z integrali / cm²), mutlak kip çizgisel
+  güç [W/cm] ister; bağıl haritada fark yoktur. Geometri spec'te yüksekliği olmadığı hâlde z'de
+  sınırlıysa ağ bu sınırlara kırpılır (±10⁴ cm yalnız gerçekten sınırsız modelde).
+* **r**: silindirik ve küresel ağda sınır kutusunun büyük kenarının yarısı. Yuvarlak modelde
+  tam; **kare ya da altıgen** modelde köşeler ağın **dışında kalır** (kare demette alanın
+  %21.5'i, 1 − π/4).
+
+**v2 projeleri:** `mesh_turu` alanı olmayan, `otomatik: true` 2B ağ tally'leri artık
+±10⁴ cm ile kurulur (v2.0 betiği ±1 cm yazıyordu; `testler/veri/y1_v2_mesh_betik.txt`).
+Kaynak nötronu başına ham değerler ve z dilimleri değişir; bağıl harita aynı fiziği verir.
+Ayrıntı: [CHANGELOG](../../../CHANGELOG.md).
 
 Skorlar formdaki **Skorlar** listesinden seçilir: akı (`flux`), fisyon, soğurma, `heating`,
 `heating-local` (yerel ısınma), `kappa-fission`, `fission-q-recoverable` …
@@ -53,23 +64,28 @@ gösterilmez (uyarı satırı nedenini yazar). Kart ağ tally'si yoksa görünme
 
 | Denetim | Anlamı |
 |---|---|
-| **Tally**, **Skor**, **Enerji grubu** | Gösterilen dizi. Enerji grubu **Toplam (bütün gruplar)** ya da tek grup; toplamda σ'lar bağımsız varsayılır (σ² toplanır). |
+| **Tally**, **Skor**, **Enerji grubu** | Gösterilen dizi. Enerji grubu **Toplam (bütün gruplar)** ya da tek grup; toplamda σ'lar bağımsız varsayılır (σ² toplanır) — gruplar pozitif ilişkili olduğundan bu **iyimser bir tahmindir**; kesin σ için enerji filtresiz ayrı bir tally tanımlayın. |
 | **Dilim ekseni** ve kaydırıcı | Sabit tutulan eksen ve dilim numarası; etiket dilimin aralığını yazar. Silindirik ağda "z sabit" (r, φ) düzlemini kartezyen gösterir, "φ sabit" r–z kesitidir; küresel ağda "φ sabit" meridyen düzlemidir (ρ, z). |
-| **Normalizasyon** | **Kaynak nötronu başına** (ham OpenMC değeri; sabit kaynakta kaynak şiddetiyle ölçekli), **Hacim başına (/cm³)**, **Ortalamaya bağıl (1 = ortalama)** (skorlu hücrelerin ortalaması 1), **Mutlak (toplam güçten)**. |
-| **Toplam güç** | Mutlak normalizasyonda modelin kapsadığı bölgenin gücü [W]; Hesap ayarlarındaki güç dağılımı **Toplam güç** değeriyle açılır. |
+| **Normalizasyon** | **Kaynak nötronu başına** (ham OpenMC değeri; sabit kaynakta OpenMC toplam kaynak şiddetiyle çarpar — ölçüldü: şiddet 1 → 30.48, şiddet 1000 → 30 478), **Hacim başına (/cm³)** (2B'de alan başına, z integrali), **Ortalamaya bağıl (1 = ortalama)** (hacim ağırlıklı ortalama: Σ değer / Σ hacim, skorlu hücreler), **Mutlak (toplam güçten)**. |
+| **Toplam güç** / **Çizgisel güç** | Mutlak normalizasyonun gücü. 3B'de **Toplam güç** [W]: modelin kapsadığı bölgenin gücü, güç dağılımı **Toplam güç** değeriyle açılır (`guc.py` ile aynı tanım). 2B'de **Çizgisel güç** [W/cm]: aktif yükseklik biliniyorsa toplam güç / aktif yükseklik, bilinmiyorsa **boş** açılır ve siz girersiniz (ör. 17.6 MW / 366 cm = 48.1 kW/cm). |
 | **Gösterim** | **Değer**, **Standart sapma (σ)**, **Bağıl hata (σ / değer)**. |
 | **Güvenilmez hücreleri işaretle** | Bağıl hatası **Eşik**'i aşan ya da hiç skor almamış hücreler × ile işaretlenir; skorsuz hücre renk ölçeğine girmez (boş). |
-| **Eşik** | Varsayılan %10: MCNP5 kılavuzu (LA-UR-03-1987, Bölüm 2, "relative error R" yorum tablosu) R < 0.10'u "genellikle güvenilir" sayar (nokta dedektörleri hariç). Bu bir **kural değil, yönergedir**; ayrıca ± değerleri OpenMC'nin iyimser (çevrimler arası korelasyonsuz) sapmalarıdır. |
-| **VTK dışa aktar…** | Seçili tally'yi seçili normalizasyonla `.vtk` dosyasına yazar: her skor ve grup için `<skor>_g<n>` (+ `_toplam`), `_sigma` ve `_bagil_hata` alanları. |
+| **Eşik** | Varsayılan %10 — **kaba yönerge (MCNP, tek tally için)**: MCNP5 kılavuzu (LA-UR-03-1987, Bölüm 2, "relative error R" yorum tablosu) R < 0.10'u "genellikle güvenilir" sayar (nokta dedektörleri hariç). Pin gücü haritasında hedef **%1–2**'dir. ± değerleri OpenMC'nin çevrimler arası korelasyonu hesaba katmayan, **iyimser** sapmalarıdır. |
+| **VTK dışa aktar…** | Seçili tally'yi seçili normalizasyonla `.vtk` dosyasına yazar: her skor (çok nüklidli tally'de her nüklid: `<skor>_<nüklid>`) ve grup için `<skor>_g<n>` (+ `_toplam`), `_sigma` ve `_bagil_hata` alanları; skorsuz hücrenin bağıl hatası **−1**. Uzantısız ada `.vtk` eklenir; dosya varsa üzerine yazma sorulur; yazma atomiktir (yarım dosya kalmaz). |
 
-**Mutlak normalizasyon** yalnız özdeğer hesabında anlamlıdır: kaynak hızı
-S = P / (H · e) [nötron/s], burada H ağdaki ısınma skorunun (`kappa-fission`, `heating` …)
-kaynak nötronu başına toplamı [eV] ve e = 1.602176634 × 10⁻¹⁹ J/eV (CODATA 2018, kesin). Akı
-n/cm²·s, ısınma W/cm³ olarak gösterilir; ağ bütün fisil bölgeyi kapsamalıdır (otomatik sınırlar
-kapsar). Tally'de ısınma skoru yoksa ya da toplam güç boşsa hacim başına gösterilir ve uyarı
-yazılır. **2B modelde** ağ yüksekliği 2 × 10⁴ cm olduğundan toplam güç = çizgisel güç [W/cm] ×
-20 000 cm girilir (ör. demet başına 17.6 MW / 366 cm = 48.1 kW/cm → 9.6 × 10⁸ W); bağıl harita
-için bu gerekmez. Normalizasyon çarpanının kendi belirsizliği σ'ya katılmaz.
+**Mutlak normalizasyon** yalnız özdeğer hesabında anlamlıdır: kaynak hızı S = P / (H · e),
+e = 1.602176634 × 10⁻¹⁹ J/eV (CODATA 2018, kesin). **H**, model kurulurken eklenen **filtresiz
+genel ısınma tally'sinden** (`mesh_genel_isi`: `kappa-fission`, `heating-local`) okunur — ağ
+fisil bölgeyi kapsamasa da S doğru çıkar (kare demette silindirik ağ ısınmanın yalnız ~%78'ini
+görür; ağ içi toplam kullanılsaydı mutlak değerler ~%28 şişerdi). Isınma skoru gösteriliyorsa
+H aynı skordur; akı ve tepkime için `heating-local` (yakalanma gamaları dahil; foton taşınımı
+kapalıyken yerel bırakım). `kappa-fission` yakalanma gamalarını içermez: aynı güçle akı ve
+tepkime ~%3–4 yüksek çıkar. `fission-q-prompt` H olarak kullanılmaz (gecikmiş enerji yok,
+~%7 düşük). 3B'de değer · S / V (akı n/cm²·s, ısınma W/cm³); **2B'de** P çizgisel güç [W/cm]
+ve payda hücre **alanı**: değer · S / A — ağın yüksekliği sonuca girmez. 2B'de elle dar bir z
+dilimi tanımlanmışsa mutlak kip reddedilir (dilim değeri kolonun bilinmeyen bir kesridir).
+Bu sürümden önceki koşularda genel tally yoktur: mutlak kip uyarıyla hacim başına gösterilir,
+koşuyu yineleyin. Normalizasyon çarpanının kendi belirsizliği σ'ya katılmaz.
 
 <a id="mesh-vtk"></a>
 ### VTK ve ParaView
@@ -99,7 +115,8 @@ tally_2_mesh_0 = openmc.CylindricalMesh(
 | Bulgu | Neden | Ne yapmalı |
 |---|---|---|
 | Haritada çok sayıda × | Hücre başına geçmiş az (ince ağ, çok grup) | Parçacık/çevrim sayısını artırın ya da ağı kabalaştırın; bağıl hata ≈ 1/√N. |
-| "Mutlak normalizasyon yapılamadı …" | Toplam güç boş ya da tally'de ısınma skoru yok; sabit kaynak hesabı | Toplam gücü girin, tally'ye `kappa-fission` ekleyin; sabit kaynakta "Kaynak nötronu başına" kullanın. |
+| "Mutlak normalizasyon yapılamadı …" | Güç kutusu boş; bu sürümden önceki koşu (genel ısınma tally'si yok); 2B'de dar z dilimi; sabit kaynak hesabı | Toplam/çizgisel gücü girin; koşuyu yineleyin; otomatik sınırları kullanın; sabit kaynakta "Kaynak nötronu başına" kullanın. |
+| "Harita çizilemedi: bağıl normalizasyon: ağda skorlu hücre yok" | Ağ hiç skor almadı (ağ modelin dışında, skor uygun değil) | Sınırları ve skoru denetleyin. |
 | "Haritada gösterilmeyen ağ tally'si: …" | Tally'de ağ ve enerji dışında filtre (malzeme, hücre) var | Ayrı bir ağ tally'si tanımlayın. |
 | "bilinmeyen ağ türü: …" | JSON'da `mesh_turu` yanlış (ör. altıgen) | `duzenli`, `silindirik` ya da `kuresel` yazın. |
 | "VTK dosya adı .vtk ile bitmeli" | Uzantı eksik | Dosya adına `.vtk` ekleyin (diyalog ekler). |

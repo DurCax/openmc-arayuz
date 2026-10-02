@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 10:14+0300\n"
+"POT-Creation-Date: 2026-10-02 10:19+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -5074,6 +5074,14 @@ msgstr "unknown mesh type: %s"
 msgid "geçersiz dilim: eksen %s, indeks %s"
 msgstr "invalid slice: axis %s, index %s"
 
+#: cekirdek/mesh_tally/normalizasyon.py:39
+msgid ""
+"kaba yönerge (MCNP, tek tally için): MCNP5 Manual Vol. I (LA-UR-03-1987), Bölüm 2, "
+"'relative error R' tablosu: R < 0.10 genellikle güvenilir."
+msgstr ""
+"rough guideline (MCNP, for a single tally): MCNP5 Manual Vol. I (LA-UR-03-1987), "
+"Chapter 2, 'relative error R' table: R < 0.10 generally reliable."
+
 #: cekirdek/mesh_tally/normalizasyon.py:53
 msgid "Kaynak nötronu başına"
 msgstr "Per source neutron"
@@ -5095,6 +5103,8 @@ msgid ""
 "model geneli ısınma tally'si yok (bu sürümden önceki koşu); mutlak normalizasyon için"
 " koşuyu yineleyin"
 msgstr ""
+"no global heating tally (run from before this version); rerun the case for absolute "
+"normalization"
 
 #: cekirdek/mesh_tally/normalizasyon.py:88
 msgid "mutlak normalizasyon için toplam güç sıfırdan büyük olmalı"
@@ -5114,25 +5124,23 @@ msgstr "relative (1 = mean)"
 
 #: cekirdek/mesh_tally/normalizasyon.py:101
 msgid "tepkime/cm³·s"
-msgstr ""
+msgstr "reactions/cm³·s"
 
 #: cekirdek/mesh_tally/normalizasyon.py:102
 msgid "tepkime"
 msgstr "reactions"
 
 #: cekirdek/mesh_tally/normalizasyon.py:104
-#, fuzzy
 msgid "eV/cm² (z integrali)"
-msgstr "n·cm/s (volume-integrated)"
+msgstr "eV/cm² (z integral)"
 
 #: cekirdek/mesh_tally/normalizasyon.py:105
-#, fuzzy
 msgid "n/cm (z integrali)"
-msgstr "n·cm/s (volume-integrated)"
+msgstr "n/cm (z integral)"
 
 #: cekirdek/mesh_tally/normalizasyon.py:105
 msgid "tepkime/cm² (z integrali)"
-msgstr ""
+msgstr "reactions/cm² (z integral)"
 
 #: cekirdek/mesh_tally/normalizasyon.py:107
 msgid "tepkime/cm³"
@@ -5168,6 +5176,8 @@ msgid ""
 "2B modelde ağ z kolonunun yalnız bir dilimini kapsıyor; mutlak değer tanımsız "
 "(otomatik sınırları kullanın)"
 msgstr ""
+"in a 2D model the mesh covers only one slice of the z column; the absolute value is "
+"undefined (use automatic bounds)"
 
 #: cekirdek/mesh_tally/normalizasyon.py:150
 msgid "mutlak normalizasyon için kaynak hızı gerekli"
@@ -5178,6 +5188,8 @@ msgid ""
 "Grup toplamında σ, gruplar bağımsız varsayılarak (σ² toplamı) hesaplanır; gruplar "
 "pozitif ilişkili olduğundan bu iyimser bir tahmindir."
 msgstr ""
+"For the group total, σ is computed assuming independent groups (sum of σ²); the "
+"groups are positively correlated, so this is an optimistic estimate."
 
 #: cekirdek/mesh_tally/sonuc.py:79
 msgid "birden çok ağ filtresi"
@@ -5191,7 +5203,7 @@ msgstr "filter other than mesh and energy present: %s"
 #: cekirdek/mesh_tally/sonuc.py:84
 #, python-format
 msgid "ağ %d boyutlu; yalnız 3 boyutlu ağ gösterilir"
-msgstr ""
+msgstr "mesh is %d-dimensional; only 3D meshes are shown"
 
 #: cekirdek/mesh_tally/sonuc.py:171
 #, python-format
@@ -5271,7 +5283,7 @@ msgstr "VTK file name must end with .vtk: %s"
 #: cekirdek/mesh_tally/vtk.py:119
 #, python-format
 msgid "VTK dizini yok ya da yazılamıyor: %s"
-msgstr ""
+msgstr "VTK directory does not exist or is not writable: %s"
 
 #: cekirdek/nuklidler.py:51
 msgid "Uranyum"

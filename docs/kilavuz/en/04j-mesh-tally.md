@@ -34,11 +34,23 @@ spherical mesh; the form keeps this field. Automatic suggestion:
 
 * **x, y**: the model bounding box (reflector included).
 * **z**: core height in a 3D model, sphere diameter in a sphere. In a **2D model** (infinite in
-  the axial direction, unbounded z) +/-10⁴ cm (`Z_2B_YARI`): particles wander freely in z, so a
-  +/-1 cm mesh missed most of the track length. Measured (`pwr_mesh_aki`, 5000 particles x 40
-  active batches): median kappa-fission relative error 21% at +/-1 cm, 2.7% at +/-10⁴ cm. In an
-  axially infinite model the flux is uniform in z, so the per-volume value does not change.
-* **r**: half of the larger side of the bounding box for cylindrical and spherical meshes.
+  the axial direction, unbounded z) +/-10⁴ cm (`Z_2B_YARI`): the mesh covers the whole z column
+  and the value is a **z integral** (independent of the axial drift of the source). In v2 it was
+  +/-1 cm; a 2 cm slice counted only a small fraction of the track length. Measured
+  (`pwr_mesh_aki`, 5000 particles x 40 active batches): median kappa-fission relative error 21%
+  at +/-1 cm, 2.7% at +/-10⁴ cm. Therefore in 2D a **per-volume value has no absolute meaning**
+  (it would be divided by the arbitrary mesh height): in 2D the **Per volume** mode divides by
+  the cell **area** (z integral / cm²) and the absolute mode asks for a linear power [W/cm]; the
+  relative map is unaffected. If the geometry is bounded in z although the spec has no height,
+  the mesh is clipped to those bounds (+/-10⁴ cm only for a truly unbounded model).
+* **r**: half of the larger side of the bounding box for cylindrical and spherical meshes. Exact
+  for a round model; on a **square or hexagonal** model the corners stay **outside** the mesh
+  (21.5% of the area of a square assembly, 1 - π/4).
+
+**v2 projects:** 2D mesh tallies without a `mesh_turu` field and with `otomatik: true` are now
+built with +/-10⁴ cm (the v2.0 script wrote +/-1 cm; `testler/veri/y1_v2_mesh_betik.txt`).
+Raw per-source values and z slices change; the relative map gives the same physics.
+Details: [CHANGELOG](../../../CHANGELOG.md).
 
 Scores are chosen from the **Scores** list of the form: flux (`flux`), fission, absorption,
 `heating`, `heating-local` (local heating), `kappa-fission`, `fission-q-recoverable` ...
@@ -54,24 +66,30 @@ mapped (the warning line gives the reason). The card is hidden when there is no 
 
 | Control | Meaning |
 |---|---|
-| **Tally**, **Score**, **Energy group** | The displayed array. The energy group is **Total (all groups)** or a single group; for the total the σ values are assumed independent (σ² summed). |
+| **Tally**, **Score**, **Energy group** | The displayed array. The energy group is **Total (all groups)** or a single group; for the total the σ values are assumed independent (σ² summed) — the groups are positively correlated, so this is an **optimistic estimate**; for an exact σ define a separate tally without energy filter. |
 | **Slice axis** and slider | The fixed axis and the slice number; the label gives the slice range. On a cylindrical mesh "z fixed" shows the (r, φ) plane in Cartesian form and "φ fixed" is the r-z section; on a spherical mesh "φ fixed" is the meridian plane (ρ, z). |
-| **Normalization** | **Per source neutron** (raw OpenMC value; scaled by the source strength in fixed source), **Per volume (/cm³)**, **Relative to the mean (1 = mean)** (the mean of the scored cells is 1), **Absolute (from total power)**. |
-| **Total power** | For absolute normalization, the power [W] of the region covered by the model; it opens with the **Total power** of the power distribution in Run settings. |
+| **Normalization** | **Per source neutron** (raw OpenMC value; in fixed source OpenMC multiplies by the total source strength — measured: strength 1 -> 30.48, strength 1000 -> 30 478), **Per volume (/cm³)** (per area in 2D, z integral), **Relative to the mean (1 = mean)** (volume-weighted mean: Σ value / Σ volume over scored cells), **Absolute (from total power)**. |
+| **Total power** / **Linear power** | Power for absolute normalization. In 3D **Total power** [W]: the power of the region covered by the model, opened with the **Total power** of the power distribution (same definition as `guc.py`). In 2D **Linear power** [W/cm]: total power / active height when the active height is known, otherwise it opens **empty** and you enter it (e.g. 17.6 MW / 366 cm = 48.1 kW/cm). |
 | **Display** | **Value**, **Standard deviation (σ)**, **Relative error (σ / value)**. |
 | **Mark unreliable cells** | Cells whose relative error exceeds the **Threshold** or that received no score are marked with ×; a cell without score is left out of the colour scale (blank). |
-| **Threshold** | Default 10%: the MCNP5 manual (LA-UR-03-1987, Chapter 2, "relative error R" interpretation table) calls R < 0.10 "generally reliable" (except point detectors). This is a **guideline, not a rule**; moreover the ± values are the optimistic (no inter-batch correlation) deviations reported by OpenMC. |
-| **Export VTK...** | Writes the selected tally with the selected normalization to a `.vtk` file: for each score and group `<score>_g<n>` (+ `_toplam`), `_sigma` and `_bagil_hata` fields. |
+| **Threshold** | Default 10% — a **rough guideline (MCNP, for a single tally)**: the MCNP5 manual (LA-UR-03-1987, Chapter 2, "relative error R" interpretation table) calls R < 0.10 "generally reliable" (except point detectors). For a pin power map the target is **1–2%**. The ± values are OpenMC's **optimistic** deviations that ignore inter-batch correlation. |
+| **Export VTK...** | Writes the selected tally with the selected normalization to a `.vtk` file: for each score (each nuclide in a multi-nuclide tally: `<score>_<nuclide>`) and group `<score>_g<n>` (+ `_toplam`), `_sigma` and `_bagil_hata` fields; the relative error of a cell without score is **-1**. `.vtk` is appended to a name without extension; an existing file asks before overwriting; writing is atomic (no half-written file). |
 
 **Absolute normalization** is meaningful only in an eigenvalue calculation: source rate
-S = P / (H · e) [neutrons/s], where H is the sum of the heating score on the mesh
-(`kappa-fission`, `heating` ...) per source neutron [eV] and e = 1.602176634 x 10⁻¹⁹ J/eV
-(CODATA 2018, exact). Flux is shown in n/cm²·s, heating in W/cm³; the mesh must cover the whole
-fissile region (automatic bounds do). Without a heating score in the tally or with an empty total
-power the map is shown per volume with a warning. In a **2D model** the mesh height is
-2 x 10⁴ cm, so enter total power = linear power [W/cm] x 20 000 cm (e.g. 17.6 MW per assembly /
-366 cm = 48.1 kW/cm -> 9.6 x 10⁸ W); the relative map does not need it. The uncertainty of the
-normalization factor itself is not added to σ.
+S = P / (H · e), e = 1.602176634 x 10⁻¹⁹ J/eV (CODATA 2018, exact). **H** is read from the
+**unfiltered global heating tally** added when the model is built (`mesh_genel_isi`:
+`kappa-fission`, `heating-local`) — S is correct even if the mesh does not cover the fissile
+region (on a square assembly a cylindrical mesh sees only ~78% of the heating; using the sum
+inside the mesh would inflate absolute values by ~28%). When a heating score is displayed, H is
+the same score; for flux and reactions `heating-local` (capture gammas included; local deposition
+with photon transport off). `kappa-fission` excludes capture gammas: at the same power, flux and
+reactions come out ~3–4% high. `fission-q-prompt` is not used as H (no delayed energy, ~7% low).
+In 3D value · S / V (flux n/cm²·s, heating W/cm³); **in 2D** P is the linear power [W/cm] and
+the denominator is the cell **area**: value · S / A — the mesh height does not enter the result.
+In 2D a hand-made narrow z slice refuses the absolute mode (the slice value is an unknown fraction
+of the column). Runs from before this version have no global tally: the absolute mode falls back
+to per volume with a warning; rerun the case. The uncertainty of the normalization factor itself
+is not added to σ.
 
 <a id="mesh-vtk"></a>
 ### VTK and ParaView
@@ -101,7 +119,8 @@ tally_2_mesh_0 = openmc.CylindricalMesh(
 | Finding | Cause | What to do |
 |---|---|---|
 | Many × on the map | Few histories per cell (fine mesh, many groups) | Increase particles/batches or coarsen the mesh; relative error ~ 1/√N. |
-| "Absolute normalization not possible ..." | Total power empty or no heating score in the tally; fixed source calculation | Enter the total power, add `kappa-fission` to the tally; in fixed source use "Per source neutron". |
+| "Absolute normalization not possible ..." | Power box empty; run from before this version (no global heating tally); narrow z slice in 2D; fixed source calculation | Enter the total/linear power; rerun; use automatic bounds; in fixed source use "Per source neutron". |
+| "Map could not be drawn: relative normalization: no scored cell on the mesh" | The mesh received no score (mesh outside the model, unsuitable score) | Check the bounds and the score. |
 | "Mesh tally not shown on the map: ..." | The tally has a filter other than mesh and energy (material, cell) | Define a separate mesh tally. |
 | "unknown mesh type: ..." | Wrong `mesh_turu` in the JSON (e.g. hexagonal) | Write `duzenli`, `silindirik` or `kuresel`. |
 | "VTK file name must end with .vtk" | Missing extension | Add `.vtk` to the file name (the dialog adds it). |

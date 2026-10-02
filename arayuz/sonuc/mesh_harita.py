@@ -78,7 +78,7 @@ class MeshHaritaWidget(QtWidgets.QWidget):
         self.guc.setSpecialValueText(_("(boş)"))
         self.guc_etiket = QtWidgets.QLabel(_("Toplam güç:"))
         self.esik = sayi(mt.BAGIL_HATA_ESIGI * _YUZDE, 1, 0.1, 100.0, 1.0, "%")
-        self.esik.setToolTip(_("Bağıl hata eşiği. Varsayılan %10 — ") + mt.BAGIL_HATA_KAYNAGI)
+        self.esik.setToolTip(_("Bağıl hata eşiği. Varsayılan %10 — ") + _(mt.BAGIL_HATA_KAYNAGI))
         self.isaretle = QtWidgets.QCheckBox(_("Güvenilmez hücreleri işaretle"))
         self.isaretle.setChecked(True)
         self.d_vtk = QtWidgets.QPushButton(_("VTK dışa aktar…"))
