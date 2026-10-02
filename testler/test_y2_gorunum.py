@@ -253,8 +253,49 @@ def test_kamera_vektorleri():
     kontrol("isin istegi isci dogrulamasindan gecer", cs.istegi_dogrula(istek) is not None)
 
 
+def test_tally_dizileri_normalizasyon_ve_maske():
+    print("\n[Y2G-11] bindirme: hacim normalizasyonu, skorsuz NaN, sigma maskesi esikle")
+    from dataclasses import replace
+    from arayuz.goruntuleyici import bindirme as bd
+    s = _sonuc("duzenli", ([0.0, 1.0, 3.0], [0.0, 1.0], [0.0, 1.0]))
+    o = np.array(s.ortalama)
+    o[0, 0, 0] = 0.0
+    sg = np.array(s.sapma)
+    sg[1, 0, 0] = 0.5 * o[1, 0, 0]                     # %50 bagil hata
+    s = replace(s, ortalama=o, sapma=sg)
+    deger, maske, birim = bd.tally_dizileri(s, "flux", None, "hacim", 0.10, False)
+    kontrol("skorsuz hucre NaN", math.isnan(deger[0, 0, 0]))
+    kontrol("hacim basina: deger / 2 cm3", math.isclose(deger[1, 0, 0],
+                                                        o[1, 0, 0, 0, 0, 0] / 2.0))
+    kontrol("maske: skorsuz ve %50 hatali hucre", maske[0, 0, 0] and maske[1, 0, 0])
+    kontrol("birim n/cm2", "n/cm²" in birim, "-> %s" % birim)
+
+
+def test_istek_sirasi():
+    print("\n[Y2G-12] istek sirasi: ayni tur hemen gider, farkli tur bekler, son -> siradaki")
+    from arayuz.goruntuleyici.istek_sirasi import IstekSirasi
+    giden = []
+    sira = IstekSirasi(lambda istek: giden.append(istek["ad"]) or len(giden))
+    sira.iste("kesit", {"ad": "k1"})
+    sira.iste("kesit", {"ad": "k2"})                 # k1'i iptal eder (istemci)
+    sira.iste("kaynak", {"ad": "q1"})
+    sira.iste("kaynak", {"ad": "q2"})                # q1 atlanir
+    sira.iste("isin", {"ad": "i1"})
+    kontrol("k1, k2 hemen; kaynak bekler", giden == ["k1", "k2"])
+    kontrol("guncel no 2 -> kesit", sira.tur(2) == "kesit" and sira.tur(1) is None)
+    sira.bitti(1)
+    kontrol("eski son etkisiz", giden == ["k1", "k2"])
+    sira.bitti(2)
+    kontrol("son -> q2 (q1 atlandi)", giden == ["k1", "k2", "q2"] and sira.tur(3) == "kaynak")
+    sira.sifirla()
+    kontrol("cokme -> siradaki isin", giden[-1] == "i1" and sira.mesgul_mu())
+    sira.bitti(4)
+    kontrol("bos", not sira.mesgul_mu())
+
+
 HIZLI = [test_varsayilan_gorunum_ve_istek, test_yakinlastir_kaydir_degismez,
          test_piksel_koordinat_eslemesi, test_nokta_bilgisi, test_renk_kipleri,
          test_duzenli_mesh_bindirme_konumu, test_silindirik_mesh_bindirme_ve_sigma,
-         test_kuresel_mesh_bindirme, test_kaynak_izdusumu, test_kamera_vektorleri]
+         test_kuresel_mesh_bindirme, test_kaynak_izdusumu, test_kamera_vektorleri,
+         test_tally_dizileri_normalizasyon_ve_maske, test_istek_sirasi]
 YAVAS = []

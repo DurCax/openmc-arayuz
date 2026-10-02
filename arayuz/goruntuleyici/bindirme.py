@@ -113,3 +113,16 @@ def izdusum(noktalar, g: gr.Gorunum, kalinlik=None) -> tuple:
     if kalinlik is not None:
         sec &= np.abs(r[:, n] - g.konum) <= kalinlik / 2.0
     return r[sec, h], r[sec, d]
+
+
+def tally_dizileri(sonuc, skor: str, grup, yontem: str, esik: float, eksenel_sonsuz: bool):
+    """(deger3b, guvenilmez3b, birim): secilen skor/grup, normalizasyon (Y1 ile ayni:
+    cekirdek/mesh_tally) ve sigma maskesi. Skorsuz hucre NaN (renk olcegini 0'a
+    cekmesin; Calistir > Ag haritasi ile ayni kural)."""
+    from cekirdek import mesh_tally as mt
+    o, sg = mt.secim(sonuc, skor, grup)
+    maske = mt.yuksek_hata_maskesi(o, sg, esik)
+    payda, olcu_turu = mt.olcu(sonuc, eksenel_sonsuz)
+    deger, _sapma, birim = mt.normalize(o, sg, payda, yontem, None, skor, sonuc.ozdeger,
+                                        olcu_turu)
+    return np.where(o == 0, np.nan, deger), maske, birim
