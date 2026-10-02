@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 07:05+0300\n"
+"POT-Creation-Date: 2026-10-02 09:36+0300\n"
 "PO-Revision-Date: 2026-10-01 18:14+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -1263,12 +1263,12 @@ msgid "Shannon entropisi"
 msgstr "Shannon entropy"
 
 #: arayuz/calistir/pano.py:87
-msgid "Süre"
-msgstr "Time"
-
-#: arayuz/calistir/pano.py:87
 msgid "dk:sn"
 msgstr "min:s"
+
+#: arayuz/calistir/pano.py:87 arayuz/karsilastir/panel.py:31 arayuz/kuyruk/panel.py:30
+msgid "Süre"
+msgstr "Time"
 
 #: arayuz/calistir/pano.py:88
 msgid "Hız"
@@ -3433,11 +3433,11 @@ msgstr "axial bin"
 msgid "Eksenel profil"
 msgstr "Axial profile"
 
-#: arayuz/guc_harita.py:343
+#: arayuz/guc_harita.py:343 arayuz/karsilastir/panel.py:214
 msgid "x (soldan)"
 msgstr "x (from left)"
 
-#: arayuz/guc_harita.py:344
+#: arayuz/guc_harita.py:344 arayuz/karsilastir/panel.py:215
 msgid "y (alttan)"
 msgstr "y (from bottom)"
 
@@ -3602,6 +3602,137 @@ msgstr "void"
 #: arayuz/kor/katmanlar.py:22
 msgid "Boş (madde yok)"
 msgstr "Void (no material)"
+
+#: arayuz/karsilastir/panel.py:31 arayuz/kuyruk/panel.py:30
+msgid "Durum"
+msgstr "State"
+
+#: arayuz/karsilastir/panel.py:31 arayuz/kuyruk/panel.py:30
+msgid "k ± σ"
+msgstr "k ± σ"
+
+#: arayuz/karsilastir/panel.py:31 arayuz/kuyruk/panel.py:30
+msgid "Dizin"
+msgstr "Directory"
+
+#: arayuz/karsilastir/panel.py:32
+msgid "Konum"
+msgstr "Position"
+
+#: arayuz/karsilastir/panel.py:32
+msgid "Bağıl güç 1"
+msgstr "Relative power 1"
+
+#: arayuz/karsilastir/panel.py:32
+msgid "Bağıl güç 2"
+msgstr "Relative power 2"
+
+#: arayuz/karsilastir/panel.py:32
+msgid "Δ"
+msgstr "Δ"
+
+#: arayuz/karsilastir/panel.py:32
+msgid "z"
+msgstr "z"
+
+#: arayuz/karsilastir/panel.py:39
+#, python-format
+msgid "anlamlı (|z| > %g)"
+msgstr "significant (|z| > %g)"
+
+#: arayuz/karsilastir/panel.py:40
+#, python-format
+msgid "anlamlı değil (|z| ≤ %g): fark istatistik gürültü içinde"
+msgstr "not significant (|z| ≤ %g): the difference is within the statistical noise"
+
+#: arayuz/karsilastir/panel.py:43
+#, python-format
+msgid "koşu 1: k = %.5f ± %.5f"
+msgstr "run 1: k = %.5f ± %.5f"
+
+#: arayuz/karsilastir/panel.py:44
+#, python-format
+msgid "koşu 2: k = %.5f ± %.5f"
+msgstr "run 2: k = %.5f ± %.5f"
+
+#: arayuz/karsilastir/panel.py:45
+#, python-format
+msgid "Δk = k2 − k1 = %+.5f ± %.5f  (%+.0f ± %.0f pcm)"
+msgstr "Δk = k2 − k1 = %+.5f ± %.5f  (%+.0f ± %.0f pcm)"
+
+#: arayuz/karsilastir/panel.py:47
+#, python-format
+msgid "Δρ = %+.0f ± %.0f pcm"
+msgstr "Δρ = %+.0f ± %.0f pcm"
+
+#: arayuz/karsilastir/panel.py:48
+#, python-format
+msgid "z = Δk / √(σ1² + σ2²) = %+.2f → %s"
+msgstr "z = Δk / √(σ1² + σ2²) = %+.2f → %s"
+
+#: arayuz/karsilastir/panel.py:49
+msgid ""
+"Varsayım: koşular bağımsız. Aynı tohumla koşulan modeller ilişkilidir; o zaman gerçek"
+" σ daha küçüktür ve bu z muhafazakârdır."
+msgstr ""
+"Assumption: the runs are independent. Models run with the same seed are correlated; "
+"then the true σ is smaller and this z is conservative."
+
+#: arayuz/karsilastir/panel.py:56
+#, python-format
+msgid "%d ortak konum; RMS Δ = %.4f; en büyük fark: %s"
+msgstr "%d common positions; RMS Δ = %.4f; largest difference: %s"
+
+#: arayuz/karsilastir/panel.py:59
+#, python-format
+msgid "|z| > %g olan konum: %d (yalnız tesadüfle ~%.1f beklenir)"
+msgstr "positions with |z| > %g: %d (~%.1f expected by chance alone)"
+
+#: arayuz/karsilastir/panel.py:62
+#, python-format
+msgid "Yalnız bir koşuda olan konum: %d / %d"
+msgstr "Positions in one run only: %d / %d"
+
+#: arayuz/karsilastir/panel.py:86
+msgid "İki koşu seçin (Ctrl ile) ve Karşılaştır'a basın."
+msgstr "Select two runs (with Ctrl) and press Compare."
+
+#: arayuz/karsilastir/panel.py:112
+msgid "Seçili iki koşuyu karşılaştır"
+msgstr "Compare the two selected runs"
+
+#: arayuz/karsilastir/panel.py:113
+msgid "İki klasör seç…"
+msgstr "Choose two folders…"
+
+#: arayuz/karsilastir/panel.py:140
+msgid "Tam olarak iki koşu seçin."
+msgstr "Select exactly two runs."
+
+#: arayuz/karsilastir/panel.py:146
+msgid "1. koşu klasörü"
+msgstr "Folder of run 1"
+
+#: arayuz/karsilastir/panel.py:149
+msgid "2. koşu klasörü"
+msgstr "Folder of run 2"
+
+#: arayuz/karsilastir/panel.py:160
+#, python-format
+msgid "Karşılaştırılamadı: %s"
+msgstr "Could not be compared: %s"
+
+#: arayuz/karsilastir/panel.py:198
+msgid "Fark haritası yalnız kare kafeste çizilir"
+msgstr "The difference map is drawn only for a square lattice"
+
+#: arayuz/karsilastir/panel.py:209
+msgid "Δ bağıl güç (2 − 1)"
+msgstr "Δ relative power (2 − 1)"
+
+#: arayuz/karsilastir/panel.py:210
+msgid "Pin gücü farkı (kırmızı: 2. koşu yüksek)"
+msgstr "Pin power difference (red: run 2 higher)"
 
 #: arayuz/kor/geometri_sayfasi.py:61
 msgid "Düzenek şablonu"
@@ -4077,6 +4208,268 @@ msgstr[1] ""
 "\n"
 "Continue?"
 
+#: arayuz/kuyruk/panel.py:30
+msgid "Çevrim"
+msgstr "Batch"
+
+#: arayuz/kuyruk/panel.py:33
+msgid "bekliyor"
+msgstr "waiting"
+
+#: arayuz/kuyruk/panel.py:33
+msgid "koşuyor"
+msgstr "running"
+
+#: arayuz/kuyruk/panel.py:34
+msgid "bitti"
+msgstr "done"
+
+#: arayuz/kuyruk/panel.py:35
+msgid "iptal"
+msgstr "cancelled"
+
+#: arayuz/kuyruk/panel.py:105
+msgid "Paralellik ve kaynaklar"
+msgstr "Parallelism and resources"
+
+#: arayuz/kuyruk/panel.py:115
+msgid "En fazla paralel koşu"
+msgstr "Maximum parallel runs"
+
+#: arayuz/kuyruk/panel.py:116
+msgid "Toplam iş parçacığı bütçesi"
+msgstr "Total thread budget"
+
+#: arayuz/kuyruk/panel.py:117
+msgid "Koşu başına iş parçacığı (OMP)"
+msgstr "Threads per run (OMP)"
+
+#: arayuz/kuyruk/panel.py:118
+msgid "MPI süreç sayısı (0 = MPI yok)"
+msgstr "MPI process count (0 = no MPI)"
+
+#: arayuz/kuyruk/panel.py:124
+msgid "Seç…"
+msgstr "Choose…"
+
+#: arayuz/kuyruk/panel.py:131
+msgid "Koşu klasörü (her koşu ayrı alt dizinde)"
+msgstr "Run folder (every run in its own subdirectory)"
+
+#: arayuz/kuyruk/panel.py:144
+msgid "Geçerli modeli ekle"
+msgstr "Add current model"
+
+#: arayuz/kuyruk/panel.py:145
+msgid "Parametrik model ekle…"
+msgstr "Add parametric model…"
+
+#: arayuz/kuyruk/panel.py:146 arayuz/kuyruk/panel.py:341
+msgid "Başlat"
+msgstr "Start"
+
+#: arayuz/kuyruk/panel.py:147
+msgid "Yukarı"
+msgstr "Up"
+
+#: arayuz/kuyruk/panel.py:148
+msgid "Aşağı"
+msgstr "Down"
+
+#: arayuz/kuyruk/panel.py:149
+msgid "İptal"
+msgstr "Cancel"
+
+#: arayuz/kuyruk/panel.py:150
+msgid "Kaldır"
+msgstr "Remove"
+
+#: arayuz/kuyruk/panel.py:165
+#, python-format
+msgid "MPI kullanılabilir (mpiexec: %s)."
+msgstr "MPI is available (mpiexec: %s)."
+
+#: arayuz/kuyruk/panel.py:167
+msgid ""
+"Bu openmc MPI desteksiz derlenmiş; MPI süreç sayısı 0 kalmalı. Kümede MPI için SLURM "
+"sekmesini kullanın."
+msgstr ""
+"This openmc was built without MPI; keep the MPI process count at 0. Use the SLURM tab"
+" for MPI on a cluster."
+
+#: arayuz/kuyruk/panel.py:169
+msgid "MPI desteği belirlenemedi (openmc ya da mpiexec bulunamadı)."
+msgstr "MPI support could not be determined (openmc or mpiexec not found)."
+
+#: arayuz/kuyruk/panel.py:185
+msgid "model"
+msgstr "model"
+
+#: arayuz/kuyruk/panel.py:206
+#, python-format
+msgid "Kuyruğa eklenemedi: %s"
+msgstr "Could not be added to the queue: %s"
+
+#: arayuz/kuyruk/panel.py:211
+msgid "Parametrik model"
+msgstr "Parametric model"
+
+#: arayuz/kuyruk/panel.py:211
+msgid "Parametrik model (*.json)"
+msgstr "Parametric model (*.json)"
+
+#: arayuz/kuyruk/panel.py:217
+#, python-format
+msgid "Parametrik model okunamadı: %s"
+msgstr "The parametric model could not be read: %s"
+
+#: arayuz/kuyruk/panel.py:221
+#, python-format
+msgid "%d nokta kuyruğa eklendi."
+msgstr "%d points added to the queue."
+
+#: arayuz/kuyruk/panel.py:224
+msgid "Koşu klasörü"
+msgstr "Run folder"
+
+#: arayuz/kuyruk/panel.py:283
+#, python-format
+msgid "'%s' başarısız: %s"
+msgstr "'%s' failed: %s"
+
+#: arayuz/kuyruk/panel.py:325
+#, python-format
+msgid "Kuyruk tamamlandı: %d / %d koşu başarılı."
+msgstr "Queue finished: %d / %d runs succeeded."
+
+#: arayuz/kuyruk/panel.py:341
+msgid "Duraklat"
+msgstr "Pause"
+
+#: arayuz/kuyruk/pencere.py:39
+msgid "İş akışı — kuyruk, geçmiş, SLURM"
+msgstr "Workflow — queue, history, SLURM"
+
+#: arayuz/kuyruk/pencere.py:48
+msgid "Koşu kuyruğu"
+msgstr "Run queue"
+
+#: arayuz/kuyruk/pencere.py:49
+msgid "Geçmiş ve karşılaştırma"
+msgstr "History and comparison"
+
+#: arayuz/kuyruk/pencere.py:50
+msgid "SLURM betiği"
+msgstr "SLURM script"
+
+#: arayuz/kuyruk/pencere.py:72
+msgid "İş akışı"
+msgstr "Workflow"
+
+#: arayuz/kuyruk/pencere.py:73
+#, python-format
+msgid "Kuyrukta %d bitmemiş koşu var; kapatılırsa iptal edilir. Kapatılsın mı?"
+msgstr ""
+"The queue has %d unfinished runs; they are cancelled if the window is closed. Close "
+"it?"
+
+#: arayuz/kuyruk/slurm_paneli.py:56
+msgid "boşlukla ayrılmış: openmpi/4.1 hdf5"
+msgstr "space separated: openmpi/4.1 hdf5"
+
+#: arayuz/kuyruk/slurm_paneli.py:60
+msgid "kümedeki cross_sections.xml yolu (isteğe bağlı)"
+msgstr "path of cross_sections.xml on the cluster (optional)"
+
+#: arayuz/kuyruk/slurm_paneli.py:64
+msgid "İş adı"
+msgstr "Name"
+
+#: arayuz/kuyruk/slurm_paneli.py:64
+msgid "Süre (ss:dd:sn)"
+msgstr "Time limit (hh:mm:ss)"
+
+#: arayuz/kuyruk/slurm_paneli.py:65
+msgid "Düğüm"
+msgstr "Nodes"
+
+#: arayuz/kuyruk/slurm_paneli.py:65
+msgid "MPI görev (ntasks)"
+msgstr "MPI tasks (ntasks)"
+
+#: arayuz/kuyruk/slurm_paneli.py:66
+msgid "Görev başına CPU (OMP)"
+msgstr "CPUs per task (OMP)"
+
+#: arayuz/kuyruk/slurm_paneli.py:66
+msgid "Bölüm (partition)"
+msgstr "Partition"
+
+#: arayuz/kuyruk/slurm_paneli.py:67
+msgid "Hesap (account)"
+msgstr "Account"
+
+#: arayuz/kuyruk/slurm_paneli.py:67
+msgid "Bellek (ör. 16G)"
+msgstr "Memory (e.g. 16G)"
+
+#: arayuz/kuyruk/slurm_paneli.py:68
+msgid "E-posta"
+msgstr "E-mail"
+
+#: arayuz/kuyruk/slurm_paneli.py:68
+msgid "Modüller"
+msgstr "Modules"
+
+#: arayuz/kuyruk/slurm_paneli.py:69
+msgid "Conda ortamı"
+msgstr "Conda environment"
+
+#: arayuz/kuyruk/slurm_paneli.py:69
+msgid "openmc yolu"
+msgstr "openmc path"
+
+#: arayuz/kuyruk/slurm_paneli.py:70
+msgid "OPENMC_CROSS_SECTIONS"
+msgstr "OPENMC_CROSS_SECTIONS"
+
+#: arayuz/kuyruk/slurm_paneli.py:71
+msgid "MPI başlatıcı"
+msgstr "MPI launcher"
+
+#: arayuz/kuyruk/slurm_paneli.py:77
+msgid "Koşu klasörünü hazırla…"
+msgstr "Prepare run folder…"
+
+#: arayuz/kuyruk/slurm_paneli.py:127
+#, python-format
+msgid "Geçersiz alan: %s"
+msgstr "Invalid field: %s"
+
+#: arayuz/kuyruk/slurm_paneli.py:133
+#, python-format
+msgid "bash -n: sözdizimi geçerli. Kümede: sbatch %s"
+msgstr "bash -n: syntax is valid. On the cluster: sbatch %s"
+
+#: arayuz/kuyruk/slurm_paneli.py:136
+#, python-format
+msgid "bash -n hatası: %s"
+msgstr "bash -n error: %s"
+
+#: arayuz/kuyruk/slurm_paneli.py:143
+msgid "Küme koşu klasörü"
+msgstr "Cluster run folder"
+
+#: arayuz/kuyruk/slurm_paneli.py:151
+#, python-format
+msgid "Hazırlanamadı: %s"
+msgstr "Could not be prepared: %s"
+
+#: arayuz/kuyruk/slurm_paneli.py:153
+#, python-format
+msgid "Yazıldı: %s — kümeye kopyalayıp 'sbatch %s' ile gönderin."
+msgstr "Written: %s — copy it to the cluster and submit it with 'sbatch %s'."
+
 #: arayuz/malzeme/bilesim.py:21
 msgid "doğal"
 msgstr "natural"
@@ -4499,7 +4892,7 @@ msgstr ""
 "Shows points claimed by more than one cell in a separate colour and\n"
 "reports how many there are. Makes plotting several times slower for large cores."
 
-#: arayuz/onizleme.py:184
+#: arayuz/karsilastir/panel.py:111 arayuz/onizleme.py:184
 msgid "Yenile"
 msgstr "Refresh"
 
@@ -4652,22 +5045,22 @@ msgstr "Template could not be built"
 msgid "Çalışan sade bir model kuruldu ({ad}). Kaydetmek için 'Farklı kaydet' kullanın."
 msgstr "A simple working model was set up ({ad}). Use 'Save as' to save it."
 
-#: arayuz/pencere/ana_pencere.py:539
+#: arayuz/pencere/ana_pencere.py:549
 #, python-brace-format
 msgid "adsız — örnek: {ornek}"
 msgstr "untitled — example: {ornek}"
 
-#: arayuz/pencere/ana_pencere.py:542
+#: arayuz/pencere/ana_pencere.py:552
 msgid "kaydedilmemiş"
 msgstr "unsaved"
 
-#: arayuz/pencere/ana_pencere.py:567
+#: arayuz/pencere/ana_pencere.py:577
 msgid "Boyuta tıklayınca Kor sayfasına, hesap türüne tıklayınca Hesap ayarlarına gider."
 msgstr ""
 "Click the dimension to go to the Geometry page, the calculation type to go to Run "
 "settings."
 
-#: arayuz/pencere/ana_pencere.py:611
+#: arayuz/pencere/ana_pencere.py:621
 #, python-brace-format
 msgid ""
 " Model bu türün gerektirdiği parçayı içermiyordu; şablondan eklendi: {parca} "
@@ -4676,7 +5069,7 @@ msgstr ""
 " The model lacked the component this type needs; added from the template: {parca} "
 "(edit it on the Components/Assembly page)."
 
-#: arayuz/pencere/ana_pencere.py:614
+#: arayuz/pencere/ana_pencere.py:624
 #, python-brace-format
 msgid "Kor türü: {tur} — geri almak için Ctrl+Z.{ek}"
 msgstr "Core type: {tur} — press Ctrl+Z to undo.{ek}"
@@ -6361,7 +6754,7 @@ msgstr "Run finished but no statepoint found"
 msgid "Sonuç okunamadı: %s"
 msgstr "Result could not be read: %s"
 
-#: arayuz/analiz/sonuc.py:83 arayuz/sekme_calistir.py:664
+#: arayuz/analiz/sonuc.py:83 arayuz/kuyruk/panel.py:34 arayuz/sekme_calistir.py:664
 msgid "başarısız"
 msgstr "failed"
 
@@ -6819,7 +7212,8 @@ msgstr "Density"
 #: arayuz/geometri/form_kafes.py:274 arayuz/geometri/form_kafes.py:299
 #: arayuz/geometri/form_kafes.py:330 arayuz/geometri/form_yerlesim.py:78
 #: arayuz/geometri/form_yerlesim.py:337 arayuz/geometri/formlar.py:146
-#: arayuz/kor/yerlesim.py:124 arayuz/sekme_malzeme.py:66
+#: arayuz/karsilastir/panel.py:31 arayuz/kor/yerlesim.py:124 arayuz/kuyruk/panel.py:30
+#: arayuz/sekme_malzeme.py:66
 msgid "Ad"
 msgstr "Name"
 

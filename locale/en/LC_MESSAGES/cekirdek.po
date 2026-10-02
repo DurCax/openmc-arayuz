@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 07:05+0300\n"
+"POT-Creation-Date: 2026-10-02 09:36+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -2600,36 +2600,36 @@ msgstr "A component must be {\"ad\", \"dugum\"}."
 msgid "'%s' parçası kullanılmıyor."
 msgstr "Component '%s' is not used."
 
-#: cekirdek/geometri/hacim.py:44
+#: cekirdek/geometri/hacim.py:49
 msgid "kesik kafes konumu"
 msgstr "truncated lattice position"
 
-#: cekirdek/geometri/hacim.py:45
+#: cekirdek/geometri/hacim.py:50
 msgid "kesik çubuk (pin hücreye sığmıyor)"
 msgstr "truncated pin (does not fit the pin cell)"
 
-#: cekirdek/geometri/hacim.py:46
+#: cekirdek/geometri/hacim.py:51
 msgid "bileşen bölgesine sığmıyor"
 msgstr "does not fit the component region"
 
-#: cekirdek/geometri/hacim.py:47
+#: cekirdek/geometri/hacim.py:52
 msgid "kafes dışı düzensiz bölge"
 msgstr "irregular region outside a lattice"
 
-#: cekirdek/geometri/hacim.py:48
+#: cekirdek/geometri/hacim.py:53
 msgid "alanı analitik hesaplanamayan bölge"
 msgstr "region whose area cannot be computed analytically"
 
-#: cekirdek/geometri/hacim.py:209
+#: cekirdek/geometri/hacim.py:237
 #, python-format
 msgid "stokastik hacmin bağıl σ'sı %%%.2f sınırını aşıyor (örneklem %d): %s"
 msgstr "the relative σ of the stochastic volume exceeds the %.2f%% limit (samples %d): %s"
 
-#: cekirdek/geometri/hacim.py:218
+#: cekirdek/geometri/hacim.py:246
 msgid "stokastik hacim sıfır (malzeme örnekleme kutusunda bulunamadı)"
 msgstr "stochastic volume is zero (material not found in the sampling box)"
 
-#: cekirdek/geometri/hacim.py:220
+#: cekirdek/geometri/hacim.py:248
 msgid "stokastik hacim ölçülemedi (malzeme kurulan modelde yok)"
 msgstr "stochastic volume could not be measured (material not in the built model)"
 
@@ -3102,7 +3102,7 @@ msgid "%s bir değer bekliyor"
 msgstr "%s expects a value"
 
 #: cekirdek/giris.py:78 cekirdek/giris.py:171 cekirdek/kosucu_terminal.py:51
-#: cekirdek/kritik_arama.py:257 cekirdek/tarama.py:440
+#: cekirdek/kritik_arama.py:257 cekirdek/tarama.py:452
 #, python-format
 msgid "bilinmeyen seçenek: %s"
 msgstr "unknown option: %s"
@@ -3925,6 +3925,36 @@ msgstr ""
 "the volume of an instance of material '%s' cannot be computed; pin-by-pin burnup "
 "requires exact volumes"
 
+#: cekirdek/kosu_gecmisi.py:136
+#, python-format
+msgid "kosu gecmisi daha yeni bir sürümle yazılmış (%d > %d): %s"
+msgstr "the run history was written by a newer version (%d > %d): %s"
+
+#: cekirdek/kosu_gecmisi.py:151
+msgid "kayıt kimliği ve adı boş olamaz"
+msgstr "the record id and name cannot be empty"
+
+#: cekirdek/kosu_gecmisi.py:250
+msgid "k > 0 ve σ ≥ 0 olmalı"
+msgstr "k > 0 and σ ≥ 0 are required"
+
+#: cekirdek/kosu_gecmisi.py:365
+#, python-format
+msgid "statepoint bulunamadı: %s"
+msgstr "statepoint not found: %s"
+
+#: cekirdek/kosu_gecmisi.py:379
+msgid "En az bir koşu sabit kaynak: k-eff karşılaştırılmadı."
+msgstr "At least one run is fixed source: k-eff was not compared."
+
+#: cekirdek/kosu_gecmisi.py:383
+msgid "İki koşuda da güç dağılımı yok: pin gücü karşılaştırılmadı."
+msgstr "The power distribution is not available in both runs: pin power was not compared."
+
+#: cekirdek/kosu_gecmisi.py:385
+msgid "Güç haritalarında ortak konum yok (farklı geometri?)."
+msgstr "The power maps have no common position (different geometry?)."
+
 #: cekirdek/kosucu.py:109
 msgid "geçersiz k-eff"
 msgstr "invalid k-eff"
@@ -4495,7 +4525,7 @@ msgid "  Çözüm bulunamadı."
 msgstr "  No solution found."
 
 #: cekirdek/dogrula/geometri.py:72 cekirdek/geometri/yapici.py:76 cekirdek/kurucu.py:86
-#: cekirdek/sema_basvuru.py:156 cekirdek/tarama.py:170 cekirdek/tarama.py:176
+#: cekirdek/sema_basvuru.py:156 cekirdek/tarama.py:174 cekirdek/tarama.py:180
 #, python-format
 msgid "tanımsız malzeme: %s"
 msgstr "undefined material: %s"
@@ -4531,6 +4561,75 @@ msgid ""
 msgstr ""
 "pin '%s' is not used in the model. The power distribution can be computed only for a "
 "pin that is present in the geometry."
+
+#: cekirdek/kuyruk.py:207
+msgid "MPI koşusu için mpiexec bulunamadı (OPENMC_ARAYUZ_MPIEXEC ya da PATH)"
+msgstr "mpiexec was not found for the MPI run (OPENMC_ARAYUZ_MPIEXEC or PATH)"
+
+#: cekirdek/kuyruk.py:306
+msgid "en fazla paralel koşu sayısı en az 1 olmalı"
+msgstr "the maximum number of parallel runs must be at least 1"
+
+#: cekirdek/kuyruk.py:309
+msgid "iş parçacığı bütçesi en az 1 olmalı"
+msgstr "the thread budget must be at least 1"
+
+#: cekirdek/kuyruk.py:347
+msgid "paralel koşu sayısı ve bütçe en az 1 olmalı"
+msgstr "the number of parallel runs and the budget must be at least 1"
+
+#: cekirdek/kuyruk.py:380
+msgid "koşunun adı boş olamaz"
+msgstr "the run name cannot be empty"
+
+#: cekirdek/kuyruk.py:382
+msgid "koşu dizini boş olamaz"
+msgstr "the run directory cannot be empty"
+
+#: cekirdek/kuyruk.py:384
+msgid "iş parçacığı en az 1, MPI süreç sayısı negatif olamaz"
+msgstr "threads must be at least 1 and the MPI process count cannot be negative"
+
+#: cekirdek/kuyruk.py:386
+#, python-format
+msgid "'%s' %d iş parçacığı istiyor; bütçe %d"
+msgstr "'%s' needs %d threads; the budget is %d"
+
+#: cekirdek/kuyruk.py:391
+#, python-format
+msgid "'%s' dizini zaten kuyruktaki bir koşunun (%s)"
+msgstr "the directory '%s' already belongs to a queued run (%s)"
+
+#: cekirdek/kuyruk.py:401 cekirdek/kuyruk.py:480
+msgid "kuyruk kapatıldı"
+msgstr "the queue is closed"
+
+#: cekirdek/kuyruk.py:434
+msgid "koşan iş kaldırılamaz; önce iptal edin"
+msgstr "a running entry cannot be removed; cancel it first"
+
+#: cekirdek/kuyruk.py:619
+#, python-format
+msgid "openmc çıkış kodu %d (günlük: %s)"
+msgstr "openmc exit code %d (log: %s)"
+
+#: cekirdek/kuyruk.py:624
+msgid "koşu bitti ama statepoint dosyası bulunamadı"
+msgstr "the run finished but no statepoint file was found"
+
+#: cekirdek/kuyruk.py:639
+#, python-format
+msgid "'%s' dizininde model.xml yok"
+msgstr "no model.xml in the directory '%s'"
+
+#: cekirdek/kuyruk.py:650
+#, python-format
+msgid "openmc çalıştırılabilir dosyası bulunamadı (%s)"
+msgstr "the openmc executable was not found (%s)"
+
+#: cekirdek/kuyruk.py:655
+msgid "Bu openmc MPI desteksiz derlenmiş (MPI enabled: no); MPI süreç sayısını 0 yapın"
+msgstr "This openmc was built without MPI (MPI enabled: no); set the MPI process count to 0"
 
 #: cekirdek/malzeme_kutup.py:145
 #, python-format
@@ -5112,6 +5211,92 @@ msgstr "level %r is invalid (valid: %s)"
 #, python-format
 msgid "%s: örnek bir JSON nesnesi değil"
 msgstr "%s: the example is not a JSON object"
+
+#: cekirdek/parametre.py:69
+#, python-format
+msgid "sayısal değer bekleniyordu: %r"
+msgstr "a numeric value was expected: %r"
+
+#: cekirdek/parametre.py:88
+#, python-format
+msgid "değişken adı bir tanımlayıcı olmalı (harf/_ ile başlar): %r"
+msgstr "the variable name must be an identifier (starting with a letter or _): %r"
+
+#: cekirdek/parametre.py:91
+#, python-format
+msgid "bilinmeyen değişken türü: %s"
+msgstr "unknown variable type: %s"
+
+#: cekirdek/parametre.py:93
+#, python-format
+msgid "'%s' değişkeninin spec yolu boş"
+msgstr "the spec path of variable '%s' is empty"
+
+#: cekirdek/parametre.py:106
+#, python-format
+msgid "tarama biçimi %s olmalı: %s"
+msgstr "the sweep mode must be %s: %s"
+
+#: cekirdek/parametre.py:110
+msgid "taranan her değişkenin en az bir değeri olmalı"
+msgstr "every swept variable needs at least one value"
+
+#: cekirdek/parametre.py:112
+msgid "eşli taramada bütün değer listeleri aynı uzunlukta olmalı"
+msgstr "in a paired sweep all value lists must have the same length"
+
+#: cekirdek/parametre.py:126
+#, python-format
+msgid "değişken adları benzersiz olmalı: %s"
+msgstr "variable names must be unique: %s"
+
+#: cekirdek/parametre.py:130
+#, python-format
+msgid "taramada tanımsız değişken: %s"
+msgstr "undefined variable in the sweep: %s"
+
+#: cekirdek/parametre.py:142
+#, python-format
+msgid "geçersiz spec yolu: %r"
+msgstr "invalid spec path: %r"
+
+#: cekirdek/parametre.py:150
+#, python-format
+msgid "spec yolunda liste öğesi yok: %s"
+msgstr "no list element at the spec path: %s"
+
+#: cekirdek/parametre.py:154
+#, python-format
+msgid "spec yolunda alan yok: %s"
+msgstr "no field at the spec path: %s"
+
+#: cekirdek/parametre.py:168
+#, python-format
+msgid "'%s' sayısal bir alan değil"
+msgstr "'%s' is not a numeric field"
+
+#: cekirdek/parametre.py:181
+#, python-format
+msgid "tanımsız değişken: %s"
+msgstr "undefined variable: %s"
+
+#: cekirdek/parametre.py:229
+#, python-format
+msgid "parametrik model dosyası değil (bicim = %r)"
+msgstr "not a parametric model file (bicim = %r)"
+
+#: cekirdek/parametre.py:231
+#, python-format
+msgid "parametrik model daha yeni bir sürümle yazılmış (%s)"
+msgstr "the parametric model was written by a newer version (%s)"
+
+#: cekirdek/parametre.py:234
+msgid "parametrik modelde taban spec yok"
+msgstr "the parametric model has no base spec"
+
+#: cekirdek/parametre.py:277
+msgid "taban"
+msgstr "base"
 
 #: cekirdek/rapor.py:175
 #, python-format
@@ -5747,6 +5932,54 @@ msgstr ""
 msgid "'%s' adında %d malzeme var; önce birini yeniden adlandırın."
 msgstr "Material name '%s' is used by %d materials; rename one of them first."
 
+#: cekirdek/slurm.py:73
+#, python-format
+msgid "%s en az %d olan bir tam sayı olmalı: %r"
+msgstr "%s must be an integer of at least %d: %r"
+
+#: cekirdek/slurm.py:79
+#, python-format
+msgid "%s yeni satır içeremez"
+msgstr "%s cannot contain a new line"
+
+#: cekirdek/slurm.py:107
+#, python-format
+msgid "geçersiz SLURM alanı %s: %r"
+msgstr "invalid SLURM field %s: %r"
+
+#: cekirdek/slurm.py:117
+#, python-format
+msgid "geçersiz modül adı: %r"
+msgstr "invalid module name: %r"
+
+#: cekirdek/slurm.py:119
+#, python-format
+msgid "geçersiz conda ortamı adı: %r"
+msgstr "invalid conda environment name: %r"
+
+#: cekirdek/slurm.py:122
+#, python-format
+msgid "geçersiz ortam değişkeni adı: %r"
+msgstr "invalid environment variable name: %r"
+
+#: cekirdek/slurm.py:125
+msgid "openmc yolu boş olamaz"
+msgstr "the openmc path cannot be empty"
+
+#: cekirdek/slurm.py:128
+msgid "koşu dizini"
+msgstr "run directory"
+
+#: cekirdek/slurm.py:130
+#, python-format
+msgid "MPI başlatıcı %s olmalı: %r"
+msgstr "the MPI launcher must be %s: %r"
+
+#: cekirdek/slurm.py:205
+#, python-format
+msgid "üretilen SLURM betiği sözdizimi denetiminden geçmedi: %s"
+msgstr "the generated SLURM script failed the syntax check: %s"
+
 #: cekirdek/surum.py:22
 msgid "OpenMC Reaktör Kuru Arayüzü"
 msgstr "OpenMC Reactor Core Interface"
@@ -5878,60 +6111,60 @@ msgstr ""
 "no temperature-dependent density correlation for '%s' — density kept constant; the "
 "moderator temperature coefficient will be incomplete"
 
-#: cekirdek/tarama.py:195
+#: cekirdek/tarama.py:199
 msgid "boşluk (void) oranı %0–100 arasında olmalı"
 msgstr "void fraction must be between 0% and 100%"
 
-#: cekirdek/tarama.py:216
+#: cekirdek/tarama.py:220
 #, python-format
 msgid "'%s' malzemesinde zenginlik tanımlı bir bileşen yok"
 msgstr "material '%s' has no component with an enrichment"
 
-#: cekirdek/dogrula/kor.py:83 cekirdek/geometri/sablon.py:141 cekirdek/tarama.py:222
+#: cekirdek/dogrula/kor.py:83 cekirdek/geometri/sablon.py:141 cekirdek/tarama.py:226
 #, python-format
 msgid "tanımsız demet: %s"
 msgstr "undefined assembly: %s"
 
-#: cekirdek/dogrula/kor.py:66 cekirdek/geometri/sablon.py:105 cekirdek/tarama.py:231
-#: cekirdek/tarama.py:243 cekirdek/tarama_agac.py:95
+#: cekirdek/dogrula/kor.py:66 cekirdek/geometri/sablon.py:105 cekirdek/tarama.py:235
+#: cekirdek/tarama.py:247 cekirdek/tarama_agac.py:95
 #, python-format
 msgid "tanımsız çubuk: %s"
 msgstr "undefined pin: %s"
 
-#: cekirdek/tarama.py:233 cekirdek/tarama_agac.py:97
+#: cekirdek/tarama.py:237 cekirdek/tarama_agac.py:97
 #, python-format
 msgid ""
 "'%s' bir kontrol çubuğu değil; daldırma taraması yalnızca kontrol çubuklarına "
 "uygulanır"
 msgstr "'%s' is not a control rod; an insertion sweep applies only to control rods"
 
-#: cekirdek/dogrula/geometri.py:93 cekirdek/tarama.py:236 cekirdek/tarama_agac.py:52
+#: cekirdek/dogrula/geometri.py:93 cekirdek/tarama.py:240 cekirdek/tarama_agac.py:52
 #, python-format
 msgid "daldırma %%0–%%100 arasında olmalı: %s"
 msgstr "insertion must be between 0%% and 100%%: %s"
 
-#: cekirdek/tarama.py:249
+#: cekirdek/tarama.py:253
 msgid "modelde kontrol tamburu yok"
 msgstr "the model has no control drum"
 
-#: cekirdek/tarama.py:257 cekirdek/tarama_agac.py:72
+#: cekirdek/tarama.py:261 cekirdek/tarama_agac.py:72
 #, python-format
 msgid "bilinmeyen tarama türü: %s"
 msgstr "unknown sweep type: %s"
 
-#: cekirdek/tarama.py:330
+#: cekirdek/tarama.py:342
 msgid "Katsayı hesaplanamadı (yeterli nokta yok)."
 msgstr "The coefficient could not be computed (not enough points)."
 
-#: cekirdek/tarama.py:333
+#: cekirdek/tarama.py:345
 msgid "negatif"
 msgstr "negative"
 
-#: cekirdek/tarama.py:333
+#: cekirdek/tarama.py:345
 msgid "pozitif"
 msgstr "positive"
 
-#: cekirdek/tarama.py:335
+#: cekirdek/tarama.py:347
 #, python-format
 msgid ""
 "Eğim istatistiksel olarak sıfırdan ayırt edilemiyor (%.2f ± %.2f). Daha fazla "
@@ -5940,7 +6173,7 @@ msgstr ""
 "The slope cannot be statistically distinguished from zero (%.2f ± %.2f). More "
 "particles/batches or a wider range are needed."
 
-#: cekirdek/tarama.py:339
+#: cekirdek/tarama.py:351
 msgid ""
 "Doppler katsayısı. Negatif olması beklenir: yakıt ısındıkça U-238 rezonansları "
 "genişler, yakalama artar. Pozitif çıkması ciddi bir güvenlik işaretidir."
@@ -5948,7 +6181,7 @@ msgstr ""
 "Doppler coefficient. It is expected to be negative: as the fuel heats up the U-238 "
 "resonances broaden and capture increases. A positive value is a serious safety sign."
 
-#: cekirdek/tarama.py:342
+#: cekirdek/tarama.py:354
 msgid ""
 "Moderatör sıcaklık katsayısı. Termal reaktörde negatif olması istenir. Pozitifse "
 "soğutucu ısındıkça güç artar — kararsızlık."
@@ -5956,7 +6189,7 @@ msgstr ""
 "Moderator temperature coefficient. In a thermal reactor it should be negative. If "
 "positive, power rises as the coolant heats up — instability."
 
-#: cekirdek/tarama.py:345
+#: cekirdek/tarama.py:357
 msgid ""
 "Boşluk (void) katsayısı. Termal reaktörde negatif olmalı. Hızlı reaktörlerde merkezi "
 "bölgede pozitif olabilir."
@@ -5964,15 +6197,15 @@ msgstr ""
 "Void coefficient. In a thermal reactor it should be negative. In fast reactors it can"
 " be positive in the central region."
 
-#: cekirdek/tarama.py:347
+#: cekirdek/tarama.py:359
 msgid "Bor değeri (worth). Negatif olması beklenir: bor nötron emicidir."
 msgstr "Boron worth. It is expected to be negative: boron is a neutron absorber."
 
-#: cekirdek/tarama.py:348
+#: cekirdek/tarama.py:360
 msgid "Zenginlik duyarlılığı. Pozitif olması beklenir."
 msgstr "Enrichment sensitivity. It is expected to be positive."
 
-#: cekirdek/tarama.py:349
+#: cekirdek/tarama.py:361
 msgid ""
 "Moderasyon oranı etkisi. İşareti, demetin az mı çok mu moderatörlü olduğunu söyler: "
 "az moderatörlü tarafta adım artışı k'yi artırır (pozitif)."
@@ -5980,7 +6213,7 @@ msgstr ""
 "Moderation ratio effect. Its sign tells whether the assembly is under- or over-"
 "moderated: on the under-moderated side an increase in pitch increases k (positive)."
 
-#: cekirdek/tarama.py:353
+#: cekirdek/tarama.py:365
 msgid ""
 "Tambur değeri. Dönme 0°'de emici kora bakar (en düşük k), 180°'de dışa bakar (en "
 "yüksek k); bu yüzden eğim pozitif olmalı. Diferansiyel değerin tepesi orta dönmede "
@@ -5990,7 +6223,7 @@ msgstr ""
 "outwards (highest k); so the slope should be positive. The peak of the differential "
 "worth occurs at mid rotation — the classic drum S-curve."
 
-#: cekirdek/tarama.py:358
+#: cekirdek/tarama.py:370
 msgid ""
 "Kontrol çubuğu değeri. Negatif olmalı: emici daldıkça reaktivite düşer. Dikkat: "
 "klasik S eğrisi yalnızca sistem her konumda kritiğe yakın olduğunda görülür. k∞'u "
@@ -6005,27 +6238,27 @@ msgstr ""
 "worth accumulates late and the peak of the differential worth occurs near full "
 "insertion rather than at the centre."
 
-#: cekirdek/tarama.py:368
+#: cekirdek/tarama.py:380
 #, python-format
 msgid "Eğim %s. %s"
 msgstr "The slope is %s. %s"
 
-#: cekirdek/tarama.py:368
+#: cekirdek/tarama.py:380
 #, python-format
 msgid "Eğim %s."
 msgstr "The slope is %s."
 
-#: cekirdek/tarama.py:389
+#: cekirdek/tarama.py:401
 #, python-format
 msgid "Tarama kullanıcı tarafından durduruldu (%d/%d)."
 msgstr "The sweep was stopped by the user (%d/%d)."
 
-#: cekirdek/tarama.py:405
+#: cekirdek/tarama.py:417
 #, python-format
 msgid "koşu başarısız (çıkış kodu %d)"
 msgstr "run failed (exit code %d)"
 
-#: cekirdek/tarama.py:424
+#: cekirdek/tarama.py:436
 msgid ""
 "\n"
 "TARAMA TÜRLERİ"
@@ -6033,36 +6266,36 @@ msgstr ""
 "\n"
 "SWEEP TYPES"
 
-#: cekirdek/tarama.py:443
+#: cekirdek/tarama.py:455
 msgid "--tur, --bas ve --son zorunlu."
 msgstr "--tur, --bas and --son are required."
 
-#: cekirdek/tarama.py:448
+#: cekirdek/tarama.py:460
 #, python-format
 msgid "bilinmeyen tür: %s"
 msgstr "unknown type: %s"
 
-#: cekirdek/tarama.py:460
+#: cekirdek/tarama.py:472
 #, python-format
 msgid " TARAMA: %s"
 msgstr " PARAMETER SWEEP: %s"
 
-#: cekirdek/tarama.py:461
+#: cekirdek/tarama.py:473
 #, python-format
 msgid " hedef: %s   |   %g → %g %s   |   %d nokta"
 msgstr " target: %s   |   %g → %g %s   |   %d points"
 
-#: cekirdek/tarama.py:468
+#: cekirdek/tarama.py:480
 #, python-format
 msgid "  [%d/%d] %-12g %s  k = %.5f ± %.5f   ρ = %+9.1f pcm"
 msgstr "  [%d/%d] %-12g %s  k = %.5f ± %.5f   ρ = %+9.1f pcm"
 
-#: cekirdek/tarama.py:471
+#: cekirdek/tarama.py:483
 #, python-format
 msgid "  [%d/%d] %-12g %s  başarısız: %s"
 msgstr "  [%d/%d] %-12g %s  failed: %s"
 
-#: cekirdek/tarama.py:478
+#: cekirdek/tarama.py:490
 #, python-format
 msgid ""
 "\n"
@@ -6071,12 +6304,12 @@ msgstr ""
 "\n"
 "  Note: %s"
 
-#: cekirdek/tarama.py:483
+#: cekirdek/tarama.py:495
 #, python-format
 msgid "  Katsayı = %+.3f ± %.3f %s   (R² = %.4f, %d nokta)"
 msgstr "  Coefficient = %+.3f ± %.3f %s   (R² = %.4f, %d points)"
 
-#: cekirdek/tarama.py:487
+#: cekirdek/tarama.py:499
 msgid "  Katsayı hesaplanamadı."
 msgstr "  The coefficient could not be computed."
 
@@ -6133,16 +6366,16 @@ msgstr "the ring target must have the form '<container id>/halkalar/<i>': %r"
 msgid "'%s' kabında kalınlıkla tanımlı %d. halka yok"
 msgstr "container '%s' has no ring %d defined by thickness"
 
-#: cekirdek/tukenme.py:92
+#: cekirdek/tukenme.py:99
 #, python-format
 msgid "otomatik: %s"
 msgstr "automatic: %s"
 
-#: cekirdek/tukenme.py:95
+#: cekirdek/tukenme.py:102
 msgid "kullanıcı seçimi"
 msgstr "user selection"
 
-#: cekirdek/tukenme.py:278
+#: cekirdek/tukenme.py:319
 #, python-format
 msgid ""
 "çubuk çubuk yanma kesin örnek hacmi gerektirir; hacmi kesin olmayan (kesik) yanabilir"
@@ -6151,7 +6384,7 @@ msgstr ""
 "pin-by-pin burnup requires exact instance volumes; depletable material with inexact "
 "(truncated) volume: %s"
 
-#: cekirdek/tukenme.py:316
+#: cekirdek/tukenme.py:357
 #, python-format
 msgid ""
 "hacmi analitik hesaplanamayan yanabilir malzeme: %s (%s). Tükenme kesin hacim "
@@ -6160,101 +6393,101 @@ msgstr ""
 "depletable material whose volume cannot be computed analytically: %s (%s). Depletion "
 "requires exact volumes."
 
-#: cekirdek/dogrula/tukenme.py:135 cekirdek/tukenme.py:320
+#: cekirdek/dogrula/tukenme.py:135 cekirdek/tukenme.py:361
 msgid "modelde yanabilir (fisil) malzeme yok"
 msgstr "the model contains no depletable (fissile) material"
 
-#: cekirdek/tukenme.py:600
+#: cekirdek/tukenme.py:641
 msgid "malzemeler"
 msgstr "materials"
 
-#: cekirdek/tukenme.py:600
+#: cekirdek/tukenme.py:641
 msgid "çubuklar"
 msgstr "pins"
 
-#: cekirdek/tukenme.py:601
+#: cekirdek/tukenme.py:642
 msgid "plaka elemanları"
 msgstr "plate-type fuel elements"
 
-#: cekirdek/tukenme.py:601
+#: cekirdek/tukenme.py:642
 msgid "demetler"
 msgstr "assemblies"
 
-#: cekirdek/tukenme.py:601
+#: cekirdek/tukenme.py:642
 msgid "kor"
 msgstr "core"
 
-#: cekirdek/tukenme.py:602
+#: cekirdek/tukenme.py:643
 msgid "hesap ayarları"
 msgstr "run settings"
 
-#: cekirdek/tukenme.py:602
+#: cekirdek/tukenme.py:643
 msgid "tally'ler"
 msgstr "tallies"
 
-#: cekirdek/tukenme.py:603
+#: cekirdek/tukenme.py:644
 msgid "güç dağılımı"
 msgstr "power distribution"
 
-#: cekirdek/tukenme.py:603
+#: cekirdek/tukenme.py:644
 msgid "tükenme ayarları"
 msgstr "depletion settings"
 
-#: cekirdek/dogrula/tukenme.py:23 cekirdek/tukenme.py:611
+#: cekirdek/dogrula/tukenme.py:23 cekirdek/tukenme.py:652
 #: cekirdek/uygunluk_denetimi/vv_arayuz.py:55 cekirdek/vv/kume.py:189
 msgctxt "spektrum"
 msgid "termal"
 msgstr "thermal"
 
-#: cekirdek/dogrula/tukenme.py:24 cekirdek/tukenme.py:612
+#: cekirdek/dogrula/tukenme.py:24 cekirdek/tukenme.py:653
 #: cekirdek/uygunluk_denetimi/vv_arayuz.py:57 cekirdek/vv/kume.py:190
 msgctxt "spektrum"
 msgid "hızlı"
 msgstr "fast"
 
-#: cekirdek/tukenme.py:666
+#: cekirdek/tukenme.py:707
 msgid "koşmadan hacim, zincir ve ağır metal bilgisini yazdır"
 msgstr "print the volume, chain and heavy metal information without running"
 
-#: cekirdek/tukenme.py:668
+#: cekirdek/tukenme.py:709
 msgid "doğrulamada nüklid/kütüphane denetimini atla"
 msgstr "skip the nuclide/library check in the model check"
 
-#: cekirdek/tukenme.py:685
+#: cekirdek/tukenme.py:726
 #, python-format
 msgid "  zincir        : %s  (%s)"
 msgstr "  chain         : %s  (%s)"
 
-#: cekirdek/tukenme.py:686
+#: cekirdek/tukenme.py:727
 #, python-format
 msgid "  fisyon verimi : %s eV (%s spektrum)"
 msgstr "  fission yield : %s eV (%s spectrum)"
 
-#: cekirdek/tukenme.py:688
+#: cekirdek/tukenme.py:729
 #, python-format
 msgid "  güç yoğunluğu : %g W/gHM"
 msgstr "  power density : %g W/gHM"
 
-#: cekirdek/tukenme.py:689
+#: cekirdek/tukenme.py:730
 #, python-format
 msgid "  adımlar       : %s %s  → %d transport"
 msgstr "  steps         : %s %s  → %d transports"
 
-#: cekirdek/tukenme.py:691 cekirdek/tukenme.py:716
+#: cekirdek/tukenme.py:732 cekirdek/tukenme.py:757
 msgid "gün"
 msgstr "days"
 
-#: cekirdek/tukenme.py:695
+#: cekirdek/tukenme.py:736
 #, python-format
 msgid "  hacim %-10s: %s cm³ [%s] %s"
 msgstr "  volume %-10s: %s cm³ [%s] %s"
 
-#: cekirdek/tukenme.py:699
+#: cekirdek/tukenme.py:740
 #, python-format
 msgid "  ağır metal    : %.6g g"
 msgstr "  heavy metal   : %.6g g"
 
-#: cekirdek/tukenme.py:708
+#: cekirdek/tukenme.py:749
 #, python-format
 msgid ""
 "\n"
@@ -6263,7 +6496,7 @@ msgstr ""
 "\n"
 "  MODEL CHECK: the run was not started (%d errors)"
 
-#: cekirdek/tukenme.py:715
+#: cekirdek/tukenme.py:756
 #, python-format
 msgid ""
 "\n"
@@ -6272,7 +6505,7 @@ msgstr ""
 "\n"
 "  heavy metal: %.6g g"
 
-#: cekirdek/tukenme.py:719
+#: cekirdek/tukenme.py:760
 #, python-format
 msgid ""
 "\n"
@@ -6371,11 +6604,11 @@ msgstr "core cylinder R = %g cm × %g cm"
 msgid "katmanı/koru doğrudan dolduruyor"
 msgstr "fills the layer/core directly"
 
-#: cekirdek/geometri/hacim.py:115 cekirdek/tukenme_hacim.py:360
+#: cekirdek/geometri/hacim.py:143 cekirdek/tukenme_hacim.py:360
 msgid "hacmi kesin değil: "
 msgstr "volume not exact: "
 
-#: cekirdek/geometri/hacim.py:120 cekirdek/tukenme_hacim.py:367
+#: cekirdek/geometri/hacim.py:148 cekirdek/tukenme_hacim.py:367
 msgid "hacmi sıfır: "
 msgstr "volume is zero: "
 
@@ -6383,11 +6616,11 @@ msgstr "volume is zero: "
 msgid "bu yerleşim için analitik hacim yok"
 msgstr "no analytical volume for this placement"
 
-#: cekirdek/geometri/hacim.py:121 cekirdek/tukenme_hacim.py:373
+#: cekirdek/geometri/hacim.py:149 cekirdek/tukenme_hacim.py:373
 msgid "malzeme geometride bulunamadı"
 msgstr "material not found in the geometry"
 
-#: cekirdek/geometri/hacim.py:236 cekirdek/tukenme_hacim.py:396
+#: cekirdek/geometri/hacim.py:264 cekirdek/tukenme_hacim.py:396
 #, python-format
 msgid "stokastik hacim %.6g ± %.2g cm³ (%s)"
 msgstr "stochastic volume %.6g ± %.2g cm³ (%s)"
@@ -6442,39 +6675,39 @@ msgstr "the model has no hydrogen or graphite moderator"
 msgid "%s (kaba kural: yakıt komşuluğu çıkarılamadı)"
 msgstr "%s (coarse rule: the fuel neighbourhood could not be derived)"
 
-#: cekirdek/uygunluk.py:74
+#: cekirdek/uygunluk.py:83
 msgid "Yakıt çubuğu (pin hücre)"
 msgstr "Fuel pin (pin cell)"
 
-#: cekirdek/uygunluk.py:75
+#: cekirdek/uygunluk.py:84
 msgid "Plaka elemanı (MTR)"
 msgstr "Plate-type fuel element (MTR)"
 
-#: cekirdek/uygunluk.py:76
+#: cekirdek/uygunluk.py:85
 msgid "Tek yakıt demeti"
 msgstr "Single fuel assembly"
 
-#: cekirdek/uygunluk.py:77
+#: cekirdek/uygunluk.py:86
 msgid "Tam kor (kare harita)"
 msgstr "Full core (rectangular map)"
 
-#: cekirdek/uygunluk.py:78
+#: cekirdek/uygunluk.py:87
 msgid "Tam kor (altıgen harita)"
 msgstr "Full core (hexagonal map)"
 
-#: cekirdek/uygunluk.py:79
+#: cekirdek/uygunluk.py:88
 msgid "Tamburlu kompakt kor"
 msgstr "Compact core with control drums"
 
-#: cekirdek/uygunluk.py:80
+#: cekirdek/uygunluk.py:89
 msgid "Küresel düzenek (kabuklar)"
 msgstr "Spherical assembly (shells)"
 
-#: cekirdek/uygunluk.py:325
+#: cekirdek/uygunluk.py:341
 msgid "tükenme özdeğer (k-eff) hesabı gerektirir"
 msgstr "depletion requires an eigenvalue (k-eff) calculation"
 
-#: cekirdek/uygunluk.py:327
+#: cekirdek/uygunluk.py:343
 msgid "geometride fisil (yakıt) malzeme yok"
 msgstr "there is no fissile (fuel) material in the geometry"
 
