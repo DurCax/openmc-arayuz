@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 15:12+0300\n"
+"POT-Creation-Date: 2026-10-02 15:45+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -1129,6 +1129,11 @@ msgstr ""
 "%s  |  fission yield %s eV (%s spectrum)\n"
 "%s"
 
+#: cekirdek/cizim_goruntu.py:115
+#, python-format
+msgid "%s %d-%d arası tamsayı olmalı: %r"
+msgstr "%s must be an integer between %d and %d: %r"
+
 #: arayuz/ayar/spektrum_karti.py:37
 #, python-format
 msgid "%s (%d grup)"
@@ -1195,6 +1200,11 @@ msgstr "%s = %g is within the validation range [%g, %g]."
 #, python-format
 msgid "%s = %g doğrulama aralığının [%g, %g] dışında (taşma %%%.0f)."
 msgstr "%s = %g is outside the validation range [%g, %g] (excess %.0f%%)."
+
+#: cekirdek/cizim_goruntu.py:106
+#, python-format
+msgid "%s bileşenleri ±%g cm içinde olmalı: %r"
+msgstr "%s components must be within ±%g cm: %r"
 
 #: cekirdek/uygunluk_denetimi/denetle.py:83
 #, python-format
@@ -1344,6 +1354,11 @@ msgstr "%s is not a finite number: %r"
 msgid "%s sonlu bir sayı olmalı: %r"
 msgstr "%s must be a finite number: %r"
 
+#: cekirdek/cizim_goruntu.py:108
+#, python-format
+msgid "%s sıfır vektör olamaz"
+msgstr "%s cannot be a zero vector"
+
 #: cekirdek/dogrula/geometri.py:136 cekirdek/dogrula/geometri.py:243
 #, python-format
 msgid "%s sıfırdan büyük olmalı: %s"
@@ -1390,6 +1405,11 @@ msgstr "%s already exists. Overwrite it?"
 #, python-format
 msgid "%s zincir seçildi ama model %s spektrumlu görünüyor"
 msgstr "%s chain selected but the model appears to have a %s spectrum"
+
+#: cekirdek/cizim_goruntu.py:103
+#, python-format
+msgid "%s üç sonlu sayı olmalı: %r"
+msgstr "%s must be three finite numbers: %r"
 
 #: arayuz/analiz/sekme.py:446
 #, python-format
@@ -1533,7 +1553,7 @@ msgstr "&File"
 msgid "&Görünüm"
 msgstr "&View"
 
-#: arayuz/pencere/menuler.py:115
+#: arayuz/pencere/menuler.py:118
 msgid "&Yardım"
 msgstr "&Help"
 
@@ -2400,6 +2420,10 @@ msgstr "(not selected)"
 msgid "(seçilmemiş)"
 msgstr "(not selected)"
 
+#: arayuz/goruntuleyici/paneller.py:114 arayuz/goruntuleyici/paneller.py:153
+msgid "(statepoint yok)"
+msgstr "(no statepoint)"
+
 #: cekirdek/uygunluk_denetimi/kurallar_rapor.py:161
 msgid "(tanımsal terimler); STANDARTLAR.md §6 madde 15"
 msgstr "(defined terms); STANDARTLAR.md §6 item 15"
@@ -2478,6 +2502,11 @@ msgstr ", including the duct"
 #, python-brace-format
 msgid ", z = {a:.4g} … {u:.4g} cm"
 msgstr ", z = {a:.4g} … {u:.4g} cm"
+
+#: arayuz/goruntuleyici/gorunum.py:178
+#, python-format
+msgid ", örnek %d"
+msgstr ", instance %d"
 
 #: cekirdek/giris.py:295
 #, python-format
@@ -2578,6 +2607,10 @@ msgstr ""
 msgid "2B modelde eksenel yığın kurulamaz; kök yüksekliği verin."
 msgstr "An axial stack cannot be built in a 2D model; give the root a height."
 
+#: arayuz/goruntuleyici/paneller.py:230
+msgid "2B modelde geometri eksenel sonsuzdur: 3B görünüm sonsuz prizmayı gösterir."
+msgstr "In a 2D model the geometry is axially infinite: the 3D view shows an infinite prism."
+
 #: cekirdek/dogrula/agac.py:319
 msgid "2B modelde kontrol tamburu: eksenel sızıntı yok; tambur değeri fazla çıkar."
 msgstr ""
@@ -2600,6 +2633,29 @@ msgstr ""
 msgid "3B"
 msgstr "3D"
 
+#: arayuz/goruntuleyici/paneller.py:210 arayuz/goruntuleyici/pencere.py:127
+msgid "3B görünüm"
+msgstr "3D view"
+
+#: arayuz/goruntuleyici/tuval.py:136
+msgid "3B görünüm için “Çiz”e basın"
+msgstr "Press “Draw” for the 3D view"
+
+#: arayuz/goruntuleyici/pencere.py:282
+msgid "3B görünüm çiziliyor…"
+msgstr "Drawing 3D view…"
+
+#: arayuz/goruntuleyici/pencere.py:345
+#, python-format
+msgid ""
+"3B görünüm üretilemedi:\n"
+"\n"
+"%s"
+msgstr ""
+"The 3D view could not be produced:\n"
+"\n"
+"%s"
+
 #: arayuz/pencere/model_islemleri.py:146
 msgid "3B katmanlı"
 msgstr "3D layered"
@@ -2611,6 +2667,19 @@ msgid ""
 msgstr ""
 "In a 3D model 'whole model' also contains the axial reflector (coverage 1, infinite-"
 "lattice check); 'active' takes only the fissile layer."
+
+#: arayuz/goruntuleyici/pencere.py:354
+#, python-format
+msgid ""
+"3B ışın izleme bu modelde başarısız oldu (OpenMC 0.16 SolidRayTracePlot sınırlaması; "
+"bazı tam kor modellerinde süreç çöker ya da asılı kalır).\n"
+"\n"
+"%s"
+msgstr ""
+"3D ray tracing failed for this model (OpenMC 0.16 SolidRayTracePlot limitation; on "
+"some full-core models the process crashes or hangs).\n"
+"\n"
+"%s"
 
 #: arayuz/kor/yerlesim.py:30
 msgid "3B, katmanlı (yansıtıcı / örtü / plenum)"
@@ -3317,7 +3386,11 @@ msgstr "Detailed output"
 msgid "Ayrıştırmadan bu yana süre"
 msgstr "Time since separation"
 
-#: arayuz/pencere/menuler.py:329 arayuz/pencere/proje.py:204
+#: arayuz/goruntuleyici/paneller.py:224
+msgid "Azimut:"
+msgstr "Azimuth:"
+
+#: arayuz/pencere/menuler.py:332 arayuz/pencere/proje.py:204
 msgid "Aç"
 msgstr "Open"
 
@@ -3328,6 +3401,10 @@ msgstr "Angle"
 #: arayuz/tasarim/tokenlar.py:152
 msgid "Açık"
 msgstr "Light"
+
+#: arayuz/goruntuleyici/pencere.py:172
+msgid "Açık model yok: önce bir model açın."
+msgstr "No open model: open a model first."
 
 #: arayuz/baslangic.py:417
 msgid "Açık modele dön"
@@ -3367,13 +3444,17 @@ msgstr "Show this screen at startup"
 msgid "Açısal dağılım:"
 msgstr "Angular distribution:"
 
-#: arayuz/baslangic.py:456 arayuz/pencere/menuler.py:143
+#: arayuz/baslangic.py:456 arayuz/pencere/menuler.py:146
 msgid "Aç…"
 msgstr "Open…"
 
 #: arayuz/sonuc/mesh_harita.py:124
 msgid "Ağ (mesh) haritası"
 msgstr "Mesh map"
+
+#: arayuz/goruntuleyici/paneller.py:110
+msgid "Ağ (mesh) tally bindirmesi"
+msgstr "Mesh tally overlay"
 
 #: arayuz/ayar/mesh_formu.py:37
 msgid "Ağ (mesh) tally'si"
@@ -3547,6 +3628,10 @@ msgstr "Relative error (σ / value)"
 msgid "Bağıl hata eşiği. Varsayılan %10 — "
 msgstr "Relative error threshold. Default 10% — "
 
+#: arayuz/goruntuleyici/paneller.py:141
+msgid "Bağıl hata eşiği:"
+msgstr "Relative error threshold:"
+
 #: cekirdek/uygunluk_denetimi/kurallar_mc.py:155
 msgid "Bağımsız tohumlarla birkaç koşu yapıp sonuçların saçılımını karşılaştırın."
 msgstr "Make several runs with independent seeds and compare the spread of the results."
@@ -3571,7 +3656,7 @@ msgstr "Start angle"
 msgid "Başlangıç ekranı"
 msgstr "Start screen"
 
-#: arayuz/pencere/menuler.py:142
+#: arayuz/pencere/menuler.py:145
 msgid "Başlangıç ekranı: ne modelleyeceğini seç"
 msgstr "Start screen: choose what to model"
 
@@ -3579,7 +3664,7 @@ msgstr "Start screen: choose what to model"
 msgid "Başlangıç ekranına geç"
 msgstr "Go to the start screen"
 
-#: arayuz/pencere/menuler.py:346
+#: arayuz/pencere/menuler.py:349
 msgid "Başlangıç ekranında: açık modele dön"
 msgstr "On the start screen: return to the open model"
 
@@ -3909,6 +3994,11 @@ msgstr "Unknown boundary condition: face %d = %r."
 msgid "Bilinmeyen şablon: {a}"
 msgstr "Unknown template: {a}"
 
+#: arayuz/goruntuleyici/pencere.py:396
+#, python-format
+msgid "Bindirme yapılamadı: %s"
+msgstr "Overlay failed: %s"
+
 #: cekirdek/geometri/denetim.py:388
 #, python-format
 msgid "Bir bölgede %d'den fazla delik; hücre arama yavaşlar."
@@ -3950,7 +4040,7 @@ msgstr ""
 "Select a material; if the region is deliberately left empty, select 'Void (no "
 "material)'."
 
-#: arayuz/pencere/menuler.py:144
+#: arayuz/pencere/menuler.py:147
 msgid "Bir model dosyası (.json) aç"
 msgstr "Open a model file (.json)"
 
@@ -4371,7 +4461,7 @@ msgstr ""
 "distributed according to the share of the target pins in the fission energy of the "
 "model."
 
-#: arayuz/pencere/menuler.py:338
+#: arayuz/pencere/menuler.py:341
 msgid "Bu yardım"
 msgstr "This help"
 
@@ -4654,7 +4744,7 @@ msgstr "On the Assembly page create a new assembly and place pins on its lattice
 msgid "Demet tanımlı değil"
 msgstr "No assembly defined"
 
-#: arayuz/pencere/menuler.py:349
+#: arayuz/pencere/menuler.py:352
 msgid ""
 "Demet ve kor haritasında sol tık boyar, sağ tık o hücrenin parçasını fırça yapar; "
 "altıgen haritada tekerlek yakınlaştırır."
@@ -4860,7 +4950,7 @@ msgstr "On a rectangular boundary the 'yuzler' keys must be %s."
 msgid "Dikkat: kaynak yakınsamamış olabilir — pasif çevrim sayısını artırın"
 msgstr "Caution: the source may not have converged — increase the number of inactive batches"
 
-#: arayuz/pencere/menuler.py:299
+#: arayuz/pencere/menuler.py:302
 msgid "Dil"
 msgstr "Language"
 
@@ -4870,7 +4960,7 @@ msgctxt "menü"
 msgid "Dil"
 msgstr "Language"
 
-#: arayuz/pencere/menuler.py:299
+#: arayuz/pencere/menuler.py:302
 msgid "Dil değişikliği uygulama yeniden başlatılınca geçerli olur."
 msgstr "The language change takes effect after the application restarts."
 
@@ -4901,6 +4991,10 @@ msgstr "Bin relative"
 #: arayuz/sonuc/mesh_harita.py:132
 msgid "Dilim ekseni:"
 msgstr "Slice axis:"
+
+#: arayuz/goruntuleyici/paneller.py:196
+msgid "Dilim kalınlığı:"
+msgstr "Slice thickness:"
 
 #: arayuz/guc_harita_tablo.py:48
 msgid "Dilim q′ [W/cm]"
@@ -5126,7 +5220,7 @@ msgstr[1] ""
 msgid "Doğrulamada hata var; Geri dönüp değerleri düzeltin."
 msgstr "The check found errors; go Back and correct the values."
 
-#: arayuz/pencere/menuler.py:124 arayuz/pencere/menuler.py:333
+#: arayuz/pencere/menuler.py:127 arayuz/pencere/menuler.py:336
 msgid "Doğrulamayı yenile (veri kütüphanesi dahil)"
 msgstr "Refresh model check (including data library)"
 
@@ -5280,7 +5374,7 @@ msgstr "The node ID (id) must be a non-empty string."
 msgid "Düğüm kondu: {tur}"
 msgstr "Node placed: {tur}"
 
-#: arayuz/onizleme.py:72
+#: arayuz/goruntuleyici/paneller.py:21 arayuz/onizleme.py:72
 msgid "Düşük (400)"
 msgstr "Low (400)"
 
@@ -5628,7 +5722,7 @@ msgstr "Adds a new layer at the top."
 msgid "En üstteki katman tabloda en üsttedir."
 msgstr "The topmost layer is at the top of the table."
 
-#: arayuz/sonuc/mesh_harita.py:131
+#: arayuz/goruntuleyici/paneller.py:137 arayuz/sonuc/mesh_harita.py:131
 msgid "Enerji grubu:"
 msgstr "Energy group:"
 
@@ -5834,11 +5928,11 @@ msgstr "F_ΔH covers only pin '%s' — the model also contains other pin types w
 msgid "Fark haritası yalnız dikdörtgen kafeste çizilir"
 msgstr "The difference map is drawn only for a rectangular lattice"
 
-#: arayuz/pencere/menuler.py:330
+#: arayuz/pencere/menuler.py:333
 msgid "Farklı kaydet"
 msgstr "Save as"
 
-#: arayuz/pencere/menuler.py:149
+#: arayuz/pencere/menuler.py:152
 msgid "Farklı kaydet…"
 msgstr "Save as…"
 
@@ -6132,7 +6226,7 @@ msgstr "Requirements"
 msgid "Geri"
 msgstr "Back"
 
-#: arayuz/pencere/menuler.py:104 arayuz/pencere/menuler.py:331
+#: arayuz/pencere/menuler.py:104 arayuz/pencere/menuler.py:334
 msgid "Geri al"
 msgstr "Undo"
 
@@ -6205,6 +6299,10 @@ msgstr "Git commit"
 msgid "Gizle"
 msgstr "Hide"
 
+#: arayuz/goruntuleyici/paneller.py:228
+msgid "Gizlenen malzemeler:"
+msgstr "Hidden materials:"
+
 #: arayuz/tukenme_arayuz.py:151
 msgid ""
 "Grafikte, tabloda ve CSV'de izlenecek nüklidler. Seçim değişince önceki sonuç yeniden"
@@ -6233,6 +6331,11 @@ msgstr "Save chart"
 #: arayuz/geometri/form_yerlesim.py:322
 msgid "Grup"
 msgstr "Group"
+
+#: arayuz/goruntuleyici/paneller.py:162
+#, python-format
+msgid "Grup %d"
+msgstr "Group %d"
 
 #: arayuz/sonuc/mesh_harita.py:251
 #, python-format
@@ -6326,9 +6429,30 @@ msgstr "Groups must be a list."
 msgid "Görev başına CPU (OMP)"
 msgstr "CPUs per task (OMP)"
 
+#: arayuz/goruntuleyici/pencere.py:77
+msgid "Görüntüleyici"
+msgstr "Viewer"
+
+#: arayuz/goruntuleyici/pencere.py:341
+#, python-format
+msgid "Görüntüleyici: %s"
+msgstr "Viewer: %s"
+
+#: arayuz/pencere/menuler.py:115
+msgid "Görüntüleyici…"
+msgstr "Viewer…"
+
 #: arayuz/guc_harita.py:105
 msgid "Görünüm:"
 msgstr "View:"
+
+#: arayuz/goruntuleyici/paneller.py:73
+msgid "Görünür genişlik:"
+msgstr "Visible width:"
+
+#: arayuz/goruntuleyici/paneller.py:227
+msgid "Görüş açısı:"
+msgstr "Field of view:"
 
 #: arayuz/onizleme.py:178
 msgid "Gösterge"
@@ -6381,6 +6505,10 @@ msgstr "See the log file and report the error."
 #: arayuz/uygunluk_paneli.py:293
 msgid "Günlük dosyasında ayrıntı var."
 msgstr "Details are in the log file."
+
+#: arayuz/goruntuleyici/paneller.py:125
+msgid "Güvenilmez hücreleri gizle (σ maskesi)"
+msgstr "Hide unreliable cells (σ mask)"
 
 #: arayuz/sonuc/mesh_harita.py:82
 msgid "Güvenilmez hücreleri işaretle"
@@ -6634,7 +6762,7 @@ msgstr "Ceramic fuel of light water reactors."
 msgid "Hafif su reaktörü yakıt zarfı."
 msgstr "Light water reactor fuel cladding."
 
-#: arayuz/pencere/menuler.py:120 arayuz/pencere/menuler.py:376
+#: arayuz/pencere/menuler.py:123 arayuz/pencere/menuler.py:379
 msgid "Hakkında"
 msgstr "About"
 
@@ -7115,6 +7243,7 @@ msgstr ""
 "Nothing is prefilled: choose the core type, then build it in order starting with "
 "materials."
 
+#: arayuz/goruntuleyici/paneller.py:214 arayuz/goruntuleyici/renk_kipi.py:23
 #: arayuz/onizleme.py:77
 msgid "Hücre"
 msgstr "Cell"
@@ -7126,6 +7255,11 @@ msgstr "Cell pitch:"
 #: arayuz/onizleme.py:631
 msgid "Hücre renkleri yalnız hücreleri ayırt etmek içindir."
 msgstr "Cell colours only tell cells apart."
+
+#: arayuz/goruntuleyici/pencere.py:412
+#, python-format
+msgid "Hücresiz (geometri dışı ya da tanımsız): %d piksel."
+msgstr "No cell (outside the geometry or undefined): %d pixels."
 
 #: arayuz/calistir/pano.py:88
 msgid "Hız"
@@ -7458,7 +7592,7 @@ msgstr ""
 "screen with File > New (Ctrl+N)."
 
 #: arayuz/bilesenler/bildirim.py:98 arayuz/malzeme/kutuphane_tarayici.py:53
-#: arayuz/pencere/menuler.py:362
+#: arayuz/pencere/menuler.py:365
 msgid "Kapat"
 msgstr "Close"
 
@@ -7598,12 +7732,14 @@ msgstr "Give the coefficient with the slope uncertainty (tarama.katsayi)."
 msgid "Kavramlar"
 msgstr "Concepts"
 
-#: arayuz/pencere/proje.py:151 arayuz/pencere/proje.py:320
+#: arayuz/goruntuleyici/pencere.py:504 arayuz/pencere/proje.py:151
+#: arayuz/pencere/proje.py:320
 #, python-format
 msgid "Kaydedildi: %s"
 msgstr "Saved: %s"
 
-#: arayuz/calistir/yakinsama.py:77 arayuz/pencere/proje.py:146
+#: arayuz/calistir/yakinsama.py:77 arayuz/goruntuleyici/pencere.py:507
+#: arayuz/pencere/proje.py:146
 msgid "Kaydedilemedi"
 msgstr "Could not save"
 
@@ -7620,7 +7756,7 @@ msgstr "Unsaved changes"
 msgid "Kaydedilmiş bir model (.json) ya da OpenMC XML klasörü."
 msgstr "A saved model (.json) or an OpenMC XML folder."
 
-#: arayuz/pencere/menuler.py:147 arayuz/pencere/menuler.py:330 arayuz/pencere/proje.py:76
+#: arayuz/pencere/menuler.py:150 arayuz/pencere/menuler.py:333 arayuz/pencere/proje.py:76
 msgid "Kaydet"
 msgstr "Save"
 
@@ -7637,6 +7773,10 @@ msgstr "Source"
 msgctxt "kaynak"
 msgid "Kaynak"
 msgstr "Source"
+
+#: arayuz/goruntuleyici/pencere.py:254
+msgid "Kaynak bankası için statepoint seçin (Ağ tally bindirmesi > Statepoint seç…)."
+msgstr "Choose a statepoint for the source bank (Mesh tally overlay > Choose statepoint…)."
 
 #: cekirdek/kosucu.py:205
 #, python-format
@@ -7693,6 +7833,15 @@ msgstr "Convergence of the source distribution"
 msgid "Kaynak entropisi"
 msgstr "Source entropy"
 
+#: arayuz/goruntuleyici/paneller.py:181
+msgid "Kaynak noktaları"
+msgstr "Source points"
+
+#: arayuz/goruntuleyici/pencere.py:415
+#, python-format
+msgid "Kaynak noktası: %d / %d gösteriliyor."
+msgstr "Source points: showing %d / %d."
+
 #: cekirdek/mesh_tally/normalizasyon.py:53
 msgid "Kaynak nötronu başına"
 msgstr "Per source neutron"
@@ -7734,6 +7883,10 @@ msgstr ""
 "Source strength [particles/s]. Tally results are multiplied by it and\n"
 "become absolute (1/s, 1/cm²/s). If left at 1, results stay per source\n"
 "particle."
+
+#: arayuz/goruntuleyici/paneller.py:194
+msgid "Kaynak:"
+msgstr "Source:"
 
 #: arayuz/uygunluk_paneli.py:330
 #, python-format
@@ -7814,6 +7967,7 @@ msgstr ""
 "by-pin burnup gives an ERROR."
 
 #: arayuz/cubuk/sayfalar.py:162 arayuz/geometri/formlar.py:148
+#: arayuz/goruntuleyici/paneller.py:55 arayuz/goruntuleyici/pencere.py:126
 msgid "Kesit"
 msgstr "Cross-section"
 
@@ -7827,15 +7981,27 @@ msgstr "The cross-section field '%s' must be a positive number."
 msgid "Kesit bir nesne olmalı ({\"sekil\": ...})."
 msgstr "A cross-section must be an object ({\"sekil\": ...})."
 
+#: arayuz/goruntuleyici/paneller.py:71
+msgid "Kesit ekseni:"
+msgstr "Slice axis:"
+
 #: arayuz/geometri/cizim.py:472 arayuz/geometri/cizim_xz.py:237
 #, python-format
 msgid "Kesit eksik çizildi (hesaplanamadı): %s"
 msgstr "Cross-section drawn incompletely (could not be computed): %s"
 
+#: arayuz/goruntuleyici/pencere.py:408
+msgid "Kesit güncel."
+msgstr "Slice up to date."
+
 #: arayuz/geometri/cizim.py:459 arayuz/geometri/cizim_xz.py:226
 #, python-format
 msgid "Kesit hesaplanamadı: %s"
 msgstr "Cross-section could not be computed: %s"
+
+#: arayuz/goruntuleyici/paneller.py:72
+msgid "Kesit konumu:"
+msgstr "Slice position:"
 
 #: arayuz/cubuk/sayfalar.py:233
 msgid ""
@@ -7854,6 +8020,17 @@ msgstr "No cross-section (xz is not drawn for a 2D model)"
 #: arayuz/cubuk/sayfalar.py:163
 msgid "Kesit yönelimi"
 msgstr "Cross-section orientation"
+
+#: arayuz/goruntuleyici/pencere.py:348
+#, python-format
+msgid ""
+"Kesit çizilemedi:\n"
+"\n"
+"%s"
+msgstr ""
+"The slice could not be drawn:\n"
+"\n"
+"%s"
 
 #: arayuz/onizleme.py:170
 msgid "Kesit:"
@@ -7885,7 +8062,7 @@ msgstr "Choose folder"
 msgid "Klasörü aç"
 msgstr "Open folder"
 
-#: arayuz/pencere/menuler.py:340
+#: arayuz/pencere/menuler.py:343
 msgid "Klavye kısayolları"
 msgstr "Keyboard shortcuts"
 
@@ -8443,12 +8620,12 @@ msgstr ""
 "Ratio of the Pu + Am mass at the time of use (AFTER ageing) to the heavy metal; heavy"
 " metal is Z ≥ 90 (Am included)."
 
-#: arayuz/pencere/menuler.py:117 arayuz/yardim/gosterici.py:56
+#: arayuz/pencere/menuler.py:120 arayuz/yardim/gosterici.py:56
 #: arayuz/yardim_baglanti.py:106
 msgid "Kullanım kılavuzu"
 msgstr "User guide"
 
-#: arayuz/pencere/menuler.py:337
+#: arayuz/pencere/menuler.py:340
 msgid "Kullanım kılavuzu (etkin sayfanın bölümü)"
 msgstr "User guide (section for the current page)"
 
@@ -8461,7 +8638,7 @@ msgstr "User guide not found: {yol}"
 msgid "Kullanım kılavuzunda bu sayfanın bölümünü açar (F1)"
 msgstr "Opens this page's section in the user guide (F1)"
 
-#: arayuz/pencere/menuler.py:118
+#: arayuz/pencere/menuler.py:121
 msgid "Kullanım kılavuzunu etkin sayfanın bölümünde açar"
 msgstr "Opens the user guide at the section for the current page"
 
@@ -8928,7 +9105,8 @@ msgid "MWd/kg (yanma)"
 msgstr "MWd/kg (burnup)"
 
 #: arayuz/cubuk/sayfalar.py:117 arayuz/demet/kilif.py:59 arayuz/geometri/formlar.py:30
-#: arayuz/geometri/formlar.py:87 arayuz/kor/yerlesim.py:85 arayuz/onizleme.py:77
+#: arayuz/geometri/formlar.py:87 arayuz/goruntuleyici/paneller.py:213
+#: arayuz/goruntuleyici/renk_kipi.py:23 arayuz/kor/yerlesim.py:85 arayuz/onizleme.py:77
 #: arayuz/sekme_malzeme.py:237 cekirdek/dogrula/_ortak.py:25
 msgid "Malzeme"
 msgstr "Material"
@@ -9006,6 +9184,10 @@ msgstr "Materials and library components are already single references."
 msgid "Malzeme yoğunluğu"
 msgstr "Material density"
 
+#: arayuz/goruntuleyici/__init__.py:17
+msgid "Malzeme/hücre/çakışma kesiti, ağ tally bindirmesi, kaynak noktaları, 3B görünüm (Y2)"
+msgstr "Material/cell/overlap slice, mesh tally overlay, source points, 3D view (Y2)"
+
 #: arayuz/kor/yerlesim.py:298
 msgid "Malzeme:"
 msgstr "Material:"
@@ -9025,7 +9207,7 @@ msgstr "Materials"
 msgid "Malzemeler sayfasında kütüphaneden yakıt, zarf ve soğutucu ekleyin."
 msgstr "On the Materials page add fuel, cladding and coolant from the library."
 
-#: arayuz/pencere/menuler.py:152
+#: arayuz/pencere/menuler.py:155
 msgid "Malzemeleri içe aktar (OpenMC XML)…"
 msgstr "Import materials (OpenMC XML)…"
 
@@ -9153,7 +9335,7 @@ msgstr "2D model: define a height in the Geometry tab"
 msgid "Model aç"
 msgstr "Open model"
 
-#: arayuz/onizleme.py:162 arayuz/onizleme.py:332
+#: arayuz/goruntuleyici/tuval.py:57 arayuz/onizleme.py:162 arayuz/onizleme.py:332
 msgid "Model bekleniyor"
 msgstr "Waiting for a model"
 
@@ -9180,6 +9362,10 @@ msgstr[1] ""
 msgid "Model henüz çalıştırılmadı; hazır olduğunda ÇALIŞTIR (F9)."
 msgstr "The model has not been run yet; press RUN (F9) when it is ready."
 
+#: arayuz/goruntuleyici/paneller.py:186
+msgid "Model kaynağı (settings.source)"
+msgstr "Model source (settings.source)"
+
 #: arayuz/sekme_calistir.py:462
 msgid "Model kurulamadı"
 msgstr "Model could not be built"
@@ -9202,7 +9388,7 @@ msgstr "Building the model: {tamam}/{toplam} steps"
 msgid "Model okunamadı; doğrulama listesine bakın."
 msgstr "The model could not be read; see the model check list."
 
-#: arayuz/pencere/menuler.py:161
+#: arayuz/pencere/menuler.py:164
 msgid "Model ve son koşu için HTML ya da PDF rapor yazar"
 msgstr "Writes an HTML or PDF report for the model and the last run"
 
@@ -9271,7 +9457,11 @@ msgstr "Save model"
 msgid "Modeli kurun ({tamam}/{toplam}):"
 msgstr "Build the model ({tamam}/{toplam}):"
 
-#: arayuz/pencere/menuler.py:130
+#: arayuz/goruntuleyici/pencere.py:112
+msgid "Modeli yenile"
+msgstr "Reload model"
+
+#: arayuz/pencere/menuler.py:133
 msgid "Modeli çalıştır (F9) — önce geometri çizilmiş ve doğrulama hatasız olmalı"
 msgstr ""
 "Run the model (F9) — the geometry must be plotted and the model check free of errors "
@@ -9426,7 +9616,7 @@ msgstr "Point kinetics"
 msgid "Nokta konumu:"
 msgstr "Point position:"
 
-#: arayuz/analiz/sekme.py:104
+#: arayuz/analiz/sekme.py:104 arayuz/goruntuleyici/paneller.py:195
 msgid "Nokta sayısı:"
 msgstr "Number of points:"
 
@@ -9443,11 +9633,11 @@ msgstr "Point sampling: %s. %s"
 msgid "Normal"
 msgstr "Normal"
 
-#: arayuz/onizleme.py:72
+#: arayuz/goruntuleyici/paneller.py:21 arayuz/onizleme.py:72
 msgid "Normal (800)"
 msgstr "Normal (800)"
 
-#: arayuz/sonuc/mesh_harita.py:134
+#: arayuz/goruntuleyici/paneller.py:138 arayuz/sonuc/mesh_harita.py:134
 msgid "Normalizasyon:"
 msgstr "Normalization:"
 
@@ -9569,6 +9759,10 @@ msgstr "Oxygen-to-heavy-metal atom ratio; a stoichiometric oxide is 2.000."
 msgid "Okunamadı"
 msgstr "Could not read"
 
+#: arayuz/goruntuleyici/paneller.py:139
+msgid "Opaklık:"
+msgstr "Opacity:"
+
 #: cekirdek/uygunluk_denetimi/ayristir.py:154
 #, python-format
 msgid "OpenMC %d uyarı yazdı (ilk %d):"
@@ -9591,7 +9785,7 @@ msgstr "OpenMC Reactor Core Interface"
 msgid "OpenMC XML (materials.xml model.xml *.xml);;Tüm dosyalar (*)"
 msgstr "OpenMC XML (materials.xml model.xml *.xml);;All files (*)"
 
-#: arayuz/pencere/menuler.py:157
+#: arayuz/pencere/menuler.py:160
 msgid "OpenMC XML olarak dışa aktar…"
 msgstr "Export as OpenMC XML…"
 
@@ -9819,6 +10013,18 @@ msgstr "PDF could not be written: %s"
 #: arayuz/guc_harita.py:68 arayuz/sonuc/yerel_k.py:54
 msgid "PNG kaydet…"
 msgstr "Save PNG…"
+
+#: arayuz/goruntuleyici/pencere.py:499
+msgid "PNG olarak kaydet"
+msgstr "Save as PNG"
+
+#: arayuz/goruntuleyici/pencere.py:113
+msgid "PNG olarak kaydet…"
+msgstr "Save as PNG…"
+
+#: arayuz/goruntuleyici/pencere.py:499
+msgid "PNG resmi (*.png)"
+msgstr "PNG image (*.png)"
 
 #: cekirdek/malzeme_pnnl.py:243
 #, python-format
@@ -10350,11 +10556,11 @@ msgstr "Pu/HM mass fraction must be between 0 and 1: %r"
 msgid "Python / platform"
 msgstr "Python / platform"
 
-#: arayuz/pencere/menuler.py:332 arayuz/pencere/proje.py:281
+#: arayuz/pencere/menuler.py:335 arayuz/pencere/proje.py:281
 msgid "Python betiği olarak dışa aktar"
 msgstr "Export as Python script"
 
-#: arayuz/pencere/menuler.py:154
+#: arayuz/pencere/menuler.py:157
 msgid "Python betiği olarak dışa aktar…"
 msgstr "Export as Python script…"
 
@@ -10392,7 +10598,7 @@ msgstr "Create report"
 msgid "Rapor oluşturulamadı"
 msgstr "Could not create report"
 
-#: arayuz/pencere/menuler.py:160
+#: arayuz/pencere/menuler.py:163
 msgid "Rapor oluştur…"
 msgstr "Create report…"
 
@@ -10518,6 +10724,10 @@ msgstr "Color"
 #: arayuz/malzeme/malzeme_diyalog.py:163 arayuz/onizleme.py:208
 msgid "Renk:"
 msgstr "Color:"
+
+#: arayuz/goruntuleyici/paneller.py:75 arayuz/goruntuleyici/paneller.py:223
+msgid "Renklendirme:"
+msgstr "Coloring:"
 
 #: arayuz/sekme_malzeme.py:66
 msgid "Rol"
@@ -10915,7 +11125,8 @@ msgstr ""
 "The system does not meet the subcriticality criterion; change the design or the "
 "control parameters."
 
-#: arayuz/ayar/yerlesim.py:172 arayuz/sonuc/mesh_harita.py:130
+#: arayuz/ayar/yerlesim.py:172 arayuz/goruntuleyici/paneller.py:136
+#: arayuz/sonuc/mesh_harita.py:130
 msgid "Skor:"
 msgstr "Score:"
 
@@ -10960,7 +11171,7 @@ msgstr ""
 msgid "Son koşudan al"
 msgstr "Take from last run"
 
-#: arayuz/baslangic.py:464 arayuz/pencere/menuler.py:145
+#: arayuz/baslangic.py:464 arayuz/pencere/menuler.py:148
 msgid "Son kullanılanlar"
 msgstr "Recent"
 
@@ -11177,7 +11388,15 @@ msgstr "Standards and good practice checklist — not a certificate"
 msgid "Statepoint"
 msgstr "Statepoint"
 
-#: cekirdek/uygunluk_denetimi/kurallar_mc.py:29
+#: arayuz/goruntuleyici/pencere.py:488
+msgid "Statepoint (statepoint*.h5);;HDF5 (*.h5)"
+msgstr "Statepoint (statepoint*.h5);;HDF5 (*.h5)"
+
+#: arayuz/goruntuleyici/paneller.py:187
+msgid "Statepoint kaynak bankası"
+msgstr "Statepoint source bank"
+
+#: arayuz/goruntuleyici/pencere.py:479 cekirdek/uygunluk_denetimi/kurallar_mc.py:29
 #, python-format
 msgid "Statepoint okunamadı: %s"
 msgstr "Statepoint could not be read: %s"
@@ -11186,6 +11405,18 @@ msgstr "Statepoint could not be read: %s"
 #, python-format
 msgid "Statepoint okunamadı: %s (%s)"
 msgstr "Statepoint could not be read: %s (%s)"
+
+#: arayuz/goruntuleyici/pencere.py:487
+msgid "Statepoint seç"
+msgstr "Choose statepoint"
+
+#: arayuz/goruntuleyici/paneller.py:116
+msgid "Statepoint seç…"
+msgstr "Choose statepoint…"
+
+#: arayuz/goruntuleyici/pencere.py:481
+msgid "Statepoint'te ağ (mesh) tally'si yok."
+msgstr "No mesh tally in the statepoint."
 
 #: arayuz/pencere/yardim_metni.py:60
 msgid ""
@@ -11424,11 +11655,11 @@ msgstr "Tallies"
 msgid "Tally'yi yeniden adlandırın."
 msgstr "Rename the tally."
 
-#: arayuz/sonuc/mesh_harita.py:130
+#: arayuz/goruntuleyici/paneller.py:135 arayuz/sonuc/mesh_harita.py:130
 msgid "Tally:"
 msgstr "Tally:"
 
-#: arayuz/pencere/menuler.py:181 arayuz/pencere/menuler.py:345
+#: arayuz/pencere/menuler.py:184 arayuz/pencere/menuler.py:348
 msgid "Tam ekran"
 msgstr "Full screen"
 
@@ -11673,7 +11904,7 @@ msgstr "Moved"
 msgid "Taşıyıcı U'da U-235 %"
 msgstr "U-235 in the carrier U (%)"
 
-#: arayuz/pencere/menuler.py:156
+#: arayuz/pencere/menuler.py:159
 msgid "Tek başına çalışan bir Python betiği üretir"
 msgstr "Writes a standalone Python script"
 
@@ -11703,6 +11934,14 @@ msgstr "A single fuel pin and its surrounding coolant; the quickest start."
 msgid "Tek yönlü demet"
 msgstr "Monodirectional beam"
 
+#: arayuz/goruntuleyici/paneller.py:78
+msgid ""
+"Tekerlek: yakınlaştır · sol tuşla sürükle: kaydır. Çakışma kipi denetimi "
+"kendiliğinden açar."
+msgstr ""
+"Wheel: zoom · drag with the left button: pan. The overlap mode turns the check on by "
+"itself."
+
 #: cekirdek/rapor_sablon/__init__.py:105
 msgid "Tekrarlanabilirlik"
 msgstr "Reproducibility"
@@ -11715,7 +11954,7 @@ msgstr "Reproducibility capsule"
 msgid "Tekrarlanan örnek yoksa dağılım tek bir değerden ibaret kalır. "
 msgstr "Without repeated instances the distribution reduces to a single value. "
 
-#: arayuz/pencere/menuler.py:280
+#: arayuz/pencere/menuler.py:283
 #, python-brace-format
 msgid "Tema: {ad}"
 msgstr "Theme: {ad}"
@@ -11878,6 +12117,10 @@ msgstr "The tolerance limit method cannot be used for extrapolation."
 msgid "Toplam (bütün gruplar)"
 msgstr "Total (all groups)"
 
+#: arayuz/goruntuleyici/paneller.py:160
+msgid "Toplam (tüm gruplar)"
+msgstr "Total (all groups)"
+
 #: arayuz/ayar/sabitler.py:33
 msgid "Toplam etkileşim (total)"
 msgstr "Total interaction (total)"
@@ -12009,6 +12252,10 @@ msgstr "Depletion chains"
 #: arayuz/tukenme_arayuz.py:134
 msgid "Tükenmeyi başlat"
 msgstr "Start depletion"
+
+#: arayuz/goruntuleyici/paneller.py:69
+msgid "Tüm modeli göster"
+msgstr "Show whole model"
 
 #: arayuz/guc_harita.py:214
 msgid "Tüm türler"
@@ -12297,6 +12544,10 @@ msgstr "Conformity check"
 #: arayuz/yardim/__init__.py:72
 msgid "Uygunluk kuralları (K1–K16)"
 msgstr "Conformity rules (K1–K16)"
+
+#: arayuz/goruntuleyici/paneller.py:226
+msgid "Uzaklık katı:"
+msgstr "Distance factor:"
 
 #: cekirdek/nuklidler.py:273
 msgid "Uzun ömürlü (7 LLFP)"
@@ -12844,7 +13095,7 @@ msgstr "Reflector radius"
 msgid "Yapı malzemesi"
 msgstr "Structural material"
 
-#: arayuz/pencere/menuler.py:119 arayuz/pencere/menuler.py:356
+#: arayuz/pencere/menuler.py:122 arayuz/pencere/menuler.py:359
 #: arayuz/pencere/yardim_metni.py:14
 msgid "Yardım ve terimler"
 msgstr "Help and terms"
@@ -12896,7 +13147,7 @@ msgstr "New material"
 msgid "Yeni model"
 msgstr "New model"
 
-#: arayuz/pencere/menuler.py:329
+#: arayuz/pencere/menuler.py:332
 msgid "Yeni model (başlangıç ekranı)"
 msgstr "New model (start screen)"
 
@@ -12925,7 +13176,7 @@ msgstr "Rename"
 msgid "Yeniden adlandırıldı: {ad}"
 msgstr "Renamed: {ad}"
 
-#: arayuz/onizleme_istemci.py:274
+#: arayuz/onizleme_istemci.py:297
 msgid "Yeniden başlatıldı; model değişince önizleme yeniden çizilir."
 msgstr "Restarted; the preview is redrawn when the model changes."
 
@@ -12938,7 +13189,7 @@ msgstr "Rerun failed (exit code %s); log: %s"
 msgid "Yenile"
 msgstr "Refresh"
 
-#: arayuz/pencere/menuler.py:140
+#: arayuz/pencere/menuler.py:143
 msgid "Yeni…"
 msgstr "New…"
 
@@ -13070,7 +13321,7 @@ msgstr ""
 "The library component being placed (drum, pin, assembly, component). Drums are "
 "defined on the Components page."
 
-#: arayuz/pencere/menuler.py:105 arayuz/pencere/menuler.py:331
+#: arayuz/pencere/menuler.py:105 arayuz/pencere/menuler.py:334
 msgid "Yinele"
 msgstr "Redo"
 
@@ -13164,7 +13415,7 @@ msgstr "Orientation:"
 msgid "Yöntem Radau ya da BDF olmalı: %r"
 msgstr "Method must be Radau or BDF: %r"
 
-#: arayuz/onizleme.py:73
+#: arayuz/goruntuleyici/paneller.py:22 arayuz/onizleme.py:73
 msgid "Yüksek (1400)"
 msgstr "High (1400)"
 
@@ -13192,6 +13443,10 @@ msgstr "Height and boundary conditions"
 #: arayuz/kor/yerlesim.py:278
 msgid "Yükseklik:"
 msgstr "Height:"
+
+#: arayuz/goruntuleyici/paneller.py:225
+msgid "Yükselti:"
+msgstr "Elevation:"
 
 #: cekirdek/geometri/denetim.py:477
 msgid "Yüz başına sınır koşulu yalnız dikdörtgen ya da altıgen dış sınırda verilebilir."
@@ -13355,6 +13610,10 @@ msgstr "[warning]"
 #: arayuz/onizleme.py:577
 msgid "[ölçek 1:1 değil]"
 msgstr "[scale not 1:1]"
+
+#: cekirdek/cizim_sureci.py:262
+msgid "adlar mantıksal değer olmalı"
+msgstr "adlar must be a boolean"
 
 #: cekirdek/veri_indir.py:160
 #, python-format
@@ -13904,7 +14163,7 @@ msgstr "unknown conformity check profile: %s (valid: %s)"
 msgid "bilinmeyen değişken türü: %s"
 msgstr "unknown variable type: %s"
 
-#: cekirdek/cizim_sureci.py:268
+#: cekirdek/cizim_sureci.py:282
 #, python-format
 msgid "bilinmeyen eksen: %r"
 msgstr "unknown axis: %r"
@@ -13939,7 +14198,7 @@ msgstr "unknown energy spectrum type: %s"
 msgid "bilinmeyen filtre türü: %s"
 msgstr "unknown filter type: %s"
 
-#: cekirdek/cizim_sureci.py:249
+#: cekirdek/cizim_sureci.py:256
 #, python-format
 msgid "bilinmeyen istek: %r"
 msgstr "unknown request: %r"
@@ -13978,6 +14237,11 @@ msgstr "unknown component type: %s"
 #, python-format
 msgid "bilinmeyen parçacık türü: %s"
 msgstr "unknown particle type: %s"
+
+#: cekirdek/cizim_goruntu.py:165
+#, python-format
+msgid "bilinmeyen renk kipi: %r"
+msgstr "unknown color mode: %r"
 
 #: cekirdek/giris.py:79 cekirdek/giris.py:172 cekirdek/kosucu_terminal.py:51
 #: cekirdek/kritik_arama.py:257 cekirdek/tarama.py:452
@@ -14066,17 +14330,17 @@ msgstr "done"
 msgid "borlu su"
 msgstr "borated water"
 
-#: cekirdek/cizim_sureci.py:156
+#: cekirdek/cizim_sureci.py:161
 #, python-format
 msgid "bozuk dizi tanımı: %r"
 msgstr "malformed array descriptor: %r"
 
-#: cekirdek/cizim_sureci.py:179
+#: cekirdek/cizim_sureci.py:184
 #, python-format
 msgid "bozuk dizi tanımı: %s"
 msgstr "malformed array descriptor: %s"
 
-#: cekirdek/cizim_sureci.py:208
+#: cekirdek/cizim_sureci.py:213
 msgid "bozuk çerçeve başı"
 msgstr "malformed frame start"
 
@@ -14097,6 +14361,10 @@ msgstr "void"
 msgctxt "yoklama"
 msgid "boşluk"
 msgstr "gap"
+
+#: arayuz/goruntuleyici/gorunum.py:179
+msgid "boşluk (void)"
+msgstr "void"
 
 #: cekirdek/uygunluk_denetimi/kurallar_kor.py:39
 msgid "boşluk (void) katsayısı"
@@ -14199,11 +14467,11 @@ msgstr "larger"
 msgid "c_xn = %.5f"
 msgstr "c_xn = %.5f"
 
-#: cekirdek/cizim_sureci.py:257
+#: cekirdek/cizim_sureci.py:267
 msgid "cakisma mantıksal değer olmalı"
 msgstr "cakisma must be a boolean"
 
-#: cekirdek/cizim_sureci.py:533
+#: cekirdek/cizim_sureci.py:615
 #, python-format
 msgid "cizim alt süreci argüman almaz: %s"
 msgstr "the drawing subprocess takes no arguments: %s"
@@ -14238,6 +14506,10 @@ msgstr "insertion"
 #, python-format
 msgid "daldırma %%0–%%100 arasında olmalı: %s"
 msgstr "insertion must be between 0%% and 100%%: %s"
+
+#: cekirdek/cizim_goruntu.py:168
+msgid "dağınık yansıma oranı 0-1 arası olmalı"
+msgstr "diffuse fraction must be between 0 and 1"
 
 #: cekirdek/geometri/ice_aktar_kap.py:210
 #, python-format
@@ -14372,15 +14644,15 @@ msgstr "bin %d: relative %.4f"
 msgid "diskte yeterli yer yok: %.1f GB gerekli (%.1f GB pay dahil), %.1f GB boş (%s)"
 msgstr "not enough disk space: %.1f GB needed (including a %.1f GB margin), %.1f GB free (%s)"
 
-#: cekirdek/cizim_sureci.py:170
+#: cekirdek/cizim_sureci.py:175
 msgid "dizi tanımı liste değil"
 msgstr "array descriptor is not a list"
 
-#: cekirdek/cizim_sureci.py:174
+#: cekirdek/cizim_sureci.py:179
 msgid "dizi verisi eksik"
 msgstr "array data incomplete"
 
-#: cekirdek/cizim_sureci.py:182
+#: cekirdek/cizim_sureci.py:187
 msgid "dizi verisi tanımla uyuşmuyor"
 msgstr "array data does not match its descriptor"
 
@@ -14776,6 +15048,11 @@ msgstr "symmetry cannot be verified in an advanced (tree) model"
 msgid "gelişmiş geometri (ağaç)"
 msgstr "advanced geometry (tree)"
 
+#: cekirdek/cizim_goruntu.py:129
+#, python-format
+msgid "genişlik iki sayı olmalı (%g-%g cm): %r"
+msgstr "width must be two numbers (%g-%g cm): %r"
+
 #: arayuz/geometri/form_ortak.py:156
 msgid "genişlik x"
 msgstr "width x"
@@ -14866,12 +15143,12 @@ msgstr "invalid conda environment name: %r"
 msgid "geçersiz dilim: eksen %s, indeks %s"
 msgstr "invalid slice: axis %s, index %s"
 
-#: cekirdek/cizim_sureci.py:158 cekirdek/cizim_sureci.py:163
+#: cekirdek/cizim_sureci.py:163 cekirdek/cizim_sureci.py:168
 #, python-format
 msgid "geçersiz dizi tanımı: %r"
 msgstr "invalid array descriptor: %r"
 
-#: cekirdek/cizim_sureci.py:147 cekirdek/cizim_sureci.py:150
+#: cekirdek/cizim_sureci.py:152 cekirdek/cizim_sureci.py:155
 #, python-format
 msgid "geçersiz dizi şekli: %r"
 msgstr "invalid array shape: %r"
@@ -14890,7 +15167,7 @@ msgstr "invalid energy group: %s"
 msgid "geçersiz k-eff"
 msgstr "invalid k-eff"
 
-#: cekirdek/cizim_sureci.py:238
+#: cekirdek/cizim_sureci.py:243
 #, python-format
 msgid "geçersiz kesit: %r"
 msgstr "invalid slice: %r"
@@ -14930,6 +15207,10 @@ msgstr "invalid boundary condition (%s): %s"
 msgid "geçici dosya açılamadı: %s (%s)"
 msgstr "the temporary file could not be opened: %s (%s)"
 
+#: cekirdek/cizim_goruntu.py:140
+msgid "gizli kimlik listesi tamsayılardan oluşmalı"
+msgstr "the hidden id list must consist of integers"
+
 #: cekirdek/rapor_sablon/grafik.py:189
 #, python-format
 msgid "grafik çizilemedi (%s): %s"
@@ -14950,6 +15231,11 @@ msgstr "group value"
 #: arayuz/geometri/formlar.py:135
 msgid "görünen ad"
 msgstr "display name"
+
+#: cekirdek/cizim_goruntu.py:158
+#, python-format
+msgid "görüş açısı %g-%g derece olmalı: %r"
+msgstr "field of view must be %g-%g degrees: %r"
 
 #: arayuz/cubuk/tambur_formu.py:208 cekirdek/geometri/yol_metni.py:20
 msgid "gövde"
@@ -15228,7 +15514,7 @@ msgstr ""
 msgid "hücre"
 msgstr "cell"
 
-#: cekirdek/geometri/yoklama.py:298
+#: arayuz/goruntuleyici/gorunum.py:176 cekirdek/geometri/yoklama.py:298
 #, python-format
 msgid "hücre %d"
 msgstr "cell %d"
@@ -15246,6 +15532,10 @@ msgstr "the fill of cell %d is translated or rotated"
 #: cekirdek/dogrula/kor.py:68
 msgid "hücre adımı sıfırdan büyük olmalı"
 msgstr "cell pitch must be greater than zero"
+
+#: arayuz/goruntuleyici/gorunum.py:175
+msgid "hücre yok (geometri dışı ya da tanımsız bölge)"
+msgstr "no cell (outside the geometry or undefined region)"
 
 #: cekirdek/geometri/ice_aktar.py:141
 msgid "hücrede hem silindir hem prizma iç sınırı var"
@@ -15292,11 +15582,11 @@ msgstr "download incomplete (%d / %d bytes); try again, it resumes where it stop
 msgid "iptal"
 msgstr "cancelled"
 
-#: cekirdek/cizim_sureci.py:251
+#: cekirdek/cizim_sureci.py:258
 msgid "istek numarası tamsayı olmalı"
 msgstr "request number must be an integer"
 
-#: cekirdek/cizim_sureci.py:253
+#: cekirdek/cizim_sureci.py:260
 msgid "istekte model (spec) yok"
 msgstr "request has no model (spec)"
 
@@ -15325,7 +15615,7 @@ msgstr "good practice; the threshold does not come from a standard (profile valu
 msgid "izin listesinde olmayan alan adı: %s"
 msgstr "domain not on the allow list: %s"
 
-#: cekirdek/cizim_sureci.py:125
+#: cekirdek/cizim_sureci.py:130
 #, python-format
 msgid "izinsiz dizi türü: %s"
 msgstr "array type not allowed: %s"
@@ -15561,6 +15851,10 @@ msgstr "the lattice has more than %d different universes; the map letters are no
 msgid "kalınlıkla büyütülemeyen kesit: %s"
 msgstr "cross-section that cannot be grown by a thickness: %s"
 
+#: cekirdek/cizim_goruntu.py:149
+msgid "kamera bakış noktasıyla aynı yerde olamaz"
+msgstr "the camera cannot be at the look-at point"
+
 #: cekirdek/geometri/ice_aktar_kap.py:73
 msgid "kap bölgesi merkezli değil"
 msgstr "the container region is not centred"
@@ -15671,14 +15965,62 @@ msgstr "source   = [  ?  ] Shannon entropy could not be read: %s"
 msgid "kaynak enerjisi %s, veri tavanı %s (%s)"
 msgstr "source energy %s, data upper limit %s (%s)"
 
+#: cekirdek/cizim_goruntu.py:252
+msgid "kaynak kutusu sınırları"
+msgstr "source box bounds"
+
+#: arayuz/goruntuleyici/tuval.py:81
+msgid "kaynak noktaları"
+msgstr "source points"
+
+#: cekirdek/cizim_goruntu.py:264
+#, python-format
+msgid "kaynak noktaları gösterilemiyor: %s sonlu olmalı"
+msgstr "source points cannot be shown: %s must be finite"
+
+#: cekirdek/cizim_goruntu.py:258
+#, python-format
+msgid "kaynak noktaları gösterilemiyor: desteklenmeyen uzay dağılımı %s"
+msgstr "source points cannot be shown: unsupported spatial distribution %s"
+
+#: cekirdek/cizim_goruntu.py:270
+msgid "kaynak noktaları gösterilemiyor: domain kısıtı desteklenmiyor"
+msgstr "source points cannot be shown: domain constraint is not supported"
+
+#: cekirdek/cizim_goruntu.py:256
+msgid "kaynak noktası"
+msgstr "source point"
+
 #: cekirdek/kaynak.py:165
 msgid "kaynak yönü sıfır vektör olamaz"
 msgstr "the source direction cannot be a zero vector"
+
+#: cekirdek/cizim_goruntu.py:319
+#, python-format
+msgid "kaynak örneklemesi %d denemede bitmedi (çok fazla ret)"
+msgstr "source sampling did not finish in %d attempts (too many rejections)"
+
+#: cekirdek/cizim_goruntu.py:315
+#, python-format
+msgid ""
+"kaynak örneklemesinde kabul oranı %%%.1f (< %%%g): kaynak kutusu fisil malzemeyi "
+"kapsamıyor olabilir"
+msgstr ""
+"source sampling acceptance fraction %.1f%% (< %g%%): the source box may not cover "
+"fissionable material"
 
 #: cekirdek/dogrula/kaynak.py:62
 #, python-format
 msgid "kaynak şiddeti sıfırdan büyük olmalı (%s)"
 msgstr "source strength must be greater than zero (%s)"
+
+#: cekirdek/cizim_goruntu.py:293
+msgid "kaynak şiddetleri sonlu ve negatif olmayan sayılar olmalı"
+msgstr "source strengths must be finite, non-negative numbers"
+
+#: cekirdek/cizim_goruntu.py:295
+msgid "kaynak şiddetlerinin toplamı sıfır"
+msgstr "the sum of source strengths is zero"
 
 #: cekirdek/malzeme_kullanici.py:206
 msgid "kayıt adı"
@@ -15721,7 +16063,7 @@ msgstr "not folded in a model with truncated pins"
 msgid "kesirlerin toplamı sıfır"
 msgstr "the fractions sum to zero"
 
-#: cekirdek/cizim_sureci.py:235
+#: cekirdek/cizim_sureci.py:240
 #, python-format
 msgid "kesit listesi 1-%d öğe olmalı"
 msgstr "slice list must have 1-%d items"
@@ -16227,6 +16569,11 @@ msgstr "the list limit cannot be negative: %d"
 msgid "malzeme"
 msgstr "material"
 
+#: arayuz/goruntuleyici/gorunum.py:180
+#, python-format
+msgid "malzeme %d"
+msgstr "material %d"
+
 #: cekirdek/kosucu.py:404
 #, python-format
 msgid "malzeme %s"
@@ -16371,6 +16718,10 @@ msgstr "the model has no material containing fissionable nuclides: no AOA parame
 msgid "modelde hidrojen ya da grafit moderatör yok"
 msgstr "the model has no hydrogen or graphite moderator"
 
+#: cekirdek/cizim_goruntu.py:326
+msgid "modelde kaynak tanımı yok"
+msgstr "the model has no source definition"
+
 #: cekirdek/tarama_agac.py:78
 msgid "modelde kontrol tamburu (dönme grubu) yok"
 msgstr "the model has no control drum (rotation group)"
@@ -16459,6 +16810,11 @@ msgstr "points"
 #, python-format
 msgid "nokta kaynak z = %g modelin dışında (yükseklik %g, sınır ±%g)"
 msgstr "point source z = %g is outside the model (height %g, boundary ±%g)"
+
+#: cekirdek/cizim_goruntu.py:175
+#, python-format
+msgid "nokta sayısı 1-%d arası tamsayı olmalı: %r"
+msgstr "number of points must be an integer between 1 and %d: %r"
 
 #: arayuz/uygunluk_paneli.py:59 cekirdek/giris.py:186
 #: cekirdek/rapor_sablon/uygunluk_eki.py:25
@@ -16682,10 +17038,15 @@ msgstr ""
 "a periodic boundary is imported only on planes perpendicular to an axis (surface %d, "
 "%s)"
 
-#: cekirdek/cizim_sureci.py:241
+#: cekirdek/cizim_sureci.py:246
 #, python-format
 msgid "piksel %d-%d arası tamsayı olmalı: %r"
 msgstr "pixels must be an integer between %d and %d: %r"
+
+#: cekirdek/cizim_goruntu.py:161
+#, python-format
+msgid "piksel [genişlik, yükseklik] olmalı: %r"
+msgstr "pixels must be [width, height]: %r"
 
 #: arayuz/cubuk/sayfalar.py:108
 msgid "pin kesit yönelimi"
@@ -17070,6 +17431,28 @@ msgstr "no standard value — user/project target (STANDARTLAR.md §3 row 2)"
 msgid "statepoint bulunamadı: %s"
 msgstr "statepoint not found: %s"
 
+#: cekirdek/cizim_goruntu.py:363
+#, python-format
+msgid "statepoint dosyası bulunamadı: %s"
+msgstr "statepoint file not found: %s"
+
+#: cekirdek/cizim_goruntu.py:366
+msgid "statepoint dosyasında kaynak bankası yok (koşu sourcepoint yazmamış)"
+msgstr "no source bank in the statepoint file (the run did not write source points)"
+
+#: cekirdek/cizim_goruntu.py:371
+msgid "statepoint kaynak bankası boş"
+msgstr "statepoint source bank is empty"
+
+#: cekirdek/cizim_goruntu.py:347
+#, python-format
+msgid "statepoint kaynak bankasında 'r' (konum) alanı yok: %s"
+msgstr "the statepoint source bank has no 'r' (position) field: %s"
+
+#: cekirdek/cizim_goruntu.py:180
+msgid "statepoint yolu mutlak bir yol olmalı"
+msgstr "statepoint path must be an absolute path"
+
 #: cekirdek/yerel_k.py:476
 msgid "statepoint'te global k-tracklength/leakage yok"
 msgstr "the statepoint has no global k-tracklength/leakage"
@@ -17196,6 +17579,11 @@ msgstr "tallies"
 #: arayuz/sonuc/spektrum.py:36
 msgid "tally'lerden k"
 msgstr "k from tallies"
+
+#: arayuz/goruntuleyici/pencere.py:464
+#, python-format
+msgid "tally: %.4g"
+msgstr "tally: %.4g"
 
 #: arayuz/onizleme_kapsam.py:123
 msgid "tam model (alt model kurulamadı)"
@@ -17503,6 +17891,10 @@ msgstr "seed %d: power distribution could not be read"
 msgid "tohum %d: koşu başarısız"
 msgstr "seed %d: run failed"
 
+#: cekirdek/cizim_goruntu.py:177
+msgid "tohum negatif olmayan tamsayı olmalı"
+msgstr "seed must be a non-negative integer"
+
 #: cekirdek/vv/istatistik.py:125
 msgid "tolerans çarpanı için en az 2 vaka gerekir"
 msgstr "the tolerance factor requires at least 2 cases"
@@ -17583,6 +17975,10 @@ msgstr "whole model"
 #: arayuz/ayar/yerel_k_karti.py:23
 msgid "tüm model yüksekliği"
 msgstr "whole model height"
+
+#: arayuz/goruntuleyici/paneller.py:192
+msgid "tümü (izdüşüm)"
+msgstr "all (projection)"
 
 #: cekirdek/kosucu_terminal.py:157
 msgid "uyarı"
@@ -17968,6 +18364,10 @@ msgstr "density not given"
 msgid "yoğunluk ya da bileşim eksik"
 msgstr "density or composition missing"
 
+#: cekirdek/cizim_goruntu.py:153
+msgid "yukarı vektörü bakış yönüne paralel olamaz"
+msgstr "the up vector cannot be parallel to the view direction"
+
 #: cekirdek/dogrula/geometri.py:195
 #, python-format
 msgid "yönelim 'x' ya da 'y' olmalı: %s"
@@ -18125,7 +18525,7 @@ msgstr "no nuclides in the chain: %s"
 msgid "zirkonyum hidrür"
 msgstr "zirconium hydride"
 
-#: arayuz/pencere/menuler.py:377
+#: arayuz/pencere/menuler.py:380
 #, python-brace-format
 msgid ""
 "{ad}\n"
@@ -18440,13 +18840,30 @@ msgstr "Added to ~/.bashrc. Open a new terminal or run: source ~/.bashrc"
 msgid "· → dış ({ad})"
 msgstr "· → outer ({ad})"
 
-#: arayuz/pencere/menuler.py:129 arayuz/pencere/menuler.py:336
+#: arayuz/goruntuleyici/pencere.py:410
+#, python-format
+msgid "ÇAKIŞMA: %d piksel birden çok hücrede."
+msgstr "OVERLAP: %d pixels in more than one cell."
+
+#: arayuz/goruntuleyici/gorunum.py:173
+msgid "ÇAKIŞMA: nokta birden çok hücrede"
+msgstr "OVERLAP: point in more than one cell"
+
+#: arayuz/pencere/menuler.py:132 arayuz/pencere/menuler.py:339
 msgid "ÇALIŞTIR"
 msgstr "RUN"
 
-#: arayuz/onizleme_boyama.py:108
+#: arayuz/onizleme_boyama.py:113
 msgid "Çakışma"
 msgstr "Overlap"
+
+#: arayuz/goruntuleyici/paneller.py:68
+msgid "Çakışma denetimi"
+msgstr "Overlap check"
+
+#: arayuz/goruntuleyici/renk_kipi.py:24
+msgid "Çakışma ve tanımsız bölge"
+msgstr "Overlap and undefined region"
 
 #: arayuz/onizleme.py:180
 msgid "Çakışmaları göster"
@@ -18616,6 +19033,10 @@ msgstr "Double-click to go to the relevant page."
 msgid "Çivit"
 msgstr "Indigo"
 
+#: arayuz/goruntuleyici/paneller.py:221
+msgid "Çiz"
+msgstr "Draw"
+
 #: arayuz/sekme_ayar.py:202
 msgid "Çizgiler:"
 msgstr "Lines:"
@@ -18628,7 +19049,7 @@ msgstr "Linear power:"
 msgid "Çizilecek öğe yok"
 msgstr "Nothing to draw"
 
-#: arayuz/onizleme.py:362
+#: arayuz/goruntuleyici/pencere.py:237 arayuz/onizleme.py:362
 msgid "Çiziliyor…"
 msgstr "Drawing…"
 
@@ -18836,11 +19257,11 @@ msgstr "Dissolved boron (ppm by mass)"
 msgid "Çözünmüş bor [ppm]"
 msgstr "Dissolved boron [ppm]"
 
-#: arayuz/onizleme.py:237
+#: arayuz/goruntuleyici/paneller.py:74 arayuz/onizleme.py:237
 msgid "Çözünürlük:"
 msgstr "Resolution:"
 
-#: arayuz/pencere/menuler.py:163
+#: arayuz/pencere/menuler.py:166
 msgid "Çıkış"
 msgstr "Quit"
 
@@ -18875,6 +19296,10 @@ msgstr "Define at least one pin in the Components tab first."
 #: arayuz/analiz/sekme.py:293
 msgid "Önce bir model açın."
 msgstr "Open a model first."
+
+#: arayuz/goruntuleyici/pencere.py:273
+msgid "Önce kesit çizilmeli (model bilgisi bekleniyor)."
+msgstr "The slice must be drawn first (waiting for model information)."
 
 #: arayuz/sekme_cubuk.py:213
 msgid "Önce malzeme gerekli"
@@ -18993,7 +19418,7 @@ msgstr "Suggestion: r = {r:.4g} cm (half of the model's outer dimension)"
 msgid "Önizleme"
 msgstr "Preview"
 
-#: arayuz/onizleme_istemci.py:263
+#: arayuz/onizleme_istemci.py:286
 #, python-format
 msgid ""
 "Önizleme %d s içinde bitmedi; model çizim için çok ağır olabilir, süreç durduruldu. "
@@ -19018,12 +19443,12 @@ msgid_plural "Önizleme güncel ({kesit}, {n} piksel){ek}"
 msgstr[0] "Preview up to date ({kesit}, {n} pixel){ek}"
 msgstr[1] "Preview up to date ({kesit}, {n} pixels){ek}"
 
-#: arayuz/onizleme_istemci.py:159
+#: arayuz/onizleme_istemci.py:167
 #, python-format
 msgid "Önizleme isteği gönderilemedi: %s"
 msgstr "Preview request could not be sent: %s"
 
-#: arayuz/pencere/menuler.py:192
+#: arayuz/pencere/menuler.py:195
 msgid ""
 "Önizleme panelini gizler ya da gösterir; gizliyken çizim yapılmaz (Çalıştır kapısı "
 "için model yine denetlenir)"
@@ -19031,12 +19456,12 @@ msgstr ""
 "Hides or shows the preview panel; nothing is plotted while it is hidden (the model is"
 " still checked for the Run gate)"
 
-#: arayuz/onizleme_istemci.py:287
+#: arayuz/onizleme_istemci.py:310
 #, python-format
 msgid "Önizleme süreci başlatılamadı: %s"
 msgstr "The preview process could not be started: %s"
 
-#: arayuz/onizleme_istemci.py:269
+#: arayuz/onizleme_istemci.py:292
 #, python-format
 msgid "Önizleme süreci beklenmedik biçimde sonlandı (%s)."
 msgstr "The preview process ended unexpectedly (%s)."
@@ -19060,7 +19485,7 @@ msgstr[1] ""
 msgid "Önizleme: tam model denetlendi."
 msgstr "Preview: full model checked."
 
-#: arayuz/pencere/menuler.py:159
+#: arayuz/pencere/menuler.py:162
 msgid "Önizlemeyi PNG olarak kaydet…"
 msgstr "Save preview as PNG…"
 
@@ -19072,11 +19497,11 @@ msgstr "Expand preview"
 msgid "Önizlemeyi daralt"
 msgstr "Collapse preview"
 
-#: arayuz/pencere/menuler.py:335
+#: arayuz/pencere/menuler.py:338
 msgid "Önizlemeyi gizle / göster"
 msgstr "Hide / show preview"
 
-#: arayuz/pencere/menuler.py:188
+#: arayuz/pencere/menuler.py:191
 msgid "Önizlemeyi göster"
 msgstr "Show preview"
 
@@ -19084,7 +19509,7 @@ msgstr "Show preview"
 msgid "Önizlemeyi kaydet"
 msgstr "Save preview"
 
-#: arayuz/pencere/menuler.py:127 arayuz/pencere/menuler.py:334
+#: arayuz/pencere/menuler.py:130 arayuz/pencere/menuler.py:337
 msgid "Önizlemeyi yenile"
 msgstr "Refresh preview"
 
@@ -19219,7 +19644,7 @@ msgctxt "arama"
 msgid "Üst sınır:"
 msgstr "Upper bound:"
 
-#: arayuz/onizleme_istemci.py:271
+#: arayuz/onizleme_istemci.py:294
 #, python-format
 msgid ""
 "Üst üste %d kez sonlandı; otomatik yeniden başlatma durduruldu, bir sonraki çizimde "
@@ -19249,25 +19674,25 @@ msgstr ""
 msgid "Üyeler yerleşim adlarıdır; yerleşimin bütün örnekleri birlikte döner."
 msgstr "Members are placement names; all instances of a placement rotate together."
 
-#: cekirdek/cizim_sureci.py:192
+#: cekirdek/cizim_sureci.py:197
 msgid "çerçeve başlığı JSON nesnesi değil"
 msgstr "frame header is not a JSON object"
 
-#: cekirdek/cizim_sureci.py:132
+#: cekirdek/cizim_sureci.py:137
 #, python-format
 msgid "çerçeve başlığı JSON'a çevrilemedi: %s"
 msgstr "frame header could not be converted to JSON: %s"
 
-#: cekirdek/cizim_sureci.py:190
+#: cekirdek/cizim_sureci.py:195
 #, python-format
 msgid "çerçeve başlığı okunamadı: %s"
 msgstr "frame header could not be read: %s"
 
-#: cekirdek/cizim_sureci.py:212
+#: cekirdek/cizim_sureci.py:217
 msgid "çerçeve sınırı aşıldı"
 msgstr "frame size limit exceeded"
 
-#: cekirdek/cizim_sureci.py:134
+#: cekirdek/cizim_sureci.py:139
 msgid "çerçeve çok büyük"
 msgstr "frame too large"
 
@@ -19362,7 +19787,7 @@ msgstr "pins"
 msgid "çubuğun dış çapı (%.5f cm) hücre adımından (%.5f cm) büyük"
 msgstr "the outer diameter of the pin (%.5f cm) is larger than the cell pitch (%.5f cm)"
 
-#: arayuz/onizleme_istemci.py:267
+#: arayuz/onizleme_istemci.py:290
 msgid "çöktü"
 msgstr "crashed"
 
@@ -19375,7 +19800,7 @@ msgstr "solution"
 msgid "çıktı dosyası girdiyle aynı olamaz: %s"
 msgstr "the output file cannot be the input file: %s"
 
-#: arayuz/onizleme_istemci.py:268 cekirdek/veri_bilgi.py:415
+#: arayuz/onizleme_istemci.py:291 cekirdek/veri_bilgi.py:415
 #, python-format
 msgid "çıkış kodu %d"
 msgstr "exit code %d"
