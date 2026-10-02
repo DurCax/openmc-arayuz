@@ -143,13 +143,16 @@ def test_olcum_spec():
     gd = sema.yukle(os.path.join(ORNEK, "pwr_gd_tukenme.json"))
     o = tukenme_guc.olcum_spec(gd)
     hedefler = sema.guc_hedefleri(o["guc_dagilimi"])
-    kontrol("Gd super hucre: iki cubuk turu hedef",
-            sorted(h["cubuk"] for h in hedefler) == ["gd_cubugu", "yakit_cubugu"],
+    # Pin gucu = TUM radyal yakit bolgelerinin toplami (profesor E1; NUREG-0800
+    # SRP 4.3/4.4): Gd pininin 5 halkasi da hedef, yakit pininde tek bolge.
+    kontrol("Gd super hucre: yakit pini 1 + Gd pini 5 halka hedef",
+            sorted((h["cubuk"], h["bolge"]) for h in hedefler)
+            == [("gd_cubugu", i) for i in range(5)] + [("yakit_cubugu", 0)],
             "-> %r" % hedefler)
     model, _b = kurucu.kur(o)
     adlar = [t.name for t in model.tallies]
-    kontrol("model guc tally'leriyle kurulur (tur basina bir)",
-            adlar.count("guc_dagilimi") == 2 and "guc_toplam_ref" in adlar, "-> %r" % adlar)
+    kontrol("model guc tally'leriyle kurulur (hedef bolge basina bir)",
+            adlar.count("guc_dagilimi") == 6 and "guc_toplam_ref" in adlar, "-> %r" % adlar)
 
 
 def test_olcumlu_hazirla_geri_duser():

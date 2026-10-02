@@ -101,14 +101,32 @@ def _fisil_bolge(spec, cubuk):
     return 0
 
 
+def _fisil_bolgeler(spec, cubuk):
+    """Cubugun BUTUN yakit rollu bolgeleri (numara listesi); hic yoksa [0]."""
+    from cekirdek import sema, uygunluk
+    bolgeler = []
+    for i, b in enumerate(cubuk.get("bolgeler") or []):
+        m = sema.malzeme_bul(spec, b.get("malzeme")) if b.get("malzeme") else None
+        if m and "yakit" in uygunluk.tek_malzeme_rolleri(m):
+            bolgeler.append(i)
+    return bolgeler or [0]
+
+
 def varsayilan_hedefler(spec):
     """
     "Butun yakit cubuklari" secimi: uygun her cubuk (uygunluk.guc_cubuklari,
-    spec sirasiyla) ilk fisil bolgesiyle. DONER [{"cubuk", "bolge"}] (yeni liste).
+    spec sirasiyla) BUTUN yakit bolgeleriyle. DONER [{"cubuk", "bolge"}] (yeni liste).
+
+    PIN GUCU = TUM RADYAL YAKIT BOLGELERININ TOPLAMI (v3 K3, profesor E1;
+    NUREG-0800 SRP 4.3/4.4). Eskiden yalniz ilk fisil bolge alinirdi: cok
+    halkali (Gd) pinde pin gucu ic halkanin gucuydu (~10 kat kucuk), ortalama
+    duser, UO2 pinlerinin bagil gucu ve F_ΔH sisiyordu. Ayni konumun bolge
+    tally'leri dagilim_oku'da toplanir (_parcalari_birlestir).
     """
     from cekirdek import sema, uygunluk
-    return [{"cubuk": ad, "bolge": _fisil_bolge(spec, sema.cubuk_bul(spec, ad))}
-            for ad in uygunluk.guc_cubuklari(spec)]
+    return [{"cubuk": ad, "bolge": i}
+            for ad in uygunluk.guc_cubuklari(spec)
+            for i in _fisil_bolgeler(spec, sema.cubuk_bul(spec, ad))]
 
 
 def bolge_hucresi(universe, cubuk, nesneler):
@@ -334,6 +352,34 @@ def _tally_konumlari(tal, geometri, df=None, adlar=None):
             "eksenel_dilim": eksenel_dilim}
 
 
+def _birlesim_notlari(parcalar, turler, birlesen):
+    """
+    Birlesme notlari. Ayni turun birden cok tally'si = ayni cubugun birden cok
+    yakit bolgesi (halka): her ek bolge kendi satir sayisi kadar bin'e eklenir;
+    kalan birlesmeler eksenel katmanlardandir. Tur sayisi ayri sayilir.
+    """
+    gruplar = {}
+    for p, tur in zip(parcalar, turler):
+        gruplar.setdefault(tur, []).append(p)
+    bolge_birlesen = sum(len(p["anahtarlar"]) for g in gruplar.values() for p in g[1:])
+    katman = max(birlesen - bolge_birlesen, 0)
+    cok_bolgeli = sorted((t or "?") for t, g in gruplar.items() if len(g) > 1)
+    notlar = []
+    if cok_bolgeli:
+        notlar.append(_("Çok bölgeli çubuk (%s): her çubuğun bütün yakıt bölgeleri (halkaları) "
+                        "toplandı; çubuk gücü bölgelerin toplamıdır.") % ", ".join(cok_bolgeli))
+    if katman:
+        notlar.append(
+            _("%d bin'de aynı çubuk konumu birden çok eksenel katmanda "
+              "bulundu; katman örnekleri dilim dilim toplandı.") % katman)
+    if len(gruplar) > 1:
+        notlar.append(
+            _("Çok türlü güç: %d çubuk türü (%s) tek haritada; bağıl güç bütün "
+              "türlerin yakıt çubuklarının ortalamasına göredir.")
+            % (len(gruplar), ", ".join(t or "?" for t in gruplar)))
+    return notlar
+
+
 def _eksenel_sinirlar(tal):
     """Guc mesh'inin (z_alt, z_ust) [cm]; eksenel mesh yoksa (2B) None.
     Dilimler bu araligi esit boler (kurucu._guc_mesh_filtresi)."""
@@ -419,7 +465,10 @@ def dagilim_oku(sp, tally_adi="guc_dagilimi"):
             _("summary.h5 bulunamadı; güç dağılımının hücre konumları okunamaz. "
             "Koşu dizininde statepoint ile summary.h5 yan yana olmalıdır."))
     geometri = sp.summary.geometry
-    geometri.determine_paths()
+    if not getattr(geometri, "_yollar_belirlendi", False):
+        # Tukenmede adimlar ayni summary'yi paylasir (tukenme_guc): yollar bir kez.
+        geometri.determine_paths()
+        geometri._yollar_belirlendi = True
     notlar = []
 
     dfs = [t.get_pandas_dataframe(paths=True) for t in taller]
@@ -452,15 +501,7 @@ def dagilim_oku(sp, tally_adi="guc_dagilimi"):
             _("Tam kor: %d kafes düzeyi. Her çubuk kordaki tam konumuyla "
               "(demet konumu + demet içi konum) ayrı sayılır; bağıl güç tüm "
               "kordaki yakıt çubuklarının ortalamasına göredir.") % len(kafesler))
-    if birlesen:
-        notlar.append(
-            _("%d bin'de aynı çubuk konumu birden çok eksenel katmanda "
-              "bulundu; katman örnekleri dilim dilim toplandı.") % birlesen)
-    if len(taller) > 1:
-        notlar.append(
-            _("Çok türlü güç: %d çubuk türü (%s) tek haritada; bağıl güç bütün "
-              "türlerin yakıt çubuklarının ortalamasına göredir.")
-            % (len(taller), ", ".join(t or "?" for t in turler)))
+    notlar.extend(_birlesim_notlari(parcalar, turler, birlesen))
 
     sonuc = {
         "turler": turler,
