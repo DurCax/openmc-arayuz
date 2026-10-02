@@ -328,6 +328,25 @@ def test_araclar_menusu_demet_kinf_sihirbazini_acar(tmp_path, monkeypatch):
         p.deleteLater()
 
 
+def test_harita_okunamayan_statepointte_dengesiz_gosterir_ve_yakitsiz_ipucu(tmp_path):
+    # Arrange
+    _uyg()
+    from cekirdek import yerel_k
+    from arayuz.sonuc.yerel_k import YerelKHaritasi
+    from testler.test_k4_yerel_k import _sentetik_df
+    spec = yerel_k.tally_ekle(_ornek("pwr_17x17"), "demet")
+    df = _sentetik_df({(0, 0): {"nu-fission": (0.0, 0.0), "absorption": (1.0, 0.01)}})
+    w = YerelKHaritasi()
+    # Act
+    w.kosu_sonucu_ayarla({"tallyler": {yerel_k.TALLY_ADLARI["demet"]: df}}, spec,
+                         statepoint=str(tmp_path / "yok.h5"))
+    w.degerler.setChecked(True)
+    # Assert
+    assert w.secili().denge is None and "P/(D+L)" not in w.ozet.text()
+    assert "yakıtsız" in w.ipucu_metni(0.0, 0.0)
+    w.csv_kaydet(str(tmp_path / "a.csv"))
+
+
 HIZLI = [test_harita_ozeti_etiket_ve_ortalama_gosterir, test_harita_ipucu_bin_degerini_verir,
          test_iki_duzey_varsa_secici_gorunur_ve_degistirir, test_harita_csv_kaydeder,
          test_tally_yoksa_ve_desteksiz_modelde_aciklama_gosterir,
@@ -341,5 +360,6 @@ HIZLI = [test_harita_ozeti_etiket_ve_ortalama_gosterir, test_harita_ipucu_bin_de
          test_ayar_karti_desteksiz_modelde_hata_gosterir_spec_degismez,
          test_ayar_sekmesi_yerel_k_kartini_doldurur,
          test_calistir_sekmesi_yerel_k_kartini_yalniz_tally_varken_gosterir,
-         test_araclar_menusu_demet_kinf_sihirbazini_acar]
+         test_araclar_menusu_demet_kinf_sihirbazini_acar,
+         test_harita_okunamayan_statepointte_dengesiz_gosterir_ve_yakitsiz_ipucu]
 YAVAS = []
