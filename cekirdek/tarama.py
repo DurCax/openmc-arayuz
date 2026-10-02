@@ -157,6 +157,10 @@ def parametre_uygula(spec, tur, hedef, deger, taban=None):
     DONER (yeni_spec, not_metni|None)
     """
     from cekirdek import tarama_agac
+    from cekirdek import parametre
+    if tur == parametre.YOL_TURU:
+        # Y10 parametrik model: hedef spec'te noktali yol (ayarlar.parcacik ...)
+        return parametre.yol_uygula(spec, hedef, deger), None
     if tur in tarama_agac.GRUP_TURLERI or (
             sema.agac_modu(spec) and tur in tarama_agac.AGAC_TURLERI):
         return tarama_agac.uygula(spec, tur, hedef, deger), None
@@ -257,6 +261,14 @@ def parametre_uygula(spec, tur, hedef, deger, taban=None):
         raise ValueError(_("bilinmeyen tarama türü: %s") % tur)
 
     return yeni, not_metni
+
+
+def parametrik_model(spec, tur, hedef, degerler, ad=None):
+    """Tek degiskenli taramayi parametre.ParametrikModel'e cevirir (Y10): JSON
+    olarak kaydedilebilir, baska degiskenlerle genisletilebilir ve
+    parametre.kuyruga_ekle ile kosu kuyruguna (sirali/paralel) verilebilir."""
+    from cekirdek import parametre
+    return parametre.tek_degiskenli(spec, tur, hedef, degerler, ad=ad)
 
 
 def noktalar(bas, son, adet):
