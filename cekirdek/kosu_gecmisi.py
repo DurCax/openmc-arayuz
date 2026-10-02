@@ -22,7 +22,11 @@
      |z| > ANLAMLILIK_ESIGI (2; ~%95, projenin 2 sigma yontemi) ise fark
      istatistiksel olarak anlamlidir. Varsayim: iki kosu BAGIMSIZ. Ayni tohumla
      kosulan iki model korelasyonludur; o zaman gercek sigma daha kucuktur ve
-     bu z MUHAFAZAKARDIR (tarama.py'deki notla ayni).
+     bu z MUHAFAZAKARDIR (tarama.py'deki notla ayni) -- yalniz POZITIF
+     korelasyonda; negatif korelasyonda (nadir) gercek sigma buyuktur.
+     Sinirlar: OpenMC'nin sigma'si cevrimler arasi korelasyonu yok saydigindan
+     hafif iyimserdir (z biraz buyuk cikar); iki kosunun pasif cevrim sayisi
+     farkliysa kaynak yakinsamasi farki bir yanlilik ekleyebilir (z bunu olcmez).
      Reaktivite farki: Delta rho = (1/k1 - 1/k2) * 1e5 pcm, sigma_rho =
      1e5 * sqrt((s1/k1^2)^2 + (s2/k2^2)^2).
    guc_farki(bagil1, bagil2) -> GucFarki
@@ -31,7 +35,9 @@
      Her ortak konumda Delta, sigma, z; yalniz birinde olan konumlar ayrica
      listelenir. N pinde |z| > 2 olan konum sayisi tesadufen ~%4.6 N beklenir
      (normal dagilim); `beklenen_tesaduf` bunu verir -- tek bir "anlamli" pin
-     bir fark kaniti degildir.
+     bir fark kaniti degildir. Bu sayi YAKLASIKTIR: pin z'leri bagimsiz
+     degildir (bagil guc ortalamaya normalize edilir, komsu pinler ayni
+     notronlarla iliskilidir).
    kosulari_karsilastir(dizin1, dizin2) -> Karsilastirma
      Iki kosu dizininin son statepoint'ini kosucu.sonuc_oku ile okur.
 ================================================================================
@@ -62,6 +68,7 @@ ANLAMLILIK_ESIGI = 2.0                # sigma; ~%95 iki yanli (proje yontemi: 2 
 TESADUF_ORANI = math.erfc(ANLAMLILIK_ESIGI / math.sqrt(2.0))
 PCM = 1.0e5
 _BAGLANTI_SURESI = 10.0               # s; kilitli veritabaninda bekleme
+_DOSYA_IZNI = 0o600
 _VARSAYILAN_SINIR = 200
 
 _SEMA = """
@@ -138,6 +145,12 @@ class GecmisDeposu:
     def __init__(self, yol: Optional[str] = None) -> None:
         self.yol = os.path.abspath(yol or varsayilan_yol())
         os.makedirs(os.path.dirname(self.yol), exist_ok=True)
+        if not os.path.exists(self.yol):
+            # gecmis kullanici dizin yollari icerir: yalniz sahibi okur/yazar
+            os.close(os.open(self.yol, os.O_CREAT | os.O_WRONLY, _DOSYA_IZNI))
+        with closing(sqlite3.connect(self.yol, timeout=_BAGLANTI_SURESI)) as bag:
+            # WAL: okuyan (arayuz) yazan isciyi bloklamaz; kalici ayardir
+            bag.execute("PRAGMA journal_mode=WAL")
         with self._islem() as bag:
             surum = bag.execute("PRAGMA user_version").fetchone()[0]
             if surum > SEMA_SURUMU:
@@ -170,7 +183,9 @@ class GecmisDeposu:
         return _satirdan(satir) if satir else None
 
     def listele(self, sinir: int = _VARSAYILAN_SINIR) -> List[KosuKaydi]:
-        """En yeni kayit once."""
+        """En yeni kayit once; sinir >= 0 (SQLite'ta negatif LIMIT "sinirsiz" olurdu)."""
+        if int(sinir) < 0:
+            raise ValueError(_("liste sınırı negatif olamaz: %d") % int(sinir))
         with self._islem() as bag:
             satirlar = bag.execute(_LISTELE, (int(sinir),)).fetchall()
         return [_satirdan(s) for s in satirlar]
@@ -205,10 +220,15 @@ def _spec_sha(dizin: str) -> Optional[str]:
         return None
     try:
         with open(yol, encoding="utf-8") as f:
-            return (json.load(f).get("spec") or {}).get("sha256")
+            veri = json.load(f)
     except (OSError, ValueError):
         _log.warning("kapsul okunamadi: %s", yol, exc_info=True)
         return None
+    spec = veri.get("spec") if isinstance(veri, dict) else None
+    sha = spec.get("sha256") if isinstance(spec, dict) else None
+    if sha is None:
+        _log.warning("kapsul bicimi beklenmedik (spec.sha256 yok): %s", yol)
+    return sha if isinstance(sha, str) else None
 
 
 def durumdan_kayit(durum: Any) -> KosuKaydi:
@@ -251,6 +271,8 @@ class KFarki:
 def k_farki(k1: float, s1: float, k2: float, s2: float,
             esik: float = ANLAMLILIK_ESIGI) -> KFarki:
     """Iki k +- sigma'nin farki ve anlamliligi (formuller: modul belgesi)."""
+    if not all(math.isfinite(v) for v in (k1, s1, k2, s2)):
+        raise ValueError(_("k ve σ sonlu olmalı"))
     if k1 <= 0 or k2 <= 0 or s1 < 0 or s2 < 0:
         raise ValueError(_("k > 0 ve σ ≥ 0 olmalı"))
     fark = k2 - k1

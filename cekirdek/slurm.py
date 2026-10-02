@@ -55,17 +55,18 @@ _BETIK_IZNI = 0o750
 
 # sbatch(1) bicimleri; kaynak: https://slurm.schedmd.com/sbatch.html
 _DESEN = {
-    "is_adi": re.compile(r"^[A-Za-z0-9_.-]{1,64}$"),
+    "is_adi": re.compile(r"^[A-Za-z0-9_.-]{1,64}$", re.ASCII),
     # --time: "dakika", "dk:sn", "sa:dk:sn", "gun-sa", "gun-sa:dk", "gun-sa:dk:sn"
-    "sure": re.compile(r"^(\d+-)?\d{1,3}(:\d{2}){0,2}$"),
-    "bolum": re.compile(r"^[A-Za-z0-9_.,-]{1,64}$"),
-    "hesap": re.compile(r"^[A-Za-z0-9_.-]{1,64}$"),
-    "bellek": re.compile(r"^\d+[KMGT]?$"),
-    "eposta": re.compile(r"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$"),
+    "sure": re.compile(r"^(\d+-)?\d{1,3}(:\d{2}){0,2}$", re.ASCII),
+    "bolum": re.compile(r"^[A-Za-z0-9_.,-]{1,64}$", re.ASCII),
+    "hesap": re.compile(r"^[A-Za-z0-9_.-]{1,64}$", re.ASCII),
+    "bellek": re.compile(r"^\d+[KMGT]?$", re.ASCII),
+    "eposta": re.compile(r"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$", re.ASCII),
 }
-_MODUL_DESENI = re.compile(r"^[A-Za-z0-9_.+/-]{1,128}$")
-_CONDA_DESENI = re.compile(r"^[A-Za-z0-9_.-]{1,64}$")
-_ORTAM_ADI_DESENI = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
+# Modul adi "-" ile baslayamaz: `module load -f` bir secenek olurdu.
+_MODUL_DESENI = re.compile(r"^[A-Za-z0-9_.+/][A-Za-z0-9_.+/-]{0,127}$", re.ASCII)
+_CONDA_DESENI = re.compile(r"^[A-Za-z0-9_.][A-Za-z0-9_.-]{0,63}$", re.ASCII)
+_ORTAM_ADI_DESENI = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$", re.ASCII)
 
 
 def _tam_sayi(ad: str, deger: Any, en_az: int = 1) -> int:
@@ -150,10 +151,16 @@ def _sbatch_satirlari(a: SlurmAyari) -> list:
 
 
 def _ortam_satirlari(a: SlurmAyari) -> list:
-    satirlar = ["module load %s" % m for m in a.moduller]
+    # Lmod/Environment Modules ve conda'nin kabuk islevleri tanimsiz degisken
+    # okur ve sifirdan farkli donus degerleri kullanir: `set -eu` altinda
+    # kirilirlardi. Bu satirlar set +eu ... set -eu arasinda kosar; yuklenemeyen
+    # modul/ortam bir sonraki adimda (openmc bulunamaz) yine durdurur.
+    kurulum = ["module load %s" % m for m in a.moduller]
     if a.conda_ortami:
-        satirlar += ['eval "$(conda shell.bash hook)"',
-                     "conda activate %s" % shlex.quote(a.conda_ortami)]
+        kurulum += ['eval "$(conda shell.bash hook)"',
+                    "conda activate %s" % shlex.quote(a.conda_ortami)]
+    satirlar = (["set +eu"] + kurulum + ["set -euo pipefail"]) if kurulum \
+        else ["set -euo pipefail"]
     satirlar.append('export OMP_NUM_THREADS="${SLURM_CPUS_PER_TASK:-%d}"' % a.cpu_gorev)
     satirlar += ["export %s=%s" % (ad, shlex.quote(str(d))) for ad, d in a.ek_ortam.items()]
     return satirlar
@@ -175,7 +182,7 @@ def betik_uret(ayar: SlurmAyari) -> str:
     satirlar = ["#!/bin/bash"] + _sbatch_satirlari(ayar) + [
         "# openmc-arayuz (Y10) tarafından üretildi; göndermek için: sbatch %s" % BETIK_ADI,
         "",
-        "set -euo pipefail",
+        "set -o pipefail",
     ] + _ortam_satirlari(ayar) + [
         "cd -- %s" % dizin,
         _komut_satiri(ayar),
