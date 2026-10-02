@@ -59,6 +59,7 @@ class DemetKinfPaneli(QtWidgets.QWidget):
         self.kq = KuyrukBagdastirici(cekirdek_kuyrugu or kuyruk.Kuyruk(), self)
         self._satirlar: Dict[str, int] = {}
         self._son: Dict[str, kuyruk.IsDurumu] = {}      # kimlik -> son gelen durum
+        self._kapandi = False
         self._kur()
         self.kq.durum_degisti.connect(self._durum_geldi)
         self.spec_ayarla(spec)
@@ -208,8 +209,15 @@ class DemetKinfPaneli(QtWidgets.QWidget):
         self._ilerlemeyi_guncelle()
 
     def _durumlar(self) -> List[kuyruk.IsDurumu]:
-        """Bu panelin islerinin son durumlari (ekleme sirasiyla)."""
-        return [self._son[k] for k in self._satirlar]
+        """Bu panelin islerinin son durumlari (ekleme sirasiyla): kuyruktan canli;
+        kuyruktan kaldirilmis is icin son gelen olay."""
+        durumlar = []
+        for k in self._satirlar:
+            try:
+                durumlar.append(self.kq.kuyruk.durum(k))
+            except KeyError:
+                durumlar.append(self._son[k])
+        return durumlar
 
     def _ilerlemeyi_guncelle(self) -> None:
         durumlar = self._durumlar()
@@ -247,6 +255,9 @@ class DemetKinfPaneli(QtWidgets.QWidget):
     def kapat(self) -> None:
         """Bu panelin bitmemis islerini iptal eder; kendi kuyruguysa kapatir,
         paylasilansa yalniz ayrilir (kuyruktaki baska isler surer)."""
+        if self._kapandi:
+            return
+        self._kapandi = True
         self._iptal()
         if self._kendi_kuyrugu:
             self.kq.kapat()
@@ -254,7 +265,7 @@ class DemetKinfPaneli(QtWidgets.QWidget):
             self.kq.ayril()
 
     def closeEvent(self, olay: Any) -> None:
-        kalan = self.bitmemis()
+        kalan = [] if self._kapandi else self.bitmemis()
         if kalan and QtWidgets.QMessageBox.question(
                 self, _("Demet k∞"),
                 _("%d demet koşusu bitmedi; kapatılırsa iptal edilir. Kapatılsın mı?")
