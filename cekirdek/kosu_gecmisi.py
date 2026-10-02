@@ -307,6 +307,45 @@ def guc_farki(bagil1: Mapping[Hashable, Tuple[float, float]],
 
 
 @dataclass(frozen=True)
+class FarkIzgarasi:
+    """Fark haritasi icin kare izgara: hucre (gx, gy) -> KonumFarki."""
+    nx: int
+    ny: int
+    hucreler: Mapping[Tuple[int, int], KonumFarki]
+
+
+def _tam_cift(a: Any) -> bool:
+    return (isinstance(a, tuple) and len(a) == 2
+            and all(isinstance(v, int) and not isinstance(v, bool) for v in a))
+
+
+def fark_izgarasi(gf: GucFarki) -> Optional[FarkIzgarasi]:
+    """Kare kafes anahtarlarini (tek demet (x, y) ya da tam kor
+    ((dx, dy), (x, y))) duz izgaraya cevirir; baska anahtarda (altigen,
+    karisik duzey) None -- fark yalniz tabloda gosterilir."""
+    anahtarlar = list(gf.farklar)
+    if not anahtarlar:
+        return None
+    if all(_tam_cift(a) for a in anahtarlar):
+        hucreler = {a: gf.farklar[a] for a in anahtarlar}
+        nx = max(x for x, _y in hucreler) + 1
+        ny = max(y for _x, y in hucreler) + 1
+    elif all(isinstance(a, tuple) and len(a) == 2 and _tam_cift(a[0]) and _tam_cift(a[1])
+             for a in anahtarlar):
+        ix = max(a[1][0] for a in anahtarlar) + 1        # demet ici izgara
+        iy = max(a[1][1] for a in anahtarlar) + 1
+        hucreler = {(a[0][0] * ix + a[1][0], a[0][1] * iy + a[1][1]): gf.farklar[a]
+                    for a in anahtarlar}
+        nx = (max(a[0][0] for a in anahtarlar) + 1) * ix    # butun demetler tam boy
+        ny = (max(a[0][1] for a in anahtarlar) + 1) * iy
+    else:
+        return None
+    if min(min(x for x, _y in hucreler), min(y for _x, y in hucreler)) < 0:
+        return None
+    return FarkIzgarasi(nx=nx, ny=ny, hucreler=hucreler)
+
+
+@dataclass(frozen=True)
 class Karsilastirma:
     dizin1: str
     dizin2: str

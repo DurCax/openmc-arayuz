@@ -170,6 +170,20 @@ def test_guc_farki_konum_konum():
     assert bos.en_buyuk is None and bos.rms_fark == 0.0
 
 
+def test_fark_izgarasi_tek_demet_tam_kor_ve_altigen():
+    from cekirdek import kosu_gecmisi as kg
+    tek = kg.guc_farki({(0, 0): (1, 0.1), (2, 1): (1, 0.1)}, {(0, 0): (2, 0.1), (2, 1): (1, 0.1)})
+    iz = kg.fark_izgarasi(tek)
+    assert (iz.nx, iz.ny) == (3, 2) and iz.hucreler[(0, 0)].fark == 1
+    kor = {((1, 0), (0, 1)): (1.0, 0.1), ((0, 0), (1, 1)): (1.0, 0.1)}
+    iz2 = kg.fark_izgarasi(kg.guc_farki(kor, kor))
+    assert (iz2.nx, iz2.ny) == (4, 2)
+    assert set(iz2.hucreler) == {(2, 1), (1, 1)}
+    altigen = {("halka", 1): (1.0, 0.1)}
+    assert kg.fark_izgarasi(kg.guc_farki(altigen, altigen)) is None
+    assert kg.fark_izgarasi(kg.guc_farki({}, {})) is None
+
+
 def test_kosulari_karsilastir_dizinlerden_okur(tmp_path):
     # Arrange: sahte okuyucu (statepoint dosyasi bos, icerigi okumaz)
     from cekirdek import kosu_gecmisi as kg
@@ -240,6 +254,7 @@ HIZLI = [test_gecmis_gidis_donus_ve_siralama, test_gecmis_varsayilan_yolu_kullan
          test_gecmis_bos_kimlik_reddedilir_ve_yeni_sema_okunmaz,
          test_gecmis_bozuk_etiket_bos_sayilir, test_kuyruk_dinleyicisi_yalniz_biten_isleri_yazar,
          test_durumdan_kayit_kapsul_karmasini_okur, test_k_farki_z_ve_anlamlilik,
-         test_guc_farki_konum_konum, test_kosulari_karsilastir_dizinlerden_okur,
+         test_guc_farki_konum_konum, test_fark_izgarasi_tek_demet_tam_kor_ve_altigen,
+         test_kosulari_karsilastir_dizinlerden_okur,
          test_karsilastirma_sabit_kaynak_ve_gucsuz_notlar]
 YAVAS = [test_gercek_iki_kosu_karsilastirma]
