@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 07:15+0300\n"
+"POT-Creation-Date: 2026-10-02 09:38+0300\n"
 "PO-Revision-Date: 2026-10-01 18:14+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -639,7 +639,7 @@ msgstr "cell"
 msgid "mesh"
 msgstr "mesh"
 
-#: arayuz/ayar/spektrum_karti.py:27 arayuz/sonuc/spektrum.py:111
+#: arayuz/ayar/spektrum_karti.py:27 arayuz/sonuc/spektrum.py:137
 msgid "Spektrum ve dört faktör"
 msgstr "Spectrum and four factors"
 
@@ -686,6 +686,15 @@ msgstr ""
 "Thermal cutoff %g eV. The four factors are meaningful only in an eigenvalue "
 "calculation; k∞ requires a leakage-free (reflective-boundary) model, and with leakage"
 " a separate P_NL factor is given."
+
+#: arayuz/ayar/spektrum_karti.py:73
+#, python-format
+msgid ""
+"Dosyadaki grup yapısı '%s' geçersiz; düzeltmek için listeden seçin (koşu bu haliyle "
+"başlamaz)."
+msgstr ""
+"The group structure '%s' in the file is invalid; choose one from the list to fix it "
+"(the run will not start as it is)."
 
 #: arayuz/ayar/tally_formu.py:115
 #, python-brace-format
@@ -1540,7 +1549,7 @@ msgid "moderatör"
 msgstr "moderator"
 
 #: arayuz/cubuk/parca_islemleri.py:24 arayuz/malzeme/yardimcilar.py:30
-#: arayuz/sonuc/spektrum.py:167
+#: arayuz/sonuc/spektrum.py:201
 msgid "yakıt"
 msgstr "fuel"
 
@@ -7122,20 +7131,21 @@ msgstr "U-238 fission / U-235 fission"
 msgid "U-238 yakalama / U-235 fisyon"
 msgstr "U-238 capture / U-235 fission"
 
-#: arayuz/sonuc/spektrum.py:64
+#: arayuz/sonuc/spektrum.py:70
 msgid "birleşik k tahmincisi"
 msgstr "combined k estimator"
 
-#: arayuz/sonuc/spektrum.py:76
+#: arayuz/sonuc/spektrum.py:82
 #, python-format
 msgid ""
-"Termal kesim %g eV (OpenMC tally-arithmetic örneği, CASMO-2 sınırı, CSEWG kadmiyum "
-"kesimi)."
+"Termal kesim %g eV: OpenMC tally-arithmetic örneği, CASMO-2 sınırı, CSEWG/ENDF-202 "
+"hesap kesimi (deneydeki etkin kadmiyum kesimi kalınlığa bağlı, ~0.4–0.5 eV)."
 msgstr ""
-"Thermal cutoff %g eV (OpenMC tally-arithmetic example, CASMO-2 boundary, CSEWG "
-"cadmium cutoff)."
+"Thermal cutoff %g eV: OpenMC tally-arithmetic example, CASMO-2 boundary, "
+"CSEWG/ENDF-202 calculational cutoff (the effective cadmium cutoff in the experiment "
+"depends on its thickness, ~0.4–0.5 eV)."
 
-#: arayuz/sonuc/spektrum.py:78
+#: arayuz/sonuc/spektrum.py:85
 msgid ""
 "ε, p, f, η sızıntısız (k∞) tanımlardır: νF nu-fission, A absorption, X = (n,xn) net "
 "üretim; F (yakıt) = fisil nüklid içeren malzemeler."
@@ -7143,7 +7153,7 @@ msgstr ""
 "ε, p, f, η are leakage-free (k∞) definitions: νF nu-fission, A absorption, X = net "
 "(n,xn) production; F (fuel) = materials containing fissile nuclides."
 
-#: arayuz/sonuc/spektrum.py:80
+#: arayuz/sonuc/spektrum.py:87
 msgid ""
 "Belirsizlik birinci derece, tally'ler arası korelasyon yok sayıldı (ihtiyatlı; "
 "çarpımın sapması νF/A oranından)."
@@ -7151,7 +7161,23 @@ msgstr ""
 "First-order uncertainty, correlation between tallies neglected (conservative; the "
 "product's deviation comes from the νF/A ratio)."
 
-#: arayuz/sonuc/spektrum.py:84
+#: arayuz/sonuc/spektrum.py:89
+msgid ""
+"X yalnız MT 11, 16, 17, 24, 25, 30, 37, 41, 42 kanallarını sayar; Be ya da D₂O içeren"
+" modellerde (n,2n) önemlidir, c_xn'e bakın."
+msgstr ""
+"X counts only the MT 11, 16, 17, 24, 25, 30, 37, 41, 42 channels; in models "
+"containing Be or D₂O, (n,2n) matters, check c_xn."
+
+#: arayuz/sonuc/spektrum.py:100
+msgid ""
+"Sızıntı bilinmiyor (global sızıntı tally'si yok): P_NL ve k hesaplanmadı; sonuç k∞ "
+"olarak etiketlenmedi."
+msgstr ""
+"Leakage unknown (no global leakage tally): P_NL and k were not computed; the result "
+"is not labelled k∞."
+
+#: arayuz/sonuc/spektrum.py:103
 msgid ""
 "Sızıntı var: P_NL global sızıntı tally'sinden tek çarpan; P_FNL ve P_TNL ayrı "
 "verilmez (enerjiye bağlı sızıntı tally'si gerekir)."
@@ -7159,7 +7185,7 @@ msgstr ""
 "Leakage present: P_NL is a single factor from the global leakage tally; P_FNL and "
 "P_TNL are not given separately (an energy-dependent leakage tally would be needed)."
 
-#: arayuz/sonuc/spektrum.py:87
+#: arayuz/sonuc/spektrum.py:106
 msgid ""
 "Spektral indeksler (CSEWG tanımları) tüm yakıt malzemelerinin ortalamasıdır; deneyler"
 " merkez çubukta ölçer."
@@ -7167,11 +7193,16 @@ msgstr ""
 "Spectral indices (CSEWG definitions) are averages over all fuel materials; "
 "experiments measure them in the central fuel pin."
 
-#: arayuz/sonuc/spektrum.py:90
+#: arayuz/sonuc/spektrum.py:109
+#, python-format
+msgid "Y3 tally'leri eksik (%s): dört faktör hesaplanmadı."
+msgstr "Y3 tallies missing (%s): the four factors were not computed."
+
+#: arayuz/sonuc/spektrum.py:113
 msgid "Sabit kaynak hesabı: dört faktör ve k tanımsız; yalnız spektrum."
 msgstr "Fixed source calculation: four factors and k are undefined; spectrum only."
 
-#: arayuz/sonuc/spektrum.py:92
+#: arayuz/sonuc/spektrum.py:115
 msgid ""
 "Termal fisyon yok (hızlı sistem): ε, p, f, η termal reaktör tanımlarıdır ve burada "
 "tanımsızdır."
@@ -7179,28 +7210,36 @@ msgstr ""
 "No thermal fission (fast system): ε, p, f, η are thermal-reactor definitions and are "
 "undefined here."
 
-#: arayuz/sonuc/spektrum.py:112
+#: arayuz/sonuc/spektrum.py:118
+msgid ""
+"f = 1: termal soğurmanın tamamı yakıt malzemesinde (homojen karışım); η yakıt + "
+"moderatör karışımına aittir, ders kitabı anlamını yitirir."
+msgstr ""
+"f = 1: all thermal absorption is in the fuel material (homogeneous mixture); η "
+"belongs to the fuel + moderator mixture and loses its textbook meaning."
+
+#: arayuz/sonuc/spektrum.py:138
 msgid "Letarji başına akı, ε·p·f·η ve spektral indeksler"
 msgstr "Flux per unit lethargy, ε·p·f·η and spectral indices"
 
-#: arayuz/sonuc/spektrum.py:136
+#: arayuz/sonuc/spektrum.py:170
 #, python-format
 msgid "Spektrum sonucu okunamadı: %s"
 msgstr "Spectrum result could not be read: %s"
 
-#: arayuz/sonuc/spektrum.py:161
+#: arayuz/sonuc/spektrum.py:195
 msgid "Spektrum tally'si yok"
 msgstr "No spectrum tally"
 
-#: arayuz/sonuc/spektrum.py:166
+#: arayuz/sonuc/spektrum.py:200
 msgid "model geneli"
 msgstr "whole model"
 
-#: arayuz/sonuc/spektrum.py:176
+#: arayuz/sonuc/spektrum.py:210
 msgid "enerji [eV]"
 msgstr "energy [eV]"
 
-#: arayuz/sonuc/spektrum.py:177
+#: arayuz/sonuc/spektrum.py:211
 msgid "φ·V / Δu [cm / kaynak nötronu]"
 msgstr "φ·V / Δu [cm / source neutron]"
 

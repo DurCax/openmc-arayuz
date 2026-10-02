@@ -649,15 +649,19 @@ bir başarısızlık değildir (`--siki` verilmedikçe).
 **Örnek dosya:** `ornekler/pwr_pinhucre.json` · **Seviye:** orta · **Tahmini süre:** 15 dakika
 
 **Amaç.** Yansıtıcı sınırlı (sonsuz kafes) bir PWR pin hücresinde nötron enerji spektrumunu
-çizmek, k∞'u dört faktöre (ε, p, f, η) ayırmak, çarpımın k∞'a eşit olduğunu görmek ve CSEWG
-spektral indekslerini okumak.
+çizmek, k∞'u dört faktöre (ε, p, f, η) ayırmak, ε·p·f·η·c_xn çarpımının k∞'a eşit olduğunu
+görmek ve CSEWG spektral indekslerini okumak.
 
 **Tanımlar (hangi tally oranı).** Hepsi aynı koşunun tally'leridir; νF = `nu-fission`,
-A = `absorption`, _th = E < E_c, F = yakıt (fisil nüklid içeren malzemeler), X = (n,2n) +
-2·(n,3n) + 3·(n,4n). Tanımlar OpenMC'nin resmî tally-arithmetic örneğiyle (openmc-notebooks,
-`tally-arithmetic.ipynb`) birebir aynıdır; ders kitabı karşılığı: Lamarsh & Baratta,
-*Introduction to Nuclear Engineering*, Bölüm 6; Duderstadt & Hamilton, *Nuclear Reactor
-Analysis* (1976), nötron yaşam döngüsü ve dört faktör formülü.
+A = `absorption`, _th = E < E_c, F = yakıt (fisil nüklid içeren malzemeler), X = Σ (x−1)·R_x
+((n,xn) türü kanallar, aşağıya bakın). Tanımlar OpenMC'nin resmî tally-arithmetic örneğiyle
+(openmc-notebooks, `tally-arithmetic.ipynb`) **sızıntısız sınırda aynıdır**; p farklıdır: örneğin
+p'si termal sızıntıyı da içerir. Ders kitabı çerçevesi: Lamarsh & Baratta, *Introduction to
+Nuclear Engineering*, Bölüm 6; Duderstadt & Hamilton, *Nuclear Reactor Analysis* (1976), nötron
+yaşam döngüsü ve dört faktör formülü — ama **iki grup tanımı** ders kitabından farklıdır:
+ders kitabındaki ε yalnız U-238 eşiği üstündeki hızlı fisyonu sayar (tipik 1.02–1.08); burada
+"hızlı" = E > 0.625 eV olduğundan ε epitermal ve rezonans bölgesindeki U-235 fisyonunu da içerir
+(bu pin hücrede 1.225) ve buna karşılık p daha küçüktür. Çarpım değişmez.
 
 | Simge | Ad | Tally oranı |
 |---|---|---|
@@ -670,8 +674,9 @@ Analysis* (1976), nötron yaşam döngüsü ve dört faktör formülü.
 | P_NL | sızmama olasılığı (P_FNL·P_TNL) | (A − X) / (A − X + L) |
 | k | tally'lerden k | νF / (A − X + L) = ε·p·f·η·c_xn·P_NL |
 
-- **Termal kesim E_c = 0.625 eV:** OpenMC örneğinin değeri; CASMO-2 iki grup sınırı ve CSEWG TRX
-  kafes ölçümlerinin kadmiyum kesimi. Kesim değişirse dört faktörün hepsi değişir (tanım gereği);
+- **Termal kesim E_c = 0.625 eV:** OpenMC örneğinin değeri, CASMO-2 iki grup sınırı ve
+  CSEWG/ENDF-202 TRX hesaplarının **hesap** kesimi; deneydeki etkin kadmiyum kesimi kadmiyum
+  kalınlığına bağlıdır (~0.4–0.5 eV). Kesim değişirse dört faktörün hepsi değişir (tanım gereği);
   yalnızca çarpım değişmez.
 - **Sızıntısız varsayım:** p = A_th/A, k∞ tanımıdır. OpenMC örneğinin p'si termal sızıntıyı da
   içerir; burada termal sızıntı tally'si yoktur. Sızıntı varsa L, statepoint'in global `leakage`
@@ -679,11 +684,17 @@ Analysis* (1976), nötron yaşam döngüsü ve dört faktör formülü.
   bağlı yüzey akımı tally'si ister (kapsam dışı).
 - **(n,xn):** OpenMC'nin `absorption` skoru (n,2n) ile doğan nötronları saymaz; bu yüzden ε·p·f·η
   = νF/A, k∞'u X/A kadar (pin hücrede ≈ %0.14) küçük verir. c_xn bunu düzeltir. Klasik dört faktör
-  formülünde bu etki ε'nin içinde varsayılır.
+  formülünde bu etki ε'nin içinde varsayılır. X yalnız MT 11, 16, 17, 24, 25, 30, 37, 41, 42
+  kanallarını sayar; daha yüksek kanallar (MT 152+, (n,5n) …) sayılmaz. Be ya da D₂O içeren
+  modellerde (n,2n) önemlidir. **c_xn yalnız analitik (el hesabı) testle doğrulandı;** X/A ≈ %0.14,
+  A'nın MC belirsizliğinden (~%0.2) küçük olduğundan Monte Carlo ile ayrıştırılamaz. MC ile
+  doğrulanan: filtresiz nu-fission tally'si = global k-tracklength (~1e-6 bağıl) ve nötron dengesi
+  A − X + L = 1 (2σ).
 - **Spektral indeksler (CSEWG benchmark tanımları; BNL-19302/ENDF-202, TRX-1/2 kafesleri):**
   ρ28 = U-238 yakalama epitermal/termal, δ25 = U-235 fisyon epitermal/termal, δ28 = U-238
   fisyon / U-235 fisyon, C* = U-238 yakalama / U-235 fisyon. Deneyler merkez çubukta ölçer;
-  burada **tüm yakıt malzemelerinin** ortalamasıdır.
+  burada **tüm yakıt malzemelerinin** ortalamasıdır. Homojen bir modelde (yakıt ve moderatör aynı
+  malzeme) f = 1 olur ve η yakıt + moderatör karışımına ait olduğundan ders kitabı anlamını yitirir.
 - **Belirsizlik:** birinci derece, tally'ler arası **korelasyon yok sayılır**: r = a/b için
   (σ_r/r)² = (σ_a/a)² + (σ_b/b)². Pay paydanın alt kümesiyken (p, f) gerçek korelasyon pozitiftir,
   bu yüzden verilen σ **büyük tahmindir** (ihtiyatlı). Çarpımın σ'sı νF/A oranından hesaplanır.
@@ -696,11 +707,12 @@ Analysis* (1976), nötron yaşam döngüsü ve dört faktör formülü.
    **Spektrum ve dört faktörü hesapla** kutusunu işaretleyin; **Enerji grup yapısı**: XMAS-172.
 2. **Çalıştır**. Koşu bitince **Spektrum ve dört faktör** kartı açılır.
 3. Grafikte termal tepeyi (≈ 0.05–0.1 eV; moderatör sıcaklığına bağlı), 1/E yavaşlama düzlüğünü ve U-238 rezonans çukurlarını
-   (6.67 eV, 20.9 eV, 36.7 eV …) yakıt eğrisinde bulun; fisyon tepesi ≈ 1 MeV'dedir.
+   (6.67 eV, 20.9 eV, 36.7 eV …) yakıt eğrisinde bulun; letarji başına fisyon tepesi ~1–2 MeV'dedir.
 4. Tablodaki ε·p·f·η·c_xn çarpımını OpenMC'nin k değeriyle karşılaştırın.
 
-**Beklenen sonuç** (ölçüm: 5 000 parçacık × 60 çevrim / 10 pasif, tohum 1, ENDF/B-VIII.0,
-OpenMC 0.16.0, XMAS-172):
+**Beklenen sonuç** (kaynak koşu: örnek dosyanın kendi ayarları — 5 000 parçacık × 60 çevrim /
+10 pasif, tohum 1 — ENDF/B-VIII.0, OpenMC 0.16.0, XMAS-172; kabul testi aynı modeli 15 pasif
+çevrimle koşar, değerleri bu tablodan birkaç σ içinde farklıdır):
 
 | Büyüklük | Değer ± 1σ |
 |---|---|
@@ -716,13 +728,18 @@ OpenMC 0.16.0, XMAS-172):
 
 İki k aynı geçmişlerden gelir ve 2σ içinde eşittir (test: `testler/test_y3_spektrum.py`,
 `test_pin_hucre_dort_faktor_k_sonsuz`). Bu indeksler bu pin hücresine aittir; TRX ölçümleriyle
-karşılaştırılmaz (farklı kafes).
+karşılaştırılmaz (farklı kafes: zenginlik %3 ve su 0.70 g/cm³ spektrumu sertleştirir, bu yüzden
+ρ28 ve δ25 TRX/BAPL kafeslerindekinden belirgin biçimde büyüktür — kabaca iki kat mertebesinde;
+bu oran ENDF-202 tablolarından doğrulanmadı, referans değer verilmez). Örnek dosya bir ders modelidir: kesitler 293.6 K'de
+alınmış ama su yoğunluğu 0.70 g/cm³ (sıcak koşul) verilmiştir; bu tutarsızlık bilinçlidir ve
+sonuçları bir tasarım değeri yapmaz.
 
 **Ne öğrendik / kontrol soruları.**
 
 - Neden f < 1 ve η < ν (≈ 2.43)? (f, zarf ve suyun termal soğurmasını dışarıda bırakır; η yakıttaki
   her termal soğurma başına üretimdir ve U-235 yakalaması ile U-238 soğurması da paydadadır.)
 - Termal kesimi 1 eV'a çekmek hangi faktörleri değiştirir? (Hepsini; çarpım νF/A sabit kalır.)
-- Godiva'da (`ornekler/godiva_kriter.json`) kart neden ε, p, f, η yerine "tanımsız" yazar ve
-  P_NL ≈ 0.43 verir? (Termal fisyon yok; çıplak küre, büyük sızıntı.)
+- Godiva'da (`ornekler/godiva_kriter.json`) ε, p, f, η neden anlamsızdır ve P_NL neden ≈ 0.43'tür?
+  (Termal fisyon yok ya da ihmal edilebilir: ε = νF/νF_th ya tanımsız ya da aşırı büyük çıkar;
+  dört faktör termal reaktör tanımıdır. Çıplak küre, büyük sızıntı.)
 - Bu sonuç bir doğrulama ya da sertifika değildir; yalnızca tanımların tutarlılığını gösterir.

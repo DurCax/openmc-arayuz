@@ -155,6 +155,13 @@ Kaynak tablo depodaki [SOZLUK.md](../../SOZLUK.md) dosyasıdır; aşağıdaki ta
 | belirsizlik | uncertainty | error | "hata" demeyin; 1σ yazılır |
 | standart sapma | standard deviation |  | σ |
 | kapsama faktörü | coverage factor |  | GUM |
+| dört faktör | four factors (four-factor) |  | ε·p·f·η (Y3; Lamarsh, Duderstadt & Hamilton) |
+| hızlı fisyon çarpanı | fast fission factor | fast fission ratio | ε |
+| rezonanstan kaçma olasılığı | resonance escape probability | resonance escape factor | p |
+| termal yararlanma | thermal utilization | thermal usage | f |
+| sızmama olasılığı | non-leakage probability | no-leak probability | P_NL = P_FNL·P_TNL |
+| letarji | lethargy |  | u = ln(E₀/E) |
+| spektral indeks | spectral index (spectral indices) | spectrum index | ρ28, δ25, δ28, C* (CSEWG) |
 
 ### 10.5 Tükenme
 
