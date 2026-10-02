@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 09:51+0300\n"
+"POT-Creation-Date: 2026-10-02 10:16+0300\n"
 "PO-Revision-Date: 2026-10-01 18:14+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -4499,7 +4499,7 @@ msgstr ""
 "Shows points claimed by more than one cell in a separate colour and\n"
 "reports how many there are. Makes plotting several times slower for large cores."
 
-#: arayuz/onizleme.py:184 arayuz/veri/sayfa.py:52
+#: arayuz/onizleme.py:184 arayuz/veri/sayfa.py:54
 msgid "Yenile"
 msgstr "Refresh"
 
@@ -4799,21 +4799,34 @@ msgstr "Undone ({i}/{n})"
 msgid "Yinelendi ({i}/{n})"
 msgstr "Redone ({i}/{n})"
 
-#: arayuz/pencere/gezinme.py:30 arayuz/veri/kayit.py:28
+#: arayuz/pencere/gezinme.py:30 arayuz/veri/kayit.py:29
 msgid "Veri"
 msgstr "Data"
 
-#: arayuz/pencere/gezinme.py:71
+#: arayuz/pencere/gezinme.py:74
+#, python-format
+msgid "kütüphane otomatik bulundu: %s"
+msgstr "library found automatically: %s"
+
+#: arayuz/pencere/gezinme.py:75
+msgid "Doğruysa Veri sayfasında 'Denetle ve kullan' ile onaylayın."
+msgstr "If it is correct, confirm it on the Data page with 'Check and use'."
+
+#: arayuz/pencere/gezinme.py:76
+msgid "birden çok kütüphane bulundu; hangisinin kullanılacağı seçilmedi"
+msgstr "several libraries found; which one to use has not been chosen"
+
+#: arayuz/pencere/gezinme.py:77
 msgid "nükleer veri kütüphanesi bulunamadı"
 msgstr "nuclear data library not found"
 
-#: arayuz/pencere/gezinme.py:72
+#: arayuz/pencere/gezinme.py:80
 msgid "Veri sayfasından cross_sections.xml içeren klasörü seçin ya da bir kütüphane indirin."
 msgstr ""
 "On the Data page, choose the folder that contains cross_sections.xml or download a "
 "library."
 
-#: arayuz/pencere/gezinme.py:87
+#: arayuz/pencere/gezinme.py:95
 #, python-brace-format
 msgid "{sekme} sayfası bu model türünde kullanılmıyor."
 msgstr "The {sekme} page is not used for this model type."
@@ -7569,24 +7582,24 @@ msgstr "Profile: %s"
 msgid "Çift tıklayınca ilgili sayfaya gider."
 msgstr "Double-click to go to the relevant page."
 
-#: arayuz/veri/indirme_karti.py:24
+#: arayuz/veri/indirme_karti.py:25
 msgid "indiriliyor"
 msgstr "downloading"
 
-#: arayuz/veri/indirme_karti.py:24
+#: arayuz/veri/indirme_karti.py:25
 msgid "açılıyor"
 msgstr "unpacking"
 
-#: arayuz/veri/indirme_karti.py:28
+#: arayuz/veri/indirme_karti.py:29
 #, python-format
 msgid "%.2f GB"
 msgstr "%.2f GB"
 
-#: arayuz/veri/indirme_karti.py:38
+#: arayuz/veri/indirme_karti.py:39
 msgid "Kütüphane indir"
 msgstr "Download library"
 
-#: arayuz/veri/indirme_karti.py:39
+#: arayuz/veri/indirme_karti.py:40
 msgid ""
 "openmc.org resmî listesinden seçin; indirme arka planda sürer, iptal edilirse kaldığı"
 " yerden devam eder."
@@ -7594,211 +7607,227 @@ msgstr ""
 "Choose from the official openmc.org list; the download runs in the background and "
 "resumes where it stopped if cancelled."
 
-#: arayuz/veri/indirme_karti.py:55
+#: arayuz/veri/indirme_karti.py:56
 msgid "Kütüphane"
 msgstr "Library"
 
-#: arayuz/veri/indirme_karti.py:55
+#: arayuz/veri/indirme_karti.py:56
 msgid "Arşiv"
 msgstr "Archive"
 
-#: arayuz/veri/indirme_karti.py:55
+#: arayuz/veri/indirme_karti.py:56
 msgid "Sıcaklıklar"
 msgstr "Temperatures"
 
-#: arayuz/veri/indirme_karti.py:76
+#: arayuz/veri/indirme_karti.py:77
 msgid "Seçili kütüphaneyi indir"
 msgstr "Download the selected library"
 
-#: arayuz/veri/indirme_karti.py:82
+#: arayuz/veri/indirme_karti.py:83
 msgid "Tükenme zincirleri"
 msgstr "Depletion chains"
 
-#: arayuz/veri/indirme_karti.py:83
+#: arayuz/veri/indirme_karti.py:84
 msgid "Yalnız tükenme hesabı için gerekir."
 msgstr "Needed only for depletion calculations."
 
-#: arayuz/veri/indirme_karti.py:106
+#: arayuz/veri/indirme_karti.py:107
 msgid "Hedef klasör:"
 msgstr "Target folder:"
 
-#: arayuz/veri/indirme_karti.py:108 arayuz/veri/indirme_karti.py:179
+#: arayuz/veri/indirme_karti.py:109 arayuz/veri/indirme_karti.py:182
 msgid "Hedef klasör"
 msgstr "Target folder"
 
-#: arayuz/veri/indirme_karti.py:111 arayuz/veri/sayfa.py:96 arayuz/veri/sayfa.py:110
+#: arayuz/veri/indirme_karti.py:112 arayuz/veri/sayfa.py:134 arayuz/veri/sayfa.py:148
 msgid "Gözat…"
 msgstr "Browse…"
 
-#: arayuz/veri/indirme_karti.py:125 arayuz/veri/indirme_karti.py:214
+#: arayuz/veri/indirme_karti.py:126 arayuz/veri/indirme_karti.py:217
 msgid "İndir"
 msgstr "Download"
 
-#: arayuz/veri/indirme_karti.py:127
+#: arayuz/veri/indirme_karti.py:128
 msgid "İptal"
 msgstr "Cancel"
 
 #: arayuz/veri/indirme_karti.py:174
+msgid "sha256 yayımlanmamış: indirmede yalnız boyut denetlenir."
+msgstr "no sha256 published: only the size is checked when downloading."
+
+#: arayuz/veri/indirme_karti.py:177
 msgid "Değerlendirme sayfası"
 msgstr "Evaluation page"
 
-#: arayuz/veri/indirme_karti.py:199
+#: arayuz/veri/indirme_karti.py:202
 msgid "Mutlak bir hedef klasör yolu girin."
 msgstr "Enter an absolute target folder path."
 
-#: arayuz/veri/indirme_karti.py:206
+#: arayuz/veri/indirme_karti.py:209
 #, python-format
 msgid "Boş alan ölçülemedi: %s"
 msgstr "Free space could not be measured: %s"
 
-#: arayuz/veri/indirme_karti.py:210
+#: arayuz/veri/indirme_karti.py:213
 #, python-format
 msgid "Gerekli: %s (indirme + açılmış kütüphane%s) · boş: %s"
 msgstr "Required: %s (download + unpacked library%s) · free: %s"
 
-#: arayuz/veri/indirme_karti.py:212
+#: arayuz/veri/indirme_karti.py:215
 msgid "; açılmış boyut tahmini"
 msgstr "; unpacked size estimated"
 
-#: arayuz/veri/indirme_karti.py:214
+#: arayuz/veri/indirme_karti.py:217
 msgid "Sürdür"
 msgstr "Resume"
 
-#: arayuz/veri/indirme_karti.py:225
+#: arayuz/veri/indirme_karti.py:228
 msgid "İndirilecek bir şey seçilmedi."
 msgstr "Nothing selected to download."
 
-#: arayuz/veri/indirme_karti.py:239
+#: arayuz/veri/indirme_karti.py:242
 msgid "İptal edildi. 'Sürdür' kaldığı yerden devam eder."
 msgstr "Cancelled. 'Resume' continues where it stopped."
 
-#: arayuz/veri/indirme_karti.py:241
+#: arayuz/veri/indirme_karti.py:244
 msgid "Başlıyor…"
 msgstr "Starting…"
 
-#: arayuz/veri/indirme_karti.py:267
+#: arayuz/veri/indirme_karti.py:270
 #, python-format
 msgid "%s — %s %s / %s"
 msgstr "%s — %s %s / %s"
 
-#: arayuz/veri/indirme_karti.py:291
+#: arayuz/veri/indirme_karti.py:294
 #, python-format
 msgid "İndirildi ama seçim kaydedilemedi: %s"
 msgstr "Downloaded, but the choice could not be saved: %s"
 
-#: arayuz/veri/indirme_karti.py:295
+#: arayuz/veri/indirme_karti.py:299
 #, python-format
 msgid "Tamam: %s"
 msgstr "Done: %s"
 
-#: arayuz/veri/isci.py:69
+#: arayuz/veri/isci.py:42 arayuz/veri/isci.py:92
 #, python-format
 msgid "beklenmeyen hata: %s"
 msgstr "unexpected error: %s"
 
-#: arayuz/veri/kayit.py:29
+#: arayuz/veri/kayit.py:30
 msgid "Kurulum"
 msgstr "Setup"
 
-#: arayuz/veri/sayfa.py:53
+#: arayuz/veri/kayit.py:89
+msgid "Nükleer veri kütüphanesi bulunamadı; koşu için Veri sayfasından seçin ya da indirin."
+msgstr "No nuclear data library found; choose or download one on the Data page to run."
+
+#: arayuz/veri/kayit.py:91
+msgid "Veri sayfası"
+msgstr "Data page"
+
+#: arayuz/veri/sayfa.py:55
 msgid "Gereksinimler"
 msgstr "Requirements"
 
-#: arayuz/veri/sayfa.py:53
+#: arayuz/veri/sayfa.py:55
 msgid "Koşu için gerekenlerin durumu."
 msgstr "Status of what a run needs."
 
-#: arayuz/veri/sayfa.py:90
+#: arayuz/veri/sayfa.py:64 arayuz/veri/sayfa.py:75 arayuz/veri/sayfa.py:200
+msgid "Denetleniyor…"
+msgstr "Checking…"
+
+#: arayuz/veri/sayfa.py:128
 msgid "Klasör seç"
 msgstr "Choose folder"
 
-#: arayuz/veri/sayfa.py:91
+#: arayuz/veri/sayfa.py:129
 msgid "Bilgisayarınızda zaten bir kütüphane varsa cross_sections.xml içeren klasörü seçin."
 msgstr ""
 "If a library is already on your computer, choose the folder that contains "
 "cross_sections.xml."
 
-#: arayuz/veri/sayfa.py:94 arayuz/veri/sayfa.py:128
+#: arayuz/veri/sayfa.py:132 arayuz/veri/sayfa.py:166
 msgid "Kütüphane klasörü"
 msgstr "Library folder"
 
-#: arayuz/veri/sayfa.py:95
+#: arayuz/veri/sayfa.py:133
 msgid "…/endfb-viii.0-hdf5"
 msgstr "…/endfb-viii.0-hdf5"
 
-#: arayuz/veri/sayfa.py:98
+#: arayuz/veri/sayfa.py:136
 msgid "Denetle ve kullan"
 msgstr "Check and use"
 
-#: arayuz/veri/sayfa.py:108
+#: arayuz/veri/sayfa.py:146
 msgid "Tükenme zinciri dosyası"
 msgstr "Depletion chain file"
 
-#: arayuz/veri/sayfa.py:109
+#: arayuz/veri/sayfa.py:147
 msgid "…/chain/chain_endfb80_thermal.xml"
 msgstr "…/chain/chain_endfb80_thermal.xml"
 
-#: arayuz/veri/sayfa.py:112
+#: arayuz/veri/sayfa.py:150
 msgid "Zinciri kullan"
 msgstr "Use chain"
 
-#: arayuz/veri/sayfa.py:114 arayuz/veri/sayfa.py:135
+#: arayuz/veri/sayfa.py:152 arayuz/veri/sayfa.py:173
 msgid "Tükenme zinciri"
 msgstr "Depletion chain"
 
-#: arayuz/veri/sayfa.py:115
+#: arayuz/veri/sayfa.py:153
 msgid "Termal zincirin yanındaki hızlı ve CASL zincirleri aynı klasörden okunur."
 msgstr "The fast and CASL chains are read from the same folder as the thermal chain."
 
-#: arayuz/veri/sayfa.py:136
+#: arayuz/veri/sayfa.py:174
 msgid "Zincir (*.xml)"
 msgstr "Chain (*.xml)"
 
-#: arayuz/veri/sayfa.py:147
+#: arayuz/veri/sayfa.py:185
 #, python-format
 msgid "%d nötron nüklidi · %d S(α,β) tablosu · %d foton elementi"
 msgstr "%d neutron nuclides · %d S(α,β) tables · %d photon elements"
 
-#: arayuz/veri/sayfa.py:150
+#: arayuz/veri/sayfa.py:188
 #, python-format
 msgid "Sıcaklıklar: %s"
 msgstr "Temperatures: %s"
 
-#: arayuz/veri/sayfa.py:152
+#: arayuz/veri/sayfa.py:190
 #, python-format
 msgid "S(α,β): %s"
 msgstr "S(α,β): %s"
 
-#: arayuz/veri/sayfa.py:161
+#: arayuz/veri/sayfa.py:231
 #, python-format
 msgid "Bu klasör kullanılamaz: %s"
 msgstr "This folder cannot be used: %s"
 
-#: arayuz/veri/sayfa.py:167 arayuz/veri/sayfa.py:183
+#: arayuz/veri/sayfa.py:238 arayuz/veri/sayfa.py:254
 #, python-format
 msgid "Seçim kaydedilemedi: %s"
 msgstr "The choice could not be saved: %s"
 
-#: arayuz/veri/sayfa.py:169
+#: arayuz/veri/sayfa.py:240
 #, python-format
 msgid "Kütüphane seçildi: %s"
 msgstr "Library chosen: %s"
 
-#: arayuz/veri/sayfa.py:177
+#: arayuz/veri/sayfa.py:248
 #, python-format
 msgid "Zincir kullanılamaz: %s"
 msgstr "The chain cannot be used: %s"
 
-#: arayuz/veri/sayfa.py:185
+#: arayuz/veri/sayfa.py:256
 #, python-format
 msgid "Zincir seçildi: %s"
 msgstr "Chain chosen: %s"
 
-#: arayuz/veri/sayfa.py:201
+#: arayuz/veri/sayfa.py:272
 msgid "Veri ve kütüphaneler"
 msgstr "Data and libraries"
 
-#: arayuz/veri/sayfa.py:202
+#: arayuz/veri/sayfa.py:273
 msgid ""
 "OpenMC tesir kesiti kütüphanesi ve tükenme zinciri olmadan koşu yapılamaz. Var olan "
 "bir klasörü seçin ya da openmc.org'dan indirin."
@@ -7806,15 +7835,15 @@ msgstr ""
 "No run is possible without an OpenMC cross section library and depletion chain. "
 "Choose an existing folder or download from openmc.org."
 
-#: arayuz/veri/sayfa.py:204
+#: arayuz/veri/sayfa.py:275
 msgid "Kılavuz: Nükleer veri ve tükenme zinciri"
 msgstr "User guide: Nuclear data and depletion chain"
 
-#: arayuz/veri/sayfa.py:227
+#: arayuz/veri/sayfa.py:298
 msgid "Başlamadan önce: nükleer veri"
 msgstr "Before you start: nuclear data"
 
-#: arayuz/veri/sayfa.py:228
+#: arayuz/veri/sayfa.py:299
 msgid ""
 "Bu bilgisayarda OpenMC nükleer veri kütüphanesi bulunamadı. Aşağıdan bir klasör seçin"
 " ya da bir kütüphane indirin; sonra başlangıç ekranından modelinizi kurun."
@@ -7822,17 +7851,29 @@ msgstr ""
 "No OpenMC nuclear data library was found on this computer. Choose a folder or "
 "download a library below; then build your model from the start screen."
 
-#: arayuz/veri/sayfa.py:231
+#: arayuz/veri/sayfa.py:302
 msgid "Başlangıç ekranına geç"
 msgstr "Go to the start screen"
 
-#: arayuz/veri/sayfa.py:251
+#: arayuz/veri/sayfa.py:321
 msgid ""
 "OPENMC_CROSS_SECTIONS ortam değişkeni ayarlı ve önceliklidir: burada yapılan seçim, "
 "değişken kaldırılana dek kullanılmaz."
 msgstr ""
 "The OPENMC_CROSS_SECTIONS environment variable is set and takes precedence: the "
 "choice made here is not used until the variable is removed."
+
+#: arayuz/veri/sayfa.py:323
+#, python-format
+msgid ""
+"Birden çok kütüphane bulundu (%s); hangisinin kullanılacağını Klasör seç ile "
+"belirleyin."
+msgstr "Several libraries found (%s); choose which one to use with Choose folder."
+
+#: arayuz/veri/sayfa.py:326
+#, python-format
+msgid "Kütüphane otomatik bulundu (%s); doğruysa 'Denetle ve kullan' ile onaylayın."
+msgstr "Library found automatically (%s); if it is correct, confirm it with 'Check and use'."
 
 #: arayuz/yardim/__init__.py:34
 msgid "Bu kılavuz kime, nasıl okunur"

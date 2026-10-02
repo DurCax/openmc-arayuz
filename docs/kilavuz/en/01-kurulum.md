@@ -105,7 +105,12 @@ variable is needed. Run, depletion and preview subprocesses get the same path.
 **Which data is used (order).** (1) If the `OPENMC_CROSS_SECTIONS` environment variable is set,
 **that one** (even if the file is missing; the page notes this, and your choice is not used until
 the variable is removed), (2) the choice on the Data page, (3) `~/nucdata/*/cross_sections.xml`
-or `~/.local/share/openmc_arayuz/nucdata/*/cross_sections.xml`. For the chain the same order
+or `~/.local/share/openmc_arayuz/nucdata/*/cross_sections.xml` — with several candidates
+`endfb-viii.0-hdf5` is chosen; without it the program **does not choose by itself**, the page
+and the model check strip say "several libraries found" and ask you to choose. While an
+automatically found candidate is used, the strip shows an **info** finding and the report says
+"automatically found candidate". If the ENDF/B-VIII.0 chain is combined with another library
+(e.g. JENDL-5), Requirements shows a warning. For the chain the same order
 starts with `OPENMC_CHAIN_FILE`; without a choice the `chain/` folder next to the library is
 used. The report, the experiment capsule and the model check all read from this single resolver
 (`cekirdek/veri_yolu.py`).
@@ -116,9 +121,14 @@ compared with the catalogue and the sha256 (when known); the file is first writt
 moved into place only after it checks out. **openmc.org does not publish sha256 values:** the
 chains' sha256 was measured once in this project and is kept in the catalogue; for libraries only
 the byte count is checked and the computed sha256 is written to the `KAYNAK.json` receipt in the
-installed folder. When unpacking, links (symlink/hardlink), absolute paths and members containing
+installed folder (`sha256_dogrulandi: false`); the page and `veri_indir.sh` state this with the
+label "no sha256: size checked only". When unpacking, links (symlink/hardlink), absolute paths and members containing
 `..` are rejected; the unpacked size and member count are limited; unpacking stops if the disk
-runs low. System directories (`/usr`, `/etc` …) cannot be chosen as the target.
+runs low; a corrupt archive is deleted (and downloaded again). System directories (`/usr`,
+`/etc` …), the home directory itself, `~/.ssh`, `~/.gnupg` and folders other users can write to
+cannot be chosen as the target; partial files stay in a `.indirilen/` folder only you can read.
+When the program is opened with a project file from the command line and data is missing, the
+page does not open; only a notification appears.
 
 The catalogue is `cekirdek/veri_katalogu.json`: source `https://openmc.org/data` (access date,
 the sha256 of the source file and the measurement method are written in the catalogue). Licence:

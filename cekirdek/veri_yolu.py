@@ -42,7 +42,7 @@ import os
 import sys
 import tempfile
 from dataclasses import dataclass
-from typing import Dict, Mapping, MutableMapping, Optional, Tuple
+from typing import Dict, Iterator, Mapping, MutableMapping, Optional, Tuple
 
 from cekirdek import yollar
 from cekirdek.gunluk import kaydedici
@@ -238,7 +238,7 @@ def cross_sections(ortam: Ortam = None) -> Yol:
     return Yol(secilen, "aday", True, adaylar)
 
 
-def _zincir_adaylari(o: Mapping[str, str]):
+def _zincir_adaylari(o: Mapping[str, str]) -> Iterator[str]:
     xs = cross_sections(o)
     if xs.gecerli:
         ust = os.path.dirname(os.path.dirname(os.path.abspath(xs.deger)))

@@ -100,7 +100,11 @@ gerekmez. Koşu, tükenme ve önizleme alt süreçleri aynı yolu alır.
 **Hangi veri kullanılır (sıra).** (1) `OPENMC_CROSS_SECTIONS` ortam değişkeni ayarlıysa **o**
 (dosya olmasa bile; sayfa bunu not olarak yazar ve seçiminiz değişken kaldırılana dek
 kullanılmaz), (2) Veri sayfasındaki seçim, (3) `~/nucdata/*/cross_sections.xml` ya da
-`~/.local/share/openmc_arayuz/nucdata/*/cross_sections.xml`. Zincir için aynı sıra
+`~/.local/share/openmc_arayuz/nucdata/*/cross_sections.xml` — birden çok aday varsa
+`endfb-viii.0-hdf5` seçilir; o yoksa program **kendisi seçmez**, sayfa ve doğrulama şeridi
+"birden çok kütüphane bulundu" der ve seçmenizi ister. Otomatik bulunan aday kullanılırken
+şeritte bir **bilgi** bulgusu ve raporda "otomatik bulunan aday" yazar. ENDF/B-VIII.0 zinciri
+başka bir kütüphaneyle (ör. JENDL-5) birlikte seçilirse Gereksinimler'de uyarı çıkar. Zincir için aynı sıra
 `OPENMC_CHAIN_FILE` ile başlar; seçim yoksa kütüphanenin yanındaki `chain/` klasörüne bakılır.
 Rapor, deney kapsülü ve doğrulama bu tek çözümleyiciden (`cekirdek/veri_yolu.py`) okur.
 
@@ -109,9 +113,13 @@ Rapor, deney kapsülü ve doğrulama bu tek çözümleyiciden (`cekirdek/veri_yo
 sha256 (biliniyorsa) karşılaştırılır; dosya önce `.part` olarak yazılır, doğrulanınca yerine
 taşınır. **openmc.org sha256 yayımlamaz:** zincirlerin sha256'sı bu projede bir kez ölçülüp
 katalogda tutulur; kütüphanelerde yalnız bayt sayısı denetlenir ve hesaplanan sha256 kurulan
-klasördeki `KAYNAK.json` makbuzuna yazılır. Arşiv açılırken bağlantı (symlink/hardlink), mutlak
+klasördeki `KAYNAK.json` makbuzuna yazılır (`sha256_dogrulandi: false`); sayfa ve
+`veri_indir.sh` bunu "sha256 yok: yalnız boyut denetlendi" etiketiyle söyler. Arşiv açılırken bağlantı (symlink/hardlink), mutlak
 yol ve `..` içeren üyeler reddedilir; açılan boyut ve üye sayısı sınırlıdır; diskte yer azalırsa
-açma durur. Hedef olarak sistem dizinleri (`/usr`, `/etc` …) seçilemez.
+açma durur; bozuk arşiv silinir (yeniden indirilir). Hedef olarak sistem dizinleri (`/usr`,
+`/etc` …), ev dizininin kendisi, `~/.ssh`, `~/.gnupg` ve başka kullanıcıların yazabildiği
+klasörler seçilemez; yarım dosyalar yalnız sizin okuyabildiğiniz `.indirilen/` klasöründe durur.
+Komut satırından bir proje dosyasıyla açılırken veri yoksa sayfa açılmaz, yalnız bildirim çıkar.
 
 Katalog `cekirdek/veri_katalogu.json`'dadır: kaynak `https://openmc.org/data` (erişim tarihi,
 kaynak dosyanın sha256'sı ve ölçüm yöntemi katalogda yazılı). Lisans: openmc.org sayfası

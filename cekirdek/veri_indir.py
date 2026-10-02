@@ -105,7 +105,7 @@ class Oge:
     spektrum: Optional[str] = None        # zincir: "termal" | "hizli"
     nuklid: Optional[int] = None
     uygulamada_kullanilir: bool = False   # zincir: tukenme.ZINCIRLER'deki adlardan mi
-    en: tuple = ()                        # ((alan, Ingilizce metin), ...) katalogdan
+    en: Tuple[Tuple[str, str], ...] = ()  # ((alan, Ingilizce metin), ...) katalogdan
 
     def metin(self, alan: str) -> str:
         """icerik / notu / lisans_notu etkin dilde (katalogun "en" alanlari)."""

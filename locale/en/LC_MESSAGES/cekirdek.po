@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 09:51+0300\n"
+"POT-Creation-Date: 2026-10-02 10:16+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -4029,111 +4029,111 @@ msgstr ""
 msgid "openmc çalıştırılabilir dosyası PATH'te bulunamadı (conda ortamı etkin mi?)"
 msgstr "the openmc executable was not found in PATH (is the conda environment active?)"
 
-#: cekirdek/kosucu.py:340
+#: cekirdek/kosucu.py:342
 msgid "akı"
 msgstr "flux"
 
-#: cekirdek/kosucu.py:340
+#: cekirdek/kosucu.py:342
 msgid "soğurma"
 msgstr "absorption"
 
-#: cekirdek/kosucu.py:340
+#: cekirdek/kosucu.py:342
 msgid "fisyon"
 msgstr "fission"
 
-#: cekirdek/kosucu.py:340
+#: cekirdek/kosucu.py:342
 msgid "fisyon nötronu üretimi"
 msgstr "fission neutron production"
 
-#: cekirdek/kosucu.py:341
+#: cekirdek/kosucu.py:343
 msgid "toplam tepkime"
 msgstr "total reaction"
 
-#: cekirdek/kosucu.py:341
+#: cekirdek/kosucu.py:343
 msgid "saçılma"
 msgstr "scattering"
 
-#: cekirdek/kosucu.py:341
+#: cekirdek/kosucu.py:343
 msgid "ısınma"
 msgstr "heating"
 
-#: cekirdek/kosucu.py:342
+#: cekirdek/kosucu.py:344
 msgid "yerel ısınma"
 msgstr "local heating"
 
-#: cekirdek/kosucu.py:342
+#: cekirdek/kosucu.py:344
 msgid "fisyon enerjisi"
 msgstr "fission energy"
 
-#: cekirdek/kosucu.py:342
+#: cekirdek/kosucu.py:344
 msgid "(n,γ) yakalama"
 msgstr "(n,γ) capture"
 
-#: cekirdek/kosucu.py:343
+#: cekirdek/kosucu.py:345
 msgid "esnek saçılma"
 msgstr "elastic scattering"
 
-#: cekirdek/kosucu.py:343
+#: cekirdek/kosucu.py:345
 msgid "akım"
 msgstr "current"
 
-#: cekirdek/kosucu.py:365
+#: cekirdek/kosucu.py:367
 msgid "n·cm/s (hacim-integralli)"
 msgstr "n·cm/s (volume-integrated)"
 
-#: cekirdek/kosucu.py:365
+#: cekirdek/kosucu.py:367
 msgid "n·cm / kaynak nötronu"
 msgstr "n·cm / source neutron"
 
-#: cekirdek/kosucu.py:367
+#: cekirdek/kosucu.py:369
 msgid "eV / kaynak nötronu"
 msgstr "eV / source neutron"
 
-#: cekirdek/kosucu.py:368
+#: cekirdek/kosucu.py:370
 msgid "/ kaynak nötronu"
 msgstr "/ source neutron"
 
-#: cekirdek/kosucu.py:389
+#: cekirdek/kosucu.py:391
 #, python-format
 msgid "malzeme %s"
 msgstr "material %s"
 
-#: cekirdek/kosucu.py:398
+#: cekirdek/kosucu.py:400
 msgid "tüm model"
 msgstr "whole model"
 
-#: cekirdek/kosucu.py:408
+#: cekirdek/kosucu.py:410
 msgid "Bölge / enerji"
 msgstr "Region / energy"
 
-#: cekirdek/kosucu.py:408
+#: cekirdek/kosucu.py:410
 msgid "Ölçülen"
 msgstr "Quantity"
 
-#: cekirdek/kosucu.py:408
+#: cekirdek/kosucu.py:410
 msgid "Değer"
 msgstr "Value"
 
-#: cekirdek/kosucu.py:408
+#: cekirdek/kosucu.py:410
 msgid "Bağıl hata"
 msgstr "Relative error"
 
-#: cekirdek/kosucu.py:408
+#: cekirdek/kosucu.py:410
 msgid "Birim"
 msgstr "Unit"
 
-#: cekirdek/kosucu.py:453 cekirdek/rapor_sablon/__init__.py:152
+#: cekirdek/kosucu.py:455 cekirdek/rapor_sablon/__init__.py:152
 #, python-format
 msgid "okunamadı: %s"
 msgstr "could not be read: %s"
 
-#: cekirdek/kosucu.py:514
+#: cekirdek/kosucu.py:516
 msgid "Referans tally yok — korunum denetlenemedi (eski statepoint ya da model regresyonu)."
 msgstr ""
 "No reference tally — conservation could not be checked (old statepoint or model "
 "regression)."
 
-#: cekirdek/kosucu.py:518
+#: cekirdek/kosucu.py:520
 #, python-format
 msgid ""
 "Referans güç toplamı sıfır ya da negatif (%.3g): hedef bölgede fisyon sayılmadı, "
@@ -4142,7 +4142,7 @@ msgstr ""
 "The reference power sum is zero or negative (%.3g): no fissions were counted in the "
 "target region, the conservation of the total could not be checked."
 
-#: cekirdek/kosucu.py:525
+#: cekirdek/kosucu.py:527
 #, python-format
 msgid ""
 "Çubuk güçlerinin toplamı filtresiz tally'den %.2e bağıl fark gösteriyor. Haritalama "
@@ -4151,20 +4151,20 @@ msgstr ""
 "The sum of the pin powers differs from the unfiltered tally by a relative %.2e. The "
 "mapping may be broken — do not trust the results."
 
-#: cekirdek/kosucu.py:578
+#: cekirdek/kosucu.py:580
 #, python-format
 msgid "toplamın korunumu: bağıl fark %.1e — %s"
 msgstr "conservation of the total: relative difference %.1e — %s"
 
-#: cekirdek/kosucu.py:579 cekirdek/kosucu_terminal.py:157
+#: cekirdek/kosucu.py:581 cekirdek/kosucu_terminal.py:157
 msgid "tamam"
 msgstr "ok"
 
-#: cekirdek/kosucu.py:580
+#: cekirdek/kosucu.py:582
 msgid "bozuk, haritaya güvenmeyin"
 msgstr "broken, do not trust the map"
 
-#: cekirdek/kosucu.py:582
+#: cekirdek/kosucu.py:584
 #, python-format
 msgid "toplamın korunumu denetlenemedi: %s"
 msgstr "conservation of the total could not be checked: %s"
@@ -4322,7 +4322,7 @@ msgstr "      converg. = [%s] %s"
 msgid "      yakınsama= [  ?  ] %s"
 msgstr "      converg. = [  ?  ] %s"
 
-#: cekirdek/kosucu_terminal.py:161 cekirdek/rapor.py:409
+#: cekirdek/kosucu_terminal.py:161 cekirdek/rapor.py:412
 #, python-format
 msgid "Shannon entropisi okunamadı: %s"
 msgstr "Shannon entropy could not be read: %s"
@@ -5119,224 +5119,231 @@ msgstr "level %r is invalid (valid: %s)"
 msgid "%s: örnek bir JSON nesnesi değil"
 msgstr "%s: the example is not a JSON object"
 
-#: cekirdek/rapor.py:176
-#, python-format
-msgid "%s (%s; rapor anındaki ortam)"
-msgstr "%s (%s; environment at report time)"
+#: cekirdek/rapor.py:177
+msgid "rapor anındaki ortam"
+msgstr "environment at report time"
 
-#: cekirdek/rapor.py:185
+#: cekirdek/rapor.py:177 cekirdek/veri_bilgi.py:461
+msgid "Veri sayfası seçimi"
+msgstr "Data page choice"
+
+#: cekirdek/rapor.py:178
+msgid "otomatik bulunan aday"
+msgstr "automatically found candidate"
+
+#: cekirdek/rapor.py:188
 msgid "; rapor anındaki ortam"
 msgstr "; environment at report time"
 
-#: cekirdek/rapor.py:189
+#: cekirdek/rapor.py:192
 #, python-format
 msgid "sha256 %s"
 msgstr "sha256 %s"
 
-#: cekirdek/rapor.py:190
+#: cekirdek/rapor.py:193
 msgid "; tükenme kapalı"
 msgstr "; depletion off"
 
-#: cekirdek/rapor.py:206
+#: cekirdek/rapor.py:209
 #, python-format
 msgid "; seçim: %s zincir — %s"
 msgstr "; selection: %s chain - %s"
 
-#: cekirdek/rapor.py:214
+#: cekirdek/rapor.py:217
 #, python-format
 msgid "%s (commit edilmemiş değişiklik var)"
 msgstr "%s (uncommitted changes present)"
 
-#: cekirdek/rapor.py:223
+#: cekirdek/rapor.py:226
 #, python-format
 msgid "%s (kurulu; koşu yok)"
 msgstr "%s (installed; no run)"
 
-#: cekirdek/rapor.py:245
+#: cekirdek/rapor.py:248
 msgid "Uygulama sürümü"
 msgstr "Application version"
 
-#: cekirdek/rapor.py:245
+#: cekirdek/rapor.py:248
 msgid "uygulama"
 msgstr "application"
 
-#: cekirdek/rapor.py:246
+#: cekirdek/rapor.py:249
 msgid "Git commit"
 msgstr "Git commit"
 
-#: cekirdek/rapor.py:247
+#: cekirdek/rapor.py:250
 msgid "Python / platform"
 msgstr "Python / platform"
 
-#: cekirdek/rapor.py:248
+#: cekirdek/rapor.py:251
 msgid "OpenMC sürümü"
 msgstr "OpenMC version"
 
-#: cekirdek/rapor.py:249 cekirdek/veri_bilgi.py:454
+#: cekirdek/rapor.py:252 cekirdek/veri_bilgi.py:467
 msgid "Tesir kesiti kütüphanesi"
 msgstr "Cross section library"
 
-#: cekirdek/rapor.py:250
+#: cekirdek/rapor.py:253
 msgid "Zincir dosyası"
 msgstr "Chain file"
 
-#: cekirdek/rapor.py:251 cekirdek/rapor.py:355
+#: cekirdek/rapor.py:254 cekirdek/rapor.py:358
 msgid "Tohum"
 msgstr "Seed"
 
-#: cekirdek/rapor.py:252 cekirdek/rapor.py:353 cekirdek/rapor_sablon/__init__.py:133
+#: cekirdek/rapor.py:255 cekirdek/rapor.py:356 cekirdek/rapor_sablon/__init__.py:133
 msgid "Parçacık / çevrim"
 msgstr "Particles / batch"
 
-#: cekirdek/rapor.py:253
+#: cekirdek/rapor.py:256
 #, python-format
 msgid "%s (%s pasif)"
 msgstr "%s (%s inactive)"
 
-#: cekirdek/rapor.py:253 cekirdek/rapor.py:354 cekirdek/rapor_sablon/__init__.py:132
+#: cekirdek/rapor.py:256 cekirdek/rapor.py:357 cekirdek/rapor_sablon/__init__.py:132
 msgid "Çevrim (pasif)"
 msgstr "Batches (inactive)"
 
-#: cekirdek/rapor.py:254
+#: cekirdek/rapor.py:257
 msgid "İş parçacığı"
 msgstr "Threads"
 
-#: cekirdek/rapor.py:258
+#: cekirdek/rapor.py:261
 msgid "Koşu tarihi"
 msgstr "Run date"
 
-#: cekirdek/rapor.py:259
+#: cekirdek/rapor.py:262
 msgid "Statepoint"
 msgstr "Statepoint"
 
-#: cekirdek/rapor.py:264
+#: cekirdek/rapor.py:267
 msgid "Tekrarlanabilirlik kapsülü"
 msgstr "Reproducibility capsule"
 
-#: cekirdek/rapor.py:278
+#: cekirdek/rapor.py:281
 #, python-format
 msgid "tekrarlanabilirlik: %s bilinmiyor"
 msgstr "reproducibility: %s unknown"
 
-#: cekirdek/rapor.py:296
+#: cekirdek/rapor.py:299
 #, python-format
 msgid " (%%%s zengin)"
 msgstr " (%s%% enriched)"
 
-#: cekirdek/rapor.py:349
+#: cekirdek/rapor.py:352
 msgid "Kor türü"
 msgstr "Core type"
 
-#: cekirdek/rapor.py:350
+#: cekirdek/rapor.py:353
 msgid "Yükseklik"
 msgstr "Height"
 
-#: cekirdek/rapor.py:350
+#: cekirdek/rapor.py:353
 msgid "2B (eksenel sonsuz)"
 msgstr "2D (axially infinite)"
 
-#: cekirdek/rapor.py:351
+#: cekirdek/rapor.py:354
 msgid "Sınır koşulları"
 msgstr "Boundary conditions"
 
-#: cekirdek/rapor.py:352
+#: cekirdek/rapor.py:355
 msgid "Hesap modu"
 msgstr "Calculation mode"
 
-#: cekirdek/rapor.py:356
+#: cekirdek/rapor.py:359
 msgid "Sıcaklık yöntemi"
 msgstr "Temperature method"
 
-#: cekirdek/dogrula/_ortak.py:30 cekirdek/rapor.py:357
+#: cekirdek/dogrula/_ortak.py:30 cekirdek/rapor.py:360
 #: cekirdek/rapor_sablon/uygunluk_eki.py:69
 msgid "Kaynak"
 msgstr "Source"
 
-#: cekirdek/rapor.py:358 cekirdek/rapor_sablon/grafik.py:97
+#: cekirdek/rapor.py:361 cekirdek/rapor_sablon/grafik.py:97
 msgid "Shannon entropisi"
 msgstr "Shannon entropy"
 
-#: cekirdek/rapor.py:359 cekirdek/rapor.py:362 cekirdek/rapor.py:365
+#: cekirdek/rapor.py:362 cekirdek/rapor.py:365 cekirdek/rapor.py:368
 msgid "kapalı"
 msgstr "off"
 
-#: cekirdek/rapor.py:360
+#: cekirdek/rapor.py:363
 #, python-format
 msgid "açık: %s, %s dilim, %s"
 msgstr "on: %s, %s bins, %s"
 
-#: cekirdek/dogrula/_ortak.py:30 cekirdek/dogrula/_ortak.py:31 cekirdek/rapor.py:360
+#: cekirdek/dogrula/_ortak.py:30 cekirdek/dogrula/_ortak.py:31 cekirdek/rapor.py:363
 #: cekirdek/rapor_sablon/__init__.py:150
 msgid "Güç dağılımı"
 msgstr "Power distribution"
 
-#: cekirdek/rapor.py:363
+#: cekirdek/rapor.py:366
 #, python-format
 msgid "açık: %s W/gHM, %d adım"
 msgstr "on: %s W/gHM, %d steps"
 
-#: cekirdek/dogrula/_ortak.py:31 cekirdek/dogrula/_ortak.py:32 cekirdek/rapor.py:363
+#: cekirdek/dogrula/_ortak.py:31 cekirdek/dogrula/_ortak.py:32 cekirdek/rapor.py:366
 #: cekirdek/rapor_sablon/__init__.py:194
 msgid "Tükenme"
 msgstr "Depletion"
 
-#: cekirdek/rapor.py:383
+#: cekirdek/rapor.py:386
 #, python-format
 msgid "doğrulama çalıştırılamadı: %s"
 msgstr "model check could not be run: %s"
 
-#: cekirdek/rapor.py:411
+#: cekirdek/rapor.py:414
 msgid "Shannon entropisi kapalı — kaynak yakınsaması doğrulanamıyor"
 msgstr "Shannon entropy is off — source convergence cannot be checked"
 
-#: cekirdek/rapor.py:450
+#: cekirdek/rapor.py:453
 msgid "bağıl hata"
 msgstr "relative error"
 
-#: cekirdek/rapor.py:473
+#: cekirdek/rapor.py:476
 #, python-format
 msgid "tükenme sonucu okunamadı: %s"
 msgstr "depletion result could not be read: %s"
 
-#: cekirdek/rapor.py:484
+#: cekirdek/rapor.py:487
 #, python-format
 msgid "tükenme sonucu bu modele ait olmayabilir (%s)"
 msgstr "the depletion result may not belong to this model (%s)"
 
-#: cekirdek/rapor.py:496
+#: cekirdek/rapor.py:499
 #, python-format
 msgid "Koşu dizininde statepoint dosyası yok: %s"
 msgstr "No statepoint file in the run directory: %s"
 
-#: cekirdek/rapor.py:501
+#: cekirdek/rapor.py:504
 #, python-format
 msgid "Statepoint okunamadı: %s (%s)"
 msgstr "Statepoint could not be read: %s (%s)"
 
-#: cekirdek/rapor.py:527
+#: cekirdek/rapor.py:530
 msgid "adsız model"
 msgstr "untitled model"
 
-#: cekirdek/rapor.py:576
+#: cekirdek/rapor.py:579
 #, python-format
 msgid "Bilinmeyen rapor biçimi: %s (geçerli: %s)"
 msgstr "Unknown report format: %s (valid: %s)"
 
-#: cekirdek/rapor.py:579
+#: cekirdek/rapor.py:582
 msgid "Rapor için model (spec) gerekli."
 msgstr "A model (spec) is required for the report."
 
-#: cekirdek/rapor.py:581
+#: cekirdek/rapor.py:584
 #, python-format
 msgid "Koşu dizini bulunamadı: %s"
 msgstr "Run directory not found: %s"
 
-#: cekirdek/rapor.py:590
+#: cekirdek/rapor.py:593
 #, python-format
 msgid "Rapor dizini oluşturulamadı: %s (%s)"
 msgstr "Report directory could not be created: %s (%s)"
 
-#: cekirdek/rapor.py:601
+#: cekirdek/rapor.py:604
 #, python-format
 msgid "Rapor yazılamadı: %s (%s)"
 msgstr "Report could not be written: %s (%s)"
@@ -6222,41 +6229,41 @@ msgstr "print the volume, chain and heavy metal information without running"
 msgid "doğrulamada nüklid/kütüphane denetimini atla"
 msgstr "skip the nuclide/library check in the model check"
 
-#: cekirdek/tukenme.py:726
+#: cekirdek/tukenme.py:728
 #, python-format
 msgid "  zincir        : %s  (%s)"
 msgstr "  chain         : %s  (%s)"
 
-#: cekirdek/tukenme.py:727
+#: cekirdek/tukenme.py:729
 #, python-format
 msgid "  fisyon verimi : %s eV (%s spektrum)"
 msgstr "  fission yield : %s eV (%s spectrum)"
 
-#: cekirdek/tukenme.py:729
+#: cekirdek/tukenme.py:731
 #, python-format
 msgid "  güç yoğunluğu : %g W/gHM"
 msgstr "  power density : %g W/gHM"
 
-#: cekirdek/tukenme.py:730
+#: cekirdek/tukenme.py:732
 #, python-format
 msgid "  adımlar       : %s %s  → %d transport"
 msgstr "  steps         : %s %s  → %d transports"
 
-#: cekirdek/tukenme.py:732 cekirdek/tukenme.py:757
+#: cekirdek/tukenme.py:734 cekirdek/tukenme.py:759
 msgid "gün"
 msgstr "days"
 
-#: cekirdek/tukenme.py:736
+#: cekirdek/tukenme.py:738
 #, python-format
 msgid "  hacim %-10s: %s cm³ [%s] %s"
 msgstr "  volume %-10s: %s cm³ [%s] %s"
 
-#: cekirdek/tukenme.py:740
+#: cekirdek/tukenme.py:742
 #, python-format
 msgid "  ağır metal    : %.6g g"
 msgstr "  heavy metal   : %.6g g"
 
-#: cekirdek/tukenme.py:749
+#: cekirdek/tukenme.py:751
 #, python-format
 msgid ""
 "\n"
@@ -6265,7 +6272,7 @@ msgstr ""
 "\n"
 "  MODEL CHECK: the run was not started (%d errors)"
 
-#: cekirdek/tukenme.py:756
+#: cekirdek/tukenme.py:758
 #, python-format
 msgid ""
 "\n"
@@ -6274,7 +6281,7 @@ msgstr ""
 "\n"
 "  heavy metal: %.6g g"
 
-#: cekirdek/tukenme.py:760
+#: cekirdek/tukenme.py:762
 #, python-format
 msgid ""
 "\n"
@@ -7622,75 +7629,111 @@ msgstr "infinite (reflective boundary)"
 msgid "bilinmeyen V&V yöntemi: %r (geçerli: %s)"
 msgstr "unknown V&V method: %r (valid: %s)"
 
-#: cekirdek/veri_arsiv.py:73
+#: cekirdek/veri_arsiv.py:83
+#, python-format
+msgid "klasör oluşturulamadı: %s (%s)"
+msgstr "the folder could not be created: %s (%s)"
+
+#: cekirdek/veri_arsiv.py:85
+#, python-format
+msgid "güvenlik: %s bir bağlantı ya da klasör değil"
+msgstr "security: %s is a link or not a folder"
+
+#: cekirdek/veri_arsiv.py:87
+#, python-format
+msgid "güvenlik: %s başka bir kullanıcıya ait"
+msgstr "security: %s belongs to another user"
+
+#: cekirdek/veri_arsiv.py:106
 #, python-format
 msgid "hedef klasör mutlak bir yol olmalı: %r"
 msgstr "the target folder must be an absolute path: %r"
 
-#: cekirdek/veri_arsiv.py:76
+#: cekirdek/veri_arsiv.py:109
 #, python-format
 msgid "sistem dizinine veri indirilemez: %s"
 msgstr "data cannot be downloaded into a system directory: %s"
 
-#: cekirdek/veri_arsiv.py:78
+#: cekirdek/veri_arsiv.py:112
 #, python-format
 msgid "hedef bir klasör değil: %s"
 msgstr "the target is not a folder: %s"
 
-#: cekirdek/veri_arsiv.py:82
+#: cekirdek/veri_arsiv.py:116
 #, python-format
 msgid "hedef klasör oluşturulamadı: %s (%s)"
 msgstr "the target folder could not be created: %s (%s)"
 
-#: cekirdek/veri_arsiv.py:84
+#: cekirdek/veri_arsiv.py:118
 #, python-format
 msgid "hedef klasöre yazma izni yok: %s"
 msgstr "no write permission for the target folder: %s"
 
-#: cekirdek/veri_arsiv.py:107
+#: cekirdek/veri_arsiv.py:120
+#, python-format
+msgid "hedef klasöre başka kullanıcılar da yazabiliyor (güvensiz): %s; alt bir klasör seçin"
+msgstr "other users can write to the target folder (unsafe): %s; choose a subfolder"
+
+#: cekirdek/veri_arsiv.py:129
+msgid "ev dizininin kendisine veri indirilemez; bir alt klasör seçin (ör. ~/nucdata)"
+msgstr ""
+"data cannot be downloaded into the home directory itself; choose a subfolder (e.g. "
+"~/nucdata)"
+
+#: cekirdek/veri_arsiv.py:134
+#, python-format
+msgid "bu klasöre veri indirilemez: %s"
+msgstr "data cannot be downloaded into this folder: %s"
+
+#: cekirdek/veri_arsiv.py:156
 #, python-format
 msgid "diskte yeterli yer yok: %.1f GB gerekli (%.1f GB pay dahil), %.1f GB boş (%s)"
 msgstr "not enough disk space: %.1f GB needed (including a %.1f GB margin), %.1f GB free (%s)"
 
-#: cekirdek/veri_arsiv.py:124
+#: cekirdek/veri_arsiv.py:173
 #, python-format
 msgid "arşivde izin verilmeyen üye türü (bağlantı/aygıt): %s"
 msgstr "member type not allowed in the archive (link/device): %s"
 
-#: cekirdek/veri_arsiv.py:128 cekirdek/veri_arsiv.py:131
+#: cekirdek/veri_arsiv.py:177 cekirdek/veri_arsiv.py:180
 #, python-format
 msgid "arşivde güvensiz yol: %s"
 msgstr "unsafe path in the archive: %s"
 
-#: cekirdek/veri_arsiv.py:141
+#: cekirdek/veri_arsiv.py:193
+#, python-format
+msgid "açılan akış boyut sınırını aştı (%.1f GB)"
+msgstr "the unpacked stream exceeded the size limit (%.1f GB)"
+
+#: cekirdek/veri_arsiv.py:231
 #, python-format
 msgid "arşivde çok fazla üye (> %d)"
 msgstr "too many members in the archive (> %d)"
 
-#: cekirdek/veri_arsiv.py:145
+#: cekirdek/veri_arsiv.py:235
 #, python-format
 msgid "açılan boyut sınırı aşıldı (%.1f GB): arşiv beklenenden büyük ya da bozuk"
 msgstr "unpacked size limit exceeded (%.1f GB): the archive is larger than expected or corrupt"
 
-#: cekirdek/veri_arsiv.py:150
+#: cekirdek/veri_arsiv.py:240
 msgid "açma iptal edildi"
 msgstr "unpacking cancelled"
 
-#: cekirdek/veri_arsiv.py:185
+#: cekirdek/veri_arsiv.py:284
 #, python-format
 msgid "geçersiz kütüphane dizin adı: %r"
 msgstr "invalid library folder name: %r"
 
-#: cekirdek/veri_arsiv.py:188
+#: cekirdek/veri_arsiv.py:287
 #, python-format
 msgid "hedefte aynı adlı klasör zaten var: %s"
 msgstr "a folder with the same name already exists: %s"
 
-#: cekirdek/veri_arsiv.py:194
+#: cekirdek/veri_arsiv.py:294
 msgid "arşivde cross_sections.xml yok"
 msgstr "no cross_sections.xml in the archive"
 
-#: cekirdek/veri_arsiv.py:198
+#: cekirdek/veri_arsiv.py:299
 #, python-format
 msgid "arşiv açılamadı (yarım ya da bozuk indirme?): %s"
 msgstr "the archive could not be unpacked (partial or corrupt download?): %s"
@@ -7733,6 +7776,11 @@ msgstr "chain parsed: %d nuclides"
 msgid "zincir ayrıştırılamadı: %s"
 msgstr "chain could not be parsed: %s"
 
+#: cekirdek/veri_bilgi.py:347
+#, python-format
+msgid "birden çok kütüphane bulundu (%s); birinin klasörünü seçin"
+msgstr "several libraries found (%s); choose the folder of one of them"
+
 #: cekirdek/veri_bilgi.py:350
 #, python-format
 msgid "%s içinde cross_sections.xml bulunamadı"
@@ -7752,189 +7800,229 @@ msgstr "the library has no neutron entries"
 msgid "%d kaydın dosyası yok (ilki: %s) — indirme ya da açma yarım kalmış olabilir"
 msgstr "%d entries have no file (first: %s) — the download or unpacking may be incomplete"
 
-#: cekirdek/veri_bilgi.py:402
+#: cekirdek/veri_bilgi.py:415
 #, python-format
 msgid "çıkış kodu %d"
 msgstr "exit code %d"
 
-#: cekirdek/veri_bilgi.py:409
+#: cekirdek/veri_bilgi.py:422
 msgid "OpenMC ikilisi"
 msgstr "OpenMC executable"
 
-#: cekirdek/veri_bilgi.py:411
+#: cekirdek/veri_bilgi.py:424
 msgid "bulunamadı"
 msgstr "not found"
 
-#: cekirdek/veri_bilgi.py:414
+#: cekirdek/veri_bilgi.py:427
 #, python-format
 msgid "%s (sürüm okunamadı: %s)"
 msgstr "%s (version could not be read: %s)"
 
-#: cekirdek/veri_bilgi.py:415
+#: cekirdek/veri_bilgi.py:428
 msgid "İkilinin çalıştığını terminalde 'openmc --version' ile deneyin."
 msgstr "Check in a terminal that the executable works: 'openmc --version'."
 
-#: cekirdek/veri_bilgi.py:421
+#: cekirdek/veri_bilgi.py:434
 msgid "OpenMC Python API"
 msgstr "OpenMC Python API"
 
-#: cekirdek/veri_bilgi.py:426
+#: cekirdek/veri_bilgi.py:439
 msgid "yüklenemedi"
 msgstr "could not be loaded"
 
-#: cekirdek/veri_bilgi.py:430
+#: cekirdek/veri_bilgi.py:443
 #, python-format
 msgid "İkili (%s) ile Python paketi (%s) farklı sürüm; aynı ortamdan kurun."
 msgstr ""
 "The executable (%s) and the Python package (%s) are different versions; install both "
 "from the same environment."
 
-#: cekirdek/veri_bilgi.py:436
+#: cekirdek/veri_bilgi.py:449
 msgid "HDF5 (h5py)"
 msgstr "HDF5 (h5py)"
 
-#: cekirdek/veri_bilgi.py:441
+#: cekirdek/veri_bilgi.py:454
 msgid "h5py yok"
 msgstr "h5py missing"
 
-#: cekirdek/veri_bilgi.py:442
+#: cekirdek/veri_bilgi.py:455
 msgid "Sıcaklık aralıkları gösterilemez: conda install h5py"
 msgstr "Temperature ranges cannot be shown: conda install h5py"
 
-#: cekirdek/veri_bilgi.py:448
+#: cekirdek/veri_bilgi.py:461
 msgid "ortam değişkeni"
 msgstr "environment variable"
 
-#: cekirdek/veri_bilgi.py:448
-msgid "Veri sayfası seçimi"
-msgstr "Data page choice"
-
-#: cekirdek/veri_bilgi.py:449
+#: cekirdek/veri_bilgi.py:462
 msgid "bulunan klasör"
 msgstr "found folder"
 
-#: cekirdek/veri_bilgi.py:458
+#: cekirdek/veri_bilgi.py:472
+#, python-format
+msgid "birden çok kütüphane bulundu: %s"
+msgstr "several libraries found: %s"
+
+#: cekirdek/veri_bilgi.py:474
+msgid "Hangisinin kullanılacağını Klasör seç ile belirleyin."
+msgstr "Choose which one to use with Choose folder."
+
+#: cekirdek/veri_bilgi.py:475
 #, python-format
 msgid "%s yok (%s)"
 msgstr "%s missing (%s)"
 
-#: cekirdek/rapor_sablon/uygunluk_eki.py:88 cekirdek/veri_bilgi.py:459
-#: cekirdek/veri_bilgi.py:471
+#: cekirdek/rapor_sablon/uygunluk_eki.py:88 cekirdek/veri_bilgi.py:476
+#: cekirdek/veri_bilgi.py:488
 msgid "seçilmedi"
 msgstr "none selected"
 
-#: cekirdek/veri_bilgi.py:461
+#: cekirdek/veri_bilgi.py:478
 msgid "Bir klasör seçin ya da kütüphane indirin."
 msgstr "Choose a folder or download a library."
 
-#: cekirdek/veri_bilgi.py:466
+#: cekirdek/veri_bilgi.py:483
 msgid "Tükenme zinciri"
 msgstr "Depletion chain"
 
-#: cekirdek/veri_bilgi.py:468
+#: cekirdek/veri_bilgi.py:485
 msgid "Yalnız tükenme hesabı için gerekir; zincir indirin."
 msgstr "Needed only for depletion calculations; download a chain."
 
-#: cekirdek/veri_bilgi.py:471
+#: cekirdek/veri_bilgi.py:488
 #, python-format
 msgid "%s yok"
 msgstr "%s missing"
 
-#: cekirdek/veri_indir.py:117
+#: cekirdek/veri_bilgi.py:540
+#, python-format
+msgid ""
+"Bu zincir ENDF/B-VIII.0 verisinden üretildi; seçili kütüphane %s. Tükenme sonuçları "
+"iki farklı değerlendirmeyi karıştırır."
+msgstr ""
+"This chain was generated from ENDF/B-VIII.0 data; the selected library is %s. "
+"Depletion results would mix two different evaluations."
+
+#: cekirdek/veri_indir.py:124
 msgid "termal"
 msgstr "thermal"
 
-#: cekirdek/veri_indir.py:117
+#: cekirdek/veri_indir.py:124
 msgid "hızlı"
 msgstr "fast"
 
-#: cekirdek/veri_indir.py:118
+#: cekirdek/veri_indir.py:125
 msgid "CASL (sadeleştirilmiş)"
 msgstr "CASL (simplified)"
 
-#: cekirdek/veri_indir.py:147
+#: cekirdek/veri_indir.py:154
 #, python-format
 msgid "geçersiz adres: %s"
 msgstr "invalid address: %s"
 
-#: cekirdek/veri_indir.py:149
+#: cekirdek/veri_indir.py:156
 #, python-format
 msgid "yalnız https adreslerine izin var: %s"
 msgstr "only https addresses are allowed: %s"
 
-#: cekirdek/veri_indir.py:151
+#: cekirdek/veri_indir.py:158
 #, python-format
 msgid "izin listesinde olmayan alan adı: %s"
 msgstr "domain not on the allow list: %s"
 
-#: cekirdek/veri_indir.py:153
+#: cekirdek/veri_indir.py:160
 #, python-format
 msgid "adreste kullanıcı bilgisine izin yok: %s"
 msgstr "user information is not allowed in the address: %s"
 
-#: cekirdek/veri_indir.py:155
+#: cekirdek/veri_indir.py:162
 #, python-format
 msgid "varsayılan dışı porta izin yok: %s"
 msgstr "non-default ports are not allowed: %s"
 
-#: cekirdek/veri_indir.py:265 cekirdek/veri_indir.py:294
+#: cekirdek/veri_indir.py:269 cekirdek/veri_indir.py:352
+msgid "indirme iptal edildi; kaldığı yerden sürdürülebilir"
+msgstr "download cancelled; it can be resumed where it stopped"
+
+#: cekirdek/veri_indir.py:276
+#, python-format
+msgid "güvenlik: %s bir sembolik bağlantı; silin ya da başka hedef seçin"
+msgstr "security: %s is a symbolic link; delete it or choose another target"
+
+#: cekirdek/veri_indir.py:286
+#, python-format
+msgid "geçici dosya açılamadı: %s (%s)"
+msgstr "the temporary file could not be opened: %s (%s)"
+
+#: cekirdek/veri_indir.py:302 cekirdek/veri_indir.py:334
 #, python-format
 msgid "sunucunun bildirdiği boyut katalogdan farklı (%s, beklenen %d)"
 msgstr "the size reported by the server differs from the catalogue (%s, expected %d)"
 
-#: cekirdek/veri_indir.py:277
+#: cekirdek/veri_indir.py:314
 #, python-format
 msgid "sunucu hata verdi: HTTP %d (%s)"
 msgstr "the server returned an error: HTTP %d (%s)"
 
-#: cekirdek/veri_indir.py:279
+#: cekirdek/veri_indir.py:316
 #, python-format
 msgid "bağlantı kurulamadı: %s"
 msgstr "could not connect: %s"
 
-#: cekirdek/veri_indir.py:287
+#: cekirdek/veri_indir.py:322
+#, python-format
+msgid "sunucu sıkıştırılmış aktarım gönderdi (Content-Encoding: %s); bayt sayısı denetlenemez"
+msgstr ""
+"the server sent a compressed transfer (Content-Encoding: %s); the byte count cannot "
+"be checked"
+
+#: cekirdek/veri_indir.py:327
 #, python-format
 msgid "sunucu istenmeyen aralık gönderdi (%d, istenen %d)"
 msgstr "the server sent an unexpected range (%d, requested %d)"
 
-#: cekirdek/veri_indir.py:291
+#: cekirdek/veri_indir.py:331
 #, python-format
 msgid "beklenmeyen HTTP yanıtı: %d"
 msgstr "unexpected HTTP response: %d"
 
-#: cekirdek/veri_indir.py:306
+#: cekirdek/veri_indir.py:346
 msgid "sunucu katalogdaki boyuttan fazla veri gönderdi"
 msgstr "the server sent more data than the catalogue size"
 
-#: cekirdek/veri_indir.py:312
-msgid "indirme iptal edildi; kaldığı yerden sürdürülebilir"
-msgstr "download cancelled; it can be resumed where it stopped"
-
-#: cekirdek/veri_indir.py:315
+#: cekirdek/veri_indir.py:355
 #, python-format
 msgid "indirme kesildi (%d / %d bayt); yeniden deneyin, kaldığı yerden sürer: %s"
 msgstr "download interrupted (%d / %d bytes); try again, it resumes where it stopped: %s"
 
-#: cekirdek/veri_indir.py:350
+#: cekirdek/veri_indir.py:396
 msgid "sunucu aralığı reddetti; yarım dosya silindi, yeniden deneyin"
 msgstr "the server rejected the range; the partial file was deleted, try again"
 
-#: cekirdek/veri_indir.py:359
+#: cekirdek/veri_indir.py:406
 #, python-format
 msgid "indirme yarım kaldı (%d / %d bayt); yeniden deneyin, kaldığı yerden sürer"
 msgstr "download incomplete (%d / %d bytes); try again, it resumes where it stopped"
 
-#: cekirdek/veri_indir.py:364
+#: cekirdek/veri_indir.py:411
 #, python-format
 msgid "sha256 tutmuyor (beklenen %s…, gelen %s…); dosya silindi, yeniden indirin"
 msgstr "sha256 mismatch (expected %s…, got %s…); the file was deleted, download it again"
 
-#: cekirdek/veri_indir.py:434
+#: cekirdek/veri_indir.py:433
+msgid "sha256 yok: yalnız boyut denetlendi (openmc.org sha256 yayımlamıyor)"
+msgstr "no sha256: size checked only (openmc.org does not publish sha256)"
+
+#: cekirdek/veri_indir.py:494
 #, python-format
 msgid "%s var ama içinde cross_sections.xml yok; klasörü taşıyın ya da başka hedef seçin"
 msgstr "%s exists but contains no cross_sections.xml; move the folder or choose another target"
 
-#: cekirdek/veri_indir.py:470
+#: cekirdek/veri_indir.py:508
+#, python-format
+msgid "%s — arşiv silindi; yeniden indirin"
+msgstr "%s — the archive was deleted; download it again"
+
+#: cekirdek/veri_indir_komut.py:26
 msgid ""
 "OpenMC nükleer verisini openmc.org kataloğundan güvenli indirir (sürdürülebilir, "
 "sha256)."
@@ -7942,19 +8030,19 @@ msgstr ""
 "Safely downloads OpenMC nuclear data from the openmc.org catalogue (resumable, "
 "sha256)."
 
-#: cekirdek/veri_indir.py:472
+#: cekirdek/veri_indir_komut.py:28
 msgid "katalogu listele ve çık"
 msgstr "list the catalogue and exit"
 
-#: cekirdek/veri_indir.py:473
+#: cekirdek/veri_indir_komut.py:29
 msgid "hedef klasör (varsayılan: ~/nucdata ya da son seçim)"
 msgstr "target folder (default: ~/nucdata or the last choice)"
 
-#: cekirdek/veri_indir.py:475
+#: cekirdek/veri_indir_komut.py:31
 msgid "kütüphane kimliği (--liste)"
 msgstr "library id (--liste)"
 
-#: cekirdek/veri_indir.py:477
+#: cekirdek/veri_indir_komut.py:33
 msgid ""
 "zincir kimliği; birden çok verilebilir (varsayılan: uygulamanın kullandığı "
 "termal/hızlı/CASL zincirleri)"
@@ -7962,20 +8050,20 @@ msgstr ""
 "chain id; may be given more than once (default: the thermal/fast/CASL chains the "
 "application uses)"
 
-#: cekirdek/veri_indir.py:479
+#: cekirdek/veri_indir_komut.py:35
 msgid "yalnız zincirleri indir"
 msgstr "download the chains only"
 
-#: cekirdek/veri_indir.py:481
+#: cekirdek/veri_indir_komut.py:37
 msgid "bitince ortam değişkenlerini ~/.bashrc'ye ekle"
 msgstr "when finished, add the environment variables to ~/.bashrc"
 
-#: cekirdek/veri_indir.py:486
+#: cekirdek/veri_indir_komut.py:42
 #, python-format
 msgid "Kaynak: %s (erişim %s)"
 msgstr "Source: %s (accessed %s)"
 
-#: cekirdek/veri_indir.py:487
+#: cekirdek/veri_indir_komut.py:43
 msgid ""
 "\n"
 "Kütüphaneler:"
@@ -7983,7 +8071,7 @@ msgstr ""
 "\n"
 "Libraries:"
 
-#: cekirdek/veri_indir.py:490
+#: cekirdek/veri_indir_komut.py:46
 msgid ""
 "\n"
 "Zincirler:"
@@ -7991,7 +8079,7 @@ msgstr ""
 "\n"
 "Chains:"
 
-#: cekirdek/veri_indir.py:494
+#: cekirdek/veri_indir_komut.py:50
 msgid ""
 "\n"
 "* uygulamanın tükenme hesabında kullandığı zincirler"
@@ -7999,40 +8087,45 @@ msgstr ""
 "\n"
 "* chains used by the application's depletion calculation"
 
-#: cekirdek/veri_indir.py:512
+#: cekirdek/veri_indir_komut.py:68
 #, python-format
 msgid "bilinmeyen kütüphane: %s (--liste)"
 msgstr "unknown library: %s (--liste)"
 
-#: cekirdek/veri_indir.py:516
+#: cekirdek/veri_indir_komut.py:72
 #, python-format
 msgid "bilinmeyen zincir: %s (--liste)"
 msgstr "unknown chain: %s (--liste)"
 
-#: cekirdek/veri_indir.py:528
+#: cekirdek/veri_indir_komut.py:84
 msgid "~/.bashrc'de zaten bir openmc_arayuz bölümü var; değiştirilmedi."
 msgstr "~/.bashrc already has an openmc_arayuz section; not changed."
 
-#: cekirdek/veri_indir.py:532
+#: cekirdek/veri_indir_komut.py:88
 msgid "~/.bashrc'ye eklendi. Yeni bir terminal açın ya da: source ~/.bashrc"
 msgstr "Added to ~/.bashrc. Open a new terminal or run: source ~/.bashrc"
 
-#: cekirdek/veri_indir.py:541
+#: cekirdek/veri_indir_komut.py:109
 #, python-format
 msgid "== zincir: %s"
 msgstr "== chain: %s"
 
-#: cekirdek/veri_indir.py:545
+#: cekirdek/veri_indir_komut.py:115
 #, python-format
 msgid "== kütüphane: %s (%.2f GB)"
 msgstr "== library: %s (%.2f GB)"
 
-#: cekirdek/veri_indir.py:572
+#: cekirdek/veri_indir_komut.py:144
 #, python-format
 msgid "HATA: %s"
 msgstr "ERROR: %s"
 
-#: cekirdek/veri_indir.py:580
+#: cekirdek/veri_indir_komut.py:152
+#, python-format
+msgid "HATA: indirildi ama seçim kaydedilemedi: %s"
+msgstr "ERROR: downloaded, but the choice could not be saved: %s"
+
+#: cekirdek/veri_indir_komut.py:155
 #, python-format
 msgid ""
 "\n"
@@ -8041,7 +8134,7 @@ msgstr ""
 "\n"
 "Done. The choice was written to the application settings (%s)."
 
-#: cekirdek/veri_indir.py:584
+#: cekirdek/veri_indir_komut.py:159
 #, python-format
 msgid ""
 "Terminalden openmc kullanacaksanız:\n"
@@ -8205,4 +8298,7 @@ msgstr ""
 
 #~ msgid "OPENMC_CROSS_SECTIONS ortam değişkeni ayarlı değil"
 #~ msgstr "the OPENMC_CROSS_SECTIONS environment variable is not set"
+
+#~ msgid "%s (%s; rapor anındaki ortam)"
+#~ msgstr "%s (%s; environment at report time)"
 
