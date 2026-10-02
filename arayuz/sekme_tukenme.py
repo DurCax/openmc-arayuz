@@ -110,6 +110,7 @@ class TukenmeSekmesi(SekmeTabani, SonucBolumu, TukenmeArayuzu):
         self.guc.valueChanged.connect(self._kaydet)
         self.adimlar.editingFinished.connect(self._kaydet)
         self.ek_liste.degisti.connect(self._kaydet)
+        self.y4.degisti.connect(self._kaydet)
         self._gorunum_guncelle()
 
     # ==================================================================
@@ -131,6 +132,7 @@ class TukenmeSekmesi(SekmeTabani, SonucBolumu, TukenmeArayuzu):
         # Eski JSON'lardaki liste AYNEN korunur (zincirde olmayan ad bile silinmez).
         self.izlenen.secim_ayarla(list(t.get("izlenen") or []), sinyal=False)
         self.ek_liste.doldur(self.spec)
+        self.y4.doldur(self.spec)
         self._ozet_guncelle()
         self._onceki_yukle()
 
@@ -180,6 +182,8 @@ class TukenmeSekmesi(SekmeTabani, SonucBolumu, TukenmeArayuzu):
             t["adim_gucu"] = self.adim_gucu.isChecked()
         t["izlenen"] = self.izlenen.secim()
         t["ek_malzemeler"] = self.ek_liste.secim()
+        self.y4.yaz(t)                       # v3 Y4 (varsayilanlar yazilmaz)
+        self.y4.gorunum(t["entegrator"])
         self._ozet_guncelle()
         self.bildir()
 
