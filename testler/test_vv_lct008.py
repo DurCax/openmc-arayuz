@@ -1,0 +1,93 @@
+# -*- coding: utf-8 -*-
+"""
+test_vv_lct008.py -- LEU-COMP-THERM-008 ek durumlari (v3 Y11; cekirdek/vv/lct008.py).
+
+  [VL8a] harita_uret: konum merkezindeki evren kimligi harfe cevrilir
+         (1 su, 2 yakit, 3 pyrex, 5 Al2O3); ilk satir en ust (+y); bilinmeyen
+         evren ValueError (sessiz su sayilmaz).
+  [VL8b] spec_olustur: sablon (durum 1) degismez; su malzemesi durumun borlu
+         suyuyla, harita yeni haritayla degisir; pertürbe cubuk ve malzemesi
+         eklenir; referans E = 1.0007 +- 0.0012, seri, MIT lisansi, h_x.
+  [VL8c] birim hucre h_x: H / U-235 (kafes birim hucresi) pozitif ve TCA ile
+         ayni mertebede.
+"""
+
+import copy
+import json
+import os
+
+from testler.ortak_test import kontrol, ORNEK
+
+ADIM = 1.63576
+
+
+def _sablon():
+    with open(os.path.join(ORNEK, "kriter_lct008.json"), encoding="utf-8") as f:
+        return json.load(f)
+
+
+def test_harita_uret():
+    print("\n[VL8a] harita_uret: evren -> harf, ust satir +y")
+    from cekirdek.vv import lct008
+
+    def bulucu(x, y):
+        if y > 0.5 * ADIM:
+            return 1            # ust satir su
+        return 3 if (abs(x) < 0.1 and abs(y) < 0.1) else 2
+
+    harita = lct008.harita_uret(bulucu, 3, ADIM)
+    kontrol("3 satir", len(harita) == 3)
+    kontrol("ust satir su", harita[0] == "sss", "-> %s" % harita)
+    kontrol("merkez pyrex", harita[1] == "ypy", "-> %s" % harita)
+    disari = lct008.harita_uret(lambda x, y: lct008.DISARIDA, 2, ADIM)
+    kontrol("tank disi su", disari == ["ss", "ss"], "-> %s" % disari)
+    try:
+        lct008.harita_uret(lambda x, y: 77, 2, ADIM)
+        reddedildi = False
+    except ValueError:
+        reddedildi = True
+    kontrol("bilinmeyen evren ValueError", reddedildi)
+
+
+def _ornek_spec():
+    from cekirdek.vv import lct008
+    su = [("H1", 0.066737), ("O16", 0.033369), ("B10", 1.4e-05), ("B11", 5.6e-05)]
+    pyrex = [("B10", 9.6e-04), ("B11", 3.9e-03), ("O16", 4.6e-02), ("Si28", 1.6e-02)]
+    harita = ["s" * 93] * 46 + ["s" * 46 + "p" + "s" * 46] + ["s" * 93] * 46
+    sablon = _sablon()
+    once = copy.deepcopy(sablon)
+    spec = lct008.spec_olustur(sablon, 5, su, {"pyrex": pyrex}, harita)
+    return sablon, once, spec
+
+
+def test_spec_olustur():
+    print("\n[VL8b] spec_olustur: sablon degismez, su/harita/cubuk guncellenir")
+    sablon, once, spec = _ornek_spec()
+    kontrol("sablon degismedi", sablon == once)
+    su = [m for m in spec["malzemeler"] if m["ad"] == "su_borlu"][0]
+    b10 = [b["miktar"] for b in su["bilesim"] if b["isim"] == "B10"]
+    kontrol("borlu su durumdan", b10 == [1.4e-05], "-> %s" % b10)
+    kontrol("pyrex malzemesi", any(m["ad"] == "pyrex" for m in spec["malzemeler"]))
+    demet = spec["demetler"][0]
+    kontrol("harita yeni", demet["harita"][46][46] == "p")
+    kontrol("anahtarda p", demet["anahtar"].get("p") == "pyrex_cubugu",
+            "-> %s" % demet["anahtar"])
+    kontrol("pyrex cubugu", any(c["ad"] == "pyrex_cubugu" for c in spec["cubuklar"]))
+    ref = spec["referans"]
+    kontrol("E ± σ", (ref["k"], ref["sigma"], ref["tur"]) == (1.0007, 0.0012, "deney"))
+    kontrol("seri", ref["seri"] == "LEU-COMP-THERM-008")
+    kontrol("durum adi", "durum 5" in ref["kaynak"], "-> %s" % ref["kaynak"])
+    kontrol("MIT lisansi", "MIT" in ref["lisans"])
+    kontrol("olcum yok (yeni)", "olcum" not in ref and "aoa" not in ref)
+    kontrol("h_x girdisi", ref["aoa_girdi"]["h_x"] > 100.0)
+
+
+def test_birim_hucre_hx():
+    print("\n[VL8c] LCT-008 birim hucre h_x")
+    from cekirdek.vv import lct008
+    hx = lct008.birim_hucre_h_x(_sablon())
+    kontrol("h_x 100-1000", 100.0 < hx < 1000.0, "-> %g" % hx)
+
+
+HIZLI = [test_harita_uret, test_spec_olustur, test_birim_hucre_hx]
+YAVAS = []
