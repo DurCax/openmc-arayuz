@@ -135,9 +135,6 @@ class KomutPaleti(QtWidgets.QFrame):
             self.destroyed.connect(self.kisayol.deleteLater)
 
     # ------------------------------------------------------------------
-    def eylemler_ayarla(self, eylemler):
-        self._eylemler = eylemler
-
     def _tum_eylemler(self):
         kaynak = self._eylemler() if callable(self._eylemler) else self._eylemler
         return [e for e in kaynak if e.isEnabled() and eylem_metni(e) and not e.isSeparator()]

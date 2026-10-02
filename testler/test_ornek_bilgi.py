@@ -143,9 +143,8 @@ def test_ornek_bilgisi_okuma():
 
 
 def test_ornek_listesi_ve_kategoriler():
-    print("\n[OB6] ornek_listesi: butun ornekler, bozuk dosya atlanir; maket kategorileri")
+    print("\n[OB6] ornek_listesi: butun ornekler, bozuk dosya atlanir")
     from cekirdek import ornek_bilgi as ob
-    from arayuz.tasarim import maket_veri
     liste = ob.ornek_listesi()
     dosyalar = sorted(os.path.basename(p) for p in glob.glob(os.path.join(ORNEK, "*.json")))
     kontrol("her ornek listede", sorted(b.dosya for b in liste) == dosyalar)
@@ -162,8 +161,6 @@ def test_ornek_listesi_ve_kategoriler():
         with open(os.path.join(d, "b.json"), "w", encoding="utf-8") as f:
             json.dump({"ad": "B", "baslik": "B", "kategori": "zirh", "seviye": "ileri"}, f)
         kontrol("bozuk dosya atlanir", [b.dosya for b in ob.ornek_listesi(d)] == ["b.json"])
-    kontrol("maket_veri.KATEGORILER ornek_bilgi'den",
-            tuple(k for k, _m in maket_veri.KATEGORILER) == ("hepsi",) + ob.KATEGORILER)
     kontrol("her kategorinin gorunen adi var", set(ob.KATEGORI_ADLARI) == set(ob.KATEGORILER)
             and set(ob.SEVIYE_ADLARI) == set(ob.SEVIYELER))
 

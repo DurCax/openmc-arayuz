@@ -296,10 +296,6 @@ class MalzemeSekmesi(SekmeTabani):
         self.spec_yukle(self.spec)
         self.bildir()
 
-    def _ad_degistir(self, eski, yeni):
-        """Geriye uyumluluk: tam ad degisimi sema'dadir."""
-        return sema.malzeme_adini_degistir(self.spec, eski, yeni)
-
     def _kopyala(self):
         satir = self._secili_satir()
         if satir < 0:

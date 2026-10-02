@@ -3,7 +3,7 @@
 arayuz/bilesenler -- tasarim sisteminin yeniden kullanilabilir bilesenleri.
 
 Gorunum arayuz/tasarim/stil.py'deki QSS'ten, renk/aralik tokenlardan gelir;
-bilesenlerde sabit renk ya da piksel YOKTUR. Ornekler: python -m arayuz.tasarim.galeri
+bilesenlerde sabit renk ya da piksel YOKTUR.
 """
 
 from arayuz.bilesenler.bildirim import Bildirim, bildir

@@ -78,16 +78,6 @@ _BOR_ZEHIR_DISI_ROLLER = {"sogutucu", "moderator", "gaz"}
 # Zincir secimi
 # ============================================================================
 
-def spektrum_tahmini(spec, kosu_dizini=None):
-    """
-    ("termal"|"hizli", gerekce). Kural cekirdek/tukenme_spektrum.py'dedir:
-    once kosudaki EALF (vv_ealf tally'si), sonra yakit komsulugu (yakitla ayni
-    cubuk/demet/plakada moderator), en son kaba genel kural.
-    """
-    tur, gerekce, _yontem = _spektrum.tahmin(spec, kosu_dizini)
-    return tur, gerekce
-
-
 def zincir_secimi(spec, kosu_dizini=None):
     """
     DONER {"tur", "yol", "spektrum", "verim_enerjisi", "gerekce", "yontem"}
