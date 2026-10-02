@@ -11,13 +11,13 @@ import math
 import os
 
 from cekirdek.ceviri import _, _n, N_
-from cekirdek import sema, dogrula, surum, uygunluk
+from cekirdek import sema, dogrula, surum, uygunluk, yollar
 
 
 # Proje koku: arayuz/pencere/ -> arayuz/ -> kok (eski arayuz/ana_pencere.py'de
 # iki dirname idi; dosya bir dizin derine indigi icin uc).
-KOK = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-ORNEKLER = os.path.join(KOK, "ornekler")
+KOK = yollar.veri_koku()
+ORNEKLER = yollar.ornekler_dizini()
 UYGULAMA_ADI = surum.UYGULAMA_ADI
 
 

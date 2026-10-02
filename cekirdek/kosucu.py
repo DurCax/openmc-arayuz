@@ -28,7 +28,7 @@
 
 import os
 import re
-import shutil
+import shutil  # noqa: F401 -- testler kosucu.shutil.which uzerinden openmc aramasini degistirir
 import subprocess
 import sys
 import time
@@ -36,6 +36,7 @@ import time
 from cekirdek import sema, kurucu, dogrula
 from cekirdek import kaynak as _kaynak
 from cekirdek import kapsul as _kapsul
+from cekirdek import yollar as _yollar
 from cekirdek.ceviri import _, N_
 from cekirdek.gunluk import kaydedici
 from cekirdek.uygunluk_denetimi import ayristir as _ayristir
@@ -212,8 +213,9 @@ def entropi_yakinsama(entropiler, pasif):
 
 
 def openmc_yolu():
-    """openmc calistirilabilir dosyasinin yolu; bulunamazsa None."""
-    return shutil.which("openmc")
+    """openmc calistirilabilir dosyasinin yolu; bulunamazsa None. Cozum tek
+    yerde: yollar.openmc_ikilisi (ortam degiskeni > PATH > conda ortami)."""
+    return _yollar.openmc_ikilisi()
 
 
 # ============================================================================

@@ -28,9 +28,11 @@ import re
 from dataclasses import dataclass
 from typing import Optional, Tuple
 
-KOK = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-ORTAM_DEGISKENI = "OPENMC_ARAYUZ_KILAVUZ"
-KILAVUZ_DIZINI = os.environ.get(ORTAM_DEGISKENI) or os.path.join(KOK, "docs", "kilavuz")
+from cekirdek import yollar
+
+KOK = yollar.veri_koku()
+ORTAM_DEGISKENI = yollar.KILAVUZ_ORTAM_DEGISKENI
+KILAVUZ_DIZINI = yollar.kilavuz_dizini()
 KAYNAK_DIL = "tr"
 DILLER = ("tr", "en")
 RESIM_DIZINI = "resimler"

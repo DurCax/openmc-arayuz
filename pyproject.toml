@@ -54,8 +54,24 @@ openmc-arayuz-kosu = "cekirdek.giris:kosu"
 include = ["cekirdek*", "arayuz*"]
 
 [tool.setuptools.package-data]
+# Paket ICI veri (cekirdek/yollar.py: ikon_dizini, font_dizini, rapor_sablon_dizini).
 # rapor sablonlari (string.Template) wheel icinde olmali
 "cekirdek.rapor_sablon" = ["*.html", "*.css"]
+"arayuz" = ["kaynaklar/*.txt", "kaynaklar/fontlar/*", "kaynaklar/ikonlar/*"]
+
+[tool.setuptools.data-files]
+# Paket DISI veri: <onek>/share/openmc-arayuz/<kaynak agacindaki yol> (conda
+# paketi de ayni duzeni kurar: conda-recipe/build.sh). cekirdek/yollar.py
+# veri_koku() bu dizini kurulu dagitimin kaydindan bulur. Yeni bir alt dizin
+# eklenirse buraya da yazilmali (testler/test_t2_yollar.py denetler).
+# Yalniz derlenmis ceviri (.mo) kurulur; .po/.pot gelistirme dosyasidir.
+"share/openmc-arayuz/ornekler" = ["ornekler/*.json"]
+"share/openmc-arayuz/ornekler/vv" = ["ornekler/vv/*.json"]
+"share/openmc-arayuz/locale/en/LC_MESSAGES" = ["locale/en/LC_MESSAGES/*.mo"]
+"share/openmc-arayuz/docs/kilavuz/tr" = ["docs/kilavuz/tr/*"]
+"share/openmc-arayuz/docs/kilavuz/en" = ["docs/kilavuz/en/*"]
+"share/openmc-arayuz/docs/kilavuz/resimler/tr" = ["docs/kilavuz/resimler/tr/*"]
+"share/openmc-arayuz/docs/kilavuz/resimler/en" = ["docs/kilavuz/resimler/en/*"]
 
 # -----------------------------------------------------------------------------
 # pytest: testler/test_*.py modullerindeki HIZLI/YAVAS listeleri kok

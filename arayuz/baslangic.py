@@ -43,13 +43,13 @@ from arayuz.tasarim import tokenlar
 from arayuz.tasarim.ikon import ikon_bagla
 from arayuz.tasarim.maket_cizim import KucukResim
 
-from cekirdek import kaynak, ornek_bilgi, sema
+from cekirdek import kaynak, ornek_bilgi, sema, yollar
 from cekirdek.ceviri import N_, _, _n
 from cekirdek.gunluk import kaydedici
 
 _log = kaydedici(__name__)
-KOK = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-ORNEKLER = os.path.join(KOK, "ornekler")
+KOK = yollar.veri_koku()
+ORNEKLER = yollar.ornekler_dizini()
 
 # (anahtar, baslik, aciklama, ornek dosyasi | None, bos sablon var mi, ilk sekme)
 # baslik/aciklama yalnizca ISARETLI (N_): ice aktarma aninda dil belli degil;

@@ -17,11 +17,11 @@ import os
 from PySide6 import QtGui
 
 from arayuz.tasarim import tokenlar
+from cekirdek import yollar
 from cekirdek.gunluk import kaydedici
 
 _log = kaydedici("arayuz.tasarim.yazi")
-FONT_DIZINI = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-                           "kaynaklar", "fontlar")
+FONT_DIZINI = yollar.font_dizini()
 FONT_DOSYALARI = ("Inter-Regular.ttf", "Inter-Medium.ttf", "Inter-SemiBold.ttf")
 
 _durum = {"yuklendi": False, "aile": None, "mono": None}

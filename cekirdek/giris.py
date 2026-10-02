@@ -10,18 +10,31 @@ giris.py -- paket giris noktalari (pyproject.toml [project.scripts]).
                        -> uygunluk_komutu(): bulgulari basar; cikis 1 = hata
                           bulgusu var, 0 = yok, 2 = kullanim hatasi, 3 = --siki
                           ile degerlendirilemeyen kural var (CI / ders)
+  openmc-arayuz-kosu --alt tukenme spec.json [-s N] [--dizin D] [...]
+                       -> arayuzun alt surecleri (bugun yalniz tukenme;
+                          = python -m cekirdek.tukenme ...)
 
-Ince sarmalayicilar: davranis mevcut modul girislerinin aynisidir. GUI tarafi
-runpy ile `python -m arayuz.ana_pencere` gibi calistirilir; boylece pencere
-modulu yeniden duzenlense de (arayuz/pencere/ paketi) giris yolu degismez.
+Ince sarmalayicilar: davranis mevcut modul girislerinin aynisidir. GUI
+arayuz.ana_pencere.main()'i dogrudan cagirir (pencere modulu arayuz/pencere/
+paketine tasinsa da giris yolu degismez).
+
+ALT SURECLER (alt_surec_komutu)
+  Arayuz bir alt sureci `sys.executable -m cekirdek.giris --alt <ad> ...` ile
+  baslatir. Neden bu komut: (1) sys.executable arayuzu calistiran yorumlayicinin
+  KENDISIDIR -- ayni ortam (openmc, numpy) garanti; (2) `-m cekirdek.giris`
+  hem kurulu pakette (site-packages) hem kaynak agacindan (PYTHONPATH = paket
+  koku) calisir, oysa `openmc-arayuz-kosu` betigi yalniz pip kurulumundan sonra
+  vardir ve etkinlestirilmemis bir venv/conda ortaminda PATH'te olmayabilir;
+  (3) dagitici tek: `openmc-arayuz-kosu --alt tukenme` ile ayni kod yolu.
 """
 
 import os
-import runpy
 import sys
 
 RAPOR_KOMUTU = "rapor"
 UYGUNLUK_KOMUTU = "uygunluk"
+ALT_SECENEGI = "--alt"
+ALT_TUKENME = "tukenme"
 _RAPOR_UZANTILARI = {".html": "html", ".htm": "html", ".pdf": "pdf"}
 _SPEC_ADAYLARI = ("spec.json", "tukenme_spec.json")
 
@@ -217,12 +230,44 @@ def uygunluk_komutu(argv):
     return rapor_uygunluk.cikis_kodu(bulgular, siki=siki)
 
 
+def _tukenme_alt_sureci(argv):
+    from cekirdek import tukenme
+    return tukenme._terminal(argv)
+
+
+_ALT_SURECLER = {ALT_TUKENME: _tukenme_alt_sureci}
+
+
+def alt_surec_komutu(ad, argumanlar):
+    """Arayuzun `ad` alt surecini baslatan (program, argumanlar); QProcess.start
+    ve subprocess icin. Gerekce: modul belgesi (ALT SURECLER). Bilinmeyen ad
+    ValueError. Kaynak agacindan calisirken cagiran PYTHONPATH'e
+    yollar.paket_koku()'nu koyar."""
+    if ad not in _ALT_SURECLER:
+        raise ValueError("bilinmeyen alt surec: %r" % (ad,))
+    return sys.executable, ["-m", "cekirdek.giris", ALT_SECENEGI, ad] + list(argumanlar)
+
+
+def alt_komutu(argv):
+    """`--alt <ad> ...` dagiticisi. Cikis: alt surecin kodu; ad yok ya da
+    bilinmiyorsa 2."""
+    from cekirdek.ceviri import _
+    if not argv or argv[0] not in _ALT_SURECLER:
+        print(_("--alt bir alt süreç adı bekliyor: %s") % ", ".join(sorted(_ALT_SURECLER)),
+              file=sys.stderr)
+        return 2
+    return _ALT_SURECLER[argv[0]](argv[1:])
+
+
 def kosu(argv=None):
     """Terminal kosucusu: cekirdek.kosucu'nun komut satiri. Ilk arguman
-    `rapor` / `uygunluk` ise alt komut calisir (kosucu._terminal cagrilmaz)."""
+    `rapor` / `uygunluk` / `--alt` ise alt komut calisir (kosucu._terminal
+    cagrilmaz)."""
     argv = list(sys.argv[1:] if argv is None else argv)
     from cekirdek.ceviri import terminal_dili
     terminal_dili()                   # OPENMC_ARAYUZ_DIL verilmisse o dil
+    if argv and argv[0] == ALT_SECENEGI:
+        return alt_komutu(argv[1:])
     if argv and argv[0] == RAPOR_KOMUTU:
         return rapor_komutu(argv[1:])
     if argv and argv[0] == UYGUNLUK_KOMUTU:
@@ -232,15 +277,14 @@ def kosu(argv=None):
 
 
 def gui(argv=None):
-    """Arayuz: `python -m arayuz.ana_pencere` ile ayni."""
-    if argv is not None:
-        sys.argv = [sys.argv[0]] + list(argv)
+    """Arayuz: `python -m arayuz.ana_pencere` ile ayni; cikis kodu doner."""
+    from arayuz import ana_pencere
     try:
-        runpy.run_module("arayuz.ana_pencere", run_name="__main__", alter_sys=True)
+        return ana_pencere.main(argv)
     except SystemExit as cikis:
         return cikis.code
-    return 0
 
 
 if __name__ == "__main__":
-    sys.exit(gui())
+    # `python -m cekirdek.giris --alt <ad> ...` -> alt surec; aksi halde arayuz
+    sys.exit(kosu() if sys.argv[1:2] == [ALT_SECENEGI] else gui())

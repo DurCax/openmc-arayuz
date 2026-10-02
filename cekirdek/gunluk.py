@@ -35,10 +35,8 @@ _durum = {"isleyici": None, "yol": None}
 
 def durum_dizini(ortam=None):
     """Uygulamanin durum (log) dizini; XDG Base Directory kurali."""
-    ortam = os.environ if ortam is None else ortam
-    taban = ortam.get("XDG_STATE_HOME") or os.path.join(
-        os.path.expanduser("~"), ".local", "state")
-    return os.path.join(taban, UYGULAMA_DIZINI)
+    from cekirdek import yollar
+    return yollar.durum_dizini(ortam)
 
 
 def dosyaya_yaziliyor():
