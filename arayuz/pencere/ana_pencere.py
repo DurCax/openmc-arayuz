@@ -55,6 +55,7 @@ from arayuz.sekme_malzeme import MalzemeSekmesi
 from arayuz import baslangic, tema
 from arayuz.ortak import tekerlek_korumasi_kur, tekerlek_suzgeci_askida
 from arayuz.pencere import kabuk
+from arayuz.tasarim import stil as _stil
 from arayuz.pencere.menuler import MenulerMixin
 from arayuz.pencere.proje import ProjeMixin
 from arayuz.pencere.gecmis import GecmisMixin
@@ -88,8 +89,9 @@ class AnaPencere(DogrulamaMixin, GezinmeCephesi, MenulerMixin, ProjeMixin, Gecmi
         tekerlek_korumasi_kur()
         uygulama_adi = UYGULAMA_ADI        # cekirdek sabiti; etkin dilde gosterilir
         self.setWindowTitle(_(uygulama_adi))
-        # H1b: kurulumda suzgec askida (her olayda Python'a gecis ~1.4 s CPU)
-        with tekerlek_suzgeci_askida():
+        # H1b: kurulumda tekerlek suzgeci askida (her olayda Python'a gecis ~1.4 s
+        # CPU) ve uygulama QSS'i kurulumdan SONRA bir kez uygulanir (stil.py)
+        with tekerlek_suzgeci_askida(), _stil.sonradan_uygula():
             self._boyut_kur()
             self._durum_kur()
             self._sayfalari_kur()

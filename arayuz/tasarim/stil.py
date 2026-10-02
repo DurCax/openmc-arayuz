@@ -25,6 +25,7 @@ ikonlarindan tema rengiyle PNG olarak gecici dizine yazilir (1x ve @2x):
 QSS `image:` yalnizca dosya yolu kabul eder.
 """
 
+import contextlib
 import os
 import tempfile
 
@@ -97,6 +98,30 @@ def uret(p, aile=None, mono=None):
     d["mono"] = ('font-family: "%s";' % mono) if mono else ""
     return "\n".join(parca % d for parca in (
         _TEMEL, _DUGMELER, _GIRISLER, _LISTELER, _CUBUKLAR, _DIGER, _BILESENLER, _ESKI))
+
+
+@contextlib.contextmanager
+def sonradan_uygula(uygulama=None):
+    """
+    Toplu widget kurulumunda (ana pencere) uygulama stil sayfasini askiya alir,
+    cikista BIR kez uygular. QSS etkinken her addWidget/setWidget yeni widget'i
+    QStyleSheetStyle ile cilalar (17 KB, ~900 kural): pencere kurulumu 4.4 s'den
+    1.65 s'ye iner (H1 olcumu). Renk/token degismez; kurulum sirasinda sizeHint'ten
+    alinan birkac olcu (bolucu, arac dugmesi) birkac piksel farkli olabilir
+    (orkestrator karari: kabul, H1b raporunda once/sonra ekranlari).
+    """
+    if uygulama is None:
+        from PySide6 import QtWidgets
+        uygulama = QtWidgets.QApplication.instance()
+    qss = uygulama.styleSheet() if uygulama is not None else ""
+    if not qss:
+        yield
+        return
+    uygulama.setStyleSheet("")
+    try:
+        yield
+    finally:
+        uygulama.setStyleSheet(qss)
 
 
 def durum_ayarla(widget, ad, deger):
