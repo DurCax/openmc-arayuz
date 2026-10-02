@@ -40,7 +40,6 @@ dependencies = [
     "matplotlib>=3.7",
     "pandas>=2.0",
     "h5py>=3.8",
-    "uncertainties>=3.1",
 ]
 
 [project.optional-dependencies]
@@ -82,7 +81,7 @@ filterwarnings = [
 # Kapsam kurali (plan: "Kalite kapilari"): toplam >= %80, dalgada DOKUNULAN her
 # modul >= %80 ya da en azindan dusmez. araclar/kapsam.sh olcer.
 source = ["cekirdek", "arayuz"]
-omit = ["*/__init__.py", "arayuz/tasarim/maket*.py", "arayuz/tasarim/galeri.py"]
+omit = ["*/__init__.py"]
 parallel = true
 
 [tool.coverage.report]

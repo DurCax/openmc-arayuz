@@ -428,27 +428,6 @@ def test_form_bilesenleri():
     _sil(s, s2, seg, r, k, bos, d)
 
 
-def test_maket_ve_galeri_kurulur():
-    print("\n[T12] GALERI ve MAKETLER kurulur ve silinir (PNG yazmadan)")
-    from arayuz.ortak import tekerlek_korumasi_kur
-    from arayuz.tasarim import galeri, maket
-    # Gercek uygulamadaki gibi uygulama geneli Python olay suzgeci: sahipsiz
-    # (Python'a ait) bir QLayout widget silinirken bu suzgecle COKUYORDU.
-    tekerlek_korumasi_kur(_qt())
-    g = galeri.GaleriPenceresi()
-    kontrol("galeri penceresi kuruldu", g.centralWidget() is not None)
-    ekranlar = maket.ekranlar()
-    kontrol("maket ekranlari (5 + cekmece + dar + palet)",
-            set(ekranlar) == {"kabuk", "kabuk_dar", "kabuk_palet", "baslangic", "demet",
-                              "hesap", "sonuclar", "sonuclar_cekmece"})
-    for ad, kur in ekranlar.items():
-        w = kur()
-        kontrol("maket %s kuruldu" % ad, w is not None)
-        _sil(w)
-    _sil(g)
-
-
-
 # ----------------------------------------------------------------------------
 # Inceleme bulgulari (Dalga 1): sessiz dusmeler loglanir, API geri bildirim verir
 # ----------------------------------------------------------------------------
@@ -548,20 +527,6 @@ def test_stil_resmi_uretilemezse():
         ikon.piksel = asil
 
 
-def test_maket_araclari_ayar_yalitir():
-    print("\n[T18] MAKET/GALERI: kaydet() dogrudan cagrilinca da ayarlar yalitilir")
-    from arayuz.tasarim import maket, galeri, once_goruntu
-    import inspect
-    for mod, adlar in ((maket, ("kaydet", "varyantlar")), (galeri, ("kaydet",))):
-        for ad in adlar:
-            kaynak = inspect.getsource(getattr(mod, ad))
-            kontrol("%s.%s ayarlari_yalit cagiriyor" % (mod.__name__.split(".")[-1], ad),
-                    "ayarlari_yalit(" in kaynak)
-    d1 = once_goruntu.ayarlari_yalit()
-    d2 = once_goruntu.ayarlari_yalit()
-    kontrol("ayarlari_yalit tekrar cagrilinca ayni dizini kullanir", d1 == d2,
-            "-> %s %s" % (d1, d2))
-
 def test_bildirim_uzun_metin_kirpilmaz():
     print("\n[T10b] BILDIRIM: uzun (sarilan) metin kirpilmaz -- acilis bildirimi")
     from PySide6 import QtWidgets
@@ -592,9 +557,9 @@ HIZLI = [test_kontrast_wcag, test_token_olcekleri, test_tema_eski_anahtarlar, te
          test_eski_ekran_uyumu,
          test_yazi_tipi, test_ikonlar, test_tema_degisimi_ikon_ve_renk, test_kenar_cubugu,
          test_komut_paleti, test_bildirim, test_bildirim_uzun_metin_kirpilmaz,
-         test_form_bilesenleri, test_maket_ve_galeri_kurulur,
+         test_form_bilesenleri,
          test_bilinmeyen_tema_loglanir, test_segment_bilinmeyen_anahtar,
-         test_bildir_pencere_yok, test_stil_resmi_uretilemezse, test_maket_araclari_ayar_yalitir]
+         test_bildir_pencere_yok, test_stil_resmi_uretilemezse]
 YAVAS = []
 
 

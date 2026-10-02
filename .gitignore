@@ -40,3 +40,11 @@ graphify-out/
 
 # --- kilavuz derleme ciktisi (araclar/kilavuz.sh) ---
 build/
+
+# --- v3 T1 eksikleri ---
+!testler/veri/kosu_ornek/
+DURUM_*.md
+dist/
+*.spec
+htmlcov/
+.ruff_cache/

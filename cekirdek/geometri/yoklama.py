@@ -23,7 +23,6 @@
 ================================================================================
 """
 
-import math
 import random
 from collections import namedtuple
 
@@ -175,8 +174,3 @@ def oran_metni(sonuc):
     """'n noktada k ortusme, b bosluk' ozeti."""
     return _("%d noktada %d örtüşme, %d boşluk") % (sonuc.n, len(sonuc.ortusmeler),
                                                  len(sonuc.bosluklar))
-
-
-def guven_siniri(n, oran=0.0):
-    """Hic sorun gorulmezse sorunlu hacim kesrinin %95 ust siniri (3/n kurali)."""
-    return 3.0 / n if n and not oran else math.nan

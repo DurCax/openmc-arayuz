@@ -3,7 +3,7 @@
 gezinme.py -- GezinmeCephesi: ana pencerenin sekme gezinmesinin HERKESE ACIK
 yuzu (Dalga 2 on-commit 3).
 
-Testler, arayuz/tasarim/once_goruntu.py ve araclar/ekran_turu.py sekmelere
+Testler ve araclar/ekran_turu.py sekmelere
 yalniz bu yontemlerle erisir. Dalga 2'de (Ajan 6) altyapi QTabWidget'tan
 KenarCubugu + QStackedWidget'a gecti: imzalar ve davranis AYNI kaldi, yalniz
 bu dosyanin govdesi degisti.

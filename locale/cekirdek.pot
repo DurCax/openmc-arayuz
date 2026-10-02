@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: openmc-arayuz 2.0.0rc1\n"
+"Project-Id-Version: openmc-arayuz 2.0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-01 21:43+0300\n"
+"POT-Creation-Date: 2026-10-02 04:26+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: cekirdek/altigen_kor.py:303
+#: cekirdek/altigen_kor.py:293
 #, python-format
 msgid "altıgen kor haritası %d halka bekliyor (öğe sayıları %s), haritada %s"
 msgstr ""
@@ -269,7 +269,7 @@ msgstr ""
 msgid "Nokta yoklaması: %s. %s"
 msgstr ""
 
-#: cekirdek/dogrula/agac.py:349 cekirdek/geometri/yoklama.py:141
+#: cekirdek/dogrula/agac.py:349 cekirdek/geometri/yoklama.py:140
 msgctxt "yoklama"
 msgid "örtüşme"
 msgstr ""
@@ -278,7 +278,7 @@ msgstr ""
 msgid "Örtüşen hücreler kayıp parçacık üretir."
 msgstr ""
 
-#: cekirdek/dogrula/agac.py:354 cekirdek/geometri/yoklama.py:142
+#: cekirdek/dogrula/agac.py:354 cekirdek/geometri/yoklama.py:141
 msgctxt "yoklama"
 msgid "boşluk"
 msgstr ""
@@ -1850,409 +1850,409 @@ msgstr ""
 msgid "'%s' demeti: haritada tanımsız harf '%s'"
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:69
+#: cekirdek/geometri/denetim.py:68
 #, python-format
 msgid "Yuvada düğüm ya da ad bekleniyordu (%r)."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:76
+#: cekirdek/geometri/denetim.py:75
 #, python-format
 msgid "Tanımsız ad: '%s' (çubuk, plaka, demet, tambur, parça ya da malzeme değil)."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:82
+#: cekirdek/geometri/denetim.py:81
 #, python-format
 msgid "Bilinmeyen düğüm türü: %r."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:85
+#: cekirdek/geometri/denetim.py:84
 #, python-format
 msgid "İç içe derinlik %d düzeyi aşıyor."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:88
+#: cekirdek/geometri/denetim.py:87
 #, python-format
 msgid "İç içe derinlik %d düzeyden fazla; izleme yavaşlar."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:93
+#: cekirdek/geometri/denetim.py:92
 msgid "Düğüm kimliği (id) boş olmayan bir dize olmalı."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:95
+#: cekirdek/geometri/denetim.py:94
 #, python-format
 msgid "Kimlik '%s' ağaçta iki kez kullanılıyor (%s)."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:107
+#: cekirdek/geometri/denetim.py:106
 msgid "Malzeme düğümüne dönüşüm uygulanamaz: OpenMC malzeme dolgulu hücreyi döndürmez."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:111
+#: cekirdek/geometri/denetim.py:110
 #, python-brace-format
 msgid "Dönüşüm bir nesne olmalı: {\"donme\", \"oteleme\"}."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:114
+#: cekirdek/geometri/denetim.py:113
 msgid "Dönüşüm: 'donme' sayı olmalı (derece)."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:118
+#: cekirdek/geometri/denetim.py:117
 msgid "Dönüşüm: 'oteleme' [x, y] olmalı (cm)."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:124
+#: cekirdek/geometri/denetim.py:123
 #, python-format
 msgid "Tanımsız malzeme: '%s'."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:127
+#: cekirdek/geometri/denetim.py:126
 #, python-format
 msgid "Çözülmemiş referans '%s': kaydedilmeden önce parçaya çevrilmeliydi."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:134
+#: cekirdek/geometri/denetim.py:133
 #, python-format
 msgid "Tanımsız bileşen: '%s'."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:137
+#: cekirdek/geometri/denetim.py:136
 #, python-format
 msgid "Belirsiz ad '%s': %s bölümlerinin ikisinde de var."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:139
+#: cekirdek/geometri/denetim.py:138
 msgid "Birini yeniden adlandırın."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:144
+#: cekirdek/geometri/denetim.py:143
 #, python-format
 msgid "Döngü: '%s' parçası kendini içeriyor (%s)."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:155
+#: cekirdek/geometri/denetim.py:154
 msgid "Eksenel yığında varsayılan 'icerik' yok."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:160
+#: cekirdek/geometri/denetim.py:159
 msgid "Eksenel yığında en az bir katman olmalı."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:166 cekirdek/geometri/denetim.py:278
+#: cekirdek/geometri/denetim.py:165 cekirdek/geometri/denetim.py:277
 msgid "Katman yüksekliği sayı olmalı (cm)."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:169
+#: cekirdek/geometri/denetim.py:168
 #, python-format
 msgid "'%s' katmanı 0 cm; atlanır."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:174
+#: cekirdek/geometri/denetim.py:173
 msgid "Katmana özgü 'anahtar' yalnız varsayılan içerik bir kafes olduğunda geçerlidir."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:182
+#: cekirdek/geometri/denetim.py:181
 #, python-format
 msgid "Kafes şekli 'kare' ya da 'altigen' olmalı (%r)."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:185
+#: cekirdek/geometri/denetim.py:184
 msgid "Kafes adımı sıfırdan büyük bir sayı olmalı."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:188
+#: cekirdek/geometri/denetim.py:187
 msgid "Kafes haritası dize listesi olmalı."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:197
+#: cekirdek/geometri/denetim.py:196
 #, python-format
 msgid "Haritada tanımsız harf: '%s'."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:202
+#: cekirdek/geometri/denetim.py:201
 msgid "Kafesin 'dis' yuvası zorunlu (kafesin dışı ve '.' konumları buraya düşer)."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:211
+#: cekirdek/geometri/denetim.py:210
 msgid "Kare kafes 'boyut' [nx, ny] pozitif tam sayılar olmalı."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:215
+#: cekirdek/geometri/denetim.py:214
 #, python-format
 msgid "Harita %d satır; boyut %d bekliyor."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:218
+#: cekirdek/geometri/denetim.py:217
 #, python-format
 msgid "Harita satırı %d: %d karakter, %d bekleniyor."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:224
+#: cekirdek/geometri/denetim.py:223
 msgid "Altıgen kafes 'halka_sayisi' pozitif tam sayı olmalı."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:227
+#: cekirdek/geometri/denetim.py:226
 msgid "Altıgen kafes yönelimi 'x' ya da 'y' olmalı."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:230
+#: cekirdek/geometri/denetim.py:229
 #, python-format
 msgid "Altıgen harita %d halka bekliyor (öğe sayıları %s), haritada %s."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:239
+#: cekirdek/geometri/denetim.py:238
 msgid "Kabın 'ic' yuvası zorunlu."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:250
+#: cekirdek/geometri/denetim.py:249
 msgid "Kök kapta 'dis' olamaz (modelin dışı yoktur)."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:254
+#: cekirdek/geometri/denetim.py:253
 #, python-format
 msgid "'%s' yalnız kök kapta bulunur."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:256
+#: cekirdek/geometri/denetim.py:255
 msgid "Kök olmayan kapta 'dis' yuvası zorunlu (kabın dışı ile yuvanın sınırı arası)."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:265
+#: cekirdek/geometri/denetim.py:264
 msgid "'kafes_zarfi' kesiti yalnız içi altıgen kafes olan kök kapta kullanılır."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:290
+#: cekirdek/geometri/denetim.py:289
 msgid "Kafes zarflı kökte 'kafes.dis' kullanılmaz (R3b)."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:294
+#: cekirdek/geometri/denetim.py:293
 msgid "Halka bir nesne olmalı."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:299
+#: cekirdek/geometri/denetim.py:298
 msgid "Halkada 'kalinlik' ya da 'dis' alanlarından tam olarak biri verilmeli."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:303
+#: cekirdek/geometri/denetim.py:302
 msgid "Halka kalınlığı sıfırdan büyük olmalı."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:305
+#: cekirdek/geometri/denetim.py:304
 msgid "'kafes_zarfi' üzerinde 'kalinlik' kullanılamaz; 'dis' kesiti verin."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:316
+#: cekirdek/geometri/denetim.py:315
 msgid "Halkanın dış kesiti bir önceki sınırı kapsamıyor."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:318
+#: cekirdek/geometri/denetim.py:317
 msgid "Halkanın 'icerik' yuvası zorunlu."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:333
+#: cekirdek/geometri/denetim.py:332
 #, python-brace-format
 msgid "Kesit bir nesne olmalı ({\"sekil\": ...})."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:337
+#: cekirdek/geometri/denetim.py:336
 #, python-format
 msgid "Bilinmeyen kesit şekli: %r."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:340
+#: cekirdek/geometri/denetim.py:339
 #, python-format
 msgid "'%s' kesiti yalnız kök kapta kullanılır."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:348
+#: cekirdek/geometri/denetim.py:347
 #, python-format
 msgid "Kesit alanı '%s' pozitif sayı olmalı."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:350
+#: cekirdek/geometri/denetim.py:349
 msgid "Altıgen kesit yönelimi 'x' ya da 'y' olmalı."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:357
+#: cekirdek/geometri/denetim.py:356
 msgid "Yerleşimler bir liste olmalı."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:364
+#: cekirdek/geometri/denetim.py:363
 msgid "Yerleşim bir nesne olmalı."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:368
+#: cekirdek/geometri/denetim.py:367
 msgid "Yerleşimin adı ('ad') zorunlu."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:370
+#: cekirdek/geometri/denetim.py:369
 #, python-format
 msgid "Yerleşim adı '%s' iki kez kullanılıyor."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:375
+#: cekirdek/geometri/denetim.py:374
 #, python-format
 msgid "Yerleşim modu %s olmalı (%r)."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:379
+#: cekirdek/geometri/denetim.py:378
 msgid "Halka yerleşiminde 'sayi' pozitif tam sayı olmalı."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:381
+#: cekirdek/geometri/denetim.py:380
 msgid "Halka yerleşiminde 'merkez_yaricap' sayı olmalı."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:387
+#: cekirdek/geometri/denetim.py:386
 msgid "Liste yerleşiminde 'konumlar' [[x, y], ...] olmalı."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:389
+#: cekirdek/geometri/denetim.py:388
 #, python-format
 msgid "Bir bölgede %d'den fazla delik; hücre arama yavaşlar."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:395
+#: cekirdek/geometri/denetim.py:394
 msgid "Yerleşimin 'icerik' yuvası zorunlu."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:400
+#: cekirdek/geometri/denetim.py:399
 msgid "Delik kesiti ('kesit') zorunlu: yalnız tambur içeriğinin doğal kesiti vardır."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:421
+#: cekirdek/geometri/denetim.py:420
 #, python-format
 msgid ""
 "'kafes_konumu' yerleşimi: '%s' kimlikli kafes aynı kabın içi ya da bir halkasının "
 "içeriği değil."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:425
+#: cekirdek/geometri/denetim.py:424
 msgid "'kafes_konumu' yerleşiminin kafesi dönüşümsüz olmalı."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:428
+#: cekirdek/geometri/denetim.py:427
 msgid "'kafes_konumu' yerleşiminde tek karakterlik 'harf' zorunlu."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:435
+#: cekirdek/geometri/denetim.py:434
 msgid "Bakış türü 'merkez' ya da 'sabit' olmalı."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:438
+#: cekirdek/geometri/denetim.py:437
 msgid "Sabit bakışta 'aci' sayı olmalı (derece)."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:442
+#: cekirdek/geometri/denetim.py:441
 msgid "Merkez bakışında 'merkez' [x, y] olmalı."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:444
+#: cekirdek/geometri/denetim.py:443
 msgid "'donme_ofset' sayı olmalı (derece)."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:449
+#: cekirdek/geometri/denetim.py:448
 msgid "Kök düğüm bir 'kap' olmalı."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:463
+#: cekirdek/geometri/denetim.py:462
 msgid "Sınır bir nesne olmalı."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:467 cekirdek/geometri/denetim.py:497
+#: cekirdek/geometri/denetim.py:466 cekirdek/geometri/denetim.py:496
 #, python-format
 msgid "Bilinmeyen sınır koşulu: %s = %r."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:478
+#: cekirdek/geometri/denetim.py:477
 msgid "Yüz başına sınır koşulu yalnız dikdörtgen ya da altıgen dış sınırda verilebilir."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:492
+#: cekirdek/geometri/denetim.py:491
 #, python-format
 msgid "Dikdörtgen sınırda 'yuzler' anahtarları %s olmalı."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:500
+#: cekirdek/geometri/denetim.py:499
 #, python-format
 msgid "Periyodik sınır karşılıklı iki yüzde birlikte verilmeli (%s / %s)."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:505
+#: cekirdek/geometri/denetim.py:504
 msgid "Altıgen sınırda 'yuzler' 6 öğeli bir liste olmalı (yüz normali açısı artan sırada)."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:510
+#: cekirdek/geometri/denetim.py:509
 #, python-format
 msgid "Bilinmeyen sınır koşulu: yüz %d = %r."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:513
+#: cekirdek/geometri/denetim.py:512
 #, python-format
 msgid "Periyodik sınır karşılıklı iki yüzde birlikte verilmeli (yüz %d / %d)."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:519
+#: cekirdek/geometri/denetim.py:518
 msgid "Kök yüksekliği pozitif sayı ya da boş (2B) olmalı."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:527
+#: cekirdek/geometri/denetim.py:526
 #, python-format
 msgid ""
 "Kökte hem 'yukseklik' (%g cm) hem farklı toplamlı eksenel yığın (%g cm) var; "
 "yükseklik boş bırakılmalı."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:536
+#: cekirdek/geometri/denetim.py:535
 msgid "Gruplar bir liste olmalı."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:543
+#: cekirdek/geometri/denetim.py:542
 msgid "Grup türü 'donme' ya da 'daldirma' olmalı."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:546
+#: cekirdek/geometri/denetim.py:545
 msgid "Grup değeri sayı olmalı."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:549
+#: cekirdek/geometri/denetim.py:548
 #, python-format
 msgid "'%s' grubu boş."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:551
+#: cekirdek/geometri/denetim.py:550
 #, python-format
 msgid "'%s' grubunun tek üyesi var."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:555
+#: cekirdek/geometri/denetim.py:554
 #, python-format
 msgid "'%s' grubunun üyesi '%s' tanımsız ya da türü uyuşmuyor (%s)."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:557
+#: cekirdek/geometri/denetim.py:556
 msgid "yerleşim adı"
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:558
+#: cekirdek/geometri/denetim.py:557
 msgid "kontrol çubuğu"
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:561
+#: cekirdek/geometri/denetim.py:560
 #, python-format
 msgid "'%s' aynı türden iki grupta (%s, %s)."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:570
+#: cekirdek/geometri/denetim.py:569
 msgid "Geometri bölümü bir nesne olmalı."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:573
+#: cekirdek/geometri/denetim.py:572
 #, python-brace-format
 msgid "Parça {\"ad\", \"dugum\"} olmalı."
 msgstr ""
 
-#: cekirdek/geometri/denetim.py:577
+#: cekirdek/geometri/denetim.py:576
 #, python-format
 msgid "'%s' parçası kullanılmıyor."
 msgstr ""
@@ -2607,21 +2607,21 @@ msgid ""
 "'sabit' bakış seçin"
 msgstr ""
 
-#: cekirdek/geometri/yoklama.py:136
+#: cekirdek/geometri/yoklama.py:135
 #, python-format
 msgid "hücre %d"
 msgstr ""
 
-#: cekirdek/geometri/yoklama.py:144 cekirdek/geometri/yol_metni.py:17
+#: cekirdek/geometri/yoklama.py:143 cekirdek/geometri/yol_metni.py:17
 msgid "kök"
 msgstr ""
 
-#: cekirdek/geometri/yoklama.py:170
+#: cekirdek/geometri/yoklama.py:169
 #, python-format
 msgid "geometri hata ayıklama koşusu temiz (%d × %d parçacık)"
 msgstr ""
 
-#: cekirdek/geometri/yoklama.py:176
+#: cekirdek/geometri/yoklama.py:175
 #, python-format
 msgid "%d noktada %d örtüşme, %d boşluk"
 msgstr ""
@@ -5179,7 +5179,7 @@ msgstr ""
 msgid "'%s' adında %d malzeme var; önce birini yeniden adlandırın."
 msgstr ""
 
-#: cekirdek/surum.py:20
+#: cekirdek/surum.py:23
 msgid "OpenMC Reaktör Kuru Arayüzü"
 msgstr ""
 
@@ -5529,138 +5529,138 @@ msgstr ""
 msgid "'%s' kabında kalınlıkla tanımlı %d. halka yok"
 msgstr ""
 
-#: cekirdek/tukenme.py:102
+#: cekirdek/tukenme.py:92
 #, python-format
 msgid "otomatik: %s"
 msgstr ""
 
-#: cekirdek/tukenme.py:105
+#: cekirdek/tukenme.py:95
 msgid "kullanıcı seçimi"
 msgstr ""
 
-#: cekirdek/tukenme.py:288
+#: cekirdek/tukenme.py:278
 #, python-format
 msgid ""
 "çubuk çubuk yanma kesin örnek hacmi gerektirir; hacmi kesin olmayan (kesik) yanabilir"
 " malzeme: %s"
 msgstr ""
 
-#: cekirdek/tukenme.py:326
+#: cekirdek/tukenme.py:316
 #, python-format
 msgid ""
 "hacmi analitik hesaplanamayan yanabilir malzeme: %s (%s). Tükenme kesin hacim "
 "gerektirir."
 msgstr ""
 
-#: cekirdek/dogrula/tukenme.py:135 cekirdek/tukenme.py:330
+#: cekirdek/dogrula/tukenme.py:135 cekirdek/tukenme.py:320
 msgid "modelde yanabilir (fisil) malzeme yok"
 msgstr ""
 
-#: cekirdek/tukenme.py:610
+#: cekirdek/tukenme.py:600
 msgid "malzemeler"
 msgstr ""
 
-#: cekirdek/tukenme.py:610
+#: cekirdek/tukenme.py:600
 msgid "çubuklar"
 msgstr ""
 
-#: cekirdek/tukenme.py:611
+#: cekirdek/tukenme.py:601
 msgid "plaka elemanları"
 msgstr ""
 
-#: cekirdek/tukenme.py:611
+#: cekirdek/tukenme.py:601
 msgid "demetler"
 msgstr ""
 
-#: cekirdek/tukenme.py:611
+#: cekirdek/tukenme.py:601
 msgid "kor"
 msgstr ""
 
-#: cekirdek/tukenme.py:612
+#: cekirdek/tukenme.py:602
 msgid "hesap ayarları"
 msgstr ""
 
-#: cekirdek/tukenme.py:612
+#: cekirdek/tukenme.py:602
 msgid "tally'ler"
 msgstr ""
 
-#: cekirdek/tukenme.py:613
+#: cekirdek/tukenme.py:603
 msgid "güç dağılımı"
 msgstr ""
 
-#: cekirdek/tukenme.py:613
+#: cekirdek/tukenme.py:603
 msgid "tükenme ayarları"
 msgstr ""
 
-#: cekirdek/dogrula/tukenme.py:23 cekirdek/tukenme.py:621
+#: cekirdek/dogrula/tukenme.py:23 cekirdek/tukenme.py:611
 #: cekirdek/uygunluk_denetimi/vv_arayuz.py:55 cekirdek/vv/kume.py:188
 msgctxt "spektrum"
 msgid "termal"
 msgstr ""
 
-#: cekirdek/dogrula/tukenme.py:24 cekirdek/tukenme.py:622
+#: cekirdek/dogrula/tukenme.py:24 cekirdek/tukenme.py:612
 #: cekirdek/uygunluk_denetimi/vv_arayuz.py:57 cekirdek/vv/kume.py:189
 msgctxt "spektrum"
 msgid "hızlı"
 msgstr ""
 
-#: cekirdek/tukenme.py:676
+#: cekirdek/tukenme.py:666
 msgid "koşmadan hacim, zincir ve ağır metal bilgisini yazdır"
 msgstr ""
 
-#: cekirdek/tukenme.py:678
+#: cekirdek/tukenme.py:668
 msgid "doğrulamada nüklid/kütüphane denetimini atla"
 msgstr ""
 
-#: cekirdek/tukenme.py:695
+#: cekirdek/tukenme.py:685
 #, python-format
 msgid "  zincir        : %s  (%s)"
 msgstr ""
 
-#: cekirdek/tukenme.py:696
+#: cekirdek/tukenme.py:686
 #, python-format
 msgid "  fisyon verimi : %s eV (%s spektrum)"
 msgstr ""
 
-#: cekirdek/tukenme.py:698
+#: cekirdek/tukenme.py:688
 #, python-format
 msgid "  güç yoğunluğu : %g W/gHM"
 msgstr ""
 
-#: cekirdek/tukenme.py:699
+#: cekirdek/tukenme.py:689
 #, python-format
 msgid "  adımlar       : %s %s  → %d transport"
 msgstr ""
 
-#: cekirdek/tukenme.py:701 cekirdek/tukenme.py:726
+#: cekirdek/tukenme.py:691 cekirdek/tukenme.py:716
 msgid "gün"
 msgstr ""
 
-#: cekirdek/tukenme.py:705
+#: cekirdek/tukenme.py:695
 #, python-format
 msgid "  hacim %-10s: %s cm³ [%s] %s"
 msgstr ""
 
-#: cekirdek/tukenme.py:709
+#: cekirdek/tukenme.py:699
 #, python-format
 msgid "  ağır metal    : %.6g g"
 msgstr ""
 
-#: cekirdek/tukenme.py:718
+#: cekirdek/tukenme.py:708
 #, python-format
 msgid ""
 "\n"
 "  DOĞRULAMA: koşu başlatılmadı (%d hata)"
 msgstr ""
 
-#: cekirdek/tukenme.py:725
+#: cekirdek/tukenme.py:715
 #, python-format
 msgid ""
 "\n"
 "  ağır metal: %.6g g"
 msgstr ""
 
-#: cekirdek/tukenme.py:729
+#: cekirdek/tukenme.py:719
 #, python-format
 msgid ""
 "\n"

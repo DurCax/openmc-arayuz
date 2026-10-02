@@ -22,8 +22,7 @@ from cekirdek.ceviri import _
 from cekirdek.geometri import kesit as _k
 from cekirdek.geometri.sema import (
     BOSLUK, DUGUM_TURLERI, SINIR_TURLERI, YERLESIM_MODLARI, GRUP_TURLERI,
-    MAKS_DERINLIK, UYARI_DERINLIK, UYARI_DELIK_SAYISI, tanimlar, ad_bolumleri,
-    yuva_adi)
+    MAKS_DERINLIK, UYARI_DERINLIK, UYARI_DELIK_SAYISI, tanimlar, ad_bolumleri)
 
 DIKDORTGEN_YUZLERI = ("-x", "+x", "-y", "+y")
 
@@ -581,8 +580,3 @@ def yapisal_denetim_agac(spec, agac):
             d.parca_yigini = []
     d.gruplar(agac.get("gruplar"))
     return d.bulgular
-
-
-def yuva_ozeti(dugum):
-    """Mesajlarda dugumun kisa adi."""
-    return yuva_adi(dugum)

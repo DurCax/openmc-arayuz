@@ -363,7 +363,8 @@ def test_rapor_tukenme_bolumu():
                                          "farklar": ["kor"], "sonuc": sahte}
     try:
         for ad in os.listdir(FIXTURE):
-            shutil.copy(os.path.join(FIXTURE, ad), dizin)
+            if os.path.isfile(os.path.join(FIXTURE, ad)):  # __pycache__ atlanir
+                shutil.copy(os.path.join(FIXTURE, ad), dizin)
         open(os.path.join(dizin, rapor.TUKENME_H5), "wb").close()
         icerik = rapor.icerik_topla(spec, dizin)
         t = icerik["tukenme"]

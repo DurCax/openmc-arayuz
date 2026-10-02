@@ -40,8 +40,10 @@ def _kopya(h5=None, log_ek="", log_sil=False):
     """kosu_ornek'in gecici kopyasi. h5: {dataset: yeni deger} statepoint'e yazilir."""
     d = tempfile.mkdtemp(prefix="uygunluk_test_")
     for ad in os.listdir(FIXTURE):
-        if ad != "uret.py":
-            shutil.copy(os.path.join(FIXTURE, ad), d)
+        kaynak = os.path.join(FIXTURE, ad)
+        # yalniz fixture dosyalari; __pycache__ gibi klasorler kopyalanmaz
+        if ad != "uret.py" and os.path.isfile(kaynak):
+            shutil.copy(kaynak, d)
     if h5:
         import h5py
         sp = glob.glob(os.path.join(d, "statepoint.*.h5"))[0]

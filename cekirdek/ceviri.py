@@ -147,12 +147,6 @@ def dinleyici_ekle(fn):
             _dinleyiciler.append(fn)
 
 
-def dinleyici_cikar(fn):
-    with _kilit:
-        if fn in _dinleyiciler:
-            _dinleyiciler.remove(fn)
-
-
 def _katalogda(katalog, anahtar):
     """Anahtar katalogda var mi? Cevirisi msgid'le AYNI olan giris
     ("Statepoint" -> "Statepoint") eksik sayilmasin diye sonuca degil

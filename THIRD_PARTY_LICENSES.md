@@ -41,7 +41,6 @@ Uygulama bu paketleri **içermez**; `environment.yml` ile conda-forge'dan kurulu
 | HDF5 | 1.14.6 | BSD-3-Clause | conda-meta |
 | matplotlib | 3.11.2 | PSF tabanlı matplotlib lisansı (PSF-2.0) | conda-meta + `LICENSE` |
 | pandas | 3.0.6 | BSD-3-Clause | conda-meta + `LICENSE` |
-| uncertainties | 3.2.3 | BSD-3-Clause | conda-meta + `LICENSE.txt` |
 | cycler | 0.12.1 | BSD-3-Clause | conda-meta |
 | lxml (OpenMC bağımlılığı) | 6.1.3 | BSD-3-Clause ve MIT-CMU | conda-meta |
 | endf (OpenMC bağımlılığı) | 0.1.12 | MIT | conda-meta |
