@@ -20,7 +20,7 @@ cubuklar (pyrex: 5, 7, 8; Al2O3: 11) ile ayrilir.
 import copy
 import math
 import os
-from typing import Callable, Dict, List, Mapping, Sequence, Tuple
+from typing import Any, Callable, Dict, List, Mapping, Sequence, Tuple
 
 from cekirdek.ceviri import _
 
@@ -172,22 +172,22 @@ def birim_hucre_h_x(spec: Mapping) -> float:
     return v_su * _yogunluk(spec, su, "H1") / (v_yakit * _yogunluk(spec, yakit, "U235"))
 
 
-def _mitcrpg_malzemeler(dizin: str) -> Dict[int, List[Tuple[str, float]]]:
-    import openmc
-    mats = openmc.Materials.from_xml(os.path.join(dizin, "materials.xml"))
+def _mitcrpg_malzemeler(mats: Any) -> Dict[int, List[Tuple[str, float]]]:
     return {m.id: sorted((n, float(d)) for n, d in m.get_nuclide_atom_densities().items())
             for m in mats}
 
 
-def _bulucu(dizin: str) -> Callable[[float, float], int]:
+def _oku_mitcrpg(dizin: str) -> Tuple[Any, Callable[[float, float], int]]:
+    """(openmc.Materials, bulucu): malzemeler BIR KEZ okunur (kimlik cakismasi uyarisi yok)."""
     import openmc
+    openmc.reset_auto_ids()
     mats = openmc.Materials.from_xml(os.path.join(dizin, "materials.xml"))
     geo = openmc.Geometry.from_xml(os.path.join(dizin, "geometry.xml"), mats)
 
     def bul(x: float, y: float) -> int:
         yol = geo.find((x, y, 0.0))
         return yol[-2].id if len(yol) >= 2 else DISARIDA     # en icteki evren
-    return bul
+    return mats, bul
 
 
 def spec(depo: str, no: int) -> dict:
@@ -199,8 +199,9 @@ def spec(depo: str, no: int) -> dict:
     dizin = os.path.join(depo, "icsbep", "leu-comp-therm-008", "openmc", DURUMLAR[no])
     with open(os.path.join(yollar.ornekler_dizini(), SABLON), encoding="utf-8") as f:
         sablon = json.load(f)
-    mats = _mitcrpg_malzemeler(dizin)
-    harita = harita_uret(_bulucu(dizin))
+    openmc_mats, bulucu = _oku_mitcrpg(dizin)
+    mats = _mitcrpg_malzemeler(openmc_mats)
+    harita = harita_uret(bulucu)
     harfler = set("".join(harita))
     ek = {}
     for kimlik, adlar in MALZEME_ADI.items():
