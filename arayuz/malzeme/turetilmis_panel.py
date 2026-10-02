@@ -29,6 +29,8 @@ class TuretilmisPanel(QtWidgets.QWidget):
         super().__init__(parent)
         self.ozet = _ozet_etiketi()
         self.hata = _hata_etiketi()
+        for e in (self.ozet, self.hata):          # metin dosyadan gelebilir (PNNL, kutuphane)
+            e.setTextFormat(QtCore.Qt.PlainText)
         self.tablo = QtWidgets.QTableWidget(0, len(self.BASLIKLAR))
         self.tablo.setHorizontalHeaderLabels([_(b) for b in self.BASLIKLAR])
         self.tablo.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)

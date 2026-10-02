@@ -19,7 +19,7 @@ için **Dosya › Farklı kaydet…** kullanın.
 | [5.8](#ders-benchmark) | Benchmark ve C/E | `ornekler/godiva_kriter.json` ve `kriter_*` | giriş–ileri |
 | [5.9](#ders-kritik-arama) | Kritik arama | `ornekler/pwr_17x17.json`, `ornekler/pwr_kontrol.json`, `ornekler/tamburlu_kor.json` | orta |
 | [5.10](#ders-rapor) | Rapor ve uygunluk eki | herhangi bir koşu | orta |
-| [5.11](#ders-malzeme-asistani) | Malzeme asistanı ve kütüphanem | `ornekler/pwr_17x17.json` | giriş |
+| [5.14](#ders-malzeme-asistani) | Malzeme asistanı ve kütüphanem | `ornekler/pwr_17x17.json` | giriş |
 
 **Beklenen sonuçlar nereden geliyor?** Her değer bir kaynağa dayanır: örnek dosyasının
 `referans.olcum` alanı, [VV.md](../../VV.md), [ORNEKLER.md](../../ORNEKLER.md) ya da
@@ -644,7 +644,7 @@ bir başarısızlık değildir (`--siki` verilmedikçe).
   3 `--siki` ile değerlendirilemeyen kural.)
 
 <a id="ders-malzeme-asistani"></a>
-## 5.11 Malzeme asistanı ve kütüphanem
+## 5.14 Malzeme asistanı ve kütüphanem
 
 **Örnek dosya:** `ornekler/pwr_17x17.json` · **Seviye:** giriş · **Tahmini süre:** 15 dakika
 (Monte Carlo koşusu yok)

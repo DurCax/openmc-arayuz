@@ -19,7 +19,7 @@ overwritten. Use **File › Save as…** to keep your own changes.
 | [5.8](#ders-benchmark) | Benchmark and C/E | `ornekler/godiva_kriter.json` and `kriter_*` | introductory–advanced |
 | [5.9](#ders-kritik-arama) | Critical search | `ornekler/pwr_17x17.json`, `ornekler/pwr_kontrol.json`, `ornekler/tamburlu_kor.json` | intermediate |
 | [5.10](#ders-rapor) | Report and conformity annex | any run | intermediate |
-| [5.11](#ders-malzeme-asistani) | Material assistant and my library | `ornekler/pwr_17x17.json` | introductory |
+| [5.14](#ders-malzeme-asistani) | Material assistant and my library | `ornekler/pwr_17x17.json` | introductory |
 
 **Where do the expected results come from?** Every value has a source: the `referans.olcum` field
 of the example file, [VV.md](../../VV.md), [ORNEKLER.md](../../ORNEKLER.md) or the measurement tables
@@ -670,7 +670,7 @@ lines are not a failure (unless `--siki` is given).
   2 usage error, 3 a rule that could not be evaluated with `--siki`.)
 
 <a id="ders-malzeme-asistani"></a>
-## 5.11 Material assistant and my library
+## 5.14 Material assistant and my library
 
 **Example file:** `ornekler/pwr_17x17.json` · **Level:** introductory · **Estimated time:** 15 minutes
 (no Monte Carlo run)

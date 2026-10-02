@@ -186,7 +186,85 @@ def test_benzersiz_kayit_adi():
     assert mku.benzersiz_kayit_adi(k, "a") == "a_3"
 
 
-HIZLI = [test_benzersiz_kayit_adi, test_yol_xdg_veri_dizininden, test_dosya_yoksa_bos_kutuphane,
+# ---------------------------------------------------------------------------
+# Inceleme duzeltmeleri (guvenlik HIGH/MEDIUM)
+# ---------------------------------------------------------------------------
+
+def test_bozuk_dosya_uzerine_kaydet_onceki_saglam_kalir(tmp_path):
+    from cekirdek import malzeme_kullanici as mku
+    yol = str(tmp_path / "malzemeler.json")
+    saglam = mku.ekle((), mku.kayit_olustur(_uo2("saglam")))
+    mku.kaydet(saglam, yol)
+    mku.kaydet(mku.ekle(saglam, mku.kayit_olustur(_uo2("ikinci"))), yol)
+    assert [k["ad"] for k in mku.yukle(yol + mku.ONCEKI_EKI)] == ["saglam"]
+    with open(yol, "w", encoding="utf-8") as f:
+        f.write("{bozuk")
+    mku.kaydet((), yol)                                     # bozuk dosyanin ustune
+    # son SAGLAM yedek bozuk icerikle ezilmedi (eski kod bozugu .onceki'ye kopyalardi)
+    assert [k["ad"] for k in mku.yukle(yol + mku.ONCEKI_EKI)] == ["saglam"]
+
+
+def test_onceki_sembolik_baglantiysa_yazma_reddedilir(tmp_path):
+    from cekirdek import malzeme_kullanici as mku
+    yol = str(tmp_path / "malzemeler.json")
+    mku.kaydet(mku.ekle((), mku.kayit_olustur(_uo2("a"))), yol)
+    hedef = tmp_path / "baska.txt"
+    hedef.write_text("dokunma")
+    os.symlink(str(hedef), yol + mku.ONCEKI_EKI)
+    with pytest.raises(mku.KutuphaneHatasi):
+        mku.kaydet((), yol)
+    assert hedef.read_text() == "dokunma"
+    assert [k["ad"] for k in mku.yukle(yol)] == ["a"]
+
+
+def test_asiri_buyuk_ve_derin_json_kutuphane_bozuk(tmp_path, monkeypatch):
+    from cekirdek import malzeme_kullanici as mku
+    yol = str(tmp_path / "malzemeler.json")
+    with open(yol, "w", encoding="utf-8") as f:
+        f.write("[" * 200000 + "]" * 200000)                 # RecursionError
+    with pytest.raises(mku.KutuphaneBozuk):
+        mku.yukle(yol)
+    monkeypatch.setattr(mku, "AZAMI_BOYUT", 10)
+    with open(yol, "w", encoding="utf-8") as f:
+        json.dump({"surum": 1, "malzemeler": []}, f)
+    with pytest.raises(mku.KutuphaneBozuk, match="büyük"):
+        mku.yukle(yol)
+
+
+def test_sinirlar_ve_beyaz_liste(tmp_path):
+    from cekirdek import malzeme_kullanici as mku
+    m = _uo2("x")
+    for bozuk in (dict(m, bilinmeyen=1),
+                  dict(m, bilesim=[dict(m["bilesim"][0], fazla=1)]),
+                  dict(m, bilesim=[{"tur": "element", "isim": "Xx", "miktar": 1, "birim": "ao"}]),
+                  dict(m, bilesim=[{"tur": "nuklid", "isim": "U", "miktar": 1, "birim": "ao"}]),
+                  dict(m, bilesim=[{"tur": "element", "isim": "U", "miktar": float("inf"),
+                                    "birim": "ao"}]),
+                  dict(m, ad="a\nb"), dict(m, ad="x" * 500)):
+        assert mku.malzeme_sorunu(bozuk), bozuk
+    k = mku.kayit_olustur(m)
+    assert mku._kayit_sorunu(dict(k, ad="baska")) is not None   # kayit adi = malzeme adi
+    with pytest.raises(ValueError):
+        mku.ekle((), {"malzeme": m})                            # ad yok: acik hata
+    with pytest.raises(ValueError):
+        mku.guncelle((k,), "x", {"malzeme": m})
+
+
+def test_degistir_kilit_altinda_oku_yaz(tmp_path):
+    from cekirdek import malzeme_kullanici as mku
+    yol = str(tmp_path / "alt" / "malzemeler.json")
+    mku.degistir(lambda k: mku.ekle(k, mku.kayit_olustur(_uo2("a"))), yol)
+    mku.degistir(lambda k: mku.ekle(k, mku.kayit_olustur(_uo2("b"))), yol)
+    assert [k["ad"] for k in mku.yukle(yol)] == ["a", "b"]
+    assert os.path.exists(yol + mku.KILIT_EKI)
+    assert oct(os.stat(os.path.dirname(yol)).st_mode & 0o777) == oct(0o700)
+
+
+HIZLI = [test_bozuk_dosya_uzerine_kaydet_onceki_saglam_kalir,
+         test_onceki_sembolik_baglantiysa_yazma_reddedilir,
+         test_asiri_buyuk_ve_derin_json_kutuphane_bozuk, test_sinirlar_ve_beyaz_liste,
+         test_degistir_kilit_altinda_oku_yaz,
+         test_benzersiz_kayit_adi, test_yol_xdg_veri_dizininden, test_dosya_yoksa_bos_kutuphane,
          test_kaydet_yukle_gidis_donus_ve_surum, test_degismez_islemler,
          test_onceki_surum_yedegi, test_bozuk_json_acik_hata_silinmez_yedeklenir,
          test_sema_dogrulama_hatali_kayitlari_reddeder,

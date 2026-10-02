@@ -55,6 +55,9 @@ class KutuphaneTarayici(QtWidgets.QDialog):
         d = QtWidgets.QVBoxLayout(self)
         d.addWidget(sekmeler, 1)
         d.addWidget(kutu)
+        # Dosyadan gelen metin (ad, kaynak, hata) zengin metin olarak yorumlanmasin.
+        for e in (self.bozuk_metin, self.detay, self.pnnl_detay, self.pnnl_bilgi, self.durum):
+            e.setTextFormat(QtCore.Qt.PlainText)
         self.yenile()
         self._son_pnnl_dosyasi()
 
@@ -161,14 +164,15 @@ class KutuphaneTarayici(QtWidgets.QDialog):
             g=k.get("guncelleme") or "—"))
         self.panel.guncelle(m)
 
-    def _yaz(self, kayitlar):
+    def _degistir(self, islem):
+        """Kilit altinda oku -> islem -> yaz (baska pencerenin kaydi kaybolmaz)."""
         try:
-            mku.kaydet(kayitlar)
-        except (mku.KutuphaneHatasi, ValueError) as e:
+            self._kayitlar = mku.degistir(islem)
+        except (mku.KutuphaneHatasi, ValueError, KeyError) as e:
             _log.warning("kullanici kutuphanesi yazilamadi: %s", e)
             self._hata_goster(str(e))
+            self.yenile()
             return False
-        self._kayitlar = tuple(kayitlar)
         self._listeyi_doldur()
         return True
 
@@ -192,25 +196,21 @@ class KutuphaneTarayici(QtWidgets.QDialog):
             return False
         m = d.sonuc()
         yeni = dict(k, ad=m["ad"], malzeme=m)
-        try:
-            kayitlar = mku.guncelle(self._kayitlar, k["ad"], yeni)
-        except ValueError as e:
-            self._hata_goster(str(e))
-            return False
-        return self._yaz(kayitlar)
+        return self._degistir(lambda kayitlar: mku.guncelle(kayitlar, k["ad"], yeni))
 
     def sil(self):
         k = self._secili_kayit()
         if k is None or not self._soru(_("Kütüphaneden sil"),
                                        _("'%s' kütüphanenizden silinsin mi?") % k["ad"]):
             return False
-        return self._yaz(mku.sil(self._kayitlar, k["ad"]))
+        return self._degistir(lambda kayitlar: mku.sil(kayitlar, k["ad"]))
 
     def bozugu_yedekle(self):
         """Bozuk dosyanin kopyasini alir, yeni bos kutuphane yazar; yedek yolu."""
         try:
-            yedek = mku.bozuk_dosyayi_yedekle()
-            mku.kaydet(())
+            with mku.kilit():
+                yedek = mku.bozuk_dosyayi_yedekle()
+                mku.kaydet(())
         except mku.KutuphaneHatasi as e:
             self._hata_goster(str(e))
             return None
@@ -327,10 +327,12 @@ class KutuphaneTarayici(QtWidgets.QDialog):
         k = self._pnnl_secili()
         if k is None:
             return False
-        ad = mku.benzersiz_kayit_adi(self._kayitlar, "pnnl_%d" % k["no"])
-        kayit = mku.kayit_olustur(mp.malzemeye_cevir(k, ad=ad), aciklama=k["ad"],
-                                  kaynak="PNNL-15870 #%d" % k["no"])
-        return self._yaz(mku.ekle(self._kayitlar, kayit))
+        def islem(kayitlar):
+            ad = mku.benzersiz_kayit_adi(kayitlar, "pnnl_%d" % k["no"])
+            kayit = mku.kayit_olustur(mp.malzemeye_cevir(k, ad=ad), aciklama=k["ad"][:mku.AZAMI_AD],
+                                      kaynak="PNNL-15870 #%d" % k["no"])
+            return mku.ekle(kayitlar, kayit)
+        return self._degistir(islem)
 
     # ================================================================ kancalar
     def _diyalog_calistir(self, d):
@@ -341,7 +343,10 @@ class KutuphaneTarayici(QtWidgets.QDialog):
         return c == QtWidgets.QMessageBox.Yes
 
     def _hata_goster(self, metin):
-        QtWidgets.QMessageBox.warning(self, _("Malzeme kütüphanem"), metin)
+        kutu = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Warning, _("Malzeme kütüphanem"),
+                                     metin, QtWidgets.QMessageBox.Ok, self)
+        kutu.setTextFormat(QtCore.Qt.PlainText)
+        kutu.exec()
 
     def _bilgi(self, metin):
         """Kalici olmayan bilgi: sekmedeki durum satiri (modal degil)."""

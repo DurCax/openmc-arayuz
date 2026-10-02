@@ -301,11 +301,15 @@ class MalzemeSekmesi(SekmeTabani):
         if satir < 0:
             return False
         m = self.spec["malzemeler"][satir]
-        try:
-            kayitlar = mku.yukle()
+        ad = m["ad"]
+
+        def islem(kayitlar):
+            nonlocal ad
             ad = mku.benzersiz_kayit_adi(kayitlar, m["ad"])
-            mku.kaydet(mku.ekle(kayitlar, mku.kayit_olustur(
-                dict(m, ad=ad), aciklama=m.get("gorunen_ad") or "", kaynak="proje")))
+            return mku.ekle(kayitlar, mku.kayit_olustur(
+                dict(m, ad=ad), aciklama=m.get("gorunen_ad") or "", kaynak="proje"))
+        try:
+            mku.degistir(islem)
         except (mku.KutuphaneHatasi, ValueError) as e:
             _log.warning("kutuphaneye kaydedilemedi: %s", e)
             b.bildir(self.window(), str(e), "hata", baslik=_("Kütüphaneye kaydedilemedi"))

@@ -101,6 +101,7 @@ class MalzemeAsistani(QtWidgets.QDialog):
                                     + _kutuphane_malzemeleri())
         self.karisim.degisti.connect(self._yenile)
         self.hata = _hata_etiketi()
+        self.hata.setTextFormat(QtCore.Qt.PlainText)
         sol = QtWidgets.QVBoxLayout()
         for oge in (self.tarif_baslik, self.tarif_aciklama, self.tarif_satiri, self.form_kutu,
                     self.karisim, self.hata):
@@ -262,15 +263,20 @@ class MalzemeAsistani(QtWidgets.QDialog):
 
     def _hata_goster(self, metin):
         """Kutuphane yazma hatasi (testler ezer)."""
-        QtWidgets.QMessageBox.warning(self, _("Kütüphaneye kaydedilemedi"), metin)
+        kutu = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Warning, _("Kütüphaneye kaydedilemedi"),
+                                     metin, QtWidgets.QMessageBox.Ok, self)
+        kutu.setTextFormat(QtCore.Qt.PlainText)
+        kutu.exec()
 
     def kutuphaneye_kaydet(self, m):
-        try:
-            kayitlar = mku.yukle()
+        aciklama = self.aciklama.text()
+
+        def islem(kayitlar):
             ad = mku.benzersiz_kayit_adi(kayitlar, m["ad"])
-            kayit = mku.kayit_olustur(dict(m, ad=ad), aciklama=self.aciklama.text(),
-                                      kaynak="asistan")
-            mku.kaydet(mku.ekle(kayitlar, kayit))
+            return mku.ekle(kayitlar, mku.kayit_olustur(dict(m, ad=ad), aciklama=aciklama,
+                                                        kaynak="asistan"))
+        try:
+            mku.degistir(islem)
         except (mku.KutuphaneHatasi, ValueError) as e:
             _log.warning("asistan: kutuphaneye kaydedilemedi: %s", e)
             self._hata_goster(str(e))
