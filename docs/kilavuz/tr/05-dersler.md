@@ -19,6 +19,7 @@ için **Dosya › Farklı kaydet…** kullanın.
 | [5.8](#ders-benchmark) | Benchmark ve C/E | `ornekler/godiva_kriter.json` ve `kriter_*` | giriş–ileri |
 | [5.9](#ders-kritik-arama) | Kritik arama | `ornekler/pwr_17x17.json`, `ornekler/pwr_kontrol.json`, `ornekler/tamburlu_kor.json` | orta |
 | [5.10](#ders-rapor) | Rapor ve uygunluk eki | herhangi bir koşu | orta |
+| [5.15](#ders-yerel-k) | Yerel k ve demet k∞ | `ornekler/pwr_17x17.json`, `ornekler/pwr_ceyrek_kor.json` | orta |
 
 **Beklenen sonuçlar nereden geliyor?** Her değer bir kaynağa dayanır: örnek dosyasının
 `referans.olcum` alanı, [VV.md](../../VV.md), [ORNEKLER.md](../../ORNEKLER.md) ya da
@@ -641,3 +642,69 @@ bir başarısızlık değildir (`--siki` verilmedikçe).
   yoktur, ör. kullanıcı sınırı girilmemiş F_ΔH.)
 - `uygunluk` komutunun çıkış kodu CI'da neden işe yarar? (0 hata yok, 1 hata var, 2 kullanım hatası,
   3 `--siki` ile değerlendirilemeyen kural.)
+
+---
+
+<a id="ders-yerel-k"></a>
+## 5.15 Yerel k ve demet k∞
+
+**Örnek dosya:** `ornekler/pwr_17x17.json`, `ornekler/pwr_ceyrek_kor.json` · **Seviye:** orta ·
+**Tahmini süre:** 30 dakika (koşular ~1–2 dakika)
+
+**Amaç.** Pin/demet başına **yerel k** haritasını okumak, haritanın ortalamasının hangi
+ağırlıkla k∞'a eşit olduğunu sayıyla görmek ve her demet türünün **k∞**'unu sihirbazla
+hesaplamak. Yorum: [6.7 Yerel k ve demet k∞](06-sonuclar.md#yerel-k).
+
+**Adımlar.**
+
+1. Yerel k tally'sini modele ekleyin (yeni dosya yazılır, örnek değişmez):
+
+   ```bash
+   python -m cekirdek.yerel_k ekle ornekler/pwr_17x17.json pin -o pwr_17x17_yk.json
+   ```
+
+   Model iki tally kazanır: `yerel_k_pin` (pin hatvesine hizalı 17×17 mesh; `nu-fission`,
+   `absorption` ve (n,xn) skorları) ve `yerel_k_toplam` (filtresiz, aynı skorlar).
+2. `pwr_17x17_yk.json`'u açın, **Hesap ayarları**'nda 3 000 parçacık × 40 çevrim / 15 pasif
+   yapın ve **Çalıştır**.
+3. Haritayı açın: `python -m arayuz.sonuc.yerel_k kosu/statepoint.40.h5 pwr_17x17_yk.json`.
+   Beyaz hücreler kılavuz borulardır (yakıt yok, k = 0); fare imleci hücrenin k ± σ değerini
+   ve (n,xn) düzeltmesiz oranı gösterir.
+4. Özet satırında **ortalama k** ile **koşunun k-eff'ini** karşılaştırın. Sonra yerel k'ların
+   düz (ağırlıksız) ortalamasını CSV'den hesaplayın (**CSV kaydet…**).
+5. Demet k∞ sihirbazı: `python -m arayuz.analiz.demet_kinf ornekler/pwr_ceyrek_kor.json`.
+   İki demet türü (`demet_24`, `demet_31`) kordaki sayılarıyla listelenir. 2 000 parçacık ×
+   40 / 15, **Kuyruğa ekle ve başlat**. Her tür ayrı bir koşu olarak koşu kuyruğuna
+   ([4.10](04j-is-akisi.md#is-akisi)) girer; tablo k∞ ± σ ile dolar, **CSV kaydet…**.
+6. Çeyrek kora demet düzeyinde yerel k ekleyip koşun
+   (`python -m cekirdek.yerel_k ekle ornekler/pwr_ceyrek_kor.json demet -o kor_yk.json`) ve
+   iç demetlerin yerel k'sını sihirbazın k∞'larıyla karşılaştırın.
+
+![Yerel k haritası: yansıtıcı 17×17 demet, pin düzeyi](../resimler/tr/k4_yerel_k_demet_pin.png)
+
+![Demet k∞ sihirbazı: iki demet türü, kuyrukta bitti](../resimler/tr/k4_demet_kinf.png)
+
+**Beklenen sonuç** (02.10.2026, ENDF/B-VIII.0, 6 iş parçacığı, tohum 1/3):
+
+- 17×17 demet, 3 000 × 40 / 15: k-eff **1.19109 ± 0.00348**, yerel k ortalaması
+  **1.18521 ± 0.00450** (fark 1σ'nın altında), harita kapsamı 1.0000, c_xn = 1.00158. Düz
+  ortalama **1.2108**: ağırlık seçimi sonucu 2 500 pcm kaydırır. Pinler arası saçılma
+  (1.10–1.31) bu istatistikte çoğunlukla gürültüdür; parçacık sayısıyla daralır.
+- Sihirbaz (2 000 × 40 / 15, tohum 1): `demet_24` **k∞ = 1.0948 ± 0.0040**, `demet_31`
+  **1.1756 ± 0.0045**. Aynı ayar ve tohumla elle kurulan tek demet modeli (kor türü
+  **tek demet**, bütün sınırlar `reflective`) **aynı** k'yı verir (fark 10⁻¹⁴ düzeyinde).
+- Çeyrek kor (4 000 × 40 / 20), demet düzeyi: iç `demet_24`'ler ~1.085–1.088, `demet_31`'ler
+  1.16–1.20; harita ortalaması 1.0644, koşunun k-eff'i 1.0595: kor vakum sınırlı olduğu için
+  ortalama k-eff'ten **büyüktür** — fark sızıntıdır.
+
+**Ne öğrendik / kontrol soruları.**
+
+- Sonsuz kafeste yerel k'ların hangi ortalaması k∞'a eşittir? (Net yok olma — Σ_aφ − X —
+  ağırlıklı aritmetik ortalama; eşdeğeri üretim ağırlıklı harmonik ortalama. Kılavuz boruların
+  soğurması da paydaya girer.)
+- Yerel k neden k∞ değildir? (Komşu hücrelerle nötron alışverişini yok sayar; korun kenarındaki
+  bir demetin yerel k'sı yüksek görünür ama sızıntı onu kritikliğe indirir.)
+- (n,2n) düzeltmesi olmasa ne değişirdi? (OpenMC `absorption`'ı (n,xn)'i saymaz; P/A ile k∞
+  arasında c_xn − 1 ≈ %0.16 fark kalırdı.)
+- BEAVRS korunda pin düzeyi neden reddedilir? (Demet adımı 21.50 cm, 17 × 1.26 = 21.42 cm:
+  demetler arası su aralığı tek düzgün mesh'e hizalanamaz; demet düzeyini kullanın.)

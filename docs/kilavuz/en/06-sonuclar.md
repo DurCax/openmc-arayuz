@@ -315,3 +315,43 @@ results.
   (see [HPC](08-terminal.md#hpc)).
 - **The conformity check and V&V do not certify anything** (see
   [what it proves](07-uygunluk.md#ne-kanitlar)).
+
+<a id="yerel-k"></a>
+## 6.7 Local k and assembly k∞
+
+**Local k** is the ratio, in each pin or assembly cell,
+
+  k_local = νΣ_f φ / (Σ_a φ − X),  X = Σ (x − 1) R_(n,xn)
+
+The cells are the bins of a mesh aligned to the pitch of the square lattice; the tallies are
+named `yerel_k_pin` / `yerel_k_demet` plus the unfiltered `yerel_k_toplam`
+(`python -m cekirdek.yerel_k ekle model.json pin|demet -o new.json`).
+
+- **It is not k∞: it is a leakage-free local multiplication ratio.** Net neutron exchange
+  with neighbouring cells is ignored.
+- **(n,xn) is in the denominator.** OpenMC `absorption` does not count channels such as
+  (n,2n) as removal, and the neutrons they produce do not enter `nu-fission`. In leakage-free
+  balance P + X = A, hence k = P/(A − X); c_xn = A/(A − X). The uncorrected P/A is shown in the
+  tooltip as well. Counted channels: MT 11, 16, 17, 24, 25, 30, 37, 41, 42 (same list as the
+  four-factor lesson).
+- **Mean:** ΣP / Σ(A − X) — the arithmetic mean weighted by net removal (= the
+  production-weighted harmonic mean). It equals k∞ only in an **infinite lattice** (single
+  pin/assembly with reflective boundaries) with map coverage 1. The plain or volume-weighted
+  mean does not.
+- **Map coverage** = Σ_map (A − X) / (A − X)_model. It drops below 1 when a channel box,
+  water gap or reflector lies outside the map.
+- **Uncertainty:** σ is propagated ignoring the correlation between numerator and
+  denominator (conservative); bin σ values do not see the batch-to-batch correlation
+  (optimistic, see [6.3](#guc-dagilimi-yorum)). For the true uncertainty use several seeds.
+- **Limits:** square lattices only; on a hexagonal lattice (OpenMC has no hexagonal mesh) and
+  in a core with gaps between assemblies the pin level is rejected with a clear error. A
+  single axial bin (radial map).
+
+The **assembly k∞ wizard** (`python -m arayuz.analiz.demet_kinf model.json`) runs every
+assembly type separately through the run queue as a single-assembly model with reflective
+boundaries (2D, tallies/power/depletion off, fissile box source) and gives an "assembly type
+× k∞ ± σ" table. The result is the infinite-lattice k∞: no water gap, reflector, spectral
+effect of neighbouring assemblies or leakage. k∞ versus burnup is not available in this
+version.
+
+![Quarter core, local k at assembly level](../resimler/en/k4_yerel_k_kor_demet.png)

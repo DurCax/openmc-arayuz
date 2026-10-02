@@ -19,6 +19,7 @@ overwritten. Use **File › Save as…** to keep your own changes.
 | [5.8](#ders-benchmark) | Benchmark and C/E | `ornekler/godiva_kriter.json` and `kriter_*` | introductory–advanced |
 | [5.9](#ders-kritik-arama) | Critical search | `ornekler/pwr_17x17.json`, `ornekler/pwr_kontrol.json`, `ornekler/tamburlu_kor.json` | intermediate |
 | [5.10](#ders-rapor) | Report and conformity annex | any run | intermediate |
+| [5.15](#ders-yerel-k) | Local k and assembly k∞ | `ornekler/pwr_17x17.json`, `ornekler/pwr_ceyrek_kor.json` | intermediate |
 
 **Where do the expected results come from?** Every value has a source: the `referans.olcum` field
 of the example file, [VV.md](../../VV.md), [ORNEKLER.md](../../ORNEKLER.md) or the measurement tables
@@ -667,3 +668,72 @@ lines are not a failure (unless `--siki` is given).
   evaluate the rule, for example F_ΔH with no user-defined limit.)
 - Why is the exit code of the `uygunluk` command useful in CI? (0 no error, 1 error findings,
   2 usage error, 3 a rule that could not be evaluated with `--siki`.)
+
+---
+
+<a id="ders-yerel-k"></a>
+## 5.15 Local k and assembly k∞
+
+**Example files:** `ornekler/pwr_17x17.json`, `ornekler/pwr_ceyrek_kor.json` · **Level:**
+intermediate · **Estimated time:** 30 minutes (runs ~1–2 minutes)
+
+**Goal.** Read the per-pin/per-assembly **local k** map, see in numbers with which weighting
+the map mean equals k∞, and compute the **k∞** of every assembly type with the wizard.
+Interpretation: [6.7 Local k and assembly k∞](06-sonuclar.md#yerel-k).
+
+**Steps.**
+
+1. Add the local k tally to the model (a new file is written, the example is unchanged):
+
+   ```bash
+   python -m cekirdek.yerel_k ekle ornekler/pwr_17x17.json pin -o pwr_17x17_yk.json
+   ```
+
+   The model gains two tallies: `yerel_k_pin` (17×17 mesh aligned to the pin pitch;
+   `nu-fission`, `absorption` and (n,xn) scores) and `yerel_k_toplam` (no filter, same scores).
+2. Open `pwr_17x17_yk.json`, set 3 000 particles × 40 batches / 15 inactive in **Run
+   settings** and **Run**.
+3. Open the map: `python -m arayuz.sonuc.yerel_k kosu/statepoint.40.h5 pwr_17x17_yk.json`.
+   White cells are guide tubes (no fuel, k = 0); the mouse pointer shows the cell's k ± σ and
+   the ratio without the (n,xn) correction.
+4. In the summary line compare the **mean k** with the **k-eff of the run**. Then compute the
+   plain (unweighted) mean of the local k values from the CSV (**Save CSV…**).
+5. Assembly k∞ wizard: `python -m arayuz.analiz.demet_kinf ornekler/pwr_ceyrek_kor.json`.
+   The two assembly types (`demet_24`, `demet_31`) are listed with their count in the core.
+   2 000 particles × 40 / 15, **Add to queue and start**. Each type enters the run queue
+   ([4.10](04j-is-akisi.md#is-akisi)) as a separate run; the table fills with k∞ ± σ,
+   **Save CSV…**.
+6. Add assembly-level local k to the quarter core and run it
+   (`python -m cekirdek.yerel_k ekle ornekler/pwr_ceyrek_kor.json demet -o kor_yk.json`);
+   compare the local k of the inner assemblies with the wizard's k∞ values.
+
+![Local k map: reflective 17×17 assembly, pin level](../resimler/en/k4_yerel_k_demet_pin.png)
+
+![Assembly k∞ wizard: two assembly types, done in the queue](../resimler/en/k4_demet_kinf.png)
+
+**Expected result** (02.10.2026, ENDF/B-VIII.0, 6 threads, seed 1/3):
+
+- 17×17 assembly, 3 000 × 40 / 15: k-eff **1.19109 ± 0.00348**, mean local k
+  **1.18521 ± 0.00450** (difference below 1σ), map coverage 1.0000, c_xn = 1.00158. Plain
+  mean **1.2108**: the choice of weighting shifts the result by 2 500 pcm. The pin-to-pin
+  scatter (1.10–1.31) is mostly noise at this statistics; it narrows with more particles.
+- Wizard (2 000 × 40 / 15, seed 1): `demet_24` **k∞ = 1.0948 ± 0.0040**, `demet_31`
+  **1.1756 ± 0.0045**. A single-assembly model built by hand with the same settings and seed
+  (core type **single assembly**, all boundaries `reflective`) gives the **same** k (difference
+  of order 10⁻¹⁴).
+- Quarter core (4 000 × 40 / 20), assembly level: inner `demet_24` ~1.085–1.088, `demet_31`
+  1.16–1.20; map mean 1.0644, k-eff of the run 1.0595: because the core has vacuum boundaries
+  the mean is **larger** than k-eff — the difference is leakage.
+
+**What we learned / check questions.**
+
+- Which mean of the local k values equals k∞ in an infinite lattice? (The arithmetic mean
+  weighted by net removal — Σ_aφ − X; equivalently the production-weighted harmonic mean. The
+  absorption in the guide tubes also enters the denominator.)
+- Why is local k not k∞? (It ignores neutron exchange with neighbouring cells; an assembly at
+  the core edge shows a high local k but leakage brings it down to criticality.)
+- What would change without the (n,2n) correction? (OpenMC `absorption` does not count (n,xn);
+  a difference of c_xn − 1 ≈ 0.16% would remain between P/A and k∞.)
+- Why is the pin level rejected for the BEAVRS core? (Assembly pitch 21.50 cm, 17 × 1.26 =
+  21.42 cm: the water gap between assemblies cannot be aligned to one uniform mesh; use the
+  assembly level.)

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 10:11+0300\n"
+"POT-Creation-Date: 2026-10-02 10:18+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -7427,61 +7427,79 @@ msgstr ""
 msgid "bu uygulama için USL yok (AOA dışında): kümede alt kümeye (%s) uyan %d vaka var; %s"
 msgstr ""
 
-#: cekirdek/yerel_k.py:148
+#: cekirdek/yerel_k.py:149
 #, python-format
 msgid "'%s' bir demet değil; yerel k için kare demet gerekir"
 msgstr ""
 
-#: cekirdek/yerel_k.py:150
+#: cekirdek/yerel_k.py:151
 #, python-format
 msgid ""
 "'%s' altıgen demet: yerel k haritası yalnız kare kafeste kurulabilir (altıgen mesh "
 "OpenMC'de yok)"
 msgstr ""
 
-#: cekirdek/yerel_k.py:173
+#: cekirdek/yerel_k.py:174
 msgid "tek pin modelinde kare hücre gerekir"
 msgstr ""
 
-#: cekirdek/yerel_k.py:187
+#: cekirdek/yerel_k.py:188
 msgid "kor kafesinde demet yok: pin düzeyi kurulamaz"
 msgstr ""
 
-#: cekirdek/yerel_k.py:193
+#: cekirdek/yerel_k.py:194
 msgid ""
 "kordaki demetlerin pin adımı/boyutu farklı: pin düzeyi tek mesh'e hizalanamaz; demet "
 "düzeyini kullanın"
 msgstr ""
 
-#: cekirdek/yerel_k.py:199
+#: cekirdek/yerel_k.py:200
 #, python-format
 msgid ""
 "demet adımı (%.5g cm) pin sayısı × pin adımına (%d × %.5g cm) eşit değil (demetler "
 "arası boşluk): pin düzeyi mesh'e hizalanamaz; demet düzeyini kullanın"
 msgstr ""
 
-#: cekirdek/yerel_k.py:208
+#: cekirdek/yerel_k.py:209
 #, python-format
 msgid "bilinmeyen yerel k düzeyi: %s"
 msgstr ""
 
-#: cekirdek/yerel_k.py:212
+#: cekirdek/yerel_k.py:214
+msgid ""
+"altıgen kesitli model: yerel k haritası yalnız kare kafeste kurulabilir (altıgen mesh"
+" OpenMC'de yok)"
+msgstr ""
+
+#: cekirdek/yerel_k.py:217
 msgid "yerel k haritası yalnız kare kafeste kurulabilir"
 msgstr ""
 
-#: cekirdek/yerel_k.py:225
+#: cekirdek/yerel_k.py:230
 #, python-format
 msgid ""
 "bu geometride (%s) pin/demet kafesi bulunamadı; yerel k haritası kare kafesli "
 "modellerde kurulur"
 msgstr ""
 
-#: cekirdek/yerel_k.py:279
+#: cekirdek/yerel_k.py:284
 msgid "yerel k tally'sinde mesh filtresi yok"
 msgstr ""
 
-#: cekirdek/yerel_k.py:287
+#: cekirdek/yerel_k.py:292
 #, python-format
 msgid "yerel k tally'sinde '%s' skoru yok"
+msgstr ""
+
+#: cekirdek/yerel_k.py:397
+msgid "ortalama k"
+msgstr ""
+
+#: cekirdek/yerel_k.py:402
+msgid "kapsam"
+msgstr ""
+
+#: cekirdek/yerel_k.py:410
+msgid "bu koşuda yerel k tally'si yok"
 msgstr ""
 

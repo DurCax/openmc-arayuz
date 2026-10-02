@@ -296,3 +296,39 @@ Bunlar hata değil, aracın bilinçli kapsam sınırlarıdır; sonuçları yorum
 - **MPI yoktur:** OpenMC bu kurulumda tek düğümde OpenMP ile çalışır
   (bkz. [HPC](08-terminal.md#hpc)).
 - **Uygunluk denetimi ve V&V sertifika vermez** (bkz. [ne kanıtlar](07-uygunluk.md#ne-kanitlar)).
+
+<a id="yerel-k"></a>
+## 6.7 Yerel k ve demet k∞
+
+**Yerel k** her pin ya da demet hücresinde
+
+  k_yerel = νΣ_f φ / (Σ_a φ − X),  X = Σ (x − 1) R_(n,xn)
+
+oranıdır. Hücreler kare kafesin hatvesine hizalı bir mesh'in binleridir; tally'ler
+`yerel_k_pin` / `yerel_k_demet` ve filtresiz `yerel_k_toplam` adını taşır
+(`python -m cekirdek.yerel_k ekle model.json pin|demet -o yeni.json`).
+
+- **k∞ değildir: sızıntısız yerel çoğalma oranıdır.** Komşu hücrelerle net nötron alışverişi
+  yok sayılır.
+- **(n,xn) paydadadır.** OpenMC `absorption`'ı (n,2n) gibi kanalları yok olma saymaz ve
+  doğurdukları nötronlar `nu-fission`'a girmez. Sızıntısız dengede P + X = A olduğundan
+  k = P/(A − X); c_xn = A/(A − X). Düzeltmesiz P/A ipucunda ayrıca gösterilir.
+  Sayılan kanallar MT 11, 16, 17, 24, 25, 30, 37, 41, 42 (dört faktör dersiyle aynı liste).
+- **Ortalama:** ΣP / Σ(A − X) — net yok olma ağırlıklı aritmetik ortalama (= üretim ağırlıklı
+  harmonik ortalama). Yalnız **sonsuz kafeste** (yansıtıcı sınırlı tek pin/demet) ve harita
+  kapsamı 1 iken k∞'a eşittir. Düz ya da hacim ağırlıklı ortalama eşit değildir.
+- **Harita kapsamı** = Σ_harita (A − X) / (A − X)_model. Kanal kutusu, su aralığı ya da
+  yansıtıcı haritanın dışında kalırsa 1'in altına düşer.
+- **Belirsizlik:** σ, pay ile paydanın korelasyonu yok sayılarak yayılır (ihtiyatlı); bin σ'ları
+  çevrimler arası korelasyonu görmez (iyimser, bkz. [6.3](#guc-dagilimi-yorum)). Gerçek
+  belirsizlik için birkaç tohum.
+- **Sınırlar:** yalnız kare kafes; altıgen kafes (OpenMC'de altıgen mesh yok) ve demetler arası
+  boşluklu korda pin düzeyi açık hatayla reddedilir. Tek eksenel bin (radyal harita).
+
+**Demet k∞ sihirbazı** (`python -m arayuz.analiz.demet_kinf model.json`) her demet türünü
+yansıtıcı sınırlı tek demet modeli (2B, tally/güç/tükenme kapalı, kaynak fisil kutu) olarak
+koşu kuyruğuyla ayrı koşar ve "demet türü × k∞ ± σ" tablosunu verir. Sonuç sonsuz kafes
+k∞'udur: su aralığı, yansıtıcı, komşu demetlerin spektral etkisi ve sızıntı yoktur. Yanmaya
+göre k∞ bu sürümde yoktur.
+
+![Çeyrek kor, demet düzeyinde yerel k](../resimler/tr/k4_yerel_k_kor_demet.png)
