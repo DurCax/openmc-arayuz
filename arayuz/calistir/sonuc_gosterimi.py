@@ -89,7 +89,8 @@ class SonucGosterimiMixin(object):
         satirlar = (self._sabit_durumu_yaz(s, k_tanim) if sabit
                     else self._ozdeger_durumu_yaz(s))
         satirlar += ozet.guc_ozeti(s)
-        tally = ozet.tally_metinleri(s, sabit, float(k_tanim.get("kuvvet") or 1.0))
+        tally = ozet.tally_metinleri(self._yerel_k_disi(s), sabit,
+                                     float(k_tanim.get("kuvvet") or 1.0))
         tam = ([] if sabit else ["k-eff    = %.5f ± %.5f" % s["keff"]]) + satirlar
         tam += ["statepoint: %s" % sp, ""] + tally
         self.ozet_etiket.setText("\n".join(satirlar))
@@ -98,6 +99,7 @@ class SonucGosterimiMixin(object):
         self.guc_harita.sonuc_ayarla(s, self.spec)
         self.mesh_harita.statepoint_ayarla(sp, self.spec)       # v3 Y1
         self.spektrum_karti.sonuc_ayarla(sp)                 # Y3
+        self._yerel_k_goster(s, sp)                          # K4
         self.kart.cikti_yaz(*cikti.uyari_ozeti(self._dizin))     # M5
         self.uygunluk.denetle(self.spec, self._dizin)
         self._guc_var = bool((s.get("guc") or {}).get("faktorler"))
@@ -110,6 +112,23 @@ class SonucGosterimiMixin(object):
                             True)
         else:
             self.durum.emit(_("Koşu tamamlandı: k-eff = %.5f ± %.5f") % s["keff"], True)
+
+    @staticmethod
+    def _yerel_k_disi(s):
+        """Yerel k tally'leri metin ozetine girmez: haritada gosterilir ve mesh
+        DataFrame'i (MultiIndex) kosucu.tally_metni'ni bozuyordu (K4)."""
+        from cekirdek import yerel_k
+        adlar = set(yerel_k.TALLY_ADLARI.values()) | {yerel_k.TOPLAM_TALLY}
+        taller = {a: v for a, v in (s.get("tallyler") or {}).items() if a not in adlar}
+        return dict(s, tallyler=taller)
+
+    def _yerel_k_goster(self, s, sp):
+        """K4: yerel k karti yalniz kosuda yerel k tally'si varsa gorunur."""
+        from cekirdek import yerel_k
+        var = any(ad in (s.get("tallyler") or {}) for ad in yerel_k.TALLY_ADLARI.values())
+        self.yerel_k_karti.setVisible(var)
+        if var:
+            self.yerel_k.kosu_sonucu_ayarla(s, self.spec, statepoint=sp)
 
     def _kaynak_tanimi(self):
         return ((self.spec or {}).get("ayarlar") or {}).get("kaynak") or {}

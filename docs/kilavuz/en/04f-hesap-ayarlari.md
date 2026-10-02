@@ -145,6 +145,22 @@ generated script builds the same tallies.
 | **Compute spectrum and four factors** | Turns on the Y3 tallies. The four factors and k only in an eigenvalue calculation; the spectrum is also computed in fixed source. | — | off | Taking ε·p·f·η for k-eff in a leaking (vacuum-bounded) model: k-eff additionally needs the P_NL factor (the card gives it separately). | `ayarlar.spektrum.var` |
 | **Energy group structure** | Groups of the flux spectrum (OpenMC built-in structures): CASMO-70, XMAS-172, SHEM-361, CCFE-709. The four factors and indices do not depend on it (they use their own two groups). | group | XMAS-172 | Choosing CCFE-709 with few particles: more noise per group. | `ayarlar.spektrum.grup_yapisi` |
 
+<a id="ayar-yerel-k"></a>
+### Local k map card
+
+Adds a mesh tally aligned to the pitch of the square lattice (`yerel_k_pin` or
+`yerel_k_demet`) and an unfiltered total tally (`yerel_k_toplam`) to the run
+(`cekirdek/yerel_k.py`). The map appears in the **Local k map** card on the
+[Run](04g-calistir.md#calistir) page; definition and interpretation: [6.7](06-sonuclar.md#yerel-k),
+step-by-step example: [lesson 5.15](05-dersler.md#ders-yerel-k). For an unsupported model
+(hexagonal lattice, gap between assemblies, translated lattice) the card shows the error and
+the model is unchanged. The generated script builds the same tallies.
+
+| Field | Meaning | Unit | Typical range | Common misuse | Spec key |
+|---|---|---|---|---|---|
+| **Level** | Off / Pin / Assembly: the mesh bins are the size of a pin cell or an assembly. | — | off | Taking local k for k∞: it is a local production / removal ratio without leakage or net current term. | `tallyler[].uretici = "yerel_k"` |
+| **Axial extent** | Whole model height (in 3D including the axial reflector) or the active (fissile) region only. No difference in 2D. | — | whole model | Choosing "active" and comparing the mean with k∞: coverage becomes < 1. | mesh `alt`/`ust` z |
+
 <a id="ayar-tally"></a>
 ### Tallies card
 

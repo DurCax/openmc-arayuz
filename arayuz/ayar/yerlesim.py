@@ -46,7 +46,8 @@ class YerlesimMixin(object):
         sagda guc dagilimi ve tally'ler."""
         sol = self._sutun((self._hesap_karti(), self._kaynak_karti(),
                            self._gelismis_karti()))
-        sag = self._sutun((self._guc_karti(), self._spektrum_karti(), self._tally_karti()))
+        sag = self._sutun((self._guc_karti(), self._spektrum_karti(), self._yerel_k_karti(),
+                           self._tally_karti()))
         bolucu = QtWidgets.QSplitter(QtCore.Qt.Horizontal)
         bolucu.addWidget(sol)
         bolucu.addWidget(sag)
@@ -182,6 +183,14 @@ class YerlesimMixin(object):
         self.spektrum_karti = SpektrumAyarKarti()
         self.spektrum_karti.degisti.connect(self.bildir)
         return self.spektrum_karti
+
+    def _yerel_k_karti(self):
+        """K4: yerel k haritasi karti (arayuz/ayar/yerel_k_karti.py). Tally
+        listesi degisir: liste tazelenir, sonra ana pencereye bildirilir."""
+        from arayuz.ayar.yerel_k_karti import YerelKAyarKarti
+        self.yerel_k_karti = YerelKAyarKarti()
+        self.yerel_k_karti.degisti.connect(lambda: (self._tallyleri_doldur(), self.bildir()))
+        return self.yerel_k_karti
 
     def _tally_formu(self):
         t_form = QtWidgets.QFormLayout()

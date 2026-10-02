@@ -444,6 +444,7 @@ class AyarSekmesi(YerlesimMixin, KaynakFormuMixin, GucFormuMixin, TallyFormuMixi
         self._guc_doldur()
         self._tallyleri_doldur()
         self.spektrum_karti.doldur(self.spec)        # Y3 (arayuz/ayar/spektrum_karti.py)
+        self.yerel_k_karti.doldur(self.spec)         # K4 (arayuz/ayar/yerel_k_karti.py)
         self._gorunurluk()
 
     def showEvent(self, olay):

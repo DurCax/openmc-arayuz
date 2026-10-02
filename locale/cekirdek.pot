@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 10:52+0300\n"
+"POT-Creation-Date: 2026-10-02 15:12+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -187,6 +187,19 @@ msgstr ""
 #: cekirdek/cizim_sureci.py:533
 #, python-format
 msgid "cizim alt süreci argüman almaz: %s"
+msgstr ""
+
+#: cekirdek/demet_kinf.py:82
+msgid "parçacık, tohum ve iş parçacığı sayısı pozitif olmalı"
+msgstr ""
+
+#: cekirdek/demet_kinf.py:84
+msgid "çevrim sayısı pasif çevrim sayısından büyük olmalı"
+msgstr ""
+
+#: cekirdek/demet_kinf.py:177
+#, python-format
+msgid "k∞ — %s"
 msgstr ""
 
 #: cekirdek/dogrula/__init__.py:156
@@ -427,7 +440,7 @@ msgstr ""
 msgid "Nokta yoklaması: %s. %s"
 msgstr ""
 
-#: cekirdek/dogrula/agac.py:369 cekirdek/geometri/yoklama.py:301
+#: cekirdek/dogrula/agac.py:369 cekirdek/geometri/yoklama.py:303
 msgctxt "yoklama"
 msgid "örtüşme"
 msgstr ""
@@ -436,7 +449,7 @@ msgstr ""
 msgid "Örtüşen hücreler kayıp parçacık üretir."
 msgstr ""
 
-#: cekirdek/dogrula/agac.py:374 cekirdek/geometri/yoklama.py:302
+#: cekirdek/dogrula/agac.py:374 cekirdek/geometri/yoklama.py:304
 msgctxt "yoklama"
 msgid "boşluk"
 msgstr ""
@@ -1930,52 +1943,52 @@ msgid ""
 "iyimser). Yanması önemliyse onu kesin hacimli bir çubuk bölgesine yerleştirin."
 msgstr ""
 
-#: cekirdek/dogrula/veri.py:34
+#: cekirdek/dogrula/veri.py:31
 msgid "nükleer veri kütüphanesi seçilmedi (OPENMC_CROSS_SECTIONS da yok)"
 msgstr ""
 
-#: cekirdek/dogrula/veri.py:35
+#: cekirdek/dogrula/veri.py:32
 msgid "Veri sayfasından cross_sections.xml içeren klasörü seçin ya da bir kütüphane indirin."
 msgstr ""
 
-#: cekirdek/dogrula/veri.py:40
+#: cekirdek/dogrula/veri.py:37
 #, python-format
 msgid "cross_sections.xml bulunamadı: %s"
 msgstr ""
 
-#: cekirdek/dogrula/veri.py:41
+#: cekirdek/dogrula/veri.py:38
 msgid "Yolu denetleyin ya da nükleer veri kütüphanesini indirin."
 msgstr ""
 
-#: cekirdek/dogrula/veri.py:81
+#: cekirdek/dogrula/veri.py:78
 msgid "cross_sections.xml okunamadı; nüklid denetimi atlandı"
 msgstr ""
 
-#: cekirdek/dogrula/veri.py:91
+#: cekirdek/dogrula/veri.py:88
 #, python-format
 msgid "malzemeler kurulamadı: %s"
 msgstr ""
 
-#: cekirdek/dogrula/veri.py:99
+#: cekirdek/dogrula/veri.py:96
 #, python-format
 msgid "nüklid listesi çıkarılamadı: %s"
 msgstr ""
 
-#: cekirdek/dogrula/veri.py:105
+#: cekirdek/dogrula/veri.py:102
 #, python-format
 msgid "veri kütüphanesinde olmayan nüklid: %s"
 msgstr ""
 
-#: cekirdek/dogrula/veri.py:106
+#: cekirdek/dogrula/veri.py:103
 msgid "Bileşimi değiştirin ya da bu nüklidleri içeren bir kütüphane kullanın."
 msgstr ""
 
-#: cekirdek/dogrula/veri.py:111
+#: cekirdek/dogrula/veri.py:108
 #, python-format
 msgid "termal saçılma verisi (S(α,β)) kütüphanede yok: %s"
 msgstr ""
 
-#: cekirdek/dogrula/veri.py:112
+#: cekirdek/dogrula/veri.py:109
 #, python-format
 msgid "Kütüphanede %d S(α,β) kaydı var; listeden birini seçin."
 msgstr ""
@@ -2809,21 +2822,21 @@ msgid ""
 "'sabit' bakış seçin"
 msgstr ""
 
-#: cekirdek/geometri/yoklama.py:296
+#: cekirdek/geometri/yoklama.py:298
 #, python-format
 msgid "hücre %d"
 msgstr ""
 
-#: cekirdek/geometri/yoklama.py:304 cekirdek/geometri/yol_metni.py:17
+#: cekirdek/geometri/yoklama.py:306 cekirdek/geometri/yol_metni.py:17
 msgid "kök"
 msgstr ""
 
-#: cekirdek/geometri/yoklama.py:330
+#: cekirdek/geometri/yoklama.py:332
 #, python-format
 msgid "geometri hata ayıklama koşusu temiz (%d × %d parçacık)"
 msgstr ""
 
-#: cekirdek/geometri/yoklama.py:336
+#: cekirdek/geometri/yoklama.py:338
 #, python-format
 msgid "%d noktada %d örtüşme, %d boşluk"
 msgstr ""
@@ -2915,7 +2928,7 @@ msgstr ""
 msgid "‘{h}’ harfi"
 msgstr ""
 
-#: cekirdek/giris.py:53
+#: cekirdek/giris.py:54
 msgid ""
 "KULLANIM\n"
 "  openmc-arayuz-kosu rapor <koşu_dizini> [-o rapor.pdf] [--spec model.json]\n"
@@ -2926,47 +2939,47 @@ msgid ""
 "                spec.json ya da tukenme_spec.json okunur."
 msgstr ""
 
-#: cekirdek/giris.py:70 cekirdek/giris.py:163
+#: cekirdek/giris.py:71 cekirdek/giris.py:164
 #, python-format
 msgid "%s bir değer bekliyor"
 msgstr ""
 
-#: cekirdek/giris.py:78 cekirdek/giris.py:171 cekirdek/kosucu_terminal.py:51
+#: cekirdek/giris.py:79 cekirdek/giris.py:172 cekirdek/kosucu_terminal.py:51
 #: cekirdek/kritik_arama.py:257 cekirdek/tarama.py:452
 #, python-format
 msgid "bilinmeyen seçenek: %s"
 msgstr ""
 
-#: cekirdek/giris.py:82 cekirdek/giris.py:175
+#: cekirdek/giris.py:83 cekirdek/giris.py:176
 msgid "koşu dizini verilmedi"
 msgstr ""
 
-#: cekirdek/giris.py:113
+#: cekirdek/giris.py:114
 #, python-format
 msgid "rapor uzantısı .pdf ya da .html olmalı: %s"
 msgstr ""
 
-#: cekirdek/giris.py:117
+#: cekirdek/giris.py:118
 #, python-format
 msgid "model (spec) bulunamadı: koşu dizininde spec.json yok; --spec ile verin (%s)"
 msgstr ""
 
-#: cekirdek/giris.py:126
+#: cekirdek/giris.py:127
 #, python-format
 msgid "rapor oluşturulamadı: %s"
 msgstr ""
 
-#: cekirdek/giris.py:129
+#: cekirdek/giris.py:130
 #, python-format
 msgid "uyarı: %s"
 msgstr ""
 
-#: cekirdek/giris.py:130
+#: cekirdek/giris.py:131
 #, python-format
 msgid "rapor yazıldı: %s"
 msgstr ""
 
-#: cekirdek/giris.py:137
+#: cekirdek/giris.py:138
 msgid ""
 "KULLANIM\n"
 "  openmc-arayuz-kosu uygunluk <koşu_dizini> [--profil A,B,C,D] [--siki]\n"
@@ -2981,53 +2994,53 @@ msgid ""
 "  3 (--siki ile) değerlendirilemeyen kural var."
 msgstr ""
 
-#: cekirdek/giris.py:177
+#: cekirdek/giris.py:178
 #, python-format
 msgid "koşu dizini bulunamadı: %s"
 msgstr ""
 
-#: cekirdek/giris.py:184
+#: cekirdek/giris.py:185
 msgid "kontrolü geçti"
 msgstr ""
 
-#: cekirdek/giris.py:184
+#: cekirdek/giris.py:185
 msgid "KONTROLÜ GEÇMEDİ"
 msgstr ""
 
-#: cekirdek/giris.py:185
+#: cekirdek/giris.py:186
 msgid "uygulanamadı"
 msgstr ""
 
-#: cekirdek/giris.py:185 cekirdek/rapor_sablon/uygunluk_eki.py:25
+#: cekirdek/giris.py:186 cekirdek/rapor_sablon/uygunluk_eki.py:25
 msgid "not"
 msgstr ""
 
-#: cekirdek/dogrula/_ortak.py:52 cekirdek/giris.py:186 cekirdek/rapor_sablon/__init__.py:27
+#: cekirdek/dogrula/_ortak.py:52 cekirdek/giris.py:187 cekirdek/rapor_sablon/__init__.py:27
 #: cekirdek/rapor_sablon/uygunluk_eki.py:26
 msgid "HATA"
 msgstr ""
 
-#: cekirdek/dogrula/_ortak.py:52 cekirdek/giris.py:186 cekirdek/rapor_sablon/__init__.py:27
+#: cekirdek/dogrula/_ortak.py:52 cekirdek/giris.py:187 cekirdek/rapor_sablon/__init__.py:27
 #: cekirdek/rapor_sablon/uygunluk_eki.py:26
 msgid "UYARI"
 msgstr ""
 
-#: cekirdek/dogrula/_ortak.py:52 cekirdek/giris.py:186 cekirdek/rapor_sablon/__init__.py:28
+#: cekirdek/dogrula/_ortak.py:52 cekirdek/giris.py:187 cekirdek/rapor_sablon/__init__.py:28
 #: cekirdek/rapor_sablon/uygunluk_eki.py:27
 msgid "BİLGİ"
 msgstr ""
 
-#: cekirdek/giris.py:193
+#: cekirdek/giris.py:194
 #, python-format
 msgid "Öneri: %s"
 msgstr ""
 
-#: cekirdek/giris.py:219
+#: cekirdek/giris.py:220
 #, python-format
 msgid "uyarı: model (spec) okunamadı, yalnız koşu denetlenir: %s"
 msgstr ""
 
-#: cekirdek/giris.py:230
+#: cekirdek/giris.py:231
 #, python-format
 msgid ""
 "\n"
@@ -3035,12 +3048,12 @@ msgid ""
 "uygulanamadı"
 msgstr ""
 
-#: cekirdek/giris.py:261
+#: cekirdek/giris.py:268
 #, python-format
 msgid "bilinmeyen alt süreç: %r"
 msgstr ""
 
-#: cekirdek/giris.py:288
+#: cekirdek/giris.py:295
 #, python-format
 msgid "--alt bir alt süreç adı bekliyor: %s"
 msgstr ""
@@ -9297,5 +9310,134 @@ msgstr ""
 #: cekirdek/vv/kume.py:245
 #, python-format
 msgid "bu uygulama için USL yok (AOA dışında): kümede alt kümeye (%s) uyan %d vaka var; %s"
+msgstr ""
+
+#: cekirdek/yerel_k.py:183
+msgid "kafes ötelenmiş ya da döndürülmüş: yerel k mesh'i hizalanamaz"
+msgstr ""
+
+#: cekirdek/yerel_k.py:191
+#, python-format
+msgid "'%s' bir demet değil; yerel k için kare demet gerekir"
+msgstr ""
+
+#: cekirdek/yerel_k.py:193
+#, python-format
+msgid ""
+"'%s' altıgen demet: yerel k haritası yalnız kare kafeste kurulabilir (altıgen mesh "
+"OpenMC'de yok)"
+msgstr ""
+
+#: cekirdek/yerel_k.py:200
+#, python-format
+msgid "bilinmeyen eksenel kapsam: %s"
+msgstr ""
+
+#: cekirdek/yerel_k.py:224
+msgid "tek pin modelinde kare hücre gerekir"
+msgstr ""
+
+#: cekirdek/yerel_k.py:241
+#, python-format
+msgid "kor kafesinde demet yok (%s): pin düzeyi kurulamaz; demet düzeyini kullanın"
+msgstr ""
+
+#: cekirdek/yerel_k.py:244
+#, python-format
+msgid ""
+"kor kafesinde demet olmayan parça var (%s): pin düzeyi tek mesh'e hizalanamaz; demet "
+"düzeyini kullanın"
+msgstr ""
+
+#: cekirdek/yerel_k.py:252
+msgid ""
+"kordaki demetlerin pin adımı/boyutu farklı: pin düzeyi tek mesh'e hizalanamaz; demet "
+"düzeyini kullanın"
+msgstr ""
+
+#: cekirdek/yerel_k.py:258
+#, python-format
+msgid ""
+"demet adımı (%.5g cm) pin sayısı × pin adımına (%d × %.5g cm) eşit değil (demetler "
+"arası boşluk): pin düzeyi mesh'e hizalanamaz; demet düzeyini kullanın"
+msgstr ""
+
+#: cekirdek/yerel_k.py:269
+msgid ""
+"altıgen kesitli model: yerel k haritası yalnız kare kafeste kurulabilir (altıgen mesh"
+" OpenMC'de yok)"
+msgstr ""
+
+#: cekirdek/yerel_k.py:272
+msgid "yerel k haritası yalnız kare kafeste kurulabilir"
+msgstr ""
+
+#: cekirdek/yerel_k.py:285
+#, python-format
+msgid ""
+"bu geometride (%s) pin/demet kafesi bulunamadı; yerel k haritası kare kafesli "
+"modellerde kurulur"
+msgstr ""
+
+#: cekirdek/yerel_k.py:292
+#, python-format
+msgid "bilinmeyen yerel k düzeyi: %s"
+msgstr ""
+
+#: cekirdek/yerel_k.py:299
+#, python-format
+msgid "modelin kafes tanımı okunamadı: %s"
+msgstr ""
+
+#: cekirdek/yerel_k.py:333
+#, python-format
+msgid "'%s' adlı bir kullanıcı tally'si zaten var; yeniden adlandırın ya da silin"
+msgstr ""
+
+#: cekirdek/yerel_k.py:357
+#, python-format
+msgid "'%s' tally'sinin mesh tanımı okunamadı"
+msgstr ""
+
+#: cekirdek/yerel_k.py:377
+msgid "yerel k tally'sinde mesh filtresi yok"
+msgstr ""
+
+#: cekirdek/yerel_k.py:385
+#, python-format
+msgid "yerel k tally'sinde '%s' skoru yok"
+msgstr ""
+
+#: cekirdek/yerel_k.py:439
+#, python-format
+msgid ""
+"yerel k tally'si %d×%d mesh'le uyuşmuyor (%d bin); model koşudan sonra değişmiş "
+"olabilir — yeniden koşun"
+msgstr ""
+
+#: cekirdek/yerel_k.py:476
+msgid "statepoint'te global k-tracklength/leakage yok"
+msgstr ""
+
+#: cekirdek/yerel_k.py:499
+#, python-format
+msgid "modelde '%s' tally tanımı yok; koşunun modeliyle açın"
+msgstr ""
+
+#: cekirdek/yerel_k.py:533
+msgid "ortalama k"
+msgstr ""
+
+#: cekirdek/yerel_k.py:538
+msgid "kapsam"
+msgstr ""
+
+#: cekirdek/yerel_k.py:558
+msgid "bu koşuda yerel k tally'si yok"
+msgstr ""
+
+#: cekirdek/yerel_k.py:569
+#, python-format
+msgid "çıktı dosyası girdiyle aynı olamaz: %s"
 msgstr ""
 
