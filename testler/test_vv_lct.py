@@ -123,6 +123,26 @@ def test_tca_spec_kurulur():
             "-> %s" % [tuple(k.shape) for k in kafesler])
 
 
-HIZLI = [test_tca_durum_tablosu, test_tca_birim_hucre, test_tca_spec_eksenel_kafes,
+def test_tca_varyantlari():
+    print("\n[VL7] Duyarlilik varyantlari: alt_tapa (Al tapa katmani), u234 (U-234 eklenir)")
+    from cekirdek.vv import lct
+    temel, tapa, u234 = (lct.tca_spec(1, v) for v in (None, "alt_tapa", "u234"))
+    katman = [k["ad"] for k in tapa["geometri"]["kok"]["ic"]["katmanlar"]]
+    kontrol("alt_tapa katmani", "alt tapa" in katman, "-> %s" % katman)
+    toplam = [sum(k["yukseklik"] for k in s["geometri"]["kok"]["ic"]["katmanlar"])
+              for s in (temel, tapa)]
+    kontrol("toplam yukseklik ayni", math.isclose(toplam[0], toplam[1]), "-> %s" % toplam)
+
+    def yakit(s):
+        m = [m for m in s["malzemeler"] if m["ad"] == "uo2_tca"][0]
+        return {b["isim"]: b["miktar"] for b in m["bilesim"]}
+    y0, y1 = yakit(temel), yakit(u234)
+    kontrol("temelde U-234 yok", "U234" not in y0)
+    kontrol("u234: U-234/U-235 orani", math.isclose(y1["U234"] / y1["U235"], lct.U234_U235_ORANI))
+    kontrol("u234: toplam U korunur", math.isclose(y1["U234"] + y1["U238"], y0["U238"]))
+    kontrol("varyant kaynakta yazar", "u234" in u234["referans"]["kaynak"])
+
+
+HIZLI = [test_tca_varyantlari, test_tca_durum_tablosu, test_tca_birim_hucre, test_tca_spec_eksenel_kafes,
          test_tca_spec_referans, test_tca_spec_saf, test_tca_spec_kurulur]
 YAVAS = []

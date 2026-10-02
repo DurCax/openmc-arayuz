@@ -49,6 +49,10 @@ N_U235, N_U238, N_O_YAKIT = 6.086e-4, 2.255e-2, 4.725e-2
 N_AL_KILIF = 5.587e-2
 N_H2O = 3.338e-2
 SICAKLIK_K = 293.15                       # 20 C (Tablo 8-1 20 C'ye indirgenmis)
+# Duyarlilik varyanti "u234": JAERI 1254 U-234 vermez; ICSBEP modeli U-234 icerir
+# (van der Marck 2006 izotop listesi). Oran LCT-008 yakitindan (2.459 w/o, mit-crpg:
+# 4.5689e-6 / 5.6868e-4) -- benzer zenginlikte TAHMIN, olcum degil.
+U234_U235_ORANI = 4.5689e-6 / 5.6868e-4
 O_DOGAL = (("O16", 0.99757), ("O17", 0.00038), ("O18", 0.00205))  # IUPAC; openmc.data
 
 # Kosu ayari: 1.5e7 aktif oyku -> sigma_c ~ 27 pcm (proje olcutu <= 30 pcm, VV.md) << sigma_e = 200 pcm
@@ -138,10 +142,16 @@ def _malzeme(ad: str, gorunen: str, bilesim: list, renk: list, sab: Optional[lis
             "sicaklik": SICAKLIK_K, "bilesim": bilesim, "sab": list(sab or []), "renk": renk}
 
 
-def _malzemeler() -> list:
+def _uranyum(varyant: Optional[str]) -> list:
+    if varyant != "u234":
+        return [_nuklid("U235", N_U235), _nuklid("U238", N_U238)]
+    n_u234 = U234_U235_ORANI * N_U235          # toplam U korunur: U-238'den dusulur
+    return [_nuklid("U234", n_u234), _nuklid("U235", N_U235), _nuklid("U238", N_U238 - n_u234)]
+
+
+def _malzemeler(varyant: Optional[str] = None) -> list:
     return [
-        _malzeme("uo2_tca", "UO2 2.596 w/o (TCA)",
-                 [_nuklid("U235", N_U235), _nuklid("U238", N_U238)] + _oksijen(N_O_YAKIT),
+        _malzeme("uo2_tca", "UO2 2.596 w/o (TCA)", _uranyum(varyant) + _oksijen(N_O_YAKIT),
                  [222, 93, 40]),
         _malzeme("al_tca", "Al kılıf (hava boşluğu dahil)", [_nuklid("Al27", N_AL_KILIF)],
                  [170, 170, 180]),
@@ -204,12 +214,13 @@ def _ayarlar(d: TcaDurumu) -> dict:
     return a
 
 
-VARYANTLAR = (None, "alt_tapa")
+VARYANTLAR = (None, "alt_tapa", "u234")
 
 
 def tca_spec(no: int, varyant: Optional[str] = None) -> dict:
     """LCT-006 durum no -> YENI spec (gelismis mod). varyant: None (temel model)
-    ya da "alt_tapa" (duyarlilik: Al alt uc tapalari alt yansiticida)."""
+    "alt_tapa" (duyarlilik: Al alt uc tapalari alt yansiticida) ya da "u234"
+    (duyarlilik: tahmini U-234, U234_U235_ORANI)."""
     from cekirdek import sema
     from cekirdek.vv import aoa
     if varyant not in VARYANTLAR:
@@ -218,7 +229,7 @@ def tca_spec(no: int, varyant: Optional[str] = None) -> dict:
     hucre = tca_birim_hucre(d.adim)
     ad = "%s, durum %d (TCA %s, %dx%d)" % (SERI_TCA, d.no, d.kafes, d.n, d.n)
     spec = sema.yeni_spec(ad)
-    spec.update(malzemeler=_malzemeler(), cubuklar=_cubuklar(), kor={"tur": "agac"},
+    spec.update(malzemeler=_malzemeler(varyant), cubuklar=_cubuklar(), kor={"tur": "agac"},
                 geometri=_geometri(d, varyant), tamburlar=[], ayarlar=_ayarlar(d),
                 tallyler=[aoa.ealf_tally_tanimi()], kategori="kriter", seviye="ileri")
     spec["baslik"] = "%s — TCA %s, %d×%d kafes, H = %.2f cm" % (ad, d.kafes, d.n, d.n,
