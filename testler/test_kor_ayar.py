@@ -24,7 +24,6 @@ import copy
 import glob
 import os
 import re
-import statistics
 import time
 import warnings
 
@@ -892,81 +891,74 @@ def test_onizleme_ikili_kesit(gecici=None):
     uyg = _qt()
     if uyg is None:
         return
-    import openmc
     from arayuz.onizleme import OnizlemeWidget, IKILI
     w = OnizlemeWidget()
     for ad in ("durum", "olcu_bulundu", "arac_cubugu", "_ciz", "spec_ayarla", "iste",
-               "cizildi_mi", "son_olcu", "kaydet", "kapat"):
+               "cizildi_mi", "son_olcu", "kaydet", "kapat", "bekle", "mesgul_mu"):
         kontrol("API: %s" % ad, hasattr(w, ad))
-    kontrol("cozunurluk ve hizli mod Gelismis altinda",
-            w.gelismis.isAncestorOf(w.cozunurluk) and w.gelismis.isAncestorOf(w.hizli_mod))
+    kontrol("cozunurluk ve cakisma secenegi Gelismis altinda",
+            w.gelismis.isAncestorOf(w.cozunurluk) and w.gelismis.isAncestorOf(w.cakisma))
     kontrol("renk ogeleri Turkce", [w.renklendirme.itemText(i) for i in range(2)]
             == ["Malzeme", "Hücre"])
 
+    # v3 H2: kesitler cizim iscisine istek olarak gider; giden kesitler kaydedilir.
     gorulen = []
-    asil = openmc.Model.plot
+    asil = w._istemci.iste
 
-    def izleyen(self, *a, **kw):
-        gorulen.append((kw.get("basis"), len(self.tallies)))
-        return asil(self, *a, **kw)
+    def izleyen(istek):
+        gorulen.append([k["eksen"] for k in istek.get("kesitler", [])])
+        return asil(istek)
 
-    openmc.Model.plot = izleyen
+    w._istemci.iste = izleyen
     try:
         s3 = _ornek("pwr_3b")                       # 3B + guc dagilimi (CellFilter)
         w.spec_ayarla(s3)
         w._ciz()
+        w.bekle(120)
         kontrol("pwr_3b: gorunum xy + xz, iki eksen cizildi",
                 w.gorunum() == ["xy", "xz"] and len(w.figur.axes) == 2 and w.cizildi_mi()
-                and [g[0] for g in gorulen] == ["xy", "xz"], "-> %s %s" % (gorulen, w._son_hata))
+                and gorulen[-1] == ["xy", "xz"], "-> %s %s" % (gorulen, w.son_hata()))
         kontrol("3B: kesit secimi gorunur, varsayilan xy + xz",
                 not w.eksen.isHidden() and w.eksen.currentText() == IKILI)
-        kontrol("cizime giden modeller tally tasimiyor", all(n == 0 for _b, n in gorulen))
-        w.eksen.setCurrentText("xz")          # secim degisince kendisi cizer
         gorulen.clear()
-        w._ciz()
-        kontrol("3B'de tek kesit secilebilir (xz)",
-                len(w.figur.axes) == 1 and [g[0] for g in gorulen] == ["xz"])
+        w.eksen.setCurrentText("xz")          # secim degisince kendisi cizer
+        w.bekle(120)
+        kontrol("3B'de tek kesit secilebilir (xz; eldeki dilimden, isciye gitmeden)",
+                len(w.figur.axes) == 1 and gorulen == [], "-> %s" % gorulen)
         gorulen.clear()
         w.spec_ayarla(_ornek("pwr_17x17"))
         w._ciz()
+        w.bekle(120)
         kontrol("2B: yalnizca xy, kesit secimi gizli",
                 w.gorunum() == ["xy"] and len(w.figur.axes) == 1 and w.eksen.isHidden()
-                and [g[0] for g in gorulen] == ["xy"])
+                and gorulen[-1] == ["xy"])
         w.spec_ayarla(s3)
         kontrol("2B -> 3B: gorunum yeniden xy + xz", w.eksen.currentText() == IKILI)
-        gorulen.clear()
-        w._ciziliyor = True
-        w._ciz()
-        kontrol("yeniden giris korumasi: cizim surerken ikinci cizim atlandi", not gorulen)
-        w._ciziliyor = False
-        # hizli mod: kutuphane acik tutulur, iki kesit yine cizilir
-        w.hizli_mod.setChecked(True)
-        kontrol("hizli mod: xy + xz cizildi", w.cizildi_mi() and len(w.figur.axes) == 2,
-                "-> %s" % w._son_hata)
-        w.hizli_mod.setChecked(False)
-        kontrol("hizli mod kapatildi, cizim hala gecerli", w.cizildi_mi())
+        w.cozunurluk.setCurrentIndex(0)       # yeni dilim: isciye gider
+        w.bekle(120)
+        kontrol("cozunurluk degisimi yeniden dilimler, cizim gecerli",
+                w.cizildi_mi() and len(w.figur.axes) == 2 and gorulen[-1] == ["xy", "xz"])
     finally:
-        openmc.Model.plot = asil
+        w._istemci.iste = asil
         w.kapat()
         os.chdir(KOK)
 
-    # sure: iki kesit TEK kutuphane oturumunda -- iki katina cikmamali
-    def ortanca(spec, eksen=None):
-        ww = OnizlemeWidget()
-        ww.spec_ayarla(spec)
-        if eksen:
-            ww.eksen.setCurrentText(eksen)
+    # oturum yeniden kullanimi: ayni modelde yeni dilim istegi init'siz
+    # (iscinin "model" yanitindaki `yeniden` bayragi; sure karsilastirmasi degil)
+    ww = OnizlemeWidget()
+    yeniden = []
+    ww._istemci.cerceve_geldi.connect(
+        lambda c: c.baslik.get("tur") == "model" and yeniden.append(c.baslik["yeniden"]))
+    try:
+        ww.spec_ayarla(_ornek("pwr_3b"))
         ww._ciz()
-        t = []
-        for _ in range(3):
-            t0 = time.perf_counter()
-            ww._ciz()
-            t.append(time.perf_counter() - t0)
-        return statistics.median(t)
-    tek = ortanca(_ornek("pwr_3b"), "xy")
-    ikili = ortanca(_ornek("pwr_3b"))
-    kontrol("xy + xz cizimi tek kesitin 1.8 katindan kisa (%.0f / %.0f ms)"
-            % (ikili * 1000, tek * 1000), ikili < 1.8 * tek)
+        ww.bekle(120)
+        ww.cozunurluk.setCurrentIndex(2)
+        ww.bekle(120)
+    finally:
+        ww.kapat()
+    kontrol("ilk istek oturumu baslatti, ayni modelde ikincisi yeniden kullandi",
+            yeniden == [True, False], "-> %s" % yeniden)
     uyg  # noqa: B018
 
 

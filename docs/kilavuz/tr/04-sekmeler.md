@@ -93,9 +93,10 @@ açıklama çıkar:
 ### Önizleme paneli
 
 Tasarım sekmelerinde (Malzemeler, Parçalar, Demet, Geometri) sağdaki panel her
-değişiklikten sonra geometri kesitini yeniden çizer. Çizim `openmc.Model.plot()` ile
-yapılır, yani gördüğünüz kesit OpenMC'nin gerçekten kuracağı geometridir. Önizleme
-tally'siz bir modeli çizer (tally'ler çizimi etkilemez).
+değişiklikten sonra geometri kesitini yeniden çizer. Kesit OpenMC'nin kendi
+kütüphanesiyle (`openmc.lib.slice_data`) dilimlenir, yani gördüğünüz kesit OpenMC'nin
+gerçekten kuracağı geometridir. Önizleme tally'siz bir modeli çizer (tally'ler çizimi
+etkilemez). Çizim sürerken ÇALIŞTIR kapalıdır; çizim başarıyla bitince açılır.
 
 | Denetim | Anlamı |
 |---|---|
@@ -103,8 +104,10 @@ tally'siz bir modeli çizer (tally'ler çizimi etkilemez).
 | **Renk** | Malzeme ya da Hücre renklendirmesi. Gelişmiş geometride seçili düğüm vurgulanır, diğerleri soluk görünür. |
 | **Gösterge** | Malzeme renklerinin açıklaması. |
 | **Yenile** | Önizlemeyi yeniden çizer (F6). |
-| **Çözünürlük** (Gelişmiş) | Düşük (400) / Normal (800) / Yüksek (1400) piksel. Maliyet çözünürlükte değil OpenMC'nin başlatılmasındadır; yüksek çözünürlük neredeyse bedavadır. |
-| **Hızlı mod (kütüphaneyi açık tut)** (Gelişmiş) | Kapalı: her çizim ~0.3 s. Açık: ilk çizim ~3 s, sonrakiler ~40 ms. Bitmiş bir geometriyi incelerken açın; model düzenlerken açmayın (her değişiklik kütüphaneyi yeniden başlatır). |
+| **Çözünürlük** (Gelişmiş) | Düşük (400) / Normal (800) / Yüksek (1400) piksel. |
+| **Çakışmaları göster** (Gelişmiş) | Birden fazla hücrenin kapladığı noktaları ayrı renkle gösterir ve sayısını bildirir. Büyük korlarda çizimi birkaç kat yavaşlatır. |
+
+Önizleme arka planda, ayrı bir süreçte çizilir; arayüz beklemez ("Çiziliyor…" yazısı). Model değişmedikçe OpenMC açık kalır: kesit, renk ya da çözünürlük değişimi hızlıdır. Panel daraltılmışken çizim yapılmaz, yalnız model denetlenir (ÇALIŞTIR kapısı yine çalışır); panel açılınca çizilir. Çizim süreci beklenmedik biçimde kapanırsa önizlemede açık bir hata görünür ve süreç yeniden başlatılır.
 
 Panelin altındaki satır modelin dış ölçüsünü yazar. Panel sağ üstteki düğmeyle daraltılır.
 

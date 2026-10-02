@@ -748,16 +748,14 @@ Kısayol: **F11** tam ekran.
 |---|---|---|---|
 | Bir düzenlemenin anlık maliyeti | 19–34 ms | **0.01 ms** | Konu bazlı sekme geçersizleştirme |
 | `openmc.Model` kurulumu (tekrar) | 21.9 ms | **0.07 ms** | İçerik özetine dayalı model önbelleği |
-| Önizleme (görüntü değişikliği) | 292 ms | **66 ms** | İsteğe bağlı "hızlı mod" |
+| Önizleme, SFR-MET1000 kor (xy + xz) | 10.8 s donma | **1.6 s arka planda, en uzun donma ~0.1 s** | v3 H2: ayrı çizim süreci, `openmc.lib.slice_data`, `-p` kipi |
 
-**Çözünürlük neredeyse bedava.** Ölçüm: tek seferlik çizimde 200 px → 632 ms,
-1200 px → 387 ms. Maliyet ışın izlemede değil, `Model.plot()`'un her çağrıda
-OpenMC kütüphanesini yeniden başlatıp tesir kesitlerini okumasında. Bu yüzden
-varsayılan çözünürlük yüksek tutuldu.
-
-**Hızlı mod** kütüphaneyi açık tutar: ilk çizim ~3 s, sonrakiler ~40 ms.
-Bitmiş bir geometriyi incelerken (eksen değiştirme, yakınlaştırma) açın;
-**düzenlerken açmayın** — her spec değişikliği yeniden başlatma gerektirir.
+**Önizleme arka planda çizilir** (v3 H2, `cekirdek/cizim_sureci.py`): kalıcı bir
+işçi süreç `openmc.lib`'i çizim kipinde (`-p`) başlatır ve model değişmedikçe açık
+tutar; eski `Model.plot()` her çağrıda sınır kutusunu hesaplayıp kütüphaneyi `-c`
+kipinde yeniden başlatıyordu (SFR: kesit başına ~2 s). Yeni istek eskisini iptal
+eder; renk/gösterge değişimi eldeki dilimden yeniden boyanır. Eski "hızlı mod"
+seçeneği bu yüzden kaldırıldı.
 
 ## Bilinen tuzaklar
 
