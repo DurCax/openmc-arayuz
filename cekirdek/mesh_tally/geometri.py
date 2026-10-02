@@ -19,7 +19,7 @@ from cekirdek.ceviri import _
 from cekirdek.mesh_tally.tanim import DUZENLI, SILINDIRIK, KURESEL
 
 
-def mesh_tur_bul(mesh):
+def mesh_tur_bul(mesh) -> str:
     """openmc mesh nesnesinin turu; desteklenmeyen sinif ValueError."""
     ad = type(mesh).__name__
     turler = {"RegularMesh": DUZENLI, "CylindricalMesh": SILINDIRIK,
@@ -29,7 +29,7 @@ def mesh_tur_bul(mesh):
     return turler[ad]
 
 
-def mesh_izgaralari(mesh):
+def mesh_izgaralari(mesh) -> tuple:
     """openmc mesh -> (eksen1, eksen2, eksen3) sinir izgaralari (yeni diziler)."""
     tur = mesh_tur_bul(mesh)
     if tur == DUZENLI:
@@ -42,7 +42,7 @@ def mesh_izgaralari(mesh):
                  (mesh.r_grid, mesh.theta_grid, mesh.phi_grid))
 
 
-def hacimler(tur, izgaralar):
+def hacimler(tur: str, izgaralar) -> np.ndarray:
     """Hucre hacimleri [cm3], sekil (n1, n2, n3)."""
     a, b, c = (np.asarray(g, dtype=float) for g in izgaralar)
     if tur == DUZENLI:
@@ -56,7 +56,7 @@ def hacimler(tur, izgaralar):
     return da[:, None, None] * db[None, :, None] * dc[None, None, :]
 
 
-def kartezyen(tur, a, b, c, merkez):
+def kartezyen(tur: str, a, b, c, merkez) -> tuple:
     """Ag koordinatlarini (ayni sekilli diziler) kartezyen (x, y, z)'ye cevirir."""
     ox, oy, oz = merkez
     if tur == DUZENLI:
@@ -67,7 +67,7 @@ def kartezyen(tur, a, b, c, merkez):
     return rxy * np.cos(c) + ox, rxy * np.sin(c) + oy, a * np.cos(b) + oz
 
 
-def koseler(tur, izgaralar, merkez):
+def koseler(tur: str, izgaralar, merkez) -> np.ndarray:
     """Kose noktalari (N, 3): i en hizli, sonra j, sonra k (VTK STRUCTURED_GRID
     ve OpenMC'nin np.swapaxes(vertices, 0, 2).reshape(-1, 3) sirasi)."""
     a, b, c = np.meshgrid(*izgaralar, indexing="ij")
@@ -113,7 +113,7 @@ def _dilim_kafesi(tur, izgaralar, eksen, merkez):
     return A * _DERECE, B * _DERECE, "θ [°]", "φ [°]", False
 
 
-def dilim(sonuc, dizi, eksen, indeks):
+def dilim(sonuc, dizi, eksen: int, indeks: int) -> "Dilim":
     """3B dizinin (n1, n2, n3) `eksen` ekseninde `indeks` dilimi (Dilim)."""
     dizi = np.asarray(dizi)
     if eksen not in (0, 1, 2) or not 0 <= indeks < dizi.shape[eksen]:

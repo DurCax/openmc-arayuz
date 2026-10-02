@@ -47,7 +47,8 @@ def _nuklid_ekleri(sonuc, nuklid):
     return [(i, "_" + n) for i, n in enumerate(sonuc.nuklidler)]
 
 
-def alanlar(sonuc, yontem="hacim", kaynak_hizi=None, nuklid=None, eksenel_sonsuz=False):
+def alanlar(sonuc, yontem="hacim", kaynak_hizi=None, nuklid=None,
+            eksenel_sonsuz=False) -> dict:
     """{alan adi: 3B dizi} -- her skor, nuklid, grup ve gruplarin toplami (yeni sozluk).
     nuklid None: tek nuklidde o, cokta hepsi."""
     payda, olcu_turu = _nrm.olcu(sonuc, eksenel_sonsuz)
@@ -110,7 +111,7 @@ def _yerlesik_yaz(sonuc, f, veri):
         np.savetxt(f, np.asarray(dizi, dtype=float).T.ravel(), fmt="%.17g")
 
 
-def vtk_yolunu_denetle(yol):
+def vtk_yolunu_denetle(yol) -> str:
     """Yazmadan ONCE: .vtk uzantisi ve yazilabilir ust dizin (OSError/ValueError)."""
     if not str(yol).lower().endswith(".vtk"):
         raise ValueError(_("VTK dosya adı .vtk ile bitmeli: %s") % yol)

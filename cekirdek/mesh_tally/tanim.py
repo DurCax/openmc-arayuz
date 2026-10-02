@@ -77,7 +77,7 @@ GRUP_YAPILARI = ("CASMO-2", "CASMO-4", "CASMO-8", "CASMO-16", "CASMO-25",
                  "CASMO-40", "CASMO-70", "XMAS-172", "SHEM-361")
 
 
-def mesh_turu(f):
+def mesh_turu(f: dict) -> str:
     """Filtrenin mesh turu; yoksa duzenli. Bilinmeyen tur ValueError."""
     tur = (f or {}).get("mesh_turu") or DUZENLI
     if tur not in MESH_TURLERI:
@@ -90,14 +90,14 @@ def mesh_turu(f):
 # kuruculari (spec sozlukleri; yeni nesne doner)
 # ---------------------------------------------------------------------------
 
-def filtre_duzenli(boyut, alt=None, ust=None):
+def filtre_duzenli(boyut, alt=None, ust=None) -> dict:
     """Duzenli mesh filtresi; alt/ust verilmezse sinirlar otomatik."""
     if alt is None or ust is None:
         return {"tur": "mesh", "boyut": list(boyut), "otomatik": True}
     return {"tur": "mesh", "boyut": list(boyut), "alt": list(alt), "ust": list(ust)}
 
 
-def filtre_silindirik(boyut, r_ust=None, z_alt=None, z_ust=None, merkez=None):
+def filtre_silindirik(boyut, r_ust=None, z_alt=None, z_ust=None, merkez=None) -> dict:
     """Silindirik mesh filtresi [nr, nphi, nz]; r_ust yoksa sinirlar otomatik."""
     f = {"tur": "mesh", "mesh_turu": SILINDIRIK, "boyut": list(boyut)}
     if r_ust is None:
@@ -109,7 +109,7 @@ def filtre_silindirik(boyut, r_ust=None, z_alt=None, z_ust=None, merkez=None):
     return f
 
 
-def filtre_kuresel(boyut, r_ust=None, merkez=None):
+def filtre_kuresel(boyut, r_ust=None, merkez=None) -> dict:
     """Kuresel mesh filtresi [nr, ntheta, nphi]; r_ust yoksa otomatik."""
     f = {"tur": "mesh", "mesh_turu": KURESEL, "boyut": list(boyut)}
     if r_ust is None:
@@ -156,7 +156,7 @@ def _acik_sinir_hatalari(f, tur):
     return hatalar
 
 
-def filtre_hatalari(f):
+def filtre_hatalari(f: dict) -> list:
     """Mesh filtresindeki hatalar (gorunen metin listesi); [] = gecerli."""
     try:
         tur = mesh_turu(f)
@@ -169,14 +169,14 @@ def filtre_hatalari(f):
 # sinirlar ve tanim
 # ---------------------------------------------------------------------------
 
-def model_sinir_kutusu(spec):
+def model_sinir_kutusu(spec: dict) -> tuple:
     """Modelin sinir kutusu (gx, gy) [cm] -- OpenMC modeli KURMADAN (geometri
     modelinden; kurucu.kur'un bilgi["sinir_kutu"] degeriyle ayni, test edilir)."""
     from cekirdek import geometri
     return tuple(float(x) for x in geometri.sinir_kutusu(geometri.model(spec)))
 
 
-def sinir_onerisi(spec, sinir_kutu, tur, z_aralik=None):
+def sinir_onerisi(spec: dict, sinir_kutu, tur: str, z_aralik=None) -> dict:
     """
     Modelin sinir kutusundan (gx, gy) [cm] otomatik sinir onerisi.
       duzenli    : x, y kurucu.tally_mesh_sinirlari ile ayni (sinir kutusu); z kor
@@ -203,7 +203,7 @@ def sinir_onerisi(spec, sinir_kutu, tur, z_aralik=None):
     raise ValueError(_("bilinmeyen ağ türü: %s") % tur)
 
 
-def eksenel_sonsuz(spec) -> bool:
+def eksenel_sonsuz(spec: dict) -> bool:
     """2B model: kor yuksekligi yok ve kure degil (spec'e gore z ekseninde sinir
     yok). Geometri yine de z'de sinirliysa kurucu/betik z_aralik ile kirpar
     (genel.geometri_z_araligi); butun orneklerde iki olcut ayni (test D7)."""
@@ -246,7 +246,7 @@ def mesh_tanimi(spec, f, sinir_kutu, z_aralik=None) -> dict:
     return tanim
 
 
-def izgaralar(tanim):
+def izgaralar(tanim: dict) -> tuple:
     """(eksen1, eksen2, eksen3) sinir izgaralari -- numpy.linspace (betikle ayni)."""
     import numpy as np
     eksenler = {DUZENLI: None, SILINDIRIK: ("r", "phi", "z"),
@@ -258,7 +258,7 @@ def izgaralar(tanim):
                  for e, n in zip(eksenler, tanim["boyut"]))
 
 
-def mesh_kur(tanim):
+def mesh_kur(tanim: dict):
     """Tanimdan openmc mesh nesnesi."""
     import openmc
     tur = tanim["tur"]
@@ -280,7 +280,7 @@ def _linspace_ifadesi(aralik, n):
     return "np.linspace(%r, %r, %d)" % (float(aralik[0]), float(aralik[1]), n + 1)
 
 
-def betik_satirlari(tanim, degisken):
+def betik_satirlari(tanim: dict, degisken: str) -> list:
     """Tanimdan betik satirlari (yeni liste); mesh_kur ile AYNI nesneyi kurar."""
     tur, b = tanim["tur"], tanim["boyut"]
     if tur == DUZENLI:
@@ -304,7 +304,8 @@ def betik_satirlari(tanim, degisken):
 NUMPY_SATIRI = "import numpy as np"
 
 
-def betik_filtresi(spec, f, sinir_kutu, degisken, z_aralik=None, onceki=()):
+def betik_filtresi(spec: dict, f: dict, sinir_kutu, degisken: str, z_aralik=None,
+                   onceki=()) -> list:
     """kod_uret kancasi: mesh filtresinin betik satirlari (aciklama dahil).
     onceki: betigin o ana kadarki satirlari -- numpy ice aktarimi BIR KEZ yazilir."""
     tanim = mesh_tanimi(spec, f, sinir_kutu, z_aralik)
@@ -326,7 +327,7 @@ def mesh_filtresi_kur(spec, f, sinir_kutu, z_aralik=None):
 # enerji grup yapilari
 # ---------------------------------------------------------------------------
 
-def grup_sinirlari(ad):
+def grup_sinirlari(ad: str) -> list:
     """Grup yapisinin sinirlari [eV] (artan; yeni liste). Bilinmeyen ad ValueError."""
     if ad not in GRUP_YAPILARI:
         raise ValueError(_("bilinmeyen enerji grup yapısı: %s") % ad)
@@ -334,7 +335,7 @@ def grup_sinirlari(ad):
     return [float(x) for x in GROUP_STRUCTURES[ad]]
 
 
-def yapi_bul(gruplar):
+def yapi_bul(gruplar) -> str | None:
     """Sinir listesi bilinen bir yapiya esitse adi, degilse None."""
     hedef = [float(x) for x in gruplar or []]
     for ad in GRUP_YAPILARI:
