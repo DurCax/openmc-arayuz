@@ -20,7 +20,7 @@
 
  VARSAYILANLAR openmc.Model.convert_to_random_ray ile ayni kural: en uzun
  kiris L = max(sinir kutusu kosegeni, 30 cm); olu = L, aktif = 5 L.
- Isin sayisi ve mesh bolmesi bizim olcumumuz (kilavuz 4.12, ders 5.19).
+ Isin sayisi ve bolme bizim olcumumuz (kilavuz: Grup sabitleri karti, ders 5.19).
 ================================================================================
 """
 
@@ -37,9 +37,11 @@ KAYNAK_SEKILLERI = ("flat", "linear", "linear_xy")
 EN_KISA_KIRIS = 30.0          # cm; openmc convert_to_random_ray
 AKTIF_KAT = 5.0               # aktif = 5 x olu (openmc convert_to_random_ray)
 SONSUZ_YERINE = 1.0           # 2B (z sonsuz) sinir kutusunda +/-1 cm (openmc ile ayni)
-# Olcum (Y8, pin hucre CASMO-70, testler/test_y8_kosu.py): hucre basina
-# ~0.1 cm kare bolme duz kaynakta MG MC'ye ~100 pcm yaklasir.
-HEDEF_BOLME_CM = 0.1
+# Varsayilan bolme YOK. Olcum (Y8, pin hucre CASMO-70 malzeme, 200 isin x 500
+# cevrim, duz kaynak): bolme 0 / 13x13 / 26x26 -> k 1.3574 / 1.3569 / 1.3569
+# (+-0.0005), sure 20 / 83 / 120 s; pin hucrede bolgeler zaten ince. Buyuk duz
+# bolgelerde (yansitici, su boslugu) kullanici bolmeyi artirir.
+VARSAYILAN_BOLME = 0
 EN_COK_BOLME = 200            # eksen basina; buyuk demette FSR sayisini sinirlar
 # Random ray her cevrimde TEK kaynak yinelemesi yapar; yakinsama orani grup ici
 # sacilma orani c = Ss(g->g)/St ile belirlenir (sudaki termal grupta ~0.93:
@@ -84,13 +86,11 @@ def sinir_kutusu(model: "openmc.Model") -> Tuple[Tuple[float, ...], Tuple[float,
 
 
 def varsayilan(model: "openmc.Model") -> RRAyar:
-    """Modelin sinir kutusundan varsayilan ayar (openmc kurali + olcumlu bolme)."""
+    """Modelin sinir kutusundan varsayilan ayar (openmc mesafe kurali; bolme yok)."""
     alt, ust = sinir_kutusu(model)
     kosegen = math.dist(alt, ust)
     olu = max(kosegen, EN_KISA_KIRIS)
-    genislik = max(ust[0] - alt[0], ust[1] - alt[1])
-    bolme = min(EN_COK_BOLME, max(1, math.ceil(genislik / HEDEF_BOLME_CM)))
-    return RRAyar(olu_mesafe=olu, aktif_mesafe=AKTIF_KAT * olu, bolme=bolme)
+    return RRAyar(olu_mesafe=olu, aktif_mesafe=AKTIF_KAT * olu, bolme=VARSAYILAN_BOLME)
 
 
 def ayar_degistir(a: RRAyar, **alanlar) -> RRAyar:

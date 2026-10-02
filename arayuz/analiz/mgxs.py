@@ -119,8 +119,8 @@ class MgxsKarti(bil.Kart):
                          ("linear_xy", _("Doğrusal, yalnız x-y"))):
             self.rr_sekil.addItem(metin, s)
         self.rr_bolme = tamsayi(0, 0, v.EN_COK_BOLME, 1)
-        self.rr_bolme.setToolTip(_("Kaynak bölgelerini eksen başına N×N kare mesh ile böler "
-                                   "(0 = bölme yok). Varsayılan ≈ 0.1 cm hücre."))
+        self.rr_bolme.setToolTip(_("Kaynak bölgelerini eksen başına N×N kare ağ ile böler "
+                                   "(0 = bölme yok, varsayılan). Büyük düz bölgelerde artırın."))
         self.rr_gelismis = GelismisBolum("mgxs_rr", _("Random ray ayarları"))
         f = form_duzeni()
         f.addRow(_("Çevrim başına ışın:"), self.rr_isin)
@@ -158,8 +158,11 @@ class MgxsKarti(bil.Kart):
         self.tur_suzgeci = QtWidgets.QComboBox()
         self.tur_suzgeci.currentIndexChanged.connect(self._tabloyu_doldur)
         self.tablo = self._tablo(tb.XS_SUTUNLARI, tb.xs_basliklari(), TABLO_YUKSEKLIGI)
+        tb.sutunlari_ayarla(self.tablo, esnek=1)
         self.tablo_notu = aciklama("")
         self.karsi = self._tablo(tb.KARSI_SUTUNLARI, tb.karsi_basliklari(), KARSI_YUKSEKLIGI)
+        tb.sutunlari_ayarla(self.karsi, esnek=0)
+        self.karsi.setMaximumHeight(KARSI_YUKSEKLIGI)
 
     @staticmethod
     def _tablo(sutun: int, basliklar: list, yukseklik: int) -> QtWidgets.QTableWidget:

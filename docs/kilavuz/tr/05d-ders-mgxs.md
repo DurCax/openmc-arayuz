@@ -38,7 +38,7 @@ yöntem) ayırmak ve taşıma düzeltmesinin etkisini ölçmek.
 7. **İnce grup, aynı geometri.** **Bölge türü** = **Malzeme**, **Grup yapısı** = **CASMO-70 (70
    grup)**, **Taşıma düzeltmesi** = **Yok** → **Grup sabitlerini üret**; sonra **MG ile yeniden
    koş** ve **Random ray ile koş**. Random ray ayarları kütüphane üretilince doldurulur
-   (200 ışın, 500 çevrim, 300 pasif, 13 × 13 bölme).
+   (200 ışın, 500 çevrim, 300 pasif, bölme yok).
 8. 7. adımı **P0** ile tekrarlayın ve özet notunu okuyun.
 
 **Beklenen sonuç** (ENDF/B-VIII.0; sayılar istatistikle ± birkaç yüz pcm oynar):
@@ -52,7 +52,7 @@ yöntem) ayırmak ve taşıma düzeltmesinin etkisini ölçmek.
 | 5 | Random ray | 1.3589 | özdeğere < 1 pcm | düz kaynak homojen ortamda kesin |
 | 6 | G×G özdeğer (P0) | 1.3589 | düzeltmesizle aynı | kaldırma Σtr − S11ᶜ = Σt − S11 |
 | 7 | MG MC (CASMO-70, malzeme) | 1.3575 ± 0.0010 | ≈ −70 pcm | homojenleştirme + yoğunlaştırma + izotropik saçılma |
-| 7 | Random ray | 1.3569 ± 0.0005 | MG'ye ≈ −60 pcm | düz kaynak, 13 × 13 bölme |
+| 7 | Random ray | 1.3574 ± 0.0005 | MG'ye ≈ −10 pcm | düz kaynak, bölme yok |
 | 8 | MG MC (P0) | ≈ 1.28 | ≈ −7600 pcm | negatif köşegen: kart uyarır |
 | 8 | Random ray (P0) | ≈ 1.357 | ≈ −120 pcm | köşegen kararlılaştırması |
 
@@ -88,14 +88,16 @@ yöntem) ayırmak ve taşıma düzeltmesinin etkisini ölçmek.
    hangi grupta oluşur?
 3. 7. adımda **Bölge türü** = **Hücre** seçin. Pin hücrede sonuç değişir mi? Neden (malzeme başına bir
    hücre)?
-4. Random ray'de **Kaynak bölgesi bölmesi** 0 ve 26 ile tekrarlayın; MG'ye fark nasıl değişir?
+4. Random ray'de **Kaynak bölgesi bölmesi** 0, 13 ve 26 ile tekrarlayın; k ve süre nasıl değişir?
 
 **Cevaplar.** (1) Formül kartın özdeğerini verir; S21 = 0 alınca k∞ ≈ 440 pcm düşer (ölçülen
 tabloda 1.35891 → 1.35446): termalden hızlı gruba dönen nötronlar kaybolmuş sayılır. (2) Hızlı grup (> 0.625 eV, (n,2n) eşiği MeV
 bölgesinde): (n,2n) yalnız ν-saçılma matrisinin hızlı satırını büyütür. (3) Pin hücrede her malzeme
-tek hücrededir; bölgeler aynıdır, sonuç istatistik içinde aynı kalır (adlar `c…` olur). (4) Bölme
-0'da yakıt, zarf ve su tek düz kaynak bölgesidir: fark büyür (yüzlerce pcm); 26'da küçülür ama koşu
-uzar.
+tek hücrededir; bölgeler aynıdır, sonuç istatistik içinde aynı kalır (adlar `c…` olur). (4) Ölçülen (CASMO-70, malzeme, 200 ışın × 500
+çevrim): bölme 0 → 1.3574, 13 → 1.3569, 26 → 1.3569 (her biri ± 0.0005); süre 20, 83, 120 s. Pin
+hücrede bölgeler zaten incedir (yakıt yarıçapı 0.39 cm; su, zarf ile hücre kenarı arasında 0.17–0.43 cm): fark istatistik düzeyindedir,
+bölme yalnız süreyi artırır. Optik olarak kalın, büyük düz bölgelerde (yansıtıcı, su boşluğu) düz
+kaynak hatası büyür ve bölme ya da **Doğrusal** kaynak gerekir.
 
 **Kaynaklar.** OpenMC 0.16 belgeleri, *Multigroup Cross Section Generation* (`openmc.mgxs`) ve
 *Random Ray* bölümleri; W. M. Stacey, *Nuclear Reactor Physics* (2007), bölüm 4 (çok gruplu

@@ -11,7 +11,8 @@
    2) CASMO-70, malzeme bolgesi: ayni geometri MG MC CE'ye <= 500 pcm
       (homojenlestirme + grup yogunlastirmasi + izotropik sacilma; olculen
       -67 +- 180 pcm, 10^4 x 40 cevrim); random ray MG MC'ye <= 300 pcm
-      (yontem farki: duz kaynak, 13x13 bolme, 300 pasif; olculen -57 +- 110 pcm).
+      (yontem farki: duz kaynak, bolme yok, 300 pasif; olculen -10 +- 110 pcm;
+      13x13 bolmede -57).
  Sozlesme: testler/ortak_test.py (HIZLI / YAVAS).
 """
 
@@ -69,8 +70,7 @@ def test_random_ray_ayar_dogrulama():
 
 
 def test_rr_varsayilan_ve_mg_sarti():
-    print("\n[Y8-I3] varsayilan: L = max(kosegen, 30); aktif 5L; pin hucrede bolme ~0.1 cm")
-    import math
+    print("\n[Y8-I3] varsayilan: L = max(kosegen, 30); aktif 5L; bolme yok")
     from cekirdek import kurucu, random_ray as rr
     # Arrange
     model, _b = kurucu.kur(sema.yukle(os.path.join(ORNEK, "pwr_pinhucre.json")))
@@ -79,7 +79,7 @@ def test_rr_varsayilan_ve_mg_sarti():
     # Assert
     kontrol("olu 30 cm (pin kosegeni < 30)", a.olu_mesafe == 30.0, "-> %r" % (a,))
     kontrol("aktif 150 cm", a.aktif_mesafe == 150.0)
-    kontrol("bolme ceil(1.26/0.1) = 13", a.bolme == math.ceil(1.26 / rr.HEDEF_BOLME_CM))
+    kontrol("bolme yok", a.bolme == 0)
     try:
         rr.rr_modeli(model, a)
         kontrol("CE modelde ValueError", False)

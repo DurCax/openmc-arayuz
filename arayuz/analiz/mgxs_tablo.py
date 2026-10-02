@@ -15,7 +15,7 @@ from typing import Optional, Sequence
 from PySide6 import QtCore, QtWidgets
 
 from cekirdek import mgxs_is, mgxs_uret
-from cekirdek.ceviri import _
+from cekirdek.ceviri import _, N_
 
 PCM = mgxs_is.PCM
 XS_SUTUNLARI = 6           # bolge, tur, g, g', deger, bagil sapma
@@ -23,6 +23,17 @@ KARSI_SUTUNLARI = 7        # yontem, k, sigma, fark CE, sigma fark, fark MG, sur
 # Tabloda en cok bu kadar satir gosterilir (70 grup x 70 grup x bolge
 # saniyelerce cizim demekti); tam veri her zaman mgxs.csv'dedir.
 EN_COK_SATIR = 5000
+DUZELTME_ADLARI = {"yok": N_("yok"), "P0": "P0"}
+
+
+def sutunlari_ayarla(tablo: QtWidgets.QTableWidget, esnek: int) -> None:
+    """Sutunlar icerige gore; `esnek` sutunu kalan genisligi alir."""
+    baslik = tablo.horizontalHeader()
+    baslik.setStretchLastSection(False)
+    for j in range(tablo.columnCount()):
+        kip = (QtWidgets.QHeaderView.Stretch if j == esnek
+               else QtWidgets.QHeaderView.ResizeToContents)
+        baslik.setSectionResizeMode(j, kip)
 
 
 def _oge(metin: str, sayi: Optional[float] = None) -> QtWidgets.QTableWidgetItem:
@@ -89,9 +100,11 @@ def ozet_html(sonuc: mgxs_uret.MgxsSonuc) -> str:
     """CE k, sabitlerden k (oran ve ozdeger) ve notlar."""
     a = sonuc.ayar
     satirlar = [
-        "<b>%s</b>" % html.escape(_("Grup sabitleri hazır: %d bölge, %s (%d grup), düzeltme: %s")
+        "<b>%s</b>" % html.escape(_("Grup sabitleri hazır — bölge sayısı: %d, %s (%d grup), "
+                                    "taşıma düzeltmesi: %s")
                                   % (len(sonuc.adlar), a.grup_yapisi,
-                                     len(sonuc.grup_kenarlari) - 1, a.duzeltme)),
+                                     len(sonuc.grup_kenarlari) - 1,
+                                     _(DUZELTME_ADLARI.get(a.duzeltme, a.duzeltme)))),
         html.escape(_("CE k: %s") % _k_metni(sonuc.k_ce)),
         html.escape(_("Sabitlerden k = Σ νΣf·φ / Σ Σa·φ ((n,xn) hariç): %s")
                     % _k_metni(sonuc.k_oran)),

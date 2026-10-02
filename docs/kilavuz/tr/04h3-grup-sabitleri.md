@@ -36,7 +36,7 @@ V bölge, g enerji grubu (g = 1 en yüksek enerji), φ skaler akı:
 | **Grup yapısı** | `openmc.mgxs.GROUP_STRUCTURES` adları: CASMO-2/4/8/16/25/40/70, XMAS-172. 2 grupta sınır 0.625 eV. | grup | demet sabiti: 2–8; MG koşusu: ≥ 70 | 2 grupla "aynı geometri MG koşusu" yapıp büyük farkı yönteme bağlamak: fark grup yoğunlaştırmasıdır. | `ayarlar.mgxs.grup_yapisi` |
 | **Taşıma düzeltmesi** | **Yok** (izotropik saçılma, Σt) ya da **P0** (Σtr, köşegen düzeltmesi). | — | Yok | İnce grupta P0 ile MG Monte Carlo koşmak: köşegen negatif olur ve MG MC bunu işleyemez (ölçüldü: pin hücre CASMO-70'te −7600 pcm). Kart bunu sonuç notunda yazar; random ray köşegen kararlılaştırması uygular ve doğru kalır. | `ayarlar.mgxs.duzeltme` (`yok` \| `P0`) |
 | **Ek türler** | Zorunlulara ek: fisyon Σf, κ-fisyon κΣf, yakalama Σc, ters hız 1/v, difüzyon katsayısı D. Σt, Σa, νΣf, χ ve tutarlı (ν-)saçılma matrisleri her zaman üretilir (MG kütüphanesi için gerekli; P0'da ayrıca ν-taşıma). | — | boş | — | `ayarlar.mgxs.turler` |
-| **Random ray ayarları** (gelişmiş) | **Çevrim başına ışın**, **Çevrim / pasif**, **Ölü / aktif mesafe** (ışının tally'lenmeyen ve tally'lenen yolu), **Kaynak şekli** (düz, doğrusal, yalnız x-y doğrusal), **Kaynak bölgesi bölmesi** (kaynak bölgelerini N×N kare ağla böler; 0 = yok). Grup sabitleri üretilince modelden doldurulur: L = max(sınır kutusu köşegeni, 30 cm), ölü = L, aktif = 5L (OpenMC `convert_to_random_ray` kuralı), bölme ≈ 0.1 cm hücre, 200 ışın × 500 çevrim, 300 pasif. | ışın, çevrim, cm | pin hücre: 200 ışın, 13 × 13 | Pasif çevrimi kısaltmak: random ray her çevrimde **tek** kaynak yinelemesi yapar; sudaki termal grupta yakınsama ~0.93ⁿ hızındadır (ölçüldü: 150 pasifte homojen ortamda 24 pcm sapma, 300'de < 1 pcm). | (spec'e yazılmaz) |
+| **Random ray ayarları** (gelişmiş) | **Çevrim başına ışın**, **Çevrim / pasif**, **Ölü / aktif mesafe** (ışının tally'lenmeyen ve tally'lenen yolu), **Kaynak şekli** (düz, doğrusal, yalnız x-y doğrusal), **Kaynak bölgesi bölmesi** (kaynak bölgelerini N×N kare ağla böler; 0 = yok). Grup sabitleri üretilince modelden doldurulur: L = max(sınır kutusu köşegeni, 30 cm), ölü = L, aktif = 5L (OpenMC `convert_to_random_ray` kuralı), bölme yok, 200 ışın × 500 çevrim, 300 pasif. Pin hücrede bölme 0 / 13 × 13 / 26 × 26 aynı k'yı verdi (1.3574 / 1.3569 / 1.3569 ± 0.0005; 20 / 83 / 120 s). | ışın, çevrim, cm | pin hücre: 200 ışın, bölme yok; büyük düz bölgede (yansıtıcı) bölme ya da doğrusal kaynak | Pasif çevrimi kısaltmak: random ray her çevrimde **tek** kaynak yinelemesi yapar; sudaki termal grupta yakınsama ~0.93ⁿ hızındadır (ölçüldü: 150 pasifte homojen ortamda 24 pcm sapma, 300'de < 1 pcm). | (spec'e yazılmaz) |
 | **Grup sabitlerini üret** | CE koşusu (modelin **Hesap ayarları** parçacık/çevrim sayılarıyla) + kütüphane. Kopya spec'e `ayarlar.mgxs` yazılır; projeniz değişmez. Koşu dizini `<koşu tabanı>/mgxs_ce`. | — | — | — | — |
 | **MG ile yeniden koş** | Aynı geometri, her bölge `mgxs.h5`'teki makroskopik veriye bağlı (OpenMC `convert_to_multigroup` ile aynı yol); tally'ler kaldırılır, sıcaklıklar silinir (kütüphane 294 K). Dizin `mgxs_mg`. | — | — | — | — |
 | **Random ray ile koş** | Aynı `mgxs.h5`, `settings.random_ray`; yalnız özdeğer hesabı. Dizin `mgxs_rr`. | — | — | — | — |
@@ -73,12 +73,12 @@ ENDF/B-VIII.0, 6 iş parçacığı; `testler/test_y8_kosu.py`):
 | 2 grup, Demet: MG MC | 1.35911 ± 0.00067 | k∞'a +20 pcm | ≤ 3σ_MG |
 | 2 grup, Demet: random ray | 1.35891 | k∞'a < 1 pcm | ≤ 10 pcm (homojen ortamda düz kaynak kesin) |
 | CASMO-70, Malzeme, düzeltme yok: MG MC | 1.3575 ± 0.0010 | −66 ± 181 pcm | ≤ 500 pcm: ince grupta beklenen yöntem hatası (bölge içi homojenleştirme, grup yoğunlaştırma, izotropik saçılma) birkaç yüz pcm'dir; 500 pcm bu beklentiyi ve bu istatistikteki birleşik σ'nın (~180 pcm) yaklaşık 3 katını kapsar |
-| CASMO-70, Malzeme: random ray (13 × 13, düz) | 1.35693 ± 0.00051 | MG'ye −57 pcm | ≤ 300 pcm: düz kaynak ve ağ bölmesinin uzay ayrıklaştırma hatası |
+| CASMO-70, Malzeme: random ray (bölme yok, düz) | 1.3574 ± 0.0005 | MG'ye −10 pcm (13 × 13'te −57) | ≤ 300 pcm: düz kaynağın uzay ayrıklaştırma hatası ve MG MC'nin σ'sı (~100 pcm; birleşik ~110 pcm'in ≈ 3 katı) |
 | CASMO-70, Malzeme, P0: MG MC | 1.2822 ± 0.0014 | −7600 pcm | negatif köşegen: geçersiz (uyarı notu) |
 | CASMO-70, Malzeme, P0: random ray | 1.35695 ± 0.00035 | −122 pcm | köşegen kararlılaştırması |
 
-Süreler (aynı koşular): CE + MGXS 27 s (70 grup), MG MC 11 s, random ray 83 s (200 ışın × 500
-çevrim). Random ray bu küçük problemde hızlı değildir; avantajı büyük, optik olarak kalın
+Süreler (aynı koşular): CE + MGXS 27 s (70 grup), MG MC 11 s, random ray 20 s (bölme yok) – 83 s
+(13 × 13), 200 ışın × 500 çevrim. Random ray bu küçük problemde hızlı değildir; avantajı büyük, optik olarak kalın
 problemlerde ve sabit kaynakta belirginleşir.
 
 **Çıktı dosyaları** (`mgxs_ce/`): `mgxs.h5` (OpenMC MG kütüphanesi, xsdata adları `m<kimlik>_<ad>`,
