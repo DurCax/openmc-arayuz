@@ -207,6 +207,37 @@ def test_bagdastirici_eski_olayi_atar(tmp_path, monkeypatch):
     kq.kapat()
 
 
+def test_paralel_model_hazirligi_seri(tmp_path, monkeypatch):
+    # Bulundu (inceleme sonrasi): openmc.data.atomic_mass ilk cagrida modul
+    # sozlugunu kilitsiz doldurur; iki isci ayni anda kurucu.kur cagirinca ara
+    # sira KeyError('u234'). Model hazirligi (xml_yaz) seri olmali.
+    from cekirdek import kosucu, kuyruk, sema
+    from testler.ortak_test import ORNEK
+    spec = sema.yukle(os.path.join(ORNEK, "pwr_pinhucre.json"))
+    ayni_anda = {"simdi": 0, "en_cok": 0}
+    kilit = threading.Lock()
+
+    def sayan_xml_yaz(spec_, dizin, is_parcacigi=None):
+        with kilit:
+            ayni_anda["simdi"] += 1
+            ayni_anda["en_cok"] = max(ayni_anda["en_cok"], ayni_anda["simdi"])
+        time.sleep(0.05)
+        with kilit:
+            ayni_anda["simdi"] -= 1
+        yo.hazir_dizin(dizin)
+    monkeypatch.setattr(kosucu, "xml_yaz", sayan_xml_yaz)
+    monkeypatch.setenv("SAHTE_SURE", "0")
+    k = _kuyruk(tmp_path, monkeypatch, en_fazla_paralel=4, is_parcacigi_butcesi=4)
+    for i in range(8):
+        k.ekle(kuyruk.KosuIsi(ad="p%d" % i, spec=spec, dizin=str(tmp_path / ("p%d" % i)),
+                              dogrulama=False, sonuc_kancasi=yo.sahte_sonuc))
+    k.baslat()
+    assert k.bekle(60.0)
+    assert all(d.asama == kuyruk.Asama.BITTI for d in k.durumlar())
+    assert ayni_anda["en_cok"] == 1
+    k.kapat()
+
+
 # ---------------------------------------------------------------------------
 # MEDIUM / LOW: kuyruk tutarliligi
 # ---------------------------------------------------------------------------
@@ -412,7 +443,8 @@ HIZLI = [test_okuma_hatasinda_surec_grubu_oldurulur, test_bozuk_bayt_okumayi_dur
          test_iptal_boru_tutan_toruni_da_oldurur, test_lider_cikmisken_iptal_toruni_oldurur,
          test_sonlandir_zamanlayicisi_tekil,
          test_atexit_acik_gruplari_oldurur, test_olay_sirasi_seq_ile_tekdize,
-         test_bagdastirici_eski_olayi_atar, test_ekle_hata_verirse_kismi_kayit_kalmaz,
+         test_bagdastirici_eski_olayi_atar, test_paralel_model_hazirligi_seri,
+         test_ekle_hata_verirse_kismi_kayit_kalmaz,
          test_sinirlar_bekleyen_isin_sigmayacagi_butceyi_reddeder,
          test_kapat_toplam_son_tarihe_uyar, test_baglam_yoneticisi_kapatir,
          test_iplik_baslatilamazsa_is_basarisiz,

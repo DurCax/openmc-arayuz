@@ -109,6 +109,7 @@ LOG_ADI = "kosu.log"                 # kosucu.calistir ve arayuz ile ayni ad
 IPTAL_SURESI = 5.0                   # s; SIGTERM'den sonra SIGKILL'e kadar
 _KAPAT_SURESI = 10.0                 # s; kapat() iscileri bu kadar bekler
 _AD_SINIRI = 60                      # ayri_dizin: dizin adinin en uzun hali
+_HAZIRLIK_KILIDI = threading.Lock()   # model hazirligi (openmc Python API) seri
 
 
 
@@ -614,6 +615,14 @@ class Kuyruk:
         if is_.dogrulama:
             from cekirdek import dogrula
             dogrula.kapi(is_.spec, veri_kontrolu=is_.veri_kontrolu)
+        with _HAZIRLIK_KILIDI:
+            # openmc Python API'si is parcacigi guvenli degil (atomic_mass ilk
+            # cagrida modul sozlugunu kilitsiz doldurur; paralel iscide ara sira
+            # KeyError('u234')). Hazirlik kisadir (~0.1 s); kosular paralel kalir.
+            self._modeli_yaz(is_)
+
+    @staticmethod
+    def _modeli_yaz(is_: KosuIsi) -> None:
         kosucu.dizin_hazirla(is_.dizin, temizle=True)
         kosucu.xml_yaz(is_.spec, is_.dizin, is_parcacigi=int(is_.is_parcacigi))
 

@@ -41,6 +41,7 @@ from __future__ import annotations
 import copy
 import itertools
 import json
+import math
 import os
 import re
 import tempfile
@@ -56,6 +57,10 @@ YOL_TURU = "yol"
 BICIM_ADI = "openmc-arayuz-parametrik"
 BICIM_SURUMU = 1
 TARAMA_BICIMLERI = ("kartezyen", "esli")
+# Bir taramanin en cok nokta sayisi. Her nokta tam bir Monte Carlo kosusudur
+# (pin hucresinde ~1 dk, korde saatler); 10 000 nokta tek makinede aylar eder,
+# daha buyugu neredeyse her zaman yanlislikla kurulmus bir kartezyen carpimdir.
+MAKS_NOKTA = 10000
 _AD_DESENI = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
 
 
@@ -67,6 +72,8 @@ def _gecerli_turler() -> Tuple[str, ...]:
 def _sayi(deger: Any) -> float | int:
     if isinstance(deger, bool) or not isinstance(deger, (int, float)):
         raise ValueError(_("sayısal değer bekleniyordu: %r") % (deger,))
+    if not math.isfinite(deger):
+        raise ValueError(_("sonlu bir sayı bekleniyordu: %r") % (deger,))
     return deger
 
 
@@ -128,8 +135,18 @@ class ParametrikModel:
             eksik = [a for a in self.tarama.degerler if a not in adlar]
             if eksik:
                 raise ValueError(_("taramada tanımsız değişken: %s") % ", ".join(eksik))
+            n = _nokta_sayisi(self.tarama)
+            if n > MAKS_NOKTA:
+                raise ValueError(_("tarama %d nokta üretir; en çok %d") % (n, MAKS_NOKTA))
         object.__setattr__(self, "degiskenler", tuple(self.degiskenler))
         object.__setattr__(self, "taban", copy.deepcopy(dict(self.taban)))
+
+
+def _nokta_sayisi(t: Tarama) -> int:
+    boylar = [len(v) for v in t.degerler.values()]
+    if not boylar:
+        return 1
+    return boylar[0] if t.bicim == "esli" else math.prod(boylar)
 
 
 # ============================================================================
@@ -146,7 +163,8 @@ def _yol_parcalari(yol: str) -> List[str]:
 def _adim(kap: Any, parca: str, yol: str) -> Tuple[Any, Any]:
     """(kap, anahtar): kap[anahtar] var olmali."""
     if isinstance(kap, list):
-        if not parca.isdigit() or int(parca) >= len(kap):
+        # isdigit() Unicode rakamlarini da kabul ederdi ("\u0661"); yalniz ASCII
+        if not (parca.isascii() and parca.isdecimal()) or int(parca) >= len(kap):
             raise KeyError(_("spec yolunda liste öğesi yok: %s") % yol)
         return kap, int(parca)
     if isinstance(kap, dict) and parca in kap:
@@ -225,9 +243,20 @@ def sozluge(model: ParametrikModel) -> Dict[str, Any]:
 
 
 def sozlukten(veri: Mapping[str, Any]) -> ParametrikModel:
-    if veri.get("bicim") != BICIM_ADI:
+    """JSON sozlugunden model; bicim/tur hatasi -> ValueError."""
+    try:
+        return _sozlukten(veri)
+    except (TypeError, AttributeError, KeyError) as e:
+        raise ValueError(_("parametrik model biçimi bozuk: %s") % e) from e
+
+
+def _sozlukten(veri: Mapping[str, Any]) -> ParametrikModel:
+    if not isinstance(veri, Mapping) or veri.get("bicim") != BICIM_ADI:
         raise ValueError(_("parametrik model dosyası değil (bicim = %r)") % (veri.get("bicim"),))
-    if int(veri.get("surum") or 0) > BICIM_SURUMU:
+    surum = veri.get("surum") or 0
+    if not isinstance(surum, int) or isinstance(surum, bool):
+        raise ValueError(_("parametrik model sürümü geçersiz: %r") % (surum,))
+    if surum > BICIM_SURUMU:
         raise ValueError(_("parametrik model daha yeni bir sürümle yazılmış (%s)")
                          % veri.get("surum"))
     if not isinstance(veri.get("taban"), Mapping):
@@ -257,8 +286,12 @@ def kaydet(model: ParametrikModel, yol: str) -> str:
         os.replace(gecici, yol)
     except BaseException:
         _log.warning("parametrik model yazilamadi: %s", yol, exc_info=True)
-        if os.path.exists(gecici):
-            os.remove(gecici)
+        try:
+            if os.path.exists(gecici):
+                os.remove(gecici)
+        except OSError:
+            # ikinci hata ASIL hatayi maskelemesin; yalniz loglanir
+            _log.warning("gecici dosya silinemedi: %s", gecici, exc_info=True)
         raise
     return yol
 
@@ -282,21 +315,34 @@ def kuyruga_ekle(model: ParametrikModel, kuyruk: Any, kok_dizin: str, is_parcaci
                  mpi_surec: int = 0, dogrulama: bool = True, veri_kontrolu: bool = True,
                  sonuc_kancasi: Any = None) -> List[str]:
     """Her noktayi ayri dizinde kuyruga ekler. DONER kimlikler (nokta sirasiyla).
-    Bir nokta uygulanamazsa (ValueError/KeyError) HICBIR nokta eklenmez."""
+    ATOMIK: once butun noktalar uygulanir (ValueError/KeyError -> hicbiri
+    eklenmez); ekleme yarida hata verirse eklenenler iptal edilip kaldirilir.
+    Dizin nokta_NNN; o ad zaten varsa kuyruk.ayri_dizin ile nokta_NNN_2 ..."""
     from cekirdek import kuyruk as _kuyruk
     hazir: List[Tuple[Dict[str, float], Dict[str, Any], List[str]]] = []
     for nokta in noktalar(model):
         spec, notlar = uygula(model, nokta)
         hazir.append((nokta, spec, notlar))
+    alinmis = [d.dizin for d in kuyruk.durumlar()]
     kimlikler: List[str] = []
-    for i, (nokta, spec, notlar) in enumerate(hazir):
-        kimlikler.append(kuyruk.ekle(_kuyruk.KosuIsi(
-            ad=_nokta_adi(model, nokta), spec=spec,
-            dizin=os.path.join(kok_dizin, "nokta_%03d" % i),
-            is_parcacigi=is_parcacigi, mpi_surec=mpi_surec, dogrulama=dogrulama,
-            veri_kontrolu=veri_kontrolu, sonuc_kancasi=sonuc_kancasi,
-            etiket={"parametrik": model.ad, "sira": i, "degerler": dict(nokta),
-                    "notlar": list(notlar)})))
+    try:
+        for i, (nokta, spec, notlar) in enumerate(hazir):
+            dizin = _kuyruk.ayri_dizin(kok_dizin, "nokta_%03d" % i, alinmis)
+            alinmis.append(dizin)
+            kimlikler.append(kuyruk.ekle(_kuyruk.KosuIsi(
+                ad=_nokta_adi(model, nokta), spec=spec, dizin=dizin,
+                is_parcacigi=is_parcacigi, mpi_surec=mpi_surec, dogrulama=dogrulama,
+                veri_kontrolu=veri_kontrolu, sonuc_kancasi=sonuc_kancasi,
+                etiket={"parametrik": model.ad, "sira": i, "degerler": dict(nokta),
+                        "notlar": list(notlar)})))
+    except Exception:
+        _log.warning("parametrik model kuyruga eklenemedi; %d nokta geri aliniyor",
+                     len(kimlikler), exc_info=True)
+        for kimlik in kimlikler:
+            kuyruk.iptal(kimlik)
+            if kuyruk.durum(kimlik).bitti_mi:
+                kuyruk.kaldir(kimlik)
+        raise
     return kimlikler
 
 
