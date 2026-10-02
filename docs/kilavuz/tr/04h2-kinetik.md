@@ -19,18 +19,18 @@ n = P/P₀ (t = 0'da 1, kritik denge), c_i grup i öncüllerinin Λ ile ölçekl
 
 | Alan | Anlamı | Birim | Tipik aralık | Yaygın yanlış kullanım | Spec anahtarı |
 |---|---|---|---|---|---|
-| **Veri kaynağı** | **Keepin U-235 termal (6 grup)**: Keepin (1965) / Lamarsh tablo 7.4 değerleri, Σβ_i = 650.2 pcm. **Son koşu (IFP)**: son başarılı koşudan okunan β_i, λ_i ve Λ. **Elle**: tabloyu kendiniz doldurursunuz (hazır veriden başlar). Hazır veride ve koşu verisinde tablo düzenlenemez. | — | Keepin | LWR olmayan bir sistemde (hızlı, MOX) Keepin U-235 termal verisini kullanmak: β ve λ_i farklıdır. | (spec'e yazılmaz) |
+| **Veri kaynağı** | **Keepin U-235 termal (6 grup)**: Keepin, Wimett & Zeigler, Phys. Rev. 107, 1044 (1957) / Lamarsh & Baratta (2001) Tablo 7.4 değerleri, Σβ_i = 650.2 pcm. **Son koşu (IFP)**: son başarılı koşudan okunan β_i, λ_i ve Λ. **Elle**: tabloyu kendiniz doldurursunuz (hazır veriden başlar). Hazır veride ve koşu verisinde tablo düzenlenemez. | — | Keepin | LWR olmayan bir sistemde (hızlı, MOX) Keepin U-235 termal verisini kullanmak: β ve λ_i farklıdır. | (spec'e yazılmaz) |
 | **Son koşudan al** | Bu projedeki son başarılı koşunun statepoint'ini okur. Koşuda [Hesap ayarları](04f-hesap-ayarlari.md#hesap-ayarlari) > **Kinetik parametreleri hesapla** ve **Gecikmeli nötron grupları** (6 ya da 8) açık olmalıdır; değilse kart nedenini yazar. | — | — | Kinetik kapalı bir koşudan veri beklemek. | — |
 | **Grup sayısı** | Elle verideki grup sayısı (tablo satırı). | grup | 6 (1–8) | — | — |
 | Tablo **β_i [pcm]**, **λ_i [1/s]** | Grup başına etkin gecikmeli nötron oranı ve öncül bozunma sabiti. β_i ≥ 0, Σβ_i > 0, λ_i > 0 olmalı; değilse hata yazılır ve hesap yapılmaz. | pcm, 1/s | λ_1 ≈ 0.0124 (≈ 56 s yarı ömür) … λ_6 ≈ 3 1/s | β_i'yi Δk/k olarak (0.0002) yazmak: tablo **pcm** ister (21.5). | — |
-| **Üretim zamanı Λ** | Ani nötron üretim zamanı. | μs | LWR 10–30 μs; hızlı sistem ns düzeyi (Godiva 5.6 ns = 0.0056 μs) | Ani nötron ömrü ℓ ile karıştırmak: Λ = ℓ/k. | — |
+| **Üretim zamanı Λ** | Ani nötron üretim zamanı. | μs | örnek değerler (bu programla ölçülen): PWR 17×17 demeti 18.9 μs, Godiva 5.6 ns = 0.0056 μs | Ani nötron ömrü ℓ ile karıştırmak: Λ = ℓ/k. | — |
 | **Reaktivite türü** | **Basamak**: t = 0'da sabit ρ. **Rampa**: ρ, **Rampa süresi** boyunca doğrusal artar, sonra sabit kalır. | — | Basamak | — | — |
 | **Birim** | **pcm** (1 pcm = 10⁻⁵ Δk/k) ya da **$** (1 $ = β_eff). Birim değişince değer o anki Σβ_i ile dönüştürülür. | — | pcm | $'ı başka bir sistemin β'sıyla düşünmek: 1 $ her sistemde farklı pcm'dir. | — |
-| **Reaktivite** | Basamakta eklenen ρ; rampada rampa sonunda ulaşılan ρ. Negatif değer kritik altı geçişi verir. | pcm ya da $ | ±(10–300) pcm | ρ ≥ 1 $ girmek: **ANİ KRİTİK** uyarısı çıkar (aşağıda). | — |
+| **Reaktivite** | Basamakta eklenen ρ; rampada rampa sonunda ulaşılan ρ. Negatif değer kritik altı geçişi verir. | pcm ya da $ | örnek: ±(10–300) pcm | ρ ≥ 1 $ girmek: **ANİ KRİTİK** uyarısı çıkar (aşağıda). | — |
 | **Rampa süresi** | Rampanın süresi; yalnızca rampada görünür. Rampa hızı = ρ / süre. | s | 1–100 s | — | — |
 | **Benzetim süresi** | Çözümün bitiş zamanı. Kararlı periyot ancak en uzun ömürlü grubun geçişi sönünce (birkaç × 1/λ_1 ≈ dakikalar) ölçülür. | s | 100 s | Kısa süreden "kararlı periyot" okumak: çözümden ölçülen periyot Inhour değerine henüz yaklaşmamıştır. | — |
 | **Adiyabatik sıcaklık geri beslemesi** | Isı atılmaz: dΔT/dt = P₀ (P/P₀) / C ve ρ = ρ_dış + α_T ΔT. Grafikte ΔT ikinci eksende kesikli çizilir. | — | kapalı | Isı atımı olan bir durumda (sürekli işletme) adiyabatik sonucu kalıcı sanmak. | — |
-| **α_T** | Sıcaklık reaktivite katsayısı. Pozitif değer uyarı verir (kararsız geri besleme). | pcm/K | −1 … −5 pcm/K (Doppler) | Birimi Δk/k/K sanmak: kutu **pcm/K** ister. | — |
+| **α_T** | Sıcaklık reaktivite katsayısı. Pozitif değer uyarı verir (kararsız geri besleme). | pcm/K | örnek değer: −2 pcm/K (kaynaklı bir tipik aralık verilmez; kendi modelinizin Doppler katsayısını Analiz taramasıyla ölçün) | Birimi Δk/k/K sanmak: kutu **pcm/K** ister. | — |
 | **Isı kapasitesi C** | Isınan kütlenin toplam ısı kapasitesi. | J/K | — | — | — |
 | **Başlangıç gücü P₀** | t = 0'daki güç. | W | — | — | — |
 | **Hesapla** | Girdileri doğrular, çözer; sonuç metni, uyarılar ve P(t)/P₀ grafiği yazılır. Grafik, güç 100 kattan fazla değişirse logaritmik eksene geçer. | — | — | — | — |
@@ -51,13 +51,21 @@ bu da yazılır. Geri beslemesiz nokta kinetiği bu bölgede yalnızca nitel bir
 
 **λ_i nereden gelir?** IFP λ_i vermez. Koşuda ayrı bir tally grup başına `decay-rate` ve
 `delayed-nu-fission` sayar; λ_i = ⟨λ_i ν_d,i Σ_f φ⟩ / ⟨ν_d,i Σ_f φ⟩ (OpenMC `mgxs.DecayRate` ile
-aynı tanım). Bu, fisyon kaynaklı (eşlenik ağırlıksız) bir karışım ortalamasıdır; λ_i **nükleer
+aynı tanım). Bu, grup i içinde nüklidlerin λ'larının **öncül üretim hızı** (ν_d,i Σ_f φ)
+ağırlıklı aritmetik ortalamasıdır: ileri (eşlenik ağırlıksız) bir ortalama. β_i ise **eşlenik
+ağırlıklıdır**; iki ağırlık farklıdır (tek baskın fisil nüklidde fark sıfıra gider). Envanteri
+koruyan harmonik ortalama (Σ ν_d / Σ (ν_d/λ)) nüklid başına skor ister ve yapılmaz. λ_i **nükleer
 veridir**: ENDF/B-VIII.0'da 6 grup ve nüklide göre farklı λ (U-235: 0.01334, 0.03274, 0.12078,
 0.30278, 0.84949, 2.85300 1/s), JEFF-3.1+'da 8 grup ve bütün nüklidlerde aynı λ. β_i ise IFP ile
 **eşlenik ağırlıklı** etkin orandır: β_eff,i = ⟨IFP beta payı⟩_i / ⟨IFP payda⟩. Λ, OpenMC
 `StatePoint.get_kinetics_parameters` tanımıyla Λ = ⟨IFP zaman payı⟩ / (⟨IFP payda⟩ k_eff)'dir.
 λ_i belirsizliği pay ve paydanın bağımsız olduğu varsayımıyla yazılır; ikisi güçlü ilintili
 olduğundan bu bir **üst sınırdır**.
+
+**Hangi β?** $ dönüşümü ve ani kritik eşiği her yerde aynı β ile yapılır: tablodaki **Σβ_i**
+(koşudan alındığında gruplu IFP tally'sinin toplamı = sonuç kartındaki β_eff). Koşuda ayrıca
+filtresiz bir `delayed-nu-fission` tally'si sayılır; Σ dnf_i bu toplamdan küçükse kütüphanede
+istenenden çok grup vardır (JEFF verisiyle 6 grup) ve kart β_eff'in eksik olduğunu uyarır.
 
 **Doğrulama** (`testler/test_y6_kinetik.py`, `testler/test_y6_tally.py`):
 

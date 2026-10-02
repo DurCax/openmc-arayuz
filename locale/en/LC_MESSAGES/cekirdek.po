@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 07:37+0300\n"
+"POT-Creation-Date: 2026-10-02 09:38+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -458,6 +458,14 @@ msgstr "entropy mesh dimensions must be greater than zero"
 #, python-format
 msgid "çevrim başına parçacık az (%d) — kaynak yakınsaması bozulabilir"
 msgstr "few particles per batch (%d) — source convergence may suffer"
+
+#: cekirdek/dogrula/ayar.py:67
+msgid ""
+"Grup sayısı nükleer veri kütüphanesiyle eşleşmeli: ENDF/B 6, JEFF 8; 0 yalnız toplam "
+"β_eff verir."
+msgstr ""
+"The number of groups must match the nuclear data library: ENDF/B 6, JEFF 8; 0 gives "
+"the total β_eff only."
 
 #: cekirdek/dogrula/eksenel.py:44
 #, python-format
@@ -3907,56 +3915,60 @@ msgstr "neutron"
 msgid " (ortalama %s)"
 msgstr " (mean %s)"
 
-#: cekirdek/kinetik.py:101
-#, python-format
-msgid "%s pozitif ve sonlu olmalı: %r"
-msgstr "%s must be positive and finite: %r"
-
-#: cekirdek/kinetik.py:108
+#: cekirdek/kinetik.py:109 cekirdek/kinetik.py:113 cekirdek/kinetik.py:126
 #, python-format
 msgid "%s sonlu bir sayı olmalı: %r"
 msgstr "%s must be a finite number: %r"
 
-#: cekirdek/kinetik.py:128
+#: cekirdek/kinetik.py:119
+#, python-format
+msgid "%s pozitif ve sonlu olmalı: %r"
+msgstr "%s must be positive and finite: %r"
+
+#: cekirdek/kinetik.py:134
+msgid "Başlangıç zamanı negatif olamaz."
+msgstr "Start time cannot be negative."
+
+#: cekirdek/kinetik.py:154
 msgid "β_i ve λ_i aynı sayıda (en az bir) grup içermeli."
 msgstr "β_i and λ_i must have the same number of groups (at least one)."
 
-#: cekirdek/kinetik.py:130
+#: cekirdek/kinetik.py:156
 #, python-format
 msgid "En çok %d gecikmeli nötron grubu desteklenir."
 msgstr "At most %d delayed neutron groups are supported."
 
-#: cekirdek/kinetik.py:133
+#: cekirdek/kinetik.py:159
 msgid "β_i negatif olamaz ve toplamı pozitif olmalı."
 msgstr "β_i cannot be negative and their sum must be positive."
 
-#: cekirdek/kinetik.py:152
+#: cekirdek/kinetik.py:178
 msgid "Keepin (1965), U-235 termal, 6 grup"
 msgstr "Keepin (1965), U-235 thermal, 6 groups"
 
-#: cekirdek/kinetik.py:164 cekirdek/kinetik.py:187
-msgid "Başlangıç zamanı negatif olamaz."
-msgstr "Start time cannot be negative."
-
-#: cekirdek/kinetik.py:185
+#: cekirdek/kinetik.py:210
 msgid "rampa süresi"
 msgstr "ramp duration"
 
-#: cekirdek/kinetik.py:208
+#: cekirdek/kinetik.py:232
 msgid "ısı kapasitesi"
 msgstr "heat capacity"
 
-#: cekirdek/kinetik.py:259
+#: cekirdek/kinetik.py:266
+msgid "ω = −λ_i bir kutuptur; ters saat denklemi tanımsız."
+msgstr "ω = −λ_i is a pole; the inhour equation is undefined there."
+
+#: cekirdek/kinetik.py:296
 #, python-format
 msgid "Inhour kökü aralıkta bulunamadı: [%g, %g]"
 msgstr "Inhour root not found in the interval: [%g, %g]"
 
-#: cekirdek/kinetik.py:272
+#: cekirdek/kinetik.py:309
 #, python-format
 msgid "Inhour kökü %g 1/s ötesinde."
 msgstr "Inhour root lies beyond %g 1/s."
 
-#: cekirdek/kinetik.py:364
+#: cekirdek/kinetik.py:404
 #, python-format
 msgid ""
 "ρ = %.3f $ ≥ 1 $: ANİ KRİTİK. Güç gecikmeli nötronları beklemeden Λ ölçeğinde artar; "
@@ -3965,7 +3977,7 @@ msgstr ""
 "ρ = %.3f $ ≥ 1 $: PROMPT CRITICAL. Power rises on the Λ time scale without waiting "
 "for delayed neutrons; in this region point kinetics gives only a qualitative picture."
 
-#: cekirdek/kinetik.py:369
+#: cekirdek/kinetik.py:409
 msgid ""
 "α_T > 0: pozitif sıcaklık katsayısı gücü kendiliğinden artırır (kararsız geri "
 "besleme)."
@@ -3973,43 +3985,59 @@ msgstr ""
 "α_T > 0: a positive temperature coefficient drives the power up by itself (unstable "
 "feedback)."
 
-#: cekirdek/kinetik.py:386
+#: cekirdek/kinetik.py:428
 msgid "süre"
 msgstr "duration"
 
-#: cekirdek/kinetik.py:388
+#: cekirdek/kinetik.py:430
 #, python-format
 msgid "Yöntem Radau ya da BDF olmalı: %r"
 msgstr "Method must be Radau or BDF: %r"
 
-#: cekirdek/kinetik.py:390
-msgid "En az iki zaman noktası gerekir."
-msgstr "At least two time points are required."
-
-#: cekirdek/kinetik.py:408
+#: cekirdek/kinetik.py:449
 #, python-format
 msgid "Çözücü başarısız: %s"
 msgstr "Solver failed: %s"
 
-#: cekirdek/kinetik.py:416
+#: cekirdek/kinetik.py:457
 #, python-format
 msgid "P/P0 %.0e'yi aştı (t = %.4g s); çözüm burada durduruldu."
 msgstr "P/P0 exceeded %.0e (t = %.4g s); the solution was stopped here."
 
-#: cekirdek/kinetik.py:442
+#: cekirdek/kinetik.py:468
+#, python-format
+msgid "En az iki zaman noktası gerekir (tam sayı): %r"
+msgstr "At least two time points are required (integer): %r"
+
+#: cekirdek/kinetik.py:498
 msgid "Periyot için en az üç nokta gerekir."
 msgstr "At least three points are required for the period."
 
-#: cekirdek/kinetik.py:445
+#: cekirdek/kinetik.py:501
 msgid "Periyot tahmini için pozitif güç noktaları gerekir."
 msgstr "Period estimation requires positive power values."
 
-#: cekirdek/kinetik_oku.py:45
+#: cekirdek/kinetik_oku.py:57
 #, python-format
 msgid "Gecikmeli nötron grup sayısı 0, 6 ya da 8 olmalı: %r"
 msgstr "Number of delayed neutron groups must be 0, 6 or 8: %r"
 
-#: cekirdek/kinetik_oku.py:168
+#: cekirdek/kinetik_oku.py:159
+#, python-format
+msgid ""
+"İstenen %d grup gecikmeli nötron üretiminin yalnızca %%%.1f'ini kapsıyor: kütüphanede"
+" daha çok grup var (JEFF: 8). β_eff ve $ eksik çıkar; grup sayısını 8 yapıp yeniden "
+"koşun."
+msgstr ""
+"The requested %d groups cover only %.1f%% of the delayed neutron production: the "
+"library has more groups (JEFF: 8). β_eff and $ come out too small; set the number of "
+"groups to 8 and run again."
+
+#: cekirdek/kinetik_oku.py:221
+msgid "k_eff yok: Λ yerine ani nötron ömrü ℓ yazıldı."
+msgstr "No k_eff: the prompt neutron lifetime ℓ was written instead of Λ."
+
+#: cekirdek/kinetik_oku.py:238
 msgid "OpenMC koşusu (IFP)"
 msgstr "OpenMC run (IFP)"
 
@@ -4227,13 +4255,13 @@ msgstr "Unit"
 msgid "okunamadı: %s"
 msgstr "could not be read: %s"
 
-#: cekirdek/kosucu.py:514
+#: cekirdek/kosucu.py:516
 msgid "Referans tally yok — korunum denetlenemedi (eski statepoint ya da model regresyonu)."
 msgstr ""
 "No reference tally — conservation could not be checked (old statepoint or model "
 "regression)."
 
-#: cekirdek/kosucu.py:518
+#: cekirdek/kosucu.py:520
 #, python-format
 msgid ""
 "Referans güç toplamı sıfır ya da negatif (%.3g): hedef bölgede fisyon sayılmadı, "
@@ -4242,7 +4270,7 @@ msgstr ""
 "The reference power sum is zero or negative (%.3g): no fissions were counted in the "
 "target region, the conservation of the total could not be checked."
 
-#: cekirdek/kosucu.py:525
+#: cekirdek/kosucu.py:527
 #, python-format
 msgid ""
 "Çubuk güçlerinin toplamı filtresiz tally'den %.2e bağıl fark gösteriyor. Haritalama "
@@ -4251,20 +4279,20 @@ msgstr ""
 "The sum of the pin powers differs from the unfiltered tally by a relative %.2e. The "
 "mapping may be broken — do not trust the results."
 
-#: cekirdek/kosucu.py:578
+#: cekirdek/kosucu.py:580
 #, python-format
 msgid "toplamın korunumu: bağıl fark %.1e — %s"
 msgstr "conservation of the total: relative difference %.1e — %s"
 
-#: cekirdek/kosucu.py:579 cekirdek/kosucu_terminal.py:157
+#: cekirdek/kosucu.py:581 cekirdek/kosucu_terminal.py:157
 msgid "tamam"
 msgstr "ok"
 
-#: cekirdek/kosucu.py:580
+#: cekirdek/kosucu.py:582
 msgid "bozuk, haritaya güvenmeyin"
 msgstr "broken, do not trust the map"
 
-#: cekirdek/kosucu.py:582
+#: cekirdek/kosucu.py:584
 #, python-format
 msgid "toplamın korunumu denetlenemedi: %s"
 msgstr "conservation of the total could not be checked: %s"
@@ -5800,7 +5828,7 @@ msgstr ""
 msgid "uygunluk denetimi yapılamadı: %s"
 msgstr "conformity check could not be performed: %s"
 
-#: cekirdek/sema.py:378
+#: cekirdek/sema.py:380
 #, python-format
 msgid ""
 "%s() gelişmiş (ağaç) geometri modunda kullanılamaz: kor alanları yok; "

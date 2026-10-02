@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 07:37+0300\n"
+"POT-Creation-Date: 2026-10-02 09:38+0300\n"
 "PO-Revision-Date: 2026-10-01 18:14+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -162,7 +162,7 @@ msgstr "Last run (IFP)"
 msgid "Elle"
 msgstr "Manual"
 
-#: arayuz/analiz/kinetik.py:41
+#: arayuz/analiz/kinetik.py:41 arayuz/yardim/__init__.py:51
 msgid "Nokta kinetiği"
 msgstr "Point kinetics"
 
@@ -189,18 +189,22 @@ msgid "Grup"
 msgstr "Group"
 
 #: arayuz/analiz/kinetik.py:73
-msgid "Λ: ani nötron üretim zamanı. LWR ~ 10–30 μs, hızlı sistem ~ ns (Godiva ~ 5.6 ns)."
-msgstr "Λ: prompt neutron generation time. LWR ~ 10–30 μs, fast system ~ ns (Godiva ~ 5.6 ns)."
+msgid ""
+"Λ: ani nötron üretim zamanı. Örnek değerler (bu programla ölçülen):\n"
+"PWR 17×17 demeti 18.9 μs, Godiva 5.6 ns."
+msgstr ""
+"Λ: prompt neutron generation time. Example values (measured with this program):\n"
+"PWR 17×17 assembly 18.9 μs, Godiva 5.6 ns."
 
-#: arayuz/analiz/kinetik.py:75
+#: arayuz/analiz/kinetik.py:76
 msgid "Basamak"
 msgstr "Step"
 
-#: arayuz/analiz/kinetik.py:76
+#: arayuz/analiz/kinetik.py:77
 msgid "Rampa"
 msgstr "Ramp"
 
-#: arayuz/analiz/kinetik.py:84
+#: arayuz/analiz/kinetik.py:85
 msgid ""
 "Basamakta t = 0'da eklenen ρ; rampada rampa sonunda ulaşılan ρ.\n"
 "1 pcm = 10⁻⁵ Δk/k; 1 $ = β_eff. ρ ≥ 1 $ ANİ KRİTİK'tir."
@@ -208,15 +212,15 @@ msgstr ""
 "Step: ρ inserted at t = 0; ramp: ρ reached at the end of the ramp.\n"
 "1 pcm = 10⁻⁵ Δk/k; 1 $ = β_eff. ρ ≥ 1 $ is PROMPT CRITICAL."
 
-#: arayuz/analiz/kinetik.py:88
+#: arayuz/analiz/kinetik.py:89
 msgid "Hesapla"
 msgstr "Compute"
 
-#: arayuz/analiz/kinetik.py:93
+#: arayuz/analiz/kinetik.py:94
 msgid "Adiyabatik sıcaklık geri beslemesi"
 msgstr "Adiabatic temperature feedback"
 
-#: arayuz/analiz/kinetik.py:95
+#: arayuz/analiz/kinetik.py:96
 msgid ""
 "Isı atılmaz: dΔT/dt = P₀·(P/P₀)/C, ρ = ρ_dış + α_T·ΔT.\n"
 "Doppler benzeri hızlı bir negatif geri beslemenin en basit modeli."
@@ -224,51 +228,51 @@ msgstr ""
 "No heat removal: dΔT/dt = P₀·(P/P₀)/C, ρ = ρ_ext + α_T·ΔT.\n"
 "The simplest model of a fast, Doppler-like negative feedback."
 
-#: arayuz/analiz/kinetik.py:110
+#: arayuz/analiz/kinetik.py:111
 msgid "Veri kaynağı:"
 msgstr "Data source:"
 
-#: arayuz/analiz/kinetik.py:111
+#: arayuz/analiz/kinetik.py:112
 msgid "Grup sayısı:"
 msgstr "Number of groups:"
 
-#: arayuz/analiz/kinetik.py:113
+#: arayuz/analiz/kinetik.py:114
 msgid "Üretim zamanı Λ:"
 msgstr "Neutron generation time Λ:"
 
-#: arayuz/analiz/kinetik.py:114
+#: arayuz/analiz/kinetik.py:115
 msgid "Reaktivite türü:"
 msgstr "Reactivity type:"
 
-#: arayuz/analiz/kinetik.py:115
+#: arayuz/analiz/kinetik.py:116
 msgid "Birim:"
 msgstr "Unit:"
 
-#: arayuz/analiz/kinetik.py:116
+#: arayuz/analiz/kinetik.py:117
 msgid "Reaktivite:"
 msgstr "Reactivity:"
 
-#: arayuz/analiz/kinetik.py:117
+#: arayuz/analiz/kinetik.py:118
 msgid "Rampa süresi:"
 msgstr "Ramp duration:"
 
-#: arayuz/analiz/kinetik.py:118
+#: arayuz/analiz/kinetik.py:119
 msgid "Benzetim süresi:"
 msgstr "Simulated time:"
 
-#: arayuz/analiz/kinetik.py:121
+#: arayuz/analiz/kinetik.py:122
 msgid "Isı kapasitesi C:"
 msgstr "Heat capacity C:"
 
-#: arayuz/analiz/kinetik.py:122
+#: arayuz/analiz/kinetik.py:123
 msgid "Başlangıç gücü P₀:"
 msgstr "Initial power P₀:"
 
-#: arayuz/analiz/kinetik.py:131 arayuz/analiz/kinetik.py:155
+#: arayuz/analiz/kinetik.py:132 arayuz/analiz/kinetik.py:156
 msgid "Henüz hesaplanmadı."
 msgstr "Not computed yet."
 
-#: arayuz/analiz/kinetik.py:166
+#: arayuz/analiz/kinetik.py:167
 msgid ""
 "Bu projede başarılı bir koşu yok: önce Çalıştır'da kinetik parametreleri açık bir "
 "özdeğer koşusu yapın."
@@ -276,12 +280,17 @@ msgstr ""
 "There is no successful run in this project: first make an eigenvalue run in Run with "
 "kinetics parameters enabled."
 
-#: arayuz/analiz/kinetik.py:174
+#: arayuz/analiz/kinetik.py:175
 #, python-format
 msgid "Koşudan kinetik veri okunamadı: %s"
 msgstr "Kinetics data could not be read from the run: %s"
 
-#: arayuz/analiz/kinetik.py:177
+#: arayuz/analiz/kinetik.py:179
+#, python-format
+msgid "Koşudan grup verisi okunamadı: %s"
+msgstr "Group data could not be read from the run: %s"
+
+#: arayuz/analiz/kinetik.py:180
 msgid ""
 "Son koşuda grup başına veri yok. Hesap ayarlarında kinetik parametreleri ve gecikmeli"
 " nötron gruplarını (6 ya da 8) açıp yeniden koşun."
@@ -289,25 +298,27 @@ msgstr ""
 "The last run has no per-group data. Enable kinetics parameters and delayed neutron "
 "groups (6 or 8) in Run settings and run again."
 
-#: arayuz/analiz/kinetik.py:184
+#: arayuz/analiz/kinetik.py:188
 #, python-format
-msgid "Koşudan alındı: %d grup, β_eff = %.1f pcm, Λ = %.4g s."
-msgstr "Taken from the run: %d groups, β_eff = %.1f pcm, Λ = %.4g s."
+msgid "Koşudan alındı: %d grup, Σβ_i = %.1f pcm ($ ve ani kritik eşiği bununla), Λ = %.4g s."
+msgstr ""
+"Taken from the run: %d groups, Σβ_i = %.1f pcm (used for $ and the prompt critical "
+"threshold), Λ = %.4g s."
 
-#: arayuz/analiz/kinetik.py:198
+#: arayuz/analiz/kinetik.py:205
 #, python-format
 msgid "Tablo satırı %d: β_i ve λ_i sayı olmalı."
 msgstr "Table row %d: β_i and λ_i must be numbers."
 
-#: arayuz/analiz/kinetik.py:201 arayuz/analiz/kinetik_gosterim.py:72
+#: arayuz/analiz/kinetik.py:208 arayuz/analiz/kinetik_gosterim.py:72
 msgid "elle"
 msgstr "manual"
 
-#: arayuz/analiz/kinetik.py:235
+#: arayuz/analiz/kinetik.py:242
 msgid "Hesaplanamadı."
 msgstr "Could not be computed."
 
-#: arayuz/analiz/kinetik.py:255
+#: arayuz/analiz/kinetik.py:262
 msgid "Önce \"Son koşudan al\" ile koşu verisini yükleyin."
 msgstr "First load the run data with \"Take from last run\"."
 
@@ -7507,7 +7518,7 @@ msgid "Sonuç"
 msgstr "Result"
 
 #: arayuz/pencere/model_islemleri.py:67 arayuz/tukenme_arayuz.py:214
-#: arayuz/yardim/__init__.py:51
+#: arayuz/yardim/__init__.py:52
 msgid "Tükenme"
 msgstr "Depletion"
 
@@ -7821,92 +7832,96 @@ msgstr "Window layout"
 msgid "Gelişmiş geometri editörü"
 msgstr "Advanced geometry editor"
 
-#: arayuz/yardim/__init__.py:52
+#: arayuz/yardim/__init__.py:53
 msgid "Rehberli dersler"
 msgstr "Guided lessons"
 
-#: arayuz/yardim/__init__.py:53
+#: arayuz/yardim/__init__.py:54
 msgid "Ders: demet k∞"
 msgstr "Lesson: assembly k∞"
 
-#: arayuz/yardim/__init__.py:54
+#: arayuz/yardim/__init__.py:55
 msgid "Ders: tam kor"
 msgstr "Lesson: full core"
 
-#: arayuz/yardim/__init__.py:55
+#: arayuz/yardim/__init__.py:56
 msgid "Ders: altıgen kor"
 msgstr "Lesson: hexagonal core"
 
-#: arayuz/yardim/__init__.py:56
+#: arayuz/yardim/__init__.py:57
 msgid "Ders: kare çekirdek + altıgen halka"
 msgstr "Lesson: square core + hexagonal ring"
 
-#: arayuz/yardim/__init__.py:57
+#: arayuz/yardim/__init__.py:58
 msgid "Ders: tamburu herhangi bir geometriye yerleştirmek"
 msgstr "Lesson: placing a drum in any geometry"
 
-#: arayuz/yardim/__init__.py:58
+#: arayuz/yardim/__init__.py:59
 msgid "Ders: tükenme ve nüklid seçimi"
 msgstr "Lesson: depletion and nuclide selection"
 
-#: arayuz/yardim/__init__.py:59
+#: arayuz/yardim/__init__.py:60
 msgid "Ders: güç haritası ve F_ΔH"
 msgstr "Lesson: power map and F_ΔH"
 
-#: arayuz/yardim/__init__.py:60
+#: arayuz/yardim/__init__.py:61
 msgid "Ders: benchmark ve C/E"
 msgstr "Lesson: benchmarks and C/E"
 
-#: arayuz/yardim/__init__.py:61
+#: arayuz/yardim/__init__.py:62
 msgid "Ders: kritik arama"
 msgstr "Lesson: critical search"
 
-#: arayuz/yardim/__init__.py:62
+#: arayuz/yardim/__init__.py:63
 msgid "Ders: rapor ve uygunluk eki"
 msgstr "Lesson: report and conformity annex"
 
-#: arayuz/yardim/__init__.py:63
+#: arayuz/yardim/__init__.py:64
+msgid "Ders: nokta kinetiği"
+msgstr "Lesson: point kinetics"
+
+#: arayuz/yardim/__init__.py:65
 msgid "Sonuçları yorumlamak"
 msgstr "Interpreting results"
 
-#: arayuz/yardim/__init__.py:64
+#: arayuz/yardim/__init__.py:66
 msgid "Önce çiz, sonra çalıştır"
 msgstr "Draw first, then run"
 
-#: arayuz/yardim/__init__.py:65
+#: arayuz/yardim/__init__.py:67
 msgid "Bilinen tuzaklar"
 msgstr "Known pitfalls"
 
-#: arayuz/yardim/__init__.py:66
+#: arayuz/yardim/__init__.py:68
 msgid "Uygunluk denetimi"
 msgstr "Conformity check"
 
-#: arayuz/yardim/__init__.py:67
+#: arayuz/yardim/__init__.py:69
 msgid "Doğrulama ve geçerleme (V&V)"
 msgstr "Verification and validation (V&V)"
 
-#: arayuz/yardim/__init__.py:68
+#: arayuz/yardim/__init__.py:70
 msgid "Terminal ve HPC kullanımı"
 msgstr "Terminal and HPC use"
 
-#: arayuz/yardim/__init__.py:69
+#: arayuz/yardim/__init__.py:71
 msgid "Sorun giderme"
 msgstr "Troubleshooting"
 
-#: arayuz/yardim/__init__.py:70
+#: arayuz/yardim/__init__.py:72
 msgid "Uygunluk kuralları (K1–K16)"
 msgstr "Conformity rules (K1–K16)"
 
-#: arayuz/yardim/__init__.py:71
+#: arayuz/yardim/__init__.py:73
 msgid "Terim sözlüğü"
 msgstr "Glossary"
 
-#: arayuz/yardim/__init__.py:103
+#: arayuz/yardim/__init__.py:105
 #, python-brace-format
 msgid "Kullanım kılavuzu bulunamadı: {yol}"
 msgstr "User guide not found: {yol}"
 
-#: arayuz/yardim/__init__.py:123
+#: arayuz/yardim/__init__.py:125
 #, python-brace-format
 msgid "Kılavuzda bu bölüm yok: {b}"
 msgstr "This section is not in the user guide: {b}"

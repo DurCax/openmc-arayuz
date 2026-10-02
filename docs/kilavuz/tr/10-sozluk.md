@@ -152,6 +152,13 @@ Kaynak tablo depodaki [SOZLUK.md](../../SOZLUK.md) dosyasıdır; aşağıdaki ta
 | kinetik parametreler | kinetics parameters |  | β_eff, Λ |
 | gecikmeli nötron oranı | delayed neutron fraction |  | β_eff |
 | üretim zamanı | neutron generation time | production time | Λ |
+| ani nötron ömrü | prompt neutron lifetime |  | ℓ = Λ·k |
+| nokta kinetiği | point kinetics |  |  |
+| gecikmeli nötron grubu | delayed neutron group |  | β_i, λ_i |
+| öncül | precursor | predecessor | gecikmeli nötron öncülü |
+| ani kritik | prompt critical | instant critical | ρ ≥ 1 $ |
+| ters saat denklemi | inhour equation | inverse clock equation | Inhour |
+| kararlı periyot | stable period |  | T = 1/ω₀ |
 | belirsizlik | uncertainty | error | "hata" demeyin; 1σ yazılır |
 | standart sapma | standard deviation |  | σ |
 | kapsama faktörü | coverage factor |  | GUM |
