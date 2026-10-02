@@ -11,7 +11,7 @@ with the σ map whether the statistics are sufficient, and export the result to 
 ### Step 1: inspect the mesh
 
 1. Open the example **PWR 17×17 assembly: mesh flux and power map** from the start screen.
-2. In **Settings › Tallies** select the `mesh_aki_guc` tally: scores flux and kappa-fission,
+2. In **Run settings › Tallies** select the `mesh_aki_guc` tally: scores flux and kappa-fission,
    **Energy groups** on with **Group structure** CASMO-2 (0.625 eV boundary), **Mesh tally** on,
    **Mesh type** Regular, **Mesh divisions** 17 x 17. With **Take bounds from the model** on, the
    suggestion line shows +/-10.71 cm: mesh cell = 21.42 / 17 = 1.26 cm = rod pitch, so every cell

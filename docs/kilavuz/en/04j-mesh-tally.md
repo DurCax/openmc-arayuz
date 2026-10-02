@@ -4,7 +4,7 @@
 A mesh tally splits a quantity (flux, fission, heating, absorption ...) over the cells of a mesh
 that is independent of the model geometry: pin-by-pin power map, radial flux profile, dose map
 in a shield. The mesh is added to a tally in the **Tallies** card of the
-[Settings](04f-hesap-ayarlari.md#ayar-tally) page; the result appears on the
+[Run settings](04f-hesap-ayarlari.md#ayar-tally) page; the result appears on the
 [Run](04g-calistir.md#calistir) page in the **Mesh map** card as a 2D slice and is exported to
 **VTK** for ParaView. The computation lives in the `cekirdek/mesh_tally/` package; the model
 built by the interface and the Python script exported with **Script** build the same mesh (the
@@ -57,7 +57,7 @@ mapped (the warning line gives the reason). The card is hidden when there is no 
 | **Tally**, **Score**, **Energy group** | The displayed array. The energy group is **Total (all groups)** or a single group; for the total the σ values are assumed independent (σ² summed). |
 | **Slice axis** and slider | The fixed axis and the slice number; the label gives the slice range. On a cylindrical mesh "z fixed" shows the (r, φ) plane in Cartesian form and "φ fixed" is the r-z section; on a spherical mesh "φ fixed" is the meridian plane (ρ, z). |
 | **Normalization** | **Per source neutron** (raw OpenMC value; scaled by the source strength in fixed source), **Per volume (/cm³)**, **Relative to the mean (1 = mean)** (the mean of the scored cells is 1), **Absolute (from total power)**. |
-| **Total power** | For absolute normalization, the power [W] of the region covered by the model; it opens with the **Total power** of the power distribution in Settings. |
+| **Total power** | For absolute normalization, the power [W] of the region covered by the model; it opens with the **Total power** of the power distribution in Run settings. |
 | **Display** | **Value**, **Standard deviation (σ)**, **Relative error (σ / value)**. |
 | **Mark unreliable cells** | Cells whose relative error exceeds the **Threshold** or that received no score are marked with ×; a cell without score is left out of the colour scale (blank). |
 | **Threshold** | Default 10%: the MCNP5 manual (LA-UR-03-1987, Chapter 2, "relative error R" interpretation table) calls R < 0.10 "generally reliable" (except point detectors). This is a **guideline, not a rule**; moreover the ± values are the optimistic (no inter-batch correlation) deviations reported by OpenMC. |

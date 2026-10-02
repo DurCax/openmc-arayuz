@@ -7114,8 +7114,8 @@ msgid ""
 "Mutlak normalizasyon için modelin kapsadığı bölgenin toplam gücü (Hesap ayarları > "
 "Güç dağılımı > Toplam güç)."
 msgstr ""
-"Total power of the region covered by the model, for absolute normalization (Settings "
-"> Power distribution > Total power)."
+"Total power of the region covered by the model, for absolute normalization (Run "
+"settings > Power distribution > Total power)."
 
 #: arayuz/sonuc/mesh_harita.py:78
 msgid "Bağıl hata eşiği. Varsayılan %10: "
