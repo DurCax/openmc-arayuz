@@ -55,8 +55,10 @@ from arayuz.sekme_kor import KorSekmesi
 from arayuz.sekme_malzeme import MalzemeSekmesi
 from arayuz import baslangic, tema
 from arayuz.baslangic_akis import BaslangicAkisi
-from arayuz.ortak import tekerlek_korumasi_kur
+from arayuz.ortak import tekerlek_korumasi_kur, tekerlek_suzgeci_askida
 from arayuz.pencere import kabuk
+from arayuz.tasarim import stil as _stil
+from cekirdek.geometri import yoklama_arka
 from arayuz.pencere.menuler import MenulerMixin
 from arayuz.pencere.proje import ProjeMixin
 from arayuz.pencere.gecmis import GecmisMixin
@@ -91,19 +93,22 @@ class AnaPencere(DogrulamaMixin, BaslangicAkisi, GezinmeCephesi, MenulerMixin, P
         tekerlek_korumasi_kur()
         uygulama_adi = UYGULAMA_ADI        # cekirdek sabiti; etkin dilde gosterilir
         self.setWindowTitle(_(uygulama_adi))
-        self._boyut_kur()
-        self._durum_kur()
-        self._sayfalari_kur()
-        self._onizleme_kur()
-        self.onizleme_kapsami = PencereKapsami(self)   # sayfa + secim -> onizleme kapsami (K5)
-        self._menu_kur()
-        self._arac_cubugu_kur()
-        self._durum_cubugu_kur()
-        self._yerlesim_kur()
-        self._baglantilari_kur()
-        self._sayaclari_kur()
-        self._spec_uygula()
-        self._gecmise_it(ilk=True)
+        # H1b: kurulumda tekerlek suzgeci askida (her olayda Python'a gecis ~1.4 s
+        # CPU) ve uygulama QSS'i kurulumdan SONRA bir kez uygulanir (stil.py)
+        with tekerlek_suzgeci_askida(), _stil.sonradan_uygula():
+            self._boyut_kur()
+            self._durum_kur()
+            self._sayfalari_kur()
+            self._onizleme_kur()
+            self.onizleme_kapsami = PencereKapsami(self)   # sayfa + secim -> onizleme kapsami (K5)
+            self._menu_kur()
+            self._arac_cubugu_kur()
+            self._durum_cubugu_kur()
+            self._yerlesim_kur()
+            self._baglantilari_kur()
+            self._sayaclari_kur()
+            self._spec_uygula()
+            self._gecmise_it(ilk=True)
         if acilis_dosyasi:
             self.proje_ac(acilis_dosyasi)
         veri_kayit.kur(self)            # K2: Veri sayfasi (kenar cubugu) + surec ortami
@@ -639,6 +644,7 @@ class AnaPencere(DogrulamaMixin, BaslangicAkisi, GezinmeCephesi, MenulerMixin, P
             # Onceki tukenme sonucu arka planda okunuyor olabilir (~3 s).
             self.s_tukenme.bekle()
             veri_kayit.kapat(self)     # K2: suren veri indirmesi iptal + bekle
+            yoklama_arka.kapat()       # H1b: nokta yoklamasi iscisi
             olay.accept()
         else:
             olay.ignore()

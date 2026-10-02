@@ -21,6 +21,8 @@
 """
 
 import math
+from typing import Callable
+
 from cekirdek.ceviri import _
 
 SQ3 = math.sqrt(3.0)
@@ -39,6 +41,40 @@ def altigen_normal_acilari(prizma_yonelimi):
     """HexagonalPrism'in 6 yuz normali (derece, artan): 'y' 0,60..; 'x' 30,90.."""
     taban = 0.0 if prizma_yonelimi == "y" else 30.0
     return [taban + 60.0 * k for k in range(6)]
+
+
+# ----------------------------------------------------------------------------
+# on hesap tablolari (H1b): gezinti ayni sin/cos'u yuz binlerce kez istiyordu.
+# Degerler eski ifadenin AYNISIYLA bir kez hesaplanir (bit duzeyinde ayni).
+# ----------------------------------------------------------------------------
+
+def _normal_tablosu(prizma_yonelimi):
+    return tuple((math.cos(math.radians(aci)), math.sin(math.radians(aci)))
+                 for aci in altigen_normal_acilari(prizma_yonelimi))
+
+
+def _kose_tablosu(prizma_yonelimi):
+    return tuple((math.cos(math.radians(aci + 30.0)), math.sin(math.radians(aci + 30.0)))
+                 for aci in altigen_normal_acilari(prizma_yonelimi))
+
+
+_NORMALLER = {True: _normal_tablosu("y"), False: _normal_tablosu("x")}
+_KOSELER = {True: _kose_tablosu("y"), False: _kose_tablosu("x")}
+_DAIRE_TABLOLARI = {}
+
+
+def _birim_normaller(yonelim):
+    """6 yuz normalinin (cos, sin) tablosu; 'y' disindaki her deger 'x' gibi."""
+    return _NORMALLER[yonelim == "y"]
+
+
+def _daire_tablosu(n_daire):
+    tablo = _DAIRE_TABLOLARI.get(n_daire)
+    if tablo is None:
+        tablo = tuple((math.cos(2 * math.pi * i / n_daire), math.sin(2 * math.pi * i / n_daire))
+                      for i in range(n_daire))
+        _DAIRE_TABLOLARI[n_daire] = tablo
+    return tablo
 
 
 def kafes_zarfi_apotemi(halka_sayisi, adim):
@@ -86,13 +122,80 @@ def icinde(kesit, x, y, merkez=(0.0, 0.0), pay=PAY):
     if s in ("silindir", "kure"):
         return math.hypot(px, py) <= float(kesit["yaricap"]) + pay
     if s == "altigen":
-        a = float(kesit["apotem"])
-        for aci in altigen_normal_acilari(kesit.get("yonelim", "y")):
-            t = math.radians(aci)
-            if px * math.cos(t) + py * math.sin(t) > a + pay:
+        sinir = float(kesit["apotem"]) + pay
+        for c, sn in _birim_normaller(kesit.get("yonelim", "y")):
+            if px * c + py * sn > sinir:
                 return False
         return True
     raise ValueError(_("içerme denetimi yapılamayan kesit: %s") % s)
+
+
+def icinde_islevi(kesit: dict, merkez=(0.0, 0.0)) -> Callable[[float, float, float], bool]:
+    """f(x, y, pay) == icinde(kesit, x, y, merkez, pay); olculer bir kez okunur.
+    Kesit sonradan degistirilmemeli (gezinti kesitleri degismez kabul eder)."""
+    cx, cy = merkez
+    s = kesit.get("sekil")
+    if s == "dikdortgen":
+        hx, hy = kesit["boyut"][0] / 2.0, kesit["boyut"][1] / 2.0
+        return lambda x, y, pay: abs(x - cx) <= hx + pay and abs(y - cy) <= hy + pay
+    if s in ("silindir", "kure"):
+        r = float(kesit["yaricap"])
+        return lambda x, y, pay: math.hypot(x - cx, y - cy) <= r + pay
+    if s == "altigen":
+        return _altigen_islevi(float(kesit["apotem"]), _birim_normaller(kesit.get("yonelim", "y")),
+                               cx, cy)
+    return lambda x, y, pay: icinde(kesit, x, y, merkez=merkez, pay=pay)
+
+
+# Kesin icerme kisayolunun guvenlik payi (cm): yalniz "kesin iceride" karari
+# verir; nokta denetiminin kayan nokta hatasi (~1e-13 cm, 1e3 cm olcekte) ve
+# NOKTA_PAYI'nin cok ustunde, gercek geometri toleranslarinin cok altinda.
+KESIN_PAY = 1.0e-6
+
+
+def dis_yaricap(kesit: dict) -> float:
+    """Kesitin merkezden en uzak sinir noktasi uzakligi (cevrel daire yaricapi)."""
+    s = kesit.get("sekil")
+    if s in ("silindir", "kure"):
+        return float(kesit["yaricap"])
+    if s == "dikdortgen":
+        return math.hypot(kesit["boyut"][0] / 2.0, kesit["boyut"][1] / 2.0)
+    if s == "altigen":
+        return 2.0 * float(kesit["apotem"]) / SQ3
+    raise ValueError(_("içerme denetimi yapılamayan kesit: %s") % s)
+
+
+def daire_kesin_islevi(kesit: dict, merkez=(0.0, 0.0)):
+    """g(cx, cy, r) -> True ise (cx, cy) merkezli r yaricapli disk kesitin KESIN
+    icindedir (KESIN_PAY payla); False 'bilinmiyor' demektir. Bilinmeyen sekil: None."""
+    mx, my = merkez
+    s = kesit.get("sekil")
+    if s in ("silindir", "kure"):
+        R = float(kesit["yaricap"]) - KESIN_PAY
+        return lambda cx, cy, r: math.hypot(cx - mx, cy - my) + r <= R
+    if s == "dikdortgen":
+        hx = kesit["boyut"][0] / 2.0 - KESIN_PAY
+        hy = kesit["boyut"][1] / 2.0 - KESIN_PAY
+        return lambda cx, cy, r: abs(cx - mx) + r <= hx and abs(cy - my) + r <= hy
+    if s == "altigen":
+        a = float(kesit["apotem"]) - KESIN_PAY
+        normaller = _birim_normaller(kesit.get("yonelim", "y"))
+        return lambda cx, cy, r: all((cx - mx) * c + (cy - my) * sn + r <= a
+                                     for c, sn in normaller)
+    return None
+
+
+def _altigen_islevi(a, normaller, cx, cy):
+    (c0, s0), (c1, s1), (c2, s2), (c3, s3), (c4, s4), (c5, s5) = normaller
+
+    def f(x, y, pay):
+        # icinde() ile ayni: herhangi bir yuzde '>' ise disarida (NaN -> iceride)
+        px, py = x - cx, y - cy
+        sinir = a + pay
+        return not (px * c0 + py * s0 > sinir or px * c1 + py * s1 > sinir
+                    or px * c2 + py * s2 > sinir or px * c3 + py * s3 > sinir
+                    or px * c4 + py * s4 > sinir or px * c5 + py * s5 > sinir)
+    return f
 
 
 def sinir_noktalari(kesit, merkez=(0.0, 0.0), n_daire=72):
@@ -105,17 +208,15 @@ def sinir_noktalari(kesit, merkez=(0.0, 0.0), n_daire=72):
                 if (sx, sy) != (0, 0)]
     if s in ("silindir", "kure"):
         r = float(kesit["yaricap"])
-        return [(cx + r * math.cos(2 * math.pi * i / n_daire),
-                 cy + r * math.sin(2 * math.pi * i / n_daire)) for i in range(n_daire)]
+        return [(cx + r * c, cy + r * sn) for c, sn in _daire_tablosu(n_daire)]
     if s == "altigen":
         a = float(kesit["apotem"])
         r = 2.0 * a / SQ3
+        yon = kesit.get("yonelim", "y") == "y"
         noktalar = []
-        for aci in altigen_normal_acilari(kesit.get("yonelim", "y")):
-            t = math.radians(aci)
-            noktalar.append((cx + a * math.cos(t), cy + a * math.sin(t)))
-            k = math.radians(aci + 30.0)
-            noktalar.append((cx + r * math.cos(k), cy + r * math.sin(k)))
+        for (c, sn), (kc, ks) in zip(_NORMALLER[yon], _KOSELER[yon]):
+            noktalar.append((cx + a * c, cy + a * sn))
+            noktalar.append((cx + r * kc, cy + r * ks))
         return noktalar
     raise ValueError(_("sınır noktası üretilemeyen kesit: %s") % s)
 
@@ -136,9 +237,8 @@ def _daire_cokgende(dis, merkez, r, pay):
         gx, gy = (v / 2.0 for v in dis["boyut"])
         return abs(cx) + r <= gx + pay and abs(cy) + r <= gy + pay
     a = float(dis["apotem"])
-    for aci in altigen_normal_acilari(dis.get("yonelim", "y")):
-        t = math.radians(aci)
-        if cx * math.cos(t) + cy * math.sin(t) + r > a + pay:
+    for c, sn in _birim_normaller(dis.get("yonelim", "y")):
+        if cx * c + cy * sn + r > a + pay:
             return False
     return True
 

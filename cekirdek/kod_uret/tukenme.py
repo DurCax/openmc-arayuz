@@ -7,7 +7,6 @@
 
 from cekirdek import sema
 from cekirdek.kod_uret.ad import _ad, _f, _bolum, _mat_ifade  # noqa: F401
-from cekirdek.geometri.yapici import yorum_metni
 from cekirdek.ceviri import _
 
 
@@ -22,6 +21,7 @@ def _tukenme(spec, satirlar):
     if not t.get("var"):
         return False
     from cekirdek import tukenme as _tk
+    from cekirdek.geometri.yapici import yorum_metni   # tembel: openmc (H1b)
     zs = _tk.zincir_secimi(spec)
     # kosucuyla (tukenme.hazirla) AYNI hacim kaynagi: agac modunda kesin
     # olmayan hacim stokastik hacme duser; zorunlu malzemenin hacmi yoksa
