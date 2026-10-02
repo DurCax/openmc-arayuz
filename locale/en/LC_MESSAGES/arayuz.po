@@ -181,7 +181,7 @@ msgstr "Take from last run"
 
 #: arayuz/analiz/kinetik.py:64 arayuz/geometri/duzenle.py:350
 msgid "grup"
-msgstr "group"
+msgstr "groups"
 
 #: arayuz/analiz/kinetik.py:67 arayuz/geometri/form_yerlesim.py:107
 #: arayuz/geometri/form_yerlesim.py:322
@@ -234,7 +234,7 @@ msgstr "Number of groups:"
 
 #: arayuz/analiz/kinetik.py:112
 msgid "Üretim zamanı Λ:"
-msgstr "Generation time Λ:"
+msgstr "Neutron generation time Λ:"
 
 #: arayuz/analiz/kinetik.py:113
 msgid "Reaktivite türü:"
@@ -287,7 +287,7 @@ msgid ""
 " nötron gruplarını (6 ya da 8) açıp yeniden koşun."
 msgstr ""
 "The last run has no per-group data. Enable kinetics parameters and delayed neutron "
-"groups (6 or 8) in Calculation settings and run again."
+"groups (6 or 8) in Run settings and run again."
 
 #: arayuz/analiz/kinetik.py:183
 #, python-format
@@ -8472,18 +8472,4 @@ msgstr "User guide"
 
 #~ msgid "3 gün önce"
 #~ msgstr "3 days ago"
-
-#~ msgid ""
-#~ "Gecikmiş nötron grupları (β_i, λ_i) ve üretim"
-#~ " zamanı Λ ile basamak ya da rampa "
-#~ "reaktivitesine güç yanıtı P(t). β_i ve Λ "
-#~ "kinetik açık bir koşudan (IFP) alınabilir."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Son koşuda grup başına veri yok. Hesap "
-#~ "ayarlarında kinetik parametreleri ve gecikmiş nötron"
-#~ " gruplarını (6 ya da 8) açıp yeniden "
-#~ "koşun."
-#~ msgstr ""
 

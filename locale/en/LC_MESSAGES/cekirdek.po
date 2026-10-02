@@ -7812,16 +7812,3 @@ msgstr ""
 #~ msgid "termaltermal"
 #~ msgstr "thermal"
 
-#~ msgid "En çok %d gecikmiş nötron grubu desteklenir."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "ρ = %.3f $ ≥ 1 $: ANİ KRİTİK. "
-#~ "Güç gecikmiş nötronları beklemeden Λ ölçeğinde "
-#~ "artar; bu bölgede nokta kinetiği yalnız nitel"
-#~ " bir tablo verir."
-#~ msgstr ""
-
-#~ msgid "Gecikmiş nötron grup sayısı 0, 6 ya da 8 olmalı: %r"
-#~ msgstr ""
-
