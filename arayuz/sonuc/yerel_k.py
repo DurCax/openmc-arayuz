@@ -150,7 +150,7 @@ class YerelKHaritasi(QtWidgets.QWidget):
             p.append(_("koşunun k-eff'i %.5f ± %.5f") % tuple(s.keff))
         p.append(_("c_xn = %.5f") % s.c_xn)
         if s.kapsama is not None:
-            p.append(_("harita kapsamı: net yok olmanın %%%.1f'i") % (100.0 * s.kapsama))
+            p.append(_("harita kapsamı (net yok olma payı): %.4f") % s.kapsama)
         fisil = [h.k for h in s.hucreler if h.fisil]
         if fisil:
             p.append(_("en düşük / en yüksek: %.4f / %.4f") % (min(fisil), max(fisil)))

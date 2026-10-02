@@ -202,6 +202,7 @@ class DemetKinfPaneli(QtWidgets.QWidget):
         if d.hata:
             self.sonuclar.item(satir, 1).setToolTip(d.hata)
             self.sonuclar.item(satir, 1).setForeground(QtGui.QColor(tema.renk("hata")))
+        self.sonuclar.resizeColumnsToContents()
         self._ilerlemeyi_guncelle()
 
     def _durumlar(self) -> List[kuyruk.IsDurumu]:
