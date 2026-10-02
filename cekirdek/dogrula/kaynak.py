@@ -176,7 +176,8 @@ def kaynak_kontrol(spec, veri_kontrolu=True):
 def _kutuphane_icerigi_foton():
     """(notron, termal, foton) ad kumeleri; okunamazsa (None, None, None)."""
     notron, termal = _kutuphane_icerigi()
-    yol = os.environ.get("OPENMC_CROSS_SECTIONS")
+    from cekirdek import veri_yolu
+    yol = veri_yolu.cross_sections().deger
     if not yol or not os.path.exists(yol):
         return notron, termal, None
     try:
