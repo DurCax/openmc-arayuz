@@ -106,13 +106,42 @@ doğrulamada uyarı/hata verir (bkz. [6.5 Bilinen tuzaklar](06-sonuclar.md#tuzak
 <a id="baslangic"></a>
 ## 1.4 İlk açılış: Başlangıç ekranı
 
-Program model olmadan açıldığında **"Ne modellemek istiyorsunuz?"** ekranı gelir.
+Program model olmadan açıldığında **"Ne modellemek istiyorsunuz?"** ekranı gelir. Hiçbir örnek
+kendiliğinden yüklenmez; üç yoldan birini seçersiniz:
+
+| Yol | Nerede | Ne kurar |
+|---|---|---|
+| **Sıfırdan** | ilk kart: kor türü seçici + **Sıfırdan başla** | Gerçekten boş bir model: malzeme, parça, demet, geometri yok; yalnız kor türü seçili. |
+| **Şablondan** | tür kartlarındaki **Şablondan** | O türün çalışan, sade modeli (eskiden "Boş başla"). |
+| **Örnekten** | tür kartlarındaki **Örnekten** ya da alttaki galeri | Hazır bir örneğin kaydedilmemiş kopyası. |
 
 ![Başlangıç ekranı: model türü kartları, son kullanılanlar ve örnek galerisi](../resimler/tr/baslangic.png)
 
+**Sıfırdan.** Kor türlerinden birini seçin (yakıt çubuğu, tek yakıt demeti, kare ya da altıgen
+haritalı tam kor, MTR plaka elemanı) ve **Sıfırdan başla**'ya basın. Editör **Malzemeler**
+sayfasında açılır ve doğrulama şeridinin üstünde bir **aşama rehberi** görünür ("adım" bu programda ızgara adımı, *pitch* demektir):
+
+| Aşama | Sayfa | Tamam sayılır |
+|---|---|---|
+| 1. **Malzeme ekle** | Malzemeler | en az bir malzeme var (kütüphaneden yakıt, zarf, soğutucu) |
+| 2. **Parça ekle** | Parçalar | en az bir çubuk (plaka türünde bir plaka elemanı) var |
+| 3. **Demet kur** (yalnız demet ve tam kor türlerinde) | Demet | en az bir demet var |
+| 4. **Geometriyi kur** | Geometri | hücrenin dolgusu seçili / kor haritası dolu |
+
+Her aşamaya tıklamak ilgili sayfayı açar; tamamlanan aşama ✓ ile, sıradaki vurguyla işaretlidir.
+Pin hücrede ilk yakıt çubuğu eklenince hücreye kendiliğinden yerleşir, yani geometri aşaması da
+tamamlanır. Bütün aşamalar bitince rehber gizlenir.
+
+Model kurulurken doğrulama bulguları **hata (kırmızı) değil "Eksik aşama" (bilgi tonu)** olarak
+gösterilir: boş bir modelde "çubuk seçilmemiş" bir hata değil, henüz tamamlanmamış bir aşamadır.
+Şerit "Model kuruluyor: 1/3 aşama" der; **Bulguya git** sıradaki aşamanın sayfasını açar. Bu sırada
+**Çalıştır kapalıdır** ve nedeni düğmenin ipucunda yazar ("Model henüz kurulmadı: 2 aşama eksik.
+Sıradaki aşama: …"). Aşamalar tamamlanınca doğrulama olağan haline döner; kalan gerçek hatalar
+yine kırmızıdır.
+
 **Model türü kartları.** Her kartın bir açıklaması ve iki eylemi vardır:
 
-| Kart | Boş başla | Örnekten | Kurulan model (kor türü) |
+| Kart | Şablondan | Örnekten | Kurulan model (kor türü) |
 |---|---|---|---|
 | **Yakıt çubuğu (pin hücre)** | var | `ornekler/pwr_pinhucre.json` | `tek_cubuk` |
 | **Yakıt demeti — kare** | var | `ornekler/pwr_17x17.json` | `tek_demet` (kare) |
@@ -124,15 +153,19 @@ Program model olmadan açıldığında **"Ne modellemek istiyorsunuz?"** ekranı
 | **Zırhlama (sabit kaynak)** | — | `ornekler/zirh_kure.json` | `kuresel` |
 | **Dosyadan aç** | **Aç…** (Ctrl+O): kayıtlı bir model (`.json`) ya da OpenMC XML klasörü | | |
 
-- **Boş başla** çalışır durumda, sade bir model kurar: malzemeler, parçalar ve geometri hazırdır;
+- **Şablondan** çalışır durumda, sade bir model kurar: malzemeler, parçalar ve geometri hazırdır;
   hesap ayarları "Normal" hassasiyettedir. Hemen **F9** ile koşabilirsiniz.
 - **Örnekten** hazır bir örneğin **kaydedilmemiş kopyasını** açar. `ornekler/*.json` test
   referansıdır; üzerine yazılmaz. Kendi dosyanız için **Dosya → Farklı kaydet**.
-- Küresel düzenek (zırhlama, Godiva tipi kriterler) boş başlatılamaz: kabukları yalnız JSON'dan
+- Küresel düzenek (zırhlama, Godiva tipi kriterler) şablondan ya da sıfırdan başlatılamaz: kabukları yalnız JSON'dan
   düzenlenir ([4.4 Geometri](04d-geometri.md#geometri)).
 
-**Son kullanılanlar.** Kaydettiğiniz modeller bu şeritte görünür (dosya adı, dizin, son
-değişiklik zamanı).
+**Son kullanılanlar.** Kaydettiğiniz ya da açtığınız modeller bu şeritte görünür (dosya adı,
+dizin, son değişiklik zamanı).
+
+**Açılışta bu ekranı göster.** Ekranın altındaki kutu (varsayılan: işaretli) ayarlara yazılır.
+İşaret kaldırılırsa program bir sonraki açılışta **son kullanılan projeyle** açılır (proje son
+kullanılanlar listesinde kalır); dosya bulunamazsa yine başlangıç ekranı gelir.
 
 **Örnek galerisi.** Depodaki bütün örnekler; üstte arama kutusu (**Örneklerde ara…**), seviye
 seçici (giriş / orta / ileri) ve kategori düğmeleri (**PWR**, **BWR**, **VVER**, **SFR**,
@@ -144,7 +177,7 @@ modele geri getirir.
 
 ## 1.5 Kurulumu doğrulamak: ilk koşu
 
-Başlangıç ekranında **Yakıt çubuğu (pin hücre) → Boş başla**, sonra **F9** (Çalıştır). Yarım
+Başlangıç ekranında **Yakıt çubuğu (pin hücre) → Şablondan**, sonra **F9** (Çalıştır). Yarım
 dakika içinde sonuç kartında **k∞ ≈ 1.323 ± 0.001** görmelisiniz (UO₂ %3.0, sıcak çalışma
 koşulu, "Normal" hassasiyet; ölçülen 1.3227 ± 0.0008). Son hanede küçük farklar istatistiktir;
 ±0.003'ten büyük bir fark kurulum sorununa (yanlış kütüphane, eksik S(α,β) verisi) işaret eder.
