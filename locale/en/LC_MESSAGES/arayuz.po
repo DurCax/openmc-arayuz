@@ -9611,15 +9611,15 @@ msgstr "CSV saved: %s"
 
 #: arayuz/tukenme_y4.py:21
 msgid "saat"
-msgstr "hour"
+msgstr "hours"
 
 #: arayuz/tukenme_y4.py:21
 msgid "yıl"
-msgstr "year"
+msgstr "years"
 
 #: arayuz/tukenme_y4.py:21
 msgid "saniye"
-msgstr "second"
+msgstr "seconds"
 
 #: arayuz/tukenme_y4.py:22
 msgid "Çözünmüş bor [ppm]"
