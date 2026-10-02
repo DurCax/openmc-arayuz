@@ -83,6 +83,40 @@ def test_veri_koku_ortam_degiskeni():
             == os.path.join(d, "ornekler"))
 
 
+class _SahteDagitim:
+    """importlib.metadata.Distribution taklidi: files + locate_file."""
+
+    def __init__(self, kok, dosyalar):
+        import pathlib
+        self._kok = kok
+        self.files = [pathlib.PurePosixPath(d) for d in dosyalar]
+
+    def locate_file(self, yol):
+        return os.path.join(self._kok, str(yol))
+
+
+def test_dagitim_kaydindan_paylasim_dizini():
+    print("\n[T2-2b] kurulu dagitimin RECORD'undan share/openmc-arayuz")
+    from importlib import metadata
+    from cekirdek import yollar
+    bul = yollar._dagitim_paylasim_dizini.__wrapped__      # lru_cache'siz govde
+    eski = metadata.distribution
+    sp = "/onek/lib/python3.13/site-packages"
+    try:
+        metadata.distribution = lambda ad: _SahteDagitim(
+            sp, ["cekirdek/yollar.py", "../../../share/openmc-arayuz/ornekler/a.json"])
+        kontrol("kayittaki onek", bul() == "/onek/share/openmc-arayuz", bul())
+        metadata.distribution = lambda ad: _SahteDagitim(sp, ["cekirdek/yollar.py"])
+        kontrol("veri kaydi yoksa None", bul() is None)
+
+        def _yok(ad):
+            raise metadata.PackageNotFoundError(ad)
+        metadata.distribution = _yok
+        kontrol("dagitim kurulu degilse None", bul() is None)
+    finally:
+        metadata.distribution = eski
+
+
 def test_ozel_dizin_ortam_degiskenleri():
     print("\n[T2-3] OPENMC_ARAYUZ_LOCALE / OPENMC_ARAYUZ_KILAVUZ eski davranis")
     from cekirdek import yollar
@@ -391,6 +425,7 @@ def test_kurulu_paket(gecici):
 
 
 HIZLI = [test_paket_ve_veri_dizinleri, test_veri_koku_ortam_degiskeni,
+         test_dagitim_kaydindan_paylasim_dizini,
          test_ozel_dizin_ortam_degiskenleri, test_xdg_dizinleri, test_gunluk_xdg_tek_kaynak,
          test_moduller_yollari_kullanir, test_openmc_ikilisi_sirasi,
          test_kosucu_openmc_yolu_yollara_baglanir, test_alt_surec_komutu,
