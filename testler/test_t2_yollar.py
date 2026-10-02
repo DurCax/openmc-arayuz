@@ -406,14 +406,27 @@ def _kapsananlar(desenler):
     return kume
 
 
+def _izlenen(yollar):
+    """Yalniz git'te izlenen dosyalar: calisma dizinindeki koşu ciktilari (ornekler/kosu*,
+    .gitignore'da) paket verisi sayilmaz. git yoksa liste oldugu gibi doner."""
+    try:
+        cikti = subprocess.run(["git", "-C", KOK, "ls-files", "-z"], capture_output=True,
+                               check=True).stdout.decode("utf-8")
+    except (OSError, subprocess.CalledProcessError):
+        return yollar
+    izlenen = {os.path.normpath(os.path.join(KOK, y)) for y in cikti.split("\0") if y}
+    return [y for y in yollar if os.path.normpath(y) in izlenen]
+
+
 def test_paket_verisi_tam():
     print("\n[T2-13] pyproject: data-files ornek/kilavuz/.mo'yu, package-data ikon/font/sablonu kapsar")
     st = _pyproject()["tool"]["setuptools"]
     veri = st.get("data-files", {})
     desenler = [d for liste in veri.values() for d in liste]
     kapsanan = _kapsananlar(desenler)
-    gerekli = [y for kalip in ("ornekler/**/*", "docs/kilavuz/**/*", "locale/**/*.mo")
-               for y in glob.glob(os.path.join(KOK, kalip), recursive=True) if os.path.isfile(y)]
+    gerekli = _izlenen([y for kalip in ("ornekler/**/*", "docs/kilavuz/**/*", "locale/**/*.mo")
+                        for y in glob.glob(os.path.join(KOK, kalip), recursive=True)
+                        if os.path.isfile(y)])
     eksik = sorted(os.path.relpath(y, KOK) for y in gerekli if os.path.normpath(y) not in kapsanan)
     kontrol("tum veri dosyalari data-files'ta", gerekli and not eksik, "-> eksik %s" % eksik[:5])
     for hedef, liste in veri.items():
