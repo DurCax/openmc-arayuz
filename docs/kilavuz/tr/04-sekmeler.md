@@ -92,9 +92,10 @@ açıklama çıkar:
 ### Önizleme paneli
 
 Tasarım sekmelerinde (Malzemeler, Parçalar, Demet, Geometri) sağdaki panel her
-değişiklikten sonra geometri kesitini yeniden çizer. Çizim `openmc.Model.plot()` ile
-yapılır, yani gördüğünüz kesit OpenMC'nin gerçekten kuracağı geometridir. Önizleme
-tally'siz bir modeli çizer (tally'ler çizimi etkilemez).
+değişiklikten sonra geometri kesitini yeniden çizer. Kesit OpenMC'nin kendi
+kütüphanesiyle (`openmc.lib.slice_data`) dilimlenir, yani gördüğünüz kesit OpenMC'nin
+gerçekten kuracağı geometridir. Önizleme tally'siz bir modeli çizer (tally'ler çizimi
+etkilemez). Çizim sürerken ÇALIŞTIR kapalıdır; çizim başarıyla bitince açılır.
 
 | Denetim | Anlamı |
 |---|---|

@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 06:38+0300\n"
+"POT-Creation-Date: 2026-10-02 07:05+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -36,97 +36,107 @@ msgctxt "menü"
 msgid "Dil"
 msgstr "Language"
 
-#: cekirdek/cizim_sureci.py:118
+#: cekirdek/cizim_sureci.py:125
 #, python-format
 msgid "izinsiz dizi türü: %s"
 msgstr "array type not allowed: %s"
 
-#: cekirdek/cizim_sureci.py:124
+#: cekirdek/cizim_sureci.py:132
 #, python-format
 msgid "çerçeve başlığı JSON'a çevrilemedi: %s"
 msgstr "frame header could not be converted to JSON: %s"
 
-#: cekirdek/cizim_sureci.py:127
+#: cekirdek/cizim_sureci.py:134
 msgid "çerçeve çok büyük"
 msgstr "frame too large"
 
-#: cekirdek/cizim_sureci.py:134
+#: cekirdek/cizim_sureci.py:147 cekirdek/cizim_sureci.py:150
+#, python-format
+msgid "geçersiz dizi şekli: %r"
+msgstr "invalid array shape: %r"
+
+#: cekirdek/cizim_sureci.py:156
+#, python-format
+msgid "bozuk dizi tanımı: %r"
+msgstr "malformed array descriptor: %r"
+
+#: cekirdek/cizim_sureci.py:158 cekirdek/cizim_sureci.py:163
+#, python-format
+msgid "geçersiz dizi tanımı: %r"
+msgstr "invalid array descriptor: %r"
+
+#: cekirdek/cizim_sureci.py:170
 msgid "dizi tanımı liste değil"
 msgstr "array descriptor is not a list"
 
-#: cekirdek/cizim_sureci.py:139
+#: cekirdek/cizim_sureci.py:174
+msgid "dizi verisi eksik"
+msgstr "array data incomplete"
+
+#: cekirdek/cizim_sureci.py:179
 #, python-format
 msgid "bozuk dizi tanımı: %s"
 msgstr "malformed array descriptor: %s"
 
-#: cekirdek/cizim_sureci.py:141
-#, python-format
-msgid "geçersiz dizi tanımı: %s"
-msgstr "invalid array descriptor: %s"
-
-#: cekirdek/cizim_sureci.py:144
-msgid "dizi verisi eksik"
-msgstr "array data incomplete"
-
-#: cekirdek/cizim_sureci.py:149
+#: cekirdek/cizim_sureci.py:182
 msgid "dizi verisi tanımla uyuşmuyor"
 msgstr "array data does not match its descriptor"
 
-#: cekirdek/cizim_sureci.py:165
-msgid "bozuk çerçeve başı"
-msgstr "malformed frame start"
-
-#: cekirdek/cizim_sureci.py:169
-msgid "çerçeve sınırı aşıldı"
-msgstr "frame size limit exceeded"
-
-#: cekirdek/cizim_sureci.py:179
+#: cekirdek/cizim_sureci.py:190
 #, python-format
 msgid "çerçeve başlığı okunamadı: %s"
 msgstr "frame header could not be read: %s"
 
-#: cekirdek/cizim_sureci.py:181
+#: cekirdek/cizim_sureci.py:192
 msgid "çerçeve başlığı JSON nesnesi değil"
 msgstr "frame header is not a JSON object"
 
-#: cekirdek/cizim_sureci.py:197
+#: cekirdek/cizim_sureci.py:208
+msgid "bozuk çerçeve başı"
+msgstr "malformed frame start"
+
+#: cekirdek/cizim_sureci.py:212
+msgid "çerçeve sınırı aşıldı"
+msgstr "frame size limit exceeded"
+
+#: cekirdek/cizim_sureci.py:235
 #, python-format
 msgid "kesit listesi 1-%d öğe olmalı"
 msgstr "slice list must have 1-%d items"
 
-#: cekirdek/cizim_sureci.py:200
+#: cekirdek/cizim_sureci.py:238
 #, python-format
 msgid "geçersiz kesit: %r"
 msgstr "invalid slice: %r"
 
-#: cekirdek/cizim_sureci.py:203
+#: cekirdek/cizim_sureci.py:241
 #, python-format
 msgid "piksel %d-%d arası tamsayı olmalı: %r"
 msgstr "pixels must be an integer between %d and %d: %r"
 
-#: cekirdek/cizim_sureci.py:211
+#: cekirdek/cizim_sureci.py:249
 #, python-format
 msgid "bilinmeyen istek: %r"
 msgstr "unknown request: %r"
 
-#: cekirdek/cizim_sureci.py:213
+#: cekirdek/cizim_sureci.py:251
 msgid "istek numarası tamsayı olmalı"
 msgstr "request number must be an integer"
 
-#: cekirdek/cizim_sureci.py:215
+#: cekirdek/cizim_sureci.py:253
 msgid "istekte model (spec) yok"
 msgstr "request has no model (spec)"
 
-#: cekirdek/cizim_sureci.py:219
+#: cekirdek/cizim_sureci.py:257
 msgid "cakisma mantıksal değer olmalı"
 msgstr "cakisma must be a boolean"
 
-#: cekirdek/cizim_sureci.py:230
+#: cekirdek/cizim_sureci.py:268
 #, python-format
 msgid "bilinmeyen eksen: %r"
 msgstr "unknown axis: %r"
 
-#: cekirdek/cizim_sureci.py:444
+#: cekirdek/cizim_sureci.py:533
 #, python-format
 msgid "cizim alt süreci argüman almaz: %s"
 msgstr "the drawing subprocess takes no arguments: %s"
@@ -3068,7 +3078,7 @@ msgstr "position ({i})"
 msgid "‘{h}’ harfi"
 msgstr "letter ‘{h}’"
 
-#: cekirdek/giris.py:47
+#: cekirdek/giris.py:53
 msgid ""
 "KULLANIM\n"
 "  openmc-arayuz-kosu rapor <koşu_dizini> [-o rapor.pdf] [--spec model.json]\n"
@@ -3086,47 +3096,47 @@ msgstr ""
 "  --spec        JSON file of the model. Default: spec.json or\n"
 "                tukenme_spec.json in the run directory."
 
-#: cekirdek/giris.py:64 cekirdek/giris.py:157
+#: cekirdek/giris.py:70 cekirdek/giris.py:163
 #, python-format
 msgid "%s bir değer bekliyor"
 msgstr "%s expects a value"
 
-#: cekirdek/giris.py:72 cekirdek/giris.py:165 cekirdek/kosucu_terminal.py:51
+#: cekirdek/giris.py:78 cekirdek/giris.py:171 cekirdek/kosucu_terminal.py:51
 #: cekirdek/kritik_arama.py:257 cekirdek/tarama.py:440
 #, python-format
 msgid "bilinmeyen seçenek: %s"
 msgstr "unknown option: %s"
 
-#: cekirdek/giris.py:76 cekirdek/giris.py:169
+#: cekirdek/giris.py:82 cekirdek/giris.py:175
 msgid "koşu dizini verilmedi"
 msgstr "no run directory given"
 
-#: cekirdek/giris.py:107
+#: cekirdek/giris.py:113
 #, python-format
 msgid "rapor uzantısı .pdf ya da .html olmalı: %s"
 msgstr "the report extension must be .pdf or .html: %s"
 
-#: cekirdek/giris.py:111
+#: cekirdek/giris.py:117
 #, python-format
 msgid "model (spec) bulunamadı: koşu dizininde spec.json yok; --spec ile verin (%s)"
 msgstr "model (spec) not found: no spec.json in the run directory; give it with --spec (%s)"
 
-#: cekirdek/giris.py:120
+#: cekirdek/giris.py:126
 #, python-format
 msgid "rapor oluşturulamadı: %s"
 msgstr "report could not be generated: %s"
 
-#: cekirdek/giris.py:123
+#: cekirdek/giris.py:129
 #, python-format
 msgid "uyarı: %s"
 msgstr "warning: %s"
 
-#: cekirdek/giris.py:124
+#: cekirdek/giris.py:130
 #, python-format
 msgid "rapor yazıldı: %s"
 msgstr "report written: %s"
 
-#: cekirdek/giris.py:131
+#: cekirdek/giris.py:137
 msgid ""
 "KULLANIM\n"
 "  openmc-arayuz-kosu uygunluk <koşu_dizini> [--profil A,B,C,D] [--siki]\n"
@@ -3153,53 +3163,53 @@ msgstr ""
 "  Exit code: 0 no error findings, 1 error findings, 2 usage error,\n"
 "  3 (with --siki) a rule could not be evaluated."
 
-#: cekirdek/giris.py:171
+#: cekirdek/giris.py:177
 #, python-format
 msgid "koşu dizini bulunamadı: %s"
 msgstr "run directory not found: %s"
 
-#: cekirdek/giris.py:178
+#: cekirdek/giris.py:184
 msgid "kontrolü geçti"
 msgstr "passed"
 
-#: cekirdek/giris.py:178
+#: cekirdek/giris.py:184
 msgid "KONTROLÜ GEÇMEDİ"
 msgstr "NOT MET"
 
-#: cekirdek/giris.py:179
+#: cekirdek/giris.py:185
 msgid "uygulanamadı"
 msgstr "not applicable"
 
-#: cekirdek/giris.py:179 cekirdek/rapor_sablon/uygunluk_eki.py:25
+#: cekirdek/giris.py:185 cekirdek/rapor_sablon/uygunluk_eki.py:25
 msgid "not"
 msgstr "note"
 
-#: cekirdek/dogrula/_ortak.py:52 cekirdek/giris.py:180 cekirdek/rapor_sablon/__init__.py:27
+#: cekirdek/dogrula/_ortak.py:52 cekirdek/giris.py:186 cekirdek/rapor_sablon/__init__.py:27
 #: cekirdek/rapor_sablon/uygunluk_eki.py:26
 msgid "HATA"
 msgstr "ERROR"
 
-#: cekirdek/dogrula/_ortak.py:52 cekirdek/giris.py:180 cekirdek/rapor_sablon/__init__.py:27
+#: cekirdek/dogrula/_ortak.py:52 cekirdek/giris.py:186 cekirdek/rapor_sablon/__init__.py:27
 #: cekirdek/rapor_sablon/uygunluk_eki.py:26
 msgid "UYARI"
 msgstr "WARNING"
 
-#: cekirdek/dogrula/_ortak.py:52 cekirdek/giris.py:180 cekirdek/rapor_sablon/__init__.py:28
+#: cekirdek/dogrula/_ortak.py:52 cekirdek/giris.py:186 cekirdek/rapor_sablon/__init__.py:28
 #: cekirdek/rapor_sablon/uygunluk_eki.py:27
 msgid "BİLGİ"
 msgstr "INFO"
 
-#: cekirdek/giris.py:187
+#: cekirdek/giris.py:193
 #, python-format
 msgid "Öneri: %s"
 msgstr "Suggestion: %s"
 
-#: cekirdek/giris.py:213
+#: cekirdek/giris.py:219
 #, python-format
 msgid "uyarı: model (spec) okunamadı, yalnız koşu denetlenir: %s"
 msgstr "warning: the model (spec) could not be read, only the run is checked: %s"
 
-#: cekirdek/giris.py:224
+#: cekirdek/giris.py:230
 #, python-format
 msgid ""
 "\n"
@@ -3209,12 +3219,12 @@ msgstr ""
 "\n"
 "Profiles: %s · %d errors, %d warnings · %d passed, %d not met, %d not applicable"
 
-#: cekirdek/giris.py:255
+#: cekirdek/giris.py:261
 #, python-format
 msgid "bilinmeyen alt süreç: %r"
 msgstr "unknown subprocess: %r"
 
-#: cekirdek/giris.py:282
+#: cekirdek/giris.py:288
 #, python-format
 msgid "--alt bir alt süreç adı bekliyor: %s"
 msgstr "--alt expects a subprocess name: %s"

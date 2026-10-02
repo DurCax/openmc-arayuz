@@ -95,9 +95,10 @@ explanation:
 ### Preview panel
 
 In the design tabs (Materials, Components, Assembly, Geometry) the panel on the right redraws
-the geometry section after every change. The plot is made with `openmc.Model.plot()`, so the
-section you see is the geometry OpenMC will really build. The preview plots a model without
-tallies (tallies do not affect the plot).
+the geometry section after every change. The section is sliced by OpenMC's own library
+(`openmc.lib.slice_data`), so the section you see is the geometry OpenMC will really build.
+The preview plots a model without tallies (tallies do not affect the plot). **Run** is disabled
+while the plot is being drawn and enabled once it finishes successfully.
 
 | Control | Meaning |
 |---|---|
@@ -108,7 +109,7 @@ tallies (tallies do not affect the plot).
 | **Resolution** (Advanced) | Low (400) / Normal (800) / High (1400) pixels. |
 | **Show overlaps** (Advanced) | Shows points claimed by more than one cell in a separate colour and reports how many there are. Makes plotting several times slower for large cores. |
 
-The preview is drawn in the background, in a separate process; the interface does not wait ("Drawing…" label). OpenMC stays open while the model is unchanged: changing the section, colour or resolution is fast. While the panel is collapsed nothing is drawn, only the model is checked (the RUN gate still works); it is drawn when the panel is opened. If the drawing process ends unexpectedly, the preview shows a clear error and the process is restarted.
+The preview is drawn in the background, in a separate process; the interface does not wait ("Drawing…" label). OpenMC stays open while the model is unchanged: changing the section, colour or resolution is fast. While the panel is collapsed nothing is drawn, only the model is checked (the **Run** gate still works); it is drawn when the panel is opened. If the drawing process ends unexpectedly, the preview shows a clear error and the process is restarted.
 
 The line below the panel gives the outer size of the model. The panel is collapsed with the
 button at its top right.
