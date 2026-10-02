@@ -407,7 +407,17 @@ def kapi(spec, veri_kontrolu=True):
     from cekirdek import dogrula
     denetlenen = copy.deepcopy(spec)
     denetlenen.setdefault("tukenme", {})["var"] = True
-    return dogrula.kapi(denetlenen, veri_kontrolu=veri_kontrolu)
+    from cekirdek import tukenme_ayar
+    ek = tukenme_ayar.ayar_bulgulari(denetlenen)          # v3 Y4 ayarlari
+    hatalar = [b for b in ek if b.seviye == "hata"]
+    try:
+        bulgular = dogrula.kapi(denetlenen, veri_kontrolu=veri_kontrolu)
+    except dogrula.DogrulamaHatasi as e:
+        raise dogrula.DogrulamaHatasi(e.bulgular + hatalar,
+                                      tum_bulgular=e.tum_bulgular + ek) from None
+    if hatalar:
+        raise dogrula.DogrulamaHatasi(hatalar, tum_bulgular=bulgular + ek)
+    return bulgular + ek
 
 
 def calistir(spec, dizin, geri_cagir=None, veri_kontrolu=True):
@@ -473,11 +483,9 @@ from cekirdek.tukenme_terminal import KOSU_ISARETI, kosu_basligi, _terminal  # n
 
 
 def transport_sayisi(spec):
-    """Toplam transport cozumu: (adim + 1) x entegrator basina transport."""
-    t = spec.get("tukenme") or {}
-    n = len(t.get("adimlar") or [])
-    basina = 2 if (t.get("entegrator") or "cecm") == "cecm" else 1
-    return n * basina + 1
+    """Toplam transport cozumu (entegrator, sogutma, hizli kip): tukenme_ayar."""
+    from cekirdek import tukenme_ayar
+    return tukenme_ayar.transport_sayisi(spec.get("tukenme") or {})
 
 
 if __name__ == "__main__":
