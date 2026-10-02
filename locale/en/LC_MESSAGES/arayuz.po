@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 09:36+0300\n"
+"POT-Creation-Date: 2026-10-02 09:43+0300\n"
 "PO-Revision-Date: 2026-10-01 18:14+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -3723,8 +3723,8 @@ msgid "Karşılaştırılamadı: %s"
 msgstr "Could not be compared: %s"
 
 #: arayuz/karsilastir/panel.py:198
-msgid "Fark haritası yalnız kare kafeste çizilir"
-msgstr "The difference map is drawn only for a square lattice"
+msgid "Fark haritası yalnız dikdörtgen kafeste çizilir"
+msgstr "The difference map is drawn only for a rectangular lattice"
 
 #: arayuz/karsilastir/panel.py:209
 msgid "Δ bağıl güç (2 − 1)"
@@ -4374,8 +4374,8 @@ msgstr ""
 "it?"
 
 #: arayuz/kuyruk/slurm_paneli.py:56
-msgid "boşlukla ayrılmış: openmpi/4.1 hdf5"
-msgstr "space separated: openmpi/4.1 hdf5"
+msgid "birden çok modül: openmpi/4.1 hdf5"
+msgstr "several modules: openmpi/4.1 hdf5"
 
 #: arayuz/kuyruk/slurm_paneli.py:60
 msgid "kümedeki cross_sections.xml yolu (isteğe bağlı)"

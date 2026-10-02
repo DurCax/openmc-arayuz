@@ -58,7 +58,7 @@ with **Choose two folders...**). The older run is run 1, the newer is run 2.
   **conservative**.
 - **Pin power difference:** if both runs have the power distribution, the relative power
   difference, its sigma and its z at every common position; the table is sorted by |z| and a
-  difference map is drawn for a square lattice (red: run 2 higher, blue: lower). Among N pins
+  difference map is drawn for a rectangular lattice (red: run 2 higher, blue: lower). Among N pins
   about 4.6 % x N positions have |z| > 2 by chance alone; the window prints this number next
   to the count, so a single "significant" pin is not evidence of a difference.
 

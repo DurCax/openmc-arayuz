@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 09:36+0300\n"
+"POT-Creation-Date: 2026-10-02 09:43+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -3571,7 +3571,7 @@ msgid "Karşılaştırılamadı: %s"
 msgstr ""
 
 #: arayuz/karsilastir/panel.py:198
-msgid "Fark haritası yalnız kare kafeste çizilir"
+msgid "Fark haritası yalnız dikdörtgen kafeste çizilir"
 msgstr ""
 
 #: arayuz/karsilastir/panel.py:209
@@ -4163,7 +4163,7 @@ msgid "Kuyrukta %d bitmemiş koşu var; kapatılırsa iptal edilir. Kapatılsın
 msgstr ""
 
 #: arayuz/kuyruk/slurm_paneli.py:56
-msgid "boşlukla ayrılmış: openmpi/4.1 hdf5"
+msgid "birden çok modül: openmpi/4.1 hdf5"
 msgstr ""
 
 #: arayuz/kuyruk/slurm_paneli.py:60

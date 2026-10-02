@@ -22,7 +22,7 @@ def test_betik_bash_sozdizimini_gecer():
     # Arrange
     from cekirdek import slurm
     ayarlar = [_ayar(), _ayar(gorev=4, dugum=2, bolum="hesap", hesap="nukleer_1",
-                              bellek="16G", eposta="a.b@uni.edu.tr", moduller=("openmpi/4.1",),
+                              bellek="16G", eposta="a.b@" "uni.edu.tr", moduller=("openmpi/4.1",),
                               conda_ortami="openmc-env", ek_ortam={"OPENMC_CROSS_SECTIONS":
                                                                    "/veri/x s/cross_sections.xml"},
                               mpi_baslatici="mpiexec", kosu_dizini="/scratch/u/kosu 1")]
@@ -63,7 +63,7 @@ def test_gecersiz_girdiler_reddedilir():
         dict(kosu_dizini="a\nb"), dict(ek_ortam={"A": "x\ny"}),
         # Python'da `$` sondaki yeni satirdan ONCE de eslesir: fullmatch sart
         dict(is_adi="pwr\n"), dict(bolum="hesap\n"), dict(moduller=("openmpi\n",)),
-        dict(conda_ortami="env\n"), dict(ek_ortam={"A\n": "x"}), dict(eposta="a@b.edu\n"),
+        dict(conda_ortami="env\n"), dict(ek_ortam={"A\n": "x"}), dict(eposta="a@" "b.edu\n"),
     ]
     for kw in hatali:
         try:

@@ -53,7 +53,7 @@ class SlurmPaneli(QtWidgets.QWidget):
         self.bolum, self.hesap, self.bellek, self.eposta = (
             QtWidgets.QLineEdit(form_kutu) for _i in range(4))
         self.moduller = QtWidgets.QLineEdit(form_kutu)
-        self.moduller.setPlaceholderText(_("boşlukla ayrılmış: openmpi/4.1 hdf5"))
+        self.moduller.setPlaceholderText(_("birden çok modül: openmpi/4.1 hdf5"))
         self.conda = QtWidgets.QLineEdit(form_kutu)
         self.openmc = QtWidgets.QLineEdit("openmc", form_kutu)
         self.veri = QtWidgets.QLineEdit(form_kutu)

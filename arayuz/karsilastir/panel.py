@@ -195,7 +195,7 @@ class KarsilastirmaPaneli(QtWidgets.QWidget):
         eks = self.figur.add_subplot(111)
         iz = kg.fark_izgarasi(g) if g else None
         if iz is None:
-            eks.text(0.5, 0.5, _("Fark haritası yalnız kare kafeste çizilir"),
+            eks.text(0.5, 0.5, _("Fark haritası yalnız dikdörtgen kafeste çizilir"),
                      ha="center", va="center", color=tema.renk("metin_soluk"), fontsize=9)
             eks.set_axis_off()
             self.tuval.draw_idle()
