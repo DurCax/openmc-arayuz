@@ -42,7 +42,7 @@ import math
 
 from PySide6 import QtCore, QtWidgets
 
-from cekirdek import sema, uygunluk
+from cekirdek import kinetik_oku, sema, uygunluk
 from cekirdek import kaynak as _kaynak
 from cekirdek.ceviri import _, _n, N_, pgettext
 from arayuz import tema
@@ -615,7 +615,10 @@ class AyarSekmesi(YerlesimMixin, KaynakFormuMixin, GucFormuMixin, TallyFormuMixi
             kin["var"] = self.kinetik_var.isChecked()
             if self.kinetik_var.isChecked():
                 kin["nesil"] = self.kinetik_nesil.value()
-                kin["gruplar"] = self.kinetik_gruplar.currentData()
+                g = self.kinetik_gruplar.currentData()
+                # Varsayilan (6) dosyada yoksa yazilmaz: degisikliksiz kayit spec'i degistirmez
+                if "gruplar" in kin or g != kinetik_oku.grup_sayisi({}):
+                    kin["gruplar"] = g
             a["kinetik"] = kin
 
         # Kaynak sozlugu BASTAN YAZILMAZ: gorunmeyen alanlar (or. ozdegerde
