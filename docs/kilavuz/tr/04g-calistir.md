@@ -109,6 +109,18 @@ tahmincisi; ardından ρ28, δ25, δ28, C*. Her değer ± 1σ'dır ve altındaki
 yazar (sızıntısız tanım, korelasyonsuz birinci derece belirsizlik, yakıt ortalaması). Fizik ve
 yorum: [5.11 dersi](05-dersler.md#ders-spektrum). Grafik **PNG kaydet** ile kaydedilir.
 
+<a id="calistir-yuzey"></a>
+### Yüzey akımı ve kaçak kartı
+
+Yalnızca koşuda yüzey tally'si varsa ([Hesap ayarları](04f-hesap-ayarlari.md#ayar-yuzey))
+görünür. **Model sınırı** tally'sinde yüzey başına kaçak \|J\|, toplamı ve OpenMC global
+sızıntısı (aynı olaylar; sabit kaynakta kaynak şiddetiyle çarpılmış) yan yana yazılır.
+**Kutu ağı** tally'sinde dış yüzlerden giren, çıkan, net çıkan, yüz başına değerler ve nötron
+dengesi S + J_giren − J_çıkan + U − A satırı vardır (S kutudaki kaynak, U = nu-scatter − scatter
+[+ nu-fission sabit kaynakta], A soğurma; analog tahminci olduğundan artık yalnız yuvarlamadır).
+Enerji grupları varsa grafik **kaçak spektrumunu** (J/Δu, log x) çizer. Birim ve işaret notları
+kartın altındadır. Grafik **PNG kaydet** ile kaydedilir.
+
 <a id="calistir-uygunluk"></a>
 ### Uygunluk kartı
 

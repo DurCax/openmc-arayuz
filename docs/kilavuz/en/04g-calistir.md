@@ -112,6 +112,18 @@ state the assumptions (leakage-free definitions, uncorrelated first-order uncert
 average). Physics and interpretation: [lesson 5.11](05-dersler.md#ders-spektrum). The plot is
 saved with **Save PNG**.
 
+<a id="calistir-yuzey"></a>
+### Surface current and leakage card
+
+Visible only if the run has a surface tally ([Calculation settings](04f-hesap-ayarlari.md#ayar-yuzey)).
+For a **model boundary** tally it lists leakage \|J\| per surface, the total and the OpenMC global
+leakage (same events; in fixed source multiplied by the source strength). For a **box mesh**
+tally it lists in, out, net out through the outer faces, per-face values and the neutron balance
+row S + J_in - J_out + U - A (S the source in the box, U = nu-scatter - scatter [+ nu-fission in
+fixed source], A absorption; with the analog estimator the residual is round-off only). With
+energy groups the plot shows the **leakage spectrum** (J/du, log x). Unit and sign notes are
+below the card. Save the plot with **Save PNG**.
+
 <a id="calistir-uygunluk"></a>
 ### Conformity card
 

@@ -99,6 +99,12 @@ note on the strength).
 |---|---|---|---|---|---|
 | **Random seed** | Seed of the random number generator. The same seed and the same model give the same result (reproduction with the capsule relies on this). | — | 1 (default); different seeds for independent repetitions | running with a single seed and trusting the σ of pin powers: the power tally uncertainty is optimistic, run with several seeds (see [interpreting the power distribution](06-sonuclar.md#guc-dagilimi-yorum)) | `ayarlar.tohum` |
 | **Temperature method** | How the cross section is obtained at a temperature that is not in the library: **Interpolation (interpolation)** or **Nearest temperature (nearest)**. | — | interpolation | S(α,β) for water exists only between 284–800 K; a temperature sweep outside this range fails in the middle of the run (README "known pitfalls") | `ayarlar.sicaklik_yontemi` (`interpolation` \| `nearest`) |
+| **Photon transport (gamma heating)** | Photons born from neutrons are transported too (`settings.photon_transport`). The `heating` score then gives neutron + gamma heating; when off, gamma energy is not counted at all. With a photon source, transport is already on. The run takes noticeably longer. Details: [lesson 5.16](05c-ders-foton-sicaklik-yuzey.md#ders-foton-sicaklik-yuzey). | — | off; on when gamma heating is needed | An element of the model has no photon data in the library (**error**: OpenMC stops at start-up). Looking for total heat with `heating-local` while photons are on (**warning**: gammas counted twice). | `ayarlar.foton.var` |
+| **Electron treatment** | How electrons/positrons produced by photons are handled: **Thick-target bremsstrahlung (ttb)**: energy deposited where born, bremsstrahlung photons transported (OpenMC default); **Local energy deposition (led)**: no bremsstrahlung photons. | — | ttb | Choosing led in a heavy-element shield and losing the bremsstrahlung gammas. | `ayarlar.foton.elektron` (`ttb` \| `led`) |
+| **Temperature tolerance** | Nearest method: distance at which a library temperature is accepted (\|T_k - T\| < tolerance); interpolation: allowance outside the library range where the end temperature is used. OpenMC rule: `src/nuclide.cpp`. | K | 10 (OpenMC default) | A huge tolerance runs 750 K fuel with 600 K data: validation **warns** "only a library temperature is used". | `ayarlar.sicaklik.tolerans` |
+| **Default temperature** | Temperature of materials without a temperature. | K | 293.6 | — | `ayarlar.sicaklik.varsayilan` |
+| **Windowed multipole (any temperature in the resonance range)** | In the resolved resonance range Doppler broadening is computed analytically at any temperature (WMP). Requires `type="wmp"` entries in the library; without them OpenMC only warns and falls back to pointwise data. | — | off | Turning it on with a library without wmp data (**warning**); multipole covers only the resonance range, elsewhere method and tolerance still apply. | `ayarlar.sicaklik.multipole` |
+| **Range to load** | When checked, **all** library temperatures in the range are loaded (feedback calculations). It does not change the selection rule. | K | off; e.g. 294-1200 | — | `ayarlar.sicaklik.aralik` ([low, high]) |
 | **Measure source convergence with Shannon entropy** | Measures whether the fission source distribution converged within the inactive batches. It is evaluated automatically at the end of the run (see [source convergence](06-sonuclar.md#kaynak-yakinsamasi)). Visible only in an eigenvalue run. | — | **on** | turning it off: the model check gives a **warning**; an unconverged source makes the k-eff estimate biased and this is not noticed any other way | `ayarlar.entropi_mesh.var` |
 | **Entropy mesh** | Number of divisions nx, ny (nz in 3D) of the regular mesh on which the entropy is computed. While **Automatic mesh size** is checked, 8 × 8 radial divisions are used, 8 axial divisions in a 3D model and a single slice in 2D; when the model changes 2D ↔ 3D the mesh changes too. | divisions | 8 × 8 × 1 (2D), 8 × 8 × 8 (3D) | leaving nz = 1 in a 3D model: axial convergence is never measured. Zero divisions (**error**). | `ayarlar.entropi_mesh.boyut`; the automatic flag `ayarlar.entropi_mesh.otomatik` |
 | **Automatic mesh size** | The entropy mesh is derived from the model (see above). | — | on | — | `ayarlar.entropi_mesh.otomatik` |
@@ -168,6 +174,23 @@ Filter types the interface does not edit (for example a `malzeme` filter with an
 a `hucre` filter) are **kept** if they come from the file, and the form shows the note "Also a
 filter from the file: ... (kept)." For a nuclide tally the `tallyler[].nuklidler` field is
 entered only in JSON.
+
+
+<a id="ayar-yuzey"></a>
+### Surface current tallies
+
+The **Type** box of the tally form turns a tally into a surface current (`cekirdek/yuzey_akim.py`).
+A surface tally scores only `current` (OpenMC rule); with **Energy groups** on, the result is a
+**leakage spectrum**; material and mesh filters are removed. The current is filtered to the source
+particle (with photon transport on, photons do not mix into the neutron current). The result is in
+the **Surface current and leakage** card on the [Run](04g-calistir.md#calistir-yuzey) page;
+physics and measured values: [lesson 5.16](05c-ders-foton-sicaklik-yuzey.md#ders-foton-sicaklik-yuzey).
+
+| Field | Meaning | Unit | Typical range | Common misuse | Spec key |
+|---|---|---|---|---|---|
+| **Type** | **Volume (flux, reactions)**: previous behaviour. **Surface: model boundary (leakage)**: the vacuum boundary surfaces of the model (`SurfaceFilter`); per surface \|J\| = leakage through it, total = OpenMC global leakage. **Surface: box mesh (in / out)**: separate incoming and outgoing partial currents on the faces of a regular mesh (`MeshSurfaceFilter`) plus an analog neutron balance tally on the same mesh (`y7_denge:<name>`). | — | Volume | Asking for the model boundary in a reflective model (**warning**: leakage is zero by definition, no tally is built). A score other than `current` (**error**). | `tallyler[].filtreler[]` (`tur`: `yuzey_sinir` \| `yuzey_kutu`) |
+| **Box divisions** | nx, ny, nz of the box mesh; inner faces cancel, in/out is counted on the outer faces. | divisions | 1 x 1 x 1 | Zero divisions (**error**). | `tallyler[].filtreler[].boyut` |
+| **Box bounds [cm]** | lower and upper corner `x, y, z`; both empty = model box (`otomatik`, same rule as the tally mesh). Unreadable text keeps the existing bounds. | cm | empty (automatic) | low >= high on an axis (**error**). A point source exactly on a box face: source share unknown, no balance. | `tallyler[].filtreler[].alt`, `.ust`, `.otomatik` |
 
 <a id="ayar-hatalar"></a>
 ### Frequent findings on this page
