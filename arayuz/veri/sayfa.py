@@ -102,6 +102,7 @@ class KlasorKarti(b.Kart):
         self.ozet = QtWidgets.QLabel()
         self.ozet.setWordWrap(True)
         self.ozet.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
+        self.ozet.setVisible(False)
         self.ekle(self.ozet)
         self.zincir = QtWidgets.QLineEdit()
         self.zincir.setAccessibleName(_("Tükenme zinciri dosyası"))
@@ -155,6 +156,7 @@ class KlasorKarti(b.Kart):
         """Klasoru denetler; uygunsa secimi kaydeder. Doner: KutuphaneDenetimi."""
         d = veri_bilgi.klasor_denetle(self.yol.text().strip())
         self.ozet.setText(self.ozet_metni(d))
+        self.ozet.setVisible(True)
         if not d.tamam:
             self.durum.emit(_("Bu klasör kullanılamaz: %s") % "; ".join(d.hatalar), False)
             return d

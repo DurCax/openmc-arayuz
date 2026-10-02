@@ -83,7 +83,7 @@ building a model. While data is missing, the model check strip shows the error
 strip brings you to this page.
 
 - **Requirements** — the OpenMC executable and its version (`openmc --version`), the OpenMC
-  Python API (same version as the executable?), HDF5 (h5py), the cross-section library and the
+  Python API (same version as the executable?), HDF5 (h5py), the cross section library and the
   depletion chain in one table: ✓ ok, ! warning, ✗ missing; for a missing item it says what to do.
 - **Choose folder** — if a library is already on your computer, choose the folder that contains
   `cross_sections.xml` (or its parent). **Check and use** reads the XML and shows the number of

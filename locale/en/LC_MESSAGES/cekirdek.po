@@ -7728,7 +7728,7 @@ msgstr "Depletion chain"
 
 #: cekirdek/veri_bilgi.py:468
 msgid "Yalnız tükenme hesabı için gerekir; zincir indirin."
-msgstr "Needed only for depletion; download a chain."
+msgstr "Needed only for depletion calculations; download a chain."
 
 #: cekirdek/veri_bilgi.py:471
 #, python-format
@@ -7811,7 +7811,7 @@ msgid "indirme kesildi (%d / %d bayt); yeniden deneyin, kaldığı yerden sürer
 msgstr "download interrupted (%d / %d bytes); try again, it resumes where it stopped: %s"
 
 #: cekirdek/veri_indir.py:350
-msgid "sunucu aralığı reddetti; yarım parça silindi, yeniden deneyin"
+msgid "sunucu aralığı reddetti; yarım dosya silindi, yeniden deneyin"
 msgstr "the server rejected the range; the partial file was deleted, try again"
 
 #: cekirdek/veri_indir.py:359

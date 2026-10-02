@@ -13,7 +13,6 @@
 
 import hashlib
 import os
-import tempfile
 import time
 
 from testler.ortak_test import kontrol

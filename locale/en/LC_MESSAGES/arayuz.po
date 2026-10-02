@@ -7557,7 +7557,7 @@ msgstr "Depletion chains"
 
 #: arayuz/veri/indirme_karti.py:83
 msgid "Yalnız tükenme hesabı için gerekir."
-msgstr "Needed only for depletion."
+msgstr "Needed only for depletion calculations."
 
 #: arayuz/veri/indirme_karti.py:106
 msgid "Hedef klasör:"
@@ -7744,12 +7744,12 @@ msgid ""
 "OpenMC tesir kesiti kütüphanesi ve tükenme zinciri olmadan koşu yapılamaz. Var olan "
 "bir klasörü seçin ya da openmc.org'dan indirin."
 msgstr ""
-"No run is possible without an OpenMC cross-section library and depletion chain. "
+"No run is possible without an OpenMC cross section library and depletion chain. "
 "Choose an existing folder or download from openmc.org."
 
 #: arayuz/veri/sayfa.py:202
 msgid "Kılavuz: Nükleer veri ve tükenme zinciri"
-msgstr "Manual: Nuclear data and depletion chain"
+msgstr "User guide: Nuclear data and depletion chain"
 
 #: arayuz/veri/sayfa.py:225
 msgid "Başlamadan önce: nükleer veri"

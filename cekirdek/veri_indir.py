@@ -347,7 +347,7 @@ def dosya_indir(url: str, hedef: str, beklenen_bayt: int, sha256: Optional[str] 
     if yanit is None:                           # 416: sunucuya gore parca zaten tam
         if bas != beklenen_bayt:
             _sil(parca)
-            raise IndirmeHatasi(_("sunucu aralığı reddetti; yarım parça silindi, yeniden "
+            raise IndirmeHatasi(_("sunucu aralığı reddetti; yarım dosya silindi, yeniden "
                                   "deneyin"))
         alinan, hasher = bas, _dosya_sha256(parca)
     else:
@@ -520,7 +520,10 @@ def _secimler(a, kat: Katalog):
 def _bashrc(satirlar) -> None:
     yol = os.path.expanduser("~/.bashrc")
     isaret = "# OpenMC verisi (openmc_arayuz veri_indir)"
-    mevcut = open(yol, encoding="utf-8").read() if os.path.isfile(yol) else ""
+    mevcut = ""
+    if os.path.isfile(yol):
+        with open(yol, encoding="utf-8") as f:
+            mevcut = f.read()
     if isaret in mevcut:
         print(_("~/.bashrc'de zaten bir openmc_arayuz bölümü var; değiştirilmedi."))
         return
