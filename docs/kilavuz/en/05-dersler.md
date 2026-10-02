@@ -25,6 +25,7 @@ overwritten. Use **File › Save as…** to keep your own changes.
 | [5.15](#ders-yerel-k) | Local k and assembly k∞ | `ornekler/pwr_17x17.json`, `ornekler/pwr_ceyrek_kor.json` | intermediate |
 | [5.16](05d-ders-foton-sicaklik-yuzey.md#ders-foton-sicaklik-yuzey) | Photon heating, temperature interpolation, surface current | `ornekler/pwr_pinhucre.json`, `ornekler/zirh_kure.json` | intermediate |
 | [5.18](05d-ders-goruntuleyici.md#ders-goruntuleyici) | Viewer: slice, overlaps, tally overlay, 3D | `ornekler/pwr_mesh_aki.json`, `ornekler/vver1000_kor.json`, `ornekler/pwr_3b.json` | intermediate |
+| [5.19](05d-ders-mgxs.md#ders-mgxs) | Group constants, multigroup MC and random ray | `ornekler/pwr_pinhucre.json` | advanced |
 
 **Where do the expected results come from?** Every value has a source: the `referans.olcum` field
 of the example file, [VV.md](../../VV.md), [ORNEKLER.md](../../ORNEKLER.md) or the measurement tables

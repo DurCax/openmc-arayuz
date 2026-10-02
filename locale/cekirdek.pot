@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 16:05+0300\n"
+"POT-Creation-Date: 2026-10-02 16:22+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -339,37 +339,33 @@ msgstr ""
 msgid "k∞ — %s"
 msgstr ""
 
-#: cekirdek/dogrula/__init__.py:160
+#: cekirdek/dogrula/__init__.py:162
 #, python-format
 msgid "%d doğrulama hatası; önce bunları giderin"
 msgid_plural "%d doğrulama hatası; önce bunları giderin"
 msgstr[0] ""
 msgstr[1] ""
 
-#: cekirdek/dogrula/__init__.py:188
+#: cekirdek/dogrula/__init__.py:190
 #, python-format
 msgid "%d hata"
 msgid_plural "%d hata"
 msgstr[0] ""
 msgstr[1] ""
 
-#: cekirdek/dogrula/__init__.py:189
+#: cekirdek/dogrula/__init__.py:191
 #, python-format
 msgid "%d uyarı"
 msgid_plural "%d uyarı"
 msgstr[0] ""
 msgstr[1] ""
 
-#: cekirdek/dogrula/__init__.py:190
+#: cekirdek/dogrula/__init__.py:192
 #, python-format
 msgid "%d bilgi"
 msgid_plural "%d bilgi"
 msgstr[0] ""
 msgstr[1] ""
-
-#: cekirdek/dogrula/_ortak.py:25
-msgid "Malzeme"
-msgstr ""
 
 #: cekirdek/dogrula/_ortak.py:25
 msgid "Çubuk"
@@ -1647,6 +1643,29 @@ msgstr ""
 msgid ""
 "Hidrojenin bağlı olduğu faza uygun bir S(α,β) seçin (ör. c_H_in_H2O, c_H_in_ZrH, "
 "c_H_in_CH2)."
+msgstr ""
+
+#: cekirdek/dogrula/mgxs.py:44
+msgid "tükenme koşusunda grup sabiti (MGXS) tally'leri eklenmez"
+msgstr ""
+
+#: cekirdek/dogrula/mgxs.py:45
+msgid "Grup sabitlerini ayrı bir özdeğer koşusunda üretin."
+msgstr ""
+
+#: cekirdek/dogrula/mgxs.py:48
+msgid ""
+"sabit kaynak hesabında χ ve k∞ kaynağın tayfına bağlıdır; grup sabitleri o kaynağa "
+"özgüdür"
+msgstr ""
+
+#: cekirdek/dogrula/mgxs.py:53
+#, python-format
+msgid "MGXS tally'leri için tahmini bellek %.1f GiB"
+msgstr ""
+
+#: cekirdek/dogrula/mgxs.py:54
+msgid "Daha kaba grup yapısı ya da 'Malzeme' bölgesi seçin."
 msgstr ""
 
 #: cekirdek/dogrula/referans.py:44
@@ -4725,118 +4744,118 @@ msgstr ""
 msgid "  Çözüm bulunamadı."
 msgstr ""
 
-#: cekirdek/dogrula/geometri.py:72 cekirdek/geometri/yapici.py:76 cekirdek/kurucu.py:88
+#: cekirdek/dogrula/geometri.py:72 cekirdek/geometri/yapici.py:76 cekirdek/kurucu.py:89
 #: cekirdek/sema_basvuru.py:156 cekirdek/tarama.py:174 cekirdek/tarama.py:180
 #, python-format
 msgid "tanımsız malzeme: %s"
 msgstr ""
 
-#: cekirdek/kurucu.py:203
+#: cekirdek/kurucu.py:204
 msgid "otomatik ağ sınırları için modelin sınır kutusu gerekli"
 msgstr ""
 
-#: cekirdek/kurucu.py:238
+#: cekirdek/kurucu.py:239
 #, python-format
 msgid "bilinmeyen filtre türü: %s"
 msgstr ""
 
-#: cekirdek/kurucu.py:259 cekirdek/kurucu.py:282
+#: cekirdek/kurucu.py:260 cekirdek/kurucu.py:283
 msgid "güç dağılımı için geçerli bir çubuk seçilmeli"
 msgstr ""
 
-#: cekirdek/kurucu.py:260
+#: cekirdek/kurucu.py:261
 #, python-format
 msgid " ('%s' tanımsız)"
 msgstr ""
 
-#: cekirdek/kurucu.py:267
+#: cekirdek/kurucu.py:268
 #, python-format
 msgid "'%s': geçersiz bölge numarası %d (çubukta %d bölge var)"
 msgstr ""
 
-#: cekirdek/kurucu.py:296
+#: cekirdek/kurucu.py:297
 #, python-format
 msgid ""
 "'%s' çubuğu modelde kullanılmıyor. Güç dağılımı yalnızca geometride yer alan bir "
 "çubuk için hesaplanabilir."
 msgstr ""
 
-#: cekirdek/kuyruk.py:192
+#: cekirdek/kuyruk.py:202
 msgid "koşu kök dizini boş olamaz"
 msgstr ""
 
-#: cekirdek/kuyruk.py:231
+#: cekirdek/kuyruk.py:241
 #, python-format
 msgid "spec'te çevrim sayısı geçersiz: %r"
 msgstr ""
 
-#: cekirdek/kuyruk.py:255
+#: cekirdek/kuyruk.py:265
 msgid "en fazla paralel koşu sayısı en az 1 olmalı"
 msgstr ""
 
-#: cekirdek/kuyruk.py:258
+#: cekirdek/kuyruk.py:268
 msgid "iş parçacığı bütçesi en az 1 olmalı"
 msgstr ""
 
-#: cekirdek/kuyruk.py:305
+#: cekirdek/kuyruk.py:315
 msgid "paralel koşu sayısı ve bütçe en az 1 olmalı"
 msgstr ""
 
-#: cekirdek/kuyruk.py:312
+#: cekirdek/kuyruk.py:322
 #, python-format
 msgid "bütçe %d, bekleyen koşulardan küçük: %s"
 msgstr ""
 
-#: cekirdek/kuyruk.py:360
+#: cekirdek/kuyruk.py:370
 msgid "koşunun adı boş olamaz"
 msgstr ""
 
-#: cekirdek/kuyruk.py:362
+#: cekirdek/kuyruk.py:372
 msgid "koşu dizini boş olamaz"
 msgstr ""
 
-#: cekirdek/kuyruk.py:364
+#: cekirdek/kuyruk.py:374
 msgid "iş parçacığı en az 1, MPI süreç sayısı negatif olamaz"
 msgstr ""
 
-#: cekirdek/kuyruk.py:366
+#: cekirdek/kuyruk.py:376
 #, python-format
 msgid "'%s' %d iş parçacığı istiyor; bütçe %d"
 msgstr ""
 
-#: cekirdek/kuyruk.py:371
+#: cekirdek/kuyruk.py:381
 #, python-format
 msgid "'%s' dizini zaten kuyruktaki bir koşunun (%s)"
 msgstr ""
 
-#: cekirdek/kuyruk.py:381 cekirdek/kuyruk.py:461
+#: cekirdek/kuyruk.py:391 cekirdek/kuyruk.py:471
 msgid "kuyruk kapatıldı"
 msgstr ""
 
-#: cekirdek/kuyruk.py:415
+#: cekirdek/kuyruk.py:425
 msgid "koşan iş kaldırılamaz; önce iptal edin"
 msgstr ""
 
-#: cekirdek/kuyruk.py:594
+#: cekirdek/kuyruk.py:604
 #, python-format
 msgid "openmc çıkış kodu %d (günlük: %s)"
 msgstr ""
 
-#: cekirdek/kuyruk.py:599
+#: cekirdek/kuyruk.py:609
 msgid "koşu bitti ama statepoint dosyası bulunamadı"
 msgstr ""
 
-#: cekirdek/kuyruk.py:614
+#: cekirdek/kuyruk.py:624
 #, python-format
 msgid "'%s' dizininde model.xml yok"
 msgstr ""
 
-#: cekirdek/kuyruk.py:633
+#: cekirdek/kuyruk.py:643
 #, python-format
 msgid "openmc çalıştırılabilir dosyası bulunamadı (%s)"
 msgstr ""
 
-#: cekirdek/kuyruk.py:638
+#: cekirdek/kuyruk.py:648
 msgid "Bu openmc MPI desteksiz derlenmiş (MPI enabled: no); MPI süreç sayısını 0 yapın"
 msgstr ""
 
@@ -6216,6 +6235,218 @@ msgstr ""
 msgid "VTK dizini yok ya da yazılamıyor: %s"
 msgstr ""
 
+#: cekirdek/mg_model.py:55
+#, python-format
+msgid "OpenMC %s: MG/random ray dönüşümü %s.x iç ayrıntılarıyla doğrulandı"
+msgstr ""
+
+#: cekirdek/mg_model.py:83
+#, python-format
+msgid ""
+"MGXS özeti bu modelle eşleşmiyor (model, grup sabitleri üretildikten sonra değişmiş);"
+" grup sabitlerini yeniden üretin. Fark: %s"
+msgstr ""
+
+#: cekirdek/mg_model.py:93
+msgid ""
+"MGXS özeti bu modelle eşleşmiyor (spec, grup sabitleri üretildikten sonra değişmiş); "
+"grup sabitlerini yeniden üretin."
+msgstr ""
+
+#: cekirdek/mg_model.py:105
+#, python-format
+msgid "hücre %d için grup sabiti yok"
+msgstr ""
+
+#: cekirdek/mg_model.py:116
+#, python-format
+msgid "demet bölgesinde tek xsdata beklenir (%d)"
+msgstr ""
+
+#: cekirdek/mg_model.py:123
+#, python-format
+msgid "malzeme %d (%s) için grup sabiti yok"
+msgstr ""
+
+#: cekirdek/mg_model.py:147
+#, python-format
+msgid "MG kütüphanesi bulunamadı: %s"
+msgstr ""
+
+#: cekirdek/mgxs_is.py:38
+msgid "Sürekli enerji (CE) MC"
+msgstr ""
+
+#: cekirdek/mgxs_is.py:38
+msgid "Çok gruplu (MG) MC"
+msgstr ""
+
+#: cekirdek/mgxs_is.py:39
+msgid "Random ray (MG)"
+msgstr ""
+
+#: cekirdek/mgxs_is.py:49
+msgid "Tüm model"
+msgstr ""
+
+#: cekirdek/mgxs_is.py:54
+#, python-format
+msgid "Demet: %s (sonsuz kafes, 2B)"
+msgstr ""
+
+#: cekirdek/mgxs_is.py:79
+msgid "MGXS üretimi (CE)"
+msgstr ""
+
+#: cekirdek/mgxs_is.py:105
+msgid "MG MC"
+msgstr ""
+
+#: cekirdek/mgxs_is.py:122
+msgid "Random ray"
+msgstr ""
+
+#: cekirdek/mgxs_k.py:59
+#, python-format
+msgid "%s sayı dizisi olmalı"
+msgstr ""
+
+#: cekirdek/mgxs_k.py:61
+#, python-format
+msgid "%s sonlu olmalı"
+msgstr ""
+
+#: cekirdek/mgxs_k.py:86
+#, python-format
+msgid "%s %d grup olmalı (toplam ile aynı)"
+msgstr ""
+
+#: cekirdek/mgxs_k.py:90
+#, python-format
+msgid "saçılma matrisi %d x %d olmalı"
+msgstr ""
+
+#: cekirdek/mgxs_k.py:93
+msgid "tesir kesitleri negatif olamaz"
+msgstr ""
+
+#: cekirdek/mgxs_k.py:95
+#, python-format
+msgid "fisyonlu bölgede χ toplamı 1 olmalı (%.4f)"
+msgstr ""
+
+#: cekirdek/mgxs_k.py:108
+msgid "kaldırma matrisi tekil (St - S)"
+msgstr ""
+
+#: cekirdek/mgxs_k.py:115
+msgid "bölgede fisyon yok: k∞ tanımsız"
+msgstr ""
+
+#: cekirdek/mgxs_uret.py:63
+msgid "Hücre"
+msgstr ""
+
+#: cekirdek/dogrula/_ortak.py:25 cekirdek/mgxs_uret.py:63
+msgid "Malzeme"
+msgstr ""
+
+#: cekirdek/mgxs_uret.py:64
+msgid "Demet (tüm model, tek bölge)"
+msgstr ""
+
+#: cekirdek/mgxs_uret.py:84
+msgid "Toplam Σt"
+msgstr ""
+
+#: cekirdek/mgxs_uret.py:84
+msgid "Taşıma Σtr (P0, ν)"
+msgstr ""
+
+#: cekirdek/mgxs_uret.py:85
+msgid "Soğurma Σa"
+msgstr ""
+
+#: cekirdek/mgxs_uret.py:85
+msgid "ν-fisyon νΣf"
+msgstr ""
+
+#: cekirdek/mgxs_uret.py:86
+msgid "Fisyon tayfı χ"
+msgstr ""
+
+#: cekirdek/mgxs_uret.py:86
+msgid "Saçılma matrisi Σs(g→g')"
+msgstr ""
+
+#: cekirdek/mgxs_uret.py:87
+msgid "ν-saçılma matrisi νΣs(g→g')"
+msgstr ""
+
+#: cekirdek/mgxs_uret.py:88
+msgid "Saçılma matrisi Σs(g→g') (tutarlı)"
+msgstr ""
+
+#: cekirdek/mgxs_uret.py:89
+msgid "ν-saçılma matrisi νΣs(g→g') (tutarlı)"
+msgstr ""
+
+#: cekirdek/mgxs_uret.py:89
+msgid "Fisyon Σf"
+msgstr ""
+
+#: cekirdek/mgxs_uret.py:90
+msgid "κ-fisyon κΣf [eV/cm]"
+msgstr ""
+
+#: cekirdek/mgxs_uret.py:90
+msgid "Yakalama Σc"
+msgstr ""
+
+#: cekirdek/mgxs_uret.py:91
+msgid "Ters hız 1/v [s/cm]"
+msgstr ""
+
+#: cekirdek/mgxs_uret.py:92
+msgid "Difüzyon katsayısı D [cm]"
+msgstr ""
+
+#: cekirdek/mgxs_uret.py:147
+#, python-format
+msgid "bilinmeyen MGXS bölge türü: %s (geçerli: %s)"
+msgstr ""
+
+#: cekirdek/mgxs_uret.py:149
+#, python-format
+msgid "bilinmeyen MGXS grup yapısı: %s (geçerli: %s)"
+msgstr ""
+
+#: cekirdek/mgxs_uret.py:151
+#, python-format
+msgid "bilinmeyen taşıma düzeltmesi: %s (geçerli: %s)"
+msgstr ""
+
+#: cekirdek/mgxs_uret.py:155
+#, python-format
+msgid "bilinmeyen MGXS türü: %s (geçerli: %s)"
+msgstr ""
+
+#: cekirdek/mgxs_uret.py:362
+#, python-format
+msgid "k∞ özdeğeri hesaplanamadı: %s"
+msgstr ""
+
+#: cekirdek/mgxs_uret.py:409
+msgid "bu spec'te MGXS açık değil"
+msgstr ""
+
+#: cekirdek/mgxs_uret.py:426
+#, python-format
+msgid ""
+"%d bölge/grup için saçılma köşegeni negatif (P0 düzeltmesi): MG Monte Carlo bunu "
+"doğru işleyemez, random ray köşegen kararlılaştırması uygular"
+msgstr ""
+
 #: cekirdek/nuklidler.py:51
 msgid "Uranyum"
 msgstr ""
@@ -6537,6 +6768,32 @@ msgstr ""
 
 #: cekirdek/parametre.py:310
 msgid "taban"
+msgstr ""
+
+#: cekirdek/random_ray.py:72
+msgid "random ray: aktif mesafe > 0, ölü mesafe ≥ 0 olmalı"
+msgstr ""
+
+#: cekirdek/random_ray.py:74
+msgid "random ray: ışın ≥ 1 ve çevrim > pasif ≥ 0 olmalı"
+msgstr ""
+
+#: cekirdek/random_ray.py:76
+#, python-format
+msgid "random ray: bilinmeyen kaynak şekli %s"
+msgstr ""
+
+#: cekirdek/random_ray.py:78
+#, python-format
+msgid "random ray: bölme 0–%d olmalı"
+msgstr ""
+
+#: cekirdek/random_ray.py:108
+msgid "random ray çok gruplu (MG) model ister"
+msgstr ""
+
+#: cekirdek/random_ray.py:110
+msgid "random ray burada yalnız özdeğer hesabı için kurulur"
 msgstr ""
 
 #: cekirdek/rapor.py:177

@@ -25,6 +25,7 @@ için **Dosya › Farklı kaydet…** kullanın.
 | [5.15](#ders-yerel-k) | Yerel k ve demet k∞ | `ornekler/pwr_17x17.json`, `ornekler/pwr_ceyrek_kor.json` | orta |
 | [5.16](05d-ders-foton-sicaklik-yuzey.md#ders-foton-sicaklik-yuzey) | Foton ısınması, sıcaklık interpolasyonu, yüzey akımı | `ornekler/pwr_pinhucre.json`, `ornekler/zirh_kure.json` | orta |
 | [5.18](05d-ders-goruntuleyici.md#ders-goruntuleyici) | Görüntüleyici: kesit, çakışma, tally bindirmesi, 3B | `ornekler/pwr_mesh_aki.json`, `ornekler/vver1000_kor.json`, `ornekler/pwr_3b.json` | orta |
+| [5.19](05d-ders-mgxs.md#ders-mgxs) | Grup sabitleri, çok gruplu MC ve random ray | `ornekler/pwr_pinhucre.json` | ileri |
 
 **Beklenen sonuçlar nereden geliyor?** Her değer bir kaynağa dayanır: örnek dosyasının
 `referans.olcum` alanı, [VV.md](../../VV.md), [ORNEKLER.md](../../ORNEKLER.md) ya da
