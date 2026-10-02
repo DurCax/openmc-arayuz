@@ -79,10 +79,10 @@ class YerelKHaritasi(QtWidgets.QWidget):
         ust.addWidget(self.d_csv)
         ust.addWidget(self.d_png)
         aciklama = QtWidgets.QLabel(_(
-            "k_yerel = νΣ_f φ / (Σ_a φ − X) her pin/demet hücresinde. Sızıntısız yerel "
-            "çoğalma oranıdır, k∞ değildir: komşu hücrelerle nötron alışverişi yok sayılır. "
-            "X: (n,xn) tepkimelerinin net nötron üretimi (OpenMC 'absorption'ı bunları "
-            "saymaz)."))
+            "k_yerel = νΣ_f φ / (Σ_a φ − X) her pin/demet hücresinde: yerel üretim / yok olma "
+            "oranı (sızıntı ve net akım terimi içermez), k∞ değildir. Akı komşulardan gelen "
+            "nötronları içerir; oranı hücredeki spektrum belirler. X: (n,xn) tepkimelerinin "
+            "net nötron üretimi (OpenMC 'absorption'ı bunları saymaz)."))
         aciklama.setObjectName("soluk")
         aciklama.setWordWrap(True)
         belirsizlik = QtWidgets.QLabel(_(
@@ -102,10 +102,18 @@ class YerelKHaritasi(QtWidgets.QWidget):
         duzen.addWidget(self.gelismis)
 
     # ------------------------------------------------------------------
-    def kosu_sonucu_ayarla(self, sonuc: Mapping[str, Any], spec: Mapping[str, Any]) -> None:
-        """kosucu.sonuc_oku ciktisi + spec. Hata gosterilir, yutulmaz."""
+    def kosu_sonucu_ayarla(self, sonuc: Mapping[str, Any], spec: Mapping[str, Any],
+                           statepoint: Optional[str] = None) -> None:
+        """kosucu.sonuc_oku ciktisi + spec (+ statepoint: global denge, sizinti
+        denetimi). Hata gosterilir, yutulmaz."""
+        denge = None
+        if statepoint:
+            try:
+                denge = _yk.denge_oku(statepoint)
+            except (_yk.YerelKHatasi, OSError, KeyError) as e:
+                _log.warning("global denge okunamadı (%s); sızıntı denetimi yok", e)
         try:
-            sonuclar = _yk.sonuctan(sonuc, spec)
+            sonuclar = _yk.sonuctan(sonuc, spec, denge=denge)
         except _yk.YerelKHatasi as e:
             _log.warning("yerel k okunamadı: %s", e)
             self.sonuclari_ayarla([], _("Yerel k okunamadı: %s") % e)
@@ -151,12 +159,17 @@ class YerelKHaritasi(QtWidgets.QWidget):
         p.append(_("c_xn = %.5f") % s.c_xn)
         if s.kapsama is not None:
             p.append(_("harita kapsamı (net yok olma payı): %.4f") % s.kapsama)
-        fisil = [h.k for h in s.hucreler if h.fisil]
+        if s.sizintili_k is not None:
+            p.append(_("P/(D+L) = %.5f (sızıntı L = %.5f; k-eff ile karşılaştırın)")
+                     % (s.sizintili_k, s.denge.sizinti[0]))
+        fisil = [h.k for h in s.hucreler if h.fisil and math.isfinite(h.k)]
         if fisil:
             p.append(_("en düşük / en yüksek: %.4f / %.4f") % (min(fisil), max(fisil)))
         metin = " &nbsp;|&nbsp; ".join(p)
-        metin += "<br>" + _("Sızıntısız yerel çoğalma oranı, k∞ değildir. Ortalama yalnız "
-                            "sonsuz kafeste (yansıtıcı sınır, kapsam %100) k∞'a eşittir.")
+        metin += "<br>" + _("Yerel üretim / yok olma oranı (sızıntı ve net akım terimi "
+                            "içermez), k∞ değildir. Ortalama yalnız sonsuz kafeste (yansıtıcı "
+                            "sınır, kapsam %100) k∞'a eşittir; kritiklik globaldir: "
+                            "k_eff = ΣP / (ΣD + L).")
         self.ozet.setText(metin)
 
     # ------------------------------------------------------------------
