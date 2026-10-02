@@ -346,9 +346,10 @@ class Kanal:
             pass
 
     def yeni_var(self):
-        """Bekleyen yeni istek (ya da girdi kapandi) mi -- engellemez."""
+        """Bekleyen yeni istek var mi -- engellemez. Girdinin kapanmasi tek basina
+        isi kesmez (arayuz kapanirken once 'cik' yazar; o kuyruktadir)."""
         self._bosalt()
-        return bool(self._kuyruk) or self.kapandi
+        return bool(self._kuyruk)
 
     def sonraki(self):
         """Siradaki istek: kuyruktaki EN SON (cik varsa o); girdi kapandiysa None."""

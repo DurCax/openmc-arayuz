@@ -11,8 +11,9 @@ giris.py -- paket giris noktalari (pyproject.toml [project.scripts]).
                           bulgusu var, 0 = yok, 2 = kullanim hatasi, 3 = --siki
                           ile degerlendirilemeyen kural var (CI / ders)
   openmc-arayuz-kosu --alt tukenme spec.json [-s N] [--dizin D] [...]
-                       -> arayuzun alt surecleri (bugun yalniz tukenme;
-                          = python -m cekirdek.tukenme ...)
+                       -> arayuzun alt surecleri: tukenme (= python -m
+                          cekirdek.tukenme ...) ve cizim (onizleme iscisi,
+                          stdin/stdout cerceve protokolu; cekirdek/cizim_sureci.py)
 
 Ince sarmalayicilar: davranis mevcut modul girislerinin aynisidir. GUI
 arayuz.ana_pencere.main()'i dogrudan cagirir (pencere modulu arayuz/pencere/
@@ -35,6 +36,7 @@ RAPOR_KOMUTU = "rapor"
 UYGUNLUK_KOMUTU = "uygunluk"
 ALT_SECENEGI = "--alt"
 ALT_TUKENME = "tukenme"
+ALT_CIZIM = "cizim"
 _RAPOR_UZANTILARI = {".html": "html", ".htm": "html", ".pdf": "pdf"}
 _SPEC_ADAYLARI = ("spec.json", "tukenme_spec.json")
 
@@ -235,7 +237,12 @@ def _tukenme_alt_sureci(argv):
     return tukenme._terminal(argv)
 
 
-_ALT_SURECLER = {ALT_TUKENME: _tukenme_alt_sureci}
+def _cizim_alt_sureci(argv):
+    from cekirdek import cizim_sureci
+    return cizim_sureci.ana(argv)
+
+
+_ALT_SURECLER = {ALT_TUKENME: _tukenme_alt_sureci, ALT_CIZIM: _cizim_alt_sureci}
 
 
 def alt_surec_komutu(ad, argumanlar, python=None):
