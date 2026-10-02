@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 07:12+0300\n"
+"POT-Creation-Date: 2026-10-02 09:53+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -54,7 +54,7 @@ msgstr ""
 "\n"
 "      statepoint: %s"
 
-#: cekirdek/tukenme.py:708
+#: cekirdek/tukenme.py:749
 #, python-format
 msgid ""
 "\n"
@@ -72,7 +72,7 @@ msgstr ""
 "\n"
 "  Note: %s"
 
-#: cekirdek/tukenme.py:715
+#: cekirdek/tukenme.py:756
 #, python-format
 msgid ""
 "\n"
@@ -81,7 +81,7 @@ msgstr ""
 "\n"
 "  heavy metal: %.6g g"
 
-#: cekirdek/tukenme.py:719
+#: cekirdek/tukenme.py:760
 #, python-format
 msgid ""
 "\n"
@@ -487,32 +487,32 @@ msgstr "  [%d/%d] %-12g %s  failed: %s"
 msgid "  [%d/%d] %-12g %s  k = %.5f ± %.5f   ρ = %+9.1f pcm"
 msgstr "  [%d/%d] %-12g %s  k = %.5f ± %.5f   ρ = %+9.1f pcm"
 
-#: cekirdek/tukenme.py:689
+#: cekirdek/tukenme.py:730
 #, python-format
 msgid "  adımlar       : %s %s  → %d transport"
 msgstr "  steps         : %s %s  → %d transports"
 
-#: cekirdek/tukenme.py:699
+#: cekirdek/tukenme.py:740
 #, python-format
 msgid "  ağır metal    : %.6g g"
 msgstr "  heavy metal   : %.6g g"
 
-#: cekirdek/tukenme.py:686
+#: cekirdek/tukenme.py:727
 #, python-format
 msgid "  fisyon verimi : %s eV (%s spektrum)"
 msgstr "  fission yield : %s eV (%s spectrum)"
 
-#: cekirdek/tukenme.py:688
+#: cekirdek/tukenme.py:729
 #, python-format
 msgid "  güç yoğunluğu : %g W/gHM"
 msgstr "  power density : %g W/gHM"
 
-#: cekirdek/tukenme.py:695
+#: cekirdek/tukenme.py:736
 #, python-format
 msgid "  hacim %-10s: %s cm³ [%s] %s"
 msgstr "  volume %-10s: %s cm³ [%s] %s"
 
-#: cekirdek/tukenme.py:685
+#: cekirdek/tukenme.py:726
 #, python-format
 msgid "  zincir        : %s  (%s)"
 msgstr "  chain         : %s  (%s)"
@@ -612,7 +612,7 @@ msgstr " > limit %.3f."
 msgid " KRİTİK ARAMA: %s"
 msgstr " CRITICAL SEARCH: %s"
 
-#: arayuz/pencere/ana_pencere.py:611
+#: arayuz/pencere/ana_pencere.py:623
 #, python-brace-format
 msgid ""
 " Model bu türün gerektirdiği parçayı içermiyordu; şablondan eklendi: {parca} "
@@ -748,7 +748,7 @@ msgstr "%d active batches ≥ %d."
 msgid "%d aktif çevrim, alt sınır %d."
 msgstr "%d active batches, lower limit %d."
 
-#: cekirdek/dogrula/__init__.py:168
+#: cekirdek/dogrula/__init__.py:169
 #, python-format
 msgid "%d bilgi"
 msgid_plural "%d bilgi"
@@ -774,7 +774,7 @@ msgstr "%d-assembly hexagonal full core"
 msgid "%d dk"
 msgstr "%d min"
 
-#: cekirdek/dogrula/__init__.py:138
+#: cekirdek/dogrula/__init__.py:139
 #, python-format
 msgid "%d doğrulama hatası; önce bunları giderin"
 msgid_plural "%d doğrulama hatası; önce bunları giderin"
@@ -788,7 +788,7 @@ msgid_plural "%d etkin + %d pasif çevrim"
 msgstr[0] "%d active + %d inactive batch"
 msgstr[1] "%d active + %d inactive batches"
 
-#: cekirdek/dogrula/geometri.py:182 cekirdek/dogrula/kor.py:434
+#: cekirdek/dogrula/geometri.py:182 cekirdek/dogrula/kor.py:436
 #, python-format
 msgid "%d halka bekleniyor, haritada %d satır var"
 msgstr "%d rings expected, the map has %d rows"
@@ -799,7 +799,7 @@ msgid "%d halkalı altıgen demet"
 msgstr "%d-ring hexagonal assembly"
 
 #: arayuz/sekme_calistir.py:524 arayuz/uygunluk_paneli.py:303
-#: cekirdek/dogrula/__init__.py:166
+#: cekirdek/dogrula/__init__.py:167
 #, python-format
 msgid "%d hata"
 msgid_plural "%d hata"
@@ -894,7 +894,7 @@ msgstr "%d drum absorber arcs of %g° (r = %g…%g cm) × %g cm"
 msgid "%d tambur, yarıçap %.3f cm, merkez %.3f cm, yay %.0f°, dönme %.1f°"
 msgstr "%d drums, radius %.3f cm, centre %.3f cm, arc %.0f°, rotation %.1f°"
 
-#: arayuz/uygunluk_paneli.py:305 cekirdek/dogrula/__init__.py:167
+#: arayuz/uygunluk_paneli.py:305 cekirdek/dogrula/__init__.py:168
 #, python-format
 msgid "%d uyarı"
 msgid_plural "%d uyarı"
@@ -937,17 +937,17 @@ msgstr "the radius of pin region %d must be greater than zero: %s"
 msgid "%d. halka (dıştan), %d. hücre: %s"
 msgstr "ring %d (from outside), cell %d: %s"
 
-#: cekirdek/dogrula/geometri.py:191 cekirdek/dogrula/kor.py:438
+#: cekirdek/dogrula/geometri.py:191 cekirdek/dogrula/kor.py:440
 #, python-format
 msgid "%d. halka (yarıçap %d) %d öğe bekliyor, %d var"
 msgstr "ring %d (radius %d) expects %d elements, has %d"
 
-#: cekirdek/dogrula/kor.py:169
+#: cekirdek/dogrula/kor.py:171
 #, python-format
 msgid "%d. kabukta tanımsız malzeme: %s"
 msgstr "undefined material in shell %d: %s"
 
-#: cekirdek/dogrula/kor.py:165
+#: cekirdek/dogrula/kor.py:167
 #, python-format
 msgid "%d. kabuğun yarıçapı sıfırdan büyük olmalı"
 msgstr "the radius of shell %d must be greater than zero"
@@ -957,7 +957,7 @@ msgstr "the radius of shell %d must be greater than zero"
 msgid "%d. satır %d karakter ama %d bekleniyor"
 msgstr "row %d has %d characters but %d are expected"
 
-#: cekirdek/dogrula/kor.py:210
+#: cekirdek/dogrula/kor.py:212
 #, python-format
 msgid "%d. satır %d karakter, %d bekleniyor"
 msgstr "row %d has %d characters, %d expected"
@@ -1093,7 +1093,7 @@ msgstr "smallest value in the %s validation range"
 msgid "%s görünümünde ama termal saçılma verisi (S(α,β)) eklenmemiş"
 msgstr "looks like %s but no thermal scattering data (S(α,β)) is added"
 
-#: cekirdek/dogrula/geometri.py:148 cekirdek/dogrula/kor.py:137
+#: cekirdek/dogrula/geometri.py:148 cekirdek/dogrula/kor.py:139
 #, python-format
 msgid "%s için tanımsız malzeme: %s"
 msgstr "undefined material for %s: %s"
@@ -1115,7 +1115,7 @@ msgstr ""
 msgid "%s kurulamadı: %s"
 msgstr "%s could not be built: %s"
 
-#: cekirdek/dogrula/kor.py:134
+#: cekirdek/dogrula/kor.py:136
 #, python-format
 msgid "%s malzemesi seçilmemiş"
 msgstr "no %s material selected"
@@ -1145,7 +1145,7 @@ msgstr "%s not selected"
 msgid "%s sıfırdan büyük olmalı: %s"
 msgstr "%s must be greater than zero: %s"
 
-#: cekirdek/dogrula/kor.py:307
+#: cekirdek/dogrula/kor.py:309
 #, python-format
 msgid "%s sınır Periyodik (periodic) ama %s sınır değil — periyodik yüzeyin eşi yok"
 msgstr ""
@@ -1177,7 +1177,7 @@ msgstr "%s — invalid on this surface"
 msgid "%s%s — seçip ızgarada tıklayın ya da sürükleyin"
 msgstr "%s%s — select, then click or drag on the grid"
 
-#: cekirdek/sema.py:376
+#: cekirdek/sema.py:383
 #, python-format
 msgid ""
 "%s() gelişmiş (ağaç) geometri modunda kullanılamaz: kor alanları yok; "
@@ -1298,7 +1298,7 @@ msgstr "Material name '%s' is used by %d materials; rename one of them first."
 msgid "'%s' adında başka bir malzeme var."
 msgstr "There is another material named '%s'."
 
-#: cekirdek/dogrula/kor.py:458
+#: cekirdek/dogrula/kor.py:460
 #, python-format
 msgid "'%s' altıgen kor haritasına konamaz: altıgen demet ya da malzeme olmalı"
 msgstr ""
@@ -1412,7 +1412,7 @@ msgstr "in the outer ring of assembly '%s' (the pin cell is clipped by the envel
 msgid "'%s' demetinin kılıfı"
 msgstr "duct of assembly '%s'"
 
-#: cekirdek/dogrula/kor.py:478
+#: cekirdek/dogrula/kor.py:480
 #, python-format
 msgid ""
 "'%s' demetinin yönelimi ('%s') kor yönelimiyle aynı — demet köşeleri komşu hücreye "
@@ -1504,7 +1504,7 @@ msgstr "lattice '%s': undefined letter '%s' in the map"
 msgid "'%s' kafesinin 'dis' yuvası boş"
 msgstr "the 'dis' slot of lattice '%s' is empty"
 
-#: cekirdek/dogrula/kor.py:465
+#: cekirdek/dogrula/kor.py:467
 #, python-format
 msgid "'%s' kare bir demet; altıgen kor haritasına yalnızca altıgen demet konabilir"
 msgstr ""
@@ -1545,12 +1545,12 @@ msgstr "control rod '%s': insertion must be between 0%% and 100%% (%s)"
 msgid "'%s' kontrol çubuğu: geçersiz emici bölge %d"
 msgstr "control rod '%s': invalid absorber region %d"
 
-#: cekirdek/dogrula/kor.py:344
+#: cekirdek/dogrula/kor.py:346
 #, python-format
 msgid "'%s' kor türünde kullanılmayan alanlar dolu: %s — yok sayılır"
 msgstr "unused fields are set for core type '%s': %s — ignored"
 
-#: cekirdek/dogrula/kor.py:332
+#: cekirdek/dogrula/kor.py:334
 #, python-format
 msgid "'%s' kor türünde yansıtıcı kuşak kurulmaz — dosyada açık ama yok sayılır"
 msgstr "no radial reflector is built for core type '%s' — on in the file but ignored"
@@ -2077,7 +2077,7 @@ msgstr "+y (top)"
 msgid ", dilim %d"
 msgstr ", axial bin %d"
 
-#: cekirdek/dogrula/kor.py:488
+#: cekirdek/dogrula/kor.py:490
 msgid ", kılıf dahil"
 msgstr ", including the duct"
 
@@ -2136,7 +2136,7 @@ msgstr "2D (axially infinite)"
 msgid "2B (sonsuz yükseklik)"
 msgstr "2D (infinite height)"
 
-#: cekirdek/dogrula/kor.py:293
+#: cekirdek/dogrula/kor.py:295
 msgid ""
 "2B model eksenel yönde sonsuzdur (yansıtıcı alt/üst ile eşdeğer). Eksenel sızıntı "
 "için Kor sekmesinde yükseklik tanımlayın."
@@ -2550,7 +2550,7 @@ msgstr ""
 "On a hexagonal boundary 'yuzler' must be a list of 6 elements (in increasing order of"
 " the face normal angle)."
 
-#: cekirdek/dogrula/kor.py:258
+#: cekirdek/dogrula/kor.py:260
 msgid "Altıgen tam korda eşleşen düzlem çifti yoktur."
 msgstr "A hexagonal full core has no matching pairs of planes."
 
@@ -2558,7 +2558,7 @@ msgstr "A hexagonal full core has no matching pairs of planes."
 msgid "Altıgen çekirdek + tambur halkası"
 msgstr "Hexagonal center + control drum ring"
 
-#: arayuz/baslangic.py:67
+#: arayuz/baslangic.py:78
 msgid "Altıgen ızgarada çubuk demeti (VVER, hızlı reaktör)."
 msgstr "Pin assembly on a hexagonal grid (VVER, fast reactor)."
 
@@ -2668,7 +2668,7 @@ msgstr ""
 msgid "Arama başarısız: %s"
 msgstr "Search failed: %s"
 
-#: arayuz/baslangic.py:430
+#: arayuz/baslangic.py:510
 msgid "Aramayı ya da kategori süzgecini değiştirin."
 msgstr "Change the search or the category filter."
 
@@ -2684,7 +2684,7 @@ msgstr "The flat-plate fuel element of research reactors (MTR)."
 msgid "Araştırma reaktörü plaka zarfı ve yapısı."
 msgstr "Research reactor plate cladding and structure."
 
-#: arayuz/baslangic.py:76
+#: arayuz/baslangic.py:87
 msgid "Araştırma reaktörünün düz plakalı yakıt elemanı."
 msgstr "The flat plate-type fuel element of a research reactor."
 
@@ -2762,7 +2762,7 @@ msgstr "Angle"
 msgid "Açık"
 msgstr "Light"
 
-#: arayuz/baslangic.py:344
+#: arayuz/baslangic.py:417
 msgid "Açık modele dön"
 msgstr "Back to open model"
 
@@ -2792,11 +2792,15 @@ msgstr "Could not open"
 msgid "Açıldı: %s"
 msgstr "Opened: %s"
 
+#: arayuz/baslangic.py:517
+msgid "Açılışta bu ekranı göster"
+msgstr "Show this screen at startup"
+
 #: arayuz/ayar/yerlesim.py:118
 msgid "Açısal dağılım:"
 msgstr "Angular distribution:"
 
-#: arayuz/baslangic.py:376 arayuz/pencere/menuler.py:133
+#: arayuz/baslangic.py:456 arayuz/pencere/menuler.py:133
 msgid "Aç…"
 msgstr "Open…"
 
@@ -2827,6 +2831,10 @@ msgstr "Weight fraction"
 #: cekirdek/malzeme_kutup.py:530
 msgid "Ağırlıkça %10 molibdenli metalik yakıt."
 msgstr "Metallic fuel with 10 wt% molybdenum."
+
+#: arayuz/baslangic_rehber.py:35
+msgid "Aşama rehberi"
+msgstr "Step guide"
 
 #: arayuz/geometri/editor.py:118 arayuz/kor/yerlesim.py:133
 msgid "Aşağı taşı"
@@ -2886,7 +2894,7 @@ msgstr "Make several runs with independent seeds and compare the spread of the r
 msgid "Başarısız — ayrıntılı çıktı aşağıda açıldı."
 msgstr "Failed — the detailed output is open below."
 
-#: cekirdek/dogrula/kor.py:346
+#: cekirdek/dogrula/kor.py:348
 msgid "Başka bir kor türünden kalmış olabilir; kurucu bu alanlara bakmaz."
 msgstr "They may be left over from another core type; the builder ignores these fields."
 
@@ -2906,7 +2914,7 @@ msgstr "Start screen: choose what to model"
 msgid "Başlangıç ekranında: açık modele dön"
 msgstr "On the start screen: return to the open model"
 
-#: arayuz/baslangic.py:345
+#: arayuz/baslangic.py:418
 msgid "Başlangıç ekranını kapatıp üzerinde çalıştığınız modele döner (Esc)."
 msgstr "Closes the start screen and returns to the model you are working on (Esc)."
 
@@ -3115,7 +3123,7 @@ msgstr "The amount in row {n} of the composition must be positive."
 msgid "Bilgi"
 msgstr "Info"
 
-#: arayuz/baslangic.py:377
+#: arayuz/baslangic.py:457
 msgid "Bilgisayarınızdaki bir model dosyasını (.json) açar (Ctrl+O)."
 msgstr "Opens a model file (.json) from your computer (Ctrl+O)."
 
@@ -3203,10 +3211,6 @@ msgstr ""
 #: arayuz/pencere/menuler.py:134
 msgid "Bir model dosyası (.json) aç"
 msgstr "Open a model file (.json)"
-
-#: arayuz/baslangic.py:351
-msgid "Bir model türüyle boş başlayın ya da hazır bir örneğin kopyasını açın."
-msgstr "Start empty with a model type, or open a copy of a ready-made example."
 
 #: arayuz/analiz/sekme.py:177
 msgid ""
@@ -3302,7 +3306,7 @@ msgstr "Size"
 msgid "Boyut:"
 msgstr "Size:"
 
-#: arayuz/pencere/ana_pencere.py:567
+#: arayuz/pencere/ana_pencere.py:579
 msgid "Boyuta tıklayınca Kor sayfasına, hesap türüne tıklayınca Hesap ayarlarına gider."
 msgstr ""
 "Click the dimension to go to the Geometry page, the calculation type to go to Run "
@@ -3331,9 +3335,15 @@ msgstr "Void"
 msgid "Boş (madde yok)"
 msgstr "Void (no material)"
 
-#: arayuz/baslangic.py:244
-msgid "Boş başla"
-msgstr "Start empty"
+#: arayuz/baslangic_akis.py:101
+msgid "Boş model açıldı. Alttaki aşama rehberini izleyin: malzeme → parça → geometri."
+msgstr ""
+"Empty model opened. Follow the step guide at the bottom: material → component → "
+"geometry."
+
+#: arayuz/baslangic.py:321
+msgid "Boş modelin kor türü; sonradan 'Türü değiştir…' ile değiştirilebilir."
+msgstr "Core type of the empty model; it can be changed later with 'Change type…'."
 
 #: arayuz/geometri/duzenle.py:71
 msgid "Boş yol ayarlanamaz."
@@ -3521,7 +3531,7 @@ msgid_plural "Bu sekmede düzeltilmesi gereken %d hata var; ayrıntısı doğrul
 msgstr[0] "This page has %d error to fix; details are in the model check list."
 msgstr[1] "This page has %d errors to fix; details are in the model check list."
 
-#: cekirdek/dogrula/kor.py:264
+#: cekirdek/dogrula/kor.py:266
 msgid ""
 "Bu sürüm periyodik sınırı yalnızca kare kesitte (x/y düzlem çiftleri) sunuyor. "
 "Simetrik bir demette sonsuz kafes için Yansıtıcı (reflective) sınır aynı k'yı verir."
@@ -3736,7 +3746,7 @@ msgstr "Assembly (fuel assembly)"
 msgid "Demet adımı (moderasyon oranı etüdü)"
 msgstr "Assembly pitch (moderation ratio study)"
 
-#: cekirdek/dogrula/kor.py:489
+#: cekirdek/dogrula/kor.py:491
 msgid ""
 "Demet adımı düz yüzden düz yüze ölçülür ve en az demetin dış ölçüsü kadar olmalı; "
 "yoksa kor hücresi demeti keser."
@@ -3760,9 +3770,17 @@ msgstr "Material that fills the space outside the assembly cells."
 msgid "Demet kullanılıyor"
 msgstr "Assembly in use"
 
+#: arayuz/baslangic_adim.py:38
+msgid "Demet kur"
+msgstr "Build an assembly"
+
 #: arayuz/sekme_demet.py:526
 msgid "Demet kurmadan önce Parçalar sekmesinde en az bir çubuk tanımlayın."
 msgstr "Define at least one pin in the Components tab before building an assembly."
+
+#: arayuz/baslangic_adim.py:95
+msgid "Demet sayfasında yeni bir demet kurup çubukları ızgaraya yerleştirin."
+msgstr "On the Assembly page create a new assembly and place pins on its lattice."
 
 #: arayuz/izgara.py:432
 msgid "Demet tanımlı değil"
@@ -3812,7 +3830,7 @@ msgstr "Assembly:"
 msgid "Demetler"
 msgstr "Assemblies"
 
-#: arayuz/baslangic.py:70
+#: arayuz/baslangic.py:81
 msgid "Demetlerden oluşan kor haritası, çevresinde su yansıtıcı."
 msgstr "A core map built from assemblies, surrounded by a water reflector."
 
@@ -4057,7 +4075,7 @@ msgstr "The schema version in the file is not a number: %r"
 msgid "Dosyadaki şema sürümü tam sayı değil: %r"
 msgstr "The schema version in the file is not an integer: %r"
 
-#: arayuz/baslangic.py:373
+#: arayuz/baslangic.py:453
 msgid "Dosyadan aç"
 msgstr "Open from file"
 
@@ -4121,7 +4139,7 @@ msgstr "Enter the validation references (IRPhEP / code-to-code comparison)."
 msgid "Doğrulama ve geçerleme (V&V)"
 msgstr "Verification and validation (V&V)"
 
-#: arayuz/pencere/dogrulama_seridi.py:72
+#: arayuz/pencere/dogrulama_seridi.py:91
 msgid "Doğrulama yenilendi (veri kütüphanesi dahil)."
 msgstr "Model check refreshed (including data library)."
 
@@ -4129,25 +4147,25 @@ msgstr "Model check refreshed (including data library)."
 msgid "Doğrulama:"
 msgstr "Model check:"
 
-#: arayuz/pencere/dogrulama_seridi.py:85
+#: arayuz/pencere/dogrulama_seridi.py:119
 msgid "Doğrulama: hata yok"
 msgstr "Model check: no errors"
 
-#: arayuz/pencere/dogrulama_seridi.py:79
+#: arayuz/pencere/dogrulama_seridi.py:113
 #, python-brace-format
 msgid "Doğrulama: {n} hata"
 msgid_plural "Doğrulama: {n} hata"
 msgstr[0] "Model check: {n} error"
 msgstr[1] "Model check: {n} errors"
 
-#: arayuz/pencere/dogrulama_seridi.py:82
+#: arayuz/pencere/dogrulama_seridi.py:116
 #, python-brace-format
 msgid "Doğrulama: {n} uyarı"
 msgid_plural "Doğrulama: {n} uyarı"
 msgstr[0] "Model check: {n} warning"
 msgstr[1] "Model check: {n} warnings"
 
-#: arayuz/pencere/dogrulama_seridi.py:156
+#: arayuz/pencere/dogrulama_seridi.py:211
 #, python-format
 msgid ""
 "Doğrulamada %d hata var — önce bunları giderin. Alttaki rozete tıklayıp bir bulguyu "
@@ -4431,6 +4449,14 @@ msgstr "The axial stack must have at least one layer."
 msgid "Eksenel yığında varsayılan 'icerik' yok."
 msgstr "The axial stack has no default 'icerik'."
 
+#: arayuz/pencere/dogrulama_seridi.py:33
+msgid "Eksik aşama"
+msgstr "Missing step"
+
+#: arayuz/pencere/dogrulama_seridi.py:143
+msgid "Eksik aşamalar tamamlanınca doğrulama sonucu burada görünür."
+msgstr "The model check result appears here once the missing steps are done."
+
 #: arayuz/pencere/model_islemleri.py:249
 msgid "Eksik: "
 msgstr "Missing: "
@@ -4675,7 +4701,7 @@ msgstr ""
 msgid "Eşleşen komut yok"
 msgstr "No matching commands"
 
-#: arayuz/baslangic.py:429
+#: arayuz/baslangic.py:509
 msgid "Eşleşen örnek yok"
 msgstr "No matching examples"
 
@@ -4946,6 +4972,18 @@ msgstr ""
 "\n"
 "%s"
 
+#: arayuz/baslangic_adim.py:72
+msgid "Geometri sayfasında demetleri kor haritasına yerleştirin."
+msgstr "On the Geometry page place the assemblies on the core map."
+
+#: arayuz/baslangic_adim.py:74
+msgid "Geometri sayfasında hücreyi dolduracak demeti seçin."
+msgstr "On the Geometry page choose the assembly that fills the cell."
+
+#: arayuz/baslangic_adim.py:75
+msgid "Geometri sayfasında hücreyi dolduracak parçayı seçin."
+msgstr "On the Geometry page choose the component that fills the cell."
+
 #: arayuz/pencere/yardim_metni.py:103
 msgid "Geometri terimleri"
 msgstr "Geometry terms"
@@ -4954,7 +4992,7 @@ msgstr "Geometry terms"
 msgid "Geometri çiziliyor; önizleme hazır olunca ÇALIŞTIR etkinleşir."
 msgstr "Plotting the geometry; RUN is enabled once the preview is ready."
 
-#: arayuz/pencere/dogrulama_seridi.py:163
+#: arayuz/pencere/dogrulama_seridi.py:239
 msgid ""
 "Geometri önizlemesi henüz çizilmedi. Önce çiz, sonra çalıştır: yanlış geometriyle "
 "saatlerce koşmamak için önizlemenin çizilmesi bekleniyor."
@@ -4978,6 +5016,10 @@ msgstr ""
 "The geometry has no fissile (fuel) material; k-eff is undefined, so reactivity cannot"
 " be computed."
 
+#: arayuz/baslangic_adim.py:39
+msgid "Geometriyi kur"
+msgstr "Build the geometry"
+
 #: arayuz/pencere/menuler.py:102 arayuz/pencere/menuler.py:294
 msgid "Geri al"
 msgstr "Undo"
@@ -4991,7 +5033,7 @@ msgstr "Undone ({i}/{n})"
 msgid "Geri kazanılabilir fisyon enerjisi (fission-q-recoverable)"
 msgstr "Recoverable fission energy (fission-q-recoverable)"
 
-#: cekirdek/dogrula/kor.py:152
+#: cekirdek/dogrula/kor.py:154
 msgid "Gerçekçi bir tambur değeri için Kor sekmesinde aktif yükseklik tanımlayın."
 msgstr "For a realistic drum worth define an active height on the Geometry page."
 
@@ -5415,7 +5457,7 @@ msgstr "Ring {n} ({t})"
 msgid "Halkada 'kalinlik' ya da 'dis' alanlarından tam olarak biri verilmeli."
 msgstr "Exactly one of the fields 'kalinlik' or 'dis' must be given in a ring."
 
-#: cekirdek/dogrula/geometri.py:184 cekirdek/dogrula/kor.py:436
+#: cekirdek/dogrula/geometri.py:184 cekirdek/dogrula/kor.py:438
 msgid "Halkalar dıştan içe sıralanır; yarıçapı k olan halkada 6k öğe, merkezde 1 öğe bulunur."
 msgstr ""
 "Rings are listed from the outside in; a ring of radius k has 6k elements, the centre "
@@ -5546,7 +5588,7 @@ msgstr "No errors"
 msgid "Hazır setler:"
 msgstr "Preset sets:"
 
-#: arayuz/baslangic.py:259
+#: arayuz/baslangic.py:270
 #, python-brace-format
 msgid "Hazır örneğin bir kopyasını açar: {dosya} (örnek dosyası değişmez)."
 msgstr "Opens a copy of the ready-made example: {dosya} (the example file is not changed)."
@@ -5625,7 +5667,7 @@ msgstr "No assemblies yet"
 msgid "Henüz entropi verisi yok"
 msgstr "No entropy data yet"
 
-#: arayuz/baslangic.py:386
+#: arayuz/baslangic.py:466
 msgid "Henüz kaydedilmiş bir model yok."
 msgstr "No saved models yet."
 
@@ -5677,7 +5719,7 @@ msgstr ""
 "Every run: source convergence, statistical adequacy, lost particles. Not a clause of "
 "a standard; labelled as good practice."
 
-#: arayuz/baslangic.py:409
+#: arayuz/baslangic.py:489
 msgid "Her seviye"
 msgstr "All levels"
 
@@ -5717,6 +5759,12 @@ msgstr ""
 #: arayuz/uygunluk_paneli.py:272
 msgid "Hiçbir profil seçilmedi; denetim yapılmadı."
 msgstr "No profile selected; no check was done."
+
+#: arayuz/baslangic.py:307
+msgid "Hiçbir şey hazır gelmez: kor türünü seçin, malzemeden başlayıp sırayla kurun."
+msgstr ""
+"Nothing is prefilled: choose the core type, then build it in order starting with "
+"materials."
 
 #: arayuz/onizleme.py:75
 msgid "Hücre"
@@ -6007,6 +6055,14 @@ msgstr "Container (shape + rings)"
 msgid "Kap {ad} ({kesit})"
 msgstr "Container {ad} ({kesit})"
 
+#: arayuz/baslangic.py:519
+msgid ""
+"Kapalıyken uygulama son kullanılan projeyle açılır; bu ekrana Dosya > Yeni (Ctrl+N) "
+"ile dönülür."
+msgstr ""
+"When off, the application opens with the most recently used project; return to this "
+"screen with File > New (Ctrl+N)."
+
 #: arayuz/bilesenler/bildirim.py:98 arayuz/pencere/menuler.py:323
 msgid "Kapat"
 msgstr "Close"
@@ -6065,7 +6121,7 @@ msgstr "The rectangular lattice 'boyut' [nx, ny] must be positive integers."
 msgid "Kare çekirdek + altıgen halka"
 msgstr "Square center + hexagonal ring"
 
-#: arayuz/baslangic.py:64
+#: arayuz/baslangic.py:75
 msgid "Kare ızgarada yakıt çubukları ve kılavuz borular (PWR tipi)."
 msgstr "Fuel pins and guide tubes on a square grid (PWR type)."
 
@@ -6137,7 +6193,7 @@ msgstr "Could not save"
 msgid "Kaydedilmemiş değişiklikler"
 msgstr "Unsaved changes"
 
-#: arayuz/baslangic.py:374
+#: arayuz/baslangic.py:454
 msgid "Kaydedilmiş bir model (.json) ya da OpenMC XML klasörü."
 msgstr "A saved model (.json) or an OpenMC XML folder."
 
@@ -6257,7 +6313,7 @@ msgstr ""
 msgid "Kaynak: %s"
 msgstr "Source: %s"
 
-#: arayuz/baslangic.py:82
+#: arayuz/baslangic.py:93
 msgid "Kaynaktan çıkan nötronların zırh katmanlarında zayıflaması."
 msgstr "Attenuation of source neutrons in shielding layers."
 
@@ -6582,7 +6638,7 @@ msgstr ""
 msgid "Kor hücre adımı"
 msgstr "Core cell pitch"
 
-#: cekirdek/dogrula/kor.py:480
+#: cekirdek/dogrula/kor.py:482
 #, python-format
 msgid ""
 "Kor kafesi pin kafesine göre 90° dönüktür: demet '%s' ise kor yönelimi '%s' olmalı "
@@ -6591,7 +6647,7 @@ msgstr ""
 "The core lattice is rotated by 90° relative to the pin lattice: if the assembly is "
 "'%s' the core orientation must be '%s' (VVER / SFR full cores are built this way)."
 
-#: cekirdek/rapor.py:347
+#: arayuz/baslangic.py:320 cekirdek/rapor.py:347
 msgid "Kor türü"
 msgstr "Core type"
 
@@ -6603,7 +6659,7 @@ msgstr ""
 "Changing the core type shows the fields of that type; the last three configurations "
 "build a geometry tree and switch to advanced geometry. Press Ctrl+Z to undo."
 
-#: arayuz/pencere/ana_pencere.py:614
+#: arayuz/pencere/ana_pencere.py:626
 #, python-brace-format
 msgid "Kor türü: {tur} — geri almak için Ctrl+Z.{ek}"
 msgstr "Core type: {tur} — press Ctrl+Z to undo.{ek}"
@@ -6998,7 +7054,7 @@ msgstr "Add independent benchmark experiments to the set."
 msgid "Küre"
 msgstr "Sphere"
 
-#: cekirdek/dogrula/kor.py:186
+#: cekirdek/dogrula/kor.py:188
 msgid ""
 "Küre geometrisi kabuk yarıçaplarıyla tamamen belirlenir; yükseklik kaynak kutusuna, "
 "entropi ağına ve tally ağlarına girer. Kor sekmesinde küresel tür seçiliyken alan "
@@ -7008,7 +7064,7 @@ msgstr ""
 "source box, the entropy mesh and the tally meshes. The field is cleared when the "
 "spherical type is selected on the Geometry page."
 
-#: cekirdek/uygunluk.py:80
+#: cekirdek/uygunluk.py:89
 msgid "Küresel düzenek (kabuklar)"
 msgstr "Spherical assembly (shells)"
 
@@ -7093,7 +7149,7 @@ msgstr "Thickness of the duct wall."
 msgid "Kılıf, dış halkadaki pinleri keser. İç ölçüyü büyütün ya da adımı küçültün."
 msgstr "The duct cuts the pins in the outer ring. Increase the inner size or reduce the pitch."
 
-#: arayuz/baslangic.py:73
+#: arayuz/baslangic.py:84
 msgid "Kılıflı altıgen demetlerden kor haritası (SFR / VVER tipi)."
 msgstr "A core map of ducted hexagonal assemblies (SFR / VVER type)."
 
@@ -7109,7 +7165,7 @@ msgstr ""
 "The volume of a clipped component is computed stochastically; it is marked "
 "'truncated' in the power map."
 
-#: cekirdek/dogrula/kor.py:420
+#: cekirdek/dogrula/kor.py:422
 msgid ""
 "Kırık çizgi sınırda her demet komşusunun aynadaki görüntüsüyle çevrilir; karışık bir "
 "haritada bu gerçek bir simetri düzlemi değildir. Tam kor için yansıtıcı kuşak ve "
@@ -7165,7 +7221,7 @@ msgstr "MOX — mixed oxide (U, Pu)O₂"
 msgid "MOX'taki uranyumun (çoğunlukla fakir U) U-235 ağırlık yüzdesi."
 msgstr "U-235 weight percentage of the uranium in MOX (mostly depleted U)."
 
-#: arayuz/baslangic.py:75
+#: arayuz/baslangic.py:86
 msgid "MTR plaka elemanı"
 msgstr "MTR plate-type fuel element"
 
@@ -7200,6 +7256,10 @@ msgid "Malzeme düğümüne dönüşüm uygulanamaz: OpenMC malzeme dolgulu hüc
 msgstr ""
 "A transform cannot be applied to a material node: OpenMC does not rotate a material-"
 "filled cell."
+
+#: arayuz/baslangic_adim.py:36
+msgid "Malzeme ekle"
+msgstr "Add materials"
 
 #: arayuz/pencere/proje.py:237
 msgid "Malzeme içeren OpenMC XML dosyası"
@@ -7254,6 +7314,10 @@ msgstr "Material: {ad}"
 msgid "Malzemeler"
 msgstr "Materials"
 
+#: arayuz/baslangic_adim.py:90
+msgid "Malzemeler sayfasında kütüphaneden yakıt, zarf ve soğutucu ekleyin."
+msgstr "On the Materials page add fuel, cladding and coolant from the library."
+
 #: arayuz/pencere/menuler.py:142
 msgid "Malzemeleri içe aktar (OpenMC XML)…"
 msgstr "Import materials (OpenMC XML)…"
@@ -7272,6 +7336,14 @@ msgid ""
 msgstr ""
 "No material selected: {eksik}. If no suitable material exists, add one in the "
 "Materials tab first."
+
+#: arayuz/baslangic.py:328
+msgid ""
+"Malzemesi, parçası ve geometrisi olmayan boş bir model açar; aşama rehberi sizi "
+"sırayla ilgili sayfalara götürür."
+msgstr ""
+"Opens an empty model with no materials, components or geometry; the step guide takes "
+"you to the relevant pages in order."
 
 #: arayuz/malzeme/malzeme_diyalog.py:58
 msgid "Malzemeyi düzenle"
@@ -7370,6 +7442,21 @@ msgstr "Waiting for a model"
 msgid "Model hazır — ÇALIŞTIR (F9) ile hesaplayın."
 msgstr "Model ready — press RUN (F9) to calculate."
 
+#: arayuz/pencere/dogrulama_seridi.py:229
+#, python-brace-format
+msgid ""
+"Model henüz kurulmadı: {n} aşama eksik. Sıradaki aşama: {baslik} — {aciklama} Alttaki"
+" aşama rehberinden ilgili sayfaya gidin."
+msgid_plural ""
+"Model henüz kurulmadı: {n} aşama eksik. Sıradaki aşama: {baslik} — {aciklama} Alttaki"
+" aşama rehberinden ilgili sayfaya gidin."
+msgstr[0] ""
+"The model is not built yet: {n} step is missing. Next step: {baslik} — {aciklama} Use"
+" the step guide at the bottom to go to the relevant page."
+msgstr[1] ""
+"The model is not built yet: {n} steps are missing. Next step: {baslik} — {aciklama} "
+"Use the step guide at the bottom to go to the relevant page."
+
 #: arayuz/pencere/model_islemleri.py:217
 msgid "Model henüz çalıştırılmadı; hazır olduğunda ÇALIŞTIR (F9)."
 msgstr "The model has not been run yet; press RUN (F9) when it is ready."
@@ -7387,6 +7474,11 @@ msgstr "Model could not be built: %s"
 msgid "Model kurulurken durur. "
 msgstr "Model building stops. "
 
+#: arayuz/pencere/dogrulama_seridi.py:140
+#, python-brace-format
+msgid "Model kuruluyor: {tamam}/{toplam} aşama"
+msgstr "Building the model: {tamam}/{toplam} steps"
+
 #: arayuz/analiz/sekme.py:293
 msgid "Model okunamadı; doğrulama listesine bakın."
 msgstr "The model could not be read; see the model check list."
@@ -7399,7 +7491,7 @@ msgstr "Writes an HTML or PDF report for the model and the last run"
 msgid "Model yok."
 msgstr "No model."
 
-#: arayuz/pencere/dogrulama_seridi.py:172
+#: arayuz/pencere/dogrulama_seridi.py:248
 msgid "Model çalıştırılmaya hazır."
 msgstr "The model is ready to run."
 
@@ -7450,6 +7542,11 @@ msgstr "Runs the model with OpenMC (F9)."
 #: arayuz/pencere/proje.py:164
 msgid "Modeli kaydet"
 msgstr "Save model"
+
+#: arayuz/baslangic_rehber.py:85
+#, python-brace-format
+msgid "Modeli kurun ({tamam}/{toplam}):"
+msgstr "Build the model ({tamam}/{toplam}):"
 
 #: arayuz/pencere/menuler.py:120
 msgid "Modeli çalıştır (F9) — önce geometri çizilmiş ve doğrulama hatasız olmalı"
@@ -7541,7 +7638,7 @@ msgstr "How to proceed"
 msgid "Ne hesaplanacak:"
 msgstr "Calculate:"
 
-#: arayuz/baslangic.py:341
+#: arayuz/baslangic.py:414
 msgid "Ne modellemek istiyorsunuz?"
 msgstr "What do you want to model?"
 
@@ -7741,7 +7838,7 @@ msgstr ""
 "OpenMC stops in the first batch (\"No fission sites banked\"). For a "
 "shielding/activation calculation set the calculation type to Fixed source."
 
-#: cekirdek/dogrula/kor.py:309
+#: cekirdek/dogrula/kor.py:311
 msgid ""
 "OpenMC koşu başlamadan durur (\"Found only one periodic surface without a specified "
 "partner\"). Alt/üst için Yansıtıcı ya da Vakum seçin."
@@ -7758,7 +7855,7 @@ msgstr ""
 "OpenMC rejects it during the run (\"Unable to use enrichment for element %s which is "
 "not uranium\"). Move the enrichment to the U row or delete it from this row."
 
-#: cekirdek/dogrula/kor.py:270
+#: cekirdek/dogrula/kor.py:272
 msgid ""
 "OpenMC periyodik yüzeyin eşini bulamaz (\"Found only one periodic surface without a "
 "specified partner\") ve koşu başlamadan durur. Yansıtıcı ya da Vakum seçin."
@@ -7913,6 +8010,10 @@ msgstr "The component name cannot be empty and must not be in use."
 msgid "Parça adı:"
 msgstr "Component name:"
 
+#: arayuz/baslangic_adim.py:37
+msgid "Parça ekle"
+msgstr "Add a component"
+
 #: arayuz/sekme_cubuk.py:382
 msgid "Parça kullanılıyor"
 msgstr "Component in use"
@@ -7968,6 +8069,14 @@ msgid ""
 msgstr ""
 "Components are built from materials. Add the fuel, cladding and coolant materials in "
 "the Materials tab."
+
+#: arayuz/baslangic_adim.py:59
+msgid "Parçalar sayfasında bir plaka elemanı ekleyin."
+msgstr "On the Components page add a plate-type fuel element."
+
+#: arayuz/baslangic_adim.py:60
+msgid "Parçalar sayfasında Çubuk ▸ Yakıt çubuğu ile ilk çubuğu ekleyin."
+msgstr "On the Components page add the first pin with Pin ▸ Fuel pin."
 
 #: arayuz/geometri/editor.py:77
 msgid ""
@@ -8048,7 +8157,7 @@ msgstr "Periodic"
 msgid "Periyodik (periodic)"
 msgstr "Periodic"
 
-#: cekirdek/dogrula/kor.py:275
+#: cekirdek/dogrula/kor.py:277
 #, python-format
 msgid ""
 "Periyodik (periodic) sınır yalnızca düzlemsel sınırlarda (x/y düzlem çiftleri) "
@@ -8095,7 +8204,7 @@ msgstr "Plate"
 msgid "Plaka elemanı"
 msgstr "Plate-type fuel element"
 
-#: cekirdek/uygunluk.py:75
+#: cekirdek/uygunluk.py:84
 msgid "Plaka elemanı (MTR)"
 msgstr "Plate-type fuel element (MTR)"
 
@@ -8361,7 +8470,7 @@ msgstr "S"
 msgid "S(α,β) (elle):"
 msgstr "S(α,β) (manual):"
 
-#: cekirdek/dogrula/kor.py:411
+#: cekirdek/dogrula/kor.py:413
 msgid ""
 "SFR tek demet için halka=1 altigen_kafes kullanın (demetler arası boşluk): demet "
 "adımı kılıf dış ölçüsünden büyük verilir ve aradaki boşluk demetin dış dolgusuyla "
@@ -8485,7 +8594,7 @@ msgstr "Tab-by-tab reference"
 msgid "Seramik zarf / yapısal malzeme."
 msgstr "Ceramic cladding / structural material."
 
-#: arayuz/baslangic.py:407 cekirdek/rapor_sablon/__init__.py:212
+#: arayuz/baslangic.py:487 cekirdek/rapor_sablon/__init__.py:212
 #: cekirdek/rapor_sablon/uygunluk_eki.py:69
 msgid "Seviye"
 msgstr "Level"
@@ -8647,7 +8756,7 @@ msgstr "Cylinder (circle)"
 msgid "Silindir (eş merkezli daireler)"
 msgstr "Cylinder (concentric circles)"
 
-#: arayuz/baslangic.py:79
+#: arayuz/baslangic.py:90
 msgid "Silindirik kor, yansıtıcı kuşak ve dönen kontrol tamburları."
 msgstr "Cylindrical core, radial reflector and rotating control drums."
 
@@ -8692,11 +8801,11 @@ msgstr "The last region is outside the pin and fills the rest of the cell."
 msgid "Son bölgenin yarıçapı yoktur: hücrenin kalanını doldurur."
 msgstr "The last region has no radius: it fills the rest of the cell."
 
-#: arayuz/baslangic.py:384 arayuz/pencere/menuler.py:135
+#: arayuz/baslangic.py:464 arayuz/pencere/menuler.py:135
 msgid "Son kullanılanlar"
 msgstr "Recent"
 
-#: cekirdek/dogrula/kor.py:316
+#: cekirdek/dogrula/kor.py:318
 msgid ""
 "Sonlu yükseklikteki bir korda eksenel periyodiklik fiziksel değildir (üst "
 "yansıtıcıdan çıkan nötron alt yansıtıcıya girer). Eksenel simetri için Yansıtıcı "
@@ -8715,11 +8824,11 @@ msgstr "Next"
 msgid "Sonraki adım: {sekme} — {aciklama}"
 msgstr "Next step: {sekme} — {aciklama}"
 
-#: cekirdek/dogrula/kor.py:357
+#: cekirdek/dogrula/kor.py:359
 msgid "Sonsuz kafes (k∞) istiyorsanız Yansıtıcı (reflective) sınır kullanın."
 msgstr "If you want an infinite lattice (k∞) use a Reflective boundary."
 
-#: cekirdek/dogrula/kor.py:260
+#: cekirdek/dogrula/kor.py:262
 msgid "Sonsuz kafes için Yansıtıcı (reflective) sınır aynı sonucu verir."
 msgstr "For an infinite lattice a Reflective boundary gives the same result."
 
@@ -8948,6 +9057,22 @@ msgstr "Computed from the temperature; change the temperature to change it."
 msgid "Sıcaklığı tanımsız malzeme: %s"
 msgstr "Material with undefined temperature: %s"
 
+#: arayuz/baslangic.py:303
+msgid "Sıfırdan (boş model)"
+msgstr "From scratch (empty model)"
+
+#: arayuz/baslangic.py:326
+msgid "Sıfırdan başla"
+msgstr "Start from scratch"
+
+#: arayuz/baslangic.py:424
+msgid ""
+"Sıfırdan boş bir modelle, bir türün çalışan şablonuyla ya da hazır bir örneğin "
+"kopyasıyla başlayın."
+msgstr ""
+"Start from scratch with an empty model, from the working template of a model type, or"
+" from a copy of a ready-made example."
+
 #: cekirdek/geometri/denetim.py:462
 msgid "Sınır bir nesne olmalı."
 msgstr "The boundary must be an object."
@@ -8968,6 +9093,16 @@ msgstr "The bounds are taken from the model's outer dimensions when the model is
 #: arayuz/geometri/editor.py:379
 msgid "Sıra değişti"
 msgstr "Order changed"
+
+#: arayuz/pencere/dogrulama_seridi.py:132
+#, python-brace-format
+msgid "Sıradaki aşama: {baslik} — {aciklama}"
+msgstr "Next step: {baslik} — {aciklama}"
+
+#: arayuz/baslangic_rehber.py:96
+#, python-brace-format
+msgid "Sıradaki: {aciklama}"
+msgstr "Next: {aciklama}"
 
 #: cekirdek/malzeme_kutup.py:422
 msgid "Sıvı sodyum"
@@ -9013,15 +9148,15 @@ msgstr "Tallies"
 msgid "Tam ekran"
 msgstr "Full screen"
 
-#: cekirdek/uygunluk.py:78
+#: cekirdek/uygunluk.py:87
 msgid "Tam kor (altıgen harita)"
 msgstr "Full core (hexagonal map)"
 
-#: arayuz/baslangic.py:69 cekirdek/uygunluk.py:77
+#: arayuz/baslangic.py:80 cekirdek/uygunluk.py:86
 msgid "Tam kor (kare harita)"
 msgstr "Full core (rectangular map)"
 
-#: arayuz/baslangic.py:72
+#: arayuz/baslangic.py:83
 msgid "Tam kor — altıgen"
 msgstr "Full core — hexagonal"
 
@@ -9052,7 +9187,7 @@ msgstr "Full core: assembly averages or all pins in the core"
 msgid "Tam sonuç metni (statepoint ve tüm tally tabloları)"
 msgstr "Full result text (statepoint and all tally tables)"
 
-#: arayuz/malzeme/malzeme_diyalog.py:206 arayuz/pencere/dogrulama_seridi.py:88
+#: arayuz/malzeme/malzeme_diyalog.py:206 arayuz/pencere/dogrulama_seridi.py:122
 msgid "Tamam"
 msgstr "OK"
 
@@ -9071,6 +9206,10 @@ msgstr "OK: the model ran successfully in this session."
 #: arayuz/pencere/model_islemleri.py:224
 msgid "Tamam: tükenme sonucu görüntüleniyor."
 msgstr "OK: a depletion result is shown."
+
+#: arayuz/baslangic_rehber.py:93
+msgid "Tamamlandı"
+msgstr "Done"
 
 #: arayuz/sekme_tukenme.py:528
 #, python-format
@@ -9135,7 +9274,7 @@ msgstr "No drums — plain radial reflector."
 msgid "Tamburlar"
 msgstr "Drums"
 
-#: arayuz/baslangic.py:78 cekirdek/uygunluk.py:79
+#: arayuz/baslangic.py:89 cekirdek/uygunluk.py:88
 msgid "Tamburlu kompakt kor"
 msgstr "Compact core with control drums"
 
@@ -9244,11 +9383,11 @@ msgstr "Single axial bin (F_q)"
 msgid "Tek enerjili (monoenerjetik)"
 msgstr "Monoenergetic"
 
-#: cekirdek/uygunluk.py:76
+#: cekirdek/uygunluk.py:85
 msgid "Tek yakıt demeti"
 msgstr "Single fuel assembly"
 
-#: arayuz/baslangic.py:61
+#: arayuz/baslangic.py:72
 msgid "Tek yakıt çubuğu ve çevresindeki soğutucu; en hızlı başlangıç."
 msgstr "A single fuel pin and its surrounding coolant; the quickest start."
 
@@ -9475,7 +9614,7 @@ msgstr "All types"
 msgid "Tüm yakıt çubukları (%d tür)"
 msgstr "All fuel pins (%d types)"
 
-#: arayuz/baslangic.py:416
+#: arayuz/baslangic.py:496
 msgid "Tümü"
 msgstr "All"
 
@@ -9516,7 +9655,11 @@ msgstr ""
 msgid "Tıklayın ya da sürükleyin · sağ tık: parçayı seç"
 msgstr "Click or drag · right-click: pick component"
 
-#: arayuz/pencere/dogrulama_seridi.py:49
+#: arayuz/pencere/dogrulama_seridi.py:74
+msgid "Tıklayınca ilgili sayfaya gider."
+msgstr "Click to go to the relevant page."
+
+#: arayuz/pencere/dogrulama_seridi.py:58
 msgid "Tıklayınca ilgili sayfaya gider; sağ tık: kılavuzda aç."
 msgstr "Click to go to its page; right-click: open in the user guide."
 
@@ -9832,11 +9975,11 @@ msgstr ""
 "Check the fuel composition and the temperature sweep; compute the net power "
 "coefficient."
 
-#: arayuz/baslangic.py:66
+#: arayuz/baslangic.py:77
 msgid "Yakıt demeti — altıgen"
 msgstr "Fuel assembly — hexagonal"
 
-#: arayuz/baslangic.py:63
+#: arayuz/baslangic.py:74
 msgid "Yakıt demeti — kare"
 msgstr "Fuel assembly — square"
 
@@ -9885,7 +10028,7 @@ msgstr ""
 "Void volume fraction in the fuel layer (0–0.3). The density is computed from the U "
 "loading and this value: U₃Si₂ (12.2 g/cm³) + Al (2.70 g/cm³)."
 
-#: arayuz/baslangic.py:60 cekirdek/uygunluk.py:74
+#: arayuz/baslangic.py:71 cekirdek/uygunluk.py:83
 msgid "Yakıt çubuğu (pin hücre)"
 msgstr "Fuel pin (pin cell)"
 
@@ -10080,7 +10223,7 @@ msgstr "Add radial reflector"
 msgid "Yansıtıcı kuşak kalınlığı"
 msgstr "Radial reflector thickness"
 
-#: cekirdek/dogrula/kor.py:334
+#: cekirdek/dogrula/kor.py:336
 msgid ""
 "Yansıtıcı kuşak yalnızca tek yakıt demeti ve haritalı tam korda (isteğe bağlı) ve "
 "tamburlu korda (zorunlu) kurulur. Model yansıtıcısız çalışır."
@@ -10105,7 +10248,7 @@ msgstr "Radial thickness of the radial reflector."
 msgid "Yansıtıcı malzemesi"
 msgstr "Reflector material"
 
-#: cekirdek/dogrula/kor.py:194
+#: cekirdek/dogrula/kor.py:196
 msgid "Yansıtıcı sınır sonsuz bir ortam demektir; kritik küre düzenekleri çıplaktır (Vakum)."
 msgstr ""
 "A reflective boundary means an infinite medium; critical sphere assemblies are bare "
@@ -10161,6 +10304,10 @@ msgstr "New square fuel assembly"
 #: arayuz/malzeme/malzeme_diyalog.py:58
 msgid "Yeni malzeme"
 msgstr "New material"
+
+#: arayuz/baslangic_akis.py:28
+msgid "Yeni model"
+msgstr "New model"
 
 #: arayuz/pencere/menuler.py:292
 msgid "Yeni model (başlangıç ekranı)"
@@ -10497,7 +10644,7 @@ msgstr "Zircaloy-4 cladding"
 msgid "Zırh"
 msgstr "Shielding"
 
-#: arayuz/baslangic.py:81
+#: arayuz/baslangic.py:92
 msgid "Zırhlama (sabit kaynak)"
 msgstr "Shielding (fixed source)"
 
@@ -10521,7 +10668,7 @@ msgstr "unnamed"
 msgid "adsız model"
 msgstr "untitled model"
 
-#: arayuz/pencere/ana_pencere.py:539
+#: arayuz/pencere/ana_pencere.py:551
 #, python-brace-format
 msgid "adsız — örnek: {ornek}"
 msgstr "untitled — example: {ornek}"
@@ -10570,7 +10717,7 @@ msgstr "flux"
 msgid "akım"
 msgstr "current"
 
-#: cekirdek/geometri/hacim.py:48
+#: cekirdek/geometri/hacim.py:53
 msgid "alanı analitik hesaplanamayan bölge"
 msgstr "region whose area cannot be computed analytically"
 
@@ -10588,7 +10735,7 @@ msgstr "bottom"
 msgid "alt sınır"
 msgstr "bottom boundary"
 
-#: cekirdek/dogrula/kor.py:315
+#: cekirdek/dogrula/kor.py:317
 msgid "alt ve üst sınır Periyodik (periodic) — korun tepesi dibine bağlanır"
 msgstr ""
 "bottom and top boundaries are Periodic — the top of the core is connected to its "
@@ -10599,7 +10746,7 @@ msgstr ""
 msgid "altıgen a={a:g} ({y})"
 msgstr "hexagon a={a:g} ({y})"
 
-#: cekirdek/dogrula/kor.py:263
+#: cekirdek/dogrula/kor.py:265
 msgid "altıgen bir prizma"
 msgstr "a hexagonal prism"
 
@@ -10680,7 +10827,7 @@ msgstr "different universe with the same name: '%s' -> imported as '%s'"
 msgid "ayrık tayf: en az bir (enerji, olasılık) çifti gerekli"
 msgstr "discrete spectrum: at least one (energy, probability) pair is required"
 
-#: arayuz/baslangic.py:158
+#: arayuz/baslangic.py:169
 msgid "az önce"
 msgstr "just now"
 
@@ -10759,7 +10906,7 @@ msgstr "beryllium oxide"
 msgid "bileşen"
 msgstr "library component"
 
-#: cekirdek/geometri/hacim.py:46
+#: cekirdek/geometri/hacim.py:51
 msgid "bileşen bölgesine sığmıyor"
 msgstr "does not fit the component region"
 
@@ -10821,6 +10968,11 @@ msgstr "unknown filter type: %s"
 msgid "bilinmeyen istek: %r"
 msgstr "unknown request: %r"
 
+#: cekirdek/sema.py:347
+#, python-format
+msgid "bilinmeyen kor türü: %r"
+msgstr "unknown core type: %r"
+
 #: cekirdek/geometri/sablon.py:304
 #, python-format
 msgid "bilinmeyen kor türü: %s"
@@ -10857,11 +11009,11 @@ msgstr "unknown type: %s"
 msgid "bilinmeyen yerleşim modu: %s"
 msgstr "unknown placement mode: %s"
 
-#: cekirdek/dogrula/kor.py:268
+#: cekirdek/dogrula/kor.py:270
 msgid "bir küre"
 msgstr "a sphere"
 
-#: cekirdek/dogrula/kor.py:268
+#: cekirdek/dogrula/kor.py:270
 msgid "bir silindir"
 msgstr "a cylinder"
 
@@ -11026,14 +11178,14 @@ msgstr[1] ""
 msgid "demet %s · çubuk %s"
 msgstr "assembly %s · pin %s"
 
-#: cekirdek/dogrula/kor.py:487
+#: cekirdek/dogrula/kor.py:489
 #, python-format
 msgid "demet adımı (%.5f cm) '%s' demetinin dış ölçüsünden (%.5f cm%s) küçük"
 msgstr ""
 "the assembly pitch (%.5f cm) is smaller than the outer size of assembly '%s' (%.5f "
 "cm%s)"
 
-#: cekirdek/dogrula/kor.py:505
+#: cekirdek/dogrula/kor.py:507
 msgid "demet adımı sıfırdan büyük olmalı"
 msgstr "assembly pitch must be greater than zero"
 
@@ -11041,7 +11193,7 @@ msgstr "assembly pitch must be greater than zero"
 msgid "demet ortalaması"
 msgstr "assembly average"
 
-#: cekirdek/dogrula/kor.py:84
+#: cekirdek/dogrula/kor.py:83
 msgid "demet seçilmemiş"
 msgstr "no assembly selected"
 
@@ -11050,11 +11202,11 @@ msgstr "no assembly selected"
 msgid "demet: %s"
 msgstr "assembly: %s"
 
-#: cekirdek/tukenme.py:601
+#: cekirdek/tukenme.py:642
 msgid "demetler"
 msgstr "assemblies"
 
-#: cekirdek/dogrula/kor.py:257
+#: cekirdek/dogrula/kor.py:259
 msgid "demetlerin dış yüzlerinden geçen kırık bir çizgi"
 msgstr "a broken line through the outer faces of the assemblies"
 
@@ -11136,7 +11288,7 @@ msgstr "validation set"
 msgid "doğrulama kümesinde %d vaka var; en az %d gerekir"
 msgstr "the validation set has %d cases; at least %d are required"
 
-#: arayuz/pencere/dogrulama_seridi.py:64
+#: arayuz/pencere/dogrulama_seridi.py:83
 #, python-format
 msgid "doğrulama sırasında hata: %s"
 msgstr "error during model check: %s"
@@ -11146,7 +11298,7 @@ msgstr "error during model check: %s"
 msgid "doğrulama çalıştırılamadı: %s"
 msgstr "model check could not be run: %s"
 
-#: cekirdek/tukenme.py:668
+#: cekirdek/tukenme.py:709
 msgid "doğrulamada nüklid/kütüphane denetimini atla"
 msgstr "skip the nuclide/library check in the model check"
 
@@ -11170,7 +11322,7 @@ msgstr "rotation group"
 msgid "dönme ofseti"
 msgstr "rotation offset"
 
-#: arayuz/baslangic.py:166
+#: arayuz/baslangic.py:177
 msgid "dün"
 msgstr "yesterday"
 
@@ -11179,7 +11331,7 @@ msgstr "yesterday"
 msgid "düzlemlerden tanınan bir kesit çıkmadı (%d düzlem)"
 msgstr "no recognized cross-section was obtained from the planes (%d planes)"
 
-#: cekirdek/dogrula/kor.py:269
+#: cekirdek/dogrula/kor.py:271
 msgid "düzlemsel değil"
 msgstr "not planar"
 
@@ -11428,7 +11580,7 @@ msgstr "geometry sections could not be plotted: openmc is not in PATH"
 msgid "geometri: %s"
 msgstr "geometry: %s"
 
-#: cekirdek/uygunluk.py:327
+#: cekirdek/uygunluk.py:343
 msgid "geometride fisil (yakıt) malzeme yok"
 msgstr "there is no fissile (fuel) material in the geometry"
 
@@ -11476,7 +11628,7 @@ msgstr "invalid k-eff"
 msgid "geçersiz kesit: %r"
 msgstr "invalid slice: %r"
 
-#: cekirdek/dogrula/kor.py:242
+#: cekirdek/dogrula/kor.py:244
 #, python-format
 msgid "geçersiz sınır koşulu (%s): %s"
 msgstr "invalid boundary condition (%s): %s"
@@ -11506,12 +11658,12 @@ msgstr "display name"
 msgid "gövde"
 msgstr "drum body"
 
-#: arayuz/tukenme_arayuz.py:75 arayuz/tukenme_arayuz.py:173 cekirdek/tukenme.py:691
-#: cekirdek/tukenme.py:716
+#: arayuz/tukenme_arayuz.py:75 arayuz/tukenme_arayuz.py:173 cekirdek/tukenme.py:732
+#: cekirdek/tukenme.py:757
 msgid "gün"
 msgstr "days"
 
-#: arayuz/cubuk/parca_islemleri.py:365 cekirdek/tukenme.py:603
+#: arayuz/cubuk/parca_islemleri.py:365 cekirdek/tukenme.py:644
 msgid "güç dağılımı"
 msgstr "power distribution"
 
@@ -11564,7 +11716,7 @@ msgstr "no volume"
 msgid "hacimler hesaplanamadı: %s"
 msgstr "volumes could not be computed: %s"
 
-#: cekirdek/tukenme.py:316
+#: cekirdek/tukenme.py:357
 #, python-format
 msgid ""
 "hacmi analitik hesaplanamayan yanabilir malzeme: %s (%s). Tükenme kesin hacim "
@@ -11582,11 +11734,11 @@ msgstr ""
 "depletable material whose volume cannot be computed: %s (%s). The depletion script "
 "requires exact volumes."
 
-#: cekirdek/geometri/hacim.py:115 cekirdek/tukenme_hacim.py:360
+#: cekirdek/geometri/hacim.py:143 cekirdek/tukenme_hacim.py:360
 msgid "hacmi kesin değil: "
 msgstr "volume not exact: "
 
-#: cekirdek/geometri/hacim.py:120 cekirdek/tukenme_hacim.py:367
+#: cekirdek/geometri/hacim.py:148 cekirdek/tukenme_hacim.py:367
 msgid "hacmi sıfır: "
 msgstr "volume is zero: "
 
@@ -11630,7 +11782,7 @@ msgstr "map"
 msgid "harita %d satır ama boyut %d satır bekliyor"
 msgstr "the map has %d rows but the size expects %d rows"
 
-#: cekirdek/dogrula/kor.py:207
+#: cekirdek/dogrula/kor.py:209
 #, python-format
 msgid "harita %d satır, boyut %d bekliyor"
 msgstr "the map has %d rows, the size expects %d"
@@ -11644,7 +11796,7 @@ msgstr "map is empty"
 msgid "haritada en fazla %d farklı parça kullanılabilir"
 msgstr "at most %d different components can be used in a map"
 
-#: cekirdek/dogrula/geometri.py:203 cekirdek/dogrula/kor.py:215 cekirdek/dogrula/kor.py:449
+#: cekirdek/dogrula/geometri.py:203 cekirdek/dogrula/kor.py:217 cekirdek/dogrula/kor.py:451
 #, python-format
 msgid "haritada tanımsız harf: '%s'"
 msgstr "undefined letter in the map: '%s'"
@@ -11684,7 +11836,7 @@ msgstr "every step must be greater than zero"
 msgid "her hesap için çevrim başına binlerce nötron"
 msgstr "thousands of neutrons per batch for every calculation"
 
-#: cekirdek/tukenme.py:602
+#: cekirdek/tukenme.py:643
 msgid "hesap ayarları"
 msgstr "run settings"
 
@@ -11734,7 +11886,7 @@ msgstr "cell pitch must be greater than zero"
 msgid "hücrede hem silindir hem prizma iç sınırı var"
 msgstr "the cell has both a cylinder and a prism inner boundary"
 
-#: cekirdek/dogrula/tukenme.py:24 cekirdek/tukenme.py:612
+#: cekirdek/dogrula/tukenme.py:24 cekirdek/tukenme.py:653
 #: cekirdek/uygunluk_denetimi/vv_arayuz.py:57 cekirdek/vv/kume.py:190
 msgctxt "spektrum"
 msgid "hızlı"
@@ -11886,7 +12038,7 @@ msgstr "Use k_norm = k_calc / k_exp and σ = √(σ_calc² + σ_exp²)."
 msgid "kabuk r = %g cm: %.4g cm³"
 msgstr "shell r = %g cm: %.4g cm³"
 
-#: cekirdek/dogrula/kor.py:175 cekirdek/geometri/sablon.py:223
+#: cekirdek/dogrula/kor.py:177 cekirdek/geometri/sablon.py:223
 #, python-format
 msgid "kabuk yarıçapları artan sırada olmalı: r%d = %.5f ≥ r%d = %.5f"
 msgstr "shell radii must be in increasing order: r%d = %.5f ≥ r%d = %.5f"
@@ -11916,7 +12068,7 @@ msgstr "lattice pitch"
 msgid "kafes adımı sıfırdan büyük olmalı: %s"
 msgstr "lattice pitch must be greater than zero: %s"
 
-#: cekirdek/geometri/hacim.py:47
+#: cekirdek/geometri/hacim.py:52
 msgid "kafes dışı düzensiz bölge"
 msgstr "irregular region outside a lattice"
 
@@ -12007,7 +12159,7 @@ msgstr ""
 msgid "katmanı/koru doğrudan dolduruyor"
 msgstr "fills the layer/core directly"
 
-#: arayuz/pencere/ana_pencere.py:542
+#: arayuz/pencere/ana_pencere.py:554
 msgid "kaydedilmemiş"
 msgstr "unsaved"
 
@@ -12044,11 +12196,11 @@ msgstr "the source direction cannot be a zero vector"
 msgid "kaynak şiddeti sıfırdan büyük olmalı (%s)"
 msgstr "source strength must be greater than zero (%s)"
 
-#: cekirdek/geometri/hacim.py:44
+#: cekirdek/geometri/hacim.py:49
 msgid "kesik kafes konumu"
 msgstr "truncated lattice position"
 
-#: cekirdek/geometri/hacim.py:45
+#: cekirdek/geometri/hacim.py:50
 msgid "kesik çubuk (pin hücreye sığmıyor)"
 msgstr "truncated pin (does not fit the pin cell)"
 
@@ -12116,7 +12268,7 @@ msgstr "not met"
 msgid "kontrolü geçti"
 msgstr "passed"
 
-#: arayuz/cubuk/parca_islemleri.py:360 cekirdek/tukenme.py:601
+#: arayuz/cubuk/parca_islemleri.py:360 cekirdek/tukenme.py:642
 msgid "kor"
 msgstr "core"
 
@@ -12124,16 +12276,16 @@ msgstr "core"
 msgid "kor dolgusu"
 msgstr "core fill"
 
-#: cekirdek/dogrula/kor.py:111
+#: cekirdek/dogrula/kor.py:113
 msgid "kor dolgusu seçilmemiş"
 msgstr "no core fill selected"
 
-#: cekirdek/dogrula/kor.py:115
+#: cekirdek/dogrula/kor.py:117
 #, python-format
 msgid "kor dolgusu tanımsız: %s"
 msgstr "undefined core fill: %s"
 
-#: cekirdek/dogrula/kor.py:500
+#: cekirdek/dogrula/kor.py:502
 #, python-format
 msgid "kor halka sayısı en az 1 olmalı: %s"
 msgstr "number of core rings must be at least 1: %s"
@@ -12147,7 +12299,7 @@ msgstr "core map"
 msgid "kor haritası %d satır, boyut %d bekliyor"
 msgstr "the core map has %d rows, the size expects %d"
 
-#: cekirdek/dogrula/kor.py:202 cekirdek/dogrula/kor.py:431
+#: cekirdek/dogrula/kor.py:204 cekirdek/dogrula/kor.py:433
 msgid "kor haritası boş"
 msgstr "core map is empty"
 
@@ -12179,16 +12331,16 @@ msgstr "core cylinder R = %g cm × %g cm"
 msgid "kor yansıtıcısı"
 msgstr "core reflector"
 
-#: cekirdek/dogrula/kor.py:102
+#: cekirdek/dogrula/kor.py:104
 msgid "kor yarıçapı sıfırdan büyük olmalı"
 msgstr "core radius must be greater than zero"
 
-#: cekirdek/dogrula/kor.py:502
+#: cekirdek/dogrula/kor.py:504
 #, python-format
 msgid "kor yönelimi 'x' ya da 'y' olmalı: %s"
 msgstr "core orientation must be 'x' or 'y': %s"
 
-#: cekirdek/tukenme.py:666
+#: cekirdek/tukenme.py:707
 msgid "koşmadan hacim, zincir ve ağır metal bilgisini yazdır"
 msgstr "print the volume, chain and heavy metal information without running"
 
@@ -12249,7 +12401,7 @@ msgstr "user input"
 msgid "kullanıcı girdisi — kaynak belirtilmedi"
 msgstr "user input — no source given"
 
-#: cekirdek/tukenme.py:95
+#: cekirdek/tukenme.py:102
 msgid "kullanıcı seçimi"
 msgstr "user selection"
 
@@ -12334,7 +12486,7 @@ msgid_plural "küresel düzenek (%d kabuk)"
 msgstr[0] "spherical assembly (%d shell)"
 msgstr[1] "spherical assembly (%d shells)"
 
-#: cekirdek/dogrula/kor.py:192
+#: cekirdek/dogrula/kor.py:194
 msgid ""
 "küresel düzenekte dış sınır Yansıtıcı (reflective) — çıplak (bare) bir kritiklik "
 "düzeneği modelliyorsanız Vakum (vacuum) olmalı"
@@ -12342,11 +12494,11 @@ msgstr ""
 "the outer boundary of the spherical assembly is Reflective — if you are modelling a "
 "bare critical assembly it should be Vacuum"
 
-#: cekirdek/dogrula/kor.py:161 cekirdek/geometri/sablon.py:219
+#: cekirdek/dogrula/kor.py:163 cekirdek/geometri/sablon.py:219
 msgid "küresel düzenekte en az bir kabuk gerekir"
 msgstr "a spherical assembly needs at least one shell"
 
-#: cekirdek/dogrula/kor.py:185
+#: cekirdek/dogrula/kor.py:187
 #, python-format
 msgid "küresel düzenekte yükseklik tanımlanamaz (%g cm)"
 msgstr "a height cannot be defined for a spherical assembly (%g cm)"
@@ -12386,7 +12538,7 @@ msgstr "no duct material selected"
 msgid "kılıf yalnızca altıgen demette kurulur — yok sayılır"
 msgstr "a duct is built only in a hexagonal assembly — ignored"
 
-#: cekirdek/dogrula/kor.py:409
+#: cekirdek/dogrula/kor.py:411
 msgid ""
 "kılıflı tek demette sınır kılıfın dış yüzündedir — demetler arası boşluk (soğutucu) "
 "modelde yok"
@@ -12424,7 +12576,7 @@ msgstr "a material-filled cell cannot be rotated/translated"
 msgid "malzeme düğümüne dönüşüm uygulanamaz"
 msgstr "a transform cannot be applied to a material node"
 
-#: cekirdek/geometri/hacim.py:121 cekirdek/tukenme_hacim.py:373
+#: cekirdek/geometri/hacim.py:149 cekirdek/tukenme_hacim.py:373
 msgid "malzeme geometride bulunamadı"
 msgstr "material not found in the geometry"
 
@@ -12438,7 +12590,7 @@ msgstr "material ID %d is not among the imported materials"
 msgid "malzeme: %s"
 msgstr "material: %s"
 
-#: cekirdek/tukenme.py:600
+#: cekirdek/tukenme.py:641
 msgid "malzemeler"
 msgstr "materials"
 
@@ -12481,7 +12633,7 @@ msgstr "mode     = fixed source (k-eff undefined)"
 msgid "model (spec) bulunamadı: koşu dizininde spec.json yok; --spec ile verin (%s)"
 msgstr "model (spec) not found: no spec.json in the run directory; give it with --spec (%s)"
 
-#: cekirdek/dogrula/kor.py:291
+#: cekirdek/dogrula/kor.py:293
 #, python-format
 msgid "model 2B — %s sınır koşulu (%s) yok sayılır"
 msgstr "2D model — the %s boundary condition (%s) is ignored"
@@ -12524,7 +12676,7 @@ msgstr "the model has no control drum (rotation group)"
 msgid "modelde kontrol tamburu yok"
 msgstr "the model has no control drum"
 
-#: cekirdek/dogrula/tukenme.py:135 cekirdek/tukenme.py:320
+#: cekirdek/dogrula/tukenme.py:135 cekirdek/tukenme.py:361
 msgid "modelde yanabilir (fisil) malzeme yok"
 msgstr "the model contains no depletable (fissile) material"
 
@@ -12612,7 +12764,7 @@ msgstr "no environment lock"
 msgid "otomatik ağ sınırları için modelin sınır kutusu gerekli"
 msgstr "automatic mesh boundaries require the bounding box of the model"
 
-#: cekirdek/tukenme.py:92
+#: cekirdek/tukenme.py:99
 #, python-format
 msgid "otomatik: %s"
 msgstr "automatic: %s"
@@ -12708,7 +12860,7 @@ msgctxt "birim"
 msgid "plaka"
 msgstr "plates"
 
-#: cekirdek/tukenme.py:601
+#: cekirdek/tukenme.py:642
 msgid "plaka elemanları"
 msgstr "plate-type fuel elements"
 
@@ -12980,20 +13132,20 @@ msgstr "no standard value — user/project target (STANDARTLAR.md §3 row 2)"
 msgid "stokastik"
 msgstr "stochastic"
 
-#: cekirdek/geometri/hacim.py:236 cekirdek/tukenme_hacim.py:396
+#: cekirdek/geometri/hacim.py:264 cekirdek/tukenme_hacim.py:396
 #, python-format
 msgid "stokastik hacim %.6g ± %.2g cm³ (%s)"
 msgstr "stochastic volume %.6g ± %.2g cm³ (%s)"
 
-#: cekirdek/geometri/hacim.py:218
+#: cekirdek/geometri/hacim.py:246
 msgid "stokastik hacim sıfır (malzeme örnekleme kutusunda bulunamadı)"
 msgstr "stochastic volume is zero (material not found in the sampling box)"
 
-#: cekirdek/geometri/hacim.py:220
+#: cekirdek/geometri/hacim.py:248
 msgid "stokastik hacim ölçülemedi (malzeme kurulan modelde yok)"
 msgstr "stochastic volume could not be measured (material not in the built model)"
 
-#: cekirdek/geometri/hacim.py:209
+#: cekirdek/geometri/hacim.py:237
 #, python-format
 msgid "stokastik hacmin bağıl σ'sı %%%.2f sınırını aşıyor (örneklem %d): %s"
 msgstr "the relative σ of the stochastic volume exceeds the %.2f%% limit (samples %d): %s"
@@ -13026,6 +13178,11 @@ msgstr "columns"
 msgid "sıcaklık aralığı okunamadı"
 msgstr "temperature range could not be read"
 
+#: arayuz/baslangic_akis.py:49
+#, python-format
+msgid "sıfırdan başlatılamayan kor türü: %s"
+msgstr "core type cannot be started from scratch: %s"
+
 #: cekirdek/geometri/yol_metni.py:18
 msgid "sınır"
 msgstr "boundary"
@@ -13035,7 +13192,7 @@ msgstr "boundary"
 msgid "sınır noktası üretilemeyen kesit: %s"
 msgstr "cross-section for which boundary points cannot be generated: %s"
 
-#: cekirdek/tukenme.py:602
+#: cekirdek/tukenme.py:643
 msgid "tally'ler"
 msgstr "tallies"
 
@@ -13057,7 +13214,7 @@ msgctxt "sonek"
 msgid "tambur"
 msgstr "drums"
 
-#: cekirdek/dogrula/kor.py:147
+#: cekirdek/dogrula/kor.py:149
 #, python-format
 msgid "tambur dönme açısı −360…360° aralığında olmalı: %s"
 msgstr "drum rotation angle must be within −360…360°: %s"
@@ -13067,20 +13224,20 @@ msgstr "drum rotation angle must be within −360…360°: %s"
 msgid "tambur emici yayı yerel +x yönünde ortalanmamış (hücre %d, %g° yoklaması)"
 msgstr "the drum absorber arc is not centred on the local +x direction (cell %d, %g° probe)"
 
-#: arayuz/malzeme/yardimcilar.py:164 cekirdek/dogrula/kor.py:131
+#: arayuz/malzeme/yardimcilar.py:164 cekirdek/dogrula/kor.py:133
 msgid "tambur emicisi"
 msgstr "drum absorber"
 
-#: cekirdek/dogrula/kor.py:142
+#: cekirdek/dogrula/kor.py:144
 #, python-format
 msgid "tambur emicisi ('%s') güçlü bir nötron emici içermiyor"
 msgstr "the drum absorber ('%s') does not contain a strong neutron absorber"
 
-#: arayuz/malzeme/yardimcilar.py:163 cekirdek/dogrula/kor.py:130
+#: arayuz/malzeme/yardimcilar.py:163 cekirdek/dogrula/kor.py:132
 msgid "tambur gövdesi"
 msgstr "drum body"
 
-#: cekirdek/dogrula/kor.py:120
+#: cekirdek/dogrula/kor.py:122
 msgid "tambur sayısı 0 — kontrol tamburu olmadan düz yansıtıcı kuşak"
 msgstr "number of control drums is 0 — a plain radial reflector without control drums"
 
@@ -13123,7 +13280,7 @@ msgid_plural "tamburlu kor (%d tambur)"
 msgstr[0] "drum-controlled core (%d control drum)"
 msgstr[1] "drum-controlled core (%d control drums)"
 
-#: cekirdek/dogrula/kor.py:151
+#: cekirdek/dogrula/kor.py:153
 msgid "tamburlu kor 2B — eksenel sızıntı yok, k-eff olduğundan yüksek çıkar"
 msgstr "core with control drums is 2D — no axial leakage, k-eff comes out too high"
 
@@ -13137,7 +13294,7 @@ msgstr ""
 "in a core with control drums the core radius and the radial reflector thickness must "
 "be greater than zero"
 
-#: cekirdek/dogrula/kor.py:105
+#: cekirdek/dogrula/kor.py:107
 msgid "tamburlu korda yansıtıcı kuşak kalınlığı sıfırdan büyük olmalı"
 msgstr "in a core with control drums the radial reflector thickness must be greater than zero"
 
@@ -13170,7 +13327,7 @@ msgstr "undefined name: %s (not a pin, plate-type fuel element, assembly or mate
 msgid "tanımsız demet/malzeme adı: '%s'"
 msgstr "undefined assembly/material name: '%s'"
 
-#: cekirdek/dogrula/kor.py:83 cekirdek/geometri/sablon.py:141 cekirdek/tarama.py:222
+#: cekirdek/dogrula/kor.py:85 cekirdek/geometri/sablon.py:141 cekirdek/tarama.py:222
 #, python-format
 msgid "tanımsız demet: %s"
 msgstr "undefined assembly: %s"
@@ -13205,7 +13362,7 @@ msgstr "undefined core"
 msgid "tanımsız malzeme: %s"
 msgstr "undefined material: %s"
 
-#: cekirdek/dogrula/kor.py:90 cekirdek/geometri/sablon.py:124
+#: cekirdek/dogrula/kor.py:93 cekirdek/geometri/sablon.py:124
 #, python-format
 msgid "tanımsız plaka elemanı: %s"
 msgstr "undefined plate-type fuel element: %s"
@@ -13223,7 +13380,7 @@ msgstr ""
 "unrecognized multi-cell universe (%d disjoint regions; e.g. a plate-type fuel element"
 " or a control rod)"
 
-#: cekirdek/dogrula/kor.py:355
+#: cekirdek/dogrula/kor.py:357
 msgid ""
 "tek hücre/demet modelinde yan sınır Vakum (vacuum) — sızıntı sonsuz kafes varsayımını"
 " bozar"
@@ -13236,7 +13393,7 @@ msgstr ""
 msgid "tekrarlanabilirlik: %s bilinmiyor"
 msgstr "reproducibility: %s unknown"
 
-#: cekirdek/dogrula/tukenme.py:23 cekirdek/tukenme.py:611
+#: cekirdek/dogrula/tukenme.py:23 cekirdek/tukenme.py:652
 #: cekirdek/uygunluk_denetimi/vv_arayuz.py:55 cekirdek/vv/kume.py:189
 msgctxt "spektrum"
 msgid "termal"
@@ -13291,7 +13448,7 @@ msgstr "thorium"
 msgid "tükenme"
 msgstr "depletion"
 
-#: cekirdek/tukenme.py:603
+#: cekirdek/tukenme.py:644
 msgid "tükenme ayarları"
 msgstr "depletion settings"
 
@@ -13318,7 +13475,7 @@ msgstr "depletion cannot be performed: %s"
 msgid "tükenme Özdeğer (k-eff) hesabı gerektirir"
 msgstr "depletion requires an eigenvalue (k-eff) calculation"
 
-#: cekirdek/uygunluk.py:325
+#: cekirdek/uygunluk.py:341
 msgid "tükenme özdeğer (k-eff) hesabı gerektirir"
 msgstr "depletion requires an eigenvalue (k-eff) calculation"
 
@@ -13496,7 +13653,7 @@ msgstr "side plate"
 msgid "yan sınır"
 msgstr "radial boundary"
 
-#: cekirdek/dogrula/kor.py:418
+#: cekirdek/dogrula/kor.py:420
 msgid ""
 "yan sınır Yansıtıcı ve haritada birden fazla demet türü var — sonsuz kafes "
 "eşdeğerliği yalnız aynı ve simetrik demetlerde geçerli"
@@ -13529,7 +13686,7 @@ msgstr "burnup [MWd/kg]"
 msgid "yansıtıcı"
 msgstr "reflector"
 
-#: cekirdek/dogrula/kor.py:108
+#: cekirdek/dogrula/kor.py:110
 msgid "yansıtıcı kuşağın malzemesi seçilmemiş (boş, madde yok)"
 msgstr "no material selected for the radial reflector (void)"
 
@@ -13621,7 +13778,7 @@ msgstr "orientation must be 'x' or 'y': %s"
 msgid "yükseklik"
 msgstr "height"
 
-#: cekirdek/dogrula/agac.py:286 cekirdek/dogrula/kor.py:364
+#: cekirdek/dogrula/agac.py:286 cekirdek/dogrula/kor.py:366
 msgid "yükseklik verilmemiş — model eksenel yönde sonsuz (2B) kabul ediliyor"
 msgstr "height not given — the model is treated as infinite in the axial direction (2D)"
 
@@ -13763,7 +13920,7 @@ msgstr "{ad} — invalid on this surface"
 msgid "{ad} — otomatik"
 msgstr "{ad} — automatic"
 
-#: arayuz/baslangic.py:296
+#: arayuz/baslangic.py:366
 #, python-brace-format
 msgid "{dosya} — kopya olarak açılır"
 msgstr "{dosya} — opens as a copy"
@@ -13804,7 +13961,7 @@ msgstr "{halka} (outermost)"
 msgid "{hata} Ad değiştirilmedi."
 msgstr "{hata} The name was not changed."
 
-#: arayuz/pencere/dogrulama_seridi.py:96
+#: arayuz/pencere/dogrulama_seridi.py:127
 #, python-brace-format
 msgid "{h} hata, {u} uyarı, {b} bilgi"
 msgstr "Errors: {h}, warnings: {u}, info: {b}"
@@ -13831,21 +13988,21 @@ msgstr[1] "ring {k} · {n} cells"
 msgid "{malzeme} — izleyici olamaz"
 msgstr "{malzeme} — cannot be a follower"
 
-#: arayuz/baslangic.py:489
+#: arayuz/baslangic.py:579
 #, python-brace-format
 msgid "{n} / {toplam} örnek"
 msgid_plural "{n} / {toplam} örnek"
 msgstr[0] "{n} / {toplam} example"
 msgstr[1] "{n} / {toplam} examples"
 
-#: arayuz/pencere/dogrulama_seridi.py:86
+#: arayuz/pencere/dogrulama_seridi.py:120
 #, python-brace-format
 msgid "{n} bilgi"
 msgid_plural "{n} bilgi"
 msgstr[0] "{n} info"
 msgstr[1] "{n} info"
 
-#: arayuz/baslangic.py:161
+#: arayuz/baslangic.py:172
 #, python-brace-format
 msgid "{n} dakika önce"
 msgid_plural "{n} dakika önce"
@@ -13857,7 +14014,7 @@ msgstr[1] "{n} minutes ago"
 msgid "{n} eşleşme"
 msgstr "{n} matches"
 
-#: arayuz/baslangic.py:166
+#: arayuz/baslangic.py:177
 #, python-brace-format
 msgid "{n} gün önce"
 msgid_plural "{n} gün önce"
@@ -13887,7 +14044,7 @@ msgstr[1] ""
 "{n} particles × {c} batches = {t} source particles; tally uncertainty decreases as "
 "1/√N."
 
-#: arayuz/baslangic.py:164
+#: arayuz/baslangic.py:175
 #, python-brace-format
 msgid "{n} saat önce"
 msgid_plural "{n} saat önce"
@@ -13901,7 +14058,7 @@ msgid_plural "{n} tanesi seçili zincirde yok (kırmızı)"
 msgstr[0] "{n} is not in the selected chain (red)"
 msgstr[1] "{n} are not in the selected chain (red)"
 
-#: arayuz/pencere/dogrulama_seridi.py:87
+#: arayuz/pencere/dogrulama_seridi.py:121
 #, python-brace-format
 msgid "{n} uyarı"
 msgid_plural "{n} uyarı"
@@ -13915,7 +14072,7 @@ msgid_plural "{n} yerde kullanılıyor"
 msgstr[0] "used in {n} place"
 msgstr[1] "used in {n} places"
 
-#: arayuz/baslangic.py:487
+#: arayuz/baslangic.py:577
 #, python-brace-format
 msgid "{n} örnek · kategoriye göre süzün"
 msgid_plural "{n} örnek · kategoriye göre süzün"
@@ -14026,7 +14183,7 @@ msgstr "Overlap"
 msgid "Çakışmaları göster"
 msgstr "Show overlaps"
 
-#: arayuz/pencere/ana_pencere.py:342
+#: arayuz/pencere/ana_pencere.py:343
 #, python-brace-format
 msgid "Çalışan sade bir model kuruldu ({ad}). Kaydetmek için 'Farklı kaydet' kullanın."
 msgstr "A simple working model was set up ({ad}). Use 'Save as' to save it."
@@ -14045,7 +14202,11 @@ msgstr "Press Run; k-eff convergence and the results appear on this page."
 msgid "Çalıştır'a basınca koşu öncesi doğrulama yapılır."
 msgstr "The model is checked before the run when you press Run."
 
-#: arayuz/pencere/dogrulama_seridi.py:168
+#: arayuz/pencere/dogrulama_seridi.py:142
+msgid "Çalıştır, eksik aşamalar tamamlanınca açılır."
+msgstr "Run becomes available once the missing steps are done."
+
+#: arayuz/pencere/dogrulama_seridi.py:244
 #, python-format
 msgid ""
 "Çalıştırılabilir. %d uyarı var — sonucu etkileyebilir, doğrulama listesini gözden "
@@ -14064,7 +14225,7 @@ msgstr[1] ""
 msgid "Çalıştırılamaz"
 msgstr "Cannot run"
 
-#: arayuz/baslangic.py:252
+#: arayuz/baslangic.py:263
 #, python-brace-format
 msgid "Çalışır durumda, sade bir {ad} modeli kurar (malzemeler, parçalar ve kor hazır)."
 msgstr "Builds a simple, working {ad} model (materials, components and core ready)."
@@ -14287,7 +14448,7 @@ msgstr "Pin types (relative mean / peak; mean of all fuel pins = 1): %s"
 msgid "Çubuk türü:"
 msgstr "Pin type:"
 
-#: cekirdek/dogrula/kor.py:460
+#: cekirdek/dogrula/kor.py:462
 msgid ""
 "Çubuk ya da plaka tek başına bir demet hücresini doldurmaz; önce bir altıgen demete "
 "yerleştirin."
@@ -14568,19 +14729,19 @@ msgstr ""
 "Example opened as a copy: %s — use 'Save as' to save it (the example file is not "
 "changed)"
 
-#: arayuz/baslangic.py:395 arayuz/baslangic.py:482
+#: arayuz/baslangic.py:475 arayuz/baslangic.py:572
 msgid "Örnekler"
 msgstr "Examples"
 
-#: arayuz/baslangic.py:398
+#: arayuz/baslangic.py:478
 msgid "Örneklerde ara…"
 msgstr "Search examples…"
 
-#: arayuz/baslangic.py:408
+#: arayuz/baslangic.py:488
 msgid "Örnekleri zorluk seviyesine göre süzer."
 msgstr "Filters the examples by difficulty level."
 
-#: arayuz/baslangic.py:245
+#: arayuz/baslangic.py:256
 msgid "Örnekten"
 msgstr "From example"
 
@@ -14771,7 +14932,7 @@ msgstr "pin total"
 msgid "çubuk çubuk yanma açık"
 msgstr "pin-by-pin burnup is on"
 
-#: cekirdek/tukenme.py:278
+#: cekirdek/tukenme.py:319
 #, python-format
 msgid ""
 "çubuk çubuk yanma kesin örnek hacmi gerektirir; hacmi kesin olmayan (kesik) yanabilir"
@@ -14790,7 +14951,7 @@ msgstr "instance volume is not exact in pin-by-pin burnup: %s"
 msgid "çubuk: %s"
 msgstr "pin: %s"
 
-#: cekirdek/tukenme.py:600
+#: cekirdek/tukenme.py:641
 msgid "çubuklar"
 msgstr "pins"
 
@@ -15024,7 +15185,7 @@ msgstr ""
 "The template will be converted into a node tree. The wizard then closes; you can "
 "return with Undo (Ctrl+Z)."
 
-#: arayuz/pencere/ana_pencere.py:335
+#: arayuz/pencere/ana_pencere.py:336
 msgid "Şablon kurulamadı"
 msgstr "Template could not be built"
 
@@ -15035,6 +15196,10 @@ msgid ""
 msgstr ""
 "The template builds a geometry tree from the dimensions and the model switches to "
 "advanced geometry. Undo returns to the state before the template."
+
+#: arayuz/baslangic.py:255
+msgid "Şablondan"
+msgstr "From template"
 
 #: arayuz/sekme_cubuk.py:199
 msgid "Şablondan çubuk ekler; malzemeler rollerine göre otomatik seçilir."
@@ -15276,7 +15441,7 @@ msgstr ""
 "⚠ truncated positions: {k} (clipped by an outer region or hole; volume stochastic, "
 "separate in the power map)  ⓘ hidden positions: {g}"
 
-#: arayuz/pencere/dogrulama_seridi.py:53
+#: arayuz/pencere/dogrulama_seridi.py:62
 msgid "✓ Bulgu yok — model tutarlı görünüyor."
 msgstr "✓ No findings — the model looks consistent."
 
