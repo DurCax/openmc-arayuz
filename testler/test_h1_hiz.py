@@ -9,7 +9,7 @@
    olcek = max(1, olculen / 0.40) ile butun mutlak esikler carpilir. Hizli
    makinede esik sikilasmaz, yavas makinede orantili gevser.
 
- TABAN / SONRA (bu makine, CPU s; olcum betigi /home/enes/openmc_v3_ciktilar/H1/olc.py)
+ TABAN / SONRA (bu makine, CPU s; olcum betigi v3 cikti dizininde H1/olc.py)
                         acilis        gelismise gecis*     tus (gelismis)
    pwr_beavrs_kor       1.51 -> 1.13  2.36 -> 0.70         0.32 -> 0.055
    vver1000_kor         1.22 -> 1.01  2.68 -> 1.58         0.24 -> 0.040
