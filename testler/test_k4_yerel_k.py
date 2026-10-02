@@ -304,26 +304,155 @@ def test_terminal_desteksiz_modelde_hata_kodu(tmp_path, capsys):
 
 # ---------------------------------------------------------------------------
 # YAVAS: sonsuz kafeste ortalama = k-sonsuz
+
+# ---------------------------------------------------------------------------
+# duzeltme turu (profesor + python-reviewer)
+# ---------------------------------------------------------------------------
+
+def test_harmonik_esdegerlik_yakitsiz_binin_d_si_ayrica_eklenir():
+    # Arrange: iki yakit bini + bir kilavuz boru (P = 0)
+    from cekirdek import yerel_k
+    df = _sentetik_df({(0, 0): {"nu-fission": (2.0, 0.0), "absorption": (1.0, 0.0)},
+                       (1, 0): {"nu-fission": (1.5, 0.0), "absorption": (1.2, 0.0)},
+                       (2, 0): {"nu-fission": (0.0, 0.0), "absorption": (0.4, 0.0)}})
+    # Act
+    s = yerel_k.hesapla(df, "pin", (3, 1), (1.0, 1.0))
+    # Assert
+    fisil = [h for h in s.hucreler if h.fisil]
+    yalniz_fisil = sum(h.uretim[0] for h in fisil) / sum(h.uretim[0] / h.k for h in fisil)
+    duzeltilmis = sum(h.uretim[0] for h in s.hucreler) / (
+        sum(h.uretim[0] / h.k for h in fisil)
+        + sum(h.yok_olma[0] for h in s.hucreler if not h.fisil))
+    assert s.ortalama[0] == pytest.approx(duzeltilmis)
+    assert s.ortalama[0] != pytest.approx(yalniz_fisil), "P=0 binin D'si eklenmeli"
+
+
+def test_uretimsiz_binin_sigmasi_payin_belirsizliginden():
+    from cekirdek import yerel_k
+    df = _sentetik_df({(0, 0): {"nu-fission": (0.0, 0.02), "absorption": (0.5, 0.01)}})
+    h = yerel_k.hesapla(df, "pin", (1, 1), (1.0, 1.0)).hucreler[0]
+    assert h.k == 0.0 and h.sigma == pytest.approx(0.04) and not h.fisil
+
+
+def test_sifir_yok_olmali_bin_fisil_sayilmaz_nan():
+    from cekirdek import yerel_k
+    df = _sentetik_df({(0, 0): {"nu-fission": (1.0, 0.0), "absorption": (0.0, 0.0)}})
+    h = yerel_k.hesapla(df, "pin", (1, 1), (1.0, 1.0)).hucreler[0]
+    assert math.isnan(h.k) and not h.fisil
+
+
+def test_mesh_olcusu_kayitli_tallyden_okunur_uyusmazlik_hata():
+    # Arrange: kosu 2x1 mesh'le yapildi; spec'teki tanim 17x17 (model degismis)
+    from cekirdek import yerel_k
+    spec = yerel_k.tally_ekle(_ornek("pwr_17x17"), "pin")
+    df = _sentetik_df({(0, 0): {"nu-fission": (1.0, 0.0), "absorption": (1.0, 0.0)},
+                       (1, 0): {"nu-fission": (1.0, 0.0), "absorption": (1.0, 0.0)}})
+    # Act / Assert
+    with pytest.raises(yerel_k.YerelKHatasi):
+        yerel_k.sonuctan({"tallyler": {yerel_k.TALLY_ADLARI["pin"]: df}}, spec)
+    yok = _ornek("pwr_17x17")
+    with pytest.raises(yerel_k.YerelKHatasi):
+        yerel_k.sonuctan({"tallyler": {yerel_k.TALLY_ADLARI["pin"]: df}}, yok)
+
+
+def test_tally_duzeni_kayitli_tanimdan_adim_ve_boyut():
+    from cekirdek import yerel_k
+    spec = yerel_k.tally_ekle(_ornek("pwr_ceyrek_kor"), "demet")
+    d = yerel_k.tally_duzeni(spec, "demet")
+    assert d.boyut == (6, 6) and d.adim == pytest.approx((21.42, 21.42))
+    assert yerel_k.tally_duzeni(spec, "pin") is None
+
+
+def test_ayni_adli_kullanici_tallysi_silinmez_hata():
+    # Arrange
+    from cekirdek import yerel_k
+    spec = _ornek("pwr_17x17")
+    spec["tallyler"].append({"ad": "yerel_k_pin", "skorlar": ["flux"], "filtreler": [],
+                             "nuklidler": []})
+    # Act / Assert
+    with pytest.raises(yerel_k.YerelKHatasi):
+        yerel_k.tally_ekle(spec, "pin")
+
+
+def test_tally_ekle_yalniz_tally_listesini_yeniler_ve_kayitta_isaret_kalir(tmp_path):
+    # Arrange
+    from cekirdek import sema, yerel_k
+    spec = _ornek("pwr_17x17")
+    # Act
+    yeni = yerel_k.tally_ekle(spec, "pin")
+    yol = str(tmp_path / "m.json")
+    sema.kaydet(yeni, yol)
+    geri = sema.yukle(yol)
+    # Assert
+    assert yeni["tallyler"] is not spec["tallyler"] and yeni["malzemeler"] is spec["malzemeler"]
+    isaretli = [t["ad"] for t in geri["tallyler"] if t.get("uretici") == yerel_k.URETICI]
+    assert sorted(isaretli) == sorted([yerel_k.TALLY_ADLARI["pin"], yerel_k.TOPLAM_TALLY])
+    assert yerel_k.tally_kaldir(geri)["tallyler"] == spec["tallyler"]
+
+
+def test_donusumlu_kafes_reddedilir():
+    from cekirdek import yerel_k
+    spec = _ornek("pwr_ceyrek_kor")
+    spec["kor"] = dict(spec["kor"])
+    import cekirdek.geometri as geo
+    agac = geo.genislet(spec)
+    agac["kok"]["ic"]["icerik"]["donusum"] = {"donme": 30.0}
+    spec2 = dict(spec, kor={"tur": "agac"}, geometri=agac)
+    with pytest.raises(yerel_k.YerelKHatasi):
+        yerel_k.kafes_duzeni(spec2, "demet")
+
+
+def test_aktif_eksenel_kapsam_yalniz_fisil_aralik():
+    from cekirdek import geometri, yerel_k
+    spec = _ornek("pwr_ceyrek_kor")
+    model = yerel_k.kafes_duzeni(spec, "demet")
+    aktif = yerel_k.kafes_duzeni(spec, "demet", z_kapsam="aktif")
+    z0, z1 = geometri.aktif_aralik(spec)
+    assert (aktif.alt[2], aktif.ust[2]) == pytest.approx((z0, z1))
+    assert aktif.ust[2] - aktif.alt[2] < model.ust[2] - model.alt[2]
+
+
+def test_sizintili_k_denge_ile():
+    from cekirdek import yerel_k
+    s = yerel_k.YerelKSonucu("pin", (1, 1), (1.0, 1.0), (), (1.1, 0.0), 1.0,
+                             model_uretim=(1.1, 0.0), model_yok_olma=(0.9, 0.0),
+                             denge=yerel_k.Denge((1.1, 0.0), (0.1, 0.0)))
+    assert s.sizintili_k == pytest.approx(1.1)
+
+
+def test_terminal_cikti_girdiyle_ayniysa_reddeder(tmp_path):
+    import shutil
+    from cekirdek import yerel_k
+    yol = str(tmp_path / "m.json")
+    shutil.copy(os.path.join(ORNEK, "pwr_17x17.json"), yol)
+    assert yerel_k.terminal(["ekle", yol, "pin", "-o", yol]) == 1
+
 # ---------------------------------------------------------------------------
 
 def test_sonsuz_kafeste_yerel_k_ortalamasi_k_sonsuza_esit(gecici):
     # Arrange: yansitici 17x17 demet (sonsuz kafes), pin duzeyi
     from cekirdek import kosucu, yerel_k
     spec = yerel_k.tally_ekle(_ornek("pwr_17x17"), "pin")
-    spec["ayarlar"].update({"parcacik": 3000, "cevrim": 40, "pasif": 15})
-    spec["ayarlar"]["entropi_mesh"] = {"var": False}
+    spec["ayarlar"] = dict(spec["ayarlar"], parcacik=3000, cevrim=40, pasif=15,
+                           entropi_mesh={"var": False})
     # Act
     r = kosucu.calistir(spec, os.path.join(str(gecici), "yk"),
                         is_parcacigi=min(ISLEM_PARCACIGI, 6))
     assert r["basarili"], r
     sonuc = kosucu.sonuc_oku(r["statepoint"])
-    s = yerel_k.sonuctan(sonuc, spec)[0]
-    # Assert
-    k_inf, s_k = sonuc["keff"]
-    k_ort, s_ort = s.ortalama
-    assert abs(k_ort - k_inf) <= 2.0 * math.hypot(s_k, s_ort), (k_ort, s_ort, k_inf, s_k)
-    assert s.kapsama == pytest.approx(1.0, abs=1e-9), "kafes tum modeli kapsar"
-    assert s.model_toplami[0] == pytest.approx(k_ort, rel=1e-9)
+    s = yerel_k.sonuctan(sonuc, spec, denge=yerel_k.denge_oku(r["statepoint"]))[0]
+    # Assert 1 (birebir): harita uretim toplami = global k-tracklength (ayni tahminci)
+    P = sum(h.uretim[0] for h in s.hucreler)
+    assert P == pytest.approx(s.denge.k_izyolu[0], rel=1e-9)
+    assert s.model_uretim[0] == pytest.approx(P, rel=1e-9)
+    # Assert 2 (birebir): harita = model (kapsama 1), sizinti 0
+    assert s.kapsama == pytest.approx(1.0, abs=1e-9) and s.denge.sizinti[0] == 0.0
+    assert s.ortalama[0] == pytest.approx(s.model_toplami[0], rel=1e-9)
+    # Assert 3 (istatistik): kaynak notronu basina net yok olma = 1 (L = 0); 3 sigma
+    D, sD = s.model_yok_olma
+    assert abs(D - 1.0) <= 3.0 * sD, (D, sD)
+    # Assert 4: k_harita = k_tl / D_model -- k-sonsuz tahmini
+    assert s.ortalama[0] == pytest.approx(s.denge.k_izyolu[0] / D, rel=1e-9)
     assert s.c_xn > 1.0, "UO2'de (n,2n) net uretimi pozitif"
     fisil = [h for h in s.hucreler if h.fisil]
     assert len(fisil) == 264 and len(s.hucreler) == 289
@@ -346,5 +475,14 @@ HIZLI = [test_pin_hucresinde_tek_bin_adim_kadar,
          test_model_toplami_ve_kapsama_orani, test_eksik_skor_acik_hata,
          test_sonuctan_tally_yoksa_none_varsa_sonuc,
          test_csv_satirlari_her_bin_icin_bir_satir,
-         test_terminal_ekle_yeni_model_dosyasi_yazar, test_terminal_desteksiz_modelde_hata_kodu]
+         test_terminal_ekle_yeni_model_dosyasi_yazar, test_terminal_desteksiz_modelde_hata_kodu,
+         test_harmonik_esdegerlik_yakitsiz_binin_d_si_ayrica_eklenir,
+         test_uretimsiz_binin_sigmasi_payin_belirsizliginden,
+         test_sifir_yok_olmali_bin_fisil_sayilmaz_nan,
+         test_mesh_olcusu_kayitli_tallyden_okunur_uyusmazlik_hata,
+         test_tally_duzeni_kayitli_tanimdan_adim_ve_boyut,
+         test_ayni_adli_kullanici_tallysi_silinmez_hata,
+         test_tally_ekle_yalniz_tally_listesini_yeniler_ve_kayitta_isaret_kalir,
+         test_donusumlu_kafes_reddedilir, test_aktif_eksenel_kapsam_yalniz_fisil_aralik,
+         test_sizintili_k_denge_ile, test_terminal_cikti_girdiyle_ayniysa_reddeder]
 YAVAS = [test_sonsuz_kafeste_yerel_k_ortalamasi_k_sonsuza_esit]

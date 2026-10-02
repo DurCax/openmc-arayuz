@@ -11,82 +11,100 @@
      A_i = Sigma_a phi   (OpenMC "absorption")
      X_i = sum_x (x-1) R_x,i   (n,xn) tepkimelerinin NET notron uretimi
 
- BU BIR k-SONSUZ DEGILDIR: "sizintisiz yerel cogalma orani". Komsu binlerle
- notron alisverisi (net akim) yok sayilir; kor kenarindaki bir demetin yerel
- k'si yuksek gorunur ama sizinti onu kritiklige indirir.
+ BU BIR k-SONSUZ DEGILDIR: "yerel uretim / yok olma orani" -- sizinti ve net
+ akim terimi icermez. Binin akisi komsulardan gelen notronlari ICERIR (P ve D
+ o akiyla hesaplanir); tanima girmeyen, binin sinirlarindaki NET akimdir.
+ Yerel P/D'yi bindeki spektrum belirler: bir ic demetin k_i'si, kor ici
+ spektrumdaki k-sonsuzuna yakindir. Kritiklik GLOBALDIR:
+     k_eff = sum P / (sum D + L) = k_harita (1 - l),  l = L / (sum D + L)
+ (L: sizinti; Duderstadt & Hamilton, Nuclear Reactor Analysis, 1976, bol. 5).
 
  (n,xn) NEDEN PAYDADA (v3 Y3 bulgusu)
    OpenMC'de "absorption" (n,2n) gibi kanallari notron YOK OLMASI olarak
    saymaz (sacilma sayilir) ve onlarin dogurdugu ek notronlar nu-fission'a
    girmez. Sizintisiz denge: P + X = A  (k = 1)  ->  k = P / (A - X).
-   Duzeltme carpani c_xn = A / (A - X) (Y3 dort faktor modulundeki tanimla
-   ayni). Duzeltmesiz oran (P/A) de k_xn_siz olarak verilir.
-   Kanallar: XN_SKORLARI (MT 11, 16, 17, 24, 25, 30, 37, 41, 42 -- Y3 ile
-   ayni liste). Daha yuksek kanallar (MT 152+) yalniz TENDL turu
-   degerlendirmelerde vardir; sayilmaz.
+   Duzeltme carpani c_xn = A / (A - X). Kanallar ve (x-1) carpanlari TEK
+   kaynaktan: cekirdek/spektrum.XN_SKORLARI (Y3 dort faktor).
 
  ORTALAMA HANGI AGIRLIKLA k-SONSUZA ESITTIR (turetme)
-   Sonsuz kafeste (yansitici sinirli tek pin/demet; sizinti 0) global denge
+   Sonsuz kafeste (yansitici sinirli tek pin/demet; L = 0) global denge
        k_inf = sum_i P_i / sum_i D_i .
    k_i = P_i / D_i yazilirsa
-       k_inf = sum_i D_i k_i / sum_i D_i            (NET YOK OLMA agirlikli
-                                                      aritmetik ortalama)
-             = sum_i P_i / sum_i (P_i / k_i)         (URETIM agirlikli
-                                                      HARMONIK ortalama)
-   Hacim agirlikli ya da duz ortalama k_inf'a esit DEGILDIR (pinlerin
-   akisi farkli). Yakitsiz binler (kilavuz boru, P=0) toplamaya GIRER:
-   onlarin sogurmasi da kafesin notron dengesinin parcasidir.
-   Haritanin kapsamadigi bolgeler (kanal kutusu/su araligi, yansitici) icin
-   ayrica filtresiz bir "model toplami" tally'si okunur; kapsama orani
-   = sum_harita D / D_model. Sonsuz kafeste kapsama 1 ise ortalama = k_inf.
+       k_inf = sum_i D_i k_i / sum_i D_i       (NET YOK OLMA agirlikli aritmetik)
+   Uretim agirlikli HARMONIK ortalama ancak butun binler fisilse esdegerdir;
+   P = 0 binlerin (kilavuz boru) D'si paydaya AYRICA eklenir:
+       1 / k_inf = [ sum_{P>0} P_i / k_i + sum_{P=0} D_i ] / sum_i P_i .
+   Duz ya da hacim agirlikli ortalama k_inf'a esit DEGILDIR.
+   Filtresiz "model toplami" tally'si haritanin kapsamini olcer:
+   kapsama = sum_harita D / D_model (kanal kutusu, su araligi, yansitici
+   disarida kalirsa < 1).
+
+ BEKLENEN ESITLIKLER (kabul testinin dayandigi, kaynak notronu basina)
+   sum P_model  = global k-tracklength (AYNI tahminci; birebir)
+   D_model + L  = 1 (beklenen deger; tracklength A tahminidir, istatistikle
+                  sapar). Bu yuzden k_harita = k_tl / D_model, kosunun
+                  birlesik k-eff'inden D_model'in sapmasi kadar ayrilir;
+                  ikisi KORELASYONLU iki tahmindir (ayni gecmisler).
 
  MESH
    Kare kafesin hatvesine hizali RegularMesh (spec kullanici tally'si olarak:
    kurucu.tallyleri_kur ve kod_uret ayni tanimi kurar -- betik esdegerligi
-   kendiliginden). z: 3B'de model yuksekligi (+-h/2, kurucu ile ayni
-   varsayim), 2B'de sinirsiz (+-SONSUZ_Z). Altigen kafes ve demetler arasi
-   bosluklu kor (BEAVRS: demet adimi != pin sayisi x pin adimi) pin duzeyinde
-   desteklenmez -- RegularMesh hizalanamaz; acik hatayla reddedilir.
+   kendiliginden). z: "model" (3B'de +-h/2, eksenel yansitici DAHIL; 2B'de
+   sinirsiz) ya da "aktif" (yalniz fisil eksenel aralik; kapsama < 1 olur).
+   Altigen kafes, donusumlu kafes ve demetler arasi bosluklu kor (BEAVRS)
+   pin duzeyinde desteklenmez -- acik hatayla reddedilir.
 
  BELIRSIZLIK (birinci derece, KORELASYON YOK SAYILIR -- etiketlenir)
    (s_k/k)^2 = (s_P/P)^2 + (s_D/D)^2 ;  s_D^2 = s_A^2 + sum (x-1)^2 s_x^2.
-   Ayni bindeki P ile A pozitif korelelidir (ikisi de ayni akiya bagli); bunu
-   yok saymak oranin sigmasini BUYUK tahmin eder (ihtiyatli). Ote yandan bin
-   sigmalari cevrimler arasi korelasyonu gormez (cekirdek/guc.py notu):
-   tek kosunun sigmasi bir alt sinirdir. Gercek belirsizlik coklu tohumla.
+   Ayni bindeki P ile A pozitif korelelidir; bunu yok saymak oranin sigmasini
+   BUYUK tahmin eder (ihtiyatli). Harita ortalamasinin sigmasi kapsama 1 iken
+   filtresiz tally'den alinir (binler arasi korelasyonu da icerir); degilse
+   bin sigmalarinin karesel toplamidir (binler arasi korelasyon da yok
+   sayilir). Bin sigmalari cevrimler arasi korelasyonu gormez (iyimser).
 ================================================================================
 """
 
 from __future__ import annotations
 
-import copy
 import csv
 import io
 import math
+import os
 import sys
 from dataclasses import dataclass
-from typing import Any, Mapping, Optional, Sequence, Tuple
+from typing import Any, Dict, List, Mapping, Optional, Sequence, Tuple
 
 from cekirdek import sema
 from cekirdek.ceviri import _
 from cekirdek.gunluk import kaydedici
+from cekirdek.spektrum import XN_SKORLARI as _XN
 
 _log = kaydedici(__name__)
 
 DUZEYLER = ("pin", "demet")
+Z_KAPSAMLARI = ("model", "aktif")
 TALLY_ADLARI = {"pin": "yerel_k_pin", "demet": "yerel_k_demet"}
 TOPLAM_TALLY = "yerel_k_toplam"
-# 2B modelde eksenel sinir yok: mesh z'de "sonsuz" (entropi mesh'inin eski
-# 2B degeriyle ayni buyukluk; tracklength icin tek bin).
+URETICI = "yerel_k"               # tally sozlugundeki isaret: bu modul uretti
+# 2B modelde eksenel sinir yok: mesh z'de "sonsuz" (tracklength icin tek bin).
 SONSUZ_Z = 1.0e10
 _ADIM_TOL = 1e-6                   # bagil; demet adimi = n x pin adimi denetimi
+_KAPSAMA_TOL = 1e-9                # kapsama 1 sayilir (harita = model)
+_CSV_FORMUL = ("=", "+", "-", "@", "\t", "\r")   # elektronik tablo formul oneki
 
-# (spec skoru, DataFrame'deki adi, net ek notron x-1). Adi dogrula.referans
-# BILINEN_SKORLAR'da olmayan kanallar MT numarasiyla yazilir (OpenMC kabul
-# eder, DataFrame'de tepki adiyla doner; test: openmc.data.REACTION_NAME).
-XN_SKORLARI = (("(n,2n)", "(n,2n)", 1), ("(n,3n)", "(n,3n)", 2), ("(n,4n)", "(n,4n)", 3),
-               ("11", "(n,2nd)", 1), ("24", "(n,2na)", 1), ("25", "(n,3na)", 2),
-               ("30", "(n,2n2a)", 1), ("41", "(n,2np)", 1), ("42", "(n,3np)", 2))
+
+def _spec_skoru(ad: str) -> str:
+    """dogrula.referans'ta bilinmeyen tepki adi MT numarasiyla yazilir (OpenMC
+    kabul eder, DataFrame'de tepki adiyla doner)."""
+    from cekirdek.dogrula.referans import BILINEN_SKORLAR
+    if ad in BILINEN_SKORLAR:
+        return ad
+    import openmc.data
+    return str(openmc.data.REACTION_MT[ad])
+
+
+# (spec skoru, DataFrame'deki adi, net ek notron x-1) -- spektrum ile ayni kanallar
+XN_SKORLARI = tuple((_spec_skoru(ad), ad, fazla) for ad, fazla in _XN)
 SKORLAR = ("nu-fission", "absorption") + tuple(s for s, _a, _x in XN_SKORLARI)
 
 Deger = Tuple[float, float]        # (ortalama, 1 sigma)
@@ -119,6 +137,13 @@ class YerelK:
 
 
 @dataclass(frozen=True)
+class Denge:
+    """Statepoint'in global notron dengesi (kaynak notronu basina)."""
+    k_izyolu: Deger                     # global k-tracklength
+    sizinti: Deger                      # global leakage
+
+
+@dataclass(frozen=True)
 class YerelKSonucu:
     duzey: str
     boyut: Tuple[int, int]
@@ -126,9 +151,20 @@ class YerelKSonucu:
     hucreler: Tuple[YerelK, ...]
     ortalama: Deger                     # sum P / sum D (net yok olma agirlikli)
     c_xn: float                         # sum A / sum D (harita)
-    model_toplami: Optional[Deger] = None
-    kapsama: Optional[float] = None     # sum_harita D / D_model
-    keff: Optional[Deger] = None        # kosunun k-eff'i (karsilastirma icin)
+    model_toplami: Optional[Deger] = None     # P_model / D_model
+    kapsama: Optional[float] = None           # sum_harita D / D_model
+    keff: Optional[Deger] = None              # kosunun birlesik k-eff'i
+    model_uretim: Optional[Deger] = None      # P_model
+    model_yok_olma: Optional[Deger] = None    # D_model
+    denge: Optional[Denge] = None
+
+    @property
+    def sizintili_k(self) -> Optional[float]:
+        """P_model / (D_model + L) -- kritiklik denetimi (k-eff ile karsilastirilir)."""
+        if not (self.denge and self.model_uretim and self.model_yok_olma):
+            return None
+        payda = self.model_yok_olma[0] + self.denge.sizinti[0]
+        return self.model_uretim[0] / payda if payda > 0 else None
 
 
 # ============================================================================
@@ -136,10 +172,16 @@ class YerelKSonucu:
 # ============================================================================
 
 def _ic_dugum(kok: Mapping[str, Any]) -> Optional[Mapping[str, Any]]:
-    """Kok kabin icerigi; eksenel katmanlama aktif katmanin icerigine acilir."""
+    """Kok kabin icerigi; eksenel katmanlama aktif katmanin icerigine acilir.
+    Donusumlu (otelenmis/dondurulmus) icerik hizalanamaz: hata."""
     dugum = kok.get("ic")
     while isinstance(dugum, dict) and dugum.get("tur") == "eksenel":
+        if dugum.get("donusum"):
+            break
         dugum = dugum.get("icerik")
+    if isinstance(dugum, dict) and dugum.get("donusum"):
+        raise YerelKHatasi(_("kafes ötelenmiş ya da döndürülmüş: yerel k mesh'i "
+                             "hizalanamaz"))
     return dugum if isinstance(dugum, dict) else None
 
 
@@ -153,7 +195,14 @@ def _kare_demet(spec: Mapping[str, Any], ad: str) -> dict:
     return d
 
 
-def _z_siniri(spec: Mapping[str, Any]) -> Tuple[float, float]:
+def _z_siniri(spec: Mapping[str, Any], z_kapsam: str) -> Tuple[float, float]:
+    if z_kapsam not in Z_KAPSAMLARI:
+        raise YerelKHatasi(_("bilinmeyen eksenel kapsam: %s") % z_kapsam)
+    if z_kapsam == "aktif":
+        from cekirdek import geometri
+        aralik = geometri.aktif_aralik(spec)
+        if aralik:
+            return float(aralik[0]), float(aralik[1])
     h = sema.model_yuksekligi(spec)
     return (-h / 2.0, h / 2.0) if h else (-SONSUZ_Z, SONSUZ_Z)
 
@@ -183,11 +232,18 @@ def _bilesen_duzeni(spec: Mapping[str, Any], dugum: Mapping[str, Any], kok: Mapp
 
 def _kor_pin_adimi(spec: Mapping[str, Any], kafes: Mapping[str, Any]
                    ) -> Tuple[Sequence[int], float]:
-    """Kor kafesindeki demetlerin ortak (boyut, pin adimi); hizalanamazsa hata."""
-    demetler = {v.get("ad") for v in (kafes.get("anahtar") or {}).values()
-                if isinstance(v, dict) and v.get("tur") == "bilesen"}
+    """Kor kafesindeki demetlerin ortak (boyut, pin adimi); hizalanamazsa hata.
+    Demet disi hucreler (su, yansitici) mesh'te ayni hatveyle kalir."""
+    bilesenler = {v.get("ad") for v in (kafes.get("anahtar") or {}).values()
+                  if isinstance(v, dict) and v.get("tur") == "bilesen"}
+    demetler = {ad for ad in bilesenler if sema.demet_bul(spec, ad) is not None}
     if not demetler:
-        raise YerelKHatasi(_("kor kafesinde demet yok: pin düzeyi kurulamaz"))
+        raise YerelKHatasi(_("kor kafesinde demet yok (%s): pin düzeyi kurulamaz; demet "
+                             "düzeyini kullanın") % (", ".join(sorted(bilesenler)) or "—"))
+    if bilesenler - demetler:
+        raise YerelKHatasi(_("kor kafesinde demet olmayan parça var (%s): pin düzeyi tek "
+                             "mesh'e hizalanamaz; demet düzeyini kullanın")
+                           % ", ".join(sorted(bilesenler - demetler)))
     olculer = set()
     for ad in sorted(demetler):
         d = _kare_demet(spec, ad)
@@ -205,10 +261,7 @@ def _kor_pin_adimi(spec: Mapping[str, Any], kafes: Mapping[str, Any]
     return n, p
 
 
-def kafes_duzeni(spec: Mapping[str, Any], duzey: str) -> KafesDuzeni:
-    """Spec'in kare kafesine hizali mesh duzeni. Desteklenmeyen durumda YerelKHatasi."""
-    if duzey not in DUZEYLER:
-        raise YerelKHatasi(_("bilinmeyen yerel k düzeyi: %s") % duzey)
+def _kafes_duzeni(spec: Mapping[str, Any], duzey: str, z_kapsam: str) -> KafesDuzeni:
     from cekirdek import geometri
     kok = geometri.model(spec).kok
     sekil = (kok.get("kesit") or {}).get("sekil")
@@ -218,7 +271,7 @@ def kafes_duzeni(spec: Mapping[str, Any], duzey: str) -> KafesDuzeni:
     if sekil not in ("dikdortgen", None):
         raise YerelKHatasi(_("yerel k haritası yalnız kare kafeste kurulabilir"))
     dugum = _ic_dugum(kok)
-    z = _z_siniri(spec)
+    z = _z_siniri(spec, z_kapsam)
     tur = (dugum or {}).get("tur")
     if tur == "bilesen":
         return _bilesen_duzeni(spec, dugum, kok, duzey, z)
@@ -233,39 +286,77 @@ def kafes_duzeni(spec: Mapping[str, Any], duzey: str) -> KafesDuzeni:
                          "haritası kare kafesli modellerde kurulur") % (tur or "?"))
 
 
+def kafes_duzeni(spec: Mapping[str, Any], duzey: str, z_kapsam: str = "model") -> KafesDuzeni:
+    """Spec'in kare kafesine hizali mesh duzeni. Desteklenmeyen durumda YerelKHatasi."""
+    if duzey not in DUZEYLER:
+        raise YerelKHatasi(_("bilinmeyen yerel k düzeyi: %s") % duzey)
+    try:
+        return _kafes_duzeni(spec, duzey, z_kapsam)
+    except YerelKHatasi:
+        raise
+    except (KeyError, TypeError, IndexError, ValueError) as e:
+        _log.warning("yerel k kafes düzeni kurulamadı", exc_info=True)
+        raise YerelKHatasi(_("modelin kafes tanımı okunamadı: %s") % e) from e
+
+
 # ============================================================================
 # 2. TALLY TANIMI (spec kullanici tally'si)
 # ============================================================================
 
-def tally_tanimi(spec: Mapping[str, Any], duzey: str) -> dict:
+def tally_tanimi(spec: Mapping[str, Any], duzey: str, z_kapsam: str = "model") -> dict:
     """Yerel k mesh tally'sinin spec tanimi (yeni sozluk)."""
-    d = kafes_duzeni(spec, duzey)
+    d = kafes_duzeni(spec, duzey, z_kapsam)
     return {"ad": TALLY_ADLARI[duzey], "skorlar": list(SKORLAR), "nuklidler": [],
+            "uretici": URETICI,
             "filtreler": [{"tur": "mesh", "boyut": [d.boyut[0], d.boyut[1], 1],
                            "otomatik": False, "alt": list(d.alt), "ust": list(d.ust)}]}
 
 
 def _toplam_tanimi() -> dict:
-    return {"ad": TOPLAM_TALLY, "skorlar": list(SKORLAR), "nuklidler": [], "filtreler": []}
+    return {"ad": TOPLAM_TALLY, "skorlar": list(SKORLAR), "nuklidler": [], "filtreler": [],
+            "uretici": URETICI}
 
 
-def tally_ekle(spec: Mapping[str, Any], duzey: str) -> dict:
-    """Yerel k tally'si (+ model toplami) eklenmis YENI spec; ayni adli eskisi
-    degistirilir. Girdi degismez."""
-    tanim = tally_tanimi(spec, duzey)
-    yeni = copy.deepcopy(dict(spec))
-    kalan = [t for t in yeni.get("tallyler") or []
-             if t.get("ad") not in (tanim["ad"], TOPLAM_TALLY)]
-    yeni["tallyler"] = kalan + [tanim, _toplam_tanimi()]
-    return yeni
+def tally_ekle(spec: Mapping[str, Any], duzey: str, z_kapsam: str = "model") -> dict:
+    """Yerel k tally'si (+ model toplami) eklenmis YENI spec (yalniz 'tallyler'
+    yeni liste; girdi degismez). Bu modulun urettigi ayni adli tally yerinde
+    degistirilir; ayni adli KULLANICI tally'si varsa YerelKHatasi."""
+    tanimlar = [tally_tanimi(spec, duzey, z_kapsam), _toplam_tanimi()]
+    eski = list(spec.get("tallyler") or [])
+    yeni_liste = []
+    for t in eski:
+        es = next((y for y in tanimlar if y["ad"] == t.get("ad")), None)
+        if es is None:
+            yeni_liste.append(t)
+            continue
+        if t.get("uretici") != URETICI:
+            raise YerelKHatasi(_("'%s' adlı bir kullanıcı tally'si zaten var; yeniden "
+                                 "adlandırın ya da silin") % t.get("ad"))
+        yeni_liste.append(es)
+        tanimlar.remove(es)
+    return dict(spec, tallyler=yeni_liste + tanimlar)
 
 
 def tally_kaldir(spec: Mapping[str, Any]) -> dict:
-    """Butun yerel k tally'leri cikarilmis YENI spec."""
-    adlar = set(TALLY_ADLARI.values()) | {TOPLAM_TALLY}
-    yeni = copy.deepcopy(dict(spec))
-    yeni["tallyler"] = [t for t in yeni.get("tallyler") or [] if t.get("ad") not in adlar]
-    return yeni
+    """Bu modulun ekledigi tally'ler cikarilmis YENI spec."""
+    return dict(spec, tallyler=[t for t in spec.get("tallyler") or []
+                                if t.get("uretici") != URETICI])
+
+
+def tally_duzeni(spec: Mapping[str, Any], duzey: str) -> Optional[KafesDuzeni]:
+    """Spec'te KAYITLI yerel k tally'sinin mesh duzeni (kosudaki mesh); yoksa None."""
+    t = next((t for t in spec.get("tallyler") or [] if t.get("ad") == TALLY_ADLARI[duzey]),
+             None)
+    if t is None:
+        return None
+    try:
+        f = next(f for f in t.get("filtreler") or [] if f.get("tur") == "mesh")
+        nx, ny = int(f["boyut"][0]), int(f["boyut"][1])
+        alt, ust = [float(v) for v in f["alt"]], [float(v) for v in f["ust"]]
+    except (StopIteration, KeyError, TypeError, IndexError, ValueError) as e:
+        raise YerelKHatasi(_("'%s' tally'sinin mesh tanımı okunamadı") % t.get("ad")) from e
+    adim = ((ust[0] - alt[0]) / nx, (ust[1] - alt[1]) / ny)
+    return KafesDuzeni(duzey, (nx, ny), adim, tuple(alt), tuple(ust))
 
 
 # ============================================================================
@@ -303,16 +394,20 @@ def _toplamlar(skorlar: Mapping[str, Deger]) -> Tuple[Deger, Deger, Deger]:
 
 
 def _oran(P: Deger, D: Deger) -> Deger:
-    if D[0] <= 0.0 or P[0] <= 0.0:
-        return (0.0 if D[0] > 0.0 else math.nan, 0.0)
+    """k = P/D ve korelasyonsuz sigma. D <= 0: tanimsiz (NaN). P <= 0: k = 0,
+    sigma = s_P / D (payin belirsizligi)."""
+    if D[0] <= 0.0:
+        return math.nan, math.nan
+    if P[0] <= 0.0:
+        return 0.0, P[1] / D[0]
     k = P[0] / D[0]
     return k, k * math.hypot(P[1] / P[0], D[1] / D[0])
 
 
-def _bin_skorlari(df: Any) -> dict:
+def _bin_skorlari(df: Any) -> Dict[Tuple[int, int], Dict[str, Deger]]:
     xs, ys = _mesh_sutunlari(df)
     skor, ort, sap = _sutun(df, "score"), _sutun(df, "mean"), _sutun(df, "std. dev.")
-    binler: dict = {}
+    binler: Dict[Tuple[int, int], Dict[str, Deger]] = {}
     for x, y, s, o, d in zip(xs, ys, skor, ort, sap):
         b = binler.setdefault((int(x) - 1, int(y) - 1), {})
         eski = b.get(s, (0.0, 0.0))                      # z dilimleri toplanir
@@ -320,49 +415,78 @@ def _bin_skorlari(df: Any) -> dict:
     return binler
 
 
-def _duz_skorlar(df: Any) -> dict:
-    sk = {}
+def _duz_skorlar(df: Any) -> Dict[str, Deger]:
+    sk: Dict[str, Deger] = {}
     for s, o, d in zip(_sutun(df, "score"), _sutun(df, "mean"), _sutun(df, "std. dev.")):
         eski = sk.get(s, (0.0, 0.0))
         sk[s] = (eski[0] + float(o), math.hypot(eski[1], float(d)))
     return sk
 
 
-def _hucre(konum: Tuple[int, int], skorlar: Mapping[str, Deger]) -> YerelK:
-    P, A, D = _toplamlar(skorlar)
+def _hucre(konum: Tuple[int, int], P: Deger, A: Deger, D: Deger) -> YerelK:
     k, s = _oran(P, D)
-    return YerelK(konum, k, s, P[0] / A[0] if A[0] > 0 else math.nan, P, D, P[0] > 0.0)
+    fisil = P[0] > 0.0 and D[0] > 0.0 and math.isfinite(k)
+    return YerelK(konum, k, s, P[0] / A[0] if A[0] > 0 else math.nan, P, D, fisil)
 
 
 def _topla(degerler: Sequence[Deger]) -> Deger:
     return (sum(d[0] for d in degerler), math.sqrt(sum(d[1] ** 2 for d in degerler)))
 
 
+def _binleri_denetle(binler: Mapping[Tuple[int, int], Any], boyut: Sequence[int]) -> None:
+    nx, ny = int(boyut[0]), int(boyut[1])
+    if len(binler) != nx * ny or any(not (0 <= x < nx and 0 <= y < ny) for x, y in binler):
+        raise YerelKHatasi(_("yerel k tally'si %d×%d mesh'le uyuşmuyor (%d bin); model "
+                             "koşudan sonra değişmiş olabilir — yeniden koşun")
+                           % (nx, ny, len(binler)))
+
+
 def hesapla(df: Any, duzey: str, boyut: Sequence[int], adim: Sequence[float],
-            toplam_df: Any = None, keff: Optional[Deger] = None) -> YerelKSonucu:
+            toplam_df: Any = None, keff: Optional[Deger] = None,
+            denge: Optional[Denge] = None) -> YerelKSonucu:
     """Mesh tally DataFrame'inden (OpenMC bicimi) yerel k sonucu."""
     binler = _bin_skorlari(df)
-    hucreler = tuple(_hucre(k, binler[k]) for k in sorted(binler, key=lambda a: (a[1], a[0])))
-    P = _topla([h.uretim for h in hucreler])
-    D = _topla([h.yok_olma for h in hucreler])
-    A = sum(_toplamlar(binler[h.konum])[1][0] for h in hucreler)
-    model, kapsama = None, None
+    _binleri_denetle(binler, boyut)
+    sirali = sorted(binler, key=lambda a: (a[1], a[0]))
+    uclu = {k: _toplamlar(binler[k]) for k in sirali}
+    hucreler = tuple(_hucre(k, *uclu[k]) for k in sirali)
+    P = _topla([uclu[k][0] for k in sirali])
+    D = _topla([uclu[k][2] for k in sirali])
+    A = sum(uclu[k][1][0] for k in sirali)
+    ortalama = _oran(P, D)
+    model, kapsama, Pm, Dm = None, None, None, None
     if toplam_df is not None:
         Pm, _Am, Dm = _toplamlar(_duz_skorlar(toplam_df))
         model = _oran(Pm, Dm)
         kapsama = D[0] / Dm[0] if Dm[0] > 0 else None
+        if kapsama is not None and abs(kapsama - 1.0) < _KAPSAMA_TOL:
+            ortalama = (ortalama[0], model[1])      # binler arasi korelasyon dahil
     return YerelKSonucu(duzey, (int(boyut[0]), int(boyut[1])), (float(adim[0]), float(adim[1])),
-                        hucreler, _oran(P, D), A / D[0] if D[0] > 0 else math.nan,
-                        model, kapsama, tuple(keff) if keff else None)
+                        hucreler, ortalama, A / D[0] if D[0] > 0 else math.nan,
+                        model, kapsama, tuple(keff) if keff else None, Pm, Dm, denge)
 
 
-def sonuctan(sonuc: Mapping[str, Any], spec: Mapping[str, Any]) -> list:
+def denge_oku(statepoint_yolu: str) -> Denge:
+    """Global k-tracklength ve sizinti (statepoint'in global tally'leri)."""
+    import openmc
+    with openmc.StatePoint(statepoint_yolu) as sp:
+        g = {(r["name"].decode() if isinstance(r["name"], bytes) else str(r["name"])):
+             (float(r["mean"]), float(r["std_dev"])) for r in sp.global_tallies}
+    if "k-tracklength" not in g or "leakage" not in g:
+        raise YerelKHatasi(_("statepoint'te global k-tracklength/leakage yok"))
+    return Denge(g["k-tracklength"], g["leakage"])
+
+
+def sonuctan(sonuc: Mapping[str, Any], spec: Mapping[str, Any],
+             denge: Optional[Denge] = None) -> List[YerelKSonucu]:
     """kosucu.sonuc_oku ciktisindaki yerel k tally'leri -> [YerelKSonucu]
-    (duzey sirasiyla; yoksa bos liste). Okunamayan tally YerelKHatasi."""
+    (duzey sirasiyla; yoksa bos liste). Mesh olcusu spec'te KAYITLI tally
+    tanimindan okunur (kosudaki mesh). Okunamayan tally YerelKHatasi."""
     taller = (sonuc or {}).get("tallyler") or {}
     toplam = taller.get(TOPLAM_TALLY)
     if isinstance(toplam, str):
-        toplam = None                    # okunamadi: kapsama verilmez (loga yazildi)
+        _log.warning("yerel k model toplamı okunamadı: %s", toplam)
+        toplam = None
     cikti = []
     for duzey in DUZEYLER:
         df = taller.get(TALLY_ADLARI[duzey])
@@ -370,10 +494,19 @@ def sonuctan(sonuc: Mapping[str, Any], spec: Mapping[str, Any]) -> list:
             continue
         if isinstance(df, str):
             raise YerelKHatasi(df)
-        d = kafes_duzeni(spec, duzey)
+        d = tally_duzeni(spec, duzey)
+        if d is None:
+            raise YerelKHatasi(_("modelde '%s' tally tanımı yok; koşunun modeliyle açın")
+                               % TALLY_ADLARI[duzey])
         cikti.append(hesapla(df, duzey, d.boyut, d.adim, toplam_df=toplam,
-                             keff=(sonuc or {}).get("keff")))
+                             keff=(sonuc or {}).get("keff"), denge=denge))
     return cikti
+
+
+def _hucre_metni(deger: Any) -> str:
+    """CSV hucresi: formul onekiyle baslayan metin tirnakla etkisizlestirilir."""
+    metin = str(deger)
+    return "'" + metin if metin.startswith(_CSV_FORMUL) else metin
 
 
 def csv_metni(s: YerelKSonucu) -> str:
@@ -391,30 +524,50 @@ def csv_metni(s: YerelKSonucu) -> str:
 
 # ============================================================================
 # 4. TERMINAL
-#   python -m cekirdek.yerel_k ekle model.json pin|demet -o yeni.json
+#   python -m cekirdek.yerel_k ekle model.json pin|demet -o yeni.json [--z aktif]
 #   python -m cekirdek.yerel_k oku statepoint.h5 model.json [--csv yol]
 # ============================================================================
 
-def _ozet_satiri(s: YerelKSonucu) -> str:
+def ozet_satiri(s: YerelKSonucu) -> str:
+    """Tek satir ozet (terminal ve gunluk)."""
     parca = ["%s: %s = %.5f +- %.5f" % (s.duzey, _("ortalama k"), *s.ortalama),
              "c_xn = %.5f" % s.c_xn]
     if s.keff:
         parca.append("k-eff = %.5f +- %.5f" % tuple(s.keff))
     if s.kapsama is not None:
         parca.append("%s = %.4f" % (_("kapsam"), s.kapsama))
+    if s.denge:
+        parca.append("k-tracklength = %.5f, L = %.5f" % (s.denge.k_izyolu[0],
+                                                       s.denge.sizinti[0]))
+    if s.sizintili_k is not None:
+        parca.append("P/(D+L) = %.5f" % s.sizintili_k)
     return " | ".join(parca)
+
+
+def _csv_yolu(taban: str, duzey: str, cok: bool) -> str:
+    if not cok:
+        return taban
+    kok, uzanti = os.path.splitext(taban)
+    return "%s_%s%s" % (kok, duzey, uzanti or ".csv")
 
 
 def _oku(sp: str, model: str, csv_yolu: Optional[str]) -> None:
     from cekirdek import kosucu
-    sonuclar = sonuctan(kosucu.sonuc_oku(sp), sema.yukle(model))
+    sonuclar = sonuctan(kosucu.sonuc_oku(sp), sema.yukle(model), denge=denge_oku(sp))
     if not sonuclar:
         raise YerelKHatasi(_("bu koşuda yerel k tally'si yok"))
     for s in sonuclar:
-        sys.stdout.write(_ozet_satiri(s) + "\n")
-    if csv_yolu:
-        with open(csv_yolu, "w", encoding="utf-8", newline="") as f:
-            f.write(csv_metni(sonuclar[0]))
+        sys.stdout.write(ozet_satiri(s) + "\n")
+        if csv_yolu:
+            with open(_csv_yolu(csv_yolu, s.duzey, len(sonuclar) > 1), "w",
+                      encoding="utf-8", newline="") as f:
+                f.write(csv_metni(s))
+
+
+def _ekle(model: str, duzey: str, cikti: str, z_kapsam: str) -> None:
+    if os.path.abspath(model) == os.path.abspath(cikti):
+        raise YerelKHatasi(_("çıktı dosyası girdiyle aynı olamaz: %s") % cikti)
+    sema.kaydet(tally_ekle(sema.yukle(model), duzey, z_kapsam), cikti)
 
 
 def terminal(argv: Sequence[str]) -> int:
@@ -426,6 +579,7 @@ def terminal(argv: Sequence[str]) -> int:
     e.add_argument("model")
     e.add_argument("duzey", choices=DUZEYLER)
     e.add_argument("-o", "--cikti", required=True)
+    e.add_argument("--z", choices=Z_KAPSAMLARI, default="model")
     o = alt.add_parser("oku")
     o.add_argument("statepoint")
     o.add_argument("model")
@@ -433,7 +587,7 @@ def terminal(argv: Sequence[str]) -> int:
     a = ap.parse_args(list(argv))
     try:
         if a.komut == "ekle":
-            sema.kaydet(tally_ekle(sema.yukle(a.model), a.duzey), a.cikti)
+            _ekle(a.model, a.duzey, a.cikti, a.z)
         else:
             _oku(a.statepoint, a.model, a.csv)
     except (ValueError, OSError) as h:          # YerelKHatasi, GocHatasi dahil
