@@ -204,8 +204,10 @@ memory use and run time grow (measurements: [4.9 Depletion](04i-tukenme.md#tuken
 | `OPENMC_CROSS_SECTIONS` | OpenMC, model check | Path of `cross_sections.xml`. If missing, the model check reports an error and the run does not start. `./veri_indir.sh --bashrc` sets it. |
 | `OPENMC_CHAIN_FILE` | only the exported script and OpenMC tools | Depletion chain. The application selects the chain for every model itself and does not rely on this variable. |
 | `OPENMC_ARAYUZ_DIL` | user interface, core messages | `tr` or `en`. Takes precedence over the saved setting and the system language. |
-| `OPENMC_ARAYUZ_KILAVUZ` | in-app user guide | Directory of the guide sources (default `docs/kilavuz` in the repository). |
-| `OPENMC_ARAYUZ_LOCALE` | translation catalog | The `locale` directory (default `locale` in the repository). |
+| `OPENMC_ARAYUZ_OPENMC` | runner | ABSOLUTE path of the `openmc` executable (`~` is expanded). A relative or non-executable path is ignored with a warning. Search order: this variable → `bin/openmc` next to the Python running the application (same environment) → only the absolute entries of `PATH` (empty, `.` and relative entries are skipped) → `$CONDA_PREFIX/bin`. |
+| `OPENMC_ARAYUZ_VERI` | examples, translations, guide | Data root: the directory containing `ornekler/`, `locale/` and `docs/kilavuz/` (`ornekler/pwr_pinhucre.json` must exist). Default: the source tree or `share/openmc-arayuz` of the installation. Ignored with a warning if invalid. |
+| `OPENMC_ARAYUZ_KILAVUZ` | in-app user guide | Directory of the guide sources (default `docs/kilavuz` in the data root). `~` and relative paths are expanded; ignored with a warning if the directory does not exist. |
+| `OPENMC_ARAYUZ_LOCALE` | translation catalog | The `locale` directory (default `locale` in the data root). `~` and relative paths are expanded; ignored with a warning if the directory does not exist. |
 | `OMP_NUM_THREADS` | OpenMP | General number of threads (depletion sets it from `-s`). |
 | `XDG_STATE_HOME` | application log | Base of the log directory (default `~/.local/state`). |
 | `QT_QPA_PLATFORM` | Qt | `offscreen`: Qt without a graphical session (screenshot scripts, tests). |

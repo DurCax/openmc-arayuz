@@ -200,8 +200,10 @@ ve süre artar (ölçümler: [4.9 Tükenme](04i-tukenme.md#tukenme)).
 | `OPENMC_CROSS_SECTIONS` | OpenMC, doğrulama | `cross_sections.xml` yolu. Yoksa doğrulama hata verir ve koşu başlamaz. `./veri_indir.sh --bashrc` ayarlar. |
 | `OPENMC_CHAIN_FILE` | yalnız dışa aktarılan betik ve OpenMC araçları | Tükenme zinciri. Uygulama zinciri her model için kendisi seçer, bu değişkene güvenmez. |
 | `OPENMC_ARAYUZ_DIL` | arayüz, çekirdek mesajları | `tr` ya da `en`. Kayıtlı ayarın ve sistem dilinin önüne geçer. |
-| `OPENMC_ARAYUZ_KILAVUZ` | uygulama içi kılavuz | Kılavuz kaynaklarının dizini (varsayılan depo içindeki `docs/kilavuz`). |
-| `OPENMC_ARAYUZ_LOCALE` | çeviri kataloğu | `locale` dizini (varsayılan depo içindeki `locale`). |
+| `OPENMC_ARAYUZ_OPENMC` | koşucu | `openmc` çalıştırılabilir dosyasının MUTLAK yolu (`~` açılır). Göreli ya da çalıştırılamayan yol uyarıyla yok sayılır. Arama sırası: bu değişken → uygulamayı çalıştıran Python'un yanındaki `bin/openmc` (aynı ortam) → `PATH`'in yalnız mutlak öğeleri (boş, `.` ve göreli öğeler atlanır) → `$CONDA_PREFIX/bin`. |
+| `OPENMC_ARAYUZ_VERI` | örnekler, çeviri, kılavuz | Veri kökü: `ornekler/`, `locale/`, `docs/kilavuz/` dizinlerini içeren dizin (`ornekler/pwr_pinhucre.json` bulunmalı). Varsayılan: kaynak ağacı ya da kurulumdaki `share/openmc-arayuz`. Geçersizse uyarıyla yok sayılır. |
+| `OPENMC_ARAYUZ_KILAVUZ` | uygulama içi kılavuz | Kılavuz kaynaklarının dizini (varsayılan veri kökündeki `docs/kilavuz`). `~` ve göreli yol açılır; dizin yoksa uyarıyla yok sayılır. |
+| `OPENMC_ARAYUZ_LOCALE` | çeviri kataloğu | `locale` dizini (varsayılan veri kökündeki `locale`). `~` ve göreli yol açılır; dizin yoksa uyarıyla yok sayılır. |
 | `OMP_NUM_THREADS` | OpenMP | Genel iş parçacığı sayısı (tükenme `-s` ile bunu ayarlar). |
 | `XDG_STATE_HOME` | uygulama logu | Log dizininin tabanı (varsayılan `~/.local/state`). |
 | `QT_QPA_PLATFORM` | Qt | `offscreen`: grafik oturum olmadan Qt (ekran görüntüsü betikleri, testler). |

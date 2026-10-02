@@ -9,9 +9,10 @@
 #  Paket yalniz izin verilen kisilere dagitilir (LICENSE): ozel bir kanala ya
 #  da dosya olarak; anaconda.org'un acik kanalina YUKLENMEZ.
 #
-#  Neden pip wheel degil: uygulama ikonlari, yazi tiplerini, ceviri katalogunu
-#  (locale/), ornekleri ve belgeleri kaynak agacina gore bulur. build.sh agaci
-#  $PREFIX/share/openmc-arayuz'a kopyalar ve site-packages'a bir .pth koyar.
+#  Duzen: build.sh agaci $PREFIX/share/openmc-arayuz'a kopyalar ve site-packages'a
+#  bir .pth koyar. cekirdek/yollar.py veri kokunu (ornekler/, locale/, kilavuz)
+#  bu dizinde bulur; pip wheel'i de (pyproject data-files) AYNI share/openmc-arayuz
+#  duzenini kurar, yani iki yol da desteklenir.
 # =============================================================================
 {% set proje = load_file_data("pyproject.toml", from_recipe_dir=True, recipe_dir=RECIPE_DIR ~ "/..")["project"] %}
 

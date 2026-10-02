@@ -15,8 +15,9 @@ açıklama görünür.
 
 ![Tükenme sekmesi: yanma ayarları, izlenen nüklidler ve sonuç grafiği](../resimler/tr/tukenme.png)
 
-Koşu, arayüzün kendi sürecinde değil `python -m cekirdek.tukenme` **alt süreci** olarak
-yapılır (OpenMC C++ tarafında bir `terminate()` bütün süreci öldürebilir; önizlemede
+Koşu, arayüzün kendi sürecinde değil `openmc-arayuz-kosu --alt tukenme` **alt süreci**
+olarak yapılır (arayüz bunu aynı Python ile `python -m cekirdek.giris --alt tukenme` diye
+başlatır; OpenMC C++ tarafında bir `terminate()` bütün süreci öldürebilir; önizlemede
 yaşandı). Terminalden aynısı: `python3 -m cekirdek.tukenme ornekler/pwr_tukenme.json -s 16`
 ([8. Terminal](08-terminal.md#terminal)).
 
