@@ -410,7 +410,7 @@ def _isle(statepoint: str, spec: Mapping, dizin: str) -> MgxsSonuc:
     negatif = negatif_kosegen(lib)
     if negatif:
         notlar = notlar + (_("%d bölge/grup için saçılma köşegeni negatif (P0 düzeltmesi): "
-                             "MG Monte Carlo bunu doğru örnekleyemez, random ray "
+                             "MG Monte Carlo bunu doğru işleyemez, random ray "
                              "köşegen kararlılaştırması uygular") % negatif,)
     satirlar = tuple(_satirlar(lib, adlar))
     sonuc = MgxsSonuc(a, tuple(float(e) for e in lib.energy_groups.group_edges), adlar,

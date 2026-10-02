@@ -43,6 +43,14 @@ EN_COK_CEVRIM = 100000
 EN_COK_MESAFE = 1.0e5         # cm
 
 
+_Y8 = "y8"                    # kuyruk isi etiketi: ce | mg | rr (cekirdek/mgxs_is.py)
+
+
+def _tur_adi(tur: Optional[str]) -> str:
+    ad = mgxs_is.TURLER.get(tur or "", tur or "")
+    return _(ad)
+
+
 class MgxsKarti(bil.Kart):
 
     def __init__(self, parent: Optional[QtWidgets.QWidget] = None) -> None:
@@ -75,8 +83,9 @@ class MgxsKarti(bil.Kart):
             "Malzeme: her malzeme bir bölge. Hücre: her malzemeli hücre bir bölge.\n"
             "Demet: modelin tamamı tek bölge (yansıtıcı sınırlı modelde sonsuz kafes sabitleri)."))
         self.grup = QtWidgets.QComboBox()
+        from openmc.mgxs import GROUP_STRUCTURES
         for g in mgxs_uret.GRUP_YAPILARI:
-            self.grup.addItem(g, g)
+            self.grup.addItem(_("%s (%d grup)") % (g, len(GROUP_STRUCTURES[g]) - 1), g)
         self.grup.setToolTip(_(
             "Homojenleştirme için 2–8 grup; MG ile yeniden koşu için ince yapı (CASMO-70, "
             "XMAS-172) grup yoğunlaştırma hatasını küçültür."))
@@ -86,7 +95,7 @@ class MgxsKarti(bil.Kart):
         self.duzeltme.setToolTip(_(
             "P0: Σtr = Σt − Σs1 ve saçılma köşegeni Σs1 kadar azalır; sonsuz ortam k∞'u "
             "değişmez, sızıntı (D = 1/3Σtr) değişir.\nİnce grupta köşegen negatif olabilir: "
-            "MG Monte Carlo bunu doğru örnekleyemez (random ray kararlılaştırır)."))
+            "MG Monte Carlo bunu doğru işleyemez (random ray kararlılaştırır)."))
         self.turler = QtWidgets.QListWidget()
         for t in mgxs_uret.SECMELI_TURLER:
             o = QtWidgets.QListWidgetItem(_(mgxs_uret.TUR_ADLARI[t]))
@@ -342,7 +351,7 @@ class MgxsKarti(bil.Kart):
     # olaylar (ana iplik; bagdastirici kuyruklu iletir)
     # ==================================================================
     def _olay(self, d: kuyruk.IsDurumu) -> None:
-        tur = d.etiket.get("y8")
+        tur = d.etiket.get(_Y8)
         if d.etiket.get("kusak") != self._kusak or tur not in mgxs_is.TURLER:
             return
         self._durumlar[tur] = d
@@ -350,7 +359,7 @@ class MgxsKarti(bil.Kart):
         if d.asama == kuyruk.Asama.BITTI and tur == "ce":
             self._ce_bitti(d)
         elif d.asama == kuyruk.Asama.BASARISIZ:
-            self._durum_yaz(_("%s başarısız: %s") % (_(mgxs_is.TURLER[tur]), d.hata), hata=True)
+            self._durum_yaz(_("%s başarısız: %s") % (_tur_adi(tur), d.hata), hata=True)
         if d.bitti_mi:
             tb.karsi_doldur(self.karsi, mgxs_is.karsilastirma(list(self._durumlar.values())))
         self._gorunurluk()
@@ -361,10 +370,9 @@ class MgxsKarti(bil.Kart):
         self.ilerleme.setValue(min(d.cevrim, toplam) if toplam else int(d.bitti_mi))
         if not d.bitti_mi:
             k = "" if d.k is None else "  k = %.5f ± %.5f" % d.k
-            self._durum_yaz(_("%s: çevrim %d%s") % (_(mgxs_is.TURLER[d.etiket["y8"]]),
-                                                    d.cevrim, k))
+            self._durum_yaz(_("%s: çevrim %d%s") % (_tur_adi(d.etiket.get(_Y8)), d.cevrim, k))
         elif d.asama == kuyruk.Asama.BITTI:
-            self._durum_yaz(_("%s bitti.") % _(mgxs_is.TURLER[d.etiket["y8"]]))
+            self._durum_yaz(_("%s bitti.") % _tur_adi(d.etiket.get(_Y8)))
 
     def _ce_bitti(self, d: kuyruk.IsDurumu) -> None:
         sonuc = (d.sonuc or {}).get("mgxs") if isinstance(d.sonuc, dict) else None

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 10:46+0300\n"
+"POT-Creation-Date: 2026-10-02 15:25+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -350,6 +350,267 @@ msgid ""
 "amaçlıdır, sertifika değildir."
 msgstr ""
 
+#: arayuz/analiz/mgxs.py:57
+msgid "Grup sabitleri ve random ray"
+msgstr ""
+
+#: arayuz/analiz/mgxs.py:58
+msgid ""
+"Akı ağırlıklı çok gruplu tesir kesitleri (openmc.mgxs) üretir; aynı geometriyi çok "
+"gruplu Monte Carlo ve random ray ile yeniden koşup CE sonucuyla karşılaştırır."
+msgstr ""
+
+#: arayuz/analiz/mgxs.py:83
+msgid ""
+"Malzeme: her malzeme bir bölge. Hücre: her malzemeli hücre bir bölge.\n"
+"Demet: modelin tamamı tek bölge (yansıtıcı sınırlı modelde sonsuz kafes sabitleri)."
+msgstr ""
+
+#: arayuz/analiz/mgxs.py:88 arayuz/ayar/spektrum_karti.py:37
+#, python-format
+msgid "%s (%d grup)"
+msgstr ""
+
+#: arayuz/analiz/mgxs.py:90
+msgid ""
+"Homojenleştirme için 2–8 grup; MG ile yeniden koşu için ince yapı (CASMO-70, "
+"XMAS-172) grup yoğunlaştırma hatasını küçültür."
+msgstr ""
+
+#: arayuz/analiz/mgxs.py:93
+msgid "Yok (izotropik saçılma, Σt)"
+msgstr ""
+
+#: arayuz/analiz/mgxs.py:94
+msgid "P0 taşıma düzeltmesi (out-scatter, Σtr)"
+msgstr ""
+
+#: arayuz/analiz/mgxs.py:96
+msgid ""
+"P0: Σtr = Σt − Σs1 ve saçılma köşegeni Σs1 kadar azalır; sonsuz ortam k∞'u değişmez, "
+"sızıntı (D = 1/3Σtr) değişir.\n"
+"İnce grupta köşegen negatif olabilir: MG Monte Carlo bunu doğru işleyemez (random ray"
+" kararlılaştırır)."
+msgstr ""
+
+#: arayuz/analiz/mgxs.py:107
+msgid "Σt, Σa, νΣf, χ ve saçılma matrisleri her zaman üretilir (MG kütüphanesi için gerekli)."
+msgstr ""
+
+#: arayuz/analiz/mgxs.py:112
+msgid "ışın"
+msgstr ""
+
+#: arayuz/analiz/mgxs.py:118
+msgid "Düz (flat)"
+msgstr ""
+
+#: arayuz/analiz/mgxs.py:118
+msgid "Doğrusal (linear)"
+msgstr ""
+
+#: arayuz/analiz/mgxs.py:119
+msgid "Doğrusal, yalnız x-y"
+msgstr ""
+
+#: arayuz/analiz/mgxs.py:122
+msgid ""
+"Kaynak bölgelerini eksen başına N×N kare mesh ile böler (0 = bölme yok). Varsayılan ≈"
+" 0.1 cm hücre."
+msgstr ""
+
+#: arayuz/analiz/mgxs.py:124
+msgid "Random ray ayarları"
+msgstr ""
+
+#: arayuz/analiz/mgxs.py:126
+msgid "Çevrim başına ışın:"
+msgstr ""
+
+#: arayuz/analiz/mgxs.py:127
+msgid "Çevrim / pasif:"
+msgstr ""
+
+#: arayuz/analiz/mgxs.py:128
+msgid "Ölü / aktif mesafe:"
+msgstr ""
+
+#: arayuz/analiz/mgxs.py:129
+msgid "Kaynak şekli:"
+msgstr ""
+
+#: arayuz/analiz/mgxs.py:130
+msgid "Kaynak bölgesi bölmesi:"
+msgstr ""
+
+#: arayuz/analiz/mgxs.py:136
+msgid "Grup sabitlerini üret"
+msgstr ""
+
+#: arayuz/analiz/mgxs.py:138
+msgid "MG ile yeniden koş"
+msgstr ""
+
+#: arayuz/analiz/mgxs.py:139
+msgid "Random ray ile koş"
+msgstr ""
+
+#: arayuz/analiz/mgxs.py:140
+msgid "CSV kaydet…"
+msgstr ""
+
+#: arayuz/analiz/mgxs.py:154 arayuz/analiz/mgxs.py:217
+msgid "Henüz grup sabiti üretilmedi."
+msgstr ""
+
+#: arayuz/analiz/mgxs.py:177
+msgid "Bölge türü:"
+msgstr ""
+
+#: arayuz/analiz/mgxs.py:178 arayuz/ayar/mesh_formu.py:86
+msgid "Grup yapısı:"
+msgstr ""
+
+#: arayuz/analiz/mgxs.py:179
+msgid "Taşıma düzeltmesi:"
+msgstr ""
+
+#: arayuz/analiz/mgxs.py:180
+msgid "Ek türler:"
+msgstr ""
+
+#: arayuz/analiz/mgxs.py:190
+msgid "Gösterilen tür:"
+msgstr ""
+
+#: arayuz/analiz/mgxs.py:191
+msgid "CE / MG / RR karşılaştırması"
+msgstr ""
+
+#: arayuz/analiz/mgxs.py:263
+msgid "Model yok"
+msgstr ""
+
+#: arayuz/analiz/mgxs.py:320
+msgid "Grup sabiti koşusu başlatılamadı"
+msgstr ""
+
+#: arayuz/analiz/mgxs.py:335
+msgid "MG koşusu başlatılamadı"
+msgstr ""
+
+#: arayuz/analiz/mgxs.py:341
+msgid "Random ray koşusu başlatılamadı"
+msgstr ""
+
+#: arayuz/analiz/mgxs.py:362
+#, python-format
+msgid "%s başarısız: %s"
+msgstr ""
+
+#: arayuz/analiz/mgxs.py:373
+#, python-format
+msgid "%s: çevrim %d%s"
+msgstr ""
+
+#: arayuz/analiz/mgxs.py:375
+#, python-format
+msgid "%s bitti."
+msgstr ""
+
+#: arayuz/analiz/mgxs.py:380
+msgid "CE koşusu bitti ama grup sabitleri okunamadı"
+msgstr ""
+
+#: arayuz/analiz/mgxs.py:394
+msgid "Hepsi"
+msgstr ""
+
+#: arayuz/analiz/mgxs.py:407
+#, python-format
+msgid "%d satırın ilk %d'i gösteriliyor; tamamı mgxs.csv'de."
+msgstr ""
+
+#: arayuz/analiz/mgxs.py:408
+msgid "Grup 1 en yüksek enerji. σ: istatistik (1σ)."
+msgstr ""
+
+#: arayuz/analiz/mgxs.py:415
+msgid "Grup sabitlerini kaydet"
+msgstr ""
+
+#: arayuz/analiz/mgxs.py:421
+msgid "CSV kaydedilemedi"
+msgstr ""
+
+#: arayuz/analiz/mgxs.py:423 arayuz/pencere/proje.py:151 arayuz/pencere/proje.py:320
+#, python-format
+msgid "Kaydedildi: %s"
+msgstr ""
+
+#: arayuz/analiz/mgxs_tablo.py:44 arayuz/analiz/sekme.py:151
+#: arayuz/geometri/form_yerlesim.py:339 arayuz/sonuc/mesh_harita.py:41
+msgid "Değer"
+msgstr ""
+
+#: arayuz/analiz/mgxs_tablo.py:44 arayuz/cubuk/parca_islemleri.py:240
+#: arayuz/cubuk/sayfalar.py:117
+msgid "Bölge"
+msgstr ""
+
+#: arayuz/analiz/mgxs_tablo.py:66
+msgid "Yöntem"
+msgstr ""
+
+#: arayuz/analiz/mgxs_tablo.py:66
+msgid "Δk CE'ye [pcm]"
+msgstr ""
+
+#: arayuz/analiz/mgxs_tablo.py:66
+msgid "Δk MG'ye [pcm]"
+msgstr ""
+
+#: arayuz/analiz/mgxs_tablo.py:67
+msgid "Süre [s]"
+msgstr ""
+
+#: arayuz/analiz/mgxs_tablo.py:92
+#, python-format
+msgid "Grup sabitleri hazır: %d bölge, %s (%d grup), düzeltme: %s"
+msgstr ""
+
+#: arayuz/analiz/mgxs_tablo.py:95
+#, python-format
+msgid "CE k: %s"
+msgstr ""
+
+#: arayuz/analiz/mgxs_tablo.py:96
+#, python-format
+msgid "Sabitlerden k = Σ νΣf·φ / Σ Σa·φ ((n,xn) hariç): %s"
+msgstr ""
+
+#: arayuz/analiz/mgxs_tablo.py:101
+#, python-format
+msgid "Sonsuz ortam k∞ (G×G özdeğer, yukarı saçılma ve (n,xn) dahil): %s"
+msgstr ""
+
+#: arayuz/analiz/mgxs_tablo.py:104
+#, python-format
+msgid "Özdeğer − CE: %+.0f pcm"
+msgstr ""
+
+#: arayuz/analiz/mgxs_tablo.py:107
+msgid ""
+"σ'lar birinci derece ve bağımsızlık varsayımlıdır (aynı geçmişlerden gelen tally'ler "
+"ilişkilidir); k∞ yalnız yansıtıcı sınırlı (sonsuz kafes) modelde CE k ile "
+"karşılaştırılabilir."
+msgstr ""
+
+#: arayuz/analiz/mgxs_tablo.py:112
+#, python-format
+msgid "Kütüphane: %s"
+msgstr ""
+
 #: arayuz/analiz/sekme.py:77
 msgid "Bu modelde analiz yapılamaz"
 msgstr ""
@@ -362,7 +623,7 @@ msgstr ""
 msgid "Gelişmiş parametreler"
 msgstr ""
 
-#: arayuz/analiz/sekme.py:98 arayuz/analiz/sekme.py:456
+#: arayuz/analiz/sekme.py:98 arayuz/analiz/sekme.py:463
 msgid "Hedef:"
 msgstr ""
 
@@ -378,11 +639,11 @@ msgstr ""
 msgid "Hedef k-eff:"
 msgstr ""
 
-#: arayuz/analiz/sekme.py:106 arayuz/analiz/sekme.py:366
+#: arayuz/analiz/sekme.py:106 arayuz/analiz/sekme.py:373
 msgid "Başlangıç:"
 msgstr ""
 
-#: arayuz/analiz/sekme.py:107 arayuz/analiz/sekme.py:367
+#: arayuz/analiz/sekme.py:107 arayuz/analiz/sekme.py:374
 msgid "Bitiş:"
 msgstr ""
 
@@ -394,143 +655,138 @@ msgstr ""
 msgid "Tahmini süre:"
 msgstr ""
 
-#: arayuz/analiz/sekme.py:128 arayuz/analiz/sekme.py:368
+#: arayuz/analiz/sekme.py:128 arayuz/analiz/sekme.py:375
 msgid "Taramayı başlat"
 msgstr ""
 
-#: arayuz/analiz/sekme.py:141 arayuz/analiz/sekme.py:220
+#: arayuz/analiz/sekme.py:141 arayuz/analiz/sekme.py:226
 msgid "Henüz analiz yapılmadı."
-msgstr ""
-
-#: arayuz/analiz/sekme.py:151 arayuz/geometri/form_yerlesim.py:339
-#: arayuz/sonuc/mesh_harita.py:41
-msgid "Değer"
 msgstr ""
 
 #: arayuz/analiz/sekme.py:160
 msgid "Analiz ayarları"
 msgstr ""
 
-#: arayuz/analiz/sekme.py:180 arayuz/pencere/model_islemleri.py:67
+#: arayuz/analiz/sekme.py:184 arayuz/pencere/model_islemleri.py:67
 #: arayuz/yardim/__init__.py:50
 msgid "Analiz"
 msgstr ""
 
-#: arayuz/analiz/sekme.py:181
+#: arayuz/analiz/sekme.py:185
 msgid ""
 "Bir parametreyi tarayıp eğimden reaktivite katsayısını ya da hedef k-eff'i veren "
 "değeri bulursunuz. Yalnızca bu modelde anlamlı parametreler listelenir; her nokta "
 "ayrı bir OpenMC koşusudur."
 msgstr ""
 
-#: arayuz/analiz/sekme.py:233
+#: arayuz/analiz/sekme.py:240
 msgid ""
 "Önceki projenin analizi arka planda sürüyor; sonucu bu projeye yazılmayacak. Yeni "
 "analiz için Durdur ile sonlandırın."
 msgstr ""
 
-#: arayuz/analiz/sekme.py:272
+#: arayuz/analiz/sekme.py:279
 msgid "Reaktivite katsayısı (parametre taraması)"
 msgstr ""
 
-#: arayuz/analiz/sekme.py:274
+#: arayuz/analiz/sekme.py:281
 msgid "Kritik arama (hedef k-eff'i veren değer)"
 msgstr ""
 
-#: arayuz/analiz/sekme.py:293
+#: arayuz/analiz/sekme.py:300
 msgid "Önce bir model açın."
 msgstr ""
 
-#: arayuz/analiz/sekme.py:298
+#: arayuz/analiz/sekme.py:305
 msgid "Model okunamadı; doğrulama listesine bakın."
 msgstr ""
 
-#: arayuz/analiz/sekme.py:300
+#: arayuz/analiz/sekme.py:307
 msgid ""
 "Reaktivite katsayıları ve kritik arama k-eff üzerinden hesaplanır; bu modelin hesap "
 "türü Sabit kaynak (k-eff tanımsız). Hesap ayarları sekmesinde hesap türünü Özdeğer "
 "(k-eff) yapın."
 msgstr ""
 
-#: arayuz/analiz/sekme.py:304
+#: arayuz/analiz/sekme.py:311
 msgid ""
 "Geometride fisil (yakıt) malzeme yok; k-eff tanımsız olduğu için reaktivite "
 "hesaplanamaz."
 msgstr ""
 
-#: arayuz/analiz/sekme.py:306
+#: arayuz/analiz/sekme.py:313
 msgid "Bu modelde taranabilecek bir parametre bulunamadı."
 msgstr ""
 
-#: arayuz/analiz/sekme.py:342
+#: arayuz/analiz/sekme.py:349
 #, python-format
 msgid ""
 "Açıkken parametre listesinde tasarım etütleri de yer alır: %s. Bunlar reaktivite "
 "katsayısı değil, tasarım duyarlılığıdır."
 msgstr ""
 
-#: arayuz/analiz/sekme.py:366
+#: arayuz/analiz/sekme.py:373
 msgctxt "arama"
 msgid "Alt sınır:"
 msgstr ""
 
-#: arayuz/analiz/sekme.py:367
+#: arayuz/analiz/sekme.py:374
 msgctxt "arama"
 msgid "Üst sınır:"
 msgstr ""
 
-#: arayuz/analiz/sekme.py:368
+#: arayuz/analiz/sekme.py:375
 msgid "Kritik aramayı başlat"
 msgstr ""
 
-#: arayuz/analiz/sekme.py:431
+#: arayuz/analiz/sekme.py:438
 msgid "Hedef malzeme:"
 msgstr ""
 
-#: arayuz/analiz/sekme.py:435
+#: arayuz/analiz/sekme.py:442
 msgid "Hedef demet:"
-msgstr ""
-
-#: arayuz/analiz/sekme.py:439
-#, python-format
-msgid "%s  (şu an %%%.1f dalmış)"
-msgstr ""
-
-#: arayuz/analiz/sekme.py:441
-msgid "Kontrol çubuğu:"
 msgstr ""
 
 #: arayuz/analiz/sekme.py:446
 #, python-format
+msgid "%s  (şu an %%%.1f dalmış)"
+msgstr ""
+
+#: arayuz/analiz/sekme.py:448
+msgid "Kontrol çubuğu:"
+msgstr ""
+
+#: arayuz/analiz/sekme.py:453
+#, python-format
 msgid "%s — %d. bölge (r = %.4g cm, %s)"
 msgstr ""
 
-#: arayuz/analiz/sekme.py:451 arayuz/ayar/yerlesim.py:170
+#: arayuz/analiz/sekme.py:458 arayuz/ayar/yerlesim.py:170
 msgid "Hedef bölge:"
 msgstr ""
 
-#: arayuz/analiz/sekme.py:523
+#: arayuz/analiz/sekme.py:530
 msgid "Model yok."
 msgstr ""
 
-#: arayuz/analiz/sekme.py:526
+#: arayuz/analiz/sekme.py:533
 msgid "Bu modelde taranabilecek bir parametre yok."
 msgstr ""
 
-#: arayuz/analiz/sekme.py:528
+#: arayuz/analiz/sekme.py:535
 #, python-format
 msgid "'%s' bu modelde artık geçerli değil."
 msgstr ""
 
-#: arayuz/analiz/sekme.py:531
+#: arayuz/analiz/sekme.py:538
 msgid "Seçili hedef bu parametre için geçerli değil (model değişmiş olabilir)."
 msgstr ""
 
-#: arayuz/analiz/sekme.py:551
+#: arayuz/analiz/sekme.py:558
 msgid "Seçim geçerli değil"
 msgstr ""
 
-#: arayuz/analiz/sekme.py:552
+#: arayuz/analiz/sekme.py:559
 #, python-format
 msgid ""
 "%s\n"
@@ -538,57 +794,57 @@ msgid ""
 "Listeler modele göre yenilendi; seçimi gözden geçirin."
 msgstr ""
 
-#: arayuz/analiz/sekme.py:569
+#: arayuz/analiz/sekme.py:576
 msgid "Çalışıyor…"
 msgstr ""
 
-#: arayuz/analiz/sekme.py:595
+#: arayuz/analiz/sekme.py:602
 #, python-format
 msgid "Analiz sürüyor: %s — her nokta ayrı bir koşu."
 msgstr ""
 
-#: arayuz/analiz/sekme.py:600
+#: arayuz/analiz/sekme.py:607
 msgid "Analiz başladı"
 msgstr ""
 
-#: arayuz/analiz/sekme.py:605
+#: arayuz/analiz/sekme.py:612
 msgid "Durdurma istendi — süren koşu bitince duracak"
 msgstr ""
 
-#: arayuz/analiz/sekme.py:611
+#: arayuz/analiz/sekme.py:618
 #, python-format
 msgid "tamamlandı — toplam %s"
 msgstr ""
 
-#: arayuz/analiz/sekme.py:624
+#: arayuz/analiz/sekme.py:631
 msgid "Önceki projenin analizi bitti; sonucu bu projeye yazılmadı."
 msgstr ""
 
-#: arayuz/analiz/sekme.py:630
+#: arayuz/analiz/sekme.py:637
 #, python-format
 msgid "<b>Hata:</b> %s"
 msgstr ""
 
-#: arayuz/analiz/sekme.py:632
+#: arayuz/analiz/sekme.py:639
 #, python-format
 msgid "Analiz hatası: %s"
 msgstr ""
 
-#: arayuz/analiz/sekme.py:647
+#: arayuz/analiz/sekme.py:654
 #, python-format
 msgid "geçen %s  |  kalan ~%s  (ölçüme göre)"
 msgstr ""
 
-#: arayuz/analiz/sekme.py:659
+#: arayuz/analiz/sekme.py:666
 msgid "Tarama tamamlandı"
 msgstr ""
 
-#: arayuz/analiz/sekme.py:667
+#: arayuz/analiz/sekme.py:674
 #, python-format
 msgid "geçen %s  |  %d. koşu bitti"
 msgstr ""
 
-#: arayuz/analiz/sekme.py:680
+#: arayuz/analiz/sekme.py:687
 msgid "Kritik arama tamamlandı"
 msgstr ""
 
@@ -763,10 +1019,6 @@ msgstr ""
 msgid "z aralığı:"
 msgstr ""
 
-#: arayuz/ayar/mesh_formu.py:86
-msgid "Grup yapısı:"
-msgstr ""
-
 #: arayuz/ayar/mesh_formu.py:127
 msgid "Öneri yok: modelin dış ölçüsü okunamadı."
 msgstr ""
@@ -906,11 +1158,6 @@ msgstr ""
 msgid ""
 "Koşuya altı tally ekler (adları y3_ ile başlar). Sonuçlar Çalıştır\n"
 "sayfasındaki “Spektrum ve dört faktör” kartında görünür."
-msgstr ""
-
-#: arayuz/ayar/spektrum_karti.py:37
-#, python-format
-msgid "%s (%d grup)"
 msgstr ""
 
 #: arayuz/ayar/spektrum_karti.py:39
@@ -1986,10 +2233,6 @@ msgstr ""
 #: arayuz/cubuk/parca_islemleri.py:239
 msgctxt "madde"
 msgid "Boş"
-msgstr ""
-
-#: arayuz/cubuk/parca_islemleri.py:240 arayuz/cubuk/sayfalar.py:117
-msgid "Bölge"
 msgstr ""
 
 #: arayuz/cubuk/parca_islemleri.py:281
@@ -3808,8 +4051,9 @@ msgstr ""
 msgid "Konum"
 msgstr ""
 
-#: arayuz/cubuk/sayfalar.py:160 arayuz/geometri/form_yerlesim.py:338
-#: arayuz/geometri/formlar.py:86 arayuz/guc_harita_tablo.py:41 arayuz/malzeme/bilesim.py:37
+#: arayuz/analiz/mgxs_tablo.py:44 arayuz/cubuk/sayfalar.py:160
+#: arayuz/geometri/form_yerlesim.py:338 arayuz/geometri/formlar.py:86
+#: arayuz/guc_harita_tablo.py:41 arayuz/malzeme/bilesim.py:37
 msgid "Tür"
 msgstr ""
 
@@ -4035,7 +4279,7 @@ msgstr ""
 msgid "boşluk"
 msgstr ""
 
-#: arayuz/analiz/sekme.py:448 arayuz/ayar/guc_formu.py:72
+#: arayuz/analiz/sekme.py:455 arayuz/ayar/guc_formu.py:72
 #: arayuz/cubuk/parca_islemleri.py:20 arayuz/izgara_yardimci.py:173
 #: arayuz/kor/katmanlar.py:22
 msgid "Boş (madde yok)"
@@ -5595,7 +5839,7 @@ msgid ""
 "Çalıştır kapısı her iki kipte de yalnız tam modele bakar."
 msgstr ""
 
-#: arayuz/onizleme_kapsam.py:92
+#: arayuz/analiz/mgxs.py:176 arayuz/onizleme_kapsam.py:92
 msgid "Kapsam:"
 msgstr ""
 
@@ -6369,11 +6613,6 @@ msgid ""
 "dosyası değişmez)"
 msgstr ""
 
-#: arayuz/pencere/proje.py:151 arayuz/pencere/proje.py:320
-#, python-format
-msgid "Kaydedildi: %s"
-msgstr ""
-
 #: arayuz/pencere/proje.py:164
 msgid "Modeli kaydet"
 msgstr ""
@@ -7098,7 +7337,8 @@ msgid_plural "{n} parçacık × {c} çevrim = {t} kaynak parçacığı; tally be
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/analiz/sekme.py:69 arayuz/sekme_calistir.py:78 arayuz/sekme_tukenme.py:76
+#: arayuz/analiz/mgxs.py:63 arayuz/analiz/sekme.py:69 arayuz/sekme_calistir.py:78
+#: arayuz/sekme_tukenme.py:76
 msgid "hazır değil"
 msgstr ""
 
@@ -7134,7 +7374,8 @@ msgid ""
 " için Durdur ile sonlandırın."
 msgstr ""
 
-#: arayuz/analiz/sekme.py:544 arayuz/sekme_calistir.py:441 arayuz/sekme_calistir.py:540
+#: arayuz/analiz/mgxs.py:309 arayuz/analiz/sekme.py:551 arayuz/sekme_calistir.py:441
+#: arayuz/sekme_calistir.py:540
 msgid "Çalıştırılamaz"
 msgstr ""
 
@@ -8421,8 +8662,8 @@ msgstr ""
 msgid "Tükenmeyi başlat"
 msgstr ""
 
-#: arayuz/analiz/sekme.py:130 arayuz/calistir/kartlar.py:87 arayuz/pencere/kabuk.py:191
-#: arayuz/tukenme_arayuz.py:136
+#: arayuz/analiz/mgxs.py:141 arayuz/analiz/sekme.py:130 arayuz/calistir/kartlar.py:87
+#: arayuz/pencere/kabuk.py:191 arayuz/tukenme_arayuz.py:136
 msgid "Durdur"
 msgstr ""
 
