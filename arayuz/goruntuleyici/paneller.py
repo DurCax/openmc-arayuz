@@ -47,7 +47,8 @@ def _kutu_doldur(kutu, ogeler):
 
 
 class KesitPaneli(QtWidgets.QGroupBox):
-    degisti = QtCore.Signal()
+    degisti = QtCore.Signal()          # kesit penceresi degisti (isciye gidilir)
+    boya = QtCore.Signal()             # yalniz renk kipi / cakisma (eldeki dilim)
     sifirla = QtCore.Signal()
 
     def __init__(self, parent=None):
@@ -76,11 +77,12 @@ class KesitPaneli(QtWidgets.QGroupBox):
         f.addRow(self.tam)
         f.addRow(ipucu(_("Tekerlek: yakınlaştır · sol tuşla sürükle: kaydır. Çakışma kipi "
                          "denetimi kendiliğinden açar.")))
-        for w in (self.eksen, self.cozunurluk, self.renk):
+        for w in (self.eksen, self.cozunurluk):
             w.currentIndexChanged.connect(lambda *_a: self.degisti.emit())
         for w in (self.konum, self.genislik):
             w.editingFinished.connect(self.degisti.emit)
-        self.cakisma.toggled.connect(lambda *_a: self.degisti.emit())
+        self.renk.currentIndexChanged.connect(lambda *_a: self.boya.emit())
+        self.cakisma.toggled.connect(lambda *_a: self.boya.emit())
         self.tam.clicked.connect(self.sifirla.emit)
 
     def piksel(self) -> int:
