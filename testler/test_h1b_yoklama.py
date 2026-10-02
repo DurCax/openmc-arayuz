@@ -256,3 +256,128 @@ def test_iceren_hucreler_kahinle_ayni():
 
 
 HIZLI.append(test_iceren_hucreler_kahinle_ayni)
+
+
+# ---------------------------------------------------------------------------
+# inceleme (python-reviewer MEDIUM 1-3): her yuzey turu, sinir, NaN, yedek yol,
+# parcali isleme, tek nokta hizi
+# ---------------------------------------------------------------------------
+
+def _yuzeyler():
+    """(ad, yuzey, yuzey ustundeki tam noktalar): beyaz liste + yedek yol turleri."""
+    import openmc
+    return [
+        ("Plane", openmc.Plane(a=1.0, b=2.0, c=0.5, d=0.25), [(0.25, 0.0, 0.0)]),
+        ("XPlane", openmc.XPlane(0.5), [(0.5, 0.3, -1.0)]),
+        ("YPlane", openmc.YPlane(-0.5), [(1.0, -0.5, 0.0)]),
+        ("ZPlane", openmc.ZPlane(0.0), [(0.3, 0.2, 0.0)]),
+        ("XCylinder", openmc.XCylinder(y0=0.5, z0=0.0, r=1.0), [(0.0, 1.5, 0.0), (1.0, -0.5, 0.0)]),
+        ("YCylinder", openmc.YCylinder(x0=0.0, z0=0.0, r=1.0), [(1.0, 0.7, 0.0), (0.0, 0.1, -1.0)]),
+        ("ZCylinder", openmc.ZCylinder(x0=0.5, y0=0.0, r=1.0), [(1.5, 0.0, 0.0), (-0.5, 0.0, 0.3)]),
+        ("Sphere", openmc.Sphere(r=1.0), [(1.0, 0.0, 0.0), (0.0, -1.0, 0.0)]),
+        ("XCone", openmc.XCone(r2=1.0), [(1.0, 1.0, 0.0)]),
+        ("YCone", openmc.YCone(r2=1.0), [(1.0, 1.0, 0.0)]),
+        ("ZCone", openmc.ZCone(r2=1.0), [(0.0, 1.0, 1.0)]),
+        ("Quadric", openmc.Quadric(a=1.0, b=2.0, c=0.5, f=0.3, g=0.2, j=0.1, k=-1.0),
+         [(0.0, 0.0, 0.0)]),
+        ("XTorus", openmc.XTorus(a=1.0, b=0.4, c=0.4), [(0.0, 1.4, 0.0)]),
+    ]
+
+
+def _maske_ve_tekil(b, P):
+    import numpy as np
+    from cekirdek.geometri import yoklama
+    maske = yoklama.bolge_maskesi(b, (P[:, 0], P[:, 1], P[:, 2]), P, {})
+    tekil = np.array([tuple(float(v) for v in p) in b for p in P])
+    return maske, tekil
+
+
+def _yuzey_noktalari(ustunde):
+    import numpy as np
+    rnd = np.random.default_rng(5)
+    P = rnd.uniform(-2.0, 2.0, size=(300, 3))
+    nan = np.array([[float("nan"), 0.0, 0.0], [0.0, float("nan"), float("nan")]])
+    return np.vstack([P, np.array(ustunde, dtype=float), nan])
+
+
+def test_her_yuzey_turunde_sinir_ve_nan_tekil_ile_ayni():
+    print("\n[H1b-Y8] bolge_maskesi: her yuzey turu, yuzey ustu (deger 0) ve NaN noktalar")
+    import numpy as np
+    for ad, s, ustunde in _yuzeyler():
+        P = _yuzey_noktalari(ustunde)
+        sifir = [float(s.evaluate(tuple(p))) == 0.0 for p in np.array(ustunde, dtype=float)]
+        for taraf, b in (("+", +s), ("-", -s), ("~-", ~(-s))):
+            maske, tekil = _maske_ve_tekil(b, P)
+            kontrol("%s %s: ayni" % (ad, taraf), np.array_equal(maske, tekil),
+                    "fark=%d" % int((maske != tekil).sum()))
+        if ad not in ("Quadric", "XTorus"):
+            kontrol("%s: yuzey ustu noktalarda deger tam 0" % ad, all(sifir), "-> %s" % sifir)
+
+
+def test_beyaz_liste_bosken_yedek_yol_calisir_ve_ayni(monkeypatch):
+    print("\n[H1b-Y9] beyaz liste bos: butun yuzeyler tekil yedek yoldan, sonuc ayni")
+    import numpy as np
+    from cekirdek.geometri import yoklama
+    tekil_cagri = [0]
+    asil = yoklama._tekil_degerler
+
+    def sayan(yuzey, P):
+        tekil_cagri[0] += 1
+        return asil(yuzey, P)
+    monkeypatch.setattr(yoklama, "_tekil_degerler", sayan)
+    monkeypatch.setattr(yoklama, "_VEKTOREL_YUZEY_ADLARI", ())
+    for ad, s, ustunde in _yuzeyler():
+        P = _yuzey_noktalari(ustunde)
+        maske, tekil = _maske_ve_tekil(-s & +s | ~(+s), P)
+        kontrol("%s: yedek yolla ayni" % ad, np.array_equal(maske, tekil))
+    kontrol("yedek yol gercekten kullanildi", tekil_cagri[0] >= len(_yuzeyler()),
+            "cagri=%d" % tekil_cagri[0])
+
+
+def test_parcali_yoklama_ayni_ve_parca_siniri_asilmaz(monkeypatch):
+    print("\n[H1b-Y10] nokta_yoklama parcalarla: sonuc ayni, toplu cagri parca boyunu asmaz")
+    from cekirdek.geometri import yoklama
+    from testler.test_geometri_dogrulama import ortusen_model
+    geo, kutu, icinde = _girdi(ortusen_model())
+    tam = yoklama.nokta_yoklama(geo, 500, 3, kutu, icinde)
+    en_buyuk = [0]
+    asil = yoklama._in_toplu
+
+    def izleyen(evren, P, *a, **k):
+        en_buyuk[0] = max(en_buyuk[0], len(P))
+        return asil(evren, P, *a, **k)
+    monkeypatch.setattr(yoklama, "_PARCA", 64)
+    monkeypatch.setattr(yoklama, "_in_toplu", izleyen)
+    parcali = yoklama.nokta_yoklama(geo, 500, 3, kutu, icinde)
+    kontrol("ayni sonuc", (tam.n, _ozet(tam.bosluklar), _ozet(tam.ortusmeler))
+            == (parcali.n, _ozet(parcali.bosluklar), _ozet(parcali.ortusmeler)))
+    kontrol("toplu cagri <= 64 nokta", en_buyuk[0] <= 64, "-> %d" % en_buyuk[0])
+
+
+def test_yavas_tek_nokta_sorgusu_tekil_kadar_hizli():
+    print("\n[H1b-Y11] _iceren_hucreler (tek nokta, guc_faktor): CPU <= 1.5 x tekil kahin (SFR kok)")
+    import time
+    import numpy as np
+    from cekirdek import kurucu, sema
+    from cekirdek.geometri import yoklama
+    model, bilgi = kurucu.kur(sema.yukle(os.path.join(ORNEK, "sfr_met1000_kor.json")))
+    gx, gy = bilgi["sinir_kutu"]
+    rnd = random.Random(1)
+    P = [np.array([rnd.uniform(-gx / 2, gx / 2), rnd.uniform(-gy / 2, gy / 2), 0.0])
+         for _i in range(40)]
+    evren = model.geometry.root_universe
+    sure = {}
+    for ad, f in (("yeni", yoklama._iceren_hucreler), ("kahin", _kahin_iceren)):
+        t = time.process_time()
+        for p in P:
+            f(evren, p)
+        sure[ad] = time.process_time() - t
+    # gerekce: H1b ilk surumu tek noktada 13x yavasti (numpy sabit maliyeti); %50 olcum payi
+    kontrol("yeni <= 1.5 x kahin", sure["yeni"] <= 1.5 * sure["kahin"],
+            "%.3f / %.3f s" % (sure["yeni"], sure["kahin"]))
+
+
+HIZLI += [test_her_yuzey_turunde_sinir_ve_nan_tekil_ile_ayni,
+          test_beyaz_liste_bosken_yedek_yol_calisir_ve_ayni,
+          test_parcali_yoklama_ayni_ve_parca_siniri_asilmaz]
+YAVAS.append(test_yavas_tek_nokta_sorgusu_tekil_kadar_hizli)

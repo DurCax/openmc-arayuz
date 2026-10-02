@@ -23,6 +23,7 @@
 ================================================================================
 """
 
+import functools
 import random
 from collections import namedtuple
 
@@ -50,16 +51,35 @@ _DERINLIK_SINIRI = 60      # evren icine inis siniri (dongu korumasi)
 # ----------------------------------------------------------------------------
 
 _VEKTOREL_YUZEY_ADLARI = ("Plane", "XPlane", "YPlane", "ZPlane", "XCylinder",
-                          "YCylinder", "ZCylinder", "Sphere")
-_vektorel = []
+                          "YCylinder", "ZCylinder", "Sphere", "XCone", "YCone", "ZCone")
+# Bundan az noktada tekil yol (Region.__contains__): numpy'nin yuzey basina sabit
+# maliyeti tek noktada tekil yoldan ~13x pahali (olculdu, SFR kok evreni).
+_TOPLU_ESIK = 16
+# nokta_yoklama'nin bir seferde topladigi nokta: bellek ~ yuzey x parca x 8 B
+# (5000 yuzey, 2048 nokta: ~80 MB; parcasiz n=20000'de ~800 MB olurdu)
+_PARCA = 2048
+
+
+@functools.lru_cache(maxsize=None)
+def _turler(adlar):
+    import openmc
+    return frozenset(getattr(openmc, a) for a in adlar)
 
 
 def _vektorel_turler():
     """evaluate()'i eleman bazli olan openmc yuzey siniflari (tembel: openmc)."""
-    if not _vektorel:
-        import openmc
-        _vektorel.append(frozenset(getattr(openmc, a) for a in _VEKTOREL_YUZEY_ADLARI))
-    return _vektorel[0]
+    return _turler(_VEKTOREL_YUZEY_ADLARI)
+
+
+@functools.lru_cache(maxsize=None)
+def _bolge_siniflari():
+    import openmc
+    return openmc.Halfspace, openmc.Intersection, openmc.Union, openmc.Complement
+
+
+def _tekil_degerler(yuzey, P: np.ndarray) -> np.ndarray:
+    """Yedek yol: yuzey denklemi nokta nokta (openmc'nin tekil cagrisi)."""
+    return np.array([yuzey.evaluate(tuple(float(v) for v in p)) for p in P], dtype=float)
 
 
 def _yuzey_degeri(yuzey, xyz, P, bellek):
@@ -68,30 +88,29 @@ def _yuzey_degeri(yuzey, xyz, P, bellek):
         if type(yuzey) in _vektorel_turler():
             deger = np.broadcast_to(yuzey.evaluate(xyz), (len(P),))
         else:
-            deger = np.array([yuzey.evaluate(tuple(float(v) for v in p)) for p in P],
-                             dtype=float)
+            deger = _tekil_degerler(yuzey, P)
         bellek[id(yuzey)] = deger
     return deger
 
 
-def bolge_maskesi(bolge, xyz, P, bellek):
+def bolge_maskesi(bolge, xyz: tuple, P: np.ndarray, bellek: dict) -> np.ndarray:
     """openmc bolgesi -> P'nin (k x 3) her satiri icin 'nokta in bolge' (bool dizisi).
     xyz = (P[:, 0], P[:, 1], P[:, 2]); bellek: ayni noktalar icin yuzey degerleri."""
-    import openmc
-    if isinstance(bolge, openmc.Halfspace):
+    yari, kesisim, birlesim, tumleyen = _bolge_siniflari()
+    if isinstance(bolge, yari):
         deger = _yuzey_degeri(bolge.surface, xyz, P, bellek)
         return deger >= 0.0 if bolge.side == "+" else deger < 0.0
-    if isinstance(bolge, openmc.Intersection):
+    if isinstance(bolge, kesisim):
         maske = np.ones(len(P), dtype=bool)
         for alt in bolge:
             maske &= bolge_maskesi(alt, xyz, P, bellek)
         return maske
-    if isinstance(bolge, openmc.Union):
+    if isinstance(bolge, birlesim):
         maske = np.zeros(len(P), dtype=bool)
         for alt in bolge:
             maske |= bolge_maskesi(alt, xyz, P, bellek)
         return maske
-    if isinstance(bolge, openmc.Complement):
+    if isinstance(bolge, tumleyen):
         return ~bolge_maskesi(bolge.node, xyz, P, bellek)
     return np.array([tuple(float(v) for v in p) in bolge for p in P], dtype=bool)
 
@@ -105,7 +124,12 @@ def _yerel(hucre, p):
 
 
 def _iceren_matrisi(hucreler, P):
-    """(hucre sayisi x nokta) bool: hucre noktayi iceriyor mu (region None = her yer)."""
+    """(hucre sayisi x nokta) bool: hucre noktayi iceriyor mu (region None = her yer).
+    _TOPLU_ESIK'ten az noktada tekil yol (openmc Region.__contains__, ayni kural)."""
+    if len(P) < _TOPLU_ESIK:
+        noktalar = [tuple(float(v) for v in p) for p in P]
+        return np.array([[c.region is None or q in c.region for q in noktalar]
+                         for c in hucreler], dtype=bool).reshape(len(hucreler), len(P))
     xyz, bellek = (P[:, 0], P[:, 1], P[:, 2]), {}
     satirlar = [np.ones(len(P), dtype=bool) if c.region is None
                 else bolge_maskesi(c.region, xyz, P, bellek) for c in hucreler]
@@ -184,7 +208,9 @@ def nokta_yoklama(geo, n=20000, tohum=1, kutu=None, icinde=None):
                    rnd.uniform(z0, z1) if z1 > z0 else z0] for _i in range(int(n))],
                  dtype=float).reshape(-1, 3)
     bosluk, ortusme, icerde = [], [], 0
-    for p, (durum, hucreler, _q) in zip(P, _in_toplu(geo.root_universe, P, True, icinde)):
+    durumlar = [d for i in range(0, len(P), _PARCA)
+                for d in _in_toplu(geo.root_universe, P[i:i + _PARCA], True, icinde)]
+    for p, (durum, hucreler, _q) in zip(P, durumlar):
         if durum == "dis":
             continue
         icerde += 1
