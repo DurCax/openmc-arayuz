@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 10:07+0300\n"
+"POT-Creation-Date: 2026-10-02 10:13+0300\n"
 "PO-Revision-Date: 2026-10-01 18:14+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -1426,7 +1426,7 @@ msgstr "New hexagonal full core"
 msgid "boş şablonu olmayan kart: %s"
 msgstr "card without an empty template: %s"
 
-#: arayuz/bilesenler/bildirim.py:98 arayuz/pencere/menuler.py:346
+#: arayuz/bilesenler/bildirim.py:98 arayuz/pencere/menuler.py:344
 msgid "Kapat"
 msgstr "Close"
 
@@ -4869,27 +4869,27 @@ msgstr "Cell"
 msgid "Malzeme"
 msgstr "Material"
 
-#: arayuz/onizleme.py:164 arayuz/onizleme.py:334
+#: arayuz/onizleme.py:162 arayuz/onizleme.py:332
 msgid "Model bekleniyor"
 msgstr "Waiting for a model"
 
-#: arayuz/onizleme.py:170
+#: arayuz/onizleme.py:168
 msgid "xy: üstten kesit (z = 0) · xz: yandan kesit (y = 0) · yz: yandan kesit (x = 0)"
 msgstr "xy: top section (z = 0) · xz: side section (y = 0) · yz: side section (x = 0)"
 
-#: arayuz/onizleme.py:172
+#: arayuz/onizleme.py:170
 msgid "Kesit:"
 msgstr "Section:"
 
-#: arayuz/onizleme.py:180
+#: arayuz/onizleme.py:178
 msgid "Gösterge"
 msgstr "Legend"
 
-#: arayuz/onizleme.py:182
+#: arayuz/onizleme.py:180
 msgid "Çakışmaları göster"
 msgstr "Show overlaps"
 
-#: arayuz/onizleme.py:184
+#: arayuz/onizleme.py:182
 msgid ""
 "Birden fazla hücrenin kapladığı noktaları ayrı renkle gösterir ve\n"
 "sayısını bildirir. Büyük korlarda çizimi birkaç kat yavaşlatır."
@@ -4897,27 +4897,27 @@ msgstr ""
 "Shows points claimed by more than one cell in a separate colour and\n"
 "reports how many there are. Makes plotting several times slower for large cores."
 
-#: arayuz/onizleme.py:186
+#: arayuz/onizleme.py:184
 msgid "Yenile"
 msgstr "Refresh"
 
-#: arayuz/malzeme/malzeme_diyalog.py:163 arayuz/onizleme.py:210
+#: arayuz/malzeme/malzeme_diyalog.py:163 arayuz/onizleme.py:208
 msgid "Renk:"
 msgstr "Color:"
 
-#: arayuz/onizleme.py:239
+#: arayuz/onizleme.py:237
 msgid "Çözünürlük:"
 msgstr "Resolution:"
 
-#: arayuz/onizleme.py:364
+#: arayuz/onizleme.py:362
 msgid "Çiziliyor…"
 msgstr "Drawing…"
 
-#: arayuz/onizleme.py:494
+#: arayuz/onizleme.py:491
 msgid "Önizleme gizli: model denetlendi, önizleme açılınca çizilir."
 msgstr "Preview hidden: model checked; it is drawn when the preview is shown."
 
-#: arayuz/onizleme.py:508
+#: arayuz/onizleme.py:505
 #, python-format
 msgid ""
 "Önizleme: %d hücre çakışması bulundu — geometriyi gözden geçirin (kesitte ayrı renkle"
@@ -4932,14 +4932,14 @@ msgstr[1] ""
 "Preview: %d cell overlaps found — review the geometry (shown in a separate colour in "
 "the slice)."
 
-#: arayuz/onizleme.py:516
+#: arayuz/onizleme.py:513
 #, python-brace-format
 msgid "Önizleme güncel ({kesit}, {n} piksel){ek}"
 msgid_plural "Önizleme güncel ({kesit}, {n} piksel){ek}"
 msgstr[0] "Preview up to date ({kesit}, {n} pixel){ek}"
 msgstr[1] "Preview up to date ({kesit}, {n} pixels){ek}"
 
-#: arayuz/onizleme.py:530
+#: arayuz/onizleme.py:526
 #, python-format
 msgid ""
 "Geometri kurulamadı:\n"
@@ -4950,25 +4950,25 @@ msgstr ""
 "\n"
 "%s"
 
-#: arayuz/onizleme.py:532
+#: arayuz/onizleme.py:528
 #, python-format
 msgid "Önizleme başarısız: %s"
 msgstr "Preview failed: %s"
 
-#: arayuz/onizleme.py:533
+#: arayuz/onizleme.py:529
 #, python-format
 msgid "Kapsamlı önizleme başarısız (Çalıştır kapısı tam modele bakar): %s"
 msgstr "Scoped preview failed (the Run gate checks the full model): %s"
 
-#: arayuz/onizleme.py:578
+#: arayuz/onizleme.py:577
 msgid "[ölçek 1:1 değil]"
 msgstr "[scale not 1:1]"
 
-#: arayuz/onizleme.py:632
+#: arayuz/onizleme.py:631
 msgid "Hücre renkleri yalnız hücreleri ayırt etmek içindir."
 msgstr "Cell colours only tell cells apart."
 
-#: arayuz/onizleme_boyama.py:101
+#: arayuz/onizleme_boyama.py:108
 msgid "Çakışma"
 msgstr "Overlap"
 
@@ -5018,15 +5018,15 @@ msgstr "Restarted; the preview is redrawn when the model changes."
 msgid "Önizleme süreci başlatılamadı: %s"
 msgstr "The preview process could not be started: %s"
 
-#: arayuz/onizleme_kapsam.py:45
+#: arayuz/onizleme_kapsam.py:47
 msgid "Otomatik"
 msgstr "Automatic"
 
-#: arayuz/onizleme_kapsam.py:45
+#: arayuz/onizleme_kapsam.py:47
 msgid "Tam model"
 msgstr "Full model"
 
-#: arayuz/onizleme_kapsam.py:87
+#: arayuz/onizleme_kapsam.py:88
 msgid ""
 "Otomatik: Parçalar sayfasında seçili parça, Demet sayfasında seçili demet,\n"
 "gelişmiş Geometri'de seçili düğüm çizilir (yansıtıcı sınırlı alt model);\n"
@@ -5039,19 +5039,19 @@ msgstr ""
 "with reflective boundaries); the full model on other pages. Full model: always\n"
 "the whole model. In both modes the Run gate checks only the full model."
 
-#: arayuz/onizleme_kapsam.py:91
+#: arayuz/onizleme_kapsam.py:92
 msgid "Kapsam:"
 msgstr "Scope:"
 
-#: arayuz/onizleme_kapsam.py:122
+#: arayuz/onizleme_kapsam.py:123
 msgid "tam model (alt model kurulamadı)"
 msgstr "full model (sub-model could not be built)"
 
-#: arayuz/onizleme_kapsam.py:157
+#: arayuz/onizleme_kapsam.py:173
 msgid "Önizleme: tam model denetlendi."
 msgstr "Preview: full model checked."
 
-#: arayuz/onizleme_kapsam.py:161
+#: arayuz/onizleme_kapsam.py:176
 #, python-format
 msgid "Tam model kurulamadı (Çalıştır kapalı): %s"
 msgstr "Full model could not be built (Run disabled): %s"
@@ -5076,39 +5076,39 @@ msgstr "Hide"
 msgid "Nadiren gereken ayarları göster"
 msgstr "Show rarely needed settings"
 
-#: arayuz/pencere/ana_pencere.py:119
+#: arayuz/pencere/ana_pencere.py:121
 msgid "yeni model"
 msgstr "new model"
 
-#: arayuz/pencere/ana_pencere.py:151
+#: arayuz/pencere/ana_pencere.py:153
 msgid "Sayfalar"
 msgstr "Pages"
 
-#: arayuz/pencere/ana_pencere.py:337
+#: arayuz/pencere/ana_pencere.py:339
 msgid "Şablon kurulamadı"
 msgstr "Template could not be built"
 
-#: arayuz/pencere/ana_pencere.py:344
+#: arayuz/pencere/ana_pencere.py:346
 #, python-brace-format
 msgid "Çalışan sade bir model kuruldu ({ad}). Kaydetmek için 'Farklı kaydet' kullanın."
 msgstr "A simple working model was set up ({ad}). Use 'Save as' to save it."
 
-#: arayuz/pencere/ana_pencere.py:552
+#: arayuz/pencere/ana_pencere.py:554
 #, python-brace-format
 msgid "adsız — örnek: {ornek}"
 msgstr "untitled — example: {ornek}"
 
-#: arayuz/pencere/ana_pencere.py:555
+#: arayuz/pencere/ana_pencere.py:557
 msgid "kaydedilmemiş"
 msgstr "unsaved"
 
-#: arayuz/pencere/ana_pencere.py:580
+#: arayuz/pencere/ana_pencere.py:582
 msgid "Boyuta tıklayınca Kor sayfasına, hesap türüne tıklayınca Hesap ayarlarına gider."
 msgstr ""
 "Click the dimension to go to the Geometry page, the calculation type to go to Run "
 "settings."
 
-#: arayuz/pencere/ana_pencere.py:624
+#: arayuz/pencere/ana_pencere.py:626
 #, python-brace-format
 msgid ""
 " Model bu türün gerektirdiği parçayı içermiyordu; şablondan eklendi: {parca} "
@@ -5117,7 +5117,7 @@ msgstr ""
 " The model lacked the component this type needs; added from the template: {parca} "
 "(edit it on the Components/Assembly page)."
 
-#: arayuz/pencere/ana_pencere.py:627
+#: arayuz/pencere/ana_pencere.py:629
 #, python-brace-format
 msgid "Kor türü: {tur} — geri almak için Ctrl+Z.{ek}"
 msgstr "Core type: {tur} — press Ctrl+Z to undo.{ek}"
@@ -5372,11 +5372,11 @@ msgstr "&File"
 msgid "D&üzen"
 msgstr "&Edit"
 
-#: arayuz/pencere/menuler.py:104 arayuz/pencere/menuler.py:315
+#: arayuz/pencere/menuler.py:104 arayuz/pencere/menuler.py:313
 msgid "Geri al"
 msgstr "Undo"
 
-#: arayuz/pencere/menuler.py:105 arayuz/pencere/menuler.py:315
+#: arayuz/pencere/menuler.py:105 arayuz/pencere/menuler.py:313
 msgid "Yinele"
 msgstr "Redo"
 
@@ -5392,24 +5392,24 @@ msgstr "&Help"
 msgid "Kullanım kılavuzunu etkin sayfanın bölümünde açar"
 msgstr "Opens the user guide at the section for the current page"
 
-#: arayuz/pencere/menuler.py:111 arayuz/pencere/menuler.py:340
+#: arayuz/pencere/menuler.py:111 arayuz/pencere/menuler.py:338
 #: arayuz/pencere/yardim_metni.py:14
 msgid "Yardım ve terimler"
 msgstr "Help and terms"
 
-#: arayuz/pencere/menuler.py:112 arayuz/pencere/menuler.py:360
+#: arayuz/pencere/menuler.py:112 arayuz/pencere/menuler.py:358
 msgid "Hakkında"
 msgstr "About"
 
-#: arayuz/pencere/menuler.py:116 arayuz/pencere/menuler.py:317
+#: arayuz/pencere/menuler.py:116 arayuz/pencere/menuler.py:315
 msgid "Doğrulamayı yenile (veri kütüphanesi dahil)"
 msgstr "Refresh model check (including data library)"
 
-#: arayuz/pencere/menuler.py:119 arayuz/pencere/menuler.py:318
+#: arayuz/pencere/menuler.py:119 arayuz/pencere/menuler.py:316
 msgid "Önizlemeyi yenile"
 msgstr "Refresh preview"
 
-#: arayuz/pencere/menuler.py:121 arayuz/pencere/menuler.py:320
+#: arayuz/pencere/menuler.py:121 arayuz/pencere/menuler.py:318
 msgid "ÇALIŞTIR"
 msgstr "RUN"
 
@@ -5431,7 +5431,7 @@ msgstr "Start screen: choose what to model"
 msgid "Bir model dosyası (.json) aç"
 msgstr "Open a model file (.json)"
 
-#: arayuz/pencere/menuler.py:139 arayuz/pencere/menuler.py:314 arayuz/pencere/proje.py:76
+#: arayuz/pencere/menuler.py:139 arayuz/pencere/menuler.py:312 arayuz/pencere/proje.py:76
 msgid "Kaydet"
 msgstr "Save"
 
@@ -5471,15 +5471,15 @@ msgstr "Writes an HTML or PDF report for the model and the last run"
 msgid "Çıkış"
 msgstr "Quit"
 
-#: arayuz/pencere/menuler.py:173 arayuz/pencere/menuler.py:329
+#: arayuz/pencere/menuler.py:173 arayuz/pencere/menuler.py:327
 msgid "Tam ekran"
 msgstr "Full screen"
 
-#: arayuz/pencere/menuler.py:182
+#: arayuz/pencere/menuler.py:180
 msgid "Önizlemeyi göster"
 msgstr "Show preview"
 
-#: arayuz/pencere/menuler.py:186
+#: arayuz/pencere/menuler.py:184
 msgid ""
 "Önizleme panelini gizler ya da gösterir; gizliyken çizim yapılmaz (Çalıştır kapısı "
 "için model yine denetlenir)"
@@ -5487,56 +5487,56 @@ msgstr ""
 "Hides or shows the preview panel; nothing is plotted while it is hidden (the model is"
 " still checked for the Run gate)"
 
-#: arayuz/pencere/menuler.py:264
+#: arayuz/pencere/menuler.py:262
 #, python-brace-format
 msgid "Tema: {ad}"
 msgstr "Theme: {ad}"
 
-#: arayuz/pencere/menuler.py:283
+#: arayuz/pencere/menuler.py:281
 msgid "Dil"
 msgstr "Language"
 
-#: arayuz/pencere/menuler.py:283
+#: arayuz/pencere/menuler.py:281
 msgid "Dil değişikliği uygulama yeniden başlatılınca geçerli olur."
 msgstr "The language change takes effect after the application restarts."
 
-#: arayuz/pencere/menuler.py:313
+#: arayuz/pencere/menuler.py:311
 msgid "Yeni model (başlangıç ekranı)"
 msgstr "New model (start screen)"
 
-#: arayuz/pencere/menuler.py:313 arayuz/pencere/proje.py:204
+#: arayuz/pencere/menuler.py:311 arayuz/pencere/proje.py:204
 msgid "Aç"
 msgstr "Open"
 
-#: arayuz/pencere/menuler.py:314
+#: arayuz/pencere/menuler.py:312
 msgid "Farklı kaydet"
 msgstr "Save as"
 
-#: arayuz/pencere/menuler.py:316 arayuz/pencere/proje.py:281
+#: arayuz/pencere/menuler.py:314 arayuz/pencere/proje.py:281
 msgid "Python betiği olarak dışa aktar"
 msgstr "Export as Python script"
 
-#: arayuz/pencere/menuler.py:319
+#: arayuz/pencere/menuler.py:317
 msgid "Önizlemeyi gizle / göster"
 msgstr "Hide / show preview"
 
-#: arayuz/pencere/menuler.py:321
+#: arayuz/pencere/menuler.py:319
 msgid "Kullanım kılavuzu (etkin sayfanın bölümü)"
 msgstr "User guide (section for the current page)"
 
-#: arayuz/pencere/menuler.py:322
+#: arayuz/pencere/menuler.py:320
 msgid "Bu yardım"
 msgstr "This help"
 
-#: arayuz/pencere/menuler.py:324
+#: arayuz/pencere/menuler.py:322
 msgid "Klavye kısayolları"
 msgstr "Keyboard shortcuts"
 
-#: arayuz/pencere/menuler.py:330
+#: arayuz/pencere/menuler.py:328
 msgid "Başlangıç ekranında: açık modele dön"
 msgstr "On the start screen: return to the open model"
 
-#: arayuz/pencere/menuler.py:333
+#: arayuz/pencere/menuler.py:331
 msgid ""
 "Demet ve kor haritasında sol tık boyar, sağ tık o hücrenin parçasını fırça yapar; "
 "altıgen haritada tekerlek yakınlaştırır."
@@ -5544,7 +5544,7 @@ msgstr ""
 "In the assembly and core maps, left-click paints and right-click picks that cell's "
 "component as the brush; on the hexagonal map the mouse wheel zooms."
 
-#: arayuz/pencere/menuler.py:361
+#: arayuz/pencere/menuler.py:359
 #, python-brace-format
 msgid ""
 "{ad}\n"

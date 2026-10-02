@@ -178,8 +178,39 @@ def test_kutuphanede_kullanilmayan_pin_adimi():
     kontrol("kurulur", "uo2" in _malzemeler(_kur(alt)))
 
 
+def test_inceleme_kenar_durumlari():
+    print("\n[K5A-10] kesitsiz kap -> None; bozuk deger -> AltModelHatasi; etiket + eksenel notu")
+    from cekirdek import alt_model as am
+    # Arrange
+    spec = _spec("kafes_tamburlu_yansitici")
+    kesitsiz = copy.deepcopy(spec)
+    kesitsiz["geometri"]["kok"]["halkalar"][0]["icerik"] = {"tur": "kap", "ic": "su"}
+    bozuk = copy.deepcopy(spec)
+    bozuk["tamburlar"][0]["yaricap"] = "abc"
+    # Act / Assert
+    kontrol("kesitsiz kap dugumu -> None (tam model)",
+            am.dugum_alt_modeli(kesitsiz, ("kok", "halkalar", 0, "icerik")) is None)
+    try:
+        am.parca_alt_modeli(bozuk, "tambur", "tambur_b4c")
+    except am.AltModelHatasi:
+        kontrol("bozuk tambur yaricapi -> AltModelHatasi", True)
+    else:
+        kontrol("bozuk tambur yaricapi -> AltModelHatasi", False)
+    k = am.parca_kapsami(_spec("pwr_ceyrek_kor"), "cubuk", "yakit_24")
+    kontrol("parca_kapsami: (spec, etiket)", k.spec["kor"]["cubuk"] == "yakit_24"
+            and "yakit_24" in k.etiket)
+    katmanli = am.parca_kapsami(_spec("pwr_eksenel"), "cubuk", "yakit_cubugu")
+    kontrol("eksenel katmanli modelde etikette not", am.EKSENEL_NOTU in katmanli.etiket,
+            "-> %s" % katmanli.etiket)
+    katmansiz = am.parca_kapsami(_spec("pwr_3b"), "cubuk", "yakit_cubugu")
+    kontrol("katmansiz 3B modelde not yok", am.EKSENEL_NOTU not in katmansiz.etiket,
+            "-> %s" % katmansiz.etiket)
+    d = am.dugum_kapsami(spec, ("kok", "ic"))
+    kontrol("dugum_kapsami etiketli", d is not None and bool(d.etiket))
+
+
 HIZLI = [test_cubuk_alt_modeli_yalniz_pinin_malzemeleri, test_demet_alt_modeli_kapsam_disi_malzeme_yok,
          test_altigen_demet_alt_modeli_kurulur, test_plaka_alt_modeli, test_tambur_alt_modeli_gelismis,
          test_dugum_alt_modeli, test_yukseklik_ve_k4_iki_boyutlu, test_tanimsiz_ad_hatasi,
-         test_kutuphanede_kullanilmayan_pin_adimi]
+         test_kutuphanede_kullanilmayan_pin_adimi, test_inceleme_kenar_durumlari]
 YAVAS = []

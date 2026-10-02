@@ -46,7 +46,6 @@ _log = kaydedici("arayuz.onizleme")
 KAPSAM_OTOMATIK, KAPSAM_TAM = "otomatik", "tam"
 KAPSAM_SECENEKLERI = ((KAPSAM_OTOMATIK, N_("Otomatik")), (KAPSAM_TAM, N_("Tam model")))
 _MALZEME_KANALI = 2               # id haritasi [hucre, ornek, malzeme] (cizim_sureci)
-_BEKLENEN = (alt_model.AltModelHatasi, KeyError, TypeError, ValueError)
 
 
 @dataclass(frozen=True)
@@ -95,7 +94,7 @@ class KapsamMixin(object):
         self.kapsam_bilgi.setObjectName("kucuk")
         self.kapsam.currentIndexChanged.connect(lambda *_a: self._ciz())
 
-    def kapsam_saglayici_ayarla(self, saglayici) -> None:
+    def kapsam_saglayici_ayarla(self, saglayici: Callable[[dict], KapsamSonucu]) -> None:
         """saglayici(spec) -> KapsamSonucu: otomatik kipte neyin cizilecegi."""
         self._kapsam_saglayici = saglayici
         self.kapsam_degisti()
@@ -114,7 +113,7 @@ class KapsamMixin(object):
             return TAM_MODEL
         try:
             sonuc = self._kapsam_saglayici(self.spec) or TAM_MODEL
-        except _BEKLENEN as e:              # secim bayat/eksik: tam model cizilir, yazilir
+        except alt_model.AltModelHatasi as e:   # secim bayat/bozuk: tam model cizilir, yazilir
             _log.warning("onizleme kapsami kurulamadi; tam model cizilecek", exc_info=True)
             return KapsamSonucu(None, "", hata=str(e.args[0] if e.args else e))
         return sonuc
@@ -182,26 +181,24 @@ class KapsamMixin(object):
 # pencere baglantisi: sayfa + secim -> kapsam
 # ============================================================================
 
-def kapsam_sonucu(spec: dict, sayfa: str | None, parca=None, demet=None,
-                  dugum=None) -> KapsamSonucu:
+def kapsam_sonucu(spec: dict, sayfa: str | None, parca: tuple | None = None,
+                  demet: str | None = None, dugum: tuple | None = None) -> KapsamSonucu:
     """Sayfa ve sayfadaki secimden kapsam (saf). parca: (tur, ad); demet: ad;
     dugum: gelismis geometride secili yol (sablon modunda None)."""
-    alt = None
+    sonuc = None
     if sayfa == "parcalar" and parca and parca[0] in alt_model.PARCA_TURLERI and parca[1]:
-        alt = alt_model.parca_alt_modeli(spec, parca[0], parca[1])
+        sonuc = alt_model.parca_kapsami(spec, parca[0], parca[1])
     elif sayfa == "demet" and demet:
-        alt = alt_model.parca_alt_modeli(spec, "demet", demet)
+        sonuc = alt_model.parca_kapsami(spec, "demet", demet)
     elif sayfa == "kor" and dugum:
-        alt = alt_model.dugum_alt_modeli(spec, dugum)
-    if alt is None:
-        return TAM_MODEL
-    return KapsamSonucu(alt, alt["ad"].rsplit(" — ", 1)[-1])
+        sonuc = alt_model.dugum_kapsami(spec, dugum)
+    return TAM_MODEL if sonuc is None else KapsamSonucu(sonuc.spec, sonuc.etiket)
 
 
 class PencereKapsami(QtCore.QObject):
     """Ana pencerenin sayfa/secim sinyallerini onizleme kapsamina baglar."""
 
-    def __init__(self, pencere):
+    def __init__(self, pencere: QtWidgets.QMainWindow):
         super().__init__(pencere)
         self._p = pencere
         on = pencere.onizleme

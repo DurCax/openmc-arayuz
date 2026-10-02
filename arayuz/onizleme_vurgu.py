@@ -10,23 +10,27 @@ model) cizimde tiklama ve vurgu kapalidir: id haritasi tam modelin degildir.
 from cekirdek import onbellek
 from cekirdek.gunluk import kaydedici
 from arayuz import tema
+from arayuz.onizleme_boyama import tema_rgb01
 
 _log = kaydedici("arayuz.onizleme")
 _SOLUK_ORTU = 0.6                 # secili olmayan bolgenin soluk ortusu (saydamlik)
 
 
-def _rgb01(ad):
-    from matplotlib.colors import to_rgb
-    return to_rgb(tema.renk(ad))
+_rgb01 = tema_rgb01
 
 
 class VurguMixin(object):
     """OnizlemeWidget'a karisir: tiklama -> dugum, secili dugum vurgusu."""
 
     def vurgula(self, yol):
-        """Secili dugum (Geometri sayfasi). Yeniden cizim ister."""
+        """Secili dugum (Geometri sayfasi). Yeniden cizim ister. Kapsamli
+        gorunumde model degismedigi icin kapi kapanmaz (kapsam_degisti, K5)."""
         self._vurgu = tuple(yol) if yol else None
-        if self.spec is not None:
+        if self.spec is None:
+            return
+        if self._son_kapsamli:
+            self.kapsam_degisti()
+        else:
             self.iste()
 
     def _model(self):

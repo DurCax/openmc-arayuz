@@ -131,7 +131,10 @@ yalnız görsel denetim içindir: koşulan model her zaman tam modeldir.
 **ÇALIŞTIR kapısı yalnız tam modele bakar.** Kapsamlı çizim tam modeli denetlemez; tam
 model değiştiyse kapsamlı çizimin ardından tam model ayrıca (kesit çizilmeden) kurulur
 ve kapı onun sonucuyla açılır ya da kapanır. Aynı tam modelde başka bir pin seçmek bu
-denetimi yinelemez. Kapsamlı çizim başarısız olsa bile (ör. kullanılmayan bir pinin
+denetimi yinelemez; tam model zaten başarıyla denetlenmişse kapsamlı çizim sürerken de
+ÇALIŞTIR açık kalır (yalnız tam modelin çizimi ya da denetimi sürerken kapalıdır). 3B
+eksenel katmanlı ya da kontrol çubuklu modelde alt model tek eksenel bölgedir; kapsam
+yazısında "eksenel olarak birebir değil" notu çıkar. Kapsamlı çizim başarısız olsa bile (ör. kullanılmayan bir pinin
 malzemesi seçilmemiş) kapı tam modelin sonucunu gösterir; tam model kurulamıyorsa
 kapsamlı çizim başarılı olsa da kapı kapalıdır. Kapsamlı çizimde önizlemeye tıklayıp
 düğüm seçmek ve düğüm vurgusu kapalıdır.

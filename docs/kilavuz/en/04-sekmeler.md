@@ -135,7 +135,10 @@ always the full model.
 **The Run gate looks only at the full model.** A scoped plot does not check the full model;
 if the full model has changed, it is built separately (without slicing) after the scoped plot
 and the gate opens or closes on that result. Selecting another pin in the same full model does
-not repeat this check. Even if the scoped plot fails (e.g. the material of an unused pin is not
+not repeat this check; if the full model has already been checked successfully, **Run** stays
+enabled while a scoped plot is being drawn (it is disabled only while the full model itself is
+being drawn or checked). In a 3D model with axial layers or control rods the sub-model is a
+single axial region; the scope text then carries the note "not axially exact". Even if the scoped plot fails (e.g. the material of an unused pin is not
 selected) the gate shows the result of the full model; if the full model cannot be built the
 gate is closed even when the scoped plot succeeds. In a scoped plot, clicking the preview to
 select a node and node highlighting are disabled.

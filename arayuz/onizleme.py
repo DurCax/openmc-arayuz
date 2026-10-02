@@ -96,9 +96,7 @@ def _model_yuksekligi(spec):
         return None
 
 
-def _rgb01(ad):
-    from matplotlib.colors import to_rgb
-    return to_rgb(tema.renk(ad))
+_rgb01 = boyama.tema_rgb01
 
 
 def _kapsam(genislik):

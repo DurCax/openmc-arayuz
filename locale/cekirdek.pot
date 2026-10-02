@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 10:07+0300\n"
+"POT-Creation-Date: 2026-10-02 10:13+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,44 +17,53 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: cekirdek/alt_model.py:57 cekirdek/sema_basvuru.py:97
+#: cekirdek/alt_model.py:67 cekirdek/sema_basvuru.py:97
 msgid "çubuk"
 msgstr ""
 
-#: cekirdek/alt_model.py:57 cekirdek/sema_basvuru.py:97
+#: cekirdek/alt_model.py:67 cekirdek/sema_basvuru.py:97
 msgid "plaka"
 msgstr ""
 
-#: cekirdek/alt_model.py:57 cekirdek/sema_basvuru.py:98
+#: cekirdek/alt_model.py:67 cekirdek/sema_basvuru.py:98
 msgid "demet"
 msgstr ""
 
-#: cekirdek/alt_model.py:58 cekirdek/alt_model.py:205
+#: cekirdek/alt_model.py:68 cekirdek/alt_model.py:225
 msgid "tambur"
 msgstr ""
 
-#: cekirdek/alt_model.py:77
+#: cekirdek/alt_model.py:74
+msgid "eksenel olarak birebir değil"
+msgstr ""
+
+#: cekirdek/alt_model.py:97
 #, python-format
 msgid "model yüksekliği okunamadı: %s"
 msgstr ""
 
-#: cekirdek/alt_model.py:155 cekirdek/alt_model.py:205
+#: cekirdek/alt_model.py:175 cekirdek/alt_model.py:225
 #, python-format
 msgid "tanımsız %(tur)s: %(ad)s"
 msgstr ""
 
-#: cekirdek/alt_model.py:209
+#: cekirdek/alt_model.py:229
 #, python-format
 msgid "tambur yarıçapı sıfırdan büyük olmalı: %s"
 msgstr ""
 
-#: cekirdek/alt_model.py:224
+#: cekirdek/alt_model.py:285
+msgid "düğüm"
+msgstr ""
+
+#: cekirdek/alt_model.py:338
 #, python-format
 msgid "bilinmeyen parça türü: %s"
 msgstr ""
 
-#: cekirdek/alt_model.py:278
-msgid "düğüm"
+#: cekirdek/alt_model.py:349
+#, python-format
+msgid "alt model kurulamadı: %s"
 msgstr ""
 
 #: cekirdek/altigen_kor.py:293

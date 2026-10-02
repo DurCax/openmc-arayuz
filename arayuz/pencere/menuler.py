@@ -176,9 +176,7 @@ class MenulerMixin(object):
         """Gorunum > Onizlemeyi goster (F7, v3 K5): paneli daraltir/acar. Durum
         panelin daraltildi sinyaliyle QSettings'e yazilir (kabuk.ONIZLEME_AYARI);
         gizliyken cizim yapilmaz, yalniz tam model denetlenir (Calistir kapisi).
-        Onizleme kapsami (sayfa + secim -> alt model) burada pencereye baglanir."""
-        from arayuz.onizleme_kapsam import PencereKapsami
-        self.onizleme_kapsami = PencereKapsami(self)
+        """
         e = QtGui.QAction(_("Önizlemeyi göster"), self)
         e.setCheckable(True)
         e.setChecked(not self.onizleme_paneli.dar_mi())

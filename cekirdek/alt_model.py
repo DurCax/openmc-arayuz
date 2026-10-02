@@ -30,8 +30,15 @@
    gruplar yalniz uyelerinin hepsi alt agacta kalanlardir.
 
  YUKSEKLIK
-   uc_boyutlu=True (onizleme): 3B modelde alt model ayni yukseklikte, tek
-   eksenel bolge (kontrol cubugu daldirmasi korunur). uc_boyutlu=False: 2B.
+   uc_boyutlu=True (onizleme): 3B modelde alt model ayni yukseklikte, TEK
+   eksenel bolge. Eksenel katmanlar, aktif aralik ve kontrol cubugunun katmana
+   gore konumu KORUNMAZ (daldirma orani alt modelin yuksekligine gore yeniden
+   uygulanir); boyle modellerde etikete EKSENEL_NOTU eklenir. uc_boyutlu=False: 2B.
+
+ GIRIS
+   parca_kapsami / dugum_kapsami -> AltModel(spec, etiket) (onizleme);
+   parca_alt_modeli / demet_alt_modeli / dugum_alt_modeli -> spec (K4).
+   Beklenen veri hatalari AltModelHatasi olarak yukselir.
 
  KAYNAK
    Ayarlar korunur; kaynak kutusunun elle yazilmis koselerinin (alt/ust) ve
@@ -42,9 +49,12 @@
 """
 
 import copy
+from typing import NamedTuple, Sequence
 
 from cekirdek import sema
 from cekirdek.ceviri import _, N_
+# Modul duzeyinde: geometri.sema yalniz 'copy' ice aktarir (dongu yok).
+from cekirdek.geometri.sema import bilesen_tanimi, kisaltma_coz, tanimlar
 
 # Demette kullanilmayan pinin hucre kenari = 2 x dis yaricap x pay. Pay yalniz
 # GORSEL: dis (sogutucu) bolgesi kesitte gorunsun; bir tasarim adimi degildir
@@ -60,8 +70,18 @@ _SABLON = {"cubuk": ("tek_cubuk", "cubuklar"), "plaka": ("tek_plaka", "plakalar"
            "demet": ("tek_demet", "demetler")}
 
 
+# Tam model 3B'de eksenel katmanli ya da kontrol cubuklu ise kapsam etiketine eklenir.
+EKSENEL_NOTU = N_("eksenel olarak birebir değil")
+
+
 class AltModelHatasi(ValueError):
-    """Alt model kurulamaz (tanimsiz parca, bilinmeyen tur); mesaj gosterilir."""
+    """Alt model kurulamaz (tanimsiz parca, bilinmeyen tur, bozuk alan); mesaj gosterilir."""
+
+
+class AltModel(NamedTuple):
+    """Alt model spec'i + gorunen kapsam etiketi ("çubuk ‘yakit’")."""
+    spec: dict
+    etiket: str
 
 
 # ----------------------------------------------------------------------------
@@ -83,7 +103,7 @@ def _taban(spec: dict, etiket: str) -> dict:
     alt["ad"] = "%s — %s" % (spec.get("ad") or "", etiket)
     alt["tallyler"] = []
     alt["guc_dagilimi"] = copy.deepcopy(sema.VARSAYILAN_GUC)
-    alt["tukenme"] = dict(copy.deepcopy(alt.get("tukenme") or sema.VARSAYILAN_TUKENME),
+    alt["tukenme"] = dict(alt.get("tukenme") or copy.deepcopy(sema.VARSAYILAN_TUKENME),
                           var=False, ek_malzemeler=[])
     ayar = alt.setdefault("ayarlar", copy.deepcopy(sema.VARSAYILAN_AYARLAR))
     ayar["kinetik"] = dict(ayar.get("kinetik") or {}, var=False)
@@ -191,7 +211,7 @@ def _agac_alt_modeli(spec: dict, kok: dict, etiket: str, uc_boyutlu: bool) -> di
     eski = spec.get("geometri") if sema.agac_modu(spec) else {}
     adlar = _yerlesim_adlari(kok, set())
     gruplar = [copy.deepcopy(g) for g in (eski or {}).get("gruplar") or []
-               if set(g.get("uyeler") or []) <= adlar]
+               if g.get("uyeler") and set(g["uyeler"]) <= adlar]
     alt["kor"] = {"tur": sema.AGAC}
     alt["geometri"] = {"kok": copy.deepcopy(kok),
                        "parcalar": copy.deepcopy((eski or {}).get("parcalar") or []),
@@ -213,24 +233,11 @@ def _tambur_alt_modeli(spec: dict, ad: str, uc_boyutlu: bool) -> dict:
 
 
 # ----------------------------------------------------------------------------
-# genel giris
+# dugum cozumu (gelismis geometri)
 # ----------------------------------------------------------------------------
 
-def parca_alt_modeli(spec: dict, tur: str, ad: str, uc_boyutlu: bool = True) -> dict:
-    """Tek parcanin (cubuk | plaka | demet | tambur) yansitici sinirli alt modeli."""
-    if tur == "tambur":
-        return _tambur_alt_modeli(spec, ad, uc_boyutlu)
-    if tur not in _SABLON:
-        raise AltModelHatasi(_("bilinmeyen parça türü: %s") % tur)
-    return _sablon_alt_modeli(spec, tur, ad, uc_boyutlu)
-
-
-def demet_alt_modeli(spec: dict, ad: str, uc_boyutlu: bool = False) -> dict:
-    """K4 demet k-sonsuz: yansitici sinirli tek demet (varsayilan 2B)."""
-    return parca_alt_modeli(spec, "demet", ad, uc_boyutlu=uc_boyutlu)
-
-
-def _al(agac, yol):
+def _al(agac: dict, yol: tuple) -> object:
+    """Agactaki yolun degeri (arayuz/geometri/duzenle.al ile ayni kural); yoksa None."""
     d = agac
     for p in yol:
         if isinstance(d, dict) and not isinstance(p, int) and p in d:
@@ -251,19 +258,19 @@ def _kafes_kesiti(kafes: dict) -> dict | None:
     return {"sekil": "dikdortgen", "boyut": [float(adim) * boyut[0], float(adim) * boyut[1]]}
 
 
-def _bilesen(spec, tanim, deger, uc_boyutlu, derinlik):
-    from cekirdek.geometri.sema import bilesen_tanimi
+def _bilesen(spec: dict, tanim: dict, deger: dict, uc_boyutlu: bool,
+             derinlik: int) -> "AltModel | None":
     tur, t = bilesen_tanimi(tanim, deger.get("ad"))
     if tur in PARCA_TURLERI:
-        return parca_alt_modeli(spec, tur, deger["ad"], uc_boyutlu)
+        return _parca(spec, tur, deger["ad"], uc_boyutlu)
     if tur == "parca":
         return _deger_alt_modeli(spec, tanim, t.get("dugum"), uc_boyutlu, derinlik + 1)
     return None
 
 
-def _deger_alt_modeli(spec, tanim, deger, uc_boyutlu, derinlik=0):
-    """Agactaki bir deger (dugum, kisaltma, halka/yerlesim/katman) -> alt model | None."""
-    from cekirdek.geometri.sema import kisaltma_coz
+def _deger_alt_modeli(spec: dict, tanim: dict, deger: object, uc_boyutlu: bool,
+                      derinlik: int = 0) -> "AltModel | None":
+    """Agactaki bir deger (dugum, kisaltma, halka/yerlesim/katman) -> AltModel | None."""
     if derinlik > _EN_COK_DERINLIK:
         return None
     if isinstance(deger, str):
@@ -278,22 +285,101 @@ def _deger_alt_modeli(spec, tanim, deger, uc_boyutlu, derinlik=0):
     etiket = "%s ‘%s’" % (_("düğüm"), deger.get("id") or tur)
     if tur == "kafes":
         kesit = _kafes_kesiti(deger)
-        if kesit is None:
-            return None
-        return _agac_alt_modeli(spec, {"tur": "kap", "kesit": kesit, "ic": deger}, etiket,
-                                uc_boyutlu)
-    if tur == "kap":
-        return _agac_alt_modeli(spec, {k: v for k, v in deger.items() if k != "dis"}, etiket,
-                                uc_boyutlu)
-    return None                                    # malzeme, eksenel, referans: tam model
+        kok = {"tur": "kap", "kesit": kesit, "ic": deger} if kesit else None
+    elif tur == "kap" and deger.get("kesit"):      # kesitsiz kap: olcusu yok, tam model
+        kok = {k: v for k, v in deger.items() if k != "dis"}
+    else:
+        kok = None                                 # malzeme, eksenel, referans: tam model
+    if kok is None:
+        return None
+    return AltModel(_agac_alt_modeli(spec, kok, etiket, uc_boyutlu), etiket)
 
 
-def dugum_alt_modeli(spec: dict, yol, uc_boyutlu: bool = True) -> dict | None:
-    """Gelismis geometride secili dugumun alt modeli; tam kor gereken yerde None
-    (sablon modu, kok, malzeme/eksenel dugumu, cozulemeyen yol)."""
+# ----------------------------------------------------------------------------
+# eksenel ayrinti notu
+# ----------------------------------------------------------------------------
+
+def _agacta_eksenel(deger: object) -> bool:
+    if isinstance(deger, dict):
+        return deger.get("tur") == "eksenel" or any(_agacta_eksenel(v) for v in deger.values())
+    if isinstance(deger, list):
+        return any(_agacta_eksenel(v) for v in deger)
+    return False
+
+
+def _eksenel_ayrinti(spec: dict, alt: dict) -> bool:
+    """Tam model 3B'de alt modelin tek eksenel bolgesinden farkli mi: eksenel
+    katmanlar ya da kontrol cubugu (daldirma alt modelin yuksekligine gore
+    yeniden uygulanir; katman siniri/aktif aralik korunmaz)."""
+    if sema.model_yuksekligi(alt) is None:
+        return False
+    if sema.agac_modu(spec):
+        katmanli = _agacta_eksenel(spec.get("geometri"))
+    else:
+        katmanli = sema.eksenel_katmanlar(spec["kor"]) is not None
+    kontrol = any(c.get("tur") == "kontrol" for c in alt.get("cubuklar") or [])
+    return katmanli or kontrol
+
+
+def _notlu(spec: dict, sonuc: "AltModel | None") -> "AltModel | None":
+    if sonuc is None or not _eksenel_ayrinti(spec, sonuc.spec):
+        return sonuc
+    return AltModel(sonuc.spec, "%s · %s" % (sonuc.etiket, _(EKSENEL_NOTU)))
+
+
+# ----------------------------------------------------------------------------
+# genel giris (imzalar K4 ile ortak: DEGISTIRMEYIN)
+# ----------------------------------------------------------------------------
+
+def _parca(spec: dict, tur: str, ad: str, uc_boyutlu: bool) -> AltModel:
+    if tur == "tambur":
+        return AltModel(_tambur_alt_modeli(spec, ad, uc_boyutlu), _etiket(tur, ad))
+    if tur not in _SABLON:
+        raise AltModelHatasi(_("bilinmeyen parça türü: %s") % tur)
+    return AltModel(_sablon_alt_modeli(spec, tur, ad, uc_boyutlu), _etiket(tur, ad))
+
+
+def _sarili(islev, *arg):
+    """Beklenen veri hatalarini (bozuk alan, eksik anahtar) AltModelHatasi yapar."""
+    try:
+        return islev(*arg)
+    except AltModelHatasi:
+        raise
+    except (KeyError, TypeError, ValueError) as e:
+        raise AltModelHatasi(_("alt model kurulamadı: %s")
+                             % (e.args[0] if e.args else e)) from e
+
+
+def parca_kapsami(spec: dict, tur: str, ad: str, uc_boyutlu: bool = True) -> AltModel:
+    """Tek parcanin (cubuk | plaka | demet | tambur) alt modeli + gorunen etiketi."""
+    return _sarili(lambda: _notlu(spec, _parca(spec, tur, ad, uc_boyutlu)))
+
+
+def parca_alt_modeli(spec: dict, tur: str, ad: str, uc_boyutlu: bool = True) -> dict:
+    """Tek parcanin (cubuk | plaka | demet | tambur) yansitici sinirli alt modeli."""
+    return _sarili(lambda: _parca(spec, tur, ad, uc_boyutlu).spec)
+
+
+def demet_alt_modeli(spec: dict, ad: str, uc_boyutlu: bool = False) -> dict:
+    """K4 demet k-sonsuz: yansitici sinirli tek demet (varsayilan 2B)."""
+    return parca_alt_modeli(spec, "demet", ad, uc_boyutlu=uc_boyutlu)
+
+
+def _dugum(spec: dict, yol: Sequence, uc_boyutlu: bool) -> AltModel | None:
     yol = tuple(yol or ())
     if not sema.agac_modu(spec) or yol in ((), ("kok",)):
         return None
-    from cekirdek.geometri.sema import tanimlar
     agac = spec.get("geometri") or {}
     return _deger_alt_modeli(spec, tanimlar(spec, agac), _al(agac, yol), uc_boyutlu)
+
+
+def dugum_kapsami(spec: dict, yol: Sequence, uc_boyutlu: bool = True) -> AltModel | None:
+    """dugum_alt_modeli + gorunen etiket; tam kor gereken yerde None."""
+    return _sarili(lambda: _notlu(spec, _dugum(spec, yol, uc_boyutlu)))
+
+
+def dugum_alt_modeli(spec: dict, yol: Sequence, uc_boyutlu: bool = True) -> dict | None:
+    """Gelismis geometride secili dugumun alt modeli; tam kor gereken yerde None
+    (sablon modu, kok, malzeme/eksenel dugumu, kesitsiz kap, cozulemeyen yol)."""
+    sonuc = _sarili(lambda: _dugum(spec, yol, uc_boyutlu))
+    return None if sonuc is None else sonuc.spec

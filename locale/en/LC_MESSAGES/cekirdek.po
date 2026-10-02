@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 10:07+0300\n"
+"POT-Creation-Date: 2026-10-02 10:13+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -18,45 +18,54 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: cekirdek/alt_model.py:57 cekirdek/sema_basvuru.py:97
+#: cekirdek/alt_model.py:67 cekirdek/sema_basvuru.py:97
 msgid "çubuk"
 msgstr "pin"
 
-#: cekirdek/alt_model.py:57 cekirdek/sema_basvuru.py:97
+#: cekirdek/alt_model.py:67 cekirdek/sema_basvuru.py:97
 msgid "plaka"
 msgstr "plate"
 
-#: cekirdek/alt_model.py:57 cekirdek/sema_basvuru.py:98
+#: cekirdek/alt_model.py:67 cekirdek/sema_basvuru.py:98
 msgid "demet"
 msgstr "assembly"
 
-#: cekirdek/alt_model.py:58 cekirdek/alt_model.py:205
+#: cekirdek/alt_model.py:68 cekirdek/alt_model.py:225
 msgid "tambur"
 msgstr "control drum"
 
-#: cekirdek/alt_model.py:77
+#: cekirdek/alt_model.py:74
+msgid "eksenel olarak birebir değil"
+msgstr "not axially exact"
+
+#: cekirdek/alt_model.py:97
 #, python-format
 msgid "model yüksekliği okunamadı: %s"
 msgstr "model height could not be read: %s"
 
-#: cekirdek/alt_model.py:155 cekirdek/alt_model.py:205
+#: cekirdek/alt_model.py:175 cekirdek/alt_model.py:225
 #, python-format
 msgid "tanımsız %(tur)s: %(ad)s"
 msgstr "undefined %(tur)s: %(ad)s"
 
-#: cekirdek/alt_model.py:209
+#: cekirdek/alt_model.py:229
 #, python-format
 msgid "tambur yarıçapı sıfırdan büyük olmalı: %s"
 msgstr "drum radius must be greater than zero: %s"
 
-#: cekirdek/alt_model.py:224
+#: cekirdek/alt_model.py:285
+msgid "düğüm"
+msgstr "node"
+
+#: cekirdek/alt_model.py:338
 #, python-format
 msgid "bilinmeyen parça türü: %s"
 msgstr "unknown component type: %s"
 
-#: cekirdek/alt_model.py:278
-msgid "düğüm"
-msgstr "node"
+#: cekirdek/alt_model.py:349
+#, python-format
+msgid "alt model kurulamadı: %s"
+msgstr "sub-model could not be built: %s"
 
 #: cekirdek/altigen_kor.py:293
 #, python-format
