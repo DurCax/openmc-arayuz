@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 15:25+0300\n"
+"POT-Creation-Date: 2026-10-02 15:37+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -6950,20 +6950,20 @@ msgstr "the parametric model has no base spec"
 msgid "taban"
 msgstr "base"
 
-#: cekirdek/random_ray.py:66
+#: cekirdek/random_ray.py:68
 msgid "random ray: aktif mesafe > 0, ölü mesafe ≥ 0 olmalı"
 msgstr "random ray: active distance must be > 0 and dead distance ≥ 0"
 
-#: cekirdek/random_ray.py:68
+#: cekirdek/random_ray.py:70
 msgid "random ray: ışın ≥ 1 ve çevrim > pasif ≥ 0 olmalı"
 msgstr "random ray: rays ≥ 1 and batches > inactive ≥ 0 required"
 
-#: cekirdek/random_ray.py:70
+#: cekirdek/random_ray.py:72
 #, python-format
 msgid "random ray: bilinmeyen kaynak şekli %s"
 msgstr "random ray: unknown source shape %s"
 
-#: cekirdek/random_ray.py:72
+#: cekirdek/random_ray.py:74
 #, python-format
 msgid "random ray: bölme 0–%d olmalı"
 msgstr "random ray: subdivision must be 0–%d"
