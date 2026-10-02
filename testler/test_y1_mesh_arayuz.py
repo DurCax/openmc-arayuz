@@ -195,17 +195,20 @@ def test_harita_secim_ve_isaret():
     kontrol("silindirik tally: tek grup (toplam)", w.grup.count() == 1)
 
 
+_GENEL = {"kappa-fission": 1.0e8, "heating-local": 1.05e8}   # genel isinma (eV/kaynak)
+
+
 def test_harita_normalizasyon_ve_vtk():
     print("\n[Y1-A6] harita: mutlak normalizasyon toplam guc ister; VTK disa aktarma")
     _qt()
     from arayuz.sonuc.mesh_harita import MeshHaritaWidget
     sonuclar, mt = _sonuclar()
     w = MeshHaritaWidget()
-    w.sonuclari_ayarla(sonuclar, toplam_guc=None)
+    w.sonuclari_ayarla(sonuclar, toplam_guc=None, genel_isi=_GENEL)
     _kutu_sec(w.normalizasyon, "mutlak")
     kontrol("guc yokken mutlak secilemez (uyari)", w.normalizasyon.currentData() != "mutlak"
             or "güç" in w.uyari.text().lower(), "-> %s" % w.uyari.text())
-    w.sonuclari_ayarla(sonuclar, toplam_guc=1.0e6)
+    w.sonuclari_ayarla(sonuclar, toplam_guc=1.0e6, genel_isi=_GENEL)
     _kutu_sec(w.skor, "kappa-fission")
     _kutu_sec(w.normalizasyon, "mutlak")
     _kutu_sec(w.gosterim, "deger")

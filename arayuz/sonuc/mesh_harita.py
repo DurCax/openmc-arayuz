@@ -17,7 +17,9 @@
 ================================================================================
 """
 
+import math
 import os
+import re
 
 import numpy as np
 
@@ -74,10 +76,9 @@ class MeshHaritaWidget(QtWidgets.QWidget):
             self.gosterim.addItem(_(ad), k)
         self.guc = sayi(0.0, 1, 0.0, 1e12, 1e5, "W")
         self.guc.setSpecialValueText(_("(boş)"))
-        self.guc.setToolTip(_("Mutlak normalizasyon için modelin kapsadığı bölgenin "
-                              "toplam gücü (Hesap ayarları > Güç dağılımı > Toplam güç)."))
+        self.guc_etiket = QtWidgets.QLabel(_("Toplam güç:"))
         self.esik = sayi(mt.BAGIL_HATA_ESIGI * _YUZDE, 1, 0.1, 100.0, 1.0, "%")
-        self.esik.setToolTip(_("Bağıl hata eşiği. Varsayılan %10: ") + mt.BAGIL_HATA_KAYNAGI)
+        self.esik.setToolTip(_("Bağıl hata eşiği. Varsayılan %10 — ") + mt.BAGIL_HATA_KAYNAGI)
         self.isaretle = QtWidgets.QCheckBox(_("Güvenilmez hücreleri işaretle"))
         self.isaretle.setChecked(True)
         self.d_vtk = QtWidgets.QPushButton(_("VTK dışa aktar…"))
@@ -85,6 +86,9 @@ class MeshHaritaWidget(QtWidgets.QWidget):
                                 "σ ve bağıl hata alanları."))
         self.ozet = ipucu("")
         self.uyari = ipucu("")
+        self.atlanan = ipucu("")        # kalici: haritada gosterilmeyen tally'ler
+        self.genel_isi = {}
+        self.eksenel = False
         self.figur = Figure(figsize=(6, 4), tight_layout=True)
         self.tuval = Tuval(self.figur)
         self.tuval.setMinimumHeight(_TUVAL_YUKSEKLIGI)
@@ -108,6 +112,8 @@ class MeshHaritaWidget(QtWidgets.QWidget):
         for oge in ogeler:
             if isinstance(oge, str):
                 d.addWidget(QtWidgets.QLabel(oge))
+            elif isinstance(oge, QtWidgets.QLabel):
+                d.addWidget(oge)
             else:
                 d.addWidget(oge, 1 if isinstance(oge, QtWidgets.QSlider) else 0)
         return w
@@ -126,11 +132,12 @@ class MeshHaritaWidget(QtWidgets.QWidget):
         duzen.addWidget(self._satir((_("Dilim ekseni:"), self.eksen, self.dilim_etiket,
                                      self.dilim)))
         duzen.addWidget(self._satir((_("Normalizasyon:"), self.normalizasyon,
-                                     _("Toplam güç:"), self.guc, _("Gösterim:"),
+                                     self.guc_etiket, self.guc, _("Gösterim:"),
                                      self.gosterim)))
         duzen.addWidget(self._satir((self.isaretle, _("Eşik:"), self.esik, self.d_vtk)))
         duzen.addWidget(self.ozet)
         duzen.addWidget(self.uyari)
+        duzen.addWidget(self.atlanan)
         duzen.addWidget(self.tuval, 1)
         self.gelismis = GelismisBolum("mesh_harita_gelismis")
         self.gelismis.ekle(self.arac)
@@ -139,41 +146,81 @@ class MeshHaritaWidget(QtWidgets.QWidget):
     # ------------------------------------------------------------------
     # disaridan
     # ------------------------------------------------------------------
+    @staticmethod
+    def _model_bilgisi(spec):
+        """(toplam guc [W] | None, eksenel sonsuz mu, aktif yukseklik [cm] | None)."""
+        if not spec:
+            return None, False, None
+        guc = (spec.get("guc_dagilimi") or {}).get("toplam_guc")
+        try:
+            from cekirdek import geometri
+            aktif = geometri.hedef_yuksekligi(spec)
+        except (ValueError, KeyError, TypeError):
+            _log.info("aktif yükseklik okunamadı; çizgisel güç önerilmiyor", exc_info=True)
+            aktif = None
+        return guc, mt.eksenel_sonsuz(spec), aktif
+
     def statepoint_ayarla(self, statepoint_yolu, spec=None):
-        """Kosu sonucundan mesh tally'lerini okur; yol None ise temizler."""
+        """Kosu sonucundan mesh tally'lerini okur; yol None ise temizler. Okuma
+        hatasi kosu sonucunun geri kalanini engellemez (gunluk + uyari)."""
         if not statepoint_yolu:
-            self.sonuclari_ayarla([], None)
+            self.sonuclari_ayarla([])
             return
         try:
             sonuclar, atlanan = mt.oku(statepoint_yolu)
-        except (OSError, ValueError, KeyError) as e:
+            genel = mt.genel_isi_oku(statepoint_yolu)
+            guc, eksenel, aktif = self._model_bilgisi(spec)
+        except Exception as e:  # noqa: BLE001 -- kosu sonucu her durumda gorunsun
             _log.warning("mesh tally'leri okunamadı: %s", statepoint_yolu, exc_info=True)
-            self.sonuclari_ayarla([], None)
+            self.sonuclari_ayarla([])
             self.uyari.setText(_("Ağ tally'leri okunamadı: %s") % e)
             self.setVisible(True)
             return
-        guc = ((spec or {}).get("guc_dagilimi") or {}).get("toplam_guc")
-        self.sonuclari_ayarla(sonuclar, guc)
-        if atlanan:
-            self.uyari.setText(_("Haritada gösterilmeyen ağ tally'si: %s") % "; ".join(
-                "%s (%s)" % a for a in atlanan))
+        self.sonuclari_ayarla(sonuclar, guc, genel, eksenel, aktif)
+        self.atlanan.setText(_("Haritada gösterilmeyen ağ tally'si: %s") % "; ".join(
+            "%s (%s)" % a for a in atlanan) if atlanan else "")
+        if atlanan and not sonuclar:
+            self.setVisible(True)
 
-    def sonuclari_ayarla(self, sonuclar, toplam_guc=None):
-        """MeshSonuc listesi; bos liste kartı gizler."""
+    def sonuclari_ayarla(self, sonuclar, toplam_guc=None, genel_isi=None,
+                         eksenel_sonsuz=False, aktif_yukseklik=None):
+        """MeshSonuc listesi; bos liste karti gizler. 2B (eksenel_sonsuz) modelde
+        guc kutusu cizgisel guc [W/cm] ister (toplam_guc / aktif_yukseklik)."""
         self.sonuclar = list(sonuclar or [])
+        self.genel_isi = dict(genel_isi or {})
+        self.eksenel = bool(eksenel_sonsuz)
         self._doluyor = True
         try:
-            self.guc.setValue(float(toplam_guc or 0.0))
+            self._guc_kutusunu_ayarla(toplam_guc, aktif_yukseklik)
             self.tally.clear()
             for s in self.sonuclar:
                 self.tally.addItem("%s (%s)" % (s.ad, _(mt.MESH_TUR_ADLARI[s.tur])), s.ad)
         finally:
             self._doluyor = False
         self.uyari.setText("")
+        self.atlanan.setText("")
         self.setVisible(bool(self.sonuclar))
         if self.sonuclar:
             self.tally.setCurrentIndex(0)
             self._tally_secildi()
+
+    def _guc_kutusunu_ayarla(self, toplam_guc, aktif_yukseklik):
+        """3B: Toplam guc [W] (guc.py ile ayni tanim). 2B: cizgisel guc [W/cm] =
+        toplam guc / aktif yukseklik; yukseklik bilinmiyorsa BOS (kullanici girer)."""
+        if self.eksenel:
+            self.guc_etiket.setText(_("Çizgisel güç:"))
+            self.guc.setSuffix(" W/cm")
+            self.guc.setToolTip(_("2B (eksenel sonsuz) modelde mutlak normalizasyon için "
+                                  "çizgisel güç [W/cm] (ör. demet gücü / aktif yükseklik)."))
+            deger = (float(toplam_guc) / float(aktif_yukseklik)
+                     if toplam_guc and aktif_yukseklik else 0.0)
+        else:
+            self.guc_etiket.setText(_("Toplam güç:"))
+            self.guc.setSuffix(" W")
+            self.guc.setToolTip(_("Mutlak normalizasyon için modelin kapsadığı bölgenin "
+                                  "toplam gücü (Hesap ayarları > Güç dağılımı > Toplam güç)."))
+            deger = float(toplam_guc or 0.0)
+        self.guc.setValue(deger)
 
     # ------------------------------------------------------------------
     # secim
@@ -222,22 +269,29 @@ class MeshHaritaWidget(QtWidgets.QWidget):
         self.dilim.setEnabled(n > 1)
         self._ciz()
 
+    def _kaynak_hizi(self, s, skor):
+        """Mutlak kip kaynak hizi; kosul yoksa ValueError (neden metniyle)."""
+        if not s.ozdeger:
+            raise ValueError(_("mutlak normalizasyon yalnız özdeğer hesabında"))
+        isi, _h_skoru = mt.isi_payi(self.genel_isi, skor)
+        return mt.kaynak_hizi(self.guc.value(), isi)
+
     def _normalize(self, s, skor, o, sg):
         """(ortalama, sapma, birim); mutlak kosulu yoksa hacime duser (uyari)."""
         yontem = self.normalizasyon.currentData()
+        payda, olcu_turu = mt.olcu(s, self.eksenel)
         hiz = None
         if yontem == "mutlak":
             try:
-                hiz = mt.kaynak_hizi(self.guc.value(), mt.isi_toplami(s))
-                if not s.ozdeger:
-                    raise ValueError(_("mutlak normalizasyon yalnız özdeğer hesabında"))
+                hiz = self._kaynak_hizi(s, skor)
+                if olcu_turu == "dilim2b":
+                    raise ValueError(_("2B modelde ağ z kolonunun yalnız bir dilimini "
+                                       "kapsıyor"))
             except ValueError as e:
                 self.uyari.setText(_("Mutlak normalizasyon yapılamadı (%s); hacim "
-                                     "başına gösteriliyor. Toplam güç [W] girin ve "
-                                     "tally'ye kappa-fission ya da heating ekleyin.") % e)
+                                     "başına gösteriliyor.") % e)
                 yontem = "hacim"
-        return mt.normalize(o, sg, mt.hacimler(s.tur, s.izgaralar), yontem, hiz, skor,
-                            s.ozdeger)
+        return mt.normalize(o, sg, payda, yontem, hiz, skor, s.ozdeger, olcu_turu)
 
     def _veri(self):
         """(sonuc, ortalama 3B, sapma 3B, birim) -- secili duruma gore."""
@@ -254,7 +308,15 @@ class MeshHaritaWidget(QtWidgets.QWidget):
         if self._doluyor or self._secili() is None or self.skor.currentData() is None:
             return
         self.uyari.setText("")
-        s, o, sg, birim = self._veri()
+        try:
+            s, o, sg, birim = self._veri()
+        except ValueError as e:          # or. bagil kipte skorlu hucre yok
+            _log.info("ağ haritası çizilemedi: %s", e)
+            self.uyari.setText(_("Harita çizilemedi: %s") % e)
+            self.gosterilen, self.isaretli = None, None
+            mesh_cizim.bos_ciz(self.figur, _("Gösterilecek değer yok"))
+            self.tuval.draw_idle()
+            return
         esik = self.esik.value() / _YUZDE
         gosterim = self.gosterim.currentData()
         # Skorsuz hucre (kilavuz boru, ag disi) bos birakilir: renk olcegini 0'a
@@ -281,18 +343,22 @@ class MeshHaritaWidget(QtWidgets.QWidget):
         aci = ad in ("φ", "θ")
         a, b = (float(g[indeks]), float(g[indeks + 1]))
         if aci:
-            a, b = a * 180.0 / 3.141592653589793, b * 180.0 / 3.141592653589793
+            a, b = math.degrees(a), math.degrees(b)
         self.dilim_etiket.setText(_("Dilim %d/%d: %s = %.4g … %.4g %s") % (
             indeks + 1, s.boyut[eksen], ad, a, b, "°" if aci else "cm"))
 
     def _ozet_yaz(self, o, sg, esik):
         oz = mt.ozet(o, sg, esik)
-        self.ozet.setText(_(
+        en_buyuk = oz["en_buyuk_bagil"]
+        metin = _(
             "{h} hücre · skorsuz {s} · bağıl hata > %{e:.0f}: {y} · en büyük bağıl hata "
             "%{m:.1f}. ± değerleri OpenMC'nin raporladığı (iyimser) sapmalardır.").format(
             h=oz["hucre"], s=oz["skorsuz"], e=esik * _YUZDE, y=oz["yuksek"],
-            m=oz["en_buyuk_bagil"] * _YUZDE if oz["en_buyuk_bagil"] == oz["en_buyuk_bagil"]
-            else 0.0))
+            m=0.0 if math.isnan(en_buyuk) else en_buyuk * _YUZDE)
+        s = self._secili()
+        if s is not None and s.grup_sayisi > 1 and self.grup.currentData() is None:
+            metin += " " + _(mt.GRUP_TOPLAMI_NOTU)
+        self.ozet.setText(metin)
 
     # ------------------------------------------------------------------
     # VTK
@@ -303,11 +369,10 @@ class MeshHaritaWidget(QtWidgets.QWidget):
         if s is None:
             return False
         yontem = self.normalizasyon.currentData()
-        hiz = None
         try:
-            if yontem == "mutlak":
-                hiz = mt.kaynak_hizi(self.guc.value(), mt.isi_toplami(s))
-            adlar = mt.vtk_yaz(s, yol, yontem=yontem, kaynak_hizi=hiz)
+            hiz = self._kaynak_hizi(s, self.skor.currentData()) if yontem == "mutlak" else None
+            adlar = mt.vtk_yaz(s, yol, yontem=yontem, kaynak_hizi=hiz,
+                               eksenel_sonsuz=self.eksenel)
         except (OSError, ValueError) as e:
             _log.warning("VTK yazılamadı: %s", yol, exc_info=True)
             self.uyari.setText(_("VTK yazılamadı: %s") % e)
@@ -315,14 +380,34 @@ class MeshHaritaWidget(QtWidgets.QWidget):
         self.uyari.setText(_("VTK yazıldı: %s (%d alan)") % (yol, len(adlar)))
         return True
 
+    @staticmethod
+    def onerilen_ad(ad):
+        """Dosya adina uygun oneri: yol ayiricisi ve bosluk yok."""
+        temiz = re.sub(r"[^\w.-]+", "_", str(ad)).strip("._") or "mesh"
+        return temiz + ".vtk"
+
+    def _uzerine_yaz_onayi(self, yol):
+        """Var olan dosyanin uzerine yazilsin mi (testte degistirilir)."""
+        cevap = QtWidgets.QMessageBox.question(
+            self, _("VTK dışa aktar"), _("%s zaten var. Üzerine yazılsın mı?") % yol)
+        return cevap == QtWidgets.QMessageBox.Yes
+
+    def secilen_yolu_yaz(self, yol):
+        """Uzanti yoksa .vtk ekler; ekleme sonrasi dosya varsa onay ister."""
+        if not yol.lower().endswith(".vtk"):
+            yol += ".vtk"
+            if os.path.exists(yol) and not self._uzerine_yaz_onayi(yol):
+                return False
+        return self.vtk_disa_aktar(yol)
+
     def _vtk_diyalogu(self):
         s = self._secili()
         if s is None:
             return
-        oneri = os.path.join(os.path.expanduser("~"), "%s.vtk" % s.ad)
-        yol, _f = QtWidgets.QFileDialog.getSaveFileName(
-            self, _("VTK dışa aktar"), oneri, _("VTK dosyası (*.vtk)"))
-        if yol:
-            if not yol.lower().endswith(".vtk"):
-                yol += ".vtk"
-            self.vtk_disa_aktar(yol)
+        d = QtWidgets.QFileDialog(self, _("VTK dışa aktar"), os.getcwd(),
+                                  _("VTK dosyası (*.vtk)"))
+        d.setAcceptMode(QtWidgets.QFileDialog.AcceptSave)
+        d.setDefaultSuffix("vtk")              # uzanti eklenince de uzerine yazma sorulur
+        d.selectFile(self.onerilen_ad(s.ad))
+        if d.exec() and d.selectedFiles():
+            self.secilen_yolu_yaz(d.selectedFiles()[0])

@@ -15,7 +15,7 @@ from dataclasses import dataclass, replace
 
 import numpy as np
 
-from cekirdek.ceviri import _
+from cekirdek.ceviri import _, N_
 from cekirdek.gunluk import kaydedici
 from cekirdek.mesh_tally import geometri as _geo
 from cekirdek.mesh_tally.tanim import GENEL_ISI_TALLY
@@ -23,7 +23,7 @@ from cekirdek.mesh_tally.tanim import GENEL_ISI_TALLY
 _log = kaydedici(__name__)
 
 _EKSEN_SAYISI = 3
-GRUP_TOPLAMI_NOTU = ("Grup toplamında σ, gruplar bağımsız varsayılarak (σ² toplamı) "
+GRUP_TOPLAMI_NOTU = N_("Grup toplamında σ, gruplar bağımsız varsayılarak (σ² toplamı) "
                      "hesaplanır; gruplar pozitif ilişkili olduğundan bu iyimser bir "
                      "tahmindir.")
 

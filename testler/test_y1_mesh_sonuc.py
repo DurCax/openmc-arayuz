@@ -264,12 +264,19 @@ def test_yavas_ornek_kosu_mesh_haritasi(gecici):
     yol = os.path.join(gecici, "harita.vtk")
     adlar_vtk = mt.vtk_yaz(s, yol, yontem="bagil")
     kontrol("VTK yazildi", os.path.getsize(yol) > 1000 and "kappa_fission_toplam" in adlar_vtk)
-    hiz = mt.kaynak_hizi(17.6e6 / 366.0, mt.isi_toplami(s))
-    om, _sm, birim = mt.normalize(o, sg, mt.hacimler(s.tur, s.izgaralar), "mutlak",
-                                  kaynak_hizi=hiz, skor="kappa-fission")
-    toplam = float((om * mt.hacimler(s.tur, s.izgaralar)).sum())
-    kontrol("mutlak: hacim x yogunluk toplami = verilen guc (W/cm)",
-            math.isclose(toplam, 17.6e6 / 366.0, rel_tol=1e-9), "-> %.4g %s" % (toplam, birim))
+    # 2B: cizgisel guc q' [W/cm], payda hucre ALANI, H genel isinma tally'sinden
+    q = 17.6e6 / 366.0
+    genel = mt.genel_isi_oku(sp)
+    isi, h_skoru = mt.isi_payi(genel, "kappa-fission")
+    kontrol("duzenli ag butun isinmayi kapsar: ag ici H = genel H",
+            math.isclose(mt.isi_toplami(s), isi, rel_tol=1e-9) and h_skoru == "kappa-fission")
+    alan, tur = mt.olcu(s, eksenel_sonsuz=True)
+    om, _sm, birim = mt.normalize(o, sg, alan, "mutlak", mt.kaynak_hizi(q, isi),
+                                  "kappa-fission", True, tur)
+    toplam = float((om * alan).sum())
+    kontrol("mutlak 2B: alan x yogunluk toplami = cizgisel guc (W/cm)",
+            tur == "alan" and math.isclose(toplam, q, rel_tol=1e-9),
+            "-> %.4g %s" % (toplam, birim))
 
 
 HIZLI = [test_hacimler_openmc_ile_ayni, test_secim_grup_toplami, test_normalizasyon,
