@@ -51,7 +51,7 @@ msgstr "drum radius must be greater than zero: %s"
 #: cekirdek/alt_model.py:224
 #, python-format
 msgid "bilinmeyen parça türü: %s"
-msgstr "unknown part type: %s"
+msgstr "unknown component type: %s"
 
 #: cekirdek/alt_model.py:278
 msgid "düğüm"
