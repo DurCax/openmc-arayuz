@@ -28,7 +28,6 @@
 
 import os
 import re
-import shutil  # noqa: F401 -- testler kosucu.shutil.which uzerinden openmc aramasini degistirir
 import subprocess
 import sys
 import time
@@ -212,8 +211,9 @@ def entropi_yakinsama(entropiler, pasif):
 
 
 def openmc_yolu():
-    """openmc calistirilabilir dosyasinin yolu; bulunamazsa None. Cozum tek
-    yerde: yollar.openmc_ikilisi (ortam degiskeni > PATH > conda ortami)."""
+    """openmc calistirilabilir dosyasinin mutlak yolu; bulunamazsa None. Cozum
+    tek yerde: yollar.openmc_ikilisi (ortam degiskeni > python'un ortami >
+    PATH'in mutlak ogeleri > CONDA_PREFIX)."""
     return _yollar.openmc_ikilisi()
 
 

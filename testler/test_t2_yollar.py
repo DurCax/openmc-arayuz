@@ -289,7 +289,7 @@ def test_openmc_ikilisi_guvenlik(tmp_path, monkeypatch, caplog):
     print("\n[T2-7b] openmc: PATH'in bos/goreli ogeleri, goreli/~ ortam yolu, bos degisken")
     from cekirdek import yollar
     d = str(tmp_path)
-    yok_python = os.path.join(d, "py")
+    yok_python = os.path.join(d, "yok", "py")        # yaninda openmc olmayan yorumlayici
     _sahte_calistirilabilir(d)                         # CWD'de kotu niyetli 'openmc'
     monkeypatch.chdir(d)
     for path in ("", ".", "goreli", os.pathsep.join(["", ".", "goreli"])):
