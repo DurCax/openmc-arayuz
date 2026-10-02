@@ -11,11 +11,14 @@
      degistirse de sonraki cagri etkilenmez (degismezlik kurali).
    * Bellekli sonuc, bellek bosken hesaplanan sonucla AYNIDIR (butun ornekler).
 
- TEMBEL SEKME (arayuz/pencere/ana_pencere.py)
-   * Spec yuklenince yalniz gorunur editor doldurulur; digerleri "kirli".
+ TEMBEL SEKME (arayuz/pencere/ana_pencere.py, _degisti / _sekme_degisti)
+   * Proje yuklenince (_spec_uygula) butun editorler doldurulur, hepsi temiz
+     (bilerek hevesli; gerekce ana_pencere._spec_uygula belgesinde).
+   * Bir duzenlemede konuya BAGIMLI gizli sekmeler kirli isaretlenir,
+     doldurulmaz; gorunur bagimli sekme hemen doldurulur.
    * Kirli sekme acilinca bir kez doldurulur ve temizlenir; temiz sekme
-     yeniden acilinca doldurulmaz.
-   * Editor doldurmak spec'i degistirmez (tembel yukleme davranisi degistirmez).
+     yeniden acilinca doldurulmaz. Ertelenmis doldurma hevesliyle ayni ekrani
+     verir; editor doldurmak spec'i degistirmez (erteleme guvenli).
 """
 
 import copy
@@ -73,6 +76,18 @@ def test_uygunluk_ayni_spec_tek_gezinti(monkeypatch):
             "gezinti=%d" % ilk_sayi)
     kontrol("ikinci tur gezintisiz", sayac.sayi == ilk_sayi, "gezinti=%d" % sayac.sayi)
     kontrol("sonuclar ayni", ilk == ikinci)
+
+
+def test_gecerli_sekmeler_tek_gezinti(monkeypatch):
+    print("\n[H1-B1b] gecerli_sekmeler: yakitli modelde yalniz icerik gezintisi")
+    from cekirdek import uygunluk
+    _bos_bellek()
+    spec = _yukle(_AGAC_ORNEGI)
+    sayac = _GeziSayaci(monkeypatch)
+    sekmeler = uygunluk.gecerli_sekmeler(spec)
+    kontrol("analiz sekmesi gorunur (on kosul)", "analiz" in sekmeler, sekmeler)
+    kontrol("tek gezinti: analiz icin ilk gecerli tarama yeter", sayac.sayi == 1,
+            "gezinti=%d" % sayac.sayi)
 
 
 def test_uygunluk_spec_degisince_yeniden_hesaplar():
@@ -262,18 +277,20 @@ def _yukleme_sayaci(p):
 
 
 def test_tembel_sekme_kirli_temiz():
-    print("\n[H1-T1] tembel sekme: yalniz gorunur editor dolar, digerleri kirli")
+    print("\n[H1-T1] tembel sekme: duzenlemede bagimli gizli sekmeler kirli, acilinca dolar")
+    from arayuz.pencere.model_islemleri import _KONU_BAGIMLILIK
     p = _pencere()
     try:
-        sayim = _yukleme_sayaci(p)
         p.ornek_ac(os.path.join(ORNEK, "pwr_17x17.json"))
-        gorunur = p._gorunur_editor()
-        kontrol("acilista yalniz gorunur editor dolduruldu",
-                set(sayim) <= {gorunur}, [type(e).__name__ for e in sayim])
-        gizli = set(p.editorler) - {gorunur}
-        kontrol("digerleri kirli", gizli <= p._kirli_sekmeler)
-        kontrol("gorunur editor temiz", gorunur not in p._kirli_sekmeler)
-        sayim.clear()
+        kontrol("proje acilinca butun sekmeler temiz", not p._kirli_sekmeler)
+        p.sekmeye_git("malzemeler", sessiz=True)
+        sayim = _yukleme_sayaci(p)
+        p._degisti("malzeme")
+        bagimli = {p._konu_sekme[k] for k in _KONU_BAGIMLILIK["malzeme"]}
+        kontrol("bagimli gizli sekmeler kirli", bagimli <= p._kirli_sekmeler,
+                sorted(type(e).__name__ for e in p._kirli_sekmeler))
+        kontrol("gizli sekmeler duzenlemede doldurulmadi", not sayim, sayim)
+        kontrol("gorunur editor kirli degil", p.s_malzeme not in p._kirli_sekmeler)
         p.sekmeye_git("tukenme", sessiz=True)
         kontrol("kirli sekme acilinca bir kez dolar", sayim.get(p.s_tukenme) == 1, sayim)
         kontrol("acilan sekme temizlendi", p.s_tukenme not in p._kirli_sekmeler)
@@ -282,36 +299,47 @@ def test_tembel_sekme_kirli_temiz():
         sayim.clear()
         p.sekmeye_git("tukenme", sessiz=True)
         kontrol("temiz sekme yeniden acilinca dolmaz", not sayim.get(p.s_tukenme), sayim)
-        # malzeme degisikligi tukenmeyi (gizliyken) kirletir
-        p.sekmeye_git("malzemeler", sessiz=True)
-        p._degisti("malzeme")
-        kontrol("bagimli gizli sekme kirlendi", p.s_tukenme in p._kirli_sekmeler)
+        p._degisti("ayar")                     # bagimlisi olmayan konu
+        kontrol("bagimsiz konu yeni sekme kirletmez",
+                p.s_tukenme not in p._kirli_sekmeler and not sayim.get(p.s_tukenme))
+        p._degisti("calistirma")               # gorunur bagimli: hemen dolar
+        kontrol("gorunur bagimli sekme hemen dolar ve temiz kalir",
+                sayim.get(p.s_tukenme) == 1 and p.s_tukenme not in p._kirli_sekmeler, sayim)
     finally:
         _kapat(p)
 
 
 def test_tembel_sekme_sonucu_hevesliyle_ayni():
-    print("\n[H1-T2] tembel sekme: acildiginda hevesli yukleme ile ayni icerik")
-    from arayuz.ortak import SekmeTabani
-    p = _pencere()
-    try:
-        p.ornek_ac(os.path.join(ORNEK, "pwr_17x17.json"))
-        p.sekmeye_git("tukenme", sessiz=True)
-        tembel = _sekme_metinleri(p.s_tukenme)
-        p.s_tukenme.spec_yukle(p.spec)      # hevesli (eski) yol
-        hevesli = _sekme_metinleri(p.s_tukenme)
-        kontrol("tukenme sekmesi metinleri ayni", tembel == hevesli)
-        kontrol("SekmeTabani turu", isinstance(p.s_tukenme, SekmeTabani))
-    finally:
-        _kapat(p)
+    print("\n[H1-T2] tembel sekme: ertelenmis doldurma hevesli doldurma ile ayni ekran")
+    yol = os.path.join(ORNEK, "pwr_17x17.json")
+    sonuc = []
+    for tembel in (True, False):
+        p = _pencere()
+        try:
+            p.ornek_ac(yol)
+            p.sekmeye_git("malzemeler", sessiz=True)
+            p.spec["malzemeler"][0]["sicaklik"] = 600.0
+            p._degisti("malzeme")              # tukenme kirli (gizli)
+            if not tembel:                      # eski/hevesli yol: hemen doldur
+                p.s_tukenme.spec_yukle(p.spec)
+                p._kirli_sekmeler.discard(p.s_tukenme)
+            p.sekmeye_git("tukenme", sessiz=True)
+            sonuc.append(_sekme_metinleri(p.s_tukenme))
+        finally:
+            _kapat(p)
+    kontrol("tukenme sekmesinin gorunen metinleri ayni", sonuc[0] == sonuc[1])
+    kontrol("karsilastirma bos degil", len(sonuc[0]) > 5, len(sonuc[0]))
 
 
 def _sekme_metinleri(w):
+    """Gorunen etiket/dugme/liste/sayi kutusu metinleri (sirayla)."""
     from PySide6 import QtWidgets
     metinler = []
     for c in w.findChildren(QtWidgets.QWidget):
+        if not c.isVisibleTo(w):
+            continue
         if isinstance(c, (QtWidgets.QLabel, QtWidgets.QAbstractButton)):
-            metinler.append((c.objectName(), c.text(), c.isVisibleTo(w)))
+            metinler.append((c.objectName(), c.text()))
         elif isinstance(c, QtWidgets.QComboBox):
             metinler.append((c.objectName(), c.currentText(), c.count()))
         elif isinstance(c, QtWidgets.QAbstractSpinBox):
@@ -337,7 +365,8 @@ def test_editor_doldurmak_spec_degistirmez():
         _kapat(p)
 
 
-HIZLI = [test_uygunluk_ayni_spec_tek_gezinti, test_uygunluk_spec_degisince_yeniden_hesaplar,
+HIZLI = [test_uygunluk_ayni_spec_tek_gezinti, test_gecerli_sekmeler_tek_gezinti,
+         test_uygunluk_spec_degisince_yeniden_hesaplar,
          test_uygunluk_donen_nesne_paylasilmaz, test_hacim_katkilar_tek_gezinti,
          test_hacim_model_degisince_yeniden_hesaplar, test_yakit_ornek_sayisi_bellegi,
          test_tembel_sekme_kirli_temiz, test_tembel_sekme_sonucu_hevesliyle_ayni]

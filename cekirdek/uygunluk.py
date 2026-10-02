@@ -199,7 +199,7 @@ def gecerli_sekmeler(spec):
     if b.tur in ("tek_demet", "kare_kafes", "altigen_kafes", "tamburlu", "agac") \
             or b.geo["demet"]:
         gorunur.add("demet")
-    if _gecerli_taramalar(b, "katsayi"):
+    if _tarama_var(b):
         gorunur.add("analiz")
     if _tukenme_uygun(b)[0]:
         gorunur.add("tukenme")
@@ -575,6 +575,15 @@ def _gecerli_taramalar(b, amac):
     if amac == "kritik":
         adaylar = [t for t in adaylar if t in KRITIK_PARAMETRELER]
     return [t for t in adaylar if _hedefler(b, t)]
+
+
+def _tarama_var(b):
+    """_gecerli_taramalar(b, "katsayi") bos degil mi -- ilk gecerli taramada
+    durur (v3 H1: sonraki taramalarin agac hedefleri ayri gezinti ister)."""
+    from cekirdek import tarama
+    if not (b.ozdeger and b.fisil):
+        return False
+    return any(_hedefler(b, t) for t in tarama.TURLER)
 
 
 def gecerli_taramalar(spec, amac="katsayi"):
