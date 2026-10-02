@@ -48,3 +48,4 @@ dist/
 *.spec
 htmlcov/
 .ruff_cache/
+!testler/veri/tukenme_guc_ornek/

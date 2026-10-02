@@ -61,7 +61,8 @@ from cekirdek.ceviri import _n
 #   tukenme  : tukenme                            ayar     : hesap ayarlari
 #   kaynak   : kaynak                             referans : tally, guc, fisil, referans
 from cekirdek.dogrula._ortak import (  # noqa: F401
-    _kor_turu_adi, _YER_ETIKETI, yer_etiketi, Bulgu, hata_var)
+    _kor_turu_adi, _YER_ETIKETI, yer_etiketi, Bulgu, hata_var,
+    BOS_ADIM_ONEKI, BOS_ADIM_GEOMETRI)
 from cekirdek.dogrula.veri import (  # noqa: F401
     veri_kutuphanesi_kontrol, _kutuphane_icerigi, nuklid_kontrol)
 from cekirdek.dogrula.malzeme import (  # noqa: F401
@@ -75,6 +76,7 @@ from cekirdek.dogrula.eksenel import (  # noqa: F401
     eksenel_kontrol, _ad_var)
 from cekirdek.dogrula.tukenme import (  # noqa: F401
     _SPEKTRUM_ADI, tukenme_kontrol)
+from cekirdek.dogrula.spektrum import spektrum_kontrol  # noqa: F401  (Y3)
 from cekirdek.dogrula.ayar import (  # noqa: F401
     ayar_kontrol)
 from cekirdek.dogrula.kaynak import (  # noqa: F401
@@ -108,6 +110,7 @@ def tum_kontroller(spec, veri_kontrolu=True):
     bulgular += kaynak_kontrol(spec, veri_kontrolu)
     bulgular += tukenme_kontrol(spec, veri_kontrolu)
     bulgular += tally_kontrol(spec)
+    bulgular += spektrum_kontrol(spec)            # Y3
     bulgular += guc_dagilimi_kontrol(spec)
     bulgular += referans_kontrol(spec)
     # nuklid kontrolu malzemeleri kurmayi gerektirir; once temel hatalar temiz olmali

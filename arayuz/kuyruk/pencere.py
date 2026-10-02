@@ -86,6 +86,8 @@ def ac(ebeveyn: Optional[QtWidgets.QWidget] = None,
     if p is None:
         p = IsAkisiPenceresi(spec, parent=ebeveyn)
         p.setWindowFlag(QtCore.Qt.Window, True)        # ebeveynli ama ayri pencere
+        # ebeveyn silinirse (ana pencere kapandi) bayat nesne tutulmasin
+        p.destroyed.connect(lambda *_a: _TEKIL.pop("pencere", None))
         _TEKIL["pencere"] = p
     else:
         p.spec_ayarla(spec)

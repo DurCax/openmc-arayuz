@@ -35,6 +35,7 @@ import time
 from cekirdek import sema, kurucu, dogrula
 from cekirdek import kapsul as _kapsul
 from cekirdek import yollar as _yollar
+from cekirdek import spektrum as _spektrum
 from cekirdek.ceviri import _, N_
 from cekirdek.gunluk import kaydedici
 from cekirdek.uygunluk_denetimi import ayristir as _ayristir
@@ -296,7 +297,9 @@ def calistir(spec, dizin, geri_cagir=None, is_parcacigi=None, temizle=True,
 
     with open(log_yolu, "w", encoding="utf-8") as log:
         log.write("# komut: %s\n# dizin: %s\n\n" % (" ".join(komut), dizin))
-        surec = subprocess.Popen(komut, cwd=dizin, stdout=subprocess.PIPE,
+        from cekirdek import veri_yolu       # K2: Veri sayfasi secimi alt surece
+        surec = subprocess.Popen(komut, cwd=dizin, env=veri_yolu.alt_surec_ortami(),
+                                 stdout=subprocess.PIPE,
                                  stderr=subprocess.STDOUT, text=True,
                                  bufsize=1, universal_newlines=True)
         for satir in surec.stdout:
@@ -446,6 +449,8 @@ def _tallyleri_oku(sp, sonuc):
         ad = t.name or "tally_%d" % t.id
         if ad in _GUC_TALLYLERI:
             continue          # guc bolumunde ayrica islenir
+        if ad.startswith(_spektrum.TALLY_ONEKI):
+            continue          # Y3 spektrum karti okur (cekirdek/spektrum.py)
         try:
             df = t.get_pandas_dataframe()
         except Exception as e:
@@ -463,7 +468,9 @@ def _tallyleri_oku(sp, sonuc):
 def _kinetik(ifp):
     """
     Kinetik parametreler (IFP yontemi); eksikse None.
-    beta_eff = <beta payi> / <payda>,  Lambda = <zaman payi> / <payda>
+    beta_eff = <beta payi> / <payda>,  omur l = <zaman payi> / <payda>
+    (ani notron omru; uretim zamani Lambda = l / k sonuc_oku'da hesaplanir:
+    cekirdek/kinetik_oku.kosu_kinetigi).
     Belirsizlik oransal olarak birlestirilir (paylar ve payda bagimsiz kabul).
     """
     import math as _m
@@ -479,8 +486,8 @@ def _kinetik(ifp):
     return {
         "beta_eff": beta,
         "beta_eff_sapma": beta * _m.sqrt((spb / pb) ** 2 + (spd / pd) ** 2),
-        "lambda": lam,
-        "lambda_sapma": lam * _m.sqrt((spt / pt) ** 2 + (spd / pd) ** 2),
+        "omur": lam,
+        "omur_sapma": lam * _m.sqrt((spt / pt) ** 2 + (spd / pd) ** 2),
     }
 
 
@@ -547,27 +554,40 @@ def _hedef_payi(sp):
     return {"hedef_payi": hedef / model}
 
 
-def _guc_oku(sp, sonuc):
-    """Cubuk bazli guc dagilimi: sonuc['guc'] ya da sonuc['guc_hata']."""
+def guc_oku(sp):
+    """
+    Statepoint'in cubuk bazli guc dagilimi (genel API; tukenme_guc adim
+    basina kullanir). DONER (guc | None, hata metni | None):
+      guc  {"dagilim", "faktorler", korunum alanlari, "hedef_payi", ...}
+      (None, None)   guc dagilimi tally'si yok (istenmemis)
+      (None, metin)  okuma ya da tepe faktoru hatasi (kaydedildi)
+    """
     from cekirdek import guc as _guc
     try:
         dagilim = _guc.dagilim_oku(sp)
     except Exception as e:
         _log.exception("güç dağılımı okunamadı")
-        sonuc["guc_hata"] = str(e)
-        return
+        return None, str(e)
     if not dagilim:
-        return
+        return None, None
     try:
         faktorler = _guc.tepe_faktorleri(dagilim)
     except Exception as e:
         _log.exception("güç tepe faktörleri hesaplanamadı")
-        sonuc["guc_hata"] = str(e)
-        return
+        return None, str(e)
     g = {"dagilim": dagilim, "faktorler": faktorler}
     g.update(_guc_korunumu(sp, dagilim))
     g.update(_hedef_payi(sp))
-    sonuc["guc"] = g
+    return g, None
+
+
+def _guc_oku(sp, sonuc):
+    """Cubuk bazli guc dagilimi: sonuc['guc'] ya da sonuc['guc_hata'] (guc_oku)."""
+    g, hata = guc_oku(sp)
+    if hata is not None:
+        sonuc["guc_hata"] = hata
+    elif g is not None:
+        sonuc["guc"] = g
 
 
 def korunum_satirlari(g):
@@ -615,7 +635,9 @@ def sonuc_oku(statepoint_yolu):
         sonuc["entropi_hata"] = entropi_hata
     kinetik = _kinetik(_tallyleri_oku(sp, sonuc))
     if kinetik:
-        sonuc["kinetik"] = kinetik
+        # Lambda = l / k (OpenMC tanimi) + grup basina beta_i, lambda_i
+        from cekirdek import kinetik_oku
+        sonuc["kinetik"] = kinetik_oku.kosu_kinetigi(kinetik, sp, sonuc["keff"])
     _guc_oku(sp, sonuc)
     return sonuc
 

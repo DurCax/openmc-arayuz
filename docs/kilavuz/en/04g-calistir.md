@@ -100,6 +100,42 @@ for the real uncertainty first confirm convergence with the entropy, then run th
 different seeds. Details: [interpreting the power distribution](06-sonuclar.md#guc-dagilimi-yorum)
 and the [power map lesson](05-dersler.md#ders-guc).
 
+<a id="calistir-pin-tablosu"></a>
+#### Pin power table
+
+Below the map, the **same** values as the map, row by row (nothing is recomputed: table = map).
+Each row is one fuel pin: assembly (in a full core), position (numbered from 1, x from the left
+/ y from the bottom), x/y [cm], pin type, **relative power** ± σ, **Power [W]** and
+**q′ [W/cm]** (if a Total power is entered), and in 3D the **Peak q′** plus the relative power
+and q′ of the selected bin. The hottest pin (the pin of F_ΔH) is shown bold and coloured;
+truncated pins are greyed out.
+
+| Element | What it does |
+|---|---|
+| Clicking the map | Selects the row of the clicked pin; the line above the table shows its values and a square marker appears on the map. In assembly view the hottest pin of the assembly is selected. |
+| Column header | Sorts by the raw number (relative power descending → first row is the hottest pin). |
+| **Filter: assembly, position or type…** | Searches the visible text (e.g. `x = 17, y = 17`). |
+| **Fold to quarter** | Enabled only if the symmetry is **verified**: every square lattice in the geometry is mirror-symmetric in x and y and centred, and the positions of the table are closed under mirroring (with the same pin type). The four mirror images are averaged (σ = √Σσ² / m) and the **Asymmetry** column gives the largest deviation in the orbit. Off for hexagonal lattices, advanced (tree) models, cores with drums and truncated pins; the tooltip says why. |
+| **Save table…** | Writes the shown table (folded or full) as CSV: decimal point, comma separator, full precision; in 3D the q′ and relative power of every bin are separate columns. If openpyxl is installed Excel (.xlsx) can be chosen as well (the application does not install it). |
+
+The normalisation is the same as for F_ΔH: relative power = pin power / mean of the
+non-truncated fuel pins; W = relative × (Total power × target share / number of pins); the sum
+over all pins (truncated ones included) is **Total power × target share**. q′ = W / active
+height; bin q′ = bin power / bin thickness. Uncertainties are the single-run σ as on the map
+(optimistic). Lesson: [5.7](05-dersler.md#ders-guc).
+
+<a id="calistir-spektrum"></a>
+### Spectrum and four factors card
+
+Shown only if the run has the Y3 tallies ([Run settings](04f-hesap-ayarlari.md#ayar-spektrum)).
+On top, the **flux per unit lethargy** (φ·V/Δu, log-log; whole model and fuel; dashed line at the
+0.625 eV thermal cutoff); below, a table: ε, p, f, η, ε·p·f·η, the (n,xn) correction c_xn, the
+non-leakage probability P_NL, k from tallies (labelled **k∞** in a leakage-free model) and
+OpenMC's combined k estimator; then ρ28, δ25, δ28, C*. Every value is ± 1σ and the notes below it
+state the assumptions (leakage-free definitions, uncorrelated first-order uncertainty, fuel
+average). Physics and interpretation: [lesson 5.11](05-dersler.md#ders-spektrum). The plot is
+saved with **Save PNG**.
+
 <a id="calistir-uygunluk"></a>
 ### Conformity card
 

@@ -120,10 +120,14 @@ def test_slurm_paneli_gecersiz_alani_reddeder_gecerliyi_onizler():
     _uyg()
     panel = SlurmPaneli()
     panel.gorev.setValue(4)
+    assert panel._zamanlayici.isActive(), "onizleme gecikmeli (debounce) kosmali"
+    assert "#SBATCH --ntasks=4" not in panel.onizleme.toPlainText()
+    panel.onizle()
     assert "#SBATCH --ntasks=4" in panel.onizleme.toPlainText()
     assert "sözdizimi geçerli" in panel.durum.text()
     assert not panel.d_kaydet.isEnabled(), "model yokken klasor hazirlanamaz"
     panel.is_adi.setText("kotu ad; rm")
+    panel.onizle()
     assert "Geçersiz" in panel.durum.text() and not panel.d_kaydet.isEnabled()
 
 
@@ -141,9 +145,56 @@ def test_is_akisi_penceresi_uc_sekme(tmp_path, monkeypatch):
     assert pencere._TEKIL == {}
 
 
+def test_araclar_menusu_is_akisini_acar_ve_calistir_gecmise_yazar(tmp_path, monkeypatch):
+    # Arrange
+    from cekirdek import kosu_gecmisi
+    from arayuz.ana_pencere import AnaPencere
+    from arayuz.kuyruk import pencere
+    _uyg()
+    monkeypatch.setenv("XDG_DATA_HOME", str(tmp_path / "veri"))
+    p = AnaPencere()
+    p._kaydetme_sor = lambda: True
+    p.onizleme._ciz = lambda *a, **k: None
+    try:
+        # Act: Araclar -> Is akisi
+        p.e_is_akisi.trigger()
+        acik = pencere._TEKIL.get("pencere")
+        # Assert
+        assert acik is not None and acik.isVisible()
+        assert acik.kuyruk.spec is not None and acik.kuyruk.spec["ad"] == p.spec["ad"]
+        acik.close()
+        # Act: Calistir sekmesinin tek kosu kancasi
+        p.s_calistir._dizin = str(tmp_path / "kosu")
+        p.s_calistir._gecmise_yaz("bitti", (1.1, 0.001))
+        kayitlar = kosu_gecmisi.GecmisDeposu().listele()
+        assert len(kayitlar) == 1 and kayitlar[0].keff == 1.1
+        assert kayitlar[0].etiket == {"kaynak": "calistir"}
+    finally:
+        p.s_tukenme.bekle()
+        p._kirli = False
+        p.close()
+        p.deleteLater()
+
+
+def test_tek_kosu_kaydet_hata_firlatmaz(tmp_path):
+    from cekirdek import kosu_gecmisi as kg
+
+    class BozukDepo:
+        def kaydet(self, kayit):
+            raise OSError("salt okunur")
+    assert kg.tek_kosu_kaydet(str(tmp_path), "x", "bitti", depo=BozukDepo()) is None
+    assert kg.tek_kosu_kaydet(None, "x", "basarisiz", depo=BozukDepo()) is None, \
+        "kosu dizini yokken (baslatilamayan surec) hata firlatmamali"
+    depo = kg.GecmisDeposu(str(tmp_path / "g.sqlite3"))
+    kayit = kg.tek_kosu_kaydet(str(tmp_path), "", "basarisiz", depo=depo)
+    assert kayit.ad == os.path.basename(str(tmp_path)) and kayit.keff is None
+
+
 HIZLI = [test_kuyruk_paneli_uc_kosuyu_sirayla_gosterir,
          test_kuyruk_paneli_gecerli_modeli_ayri_dizine_ekler,
          test_karsilastirma_paneli_ozet_tablo_ve_harita, test_karsilastirma_paneli_hata_gosterir,
          test_slurm_paneli_gecersiz_alani_reddeder_gecerliyi_onizler,
-         test_is_akisi_penceresi_uc_sekme]
+         test_is_akisi_penceresi_uc_sekme,
+         test_araclar_menusu_is_akisini_acar_ve_calistir_gecmise_yazar,
+         test_tek_kosu_kaydet_hata_firlatmaz]
 YAVAS = []

@@ -19,6 +19,8 @@ overwritten. Use **File › Save as…** to keep your own changes.
 | [5.8](#ders-benchmark) | Benchmark and C/E | `ornekler/godiva_kriter.json` and `kriter_*` | introductory–advanced |
 | [5.9](#ders-kritik-arama) | Critical search | `ornekler/pwr_17x17.json`, `ornekler/pwr_kontrol.json`, `ornekler/tamburlu_kor.json` | intermediate |
 | [5.10](#ders-rapor) | Report and conformity annex | any run | intermediate |
+| [5.11](#ders-spektrum) | Spectrum and four factors | `ornekler/pwr_pinhucre.json` | intermediate |
+| [5.14](#ders-malzeme-asistani) | Material assistant and my library | `ornekler/pwr_17x17.json` | introductory |
 | [5.15](#ders-yerel-k) | Local k and assembly k∞ | `ornekler/pwr_17x17.json`, `ornekler/pwr_ceyrek_kor.json` | intermediate |
 
 **Where do the expected results come from?** Every value has a source: the `referans.olcum` field
@@ -527,6 +529,67 @@ scatter / √5). Mean linear power **182 W/cm**.
 - Why is F_ΔH the same and F_q smaller in the axially layered `ornekler/pwr_eksenel.json`? (Layering
   does not touch the radial distribution; the water reflector flattens the axial profile.)
 
+<a id="ders-guc-yanma"></a>
+### 5.7.1 Pin power table and pin power versus burnup
+
+**Example file:** `ornekler/pwr_3b.json` (table), `ornekler/pwr_17x17.json` (burnup) ·
+**Level:** intermediate. Fields: [pin power table](04g-calistir.md#calistir-pin-tablosu),
+[pin power versus burnup](04i-tukenme.md#tukenme-pin-gucu).
+
+**A. Table (the run of 5.7).**
+
+1. The **Pin power table** under the power map has 264 rows (guide/instrument tubes are not in
+   the table). Click the **Relative power** header to sort descending: the first row is the
+   hottest pin and its value equals F_ΔH in the summary (table = map).
+2. Click a pin on the map: its row is selected and its values are shown above the table.
+3. **Fold to quarter**: enabled because the single assembly is mirror-symmetric; 264 pins become
+   72 orbits (81 positions in the quarter − 9 guide/instrument positions). The **Asymmetry**
+   column is the difference between the pins of one orbit: in a symmetric model it is only
+   statistical noise.
+4. Switch folding **off** and write a CSV with **Save table…**; the sum of the `W` column is
+   Total power × target share (in this model all fission energy is in the target pins:
+   17.6 MW). In the folded table each row is the average of m members (`katlanan_m` column):
+   the total is Σ m·W.
+5. Rows in italics cannot be told apart statistically from the hottest pin (within a combined
+   2σ): "the hottest pin" is a group, not a single pin.
+
+**B. Versus burnup.**
+
+1. Open the `pwr_17x17` example and enable the calculation on the **Depletion** page. You do not
+   have to switch on the power distribution in Run settings: the depletion run tallies the pin
+   power in every step by itself. To shorten the run you can choose the **CASL simple thermal**
+   chain under Advanced.
+2. When the run finishes, a **Step** selector appears below the result card. The table shows
+   the values of the selected step; pins selected in the table are tracked in the left plot as
+   relative power versus burnup, the right plot shows F_ΔH per step.
+3. **Save step × pin…** gives the pin table of every step in one CSV.
+
+**What did we learn / check questions.**
+
+- Relative power is relative to the average of that step: if a pin's relative power drops, must
+  its absolute power drop too? (Yes, by the same ratio — if total power and target share are
+  constant.)
+- In `pwr_17x17` **Pin-by-pin depletion** is off: all pins burn with the same average
+  composition. Why is the flattening of the distribution by the faster burning of hot pins
+  therefore **not seen**? (No per-pin burnup feedback; to see it switch on **Pin-by-pin
+  depletion** under Advanced — every pin becomes its own material, memory and time grow with
+  the number of pins.) Judge differences with the seed-to-seed spread, not with the single-run
+  σ (optimistic).
+- Why is the distribution shown the one at the **beginning** of the step? (OpenMC writes the
+  step statepoint after the predictor transport.)
+
+**Measured (B, small settings).** 02.10.2026, `pwr_17x17` + Depletion: **2000 × 30 / 10
+inactive** (the example's own 10 000 × 150 setting was not measured), CASL simple thermal, CECM,
+40 W/gHM, steps 1, 4, 5, 10 MWd/kg (9 transports, 6 threads, 518 s). Mean q′ **193.3 W/cm**
+(2D: per 1 cm of height). F_ΔH per step: 1.222, 1.207, 1.258, 1.262, 1.240 (single-run σ
+0.06–0.10); the hottest pin is at a different position in every step (x = 5, y = 6 → x = 14,
+y = 9 → …). With these statistics the step-to-step difference **cannot be told apart** from
+noise and F_ΔH is pushed up by the bias of the maximum (5.7): to read a burnup trend increase
+the number of particles and use several seeds. k-eff 1.1773 → 0.9648 (20 MWd/kg).
+
+These numbers are not a design or licensing assessment; for the limits see
+[6.6 Known limits](06-sonuclar.md#bilinen-sinirlar).
+
 <a id="ders-benchmark"></a>
 ## 5.8 Benchmark and C/E
 
@@ -669,6 +732,168 @@ lines are not a failure (unless `--siki` is given).
 - Why is the exit code of the `uygunluk` command useful in CI? (0 no error, 1 error findings,
   2 usage error, 3 a rule that could not be evaluated with `--siki`.)
 
+<a id="ders-spektrum"></a>
+## 5.11 Spectrum, four factors and spectral indices
+
+**Example file:** `ornekler/pwr_pinhucre.json` · **Level:** intermediate · **Estimated time:** 15
+minutes
+
+**Goal.** In a reflective-boundary (infinite lattice) PWR pin cell, plot the neutron energy
+spectrum, split k∞ into the four factors (ε, p, f, η), see that the product ε·p·f·η·c_xn equals
+k∞, and read the CSEWG spectral indices.
+
+**Definitions (which tally ratio).** All are tallies of the same run; νF = `nu-fission`,
+A = `absorption`, _th = E < E_c, F = fuel (materials containing fissile nuclides), X = Σ (x−1)·R_x
+((n,xn)-type channels, see below). The definitions agree with OpenMC's official tally-arithmetic
+example (openmc-notebooks, `tally-arithmetic.ipynb`) **in the leakage-free limit**; p differs: the
+example's p also contains thermal leakage. Textbook frame: Lamarsh & Baratta, *Introduction to
+Nuclear Engineering*, Chapter 6; Duderstadt & Hamilton, *Nuclear Reactor Analysis* (1976), neutron
+life cycle and the four-factor formula — but the **two-group definition** differs from the
+textbook: the textbook ε counts only fast fission above the U-238 threshold (typically
+1.02–1.08); here "fast" = E > 0.625 eV, so ε also contains epithermal and resonance U-235 fission
+(1.225 in this pin cell) and p is correspondingly smaller. The product does not change.
+
+| Symbol | Name | Tally ratio |
+|---|---|---|
+| ε | fast fission factor | νF / νF_th |
+| p | resonance escape probability | A_th / A |
+| f | thermal utilization | A_F,th / A_th |
+| η | neutrons per thermal absorption | νF_th / A_F,th |
+| ε·p·f·η | product | νF / A (intermediate tallies cancel) |
+| c_xn | (n,xn) correction | A / (A − X) |
+| P_NL | non-leakage probability (P_FNL·P_TNL) | (A − X) / (A − X + L) |
+| k | k from tallies | νF / (A − X + L) = ε·p·f·η·c_xn·P_NL |
+
+- **Thermal cutoff E_c = 0.625 eV:** the value of the OpenMC example, the CASMO-2 two-group
+  boundary and the **calculational** cutoff of the CSEWG/ENDF-202 TRX calculations; the effective
+  cadmium cutoff in the experiment depends on the cadmium thickness (~0.4–0.5 eV). Changing the
+  cutoff changes all four factors (by definition); only the product stays the same.
+- **Leakage-free assumption:** p = A_th/A is the k∞ definition. The p of the OpenMC example also
+  contains thermal leakage; there is no thermal leakage tally here. With leakage, L is taken from
+  the global `leakage` tally of the statepoint and given as a **single** factor P_NL; giving P_FNL
+  and P_TNL separately needs an energy-dependent surface current tally (out of scope).
+- **(n,xn):** OpenMC's `absorption` score does not count the neutrons born in (n,2n); hence
+  ε·p·f·η = νF/A underestimates k∞ by X/A (about 0.14 % in the pin cell). c_xn corrects for it. In
+  the classical four-factor formula this effect is assumed to be inside ε. X counts only the MT 11,
+  16, 17, 24, 25, 30, 37, 41, 42 channels; higher channels (MT 152+, (n,5n) ...) are not counted.
+  In models containing Be or D₂O, (n,2n) matters. **c_xn is verified only by the analytic
+  (hand-calculation) test;** X/A of about 0.14 % is smaller than the Monte Carlo uncertainty of A
+  (~0.2 %), so its effect on k is not resolved by Monte Carlo. Verified by Monte Carlo: the
+  unfiltered nu-fission tally = global k-tracklength (~1e-6 relative); with the Y3 tallies the
+  neutron balance A − X + L = 1 (3σ, since the correlation is neglected); with the analog estimator
+  the same balance holds **exactly** (1e-9) — this shows that L and the tallies share one
+  normalization and that the channel set of X is complete for these models (pin cell, Godiva).
+- **Spectral indices (CSEWG benchmark definitions; BNL-19302/ENDF-202, TRX-1/2 lattices):**
+  ρ28 = U-238 capture epithermal/thermal, δ25 = U-235 fission epithermal/thermal, δ28 = U-238
+  fission / U-235 fission, C* = U-238 capture / U-235 fission. Experiments measure them in the
+  central fuel pin; here they are averages over **all fuel materials**. In a homogeneous model (fuel
+  and moderator in the same material) f = 1 and η belongs to the fuel + moderator mixture, so it
+  loses its textbook meaning.
+- **Uncertainty:** first order, **correlation between tallies neglected**: for r = a/b,
+  (σ_r/r)² = (σ_a/a)² + (σ_b/b)². When the numerator is a subset of the denominator (p, f) the
+  true correlation is positive, so the given σ is an **overestimate** (conservative). The σ of the
+  product is computed from the νF/A ratio.
+- **Spectrum:** OpenMC's `flux` score is a volume integral (φ·V, cm per source neutron); the plot
+  divides it by the lethargy width: φ_g·V / ln(E_g,upper / E_g,lower).
+
+**Steps.**
+
+1. Open `ornekler/pwr_pinhucre.json`. In **Run settings › Spectrum and four factors**, tick
+   **Compute spectrum and four factors**; **Energy group structure**: XMAS-172.
+2. **Run**. When the run ends, the **Spectrum and four factors** card appears.
+3. In the plot, find the thermal peak (about 0.05–0.1 eV, depending on the moderator temperature), the 1/E slowing-down plateau and the U-238
+   resonance dips (6.67 eV, 20.9 eV, 36.7 eV ...) on the fuel curve; the fission peak per unit
+   lethargy is at ~1–2 MeV.
+4. Compare the product ε·p·f·η·c_xn in the table with OpenMC's k.
+
+**Expected result** (source run: the example file's own settings — 5 000 particles × 60 batches /
+10 inactive, seed 1 — ENDF/B-VIII.0, OpenMC 0.16.0, XMAS-172; the acceptance test runs the same
+model with 15 inactive batches, its values differ from this table by a few σ):
+
+| Quantity | Value ± 1σ |
+|---|---|
+| ε | 1.2250 ± 0.0048 |
+| p | 0.6543 ± 0.0024 |
+| f | 0.9276 ± 0.0040 |
+| η | 1.8251 ± 0.0078 |
+| ε·p·f·η | 1.3570 ± 0.0044 |
+| c_xn | 1.0015 |
+| k∞ (tallies) | 1.3589 ± 0.0044 |
+| k∞ (OpenMC combined) | 1.3570 ± 0.0020 |
+| ρ28 / δ25 / δ28 / C* | 2.795 ± 0.014 / 0.1528 ± 0.0006 / 0.0545 ± 0.0002 / 0.5109 ± 0.0020 |
+
+The two k come from the same histories and agree within 2σ (test: `testler/test_y3_spektrum.py`,
+`test_pin_hucre_dort_faktor_k_sonsuz`). These indices belong to this pin cell; they are not
+compared with the TRX measurements (different lattice: the 3 % enrichment and the 0.70 g/cm³ water
+harden the spectrum, so ρ28 and δ25 are clearly larger than in the TRX/BAPL lattices — roughly a
+factor of two; this ratio was not verified against the ENDF-202 tables, no reference value is
+given). The example file is a teaching model: its cross
+sections are taken at 293.6 K while the water density is 0.70 g/cm³ (hot condition); this
+inconsistency is deliberate and does not make the results design values.
+
+**What we learned / check questions.**
+
+- Why is f < 1 and η < ν (about 2.43)? (f leaves out the thermal absorption of the clad and the
+  water; η is the production per thermal absorption in the fuel, and U-235 capture and U-238
+  absorption are in the denominator too.)
+- Which factors change if the thermal cutoff is moved to 1 eV? (All of them; the product νF/A
+  stays the same.)
+- Why are ε, p, f, η meaningless for Godiva (`ornekler/godiva_kriter.json`) and why is P_NL about
+  0.43? (No or negligible thermal fission: ε = νF/νF_th is either undefined or excessively large;
+  the four factors are a thermal-reactor definition. Bare sphere, large leakage.)
+- This result is not a validation or a certificate; it only shows that the definitions are
+  consistent.
+
+<a id="ders-malzeme-asistani"></a>
+## 5.14 Material assistant and my library
+
+**Example file:** `ornekler/pwr_17x17.json` · **Level:** introductory · **Estimated time:** 15 minutes
+(no Monte Carlo run)
+
+**Goal.** Build a fuel and a coolant with the assistant, compare the derived values with a hand
+calculation, see how an invalid input is stopped, and save the material to the library on this
+computer. Background: [Material assistant](04a-malzemeler.md#malzeme-asistani).
+
+**Steps.**
+
+1. Open `ornekler/pwr_17x17.json`. On the **Materials** page, click **Assistant…**.
+2. **What are you designing?** → **Fuel**. **Material type** UO₂; **U-235 weight %** 3.2;
+   **Density** "directly in g/cm³", 10.40; **O/M ratio** 2.000; **Temperature** 900 K.
+3. Read the **Derived values** panel and compare it with the hand calculation below.
+4. **Next**. If a cross section library is set, the check list shows no missing nuclides; if not,
+   the warning "missing-nuclide check skipped" appears. The suggested **Name** is `uo2_2` (the
+   example already has `uo2`). Tick **Also save to my library** and click **Finish**.
+5. Open **Assistant…** again → **Moderator / coolant** → **Light water**: 580 K, 15.5 MPa,
+   1000 ppm boron. Then lower the pressure to 5 MPa and raise the temperature to 600 K.
+6. **My library…**: the material saved in step 4 is in the list; **Add to project** adds it again
+   with a `_2` name.
+
+**Expected result** (hand calculation; `testler/test_k6_hesap.py` and `testler/test_k6_sogutucu.py`):
+
+| Value | Hand calculation | Panel |
+|---|---|---|
+| M_U (3.2%, ORNL/CSD/TM-244 vector) | 1 / Σ(w_i/M_i) = 237.9519 g/mol | — |
+| N_total = 3 · ρ N_A / (M_U + 2 M_O) | 3 · 10.40 · 0.602214 / 269.9505 = 0.069602 atom/b-cm | 6.9602e-02 |
+| N(U-235) | 0.023201 · 0.032396 = 7.5161e-04 atom/b-cm | 7.5161e-04 |
+| Heavy metal | 10.40 · 237.9519 / 269.9505 = 9.1672 gHM/cm³ | 9.1672 |
+| Water ρ(580 K, 15.5 MPa), IAPWS-IF97 | 0.71187 g/cm³ (NIST IAPWS-95: 0.711869) | 0.71187 |
+| 600 K, 5 MPa | p_s(600 K) = 12.34 MPa > 5 MPa: steam region | red error, **Next** disabled |
+
+The assistant's UO₂ has the same composition as the UO₂ of the library (U, enrichment 3.2; O 2;
+10.40 g/cm³; 900 K); with the same seed k is also the same.
+
+**What we learned / check questions.**
+
+- Why do U-234 and U-236 appear besides U-235? (Enrichment also enriches U-234; the
+  ORNL/CSD/TM-244 correlation gives U-234 = 0.0089·e and U-236 = 0.0046·e by weight. The U-236
+  term is an empirical fit to commercial LEU containing recycled uranium; enrichment from
+  natural feed has no U-236, and the correlation is valid only at low enrichment.)
+- Why does the saturated-water table (the library's **Light water**) come out 2.2% lower at 580 K and
+  15.5 MPa (0.6965 g/cm³)? (2.0% is the pressure: IF97 saturated liquid is 0.69763 g/cm³;
+  the remaining 0.17% is the linear interpolation of the table.) (At 15.5 MPa the liquid is compressed; the assistant also accounts for pressure
+  through IF97.)
+- Why is my library not connected to a network? (User decision: material data stays on this
+  computer only; the file is written atomically and is not deleted if it gets damaged.)
 ---
 
 <a id="ders-yerel-k"></a>

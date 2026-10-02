@@ -81,7 +81,12 @@ class MalzemeSekmesi(SekmeTabani):
                        "tanımlanmaz."),
             eylem=self.d_kutup)
         self.kart.ekle(self.tablo, 1)
-        self.kart.ekle(sd.satir(self.d_yeni, self.d_duzenle, self.d_kopya, self.d_sil))
+        # Asistan ve Kutuphanem baslik satirinda (birincil eylemin yaninda): alt satir
+        # 1280 px pencerede yatay kaydirma yaratmasin (test_kabuk_kabul).
+        self.kart.eylem_ekle(self.d_asistan)
+        self.kart.eylem_ekle(self.d_kutuphanem)
+        self.kart.ekle(sd.satir(self.d_yeni, self.d_duzenle, self.d_kopya, self.d_kaydet_kutup,
+                                self.d_sil))
         liste_sayfa = self.kart
 
         bos_sayfa = QtWidgets.QWidget()
@@ -143,9 +148,21 @@ class MalzemeSekmesi(SekmeTabani):
         self.d_duzenle = b.ikincil_dugme(_("Düzenle…"), "sliders-horizontal")
         self.d_kopya = b.duz_dugme(_("Kopyala"), "copy")
         self.d_sil = b.tehlikeli_dugme(_("Sil"), "trash")
+        self.d_asistan = b.ikincil_dugme(
+            _("Asistan…"), "zap",
+            _("Adım adım malzeme tasarımı: zenginlik, %TD, bor, sıcaklık ve basınçtan "
+              "bileşim ve yoğunluk; türetilmiş değerler anında hesaplanır."))
+        self.d_kutuphanem = b.ikincil_dugme(
+            _("Kütüphanem…"), "folder-open",
+            _("Bu bilgisayarda sakladığınız malzemeler ve PNNL-15870 içe aktarımı."))
+        self.d_kaydet_kutup = b.duz_dugme(
+            _("Kütüphaneme kaydet"), "save",
+            _("Seçili malzemeyi yalnız bu bilgisayardaki kütüphanenize kaydeder."))
         for d, islem in ((self.d_kutup, self._kutuphaneden), (self.d_yeni, self._yeni),
                          (self.d_duzenle, self._duzenle), (self.d_kopya, self._kopyala),
-                         (self.d_sil, self._sil)):
+                         (self.d_sil, self._sil), (self.d_asistan, self._asistan),
+                         (self.d_kutuphanem, self._kutuphanem),
+                         (self.d_kaydet_kutup, self._kutuphaneme_kaydet)):
             d.clicked.connect(islem)
 
     # ------------------------------------------------------------------
@@ -208,7 +225,7 @@ class MalzemeSekmesi(SekmeTabani):
     def _dugmeleri_guncelle(self):
         """Duzenle / Kopyala / Sil yalnizca bir satir seciliyken etkin."""
         satir = self._secili_satir()
-        for d in (self.d_duzenle, self.d_kopya, self.d_sil):
+        for d in (self.d_duzenle, self.d_kopya, self.d_sil, self.d_kaydet_kutup):
             d.setEnabled(satir >= 0)
         if self.spec is not None:
             self._secim_adi = self.spec["malzemeler"][satir]["ad"] if satir >= 0 else None
@@ -218,7 +235,8 @@ class MalzemeSekmesi(SekmeTabani):
     # ------------------------------------------------------------------
     def komutlar(self):
         return sd.dugme_komutlari(self, _("Malzeme"), (
-            self.d_kutup, self.d_yeni, self.d_duzenle, self.d_kopya, self.d_sil))
+            self.d_kutup, self.d_asistan, self.d_kutuphanem, self.d_yeni, self.d_duzenle,
+            self.d_kopya, self.d_kaydet_kutup, self.d_sil))
 
     def odakla(self, yer):
         """"malzeme:<ad>" bulgusunda o malzemenin satirini secer."""
@@ -263,6 +281,41 @@ class MalzemeSekmesi(SekmeTabani):
         d = MalzemeDiyalog(m, self.spec, self, yeni=True)
         if self._diyalog_calistir(d):
             self._ekle(d.sonuc())
+
+    def _asistan(self):
+        from arayuz.malzeme.asistan import MalzemeAsistani
+        d = MalzemeAsistani(self.spec, self)
+        if self._diyalog_calistir(d) and d.projeye_eklenecek_mi():
+            self._ekle(d.sonuc())
+
+    def _kutuphanem(self):
+        from arayuz.malzeme.kutuphane_tarayici import KutuphaneTarayici
+        t = KutuphaneTarayici(self.spec, self)
+        t.projeye_ekle.connect(self._ekle)
+        self._diyalog_calistir(t)
+
+    def _kutuphaneme_kaydet(self):
+        """Secili malzemeyi kullanici kutuphanesine ekler (ad cakisirsa _2, _3 ...)."""
+        from cekirdek import malzeme_kullanici as mku
+        satir = self._secili_satir()
+        if satir < 0:
+            return False
+        m = self.spec["malzemeler"][satir]
+        ad = m["ad"]
+
+        def islem(kayitlar):
+            nonlocal ad
+            ad = mku.benzersiz_kayit_adi(kayitlar, m["ad"])
+            return mku.ekle(kayitlar, mku.kayit_olustur(
+                dict(m, ad=ad), aciklama=m.get("gorunen_ad") or "", kaynak="proje"))
+        try:
+            mku.degistir(islem)
+        except (mku.KutuphaneHatasi, ValueError) as e:
+            _log.warning("kutuphaneye kaydedilemedi: %s", e)
+            b.bildir(self.window(), str(e), "hata", baslik=_("Kütüphaneye kaydedilemedi"))
+            return False
+        b.bildir(self.window(), _("'%s' kütüphanenize kaydedildi.") % ad, "basari")
+        return True
 
     def _secili_satir(self):
         if not self.spec:

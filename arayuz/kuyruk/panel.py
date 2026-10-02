@@ -14,7 +14,7 @@ from __future__ import annotations
 
 import os
 import time
-from typing import Any, Dict, Mapping, Optional
+from typing import Any, Callable, Dict, Mapping, Optional
 
 from PySide6 import QtCore, QtGui, QtWidgets
 
@@ -198,10 +198,11 @@ class KuyrukPaneli(QtWidgets.QWidget):
                               mpi_surec=self.mpi.value(),
                               dizin=kuyruk.ayri_dizin(self.kok.text(), ad, alinmis))
 
-    def _ekle(self, islem):
+    def _ekle(self, islem: Callable[[], Any]) -> Any:
         try:
             return islem()
-        except (ValueError, KeyError, RuntimeError) as e:
+        except (ValueError, KeyError, RuntimeError, OSError) as e:
+            # DogrulamaHatasi bir ValueError'dur; OSError: koşu klasörü yazılamaz
             _log.warning("kuyruga eklenemedi: %s", e)
             self._durum_yaz(_("Kuyruğa eklenemedi: %s") % e, "hata")
             return None

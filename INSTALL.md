@@ -114,7 +114,7 @@ pytest -m hizli -n auto -q       # fast suite, in parallel (~40 s); expect "pass
 ```
 
 First calculation: on the start screen (*What would you like to model?*) choose **Fuel pin →
-start empty**, then press **F9** (Run). Within about half a minute the result card should show
+From template**, then press **F9** (Run). Within about half a minute the result card should show
 **k∞ ≈ 1.323 ± 0.001** (UO₂ 3.0 %, hot operating conditions, *Normal* accuracy preset; measured
 1.3227 ± 0.0008, 1σ). Small differences in the last digit are normal on another machine because
 of statistics; a difference larger than ±0.003 points to an installation problem.
