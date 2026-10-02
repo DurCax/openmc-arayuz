@@ -249,6 +249,10 @@ def tek_kosu_kaydet(dizin: str, ad: str, durum: str, keff: Optional[Tuple[float,
     YUKARI cikmaz (gecmis yazilamadi diye kosu sonucu gizlenmez); loglanir.
     DONER yazilan kayit ya da None."""
     import uuid
+    if not dizin:
+        # surec baslatilamadi / kosu dizini hic kurulmadi: kaydedilecek kosu yok
+        _log.debug("tek kosu gecmise yazilmadi: kosu dizini yok")
+        return None
     try:
         depo = depo or GecmisDeposu()
         k = keff or (None, None)

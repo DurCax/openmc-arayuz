@@ -183,6 +183,8 @@ def test_tek_kosu_kaydet_hata_firlatmaz(tmp_path):
         def kaydet(self, kayit):
             raise OSError("salt okunur")
     assert kg.tek_kosu_kaydet(str(tmp_path), "x", "bitti", depo=BozukDepo()) is None
+    assert kg.tek_kosu_kaydet(None, "x", "basarisiz", depo=BozukDepo()) is None, \
+        "kosu dizini yokken (baslatilamayan surec) hata firlatmamali"
     depo = kg.GecmisDeposu(str(tmp_path / "g.sqlite3"))
     kayit = kg.tek_kosu_kaydet(str(tmp_path), "", "basarisiz", depo=depo)
     assert kayit.ad == os.path.basename(str(tmp_path)) and kayit.keff is None
