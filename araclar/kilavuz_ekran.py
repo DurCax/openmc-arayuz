@@ -93,8 +93,8 @@ def _bekle(app, pencere=None):
     while True:
         app.processEvents()
         gecen = time.monotonic() - bas
-        sayac = getattr(getattr(pencere, "onizleme", None), "_sayac", None)
-        mesgul = sayac is not None and sayac.isActive()
+        onizleme = getattr(pencere, "onizleme", None)
+        mesgul = onizleme is not None and onizleme.mesgul_mu()   # gecikme + arka plan cizimi
         if gecen > _EN_COK_BEKLEME or (gecen > _EN_AZ_BEKLEME and not mesgul):
             break
         time.sleep(0.05)
