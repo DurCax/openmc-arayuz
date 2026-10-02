@@ -259,6 +259,7 @@ class AnaPencere(DogrulamaMixin, GezinmeCephesi, MenulerMixin, ProjeMixin, Gecmi
         self.baslangic.geri_istendi.connect(self._editoru_goster)
         self.s_calistir.kapi_ayarla(self._kosu_izni)
         self.s_analiz.kapi_ayarla(self._kosu_izni)
+        self.s_analiz.kinetik.kosu_kaynagi_ayarla(self.s_calistir.son_kosu_dizini)  # Y6
         self.s_tukenme.kapi_ayarla(self._kosu_izni)
         for s in (self.s_calistir, self.s_analiz, self.s_tukenme):
             s.durum.connect(self._sekme_durum_mesaji)
