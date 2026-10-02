@@ -8040,8 +8040,8 @@ msgid ""
 "'%s' altıgen demet: yerel k haritası yalnız kare kafeste kurulabilir (altıgen mesh "
 "OpenMC'de yok)"
 msgstr ""
-"'%s' is a hexagonal assembly: the local k map can only be built on a square lattice "
-"(OpenMC has no hexagonal mesh)"
+"'%s' is a hexagonal assembly: the local k map can only be built on a rectangular "
+"lattice (OpenMC has no hexagonal mesh)"
 
 #: cekirdek/yerel_k.py:174
 msgid "tek pin modelinde kare hücre gerekir"
@@ -8079,12 +8079,12 @@ msgid ""
 "altıgen kesitli model: yerel k haritası yalnız kare kafeste kurulabilir (altıgen mesh"
 " OpenMC'de yok)"
 msgstr ""
-"model with a hexagonal cross-section: the local k map can only be built on a square "
-"lattice (OpenMC has no hexagonal mesh)"
+"model with a hexagonal cross-section: the local k map can only be built on a "
+"rectangular lattice (OpenMC has no hexagonal mesh)"
 
 #: cekirdek/yerel_k.py:217
 msgid "yerel k haritası yalnız kare kafeste kurulabilir"
-msgstr "the local k map can only be built on a square lattice"
+msgstr "the local k map can only be built on a rectangular lattice"
 
 #: cekirdek/yerel_k.py:230
 #, python-format
@@ -8092,8 +8092,8 @@ msgid ""
 "bu geometride (%s) pin/demet kafesi bulunamadı; yerel k haritası kare kafesli "
 "modellerde kurulur"
 msgstr ""
-"no pin/assembly lattice found in this geometry (%s); the local k map is built for "
-"models with a square lattice"
+"no rectangular pin/assembly lattice found in this geometry (%s); the local k map is "
+"built for models with a rectangular lattice"
 
 #: cekirdek/yerel_k.py:284
 msgid "yerel k tally'sinde mesh filtresi yok"
