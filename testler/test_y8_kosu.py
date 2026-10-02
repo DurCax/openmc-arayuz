@@ -87,6 +87,23 @@ def test_rr_varsayilan_ve_mg_sarti():
         kontrol("CE modelde ValueError", True)
 
 
+def test_kapsam_secenekleri_ve_demet_alt_modeli():
+    print("\n[Y8-I4] kapsam: tek demet/pin modelde yalniz tum model; kor -> demet basina alt model")
+    from cekirdek import mgxs_is
+    # Arrange
+    kor = sema.yukle(os.path.join(ORNEK, "pwr_smr_kor.json"))
+    pin = sema.yukle(os.path.join(ORNEK, "pwr_pinhucre.json"))
+    # Act
+    sk, sp = mgxs_is.kapsam_secenekleri(kor), mgxs_is.kapsam_secenekleri(pin)
+    alt = mgxs_is.kapsam_spec(kor, "demet_24")
+    # Assert
+    kontrol("pin: yalniz tum model", [a for a, _m in sp] == [None], "-> %r" % (sp,))
+    kontrol("kor: tum model + 2 demet", [a for a, _m in sk] == [None, "demet_24", "demet_31"])
+    kontrol("alt model tek demet, yansitici", alt["kor"]["tur"] == "tek_demet"
+            and set(alt["kor"]["sinir"].values()) == {"reflective"}, "-> %r" % (alt["kor"].get("sinir"),))
+    kontrol("tum model: ayni spec", mgxs_is.kapsam_spec(kor, None) is kor)
+
+
 # ---------------------------------------------------------------------------
 # YAVAS
 # ---------------------------------------------------------------------------
@@ -168,5 +185,6 @@ def test_ince_grup_mg_ve_random_ray(gecici):
              ["%.0f s" % x.sure_s for x in t.values()]))
 
 
-HIZLI = [test_karsilastirma_tablosu, test_random_ray_ayar_dogrulama, test_rr_varsayilan_ve_mg_sarti]
+HIZLI = [test_karsilastirma_tablosu, test_random_ray_ayar_dogrulama, test_rr_varsayilan_ve_mg_sarti,
+         test_kapsam_secenekleri_ve_demet_alt_modeli]
 YAVAS = [test_iki_grup_homojen_k_inf, test_ince_grup_mg_ve_random_ray]

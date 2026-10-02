@@ -35,6 +35,32 @@ TURLER = {"ce": N_("Sürekli enerji (CE) MC"), "mg": N_("Çok gruplu (MG) MC"),
           "rr": N_("Random ray (MG)")}
 
 
+# Demet basina alt model anlamli olan kor turleri (tek parca modelde tum model zaten tek demet/pin)
+_TEK_PARCA = ("tek_cubuk", "tek_plaka", "tek_demet")
+
+
+def kapsam_secenekleri(spec: Mapping) -> list:
+    """[(None, "Tum model"), (demet adi, gorunen ad), ...]. Tek parcali modelde
+    yalniz tum model (alt model ayni sey olurdu)."""
+    secenekler = [(None, _("Tüm model"))]
+    if ((spec.get("kor") or {}).get("tur")) in _TEK_PARCA:
+        return secenekler
+    for d in spec.get("demetler") or []:
+        if d.get("ad"):
+            secenekler.append((d["ad"], _("Demet: %s (sonsuz kafes, 2B)") % d["ad"]))
+    return secenekler
+
+
+def kapsam_spec(spec: Mapping, demet: Optional[str]) -> Mapping:
+    """demet None: spec'in kendisi; aksi halde yansitici sinirli tek demet
+    alt modeli (cekirdek/alt_model.demet_alt_modeli; 2B) -- demet basina
+    homojenlestirme bu alt modelde yapilir."""
+    if demet is None:
+        return spec
+    from cekirdek import alt_model
+    return alt_model.demet_alt_modeli(spec, demet)
+
+
 def ce_isi(spec: Mapping, a: mgxs_uret.MgxsAyar, dizin: str, is_parcacigi: int,
            ad: Optional[str] = None) -> kuyruk.KosuIsi:
     """CE + MGXS tally koşusu. Bitince sonuc: {"keff", "mgxs": MgxsSonuc}."""
