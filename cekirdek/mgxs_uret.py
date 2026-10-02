@@ -63,7 +63,11 @@ BOLGE_ADLARI = {"malzeme": N_("Malzeme"), "hucre": N_("Hücre"),
 GRUP_YAPILARI = ("CASMO-2", "CASMO-4", "CASMO-8", "CASMO-16", "CASMO-25",
                  "CASMO-40", "CASMO-70", "XMAS-172")
 VARSAYILAN_GRUP = "CASMO-2"
-DUZELTMELER = ("P0", "yok")
+DUZELTMELER = ("yok", "P0")
+# Varsayilan "yok": P0 duzeltmesi ince grupta kosegeni NEGATIF yapabilir; MG
+# Monte Carlo negatif sacilma olasiligini ornekleyemez (olculdu, Y8: pin hucre
+# CASMO-70'te MG MC -7600 pcm; random ray kosegen kararlastirmasiyla dogru).
+VARSAYILAN_DUZELTME = "yok"
 # MG kutuphanesi (create_mg_library) icin her zaman: toplam + sogurma +
 # nu-fisyon + chi + nu-sacilma ve sacilma matrisi (cogalma matrisi).
 SACILMA_TURU = "consistent nu-scatter matrix"
@@ -100,7 +104,7 @@ class MgxsAyar:
     bolge: str = "malzeme"
     grup_yapisi: str = VARSAYILAN_GRUP
     turler: Tuple[str, ...] = ()
-    duzeltme: str = "P0"
+    duzeltme: str = "yok"
 
     @property
     def etkin_turler(self) -> Tuple[str, ...]:
@@ -139,7 +143,7 @@ def ayar(spec: Mapping) -> MgxsAyar:
                      _("bilinmeyen MGXS bölge türü: %s (geçerli: %s)"))
     grup = _secenek(ham.get("grup_yapisi", VARSAYILAN_GRUP), GRUP_YAPILARI,
                     _("bilinmeyen MGXS grup yapısı: %s (geçerli: %s)"))
-    duz = _secenek(ham.get("duzeltme", "P0"), DUZELTMELER,
+    duz = _secenek(ham.get("duzeltme", VARSAYILAN_DUZELTME), DUZELTMELER,
                    _("bilinmeyen taşıma düzeltmesi: %s (geçerli: %s)"))
     turler = tuple(ham.get("turler") or ())
     for t in turler:
@@ -347,6 +351,17 @@ def k_tahminleri(lib: "openmc.mgxs.Library", a: MgxsAyar) -> Tuple[Optional[mgxs
     return k_oran, k_oz, tuple(notlar)
 
 
+def negatif_kosegen(lib: "openmc.mgxs.Library") -> int:
+    """nu-sacilma matrisinde negatif kosegen ogesi sayisi (butun bolgeler)."""
+    import numpy as np
+    sayi = 0
+    for d in lib.domains:
+        o, _s = _diziler(lib.get_mgxs(d, SACILMA_TURU))
+        if o.ndim == 2:
+            sayi += int(np.sum(np.diag(o) < 0.0))
+    return sayi
+
+
 def csv_yaz(satirlar: Tuple[Satir, ...], yol: str, a: MgxsAyar) -> str:
     with open(yol, "w", encoding="utf-8", newline="") as f:
         w = csv.writer(f)
@@ -392,6 +407,11 @@ def _isle(statepoint: str, spec: Mapping, dizin: str) -> MgxsSonuc:
     mg.export_to_hdf5(os.path.join(dizin, H5_ADI))
     k_ce = None if k is None else mgxs_k.Deger(float(k.n), float(k.s))
     k_oran, k_oz, notlar = k_tahminleri(lib, a)
+    negatif = negatif_kosegen(lib)
+    if negatif:
+        notlar = notlar + (_("%d bölge/grup için saçılma köşegeni negatif (P0 düzeltmesi): "
+                             "MG Monte Carlo bunu doğru örnekleyemez, random ray "
+                             "köşegen kararlılaştırması uygular") % negatif,)
     satirlar = tuple(_satirlar(lib, adlar))
     sonuc = MgxsSonuc(a, tuple(float(e) for e in lib.energy_groups.group_edges), adlar,
                       satirlar, k_ce, k_oran, k_oz, dizin, notlar)

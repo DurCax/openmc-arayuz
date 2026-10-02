@@ -59,8 +59,8 @@ def test_ayar_varsayilan_ve_dogrulama():
     # Arrange / Act
     a = mu.ayar(_pin())
     # Assert
-    kontrol("varsayilan: malzeme, CASMO-2, P0", (a.bolge, a.grup_yapisi, a.duzeltme)
-            == ("malzeme", "CASMO-2", "P0"), "-> %r" % (a,))
+    kontrol("varsayilan: malzeme, CASMO-2, yok", (a.bolge, a.grup_yapisi, a.duzeltme)
+            == ("malzeme", "CASMO-2", "yok"), "-> %r" % (a,))
     kontrol("kapali spec -> var False", mu.ayar(sema.yukle(
         os.path.join(ORNEK, "pwr_pinhucre.json"))).var is False)
     hata = 0
@@ -77,8 +77,8 @@ def test_etkin_turler_mg_icin_zorunlulari_icerir():
     print("\n[Y8-M2] etkin turler: zorunlular + secilenler; P0'da nu-transport")
     from cekirdek import mgxs_uret as mu
     # Arrange / Act
-    p0 = mu.ayar(_pin(turler=["kappa-fission"]))
-    yok = mu.ayar(_pin(duzeltme="yok"))
+    p0 = mu.ayar(_pin(turler=["kappa-fission"], duzeltme="P0"))
+    yok = mu.ayar(_pin())
     # Assert
     for t in ("total", "absorption", "nu-fission", "chi", "consistent nu-scatter matrix",
               "consistent scatter matrix"):
@@ -188,8 +188,8 @@ def test_bellek_tahmini():
     print("\n[Y8-M9] tally bellek tahmini: D x G^2 sacilma kutusu baskin")
     from cekirdek import mgxs_uret as mu
     # Arrange
-    a2 = mu.ayar(_pin(grup_yapisi="CASMO-2"))
-    a70 = mu.ayar(_pin(grup_yapisi="CASMO-70"))
+    a2 = mu.ayar(_pin(grup_yapisi="CASMO-2", duzeltme="P0"))
+    a70 = mu.ayar(_pin(grup_yapisi="CASMO-70", duzeltme="P0"))
     # Act
     b2, b70 = mu.bellek_tahmini(a2, 3), mu.bellek_tahmini(a70, 3)
     # Assert

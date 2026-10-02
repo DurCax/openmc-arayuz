@@ -41,9 +41,14 @@ SONSUZ_YERINE = 1.0           # 2B (z sonsuz) sinir kutusunda +/-1 cm (openmc il
 # ~0.1 cm kare bolme duz kaynakta MG MC'ye ~100 pcm yaklasir.
 HEDEF_BOLME_CM = 0.1
 EN_COK_BOLME = 200            # eksen basina; buyuk demette FSR sayisini sinirlar
-VARSAYILAN_ISIN = 500
-VARSAYILAN_CEVRIM = 300
-VARSAYILAN_PASIF = 150
+# Random ray her cevrimde TEK kaynak yinelemesi yapar; yakinsama orani grup ici
+# sacilma orani c = Ss(g->g)/St ile belirlenir (sudaki termal grupta ~0.93:
+# hata ~ c^n). 300 pasif cevrimde 0.93^300 ~ 1e-9. Olcum (Y8, pin hucre 2 grup,
+# duzeltmesiz): 150 pasifte homojen ortam k'si ozdegerden 24 pcm sapti, P0'da
+# (kosegen kucuk) sapmadi.
+VARSAYILAN_ISIN = 200
+VARSAYILAN_CEVRIM = 500
+VARSAYILAN_PASIF = 300
 
 
 @dataclass(frozen=True)
