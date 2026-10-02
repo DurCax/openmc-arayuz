@@ -28,6 +28,7 @@ from collections import namedtuple
 
 import numpy as np
 from cekirdek.ceviri import _, pgettext
+from cekirdek.uygunluk_bellek import Bellek, icerik_anahtari
 
 YoklamaSonucu = namedtuple("YoklamaSonucu", "n bosluklar ortusmeler")
 RAPOR_SINIRI = 5
@@ -203,18 +204,31 @@ def _dis_sinir(m):
     return lambda x, y: any(_k.icinde(el, x, y, merkez=c, pay=-1.0e-7) for c in merkezler)
 
 
+_YOKLAMALAR = Bellek("yoklama")
+
+
 def yokla(spec, n=20000, tohum=1):
-    """spec -> (YoklamaSonucu, [okunur sorun metni]) (ilk RAPOR_SINIRI sorun)."""
-    from cekirdek import geometri, kurucu
-    model, bilgi = kurucu.kur(spec)
+    """spec -> (YoklamaSonucu, [okunur sorun metni]) (ilk RAPOR_SINIRI sorun).
+    H1b: model onbellek.kur_onbellekli'den (salt okunur: yalniz bolge/kafes
+    sorgulanir); sonuc icerik anahtariyla bellekte (degismez demetler), metin
+    her cagrida etkin dilde uretilir."""
+    anahtar = icerik_anahtari([spec, int(n), tohum])
+    sonuc, dizin = _YOKLAMALAR.al(anahtar, lambda: _yokla_hesapla(spec, n, tohum))
+    return sonuc, _metinler(sonuc, dizin)
+
+
+def _yokla_hesapla(spec, n, tohum):
+    from cekirdek import geometri, onbellek
+    model, bilgi = onbellek.kur_onbellekli(spec)
     m = geometri.model(spec)
     gx, gy = geometri.sinir_kutusu(m)
     h = geometri.yukseklik(m)
     z = h / 2.0 * (1.0 - 1.0e-9) if h else 0.0
     kutu = ((-gx / 2.0, -gy / 2.0, -z), (gx / 2.0, gy / 2.0, z))
-    sonuc = nokta_yoklama(model.geometry, n, tohum, kutu, _dis_sinir(m))
-    dizin = bilgi.get("geometri_dizini")
-    return sonuc, _metinler(sonuc, dizin)
+    s = nokta_yoklama(model.geometry, n, tohum, kutu, _dis_sinir(m))
+    donmus = YoklamaSonucu(s.n, tuple((p, tuple(h)) for p, h in s.bosluklar),
+                           tuple((p, tuple(h)) for p, h in s.ortusmeler))
+    return donmus, bilgi.get("geometri_dizini")
 
 
 def _hucre_adi(h, dizin):

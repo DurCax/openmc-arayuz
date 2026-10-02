@@ -206,3 +206,34 @@ HIZLI = [test_toplu_yoklama_tum_orneklerde_kahinle_ayni,
          test_toplu_yoklama_kasitli_ortusme_ve_boslukta_ayni, test_tek_nokta_in_kahinle_ayni,
          test_bolge_maskesi_tekil_icermeyle_ayni]
 YAVAS = [test_yavas_toplu_yoklama_tum_orneklerde_600_nokta]
+
+
+def test_yokla_bellekli_ve_paylasilan_modeli_kullanir(monkeypatch):
+    print("\n[H1b-Y6] yokla: ayni icerikte bellekten (kurmaz), model onbellekten (salt okuma)")
+    from cekirdek import kurucu, onbellek, sema, uygunluk_bellek
+    from cekirdek.geometri import yoklama
+    spec = sema.yukle(os.path.join(ORNEK, "pwr_kare_altigen_halka.json"))
+    uygunluk_bellek.temizle()
+    onbellek.temizle()
+    ilk = yoklama.yokla(spec, n=200)
+    sayac = [0]
+    asil = kurucu.kur
+
+    def sayan(*a, **k):
+        sayac[0] += 1
+        return asil(*a, **k)
+    monkeypatch.setattr(kurucu, "kur", sayan)
+    ikinci = yoklama.yokla(spec, n=200)
+    kontrol("ikinci cagri model kurmaz", sayac[0] == 0, "kur=%d" % sayac[0])
+    kontrol("ayni sonuc ve metin", (_ozet(ilk[0].bosluklar), _ozet(ilk[0].ortusmeler), ilk[0].n,
+                                    ilk[1]) == (_ozet(ikinci[0].bosluklar),
+                                                _ozet(ikinci[0].ortusmeler), ikinci[0].n,
+                                                ikinci[1]))
+    uygunluk_bellek.temizle()
+    yoklama.yokla(spec, n=200)
+    kontrol("bellek bosken de model onbellekten (kur yok)", sayac[0] == 0, "kur=%d" % sayac[0])
+    yoklama.yokla(spec, n=201)
+    kontrol("farkli n: yeniden yoklar (model yine onbellekte)", sayac[0] == 0)
+
+
+HIZLI.append(test_yokla_bellekli_ve_paylasilan_modeli_kullanir)
