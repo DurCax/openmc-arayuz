@@ -22,7 +22,8 @@ VERI (paketin disinda; kurulu pakette data-files -> <onek>/share/openmc-arayuz)
 
   veri_koku() sirasi: OPENMC_ARAYUZ_VERI (var olan dizinse) > paket koku
   (kaynak agaci ve conda paketi: build.sh agaci share/openmc-arayuz'a kopyalar)
-  > kurulu dagitimin kaydindaki share/openmc-arayuz (venv, --user, --target)
+  > kurulu dagitimin kaydindaki share/openmc-arayuz (venv, --user, --prefix)
+  > <paket koku>/share/openmc-arayuz (pip install --target; RECORD'da yok)
   > sys.prefix/share/openmc-arayuz > paket koku (son care; yoksa cagiran
   "dosya bulunamadi" hatasini kendisi gosterir).
 
@@ -143,6 +144,7 @@ def _veri_adaylari(ortam):
                          VERI_ORTAM_DEGISKENI, istenen, _VERI_ISARETI)
     yield _PAKET_KOKU
     yield _dagitim_paylasim_dizini()
+    yield os.path.join(_PAKET_KOKU, "share", PAYLASIM_ADI)     # pip install --target
     yield os.path.join(sys.prefix, "share", PAYLASIM_ADI)
 
 

@@ -13,6 +13,7 @@
 import ast
 import glob
 import os
+import shutil
 import stat
 import subprocess
 import sys
@@ -23,6 +24,8 @@ from testler.ortak_test import kontrol, KOK
 _KAYNAK_PAKETLER = ("cekirdek", "arayuz")
 _AZAMI_SATIR = 800          # ORTAK_KURALLAR.md madde 9: dosya < 800 satir
 _ALT_SUREC_SURESI = 120     # s; alt surec (import openmc dahil) en kotu durumda
+_KOPYALANMAYAN = (".git", ".claude", "__pycache__", "build", "dist", "*.egg-info",
+                  "graphify-out", "htmlcov", ".ruff_cache")
 
 
 def _kaynak_dosyalari():
@@ -346,8 +349,10 @@ assert r.returncode == 0 and "--hazirla" in r.stdout, r.stderr
 from PySide6 import QtCore, QtWidgets
 _exec = QtWidgets.QApplication.exec
 def _kisa_exec(app):
+    pencere = [w for w in app.topLevelWidgets() if w.isVisible()]
+    assert pencere, "gorunur pencere yok"
     QtCore.QTimer.singleShot(1500, app.quit)
-    return _exec(app)
+    return _exec()
 QtWidgets.QApplication.exec = _kisa_exec
 sys.exit(giris.gui([]))
 """
@@ -360,7 +365,10 @@ def test_kurulu_paket(gecici):
                        capture_output=True, text=True)
     kontrol("venv olustu", r.returncode == 0, r.stderr[-500:])
     py = os.path.join(venv, "bin", "python")
-    r = subprocess.run([py, "-m", "pip", "install", "-q", "--no-deps", KOK],
+    # Kopyadan kurulur: pip agacin icinde derler (build/, *.egg-info) -- depo kirlenmesin
+    kaynak = os.path.join(gecici, "kaynak")
+    shutil.copytree(KOK, kaynak, ignore=shutil.ignore_patterns(*_KOPYALANMAYAN))
+    r = subprocess.run([py, "-m", "pip", "install", "-q", "--no-deps", kaynak],
                        capture_output=True, text=True, cwd=gecici)
     kontrol("pip install --no-deps .", r.returncode == 0, r.stderr[-1500:])
     temiz = os.path.join(gecici, "temiz")
