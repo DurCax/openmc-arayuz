@@ -1663,7 +1663,7 @@ msgstr "estimated memory for MGXS tallies %.1f GiB"
 
 #: cekirdek/dogrula/mgxs.py:54
 msgid "Daha kaba grup yapısı ya da 'Malzeme' bölgesi seçin."
-msgstr "Choose a coarser group structure or the 'Material' domain."
+msgstr "Choose a coarser group structure or the 'Material' region type."
 
 #: cekirdek/dogrula/referans.py:44
 msgid "en az bir skor seçilmeli"
@@ -6439,7 +6439,7 @@ msgstr "no group constants for cell %d"
 #: cekirdek/mg_model.py:68
 #, python-format
 msgid "demet bölgesinde tek xsdata beklenir (%d)"
-msgstr "a single xsdata is expected for the assembly domain (%d)"
+msgstr "a single xsdata is expected for the assembly region (%d)"
 
 #: cekirdek/mg_model.py:75
 #, python-format
@@ -6592,7 +6592,7 @@ msgstr "Diffusion coefficient D [cm]"
 #: cekirdek/mgxs_uret.py:143
 #, python-format
 msgid "bilinmeyen MGXS bölge türü: %s (geçerli: %s)"
-msgstr "unknown MGXS domain type: %s (valid: %s)"
+msgstr "unknown MGXS region type: %s (valid: %s)"
 
 #: cekirdek/mgxs_uret.py:145
 #, python-format
