@@ -289,14 +289,27 @@ def surece_uygula(ortam: Ortam = None,
     for degisken in [k for k in _ENJEKTE if k not in cozulen]:
         if os.environ.get(degisken) == _ENJEKTE.pop(degisken):
             del os.environ[degisken]
+            _openmc_config_sil(degisken)
     _ENJEKTE.update(yazilan)
     if yazilan and "openmc" in sys.modules:
         _openmc_config(yazilan)
     return yazilan
 
 
+_CONFIG_ANAHTARI = {XS_DEGISKENI: "cross_sections", ZINCIR_DEGISKENI: "chain_file"}
+
+
 def _openmc_config(yazilan: Mapping[str, str]) -> None:
     import openmc
-    anahtar = {XS_DEGISKENI: "cross_sections", ZINCIR_DEGISKENI: "chain_file"}
     for degisken, yol in yazilan.items():
-        openmc.config[anahtar[degisken]] = yol
+        openmc.config[_CONFIG_ANAHTARI[degisken]] = yol
+
+
+def _openmc_config_sil(degisken: str) -> None:
+    """Kaldirilan degiskenin openmc.config karsiligi (openmc yukluyse)."""
+    if "openmc" not in sys.modules:
+        return
+    import openmc
+    anahtar = _CONFIG_ANAHTARI[degisken]
+    if anahtar in openmc.config:
+        del openmc.config[anahtar]

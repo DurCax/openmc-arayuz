@@ -8,7 +8,7 @@
  HTTP sunucusu) arka planda indirme + iptal + surdurme.
 
  Her test kendi HOME / XDG dizinleriyle ve OPENMC_* degiskenleri olmadan
- calisir (_YalitilmisVeri); gercek ~/nucdata ve kullanici ayarlari okunmaz.
+ calisir (testler/k2_yalitim.VeriYalitimi); gercek ~/nucdata ve kullanici ayarlari okunmaz.
 """
 
 import hashlib
@@ -18,46 +18,16 @@ import time
 
 from testler.ortak_test import kontrol
 from testler.k2_sahte_sunucu import SahteSunucu
+from testler.k2_yalitim import VeriYalitimi
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
-_DEGISKENLER = ("OPENMC_CROSS_SECTIONS", "OPENMC_CHAIN_FILE", "HOME", "XDG_CONFIG_HOME",
-                "XDG_DATA_HOME")
 _BEKLEME_S = 30.0
 
 
 def _uyg():
     from PySide6 import QtWidgets
     return QtWidgets.QApplication.instance() or QtWidgets.QApplication([])
-
-
-class _YalitilmisVeri:
-    """Gecici HOME/XDG; OPENMC_* yok; cikista ortam ve onbellekler geri gelir."""
-
-    def __enter__(self):
-        from cekirdek import veri_yolu
-        self._dizin = tempfile.TemporaryDirectory()
-        self.kok = self._dizin.name
-        self._eski = {k: os.environ.get(k) for k in _DEGISKENLER}
-        self._enjekte = dict(veri_yolu._ENJEKTE)
-        for k in ("OPENMC_CROSS_SECTIONS", "OPENMC_CHAIN_FILE"):
-            os.environ.pop(k, None)
-        os.environ.update(HOME=self.kok, XDG_CONFIG_HOME=os.path.join(self.kok, "cfg"),
-                          XDG_DATA_HOME=os.path.join(self.kok, "data"))
-        veri_yolu._ENJEKTE.clear()
-        return self
-
-    def __exit__(self, *a):
-        from cekirdek import veri_bilgi, veri_yolu
-        for k, v in self._eski.items():
-            if v is None:
-                os.environ.pop(k, None)
-            else:
-                os.environ[k] = v
-        veri_yolu._ENJEKTE.clear()
-        veri_yolu._ENJEKTE.update(self._enjekte)
-        veri_bilgi.onbellek_temizle()
-        self._dizin.cleanup()
 
 
 def _kutuphane(dizin):
@@ -103,7 +73,7 @@ def test_sayfa_kenar_cubugunda():
     from cekirdek import uygunluk
     from arayuz.veri.sayfa import VeriSayfasi
     _uyg()
-    with _YalitilmisVeri():
+    with VeriYalitimi():
         p = _pencere()
         try:
             kontrol("kenar cubugunda 'veri'", "veri" in p.kenar.anahtarlar())
@@ -132,7 +102,7 @@ def test_ilk_acilis_veri_yokken():
     from arayuz.veri import kayit
     from cekirdek import veri_yolu
     _uyg()
-    with _YalitilmisVeri() as y:
+    with VeriYalitimi() as y:
         p = _pencere()
         try:
             # Arrange: veri yok
@@ -206,7 +176,7 @@ def test_arka_planda_indirme_iptal_surdurme():
     from cekirdek import veri_indir, veri_yolu
     from arayuz.veri.sayfa import VeriSayfasi
     _uyg()
-    with _YalitilmisVeri() as y, SahteSunucu() as s:
+    with VeriYalitimi() as y, SahteSunucu() as s:
         arsiv = _arsiv(y.kok)
         zincir = b"<depletion_chain>\n" + b" " * 300000 + b"</depletion_chain>\n"
         s.dosyalar.update({"/kutup.xz": arsiv, "/zincir.xml": zincir})
@@ -246,7 +216,7 @@ def test_iptal_dugmesi():
     from cekirdek import veri_indir
     from arayuz.veri.sayfa import VeriSayfasi
     _uyg()
-    with _YalitilmisVeri() as y, SahteSunucu() as s:
+    with VeriYalitimi() as y, SahteSunucu() as s:
         buyuk = b"0" * (veri_indir.PARCA_BOYUTU * 40)
         arsiv = _arsiv(y.kok)
         s.dosyalar.update({"/kutup.xz": arsiv, "/zincir.xml": buyuk})
@@ -269,7 +239,7 @@ def test_gecersiz_hedef_ve_disk():
     print("\n[K2-S5] gecersiz hedef klasor indirmeyi baslatmaz, nedeni gosterilir")
     from arayuz.veri.sayfa import VeriSayfasi
     _uyg()
-    with _YalitilmisVeri():
+    with VeriYalitimi():
         sayfa = VeriSayfasi()
         k = sayfa.indirme
         k.hedef.setText("/usr/share/nucdata")
@@ -289,7 +259,7 @@ def test_gereksinim_karti():
     print("\n[K2-S6] gereksinim karti bes satir; veri yokken kutuphane 'eksik'")
     from arayuz.veri.sayfa import VeriSayfasi
     _uyg()
-    with _YalitilmisVeri():
+    with VeriYalitimi():
         sayfa = VeriSayfasi()
         satirlar = {g.anahtar: g for g in sayfa.gereksinim.satirlar}
         kontrol("bes satir", len(satirlar) == 5)

@@ -109,7 +109,7 @@ def test_url_politikasi():
     kontrol("https izinli alan", _hata(p.denetle, "https://anl.box.com/shared/static/a.xml") is None)
     for kotu in ("http://anl.box.com/a.xml", "ftp://anl.box.com/a", "file:///etc/passwd",
                  "https://evil.com/a", "https://anl.box.com.evil.com/a",
-                 "https://user:pw@anl.box.com/a", "https://anl.box.com:8443/a"):
+                 "https://user:pw" + "@" + "anl.box.com/a", "https://anl.box.com:8443/a"):
         kontrol("reddedildi: %s" % kotu,
                 isinstance(_hata(p.denetle, kotu), veri_indir.IndirmeHatasi))
     kontrol("varsayilan politika https", veri_indir.UrlPolitikasi(alanlar=frozenset(

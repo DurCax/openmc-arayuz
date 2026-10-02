@@ -12,6 +12,7 @@ import os
 import tempfile
 
 from testler.ortak_test import kontrol
+from testler.k2_yalitim import VeriYalitimi
 
 _ZINCIR = "chain_endfb80_thermal.xml"
 
@@ -178,35 +179,53 @@ def test_surece_uygula():
 def test_surece_uygulanan_sonraki_secimi_engellemez():
     print("\n[K2-Y7b] os.environ'a bizim yazdigimiz deger 'kullanici ortami' sayilmaz")
     from cekirdek import veri_yolu
-    eski = {k: os.environ.get(k) for k in ("OPENMC_CROSS_SECTIONS", "OPENMC_CHAIN_FILE",
-                                           "HOME", "XDG_CONFIG_HOME", "XDG_DATA_HOME")}
-    with tempfile.TemporaryDirectory() as kok:
-        try:
-            for k in ("OPENMC_CROSS_SECTIONS", "OPENMC_CHAIN_FILE"):
-                os.environ.pop(k, None)
-            os.environ.update(_ortam(kok))
-            ilk = _kutuphane(os.path.join(kok, "nucdata", "a"))
-            veri_yolu.surece_uygula()
-            kontrol("ilk secim ortamda", os.environ.get("OPENMC_CROSS_SECTIONS") == ilk)
-            ikinci = _kutuphane(os.path.join(kok, "b"))
-            veri_yolu.ayar_yaz({"cross_sections": ikinci})
-            kontrol("yeni ayar ortamdaki enjekte degerden once",
-                    veri_yolu.cross_sections().deger == ikinci)
-            veri_yolu.surece_uygula()
-            kontrol("ortam yeni secime gecti", os.environ.get("OPENMC_CROSS_SECTIONS") == ikinci)
-            os.remove(ikinci)
-            veri_yolu.ayar_yaz({"cross_sections": None})
-            os.remove(ilk)
-            veri_yolu.surece_uygula()
-            kontrol("cozulmeyen enjekte deger kaldirildi",
-                    "OPENMC_CROSS_SECTIONS" not in os.environ)
-        finally:
-            veri_yolu._ENJEKTE.clear()
-            for k, v in eski.items():
-                if v is None:
-                    os.environ.pop(k, None)
-                else:
-                    os.environ[k] = v
+    with VeriYalitimi() as y:
+        kok = y.kok
+        ilk = _kutuphane(os.path.join(kok, "nucdata", "a"))
+        veri_yolu.surece_uygula()
+        kontrol("ilk secim ortamda", os.environ.get("OPENMC_CROSS_SECTIONS") == ilk)
+        ikinci = _kutuphane(os.path.join(kok, "b"))
+        veri_yolu.ayar_yaz({"cross_sections": ikinci})
+        kontrol("yeni ayar ortamdaki enjekte degerden once",
+                veri_yolu.cross_sections().deger == ikinci)
+        veri_yolu.surece_uygula()
+        kontrol("ortam yeni secime gecti", os.environ.get("OPENMC_CROSS_SECTIONS") == ikinci)
+        os.remove(ikinci)
+        veri_yolu.ayar_yaz({"cross_sections": None})
+        os.remove(ilk)
+        veri_yolu.surece_uygula()
+        kontrol("cozulmeyen enjekte deger kaldirildi",
+                "OPENMC_CROSS_SECTIONS" not in os.environ)
+    kontrol("yalitim openmc.config'i geri getirdi",
+            _config_xs() == _ONCEKI_CONFIG_XS or _ONCEKI_CONFIG_XS is _YOK_ISARETI,
+            repr(_config_xs()))
+
+
+_YOK_ISARETI = object()
+
+
+def _config_xs():
+    import sys
+    if "openmc" not in sys.modules:
+        return _YOK_ISARETI
+    import openmc
+    return openmc.config.get("cross_sections")
+
+
+_ONCEKI_CONFIG_XS = _config_xs()
+
+
+def test_surece_uygula_openmc_config():
+    print("\n[K2-Y7c] openmc yukluyse surece_uygula openmc.config'i yazar, kaldirinca siler")
+    import openmc
+    from cekirdek import veri_yolu
+    with VeriYalitimi() as y:
+        xs = _kutuphane(os.path.join(y.kok, "nucdata", "a"))
+        veri_yolu.surece_uygula()
+        kontrol("config yazildi", str(openmc.config.get("cross_sections")) == xs)
+        os.remove(xs)
+        veri_yolu.surece_uygula()
+        kontrol("config silindi", "cross_sections" not in openmc.config)
 
 
 def test_varsayilan_zincir_adi_tukenmeyle_ayni():
@@ -231,6 +250,7 @@ def test_ayar_dosyasi_json_bicimi():
 HIZLI = [test_ortam_degiskeni_once_gelir, test_ayar_sonra_aday, test_hicbiri_yoksa_yok,
          test_ayar_dosyasi_kalici_ve_bozuga_dayanikli, test_zincir_cozumu,
          test_alt_surec_ortami_yeni_sozluk, test_surece_uygula,
-         test_surece_uygulanan_sonraki_secimi_engellemez, test_ayar_dosyasi_json_bicimi,
+         test_surece_uygulanan_sonraki_secimi_engellemez, test_surece_uygula_openmc_config,
+         test_ayar_dosyasi_json_bicimi,
          test_varsayilan_zincir_adi_tukenmeyle_ayni]
 YAVAS = []
