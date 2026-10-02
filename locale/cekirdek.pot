@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 09:43+0300\n"
+"POT-Creation-Date: 2026-10-02 10:11+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -138,6 +138,25 @@ msgstr ""
 #: cekirdek/cizim_sureci.py:533
 #, python-format
 msgid "cizim alt süreci argüman almaz: %s"
+msgstr ""
+
+#: cekirdek/demet_kinf.py:79
+msgid "parçacık, tohum ve iş parçacığı sayısı pozitif olmalı"
+msgstr ""
+
+#: cekirdek/demet_kinf.py:81
+msgid "çevrim sayısı pasif çevrim sayısından büyük olmalı"
+msgstr ""
+
+#: cekirdek/demet_kinf.py:140 cekirdek/dogrula/kor.py:83 cekirdek/geometri/sablon.py:141
+#: cekirdek/tarama.py:226
+#, python-format
+msgid "tanımsız demet: %s"
+msgstr ""
+
+#: cekirdek/demet_kinf.py:198
+#, python-format
+msgid "k∞ — %s"
 msgstr ""
 
 #: cekirdek/dogrula/__init__.py:138
@@ -3547,33 +3566,33 @@ msgid ""
 "gerektirir"
 msgstr ""
 
-#: cekirdek/kosu_gecmisi.py:136
+#: cekirdek/kosu_gecmisi.py:144
 #, python-format
 msgid "kosu gecmisi daha yeni bir sürümle yazılmış (%d > %d): %s"
 msgstr ""
 
-#: cekirdek/kosu_gecmisi.py:151
+#: cekirdek/kosu_gecmisi.py:159
 msgid "kayıt kimliği ve adı boş olamaz"
 msgstr ""
 
-#: cekirdek/kosu_gecmisi.py:250
+#: cekirdek/kosu_gecmisi.py:255
 msgid "k > 0 ve σ ≥ 0 olmalı"
 msgstr ""
 
-#: cekirdek/kosu_gecmisi.py:365
+#: cekirdek/kosu_gecmisi.py:370
 #, python-format
 msgid "statepoint bulunamadı: %s"
 msgstr ""
 
-#: cekirdek/kosu_gecmisi.py:379
+#: cekirdek/kosu_gecmisi.py:384
 msgid "En az bir koşu sabit kaynak: k-eff karşılaştırılmadı."
 msgstr ""
 
-#: cekirdek/kosu_gecmisi.py:383
+#: cekirdek/kosu_gecmisi.py:388
 msgid "İki koşuda da güç dağılımı yok: pin gücü karşılaştırılmadı."
 msgstr ""
 
-#: cekirdek/kosu_gecmisi.py:385
+#: cekirdek/kosu_gecmisi.py:390
 msgid "Güç haritalarında ortak konum yok (farklı geometri?)."
 msgstr ""
 
@@ -5656,11 +5675,6 @@ msgstr ""
 msgid "'%s' malzemesinde zenginlik tanımlı bir bileşen yok"
 msgstr ""
 
-#: cekirdek/dogrula/kor.py:83 cekirdek/geometri/sablon.py:141 cekirdek/tarama.py:226
-#, python-format
-msgid "tanımsız demet: %s"
-msgstr ""
-
 #: cekirdek/dogrula/kor.py:66 cekirdek/geometri/sablon.py:105 cekirdek/tarama.py:235
 #: cekirdek/tarama.py:247 cekirdek/tarama_agac.py:95
 #, python-format
@@ -7411,5 +7425,63 @@ msgstr ""
 #: cekirdek/vv/kume.py:245
 #, python-format
 msgid "bu uygulama için USL yok (AOA dışında): kümede alt kümeye (%s) uyan %d vaka var; %s"
+msgstr ""
+
+#: cekirdek/yerel_k.py:148
+#, python-format
+msgid "'%s' bir demet değil; yerel k için kare demet gerekir"
+msgstr ""
+
+#: cekirdek/yerel_k.py:150
+#, python-format
+msgid ""
+"'%s' altıgen demet: yerel k haritası yalnız kare kafeste kurulabilir (altıgen mesh "
+"OpenMC'de yok)"
+msgstr ""
+
+#: cekirdek/yerel_k.py:173
+msgid "tek pin modelinde kare hücre gerekir"
+msgstr ""
+
+#: cekirdek/yerel_k.py:187
+msgid "kor kafesinde demet yok: pin düzeyi kurulamaz"
+msgstr ""
+
+#: cekirdek/yerel_k.py:193
+msgid ""
+"kordaki demetlerin pin adımı/boyutu farklı: pin düzeyi tek mesh'e hizalanamaz; demet "
+"düzeyini kullanın"
+msgstr ""
+
+#: cekirdek/yerel_k.py:199
+#, python-format
+msgid ""
+"demet adımı (%.5g cm) pin sayısı × pin adımına (%d × %.5g cm) eşit değil (demetler "
+"arası boşluk): pin düzeyi mesh'e hizalanamaz; demet düzeyini kullanın"
+msgstr ""
+
+#: cekirdek/yerel_k.py:208
+#, python-format
+msgid "bilinmeyen yerel k düzeyi: %s"
+msgstr ""
+
+#: cekirdek/yerel_k.py:212
+msgid "yerel k haritası yalnız kare kafeste kurulabilir"
+msgstr ""
+
+#: cekirdek/yerel_k.py:225
+#, python-format
+msgid ""
+"bu geometride (%s) pin/demet kafesi bulunamadı; yerel k haritası kare kafesli "
+"modellerde kurulur"
+msgstr ""
+
+#: cekirdek/yerel_k.py:279
+msgid "yerel k tally'sinde mesh filtresi yok"
+msgstr ""
+
+#: cekirdek/yerel_k.py:287
+#, python-format
+msgid "yerel k tally'sinde '%s' skoru yok"
 msgstr ""
 

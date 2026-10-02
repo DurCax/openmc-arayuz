@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 09:43+0300\n"
+"POT-Creation-Date: 2026-10-02 10:11+0300\n"
 "PO-Revision-Date: 2026-10-01 18:14+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -149,6 +149,126 @@ msgstr "Rod worth (differential)"
 #: arayuz/analiz/adlar.py:98
 msgid "Tambur değeri (diferansiyel)"
 msgstr "Drum worth (differential)"
+
+#: arayuz/analiz/demet_kinf.py:40
+msgid "Kordaki sayı"
+msgstr "Count in core"
+
+#: arayuz/analiz/demet_kinf.py:40 arayuz/cubuk/sayfalar.py:160
+#: arayuz/geometri/form_yerlesim.py:338 arayuz/geometri/formlar.py:86
+#: arayuz/malzeme/bilesim.py:37
+msgid "Tür"
+msgstr "Type"
+
+#: arayuz/analiz/demet_kinf.py:40 arayuz/demet/yerlesim.py:188
+msgid "Boyut"
+msgstr "Size"
+
+#: arayuz/analiz/demet_kinf.py:41
+msgid "k∞ ± σ"
+msgstr "k∞ ± σ"
+
+#: arayuz/analiz/demet_kinf.py:41 arayuz/karsilastir/panel.py:31 arayuz/kuyruk/panel.py:30
+msgid "Durum"
+msgstr "State"
+
+#: arayuz/analiz/demet_kinf.py:41 arayuz/kuyruk/panel.py:30
+msgid "Çevrim"
+msgstr "Batch"
+
+#: arayuz/analiz/demet_kinf.py:42
+msgid "kare"
+msgstr "square"
+
+#: arayuz/analiz/demet_kinf.py:42
+msgid "altıgen"
+msgstr "hexagonal"
+
+#: arayuz/analiz/demet_kinf.py:78
+msgid "Kuyruğa ekle ve başlat"
+msgstr "Add to queue and start"
+
+#: arayuz/analiz/demet_kinf.py:79 arayuz/kuyruk/panel.py:149
+msgid "İptal"
+msgstr "Cancel"
+
+#: arayuz/analiz/demet_kinf.py:80 arayuz/sonuc/yerel_k.py:53
+msgid "CSV kaydet…"
+msgstr "Save CSV…"
+
+#: arayuz/analiz/demet_kinf.py:96
+msgid "Koşu ayarları (her demet için)"
+msgstr "Run settings (per assembly)"
+
+#: arayuz/analiz/demet_kinf.py:98 arayuz/ayar/yerlesim.py:82
+msgid "Parçacık / çevrim:"
+msgstr "Particles / batch:"
+
+#: arayuz/analiz/demet_kinf.py:99
+msgid "Çevrim:"
+msgstr "Batches:"
+
+#: arayuz/analiz/demet_kinf.py:100 arayuz/ayar/yerlesim.py:84
+msgid "Pasif çevrim:"
+msgstr "Inactive batches:"
+
+#: arayuz/analiz/demet_kinf.py:101
+msgid "Tohum:"
+msgstr "Seed:"
+
+#: arayuz/analiz/demet_kinf.py:102
+msgid "İş parçacığı (koşu başına):"
+msgstr "Threads (per run):"
+
+#: arayuz/analiz/demet_kinf.py:103
+msgid "Aynı anda koşu:"
+msgstr "Concurrent runs:"
+
+#: arayuz/analiz/demet_kinf.py:108
+msgid ""
+"Her demet türü yansıtıcı sınırlı tek demet modeli olarak (sonsuz kafes, 2B) ayrı "
+"koşulur. Sonuç k∞'dur: sızıntı, su aralığı, yansıtıcı ve komşu demetlerin etkisi "
+"yoktur. Yanmaya göre k∞ bu sürümde yok."
+msgstr ""
+"Each assembly type is run separately as a single-assembly model with reflective "
+"boundaries (infinite lattice, 2D). The result is k∞: leakage, water gap, reflector "
+"and neighbouring assemblies have no effect. k∞ versus burnup is not available in this"
+" version."
+
+#: arayuz/analiz/demet_kinf.py:124 arayuz/analiz/demet_kinf.py:258
+msgid "Demet k∞ sihirbazı"
+msgstr "Assembly k∞ wizard"
+
+#: arayuz/analiz/demet_kinf.py:148
+msgid "Modelde demet tanımı yok."
+msgstr "The model defines no assembly."
+
+#: arayuz/analiz/demet_kinf.py:167
+msgid "En az bir demet seçin."
+msgstr "Select at least one assembly."
+
+#: arayuz/analiz/demet_kinf.py:180
+#, python-format
+msgid "Başlatılamadı: %s"
+msgstr "Could not start: %s"
+
+#: arayuz/analiz/demet_kinf.py:185
+#, python-format
+msgid "%d demet kuyrukta."
+msgstr "%d assemblies queued."
+
+#: arayuz/analiz/demet_kinf.py:225
+msgid "Demet k∞ tablosunu kaydet"
+msgstr "Save assembly k∞ table"
+
+#: arayuz/analiz/demet_kinf.py:231
+msgid "Demet k∞"
+msgstr "Assembly k∞"
+
+#: arayuz/analiz/demet_kinf.py:231 arayuz/sonuc/yerel_k.py:250
+#, python-format
+msgid "Kaydedilemedi: %s"
+msgstr "Could not save: %s"
 
 #: arayuz/analiz/sekme.py:77
 msgid "Bu modelde analiz yapılamaz"
@@ -657,17 +777,9 @@ msgstr "Calculation type:"
 msgid "Hesap hassasiyeti:"
 msgstr "Accuracy preset:"
 
-#: arayuz/ayar/yerlesim.py:82
-msgid "Parçacık / çevrim:"
-msgstr "Particles / batch:"
-
 #: arayuz/ayar/yerlesim.py:83
 msgid "Toplam çevrim:"
 msgstr "Total batches:"
-
-#: arayuz/ayar/yerlesim.py:84
-msgid "Pasif çevrim:"
-msgstr "Inactive batches:"
 
 #: arayuz/ayar/yerlesim.py:86 arayuz/pencere/kabuk.py:38
 msgid "Hesap"
@@ -1751,11 +1863,6 @@ msgstr ""
 "Swaps the material of the selected region with the next outer region; the radii stay "
 "in place. It cannot move into the outer region."
 
-#: arayuz/cubuk/sayfalar.py:160 arayuz/geometri/form_yerlesim.py:338
-#: arayuz/geometri/formlar.py:86 arayuz/malzeme/bilesim.py:37
-msgid "Tür"
-msgstr "Type"
-
 #: arayuz/cubuk/sayfalar.py:162 arayuz/geometri/formlar.py:148
 msgid "Kesit"
 msgstr "Cross-section"
@@ -2062,10 +2169,6 @@ msgstr "Number of columns (x)"
 #: arayuz/demet/yerlesim.py:185
 msgid "Satır sayısı (y)"
 msgstr "Number of rows (y)"
-
-#: arayuz/demet/yerlesim.py:188
-msgid "Boyut"
-msgstr "Size"
 
 #: arayuz/demet/yerlesim.py:197
 msgid "Demet dışı"
@@ -3268,14 +3371,15 @@ msgstr "Single axial bin (F_q)"
 msgid "Dilim %d"
 msgstr "Axial bin %d"
 
-#: arayuz/guc_harita.py:65
+#: arayuz/guc_harita.py:65 arayuz/sonuc/yerel_k.py:52
 msgid "Değerleri haritaya yaz"
 msgstr "Write values on the map"
 
-#: arayuz/guc_harita.py:66
+#: arayuz/guc_harita.py:66 arayuz/sonuc/yerel_k.py:54
 msgid "PNG kaydet…"
 msgstr "Save PNG…"
 
+#: arayuz/analiz/demet_kinf.py:40 arayuz/analiz/demet_kinf.py:41
 #: arayuz/demet/yerlesim.py:35 arayuz/geometri/sablon_diyalogu.py:23
 #: arayuz/guc_harita.py:69 arayuz/pencere/model_islemleri.py:65 arayuz/sekme_demet.py:508
 #: arayuz/yardim/__init__.py:45
@@ -3433,11 +3537,11 @@ msgstr "axial bin"
 msgid "Eksenel profil"
 msgstr "Axial profile"
 
-#: arayuz/guc_harita.py:343 arayuz/karsilastir/panel.py:214
+#: arayuz/guc_harita.py:343 arayuz/karsilastir/panel.py:214 arayuz/sonuc/yerel_k.py:195
 msgid "x (soldan)"
 msgstr "x (from left)"
 
-#: arayuz/guc_harita.py:344 arayuz/karsilastir/panel.py:215
+#: arayuz/guc_harita.py:344 arayuz/karsilastir/panel.py:215 arayuz/sonuc/yerel_k.py:196
 msgid "y (alttan)"
 msgstr "y (from bottom)"
 
@@ -3602,10 +3706,6 @@ msgstr "void"
 #: arayuz/kor/katmanlar.py:22
 msgid "Boş (madde yok)"
 msgstr "Void (no material)"
-
-#: arayuz/karsilastir/panel.py:31 arayuz/kuyruk/panel.py:30
-msgid "Durum"
-msgstr "State"
 
 #: arayuz/karsilastir/panel.py:31 arayuz/kuyruk/panel.py:30
 msgid "k ± σ"
@@ -4208,10 +4308,6 @@ msgstr[1] ""
 "\n"
 "Continue?"
 
-#: arayuz/kuyruk/panel.py:30
-msgid "Çevrim"
-msgstr "Batch"
-
 #: arayuz/kuyruk/panel.py:33
 msgid "bekliyor"
 msgstr "waiting"
@@ -4275,10 +4371,6 @@ msgstr "Up"
 #: arayuz/kuyruk/panel.py:148
 msgid "Aşağı"
 msgstr "Down"
-
-#: arayuz/kuyruk/panel.py:149
-msgid "İptal"
-msgstr "Cancel"
 
 #: arayuz/kuyruk/panel.py:150
 msgid "Kaldır"
@@ -7477,6 +7569,116 @@ msgstr "%d min"
 #, python-format
 msgid "%.1f sa"
 msgstr "%.1f h"
+
+#: arayuz/sonuc/yerel_k.py:51
+msgid "Düzey:"
+msgstr "Level:"
+
+#: arayuz/sonuc/yerel_k.py:71
+msgid "Yerel k hesaplanmadı. Modele yerel k tally'si ekleyip yeniden çalıştırın."
+msgstr "Local k was not computed. Add the local k tally to the model and run it again."
+
+#: arayuz/sonuc/yerel_k.py:82
+msgid ""
+"k_yerel = νΣ_f φ / (Σ_a φ − X) her pin/demet hücresinde. Sızıntısız yerel çoğalma "
+"oranıdır, k∞ değildir: komşu hücrelerle nötron alışverişi yok sayılır. X: (n,xn) "
+"tepkimelerinin net nötron üretimi (OpenMC 'absorption'ı bunları saymaz)."
+msgstr ""
+"k_local = νΣ_f φ / (Σ_a φ − X) in each pin/assembly cell. It is a leakage-free local "
+"multiplication ratio, not k∞: neutron exchange with neighbouring cells is ignored. X:"
+" net neutron production of (n,xn) reactions (OpenMC 'absorption' does not count "
+"them)."
+
+#: arayuz/sonuc/yerel_k.py:89
+msgid ""
+"Belirsizlik: σ, pay ile payda arasındaki korelasyon yok sayılarak yayılır "
+"(ihtiyatlı); bin σ'ları çevrimler arası korelasyonu görmez (iyimser). Gerçek "
+"belirsizlik için modeli birkaç tohumla koşun."
+msgstr ""
+"Uncertainty: σ is propagated ignoring the correlation between numerator and "
+"denominator (conservative); bin σ values do not see the batch-to-batch correlation "
+"(optimistic). For the true uncertainty, run the model with several seeds."
+
+#: arayuz/sonuc/yerel_k.py:96
+msgid "Yerel k haritası"
+msgstr "Local k map"
+
+#: arayuz/sonuc/yerel_k.py:111
+#, python-format
+msgid "Yerel k okunamadı: %s"
+msgstr "Local k could not be read: %s"
+
+#: arayuz/sonuc/yerel_k.py:130
+msgid "Yerel k hesaplanmadı: bu koşuda yerel k tally'si yok."
+msgstr "Local k was not computed: this run has no local k tally."
+
+#: arayuz/sonuc/yerel_k.py:147
+#, python-format
+msgid "<b>ortalama k = %.5f ± %.5f</b> (net yok olma ağırlıklı = Σ νΣ_f φ / Σ (Σ_a φ − X))"
+msgstr "<b>mean k = %.5f ± %.5f</b> (net-removal weighted = Σ νΣ_f φ / Σ (Σ_a φ − X))"
+
+#: arayuz/sonuc/yerel_k.py:150
+#, python-format
+msgid "koşunun k-eff'i %.5f ± %.5f"
+msgstr "k-eff of the run %.5f ± %.5f"
+
+#: arayuz/sonuc/yerel_k.py:151
+#, python-format
+msgid "c_xn = %.5f"
+msgstr "c_xn = %.5f"
+
+#: arayuz/sonuc/yerel_k.py:153
+#, python-format
+msgid "harita kapsamı (net yok olma payı): %.4f"
+msgstr "map coverage (share of net removal): %.4f"
+
+#: arayuz/sonuc/yerel_k.py:156
+#, python-format
+msgid "en düşük / en yüksek: %.4f / %.4f"
+msgstr "lowest / highest: %.4f / %.4f"
+
+#: arayuz/sonuc/yerel_k.py:158
+msgid ""
+"Sızıntısız yerel çoğalma oranı, k∞ değildir. Ortalama yalnız sonsuz kafeste "
+"(yansıtıcı sınır, kapsam %100) k∞'a eşittir."
+msgstr ""
+"Leakage-free local multiplication ratio, not k∞. The mean equals k∞ only in an "
+"infinite lattice (reflective boundary, 100% coverage)."
+
+#: arayuz/sonuc/yerel_k.py:194
+msgid "k_yerel"
+msgstr "k_local"
+
+#: arayuz/sonuc/yerel_k.py:198
+#, python-format
+msgid ""
+"Yerel k — %s düzeyi\n"
+"beyaz: yakıtsız konum (k = 0)"
+msgstr ""
+"Local k — %s level\n"
+"white: position without fuel (k = 0)"
+
+#: arayuz/sonuc/yerel_k.py:220
+#, python-format
+msgid "(%d, %d): yakıtsız"
+msgstr "(%d, %d): no fuel"
+
+#: arayuz/sonuc/yerel_k.py:221
+#, python-format
+msgid "(%d, %d): k_yerel = %.5f ± %.5f (xn düzeltmesiz %.5f)"
+msgstr "(%d, %d): k_local = %.5f ± %.5f (without xn correction %.5f)"
+
+#: arayuz/sonuc/yerel_k.py:244
+msgid "Yerel k tablosunu kaydet"
+msgstr "Save local k table"
+
+#: arayuz/sonuc/yerel_k.py:250
+msgid "Yerel k"
+msgstr "Local k"
+
+#: arayuz/sonuc/yerel_k.py:254
+msgid "Yerel k haritasını kaydet"
+msgstr "Save local k map"
 
 #: arayuz/tasarim/tokenlar.py:129
 msgid "Kobalt"

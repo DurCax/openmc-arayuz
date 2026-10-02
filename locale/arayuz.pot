@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 09:43+0300\n"
+"POT-Creation-Date: 2026-10-02 10:11+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -145,6 +145,122 @@ msgstr ""
 
 #: arayuz/analiz/adlar.py:98
 msgid "Tambur değeri (diferansiyel)"
+msgstr ""
+
+#: arayuz/analiz/demet_kinf.py:40
+msgid "Kordaki sayı"
+msgstr ""
+
+#: arayuz/analiz/demet_kinf.py:40 arayuz/cubuk/sayfalar.py:160
+#: arayuz/geometri/form_yerlesim.py:338 arayuz/geometri/formlar.py:86
+#: arayuz/malzeme/bilesim.py:37
+msgid "Tür"
+msgstr ""
+
+#: arayuz/analiz/demet_kinf.py:40 arayuz/demet/yerlesim.py:188
+msgid "Boyut"
+msgstr ""
+
+#: arayuz/analiz/demet_kinf.py:41
+msgid "k∞ ± σ"
+msgstr ""
+
+#: arayuz/analiz/demet_kinf.py:41 arayuz/karsilastir/panel.py:31 arayuz/kuyruk/panel.py:30
+msgid "Durum"
+msgstr ""
+
+#: arayuz/analiz/demet_kinf.py:41 arayuz/kuyruk/panel.py:30
+msgid "Çevrim"
+msgstr ""
+
+#: arayuz/analiz/demet_kinf.py:42
+msgid "kare"
+msgstr ""
+
+#: arayuz/analiz/demet_kinf.py:42
+msgid "altıgen"
+msgstr ""
+
+#: arayuz/analiz/demet_kinf.py:78
+msgid "Kuyruğa ekle ve başlat"
+msgstr ""
+
+#: arayuz/analiz/demet_kinf.py:79 arayuz/kuyruk/panel.py:149
+msgid "İptal"
+msgstr ""
+
+#: arayuz/analiz/demet_kinf.py:80 arayuz/sonuc/yerel_k.py:53
+msgid "CSV kaydet…"
+msgstr ""
+
+#: arayuz/analiz/demet_kinf.py:96
+msgid "Koşu ayarları (her demet için)"
+msgstr ""
+
+#: arayuz/analiz/demet_kinf.py:98 arayuz/ayar/yerlesim.py:82
+msgid "Parçacık / çevrim:"
+msgstr ""
+
+#: arayuz/analiz/demet_kinf.py:99
+msgid "Çevrim:"
+msgstr ""
+
+#: arayuz/analiz/demet_kinf.py:100 arayuz/ayar/yerlesim.py:84
+msgid "Pasif çevrim:"
+msgstr ""
+
+#: arayuz/analiz/demet_kinf.py:101
+msgid "Tohum:"
+msgstr ""
+
+#: arayuz/analiz/demet_kinf.py:102
+msgid "İş parçacığı (koşu başına):"
+msgstr ""
+
+#: arayuz/analiz/demet_kinf.py:103
+msgid "Aynı anda koşu:"
+msgstr ""
+
+#: arayuz/analiz/demet_kinf.py:108
+msgid ""
+"Her demet türü yansıtıcı sınırlı tek demet modeli olarak (sonsuz kafes, 2B) ayrı "
+"koşulur. Sonuç k∞'dur: sızıntı, su aralığı, yansıtıcı ve komşu demetlerin etkisi "
+"yoktur. Yanmaya göre k∞ bu sürümde yok."
+msgstr ""
+
+#: arayuz/analiz/demet_kinf.py:124 arayuz/analiz/demet_kinf.py:258
+msgid "Demet k∞ sihirbazı"
+msgstr ""
+
+#: arayuz/analiz/demet_kinf.py:148
+msgid "Modelde demet tanımı yok."
+msgstr ""
+
+#: arayuz/analiz/demet_kinf.py:167
+msgid "En az bir demet seçin."
+msgstr ""
+
+#: arayuz/analiz/demet_kinf.py:180
+#, python-format
+msgid "Başlatılamadı: %s"
+msgstr ""
+
+#: arayuz/analiz/demet_kinf.py:185
+#, python-format
+msgid "%d demet kuyrukta."
+msgstr ""
+
+#: arayuz/analiz/demet_kinf.py:225
+msgid "Demet k∞ tablosunu kaydet"
+msgstr ""
+
+#: arayuz/analiz/demet_kinf.py:231
+msgid "Demet k∞"
+msgstr ""
+
+#: arayuz/analiz/demet_kinf.py:231 arayuz/sonuc/yerel_k.py:250
+#, python-format
+msgid "Kaydedilemedi: %s"
 msgstr ""
 
 #: arayuz/analiz/sekme.py:77
@@ -631,16 +747,8 @@ msgstr ""
 msgid "Hesap hassasiyeti:"
 msgstr ""
 
-#: arayuz/ayar/yerlesim.py:82
-msgid "Parçacık / çevrim:"
-msgstr ""
-
 #: arayuz/ayar/yerlesim.py:83
 msgid "Toplam çevrim:"
-msgstr ""
-
-#: arayuz/ayar/yerlesim.py:84
-msgid "Pasif çevrim:"
 msgstr ""
 
 #: arayuz/ayar/yerlesim.py:86 arayuz/pencere/kabuk.py:38
@@ -1690,11 +1798,6 @@ msgid ""
 "kalır. Dış bölgeye taşınmaz."
 msgstr ""
 
-#: arayuz/cubuk/sayfalar.py:160 arayuz/geometri/form_yerlesim.py:338
-#: arayuz/geometri/formlar.py:86 arayuz/malzeme/bilesim.py:37
-msgid "Tür"
-msgstr ""
-
 #: arayuz/cubuk/sayfalar.py:162 arayuz/geometri/formlar.py:148
 msgid "Kesit"
 msgstr ""
@@ -1981,10 +2084,6 @@ msgstr ""
 
 #: arayuz/demet/yerlesim.py:185
 msgid "Satır sayısı (y)"
-msgstr ""
-
-#: arayuz/demet/yerlesim.py:188
-msgid "Boyut"
 msgstr ""
 
 #: arayuz/demet/yerlesim.py:197
@@ -3147,14 +3246,15 @@ msgstr ""
 msgid "Dilim %d"
 msgstr ""
 
-#: arayuz/guc_harita.py:65
+#: arayuz/guc_harita.py:65 arayuz/sonuc/yerel_k.py:52
 msgid "Değerleri haritaya yaz"
 msgstr ""
 
-#: arayuz/guc_harita.py:66
+#: arayuz/guc_harita.py:66 arayuz/sonuc/yerel_k.py:54
 msgid "PNG kaydet…"
 msgstr ""
 
+#: arayuz/analiz/demet_kinf.py:40 arayuz/analiz/demet_kinf.py:41
 #: arayuz/demet/yerlesim.py:35 arayuz/geometri/sablon_diyalogu.py:23
 #: arayuz/guc_harita.py:69 arayuz/pencere/model_islemleri.py:65 arayuz/sekme_demet.py:508
 #: arayuz/yardim/__init__.py:45
@@ -3297,11 +3397,11 @@ msgstr ""
 msgid "Eksenel profil"
 msgstr ""
 
-#: arayuz/guc_harita.py:343 arayuz/karsilastir/panel.py:214
+#: arayuz/guc_harita.py:343 arayuz/karsilastir/panel.py:214 arayuz/sonuc/yerel_k.py:195
 msgid "x (soldan)"
 msgstr ""
 
-#: arayuz/guc_harita.py:344 arayuz/karsilastir/panel.py:215
+#: arayuz/guc_harita.py:344 arayuz/karsilastir/panel.py:215 arayuz/sonuc/yerel_k.py:196
 msgid "y (alttan)"
 msgstr ""
 
@@ -3451,10 +3551,6 @@ msgstr ""
 #: arayuz/cubuk/parca_islemleri.py:20 arayuz/izgara_yardimci.py:173
 #: arayuz/kor/katmanlar.py:22
 msgid "Boş (madde yok)"
-msgstr ""
-
-#: arayuz/karsilastir/panel.py:31 arayuz/kuyruk/panel.py:30
-msgid "Durum"
 msgstr ""
 
 #: arayuz/karsilastir/panel.py:31 arayuz/kuyruk/panel.py:30
@@ -4001,10 +4097,6 @@ msgid_plural ""
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/kuyruk/panel.py:30
-msgid "Çevrim"
-msgstr ""
-
 #: arayuz/kuyruk/panel.py:33
 msgid "bekliyor"
 msgstr ""
@@ -4067,10 +4159,6 @@ msgstr ""
 
 #: arayuz/kuyruk/panel.py:148
 msgid "Aşağı"
-msgstr ""
-
-#: arayuz/kuyruk/panel.py:149
-msgid "İptal"
 msgstr ""
 
 #: arayuz/kuyruk/panel.py:150
@@ -6988,6 +7076,105 @@ msgstr ""
 #: arayuz/sekme_tukenme.py:561
 #, python-format
 msgid "%.1f sa"
+msgstr ""
+
+#: arayuz/sonuc/yerel_k.py:51
+msgid "Düzey:"
+msgstr ""
+
+#: arayuz/sonuc/yerel_k.py:71
+msgid "Yerel k hesaplanmadı. Modele yerel k tally'si ekleyip yeniden çalıştırın."
+msgstr ""
+
+#: arayuz/sonuc/yerel_k.py:82
+msgid ""
+"k_yerel = νΣ_f φ / (Σ_a φ − X) her pin/demet hücresinde. Sızıntısız yerel çoğalma "
+"oranıdır, k∞ değildir: komşu hücrelerle nötron alışverişi yok sayılır. X: (n,xn) "
+"tepkimelerinin net nötron üretimi (OpenMC 'absorption'ı bunları saymaz)."
+msgstr ""
+
+#: arayuz/sonuc/yerel_k.py:89
+msgid ""
+"Belirsizlik: σ, pay ile payda arasındaki korelasyon yok sayılarak yayılır "
+"(ihtiyatlı); bin σ'ları çevrimler arası korelasyonu görmez (iyimser). Gerçek "
+"belirsizlik için modeli birkaç tohumla koşun."
+msgstr ""
+
+#: arayuz/sonuc/yerel_k.py:96
+msgid "Yerel k haritası"
+msgstr ""
+
+#: arayuz/sonuc/yerel_k.py:111
+#, python-format
+msgid "Yerel k okunamadı: %s"
+msgstr ""
+
+#: arayuz/sonuc/yerel_k.py:130
+msgid "Yerel k hesaplanmadı: bu koşuda yerel k tally'si yok."
+msgstr ""
+
+#: arayuz/sonuc/yerel_k.py:147
+#, python-format
+msgid "<b>ortalama k = %.5f ± %.5f</b> (net yok olma ağırlıklı = Σ νΣ_f φ / Σ (Σ_a φ − X))"
+msgstr ""
+
+#: arayuz/sonuc/yerel_k.py:150
+#, python-format
+msgid "koşunun k-eff'i %.5f ± %.5f"
+msgstr ""
+
+#: arayuz/sonuc/yerel_k.py:151
+#, python-format
+msgid "c_xn = %.5f"
+msgstr ""
+
+#: arayuz/sonuc/yerel_k.py:153
+#, python-format
+msgid "harita kapsamı (net yok olma payı): %.4f"
+msgstr ""
+
+#: arayuz/sonuc/yerel_k.py:156
+#, python-format
+msgid "en düşük / en yüksek: %.4f / %.4f"
+msgstr ""
+
+#: arayuz/sonuc/yerel_k.py:158
+msgid ""
+"Sızıntısız yerel çoğalma oranı, k∞ değildir. Ortalama yalnız sonsuz kafeste "
+"(yansıtıcı sınır, kapsam %100) k∞'a eşittir."
+msgstr ""
+
+#: arayuz/sonuc/yerel_k.py:194
+msgid "k_yerel"
+msgstr ""
+
+#: arayuz/sonuc/yerel_k.py:198
+#, python-format
+msgid ""
+"Yerel k — %s düzeyi\n"
+"beyaz: yakıtsız konum (k = 0)"
+msgstr ""
+
+#: arayuz/sonuc/yerel_k.py:220
+#, python-format
+msgid "(%d, %d): yakıtsız"
+msgstr ""
+
+#: arayuz/sonuc/yerel_k.py:221
+#, python-format
+msgid "(%d, %d): k_yerel = %.5f ± %.5f (xn düzeltmesiz %.5f)"
+msgstr ""
+
+#: arayuz/sonuc/yerel_k.py:244
+msgid "Yerel k tablosunu kaydet"
+msgstr ""
+
+#: arayuz/sonuc/yerel_k.py:250
+msgid "Yerel k"
+msgstr ""
+
+#: arayuz/sonuc/yerel_k.py:254
+msgid "Yerel k haritasını kaydet"
 msgstr ""
 
 #: arayuz/tasarim/tokenlar.py:129
