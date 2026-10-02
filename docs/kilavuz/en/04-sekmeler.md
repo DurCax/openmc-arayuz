@@ -98,21 +98,53 @@ In the design tabs (Materials, Components, Assembly, Geometry) the panel on the 
 the geometry section after every change. The section is sliced by OpenMC's own library
 (`openmc.lib.slice_data`), so the section you see is the geometry OpenMC will really build.
 The preview plots a model without tallies (tallies do not affect the plot). **Run** is disabled
-while the plot is being drawn and enabled once it finishes successfully.
+while the full model is being drawn or checked and enabled once the full model has been built
+successfully.
 
 | Control | Meaning |
 |---|---|
 | **Section** | xy (from above, z = 0), xz (from the side, y = 0), yz (from the side, x = 0). The default in a 3D model is "xy + xz": two sections side by side. In a 2D model only xy is drawn. |
 | **Colour** | Colour by material or by cell. In advanced geometry the selected node is highlighted and the others are faded. |
-| **Legend** | Explanation of the material colours. |
+| **Legend** | Explanation of the material colours. In a scoped plot only the materials actually present in the section are listed. |
+| **Scope** | **Automatic**: the item selected on the page is plotted (table below). **Full model**: the whole model on every page. The text next to it names the plotted scope (e.g. "pin ‘yakit_cubugu’"). |
 | **Refresh** | Redraws the preview (F6). |
 | **Resolution** (Advanced) | Low (400) / Normal (800) / High (1400) pixels. |
 | **Show overlaps** (Advanced) | Shows points claimed by more than one cell in a separate colour and reports how many there are. Makes plotting several times slower for large cores. |
 
+#### Preview scope
+
+When you edit a single pin of a large core, plotting the whole core is slow and the pin is
+only a few pixels wide. With the **Automatic** scope the preview plots the item selected on
+the page on its own:
+
+| Page | Plotted |
+|---|---|
+| Components | the selected rod, plate or control drum |
+| Assembly | the selected assembly |
+| Geometry (advanced) | the selected node: a lattice, a container or a component (rod, assembly, drum); the full core when the root or a material node is selected |
+| Geometry (template), Materials | the full model |
+
+The selected item is plotted in a **single-universe sub-model whose outer boundaries are all
+reflective** (`cekirdek/alt_model.py`): a rod in its own cell pitch (the pitch of the first
+assembly that uses it), an assembly within its lattice boundary, without the reflector belt
+and without axial layers; in a 3D model the sub-model keeps the same height. The material
+list of the sub-model is pruned to the materials of that item, and the legend shows only the
+materials in the section. The sub-model is for visual checking only: the model that is run is
+always the full model.
+
+**The Run gate looks only at the full model.** A scoped plot does not check the full model;
+if the full model has changed, it is built separately (without slicing) after the scoped plot
+and the gate opens or closes on that result. Selecting another pin in the same full model does
+not repeat this check. Even if the scoped plot fails (e.g. the material of an unused pin is not
+selected) the gate shows the result of the full model; if the full model cannot be built the
+gate is closed even when the scoped plot succeeds. In a scoped plot, clicking the preview to
+select a node and node highlighting are disabled.
+
 The preview is drawn in the background, in a separate process; the interface does not wait ("Drawing…" label). OpenMC stays open while the model is unchanged: changing the section, colour or resolution is fast. While the panel is collapsed nothing is drawn, only the model is checked (the **Run** gate still works); it is drawn when the panel is opened. If the drawing process ends unexpectedly, the preview shows a clear error and the process is restarted.
 
-The line below the panel gives the outer size of the model. The panel is collapsed with the
-button at its top right.
+The line below the panel gives the outer size of the full model. The panel is hidden with the
+button at its top right or with **View > Show preview** (F7); the state is remembered. While it
+is hidden nothing is plotted; the model is only checked for the **Run** gate.
 
 ### Model check strip and list of findings
 
@@ -157,6 +189,7 @@ are enabled at that moment are listed.
 | Edit | Undo / Redo | Ctrl+Z / Ctrl+Y (or Ctrl+Shift+Z) | |
 | View | Light theme / Dark theme | — | Plots use the same palette; the choice is remembered. |
 | View | Language (Turkish / English) | — | Takes effect when the application is restarted. |
+| View | Show preview | F7 | Hides / shows the preview panel; the state is remembered. Nothing is plotted while it is hidden. |
 | View | Full screen | F11 | |
 | Help | Help and terms (user guide), About | F1 | F1 opens the guide section that belongs to the current page. |
 
@@ -171,6 +204,7 @@ full path ([4.7](04g-calistir.md#calistir)).
 | F1 | User guide (section of the current page) |
 | F5 | Refresh the model check (including the data library) |
 | F6 | Refresh the preview |
+| F7 | Hide / show the preview |
 | F9 | Run |
 | F11 | Full screen |
 | Ctrl+K | Command palette |

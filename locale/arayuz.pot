@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 07:05+0300\n"
+"POT-Creation-Date: 2026-10-02 07:43+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -898,7 +898,7 @@ msgstr ""
 msgid "Kaydedilmiş bir model (.json) ya da OpenMC XML klasörü."
 msgstr ""
 
-#: arayuz/baslangic.py:376 arayuz/pencere/menuler.py:133
+#: arayuz/baslangic.py:376 arayuz/pencere/menuler.py:135
 msgid "Aç…"
 msgstr ""
 
@@ -906,7 +906,7 @@ msgstr ""
 msgid "Bilgisayarınızdaki bir model dosyasını (.json) açar (Ctrl+O)."
 msgstr ""
 
-#: arayuz/baslangic.py:384 arayuz/pencere/menuler.py:135
+#: arayuz/baslangic.py:384 arayuz/pencere/menuler.py:137
 msgid "Son kullanılanlar"
 msgstr ""
 
@@ -993,7 +993,7 @@ msgstr ""
 msgid "boş şablonu olmayan kart: %s"
 msgstr ""
 
-#: arayuz/bilesenler/bildirim.py:98 arayuz/pencere/menuler.py:323
+#: arayuz/bilesenler/bildirim.py:98 arayuz/pencere/menuler.py:346
 msgid "Kapat"
 msgstr ""
 
@@ -1404,7 +1404,7 @@ msgid "Son bölgenin yarıçapı yoktur: hücrenin kalanını doldurur."
 msgstr ""
 
 #: arayuz/cubuk/cubuk_formu.py:153 arayuz/cubuk/plaka_formu.py:70
-#: arayuz/cubuk/tambur_formu.py:211
+#: arayuz/cubuk/tambur_formu.py:212
 #, python-brace-format
 msgid ""
 "Malzemesi seçilmemiş: {eksik}. Uygun malzeme yoksa önce Malzemeler sekmesinden "
@@ -1451,7 +1451,7 @@ msgstr ""
 msgid "moderatör"
 msgstr ""
 
-#: arayuz/cubuk/parca_islemleri.py:25 arayuz/cubuk/tambur_formu.py:208
+#: arayuz/cubuk/parca_islemleri.py:25 arayuz/cubuk/tambur_formu.py:209
 #: arayuz/malzeme/yardimcilar.py:31
 msgid "emici"
 msgstr ""
@@ -1840,15 +1840,15 @@ msgid ""
 "ekleyin ve içerik olarak bu tamburu seçin. Dönme, yerleşimin grubundadır."
 msgstr ""
 
-#: arayuz/cubuk/tambur_formu.py:207
+#: arayuz/cubuk/tambur_formu.py:208
 msgid "gövde"
 msgstr ""
 
-#: arayuz/cubuk/tambur_formu.py:277
+#: arayuz/cubuk/tambur_formu.py:278
 msgid "Tambur kullanılıyor"
 msgstr ""
 
-#: arayuz/cubuk/tambur_formu.py:278
+#: arayuz/cubuk/tambur_formu.py:279
 #, python-brace-format
 msgid ""
 "'{ad}' şurada kullanılıyor: {yerler}.\n"
@@ -3156,13 +3156,13 @@ msgid "PNG kaydet…"
 msgstr ""
 
 #: arayuz/demet/yerlesim.py:35 arayuz/geometri/sablon_diyalogu.py:23
-#: arayuz/guc_harita.py:69 arayuz/pencere/model_islemleri.py:65 arayuz/sekme_demet.py:508
+#: arayuz/guc_harita.py:69 arayuz/pencere/model_islemleri.py:65 arayuz/sekme_demet.py:514
 #: arayuz/yardim/__init__.py:45
 msgid "Demet"
 msgstr ""
 
 #: arayuz/cubuk/cubuk_formu.py:38 arayuz/cubuk/sayfalar.py:63 arayuz/guc_harita.py:70
-#: arayuz/sekme_cubuk.py:125
+#: arayuz/sekme_cubuk.py:126
 msgid "Çubuk"
 msgstr ""
 
@@ -4234,75 +4234,75 @@ msgstr[1] ""
 msgid "aşağıdan işaretleyin ya da hazır set seçin"
 msgstr ""
 
-#: arayuz/onizleme.py:70
+#: arayuz/onizleme.py:72
 msgid "Düşük (400)"
 msgstr ""
 
-#: arayuz/onizleme.py:70
+#: arayuz/onizleme.py:72
 msgid "Normal (800)"
 msgstr ""
 
-#: arayuz/onizleme.py:71
+#: arayuz/onizleme.py:73
 msgid "Yüksek (1400)"
 msgstr ""
 
-#: arayuz/onizleme.py:75
+#: arayuz/onizleme.py:77
 msgid "Hücre"
 msgstr ""
 
 #: arayuz/cubuk/sayfalar.py:117 arayuz/demet/kilif.py:59 arayuz/geometri/formlar.py:30
-#: arayuz/geometri/formlar.py:87 arayuz/kor/yerlesim.py:85 arayuz/onizleme.py:75
+#: arayuz/geometri/formlar.py:87 arayuz/kor/yerlesim.py:85 arayuz/onizleme.py:77
 #: arayuz/sekme_malzeme.py:220
 msgid "Malzeme"
 msgstr ""
 
-#: arayuz/onizleme.py:162 arayuz/onizleme.py:323
+#: arayuz/onizleme.py:164 arayuz/onizleme.py:334
 msgid "Model bekleniyor"
 msgstr ""
 
-#: arayuz/onizleme.py:168
+#: arayuz/onizleme.py:170
 msgid "xy: üstten kesit (z = 0) · xz: yandan kesit (y = 0) · yz: yandan kesit (x = 0)"
 msgstr ""
 
-#: arayuz/onizleme.py:170
+#: arayuz/onizleme.py:172
 msgid "Kesit:"
 msgstr ""
 
-#: arayuz/onizleme.py:178
+#: arayuz/onizleme.py:180
 msgid "Gösterge"
 msgstr ""
 
-#: arayuz/onizleme.py:180
+#: arayuz/onizleme.py:182
 msgid "Çakışmaları göster"
 msgstr ""
 
-#: arayuz/onizleme.py:182
+#: arayuz/onizleme.py:184
 msgid ""
 "Birden fazla hücrenin kapladığı noktaları ayrı renkle gösterir ve\n"
 "sayısını bildirir. Büyük korlarda çizimi birkaç kat yavaşlatır."
 msgstr ""
 
-#: arayuz/onizleme.py:184
+#: arayuz/onizleme.py:186
 msgid "Yenile"
 msgstr ""
 
-#: arayuz/malzeme/malzeme_diyalog.py:163 arayuz/onizleme.py:208
+#: arayuz/malzeme/malzeme_diyalog.py:163 arayuz/onizleme.py:210
 msgid "Renk:"
 msgstr ""
 
-#: arayuz/onizleme.py:231
+#: arayuz/onizleme.py:239
 msgid "Çözünürlük:"
 msgstr ""
 
-#: arayuz/onizleme.py:342
+#: arayuz/onizleme.py:364
 msgid "Çiziliyor…"
 msgstr ""
 
-#: arayuz/onizleme.py:462
+#: arayuz/onizleme.py:494
 msgid "Önizleme gizli: model denetlendi, önizleme açılınca çizilir."
 msgstr ""
 
-#: arayuz/onizleme.py:474
+#: arayuz/onizleme.py:508
 #, python-format
 msgid ""
 "Önizleme: %d hücre çakışması bulundu — geometriyi gözden geçirin (kesitte ayrı renkle"
@@ -4313,14 +4313,14 @@ msgid_plural ""
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/onizleme.py:481
+#: arayuz/onizleme.py:516
 #, python-brace-format
 msgid "Önizleme güncel ({kesit}, {n} piksel){ek}"
 msgid_plural "Önizleme güncel ({kesit}, {n} piksel){ek}"
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/onizleme.py:491
+#: arayuz/onizleme.py:530
 #, python-format
 msgid ""
 "Geometri kurulamadı:\n"
@@ -4328,16 +4328,21 @@ msgid ""
 "%s"
 msgstr ""
 
-#: arayuz/onizleme.py:493
+#: arayuz/onizleme.py:532
 #, python-format
 msgid "Önizleme başarısız: %s"
 msgstr ""
 
-#: arayuz/onizleme.py:534
+#: arayuz/onizleme.py:533
+#, python-format
+msgid "Kapsamlı önizleme başarısız (Çalıştır kapısı tam modele bakar): %s"
+msgstr ""
+
+#: arayuz/onizleme.py:578
 msgid "[ölçek 1:1 değil]"
 msgstr ""
 
-#: arayuz/onizleme.py:582
+#: arayuz/onizleme.py:632
 msgid "Hücre renkleri yalnız hücreleri ayırt etmek içindir."
 msgstr ""
 
@@ -4387,6 +4392,39 @@ msgstr ""
 msgid "Önizleme süreci başlatılamadı: %s"
 msgstr ""
 
+#: arayuz/onizleme_kapsam.py:45
+msgid "Otomatik"
+msgstr ""
+
+#: arayuz/onizleme_kapsam.py:45
+msgid "Tam model"
+msgstr ""
+
+#: arayuz/onizleme_kapsam.py:87
+msgid ""
+"Otomatik: Parçalar sayfasında seçili parça, Demet sayfasında seçili demet,\n"
+"gelişmiş Geometri'de seçili düğüm çizilir (yansıtıcı sınırlı alt model);\n"
+"diğer sayfalarda tam model. Tam model: her zaman bütün model.\n"
+"Çalıştır kapısı her iki kipte de yalnız tam modele bakar."
+msgstr ""
+
+#: arayuz/onizleme_kapsam.py:91
+msgid "Kapsam:"
+msgstr ""
+
+#: arayuz/onizleme_kapsam.py:122
+msgid "tam model (alt model kurulamadı)"
+msgstr ""
+
+#: arayuz/onizleme_kapsam.py:157
+msgid "Önizleme: tam model denetlendi."
+msgstr ""
+
+#: arayuz/onizleme_kapsam.py:161
+#, python-format
+msgid "Tam model kurulamadı (Çalıştır kapalı): %s"
+msgstr ""
+
 #: arayuz/ortak.py:173
 msgid "seçilmemiş"
 msgstr ""
@@ -4424,27 +4462,27 @@ msgstr ""
 msgid "Çalışan sade bir model kuruldu ({ad}). Kaydetmek için 'Farklı kaydet' kullanın."
 msgstr ""
 
-#: arayuz/pencere/ana_pencere.py:539
+#: arayuz/pencere/ana_pencere.py:549
 #, python-brace-format
 msgid "adsız — örnek: {ornek}"
 msgstr ""
 
-#: arayuz/pencere/ana_pencere.py:542
+#: arayuz/pencere/ana_pencere.py:552
 msgid "kaydedilmemiş"
 msgstr ""
 
-#: arayuz/pencere/ana_pencere.py:567
+#: arayuz/pencere/ana_pencere.py:577
 msgid "Boyuta tıklayınca Kor sayfasına, hesap türüne tıklayınca Hesap ayarlarına gider."
 msgstr ""
 
-#: arayuz/pencere/ana_pencere.py:611
+#: arayuz/pencere/ana_pencere.py:621
 #, python-brace-format
 msgid ""
 " Model bu türün gerektirdiği parçayı içermiyordu; şablondan eklendi: {parca} "
 "(Parçalar/Demet sayfasında düzenleyin)."
 msgstr ""
 
-#: arayuz/pencere/ana_pencere.py:614
+#: arayuz/pencere/ana_pencere.py:624
 #, python-brace-format
 msgid "Kor türü: {tur} — geri almak için Ctrl+Z.{ek}"
 msgstr ""
@@ -4619,184 +4657,198 @@ msgstr ""
 msgid "Uygulama sürümü (Yardım > Hakkında)"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:37
+#: arayuz/pencere/menuler.py:39
 #, python-brace-format
 msgid "{ad} tema"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:53
+#: arayuz/pencere/menuler.py:55
 msgid "Doğrulama bulguları"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:57
+#: arayuz/pencere/menuler.py:59
 msgid "Bir satıra tıklayınca ilgili sayfaya gider; sağ tık: kılavuzda aç."
 msgstr ""
 
-#: arayuz/pencere/menuler.py:79
+#: arayuz/pencere/menuler.py:81
 msgid "Kılavuzda aç"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:100
+#: arayuz/pencere/menuler.py:102
 msgid "&Dosya"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:101
+#: arayuz/pencere/menuler.py:103
 msgid "D&üzen"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:102 arayuz/pencere/menuler.py:294
+#: arayuz/pencere/menuler.py:104 arayuz/pencere/menuler.py:315
 msgid "Geri al"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:103 arayuz/pencere/menuler.py:294
+#: arayuz/pencere/menuler.py:105 arayuz/pencere/menuler.py:315
 msgid "Yinele"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:104
+#: arayuz/pencere/menuler.py:106
 msgid "&Görünüm"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:105
+#: arayuz/pencere/menuler.py:107
 msgid "&Yardım"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:108
+#: arayuz/pencere/menuler.py:110
 msgid "Kullanım kılavuzunu etkin sayfanın bölümünde açar"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:109 arayuz/pencere/menuler.py:317
+#: arayuz/pencere/menuler.py:111 arayuz/pencere/menuler.py:340
 #: arayuz/pencere/yardim_metni.py:14
 msgid "Yardım ve terimler"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:110 arayuz/pencere/menuler.py:337
+#: arayuz/pencere/menuler.py:112 arayuz/pencere/menuler.py:360
 msgid "Hakkında"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:114 arayuz/pencere/menuler.py:296
+#: arayuz/pencere/menuler.py:116 arayuz/pencere/menuler.py:317
 msgid "Doğrulamayı yenile (veri kütüphanesi dahil)"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:117 arayuz/pencere/menuler.py:297
+#: arayuz/pencere/menuler.py:119 arayuz/pencere/menuler.py:318
 msgid "Önizlemeyi yenile"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:119 arayuz/pencere/menuler.py:297
+#: arayuz/pencere/menuler.py:121 arayuz/pencere/menuler.py:320
 msgid "ÇALIŞTIR"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:120
+#: arayuz/pencere/menuler.py:122
 msgid "Modeli çalıştır (F9) — önce geometri çizilmiş ve doğrulama hatasız olmalı"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:130
+#: arayuz/pencere/menuler.py:132
 msgid "Yeni…"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:132
+#: arayuz/pencere/menuler.py:134
 msgid "Başlangıç ekranı: ne modelleyeceğini seç"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:134
+#: arayuz/pencere/menuler.py:136
 msgid "Bir model dosyası (.json) aç"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:137 arayuz/pencere/menuler.py:293 arayuz/pencere/proje.py:76
+#: arayuz/pencere/menuler.py:139 arayuz/pencere/menuler.py:314 arayuz/pencere/proje.py:76
 msgid "Kaydet"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:139
+#: arayuz/pencere/menuler.py:141
 msgid "Farklı kaydet…"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:142
+#: arayuz/pencere/menuler.py:144
 msgid "Malzemeleri içe aktar (OpenMC XML)…"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:144
+#: arayuz/pencere/menuler.py:146
 msgid "Python betiği olarak dışa aktar…"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:146
+#: arayuz/pencere/menuler.py:148
 msgid "Tek başına çalışan bir Python betiği üretir"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:147
+#: arayuz/pencere/menuler.py:149
 msgid "OpenMC XML olarak dışa aktar…"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:149
+#: arayuz/pencere/menuler.py:151
 msgid "Önizlemeyi PNG olarak kaydet…"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:150
+#: arayuz/pencere/menuler.py:152
 msgid "Rapor oluştur…"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:151
+#: arayuz/pencere/menuler.py:153
 msgid "Model ve son koşu için HTML ya da PDF rapor yazar"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:153
+#: arayuz/pencere/menuler.py:155
 msgid "Çıkış"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:170 arayuz/pencere/menuler.py:306
+#: arayuz/pencere/menuler.py:173 arayuz/pencere/menuler.py:329
 msgid "Tam ekran"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:243
+#: arayuz/pencere/menuler.py:182
+msgid "Önizlemeyi göster"
+msgstr ""
+
+#: arayuz/pencere/menuler.py:186
+msgid ""
+"Önizleme panelini gizler ya da gösterir; gizliyken çizim yapılmaz (Çalıştır kapısı "
+"için model yine denetlenir)"
+msgstr ""
+
+#: arayuz/pencere/menuler.py:264
 #, python-brace-format
 msgid "Tema: {ad}"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:262
+#: arayuz/pencere/menuler.py:283
 msgid "Dil"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:262
+#: arayuz/pencere/menuler.py:283
 msgid "Dil değişikliği uygulama yeniden başlatılınca geçerli olur."
 msgstr ""
 
-#: arayuz/pencere/menuler.py:292
+#: arayuz/pencere/menuler.py:313
 msgid "Yeni model (başlangıç ekranı)"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:292 arayuz/pencere/proje.py:204
+#: arayuz/pencere/menuler.py:313 arayuz/pencere/proje.py:204
 msgid "Aç"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:293
+#: arayuz/pencere/menuler.py:314
 msgid "Farklı kaydet"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:295 arayuz/pencere/proje.py:281
+#: arayuz/pencere/menuler.py:316 arayuz/pencere/proje.py:281
 msgid "Python betiği olarak dışa aktar"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:298
+#: arayuz/pencere/menuler.py:319
+msgid "Önizlemeyi gizle / göster"
+msgstr ""
+
+#: arayuz/pencere/menuler.py:321
 msgid "Kullanım kılavuzu (etkin sayfanın bölümü)"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:299
+#: arayuz/pencere/menuler.py:322
 msgid "Bu yardım"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:301
+#: arayuz/pencere/menuler.py:324
 msgid "Klavye kısayolları"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:307
+#: arayuz/pencere/menuler.py:330
 msgid "Başlangıç ekranında: açık modele dön"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:310
+#: arayuz/pencere/menuler.py:333
 msgid ""
 "Demet ve kor haritasında sol tık boyar, sağ tık o hücrenin parçasını fırça yapar; "
 "altıgen haritada tekerlek yakınlaştırır."
 msgstr ""
 
-#: arayuz/pencere/menuler.py:338
+#: arayuz/pencere/menuler.py:361
 #, python-brace-format
 msgid ""
 "{ad}\n"
@@ -5946,132 +5998,132 @@ msgstr ""
 msgid "başarısız"
 msgstr ""
 
-#: arayuz/sekme_cubuk.py:92 arayuz/sekme_cubuk.py:219 arayuz/sekme_cubuk.py:223
+#: arayuz/sekme_cubuk.py:93 arayuz/sekme_cubuk.py:220 arayuz/sekme_cubuk.py:224
 msgid "Henüz parça yok"
 msgstr ""
 
-#: arayuz/sekme_cubuk.py:92 arayuz/sekme_cubuk.py:226
+#: arayuz/sekme_cubuk.py:93 arayuz/sekme_cubuk.py:227
 msgid "Yakıt çubuğu ekle"
 msgstr ""
 
-#: arayuz/sekme_cubuk.py:114
+#: arayuz/sekme_cubuk.py:115
 msgid "Çubuklar ve plaka elemanları: radyal bölgeler ve malzemeler."
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:65 arayuz/sekme_cubuk.py:114 arayuz/sekme_cubuk.py:146
+#: arayuz/pencere/model_islemleri.py:65 arayuz/sekme_cubuk.py:115 arayuz/sekme_cubuk.py:147
 #: arayuz/yardim/__init__.py:44
 msgid "Parçalar"
 msgstr ""
 
-#: arayuz/sekme_cubuk.py:133
+#: arayuz/sekme_cubuk.py:134
 msgid "Yakıt, yakıt-zarf aralığı, zarf ve soğutucu; malzemeler rollerine göre seçilir."
 msgstr ""
 
-#: arayuz/sekme_cubuk.py:135
+#: arayuz/sekme_cubuk.py:136
 msgid "Suyla dolu kılavuz boru (zarf + soğutucu)."
 msgstr ""
 
-#: arayuz/sekme_cubuk.py:137
+#: arayuz/sekme_cubuk.py:138
 msgid "Kılavuz borusunda eksenel hareket eden emici çubuk (3B model)."
 msgstr ""
 
-#: arayuz/sekme_cubuk.py:140
+#: arayuz/sekme_cubuk.py:141
 msgid "Plaka"
 msgstr ""
 
-#: arayuz/calistir/kartlar.py:175 arayuz/demet/yerlesim.py:93 arayuz/sekme_cubuk.py:141
+#: arayuz/calistir/kartlar.py:175 arayuz/demet/yerlesim.py:93 arayuz/sekme_cubuk.py:142
 #: arayuz/sekme_malzeme.py:144
 msgid "Kopyala"
 msgstr ""
 
 #: arayuz/ayar/yerlesim.py:196 arayuz/cubuk/tambur_formu.py:71 arayuz/demet/yerlesim.py:94
 #: arayuz/geometri/editor.py:116 arayuz/geometri/form_yerlesim.py:60
-#: arayuz/kor/yerlesim.py:130 arayuz/sekme_cubuk.py:142 arayuz/sekme_malzeme.py:145
+#: arayuz/kor/yerlesim.py:130 arayuz/sekme_cubuk.py:143 arayuz/sekme_malzeme.py:145
 msgid "Sil"
 msgstr ""
 
-#: arayuz/cubuk/cubuk_formu.py:316 arayuz/sekme_cubuk.py:161
+#: arayuz/cubuk/cubuk_formu.py:316 arayuz/sekme_cubuk.py:162
 msgid "  · kontrol"
 msgstr ""
 
-#: arayuz/cubuk/cubuk_formu.py:315 arayuz/sekme_cubuk.py:169
+#: arayuz/cubuk/cubuk_formu.py:315 arayuz/sekme_cubuk.py:170
 msgid "  · plaka"
 msgstr ""
 
-#: arayuz/sekme_cubuk.py:189
+#: arayuz/sekme_cubuk.py:190
 #, python-brace-format
 msgid "Malzemesi seçilmemiş: {eksik}"
 msgstr ""
 
-#: arayuz/sekme_cubuk.py:199
+#: arayuz/sekme_cubuk.py:200
 msgid "Şablondan çubuk ekler; malzemeler rollerine göre otomatik seçilir."
 msgstr ""
 
-#: arayuz/sekme_cubuk.py:201
+#: arayuz/sekme_cubuk.py:202
 msgid "MTR plaka elemanı ekler; malzemeler rollerine göre otomatik seçilir."
 msgstr ""
 
-#: arayuz/sekme_cubuk.py:212
+#: arayuz/sekme_cubuk.py:213
 msgid "Önce malzeme gerekli"
 msgstr ""
 
-#: arayuz/sekme_cubuk.py:213
+#: arayuz/sekme_cubuk.py:214
 msgid ""
 "Parçalar malzemelerden kurulur. Malzemeler sekmesinden yakıt, zarf ve soğutucu "
 "malzemelerini ekleyin."
 msgstr ""
 
-#: arayuz/sekme_cubuk.py:216
+#: arayuz/sekme_cubuk.py:217
 msgid "Bir parça seçin"
 msgstr ""
 
-#: arayuz/sekme_cubuk.py:217
+#: arayuz/sekme_cubuk.py:218
 msgid "Düzenlemek için soldaki listeden bir parça seçin."
 msgstr ""
 
-#: arayuz/sekme_cubuk.py:220
+#: arayuz/sekme_cubuk.py:221
 msgid "Plaka elemanı ekleyin; malzemeler rollerine göre otomatik seçilir."
 msgstr ""
 
-#: arayuz/sekme_cubuk.py:221
+#: arayuz/sekme_cubuk.py:222
 msgid "Plaka elemanı ekle"
 msgstr ""
 
-#: arayuz/sekme_cubuk.py:224
+#: arayuz/sekme_cubuk.py:225
 msgid ""
 "Soldaki '+ Çubuk' menüsünden bir şablon seçin; malzemeler rollerine göre (yakıt, "
 "zarf, soğutucu) otomatik seçilir."
 msgstr ""
 
-#: arayuz/sekme_cubuk.py:228
+#: arayuz/sekme_cubuk.py:229
 msgid "Bu model parça kullanmıyor"
 msgstr ""
 
-#: arayuz/sekme_cubuk.py:229
+#: arayuz/sekme_cubuk.py:230
 msgid "Bu kor türünde çubuk ya da plaka tanımlanmaz."
 msgstr ""
 
-#: arayuz/cubuk/tambur_formu.py:252 arayuz/sekme_cubuk.py:278 arayuz/sekme_demet.py:580
+#: arayuz/cubuk/tambur_formu.py:253 arayuz/sekme_cubuk.py:285 arayuz/sekme_demet.py:586
 #, python-brace-format
 msgid "{hata} Ad değiştirilmedi."
 msgstr ""
 
-#: arayuz/sekme_cubuk.py:326
+#: arayuz/sekme_cubuk.py:333
 #, python-brace-format
 msgid ""
 "Bu modelde {roller} rolünde malzeme yok; ilgili bölgeler kırmızı işaretli. Önce "
 "Malzemeler sekmesinden ekleyin, sonra burada seçin."
 msgstr ""
 
-#: arayuz/geometri/form_kafes.py:323 arayuz/sekme_cubuk.py:349
+#: arayuz/geometri/form_kafes.py:323 arayuz/sekme_cubuk.py:356
 msgid "Parça"
 msgstr ""
 
-#: arayuz/sekme_cubuk.py:382
+#: arayuz/sekme_cubuk.py:389
 msgid "Parça kullanılıyor"
 msgstr ""
 
-#: arayuz/sekme_cubuk.py:383
+#: arayuz/sekme_cubuk.py:390
 #, python-brace-format
 msgid ""
 "'{ad}' şurada kullanılıyor: {yerler}.\n"
@@ -6092,107 +6144,107 @@ msgstr[1] ""
 msgid "kare {nx}×{ny}"
 msgstr ""
 
-#: arayuz/sekme_demet.py:118
+#: arayuz/sekme_demet.py:119
 msgid "Kare demet ekler; çubukları paletten seçip ızgaraya yerleştirirsiniz."
 msgstr ""
 
-#: arayuz/sekme_demet.py:119
+#: arayuz/sekme_demet.py:120
 msgid "Altıgen demet ekler; çubukları paletten seçip ızgaraya yerleştirirsiniz."
 msgstr ""
 
-#: arayuz/sekme_demet.py:124
+#: arayuz/sekme_demet.py:125
 msgid "Önce Parçalar sekmesinde en az bir çubuk tanımlayın."
 msgstr ""
 
-#: arayuz/sekme_demet.py:132
+#: arayuz/sekme_demet.py:133
 msgid "Bu modelde demet kullanılmıyor"
 msgstr ""
 
-#: arayuz/sekme_demet.py:133
+#: arayuz/sekme_demet.py:134
 msgid ""
 "Bu kor türü demet içermez. Demet gerekiyorsa kor türünü model başlığındaki “Türü "
 "değiştir…” ile değiştirin."
 msgstr ""
 
-#: arayuz/sekme_demet.py:136 arayuz/sekme_demet.py:525
+#: arayuz/sekme_demet.py:137 arayuz/sekme_demet.py:531
 msgid "Önce çubuk gerekli"
 msgstr ""
 
-#: arayuz/sekme_demet.py:137
+#: arayuz/sekme_demet.py:138
 msgid ""
 "Demet, Parçalar sekmesinde tanımlanan çubuklardan kurulur. Önce bir yakıt çubuğu "
 "ekleyin."
 msgstr ""
 
-#: arayuz/demet/yerlesim.py:45 arayuz/sekme_demet.py:140
+#: arayuz/demet/yerlesim.py:45 arayuz/sekme_demet.py:141
 msgid "Henüz demet yok"
 msgstr ""
 
-#: arayuz/sekme_demet.py:141
+#: arayuz/sekme_demet.py:142
 msgid ""
 "Bir demet ekleyin; çubukları sağdaki paletten seçip ızgaraya tıklayarak ya da "
 "sürükleyerek yerleştirin."
 msgstr ""
 
-#: arayuz/sekme_demet.py:257
+#: arayuz/sekme_demet.py:263
 msgid "Merkez hücre"
 msgstr ""
 
-#: arayuz/sekme_demet.py:259
+#: arayuz/sekme_demet.py:265
 #, python-brace-format
 msgid "{k}. halka · {n} hücre"
 msgid_plural "{k}. halka · {n} hücre"
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/sekme_demet.py:262
+#: arayuz/sekme_demet.py:268
 #, python-brace-format
 msgid "{halka} (en dış)"
 msgstr ""
 
-#: arayuz/sekme_demet.py:278
+#: arayuz/sekme_demet.py:284
 #, python-brace-format
 msgid ""
 "Komşu hücre merkezleri arası uzaklık (pitch).\n"
 "En az {d:.5f} cm: {sebep}."
 msgstr ""
 
-#: arayuz/demet/yerlesim.py:171 arayuz/sekme_demet.py:280
+#: arayuz/demet/yerlesim.py:171 arayuz/sekme_demet.py:286
 msgid "Komşu hücre merkezleri arası uzaklık (pitch)."
 msgstr ""
 
-#: arayuz/sekme_demet.py:294
+#: arayuz/sekme_demet.py:300
 #, python-brace-format
 msgid "Adıma sığmayan iç demetler: {adlar}"
 msgstr ""
 
-#: arayuz/sekme_demet.py:297
+#: arayuz/sekme_demet.py:303
 msgid "Bir demeti iç demet olarak yerleştirmek için adım en az o demetin ölçüsü kadar olmalı."
 msgstr ""
 
-#: arayuz/sekme_demet.py:323
+#: arayuz/sekme_demet.py:329
 #, python-brace-format
 msgid "{gx:.3f} × {gy:.3f} cm · {n} hücre, {h} halka"
 msgid_plural "{gx:.3f} × {gy:.3f} cm · {n} hücre, {h} halka"
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/sekme_demet.py:328
+#: arayuz/sekme_demet.py:334
 #, python-brace-format
 msgid "{gx:.3f} × {gy:.3f} cm · {n} hücre"
 msgid_plural "{gx:.3f} × {gy:.3f} cm · {n} hücre"
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/sekme_demet.py:355
+#: arayuz/sekme_demet.py:361
 msgid "Çok fazla parça"
 msgstr ""
 
-#: arayuz/sekme_demet.py:430
+#: arayuz/sekme_demet.py:436
 msgid "Harita küçülüyor"
 msgstr ""
 
-#: arayuz/sekme_demet.py:431
+#: arayuz/sekme_demet.py:437
 #, python-brace-format
 msgid ""
 "Demet {eski_nx}×{eski_ny}'den {nx}×{ny}'ye küçülüyor: haritanın sağ/alt kısmındaki "
@@ -6201,11 +6253,11 @@ msgid ""
 "Devam edilsin mi?"
 msgstr ""
 
-#: arayuz/sekme_demet.py:470
+#: arayuz/sekme_demet.py:476
 msgid "Halka sayısı azalıyor"
 msgstr ""
 
-#: arayuz/sekme_demet.py:471
+#: arayuz/sekme_demet.py:477
 #, python-brace-format
 msgid ""
 "Halka sayısı {eski}'den {yeni}'ye iniyor: dıştaki {n} halka silinecek (artırmak "
@@ -6220,15 +6272,15 @@ msgid_plural ""
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/sekme_demet.py:526
+#: arayuz/sekme_demet.py:532
 msgid "Demet kurmadan önce Parçalar sekmesinde en az bir çubuk tanımlayın."
 msgstr ""
 
-#: arayuz/sekme_demet.py:559
+#: arayuz/sekme_demet.py:565
 msgid "Demet kullanılıyor"
 msgstr ""
 
-#: arayuz/sekme_demet.py:560
+#: arayuz/sekme_demet.py:566
 #, python-brace-format
 msgid ""
 "'{ad}' şurada kullanılıyor: {yerler}.\n"
@@ -7203,7 +7255,7 @@ msgstr ""
 msgid "Kullanım kılavuzunda bu sayfanın bölümünü açar (F1)"
 msgstr ""
 
-#: arayuz/pencere/menuler.py:107 arayuz/yardim/gosterici.py:56
+#: arayuz/pencere/menuler.py:109 arayuz/yardim/gosterici.py:56
 #: arayuz/yardim_baglanti.py:106
 msgid "Kullanım kılavuzu"
 msgstr ""
