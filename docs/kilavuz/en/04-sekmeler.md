@@ -22,6 +22,7 @@ The tabs, in the order of the sidebar:
 | [4.8](04h-analiz.md#analiz) | Analysis | parameter sweep, reactivity coefficients, critical search |
 | [4.9](04i-tukenme.md#tukenme) | Depletion | burnup calculation and tracked nuclides |
 | [4.11](04k-mesh-tally.md#mesh-tally) | Mesh tally | mesh type, bounds, 2D map, VTK |
+| [4.12](04l-goruntuleyici.md#goruntuleyici) | Viewer (Tools menu) | slice, overlaps, tally overlay, source points, 3D |
 
 ## How to read this chapter
 

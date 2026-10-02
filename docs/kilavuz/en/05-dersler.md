@@ -22,6 +22,7 @@ overwritten. Use **File › Save as…** to keep your own changes.
 | [5.11](#ders-spektrum) | Spectrum and four factors | `ornekler/pwr_pinhucre.json` | intermediate |
 | [5.13](05c-ders-mesh.md#ders-mesh) | Mesh flux and power map, ParaView | `ornekler/pwr_mesh_aki.json` | intermediate |
 | [5.14](#ders-malzeme-asistani) | Material assistant and my library | `ornekler/pwr_17x17.json` | introductory |
+| [5.18](05d-ders-goruntuleyici.md#ders-goruntuleyici) | Viewer: slice, overlaps, tally overlay, 3D | `ornekler/pwr_mesh_aki.json`, `ornekler/vver1000_kor.json`, `ornekler/pwr_3b.json` | intermediate |
 
 **Where do the expected results come from?** Every value has a source: the `referans.olcum` field
 of the example file, [VV.md](../../VV.md), [ORNEKLER.md](../../ORNEKLER.md) or the measurement tables

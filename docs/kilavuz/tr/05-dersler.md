@@ -22,6 +22,7 @@ için **Dosya › Farklı kaydet…** kullanın.
 | [5.11](#ders-spektrum) | Spektrum ve dört faktör | `ornekler/pwr_pinhucre.json` | orta |
 | [5.13](05c-ders-mesh.md#ders-mesh) | Ağ (mesh) akı ve güç haritası, ParaView | `ornekler/pwr_mesh_aki.json` | orta |
 | [5.14](#ders-malzeme-asistani) | Malzeme asistanı ve kütüphanem | `ornekler/pwr_17x17.json` | giriş |
+| [5.18](05d-ders-goruntuleyici.md#ders-goruntuleyici) | Görüntüleyici: kesit, çakışma, tally bindirmesi, 3B | `ornekler/pwr_mesh_aki.json`, `ornekler/vver1000_kor.json`, `ornekler/pwr_3b.json` | orta |
 
 **Beklenen sonuçlar nereden geliyor?** Her değer bir kaynağa dayanır: örnek dosyasının
 `referans.olcum` alanı, [VV.md](../../VV.md), [ORNEKLER.md](../../ORNEKLER.md) ya da
