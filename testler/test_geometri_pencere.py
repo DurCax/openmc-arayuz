@@ -57,7 +57,10 @@ def test_ana_pencere_agac_modunu_acar():
                         p.sekmeye_git(anahtar_s, sessiz=True)
                         uyg.processEvents()
                         _sayfa_eylemleri(p, uyg, anahtar_s, eylem)
+                    # v3 H2: onizleme yalniz gorunurken cizer (tasarim sayfasi)
+                    p.sekmeye_git("kor", sessiz=True)
                     p.onizleme._ciz()
+                    p.onizleme.bekle(120)
                 except Exception as e:      # testin amaci cokmeyi raporlamak
                     hata = "%s: %s" % (type(e).__name__, e)
                 kontrol("%s: pencere agac modundaki modeli acti, butun sayfalari gezdi"

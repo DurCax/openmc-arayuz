@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 05:26+0300\n"
+"POT-Creation-Date: 2026-10-02 06:20+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -4234,87 +4234,93 @@ msgstr[1] ""
 msgid "aşağıdan işaretleyin ya da hazır set seçin"
 msgstr ""
 
-#: arayuz/onizleme.py:89
+#: arayuz/onizleme.py:66
 msgid "Düşük (400)"
 msgstr ""
 
-#: arayuz/onizleme.py:89
+#: arayuz/onizleme.py:66
 msgid "Normal (800)"
 msgstr ""
 
-#: arayuz/onizleme.py:90
+#: arayuz/onizleme.py:67
 msgid "Yüksek (1400)"
 msgstr ""
 
-#: arayuz/onizleme.py:97
+#: arayuz/onizleme.py:71
 msgid "Hücre"
 msgstr ""
 
 #: arayuz/cubuk/sayfalar.py:117 arayuz/demet/kilif.py:59 arayuz/geometri/formlar.py:30
-#: arayuz/geometri/formlar.py:87 arayuz/kor/yerlesim.py:85 arayuz/onizleme.py:97
+#: arayuz/geometri/formlar.py:87 arayuz/kor/yerlesim.py:85 arayuz/onizleme.py:71
 #: arayuz/sekme_malzeme.py:220
 msgid "Malzeme"
 msgstr ""
 
-#: arayuz/onizleme.py:180
-msgid "xy: üstten kesit (z = 0) · xz: yandan kesit (y = 0) · yz: yandan kesit (x = 0)"
-msgstr ""
-
-#: arayuz/onizleme.py:182
-msgid "Kesit:"
-msgstr ""
-
-#: arayuz/onizleme.py:190
-msgid "Gösterge"
-msgstr ""
-
-#: arayuz/onizleme.py:192
-msgid "Hızlı mod (kütüphaneyi açık tut)"
-msgstr ""
-
-#: arayuz/onizleme.py:194
-msgid ""
-"Kapalı: her çizim ~0.3 s; model düzenlerken doğru seçim.\n"
-"Açık: ilk çizim ~3 s (tesir kesitleri belleğe yüklenir),\n"
-"sonraki çizimler ~40 ms.\n"
-"\n"
-"Bitmiş bir geometriyi incelerken (kesit değiştirme, yakınlaştırma)\n"
-"açın. Düzenlerken açmayın: her model değişikliği kütüphaneyi\n"
-"yeniden başlatır ve değişiklik başına ~3 s sürer."
-msgstr ""
-
-#: arayuz/onizleme.py:200
-msgid "Yenile"
-msgstr ""
-
-#: arayuz/malzeme/malzeme_diyalog.py:163 arayuz/onizleme.py:207
-msgid "Renk:"
-msgstr ""
-
-#: arayuz/onizleme.py:231
-msgid "Çözünürlük:"
-msgstr ""
-
-#: arayuz/onizleme.py:261 arayuz/onizleme.py:316
+#: arayuz/onizleme.py:153 arayuz/onizleme.py:303
 msgid "Model bekleniyor"
 msgstr ""
 
-#: arayuz/onizleme.py:299
-msgid "Hızlı mod kapatıldı"
+#: arayuz/onizleme.py:159
+msgid "xy: üstten kesit (z = 0) · xz: yandan kesit (y = 0) · yz: yandan kesit (x = 0)"
 msgstr ""
 
-#: arayuz/onizleme.py:402
-msgid "[hızlı mod yeniden başlatıldı]"
+#: arayuz/onizleme.py:161
+msgid "Kesit:"
 msgstr ""
 
-#: arayuz/onizleme.py:404
+#: arayuz/onizleme.py:169
+msgid "Gösterge"
+msgstr ""
+
+#: arayuz/onizleme.py:171
+msgid "Çakışmaları göster"
+msgstr ""
+
+#: arayuz/onizleme.py:173
+msgid ""
+"Birden fazla hücrenin kapladığı noktaları ayrı renkle gösterir ve\n"
+"sayısını bildirir. Büyük korlarda çizimi birkaç kat yavaşlatır."
+msgstr ""
+
+#: arayuz/onizleme.py:175
+msgid "Yenile"
+msgstr ""
+
+#: arayuz/malzeme/malzeme_diyalog.py:163 arayuz/onizleme.py:192
+msgid "Renk:"
+msgstr ""
+
+#: arayuz/onizleme.py:215
+msgid "Çözünürlük:"
+msgstr ""
+
+#: arayuz/onizleme.py:321
+msgid "Çiziliyor…"
+msgstr ""
+
+#: arayuz/onizleme.py:424
+msgid "Önizleme gizli: model denetlendi, önizleme açılınca çizilir."
+msgstr ""
+
+#: arayuz/onizleme.py:437
+#, python-format
+msgid ""
+"Önizleme: %d hücre çakışması bulundu — geometriyi gözden geçirin (kesitte ayrı renkle"
+" gösterildi)."
+msgid_plural ""
+"Önizleme: %d hücre çakışması bulundu — geometriyi gözden geçirin (kesitte ayrı renkle"
+" gösterildi)."
+msgstr[0] ""
+msgstr[1] ""
+
+#: arayuz/onizleme.py:444
 #, python-brace-format
 msgid "Önizleme güncel ({kesit}, {n} piksel){ek}"
 msgid_plural "Önizleme güncel ({kesit}, {n} piksel){ek}"
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/onizleme.py:410
+#: arayuz/onizleme.py:453
 #, python-format
 msgid ""
 "Geometri kurulamadı:\n"
@@ -4322,13 +4328,43 @@ msgid ""
 "%s"
 msgstr ""
 
-#: arayuz/onizleme.py:411
+#: arayuz/onizleme.py:455
 #, python-format
 msgid "Önizleme başarısız: %s"
 msgstr ""
 
-#: arayuz/onizleme.py:431
+#: arayuz/onizleme.py:494
 msgid "[ölçek 1:1 değil]"
+msgstr ""
+
+#: arayuz/onizleme_boyama.py:101
+msgid "Çakışma"
+msgstr ""
+
+#: arayuz/onizleme_istemci.py:129
+#, python-format
+msgid "Önizleme isteği gönderilemedi: %s"
+msgstr ""
+
+#: arayuz/onizleme_istemci.py:197
+msgid "çöktü"
+msgstr ""
+
+#: arayuz/onizleme_istemci.py:198
+#, python-format
+msgid "çıkış kodu %d"
+msgstr ""
+
+#: arayuz/onizleme_istemci.py:199
+#, python-format
+msgid ""
+"Önizleme süreci beklenmedik biçimde sonlandı (%s); yeniden başlatıldı. Model "
+"değişince önizleme yeniden çizilir."
+msgstr ""
+
+#: arayuz/onizleme_istemci.py:223
+#, python-format
+msgid "Önizleme süreci başlatılamadı: %s"
 msgstr ""
 
 #: arayuz/ortak.py:173

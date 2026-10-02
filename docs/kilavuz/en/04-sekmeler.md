@@ -105,8 +105,10 @@ tallies (tallies do not affect the plot).
 | **Colour** | Colour by material or by cell. In advanced geometry the selected node is highlighted and the others are faded. |
 | **Legend** | Explanation of the material colours. |
 | **Refresh** | Redraws the preview (F6). |
-| **Resolution** (Advanced) | Low (400) / Normal (800) / High (1400) pixels. The cost is not in the resolution but in starting OpenMC; high resolution is almost free. |
-| **Fast mode (keep the library open)** (Advanced) | Off: every plot ~0.3 s. On: the first plot ~3 s, the following ones ~40 ms. Turn it on while inspecting a finished geometry; do not turn it on while editing the model (every change restarts the library). |
+| **Resolution** (Advanced) | Low (400) / Normal (800) / High (1400) pixels. |
+| **Show overlaps** (Advanced) | Shows points claimed by more than one cell in a separate colour and reports how many there are. Makes plotting several times slower for large cores. |
+
+The preview is drawn in the background, in a separate process; the interface does not wait ("Drawing…" label). OpenMC stays open while the model is unchanged: changing the section, colour or resolution is fast. While the panel is collapsed nothing is drawn, only the model is checked (the RUN gate still works); it is drawn when the panel is opened. If the drawing process ends unexpectedly, the preview shows a clear error and the process is restarted.
 
 The line below the panel gives the outer size of the model. The panel is collapsed with the
 button at its top right.

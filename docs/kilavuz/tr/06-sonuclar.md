@@ -205,9 +205,9 @@ sıradaki adımı yazar ("Geometri çiziliyor; önizleme hazır olunca ÇALIŞTI
   ve yanlış sonuç demektir.
 - 3B modelde önizleme xy ve xz kesitlerini yan yana gösterir; eksenel katmanları, kontrol
   çubuğu ucunu ve yansıtıcıları xz kesitinde denetleyin.
-- Önizlemeyi **F6** ile yenileyin. Bitmiş bir geometriyi incelerken (eksen değiştirme,
-  yakınlaştırma) **hızlı mod** açılabilir: kütüphane açık tutulur, ilk çizim ~3 s, sonrakiler
-  ~40 ms. **Düzenlerken hızlı modu açmayın** — her model değişikliği yeniden başlatma ister.
+- Önizlemeyi **F6** ile yenileyin. Çizim arka planda yapılır; model değişmedikçe kesit ve renk
+  değişimi hızlıdır. Şüpheli bir bölgede Gelişmiş > **Çakışmaları göster** ile hücre
+  çakışmalarını ayrı renkte görün.
 
 Önizleme koşu yerine geçmez: kesit yalnız bir düzlemi gösterir. Koşu sonunda kayıp parçacık
 sayısına bakın (uygunluk denetiminde **K3**: kayıp parçacık = 0 olmalı); kayıp parçacık geometri
