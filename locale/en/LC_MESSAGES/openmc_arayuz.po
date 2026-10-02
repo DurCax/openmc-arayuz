@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 10:35+0300\n"
+"POT-Creation-Date: 2026-10-02 10:40+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -54,7 +54,7 @@ msgstr ""
 "\n"
 "      statepoint: %s"
 
-#: cekirdek/tukenme.py:752
+#: cekirdek/tukenme.py:764
 #, python-format
 msgid ""
 "\n"
@@ -72,7 +72,7 @@ msgstr ""
 "\n"
 "  Note: %s"
 
-#: cekirdek/tukenme.py:759
+#: cekirdek/tukenme.py:771
 #, python-format
 msgid ""
 "\n"
@@ -81,7 +81,7 @@ msgstr ""
 "\n"
 "  heavy metal: %.6g g"
 
-#: cekirdek/tukenme.py:763
+#: cekirdek/tukenme.py:775
 #, python-format
 msgid ""
 "\n"
@@ -90,7 +90,7 @@ msgstr ""
 "\n"
 "  result: %s"
 
-#: arayuz/sekme_tukenme.py:522
+#: arayuz/sekme_tukenme.py:554
 #, python-format
 msgid ""
 "\n"
@@ -99,7 +99,7 @@ msgstr ""
 "\n"
 "# Result could not be read: %s"
 
-#: arayuz/sekme_tukenme.py:482
+#: arayuz/sekme_tukenme.py:514
 #, python-format
 msgid ""
 "\n"
@@ -117,7 +117,7 @@ msgstr ""
 "\n"
 "# Process error: %s"
 
-#: arayuz/sekme_calistir.py:558 arayuz/sekme_tukenme.py:442
+#: arayuz/sekme_calistir.py:558 arayuz/sekme_tukenme.py:474
 msgid ""
 "\n"
 "# kullanıcı tarafından durduruldu"
@@ -235,7 +235,7 @@ msgstr ""
 "\n"
 "[3/3] Results"
 
-#: arayuz/guc_harita.py:484
+#: arayuz/guc_harita.py:506
 #, python-format
 msgid ""
 "\n"
@@ -520,32 +520,32 @@ msgstr "  [%d/%d] %-12g %s  failed: %s"
 msgid "  [%d/%d] %-12g %s  k = %.5f ± %.5f   ρ = %+9.1f pcm"
 msgstr "  [%d/%d] %-12g %s  k = %.5f ± %.5f   ρ = %+9.1f pcm"
 
-#: cekirdek/tukenme.py:733
+#: cekirdek/tukenme.py:745
 #, python-format
 msgid "  adımlar       : %s %s  → %d transport"
 msgstr "  steps         : %s %s  → %d transports"
 
-#: cekirdek/tukenme.py:743
+#: cekirdek/tukenme.py:755
 #, python-format
 msgid "  ağır metal    : %.6g g"
 msgstr "  heavy metal   : %.6g g"
 
-#: cekirdek/tukenme.py:730
+#: cekirdek/tukenme.py:742
 #, python-format
 msgid "  fisyon verimi : %s eV (%s spektrum)"
 msgstr "  fission yield : %s eV (%s spectrum)"
 
-#: cekirdek/tukenme.py:732
+#: cekirdek/tukenme.py:744
 #, python-format
 msgid "  güç yoğunluğu : %g W/gHM"
 msgstr "  power density : %g W/gHM"
 
-#: cekirdek/tukenme.py:739
+#: cekirdek/tukenme.py:751
 #, python-format
 msgid "  hacim %-10s: %s cm³ [%s] %s"
 msgstr "  volume %-10s: %s cm³ [%s] %s"
 
-#: cekirdek/tukenme.py:729
+#: cekirdek/tukenme.py:741
 #, python-format
 msgid "  zincir        : %s  (%s)"
 msgstr "  chain         : %s  (%s)"
@@ -681,7 +681,7 @@ msgstr " target: %s   |   %g → %g %s   |   %d points"
 msgid " §II; NUREG/CR-6698 §2.4 dipnotu (yakınsama kullanıcı yargısıdır)"
 msgstr " §II; NUREG/CR-6698 §2.4 footnote (convergence is a user judgement)"
 
-#: arayuz/guc_harita.py:464
+#: arayuz/guc_harita.py:486
 #, python-format
 msgid " · × kesik çubuk (%d, F_ΔH dışı)"
 msgid_plural " · × kesik çubuk (%d, F_ΔH dışı)"
@@ -749,7 +749,7 @@ msgstr "%.0f s"
 msgid "%.1f dk"
 msgstr "%.1f min"
 
-#: arayuz/sekme_tukenme.py:561
+#: arayuz/sekme_tukenme.py:593
 #, python-format
 msgid "%.1f sa"
 msgstr "%.1f h"
@@ -787,7 +787,16 @@ msgstr "0% fully withdrawn, 100% fully inserted."
 msgid "%TD ya da gözeneklilikten yalnız biri verilmeli"
 msgstr "give either %TD or porosity, not both"
 
-#: arayuz/sekme_tukenme.py:245
+#: cekirdek/tukenme_temizlik.py:75
+#, python-format
+msgid ""
+"%d adım dosyası (openmc_simulation_n*.h5) bu arayüzün koşu kaydı olmayan dizinde "
+"bulundu; silinmedi: %s"
+msgstr ""
+"%d step files (openmc_simulation_n*.h5) were found in a directory without a run "
+"record of this application; not deleted: %s"
+
+#: arayuz/sekme_tukenme.py:277
 #, python-format
 msgid "%d adım · toplam %.4g gün = %.4g MWd/kg · %d transport çözümü"
 msgid_plural "%d adım · toplam %.4g gün = %.4g MWd/kg · %d transport çözümü"
@@ -811,7 +820,7 @@ msgid_plural "%d bilgi"
 msgstr[0] "%d info"
 msgstr[1] "%d info"
 
-#: cekirdek/guc.py:447
+#: cekirdek/guc.py:373
 #, python-format
 msgid ""
 "%d bin'de aynı çubuk konumu birden çok eksenel katmanda bulundu; katman örnekleri "
@@ -825,7 +834,7 @@ msgstr ""
 msgid "%d demetli altıgen tam kor"
 msgstr "%d-assembly hexagonal full core"
 
-#: arayuz/sekme_tukenme.py:560
+#: arayuz/sekme_tukenme.py:592
 #, python-format
 msgid "%d dk"
 msgstr "%d min"
@@ -894,7 +903,7 @@ msgstr "%d records skipped (details in the log)."
 msgid "%d kesik konum/bileşen üst bölgeyle kırpılıyor (ilk %d: %s)."
 msgstr "%d truncated positions/components are clipped by the parent region (first %d: %s)."
 
-#: cekirdek/guc_faktor.py:217
+#: cekirdek/guc_faktor.py:236
 #, python-format
 msgid ""
 "%d kesik çubuk (yakıt bölgesi üst hücre sınırıyla kırpılıyor) F_ΔH ve F_q dışında "
@@ -914,6 +923,11 @@ msgid "%d kontrol geçti · %d kural değerlendirilemedi"
 msgid_plural "%d kontrol geçti · %d kural değerlendirilemedi"
 msgstr[0] "%d passed · %d rule not evaluated"
 msgstr[1] "%d passed · %d rules not evaluated"
+
+#: arayuz/guc_harita_tablo.py:395
+#, python-format
+msgid "%d konumun ortalaması"
+msgstr "average of %d positions"
 
 #: cekirdek/ice_aktar.py:169
 #, python-format
@@ -1001,7 +1015,7 @@ msgid_plural "%d çevrimin sonuncusu"
 msgstr[0] "last of %d batch"
 msgstr[1] "last of %d batches"
 
-#: arayuz/guc_harita.py:236
+#: arayuz/guc_harita.py:252
 #, python-format
 msgid "%d çubuk, %d eksenel dilim"
 msgid_plural "%d çubuk, %d eksenel dilim"
@@ -1017,6 +1031,11 @@ msgstr "no material selected for pin region %d"
 #, python-format
 msgid "%d. bölgenin yarıçapı sıfırdan büyük olmalı: %s"
 msgstr "the radius of pin region %d must be greater than zero: %s"
+
+#: cekirdek/guc_katlama.py:116
+#, python-format
+msgid "%d. düzeyde farklı boyutlu kafesler var: %s"
+msgstr "lattices of different sizes at level %d: %s"
 
 #: arayuz/izgara.py:576
 #, python-format
@@ -1069,7 +1088,7 @@ msgstr ""
 "\n"
 "The lists were refreshed for the model; review your selection."
 
-#: arayuz/guc_harita.py:519
+#: arayuz/guc_harita.py:544
 #, python-format
 msgid ""
 "%s\n"
@@ -1083,7 +1102,7 @@ msgstr ""
 msgid "%s  (şu an %%%.1f dalmış)"
 msgstr "%s  (currently %.1f%% inserted)"
 
-#: arayuz/sekme_tukenme.py:208
+#: arayuz/sekme_tukenme.py:240
 #, python-format
 msgid ""
 "%s  |  fisyon verimi %s eV (%s spektrum)\n"
@@ -1229,12 +1248,22 @@ msgstr "%s has changed since the capsule (sha256 differs); reproduction refused"
 msgid "%s kontrol karakteri içeremez"
 msgstr "%s cannot contain control characters"
 
-#: cekirdek/guc.py:434
+#: cekirdek/guc_katlama.py:161
+#, python-format
+msgid "%s konumu düzey kafesinin dışında (farklı boyutlu demet)"
+msgstr "position %s is outside the level lattice (assembly of a different size)"
+
+#: cekirdek/guc.py:493
 #, python-format
 msgid "%s konumunda bazı eksenel dilimler eksik; veri biçimi beklenenden farklı."
 msgstr ""
 "some axial bins are missing at position %s; the data format differs from what is "
 "expected."
+
+#: cekirdek/guc_katlama.py:164
+#, python-format
+msgid "%s konumunun aynası tabloda yok ya da farklı türde"
+msgstr "the mirror of position %s is missing from the table or of a different type"
 
 #: cekirdek/dogrula/kaynak.py:53
 #, python-format
@@ -1456,7 +1485,7 @@ msgstr "%s: density could not be determined, 1.0 g/cm³ assumed — be sure to c
 msgid "%s: örnek bir JSON nesnesi değil"
 msgstr "%s: the example is not a JSON object"
 
-#: arayuz/sekme_tukenme.py:406
+#: arayuz/sekme_tukenme.py:438
 msgid "%v / %m transport"
 msgstr "%v / %m transport"
 
@@ -1974,7 +2003,7 @@ msgstr ""
 msgid "'%s' çubuğu modelde yok — güç haritasında bu tür yer almaz"
 msgstr "pin '%s' is not in the model — this type does not appear in the power map"
 
-#: cekirdek/guc.py:137
+#: cekirdek/guc.py:155
 #, python-format
 msgid ""
 "'%s' çubuğu, %d. bölge: beklenen malzeme '%s' ama hücrede '%s' var. Hücre-bölge "
@@ -1983,7 +2012,7 @@ msgstr ""
 "pin '%s', region %d: material '%s' expected but the cell contains '%s'. The cell-to-"
 "region mapping is broken."
 
-#: cekirdek/guc.py:130
+#: cekirdek/guc.py:148
 #, python-format
 msgid ""
 "'%s' çubuğu: %d bölge bekleniyor ama geometride %d hücre var. Güç dağılımı için "
@@ -2449,6 +2478,10 @@ msgstr ""
 "A 2D model is infinite in the axial direction (equivalent to reflective bottom/top). "
 "For axial leakage define a height on the Geometry page."
 
+#: cekirdek/tukenme_guc.py:276
+msgid "2B model: güç ve q′ 1 cm yükseklik başınadır (tükenme hacmi gibi)."
+msgstr "2D model: power and q′ are per 1 cm of height (like the depletion volume)."
+
 #: cekirdek/dogrula/agac.py:248
 msgid "2B modelde eksenel yığın kurulamaz; kök yüksekliği verin."
 msgstr "An axial stack cannot be built in a 2D model; give the root a height."
@@ -2634,7 +2667,7 @@ msgstr ""
 msgid "<br><br><i>Notlar:</i><br>"
 msgstr "<br><br><i>Notes:</i><br>"
 
-#: arayuz/guc_harita.py:248
+#: arayuz/guc_harita.py:264
 #, python-format
 msgid "<br><span style='color:%s'>Toplamın korunumu: bağıl fark %.1e — %s</span>"
 msgstr ""
@@ -2721,6 +2754,15 @@ msgstr ""
 "Material design step by step: composition and density from enrichment, %TD, boron, "
 "temperature and pressure; derived values are computed instantly."
 
+#: arayuz/tukenme_pin_bolumu.py:128
+#, python-format
+msgid "Adım başına güç okunamadı: %s"
+msgstr "Per-step power could not be read: %s"
+
+#: arayuz/sekme_tukenme.py:189
+msgid "Adım başına pin gücü"
+msgstr "Pin power per step"
+
 #: arayuz/tukenme_arayuz.py:100
 msgid "Adım birimi:"
 msgstr "Step unit:"
@@ -2735,9 +2777,21 @@ msgstr ""
 "Xe-135 reaches equilibrium in ~2 days and causes a fast drop of a few\n"
 "thousand pcm in a PWR; a long first step hides it."
 
-#: arayuz/sekme_tukenme.py:250
+#: arayuz/sekme_tukenme.py:282
 msgid "Adım yok — virgülle adım uzunlukları girin."
 msgstr "No steps — enter step lengths separated by commas."
+
+#: arayuz/tukenme_pin_gucu.py:51
+msgid "Adım × pin kaydet…"
+msgstr "Save step × pin…"
+
+#: arayuz/tukenme_pin_gucu.py:225
+msgid "Adım × pin tablosunu kaydet"
+msgstr "Save step × pin table"
+
+#: arayuz/tukenme_pin_gucu.py:85
+msgid "Adım:"
+msgstr "Step:"
 
 #: arayuz/geometri/form_kafes.py:101
 msgid ""
@@ -2752,7 +2806,7 @@ msgstr ""
 msgid "Adıma sığmayan iç demetler: {adlar}"
 msgstr "Inner assemblies that do not fit the pitch: {adlar}"
 
-#: arayuz/sekme_tukenme.py:234
+#: arayuz/sekme_tukenme.py:266
 #, python-format
 msgid "Adımlar geçersiz — %s. Virgülle ayrılmış pozitif sayılar girin (ör. 1, 5, 30)."
 msgstr "Invalid steps — %s. Enter comma-separated positive numbers (e.g. 1, 5, 30)."
@@ -3055,6 +3109,10 @@ msgstr "Search…"
 msgid "Arşiv"
 msgstr "Archive"
 
+#: arayuz/guc_harita_tablo.py:50
+msgid "Asimetri"
+msgstr "Asymmetry"
+
 #: arayuz/sekme_malzeme.py:152
 msgid "Asistan…"
 msgstr "Assistant…"
@@ -3291,7 +3349,11 @@ msgstr ""
 msgid "Basınç"
 msgstr "Pressure"
 
-#: arayuz/guc_harita.py:466
+#: arayuz/guc_harita_tablo.py:42
+msgid "Bağıl güç"
+msgstr "Relative power"
+
+#: arayuz/guc_harita.py:488
 #, python-format
 msgid ""
 "Bağıl güç (kor ortalaması = 1) — %s · %s\n"
@@ -3308,7 +3370,16 @@ msgstr "Relative power 1"
 msgid "Bağıl güç 2"
 msgstr "Relative power 2"
 
-#: arayuz/guc_harita.py:296
+#: cekirdek/tukenme_guc.py:278
+msgid ""
+"Bağıl güç kappa-fission tally'sinden, adımın mutlak gücü tükenmenin fission-q "
+"normalizasyonundan gelir; iki enerji tanımı biraz farklıdır."
+msgstr ""
+"The relative power comes from the kappa-fission tally, the absolute power of the step"
+" from the fission-q normalisation of the depletion; the two energy definitions differ"
+" slightly."
+
+#: arayuz/guc_harita.py:315
 #, python-format
 msgid ""
 "Bağıl güç — %s\n"
@@ -3325,7 +3396,7 @@ msgstr "Relative error"
 msgid "Bağımsız tohumlarla birkaç koşu yapıp sonuçların saçılımını karşılaştırın."
 msgstr "Make several runs with independent seeds and compare the spread of the results."
 
-#: arayuz/sekme_tukenme.py:511
+#: arayuz/sekme_tukenme.py:543
 msgid "Başarısız — ayrıntılı çıktı aşağıda açıldı."
 msgstr "Failed — the detailed output is open below."
 
@@ -3397,7 +3468,7 @@ msgstr "Start:"
 msgid "Başlat"
 msgstr "Start"
 
-#: arayuz/sekme_tukenme.py:372 arayuz/sekme_tukenme.py:376
+#: arayuz/sekme_tukenme.py:404 arayuz/sekme_tukenme.py:408
 msgid "Başlatılamaz"
 msgstr "Cannot start"
 
@@ -3453,7 +3524,7 @@ msgstr "Uncertainty and unit reporting"
 msgid "Belirsizlik ve birim bildirimi uygun (%s)."
 msgstr "Uncertainty and unit reporting is in order (%s)."
 
-#: arayuz/guc_harita.py:120
+#: arayuz/guc_harita.py:132
 msgid ""
 "Belirsizlik: ± değerleri OpenMC'nin raporladığı sapmalardır ve iyimserdir — ardışık "
 "çevrimler arasındaki korelasyon hesaba katılmaz. Gerçek belirsizlik için önce Shannon"
@@ -3979,7 +4050,7 @@ msgstr ""
 "This material was changed outside the parameter form after it was added from the "
 "library; it is edited with the composition table."
 
-#: arayuz/tukenme_sonuc.py:203
+#: arayuz/tukenme_sonuc.py:206
 #, python-format
 msgid ""
 "Bu model için kayıtlı tükenme sonucu yok. Sonuçlar şuraya yazılır: %s (Çalıştır "
@@ -4028,7 +4099,7 @@ msgstr ""
 "There is no suitable pin in this model: a pin with a fissile region must be repeated "
 "in an assembly."
 
-#: arayuz/sekme_tukenme.py:358 arayuz/sekme_tukenme.py:373
+#: arayuz/sekme_tukenme.py:390 arayuz/sekme_tukenme.py:405
 #, python-format
 msgid "Bu modelde yapılamaz: %s"
 msgstr "Not possible for this model: %s"
@@ -4114,6 +4185,10 @@ msgstr ""
 "This version offers a periodic boundary only for a rectangular cross-section (x/y "
 "plane pairs). For an infinite lattice of a symmetric assembly a Reflective boundary "
 "gives the same k."
+
+#: cekirdek/guc_tablo.py:357
+msgid "Bu tablo bir tasarım ya da lisans değerlendirmesi değildir."
+msgstr "This table is not a design or licensing assessment."
 
 #: cekirdek/dogrula/referans.py:332
 msgid ""
@@ -4281,11 +4356,16 @@ msgstr "CASL simplified thermal (228 nuclides, ~3× faster)"
 msgid "CECM (öngörücü-düzeltici, adım başına 2 transport)"
 msgstr "CECM (predictor-corrector, 2 transport solves per step)"
 
-#: arayuz/tukenme_sonuc.py:113
+#: arayuz/guc_harita_tablo.py:197
+msgid "CSV (ondalık nokta); openpyxl kuruluysa Excel de"
+msgstr "CSV (decimal point); also Excel if openpyxl is installed"
+
+#: arayuz/guc_harita_tablo.py:340 arayuz/tukenme_pin_gucu.py:231
+#: arayuz/tukenme_sonuc.py:116
 msgid "CSV dosyası (*.csv)"
 msgstr "CSV file (*.csv)"
 
-#: arayuz/tukenme_sonuc.py:390
+#: arayuz/tukenme_sonuc.py:395
 #, python-format
 msgid "CSV kaydedildi: %s"
 msgstr "CSV saved: %s"
@@ -4294,7 +4374,7 @@ msgstr "CSV saved: %s"
 msgid "CSV olarak dışa aktar"
 msgstr "Export as CSV"
 
-#: arayuz/tukenme_sonuc.py:387
+#: arayuz/tukenme_sonuc.py:392
 msgid "CSV yazılamadı"
 msgstr "CSV could not be written"
 
@@ -4329,7 +4409,8 @@ msgid "Delik konum hücresinin içinde kalmalı (kafes adımından küçük)."
 msgstr "The hole must stay inside its position cell (smaller than the lattice pitch)."
 
 #: arayuz/demet/yerlesim.py:35 arayuz/geometri/sablon_diyalogu.py:23
-#: arayuz/guc_harita.py:69 arayuz/pencere/model_islemleri.py:65 arayuz/sekme_demet.py:514
+#: arayuz/guc_harita.py:71 arayuz/guc_harita_tablo.py:37
+#: arayuz/pencere/model_islemleri.py:65 arayuz/sekme_demet.py:514
 #: arayuz/yardim/__init__.py:45 cekirdek/dogrula/_ortak.py:26
 msgid "Demet"
 msgstr "Assembly"
@@ -4562,7 +4643,7 @@ msgstr[1] "Not evaluated: %d rules"
 msgid "Değerlendirme sayfası"
 msgstr "Evaluation page"
 
-#: arayuz/guc_harita.py:65
+#: arayuz/guc_harita.py:67
 msgid "Değerleri haritaya yaz"
 msgstr "Write values on the map"
 
@@ -4597,10 +4678,28 @@ msgstr "Language"
 msgid "Dil değişikliği uygulama yeniden başlatılınca geçerli olur."
 msgstr "The language change takes effect after the application restarts."
 
-#: arayuz/guc_harita.py:64 arayuz/guc_harita.py:275
+#: arayuz/guc_harita.py:66 arayuz/guc_harita.py:291
 #, python-format
 msgid "Dilim %d"
 msgstr "Axial bin %d"
+
+#: arayuz/guc_harita_tablo.py:54
+#, python-format
+msgid "Dilim %d bağıl"
+msgstr "Bin %d relative"
+
+#: arayuz/guc_harita_tablo.py:55
+#, python-format
+msgid "Dilim %d q′ [W/cm]"
+msgstr "Bin %d q′ [W/cm]"
+
+#: arayuz/guc_harita_tablo.py:47
+msgid "Dilim bağıl"
+msgstr "Bin relative"
+
+#: arayuz/guc_harita_tablo.py:48
+msgid "Dilim q′ [W/cm]"
+msgstr "Bin q′ [W/cm]"
 
 #: arayuz/calistir/sonuc_gosterimi.py:52
 msgid "Diskten yüklendi"
@@ -5112,7 +5211,7 @@ msgstr "Axial layers"
 msgid "Eksenel olarak daldırılan (emici) bölge. Dış bölge seçilemez."
 msgstr "The axially inserted (absorber) region. The outer region cannot be selected."
 
-#: arayuz/guc_harita.py:310
+#: arayuz/guc_harita.py:329
 msgid "Eksenel profil"
 msgstr "Axial profile"
 
@@ -5282,6 +5381,10 @@ msgstr "Nearest temperature (nearest)"
 msgid "En yüksek lineer güç"
 msgstr "Maximum linear power"
 
+#: arayuz/guc_harita_tablo.py:46
+msgid "En yüksek q′ [W/cm]"
+msgstr "Peak q′ [W/cm]"
+
 #: cekirdek/guc_yorum.py:159
 #, python-format
 msgid "En yüksek çizgisel güç %.1f W/cm (tepe faktörü: %s)."
@@ -5332,7 +5435,7 @@ msgstr ""
 "Entropy measures the convergence of the fission source distribution; with a fixed "
 "source the source is already fixed. OpenMC ignores it."
 
-#: arayuz/tukenme_sonuc.py:145
+#: arayuz/tukenme_sonuc.py:148
 #, python-format
 msgid ""
 "Eski sonuç (%s): model o koşudan beri değişti (%s). Gösterilen sayılar bu modele ait "
@@ -5340,6 +5443,12 @@ msgid ""
 msgstr ""
 "Outdated result (%s): the model has changed since that run (%s). The numbers shown do"
 " not belong to this model — run again."
+
+#: arayuz/tukenme_pin_gucu.py:61
+msgid "Eski sonuç: model bu koşudan beri değişti; adım başına güç bu modele ait değil."
+msgstr ""
+"Stale result: the model has changed since this run; the per-step power does not "
+"belong to this model."
 
 #: arayuz/ayar/sabitler.py:34
 msgid "Esnek saçılma (elastic)"
@@ -5366,6 +5475,10 @@ msgid ""
 msgstr ""
 "Effective delayed neutron fraction. A small part of the fission neutrons (~0.7%) is "
 "emitted with a delay; reactor control relies on this delay."
+
+#: arayuz/guc_harita_tablo.py:342
+msgid "Excel çalışma kitabı (*.xlsx)"
+msgstr "Excel workbook (*.xlsx)"
 
 #: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:226
 msgid "Eğilim analizi sonucu raporlanmamış."
@@ -5440,6 +5553,11 @@ msgstr "F_q      = undefined (2D model)"
 msgid "F_q = %.4f — yerel güç yoğunluğu tepesi (eksenel şekil dahil)."
 msgstr "F_q = %.4f — local power density peak (including the axial shape)."
 
+#: cekirdek/guc_tablo.py:355
+#, python-format
+msgid "F_q dilim ortalamasıdır (Δz = %.1f cm); daha ince dilimde yerel tepe büyüyebilir."
+msgstr "F_q is a bin average (Δz = %.1f cm); with finer bins the local peak can be larger."
+
 #: cekirdek/guc_yorum.py:104
 msgid ""
 "F_q tanımsız — model 2B (eksenel yükseklik yok). Eksenel tepe olmadan yerel güç "
@@ -5453,7 +5571,7 @@ msgstr ""
 msgid "F_ΔH     = %.4f   (en yüksek çubuk gücü / ortalama)%s"
 msgstr "F_ΔH     = %.4f   (highest pin power / average)%s"
 
-#: cekirdek/guc.py:710
+#: cekirdek/guc.py:765
 msgid "F_ΔH (2B — eksenel tepe dahil değil)"
 msgstr "F_ΔH (2D — axial peak not included)"
 
@@ -5462,7 +5580,7 @@ msgstr "F_ΔH (2D — axial peak not included)"
 msgid "F_ΔH = %.4f — en sıcak çubuk ortalamanın %%%.1f üstünde güç üretiyor."
 msgstr "F_ΔH = %.4f — the hottest pin produces %.1f%% more power than the average."
 
-#: arayuz/guc_harita.py:136
+#: arayuz/guc_harita.py:148
 msgid ""
 "F_ΔH = en yüksek çubuk gücü / ortalama (radyal). F_q = en yüksek yerel güç yoğunluğu "
 "/ ortalama (radyal × eksenel, 3B gerekir). Renk ölçeği ortalamaya göre bağıldır: 1.00"
@@ -5958,7 +6076,7 @@ msgstr "Groups must be a list."
 msgid "Görev başına CPU (OMP)"
 msgstr "CPUs per task (OMP)"
 
-#: arayuz/guc_harita.py:96
+#: arayuz/guc_harita.py:105
 msgid "Görünüm:"
 msgstr "View:"
 
@@ -6006,6 +6124,14 @@ msgstr "See the log file and report the error."
 msgid "Günlük dosyasında ayrıntı var."
 msgstr "Details are in the log file."
 
+#: arayuz/guc_harita_tablo.py:117
+msgid "Güç [W/cm yükseklik]"
+msgstr "Power [W/cm height]"
+
+#: arayuz/guc_harita_tablo.py:44
+msgid "Güç [W]"
+msgstr "Power [W]"
+
 #: arayuz/ayar/yerlesim.py:154 cekirdek/dogrula/_ortak.py:30 cekirdek/dogrula/_ortak.py:31
 #: cekirdek/rapor.py:363 cekirdek/rapor_sablon/__init__.py:150
 msgid "Güç dağılımı"
@@ -6019,7 +6145,7 @@ msgstr ""
 "The power distribution is usually measured in the fuel region (region 1). If the "
 "cladding or the coolant was selected, the result is meaningless."
 
-#: arayuz/guc_harita.py:103
+#: arayuz/guc_harita.py:112
 msgid "Güç dağılımı henüz hesaplanmadı."
 msgstr "The power distribution has not been computed yet."
 
@@ -6027,11 +6153,11 @@ msgstr "The power distribution has not been computed yet."
 msgid "Güç dağılımı hesaplanamadı."
 msgstr "The power distribution could not be computed."
 
-#: arayuz/guc_harita.py:272
+#: arayuz/guc_harita.py:288
 msgid "Güç dağılımı hesaplanmadı"
 msgstr "Power distribution not computed"
 
-#: arayuz/guc_harita.py:227
+#: arayuz/guc_harita.py:243
 msgid ""
 "Güç dağılımı hesaplanmadı. Hesap ayarları sekmesinde 'Çubuk bazlı güç dağılımı "
 "hesapla' kutusunu işaretleyip modeli yeniden çalıştırın."
@@ -6056,7 +6182,7 @@ msgstr "Power distribution could not be read: %s"
 msgid "Güç dağılımı sonucu yok (F_ΔH / F_q)."
 msgstr "No power distribution result (F_ΔH / F_q)."
 
-#: cekirdek/guc.py:310
+#: cekirdek/guc.py:328
 msgid ""
 "Güç dağılımı sonucunda demet (kafes) düzeyi bulunamadı. Hedef çubuk bir demette "
 "tekrarlanmıyor olabilir; güç dağılımı yalnızca demet içindeki çubuklar için "
@@ -6110,7 +6236,7 @@ msgstr ""
 "also shared among these pins, so W/cm comes out too high. If you will use absolute "
 "values, enter as total power only the power produced by these pins."
 
-#: cekirdek/guc.py:347
+#: cekirdek/guc.py:403
 msgid ""
 "Güç dağılımı: çubuk türleri farklı kafes düzeylerinde ya da farklı eksenel "
 "dilimlerde; türler tek haritada birleştirilemez."
@@ -6122,13 +6248,23 @@ msgstr ""
 msgid "Güç dağılımını açıp koşuyu yineleyin."
 msgstr "Turn on the power distribution and repeat the run."
 
+#: cekirdek/tukenme_guc.py:249
+#, python-format
+msgid "Güç dosyası bulunmayan adımlar: %s"
+msgstr "Steps without a power file: %s"
+
 #: cekirdek/kosu_gecmisi.py:436
 msgid "Güç haritalarında ortak konum yok (farklı geometri?)."
 msgstr "The power maps have no common position (different geometry?)."
 
-#: arayuz/guc_harita.py:579
+#: arayuz/guc_harita.py:604
 msgid "Güç haritasını kaydet"
 msgstr "Save power map"
+
+#: cekirdek/tukenme_guc.py:273
+#, python-format
+msgid "Güç tablosu okunamayan adımlar: %s"
+msgstr "Steps whose power table could not be read: %s"
 
 #: cekirdek/uygunluk_denetimi/kurallar_kor.py:238
 msgid "Güç tepe faktörleri F_ΔH / F_q"
@@ -6410,6 +6546,10 @@ msgstr "Map row %d: %d characters, %d expected."
 msgid "Harita yazılamadı"
 msgstr "Map could not be written"
 
+#: arayuz/guc_harita_tablo.py:209
+msgid "Haritada bir çubuğa tıklayın ya da tablodan seçin."
+msgstr "Click a pin on the map or select it in the table."
+
 #: cekirdek/geometri/denetim.py:196
 #, python-format
 msgid "Haritada tanımsız harf: '%s'."
@@ -6547,7 +6687,7 @@ msgstr "Not computed yet."
 msgid "Henüz kaydedilmiş bir model yok."
 msgstr "No saved models yet."
 
-#: arayuz/guc_harita.py:148
+#: arayuz/guc_harita.py:162
 msgid "Henüz koşu yapılmadı"
 msgstr "No run yet"
 
@@ -6570,6 +6710,10 @@ msgid ""
 msgstr ""
 "No tallies yet. Add one with “+ Tally” and choose what to measure (flux, reaction "
 "rate, heat)."
+
+#: arayuz/tukenme_pin_gucu.py:52
+msgid "Her adımın pin tablosu tek dosyada (CSV; openpyxl kuruluysa Excel)"
+msgstr "Pin table of every step in one file (CSV; Excel if openpyxl is installed)"
 
 #: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:242
 msgid "Her deney serisinden en çok bir vaka."
@@ -6598,6 +6742,28 @@ msgstr ""
 #: arayuz/baslangic.py:489
 msgid "Her seviye"
 msgstr "All levels"
+
+#: arayuz/sekme_tukenme.py:191
+msgid ""
+"Her tükenme adımında çubuk güç dağılımı (distribcell + eksenel mesh tally'si) sayılır"
+" ve adım başına bir statepoint dosyası yazılır. Transport süresine etkisi küçüktür; "
+"disk ve bellek çubuk × eksenel dilim sayısıyla artar (ölçüldü: 24 çubuk × 4 dilimde "
+"adım başına 52 kB). On binlerce çubuklu tam korda kapatmayı düşünün."
+msgstr ""
+"In every depletion step the pin power distribution (distribcell + axial mesh tally) "
+"is tallied and one statepoint file is written per step. The effect on transport time "
+"is small; disk and memory grow with pins × axial bins (measured: 52 kB per step for "
+"24 pins × 4 bins). Consider switching it off for a full core with tens of thousands "
+"of pins."
+
+#: arayuz/tukenme_pin_gucu.py:93
+msgid ""
+"Her tükenme adımının başındaki çubuk güç dağılımı. Tablodan seçilen çubuklar grafikte"
+" izlenir; bağıl güç o adımın yakıt çubuğu ortalamasına göredir."
+msgstr ""
+"Pin power distribution at the start of each depletion step. Pins selected in the "
+"table are tracked in the plot; relative power is with respect to that step's fuel pin"
+" average."
 
 #: arayuz/ayar/yerlesim.py:86 arayuz/pencere/kabuk.py:38
 msgid "Hesap"
@@ -7068,6 +7234,15 @@ msgstr "Fuel pins and guide tubes on a square grid (PWR type)."
 #, python-format
 msgid "Karşılaştırılamadı: %s"
 msgstr "Could not be compared: %s"
+
+#: arayuz/guc_harita_tablo.py:49
+msgid "Katlanan"
+msgstr "Folded"
+
+#: cekirdek/guc_katlama.py:243
+#, python-format
+msgid "Katlı F_ΔH = %.4f (yörünge ortalamalarının en büyüğü)."
+msgstr "Folded F_ΔH = %.4f (largest of the orbit averages)."
 
 #: arayuz/geometri/form_kafes.py:291
 msgid "Katman"
@@ -7552,7 +7727,7 @@ msgstr "Rules passed"
 msgid "Kontrolü geçmeyen kurallar"
 msgstr "Rules not met"
 
-#: arayuz/karsilastir/panel.py:32
+#: arayuz/guc_harita_tablo.py:38 arayuz/karsilastir/panel.py:32
 msgid "Konum"
 msgstr "Position"
 
@@ -9270,7 +9445,7 @@ msgstr "PySide6 is required for PDF: %s"
 msgid "PDF yazılamadı: %s"
 msgstr "PDF could not be written: %s"
 
-#: arayuz/guc_harita.py:66
+#: arayuz/guc_harita.py:68
 msgid "PNG kaydet…"
 msgstr "Save PNG…"
 
@@ -9616,6 +9791,19 @@ msgstr "Period estimation requires positive power values."
 #: arayuz/karsilastir/panel.py:210
 msgid "Pin gücü farkı (kırmızı: 2. koşu yüksek)"
 msgstr "Pin power difference (red: run 2 higher)"
+
+#: arayuz/guc_harita.py:159 arayuz/guc_harita_tablo.py:207
+msgid "Pin gücü tablosu"
+msgstr "Pin power table"
+
+#: arayuz/guc_harita_secim.py:39
+#, python-format
+msgid "Pin gücü tablosu kurulamadı: %s"
+msgstr "Pin power table could not be built: %s"
+
+#: arayuz/guc_harita_tablo.py:351
+msgid "Pin gücü tablosunu kaydet"
+msgstr "Save pin power table"
 
 #: arayuz/analiz/adlar.py:82
 msgid "Pin hücrede hücre adımı, tam korda demet adımı."
@@ -10186,6 +10374,15 @@ msgstr "Adds a layer to the selected axial stack"
 msgid "Seçili hedef bu parametre için geçerli değil (model değişmiş olabilir)."
 msgstr "The selected target is not valid for this parameter (the model may have changed)."
 
+#: cekirdek/guc_tablo.py:347
+#, python-format
+msgid ""
+"Seçili hedefler modelin fisyon enerjisinin %%%.1f'ini taşıyor: F_ΔH ve ortalama "
+"yalnız seçili çubuklar üzerindendir."
+msgstr ""
+"The selected targets carry %.1f%% of the fission energy of the model: F_ΔH and the "
+"average are over the selected pins only."
+
 #: arayuz/karsilastir/panel.py:112
 msgid "Seçili iki koşuyu karşılaştır"
 msgstr "Compare the two selected runs"
@@ -10245,10 +10442,14 @@ msgstr "Invalid selection"
 msgid "Seçim kaydedilemedi: %s"
 msgstr "The choice could not be saved: %s"
 
-#: arayuz/tukenme_sonuc.py:374
+#: arayuz/tukenme_sonuc.py:379
 #, python-format
 msgid "Seçim sonuç dosyasından okunamadı: %s"
 msgstr "The selection could not be read from the result file: %s"
+
+#: arayuz/tukenme_pin_gucu.py:49
+msgid "Seçimi temizle"
+msgstr "Clear selection"
 
 #: arayuz/kuyruk/panel.py:124
 msgid "Seç…"
@@ -10318,6 +10519,10 @@ msgstr "Cylindrical core, radial reflector and rotating control drums."
 #: cekirdek/malzeme_kutup.py:460
 msgid "Silisyum karbür"
 msgstr "Silicon carbide"
+
+#: arayuz/guc_harita_tablo.py:252
+msgid "Simetri doğrulandı: dört ayna görüntüsünün ortalaması (gürültü azalır)"
+msgstr "Symmetry verified: average of the four mirror images (reduces noise)"
 
 #: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:59
 msgid ""
@@ -10420,6 +10625,15 @@ msgctxt "gezinme"
 msgid "Sonuç"
 msgstr "Results"
 
+#: cekirdek/tukenme_guc.py:244
+#, python-format
+msgid ""
+"Sonuç dosyasında karşılığı olmayan adım dosyaları yok sayıldı (önceki koşudan "
+"kalmış): %s"
+msgstr ""
+"Step files without a counterpart in the results file were ignored (left over from a "
+"previous run): %s"
+
 #: cekirdek/dogrula/referans.py:377
 msgid ""
 "Sonuç okuma ve harita çizimi yavaşlayabilir; gerekmiyorsa eksenel dilim sayısını "
@@ -10428,12 +10642,12 @@ msgstr ""
 "Reading the results and drawing the map may slow down; reduce the number of axial "
 "bins if they are not needed."
 
-#: arayuz/sekme_tukenme.py:521
+#: arayuz/sekme_tukenme.py:553
 msgid "Sonuç okunamadı — ayrıntılı çıktıya bakın."
 msgstr "Result could not be read — see the detailed output."
 
 #: arayuz/calistir/sonuc_gosterimi.py:48 arayuz/sekme_calistir.py:662
-#: arayuz/sekme_calistir.py:663 arayuz/sekme_tukenme.py:520
+#: arayuz/sekme_calistir.py:663 arayuz/sekme_tukenme.py:552
 #, python-format
 msgid "Sonuç okunamadı: %s"
 msgstr "Result could not be read: %s"
@@ -10460,7 +10674,7 @@ msgstr ""
 msgid "Sonuçları yorumlamak"
 msgstr "Interpreting results"
 
-#: arayuz/tukenme_sonuc.py:332
+#: arayuz/tukenme_sonuc.py:337
 #, python-format
 msgid "Sonuçta bulunamayan nüklidler (grafikte yok): %s"
 msgstr "Nuclides not found in the result (not in the chart): %s"
@@ -10631,6 +10845,10 @@ msgstr "Columns"
 msgid "Sütun sayısı (x)"
 msgstr "Number of columns (x)"
 
+#: arayuz/guc_harita_tablo.py:191
+msgid "Süz: demet, konum ya da tür…"
+msgstr "Filter: assembly, position or type…"
+
 #: arayuz/sekme_malzeme.py:67 cekirdek/malzeme_kutup.py:538 cekirdek/malzeme_tarif.py:77
 #: cekirdek/rapor_sablon/__init__.py:93
 msgid "Sıcaklık"
@@ -10771,6 +10989,14 @@ msgstr "Table"
 msgid "Tablo satırı %d: β_i ve λ_i sayı olmalı."
 msgstr "Table row %d: β_i and λ_i must be numbers."
 
+#: arayuz/guc_harita_tablo.py:358 arayuz/tukenme_pin_gucu.py:241
+msgid "Tablo yazılamadı"
+msgstr "Table could not be written"
+
+#: arayuz/guc_harita_tablo.py:196
+msgid "Tabloyu kaydet…"
+msgstr "Save table…"
+
 #: arayuz/analiz/sekme.py:124
 msgid "Tahmini süre:"
 msgstr "Estimated time:"
@@ -10824,7 +11050,7 @@ msgstr ""
 "Full core: %d assemblies, %d fuel pins. Hottest assembly %s; its mean is %.4f times "
 "the core mean (F_assembly). F_ΔH and F_q are computed over all fuel pins in the core."
 
-#: cekirdek/guc.py:442
+#: cekirdek/guc.py:501
 #, python-format
 msgid ""
 "Tam kor: %d kafes düzeyi. Her çubuk kordaki tam konumuyla (demet konumu + demet içi "
@@ -10834,7 +11060,7 @@ msgstr ""
 "the core (assembly position + position in the assembly); the relative power is "
 "relative to the mean of all fuel pins in the core."
 
-#: arayuz/guc_harita.py:71
+#: arayuz/guc_harita.py:73
 msgid "Tam kor: demet ortalamaları ya da kordaki bütün çubuklar"
 msgstr "Full core: assembly averages or all pins in the core"
 
@@ -10884,7 +11110,7 @@ msgstr "OK: a depletion result is shown."
 msgid "Tamamlandı"
 msgstr "Done"
 
-#: arayuz/sekme_tukenme.py:528
+#: arayuz/sekme_tukenme.py:560
 #, python-format
 msgid "Tamamlandı: %s"
 msgstr "Finished: %s"
@@ -11048,7 +11274,13 @@ msgstr "U-235 in the carrier U (%)"
 msgid "Tek başına çalışan bir Python betiği üretir"
 msgstr "Writes a standalone Python script"
 
-#: arayuz/guc_harita.py:61
+#: cekirdek/guc_tablo.py:350
+msgid "Tek demet, yansıtıcı yan sınır: F_ΔH demet içi radyal faktördür; kor F_ΔH'si değildir."
+msgstr ""
+"Single assembly, reflective side boundary: F_ΔH is the in-assembly radial factor, not"
+" the core F_ΔH."
+
+#: arayuz/guc_harita.py:63
 msgid "Tek eksenel dilim (F_q)"
 msgstr "Single axial bin (F_q)"
 
@@ -11096,6 +11328,14 @@ msgstr "Basic quantities"
 #: arayuz/nuklid_secici.py:193
 msgid "Temizle"
 msgstr "Clear"
+
+#: arayuz/tukenme_pin_gucu.py:55
+msgid "Tepe faktörleri CSV…"
+msgstr "Peaking factors CSV…"
+
+#: arayuz/tukenme_pin_gucu.py:230
+msgid "Tepe faktörlerini kaydet"
+msgstr "Save peaking factors"
 
 #: arayuz/sekme_ayar.py:193
 msgid "Tepkimeye girenlerin kütleleri toplamı: D+T = 2+3 = 5, D+D = 4"
@@ -11262,7 +11502,7 @@ msgstr "Total height = %g cm"
 msgid "Toplam çevrim:"
 msgstr "Total batches:"
 
-#: arayuz/guc_harita.py:160
+#: arayuz/guc_harita.py:174
 #, python-format
 msgid "Toplamın korunumu denetlenemedi: %s"
 msgstr "Conservation of the total could not be checked: %s"
@@ -11285,15 +11525,24 @@ msgstr "Depletion"
 msgid "Tükenme (yanma) hesabını etkinleştir"
 msgstr "Enable depletion (burnup) calculation"
 
-#: arayuz/sekme_tukenme.py:510
+#: arayuz/tukenme_pin_gucu.py:47
+msgid "Tükenme adımı"
+msgstr "Depletion step"
+
+#: arayuz/sekme_tukenme.py:542
 #, python-format
 msgid "Tükenme başarısız (çıkış kodu %d)"
 msgstr "Depletion failed (exit code %d)"
 
-#: arayuz/sekme_tukenme.py:436
+#: arayuz/sekme_tukenme.py:468
 #, python-format
 msgid "Tükenme başladı → %s"
 msgstr "Depletion started → %s"
+
+#: cekirdek/tukenme_temizlik.py:70
+#, python-format
+msgid "Tükenme dizinine yazılamıyor: %s"
+msgstr "Cannot write to the depletion directory: %s"
 
 #: cekirdek/dogrula/tukenme.py:159
 msgid ""
@@ -11304,7 +11553,7 @@ msgstr ""
 "noise accumulates from step to step. Particles × active batches ≥ 100 000 is "
 "recommended."
 
-#: arayuz/sekme_tukenme.py:360
+#: arayuz/sekme_tukenme.py:392
 msgid "Tükenme kapalı — yukarıdan etkinleştirin."
 msgstr "Depletion is off — enable it above."
 
@@ -11316,16 +11565,16 @@ msgstr ""
 "Depletion requires exact volumes: a wrong volume distorts the burnup rate in the same"
 " proportion and leaves no trace in k-eff."
 
-#: arayuz/sekme_tukenme.py:433
+#: arayuz/sekme_tukenme.py:465
 #, python-format
 msgid "Tükenme koşusu sürüyor → %s"
 msgstr "Depletion run in progress → %s"
 
-#: arayuz/tukenme_sonuc.py:112
+#: arayuz/tukenme_sonuc.py:115
 msgid "Tükenme sonucunu CSV olarak kaydet"
 msgstr "Save depletion result as CSV"
 
-#: arayuz/sekme_tukenme.py:529
+#: arayuz/sekme_tukenme.py:561
 msgid "Tükenme tamamlandı"
 msgstr "Depletion finished"
 
@@ -11349,7 +11598,7 @@ msgstr "Depletion chains"
 msgid "Tükenmeyi başlat"
 msgstr "Start depletion"
 
-#: arayuz/guc_harita.py:199
+#: arayuz/guc_harita.py:214
 msgid "Tüm türler"
 msgstr "All types"
 
@@ -11371,7 +11620,7 @@ msgid "Tümünü seçili parçayla doldur"
 msgstr "Fill all with selected component"
 
 #: arayuz/cubuk/sayfalar.py:160 arayuz/geometri/form_yerlesim.py:338
-#: arayuz/geometri/formlar.py:86 arayuz/malzeme/bilesim.py:37
+#: arayuz/geometri/formlar.py:86 arayuz/guc_harita_tablo.py:41 arayuz/malzeme/bilesim.py:37
 msgid "Tür"
 msgstr "Type"
 
@@ -11558,6 +11807,16 @@ msgstr "Uranium enrichment (wt%)"
 #: arayuz/pencere/dogrulama_seridi.py:32
 msgid "Uyarı"
 msgstr "Warning"
+
+#: cekirdek/guc_katlama.py:247
+#, python-format
+msgid ""
+"Uyarı — asimetri: %d yörüngede üyeler arası fark %gσ'yı aşıyor. Ya σ iyimser (tek "
+"koşu) ya da model gerçekten asimetrik; katlı değerleri dikkatle kullanın."
+msgstr ""
+"Warning — asymmetry: in %d orbits the difference between members exceeds %gσ. Either "
+"σ is optimistic (single run) or the model is really asymmetric; use the folded values"
+" with care."
 
 #: cekirdek/rapor_sablon/__init__.py:86
 msgid "Uyarılar"
@@ -12005,7 +12264,7 @@ msgstr "Side plate material:"
 msgid "Yan sınır:"
 msgstr "Radial boundary:"
 
-#: arayuz/sekme_tukenme.py:256
+#: arayuz/sekme_tukenme.py:288
 msgid "Yanabilir (fisil) malzeme bulunamadı."
 msgstr "No depletable (fissile) material found."
 
@@ -12145,7 +12404,7 @@ msgstr "Structural material"
 msgid "Yardım ve terimler"
 msgstr "Help and terms"
 
-#: arayuz/tukenme_sonuc.py:139
+#: arayuz/tukenme_sonuc.py:142
 #, python-format
 msgid ""
 "Yarım kalmış koşu (%s): %d / %d adım tamamlanmış. Koşu durdurulmuş ya da hâlâ sürüyor"
@@ -12534,7 +12793,7 @@ msgstr "Depletion chain"
 msgid "Zincir dosyası"
 msgstr "Chain file"
 
-#: arayuz/sekme_tukenme.py:215
+#: arayuz/sekme_tukenme.py:247
 #, python-format
 msgid "Zincir dosyası kullanılamıyor: %s (Gelişmiş › Zincir)"
 msgstr "Depletion chain file cannot be used: %s (Advanced › Chain)"
@@ -12613,7 +12872,17 @@ msgstr "untitled model"
 msgid "adsız — örnek: {ornek}"
 msgstr "untitled — example: {ornek}"
 
-#: arayuz/guc_harita.py:383
+#: arayuz/tukenme_pin_gucu.py:74
+msgctxt "tükenme"
+msgid "adım"
+msgstr "step"
+
+#: arayuz/tukenme_pin_gucu.py:114
+#, python-format
+msgid "adım %d — %.4g gün, %.4g MWd/kg"
+msgstr "step %d — %.4g d, %.4g MWd/kg"
+
+#: arayuz/guc_harita.py:405
 msgid "adım birimi"
 msgstr "pitch units"
 
@@ -12901,9 +13170,15 @@ msgstr "pressure must be within 0–%.0f MPa: %r MPa"
 msgid "bağlantı kurulamadı: %s"
 msgstr "could not connect: %s"
 
-#: arayuz/guc_harita.py:306 arayuz/guc_harita.py:319 cekirdek/rapor_sablon/grafik.py:156
+#: arayuz/guc_harita.py:325 arayuz/guc_harita.py:339 arayuz/tukenme_pin_gucu.py:192
+#: cekirdek/rapor_sablon/grafik.py:156
 msgid "bağıl güç"
 msgstr "relative power"
+
+#: arayuz/guc_harita_tablo.py:386
+#, python-format
+msgid "bağıl güç %.4f ± %.4f"
+msgstr "relative power %.4f ± %.4f"
 
 #: cekirdek/rapor.py:453
 msgid "bağıl hata"
@@ -13204,7 +13479,7 @@ msgstr "malformed array descriptor: %s"
 msgid "bozuk çerçeve başı"
 msgstr "malformed frame start"
 
-#: arayuz/guc_harita.py:251 cekirdek/kosucu.py:587
+#: arayuz/guc_harita.py:267 cekirdek/kosucu.py:600
 msgid "bozuk, haritaya güvenmeyin"
 msgstr "broken, do not trust the map"
 
@@ -13229,6 +13504,10 @@ msgstr "void coefficient"
 #: cekirdek/tarama.py:199
 msgid "boşluk (void) oranı %0–100 arasında olmalı"
 msgstr "void fraction must be between 0% and 100%"
+
+#: cekirdek/tukenme_guc.py:148
+msgid "bu adımda güç dağılımı tally'si yok"
+msgstr "no power distribution tally in this step"
 
 #: cekirdek/veri_arsiv.py:134
 #, python-format
@@ -13350,7 +13629,12 @@ msgstr "hole cell %d is not a closed cross-section"
 msgid "demet"
 msgstr "assembly"
 
-#: arayuz/guc_harita.py:480
+#: arayuz/guc_harita_tablo.py:384
+#, python-format
+msgid "demet %s"
+msgstr "assembly %s"
+
+#: arayuz/guc_harita.py:502
 #, python-format
 msgid ""
 "demet %s\n"
@@ -13369,7 +13653,7 @@ msgstr[1] ""
 "average %.4f ± %.4f\n"
 "%d pins"
 
-#: cekirdek/guc.py:506
+#: cekirdek/guc.py:561
 #, python-format
 msgid "demet %s · çubuk %s"
 msgstr "assembly %s · pin %s"
@@ -13385,7 +13669,7 @@ msgstr ""
 msgid "demet adımı sıfırdan büyük olmalı"
 msgstr "assembly pitch must be greater than zero"
 
-#: arayuz/guc_harita.py:468
+#: arayuz/guc_harita.py:490
 msgid "demet ortalaması"
 msgstr "assembly average"
 
@@ -13398,7 +13682,7 @@ msgstr "no assembly selected"
 msgid "demet: %s"
 msgstr "assembly: %s"
 
-#: cekirdek/tukenme.py:643
+#: cekirdek/tukenme.py:655
 msgid "demetler"
 msgstr "assemblies"
 
@@ -13439,10 +13723,15 @@ msgstr "rectangle %g×%g"
 msgid "dilim"
 msgstr "bins"
 
-#: arayuz/guc_harita.py:267
+#: arayuz/guc_harita.py:283
 #, python-format
 msgid "dilim %d / %d"
 msgstr "axial bin %d / %d"
+
+#: arayuz/guc_harita_tablo.py:393
+#, python-format
+msgid "dilim %d: bağıl %.4f"
+msgstr "bin %d: relative %.4f"
 
 #: cekirdek/veri_arsiv.py:156
 #, python-format
@@ -13542,7 +13831,7 @@ msgstr "error during model check: %s"
 msgid "doğrulama çalıştırılamadı: %s"
 msgstr "model check could not be run: %s"
 
-#: cekirdek/tukenme.py:710
+#: cekirdek/tukenme.py:722
 msgid "doğrulamada nüklid/kütüphane denetimini atla"
 msgstr "skip the nuclide/library check in the model check"
 
@@ -13595,7 +13884,7 @@ msgstr "outer"
 msgid "dış bölge"
 msgstr "outer region"
 
-#: cekirdek/guc.py:489
+#: cekirdek/guc.py:544
 #, python-format
 msgid "dıştan %d. halka, %d. konum"
 msgstr "ring %d from the outside, position %d"
@@ -13604,7 +13893,7 @@ msgstr "ring %d from the outside, position %d"
 msgid "eV / kaynak nötronu"
 msgstr "eV / source neutron"
 
-#: arayuz/guc_harita.py:307
+#: arayuz/guc_harita.py:326
 msgid "eksenel dilim"
 msgstr "axial bin"
 
@@ -13705,17 +13994,25 @@ msgstr "the maximum number of parallel runs must be at least 1"
 msgid "en sıcak demet: %s (F_demet = %.4f)"
 msgstr "hottest assembly: %s (F_assembly = %.4f)"
 
-#: arayuz/guc_harita.py:241
+#: arayuz/guc_harita.py:257
 #, python-format
 msgid "en sıcak demet: %s (ortalama %.4f)"
 msgstr "hottest assembly: %s (average %.4f)"
 
-#: arayuz/guc_harita.py:244
+#: arayuz/guc_harita.py:260
 #, python-format
 msgid "en sıcak dilim: %d"
 msgstr "hottest axial bin: %d"
 
-#: arayuz/guc_harita.py:238 cekirdek/guc_yorum.py:324
+#: arayuz/guc_harita_tablo.py:397
+msgid "en sıcak çubuk"
+msgstr "hottest pin"
+
+#: arayuz/guc_harita_tablo.py:164
+msgid "en sıcak çubuk (F_ΔH)"
+msgstr "hottest pin (F_ΔH)"
+
+#: arayuz/guc_harita.py:254 cekirdek/guc_yorum.py:324
 #, python-format
 msgid "en sıcak çubuk: %s"
 msgstr "hottest pin: %s"
@@ -13724,6 +14021,10 @@ msgstr "hottest pin: %s"
 #, python-format
 msgid "en sıcak çubuk: %s%s"
 msgstr "hottest pin: %s%s"
+
+#: arayuz/tukenme_pin_gucu.py:74
+msgid "en yüksek q′ [W/cm]"
+msgstr "peak q′ [W/cm]"
 
 #: arayuz/ayar/sabitler.py:63
 msgid "enerji"
@@ -13824,6 +14125,10 @@ msgstr "a photon source is meaningless in an eigenvalue (k-eff) calculation"
 msgid "gaz"
 msgstr "gas"
 
+#: cekirdek/guc_katlama.py:125
+msgid "gelişmiş (ağaç) modelde simetri doğrulanamıyor"
+msgstr "symmetry cannot be verified in an advanced (tree) model"
+
 #: arayuz/pencere/model_islemleri.py:135
 msgid "gelişmiş geometri (ağaç)"
 msgstr "advanced geometry (tree)"
@@ -13850,6 +14155,10 @@ msgstr "geometry debug run is clean (%d × %d particles)"
 #, python-format
 msgid "geometri içe aktarılamadı: %s"
 msgstr "geometry could not be imported: %s"
+
+#: cekirdek/guc_katlama.py:175
+msgid "geometri kafesleri okunamadı"
+msgstr "geometry lattices could not be read"
 
 #: cekirdek/rapor_sablon/grafik.py:296
 #, python-format
@@ -13884,7 +14193,7 @@ msgstr "elapsed %s  |  run %d finished"
 msgid "geçen %s  |  kalan ~%s  (ölçüme göre)"
 msgstr "elapsed %s  |  remaining ~%s  (measured)"
 
-#: arayuz/sekme_tukenme.py:475
+#: arayuz/sekme_tukenme.py:507
 #, python-format
 msgid "geçen %s  |  transport başına %.0f s (ölçülen)  |  kalan ~%s"
 msgstr "elapsed %s  |  %.0f s per transport (measured)  |  remaining ~%s"
@@ -13998,8 +14307,8 @@ msgstr "drum body"
 msgid "gözeneklilik 0 ile 1 arasında olmalı: %r"
 msgstr "porosity must be between 0 and 1: %r"
 
-#: arayuz/tukenme_arayuz.py:75 arayuz/tukenme_arayuz.py:173 cekirdek/tukenme.py:735
-#: cekirdek/tukenme.py:760
+#: arayuz/tukenme_arayuz.py:75 arayuz/tukenme_arayuz.py:173 arayuz/tukenme_pin_gucu.py:74
+#: cekirdek/tukenme.py:747 cekirdek/tukenme.py:772
 msgid "gün"
 msgstr "days"
 
@@ -14018,7 +14327,7 @@ msgstr "security: %s is a link or not a folder"
 msgid "güvenlik: %s bir sembolik bağlantı; silin ya da başka hedef seçin"
 msgstr "security: %s is a symbolic link; delete it or choose another target"
 
-#: arayuz/cubuk/parca_islemleri.py:365 cekirdek/tukenme.py:645
+#: arayuz/cubuk/parca_islemleri.py:365 cekirdek/tukenme.py:657
 msgid "güç dağılımı"
 msgstr "power distribution"
 
@@ -14031,7 +14340,7 @@ msgstr "a valid pin must be selected for the power distribution"
 msgid "güç dağılımı okunamadı: %s"
 msgstr "power distribution could not be read: %s"
 
-#: cekirdek/guc_yorum.py:319
+#: arayuz/guc_harita_tablo.py:238 cekirdek/guc_yorum.py:319
 msgid "güç dağılımı yok"
 msgstr "no power distribution"
 
@@ -14066,7 +14375,7 @@ msgstr "h5py missing"
 msgid "hacim hesaplanamıyor: %s"
 msgstr "volume cannot be computed: %s"
 
-#: arayuz/sekme_tukenme.py:262
+#: arayuz/sekme_tukenme.py:294
 msgid "hacim yok"
 msgstr "no volume"
 
@@ -14075,7 +14384,7 @@ msgstr "no volume"
 msgid "hacimler hesaplanamadı: %s"
 msgstr "volumes could not be computed: %s"
 
-#: cekirdek/tukenme.py:358
+#: cekirdek/tukenme.py:360
 #, python-format
 msgid ""
 "hacmi analitik hesaplanamayan yanabilir malzeme: %s (%s). Tükenme kesin hacim "
@@ -14221,7 +14530,7 @@ msgstr "target ≈ ±%d pcm"
 msgid "hedefte aynı adlı klasör zaten var: %s"
 msgstr "a folder with the same name already exists: %s"
 
-#: arayuz/sekme_tukenme.py:233
+#: arayuz/sekme_tukenme.py:265
 msgid "her adım sıfırdan büyük olmalı"
 msgstr "every step must be greater than zero"
 
@@ -14229,7 +14538,7 @@ msgstr "every step must be greater than zero"
 msgid "her hesap için çevrim başına binlerce nötron"
 msgstr "thousands of neutrons per batch for every calculation"
 
-#: cekirdek/tukenme.py:644
+#: cekirdek/tukenme.py:656
 msgid "hesap ayarları"
 msgstr "run settings"
 
@@ -14237,7 +14546,7 @@ msgstr "run settings"
 msgid "hesap referansı"
 msgstr "calculated reference"
 
-#: arayuz/sekme_tukenme.py:265
+#: arayuz/sekme_tukenme.py:297
 #, python-format
 msgid "hesaplanamadı: %s"
 msgstr "could not be computed: %s"
@@ -14271,6 +14580,11 @@ msgstr "cell %d"
 msgid "hücre %d birden çok iç sınır dışlıyor (tanınmayan desen)"
 msgstr "cell %d excludes more than one inner boundary (unrecognized pattern)"
 
+#: cekirdek/guc_katlama.py:71
+#, python-format
+msgid "hücre %d dolgusu ötelenmiş ya da döndürülmüş"
+msgstr "the fill of cell %d is translated or rotated"
+
 #: cekirdek/dogrula/kor.py:68
 msgid "hücre adımı sıfırdan büyük olmalı"
 msgstr "cell pitch must be greater than zero"
@@ -14283,7 +14597,7 @@ msgstr "the cell has both a cylinder and a prism inner boundary"
 msgid "hızlı"
 msgstr "fast"
 
-#: cekirdek/dogrula/tukenme.py:24 cekirdek/tukenme.py:654
+#: cekirdek/dogrula/tukenme.py:24 cekirdek/tukenme.py:666
 #: cekirdek/uygunluk_denetimi/vv_arayuz.py:57 cekirdek/vv/kume.py:190
 msgctxt "spektrum"
 msgid "hızlı"
@@ -14506,7 +14820,17 @@ msgstr ""
 msgid "kafes"
 msgstr "lattice"
 
-#: cekirdek/guc.py:209
+#: cekirdek/guc_katlama.py:50
+#, python-format
+msgid "kafes %d ayna simetrik değil"
+msgstr "lattice %d is not mirror-symmetric"
+
+#: cekirdek/guc_katlama.py:55
+#, python-format
+msgid "kafes %d elemanında ortalanmamış"
+msgstr "lattice %d is not centred in its element"
+
+#: cekirdek/guc.py:227
 #, python-format
 msgid "kafes (id = %d) geometride bulunamadı"
 msgstr "lattice (id = %d) not found in the geometry"
@@ -14562,6 +14886,11 @@ msgstr "the container rings do not form a concentric chain"
 #: cekirdek/rapor.py:362 cekirdek/rapor.py:365 cekirdek/rapor.py:368
 msgid "kapalı"
 msgstr "off"
+
+#: cekirdek/guc_katlama.py:46
+#, python-format
+msgid "kare olmayan kafes (%s)"
+msgstr "non-rectangular lattice (%s)"
 
 #: cekirdek/geometri/ice_aktar.py:388
 #, python-format
@@ -14678,9 +15007,21 @@ msgstr "unknown field in the record: %s"
 msgid "kesik kafes konumu"
 msgstr "truncated lattice position"
 
+#: arayuz/guc_harita_tablo.py:399
+msgid "kesik çubuk (F_ΔH dışı)"
+msgstr "truncated pin (excluded from F_ΔH)"
+
 #: cekirdek/geometri/hacim.py:50
 msgid "kesik çubuk (pin hücreye sığmıyor)"
 msgstr "truncated pin (does not fit the pin cell)"
+
+#: arayuz/guc_harita_tablo.py:168
+msgid "kesik çubuk — F_ΔH ve F_q dışında"
+msgstr "truncated pin — excluded from F_ΔH and F_q"
+
+#: cekirdek/guc_katlama.py:132
+msgid "kesik çubuklu modelde katlanmaz"
+msgstr "not folded in a model with truncated pins"
 
 #: cekirdek/malzeme_hesap.py:136
 msgid "kesirlerin toplamı sıfır"
@@ -14732,6 +15073,10 @@ msgstr ""
 msgid "koninin yarı açılımı 0–180° arasında olmalı (%s)"
 msgstr "the cone half-angle must be between 0 and 180° (%s)"
 
+#: cekirdek/guc_katlama.py:127
+msgid "kontrol tamburlu kor simetrik sayılmaz"
+msgstr "a core with control drums is not treated as symmetric"
+
 #: cekirdek/geometri/denetim.py:557
 msgid "kontrol çubuğu"
 msgstr "control rod"
@@ -14760,7 +15105,7 @@ msgstr "not met"
 msgid "kontrolü geçti"
 msgstr "passed"
 
-#: arayuz/cubuk/parca_islemleri.py:360 cekirdek/tukenme.py:643
+#: arayuz/cubuk/parca_islemleri.py:360 cekirdek/tukenme.py:655
 msgid "kor"
 msgstr "core"
 
@@ -14841,7 +15186,7 @@ msgstr "the run history was written by a newer version (%d > %d): %s"
 msgid "koşan iş kaldırılamaz; önce iptal edin"
 msgstr "a running entry cannot be removed; cancel it first"
 
-#: cekirdek/tukenme.py:708
+#: cekirdek/tukenme.py:720
 msgid "koşmadan hacim, zincir ve ağır metal bilgisini yazdır"
 msgstr "print the volume, chain and heavy metal information without running"
 
@@ -14936,7 +15281,7 @@ msgstr "user input"
 msgid "kullanıcı girdisi — kaynak belirtilmedi"
 msgstr "user input — no source given"
 
-#: cekirdek/tukenme.py:103
+#: cekirdek/tukenme.py:105
 msgid "kullanıcı seçimi"
 msgstr "user selection"
 
@@ -15190,7 +15535,7 @@ msgstr "material: %s"
 msgid "malzemede bilinmeyen alan: %s"
 msgstr "unknown field in the material: %s"
 
-#: cekirdek/tukenme.py:642
+#: cekirdek/tukenme.py:654
 msgid "malzemeler"
 msgstr "materials"
 
@@ -15250,11 +15595,11 @@ msgstr "2D model — F_q cannot be computed, only F_ΔH is given"
 msgid "model geneli"
 msgstr "whole model"
 
-#: arayuz/sekme_tukenme.py:283
+#: arayuz/sekme_tukenme.py:315
 msgid "model uygun değil"
 msgstr "the model is not suitable"
 
-#: arayuz/sekme_tukenme.py:178
+#: arayuz/sekme_tukenme.py:209
 msgid "model yok"
 msgstr "no model"
 
@@ -15289,7 +15634,7 @@ msgstr "the model has no control drum (rotation group)"
 msgid "modelde kontrol tamburu yok"
 msgstr "the model has no control drum"
 
-#: cekirdek/dogrula/tukenme.py:135 cekirdek/tukenme.py:362
+#: cekirdek/dogrula/tukenme.py:135 cekirdek/tukenme.py:364
 msgid "modelde yanabilir (fisil) malzeme yok"
 msgstr "the model contains no depletable (fissile) material"
 
@@ -15452,7 +15797,7 @@ msgstr "automatic mesh boundaries require the bounding box of the model"
 msgid "otomatik bulunan aday"
 msgstr "automatically found candidate"
 
-#: cekirdek/tukenme.py:100
+#: cekirdek/tukenme.py:102
 #, python-format
 msgid "otomatik: %s"
 msgstr "automatic: %s"
@@ -15576,7 +15921,7 @@ msgctxt "birim"
 msgid "plaka"
 msgstr "plates"
 
-#: cekirdek/tukenme.py:643
+#: cekirdek/tukenme.py:655
 msgid "plaka elemanları"
 msgstr "plate-type fuel elements"
 
@@ -15806,7 +16151,7 @@ msgstr "rows"
 msgid "satır %d, sütun %d: %s"
 msgstr "row %d, column %d: %s"
 
-#: arayuz/sekme_tukenme.py:232
+#: arayuz/sekme_tukenme.py:264
 #, python-format
 msgid "sayı olmayan: %s"
 msgstr "not a number: %s"
@@ -15973,7 +16318,7 @@ msgstr "water (H₂O)"
 msgid "su yoğunluğu (IAPWS-IF97 Bölge 1) %.2f–%.2f K aralığında: %.2f K"
 msgstr "water density (IAPWS-IF97 Region 1) is valid for %.2f–%.2f K: %.2f K"
 
-#: cekirdek/guc.py:409
+#: cekirdek/guc.py:465
 msgid ""
 "summary.h5 bulunamadı; güç dağılımının hücre konumları okunamaz. Koşu dizininde "
 "statepoint ile summary.h5 yan yana olmalıdır."
@@ -16049,7 +16394,7 @@ msgstr "non-leakage probability (P_FNL·P_TNL)"
 msgid "taban"
 msgstr "base"
 
-#: cekirdek/tukenme.py:644
+#: cekirdek/tukenme.py:656
 msgid "tally'ler"
 msgstr "tallies"
 
@@ -16061,7 +16406,7 @@ msgstr "k from tallies"
 msgid "tam model (alt model kurulamadı)"
 msgstr "full model (sub-model could not be built)"
 
-#: arayuz/guc_harita.py:251 cekirdek/kosucu.py:586 cekirdek/kosucu_terminal.py:157
+#: arayuz/guc_harita.py:267 cekirdek/kosucu.py:599 cekirdek/kosucu_terminal.py:157
 msgid "tamam"
 msgstr "ok"
 
@@ -16302,11 +16647,19 @@ msgstr ""
 msgid "tekrarlanabilirlik: %s bilinmiyor"
 msgstr "reproducibility: %s unknown"
 
+#: arayuz/tukenme_pin_gucu.py:193
+msgid "tepe faktörü"
+msgstr "peaking factor"
+
+#: arayuz/guc_harita_tablo.py:166
+msgid "tepeden istatistik olarak ayırt edilemez (birleşik 2σ içinde)"
+msgstr "statistically indistinguishable from the peak (within a combined 2σ)"
+
 #: cekirdek/veri_indir.py:124
 msgid "termal"
 msgstr "thermal"
 
-#: cekirdek/dogrula/tukenme.py:23 cekirdek/tukenme.py:653
+#: cekirdek/dogrula/tukenme.py:23 cekirdek/tukenme.py:665
 #: cekirdek/uygunluk_denetimi/vv_arayuz.py:55 cekirdek/vv/kume.py:189
 msgctxt "spektrum"
 msgid "termal"
@@ -16351,12 +16704,12 @@ msgstr "total power is given but the model is 2D — linear power [W/cm] cannot 
 msgid "toplam tepkime"
 msgstr "total reaction"
 
-#: cekirdek/kosucu.py:589
+#: cekirdek/kosucu.py:602
 #, python-format
 msgid "toplamın korunumu denetlenemedi: %s"
 msgstr "conservation of the total could not be checked: %s"
 
-#: cekirdek/kosucu.py:585
+#: cekirdek/kosucu.py:598
 #, python-format
 msgid "toplamın korunumu: bağıl fark %.1e — %s"
 msgstr "conservation of the total: relative difference %.1e — %s"
@@ -16369,7 +16722,7 @@ msgstr "thorium"
 msgid "tükenme"
 msgstr "depletion"
 
-#: cekirdek/tukenme.py:645
+#: cekirdek/tukenme.py:657
 msgid "tükenme ayarları"
 msgstr "depletion settings"
 
@@ -16470,7 +16823,7 @@ msgstr ""
 msgid "verilen rapor metni"
 msgstr "the given report text"
 
-#: arayuz/guc_harita.py:343 arayuz/karsilastir/panel.py:214
+#: arayuz/guc_harita.py:364 arayuz/karsilastir/panel.py:214
 msgid "x (soldan)"
 msgstr "x (from left)"
 
@@ -16498,7 +16851,7 @@ msgstr "xy: top section (z = 0) · xz: side section (y = 0) · yz: side section 
 msgid "xz kesiti"
 msgstr "xz section"
 
-#: arayuz/guc_harita.py:344 arayuz/karsilastir/panel.py:215
+#: arayuz/guc_harita.py:365 arayuz/karsilastir/panel.py:215
 msgid "y (alttan)"
 msgstr "y (from bottom)"
 
@@ -16622,7 +16975,7 @@ msgstr "burnable absorber '%s' does not take part in depletion: %s"
 msgid "yanma [MWd/kgHM]"
 msgstr "burnup [MWd/kgHM]"
 
-#: arayuz/tukenme_sonuc.py:54 arayuz/tukenme_sonuc.py:70
+#: arayuz/tukenme_pin_gucu.py:191 arayuz/tukenme_sonuc.py:57 arayuz/tukenme_sonuc.py:73
 msgid "yanma [MWd/kg]"
 msgstr "burnup [MWd/kg]"
 
@@ -16810,7 +17163,7 @@ msgstr "z = Δk / √(σ1² + σ2²) = %+.2f → %s"
 msgid "z yönünde öteleme desteklenmiyor (hücre %d)"
 msgstr "translation in the z direction is not supported (cell %d)"
 
-#: arayuz/tukenme_sonuc.py:54
+#: arayuz/tukenme_sonuc.py:57
 msgid "zaman [gün]"
 msgstr "time [days]"
 
@@ -16909,7 +17262,7 @@ msgstr ""
 "chain id; may be given more than once (default: the thermal/fast/CASL chains the "
 "application uses)"
 
-#: arayuz/sekme_tukenme.py:221
+#: arayuz/sekme_tukenme.py:253
 #, python-format
 msgid "zincir seçilemedi: %s"
 msgstr "depletion chain could not be selected: %s"
@@ -17376,6 +17729,15 @@ msgstr ""
 "source measures an underestimation by a factor of 1.7–4.7 in local tallies (fission "
 "rates) (§IV.B Table 2); it gives no magnitude for k-eff."
 
+#: arayuz/guc_harita_tablo.py:194
+msgid "Çeyrek katla"
+msgstr "Fold to quarter"
+
+#: arayuz/guc_harita_tablo.py:253
+#, python-format
+msgid "Çeyrek katlama yapılamaz: %s"
+msgstr "Quarter folding not possible: %s"
+
 #: arayuz/geometri/sinir_formu.py:103
 msgid ""
 "Çeyrek kor gibi simetri modelleri için: her dış yüz ayrı koşul alır (ör. iki simetri "
@@ -17404,11 +17766,20 @@ msgstr "Nothing to draw"
 msgid "Çiziliyor…"
 msgstr "Drawing…"
 
+#: cekirdek/guc.py:369
+#, python-format
+msgid ""
+"Çok bölgeli çubuk (%s): her çubuğun bütün yakıt bölgeleri (halkaları) toplandı; çubuk"
+" gücü bölgelerin toplamıdır."
+msgstr ""
+"Multi-region pin (%s): all fuel regions (rings) of every pin were summed; the pin "
+"power is the sum of the regions."
+
 #: arayuz/sekme_demet.py:361
 msgid "Çok fazla parça"
 msgstr "Too many components"
 
-#: arayuz/guc_harita.py:79
+#: arayuz/guc_harita.py:81
 msgid ""
 "Çok türlü güç dağılımı: haritada yalnız seçili çubuk türü gösterilir; bağıl güç yine "
 "bütün yakıt çubuklarına göredir."
@@ -17416,7 +17787,7 @@ msgstr ""
 "Multi-type power distribution: the map shows only the selected pin type; relative "
 "power is still with respect to all fuel pins."
 
-#: cekirdek/guc.py:451
+#: cekirdek/guc.py:377
 #, python-format
 msgid ""
 "Çok türlü güç: %d çubuk türü (%s) tek haritada; bağıl güç bütün türlerin yakıt "
@@ -17445,7 +17816,7 @@ msgstr ""
 " 1 does not mean the reactor is supercritical, only that the fuel carries excess "
 "reactivity; in a finite core k-eff is smaller because of leakage."
 
-#: arayuz/cubuk/cubuk_formu.py:38 arayuz/cubuk/sayfalar.py:63 arayuz/guc_harita.py:70
+#: arayuz/cubuk/cubuk_formu.py:38 arayuz/cubuk/sayfalar.py:63 arayuz/guc_harita.py:72
 #: arayuz/sekme_cubuk.py:126 cekirdek/dogrula/_ortak.py:25
 msgid "Çubuk"
 msgstr "Pin"
@@ -17484,7 +17855,7 @@ msgstr "Pin region radius"
 msgid "Çubuk değeri (diferansiyel)"
 msgstr "Rod worth (differential)"
 
-#: arayuz/guc_harita.py:134
+#: arayuz/guc_harita.py:146
 msgid "Çubuk güç dağılımı"
 msgstr "Pin power distribution"
 
@@ -17497,7 +17868,7 @@ msgstr ""
 "The sum of the pin powers differs from the unfiltered tally by a relative %.2e. The "
 "mapping may be broken — do not trust the results."
 
-#: arayuz/guc_harita.py:60
+#: arayuz/guc_harita.py:62
 msgid "Çubuk toplam gücü (F_ΔH)"
 msgstr "Total pin power (F_ΔH)"
 
@@ -17506,7 +17877,7 @@ msgstr "Total pin power (F_ΔH)"
 msgid "Çubuk türleri (bağıl ortalama / tepe; bütün yakıt çubuklarının ortalaması = 1): %s"
 msgstr "Pin types (relative mean / peak; mean of all fuel pins = 1): %s"
 
-#: arayuz/guc_harita.py:81
+#: arayuz/guc_harita.py:83
 msgid "Çubuk türü:"
 msgstr "Pin type:"
 
@@ -17529,6 +17900,14 @@ msgstr ""
 #: arayuz/tukenme_arayuz.py:118
 msgid "Çubuk çubuk yanma (her örnek ayrı malzeme — çok ağır)"
 msgstr "Pin-by-pin burnup (each instance a separate material — very heavy)"
+
+#: cekirdek/tukenme_guc.py:281
+msgid ""
+"Çubuk çubuk yanma kapalı: bütün çubuklar aynı ortalama bileşimle yanar; dağılımın "
+"yanmayla değişimi pin başına yanmayı yansıtmaz."
+msgstr ""
+"Pin-by-pin depletion is off: all pins burn with the same average composition; the "
+"change of the distribution with burnup does not reflect per-pin burnup."
 
 #: arayuz/kor/yerlesim.py:199
 msgid "Çubuk:"
@@ -17603,7 +17982,7 @@ msgstr "Quit"
 msgid "ÖLÇÜT DIŞINDA (> 3σ)"
 msgstr "OUTSIDE THE CRITERION (> 3σ)"
 
-#: arayuz/guc_harita.py:73
+#: arayuz/guc_harita.py:75
 msgid "Ölçek:"
 msgstr "Scale:"
 
@@ -17647,12 +18026,12 @@ msgstr "A pin is needed first"
 msgid "Önceki"
 msgstr "Previous"
 
-#: arayuz/tukenme_sonuc.py:143
+#: arayuz/tukenme_sonuc.py:146
 #, python-format
 msgid "Önceki koşunun sonucu (%s) — bu modele ait."
 msgstr "Result of the previous run (%s) — belongs to this model."
 
-#: arayuz/tukenme_sonuc.py:148
+#: arayuz/tukenme_sonuc.py:151
 #, python-format
 msgid ""
 "Önceki koşunun sonucu (%s). Koşunun model kaydı yok; bu modele ait olduğu "
@@ -17661,7 +18040,7 @@ msgstr ""
 "Result of the previous run (%s). The run has no model record; it cannot be confirmed "
 "that it belongs to this model."
 
-#: arayuz/tukenme_sonuc.py:221
+#: arayuz/tukenme_sonuc.py:224
 msgid "Önceki koşunun sonucu okunuyor…"
 msgstr "Reading the previous run's result…"
 
@@ -17692,7 +18071,7 @@ msgstr ""
 "The previous project's run finished; its result was not written to this project "
 "(files: %s)."
 
-#: arayuz/sekme_tukenme.py:348
+#: arayuz/sekme_tukenme.py:380
 msgid ""
 "Önceki projenin tükenme koşusu arka planda sürüyor; sonucu bu projeye yazılmayacak. "
 "Yeni koşu için Durdur ile sonlandırın."
@@ -17700,17 +18079,22 @@ msgstr ""
 "A depletion run from the previous project is still going in the background; its "
 "result will not be written to this project. Use Stop to end it before a new run."
 
-#: arayuz/sekme_tukenme.py:504
+#: arayuz/sekme_tukenme.py:536
 #, python-format
 msgid "Önceki projenin tükenme koşusu bitti; sonucu bu projeye yazılmadı (dosyalar: %s)."
 msgstr ""
 "The previous project's depletion run finished; its result was not written to this "
 "project (files: %s)."
 
-#: arayuz/tukenme_sonuc.py:251
+#: arayuz/tukenme_sonuc.py:250
 #, python-format
 msgid "Önceki sonuç okunamadı: %s"
 msgstr "The previous result could not be read: %s"
+
+#: cekirdek/tukenme_temizlik.py:58
+#, python-format
+msgid "Önceki tükenme çıktısı silinemedi: %s (%s)"
+msgstr "Previous depletion output could not be deleted: %s (%s)"
 
 #: cekirdek/rapor_sablon/__init__.py:212
 msgid "Öneri"
@@ -18035,7 +18419,11 @@ msgstr "batch k"
 msgid "çevrim sayısı sıfırdan büyük olmalı"
 msgstr "number of batches must be greater than zero"
 
-#: arayuz/geometri/form_ortak.py:132 arayuz/guc_harita.py:468 arayuz/izgara_yardimci.py:157
+#: cekirdek/guc_katlama.py:130
+msgid "çeyrek katlama yalnız kare kafeste"
+msgstr "quarter folding only on rectangular lattices"
+
+#: arayuz/geometri/form_ortak.py:132 arayuz/guc_harita.py:490 arayuz/izgara_yardimci.py:157
 #: cekirdek/alt_model.py:67 cekirdek/sema_basvuru.py:97
 msgid "çubuk"
 msgstr "pin"
@@ -18045,11 +18433,16 @@ msgctxt "çoğul"
 msgid "çubuk"
 msgstr "pins"
 
+#: arayuz/guc_harita_tablo.py:385
+#, python-format
+msgid "çubuk %s"
+msgstr "pin %s"
+
 #: cekirdek/dogrula/kor.py:64
 msgid "çubuk seçilmemiş"
 msgstr "no pin selected"
 
-#: arayuz/guc_harita.py:268
+#: arayuz/guc_harita.py:284
 msgid "çubuk toplamı"
 msgstr "pin total"
 
@@ -18057,7 +18450,7 @@ msgstr "pin total"
 msgid "çubuk çubuk yanma açık"
 msgstr "pin-by-pin burnup is on"
 
-#: cekirdek/tukenme.py:320
+#: cekirdek/tukenme.py:322
 #, python-format
 msgid ""
 "çubuk çubuk yanma kesin örnek hacmi gerektirir; hacmi kesin olmayan (kesik) yanabilir"
@@ -18076,7 +18469,7 @@ msgstr "instance volume is not exact in pin-by-pin burnup: %s"
 msgid "çubuk: %s"
 msgstr "pin: %s"
 
-#: cekirdek/tukenme.py:642
+#: cekirdek/tukenme.py:654
 msgid "çubuklar"
 msgstr "pins"
 
@@ -18207,7 +18600,7 @@ msgstr ""
 "Keep the first steps short (e.g. 0.5 and 1.5 days). Xe-135 causes a fast drop of "
 "several thousand pcm in a PWR; a long first step hides it."
 
-#: arayuz/sekme_tukenme.py:407
+#: arayuz/sekme_tukenme.py:439
 msgid "İlk transport bekleniyor — kalan süre ondan ölçülecek."
 msgstr "Waiting for the first transport solve — the remaining time will be measured from it."
 

@@ -103,6 +103,35 @@ sayılmaz; tükenmeyi kapatıp açmak da sonucu eskitmez. Sonuç **kayıttaki** 
 **Ayrıntılı çıktı** (katlanır) OpenMC ve `cekirdek.tukenme` çıktısını gösterir; hata olursa
 kendiliğinden açılır.
 
+<a id="tukenme-pin-gucu"></a>
+#### Yanmaya göre pin gücü
+
+Modelde güç tally'si kurulabiliyorsa (çubuklar bir kafeste tekrarlanıyorsa) tükenme koşusu her
+adımda çubuk güç dağılımını da sayar — Hesap ayarlarındaki güç dağılımı kapalı olsa bile
+(hedef seçilmemişse bütün yakıt çubukları). Kapatmak için spec'te `tukenme.adim_gucu` = `false`.
+OpenMC her adımın **başındaki** transporttan sonra `openmc_simulation_n<i>.h5` yazar; bunlar
+`depletion_results.h5`'in zaman noktalarına bire bir karşılık gelir (CECM'in düzeltici
+transportu yazılmaz: gösterilen dağılım adımın başındakidir). Yeni koşu eski adım dosyalarını siler.
+
+Sonuç kartının altında (adım dosyası varsa):
+
+| Öğe | Ne gösterir |
+|---|---|
+| **Adım:** | Adım seçici (adım, gün, MWd/kg); altındaki pin tablosu o adımın tablosudur ([pin gücü tablosu](04g-calistir.md#calistir-pin-tablosu) ile aynı: sırala, süz, **Çeyrek katla**). |
+| Grafik (sol) | Tablodan seçilen çubukların bağıl gücü – yanma (± 1σ); her seçim listeye eklenir (en çok 6). Başlangıçta en sıcak çubuk. **Seçimi temizle** listeyi boşaltır. |
+| Grafik (sağ) ve tablo | Adım başına F_ΔH ve F_q (3B) ± σ ve en yüksek q′. |
+| **Adım × pin kaydet…** | Her adımın pin tablosu tek dosyada: adım, zaman [gün], yanma [MWd/kg] + pin sütunları (CSV; openpyxl kuruluysa Excel). |
+| **Tepe faktörleri CSV…** | Adım başına F_ΔH, F_q, σ'ları ve en yüksek q′. |
+
+Mutlak güç adımın kaynak gücüdür (güç yoğunluğu × ağır metal; `Results.get_source_rates`);
+2B modelde güç ve q′ 1 cm yükseklik başınadır (tükenme hacmi gibi; tablo başlığı
+"Güç [W/cm yükseklik]", dosyada `W_per_cm`). **Çubuk çubuk yanma kapalıyken** bütün çubuklar
+aynı ortalama bileşimle yanar: dağılımın yanmayla değişimi pin başına yanmayı yansıtmaz
+(sıcak çubukların daha hızlı yanması görülmez). Pin gücü çubuğun bütün yakıt bölgelerinin
+(Gd pininde bütün halkaların) toplamıdır. Gelişmiş'teki **Adım başına pin gücü** kutusu
+(`tukenme.adim_gucu`) ölçümü kapatır; sonucu eskitmez. Bağıl güç her adımda o
+adımın yakıt çubuğu ortalamasına göredir. Ders: [5.7](05-dersler.md#ders-guc-yanma).
+
 ### Örnek ve doğrulama
 
 `ornekler/pwr_tukenme.json`: `pwr_pinhucre` ile aynı pin, 40 W/gHM, 500 gün (20 MWd/kg),

@@ -44,9 +44,11 @@
 ================================================================================
 """
 
+import collections
 import math
 import os
 import sys
+import threading
 import types
 
 from cekirdek import sema, veri_bilgi
@@ -421,17 +423,20 @@ def calistir(spec, dizin, geri_cagir=None, veri_kontrolu=True):
     """
     bulgular = kapi(spec, veri_kontrolu=veri_kontrolu)
     import openmc.deplete as d
+    from cekirdek import tukenme_guc
     t = spec["tukenme"]
-    model, bilgi = hazirla(spec)
+    # v3 K3: guc tally'si kurulabilen modelde her adimda pin gucu sayilir
+    # (spec kaydi kullanicinin spec'idir).
+    model, bilgi = tukenme_guc.olcumlu_hazirla(hazirla, spec)
     bilgi["dogrulama"] = bulgular
     zs = bilgi["zincir"]
     os.makedirs(dizin, exist_ok=True)
     # Eski sonuc SILINIR, sonra spec kaydi yazilir. Sira onemli: kosu yarida
     # kalirsa dizinde eski bir sonuc ile YENI bir spec kaydi yan yana kalir
     # ve eski sonuc "guncel" diye gosterilirdi.
-    onceki = os.path.join(dizin, "depletion_results.h5")
-    if os.path.exists(onceki):
-        os.remove(onceki)
+    # (v3 K3) adim statepoint'leri yalniz bu arayuzun kayitli dizininde silinir.
+    from cekirdek import tukenme_temizlik
+    tukenme_temizlik.onceki_sonucu_temizle(dizin)
     spec_kaydet(spec, dizin)
     eski = os.getcwd()
     try:
@@ -459,7 +464,8 @@ def calistir(spec, dizin, geri_cagir=None, veri_kontrolu=True):
 # Sonuc okuma kaynagi onbellegi: {(h5, boyut, mtime, spec imzasi): (Results,
 # {malzeme_id: ad}, hacimler)}. Olculdu: Results() 3820 nuklidli dosyada
 # 1.8 s, kurucu.kur + hacimler ~0.5 s; secim degisince bunlar TEKRARLANMAZ.
-_SONUC_KAYNAGI = {}
+_SONUC_KAYNAGI = collections.OrderedDict()   # kilitli LRU (v3 K3)
+_SONUC_KILIDI = threading.Lock()
 _SONUC_KAYNAGI_EN_COK = 2
 
 
@@ -513,15 +519,20 @@ def _sonuc_kaynagi(h5, spec):
     bilgi = os.stat(h5)
     anahtar = (os.path.abspath(h5), bilgi.st_size, bilgi.st_mtime,
                json.dumps(spec, sort_keys=True, default=str))
-    kaynak = _SONUC_KAYNAGI.get(anahtar)
-    if kaynak is not None:
-        return kaynak
+    with _SONUC_KILIDI:
+        kaynak = _SONUC_KAYNAGI.get(anahtar)
+        if kaynak is not None:
+            _SONUC_KAYNAGI.move_to_end(anahtar)
+            return kaynak
+    # Okuma kilit DISINDA (saniyeler): arka plan iscileri birbirini beklemez.
     r = d.Results(h5)
     ad_by_id, hacim_by_ad = _malzeme_haritasi(spec)
-    kaynak = (r, ad_by_id, hacim_by_ad)
-    while len(_SONUC_KAYNAGI) >= _SONUC_KAYNAGI_EN_COK:
-        _SONUC_KAYNAGI.pop(next(iter(_SONUC_KAYNAGI)))
-    _SONUC_KAYNAGI[anahtar] = kaynak
+    kaynak = (r, types.MappingProxyType(ad_by_id), types.MappingProxyType(hacim_by_ad))
+    with _SONUC_KILIDI:
+        _SONUC_KAYNAGI[anahtar] = kaynak
+        _SONUC_KAYNAGI.move_to_end(anahtar)
+        while len(_SONUC_KAYNAGI) > _SONUC_KAYNAGI_EN_COK:
+            _SONUC_KAYNAGI.popitem(last=False)
     return kaynak
 
 
@@ -578,7 +589,7 @@ def sonuc_oku(h5, spec, izlenen=None):
 #   kimlikleri ve hacimler kosudaki modelden gelsin).
 # ============================================================================
 
-SPEC_KAYDI = "tukenme_spec.json"
+from cekirdek.tukenme_temizlik import SPEC_KAYDI  # noqa: E402 (tek tanim)
 
 # Fizigi etkilemeyen bolumler: bunlar degisti diye sonuc eskimez.
 _FIZIK_DISI = ("ad", "aciklama", "calistirma") + sema.META_ALANLARI
@@ -607,6 +618,7 @@ def _fizik_kismi(spec):
             if k not in _FIZIK_DISI}
     sade.get("tukenme", {}).pop("var", None)
     sade.get("tukenme", {}).pop("izlenen", None)
+    sade.get("tukenme", {}).pop("adim_gucu", None)   # yalniz olcum (K3): fizik degil
     sade.pop("surum", None)
     return sade
 
