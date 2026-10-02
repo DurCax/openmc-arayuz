@@ -81,8 +81,12 @@ class MalzemeSekmesi(SekmeTabani):
                        "tanımlanmaz."),
             eylem=self.d_kutup)
         self.kart.ekle(self.tablo, 1)
-        self.kart.ekle(sd.satir(self.d_asistan, self.d_kutuphanem, self.d_yeni, self.d_duzenle,
-                                self.d_kopya, self.d_kaydet_kutup, self.d_sil))
+        # Asistan ve Kutuphanem baslik satirinda (birincil eylemin yaninda): alt satir
+        # 1280 px pencerede yatay kaydirma yaratmasin (test_kabuk_kabul).
+        self.kart.eylem_ekle(self.d_asistan)
+        self.kart.eylem_ekle(self.d_kutuphanem)
+        self.kart.ekle(sd.satir(self.d_yeni, self.d_duzenle, self.d_kopya, self.d_kaydet_kutup,
+                                self.d_sil))
         liste_sayfa = self.kart
 
         bos_sayfa = QtWidgets.QWidget()
