@@ -247,7 +247,9 @@ def yokla(spec: dict, n: int = 20000, tohum: int = 1) -> tuple:
     arka_planda() blogunda sonuc henuz yoksa None.
     H1b: model onbellek.kur_onbellekli'den (salt okunur: yalniz bolge/kafes
     sorgulanir); sonuc icerik anahtariyla bellekte (degismez demetler), metin
-    her cagrida etkin dilde uretilir."""
+    her cagrida etkin dilde uretilir. Esli sonuctaki hucreler onbellekteki
+    modelin openmc.Cell nesneleridir (salt okunur; kimlik/ad icin kullanin);
+    arka plan sonucunda yoklama_arka.HucreOzu(id, name) anlik goruntusu."""
     anahtar = icerik_anahtari([spec, int(n), tohum])
     bildir = _ARKA_PLAN.get()
     if bildir is not None:
