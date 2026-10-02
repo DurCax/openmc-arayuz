@@ -215,9 +215,9 @@ What to look for in the preview:
   lost particles and a wrong result.
 - In a 3D model the preview shows the xy and xz sections side by side; check axial layers, the
   control rod tip and the reflectors in the xz section.
-- Refresh the preview with **F6**. When inspecting a finished geometry (changing the axis, zooming)
-  you can turn on **fast mode**: the library is kept open, the first plot takes ~3 s, later ones
-  ~40 ms. **Do not use fast mode while editing** — every model change needs a restart.
+- Refresh the preview with **F6**. Drawing happens in the background; while the model is unchanged,
+  changing the section or colour is fast. For a suspicious region, use Advanced > **Show overlaps**
+  to see cell overlaps in a separate colour.
 
 The preview does not replace a run: a section shows only one plane. After the run, look at the
 number of lost particles (rule **K3** of the conformity check: lost particles = 0); lost particles

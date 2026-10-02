@@ -319,8 +319,9 @@ def test_onizleme_tallyli_model(gecici=None):
     """
     ONIZLEME TALLY'LERE TAKILMAMALI.
 
-    Model.plot() geometriyi dilimlemek icin OpenMC KUTUPHANESINI baslatiyor ve
-    bu sirada tally'leri de cozmeye calisiyor. Guc dagilimi tally'sine eklenen
+    Model.plot() (v3 H2'den beri: cizim iscisinin openmc.lib.init'i) geometriyi
+    dilimlemek icin OpenMC KUTUPHANESINI baslatiyor ve bu sirada tally'leri de
+    cozmeye calisiyor. Guc dagilimi tally'sine eklenen
     CellFilter cozulemedigi icin OpenMC C++ tarafinda terminate() cagriliyordu:
     Python istisnasi degil, DOGRUDAN SIGABRT -- butun arayuz kapaniyordu.
     Olculdu: duzeltmeden once 3/3 kosuda cokme, duzeltmeden sonra 4/4 temiz.
@@ -348,44 +349,54 @@ def test_onizleme_tallyli_model(gecici=None):
     kontrol("tally tasiyan ornek var (test anlamli olsun)", len(tallyli) >= 3,
             "-> %s" % ", ".join(tallyli))
 
-    # Model.plot() sarmalanip cagrildigi modelin tally sayisi kaydediliyor.
-    # Duzeltme geri alinirsa bu sayi sifirdan buyuk cikar ve test KALIR.
-    import openmc
+    # v3 H2: cizim ayri surecte (cekirdek/cizim_sureci.py). Isciye giden model
+    # cizim_modeli()'nden gecer; sarmalanip kurulan modellerin tally sayisi
+    # kaydedilir. Duzeltme geri alinirsa bu sayi sifirdan buyuk cikar ve test KALIR.
+    from cekirdek import cizim_sureci
     gorulen = []
-    asil_plot = openmc.Model.plot
+    asil_model = cizim_sureci.cizim_modeli
 
-    def izleyen_plot(self, *a, **kw):
-        gorulen.append(len(self.tallies))
-        return asil_plot(self, *a, **kw)
+    def izleyen_model(model):
+        sonuc = asil_model(model)
+        gorulen.append(len(sonuc.tallies))
+        return sonuc
 
-    w = OnizlemeWidget()
-    openmc.Model.plot = izleyen_plot
+    cizim_sureci.cizim_modeli = izleyen_model
+    oturum = cizim_sureci.Oturum()
+    eski_dizin = os.getcwd()
     try:
         for ad in tallyli:
-            w.spec = sema.yukle(os.path.join(ORNEK, ad + ".json"))
+            oturum.hazirla(sema.yukle(os.path.join(ORNEK, ad + ".json")))
+    finally:
+        cizim_sureci.cizim_modeli = asil_model
+        oturum.kapat()
+        os.chdir(eski_dizin)
+    kontrol("cizime giden modellerin hicbiri tally tasimiyor (%d model)"
+            % len(gorulen), bool(gorulen) and max(gorulen) == 0,
+            "-> gorulen tally sayilari: %s" % sorted(set(gorulen)))
+
+    # Ucdan uca: tally'li ornekler iscide xy + xz cizilir (cokme yok).
+    w = OnizlemeWidget()
+    try:
+        for ad in tallyli:
+            w.spec_ayarla(sema.yukle(os.path.join(ORNEK, ad + ".json")))
             iyi = True
             for eksen in ("xy", "xz"):
                 w.eksen.setCurrentText(eksen)
                 w._ciz()
-                iyi = iyi and w.cizildi_mi()
-            kontrol("%s xy+xz cizildi" % ad, iyi, "-> %s" % (w._son_hata or ""))
-    finally:
-        openmc.Model.plot = asil_plot
-    kontrol("cizime giden modellerin hicbiri tally tasimiyor (%d cizim)"
-            % len(gorulen), bool(gorulen) and max(gorulen) == 0,
-            "-> gorulen tally sayilari: %s" % sorted(set(gorulen)))
+                iyi = w.bekle(120) and iyi and w.cizildi_mi()
+            kontrol("%s xy+xz cizildi" % ad, iyi, "-> %s" % (w.son_hata() or ""))
 
-    # Yeniden girme korumasi: cizim surerken ikinci cizim baslamamali.
-    w.spec = sema.yukle(os.path.join(ORNEK, "pwr_eksenel.json"))
-    w._ciziliyor = True
-    onceki = len(gorulen)
-    openmc.Model.plot = izleyen_plot
-    try:
+        # Yeni istek eskisini iptal eder: ardisik iki cizimde yalniz sonuncusu gecerli.
+        w.spec_ayarla(sema.yukle(os.path.join(ORNEK, "pwr_eksenel.json")))
         w._ciz()
+        w.spec_ayarla(sema.yukle(os.path.join(ORNEK, "pwr_17x17.json")))
+        w._ciz()
+        w.bekle(120)
+        kontrol("ardisik cizimde son model cizildi",
+                w.cizildi_mi() and abs(w.son_olcu[0] - 21.42) < 1e-6 and w.eksen.isHidden())
     finally:
-        openmc.Model.plot = asil_plot
-        w._ciziliyor = False
-    kontrol("cizim surerken ikinci cizim atlaniyor", len(gorulen) == onceki)
+        w.kapat()
     uyg  # noqa: B018
 
 

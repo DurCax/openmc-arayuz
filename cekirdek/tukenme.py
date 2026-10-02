@@ -47,10 +47,17 @@
 import math
 import os
 import sys
+import types
 
 from cekirdek import sema, veri_bilgi
 from cekirdek import tukenme_spektrum as _spektrum
-from cekirdek.ceviri import N_, _, pgettext
+from cekirdek.ceviri import N_, _, etkin_dil, pgettext
+from cekirdek.uygunluk_bellek import Bellek, icerik_anahtari
+
+# Spec icerigine gore bellek (v3 H1): Tukenme sekmesi her doldurmada yeniden
+# sayiyor ve hacimleri yeniden hesapliyordu (SFR: 0.4 s + 1.5 s).
+_ORNEK_SAYISI = Bellek("yakit_ornek_sayisi")
+_HACIM_KAYDI = Bellek("tukenme_hacim_kaydi")
 
 ZINCIRLER = {
     "termal":      "chain_endfb80_thermal.xml",
@@ -165,27 +172,43 @@ def _zorunlu_mu(spec, ad):
     return _fisil_mi(m) or ad in ((spec.get("tukenme") or {}).get("ek_malzemeler") or [])
 
 
-def _sayim(spec, dolgu, hedef, esleme=None, derinlik=0):
+def _sayim(spec, dolgu, hedef, derinlik=0):
     """'dolgu' icinde 'hedef' cubuk/plaka kac kez geciyor (demetler icinden)."""
+    return _bellekli_sayim(spec, dolgu, hedef, derinlik, {})
+
+
+def _bellekli_sayim(spec, dolgu, hedef, derinlik, bellek):
+    """_sayim; bellek {(dolgu, derinlik): sayi} AYNI cagri icinde ayni demetin
+    yeniden sayilmamasi icin (v3 H1: SFR kor haritasinda 2.5 milyon ozyineleme,
+    ~1.5 s). Derinlik anahtarda: sonuc bellekli ve belleksiz ayni. Hashlenemeyen
+    dolgu (bozuk spec) bellege girmez; eskisi gibi sayilir (demet bulunmaz -> 0)."""
     if not dolgu or derinlik > 8:
         return 0
     if dolgu == hedef:
         return 1
+    try:
+        anahtar_b = (dolgu, derinlik)
+        if anahtar_b in bellek:
+            return bellek[anahtar_b]
+    except TypeError:
+        anahtar_b = None
     d = sema.demet_bul(spec, dolgu)
-    if d is None:
-        return 0
-    anahtar = d.get("anahtar") or {}
     toplam = 0
-    for satir in d.get("harita") or []:
-        for harf in satir:
-            if harf in anahtar:
-                toplam += _sayim(spec, anahtar[harf], hedef, None, derinlik + 1)
+    if d is not None:
+        anahtar = d.get("anahtar") or {}
+        for satir in d.get("harita") or []:
+            for harf in satir:
+                if harf in anahtar:
+                    toplam += _bellekli_sayim(spec, anahtar[harf], hedef, derinlik + 1, bellek)
+    if anahtar_b is not None:
+        bellek[anahtar_b] = toplam
     return toplam
 
 
 def _kor_sayimi(spec, kor, dolgu, hedef, esleme=None):
     """Bir katmanin dolgusunda hedef kac kez var (kare/altigen kor haritasi dahil).
     Altigen harita halka listesidir; her harf bir konumdur, sayim aynidir."""
+    bellek = {}
     if kor["tur"] in sema.HARITALI_KORLAR and dolgu is None:
         anahtar = dict(kor.get("anahtar") or {})
         if esleme:
@@ -194,9 +217,9 @@ def _kor_sayimi(spec, kor, dolgu, hedef, esleme=None):
         for satir in kor.get("harita") or []:
             for harf in satir:
                 if harf in anahtar:
-                    toplam += _sayim(spec, anahtar[harf], hedef)
+                    toplam += _bellekli_sayim(spec, anahtar[harf], hedef, 0, bellek)
         return toplam
-    return _sayim(spec, dolgu or sema.ana_dolgu(kor), hedef)
+    return _bellekli_sayim(spec, dolgu or sema.ana_dolgu(kor), hedef, 0, bellek)
 
 
 def _eksenel_dilimler(kor):
@@ -217,6 +240,10 @@ def yakit_ornek_sayisi(spec):
     hicbir sey degistirmez. uygunluk.tukenme_ayirma_anlamli bunu kullanir.
     Sayim tukenme_hacim.ornek_sayisi'ndadir (sablon ve agac modu).
     """
+    return _ORNEK_SAYISI.al(icerik_anahtari(spec), lambda: _yakit_ornek_sayisi(spec))
+
+
+def _yakit_ornek_sayisi(spec):
     from cekirdek import tukenme_hacim
     return max([tukenme_hacim.ornek_sayisi(spec, ad) for ad in yanabilir_adlar(spec)] or [0])
 
@@ -225,9 +252,23 @@ def _hacim_tablosu(spec):
     """Butun yanabilir malzemelerin kaydi + "zorunlu" (bkz. _zorunlu_mu).
     Sablon modunda tukenme_hacim.sablon_malzeme_hacmi, gelismis (agac)
     modunda geometri.hacim.analitik (agac gezintisi)."""
+    dil = etkin_dil()
+    anahtar = (icerik_anahtari(spec), dil)
+    kayit = _HACIM_KAYDI.al(anahtar, lambda: _hacim_kaydi_hesapla(spec))
+    if etkin_dil() != dil:
+        # Hesap surerken dil degisti (baska is parcacigi): metinler karisik
+        # olabilir; eski dil anahtariyla saklanmaz, yeni dilde yeniden hesaplanir.
+        _HACIM_KAYDI.unut(anahtar)
+        kayit = _hacim_kaydi_hesapla(spec)
+    return {ad: dict(v, zorunlu=_zorunlu_mu(spec, ad)) for ad, v in kayit.items()}
+
+
+def _hacim_kaydi_hesapla(spec):
+    """Degismez kayit (ayrinti metni etkin dilde: anahtarda dil var)."""
     from cekirdek import tukenme_hacim
     kayit = tukenme_hacim.malzeme_hacimleri(spec, yanabilir_adlar(spec))
-    return {ad: dict(v, zorunlu=_zorunlu_mu(spec, ad)) for ad, v in kayit.items()}
+    return types.MappingProxyType({ad: types.MappingProxyType(dict(v))
+                                   for ad, v in kayit.items()})
 
 
 def hacimler(spec):

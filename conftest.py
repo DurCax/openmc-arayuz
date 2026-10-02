@@ -21,8 +21,9 @@ NASIL CALISIR
   - `veri` isareti: nukleer veri (OPENMC_CROSS_SECTIONS ya da tukenme zinciri)
     gerektiren testler. Otomatik anlasilamadigi icin VERI_GEREKTIREN listesinde
     tutulur (CI taklidiyle olculdu). Veri yoksa bu testler ATLANIR: veri
-    olmadan Model.plot/openmc.lib sureci C++ tarafinda sonlandirir, yani
-    pytest'in kendisi de olurdu.
+    olmadan openmc.lib '-c' kipi (Model.plot, test surecinde init) sureci C++
+    tarafinda sonlandirir, yani pytest'in kendisi de olurdu. Onizleme (v3 H2)
+    ayri surecte '-p' kipindedir ve veri istemez.
   - MODUL BASINA LISTE (Dalga 2): yeni test modulleri merkezi listeye
     dokunmadan kendi listesini tanimlar (paralel ajanlar bu dosyada cakismaz):
         VERI_GEREKEN = [test_bir_sey]            # islev ya da "test_bir_sey"
@@ -45,8 +46,8 @@ from testler import ortak_test  # noqa: E402
 # Modul:islev -> nukleer veri gerektirir. YAVAS listesindekilerin hepsi
 # (Monte Carlo) ayrica otomatik isaretlenir. Olcum (28.09.2026): veri yokken
 # (OPENMC_CROSS_SECTIONS/OPENMC_CHAIN_FILE bos, ~/nucdata yok) hizli suit.
-# (*) = veri olmadan openmc.lib sureci SONLANDIRIR (Model.plot ya da onizleme
-#       widget'i tesir kesitlerini yukler); digerleri KALDI/istisna verir.
+# (*) = veri olmadan openmc.lib sureci SONLANDIRIR ('-c' kipi tesir kesitlerini
+#       yukler; onizleme iscisi '-p' kipinde veri istemez); digerleri KALDI/istisna verir.
 # Test tasinirsa modul adi burada guncellenir; bilinmeyen ad zararsizdir
 # ama test_veri_listesi_gecerli uyarir.
 VERI_GEREKTIREN = frozenset({

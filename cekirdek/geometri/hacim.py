@@ -28,11 +28,16 @@
 
 import math
 import os
+import types
 from dataclasses import dataclass, field
 
 from cekirdek.geometri.gezinti import gez
 from cekirdek.geometri.sema import BOSLUK
 from cekirdek.ceviri import N_, _
+from cekirdek.uygunluk_bellek import Bellek, icerik_anahtari
+
+# Model icerigine gore katki tablosu (v3 H1; bkz. cekirdek/uygunluk_bellek.py)
+_KATKILAR = Bellek("hacim_katkilar")
 
 KESIN_DEGIL = "stokastik hesap gerekli"
 STOKASTIK = "stokastik"
@@ -82,11 +87,34 @@ def _ozet(satirlar):
 
 
 def katkilar(m, ad):
-    """[(yol, hacim | None, carpan, neden)] -- 'ad' malzemesinin her ziyareti."""
-    cikti = []
+    """[(yol, hacim | None, carpan, neden)] -- 'ad' malzemesinin her ziyareti.
+
+    Butun malzemelerin katkilari TEK gezintide cikarilir ve modelin icerigine
+    gore bellekte tutulur (v3 H1: tukenme sekmesi her yanabilir malzeme icin
+    ayri gezinti yapiyordu; SFR'de 12 x 0.4 s). Donen liste cagiranindir."""
+    if ad == BOSLUK:
+        return []
+    return list(_katki_tablosu(m).get(ad, ()))
+
+
+def _model_anahtari(m):
+    """GeometriModeli'nin icerige dayali kimligi: BUTUN alanlar (agac dahil;
+    gezinti bugun agac'i dogrudan okumasa da ileride okursa bayat sonuc olmasin)."""
+    return icerik_anahtari([m.kok, m.parcalar, m.gruplar, m.tanimlar, m.sablon, m.kaynaklar,
+                            m.agac])
+
+
+def _katki_tablosu(m):
+    """{ad: ((yol, hacim | None, carpan, neden), ...)} -- degismez, bellekli."""
+    return _KATKILAR.al(_model_anahtari(m), lambda: _katki_tablosu_hesapla(m))
+
+
+def _katki_tablosu_hesapla(m):
+    tablo = {}
     for z in gez(m):
         d = z.dugum
-        if d.get("tur") != "malzeme" or d.get("ad") != ad or ad == BOSLUK:
+        ad = d.get("ad")
+        if d.get("tur") != "malzeme" or ad == BOSLUK:
             continue
         if z.bolge is not None and z.bolge.hacim is not None:
             v = z.bolge.hacim * z.carpan
@@ -94,8 +122,8 @@ def katkilar(m, ad):
             v = None
         else:
             v = z.bolge.alan * _uzunluk(z.z_araligi) * z.carpan
-        cikti.append((z.yol, v, z.carpan, z.neden))
-    return cikti
+        tablo.setdefault(ad, []).append((z.yol, v, z.carpan, z.neden))
+    return types.MappingProxyType({a: tuple(k) for a, k in tablo.items()})
 
 
 def analitik(m, ad):

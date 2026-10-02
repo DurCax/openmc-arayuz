@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 07:22+0300\n"
+"POT-Creation-Date: 2026-10-02 07:37+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -285,7 +285,7 @@ msgstr ""
 msgid "Tablo satırı %d: β_i ve λ_i sayı olmalı."
 msgstr ""
 
-#: arayuz/analiz/kinetik.py:201 arayuz/analiz/kinetik_gosterim.py:71
+#: arayuz/analiz/kinetik.py:201 arayuz/analiz/kinetik_gosterim.py:72
 msgid "elle"
 msgstr ""
 
@@ -297,46 +297,46 @@ msgstr ""
 msgid "Önce \"Son koşudan al\" ile koşu verisini yükleyin."
 msgstr ""
 
-#: arayuz/analiz/kinetik_gosterim.py:35
+#: arayuz/analiz/kinetik_gosterim.py:36
 msgid "zaman [s]"
 msgstr ""
 
-#: arayuz/analiz/kinetik_gosterim.py:48
+#: arayuz/analiz/kinetik_gosterim.py:49
 #, python-format
 msgid "ρ = %.1f pcm = %.4f $ (β_eff = %.1f pcm)"
 msgstr ""
 
-#: arayuz/analiz/kinetik_gosterim.py:56
+#: arayuz/analiz/kinetik_gosterim.py:57
 #, python-format
 msgid "Inhour kararlı periyot (geri beslemesiz, dış ρ ile): T = %s"
 msgstr ""
 
-#: arayuz/analiz/kinetik_gosterim.py:58
+#: arayuz/analiz/kinetik_gosterim.py:59
 #, python-format
 msgid "Inhour kararlı periyot: T = %s"
 msgstr ""
 
-#: arayuz/analiz/kinetik_gosterim.py:61
+#: arayuz/analiz/kinetik_gosterim.py:62
 #, python-format
 msgid "Çözümden ölçülen periyot (son %%10): %s"
 msgstr ""
 
-#: arayuz/analiz/kinetik_gosterim.py:64
+#: arayuz/analiz/kinetik_gosterim.py:65
 #, python-format
 msgid "Çözümden periyot ölçülemedi: %s"
 msgstr ""
 
-#: arayuz/analiz/kinetik_gosterim.py:65
+#: arayuz/analiz/kinetik_gosterim.py:66
 #, python-format
 msgid "P(%.4g s) / P₀ = %.4g"
 msgstr ""
 
-#: arayuz/analiz/kinetik_gosterim.py:67
+#: arayuz/analiz/kinetik_gosterim.py:68
 #, python-format
 msgid "ΔT(%.4g s) = %.4g K; toplam ρ = %.1f pcm"
 msgstr ""
 
-#: arayuz/analiz/kinetik_gosterim.py:69
+#: arayuz/analiz/kinetik_gosterim.py:70
 #, python-format
 msgid ""
 "Veri: %s; çözücü: %s (katı ODE). Nokta kinetiği uzaysal etkileri içermez; eğitim "
@@ -4426,60 +4426,59 @@ msgstr[1] ""
 msgid "aşağıdan işaretleyin ya da hazır set seçin"
 msgstr ""
 
-#: arayuz/onizleme.py:89
+#: arayuz/onizleme.py:70
 msgid "Düşük (400)"
 msgstr ""
 
-#: arayuz/onizleme.py:89
+#: arayuz/onizleme.py:70
 msgid "Normal (800)"
 msgstr ""
 
-#: arayuz/onizleme.py:90
+#: arayuz/onizleme.py:71
 msgid "Yüksek (1400)"
 msgstr ""
 
-#: arayuz/onizleme.py:97
+#: arayuz/onizleme.py:75
 msgid "Hücre"
 msgstr ""
 
 #: arayuz/cubuk/sayfalar.py:117 arayuz/demet/kilif.py:59 arayuz/geometri/formlar.py:30
-#: arayuz/geometri/formlar.py:87 arayuz/kor/yerlesim.py:85 arayuz/onizleme.py:97
+#: arayuz/geometri/formlar.py:87 arayuz/kor/yerlesim.py:85 arayuz/onizleme.py:75
 #: arayuz/sekme_malzeme.py:220
 msgid "Malzeme"
 msgstr ""
 
-#: arayuz/onizleme.py:180
+#: arayuz/onizleme.py:162 arayuz/onizleme.py:323
+msgid "Model bekleniyor"
+msgstr ""
+
+#: arayuz/onizleme.py:168
 msgid "xy: üstten kesit (z = 0) · xz: yandan kesit (y = 0) · yz: yandan kesit (x = 0)"
 msgstr ""
 
-#: arayuz/onizleme.py:182
+#: arayuz/onizleme.py:170
 msgid "Kesit:"
 msgstr ""
 
-#: arayuz/onizleme.py:190
+#: arayuz/onizleme.py:178
 msgid "Gösterge"
 msgstr ""
 
-#: arayuz/onizleme.py:192
-msgid "Hızlı mod (kütüphaneyi açık tut)"
+#: arayuz/onizleme.py:180
+msgid "Çakışmaları göster"
 msgstr ""
 
-#: arayuz/onizleme.py:194
+#: arayuz/onizleme.py:182
 msgid ""
-"Kapalı: her çizim ~0.3 s; model düzenlerken doğru seçim.\n"
-"Açık: ilk çizim ~3 s (tesir kesitleri belleğe yüklenir),\n"
-"sonraki çizimler ~40 ms.\n"
-"\n"
-"Bitmiş bir geometriyi incelerken (kesit değiştirme, yakınlaştırma)\n"
-"açın. Düzenlerken açmayın: her model değişikliği kütüphaneyi\n"
-"yeniden başlatır ve değişiklik başına ~3 s sürer."
+"Birden fazla hücrenin kapladığı noktaları ayrı renkle gösterir ve\n"
+"sayısını bildirir. Büyük korlarda çizimi birkaç kat yavaşlatır."
 msgstr ""
 
-#: arayuz/onizleme.py:200
+#: arayuz/onizleme.py:184
 msgid "Yenile"
 msgstr ""
 
-#: arayuz/malzeme/malzeme_diyalog.py:163 arayuz/onizleme.py:207
+#: arayuz/malzeme/malzeme_diyalog.py:163 arayuz/onizleme.py:208
 msgid "Renk:"
 msgstr ""
 
@@ -4487,26 +4486,33 @@ msgstr ""
 msgid "Çözünürlük:"
 msgstr ""
 
-#: arayuz/onizleme.py:261 arayuz/onizleme.py:316
-msgid "Model bekleniyor"
+#: arayuz/onizleme.py:342
+msgid "Çiziliyor…"
 msgstr ""
 
-#: arayuz/onizleme.py:299
-msgid "Hızlı mod kapatıldı"
+#: arayuz/onizleme.py:462
+msgid "Önizleme gizli: model denetlendi, önizleme açılınca çizilir."
 msgstr ""
 
-#: arayuz/onizleme.py:402
-msgid "[hızlı mod yeniden başlatıldı]"
-msgstr ""
+#: arayuz/onizleme.py:474
+#, python-format
+msgid ""
+"Önizleme: %d hücre çakışması bulundu — geometriyi gözden geçirin (kesitte ayrı renkle"
+" gösterildi)."
+msgid_plural ""
+"Önizleme: %d hücre çakışması bulundu — geometriyi gözden geçirin (kesitte ayrı renkle"
+" gösterildi)."
+msgstr[0] ""
+msgstr[1] ""
 
-#: arayuz/onizleme.py:404
+#: arayuz/onizleme.py:481
 #, python-brace-format
 msgid "Önizleme güncel ({kesit}, {n} piksel){ek}"
 msgid_plural "Önizleme güncel ({kesit}, {n} piksel){ek}"
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/onizleme.py:410
+#: arayuz/onizleme.py:491
 #, python-format
 msgid ""
 "Geometri kurulamadı:\n"
@@ -4514,13 +4520,63 @@ msgid ""
 "%s"
 msgstr ""
 
-#: arayuz/onizleme.py:411
+#: arayuz/onizleme.py:493
 #, python-format
 msgid "Önizleme başarısız: %s"
 msgstr ""
 
-#: arayuz/onizleme.py:431
+#: arayuz/onizleme.py:534
 msgid "[ölçek 1:1 değil]"
+msgstr ""
+
+#: arayuz/onizleme.py:582
+msgid "Hücre renkleri yalnız hücreleri ayırt etmek içindir."
+msgstr ""
+
+#: arayuz/onizleme_boyama.py:101
+msgid "Çakışma"
+msgstr ""
+
+#: arayuz/onizleme_istemci.py:159
+#, python-format
+msgid "Önizleme isteği gönderilemedi: %s"
+msgstr ""
+
+#: arayuz/onizleme_istemci.py:263
+#, python-format
+msgid ""
+"Önizleme %d s içinde bitmedi; model çizim için çok ağır olabilir, süreç durduruldu. "
+"Çözünürlüğü düşürün ya da çakışma denetimini kapatın."
+msgstr ""
+
+#: arayuz/onizleme_istemci.py:267
+msgid "çöktü"
+msgstr ""
+
+#: arayuz/onizleme_istemci.py:268
+#, python-format
+msgid "çıkış kodu %d"
+msgstr ""
+
+#: arayuz/onizleme_istemci.py:269
+#, python-format
+msgid "Önizleme süreci beklenmedik biçimde sonlandı (%s)."
+msgstr ""
+
+#: arayuz/onizleme_istemci.py:271
+#, python-format
+msgid ""
+"Üst üste %d kez sonlandı; otomatik yeniden başlatma durduruldu, bir sonraki çizimde "
+"yeniden denenir."
+msgstr ""
+
+#: arayuz/onizleme_istemci.py:274
+msgid "Yeniden başlatıldı; model değişince önizleme yeniden çizilir."
+msgstr ""
+
+#: arayuz/onizleme_istemci.py:287
+#, python-format
+msgid "Önizleme süreci başlatılamadı: %s"
 msgstr ""
 
 #: arayuz/ortak.py:173
@@ -4560,27 +4616,27 @@ msgstr ""
 msgid "Çalışan sade bir model kuruldu ({ad}). Kaydetmek için 'Farklı kaydet' kullanın."
 msgstr ""
 
-#: arayuz/pencere/ana_pencere.py:540
+#: arayuz/pencere/ana_pencere.py:550
 #, python-brace-format
 msgid "adsız — örnek: {ornek}"
 msgstr ""
 
-#: arayuz/pencere/ana_pencere.py:543
+#: arayuz/pencere/ana_pencere.py:553
 msgid "kaydedilmemiş"
 msgstr ""
 
-#: arayuz/pencere/ana_pencere.py:568
+#: arayuz/pencere/ana_pencere.py:578
 msgid "Boyuta tıklayınca Kor sayfasına, hesap türüne tıklayınca Hesap ayarlarına gider."
 msgstr ""
 
-#: arayuz/pencere/ana_pencere.py:612
+#: arayuz/pencere/ana_pencere.py:622
 #, python-brace-format
 msgid ""
 " Model bu türün gerektirdiği parçayı içermiyordu; şablondan eklendi: {parca} "
 "(Parçalar/Demet sayfasında düzenleyin)."
 msgstr ""
 
-#: arayuz/pencere/ana_pencere.py:615
+#: arayuz/pencere/ana_pencere.py:625
 #, python-brace-format
 msgid "Kor türü: {tur} — geri almak için Ctrl+Z.{ek}"
 msgstr ""
