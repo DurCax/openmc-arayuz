@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 06:20+0300\n"
+"POT-Creation-Date: 2026-10-02 06:32+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -4256,53 +4256,53 @@ msgstr ""
 msgid "Malzeme"
 msgstr ""
 
-#: arayuz/onizleme.py:153 arayuz/onizleme.py:303
+#: arayuz/onizleme.py:155 arayuz/onizleme.py:312
 msgid "Model bekleniyor"
 msgstr ""
 
-#: arayuz/onizleme.py:159
+#: arayuz/onizleme.py:161
 msgid "xy: üstten kesit (z = 0) · xz: yandan kesit (y = 0) · yz: yandan kesit (x = 0)"
 msgstr ""
 
-#: arayuz/onizleme.py:161
+#: arayuz/onizleme.py:163
 msgid "Kesit:"
 msgstr ""
 
-#: arayuz/onizleme.py:169
+#: arayuz/onizleme.py:171
 msgid "Gösterge"
 msgstr ""
 
-#: arayuz/onizleme.py:171
+#: arayuz/onizleme.py:173
 msgid "Çakışmaları göster"
 msgstr ""
 
-#: arayuz/onizleme.py:173
+#: arayuz/onizleme.py:175
 msgid ""
 "Birden fazla hücrenin kapladığı noktaları ayrı renkle gösterir ve\n"
 "sayısını bildirir. Büyük korlarda çizimi birkaç kat yavaşlatır."
 msgstr ""
 
-#: arayuz/onizleme.py:175
+#: arayuz/onizleme.py:177
 msgid "Yenile"
 msgstr ""
 
-#: arayuz/malzeme/malzeme_diyalog.py:163 arayuz/onizleme.py:192
+#: arayuz/malzeme/malzeme_diyalog.py:163 arayuz/onizleme.py:201
 msgid "Renk:"
 msgstr ""
 
-#: arayuz/onizleme.py:215
+#: arayuz/onizleme.py:224
 msgid "Çözünürlük:"
 msgstr ""
 
-#: arayuz/onizleme.py:321
+#: arayuz/onizleme.py:330
 msgid "Çiziliyor…"
 msgstr ""
 
-#: arayuz/onizleme.py:424
+#: arayuz/onizleme.py:432
 msgid "Önizleme gizli: model denetlendi, önizleme açılınca çizilir."
 msgstr ""
 
-#: arayuz/onizleme.py:437
+#: arayuz/onizleme.py:444
 #, python-format
 msgid ""
 "Önizleme: %d hücre çakışması bulundu — geometriyi gözden geçirin (kesitte ayrı renkle"
@@ -4313,14 +4313,14 @@ msgid_plural ""
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/onizleme.py:444
+#: arayuz/onizleme.py:451
 #, python-brace-format
 msgid "Önizleme güncel ({kesit}, {n} piksel){ek}"
 msgid_plural "Önizleme güncel ({kesit}, {n} piksel){ek}"
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/onizleme.py:453
+#: arayuz/onizleme.py:460
 #, python-format
 msgid ""
 "Geometri kurulamadı:\n"
@@ -4328,13 +4328,17 @@ msgid ""
 "%s"
 msgstr ""
 
-#: arayuz/onizleme.py:455
+#: arayuz/onizleme.py:462
 #, python-format
 msgid "Önizleme başarısız: %s"
 msgstr ""
 
-#: arayuz/onizleme.py:494
+#: arayuz/onizleme.py:501
 msgid "[ölçek 1:1 değil]"
+msgstr ""
+
+#: arayuz/onizleme.py:549
+msgid "Hücre renkleri yalnız hücreleri ayırt etmek içindir."
 msgstr ""
 
 #: arayuz/onizleme_boyama.py:101

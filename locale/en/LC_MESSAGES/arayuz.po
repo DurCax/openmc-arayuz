@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 06:20+0300\n"
+"POT-Creation-Date: 2026-10-02 06:32+0300\n"
 "PO-Revision-Date: 2026-10-01 18:14+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -4471,27 +4471,27 @@ msgstr "Cell"
 msgid "Malzeme"
 msgstr "Material"
 
-#: arayuz/onizleme.py:153 arayuz/onizleme.py:303
+#: arayuz/onizleme.py:155 arayuz/onizleme.py:312
 msgid "Model bekleniyor"
 msgstr "Waiting for a model"
 
-#: arayuz/onizleme.py:159
+#: arayuz/onizleme.py:161
 msgid "xy: üstten kesit (z = 0) · xz: yandan kesit (y = 0) · yz: yandan kesit (x = 0)"
 msgstr "xy: top section (z = 0) · xz: side section (y = 0) · yz: side section (x = 0)"
 
-#: arayuz/onizleme.py:161
+#: arayuz/onizleme.py:163
 msgid "Kesit:"
 msgstr "Section:"
 
-#: arayuz/onizleme.py:169
+#: arayuz/onizleme.py:171
 msgid "Gösterge"
 msgstr "Legend"
 
-#: arayuz/onizleme.py:171
+#: arayuz/onizleme.py:173
 msgid "Çakışmaları göster"
 msgstr "Show overlaps"
 
-#: arayuz/onizleme.py:173
+#: arayuz/onizleme.py:175
 msgid ""
 "Birden fazla hücrenin kapladığı noktaları ayrı renkle gösterir ve\n"
 "sayısını bildirir. Büyük korlarda çizimi birkaç kat yavaşlatır."
@@ -4499,27 +4499,27 @@ msgstr ""
 "Shows points claimed by more than one cell in a separate colour and\n"
 "reports how many there are. Makes plotting several times slower for large cores."
 
-#: arayuz/onizleme.py:175
+#: arayuz/onizleme.py:177
 msgid "Yenile"
 msgstr "Refresh"
 
-#: arayuz/malzeme/malzeme_diyalog.py:163 arayuz/onizleme.py:192
+#: arayuz/malzeme/malzeme_diyalog.py:163 arayuz/onizleme.py:201
 msgid "Renk:"
 msgstr "Color:"
 
-#: arayuz/onizleme.py:215
+#: arayuz/onizleme.py:224
 msgid "Çözünürlük:"
 msgstr "Resolution:"
 
-#: arayuz/onizleme.py:321
+#: arayuz/onizleme.py:330
 msgid "Çiziliyor…"
 msgstr "Drawing…"
 
-#: arayuz/onizleme.py:424
+#: arayuz/onizleme.py:432
 msgid "Önizleme gizli: model denetlendi, önizleme açılınca çizilir."
 msgstr "Preview hidden: model checked; it is drawn when the preview is shown."
 
-#: arayuz/onizleme.py:437
+#: arayuz/onizleme.py:444
 #, python-format
 msgid ""
 "Önizleme: %d hücre çakışması bulundu — geometriyi gözden geçirin (kesitte ayrı renkle"
@@ -4534,14 +4534,14 @@ msgstr[1] ""
 "Preview: %d cell overlaps found — review the geometry (shown in a separate colour in "
 "the slice)."
 
-#: arayuz/onizleme.py:444
+#: arayuz/onizleme.py:451
 #, python-brace-format
 msgid "Önizleme güncel ({kesit}, {n} piksel){ek}"
 msgid_plural "Önizleme güncel ({kesit}, {n} piksel){ek}"
 msgstr[0] "Preview up to date ({kesit}, {n} pixel){ek}"
 msgstr[1] "Preview up to date ({kesit}, {n} pixels){ek}"
 
-#: arayuz/onizleme.py:453
+#: arayuz/onizleme.py:460
 #, python-format
 msgid ""
 "Geometri kurulamadı:\n"
@@ -4552,14 +4552,18 @@ msgstr ""
 "\n"
 "%s"
 
-#: arayuz/onizleme.py:455
+#: arayuz/onizleme.py:462
 #, python-format
 msgid "Önizleme başarısız: %s"
 msgstr "Preview failed: %s"
 
-#: arayuz/onizleme.py:494
+#: arayuz/onizleme.py:501
 msgid "[ölçek 1:1 değil]"
 msgstr "[scale not 1:1]"
+
+#: arayuz/onizleme.py:549
+msgid "Hücre renkleri yalnız hücreleri ayırt etmek içindir."
+msgstr "Cell colours only tell cells apart."
 
 #: arayuz/onizleme_boyama.py:101
 msgid "Çakışma"

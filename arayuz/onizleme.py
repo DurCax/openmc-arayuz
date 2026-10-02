@@ -72,6 +72,7 @@ RENKLENDIRME = [("material", N_("Malzeme")), ("cell", N_("Hücre"))]   # veri, g
 _SOLUK_ORTU = 0.6                 # secili olmayan bolgenin soluk ortusu (saydamlik)
 _GECIKME_MS = 300                 # ardisik degisiklikler tek istege duser (v2'den)
 _ISITMA_MS = 1500                 # acilistan sonra isci sicak baslatilir (ilk cizimde import yok)
+_GOSTERGE_SATIRI = 3              # gosterge alaninin en cok satiri (fazlasi kaydirilir)
 _ADIM_ARASI_MS = 1                # 0 olursa Qt adimlari tek turda (araya girdi almadan) yurutur
 _YERLESIM_GECIKMESI_MS = 150     # boyut degisimi durulunca yerlesim (cizimle ayni olayda degil)
 _EN_BOY_SINIRI = 3.0              # bu orani asan eksenel kesit gerilir ve baslikta yazar
@@ -141,6 +142,7 @@ class OnizlemeWidget(QtWidgets.QWidget):
 
         for w in (self.eksen, self.renklendirme, self.cozunurluk):
             w.currentIndexChanged.connect(lambda *_a: self._ciz())
+        self.gosterge.toggled.connect(self.gosterge_alani.setVisible)
         self.gosterge.toggled.connect(lambda *_a: self._ciz())
         self.cakisma.toggled.connect(lambda *_a: self._ciz())
         self.yenile_dugme.clicked.connect(lambda *_a: self._ciz())
@@ -180,7 +182,14 @@ class OnizlemeWidget(QtWidgets.QWidget):
         self.gosterge_etiketi.setWordWrap(True)
         self.gosterge_etiketi.setTextFormat(QtCore.Qt.RichText)
         self.gosterge_etiketi.setContentsMargins(A["s"], 0, A["s"], 0)
-        self.gosterge_etiketi.hide()
+        # Uzun malzeme listesi (SFR: 20 oge) tuvali ezmesin: en cok birkac satir, kaydirilir.
+        self.gosterge_alani = QtWidgets.QScrollArea()
+        self.gosterge_alani.setWidget(self.gosterge_etiketi)
+        self.gosterge_alani.setWidgetResizable(True)
+        self.gosterge_alani.setFrameShape(QtWidgets.QFrame.NoFrame)
+        self.gosterge_alani.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.gosterge_alani.setFixedHeight(
+            self.gosterge_etiketi.fontMetrics().lineSpacing() * _GOSTERGE_SATIRI + A["s"])
         self._son_gosterge = []
 
     def _duzeni_kur(self):
@@ -227,7 +236,7 @@ class OnizlemeWidget(QtWidgets.QWidget):
         duzen.setContentsMargins(0, 0, 0, 0)
         duzen.addLayout(ust)
         duzen.addWidget(self.tuval, 1)
-        duzen.addWidget(self.gosterge_etiketi)
+        duzen.addWidget(self.gosterge_alani)
         duzen.addLayout(alt)
 
     # ------------------------------------------------------------------
@@ -348,8 +357,7 @@ class OnizlemeWidget(QtWidgets.QWidget):
         islev, arg = adimlar[0]
         islev(*arg)
         if len(adimlar) > 1:
-            QtCore.QTimer.singleShot(_ADIM_ARASI_MS, self,
-                                     lambda: self._adimlari_yurut(ist, adimlar[1:]))
+            self._sonra(lambda: self._adimlari_yurut(ist, adimlar[1:]))
 
     # ------------------------------------------------------------------
     def _cerceve_geldi(self, c):
@@ -427,8 +435,7 @@ class OnizlemeWidget(QtWidgets.QWidget):
             return
         self._son_eksenler = list(zip(ist["kesitler"], ist["eksenler"] or []))
         self._gosterge_goster(ist)
-        self._yerlesim()
-        self.tuval.draw_idle()
+        self._sonra(self._yerlesim_ve_ciz)
         self._basari_bildir(ist)
         self.cizim_bitti.emit(True)
 
@@ -449,7 +456,7 @@ class OnizlemeWidget(QtWidgets.QWidget):
         from arayuz.ortak import hata_metni
         self._son_hata = iz or metin
         self._son_eksenler = []
-        self.gosterge_etiketi.hide()
+        self.gosterge_etiketi.setText("")
         self._bos_mesaj(_("Geometri kurulamadı:\n\n%s") % hata_metni(RuntimeError(metin)),
                         hata=True)
         self.durum.emit(_("Önizleme başarısız: %s") % metin, False)
@@ -495,8 +502,19 @@ class OnizlemeWidget(QtWidgets.QWidget):
         ax.set_title(baslik_ + ek, fontsize=8)
         ax.tick_params(labelsize=7)
 
+    def _sonra(self, islev):
+        """Islevi bir sonraki olay dongusu turunda calistirir (adimlar arasina
+        girdi girebilsin: yerlesim ~70 ms + cizim ~110 ms ayni turda donma olurdu)."""
+        QtCore.QTimer.singleShot(_ADIM_ARASI_MS, self, islev)
+
+    def _yerlesim_ve_ciz(self):
+        if self._istek is None:             # arada yeni istek geldiyse o cizer
+            self._yerlesim()
+            self._sonra(self.tuval.draw_idle)
+
     def _yeniden_yerlestir(self):
-        if self._son_eksenler:
+        # Suren istek varsa yerlesim + cizim zaten sonda yapilir (cift cizim donmasi).
+        if self._son_eksenler and self._istek is None:
             self._yerlesim()
             self.tuval.draw_idle()
 
@@ -524,14 +542,17 @@ class OnizlemeWidget(QtWidgets.QWidget):
         matplotlib gostergesi olarak yer alir (kaydet)."""
         ogeler = self._gosterge_ogeleri(ist)
         self._son_gosterge = ogeler
+        # Alan yuksekligi SABIT ve yalniz "Gosterge" kapatilinca gizlenir: cizim
+        # sirasinda tuval boyutu degismesin (yeniden yerlesim + ikinci cizim).
         if not ogeler:
-            self.gosterge_etiketi.hide()
+            self.gosterge_etiketi.setText(
+                _("Hücre renkleri yalnız hücreleri ayırt etmek içindir.")
+                if ist["renk"] == "cell" else "")
             return
         from matplotlib.colors import to_hex
         self.gosterge_etiketi.setText("&nbsp;&nbsp; ".join(
             "<span style='color:%s'>&#9632;</span>&nbsp;%s" % (to_hex(renk), html.escape(ad))
             for ad, renk in ogeler))
-        self.gosterge_etiketi.show()
 
     # ------------------------------------------------------------------
     # gelismis geometri: tiklama -> dugum, vurgu
@@ -634,7 +655,7 @@ class OnizlemeWidget(QtWidgets.QWidget):
         """Tuvali resim olarak kaydeder; gosterge (Qt etiketi) resme matplotlib
         gostergesi olarak eklenir, kayittan sonra kaldirilir."""
         gosterge = None
-        if self._son_gosterge and self.gosterge_etiketi.isVisibleTo(self):
+        if self._son_gosterge and self.gosterge_alani.isVisibleTo(self):
             from matplotlib.patches import Patch
             tutamaklar = [Patch(color=renk, label=ad) for ad, renk in self._son_gosterge]
             gosterge = self.figur.legend(handles=tutamaklar, loc="upper center",

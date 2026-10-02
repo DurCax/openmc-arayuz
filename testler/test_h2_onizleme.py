@@ -233,10 +233,12 @@ def test_sfr_onizleme_suresi(gecici=None):
         w._ciz()
         w.bekle(_ZAMAN_ASIMI)
         ilk = time.perf_counter() - t0
+        _bekle(lambda: False, 0.3)                # kullanici bir sonraki tiklamayi yapana dek
         t0 = time.perf_counter()
         w.renklendirme.setCurrentIndex(w.renklendirme.findData("cell"))
         w.bekle(_ZAMAN_ASIMI)
         ikinci = time.perf_counter() - t0
+        _bekle(lambda: False, 0.3)                # son cizim (draw_idle) da olculsun
         en_buyuk = olcer.durdur()
         print("  OLCUM sfr_met1000_kor: ilk %.2f s, renk degisimi %.2f s, en uzun donma %.0f ms"
               % (ilk, ikinci, en_buyuk * 1e3))
