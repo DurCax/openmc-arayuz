@@ -15,12 +15,14 @@
    satirlar = tablo(k.durumlar()); open("kinf.csv", "w").write(csv_metni(satirlar))
 
  TEK DEMET ALT MODELI
-   tek_demet_spec(spec, ad, uc_boyutlu=False) K5'in cekirdek/alt_model.py
-   demet_alt_modeli'si ile AYNI imza ve sozlesmededir; o modul varsa onu
-   kullanir (tek gercek kaynak), yoksa _yedek_tek_demet_spec'e duser
-   (K5 birlesince yedek kaldirilabilir). Sozlesme: kor = tek_demet, butun
-   sinirlar yansitici, 2B, tally/guc dagilimi/tukenme/kinetik kapali, kaynak
-   koseleri alt modelden turetilir. Testler iki uygulamayi da denetler.
+   tek_demet_spec(spec, ad, uc_boyutlu=False) = K5'in cekirdek/alt_model.py
+   demet_alt_modeli'si (tek gercek kaynak; yalniz AltModelHatasi ->
+   DemetKinfHatasi). Sozlesme: kor = tek_demet, butun sinirlar yansitici, 2B,
+   tally/guc dagilimi/tukenme/kinetik kapali, kutuphane ve malzemeler
+   kullanilanlara budanmis. Elle kurulan tek demet modeliyle FIZIKSEL OLARAK
+   OZDESTIR (testte malzeme bilesimi/yuzey/hucre/kafes imzasi); budama
+   malzeme sirasini degistirdigi icin rastgele gerceklesme farklidir: k-sonsuz
+   istatistik sinirinda aynidir (sigma_fark = hypot(s1, s2)).
 
  FIZIK
    Sonuc k-sonsuz'dur: sizintisiz, sonsuz ozdes demet kafesi (yansitici
@@ -32,7 +34,6 @@
 
 from __future__ import annotations
 
-import copy
 import csv
 import io
 import os
@@ -40,15 +41,17 @@ from dataclasses import dataclass
 from typing import Any, Iterable, List, Mapping, Optional, Sequence, Tuple
 
 from cekirdek import kuyruk, sema
+from cekirdek.alt_model import AltModelHatasi, demet_alt_modeli
+from cekirdek.yerel_k import csv_hucresi
 from cekirdek.ceviri import _
 from cekirdek.gunluk import kaydedici
 
 _log = kaydedici(__name__)
 
 ETIKET = "k4_demet"                   # KosuIsi.etiket anahtari (demet adi)
-_YANSITICI = {"yan": "reflective", "alt": "reflective", "ust": "reflective"}
-# Varsayilan istatistik: tek demet k-sonsuzu icin ~20 pcm duzeyi (pwr 17x17,
-# 5000 x 90 aktif cevrim olculdu; kullanici degistirir).
+# Varsayilan istatistik. Olcum (02.10.2026, pwr_ceyrek_kor demet_31, 17x17):
+# 2000 x 25 aktif -> sigma ~450 pcm, 10000 x 60 aktif -> ~110-140 pcm; 1/sqrt(N)
+# ile 5000 x 90 aktif -> ~150 pcm (raporlanan; tek kosu sigmasi alt sinirdir).
 VARSAYILAN_PARCACIK = 5000
 VARSAYILAN_CEVRIM = 120
 VARSAYILAN_PASIF = 30
@@ -107,6 +110,9 @@ def _say(dugum: Any, sayac: dict) -> None:
         sayac[dugum["ad"]] += 1
     if dugum.get("tur") == "kafes":
         anahtar = dugum.get("anahtar") or {}
+        if any(len(str(a)) != 1 for a in anahtar):
+            _log.warning("kafes '%s': çok karakterli harita anahtarı; demet sayısı eksik "
+                         "olabilir", dugum.get("id"))
         for satir in dugum.get("harita") or []:
             for harf in str(satir):
                 hedef = anahtar.get(harf)
@@ -134,39 +140,12 @@ def demet_turleri(spec: Mapping[str, Any]) -> Tuple[DemetTuru, ...]:
 # 2. TEK DEMET ALT MODELI
 # ============================================================================
 
-def _yedek_tek_demet_spec(spec: Mapping[str, Any], ad: str, uc_boyutlu: bool = False) -> dict:
-    """K5 alt_model.demet_alt_modeli ile ayni sozlesme (K5 birlesmeden once)."""
-    if sema.demet_bul(spec, ad) is None:
-        raise DemetKinfHatasi(_("tanımsız demet: %s") % ad)
-    alt = copy.deepcopy(dict(spec))
-    alt["ad"] = "%s — %s" % (spec.get("ad") or "", ad)
-    kor = copy.deepcopy(sema.VARSAYILAN_KOR)
-    kor.update({"tur": "tek_demet", "demet": ad, "sinir": dict(_YANSITICI),
-                "yukseklik": sema.model_yuksekligi(spec) if uc_boyutlu else None})
-    alt.update(kor=kor, geometri=None, tamburlar=[], tallyler=[],
-               guc_dagilimi=copy.deepcopy(sema.VARSAYILAN_GUC))
-    alt["tukenme"] = dict(copy.deepcopy(alt.get("tukenme") or sema.VARSAYILAN_TUKENME),
-                          var=False, ek_malzemeler=[])
-    ayar = alt.setdefault("ayarlar", copy.deepcopy(sema.VARSAYILAN_AYARLAR))
-    ayar["kinetik"] = dict(ayar.get("kinetik") or {}, var=False)
-    kaynak = ayar.setdefault("kaynak", {})
-    kaynak.pop("alt", None)
-    kaynak.pop("ust", None)
-    kaynak["konum"] = [0.0, 0.0, 0.0]
-    return alt
-
-
 def tek_demet_spec(spec: Mapping[str, Any], ad: str, uc_boyutlu: bool = False) -> dict:
-    """Yansitici sinirli tek demet alt modeli (YENI spec; girdi degismez)."""
-    try:
-        from cekirdek.alt_model import demet_alt_modeli
-    except ImportError:
-        demet_alt_modeli = _yedek_tek_demet_spec
+    """Yansitici sinirli tek demet alt modeli (K5 cekirdek/alt_model.py; YENI
+    spec, girdi degismez). Kurulamazsa DemetKinfHatasi."""
     try:
         return demet_alt_modeli(spec, ad, uc_boyutlu=uc_boyutlu)
-    except DemetKinfHatasi:
-        raise
-    except ValueError as e:                  # K5 AltModelHatasi(ValueError)
+    except AltModelHatasi as e:
         raise DemetKinfHatasi(str(e)) from e
 
 
@@ -226,8 +205,9 @@ def csv_metni(satirlar: Iterable[KinfSatiri]) -> str:
     yazici = csv.writer(tampon, lineterminator="\n")
     yazici.writerow(["demet", "k_inf", "sigma", "durum", "hata"])
     for s in satirlar:
-        yazici.writerow([s.demet, "" if s.k is None else "%.6f" % s.k,
-                         "" if s.sigma is None else "%.6f" % s.sigma, s.asama, s.hata or ""])
+        yazici.writerow([csv_hucresi(s.demet), "" if s.k is None else "%.6f" % s.k,
+                         "" if s.sigma is None else "%.6f" % s.sigma, s.asama,
+                         csv_hucresi(s.hata or "")])
     return tampon.getvalue()
 
 

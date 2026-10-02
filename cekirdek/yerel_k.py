@@ -503,7 +503,7 @@ def sonuctan(sonuc: Mapping[str, Any], spec: Mapping[str, Any],
     return cikti
 
 
-def _hucre_metni(deger: Any) -> str:
+def csv_hucresi(deger: Any) -> str:
     """CSV hucresi: formul onekiyle baslayan metin tirnakla etkisizlestirilir."""
     metin = str(deger)
     return "'" + metin if metin.startswith(_CSV_FORMUL) else metin

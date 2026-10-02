@@ -29,15 +29,25 @@ def _ornek(ad):
 
 
 def _uygulamalar():
-    """Sozlesmeyi saglamasi gereken tek demet alt modeli uygulamalari."""
-    from cekirdek import demet_kinf
-    adaylar = [demet_kinf._yedek_tek_demet_spec, demet_kinf.tek_demet_spec]
-    try:
-        from cekirdek import alt_model
-        adaylar.append(alt_model.demet_alt_modeli)
-    except ImportError:
-        pass                     # K5 henuz birlesmedi: yalniz yedek denetlenir
-    return adaylar
+    """Sozlesmeyi saglamasi gereken tek demet alt modeli (K5 alt_model; sarmalayici)."""
+    from cekirdek import alt_model, demet_kinf
+    return [demet_kinf.tek_demet_spec, alt_model.demet_alt_modeli]
+
+
+def _imza(spec):
+    """Kurulan modelin kimlikten bagimsiz imzasi: geometride KULLANILAN
+    malzemelerin bilesimi, yuzeyler (tur, katsayi, sinir), hucre ve kafes."""
+    from cekirdek import kurucu
+    model, _b = kurucu.kur(spec)
+    geo = model.geometry
+    malzemeler = {m.name: tuple(sorted((n, round(d, 12)) for n, d in
+                                       m.get_nuclide_atom_densities().items()))
+                  for m in geo.get_all_materials().values()}
+    yuzeyler = sorted((s.type, tuple(round(float(v), 9) for v in s.coefficients.values()),
+                       s.boundary_type) for s in geo.get_all_surfaces().values())
+    kafesler = sorted((tuple(l.pitch), tuple(l.shape), tuple(l.lower_left))
+                      for l in geo.get_all_lattices().values())
+    return malzemeler, yuzeyler, len(geo.get_all_cells()), kafesler
 
 
 def test_demet_turleri_kordaki_kullanim_sayisiyla_listelenir():
@@ -78,6 +88,42 @@ def test_tek_demet_alt_modeli_yansitici_ve_sade():
         model, _b = kurucu.kur(alt)
         kutu = model.geometry.bounding_box
         assert kutu.upper_right[0] == pytest.approx(10.71), ad
+
+
+def test_sihirbaz_modeli_elle_modelle_fiziksel_olarak_ozdes():
+    # Arrange: deterministik kanit -- ayni malzeme bilesimi, yuzeyler, hucreler, kafes
+    from cekirdek import demet_kinf
+    spec = _ornek("pwr_ceyrek_kor")
+    ayar = demet_kinf.KinfAyari(parcacik=100, cevrim=10, pasif=2)
+    for ad in ("demet_24", "demet_31"):
+        # Act
+        sihirbaz = demet_kinf.sihirbaz_spec(spec, ad, ayar)
+        elle = _elle_tek_demet(spec, ad, ayar)
+        # Assert
+        assert _imza(sihirbaz) == _imza(elle), ad
+
+
+def test_budama_yalniz_kullanilmayan_malzemeleri_atar():
+    # Arrange
+    from cekirdek import demet_kinf, sema
+    spec = _ornek("pwr_ceyrek_kor")
+    for ad in ("demet_24", "demet_31"):
+        # Act
+        alt = demet_kinf.tek_demet_spec(spec, ad)
+        # Assert
+        tum = {m["ad"] for m in spec["malzemeler"]}
+        kalan = {m["ad"] for m in alt["malzemeler"]}
+        atilan = tum - kalan
+        assert kalan <= tum
+        assert not (atilan & set(_imza(alt)[0])), "atilan malzeme geometride kullanilmamali"
+        assert sema.kullanilan_malzemeler(alt) <= kalan
+
+
+def test_demet_kinf_csv_formul_oneki_etkisiz():
+    from cekirdek import demet_kinf
+    satir = demet_kinf.KinfSatiri("=CMD()", 1.0, 0.1, "basarisiz", "+hata")
+    okunan = list(csv.reader(io.StringIO(demet_kinf.csv_metni([satir]))))[1]
+    assert okunan[0] == "'=CMD()" and okunan[4] == "'+hata"
 
 
 def test_tanimsiz_demet_acik_hata():
@@ -201,6 +247,8 @@ def test_sihirbaz_k_sonsuzu_elle_modelle_ayni(gecici):
     # Assert
     assert d.asama == kuyruk.Asama.BITTI, d.hata
     (k_s, s_s) = d.k
+    # Fiziksel olarak ozdes model (imza testi); budama rastgele gerceklesmeyi
+    # degistirir: istatistik sinirinda ayni, sigma_fark = hypot(s1, s2).
     assert abs(k_s - k_el[0]) <= 2.0 * math.hypot(s_s, k_el[1]), (d.k, k_el)
     assert k_s > 1.0, "yansitici 2.4% demet kritik ustu olmali"
 
@@ -210,5 +258,8 @@ HIZLI = [test_demet_turleri_kordaki_kullanim_sayisiyla_listelenir,
          test_tek_demet_alt_modeli_yansitici_ve_sade, test_tanimsiz_demet_acik_hata,
          test_sihirbaz_spec_ayarlari_uygular_kaynak_kutu, test_gecersiz_ayar_reddedilir,
          test_isler_ayri_dizinde_etiketli, test_kuyrukla_kosulup_tablo_dolar,
-         test_csv_demet_turu_k_sigma, test_yabanci_isler_tabloya_girmez]
+         test_csv_demet_turu_k_sigma, test_yabanci_isler_tabloya_girmez,
+         test_sihirbaz_modeli_elle_modelle_fiziksel_olarak_ozdes,
+         test_budama_yalniz_kullanilmayan_malzemeleri_atar,
+         test_demet_kinf_csv_formul_oneki_etkisiz]
 YAVAS = [test_sihirbaz_k_sonsuzu_elle_modelle_ayni]
