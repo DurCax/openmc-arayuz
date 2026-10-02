@@ -84,7 +84,7 @@ class Degisken:
     birim: str = ""
 
     def __post_init__(self) -> None:
-        if not _AD_DESENI.match(str(self.ad or "")):
+        if not _AD_DESENI.fullmatch(str(self.ad or "")):
             raise ValueError(_("değişken adı bir tanımlayıcı olmalı (harf/_ ile başlar): %r")
                              % (self.ad,))
         if self.tur not in _gecerli_turler():
@@ -303,6 +303,6 @@ def kuyruga_ekle(model: ParametrikModel, kuyruk: Any, kok_dizin: str, is_parcaci
 def tek_degiskenli(spec: Mapping[str, Any], tur: str, hedef: Any,
                    degerler: Sequence[float], ad: Optional[str] = None) -> ParametrikModel:
     """Tek degiskenli tarama -> ParametrikModel (tarama.parametrik_model kullanir)."""
-    degisken = Degisken(ad=tur if _AD_DESENI.match(tur) else "x", tur=tur, hedef=hedef)
+    degisken = Degisken(ad=tur if _AD_DESENI.fullmatch(tur) else "x", tur=tur, hedef=hedef)
     return ParametrikModel(ad=ad or tur, taban=spec, degiskenler=(degisken,),
                            tarama=Tarama(degerler={degisken.ad: tuple(degerler)}))
