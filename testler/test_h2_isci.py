@@ -180,4 +180,6 @@ HIZLI = [test_dongu_yalniz_en_son_istegi_isler, test_dongu_yeni_istek_eskisini_i
          test_dongu_hata_yanit_olur_ve_surer, test_dongu_cik_istegi, test_giris_cizim_alt_sureci,
          test_oturum_acik_tutulur_ve_kapanir]
 YAVAS = []
+# '-p' kipi veri istemez; ama conftest koruyucusu test surecinde openmc.lib.init'i
+# veri yokken yasaklar (kipi ayirt edemez): surec ici oturum testi listede kalir.
 VERI_GEREKEN = [test_oturum_acik_tutulur_ve_kapanir]

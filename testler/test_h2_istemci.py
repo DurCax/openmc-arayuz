@@ -143,5 +143,4 @@ def test_istemci_baslatilamazsa_hata():
 HIZLI = [test_istemci_cizer_ve_zombisiz_kapanir, test_istemci_eski_sonucu_atar,
          test_istemci_cokmede_hata_ve_yeniden_baslar, test_istemci_baslatilamazsa_hata]
 YAVAS = []
-VERI_GEREKEN = [test_istemci_cizer_ve_zombisiz_kapanir, test_istemci_eski_sonucu_atar,
-                test_istemci_cokmede_hata_ve_yeniden_baslar]
+# Nukleer veri GEREKMEZ: isci openmc.lib'i '-p' (cizim) kipinde baslatir.

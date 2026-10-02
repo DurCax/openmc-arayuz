@@ -256,6 +256,4 @@ HIZLI = [test_widget_arka_planda_cizer, test_widget_gizliyken_cizmez,
          test_widget_bozuk_model_kapiyi_kapatir, test_widget_cokmede_acik_hata,
          test_widget_ana_is_parcacigi_bloklanmaz, test_widget_cakisma_secenegi]
 YAVAS = [test_sfr_onizleme_suresi]
-VERI_GEREKEN = [test_widget_arka_planda_cizer, test_widget_gizliyken_cizmez,
-                test_widget_bozuk_model_kapiyi_kapatir, test_widget_cokmede_acik_hata,
-                test_widget_ana_is_parcacigi_bloklanmaz]
+# Nukleer veri GEREKMEZ: isci openmc.lib'i '-p' (cizim) kipinde baslatir.
