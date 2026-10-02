@@ -420,8 +420,11 @@ def calistir(spec, dizin, geri_cagir=None, veri_kontrolu=True):
     """
     bulgular = kapi(spec, veri_kontrolu=veri_kontrolu)
     import openmc.deplete as d
+    from cekirdek import tukenme_guc
     t = spec["tukenme"]
-    model, bilgi = hazirla(spec)
+    # v3 K3: guc tally'si kurulabilen modelde her adimda pin gucu sayilir
+    # (tukenme_guc.olcum_spec; spec kaydi kullanicinin spec'idir).
+    model, bilgi = hazirla(tukenme_guc.olcum_spec(spec))
     bilgi["dogrulama"] = bulgular
     zs = bilgi["zincir"]
     os.makedirs(dizin, exist_ok=True)
@@ -431,6 +434,7 @@ def calistir(spec, dizin, geri_cagir=None, veri_kontrolu=True):
     onceki = os.path.join(dizin, "depletion_results.h5")
     if os.path.exists(onceki):
         os.remove(onceki)
+    tukenme_guc.onceki_adimlari_sil(dizin)     # eski adim gucu yeni sonuca karismasin
     spec_kaydet(spec, dizin)
     eski = os.getcwd()
     try:
