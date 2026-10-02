@@ -137,7 +137,7 @@ def test_giris_cizim_alt_sureci():
     from cekirdek import giris
     program, arg = giris.alt_surec_komutu(giris.ALT_CIZIM, [], python="/py")
     kontrol("komut: python -m cekirdek.giris --alt cizim",
-            (program, arg) == ("/py", ["-m", "cekirdek.giris", "--alt", "cizim"]))
+            (program, arg) == ("/py", giris._GUVENLI_YOL + ["-m", "cekirdek.giris", "--alt", "cizim"]))
     kontrol("arguman verilirse kullanim hatasi (2)", giris.alt_komutu(["cizim", "fazla"]) == 2)
 
 

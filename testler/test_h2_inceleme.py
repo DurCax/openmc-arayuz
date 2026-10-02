@@ -321,7 +321,7 @@ def test_ardisik_cokmede_durur():
                 "-> %s" % araliklar)
         kontrol("son ileti durdugunu soyler", "durduruldu" in coktu[-1], "-> %s" % coktu[-1:])
         ist.iste({"tur": "kontrol", "spec": {}})
-        kontrol("sonraki istekte yeniden denenir", _bekle(lambda: len(hazir) > len(coktu), 10))
+        kontrol("sonraki istekte yeniden denenir", _bekle(lambda: len(hazir) > oi.EN_COK_ARDISIK_COKME, 10))
     finally:
         ist.kapat()
 

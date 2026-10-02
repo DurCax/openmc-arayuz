@@ -26,7 +26,9 @@ ALT SURECLER (alt_surec_komutu)
   hem kurulu pakette (site-packages) hem kaynak agacindan (PYTHONPATH = paket
   koku) calisir, oysa `openmc-arayuz-kosu` betigi yalniz pip kurulumundan sonra
   vardir ve etkinlestirilmemis bir venv/conda ortaminda PATH'te olmayabilir;
-  (3) dagitici tek: `openmc-arayuz-kosu --alt tukenme` ile ayni kod yolu.
+  (3) dagitici tek: `openmc-arayuz-kosu --alt tukenme` ile ayni kod yolu;
+  (4) `-P` (Python >= 3.11) calisma dizinini modul yoluna eklemez: cwd'den
+  modul kacirma olmaz. Cagiran ayrica calisma dizinini paket kokune sabitler.
 """
 
 import os
@@ -37,6 +39,10 @@ UYGUNLUK_KOMUTU = "uygunluk"
 ALT_SECENEGI = "--alt"
 ALT_TUKENME = "tukenme"
 ALT_CIZIM = "cizim"
+# -P (Python >= 3.11): `-m` calisma dizinini sys.path'in basina KOYMAZ; aksi halde
+# cwd'deki sahte bir `cekirdek/` paketi gercegin yerine yuklenirdi (modul kacirma).
+# Kaynak agacinda paket koku PYTHONPATH ile gelir (alt_surec_pythonpath).
+_GUVENLI_YOL = ["-P"] if sys.version_info >= (3, 11) else []
 _RAPOR_UZANTILARI = {".html": "html", ".htm": "html", ".pdf": "pdf"}
 _SPEC_ADAYLARI = ("spec.json", "tukenme_spec.json")
 
@@ -254,7 +260,7 @@ def alt_surec_komutu(ad, argumanlar, python=None):
         from cekirdek.ceviri import _
         raise ValueError(_("bilinmeyen alt süreç: %r") % (ad,))
     return (python or sys.executable,
-            ["-m", "cekirdek.giris", ALT_SECENEGI, ad] + list(argumanlar))
+            _GUVENLI_YOL + ["-m", "cekirdek.giris", ALT_SECENEGI, ad] + list(argumanlar))
 
 
 def alt_surec_pythonpath(mevcut, kaynak_agaci=None):
