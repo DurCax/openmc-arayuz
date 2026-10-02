@@ -378,7 +378,7 @@ def hazirla(spec):
         ornek = tukenme_hacim.ornekleri_ayir(model, spec, hv, {a: nesneler[a] for a in hv})
     return model, {"zincir": zs, "hacimler": hv, "agir_metal_g": agir,
                    "yanabilir": list(hv), "atlanan": atlanan, "ornek_sayisi": ornek,
-                   "stokastik": stokastik}
+                   "stokastik": stokastik, "nesneler": nesneler}
 
 
 def _agir_metal_kutlesi(m):
@@ -427,43 +427,32 @@ def calistir(spec, dizin, geri_cagir=None, veri_kontrolu=True):
 
     Once dogrulama kapisi (kapi): hata varsa dogrula.DogrulamaHatasi ve
     dizindeki ONCEKI sonuc ile spec kaydi SILINMEZ. bilgi["dogrulama"]:
-    kapidan gecen bulgular (uyari, bilgi).
+    kapidan gecen bulgular (uyari, bilgi). v3 Y4: entegrator, sogutma,
+    surdurme, kritik arama ve hizli kip cekirdek/tukenme_kosu.py'dedir;
+    bilgi["surdurulen"]: surdurmede onceki kosunun tamamlanmis adim sayisi.
     """
     bulgular = kapi(spec, veri_kontrolu=veri_kontrolu)
-    import openmc.deplete as d
-    from cekirdek import tukenme_guc
-    t = spec["tukenme"]
+    from cekirdek import tukenme_ayar, tukenme_guc, tukenme_kosu, tukenme_surdur
     # v3 K3: guc tally'si kurulabilen modelde her adimda pin gucu sayilir
     # (spec kaydi kullanicinin spec'idir).
     model, bilgi = tukenme_guc.olcumlu_hazirla(hazirla, spec)
     bilgi["dogrulama"] = bulgular
-    zs = bilgi["zincir"]
     os.makedirs(dizin, exist_ok=True)
-    # Eski sonuc SILINIR, sonra spec kaydi yazilir. Sira onemli: kosu yarida
-    # kalirsa dizinde eski bir sonuc ile YENI bir spec kaydi yan yana kalir
-    # ve eski sonuc "guncel" diye gosterilirdi.
-    # (v3 K3) adim statepoint'leri yalniz bu arayuzun kayitli dizininde silinir.
-    from cekirdek import tukenme_temizlik
-    tukenme_temizlik.onceki_sonucu_temizle(dizin)
+    onceki = (tukenme_surdur.onceki_durum(spec, dizin)
+              if tukenme_ayar.surdur(spec["tukenme"]) else None)
+    bilgi["surdurulen"] = onceki.tamam if onceki is not None else 0
+    if onceki is None:
+        # Eski sonuc SILINIR, sonra spec kaydi yazilir. Sira onemli: kosu yarida
+        # kalirsa dizinde eski bir sonuc ile YENI bir spec kaydi yan yana kalir
+        # ve eski sonuc "guncel" diye gosterilirdi.
+        # (v3 K3) adim statepoint'leri yalniz bu arayuzun kayitli dizininde silinir.
+        from cekirdek import tukenme_temizlik
+        tukenme_temizlik.onceki_sonucu_temizle(dizin)
     spec_kaydet(spec, dizin)
     eski = os.getcwd()
     try:
         os.chdir(dizin)
-        # Ornekler hazirla()'da kesin hacimle ayrildi; OpenMC'nin esit bolmesi
-        # (diff_burnable_mats) bu yuzden KAPALI.
-        op = d.CoupledOperator(
-            model, zs["yol"],
-            diff_burnable_mats=False,
-            normalization_mode="fission-q",
-            fission_yield_mode="constant",
-            fission_yield_opts={"energy": zs["verim_enerjisi"]},
-        )
-        Sinif = {"cecm": d.CECMIntegrator,
-                 "predictor": d.PredictorIntegrator}[t.get("entegrator") or "cecm"]
-        integ = Sinif(op, list(t["adimlar"]),
-                      power_density=float(t["guc_yogunlugu"]),
-                      timestep_units=t.get("adim_birimi") or "d")
-        integ.integrate()
+        tukenme_kosu.kos(model, bilgi, spec, dizin, onceki)
     finally:
         os.chdir(eski)
     return os.path.join(dizin, "depletion_results.h5"), bilgi

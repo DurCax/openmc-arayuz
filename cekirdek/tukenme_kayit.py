@@ -55,6 +55,7 @@ def _fizik_kismi(spec):
     sade.get("tukenme", {}).pop("var", None)
     sade.get("tukenme", {}).pop("izlenen", None)
     sade.get("tukenme", {}).pop("adim_gucu", None)   # yalniz olcum (K3): fizik degil
+    sade.get("tukenme", {}).pop("surdur", None)      # Y4: kosu kipi, fizik degil
     sade.pop("surum", None)
     return sade
 

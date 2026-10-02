@@ -12,6 +12,7 @@
 """
 
 import collections
+import math
 import os
 import threading
 import types
@@ -99,6 +100,36 @@ def _sonuc_kaynagi(h5, spec):
     return kaynak
 
 
+def _yanmalar(zaman_d, guclu, p):
+    """Birikimli yanma [MWd/kgHM]: yalniz guclu araliklar (sogutmada artmaz).
+    Kayit j'nin gucu [t_j, t_j+1] araligina aittir."""
+    yanma, toplam = [0.0], 0.0
+    for j in range(1, len(zaman_d)):
+        if guclu[j - 1]:
+            toplam += _tk().yanma(float(zaman_d[j]) - float(zaman_d[j - 1]), p)
+        yanma.append(toplam)
+    return yanma
+
+
+def _guclu_listesi(r, n):
+    """Kayit basina guc > 0 mi. source_rate tasimayan (eski/taklit) sonucta
+    hepsi guclu sayilir (Y4 oncesi davranis)."""
+    try:
+        return [bool(float(r[i].source_rate) > 0) for i in range(n)]
+    except AttributeError:
+        return [True] * n
+
+
+def _kok(adim):
+    """Kritik aramanin bu adimda buldugu deger (ppm ya da %); yoksa None."""
+    v = getattr(adim, "keff_search_root", None)
+    try:
+        v = float(v)
+    except (TypeError, ValueError):
+        return None
+    return v if math.isfinite(v) else None
+
+
 def sonuc_oku(h5, spec, izlenen=None):
     """
     DONER {"zaman_d", "yanma", "k", "k_sapma", "atomlar": {malz: {nuklid: [..]}},
@@ -112,6 +143,10 @@ def sonuc_oku(h5, spec, izlenen=None):
     from cekirdek.gunluk import kaydedici
     r, ad_by_id, hacim_by_ad = _sonuc_kaynagi(h5, spec)
     zaman, k = r.get_keff(time_units="d")
+    # v3 Y4: sogutma (guc 0) adiminda OpenMC transport kosmaz ve k = 0 +- 0
+    # yazar; hizli kipte k hic yoktur. Bunlar NaN gosterilir (sifir degil).
+    guclu = _guclu_listesi(r, len(zaman))
+    kli = [g and float(x) > 0 and math.isfinite(float(x)) for g, x in zip(guclu, k[:, 0])]
     p = float(spec["tukenme"]["guc_yogunlugu"])
     if izlenen is None:
         izlenen = (spec.get("tukenme") or {}).get("izlenen") or []
@@ -132,9 +167,11 @@ def sonuc_oku(h5, spec, izlenen=None):
                                     h5, ", ".join(bulunamayan))
     return {
         "zaman_d": [float(x) for x in zaman],
-        "yanma": [_tk().yanma(float(x), p) for x in zaman],
-        "k": [float(x) for x in k[:, 0]],
-        "k_sapma": [float(x) for x in k[:, 1]],
+        "yanma": _yanmalar(zaman, guclu, p),
+        "k": [float(x) if g else math.nan for x, g in zip(k[:, 0], kli)],
+        "k_sapma": [float(x) if g else math.nan for x, g in zip(k[:, 1], kli)],
+        "guclu": guclu,
+        "arama_degeri": [_kok(r[i]) for i in range(len(zaman))],
         "atomlar": atomlar,
         "yogunluk": yogunluk,
         "adim_sayisi": len(zaman) - 1,

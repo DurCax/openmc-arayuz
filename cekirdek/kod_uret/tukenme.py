@@ -49,8 +49,12 @@ def _tukenme(spec, satirlar):
     satirlar.append("# Zincir: %s" % yorum_metni(zs["gerekce"]))
     satirlar.append("# Bu yol bu makineye aittir; başka yerde OPENMC_CHAIN_FILE'a bakın.")
     satirlar.append("TUKENME_ZINCIRI = %r" % zs["yol"])
-    satirlar.append("TUKENME_ADIMLARI = %r   # %s" % ([float(a) for a in t["adimlar"]],
-                                                    yorum_metni(t.get("adim_birimi") or "d")))
+    _plan_satirlari(t, satirlar)
+    from cekirdek import tukenme_ayar as _ta
+    arama = _ta.kritik_arama(t)
+    if arama.var:
+        from cekirdek.kod_uret.tukenme_arama import arama_satirlari
+        arama_satirlari(spec, arama, satirlar)
     satirlar.append("")
     satirlar.append("")
     satirlar.append("def tukenme_kos():")
@@ -58,6 +62,43 @@ def _tukenme(spec, satirlar):
     satirlar.append("    import openmc.deplete")
     if ayir:
         satirlar.append("    _ornekleri_ayir(model)   # örnek başına kesin hacim (aşağıda False)")
+    if arama.var:
+        satirlar.append("    arama_islevi = _arama_hazirla(model)   # kritiklik araması (yukarıda)")
+    _operator_satirlari(t, zs, satirlar)
+    _entegrator_satirlari(t, satirlar)
+    if arama.var:
+        satirlar.append("    integ.add_keff_search_control(")
+        satirlar.append("        arama_islevi, %r, %r, %r, target=1.0, k_tol=%r, sigma_final=%r)"
+                        % (arama.alt, arama.ust, list(arama.sinir), arama.k_tol, arama.sigma))
+    satirlar.append("    # write_rates: reaksiyon hızları kaydedilir (sürdürme doğru başlasın)")
+    satirlar.append("    integ.integrate(write_rates=%r)" % (not ayir))
+    satirlar.append("    return 'depletion_results.h5'")
+    return True
+
+
+def _plan_satirlari(t, satirlar):
+    """Zaman plani: yanma + sogutma (guc 0) -- tukenme_ayar.zaman_plani ile AYNI."""
+    from cekirdek import tukenme_ayar as _ta
+    adimlar, guc = _ta.zaman_plani(t)
+    satirlar.append("# Adımlar (değer, birim); soğuma adımlarında güç 0: OpenMC transport koşmaz,")
+    satirlar.append("# yalnız bozunma çözülür.")
+    satirlar.append("TUKENME_ADIMLARI = %r" % adimlar)
+    satirlar.append("TUKENME_GUC_YOGUNLUGU = %r   # W/gHM (mutlak güç değil)" % guc)
+
+
+def _operator_satirlari(t, zs, satirlar):
+    from cekirdek import tukenme_ayar as _ta
+    if _ta.hizli_kip(t):
+        satirlar.append("    # HIZLI KİP: tek transport'tan MicroXS; tesir kesitleri adımlar boyunca SABİT")
+        satirlar.append("    yanan = [m for m in model.materials if m.depletable]")
+        satirlar.append("    akilar, mikrolar = openmc.deplete.get_microxs_and_flux(")
+        satirlar.append("        model, yanan, chain_file=TUKENME_ZINCIRI,")
+        satirlar.append("        path_statepoint='microxs_statepoint.h5')")
+        satirlar.append("    op = openmc.deplete.IndependentOperator(")
+        satirlar.append("        openmc.Materials(yanan), akilar, mikrolar, chain_file=TUKENME_ZINCIRI,")
+        satirlar.append("        normalization_mode='fission-q',")
+        satirlar.append("        fission_yield_opts={'energy': %r})" % zs["verim_enerjisi"])
+        return
     satirlar.append("    op = openmc.deplete.CoupledOperator(")
     satirlar.append("        model, TUKENME_ZINCIRI,")
     satirlar.append("        diff_burnable_mats=False,")
@@ -67,16 +108,17 @@ def _tukenme(spec, satirlar):
     satirlar.append("        # 5e5 eV hızlı. OpenMC'nin varsayılanı 0.0253 eV'tur — hızlı")
     satirlar.append("        # zincir seçilse bile. Hızlı sistemde bu ayrıca verilmelidir.")
     satirlar.append("        fission_yield_opts={'energy': %r})" % zs["verim_enerjisi"])
-    sinif = {"cecm": "CECMIntegrator", "predictor": "PredictorIntegrator"}[
-        t.get("entegrator") or "cecm"]
-    satirlar.append("    integ = openmc.deplete.%s(" % sinif)
+
+
+def _entegrator_satirlari(t, satirlar):
+    from cekirdek import tukenme_ayar as _ta
+    e = _ta.entegrator(t)
+    satirlar.append("    # Entegratör: %s" % yorum_metni(e.gorunen_ad()))
+    satirlar.append("    integ = openmc.deplete.%s(" % e.sinif)
     satirlar.append("        op, TUKENME_ADIMLARI,")
-    satirlar.append("        power_density=%r,   # W/gHM (mutlak güç değil)"
-                    % float(t["guc_yogunlugu"]))
-    satirlar.append("        timestep_units=%r)" % (t.get("adim_birimi") or "d"))
-    satirlar.append("    integ.integrate()")
-    satirlar.append("    return 'depletion_results.h5'")
-    return True
+    if e.si:
+        satirlar.append("        n_steps=%d,   # SI iç yineleme" % _ta.si_ic_adim(t))
+    satirlar.append("        power_density=TUKENME_GUC_YOGUNLUGU)")
 
 
 def _ornek_hacimleri(spec, hv):
