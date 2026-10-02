@@ -37,13 +37,15 @@ ICERI_PAY = 1.0e-7
 class Bolge(object):
     """Nokta icerme + alan. Degismez (alanlar yeniden atanmaz)."""
 
-    __slots__ = ("_icinde", "alan", "kesit", "hacim")
+    __slots__ = ("_icinde", "alan", "kesit", "hacim", "daire")
 
-    def __init__(self, icinde, alan=None, kesit=None, hacim=None):
+    def __init__(self, icinde, alan=None, kesit=None, hacim=None, daire=None):
         self._icinde = icinde
         self.alan = alan
         self.kesit = kesit
         self.hacim = hacim
+        # daire(cx, cy, r): disk KESIN iceride mi (kesit.daire_kesin_islevi); None: bilinmez
+        self.daire = daire
 
     def icinde(self, x, y, pay=NOKTA_PAYI):
         return self._icinde(x, y, pay)
@@ -56,7 +58,8 @@ def kesit_bolgesi(kes, merkez=(0.0, 0.0)):
     """Tek kesit (merkez'de) -> Bolge."""
     alan = _k.alan(kes) if kes.get("sekil") in ("dikdortgen", "silindir", "altigen") else None
     return Bolge(_k.icinde_islevi(kes, merkez), alan,
-                 kesit=kes if merkez == (0.0, 0.0) else None)
+                 kesit=kes if merkez == (0.0, 0.0) else None,
+                 daire=_k.daire_kesin_islevi(kes, merkez))
 
 
 def kure_bolgesi(r_dis, r_ic=0.0):
@@ -92,13 +95,17 @@ def delikli(bolge, delikler):
 def kesisim(a, b):
     """a n b; alan bilinmez (kirpilmis konum)."""
     a_ic, b_ic = a._icinde, b._icinde
-    return Bolge(lambda x, y, pay: a_ic(x, y, pay) and b_ic(x, y, pay), None)
+    da, db = a.daire, b.daire
+    daire = (lambda cx, cy, r: da(cx, cy, r) and db(cx, cy, r)) if da and db else None
+    return Bolge(lambda x, y, pay: a_ic(x, y, pay) and b_ic(x, y, pay), None, daire=daire)
 
 
 def otele(bolge, dx, dy):
     """Cercevesi (dx, dy) kaydirilmis bolge: yeni(p) = eski(p + d)."""
-    b_ic = bolge._icinde
-    return Bolge(lambda x, y, pay: b_ic(x + dx, y + dy, pay), bolge.alan, hacim=bolge.hacim)
+    b_ic, bd = bolge._icinde, bolge.daire
+    daire = (lambda cx, cy, r: bd(cx + dx, cy + dy, r)) if bd else None
+    return Bolge(lambda x, y, pay: b_ic(x + dx, y + dy, pay), bolge.alan, hacim=bolge.hacim,
+                 daire=daire)
 
 
 def geri_cek(bolge, donme=0.0, oteleme=(0.0, 0.0)):
@@ -108,9 +115,10 @@ def geri_cek(bolge, donme=0.0, oteleme=(0.0, 0.0)):
     tx, ty = (float(v) for v in (oteleme or (0.0, 0.0)))
     if not t and not tx and not ty:
         return bolge
-    b_ic = bolge._icinde
+    b_ic, bd = bolge._icinde, bolge.daire
+    daire = (lambda cx, cy, r: bd(c * cx - s * cy + tx, s * cx + c * cy + ty, r)) if bd else None
     return Bolge(lambda x, y, pay: b_ic(c * x - s * y + tx, s * x + c * y + ty, pay),
-                 bolge.alan, hacim=bolge.hacim)
+                 bolge.alan, hacim=bolge.hacim, daire=daire)
 
 
 def sinir_noktalari_iceri(kes, merkez=(0.0, 0.0), pay=ICERI_PAY):
@@ -136,7 +144,11 @@ def durum(bolge, noktalar):
 
 
 def sigar(bolge, kes, merkez=(0.0, 0.0)):
-    """Kesit (merkez'de) bolgenin icinde mi (sinir noktalari, NOKTA_PAYI)."""
+    """Kesit (merkez'de) bolgenin icinde mi (sinir noktalari, NOKTA_PAYI).
+    H1b kisayolu: kesitin cevrel diski bolgenin KESIN icindeyse (KESIN_PAY payla;
+    nokta denetiminin sonucu da kesinlikle True olurdu) noktalar denenmez."""
+    if bolge.daire is not None and bolge.daire(merkez[0], merkez[1], _k.dis_yaricap(kes)):
+        return True
     return bolge.hepsi_icinde(_k.sinir_noktalari(kes, merkez))
 
 

@@ -190,4 +190,49 @@ def test_yavas_sfr_zamanlayici_dogrulamasi_hizli():
 
 
 HIZLI.append(test_ziyaretler_bellekli_ve_gez_ile_ayni)
+
+
+def _rastgele_bolge(rnd):
+    from cekirdek.geometri import bolge as _b
+    sekil = rnd.choice(("altigen", "dikdortgen", "silindir"))
+    if sekil == "altigen":
+        kes = {"sekil": "altigen", "apotem": rnd.uniform(0.5, 2.0), "yonelim": rnd.choice("xy")}
+    elif sekil == "dikdortgen":
+        kes = {"sekil": "dikdortgen", "boyut": [rnd.uniform(1.0, 4.0), rnd.uniform(1.0, 4.0)]}
+    else:
+        kes = {"sekil": "silindir", "yaricap": rnd.uniform(0.5, 2.0)}
+    merkez = (rnd.uniform(-0.3, 0.3), rnd.uniform(-0.3, 0.3)) if rnd.random() < 0.5 else (0.0, 0.0)
+    return _b.kesit_bolgesi(kes, merkez)
+
+
+def test_sigar_kesin_kisayolu_tam_denetimle_ayni():
+    print("\n[H1b-G8] bolge.sigar daire kisayolu: kesisim/otele/geri_cek bilesimlerinde tam "
+          "sinir noktasi denetimiyle ayni karar")
+    from cekirdek.geometri import bolge as _b
+    from cekirdek.geometri import kesit as _k
+    rnd = random.Random(21)
+    fark = kisayol = 0
+    for _i in range(4000):
+        a, b = _rastgele_bolge(rnd), _rastgele_bolge(rnd)
+        secim = rnd.randrange(4)
+        if secim == 0:
+            bolge = _b.kesisim(a, _b.otele(b, rnd.uniform(-0.5, 0.5), rnd.uniform(-0.5, 0.5)))
+        elif secim == 1:
+            bolge = _b.geri_cek(a, rnd.uniform(0, 360), (rnd.uniform(-0.3, 0.3), 0.1))
+        elif secim == 2:
+            bolge = _b.kesisim(_b.geri_cek(a, 30.0, (0.0, 0.2)), b)
+        else:
+            bolge = a
+        pin = _k.pin_bolge_kesiti(rnd.choice(("silindir", "kare", "altigen")),
+                                  rnd.uniform(0.05, 1.5), rnd.choice("xy"))
+        merkez = (rnd.uniform(-0.5, 0.5), rnd.uniform(-0.5, 0.5))
+        tam = bolge.hepsi_icinde(_k.sinir_noktalari(pin, merkez))
+        fark += _b.sigar(bolge, pin, merkez) != tam
+        kisayol += bool(bolge.daire is not None and bolge.daire(merkez[0], merkez[1],
+                                                                _k.dis_yaricap(pin)))
+    kontrol("4000 rastgele durumda fark yok", fark == 0, "fark=%d" % fark)
+    kontrol("kisayol gercekten devrede (> 400)", kisayol > 400, "kisayol=%d" % kisayol)
+
+
+HIZLI.append(test_sigar_kesin_kisayolu_tam_denetimle_ayni)
 YAVAS.append(test_yavas_sfr_zamanlayici_dogrulamasi_hizli)

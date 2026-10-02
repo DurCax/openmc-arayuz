@@ -147,6 +147,44 @@ def icinde_islevi(kesit: dict, merkez=(0.0, 0.0)) -> Callable[[float, float, flo
     return lambda x, y, pay: icinde(kesit, x, y, merkez=merkez, pay=pay)
 
 
+# Kesin icerme kisayolunun guvenlik payi (cm): yalniz "kesin iceride" karari
+# verir; nokta denetiminin kayan nokta hatasi (~1e-13 cm, 1e3 cm olcekte) ve
+# NOKTA_PAYI'nin cok ustunde, gercek geometri toleranslarinin cok altinda.
+KESIN_PAY = 1.0e-6
+
+
+def dis_yaricap(kesit: dict) -> float:
+    """Kesitin merkezden en uzak sinir noktasi uzakligi (cevrel daire yaricapi)."""
+    s = kesit.get("sekil")
+    if s in ("silindir", "kure"):
+        return float(kesit["yaricap"])
+    if s == "dikdortgen":
+        return math.hypot(kesit["boyut"][0] / 2.0, kesit["boyut"][1] / 2.0)
+    if s == "altigen":
+        return 2.0 * float(kesit["apotem"]) / SQ3
+    raise ValueError(_("içerme denetimi yapılamayan kesit: %s") % s)
+
+
+def daire_kesin_islevi(kesit: dict, merkez=(0.0, 0.0)):
+    """g(cx, cy, r) -> True ise (cx, cy) merkezli r yaricapli disk kesitin KESIN
+    icindedir (KESIN_PAY payla); False 'bilinmiyor' demektir. Bilinmeyen sekil: None."""
+    mx, my = merkez
+    s = kesit.get("sekil")
+    if s in ("silindir", "kure"):
+        R = float(kesit["yaricap"]) - KESIN_PAY
+        return lambda cx, cy, r: math.hypot(cx - mx, cy - my) + r <= R
+    if s == "dikdortgen":
+        hx = kesit["boyut"][0] / 2.0 - KESIN_PAY
+        hy = kesit["boyut"][1] / 2.0 - KESIN_PAY
+        return lambda cx, cy, r: abs(cx - mx) + r <= hx and abs(cy - my) + r <= hy
+    if s == "altigen":
+        a = float(kesit["apotem"]) - KESIN_PAY
+        normaller = _birim_normaller(kesit.get("yonelim", "y"))
+        return lambda cx, cy, r: all((cx - mx) * c + (cy - my) * sn + r <= a
+                                     for c, sn in normaller)
+    return None
+
+
 def _altigen_islevi(a, normaller, cx, cy):
     (c0, s0), (c1, s1), (c2, s2), (c3, s3), (c4, s4), (c5, s5) = normaller
 
