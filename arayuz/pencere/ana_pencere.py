@@ -44,6 +44,7 @@ from cekirdek.ceviri import _
 from cekirdek.gunluk import kaydedici
 from arayuz.bilesenler import KenarCubugu, bildir
 from arayuz.onizleme import OnizlemeWidget
+from arayuz.onizleme_kapsam import PencereKapsami
 from arayuz.sekme_analiz import AnalizSekmesi
 from arayuz.sekme_tukenme import TukenmeSekmesi
 from arayuz.sekme_ayar import AyarSekmesi
@@ -93,6 +94,7 @@ class AnaPencere(DogrulamaMixin, BaslangicAkisi, GezinmeCephesi, MenulerMixin, P
         self._durum_kur()
         self._sayfalari_kur()
         self._onizleme_kur()
+        self.onizleme_kapsami = PencereKapsami(self)   # sayfa + secim -> onizleme kapsami (K5)
         self._menu_kur()
         self._arac_cubugu_kur()
         self._durum_cubugu_kur()

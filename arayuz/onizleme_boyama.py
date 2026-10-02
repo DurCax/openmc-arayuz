@@ -25,6 +25,13 @@ _LUT_SINIRI = 1 << 22               # daha buyuk kimlikte np.unique yoluna dusul
 _RASTGELE_TOHUM = 1                 # openmc.plots._id_map_to_rgb ile ayni
 
 
+def tema_rgb01(ad):
+    """Tema renk tokeninin (ad) matplotlib RGB'si (0-1); onizleme ve vurgu ortak."""
+    from matplotlib.colors import to_rgb
+    from arayuz import tema
+    return to_rgb(tema.renk(ad))
+
+
 def _rgb01(renk):
     return tuple(float(v) / 255.0 for v in renk[:3])
 
