@@ -34,7 +34,7 @@ import openmc
 from cekirdek import geometri
 from cekirdek import kaynak as _kaynak
 from cekirdek import spektrum
-from cekirdek import foton as _foton, sicaklik as _sicaklik
+from cekirdek import foton as _foton, sicaklik as _sicaklik, yuzey_akim as _yuzey
 from cekirdek.geometri.kurulum import kur as _geo_kur
 from cekirdek.sema import model_yuksekligi as sema_model_yuksekligi
 from cekirdek.sema import guc_hedefleri as sema_guc_hedefleri
@@ -214,6 +214,8 @@ def tallyleri_kur(spec, nesneler, sinir_kutu=None):
     """spec["tallyler"] -> openmc.Tallies"""
     liste = []
     for t in spec.get("tallyler", []):
+        if _yuzey.yuzey_tally_mi(t):
+            continue          # Y7: kur() sonunda yuzey_akim.tally_ekle (geometri gerekir)
         tal = openmc.Tally(name=t["ad"])
         tal.scores = list(t["skorlar"])
         if t.get("nuklidler"):
@@ -412,4 +414,5 @@ def kur(spec):
         bilgi["guc_hucre"] = guc_tally_ekle(spec, model, nesneler, universeler,
                                             sinir_kutu, fisil, bilgi=bilgi)
     spektrum.tally_ekle(spec, model, nesneler)   # Y3: spektrum/dort faktor (cekirdek/spektrum.py)
+    _yuzey.tally_ekle(spec, model, sinir_kutu)   # Y7: yuzey akimi (cekirdek/yuzey_akim.py)
     return model, bilgi

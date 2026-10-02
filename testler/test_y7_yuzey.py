@@ -46,11 +46,12 @@ def _betik_modeli(spec):
     return mod.model
 
 
-def _filtre_ozeti(f):
+def _filtre_ozeti(f, yuzeyler):
     import openmc
     if isinstance(f, openmc.SurfaceFilter):
         return ("surface", tuple(sorted(
-            (type(s).__name__, tuple(sorted(s.coefficients.items()))) for s in f.bins)))
+            (type(yuzeyler[int(i)]).__name__, tuple(sorted(yuzeyler[int(i)].coefficients.items())))
+            for i in f.bins)))
     if isinstance(f, openmc.MeshSurfaceFilter) or isinstance(f, openmc.MeshFilter):
         m = f.mesh
         return (type(f).__name__, tuple(m.dimension), tuple(m.lower_left), tuple(m.upper_right))
@@ -60,7 +61,8 @@ def _filtre_ozeti(f):
 
 
 def _tally_ozeti(model):
-    return {t.name: (tuple(t.scores), tuple(_filtre_ozeti(f) for f in t.filters))
+    yuzeyler = model.geometry.get_all_surfaces()
+    return {t.name: (tuple(t.scores), tuple(_filtre_ozeti(f, yuzeyler) for f in t.filters))
             for t in model.tallies}
 
 
@@ -92,7 +94,8 @@ def test_kurucu_sinir_tallysi_vakum_yuzeyleri():
     # Act
     model, _b = kurucu.kur(spec)
     t = next(t for t in model.tallies if t.name == "kacak")
-    yuzeyler = t.filters[0].bins
+    tum = model.geometry.get_all_surfaces()
+    yuzeyler = [tum[int(i)] for i in t.filters[0].bins]
     # Assert
     kontrol("SurfaceFilter ilk", isinstance(t.filters[0], openmc.SurfaceFilter))
     kontrol("hepsi vakum", all(s.boundary_type == "vacuum" for s in yuzeyler) and yuzeyler)
