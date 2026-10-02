@@ -15,7 +15,7 @@ import os
 import re
 from typing import Any, Dict, Mapping, Optional
 
-from PySide6 import QtWidgets
+from PySide6 import QtCore, QtWidgets
 
 from cekirdek import slurm
 from cekirdek.ceviri import _
@@ -28,6 +28,7 @@ A = tokenlar.ARALIK
 _EN_COK_GOREV = 100000         # spin kutusu ust siniri (kume boyu)
 _EN_COK_CPU = 512
 _EN_COK_DUGUM = 10000
+ONIZLEME_GECIKMESI = 300     # ms; yazarken onizleme gecikmesi (debounce)
 
 
 class SlurmPaneli(QtWidgets.QWidget):
@@ -36,6 +37,12 @@ class SlurmPaneli(QtWidgets.QWidget):
     def __init__(self, parent: Optional[QtWidgets.QWidget] = None) -> None:
         super().__init__(parent)
         self.spec: Optional[Dict[str, Any]] = None
+        # her tusta `bash -n` alt sureci ana iplikte kosmasin: son degisiklikten
+        # ONIZLEME_GECIKMESI ms sonra bir kez
+        self._zamanlayici = QtCore.QTimer(self)
+        self._zamanlayici.setSingleShot(True)
+        self._zamanlayici.setInterval(ONIZLEME_GECIKMESI)
+        self._zamanlayici.timeout.connect(self.onizle)
         self._kur()
         self.onizle()
 
@@ -43,41 +50,48 @@ class SlurmPaneli(QtWidgets.QWidget):
         duzen = QtWidgets.QHBoxLayout(self)
         duzen.setContentsMargins(A["l"], A["l"], A["l"], A["l"])
         duzen.setSpacing(A["l"])
-        form_kutu = QtWidgets.QWidget(self)
-        form = QtWidgets.QFormLayout(form_kutu)
-        self.is_adi = QtWidgets.QLineEdit("openmc", form_kutu)
-        self.sure = QtWidgets.QLineEdit("01:00:00", form_kutu)
+        duzen.addWidget(self._form_kur(), 1)
+        duzen.addLayout(self._onizleme_kur(), 2)
+
+    def _alanlari_kur(self, kutu: QtWidgets.QWidget) -> tuple:
+        self.is_adi = QtWidgets.QLineEdit("openmc", kutu)
+        self.sure = QtWidgets.QLineEdit("01:00:00", kutu)
         self.dugum = self._spin(1, _EN_COK_DUGUM, 1)
         self.gorev = self._spin(1, _EN_COK_GOREV, 1)
         self.cpu = self._spin(1, _EN_COK_CPU, 8)
         self.bolum, self.hesap, self.bellek, self.eposta = (
-            QtWidgets.QLineEdit(form_kutu) for _i in range(4))
-        self.moduller = QtWidgets.QLineEdit(form_kutu)
+            QtWidgets.QLineEdit(kutu) for _i in range(4))
+        self.moduller = QtWidgets.QLineEdit(kutu)
         self.moduller.setPlaceholderText(_("birden çok modül: openmpi/4.1 hdf5"))
-        self.conda = QtWidgets.QLineEdit(form_kutu)
-        self.openmc = QtWidgets.QLineEdit("openmc", form_kutu)
-        self.veri = QtWidgets.QLineEdit(form_kutu)
+        self.conda = QtWidgets.QLineEdit(kutu)
+        self.openmc = QtWidgets.QLineEdit("openmc", kutu)
+        self.veri = QtWidgets.QLineEdit(kutu)
         self.veri.setPlaceholderText(_("kümedeki cross_sections.xml yolu (isteğe bağlı)"))
-        self.baslatici = QtWidgets.QComboBox(form_kutu)
+        self.baslatici = QtWidgets.QComboBox(kutu)
         for b in slurm.MPI_BASLATICILARI:
             self.baslatici.addItem(b, b)
-        satirlar = ((_("İş adı"), self.is_adi), (_("Süre (ss:dd:sn)"), self.sure),
-                    (_("Düğüm"), self.dugum), (_("MPI görev (ntasks)"), self.gorev),
-                    (_("Görev başına CPU (OMP)"), self.cpu), (_("Bölüm (partition)"), self.bolum),
-                    (_("Hesap (account)"), self.hesap), (_("Bellek (ör. 16G)"), self.bellek),
-                    (_("E-posta"), self.eposta), (_("Modüller"), self.moduller),
-                    (_("Conda ortamı"), self.conda), (_("openmc yolu"), self.openmc),
-                    (_("OPENMC_CROSS_SECTIONS"), self.veri),
-                    (_("MPI başlatıcı"), self.baslatici))
-        for etiket, alan in satirlar:
+        return ((_("İş adı"), self.is_adi), (_("Süre (ss:dd:sn)"), self.sure),
+                (_("Düğüm"), self.dugum), (_("MPI görev (ntasks)"), self.gorev),
+                (_("Görev başına CPU (OMP)"), self.cpu), (_("Bölüm (partition)"), self.bolum),
+                (_("Hesap (account)"), self.hesap), (_("Bellek (ör. 16G)"), self.bellek),
+                (_("E-posta"), self.eposta), (_("Modüller"), self.moduller),
+                (_("Conda ortamı"), self.conda), (_("openmc yolu"), self.openmc),
+                (_("OPENMC_CROSS_SECTIONS"), self.veri), (_("MPI başlatıcı"), self.baslatici))
+
+    def _form_kur(self) -> QtWidgets.QWidget:
+        kutu = QtWidgets.QWidget(self)
+        form = QtWidgets.QFormLayout(kutu)
+        for etiket, alan in self._alanlari_kur(kutu):
             form.addRow(etiket, alan)
             sinyal = getattr(alan, "textChanged", None) or getattr(alan, "valueChanged", None) \
                 or alan.currentIndexChanged
-            sinyal.connect(self.onizle)
-        self.d_kaydet = QtWidgets.QPushButton(_("Koşu klasörünü hazırla…"), form_kutu)
+            sinyal.connect(self._zamanlayici.start)
+        self.d_kaydet = QtWidgets.QPushButton(_("Koşu klasörünü hazırla…"), kutu)
         self.d_kaydet.clicked.connect(self._kaydet)
         form.addRow("", self.d_kaydet)
-        duzen.addWidget(form_kutu, 1)
+        return kutu
+
+    def _onizleme_kur(self) -> QtWidgets.QVBoxLayout:
         sag = QtWidgets.QVBoxLayout()
         self.durum = QtWidgets.QLabel("", self)
         self.durum.setWordWrap(True)
@@ -86,7 +100,7 @@ class SlurmPaneli(QtWidgets.QWidget):
         self.onizleme.setReadOnly(True)
         self.onizleme.setFont(yazi.font("mono"))
         sag.addWidget(self.onizleme, 1)
-        duzen.addLayout(sag, 2)
+        return sag
 
     def _spin(self, alt: int, ust: int, deger: int) -> QtWidgets.QSpinBox:
         s = QtWidgets.QSpinBox(self)
@@ -143,6 +157,7 @@ class SlurmPaneli(QtWidgets.QWidget):
         dizin = QtWidgets.QFileDialog.getExistingDirectory(self, _("Küme koşu klasörü"))
         if not dizin:
             return
+        self._zamanlayici.stop()
         try:
             yol = slurm.hazirla(self.spec, dizin, self.ayar())
         except Exception as e:

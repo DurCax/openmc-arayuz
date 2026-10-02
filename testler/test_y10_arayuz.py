@@ -120,10 +120,14 @@ def test_slurm_paneli_gecersiz_alani_reddeder_gecerliyi_onizler():
     _uyg()
     panel = SlurmPaneli()
     panel.gorev.setValue(4)
+    assert panel._zamanlayici.isActive(), "onizleme gecikmeli (debounce) kosmali"
+    assert "#SBATCH --ntasks=4" not in panel.onizleme.toPlainText()
+    panel.onizle()
     assert "#SBATCH --ntasks=4" in panel.onizleme.toPlainText()
     assert "sözdizimi geçerli" in panel.durum.text()
     assert not panel.d_kaydet.isEnabled(), "model yokken klasor hazirlanamaz"
     panel.is_adi.setText("kotu ad; rm")
+    panel.onizle()
     assert "Geçersiz" in panel.durum.text() and not panel.d_kaydet.isEnabled()
 
 

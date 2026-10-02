@@ -36,6 +36,7 @@ class KuyrukBagdastirici(QtCore.QObject):
         self.kuyruk = cekirdek_kuyrugu or _kuyruk.Kuyruk()
         self._son_seq: Dict[str, int] = {}
         self._kilit = threading.Lock()
+        self._bitti_yayildi = False       # hepsi_bitti yeni bir is gelene kadar bir kez
         self.kuyruk.dinleyici_ekle(self._olay)
 
     def _olay(self, durum: _kuyruk.IsDurumu) -> None:
@@ -44,8 +45,10 @@ class KuyrukBagdastirici(QtCore.QObject):
             if self._son_seq.get(durum.kimlik, -1) >= durum.seq:
                 return
             self._son_seq[durum.kimlik] = durum.seq
+            bitti = durum.bitti_mi and self.kuyruk.tamamlandi_mi() and not self._bitti_yayildi
+            self._bitti_yayildi = bitti or (self._bitti_yayildi and durum.bitti_mi)
         self.durum_degisti.emit(durum)
-        if durum.bitti_mi and self.kuyruk.tamamlandi_mi():
+        if bitti:
             self.hepsi_bitti.emit()
 
     def kapat(self) -> None:
