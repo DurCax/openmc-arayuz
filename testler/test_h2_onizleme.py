@@ -227,6 +227,11 @@ def test_sfr_onizleme_suresi(gecici=None):
     try:
         w._istemci.baslat()
         _bekle(w._istemci.hazir_mi)
+        giden, yeniden = [], []
+        asil = w._istemci.iste
+        w._istemci.iste = lambda istek: (giden.append(istek["tur"]), asil(istek))[1]
+        w._istemci.cerceve_geldi.connect(
+            lambda c: c.baslik.get("tur") == "model" and yeniden.append(c.baslik["yeniden"]))
         olcer = _DonmaOlcer()
         t0 = time.perf_counter()
         w.spec_ayarla(_spec("sfr_met1000_kor"))
@@ -244,8 +249,12 @@ def test_sfr_onizleme_suresi(gecici=None):
               % (ilk, ikinci, en_buyuk * 1e3))
         kontrol("SFR ilk onizleme <= %.0f s" % _SFR_SINIRI, w.cizildi_mi() and ilk <= _SFR_SINIRI,
                 "-> %.2f s" % ilk)
-        kontrol("ayni modelde gorunum degisimi init'siz (< ilk)", ikinci < ilk,
-                "-> %.2f s" % ikinci)
+        kontrol("renk degisimi isciye gitmedi (eldeki dilimden)", giden == ["ciz"],
+                "-> %s" % giden)
+        w.cozunurluk.setCurrentIndex(0)
+        w.bekle(_ZAMAN_ASIMI)
+        kontrol("ayni modelde yeni dilim istegi oturumu yeniden kullandi (init yok)",
+                yeniden == [True, False], "-> %s" % yeniden)
         kontrol("en uzun donma < %d ms" % (_DONMA_SINIRI * 1000), en_buyuk < _DONMA_SINIRI,
                 "-> %.0f ms" % (en_buyuk * 1e3))
     finally:

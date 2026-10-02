@@ -943,24 +943,22 @@ def test_onizleme_ikili_kesit(gecici=None):
         w.kapat()
         os.chdir(KOK)
 
-    # sure: ayni modelde ikinci cizim init'siz (oturum acik): ilkinden kisa
-    def sure(ww, spec):
-        ww.spec_ayarla(spec)
-        t0 = time.perf_counter()
+    # oturum yeniden kullanimi: ayni modelde yeni dilim istegi init'siz
+    # (iscinin "model" yanitindaki `yeniden` bayragi; sure karsilastirmasi degil)
+    ww = OnizlemeWidget()
+    yeniden = []
+    ww._istemci.cerceve_geldi.connect(
+        lambda c: c.baslik.get("tur") == "model" and yeniden.append(c.baslik["yeniden"]))
+    try:
+        ww.spec_ayarla(_ornek("pwr_3b"))
         ww._ciz()
         ww.bekle(120)
-        return time.perf_counter() - t0
-    ww = OnizlemeWidget()
-    try:
-        ilk = sure(ww, _ornek("pwr_3b"))
         ww.cozunurluk.setCurrentIndex(2)
-        t0 = time.perf_counter()
         ww.bekle(120)
-        ikinci = time.perf_counter() - t0
     finally:
         ww.kapat()
-    kontrol("ayni modelde yeniden dilimleme ilk cizimden kisa (%.0f / %.0f ms)"
-            % (ikinci * 1000, ilk * 1000), ikinci < ilk)
+    kontrol("ilk istek oturumu baslatti, ayni modelde ikincisi yeniden kullandi",
+            yeniden == [True, False], "-> %s" % yeniden)
     uyg  # noqa: B018
 
 
