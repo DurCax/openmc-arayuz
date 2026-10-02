@@ -105,17 +105,34 @@ def test_malzeme_anahtari_yoksa_hata_aynen():
     kontrol("bos liste: bulgu yok", veri.nuklid_kontrol({"malzemeler": []}) == [])
 
 
+_ANA_ISLEM_IZI = """
+import builtins, os, sys, threading
+os.environ['QT_QPA_PLATFORM'] = 'offscreen'
+_asil, ana = builtins.__import__, []
+def _iz(ad, *a, **k):
+    if ad == 'openmc' and 'openmc' not in sys.modules and \
+            threading.current_thread() is threading.main_thread():
+        ana.append(1)
+    return _asil(ad, *a, **k)
+builtins.__import__ = _iz
+from PySide6 import QtWidgets
+app = QtWidgets.QApplication([])
+from arayuz import tema
+from arayuz.ana_pencere import AnaPencere
+tema.uygula(app)
+p = AnaPencere()
+p.show()
+[app.processEvents() for _i in range(5)]
+print(bool(ana))
+"""
+
+
 def test_ana_pencere_acilisi_openmc_yuklemez():
-    print("\n[H1b-I7] AnaPencere kurulumu + gosterim (bos model) openmc'yi yuklemez")
-    kod = ("import os, sys\nos.environ['QT_QPA_PLATFORM'] = 'offscreen'\n"
-           "from PySide6 import QtWidgets\napp = QtWidgets.QApplication([])\n"
-           "from arayuz import tema\nfrom arayuz.ana_pencere import AnaPencere\n"
-           "tema.uygula(app)\np = AnaPencere()\np.show()\n"
-           "[app.processEvents() for _i in range(5)]\n"
-           "print('openmc' in sys.modules)")
-    kodu, cikti, hata = _alt_surec(kod)
+    print("\n[H1b-I7] AnaPencere kurulumu + gosterim (bos model) openmc'yi ANA is "
+          "parcaciginda yuklemez (K2 veri sayfasi arka plan isinde yukleyebilir)")
+    kodu, cikti, hata = _alt_surec(_ANA_ISLEM_IZI)
     kontrol("alt surec basarili", kodu == 0, hata[-300:])
-    kontrol("openmc yuklenmedi", cikti == "False", "-> %r" % cikti)
+    kontrol("ana is parcaciginda openmc ice aktarilmadi", cikti == "False", "-> %r" % cikti)
 
 
 def test_kor_ozeti_kurucu_olcusuyle_ayni():
