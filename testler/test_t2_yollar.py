@@ -17,15 +17,16 @@ import shutil
 import stat
 import subprocess
 import sys
-import tempfile
 
 from testler.ortak_test import kontrol, KOK
 
 _KAYNAK_PAKETLER = ("cekirdek", "arayuz")
 _AZAMI_SATIR = 800          # ORTAK_KURALLAR.md madde 9: dosya < 800 satir
 _ALT_SUREC_SURESI = 120     # s; alt surec (import openmc dahil) en kotu durumda
-_KOPYALANMAYAN = (".git", ".claude", "__pycache__", "build", "dist", "*.egg-info",
+_KOPYALANMAYAN = (".git", ".claude", ".env*", "__pycache__", "build", "dist", "*.egg-info",
                   "graphify-out", "htmlcov", ".ruff_cache")
+# Kopyada OLMAMASI gereken (gizli bilgi / depo gecmisi tasiyabilen) adlar
+_GIZLI_ADLAR = (".git", ".claude", ".env")
 
 
 def _kaynak_dosyalari():
@@ -46,6 +47,15 @@ def _sahte_calistirilabilir(dizin, ad="openmc"):
 # yollar: paket ve veri dizinleri
 # ---------------------------------------------------------------------------
 
+def _veri_dizini(kok):
+    """Gecerli bir veri koku taklidi: yollar.VERI_ISARETI dosyasi var."""
+    from cekirdek import yollar
+    isaret = os.path.join(str(kok), yollar.VERI_ISARETI)
+    os.makedirs(os.path.dirname(isaret), exist_ok=True)
+    open(isaret, "w").close()
+    return str(kok)
+
+
 def test_paket_ve_veri_dizinleri():
     print("\n[T2-1] yollar: paket koku, ornekler, locale, kilavuz, ikon, font, sablon")
     from cekirdek import yollar
@@ -54,12 +64,15 @@ def test_paket_ve_veri_dizinleri():
             os.path.isdir(os.path.join(kok, "cekirdek")) and os.path.isdir(os.path.join(kok, "arayuz")),
             kok)
     kontrol("kaynak agacinda veri koku = paket koku",
-            os.path.realpath(yollar.veri_koku()) == os.path.realpath(KOK), yollar.veri_koku())
+            os.path.realpath(yollar.veri_koku(ortam={})) == os.path.realpath(KOK))
+    kontrol("veri isareti dosyasi kaynak agacinda var",
+            os.path.isfile(os.path.join(KOK, yollar.VERI_ISARETI)), yollar.VERI_ISARETI)
+    kontrol("kaynak_agaci_mi", yollar.kaynak_agaci_mi())
     kontrol("ornekler *.json", bool(glob.glob(os.path.join(yollar.ornekler_dizini(), "*.json"))))
     kontrol("locale en katalog dizini",
-            os.path.isdir(os.path.join(yollar.locale_dizini(), "en", "LC_MESSAGES")))
+            os.path.isdir(os.path.join(yollar.locale_dizini(ortam={}), "en", "LC_MESSAGES")))
     kontrol("kilavuz tr/00-giris.md",
-            os.path.isfile(os.path.join(yollar.kilavuz_dizini(), "tr", "00-giris.md")))
+            os.path.isfile(os.path.join(yollar.kilavuz_dizini(ortam={}), "tr", "00-giris.md")))
     kontrol("ikonlar *.svg", bool(glob.glob(os.path.join(yollar.ikon_dizini(), "*.svg"))))
     kontrol("font Inter-Regular.ttf",
             os.path.isfile(os.path.join(yollar.font_dizini(), "Inter-Regular.ttf")))
@@ -68,71 +81,118 @@ def test_paket_ve_veri_dizinleri():
     kontrol("pyproject yolu kaynak agacinda var", os.path.isfile(yollar.pyproject_yolu()))
 
 
-def test_veri_koku_ortam_degiskeni():
-    print("\n[T2-2] OPENMC_ARAYUZ_VERI: gecerli dizin kullanilir, gecersizi yok sayilir")
+def test_veri_koku_ortam_degiskeni(tmp_path, caplog):
+    print("\n[T2-2] OPENMC_ARAYUZ_VERI: gecerli dizin kullanilir, gecersizi uyarip yok sayilir")
     from cekirdek import yollar
-    d = tempfile.mkdtemp()
-    os.makedirs(os.path.join(d, "ornekler"))
-    kontrol("gecerli ortam dizini oncelikli",
-            yollar.veri_koku(ortam={yollar.VERI_ORTAM_DEGISKENI: d}) == d)
-    yok = os.path.join(d, "olmayan")
-    kontrol("olmayan dizin yok sayilir (kesif devam eder)",
-            yollar.veri_koku(ortam={yollar.VERI_ORTAM_DEGISKENI: yok}) != yok)
+    d = _veri_dizini(tmp_path / "veri")
+    ad = yollar.VERI_ORTAM_DEGISKENI
+    kontrol("gecerli ortam dizini oncelikli", yollar.veri_koku(ortam={ad: d}) == d)
     kontrol("ornekler veri kokunun altinda",
-            yollar.ornekler_dizini(ortam={yollar.VERI_ORTAM_DEGISKENI: d})
-            == os.path.join(d, "ornekler"))
+            yollar.ornekler_dizini(ortam={ad: d}) == os.path.join(d, "ornekler"))
+    yabanci = tmp_path / "yabanci"
+    os.makedirs(yabanci / "ornekler")                 # isaretsiz yabanci ornekler/
+    for deger, neden in ((str(tmp_path / "olmayan"), "olmayan"), (str(yabanci), "isaretsiz"),
+                         ("goreli/dizin", "goreli")):
+        caplog.clear()
+        with caplog.at_level("WARNING", logger="openmc_arayuz.yollar"):
+            sonuc = yollar.veri_koku(ortam={ad: deger})
+        kontrol("%s dizin yok sayilir" % neden, sonuc != deger, sonuc)
+        kontrol("%s dizin uyarisi" % neden, ad in caplog.text, caplog.text)
+
+
+def test_veri_koku_aday_sirasi(tmp_path, monkeypatch):
+    print("\n[T2-2a] veri koku: --target (paket koku/share) ve sys.prefix/share adaylari")
+    from cekirdek import yollar
+    sahte_kok = tmp_path / "site"                     # ornekler/ YOK (kurulu paket)
+    os.makedirs(sahte_kok)
+    monkeypatch.setattr(yollar, "_PAKET_KOKU", str(sahte_kok))
+    monkeypatch.setattr(yollar, "_dagitim_paylasim_dizini", lambda: None)
+    onek = tmp_path / "onek"
+    monkeypatch.setattr(sys, "prefix", str(onek))
+    kontrol("hicbiri yoksa paket koku", yollar.veri_koku(ortam={}) == str(sahte_kok))
+    prefix_veri = _veri_dizini(onek / "share" / yollar.PAYLASIM_ADI)
+    kontrol("sys.prefix/share/openmc-arayuz", yollar.veri_koku(ortam={}) == prefix_veri)
+    hedef_veri = _veri_dizini(sahte_kok / "share" / yollar.PAYLASIM_ADI)
+    kontrol("--target duzeni sys.prefix'ten once", yollar.veri_koku(ortam={}) == hedef_veri)
+    kayit = _veri_dizini(tmp_path / "kayit")
+    monkeypatch.setattr(yollar, "_dagitim_paylasim_dizini", lambda: kayit)
+    kontrol("dagitim kaydi --target'tan once", yollar.veri_koku(ortam={}) == kayit)
 
 
 class _SahteDagitim:
     """importlib.metadata.Distribution taklidi: files + locate_file."""
 
-    def __init__(self, kok, dosyalar):
+    def __init__(self, kok, dosyalar=None, hata=None):
         import pathlib
         self._kok = kok
-        self.files = [pathlib.PurePosixPath(d) for d in dosyalar]
+        self._hata = hata
+        self._dosyalar = [pathlib.PurePosixPath(d) for d in dosyalar or ()]
+
+    @property
+    def files(self):
+        if self._hata:
+            raise self._hata
+        return self._dosyalar
 
     def locate_file(self, yol):
         return os.path.join(self._kok, str(yol))
 
 
-def test_dagitim_kaydindan_paylasim_dizini():
-    print("\n[T2-2b] kurulu dagitimin RECORD'undan share/openmc-arayuz")
+def test_dagitim_kaydindan_paylasim_dizini(monkeypatch, caplog):
+    print("\n[T2-2b] kurulu dagitimin RECORD'undan share/openmc-arayuz; bozuk kayit")
     from importlib import metadata
     from cekirdek import yollar
     bul = yollar._dagitim_paylasim_dizini.__wrapped__      # lru_cache'siz govde
-    eski = metadata.distribution
     sp = "/onek/lib/python3.13/site-packages"
-    try:
-        metadata.distribution = lambda ad: _SahteDagitim(
-            sp, ["cekirdek/yollar.py", "../../../share/openmc-arayuz/ornekler/a.json"])
-        kontrol("kayittaki onek", bul() == "/onek/share/openmc-arayuz", bul())
-        metadata.distribution = lambda ad: _SahteDagitim(sp, ["cekirdek/yollar.py"])
-        kontrol("veri kaydi yoksa None", bul() is None)
+    monkeypatch.setattr(metadata, "distribution", lambda ad: _SahteDagitim(
+        sp, ["cekirdek/yollar.py", "../../../share/openmc-arayuz/ornekler/a.json"]))
+    kontrol("kayittaki onek", bul() == "/onek/share/openmc-arayuz", bul())
+    monkeypatch.setattr(metadata, "distribution", lambda ad: _SahteDagitim(sp, ["cekirdek/a.py"]))
+    kontrol("veri kaydi yoksa None", bul() is None)
+    for hata in (OSError("RECORD okunamadi"), ValueError("bozuk satir")):
+        monkeypatch.setattr(metadata, "distribution",
+                            lambda ad, h=hata: _SahteDagitim(sp, hata=h))
+        caplog.clear()
+        with caplog.at_level("WARNING", logger="openmc_arayuz.yollar"):
+            sonuc = bul()
+        kontrol("bozuk RECORD (%s) -> None + uyari" % type(hata).__name__,
+                sonuc is None and "RECORD" in caplog.text, caplog.text)
 
-        def _yok(ad):
-            raise metadata.PackageNotFoundError(ad)
-        metadata.distribution = _yok
-        kontrol("dagitim kurulu degilse None", bul() is None)
-    finally:
-        metadata.distribution = eski
+    def _yok(ad):
+        raise metadata.PackageNotFoundError(ad)
+    monkeypatch.setattr(metadata, "distribution", _yok)
+    kontrol("dagitim kurulu degilse None", bul() is None)
 
 
-def test_ozel_dizin_ortam_degiskenleri():
-    print("\n[T2-3] OPENMC_ARAYUZ_LOCALE / OPENMC_ARAYUZ_KILAVUZ eski davranis")
+def test_ozel_dizin_ortam_degiskenleri(tmp_path, monkeypatch, caplog):
+    print("\n[T2-3] OPENMC_ARAYUZ_LOCALE / _KILAVUZ: ~ ve goreli yol, gecersiz uyarip atlanir")
     from cekirdek import yollar
-    kontrol("locale ortam degiskeni",
-            yollar.locale_dizini(ortam={"OPENMC_ARAYUZ_LOCALE": "/x/loc"}) == "/x/loc")
+    monkeypatch.setenv("HOME", str(tmp_path))
+    os.makedirs(tmp_path / "loc")
+    os.makedirs(tmp_path / "k")
+    kontrol("locale ortam degiskeni (~ acilir)",
+            yollar.locale_dizini(ortam={"OPENMC_ARAYUZ_LOCALE": "~/loc"}) == str(tmp_path / "loc"))
     kontrol("kilavuz ortam degiskeni",
-            yollar.kilavuz_dizini(ortam={"OPENMC_ARAYUZ_KILAVUZ": "/x/k"}) == "/x/k")
+            yollar.kilavuz_dizini(ortam={"OPENMC_ARAYUZ_KILAVUZ": str(tmp_path / "k")})
+            == str(tmp_path / "k"))
+    monkeypatch.chdir(tmp_path)
+    kontrol("goreli yol mutlaga cevrilir",
+            yollar.kilavuz_dizini(ortam={"OPENMC_ARAYUZ_KILAVUZ": "k"}) == str(tmp_path / "k"))
+    varsayilan = os.path.join(yollar.veri_koku(ortam={}), "docs", "kilavuz")
     kontrol("bos degisken varsayilana duser",
-            yollar.kilavuz_dizini(ortam={"OPENMC_ARAYUZ_KILAVUZ": ""})
-            == os.path.join(yollar.veri_koku(ortam={}), "docs", "kilavuz"))
+            yollar.kilavuz_dizini(ortam={"OPENMC_ARAYUZ_KILAVUZ": ""}) == varsayilan)
+    caplog.clear()
+    with caplog.at_level("WARNING", logger="openmc_arayuz.yollar"):
+        sonuc = yollar.kilavuz_dizini(ortam={"OPENMC_ARAYUZ_KILAVUZ": str(tmp_path / "yok")})
+    kontrol("olmayan dizin uyarilip varsayilana duser",
+            sonuc == varsayilan and "OPENMC_ARAYUZ_KILAVUZ" in caplog.text, caplog.text)
 
 
-def test_xdg_dizinleri():
+def test_xdg_dizinleri(tmp_path, monkeypatch):
     print("\n[T2-4] XDG kullanici dizinleri (config/data/cache/state)")
     from cekirdek import yollar
-    ev = os.path.expanduser("~")
+    monkeypatch.setenv("HOME", str(tmp_path))
+    ev = str(tmp_path)
     beklenen = {"XDG_CONFIG_HOME": (yollar.ayar_dizini, ".config"),
                 "XDG_DATA_HOME": (yollar.kullanici_veri_dizini, os.path.join(".local", "share")),
                 "XDG_CACHE_HOME": (yollar.onbellek_dizini, ".cache"),
@@ -153,8 +213,19 @@ def test_gunluk_xdg_tek_kaynak():
     kontrol("ayni yol", gunluk.durum_dizini(ortam) == yollar.durum_dizini(ortam))
 
 
+def _file_kullanan_dosyalar():
+    """cekirdek/ ve arayuz/ altinda `__file__` ADINI (AST) kullanan dosyalar."""
+    kalan = []
+    for yol in _kaynak_dosyalari():
+        with open(yol, encoding="utf-8") as f:
+            agac = ast.parse(f.read())
+        if any(isinstance(d, ast.Name) and d.id == "__file__" for d in ast.walk(agac)):
+            kalan.append(os.path.relpath(yol, KOK))
+    return kalan
+
+
 def test_moduller_yollari_kullanir():
-    print("\n[T2-6] modul sabitleri yollar'dan; cekirdek/arayuz'da baska __file__ yok")
+    print("\n[T2-6] modul sabitleri yollar'dan; cekirdek/arayuz'da baska __file__ yok (AST)")
     from cekirdek import ceviri, ornek_bilgi, surum, yollar
     from cekirdek import rapor_sablon
     from cekirdek.vv import kume
@@ -177,9 +248,7 @@ def test_moduller_yollari_kullanir():
                ("surum._PYPROJECT", surum._PYPROJECT, yollar.pyproject_yolu()))
     for ad, deger, beklenen in esitler:
         kontrol(ad, deger == beklenen, "%s != %s" % (deger, beklenen))
-    izinli = os.path.join(KOK, "cekirdek", "yollar.py")
-    kalan = [os.path.relpath(y, KOK) for y in _kaynak_dosyalari()
-             if y != izinli and "__file__" in open(y, encoding="utf-8").read()]
+    kalan = [y for y in _file_kullanan_dosyalar() if y != os.path.join("cekirdek", "yollar.py")]
     kontrol("__file__ yalniz yollar.py'de", not kalan, "-> %s" % kalan)
 
 
@@ -187,11 +256,10 @@ def test_moduller_yollari_kullanir():
 # openmc ikilisi
 # ---------------------------------------------------------------------------
 
-def test_openmc_ikilisi_sirasi():
-    print("\n[T2-7] openmc ikilisi: ayar > ortam > PATH > python'un yani > CONDA_PREFIX")
+def test_openmc_ikilisi_sirasi(tmp_path):
+    print("\n[T2-7] openmc ikilisi: ortam > python'un yani > PATH > CONDA_PREFIX")
     from cekirdek import yollar
-    d = tempfile.mkdtemp()
-    ayar_exe = _sahte_calistirilabilir(os.path.join(d), "openmc_ayar")
+    d = str(tmp_path)
     ortam_exe = _sahte_calistirilabilir(d, "openmc_ortam")
     yol_dizini = os.path.join(d, "path")
     os.makedirs(yol_dizini)
@@ -205,39 +273,57 @@ def test_openmc_ikilisi_sirasi():
     tam = {yollar.OPENMC_ORTAM_DEGISKENI: ortam_exe, "PATH": yol_dizini,
            "CONDA_PREFIX": os.path.join(d, "conda")}
     python = os.path.join(py_dizini, "python")
-    kontrol("ayar en once", yollar.openmc_ikilisi(ayar=ayar_exe, ortam=tam, python=python)
-            == ayar_exe)
-    kontrol("ortam degiskeni", yollar.openmc_ikilisi(ortam=tam, python=python) == ortam_exe)
+    yok_python = os.path.join(d, "py")
+    kontrol("ortam degiskeni en once", yollar.openmc_ikilisi(ortam=tam, python=python) == ortam_exe)
     tam.pop(yollar.OPENMC_ORTAM_DEGISKENI)
-    kontrol("PATH", yollar.openmc_ikilisi(ortam=tam, python=python) == path_exe)
-    tam["PATH"] = os.path.join(d, "bos")
-    kontrol("python'un yanindaki (etkin olmayan conda ortami)",
+    kontrol("python'un yanindaki PATH'ten once (ayni ortam)",
             yollar.openmc_ikilisi(ortam=tam, python=python) == py_exe)
-    kontrol("CONDA_PREFIX/bin", yollar.openmc_ikilisi(ortam=tam, python=os.path.join(d, "py"))
-            == conda_exe)
-    kontrol("hicbiri yoksa None", yollar.openmc_ikilisi(ortam={"PATH": ""},
-                                                       python=os.path.join(d, "py")) is None)
+    kontrol("PATH", yollar.openmc_ikilisi(ortam=tam, python=yok_python) == path_exe)
+    tam["PATH"] = os.path.join(d, "bos")
+    kontrol("CONDA_PREFIX/bin", yollar.openmc_ikilisi(ortam=tam, python=yok_python) == conda_exe)
+    kontrol("hicbiri yoksa None",
+            yollar.openmc_ikilisi(ortam={"PATH": ""}, python=yok_python) is None)
+
+
+def test_openmc_ikilisi_guvenlik(tmp_path, monkeypatch, caplog):
+    print("\n[T2-7b] openmc: PATH'in bos/goreli ogeleri, goreli/~ ortam yolu, bos degisken")
+    from cekirdek import yollar
+    d = str(tmp_path)
+    yok_python = os.path.join(d, "py")
+    _sahte_calistirilabilir(d)                         # CWD'de kotu niyetli 'openmc'
+    monkeypatch.chdir(d)
+    for path in ("", ".", "goreli", os.pathsep.join(["", ".", "goreli"])):
+        kontrol("PATH=%r CWD'yi aramaz" % path,
+                yollar.openmc_ikilisi(ortam={"PATH": path}, python=yok_python) is None)
+    ad = yollar.OPENMC_ORTAM_DEGISKENI
+    caplog.clear()
+    with caplog.at_level("WARNING", logger="openmc_arayuz.yollar"):
+        sonuc = yollar.openmc_ikilisi(ortam={ad: "openmc", "PATH": ""}, python=yok_python)
+    kontrol("goreli ortam yolu reddedilir + uyari", sonuc is None and ad in caplog.text,
+            caplog.text)
+    monkeypatch.setenv("HOME", d)
+    os.makedirs(os.path.join(d, "bin"))
+    ev_exe = _sahte_calistirilabilir(os.path.join(d, "bin"))
+    kontrol("~ acilir (HOME sabit)",
+            yollar.openmc_ikilisi(ortam={ad: "~/bin/openmc", "PATH": ""}, python=yok_python)
+            == ev_exe)
+    kontrol("bos degisken atlanir (PATH'e duser)",
+            yollar.openmc_ikilisi(ortam={ad: "", "PATH": os.path.join(d, "bin")},
+                                  python=yok_python) == ev_exe)
     duz = os.path.join(d, "calistirilamaz")
     open(duz, "w").close()
-    kontrol("calistirilamayan ayar atlanir",
-            yollar.openmc_ikilisi(ayar=duz, ortam={"PATH": yol_dizini},
-                                  python=os.path.join(d, "py")) == path_exe)
+    kontrol("calistirilamayan ortam yolu atlanir",
+            yollar.openmc_ikilisi(ortam={ad: duz, "PATH": ""}, python=yok_python) is None)
+    sonuc = yollar.openmc_ikilisi(ortam={"PATH": os.path.join(d, "bin")}, python=yok_python)
+    kontrol("sonuc mutlak yol", sonuc is not None and os.path.isabs(sonuc), sonuc)
 
 
-def test_kosucu_openmc_yolu_yollara_baglanir():
+def test_kosucu_openmc_yolu_yollara_baglanir(tmp_path, monkeypatch):
     print("\n[T2-8] kosucu.openmc_yolu yollar.openmc_ikilisi'ni kullanir")
     from cekirdek import kosucu, yollar
-    d = tempfile.mkdtemp()
-    exe = _sahte_calistirilabilir(d, "openmc_ozel")
-    eski = os.environ.get(yollar.OPENMC_ORTAM_DEGISKENI)
-    os.environ[yollar.OPENMC_ORTAM_DEGISKENI] = exe
-    try:
-        kontrol("ortam degiskenindeki openmc", kosucu.openmc_yolu() == exe)
-    finally:
-        if eski is None:
-            os.environ.pop(yollar.OPENMC_ORTAM_DEGISKENI)
-        else:
-            os.environ[yollar.OPENMC_ORTAM_DEGISKENI] = eski
+    exe = _sahte_calistirilabilir(str(tmp_path), "openmc_ozel")
+    monkeypatch.setenv(yollar.OPENMC_ORTAM_DEGISKENI, exe)
+    kontrol("ortam degiskenindeki openmc", kosucu.openmc_yolu() == exe)
 
 
 # ---------------------------------------------------------------------------
@@ -278,12 +364,15 @@ def test_kosu_alt_dagiticisi():
     kontrol("bilinmeyen alt -> 2", kod_bilinmeyen == 2)
 
 
-def test_alt_surec_gercek_komut_satiri():
+def test_alt_surec_gercek_komut_satiri(tmp_path):
     print("\n[T2-11] alt surec komutu kaynak agacindan, baska bir dizinden calisir")
-    from cekirdek import giris, yollar
+    from cekirdek import giris
     program, arg = giris.alt_surec_komutu("tukenme", ["--help"])
-    ortam = dict(os.environ, PYTHONPATH=yollar.paket_koku())
-    r = subprocess.run([program] + arg, cwd=tempfile.mkdtemp(), env=ortam, capture_output=True,
+    ortam = dict(os.environ)
+    yol = giris.alt_surec_pythonpath(ortam.get("PYTHONPATH", ""))
+    if yol:
+        ortam["PYTHONPATH"] = yol
+    r = subprocess.run([program] + arg, cwd=str(tmp_path), env=ortam, capture_output=True,
                        text=True, timeout=_ALT_SUREC_SURESI)
     kontrol("cikis 0", r.returncode == 0, r.stderr[-500:])
     kontrol("tukenme yardimi (--hazirla)", "--hazirla" in r.stdout, r.stdout[-300:])
@@ -404,6 +493,9 @@ def test_kurulu_paket(gecici):
     # Kopyadan kurulur: pip agacin icinde derler (build/, *.egg-info) -- depo kirlenmesin
     kaynak = os.path.join(gecici, "kaynak")
     shutil.copytree(KOK, kaynak, ignore=shutil.ignore_patterns(*_KOPYALANMAYAN))
+    sizan = [os.path.relpath(os.path.join(k, a), kaynak) for k, dizinler, dosyalar in os.walk(kaynak)
+             for a in dizinler + dosyalar if a.startswith(_GIZLI_ADLAR)]
+    kontrol("kopyada .git/.claude/.env* yok", not sizan, "-> %s" % sizan[:5])
     r = subprocess.run([py, "-m", "pip", "install", "-q", "--no-deps", kaynak],
                        capture_output=True, text=True, cwd=gecici)
     kontrol("pip install --no-deps .", r.returncode == 0, r.stderr[-1500:])
@@ -424,10 +516,10 @@ def test_kurulu_paket(gecici):
             r.stderr[-500:])
 
 
-HIZLI = [test_paket_ve_veri_dizinleri, test_veri_koku_ortam_degiskeni,
+HIZLI = [test_paket_ve_veri_dizinleri, test_veri_koku_ortam_degiskeni, test_veri_koku_aday_sirasi,
          test_dagitim_kaydindan_paylasim_dizini,
          test_ozel_dizin_ortam_degiskenleri, test_xdg_dizinleri, test_gunluk_xdg_tek_kaynak,
-         test_moduller_yollari_kullanir, test_openmc_ikilisi_sirasi,
+         test_moduller_yollari_kullanir, test_openmc_ikilisi_sirasi, test_openmc_ikilisi_guvenlik,
          test_kosucu_openmc_yolu_yollara_baglanir, test_alt_surec_komutu,
          test_kosu_alt_dagiticisi, test_alt_surec_gercek_komut_satiri,
          test_runpy_ve_modul_adi_yok, test_paket_verisi_tam, test_kaynak_dosyalari_800_satir_alti]
