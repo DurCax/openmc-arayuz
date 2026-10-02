@@ -225,7 +225,7 @@ class MeshFormuMixin(object):
     # ------------------------------------------------------------------
     # sinyaller
     # ------------------------------------------------------------------
-    def _mesh_turu_degisti(self, *_):
+    def _mesh_turu_degisti(self, *_arg):
         if self._yukleniyor:
             return
         tur = self.t_mesh_tur.currentData()
@@ -242,7 +242,7 @@ class MeshFormuMixin(object):
             self._sinirlari_goster(tur, self._mesh_onerisi(tur))
         self._tally_kaydet()
 
-    def _enerji_yapisi_secildi(self, *_):
+    def _enerji_yapisi_secildi(self, *_arg):
         if self._yukleniyor:
             return
         ad = self.t_enerji_yapi.currentData()

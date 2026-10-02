@@ -190,7 +190,7 @@ def test_harita_secim_ve_isaret():
     kontrol("ikinci dilimde skorsuz hucre isaretli", bool(w.isaretli[2, 1]))
     kontrol("ozet yuksek hatali hucreyi soyler", "1" in w.ozet.text() and "%" in w.ozet.text(),
             "-> %s" % w.ozet.text())
-    _kutu_sec(w.tally, 1)
+    w.tally.setCurrentIndex(1)
     kontrol("silindirik tally: tek grup (toplam)", w.grup.count() == 1)
 
 
@@ -217,6 +217,38 @@ def test_harita_normalizasyon_ve_vtk():
         kontrol("yazilamayan yol: False + uyari (cokmez)", kotu is False and w.uyari.text())
 
 
+def test_yavas_calistir_sayfasi_mesh_karti(gecici):
+    print("\n[Y1-A7] YAVAS: kosu dizini Calistir sayfasina yuklenince ag haritasi gorunur")
+    from cekirdek import kurucu, sema
+    from testler.ortak_test import ISLEM_PARCACIGI
+    uyg = _qt()
+    spec = sema.yukle(os.path.join(ORNEK, "pwr_mesh_aki.json"))
+    spec["ayarlar"].update(parcacik=2000, cevrim=20, pasif=8)
+    eski = os.getcwd()
+    try:
+        os.chdir(gecici)
+        model, _b = kurucu.kur(spec)
+        model.run(threads=ISLEM_PARCACIGI, output=False)
+    finally:
+        os.chdir(eski)
+    from arayuz.sekme_calistir import CalistirSekmesi
+    s = CalistirSekmesi()
+    s.spec_ayarla(spec)
+    kontrol("kosudan once ag karti gizli", not s.mesh_karti.isVisibleTo(s))
+    ok = s.kosu_dizinini_yukle(gecici)
+    uyg.processEvents()
+    kontrol("kosu yuklendi", ok)
+    kontrol("ag karti gorunur, iki tally", s.mesh_karti.isVisibleTo(s)
+            and s.mesh_harita.tally.count() == 2)
+    kontrol("harita cizildi", s.mesh_harita.gosterilen is not None
+            and s.mesh_harita.gosterilen.deger.shape == (17, 17))
+    s.sifirla()          # proje degisince (yeni/ac/ornek)
+    kontrol("yeni projede ag karti temizlendi", not s.mesh_karti.isVisibleTo(s)
+            and not s.mesh_harita.sonuclar)
+    s.deleteLater()
+
+
 HIZLI = [test_form_ag_turu_ve_sinirlar, test_form_dosyadan_yukler_ve_korur,
          test_form_enerji_grup_yapisi, test_form_betik_esdegerligi,
          test_harita_secim_ve_isaret, test_harita_normalizasyon_ve_vtk]
+YAVAS = [test_yavas_calistir_sayfasi_mesh_karti]

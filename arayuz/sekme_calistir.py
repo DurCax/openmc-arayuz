@@ -130,6 +130,10 @@ class CalistirSekmesi(SonucGosterimiMixin, QtWidgets.QWidget):
         self.guc_harita = GucHaritaWidget()
         self.guc_karti = b.Kart()
         self.guc_karti.ekle(self.guc_harita)
+        from arayuz.sonuc.mesh_harita import MeshHaritaWidget   # v3 Y1
+        self.mesh_harita = MeshHaritaWidget()
+        self.mesh_karti = b.Kart()
+        self.mesh_karti.ekle(self.mesh_harita)
 
         self.kart = SonucKarti()
         self.durum_etiket, self.ozet_etiket = self.kart.durum_etiket, self.kart.ozet_etiket
@@ -158,6 +162,7 @@ class CalistirSekmesi(SonucGosterimiMixin, QtWidgets.QWidget):
         duzen.addWidget(self.pano)
         duzen.addLayout(grafikler)
         duzen.addWidget(self.guc_karti)
+        duzen.addWidget(self.mesh_karti)
         duzen.addWidget(self.kart)
         duzen.addWidget(self.uygunluk)
         duzen.addWidget(self.ayrinti_karti)
@@ -230,6 +235,7 @@ class CalistirSekmesi(SonucGosterimiMixin, QtWidgets.QWidget):
         self.ilerleme.resetFormat()
         self._grafik_kur(self._entropi_acik(self.spec))
         self.guc_harita.sonuc_ayarla(None, None)
+        self.mesh_harita.sonuclari_ayarla([])
         self._gorunum_guncelle()
         self.kapi_guncelle()
         self.sonuc_degisti.emit()
@@ -395,6 +401,7 @@ class CalistirSekmesi(SonucGosterimiMixin, QtWidgets.QWidget):
         self.tally_metin.setVisible(tally)
         self.ozet_etiket.setVisible(bool(self.ozet_etiket.text()))
         self.guc_karti.setVisible(sonuc and self._guc_var and self._guc_etkin())
+        self.mesh_karti.setVisible(sonuc and bool(self.mesh_harita.sonuclar))
         self.bos.setVisible(not (kart or grafik))
         self.d_klasor.setEnabled(bool(self.son_kosu_dizini()))
         # Ayrintili cikti yalnizca gosterecek bir sey varken (bos bolum gurultudur)
@@ -470,6 +477,7 @@ class CalistirSekmesi(SonucGosterimiMixin, QtWidgets.QWidget):
         self.kart.cikti_yaz([])
         self.uygunluk.temizle()
         self.guc_harita.sonuc_ayarla(None, None)
+        self.mesh_harita.sonuclari_ayarla([])
         self.pano.temizle()
         self.keff_etiket.setText(_("koşuyor…"))
         self.durum_etiket.setStyleSheet("")

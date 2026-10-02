@@ -212,6 +212,26 @@ def test_vtk_yazici(gecici=None):
                     and set(adlar) == set(alanlar), "-> %s" % sorted(alanlar)[:4])
 
 
+def test_tally_metni_mesh_ve_enerji():
+    print("\n[Y1-S9] kosucu.tally_metni: mesh + enerji filtreli tally (MultiIndex sutun) cokmez")
+    import pandas as pd
+    from cekirdek import kosucu
+    # OpenMC'nin mesh filtreli DataFrame'i: sutunlar MultiIndex ("mesh 1", "x") ...
+    sutun = pd.MultiIndex.from_tuples(
+        [("mesh 1", "x"), ("mesh 1", "y"), ("mesh 1", "z"), ("energy low [eV]", ""),
+         ("energy high [eV]", ""), ("nuclide", ""), ("score", ""), ("mean", ""),
+         ("std. dev.", "")])
+    df = pd.DataFrame([[1, 1, 1, 0.0, 0.625, "total", "flux", 2.0, 0.1],
+                       [1, 1, 1, 0.625, 2e7, "total", "flux", 3.0, 0.1]], columns=sutun)
+    try:
+        metin = kosucu.tally_metni("mesh_aki", df)
+        hata = None
+    except ValueError as e:
+        metin, hata = "", e
+    kontrol("metin uretildi (tam tablo)", hata is None and "mesh_aki" in metin
+            and "flux" in metin, "-> %s" % hata)
+
+
 def test_yavas_ornek_kosu_mesh_haritasi(gecici):
     print("\n[Y1-S8] YAVAS: pwr_mesh_aki kosusu -> mesh sonuclari, simetri, VTK")
     import openmc
@@ -254,5 +274,5 @@ def test_yavas_ornek_kosu_mesh_haritasi(gecici):
 
 HIZLI = [test_hacimler_openmc_ile_ayni, test_secim_grup_toplami, test_normalizasyon,
          test_isi_toplami, test_bagil_hata_ve_isaret, test_dilim_koordinatlari,
-         test_vtk_yazici]
+         test_vtk_yazici, test_tally_metni_mesh_ve_enerji]
 YAVAS = [test_yavas_ornek_kosu_mesh_haritasi]
