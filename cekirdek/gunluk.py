@@ -22,8 +22,10 @@ import os
 import sys
 import threading
 
+from cekirdek import yollar
+
 KOK_KAYDEDICI = "openmc_arayuz"
-UYGULAMA_DIZINI = "openmc_arayuz"
+UYGULAMA_DIZINI = yollar.UYGULAMA_DIZINI      # geriye uyum (tek kaynak: yollar)
 LOG_DOSYASI = "openmc_arayuz.log"
 AZAMI_BAYT = 1_000_000
 YEDEK_SAYISI = 5
@@ -34,8 +36,8 @@ _durum = {"isleyici": None, "yol": None}
 
 
 def durum_dizini(ortam=None):
-    """Uygulamanin durum (log) dizini; XDG Base Directory kurali."""
-    from cekirdek import yollar
+    """Uygulamanin durum (log) dizini; XDG Base Directory kurali (tek kaynak:
+    yollar.durum_dizini; goreli XDG_STATE_HOME yok sayilir)."""
     return yollar.durum_dizini(ortam)
 
 

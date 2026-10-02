@@ -51,8 +51,11 @@ import logging
 import os
 import shutil
 import sys
+from typing import Iterator, Mapping, Optional, Tuple
 
-UYGULAMA_DIZINI = "openmc_arayuz"          # XDG alt dizini (gunluk.py ile ayni ad)
+Ortam = Optional[Mapping[str, str]]        # None -> os.environ
+
+UYGULAMA_DIZINI = "openmc_arayuz"          # XDG alt dizini (gunluk.UYGULAMA_DIZINI de bu)
 PAYLASIM_ADI = "openmc-arayuz"             # <onek>/share/<ad> (conda-recipe/build.sh)
 DAGITIM_ADI = "openmc-arayuz"              # pyproject [project].name
 VERI_ORTAM_DEGISKENI = "OPENMC_ARAYUZ_VERI"
@@ -75,7 +78,7 @@ _log = logging.getLogger("openmc_arayuz.yollar")   # gunluk.KOK_KAYDEDICI altind
 _PAKET_KOKU = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
-def _ortam(ortam):
+def _ortam(ortam: Ortam) -> Mapping[str, str]:
     return os.environ if ortam is None else ortam
 
 
@@ -83,24 +86,24 @@ def _ortam(ortam):
 # paket ici
 # ---------------------------------------------------------------------------
 
-def paket_koku():
+def paket_koku() -> str:
     """cekirdek/ ve arayuz/ paketlerini iceren dizin."""
     return _PAKET_KOKU
 
 
-def ikon_dizini():
+def ikon_dizini() -> str:
     return os.path.join(_PAKET_KOKU, "arayuz", "kaynaklar", "ikonlar")
 
 
-def font_dizini():
+def font_dizini() -> str:
     return os.path.join(_PAKET_KOKU, "arayuz", "kaynaklar", "fontlar")
 
 
-def rapor_sablon_dizini():
+def rapor_sablon_dizini() -> str:
     return os.path.join(_PAKET_KOKU, "cekirdek", "rapor_sablon")
 
 
-def pyproject_yolu():
+def pyproject_yolu() -> str:
     """Kaynak agacindaki pyproject.toml (kurulu pakette yoktur; surum.py
     o zaman paket meta verisine duser)."""
     return os.path.join(_PAKET_KOKU, "pyproject.toml")
@@ -110,12 +113,12 @@ def pyproject_yolu():
 # veri koku
 # ---------------------------------------------------------------------------
 
-def _veri_koku_mu(dizin):
+def _veri_koku_mu(dizin: Optional[str]) -> bool:
     return bool(dizin) and os.path.isdir(os.path.join(dizin, _VERI_ISARETI))
 
 
 @functools.lru_cache(maxsize=1)
-def _dagitim_paylasim_dizini():
+def _dagitim_paylasim_dizini() -> Optional[str]:
     """Kurulu dagitimin RECORD kaydindan share/openmc-arayuz'un mutlak yolu;
     dagitim yoksa ya da veri dosyasi kaydedilmemisse None. Kurulum bicimi
     (venv, --user, --prefix) ne olursa olsun dogru oneki verir."""
@@ -134,7 +137,7 @@ def _dagitim_paylasim_dizini():
     return None
 
 
-def _veri_adaylari(ortam):
+def _veri_adaylari(ortam: Mapping[str, str]) -> Iterator[Optional[str]]:
     istenen = ortam.get(VERI_ORTAM_DEGISKENI)
     if istenen:
         if _veri_koku_mu(istenen):
@@ -148,7 +151,7 @@ def _veri_adaylari(ortam):
     yield os.path.join(sys.prefix, "share", PAYLASIM_ADI)
 
 
-def veri_koku(ortam=None):
+def veri_koku(ortam: Ortam = None) -> str:
     """ornekler/, locale/, docs/kilavuz/'u iceren dizin (sira: modul belgesi)."""
     for aday in _veri_adaylari(_ortam(ortam)):
         if _veri_koku_mu(aday):
@@ -156,15 +159,15 @@ def veri_koku(ortam=None):
     return _PAKET_KOKU
 
 
-def ornekler_dizini(ortam=None):
+def ornekler_dizini(ortam: Ortam = None) -> str:
     return os.path.join(veri_koku(ortam), "ornekler")
 
 
-def locale_dizini(ortam=None):
+def locale_dizini(ortam: Ortam = None) -> str:
     return _ortam(ortam).get(LOCALE_ORTAM_DEGISKENI) or os.path.join(veri_koku(ortam), "locale")
 
 
-def kilavuz_dizini(ortam=None):
+def kilavuz_dizini(ortam: Ortam = None) -> str:
     return (_ortam(ortam).get(KILAVUZ_ORTAM_DEGISKENI)
             or os.path.join(veri_koku(ortam), "docs", "kilavuz"))
 
@@ -173,7 +176,7 @@ def kilavuz_dizini(ortam=None):
 # XDG kullanici dizinleri
 # ---------------------------------------------------------------------------
 
-def _xdg(degisken, ortam):
+def _xdg(degisken: str, ortam: Ortam) -> str:
     taban = _ortam(ortam).get(degisken)
     if not taban or not os.path.isabs(taban):
         # XDG: "If an implementation encounters a relative path in any of these
@@ -182,19 +185,19 @@ def _xdg(degisken, ortam):
     return os.path.join(taban, UYGULAMA_DIZINI)
 
 
-def ayar_dizini(ortam=None):
+def ayar_dizini(ortam: Ortam = None) -> str:
     return _xdg("XDG_CONFIG_HOME", ortam)
 
 
-def kullanici_veri_dizini(ortam=None):
+def kullanici_veri_dizini(ortam: Ortam = None) -> str:
     return _xdg("XDG_DATA_HOME", ortam)
 
 
-def onbellek_dizini(ortam=None):
+def onbellek_dizini(ortam: Ortam = None) -> str:
     return _xdg("XDG_CACHE_HOME", ortam)
 
 
-def durum_dizini(ortam=None):
+def durum_dizini(ortam: Ortam = None) -> str:
     return _xdg("XDG_STATE_HOME", ortam)
 
 
@@ -202,11 +205,11 @@ def durum_dizini(ortam=None):
 # openmc ikilisi
 # ---------------------------------------------------------------------------
 
-def _calistirilabilir_mi(yol):
+def _calistirilabilir_mi(yol: Optional[str]) -> bool:
     return bool(yol) and os.path.isfile(yol) and os.access(yol, os.X_OK)
 
 
-def _path_te_ara(ortam):
+def _path_te_ara(ortam: Mapping[str, str]) -> Optional[str]:
     # Surec ortaminda shutil.which'in kendi PATH okumasi kullanilir (ayni
     # sonuc; which'i degistiren eski testler de calisir).
     if ortam is os.environ:
@@ -214,17 +217,20 @@ def _path_te_ara(ortam):
     return shutil.which(OPENMC_ADI, path=ortam.get("PATH", os.defpath))
 
 
-def _openmc_adaylari(ayar, ortam, python):
+def _openmc_adaylari(ayar: Optional[str], ortam: Mapping[str, str],
+                     python: str) -> Iterator[Tuple[str, Optional[str]]]:
     if ayar:
-        yield "ayar", ayar
-    yield OPENMC_ORTAM_DEGISKENI, ortam.get(OPENMC_ORTAM_DEGISKENI)
+        yield "ayar", os.path.expanduser(ayar)
+    istenen = ortam.get(OPENMC_ORTAM_DEGISKENI)
+    yield OPENMC_ORTAM_DEGISKENI, os.path.expanduser(istenen) if istenen else None
     yield "PATH", _path_te_ara(ortam)
     yield "python", os.path.join(os.path.dirname(python), OPENMC_ADI)
     onek = ortam.get("CONDA_PREFIX")
     yield "CONDA_PREFIX", os.path.join(onek, "bin", OPENMC_ADI) if onek else None
 
 
-def openmc_ikilisi(ayar=None, ortam=None, python=None):
+def openmc_ikilisi(ayar: Optional[str] = None, ortam: Ortam = None,
+                   python: Optional[str] = None) -> Optional[str]:
     """openmc calistirilabilir dosyasinin yolu; bulunamazsa None.
 
     ayar   : cagiranin ayarlarindan gelen yol (bos/None ise atlanir)
