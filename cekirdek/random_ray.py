@@ -29,9 +29,13 @@ from __future__ import annotations
 import copy
 import math
 from dataclasses import dataclass, replace
-from typing import Tuple
+from typing import TYPE_CHECKING, Tuple
 
 from cekirdek.ceviri import _
+
+if TYPE_CHECKING:                     # yalniz tur aciklamalari (openmc tembel yuklenir)
+    import openmc
+    import openmc.mgxs  # noqa: F401
 
 KAYNAK_SEKILLERI = ("flat", "linear", "linear_xy")
 EN_KISA_KIRIS = 30.0          # cm; openmc convert_to_random_ray

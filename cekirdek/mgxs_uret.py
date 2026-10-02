@@ -46,11 +46,15 @@ import os
 import re
 import warnings
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Mapping, Optional, Tuple
+from typing import TYPE_CHECKING, Any, Dict, List, Mapping, Optional, Tuple
 
 from cekirdek import mgxs_k
 from cekirdek.ceviri import _, N_
 from cekirdek.gunluk import kaydedici
+
+if TYPE_CHECKING:                     # yalniz tur aciklamalari (openmc tembel yuklenir)
+    import openmc
+    import openmc.mgxs  # noqa: F401
 
 _log = kaydedici(__name__)
 
@@ -319,7 +323,8 @@ def _hiz(lib: "openmc.mgxs.Library", tur: str) -> List[Tuple[float, float]]:
     return hizlar
 
 
-def _sabitler(lib: "openmc.mgxs.Library", a: MgxsAyar):
+def _sabitler(lib: "openmc.mgxs.Library", a: MgxsAyar) -> Tuple[mgxs_k.GrupSabitleri,
+                                                                 mgxs_k.GrupSapmalari, tuple]:
     """Tek bolgenin (GrupSabitleri, GrupSapmalari, nu'suz sacilma matrisi)."""
     d = lib.domains[0]
     toplam_turu = "nu-transport" if a.duzeltme == "P0" else "total"
@@ -376,7 +381,7 @@ def csv_yaz(satirlar: Tuple[Satir, ...], yol: str, a: MgxsAyar) -> str:
 
 
 def _ozet_yaz(sonuc: MgxsSonuc) -> None:
-    def _d(d):
+    def _d(d: Optional[mgxs_k.Deger]) -> Optional[list]:
         return None if d is None else [d.ort, d.sapma]
     veri = {"ayar": sonuc.ayar.sozluk(), "grup_kenarlari": list(sonuc.grup_kenarlari),
             "adlar": {str(k): v for k, v in sonuc.adlar.items()}, "k_ce": _d(sonuc.k_ce),

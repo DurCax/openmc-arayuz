@@ -25,10 +25,14 @@ from __future__ import annotations
 import math
 import os
 from dataclasses import dataclass
-from typing import Any, Mapping, Optional, Sequence
+from typing import TYPE_CHECKING, Any, Mapping, Optional, Sequence
 
 from cekirdek import kosucu, kuyruk, mg_model, mgxs_uret, random_ray
 from cekirdek.ceviri import _, N_
+
+if TYPE_CHECKING:                     # yalniz tur aciklamalari (openmc tembel yuklenir)
+    import openmc
+    import openmc.mgxs  # noqa: F401
 
 PCM = 1.0e5
 TURLER = {"ce": N_("Sürekli enerji (CE) MC"), "mg": N_("Çok gruplu (MG) MC"),

@@ -285,7 +285,7 @@ class MgxsKarti(bil.Kart):
         n = int(((self.spec or {}).get("calistirma") or {}).get("is_parcacigi", 1))
         return max(1, min(n, os.cpu_count() or 1))
 
-    def _kuyruk(self):
+    def _kuyruk(self) -> kuyruk.Kuyruk:
         if self._kq is None:
             from arayuz.kuyruk.bagdastirici import KuyrukBagdastirici
             self._kq = KuyrukBagdastirici(kuyruk.Kuyruk(en_fazla_paralel=1), parent=self)

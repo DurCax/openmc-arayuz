@@ -24,9 +24,13 @@
 from __future__ import annotations
 
 import os
-from typing import Mapping
+from typing import TYPE_CHECKING, Mapping
 
 from cekirdek.ceviri import _
+
+if TYPE_CHECKING:                     # yalniz tur aciklamalari (openmc tembel yuklenir)
+    import openmc
+    import openmc.mgxs  # noqa: F401
 
 MG_KIPI = "multi-group"
 _KOPYALANAN_AYARLAR = ("run_mode", "particles", "batches", "inactive", "seed",
