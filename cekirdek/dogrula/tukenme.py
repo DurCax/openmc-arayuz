@@ -166,6 +166,9 @@ def tukenme_kontrol(spec, veri_kontrolu=True):
               "Her örneğin hacmi kendi hücre alanı × kendi katman yüksekliğidir "
               "(OpenMC'nin eşit bölmesi kullanılmaz: eşit olmayan katmanlarda ve "
               "aynı yakıtı farklı yarıçapla kullanan çubuklarda yanlış olurdu).")))
+    # v3 Y4: entegrator, sogutma, surdurme, hizli kip, kritik arama
+    from cekirdek import tukenme_ayar
+    bulgular.extend(tukenme_ayar.ayar_bulgulari(spec))
     return bulgular
 
 

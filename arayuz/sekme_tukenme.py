@@ -110,6 +110,7 @@ class TukenmeSekmesi(SekmeTabani, SonucBolumu, TukenmeArayuzu):
         self.guc.valueChanged.connect(self._kaydet)
         self.adimlar.editingFinished.connect(self._kaydet)
         self.ek_liste.degisti.connect(self._kaydet)
+        self.y4.degisti.connect(self._kaydet)
         self._gorunum_guncelle()
 
     # ==================================================================
@@ -131,6 +132,7 @@ class TukenmeSekmesi(SekmeTabani, SonucBolumu, TukenmeArayuzu):
         # Eski JSON'lardaki liste AYNEN korunur (zincirde olmayan ad bile silinmez).
         self.izlenen.secim_ayarla(list(t.get("izlenen") or []), sinyal=False)
         self.ek_liste.doldur(self.spec)
+        self.y4.doldur(self.spec)
         self._ozet_guncelle()
         self._onceki_yukle()
 
@@ -180,6 +182,8 @@ class TukenmeSekmesi(SekmeTabani, SonucBolumu, TukenmeArayuzu):
             t["adim_gucu"] = self.adim_gucu.isChecked()
         t["izlenen"] = self.izlenen.secim()
         t["ek_malzemeler"] = self.ek_liste.secim()
+        self.y4.yaz(t)                       # v3 Y4 (varsayilanlar yazilmaz)
+        self.y4.gorunum(t["entegrator"])
         self._ozet_guncelle()
         self.bildir()
 
@@ -194,6 +198,19 @@ class TukenmeSekmesi(SekmeTabani, SonucBolumu, TukenmeArayuzu):
             "çubuk × 4 dilimde adım başına 52 kB). On binlerce çubuklu tam korda kapatmayı "
             "düşünün."))
         self.gelismis_form.addRow("", self.adim_gucu)
+
+    def _sogutma_ozeti(self, t):
+        """v3 Y4: adim ozetine sogutma adimlari ve kritik arama notu eklenir."""
+        from cekirdek import tukenme_ayar
+        ekler = []
+        n = len(tukenme_ayar.sogutma(t)[0])
+        if n:
+            ekler.append(_n("%d soğuma adımı (transport yok)", "%d soğuma adımı (transport yok)",
+                            n) % n)
+        if tukenme_ayar.kritik_arama(t).var:
+            ekler.append(_("kritik arama adım başına ek transport koşar"))
+        if ekler:
+            self.adim_ozet.setText(self.adim_ozet.text() + " · " + " · ".join(ekler))
 
     def _adim_gucu_anlamli(self):
         """Guc tally'si kurulabilen modelde (cubuklar bir kafeste) anlamli."""
@@ -278,6 +295,7 @@ class TukenmeSekmesi(SekmeTabani, SonucBolumu, TukenmeArayuzu):
                    "%d adım · toplam %.4g gün = %.4g MWd/kg · %d transport çözümü",
                    len(adimlar))
                 % (len(adimlar), gun, bu, _tk.transport_sayisi(self.spec)))
+            self._sogutma_ozeti(t)
         else:
             self.adim_ozet.setText(_("Adım yok — virgülle adım uzunlukları girin."))
 

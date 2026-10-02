@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 15:50+0300\n"
+"POT-Creation-Date: 2026-10-02 16:05+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2046,34 +2046,34 @@ msgid ""
 "olurdu)."
 msgstr ""
 
-#: cekirdek/dogrula/tukenme.py:188
+#: cekirdek/dogrula/tukenme.py:191
 #, python-format
 msgid "çubuk çubuk yanmada örnek hacmi kesin değil: %s"
 msgstr ""
 
-#: cekirdek/dogrula/tukenme.py:189
+#: cekirdek/dogrula/tukenme.py:192
 msgid ""
 "Kesik (kırpılan) konumlardaki örneklerin hacmi analitik bilinmez. Çubuk çubuk yanmayı"
 " kapatın ya da kesik konumları kaldırın."
 msgstr ""
 
-#: cekirdek/dogrula/tukenme.py:194
+#: cekirdek/dogrula/tukenme.py:197
 #, python-format
 msgid "'%s' hacmi stokastik hesaplanacak: %s"
 msgstr ""
 
-#: cekirdek/dogrula/tukenme.py:195
+#: cekirdek/dogrula/tukenme.py:198
 msgid ""
 "Analitik hacim kesin değil (kesik konum ya da çubuk); OpenMC stokastik hacim hesabı "
 "kullanılır ve belirsizliği rapora yazılır."
 msgstr ""
 
-#: cekirdek/dogrula/tukenme.py:204
+#: cekirdek/dogrula/tukenme.py:207
 #, python-format
 msgid "yanabilir zehir '%s' tükenmeye katılmıyor: %s"
 msgstr ""
 
-#: cekirdek/dogrula/tukenme.py:205
+#: cekirdek/dogrula/tukenme.py:208
 msgid ""
 "Hacmi analitik hesaplanamıyor; bu malzeme koşu boyunca taze kalır. Taze kalan emici "
 "ömür sonunda kontrol değerini olduğundan büyük gösterir (kapanma payı açısından "
@@ -4154,7 +4154,7 @@ msgid ""
 "gerektirir."
 msgstr ""
 
-#: cekirdek/kod_uret/tukenme.py:100
+#: cekirdek/kod_uret/tukenme.py:143
 #, python-format
 msgid ""
 "'%s' malzemesinin bir örneğinin hacmi hesaplanamıyor; çubuk çubuk yanma kesin hacim "
@@ -7614,142 +7614,214 @@ msgstr ""
 msgid "'%s' kabında kalınlıkla tanımlı %d. halka yok"
 msgstr ""
 
-#: cekirdek/tukenme.py:102
+#: cekirdek/tukenme.py:100
 #, python-format
 msgid "otomatik: %s"
 msgstr ""
 
-#: cekirdek/tukenme.py:105
+#: cekirdek/tukenme.py:103
 msgid "kullanıcı seçimi"
 msgstr ""
 
-#: cekirdek/tukenme.py:322
+#: cekirdek/tukenme.py:320
 #, python-format
 msgid ""
 "çubuk çubuk yanma kesin örnek hacmi gerektirir; hacmi kesin olmayan (kesik) yanabilir"
 " malzeme: %s"
 msgstr ""
 
-#: cekirdek/tukenme.py:360
+#: cekirdek/tukenme.py:358
 #, python-format
 msgid ""
 "hacmi analitik hesaplanamayan yanabilir malzeme: %s (%s). Tükenme kesin hacim "
 "gerektirir."
 msgstr ""
 
-#: cekirdek/dogrula/tukenme.py:135 cekirdek/tukenme.py:364
+#: cekirdek/dogrula/tukenme.py:135 cekirdek/tukenme.py:362
 msgid "modelde yanabilir (fisil) malzeme yok"
 msgstr ""
 
-#: cekirdek/tukenme.py:654
-msgid "malzemeler"
-msgstr ""
-
-#: cekirdek/tukenme.py:654
-msgid "çubuklar"
-msgstr ""
-
-#: cekirdek/tukenme.py:655
-msgid "plaka elemanları"
-msgstr ""
-
-#: cekirdek/tukenme.py:655
-msgid "demetler"
-msgstr ""
-
-#: cekirdek/tukenme.py:655
-msgid "kor"
-msgstr ""
-
-#: cekirdek/tukenme.py:656
-msgid "hesap ayarları"
-msgstr ""
-
-#: cekirdek/tukenme.py:656
-msgid "tally'ler"
-msgstr ""
-
-#: cekirdek/tukenme.py:657
-msgid "güç dağılımı"
-msgstr ""
-
-#: cekirdek/tukenme.py:657
-msgid "tükenme ayarları"
-msgstr ""
-
-#: cekirdek/dogrula/tukenme.py:23 cekirdek/tukenme.py:665
-#: cekirdek/uygunluk_denetimi/vv_arayuz.py:55 cekirdek/vv/kume.py:189
-msgctxt "spektrum"
-msgid "termal"
-msgstr ""
-
-#: cekirdek/dogrula/tukenme.py:24 cekirdek/tukenme.py:666
-#: cekirdek/uygunluk_denetimi/vv_arayuz.py:57 cekirdek/vv/kume.py:190
-msgctxt "spektrum"
-msgid "hızlı"
-msgstr ""
-
-#: cekirdek/tukenme.py:720
-msgid "koşmadan hacim, zincir ve ağır metal bilgisini yazdır"
-msgstr ""
-
-#: cekirdek/tukenme.py:722
-msgid "doğrulamada nüklid/kütüphane denetimini atla"
-msgstr ""
-
-#: cekirdek/tukenme.py:741
+#: cekirdek/tukenme_arama.py:98
 #, python-format
-msgid "  zincir        : %s  (%s)"
+msgid "kritiklik araması: modelde '%s' malzemesi yok"
 msgstr ""
 
-#: cekirdek/tukenme.py:742
-#, python-format
-msgid "  fisyon verimi : %s eV (%s spektrum)"
-msgstr ""
-
-#: cekirdek/tukenme.py:744
-#, python-format
-msgid "  güç yoğunluğu : %g W/gHM"
-msgstr ""
-
-#: cekirdek/tukenme.py:745
-#, python-format
-msgid "  adımlar       : %s %s  → %d transport"
-msgstr ""
-
-#: cekirdek/tukenme.py:747 cekirdek/tukenme.py:772
-msgid "gün"
-msgstr ""
-
-#: cekirdek/tukenme.py:751
-#, python-format
-msgid "  hacim %-10s: %s cm³ [%s] %s"
-msgstr ""
-
-#: cekirdek/tukenme.py:755
-#, python-format
-msgid "  ağır metal    : %.6g g"
-msgstr ""
-
-#: cekirdek/tukenme.py:764
+#: cekirdek/tukenme_arama.py:170
 #, python-format
 msgid ""
-"\n"
-"  DOĞRULAMA: koşu başlatılmadı (%d hata)"
+"kritiklik araması: '%s' kontrol çubuğunun hareketli hücresi bulunamadı (3B model ve "
+"kontrol çubuğu gerekli)"
 msgstr ""
 
-#: cekirdek/tukenme.py:771
-#, python-format
-msgid ""
-"\n"
-"  ağır metal: %.6g g"
+#: cekirdek/tukenme_arama.py:219
+msgid "kontrol çubuğu araması 3B model gerektirir"
 msgstr ""
 
-#: cekirdek/tukenme.py:775
+#: cekirdek/tukenme_ayar.py:69
+msgid "Predictor — öngörücü, 1. mertebe (adım başına 1 transport)"
+msgstr ""
+
+#: cekirdek/tukenme_ayar.py:71
+msgid "CE/CM — öngörücü-düzeltici, 2. mertebe (adım başına 2 transport)"
+msgstr ""
+
+#: cekirdek/tukenme_ayar.py:73
+msgid "CE/LI — sabit dışdeğerleme / doğrusal aradeğerleme (2 transport)"
+msgstr ""
+
+#: cekirdek/tukenme_ayar.py:75
+msgid "LE/QI — doğrusal dışdeğerleme / ikinci derece aradeğerleme (2 transport)"
+msgstr ""
+
+#: cekirdek/tukenme_ayar.py:77
+msgid "EPC-RK4 — genişletilmiş öngörücü-düzeltici, Runge-Kutta 4 (4 transport)"
+msgstr ""
+
+#: cekirdek/tukenme_ayar.py:79
+msgid "CF4 — 4. mertebe komütatörsüz Lie (4 transport)"
+msgstr ""
+
+#: cekirdek/tukenme_ayar.py:81
+msgid "SI-CE/LI — stokastik örtük CE/LI (iç yinelemeli)"
+msgstr ""
+
+#: cekirdek/tukenme_ayar.py:83
+msgid "SI-LE/QI — stokastik örtük LE/QI (iç yinelemeli)"
+msgstr ""
+
+#: cekirdek/tukenme_ayar.py:104 cekirdek/tukenme_ayar.py:204
 #, python-format
+msgid "bilinmeyen entegratör: %s"
+msgstr ""
+
+#: cekirdek/tukenme_ayar.py:184
+msgid "hızlı kip: tesir kesitleri tek transport'tan (MicroXS), adımlar boyunca sabit"
+msgstr ""
+
+#: cekirdek/tukenme_ayar.py:185
 msgid ""
-"\n"
-"  sonuç: %s"
+"Yakıt tükendikçe spektrum değişir ama hızlı kip bunu görmez; yüksek yanmada Pu "
+"birikimi ve zehirlerin yanması sonucu saptırır. Ön inceleme içindir; tam "
+"(transport'lu) tükenmeyle doğrulayın. k-eff adım adım hesaplanmaz."
+msgstr ""
+
+#: cekirdek/tukenme_ayar.py:190
+msgid "sürdürme açık: önceki sonuç silinmez, kaldığı yerden devam edilir"
+msgstr ""
+
+#: cekirdek/tukenme_ayar.py:191
+msgid ""
+"Önceki koşunun fiziği (malzeme, geometri, güç) aynı olmalı; adım listesi öncekinin "
+"devamı olmalı."
+msgstr ""
+
+#: cekirdek/tukenme_ayar.py:205
+#, python-format
+msgid "Seçenekler: %s"
+msgstr ""
+
+#: cekirdek/tukenme_ayar.py:214
+#, python-format
+msgid "SI iç yineleme sayısı %d–%d arasında olmalı"
+msgstr ""
+
+#: cekirdek/tukenme_ayar.py:220
+#, python-format
+msgid "soğuma adımı birimi geçersiz: %s"
+msgstr ""
+
+#: cekirdek/tukenme_ayar.py:221
+#, python-format
+msgid "Soğuma sıfır güçtedir; birim zaman olmalı (%s)."
+msgstr ""
+
+#: cekirdek/tukenme_ayar.py:226
+msgid "soğuma adımları sayı olmalı"
+msgstr ""
+
+#: cekirdek/tukenme_ayar.py:228
+msgid "soğuma adımları sıfırdan büyük olmalı"
+msgstr ""
+
+#: cekirdek/tukenme_ayar.py:236
+msgid "kritiklik araması ayarları sayı olmalı"
+msgstr ""
+
+#: cekirdek/tukenme_ayar.py:240
+#, python-format
+msgid "bilinmeyen kritiklik araması türü: %s"
+msgstr ""
+
+#: cekirdek/tukenme_ayar.py:243
+msgid "arama sınırı [alt, üst] ve alt < üst olmalı"
+msgstr ""
+
+#: cekirdek/tukenme_ayar.py:246
+msgid "iki başlangıç tahmini sınırın içinde ve birbirinden farklı olmalı"
+msgstr ""
+
+#: cekirdek/tukenme_ayar.py:248
+msgid "k toleransı ve σ sınırı sıfırdan büyük olmalı"
+msgstr ""
+
+#: cekirdek/tukenme_ayar.py:249
+msgid ""
+"Kritiklik araması: OpenMC Integrator.add_keff_search_control (Model.keff_search, "
+"GRsecant)."
+msgstr ""
+
+#: cekirdek/tukenme_ayar.py:269
+#, python-format
+msgid "kontrol çubuğu araması: hareketli emici '%s' tükenmeden çıkarılır"
+msgstr ""
+
+#: cekirdek/tukenme_ayar.py:270
+msgid ""
+"Emici hareket ettiği için çekirdekteki hacmi sabit değildir; bileşimi taze kalır "
+"(B-10 yanması izlenmez)."
+msgstr ""
+
+#: cekirdek/tukenme_ayar.py:278
+msgid "SI-* entegratörleri kritiklik aramasını desteklemez (OpenMC 0.16)"
+msgstr ""
+
+#: cekirdek/tukenme_ayar.py:280
+msgid "hızlı kipte (MicroXS) kritiklik araması yapılamaz: transport yok"
+msgstr ""
+
+#: cekirdek/tukenme_ayar.py:282
+msgid "kontrol çubuğu araması çubuk çubuk yanma ile birlikte desteklenmiyor"
+msgstr ""
+
+#: cekirdek/tukenme_ayar.py:291
+#, python-format
+msgid "bor araması: tanımsız malzeme '%s'"
+msgstr ""
+
+#: cekirdek/tukenme_ayar.py:294
+#, python-format
+msgid "bor araması yalnız su (soğutucu/moderatör) malzemesine uygulanır: '%s'"
+msgstr ""
+
+#: cekirdek/tukenme_ayar.py:299
+#, python-format
+msgid "bor araması hedefi tükenen bir malzeme olamaz: '%s' (ek yanan malzemelerden çıkarın)"
+msgstr ""
+
+#: cekirdek/tukenme_ayar.py:304
+#, python-format
+msgid "kontrol çubuğu araması: '%s' bir kontrol çubuğu değil"
+msgstr ""
+
+#: cekirdek/tukenme_ayar.py:306
+msgid "kontrol çubuğu araması sınırı 0–100 daldırma yüzdesi içinde olmalı"
+msgstr ""
+
+#: cekirdek/tukenme_cikti.py:158
+msgid ""
+"Aktivite Bq, Bq/g (malzeme kütlesi başına); bozunma ısısı W, W/g (Q: zincirin bozunma"
+" enerjisi, nötrino hariç); foton kaynağı foton/s. Temas doz hızı FISPACT-II yöntemi "
+"(Gy/h, havada), atık sınıfı NRC 10 CFR 61.55 — bilgi amaçlıdır, sertifika değildir."
 msgstr ""
 
 #: cekirdek/tukenme_guc.py:148
@@ -7912,6 +7984,54 @@ msgstr ""
 msgid "'%s': örnek hacimleri toplamı %.8g cm³, analitik hacim %.8g cm³ — tutmuyor"
 msgstr ""
 
+#: cekirdek/tukenme_kayit.py:96
+msgid "malzemeler"
+msgstr ""
+
+#: cekirdek/tukenme_kayit.py:96
+msgid "çubuklar"
+msgstr ""
+
+#: cekirdek/tukenme_kayit.py:97
+msgid "plaka elemanları"
+msgstr ""
+
+#: cekirdek/tukenme_kayit.py:97
+msgid "demetler"
+msgstr ""
+
+#: cekirdek/tukenme_kayit.py:97
+msgid "kor"
+msgstr ""
+
+#: cekirdek/tukenme_kayit.py:98
+msgid "hesap ayarları"
+msgstr ""
+
+#: cekirdek/tukenme_kayit.py:98
+msgid "tally'ler"
+msgstr ""
+
+#: cekirdek/tukenme_kayit.py:99
+msgid "güç dağılımı"
+msgstr ""
+
+#: cekirdek/tukenme_kayit.py:99
+msgid "tükenme ayarları"
+msgstr ""
+
+#: cekirdek/dogrula/tukenme.py:23 cekirdek/tukenme_kayit.py:107
+#: cekirdek/uygunluk_denetimi/vv_arayuz.py:55 cekirdek/vv/kume.py:189
+msgctxt "spektrum"
+msgid "termal"
+msgstr ""
+
+#: cekirdek/dogrula/tukenme.py:24 cekirdek/tukenme_kayit.py:108
+#: cekirdek/uygunluk_denetimi/vv_arayuz.py:57 cekirdek/vv/kume.py:190
+msgctxt "spektrum"
+msgid "hızlı"
+msgstr ""
+
 #: cekirdek/tukenme_spektrum.py:35
 #, python-format
 msgid "'%s' malzemesinde %s var"
@@ -7946,6 +8066,32 @@ msgstr ""
 msgid "%s (kaba kural: yakıt komşuluğu çıkarılamadı)"
 msgstr ""
 
+#: cekirdek/tukenme_surdur.py:87
+msgid ""
+"sürdürülemez: önceki koşunun fiziği farklı ya da kaydı yok (malzeme, geometri, güç "
+"aynı olmalı). Sürdürmeyi kapatıp baştan koşun."
+msgstr ""
+
+#: cekirdek/tukenme_surdur.py:98
+#, python-format
+msgid "sürdürülecek adım yok: önceki koşu %d adımın hepsini bitirmiş. Yeni adım ekleyin."
+msgstr ""
+
+#: cekirdek/tukenme_surdur.py:102
+msgid ""
+"LE/QI ile sürdürme bu dosyada yapılamaz: önceki adımın reaksiyon hızları kayıtlı "
+"değil. Başka entegratör seçin."
+msgstr ""
+
+#: cekirdek/tukenme_surdur.py:110
+#, python-format
+msgid "sürdürülemez: önceki koşunun %d adımı yeni adım listesinin başıyla aynı değil"
+msgstr ""
+
+#: cekirdek/tukenme_surdur.py:113
+msgid "sürdürülemez: güçlü/soğuma adımlarının sırası önceki koşuyla aynı değil"
+msgstr ""
+
 #: cekirdek/tukenme_temizlik.py:58
 #, python-format
 msgid "Önceki tükenme çıktısı silinemedi: %s (%s)"
@@ -7961,6 +8107,69 @@ msgstr ""
 msgid ""
 "%d adım dosyası (openmc_simulation_n*.h5) bu arayüzün koşu kaydı olmayan dizinde "
 "bulundu; silinmedi: %s"
+msgstr ""
+
+#: cekirdek/tukenme_terminal.py:42
+msgid "koşmadan hacim, zincir ve ağır metal bilgisini yazdır"
+msgstr ""
+
+#: cekirdek/tukenme_terminal.py:44
+msgid "doğrulamada nüklid/kütüphane denetimini atla"
+msgstr ""
+
+#: cekirdek/tukenme_terminal.py:63
+#, python-format
+msgid "  zincir        : %s  (%s)"
+msgstr ""
+
+#: cekirdek/tukenme_terminal.py:64
+#, python-format
+msgid "  fisyon verimi : %s eV (%s spektrum)"
+msgstr ""
+
+#: cekirdek/tukenme_terminal.py:66
+#, python-format
+msgid "  güç yoğunluğu : %g W/gHM"
+msgstr ""
+
+#: cekirdek/tukenme_terminal.py:67
+#, python-format
+msgid "  adımlar       : %s %s  → %d transport"
+msgstr ""
+
+#: cekirdek/tukenme_terminal.py:69 cekirdek/tukenme_terminal.py:94
+msgid "gün"
+msgstr ""
+
+#: cekirdek/tukenme_terminal.py:73
+#, python-format
+msgid "  hacim %-10s: %s cm³ [%s] %s"
+msgstr ""
+
+#: cekirdek/tukenme_terminal.py:77
+#, python-format
+msgid "  ağır metal    : %.6g g"
+msgstr ""
+
+#: cekirdek/tukenme_terminal.py:86
+#, python-format
+msgid ""
+"\n"
+"  DOĞRULAMA: koşu başlatılmadı (%d hata)"
+msgstr ""
+
+#: cekirdek/tukenme_terminal.py:93
+#, python-format
+msgid ""
+"\n"
+"  ağır metal: %.6g g"
+msgstr ""
+
+#: cekirdek/tukenme_terminal.py:97
+#, python-format
+msgid ""
+"\n"
+"  sonuç: %s"
 msgstr ""
 
 #: cekirdek/uygunluk.py:83
