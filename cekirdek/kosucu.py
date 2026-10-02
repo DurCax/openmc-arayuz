@@ -615,7 +615,9 @@ def sonuc_oku(statepoint_yolu):
         sonuc["entropi_hata"] = entropi_hata
     kinetik = _kinetik(_tallyleri_oku(sp, sonuc))
     if kinetik:
-        sonuc["kinetik"] = kinetik
+        # Lambda = l / k (OpenMC tanimi) + grup basina beta_i, lambda_i
+        from cekirdek import kinetik_oku
+        sonuc["kinetik"] = kinetik_oku.kosu_kinetigi(kinetik, sp, sonuc["keff"])
     _guc_oku(sp, sonuc)
     return sonuc
 

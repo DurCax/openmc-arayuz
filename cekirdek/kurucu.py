@@ -387,8 +387,9 @@ def kur(spec):
     # kurulurken yapilmalidir, sonradan degil (onbellek kimliginin parcasi).
     kin = spec["ayarlar"].get("kinetik") or {}
     if kin.get("var") and settings.run_mode == "eigenvalue":
-        model.add_kinetics_parameters_tallies()
-        model.settings.ifp_n_generation = int(kin.get("nesil") or 10)
+        # beta_i (DelayedGroupFilter) + lambda_i tally'si: cekirdek/kinetik_oku.py
+        from cekirdek import kinetik_oku
+        kinetik_oku.tallyleri_ekle(model, kin)
     bilgi = {
         "malzemeler": nesneler,
         "renkler": renkler,

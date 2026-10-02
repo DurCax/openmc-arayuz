@@ -122,8 +122,8 @@ def _kapanis(spec, satirlar, renkli):
         satirlar.append("")
         satirlar.append("# Kinetik parametreler (IFP): etkin gecikmiş nötron kesri (beta_eff)")
         satirlar.append("# ve ortalama nötron nesil süresi. Koşu süresini biraz uzatır.")
-        satirlar.append("model.add_kinetics_parameters_tallies()")
-        satirlar.append("model.settings.ifp_n_generation = %d" % int(kin.get("nesil") or 10))
+        from cekirdek import kinetik_oku
+        satirlar.extend(kinetik_oku.betik_satirlari(kin))
     if renkli:
         satirlar.append("")
         satirlar.append("# Model.plot() SVG renk adı ya da (R,G,B) demeti ister — hex dize kabul etmez")
