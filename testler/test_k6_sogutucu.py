@@ -101,7 +101,43 @@ def test_agir_su_saflik_karisimi():
     assert m_d == pytest.approx(20.027508064926562, rel=1e-12)
 
 
-HIZLI = [test_if97_bolge1_resmi_dogrulama, test_if97_bolge4_doyma_basinci,
+def test_agir_su_dugum_basincinda_tek_izobar():
+    """20 MPa tam dugum: 614-637 K yalniz 20 MPa izobarinda var (15 MPa 614 K'de doyar)."""
+    from cekirdek import malzeme_sogutucu as ms
+    assert ms.agir_su_yogunlugu(630.0, 20.0) == pytest.approx(0.613026, rel=1e-12)
+    assert ms.agir_su_yogunlugu(613.982, 15.0) == pytest.approx(0.663490, rel=1e-12)
+    # ara basincta ust T siniri iki komsu izobarin kucuk olani; ileti ikisini de soyler
+    with pytest.raises(ValueError, match="15") as hata:
+        ms.agir_su_yogunlugu(620.0, 17.0)
+    assert "17" in str(hata.value) and "613.98" in str(hata.value)
+    assert ms.ust_sicaklik_d2o(17.0) == pytest.approx(613.982)
+    assert ms.ust_sicaklik_d2o(20.0) == pytest.approx(637.284)
+
+
+def test_agir_su_safligi_h2o_payi_buhar_degil():
+    """x >= 0.99: H2O molar hacmi D2O'nunkiyle esit alinir (Kell 1977); IF97 cagrilmaz."""
+    from cekirdek import malzeme_sogutucu as ms
+    for t, p in ((373.5, 0.1), (453.3, 1.0), (630.0, 20.0)):    # H2O burada sivi degil/IF97 disi
+        rho = ms.agir_su_karisim_yogunlugu(t, p, 0.9975)
+        rho_d = ms.agir_su_yogunlugu(t, p)
+        m_d, m_h = ms.molar_kutle_d2o(), ms.molar_kutle_h2o()
+        # rho = (x M_D + (1-x) M_H) / V_D ,  V_D = M_D / rho_D
+        assert rho == pytest.approx((0.9975 * m_d + 0.0025 * m_h) * rho_d / m_d, rel=1e-12)
+    with pytest.raises(ValueError, match="H₂O"):
+        ms.agir_su_karisim_yogunlugu(373.5, 0.1, 0.95)            # dusuk saflik: acik ileti
+
+
+def test_sodyum_anl_tablosu():
+    """ANL/RE-95/2 Tablo 1.3-1 (raporun kendi tablosu, tam sayiya yuvarli, kg/m3)."""
+    from cekirdek import malzeme_sogutucu as ms
+    tablo = {400: 919, 500: 897, 600: 874, 700: 852, 800: 828, 900: 805, 1000: 781,
+             1100: 756, 1200: 732, 1300: 706, 1400: 680}
+    for t, rho in tablo.items():
+        assert ms.sodyum_yogunlugu(float(t)) * 1000.0 == pytest.approx(rho, abs=0.5), t
+
+
+HIZLI = [test_sodyum_anl_tablosu, test_agir_su_dugum_basincinda_tek_izobar, test_agir_su_safligi_h2o_payi_buhar_degil,
+         test_if97_bolge1_resmi_dogrulama, test_if97_bolge4_doyma_basinci,
          test_su_iapws95_ile_tutarli, test_su_sinir_disinda_acik_hata,
          test_agir_su_tablo_dugum_ve_interpolasyon, test_agir_su_tablo_disinda_acik_hata,
          test_sodyum_fink_leibowitz, test_agir_su_saflik_karisimi]

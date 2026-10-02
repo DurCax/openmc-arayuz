@@ -24,6 +24,7 @@ def _qt():
 
 def _yerel_veri():
     """Gecici XDG_DATA_HOME + kesit yolu yok (nuklid denetimi atlanir)."""
+    import openmc  # noqa: F401  -- openmc.config ortami ilk ice aktarimda okur (bos yol kalmasin)
     d = tempfile.mkdtemp(prefix="k6_xdg_")
     return mock.patch.dict(os.environ, {"XDG_DATA_HOME": d, "OPENMC_CROSS_SECTIONS": ""})
 

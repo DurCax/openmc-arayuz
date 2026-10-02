@@ -37,11 +37,16 @@ from cekirdek.ceviri import _
 # ----------------------------------------------------------------------------
 # Adli sabitler (kaynakli)
 # ----------------------------------------------------------------------------
-# UO2 kuramsal yogunlugu [g/cm3], 300 K -- NUREG/CR-6150 (MATPRO), INEL-96/0422
-# Rev.2, "FDEN": 10.97 g/cm3.
-UO2_TD = 10.97
-# Gd2O3 (kubik) kuramsal yogunlugu [g/cm3] -- CRC Handbook of Chemistry and
-# Physics, 97. bs., "Physical Constants of Inorganic Compounds": 7.407.
+# UO2 kuramsal yogunlugu [g/cm3], 273 K -- J.K. Fink, "Thermophysical
+# properties of uranium dioxide", J. Nucl. Mater. 279 (2000) 1: 10.963 g/cm3;
+# ayni deger Carbajo vd., ORNL/TM-2000/351 (PuO2 11.46 ile birlikte, ayni
+# kaynak). ODA SICAKLIGI degeridir: isil genlesme uygulanmaz (900 K'de pelet
+# yogunlugu ~%2 dusuktur; kosu sicakligindaki yogunluk isteniyorsa elle girin).
+UO2_TD = 10.963
+# Gd2O3 kuramsal yogunlugu [g/cm3] -- CRC Handbook of Chemistry and Physics,
+# 97. bs., "Physical Constants of Inorganic Compounds": 7.407. Faza baglidir:
+# kubik (C tipi) icin literaturde 7.4-7.6, monoklinik (B tipi) ~8.3; UO2
+# icindeki Gd kati cozelti yapar, yani bu yalniz ideal karisim tahminidir.
 GD2O3_TD = 7.407
 # B4C kuramsal yogunlugu [g/cm3] -- CRC Handbook, 97. bs.: 2.52.
 B4C_TD = 2.52
@@ -322,7 +327,11 @@ def _sayi_ve_kutle_yogunlugu(m, kesirler, mol):
         if bilesim_birimi(m["bilesim"]) == "ao":       # satirlar atom/b-cm
             n = sum(mol.values())
             return n, atom_bcm_to_gcm3(n, m_ort)
-        rho = sum(float(s["miktar"]) for s in m["bilesim"])   # satirlar g/cm3
+        # wo + 'sum': satirlar g/cm3 kabul edilir. OpenMC'de 'sum' birimi wo ile
+        # tutarli tanimli DEGILDIR (Material.get_nuclide_atom_densities wo
+        # satirlarini atom/b-cm gibi toplar); bu yorum yalnizca bilgi icindir,
+        # arayuz 'sum'u yalniz ao satirlarla uretir.
+        rho = sum(float(s["miktar"]) for s in m["bilesim"])
         return gcm3_to_atom_bcm(rho, m_ort), rho
     deger = float(y.get("deger"))
     if not deger > 0.0:

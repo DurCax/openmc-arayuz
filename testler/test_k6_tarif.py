@@ -59,7 +59,7 @@ def test_uo2_td_yolu_ve_om():
     from cekirdek import malzeme_tarif as mt
     m = mt.uret("uo2", {"zenginlik": 4.95, "yogunluk_yolu": "td", "td_yuzde": 95.0,
                         "om": 2.0, "sicaklik": 900.0})
-    assert m["yogunluk"]["deger"] == pytest.approx(0.95 * 10.97)          # 10.4215
+    assert m["yogunluk"]["deger"] == pytest.approx(0.95 * 10.963)         # 10.41485
     m = mt.uret("uo2", dict(mt.varsayilanlar("uo2"), om=2.01))
     assert [b["miktar"] for b in m["bilesim"]] == [1.0, 2.01]
     with pytest.raises(ValueError, match="O/M"):
@@ -92,7 +92,7 @@ def test_agir_su_sodyum_grafit():
         ms.agir_su_karisim_yogunlugu(340.0, 0.1, 0.9975), rel=1e-12)
     h = {b["isim"]: b["miktar"] for b in d["bilesim"]}
     assert h["H2"] == pytest.approx(2 * 0.9975) and h["H1"] == pytest.approx(2 * 0.0025)
-    assert d["sab"] == ["c_D_in_D2O"]
+    assert d["sab"] == ["c_D_in_D2O", "c_O_in_D2O"]       # ENDF/B-VIII.0: D ve O ayri tablolar
     na = mt.uret("na", {"sicaklik": 673.0})
     assert na["yogunluk"]["deger"] == pytest.approx(0.8577659873807998, rel=1e-12)
     g = mt.uret("grafit", mt.varsayilanlar("grafit"))
@@ -109,7 +109,7 @@ def test_b4c_ve_uo2_gd2o3_ve_mox():
     gd = mt.uret("uo2_gd", {"zenginlik": 3.2, "gd2o3_yuzde": 8.0, "td_yuzde": 95.0,
                             "sicaklik": 900.0})
     assert gd["bilesim"] == mh.uo2_gd2o3_bilesimi(3.2, 0.08)
-    assert gd["yogunluk"]["deger"] == pytest.approx(0.95 * 10.56349030946277)
+    assert gd["yogunluk"]["deger"] == pytest.approx(0.95 * 10.557518318971121)
     p = dict(mt.varsayilanlar("mox"), yas_yil=5.0)
     mox = mt.uret("mox", p)
     toplam = sum(s["miktar"] for s in mox["bilesim"])
@@ -253,7 +253,30 @@ def test_asistan_uo2_k_ayni(gecici):
     assert 1.0 < kler[0][0] < 1.6
 
 
-HIZLI = [test_kategoriler_ve_her_tarif_varsayilanla_gecerli, test_asistan_uo2_katalog_uo2_ile_ayni,
+def test_sab_kurali_ek_tablolari_onerir():
+    from cekirdek import dogrula
+    from cekirdek.sema import malzeme, bilesen
+    d2o = malzeme("d", [bilesen("H2", 2.0, tur="nuklid"), bilesen("O", 1.0)], 1.1)
+    oneri = " ".join(b.oneri for b in dogrula._sab_kontrol(d2o, "t"))
+    assert "c_D_in_D2O" in oneri and "c_O_in_D2O" in oneri
+    zrh = malzeme("z", [bilesen("Zr", 1.0), bilesen("H", 1.6)], 5.6)
+    assert "c_Zr_in_ZrH" in " ".join(b.oneri for b in dogrula._sab_kontrol(zrh, "t"))
+    gr = malzeme("g", [bilesen("C", 1.0)], 1.7)
+    assert "c_Graphite_30p" in " ".join(b.oneri for b in dogrula._sab_kontrol(gr, "t"))
+
+
+def test_yuksek_zenginlikte_uyari():
+    """%5 ustu: OpenMC zenginlik kisayolunun U-234/U-236 bagintisi dusuk zenginlik icindir."""
+    import openmc  # noqa: F401  -- openmc.config ortam degiskenini ILK ice aktarimda okur
+    from cekirdek import malzeme_tarif as mt
+    with mock.patch.dict(os.environ, {"OPENMC_CROSS_SECTIONS": ""}):
+        umo = mt.dogrula_malzeme(mt.uret("umo", dict(mt.varsayilanlar("umo"), zenginlik=19.75)))
+        leu = mt.dogrula_malzeme(mt.uret("uo2", mt.varsayilanlar("uo2")))
+    assert any(s == "uyari" and "19.75" in m for s, m in umo), umo
+    assert not any("zenginliği" in m for _s, m in leu)
+
+
+HIZLI = [test_yuksek_zenginlikte_uyari, test_sab_kurali_ek_tablolari_onerir, test_kategoriler_ve_her_tarif_varsayilanla_gecerli, test_asistan_uo2_katalog_uo2_ile_ayni,
          test_uo2_td_yolu_ve_om, test_hafif_su_if97_ve_bor, test_agir_su_sodyum_grafit,
          test_b4c_ve_uo2_gd2o3_ve_mox, test_yeni_sablonlar_m5_ss304,
          test_katalog_tarifleri_parametrik_kayit_tasir, test_aralik_disi_parametre_alan_adiyla_hata,

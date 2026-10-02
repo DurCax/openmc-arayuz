@@ -186,13 +186,36 @@ def _izobar(basinc, sicaklik):
     return _dogrusal(sicaklik, t0, t1, r0, r1)
 
 
-def agir_su_yogunlugu(sicaklik, basinc):
-    """Saf sivi D2O yogunlugu [g/cm3], tablo interpolasyonu (T [K], p [MPa])."""
+def _komsu_izobarlar(basinc):
+    """Tam dugum basincinda (p,) ; arada (alt, ust)."""
     ps = _D2O_BASINCLARI
     if not ps[0] <= basinc <= ps[-1]:
         raise ValueError(_("D₂O tablosu %.1f–%.0f MPa aralığında: %r MPa") % (ps[0], ps[-1], basinc))
-    j = min(max(bisect.bisect_right(ps, basinc) - 1, 0), len(ps) - 2)
-    alt, ust = ps[j], ps[j + 1]
+    if basinc in _D2O:
+        return (basinc,)
+    j = bisect.bisect_right(ps, basinc) - 1
+    return ps[j], ps[j + 1]
+
+
+def ust_sicaklik_d2o(basinc):
+    """Bu basincta tablonun ust sicakligi [K]: komsu izobarlarin doyma
+    noktalarinin KUCUGU (arada tablo dogrusal interpolasyondur)."""
+    return min(_D2O[p][-1][0] for p in _komsu_izobarlar(basinc))
+
+
+def agir_su_yogunlugu(sicaklik, basinc):
+    """Saf sivi D2O yogunlugu [g/cm3], tablo interpolasyonu (T [K], p [MPa]).
+    Tam dugum basincinda yalniz o izobar; arada iki komsu izobar arasinda
+    dogrusal. Ust sicaklik ust_sicaklik_d2o(p)'dir (ara basincta kucuk olan
+    izobarin doyma sicakligi; gercek doyma sicakligi biraz daha yuksektir)."""
+    izobarlar = _komsu_izobarlar(basinc)
+    if len(izobarlar) == 1:
+        return _izobar(basinc, sicaklik)
+    alt, ust = izobarlar
+    t_ust = ust_sicaklik_d2o(basinc)
+    if sicaklik > t_ust:
+        raise ValueError(_("D₂O tablosu %.4g MPa'da (komşu izobarlar %g ve %g MPa) en çok %.2f K'e "
+                           "kadar sıvı verir: %.2f K") % (basinc, alt, ust, t_ust, sicaklik))
     return _dogrusal(basinc, alt, ust, _izobar(alt, sicaklik), _izobar(ust, sicaklik))
 
 
@@ -212,22 +235,37 @@ def molar_kutle_d2o():
     return 2.0 * mh.kutle("H2") + _ortalama("O")
 
 
+# Bu saflik ve ustunde H2O payinin molar hacmi D2O'nunkiyle esit alinir:
+# 25 °C'de V_m(D2O)/V_m(H2O) = 18.134/18.069 = 1.0036 (Kell, J. Phys. Chem. Ref.
+# Data 6 (1977) 1109); %1 H2O payinda yogunluk hatasi < 4e-5. Boylece H2O'nun
+# sivi olmadigi (D2O'nun daha yuksek kaynama noktasi) ya da IF97 Bolge 1 disi
+# (T > 623.15 K) kosullarda da karisim tanimlidir.
+D2O_YUKSEK_SAFLIK = 0.99
+
+
 def agir_su_karisim_yogunlugu(sicaklik, basinc, d2o_mol_kesri):
     """
-    D2O-H2O sivi karisimi, IDEAL KARISIM (molar hacimler toplanir):
-      rho = (x M_D + (1-x) M_H) / (x M_D/rho_D + (1-x) M_H/rho_H)
-    rho_D tablodan, rho_H IF97'den. Yaklasimdir: karisim hacmi sapmasi
-    ihmal edilir (reaktor saflikta, x > 0.99, etkisi < 1e-4).
+    D2O-H2O sivi karisimi [g/cm3], IDEAL KARISIM (molar hacimler toplanir):
+      rho = (x M_D + (1-x) M_H) / (x V_D + (1-x) V_H)
+    V_D = M_D/rho_D (tablo). x >= D2O_YUKSEK_SAFLIK: V_H = V_D (Kell 1977);
+    daha dusuk saflikta V_H = M_H/rho_H (IF97) ve H2O bu kosulda sivi degilse
+    acik hata.
     """
     if not 0.0 <= d2o_mol_kesri <= 1.0:
         raise ValueError(_("D₂O mol kesri 0 ile 1 arasında olmalı: %r") % d2o_mol_kesri)
     x = d2o_mol_kesri
     rho_d = agir_su_yogunlugu(sicaklik, basinc)
-    if x == 1.0:
-        return rho_d
-    rho_h = su_yogunlugu(sicaklik, basinc)
     m_d, m_h = molar_kutle_d2o(), molar_kutle_h2o()
-    return (x * m_d + (1.0 - x) * m_h) / (x * m_d / rho_d + (1.0 - x) * m_h / rho_h)
+    v_d = m_d / rho_d
+    if x >= D2O_YUKSEK_SAFLIK:
+        return (x * m_d + (1.0 - x) * m_h) / v_d
+    try:
+        v_h = m_h / su_yogunlugu(sicaklik, basinc)
+    except ValueError as e:
+        raise ValueError(_("Saflık %%%.2f < %%%.0f: H₂O payının yoğunluğu IAPWS-IF97 ile "
+                           "hesaplanır ve bu koşulda bulunamadı (%s)")
+                         % (100.0 * x, 100.0 * D2O_YUKSEK_SAFLIK, e)) from e
+    return (x * m_d + (1.0 - x) * m_h) / (x * v_d + (1.0 - x) * v_h)
 
 
 # ----------------------------------------------------------------------------

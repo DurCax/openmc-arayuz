@@ -40,6 +40,30 @@ _SAB_KURALLARI = [
 ]
 
 
+# Ana tabloya EK olarak gereken baglayici tablolar (ENDF/B-VIII.0'da ayri
+# dosyalar; Brown vd., Nucl. Data Sheets 148 (2018) 1, Bolum IV.C): agir suda
+# oksijen, zirkonyum hidrurde zirkonyum, BeO'da oksijen. Kutuphanede yoksa
+# (ENDF/B-VII.1) dogrulama eksik S(a,b) hatasi verir.
+_SAB_EKLERI = {"c_D_in_D2O": "c_O_in_D2O", "c_H_in_ZrH": "c_Zr_in_ZrH",
+               "c_Be_in_BeO": "c_O_in_BeO"}
+# Ana tablonun secenekli esdegerleri ve ilgili notlar (yalniz bilgi).
+_SAB_NOTLARI = {
+    "c_Graphite": N_("Gözenekli nükleer grafit için c_Graphite_10p ya da c_Graphite_30p "
+                     "(%10 / %30 gözeneklilik) da kullanılabilir."),
+    "c_D_in_D2O": N_("Ağır sudaki artık hafif su hidrojeni için ayrıca c_H_in_H2O gerekebilir."),
+}
+
+
+def sab_ek_onerisi(onerilen):
+    """Ana S(a,b) onerisine eklenecek cumle (ek tablo + not), etkin dilde; yoksa ''."""
+    parca = []
+    if onerilen in _SAB_EKLERI:
+        parca.append(_("Ayrıca %s ekleyin.") % _SAB_EKLERI[onerilen])
+    if onerilen in _SAB_NOTLARI:
+        parca.append(_(_SAB_NOTLARI[onerilen]))
+    return " ".join(parca)
+
+
 # Yogunlastirilmis faz esigi [g/cm3] -- bunun altinda gaz kabul edilir,
 # termal sacilma baglama etkisi anlamsizdir.
 _YOGUN_FAZ_ESIGI = 0.1
@@ -176,8 +200,10 @@ def _sab_kontrol(malzeme, yer):
         return [Bulgu(
             "uyari", yer,
             _("%s görünümünde ama termal saçılma verisi (S(α,β)) eklenmemiş") % _(tanim),
-            _("Termal spektrumda k'yi yüzde mertebesinde kaydırır. Malzemeler "
-            "sekmesinde S(α,β) olarak %s ekleyin.") % onerilen)]
+            " ".join(x for x in (
+                _("Termal spektrumda k'yi yüzde mertebesinde kaydırır. Malzemeler "
+                  "sekmesinde S(α,β) olarak %s ekleyin.") % onerilen,
+                sab_ek_onerisi(onerilen)) if x))]
     # Kurala uymayan ama hidrojen iceren yogun malzeme -- yine de uyar
     if "H" in elemanlar:
         return [Bulgu(

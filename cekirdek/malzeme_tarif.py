@@ -39,17 +39,7 @@ KATEGORILER = (
 PUO2_TD = 11.46
 _YUZDE = 100.0
 
-# M5 -- Zr-1Nb-O (Mardon vd., "Influence of composition and fabrication process
-# on out-of-pile and in-pile properties of M5 alloy", ASTM STP 1354 (2000)
-# 505): Nb %1.0, O %0.125 (agirlikca, nominal), Fe ~%0.03; Zr kalan.
-# Yogunluk 6.50 g/cm3 (Zr-1Nb; saf Zr 6.52 g/cm3, CRC Handbook).
-_M5 = (("Zr", 98.845), ("Nb", 1.0), ("O", 0.125), ("Fe", 0.03))
-_M5_YOGUNLUK = 6.50
-# SS304 -- SCALE 6.2 Standard Composition Library (ORNL/TM-2005/39, Tablo
-# M8.2.4 "SS304"): agirlikca %, rho = 7.94 g/cm3.
-_SS304 = (("C", 0.08), ("Si", 1.0), ("P", 0.045), ("Cr", 19.0), ("Mn", 2.0),
-          ("Fe", 68.375), ("Ni", 9.5))
-_SS304_YOGUNLUK = 7.94
+# M5 ve SS-304 bilesimleri katalogdadir (malzeme_kutup.m5 / ss304, kaynaklariyla).
 
 # Ornek Pu vektoru (agirlikca %, Pu + Am-241) -- KULLANICININ DEGISTIRMESI
 # BEKLENIR; olculmus vektor girilmeli. Toplam 100.
@@ -78,18 +68,25 @@ _ALAN = {
                         secenekler=(("td", N_("kuramsal yoğunluk yüzdesinden")),
                                     ("dogrudan", N_("doğrudan g/cm³")))),
     "td_yuzde": _a(N_("Kuramsal yoğunluk (%TD)"), 1.0, 100.0, 95.0, 2, 0.5, "%",
-                   N_("Gözeneklilik = 1 − %TD/100.")),
+                   N_("Gözeneklilik = 1 − %TD/100. Kuramsal yoğunluk oda sıcaklığı değeridir; "
+                      "ısıl genleşme uygulanmaz.")),
     "yogunluk": _a(N_("Yoğunluk"), 1.0e-4, 30.0, 10.40, 4, 0.01, "g/cm³"),
     "om": _a(N_("O/M oranı"), 1.5, 2.5, 2.0, 3, 0.01, "",
              N_("Oksijen / ağır metal atom oranı; stokiyometrik oksit 2.000.")),
     "sicaklik": _a(N_("Sıcaklık"), 250.0, 3000.0, 900.0, 2, 10.0, "K", tur="sicaklik"),
     "gd2o3_yuzde": _a(N_("Gd₂O₃ ağırlıkça %"), 0.0, 30.0, 8.0, 2, 0.5, "%"),
-    "pu_hm_yuzde": _a(N_("Pu / ağır metal (ağırlıkça %)"), 0.1, 100.0, 7.0, 2, 0.5, "%"),
+    "pu_hm_yuzde": _a(N_("Pu / ağır metal (ağırlıkça %)"), 0.1, 100.0, 7.0, 2, 0.5, "%",
+                      N_("Kullanım anındaki (yaşlanmadan SONRA) Pu + Am kütlesinin ağır metale "
+                         "oranı; ağır metal Z ≥ 90 (Am dahil).")),
     "yas_yil": _a(N_("Ayrıştırmadan bu yana süre"), 0.0, 50.0, 0.0, 2, 0.5, N_("yıl"),
-                  N_("Pu-241 (T½ = 14.29 y) Am-241'e bozunur; Bateman çözümü.")),
+                  N_("Pu-241 (T½ = 14.29 yıl; NUBASE2020 14.290(6) yıl) Am-241'e bozunur; "
+                     "Bateman çözümü. Diğer ürünler (Pu-238 → U-234, Am-241 → Np-237) "
+                     "vektörden çıkar.")),
     "mo_yuzde": _a(N_("Mo ağırlıkça %"), 0.0, 20.0, 10.0, 2, 0.5, "%"),
     "basinc": _a(N_("Basınç"), 1.0e-3, 100.0, 0.101325, 4, 0.5, "MPa"),
-    "bor_ppm": _a(N_("Çözünmüş bor (kütlece ppm)"), 0.0, 10000.0, 0.0, 1, 50.0, "ppm"),
+    "bor_ppm": _a(N_("Çözünmüş bor (kütlece ppm)"), 0.0, 10000.0, 0.0, 1, 50.0, "ppm",
+                  N_("ppm = mg B / kg çözelti. Yoğunluk saf suyunkidir: borik asidin (H₃BO₃) "
+                     "yoğunluğa etkisi (~+%0.2–0.3) ihmal edilir; bor yalnız bileşime girer.")),
     "b10_yuzde": _a(N_("B-10 atomca %"), 0.0, 100.0, None, 2, 1.0, "%",
                     N_("Boş bırakılırsa doğal bor (IUPAC 2013: %19.82)."), tur="dogal_ya_da"),
     "saflik": _a(N_("D₂O saflığı (mol %)"), 50.0, 100.0, 99.75, 3, 0.05, "%"),
@@ -158,13 +155,6 @@ def _umo(p):
                    gorunen_ad="U-%gMo %%%.2f" % (mo, p["zenginlik"]))
 
 
-def _alasim(ad, gorunen, satirlar, renk):
-    def uretici(p):
-        return malzeme(ad, [bilesen(e, w, birim="wo") for e, w in satirlar], p["yogunluk"],
-                       sicaklik=p["sicaklik"], renk=renk, gorunen_ad=gorunen)
-    return uretici
-
-
 def _h2o(p):
     # Cozunmus borun yogunluga etkisi ihmal edilir: yogunluk saf suyun IF97
     # degeridir (katalogdaki su() ile ayni yaklasim); bor yalnizca bilesime girer.
@@ -185,7 +175,7 @@ def _d2o(p):
     rho = ms.agir_su_karisim_yogunlugu(p["sicaklik"], p["basinc"], x)
     return malzeme("agir_su", [bilesen("H2", 2.0 * x, tur="nuklid"),
                                bilesen("H1", 2.0 * (1.0 - x), tur="nuklid"), bilesen("O", 1.0)],
-                   rho, sicaklik=p["sicaklik"], sab=["c_D_in_D2O"], renk=mk.RENK["sogutucu"],
+                   rho, sicaklik=p["sicaklik"], sab=["c_D_in_D2O", "c_O_in_D2O"], renk=mk.RENK["sogutucu"],
                    gorunen_ad="D2O %%%.2f %.1f K" % (p["saflik"], p["sicaklik"]))
 
 
@@ -242,13 +232,6 @@ _TARIFLER = {
             + ["u_zenginlik", "yas_yil", "td_yuzde", "om", "sicaklik"], _mox),
     "umo": (("yakit",), N_("U-Mo — metalik alaşım"), N_("Araştırma reaktörü metalik yakıtı."),
             ["zenginlik", "mo_yuzde", ("yogunluk", {"varsayilan": 17.0}), "sicaklik"], _umo),
-    "m5": (("kilif",), N_("M5 — Zr-1Nb-O"), N_("PWR yakıt zarfı alaşımı (nominal bileşim)."),
-           [("yogunluk", {"varsayilan": _M5_YOGUNLUK}), _SIC],
-           _alasim("m5", "M5", _M5, mk.RENK["zarf"])),
-    "ss304": (("kilif", "yapi"), N_("SS-304 paslanmaz çelik"),
-              N_("SCALE standart bileşim kütüphanesi değerleri."),
-              [("yogunluk", {"varsayilan": _SS304_YOGUNLUK}), _SIC],
-              _alasim("ss304", "SS-304", _SS304, mk.RENK["yapisal"])),
     "h2o": (("moderator",), N_("Hafif su (H₂O), isteğe bağlı borlu"),
             N_("Yoğunluk IAPWS-IF97 ile sıcaklık ve basınçtan."),
             [("sicaklik", {"varsayilan": 293.6, "en_az": 273.15, "en_cok": 623.15}),
@@ -262,7 +245,8 @@ _TARIFLER = {
     "b4c": (("emici",), N_("B₄C — bor karbür"), N_("B-10 zenginliği ve %TD ile emici."),
             ["b10_yuzde", ("td_yuzde", {"varsayilan": 100.0}), _SIC], _b4c),
 }
-for _k, _kat in (("zirkaloy4", ("kilif", "yapi")), ("fecral", ("kilif",)), ("ss316", ("kilif", "yapi")),
+for _k, _kat in (("zirkaloy4", ("kilif", "yapi")), ("m5", ("kilif",)), ("ss304", ("kilif", "yapi")),
+                 ("fecral", ("kilif",)), ("ss316", ("kilif", "yapi")),
                  ("sic", ("kilif",)), ("al6061", ("yapi",)), ("grafit", ("moderator",)),
                  ("berilyum", ("moderator",)), ("agincd", ("emici",)), ("gd2o3", ("emici",))):
     _TARIFLER[_k] = _katalog_tarifi(_k, _kat)

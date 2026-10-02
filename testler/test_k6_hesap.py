@@ -32,10 +32,10 @@ def _yakin(a, b, goreli=_GORELI):
 
 def test_td_ve_gozeneklilikten_yogunluk():
     from cekirdek import malzeme_hesap as mh
-    # %95 TD UO2: 0.95 x 10.97 = 10.4215 ; p = 0.05 ayni sonuc
-    assert _yakin(mh.yogunluk_td(mh.UO2_TD, td_orani=0.95), 10.4215)
-    assert _yakin(mh.yogunluk_td(mh.UO2_TD, gozeneklilik=0.05), 10.4215)
-    assert _yakin(mh.td_orani(10.40, mh.UO2_TD), 10.40 / 10.97)
+    # %95 TD UO2: 0.95 x 10.963 = 10.41485 ; p = 0.05 ayni sonuc (TD: Fink 2000, 273 K)
+    assert _yakin(mh.yogunluk_td(mh.UO2_TD, td_orani=0.95), 10.41485)
+    assert _yakin(mh.yogunluk_td(mh.UO2_TD, gozeneklilik=0.05), 10.41485)
+    assert _yakin(mh.td_orani(10.40, mh.UO2_TD), 10.40 / 10.963)
     for hatali in ({"td_orani": 1.2}, {"gozeneklilik": 1.0}, {},
                    {"td_orani": 0.9, "gozeneklilik": 0.1}):
         with pytest.raises(ValueError):
@@ -265,8 +265,8 @@ def test_uo2_gd2o3_bilesimi():
     assert b["U"]["zenginlik"] == 3.2
     assert _yakin(b["Gd"]["miktar"], 6.940742049842756)
     assert _yakin(b["O"]["miktar"], 11.964485875035143)
-    # ideal karisim kuramsal yogunlugu: 1/(0.92/10.97 + 0.08/7.407)
-    assert _yakin(mh.karisim_td([0.92, 0.08], [mh.UO2_TD, mh.GD2O3_TD]), 10.56349030946277)
+    # ideal karisim kuramsal yogunlugu: 1/(0.92/10.963 + 0.08/7.407)
+    assert _yakin(mh.karisim_td([0.92, 0.08], [mh.UO2_TD, mh.GD2O3_TD]), 10.557518318971121)
     with pytest.raises(ValueError):
         mh.uo2_gd2o3_bilesimi(3.2, 1.2)
 
