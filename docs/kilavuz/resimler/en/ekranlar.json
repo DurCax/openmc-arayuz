@@ -12,7 +12,7 @@
    ],
    "ornek": "pwr_17x17.json",
    "sekme": "analiz",
-   "sha256": "2ed5a953ee5b861dfa44180da0b57e3f893e4a88660eb67aa95a9b233ccb8bb3"
+   "sha256": "b5d8e5e7dd37ade536db2a93bac00fb09bc9fac1f77d8880f109f091476e09ac"
   },
   "baslangic": {
    "boyut": [
@@ -21,7 +21,7 @@
    ],
    "ornek": null,
    "sekme": null,
-   "sha256": "f23e15464b59d5572ff790030115355e2c0c5b5ea5361d811b30b0569e0cc20b"
+   "sha256": "91565761267e142d0d28ddd4599d66e4b190c5d31689d2da1225c0ce8c8c0996"
   },
   "geometri-altigen-kor": {
    "boyut": [
@@ -30,7 +30,7 @@
    ],
    "ornek": "vver1000_kor.json",
    "sekme": "kor",
-   "sha256": "4077c3e384ccf17c3a9f20635017f3ae1f42455ce47c908fc89a561a82861acb"
+   "sha256": "6231f77e1d7d8a666b07bc5259da5c263ab8602782612e00fe7827d3191dbc02"
   },
   "geometri-gelismis": {
    "boyut": [
@@ -39,7 +39,7 @@
    ],
    "ornek": "pwr_kare_altigen_halka.json",
    "sekme": "kor",
-   "sha256": "e73586693181a14e91654bed036d160f7efde4453856f9988a2994f3a1bef6a5"
+   "sha256": "101ac887263bfd4a2395ddf18316f8f12c3bed7b6ba7e0c59be76e4cdabee7f2"
   },
   "geometri-tambur": {
    "boyut": [
@@ -48,7 +48,7 @@
    ],
    "ornek": "kafes_tamburlu_yansitici.json",
    "sekme": "kor",
-   "sha256": "13dc427e9bb6af576a37360d6ecc0d1ace4f2e19a015baa0650a9b5dc61dd437"
+   "sha256": "9672e780240917fbed64796595ce995c648c50db6bd4c05a593f68c7ca065f94"
   },
   "ilk-hesap-calistir": {
    "boyut": [
@@ -57,7 +57,7 @@
    ],
    "ornek": "pwr_17x17.json",
    "sekme": "calistir",
-   "sha256": "1976d79e5bcea0a2c870d906bb8a2f70e4a7c016616f516fe1135b6c3ab5e703"
+   "sha256": "0d3e497dc1b043090227e1aeb224097b0060cb7ec4cc01b4f564c143fb16fc1d"
   },
   "ilk-hesap-demet": {
    "boyut": [
@@ -66,7 +66,7 @@
    ],
    "ornek": "pwr_17x17.json",
    "sekme": "demet",
-   "sha256": "a05c2409ea91d389350aea54f94337285412229981f91e0604e719e1bcc62040"
+   "sha256": "b5528384167ae4448ad6730f7d494dc03cec764bee816807e764d42efda0b8ea"
   },
   "ilk-hesap-geometri": {
    "boyut": [
@@ -75,7 +75,7 @@
    ],
    "ornek": "pwr_17x17.json",
    "sekme": "kor",
-   "sha256": "2bb945433b508301131efb4928f550234e698ab36b7164a7dea5f4015271b9f2"
+   "sha256": "7355e18e16523d4683876dc93e598b473aa9bff174df5948c700ace5ee24e983"
   },
   "ilk-hesap-hesap-ayarlari": {
    "boyut": [
@@ -84,7 +84,7 @@
    ],
    "ornek": "pwr_17x17.json",
    "sekme": "ayarlar",
-   "sha256": "8a743c806f16c0ec486a900e67028495b26c38b5b31bd088b8744db92682851e"
+   "sha256": "08b24b06ff30464990fe78d13987e504735c1839f2f8449cc7992ea96dd821d4"
   },
   "ilk-hesap-malzemeler": {
    "boyut": [
@@ -93,7 +93,7 @@
    ],
    "ornek": "pwr_17x17.json",
    "sekme": "malzemeler",
-   "sha256": "f2760da045d0ca9a1aecbab8f86d8e451b2f28b8f5e28950becc8858d2f3cb76"
+   "sha256": "90963de27efb78dfd48fb6c7cddae4e5d2b5feb1edc81c6d4999bf1dda7d5c0b"
   },
   "ilk-hesap-parcalar": {
    "boyut": [
@@ -102,7 +102,7 @@
    ],
    "ornek": "pwr_17x17.json",
    "sekme": "parcalar",
-   "sha256": "07a788bfd3cbd70ade396c1a9baad0151f447d3d845b3fcb19108c072644f37b"
+   "sha256": "cd1ea829ef5f21c7b788d0b8ace0ca8963e36de763411f892dda8c87102eb549"
   },
   "kilavuz": {
    "boyut": [
@@ -111,7 +111,7 @@
    ],
    "ornek": null,
    "sekme": "kilavuz",
-   "sha256": "53114fc266037bc44a1e78efb9d84659e8cf081523cb742c5418ebe346ba2ec0"
+   "sha256": "27b636dff6222cbfc70ba8e267e1bce11ad10d18c1db4936c448fcaa2caa22a6"
   },
   "tukenme": {
    "boyut": [
@@ -120,8 +120,8 @@
    ],
    "ornek": "pwr_tukenme.json",
    "sekme": "tukenme",
-   "sha256": "6c4acf8f6ad29ffd6643c25a53ce7248b226513a1c55bddb22ad660a0416ec49"
+   "sha256": "bdf08d8074e851f075fe1d779a030073e9f79dde7118f38243356c842251538c"
   }
  },
- "girdi_ozeti": "f66f5bc9565dd4daa7eb4cfca220e6d1b777e65b1fa0bc837c43aaf83334cd88"
+ "girdi_ozeti": "724bf148dc06bc2689aafdf63b9ea9562a2ed3ba2a83c1ac11db2eadcea88f39"
 }
