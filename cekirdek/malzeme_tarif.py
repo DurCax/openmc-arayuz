@@ -95,8 +95,9 @@ _ALAN = {
     "saflik": _a(N_("D₂O saflığı (mol %)"), 50.0, 100.0, 99.75, 3, 0.05, "%"),
 }
 for _ad, _nk in _PU_ALANLARI:
-    _ALAN[_ad] = _a(N_("%s (Pu+Am içinde ağırlıkça %%)") % _nk, 0.0, 100.0, _ORNEK_PU[_ad],
-                    3, 0.5, "%", N_("Örnek değer; ölçülmüş vektörü girin."))
+    _ALAN[_ad] = dict(_a(N_("%s (Pu+Am içinde ağırlıkça %%)"), 0.0, 100.0, _ORNEK_PU[_ad],
+                         3, 0.5, "%", N_("Örnek değer; ölçülmüş vektörü girin.")),
+                      etiket_arg=_nk)
 
 
 # ============================================================================
@@ -297,6 +298,8 @@ def alanlar(anahtar):
         a["ad"] = ad
         for alan in ("etiket", "ipucu", "sonek"):
             a[alan] = _(a[alan]) if a[alan] else ""
+        if a.get("etiket_arg"):
+            a["etiket"] = a["etiket"] % a.pop("etiket_arg")
         a["secenekler"] = tuple((d, _(e)) for d, e in a["secenekler"])
         cikti.append(a)
     return cikti
@@ -371,7 +374,7 @@ def _nuklid_bulgulari(m, yol):
         except ValueError as e:              # OpenMC elementi kutuphaneyle acamiyor
             bulgular.append(("hata", _("%s elementi bu kütüphaneyle açılamıyor: %s") % (s["isim"], e)))
     if eksik:
-        bulgular.append(("hata", _("Kesit kütüphanesinde olmayan nüklid: %s") % ", ".join(sorted(eksik))))
+        bulgular.append(("hata", _("Tesir kesiti kütüphanesinde olmayan nüklid: %s") % ", ".join(sorted(eksik))))
     for s in m.get("sab") or []:
         if s not in termal:
             bulgular.append(("hata", _("S(α,β) tablosu kütüphanede yok: %s") % s))
@@ -410,6 +413,6 @@ def dogrula_malzeme(m):
                 for b in dogrula.malzeme_kontrol({"malzemeler": [m]})]
     yol = os.environ.get("OPENMC_CROSS_SECTIONS")
     if not yol or not os.path.isfile(yol):
-        return bulgular + [("uyari", _("Kesit kütüphanesi yolu tanımlı değil "
+        return bulgular + [("uyari", _("Tesir kesiti kütüphanesi yolu tanımlı değil "
                                        "(OPENMC_CROSS_SECTIONS); eksik nüklid denetimi atlandı."))]
     return bulgular + _nuklid_bulgulari(m, yol) + _sicaklik_bulgulari(m)

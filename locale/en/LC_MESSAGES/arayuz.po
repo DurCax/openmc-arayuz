@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 05:26+0300\n"
+"POT-Creation-Date: 2026-10-02 07:34+0300\n"
 "PO-Revision-Date: 2026-10-01 18:14+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -753,7 +753,7 @@ msgstr "Total power:"
 msgid "Skor:"
 msgstr "Score:"
 
-#: arayuz/ayar/yerlesim.py:181 arayuz/cubuk/sayfalar.py:203
+#: arayuz/ayar/yerlesim.py:181 arayuz/cubuk/sayfalar.py:203 arayuz/malzeme/asistan.py:130
 #: arayuz/malzeme/kutuphane_diyalog.py:65 arayuz/malzeme/malzeme_diyalog.py:83
 msgid "Ad:"
 msgstr "Name:"
@@ -1021,7 +1021,8 @@ msgstr "New hexagonal full core"
 msgid "boş şablonu olmayan kart: %s"
 msgstr "card without an empty template: %s"
 
-#: arayuz/bilesenler/bildirim.py:98 arayuz/pencere/menuler.py:323
+#: arayuz/bilesenler/bildirim.py:98 arayuz/malzeme/kutuphane_tarayici.py:53
+#: arayuz/pencere/menuler.py:323
 msgid "Kapat"
 msgstr "Close"
 
@@ -4077,7 +4078,100 @@ msgstr[1] ""
 "\n"
 "Continue?"
 
-#: arayuz/malzeme/bilesim.py:21
+#: arayuz/malzeme/asistan.py:42
+#, python-format
+msgid "Kütüphanem: %s"
+msgstr "My library: %s"
+
+#: arayuz/malzeme/asistan.py:52
+msgid "Malzeme asistanı"
+msgstr "Material assistant"
+
+#: arayuz/malzeme/asistan.py:71
+msgid "Ne tasarlıyorsun?"
+msgstr "What are you designing?"
+
+#: arayuz/malzeme/asistan.py:72
+msgid ""
+"Malzemenin rolünü seçin; sonraki adımda yalnızca o role uygun alanlar sorulur ve "
+"türetilmiş değerler anında hesaplanır."
+msgstr ""
+"Choose the material's role; the next step asks only for the fields that fit that role"
+" and computes derived values instantly."
+
+#: arayuz/malzeme/asistan.py:96
+msgid "Malzeme türü:"
+msgstr "Material type:"
+
+#: arayuz/malzeme/asistan.py:121 arayuz/malzeme/kutuphane_tarayici.py:82
+#: arayuz/malzeme/kutuphane_tarayici.py:237
+msgid "Projeye ekle"
+msgstr "Add to project"
+
+#: arayuz/malzeme/asistan.py:124
+#, python-format
+msgid "Kütüphaneme de kaydet (yalnız bu bilgisayarda: %s)"
+msgstr "Also save to my library (this computer only: %s)"
+
+#: arayuz/malzeme/asistan.py:126
+msgid "Kısa açıklama (isteğe bağlı)"
+msgstr "Short description (optional)"
+
+#: arayuz/malzeme/asistan.py:134 arayuz/malzeme/malzeme_diyalog.py:139
+msgid "Açıklama:"
+msgstr "Description:"
+
+#: arayuz/malzeme/asistan.py:136
+msgid "Doğrulama ve kaydetme"
+msgstr "Check and save"
+
+#: arayuz/malzeme/asistan.py:142
+msgid "Geri"
+msgstr "Back"
+
+#: arayuz/malzeme/asistan.py:143
+msgctxt "asistan adımı"
+msgid "İleri"
+msgstr "Next"
+
+#: arayuz/malzeme/asistan.py:144
+msgid "Bitir"
+msgstr "Finish"
+
+#: arayuz/malzeme/asistan.py:145 arayuz/malzeme/kutuphane_diyalog.py:74
+#: arayuz/malzeme/malzeme_diyalog.py:208 arayuz/pencere/proje.py:78
+msgid "Vazgeç"
+msgstr "Cancel"
+
+#: arayuz/malzeme/asistan.py:167
+msgid ""
+"Projedeki ya da kütüphanenizdeki malzemeleri ağırlık, atom ya da hacim oranıyla "
+"karıştırın (ideal karışım: hacimler toplanır)."
+msgstr ""
+"Mix materials from the project or your library by weight, atom or volume fraction "
+"(ideal mixture: volumes add)."
+
+#: arayuz/malzeme/asistan.py:205
+msgid "En az iki bileşen seçin."
+msgstr "Select at least two components."
+
+#: arayuz/malzeme/asistan.py:224
+msgid "Sorun bulunmadı."
+msgstr "No problems found."
+
+#: arayuz/malzeme/asistan.py:239
+msgid "Malzeme adı boş olamaz."
+msgstr "The material name cannot be empty."
+
+#: arayuz/malzeme/asistan.py:241
+msgid "Projeye ekleyin ya da kütüphanenize kaydedin."
+msgstr "Add it to the project or save it to your library."
+
+#: arayuz/malzeme/asistan.py:243
+msgid "Doğrulamada hata var; Geri dönüp değerleri düzeltin."
+msgstr "The check found errors; go Back and correct the values."
+
+#: arayuz/malzeme/bilesim.py:21 arayuz/malzeme/tarif_formu.py:31
 msgid "doğal"
 msgstr "natural"
 
@@ -4121,10 +4215,107 @@ msgstr "Add material from library"
 msgid "Ekle"
 msgstr "Add"
 
-#: arayuz/malzeme/kutuphane_diyalog.py:74 arayuz/malzeme/malzeme_diyalog.py:208
-#: arayuz/pencere/proje.py:78
-msgid "Vazgeç"
-msgstr "Cancel"
+#: arayuz/malzeme/kutuphane_tarayici.py:44 arayuz/malzeme/kutuphane_tarayici.py:344
+msgid "Malzeme kütüphanem"
+msgstr "My material library"
+
+#: arayuz/malzeme/kutuphane_tarayici.py:50
+msgid "Kütüphanem"
+msgstr "My library"
+
+#: arayuz/malzeme/kutuphane_tarayici.py:68
+msgid "Bozuk dosyanın kopyasını al ve yeni kütüphane başlat"
+msgstr "Back up the damaged file and start a new library"
+
+#: arayuz/malzeme/kutuphane_tarayici.py:75
+msgid "Ara…"
+msgstr "Search…"
+
+#: arayuz/malzeme/kutuphane_tarayici.py:89
+#, python-format
+msgid "Yalnız bu bilgisayarda saklanır: %s"
+msgstr "Stored on this computer only: %s"
+
+#: arayuz/malzeme/kutuphane_tarayici.py:121
+#, python-format
+msgid ""
+"Kütüphane dosyası okunamadı ve değiştirilmedi:\n"
+"%s"
+msgstr ""
+"The library file could not be read and was left unchanged:\n"
+"%s"
+
+#: arayuz/malzeme/kutuphane_tarayici.py:159
+#, python-brace-format
+msgid ""
+"Bileşim: {b}\n"
+"Yoğunluk: {y}\n"
+"Kaynak: {k}   ·   Güncelleme: {g}"
+msgstr ""
+"Composition: {b}\n"
+"Density: {y}\n"
+"Source: {k}   ·   Updated: {g}"
+
+#: arayuz/malzeme/kutuphane_tarayici.py:204
+msgid "Kütüphaneden sil"
+msgstr "Delete from library"
+
+#: arayuz/malzeme/kutuphane_tarayici.py:205
+#, python-format
+msgid "'%s' kütüphanenizden silinsin mi?"
+msgstr "Delete '%s' from your library?"
+
+#: arayuz/malzeme/kutuphane_tarayici.py:217
+#, python-format
+msgid ""
+"Bozuk dosyanın kopyası alındı:\n"
+"%s"
+msgstr ""
+"A copy of the damaged file was saved:\n"
+"%s"
+
+#: arayuz/malzeme/kutuphane_tarayici.py:225
+msgid ""
+"PNNL-15870 malzeme derlemesi açık bir lisansla yayımlanmadığı için programla "
+"dağıtılmaz. Derlemenin CSV dosyasını (Rev. 1 biçimi, ör. PyNE "
+"materials_compendium.csv) kendiniz indirip seçin; dosya yalnızca okunur."
+msgstr ""
+"The PNNL-15870 material compendium is not published under an open licence, so it is "
+"not distributed with the program. Download the compendium CSV file yourself (Rev. 1 "
+"format, e.g. PyNE materials_compendium.csv) and select it; the file is only read."
+
+#: arayuz/malzeme/kutuphane_tarayici.py:228
+msgid "Dosya seç…"
+msgstr "Choose file…"
+
+#: arayuz/malzeme/kutuphane_tarayici.py:231
+msgid "Ad ya da formül ara…"
+msgstr "Search by name or formula…"
+
+#: arayuz/malzeme/kutuphane_tarayici.py:267
+msgid "PNNL-15870 CSV dosyası"
+msgstr "PNNL-15870 CSV file"
+
+#: arayuz/malzeme/kutuphane_tarayici.py:280
+#, python-format
+msgid "%d malzeme okundu: %s"
+msgstr "%d materials read: %s"
+
+#: arayuz/malzeme/kutuphane_tarayici.py:282
+#, python-format
+msgid "%d kayıt atlandı (ayrıntı günlükte)."
+msgstr "%d records skipped (details in the log)."
+
+#: arayuz/malzeme/kutuphane_tarayici.py:313
+#, python-brace-format
+msgid ""
+"PNNL-15870 #{no}: {ad}\n"
+"Yoğunluk: {y:.6g} g/cm³\n"
+"Kaynak: {k}"
+msgstr ""
+"PNNL-15870 #{no}: {ad}\n"
+"Density: {y:.6g} g/cm³\n"
+"Source: {k}"
 
 #: arayuz/malzeme/malzeme_diyalog.py:58
 msgid "Yeni malzeme"
@@ -4158,11 +4349,7 @@ msgstr "Delete row"
 msgid "ör. UO₂ %4.0 — listelerde adın yanında görünür"
 msgstr "e.g. UO₂ 4.0% — shown next to the name in lists"
 
-#: arayuz/malzeme/malzeme_diyalog.py:139
-msgid "Açıklama:"
-msgstr "Description:"
-
-#: arayuz/malzeme/malzeme_diyalog.py:149
+#: arayuz/malzeme/malzeme_diyalog.py:149 arayuz/malzeme/tarif_formu.py:160
 msgid "Sıcaklık:"
 msgstr "Temperature:"
 
@@ -4253,6 +4440,55 @@ msgstr "Row {n} of the composition has an empty name."
 #, python-brace-format
 msgid "Bileşimin {n}. satırında miktar pozitif olmalı."
 msgstr "The amount in row {n} of the composition must be positive."
+
+#: arayuz/malzeme/tarif_formu.py:139
+msgid "— seçilmedi —"
+msgstr "— not selected —"
+
+#: arayuz/malzeme/tarif_formu.py:148
+#, python-format
+msgid "Bileşen %d:"
+msgstr "Component %d:"
+
+#: arayuz/malzeme/tarif_formu.py:157
+msgid "Oranlar:"
+msgstr "Fractions:"
+
+#: arayuz/malzeme/turetilmis_panel.py:26
+msgid "Nüklid"
+msgstr "Nuclide"
+
+#: arayuz/malzeme/turetilmis_panel.py:26
+msgid "Atomca %"
+msgstr "Atom %"
+
+#: arayuz/malzeme/turetilmis_panel.py:26
+msgid "Ağırlıkça %"
+msgstr "Weight %"
+
+#: arayuz/malzeme/turetilmis_panel.py:39
+msgid "Türetilmiş değerler"
+msgstr "Derived values"
+
+#: arayuz/malzeme/turetilmis_panel.py:77
+#, python-brace-format
+msgid "Yoğunluk: {rho:.5g} g/cm³  =  {n:.4e} atom/b-cm"
+msgstr "Density: {rho:.5g} g/cm³  =  {n:.4e} atom/b-cm"
+
+#: arayuz/malzeme/turetilmis_panel.py:79
+#, python-brace-format
+msgid "Atom başına ortalama molar kütle: {m:.4f} g/mol"
+msgstr "Mean molar mass per atom: {m:.4f} g/mol"
+
+#: arayuz/malzeme/turetilmis_panel.py:82
+#, python-brace-format
+msgid "Ağır metal: {hm:.4f} gHM/cm³"
+msgstr "Heavy metal: {hm:.4f} gHM/cm³"
+
+#: arayuz/malzeme/turetilmis_panel.py:84
+#, python-brace-format
+msgid "H/X (hidrojen / fisil atom): {hx:.4g}"
+msgstr "H/X (hydrogen / fissile atom): {hx:.4g}"
 
 #: arayuz/malzeme/yardimcilar.py:20
 msgid "Doğal element"
@@ -4467,7 +4703,7 @@ msgstr "Cell"
 
 #: arayuz/cubuk/sayfalar.py:117 arayuz/demet/kilif.py:59 arayuz/geometri/formlar.py:30
 #: arayuz/geometri/formlar.py:87 arayuz/kor/yerlesim.py:85 arayuz/onizleme.py:97
-#: arayuz/sekme_malzeme.py:220
+#: arayuz/sekme_malzeme.py:233
 msgid "Malzeme"
 msgstr "Material"
 
@@ -6340,13 +6576,14 @@ msgid "Plaka"
 msgstr "Plate"
 
 #: arayuz/calistir/kartlar.py:175 arayuz/demet/yerlesim.py:93 arayuz/sekme_cubuk.py:141
-#: arayuz/sekme_malzeme.py:144
+#: arayuz/sekme_malzeme.py:145
 msgid "Kopyala"
 msgstr "Copy"
 
 #: arayuz/ayar/yerlesim.py:196 arayuz/cubuk/tambur_formu.py:71 arayuz/demet/yerlesim.py:94
 #: arayuz/geometri/editor.py:116 arayuz/geometri/form_yerlesim.py:60
-#: arayuz/kor/yerlesim.py:130 arayuz/sekme_cubuk.py:142 arayuz/sekme_malzeme.py:145
+#: arayuz/kor/yerlesim.py:130 arayuz/malzeme/kutuphane_tarayici.py:84
+#: arayuz/sekme_cubuk.py:142 arayuz/sekme_malzeme.py:146
 msgid "Sil"
 msgstr "Delete"
 
@@ -6773,7 +7010,7 @@ msgid "Bileşim"
 msgstr "Composition"
 
 #: arayuz/pencere/model_islemleri.py:65 arayuz/sekme_malzeme.py:78
-#: arayuz/sekme_malzeme.py:112 arayuz/yardim/__init__.py:43
+#: arayuz/sekme_malzeme.py:113 arayuz/yardim/__init__.py:43
 msgid "Malzemeler"
 msgstr "Materials"
 
@@ -6785,11 +7022,11 @@ msgstr ""
 "Double-click a row to edit it. 'bosluk' is a reserved name: in the geometry it means "
 "void (no material) and is not defined here."
 
-#: arayuz/sekme_malzeme.py:91
+#: arayuz/sekme_malzeme.py:92
 msgid "Henüz malzeme yok"
 msgstr "No materials yet"
 
-#: arayuz/sekme_malzeme.py:92
+#: arayuz/sekme_malzeme.py:93
 msgid ""
 "Yakıt, zarf ve soğutucuyu hazır kütüphaneden ekleyin. Zenginlik, sıcaklık ve bor gibi"
 " değerleri sonradan değiştirebilirsiniz."
@@ -6797,19 +7034,19 @@ msgstr ""
 "Add fuel, cladding and coolant from the ready-made library. You can change values "
 "such as enrichment, temperature and boron later."
 
-#: arayuz/sekme_malzeme.py:94 arayuz/sekme_malzeme.py:137
+#: arayuz/sekme_malzeme.py:95 arayuz/sekme_malzeme.py:138
 msgid "Kütüphaneden ekle…"
 msgstr "Add from library…"
 
-#: arayuz/sekme_malzeme.py:97
+#: arayuz/sekme_malzeme.py:98
 msgid "ya da bileşimi elle tanımlayın"
 msgstr "or define the composition manually"
 
-#: arayuz/sekme_malzeme.py:112
+#: arayuz/sekme_malzeme.py:113
 msgid "Modeldeki malzemeler, yoğunluk ve bileşim."
 msgstr "Materials in the model, density and composition."
 
-#: arayuz/sekme_malzeme.py:138
+#: arayuz/sekme_malzeme.py:139
 msgid ""
 "Hazır, doğrulanmış bileşimler. Zenginlik, sıcaklık ve bor gibi değerler sonradan "
 "değiştirilebilir."
@@ -6817,32 +7054,69 @@ msgstr ""
 "Ready-made, verified compositions. Values such as enrichment, temperature and boron "
 "can be changed later."
 
-#: arayuz/sekme_malzeme.py:141
+#: arayuz/sekme_malzeme.py:142
 msgid "Elle tanımla…"
 msgstr "Define manually…"
 
-#: arayuz/sekme_malzeme.py:142
+#: arayuz/sekme_malzeme.py:143
 msgid "Bileşimi element/izotop satırlarıyla kendiniz girin."
 msgstr "Enter the composition yourself as element/nuclide rows."
 
-#: arayuz/sekme_malzeme.py:143
+#: arayuz/malzeme/kutuphane_tarayici.py:83 arayuz/sekme_malzeme.py:144
 msgid "Düzenle…"
 msgstr "Edit…"
 
-#: arayuz/sekme_malzeme.py:203
+#: arayuz/sekme_malzeme.py:148
+msgid "Asistan…"
+msgstr "Assistant…"
+
+#: arayuz/sekme_malzeme.py:149
+msgid ""
+"Adım adım malzeme tasarımı: zenginlik, %TD, bor, sıcaklık ve basınçtan bileşim ve "
+"yoğunluk; türetilmiş değerler anında hesaplanır."
+msgstr ""
+"Material design step by step: composition and density from enrichment, %TD, boron, "
+"temperature and pressure; derived values are computed instantly."
+
+#: arayuz/sekme_malzeme.py:152
+msgid "Kütüphanem…"
+msgstr "My library…"
+
+#: arayuz/sekme_malzeme.py:153
+msgid "Bu bilgisayarda sakladığınız malzemeler ve PNNL-15870 içe aktarımı."
+msgstr "Materials you keep on this computer, and PNNL-15870 import."
+
+#: arayuz/malzeme/kutuphane_tarayici.py:238 arayuz/sekme_malzeme.py:155
+msgid "Kütüphaneme kaydet"
+msgstr "Save to my library"
+
+#: arayuz/sekme_malzeme.py:156
+msgid "Seçili malzemeyi yalnız bu bilgisayardaki kütüphanenize kaydeder."
+msgstr "Saves the selected material to your library on this computer only."
+
+#: arayuz/sekme_malzeme.py:216
 msgid "Elle tanımlı bileşim"
 msgstr "Manually defined composition"
 
-#: arayuz/sekme_malzeme.py:205
+#: arayuz/sekme_malzeme.py:218
 #, python-brace-format
 msgid "Kütüphaneden ({ad}) — Düzenle parametre formunu açar"
 msgstr "From the library ({ad}) — Edit opens the parameter form"
 
-#: arayuz/sekme_malzeme.py:323
+#: arayuz/malzeme/asistan.py:265 arayuz/sekme_malzeme.py:307
+msgid "Kütüphaneye kaydedilemedi"
+msgstr "Could not save to the library"
+
+#: arayuz/sekme_malzeme.py:309
+#, python-format
+msgid "'%s' kütüphanenize kaydedildi."
+msgstr "'%s' was saved to your library."
+
+#: arayuz/sekme_malzeme.py:368
 msgid "Malzeme kullanımda"
 msgstr "Material in use"
 
-#: arayuz/sekme_malzeme.py:324
+#: arayuz/sekme_malzeme.py:369
 #, python-brace-format
 msgid ""
 "'{ad}' modelde {n} yerde kullanılıyor ({ornek}).\n"
@@ -7856,7 +8130,7 @@ msgstr "User guide"
 #~ msgstr "Guide tube material is undefined."
 
 #~ msgid "Doğrulama"
-#~ msgstr "Model check"
+#~ msgstr "Validation"
 
 #~ msgid "OpenMC süreci beklenmedik biçimde sonlandı."
 #~ msgstr "The OpenMC process ended unexpectedly."

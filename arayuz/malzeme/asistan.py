@@ -16,7 +16,7 @@ from PySide6 import QtCore, QtWidgets
 from cekirdek import malzeme_kullanici as mku
 from cekirdek import malzeme_tarif as mt
 from cekirdek import sema
-from cekirdek.ceviri import _
+from cekirdek.ceviri import _, pgettext
 from cekirdek.gunluk import kaydedici
 from arayuz import bilesenler as b
 from arayuz.ortak import baslik, ipucu
@@ -133,14 +133,14 @@ class MalzemeAsistani(QtWidgets.QDialog):
         form.addRow(self.kutuphaneye)
         form.addRow(_etiket(_("Açıklama:")), self.aciklama)
         d = QtWidgets.QVBoxLayout(w)
-        d.addWidget(baslik(_("Doğrulama")))
+        d.addWidget(baslik(_("Doğrulama ve kaydetme")))
         d.addWidget(self.bulgu_listesi, 1)
         d.addLayout(form)
         return w
 
     def _dugmeler(self):
         self.d_geri = b.ikincil_dugme(_("Geri"), "chevron-left")
-        self.d_ileri = b.birincil_dugme(_("İleri"), "chevron-right")
+        self.d_ileri = b.birincil_dugme(pgettext("asistan adımı", "İleri"), "chevron-right")
         self.d_bitir = b.birincil_dugme(_("Bitir"), "check")
         self.d_vazgec = b.duz_dugme(_("Vazgeç"))
         self.d_geri.clicked.connect(self.geri)

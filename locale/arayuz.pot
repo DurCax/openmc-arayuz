@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 05:26+0300\n"
+"POT-Creation-Date: 2026-10-02 07:34+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -725,7 +725,7 @@ msgstr ""
 msgid "Skor:"
 msgstr ""
 
-#: arayuz/ayar/yerlesim.py:181 arayuz/cubuk/sayfalar.py:203
+#: arayuz/ayar/yerlesim.py:181 arayuz/cubuk/sayfalar.py:203 arayuz/malzeme/asistan.py:130
 #: arayuz/malzeme/kutuphane_diyalog.py:65 arayuz/malzeme/malzeme_diyalog.py:83
 msgid "Ad:"
 msgstr ""
@@ -993,7 +993,8 @@ msgstr ""
 msgid "boş şablonu olmayan kart: %s"
 msgstr ""
 
-#: arayuz/bilesenler/bildirim.py:98 arayuz/pencere/menuler.py:323
+#: arayuz/bilesenler/bildirim.py:98 arayuz/malzeme/kutuphane_tarayici.py:53
+#: arayuz/pencere/menuler.py:323
 msgid "Kapat"
 msgstr ""
 
@@ -3872,7 +3873,96 @@ msgid_plural ""
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/malzeme/bilesim.py:21
+#: arayuz/malzeme/asistan.py:42
+#, python-format
+msgid "Kütüphanem: %s"
+msgstr ""
+
+#: arayuz/malzeme/asistan.py:52
+msgid "Malzeme asistanı"
+msgstr ""
+
+#: arayuz/malzeme/asistan.py:71
+msgid "Ne tasarlıyorsun?"
+msgstr ""
+
+#: arayuz/malzeme/asistan.py:72
+msgid ""
+"Malzemenin rolünü seçin; sonraki adımda yalnızca o role uygun alanlar sorulur ve "
+"türetilmiş değerler anında hesaplanır."
+msgstr ""
+
+#: arayuz/malzeme/asistan.py:96
+msgid "Malzeme türü:"
+msgstr ""
+
+#: arayuz/malzeme/asistan.py:121 arayuz/malzeme/kutuphane_tarayici.py:82
+#: arayuz/malzeme/kutuphane_tarayici.py:237
+msgid "Projeye ekle"
+msgstr ""
+
+#: arayuz/malzeme/asistan.py:124
+#, python-format
+msgid "Kütüphaneme de kaydet (yalnız bu bilgisayarda: %s)"
+msgstr ""
+
+#: arayuz/malzeme/asistan.py:126
+msgid "Kısa açıklama (isteğe bağlı)"
+msgstr ""
+
+#: arayuz/malzeme/asistan.py:134 arayuz/malzeme/malzeme_diyalog.py:139
+msgid "Açıklama:"
+msgstr ""
+
+#: arayuz/malzeme/asistan.py:136
+msgid "Doğrulama ve kaydetme"
+msgstr ""
+
+#: arayuz/malzeme/asistan.py:142
+msgid "Geri"
+msgstr ""
+
+#: arayuz/malzeme/asistan.py:143
+msgctxt "asistan adımı"
+msgid "İleri"
+msgstr ""
+
+#: arayuz/malzeme/asistan.py:144
+msgid "Bitir"
+msgstr ""
+
+#: arayuz/malzeme/asistan.py:145 arayuz/malzeme/kutuphane_diyalog.py:74
+#: arayuz/malzeme/malzeme_diyalog.py:208 arayuz/pencere/proje.py:78
+msgid "Vazgeç"
+msgstr ""
+
+#: arayuz/malzeme/asistan.py:167
+msgid ""
+"Projedeki ya da kütüphanenizdeki malzemeleri ağırlık, atom ya da hacim oranıyla "
+"karıştırın (ideal karışım: hacimler toplanır)."
+msgstr ""
+
+#: arayuz/malzeme/asistan.py:205
+msgid "En az iki bileşen seçin."
+msgstr ""
+
+#: arayuz/malzeme/asistan.py:224
+msgid "Sorun bulunmadı."
+msgstr ""
+
+#: arayuz/malzeme/asistan.py:239
+msgid "Malzeme adı boş olamaz."
+msgstr ""
+
+#: arayuz/malzeme/asistan.py:241
+msgid "Projeye ekleyin ya da kütüphanenize kaydedin."
+msgstr ""
+
+#: arayuz/malzeme/asistan.py:243
+msgid "Doğrulamada hata var; Geri dönüp değerleri düzeltin."
+msgstr ""
+
+#: arayuz/malzeme/bilesim.py:21 arayuz/malzeme/tarif_formu.py:31
 msgid "doğal"
 msgstr ""
 
@@ -3916,9 +4006,93 @@ msgstr ""
 msgid "Ekle"
 msgstr ""
 
-#: arayuz/malzeme/kutuphane_diyalog.py:74 arayuz/malzeme/malzeme_diyalog.py:208
-#: arayuz/pencere/proje.py:78
-msgid "Vazgeç"
+#: arayuz/malzeme/kutuphane_tarayici.py:44 arayuz/malzeme/kutuphane_tarayici.py:344
+msgid "Malzeme kütüphanem"
+msgstr ""
+
+#: arayuz/malzeme/kutuphane_tarayici.py:50
+msgid "Kütüphanem"
+msgstr ""
+
+#: arayuz/malzeme/kutuphane_tarayici.py:68
+msgid "Bozuk dosyanın kopyasını al ve yeni kütüphane başlat"
+msgstr ""
+
+#: arayuz/malzeme/kutuphane_tarayici.py:75
+msgid "Ara…"
+msgstr ""
+
+#: arayuz/malzeme/kutuphane_tarayici.py:89
+#, python-format
+msgid "Yalnız bu bilgisayarda saklanır: %s"
+msgstr ""
+
+#: arayuz/malzeme/kutuphane_tarayici.py:121
+#, python-format
+msgid ""
+"Kütüphane dosyası okunamadı ve değiştirilmedi:\n"
+"%s"
+msgstr ""
+
+#: arayuz/malzeme/kutuphane_tarayici.py:159
+#, python-brace-format
+msgid ""
+"Bileşim: {b}\n"
+"Yoğunluk: {y}\n"
+"Kaynak: {k}   ·   Güncelleme: {g}"
+msgstr ""
+
+#: arayuz/malzeme/kutuphane_tarayici.py:204
+msgid "Kütüphaneden sil"
+msgstr ""
+
+#: arayuz/malzeme/kutuphane_tarayici.py:205
+#, python-format
+msgid "'%s' kütüphanenizden silinsin mi?"
+msgstr ""
+
+#: arayuz/malzeme/kutuphane_tarayici.py:217
+#, python-format
+msgid ""
+"Bozuk dosyanın kopyası alındı:\n"
+"%s"
+msgstr ""
+
+#: arayuz/malzeme/kutuphane_tarayici.py:225
+msgid ""
+"PNNL-15870 malzeme derlemesi açık bir lisansla yayımlanmadığı için programla "
+"dağıtılmaz. Derlemenin CSV dosyasını (Rev. 1 biçimi, ör. PyNE "
+"materials_compendium.csv) kendiniz indirip seçin; dosya yalnızca okunur."
+msgstr ""
+
+#: arayuz/malzeme/kutuphane_tarayici.py:228
+msgid "Dosya seç…"
+msgstr ""
+
+#: arayuz/malzeme/kutuphane_tarayici.py:231
+msgid "Ad ya da formül ara…"
+msgstr ""
+
+#: arayuz/malzeme/kutuphane_tarayici.py:267
+msgid "PNNL-15870 CSV dosyası"
+msgstr ""
+
+#: arayuz/malzeme/kutuphane_tarayici.py:280
+#, python-format
+msgid "%d malzeme okundu: %s"
+msgstr ""
+
+#: arayuz/malzeme/kutuphane_tarayici.py:282
+#, python-format
+msgid "%d kayıt atlandı (ayrıntı günlükte)."
+msgstr ""
+
+#: arayuz/malzeme/kutuphane_tarayici.py:313
+#, python-brace-format
+msgid ""
+"PNNL-15870 #{no}: {ad}\n"
+"Yoğunluk: {y:.6g} g/cm³\n"
+"Kaynak: {k}"
 msgstr ""
 
 #: arayuz/malzeme/malzeme_diyalog.py:58
@@ -3951,11 +4125,7 @@ msgstr ""
 msgid "ör. UO₂ %4.0 — listelerde adın yanında görünür"
 msgstr ""
 
-#: arayuz/malzeme/malzeme_diyalog.py:139
-msgid "Açıklama:"
-msgstr ""
-
-#: arayuz/malzeme/malzeme_diyalog.py:149
+#: arayuz/malzeme/malzeme_diyalog.py:149 arayuz/malzeme/tarif_formu.py:160
 msgid "Sıcaklık:"
 msgstr ""
 
@@ -4039,6 +4209,55 @@ msgstr ""
 #: arayuz/malzeme/malzeme_diyalog.py:383
 #, python-brace-format
 msgid "Bileşimin {n}. satırında miktar pozitif olmalı."
+msgstr ""
+
+#: arayuz/malzeme/tarif_formu.py:139
+msgid "— seçilmedi —"
+msgstr ""
+
+#: arayuz/malzeme/tarif_formu.py:148
+#, python-format
+msgid "Bileşen %d:"
+msgstr ""
+
+#: arayuz/malzeme/tarif_formu.py:157
+msgid "Oranlar:"
+msgstr ""
+
+#: arayuz/malzeme/turetilmis_panel.py:26
+msgid "Nüklid"
+msgstr ""
+
+#: arayuz/malzeme/turetilmis_panel.py:26
+msgid "Atomca %"
+msgstr ""
+
+#: arayuz/malzeme/turetilmis_panel.py:26
+msgid "Ağırlıkça %"
+msgstr ""
+
+#: arayuz/malzeme/turetilmis_panel.py:39
+msgid "Türetilmiş değerler"
+msgstr ""
+
+#: arayuz/malzeme/turetilmis_panel.py:77
+#, python-brace-format
+msgid "Yoğunluk: {rho:.5g} g/cm³  =  {n:.4e} atom/b-cm"
+msgstr ""
+
+#: arayuz/malzeme/turetilmis_panel.py:79
+#, python-brace-format
+msgid "Atom başına ortalama molar kütle: {m:.4f} g/mol"
+msgstr ""
+
+#: arayuz/malzeme/turetilmis_panel.py:82
+#, python-brace-format
+msgid "Ağır metal: {hm:.4f} gHM/cm³"
+msgstr ""
+
+#: arayuz/malzeme/turetilmis_panel.py:84
+#, python-brace-format
+msgid "H/X (hidrojen / fisil atom): {hx:.4g}"
 msgstr ""
 
 #: arayuz/malzeme/yardimcilar.py:20
@@ -4252,7 +4471,7 @@ msgstr ""
 
 #: arayuz/cubuk/sayfalar.py:117 arayuz/demet/kilif.py:59 arayuz/geometri/formlar.py:30
 #: arayuz/geometri/formlar.py:87 arayuz/kor/yerlesim.py:85 arayuz/onizleme.py:97
-#: arayuz/sekme_malzeme.py:220
+#: arayuz/sekme_malzeme.py:233
 msgid "Malzeme"
 msgstr ""
 
@@ -5924,13 +6143,14 @@ msgid "Plaka"
 msgstr ""
 
 #: arayuz/calistir/kartlar.py:175 arayuz/demet/yerlesim.py:93 arayuz/sekme_cubuk.py:141
-#: arayuz/sekme_malzeme.py:144
+#: arayuz/sekme_malzeme.py:145
 msgid "Kopyala"
 msgstr ""
 
 #: arayuz/ayar/yerlesim.py:196 arayuz/cubuk/tambur_formu.py:71 arayuz/demet/yerlesim.py:94
 #: arayuz/geometri/editor.py:116 arayuz/geometri/form_yerlesim.py:60
-#: arayuz/kor/yerlesim.py:130 arayuz/sekme_cubuk.py:142 arayuz/sekme_malzeme.py:145
+#: arayuz/kor/yerlesim.py:130 arayuz/malzeme/kutuphane_tarayici.py:84
+#: arayuz/sekme_cubuk.py:142 arayuz/sekme_malzeme.py:146
 msgid "Sil"
 msgstr ""
 
@@ -6316,7 +6536,7 @@ msgid "Bileşim"
 msgstr ""
 
 #: arayuz/pencere/model_islemleri.py:65 arayuz/sekme_malzeme.py:78
-#: arayuz/sekme_malzeme.py:112 arayuz/yardim/__init__.py:43
+#: arayuz/sekme_malzeme.py:113 arayuz/yardim/__init__.py:43
 msgid "Malzemeler"
 msgstr ""
 
@@ -6326,60 +6546,95 @@ msgid ""
 "yok) anlamına gelir, burada tanımlanmaz."
 msgstr ""
 
-#: arayuz/sekme_malzeme.py:91
+#: arayuz/sekme_malzeme.py:92
 msgid "Henüz malzeme yok"
 msgstr ""
 
-#: arayuz/sekme_malzeme.py:92
+#: arayuz/sekme_malzeme.py:93
 msgid ""
 "Yakıt, zarf ve soğutucuyu hazır kütüphaneden ekleyin. Zenginlik, sıcaklık ve bor gibi"
 " değerleri sonradan değiştirebilirsiniz."
 msgstr ""
 
-#: arayuz/sekme_malzeme.py:94 arayuz/sekme_malzeme.py:137
+#: arayuz/sekme_malzeme.py:95 arayuz/sekme_malzeme.py:138
 msgid "Kütüphaneden ekle…"
 msgstr ""
 
-#: arayuz/sekme_malzeme.py:97
+#: arayuz/sekme_malzeme.py:98
 msgid "ya da bileşimi elle tanımlayın"
 msgstr ""
 
-#: arayuz/sekme_malzeme.py:112
+#: arayuz/sekme_malzeme.py:113
 msgid "Modeldeki malzemeler, yoğunluk ve bileşim."
 msgstr ""
 
-#: arayuz/sekme_malzeme.py:138
+#: arayuz/sekme_malzeme.py:139
 msgid ""
 "Hazır, doğrulanmış bileşimler. Zenginlik, sıcaklık ve bor gibi değerler sonradan "
 "değiştirilebilir."
 msgstr ""
 
-#: arayuz/sekme_malzeme.py:141
+#: arayuz/sekme_malzeme.py:142
 msgid "Elle tanımla…"
 msgstr ""
 
-#: arayuz/sekme_malzeme.py:142
+#: arayuz/sekme_malzeme.py:143
 msgid "Bileşimi element/izotop satırlarıyla kendiniz girin."
 msgstr ""
 
-#: arayuz/sekme_malzeme.py:143
+#: arayuz/malzeme/kutuphane_tarayici.py:83 arayuz/sekme_malzeme.py:144
 msgid "Düzenle…"
 msgstr ""
 
-#: arayuz/sekme_malzeme.py:203
+#: arayuz/sekme_malzeme.py:148
+msgid "Asistan…"
+msgstr ""
+
+#: arayuz/sekme_malzeme.py:149
+msgid ""
+"Adım adım malzeme tasarımı: zenginlik, %TD, bor, sıcaklık ve basınçtan bileşim ve "
+"yoğunluk; türetilmiş değerler anında hesaplanır."
+msgstr ""
+
+#: arayuz/sekme_malzeme.py:152
+msgid "Kütüphanem…"
+msgstr ""
+
+#: arayuz/sekme_malzeme.py:153
+msgid "Bu bilgisayarda sakladığınız malzemeler ve PNNL-15870 içe aktarımı."
+msgstr ""
+
+#: arayuz/malzeme/kutuphane_tarayici.py:238 arayuz/sekme_malzeme.py:155
+msgid "Kütüphaneme kaydet"
+msgstr ""
+
+#: arayuz/sekme_malzeme.py:156
+msgid "Seçili malzemeyi yalnız bu bilgisayardaki kütüphanenize kaydeder."
+msgstr ""
+
+#: arayuz/sekme_malzeme.py:216
 msgid "Elle tanımlı bileşim"
 msgstr ""
 
-#: arayuz/sekme_malzeme.py:205
+#: arayuz/sekme_malzeme.py:218
 #, python-brace-format
 msgid "Kütüphaneden ({ad}) — Düzenle parametre formunu açar"
 msgstr ""
 
-#: arayuz/sekme_malzeme.py:323
+#: arayuz/malzeme/asistan.py:265 arayuz/sekme_malzeme.py:307
+msgid "Kütüphaneye kaydedilemedi"
+msgstr ""
+
+#: arayuz/sekme_malzeme.py:309
+#, python-format
+msgid "'%s' kütüphanenize kaydedildi."
+msgstr ""
+
+#: arayuz/sekme_malzeme.py:368
 msgid "Malzeme kullanımda"
 msgstr ""
 
-#: arayuz/sekme_malzeme.py:324
+#: arayuz/sekme_malzeme.py:369
 #, python-brace-format
 msgid ""
 "'{ad}' modelde {n} yerde kullanılıyor ({ornek}).\n"
