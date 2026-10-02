@@ -3,12 +3,17 @@
 
 Every material of the model is defined here: fuel, cladding and structural materials,
 coolant and moderator, absorber and gas. Components (pins, plates), assemblies and the
-geometry refer to materials **by name**. There are two ways to add a material:
+geometry refer to materials **by name**. There are four ways to add a material:
 
-- **Add from library…** (recommended): 21 ready, verified compositions. The production
+- **Add from library…** (recommended): 24 ready, verified compositions. The production
   parameters (enrichment, temperature, boron…) are stored with the material; **Edit…** opens
   the same parameter form and the material is regenerated from those parameters.
 - **Define manually…**: you enter the composition yourself as element or isotope rows.
+- **Assistant…**: a step-by-step design that starts with "What are you designing?";
+  composition and density are computed from enrichment, %TD, boron, temperature and pressure
+  ([Material assistant](#malzeme-asistani)).
+- **My library…**: materials you keep on this computer, and PNNL-15870 import
+  ([My library](#kutuphanem)).
 
 `bosluk` is a reserved name: in the geometry it means "Void (no material)" and is not defined
 here.
@@ -27,6 +32,9 @@ defined manually.
 | Define manually… | Opens the new material window with an empty composition table. |
 | Edit… | Edits the selected material (same as a double click). |
 | Copy | Adds a copy of the selected material with a `_2` suffix (for example for two enrichments). |
+| Assistant… | Opens the material assistant (below); when finished, the material is added to the project. |
+| My library… | Opens the user library and PNNL-15870 window (below). |
+| Save to my library | Saves the selected material to your library on this computer only; on a name clash it gets a `_2` suffix. |
 | Delete | Deletes the selected material. If the material is used in the model, it says in how many places and asks for confirmation; if deleted, those places become undefined and the model cannot be built. |
 
 **Role.** The interface derives the role of every material from its composition
@@ -85,7 +93,8 @@ the production parameters; **Edit…** reopens the form from this record.
 | Fuel | `un` | UN — uranium nitride | 19.75 %, 13.5, 900 K |
 | Fuel | `u10mo` | U-10Mo — metallic uranium alloy | 19.75 %, 17.0, 900 K |
 | Fuel | `u3si2_al` | U₃Si₂-Al — dispersion fuel | 4.8 gU/cm³, 19.75 %, porosity 0, 350 K |
-| Cladding and structural | `zirkaloy4`, `ss316`, `fecral`, `ma956`, `sic`, `al6061` | Zircaloy-4, SS-316, FeCrAl, MA956, SiC, Al-6061 | density and temperature |
+| Fuel | `uo2_gd2o3` | UO₂-Gd₂O₃ — gadolinia fuel | 3.2 %, Gd₂O₃ 8 %, 10.03 (95% TD), 900 K |
+| Cladding and structural | `zirkaloy4`, `m5`, `ss304`, `ss316`, `fecral`, `ma956`, `sic`, `al6061` | Zircaloy-4, M5, SS-304, SS-316, FeCrAl, MA956, SiC, Al-6061 | density and temperature |
 | Coolant and moderator | `su` | Light water (H₂O) | 293.6 K, boron 0 ppm; density from temperature |
 | Coolant and moderator | `agir_su` | Heavy water (D₂O) | purity 99.75 %, 1.1056, 293.6 K |
 | Coolant and moderator | `sodyum`, `lbe` | Liquid sodium, lead-bismuth eutectic | temperature (673 K, 723 K); density from temperature |
@@ -131,6 +140,80 @@ Columns of the **Composition** table (with the **Add row** / **Delete row** butt
 At the bottom of the window it is stated with which role the composition will be recognised
 in the model ("This composition is recognised in the model as: fuel"). **OK** saves; if the
 density, a name or an amount is missing it does not save and gives the reason.
+
+<a id="malzeme-asistani"></a>
+### Material assistant
+
+**Assistant…** builds a material in three steps. The calculations live in
+`cekirdek/malzeme_hesap.py`, `cekirdek/malzeme_sogutucu.py` and `cekirdek/malzeme_tarif.py`;
+the source of every formula is written in the code, and every calculator is tested against an
+independent hand calculation or against the source's own table (IF97 official
+verification table, ANL/RE-95/2 Table 1.3-1, NIST). Worked example:
+[5.14 Material assistant and my library](05-dersler.md#ders-malzeme-asistani).
+
+1. **What are you designing?** — **Fuel**, **Cladding**, **Moderator / coolant**, **Absorber**,
+   **Structural material** or **Custom mixture**.
+2. **Material type and values** — only the fields that fit the type are asked. The
+   **Derived values** panel on the right is recomputed on every change: density (g/cm³ and
+   atom/b-cm), mean molar mass per atom, heavy metal density (gHM/cm³, Z ≥ 90), H/X (hydrogen /
+   fissile atom: U-233, U-235, Pu-239, Pu-241) and, for every nuclide, the number density N_i
+   and its atom and weight percentages. If a value is invalid (for example 5 MPa at 600 K: steam
+   region) the reason is shown in red and **Next** is disabled.
+3. **Check and save** — the findings are listed: composition and density check, S(α,β)
+   suggestion (same rule as the model check), **missing nuclides** and S(α,β) tables in the
+   cross section library, and whether the temperature is inside the library range. If
+   `OPENMC_CROSS_SECTIONS` is not set, the missing-nuclide check is **skipped with a warning**.
+   If there is an error, **Finish** is disabled. **Name**, **Add to project** and **Also save to
+   my library** are here.
+
+| Type | Fields | Calculation and source |
+|---|---|---|
+| UO₂ | U-235 weight %, density (from %TD or directly), O/M, temperature | ρ = ρ_TD · %TD/100, ρ_TD = 10.963 g/cm³ (Fink, J. Nucl. Mater. 279 (2000) 1; 273 K: a room-temperature value, no thermal expansion is applied); U-234 = 0.0089·e, U-236 = 0.0046·e (ORNL/CSD/TM-244, same as OpenMC). The U-236 term is an empirical fit to commercial LEU containing recycled uranium: enrichment from natural feed has no U-236; the correlation is for low enrichment, and above 5% the check warns. |
+| UO₂-Gd₂O₃ | enrichment, Gd₂O₃ weight %, %TD, temperature | Mass balance; TD from ideal mixing 1/ρ = Σ w_i/ρ_i (Gd₂O₃ 7.407 g/cm³, CRC Handbook). The density of Gd₂O₃ depends on the phase (cubic 7.4–7.6, monoclinic ~8.3) and Gd forms a solid solution in UO₂: the TD is only an estimate. |
+| MOX | Pu / heavy metal %, Pu-238…Pu-242 and Am-241 (weight % of Pu+Am), carrier U, time since separation, %TD, O/M | O = x·M_O·Σ w_i/M_i; Pu-241 → Am-241 Bateman solution (T½ from ENDF/B-VIII.0); TD from ideal mixing of UO₂ and PuO₂ (11.46 g/cm³, Carbajo et al. 2001). The default Pu vector is an **example**; enter the measured vector. Ageing tracks only Pu-241 → Am-241 (T½ = 14.29 years; NUBASE2020 14.290(6) years); the products Pu-238 → U-234 and Am-241 → Np-237 leave the vector. Pu/HM is the Pu + Am fraction **after** ageing (at the time of use); heavy metal is Z ≥ 90 (Am included). |
+| U-Mo | enrichment, Mo weight %, density | — |
+| Light water | temperature, pressure, dissolved boron (ppm by mass), B-10 atom % | ρ(T, p) from IAPWS-IF97 Region 1 (compressed liquid), 273.15–623.15 K, p_s(T)–100 MPa; tested against the official verification table. The steam region or an out-of-range value is an **explicit error**. Boron ppm = mg B per kg of solution; the density is that of pure water (the ~+0.2–0.3% effect of boric acid H₃BO₃ on density is neglected), and boron enters only the composition. |
+| Heavy water | temperature, pressure, D₂O purity (mol %) | Table from the NIST WebBook (IAPWS R16-17 D₂O formulation), 0.1–20 MPa, from 280 K up to saturation; linear interpolation in T and p. The table isobars are 0.1, 1, 2, 5, 10, 12, 15 and 20 MPa: at a pressure between two isobars the upper temperature is the saturation temperature of the **lower** isobar (for example 613.98 K at 17 MPa). The remainder is light water (ideal mixing); at purity ≥ 99% the molar volume of H₂O is taken equal to that of D₂O (Kell 1977; ratio 1.0036 at 25 °C). S(α,β): `c_D_in_D2O` + `c_O_in_D2O`. |
+| Liquid sodium | temperature | Fink & Leibowitz, ANL/RE-95/2 (1995), 371–2503.7 K; tested against Table 1.3-1 of the report |
+| B₄C | B-10 atom %, %TD, temperature | ρ_TD = 2.52 g/cm³ (CRC Handbook) |
+| M5, SS-304 | density, temperature | M5: Zr-1Nb-0.125O (Mardon et al., ASTM STP 1354); SS-304: SCALE standard composition library (ρ = 7.94 g/cm³) |
+| Zircaloy-4, FeCrAl, SS-316, SiC, Al-6061, graphite, beryllium, Ag-In-Cd, Gd₂O₃ | density, temperature | Same entry as the ready library; **Edit…** opens the library form |
+| Custom mixture | up to four components (from the project or your library), their percentages, fraction type (wo / ao / vo), temperature | Ideal mixing (volumes add), the same model as `openmc.Material.mix_materials`; the result is a list of nuclide rows. The fractions must sum to 100%. |
+
+Atomic masses and natural isotopic abundances are read from `openmc.data` (AME2020, IUPAC
+2013). A UO₂ built with the assistant (3.2%, 10.40 g/cm³, 900 K) has **the same composition** as
+the UO₂ of the ready library; with the same seed k is also the same (test:
+`testler/test_k6_tarif.py`). Field limits are **input limits** that catch typing errors, not
+physical thresholds. The calculations are a design aid, not a certification: verify material
+data against your own source.
+
+<a id="kutuphanem"></a>
+### My library and PNNL-15870
+
+**My library** is kept on this computer only: `~/.local/share/openmc_arayuz/malzemeler.json`
+(under `XDG_DATA_HOME` if it is set). There is no network access. The window has **Search…**,
+**Add to project**, **Edit…** and **Delete**; the composition and derived values of the selected
+entry are shown on the right.
+
+- The file is written **atomically** (temporary file + rename): if writing is interrupted, the
+  old file stays intact; the last **valid** version is kept as `malzemeler.json.onceki` (a
+  damaged file never overwrites this backup). When two windows save at the same time, a side
+  lock file (`malzemeler.json.lock`) prevents lost records. The folder is private to you
+  (0700); the file may hold at most 20 MB and 10 000 records.
+- If the file is damaged (truncated JSON, an entry that does not match the schema), the list is
+  locked and the reason is shown; the file is **not deleted**. **Back up the damaged file and
+  start a new library** first saves a time-stamped copy (`malzemeler.json.bozuk-…`).
+- The file has a `surum` (version) field; a file written by a newer version is neither read nor
+  overwritten.
+
+**PNNL-15870** (Compendium of Material Composition Data for Radiation Transport Modeling,
+372/411 materials) is not published under an open licence, so it is **not distributed** with the
+program. Download the compendium CSV file yourself (Rev. 1 format; for example PyNE's
+`materials_compendium.csv`) and point to it with **Choose file…**; the file is only read and the
+last path is remembered. Filter with **Search by name or formula…**; then **Add to project** or
+**Save to my library**. Records that cannot be read (non-numeric or negative weights, a
+density outside 0–30 g/cm³, weights summing to 1 with a deviation above 0.001 — SS-440 in
+Rev. 1 — or a repeated number) are skipped and counted (details in the log).
 
 ### Importing from OpenMC XML
 
