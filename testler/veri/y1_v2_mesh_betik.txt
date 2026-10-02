@@ -1,0 +1,11 @@
+# v2.0 / taban 94c3a27 kod_uret ciktisi (testler/test_y1_duzeltme.py D6):
+# pwr_17x17 + filtre_mesh_otomatik([17, 17, 1]) tally'si; yalniz "tally_3" satirlari.
+# v3 Y1'de 2B (eksenel sonsuz) modelde otomatik z +/-1 cm -> +/-Z_2B_YARI (1e4 cm) oldu.
+tally_3 = openmc.Tally(name='v2_aki')
+tally_3.scores = ['flux']
+tally_3_mesh_0 = openmc.RegularMesh()
+tally_3_mesh_0.dimension  = [17, 17, 1]
+tally_3_mesh_0.lower_left = [-10.71, -10.71, -1.0]
+tally_3_mesh_0.upper_right = [10.71, 10.71, 1.0]
+tally_3.filters = [openmc.MeshFilter(tally_3_mesh_0)]
+tallyler = openmc.Tallies([tally_1, tally_2, tally_3])

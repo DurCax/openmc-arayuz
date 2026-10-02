@@ -528,14 +528,15 @@ def test_k4_izlenebilirlik():
     kontrol("spec degismedi (girdi)", kirik["malzemeler"][0]["sicaklik"] is None
             and spec["malzemeler"][0]["sicaklik"] == 900.0)
     d = _kopya(log_sil=True)
-    eski = os.environ.pop("OPENMC_CROSS_SECTIONS", None)
+    # v3 K2: veri tek cozumleyiciden (ortam > ayar > ~/nucdata adayi) gelir;
+    # "veri yok" icin ortam degiskeni yaninda ev/ayar dizinleri de yalitilir.
+    from testler.k2_yalitim import VeriYalitimi
     try:
-        b = _denetle(d, ("D",))                         # spec kosu dizininden okunur
+        with VeriYalitimi():
+            b = _denetle(d, ("D",))                     # spec kosu dizininden okunur
         kontrol("kirmizi: log + ortam yok -> kutuphane bilinmiyor uyarisi", any(
             x.kural == "K4" and x.seviye == "uyari" and "kütüphanesi" in x.mesaj for x in b))
     finally:
-        if eski is not None:
-            os.environ["OPENMC_CROSS_SECTIONS"] = eski
         shutil.rmtree(d, True)
     kontrol("spec yok -> uygulanamadi", _durum(_denetle(tempfile.gettempdir(), ("D",)), "K4")
             == ("bilgi", "uygulanamadi"))

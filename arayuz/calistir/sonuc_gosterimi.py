@@ -96,6 +96,7 @@ class SonucGosterimiMixin(object):
         self.sonuc_metin.setPlainText("\n".join(tam))
         self.tally_metin.setPlainText("\n".join(tally) if sabit else "")
         self.guc_harita.sonuc_ayarla(s, self.spec)
+        self.mesh_harita.statepoint_ayarla(sp, self.spec)       # v3 Y1
         self.spektrum_karti.sonuc_ayarla(sp)                 # Y3
         self.kart.cikti_yaz(*cikti.uyari_ozeti(self._dizin))     # M5
         self.uygunluk.denetle(self.spec, self._dizin)

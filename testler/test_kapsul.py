@@ -73,7 +73,8 @@ def test_kapsul_icerigi():
         kontrol("uygulama surumu", k["uygulama"]["surum"] == surum.surum())
         kontrol("git commit alani var", "git_commit" in k["uygulama"])
         kontrol("openmc surumu", k["openmc"]["surum"] == openmc.__version__)
-        xs = os.environ.get("OPENMC_CROSS_SECTIONS")
+        from cekirdek import veri_yolu
+        xs = veri_yolu.cross_sections().deger      # kapsul ayni cozumleyiciden okur
         kut = k["kutuphane"]
         if xs and os.path.isfile(xs):
             kontrol("cross_sections.xml karmasi", kut["cross_sections"]["sha256"] == _sha(xs))

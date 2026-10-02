@@ -127,6 +127,26 @@ def _yaricap(hucre):
         return None
 
 
+def dis_yakit_yaricaplari(geometri, hedef_hucreler):
+    """
+    {hedef hucre kimligi: ayni evrendeki hedef hucrelerin en buyuk dis yaricapi}.
+    Cok halkali (Gd) pinde merkez noktasi ic halkadadir; kesik yoklamasi pinin
+    EN DIS yakit siniri boyunca yapilmalidir (profesor E1).
+    """
+    hucreler = geometri.get_all_cells()
+    evren_of = {}
+    for u in geometri.get_all_universes().values():
+        for c in u.cells.values():
+            evren_of[c.id] = u.id
+    yaricap = {k: _yaricap(hucreler[k]) for k in hedef_hucreler if k in hucreler}
+    en_dis = {}
+    for k, r in yaricap.items():
+        if r:
+            u = evren_of.get(k)
+            en_dis[u] = max(en_dis.get(u, 0.0), r)
+    return {k: en_dis.get(evren_of.get(k)) for k in yaricap}
+
+
 def _yol(geometri, p):
     """(hucre kimlikleri, kafes adlari) -- noktanin kurulan geometrideki yolu; ya da None."""
     import numpy as np
@@ -172,8 +192,7 @@ def kesik_cubuklar(dagilim, geometri, hedef_hucreler, z=0.0):
     konumlar = dagilim.get("konumlar") or {}
     if not dagilim.get("tam_kor") or len(konumlar) > KESIK_YOKLAMA_SINIRI:
         return []
-    hucreler = geometri.get_all_cells()
-    yaricaplar = {k: _yaricap(hucreler[k]) for k in hedef_hucreler if k in hucreler}
+    yaricaplar = dis_yakit_yaricaplari(geometri, hedef_hucreler)
     kesikler = []
     for anahtar in konumlar:
         cx, cy = cubuk_merkezi(dagilim, anahtar)

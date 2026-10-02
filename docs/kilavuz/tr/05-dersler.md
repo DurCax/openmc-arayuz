@@ -20,6 +20,8 @@ için **Dosya › Farklı kaydet…** kullanın.
 | [5.9](#ders-kritik-arama) | Kritik arama | `ornekler/pwr_17x17.json`, `ornekler/pwr_kontrol.json`, `ornekler/tamburlu_kor.json` | orta |
 | [5.10](#ders-rapor) | Rapor ve uygunluk eki | herhangi bir koşu | orta |
 | [5.11](#ders-spektrum) | Spektrum ve dört faktör | `ornekler/pwr_pinhucre.json` | orta |
+| [5.13](05c-ders-mesh.md#ders-mesh) | Ağ (mesh) akı ve güç haritası, ParaView | `ornekler/pwr_mesh_aki.json` | orta |
+| [5.14](#ders-malzeme-asistani) | Malzeme asistanı ve kütüphanem | `ornekler/pwr_17x17.json` | giriş |
 
 **Beklenen sonuçlar nereden geliyor?** Her değer bir kaynağa dayanır: örnek dosyasının
 `referans.olcum` alanı, [VV.md](../../VV.md), [ORNEKLER.md](../../ORNEKLER.md) ya da
@@ -506,6 +508,62 @@ Ortalama lineer güç **182 W/cm**.
 - Eksenel katmanlı `ornekler/pwr_eksenel.json`'da F_ΔH neden aynı, F_q neden küçüktür?
   (Katmanlama radyal dağılıma dokunmaz; su yansıtıcı eksenel profili düzleştirir.)
 
+<a id="ders-guc-yanma"></a>
+### 5.7.1 Pin gücü tablosu ve yanmaya göre pin gücü
+
+**Örnek dosya:** `ornekler/pwr_3b.json` (tablo), `ornekler/pwr_17x17.json` (yanma) ·
+**Seviye:** orta. Alanlar: [pin gücü tablosu](04g-calistir.md#calistir-pin-tablosu),
+[yanmaya göre pin gücü](04i-tukenme.md#tukenme-pin-gucu).
+
+**A. Tablo (5.7'nin koşusu).**
+
+1. Güç haritasının altındaki **Pin gücü tablosu**nda 264 satır vardır (kılavuz/ölçüm boruları
+   tabloda yoktur). **Bağıl güç** başlığına tıklayıp azalan sıralayın: ilk satır en sıcak
+   çubuktur ve değeri özetteki F_ΔH ile aynıdır (tablo = harita).
+2. Haritada bir çubuğa tıklayın: satırı seçilir, tablonun üstünde değerleri yazar.
+3. **Çeyrek katla**: tek demet ayna simetrik olduğu için etkindir; 264 çubuk 72 yörüngeye iner
+   (çeyrekte 81 konum − 9 kılavuz/ölçüm konumu). **Asimetri** sütunu aynı yörüngedeki çubukların
+   farkıdır: simetrik modelde bu fark yalnız istatistik gürültüdür.
+4. Katlamayı **kapatıp** **Tabloyu kaydet…** ile CSV yazın; `W` sütununun toplamı Toplam güç ×
+   hedef payıdır (bu modelde bütün fisyon enerjisi hedef çubuklarda: 17.6 MW). Katlı tabloda
+   her satır m üyenin ortalamasıdır (`katlanan_m` sütunu): toplam Σ m·W'dir.
+5. İtalik satırlar en sıcak çubuktan istatistik olarak **ayırt edilemez** (birleşik 2σ içinde):
+   "en sıcak çubuk" tek bir çubuk değil, bir gruptur.
+
+**B. Yanmaya göre.**
+
+1. `pwr_17x17` örneğini açın; **Tükenme** sayfasında hesabı etkinleştirin. Güç dağılımını Hesap
+   ayarlarında açmanız gerekmez: tükenme koşusu her adımda pin gücünü kendiliğinden sayar.
+   Süreyi kısaltmak için Gelişmiş'te **CASL basit termal** zincirini seçebilirsiniz.
+2. Koşu bitince sonuç kartının altında **Adım** seçicisi çıkar. Adım değiştikçe tablo o adımın
+   değerlerini gösterir; tablodan seçtiğiniz çubuklar soldaki grafikte bağıl güç – yanma olarak
+   izlenir, sağda adım başına F_ΔH çizilir.
+3. **Adım × pin kaydet…** her adımın pin tablosunu tek CSV'de verir.
+
+**Ne öğrendik / kontrol soruları.**
+
+- Bağıl güç her adımda o adımın ortalamasına göredir: bir çubuğun bağıl gücü düşüyorsa mutlak
+  gücü de düşmüş olmak zorunda mıdır? (Evet, aynı oranda — toplam güç ve hedef payı sabitse.)
+- `pwr_17x17`'de **Çubuk çubuk yanma** kapalıdır: bütün çubuklar aynı ortalama bileşimle yanar.
+  Bu yüzden sıcak çubukların daha hızlı yanıp dağılımı düzleştirmesi neden **görülmez**?
+  (Pin başına yanma geri beslemesi yok; görmek için Gelişmiş'te **Çubuk çubuk yanma**'yı açın —
+  her çubuk ayrı malzeme olur, bellek ve süre çubuk sayısıyla artar.) Farkları tek koşu
+  σ'sıyla (iyimser) değil tohum saçılmasıyla değerlendirin.
+- Gösterilen dağılım neden adımın **başındaki** dağılımdır? (OpenMC adım statepoint'ini
+  öngörücü transporttan sonra yazar.)
+
+**Ölçülen (B, küçük ayar).** 02.10.2026, `pwr_17x17` + Tükenme: **2000 × 30 / 10 pasif**
+(örneğin kendi 10 000 × 150 ayarı ölçülmedi), CASL basit termal, CECM, 40 W/gHM, adımlar 1, 4, 5,
+10 MWd/kg (9 transport, 6 iş parçacığı, 518 s). Ortalama q′ **193.3 W/cm** (2B: 1 cm yükseklik
+başına). Adım başına F_ΔH: 1.222, 1.207, 1.258, 1.262, 1.240 (tek koşu σ 0.06–0.10); en sıcak
+çubuk her adımda başka bir konumda (x = 5, y = 6 → x = 14, y = 9 → …). Bu istatistikte adımlar
+arası fark gürültüden **ayırt edilemez** ve F_ΔH maksimum yanlılığıyla yukarı çıkar (5.7):
+yanmaya göre eğilim okumak için parçacık sayısını artırın ve birkaç tohum kullanın. k-eff
+1.1773 → 0.9648 (20 MWd/kg).
+
+Bu sayılar bir tasarım ya da lisans değerlendirmesi değildir; sınırlar için
+[6.6 Bilinen sınırlar](06-sonuclar.md#bilinen-sinirlar).
+
 <a id="ders-benchmark"></a>
 ## 5.8 Benchmark ve C/E
 
@@ -745,3 +803,53 @@ sonuçları bir tasarım değeri yapmaz.
   (Termal fisyon yok ya da ihmal edilebilir: ε = νF/νF_th ya tanımsız ya da aşırı büyük çıkar;
   dört faktör termal reaktör tanımıdır. Çıplak küre, büyük sızıntı.)
 - Bu sonuç bir doğrulama ya da sertifika değildir; yalnızca tanımların tutarlılığını gösterir.
+
+<a id="ders-malzeme-asistani"></a>
+## 5.14 Malzeme asistanı ve kütüphanem
+
+**Örnek dosya:** `ornekler/pwr_17x17.json` · **Seviye:** giriş · **Tahmini süre:** 15 dakika
+(Monte Carlo koşusu yok)
+
+**Amaç.** Bir yakıtı ve bir soğutucuyu asistanla kurmak, türetilmiş değerleri el hesabıyla
+karşılaştırmak, geçersiz bir girdinin nasıl durdurulduğunu görmek ve malzemeyi bu bilgisayardaki
+kütüphaneye kaydetmek. Arka plan: [Malzeme asistanı](04a-malzemeler.md#malzeme-asistani).
+
+**Adımlar.**
+
+1. `ornekler/pwr_17x17.json`'u açın. **Malzemeler** sayfasında **Asistan…**.
+2. **Ne tasarlıyorsun?** → **Yakıt**. **Malzeme türü** UO₂; **U-235 ağırlıkça %** 3.2;
+   **Yoğunluk** "doğrudan g/cm³", 10.40; **O/M oranı** 2.000; **Sıcaklık** 900 K.
+3. **Türetilmiş değerler** panelini okuyun ve aşağıdaki el hesabıyla karşılaştırın.
+4. **İleri**. Doğrulama listesinde tesir kesiti kütüphanesi tanımlıysa eksik nüklid yoktur;
+   tanımlı değilse "eksik nüklid denetimi atlandı" uyarısı görünür. **Ad** `uo2_2` önerilir
+   (örnekte `uo2` var). **Kütüphaneme de kaydet**'i işaretleyip **Bitir**.
+5. Yeniden **Asistan…** → **Moderatör / soğutucu** → **Hafif su**: 580 K, 15.5 MPa, 1000 ppm bor.
+   Sonra basıncı 5 MPa'ya, sıcaklığı 600 K'e çekin.
+6. **Kütüphanem…**: 4. adımda kaydettiğiniz malzeme listededir; **Projeye ekle** onu `_2` ekli
+   bir adla yeniden ekler.
+
+**Beklenen sonuç** (el hesabı; `testler/test_k6_hesap.py` ve `testler/test_k6_sogutucu.py`):
+
+| Değer | El hesabı | Panel |
+|---|---|---|
+| M_U (3.2 %, ORNL/CSD/TM-244 vektörü) | 1 / Σ(w_i/M_i) = 237.9519 g/mol | — |
+| N_toplam = 3 · ρ N_A / (M_U + 2 M_O) | 3 · 10.40 · 0.602214 / 269.9505 = 0.069602 atom/b-cm | 6.9602e-02 |
+| N(U-235) | 0.023201 · 0.032396 = 7.5161e-04 atom/b-cm | 7.5161e-04 |
+| Ağır metal | 10.40 · 237.9519 / 269.9505 = 9.1672 gHM/cm³ | 9.1672 |
+| Su ρ(580 K, 15.5 MPa), IAPWS-IF97 | 0.71187 g/cm³ (NIST IAPWS-95: 0.711869) | 0.71187 |
+| 600 K, 5 MPa | p_s(600 K) = 12.34 MPa > 5 MPa: buhar bölgesi | kırmızı hata, **İleri** kapalı |
+
+Asistanın UO₂'si kütüphanedeki UO₂ ile aynı bileşimdir (U, zenginlik 3.2; O 2; 10.40 g/cm³;
+900 K); aynı tohumla k da aynıdır.
+
+**Ne öğrendik / kontrol soruları.**
+
+- Neden U-235 dışında U-234 ve U-236 da çıkıyor? (Zenginleştirme U-234'ü de zenginleştirir;
+  ORNL/CSD/TM-244 bağıntısı U-234 = 0.0089·e, U-236 = 0.0046·e ağırlıkça. U-236 terimi geri
+  kazanılmış uranyum karışmış ticari LEU'ya uydurulmuş ampiriktir; doğal beslemeden
+  zenginleştirmede U-236 yoktur ve bağıntı yalnız düşük zenginlikte geçerlidir.)
+- Doymuş su tablosu (kütüphanedeki **Hafif su**) 580 K, 15.5 MPa koşulunda neden %2.2 düşük kalır (0.6965 g/cm³)? (%2.0'si basınçtır:
+  IF97 doymuş sıvı 0.69763 g/cm³; kalan %0.17 tablonun doğrusal interpolasyonudur.)
+  (15.5 MPa'da sıvı sıkıştırılmıştır; asistan IF97 ile basıncı da hesaba katar.)
+- Kütüphanem neden ağa bağlı değil? (Kullanıcı kararı: malzeme verisi yalnız bu bilgisayarda
+  kalır; dosya atomik yazılır, bozulursa silinmez.)

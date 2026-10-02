@@ -95,10 +95,16 @@ class TukenmeSekmesi(SekmeTabani, SonucBolumu, TukenmeArayuzu):
         self._sonuc = None            # gosterilen sonuc_oku() ciktisi
         self._kaynak = None           # (h5, okuma spec'i): secim degisince yeniden okunur
         self._arayuzu_kur()           # widget'lar ve yerlesim: tukenme_arayuz.py
+        self._adim_gucu_kur()         # v3 K3: "Adim basina pin gucu" (Gelismis)
+        # Kapanista calisan okuma iscileri yok edilmesin (Qt sureci dusurur).
+        uyg = QtWidgets.QApplication.instance()
+        if uyg is not None:
+            uyg.aboutToQuit.connect(self.isleri_durdur)
 
         # ---------------- sinyaller ----------------
         self.var.toggled.connect(self._kaydet)
         self.ayir.toggled.connect(self._kaydet)
+        self.adim_gucu.toggled.connect(self._kaydet)
         for w in (self.zincir, self.birim, self.entegrator):
             w.currentIndexChanged.connect(self._kaydet)
         self.guc.valueChanged.connect(self._kaydet)
@@ -121,6 +127,7 @@ class TukenmeSekmesi(SekmeTabani, SonucBolumu, TukenmeArayuzu):
         i = self.entegrator.findData(t.get("entegrator") or "cecm")
         self.entegrator.setCurrentIndex(max(i, 0))
         self.ayir.setChecked(bool(t.get("malzemeleri_ayir")))
+        self.adim_gucu.setChecked(t.get("adim_gucu") is not False)     # varsayilan acik
         # Eski JSON'lardaki liste AYNEN korunur (zincirde olmayan ad bile silinmez).
         self.izlenen.secim_ayarla(list(t.get("izlenen") or []), sinyal=False)
         self.ek_liste.doldur(self.spec)
@@ -168,10 +175,34 @@ class TukenmeSekmesi(SekmeTabani, SonucBolumu, TukenmeArayuzu):
         t["adimlar"] = self._sayilar(self.adimlar.text())
         t["entegrator"] = self.entegrator.currentData()
         t["malzemeleri_ayir"] = self.ayir.isChecked()
+        # Varsayilan (acik) dosyaya yazilmaz: eski spec'ler gidis-donuste degismesin.
+        if not self.adim_gucu.isChecked() or "adim_gucu" in t:
+            t["adim_gucu"] = self.adim_gucu.isChecked()
         t["izlenen"] = self.izlenen.secim()
         t["ek_malzemeler"] = self.ek_liste.secim()
         self._ozet_guncelle()
         self.bildir()
+
+    def _adim_gucu_kur(self):
+        """Adim basina pin gucu (tukenme.adim_gucu; varsayilan acik). Gerekce:
+        yanmaya gore pin gucu kullanici karari 3'tur; maliyet kucuk ama sifir degil."""
+        self.adim_gucu = QtWidgets.QCheckBox(_("Adım başına pin gücü"))
+        self.adim_gucu.setToolTip(_(
+            "Her tükenme adımında çubuk güç dağılımı (distribcell + eksenel mesh tally'si) "
+            "sayılır ve adım başına bir statepoint dosyası yazılır. Transport süresine etkisi "
+            "küçüktür; disk ve bellek çubuk × eksenel dilim sayısıyla artar (ölçüldü: 24 "
+            "çubuk × 4 dilimde adım başına 52 kB). On binlerce çubuklu tam korda kapatmayı "
+            "düşünün."))
+        self.gelismis_form.addRow("", self.adim_gucu)
+
+    def _adim_gucu_anlamli(self):
+        """Guc tally'si kurulabilen modelde (cubuklar bir kafeste) anlamli."""
+        try:
+            from cekirdek import uygunluk
+            return bool(uygunluk.guc_cubuklari(self.spec))
+        except Exception:
+            _log.exception("güç çubukları belirlenemedi; 'adım başına pin gücü' gösteriliyor")
+            return True
 
     def _uygunluk_oku(self):
         if not self.spec:
@@ -197,6 +228,7 @@ class TukenmeSekmesi(SekmeTabani, SonucBolumu, TukenmeArayuzu):
 
         # --- cubuk cubuk yanma: yalnizca yakit birden fazla ornekse ---
         self.gelismis_form.setRowVisible(self.ayir, self._ayirma_anlamli())
+        self.gelismis_form.setRowVisible(self.adim_gucu, self._adim_gucu_anlamli())
 
         # --- zincir ---
         self.zincir_uyari.setText("")

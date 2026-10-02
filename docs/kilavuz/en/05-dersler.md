@@ -20,6 +20,8 @@ overwritten. Use **File › Save as…** to keep your own changes.
 | [5.9](#ders-kritik-arama) | Critical search | `ornekler/pwr_17x17.json`, `ornekler/pwr_kontrol.json`, `ornekler/tamburlu_kor.json` | intermediate |
 | [5.10](#ders-rapor) | Report and conformity annex | any run | intermediate |
 | [5.11](#ders-spektrum) | Spectrum and four factors | `ornekler/pwr_pinhucre.json` | intermediate |
+| [5.13](05c-ders-mesh.md#ders-mesh) | Mesh flux and power map, ParaView | `ornekler/pwr_mesh_aki.json` | intermediate |
+| [5.14](#ders-malzeme-asistani) | Material assistant and my library | `ornekler/pwr_17x17.json` | introductory |
 
 **Where do the expected results come from?** Every value has a source: the `referans.olcum` field
 of the example file, [VV.md](../../VV.md), [ORNEKLER.md](../../ORNEKLER.md) or the measurement tables
@@ -527,6 +529,67 @@ scatter / √5). Mean linear power **182 W/cm**.
 - Why is F_ΔH the same and F_q smaller in the axially layered `ornekler/pwr_eksenel.json`? (Layering
   does not touch the radial distribution; the water reflector flattens the axial profile.)
 
+<a id="ders-guc-yanma"></a>
+### 5.7.1 Pin power table and pin power versus burnup
+
+**Example file:** `ornekler/pwr_3b.json` (table), `ornekler/pwr_17x17.json` (burnup) ·
+**Level:** intermediate. Fields: [pin power table](04g-calistir.md#calistir-pin-tablosu),
+[pin power versus burnup](04i-tukenme.md#tukenme-pin-gucu).
+
+**A. Table (the run of 5.7).**
+
+1. The **Pin power table** under the power map has 264 rows (guide/instrument tubes are not in
+   the table). Click the **Relative power** header to sort descending: the first row is the
+   hottest pin and its value equals F_ΔH in the summary (table = map).
+2. Click a pin on the map: its row is selected and its values are shown above the table.
+3. **Fold to quarter**: enabled because the single assembly is mirror-symmetric; 264 pins become
+   72 orbits (81 positions in the quarter − 9 guide/instrument positions). The **Asymmetry**
+   column is the difference between the pins of one orbit: in a symmetric model it is only
+   statistical noise.
+4. Switch folding **off** and write a CSV with **Save table…**; the sum of the `W` column is
+   Total power × target share (in this model all fission energy is in the target pins:
+   17.6 MW). In the folded table each row is the average of m members (`katlanan_m` column):
+   the total is Σ m·W.
+5. Rows in italics cannot be told apart statistically from the hottest pin (within a combined
+   2σ): "the hottest pin" is a group, not a single pin.
+
+**B. Versus burnup.**
+
+1. Open the `pwr_17x17` example and enable the calculation on the **Depletion** page. You do not
+   have to switch on the power distribution in Run settings: the depletion run tallies the pin
+   power in every step by itself. To shorten the run you can choose the **CASL simple thermal**
+   chain under Advanced.
+2. When the run finishes, a **Step** selector appears below the result card. The table shows
+   the values of the selected step; pins selected in the table are tracked in the left plot as
+   relative power versus burnup, the right plot shows F_ΔH per step.
+3. **Save step × pin…** gives the pin table of every step in one CSV.
+
+**What did we learn / check questions.**
+
+- Relative power is relative to the average of that step: if a pin's relative power drops, must
+  its absolute power drop too? (Yes, by the same ratio — if total power and target share are
+  constant.)
+- In `pwr_17x17` **Pin-by-pin depletion** is off: all pins burn with the same average
+  composition. Why is the flattening of the distribution by the faster burning of hot pins
+  therefore **not seen**? (No per-pin burnup feedback; to see it switch on **Pin-by-pin
+  depletion** under Advanced — every pin becomes its own material, memory and time grow with
+  the number of pins.) Judge differences with the seed-to-seed spread, not with the single-run
+  σ (optimistic).
+- Why is the distribution shown the one at the **beginning** of the step? (OpenMC writes the
+  step statepoint after the predictor transport.)
+
+**Measured (B, small settings).** 02.10.2026, `pwr_17x17` + Depletion: **2000 × 30 / 10
+inactive** (the example's own 10 000 × 150 setting was not measured), CASL simple thermal, CECM,
+40 W/gHM, steps 1, 4, 5, 10 MWd/kg (9 transports, 6 threads, 518 s). Mean q′ **193.3 W/cm**
+(2D: per 1 cm of height). F_ΔH per step: 1.222, 1.207, 1.258, 1.262, 1.240 (single-run σ
+0.06–0.10); the hottest pin is at a different position in every step (x = 5, y = 6 → x = 14,
+y = 9 → …). With these statistics the step-to-step difference **cannot be told apart** from
+noise and F_ΔH is pushed up by the bias of the maximum (5.7): to read a burnup trend increase
+the number of particles and use several seeds. k-eff 1.1773 → 0.9648 (20 MWd/kg).
+
+These numbers are not a design or licensing assessment; for the limits see
+[6.6 Known limits](06-sonuclar.md#bilinen-sinirlar).
+
 <a id="ders-benchmark"></a>
 ## 5.8 Benchmark and C/E
 
@@ -780,3 +843,54 @@ inconsistency is deliberate and does not make the results design values.
   the four factors are a thermal-reactor definition. Bare sphere, large leakage.)
 - This result is not a validation or a certificate; it only shows that the definitions are
   consistent.
+
+<a id="ders-malzeme-asistani"></a>
+## 5.14 Material assistant and my library
+
+**Example file:** `ornekler/pwr_17x17.json` · **Level:** introductory · **Estimated time:** 15 minutes
+(no Monte Carlo run)
+
+**Goal.** Build a fuel and a coolant with the assistant, compare the derived values with a hand
+calculation, see how an invalid input is stopped, and save the material to the library on this
+computer. Background: [Material assistant](04a-malzemeler.md#malzeme-asistani).
+
+**Steps.**
+
+1. Open `ornekler/pwr_17x17.json`. On the **Materials** page, click **Assistant…**.
+2. **What are you designing?** → **Fuel**. **Material type** UO₂; **U-235 weight %** 3.2;
+   **Density** "directly in g/cm³", 10.40; **O/M ratio** 2.000; **Temperature** 900 K.
+3. Read the **Derived values** panel and compare it with the hand calculation below.
+4. **Next**. If a cross section library is set, the check list shows no missing nuclides; if not,
+   the warning "missing-nuclide check skipped" appears. The suggested **Name** is `uo2_2` (the
+   example already has `uo2`). Tick **Also save to my library** and click **Finish**.
+5. Open **Assistant…** again → **Moderator / coolant** → **Light water**: 580 K, 15.5 MPa,
+   1000 ppm boron. Then lower the pressure to 5 MPa and raise the temperature to 600 K.
+6. **My library…**: the material saved in step 4 is in the list; **Add to project** adds it again
+   with a `_2` name.
+
+**Expected result** (hand calculation; `testler/test_k6_hesap.py` and `testler/test_k6_sogutucu.py`):
+
+| Value | Hand calculation | Panel |
+|---|---|---|
+| M_U (3.2%, ORNL/CSD/TM-244 vector) | 1 / Σ(w_i/M_i) = 237.9519 g/mol | — |
+| N_total = 3 · ρ N_A / (M_U + 2 M_O) | 3 · 10.40 · 0.602214 / 269.9505 = 0.069602 atom/b-cm | 6.9602e-02 |
+| N(U-235) | 0.023201 · 0.032396 = 7.5161e-04 atom/b-cm | 7.5161e-04 |
+| Heavy metal | 10.40 · 237.9519 / 269.9505 = 9.1672 gHM/cm³ | 9.1672 |
+| Water ρ(580 K, 15.5 MPa), IAPWS-IF97 | 0.71187 g/cm³ (NIST IAPWS-95: 0.711869) | 0.71187 |
+| 600 K, 5 MPa | p_s(600 K) = 12.34 MPa > 5 MPa: steam region | red error, **Next** disabled |
+
+The assistant's UO₂ has the same composition as the UO₂ of the library (U, enrichment 3.2; O 2;
+10.40 g/cm³; 900 K); with the same seed k is also the same.
+
+**What we learned / check questions.**
+
+- Why do U-234 and U-236 appear besides U-235? (Enrichment also enriches U-234; the
+  ORNL/CSD/TM-244 correlation gives U-234 = 0.0089·e and U-236 = 0.0046·e by weight. The U-236
+  term is an empirical fit to commercial LEU containing recycled uranium; enrichment from
+  natural feed has no U-236, and the correlation is valid only at low enrichment.)
+- Why does the saturated-water table (the library's **Light water**) come out 2.2% lower at 580 K and
+  15.5 MPa (0.6965 g/cm³)? (2.0% is the pressure: IF97 saturated liquid is 0.69763 g/cm³;
+  the remaining 0.17% is the linear interpolation of the table.) (At 15.5 MPa the liquid is compressed; the assistant also accounts for pressure
+  through IF97.)
+- Why is my library not connected to a network? (User decision: material data stays on this
+  computer only; the file is written atomically and is not deleted if it gets damaged.)
