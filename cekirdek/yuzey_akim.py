@@ -14,18 +14,26 @@
        Duzenli agin hucre yuzleri (MeshSurfaceFilter) + "current": her yuz
        icin AYRI giren/cikan kismi akim (OpenMC bin adlari "x-min out",
        "x-min in" ...). Otomatik sinirlar kurucu.tally_mesh_sinirlari ile ayni.
-       Esli denge tally'si "y7_denge:<ad>" ayni ag uzerinde (MeshFilter)
-       absorption, nu-fission ve (n,xn) skorlarini toplar.
+       Esli denge tally'si "y7_denge:<ad>" ayni ag uzerinde (MeshFilter,
+       ANALOG tahminci, yalniz notron) absorption, nu-fission, scatter ve
+       nu-scatter skorlarini toplar (notron kaynaginda).
  Her iki tur EnergyFilter ile birlesirse enerji gruplu akim: kacak spektrumu.
+ Akim KAYNAK PARCACIGINA suzulur (ParticleFilter): foton tasinimi acikken
+ fotonlar notron akimina karismaz (score_surface_tally parcacik ayirmaz).
  Baska filtre (malzeme, mesh) bir yuzey tally'sine konamaz (dogrula/yuzey.py).
 
  KORUNUM (notron dengesi, kutunun dis yuzleri; ic yuzler birbirini goturur)
-     S + J_giren - J_cikan + X = A
+     S + J_giren - J_cikan + U = A
    S: kutudaki kaynak -- sabit kaynakta kutu icindeki nokta kaynagin SIDDETI
       (OpenMC sabit kaynak tally'lerini kaynak siddetiyle carpar; olculdu),
       ozdegerde nu-fission_kutu / k-eff (kaynak = fisyon notronlari / k).
-   X: (n,xn) net uretim  sum (x-1) R_x  (cekirdek/spektrum.py XN_SKORLARI).
+   U: sacilmada net notron uretimi  nu-scatter - scatter  ((n,xn) VE kesirli
+      verimli MT5 (n,anything); ENDF/B-VIII.0 Fe56 MT5 verimi 14 MeV'de 0.46 --
+      yalniz (n,xn) kanallarini saymak 14 MeV demir zirhta dengeyi %0.15
+      bozuyordu, olculdu) + sabit kaynakta fisyon notronlari (nu-fission;
+      ozdegerde fisyon S'nin icindedir).
    A: absorption (OpenMC "absorption" (n,xn)'i icermez).
+   Analog tahminciyle denge HER GECMISTE tamdir (yalniz yuvarlama; test 1e-9).
    Birim: kaynak parcacigi basina (siddet 1) ya da siddetle [1/s].
 ================================================================================
 """
@@ -46,7 +54,7 @@ YUZEY_FILTRELERI = (FILTRE_SINIR, FILTRE_KUTU)
 YUZEY_SKORU = "current"
 TALLY_ONEKI = "y7_"
 _DENGE_ONEKI = "y7_denge:"
-DENGE_SKORLARI = ("absorption", "nu-fission") + tuple(s for s, _x in spektrum.XN_SKORLARI)
+DENGE_SKORLARI = ("absorption", "nu-fission", "scatter", "nu-scatter")
 EKSENLER = ("x", "y", "z")
 _SIFIR = Deger(0.0, 0.0)
 
@@ -107,18 +115,21 @@ def _kutu_agi(spec: dict, f: dict, sinir_kutu) -> "openmc.RegularMesh":
     return mesh
 
 
-def _tally_kur(spec: dict, t: dict, geometri, sinir_kutu) -> list:
-    """Bir yuzey tally'si (+ kutuda denge tally'si); sinirda vakum yoksa []."""
+def kaynak_parcacigi(spec: dict) -> str:
+    k = ((spec or {}).get("ayarlar") or {}).get("kaynak") or {}
+    return k.get("parcacik") or "neutron"
+
+
+def _yuzey_filtreleri(spec: dict, t: dict, geometri, sinir_kutu):
+    """(filtreler, kutu agi ya da None); sinirda vakum yoksa (None, None)."""
     import openmc
-    tal = openmc.Tally(name=t["ad"])
-    tal.scores = list(t["skorlar"])
     filtreler, mesh = [], None
     for f in t.get("filtreler") or []:
         if f["tur"] == FILTRE_SINIR:
             yuzeyler = vakum_yuzeyleri(geometri)
             if not yuzeyler:
                 _log.warning("'%s': modelde vakum sınırı yok, sınır tally'si kurulmadı", t["ad"])
-                return []
+                return None, None
             filtreler.append(openmc.SurfaceFilter(yuzeyler))
         elif f["tur"] == FILTRE_KUTU:
             mesh = _kutu_agi(spec, f, sinir_kutu)
@@ -127,12 +138,25 @@ def _tally_kur(spec: dict, t: dict, geometri, sinir_kutu) -> list:
             filtreler.append(openmc.EnergyFilter(list(f["gruplar"])))
         else:
             raise ValueError(_("yüzey tally'sinde desteklenmeyen filtre: %s") % f["tur"])
+    filtreler.append(openmc.ParticleFilter([kaynak_parcacigi(spec)]))
+    return filtreler, mesh
+
+
+def _tally_kur(spec: dict, t: dict, geometri, sinir_kutu) -> list:
+    """Bir yuzey tally'si (+ notron kaynakli kutuda denge tally'si)."""
+    import openmc
+    filtreler, mesh = _yuzey_filtreleri(spec, t, geometri, sinir_kutu)
+    if filtreler is None:
+        return []
+    tal = openmc.Tally(name=t["ad"])
+    tal.scores = list(t["skorlar"])
     tal.filters = filtreler
-    if mesh is None:
+    if mesh is None or kaynak_parcacigi(spec) != "neutron":
         return [tal]
     denge = openmc.Tally(name=denge_adi(t["ad"]))
     denge.scores = list(DENGE_SKORLARI)
-    denge.filters = [openmc.MeshFilter(mesh)]
+    denge.filters = [openmc.MeshFilter(mesh), openmc.ParticleFilter(["neutron"])]
+    denge.estimator = "analog"
     return [tal, denge]
 
 
@@ -152,11 +176,11 @@ def tally_ekle(spec: dict, model: "openmc.Model", sinir_kutu) -> Tuple[str, ...]
 # saf hesaplar
 # ----------------------------------------------------------------------------
 
-def _toplam(degerler: Sequence[Deger]) -> Deger:
+def toplam_degerleri(degerler: Sequence[Deger]) -> Deger:
     return Deger(sum(d.ort for d in degerler), math.sqrt(sum(d.sapma ** 2 for d in degerler)))
 
 
-def _sutun(df, ad: str):
+def sutun(df, ad: str):
     """Duz ya da cok duzeyli (MeshSurfaceFilter) sutun adlari icin seri."""
     if ad in df.columns:
         return df[ad]
@@ -172,25 +196,25 @@ def _spektrum(df, degerler: Dict[int, Deger]) -> Optional[dict]:
     """degerler: satir sirasi -> Deger; enerji gruplari kenarlarla toplanir."""
     if not _enerji_var(df):
         return None
-    alt, ust = _sutun(df, "energy low [eV]"), _sutun(df, "energy high [eV]")
+    alt, ust = sutun(df, "energy low [eV]"), sutun(df, "energy high [eV]")
     gruplar: Dict[Tuple[float, float], List[Deger]] = {}
     for sira, d in degerler.items():
         gruplar.setdefault((float(alt.iloc[sira]), float(ust.iloc[sira])), []).append(d)
     anahtarlar = sorted(gruplar)
-    toplamlar = [_toplam(gruplar[a]) for a in anahtarlar]
+    toplamlar = [toplam_degerleri(gruplar[a]) for a in anahtarlar]
     return {"kenarlar": [a[0] for a in anahtarlar] + [anahtarlar[-1][1]],
             "deger": [d.ort for d in toplamlar], "sapma": [d.sapma for d in toplamlar]}
 
 
 def sinir_akimlari(df) -> dict:
     """SurfaceFilter tablosu -> yuzey basina kacak |J|, toplam ve spektrum."""
-    yuzey, ort, sap = _sutun(df, "surface"), _sutun(df, "mean"), _sutun(df, "std. dev.")
+    yuzey, ort, sap = sutun(df, "surface"), sutun(df, "mean"), sutun(df, "std. dev.")
     satirlar = {i: Deger(abs(float(ort.iloc[i])), float(sap.iloc[i])) for i in range(len(df))}
     yuzeyler: Dict[int, List[Deger]] = {}
     for i, d in satirlar.items():
         yuzeyler.setdefault(int(yuzey.iloc[i]), []).append(d)
-    yuzey_top = {k: _toplam(v) for k, v in sorted(yuzeyler.items())}
-    return {"yuzeyler": yuzey_top, "toplam": _toplam(list(yuzey_top.values())),
+    yuzey_top = {k: toplam_degerleri(v) for k, v in sorted(yuzeyler.items())}
+    return {"yuzeyler": yuzey_top, "toplam": toplam_degerleri(list(yuzey_top.values())),
             "spektrum": _spektrum(df, satirlar)}
 
 
@@ -211,7 +235,7 @@ def kutu_akimlari(df, boyut: Sequence[int]) -> dict:
     toplam) ve cikan akimin enerji spektrumu (varsa)."""
     yuzey = _mesh_sutunu(df, "surf")
     indeksler = [_mesh_sutunu(df, e) for e in EKSENLER]
-    ort, sap = _sutun(df, "mean"), _sutun(df, "std. dev.")
+    ort, sap = sutun(df, "mean"), sutun(df, "std. dev.")
     yuzler = {"%s-%s" % (e, u): {"giren": [], "cikan": []} for e in EKSENLER for u in ("min", "max")}
     cikan_satirlar: Dict[int, Deger] = {}
     for i in range(len(df)):
@@ -222,21 +246,21 @@ def kutu_akimlari(df, boyut: Sequence[int]) -> dict:
         yuzler[yuz]["cikan" if yon == "out" else "giren"].append(d)
         if yon == "out":
             cikan_satirlar[i] = d
-    ozet = {y: {k: _toplam(v) for k, v in g.items()} for y, g in yuzler.items()}
-    giren = _toplam([g["giren"] for g in ozet.values()])
-    cikan = _toplam([g["cikan"] for g in ozet.values()])
+    ozet = {y: {k: toplam_degerleri(v) for k, v in g.items()} for y, g in yuzler.items()}
+    giren = toplam_degerleri([g["giren"] for g in ozet.values()])
+    cikan = toplam_degerleri([g["cikan"] for g in ozet.values()])
     return {"yuzler": ozet, "giren": giren, "cikan": cikan,
             "net_cikan": spektrum.fark(cikan, giren), "spektrum": _spektrum(df, cikan_satirlar)}
 
 
-def denge(giren: Deger, cikan: Deger, kaynak: Optional[Deger], xn: Deger,
+def denge(giren: Deger, cikan: Deger, kaynak: Optional[Deger], uretim: Deger,
           sogurma: Deger) -> dict:
-    """artik = S + giren - cikan + X - A (korelasyonsuz birlesik sapma);
+    """artik = S + giren - cikan + U - A (korelasyonsuz birlesik sapma);
     kaynak bilinmiyorsa artik None."""
     if kaynak is None:
         return {"artik": None, "bagil": None}
-    uretim = _toplam([kaynak, giren, xn])
-    kayip = _toplam([cikan, sogurma])
+    uretim = toplam_degerleri([kaynak, giren, uretim])
+    kayip = toplam_degerleri([cikan, sogurma])
     artik = spektrum.fark(uretim, kayip)
     bagil = artik.ort / kayip.ort if kayip.ort else None
     return {"artik": artik, "bagil": bagil}

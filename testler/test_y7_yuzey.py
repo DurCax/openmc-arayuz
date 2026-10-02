@@ -57,12 +57,13 @@ def _filtre_ozeti(f, yuzeyler):
         return (type(f).__name__, tuple(m.dimension), tuple(m.lower_left), tuple(m.upper_right))
     if isinstance(f, openmc.EnergyFilter):
         return ("energy", tuple(float(x) for x in f.values))
-    return (type(f).__name__,)
+    return (type(f).__name__, tuple(str(b) for b in f.bins))
 
 
 def _tally_ozeti(model):
     yuzeyler = model.geometry.get_all_surfaces()
-    return {t.name: (tuple(t.scores), tuple(_filtre_ozeti(f, yuzeyler) for f in t.filters))
+    return {t.name: (tuple(t.scores), t.estimator,
+                     tuple(_filtre_ozeti(f, yuzeyler) for f in t.filters))
             for t in model.tallies}
 
 
@@ -121,8 +122,32 @@ def test_kurucu_kutu_tallysi_ve_denge():
     kontrol("denge tally'si var", d is not None)
     kontrol("denge: MeshFilter ayni ag", isinstance(d.filters[0], openmc.MeshFilter)
             and d.filters[0].mesh is t.filters[0].mesh)
-    kontrol("denge skorlari: absorption, nu-fission, (n,2n) ...",
-            {"absorption", "nu-fission", "(n,2n)"} <= set(d.scores))
+    kontrol("denge skorlari: absorption, nu-fission, scatter, nu-scatter",
+            set(d.scores) == {"absorption", "nu-fission", "scatter", "nu-scatter"})
+    kontrol("denge analog (X = nu-scatter - scatter olay olay tam)", d.estimator == "analog")
+    kontrol("denge yalniz notron", any(isinstance(f, openmc.ParticleFilter)
+                                       and list(f.bins) == ["neutron"] for f in d.filters))
+
+
+def test_yuzey_tallysi_kaynak_parcacigina_suzulur():
+    print("\n[Y7Y-3b] yuzey akimi kaynak parcacigina suzulur (foton aciksa karismaz)")
+    import openmc
+    from cekirdek import kurucu, yuzey_akim as y
+    # Arrange
+    notron = _kure(y.filtre_sinir())
+    foton = _kure(y.filtre_kutu([1, 1, 1]))
+    foton["ayarlar"]["kaynak"]["parcacik"] = "photon"
+    foton["ayarlar"]["kaynak"]["enerji"] = {"tur": "tek", "enerji": 1.0e6}
+    # Act
+    tn = {t.name: t for t in kurucu.kur(notron)[0].tallies}
+    tf = {t.name: t for t in kurucu.kur(foton)[0].tallies}
+    # Assert
+    def parcacik(t):
+        return [list(f.bins) for f in t.filters if isinstance(f, openmc.ParticleFilter)]
+    kontrol("notron kaynagi: neutron", parcacik(tn["kacak"]) == [["neutron"]])
+    kontrol("foton kaynagi: photon", parcacik(tf["kacak"]) == [["photon"]])
+    kontrol("foton kaynaginda denge tally'si yok (notron dengesi)",
+            y.denge_adi("kacak") not in tf)
 
 
 def test_kutu_otomatik_sinirlari_model_kutusu():
@@ -279,12 +304,12 @@ def test_kutu_dis_yuzleri_ic_yuzleri_saymaz():
 
 
 def test_denge_artigi_el_hesabi():
-    print("\n[Y7Y-13] denge: S + giren - cikan + X - A = artik (birlesik sapma)")
+    print("\n[Y7Y-13] denge: S + giren - cikan + U - A = artik (U: (n,xn)+MT5 net, sabit kaynakta fisyon)")
     from cekirdek import yuzey_akim as y
     from cekirdek.spektrum import Deger
     # Act
     d = y.denge(giren=Deger(0.2, 0.01), cikan=Deger(0.9, 0.02), kaynak=Deger(1.0, 0.0),
-                xn=Deger(0.01, 0.001), sogurma=Deger(0.31, 0.01))
+                uretim=Deger(0.01, 0.001), sogurma=Deger(0.31, 0.01))
     # Assert
     kontrol("artik 0", abs(d["artik"].ort) < _TOL, "-> %r" % (d["artik"],))
     kontrol("sapma", abs(d["artik"].sapma - math.sqrt(0.01**2 + 0.02**2 + 0.001**2 + 0.01**2))
@@ -330,7 +355,8 @@ def test_kaynak_payi_nokta_kaynak():
 
 
 HIZLI = [test_yuzey_filtre_yapicilari_ve_tanima, test_kurucu_sinir_tallysi_vakum_yuzeyleri,
-         test_kurucu_kutu_tallysi_ve_denge, test_kutu_otomatik_sinirlari_model_kutusu,
+         test_kurucu_kutu_tallysi_ve_denge,
+         test_yuzey_tallysi_kaynak_parcacigina_suzulur, test_kutu_otomatik_sinirlari_model_kutusu,
          test_vakum_yoksa_sinir_tallysi_kurulmaz, test_kurucu_ve_betik_ayni_yuzey_tallyleri,
          test_dogrula_yuzey_skoru_yalniz_current, test_dogrula_kutu_sinirlari_ve_boyut,
          test_dogrula_iki_yuzey_filtresi_ve_onek, test_dogrula_vakumsuz_modelde_sinir_uyarisi,
