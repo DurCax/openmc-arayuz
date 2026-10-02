@@ -109,7 +109,7 @@ Kılıfın dışı ile demet hücresinin sınırı arası **Demet dışı** malz
 arası boşluk). Kılıf yalnız altıgen demette kurulur (kare demette "yok sayılır" uyarısı);
 pinler kılıfa sığmalıdır: en dış pin merkezleri (halka − 1)·adım·√3/2 uzaklıktadır, iç ölçü
 en az bunun iki katı + iki pin yarıçapı olmalıdır ("pinler kılıfa sığmıyor" hatası).
-Başlangıç ekranındaki **Tam kor — altıgen** kartının **Boş başla** şablonu, SFR altıgen demetine
+Başlangıç ekranındaki **Tam kor — altıgen** kartının **Şablondan** modeli, SFR altıgen demetine
 SS-316 kılıf (iç ölçü 10.30 cm, 0.30 cm duvar) ekleyerek 7 demetli bir kor kurar.
 
 ### Altıgen demette iki tuzak

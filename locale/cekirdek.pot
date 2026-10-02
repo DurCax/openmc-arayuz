@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 07:05+0300\n"
+"POT-Creation-Date: 2026-10-02 09:48+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -140,28 +140,28 @@ msgstr ""
 msgid "cizim alt süreci argüman almaz: %s"
 msgstr ""
 
-#: cekirdek/dogrula/__init__.py:138
+#: cekirdek/dogrula/__init__.py:139
 #, python-format
 msgid "%d doğrulama hatası; önce bunları giderin"
 msgid_plural "%d doğrulama hatası; önce bunları giderin"
 msgstr[0] ""
 msgstr[1] ""
 
-#: cekirdek/dogrula/__init__.py:166
+#: cekirdek/dogrula/__init__.py:167
 #, python-format
 msgid "%d hata"
 msgid_plural "%d hata"
 msgstr[0] ""
 msgstr[1] ""
 
-#: cekirdek/dogrula/__init__.py:167
+#: cekirdek/dogrula/__init__.py:168
 #, python-format
 msgid "%d uyarı"
 msgid_plural "%d uyarı"
 msgstr[0] ""
 msgstr[1] ""
 
-#: cekirdek/dogrula/__init__.py:168
+#: cekirdek/dogrula/__init__.py:169
 #, python-format
 msgid "%d bilgi"
 msgid_plural "%d bilgi"
@@ -341,7 +341,7 @@ msgstr ""
 msgid "%s sınır periyodik olamaz: sonlu bir korda eksenel periyodiklik fiziksel değildir."
 msgstr ""
 
-#: cekirdek/dogrula/agac.py:286 cekirdek/dogrula/kor.py:364
+#: cekirdek/dogrula/agac.py:286 cekirdek/dogrula/kor.py:366
 msgid "yükseklik verilmemiş — model eksenel yönde sonsuz (2B) kabul ediliyor"
 msgstr ""
 
@@ -657,7 +657,7 @@ msgstr ""
 msgid "Seçilmeyen malzeme boş (madde yok) kurulurdu."
 msgstr ""
 
-#: cekirdek/dogrula/geometri.py:148 cekirdek/dogrula/kor.py:137
+#: cekirdek/dogrula/geometri.py:148 cekirdek/dogrula/kor.py:139
 #, python-format
 msgid "%s için tanımsız malzeme: %s"
 msgstr ""
@@ -680,16 +680,16 @@ msgstr ""
 msgid "halka sayısı en az 1 olmalı"
 msgstr ""
 
-#: cekirdek/dogrula/geometri.py:182 cekirdek/dogrula/kor.py:434
+#: cekirdek/dogrula/geometri.py:182 cekirdek/dogrula/kor.py:436
 #, python-format
 msgid "%d halka bekleniyor, haritada %d satır var"
 msgstr ""
 
-#: cekirdek/dogrula/geometri.py:184 cekirdek/dogrula/kor.py:436
+#: cekirdek/dogrula/geometri.py:184 cekirdek/dogrula/kor.py:438
 msgid "Halkalar dıştan içe sıralanır; yarıçapı k olan halkada 6k öğe, merkezde 1 öğe bulunur."
 msgstr ""
 
-#: cekirdek/dogrula/geometri.py:191 cekirdek/dogrula/kor.py:438
+#: cekirdek/dogrula/geometri.py:191 cekirdek/dogrula/kor.py:440
 #, python-format
 msgid "%d. halka (yarıçap %d) %d öğe bekliyor, %d var"
 msgstr ""
@@ -703,7 +703,7 @@ msgstr ""
 msgid "adım sıfırdan büyük olmalı"
 msgstr ""
 
-#: cekirdek/dogrula/geometri.py:203 cekirdek/dogrula/kor.py:215 cekirdek/dogrula/kor.py:449
+#: cekirdek/dogrula/geometri.py:203 cekirdek/dogrula/kor.py:217 cekirdek/dogrula/kor.py:451
 #, python-format
 msgid "haritada tanımsız harf: '%s'"
 msgstr ""
@@ -964,327 +964,327 @@ msgstr ""
 msgid "çubuğun dış çapı (%.5f cm) hücre adımından (%.5f cm) büyük"
 msgstr ""
 
-#: cekirdek/dogrula/kor.py:84
+#: cekirdek/dogrula/kor.py:83
 msgid "demet seçilmemiş"
-msgstr ""
-
-#: cekirdek/dogrula/kor.py:90 cekirdek/geometri/sablon.py:124
-#, python-format
-msgid "tanımsız plaka elemanı: %s"
 msgstr ""
 
 #: cekirdek/dogrula/kor.py:91
 msgid "plaka elemanı seçilmemiş"
 msgstr ""
 
-#: cekirdek/dogrula/kor.py:102
+#: cekirdek/dogrula/kor.py:93 cekirdek/geometri/sablon.py:124
+#, python-format
+msgid "tanımsız plaka elemanı: %s"
+msgstr ""
+
+#: cekirdek/dogrula/kor.py:104
 msgid "kor yarıçapı sıfırdan büyük olmalı"
 msgstr ""
 
-#: cekirdek/dogrula/kor.py:105
+#: cekirdek/dogrula/kor.py:107
 msgid "tamburlu korda yansıtıcı kuşak kalınlığı sıfırdan büyük olmalı"
 msgstr ""
 
-#: cekirdek/dogrula/kor.py:108
+#: cekirdek/dogrula/kor.py:110
 msgid "yansıtıcı kuşağın malzemesi seçilmemiş (boş, madde yok)"
 msgstr ""
 
-#: cekirdek/dogrula/kor.py:111
+#: cekirdek/dogrula/kor.py:113
 msgid "kor dolgusu seçilmemiş"
 msgstr ""
 
-#: cekirdek/dogrula/kor.py:115
+#: cekirdek/dogrula/kor.py:117
 #, python-format
 msgid "kor dolgusu tanımsız: %s"
 msgstr ""
 
-#: cekirdek/dogrula/kor.py:120
+#: cekirdek/dogrula/kor.py:122
 msgid "tambur sayısı 0 — kontrol tamburu olmadan düz yansıtıcı kuşak"
 msgstr ""
 
-#: cekirdek/dogrula/kor.py:130
+#: cekirdek/dogrula/kor.py:132
 msgid "tambur gövdesi"
 msgstr ""
 
-#: cekirdek/dogrula/kor.py:131
+#: cekirdek/dogrula/kor.py:133
 msgid "tambur emicisi"
 msgstr ""
 
-#: cekirdek/dogrula/kor.py:134
+#: cekirdek/dogrula/kor.py:136
 #, python-format
 msgid "%s malzemesi seçilmemiş"
 msgstr ""
 
-#: cekirdek/dogrula/kor.py:142
+#: cekirdek/dogrula/kor.py:144
 #, python-format
 msgid "tambur emicisi ('%s') güçlü bir nötron emici içermiyor"
 msgstr ""
 
-#: cekirdek/dogrula/kor.py:147
+#: cekirdek/dogrula/kor.py:149
 #, python-format
 msgid "tambur dönme açısı −360…360° aralığında olmalı: %s"
 msgstr ""
 
-#: cekirdek/dogrula/kor.py:151
+#: cekirdek/dogrula/kor.py:153
 msgid "tamburlu kor 2B — eksenel sızıntı yok, k-eff olduğundan yüksek çıkar"
 msgstr ""
 
-#: cekirdek/dogrula/kor.py:152
+#: cekirdek/dogrula/kor.py:154
 msgid "Gerçekçi bir tambur değeri için Kor sekmesinde aktif yükseklik tanımlayın."
 msgstr ""
 
-#: cekirdek/dogrula/kor.py:161 cekirdek/geometri/sablon.py:219
+#: cekirdek/dogrula/kor.py:163 cekirdek/geometri/sablon.py:219
 msgid "küresel düzenekte en az bir kabuk gerekir"
 msgstr ""
 
-#: cekirdek/dogrula/kor.py:165
+#: cekirdek/dogrula/kor.py:167
 #, python-format
 msgid "%d. kabuğun yarıçapı sıfırdan büyük olmalı"
 msgstr ""
 
-#: cekirdek/dogrula/kor.py:169
+#: cekirdek/dogrula/kor.py:171
 #, python-format
 msgid "%d. kabukta tanımsız malzeme: %s"
 msgstr ""
 
-#: cekirdek/dogrula/kor.py:175 cekirdek/geometri/sablon.py:223
+#: cekirdek/dogrula/kor.py:177 cekirdek/geometri/sablon.py:223
 #, python-format
 msgid "kabuk yarıçapları artan sırada olmalı: r%d = %.5f ≥ r%d = %.5f"
 msgstr ""
 
-#: cekirdek/dogrula/kor.py:185
+#: cekirdek/dogrula/kor.py:187
 #, python-format
 msgid "küresel düzenekte yükseklik tanımlanamaz (%g cm)"
 msgstr ""
 
-#: cekirdek/dogrula/kor.py:186
+#: cekirdek/dogrula/kor.py:188
 msgid ""
 "Küre geometrisi kabuk yarıçaplarıyla tamamen belirlenir; yükseklik kaynak kutusuna, "
 "entropi ağına ve tally ağlarına girer. Kor sekmesinde küresel tür seçiliyken alan "
 "temizlenir."
 msgstr ""
 
-#: cekirdek/dogrula/kor.py:192
+#: cekirdek/dogrula/kor.py:194
 msgid ""
 "küresel düzenekte dış sınır Yansıtıcı (reflective) — çıplak (bare) bir kritiklik "
 "düzeneği modelliyorsanız Vakum (vacuum) olmalı"
 msgstr ""
 
-#: cekirdek/dogrula/kor.py:194
+#: cekirdek/dogrula/kor.py:196
 msgid "Yansıtıcı sınır sonsuz bir ortam demektir; kritik küre düzenekleri çıplaktır (Vakum)."
 msgstr ""
 
-#: cekirdek/dogrula/kor.py:202 cekirdek/dogrula/kor.py:431
+#: cekirdek/dogrula/kor.py:204 cekirdek/dogrula/kor.py:433
 msgid "kor haritası boş"
 msgstr ""
 
-#: cekirdek/dogrula/kor.py:207
+#: cekirdek/dogrula/kor.py:209
 #, python-format
 msgid "harita %d satır, boyut %d bekliyor"
 msgstr ""
 
-#: cekirdek/dogrula/kor.py:210
+#: cekirdek/dogrula/kor.py:212
 #, python-format
 msgid "%d. satır %d karakter, %d bekleniyor"
 msgstr ""
 
-#: cekirdek/dogrula/kor.py:242
+#: cekirdek/dogrula/kor.py:244
 #, python-format
 msgid "geçersiz sınır koşulu (%s): %s"
 msgstr ""
 
-#: cekirdek/dogrula/kor.py:257
+#: cekirdek/dogrula/kor.py:259
 msgid "demetlerin dış yüzlerinden geçen kırık bir çizgi"
 msgstr ""
 
-#: cekirdek/dogrula/kor.py:258
+#: cekirdek/dogrula/kor.py:260
 msgid "Altıgen tam korda eşleşen düzlem çifti yoktur."
 msgstr ""
 
-#: cekirdek/dogrula/kor.py:260
+#: cekirdek/dogrula/kor.py:262
 msgid "Sonsuz kafes için Yansıtıcı (reflective) sınır aynı sonucu verir."
 msgstr ""
 
-#: cekirdek/dogrula/kor.py:263
+#: cekirdek/dogrula/kor.py:265
 msgid "altıgen bir prizma"
 msgstr ""
 
-#: cekirdek/dogrula/kor.py:264
+#: cekirdek/dogrula/kor.py:266
 msgid ""
 "Bu sürüm periyodik sınırı yalnızca kare kesitte (x/y düzlem çiftleri) sunuyor. "
 "Simetrik bir demette sonsuz kafes için Yansıtıcı (reflective) sınır aynı k'yı verir."
 msgstr ""
 
-#: cekirdek/dogrula/kor.py:268
+#: cekirdek/dogrula/kor.py:270
 msgid "bir küre"
 msgstr ""
 
-#: cekirdek/dogrula/kor.py:268
+#: cekirdek/dogrula/kor.py:270
 msgid "bir silindir"
 msgstr ""
 
-#: cekirdek/dogrula/kor.py:269
+#: cekirdek/dogrula/kor.py:271
 msgid "düzlemsel değil"
 msgstr ""
 
-#: cekirdek/dogrula/kor.py:270
+#: cekirdek/dogrula/kor.py:272
 msgid ""
 "OpenMC periyodik yüzeyin eşini bulamaz (\"Found only one periodic surface without a "
 "specified partner\") ve koşu başlamadan durur. Yansıtıcı ya da Vakum seçin."
 msgstr ""
 
-#: cekirdek/dogrula/kor.py:275
+#: cekirdek/dogrula/kor.py:277
 #, python-format
 msgid ""
 "Periyodik (periodic) sınır yalnızca düzlemsel sınırlarda (x/y düzlem çiftleri) "
 "kullanılabilir — bu kor türünün yan yüzeyi %s"
 msgstr ""
 
-#: cekirdek/dogrula/kor.py:291
+#: cekirdek/dogrula/kor.py:293
 #, python-format
 msgid "model 2B — %s sınır koşulu (%s) yok sayılır"
 msgstr ""
 
-#: cekirdek/dogrula/kor.py:293
+#: cekirdek/dogrula/kor.py:295
 msgid ""
 "2B model eksenel yönde sonsuzdur (yansıtıcı alt/üst ile eşdeğer). Eksenel sızıntı "
 "için Kor sekmesinde yükseklik tanımlayın."
 msgstr ""
 
-#: cekirdek/dogrula/kor.py:307
+#: cekirdek/dogrula/kor.py:309
 #, python-format
 msgid "%s sınır Periyodik (periodic) ama %s sınır değil — periyodik yüzeyin eşi yok"
 msgstr ""
 
-#: cekirdek/dogrula/kor.py:309
+#: cekirdek/dogrula/kor.py:311
 msgid ""
 "OpenMC koşu başlamadan durur (\"Found only one periodic surface without a specified "
 "partner\"). Alt/üst için Yansıtıcı ya da Vakum seçin."
 msgstr ""
 
-#: cekirdek/dogrula/kor.py:315
+#: cekirdek/dogrula/kor.py:317
 msgid "alt ve üst sınır Periyodik (periodic) — korun tepesi dibine bağlanır"
 msgstr ""
 
-#: cekirdek/dogrula/kor.py:316
+#: cekirdek/dogrula/kor.py:318
 msgid ""
 "Sonlu yükseklikteki bir korda eksenel periyodiklik fiziksel değildir (üst "
 "yansıtıcıdan çıkan nötron alt yansıtıcıya girer). Eksenel simetri için Yansıtıcı "
 "sınır kullanın; arayüz bu seçeneği sunmaz."
 msgstr ""
 
-#: cekirdek/dogrula/kor.py:332
+#: cekirdek/dogrula/kor.py:334
 #, python-format
 msgid "'%s' kor türünde yansıtıcı kuşak kurulmaz — dosyada açık ama yok sayılır"
 msgstr ""
 
-#: cekirdek/dogrula/kor.py:334
+#: cekirdek/dogrula/kor.py:336
 msgid ""
 "Yansıtıcı kuşak yalnızca tek yakıt demeti ve haritalı tam korda (isteğe bağlı) ve "
 "tamburlu korda (zorunlu) kurulur. Model yansıtıcısız çalışır."
 msgstr ""
 
-#: cekirdek/dogrula/kor.py:344
+#: cekirdek/dogrula/kor.py:346
 #, python-format
 msgid "'%s' kor türünde kullanılmayan alanlar dolu: %s — yok sayılır"
 msgstr ""
 
-#: cekirdek/dogrula/kor.py:346
+#: cekirdek/dogrula/kor.py:348
 msgid "Başka bir kor türünden kalmış olabilir; kurucu bu alanlara bakmaz."
 msgstr ""
 
-#: cekirdek/dogrula/kor.py:355
+#: cekirdek/dogrula/kor.py:357
 msgid ""
 "tek hücre/demet modelinde yan sınır Vakum (vacuum) — sızıntı sonsuz kafes varsayımını"
 " bozar"
 msgstr ""
 
-#: cekirdek/dogrula/kor.py:357
+#: cekirdek/dogrula/kor.py:359
 msgid "Sonsuz kafes (k∞) istiyorsanız Yansıtıcı (reflective) sınır kullanın."
 msgstr ""
 
-#: cekirdek/dogrula/kor.py:409
+#: cekirdek/dogrula/kor.py:411
 msgid ""
 "kılıflı tek demette sınır kılıfın dış yüzündedir — demetler arası boşluk (soğutucu) "
 "modelde yok"
 msgstr ""
 
-#: cekirdek/dogrula/kor.py:411
+#: cekirdek/dogrula/kor.py:413
 msgid ""
 "SFR tek demet için halka=1 altigen_kafes kullanın (demetler arası boşluk): demet "
 "adımı kılıf dış ölçüsünden büyük verilir ve aradaki boşluk demetin dış dolgusuyla "
 "dolar."
 msgstr ""
 
-#: cekirdek/dogrula/kor.py:418
+#: cekirdek/dogrula/kor.py:420
 msgid ""
 "yan sınır Yansıtıcı ve haritada birden fazla demet türü var — sonsuz kafes "
 "eşdeğerliği yalnız aynı ve simetrik demetlerde geçerli"
 msgstr ""
 
-#: cekirdek/dogrula/kor.py:420
+#: cekirdek/dogrula/kor.py:422
 msgid ""
 "Kırık çizgi sınırda her demet komşusunun aynadaki görüntüsüyle çevrilir; karışık bir "
 "haritada bu gerçek bir simetri düzlemi değildir. Tam kor için yansıtıcı kuşak ve "
 "Vakum sınır kullanın."
 msgstr ""
 
-#: cekirdek/dogrula/kor.py:458
+#: cekirdek/dogrula/kor.py:460
 #, python-format
 msgid "'%s' altıgen kor haritasına konamaz: altıgen demet ya da malzeme olmalı"
 msgstr ""
 
-#: cekirdek/dogrula/kor.py:460
+#: cekirdek/dogrula/kor.py:462
 msgid ""
 "Çubuk ya da plaka tek başına bir demet hücresini doldurmaz; önce bir altıgen demete "
 "yerleştirin."
 msgstr ""
 
-#: cekirdek/dogrula/kor.py:465
+#: cekirdek/dogrula/kor.py:467
 #, python-format
 msgid "'%s' kare bir demet; altıgen kor haritasına yalnızca altıgen demet konabilir"
 msgstr ""
 
-#: cekirdek/dogrula/kor.py:478
+#: cekirdek/dogrula/kor.py:480
 #, python-format
 msgid ""
 "'%s' demetinin yönelimi ('%s') kor yönelimiyle aynı — demet köşeleri komşu hücreye "
 "taşar"
 msgstr ""
 
-#: cekirdek/dogrula/kor.py:480
+#: cekirdek/dogrula/kor.py:482
 #, python-format
 msgid ""
 "Kor kafesi pin kafesine göre 90° dönüktür: demet '%s' ise kor yönelimi '%s' olmalı "
 "(VVER / SFR tam korları böyledir)."
 msgstr ""
 
-#: cekirdek/dogrula/kor.py:487
+#: cekirdek/dogrula/kor.py:489
 #, python-format
 msgid "demet adımı (%.5f cm) '%s' demetinin dış ölçüsünden (%.5f cm%s) küçük"
 msgstr ""
 
-#: cekirdek/dogrula/kor.py:488
+#: cekirdek/dogrula/kor.py:490
 msgid ", kılıf dahil"
 msgstr ""
 
-#: cekirdek/dogrula/kor.py:489
+#: cekirdek/dogrula/kor.py:491
 msgid ""
 "Demet adımı düz yüzden düz yüze ölçülür ve en az demetin dış ölçüsü kadar olmalı; "
 "yoksa kor hücresi demeti keser."
 msgstr ""
 
-#: cekirdek/dogrula/kor.py:500
+#: cekirdek/dogrula/kor.py:502
 #, python-format
 msgid "kor halka sayısı en az 1 olmalı: %s"
 msgstr ""
 
-#: cekirdek/dogrula/kor.py:502
+#: cekirdek/dogrula/kor.py:504
 #, python-format
 msgid "kor yönelimi 'x' ya da 'y' olmalı: %s"
 msgstr ""
 
-#: cekirdek/dogrula/kor.py:505
+#: cekirdek/dogrula/kor.py:507
 msgid "demet adımı sıfırdan büyük olmalı"
 msgstr ""
 
@@ -2362,36 +2362,36 @@ msgstr ""
 msgid "'%s' parçası kullanılmıyor."
 msgstr ""
 
-#: cekirdek/geometri/hacim.py:44
+#: cekirdek/geometri/hacim.py:49
 msgid "kesik kafes konumu"
 msgstr ""
 
-#: cekirdek/geometri/hacim.py:45
+#: cekirdek/geometri/hacim.py:50
 msgid "kesik çubuk (pin hücreye sığmıyor)"
 msgstr ""
 
-#: cekirdek/geometri/hacim.py:46
+#: cekirdek/geometri/hacim.py:51
 msgid "bileşen bölgesine sığmıyor"
 msgstr ""
 
-#: cekirdek/geometri/hacim.py:47
+#: cekirdek/geometri/hacim.py:52
 msgid "kafes dışı düzensiz bölge"
 msgstr ""
 
-#: cekirdek/geometri/hacim.py:48
+#: cekirdek/geometri/hacim.py:53
 msgid "alanı analitik hesaplanamayan bölge"
 msgstr ""
 
-#: cekirdek/geometri/hacim.py:209
+#: cekirdek/geometri/hacim.py:237
 #, python-format
 msgid "stokastik hacmin bağıl σ'sı %%%.2f sınırını aşıyor (örneklem %d): %s"
 msgstr ""
 
-#: cekirdek/geometri/hacim.py:218
+#: cekirdek/geometri/hacim.py:246
 msgid "stokastik hacim sıfır (malzeme örnekleme kutusunda bulunamadı)"
 msgstr ""
 
-#: cekirdek/geometri/hacim.py:220
+#: cekirdek/geometri/hacim.py:248
 msgid "stokastik hacim ölçülemedi (malzeme kurulan modelde yok)"
 msgstr ""
 
@@ -5245,7 +5245,12 @@ msgstr ""
 msgid "uygunluk denetimi yapılamadı: %s"
 msgstr ""
 
-#: cekirdek/sema.py:376
+#: cekirdek/sema.py:347
+#, python-format
+msgid "bilinmeyen kor türü: %r"
+msgstr ""
+
+#: cekirdek/sema.py:383
 #, python-format
 msgid ""
 "%s() gelişmiş (ağaç) geometri modunda kullanılamaz: kor alanları yok; "
@@ -5423,7 +5428,7 @@ msgstr ""
 msgid "'%s' malzemesinde zenginlik tanımlı bir bileşen yok"
 msgstr ""
 
-#: cekirdek/dogrula/kor.py:83 cekirdek/geometri/sablon.py:141 cekirdek/tarama.py:222
+#: cekirdek/dogrula/kor.py:85 cekirdek/geometri/sablon.py:141 cekirdek/tarama.py:222
 #, python-format
 msgid "tanımsız demet: %s"
 msgstr ""
@@ -5644,138 +5649,138 @@ msgstr ""
 msgid "'%s' kabında kalınlıkla tanımlı %d. halka yok"
 msgstr ""
 
-#: cekirdek/tukenme.py:92
+#: cekirdek/tukenme.py:99
 #, python-format
 msgid "otomatik: %s"
 msgstr ""
 
-#: cekirdek/tukenme.py:95
+#: cekirdek/tukenme.py:102
 msgid "kullanıcı seçimi"
 msgstr ""
 
-#: cekirdek/tukenme.py:278
+#: cekirdek/tukenme.py:319
 #, python-format
 msgid ""
 "çubuk çubuk yanma kesin örnek hacmi gerektirir; hacmi kesin olmayan (kesik) yanabilir"
 " malzeme: %s"
 msgstr ""
 
-#: cekirdek/tukenme.py:316
+#: cekirdek/tukenme.py:357
 #, python-format
 msgid ""
 "hacmi analitik hesaplanamayan yanabilir malzeme: %s (%s). Tükenme kesin hacim "
 "gerektirir."
 msgstr ""
 
-#: cekirdek/dogrula/tukenme.py:135 cekirdek/tukenme.py:320
+#: cekirdek/dogrula/tukenme.py:135 cekirdek/tukenme.py:361
 msgid "modelde yanabilir (fisil) malzeme yok"
 msgstr ""
 
-#: cekirdek/tukenme.py:600
+#: cekirdek/tukenme.py:641
 msgid "malzemeler"
 msgstr ""
 
-#: cekirdek/tukenme.py:600
+#: cekirdek/tukenme.py:641
 msgid "çubuklar"
 msgstr ""
 
-#: cekirdek/tukenme.py:601
+#: cekirdek/tukenme.py:642
 msgid "plaka elemanları"
 msgstr ""
 
-#: cekirdek/tukenme.py:601
+#: cekirdek/tukenme.py:642
 msgid "demetler"
 msgstr ""
 
-#: cekirdek/tukenme.py:601
+#: cekirdek/tukenme.py:642
 msgid "kor"
 msgstr ""
 
-#: cekirdek/tukenme.py:602
+#: cekirdek/tukenme.py:643
 msgid "hesap ayarları"
 msgstr ""
 
-#: cekirdek/tukenme.py:602
+#: cekirdek/tukenme.py:643
 msgid "tally'ler"
 msgstr ""
 
-#: cekirdek/tukenme.py:603
+#: cekirdek/tukenme.py:644
 msgid "güç dağılımı"
 msgstr ""
 
-#: cekirdek/tukenme.py:603
+#: cekirdek/tukenme.py:644
 msgid "tükenme ayarları"
 msgstr ""
 
-#: cekirdek/dogrula/tukenme.py:23 cekirdek/tukenme.py:611
+#: cekirdek/dogrula/tukenme.py:23 cekirdek/tukenme.py:652
 #: cekirdek/uygunluk_denetimi/vv_arayuz.py:55 cekirdek/vv/kume.py:189
 msgctxt "spektrum"
 msgid "termal"
 msgstr ""
 
-#: cekirdek/dogrula/tukenme.py:24 cekirdek/tukenme.py:612
+#: cekirdek/dogrula/tukenme.py:24 cekirdek/tukenme.py:653
 #: cekirdek/uygunluk_denetimi/vv_arayuz.py:57 cekirdek/vv/kume.py:190
 msgctxt "spektrum"
 msgid "hızlı"
 msgstr ""
 
-#: cekirdek/tukenme.py:666
+#: cekirdek/tukenme.py:707
 msgid "koşmadan hacim, zincir ve ağır metal bilgisini yazdır"
 msgstr ""
 
-#: cekirdek/tukenme.py:668
+#: cekirdek/tukenme.py:709
 msgid "doğrulamada nüklid/kütüphane denetimini atla"
 msgstr ""
 
-#: cekirdek/tukenme.py:685
+#: cekirdek/tukenme.py:726
 #, python-format
 msgid "  zincir        : %s  (%s)"
 msgstr ""
 
-#: cekirdek/tukenme.py:686
+#: cekirdek/tukenme.py:727
 #, python-format
 msgid "  fisyon verimi : %s eV (%s spektrum)"
 msgstr ""
 
-#: cekirdek/tukenme.py:688
+#: cekirdek/tukenme.py:729
 #, python-format
 msgid "  güç yoğunluğu : %g W/gHM"
 msgstr ""
 
-#: cekirdek/tukenme.py:689
+#: cekirdek/tukenme.py:730
 #, python-format
 msgid "  adımlar       : %s %s  → %d transport"
 msgstr ""
 
-#: cekirdek/tukenme.py:691 cekirdek/tukenme.py:716
+#: cekirdek/tukenme.py:732 cekirdek/tukenme.py:757
 msgid "gün"
 msgstr ""
 
-#: cekirdek/tukenme.py:695
+#: cekirdek/tukenme.py:736
 #, python-format
 msgid "  hacim %-10s: %s cm³ [%s] %s"
 msgstr ""
 
-#: cekirdek/tukenme.py:699
+#: cekirdek/tukenme.py:740
 #, python-format
 msgid "  ağır metal    : %.6g g"
 msgstr ""
 
-#: cekirdek/tukenme.py:708
+#: cekirdek/tukenme.py:749
 #, python-format
 msgid ""
 "\n"
 "  DOĞRULAMA: koşu başlatılmadı (%d hata)"
 msgstr ""
 
-#: cekirdek/tukenme.py:715
+#: cekirdek/tukenme.py:756
 #, python-format
 msgid ""
 "\n"
 "  ağır metal: %.6g g"
 msgstr ""
 
-#: cekirdek/tukenme.py:719
+#: cekirdek/tukenme.py:760
 #, python-format
 msgid ""
 "\n"
@@ -5872,11 +5877,11 @@ msgstr ""
 msgid "katmanı/koru doğrudan dolduruyor"
 msgstr ""
 
-#: cekirdek/geometri/hacim.py:115 cekirdek/tukenme_hacim.py:360
+#: cekirdek/geometri/hacim.py:143 cekirdek/tukenme_hacim.py:360
 msgid "hacmi kesin değil: "
 msgstr ""
 
-#: cekirdek/geometri/hacim.py:120 cekirdek/tukenme_hacim.py:367
+#: cekirdek/geometri/hacim.py:148 cekirdek/tukenme_hacim.py:367
 msgid "hacmi sıfır: "
 msgstr ""
 
@@ -5884,11 +5889,11 @@ msgstr ""
 msgid "bu yerleşim için analitik hacim yok"
 msgstr ""
 
-#: cekirdek/geometri/hacim.py:121 cekirdek/tukenme_hacim.py:373
+#: cekirdek/geometri/hacim.py:149 cekirdek/tukenme_hacim.py:373
 msgid "malzeme geometride bulunamadı"
 msgstr ""
 
-#: cekirdek/geometri/hacim.py:236 cekirdek/tukenme_hacim.py:396
+#: cekirdek/geometri/hacim.py:264 cekirdek/tukenme_hacim.py:396
 #, python-format
 msgid "stokastik hacim %.6g ± %.2g cm³ (%s)"
 msgstr ""
@@ -5939,39 +5944,39 @@ msgstr ""
 msgid "%s (kaba kural: yakıt komşuluğu çıkarılamadı)"
 msgstr ""
 
-#: cekirdek/uygunluk.py:74
+#: cekirdek/uygunluk.py:83
 msgid "Yakıt çubuğu (pin hücre)"
 msgstr ""
 
-#: cekirdek/uygunluk.py:75
+#: cekirdek/uygunluk.py:84
 msgid "Plaka elemanı (MTR)"
 msgstr ""
 
-#: cekirdek/uygunluk.py:76
+#: cekirdek/uygunluk.py:85
 msgid "Tek yakıt demeti"
 msgstr ""
 
-#: cekirdek/uygunluk.py:77
+#: cekirdek/uygunluk.py:86
 msgid "Tam kor (kare harita)"
 msgstr ""
 
-#: cekirdek/uygunluk.py:78
+#: cekirdek/uygunluk.py:87
 msgid "Tam kor (altıgen harita)"
 msgstr ""
 
-#: cekirdek/uygunluk.py:79
+#: cekirdek/uygunluk.py:88
 msgid "Tamburlu kompakt kor"
 msgstr ""
 
-#: cekirdek/uygunluk.py:80
+#: cekirdek/uygunluk.py:89
 msgid "Küresel düzenek (kabuklar)"
 msgstr ""
 
-#: cekirdek/uygunluk.py:325
+#: cekirdek/uygunluk.py:341
 msgid "tükenme özdeğer (k-eff) hesabı gerektirir"
 msgstr ""
 
-#: cekirdek/uygunluk.py:327
+#: cekirdek/uygunluk.py:343
 msgid "geometride fisil (yakıt) malzeme yok"
 msgstr ""
 

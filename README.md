@@ -35,10 +35,12 @@ cd ~/openmc_arayuz
 ./calistir.sh ornekler/pwr_17x17.json  # doğrudan bir modelle (örnekler KOPYA açılır)
 ```
 
-Başlangıç ekranında her model türü için bir kart vardır (yakıt çubuğu, kare/altıgen
-yakıt demeti, tam kor, MTR plaka elemanı, tamburlu kor, zırhlama). **Boş başla**
-çalışır durumda sade bir model kurar; **Örnekten başla** hazır bir örneğin
-kaydedilmemiş kopyasını açar — `ornekler/*.json` test referansıdır, üzerine
+Açılışta hiçbir örnek kendiliğinden yüklenmez; başlangıç ekranında üç yol vardır.
+**Sıfırdan** gerçekten boş bir model açar (yalnız kor türü seçilir) ve aşama rehberi
+malzeme → parça → demet → geometri sırasıyla ilgili sayfalara götürür. Her model türü
+kartında (yakıt çubuğu, kare/altıgen yakıt demeti, tam kor, MTR plaka elemanı, tamburlu
+kor, zırhlama) **Şablondan** çalışır durumda sade bir model kurar; **Örnekten** hazır bir
+örneğin kaydedilmemiş kopyasını açar — `ornekler/*.json` test referansıdır, üzerine
 yazılmaz ("Farklı kaydet" ile kendi dosyanıza kaydedin).
 
 GUI istemiyorsan çekirdek katman terminalden de çalışır:

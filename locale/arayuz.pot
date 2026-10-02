@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 07:05+0300\n"
+"POT-Creation-Date: 2026-10-02 09:48+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -758,207 +758,320 @@ msgstr ""
 msgid "Ölçülecek büyüklükler"
 msgstr ""
 
-#: arayuz/baslangic.py:60
+#: arayuz/baslangic.py:71
 msgid "Yakıt çubuğu (pin hücre)"
 msgstr ""
 
-#: arayuz/baslangic.py:61
+#: arayuz/baslangic.py:72
 msgid "Tek yakıt çubuğu ve çevresindeki soğutucu; en hızlı başlangıç."
 msgstr ""
 
-#: arayuz/baslangic.py:63
+#: arayuz/baslangic.py:74
 msgid "Yakıt demeti — kare"
 msgstr ""
 
-#: arayuz/baslangic.py:64
+#: arayuz/baslangic.py:75
 msgid "Kare ızgarada yakıt çubukları ve kılavuz borular (PWR tipi)."
 msgstr ""
 
-#: arayuz/baslangic.py:66
+#: arayuz/baslangic.py:77
 msgid "Yakıt demeti — altıgen"
 msgstr ""
 
-#: arayuz/baslangic.py:67
+#: arayuz/baslangic.py:78
 msgid "Altıgen ızgarada çubuk demeti (VVER, hızlı reaktör)."
 msgstr ""
 
-#: arayuz/baslangic.py:69
+#: arayuz/baslangic.py:80
 msgid "Tam kor (kare harita)"
 msgstr ""
 
-#: arayuz/baslangic.py:70
+#: arayuz/baslangic.py:81
 msgid "Demetlerden oluşan kor haritası, çevresinde su yansıtıcı."
 msgstr ""
 
-#: arayuz/baslangic.py:72
+#: arayuz/baslangic.py:83
 msgid "Tam kor — altıgen"
 msgstr ""
 
-#: arayuz/baslangic.py:73
+#: arayuz/baslangic.py:84
 msgid "Kılıflı altıgen demetlerden kor haritası (SFR / VVER tipi)."
 msgstr ""
 
-#: arayuz/baslangic.py:75
+#: arayuz/baslangic.py:86
 msgid "MTR plaka elemanı"
 msgstr ""
 
-#: arayuz/baslangic.py:76
+#: arayuz/baslangic.py:87
 msgid "Araştırma reaktörünün düz plakalı yakıt elemanı."
 msgstr ""
 
-#: arayuz/baslangic.py:78
+#: arayuz/baslangic.py:89
 msgid "Tamburlu kompakt kor"
 msgstr ""
 
-#: arayuz/baslangic.py:79
+#: arayuz/baslangic.py:90
 msgid "Silindirik kor, yansıtıcı kuşak ve dönen kontrol tamburları."
 msgstr ""
 
-#: arayuz/baslangic.py:81
+#: arayuz/baslangic.py:92
 msgid "Zırhlama (sabit kaynak)"
 msgstr ""
 
-#: arayuz/baslangic.py:82
+#: arayuz/baslangic.py:93
 msgid "Kaynaktan çıkan nötronların zırh katmanlarında zayıflaması."
 msgstr ""
 
-#: arayuz/baslangic.py:158
+#: arayuz/baslangic.py:169
 msgid "az önce"
 msgstr ""
 
-#: arayuz/baslangic.py:161
+#: arayuz/baslangic.py:172
 #, python-brace-format
 msgid "{n} dakika önce"
 msgid_plural "{n} dakika önce"
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/baslangic.py:164
+#: arayuz/baslangic.py:175
 #, python-brace-format
 msgid "{n} saat önce"
 msgid_plural "{n} saat önce"
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/baslangic.py:166
+#: arayuz/baslangic.py:177
 msgid "dün"
 msgstr ""
 
-#: arayuz/baslangic.py:166
+#: arayuz/baslangic.py:177
 #, python-brace-format
 msgid "{n} gün önce"
 msgid_plural "{n} gün önce"
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/baslangic.py:244
-msgid "Boş başla"
+#: arayuz/baslangic.py:255
+msgid "Şablondan"
 msgstr ""
 
-#: arayuz/baslangic.py:245
+#: arayuz/baslangic.py:256
 msgid "Örnekten"
 msgstr ""
 
-#: arayuz/baslangic.py:252
+#: arayuz/baslangic.py:263
 #, python-brace-format
 msgid "Çalışır durumda, sade bir {ad} modeli kurar (malzemeler, parçalar ve kor hazır)."
 msgstr ""
 
-#: arayuz/baslangic.py:259
+#: arayuz/baslangic.py:270
 #, python-brace-format
 msgid "Hazır örneğin bir kopyasını açar: {dosya} (örnek dosyası değişmez)."
 msgstr ""
 
-#: arayuz/baslangic.py:296
+#: arayuz/baslangic.py:303
+msgid "Sıfırdan (boş model)"
+msgstr ""
+
+#: arayuz/baslangic.py:307
+msgid "Hiçbir şey hazır gelmez: kor türünü seçin, malzemeden başlayıp sırayla kurun."
+msgstr ""
+
+#: arayuz/baslangic.py:320
+msgid "Kor türü"
+msgstr ""
+
+#: arayuz/baslangic.py:321
+msgid "Boş modelin kor türü; sonradan 'Türü değiştir…' ile değiştirilebilir."
+msgstr ""
+
+#: arayuz/baslangic.py:326
+msgid "Sıfırdan başla"
+msgstr ""
+
+#: arayuz/baslangic.py:328
+msgid ""
+"Malzemesi, parçası ve geometrisi olmayan boş bir model açar; aşama rehberi sizi "
+"sırayla ilgili sayfalara götürür."
+msgstr ""
+
+#: arayuz/baslangic.py:366
 #, python-brace-format
 msgid "{dosya} — kopya olarak açılır"
 msgstr ""
 
-#: arayuz/baslangic.py:341
+#: arayuz/baslangic.py:414
 msgid "Ne modellemek istiyorsunuz?"
 msgstr ""
 
-#: arayuz/baslangic.py:344
+#: arayuz/baslangic.py:417
 msgid "Açık modele dön"
 msgstr ""
 
-#: arayuz/baslangic.py:345
+#: arayuz/baslangic.py:418
 msgid "Başlangıç ekranını kapatıp üzerinde çalıştığınız modele döner (Esc)."
 msgstr ""
 
-#: arayuz/baslangic.py:351
-msgid "Bir model türüyle boş başlayın ya da hazır bir örneğin kopyasını açın."
+#: arayuz/baslangic.py:424
+msgid ""
+"Sıfırdan boş bir modelle, bir türün çalışan şablonuyla ya da hazır bir örneğin "
+"kopyasıyla başlayın."
 msgstr ""
 
-#: arayuz/baslangic.py:373
+#: arayuz/baslangic.py:453
 msgid "Dosyadan aç"
 msgstr ""
 
-#: arayuz/baslangic.py:374
+#: arayuz/baslangic.py:454
 msgid "Kaydedilmiş bir model (.json) ya da OpenMC XML klasörü."
 msgstr ""
 
-#: arayuz/baslangic.py:376 arayuz/pencere/menuler.py:133
+#: arayuz/baslangic.py:456 arayuz/pencere/menuler.py:133
 msgid "Aç…"
 msgstr ""
 
-#: arayuz/baslangic.py:377
+#: arayuz/baslangic.py:457
 msgid "Bilgisayarınızdaki bir model dosyasını (.json) açar (Ctrl+O)."
 msgstr ""
 
-#: arayuz/baslangic.py:384 arayuz/pencere/menuler.py:135
+#: arayuz/baslangic.py:464 arayuz/pencere/menuler.py:135
 msgid "Son kullanılanlar"
 msgstr ""
 
-#: arayuz/baslangic.py:386
+#: arayuz/baslangic.py:466
 msgid "Henüz kaydedilmiş bir model yok."
 msgstr ""
 
-#: arayuz/baslangic.py:395 arayuz/baslangic.py:482
+#: arayuz/baslangic.py:475 arayuz/baslangic.py:572
 msgid "Örnekler"
 msgstr ""
 
-#: arayuz/baslangic.py:398
+#: arayuz/baslangic.py:478
 msgid "Örneklerde ara…"
 msgstr ""
 
-#: arayuz/baslangic.py:407
+#: arayuz/baslangic.py:487
 msgid "Seviye"
 msgstr ""
 
-#: arayuz/baslangic.py:408
+#: arayuz/baslangic.py:488
 msgid "Örnekleri zorluk seviyesine göre süzer."
 msgstr ""
 
-#: arayuz/baslangic.py:409
+#: arayuz/baslangic.py:489
 msgid "Her seviye"
 msgstr ""
 
-#: arayuz/baslangic.py:416
+#: arayuz/baslangic.py:496
 msgid "Tümü"
 msgstr ""
 
-#: arayuz/baslangic.py:429
+#: arayuz/baslangic.py:509
 msgid "Eşleşen örnek yok"
 msgstr ""
 
-#: arayuz/baslangic.py:430
+#: arayuz/baslangic.py:510
 msgid "Aramayı ya da kategori süzgecini değiştirin."
 msgstr ""
 
-#: arayuz/baslangic.py:487
+#: arayuz/baslangic.py:517
+msgid "Açılışta bu ekranı göster"
+msgstr ""
+
+#: arayuz/baslangic.py:519
+msgid ""
+"Kapalıyken uygulama son kullanılan projeyle açılır; bu ekrana Dosya > Yeni (Ctrl+N) "
+"ile dönülür."
+msgstr ""
+
+#: arayuz/baslangic.py:577
 #, python-brace-format
 msgid "{n} örnek · kategoriye göre süzün"
 msgid_plural "{n} örnek · kategoriye göre süzün"
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/baslangic.py:489
+#: arayuz/baslangic.py:579
 #, python-brace-format
 msgid "{n} / {toplam} örnek"
 msgid_plural "{n} / {toplam} örnek"
 msgstr[0] ""
 msgstr[1] ""
+
+#: arayuz/baslangic_adim.py:36
+msgid "Malzeme ekle"
+msgstr ""
+
+#: arayuz/baslangic_adim.py:37
+msgid "Parça ekle"
+msgstr ""
+
+#: arayuz/baslangic_adim.py:38
+msgid "Demet kur"
+msgstr ""
+
+#: arayuz/baslangic_adim.py:39
+msgid "Geometriyi kur"
+msgstr ""
+
+#: arayuz/baslangic_adim.py:59
+msgid "Parçalar sayfasında bir plaka elemanı ekleyin."
+msgstr ""
+
+#: arayuz/baslangic_adim.py:60
+msgid "Parçalar sayfasında Çubuk ▸ Yakıt çubuğu ile ilk çubuğu ekleyin."
+msgstr ""
+
+#: arayuz/baslangic_adim.py:72
+msgid "Geometri sayfasında demetleri kor haritasına yerleştirin."
+msgstr ""
+
+#: arayuz/baslangic_adim.py:74
+msgid "Geometri sayfasında hücreyi dolduracak demeti seçin."
+msgstr ""
+
+#: arayuz/baslangic_adim.py:75
+msgid "Geometri sayfasında hücreyi dolduracak parçayı seçin."
+msgstr ""
+
+#: arayuz/baslangic_adim.py:90
+msgid "Malzemeler sayfasında kütüphaneden yakıt, zarf ve soğutucu ekleyin."
+msgstr ""
+
+#: arayuz/baslangic_adim.py:95
+msgid "Demet sayfasında yeni bir demet kurup çubukları ızgaraya yerleştirin."
+msgstr ""
+
+#: arayuz/baslangic_akis.py:28
+msgid "Yeni model"
+msgstr ""
+
+#: arayuz/baslangic_akis.py:49
+#, python-format
+msgid "sıfırdan başlatılamayan kor türü: %s"
+msgstr ""
+
+#: arayuz/baslangic_akis.py:101
+msgid "Boş model açıldı. Alttaki aşama rehberini izleyin: malzeme → parça → geometri."
+msgstr ""
+
+#: arayuz/baslangic_rehber.py:35
+msgid "Aşama rehberi"
+msgstr ""
+
+#: arayuz/baslangic_rehber.py:85
+#, python-brace-format
+msgid "Modeli kurun ({tamam}/{toplam}):"
+msgstr ""
+
+#: arayuz/baslangic_rehber.py:93
+msgid "Tamamlandı"
+msgstr ""
+
+#: arayuz/baslangic_rehber.py:96
+#, python-brace-format
+msgid "Sıradaki: {aciklama}"
+msgstr ""
 
 #: arayuz/baslangic_sablon.py:153 arayuz/pencere/model_islemleri.py:382
 msgid "Yeni yakıt çubuğu"
@@ -4005,7 +4118,7 @@ msgstr ""
 msgid "Elle düzenlemeye geçince malzeme kütüphane parametrelerinden ayrılır."
 msgstr ""
 
-#: arayuz/malzeme/malzeme_diyalog.py:206 arayuz/pencere/dogrulama_seridi.py:88
+#: arayuz/malzeme/malzeme_diyalog.py:206 arayuz/pencere/dogrulama_seridi.py:122
 msgid "Tamam"
 msgstr ""
 
@@ -4415,36 +4528,36 @@ msgstr ""
 msgid "Sayfalar"
 msgstr ""
 
-#: arayuz/pencere/ana_pencere.py:335
+#: arayuz/pencere/ana_pencere.py:336
 msgid "Şablon kurulamadı"
 msgstr ""
 
-#: arayuz/pencere/ana_pencere.py:342
+#: arayuz/pencere/ana_pencere.py:343
 #, python-brace-format
 msgid "Çalışan sade bir model kuruldu ({ad}). Kaydetmek için 'Farklı kaydet' kullanın."
 msgstr ""
 
-#: arayuz/pencere/ana_pencere.py:539
+#: arayuz/pencere/ana_pencere.py:551
 #, python-brace-format
 msgid "adsız — örnek: {ornek}"
 msgstr ""
 
-#: arayuz/pencere/ana_pencere.py:542
+#: arayuz/pencere/ana_pencere.py:554
 msgid "kaydedilmemiş"
 msgstr ""
 
-#: arayuz/pencere/ana_pencere.py:567
+#: arayuz/pencere/ana_pencere.py:579
 msgid "Boyuta tıklayınca Kor sayfasına, hesap türüne tıklayınca Hesap ayarlarına gider."
 msgstr ""
 
-#: arayuz/pencere/ana_pencere.py:611
+#: arayuz/pencere/ana_pencere.py:623
 #, python-brace-format
 msgid ""
 " Model bu türün gerektirdiği parçayı içermiyordu; şablondan eklendi: {parca} "
 "(Parçalar/Demet sayfasında düzenleyin)."
 msgstr ""
 
-#: arayuz/pencere/ana_pencere.py:614
+#: arayuz/pencere/ana_pencere.py:626
 #, python-brace-format
 msgid "Kor türü: {tur} — geri almak için Ctrl+Z.{ek}"
 msgstr ""
@@ -4461,61 +4574,87 @@ msgstr ""
 msgid "Bilgi"
 msgstr ""
 
-#: arayuz/pencere/dogrulama_seridi.py:49
+#: arayuz/pencere/dogrulama_seridi.py:33
+msgid "Eksik aşama"
+msgstr ""
+
+#: arayuz/pencere/dogrulama_seridi.py:58
 msgid "Tıklayınca ilgili sayfaya gider; sağ tık: kılavuzda aç."
 msgstr ""
 
-#: arayuz/pencere/dogrulama_seridi.py:53
+#: arayuz/pencere/dogrulama_seridi.py:62
 msgid "✓ Bulgu yok — model tutarlı görünüyor."
 msgstr ""
 
-#: arayuz/pencere/dogrulama_seridi.py:64
+#: arayuz/pencere/dogrulama_seridi.py:74
+msgid "Tıklayınca ilgili sayfaya gider."
+msgstr ""
+
+#: arayuz/pencere/dogrulama_seridi.py:83
 #, python-format
 msgid "doğrulama sırasında hata: %s"
 msgstr ""
 
-#: arayuz/pencere/dogrulama_seridi.py:72
+#: arayuz/pencere/dogrulama_seridi.py:91
 msgid "Doğrulama yenilendi (veri kütüphanesi dahil)."
 msgstr ""
 
-#: arayuz/pencere/dogrulama_seridi.py:79
+#: arayuz/pencere/dogrulama_seridi.py:113
 #, python-brace-format
 msgid "Doğrulama: {n} hata"
 msgid_plural "Doğrulama: {n} hata"
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/pencere/dogrulama_seridi.py:82
+#: arayuz/pencere/dogrulama_seridi.py:116
 #, python-brace-format
 msgid "Doğrulama: {n} uyarı"
 msgid_plural "Doğrulama: {n} uyarı"
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/pencere/dogrulama_seridi.py:85
+#: arayuz/pencere/dogrulama_seridi.py:119
 msgid "Doğrulama: hata yok"
 msgstr ""
 
-#: arayuz/pencere/dogrulama_seridi.py:86
+#: arayuz/pencere/dogrulama_seridi.py:120
 #, python-brace-format
 msgid "{n} bilgi"
 msgid_plural "{n} bilgi"
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/pencere/dogrulama_seridi.py:87
+#: arayuz/pencere/dogrulama_seridi.py:121
 #, python-brace-format
 msgid "{n} uyarı"
 msgid_plural "{n} uyarı"
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/pencere/dogrulama_seridi.py:96
+#: arayuz/pencere/dogrulama_seridi.py:127
 #, python-brace-format
 msgid "{h} hata, {u} uyarı, {b} bilgi"
 msgstr ""
 
-#: arayuz/pencere/dogrulama_seridi.py:156
+#: arayuz/pencere/dogrulama_seridi.py:132
+#, python-brace-format
+msgid "Sıradaki aşama: {baslik} — {aciklama}"
+msgstr ""
+
+#: arayuz/pencere/dogrulama_seridi.py:140
+#, python-brace-format
+msgid "Model kuruluyor: {tamam}/{toplam} aşama"
+msgstr ""
+
+#: arayuz/pencere/dogrulama_seridi.py:142
+msgid "Çalıştır, eksik aşamalar tamamlanınca açılır."
+msgstr ""
+
+#: arayuz/pencere/dogrulama_seridi.py:143
+msgid "Eksik aşamalar tamamlanınca doğrulama sonucu burada görünür."
+msgstr ""
+
+#: arayuz/pencere/dogrulama_seridi.py:211
 #, python-format
 msgid ""
 "Doğrulamada %d hata var — önce bunları giderin. Alttaki rozete tıklayıp bir bulguyu "
@@ -4526,13 +4665,24 @@ msgid_plural ""
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/pencere/dogrulama_seridi.py:163
+#: arayuz/pencere/dogrulama_seridi.py:229
+#, python-brace-format
+msgid ""
+"Model henüz kurulmadı: {n} aşama eksik. Sıradaki aşama: {baslik} — {aciklama} Alttaki"
+" aşama rehberinden ilgili sayfaya gidin."
+msgid_plural ""
+"Model henüz kurulmadı: {n} aşama eksik. Sıradaki aşama: {baslik} — {aciklama} Alttaki"
+" aşama rehberinden ilgili sayfaya gidin."
+msgstr[0] ""
+msgstr[1] ""
+
+#: arayuz/pencere/dogrulama_seridi.py:239
 msgid ""
 "Geometri önizlemesi henüz çizilmedi. Önce çiz, sonra çalıştır: yanlış geometriyle "
 "saatlerce koşmamak için önizlemenin çizilmesi bekleniyor."
 msgstr ""
 
-#: arayuz/pencere/dogrulama_seridi.py:168
+#: arayuz/pencere/dogrulama_seridi.py:244
 #, python-format
 msgid ""
 "Çalıştırılabilir. %d uyarı var — sonucu etkileyebilir, doğrulama listesini gözden "
@@ -4543,7 +4693,7 @@ msgid_plural ""
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/pencere/dogrulama_seridi.py:172
+#: arayuz/pencere/dogrulama_seridi.py:248
 msgid "Model çalıştırılmaya hazır."
 msgstr ""
 
