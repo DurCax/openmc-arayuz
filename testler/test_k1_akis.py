@@ -19,8 +19,10 @@ import tempfile
 from testler.ortak_test import kontrol, ISLEM_PARCACIGI
 
 _ZAMAN_ASIMI = 120.0
-# Westinghouse 17x17 PWR pin hucresi, UO2 %3.0, sicak: k-inf ~1.32 (kilavuz
-# 1.5 olcumu 1.3227). Kisa kosuda genis pencere yeter (fizik testi degil).
+# Westinghouse 17x17 olculu pin hucresi, kutuphane varsayilanlariyla (UO2
+# %3.0, borsuz su): olculen k-inf 1.373 +- 0.010 (02.10.2026, 1000x20 kisa
+# kosu; sicak sablonun 1.3227'sinden yuksek cunku varsayilan sicakliklar daha
+# soguk). Kisa kosuda genis pencere yeter (fizik testi degil, akis testi).
 _KINF_ARALIGI = (1.15, 1.50)
 _KISA_KOSU = {"parcacik": 1000, "cevrim": 20, "pasif": 5}
 _MALZEMELER = ("uo2", "zirkaloy4", "helyum", "su")
@@ -134,6 +136,3 @@ def test_yavas_sifirdan_pin_kosusu(gecici):
 
 HIZLI = [test_sifirdan_pin_kuru_calistirma]
 YAVAS = [test_yavas_sifirdan_pin_kosusu]
-# Kuru calistirma da modeli kurar (openmc.Material yogunluk/nuklid denetimi
-# veri istemez) ama kosucu.xml_yaz kapsul yazarken kutuphane yolunu okur.
-VERI_GEREKEN = []

@@ -14,7 +14,7 @@ from PySide6 import QtCore, QtGui, QtWidgets
 from cekirdek import dogrula
 from cekirdek.ceviri import _, _n, N_
 from cekirdek.gunluk import kaydedici
-from arayuz import tema
+from arayuz import baslangic_adim, tema
 from arayuz.ortak import cumle_basi
 from arayuz.pencere import sekme_arayuzu
 from arayuz.pencere.model_islemleri import yer_etiketi, yer_sekme_anahtari
@@ -30,6 +30,10 @@ def _seviye_renk(seviye):
 
 # Yalniz isaretlenir (N_); gosterirken _().
 _SEVIYE_ADI = {"hata": N_("Hata"), "uyari": N_("Uyarı"), "bilgi": N_("Bilgi")}
+_EKSIK_ADIM = N_("Eksik adım")
+# Adim sayfasi -> o sayfaya goturen bulgu yeri (model_islemleri._YER_SEKME).
+_ADIM_YERI = {"malzemeler": "malzemeler", "parcalar": "cubuk", "demet": "demet",
+              "kor": "kor"}
 
 
 class DogrulamaMixin(object):
@@ -38,13 +42,16 @@ class DogrulamaMixin(object):
     # dogrulama
     # ==================================================================
     def _bulgu_ogeleri(self, liste):
-        """Bulgulari bir QListWidget'a yazar (acilir liste)."""
+        """Bulgulari bir QListWidget'a yazar (acilir liste). Eksik adimlar
+        (v3 K1) en ustte bilgi tonunda; onlarin sonucu olan hatalar da."""
         liste.clear()
+        self._adim_ogeleri(liste)
         for b in self._bulgular:
+            adim = baslangic_adim.adim_bulgusu_mu(self.spec, b)
+            seviye_adi = _EKSIK_ADIM if adim else _SEVIYE_ADI.get(b.seviye, b.seviye)
             oge = QtWidgets.QListWidgetItem(
-                "%s · %s: %s" % (_(_SEVIYE_ADI.get(b.seviye, b.seviye)), yer_etiketi(b.yer),
-                                 cumle_basi(b.mesaj)))
-            oge.setForeground(QtGui.QColor(_seviye_renk(b.seviye)))
+                "%s · %s: %s" % (_(seviye_adi), yer_etiketi(b.yer), cumle_basi(b.mesaj)))
+            oge.setForeground(QtGui.QColor(_seviye_renk("bilgi" if adim else b.seviye)))
             oge.setData(QtCore.Qt.UserRole, b.yer)
             tiklama = _("Tıklayınca ilgili sayfaya gider; sağ tık: kılavuzda aç.")
             oge.setToolTip((b.oneri + "\n\n" + tiklama) if b.oneri else tiklama)
@@ -53,6 +60,16 @@ class DogrulamaMixin(object):
             oge = QtWidgets.QListWidgetItem(_("✓ Bulgu yok — model tutarlı görünüyor."))
             oge.setForeground(QtGui.QColor(tema.renk("basari")))
             oge.setFlags(QtCore.Qt.ItemIsEnabled)
+            liste.addItem(oge)
+
+    def _adim_ogeleri(self, liste: QtWidgets.QListWidget) -> None:
+        """Eksik adimlar listenin basinda (tiklaninca adimin sayfasi)."""
+        for adim in baslangic_adim.eksik_adimlar(self.spec):
+            oge = QtWidgets.QListWidgetItem("%s · %s: %s" % (
+                _(_EKSIK_ADIM), adim.baslik, adim.aciklama))
+            oge.setForeground(QtGui.QColor(_seviye_renk("bilgi")))
+            oge.setData(QtCore.Qt.UserRole, _ADIM_YERI[adim.sekme])
+            oge.setToolTip(_("Tıklayınca ilgili sayfaya gider."))
             liste.addItem(oge)
 
     def _dogrula(self, veri=False):
@@ -73,6 +90,12 @@ class DogrulamaMixin(object):
 
     def _serit_guncelle(self, ipucu=None):
         """Alt dogrulama seridi: ozet, rozet, ilk bulgu, sonraki adim."""
+        if ipucu is None:
+            ipucu = self._sonraki_ipucu
+        self._sonraki_ipucu = ipucu
+        self._rehber_guncelle()
+        if self._eksik_adim_seridi():
+            return
         n = {s: sum(1 for b in self._bulgular if b.seviye == s)
              for s in ("hata", "uyari", "bilgi")}
         if n["hata"]:
@@ -89,12 +112,24 @@ class DogrulamaMixin(object):
         onemli = [b for b in self._bulgular if b.seviye in ("hata", "uyari")]
         ilk = ("%s · %s" % (yer_etiketi(onemli[0].yer), cumle_basi(onemli[0].mesaj))
                if onemli else "")
-        if ipucu is None:
-            ipucu = self._sonraki_ipucu
-        self._sonraki_ipucu = ipucu
         self.serit.ayarla(seviye, ozet, rozet, ilk, ipucu)
         self.serit.setToolTip(_("{h} hata, {u} uyarı, {b} bilgi").format(
             h=n["hata"], u=n["uyari"], b=n["bilgi"]))
+
+    def _eksik_adim_seridi(self) -> bool:
+        """Model henuz kuruluyorsa (eksik adim) serit BILGI tonunda adimi
+        soyler -- hata kirmizisi degil (v3 K1). Gosterildiyse True."""
+        adim = baslangic_adim.siradaki(self.spec)
+        if adim is None:
+            return False
+        tamam, toplam = baslangic_adim.ilerleme(self.spec)
+        sira = _("Sıradaki adım: {baslik} — {aciklama}").format(
+            baslik=adim.baslik, aciklama=adim.aciklama)
+        self.serit.ayarla("bilgi", _("Model kuruluyor: {tamam}/{toplam} adım").format(
+            tamam=tamam, toplam=toplam), _(_EKSIK_ADIM), sira, sira)
+        self.serit.setToolTip(_("Eksik adımlar tamamlanınca doğrulama sonucu burada "
+                                "görünür."))
+        return True
 
     def _bulgu_listesini_ac(self):
         self._bulgu_ogeleri(self.bulgu_acilir.liste)
@@ -105,6 +140,10 @@ class DogrulamaMixin(object):
         self._bulguya_git(oge)
 
     def _ilk_bulguya_git(self):
+        adim = baslangic_adim.siradaki(self.spec)
+        if adim is not None:
+            self._adima_git(adim.sekme)
+            return
         onemli = [b for b in self._bulgular if b.seviye in ("hata", "uyari")]
         if onemli:
             self.sekmeye_gitmeyi_dene(onemli[0].yer)
@@ -150,7 +189,17 @@ class DogrulamaMixin(object):
             self.ust.kosu_izni(*self._kosu_izni())
 
     def _kosu_izni(self):
-        """CALISTIR kapisi: once geometri cizilmeli, sonra hata olmamali."""
+        """CALISTIR kapisi: once model kurulmali (eksik adim yok), geometri
+        cizilmeli, hata olmamali."""
+        adim = baslangic_adim.siradaki(self.spec)
+        if adim is not None:
+            n = len(baslangic_adim.eksik_adimlar(self.spec))
+            return False, _n(
+                "Model henüz kurulmadı: {n} adım eksik. Sıradaki adım: {baslik} — "
+                "{aciklama} Alttaki adım rehberinden ilgili sayfaya gidin.",
+                "Model henüz kurulmadı: {n} adım eksik. Sıradaki adım: {baslik} — "
+                "{aciklama} Alttaki adım rehberinden ilgili sayfaya gidin.", n).format(
+                    n=n, baslik=adim.baslik, aciklama=adim.aciklama)
         if dogrula.hata_var(self._bulgular):
             n = sum(1 for b in self._bulgular if b.seviye == "hata")
             return False, _n("Doğrulamada %d hata var — önce bunları giderin. Alttaki "

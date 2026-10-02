@@ -333,14 +333,21 @@ def kosu_tabani(proje_yolu=None):
     return os.path.dirname(os.path.abspath(proje_yolu)) if proje_yolu else KOSU_KOKU
 
 
-def yeni_spec(ad="adsız model"):
+def yeni_spec(ad: str = "adsız model", kor_turu: str = "tek_cubuk") -> dict:
     """
-    Bos ama gecerli bir spec dondurur. YENI modellerde entropi agi modelden
+    GERCEKTEN bos bir spec dondurur (malzeme, parca, demet, tally yok); yalniz
+    kor turu secilir (v3 K1 "Sifirdan"). kor_turu KOR_TUR_ALANLARI'ndan biri
+    olmalidir, degilse ValueError. YENI modellerde entropi agi modelden
     turetilir (entropi_mesh.otomatik; kaynak.entropi_boyutu): 2B'den 3B'ye
     gecince nz kendiliginden 1 -> 8 olur. Eski dosyalarda (anahtar yok)
     dosyadaki "boyut" aynen kullanilir -- VARSAYILAN_AYARLAR'a eklenmedi,
     yoksa tamamla() kullanicinin sectigi boyutu ezerdi.
     """
+    if kor_turu not in KOR_TUR_ALANLARI:
+        raise ValueError("bilinmeyen kor türü: %r" % (kor_turu,))
+    kor = copy.deepcopy(VARSAYILAN_KOR)
+    kor["tur"] = kor_turu
+    kor_alanlarini_ayikla(kor)
     spec = {
         "surum": SEMA_SURUM,
         "ad": ad,
@@ -349,7 +356,7 @@ def yeni_spec(ad="adsız model"):
         "cubuklar": [],
         "plakalar": [],
         "demetler": [],
-        "kor": copy.deepcopy(VARSAYILAN_KOR),
+        "kor": kor,
         "ayarlar": copy.deepcopy(VARSAYILAN_AYARLAR),
         "tallyler": [],
         "guc_dagilimi": copy.deepcopy(VARSAYILAN_GUC),
