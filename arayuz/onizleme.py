@@ -121,6 +121,8 @@ class OnizlemeWidget(QtWidgets.QWidget):
         self._vurgu = None                # gelismis editorde secili dugum yolu
         self._son_eksenler = []           # [(eksen, ax)] son basarili cizim (tiklama)
         self._son_hata = None
+        self._son_basarili = False         # gecerli spec icin son istek basarili mi (kapi)
+        self._kapandi = False              # kapat() sonrasi istek gonderilmez
         self.son_olcu = None
         self._ikili_varsayilan = None     # son spec 3B miydi (gorunum varsayilani)
         self.son_sure = None              # son istegin suresi [s] (istekten sona)
@@ -252,6 +254,7 @@ class OnizlemeWidget(QtWidgets.QWidget):
 
     def spec_ayarla(self, spec):
         self.spec = spec
+        self._son_basarili = False
         # 3B modelde xy ve xz yan yana; 2B'de yalnizca xy -- secim gizlenir.
         # 2B -> 3B gecisinde gorunum "xy + xz"ye doner; 3B icindeki secim korunur.
         uc_b = self._uc_boyutlu(spec)
@@ -273,7 +276,8 @@ class OnizlemeWidget(QtWidgets.QWidget):
 
     def iste(self):
         """Cizimi gecikmeli ister; ardarda cagrilar tek istege duser."""
-        self._sayac.start()
+        if not self._kapandi:
+            self._sayac.start()
 
     def mesgul_mu(self):
         """Bekleyen (gecikmeli ya da iscide suren) istek var mi."""
@@ -313,9 +317,12 @@ class OnizlemeWidget(QtWidgets.QWidget):
     def _ciz(self):
         """Hemen istek gonderir (gecikme yok); sonuc arka planda gelir."""
         self._sayac.stop()
+        if self._kapandi:
+            return
         if self.spec is None:
             self._bos_mesaj(_("Model bekleniyor"))
             return
+        self._son_basarili = False
         kontrol = self._gizli_mi()
         self._gorunum_kirli = kontrol
         kesitler = [] if kontrol else self.gorunum()
@@ -441,14 +448,13 @@ class OnizlemeWidget(QtWidgets.QWidget):
         self._istek = None
         self.calisiyor.setText("")
         self.son_sure = time.perf_counter() - ist["t0"]
-        durum = b.get("durum")
-        if durum == cs.DURUM_IPTAL:
-            return
-        if durum != cs.DURUM_TAMAM:
+        # Not: isci eski istek icin "iptal" yollar; no'su guncel olmadigindan buraya gelmez.
+        if b.get("durum") != cs.DURUM_TAMAM:
             self._kesit_onbellegi = None
             self._hata_goster(b.get("hata") or "", b.get("iz") or b.get("hata") or "")
             return
         self._son_hata = None
+        self._son_basarili = True
         if ist["toplanan"]:
             self._kesit_onbellegi = {"anahtar": ist["anahtar"], "meta": self._meta,
                                      "kesitler": dict(ist["toplanan"])}
@@ -479,6 +485,7 @@ class OnizlemeWidget(QtWidgets.QWidget):
     def _hata_goster(self, metin, iz):
         from arayuz.ortak import hata_metni
         self._son_hata = iz or metin
+        self._son_basarili = False
         self._son_eksenler = []
         self.gosterge_etiketi.setText("")
         self._bos_mesaj(_("Geometri kurulamadı:\n\n%s") % hata_metni(RuntimeError(metin)),
@@ -487,7 +494,9 @@ class OnizlemeWidget(QtWidgets.QWidget):
         self.cizim_bitti.emit(False)
 
     def _coktu(self, mesaj):
-        if self._istek is None:             # bosta coktu: son cizim gecerli kalir
+        if self._istek is None or self._istek["no"] is None:
+            # bosta coktu (ya da isciye gitmeyen onbellek boyamasi suruyor):
+            # son cizim gecerli kalir, yalniz bildirilir.
             self.durum.emit(mesaj, False)
             return
         self._istek = None
@@ -669,8 +678,11 @@ class OnizlemeWidget(QtWidgets.QWidget):
 
     # ------------------------------------------------------------------
     def cizildi_mi(self):
-        """Gecerli bir cizim yapildi mi? (CALISTIR kapisi bunu kullanir)"""
-        return self.spec is not None and self._son_hata is None
+        """Gecerli spec icin son istek BASARIYLA bitti mi? (CALISTIR kapisi)
+        Istek surerken (gecikme dahil) ya da son istek basarisizken False:
+        eszamansiz cizimde kapi, denetlenmemis modele acik kalmasin."""
+        return (self.spec is not None and self._son_basarili and self._son_hata is None
+                and not self.mesgul_mu())
 
     def son_hata(self):
         return self._son_hata
@@ -693,7 +705,8 @@ class OnizlemeWidget(QtWidgets.QWidget):
         return yol
 
     def kapat(self):
-        """Uygulama kapanirken cizim iscisini temiz sonlandirir."""
+        """Uygulama kapanirken cizim iscisini temiz sonlandirir (kalici)."""
+        self._kapandi = True
         self._sayac.stop()
         self._isitma.stop()
         self._yerlesim_sayaci.stop()
