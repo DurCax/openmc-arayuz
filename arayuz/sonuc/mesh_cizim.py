@@ -11,7 +11,6 @@
 
 import numpy as np
 
-from cekirdek.ceviri import _
 from arayuz.tasarim import tokenlar
 
 ISARET_RENGI = tokenlar.OKABE_ITO["turuncu"]
@@ -36,10 +35,9 @@ def ciz(figur, dilim, isaretli, baslik_metni, renk_etiketi):
     figur.colorbar(ortu, ax=eks, label=renk_etiketi)
     if isaretli is not None and np.any(isaretli):
         ox, oy = hucre_ortalari(dilim)
+        # Aciklama kartin ust metninde (× = guvenilmez); lejant haritayi ortuyordu.
         eks.scatter(ox[isaretli], oy[isaretli], marker="x", s=_ISARET_BOYU,
-                    color=ISARET_RENGI, linewidths=1.2,
-                    label=_("güvenilmez hücre"))
-        eks.legend(loc="upper right", fontsize="small")
+                    color=ISARET_RENGI, linewidths=1.2)
     eks.set_xlabel(dilim.x_adi)
     eks.set_ylabel(dilim.y_adi)
     if dilim.esit_olcek:

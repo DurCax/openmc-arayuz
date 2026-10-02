@@ -19,6 +19,8 @@
 
 import os
 
+import numpy as np
+
 from PySide6 import QtCore, QtWidgets
 from matplotlib.backends.backend_qtagg import NavigationToolbar2QT
 from matplotlib.figure import Figure
@@ -255,7 +257,11 @@ class MeshHaritaWidget(QtWidgets.QWidget):
         s, o, sg, birim = self._veri()
         esik = self.esik.value() / _YUZDE
         gosterim = self.gosterim.currentData()
-        dizi = {"deger": o, "sigma": sg, "bagil": mt.bagil_hata(o, sg)}[gosterim]
+        # Skorsuz hucre (kilavuz boru, ag disi) bos birakilir: renk olcegini 0'a
+        # cekmesin; × isaretiyle yine gorunur.
+        skorsuz = o == 0
+        dizi = {"deger": np.where(skorsuz, np.nan, o), "sigma": np.where(skorsuz, np.nan, sg),
+                "bagil": mt.bagil_hata(o, sg)}[gosterim]
         eksen, indeks = self.eksen.currentData(), self.dilim.value() - 1
         self.gosterilen = mt.dilim(s, dizi, eksen, indeks)
         maske = mt.yuksek_hata_maskesi(o, sg, esik)
