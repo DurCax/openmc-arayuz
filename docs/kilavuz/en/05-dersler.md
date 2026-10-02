@@ -20,7 +20,10 @@ overwritten. Use **File › Save as…** to keep your own changes.
 | [5.9](#ders-kritik-arama) | Critical search | `ornekler/pwr_17x17.json`, `ornekler/pwr_kontrol.json`, `ornekler/tamburlu_kor.json` | intermediate |
 | [5.10](#ders-rapor) | Report and conformity annex | any run | intermediate |
 | [5.11](#ders-spektrum) | Spectrum and four factors | `ornekler/pwr_pinhucre.json` | intermediate |
-| [5.16](05c-ders-foton-sicaklik-yuzey.md#ders-foton-sicaklik-yuzey) | Photon heating, temperature interpolation, surface current | `ornekler/pwr_pinhucre.json`, `ornekler/zirh_kure.json` | intermediate |
+| [5.13](05c-ders-mesh.md#ders-mesh) | Mesh flux and power map, ParaView | `ornekler/pwr_mesh_aki.json` | intermediate |
+| [5.14](#ders-malzeme-asistani) | Material assistant and my library | `ornekler/pwr_17x17.json` | introductory |
+| [5.15](#ders-yerel-k) | Local k and assembly k∞ | `ornekler/pwr_17x17.json`, `ornekler/pwr_ceyrek_kor.json` | intermediate |
+| [5.16](05d-ders-foton-sicaklik-yuzey.md#ders-foton-sicaklik-yuzey) | Photon heating, temperature interpolation, surface current | `ornekler/pwr_pinhucre.json`, `ornekler/zirh_kure.json` | intermediate |
 
 **Where do the expected results come from?** Every value has a source: the `referans.olcum` field
 of the example file, [VV.md](../../VV.md), [ORNEKLER.md](../../ORNEKLER.md) or the measurement tables
@@ -528,6 +531,67 @@ scatter / √5). Mean linear power **182 W/cm**.
 - Why is F_ΔH the same and F_q smaller in the axially layered `ornekler/pwr_eksenel.json`? (Layering
   does not touch the radial distribution; the water reflector flattens the axial profile.)
 
+<a id="ders-guc-yanma"></a>
+### 5.7.1 Pin power table and pin power versus burnup
+
+**Example file:** `ornekler/pwr_3b.json` (table), `ornekler/pwr_17x17.json` (burnup) ·
+**Level:** intermediate. Fields: [pin power table](04g-calistir.md#calistir-pin-tablosu),
+[pin power versus burnup](04i-tukenme.md#tukenme-pin-gucu).
+
+**A. Table (the run of 5.7).**
+
+1. The **Pin power table** under the power map has 264 rows (guide/instrument tubes are not in
+   the table). Click the **Relative power** header to sort descending: the first row is the
+   hottest pin and its value equals F_ΔH in the summary (table = map).
+2. Click a pin on the map: its row is selected and its values are shown above the table.
+3. **Fold to quarter**: enabled because the single assembly is mirror-symmetric; 264 pins become
+   72 orbits (81 positions in the quarter − 9 guide/instrument positions). The **Asymmetry**
+   column is the difference between the pins of one orbit: in a symmetric model it is only
+   statistical noise.
+4. Switch folding **off** and write a CSV with **Save table…**; the sum of the `W` column is
+   Total power × target share (in this model all fission energy is in the target pins:
+   17.6 MW). In the folded table each row is the average of m members (`katlanan_m` column):
+   the total is Σ m·W.
+5. Rows in italics cannot be told apart statistically from the hottest pin (within a combined
+   2σ): "the hottest pin" is a group, not a single pin.
+
+**B. Versus burnup.**
+
+1. Open the `pwr_17x17` example and enable the calculation on the **Depletion** page. You do not
+   have to switch on the power distribution in Run settings: the depletion run tallies the pin
+   power in every step by itself. To shorten the run you can choose the **CASL simple thermal**
+   chain under Advanced.
+2. When the run finishes, a **Step** selector appears below the result card. The table shows
+   the values of the selected step; pins selected in the table are tracked in the left plot as
+   relative power versus burnup, the right plot shows F_ΔH per step.
+3. **Save step × pin…** gives the pin table of every step in one CSV.
+
+**What did we learn / check questions.**
+
+- Relative power is relative to the average of that step: if a pin's relative power drops, must
+  its absolute power drop too? (Yes, by the same ratio — if total power and target share are
+  constant.)
+- In `pwr_17x17` **Pin-by-pin depletion** is off: all pins burn with the same average
+  composition. Why is the flattening of the distribution by the faster burning of hot pins
+  therefore **not seen**? (No per-pin burnup feedback; to see it switch on **Pin-by-pin
+  depletion** under Advanced — every pin becomes its own material, memory and time grow with
+  the number of pins.) Judge differences with the seed-to-seed spread, not with the single-run
+  σ (optimistic).
+- Why is the distribution shown the one at the **beginning** of the step? (OpenMC writes the
+  step statepoint after the predictor transport.)
+
+**Measured (B, small settings).** 02.10.2026, `pwr_17x17` + Depletion: **2000 × 30 / 10
+inactive** (the example's own 10 000 × 150 setting was not measured), CASL simple thermal, CECM,
+40 W/gHM, steps 1, 4, 5, 10 MWd/kg (9 transports, 6 threads, 518 s). Mean q′ **193.3 W/cm**
+(2D: per 1 cm of height). F_ΔH per step: 1.222, 1.207, 1.258, 1.262, 1.240 (single-run σ
+0.06–0.10); the hottest pin is at a different position in every step (x = 5, y = 6 → x = 14,
+y = 9 → …). With these statistics the step-to-step difference **cannot be told apart** from
+noise and F_ΔH is pushed up by the bias of the maximum (5.7): to read a burnup trend increase
+the number of particles and use several seeds. k-eff 1.1773 → 0.9648 (20 MWd/kg).
+
+These numbers are not a design or licensing assessment; for the limits see
+[6.6 Known limits](06-sonuclar.md#bilinen-sinirlar).
+
 <a id="ders-benchmark"></a>
 ## 5.8 Benchmark and C/E
 
@@ -781,3 +845,136 @@ inconsistency is deliberate and does not make the results design values.
   the four factors are a thermal-reactor definition. Bare sphere, large leakage.)
 - This result is not a validation or a certificate; it only shows that the definitions are
   consistent.
+
+<a id="ders-malzeme-asistani"></a>
+## 5.14 Material assistant and my library
+
+**Example file:** `ornekler/pwr_17x17.json` · **Level:** introductory · **Estimated time:** 15 minutes
+(no Monte Carlo run)
+
+**Goal.** Build a fuel and a coolant with the assistant, compare the derived values with a hand
+calculation, see how an invalid input is stopped, and save the material to the library on this
+computer. Background: [Material assistant](04a-malzemeler.md#malzeme-asistani).
+
+**Steps.**
+
+1. Open `ornekler/pwr_17x17.json`. On the **Materials** page, click **Assistant…**.
+2. **What are you designing?** → **Fuel**. **Material type** UO₂; **U-235 weight %** 3.2;
+   **Density** "directly in g/cm³", 10.40; **O/M ratio** 2.000; **Temperature** 900 K.
+3. Read the **Derived values** panel and compare it with the hand calculation below.
+4. **Next**. If a cross section library is set, the check list shows no missing nuclides; if not,
+   the warning "missing-nuclide check skipped" appears. The suggested **Name** is `uo2_2` (the
+   example already has `uo2`). Tick **Also save to my library** and click **Finish**.
+5. Open **Assistant…** again → **Moderator / coolant** → **Light water**: 580 K, 15.5 MPa,
+   1000 ppm boron. Then lower the pressure to 5 MPa and raise the temperature to 600 K.
+6. **My library…**: the material saved in step 4 is in the list; **Add to project** adds it again
+   with a `_2` name.
+
+**Expected result** (hand calculation; `testler/test_k6_hesap.py` and `testler/test_k6_sogutucu.py`):
+
+| Value | Hand calculation | Panel |
+|---|---|---|
+| M_U (3.2%, ORNL/CSD/TM-244 vector) | 1 / Σ(w_i/M_i) = 237.9519 g/mol | — |
+| N_total = 3 · ρ N_A / (M_U + 2 M_O) | 3 · 10.40 · 0.602214 / 269.9505 = 0.069602 atom/b-cm | 6.9602e-02 |
+| N(U-235) | 0.023201 · 0.032396 = 7.5161e-04 atom/b-cm | 7.5161e-04 |
+| Heavy metal | 10.40 · 237.9519 / 269.9505 = 9.1672 gHM/cm³ | 9.1672 |
+| Water ρ(580 K, 15.5 MPa), IAPWS-IF97 | 0.71187 g/cm³ (NIST IAPWS-95: 0.711869) | 0.71187 |
+| 600 K, 5 MPa | p_s(600 K) = 12.34 MPa > 5 MPa: steam region | red error, **Next** disabled |
+
+The assistant's UO₂ has the same composition as the UO₂ of the library (U, enrichment 3.2; O 2;
+10.40 g/cm³; 900 K); with the same seed k is also the same.
+
+**What we learned / check questions.**
+
+- Why do U-234 and U-236 appear besides U-235? (Enrichment also enriches U-234; the
+  ORNL/CSD/TM-244 correlation gives U-234 = 0.0089·e and U-236 = 0.0046·e by weight. The U-236
+  term is an empirical fit to commercial LEU containing recycled uranium; enrichment from
+  natural feed has no U-236, and the correlation is valid only at low enrichment.)
+- Why does the saturated-water table (the library's **Light water**) come out 2.2% lower at 580 K and
+  15.5 MPa (0.6965 g/cm³)? (2.0% is the pressure: IF97 saturated liquid is 0.69763 g/cm³;
+  the remaining 0.17% is the linear interpolation of the table.) (At 15.5 MPa the liquid is compressed; the assistant also accounts for pressure
+  through IF97.)
+- Why is my library not connected to a network? (User decision: material data stays on this
+  computer only; the file is written atomically and is not deleted if it gets damaged.)
+---
+
+<a id="ders-yerel-k"></a>
+## 5.15 Local k and assembly k∞
+
+**Example files:** `ornekler/pwr_17x17.json`, `ornekler/pwr_ceyrek_kor.json` · **Level:**
+intermediate · **Estimated time:** 30 minutes (runs ~1–2 minutes)
+
+**Goal.** Read the per-pin/per-assembly **local k** map, see in numbers with which weighting
+the map mean equals k∞, and compute the **k∞** of every assembly type with the wizard.
+Interpretation: [6.7 Local k and assembly k∞](06-sonuclar.md#yerel-k).
+
+**Steps.**
+
+1. Open the **PWR 17×17 assembly** example. In **Run settings** › **Local k map
+   (pin/assembly)** set **Level** = **Pin**. Two tallies are added to the model:
+   `yerel_k_pin` (17×17 mesh aligned to the pin pitch; `nu-fission`, `absorption` and (n,xn)
+   scores) and `yerel_k_toplam` (no filter, same scores). The same from the terminal:
+   `python -m cekirdek.yerel_k ekle ornekler/pwr_17x17.json pin -o pwr_17x17_yk.json`.
+2. Set 3 000 particles × 40 batches / 15 inactive and **Run**.
+3. On the **Run** page the **Local k map** card opens. White cells are guide tubes (no fuel,
+   k = 0); the mouse pointer shows the cell's k ± σ and the ratio without the (n,xn)
+   correction.
+4. In the summary line compare the **mean k**, the **k-eff of the run** and **P/(D+L)**.
+   Then take the table with **Save CSV…** and compute the plain (unweighted) mean of the
+   `fisil = 1` rows only.
+5. Assembly k∞ wizard: open the **Quarter-symmetric PWR core** example, **Tools › Assembly
+   k∞ wizard…**. The two assembly types (`demet_24`, `demet_31`) are listed with their count
+   in the core. 2 000 particles × 40 / 15, seed 1, **Add to queue and start**. Each type
+   enters the run queue ([4.10](04j-is-akisi.md#is-akisi)) as a separate run; the table fills
+   with the k∞ ± σ of finished runs, **Save CSV…**.
+6. Add assembly-level local k to the same core and run 4 000 × 40 / 20. Compare the local k
+   (± σ) of the inner assemblies with the wizard's k∞ values.
+
+![Local k map: reflective 17×17 assembly, pin level](../resimler/en/k4_yerel_k_demet_pin.png)
+
+![Assembly k∞ wizard: two assembly types, done in the queue](../resimler/en/k4_demet_kinf.png)
+
+**Expected result** (02.10.2026, ENDF/B-VIII.0, 6 threads):
+
+- **17×17, 3 000 × 40 / 15, seed 1.** Mean local k **1.18521**, combined k-eff of the run
+  **1.19109 ± 0.00348**. They are **two correlated estimates** (same histories); their
+  difference (−590 pcm) splits as follows: ΣP = global k-tracklength = **1.18941** (same
+  estimator, identical), ΣD_model = **1.0035 ± 0.0040** (expected value 1: no leakage, per
+  source neutron). k_map = k_tl / D_model → the deviation of D from 1 gives −420 pcm
+  (≈ 0.9 σ_D), the combined vs tracklength estimator −170 pcm. Map coverage 1.0000,
+  c_xn = 1.00158.
+- **Plain mean** (the 264 fuelled pins only) **1.2108**: almost all of the 2 500 pcm shift
+  is the absorption of the guide tubes (2.1% of D) being left out — ΣP/ΣD of the fuelled pins
+  is 1.2107 as well. The pin-to-pin scatter (1.10–1.31) is mostly noise at this statistics.
+- **Wizard** (2 000 × 40 / 15, seed 1): `demet_24` **k∞ = 1.0948 ± 0.0040**, `demet_31`
+  **1.1715 ± 0.0045**. A single-assembly model built by hand (core type **single assembly**,
+  all boundaries `reflective`) is **physically identical** (material composition, surface,
+  cell and lattice signature fixed by a test); because the wizard prunes the library to the
+  parts in use, the random realization may differ: `demet_24` 1.0948 (identical), `demet_31`
+  by hand 1.1756 ± 0.0045 — a difference of 0.65 σ_diff (σ_diff = √(σ₁² + σ₂²)).
+- **Quarter core, assembly level** (4 000 × 40 / 20): inner `demet_24` 1.085–1.088
+  (± 0.02–0.03), `demet_31` 1.16–1.20 (± 0.02–0.06). The bin σ values are large because the
+  correlation is ignored (conservative). Map mean 1.0644, P/(D+L) = 1.0628, k-tracklength
+  1.0633, combined k-eff 1.0595 ± 0.0025. Leakage is only L = 0.00155 (1 − ℓ = 0.9985:
+  −155 pcm): the water reflector cells are inside the map and most neutrons are absorbed
+  there. Most of the gap between the mean and k-eff is not leakage but the estimator
+  difference (combined − tracklength −380 pcm). In a 3D model the assembly bins also contain
+  the axial water layers (±h/2); for the active region only, set **Axial extent** = **active
+  (fissile) region only** on the card (coverage becomes < 1).
+
+**What we learned / check questions.**
+
+- Which mean of the local k values equals k∞ in an infinite lattice? (The arithmetic mean
+  weighted by net removal — Σ_aφ − X. The production-weighted harmonic mean is equivalent
+  only when all bins are fissile; the D of P = 0 bins such as guide tubes is added to the
+  denominator separately.)
+- Why is local k not k∞? (It is a local production / removal ratio; the net current across
+  the bin boundaries and leakage are not part of the definition. The flux includes neutrons
+  coming from neighbours; the ratio is set by the spectrum in the bin: the local k of an
+  inner assembly is close to its k∞ in the in-core spectrum. Criticality is global:
+  k_eff = ΣP / (ΣD + L) = k_map (1 − ℓ).)
+- What would change without the (n,2n) correction? (OpenMC `absorption` does not count (n,xn);
+  a difference of c_xn − 1 ≈ 0.16% would remain between P/A and k∞.)
+- Why is the pin level rejected for the BEAVRS core? (Assembly pitch 21.50 cm, 17 × 1.26 =
+  21.42 cm: the water gap between assemblies cannot be aligned to one uniform mesh; use the
+  assembly level.)

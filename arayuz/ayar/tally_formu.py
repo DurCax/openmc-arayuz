@@ -10,9 +10,10 @@ from PySide6 import QtCore, QtWidgets
 from cekirdek import sema
 from cekirdek.ceviri import _
 from arayuz.ayar.sabitler import OZEL, SKORLAR, SKOR_SETLERI, _FILTRE_ADI, _SKOR_ADI
+from arayuz.ayar.mesh_formu import MeshFormuMixin
 
 
-class TallyFormuMixin(object):
+class TallyFormuMixin(MeshFormuMixin):
     """Tally listesi ve secili tally'nin formu."""
 
     def _tallyleri_doldur(self):
@@ -90,12 +91,14 @@ class TallyFormuMixin(object):
             if enerji:
                 self.t_enerji.setText(", ".join("%.12g" % g for g in enerji["gruplar"]))
                 self.t_enerji.setCursorPosition(0)
+            self._enerji_yapisi_goster(enerji)
             mesh = next((f for f in t.get("filtreler", []) if f["tur"] == "mesh"), None)
             self.t_mesh_var.setChecked(bool(mesh))
             if mesh:
                 self.t_mesh_nx.setValue(mesh["boyut"][0])
                 self.t_mesh_ny.setValue(mesh["boyut"][1])
                 self.t_mesh_nz.setValue(mesh["boyut"][2])
+                self._mesh_formu_yukle(mesh)
             self._yuzey_doldur(t)            # Y7 (arayuz/ayar/yuzey_tally.py)
         finally:
             self._yukleniyor = eski
@@ -118,9 +121,7 @@ class TallyFormuMixin(object):
         tf.setRowVisible(self.t_set_ozet, not ozel)
         tf.setRowVisible(self.t_enerji, self.t_enerji_var.isChecked())
         tf.setRowVisible(self.mesh_satiri, self.t_mesh_var.isChecked())
-        uc_b = self._mesh_nz_anlamli()
-        self.t_mesh_nz.setVisible(uc_b)
-        self.t_mesh_nz._etiket.setVisible(uc_b)
+        self._mesh_formu_gorunurluk()
         diger = [f.get("tur") for f in t.get("filtreler", [])
                  if f.get("tur") not in ("enerji", "mesh")]
         self.t_diger.setText(_("Ayrıca dosyadan gelen filtre: {f} (korunur).").format(
@@ -168,16 +169,8 @@ class TallyFormuMixin(object):
             if eski_enerji is not None and yeni["enerji"]["gruplar"] == eski_enerji.get("gruplar"):
                 yeni["enerji"] = eski_enerji
         if self.t_mesh_var.isChecked():
-            eski_b = list((eski_mesh or {}).get("boyut") or [10, 10, 1])
-            boyut = [self.t_mesh_nx.value(), self.t_mesh_ny.value(),
-                     self.t_mesh_nz.value() if self._mesh_nz_anlamli() else eski_b[2]]
-            if eski_mesh is not None:
-                # Arayuzde gosterilmeyen alanlar (eski dosyalarin acik alt/ust
-                # sinirlari, "otomatik") korunur; yalnizca bolme sayisi degisir.
-                yeni["mesh"] = dict(eski_mesh, boyut=boyut)
-            else:
-                # Sinirlar model KURULURKEN turetilir (kurucu.tally_mesh_sinirlari).
-                yeni["mesh"] = sema.filtre_mesh_otomatik(boyut)
+            # v3 Y1: tur/sinir/bolme mesh_formu'ndan; yonetilmeyen alanlar korunur.
+            yeni["mesh"] = self._mesh_formu_filtresi(eski_mesh)
         # Bu editorun YONETMEDIGI filtre turleri (or. malzeme) yerinde korunur.
         filtreler, konan = [], set()
         for f in eski:

@@ -20,7 +20,10 @@ için **Dosya › Farklı kaydet…** kullanın.
 | [5.9](#ders-kritik-arama) | Kritik arama | `ornekler/pwr_17x17.json`, `ornekler/pwr_kontrol.json`, `ornekler/tamburlu_kor.json` | orta |
 | [5.10](#ders-rapor) | Rapor ve uygunluk eki | herhangi bir koşu | orta |
 | [5.11](#ders-spektrum) | Spektrum ve dört faktör | `ornekler/pwr_pinhucre.json` | orta |
-| [5.16](05c-ders-foton-sicaklik-yuzey.md#ders-foton-sicaklik-yuzey) | Foton ısınması, sıcaklık interpolasyonu, yüzey akımı | `ornekler/pwr_pinhucre.json`, `ornekler/zirh_kure.json` | orta |
+| [5.13](05c-ders-mesh.md#ders-mesh) | Ağ (mesh) akı ve güç haritası, ParaView | `ornekler/pwr_mesh_aki.json` | orta |
+| [5.14](#ders-malzeme-asistani) | Malzeme asistanı ve kütüphanem | `ornekler/pwr_17x17.json` | giriş |
+| [5.15](#ders-yerel-k) | Yerel k ve demet k∞ | `ornekler/pwr_17x17.json`, `ornekler/pwr_ceyrek_kor.json` | orta |
+| [5.16](05d-ders-foton-sicaklik-yuzey.md#ders-foton-sicaklik-yuzey) | Foton ısınması, sıcaklık interpolasyonu, yüzey akımı | `ornekler/pwr_pinhucre.json`, `ornekler/zirh_kure.json` | orta |
 
 **Beklenen sonuçlar nereden geliyor?** Her değer bir kaynağa dayanır: örnek dosyasının
 `referans.olcum` alanı, [VV.md](../../VV.md), [ORNEKLER.md](../../ORNEKLER.md) ya da
@@ -507,6 +510,62 @@ Ortalama lineer güç **182 W/cm**.
 - Eksenel katmanlı `ornekler/pwr_eksenel.json`'da F_ΔH neden aynı, F_q neden küçüktür?
   (Katmanlama radyal dağılıma dokunmaz; su yansıtıcı eksenel profili düzleştirir.)
 
+<a id="ders-guc-yanma"></a>
+### 5.7.1 Pin gücü tablosu ve yanmaya göre pin gücü
+
+**Örnek dosya:** `ornekler/pwr_3b.json` (tablo), `ornekler/pwr_17x17.json` (yanma) ·
+**Seviye:** orta. Alanlar: [pin gücü tablosu](04g-calistir.md#calistir-pin-tablosu),
+[yanmaya göre pin gücü](04i-tukenme.md#tukenme-pin-gucu).
+
+**A. Tablo (5.7'nin koşusu).**
+
+1. Güç haritasının altındaki **Pin gücü tablosu**nda 264 satır vardır (kılavuz/ölçüm boruları
+   tabloda yoktur). **Bağıl güç** başlığına tıklayıp azalan sıralayın: ilk satır en sıcak
+   çubuktur ve değeri özetteki F_ΔH ile aynıdır (tablo = harita).
+2. Haritada bir çubuğa tıklayın: satırı seçilir, tablonun üstünde değerleri yazar.
+3. **Çeyrek katla**: tek demet ayna simetrik olduğu için etkindir; 264 çubuk 72 yörüngeye iner
+   (çeyrekte 81 konum − 9 kılavuz/ölçüm konumu). **Asimetri** sütunu aynı yörüngedeki çubukların
+   farkıdır: simetrik modelde bu fark yalnız istatistik gürültüdür.
+4. Katlamayı **kapatıp** **Tabloyu kaydet…** ile CSV yazın; `W` sütununun toplamı Toplam güç ×
+   hedef payıdır (bu modelde bütün fisyon enerjisi hedef çubuklarda: 17.6 MW). Katlı tabloda
+   her satır m üyenin ortalamasıdır (`katlanan_m` sütunu): toplam Σ m·W'dir.
+5. İtalik satırlar en sıcak çubuktan istatistik olarak **ayırt edilemez** (birleşik 2σ içinde):
+   "en sıcak çubuk" tek bir çubuk değil, bir gruptur.
+
+**B. Yanmaya göre.**
+
+1. `pwr_17x17` örneğini açın; **Tükenme** sayfasında hesabı etkinleştirin. Güç dağılımını Hesap
+   ayarlarında açmanız gerekmez: tükenme koşusu her adımda pin gücünü kendiliğinden sayar.
+   Süreyi kısaltmak için Gelişmiş'te **CASL basit termal** zincirini seçebilirsiniz.
+2. Koşu bitince sonuç kartının altında **Adım** seçicisi çıkar. Adım değiştikçe tablo o adımın
+   değerlerini gösterir; tablodan seçtiğiniz çubuklar soldaki grafikte bağıl güç – yanma olarak
+   izlenir, sağda adım başına F_ΔH çizilir.
+3. **Adım × pin kaydet…** her adımın pin tablosunu tek CSV'de verir.
+
+**Ne öğrendik / kontrol soruları.**
+
+- Bağıl güç her adımda o adımın ortalamasına göredir: bir çubuğun bağıl gücü düşüyorsa mutlak
+  gücü de düşmüş olmak zorunda mıdır? (Evet, aynı oranda — toplam güç ve hedef payı sabitse.)
+- `pwr_17x17`'de **Çubuk çubuk yanma** kapalıdır: bütün çubuklar aynı ortalama bileşimle yanar.
+  Bu yüzden sıcak çubukların daha hızlı yanıp dağılımı düzleştirmesi neden **görülmez**?
+  (Pin başına yanma geri beslemesi yok; görmek için Gelişmiş'te **Çubuk çubuk yanma**'yı açın —
+  her çubuk ayrı malzeme olur, bellek ve süre çubuk sayısıyla artar.) Farkları tek koşu
+  σ'sıyla (iyimser) değil tohum saçılmasıyla değerlendirin.
+- Gösterilen dağılım neden adımın **başındaki** dağılımdır? (OpenMC adım statepoint'ini
+  öngörücü transporttan sonra yazar.)
+
+**Ölçülen (B, küçük ayar).** 02.10.2026, `pwr_17x17` + Tükenme: **2000 × 30 / 10 pasif**
+(örneğin kendi 10 000 × 150 ayarı ölçülmedi), CASL basit termal, CECM, 40 W/gHM, adımlar 1, 4, 5,
+10 MWd/kg (9 transport, 6 iş parçacığı, 518 s). Ortalama q′ **193.3 W/cm** (2B: 1 cm yükseklik
+başına). Adım başına F_ΔH: 1.222, 1.207, 1.258, 1.262, 1.240 (tek koşu σ 0.06–0.10); en sıcak
+çubuk her adımda başka bir konumda (x = 5, y = 6 → x = 14, y = 9 → …). Bu istatistikte adımlar
+arası fark gürültüden **ayırt edilemez** ve F_ΔH maksimum yanlılığıyla yukarı çıkar (5.7):
+yanmaya göre eğilim okumak için parçacık sayısını artırın ve birkaç tohum kullanın. k-eff
+1.1773 → 0.9648 (20 MWd/kg).
+
+Bu sayılar bir tasarım ya da lisans değerlendirmesi değildir; sınırlar için
+[6.6 Bilinen sınırlar](06-sonuclar.md#bilinen-sinirlar).
+
 <a id="ders-benchmark"></a>
 ## 5.8 Benchmark ve C/E
 
@@ -746,3 +805,132 @@ sonuçları bir tasarım değeri yapmaz.
   (Termal fisyon yok ya da ihmal edilebilir: ε = νF/νF_th ya tanımsız ya da aşırı büyük çıkar;
   dört faktör termal reaktör tanımıdır. Çıplak küre, büyük sızıntı.)
 - Bu sonuç bir doğrulama ya da sertifika değildir; yalnızca tanımların tutarlılığını gösterir.
+
+<a id="ders-malzeme-asistani"></a>
+## 5.14 Malzeme asistanı ve kütüphanem
+
+**Örnek dosya:** `ornekler/pwr_17x17.json` · **Seviye:** giriş · **Tahmini süre:** 15 dakika
+(Monte Carlo koşusu yok)
+
+**Amaç.** Bir yakıtı ve bir soğutucuyu asistanla kurmak, türetilmiş değerleri el hesabıyla
+karşılaştırmak, geçersiz bir girdinin nasıl durdurulduğunu görmek ve malzemeyi bu bilgisayardaki
+kütüphaneye kaydetmek. Arka plan: [Malzeme asistanı](04a-malzemeler.md#malzeme-asistani).
+
+**Adımlar.**
+
+1. `ornekler/pwr_17x17.json`'u açın. **Malzemeler** sayfasında **Asistan…**.
+2. **Ne tasarlıyorsun?** → **Yakıt**. **Malzeme türü** UO₂; **U-235 ağırlıkça %** 3.2;
+   **Yoğunluk** "doğrudan g/cm³", 10.40; **O/M oranı** 2.000; **Sıcaklık** 900 K.
+3. **Türetilmiş değerler** panelini okuyun ve aşağıdaki el hesabıyla karşılaştırın.
+4. **İleri**. Doğrulama listesinde tesir kesiti kütüphanesi tanımlıysa eksik nüklid yoktur;
+   tanımlı değilse "eksik nüklid denetimi atlandı" uyarısı görünür. **Ad** `uo2_2` önerilir
+   (örnekte `uo2` var). **Kütüphaneme de kaydet**'i işaretleyip **Bitir**.
+5. Yeniden **Asistan…** → **Moderatör / soğutucu** → **Hafif su**: 580 K, 15.5 MPa, 1000 ppm bor.
+   Sonra basıncı 5 MPa'ya, sıcaklığı 600 K'e çekin.
+6. **Kütüphanem…**: 4. adımda kaydettiğiniz malzeme listededir; **Projeye ekle** onu `_2` ekli
+   bir adla yeniden ekler.
+
+**Beklenen sonuç** (el hesabı; `testler/test_k6_hesap.py` ve `testler/test_k6_sogutucu.py`):
+
+| Değer | El hesabı | Panel |
+|---|---|---|
+| M_U (3.2 %, ORNL/CSD/TM-244 vektörü) | 1 / Σ(w_i/M_i) = 237.9519 g/mol | — |
+| N_toplam = 3 · ρ N_A / (M_U + 2 M_O) | 3 · 10.40 · 0.602214 / 269.9505 = 0.069602 atom/b-cm | 6.9602e-02 |
+| N(U-235) | 0.023201 · 0.032396 = 7.5161e-04 atom/b-cm | 7.5161e-04 |
+| Ağır metal | 10.40 · 237.9519 / 269.9505 = 9.1672 gHM/cm³ | 9.1672 |
+| Su ρ(580 K, 15.5 MPa), IAPWS-IF97 | 0.71187 g/cm³ (NIST IAPWS-95: 0.711869) | 0.71187 |
+| 600 K, 5 MPa | p_s(600 K) = 12.34 MPa > 5 MPa: buhar bölgesi | kırmızı hata, **İleri** kapalı |
+
+Asistanın UO₂'si kütüphanedeki UO₂ ile aynı bileşimdir (U, zenginlik 3.2; O 2; 10.40 g/cm³;
+900 K); aynı tohumla k da aynıdır.
+
+**Ne öğrendik / kontrol soruları.**
+
+- Neden U-235 dışında U-234 ve U-236 da çıkıyor? (Zenginleştirme U-234'ü de zenginleştirir;
+  ORNL/CSD/TM-244 bağıntısı U-234 = 0.0089·e, U-236 = 0.0046·e ağırlıkça. U-236 terimi geri
+  kazanılmış uranyum karışmış ticari LEU'ya uydurulmuş ampiriktir; doğal beslemeden
+  zenginleştirmede U-236 yoktur ve bağıntı yalnız düşük zenginlikte geçerlidir.)
+- Doymuş su tablosu (kütüphanedeki **Hafif su**) 580 K, 15.5 MPa koşulunda neden %2.2 düşük kalır (0.6965 g/cm³)? (%2.0'si basınçtır:
+  IF97 doymuş sıvı 0.69763 g/cm³; kalan %0.17 tablonun doğrusal interpolasyonudur.)
+  (15.5 MPa'da sıvı sıkıştırılmıştır; asistan IF97 ile basıncı da hesaba katar.)
+- Kütüphanem neden ağa bağlı değil? (Kullanıcı kararı: malzeme verisi yalnız bu bilgisayarda
+  kalır; dosya atomik yazılır, bozulursa silinmez.)
+---
+
+<a id="ders-yerel-k"></a>
+## 5.15 Yerel k ve demet k∞
+
+**Örnek dosya:** `ornekler/pwr_17x17.json`, `ornekler/pwr_ceyrek_kor.json` · **Seviye:** orta ·
+**Tahmini süre:** 30 dakika (koşular ~1–2 dakika)
+
+**Amaç.** Pin/demet başına **yerel k** haritasını okumak, haritanın ortalamasının hangi
+ağırlıkla k∞'a eşit olduğunu sayıyla görmek ve her demet türünün **k∞**'unu sihirbazla
+hesaplamak. Yorum: [6.7 Yerel k ve demet k∞](06-sonuclar.md#yerel-k).
+
+**Adımlar.**
+
+1. **PWR 17×17 demet** örneğini açın. **Hesap ayarları** › **Yerel k haritası (pin/demet)**
+   kartında **Düzey** = **Pin** seçin. Modele iki tally eklenir: `yerel_k_pin` (pin
+   hatvesine hizalı 17×17 mesh; `nu-fission`, `absorption` ve (n,xn) skorları) ve
+   `yerel_k_toplam` (filtresiz, aynı skorlar). Terminalden aynısı:
+   `python -m cekirdek.yerel_k ekle ornekler/pwr_17x17.json pin -o pwr_17x17_yk.json`.
+2. 3 000 parçacık × 40 çevrim / 15 pasif yapın ve **Çalıştır**.
+3. **Çalıştır** sayfasında **Yerel k haritası** kartı açılır. Beyaz hücreler kılavuz
+   borulardır (yakıt yok, k = 0); fare imleci hücrenin k ± σ değerini ve (n,xn)
+   düzeltmesiz oranı gösterir.
+4. Özet satırında **ortalama k**, **koşunun k-eff'i** ve **P/(D+L)** değerlerini
+   karşılaştırın. Sonra **CSV kaydet…** ile tabloyu alın ve yalnız `fisil = 1` satırlarının
+   düz (ağırlıksız) ortalamasını hesaplayın.
+5. Demet k∞ sihirbazı: **Çeyrek simetrik PWR koru** örneğini açın, **Araçlar › Demet k∞
+   sihirbazı…**. İki demet türü (`demet_24`, `demet_31`) kordaki sayılarıyla listelenir.
+   2 000 parçacık × 40 / 15, tohum 1, **Kuyruğa ekle ve başlat**. Her tür ayrı bir koşu
+   olarak koşu kuyruğuna ([4.10](04j-is-akisi.md#is-akisi)) girer; tablo biten koşuların
+   k∞ ± σ değeriyle dolar, **CSV kaydet…**.
+6. Aynı kora **Demet** düzeyinde yerel k ekleyip 4 000 × 40 / 20 koşun. İç demetlerin
+   yerel k'sını (± σ) sihirbazın k∞'larıyla karşılaştırın.
+
+![Yerel k haritası: yansıtıcı 17×17 demet, pin düzeyi](../resimler/tr/k4_yerel_k_demet_pin.png)
+
+![Demet k∞ sihirbazı: iki demet türü, kuyrukta bitti](../resimler/tr/k4_demet_kinf.png)
+
+**Beklenen sonuç** (02.10.2026, ENDF/B-VIII.0, 6 iş parçacığı):
+
+- **17×17, 3 000 × 40 / 15, tohum 1.** Yerel k ortalaması **1.18521**, koşunun birleşik
+  k-eff'i **1.19109 ± 0.00348**. İkisi **korelasyonlu iki tahmindir** (aynı geçmişler);
+  farkı (−590 pcm) şöyle ayrışır: ΣP = global k-tracklength = **1.18941** (aynı tahminci,
+  birebir), ΣD_model = **1.0035 ± 0.0040** (beklenen değer 1: sızıntı yok, kaynak nötronu
+  başına). k_harita = k_tl / D_model → D'nin 1'den sapması −420 pcm (≈ 0.9 σ_D), birleşik
+  tahminci ile tracklength farkı −170 pcm. Harita kapsamı 1.0000, c_xn = 1.00158.
+- **Düz ortalama** (yalnız yakıtlı 264 pin) **1.2108**: 2 500 pcm kaymanın neredeyse
+  tamamı kılavuz boruların soğurmasının (D'nin %2.1'i) dışarıda kalmasıdır — yakıtlı
+  pinlerin ΣP/ΣD'si de 1.2107'dir. Pinler arası saçılma (1.10–1.31) bu istatistikte
+  çoğunlukla gürültüdür.
+- **Sihirbaz** (2 000 × 40 / 15, tohum 1): `demet_24` **k∞ = 1.0948 ± 0.0040**,
+  `demet_31` **1.1715 ± 0.0045**. Elle kurulan tek demet modeli (kor türü **tek demet**,
+  bütün sınırlar `reflective`) **fiziksel olarak özdeştir** (malzeme bileşimi, yüzey, hücre
+  ve kafes imzası testle sabit); sihirbaz kütüphaneyi kullanılan parçalara budadığı için
+  rastgele gerçekleşme farklı olabilir: `demet_24` 1.0948 (birebir aynı), `demet_31` elle
+  1.1756 ± 0.0045 — fark 0.65 σ_fark (σ_fark = √(σ₁² + σ₂²)).
+- **Çeyrek kor, demet düzeyi** (4 000 × 40 / 20): iç `demet_24`'ler 1.085–1.088 (± 0.02–0.03),
+  `demet_31`'ler 1.16–1.20 (± 0.02–0.06). Bin σ'ları korelasyon yok sayıldığı için büyüktür
+  (ihtiyatlı). Harita ortalaması 1.0644, P/(D+L) = 1.0628, k-tracklength 1.0633, birleşik
+  k-eff 1.0595 ± 0.0025. Sızıntı yalnız L = 0.00155'tir (1 − ℓ = 0.9985: −155 pcm):
+  su yansıtıcı hücreler haritanın içindedir ve nötronların çoğu orada soğurulur. Ortalama
+  ile k-eff arasındaki farkın çoğu sızıntı değil, tahminci farkıdır (birleşik − tracklength
+  −380 pcm). 3B modelde demet binleri eksenel su katmanlarını da içerir (±h/2); yalnız aktif
+  bölge için kartta **Eksenel kapsam** = **yalnız aktif (fisil) bölge** seçin (kapsama < 1
+  olur).
+
+**Ne öğrendik / kontrol soruları.**
+
+- Sonsuz kafeste yerel k'ların hangi ortalaması k∞'a eşittir? (Net yok olma — Σ_aφ − X —
+  ağırlıklı aritmetik ortalama. Üretim ağırlıklı harmonik ortalama ancak bütün binler
+  fisilse eşdeğerdir; kılavuz boru gibi P = 0 binlerin D'si paydaya ayrıca eklenir.)
+- Yerel k neden k∞ değildir? (Yerel üretim / yok olma oranıdır; bin sınırlarındaki net akım
+  ve sızıntı tanıma girmez. Akı komşulardan gelen nötronları içerir; oranı bindeki spektrum
+  belirler: iç demetin yerel k'sı, kor içi spektrumdaki k∞'una yakındır. Kritiklik
+  globaldir: k_eff = ΣP / (ΣD + L) = k_harita (1 − ℓ).)
+- (n,2n) düzeltmesi olmasa ne değişirdi? (OpenMC `absorption`'ı (n,xn)'i saymaz; P/A ile k∞
+  arasında c_xn − 1 ≈ %0.16 fark kalırdı.)
+- BEAVRS korunda pin düzeyi neden reddedilir? (Demet adımı 21.50 cm, 17 × 1.26 = 21.42 cm:
+  demetler arası su aralığı tek düzgün mesh'e hizalanamaz; demet düzeyini kullanın.)

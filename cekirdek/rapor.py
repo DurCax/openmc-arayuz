@@ -169,17 +169,22 @@ def _kutuphane_metni(log):
     if log.get("kutuphane_dizini"):
         d = log["kutuphane_dizini"]
         return "%s (%s)" % (os.path.basename(d.rstrip("/")), _kisa_yol(d))
-    xs = os.environ.get("OPENMC_CROSS_SECTIONS")
+    from cekirdek import veri_yolu
+    cozum = veri_yolu.cross_sections()
+    xs = cozum.deger
     if xs:
         d = os.path.dirname(os.path.abspath(xs))
-        return _("%s (%s; rapor anındaki ortam)") % (os.path.basename(d), _kisa_yol(xs))
+        kaynak = {"ortam": _("rapor anındaki ortam"), "ayar": _("Veri sayfası seçimi"),
+                  "aday": _("otomatik bulunan aday")}.get(cozum.kaynak, cozum.kaynak)
+        return "%s (%s; %s)" % (os.path.basename(d), _kisa_yol(xs), kaynak)
     return None
 
 
 def _zincir_metni(spec, log, kosu_dizini=None):
     yol, kaynak = log.get("zincir"), ""
     if not yol:
-        yol = os.environ.get("OPENMC_CHAIN_FILE")
+        from cekirdek import veri_yolu
+        yol = veri_yolu.zincir().deger
         kaynak = _("; rapor anındaki ortam") if yol else ""
     if not yol:
         return None

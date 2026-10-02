@@ -35,7 +35,9 @@ SKORLAR = [
     ("(n,gamma)", N_("Işınımsal yakalama (n,gamma)")),
     ("(n,2n)", N_("(n,2n) tepkimesi")),
     ("heating", N_("Isınma (heating)")),
+    ("heating-local", N_("Yerel ısınma (heating-local)")),
     ("kappa-fission", N_("Fisyon enerjisi (kappa-fission)")),
+    ("fission-q-recoverable", N_("Geri kazanılabilir fisyon enerjisi (fission-q-recoverable)")),
     ("fission-q-prompt", N_("Anlık fisyon enerjisi (fission-q-prompt)")),
     ("damage-energy", N_("Hasar enerjisi (damage-energy)")),
 ]

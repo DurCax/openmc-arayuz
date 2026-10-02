@@ -41,6 +41,7 @@ from cekirdek.geometri import yerlesim as _yer
 from cekirdek.geometri.eksenel import dilimler, katman_icerigi, model_yuksekligi
 from cekirdek.geometri.kesik import bolge_kesitleri
 from cekirdek.geometri.sema import BOSLUK, bilesen_tanimi, kisaltma_coz
+from cekirdek.uygunluk_bellek import Bellek, icerik_anahtari
 
 SQ3 = math.sqrt(3.0)
 MAKS_GEZINTI = 40          # kutuphane icleri dahil derinlik siniri (dongu korumasi)
@@ -460,6 +461,18 @@ def gez(m):
     return _Gezgin(m).kok()
 
 
+_ZIYARETLER = Bellek("gezinti_ziyaretleri", sinir=4)
+
+
+def ziyaretler(m):
+    """gez(m)'in butun ziyaretleri (demet), model icerigine gore bellekli (H1b):
+    tusun uygunluk gezintisi ile dogrulamanin agac denetimi AYNI gezintiyi paylasir.
+    Ziyaretlerin dugum sozlukleri salt okunur kullanilmali."""
+    anahtar = icerik_anahtari([m.kok, m.parcalar, m.gruplar, m.tanimlar, m.sablon,
+                               m.kaynaklar, m.agac])
+    return _ZIYARETLER.al(anahtar, lambda: tuple(gez(m)))
+
+
 # ----------------------------------------------------------------------------
 # icerik: uygunluk.geometri_icerigi ile ayni bicim (§7)
 # ----------------------------------------------------------------------------
@@ -474,7 +487,7 @@ def icerik(m):
     ic = {k: set() for k in ("malzeme", "cubuk", "plaka", "demet", "kafesteki_cubuk",
                              "tambur", "parca")}
     tanimli = m.tanimlar.get("malzeme") or {}
-    for z in gez(m):
+    for z in ziyaretler(m):
         d = z.dugum
         if d.get("tur") == "malzeme":
             ad = d.get("ad")

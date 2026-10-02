@@ -6,6 +6,19 @@ gelir (`pyproject.toml` → `cekirdek/surum.py`). Ayrıntılı değişiklikler `
 (conventional commits). Sürüm notunun kullanıcıya dönük özeti (TR + EN):
 `docs/SURUM_NOTLARI.md`.
 
+## Yayımlanmamış (v3)
+
+### Davranış değişikliği — ağ (mesh) tally'leri (v3 Y1)
+- **2B (eksenel sonsuz) modelde otomatik ağın z aralığı ±1 cm → ±10⁴ cm** (`Z_2B_YARI`,
+  `cekirdek/mesh_tally/tanim.py`). `mesh_turu` alanı olmayan `otomatik: true` v2 projeleri de
+  etkilenir: üretilen betik, kaynak nötronu başına ham değerler ve z dilimleri değişir
+  (v2.0 betiği: `testler/veri/y1_v2_mesh_betik.txt`). Gerekçe: ağ artık bütün z kolonunu
+  kapsar (z integrali); ±1 cm'lik dilim iz uzunluğunun küçük bir kesrini sayıyordu (ölçüldü:
+  kappa-fission bağıl hata medyanı %21 → %2.7, aynı geçmiş sayısı). Bağıl harita aynı fiziği
+  verir; 2B'de hacim başına değer hücre alanına bölünür (z integrali / cm²).
+- Özdeğer hesabında ağ tally'si varsa filtresiz `mesh_genel_isi` tally'si (`kappa-fission`,
+  `heating-local`) eklenir; mutlak normalizasyonun paydası buradan okunur.
+
 ## 2.0.0 — 02.10.2026
 
 ### Ortam

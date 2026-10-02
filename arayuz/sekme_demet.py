@@ -72,6 +72,7 @@ class DemetSekmesi(YerlesimMixin, KilifMixin, SekmeTabani):
     """Demet listesi + boyanabilir kare/altigen harita + parca paleti."""
 
     KONU = "demet"
+    oge_secildi = QtCore.Signal()      # onizleme kapsami (v3 K5): secili demet degisti
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -191,8 +192,13 @@ class DemetSekmesi(YerlesimMixin, KilifMixin, SekmeTabani):
         return self.hex_izgara if d is not None and d.get("tur") == "altigen" \
             else self.kare_izgara
 
+    def secili_oge(self):
+        """Onizleme kapsami (K5): secili demetin adi ya da None."""
+        return self._secili_ad()
+
     def _secim_degisti(self, _satir):
         d = self._secili()
+        self.oge_secildi.emit()
         self.d_kopya.setEnabled(d is not None)
         self.d_sil.setEnabled(d is not None)
         if d is None:

@@ -39,6 +39,7 @@ UYGUNLUK_KOMUTU = "uygunluk"
 ALT_SECENEGI = "--alt"
 ALT_TUKENME = "tukenme"
 ALT_CIZIM = "cizim"
+ALT_YOKLAMA = "yoklama"          # H1b: nokta yoklamasi iscisi (geometri/yoklama_arka.py)
 # -P (Python >= 3.11): `-m` calisma dizinini sys.path'in basina KOYMAZ; aksi halde
 # cwd'deki sahte bir `cekirdek/` paketi gercegin yerine yuklenirdi (modul kacirma).
 # Kaynak agacinda paket koku PYTHONPATH ile gelir (alt_surec_pythonpath).
@@ -248,7 +249,13 @@ def _cizim_alt_sureci(argv):
     return cizim_sureci.ana(argv)
 
 
-_ALT_SURECLER = {ALT_TUKENME: _tukenme_alt_sureci, ALT_CIZIM: _cizim_alt_sureci}
+def _yoklama_alt_sureci(argv):
+    from cekirdek.geometri import yoklama_arka
+    return yoklama_arka.ana(argv)
+
+
+_ALT_SURECLER = {ALT_TUKENME: _tukenme_alt_sureci, ALT_CIZIM: _cizim_alt_sureci,
+                 ALT_YOKLAMA: _yoklama_alt_sureci}
 
 
 def alt_surec_komutu(ad, argumanlar, python=None):
@@ -298,6 +305,8 @@ def kosu(argv=None):
     argv = list(sys.argv[1:] if argv is None else argv)
     from cekirdek.ceviri import terminal_dili
     terminal_dili()                   # OPENMC_ARAYUZ_DIL verilmisse o dil
+    from cekirdek import veri_yolu
+    veri_yolu.surece_uygula()         # K2: Veri sayfasi secimi terminalde de gecerli
     if argv and argv[0] == ALT_SECENEGI:
         return alt_komutu(argv[1:])
     if argv and argv[0] == RAPOR_KOMUTU:

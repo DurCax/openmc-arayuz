@@ -32,7 +32,7 @@ import subprocess
 import sys
 import time
 
-from cekirdek import sema, kurucu, dogrula
+from cekirdek import sema, dogrula
 from cekirdek import kapsul as _kapsul
 from cekirdek import yollar as _yollar
 from cekirdek import spektrum as _spektrum
@@ -246,6 +246,7 @@ def xml_yaz(spec, dizin, is_parcacigi=None):
     """Modeli kurar ve model.xml'i kosu dizinine yazar. DONER (model, bilgi, yol)"""
     # Kosu icin DAIMA taze model -- onbellekteki nesne paylasilir, uzerinde
     # calisma dizinine bagli islemler yapilmamalidir (bkz. onbellek.py).
+    from cekirdek import kurucu     # tembel: openmc (H1b)
     model, bilgi = kurucu.kur(spec)
     yol = os.path.join(dizin, "model.xml")
     model.export_to_model_xml(yol)
@@ -298,7 +299,9 @@ def calistir(spec, dizin, geri_cagir=None, is_parcacigi=None, temizle=True,
 
     with open(log_yolu, "w", encoding="utf-8") as log:
         log.write("# komut: %s\n# dizin: %s\n\n" % (" ".join(komut), dizin))
-        surec = subprocess.Popen(komut, cwd=dizin, stdout=subprocess.PIPE,
+        from cekirdek import veri_yolu       # K2: Veri sayfasi secimi alt surece
+        surec = subprocess.Popen(komut, cwd=dizin, env=veri_yolu.alt_surec_ortami(),
+                                 stdout=subprocess.PIPE,
                                  stderr=subprocess.STDOUT, text=True,
                                  bufsize=1, universal_newlines=True)
         for satir in surec.stdout:
@@ -370,6 +373,13 @@ def _birim(skor, sabit, kuvvet):
     return "1/s" if mutlak else _("/ kaynak nötronu")
 
 
+def _tam_tablo(ad, df, pd):
+    """Tanimadigimiz filtreli tally'nin ham tablosu (satir siniri 60)."""
+    with pd.option_context("display.max_columns", None, "display.width", 200,
+                           "display.max_rows", 60):
+        return "tally: %s\n%s" % (ad, df.to_string())
+
+
 def tally_metni(ad, df, malzeme_adlari=None, sabit=False, kuvvet=1.0):
     """
     Tally DataFrame'ini okunur metin tablosuna cevirir: malzeme kimligi
@@ -383,6 +393,10 @@ def tally_metni(ad, df, malzeme_adlari=None, sabit=False, kuvvet=1.0):
         return "tally: %s\n%s" % (ad, df)
     if not isinstance(df, pd.DataFrame):
         return "tally: %s\n%s" % (ad, df)
+    if isinstance(df.columns, pd.MultiIndex):
+        # Mesh filtreli tally (sutunlar ("mesh 1", "x") ...): satir okuyucusu
+        # r["energy low [eV]"] Series doner; tam tablo basilir (v3 Y1 bulgusu).
+        return _tam_tablo(ad, df, pd)
     adlar = malzeme_adlari or {}
     satirlar = []
     for _sira, r in df.iterrows():
@@ -403,9 +417,7 @@ def tally_metni(ad, df, malzeme_adlari=None, sabit=False, kuvvet=1.0):
         "material", "energy low [eV]", "energy high [eV]", "nuclide", "score", "mean", "std. dev.")]
     if ek_sutun or not satirlar:
         # tanimadigimiz filtre (mesh vb.): tam tabloyu kirpmadan bas
-        with pd.option_context("display.max_columns", None, "display.width", 200,
-                               "display.max_rows", 60):
-            return "tally: %s\n%s" % (ad, df.to_string())
+        return _tam_tablo(ad, df, pd)
     genislik = [max(len(s[i]) for s in satirlar) for i in range(5)]
     baslik = (_("Bölge / enerji"), _("Ölçülen"), _("Değer"), _("Bağıl hata"), _("Birim"))
     genislik = [max(g, len(b)) for g, b in zip(genislik, baslik)]
@@ -555,27 +567,40 @@ def _hedef_payi(sp):
     return {"hedef_payi": hedef / model}
 
 
-def _guc_oku(sp, sonuc):
-    """Cubuk bazli guc dagilimi: sonuc['guc'] ya da sonuc['guc_hata']."""
+def guc_oku(sp):
+    """
+    Statepoint'in cubuk bazli guc dagilimi (genel API; tukenme_guc adim
+    basina kullanir). DONER (guc | None, hata metni | None):
+      guc  {"dagilim", "faktorler", korunum alanlari, "hedef_payi", ...}
+      (None, None)   guc dagilimi tally'si yok (istenmemis)
+      (None, metin)  okuma ya da tepe faktoru hatasi (kaydedildi)
+    """
     from cekirdek import guc as _guc
     try:
         dagilim = _guc.dagilim_oku(sp)
     except Exception as e:
         _log.exception("güç dağılımı okunamadı")
-        sonuc["guc_hata"] = str(e)
-        return
+        return None, str(e)
     if not dagilim:
-        return
+        return None, None
     try:
         faktorler = _guc.tepe_faktorleri(dagilim)
     except Exception as e:
         _log.exception("güç tepe faktörleri hesaplanamadı")
-        sonuc["guc_hata"] = str(e)
-        return
+        return None, str(e)
     g = {"dagilim": dagilim, "faktorler": faktorler}
     g.update(_guc_korunumu(sp, dagilim))
     g.update(_hedef_payi(sp))
-    sonuc["guc"] = g
+    return g, None
+
+
+def _guc_oku(sp, sonuc):
+    """Cubuk bazli guc dagilimi: sonuc['guc'] ya da sonuc['guc_hata'] (guc_oku)."""
+    g, hata = guc_oku(sp)
+    if hata is not None:
+        sonuc["guc_hata"] = hata
+    elif g is not None:
+        sonuc["guc"] = g
 
 
 def korunum_satirlari(g):

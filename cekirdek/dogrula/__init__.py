@@ -43,13 +43,28 @@ import os
 
 from cekirdek.sema import kor_yuksekligi as sema_kor_yuksekligi
 from cekirdek.sema import BOSLUK, malzeme_bul, cubuk_bul, plaka_bul, demet_bul
-from cekirdek import altigen, kurucu, veri_bilgi, sema
+from cekirdek import altigen, veri_bilgi, sema
 from cekirdek import kaynak as _kaynak
 # "Bu modelde ne gecerli?" kurallarinin TEK kaynagi. Arayuz ayni kurallarla
 # secenekleri gizler/suzer; burada ayni kurali ihlal eden (elle yazilmis)
 # dosyalar yakalanir. Kural burada TEKRAR YAZILMAZ.
 from cekirdek import uygunluk
 from cekirdek.ceviri import _n
+
+
+def __getattr__(ad):
+    """Eski ad alani: dogrula.kurucu tembel (kurucu openmc'yi yukler; acilista
+    gerekmez -- H1b). PEP 562."""
+    if ad == "kurucu":
+        from cekirdek import kurucu
+        globals()["kurucu"] = kurucu        # sonraki erisim dogrudan
+        return kurucu
+    raise AttributeError("module %r has no attribute %r" % (__name__, ad))
+
+
+def __dir__():
+    return sorted(set(globals()) | {"kurucu"})
+
 
 # Alt moduller (bolunme: Dalga 0). Bugunku butun herkese acik ve testlerin/
 # arayuzun kullandigi ozel adlar burada yeniden dis verilir; boylece

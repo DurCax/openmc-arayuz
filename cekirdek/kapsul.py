@@ -100,7 +100,9 @@ def _dizin_ozeti(dizin):
 
 def kutuphane_kimligi(xs_yolu=None):
     """Tesir kesiti kutuphanesi: cross_sections.xml tam karmasi + dizin ozeti."""
-    xs_yolu = xs_yolu if xs_yolu is not None else os.environ.get("OPENMC_CROSS_SECTIONS")
+    if xs_yolu is None:
+        from cekirdek import veri_yolu
+        xs_yolu = veri_yolu.cross_sections().deger
     if not xs_yolu or not os.path.isfile(xs_yolu):
         return {"durum": "yok", "cross_sections": xs_yolu or None}
     dizin = os.path.dirname(os.path.abspath(xs_yolu))

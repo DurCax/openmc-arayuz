@@ -9,7 +9,7 @@
 import os
 
 from cekirdek.sema import malzeme_bul
-from cekirdek import kurucu
+from cekirdek import veri_yolu
 from cekirdek.dogrula._ortak import Bulgu
 from cekirdek.ceviri import _
 from cekirdek.gunluk import kaydedici, uyar_bir_kez
@@ -22,14 +22,15 @@ _log = kaydedici(__name__)
 # ============================================================================
 
 def veri_kutuphanesi_kontrol():
-    """OPENMC_CROSS_SECTIONS ayarli mi, dosya var mi?"""
+    """Tesir kesiti kutuphanesi cozuldu mu (veri_yolu), dosya var mi?"""
     bulgular = []
-    yol = os.environ.get("OPENMC_CROSS_SECTIONS")
+    yol = veri_yolu.cross_sections().deger
     if not yol:
         bulgular.append(Bulgu(
             "hata", "veri kutuphanesi",
-            _("OPENMC_CROSS_SECTIONS ortam değişkeni ayarlı değil"),
-            "export OPENMC_CROSS_SECTIONS=$HOME/nucdata/.../cross_sections.xml"))
+            _("nükleer veri kütüphanesi seçilmedi (OPENMC_CROSS_SECTIONS da yok)"),
+            _("Veri sayfasından cross_sections.xml içeren klasörü seçin ya da bir "
+              "kütüphane indirin.")))
     elif not os.path.exists(yol):
         bulgular.append(Bulgu(
             "hata", "veri kutuphanesi",
@@ -43,7 +44,7 @@ def _kutuphane_icerigi():
     cross_sections.xml icindeki notron ve termal kayitlarini okur.
     DONER (notron_adlari, termal_adlari) -- okunamazsa (None, None)
     """
-    yol = os.environ.get("OPENMC_CROSS_SECTIONS")
+    yol = veri_yolu.cross_sections().deger
     if not yol or not os.path.exists(yol):
         return None, None
     try:
@@ -77,6 +78,9 @@ def nuklid_kontrol(spec):
                               _("cross_sections.xml okunamadı; nüklid denetimi atlandı")))
         return bulgular
 
+    if spec.get("malzemeler") == []:
+        return bulgular     # bos liste: kurulacak malzeme yok (acilis: openmc yuklenmez)
+    from cekirdek import kurucu     # tembel: openmc (H1b)
     try:
         nesneler, _sab, _hacim = kurucu.malzemeleri_kur(spec)
     except Exception as e:

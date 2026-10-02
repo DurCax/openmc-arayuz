@@ -9,9 +9,13 @@ turer, yani yontem cozumu ve adlar aynidir. _seviye_renk ve _SEVIYE_ADI da
 buradadir; ana_pencere'den yeniden disa aktarilir.
 """
 
+from typing import Callable
+
+import shiboken6
 from PySide6 import QtCore, QtGui, QtWidgets
 
 from cekirdek import dogrula
+from cekirdek.geometri import yoklama, yoklama_arka
 from cekirdek.ceviri import _, _n, N_
 from cekirdek.gunluk import kaydedici
 from arayuz import baslangic_adim, tema
@@ -34,6 +38,11 @@ _EKSIK_ADIM = N_("Eksik aşama")
 # Adim sayfasi -> o sayfaya goturen bulgu yeri (model_islemleri._YER_SEKME).
 _ADIM_YERI = {"malzemeler": "malzemeler", "parcalar": "cubuk", "demet": "demet",
               "kor": "kor"}
+
+
+class _YoklamaHabercisi(QtCore.QObject):
+    """Arka plan yoklamasinin bitis sinyali (ana is parcacigindaki nesne)."""
+    geldi = QtCore.Signal()
 
 
 class DogrulamaMixin(object):
@@ -74,13 +83,35 @@ class DogrulamaMixin(object):
             oge.setToolTip(_("Tıklayınca ilgili sayfaya gider."))
             liste.addItem(oge)
 
+    def _yoklama_bildirimi(self) -> Callable[[], None]:
+        """Arka plan yoklamasi bitince (isci is parcacigindan) ana is parcaciginda
+        yeniden dogrular: kuyruklu sinyal (H1b, cekirdek/geometri/yoklama_arka.py)."""
+        haberci = getattr(self, "_yoklama_haberci", None)
+        if haberci is None:
+            haberci = _YoklamaHabercisi(self)
+            haberci.geldi.connect(lambda: self._dogrula(veri=False))
+            self._yoklama_haberci = haberci
+            uygulama = QtCore.QCoreApplication.instance()
+            if uygulama is not None:
+                uygulama.aboutToQuit.connect(yoklama_arka.kapat)
+
+        def bildir():
+            if shiboken6.isValid(haberci):
+                haberci.geldi.emit()
+        return bildir
+
     def _dogrula(self, veri=False):
         try:
-            self._bulgular = dogrula.tum_kontroller(self.spec, veri_kontrolu=veri)
+            if veri:        # F5 / veri denetimi: tam, esli dogrulama
+                self._bulgular = dogrula.tum_kontroller(self.spec, veri_kontrolu=True)
+            else:           # zamanlayici: nokta yoklamasi ayri surecte (donma yok)
+                with yoklama.arka_planda(self._yoklama_bildirimi()):
+                    self._bulgular = dogrula.tum_kontroller(self.spec, veri_kontrolu=False)
         except Exception as e:                                  # noqa: BLE001
             _log.exception("dogrulama sirasinda hata")
             self._bulgular = [dogrula.Bulgu("hata", "dogrulama",
                                             _("doğrulama sırasında hata: %s") % e)]
+        self._bulgular = self.veri_bulgusu_ekle(self._bulgular)     # K2: veri yoksa hata
         self._bulgu_ogeleri(self.dogrulama)
         self._serit_guncelle()
         self.s_calistir.kapi_guncelle()
@@ -168,7 +199,7 @@ class DogrulamaMixin(object):
 
     def sekmeye_gitmeyi_dene(self, yer):
         """Bulgunun yerinden sayfaya gider; sayfa destekliyorsa odaklar."""
-        anahtar = yer_sekme_anahtari(yer)
+        anahtar = self.ek_sayfa_anahtari(yer) or yer_sekme_anahtari(yer)   # K2: veri once
         if anahtar is None:
             return False
         if self.baslangic_acik_mi():

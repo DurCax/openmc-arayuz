@@ -130,8 +130,17 @@ class CalistirSekmesi(SonucGosterimiMixin, QtWidgets.QWidget):
         self.guc_harita = GucHaritaWidget()
         self.guc_karti = b.Kart()
         self.guc_karti.ekle(self.guc_harita)
+        from arayuz.sonuc.mesh_harita import MeshHaritaWidget   # v3 Y1
+        self.mesh_harita = MeshHaritaWidget()
+        self.mesh_karti = b.Kart()
+        self.mesh_karti.ekle(self.mesh_harita)
         from arayuz.sonuc.spektrum import SpektrumKarti     # Y3: kendi gorunurlugu
         self.spektrum_karti = SpektrumKarti()
+        from arayuz.sonuc.yerel_k import YerelKHaritasi    # K4: yalniz tally varken
+        self.yerel_k = YerelKHaritasi()
+        self.yerel_k_karti = b.Kart()
+        self.yerel_k_karti.ekle(self.yerel_k)
+        self.yerel_k_karti.setVisible(False)
         from arayuz.sonuc.yuzey import YuzeyKarti           # Y7: kendi gorunurlugu
         self.yuzey_karti = YuzeyKarti()
 
@@ -162,7 +171,9 @@ class CalistirSekmesi(SonucGosterimiMixin, QtWidgets.QWidget):
         duzen.addWidget(self.pano)
         duzen.addLayout(grafikler)
         duzen.addWidget(self.guc_karti)
+        duzen.addWidget(self.mesh_karti)
         duzen.addWidget(self.spektrum_karti)
+        duzen.addWidget(self.yerel_k_karti)
         duzen.addWidget(self.yuzey_karti)
         duzen.addWidget(self.kart)
         duzen.addWidget(self.uygunluk)
@@ -236,7 +247,9 @@ class CalistirSekmesi(SonucGosterimiMixin, QtWidgets.QWidget):
         self.ilerleme.resetFormat()
         self._grafik_kur(self._entropi_acik(self.spec))
         self.guc_harita.sonuc_ayarla(None, None)
+        self.mesh_harita.sonuclari_ayarla([])
         self.spektrum_karti.goster(None)
+        self.yerel_k_karti.setVisible(False)
         self.yuzey_karti.goster(None)
         self._gorunum_guncelle()
         self.kapi_guncelle()
@@ -403,6 +416,7 @@ class CalistirSekmesi(SonucGosterimiMixin, QtWidgets.QWidget):
         self.tally_metin.setVisible(tally)
         self.ozet_etiket.setVisible(bool(self.ozet_etiket.text()))
         self.guc_karti.setVisible(sonuc and self._guc_var and self._guc_etkin())
+        self.mesh_karti.setVisible(sonuc and bool(self.mesh_harita.sonuclar))
         self.bos.setVisible(not (kart or grafik))
         self.d_klasor.setEnabled(bool(self.son_kosu_dizini()))
         # Ayrintili cikti yalnizca gosterecek bir sey varken (bos bolum gurultudur)
@@ -478,7 +492,9 @@ class CalistirSekmesi(SonucGosterimiMixin, QtWidgets.QWidget):
         self.kart.cikti_yaz([])
         self.uygunluk.temizle()
         self.guc_harita.sonuc_ayarla(None, None)
+        self.mesh_harita.sonuclari_ayarla([])
         self.spektrum_karti.goster(None)
+        self.yerel_k_karti.setVisible(False)
         self.yuzey_karti.goster(None)
         self.pano.temizle()
         self.keff_etiket.setText(_("koşuyor…"))
@@ -626,6 +642,8 @@ class CalistirSekmesi(SonucGosterimiMixin, QtWidgets.QWidget):
         self._grafik_guncelle()
         self._zaman = self._zamanlama(self.log.toPlainText())
         cikti.gunlugu_yaz(self._dizin, self._gunluk)    # rapor, K3, M5 bunu okur
+        if self._durduruldu or cikis_kodu != 0:         # Y10: kosu gecmisi
+            self._gecmise_yaz("iptal" if self._durduruldu else "basarisiz")
         if self._durduruldu:
             self._durduruldu_goster()
             return
@@ -666,6 +684,14 @@ class CalistirSekmesi(SonucGosterimiMixin, QtWidgets.QWidget):
             self.durum.emit(_("Sonuç okunamadı: %s") % e, False)
             return
         self._sonuc_goster(s, sp)
+        self._gecmise_yaz("bitti", s.get("keff"))
+
+    def _gecmise_yaz(self, durum, keff=None):
+        """Y10: tek kosuyu kosu gecmisine yazar (hata loglanir, kosuyu etkilemez)."""
+        from cekirdek import kosu_gecmisi
+        kosu_gecmisi.tek_kosu_kaydet(
+            self._dizin, (self.spec or {}).get("ad") or "", durum, keff,
+            is_parcacigi=int((self.spec or {}).get("calistirma", {}).get("is_parcacigi", 8) or 8))
 
     def _basarisiz_goster(self, metin):
         self._son_basarili = False

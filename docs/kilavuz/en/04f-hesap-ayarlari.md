@@ -99,7 +99,7 @@ note on the strength).
 |---|---|---|---|---|---|
 | **Random seed** | Seed of the random number generator. The same seed and the same model give the same result (reproduction with the capsule relies on this). | — | 1 (default); different seeds for independent repetitions | running with a single seed and trusting the σ of pin powers: the power tally uncertainty is optimistic, run with several seeds (see [interpreting the power distribution](06-sonuclar.md#guc-dagilimi-yorum)) | `ayarlar.tohum` |
 | **Temperature method** | How the cross section is obtained at a temperature that is not in the library: **Interpolation (interpolation)** or **Nearest temperature (nearest)**. | — | interpolation | S(α,β) for water exists only between 284–800 K; a temperature sweep outside this range fails in the middle of the run (README "known pitfalls") | `ayarlar.sicaklik_yontemi` (`interpolation` \| `nearest`) |
-| **Photon transport (gamma heating)** | Photons born from neutrons are transported too (`settings.photon_transport`). The `heating` score then gives neutron + gamma heating; when off, gamma energy is not counted at all. With a photon source, transport is already on. The run takes noticeably longer. Details: [lesson 5.16](05c-ders-foton-sicaklik-yuzey.md#ders-foton-sicaklik-yuzey). | — | off; on when gamma heating is needed | An element of the model has no photon data in the library (**error**: OpenMC stops at start-up). Looking for total heat with `heating-local` while photons are on (**warning**: gammas counted twice). | `ayarlar.foton.var` |
+| **Photon transport (gamma heating)** | Photons born from neutrons are transported too (`settings.photon_transport`). The `heating` score then gives neutron + gamma heating; when off, gamma energy is not counted at all. With a photon source, transport is already on. The run takes noticeably longer. Details: [lesson 5.16](05d-ders-foton-sicaklik-yuzey.md#ders-foton-sicaklik-yuzey). | — | off; on when gamma heating is needed | An element of the model has no photon data in the library (**error**: OpenMC stops at start-up). Looking for total heat with `heating-local` while photons are on (**warning**: gammas counted twice). | `ayarlar.foton.var` |
 | **Electron treatment** | How electrons/positrons produced by photons are handled: **Thick-target bremsstrahlung (ttb)**: energy deposited where born, bremsstrahlung photons transported (OpenMC default); **Local energy deposition (led)**: no bremsstrahlung photons. | — | ttb | Choosing led in a heavy-element shield and losing the bremsstrahlung gammas. | `ayarlar.foton.elektron` (`ttb` \| `led`) |
 | **Temperature tolerance** | Nearest method: distance at which a library temperature is accepted (\|T_k - T\| < tolerance); interpolation: allowance outside the library range where the end temperature is used. OpenMC rule: `src/nuclide.cpp`. | K | 10 (OpenMC default) | A huge tolerance runs 750 K fuel with 600 K data: validation **warns** "only a library temperature is used". | `ayarlar.sicaklik.tolerans` |
 | **Default temperature** | Temperature of materials without a temperature. | K | 293.6 | — | `ayarlar.sicaklik.varsayilan` |
@@ -151,6 +151,22 @@ generated script builds the same tallies.
 | **Compute spectrum and four factors** | Turns on the Y3 tallies. The four factors and k only in an eigenvalue calculation; the spectrum is also computed in fixed source. | — | off | Taking ε·p·f·η for k-eff in a leaking (vacuum-bounded) model: k-eff additionally needs the P_NL factor (the card gives it separately). | `ayarlar.spektrum.var` |
 | **Energy group structure** | Groups of the flux spectrum (OpenMC built-in structures): CASMO-70, XMAS-172, SHEM-361, CCFE-709. The four factors and indices do not depend on it (they use their own two groups). | group | XMAS-172 | Choosing CCFE-709 with few particles: more noise per group. | `ayarlar.spektrum.grup_yapisi` |
 
+<a id="ayar-yerel-k"></a>
+### Local k map card
+
+Adds a mesh tally aligned to the pitch of the square lattice (`yerel_k_pin` or
+`yerel_k_demet`) and an unfiltered total tally (`yerel_k_toplam`) to the run
+(`cekirdek/yerel_k.py`). The map appears in the **Local k map** card on the
+[Run](04g-calistir.md#calistir) page; definition and interpretation: [6.7](06-sonuclar.md#yerel-k),
+step-by-step example: [lesson 5.15](05-dersler.md#ders-yerel-k). For an unsupported model
+(hexagonal lattice, gap between assemblies, translated lattice) the card shows the error and
+the model is unchanged. The generated script builds the same tallies.
+
+| Field | Meaning | Unit | Typical range | Common misuse | Spec key |
+|---|---|---|---|---|---|
+| **Level** | Off / Pin / Assembly: the mesh bins are the size of a pin cell or an assembly. | — | off | Taking local k for k∞: it is a local production / removal ratio without leakage or net current term. | `tallyler[].uretici = "yerel_k"` |
+| **Axial extent** | Whole model height (in 3D including the axial reflector) or the active (fissile) region only. No difference in 2D. | — | whole model | Choosing "active" and comparing the mean with k∞: coverage becomes < 1. | mesh `alt`/`ust` z |
+
 <a id="ayar-tally"></a>
 ### Tallies card
 
@@ -167,7 +183,7 @@ produces no result (**error**). The results are read in the **Result** card on t
 | **Scores** | OpenMC scores selected in the custom set (flux, fission, absorption, nu-fission, scatter, total, elastic, (n,gamma), (n,2n), heating, kappa-fission, fission-q-prompt, damage-energy). Unknown scores from the file are kept in the list. | — | 1–4 scores | OpenMC does not check score names; a made-up score fails in the run (the model check gives a **warning** against a curated list). Forgetting that the `flux` score is a **volume integral** (unit cm/s or cm per source particle): for the mean flux [1/cm²/s] divide by the region volume. | `tallyler[].skorlar` |
 | **Energy groups** | Adds an energy filter to the tally. | — | off; two groups: thermal/fast | — | `tallyler[].filtreler[]` (`tur`: `enerji`) |
 | **Group boundaries [eV]** | Energy group boundaries, in increasing order, comma separated. | eV | `0.0, 0.625, 2.0e7` (two groups) | unreadable text does not delete the existing filter; fewer than two boundaries are invalid | `tallyler[].filtreler[].gruplar` |
-| **Flux map (regular mesh)** | Adds a regular mesh filter to the tally; the limits are taken from the outer size of the model when the model is built (`otomatik`). | — | off | writing the mesh by hand with small limits and later adding a reflector to the model: the automatic mesh prevents this (the `alt`/`ust` limits of old files are kept) | `tallyler[].filtreler[]` (`tur`: `mesh`, `otomatik`, `alt`, `ust`) |
+| **Mesh tally** | Adds a mesh filter to the tally (regular, cylindrical, spherical; details in [4.11](04k-mesh-tally.md#mesh-tally)); the limits are taken from the outer size of the model when the model is built (`otomatik`). | — | off | writing the mesh by hand with small limits and later adding a reflector to the model: the automatic mesh prevents this (the `alt`/`ust` limits of old files are kept) | `tallyler[].filtreler[]` (`tur`: `mesh`, `otomatik`, `alt`, `ust`) |
 | **Mesh divisions** | Number of divisions nx, ny, nz of the mesh; nz is meaningful only in a 3D model and in a sphere. | divisions | 10 × 10 × 1 (1–1000) | expecting nz > 1 in a 2D model (in 2D the mesh is a single slice) | `tallyler[].filtreler[].boyut` |
 
 Filter types the interface does not edit (for example a `malzeme` filter with an `adlar` list;
@@ -184,7 +200,7 @@ A surface tally scores only `current` (OpenMC rule); with **Energy groups** on, 
 **leakage spectrum**; material and mesh filters are removed. The current is filtered to the source
 particle (with photon transport on, photons do not mix into the neutron current). The result is in
 the **Surface current and leakage** card on the [Run](04g-calistir.md#calistir-yuzey) page;
-physics and measured values: [lesson 5.16](05c-ders-foton-sicaklik-yuzey.md#ders-foton-sicaklik-yuzey).
+physics and measured values: [lesson 5.16](05d-ders-foton-sicaklik-yuzey.md#ders-foton-sicaklik-yuzey).
 
 | Field | Meaning | Unit | Typical range | Common misuse | Spec key |
 |---|---|---|---|---|---|

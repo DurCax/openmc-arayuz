@@ -84,10 +84,20 @@ _TEST_DIZINI = os.path.join(ortak_test.KOK, "testler")
 
 
 def veri_var(ortam=None):
-    """Tesir kesiti kutuphanesi erisilebilir mi (CI'da yok)."""
-    ortam = os.environ if ortam is None else ortam
-    yol = ortam.get("OPENMC_CROSS_SECTIONS", "")
-    return bool(yol) and os.path.isfile(yol)
+    """Tesir kesiti kutuphanesi erisilebilir mi (CI'da yok): uygulamanin tek
+    cozumleyicisi (cekirdek/veri_yolu.py; ortam > ayar > ~/nucdata adayi)."""
+    from cekirdek import veri_yolu
+    return veri_yolu.veri_hazir_mi(ortam)
+
+
+def _veri_ortamini_kur():
+    """Oturum basinda cozulen veri surec ortamina yazilir (uygulama acilisi
+    gibi): veri_var() True iken openmc de ayni kutuphaneyi gorur."""
+    from cekirdek import veri_yolu
+    veri_yolu.surece_uygula()
+
+
+_veri_ortamini_kur()
 
 
 def zincir_var():
@@ -275,6 +285,26 @@ def _qt_pencere_temizligi():
         w.deleteLater()
     if yeni:
         QtCore.QCoreApplication.sendPostedEvents(None, QtCore.QEvent.DeferredDelete)
+
+
+@pytest.fixture(autouse=True)
+def _veri_ortami_korumasi():
+    """Her testten sonra OPENMC_* ortam degiskenleri, openmc.config ve
+    veri_yolu enjekte kaydi eski haline doner (bir testin sectigi gecici
+    kutuphane sonraki testlere sizmasin; K2 incelemesi)."""
+    from cekirdek import veri_yolu
+    from testler.k2_yalitim import config_al, config_geri
+    ortam = {k: os.environ.get(k) for k in ("OPENMC_CROSS_SECTIONS", "OPENMC_CHAIN_FILE")}
+    config, enjekte = config_al(), dict(veri_yolu._ENJEKTE)
+    yield
+    config_geri(config)
+    for k, v in ortam.items():
+        if v is None:
+            os.environ.pop(k, None)
+        else:
+            os.environ[k] = v
+    veri_yolu._ENJEKTE.clear()
+    veri_yolu._ENJEKTE.update(enjekte)
 
 
 @pytest.fixture(autouse=True)

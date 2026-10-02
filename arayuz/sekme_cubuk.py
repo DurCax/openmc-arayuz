@@ -77,6 +77,7 @@ class CubukSekmesi(SayfalarMixin, CubukFormuMixin, PlakaFormuMixin, TamburFormuM
     """Cubuk ve plaka tanimlari."""
 
     KONU = "cubuk"
+    oge_secildi = QtCore.Signal()      # onizleme kapsami (v3 K5): secili parca degisti
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -238,8 +239,14 @@ class CubukSekmesi(SayfalarMixin, CubukFormuMixin, PlakaFormuMixin, TamburFormuM
         oge = self.liste.currentItem()
         return oge.data(QtCore.Qt.UserRole) if oge else (None, None)
 
+    def secili_oge(self):
+        """Onizleme kapsami (K5): ("tambur" | "cubuk" | "plaka", ad) ya da (None, None)."""
+        tambur = self._tambur_secili()
+        return ("tambur", tambur) if tambur is not None else tuple(self._secili())
+
     def _secim_degisti(self, _satir):
         tur, ad = self._secili()
+        self.oge_secildi.emit()
         if tur is not None:
             self._tambur_secimini_birak()
         eski = self._yukleniyor

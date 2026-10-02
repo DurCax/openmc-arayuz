@@ -97,7 +97,7 @@ ortalama enerji yazılır (sabit kaynakta şiddet notu da).
 |---|---|---|---|---|---|
 | **Rastgele tohum** | Rastgele sayı üretecinin tohumu. Aynı tohum ve aynı model aynı sonucu verir (kapsül ile yeniden üretim buna dayanır). | — | 1 (varsayılan); bağımsız tekrarlar için farklı tohumlar | Tek tohumla koşup çubuk güçlerinin σ'sına güvenmek: güç tally'si belirsizliği iyimserdir, birkaç tohumla koşun (bkz. [güç dağılımını yorumlamak](06-sonuclar.md#guc-dagilimi-yorum)). | `ayarlar.tohum` |
 | **Sıcaklık yöntemi** | Kütüphanede olmayan bir sıcaklıkta tesir kesitinin nasıl alınacağı: **Ara değer (interpolation)** ya da **En yakın sıcaklık (nearest)**. | — | ara değer | Su için S(α,β) yalnızca 284–800 K arasındadır; aralık dışı bir sıcaklık taraması koşunun ortasında patlar (README "Bilinen tuzaklar"). | `ayarlar.sicaklik_yontemi` (`interpolation` \| `nearest`) |
-| **Foton taşınımı (gama ısınması)** | Nötronlardan doğan fotonlar da taşınır (`settings.photon_transport`). `heating` skoru böylece nötron + gama ısınmasını verir; kapalıyken gama enerjisi hiç sayılmaz. Foton kaynağı seçiliyse taşınım zaten açıktır. Koşu belirgin uzar. Ayrıntı: [5.16 dersi](05c-ders-foton-sicaklik-yuzey.md#ders-foton-sicaklik-yuzey). | — | kapalı; gama ısınması isteniyorsa açık | Kütüphanede modeldeki bir elementin foton verisi yok (**hata**: OpenMC koşu başında durur). Foton açıkken toplam ısıyı `heating-local` ile aramak (**uyarı**: gama iki kez sayılır). | `ayarlar.foton.var` |
+| **Foton taşınımı (gama ısınması)** | Nötronlardan doğan fotonlar da taşınır (`settings.photon_transport`). `heating` skoru böylece nötron + gama ısınmasını verir; kapalıyken gama enerjisi hiç sayılmaz. Foton kaynağı seçiliyse taşınım zaten açıktır. Koşu belirgin uzar. Ayrıntı: [5.16 dersi](05d-ders-foton-sicaklik-yuzey.md#ders-foton-sicaklik-yuzey). | — | kapalı; gama ısınması isteniyorsa açık | Kütüphanede modeldeki bir elementin foton verisi yok (**hata**: OpenMC koşu başında durur). Foton açıkken toplam ısıyı `heating-local` ile aramak (**uyarı**: gama iki kez sayılır). | `ayarlar.foton.var` |
 | **Elektron işlemi** | Fotonların ürettiği elektron/pozitronların işlenişi: **Kalın hedef frenleme (ttb)** — enerji doğduğu yerde bırakılır, frenleme fotonları taşınır (OpenMC varsayılanı); **Yerel bırakım (led)** — frenleme fotonu da üretilmez. | — | ttb | Ağır elementli zırhta led seçip frenleme gamalarını kaybetmek. | `ayarlar.foton.elektron` (`ttb` \| `led`) |
 | **Sıcaklık toleransı** | En yakın yöntemde kütüphane sıcaklığının kabul edileceği uzaklık (\|T_k − T\| < tolerans); ara değer yönteminde kütüphane aralığının dışında uç sıcaklığa izin verilen pay. OpenMC kuralı: `src/nuclide.cpp`. | K | 10 (OpenMC varsayılanı) | Toleransı çok büyütüp 750 K yakıtı 600 K verisiyle koşmak: doğrulama **uyarı** "yalnız kütüphane sıcaklığı kullanılır" der. | `ayarlar.sicaklik.tolerans` |
 | **Varsayılan sıcaklık** | Sıcaklığı verilmemiş malzemelerin sıcaklığı. | K | 293.6 | — | `ayarlar.sicaklik.varsayilan` |
@@ -147,6 +147,21 @@ Termal kesim sabit **0.625 eV**'tur. Üretilen betik aynı tally'leri kurar.
 | **Spektrum ve dört faktörü hesapla** | Y3 tally'lerini açar. Dört faktör ve k yalnızca özdeğer hesabında; spektrum sabit kaynakta da hesaplanır. | — | kapalı | Sızıntılı (vakum sınırlı) modelde ε·p·f·η'yı k-eff sanmak: k-eff için ayrıca P_NL çarpanı gerekir (kart ayrı verir). | `ayarlar.spektrum.var` |
 | **Enerji grup yapısı** | Akı spektrumunun grupları (OpenMC hazır yapıları): CASMO-70, XMAS-172, SHEM-361, CCFE-709. Dört faktör ve indeksler gruptan bağımsızdır (kendi iki grubunu kullanır). | grup | XMAS-172 | Az parçacıkla CCFE-709 seçmek: grup başına gürültü artar. | `ayarlar.spektrum.grup_yapisi` |
 
+<a id="ayar-yerel-k"></a>
+### Yerel k haritası kartı
+
+Koşuya kare kafesin hatvesine hizalı bir mesh tally'si (`yerel_k_pin` ya da `yerel_k_demet`)
+ve filtresiz bir toplam tally'si (`yerel_k_toplam`) ekler (`cekirdek/yerel_k.py`). Harita
+[Çalıştır](04g-calistir.md#calistir) sayfasındaki **Yerel k haritası** kartında görünür;
+tanım ve yorum: [6.7](06-sonuclar.md#yerel-k), adım adım örnek: [5.15 dersi](05-dersler.md#ders-yerel-k).
+Desteklenmeyen modelde (altıgen kafes, demetler arası boşluk, ötelenmiş kafes) kart hatayı
+yazar ve model değişmez. Üretilen betik aynı tally'leri kurar.
+
+| Alan | Anlamı | Birim | Tipik aralık | Yaygın yanlış kullanım | Spec anahtarı |
+|---|---|---|---|---|---|
+| **Düzey** | Kapalı / Pin / Demet: mesh binleri pin hücresi ya da demet büyüklüğünde. | — | kapalı | Yerel k'yı k∞ sanmak: yerel üretim / yok olma oranıdır, sızıntı ve net akım terimi içermez. | `tallyler[].uretici = "yerel_k"` |
+| **Eksenel kapsam** | Tüm model yüksekliği (3B'de eksenel yansıtıcı dahil) ya da yalnız aktif (fisil) bölge. 2B'de fark yoktur. | — | tüm model | "Aktif" seçip ortalamayı k∞ ile karşılaştırmak: kapsama < 1 olur. | mesh `alt`/`ust` z |
+
 <a id="ayar-tally"></a>
 ### Tally'ler kartı
 
@@ -163,7 +178,7 @@ Sonuçlar [Çalıştır](04g-calistir.md#calistir) sayfasındaki **Sonuç** kart
 | **Skorlar** | Özel sette seçilen OpenMC skorları (akı, fisyon, soğurma, nu-fission, saçılma, toplam, esnek saçılma, (n,gamma), (n,2n), ısınma, kappa-fission, fission-q-prompt, damage-energy). Dosyadaki bilinmeyen skorlar listede korunur. | — | 1–4 skor | OpenMC skor adını doğrulamaz; uydurma bir skor koşuda hata verir (doğrulama küratörlü listeye göre **uyarı** verir). `flux` skorunun **hacim üzerinden integral** olduğunu (birim cm/s ya da kaynak parçacığı başına cm) unutmak: ortalama akı [1/cm²/s] için bölge hacmine bölün. | `tallyler[].skorlar` |
 | **Enerji grupları** | Tally'ye enerji filtresi ekler. | — | kapalı; iki grup: termal/hızlı | — | `tallyler[].filtreler[]` (`tur`: `enerji`) |
 | **Grup sınırları [eV]** | Enerji grup sınırları, artan sırada, virgülle. | eV | `0.0, 0.625, 2.0e7` (iki grup) | Okunamayan metin mevcut filtreyi silmez; ikiden az sınır geçersizdir. | `tallyler[].filtreler[].gruplar` |
-| **Akı haritası (düzenli ağ)** | Tally'ye düzenli ağ (mesh) filtresi ekler; sınırlar model kurulurken modelin dış ölçüsünden alınır (`otomatik`). | — | kapalı | Ağı elle küçük sınırlarla yazıp sonra modele yansıtıcı eklemek: otomatik ağ bunu önler (eski dosyaların `alt`/`ust` sınırları korunur). | `tallyler[].filtreler[]` (`tur`: `mesh`, `otomatik`, `alt`, `ust`) |
+| **Ağ (mesh) tally'si** | Tally'ye ağ (mesh) filtresi ekler (düzenli, silindirik, küresel; ayrıntı [4.11](04k-mesh-tally.md#mesh-tally)); sınırlar model kurulurken modelin dış ölçüsünden alınır (`otomatik`). | — | kapalı | Ağı elle küçük sınırlarla yazıp sonra modele yansıtıcı eklemek: otomatik ağ bunu önler (eski dosyaların `alt`/`ust` sınırları korunur). | `tallyler[].filtreler[]` (`tur`: `mesh`, `otomatik`, `alt`, `ust`) |
 | **Ağ bölmeleri** | Ağın nx, ny, nz bölme sayısı; nz yalnızca 3B modelde ve kürede anlamlıdır. | bölme | 10 × 10 × 1 (1–1000) | 2B modelde nz > 1 beklemek (2B'de ağ tek dilimdir). | `tallyler[].filtreler[].boyut` |
 
 Arayüzün düzenlemediği filtre türleri (ör. `malzeme` filtresi, `adlar` listesiyle; `hucre`
@@ -179,7 +194,7 @@ Yüzey tally'sinde skor yalnızca `current`'tır (OpenMC kuralı); **Enerji grup
 sonuç **kaçak spektrumu** olur; malzeme ve ağ filtreleri kaldırılır. Akım kaynak parçacığına
 süzülür (foton taşınımı açıkken fotonlar nötron akımına karışmaz). Sonuç
 [Çalıştır](04g-calistir.md#calistir-yuzey) sayfasındaki **Yüzey akımı ve kaçak** kartındadır;
-fizik ve ölçülen değerler: [5.16 dersi](05c-ders-foton-sicaklik-yuzey.md#ders-foton-sicaklik-yuzey).
+fizik ve ölçülen değerler: [5.16 dersi](05d-ders-foton-sicaklik-yuzey.md#ders-foton-sicaklik-yuzey).
 
 | Alan | Anlamı | Birim | Tipik aralık | Yaygın yanlış kullanım | Spec anahtarı |
 |---|---|---|---|---|---|

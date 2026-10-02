@@ -126,7 +126,7 @@ def test_goc_ornekler():
     print("\n[GOC4] 30 ornek (27 sablon + 3 G-4 agac) goc ettirilip yuklenir; kor aynen kalir")
     from cekirdek import sema, goc
     dosyalar = sorted(glob.glob(os.path.join(ORNEK, "*.json")))
-    kontrol("30 ornek", len(dosyalar) == 30, "-> %d" % len(dosyalar))
+    kontrol("31 ornek (v3 Y1: pwr_mesh_aki)", len(dosyalar) == 31, "-> %d" % len(dosyalar))
     for yol in dosyalar:
         with open(yol, encoding="utf-8") as f:
             ham = json.load(f)

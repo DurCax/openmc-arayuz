@@ -87,6 +87,7 @@ BEKLENEN_GRUP = {
     "grafit": "sogutucu", "berilyum": "sogutucu",
     "b4c": "emici", "agincd": "emici", "gd2o3": "emici",
     "helyum": "gaz",
+    "m5": "yapisal", "ss304": "yapisal", "uo2_gd2o3": "yakit",     # K6
 }
 
 
