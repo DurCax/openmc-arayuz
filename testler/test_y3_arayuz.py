@@ -160,6 +160,27 @@ def test_calistir_sekmesinde_kart_gizli_baslar():
     sekme.deleteLater()
 
 
+def test_y3siz_statepoint_karti_gizler():
+    print("\n[Y3-A6] Y3 tally'si olmayan gercek statepoint: oku() None, kart gizli (hata yok)")
+    if _qt() is None:
+        return
+    import glob
+    from cekirdek import spektrum
+    from arayuz.sonuc.spektrum import SpektrumKarti
+    from testler.ortak_test import KOK
+    # Arrange
+    sp = sorted(glob.glob(os.path.join(KOK, "testler", "veri", "kosu_ornek", "statepoint.*.h5")))[-1]
+    kart = SpektrumKarti()
+    kart.goster(_sahte_sonuc())
+    # Act
+    sonuc = spektrum.oku(sp)
+    kart.sonuc_ayarla(sp)
+    # Assert
+    kontrol("oku() None", sonuc is None)
+    kontrol("kart gizli", kart.isHidden())
+    kart.deleteLater()
+
+
 def test_gercek_kosu_diskten_yuklenir(gecici):
     print("\n[Y3-AY1] pin hucre kosusu (spektrum acik) diskten yuklenince kart dolu")
     if _qt() is None:
@@ -192,5 +213,5 @@ def test_gercek_kosu_diskten_yuklenir(gecici):
 
 HIZLI = [test_ayar_karti_spec_yazar, test_ayar_karti_doldurur_ve_gecersizi_duzeltir,
          test_sonuc_karti_tablo_ve_notlar, test_sonuc_karti_sizinti_ve_sabit_kaynak,
-         test_calistir_sekmesinde_kart_gizli_baslar]
+         test_calistir_sekmesinde_kart_gizli_baslar, test_y3siz_statepoint_karti_gizler]
 YAVAS = [test_gercek_kosu_diskten_yuklenir]

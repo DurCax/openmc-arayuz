@@ -135,6 +135,9 @@ class SpektrumKarti(GrafikKarti):
             self.setVisible(True)
             self.tablo.setText(_("Spektrum sonucu okunamadı: %s") % html.escape(str(e)))
             return
+        if sonuc is None:                 # kosuda Y3 tally'si yok (ayar kapali)
+            self.goster(None)
+            return
         self.goster(sonuc, self._sonsuz(sonuc))
 
     @staticmethod
