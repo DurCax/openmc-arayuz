@@ -33,12 +33,12 @@
 
 import math
 
-import openmc
 from cekirdek.ceviri import _
 
 
 def _duzlem(aci_derece):
     """z ekseninden gecen, verilen aciya ait yari-duzlem siniri."""
+    import openmc       # tembel: geometri_kontrol/ozet openmc'siz (H1b)
     a = math.radians(aci_derece)
     return openmc.Plane(a=-math.sin(a), b=math.cos(a), c=0.0, d=0.0)
 
@@ -60,6 +60,7 @@ def universe(tambur, nesneler, _mat):
     Tambur universe'i: emici yay LOKAL +x yonunde ortalanmistir.
     Yerlestirme sirasinda cell.rotation ile dondurulur.
     """
+    import openmc
     R = float(tambur["yaricap"])
     r_ic = float(tambur.get("emici_ic_yaricap") or 0.0)
     aci = float(tambur.get("emici_aci") or 120.0)

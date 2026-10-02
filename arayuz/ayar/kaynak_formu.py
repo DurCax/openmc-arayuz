@@ -90,7 +90,8 @@ class KaynakFormuMixin(object):
         sabit = not self._ozdeger()
         e = self._tayf_oku()
         try:
-            _kaynak.enerji_dagilimi(e)
+            if not _kaynak.varsayilan_dagilim_mi("enerji", e):   # H1b: acilista openmc yok
+                _kaynak.enerji_dagilimi(e)
             ort = _kaynak.ortalama_enerji(e)
             metin = (_("Ortalama enerji: {e}").format(e=_kaynak.enerji_metni(ort))) if ort else ""
             if sabit:

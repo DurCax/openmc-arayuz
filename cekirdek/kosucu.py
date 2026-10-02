@@ -32,10 +32,11 @@ import subprocess
 import sys
 import time
 
-from cekirdek import sema, kurucu, dogrula
+from cekirdek import sema, dogrula
 from cekirdek import kapsul as _kapsul
 from cekirdek import yollar as _yollar
 from cekirdek import spektrum as _spektrum
+from cekirdek import yuzey_akim as _yuzey
 from cekirdek.ceviri import _, N_
 from cekirdek.gunluk import kaydedici
 from cekirdek.uygunluk_denetimi import ayristir as _ayristir
@@ -245,6 +246,7 @@ def xml_yaz(spec, dizin, is_parcacigi=None):
     """Modeli kurar ve model.xml'i kosu dizinine yazar. DONER (model, bilgi, yol)"""
     # Kosu icin DAIMA taze model -- onbellekteki nesne paylasilir, uzerinde
     # calisma dizinine bagli islemler yapilmamalidir (bkz. onbellek.py).
+    from cekirdek import kurucu     # tembel: openmc (H1b)
     model, bilgi = kurucu.kur(spec)
     yol = os.path.join(dizin, "model.xml")
     model.export_to_model_xml(yol)
@@ -378,6 +380,33 @@ def _tam_tablo(ad, df, pd):
         return "tally: %s\n%s" % (ad, df.to_string())
 
 
+_TALLY_SATIR_SINIRI = 200      # metin tablosunda en cok satir (buyuk mesh tally'leri)
+
+
+def _duz_sutunlar(df, pd):
+    """MultiIndex sutunlari duz adlara cevirir (YENI DataFrame) ve mesh
+    sutunlarini {mesh adi: [duz sutun adlari]} olarak dondurur."""
+    if not isinstance(df.columns, pd.MultiIndex):
+        return df, {}
+    adlar = [str(a) if not str(b) else "%s %s" % (a, b) for a, b in df.columns]
+    ag = {}
+    for (a, b), duz in zip(df.columns, adlar):
+        if str(a).startswith("mesh") and str(b):
+            ag.setdefault(str(a), []).append(duz)
+    return df.set_axis(adlar, axis=1), ag
+
+
+def _ag_etiketi(r, ag):
+    """'ağ 1 (x=1, y=2, z=1) x-min out' bicimi."""
+    parcalar = []
+    for mesh, sutunlar in ag.items():
+        indeks = ", ".join("%s=%s" % (s[len(mesh) + 1:], r[s]) for s in sutunlar
+                           if not s.endswith(" surf"))
+        yuz = [str(r[s]) for s in sutunlar if s.endswith(" surf")]
+        parcalar.append(" ".join([_("ağ %s (%s)") % (mesh[len("mesh"):].strip(), indeks)] + yuz))
+    return " · ".join(parcalar)
+
+
 def tally_metni(ad, df, malzeme_adlari=None, sabit=False, kuvvet=1.0):
     """
     Tally DataFrame'ini okunur metin tablosuna cevirir: malzeme kimligi
@@ -391,14 +420,14 @@ def tally_metni(ad, df, malzeme_adlari=None, sabit=False, kuvvet=1.0):
         return "tally: %s\n%s" % (ad, df)
     if not isinstance(df, pd.DataFrame):
         return "tally: %s\n%s" % (ad, df)
-    if isinstance(df.columns, pd.MultiIndex):
-        # Mesh filtreli tally (sutunlar ("mesh 1", "x") ...): satir okuyucusu
-        # r["energy low [eV]"] Series doner; tam tablo basilir (v3 Y1 bulgusu).
-        return _tam_tablo(ad, df, pd)
+    # Mesh filtreli tally (sutunlar ("mesh 1", "x") ...): sutunlar duz adlara
+    # cevrilir ("mesh 1 x"); satir okuyucusu artik Series degil deger alir
+    # (v3 Y1/K4/Y7 bulgusu: MultiIndex'te r["nuclide"] Series donup cokuyordu).
+    df, ag = _duz_sutunlar(df, pd)
     adlar = malzeme_adlari or {}
     satirlar = []
-    for _sira, r in df.iterrows():
-        etiket = []
+    for _sira, r in df.head(_TALLY_SATIR_SINIRI).iterrows():
+        etiket = [_ag_etiketi(r, ag)] if ag else []
         if "material" in df.columns:
             etiket.append(str(adlar.get(int(r["material"]), _("malzeme %s") % r["material"])))
         if "energy low [eV]" in df.columns:
@@ -412,7 +441,8 @@ def tally_metni(ad, df, malzeme_adlari=None, sabit=False, kuvvet=1.0):
         satirlar.append((" · ".join(etiket) or _("tüm model"), _skor_adi(skor),
                          "%.4e" % ort, "± %.1f%%" % bagil, _birim(skor, sabit, kuvvet)))
     ek_sutun = [c for c in df.columns if c not in (
-        "material", "energy low [eV]", "energy high [eV]", "nuclide", "score", "mean", "std. dev.")]
+        "material", "energy low [eV]", "energy high [eV]", "nuclide", "score", "mean",
+        "std. dev.") and c not in sum(ag.values(), [])]
     if ek_sutun or not satirlar:
         # tanimadigimiz filtre (mesh vb.): tam tabloyu kirpmadan bas
         return _tam_tablo(ad, df, pd)
@@ -423,6 +453,8 @@ def tally_metni(ad, df, malzeme_adlari=None, sabit=False, kuvvet=1.0):
         return "  ".join(str(x).ljust(g) for x, g in zip(sat, genislik)).rstrip()
     cikti = ["tally: %s" % ad, bicimle(baslik), bicimle(["─" * g for g in genislik])]
     cikti += [bicimle(sat) for sat in satirlar]
+    if len(df) > _TALLY_SATIR_SINIRI:
+        cikti.append(_("… %d satır daha (tamamı statepoint'te)") % (len(df) - _TALLY_SATIR_SINIRI))
     return "\n".join(cikti)
 
 
@@ -460,6 +492,8 @@ def _tallyleri_oku(sp, sonuc):
             continue          # guc bolumunde ayrica islenir
         if ad.startswith(_spektrum.TALLY_ONEKI):
             continue          # Y3 spektrum karti okur (cekirdek/spektrum.py)
+        if ad.startswith(_yuzey.TALLY_ONEKI) or _yuzey.kosu_yuzey_tallysi_mi(t):
+            continue          # Y7 yuzey karti okur (cekirdek/yuzey_oku.py)
         try:
             df = t.get_pandas_dataframe()
         except Exception as e:

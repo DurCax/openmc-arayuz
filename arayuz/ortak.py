@@ -8,7 +8,9 @@
 ================================================================================
 """
 
+import contextlib
 import re
+from typing import Iterator
 
 import shiboken6
 from PySide6 import QtCore, QtGui, QtWidgets
@@ -85,6 +87,62 @@ def tekerlek_korumasi_kur(uygulama=None):
     suzgec = _TekerlekSuzgeci(uygulama)
     uygulama.installEventFilter(suzgec)
     _SUZGEC[id(uygulama)] = suzgec
+
+
+def odak_politikalarini_duzelt(kok: "QtWidgets.QWidget | None" = None) -> None:
+    """Polish suzgecinin isini toplu yapar: WheelFocus'lu hedef kutular StrongFocus
+    olur. kok verilirse yalniz onun altindaki widget'lar, yoksa uygulamanin tumu.
+    Silinmis (C++ nesnesi yok) kok ya da widget atlanir."""
+    if kok is not None:
+        if not shiboken6.isValid(kok):
+            return
+        adaylar = [w for sinif in _TEKERLEK_HEDEFLERI for w in kok.findChildren(sinif)]
+    else:
+        adaylar = [w for w in QtWidgets.QApplication.allWidgets()
+                   if isinstance(w, _TEKERLEK_HEDEFLERI)]
+    for w in adaylar:
+        if shiboken6.isValid(w) and w.focusPolicy() == QtCore.Qt.WheelFocus:
+            w.setFocusPolicy(QtCore.Qt.StrongFocus)
+
+
+_ASKI_DERINLIGI = {}       # id(uygulama) -> ic ice askida blok sayisi
+
+
+@contextlib.contextmanager
+def tekerlek_suzgeci_askida(kok: "QtWidgets.QWidget | None" = None,
+                            uygulama: "QtWidgets.QApplication | None" = None
+                            ) -> Iterator[None]:
+    """
+    Toplu widget kurulumu (ana pencere) sirasinda uygulama geneli suzgeci askiya
+    alir. Python suzgeci HER olayda (kurulumda ~170 bin: ChildAdded, Polish,
+    LayoutRequest ...) C++ -> Python gecisi demekti: pencere kurulumunun ~1.4 s'si
+    (olculdu, H1b). Kurulumda tekerlek/diyalog olayi olmaz; Polish'in isi
+    (odak politikasi) cikista toplu yapilir ve suzgec geri kurulur.
+
+    Blok icinde olay dongusu ya da modal diyalog CALISTIRILMAZ (exec, QTest.qWait):
+    suzgec yokken tekerlek korumasi ve diyalog sonrasi etkinlestirme calismaz.
+    Ic ice kullanilabilir: suzgeci yalniz en distaki blok kaldirir ve geri kurar.
+    """
+    uygulama = uygulama or QtWidgets.QApplication.instance()
+    suzgec = _SUZGEC.get(id(uygulama)) if uygulama is not None else None
+    if suzgec is None:
+        yield
+        return
+    anahtar = id(uygulama)
+    derinlik = _ASKI_DERINLIGI.get(anahtar, 0)
+    _ASKI_DERINLIGI[anahtar] = derinlik + 1
+    if derinlik == 0:
+        uygulama.removeEventFilter(suzgec)
+    try:
+        yield
+    finally:
+        _ASKI_DERINLIGI[anahtar] = derinlik
+        if derinlik == 0:
+            uygulama.installEventFilter(suzgec)
+            try:
+                odak_politikalarini_duzelt(kok)
+            except RuntimeError:        # asil hatayi maskelemesin; iz kalsin
+                _log.warning("odak politikasi duzeltilemedi", exc_info=True)
 
 
 _QT_CEVIRMEN = {}

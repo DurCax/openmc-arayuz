@@ -22,6 +22,9 @@ için **Dosya › Farklı kaydet…** kullanın.
 | [5.11](#ders-spektrum) | Spektrum ve dört faktör | `ornekler/pwr_pinhucre.json` | orta |
 | [5.13](05c-ders-mesh.md#ders-mesh) | Ağ (mesh) akı ve güç haritası, ParaView | `ornekler/pwr_mesh_aki.json` | orta |
 | [5.14](#ders-malzeme-asistani) | Malzeme asistanı ve kütüphanem | `ornekler/pwr_17x17.json` | giriş |
+| [5.15](#ders-yerel-k) | Yerel k ve demet k∞ | `ornekler/pwr_17x17.json`, `ornekler/pwr_ceyrek_kor.json` | orta |
+| [5.16](05d-ders-foton-sicaklik-yuzey.md#ders-foton-sicaklik-yuzey) | Foton ısınması, sıcaklık interpolasyonu, yüzey akımı | `ornekler/pwr_pinhucre.json`, `ornekler/zirh_kure.json` | orta |
+| [5.18](05d-ders-goruntuleyici.md#ders-goruntuleyici) | Görüntüleyici: kesit, çakışma, tally bindirmesi, 3B | `ornekler/pwr_mesh_aki.json`, `ornekler/vver1000_kor.json`, `ornekler/pwr_3b.json` | orta |
 | [5.19](05d-ders-mgxs.md#ders-mgxs) | Grup sabitleri, çok gruplu MC ve random ray | `ornekler/pwr_pinhucre.json` | ileri |
 
 **Beklenen sonuçlar nereden geliyor?** Her değer bir kaynağa dayanır: örnek dosyasının
@@ -854,3 +857,82 @@ Asistanın UO₂'si kütüphanedeki UO₂ ile aynı bileşimdir (U, zenginlik 3.
   (15.5 MPa'da sıvı sıkıştırılmıştır; asistan IF97 ile basıncı da hesaba katar.)
 - Kütüphanem neden ağa bağlı değil? (Kullanıcı kararı: malzeme verisi yalnız bu bilgisayarda
   kalır; dosya atomik yazılır, bozulursa silinmez.)
+---
+
+<a id="ders-yerel-k"></a>
+## 5.15 Yerel k ve demet k∞
+
+**Örnek dosya:** `ornekler/pwr_17x17.json`, `ornekler/pwr_ceyrek_kor.json` · **Seviye:** orta ·
+**Tahmini süre:** 30 dakika (koşular ~1–2 dakika)
+
+**Amaç.** Pin/demet başına **yerel k** haritasını okumak, haritanın ortalamasının hangi
+ağırlıkla k∞'a eşit olduğunu sayıyla görmek ve her demet türünün **k∞**'unu sihirbazla
+hesaplamak. Yorum: [6.7 Yerel k ve demet k∞](06-sonuclar.md#yerel-k).
+
+**Adımlar.**
+
+1. **PWR 17×17 demet** örneğini açın. **Hesap ayarları** › **Yerel k haritası (pin/demet)**
+   kartında **Düzey** = **Pin** seçin. Modele iki tally eklenir: `yerel_k_pin` (pin
+   hatvesine hizalı 17×17 mesh; `nu-fission`, `absorption` ve (n,xn) skorları) ve
+   `yerel_k_toplam` (filtresiz, aynı skorlar). Terminalden aynısı:
+   `python -m cekirdek.yerel_k ekle ornekler/pwr_17x17.json pin -o pwr_17x17_yk.json`.
+2. 3 000 parçacık × 40 çevrim / 15 pasif yapın ve **Çalıştır**.
+3. **Çalıştır** sayfasında **Yerel k haritası** kartı açılır. Beyaz hücreler kılavuz
+   borulardır (yakıt yok, k = 0); fare imleci hücrenin k ± σ değerini ve (n,xn)
+   düzeltmesiz oranı gösterir.
+4. Özet satırında **ortalama k**, **koşunun k-eff'i** ve **P/(D+L)** değerlerini
+   karşılaştırın. Sonra **CSV kaydet…** ile tabloyu alın ve yalnız `fisil = 1` satırlarının
+   düz (ağırlıksız) ortalamasını hesaplayın.
+5. Demet k∞ sihirbazı: **Çeyrek simetrik PWR koru** örneğini açın, **Araçlar › Demet k∞
+   sihirbazı…**. İki demet türü (`demet_24`, `demet_31`) kordaki sayılarıyla listelenir.
+   2 000 parçacık × 40 / 15, tohum 1, **Kuyruğa ekle ve başlat**. Her tür ayrı bir koşu
+   olarak koşu kuyruğuna ([4.10](04j-is-akisi.md#is-akisi)) girer; tablo biten koşuların
+   k∞ ± σ değeriyle dolar, **CSV kaydet…**.
+6. Aynı kora **Demet** düzeyinde yerel k ekleyip 4 000 × 40 / 20 koşun. İç demetlerin
+   yerel k'sını (± σ) sihirbazın k∞'larıyla karşılaştırın.
+
+![Yerel k haritası: yansıtıcı 17×17 demet, pin düzeyi](../resimler/tr/k4_yerel_k_demet_pin.png)
+
+![Demet k∞ sihirbazı: iki demet türü, kuyrukta bitti](../resimler/tr/k4_demet_kinf.png)
+
+**Beklenen sonuç** (02.10.2026, ENDF/B-VIII.0, 6 iş parçacığı):
+
+- **17×17, 3 000 × 40 / 15, tohum 1.** Yerel k ortalaması **1.18521**, koşunun birleşik
+  k-eff'i **1.19109 ± 0.00348**. İkisi **korelasyonlu iki tahmindir** (aynı geçmişler);
+  farkı (−590 pcm) şöyle ayrışır: ΣP = global k-tracklength = **1.18941** (aynı tahminci,
+  birebir), ΣD_model = **1.0035 ± 0.0040** (beklenen değer 1: sızıntı yok, kaynak nötronu
+  başına). k_harita = k_tl / D_model → D'nin 1'den sapması −420 pcm (≈ 0.9 σ_D), birleşik
+  tahminci ile tracklength farkı −170 pcm. Harita kapsamı 1.0000, c_xn = 1.00158.
+- **Düz ortalama** (yalnız yakıtlı 264 pin) **1.2108**: 2 500 pcm kaymanın neredeyse
+  tamamı kılavuz boruların soğurmasının (D'nin %2.1'i) dışarıda kalmasıdır — yakıtlı
+  pinlerin ΣP/ΣD'si de 1.2107'dir. Pinler arası saçılma (1.10–1.31) bu istatistikte
+  çoğunlukla gürültüdür.
+- **Sihirbaz** (2 000 × 40 / 15, tohum 1): `demet_24` **k∞ = 1.0948 ± 0.0040**,
+  `demet_31` **1.1715 ± 0.0045**. Elle kurulan tek demet modeli (kor türü **tek demet**,
+  bütün sınırlar `reflective`) **fiziksel olarak özdeştir** (malzeme bileşimi, yüzey, hücre
+  ve kafes imzası testle sabit); sihirbaz kütüphaneyi kullanılan parçalara budadığı için
+  rastgele gerçekleşme farklı olabilir: `demet_24` 1.0948 (birebir aynı), `demet_31` elle
+  1.1756 ± 0.0045 — fark 0.65 σ_fark (σ_fark = √(σ₁² + σ₂²)).
+- **Çeyrek kor, demet düzeyi** (4 000 × 40 / 20): iç `demet_24`'ler 1.085–1.088 (± 0.02–0.03),
+  `demet_31`'ler 1.16–1.20 (± 0.02–0.06). Bin σ'ları korelasyon yok sayıldığı için büyüktür
+  (ihtiyatlı). Harita ortalaması 1.0644, P/(D+L) = 1.0628, k-tracklength 1.0633, birleşik
+  k-eff 1.0595 ± 0.0025. Sızıntı yalnız L = 0.00155'tir (1 − ℓ = 0.9985: −155 pcm):
+  su yansıtıcı hücreler haritanın içindedir ve nötronların çoğu orada soğurulur. Ortalama
+  ile k-eff arasındaki farkın çoğu sızıntı değil, tahminci farkıdır (birleşik − tracklength
+  −380 pcm). 3B modelde demet binleri eksenel su katmanlarını da içerir (±h/2); yalnız aktif
+  bölge için kartta **Eksenel kapsam** = **yalnız aktif (fisil) bölge** seçin (kapsama < 1
+  olur).
+
+**Ne öğrendik / kontrol soruları.**
+
+- Sonsuz kafeste yerel k'ların hangi ortalaması k∞'a eşittir? (Net yok olma — Σ_aφ − X —
+  ağırlıklı aritmetik ortalama. Üretim ağırlıklı harmonik ortalama ancak bütün binler
+  fisilse eşdeğerdir; kılavuz boru gibi P = 0 binlerin D'si paydaya ayrıca eklenir.)
+- Yerel k neden k∞ değildir? (Yerel üretim / yok olma oranıdır; bin sınırlarındaki net akım
+  ve sızıntı tanıma girmez. Akı komşulardan gelen nötronları içerir; oranı bindeki spektrum
+  belirler: iç demetin yerel k'sı, kor içi spektrumdaki k∞'una yakındır. Kritiklik
+  globaldir: k_eff = ΣP / (ΣD + L) = k_harita (1 − ℓ).)
+- (n,2n) düzeltmesi olmasa ne değişirdi? (OpenMC `absorption`'ı (n,xn)'i saymaz; P/A ile k∞
+  arasında c_xn − 1 ≈ %0.16 fark kalırdı.)
+- BEAVRS korunda pin düzeyi neden reddedilir? (Demet adımı 21.50 cm, 17 × 1.26 = 21.42 cm:
+  demetler arası su aralığı tek düzgün mesh'e hizalanamaz; demet düzeyini kullanın.)

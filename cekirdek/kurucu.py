@@ -35,6 +35,7 @@ from cekirdek import geometri
 from cekirdek import kaynak as _kaynak
 from cekirdek import mgxs_uret
 from cekirdek import spektrum
+from cekirdek import foton as _foton, sicaklik as _sicaklik, yuzey_akim as _yuzey
 from cekirdek.geometri.kurulum import kur as _geo_kur
 from cekirdek.sema import model_yuksekligi as sema_model_yuksekligi
 from cekirdek.sema import guc_hedefleri as sema_guc_hedefleri
@@ -151,6 +152,8 @@ def ayarlari_kur(spec, sinir_kutu, fisil_aralik=None):
     # etkilesime girmeden gecer ve sonuc sessizce ANLAMSIZ olur.
     if (k.get("parcacik") or "neutron") == "photon":
         s.photon_transport = True
+    _foton.uygula(s, spec)          # Y7: foton tasinimi (cekirdek/foton.py)
+    _sicaklik.uygula(s, spec)       # Y7: sicaklik isleme (cekirdek/sicaklik.py)
 
     # --- Shannon entropisi mesh'i (kaynak yakinsamasi olcumu) ---
     ent = a.get("entropi_mesh") or {}
@@ -217,6 +220,8 @@ def tallyleri_kur(spec, nesneler, sinir_kutu=None, z_aralik=None):
     from cekirdek import mesh_tally as _mt
     liste = []
     for t in spec.get("tallyler", []):
+        if _yuzey.yuzey_tally_mi(t):
+            continue          # Y7: kur() sonunda yuzey_akim.tally_ekle (geometri gerekir)
         tal = openmc.Tally(name=t["ad"])
         tal.scores = list(t["skorlar"])
         if t.get("nuklidler"):
@@ -415,5 +420,6 @@ def kur(spec):
         bilgi["guc_hucre"] = guc_tally_ekle(spec, model, nesneler, universeler,
                                             sinir_kutu, fisil, bilgi=bilgi)
     spektrum.tally_ekle(spec, model, nesneler)   # Y3: spektrum/dort faktor (cekirdek/spektrum.py)
+    _yuzey.tally_ekle(spec, model, sinir_kutu)   # Y7: yuzey akimi (cekirdek/yuzey_akim.py)
     bilgi["mgxs"] = mgxs_uret.tally_ekle(spec, model)   # Y8: grup sabitleri (cekirdek/mgxs_uret.py)
     return model, bilgi
