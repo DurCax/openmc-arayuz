@@ -324,6 +324,7 @@ class Kuyruk:
         self._dinleyiciler: List[Callable[[IsDurumu], None]] = []
         self._etkin = False
         self._kapali = False
+        self._bildirim = 0          # dinleyicilere henuz iletilmemis son asama olayi
 
     # ------------------------------------------------------------------
     # ozellikler
@@ -454,11 +455,16 @@ class Kuyruk:
             return self._isler[kimlik]
 
     def tamamlandi_mi(self) -> bool:
+        """Butun isler son asamada mi (dinleyici icinden de dogru cevap verir)."""
         with self._kosul:
-            return self._tamam()
+            return self._hepsi_son()
+
+    def _hepsi_son(self) -> bool:
+        return all(d.bitti_mi for d in self._durumlar.values()) and not self._calisan
 
     def _tamam(self) -> bool:
-        return all(d.bitti_mi for d in self._durumlar.values()) and not self._calisan
+        # bekle() dinleyiciler son olayi ALDIKTAN sonra doner (gecmis kaydi vb.)
+        return self._hepsi_son() and self._bildirim == 0
 
     def bekle(self, zaman_asimi: Optional[float] = None) -> bool:
         """Butun isler son asamaya gelene kadar bekler. DONER True: tamam."""
@@ -492,13 +498,14 @@ class Kuyruk:
                 yeni = dataclasses.replace(durum, asama=Asama.IPTAL, bitis=time.time())
                 self._durumlar[kimlik] = yeni
                 olaylar = [yeni]
-                self._kosul.notify_all()
+                self._bildirim += 1
             else:
                 self._iptal_istenen.add(kimlik)
                 surec = self._surecler.get(kimlik)
                 if surec is not None:
                     self._sonlandir(surec)
-        self._yay(olaylar)
+        if olaylar:
+            self._son_yay(olaylar)
 
     def kapat(self) -> None:
         """Yeni is alinmaz; bekleyenler ve kosanlar iptal edilir, isciler beklenir."""
@@ -581,8 +588,17 @@ class Kuyruk:
             self._iptal_istenen.discard(kimlik)
             self._iplikler.pop(kimlik, None)
             olaylar = [yeni] + self._dagit()
-            self._kosul.notify_all()
-        self._yay(olaylar)
+            self._bildirim += 1
+        self._son_yay(olaylar)
+
+    def _son_yay(self, olaylar: List[IsDurumu]) -> None:
+        """Son asama olayini yayar, SONRA bekleyenleri uyandirir."""
+        try:
+            self._yay(olaylar)
+        finally:
+            with self._kosul:
+                self._bildirim -= 1
+                self._kosul.notify_all()
 
     def _iptal_mi(self, kimlik: str) -> bool:
         with self._kosul:
