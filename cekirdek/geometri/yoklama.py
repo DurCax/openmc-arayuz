@@ -33,9 +33,66 @@ YoklamaSonucu = namedtuple("YoklamaSonucu", "n bosluklar ortusmeler")
 RAPOR_SINIRI = 5
 
 
-def _iceren_hucreler(evren, p):
-    nokta = tuple(float(v) for v in p)
-    return [c for c in evren.cells.values() if c.region is None or nokta in c.region]
+_DERINLIK_SINIRI = 60      # evren icine inis siniri (dongu korumasi)
+
+
+# ----------------------------------------------------------------------------
+# toplu bolge degerlendirmesi (H1b): yuzey denklemi nokta dizisinde BIR kez
+#   openmc Region.__contains__ her noktada her hucrenin agacini yurur; ayni
+#   yuzey komsu hucrelerde tekrar tekrar hesaplanir (SFR: 600 nokta 11.5 s).
+#   Burada bir evrenin butun noktalari birlikte degerlendirilir: her yuzey
+#   numpy dizisinde bir kez (bellek: id(yuzey) -> deger dizisi). Aritmetik
+#   openmc'nin kendi evaluate()'idir (ayni islem sirasi, IEEE ayni sonuc);
+#   yalniz eleman bazli evaluate'i olan yuzey turleri dizide calistirilir,
+#   digerleri nokta nokta (tekil yedek yol). Halfspace kurali openmc ile ayni:
+#   '+' -> deger >= 0, '-' -> deger < 0.
+# ----------------------------------------------------------------------------
+
+_VEKTOREL_YUZEY_ADLARI = ("Plane", "XPlane", "YPlane", "ZPlane", "XCylinder",
+                          "YCylinder", "ZCylinder", "Sphere")
+_vektorel = []
+
+
+def _vektorel_turler():
+    """evaluate()'i eleman bazli olan openmc yuzey siniflari (tembel: openmc)."""
+    if not _vektorel:
+        import openmc
+        _vektorel.append(frozenset(getattr(openmc, a) for a in _VEKTOREL_YUZEY_ADLARI))
+    return _vektorel[0]
+
+
+def _yuzey_degeri(yuzey, xyz, P, bellek):
+    deger = bellek.get(id(yuzey))
+    if deger is None:
+        if type(yuzey) in _vektorel_turler():
+            deger = np.broadcast_to(yuzey.evaluate(xyz), (len(P),))
+        else:
+            deger = np.array([yuzey.evaluate(tuple(float(v) for v in p)) for p in P],
+                             dtype=float)
+        bellek[id(yuzey)] = deger
+    return deger
+
+
+def bolge_maskesi(bolge, xyz, P, bellek):
+    """openmc bolgesi -> P'nin (k x 3) her satiri icin 'nokta in bolge' (bool dizisi).
+    xyz = (P[:, 0], P[:, 1], P[:, 2]); bellek: ayni noktalar icin yuzey degerleri."""
+    import openmc
+    if isinstance(bolge, openmc.Halfspace):
+        deger = _yuzey_degeri(bolge.surface, xyz, P, bellek)
+        return deger >= 0.0 if bolge.side == "+" else deger < 0.0
+    if isinstance(bolge, openmc.Intersection):
+        maske = np.ones(len(P), dtype=bool)
+        for alt in bolge:
+            maske &= bolge_maskesi(alt, xyz, P, bellek)
+        return maske
+    if isinstance(bolge, openmc.Union):
+        maske = np.zeros(len(P), dtype=bool)
+        for alt in bolge:
+            maske |= bolge_maskesi(alt, xyz, P, bellek)
+        return maske
+    if isinstance(bolge, openmc.Complement):
+        return ~bolge_maskesi(bolge.node, xyz, P, bellek)
+    return np.array([tuple(float(v) for v in p) in bolge for p in P], dtype=bool)
 
 
 def _yerel(hucre, p):
@@ -46,36 +103,66 @@ def _yerel(hucre, p):
     return p
 
 
+def _iceren_matrisi(hucreler, P):
+    """(hucre sayisi x nokta) bool: hucre noktayi iceriyor mu (region None = her yer)."""
+    xyz, bellek = (P[:, 0], P[:, 1], P[:, 2]), {}
+    satirlar = [np.ones(len(P), dtype=bool) if c.region is None
+                else bolge_maskesi(c.region, xyz, P, bellek) for c in hucreler]
+    return np.vstack(satirlar) if satirlar else np.zeros((0, len(P)), dtype=bool)
+
+
+def _bos_durum(p, kok, icinde):
+    if kok and icinde is not None and not icinde(p[0], p[1]):
+        return "dis"
+    return "dis" if kok and icinde is None else "bosluk"
+
+
+def _inis(hucre, p):
+    """Tek iceren hucreden sonraki adim: (alt evren | None, yeni nokta, durum)."""
+    if hucre.fill_type == "universe":
+        return hucre.fill, _yerel(hucre, p), None
+    if hucre.fill_type == "lattice":
+        kafes = hucre.fill
+        idx, p = kafes.find_element(_yerel(hucre, p))
+        if kafes.is_valid_index(idx):
+            return kafes.get_universe(idx), p, None
+        if kafes.outer is not None:
+            return kafes.outer, p, None
+        return None, p, "bosluk"
+    return None, p, "tamam"
+
+
+def _in_toplu(evren, P, kok, icinde, derinlik=0):
+    """P (k x 3) -> [(durum, [hucre], nokta)] her satir icin (bkz. _in)."""
+    if derinlik >= _DERINLIK_SINIRI:
+        return [("tamam", [], p) for p in P]
+    hucreler = list(evren.cells.values())
+    matris = _iceren_matrisi(hucreler, P)
+    sonuc, gruplar = [None] * len(P), {}
+    for i, p in enumerate(P):
+        icerenler = [hucreler[j] for j in np.flatnonzero(matris[:, i])]
+        if len(icerenler) != 1:
+            sonuc[i] = ("ortusme", icerenler, p) if icerenler else \
+                (_bos_durum(p, kok, icinde), [], p)
+            continue
+        alt, q, durum = _inis(icerenler[0], p)
+        if alt is None:
+            sonuc[i] = (durum, icerenler, q)
+            continue
+        grup = gruplar.setdefault((id(icerenler[0]), id(alt)), (icerenler[0], alt, [], []))
+        grup[2].append(i)
+        grup[3].append(q)
+    for hucre, alt, sira, noktalar in gruplar.values():
+        alt_sonuc = _in_toplu(alt, np.array(noktalar, dtype=float), False, icinde,
+                              derinlik + 1)
+        for i, (durum, yol, q) in zip(sira, alt_sonuc):
+            sonuc[i] = (durum, [hucre] + yol, q)
+    return sonuc
+
+
 def _in(evren, p, kok, icinde, derinlik=0):
     """(durum, [hucre], nokta) -- durum: 'tamam' | 'bosluk' | 'ortusme' | 'dis'."""
-    yol = []
-    while derinlik < 60:
-        icerenler = _iceren_hucreler(evren, p)
-        if not icerenler:
-            if kok and icinde is not None and not icinde(p[0], p[1]):
-                return "dis", yol, p
-            return ("dis" if kok and icinde is None else "bosluk"), yol, p
-        if len(icerenler) > 1:
-            return "ortusme", yol + icerenler, p
-        hucre = icerenler[0]
-        yol.append(hucre)
-        kok = False
-        if hucre.fill_type == "universe":
-            p, evren = _yerel(hucre, p), hucre.fill
-        elif hucre.fill_type == "lattice":
-            p = _yerel(hucre, p)
-            kafes = hucre.fill
-            idx, p = kafes.find_element(p)
-            if kafes.is_valid_index(idx):
-                evren = kafes.get_universe(idx)
-            elif kafes.outer is not None:
-                evren = kafes.outer
-            else:
-                return "bosluk", yol, p
-        else:
-            return "tamam", yol, p
-        derinlik += 1
-    return "tamam", yol, p
+    return _in_toplu(evren, np.array([p], dtype=float), kok, icinde, derinlik)[0]
 
 
 def nokta_yoklama(geo, n=20000, tohum=1, kutu=None, icinde=None):
@@ -85,11 +172,11 @@ def nokta_yoklama(geo, n=20000, tohum=1, kutu=None, icinde=None):
         kutu = (tuple(alt), tuple(ust))
     (x0, y0, z0), (x1, y1, z1) = kutu
     rnd = random.Random(tohum)
+    P = np.array([[rnd.uniform(x0, x1), rnd.uniform(y0, y1),
+                   rnd.uniform(z0, z1) if z1 > z0 else z0] for _i in range(int(n))],
+                 dtype=float).reshape(-1, 3)
     bosluk, ortusme, icerde = [], [], 0
-    for _i in range(int(n)):
-        p = np.array([rnd.uniform(x0, x1), rnd.uniform(y0, y1),
-                      rnd.uniform(z0, z1) if z1 > z0 else z0])
-        durum, hucreler, _yerel_p = _in(geo.root_universe, p, True, icinde)
+    for p, (durum, hucreler, _q) in zip(P, _in_toplu(geo.root_universe, P, True, icinde)):
         if durum == "dis":
             continue
         icerde += 1
