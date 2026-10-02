@@ -126,5 +126,60 @@ def test_dosya_yok_ya_da_bicim_disi_acik_hata():
         mp.oku(_dosya("a,b,c\n1,2,3\n"))
 
 
+def _kayit(no, ad, yogunluk, satirlar, yorum=()):
+    metin = ['"%d.  ","%s",,,,,' % (no, ad), '"Formula =","-",,,,,',
+             '"Density (g/cm3) =",,%s,,,,' % yogunluk,
+             '"Element","Neutron ZA","Photon ZA","Fraction","Fraction","Density",']
+    metin += ['"%s",1,1,%s,0.5,0.1,' % (e, w) for e, w in satirlar]
+    metin += ['"Total",,,1.0,1.0,0.1,', '"Comments & references:",,,,,,']
+    metin += ['"%s",,,,,,' % y for y in yorum] + ["0,,,,,,"]
+    return "\n".join(metin) + "\n"
+
+
+def test_nan_negatif_toplam_ve_yinelenen_kayitlar_atlanir():
+    from cekirdek import malzeme_pnnl as mp
+    icerik = (_kayit(1, "Iyi", "1.0", [("H", "0.5"), ("O", "0.5")])
+              + _kayit(2, "NaN agirlik", "1.0", [("H", "nan"), ("O", "0.5")])
+              + _kayit(3, "Negatif", "1.0", [("H", "-0.5"), ("O", "1.5")])
+              + _kayit(4, "Sonsuz yogunluk", "inf", [("H", "1.0")])
+              + _kayit(5, "Asiri yogun", "45.0", [("H", "1.0")])
+              + _kayit(6, "Toplam 0.99", "1.0", [("H", "0.49"), ("O", "0.50")])
+              + _kayit(1, "Yinelenen", "1.0", [("H", "1.0")]))
+    malz, sorunlar = mp.oku(_dosya(icerik))
+    assert [m["ad"] for m in malz] == ["Iyi"]
+    assert len(sorunlar) == 6
+    assert any("toplam" in s for s in sorunlar) and any("daha önce" in s for s in sorunlar)
+
+
+def test_yorumdaki_numara_sahte_kayit_acmaz():
+    from cekirdek import malzeme_pnnl as mp
+    icerik = (_kayit(1, "Bir", "1.0", [("H", "1.0")], yorum=("12.  ", "Kaynak metni."))
+              + _kayit(2, "Iki", "2.0", [("O", "1.0")]))
+    malz, sorunlar = mp.oku(_dosya(icerik))
+    assert [m["no"] for m in malz] == [1, 2] and not sorunlar
+    assert "Kaynak metni." in malz[0]["kaynak"]
+
+
+def test_boyut_ve_bilesen_sinirlari(monkeypatch):
+    from cekirdek import malzeme_pnnl as mp
+    yol = _dosya(_kayit(1, "A", "1.0", [("H", "0.5"), ("O", "0.3"), ("C", "0.2")]))
+    monkeypatch.setattr(mp, "AZAMI_BILESEN", 2)
+    with pytest.raises(mp.PnnlHatasi):
+        mp.oku(yol)
+    monkeypatch.setattr(mp, "AZAMI_BOYUT", 10)
+    with pytest.raises(mp.PnnlHatasi, match="büyük"):
+        mp.oku(yol)
+
+
+def test_utf8_bom_okunur(tmp_path):
+    from cekirdek import malzeme_pnnl as mp
+    yol = tmp_path / "pnnl.csv"
+    yol.write_bytes(_kayit(7, "Çelik ünlü", "7.9", [("Fe", "1.0")]).encode("utf-8-sig"))
+    malz, _s = mp.oku(str(yol))
+    assert malz[0]["ad"] == "Çelik ünlü" and malz[0]["no"] == 7
+
+
 HIZLI = [test_csv_okunur_malzemeler_ve_sorunlar, test_ara_ad_ve_formulde_buyuk_kucuk_harf_duyarsiz,
-         test_malzemeye_cevir_sema_bicimi_ve_kurulabilir, test_dosya_yok_ya_da_bicim_disi_acik_hata]
+         test_malzemeye_cevir_sema_bicimi_ve_kurulabilir, test_dosya_yok_ya_da_bicim_disi_acik_hata,
+         test_nan_negatif_toplam_ve_yinelenen_kayitlar_atlanir, test_yorumdaki_numara_sahte_kayit_acmaz,
+         test_boyut_ve_bilesen_sinirlari, test_utf8_bom_okunur]
