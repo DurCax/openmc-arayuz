@@ -63,7 +63,7 @@ eklenir.
 
 | Alan | Anlamı | Birim | Tipik aralık | Yaygın yanlış kullanım |
 |---|---|---|---|---|
-| **Kaynak** | **Model kaynağı (örnekleme)**: `settings.source` (kutu ya da nokta) örneklenir; `fissionable` kısıtı noktadaki malzemeye bakılarak uygulanır. **Statepoint kaynak bankası**: koşunun son kaynak noktaları (`source_bank`). | — | model kaynağı | Model kaynağını koşunun yakınsamış dağılımı sanmak: ilk çevrimin kaynağıdır. |
+| **Kaynak** | **Model kaynağı (settings.source)**: `settings.source` (kutu ya da nokta) örneklenir; `fissionable` kısıtı noktadaki malzemeye bakılarak uygulanır. **Statepoint kaynak bankası**: koşunun son kaynak noktaları (`source_bank`). | — | model kaynağı | Model kaynağını koşunun yakınsamış dağılımı sanmak: ilk çevrimin kaynağıdır. |
 | **Nokta sayısı** | Gösterilecek nokta (bankadan rastgele alt küme). | nokta | 2000 (10–20000) | — |
 | **Dilim kalınlığı** | Yalnız kesit düzlemine bu kalınlıktaki noktalar; **tümü (izdüşüm)** bütün noktaları düzleme izdüşürür. | cm | tümü | 3B modelde xz'de kalınlık 0: bütün eksenel noktalar üst üste. |
 

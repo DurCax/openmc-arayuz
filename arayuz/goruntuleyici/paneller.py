@@ -183,7 +183,7 @@ class KaynakPaneli(QtWidgets.QGroupBox):
         self.setChecked(False)
         from cekirdek import cizim_goruntu as cg
         self.kaynak = QtWidgets.QComboBox()
-        self.kaynak.addItem(_("Model kaynağı (örnekleme)"), KAYNAK_AYAR)
+        self.kaynak.addItem(_("Model kaynağı (settings.source)"), KAYNAK_AYAR)
         self.kaynak.addItem(_("Statepoint kaynak bankası"), KAYNAK_STATEPOINT)
         self.sayi = QtWidgets.QSpinBox()
         self.sayi.setRange(_KAYNAK_EN_AZ, cg.KAYNAK_EN_COK)

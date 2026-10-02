@@ -51,7 +51,7 @@ verified on a known overlapping model by `testler/test_y2_isci.py`.
 3. With **Hide unreliable cells (σ mask)** on, cells with a relative error above 10% are not
    drawn. If cells disappear in a short run (e.g. 4000 particles x 40 cycles) the statistics are
    insufficient.
-4. **Source points** › **Model source (sampled)**: points lie only in the fuel rods (the
+4. **Source points** › **Model source (settings.source)**: points lie only in the fuel rods (the
    `fissionable` constraint of the box source built by the model builder); there are no points in
    guide tubes or water. **Statepoint source bank** shows the fission sites of the last cycle of
    the run.

@@ -63,7 +63,7 @@ transparent. The value under the mouse is added to the info line.
 
 | Field | Meaning | Unit | Typical range | Common misuse |
 |---|---|---|---|---|
-| **Source** | **Model source (sampled)**: `settings.source` (box or point) is sampled; the `fissionable` constraint is applied by looking up the material at the point. **Statepoint source bank**: the last source sites of the run (`source_bank`). | — | model source | Taking the model source for the converged distribution of the run: it is the first-cycle source. |
+| **Source** | **Model source (settings.source)**: `settings.source` (box or point) is sampled; the `fissionable` constraint is applied by looking up the material at the point. **Statepoint source bank**: the last source sites of the run (`source_bank`). | — | model source | Taking the model source for the converged distribution of the run: it is the first-cycle source. |
 | **Number of points** | Points shown (random subset of the bank). | point | 2000 (10–20000) | — |
 | **Slice thickness** | Only points within this thickness of the slice plane; **all (projection)** projects every point onto the plane. | cm | all | 3D model, xz, thickness 0: all axial points on top of each other. |
 

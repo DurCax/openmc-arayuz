@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 15:02+0300\n"
+"POT-Creation-Date: 2026-10-02 15:13+0300\n"
 "PO-Revision-Date: 2026-10-01 18:14+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -1854,7 +1854,7 @@ msgstr "batch"
 msgid "Grafiği kaydet"
 msgstr "Save chart"
 
-#: arayuz/calistir/yakinsama.py:77 arayuz/goruntuleyici/pencere.py:474
+#: arayuz/calistir/yakinsama.py:77 arayuz/goruntuleyici/pencere.py:479
 #: arayuz/pencere/proje.py:146
 msgid "Kaydedilemedi"
 msgstr "Could not save"
@@ -3838,8 +3838,8 @@ msgid "Kaynak noktaları"
 msgstr "Source points"
 
 #: arayuz/goruntuleyici/paneller.py:186
-msgid "Model kaynağı (örnekleme)"
-msgstr "Model source (sampled)"
+msgid "Model kaynağı (settings.source)"
+msgstr "Model source (settings.source)"
 
 #: arayuz/goruntuleyici/paneller.py:187
 msgid "Statepoint kaynak bankası"
@@ -3905,24 +3905,24 @@ msgstr "Save as PNG…"
 msgid "Açık model yok: önce bir model açın."
 msgstr "No open model: open a model first."
 
-#: arayuz/goruntuleyici/pencere.py:230
+#: arayuz/goruntuleyici/pencere.py:232
 msgid "Kaynak bankası için statepoint seçin (Ağ tally bindirmesi > Statepoint seç…)."
 msgstr "Choose a statepoint for the source bank (Mesh tally overlay > Choose statepoint…)."
 
-#: arayuz/goruntuleyici/pencere.py:246
+#: arayuz/goruntuleyici/pencere.py:248
 msgid "Önce kesit çizilmeli (model bilgisi bekleniyor)."
 msgstr "The slice must be drawn first (waiting for model information)."
 
-#: arayuz/goruntuleyici/pencere.py:255
+#: arayuz/goruntuleyici/pencere.py:257
 msgid "3B görünüm çiziliyor…"
 msgstr "Drawing 3D view…"
 
-#: arayuz/goruntuleyici/pencere.py:314
+#: arayuz/goruntuleyici/pencere.py:316
 #, python-format
 msgid "Görüntüleyici: %s"
 msgstr "Viewer: %s"
 
-#: arayuz/goruntuleyici/pencere.py:316
+#: arayuz/goruntuleyici/pencere.py:320
 #, python-format
 msgid ""
 "3B görünüm üretilemedi:\n"
@@ -3933,7 +3933,7 @@ msgstr ""
 "\n"
 "%s"
 
-#: arayuz/goruntuleyici/pencere.py:319
+#: arayuz/goruntuleyici/pencere.py:323
 #, python-format
 msgid ""
 "Kesit çizilemedi:\n"
@@ -3944,7 +3944,7 @@ msgstr ""
 "\n"
 "%s"
 
-#: arayuz/goruntuleyici/pencere.py:325
+#: arayuz/goruntuleyici/pencere.py:329
 #, python-format
 msgid ""
 "3B ışın izleme bu modelde başarısız oldu (OpenMC 0.16 SolidRayTracePlot sınırlaması; "
@@ -3957,61 +3957,61 @@ msgstr ""
 "\n"
 "%s"
 
-#: arayuz/goruntuleyici/pencere.py:364
+#: arayuz/goruntuleyici/pencere.py:369
 #, python-format
 msgid "Bindirme yapılamadı: %s"
 msgstr "Overlay failed: %s"
 
-#: arayuz/goruntuleyici/pencere.py:376
+#: arayuz/goruntuleyici/pencere.py:381
 msgid "Kesit güncel."
 msgstr "Slice up to date."
 
-#: arayuz/goruntuleyici/pencere.py:378
+#: arayuz/goruntuleyici/pencere.py:383
 #, python-format
 msgid "ÇAKIŞMA: %d piksel birden çok hücrede."
 msgstr "OVERLAP: %d pixels in more than one cell."
 
-#: arayuz/goruntuleyici/pencere.py:380
+#: arayuz/goruntuleyici/pencere.py:385
 #, python-format
 msgid "Hücresiz (geometri dışı ya da tanımsız): %d piksel."
 msgstr "No cell (outside the geometry or undefined): %d pixels."
 
-#: arayuz/goruntuleyici/pencere.py:383
+#: arayuz/goruntuleyici/pencere.py:388
 #, python-format
 msgid "Kaynak noktası: %d / %d gösteriliyor."
 msgstr "Source points: showing %d / %d."
 
-#: arayuz/goruntuleyici/pencere.py:432
+#: arayuz/goruntuleyici/pencere.py:437
 #, python-format
 msgid "tally: %.4g"
 msgstr "tally: %.4g"
 
-#: arayuz/goruntuleyici/pencere.py:446
+#: arayuz/goruntuleyici/pencere.py:451
 #, python-format
 msgid "Statepoint okunamadı: %s"
 msgstr "Statepoint could not be read: %s"
 
-#: arayuz/goruntuleyici/pencere.py:448
+#: arayuz/goruntuleyici/pencere.py:453
 msgid "Statepoint'te ağ (mesh) tally'si yok."
 msgstr "No mesh tally in the statepoint."
 
-#: arayuz/goruntuleyici/pencere.py:454
+#: arayuz/goruntuleyici/pencere.py:459
 msgid "Statepoint seç"
 msgstr "Choose statepoint"
 
-#: arayuz/goruntuleyici/pencere.py:455
+#: arayuz/goruntuleyici/pencere.py:460
 msgid "Statepoint (statepoint*.h5);;HDF5 (*.h5)"
 msgstr "Statepoint (statepoint*.h5);;HDF5 (*.h5)"
 
-#: arayuz/goruntuleyici/pencere.py:466
+#: arayuz/goruntuleyici/pencere.py:471
 msgid "PNG olarak kaydet"
 msgstr "Save as PNG"
 
-#: arayuz/goruntuleyici/pencere.py:466
+#: arayuz/goruntuleyici/pencere.py:471
 msgid "PNG resmi (*.png)"
 msgstr "PNG image (*.png)"
 
-#: arayuz/goruntuleyici/pencere.py:471 arayuz/pencere/proje.py:151
+#: arayuz/goruntuleyici/pencere.py:476 arayuz/pencere/proje.py:151
 #: arayuz/pencere/proje.py:320
 #, python-format
 msgid "Kaydedildi: %s"

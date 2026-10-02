@@ -305,6 +305,24 @@ def test_hata_ve_cokme_gosterilir():
         p.kapat()
 
 
+def test_bozuk_statepoint_arka_planda_okunur():
+    print("\n[Y2P-8] statepoint okumasi is parcaciginda; okunamayan dosya acik ileti")
+    import tempfile
+    ist = _SahteIstemci()
+    p = _pencere(None, ist)
+    try:
+        yol = os.path.join(tempfile.mkdtemp(prefix="y2_sp_"), "statepoint.1.h5")
+        with open(yol, "w", encoding="utf-8") as f:
+            f.write("hdf5 degil")
+        p.statepoint_ayarla(yol)
+        kontrol("okuma bitti", p.bekle(_ZAMAN_ASIMI))
+        kontrol("hata durum satirinda", "Statepoint okunamadı" in p.durum.text(),
+                "-> %s" % p.durum.text())
+        kontrol("tally listesi bos", p.p_tally.tally.count() == 0)
+    finally:
+        p.kapat()
+
+
 def test_araclar_menusu():
     print("\n[Y2P-7] Araclar menusunde 'Goruntuleyici…' tekil pencereyi acar")
     _uyg()
@@ -329,5 +347,6 @@ def test_araclar_menusu():
 
 HIZLI = [test_cakisma_kipi_goruntusu, test_fare_bilgisi_ve_yakinlastirma,
          test_tally_bindirme_konumu, test_hata_ve_cokme_gosterilir, test_araclar_menusu,
+         test_bozuk_statepoint_arka_planda_okunur,
          test_gercek_iscide_kesit_kaynak_3b, test_arayuz_donmaz]
 YAVAS = []

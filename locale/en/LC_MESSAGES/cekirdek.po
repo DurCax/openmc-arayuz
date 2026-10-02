@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 15:02+0300\n"
+"POT-Creation-Date: 2026-10-02 15:13+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -152,7 +152,7 @@ msgid "kaynak noktaları gösterilemiyor: desteklenmeyen uzay dağılımı %s"
 msgstr "source points cannot be shown: unsupported spatial distribution %s"
 
 #: cekirdek/cizim_goruntu.py:242
-msgid "kaynak noktaları gösterilemiyor: bölge (domain) kısıtı desteklenmiyor"
+msgid "kaynak noktaları gösterilemiyor: domain kısıtı desteklenmiyor"
 msgstr "source points cannot be shown: domain constraint is not supported"
 
 #: cekirdek/cizim_goruntu.py:265

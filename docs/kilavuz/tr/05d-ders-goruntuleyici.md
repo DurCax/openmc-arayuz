@@ -46,7 +46,7 @@ modelde çakışma yok); çakışma kodunun konumu bilinen bir çakışmalı mod
    satırına eklenir.
 3. **Güvenilmez hücreleri gizle (σ maskesi)** açıkken bağıl hatası %10'u aşan hücreler çizilmez.
    Kısa koşuda (örn. 4000 parçacık × 40 çevrim) bazı hücreler kaybolursa istatistik yetersizdir.
-4. **Kaynak noktaları** › **Model kaynağı (örnekleme)**: noktalar yalnız yakıt çubuklarındadır
+4. **Kaynak noktaları** › **Model kaynağı (settings.source)**: noktalar yalnız yakıt çubuklarındadır
    (kurucunun kutu kaynağında `fissionable` kısıtı); kılavuz borularda ve suda nokta yoktur.
    **Statepoint kaynak bankası** koşunun son çevrimindeki fisyon noktalarını gösterir.
 

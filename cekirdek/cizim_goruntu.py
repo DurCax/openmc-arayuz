@@ -239,7 +239,7 @@ def _uzay_ornekle(uzay, n, rng):
 def _kisit_fisil_mi(kaynak) -> bool:
     kisit = dict(getattr(kaynak, "constraints", None) or {})
     if kisit.get("domains") or kisit.get("domain_ids"):   # 0.16: domain_ids
-        raise ValueError(_("kaynak noktaları gösterilemiyor: bölge (domain) kısıtı "
+        raise ValueError(_("kaynak noktaları gösterilemiyor: domain kısıtı "
                            "desteklenmiyor"))
     return bool(kisit.get("fissionable"))
 
