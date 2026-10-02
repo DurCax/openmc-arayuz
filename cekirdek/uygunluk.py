@@ -45,10 +45,14 @@
 ================================================================================
 """
 
+import types
+from collections import namedtuple
+
 from cekirdek import sema
+from cekirdek.uygunluk_bellek import Bellek, icerik_anahtari
 from cekirdek.uygunluk_geometri import (  # noqa: F401 -- disa verilen adlar
-    _ALTIGEN_PERIODIC, _bul, geometri_icerigi, model_boyutu, sinir_secenekleri,
-    sonsuz_ortam, yan_yuzey, yuz_sinir_secenekleri)
+    _ALTIGEN_PERIODIC, _bul, dondurulmus_icerik, geometri_icerigi, model_boyutu,
+    sinir_secenekleri, sonsuz_ortam, yan_yuzey, yuz_sinir_secenekleri)
 from cekirdek.uygunluk_malzeme import (  # noqa: F401 -- tasindi (T2), adlar burada da
     ROLLER, _AVOGADRO_BARN, _EMICI_ELEMENTLER, _EMICI_ESIGI, _ESER_ESIGI,
     _GAZ_YOGUNLUK_ESIGI, _atom_kesirleri, _doteryumlu, _eleman, _hafif_su_korelasyonu_mu,
@@ -58,6 +62,11 @@ from cekirdek.ceviri import N_, _
 from cekirdek.gunluk import kaydedici, uyar_bir_kez
 
 _log = kaydedici(__name__)
+
+# Spec icerigine gore bellek (v3 H1; bkz. uygunluk_bellek.py): roller ve agac
+# ozeti (tek gezintide kafes/halka hedefleri).
+_ROLLER = Bellek("malzeme_rolleri")
+_AGAC_OZETI = Bellek("agac_ozeti")
 
 # Ana penceredeki sekmelerin sabit anahtarlari, SIRAYLA.
 SEKMELER = ("malzemeler", "parcalar", "demet", "kor", "ayarlar",
@@ -101,14 +110,17 @@ class _Baglam(object):
 
     def __init__(self, spec):
         self.spec = spec
+        # Icerik anahtari bir kez: butun bellekli parcalar bunu kullanir.
+        self.anahtar = icerik_anahtari(spec)
         self.kor = spec.get("kor") or {}
         self.tur = self.kor.get("tur")
         self.mod = (spec.get("ayarlar") or {}).get("mod", "eigenvalue")
         self.ozdeger = self.mod == "eigenvalue"
         self.agac = self.tur == "agac"
-        self.boyut = model_boyutu(spec)
-        self.roller = malzeme_rolleri(spec)
-        self.geo = geometri_icerigi(spec)
+        self.boyut = model_boyutu(spec, self.anahtar)
+        self.roller = _ROLLER.al(self.anahtar, lambda: types.MappingProxyType(
+            {ad: frozenset(r) for ad, r in malzeme_rolleri(spec).items()}))
+        self.geo = dondurulmus_icerik(spec, self.anahtar)
         # geometride kullanilan malzeme tanimlari, spec sirasiyla
         self.malzemeler = [m for m in spec.get("malzemeler", [])
                            if m.get("ad") in self.geo["malzeme"]]
@@ -125,6 +137,11 @@ class _Baglam(object):
             from cekirdek import geometri
             self._model = geometri.model(self.spec)
         return self._model
+
+    @property
+    def agac_ozeti(self):
+        """AgacOzeti (tek gezinti; spec icerigine gore bellekli)."""
+        return _AGAC_OZETI.al(self.anahtar, lambda: _agac_ozeti_hesapla(self.model))
 
     def gruplar(self, tur):
         """Uyesi geometride olan 'tur' gruplarinin adlari (agac ya da sablon)."""
@@ -163,8 +180,7 @@ def model_ozeti(spec):
 
 
 def _agacta_kafes_var(b):
-    from cekirdek import geometri
-    return any(z.dugum.get("tur") == "kafes" for z in geometri.gez(b.model))
+    return b.agac_ozeti.kafes_var
 
 
 def gecerli_sekmeler(spec):
@@ -183,7 +199,7 @@ def gecerli_sekmeler(spec):
     if b.tur in ("tek_demet", "kare_kafes", "altigen_kafes", "tamburlu", "agac") \
             or b.geo["demet"]:
         gorunur.add("demet")
-    if _gecerli_taramalar(b, "katsayi"):
+    if _tarama_var(b):
         gorunur.add("analiz")
     if _tukenme_uygun(b)[0]:
         gorunur.add("tukenme")
@@ -453,35 +469,49 @@ def _hedefler(b, tarama_turu):
     return []
 
 
+# Agac gezintisinden turetilen, spec icerigine gore bellekli bilgiler. Uc
+# kural (kafes var mi, kor_adim ve yansitici_kalinlik hedefleri) eskiden ayri
+# ayri gezinti yapiyordu; SFR'de her biri ~0.4 s.
+AgacOzeti = namedtuple("AgacOzeti", "kafes_var kafes_kimlikleri halka_hedefleri")
+
+
+def _agac_ozeti_hesapla(model):
+    """Tek gezintide AgacOzeti (degismez: bool + tuple'lar)."""
+    from cekirdek import geometri
+    kafes_var, kimlikler, hedefler = False, [], []
+    for z in geometri.gez(model):
+        d = z.dugum
+        tur = d.get("tur")
+        if tur == "kafes":
+            kafes_var = True
+            kid = d.get("id")
+            if kid and not str(kid).startswith("demet:") and kid not in kimlikler:
+                kimlikler.append(kid)
+        elif tur == "kap" and d.get("id"):
+            for hedef in _kap_halka_hedefleri(d):
+                if hedef not in hedefler:
+                    hedefler.append(hedef)
+    return AgacOzeti(kafes_var, tuple(kimlikler), tuple(hedefler))
+
+
+def _kap_halka_hedefleri(d):
+    """Kabin kalinlikla tanimli, malzemeli halkalari: "<kap id>/halkalar/<i>"."""
+    for i, h in enumerate(d.get("halkalar") or []):
+        icerik = h.get("icerik") or {}
+        if h.get("kalinlik") is not None and icerik.get("tur") == "malzeme" \
+                and (icerik.get("ad") or sema.BOSLUK) != sema.BOSLUK:
+            yield "%s/halkalar/%d" % (d["id"], i)
+
+
 def _agac_kafes_hedefleri(b):
     """kor_adim (agac): adimi taranabilecek agac kafeslerinin kimlikleri."""
-    from cekirdek import geometri
-    kimlikler = []
-    for z in geometri.gez(b.model):
-        kid = z.dugum.get("id")
-        if z.dugum.get("tur") == "kafes" and kid and not str(kid).startswith("demet:") \
-                and kid not in kimlikler:
-            kimlikler.append(kid)
-    return kimlikler
+    return list(b.agac_ozeti.kafes_kimlikleri)
 
 
 def _agac_halka_hedefleri(b):
     """yansitici_kalinlik (agac): kalinlikla tanimli, malzemeli halkalar
     "<kap id>/halkalar/<i>" (kok ve parca kaplari)."""
-    from cekirdek import geometri
-    hedefler = []
-    for z in geometri.gez(b.model):
-        d = z.dugum
-        if d.get("tur") != "kap" or not d.get("id"):
-            continue
-        for i, h in enumerate(d.get("halkalar") or []):
-            icerik = h.get("icerik") or {}
-            if h.get("kalinlik") is not None and icerik.get("tur") == "malzeme" \
-                    and (icerik.get("ad") or sema.BOSLUK) != sema.BOSLUK:
-                hedef = "%s/halkalar/%d" % (d["id"], i)
-                if hedef not in hedefler:
-                    hedefler.append(hedef)
-    return hedefler
+    return list(b.agac_ozeti.halka_hedefleri)
 
 
 def _agac_daldirma_hedefleri(b):
@@ -545,6 +575,15 @@ def _gecerli_taramalar(b, amac):
     if amac == "kritik":
         adaylar = [t for t in adaylar if t in KRITIK_PARAMETRELER]
     return [t for t in adaylar if _hedefler(b, t)]
+
+
+def _tarama_var(b):
+    """_gecerli_taramalar(b, "katsayi") bos degil mi -- ilk gecerli taramada
+    durur (v3 H1: sonraki taramalarin agac hedefleri ayri gezinti ister)."""
+    from cekirdek import tarama
+    if not (b.ozdeger and b.fisil):
+        return False
+    return any(_hedefler(b, t) for t in tarama.TURLER)
 
 
 def gecerli_taramalar(spec, amac="katsayi"):
