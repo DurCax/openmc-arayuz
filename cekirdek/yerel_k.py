@@ -166,7 +166,8 @@ def _duzen(duzey: str, n: Sequence[int], p: Sequence[float], z: Tuple[float, flo
                        (px * nx / 2.0, py * ny / 2.0, z[1]))
 
 
-def _bilesen_duzeni(spec, dugum, kok, duzey, z) -> KafesDuzeni:
+def _bilesen_duzeni(spec: Mapping[str, Any], dugum: Mapping[str, Any], kok: Mapping[str, Any],
+                    duzey: str, z: Tuple[float, float]) -> KafesDuzeni:
     ad = dugum.get("ad")
     if sema.cubuk_bul(spec, ad) is not None:
         kesit = kok.get("kesit") or {}
@@ -180,7 +181,8 @@ def _bilesen_duzeni(spec, dugum, kok, duzey, z) -> KafesDuzeni:
     return _duzen(duzey, (1, 1), (p * n[0], p * n[1]), z)
 
 
-def _kor_pin_adimi(spec, kafes) -> Tuple[Sequence[int], float]:
+def _kor_pin_adimi(spec: Mapping[str, Any], kafes: Mapping[str, Any]
+                   ) -> Tuple[Sequence[int], float]:
     """Kor kafesindeki demetlerin ortak (boyut, pin adimi); hizalanamazsa hata."""
     demetler = {v.get("ad") for v in (kafes.get("anahtar") or {}).values()
                 if isinstance(v, dict) and v.get("tur") == "bilesen"}
@@ -270,14 +272,14 @@ def tally_kaldir(spec: Mapping[str, Any]) -> dict:
 # 3. HESAP
 # ============================================================================
 
-def _sutun(df, ad: str):
+def _sutun(df: Any, ad: str) -> Any:
     """Duz ya da MultiIndex (('score', '')) sutun."""
     if ad in df.columns:
         return df[ad]
     return df[(ad, "")]
 
 
-def _mesh_sutunlari(df):
+def _mesh_sutunlari(df: Any) -> Tuple[Any, Any]:
     ad = next((c[0] for c in df.columns if isinstance(c, tuple)
                and str(c[0]).startswith("mesh")), None)
     if ad is None:
@@ -307,7 +309,7 @@ def _oran(P: Deger, D: Deger) -> Deger:
     return k, k * math.hypot(P[1] / P[0], D[1] / D[0])
 
 
-def _bin_skorlari(df) -> dict:
+def _bin_skorlari(df: Any) -> dict:
     xs, ys = _mesh_sutunlari(df)
     skor, ort, sap = _sutun(df, "score"), _sutun(df, "mean"), _sutun(df, "std. dev.")
     binler: dict = {}
@@ -318,7 +320,7 @@ def _bin_skorlari(df) -> dict:
     return binler
 
 
-def _duz_skorlar(df) -> dict:
+def _duz_skorlar(df: Any) -> dict:
     sk = {}
     for s, o, d in zip(_sutun(df, "score"), _sutun(df, "mean"), _sutun(df, "std. dev.")):
         eski = sk.get(s, (0.0, 0.0))
@@ -326,7 +328,7 @@ def _duz_skorlar(df) -> dict:
     return sk
 
 
-def _hucre(konum, skorlar) -> YerelK:
+def _hucre(konum: Tuple[int, int], skorlar: Mapping[str, Deger]) -> YerelK:
     P, A, D = _toplamlar(skorlar)
     k, s = _oran(P, D)
     return YerelK(konum, k, s, P[0] / A[0] if A[0] > 0 else math.nan, P, D, P[0] > 0.0)
@@ -336,8 +338,8 @@ def _topla(degerler: Sequence[Deger]) -> Deger:
     return (sum(d[0] for d in degerler), math.sqrt(sum(d[1] ** 2 for d in degerler)))
 
 
-def hesapla(df, duzey: str, boyut: Sequence[int], adim: Sequence[float],
-            toplam_df=None, keff: Optional[Deger] = None) -> YerelKSonucu:
+def hesapla(df: Any, duzey: str, boyut: Sequence[int], adim: Sequence[float],
+            toplam_df: Any = None, keff: Optional[Deger] = None) -> YerelKSonucu:
     """Mesh tally DataFrame'inden (OpenMC bicimi) yerel k sonucu."""
     binler = _bin_skorlari(df)
     hucreler = tuple(_hucre(k, binler[k]) for k in sorted(binler, key=lambda a: (a[1], a[0])))

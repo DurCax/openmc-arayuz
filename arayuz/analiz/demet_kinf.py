@@ -240,6 +240,8 @@ class DemetKinfPaneli(QtWidgets.QWidget):
         if self._kendi_kuyrugu:
             self.kq.kapat()
         else:
+            # Paylasilan kuyruk: yalniz bu bagdastiricinin dinleyicisi cikar (kuyruk
+            # surer). KuyrukBagdastirici'da "ayril" yok; Y10'a oneri olarak raporlandi.
             self.kq.kuyruk.dinleyici_cikar(self.kq._olay)
 
     def closeEvent(self, olay: Any) -> None:
