@@ -271,6 +271,7 @@ def test_onizleme_malzeme_vurgusu():
     w.vurgula(("kok", "ic"))
     kontrol("malzeme renklendirmesinde vurgula yeniden cizim ister", istenen == ["material"])
     w._ciz()
+    w.bekle(120)
     eks = w.figur.axes[0]
     vurgu = [a for a in eks.get_children() if getattr(a, "get_gid", lambda: None)() == "vurgu"]
     kontrol("malzeme renkleri korunur + vurgu katmani cizildi",
@@ -284,6 +285,7 @@ def test_onizleme_malzeme_vurgusu():
     kontrol("vurgu konturu cizildi", any("Contour" in type(a).__name__ for a in eks.get_children()))
     w.vurgula(None)
     w._ciz()
+    w.bekle(120)
     eks = w.figur.axes[0]
     kontrol("vurgu kalkinca katman yok",
             not [a for a in eks.get_children() if getattr(a, "get_gid", lambda: None)() == "vurgu"])
