@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 15:42+0300\n"
+"POT-Creation-Date: 2026-10-02 15:59+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -7998,8 +7998,8 @@ msgstr ""
 
 #: cekirdek/tukenme_ayar.py:269
 #, python-format
-msgid "çubuk araması: hareketli emici '%s' tükenmeden çıkarılır"
-msgstr "rod search: the moving absorber '%s' is excluded from depletion"
+msgid "kontrol çubuğu araması: hareketli emici '%s' tükenmeden çıkarılır"
+msgstr "control rod search: the moving absorber '%s' is excluded from depletion"
 
 #: cekirdek/tukenme_ayar.py:270
 msgid ""
@@ -8007,7 +8007,7 @@ msgid ""
 "(B-10 yanması izlenmez)."
 msgstr ""
 "Because the absorber moves its volume in the core is not constant; its composition "
-"stays fresh (B-10 burnout is not followed)."
+"stays fresh (B-10 burnup is not followed)."
 
 #: cekirdek/tukenme_ayar.py:278
 msgid "SI-* entegratörleri kritiklik aramasını desteklemez (OpenMC 0.16)"

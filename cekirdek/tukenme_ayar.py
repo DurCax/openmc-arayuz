@@ -266,7 +266,7 @@ def _hareketli_emici_bulgusu(spec: dict, k: KritikArama) -> list:
     emici = bolgeler[i].get("malzeme")
     if emici not in tukenme.yanabilir_adlar(spec):
         return []
-    return [_bulgu("uyari", _("çubuk araması: hareketli emici '%s' tükenmeden çıkarılır") % emici,
+    return [_bulgu("uyari", _("kontrol çubuğu araması: hareketli emici '%s' tükenmeden çıkarılır") % emici,
                    _("Emici hareket ettiği için çekirdekteki hacmi sabit değildir; bileşimi "
                      "taze kalır (B-10 yanması izlenmez)."))]
 
