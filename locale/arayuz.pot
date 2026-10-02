@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 05:26+0300\n"
+"POT-Creation-Date: 2026-10-02 07:26+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1690,11 +1690,6 @@ msgid ""
 "kalır. Dış bölgeye taşınmaz."
 msgstr ""
 
-#: arayuz/cubuk/sayfalar.py:160 arayuz/geometri/form_yerlesim.py:338
-#: arayuz/geometri/formlar.py:86 arayuz/malzeme/bilesim.py:37
-msgid "Tür"
-msgstr ""
-
 #: arayuz/cubuk/sayfalar.py:162 arayuz/geometri/formlar.py:148
 msgid "Kesit"
 msgstr ""
@@ -3134,65 +3129,66 @@ msgstr ""
 msgid "Sınır koşulları"
 msgstr ""
 
-#: arayuz/guc_harita.py:60
+#: arayuz/guc_harita.py:61
 msgid "Çubuk toplam gücü (F_ΔH)"
 msgstr ""
 
-#: arayuz/guc_harita.py:61
+#: arayuz/guc_harita.py:62
 msgid "Tek eksenel dilim (F_q)"
 msgstr ""
 
-#: arayuz/guc_harita.py:64 arayuz/guc_harita.py:275
+#: arayuz/guc_harita.py:65 arayuz/guc_harita.py:302
 #, python-format
 msgid "Dilim %d"
 msgstr ""
 
-#: arayuz/guc_harita.py:65
+#: arayuz/guc_harita.py:66
 msgid "Değerleri haritaya yaz"
 msgstr ""
 
-#: arayuz/guc_harita.py:66
+#: arayuz/guc_harita.py:67
 msgid "PNG kaydet…"
 msgstr ""
 
 #: arayuz/demet/yerlesim.py:35 arayuz/geometri/sablon_diyalogu.py:23
-#: arayuz/guc_harita.py:69 arayuz/pencere/model_islemleri.py:65 arayuz/sekme_demet.py:508
+#: arayuz/guc_harita.py:70 arayuz/guc_harita_tablo.py:39
+#: arayuz/pencere/model_islemleri.py:65 arayuz/sekme_demet.py:508
 #: arayuz/yardim/__init__.py:45
 msgid "Demet"
 msgstr ""
 
-#: arayuz/cubuk/cubuk_formu.py:38 arayuz/cubuk/sayfalar.py:63 arayuz/guc_harita.py:70
+#: arayuz/cubuk/cubuk_formu.py:38 arayuz/cubuk/sayfalar.py:63 arayuz/guc_harita.py:71
 #: arayuz/sekme_cubuk.py:125
 msgid "Çubuk"
 msgstr ""
 
-#: arayuz/guc_harita.py:71
+#: arayuz/guc_harita.py:72
 msgid "Tam kor: demet ortalamaları ya da kordaki bütün çubuklar"
 msgstr ""
 
-#: arayuz/guc_harita.py:73
+#: arayuz/guc_harita.py:74
 msgid "Ölçek:"
 msgstr ""
 
-#: arayuz/guc_harita.py:79
+#: arayuz/guc_harita.py:80
 msgid ""
 "Çok türlü güç dağılımı: haritada yalnız seçili çubuk türü gösterilir; bağıl güç yine "
 "bütün yakıt çubuklarına göredir."
 msgstr ""
 
-#: arayuz/guc_harita.py:81
+#: arayuz/guc_harita.py:82
 msgid "Çubuk türü:"
 msgstr ""
 
-#: arayuz/guc_harita.py:96
+#: arayuz/guc_harita.py:104
 msgid "Görünüm:"
 msgstr ""
 
-#: arayuz/guc_harita.py:103
+#: arayuz/guc_harita.py:111
 msgid "Güç dağılımı henüz hesaplanmadı."
 msgstr ""
 
-#: arayuz/guc_harita.py:120
+#: arayuz/guc_harita.py:131
 msgid ""
 "Belirsizlik: ± değerleri OpenMC'nin raporladığı sapmalardır ve iyimserdir — ardışık "
 "çevrimler arasındaki korelasyon hesaba katılmaz. Gerçek belirsizlik için önce Shannon"
@@ -3200,138 +3196,142 @@ msgid ""
 " koşun."
 msgstr ""
 
-#: arayuz/guc_harita.py:134
+#: arayuz/guc_harita.py:145
 msgid "Çubuk güç dağılımı"
 msgstr ""
 
-#: arayuz/guc_harita.py:136
+#: arayuz/guc_harita.py:147
 msgid ""
 "F_ΔH = en yüksek çubuk gücü / ortalama (radyal). F_q = en yüksek yerel güç yoğunluğu "
 "/ ortalama (radyal × eksenel, 3B gerekir). Renk ölçeği ortalamaya göre bağıldır: 1.00"
 " = ortalama çubuk."
 msgstr ""
 
-#: arayuz/guc_harita.py:148
+#: arayuz/guc_harita.py:158 arayuz/guc_harita_tablo.py:194
+msgid "Pin gücü tablosu"
+msgstr ""
+
+#: arayuz/guc_harita.py:161
 msgid "Henüz koşu yapılmadı"
 msgstr ""
 
-#: arayuz/guc_harita.py:160
+#: arayuz/guc_harita.py:173
 #, python-format
 msgid "Toplamın korunumu denetlenemedi: %s"
 msgstr ""
 
-#: arayuz/guc_harita.py:199
+#: arayuz/guc_harita.py:225
 msgid "Tüm türler"
 msgstr ""
 
-#: arayuz/guc_harita.py:227
+#: arayuz/guc_harita.py:254
 msgid ""
 "Güç dağılımı hesaplanmadı. Hesap ayarları sekmesinde 'Çubuk bazlı güç dağılımı "
 "hesapla' kutusunu işaretleyip modeli yeniden çalıştırın."
 msgstr ""
 
-#: arayuz/guc_harita.py:236
+#: arayuz/guc_harita.py:263
 #, python-format
 msgid "%d çubuk, %d eksenel dilim"
 msgid_plural "%d çubuk, %d eksenel dilim"
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/guc_harita.py:238
+#: arayuz/guc_harita.py:265
 #, python-format
 msgid "en sıcak çubuk: %s"
 msgstr ""
 
-#: arayuz/guc_harita.py:241
+#: arayuz/guc_harita.py:268
 #, python-format
 msgid "en sıcak demet: %s (ortalama %.4f)"
 msgstr ""
 
-#: arayuz/guc_harita.py:244
+#: arayuz/guc_harita.py:271
 #, python-format
 msgid "en sıcak dilim: %d"
 msgstr ""
 
-#: arayuz/guc_harita.py:248
+#: arayuz/guc_harita.py:275
 #, python-format
 msgid "<br><span style='color:%s'>Toplamın korunumu: bağıl fark %.1e — %s</span>"
 msgstr ""
 
-#: arayuz/guc_harita.py:251
+#: arayuz/guc_harita.py:278
 msgid "tamam"
 msgstr ""
 
-#: arayuz/guc_harita.py:251
+#: arayuz/guc_harita.py:278
 msgid "bozuk, haritaya güvenmeyin"
 msgstr ""
 
-#: arayuz/guc_harita.py:267
+#: arayuz/guc_harita.py:294
 #, python-format
 msgid "dilim %d / %d"
 msgstr ""
 
-#: arayuz/guc_harita.py:268
+#: arayuz/guc_harita.py:295
 msgid "çubuk toplamı"
 msgstr ""
 
-#: arayuz/guc_harita.py:272
+#: arayuz/guc_harita.py:299
 msgid "Güç dağılımı hesaplanmadı"
 msgstr ""
 
-#: arayuz/guc_harita.py:296
+#: arayuz/guc_harita.py:326
 #, python-format
 msgid ""
 "Bağıl güç — %s\n"
 "○ en sıcak çubuk · beyaz: yakıtsız konum (kılavuz/ölçüm borusu)"
 msgstr ""
 
-#: arayuz/guc_harita.py:306 arayuz/guc_harita.py:319
+#: arayuz/guc_harita.py:336 arayuz/guc_harita.py:350 arayuz/tukenme_pin_gucu.py:177
 msgid "bağıl güç"
 msgstr ""
 
-#: arayuz/guc_harita.py:307
+#: arayuz/guc_harita.py:337
 msgid "eksenel dilim"
 msgstr ""
 
-#: arayuz/guc_harita.py:310
+#: arayuz/guc_harita.py:340
 msgid "Eksenel profil"
 msgstr ""
 
-#: arayuz/guc_harita.py:343
+#: arayuz/guc_harita.py:375
 msgid "x (soldan)"
 msgstr ""
 
-#: arayuz/guc_harita.py:344
+#: arayuz/guc_harita.py:376
 msgid "y (alttan)"
 msgstr ""
 
-#: arayuz/guc_harita.py:383
+#: arayuz/guc_harita.py:416
 msgid "adım birimi"
 msgstr ""
 
-#: arayuz/guc_harita.py:464
+#: arayuz/guc_harita.py:497
 #, python-format
 msgid " · × kesik çubuk (%d, F_ΔH dışı)"
 msgid_plural " · × kesik çubuk (%d, F_ΔH dışı)"
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/guc_harita.py:466
+#: arayuz/guc_harita.py:499
 #, python-format
 msgid ""
 "Bağıl güç (kor ortalaması = 1) — %s · %s\n"
 "○ en sıcak çubuk · kalın çerçeve: en sıcak demet"
 msgstr ""
 
-#: arayuz/guc_harita.py:468
+#: arayuz/guc_harita.py:501
 msgid "demet ortalaması"
 msgstr ""
 
-#: arayuz/geometri/form_ortak.py:132 arayuz/guc_harita.py:468 arayuz/izgara_yardimci.py:157
+#: arayuz/geometri/form_ortak.py:132 arayuz/guc_harita.py:501 arayuz/izgara_yardimci.py:157
 msgid "çubuk"
 msgstr ""
 
-#: arayuz/guc_harita.py:480
+#: arayuz/guc_harita.py:513
 #, python-format
 msgid ""
 "demet %s\n"
@@ -3344,22 +3344,150 @@ msgid_plural ""
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/guc_harita.py:484
+#: arayuz/guc_harita.py:517
 #, python-format
 msgid ""
 "\n"
 "tepe %.4f ± %.4f (%s)"
 msgstr ""
 
-#: arayuz/guc_harita.py:519
+#: arayuz/guc_harita.py:555
 #, python-format
 msgid ""
 "%s\n"
 "kesik çubuk — üst hücre sınırıyla kırpılıyor; F_ΔH ve F_q dışında"
 msgstr ""
 
-#: arayuz/guc_harita.py:579
+#: arayuz/guc_harita.py:615
 msgid "Güç haritasını kaydet"
+msgstr ""
+
+#: arayuz/guc_harita_tablo.py:40
+msgid "Konum"
+msgstr ""
+
+#: arayuz/cubuk/sayfalar.py:160 arayuz/geometri/form_yerlesim.py:338
+#: arayuz/geometri/formlar.py:86 arayuz/guc_harita_tablo.py:43 arayuz/malzeme/bilesim.py:37
+msgid "Tür"
+msgstr ""
+
+#: arayuz/guc_harita_tablo.py:44
+msgid "Bağıl güç"
+msgstr ""
+
+#: arayuz/guc_harita_tablo.py:46
+msgid "Güç [W]"
+msgstr ""
+
+#: arayuz/guc_harita_tablo.py:48
+msgid "En yüksek q′ [W/cm]"
+msgstr ""
+
+#: arayuz/guc_harita_tablo.py:49
+msgid "Dilim bağıl"
+msgstr ""
+
+#: arayuz/guc_harita_tablo.py:50
+msgid "Dilim q′ [W/cm]"
+msgstr ""
+
+#: arayuz/guc_harita_tablo.py:51
+msgid "Katlanan"
+msgstr ""
+
+#: arayuz/guc_harita_tablo.py:52
+msgid "Asimetri"
+msgstr ""
+
+#: arayuz/guc_harita_tablo.py:153
+msgid "en sıcak çubuk (F_ΔH)"
+msgstr ""
+
+#: arayuz/guc_harita_tablo.py:155
+msgid "kesik çubuk — F_ΔH ve F_q dışında"
+msgstr ""
+
+#: arayuz/guc_harita_tablo.py:178
+msgid "Süz: demet, konum ya da tür…"
+msgstr ""
+
+#: arayuz/guc_harita_tablo.py:181
+msgid "Çeyrek katla"
+msgstr ""
+
+#: arayuz/guc_harita_tablo.py:183
+msgid "Tabloyu kaydet…"
+msgstr ""
+
+#: arayuz/guc_harita_tablo.py:184
+msgid "CSV (ondalık nokta); openpyxl kuruluysa Excel de"
+msgstr ""
+
+#: arayuz/guc_harita_tablo.py:196
+msgid "Haritada bir çubuğa tıklayın ya da tablodan seçin."
+msgstr ""
+
+#: arayuz/guc_harita_tablo.py:215
+msgid "güç dağılımı yok"
+msgstr ""
+
+#: arayuz/guc_harita_tablo.py:229
+msgid "Simetri doğrulandı: dört ayna görüntüsünün ortalaması (gürültü azalır)"
+msgstr ""
+
+#: arayuz/guc_harita_tablo.py:230
+#, python-format
+msgid "Çeyrek katlama yapılamaz: %s"
+msgstr ""
+
+#: arayuz/guc_harita_tablo.py:297 arayuz/tukenme_pin_gucu.py:216
+#: arayuz/tukenme_sonuc.py:118
+msgid "CSV dosyası (*.csv)"
+msgstr ""
+
+#: arayuz/guc_harita_tablo.py:299
+msgid "Excel çalışma kitabı (*.xlsx)"
+msgstr ""
+
+#: arayuz/guc_harita_tablo.py:307
+msgid "Pin gücü tablosunu kaydet"
+msgstr ""
+
+#: arayuz/guc_harita_tablo.py:314 arayuz/tukenme_pin_gucu.py:226
+msgid "Tablo yazılamadı"
+msgstr ""
+
+#: arayuz/guc_harita_tablo.py:330
+#, python-format
+msgid "demet %s"
+msgstr ""
+
+#: arayuz/guc_harita_tablo.py:331
+#, python-format
+msgid "çubuk %s"
+msgstr ""
+
+#: arayuz/guc_harita_tablo.py:332
+#, python-format
+msgid "bağıl güç %.4f ± %.4f"
+msgstr ""
+
+#: arayuz/guc_harita_tablo.py:339
+#, python-format
+msgid "dilim %d: bağıl %.4f"
+msgstr ""
+
+#: arayuz/guc_harita_tablo.py:341
+#, python-format
+msgid "%d konumun ortalaması"
+msgstr ""
+
+#: arayuz/guc_harita_tablo.py:343
+msgid "en sıcak çubuk"
+msgstr ""
+
+#: arayuz/guc_harita_tablo.py:345
+msgid "kesik çubuk (F_ΔH dışı)"
 msgstr ""
 
 #: arayuz/hata_yakalayici.py:51
@@ -4368,27 +4496,27 @@ msgstr ""
 msgid "Çalışan sade bir model kuruldu ({ad}). Kaydetmek için 'Farklı kaydet' kullanın."
 msgstr ""
 
-#: arayuz/pencere/ana_pencere.py:539
+#: arayuz/pencere/ana_pencere.py:549
 #, python-brace-format
 msgid "adsız — örnek: {ornek}"
 msgstr ""
 
-#: arayuz/pencere/ana_pencere.py:542
+#: arayuz/pencere/ana_pencere.py:552
 msgid "kaydedilmemiş"
 msgstr ""
 
-#: arayuz/pencere/ana_pencere.py:567
+#: arayuz/pencere/ana_pencere.py:577
 msgid "Boyuta tıklayınca Kor sayfasına, hesap türüne tıklayınca Hesap ayarlarına gider."
 msgstr ""
 
-#: arayuz/pencere/ana_pencere.py:611
+#: arayuz/pencere/ana_pencere.py:621
 #, python-brace-format
 msgid ""
 " Model bu türün gerektirdiği parçayı içermiyordu; şablondan eklendi: {parca} "
 "(Parçalar/Demet sayfasında düzenleyin)."
 msgstr ""
 
-#: arayuz/pencere/ana_pencere.py:614
+#: arayuz/pencere/ana_pencere.py:624
 #, python-brace-format
 msgid "Kor türü: {tur} — geri almak için Ctrl+Z.{ek}"
 msgstr ""
@@ -6608,7 +6736,7 @@ msgid ""
 "Tipik: PWR 38–40, BWR ~25, SFR 50–100 W/gHM."
 msgstr ""
 
-#: arayuz/tukenme_arayuz.py:75 arayuz/tukenme_arayuz.py:173
+#: arayuz/tukenme_arayuz.py:75 arayuz/tukenme_arayuz.py:173 arayuz/tukenme_pin_gucu.py:69
 msgid "gün"
 msgstr ""
 
@@ -6750,81 +6878,142 @@ msgstr ""
 msgid "{ad} (tanımsız)"
 msgstr ""
 
-#: arayuz/tukenme_sonuc.py:54
-msgid "zaman [gün]"
+#: arayuz/tukenme_pin_gucu.py:47
+msgid "Tükenme adımı"
 msgstr ""
 
-#: arayuz/tukenme_sonuc.py:54 arayuz/tukenme_sonuc.py:70
+#: arayuz/tukenme_pin_gucu.py:49
+msgid "Seçimi temizle"
+msgstr ""
+
+#: arayuz/tukenme_pin_gucu.py:51
+msgid "Adım × pin kaydet…"
+msgstr ""
+
+#: arayuz/tukenme_pin_gucu.py:52
+msgid "Her adımın pin tablosu tek dosyada (CSV; openpyxl kuruluysa Excel)"
+msgstr ""
+
+#: arayuz/tukenme_pin_gucu.py:55
+msgid "Tepe faktörleri CSV…"
+msgstr ""
+
+#: arayuz/tukenme_pin_gucu.py:69
+msgctxt "tükenme"
+msgid "adım"
+msgstr ""
+
+#: arayuz/tukenme_pin_gucu.py:69
+msgid "en yüksek q′ [W/cm]"
+msgstr ""
+
+#: arayuz/tukenme_pin_gucu.py:80
+msgid "Adım:"
+msgstr ""
+
+#: arayuz/tukenme_pin_gucu.py:88
+msgid ""
+"Her tükenme adımının başındaki çubuk güç dağılımı. Tablodan seçilen çubuklar grafikte"
+" izlenir; bağıl güç o adımın yakıt çubuğu ortalamasına göredir."
+msgstr ""
+
+#: arayuz/tukenme_pin_gucu.py:108
+#, python-format
+msgid "adım %d — %.4g gün, %.4g MWd/kg"
+msgstr ""
+
+#: arayuz/tukenme_pin_gucu.py:176 arayuz/tukenme_sonuc.py:59 arayuz/tukenme_sonuc.py:75
 msgid "yanma [MWd/kg]"
 msgstr ""
 
-#: arayuz/tukenme_sonuc.py:112
+#: arayuz/tukenme_pin_gucu.py:178
+msgid "tepe faktörü"
+msgstr ""
+
+#: arayuz/tukenme_pin_gucu.py:207
+msgid "adım × pin"
+msgstr ""
+
+#: arayuz/tukenme_pin_gucu.py:210
+msgid "Adım × pin tablosunu kaydet"
+msgstr ""
+
+#: arayuz/tukenme_pin_gucu.py:215
+msgid "Tepe faktörlerini kaydet"
+msgstr ""
+
+#: arayuz/tukenme_sonuc.py:59
+msgid "zaman [gün]"
+msgstr ""
+
+#: arayuz/tukenme_sonuc.py:117
 msgid "Tükenme sonucunu CSV olarak kaydet"
 msgstr ""
 
-#: arayuz/tukenme_sonuc.py:113
-msgid "CSV dosyası (*.csv)"
-msgstr ""
-
-#: arayuz/tukenme_sonuc.py:139
+#: arayuz/tukenme_sonuc.py:144
 #, python-format
 msgid ""
 "Yarım kalmış koşu (%s): %d / %d adım tamamlanmış. Koşu durdurulmuş ya da hâlâ sürüyor"
 " olabilir; tam sonuç için yeniden koşun."
 msgstr ""
 
-#: arayuz/tukenme_sonuc.py:143
+#: arayuz/tukenme_sonuc.py:148
 #, python-format
 msgid "Önceki koşunun sonucu (%s) — bu modele ait."
 msgstr ""
 
-#: arayuz/tukenme_sonuc.py:145
+#: arayuz/tukenme_sonuc.py:150
 #, python-format
 msgid ""
 "Eski sonuç (%s): model o koşudan beri değişti (%s). Gösterilen sayılar bu modele ait "
 "değil — yeniden koşun."
 msgstr ""
 
-#: arayuz/tukenme_sonuc.py:148
+#: arayuz/tukenme_sonuc.py:153
 #, python-format
 msgid ""
 "Önceki koşunun sonucu (%s). Koşunun model kaydı yok; bu modele ait olduğu "
 "doğrulanamıyor."
 msgstr ""
 
-#: arayuz/tukenme_sonuc.py:203
+#: arayuz/tukenme_sonuc.py:208
 #, python-format
 msgid ""
 "Bu model için kayıtlı tükenme sonucu yok. Sonuçlar şuraya yazılır: %s (Çalıştır "
 "sekmesindeki koşu dizininden türetilir)."
 msgstr ""
 
-#: arayuz/tukenme_sonuc.py:221
+#: arayuz/tukenme_sonuc.py:226
 msgid "Önceki koşunun sonucu okunuyor…"
 msgstr ""
 
-#: arayuz/tukenme_sonuc.py:251
+#: arayuz/tukenme_sonuc.py:256
 #, python-format
 msgid "Önceki sonuç okunamadı: %s"
 msgstr ""
 
-#: arayuz/tukenme_sonuc.py:332
+#: arayuz/tukenme_sonuc.py:344
 #, python-format
 msgid "Sonuçta bulunamayan nüklidler (grafikte yok): %s"
 msgstr ""
 
-#: arayuz/tukenme_sonuc.py:374
+#: arayuz/tukenme_sonuc.py:386
 #, python-format
 msgid "Seçim sonuç dosyasından okunamadı: %s"
 msgstr ""
 
-#: arayuz/tukenme_sonuc.py:387
+#: arayuz/tukenme_sonuc.py:399
 msgid "CSV yazılamadı"
 msgstr ""
 
-#: arayuz/tukenme_sonuc.py:390
+#: arayuz/tukenme_sonuc.py:402
 #, python-format
 msgid "CSV kaydedildi: %s"
+msgstr ""
+
+#: arayuz/tukenme_sonuc.py:451
+#, python-format
+msgid "Adım başına güç okunamadı: %s"
 msgstr ""
 
 #: arayuz/uygunluk_paneli.py:58

@@ -24,7 +24,7 @@ from PySide6 import QtWidgets
 from cekirdek import guc as _guc
 from cekirdek import guc_tablo
 from cekirdek import tukenme_guc as _tg
-from cekirdek.ceviri import _
+from cekirdek.ceviri import _, pgettext
 from cekirdek.gunluk import kaydedici
 from arayuz import tema
 from arayuz.analiz.tuval import Tuval
@@ -66,7 +66,7 @@ class PinGucuYanma(QtWidgets.QWidget):
         self.eksen_f = self.figur.add_subplot(122)
         self.faktor_tablosu = QtWidgets.QTableWidget(0, 6)
         self.faktor_tablosu.setHorizontalHeaderLabels(
-            [_("adım"), _("gün"), "MWd/kg", "F_ΔH", "F_q", _("en yüksek q′ [W/cm]")])
+            [pgettext("tükenme", "adım"), _("gün"), "MWd/kg", "F_ΔH", "F_q", _("en yüksek q′ [W/cm]")])
         self.faktor_tablosu.verticalHeader().setVisible(False)
         self.faktor_tablosu.horizontalHeader().setStretchLastSection(True)
         self.faktor_tablosu.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)

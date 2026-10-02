@@ -38,7 +38,7 @@ import copy
 import os
 import re
 
-from cekirdek.ceviri import _
+from cekirdek.ceviri import _, pgettext
 from cekirdek.gunluk import kaydedici
 
 _log = kaydedici(__name__)
@@ -73,8 +73,16 @@ def olcum_spec(spec):
         return spec
     if not cubuklar:
         return spec
+    from cekirdek import guc, sema
     yeni = copy.deepcopy(spec)
-    yeni.setdefault("guc_dagilimi", {})["var"] = True
+    g = yeni.setdefault("guc_dagilimi", {})
+    g["var"] = True
+    if not sema.guc_hedefleri(g):
+        # Hedef secilmemis (ornekte "cubuk": null): butun yakit cubuklari,
+        # arayuzun "Butun yakit cubuklari" secimiyle ayni (guc.varsayilan_hedefler).
+        g.pop("cubuk", None)
+        g.pop("bolge", None)
+        g["cubuklar"] = guc.varsayilan_hedefler(yeni)
     return yeni
 
 
@@ -260,7 +268,7 @@ def faktor_serisi(sonuc):
 
 
 def _bas():
-    return [_("adım"), _("zaman [gün]"), _("yanma [MWd/kg]")]
+    return [pgettext("tükenme", "adım"), _("zaman [gün]"), _("yanma [MWd/kg]")]
 
 
 def satirlar(sonuc):

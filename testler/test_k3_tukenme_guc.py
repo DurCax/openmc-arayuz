@@ -138,6 +138,18 @@ def test_olcum_spec():
     kontrol("tukenme.adim_gucu = false: degismez", tukenme_guc.olcum_spec(s2) == s2)
     pin = sema.yukle(os.path.join(ORNEK, "pwr_tukenme.json"))
     kontrol("pin hucre (kafes yok): degismez", tukenme_guc.olcum_spec(pin) == pin)
+    # hedefsiz guc sozlugu (ornekte "cubuk": null): butun yakit cubuklari hedef olur
+    from cekirdek import kurucu
+    gd = sema.yukle(os.path.join(ORNEK, "pwr_gd_tukenme.json"))
+    o = tukenme_guc.olcum_spec(gd)
+    hedefler = sema.guc_hedefleri(o["guc_dagilimi"])
+    kontrol("Gd super hucre: iki cubuk turu hedef",
+            sorted(h["cubuk"] for h in hedefler) == ["gd_cubugu", "yakit_cubugu"],
+            "-> %r" % hedefler)
+    model, _b = kurucu.kur(o)
+    adlar = [t.name for t in model.tallies]
+    kontrol("model guc tally'leriyle kurulur (tur basina bir)",
+            adlar.count("guc_dagilimi") == 2 and "guc_toplam_ref" in adlar, "-> %r" % adlar)
 
 
 class _Dur(Exception):
