@@ -710,9 +710,12 @@ The assistant's UO₂ has the same composition as the UO₂ of the library (U, e
 **What we learned / check questions.**
 
 - Why do U-234 and U-236 appear besides U-235? (Enrichment also enriches U-234; the
-  ORNL/CSD/TM-244 correlation gives U-234 = 0.0089·e and U-236 = 0.0046·e by weight.)
+  ORNL/CSD/TM-244 correlation gives U-234 = 0.0089·e and U-236 = 0.0046·e by weight. The U-236
+  term is an empirical fit to commercial LEU containing recycled uranium; enrichment from
+  natural feed has no U-236, and the correlation is valid only at low enrichment.)
 - Why does the saturated-water table (the library's **Light water**) come out 2.2% lower at 580 K and
-  15.5 MPa (0.6965 g/cm³)? (At 15.5 MPa the liquid is compressed; the assistant also accounts for pressure
+  15.5 MPa (0.6965 g/cm³)? (2.0% is the pressure: IF97 saturated liquid is 0.69763 g/cm³;
+  the remaining 0.17% is the linear interpolation of the table.) (At 15.5 MPa the liquid is compressed; the assistant also accounts for pressure
   through IF97.)
 - Why is my library not connected to a network? (User decision: material data stays on this
   computer only; the file is written atomically and is not deleted if it gets damaged.)

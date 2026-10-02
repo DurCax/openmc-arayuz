@@ -5,7 +5,7 @@ Modeldeki her malzeme burada tanımlanır: yakıt, zarf ve yapısal malzemeler, 
 moderatör, emici ve gaz. Parçalar (çubuk, plaka), demetler ve geometri malzemelere **adıyla**
 başvurur. Malzeme eklemenin dört yolu vardır:
 
-- **Kütüphaneden ekle…** (önerilen): 21 hazır, doğrulanmış bileşim. Üretim parametreleri
+- **Kütüphaneden ekle…** (önerilen): 24 hazır, doğrulanmış bileşim. Üretim parametreleri
   (zenginlik, sıcaklık, bor…) malzemeyle birlikte saklanır; **Düzenle…** aynı parametre
   formunu açar ve malzeme o parametrelerden yeniden üretilir.
 - **Elle tanımla…**: bileşimi element ya da izotop satırlarıyla kendiniz girersiniz.
@@ -90,7 +90,8 @@ Kütüphane penceresinde **Ekle** malzemeyi ekler, **Vazgeç** kapatır. Eklenen
 | Yakıt | `un` | UN — uranyum nitrür | 19.75 %, 13.5, 900 K |
 | Yakıt | `u10mo` | U-10Mo — metalik uranyum alaşımı | 19.75 %, 17.0, 900 K |
 | Yakıt | `u3si2_al` | U₃Si₂-Al — dispersiyon yakıtı | 4.8 gU/cm³, 19.75 %, gözeneklilik 0, 350 K |
-| Zarf ve yapısal | `zirkaloy4`, `ss316`, `fecral`, `ma956`, `sic`, `al6061` | Zircaloy-4, SS-316, FeCrAl, MA956, SiC, Al-6061 | yoğunluk ve sıcaklık |
+| Yakıt | `uo2_gd2o3` | UO₂-Gd₂O₃ — gadolinyumlu yakıt | 3.2 %, Gd₂O₃ 8 %, 10.03 (%95 TD), 900 K |
+| Zarf ve yapısal | `zirkaloy4`, `m5`, `ss304`, `ss316`, `fecral`, `ma956`, `sic`, `al6061` | Zircaloy-4, M5, SS-304, SS-316, FeCrAl, MA956, SiC, Al-6061 | yoğunluk ve sıcaklık |
 | Soğutucu ve moderatör | `su` | Hafif su (H₂O) | 293.6 K, bor 0 ppm; yoğunluk sıcaklıktan |
 | Soğutucu ve moderatör | `agir_su` | Ağır su (D₂O) | saflık 99.75 %, 1.1056, 293.6 K |
 | Soğutucu ve moderatör | `sodyum`, `lbe` | Sıvı sodyum, kurşun-bizmut ötektiği | sıcaklık (673 K, 723 K); yoğunluk sıcaklıktan |
@@ -141,7 +142,9 @@ ve nedenini yazar.
 
 **Asistan…** malzemeyi üç adımda kurar. Hesaplar `cekirdek/malzeme_hesap.py`,
 `cekirdek/malzeme_sogutucu.py` ve `cekirdek/malzeme_tarif.py` içindedir; her formülün kaynağı
-kodda yazılıdır ve her hesaplayıcı bağımsız bir el hesabıyla test edilir.
+kodda yazılıdır. Her hesaplayıcı bağımsız bir el hesabıyla ya da kaynağın kendi tablosuyla
+(IF97 resmî doğrulama tablosu, ANL/RE-95/2 Tablo 1.3-1, NIST) test edilir. Uygulamalı örnek:
+[5.14 Malzeme asistanı ve kütüphanem](05-dersler.md#ders-malzeme-asistani).
 
 1. **Ne tasarlıyorsun?** — **Yakıt**, **Kılıf (zarf)**, **Moderatör / soğutucu**, **Emici**,
    **Yapı malzemesi** ya da **Özel karışım**.
@@ -159,13 +162,13 @@ kodda yazılıdır ve her hesaplayıcı bağımsız bir el hesabıyla test edili
 
 | Tür | Alanlar | Hesap ve kaynak |
 |---|---|---|
-| UO₂ | U-235 ağırlıkça %, yoğunluk (%TD'den ya da doğrudan), O/M, sıcaklık | ρ = ρ_TD · %TD/100, ρ_TD = 10.97 g/cm³ (NUREG/CR-6150, MATPRO); U-234 = 0.0089·e, U-236 = 0.0046·e (ORNL/CSD/TM-244, OpenMC ile aynı) |
-| UO₂-Gd₂O₃ | zenginlik, Gd₂O₃ ağırlıkça %, %TD, sıcaklık | Kütle dengesi; TD ideal karışımdan 1/ρ = Σ w_i/ρ_i (Gd₂O₃ 7.407 g/cm³, CRC Handbook) |
-| MOX | Pu / ağır metal %, Pu-238…Pu-242 ve Am-241 (Pu+Am içinde ağırlıkça %), taşıyıcı U, ayrıştırmadan bu yana süre, %TD, O/M | O = x·M_O·Σ w_i/M_i; Pu-241 → Am-241 Bateman çözümü (T½ ENDF/B-VIII.0); TD UO₂ ve PuO₂ (11.46 g/cm³, Carbajo vd. 2001) ideal karışımı. Varsayılan Pu vektörü **örnektir**; ölçülmüş vektörü girin. |
+| UO₂ | U-235 ağırlıkça %, yoğunluk (%TD'den ya da doğrudan), O/M, sıcaklık | ρ = ρ_TD · %TD/100, ρ_TD = 10.963 g/cm³ (Fink, J. Nucl. Mater. 279 (2000) 1; 273 K: oda sıcaklığı değeri, ısıl genleşme uygulanmaz); U-234 = 0.0089·e, U-236 = 0.0046·e (ORNL/CSD/TM-244, OpenMC ile aynı). U-236 terimi geri kazanılmış uranyum karışmış ticari LEU'ya uydurulmuş ampiriktir: doğal beslemeden zenginleştirmede U-236 yoktur; bağıntı düşük zenginlik içindir, %5 üstünde doğrulama uyarır. |
+| UO₂-Gd₂O₃ | zenginlik, Gd₂O₃ ağırlıkça %, %TD, sıcaklık | Kütle dengesi; TD ideal karışımdan 1/ρ = Σ w_i/ρ_i (Gd₂O₃ 7.407 g/cm³, CRC Handbook). Gd₂O₃ yoğunluğu faza bağlıdır (kübik 7.4–7.6, monoklinik ~8.3) ve Gd UO₂ içinde katı çözelti yapar: TD yalnız bir tahmindir. |
+| MOX | Pu / ağır metal %, Pu-238…Pu-242 ve Am-241 (Pu+Am içinde ağırlıkça %), taşıyıcı U, ayrıştırmadan bu yana süre, %TD, O/M | O = x·M_O·Σ w_i/M_i; Pu-241 → Am-241 Bateman çözümü (T½ ENDF/B-VIII.0); TD UO₂ ve PuO₂ (11.46 g/cm³, Carbajo vd. 2001) ideal karışımı. Varsayılan Pu vektörü **örnektir**; ölçülmüş vektörü girin. Yaşlanma yalnız Pu-241 → Am-241'i izler (T½ = 14.29 yıl; NUBASE2020 14.290(6) yıl); Pu-238 → U-234 ve Am-241 → Np-237 ürünleri vektörden çıkar. Pu/HM yaşlanmadan **sonraki** (kullanım anı) Pu + Am payıdır; ağır metal Z ≥ 90 (Am dahil). |
 | U-Mo | zenginlik, Mo ağırlıkça %, yoğunluk | — |
-| Hafif su | sıcaklık, basınç, çözünmüş bor (kütlece ppm), B-10 atomca % | ρ(T, p) IAPWS-IF97 Bölge 1 (sıkıştırılmış sıvı), 273.15–623.15 K, p_s(T)–100 MPa; resmî doğrulama tablosuyla test edilir. Buhar bölgesi ya da aralık dışı **açık hatadır**. |
-| Ağır su | sıcaklık, basınç, D₂O saflığı (mol %) | NIST WebBook (IAPWS R16-17 D₂O formülasyonu) tablosu, 0.1–20 MPa, 280 K'den doyma sıcaklığına kadar; T ve p'de doğrusal interpolasyon; kalanı hafif su (ideal karışım) |
-| Sıvı sodyum | sıcaklık | Fink & Leibowitz, ANL/RE-95/2 (1995), 371–2503.7 K |
+| Hafif su | sıcaklık, basınç, çözünmüş bor (kütlece ppm), B-10 atomca % | ρ(T, p) IAPWS-IF97 Bölge 1 (sıkıştırılmış sıvı), 273.15–623.15 K, p_s(T)–100 MPa; resmî doğrulama tablosuyla test edilir. Buhar bölgesi ya da aralık dışı **açık hatadır**. Bor ppm = mg B / kg çözelti; yoğunluk saf suyunkidir (borik asidin H₃BO₃ yoğunluğa ~+%0.2–0.3 etkisi ihmal edilir), bor yalnız bileşime girer. |
+| Ağır su | sıcaklık, basınç, D₂O saflığı (mol %) | NIST WebBook (IAPWS R16-17 D₂O formülasyonu) tablosu, 0.1–20 MPa, 280 K'den doyma sıcaklığına kadar; T ve p'de doğrusal interpolasyon. Tablo izobarları 0.1, 1, 2, 5, 10, 12, 15, 20 MPa'dır: iki izobar arasındaki basınçta üst sıcaklık **küçük olan izobarın** doyma sıcaklığıdır (ör. 17 MPa'da 613.98 K). Kalanı hafif sudur (ideal karışım); saflık ≥ %99'da H₂O molar hacmi D₂O'nunkiyle eşit alınır (Kell 1977; 25 °C'de oran 1.0036). S(α,β): `c_D_in_D2O` + `c_O_in_D2O`. |
+| Sıvı sodyum | sıcaklık | Fink & Leibowitz, ANL/RE-95/2 (1995), 371–2503.7 K; raporun Tablo 1.3-1 değerleriyle test edilir |
 | B₄C | B-10 atomca %, %TD, sıcaklık | ρ_TD = 2.52 g/cm³ (CRC Handbook) |
 | M5, SS-304 | yoğunluk, sıcaklık | M5: Zr-1Nb-0.125O (Mardon vd., ASTM STP 1354); SS-304: SCALE standart bileşim kütüphanesi (ρ = 7.94 g/cm³) |
 | Zircaloy-4, FeCrAl, SS-316, SiC, Al-6061, grafit, berilyum, Ag-In-Cd, Gd₂O₃ | yoğunluk, sıcaklık | Hazır kütüphaneyle aynı kayıt; **Düzenle…** kütüphane formunu açar |
@@ -185,7 +188,10 @@ sertifika değildir: malzeme verisini kendi kaynağınızla doğrulayın.
 **Düzenle…** ve **Sil** vardır; seçili kaydın bileşimi ve türetilmiş değerleri sağda görünür.
 
 - Dosya **atomik** yazılır (geçici dosya + yeniden adlandırma): yazma yarıda kesilirse eski dosya
-  sağlam kalır; bir önceki sürüm `malzemeler.json.onceki` olarak saklanır.
+  sağlam kalır; son **sağlam** sürüm `malzemeler.json.onceki` olarak saklanır (bozuk bir dosya
+  bu yedeğin üzerine yazılmaz). İki pencere aynı anda kaydederken yan kilit dosyası
+  (`malzemeler.json.lock`) kayıt kaybını önler. Dizin yalnız size açıktır (0700); dosya en çok
+  20 MB ve 10 000 kayıt olabilir.
 - Dosya bozuksa (yarım JSON, şemaya uymayan kayıt) liste kilitlenir ve neden yazılır; dosya
   **silinmez**. **Bozuk dosyanın kopyasını al ve yeni kütüphane başlat** önce zaman damgalı bir kopya
   (`malzemeler.json.bozuk-…`) alır.
@@ -196,8 +202,9 @@ sertifika değildir: malzeme verisini kendi kaynağınızla doğrulayın.
 malzeme) açık bir lisansla yayımlanmadığı için programla **dağıtılmaz**. Derlemenin CSV dosyasını
 (Rev. 1 biçimi; ör. PyNE'nin `materials_compendium.csv` dosyası) kendiniz indirin ve **Dosya seç…**
 ile gösterin; dosya yalnızca okunur, son yol hatırlanır. **Ad ya da formül ara…** ile süzün;
-**Projeye ekle** ya da **Kütüphaneme kaydet**. Okunamayan kayıtlar atlanır ve sayısı yazılır
-(ayrıntı günlükte).
+**Projeye ekle** ya da **Kütüphaneme kaydet**. Okunamayan kayıtlar (sayı olmayan ya da negatif
+ağırlık, 0–30 g/cm³ dışında yoğunluk, ağırlık toplamı 1'den 0.001'den fazla sapan — Rev. 1'de
+SS-440 — ya da yinelenen numara) atlanır ve sayısı yazılır (ayrıntı günlükte).
 
 ### OpenMC XML'den içe aktarma
 

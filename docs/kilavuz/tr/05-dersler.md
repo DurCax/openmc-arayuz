@@ -684,8 +684,11 @@ Asistanın UO₂'si kütüphanedeki UO₂ ile aynı bileşimdir (U, zenginlik 3.
 **Ne öğrendik / kontrol soruları.**
 
 - Neden U-235 dışında U-234 ve U-236 da çıkıyor? (Zenginleştirme U-234'ü de zenginleştirir;
-  ORNL/CSD/TM-244 bağıntısı U-234 = 0.0089·e, U-236 = 0.0046·e ağırlıkça.)
-- Doymuş su tablosu (kütüphanedeki **Hafif su**) 580 K, 15.5 MPa koşulunda neden %2.2 düşük kalır (0.6965 g/cm³)?
+  ORNL/CSD/TM-244 bağıntısı U-234 = 0.0089·e, U-236 = 0.0046·e ağırlıkça. U-236 terimi geri
+  kazanılmış uranyum karışmış ticari LEU'ya uydurulmuş ampiriktir; doğal beslemeden
+  zenginleştirmede U-236 yoktur ve bağıntı yalnız düşük zenginlikte geçerlidir.)
+- Doymuş su tablosu (kütüphanedeki **Hafif su**) 580 K, 15.5 MPa koşulunda neden %2.2 düşük kalır (0.6965 g/cm³)? (%2.0'si basınçtır:
+  IF97 doymuş sıvı 0.69763 g/cm³; kalan %0.17 tablonun doğrusal interpolasyonudur.)
   (15.5 MPa'da sıvı sıkıştırılmıştır; asistan IF97 ile basıncı da hesaba katar.)
 - Kütüphanem neden ağa bağlı değil? (Kullanıcı kararı: malzeme verisi yalnız bu bilgisayarda
   kalır; dosya atomik yazılır, bozulursa silinmez.)

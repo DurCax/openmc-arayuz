@@ -5,7 +5,7 @@ Every material of the model is defined here: fuel, cladding and structural mater
 coolant and moderator, absorber and gas. Components (pins, plates), assemblies and the
 geometry refer to materials **by name**. There are four ways to add a material:
 
-- **Add from library…** (recommended): 21 ready, verified compositions. The production
+- **Add from library…** (recommended): 24 ready, verified compositions. The production
   parameters (enrichment, temperature, boron…) are stored with the material; **Edit…** opens
   the same parameter form and the material is regenerated from those parameters.
 - **Define manually…**: you enter the composition yourself as element or isotope rows.
@@ -93,7 +93,8 @@ the production parameters; **Edit…** reopens the form from this record.
 | Fuel | `un` | UN — uranium nitride | 19.75 %, 13.5, 900 K |
 | Fuel | `u10mo` | U-10Mo — metallic uranium alloy | 19.75 %, 17.0, 900 K |
 | Fuel | `u3si2_al` | U₃Si₂-Al — dispersion fuel | 4.8 gU/cm³, 19.75 %, porosity 0, 350 K |
-| Cladding and structural | `zirkaloy4`, `ss316`, `fecral`, `ma956`, `sic`, `al6061` | Zircaloy-4, SS-316, FeCrAl, MA956, SiC, Al-6061 | density and temperature |
+| Fuel | `uo2_gd2o3` | UO₂-Gd₂O₃ — gadolinia fuel | 3.2 %, Gd₂O₃ 8 %, 10.03 (95% TD), 900 K |
+| Cladding and structural | `zirkaloy4`, `m5`, `ss304`, `ss316`, `fecral`, `ma956`, `sic`, `al6061` | Zircaloy-4, M5, SS-304, SS-316, FeCrAl, MA956, SiC, Al-6061 | density and temperature |
 | Coolant and moderator | `su` | Light water (H₂O) | 293.6 K, boron 0 ppm; density from temperature |
 | Coolant and moderator | `agir_su` | Heavy water (D₂O) | purity 99.75 %, 1.1056, 293.6 K |
 | Coolant and moderator | `sodyum`, `lbe` | Liquid sodium, lead-bismuth eutectic | temperature (673 K, 723 K); density from temperature |
@@ -146,7 +147,9 @@ density, a name or an amount is missing it does not save and gives the reason.
 **Assistant…** builds a material in three steps. The calculations live in
 `cekirdek/malzeme_hesap.py`, `cekirdek/malzeme_sogutucu.py` and `cekirdek/malzeme_tarif.py`;
 the source of every formula is written in the code, and every calculator is tested against an
-independent hand calculation.
+independent hand calculation or against the source's own table (IF97 official
+verification table, ANL/RE-95/2 Table 1.3-1, NIST). Worked example:
+[5.14 Material assistant and my library](05-dersler.md#ders-malzeme-asistani).
 
 1. **What are you designing?** — **Fuel**, **Cladding**, **Moderator / coolant**, **Absorber**,
    **Structural material** or **Custom mixture**.
@@ -165,13 +168,13 @@ independent hand calculation.
 
 | Type | Fields | Calculation and source |
 |---|---|---|
-| UO₂ | U-235 weight %, density (from %TD or directly), O/M, temperature | ρ = ρ_TD · %TD/100, ρ_TD = 10.97 g/cm³ (NUREG/CR-6150, MATPRO); U-234 = 0.0089·e, U-236 = 0.0046·e (ORNL/CSD/TM-244, same as OpenMC) |
-| UO₂-Gd₂O₃ | enrichment, Gd₂O₃ weight %, %TD, temperature | Mass balance; TD from ideal mixing 1/ρ = Σ w_i/ρ_i (Gd₂O₃ 7.407 g/cm³, CRC Handbook) |
-| MOX | Pu / heavy metal %, Pu-238…Pu-242 and Am-241 (weight % of Pu+Am), carrier U, time since separation, %TD, O/M | O = x·M_O·Σ w_i/M_i; Pu-241 → Am-241 Bateman solution (T½ from ENDF/B-VIII.0); TD from ideal mixing of UO₂ and PuO₂ (11.46 g/cm³, Carbajo et al. 2001). The default Pu vector is an **example**; enter the measured vector. |
+| UO₂ | U-235 weight %, density (from %TD or directly), O/M, temperature | ρ = ρ_TD · %TD/100, ρ_TD = 10.963 g/cm³ (Fink, J. Nucl. Mater. 279 (2000) 1; 273 K: a room-temperature value, no thermal expansion is applied); U-234 = 0.0089·e, U-236 = 0.0046·e (ORNL/CSD/TM-244, same as OpenMC). The U-236 term is an empirical fit to commercial LEU containing recycled uranium: enrichment from natural feed has no U-236; the correlation is for low enrichment, and above 5% the check warns. |
+| UO₂-Gd₂O₃ | enrichment, Gd₂O₃ weight %, %TD, temperature | Mass balance; TD from ideal mixing 1/ρ = Σ w_i/ρ_i (Gd₂O₃ 7.407 g/cm³, CRC Handbook). The density of Gd₂O₃ depends on the phase (cubic 7.4–7.6, monoclinic ~8.3) and Gd forms a solid solution in UO₂: the TD is only an estimate. |
+| MOX | Pu / heavy metal %, Pu-238…Pu-242 and Am-241 (weight % of Pu+Am), carrier U, time since separation, %TD, O/M | O = x·M_O·Σ w_i/M_i; Pu-241 → Am-241 Bateman solution (T½ from ENDF/B-VIII.0); TD from ideal mixing of UO₂ and PuO₂ (11.46 g/cm³, Carbajo et al. 2001). The default Pu vector is an **example**; enter the measured vector. Ageing tracks only Pu-241 → Am-241 (T½ = 14.29 years; NUBASE2020 14.290(6) years); the products Pu-238 → U-234 and Am-241 → Np-237 leave the vector. Pu/HM is the Pu + Am fraction **after** ageing (at the time of use); heavy metal is Z ≥ 90 (Am included). |
 | U-Mo | enrichment, Mo weight %, density | — |
-| Light water | temperature, pressure, dissolved boron (ppm by mass), B-10 atom % | ρ(T, p) from IAPWS-IF97 Region 1 (compressed liquid), 273.15–623.15 K, p_s(T)–100 MPa; tested against the official verification table. The steam region or an out-of-range value is an **explicit error**. |
-| Heavy water | temperature, pressure, D₂O purity (mol %) | Table from the NIST WebBook (IAPWS R16-17 D₂O formulation), 0.1–20 MPa, from 280 K up to saturation; linear interpolation in T and p; the remainder is light water (ideal mixing) |
-| Liquid sodium | temperature | Fink & Leibowitz, ANL/RE-95/2 (1995), 371–2503.7 K |
+| Light water | temperature, pressure, dissolved boron (ppm by mass), B-10 atom % | ρ(T, p) from IAPWS-IF97 Region 1 (compressed liquid), 273.15–623.15 K, p_s(T)–100 MPa; tested against the official verification table. The steam region or an out-of-range value is an **explicit error**. Boron ppm = mg B per kg of solution; the density is that of pure water (the ~+0.2–0.3% effect of boric acid H₃BO₃ on density is neglected), and boron enters only the composition. |
+| Heavy water | temperature, pressure, D₂O purity (mol %) | Table from the NIST WebBook (IAPWS R16-17 D₂O formulation), 0.1–20 MPa, from 280 K up to saturation; linear interpolation in T and p. The table isobars are 0.1, 1, 2, 5, 10, 12, 15 and 20 MPa: at a pressure between two isobars the upper temperature is the saturation temperature of the **lower** isobar (for example 613.98 K at 17 MPa). The remainder is light water (ideal mixing); at purity ≥ 99% the molar volume of H₂O is taken equal to that of D₂O (Kell 1977; ratio 1.0036 at 25 °C). S(α,β): `c_D_in_D2O` + `c_O_in_D2O`. |
+| Liquid sodium | temperature | Fink & Leibowitz, ANL/RE-95/2 (1995), 371–2503.7 K; tested against Table 1.3-1 of the report |
 | B₄C | B-10 atom %, %TD, temperature | ρ_TD = 2.52 g/cm³ (CRC Handbook) |
 | M5, SS-304 | density, temperature | M5: Zr-1Nb-0.125O (Mardon et al., ASTM STP 1354); SS-304: SCALE standard composition library (ρ = 7.94 g/cm³) |
 | Zircaloy-4, FeCrAl, SS-316, SiC, Al-6061, graphite, beryllium, Ag-In-Cd, Gd₂O₃ | density, temperature | Same entry as the ready library; **Edit…** opens the library form |
@@ -193,7 +196,10 @@ data against your own source.
 entry are shown on the right.
 
 - The file is written **atomically** (temporary file + rename): if writing is interrupted, the
-  old file stays intact; the previous version is kept as `malzemeler.json.onceki`.
+  old file stays intact; the last **valid** version is kept as `malzemeler.json.onceki` (a
+  damaged file never overwrites this backup). When two windows save at the same time, a side
+  lock file (`malzemeler.json.lock`) prevents lost records. The folder is private to you
+  (0700); the file may hold at most 20 MB and 10 000 records.
 - If the file is damaged (truncated JSON, an entry that does not match the schema), the list is
   locked and the reason is shown; the file is **not deleted**. **Back up the damaged file and
   start a new library** first saves a time-stamped copy (`malzemeler.json.bozuk-…`).
@@ -205,7 +211,9 @@ entry are shown on the right.
 program. Download the compendium CSV file yourself (Rev. 1 format; for example PyNE's
 `materials_compendium.csv`) and point to it with **Choose file…**; the file is only read and the
 last path is remembered. Filter with **Search by name or formula…**; then **Add to project** or
-**Save to my library**. Records that cannot be read are skipped and counted (details in the log).
+**Save to my library**. Records that cannot be read (non-numeric or negative weights, a
+density outside 0–30 g/cm³, weights summing to 1 with a deviation above 0.001 — SS-440 in
+Rev. 1 — or a repeated number) are skipped and counted (details in the log).
 
 ### Importing from OpenMC XML
 
