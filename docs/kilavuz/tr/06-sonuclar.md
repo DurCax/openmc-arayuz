@@ -296,3 +296,54 @@ Bunlar hata değil, aracın bilinçli kapsam sınırlarıdır; sonuçları yorum
 - **MPI yoktur:** OpenMC bu kurulumda tek düğümde OpenMP ile çalışır
   (bkz. [HPC](08-terminal.md#hpc)).
 - **Uygunluk denetimi ve V&V sertifika vermez** (bkz. [ne kanıtlar](07-uygunluk.md#ne-kanitlar)).
+
+<a id="yerel-k"></a>
+## 6.7 Yerel k ve demet k∞
+
+**Yerel k** her pin ya da demet hücresinde
+
+  k_yerel = νΣ_f φ / (Σ_a φ − X),  X = Σ (x − 1) R_(n,xn)
+
+oranıdır. Hücreler kare kafesin hatvesine hizalı bir mesh'in binleridir; tally'ler
+`yerel_k_pin` / `yerel_k_demet` ve filtresiz `yerel_k_toplam` adını taşır (**Hesap ayarları ›
+Yerel k haritası** ya da `python -m cekirdek.yerel_k ekle model.json pin|demet -o yeni.json`).
+
+- **Yerel üretim / yok olma oranıdır, k∞ değildir.** Bin sınırlarındaki net akım ve sızıntı
+  tanıma girmez. Akı komşulardan gelen nötronları içerir; oranı bindeki spektrum belirler
+  (iç demetin yerel k'sı, kor içi spektrumdaki k∞'una yakındır). Kritiklik globaldir:
+  k_eff = ΣP / (ΣD + L) = k_harita (1 − ℓ), ℓ = L / (ΣD + L) (Duderstadt & Hamilton,
+  *Nuclear Reactor Analysis*, 1976). Statepoint okunabildiğinde özet P/(D+L)'yi de verir.
+- **(n,xn) paydadadır.** OpenMC `absorption`'ı (n,2n) gibi kanalları yok olma saymaz ve
+  doğurdukları nötronlar `nu-fission`'a girmez. Sızıntısız dengede P + X = A olduğundan
+  k = P/(A − X); c_xn = A/(A − X). Düzeltmesiz P/A ipucunda ayrıca gösterilir. Kanallar dört
+  faktör dersiyle aynı listeden gelir (MT 11, 16, 17, 24, 25, 30, 37, 41, 42).
+- **Ortalama:** ΣP / Σ(A − X) — net yok olma ağırlıklı aritmetik ortalama. Üretim ağırlıklı
+  harmonik ortalama ancak bütün binler fisilse eşdeğerdir; P = 0 binlerin D'si paydaya ayrıca
+  eklenir. Yalnız **sonsuz kafeste** (yansıtıcı sınırlı tek pin/demet) ve harita kapsamı 1
+  iken k∞ tahminidir. Düz ya da hacim ağırlıklı ortalama değildir.
+- **Koşunun k-eff'iyle karşılaştırma:** ΣP_model global k-tracklength ile birebir aynıdır;
+  ΣD_model'in beklenen değeri 1 − L'dir (kaynak nötronu başına) ama tracklength tahmini
+  olduğu için istatistikle sapar. Bu yüzden harita ortalaması, birleşik k-eff'ten D_model'in
+  sapması ve tahminci farkı kadar ayrılır; ikisi korelasyonlu tahminlerdir.
+- **Harita kapsamı** = Σ_harita (A − X) / (A − X)_model. Kanal kutusu, su aralığı ya da
+  yansıtıcı haritanın dışında kalırsa 1'in altına düşer. 3B modelde **tüm model** kapsamı
+  eksenel yansıtıcıyı da içerir; **yalnız aktif bölge** seçilirse kapsama < 1 olur.
+- **Belirsizlik:** σ, pay ile paydanın korelasyonu yok sayılarak yayılır (ihtiyatlı; demet
+  düzeyinde bin σ'ları bu yüzden büyüktür). Kapsama 1 iken ortalamanın σ'sı filtresiz
+  tally'den alınır (binler arası korelasyon dahil); değilse binlerin karesel toplamıdır
+  (binler arası korelasyon da yok sayılır). Bin σ'ları çevrimler arası korelasyonu görmez
+  (iyimser, bkz. [6.3](#guc-dagilimi-yorum)): gerçek belirsizlik için birkaç tohum ve
+  Shannon entropisiyle yakınsama denetimi.
+- **Sınırlar:** yalnız kare kafes; altıgen kafes (OpenMC'de altıgen mesh yok), ötelenmiş /
+  döndürülmüş kafes ve demetler arası boşluklu korda pin düzeyi açık hatayla reddedilir.
+  Tek eksenel bin (radyal harita).
+
+**Demet k∞ sihirbazı** (**Araçlar › Demet k∞ sihirbazı…**) her demet türünü yansıtıcı
+sınırlı tek demet modeli (2B, tally/güç/tükenme kapalı, kaynak fisil kutu, kütüphane
+kullanılan parçalara budanmış) olarak koşu kuyruğuyla ayrı koşar ve "demet türü × k∞ ± σ"
+tablosunu verir. Model, elle kurulan tek demet modeliyle fiziksel olarak özdeştir; budama
+rastgele gerçekleşmeyi değiştirebildiği için sonuçlar istatistik sınırında aynıdır
+(σ_fark = √(σ₁² + σ₂²)). Sonuç sonsuz kafes k∞'udur: su aralığı, yansıtıcı, komşu
+demetlerin spektral etkisi ve sızıntı yoktur. Yanmaya göre k∞ bu sürümde yoktur.
+
+![Çeyrek kor, demet düzeyinde yerel k](../resimler/tr/k4_yerel_k_kor_demet.png)

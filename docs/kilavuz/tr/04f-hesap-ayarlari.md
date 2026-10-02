@@ -141,6 +141,21 @@ Termal kesim sabit **0.625 eV**'tur. Üretilen betik aynı tally'leri kurar.
 | **Spektrum ve dört faktörü hesapla** | Y3 tally'lerini açar. Dört faktör ve k yalnızca özdeğer hesabında; spektrum sabit kaynakta da hesaplanır. | — | kapalı | Sızıntılı (vakum sınırlı) modelde ε·p·f·η'yı k-eff sanmak: k-eff için ayrıca P_NL çarpanı gerekir (kart ayrı verir). | `ayarlar.spektrum.var` |
 | **Enerji grup yapısı** | Akı spektrumunun grupları (OpenMC hazır yapıları): CASMO-70, XMAS-172, SHEM-361, CCFE-709. Dört faktör ve indeksler gruptan bağımsızdır (kendi iki grubunu kullanır). | grup | XMAS-172 | Az parçacıkla CCFE-709 seçmek: grup başına gürültü artar. | `ayarlar.spektrum.grup_yapisi` |
 
+<a id="ayar-yerel-k"></a>
+### Yerel k haritası kartı
+
+Koşuya kare kafesin hatvesine hizalı bir mesh tally'si (`yerel_k_pin` ya da `yerel_k_demet`)
+ve filtresiz bir toplam tally'si (`yerel_k_toplam`) ekler (`cekirdek/yerel_k.py`). Harita
+[Çalıştır](04g-calistir.md#calistir) sayfasındaki **Yerel k haritası** kartında görünür;
+tanım ve yorum: [6.7](06-sonuclar.md#yerel-k), adım adım örnek: [5.15 dersi](05-dersler.md#ders-yerel-k).
+Desteklenmeyen modelde (altıgen kafes, demetler arası boşluk, ötelenmiş kafes) kart hatayı
+yazar ve model değişmez. Üretilen betik aynı tally'leri kurar.
+
+| Alan | Anlamı | Birim | Tipik aralık | Yaygın yanlış kullanım | Spec anahtarı |
+|---|---|---|---|---|---|
+| **Düzey** | Kapalı / Pin / Demet: mesh binleri pin hücresi ya da demet büyüklüğünde. | — | kapalı | Yerel k'yı k∞ sanmak: yerel üretim / yok olma oranıdır, sızıntı ve net akım terimi içermez. | `tallyler[].uretici = "yerel_k"` |
+| **Eksenel kapsam** | Tüm model yüksekliği (3B'de eksenel yansıtıcı dahil) ya da yalnız aktif (fisil) bölge. 2B'de fark yoktur. | — | tüm model | "Aktif" seçip ortalamayı k∞ ile karşılaştırmak: kapsama < 1 olur. | mesh `alt`/`ust` z |
+
 <a id="ayar-tally"></a>
 ### Tally'ler kartı
 

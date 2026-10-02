@@ -25,8 +25,10 @@ ikonlarindan tema rengiyle PNG olarak gecici dizine yazilir (1x ve @2x):
 QSS `image:` yalnizca dosya yolu kabul eder.
 """
 
+import contextlib
 import os
 import tempfile
+from typing import Iterator
 
 from arayuz.tasarim import tokenlar
 from cekirdek.gunluk import kaydedici
@@ -97,6 +99,35 @@ def uret(p, aile=None, mono=None):
     d["mono"] = ('font-family: "%s";' % mono) if mono else ""
     return "\n".join(parca % d for parca in (
         _TEMEL, _DUGMELER, _GIRISLER, _LISTELER, _CUBUKLAR, _DIGER, _BILESENLER, _ESKI))
+
+
+@contextlib.contextmanager
+def sonradan_uygula(uygulama=None) -> Iterator[None]:
+    """
+    Toplu widget kurulumunda (ana pencere) uygulama stil sayfasini askiya alir,
+    cikista BIR kez uygular. QSS etkinken her addWidget/setWidget yeni widget'i
+    QStyleSheetStyle ile cilalar (17 KB, ~900 kural): pencere kurulumu 4.4 s'den
+    ~1.2 s'ye iner (H1b olcumu). Renk/token degismez; kurulum sirasinda sizeHint'ten
+    alinan birkac olcu (bolucu) ~11 px farkli olabilir (orkestrator karari: kabul,
+    H1b raporunda once/sonra ekranlari).
+
+    Ilk (tek) ana pencere icindir: cikistaki setStyleSheet uygulamadaki BUTUN canli
+    widget'lari yeniden cilalar; cok pencereli surecte maliyet onlarla buyur.
+    Blok icinde yeni bir stil sayfasi kurulduysa (tema degisti) o korunur.
+    """
+    if uygulama is None:
+        from PySide6 import QtWidgets
+        uygulama = QtWidgets.QApplication.instance()
+    qss = uygulama.styleSheet() if uygulama is not None else ""
+    if not qss:
+        yield
+        return
+    uygulama.setStyleSheet("")
+    try:
+        yield
+    finally:
+        if not uygulama.styleSheet():
+            uygulama.setStyleSheet(qss)
 
 
 def durum_ayarla(widget, ad, deger):

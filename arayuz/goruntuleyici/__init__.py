@@ -11,6 +11,11 @@
  Hafif tutulur: menu bu paketi acilista ice aktarir, pencere ilk acilista yuklenir.
 """
 
+from cekirdek.ceviri import N_
+
+# Araclar menusundeki eylemin ipucu (arayuz/pencere/menuler.py)
+IPUCU = N_("Malzeme/hücre/çakışma kesiti, ağ tally bindirmesi, kaynak noktaları, 3B görünüm (Y2)")
+
 
 def ac(ana_pencere=None):
     """Tekil goruntuleyici penceresini acar (gecerli model ve son kosuyla)."""
