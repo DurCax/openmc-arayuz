@@ -98,8 +98,10 @@ def katkilar(m, ad):
 
 
 def _model_anahtari(m):
-    """GeometriModeli'nin icerige dayali kimligi (gezintinin girdileri)."""
-    return icerik_anahtari([m.kok, m.parcalar, m.gruplar, m.tanimlar, m.sablon, m.kaynaklar])
+    """GeometriModeli'nin icerige dayali kimligi: BUTUN alanlar (agac dahil;
+    gezinti bugun agac'i dogrudan okumasa da ileride okursa bayat sonuc olmasin)."""
+    return icerik_anahtari([m.kok, m.parcalar, m.gruplar, m.tanimlar, m.sablon, m.kaynaklar,
+                            m.agac])
 
 
 def _katki_tablosu(m):

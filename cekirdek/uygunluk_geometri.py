@@ -70,13 +70,9 @@ def _icerik_hesapla(spec):
     return _sablon_geometri_icerigi(spec)
 
 
-def model_boyutu(spec):
-    """"2B" | "3B" | "3B_katmanli" -- eksenel boyut (kurede "2B"); bellekli."""
-    return bellekli_boyut(spec)
-
-
-def bellekli_boyut(spec, anahtar=None):
-    """model_boyutu; anahtar: icerik_anahtari(spec) (verilmezse hesaplanir)."""
+def model_boyutu(spec, anahtar=None):
+    """"2B" | "3B" | "3B_katmanli" -- eksenel boyut (kurede "2B"); bellekli.
+    anahtar: icerik_anahtari(spec) (verilmezse hesaplanir)."""
     return _BOYUT.al(anahtar or icerik_anahtari(spec), lambda: _model_boyutu(spec))
 
 

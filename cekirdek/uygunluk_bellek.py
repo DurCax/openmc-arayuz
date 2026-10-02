@@ -12,8 +12,8 @@
    Ayni icerik icin sonuc aynidir; burada bir kez hesaplanip saklanir.
 
  ANAHTAR
-   icerik_anahtari(nesne): kanonik JSON'un SHA-256 ozeti (cekirdek/onbellek.ozet
-   ile ayni kural). Anahtar HER cagrida icerikten yeniden uretilir: spec yerinde
+   icerik_anahtari(nesne): JSON metninin SHA-256 ozeti (sozluk sirasina duyarli;
+   sinirlar islevin belgesinde). Anahtar HER cagrida icerikten yeniden uretilir: spec yerinde
    degistirilse bile yeni icerik yeni anahtardir, bayat sonuc donmez. Maliyeti
    SFR spec'inde ~1 ms (gezintinin ~1/400'u).
 
@@ -55,9 +55,24 @@ def _json_disi(_nesne):
 
 
 def icerik_anahtari(nesne):
-    """JSON'a cevrilebilir nesnenin icerige dayali kimligi (SHA-256, 32 hane)."""
-    ham = json.dumps(nesne, sort_keys=True, ensure_ascii=False,
-                     separators=(",", ":"), default=_json_disi)
+    """
+    JSON'a cevrilebilir nesnenin icerige dayali kimligi (SHA-256, 32 hane).
+
+    SINIRLAR (bilerek)
+      * Sozluk SIRASINA duyarlidir (sort_keys yok): ayni icerik farkli sirayla
+        yalniz bir iska uretir, asla bayat isabet degil -- sonuclarin bazilari
+        (gezinti sirasi, ayrinti metni) sozluk sirasina bagli olabilir.
+      * JSON kurali geregi {1: x} ile {"1": x} ayni metne doner. Spec ve
+        GeometriModeli JSON'dan gelir, anahtarlari hep str'dir (testler/
+        test_h1_bellek.py denetler).
+      * Cevrilemeyen icerik (tuple anahtar, ozyineli yapi) TypeError/ValueError
+        yerine essiz belirtec verir: bellek atlanir, hata cagirana tasinmaz.
+    """
+    try:
+        ham = json.dumps(nesne, ensure_ascii=False, separators=(",", ":"),
+                         default=_json_disi)
+    except (TypeError, ValueError):
+        return _json_disi(nesne)
     return hashlib.sha256(ham.encode("utf-8")).hexdigest()[:32]
 
 
@@ -73,19 +88,28 @@ class Bellek(object):
         self.sinir = sinir
         self._kayit = collections.OrderedDict()
         self._kilit = threading.Lock()
+        self.isabet = 0                  # tanilama sayaclari (testler, olcum)
+        self.iska = 0
         _BELLEKLER.append(self)
 
     def al(self, anahtar, uret):
         with self._kilit:
             if anahtar in self._kayit:
                 self._kayit.move_to_end(anahtar)
+                self.isabet += 1
                 return self._kayit[anahtar]
+            self.iska += 1
         deger = uret()
         with self._kilit:
             self._kayit[anahtar] = deger
             while len(self._kayit) > self.sinir:
                 self._kayit.popitem(last=False)
         return deger
+
+    def unut(self, anahtar):
+        """Tek kaydi siler (yoksa sessizce gecer: silinecek bir sey yok)."""
+        with self._kilit:
+            self._kayit.pop(anahtar, None)
 
     def temizle(self):
         with self._kilit:

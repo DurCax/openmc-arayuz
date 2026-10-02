@@ -84,7 +84,7 @@ def test_bellek_lru_ve_anahtar():
     except ValueError:
         kontrol("sinir < 1 reddedilir", True)
     kontrol("ayni icerik ayni anahtar",
-            ub.icerik_anahtari({"x": [1, 2], "y": "a"}) == ub.icerik_anahtari({"y": "a", "x": [1, 2]}))
+            ub.icerik_anahtari({"x": [1, 2], "y": "a"}) == ub.icerik_anahtari({"x": [1, 2], "y": "a"}))
     kontrol("farkli icerik farkli anahtar",
             ub.icerik_anahtari({"x": 1}) != ub.icerik_anahtari({"x": 1.0001}))
     nesne = object()
@@ -108,6 +108,21 @@ def test_ornek_spec_ve_modelleri_json_saf():
                    default=json_disi)
     kontrol("JSON disi deger yok (bellek anahtari icerigi tam yansitir)", not sorunlu,
             sorted(set(sorunlu)))
+
+    def str_disi_anahtar(x):
+        if isinstance(x, dict):
+            return any(not isinstance(k, str) or str_disi_anahtar(v) for k, v in x.items())
+        if isinstance(x, (list, tuple)):
+            return any(str_disi_anahtar(v) for v in x)
+        return False
+    for yol in sorted(glob.glob(os.path.join(ORNEK, "*.json"))):
+        spec = _yukle(os.path.splitext(os.path.basename(yol))[0])
+        m = geometri.model(spec)
+        if str_disi_anahtar(spec) or str_disi_anahtar([m.kok, m.parcalar, m.gruplar,
+                                                        m.tanimlar, m.agac]):
+            sorunlu.append(os.path.basename(yol))
+    kontrol("sozluk anahtarlari hep str ({1: x} ile {'1': x} cakismasi olusmaz)",
+            not sorunlu, sorunlu)
 
 
 # ---------------------------------------------------------------------------
@@ -420,10 +435,94 @@ def test_editor_doldurmak_spec_degistirmez():
         _kapat(p)
 
 
+# ---------------------------------------------------------------------------
+# inceleme (python-reviewer) bulgulari
+# ---------------------------------------------------------------------------
+
+def test_hacim_anahtari_agaci_kapsar():
+    print("\n[H1-R1] hacim: model anahtari GeometriModeli.agac'i da kapsar")
+    import dataclasses
+    from cekirdek import geometri
+    from cekirdek.geometri import hacim
+    m = geometri.model(_yukle(_HACIM_ORNEGI))
+    baska = dataclasses.replace(m, agac=dict(m.agac, h1_isaret=1))
+    kontrol("agac farkli -> anahtar farkli",
+            hacim._model_anahtari(m) != hacim._model_anahtari(baska))
+
+
+def test_anahtar_json_disi_ve_karisik_sozluk():
+    print("\n[H1-R2] icerik_anahtari: tuple/karisik anahtarli sozluk hata vermez, eslesmez")
+    from cekirdek import uygunluk_bellek as ub
+    try:
+        nesne = {(1, 2): "a"}
+        kontrol("tuple anahtar: hata yok, her seferinde farkli (bellek atlanir)",
+                ub.icerik_anahtari(nesne) != ub.icerik_anahtari(nesne))
+        nesne = {1: "a", "b": 2}
+        kontrol("karisik anahtar: hata yok, kararli",
+                ub.icerik_anahtari(nesne) == ub.icerik_anahtari(nesne))
+    except TypeError as e:
+        kontrol("TypeError yok", False, str(e))
+    kontrol("sira duyarli: farkli sira farkli anahtar (yalniz iska, bayat isabet degil)",
+            ub.icerik_anahtari({"a": 1, "b": 2}) != ub.icerik_anahtari({"b": 2, "a": 1}))
+    b = ub.Bellek("test_sayac")
+    b.al("x", lambda: 1)
+    b.al("x", lambda: 2)
+    b.al("y", lambda: 3)
+    kontrol("isabet/iska sayaci", (b.isabet, b.iska) == (1, 2), (b.isabet, b.iska))
+
+
+def test_hacim_tablosu_dil_yarisi(monkeypatch):
+    print("\n[H1-R3] tukenme: hesap sirasinda dil degisirse kayit eski dil anahtariyla saklanmaz")
+    from cekirdek import tukenme
+    _bos_bellek()
+    spec = _yukle("pwr_17x17")
+    diller = iter(["tr", "en"])
+    monkeypatch.setattr(tukenme, "etkin_dil", lambda: next(diller, "en"))
+    tukenme.hacimler(spec)
+    kontrol("'tr' anahtariyla kayit yok",
+            not any(k[1] == "tr" for k in tukenme._HACIM_KAYDI._kayit), list(tukenme._HACIM_KAYDI._kayit))
+
+
+def test_sayim_hashlenemeyen_dolgu():
+    print("\n[H1-R4] tukenme._sayim: hashlenemeyen dolgu eskisi gibi 0 (hata yok)")
+    from cekirdek import tukenme
+    spec = _yukle("pwr_17x17")
+    try:
+        kontrol("sozluk dolgu -> 0", tukenme._sayim(spec, {"tur": "x"}, "cubuk") == 0)
+    except TypeError as e:
+        kontrol("sozluk dolgu -> 0", False, str(e))
+    kor = spec["kor"]
+    hedef = spec["cubuklar"][0]["ad"]
+    kontrol("bellekli sayim > 0 (17x17)", tukenme._kor_sayimi(spec, kor, None, hedef) > 0)
+
+
+def test_tarama_var_eski_kurala_esdeger():
+    print("\n[H1-R5] _tarama_var == bool(_gecerli_taramalar(b, 'katsayi')) butun orneklerde")
+    from cekirdek import geometri, uygunluk
+    farkli = []
+    for yol in sorted(glob.glob(os.path.join(ORNEK, "*.json"))):
+        ad = os.path.splitext(os.path.basename(yol))[0]
+        spec = _yukle(ad)
+        adaylar = [spec]
+        if not geometri.agac_modu(spec):
+            try:
+                adaylar.append(geometri.gelismise_gec(spec))
+            except (ValueError, KeyError):
+                pass                       # gelismise gecilemeyen sablon (kuresel)
+        for s in adaylar:
+            b = uygunluk._Baglam(s)
+            if uygunluk._tarama_var(b) != bool(uygunluk._gecerli_taramalar(b, "katsayi")):
+                farkli.append(ad)
+    kontrol("esdeger (sablon + gelismis)", not farkli, farkli)
+
+
 HIZLI = [test_bellek_lru_ve_anahtar, test_ornek_spec_ve_modelleri_json_saf,
          test_uygunluk_ayni_spec_tek_gezinti, test_gecerli_sekmeler_tek_gezinti,
          test_uygunluk_spec_degisince_yeniden_hesaplar,
          test_uygunluk_donen_nesne_paylasilmaz, test_hacim_katkilar_tek_gezinti,
          test_hacim_model_degisince_yeniden_hesaplar, test_yakit_ornek_sayisi_bellegi,
-         test_tembel_sekme_kirli_temiz, test_tembel_sekme_sonucu_hevesliyle_ayni]
-YAVAS = [test_bellekli_sonuc_belleksizle_ayni, test_editor_doldurmak_spec_degistirmez]
+         test_tembel_sekme_kirli_temiz, test_tembel_sekme_sonucu_hevesliyle_ayni,
+         test_hacim_anahtari_agaci_kapsar, test_anahtar_json_disi_ve_karisik_sozluk,
+         test_hacim_tablosu_dil_yarisi, test_sayim_hashlenemeyen_dolgu]
+YAVAS = [test_bellekli_sonuc_belleksizle_ayni, test_editor_doldurmak_spec_degistirmez,
+         test_tarama_var_eski_kurala_esdeger]

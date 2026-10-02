@@ -51,8 +51,8 @@ from collections import namedtuple
 from cekirdek import sema
 from cekirdek.uygunluk_bellek import Bellek, icerik_anahtari
 from cekirdek.uygunluk_geometri import (  # noqa: F401 -- disa verilen adlar
-    _ALTIGEN_PERIODIC, _bul, bellekli_boyut, dondurulmus_icerik, geometri_icerigi,
-    model_boyutu, sinir_secenekleri, sonsuz_ortam, yan_yuzey, yuz_sinir_secenekleri)
+    _ALTIGEN_PERIODIC, _bul, dondurulmus_icerik, geometri_icerigi, model_boyutu,
+    sinir_secenekleri, sonsuz_ortam, yan_yuzey, yuz_sinir_secenekleri)
 from cekirdek.uygunluk_malzeme import (  # noqa: F401 -- tasindi (T2), adlar burada da
     ROLLER, _AVOGADRO_BARN, _EMICI_ELEMENTLER, _EMICI_ESIGI, _ESER_ESIGI,
     _GAZ_YOGUNLUK_ESIGI, _atom_kesirleri, _doteryumlu, _eleman, _hafif_su_korelasyonu_mu,
@@ -117,7 +117,7 @@ class _Baglam(object):
         self.mod = (spec.get("ayarlar") or {}).get("mod", "eigenvalue")
         self.ozdeger = self.mod == "eigenvalue"
         self.agac = self.tur == "agac"
-        self.boyut = bellekli_boyut(spec, self.anahtar)
+        self.boyut = model_boyutu(spec, self.anahtar)
         self.roller = _ROLLER.al(self.anahtar, lambda: types.MappingProxyType(
             {ad: frozenset(r) for ad, r in malzeme_rolleri(spec).items()}))
         self.geo = dondurulmus_icerik(spec, self.anahtar)

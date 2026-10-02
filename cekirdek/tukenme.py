@@ -172,32 +172,36 @@ def _zorunlu_mu(spec, ad):
     return _fisil_mi(m) or ad in ((spec.get("tukenme") or {}).get("ek_malzemeler") or [])
 
 
-def _sayim(spec, dolgu, hedef, esleme=None, derinlik=0, _bellek=None):
-    """'dolgu' icinde 'hedef' cubuk/plaka kac kez geciyor (demetler icinden).
+def _sayim(spec, dolgu, hedef, derinlik=0):
+    """'dolgu' icinde 'hedef' cubuk/plaka kac kez geciyor (demetler icinden)."""
+    return _bellekli_sayim(spec, dolgu, hedef, derinlik, {})
 
-    _bellek: {(dolgu, derinlik): sayi} -- ayni cagri icinde ayni demetin
+
+def _bellekli_sayim(spec, dolgu, hedef, derinlik, bellek):
+    """_sayim; bellek {(dolgu, derinlik): sayi} AYNI cagri icinde ayni demetin
     yeniden sayilmamasi icin (v3 H1: SFR kor haritasinda 2.5 milyon ozyineleme,
-    ~1.5 s). Sonuc bellekli ve belleksiz ayni (derinlik anahtarda)."""
+    ~1.5 s). Derinlik anahtarda: sonuc bellekli ve belleksiz ayni. Hashlenemeyen
+    dolgu (bozuk spec) bellege girmez; eskisi gibi sayilir (demet bulunmaz -> 0)."""
     if not dolgu or derinlik > 8:
         return 0
     if dolgu == hedef:
         return 1
-    if _bellek is None:
-        _bellek = {}
-    anahtar_b = (dolgu, derinlik)
-    if anahtar_b in _bellek:
-        return _bellek[anahtar_b]
+    try:
+        anahtar_b = (dolgu, derinlik)
+        if anahtar_b in bellek:
+            return bellek[anahtar_b]
+    except TypeError:
+        anahtar_b = None
     d = sema.demet_bul(spec, dolgu)
-    if d is None:
-        _bellek[anahtar_b] = 0
-        return 0
-    anahtar = d.get("anahtar") or {}
     toplam = 0
-    for satir in d.get("harita") or []:
-        for harf in satir:
-            if harf in anahtar:
-                toplam += _sayim(spec, anahtar[harf], hedef, None, derinlik + 1, _bellek)
-    _bellek[anahtar_b] = toplam
+    if d is not None:
+        anahtar = d.get("anahtar") or {}
+        for satir in d.get("harita") or []:
+            for harf in satir:
+                if harf in anahtar:
+                    toplam += _bellekli_sayim(spec, anahtar[harf], hedef, derinlik + 1, bellek)
+    if anahtar_b is not None:
+        bellek[anahtar_b] = toplam
     return toplam
 
 
@@ -213,9 +217,9 @@ def _kor_sayimi(spec, kor, dolgu, hedef, esleme=None):
         for satir in kor.get("harita") or []:
             for harf in satir:
                 if harf in anahtar:
-                    toplam += _sayim(spec, anahtar[harf], hedef, _bellek=bellek)
+                    toplam += _bellekli_sayim(spec, anahtar[harf], hedef, 0, bellek)
         return toplam
-    return _sayim(spec, dolgu or sema.ana_dolgu(kor), hedef, _bellek=bellek)
+    return _bellekli_sayim(spec, dolgu or sema.ana_dolgu(kor), hedef, 0, bellek)
 
 
 def _eksenel_dilimler(kor):
@@ -248,8 +252,14 @@ def _hacim_tablosu(spec):
     """Butun yanabilir malzemelerin kaydi + "zorunlu" (bkz. _zorunlu_mu).
     Sablon modunda tukenme_hacim.sablon_malzeme_hacmi, gelismis (agac)
     modunda geometri.hacim.analitik (agac gezintisi)."""
-    kayit = _HACIM_KAYDI.al((icerik_anahtari(spec), etkin_dil()),
-                            lambda: _hacim_kaydi_hesapla(spec))
+    dil = etkin_dil()
+    anahtar = (icerik_anahtari(spec), dil)
+    kayit = _HACIM_KAYDI.al(anahtar, lambda: _hacim_kaydi_hesapla(spec))
+    if etkin_dil() != dil:
+        # Hesap surerken dil degisti (baska is parcacigi): metinler karisik
+        # olabilir; eski dil anahtariyla saklanmaz, yeni dilde yeniden hesaplanir.
+        _HACIM_KAYDI.unut(anahtar)
+        kayit = _hacim_kaydi_hesapla(spec)
     return {ad: dict(v, zorunlu=_zorunlu_mu(spec, ad)) for ad, v in kayit.items()}
 
 
