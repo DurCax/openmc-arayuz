@@ -446,6 +446,8 @@ def _tallyleri_oku(sp, sonuc):
         ad = t.name or "tally_%d" % t.id
         if ad in _GUC_TALLYLERI:
             continue          # guc bolumunde ayrica islenir
+        if ad.startswith("y3_"):
+            continue          # Y3 spektrum karti okur (cekirdek/spektrum.py)
         try:
             df = t.get_pandas_dataframe()
         except Exception as e:
