@@ -31,7 +31,7 @@ def entegrator_doldur(kutu: QtWidgets.QComboBox) -> None:
     kutu.setToolTip(_(
         "openmc.deplete entegratörü. Yüksek mertebe daha az adımla aynı doğruluğu verir "
         "ama adım başına daha çok transport koşar. SI-* (stokastik örtük) adım başına "
-        "iç yineleme yapar; kritiklik aramasıyla birlikte kullanılamaz."))
+        "iç döngü koşar; kritik aramayla birlikte kullanılamaz."))
 
 
 class TukenmeGenisletme(QtWidgets.QWidget):
@@ -51,14 +51,14 @@ class TukenmeGenisletme(QtWidgets.QWidget):
         self.sogutma.setPlaceholderText(_("ör. 1, 10, 100 (boş: soğuma yok)"))
         self.sogutma.setToolTip(_(
             "Yanmadan SONRA sıfır güçte (yalnız bozunma) adımlar. Transport koşulmaz; "
-            "bozunma ısısı, aktivite ve foton kaynağı bu adımlarda izlenir."))
+            "bozunma ısısı, aktivite ve foton kaynağı soğuma adımlarında izlenir."))
         self.sogutma_birim = QtWidgets.QComboBox()
         for kod, ad in SOGUMA_BIRIMLERI:
             self.sogutma_birim.addItem(_(ad), kod)
         self.si_adim = QtWidgets.QSpinBox()
         self.si_adim.setRange(*ta.SI_IC_ADIM_SINIR)
         self.si_adim.setValue(ta.SI_IC_ADIM)
-        self.si_adim.setToolTip(_("SI-* entegratörlerinin iç yineleme sayısı (OpenMC n_steps)."))
+        self.si_adim.setToolTip(_("SI-* entegratörlerinin iç döngü sayısı (OpenMC n_steps)."))
         self.surdur = QtWidgets.QCheckBox(_("Kaldığı yerden sürdür"))
         self.surdur.setToolTip(_(
             "Dizindeki önceki sonuç silinmez; yarıda kalan koşu son kayıtlı adımdan devam "
@@ -72,7 +72,7 @@ class TukenmeGenisletme(QtWidgets.QWidget):
         form.setContentsMargins(0, 0, 0, 0)
         form.addRow(_("Soğuma adımları:"), self.sogutma)
         form.addRow(_("Soğuma birimi:"), self.sogutma_birim)
-        form.addRow(_("SI iç yineleme:"), self.si_adim)
+        form.addRow(_("SI iç döngü:"), self.si_adim)
         form.addRow("", self.surdur)
         form.addRow("", self.hizli)
         form.addRow(self.arama_var)
@@ -94,9 +94,9 @@ class TukenmeGenisletme(QtWidgets.QWidget):
         self.arama_tur.currentIndexChanged.connect(self._hedefleri_doldur)
 
     def _arama_kur(self) -> None:
-        self.arama_var = QtWidgets.QCheckBox(_("Tükenme sırasında kritiklik araması (k = 1)"))
+        self.arama_var = QtWidgets.QCheckBox(_("Tükenme sırasında kritik arama (k = 1)"))
         self.arama_var.setToolTip(_(
-            "Her güçlü adımın başında k = 1 veren bor derişimi ya da çubuk daldırması "
+            "Her güçlü adımın başında k = 1 veren bor derişimi ya da kontrol çubuğu daldırması "
             "aranır (OpenMC add_keff_search_control, GRsecant). Adım başına birkaç ek "
             "transport koşar."))
         self.arama_tur = QtWidgets.QComboBox()

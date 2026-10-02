@@ -208,7 +208,7 @@ class TukenmeSekmesi(SekmeTabani, SonucBolumu, TukenmeArayuzu):
             ekler.append(_n("%d soğuma adımı (transport yok)", "%d soğuma adımı (transport yok)",
                             n) % n)
         if tukenme_ayar.kritik_arama(t).var:
-            ekler.append(_("kritiklik araması adım başına ek transport koşar"))
+            ekler.append(_("kritik arama adım başına ek transport koşar"))
         if ekler:
             self.adim_ozet.setText(self.adim_ozet.text() + " · " + " · ".join(ekler))
 

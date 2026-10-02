@@ -28,7 +28,7 @@ bor derişiminin nasıl değiştiğini izlemek. Alanlar:
    mertebesi sonucu belirlemez.
 5. **Sürdürme.** **Adımlar** = `1, 5, 10` yapın, **Kaldığı yerden sürdür**'ü açın ve
    başlatın: yalnız yeni adım koşulur, ilk iki satır değişmez.
-6. **Kritik bor.** Sürdürmeyi kapatın, **Tükenme sırasında kritiklik araması** açık, **Arama
+6. **Kritik bor.** Sürdürmeyi kapatın, **Tükenme sırasında kritik arama** açık, **Arama
    türü** = Çözünmüş bor, **Hedef** = su, tahminler 500 ve 1500 ppm, sınır 0–5000, **k
    toleransı** 0.005. Başlatın: tabloda her adımın bulunan bor değeri ve k ≈ 1 görünür.
 

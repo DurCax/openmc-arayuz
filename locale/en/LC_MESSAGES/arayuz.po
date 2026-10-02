@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 15:05+0300\n"
+"POT-Creation-Date: 2026-10-02 15:27+0300\n"
 "PO-Revision-Date: 2026-10-01 18:14+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -8312,8 +8312,8 @@ msgstr[0] "%d cooling step (no transport)"
 msgstr[1] "%d cooling steps (no transport)"
 
 #: arayuz/sekme_tukenme.py:211
-msgid "kritiklik araması adım başına ek transport koşar"
-msgstr "the criticality search runs extra transport solutions per step"
+msgid "kritik arama adım başına ek transport koşar"
+msgstr "the critical search runs extra transport solutions per step"
 
 #: arayuz/sekme_tukenme.py:226
 msgid "model yok"
@@ -9111,12 +9111,12 @@ msgstr "Control rod insertion [%]"
 #: arayuz/tukenme_y4.py:32
 msgid ""
 "openmc.deplete entegratörü. Yüksek mertebe daha az adımla aynı doğruluğu verir ama "
-"adım başına daha çok transport koşar. SI-* (stokastik örtük) adım başına iç yineleme "
-"yapar; kritiklik aramasıyla birlikte kullanılamaz."
+"adım başına daha çok transport koşar. SI-* (stokastik örtük) adım başına iç döngü "
+"koşar; kritik aramayla birlikte kullanılamaz."
 msgstr ""
 "openmc.deplete integrator. A higher order gives the same accuracy with fewer steps "
-"but runs more transport solutions per step. SI-* (stochastic implicit) iterates "
-"inside each step; it cannot be used with the criticality search."
+"but runs more transport solutions per step. SI-* (stochastic implicit) runs an inner "
+"loop in each step; it cannot be used with the critical search."
 
 #: arayuz/tukenme_y4.py:51
 msgid "ör. 1, 10, 100 (boş: soğuma yok)"
@@ -9125,14 +9125,14 @@ msgstr "e.g. 1, 10, 100 (empty: no cooling)"
 #: arayuz/tukenme_y4.py:53
 msgid ""
 "Yanmadan SONRA sıfır güçte (yalnız bozunma) adımlar. Transport koşulmaz; bozunma "
-"ısısı, aktivite ve foton kaynağı bu adımlarda izlenir."
+"ısısı, aktivite ve foton kaynağı soğuma adımlarında izlenir."
 msgstr ""
 "Steps at zero power (decay only) AFTER the burnup. No transport is run; decay heat, "
-"activity and photon source are followed in these steps."
+"activity and photon source are followed in the cooling steps."
 
 #: arayuz/tukenme_y4.py:61
-msgid "SI-* entegratörlerinin iç yineleme sayısı (OpenMC n_steps)."
-msgstr "Number of inner iterations of the SI-* integrators (OpenMC n_steps)."
+msgid "SI-* entegratörlerinin iç döngü sayısı (OpenMC n_steps)."
+msgstr "Number of inner loops of the SI-* integrators (OpenMC n_steps)."
 
 #: arayuz/tukenme_y4.py:62
 msgid "Kaldığı yerden sürdür"
@@ -9169,8 +9169,8 @@ msgid "Soğuma birimi:"
 msgstr "Cooling unit:"
 
 #: arayuz/tukenme_y4.py:75
-msgid "SI iç yineleme:"
-msgstr "SI inner iterations:"
+msgid "SI iç döngü:"
+msgstr "SI inner loops:"
 
 #: arayuz/tukenme_y4.py:79
 msgid "Arama türü:"
@@ -9193,17 +9193,18 @@ msgid "k toleransı:"
 msgstr "k tolerance:"
 
 #: arayuz/tukenme_y4.py:97
-msgid "Tükenme sırasında kritiklik araması (k = 1)"
-msgstr "Criticality search during depletion (k = 1)"
+msgid "Tükenme sırasında kritik arama (k = 1)"
+msgstr "Critical search during depletion (k = 1)"
 
 #: arayuz/tukenme_y4.py:99
 msgid ""
-"Her güçlü adımın başında k = 1 veren bor derişimi ya da çubuk daldırması aranır "
-"(OpenMC add_keff_search_control, GRsecant). Adım başına birkaç ek transport koşar."
+"Her güçlü adımın başında k = 1 veren bor derişimi ya da kontrol çubuğu daldırması "
+"aranır (OpenMC add_keff_search_control, GRsecant). Adım başına birkaç ek transport "
+"koşar."
 msgstr ""
-"At the start of every powered step the boron concentration or rod insertion giving k "
-"= 1 is searched (OpenMC add_keff_search_control, GRsecant). It runs a few extra "
-"transport solutions per step."
+"At the start of every powered step the boron concentration or control rod insertion "
+"giving k = 1 is searched (OpenMC add_keff_search_control, GRsecant). It runs a few "
+"extra transport solutions per step."
 
 #: arayuz/tukenme_y4.py:112
 msgid ""
@@ -10456,4 +10457,7 @@ msgstr "User guide"
 
 #~ msgid "CECM (öngörücü-düzeltici, adım başına 2 transport)"
 #~ msgstr "CECM (predictor-corrector, 2 transport solves per step)"
+
+#~ msgid "SI iç yineleme:"
+#~ msgstr "SI inner iterations:"
 

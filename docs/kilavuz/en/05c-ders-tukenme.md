@@ -30,7 +30,7 @@ concentration changes during depletion. Fields:
    order of the integrator does not decide the result.
 5. **Restart.** Set **Steps** = `1, 5, 10`, turn on **Resume from where it stopped** and start:
    only the new step is run, the first two rows do not change.
-6. **Critical boron.** Turn restart off, turn on **Criticality search during depletion**,
+6. **Critical boron.** Turn restart off, turn on **Critical search during depletion**,
    **Search type** = Dissolved boron, **Target** = su, guesses 500 and 1500 ppm, bounds 0–5000,
    **k tolerance** 0.005. Start: the table shows the boron found at every step and k ≈ 1.
 

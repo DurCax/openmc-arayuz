@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 15:05+0300\n"
+"POT-Creation-Date: 2026-10-02 15:27+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -7755,7 +7755,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #: arayuz/sekme_tukenme.py:211
-msgid "kritiklik araması adım başına ek transport koşar"
+msgid "kritik arama adım başına ek transport koşar"
 msgstr ""
 
 #: arayuz/sekme_tukenme.py:226
@@ -8490,8 +8490,8 @@ msgstr ""
 #: arayuz/tukenme_y4.py:32
 msgid ""
 "openmc.deplete entegratörü. Yüksek mertebe daha az adımla aynı doğruluğu verir ama "
-"adım başına daha çok transport koşar. SI-* (stokastik örtük) adım başına iç yineleme "
-"yapar; kritiklik aramasıyla birlikte kullanılamaz."
+"adım başına daha çok transport koşar. SI-* (stokastik örtük) adım başına iç döngü "
+"koşar; kritik aramayla birlikte kullanılamaz."
 msgstr ""
 
 #: arayuz/tukenme_y4.py:51
@@ -8501,11 +8501,11 @@ msgstr ""
 #: arayuz/tukenme_y4.py:53
 msgid ""
 "Yanmadan SONRA sıfır güçte (yalnız bozunma) adımlar. Transport koşulmaz; bozunma "
-"ısısı, aktivite ve foton kaynağı bu adımlarda izlenir."
+"ısısı, aktivite ve foton kaynağı soğuma adımlarında izlenir."
 msgstr ""
 
 #: arayuz/tukenme_y4.py:61
-msgid "SI-* entegratörlerinin iç yineleme sayısı (OpenMC n_steps)."
+msgid "SI-* entegratörlerinin iç döngü sayısı (OpenMC n_steps)."
 msgstr ""
 
 #: arayuz/tukenme_y4.py:62
@@ -8537,7 +8537,7 @@ msgid "Soğuma birimi:"
 msgstr ""
 
 #: arayuz/tukenme_y4.py:75
-msgid "SI iç yineleme:"
+msgid "SI iç döngü:"
 msgstr ""
 
 #: arayuz/tukenme_y4.py:79
@@ -8561,13 +8561,14 @@ msgid "k toleransı:"
 msgstr ""
 
 #: arayuz/tukenme_y4.py:97
-msgid "Tükenme sırasında kritiklik araması (k = 1)"
+msgid "Tükenme sırasında kritik arama (k = 1)"
 msgstr ""
 
 #: arayuz/tukenme_y4.py:99
 msgid ""
-"Her güçlü adımın başında k = 1 veren bor derişimi ya da çubuk daldırması aranır "
-"(OpenMC add_keff_search_control, GRsecant). Adım başına birkaç ek transport koşar."
+"Her güçlü adımın başında k = 1 veren bor derişimi ya da kontrol çubuğu daldırması "
+"aranır (OpenMC add_keff_search_control, GRsecant). Adım başına birkaç ek transport "
+"koşar."
 msgstr ""
 
 #: arayuz/tukenme_y4.py:112
