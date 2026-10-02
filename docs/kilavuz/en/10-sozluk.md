@@ -153,6 +153,13 @@ add the term to SOZLUK.md).
 | kinetics parameters | kinetik parametreler |  |
 | delayed neutron fraction | gecikmeli nötron oranı |  |
 | neutron generation time | üretim zamanı | production time |
+| prompt neutron lifetime | ani nötron ömrü |  |
+| point kinetics | nokta kinetiği |  |
+| delayed neutron group | gecikmeli nötron grubu |  |
+| precursor | öncül | predecessor |
+| prompt critical | ani kritik | instant critical |
+| inhour equation | ters saat denklemi | inverse clock equation |
+| stable period | kararlı periyot |  |
 | uncertainty | belirsizlik | error |
 | standard deviation | standart sapma |  |
 | coverage factor | kapsama faktörü |  |

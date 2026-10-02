@@ -627,12 +627,18 @@ tambur konumu **122.46° ± 3.68** (4 koşu).
 
 Hesap ayarlarından açılır (IFP yöntemi; dışa aktarılan betik de aynı IFP ayarını yazar). Ölçülen:
 
-| Model | β_eff | Λ |
-|---|---|---|
-| PWR 17×17 | 696 ± 48 pcm | 22.4 μs |
-| Godiva | 681 ± 27 pcm | 5.62 ns |
+| Model | k | β_eff | Λ = ℓ/k |
+|---|---|---|---|
+| PWR 17×17 (k∞, yansıtıcı sınır) | 1.18443 ± 0.00088 | 692.9 ± 25.7 pcm | 18.85 ± 0.07 μs |
+| Godiva | 0.99900 ± 0.00045 | 680.7 ± 24.5 pcm | 5.62 ns |
 
-β_eff sayesinde reaktivite **dolar** cinsinden de raporlanır (1 $ = β_eff).
+Λ, OpenMC `StatePoint.get_kinetics_parameters` tanımıyla Λ = ℓ/k'dir (ℓ ani nötron ömrü).
+v3 öncesi sürüm ℓ'yi Λ diye yazıyordu (PWR 17×17: 22.4 μs); Godiva'da k ≈ 1 olduğundan fark
+yoktur. Ölçüm: 6 iş parçacığı, 02.10.2026, ENDF/B-VIII.0, 6 gecikmeli nötron grubu.
+
+β_eff sayesinde reaktivite **dolar** cinsinden de raporlanır (1 $ = β_eff). Grup başına
+β_i, λ_i ve nokta kinetiği (basamak/rampa → P(t), periyot): **Analiz > Nokta kinetiği**
+(kılavuz 4.8, ders 5.12).
 
 ## Bilimsel doğrulama — Godiva kriteri
 

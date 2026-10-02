@@ -42,7 +42,7 @@ import math
 
 from PySide6 import QtCore, QtWidgets
 
-from cekirdek import sema, uygunluk
+from cekirdek import kinetik_oku, sema, uygunluk
 from cekirdek import kaynak as _kaynak
 from cekirdek.ceviri import _, _n, N_, pgettext
 from arayuz import tema
@@ -147,6 +147,14 @@ class AyarSekmesi(YerlesimMixin, KaynakFormuMixin, GucFormuMixin, TallyFormuMixi
         self.entropi_nz = tamsayi(1, 1, 200)
         self.kinetik_nesil = tamsayi(10, 1, 50, 1, _("nesil"))
         self.kinetik_nesil.setToolTip(_("IFP'nin geriye doğru izlediği nesil sayısı."))
+        # Y6: grup basina beta_i ve lambda_i (cekirdek/kinetik_oku.py)
+        self.kinetik_gruplar = QtWidgets.QComboBox()
+        for deger, metin in ((6, _("6 grup (ENDF/B)")), (8, _("8 grup (JEFF)")),
+                             (0, _("yalnız toplam β_eff"))):
+            self.kinetik_gruplar.addItem(metin, deger)
+        self.kinetik_gruplar.setToolTip(_(
+            "Grup başına β_i ve λ_i (nokta kinetiği için). Grup sayısı nükleer veri\n"
+            "kütüphanesiyle eşleşmeli: ENDF/B-VII.1/VIII.0 6 grup, JEFF-3.1+ 8 grup."))
 
     def _kaynak_alanlari_kur(self):
         """Kaynak turu, konumu, parcacigi ve siddeti."""
@@ -288,7 +296,8 @@ class AyarSekmesi(YerlesimMixin, KaynakFormuMixin, GucFormuMixin, TallyFormuMixi
             w.toggled.connect(self._kaydet)
         self.guc_cubuk.currentIndexChanged.connect(self._guc_cubuk_degisti)
         for w in (self.mod, self.sicaklik_yontemi, self.kaynak_tur, self.kaynak_parcacik,
-                  self.tayf, self.aci_tur, self.guc_bolge, self.guc_skor):
+                  self.tayf, self.aci_tur, self.guc_bolge, self.guc_skor,
+                  self.kinetik_gruplar):
             w.currentIndexChanged.connect(self._kaydet)
         for w in (self.watt_a, self.maxwell_theta, self.tek_enerji,
                   self.fuzyon_e0, self.fuzyon_kt):
@@ -429,6 +438,8 @@ class AyarSekmesi(YerlesimMixin, KaynakFormuMixin, GucFormuMixin, TallyFormuMixi
         kin = a.get("kinetik") or {}
         self.kinetik_var.setChecked(bool(kin.get("var")))
         self.kinetik_nesil.setValue(kin.get("nesil") or 10)
+        self.kinetik_gruplar.setCurrentIndex(max(self.kinetik_gruplar.findData(
+            kin.get("gruplar", 6)), 0))
 
         self._guc_doldur()
         self._tallyleri_doldur()
@@ -486,8 +497,8 @@ class AyarSekmesi(YerlesimMixin, KaynakFormuMixin, GucFormuMixin, TallyFormuMixi
                 self._deger_ayarla(w, v)
         self.entropi_nz.setVisible(uc_b)
         self.entropi_nz._etiket.setVisible(uc_b)
-        gf.setRowVisible(self.kinetik_nesil,
-                         self._kinetik_gorunur() and self.kinetik_var.isChecked())
+        for w in (self.kinetik_nesil, self.kinetik_gruplar):
+            gf.setRowVisible(w, self._kinetik_gorunur() and self.kinetik_var.isChecked())
 
         self._guc_gorunurluk()
         self._tally_gorunurluk()
@@ -604,6 +615,10 @@ class AyarSekmesi(YerlesimMixin, KaynakFormuMixin, GucFormuMixin, TallyFormuMixi
             kin["var"] = self.kinetik_var.isChecked()
             if self.kinetik_var.isChecked():
                 kin["nesil"] = self.kinetik_nesil.value()
+                g = self.kinetik_gruplar.currentData()
+                # Varsayilan (6) dosyada yoksa yazilmaz: degisikliksiz kayit spec'i degistirmez
+                if "gruplar" in kin or g != kinetik_oku.grup_sayisi({}):
+                    kin["gruplar"] = g
             a["kinetik"] = kin
 
         # Kaynak sozlugu BASTAN YAZILMAZ: gorunmeyen alanlar (or. ozdegerde

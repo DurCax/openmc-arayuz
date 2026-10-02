@@ -463,7 +463,9 @@ def _tallyleri_oku(sp, sonuc):
 def _kinetik(ifp):
     """
     Kinetik parametreler (IFP yontemi); eksikse None.
-    beta_eff = <beta payi> / <payda>,  Lambda = <zaman payi> / <payda>
+    beta_eff = <beta payi> / <payda>,  omur l = <zaman payi> / <payda>
+    (ani notron omru; uretim zamani Lambda = l / k sonuc_oku'da hesaplanir:
+    cekirdek/kinetik_oku.kosu_kinetigi).
     Belirsizlik oransal olarak birlestirilir (paylar ve payda bagimsiz kabul).
     """
     import math as _m
@@ -479,8 +481,8 @@ def _kinetik(ifp):
     return {
         "beta_eff": beta,
         "beta_eff_sapma": beta * _m.sqrt((spb / pb) ** 2 + (spd / pd) ** 2),
-        "lambda": lam,
-        "lambda_sapma": lam * _m.sqrt((spt / pt) ** 2 + (spd / pd) ** 2),
+        "omur": lam,
+        "omur_sapma": lam * _m.sqrt((spt / pt) ** 2 + (spd / pd) ** 2),
     }
 
 
@@ -615,7 +617,9 @@ def sonuc_oku(statepoint_yolu):
         sonuc["entropi_hata"] = entropi_hata
     kinetik = _kinetik(_tallyleri_oku(sp, sonuc))
     if kinetik:
-        sonuc["kinetik"] = kinetik
+        # Lambda = l / k (OpenMC tanimi) + grup basina beta_i, lambda_i
+        from cekirdek import kinetik_oku
+        sonuc["kinetik"] = kinetik_oku.kosu_kinetigi(kinetik, sp, sonuc["keff"])
     _guc_oku(sp, sonuc)
     return sonuc
 

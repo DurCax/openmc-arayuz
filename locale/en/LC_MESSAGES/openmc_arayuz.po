@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 09:53+0300\n"
+"POT-Creation-Date: 2026-10-02 09:59+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -559,11 +559,11 @@ msgstr " ('%s' undefined)"
 msgid " (arama genellikle 4–8 koşu sürer)"
 msgstr " (a search usually takes 4–8 runs)"
 
-#: arayuz/ayar/guc_formu.py:55 arayuz/sekme_ayar.py:375
+#: arayuz/ayar/guc_formu.py:55 arayuz/sekme_ayar.py:384
 msgid " (bilinmeyen)"
 msgstr " (unknown)"
 
-#: arayuz/sekme_ayar.py:319
+#: arayuz/sekme_ayar.py:328
 msgid " (bu modelde geçersiz)"
 msgstr " (invalid in this model)"
 
@@ -612,7 +612,7 @@ msgstr " > limit %.3f."
 msgid " KRİTİK ARAMA: %s"
 msgstr " CRITICAL SEARCH: %s"
 
-#: arayuz/pencere/ana_pencere.py:623
+#: arayuz/pencere/ana_pencere.py:624
 #, python-brace-format
 msgid ""
 " Model bu türün gerektirdiği parçayı içermiyordu; şablondan eklendi: {parca} "
@@ -626,7 +626,7 @@ msgstr ""
 msgid " TARAMA: %s"
 msgstr " PARAMETER SWEEP: %s"
 
-#: arayuz/sekme_ayar.py:215
+#: arayuz/sekme_ayar.py:223
 msgid " derece"
 msgstr " degrees"
 
@@ -655,11 +655,11 @@ msgid_plural " · × kesik çubuk (%d, F_ΔH dışı)"
 msgstr[0] " · × truncated pin (%d, excluded from F_ΔH)"
 msgstr[1] " · × truncated pins (%d, excluded from F_ΔH)"
 
-#: arayuz/sekme_ayar.py:516
+#: arayuz/sekme_ayar.py:527
 msgid " — aktif çevrim yok: pasif çevrim sayısını azaltın."
 msgstr " — no active batches: reduce the number of inactive batches."
 
-#: arayuz/sekme_ayar.py:519
+#: arayuz/sekme_ayar.py:530
 #, python-brace-format
 msgid ""
 " — beklenen k-eff belirsizliği ≈ ±{s} pcm (pin hücre ölçümü; büyük korlarda daha "
@@ -972,7 +972,7 @@ msgstr "%d×%d full core"
 msgid "%d×%d yakıt demeti"
 msgstr "%d×%d fuel assembly"
 
-#: arayuz/analiz/sekme.py:547
+#: arayuz/analiz/sekme.py:552
 #, python-format
 msgid ""
 "%s\n"
@@ -992,7 +992,7 @@ msgstr ""
 "%s\n"
 "truncated pin — clipped by the upper cell boundary; excluded from F_ΔH and F_q"
 
-#: arayuz/analiz/sekme.py:434
+#: arayuz/analiz/sekme.py:439
 #, python-format
 msgid "%s  (şu an %%%.1f dalmış)"
 msgstr "%s  (currently %.1f%% inserted)"
@@ -1130,6 +1130,11 @@ msgstr "Remove nuclide %s from the selection"
 msgid "%s okunamadı: %s"
 msgstr "%s could not be read: %s"
 
+#: cekirdek/kinetik.py:119
+#, python-format
+msgid "%s pozitif ve sonlu olmalı: %r"
+msgstr "%s must be positive and finite: %r"
+
 #: cekirdek/uygunluk_denetimi/profiller.py:211
 #, python-format
 msgid "%s profilinde bilinmeyen eşik: %s"
@@ -1139,6 +1144,11 @@ msgstr "unknown threshold in profile %s: %s"
 #, python-format
 msgid "%s seçilmemiş"
 msgstr "%s not selected"
+
+#: cekirdek/kinetik.py:109 cekirdek/kinetik.py:113 cekirdek/kinetik.py:126
+#, python-format
+msgid "%s sonlu bir sayı olmalı: %r"
+msgstr "%s must be a finite number: %r"
 
 #: cekirdek/dogrula/geometri.py:136 cekirdek/dogrula/geometri.py:243
 #, python-format
@@ -1162,7 +1172,7 @@ msgstr "%s boundary cannot be periodic: axial periodicity is not physical in a f
 msgid "%s zincir seçildi ama model %s spektrumlu görünüyor"
 msgstr "%s chain selected but the model appears to have a %s spectrum"
 
-#: arayuz/analiz/sekme.py:441
+#: arayuz/analiz/sekme.py:446
 #, python-format
 msgid "%s — %d. bölge (r = %.4g cm, %s)"
 msgstr "%s — pin region %d (r = %.4g cm, %s)"
@@ -1177,7 +1187,7 @@ msgstr "%s — invalid on this surface"
 msgid "%s%s — seçip ızgarada tıklayın ya da sürükleyin"
 msgstr "%s%s — select, then click or drag on the grid"
 
-#: cekirdek/sema.py:383
+#: cekirdek/sema.py:387
 #, python-format
 msgid ""
 "%s() gelişmiş (ağaç) geometri modunda kullanılamaz: kor alanları yok; "
@@ -1342,7 +1352,7 @@ msgid ""
 "uygulanır"
 msgstr "'%s' is not a control rod; an insertion sweep applies only to control rods"
 
-#: arayuz/analiz/sekme.py:523
+#: arayuz/analiz/sekme.py:528
 #, python-format
 msgid "'%s' bu modelde artık geçerli değil."
 msgstr "'%s' is no longer valid for this model."
@@ -1959,7 +1969,7 @@ msgstr "(fewer than 10 experiments require a technical justification)"
 msgid "(bileşen değil — ağaçta düzenleyin)"
 msgstr "(not a component — edit it in the tree)"
 
-#: arayuz/sekme_ayar.py:234
+#: arayuz/sekme_ayar.py:242
 msgid "(boş — yalnızca bağıl)"
 msgstr "(empty — relative only)"
 
@@ -2056,7 +2066,7 @@ msgstr "+ Layer"
 msgid "+ Konum"
 msgstr "+ Position"
 
-#: arayuz/ayar/yerlesim.py:195
+#: arayuz/ayar/yerlesim.py:196
 msgid "+ Tally"
 msgstr "+ Tally"
 
@@ -2182,6 +2192,14 @@ msgstr "3D, layered (reflector / blanket / plenum)"
 msgid "3B, tek bölge"
 msgstr "3D, single region"
 
+#: arayuz/sekme_ayar.py:152
+msgid "6 grup (ENDF/B)"
+msgstr "6 groups (ENDF/B)"
+
+#: arayuz/sekme_ayar.py:152
+msgid "8 grup (JEFF)"
+msgstr "8 groups (JEFF)"
+
 #: arayuz/sekme_ayar.py:143
 msgid ""
 "8 × 8 radyal bölme; 3B modelde eksenel 8 bölme, 2B'de tek dilim.\n"
@@ -2267,7 +2285,7 @@ msgid_plural "<b>%s = %+.3f &plusmn; %.3f %s</b><br>doğrusal uyum R&sup2; = %.4
 msgstr[0] "<b>%s = %+.3f &plusmn; %.3f %s</b><br>linear fit R&sup2; = %.4f, %d point<br><br>%s"
 msgstr[1] "<b>%s = %+.3f &plusmn; %.3f %s</b><br>linear fit R&sup2; = %.4f, %d points<br><br>%s"
 
-#: arayuz/analiz/sekme.py:625
+#: arayuz/analiz/sekme.py:630
 #, python-format
 msgid "<b>Hata:</b> %s"
 msgstr "<b>Error:</b> %s"
@@ -2351,10 +2369,14 @@ msgstr "The name cannot start or end with a space."
 msgid "Ad değiştirilemedi: {neden}"
 msgstr "Could not rename: {neden}"
 
-#: arayuz/ayar/yerlesim.py:181 arayuz/cubuk/sayfalar.py:203
+#: arayuz/ayar/yerlesim.py:182 arayuz/cubuk/sayfalar.py:203
 #: arayuz/malzeme/kutuphane_diyalog.py:65 arayuz/malzeme/malzeme_diyalog.py:83
 msgid "Ad:"
 msgstr "Name:"
+
+#: arayuz/analiz/kinetik.py:94
+msgid "Adiyabatik sıcaklık geri beslemesi"
+msgstr "Adiabatic temperature feedback"
 
 #: cekirdek/dogrula/tukenme.py:39
 msgid "Adı OpenMC biçiminde yazın (ör. Xe135, Am242_m1)."
@@ -2447,7 +2469,7 @@ msgstr "Flux"
 msgid "Akı (flux)"
 msgstr "Flux"
 
-#: arayuz/sekme_ayar.py:263
+#: arayuz/sekme_ayar.py:271
 msgid "Akı haritası (düzenli ağ)"
 msgstr "Flux map (regular mesh)"
 
@@ -2471,7 +2493,7 @@ msgstr "Turn the subtree into a component and use it in both places as a 'bilese
 msgid "Alt sınır:"
 msgstr "Bottom boundary:"
 
-#: arayuz/analiz/sekme.py:361
+#: arayuz/analiz/sekme.py:366
 msgctxt "arama"
 msgid "Alt sınır:"
 msgstr "Lower bound:"
@@ -2587,7 +2609,7 @@ msgstr ""
 "The analytical volume is not exact (truncated position or pin); OpenMC stochastic "
 "volume calculation is used and its uncertainty is written to the report."
 
-#: arayuz/analiz/sekme.py:176 arayuz/pencere/model_islemleri.py:67
+#: arayuz/analiz/sekme.py:180 arayuz/pencere/model_islemleri.py:67
 #: arayuz/yardim/__init__.py:50
 msgid "Analiz"
 msgstr "Analysis"
@@ -2596,11 +2618,11 @@ msgstr "Analysis"
 msgid "Analiz ayarları"
 msgstr "Analysis settings"
 
-#: arayuz/analiz/sekme.py:595
+#: arayuz/analiz/sekme.py:600
 msgid "Analiz başladı"
 msgstr "Analysis started"
 
-#: arayuz/analiz/sekme.py:627
+#: arayuz/analiz/sekme.py:632
 #, python-format
 msgid "Analiz hatası: %s"
 msgstr "Analysis error: %s"
@@ -2609,7 +2631,7 @@ msgstr "Analysis error: %s"
 msgid "Analiz sekmesinde sıcaklık/boşluk taraması yapın."
 msgstr "Run a temperature/void sweep on the Analysis page."
 
-#: arayuz/analiz/sekme.py:590
+#: arayuz/analiz/sekme.py:595
 #, python-format
 msgid "Analiz sürüyor: %s — her nokta ayrı bir koşu."
 msgstr "Analysis in progress: %s — each point is a separate run."
@@ -2766,7 +2788,7 @@ msgstr "Light"
 msgid "Açık modele dön"
 msgstr "Back to open model"
 
-#: arayuz/analiz/sekme.py:337
+#: arayuz/analiz/sekme.py:342
 #, python-format
 msgid ""
 "Açıkken parametre listesinde tasarım etütleri de yer alır: %s. Bunlar reaktivite "
@@ -2808,7 +2830,7 @@ msgstr "Open…"
 msgid "Ağ boyutu otomatik"
 msgstr "Automatic mesh size"
 
-#: arayuz/ayar/yerlesim.py:190
+#: arayuz/ayar/yerlesim.py:191
 msgid "Ağ bölmeleri:"
 msgstr "Mesh divisions:"
 
@@ -2864,6 +2886,18 @@ msgstr ""
 "Bartlett approximation: in an independent sequence the lag-1 autocorrelation ≈ N(0, "
 "1/N); the MC σ ignores the batch-to-batch correlation ("
 
+#: arayuz/analiz/kinetik.py:76
+msgid "Basamak"
+msgstr "Step"
+
+#: arayuz/analiz/kinetik.py:85
+msgid ""
+"Basamakta t = 0'da eklenen ρ; rampada rampa sonunda ulaşılan ρ.\n"
+"1 pcm = 10⁻⁵ Δk/k; 1 $ = β_eff. ρ ≥ 1 $ ANİ KRİTİK'tir."
+msgstr ""
+"Step: ρ inserted at t = 0; ramp: ρ reached at the end of the ramp.\n"
+"1 pcm = 10⁻⁵ Δk/k; 1 $ = β_eff. ρ ≥ 1 $ is PROMPT CRITICAL."
+
 #: arayuz/guc_harita.py:466
 #, python-format
 msgid ""
@@ -2918,7 +2952,11 @@ msgstr "On the start screen: return to the open model"
 msgid "Başlangıç ekranını kapatıp üzerinde çalıştığınız modele döner (Esc)."
 msgstr "Closes the start screen and returns to the model you are working on (Esc)."
 
-#: arayuz/sekme_ayar.py:460
+#: arayuz/analiz/kinetik.py:123
+msgid "Başlangıç gücü P₀:"
+msgstr "Initial power P₀:"
+
+#: arayuz/sekme_ayar.py:471
 msgid "Başlangıç kaynağı"
 msgstr "Initial source"
 
@@ -2934,11 +2972,15 @@ msgstr ""
 "of the target pin — the two need not be the same (a natural uranium blanket is "
 "fissile but contains no fuel pin)."
 
-#: arayuz/ayar/yerlesim.py:139
+#: arayuz/ayar/yerlesim.py:140
 msgid "Başlangıç kaynağının enerjisi ve yönü"
 msgstr "Initial source energy and direction"
 
-#: arayuz/analiz/sekme.py:106 arayuz/analiz/sekme.py:361
+#: cekirdek/kinetik.py:134
+msgid "Başlangıç zamanı negatif olamaz."
+msgstr "Start time cannot be negative."
+
+#: arayuz/analiz/sekme.py:106 arayuz/analiz/sekme.py:366
 msgid "Başlangıç:"
 msgstr "Start:"
 
@@ -3010,6 +3052,10 @@ msgstr ""
 #: cekirdek/uygunluk_denetimi/kurallar_rapor.py:143
 msgid "Belirsizliğin 1σ standart belirsizlik olduğunu yazın."
 msgstr "State that the uncertainty is the 1σ standard uncertainty."
+
+#: arayuz/analiz/kinetik.py:119
+msgid "Benzetim süresi:"
+msgstr "Simulated time:"
 
 #: cekirdek/malzeme_kutup.py:552
 msgid "Berilyum (Be)"
@@ -3127,7 +3173,7 @@ msgstr "Info"
 msgid "Bilgisayarınızdaki bir model dosyasını (.json) açar (Ctrl+O)."
 msgstr "Opens a model file (.json) from your computer (Ctrl+O)."
 
-#: arayuz/yardim/__init__.py:65
+#: arayuz/yardim/__init__.py:67
 msgid "Bilinen tuzaklar"
 msgstr "Known pitfalls"
 
@@ -3212,7 +3258,7 @@ msgstr ""
 msgid "Bir model dosyası (.json) aç"
 msgstr "Open a model file (.json)"
 
-#: arayuz/analiz/sekme.py:177
+#: arayuz/analiz/sekme.py:181
 msgid ""
 "Bir parametreyi tarayıp eğimden reaktivite katsayısını ya da hedef k-eff'i veren "
 "değeri bulursunuz. Yalnızca bu modelde anlamlı parametreler listelenir; her nokta "
@@ -3250,11 +3296,15 @@ msgstr "The unit must be 'ao' (atom fraction) or 'wo' (weight fraction)."
 msgid "Birim ağır metal kütlesi başına üretilen enerji [MWd/kg]."
 msgstr "Energy produced per unit heavy-metal mass [MWd/kg]."
 
+#: arayuz/analiz/kinetik.py:116
+msgid "Birim:"
+msgstr "Unit:"
+
 #: cekirdek/geometri/denetim.py:138
 msgid "Birini yeniden adlandırın."
 msgstr "Rename one of them."
 
-#: arayuz/analiz/sekme.py:107 arayuz/analiz/sekme.py:362
+#: arayuz/analiz/sekme.py:107 arayuz/analiz/sekme.py:367
 msgid "Bitiş:"
 msgstr "End:"
 
@@ -3306,7 +3356,7 @@ msgstr "Size"
 msgid "Boyut:"
 msgstr "Size:"
 
-#: arayuz/pencere/ana_pencere.py:579
+#: arayuz/pencere/ana_pencere.py:580
 msgid "Boyuta tıklayınca Kor sayfasına, hesap türüne tıklayınca Hesap ayarlarına gider."
 msgstr ""
 "Click the dimension to go to the Geometry page, the calculation type to go to Run "
@@ -3329,7 +3379,7 @@ msgctxt "madde"
 msgid "Boş"
 msgstr "Void"
 
-#: arayuz/analiz/sekme.py:443 arayuz/ayar/guc_formu.py:72
+#: arayuz/analiz/sekme.py:448 arayuz/ayar/guc_formu.py:72
 #: arayuz/cubuk/parca_islemleri.py:20 arayuz/izgara_yardimci.py:173
 #: arayuz/kor/katmanlar.py:22
 msgid "Boş (madde yok)"
@@ -3453,11 +3503,11 @@ msgstr ""
 "Power distribution cannot be computed for this model: the assembly has no repeated "
 "fissile pin. Uncheck the box."
 
-#: arayuz/analiz/sekme.py:301
+#: arayuz/analiz/sekme.py:306
 msgid "Bu modelde taranabilecek bir parametre bulunamadı."
 msgstr "No parameter that can be swept was found in this model."
 
-#: arayuz/analiz/sekme.py:521
+#: arayuz/analiz/sekme.py:526
 msgid "Bu modelde taranabilecek bir parametre yok."
 msgstr "This model has no parameter that can be swept."
 
@@ -3523,6 +3573,14 @@ msgstr ""
 "organization's own quality assurance programme and an independent review. No "
 "threshold is set without a source that can be cited; the thresholds can be adjusted "
 "in the profile."
+
+#: arayuz/analiz/kinetik.py:167
+msgid ""
+"Bu projede başarılı bir koşu yok: önce Çalıştır'da kinetik parametreleri açık bir "
+"özdeğer koşusu yapın."
+msgstr ""
+"There is no successful run in this project: first make an eigenvalue run in Run with "
+"kinetics parameters enabled."
 
 #: arayuz/pencere/model_islemleri.py:180
 #, python-format
@@ -3849,7 +3907,7 @@ msgstr ""
 "The placement of the assemblies. The core map shows which assembly goes into each "
 "position."
 
-#: arayuz/sekme_ayar.py:223
+#: arayuz/sekme_ayar.py:231
 msgid ""
 "Demette tekrarlanan yakıt çubuğunun her örneği ayrı sayılır\n"
 "(OpenMC: DistribcellFilter). Buradan tepe faktörleri çıkar:\n"
@@ -3885,43 +3943,47 @@ msgstr "Independence between experiments"
 msgid "Deniz yeşili"
 msgstr "Teal"
 
-#: arayuz/yardim/__init__.py:55
+#: arayuz/yardim/__init__.py:56
 msgid "Ders: altıgen kor"
 msgstr "Lesson: hexagonal core"
 
-#: arayuz/yardim/__init__.py:60
+#: arayuz/yardim/__init__.py:61
 msgid "Ders: benchmark ve C/E"
 msgstr "Lesson: benchmarks and C/E"
 
-#: arayuz/yardim/__init__.py:53
+#: arayuz/yardim/__init__.py:54
 msgid "Ders: demet k∞"
 msgstr "Lesson: assembly k∞"
 
-#: arayuz/yardim/__init__.py:59
+#: arayuz/yardim/__init__.py:60
 msgid "Ders: güç haritası ve F_ΔH"
 msgstr "Lesson: power map and F_ΔH"
 
-#: arayuz/yardim/__init__.py:56
+#: arayuz/yardim/__init__.py:57
 msgid "Ders: kare çekirdek + altıgen halka"
 msgstr "Lesson: square core + hexagonal ring"
 
-#: arayuz/yardim/__init__.py:61
+#: arayuz/yardim/__init__.py:62
 msgid "Ders: kritik arama"
 msgstr "Lesson: critical search"
 
-#: arayuz/yardim/__init__.py:62
+#: arayuz/yardim/__init__.py:64
+msgid "Ders: nokta kinetiği"
+msgstr "Lesson: point kinetics"
+
+#: arayuz/yardim/__init__.py:63
 msgid "Ders: rapor ve uygunluk eki"
 msgstr "Lesson: report and conformity annex"
 
-#: arayuz/yardim/__init__.py:54
+#: arayuz/yardim/__init__.py:55
 msgid "Ders: tam kor"
 msgstr "Lesson: full core"
 
-#: arayuz/yardim/__init__.py:57
+#: arayuz/yardim/__init__.py:58
 msgid "Ders: tamburu herhangi bir geometriye yerleştirmek"
 msgstr "Lesson: placing a drum in any geometry"
 
-#: arayuz/yardim/__init__.py:58
+#: arayuz/yardim/__init__.py:59
 msgid "Ders: tükenme ve nüklid seçimi"
 msgstr "Lesson: depletion and nuclide selection"
 
@@ -4135,7 +4197,7 @@ msgstr "Validation references: %s"
 msgid "Doğrulama referanslarını (IRPhEP / hesap-hesap karşılaştırması) girin."
 msgstr "Enter the validation references (IRPhEP / code-to-code comparison)."
 
-#: arayuz/yardim/__init__.py:67
+#: arayuz/yardim/__init__.py:69
 msgid "Doğrulama ve geçerleme (V&V)"
 msgstr "Verification and validation (V&V)"
 
@@ -4189,7 +4251,7 @@ msgstr "Refresh model check (including data library)"
 msgid "Durdur"
 msgstr "Stop"
 
-#: arayuz/analiz/sekme.py:600
+#: arayuz/analiz/sekme.py:605
 msgid "Durdurma istendi — süren koşu bitince duracak"
 msgstr "Stop requested — it will stop when the current run finishes"
 
@@ -4410,7 +4472,7 @@ msgstr ""
 "Insertion cannot be defined without an axial tip position. Define an active height on"
 " the Geometry page."
 
-#: arayuz/ayar/yerlesim.py:158
+#: arayuz/ayar/yerlesim.py:159
 msgid "Eksenel dilim:"
 msgstr "Axial bins:"
 
@@ -4493,6 +4555,10 @@ msgstr "Missing: no spherical shell is defined."
 msgid "Eleman dış ölçüsü (x × y):"
 msgstr "Element outer size (x × y):"
 
+#: arayuz/analiz/kinetik.py:35
+msgid "Elle"
+msgstr "Manual"
+
 #: arayuz/malzeme/malzeme_diyalog.py:200
 msgid "Elle düzenlemeye geçince malzeme kütüphane parametrelerinden ayrılır."
 msgstr "Switching to manual editing detaches the material from the library parameters."
@@ -4554,6 +4620,11 @@ msgstr "Absorber arc angle:"
 msgid "Emici yayı"
 msgstr "Absorber arc"
 
+#: cekirdek/kinetik.py:468
+#, python-format
+msgid "En az iki zaman noktası gerekir (tam sayı): %r"
+msgstr "At least two time points are required (integer): %r"
+
 #: cekirdek/uygunluk_denetimi/kurallar_kor.py:213
 msgid "En değerli çubuğu dışarıda bırakarak yeniden hesaplayın."
 msgstr "Recompute leaving the most reactive rod out."
@@ -4579,6 +4650,11 @@ msgstr "Maximum linear power"
 msgid "En yüksek çizgisel güç %.1f W/cm (tepe faktörü: %s)."
 msgstr "Maximum linear power %.1f W/cm (peaking factor: %s)."
 
+#: cekirdek/kinetik.py:156
+#, python-format
+msgid "En çok %d gecikmeli nötron grubu desteklenir."
+msgstr "At most %d delayed neutron groups are supported."
+
 #: arayuz/kor/yerlesim.py:129
 msgid "En üste yeni bir katman ekler."
 msgstr "Adds a new layer at the top."
@@ -4587,7 +4663,7 @@ msgstr "Adds a new layer at the top."
 msgid "En üstteki katman tabloda en üsttedir."
 msgstr "The topmost layer is at the top of the table."
 
-#: arayuz/sekme_ayar.py:259
+#: arayuz/sekme_ayar.py:267
 msgid "Enerji grupları"
 msgstr "Energy groups"
 
@@ -4595,7 +4671,7 @@ msgstr "Energy groups"
 msgid "Enerji tayfı:"
 msgstr "Energy spectrum:"
 
-#: arayuz/sekme_ayar.py:193
+#: arayuz/sekme_ayar.py:201
 msgid "Enerji:"
 msgstr "Energy:"
 
@@ -4823,7 +4899,7 @@ msgstr "Fission product poisons"
 msgid "Foton (gama)"
 msgstr "Photon (gamma)"
 
-#: arayuz/sekme_ayar.py:159
+#: arayuz/sekme_ayar.py:167
 msgid ""
 "Foton seçilirse foton taşınımı da açılır ve kütüphanede foton\n"
 "verisi bulunmalıdır."
@@ -4857,6 +4933,24 @@ msgstr "Gd₂O₃ — gadolinium oxide"
 #, python-format
 msgid "Gecikme-1 ilinti r = %.2f ≤ %.2f."
 msgstr "Lag-1 correlation r = %.2f ≤ %.2f."
+
+#: cekirdek/kinetik_oku.py:57
+#, python-format
+msgid "Gecikmeli nötron grup sayısı 0, 6 ya da 8 olmalı: %r"
+msgstr "Number of delayed neutron groups must be 0, 6 or 8: %r"
+
+#: arayuz/analiz/kinetik.py:42
+msgid ""
+"Gecikmeli nötron grupları (β_i, λ_i) ve üretim zamanı Λ ile basamak ya da rampa "
+"reaktivitesine güç yanıtı P(t). β_i ve Λ kinetik açık bir koşudan (IFP) alınabilir."
+msgstr ""
+"Power response P(t) to a step or ramp reactivity, from the delayed neutron groups "
+"(β_i, λ_i) and the neutron generation time Λ. β_i and Λ can be taken from a run with "
+"kinetics enabled (IFP)."
+
+#: arayuz/ayar/yerlesim.py:138
+msgid "Gecikmeli nötron grupları:"
+msgstr "Delayed neutron groups:"
 
 #: arayuz/ortak.py:388
 msgid "Gelişmiş"
@@ -5008,7 +5102,7 @@ msgstr ""
 "The geometry contains a gap or overlapping cells: check the geometry plots and the "
 "boundary conditions."
 
-#: arayuz/analiz/sekme.py:299
+#: arayuz/analiz/sekme.py:304
 msgid ""
 "Geometride fisil (yakıt) malzeme yok; k-eff tanımsız olduğu için reaktivite "
 "hesaplanamaz."
@@ -5104,15 +5198,25 @@ msgstr "Save chart as PNG"
 msgid "Grafiği kaydet"
 msgstr "Save chart"
 
-#: arayuz/geometri/form_yerlesim.py:107 arayuz/geometri/form_yerlesim.py:322
+#: arayuz/analiz/kinetik.py:67 arayuz/geometri/form_yerlesim.py:107
+#: arayuz/geometri/form_yerlesim.py:322
 msgid "Grup"
 msgstr "Group"
+
+#: arayuz/sekme_ayar.py:156
+msgid ""
+"Grup başına β_i ve λ_i (nokta kinetiği için). Grup sayısı nükleer veri\n"
+"kütüphanesiyle eşleşmeli: ENDF/B-VII.1/VIII.0 6 grup, JEFF-3.1+ 8 grup."
+msgstr ""
+"Per-group β_i and λ_i (for point kinetics). The number of groups must match the "
+"nuclear\n"
+"data library: ENDF/B-VII.1/VIII.0 6 groups, JEFF-3.1+ 8 groups."
 
 #: cekirdek/geometri/denetim.py:545
 msgid "Grup değeri sayı olmalı."
 msgstr "The group value must be a number."
 
-#: arayuz/sekme_ayar.py:195
+#: arayuz/sekme_ayar.py:203
 msgid "Grup değerleri:"
 msgstr "Group values:"
 
@@ -5124,11 +5228,23 @@ msgstr "Group added"
 msgid "Grup grup tayf (histogram)"
 msgstr "Group-wise spectrum (histogram)"
 
-#: arayuz/sekme_ayar.py:195
+#: arayuz/sekme_ayar.py:203
 msgid "Grup kenarları:"
 msgstr "Group edges:"
 
-#: arayuz/sekme_ayar.py:261
+#: cekirdek/dogrula/ayar.py:67
+msgid ""
+"Grup sayısı nükleer veri kütüphanesiyle eşleşmeli: ENDF/B 6, JEFF 8; 0 yalnız toplam "
+"β_eff verir."
+msgstr ""
+"The number of groups must match the nuclear data library: ENDF/B 6, JEFF 8; 0 gives "
+"the total β_eff only."
+
+#: arayuz/analiz/kinetik.py:112
+msgid "Grup sayısı:"
+msgstr "Number of groups:"
+
+#: arayuz/sekme_ayar.py:269
 msgid ""
 "Grup sınırları [eV], artan sırada, virgülle ayrılmış.\n"
 "Örnek (iki grup): 0.0, 0.625, 2.0e7"
@@ -5136,7 +5252,7 @@ msgstr ""
 "Group boundaries [eV], in increasing order, comma-separated.\n"
 "Example (two groups): 0.0, 0.625, 2.0e7"
 
-#: arayuz/ayar/yerlesim.py:186
+#: arayuz/ayar/yerlesim.py:187
 msgid "Grup sınırları [eV]:"
 msgstr "Group boundaries [eV]:"
 
@@ -5186,7 +5302,7 @@ msgstr "See the log file and report the error."
 msgid "Günlük dosyasında ayrıntı var."
 msgstr "Details are in the log file."
 
-#: arayuz/ayar/yerlesim.py:153 cekirdek/dogrula/_ortak.py:30 cekirdek/dogrula/_ortak.py:31
+#: arayuz/ayar/yerlesim.py:154 cekirdek/dogrula/_ortak.py:30 cekirdek/dogrula/_ortak.py:31
 #: cekirdek/rapor.py:358 cekirdek/rapor_sablon/__init__.py:150
 msgid "Güç dağılımı"
 msgstr "Power distribution"
@@ -5601,11 +5717,11 @@ msgstr ""
 "Ready-made, verified compositions. Values such as enrichment, temperature and boron "
 "can be changed later."
 
-#: arayuz/analiz/sekme.py:446 arayuz/ayar/yerlesim.py:169
+#: arayuz/analiz/sekme.py:451 arayuz/ayar/yerlesim.py:170
 msgid "Hedef bölge:"
 msgstr "Target pin region:"
 
-#: arayuz/analiz/sekme.py:430
+#: arayuz/analiz/sekme.py:435
 msgid "Hedef demet:"
 msgstr "Target assembly:"
 
@@ -5624,7 +5740,7 @@ msgstr ""
 msgid "Hedef k-eff:"
 msgstr "Target k-eff:"
 
-#: arayuz/analiz/sekme.py:426
+#: arayuz/analiz/sekme.py:431
 msgid "Hedef malzeme:"
 msgstr "Target material:"
 
@@ -5639,11 +5755,11 @@ msgstr ""
 "both a layer with the pin and a layer without it, lowering the average. Choose a bin "
 "thickness that is a common divisor of the layer thicknesses."
 
-#: arayuz/ayar/yerlesim.py:157
+#: arayuz/ayar/yerlesim.py:158
 msgid "Hedef çubuk:"
 msgstr "Target pin:"
 
-#: arayuz/analiz/sekme.py:98 arayuz/analiz/sekme.py:451
+#: arayuz/analiz/sekme.py:98 arayuz/analiz/sekme.py:456
 msgid "Hedef:"
 msgstr "Target:"
 
@@ -5655,7 +5771,7 @@ msgstr "Helium (He)"
 msgid "Helyum dolgu gazı"
 msgstr "Helium fill gas"
 
-#: arayuz/analiz/sekme.py:141 arayuz/analiz/sekme.py:216
+#: arayuz/analiz/sekme.py:141 arayuz/analiz/sekme.py:220
 msgid "Henüz analiz yapılmadı."
 msgstr "No analysis has been run yet."
 
@@ -5666,6 +5782,10 @@ msgstr "No assemblies yet"
 #: arayuz/calistir/yakinsama.py:138
 msgid "Henüz entropi verisi yok"
 msgstr "No entropy data yet"
+
+#: arayuz/analiz/kinetik.py:132 arayuz/analiz/kinetik.py:156
+msgid "Henüz hesaplanmadı."
+msgstr "Not computed yet."
 
 #: arayuz/baslangic.py:466
 msgid "Henüz kaydedilmiş bir model yok."
@@ -5687,7 +5807,7 @@ msgstr "No materials yet"
 msgid "Henüz parça yok"
 msgstr "No components yet"
 
-#: arayuz/sekme_ayar.py:269
+#: arayuz/sekme_ayar.py:277
 msgid ""
 "Henüz tally yok. “+ Tally” ile ekleyin: ne ölçmek istediğinizi (akı, reaksiyon hızı, "
 "ısı) seçersiniz."
@@ -5747,6 +5867,14 @@ msgstr "Calculation mode"
 #: arayuz/ayar/yerlesim.py:79
 msgid "Hesap türü:"
 msgstr "Calculation type:"
+
+#: arayuz/analiz/kinetik.py:89
+msgid "Hesapla"
+msgstr "Compute"
+
+#: arayuz/analiz/kinetik.py:242
+msgid "Hesaplanamadı."
+msgstr "Could not be computed."
 
 #: cekirdek/dogrula/malzeme.py:186
 msgid ""
@@ -5848,9 +5976,41 @@ msgstr ""
 msgid "IFP'nin geriye doğru izlediği nesil sayısı."
 msgstr "Number of generations that IFP traces back."
 
+#: arayuz/analiz/kinetik_gosterim.py:57
+#, python-format
+msgid "Inhour kararlı periyot (geri beslemesiz, dış ρ ile): T = %s"
+msgstr "Inhour stable period (without feedback, external ρ): T = %s"
+
+#: arayuz/analiz/kinetik_gosterim.py:59
+#, python-format
+msgid "Inhour kararlı periyot: T = %s"
+msgstr "Inhour stable period: T = %s"
+
+#: cekirdek/kinetik.py:309
+#, python-format
+msgid "Inhour kökü %g 1/s ötesinde."
+msgstr "Inhour root lies beyond %g 1/s."
+
+#: cekirdek/kinetik.py:296
+#, python-format
+msgid "Inhour kökü aralıkta bulunamadı: [%g, %g]"
+msgstr "Inhour root not found in the interval: [%g, %g]"
+
 #: arayuz/ayar/sabitler.py:48
 msgid "Isı / güç"
 msgstr "Heat / power"
+
+#: arayuz/analiz/kinetik.py:96
+msgid ""
+"Isı atılmaz: dΔT/dt = P₀·(P/P₀)/C, ρ = ρ_dış + α_T·ΔT.\n"
+"Doppler benzeri hızlı bir negatif geri beslemenin en basit modeli."
+msgstr ""
+"No heat removal: dΔT/dt = P₀·(P/P₀)/C, ρ = ρ_ext + α_T·ΔT.\n"
+"The simplest model of a fast, Doppler-like negative feedback."
+
+#: arayuz/analiz/kinetik.py:122
+msgid "Isı kapasitesi C:"
+msgstr "Heat capacity C:"
 
 #: arayuz/ayar/sabitler.py:37
 msgid "Isınma (heating)"
@@ -6210,7 +6370,7 @@ msgstr "Don't save"
 msgid "Kaynak"
 msgstr "Source"
 
-#: arayuz/ayar/yerlesim.py:102 arayuz/sekme_ayar.py:461
+#: arayuz/ayar/yerlesim.py:102 arayuz/sekme_ayar.py:472
 msgctxt "kaynak"
 msgid "Kaynak"
 msgstr "Source"
@@ -6298,7 +6458,7 @@ msgstr "Source convergence (Shannon entropy plateau)"
 msgid "Kaynak şiddeti [1/s]:"
 msgstr "Source strength [1/s]:"
 
-#: arayuz/sekme_ayar.py:163
+#: arayuz/sekme_ayar.py:171
 msgid ""
 "Kaynak şiddeti [parçacık/s]. Tally sonuçları bununla çarpılır ve\n"
 "mutlak birime geçer (1/s, 1/cm²/s). 1 bırakılırsa sonuçlar kaynak\n"
@@ -6336,6 +6496,14 @@ msgstr "Showing a saved run; the pre-run model check was not done in this sessio
 #: cekirdek/malzeme_kutup.py:537
 msgid "Kazaya dayanıklı yakıt zarfı."
 msgstr "Accident-tolerant fuel cladding."
+
+#: arayuz/analiz/kinetik.py:34
+msgid "Keepin U-235 termal (6 grup)"
+msgstr "Keepin U-235 thermal (6 groups)"
+
+#: cekirdek/kinetik.py:178
+msgid "Keepin, Wimett & Zeigler (1957), U-235 termal, 6 grup"
+msgstr "Keepin, Wimett & Zeigler (1957), U-235 thermal, 6 groups"
 
 #: arayuz/bilesenler/kenar_cubugu.py:143 arayuz/bilesenler/kenar_cubugu.py:241
 msgid "Kenar çubuğunu daralt"
@@ -6498,7 +6666,7 @@ msgstr "Cone"
 msgid "Koni yarı açısı:"
 msgstr "Cone half-angle:"
 
-#: arayuz/sekme_ayar.py:216
+#: arayuz/sekme_ayar.py:224
 msgid "Koninin yarı açılımı (eksenden kenara açı). Katı açıda düzgün dağılım kullanılır."
 msgstr ""
 "Half-opening of the cone (angle from the axis to the edge). The distribution is "
@@ -6579,7 +6747,7 @@ msgstr ""
 "To find the critical rod position, use 'Critical search' with the 'Control rod "
 "insertion' parameter in the Analysis tab."
 
-#: arayuz/analiz/sekme.py:436
+#: arayuz/analiz/sekme.py:441
 msgid "Kontrol çubuğu:"
 msgstr "Control rod:"
 
@@ -6659,7 +6827,7 @@ msgstr ""
 "Changing the core type shows the fields of that type; the last three configurations "
 "build a geometry tree and switch to advanced geometry. Press Ctrl+Z to undo."
 
-#: arayuz/pencere/ana_pencere.py:626
+#: arayuz/pencere/ana_pencere.py:627
 #, python-brace-format
 msgid "Kor türü: {tur} — geri almak için Ctrl+Z.{ek}"
 msgstr "Core type: {tur} — press Ctrl+Z to undo.{ek}"
@@ -6840,6 +7008,23 @@ msgstr "Run complete: k-eff = %.5f ± %.5f"
 msgid "Koşu tarihi"
 msgstr "Run date"
 
+#: arayuz/analiz/kinetik.py:188
+#, python-format
+msgid "Koşudan alındı: %d grup, Σβ_i = %.1f pcm ($ ve ani kritik eşiği bununla), Λ = %.4g s."
+msgstr ""
+"Taken from the run: %d groups, Σβ_i = %.1f pcm (used for $ and the prompt critical "
+"threshold), Λ = %.4g s."
+
+#: arayuz/analiz/kinetik.py:179
+#, python-format
+msgid "Koşudan grup verisi okunamadı: %s"
+msgstr "Group data could not be read from the run: %s"
+
+#: arayuz/analiz/kinetik.py:175
+#, python-format
+msgid "Koşudan kinetik veri okunamadı: %s"
+msgstr "Kinetics data could not be read from the run: %s"
+
 #: arayuz/uygunluk_paneli.py:110
 msgid "Koşunun Monte Carlo iyi uygulaması ve standartların isteyeceği kanıta göre denetimi."
 msgstr ""
@@ -6880,15 +7065,15 @@ msgstr "Critical (statistically indistinguishable from k = 1)"
 msgid "Kritik altı (k < 1 — güç söner)"
 msgstr "Subcritical (k < 1 — power decays)"
 
-#: arayuz/analiz/sekme.py:269
+#: arayuz/analiz/sekme.py:274
 msgid "Kritik arama (hedef k-eff'i veren değer)"
 msgstr "Critical search (value giving the target k-eff)"
 
-#: arayuz/analiz/sekme.py:675
+#: arayuz/analiz/sekme.py:680
 msgid "Kritik arama tamamlandı"
 msgstr "Critical search finished"
 
-#: arayuz/analiz/sekme.py:363
+#: arayuz/analiz/sekme.py:368
 msgid "Kritik aramayı başlat"
 msgstr "Start critical search"
 
@@ -6926,7 +7111,7 @@ msgstr "User guide"
 msgid "Kullanım kılavuzu (etkin sayfanın bölümü)"
 msgstr "User guide (section for the current page)"
 
-#: arayuz/yardim/__init__.py:103
+#: arayuz/yardim/__init__.py:105
 #, python-brace-format
 msgid "Kullanım kılavuzu bulunamadı: {yol}"
 msgstr "User guide not found: {yol}"
@@ -7076,7 +7261,7 @@ msgstr "Spherical shells (inside to outside)"
 msgid "Küriyum"
 msgstr "Curium"
 
-#: arayuz/sekme_ayar.py:196
+#: arayuz/sekme_ayar.py:204
 msgid "Kütle toplamı:"
 msgstr "Mass sum:"
 
@@ -7128,7 +7313,7 @@ msgstr "Search the user guide…"
 msgid "Kılavuzda aç"
 msgstr "Open in user guide"
 
-#: arayuz/yardim/__init__.py:123
+#: arayuz/yardim/__init__.py:125
 #, python-brace-format
 msgid "Kılavuzda bu bölüm yok: {b}"
 msgstr "This section is not in the user guide: {b}"
@@ -7479,7 +7664,7 @@ msgstr "Model building stops. "
 msgid "Model kuruluyor: {tamam}/{toplam} aşama"
 msgstr "Building the model: {tamam}/{toplam} steps"
 
-#: arayuz/analiz/sekme.py:293
+#: arayuz/analiz/sekme.py:298
 msgid "Model okunamadı; doğrulama listesine bakın."
 msgstr "The model could not be read; see the model check list."
 
@@ -7487,7 +7672,7 @@ msgstr "The model could not be read; see the model check list."
 msgid "Model ve son koşu için HTML ya da PDF rapor yazar"
 msgstr "Writes an HTML or PDF report for the model and the last run"
 
-#: arayuz/analiz/sekme.py:518
+#: arayuz/analiz/sekme.py:523
 msgid "Model yok."
 msgstr "No model."
 
@@ -7602,11 +7787,11 @@ msgstr "Monte Carlo good practice"
 msgid "Monte Carlo terimleri"
 msgstr "Monte Carlo terms"
 
-#: arayuz/sekme_ayar.py:182
+#: arayuz/sekme_ayar.py:190
 msgid "N grup değeri (bağıl); kenar sayısından bir eksik olmalı"
 msgstr "N group values (relative); one fewer than the number of edges"
 
-#: arayuz/sekme_ayar.py:181
+#: arayuz/sekme_ayar.py:189
 msgid "N+1 grup kenarı [eV], artan sırada"
 msgstr "N+1 group edges [eV], in increasing order"
 
@@ -7642,7 +7827,7 @@ msgstr "Calculate:"
 msgid "Ne modellemek istiyorsunuz?"
 msgstr "What do you want to model?"
 
-#: arayuz/ayar/yerlesim.py:182
+#: arayuz/ayar/yerlesim.py:183
 msgid "Ne ölçülsün:"
 msgstr "Measure:"
 
@@ -7661,6 +7846,10 @@ msgstr ""
 #: arayuz/sekme_ayar.py:67
 msgid "Nokta kaynak"
 msgstr "Point source"
+
+#: arayuz/analiz/kinetik.py:41 arayuz/yardim/__init__.py:51
+msgid "Nokta kinetiği"
+msgstr "Point kinetics"
 
 #: arayuz/ayar/yerlesim.py:96
 msgid "Nokta konumu:"
@@ -7855,6 +8044,10 @@ msgstr ""
 "OpenMC rejects it during the run (\"Unable to use enrichment for element %s which is "
 "not uranium\"). Move the enrichment to the U row or delete it from this row."
 
+#: cekirdek/kinetik_oku.py:238
+msgid "OpenMC koşusu (IFP)"
+msgstr "OpenMC run (IFP)"
+
 #: cekirdek/dogrula/kor.py:272
 msgid ""
 "OpenMC periyodik yüzeyin eşini bulamaz (\"Found only one periodic surface without a "
@@ -7917,7 +8110,7 @@ msgstr "Intermediate"
 msgid "Orta ömürlü ısı kaynağı (Cs137, Sr90)"
 msgstr "Medium-lived heat sources (Cs137, Sr90)"
 
-#: arayuz/sekme_ayar.py:196
+#: arayuz/sekme_ayar.py:204
 msgid "Ortalama E₀:"
 msgstr "Mean E₀:"
 
@@ -7941,6 +8134,16 @@ msgstr "Automatic (from spectrum)"
 #: cekirdek/rapor_sablon/uygunluk_eki.py:29
 msgid "P"
 msgstr "P"
+
+#: arayuz/analiz/kinetik_gosterim.py:66
+#, python-format
+msgid "P(%.4g s) / P₀ = %.4g"
+msgstr "P(%.4g s) / P₀ = %.4g"
+
+#: cekirdek/kinetik.py:457
+#, python-format
+msgid "P/P0 %.0e'yi aştı (t = %.4g s); çözüm burada durduruldu."
+msgstr "P/P0 exceeded %.0e (t = %.4g s); the solution was stopped here."
 
 #: cekirdek/rapor_pdf.py:78
 #, python-format
@@ -8192,6 +8395,14 @@ msgstr ""
 "The face opposite a periodic face must also be periodic (one-sided periodic stops "
 "OpenMC)."
 
+#: cekirdek/kinetik.py:498
+msgid "Periyot için en az üç nokta gerekir."
+msgstr "At least three points are required for the period."
+
+#: cekirdek/kinetik.py:501
+msgid "Periyot tahmini için pozitif güç noktaları gerekir."
+msgstr "Period estimation requires positive power values."
+
 #: arayuz/analiz/adlar.py:82
 msgid "Pin hücrede hücre adımı, tam korda demet adımı."
 msgstr "Cell pitch for a pin cell, assembly pitch for a full core."
@@ -8317,6 +8528,14 @@ msgstr "Export as Python script…"
 msgid "Radyal bölgeler"
 msgstr "Radial regions"
 
+#: arayuz/analiz/kinetik.py:77
+msgid "Rampa"
+msgstr "Ramp"
+
+#: arayuz/analiz/kinetik.py:118
+msgid "Rampa süresi:"
+msgstr "Ramp duration:"
+
 #: cekirdek/rapor.py:588
 #, python-format
 msgid "Rapor dizini oluşturulamadı: %s (%s)"
@@ -8392,7 +8611,7 @@ msgstr "Reactivity / &beta;<sub>eff</sub>. Above 1 $ a transient is prompt criti
 msgid "Reaktivite katsayıları (Analiz sekmesi)"
 msgstr "Reactivity coefficients (Analysis page)"
 
-#: arayuz/analiz/sekme.py:295
+#: arayuz/analiz/sekme.py:300
 msgid ""
 "Reaktivite katsayıları ve kritik arama k-eff üzerinden hesaplanır; bu modelin hesap "
 "türü Sabit kaynak (k-eff tanımsız). Hesap ayarları sekmesinde hesap türünü Özdeğer "
@@ -8419,7 +8638,7 @@ msgstr "Sign of the reactivity coefficients (GDC 11)"
 msgid "Reaktivite katsayısı"
 msgstr "Reactivity coefficient"
 
-#: arayuz/analiz/sekme.py:267
+#: arayuz/analiz/sekme.py:272
 msgid "Reaktivite katsayısı (parametre taraması)"
 msgstr "Reactivity coefficient (parameter sweep)"
 
@@ -8427,11 +8646,19 @@ msgstr "Reactivity coefficient (parameter sweep)"
 msgid "Reaktivite katsayısı sonucu verilmedi."
 msgstr "No reactivity coefficient result given."
 
+#: arayuz/analiz/kinetik.py:115
+msgid "Reaktivite türü:"
+msgstr "Reactivity type:"
+
+#: arayuz/analiz/kinetik.py:117
+msgid "Reaktivite:"
+msgstr "Reactivity:"
+
 #: cekirdek/uygunluk_denetimi/profiller.py:152
 msgid "Reaktör kor tasarımı"
 msgstr "Reactor core design"
 
-#: cekirdek/kosucu.py:518
+#: cekirdek/kosucu.py:520
 #, python-format
 msgid ""
 "Referans güç toplamı sıfır ya da negatif (%.3g): hedef bölgede fisyon sayılmadı, "
@@ -8440,13 +8667,13 @@ msgstr ""
 "The reference power sum is zero or negative (%.3g): no fissions were counted in the "
 "target region, the conservation of the total could not be checked."
 
-#: cekirdek/kosucu.py:514
+#: cekirdek/kosucu.py:516
 msgid "Referans tally yok — korunum denetlenemedi (eski statepoint ya da model regresyonu)."
 msgstr ""
 "No reference tally — conservation could not be checked (old statepoint or model "
 "regression)."
 
-#: arayuz/yardim/__init__.py:52
+#: arayuz/yardim/__init__.py:53
 msgid "Rehberli dersler"
 msgstr "Guided lessons"
 
@@ -8649,7 +8876,7 @@ msgstr "Adds a copy of the selected assembly."
 msgid "Seçili eksenel yığına katman ekler"
 msgstr "Adds a layer to the selected axial stack"
 
-#: arayuz/analiz/sekme.py:526
+#: arayuz/analiz/sekme.py:531
 msgid "Seçili hedef bu parametre için geçerli değil (model değişmiş olabilir)."
 msgstr "The selected target is not valid for this parameter (the model may have changed)."
 
@@ -8691,7 +8918,7 @@ msgstr "Puts the selection inside a new container"
 msgid "Seçilmeyen malzeme boş (madde yok) kurulurdu."
 msgstr "An unselected material would be built as void."
 
-#: arayuz/analiz/sekme.py:546
+#: arayuz/analiz/sekme.py:551
 msgid "Seçim geçerli değil"
 msgstr "Invalid selection"
 
@@ -8738,7 +8965,7 @@ msgstr "Shannon entropy is not used in a fixed source calculation"
 msgid "SiC — silisyum karbür"
 msgstr "SiC — silicon carbide"
 
-#: arayuz/ayar/yerlesim.py:196 arayuz/cubuk/tambur_formu.py:71 arayuz/demet/yerlesim.py:94
+#: arayuz/ayar/yerlesim.py:197 arayuz/cubuk/tambur_formu.py:71 arayuz/demet/yerlesim.py:94
 #: arayuz/geometri/editor.py:116 arayuz/geometri/form_yerlesim.py:60
 #: arayuz/kor/yerlesim.py:130 arayuz/sekme_cubuk.py:142 arayuz/sekme_malzeme.py:145
 msgid "Sil"
@@ -8772,11 +8999,11 @@ msgstr ""
 "The system does not meet the subcriticality criterion; change the design or the "
 "control parameters."
 
-#: arayuz/ayar/yerlesim.py:170
+#: arayuz/ayar/yerlesim.py:171
 msgid "Skor:"
 msgstr "Score:"
 
-#: arayuz/ayar/yerlesim.py:184
+#: arayuz/ayar/yerlesim.py:185
 msgid "Skorlar:"
 msgstr "Scores:"
 
@@ -8800,6 +9027,22 @@ msgstr "The last region is outside the pin and fills the rest of the cell."
 #: arayuz/cubuk/cubuk_formu.py:118
 msgid "Son bölgenin yarıçapı yoktur: hücrenin kalanını doldurur."
 msgstr "The last region has no radius: it fills the rest of the cell."
+
+#: arayuz/analiz/kinetik.py:34
+msgid "Son koşu (IFP)"
+msgstr "Last run (IFP)"
+
+#: arayuz/analiz/kinetik.py:180
+msgid ""
+"Son koşuda grup başına veri yok. Hesap ayarlarında kinetik parametreleri ve gecikmeli"
+" nötron gruplarını (6 ya da 8) açıp yeniden koşun."
+msgstr ""
+"The last run has no per-group data. Enable kinetics parameters and delayed neutron "
+"groups (6 or 8) in Run settings and run again."
+
+#: arayuz/analiz/kinetik.py:62
+msgid "Son koşudan al"
+msgstr "Take from last run"
 
 #: arayuz/baslangic.py:464 arayuz/pencere/menuler.py:135
 msgid "Son kullanılanlar"
@@ -8885,7 +9128,7 @@ msgstr ""
 "Results are in absolute units (OpenMC applies the strength itself; do not multiply "
 "again)."
 
-#: arayuz/yardim/__init__.py:63
+#: arayuz/yardim/__init__.py:65
 msgid "Sonuçları yorumlamak"
 msgstr "Interpreting results"
 
@@ -8899,7 +9142,7 @@ msgstr "Nuclides not found in the result (not in the chart): %s"
 msgid "Sonuçta bulunamayan nüklidler: %s"
 msgstr "Nuclides not found in the result: %s"
 
-#: arayuz/yardim/__init__.py:69
+#: arayuz/yardim/__init__.py:71
 msgid "Sorun giderme"
 msgstr "Troubleshooting"
 
@@ -9086,7 +9329,7 @@ msgstr "Boundary conditions"
 msgid "Sınır koşulu"
 msgstr "Boundary condition"
 
-#: arayuz/sekme_ayar.py:264
+#: arayuz/sekme_ayar.py:272
 msgid "Sınırlar model kurulurken modelin dış ölçüsünden alınır."
 msgstr "The bounds are taken from the model's outer dimensions when the model is built."
 
@@ -9120,6 +9363,11 @@ msgstr "Fit (double-click)"
 msgid "Tablo"
 msgstr "Table"
 
+#: arayuz/analiz/kinetik.py:205
+#, python-format
+msgid "Tablo satırı %d: β_i ve λ_i sayı olmalı."
+msgstr "Table row %d: β_i and λ_i must be numbers."
+
 #: arayuz/analiz/sekme.py:124
 msgid "Tahmini süre:"
 msgstr "Estimated time:"
@@ -9140,7 +9388,7 @@ msgstr "Tally results"
 msgid "Tally özetleri"
 msgstr "Tally summaries"
 
-#: arayuz/ayar/yerlesim.py:215
+#: arayuz/ayar/yerlesim.py:216
 msgid "Tally'ler"
 msgstr "Tallies"
 
@@ -9338,11 +9586,11 @@ msgstr "Widen the parameter sweep range or increase the statistics."
 msgid "Tarama kullanıcı tarafından durduruldu (%d/%d)."
 msgstr "The sweep was stopped by the user (%d/%d)."
 
-#: arayuz/analiz/sekme.py:654
+#: arayuz/analiz/sekme.py:659
 msgid "Tarama tamamlandı"
 msgstr "Parameter sweep finished"
 
-#: arayuz/analiz/sekme.py:128 arayuz/analiz/sekme.py:363
+#: arayuz/analiz/sekme.py:128 arayuz/analiz/sekme.py:368
 msgid "Taramayı başlat"
 msgstr "Start sweep"
 
@@ -9424,11 +9672,11 @@ msgstr "Basic quantities"
 msgid "Temizle"
 msgstr "Clear"
 
-#: arayuz/sekme_ayar.py:185
+#: arayuz/sekme_ayar.py:193
 msgid "Tepkimeye girenlerin kütleleri toplamı: D+T = 2+3 = 5, D+D = 4"
 msgstr "Sum of the reactant masses: D+T = 2+3 = 5, D+D = 4"
 
-#: arayuz/yardim/__init__.py:71
+#: arayuz/yardim/__init__.py:73
 msgid "Terim sözlüğü"
 msgstr "Glossary"
 
@@ -9463,7 +9711,7 @@ msgstr ""
 "The thermal/fast chain sets the capture branching ratios and the fission yields (e.g."
 " Am241(n,γ)→Am242m: 8.1% (thermal), 13.2% (fast))."
 
-#: arayuz/yardim/__init__.py:68
+#: arayuz/yardim/__init__.py:70
 msgid "Terminal ve HPC kullanımı"
 msgstr "Terminal and HPC use"
 
@@ -9503,7 +9751,7 @@ msgstr "The tolerance limit method cannot be used for extrapolation."
 msgid "Toplam etkileşim (total)"
 msgstr "Total interaction (total)"
 
-#: arayuz/sekme_ayar.py:237
+#: arayuz/sekme_ayar.py:245
 msgid ""
 "Toplam güç, <b>modelin kapsadığı</b> bölgenin gücüdür — tüm korun değil. Örnek: 3400 "
 "MWth / 193 demet = 17.6 MW; tek demetlik modelde 17.6e6 W girilir. Boş bırakılırsa "
@@ -9513,7 +9761,7 @@ msgstr ""
 " core. Example: 3400 MWth / 193 assemblies = 17.6 MW; for a single-assembly model "
 "enter 17.6e6 W. If left empty, only the relative distribution is given."
 
-#: arayuz/ayar/yerlesim.py:159
+#: arayuz/ayar/yerlesim.py:160
 msgid "Toplam güç:"
 msgstr "Total power:"
 
@@ -9540,7 +9788,7 @@ msgid "Toryum çevrimi (Th, Pa)"
 msgstr "Thorium cycle (Th, Pa)"
 
 #: arayuz/pencere/model_islemleri.py:67 arayuz/tukenme_arayuz.py:214
-#: arayuz/yardim/__init__.py:51 cekirdek/dogrula/_ortak.py:31 cekirdek/dogrula/_ortak.py:32
+#: arayuz/yardim/__init__.py:52 cekirdek/dogrula/_ortak.py:31 cekirdek/dogrula/_ortak.py:32
 #: cekirdek/rapor.py:361 cekirdek/rapor_sablon/__init__.py:194
 msgid "Tükenme"
 msgstr "Depletion"
@@ -9833,11 +10081,11 @@ msgstr "Conformity check"
 msgid "Uygunluk bulguları"
 msgstr "Conformity check findings"
 
-#: arayuz/yardim/__init__.py:66
+#: arayuz/yardim/__init__.py:68
 msgid "Uygunluk denetimi"
 msgstr "Conformity check"
 
-#: arayuz/yardim/__init__.py:70
+#: arayuz/yardim/__init__.py:72
 msgid "Uygunluk kuralları (K1–K16)"
 msgstr "Conformity rules (K1–K16)"
 
@@ -9892,6 +10140,10 @@ msgstr "Data traceability"
 msgid "Veri izlenebilirliği (K4) ve belirsizlik/birim bildirimi (K5)."
 msgstr "Data traceability (K4) and uncertainty/unit reporting (K5)."
 
+#: arayuz/analiz/kinetik.py:111
+msgid "Veri kaynağı:"
+msgstr "Data source:"
+
 #: cekirdek/dogrula/_ortak.py:29
 msgid "Veri kütüphanesi"
 msgstr "Data library"
@@ -9904,6 +10156,15 @@ msgstr "Check data library"
 #, python-format
 msgid "Veri normal değil (%s) ama '%s' yöntemi kullanılmış."
 msgstr "The data are not normal (%s) but the '%s' method was used."
+
+#: arayuz/analiz/kinetik_gosterim.py:70
+#, python-format
+msgid ""
+"Veri: %s; çözücü: %s (katı ODE). Nokta kinetiği uzaysal etkileri içermez; eğitim "
+"amaçlıdır, sertifika değildir."
+msgstr ""
+"Data: %s; solver: %s (stiff ODE). Point kinetics has no spatial effects; it is for "
+"education and is not a certification."
 
 #: arayuz/malzeme/malzeme_diyalog.py:176
 msgid ""
@@ -10490,6 +10751,11 @@ msgstr "Orientation"
 msgid "Yönelim:"
 msgstr "Orientation:"
 
+#: cekirdek/kinetik.py:430
+#, python-format
+msgid "Yöntem Radau ya da BDF olmalı: %r"
+msgstr "Method must be Radau or BDF: %r"
+
 #: arayuz/onizleme.py:71
 msgid "Yüksek (1400)"
 msgstr "High (1400)"
@@ -10668,7 +10934,7 @@ msgstr "unnamed"
 msgid "adsız model"
 msgstr "untitled model"
 
-#: arayuz/pencere/ana_pencere.py:551
+#: arayuz/pencere/ana_pencere.py:552
 #, python-brace-format
 msgid "adsız — örnek: {ornek}"
 msgstr "untitled — example: {ornek}"
@@ -10968,7 +11234,7 @@ msgstr "unknown filter type: %s"
 msgid "bilinmeyen istek: %r"
 msgstr "unknown request: %r"
 
-#: cekirdek/sema.py:347
+#: cekirdek/sema.py:351
 #, python-format
 msgid "bilinmeyen kor türü: %r"
 msgstr "unknown core type: %r"
@@ -11035,7 +11301,7 @@ msgstr "malformed array descriptor: %s"
 msgid "bozuk çerçeve başı"
 msgstr "malformed frame start"
 
-#: arayuz/guc_harita.py:251 cekirdek/kosucu.py:580
+#: arayuz/guc_harita.py:251 cekirdek/kosucu.py:582
 msgid "bozuk, haritaya güvenmeyin"
 msgstr "broken, do not trust the map"
 
@@ -11229,7 +11495,7 @@ msgstr "unsupported surface type: %s"
 msgid "dikdörtgen %g×%g"
 msgstr "rectangle %g×%g"
 
-#: arayuz/sekme_ayar.py:232
+#: arayuz/sekme_ayar.py:240
 msgid "dilim"
 msgstr "bins"
 
@@ -11403,6 +11669,10 @@ msgstr "axial stack"
 msgid "eksenel ölçek sıkıştırıldı"
 msgstr "axial scale compressed"
 
+#: arayuz/analiz/kinetik.py:208 arayuz/analiz/kinetik_gosterim.py:72
+msgid "elle"
+msgstr "manual"
+
 #: arayuz/cubuk/parca_islemleri.py:25 arayuz/cubuk/tambur_formu.py:208
 #: arayuz/malzeme/yardimcilar.py:31 cekirdek/geometri/yol_metni.py:20
 msgid "emici"
@@ -11469,7 +11739,7 @@ msgstr "energy"
 msgid "enerji tayfı"
 msgstr "energy spectrum"
 
-#: arayuz/sekme_ayar.py:177
+#: arayuz/sekme_ayar.py:185
 msgid ""
 "enerji[eV]:olasılık çiftleri, virgülle ayrılmış\n"
 "Örnek (Co-60): 1.173e6:0.5, 1.333e6:0.5"
@@ -11584,12 +11854,12 @@ msgstr "geometry: %s"
 msgid "geometride fisil (yakıt) malzeme yok"
 msgstr "there is no fissile (fuel) material in the geometry"
 
-#: arayuz/analiz/sekme.py:662
+#: arayuz/analiz/sekme.py:667
 #, python-format
 msgid "geçen %s  |  %d. koşu bitti"
 msgstr "elapsed %s  |  run %d finished"
 
-#: arayuz/analiz/sekme.py:642
+#: arayuz/analiz/sekme.py:647
 #, python-format
 msgid "geçen %s  |  kalan ~%s  (ölçüme göre)"
 msgstr "elapsed %s  |  remaining ~%s  (measured)"
@@ -11642,9 +11912,9 @@ msgstr "plot could not be drawn (%s): %s"
 msgid "grafit"
 msgstr "graphite"
 
-#: arayuz/geometri/duzenle.py:350
+#: arayuz/analiz/kinetik.py:64 arayuz/geometri/duzenle.py:350
 msgid "grup"
-msgstr "group"
+msgstr "groups"
 
 #: arayuz/geometri/form_yerlesim.py:330
 msgid "grup değeri"
@@ -12029,6 +12299,10 @@ msgstr "k_calc / k_exp normalization"
 msgid "k_calc / k_exp normalleştirmesi uygulandı."
 msgstr "k_calc / k_exp normalization applied."
 
+#: cekirdek/kinetik_oku.py:221
+msgid "k_eff yok: Λ yerine ani nötron ömrü ℓ yazıldı."
+msgstr "No k_eff: the prompt neutron lifetime ℓ was written instead of Λ."
+
 #: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:107
 msgid "k_norm = k_calc / k_exp ve σ = √(σ_calc² + σ_exp²) kullanın."
 msgstr "Use k_norm = k_calc / k_exp and σ = √(σ_calc² + σ_exp²)."
@@ -12159,7 +12433,7 @@ msgstr ""
 msgid "katmanı/koru doğrudan dolduruyor"
 msgstr "fills the layer/core directly"
 
-#: arayuz/pencere/ana_pencere.py:554
+#: arayuz/pencere/ana_pencere.py:555
 msgid "kaydedilmemiş"
 msgstr "unsaved"
 
@@ -12926,6 +13200,10 @@ msgstr "project criterion (not from a standard)"
 msgid "proje ölçütü: |eğim| > 2σ ise işaret anlamlı (cekirdek/tarama.yorumla)"
 msgstr "project criterion: the sign is significant if |slope| > 2σ (cekirdek/tarama.yorumla)"
 
+#: cekirdek/kinetik.py:210
+msgid "rampa süresi"
+msgstr "ramp duration"
+
 #: cekirdek/giris.py:126
 #, python-format
 msgid "rapor oluşturulamadı: %s"
@@ -13170,6 +13448,10 @@ msgstr ""
 "summary.h5 not found; the cell positions of the power distribution cannot be read. "
 "summary.h5 must be next to the statepoint in the run directory."
 
+#: cekirdek/kinetik.py:428
+msgid "süre"
+msgstr "duration"
+
 #: arayuz/kor/yerlesim.py:95
 msgid "sütun"
 msgstr "columns"
@@ -13196,11 +13478,11 @@ msgstr "cross-section for which boundary points cannot be generated: %s"
 msgid "tally'ler"
 msgstr "tallies"
 
-#: arayuz/guc_harita.py:251 cekirdek/kosucu.py:579 cekirdek/kosucu_terminal.py:157
+#: arayuz/guc_harita.py:251 cekirdek/kosucu.py:581 cekirdek/kosucu_terminal.py:157
 msgid "tamam"
 msgstr "ok"
 
-#: arayuz/analiz/sekme.py:606
+#: arayuz/analiz/sekme.py:611
 #, python-format
 msgid "tamamlandı — toplam %s"
 msgstr "finished — total %s"
@@ -13430,12 +13712,12 @@ msgstr "total power is given but the model is 2D — linear power [W/cm] cannot 
 msgid "toplam tepkime"
 msgstr "total reaction"
 
-#: cekirdek/kosucu.py:582
+#: cekirdek/kosucu.py:584
 #, python-format
 msgid "toplamın korunumu denetlenemedi: %s"
 msgstr "conservation of the total could not be checked: %s"
 
-#: cekirdek/kosucu.py:578
+#: cekirdek/kosucu.py:580
 #, python-format
 msgid "toplamın korunumu: bağıl fark %.1e — %s"
 msgstr "conservation of the total: relative difference %.1e — %s"
@@ -13626,6 +13908,10 @@ msgstr "next to the fuel, %s"
 msgid "yakıta komşu malzemelerde moderatör yok (%s yakıtla temas etmiyor)"
 msgstr "no moderator in the materials next to the fuel (%s does not touch the fuel)"
 
+#: arayuz/sekme_ayar.py:153
+msgid "yalnız toplam β_eff"
+msgstr "total β_eff only"
+
 #: cekirdek/geometri/ice_aktar_kap.py:107
 msgid "yalnız z ekseni etrafında dönme desteklenir"
 msgstr "only rotation about the z axis is supported"
@@ -13795,6 +14081,10 @@ msgstr "translation in the z direction is not supported (cell %d)"
 #: arayuz/tukenme_sonuc.py:54
 msgid "zaman [gün]"
 msgstr "time [days]"
+
+#: arayuz/analiz/kinetik_gosterim.py:36
+msgid "zaman [s]"
+msgstr "time [s]"
 
 #: cekirdek/dogrula/tukenme.py:111
 msgid "zaman adımları sıfırdan büyük olmalı"
@@ -14028,14 +14318,14 @@ msgid_plural "{n} katman, toplam {h:g} cm"
 msgstr[0] "{n} layer, total {h:g} cm"
 msgstr[1] "{n} layers, total {h:g} cm"
 
-#: arayuz/sekme_ayar.py:511
+#: arayuz/sekme_ayar.py:522
 #, python-brace-format
 msgid "{n} parçacık × {c} çevrim ({p} pasif, {a} aktif)"
 msgid_plural "{n} parçacık × {c} çevrim ({p} pasif, {a} aktif)"
 msgstr[0] "{n} particles × {c} batch ({p} inactive, {a} active)"
 msgstr[1] "{n} particles × {c} batches ({p} inactive, {a} active)"
 
-#: arayuz/sekme_ayar.py:523
+#: arayuz/sekme_ayar.py:534
 #, python-brace-format
 msgid "{n} parçacık × {c} çevrim = {t} kaynak parçacığı; tally belirsizliği 1/√N ile azalır."
 msgid_plural "{n} parçacık × {c} çevrim = {t} kaynak parçacığı; tally belirsizliği 1/√N ile azalır."
@@ -14183,7 +14473,7 @@ msgstr "Overlap"
 msgid "Çakışmaları göster"
 msgstr "Show overlaps"
 
-#: arayuz/pencere/ana_pencere.py:343
+#: arayuz/pencere/ana_pencere.py:344
 #, python-brace-format
 msgid "Çalışan sade bir model kuruldu ({ad}). Kaydetmek için 'Farklı kaydet' kullanın."
 msgstr "A simple working model was set up ({ad}). Use 'Save as' to save it."
@@ -14221,7 +14511,7 @@ msgstr[1] ""
 "Ready to run. There are %d warnings — they may affect the result; review the model "
 "check list."
 
-#: arayuz/analiz/sekme.py:539 arayuz/sekme_calistir.py:430 arayuz/sekme_calistir.py:527
+#: arayuz/analiz/sekme.py:544 arayuz/sekme_calistir.py:430 arayuz/sekme_calistir.py:527
 msgid "Çalıştırılamaz"
 msgstr "Cannot run"
 
@@ -14230,7 +14520,7 @@ msgstr "Cannot run"
 msgid "Çalışır durumda, sade bir {ad} modeli kurar (malzemeler, parçalar ve kor hazır)."
 msgstr "Builds a simple, working {ad} model (materials, components and core ready)."
 
-#: arayuz/analiz/sekme.py:564
+#: arayuz/analiz/sekme.py:569
 msgid "Çalışıyor…"
 msgstr "Working…"
 
@@ -14330,7 +14620,7 @@ msgstr "Double-click to go to the relevant page."
 msgid "Çivit"
 msgstr "Indigo"
 
-#: arayuz/sekme_ayar.py:194
+#: arayuz/sekme_ayar.py:202
 msgid "Çizgiler:"
 msgstr "Lines:"
 
@@ -14400,7 +14690,7 @@ msgstr "Pins / axial bins"
 msgid "Çubuk adımı (moderasyon oranı)"
 msgstr "Pin pitch (moderation ratio)"
 
-#: arayuz/sekme_ayar.py:221
+#: arayuz/sekme_ayar.py:229
 msgid "Çubuk bazlı güç dağılımı hesapla (F_ΔH, 3B'de F_q)"
 msgstr "Compute pin power distribution (F_ΔH, F_q in 3D)"
 
@@ -14426,7 +14716,7 @@ msgstr "Rod worth (differential)"
 msgid "Çubuk güç dağılımı"
 msgstr "Pin power distribution"
 
-#: cekirdek/kosucu.py:525
+#: cekirdek/kosucu.py:527
 #, python-format
 msgid ""
 "Çubuk güçlerinin toplamı filtresiz tally'den %.2e bağıl fark gösteriyor. Haritalama "
@@ -14484,6 +14774,11 @@ msgstr "Radius of a pin region"
 msgid "Çubuğun seçilen bölgesinin dış yarıçapı."
 msgstr "Outer radius of the selected pin region."
 
+#: cekirdek/kinetik.py:449
+#, python-format
+msgid "Çözücü başarısız: %s"
+msgstr "Solver failed: %s"
+
 #: cekirdek/geometri/denetim.py:126
 #, python-format
 msgid "Çözülmemiş referans '%s': kaydedilmeden önce parçaya çevrilmeliydi."
@@ -14493,6 +14788,16 @@ msgstr "Unresolved reference '%s': it should have been turned into a component b
 #, python-format
 msgid "Çözüm: %s = %.6g%s   (k = %.5f ± %.5f, %d yineleme)"
 msgstr "Solution: %s = %.6g%s   (k = %.5f ± %.5f, %d iterations)"
+
+#: arayuz/analiz/kinetik_gosterim.py:65
+#, python-format
+msgid "Çözümden periyot ölçülemedi: %s"
+msgstr "Period could not be measured from the solution: %s"
+
+#: arayuz/analiz/kinetik_gosterim.py:62
+#, python-format
+msgid "Çözümden ölçülen periyot (son %%10): %s"
+msgstr "Period measured from the solution (last 10%%): %s"
 
 #: arayuz/analiz/adlar.py:69
 msgid "Çözünmüş bor"
@@ -14518,13 +14823,17 @@ msgstr "OUTSIDE THE CRITERION (> 3σ)"
 msgid "Ölçek:"
 msgstr "Scale:"
 
-#: arayuz/ayar/yerlesim.py:215
+#: arayuz/ayar/yerlesim.py:216
 msgid "Ölçülecek büyüklükler"
 msgstr "Quantities to measure"
 
 #: cekirdek/kosucu.py:408
 msgid "Ölçülen"
 msgstr "Quantity"
+
+#: arayuz/analiz/kinetik.py:262
+msgid "Önce \"Son koşudan al\" ile koşu verisini yükleyin."
+msgstr "First load the run data with \"Take from last run\"."
 
 #: arayuz/cubuk/parca_islemleri.py:22
 msgid "Önce Malzemeler sekmesinden malzeme ekleyin."
@@ -14534,7 +14843,7 @@ msgstr "Add materials in the Materials tab first."
 msgid "Önce Parçalar sekmesinde en az bir çubuk tanımlayın."
 msgstr "Define at least one pin in the Components tab first."
 
-#: arayuz/analiz/sekme.py:288
+#: arayuz/analiz/sekme.py:293
 msgid "Önce bir model açın."
 msgstr "Open a model first."
 
@@ -14542,7 +14851,7 @@ msgstr "Open a model first."
 msgid "Önce malzeme gerekli"
 msgstr "Materials needed first"
 
-#: arayuz/yardim/__init__.py:64
+#: arayuz/yardim/__init__.py:66
 msgid "Önce çiz, sonra çalıştır"
 msgstr "Draw first, then run"
 
@@ -14572,7 +14881,7 @@ msgstr ""
 msgid "Önceki koşunun sonucu okunuyor…"
 msgstr "Reading the previous run's result…"
 
-#: arayuz/analiz/sekme.py:228
+#: arayuz/analiz/sekme.py:233
 msgid ""
 "Önceki projenin analizi arka planda sürüyor; sonucu bu projeye yazılmayacak. Yeni "
 "analiz için Durdur ile sonlandırın."
@@ -14580,7 +14889,7 @@ msgstr ""
 "An analysis from the previous project is still going in the background; its result "
 "will not be written to this project. Use Stop to end it before a new analysis."
 
-#: arayuz/analiz/sekme.py:619
+#: arayuz/analiz/sekme.py:624
 msgid "Önceki projenin analizi bitti; sonucu bu projeye yazılmadı."
 msgstr "The previous project's analysis finished; its result was not written to this project."
 
@@ -14771,7 +15080,7 @@ msgstr ""
 "An eigenvalue (k-eff) calculation requires fissile material — there is no fissile "
 "material in the geometry"
 
-#: arayuz/ayar/yerlesim.py:142
+#: arayuz/ayar/yerlesim.py:143
 msgid ""
 "Özdeğer hesabında bunlar yalnızca başlangıç tahminidir; pasif çevrimlerde gerçek "
 "fisyon tayfına döner ve k-eff'i etkilemez."
@@ -14801,7 +15110,7 @@ msgstr ""
 "Fixed source: transport from an external source (shielding,\n"
 "detectors); the results are tallies, there is no k-eff."
 
-#: arayuz/sekme_ayar.py:109 arayuz/sekme_ayar.py:253
+#: arayuz/sekme_ayar.py:109 arayuz/sekme_ayar.py:261
 msgid "Özel"
 msgstr "Custom"
 
@@ -14817,6 +15126,10 @@ msgstr "Could not generate"
 msgid "Üretilen bileşim:"
 msgstr "Generated composition:"
 
+#: arayuz/analiz/kinetik.py:114
+msgid "Üretim zamanı Λ:"
+msgstr "Neutron generation time Λ:"
+
 #: arayuz/geometri/sinir_formu.py:112
 msgid "Üst"
 msgstr "Top"
@@ -14825,7 +15138,7 @@ msgstr "Top"
 msgid "Üst sınır:"
 msgstr "Top boundary:"
 
-#: arayuz/analiz/sekme.py:362
+#: arayuz/analiz/sekme.py:367
 msgctxt "arama"
 msgid "Üst sınır:"
 msgstr "Upper bound:"
@@ -15069,6 +15382,17 @@ msgstr "Statistical adequacy"
 msgid "İstatistiği artırın."
 msgstr "Increase the statistics."
 
+#: cekirdek/kinetik_oku.py:159
+#, python-format
+msgid ""
+"İstenen %d grup gecikmeli nötron üretiminin yalnızca %%%.1f'ini kapsıyor: kütüphanede"
+" daha çok grup var (JEFF: 8). β_eff ve $ eksik çıkar; grup sayısını 8 yapıp yeniden "
+"koşun."
+msgstr ""
+"The requested %d groups cover only %.1f%% of the delayed neutron production: the "
+"library has more groups (JEFF: 8). β_eff and $ come out too small; set the number of "
+"groups to 8 and run again."
+
 #: cekirdek/uygunluk_denetimi/profiller.py:134
 msgid ""
 "İsteğe bağlı: k + 2σ < USL (NUREG/CR-6698 eş. 36), AOA ve doğrulama kümesinin "
@@ -15085,7 +15409,7 @@ msgstr "Optional: reactivity coefficients and critical search."
 msgid "İsteğe bağlı: yakıtın zamanla tükenmesi (yanma) hesabı."
 msgstr "Optional: fuel depletion (burnup) over time."
 
-#: arayuz/sekme_ayar.py:187
+#: arayuz/sekme_ayar.py:195
 msgid ""
 "İyon sıcaklığı kT. D-T için genişleme:\n"
 "FWHM = 177 × √kT[keV] keV"
@@ -15093,7 +15417,7 @@ msgstr ""
 "Ion temperature kT. Broadening for D-T:\n"
 "FWHM = 177 × √kT[keV] keV"
 
-#: arayuz/sekme_ayar.py:197
+#: arayuz/sekme_ayar.py:205
 msgid "İyon sıcaklığı:"
 msgstr "Ion temperature:"
 
@@ -15173,6 +15497,10 @@ msgstr "Threads"
 msgid "İş parçacığı:"
 msgstr "Threads:"
 
+#: cekirdek/kinetik.py:232
+msgid "ısı kapasitesi"
+msgstr "heat capacity"
+
 #: cekirdek/kosucu.py:341
 msgid "ısınma"
 msgstr "heating"
@@ -15185,7 +15513,7 @@ msgstr ""
 "The template will be converted into a node tree. The wizard then closes; you can "
 "return with Undo (Ctrl+Z)."
 
-#: arayuz/pencere/ana_pencere.py:336
+#: arayuz/pencere/ana_pencere.py:337
 msgid "Şablon kurulamadı"
 msgstr "Template could not be built"
 
@@ -15263,10 +15591,31 @@ msgstr ""
 msgid "ΔSM'yi en az %.2f yapın ve gerekçesini yazın."
 msgstr "Set ΔSM to at least %.2f and write down its justification."
 
+#: arayuz/analiz/kinetik_gosterim.py:68
+#, python-format
+msgid "ΔT(%.4g s) = %.4g K; toplam ρ = %.1f pcm"
+msgstr "ΔT(%.4g s) = %.4g K; total ρ = %.1f pcm"
+
 #: arayuz/calistir/ozet.py:82
 #, python-format
 msgid "Λ        = %-22s (nötron üretim zamanı)"
 msgstr "Λ        = %-22s (neutron generation time)"
+
+#: arayuz/analiz/kinetik.py:73
+msgid ""
+"Λ: ani nötron üretim zamanı. Örnek değerler (bu programla ölçülen):\n"
+"PWR 17×17 demeti 18.9 μs, Godiva 5.6 ns."
+msgstr ""
+"Λ: prompt neutron generation time. Example values (measured with this program):\n"
+"PWR 17×17 assembly 18.9 μs, Godiva 5.6 ns."
+
+#: cekirdek/kinetik.py:409
+msgid ""
+"α_T > 0: pozitif sıcaklık katsayısı gücü kendiliğinden artırır (kararsız geri "
+"besleme)."
+msgstr ""
+"α_T > 0: a positive temperature coefficient drives the power up by itself (unstable "
+"feedback)."
 
 #: cekirdek/uygunluk_denetimi/kurallar_kritiklik.py:132
 #, python-format
@@ -15279,6 +15628,28 @@ msgstr ""
 #, python-format
 msgid "β_eff    = %.1f ± %.1f pcm   (reaktivite birimi: 1 $ = β_eff)"
 msgstr "β_eff    = %.1f ± %.1f pcm   (reactivity unit: 1 $ = β_eff)"
+
+#: cekirdek/kinetik.py:159
+msgid "β_i negatif olamaz ve toplamı pozitif olmalı."
+msgstr "β_i cannot be negative and their sum must be positive."
+
+#: cekirdek/kinetik.py:154
+msgid "β_i ve λ_i aynı sayıda (en az bir) grup içermeli."
+msgstr "β_i and λ_i must have the same number of groups (at least one)."
+
+#: arayuz/analiz/kinetik_gosterim.py:49
+#, python-format
+msgid "ρ = %.1f pcm = %.4f $ (β_eff = %.1f pcm)"
+msgstr "ρ = %.1f pcm = %.4f $ (β_eff = %.1f pcm)"
+
+#: cekirdek/kinetik.py:404
+#, python-format
+msgid ""
+"ρ = %.3f $ ≥ 1 $: ANİ KRİTİK. Güç gecikmeli nötronları beklemeden Λ ölçeğinde artar; "
+"bu bölgede nokta kinetiği yalnız nitel bir tablo verir."
+msgstr ""
+"ρ = %.3f $ ≥ 1 $: PROMPT CRITICAL. Power rises on the Λ time scale without waiting "
+"for delayed neutrons; in this region point kinetics gives only a qualitative picture."
 
 #: cekirdek/kosucu.py:138
 msgid ""
@@ -15313,6 +15684,10 @@ msgstr "σ_k = %.5f is above the target (%.5f)."
 #, python-format
 msgid "σ_k = %.5f ≤ hedef %.5f."
 msgstr "σ_k = %.5f ≤ target %.5f."
+
+#: cekirdek/kinetik.py:266
+msgid "ω = −λ_i bir kutuptur; ters saat denklemi tanımsız."
+msgstr "ω = −λ_i is a pole; the inhour equation is undefined there."
 
 #: arayuz/cubuk/parca_islemleri.py:21
 msgid "— Malzeme seçin —"

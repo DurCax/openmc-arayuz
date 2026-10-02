@@ -91,7 +91,7 @@ positions, overlaps and gaps before a run. See
   Run button stays disabled until the geometry preview has been produced and no errors remain.
 - **Source convergence.** The Shannon entropy mesh is on by default; after the run the tool
   checks whether the source had settled by the end of the inactive batches.
-- **Kinetics parameters** (β_eff, Λ) by the iterated fission probability method.
+- **Kinetics parameters** (β_eff, Λ = ℓ/k; per-group β_i and λ_i) by the iterated fission probability method, and a **point kinetics** solver (step/ramp reactivity → P(t), Inhour period, adiabatic feedback) under Analysis.
 
 ### Results and analysis
 

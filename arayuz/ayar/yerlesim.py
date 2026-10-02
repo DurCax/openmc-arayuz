@@ -135,6 +135,7 @@ class YerlesimMixin(object):
         self.entropi_agi = self._sar(ent)
         gf.addRow(_("Entropi ağı:"), self.entropi_agi)
         gf.addRow(_("IFP nesil sayısı:"), self.kinetik_nesil)
+        gf.addRow(_("Gecikmeli nötron grupları:"), self.kinetik_gruplar)
         self.gelismis.ekle(self._sar(gf))
         self.gelismis_tayf_baslik = baslik(_("Başlangıç kaynağının enerjisi ve yönü"))
         self.gelismis.ekle(self.gelismis_tayf_baslik)
