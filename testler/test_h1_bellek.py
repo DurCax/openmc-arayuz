@@ -58,6 +58,59 @@ def _bos_bellek():
 
 
 # ---------------------------------------------------------------------------
+# Bellek sinifi
+# ---------------------------------------------------------------------------
+
+def test_bellek_lru_ve_anahtar():
+    print("\n[H1-B0] Bellek: LRU siniri, temizle, JSON disi deger hic eslesmez")
+    from cekirdek import uygunluk_bellek as ub
+    b = ub.Bellek("test_lru", sinir=2)
+    hesap = []
+
+    def uret(x):
+        hesap.append(x)
+        return x * 10
+    kontrol("ilk hesap", b.al("a", lambda: uret(1)) == 10 and hesap == [1])
+    kontrol("isabet hesaplamaz", b.al("a", lambda: uret(99)) == 10 and hesap == [1])
+    b.al("b", lambda: uret(2))
+    b.al("a", lambda: uret(99))          # a en son kullanilan
+    b.al("c", lambda: uret(3))           # sinir 2: en eski (b) atilir
+    kontrol("LRU: en eski atildi", len(b) == 2 and b.al("b", lambda: uret(4)) == 40)
+    ub.temizle()
+    kontrol("temizle butun bellekleri bosaltir", len(b) == 0)
+    try:
+        ub.Bellek("gecersiz", sinir=0)
+        kontrol("sinir < 1 reddedilir", False)
+    except ValueError:
+        kontrol("sinir < 1 reddedilir", True)
+    kontrol("ayni icerik ayni anahtar",
+            ub.icerik_anahtari({"x": [1, 2], "y": "a"}) == ub.icerik_anahtari({"y": "a", "x": [1, 2]}))
+    kontrol("farkli icerik farkli anahtar",
+            ub.icerik_anahtari({"x": 1}) != ub.icerik_anahtari({"x": 1.0001}))
+    nesne = object()
+    kontrol("JSON disi deger her seferinde farkli anahtar (bellek atlanir)",
+            ub.icerik_anahtari({"x": nesne}) != ub.icerik_anahtari({"x": nesne}))
+
+
+def test_ornek_spec_ve_modelleri_json_saf():
+    print("\n[H1-B0b] ornek spec'leri ve GeometriModeli alanlari JSON'a cevrilebilir")
+    from cekirdek import geometri
+    sorunlu = []
+
+    def json_disi(o):
+        sorunlu.append(type(o).__name__)
+        return None
+    for yol in sorted(glob.glob(os.path.join(ORNEK, "*.json"))):
+        spec = _yukle(os.path.splitext(os.path.basename(yol))[0])
+        json.dumps(spec, default=json_disi)
+        m = geometri.model(spec)
+        json.dumps([m.kok, m.parcalar, m.gruplar, m.tanimlar, m.sablon, m.kaynaklar],
+                   default=json_disi)
+    kontrol("JSON disi deger yok (bellek anahtari icerigi tam yansitir)", not sorunlu,
+            sorted(set(sorunlu)))
+
+
+# ---------------------------------------------------------------------------
 # uygunluk
 # ---------------------------------------------------------------------------
 
@@ -189,6 +242,8 @@ def test_hacim_katkilar_tek_gezinti(monkeypatch):
     bellekli[adlar[0]].append(("sahte", 1.0, 1, None))
     kontrol("donen liste kopya", hacim.katkilar(geometri.model(spec), adlar[0])
             == belleksiz[adlar[0]])
+    from cekirdek.geometri.sema import BOSLUK
+    kontrol("bosluk malzemesinin katkisi yok", hacim.katkilar(geometri.model(spec), BOSLUK) == [])
 
 
 def test_hacim_model_degisince_yeniden_hesaplar():
@@ -365,7 +420,8 @@ def test_editor_doldurmak_spec_degistirmez():
         _kapat(p)
 
 
-HIZLI = [test_uygunluk_ayni_spec_tek_gezinti, test_gecerli_sekmeler_tek_gezinti,
+HIZLI = [test_bellek_lru_ve_anahtar, test_ornek_spec_ve_modelleri_json_saf,
+         test_uygunluk_ayni_spec_tek_gezinti, test_gecerli_sekmeler_tek_gezinti,
          test_uygunluk_spec_degisince_yeniden_hesaplar,
          test_uygunluk_donen_nesne_paylasilmaz, test_hacim_katkilar_tek_gezinti,
          test_hacim_model_degisince_yeniden_hesaplar, test_yakit_ornek_sayisi_bellegi,

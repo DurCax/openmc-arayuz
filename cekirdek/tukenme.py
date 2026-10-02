@@ -47,6 +47,7 @@
 import math
 import os
 import sys
+import types
 
 from cekirdek import sema, veri_bilgi
 from cekirdek import tukenme_spektrum as _spektrum
@@ -254,7 +255,6 @@ def _hacim_tablosu(spec):
 
 def _hacim_kaydi_hesapla(spec):
     """Degismez kayit (ayrinti metni etkin dilde: anahtarda dil var)."""
-    import types
     from cekirdek import tukenme_hacim
     kayit = tukenme_hacim.malzeme_hacimleri(spec, yanabilir_adlar(spec))
     return types.MappingProxyType({ad: types.MappingProxyType(dict(v))

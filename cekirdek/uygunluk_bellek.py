@@ -31,6 +31,7 @@
 
 import collections
 import hashlib
+import itertools
 import json
 import threading
 
@@ -42,10 +43,21 @@ VARSAYILAN_SINIR = 8
 _BELLEKLER = []
 
 
+_ESSIZ = itertools.count()
+
+
+def _json_disi(_nesne):
+    """JSON'a cevrilemeyen deger: her cagrida ESSIZ bir belirtec. Boylece
+    anahtar hic eslesmez (bellek atlanir) -- str() gibi icerigi gostermeyen
+    bir temsil (nesne kimligi) yerinde degisiklikte bayat sonuc verebilirdi.
+    Bugunku spec ve GeometriModeli'nde boyle deger yok (testler/test_h1_bellek.py)."""
+    return "<json-disi:%d>" % next(_ESSIZ)
+
+
 def icerik_anahtari(nesne):
     """JSON'a cevrilebilir nesnenin icerige dayali kimligi (SHA-256, 32 hane)."""
     ham = json.dumps(nesne, sort_keys=True, ensure_ascii=False,
-                     separators=(",", ":"), default=str)
+                     separators=(",", ":"), default=_json_disi)
     return hashlib.sha256(ham.encode("utf-8")).hexdigest()[:32]
 
 
