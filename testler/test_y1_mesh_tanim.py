@@ -231,8 +231,11 @@ def test_yavas_betik_esdegerligi_kosu(gecici):
         if any(isinstance(f, openmc.MeshFilter) for f in t.filters):
             va = spa.get_tally(name=t.name).mean
             vb = spb.get_tally(name=t.name).mean
-            kontrol("'%s' mesh degerleri birebir" % t.name,
-                    va.shape == vb.shape and np.array_equal(va, vb))
+            # Ayni tohum: ayni gecmisler; is parcacigi toplama sirasi yalniz
+            # yuvarlama farki birakir (k farki da ~1e-15).
+            fark = float(np.max(np.abs(va - vb) / np.maximum(np.abs(va), 1e-300)))
+            kontrol("'%s' mesh degerleri ayni (bagil < 1e-10)" % t.name,
+                    va.shape == vb.shape and fark < 1e-10, "-> %.2e" % fark)
 
 
 HIZLI = [test_mesh_turu_eski_dosyada_duzenli, test_filtre_hatalari,
