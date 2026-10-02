@@ -334,6 +334,16 @@ def _tally_konumlari(tal, geometri, df=None, adlar=None):
             "eksenel_dilim": eksenel_dilim}
 
 
+def _eksenel_sinirlar(tal):
+    """Guc mesh'inin (z_alt, z_ust) [cm]; eksenel mesh yoksa (2B) None.
+    Dilimler bu araligi esit boler (kurucu._guc_mesh_filtresi)."""
+    import openmc
+    for f in getattr(tal, "filters", None) or []:
+        if isinstance(f, openmc.MeshFilter):
+            return (float(f.mesh.lower_left[2]), float(f.mesh.upper_right[2]))
+    return None
+
+
 def _parcalari_birlestir(parcalar, turler):
     """Tur basina parcalari tek konum sozlugunde birlestirir. Ayni konum x
     dilim bin'i (ayni cubuk sutununda katman katman farkli tur) TOPLANIR.
@@ -470,6 +480,9 @@ def dagilim_oku(sp, tally_adi="guc_dagilimi"):
         "kor_kafes": kafesler[0] if tam_kor else None,
         "kor_kafes_turu": kafes_turleri[0] if tam_kor else None,
         "birlesen_bin": birlesen,
+        # --- v3 K3 (pin tablosu): dilim z araliklari ve ceyrek simetri denetimi
+        "eksenel_sinirlar": _eksenel_sinirlar(taller[0]),
+        "tum_kafesler": geometri.get_all_lattices(),
     }
     sonuc["kesik_cubuklar"] = _kesikler(sonuc, geometri, taller, notlar)
     return sonuc
