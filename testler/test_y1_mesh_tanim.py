@@ -114,6 +114,12 @@ def test_sinir_onerisi_sinir_kutusundan():
     kontrol("2B modelde z = +/-1 cm (duzenli ile ayni)",
             (s["z_alt"], s["z_ust"]) == (alt[2], ust[2]))
     kontrol("kuresel r = max(gx, gy)/2", math.isclose(k["r_ust"], 10.71))
+    for ad in ("pwr_17x17.json", "godiva_kriter.json", "vver1000_kor.json"):
+        s = _spec(ad)
+        _m, bilgi = kurucu.kur(s)
+        kontrol("%s: model_sinir_kutusu = kurucu sinir_kutu" % ad,
+                mt.model_sinir_kutusu(s) == tuple(float(x) for x in bilgi["sinir_kutu"]),
+                "-> %s %s" % (mt.model_sinir_kutusu(s), bilgi["sinir_kutu"]))
 
 
 def test_tanim_ve_mesh_kurulumu():

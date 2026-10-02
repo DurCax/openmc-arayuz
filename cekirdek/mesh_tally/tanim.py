@@ -151,6 +151,13 @@ def filtre_hatalari(f):
 # sinirlar ve tanim
 # ---------------------------------------------------------------------------
 
+def model_sinir_kutusu(spec):
+    """Modelin sinir kutusu (gx, gy) [cm] -- OpenMC modeli KURMADAN (geometri
+    modelinden; kurucu.kur'un bilgi["sinir_kutu"] degeriyle ayni, test edilir)."""
+    from cekirdek import geometri
+    return tuple(float(x) for x in geometri.sinir_kutusu(geometri.model(spec)))
+
+
 def sinir_onerisi(spec, sinir_kutu, tur):
     """
     Modelin sinir kutusundan (gx, gy) [cm] otomatik sinir onerisi.

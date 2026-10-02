@@ -12,7 +12,7 @@
 from cekirdek.mesh_tally.tanim import (  # noqa: F401
     DUZENLI, SILINDIRIK, KURESEL, MESH_TURLERI, MESH_TUR_ADLARI, EKSEN_ADLARI,
     HEKSAGONAL_NOTU, GRUP_YAPILARI, mesh_turu, filtre_duzenli, filtre_silindirik,
-    filtre_kuresel, filtre_hatalari, sinir_onerisi, mesh_tanimi, izgaralar, mesh_kur,
+    filtre_kuresel, filtre_hatalari, model_sinir_kutusu, sinir_onerisi, mesh_tanimi, izgaralar, mesh_kur,
     betik_satirlari, betik_filtresi, mesh_filtresi_kur, grup_sinirlari, yapi_bul)
 from cekirdek.mesh_tally.geometri import (  # noqa: F401
     Dilim, mesh_tur_bul, mesh_izgaralari, hacimler, koseler, dilim)

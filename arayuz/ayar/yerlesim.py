@@ -178,16 +178,19 @@ class YerlesimMixin(object):
     def _tally_formu(self):
         t_form = QtWidgets.QFormLayout()
         self._t_form = t_form
+        self._mesh_alanlari_kur()           # v3 Y1 (arayuz/ayar/mesh_formu.py)
         t_form.addRow(_("Ad:"), self.t_ad)
         t_form.addRow(_("Ne ölçülsün:"), self.t_set)
         t_form.addRow("", self.t_set_ozet)
         t_form.addRow(_("Skorlar:"), self.t_skor)
         t_form.addRow(self.t_enerji_var)
+        self._enerji_satiri_ekle(t_form)
         t_form.addRow(_("Grup sınırları [eV]:"), self.t_enerji)
         t_form.addRow(self.t_mesh_var)
         self.mesh_satiri = self._uclu((("nx", self.t_mesh_nx), ("ny", self.t_mesh_ny),
                                        ("nz", self.t_mesh_nz)))
         t_form.addRow(_("Ağ bölmeleri:"), self.mesh_satiri)
+        self._mesh_satirlari_ekle(t_form)
         t_form.addRow(self.t_diger)
         self.tally_duzenleyici = self._sar(t_form)
 
