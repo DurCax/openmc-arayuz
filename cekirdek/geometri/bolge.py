@@ -54,9 +54,8 @@ class Bolge(object):
 
 def kesit_bolgesi(kes, merkez=(0.0, 0.0)):
     """Tek kesit (merkez'de) -> Bolge."""
-    cx, cy = merkez
     alan = _k.alan(kes) if kes.get("sekil") in ("dikdortgen", "silindir", "altigen") else None
-    return Bolge(lambda x, y, pay: _k.icinde(kes, x, y, merkez=(cx, cy), pay=pay), alan,
+    return Bolge(_k.icinde_islevi(kes, merkez), alan,
                  kesit=kes if merkez == (0.0, 0.0) else None)
 
 
@@ -72,7 +71,8 @@ def fark(dis, ic):
     alan = None
     if dis.alan is not None and ic.alan is not None:
         alan = max(dis.alan - ic.alan, 0.0)
-    return Bolge(lambda x, y, pay: dis.icinde(x, y, pay) and not ic.icinde(x, y, -pay), alan)
+    d_ic, i_ic = dis._icinde, ic._icinde
+    return Bolge(lambda x, y, pay: d_ic(x, y, pay) and not i_ic(x, y, -pay), alan)
 
 
 def delikli(bolge, delikler):
@@ -84,19 +84,21 @@ def delikli(bolge, delikler):
         alan = None if (alan is None or d.alan is None) else alan - d.alan
     if alan is not None:
         alan = max(alan, 0.0)
-    return Bolge(lambda x, y, pay: bolge.icinde(x, y, pay)
-                 and not any(d.icinde(x, y, -pay) for d in delikler), alan)
+    b_ic, d_icler = bolge._icinde, tuple(d._icinde for d in delikler)
+    return Bolge(lambda x, y, pay: b_ic(x, y, pay)
+                 and not any(d(x, y, -pay) for d in d_icler), alan)
 
 
 def kesisim(a, b):
     """a n b; alan bilinmez (kirpilmis konum)."""
-    return Bolge(lambda x, y, pay: a.icinde(x, y, pay) and b.icinde(x, y, pay), None)
+    a_ic, b_ic = a._icinde, b._icinde
+    return Bolge(lambda x, y, pay: a_ic(x, y, pay) and b_ic(x, y, pay), None)
 
 
 def otele(bolge, dx, dy):
     """Cercevesi (dx, dy) kaydirilmis bolge: yeni(p) = eski(p + d)."""
-    return Bolge(lambda x, y, pay: bolge.icinde(x + dx, y + dy, pay), bolge.alan,
-                 hacim=bolge.hacim)
+    b_ic = bolge._icinde
+    return Bolge(lambda x, y, pay: b_ic(x + dx, y + dy, pay), bolge.alan, hacim=bolge.hacim)
 
 
 def geri_cek(bolge, donme=0.0, oteleme=(0.0, 0.0)):
@@ -106,7 +108,8 @@ def geri_cek(bolge, donme=0.0, oteleme=(0.0, 0.0)):
     tx, ty = (float(v) for v in (oteleme or (0.0, 0.0)))
     if not t and not tx and not ty:
         return bolge
-    return Bolge(lambda x, y, pay: bolge.icinde(c * x - s * y + tx, s * x + c * y + ty, pay),
+    b_ic = bolge._icinde
+    return Bolge(lambda x, y, pay: b_ic(c * x - s * y + tx, s * x + c * y + ty, pay),
                  bolge.alan, hacim=bolge.hacim)
 
 
