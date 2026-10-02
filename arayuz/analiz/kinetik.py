@@ -195,7 +195,7 @@ class KinetikKarti(bil.Kart):
                 beta.append(kin.pcm_den(float(self.tablo.item(i, _SUTUN_BETA).text())))
                 lam.append(float(self.tablo.item(i, _SUTUN_LAMBDA).text()))
             except (AttributeError, ValueError):
-                raise ValueError(_("Tablo satırı %d: β_i ve λ_i sayı olmalı.") % (i + 1))
+                raise ValueError(_("Tablo satırı %d: β_i ve λ_i sayı olmalı.") % (i + 1)) from None
         kaynak = {"keepin": kin.KEEPIN_U235_TERMAL.kaynak,
                   "kosu": self._kosu_verisi.kaynak if self._kosu_verisi else ""}.get(
                       self.kaynak.currentData(), _("elle"))

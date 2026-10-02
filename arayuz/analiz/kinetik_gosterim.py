@@ -8,6 +8,7 @@ Widget: arayuz/analiz/kinetik.py.
 
 import html
 import math
+import sys
 
 from cekirdek import kinetik as kin
 from cekirdek.ceviri import _
@@ -29,7 +30,7 @@ def grafik_ciz(figur, cozum):
     eksen = figur.add_subplot(111)
     eksen.grid(alpha=0.3)
     eksen.plot(cozum.t, cozum.guc, lw=CIZGI, color=renk("vurgu"), label="P/P₀")
-    en_kucuk = max(min(cozum.guc), 1e-300)
+    en_kucuk = max(min(cozum.guc), sys.float_info.min)
     if max(cozum.guc) / en_kucuk > LOG_ESIGI:
         eksen.set_yscale("log")
     eksen.set_xlabel(_("zaman [s]"), fontsize=YAZI_EKSEN)

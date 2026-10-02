@@ -52,6 +52,10 @@ _RTOL, _ATOL = 1e-9, 1e-12      # solve_ivp toleranslari (testlerde 1e-6 dogrulu
 _YONTEMLER = ("Radau", "BDF")
 _KOK_UST_SINIR = 1e12           # Inhour koku aramasi [1/s]; Lambda >= 1e-10 s icin yeter
 _PERIYOT_PENCERESI = 0.1        # periyot tahmini: zaman ekseninin son %10'u
+_KUTUP_PAYI = 1e-13             # kok araligi kutuptan bu bagil payla iceride baslar
+_KOK_XTOL = 1e-15               # brentq mutlak tolerans, kok olcegine bagil
+_KOK_YINELEME = 500
+_EGIM_SIFIR = 1e-14             # |d ln P/dt| [1/s] bunun altindaysa periyot sonsuz
 
 # Keepin, Wimett & Zeigler (1957), Phys. Rev. 107, 1044; Keepin (1965) Tablo 4-7:
 # U-235 termal fisyon, 6 grup. Lamarsh & Baratta (2001) Tablo 7.4 ile ayni.
@@ -253,8 +257,9 @@ def _kok(f, a, b):
         return b
     if fa * fb > 0:
         raise RuntimeError(_("Inhour kökü aralıkta bulunamadı: [%g, %g]") % (a, b))
-    olcek = max(abs(a), abs(b), 1e-300)
-    return brentq(f, a, b, xtol=1e-15 * olcek, rtol=4 * np.finfo(float).eps, maxiter=500)
+    olcek = max(abs(a), abs(b), np.finfo(float).tiny)
+    return brentq(f, a, b, xtol=_KOK_XTOL * olcek, rtol=4 * np.finfo(float).eps,
+                  maxiter=_KOK_YINELEME)
 
 
 def _genislet(f, bas, yon):
@@ -273,9 +278,14 @@ def inhour_kokleri(veri, rho):
     """Ters saat denkleminin tum kokleri, buyukten kucuge (1/s)."""
     rho = _sonlu(rho, "ρ")
     v = _birlesik_gruplar(veri)
-    f = lambda w: inhour_rho(v, w) - rho          # noqa: E731
+
+    def f(w):
+        return inhour_rho(v, w) - rho
+
+    def pay(kutup_degeri):
+        return abs(kutup_degeri) * _KUTUP_PAYI
+
     kutup = [-x for x in v.lam]                   # azalan: -l1 > -l2 > ...
-    pay = lambda p: abs(p) * 1e-13                # noqa: E731
     kokler = [_kok(f, kutup[0] + pay(kutup[0]), _genislet(f, kutup[0], +1))]
     for ust, alt in zip(kutup, kutup[1:]):
         kokler.append(_kok(f, alt + pay(alt), ust - pay(ust)))
@@ -379,7 +389,10 @@ def coz(veri, reaktivite, t_son, geri_besleme=None, nokta=VARSAYILAN_NOKTA, yont
     if int(nokta) < 2:
         raise ValueError(_("En az iki zaman noktası gerekir."))
     f, jac, rho_t = _turevler(veri, reaktivite, geri_besleme)
-    tasma = lambda t, y: y[0] - AZAMI_GUC_ORANI   # noqa: E731
+
+    def tasma(t, y):
+        return y[0] - AZAMI_GUC_ORANI
+
     tasma.terminal, tasma.direction = True, 1
     izgara = np.linspace(0.0, t_son, int(nokta))
     y = np.concatenate((_denge(veri), [0.0] if geri_besleme else []))
@@ -431,4 +444,4 @@ def periyot_tahmini(cozum):
     if pencere.sum() < 2 or np.any(n[pencere] <= 0):
         raise ValueError(_("Periyot tahmini için pozitif güç noktaları gerekir."))
     egim = np.polyfit(t[pencere], np.log(n[pencere]), 1)[0]
-    return math.inf if abs(egim) < 1e-14 else 1.0 / egim
+    return math.inf if abs(egim) < _EGIM_SIFIR else 1.0 / egim
