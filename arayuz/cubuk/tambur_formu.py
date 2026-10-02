@@ -177,6 +177,7 @@ class TamburFormuMixin(object):
         finally:
             self._yukleniyor = onceki
         self.yigin.setCurrentWidget(self.tambur_sayfa)
+        self.oge_secildi.emit()             # onizleme kapsami (K5)
 
     def _tambur_secimini_birak(self):
         eski = self.t_liste.blockSignals(True)
