@@ -235,4 +235,31 @@ def test_sigar_kesin_kisayolu_tam_denetimle_ayni():
 
 
 HIZLI.append(test_sigar_kesin_kisayolu_tam_denetimle_ayni)
+
+
+def test_sigar_pay_bandi_ve_cok_duzeyli_zincir():
+    print("\n[H1b-G9] sigar: teget disk (R - KESIN_PAY +- eps) ve cok duzeyli otele/geri_cek "
+          "zinciri, kure kesiti: tam denetimle ayni")
+    from cekirdek.geometri import bolge as _b
+    from cekirdek.geometri import kesit as _k
+    fark = 0
+    for sekil in ("silindir", "kure", "altigen", "dikdortgen"):
+        dis = {"silindir": {"sekil": "silindir", "yaricap": 1.0},
+               "kure": {"sekil": "kure", "yaricap": 1.0},
+               "altigen": {"sekil": "altigen", "apotem": 1.0, "yonelim": "y"},
+               "dikdortgen": {"sekil": "dikdortgen", "boyut": [2.0, 2.0]}}[sekil]
+        b = _b.kesit_bolgesi(dis)
+        zincir = _b.geri_cek(_b.otele(_b.geri_cek(_b.otele(b, 0.1, -0.05), 17.0, (0.02, 0.0)),
+                                      -0.1, 0.05), -17.0)
+        for bolge in (b, zincir):
+            for eps in (-1e-5, -1e-7, -1e-9, 0.0, 1e-9, 1e-7, 1e-5):
+                r = 0.5 - _k.KESIN_PAY + eps
+                for merkez in ((0.5, 0.0), (0.0, 0.5), (0.3, 0.3)):
+                    pin = {"sekil": "silindir", "yaricap": r}
+                    fark += _b.sigar(bolge, pin, merkez) != \
+                        bolge.hepsi_icinde(_k.sinir_noktalari(pin, merkez))
+    kontrol("pay bandinda ve zincirde fark yok", fark == 0, "fark=%d" % fark)
+
+
+HIZLI.append(test_sigar_pay_bandi_ve_cok_duzeyli_zincir)
 YAVAS.append(test_yavas_sfr_zamanlayici_dogrulamasi_hizli)

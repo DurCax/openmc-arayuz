@@ -9,11 +9,13 @@ turer, yani yontem cozumu ve adlar aynidir. _seviye_renk ve _SEVIYE_ADI da
 buradadir; ana_pencere'den yeniden disa aktarilir.
 """
 
+from typing import Callable
+
 import shiboken6
 from PySide6 import QtCore, QtGui, QtWidgets
 
 from cekirdek import dogrula
-from cekirdek.geometri import yoklama
+from cekirdek.geometri import yoklama, yoklama_arka
 from cekirdek.ceviri import _, _n, N_
 from cekirdek.gunluk import kaydedici
 from arayuz import baslangic_adim, tema
@@ -81,7 +83,7 @@ class DogrulamaMixin(object):
             oge.setToolTip(_("Tıklayınca ilgili sayfaya gider."))
             liste.addItem(oge)
 
-    def _yoklama_bildirimi(self):
+    def _yoklama_bildirimi(self) -> Callable[[], None]:
         """Arka plan yoklamasi bitince (isci is parcacigindan) ana is parcaciginda
         yeniden dogrular: kuyruklu sinyal (H1b, cekirdek/geometri/yoklama_arka.py)."""
         haberci = getattr(self, "_yoklama_haberci", None)
@@ -89,6 +91,9 @@ class DogrulamaMixin(object):
             haberci = _YoklamaHabercisi(self)
             haberci.geldi.connect(lambda: self._dogrula(veri=False))
             self._yoklama_haberci = haberci
+            uygulama = QtCore.QCoreApplication.instance()
+            if uygulama is not None:
+                uygulama.aboutToQuit.connect(yoklama_arka.kapat)
 
         def bildir():
             if shiboken6.isValid(haberci):

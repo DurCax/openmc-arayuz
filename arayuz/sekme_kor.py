@@ -361,6 +361,8 @@ class KorSekmesi(KorGeometriMixin, KorYerlesimMixin, KorHaritasiMixin, KorKatman
             return
         try:
             # H1b: olcu openmc'siz (kurucu sinir_kutu ile ayni; test_h1b_ithal)
+            # Not: geometri kurulup openmc modeli kurulamayan (or. tanimsiz malzeme)
+            # spec'te artik olcu gorunur; kurulum hatasini dogrulama seridi bildirir.
             from cekirdek import geometri
             gx, gy = geometri.sinir_kutusu(geometri.model(self.spec))
             # sema.kor_yuksekligi(): katmanliyken yukseklik katman toplamidir.

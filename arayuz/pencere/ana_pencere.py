@@ -58,6 +58,7 @@ from arayuz.baslangic_akis import BaslangicAkisi
 from arayuz.ortak import tekerlek_korumasi_kur, tekerlek_suzgeci_askida
 from arayuz.pencere import kabuk
 from arayuz.tasarim import stil as _stil
+from cekirdek.geometri import yoklama_arka
 from arayuz.pencere.menuler import MenulerMixin
 from arayuz.pencere.proje import ProjeMixin
 from arayuz.pencere.gecmis import GecmisMixin
@@ -643,6 +644,7 @@ class AnaPencere(DogrulamaMixin, BaslangicAkisi, GezinmeCephesi, MenulerMixin, P
             # Onceki tukenme sonucu arka planda okunuyor olabilir (~3 s).
             self.s_tukenme.bekle()
             veri_kayit.kapat(self)     # K2: suren veri indirmesi iptal + bekle
+            yoklama_arka.kapat()       # H1b: nokta yoklamasi iscisi
             olay.accept()
         else:
             olay.ignore()

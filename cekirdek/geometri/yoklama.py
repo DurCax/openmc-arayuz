@@ -242,7 +242,7 @@ def _dis_sinir(m):
 _YOKLAMALAR = Bellek("yoklama")
 
 
-def yokla(spec: dict, n: int = 20000, tohum: int = 1) -> tuple:
+def yokla(spec: dict, n: int = 20000, tohum: int = 1) -> "tuple | None":
     """spec -> (YoklamaSonucu, [okunur sorun metni]) (ilk RAPOR_SINIRI sorun);
     arka_planda() blogunda sonuc henuz yoksa None.
     H1b: model onbellek.kur_onbellekli'den (salt okunur: yalniz bolge/kafes
@@ -254,11 +254,13 @@ def yokla(spec: dict, n: int = 20000, tohum: int = 1) -> tuple:
     bildir = _ARKA_PLAN.get()
     if bildir is not None:
         from cekirdek.geometri import yoklama_arka
-        hazir = yoklama_arka.sonuc_al(anahtar)
-        if hazir is not None:
+        arka = yoklama_arka.anahtar_dilli(anahtar)
+        hazir = yoklama_arka.sonuc_al(arka)
+        if hazir is not None and hazir != yoklama_arka.COKTU:
             return hazir[0], _metinler(*hazir)
-        if yoklama_arka.istek(anahtar, spec, n, tohum, bildir):
+        if hazir is None and yoklama_arka.istek(arka, spec, n, tohum, bildir):
             return None
+        # COKTU ya da isci yok: esli yol (yeniden istek yok)
     sonuc, dizin = _YOKLAMALAR.al(anahtar, lambda: _yokla_hesapla(spec, n, tohum))
     return sonuc, _metinler(sonuc, dizin)
 
