@@ -53,7 +53,7 @@ from arayuz.tukenme_sonuc import SonucBolumu
 
 _log = kaydedici(__name__)
 
-KOK = yollar.paket_koku()   # alt surecin PYTHONPATH'i (kaynak agacindan calisirken)
+KOK = yollar.paket_koku()   # alt surecin calisma dizini (eski davranis)
 
 
 def yakit_ornek_sayisi(spec):
@@ -411,7 +411,9 @@ class TukenmeSekmesi(SekmeTabani, SonucBolumu, TukenmeArayuzu):
         self._surec = QtCore.QProcess(self)
         self._surec.setWorkingDirectory(KOK)
         ortam = QtCore.QProcessEnvironment.systemEnvironment()
-        ortam.insert("PYTHONPATH", KOK)
+        yol = _giris.alt_surec_pythonpath(ortam.value("PYTHONPATH"))
+        if yol:                         # kaynak agaci: paket koku MEVCUDUN onune
+            ortam.insert("PYTHONPATH", yol)
         ortam.insert("PYTHONUNBUFFERED", "1")
         from cekirdek import ceviri as _ceviri
         ortam.insert(_ceviri.ORTAM_DEGISKENI, _ceviri.etkin_dil())   # alt surec ayni dilde

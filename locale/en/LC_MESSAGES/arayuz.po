@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 05:10+0300\n"
+"POT-Creation-Date: 2026-10-02 05:26+0300\n"
 "PO-Revision-Date: 2026-10-01 18:14+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -6242,7 +6242,7 @@ msgid_plural "… ve %d hata daha."
 msgstr[0] "… and %d more error."
 msgstr[1] "… and %d more errors."
 
-#: arayuz/sekme_calistir.py:553 arayuz/sekme_tukenme.py:440
+#: arayuz/sekme_calistir.py:553 arayuz/sekme_tukenme.py:442
 msgid ""
 "\n"
 "# kullanıcı tarafından durduruldu"
@@ -6297,7 +6297,7 @@ msgid "Koşu bitti ama statepoint bulunamadı"
 msgstr "Run finished but no statepoint found"
 
 #: arayuz/calistir/sonuc_gosterimi.py:48 arayuz/sekme_calistir.py:655
-#: arayuz/sekme_calistir.py:656 arayuz/sekme_tukenme.py:518
+#: arayuz/sekme_calistir.py:656 arayuz/sekme_tukenme.py:520
 #, python-format
 msgid "Sonuç okunamadı: %s"
 msgstr "Result could not be read: %s"
@@ -6953,22 +6953,22 @@ msgstr "%v / %m transport"
 msgid "İlk transport bekleniyor — kalan süre ondan ölçülecek."
 msgstr "Waiting for the first transport solve — the remaining time will be measured from it."
 
-#: arayuz/sekme_tukenme.py:431
+#: arayuz/sekme_tukenme.py:433
 #, python-format
 msgid "Tükenme koşusu sürüyor → %s"
 msgstr "Depletion run in progress → %s"
 
-#: arayuz/sekme_tukenme.py:434
+#: arayuz/sekme_tukenme.py:436
 #, python-format
 msgid "Tükenme başladı → %s"
 msgstr "Depletion started → %s"
 
-#: arayuz/sekme_tukenme.py:473
+#: arayuz/sekme_tukenme.py:475
 #, python-format
 msgid "geçen %s  |  transport başına %.0f s (ölçülen)  |  kalan ~%s"
 msgstr "elapsed %s  |  %.0f s per transport (measured)  |  remaining ~%s"
 
-#: arayuz/sekme_tukenme.py:480
+#: arayuz/sekme_tukenme.py:482
 #, python-format
 msgid ""
 "\n"
@@ -6977,27 +6977,27 @@ msgstr ""
 "\n"
 "# Process could not be started: %s"
 
-#: arayuz/sekme_tukenme.py:502
+#: arayuz/sekme_tukenme.py:504
 #, python-format
 msgid "Önceki projenin tükenme koşusu bitti; sonucu bu projeye yazılmadı (dosyalar: %s)."
 msgstr ""
 "The previous project's depletion run finished; its result was not written to this "
 "project (files: %s)."
 
-#: arayuz/sekme_tukenme.py:508
+#: arayuz/sekme_tukenme.py:510
 #, python-format
 msgid "Tükenme başarısız (çıkış kodu %d)"
 msgstr "Depletion failed (exit code %d)"
 
-#: arayuz/sekme_tukenme.py:509
+#: arayuz/sekme_tukenme.py:511
 msgid "Başarısız — ayrıntılı çıktı aşağıda açıldı."
 msgstr "Failed — the detailed output is open below."
 
-#: arayuz/sekme_tukenme.py:519
+#: arayuz/sekme_tukenme.py:521
 msgid "Sonuç okunamadı — ayrıntılı çıktıya bakın."
 msgstr "Result could not be read — see the detailed output."
 
-#: arayuz/sekme_tukenme.py:520
+#: arayuz/sekme_tukenme.py:522
 #, python-format
 msgid ""
 "\n"
@@ -7006,21 +7006,21 @@ msgstr ""
 "\n"
 "# Result could not be read: %s"
 
-#: arayuz/sekme_tukenme.py:526
+#: arayuz/sekme_tukenme.py:528
 #, python-format
 msgid "Tamamlandı: %s"
 msgstr "Finished: %s"
 
-#: arayuz/sekme_tukenme.py:527
+#: arayuz/sekme_tukenme.py:529
 msgid "Tükenme tamamlandı"
 msgstr "Depletion finished"
 
-#: arayuz/sekme_tukenme.py:558
+#: arayuz/sekme_tukenme.py:560
 #, python-format
 msgid "%d dk"
 msgstr "%d min"
 
-#: arayuz/sekme_tukenme.py:559
+#: arayuz/sekme_tukenme.py:561
 #, python-format
 msgid "%.1f sa"
 msgstr "%.1f h"

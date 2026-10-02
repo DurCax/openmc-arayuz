@@ -244,9 +244,27 @@ def alt_surec_komutu(ad, argumanlar, python=None):
     yorumlayici (varsayilan sys.executable). Bilinmeyen ad ValueError. Kaynak
     agacindan calisirken cagiran PYTHONPATH'e yollar.paket_koku()'nu koyar."""
     if ad not in _ALT_SURECLER:
-        raise ValueError("bilinmeyen alt surec: %r" % (ad,))
+        from cekirdek.ceviri import _
+        raise ValueError(_("bilinmeyen alt süreç: %r") % (ad,))
     return (python or sys.executable,
             ["-m", "cekirdek.giris", ALT_SECENEGI, ad] + list(argumanlar))
+
+
+def alt_surec_pythonpath(mevcut, kaynak_agaci=None):
+    """Alt surecin PYTHONPATH'i ya da None (degistirme). Kaynak agacindan
+    calisirken paket koku MEVCUT degerin ONUNE eklenir (ezilmez); kurulu
+    pakette paket zaten yorumlayicinin yolundadir, dokunulmaz.
+    kaynak_agaci: None -> yollar.kaynak_agaci_mi()."""
+    from cekirdek import yollar
+    if kaynak_agaci is None:
+        kaynak_agaci = yollar.kaynak_agaci_mi()
+    if not kaynak_agaci:
+        return None
+    kok = yollar.paket_koku()
+    ogeler = [o for o in (mevcut or "").split(os.pathsep) if o]
+    if ogeler and ogeler[0] == kok:
+        return mevcut
+    return os.pathsep.join([kok] + ([mevcut] if mevcut else []))
 
 
 def alt_komutu(argv):
@@ -283,7 +301,17 @@ def gui(argv=None):
     try:
         return ana_pencere.main(argv)
     except SystemExit as cikis:
-        return cikis.code
+        return _cikis_kodu(cikis.code)
+
+
+def _cikis_kodu(kod):
+    """SystemExit.code -> int (sys.exit anlamiyla: None 0, metin stderr'e + 1)."""
+    if kod is None:
+        return 0
+    if isinstance(kod, int):
+        return kod
+    print(kod, file=sys.stderr)
+    return 1
 
 
 if __name__ == "__main__":

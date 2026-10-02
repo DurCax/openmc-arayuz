@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 05:10+0300\n"
+"POT-Creation-Date: 2026-10-02 05:26+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -3114,7 +3114,12 @@ msgstr ""
 "\n"
 "Profiles: %s · %d errors, %d warnings · %d passed, %d not met, %d not applicable"
 
-#: cekirdek/giris.py:257
+#: cekirdek/giris.py:248
+#, python-format
+msgid "bilinmeyen alt süreç: %r"
+msgstr "unknown subprocess: %r"
+
+#: cekirdek/giris.py:275
 #, python-format
 msgid "--alt bir alt süreç adı bekliyor: %s"
 msgstr "--alt expects a subprocess name: %s"
@@ -3815,11 +3820,11 @@ msgstr ""
 "the volume of an instance of material '%s' cannot be computed; pin-by-pin burnup "
 "requires exact volumes"
 
-#: cekirdek/kosucu.py:110
+#: cekirdek/kosucu.py:109
 msgid "geçersiz k-eff"
 msgstr "invalid k-eff"
 
-#: cekirdek/kosucu.py:117
+#: cekirdek/kosucu.py:116
 msgid ""
 "k∞ (sonsuz ortam) — sızıntı yok, kritiklik hükmü verilmez; sonlu bir reaktörde k-eff "
 "daha küçüktür"
@@ -3827,34 +3832,34 @@ msgstr ""
 "k∞ (infinite medium) — no leakage, no criticality verdict is given; in a finite "
 "reactor k-eff is smaller"
 
-#: cekirdek/kosucu.py:120
+#: cekirdek/kosucu.py:119
 msgid "Kritik (k = 1'den istatistiksel olarak ayırt edilemez)"
 msgstr "Critical (statistically indistinguishable from k = 1)"
 
-#: cekirdek/kosucu.py:122
+#: cekirdek/kosucu.py:121
 msgid "Kritik üstü (k > 1 — güç artar)"
 msgstr "Supercritical (k > 1 — power rises)"
 
-#: cekirdek/kosucu.py:124
+#: cekirdek/kosucu.py:123
 msgid "Kritik altı (k < 1 — güç söner)"
 msgstr "Subcritical (k < 1 — power decays)"
 
-#: cekirdek/kosucu.py:127
+#: cekirdek/kosucu.py:126
 #, python-format
 msgid "ρ∞ = %+.0f ± %.0f pcm (yakıtın taşıdığı reaktivite fazlası)"
 msgstr "ρ∞ = %+.0f ± %.0f pcm (excess reactivity carried by the fuel)"
 
-#: cekirdek/kosucu.py:129
+#: cekirdek/kosucu.py:128
 #, python-format
 msgid "reaktivite = %+.0f ± %.0f pcm"
 msgstr "reactivity = %+.0f ± %.0f pcm"
 
-#: cekirdek/kosucu.py:132
+#: cekirdek/kosucu.py:131
 #, python-format
 msgid "%+.2f $ (β_eff = %.0f pcm)"
 msgstr "%+.2f $ (β_eff = %.0f pcm)"
 
-#: cekirdek/kosucu.py:139
+#: cekirdek/kosucu.py:138
 msgid ""
 "ρ > 1 $: gerçek bir geçici rejimde bu anlık kritiklik demektir; sonsuz ortam (k∞) "
 "hesabında ise yakıtın taşıdığı reaktivite fazlasıdır (kontrol sistemiyle dengelenir)"
@@ -3863,7 +3868,7 @@ msgstr ""
 "(k∞) calculation it is the excess reactivity carried by the fuel (balanced by the "
 "control system)"
 
-#: cekirdek/kosucu.py:183
+#: cekirdek/kosucu.py:182
 #, python-format
 msgid ""
 "pasif çevrim sayısı (%d) kaynak yakınsamasını değerlendirmek için çok az — en az 4, "
@@ -3872,16 +3877,16 @@ msgstr ""
 "the number of inactive batches (%d) is too small to assess source convergence — use "
 "at least 4, in practice 20–50 inactive batches"
 
-#: cekirdek/kosucu.py:187
+#: cekirdek/kosucu.py:186
 #, python-format
 msgid "aktif çevrim sayısı değerlendirme için yetersiz (%d çevrim, %d pasif)"
 msgstr "not enough active batches for the assessment (%d batches, %d inactive)"
 
-#: cekirdek/kosucu.py:194
+#: cekirdek/kosucu.py:193
 msgid "entropi sabit; değerlendirilemedi"
 msgstr "entropy is constant; could not be assessed"
 
-#: cekirdek/kosucu.py:200
+#: cekirdek/kosucu.py:199
 #, python-format
 msgid ""
 "Kaynak dağılımı pasif dönemin sonunda hâlâ kayıyor (kayma %.4f, aktif saçılma σ = "
@@ -3891,7 +3896,7 @@ msgstr ""
 "%.4f, active spread σ = %.4f). Increase the number of inactive batches — k-eff may be"
 " biased."
 
-#: cekirdek/kosucu.py:205
+#: cekirdek/kosucu.py:204
 #, python-format
 msgid ""
 "Kaynak dağılımı aktif dönemde de kaymaya devam etti (ilk aktif çeyrek ile plato farkı"
@@ -3902,7 +3907,7 @@ msgstr ""
 "first active quarter and the plateau %.4f > 2σ = %.4f). Increase the number of "
 "inactive batches — k-eff and the tallies may be biased."
 
-#: cekirdek/kosucu.py:209
+#: cekirdek/kosucu.py:208
 #, python-format
 msgid "Kaynak dağılımı yakınsamış görünüyor (pasif dönem sonunda kayma %.4f ≤ 2σ = %.4f)."
 msgstr ""

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 05:10+0300\n"
+"POT-Creation-Date: 2026-10-02 05:26+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2833,7 +2833,12 @@ msgid ""
 "uygulanamadı"
 msgstr ""
 
-#: cekirdek/giris.py:257
+#: cekirdek/giris.py:248
+#, python-format
+msgid "bilinmeyen alt süreç: %r"
+msgstr ""
+
+#: cekirdek/giris.py:275
 #, python-format
 msgid "--alt bir alt süreç adı bekliyor: %s"
 msgstr ""
@@ -3437,73 +3442,73 @@ msgid ""
 "gerektirir"
 msgstr ""
 
-#: cekirdek/kosucu.py:110
+#: cekirdek/kosucu.py:109
 msgid "geçersiz k-eff"
 msgstr ""
 
-#: cekirdek/kosucu.py:117
+#: cekirdek/kosucu.py:116
 msgid ""
 "k∞ (sonsuz ortam) — sızıntı yok, kritiklik hükmü verilmez; sonlu bir reaktörde k-eff "
 "daha küçüktür"
 msgstr ""
 
-#: cekirdek/kosucu.py:120
+#: cekirdek/kosucu.py:119
 msgid "Kritik (k = 1'den istatistiksel olarak ayırt edilemez)"
 msgstr ""
 
-#: cekirdek/kosucu.py:122
+#: cekirdek/kosucu.py:121
 msgid "Kritik üstü (k > 1 — güç artar)"
 msgstr ""
 
-#: cekirdek/kosucu.py:124
+#: cekirdek/kosucu.py:123
 msgid "Kritik altı (k < 1 — güç söner)"
 msgstr ""
 
-#: cekirdek/kosucu.py:127
+#: cekirdek/kosucu.py:126
 #, python-format
 msgid "ρ∞ = %+.0f ± %.0f pcm (yakıtın taşıdığı reaktivite fazlası)"
 msgstr ""
 
-#: cekirdek/kosucu.py:129
+#: cekirdek/kosucu.py:128
 #, python-format
 msgid "reaktivite = %+.0f ± %.0f pcm"
 msgstr ""
 
-#: cekirdek/kosucu.py:132
+#: cekirdek/kosucu.py:131
 #, python-format
 msgid "%+.2f $ (β_eff = %.0f pcm)"
 msgstr ""
 
-#: cekirdek/kosucu.py:139
+#: cekirdek/kosucu.py:138
 msgid ""
 "ρ > 1 $: gerçek bir geçici rejimde bu anlık kritiklik demektir; sonsuz ortam (k∞) "
 "hesabında ise yakıtın taşıdığı reaktivite fazlasıdır (kontrol sistemiyle dengelenir)"
 msgstr ""
 
-#: cekirdek/kosucu.py:183
+#: cekirdek/kosucu.py:182
 #, python-format
 msgid ""
 "pasif çevrim sayısı (%d) kaynak yakınsamasını değerlendirmek için çok az — en az 4, "
 "pratikte 20–50 pasif çevrim kullanın"
 msgstr ""
 
-#: cekirdek/kosucu.py:187
+#: cekirdek/kosucu.py:186
 #, python-format
 msgid "aktif çevrim sayısı değerlendirme için yetersiz (%d çevrim, %d pasif)"
 msgstr ""
 
-#: cekirdek/kosucu.py:194
+#: cekirdek/kosucu.py:193
 msgid "entropi sabit; değerlendirilemedi"
 msgstr ""
 
-#: cekirdek/kosucu.py:200
+#: cekirdek/kosucu.py:199
 #, python-format
 msgid ""
 "Kaynak dağılımı pasif dönemin sonunda hâlâ kayıyor (kayma %.4f, aktif saçılma σ = "
 "%.4f). Pasif çevrim sayısını artırın — k-eff yanlı olabilir."
 msgstr ""
 
-#: cekirdek/kosucu.py:205
+#: cekirdek/kosucu.py:204
 #, python-format
 msgid ""
 "Kaynak dağılımı aktif dönemde de kaymaya devam etti (ilk aktif çeyrek ile plato farkı"
@@ -3511,7 +3516,7 @@ msgid ""
 "olabilir."
 msgstr ""
 
-#: cekirdek/kosucu.py:209
+#: cekirdek/kosucu.py:208
 #, python-format
 msgid "Kaynak dağılımı yakınsamış görünüyor (pasif dönem sonunda kayma %.4f ≤ 2σ = %.4f)."
 msgstr ""
