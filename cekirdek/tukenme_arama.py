@@ -99,7 +99,7 @@ def _radyal_bolge(hucre, uc):
         return None
     parcalar = [p for p in bolge if not (isinstance(p, openmc.Halfspace) and p.surface is uc)]
     if len(parcalar) == len(list(bolge)):
-        raise ValueError(_("çubuk hücresinin bölgesi beklenen biçimde değil"))
+        raise ValueError(_("kontrol çubuğu hücresinin bölgesi beklenen biçimde değil"))
     return openmc.Intersection(parcalar) if len(parcalar) > 1 else parcalar[0]
 
 
@@ -130,7 +130,7 @@ def cubuk_islevi(model, nesneler: dict, spec: dict, hedef: str, aralik: tuple):
     izleyici = _malzeme(nesneler, c.get("izleyici_malzeme"))
     ciftler = _cubuk_ciftleri(model, emici, izleyici)
     if not ciftler:
-        raise ValueError(_("kritiklik araması: '%s' çubuğunun hareketli hücresi bulunamadı "
+        raise ValueError(_("kritiklik araması: '%s' kontrol çubuğunun hareketli hücresi bulunamadı "
                            "(3B model ve kontrol çubuğu gerekli)") % hedef)
     z_alt, z_ust = aralik
     hucre_idler = []
@@ -192,7 +192,7 @@ def _aktif_aralik(spec: dict) -> tuple:
         return tuple(aralik)
     h = sema.kor_yuksekligi(spec["kor"]) if spec.get("kor", {}).get("tur") != sema.AGAC else None
     if not h:
-        raise ValueError(_("çubuk araması 3B model gerektirir"))
+        raise ValueError(_("kontrol çubuğu araması 3B model gerektirir"))
     return (-h / 2.0, h / 2.0)
 
 

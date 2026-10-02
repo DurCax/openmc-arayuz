@@ -66,7 +66,7 @@ class Entegrator:
 
 ENTEGRATORLER = {e.kod: e for e in (
     Entegrator("predictor", "PredictorIntegrator", 1,
-               N_("Predictor — öngörücü, 1. mertebe (adım başına 1 transport, kaba)")),
+               N_("Predictor — öngörücü, 1. mertebe (adım başına 1 transport)")),
     Entegrator("cecm", "CECMIntegrator", 2,
                N_("CE/CM — öngörücü-düzeltici, 2. mertebe (adım başına 2 transport)")),
     Entegrator("celi", "CELIIntegrator", 2,
@@ -259,7 +259,7 @@ def _arama_uyum_hatalari(t: dict, k: KritikArama) -> list:
     if hizli_kip(t):
         hatalar.append(_("hızlı kipte (MicroXS) kritiklik araması yapılamaz: transport yok"))
     if k.tur == "cubuk" and t.get("malzemeleri_ayir"):
-        hatalar.append(_("çubuk araması çubuk çubuk yanma ile birlikte desteklenmiyor"))
+        hatalar.append(_("kontrol çubuğu araması çubuk çubuk yanma ile birlikte desteklenmiyor"))
     return hatalar
 
 
@@ -276,7 +276,7 @@ def _arama_hedef_hatalari(spec: dict, k: KritikArama) -> list:
         return []
     c = sema.cubuk_bul(spec, k.hedef)
     if c is None or c.get("tur") != "kontrol":
-        return [_("çubuk araması: '%s' bir kontrol çubuğu değil") % k.hedef]
+        return [_("kontrol çubuğu araması: '%s' bir kontrol çubuğu değil") % k.hedef]
     if not (CUBUK_SINIR[0] <= k.sinir[0] and k.sinir[-1] <= CUBUK_SINIR[1]):
-        return [_("çubuk araması sınırı %0–%100 daldırma içinde olmalı")]
+        return [_("kontrol çubuğu araması sınırı 0–100 daldırma yüzdesi içinde olmalı")]
     return []

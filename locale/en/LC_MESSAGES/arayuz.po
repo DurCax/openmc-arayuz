@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 10:40+0300\n"
+"POT-Creation-Date: 2026-10-02 15:05+0300\n"
 "PO-Revision-Date: 2026-10-01 18:14+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -213,10 +213,6 @@ msgstr ""
 "Step: ρ inserted at t = 0; ramp: ρ reached at the end of the ramp.\n"
 "1 pcm = 10⁻⁵ Δk/k; 1 $ = β_eff. ρ ≥ 1 $ is PROMPT CRITICAL."
 
-#: arayuz/analiz/kinetik.py:89
-msgid "Hesapla"
-msgstr "Compute"
-
 #: arayuz/analiz/kinetik.py:94
 msgid "Adiyabatik sıcaklık geri beslemesi"
 msgstr "Adiabatic temperature feedback"
@@ -382,10 +378,6 @@ msgstr "Calculate:"
 #: arayuz/analiz/sekme.py:93
 msgid "Gelişmiş parametreler"
 msgstr "Advanced parameters"
-
-#: arayuz/analiz/sekme.py:98 arayuz/analiz/sekme.py:456
-msgid "Hedef:"
-msgstr "Target:"
 
 #: arayuz/analiz/sekme.py:102
 msgid "nokta"
@@ -1775,10 +1767,6 @@ msgstr "batch"
 #: arayuz/calistir/yakinsama.py:65
 msgid "Grafiği kaydet"
 msgstr "Save chart"
-
-#: arayuz/calistir/yakinsama.py:77 arayuz/pencere/proje.py:146
-msgid "Kaydedilemedi"
-msgstr "Could not save"
 
 #: arayuz/calistir/yakinsama.py:86
 msgid "Yakınsama"
@@ -4011,7 +3999,7 @@ msgid "Çeyrek katlama yapılamaz: %s"
 msgstr "Quarter folding not possible: %s"
 
 #: arayuz/guc_harita_tablo.py:340 arayuz/tukenme_pin_gucu.py:231
-#: arayuz/tukenme_sonuc.py:116
+#: arayuz/tukenme_sonuc.py:119
 msgid "CSV dosyası (*.csv)"
 msgstr "CSV file (*.csv)"
 
@@ -7643,7 +7631,7 @@ msgid_plural "… ve %d hata daha."
 msgstr[0] "… and %d more error."
 msgstr[1] "… and %d more errors."
 
-#: arayuz/sekme_calistir.py:558 arayuz/sekme_tukenme.py:474
+#: arayuz/sekme_calistir.py:558 arayuz/sekme_tukenme.py:492
 msgid ""
 "\n"
 "# kullanıcı tarafından durduruldu"
@@ -7698,7 +7686,7 @@ msgid "Koşu bitti ama statepoint bulunamadı"
 msgstr "Run finished but no statepoint found"
 
 #: arayuz/calistir/sonuc_gosterimi.py:48 arayuz/sekme_calistir.py:662
-#: arayuz/sekme_calistir.py:663 arayuz/sekme_tukenme.py:552
+#: arayuz/sekme_calistir.py:663 arayuz/sekme_tukenme.py:570
 #, python-format
 msgid "Sonuç okunamadı: %s"
 msgstr "Result could not be read: %s"
@@ -8299,11 +8287,11 @@ msgstr[1] ""
 "If you delete it, these places become undefined and the model cannot be built. Delete"
 " anyway?"
 
-#: arayuz/sekme_tukenme.py:189
+#: arayuz/sekme_tukenme.py:193
 msgid "Adım başına pin gücü"
 msgstr "Pin power per step"
 
-#: arayuz/sekme_tukenme.py:191
+#: arayuz/sekme_tukenme.py:195
 msgid ""
 "Her tükenme adımında çubuk güç dağılımı (distribcell + eksenel mesh tally'si) sayılır"
 " ve adım başına bir statepoint dosyası yazılır. Transport süresine etkisi küçüktür; "
@@ -8316,11 +8304,22 @@ msgstr ""
 "24 pins × 4 bins). Consider switching it off for a full core with tens of thousands "
 "of pins."
 
-#: arayuz/sekme_tukenme.py:209
+#: arayuz/sekme_tukenme.py:208
+#, python-format
+msgid "%d soğuma adımı (transport yok)"
+msgid_plural "%d soğuma adımı (transport yok)"
+msgstr[0] "%d cooling step (no transport)"
+msgstr[1] "%d cooling steps (no transport)"
+
+#: arayuz/sekme_tukenme.py:211
+msgid "kritiklik araması adım başına ek transport koşar"
+msgstr "the criticality search runs extra transport solutions per step"
+
+#: arayuz/sekme_tukenme.py:226
 msgid "model yok"
 msgstr "no model"
 
-#: arayuz/sekme_tukenme.py:240
+#: arayuz/sekme_tukenme.py:257
 #, python-format
 msgid ""
 "%s  |  fisyon verimi %s eV (%s spektrum)\n"
@@ -8329,59 +8328,59 @@ msgstr ""
 "%s  |  fission yield %s eV (%s spectrum)\n"
 "%s"
 
-#: arayuz/sekme_tukenme.py:247
+#: arayuz/sekme_tukenme.py:264
 #, python-format
 msgid "Zincir dosyası kullanılamıyor: %s (Gelişmiş › Zincir)"
 msgstr "Depletion chain file cannot be used: %s (Advanced › Chain)"
 
-#: arayuz/sekme_tukenme.py:253
+#: arayuz/sekme_tukenme.py:270
 #, python-format
 msgid "zincir seçilemedi: %s"
 msgstr "depletion chain could not be selected: %s"
 
-#: arayuz/sekme_tukenme.py:264
+#: arayuz/sekme_tukenme.py:281
 #, python-format
 msgid "sayı olmayan: %s"
 msgstr "not a number: %s"
 
-#: arayuz/sekme_tukenme.py:265
+#: arayuz/sekme_tukenme.py:282
 msgid "her adım sıfırdan büyük olmalı"
 msgstr "every step must be greater than zero"
 
-#: arayuz/sekme_tukenme.py:266
+#: arayuz/sekme_tukenme.py:283
 #, python-format
 msgid "Adımlar geçersiz — %s. Virgülle ayrılmış pozitif sayılar girin (ör. 1, 5, 30)."
 msgstr "Invalid steps — %s. Enter comma-separated positive numbers (e.g. 1, 5, 30)."
 
-#: arayuz/sekme_tukenme.py:277
+#: arayuz/sekme_tukenme.py:294
 #, python-format
 msgid "%d adım · toplam %.4g gün = %.4g MWd/kg · %d transport çözümü"
 msgid_plural "%d adım · toplam %.4g gün = %.4g MWd/kg · %d transport çözümü"
 msgstr[0] "%d step · total %.4g days = %.4g MWd/kg · %d transport solves"
 msgstr[1] "%d steps · total %.4g days = %.4g MWd/kg · %d transport solves"
 
-#: arayuz/sekme_tukenme.py:282
+#: arayuz/sekme_tukenme.py:300
 msgid "Adım yok — virgülle adım uzunlukları girin."
 msgstr "No steps — enter step lengths separated by commas."
 
-#: arayuz/sekme_tukenme.py:288
+#: arayuz/sekme_tukenme.py:306
 msgid "Yanabilir (fisil) malzeme bulunamadı."
 msgstr "No depletable (fissile) material found."
 
-#: arayuz/sekme_tukenme.py:294
+#: arayuz/sekme_tukenme.py:312
 msgid "hacim yok"
 msgstr "no volume"
 
-#: arayuz/sekme_tukenme.py:297
+#: arayuz/sekme_tukenme.py:315
 #, python-format
 msgid "hesaplanamadı: %s"
 msgstr "could not be computed: %s"
 
-#: arayuz/sekme_tukenme.py:315
+#: arayuz/sekme_tukenme.py:333
 msgid "model uygun değil"
 msgstr "the model is not suitable"
 
-#: arayuz/sekme_tukenme.py:380
+#: arayuz/sekme_tukenme.py:398
 msgid ""
 "Önceki projenin tükenme koşusu arka planda sürüyor; sonucu bu projeye yazılmayacak. "
 "Yeni koşu için Durdur ile sonlandırın."
@@ -8389,43 +8388,43 @@ msgstr ""
 "A depletion run from the previous project is still going in the background; its "
 "result will not be written to this project. Use Stop to end it before a new run."
 
-#: arayuz/sekme_tukenme.py:390 arayuz/sekme_tukenme.py:405
+#: arayuz/sekme_tukenme.py:408 arayuz/sekme_tukenme.py:423
 #, python-format
 msgid "Bu modelde yapılamaz: %s"
 msgstr "Not possible for this model: %s"
 
-#: arayuz/sekme_tukenme.py:392
+#: arayuz/sekme_tukenme.py:410
 msgid "Tükenme kapalı — yukarıdan etkinleştirin."
 msgstr "Depletion is off — enable it above."
 
-#: arayuz/sekme_tukenme.py:404 arayuz/sekme_tukenme.py:408
+#: arayuz/sekme_tukenme.py:422 arayuz/sekme_tukenme.py:426
 msgid "Başlatılamaz"
 msgstr "Cannot start"
 
-#: arayuz/sekme_tukenme.py:438
+#: arayuz/sekme_tukenme.py:456
 msgid "%v / %m transport"
 msgstr "%v / %m transport"
 
-#: arayuz/sekme_tukenme.py:439
+#: arayuz/sekme_tukenme.py:457
 msgid "İlk transport bekleniyor — kalan süre ondan ölçülecek."
 msgstr "Waiting for the first transport solve — the remaining time will be measured from it."
 
-#: arayuz/sekme_tukenme.py:465
+#: arayuz/sekme_tukenme.py:483
 #, python-format
 msgid "Tükenme koşusu sürüyor → %s"
 msgstr "Depletion run in progress → %s"
 
-#: arayuz/sekme_tukenme.py:468
+#: arayuz/sekme_tukenme.py:486
 #, python-format
 msgid "Tükenme başladı → %s"
 msgstr "Depletion started → %s"
 
-#: arayuz/sekme_tukenme.py:507
+#: arayuz/sekme_tukenme.py:525
 #, python-format
 msgid "geçen %s  |  transport başına %.0f s (ölçülen)  |  kalan ~%s"
 msgstr "elapsed %s  |  %.0f s per transport (measured)  |  remaining ~%s"
 
-#: arayuz/sekme_tukenme.py:514
+#: arayuz/sekme_tukenme.py:532
 #, python-format
 msgid ""
 "\n"
@@ -8434,27 +8433,27 @@ msgstr ""
 "\n"
 "# Process could not be started: %s"
 
-#: arayuz/sekme_tukenme.py:536
+#: arayuz/sekme_tukenme.py:554
 #, python-format
 msgid "Önceki projenin tükenme koşusu bitti; sonucu bu projeye yazılmadı (dosyalar: %s)."
 msgstr ""
 "The previous project's depletion run finished; its result was not written to this "
 "project (files: %s)."
 
-#: arayuz/sekme_tukenme.py:542
+#: arayuz/sekme_tukenme.py:560
 #, python-format
 msgid "Tükenme başarısız (çıkış kodu %d)"
 msgstr "Depletion failed (exit code %d)"
 
-#: arayuz/sekme_tukenme.py:543
+#: arayuz/sekme_tukenme.py:561
 msgid "Başarısız — ayrıntılı çıktı aşağıda açıldı."
 msgstr "Failed — the detailed output is open below."
 
-#: arayuz/sekme_tukenme.py:553
+#: arayuz/sekme_tukenme.py:571
 msgid "Sonuç okunamadı — ayrıntılı çıktıya bakın."
 msgstr "Result could not be read — see the detailed output."
 
-#: arayuz/sekme_tukenme.py:554
+#: arayuz/sekme_tukenme.py:572
 #, python-format
 msgid ""
 "\n"
@@ -8463,21 +8462,21 @@ msgstr ""
 "\n"
 "# Result could not be read: %s"
 
-#: arayuz/sekme_tukenme.py:560
+#: arayuz/sekme_tukenme.py:578
 #, python-format
 msgid "Tamamlandı: %s"
 msgstr "Finished: %s"
 
-#: arayuz/sekme_tukenme.py:561
+#: arayuz/sekme_tukenme.py:579
 msgid "Tükenme tamamlandı"
 msgstr "Depletion finished"
 
-#: arayuz/sekme_tukenme.py:592
+#: arayuz/sekme_tukenme.py:610
 #, python-format
 msgid "%d dk"
 msgstr "%d min"
 
-#: arayuz/sekme_tukenme.py:593
+#: arayuz/sekme_tukenme.py:611
 #, python-format
 msgid "%.1f sa"
 msgstr "%.1f h"
@@ -8710,7 +8709,8 @@ msgstr ""
 "\n"
 "Typical: PWR 38–40, BWR ~25, SFR 50–100 W/gHM."
 
-#: arayuz/tukenme_arayuz.py:75 arayuz/tukenme_arayuz.py:173 arayuz/tukenme_pin_gucu.py:74
+#: arayuz/tukenme_arayuz.py:75 arayuz/tukenme_arayuz.py:175
+#: arayuz/tukenme_cikti_panel.py:54 arayuz/tukenme_pin_gucu.py:74 arayuz/tukenme_y4.py:21
 msgid "gün"
 msgstr "days"
 
@@ -8763,19 +8763,11 @@ msgstr "Depleted materials:"
 msgid "Ek yanan malzemeler:"
 msgstr "Additional depleted materials:"
 
-#: arayuz/tukenme_arayuz.py:116
-msgid "CECM (öngörücü-düzeltici, adım başına 2 transport)"
-msgstr "CECM (predictor-corrector, 2 transport solves per step)"
-
-#: arayuz/tukenme_arayuz.py:117
-msgid "Predictor (adım başına 1 transport, kaba)"
-msgstr "Predictor (1 transport solve per step, coarse)"
-
-#: arayuz/tukenme_arayuz.py:118
+#: arayuz/tukenme_arayuz.py:119
 msgid "Çubuk çubuk yanma (her örnek ayrı malzeme — çok ağır)"
 msgstr "Pin-by-pin burnup (each instance a separate material — very heavy)"
 
-#: arayuz/tukenme_arayuz.py:119
+#: arayuz/tukenme_arayuz.py:120
 msgid ""
 "Yakıtın her örneği (ör. demetteki her çubuk) ayrı yanar; bellek ve süre örnek "
 "sayısıyla artar."
@@ -8783,24 +8775,24 @@ msgstr ""
 "Each fuel instance (e.g. each pin in the assembly) is depleted separately; memory and"
 " time grow with the number of instances."
 
-#: arayuz/tukenme_arayuz.py:124
+#: arayuz/tukenme_arayuz.py:125
 msgid "Zincir:"
 msgstr "Chain:"
 
-#: arayuz/tukenme_arayuz.py:126
+#: arayuz/tukenme_arayuz.py:127
 msgid "Entegratör:"
 msgstr "Integrator:"
 
-#: arayuz/tukenme_arayuz.py:134
+#: arayuz/tukenme_arayuz.py:136
 msgid "Tükenmeyi başlat"
 msgstr "Start depletion"
 
 #: arayuz/analiz/sekme.py:130 arayuz/calistir/kartlar.py:87 arayuz/pencere/kabuk.py:191
-#: arayuz/tukenme_arayuz.py:136
+#: arayuz/tukenme_arayuz.py:138
 msgid "Durdur"
 msgstr "Stop"
 
-#: arayuz/tukenme_arayuz.py:151
+#: arayuz/tukenme_arayuz.py:153
 msgid ""
 "Grafikte, tabloda ve CSV'de izlenecek nüklidler. Seçim değişince önceki sonuç yeniden"
 " koşmadan güncellenir."
@@ -8808,40 +8800,121 @@ msgstr ""
 "Nuclides to track in the chart, table and CSV. When the selection changes, the "
 "previous result is updated without rerunning."
 
-#: arayuz/tukenme_arayuz.py:167
+#: arayuz/tukenme_arayuz.py:169
 msgid "CSV olarak dışa aktar"
 msgstr "Export as CSV"
 
-#: arayuz/tukenme_arayuz.py:168
+#: arayuz/tukenme_arayuz.py:170
 msgid "Zaman, yanma, k, σ ve seçili her nüklidin atom sayısı ile yoğunluğu (ondalık nokta)"
 msgstr ""
 "Time, burnup, k, σ and the atom count and density of each selected nuclide (decimal "
 "point)"
 
-#: arayuz/calistir/kartlar.py:176 arayuz/tukenme_arayuz.py:185
+#: arayuz/calistir/kartlar.py:176 arayuz/tukenme_arayuz.py:187
 msgid "Ayrıntılı çıktı"
 msgstr "Detailed output"
 
-#: arayuz/tukenme_arayuz.py:190
+#: arayuz/tukenme_arayuz.py:192
 msgid "Yanma ayarları"
 msgstr "Burnup settings"
 
-#: arayuz/tukenme_arayuz.py:193
+#: arayuz/tukenme_arayuz.py:195
 msgid "İzlenen nüklidler"
 msgstr "Tracked nuclides"
 
-#: arayuz/calistir/kartlar.py:84 arayuz/tukenme_arayuz.py:195
+#: arayuz/calistir/kartlar.py:84 arayuz/tukenme_arayuz.py:197
 msgid "Koşu"
 msgstr "Run"
 
-#: arayuz/analiz/sekme.py:165 arayuz/calistir/kartlar.py:138 arayuz/tukenme_arayuz.py:201
+#: arayuz/analiz/sekme.py:165 arayuz/calistir/kartlar.py:138 arayuz/tukenme_arayuz.py:203
 msgid "Sonuç"
 msgstr "Result"
 
-#: arayuz/pencere/model_islemleri.py:67 arayuz/tukenme_arayuz.py:214
+#: arayuz/pencere/model_islemleri.py:67 arayuz/tukenme_arayuz.py:218
 #: arayuz/yardim/__init__.py:52
 msgid "Tükenme"
 msgstr "Depletion"
+
+#: arayuz/tukenme_cikti_panel.py:29
+msgid "Bozunma ısısı [W]"
+msgstr "Decay heat [W]"
+
+#: arayuz/tukenme_cikti_panel.py:29
+msgid "Bozunma ısısı [W/g]"
+msgstr "Decay heat [W/g]"
+
+#: arayuz/tukenme_cikti_panel.py:30
+msgid "Aktivite [Bq]"
+msgstr "Activity [Bq]"
+
+#: arayuz/tukenme_cikti_panel.py:30
+msgid "Aktivite [Bq/g]"
+msgstr "Activity [Bq/g]"
+
+#: arayuz/tukenme_cikti_panel.py:31
+msgid "Foton kaynağı [foton/s]"
+msgstr "Photon source [photons/s]"
+
+#: arayuz/analiz/kinetik.py:89 arayuz/tukenme_cikti_panel.py:38
+msgid "Hesapla"
+msgstr "Compute"
+
+#: arayuz/tukenme_cikti_panel.py:39
+msgid "Aktivite, bozunma ısısı ve foton kaynağı"
+msgstr "Activity, decay heat and photon source"
+
+#: arayuz/tukenme_cikti_panel.py:46 arayuz/tukenme_cikti_panel.py:86
+msgid "Sonuç yok."
+msgstr "No result."
+
+#: arayuz/tukenme_cikti_panel.py:54
+msgid "foton/s"
+msgstr "photons/s"
+
+#: arayuz/tukenme_cikti_panel.py:61
+msgid "Çıktıları CSV olarak dışa aktar"
+msgstr "Export outputs as CSV"
+
+#: arayuz/tukenme_cikti_panel.py:85
+msgid "Sonuç hazır — «Hesapla» ile çıktıları hesaplayın."
+msgstr "Result ready — compute the outputs with «Compute»."
+
+#: arayuz/tukenme_cikti_panel.py:100
+#, python-format
+msgid "Çıktılar hesaplanamadı: %s"
+msgstr "The outputs could not be computed: %s"
+
+#: arayuz/tukenme_cikti_panel.py:104
+#, python-format
+msgid "%d zaman noktası, %d malzeme."
+msgstr "%d time points, %d materials."
+
+#: arayuz/tukenme_cikti_panel.py:127
+#, python-format
+msgid "%s: hesaplanamadı (%s)"
+msgstr "%s: could not be computed (%s)"
+
+#: arayuz/tukenme_cikti_panel.py:129
+#, python-format
+msgid "%s: temas doz hızı %.4g Gy/h · atık sınıfı (10 CFR 61.55) %s"
+msgstr "%s: contact dose rate %.4g Gy/h · waste class (10 CFR 61.55) %s"
+
+#: arayuz/tukenme_cikti_panel.py:131
+msgid "Son adımda:\n"
+msgstr "At the last step:\n"
+
+#: arayuz/tukenme_cikti_panel.py:148 arayuz/tukenme_sonuc.py:58
+msgid "zaman [gün]"
+msgstr "time [days]"
+
+#: arayuz/tukenme_cikti_panel.py:160
+msgid "Çıktıları kaydet"
+msgstr "Save outputs"
+
+#: arayuz/calistir/yakinsama.py:77 arayuz/pencere/proje.py:146
+#: arayuz/tukenme_cikti_panel.py:167
+msgid "Kaydedilemedi"
+msgstr "Could not save"
 
 #: arayuz/tukenme_ek.py:31
 msgid "Ek yanan malzemeler"
@@ -8926,7 +8999,7 @@ msgstr ""
 msgid "adım %d — %.4g gün, %.4g MWd/kg"
 msgstr "step %d — %.4g d, %.4g MWd/kg"
 
-#: arayuz/tukenme_pin_gucu.py:191 arayuz/tukenme_sonuc.py:57 arayuz/tukenme_sonuc.py:73
+#: arayuz/tukenme_pin_gucu.py:191 arayuz/tukenme_sonuc.py:58 arayuz/tukenme_sonuc.py:74
 msgid "yanma [MWd/kg]"
 msgstr "burnup [MWd/kg]"
 
@@ -8942,15 +9015,11 @@ msgstr "Save step × pin table"
 msgid "Tepe faktörlerini kaydet"
 msgstr "Save peaking factors"
 
-#: arayuz/tukenme_sonuc.py:57
-msgid "zaman [gün]"
-msgstr "time [days]"
-
-#: arayuz/tukenme_sonuc.py:115
+#: arayuz/tukenme_sonuc.py:118
 msgid "Tükenme sonucunu CSV olarak kaydet"
 msgstr "Save depletion result as CSV"
 
-#: arayuz/tukenme_sonuc.py:142
+#: arayuz/tukenme_sonuc.py:145
 #, python-format
 msgid ""
 "Yarım kalmış koşu (%s): %d / %d adım tamamlanmış. Koşu durdurulmuş ya da hâlâ sürüyor"
@@ -8959,12 +9028,12 @@ msgstr ""
 "Incomplete run (%s): %d / %d steps completed. The run may have been stopped or may "
 "still be going; run again for the full result."
 
-#: arayuz/tukenme_sonuc.py:146
+#: arayuz/tukenme_sonuc.py:149
 #, python-format
 msgid "Önceki koşunun sonucu (%s) — bu modele ait."
 msgstr "Result of the previous run (%s) — belongs to this model."
 
-#: arayuz/tukenme_sonuc.py:148
+#: arayuz/tukenme_sonuc.py:151
 #, python-format
 msgid ""
 "Eski sonuç (%s): model o koşudan beri değişti (%s). Gösterilen sayılar bu modele ait "
@@ -8973,7 +9042,7 @@ msgstr ""
 "Outdated result (%s): the model has changed since that run (%s). The numbers shown do"
 " not belong to this model — run again."
 
-#: arayuz/tukenme_sonuc.py:151
+#: arayuz/tukenme_sonuc.py:154
 #, python-format
 msgid ""
 "Önceki koşunun sonucu (%s). Koşunun model kaydı yok; bu modele ait olduğu "
@@ -8982,7 +9051,7 @@ msgstr ""
 "Result of the previous run (%s). The run has no model record; it cannot be confirmed "
 "that it belongs to this model."
 
-#: arayuz/tukenme_sonuc.py:206
+#: arayuz/tukenme_sonuc.py:209
 #, python-format
 msgid ""
 "Bu model için kayıtlı tükenme sonucu yok. Sonuçlar şuraya yazılır: %s (Çalıştır "
@@ -8991,33 +9060,158 @@ msgstr ""
 "No saved depletion result for this model. Results are written to: %s (derived from "
 "the run directory on the Run page)."
 
-#: arayuz/tukenme_sonuc.py:224
+#: arayuz/tukenme_sonuc.py:227
 msgid "Önceki koşunun sonucu okunuyor…"
 msgstr "Reading the previous run's result…"
 
-#: arayuz/tukenme_sonuc.py:250
+#: arayuz/tukenme_sonuc.py:253
 #, python-format
 msgid "Önceki sonuç okunamadı: %s"
 msgstr "The previous result could not be read: %s"
 
-#: arayuz/tukenme_sonuc.py:337
+#: arayuz/tukenme_sonuc.py:342
 #, python-format
 msgid "Sonuçta bulunamayan nüklidler (grafikte yok): %s"
 msgstr "Nuclides not found in the result (not in the chart): %s"
 
-#: arayuz/tukenme_sonuc.py:379
+#: arayuz/tukenme_sonuc.py:384
 #, python-format
 msgid "Seçim sonuç dosyasından okunamadı: %s"
 msgstr "The selection could not be read from the result file: %s"
 
-#: arayuz/tukenme_sonuc.py:392
+#: arayuz/tukenme_sonuc.py:397
 msgid "CSV yazılamadı"
 msgstr "CSV could not be written"
 
-#: arayuz/tukenme_sonuc.py:395
+#: arayuz/tukenme_sonuc.py:400
 #, python-format
 msgid "CSV kaydedildi: %s"
 msgstr "CSV saved: %s"
+
+#: arayuz/tukenme_y4.py:21
+msgid "saat"
+msgstr "hour"
+
+#: arayuz/tukenme_y4.py:21
+msgid "yıl"
+msgstr "year"
+
+#: arayuz/tukenme_y4.py:21
+msgid "saniye"
+msgstr "second"
+
+#: arayuz/tukenme_y4.py:22
+msgid "Çözünmüş bor [ppm]"
+msgstr "Dissolved boron [ppm]"
+
+#: arayuz/tukenme_y4.py:22
+msgid "Kontrol çubuğu daldırma [%]"
+msgstr "Control rod insertion [%]"
+
+#: arayuz/tukenme_y4.py:32
+msgid ""
+"openmc.deplete entegratörü. Yüksek mertebe daha az adımla aynı doğruluğu verir ama "
+"adım başına daha çok transport koşar. SI-* (stokastik örtük) adım başına iç yineleme "
+"yapar; kritiklik aramasıyla birlikte kullanılamaz."
+msgstr ""
+"openmc.deplete integrator. A higher order gives the same accuracy with fewer steps "
+"but runs more transport solutions per step. SI-* (stochastic implicit) iterates "
+"inside each step; it cannot be used with the criticality search."
+
+#: arayuz/tukenme_y4.py:51
+msgid "ör. 1, 10, 100 (boş: soğuma yok)"
+msgstr "e.g. 1, 10, 100 (empty: no cooling)"
+
+#: arayuz/tukenme_y4.py:53
+msgid ""
+"Yanmadan SONRA sıfır güçte (yalnız bozunma) adımlar. Transport koşulmaz; bozunma "
+"ısısı, aktivite ve foton kaynağı bu adımlarda izlenir."
+msgstr ""
+"Steps at zero power (decay only) AFTER the burnup. No transport is run; decay heat, "
+"activity and photon source are followed in these steps."
+
+#: arayuz/tukenme_y4.py:61
+msgid "SI-* entegratörlerinin iç yineleme sayısı (OpenMC n_steps)."
+msgstr "Number of inner iterations of the SI-* integrators (OpenMC n_steps)."
+
+#: arayuz/tukenme_y4.py:62
+msgid "Kaldığı yerden sürdür"
+msgstr "Resume from where it stopped"
+
+#: arayuz/tukenme_y4.py:64
+msgid ""
+"Dizindeki önceki sonuç silinmez; yarıda kalan koşu son kayıtlı adımdan devam eder, "
+"biten koşuya eklenen adımlar koşulur. Fizik aynı olmalı."
+msgstr ""
+"The previous result in the directory is not deleted; an interrupted run continues "
+"from the last saved step, steps added to a finished run are run. The physics must be "
+"the same."
+
+#: arayuz/tukenme_y4.py:66
+msgid "Hızlı kip (MicroXS, transport'suz)"
+msgstr "Fast mode (MicroXS, no transport)"
+
+#: arayuz/tukenme_y4.py:68
+msgid ""
+"Tek transport'tan tek gruplu tesir kesitleri; adımlar transport koşmadan çözülür. "
+"Spektrum değişimi görülmez ve k-eff adım adım hesaplanmaz."
+msgstr ""
+"One-group cross sections from a single transport solution; the steps are solved "
+"without transport. The spectrum change is not seen and k-eff is not computed step by "
+"step."
+
+#: arayuz/tukenme_y4.py:73
+msgid "Soğuma adımları:"
+msgstr "Cooling steps:"
+
+#: arayuz/tukenme_y4.py:74
+msgid "Soğuma birimi:"
+msgstr "Cooling unit:"
+
+#: arayuz/tukenme_y4.py:75
+msgid "SI iç yineleme:"
+msgstr "SI inner iterations:"
+
+#: arayuz/tukenme_y4.py:79
+msgid "Arama türü:"
+msgstr "Search type:"
+
+#: arayuz/analiz/sekme.py:98 arayuz/analiz/sekme.py:456 arayuz/tukenme_y4.py:80
+msgid "Hedef:"
+msgstr "Target:"
+
+#: arayuz/tukenme_y4.py:81
+msgid "Başlangıç tahminleri:"
+msgstr "Initial guesses:"
+
+#: arayuz/tukenme_y4.py:82
+msgid "Sınır [en az, en çok]:"
+msgstr "Bounds [min, max]:"
+
+#: arayuz/tukenme_y4.py:83
+msgid "k toleransı:"
+msgstr "k tolerance:"
+
+#: arayuz/tukenme_y4.py:97
+msgid "Tükenme sırasında kritiklik araması (k = 1)"
+msgstr "Criticality search during depletion (k = 1)"
+
+#: arayuz/tukenme_y4.py:99
+msgid ""
+"Her güçlü adımın başında k = 1 veren bor derişimi ya da çubuk daldırması aranır "
+"(OpenMC add_keff_search_control, GRsecant). Adım başına birkaç ek transport koşar."
+msgstr ""
+"At the start of every powered step the boron concentration or rod insertion giving k "
+"= 1 is searched (OpenMC add_keff_search_control, GRsecant). It runs a few extra "
+"transport solutions per step."
+
+#: arayuz/tukenme_y4.py:112
+msgid ""
+"Arama |k − 1| ≤ tolerans ve σ ≤ tolerans olunca durur. Varsayılan 1e-3 (100 pcm): "
+"tipik bir tükenme adımının istatistik belirsizliği düzeyi."
+msgstr ""
+"The search stops when |k − 1| ≤ tolerance and σ ≤ tolerance. Default 1e-3 (100 pcm): "
+"the statistical uncertainty level of a typical depletion step."
 
 #: arayuz/uygunluk_paneli.py:58
 msgid "kontrolü geçti"
@@ -10259,4 +10453,7 @@ msgstr "User guide"
 
 #~ msgid "Bir model türüyle boş başlayın ya da hazır bir örneğin kopyasını açın."
 #~ msgstr "Start empty with a model type, or open a copy of a ready-made example."
+
+#~ msgid "CECM (öngörücü-düzeltici, adım başına 2 transport)"
+#~ msgstr "CECM (predictor-corrector, 2 transport solves per step)"
 
