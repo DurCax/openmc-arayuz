@@ -11,7 +11,7 @@
 """
 
 from PySide6 import QtCore, QtGui, QtWidgets
-from arayuz import tema, yardim_baglanti
+from arayuz import goruntuleyici, tema, yardim_baglanti
 from cekirdek import ceviri
 from cekirdek.ceviri import _
 from arayuz.bilesenler import KomutPaleti
@@ -112,6 +112,9 @@ class MenulerMixin(object):
         self.e_demet_kinf = self._eylem(
             m_araclar, _("Demet k∞ sihirbazı…"), self._demet_kinf_ac, None,
             _("Her demet türü için yansıtıcı sınırlı tek demet k∞ koşusu (K4)"))
+        self.e_goruntuleyici = self._eylem(m_araclar, _("Görüntüleyici…"),
+                                           lambda: goruntuleyici.ac(self), None,
+                                           _(goruntuleyici.IPUCU))  # Y2
         m_yardim = self.menuBar().addMenu(_("&Yardım"))
         m_yardim.setToolTipsVisible(True)
         self.e_kilavuz = self._eylem(m_yardim, _("Kullanım kılavuzu"), self.kilavuzu_ac, "F1",
