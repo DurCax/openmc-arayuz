@@ -130,6 +130,21 @@ example the [power map lesson](05-dersler.md#ders-guc).
 > to be ~20 times larger. For a power map use at least **Normal**, preferably several different
 > **Random seed** values.
 
+<a id="ayar-spektrum"></a>
+### Spectrum and four factors card
+
+Adds six tallies to the run (names start with `y3_`; `cekirdek/spektrum.py`): the energy
+spectrum (whole model and fuel), the four factors (ε, p, f, η) and the spectral indices (ρ28, δ25,
+δ28, C*). The result appears in the **Spectrum and four factors** card on the
+[Run](04g-calistir.md#calistir-spektrum) page; definitions and a step-by-step example:
+[lesson 5.11](05-dersler.md#ders-spektrum). The thermal cutoff is fixed at **0.625 eV**. The
+generated script builds the same tallies.
+
+| Field | Meaning | Unit | Typical range | Common misuse | Spec key |
+|---|---|---|---|---|---|
+| **Compute spectrum and four factors** | Turns on the Y3 tallies. The four factors and k only in an eigenvalue calculation; the spectrum is also computed in fixed source. | — | off | Taking ε·p·f·η for k-eff in a leaking (vacuum-bounded) model: k-eff additionally needs the P_NL factor (the card gives it separately). | `ayarlar.spektrum.var` |
+| **Energy group structure** | Groups of the flux spectrum (OpenMC built-in structures): CASMO-70, XMAS-172, SHEM-361, CCFE-709. The four factors and indices do not depend on it (they use their own two groups). | group | XMAS-172 | Choosing CCFE-709 with few particles: more noise per group. | `ayarlar.spektrum.grup_yapisi` |
+
 <a id="ayar-tally"></a>
 ### Tallies card
 

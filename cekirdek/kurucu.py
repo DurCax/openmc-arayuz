@@ -33,6 +33,7 @@ import openmc
 
 from cekirdek import geometri
 from cekirdek import kaynak as _kaynak
+from cekirdek import spektrum
 from cekirdek.geometri.kurulum import kur as _geo_kur
 from cekirdek.sema import model_yuksekligi as sema_model_yuksekligi
 from cekirdek.sema import guc_hedefleri as sema_guc_hedefleri
@@ -407,4 +408,5 @@ def kur(spec):
     if g.get("var"):
         bilgi["guc_hucre"] = guc_tally_ekle(spec, model, nesneler, universeler,
                                             sinir_kutu, fisil, bilgi=bilgi)
+    spektrum.tally_ekle(spec, model, nesneler)   # Y3: spektrum/dort faktor (cekirdek/spektrum.py)
     return model, bilgi

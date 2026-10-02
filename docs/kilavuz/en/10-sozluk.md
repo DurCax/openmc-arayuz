@@ -163,6 +163,13 @@ add the term to SOZLUK.md).
 | uncertainty | belirsizlik | error |
 | standard deviation | standart sapma |  |
 | coverage factor | kapsama faktörü |  |
+| four factors (four-factor) | dört faktör |  |
+| fast fission factor | hızlı fisyon çarpanı | fast fission ratio |
+| resonance escape probability | rezonanstan kaçma olasılığı | resonance escape factor |
+| thermal utilization | termal yararlanma | thermal usage |
+| non-leakage probability | sızmama olasılığı | no-leak probability |
+| lethargy | letarji |  |
+| spectral index (spectral indices) | spektral indeks | spectrum index |
 
 ### 10.5 Depletion
 

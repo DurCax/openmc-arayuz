@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 09:59+0300\n"
+"POT-Creation-Date: 2026-10-02 10:02+0300\n"
 "PO-Revision-Date: 2026-10-01 18:14+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -182,7 +182,7 @@ msgstr "Take from last run"
 
 #: arayuz/analiz/kinetik.py:64 arayuz/geometri/duzenle.py:350
 msgid "grup"
-msgstr "groups"
+msgstr "group"
 
 #: arayuz/analiz/kinetik.py:67 arayuz/geometri/form_yerlesim.py:107
 #: arayuz/geometri/form_yerlesim.py:322
@@ -860,6 +860,63 @@ msgstr "cell"
 msgid "mesh"
 msgstr "mesh"
 
+#: arayuz/ayar/spektrum_karti.py:27 arayuz/sonuc/spektrum.py:137
+msgid "Spektrum ve dört faktör"
+msgstr "Spectrum and four factors"
+
+#: arayuz/ayar/spektrum_karti.py:28
+msgid "ε, p, f, η, spektral indeksler ve akı spektrumu"
+msgstr "ε, p, f, η, spectral indices and flux spectrum"
+
+#: arayuz/ayar/spektrum_karti.py:31
+msgid "Spektrum ve dört faktörü hesapla"
+msgstr "Compute spectrum and four factors"
+
+#: arayuz/ayar/spektrum_karti.py:33
+msgid ""
+"Koşuya altı tally ekler (adları y3_ ile başlar). Sonuçlar Çalıştır\n"
+"sayfasındaki “Spektrum ve dört faktör” kartında görünür."
+msgstr ""
+"Adds six tallies to the run (names start with y3_). Results appear in the\n"
+"“Spectrum and four factors” card on the Run page."
+
+#: arayuz/ayar/spektrum_karti.py:37
+#, python-format
+msgid "%s (%d grup)"
+msgstr "%s (%d groups)"
+
+#: arayuz/ayar/spektrum_karti.py:39
+msgid ""
+"Akı spektrumunun enerji grupları (OpenMC hazır yapıları).\n"
+"Çok grup = ince ayrıntı ama grup başına daha çok gürültü."
+msgstr ""
+"Energy groups of the flux spectrum (OpenMC built-in structures).\n"
+"More groups = finer detail but more noise per group."
+
+#: arayuz/ayar/spektrum_karti.py:43
+msgid "Enerji grup yapısı:"
+msgstr "Energy group structure:"
+
+#: arayuz/ayar/spektrum_karti.py:46
+#, python-format
+msgid ""
+"Termal kesim %g eV. Dört faktör yalnızca özdeğer hesabında anlamlıdır; k∞ için "
+"sızıntısız (yansıtıcı sınırlı) model gerekir, sızıntı varsa ayrı bir P_NL çarpanı "
+"verilir."
+msgstr ""
+"Thermal cutoff %g eV. The four factors are meaningful only in an eigenvalue "
+"calculation; k∞ requires a leakage-free (reflective-boundary) model, and with leakage"
+" a separate P_NL factor is given."
+
+#: arayuz/ayar/spektrum_karti.py:73
+#, python-format
+msgid ""
+"Dosyadaki grup yapısı '%s' geçersiz; düzeltmek için listeden seçin (koşu bu haliyle "
+"başlamaz)."
+msgstr ""
+"The group structure '%s' in the file is invalid; choose one from the list to fix it "
+"(the run will not start as it is)."
+
 #: arayuz/ayar/tally_formu.py:115
 #, python-brace-format
 msgid "Skorlar: {s}"
@@ -978,36 +1035,36 @@ msgstr "Total power:"
 msgid "Skor:"
 msgstr "Score:"
 
-#: arayuz/ayar/yerlesim.py:182 arayuz/cubuk/sayfalar.py:203
+#: arayuz/ayar/yerlesim.py:189 arayuz/cubuk/sayfalar.py:203
 #: arayuz/malzeme/kutuphane_diyalog.py:65 arayuz/malzeme/malzeme_diyalog.py:83
 msgid "Ad:"
 msgstr "Name:"
 
-#: arayuz/ayar/yerlesim.py:183
+#: arayuz/ayar/yerlesim.py:190
 msgid "Ne ölçülsün:"
 msgstr "Measure:"
 
-#: arayuz/ayar/yerlesim.py:185
+#: arayuz/ayar/yerlesim.py:192
 msgid "Skorlar:"
 msgstr "Scores:"
 
-#: arayuz/ayar/yerlesim.py:187
+#: arayuz/ayar/yerlesim.py:194
 msgid "Grup sınırları [eV]:"
 msgstr "Group boundaries [eV]:"
 
-#: arayuz/ayar/yerlesim.py:191
+#: arayuz/ayar/yerlesim.py:198
 msgid "Ağ bölmeleri:"
 msgstr "Mesh divisions:"
 
-#: arayuz/ayar/yerlesim.py:196
+#: arayuz/ayar/yerlesim.py:203
 msgid "+ Tally"
 msgstr "+ Tally"
 
-#: arayuz/ayar/yerlesim.py:216
+#: arayuz/ayar/yerlesim.py:223
 msgid "Tally'ler"
 msgstr "Tallies"
 
-#: arayuz/ayar/yerlesim.py:216
+#: arayuz/ayar/yerlesim.py:223
 msgid "Ölçülecek büyüklükler"
 msgstr "Quantities to measure"
 
@@ -1685,16 +1742,16 @@ msgstr "Loaded from disk"
 msgid "Kayıtlı koşu gösteriliyor; koşu öncesi doğrulama bu oturumda yapılmadı."
 msgstr "Showing a saved run; the pre-run model check was not done in this session."
 
-#: arayuz/calistir/sonuc_gosterimi.py:107
+#: arayuz/calistir/sonuc_gosterimi.py:108
 msgid "Koşu tamamlandı (sabit kaynak) — sonuçlar tally'lerde"
 msgstr "Run complete (fixed source) — results are in the tallies"
 
-#: arayuz/calistir/sonuc_gosterimi.py:110
+#: arayuz/calistir/sonuc_gosterimi.py:111
 #, python-format
 msgid "Koşu tamamlandı: k-eff = %.5f ± %.5f"
 msgstr "Run complete: k-eff = %.5f ± %.5f"
 
-#: arayuz/calistir/sonuc_gosterimi.py:122
+#: arayuz/calistir/sonuc_gosterimi.py:123
 msgid ""
 "Sabit kaynak — k-eff tanımsız\n"
 "Sonuç tally'lerdir (aşağıda)."
@@ -1702,7 +1759,7 @@ msgstr ""
 "Fixed source — k-eff undefined\n"
 "The results are tallies (below)."
 
-#: arayuz/calistir/sonuc_gosterimi.py:149
+#: arayuz/calistir/sonuc_gosterimi.py:150
 msgid "Dikkat: kaynak yakınsamamış olabilir — pasif çevrim sayısını artırın"
 msgstr "Caution: the source may not have converged — increase the number of inactive batches"
 
@@ -1836,12 +1893,13 @@ msgid "soğutucu"
 msgstr "coolant"
 
 #: arayuz/cubuk/parca_islemleri.py:24 arayuz/malzeme/yardimcilar.py:30
-msgid "yakıt"
-msgstr "fuel"
-
-#: arayuz/cubuk/parca_islemleri.py:24 arayuz/malzeme/yardimcilar.py:30
 msgid "moderatör"
 msgstr "moderator"
+
+#: arayuz/cubuk/parca_islemleri.py:24 arayuz/malzeme/yardimcilar.py:30
+#: arayuz/sonuc/spektrum.py:201
+msgid "yakıt"
+msgstr "fuel"
 
 #: arayuz/cubuk/parca_islemleri.py:25 arayuz/cubuk/tambur_formu.py:208
 #: arayuz/malzeme/yardimcilar.py:31
@@ -3890,7 +3948,7 @@ msgid "%s%s — seçip ızgarada tıklayın ya da sürükleyin"
 msgstr "%s%s — select, then click or drag on the grid"
 
 #: arayuz/izgara.py:139 arayuz/izgara.py:481 arayuz/izgara.py:576 arayuz/sekme_kor.py:73
-#: arayuz/sekme_kor.py:75
+#: arayuz/sekme_kor.py:75 arayuz/sonuc/spektrum.py:49
 msgid "tanımsız"
 msgstr "undefined"
 
@@ -6536,27 +6594,27 @@ msgstr " (invalid in this model)"
 msgid " (bilinmeyen)"
 msgstr " (unknown)"
 
-#: arayuz/sekme_ayar.py:471
+#: arayuz/sekme_ayar.py:472
 msgid "Başlangıç kaynağı"
 msgstr "Initial source"
 
-#: arayuz/ayar/yerlesim.py:102 arayuz/sekme_ayar.py:472
+#: arayuz/ayar/yerlesim.py:102 arayuz/sekme_ayar.py:473
 msgctxt "kaynak"
 msgid "Kaynak"
 msgstr "Source"
 
-#: arayuz/sekme_ayar.py:522
+#: arayuz/sekme_ayar.py:523
 #, python-brace-format
 msgid "{n} parçacık × {c} çevrim ({p} pasif, {a} aktif)"
 msgid_plural "{n} parçacık × {c} çevrim ({p} pasif, {a} aktif)"
 msgstr[0] "{n} particles × {c} batch ({p} inactive, {a} active)"
 msgstr[1] "{n} particles × {c} batches ({p} inactive, {a} active)"
 
-#: arayuz/sekme_ayar.py:527
+#: arayuz/sekme_ayar.py:528
 msgid " — aktif çevrim yok: pasif çevrim sayısını azaltın."
 msgstr " — no active batches: reduce the number of inactive batches."
 
-#: arayuz/sekme_ayar.py:530
+#: arayuz/sekme_ayar.py:531
 #, python-brace-format
 msgid ""
 " — beklenen k-eff belirsizliği ≈ ±{s} pcm (pin hücre ölçümü; büyük korlarda daha "
@@ -6565,7 +6623,7 @@ msgstr ""
 " — expected k-eff uncertainty ≈ ±{s} pcm (pin cell measurement; may be larger for "
 "large cores)"
 
-#: arayuz/sekme_ayar.py:534
+#: arayuz/sekme_ayar.py:535
 #, python-brace-format
 msgid "{n} parçacık × {c} çevrim = {t} kaynak parçacığı; tally belirsizliği 1/√N ile azalır."
 msgid_plural "{n} parçacık × {c} çevrim = {t} kaynak parçacığı; tally belirsizliği 1/√N ile azalır."
@@ -6592,19 +6650,19 @@ msgstr "Press Run; k-eff convergence and the results appear on this page."
 msgid "Çalıştır"
 msgstr "Run"
 
-#: arayuz/sekme_calistir.py:200
+#: arayuz/sekme_calistir.py:203
 msgid "OpenMC çıktısı panoya kopyalandı"
 msgstr "OpenMC output copied to the clipboard"
 
-#: arayuz/calistir/pano.py:98 arayuz/calistir/pano.py:114 arayuz/sekme_calistir.py:220
+#: arayuz/calistir/pano.py:98 arayuz/calistir/pano.py:114 arayuz/sekme_calistir.py:223
 msgid "Denetlenmedi"
 msgstr "Not checked"
 
-#: arayuz/calistir/pano.py:115 arayuz/sekme_calistir.py:221
+#: arayuz/calistir/pano.py:115 arayuz/sekme_calistir.py:224
 msgid "Çalıştır'a basınca koşu öncesi doğrulama yapılır."
 msgstr "The model is checked before the run when you press Run."
 
-#: arayuz/sekme_calistir.py:240
+#: arayuz/sekme_calistir.py:244
 msgid ""
 "Önceki projenin koşusu arka planda sürüyor; sonucu bu projeye yazılmayacak. Yeni koşu"
 " için Durdur ile sonlandırın."
@@ -6612,19 +6670,19 @@ msgstr ""
 "A run from the previous project is still going in the background; its result will not"
 " be written to this project. Use Stop to end it before a new run."
 
-#: arayuz/analiz/sekme.py:544 arayuz/sekme_calistir.py:430 arayuz/sekme_calistir.py:527
+#: arayuz/analiz/sekme.py:544 arayuz/sekme_calistir.py:434 arayuz/sekme_calistir.py:532
 msgid "Çalıştırılamaz"
 msgstr "Cannot run"
 
-#: arayuz/sekme_calistir.py:444
+#: arayuz/sekme_calistir.py:448
 msgid "Model kurulamadı"
 msgstr "Model could not be built"
 
-#: arayuz/sekme_calistir.py:450
+#: arayuz/sekme_calistir.py:454
 msgid "openmc bulunamadı"
 msgstr "openmc not found"
 
-#: arayuz/sekme_calistir.py:451
+#: arayuz/sekme_calistir.py:455
 msgid ""
 "openmc çalıştırılabilir dosyası PATH'te yok.\n"
 "Conda ortamının etkin olduğundan emin olun (openmc-env)."
@@ -6632,60 +6690,60 @@ msgstr ""
 "The openmc executable is not on PATH.\n"
 "Make sure the conda environment is active (openmc-env)."
 
-#: arayuz/sekme_calistir.py:474
+#: arayuz/sekme_calistir.py:479
 msgid "koşuyor…"
 msgstr "running…"
 
-#: arayuz/calistir/pano.py:154 arayuz/sekme_calistir.py:477
+#: arayuz/calistir/pano.py:154 arayuz/sekme_calistir.py:482
 msgid "Sabit kaynak — k-eff tanımsız; sonuç tally'lerdir."
 msgstr "Fixed source — k-eff undefined; the results are tallies."
 
-#: arayuz/sekme_calistir.py:478
+#: arayuz/sekme_calistir.py:483
 msgid "Koşu sürüyor; k-eff kümülatif ortalamadır."
 msgstr "Run in progress; k-eff is the cumulative mean."
 
-#: arayuz/sekme_calistir.py:487
+#: arayuz/sekme_calistir.py:492
 msgid "%v / %m çevrim"
 msgstr "%v / %m batches"
 
-#: arayuz/sekme_calistir.py:497
+#: arayuz/sekme_calistir.py:502
 #, python-format
 msgid "# komut: %s -s %d"
 msgstr "# command: %s -s %d"
 
-#: arayuz/sekme_calistir.py:498
+#: arayuz/sekme_calistir.py:503
 #, python-format
 msgid "# dizin: %s"
 msgstr "# directory: %s"
 
-#: arayuz/sekme_calistir.py:504
+#: arayuz/sekme_calistir.py:509
 #, python-format
 msgid "Koşu sürüyor (%d iş parçacığı) → %s"
 msgid_plural "Koşu sürüyor (%d iş parçacığı) → %s"
 msgstr[0] "Running (%d thread) → %s"
 msgstr[1] "Running (%d threads) → %s"
 
-#: arayuz/sekme_calistir.py:508
+#: arayuz/sekme_calistir.py:513
 #, python-format
 msgid "Koşu başladı → %s"
 msgstr "Run started → %s"
 
-#: arayuz/sekme_calistir.py:524 arayuz/uygunluk_paneli.py:303
+#: arayuz/sekme_calistir.py:529 arayuz/uygunluk_paneli.py:303
 #, python-format
 msgid "%d hata"
 msgid_plural "%d hata"
 msgstr[0] "%d error"
 msgstr[1] "%d errors"
 
-#: arayuz/sekme_calistir.py:526
+#: arayuz/sekme_calistir.py:531
 msgid "Koşu başlatılmadı; önceki sonuç silinmedi."
 msgstr "Run not started; the previous result was not deleted."
 
-#: arayuz/sekme_calistir.py:531
+#: arayuz/sekme_calistir.py:536
 msgid "Hata yok"
 msgstr "No errors"
 
-#: arayuz/sekme_calistir.py:538
+#: arayuz/sekme_calistir.py:543
 #, python-format
 msgid "Doğrulama hataları giderilmeden koşu başlatılmaz (%d hata); önceki sonuç silinmedi."
 msgid_plural "Doğrulama hataları giderilmeden koşu başlatılmaz (%d hata); önceki sonuç silinmedi."
@@ -6696,14 +6754,14 @@ msgstr[1] ""
 "The run cannot start until the model check errors are fixed (%d errors); the previous"
 " result was not deleted."
 
-#: arayuz/sekme_calistir.py:545
+#: arayuz/sekme_calistir.py:550
 #, python-format
 msgid "… ve %d hata daha."
 msgid_plural "… ve %d hata daha."
 msgstr[0] "… and %d more error."
 msgstr[1] "… and %d more errors."
 
-#: arayuz/sekme_calistir.py:553 arayuz/sekme_tukenme.py:442
+#: arayuz/sekme_calistir.py:558 arayuz/sekme_tukenme.py:442
 msgid ""
 "\n"
 "# kullanıcı tarafından durduruldu"
@@ -6711,7 +6769,7 @@ msgstr ""
 "\n"
 "# stopped by the user"
 
-#: arayuz/sekme_calistir.py:593
+#: arayuz/sekme_calistir.py:598
 #, python-format
 msgid ""
 "\n"
@@ -6720,50 +6778,50 @@ msgstr ""
 "\n"
 "# Process error: %s"
 
-#: arayuz/sekme_calistir.py:610
+#: arayuz/sekme_calistir.py:615
 #, python-format
 msgid "Önceki projenin koşusu bitti; sonucu bu projeye yazılmadı (dosyalar: %s)."
 msgstr ""
 "The previous project's run finished; its result was not written to this project "
 "(files: %s)."
 
-#: arayuz/sekme_calistir.py:623
+#: arayuz/sekme_calistir.py:628
 #, python-format
 msgid "Koşu başarısız (çıkış kodu %d). OpenMC çıktısı aşağıda, 'Ayrıntılı çıktı' bölümünde."
 msgstr "Run failed (exit code %d). The OpenMC output is below, under 'Detailed output'."
 
-#: arayuz/sekme_calistir.py:625
+#: arayuz/sekme_calistir.py:630
 #, python-format
 msgid "Koşu başarısız (çıkış kodu %d)"
 msgstr "Run failed (exit code %d)"
 
-#: arayuz/sekme_calistir.py:638
+#: arayuz/sekme_calistir.py:643
 msgid "durduruldu"
 msgstr "stopped"
 
-#: arayuz/sekme_calistir.py:640
+#: arayuz/sekme_calistir.py:645
 msgid "Koşu kullanıcı tarafından durduruldu; sonuç yok."
 msgstr "Run stopped by the user; no result."
 
-#: arayuz/sekme_calistir.py:643
+#: arayuz/sekme_calistir.py:648
 msgid "Koşu durduruldu"
 msgstr "Run stopped"
 
-#: arayuz/sekme_calistir.py:649
+#: arayuz/sekme_calistir.py:654
 msgid "Koşu bitti ama statepoint dosyası bulunamadı."
 msgstr "The run finished but no statepoint file was found."
 
-#: arayuz/sekme_calistir.py:650
+#: arayuz/sekme_calistir.py:655
 msgid "Koşu bitti ama statepoint bulunamadı"
 msgstr "Run finished but no statepoint found"
 
-#: arayuz/calistir/sonuc_gosterimi.py:48 arayuz/sekme_calistir.py:655
-#: arayuz/sekme_calistir.py:656 arayuz/sekme_tukenme.py:520
+#: arayuz/calistir/sonuc_gosterimi.py:48 arayuz/sekme_calistir.py:660
+#: arayuz/sekme_calistir.py:661 arayuz/sekme_tukenme.py:520
 #, python-format
 msgid "Sonuç okunamadı: %s"
 msgstr "Result could not be read: %s"
 
-#: arayuz/analiz/sonuc.py:83 arayuz/sekme_calistir.py:664
+#: arayuz/analiz/sonuc.py:83 arayuz/sekme_calistir.py:669
 msgid "başarısız"
 msgstr "failed"
 
@@ -6805,7 +6863,7 @@ msgstr "Plate"
 msgid "Kopyala"
 msgstr "Copy"
 
-#: arayuz/ayar/yerlesim.py:197 arayuz/cubuk/tambur_formu.py:71 arayuz/demet/yerlesim.py:94
+#: arayuz/ayar/yerlesim.py:204 arayuz/cubuk/tambur_formu.py:71 arayuz/demet/yerlesim.py:94
 #: arayuz/geometri/editor.py:116 arayuz/geometri/form_yerlesim.py:60
 #: arayuz/kor/yerlesim.py:130 arayuz/sekme_cubuk.py:142 arayuz/sekme_malzeme.py:145
 msgid "Sil"
@@ -7485,6 +7543,166 @@ msgstr "%d min"
 #, python-format
 msgid "%.1f sa"
 msgstr "%.1f h"
+
+#: arayuz/sonuc/spektrum.py:29
+msgid "hızlı fisyon çarpanı"
+msgstr "fast fission factor"
+
+#: arayuz/sonuc/spektrum.py:30
+msgid "rezonanstan kaçma olasılığı"
+msgstr "resonance escape probability"
+
+#: arayuz/sonuc/spektrum.py:31
+msgid "termal yararlanma"
+msgstr "thermal utilization"
+
+#: arayuz/sonuc/spektrum.py:32
+msgid "termal soğurma başına nötron"
+msgstr "neutrons per thermal absorption"
+
+#: arayuz/sonuc/spektrum.py:33
+msgid "dört faktör çarpımı"
+msgstr "four-factor product"
+
+#: arayuz/sonuc/spektrum.py:34
+msgid "(n,xn) düzeltmesi"
+msgstr "(n,xn) correction"
+
+#: arayuz/sonuc/spektrum.py:35
+msgid "sızmama olasılığı (P_FNL·P_TNL)"
+msgstr "non-leakage probability (P_FNL·P_TNL)"
+
+#: arayuz/sonuc/spektrum.py:36
+msgid "tally'lerden k"
+msgstr "k from tallies"
+
+#: arayuz/sonuc/spektrum.py:39
+msgid "U-238 yakalama, epitermal / termal"
+msgstr "U-238 capture, epithermal / thermal"
+
+#: arayuz/sonuc/spektrum.py:40
+msgid "U-235 fisyon, epitermal / termal"
+msgstr "U-235 fission, epithermal / thermal"
+
+#: arayuz/sonuc/spektrum.py:41
+msgid "U-238 fisyon / U-235 fisyon"
+msgstr "U-238 fission / U-235 fission"
+
+#: arayuz/sonuc/spektrum.py:42
+msgid "U-238 yakalama / U-235 fisyon"
+msgstr "U-238 capture / U-235 fission"
+
+#: arayuz/sonuc/spektrum.py:70
+msgid "birleşik k tahmincisi"
+msgstr "combined k estimator"
+
+#: arayuz/sonuc/spektrum.py:82
+#, python-format
+msgid ""
+"Termal kesim %g eV: OpenMC tally-arithmetic örneği, CASMO-2 sınırı, CSEWG/ENDF-202 "
+"hesap kesimi (deneydeki etkin kadmiyum kesimi kalınlığa bağlı, ~0.4–0.5 eV)."
+msgstr ""
+"Thermal cutoff %g eV: OpenMC tally-arithmetic example, CASMO-2 boundary, "
+"CSEWG/ENDF-202 calculational cutoff (the effective cadmium cutoff in the experiment "
+"depends on its thickness, ~0.4–0.5 eV)."
+
+#: arayuz/sonuc/spektrum.py:85
+msgid ""
+"ε, p, f, η sızıntısız (k∞) tanımlardır: νF nu-fission, A absorption, X = (n,xn) net "
+"üretim; F (yakıt) = fisil nüklid içeren malzemeler."
+msgstr ""
+"ε, p, f, η are leakage-free (k∞) definitions: νF nu-fission, A absorption, X = net "
+"(n,xn) production; F (fuel) = materials containing fissile nuclides."
+
+#: arayuz/sonuc/spektrum.py:87
+msgid ""
+"Belirsizlik birinci derece, tally'ler arası korelasyon yok sayıldı (ihtiyatlı; "
+"çarpımın sapması νF/A oranından)."
+msgstr ""
+"First-order uncertainty, correlation between tallies neglected (conservative; the "
+"product's deviation comes from the νF/A ratio)."
+
+#: arayuz/sonuc/spektrum.py:89
+msgid ""
+"X yalnız MT 11, 16, 17, 24, 25, 30, 37, 41, 42 kanallarını sayar; Be ya da D₂O içeren"
+" modellerde (n,2n) önemlidir, c_xn'e bakın."
+msgstr ""
+"X counts only the MT 11, 16, 17, 24, 25, 30, 37, 41, 42 channels; in models "
+"containing Be or D₂O, (n,2n) matters, check c_xn."
+
+#: arayuz/sonuc/spektrum.py:100
+msgid ""
+"Sızıntı bilinmiyor (global sızıntı tally'si yok): P_NL ve k hesaplanmadı; sonuç k∞ "
+"olarak etiketlenmedi."
+msgstr ""
+"Leakage unknown (no global leakage tally): P_NL and k were not computed; the result "
+"is not labelled k∞."
+
+#: arayuz/sonuc/spektrum.py:103
+msgid ""
+"Sızıntı var: P_NL global sızıntı tally'sinden tek çarpan; P_FNL ve P_TNL ayrı "
+"verilmez (enerjiye bağlı sızıntı tally'si gerekir)."
+msgstr ""
+"Leakage present: P_NL is a single factor from the global leakage tally; P_FNL and "
+"P_TNL are not given separately (an energy-dependent leakage tally would be needed)."
+
+#: arayuz/sonuc/spektrum.py:106
+msgid ""
+"Spektral indeksler (CSEWG tanımları) tüm yakıt malzemelerinin ortalamasıdır; deneyler"
+" merkez çubukta ölçer."
+msgstr ""
+"Spectral indices (CSEWG definitions) are averages over all fuel materials; "
+"experiments measure them in the central fuel pin."
+
+#: arayuz/sonuc/spektrum.py:109
+#, python-format
+msgid "Y3 tally'leri eksik (%s): dört faktör hesaplanmadı."
+msgstr "Y3 tallies missing (%s): the four factors were not computed."
+
+#: arayuz/sonuc/spektrum.py:113
+msgid "Sabit kaynak hesabı: dört faktör ve k tanımsız; yalnız spektrum."
+msgstr "Fixed source calculation: four factors and k are undefined; spectrum only."
+
+#: arayuz/sonuc/spektrum.py:115
+msgid ""
+"Termal fisyon yok (hızlı sistem): ε, p, f, η termal reaktör tanımlarıdır ve burada "
+"tanımsızdır."
+msgstr ""
+"No thermal fission (fast system): ε, p, f, η are thermal-reactor definitions and are "
+"undefined here."
+
+#: arayuz/sonuc/spektrum.py:118
+msgid ""
+"f = 1: termal soğurmanın tamamı yakıt malzemesinde (homojen karışım); η yakıt + "
+"moderatör karışımına aittir, ders kitabı anlamını yitirir."
+msgstr ""
+"f = 1: all thermal absorption is in the fuel material (homogeneous mixture); η "
+"belongs to the fuel + moderator mixture and loses its textbook meaning."
+
+#: arayuz/sonuc/spektrum.py:138
+msgid "Letarji başına akı, ε·p·f·η ve spektral indeksler"
+msgstr "Flux per unit lethargy, ε·p·f·η and spectral indices"
+
+#: arayuz/sonuc/spektrum.py:170
+#, python-format
+msgid "Spektrum sonucu okunamadı: %s"
+msgstr "Spectrum result could not be read: %s"
+
+#: arayuz/sonuc/spektrum.py:195
+msgid "Spektrum tally'si yok"
+msgstr "No spectrum tally"
+
+#: arayuz/sonuc/spektrum.py:200
+msgid "model geneli"
+msgstr "whole model"
+
+#: arayuz/sonuc/spektrum.py:210
+msgid "enerji [eV]"
+msgstr "energy [eV]"
+
+#: arayuz/sonuc/spektrum.py:211
+msgid "φ·V / Δu [cm / kaynak nötronu]"
+msgstr "φ·V / Δu [cm / source neutron]"
 
 #: arayuz/tasarim/tokenlar.py:129
 msgid "Kobalt"
