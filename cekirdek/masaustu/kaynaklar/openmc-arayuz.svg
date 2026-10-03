@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <!-- Uygulama simgesi: koyu mavi yuvarlatilmis kare + atom (Lucide "atom", ISC lisansi,
+       arayuz/kaynaklar/ikonlar/LICENSE). Uretici: paket/masaustu/ikon_uret.py -->
+  <rect x="8" y="8" width="240" height="240" rx="48" fill="#12355b"/>
+  <g transform="translate(40 40) scale(7)" fill="none" stroke="#ffffff" stroke-width="1.6"
+     stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="1" fill="#ffffff"/>
+    <path d="M20.2 20.2c2.04-2.03.02-7.36-4.5-11.9-4.54-4.52-9.87-6.54-11.9-4.5-2.04 2.03-.02 7.36 4.5 11.9 4.54 4.52 9.87 6.54 11.9 4.5Z"/>
+    <path d="M15.7 15.7c4.52-4.54 6.54-9.87 4.5-11.9-2.03-2.04-7.36-.02-11.9 4.5-4.52 4.54-6.54 9.87-4.5 11.9 2.03 2.04 7.36.02 11.9-4.5Z"/>
+  </g>
+</svg>
