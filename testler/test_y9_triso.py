@@ -240,3 +240,76 @@ def test_malzeme_adi_degisimi_triso_alanlarini_gunceller():
 
 HIZLI += [test_dogrula_triso_2b_model_hata_ve_tanimsiz_malzeme,
           test_malzeme_adi_degisimi_triso_alanlarini_gunceller]
+
+
+def test_pebble_kurulur_ve_hacimler_tutarli():
+    print("\n[Y9-10] pebble: kurulum, parcacik sayisi ~ 8335, kernel hacmi = N x 4/3 pi r^3 (gezinti)")
+    import os
+    import warnings
+    from cekirdek import geometri, sema, triso
+    from testler.ortak_test import ORNEK
+    # Arrange
+    spec = sema.yukle(os.path.join(ORNEK, "htgr_pebble.json"))
+    t = spec["trisolar"][0]
+    m = geometri.model(spec)
+    # Act
+    from cekirdek.geometri import hacim
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        uo2 = hacim.analitik(m, "uo2")
+    n = triso.hedef_sayi(t)
+    beklenen = n * 4 / 3 * math.pi * 0.025 ** 3
+    # Assert
+    kontrol("N ~ 8335 (HTR-10)", abs(n - 8335) <= 10, "-> %d" % n)
+    kontrol("UO2 hacmi = N x kernel hacmi", abs(uo2.hacim - beklenen) / beklenen < 1e-9,
+            "-> %r / %r" % (uo2.hacim, beklenen))
+
+
+HIZLI += [test_pebble_kurulur_ve_hacimler_tutarli]
+
+
+# ---------------------------------------------------------------------------
+# YAVAS: kafes yaklasimi (duzenli kafes ve rastgele) k'ya etkisi
+# ---------------------------------------------------------------------------
+
+_PARCACIK, _CEVRIM, _PASIF = 5000, 60, 15
+
+
+def _k(spec, dizin):
+    from cekirdek import kosucu
+    from testler.ortak_test import ISLEM_PARCACIGI
+    spec["ayarlar"].update(parcacik=_PARCACIK, cevrim=_CEVRIM, pasif=_PASIF)
+    kosucu.calistir(spec, dizin, is_parcacigi=ISLEM_PARCACIGI)
+    return kosucu.sonuc_oku(kosucu.son_statepoint(dizin))["keff"]
+
+
+def test_yavas_duzenli_ve_rastgele_yerlesimin_k_farki(gecici):
+    print("\n[Y9-Y2] ayni paketleme orani: rastgele (3 tohum) ve duzenli kubik kafes -> k karsilastirma")
+    import os
+    import warnings
+    # Arrange
+    sonuc = {}
+    # Act
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        for ad, yontem, tohum in (("rastgele1", "rastgele", 1), ("rastgele2", "rastgele", 2),
+                                  ("rastgele3", "rastgele", 3), ("duzenli", "duzenli", 1)):
+            spec = _model_spec(pf=0.30, yontem=yontem)
+            spec["trisolar"][0]["tohum"] = tohum
+            sonuc[ad] = _k(spec, os.path.join(gecici, ad))
+    # Assert (olcum raporu: duzenli-rastgele farki icin esik YOK; kaynak fizik: duzenli yerlesim
+    # parcaciklar arasi "kendini koruma" etkisini degistirir, bkz. kilavuz)
+    ort = sum(k for k, _s in (sonuc[a] for a in ("rastgele1", "rastgele2", "rastgele3"))) / 3.0
+    for ad, (k, s) in sonuc.items():
+        print("  %-9s k = %.5f +- %.5f" % (ad, k, s))
+    fark = (sonuc["duzenli"][0] - ort) * 1e5
+    print("  duzenli - ortalama(rastgele) = %.0f pcm" % fark)
+    kontrol("tum k fiziksel (0.5 < k < 2)", all(0.5 < k < 2.0 for k, _s in sonuc.values()))
+    yayilim = max(k for k, _s in (sonuc[a] for a in ("rastgele1", "rastgele2", "rastgele3"))) \
+        - min(k for k, _s in (sonuc[a] for a in ("rastgele1", "rastgele2", "rastgele3")))
+    sigma = max(s for _k_, s in sonuc.values())
+    kontrol("rastgele tohumlar istatistik icinde tutarli (yayilim <= 5 sigma)", yayilim <= 5 * sigma,
+            "-> %.0f pcm / sigma %.0f pcm" % (yayilim * 1e5, sigma * 1e5))
+
+
+YAVAS += [test_yavas_duzenli_ve_rastgele_yerlesimin_k_farki]

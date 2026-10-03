@@ -462,7 +462,7 @@ class _Gezgin(object):
             cikti += self._sanal(t.get("kabuk_malzeme"), 4.0 / 3.0 * math.pi * (R ** 3 - r ** 3) / L,
                                  carpan, z, "%s>%s/kabuk" % (yol, ad), alt, kafeste, kesik, neden, "triso")
             cikti += self._sanal(t.get("dis_malzeme"), None, carpan, z, "%s>%s/dis" % (yol, ad),
-                                 alt, kafeste, True, "bilesen", "triso")
+                                 alt, kafeste, kesik, neden, "triso")
         else:
             disi = None if (bolge is None or bolge.alan is None) else \
                 max(bolge.alan - math.pi * kap.yaricap ** 2, 0.0)

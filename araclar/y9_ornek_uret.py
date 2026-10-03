@@ -97,6 +97,62 @@ def htgr_kompakt():
     return d
 
 
+def htgr_pebble():
+    """HTR-10 pebble'i (IAEA-TECDOC-1382 olculeri) Wigner-Seitz kuresinde: 3.0 cm pebble +
+    helyum kabugu (yatak paketlemesi 0.61 -> hucre yaricapi 3.0 * (1/0.61)^(1/3) = 3.54 cm),
+    yansitici sinir (sonsuz yatak yaklasimi, kuresel hucre)."""
+    d = _taban()
+    d.update(ad="HTR-10 pebble (TRISO, Wigner-Seitz)", baslik="HTR-10 pebble",
+             baslik_en="HTR-10 pebble", kategori="arastirma", seviye="ileri",
+             aciklama=(
+                 "HTR-10 yakit kuresi: yakit bolgesi 2.5 cm yaricapli, icinde ~8335 TRISO parcacigi "
+                 "(UO2 cekirdek, capi 500 um; tampon 90, IPyC 40, SiC 35, OPyC 40 um), 0.5 cm "
+                 "grafit kabuk; cevresinde helyum kabugu (yatagin 0.61 paketlemesine denk gelen "
+                 "Wigner-Seitz hucresi) ve yansitici sinir. Sonsuz yatagin kuresel hucre "
+                 "yaklasimidir; gercek yatagin k_inf'i degildir. Kaynak: IAEA-TECDOC-1382, "
+                 "HTR-10 kriterlik benchmark. Helyum yogunlugu ideal gaz (3 MPa, 900 K)."),
+             aciklama_en=(
+                 "HTR-10 fuel pebble: 2.5 cm fuel zone with ~8335 TRISO particles (UO2 kernel, "
+                 "500 um diameter; buffer 90, IPyC 40, SiC 35, OPyC 40 um), 0.5 cm graphite shell, "
+                 "surrounded by a helium shell (Wigner-Seitz cell matching the 0.61 bed packing) "
+                 "with reflective boundary. A spherical-cell approximation of the infinite "
+                 "bed, not the k_inf of the real bed. Source: IAEA-TECDOC-1382 HTR-10 benchmark. "
+                 "Helium density from the ideal gas law (3 MPa, 900 K)."))
+    d["malzemeler"] = [
+        _mal("uo2", "UO2 cekirdek %17 U-235 (HTR-10)", 10.4,
+             [_nuk("U235", 0.17), _nuk("U238", 0.83), _el("O", 2.0)], (222, 93, 40)),
+        _mal("tampon", "Gozenekli karbon tampon", 1.1, [_el("C", 1.0)], (110, 110, 110), ["c_Graphite"]),
+        _mal("pyc_ic", "IPyC", 1.9, [_el("C", 1.0)], (70, 70, 70), ["c_Graphite"]),
+        _mal("sic", "SiC", 3.18, [_el("Si", 1.0), _el("C", 1.0)], (150, 190, 120)),
+        _mal("pyc_dis", "OPyC", 1.9, [_el("C", 1.0)], (50, 50, 50), ["c_Graphite"]),
+        _mal("matris", "Pebble grafit matrisi", 1.73, [_el("C", 1.0)], (130, 130, 140), ["c_Graphite"]),
+        _mal("grafit", "Pebble grafit kabuk", 1.73, [_el("C", 1.0)], (170, 170, 175), ["c_Graphite"]),
+        _mal("helyum", "Helyum (3 MPa, 900 K)", 0.0016, [_el("He", 1.0)], (230, 230, 120)),
+    ]
+    d["malzemeler"][0]["bilesim"] = [_nuk("U235", 0.17 / 235.04 / (0.17 / 235.04 + 0.83 / 238.05)),
+                                      _nuk("U238", 0.83 / 238.05 / (0.17 / 235.04 + 0.83 / 238.05)),
+                                      _el("O", 2.0)]
+    t = triso.sablon("htr10", "htr10_pebble", {"kernel": "uo2", "buffer": "tampon",
+                                              "ipyc": "pyc_ic", "sic": "sic", "opyc": "pyc_dis",
+                                              "matris": "matris", "kabuk": "grafit", "dis": "helyum"})
+    d["trisolar"] = [t]
+    kabuk_kalinlik = round(3.0 * ((1.0 / 0.61) ** (1.0 / 3.0) - 1.0), 2)
+    d["geometri"] = {
+        "kok": {"tur": "kap", "id": "kok", "kesit": {"sekil": "kure", "yaricap": t["dis_yaricap"]},
+                "ic": {"tur": "bilesen", "ad": "htr10_pebble"}, "yerlesimler": [],
+                "halkalar": [{"kalinlik": kabuk_kalinlik,
+                              "icerik": {"tur": "malzeme", "ad": "helyum"}, "yerlesimler": []}],
+                "yukseklik": None,
+                "sinir": {"yan": "reflective", "alt": "reflective", "ust": "reflective"}},
+        "parcalar": [], "gruplar": []}
+    d["ayarlar"] = copy.deepcopy(d["ayarlar"])
+    d["ayarlar"].update(parcacik=4000, cevrim=60, pasif=15)
+    d["ayarlar"]["entropi_mesh"] = dict(d["ayarlar"].get("entropi_mesh") or {}, var=False)
+    d["ayarlar"]["kaynak"] = dict(d["ayarlar"]["kaynak"], tur="nokta", konum=[0.0, 0.0, 0.0])
+    d["calistirma"] = dict(d["calistirma"], dizin="kosu_htgr_pebble")
+    return d
+
+
 def zirh_agirlik_pencere():
     """Derin nufuz zirhi (varyans azaltma dersi): D-T kaynagi, su/celik/su katmanlari, en disi
     ayri adli (ayni bilesimli) 'dedektor' suyu; tally o malzemedeki aki."""
@@ -143,4 +199,5 @@ def yaz(ad, d):
 
 if __name__ == "__main__":
     print(yaz("htgr_kompakt.json", htgr_kompakt()))
+    print(yaz("htgr_pebble.json", htgr_pebble()))
     print(yaz("zirh_agirlik_pencere.json", zirh_agirlik_pencere()))

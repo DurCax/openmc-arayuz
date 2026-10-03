@@ -1,0 +1,369 @@
+{
+  "surum": 3,
+  "ad": "HTR-10 pebble (TRISO, Wigner-Seitz)",
+  "baslik": "HTR-10 pebble",
+  "baslik_en": "HTR-10 pebble",
+  "aciklama": "HTR-10 yakit kuresi: yakit bolgesi 2.5 cm yaricapli, icinde ~8335 TRISO parcacigi (UO2 cekirdek, capi 500 um; tampon 90, IPyC 40, SiC 35, OPyC 40 um), 0.5 cm grafit kabuk; cevresinde helyum kabugu (yatagin 0.61 paketlemesine denk gelen Wigner-Seitz hucresi) ve yansitici sinir. Sonsuz yatagin kuresel hucre yaklasimidir; gercek yatagin k_inf'i degildir. Kaynak: IAEA-TECDOC-1382, HTR-10 kriterlik benchmark. Helyum yogunlugu ideal gaz (3 MPa, 900 K).",
+  "aciklama_en": "HTR-10 fuel pebble: 2.5 cm fuel zone with ~8335 TRISO particles (UO2 kernel, 500 um diameter; buffer 90, IPyC 40, SiC 35, OPyC 40 um), 0.5 cm graphite shell, surrounded by a helium shell (Wigner-Seitz cell matching the 0.61 bed packing) with reflective boundary. A spherical-cell approximation of the infinite bed, not the k_inf of the real bed. Source: IAEA-TECDOC-1382 HTR-10 benchmark. Helium density from the ideal gas law (3 MPa, 900 K).",
+  "kategori": "arastirma",
+  "seviye": "ileri",
+  "malzemeler": [
+    {
+      "ad": "uo2",
+      "gorunen_ad": "UO2 cekirdek %17 U-235 (HTR-10)",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 10.4
+      },
+      "sicaklik": 900.0,
+      "bilesim": [
+        {
+          "tur": "nuklid",
+          "isim": "U235",
+          "miktar": 0.17180304790837853,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "U238",
+          "miktar": 0.8281969520916214,
+          "birim": "ao"
+        },
+        {
+          "tur": "element",
+          "isim": "O",
+          "miktar": 2.0,
+          "birim": "ao"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        222,
+        93,
+        40
+      ]
+    },
+    {
+      "ad": "tampon",
+      "gorunen_ad": "Gozenekli karbon tampon",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 1.1
+      },
+      "sicaklik": 900.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "C",
+          "miktar": 1.0,
+          "birim": "ao"
+        }
+      ],
+      "sab": [
+        "c_Graphite"
+      ],
+      "renk": [
+        110,
+        110,
+        110
+      ]
+    },
+    {
+      "ad": "pyc_ic",
+      "gorunen_ad": "IPyC",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 1.9
+      },
+      "sicaklik": 900.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "C",
+          "miktar": 1.0,
+          "birim": "ao"
+        }
+      ],
+      "sab": [
+        "c_Graphite"
+      ],
+      "renk": [
+        70,
+        70,
+        70
+      ]
+    },
+    {
+      "ad": "sic",
+      "gorunen_ad": "SiC",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 3.18
+      },
+      "sicaklik": 900.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "Si",
+          "miktar": 1.0,
+          "birim": "ao"
+        },
+        {
+          "tur": "element",
+          "isim": "C",
+          "miktar": 1.0,
+          "birim": "ao"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        150,
+        190,
+        120
+      ]
+    },
+    {
+      "ad": "pyc_dis",
+      "gorunen_ad": "OPyC",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 1.9
+      },
+      "sicaklik": 900.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "C",
+          "miktar": 1.0,
+          "birim": "ao"
+        }
+      ],
+      "sab": [
+        "c_Graphite"
+      ],
+      "renk": [
+        50,
+        50,
+        50
+      ]
+    },
+    {
+      "ad": "matris",
+      "gorunen_ad": "Pebble grafit matrisi",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 1.73
+      },
+      "sicaklik": 900.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "C",
+          "miktar": 1.0,
+          "birim": "ao"
+        }
+      ],
+      "sab": [
+        "c_Graphite"
+      ],
+      "renk": [
+        130,
+        130,
+        140
+      ]
+    },
+    {
+      "ad": "grafit",
+      "gorunen_ad": "Pebble grafit kabuk",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 1.73
+      },
+      "sicaklik": 900.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "C",
+          "miktar": 1.0,
+          "birim": "ao"
+        }
+      ],
+      "sab": [
+        "c_Graphite"
+      ],
+      "renk": [
+        170,
+        170,
+        175
+      ]
+    },
+    {
+      "ad": "helyum",
+      "gorunen_ad": "Helyum (3 MPa, 900 K)",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 0.0016
+      },
+      "sicaklik": 900.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "He",
+          "miktar": 1.0,
+          "birim": "ao"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        230,
+        230,
+        120
+      ]
+    }
+  ],
+  "cubuklar": [],
+  "plakalar": [],
+  "demetler": [],
+  "kor": {
+    "tur": "agac"
+  },
+  "ayarlar": {
+    "mod": "eigenvalue",
+    "parcacik": 4000,
+    "cevrim": 60,
+    "pasif": 15,
+    "tohum": 1,
+    "sicaklik_yontemi": "interpolation",
+    "kaynak": {
+      "tur": "nokta",
+      "alt": null,
+      "ust": null,
+      "konum": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "entropi_mesh": {
+      "var": false,
+      "boyut": [
+        10,
+        10,
+        6
+      ]
+    }
+  },
+  "tallyler": [],
+  "guc_dagilimi": {
+    "var": false,
+    "cubuklar": [],
+    "skor": "kappa-fission",
+    "eksenel_dilim": 20,
+    "toplam_guc": null
+  },
+  "tukenme": {
+    "var": false,
+    "zincir": "otomatik",
+    "guc_yogunlugu": 40.0,
+    "adimlar": [
+      0.5,
+      1.5,
+      3.0,
+      5.0,
+      10.0,
+      10.0
+    ],
+    "adim_birimi": "d",
+    "entegrator": "cecm",
+    "malzemeleri_ayir": false,
+    "ek_malzemeler": [],
+    "izlenen": [
+      "U235",
+      "U238",
+      "Pu239",
+      "Pu240",
+      "Pu241",
+      "Xe135",
+      "Sm149"
+    ]
+  },
+  "calistirma": {
+    "is_parcacigi": 8,
+    "dizin": "kosu_htgr_pebble"
+  },
+  "geometri": {
+    "kok": {
+      "tur": "kap",
+      "id": "kok",
+      "kesit": {
+        "sekil": "kure",
+        "yaricap": 3.0
+      },
+      "ic": {
+        "tur": "bilesen",
+        "ad": "htr10_pebble"
+      },
+      "yerlesimler": [],
+      "halkalar": [
+        {
+          "kalinlik": 0.54,
+          "icerik": {
+            "tur": "malzeme",
+            "ad": "helyum"
+          },
+          "yerlesimler": []
+        }
+      ],
+      "yukseklik": null,
+      "sinir": {
+        "yan": "reflective",
+        "alt": "reflective",
+        "ust": "reflective"
+      }
+    },
+    "parcalar": [],
+    "gruplar": []
+  },
+  "tamburlar": [],
+  "trisolar": [
+    {
+      "ad": "htr10_pebble",
+      "sekil": "pebble",
+      "paketleme": 0.0502,
+      "yontem": "rastgele",
+      "tohum": 1,
+      "katmanlar": [
+        {
+          "ad": "kernel",
+          "r": 0.025,
+          "malzeme": "uo2"
+        },
+        {
+          "ad": "buffer",
+          "r": 0.034,
+          "malzeme": "tampon"
+        },
+        {
+          "ad": "ipyc",
+          "r": 0.038,
+          "malzeme": "pyc_ic"
+        },
+        {
+          "ad": "sic",
+          "r": 0.0415,
+          "malzeme": "sic"
+        },
+        {
+          "ad": "opyc",
+          "r": 0.0455,
+          "malzeme": "pyc_dis"
+        }
+      ],
+      "matris_malzeme": "matris",
+      "yakit_yaricap": 2.5,
+      "dis_yaricap": 3.0,
+      "kabuk_malzeme": "grafit",
+      "dis_malzeme": "helyum"
+    }
+  ]
+}
