@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-03 21:18+0300\n"
+"POT-Creation-Date: 2026-10-03 21:55+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: cekirdek/alt_model.py:67 cekirdek/sema_basvuru.py:100
+#: cekirdek/alt_model.py:67 cekirdek/dal.py:201 cekirdek/sema_basvuru.py:100
 msgid "çubuk"
 msgstr ""
 
@@ -84,155 +84,155 @@ msgstr ""
 msgid "altıgen kor haritası %d halka bekliyor (öğe sayıları %s), haritada %s"
 msgstr ""
 
-#: cekirdek/bolge_bol.py:66
+#: cekirdek/bolge_bol.py:68
 msgid "Eşit hacimli halkalar (Gd için önerilen başlangıç)"
 msgstr ""
 
-#: cekirdek/bolge_bol.py:67
+#: cekirdek/bolge_bol.py:69
 msgid "Eşit kalınlıklı halkalar (karşılaştırma için)"
 msgstr ""
 
-#: cekirdek/bolge_bol.py:68
+#: cekirdek/bolge_bol.py:70
 msgid "Dışa doğru incelen halkalar (geometrik)"
-msgstr ""
-
-#: cekirdek/bolge_bol.py:119
-#, python-format
-msgid "halka sayısı 1–%d arasında tam sayı olmalı: %r"
 msgstr ""
 
 #: cekirdek/bolge_bol.py:121
 #, python-format
+msgid "halka sayısı 1–%d arasında tam sayı olmalı: %r"
+msgstr ""
+
+#: cekirdek/bolge_bol.py:123
+#, python-format
 msgid "halka bölmek için 0 ≤ iç yarıçap < dış yarıçap olmalı (%r, %r)"
 msgstr ""
 
-#: cekirdek/bolge_bol.py:130
+#: cekirdek/bolge_bol.py:132
 #, python-format
 msgid "incelme oranı %g–%g arasında olmalı: %r"
 msgstr ""
 
-#: cekirdek/bolge_bol.py:138 cekirdek/bolge_bol.py:170
+#: cekirdek/bolge_bol.py:140 cekirdek/bolge_bol.py:172
 #, python-format
 msgid "bilinmeyen halka türü: %s"
 msgstr ""
 
-#: cekirdek/bolge_bol.py:154
+#: cekirdek/bolge_bol.py:156
 #, python-format
 msgid "%s %d–%d arasında tam sayı olmalı: %r"
 msgstr ""
 
-#: cekirdek/bolge_bol.py:163
+#: cekirdek/bolge_bol.py:165
 #, python-format
 msgid "indeks listesi geçersiz: %r"
 msgstr ""
 
-#: cekirdek/bolge_bol.py:173
+#: cekirdek/bolge_bol.py:175
 msgid "bölme girdisinde çubuk adı yok"
 msgstr ""
 
-#: cekirdek/bolge_bol.py:176
+#: cekirdek/bolge_bol.py:178
 #, python-format
 msgid "incelme oranı sayı olmalı: %r"
 msgstr ""
 
-#: cekirdek/bolge_bol.py:177
+#: cekirdek/bolge_bol.py:179
 msgid "halka sayısı"
 msgstr ""
 
-#: cekirdek/bolge_bol.py:188
+#: cekirdek/bolge_bol.py:190
 msgid "tükenme bölmesi bir sözlük olmalı"
 msgstr ""
 
-#: cekirdek/bolge_bol.py:192
+#: cekirdek/bolge_bol.py:194
 #, python-format
 msgid "aynı çubuk bölmede birden fazla kez: %s"
 msgstr ""
 
-#: cekirdek/bolge_bol.py:195
+#: cekirdek/bolge_bol.py:197
 msgid "eksenel dilim sayısı"
-msgstr ""
-
-#: cekirdek/bolge_bol.py:247
-#, python-format
-msgid "bölmede tanımsız çubuk: %s"
 msgstr ""
 
 #: cekirdek/bolge_bol.py:249
 #, python-format
-msgid "'%s' kontrol çubuğu bölünemez (emici bölge daldırmaya bağlı)"
+msgid "bölmede tanımsız çubuk: %s"
 msgstr ""
 
 #: cekirdek/bolge_bol.py:251
 #, python-format
+msgid "'%s' kontrol çubuğu bölünemez (emici bölge daldırmaya bağlı)"
+msgstr ""
+
+#: cekirdek/bolge_bol.py:253
+#, python-format
 msgid "'%s' çubuğu silindirik değil; halka bölme yalnız silindirde"
 msgstr ""
 
-#: cekirdek/bolge_bol.py:255
+#: cekirdek/bolge_bol.py:257
 #, python-format
 msgid "'%s' çubuğunda bölünecek yanabilir bölge yok"
 msgstr ""
 
-#: cekirdek/bolge_bol.py:258
+#: cekirdek/bolge_bol.py:260
 #, python-format
 msgid "'%s' çubuğunda olmayan bölge: %s"
 msgstr ""
 
-#: cekirdek/bolge_bol.py:269
+#: cekirdek/bolge_bol.py:271
 #, python-format
 msgid "'%s' çubuğunun dış bölgesi (yarıçapsız) bölünemez"
 msgstr ""
 
-#: cekirdek/bolge_bol.py:318
+#: cekirdek/bolge_bol.py:320
 #, python-format
 msgid "olmayan eksenel katman: %s"
 msgstr ""
 
-#: cekirdek/bolge_bol.py:334
+#: cekirdek/bolge_bol.py:336
 msgid "eksenel dilim bölme gelişmiş (ağaç) modda desteklenmiyor"
 msgstr ""
 
-#: cekirdek/bolge_bol.py:337
+#: cekirdek/bolge_bol.py:339
 #, python-format
 msgid "eksenel dilim bölme bu kor türünde desteklenmiyor: %s"
 msgstr ""
 
-#: cekirdek/bolge_bol.py:343
+#: cekirdek/bolge_bol.py:345
 msgid "eksenel dilim bölme 3B (yükseklikli) model gerektirir"
 msgstr ""
 
-#: cekirdek/bolge_bol.py:344
+#: cekirdek/bolge_bol.py:346
 msgid "aktif"
 msgstr ""
 
-#: cekirdek/bolge_bol.py:347
+#: cekirdek/bolge_bol.py:349
 msgid "eksenel olarak bölünecek yanabilir katman bulunamadı"
 msgstr ""
 
-#: cekirdek/bolge_bol.py:357
+#: cekirdek/bolge_bol.py:359
 msgid "katman"
 msgstr ""
 
-#: cekirdek/bolge_bol.py:377
+#: cekirdek/bolge_bol.py:379
 msgid "tükenme bölgesi bölme gelişmiş (ağaç) modda desteklenmiyor"
 msgstr ""
 
-#: cekirdek/bolge_bol.py:465
+#: cekirdek/bolge_bol.py:467
 #, python-format
 msgid "tükenme bölgesi bölme geçersiz: %s"
 msgstr ""
 
-#: cekirdek/bolge_bol.py:466
+#: cekirdek/bolge_bol.py:468
 msgid ""
 "Tükenme › Bölge bölme kartında çubuk, halka sayısı ve eksenel dilimi düzeltin ya da "
 "bölmeyi kapatın."
 msgstr ""
 
-#: cekirdek/bolge_bol.py:468
+#: cekirdek/bolge_bol.py:470
 #, python-format
 msgid "bölge bölme açık: ayrı tükenme malzemesi %d → %d"
 msgstr ""
 
-#: cekirdek/bolge_bol.py:469
+#: cekirdek/bolge_bol.py:471
 msgid ""
 "Her halka ve dilim ayrı malzeme olarak yanar (çubuk çubuk yanma otomatik açılır); "
 "bellek ve süre bunların sayısıyla artar."
@@ -493,98 +493,109 @@ msgstr ""
 msgid "cizim alt süreci argüman almaz: %s"
 msgstr ""
 
-#: cekirdek/dal.py:68
+#: cekirdek/dal.py:73
 msgid "Dal"
 msgstr ""
 
-#: cekirdek/dal.py:79
+#: cekirdek/dal.py:84
 msgid "Yakıt sıcaklığı [K]"
 msgstr ""
 
-#: cekirdek/dal.py:80 cekirdek/malzeme_kutup.py:541
+#: cekirdek/dal.py:85 cekirdek/malzeme_kutup.py:541
 msgid "Çözünmüş bor [ppm]"
 msgstr ""
 
-#: cekirdek/dal.py:81
+#: cekirdek/dal.py:86
 msgid "Soğutucu sıcaklığı [K] (yoğunluk korelasyonla)"
 msgstr ""
 
-#: cekirdek/dal.py:82
+#: cekirdek/dal.py:87
 msgid "Soğutucu yoğunluğu [g/cm³]"
 msgstr ""
 
-#: cekirdek/dal.py:95 cekirdek/dal.py:172
+#: cekirdek/dal.py:100 cekirdek/dal.py:179
 #, python-format
 msgid "bilinmeyen dal değişkeni: %s"
 msgstr ""
 
-#: cekirdek/dal.py:97
+#: cekirdek/dal.py:102
 #, python-format
 msgid "'%s' dal değişkeninin hedef malzemesi yok"
 msgstr ""
 
-#: cekirdek/dal.py:99
+#: cekirdek/dal.py:104
 #, python-format
 msgid "'%s' dal değişkeninin değeri yok"
 msgstr ""
 
-#: cekirdek/dal.py:102
+#: cekirdek/dal.py:107
 #, python-format
 msgid "dal değeri sonlu bir sayı olmalı: %r"
 msgstr ""
 
-#: cekirdek/dal.py:123
+#: cekirdek/dal.py:128
 msgid "en az bir yanma adımı seçin"
 msgstr ""
 
-#: cekirdek/dal.py:125
+#: cekirdek/dal.py:130
 msgid "yanma adımı indeksi negatif olmayan tam sayı olmalı"
 msgstr ""
 
-#: cekirdek/dal.py:127
+#: cekirdek/dal.py:132
 #, python-format
 msgid "dal biçimi %s olmalı: %s"
 msgstr ""
 
-#: cekirdek/dal.py:130
+#: cekirdek/dal.py:135
 #, python-format
 msgid "dal değişkenleri benzersiz olmalı: %s"
 msgstr ""
 
-#: cekirdek/dal.py:132
+#: cekirdek/dal.py:137
 msgid "dal değişkeni yok ve taban dal kapalı: koşulacak bir şey yok"
 msgstr ""
 
-#: cekirdek/dal.py:136
+#: cekirdek/dal.py:141
 #, python-format
 msgid "dal tablosu %d koşu üretir; en çok %d"
 msgstr ""
 
-#: cekirdek/dal.py:181
+#: cekirdek/dal.py:188
 #, python-format
 msgid "'%s' için modelde uygun malzeme yok"
 msgstr ""
 
-#: cekirdek/dal.py:241 cekirdek/dal.py:328
+#: cekirdek/dal.py:199
+#, python-format
+msgid ""
+"Tükenmede kritiklik araması (%s) açıktı: dal modeli adım başına aranan değeri değil, "
+"modeldeki sabit değeri kullanır; taban dal tükenmenin k'sına eşit değildir."
+msgstr ""
+
+#: cekirdek/dal.py:201
+msgid "bor"
+msgstr ""
+
+#: cekirdek/dal.py:260 cekirdek/dal.py:347
 #, python-format
 msgid "yanma adımı %d: sonuç dosyasında %d zaman noktası var"
 msgstr ""
 
-#: cekirdek/dal.py:249
+#: cekirdek/dal.py:268
 #, python-format
 msgid ""
 "sonuç dosyasındaki malzemeler modelde yok (kimlik: %s): tükenme koşusundaki modelle "
 "bu model aynı değil"
 msgstr ""
 
-#: cekirdek/dal.py:255
+#: cekirdek/dal.py:274
 #, python-format
 msgid ""
 "malzeme %s hacmi modelde %r, sonuç dosyasında %r cm³: tükenme koşusundaki modelle bu "
 "model aynı değil"
 msgstr ""
 
-#: cekirdek/dal.py:310 cekirdek/parametre.py:310
+#: cekirdek/dal.py:329 cekirdek/parametre.py:310
 msgid "taban"
 msgstr ""
 
@@ -1219,29 +1230,30 @@ msgstr ""
 msgid "Kılıf, dış halkadaki pinleri keser. İç ölçüyü büyütün ya da adımı küçültün."
 msgstr ""
 
-#: cekirdek/dogrula/geometri.py:322
+#: cekirdek/dogrula/geometri.py:338
 #, python-format
 msgid ""
 "'%s' çubuğunun dış çapı (%.5f cm) kafes adımından (%.5f cm) büyük — çubuk komşu "
 "hücreye taşar"
 msgstr ""
 
-#: cekirdek/dogrula/geometri.py:324
+#: cekirdek/dogrula/geometri.py:340
 msgid ""
 "OpenMC bunu hata saymaz: kafes hücresi çubuğu sessizce keser. Adımı büyütün ya da "
 "çubuk yarıçaplarını küçültün."
 msgstr ""
 
-#: cekirdek/dogrula/geometri.py:334
+#: cekirdek/dogrula/geometri.py:350
 #, python-format
 msgid "iç içe demet '%s' (%.4f × %.4f cm) demet adımına (%.5f cm) sığmıyor"
 msgstr ""
 
-#: cekirdek/dogrula/geometri.py:336
+#: cekirdek/dogrula/geometri.py:352
 #, python-format
 msgid ""
 "Kafes hücresi içteki demeti keser; dış halkadaki çubuklar sessizce kaybolur. Dış "
-"demetin adımı en az %.5f cm olmalı."
+"demetin adımı en az %.5f cm olmalı: kor adımını bu değere (ya da biraz üstüne) "
+"ayarlayın."
 msgstr ""
 
 #: cekirdek/dogrula/kaynak.py:48
@@ -1500,7 +1512,7 @@ msgstr ""
 msgid "Gerçekçi bir tambur değeri için Kor sekmesinde aktif yükseklik tanımlayın."
 msgstr ""
 
-#: cekirdek/dogrula/kor.py:163 cekirdek/geometri/sablon.py:219
+#: cekirdek/dogrula/kor.py:163 cekirdek/geometri/sablon.py:221
 msgid "küresel düzenekte en az bir kabuk gerekir"
 msgstr ""
 
@@ -1514,7 +1526,7 @@ msgstr ""
 msgid "%d. kabukta tanımsız malzeme: %s"
 msgstr ""
 
-#: cekirdek/dogrula/kor.py:177 cekirdek/geometri/sablon.py:223
+#: cekirdek/dogrula/kor.py:177 cekirdek/geometri/sablon.py:225
 #, python-format
 msgid "kabuk yarıçapları artan sırada olmalı: r%d = %.5f ≥ r%d = %.5f"
 msgstr ""
@@ -3409,23 +3421,27 @@ msgid "kurulamayan kesit: %s"
 msgstr ""
 
 #: cekirdek/geometri/sablon.py:187
+msgid "kor haritası boş: Geometri sayfasında haritayı bir demetle boyayın"
+msgstr ""
+
+#: cekirdek/geometri/sablon.py:189
 #, python-format
 msgid "kor haritası %d satır, boyut %d bekliyor"
 msgstr ""
 
-#: cekirdek/geometri/sablon.py:255
+#: cekirdek/geometri/sablon.py:257
 msgid "tamburlu korda kor yarıçapı ve yansıtıcı kuşak kalınlığı sıfırdan büyük olmalı"
 msgstr ""
 
-#: cekirdek/geometri/sablon.py:261
+#: cekirdek/geometri/sablon.py:263
 msgid "tambur yerleşimi geçersiz: "
 msgstr ""
 
-#: cekirdek/geometri/sablon.py:263
+#: cekirdek/geometri/sablon.py:265
 msgid "tamburlu korda kor dolgusu seçilmeli (demet, çubuk ya da malzeme)"
 msgstr ""
 
-#: cekirdek/geometri/sablon.py:304
+#: cekirdek/geometri/sablon.py:306
 #, python-format
 msgid "bilinmeyen kor türü: %s"
 msgstr ""
@@ -8482,11 +8498,16 @@ msgstr ""
 msgid "kontrol çubuğu araması sınırı 0–100 daldırma yüzdesi içinde olmalı"
 msgstr ""
 
-#: cekirdek/tukenme_cikti.py:158
+#: cekirdek/tukenme_cikti.py:176
 msgid ""
 "Aktivite Bq, Bq/g (malzeme kütlesi başına); bozunma ısısı W, W/g (Q: zincirin bozunma"
 " enerjisi, nötrino hariç); foton kaynağı foton/s. Temas doz hızı FISPACT-II yöntemi "
-"(Gy/h, havada), atık sınıfı NRC 10 CFR 61.55 — bilgi amaçlıdır, sertifika değildir."
+"(yarı sonsuz levha, yalnız yakıt, havada soğurulan doz [Gy(hava) ≠ Sv]; hacimden "
+"bağımsız, kılıf yok: üst sınır göstergesi); atık sınıfı NRC 10 CFR 61.55 tablo "
+"karşılaştırması (yakın-yüzey; kullanılmış yakıt için geçerli değil) — bilgi "
+"amaçlıdır, sertifika değildir. Bozunma ısısında λ ENDF/B-VIII.0 yarı ömründen, Q "
+"zincirden; aktivitede λ zincirden alınır (zincir ≠ ENDF/B-VIII.0 ise ikisi birbirini "
+"tutmaz)."
 msgstr ""
 
 #: cekirdek/tukenme_guc.py:148
@@ -8873,21 +8894,29 @@ msgstr ""
 msgid "geometride fisil (yakıt) malzeme yok"
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/ayristir.py:147
+#: cekirdek/uygunluk_denetimi/ayristir.py:150
 #, python-format
 msgid ""
 "KAYIP PARÇACIK: %d — geometride boşluk ya da çakışma olabilir; sonuçlara güvenmeden "
 "önce geometriyi denetleyin."
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/ayristir.py:152
+#: cekirdek/uygunluk_denetimi/ayristir.py:155
 #, python-format
 msgid "OpenMC hatası: %s"
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/ayristir.py:154
+#: cekirdek/uygunluk_denetimi/ayristir.py:157
 #, python-format
 msgid "OpenMC %d uyarı yazdı (ilk %d):"
+msgstr ""
+
+#: cekirdek/uygunluk_denetimi/ayristir.py:161
+msgid ""
+"  Not: \"probability table\" uyarısı, nüklid verisindeki rezonans-ötesi (URR) "
+"olasılık tablosunda negatif değer bulunduğunu söyler; model hatası değildir. Sonuçtan"
+" şüphe ediyorsanız başka bir kütüphane sürümüyle karşılaştırın (Kılavuz: Sorun "
+"giderme)."
 msgstr ""
 
 #: cekirdek/uygunluk_denetimi/denetle.py:83
@@ -9992,6 +10021,10 @@ msgstr ""
 
 #: cekirdek/varyans.py:163
 msgid "ağırlık penceresi 3B model gerektirir (yükseklik tanımlı değil)"
+msgstr ""
+
+#: cekirdek/varyans.py:305
+msgid "(en kötü bin)"
 msgstr ""
 
 #: cekirdek/veri_arsiv.py:83

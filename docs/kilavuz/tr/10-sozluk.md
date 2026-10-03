@@ -210,7 +210,7 @@ Kaynak tablo depodaki [SOZLUK.md](../../SOZLUK.md) dosyasıdır; aşağıdaki ta
 | soğuma adımı | cooling step | decay step | transport yok; yalnız bozunma |
 | kritik bor | critical boron | boron search result | k = 1 için bor derişimi [ppm] |
 | kaldırma (grup sabiti) | removal | loss | Σ_R = Σt − Σs,g→g (out-scatter) |
-| yoğunlaştırma (grup) | group collapsing | condensation | ince gruptan kaba gruba akı ağırlıklı indirgeme |
+| yoğunlaştırma (grup) | group condensation | collapse | ince gruptan kaba gruba akı ağırlıklı indirgeme (OpenMC belgelerinde *group collapsing* de geçer) |
 
 ### 10.6 Doğrulama, uygunluk ve rapor
 

@@ -211,7 +211,7 @@ add the term to SOZLUK.md).
 | cooling step | soğuma adımı | decay step |
 | critical boron | kritik bor | boron search result |
 | removal | kaldırma (grup sabiti) | loss |
-| group collapsing | yoğunlaştırma (grup) | condensation |
+| group condensation | yoğunlaştırma (grup) | collapse |
 
 ### 10.6 Model check, conformity and report
 

@@ -90,6 +90,8 @@ class YerlesimMixin(object):
         self.liste.currentRowChanged.connect(self._secim_degisti)
         self.d_kare = bl.ikincil_dugme(_("Kare demet"), "grid-3x3")
         self.d_hex = bl.ikincil_dugme(_("Altıgen demet"), "hexagon")
+        for d_ in (self.d_kare, self.d_hex):         # EN etiketler kesilmesin (Q1-07)
+            d_.setMinimumWidth(d_.sizeHint().width())
         self.d_kopya = bl.duz_dugme(_("Kopyala"), "copy", _("Seçili demetin kopyasını ekler."))
         self.d_sil = bl.tehlikeli_dugme(_("Sil"), "trash", _(
             "Seçili demeti siler (kullanılıyorsa önce sorar)."))

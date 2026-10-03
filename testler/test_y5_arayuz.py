@@ -167,7 +167,7 @@ def test_dal_tablosu_ve_csv(gecici=None):
     kontrol("3 satir", k.tablo.rowCount() == 3)
     basliklar = [k.tablo.horizontalHeaderItem(i).text() for i in range(k.tablo.columnCount())]
     kontrol("baslik: T_yakit sutunu", "T_yakit" in basliklar, repr(basliklar))
-    kontrol("dk -1000 pcm", "-1000" in k.tablo.item(1, k.tablo.columnCount() - 1).text(),
+    kontrol("dk -1000 pcm", "-1000" in k.tablo.item(1, k.tablo.columnCount() - 2).text(),
             k.tablo.item(1, k.tablo.columnCount() - 1).text())
     kontrol("basarisiz satirda hata metni", "koşu başarısız" in k.tablo.item(2, 3).text()
             or "koşu başarısız" in k.tablo.item(2, 4).text())

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-03 21:18+0300\n"
+"POT-Creation-Date: 2026-10-03 21:55+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: cekirdek/alt_model.py:67 cekirdek/sema_basvuru.py:100
+#: cekirdek/alt_model.py:67 cekirdek/dal.py:201 cekirdek/sema_basvuru.py:100
 msgid "çubuk"
 msgstr "pin"
 
@@ -88,146 +88,146 @@ msgstr ""
 "the hexagonal core map expects %d rings (element counts %s), the map has "
 "%s"
 
-#: cekirdek/bolge_bol.py:66
+#: cekirdek/bolge_bol.py:68
 msgid "Eşit hacimli halkalar (Gd için önerilen başlangıç)"
 msgstr "Equal-volume rings (recommended start for Gd)"
 
-#: cekirdek/bolge_bol.py:67
+#: cekirdek/bolge_bol.py:69
 msgid "Eşit kalınlıklı halkalar (karşılaştırma için)"
 msgstr "Equal-thickness rings (for comparison)"
 
-#: cekirdek/bolge_bol.py:68
+#: cekirdek/bolge_bol.py:70
 msgid "Dışa doğru incelen halkalar (geometrik)"
 msgstr "Rings thinning outward (geometric)"
 
-#: cekirdek/bolge_bol.py:119
+#: cekirdek/bolge_bol.py:121
 #, python-format
 msgid "halka sayısı 1–%d arasında tam sayı olmalı: %r"
 msgstr "the ring count must be an integer from 1 to %d: %r"
 
-#: cekirdek/bolge_bol.py:121
+#: cekirdek/bolge_bol.py:123
 #, python-format
 msgid "halka bölmek için 0 ≤ iç yarıçap < dış yarıçap olmalı (%r, %r)"
 msgstr "to split into rings, 0 ≤ inner radius < outer radius is required (%r, %r)"
 
-#: cekirdek/bolge_bol.py:130
+#: cekirdek/bolge_bol.py:132
 #, python-format
 msgid "incelme oranı %g–%g arasında olmalı: %r"
 msgstr "the thinning ratio must be between %g and %g: %r"
 
-#: cekirdek/bolge_bol.py:138 cekirdek/bolge_bol.py:170
+#: cekirdek/bolge_bol.py:140 cekirdek/bolge_bol.py:172
 #, python-format
 msgid "bilinmeyen halka türü: %s"
 msgstr "unknown ring type: %s"
 
-#: cekirdek/bolge_bol.py:154
+#: cekirdek/bolge_bol.py:156
 #, python-format
 msgid "%s %d–%d arasında tam sayı olmalı: %r"
 msgstr "%s must be an integer from %d to %d: %r"
 
-#: cekirdek/bolge_bol.py:163
+#: cekirdek/bolge_bol.py:165
 #, python-format
 msgid "indeks listesi geçersiz: %r"
 msgstr "invalid index list: %r"
 
-#: cekirdek/bolge_bol.py:173
+#: cekirdek/bolge_bol.py:175
 msgid "bölme girdisinde çubuk adı yok"
 msgstr "no pin name in the subdivision entry"
 
-#: cekirdek/bolge_bol.py:176
+#: cekirdek/bolge_bol.py:178
 #, python-format
 msgid "incelme oranı sayı olmalı: %r"
 msgstr "the thinning ratio must be a number: %r"
 
-#: cekirdek/bolge_bol.py:177
+#: cekirdek/bolge_bol.py:179
 msgid "halka sayısı"
 msgstr "ring count"
 
-#: cekirdek/bolge_bol.py:188
+#: cekirdek/bolge_bol.py:190
 msgid "tükenme bölmesi bir sözlük olmalı"
 msgstr "the depletion subdivision must be a dictionary"
 
-#: cekirdek/bolge_bol.py:192
+#: cekirdek/bolge_bol.py:194
 #, python-format
 msgid "aynı çubuk bölmede birden fazla kez: %s"
 msgstr "the same pin appears more than once in the subdivision: %s"
 
-#: cekirdek/bolge_bol.py:195
+#: cekirdek/bolge_bol.py:197
 msgid "eksenel dilim sayısı"
 msgstr "axial slice count"
 
-#: cekirdek/bolge_bol.py:247
+#: cekirdek/bolge_bol.py:249
 #, python-format
 msgid "bölmede tanımsız çubuk: %s"
 msgstr "undefined pin in the subdivision: %s"
 
-#: cekirdek/bolge_bol.py:249
+#: cekirdek/bolge_bol.py:251
 #, python-format
 msgid "'%s' kontrol çubuğu bölünemez (emici bölge daldırmaya bağlı)"
 msgstr ""
 "control rod '%s' cannot be subdivided (the absorber region depends on "
 "insertion)"
 
-#: cekirdek/bolge_bol.py:251
+#: cekirdek/bolge_bol.py:253
 #, python-format
 msgid "'%s' çubuğu silindirik değil; halka bölme yalnız silindirde"
 msgstr "pin '%s' is not cylindrical; ring subdivision works only on cylinders"
 
-#: cekirdek/bolge_bol.py:255
+#: cekirdek/bolge_bol.py:257
 #, python-format
 msgid "'%s' çubuğunda bölünecek yanabilir bölge yok"
 msgstr "pin '%s' has no burnable region to subdivide"
 
-#: cekirdek/bolge_bol.py:258
+#: cekirdek/bolge_bol.py:260
 #, python-format
 msgid "'%s' çubuğunda olmayan bölge: %s"
 msgstr "pin '%s' has no such region: %s"
 
-#: cekirdek/bolge_bol.py:269
+#: cekirdek/bolge_bol.py:271
 #, python-format
 msgid "'%s' çubuğunun dış bölgesi (yarıçapsız) bölünemez"
 msgstr "the outer region (no radius) of pin '%s' cannot be subdivided"
 
-#: cekirdek/bolge_bol.py:318
+#: cekirdek/bolge_bol.py:320
 #, python-format
 msgid "olmayan eksenel katman: %s"
 msgstr "no such axial layer: %s"
 
-#: cekirdek/bolge_bol.py:334
+#: cekirdek/bolge_bol.py:336
 msgid "eksenel dilim bölme gelişmiş (ağaç) modda desteklenmiyor"
 msgstr "axial slice subdivision is not supported in advanced (tree) mode"
 
-#: cekirdek/bolge_bol.py:337
+#: cekirdek/bolge_bol.py:339
 #, python-format
 msgid "eksenel dilim bölme bu kor türünde desteklenmiyor: %s"
 msgstr "axial slice subdivision is not supported for this core type: %s"
 
-#: cekirdek/bolge_bol.py:343
+#: cekirdek/bolge_bol.py:345
 msgid "eksenel dilim bölme 3B (yükseklikli) model gerektirir"
 msgstr "axial slice subdivision needs a 3D model (with height)"
 
-#: cekirdek/bolge_bol.py:344
+#: cekirdek/bolge_bol.py:346
 msgid "aktif"
 msgstr "active"
 
-#: cekirdek/bolge_bol.py:347
+#: cekirdek/bolge_bol.py:349
 msgid "eksenel olarak bölünecek yanabilir katman bulunamadı"
 msgstr "no burnable layer found to subdivide axially"
 
-#: cekirdek/bolge_bol.py:357
+#: cekirdek/bolge_bol.py:359
 msgid "katman"
 msgstr "layer"
 
-#: cekirdek/bolge_bol.py:377
+#: cekirdek/bolge_bol.py:379
 msgid "tükenme bölgesi bölme gelişmiş (ağaç) modda desteklenmiyor"
 msgstr "depletion region subdivision is not supported in advanced (tree) mode"
 
-#: cekirdek/bolge_bol.py:465
+#: cekirdek/bolge_bol.py:467
 #, python-format
 msgid "tükenme bölgesi bölme geçersiz: %s"
 msgstr "depletion region subdivision is invalid: %s"
 
-#: cekirdek/bolge_bol.py:466
+#: cekirdek/bolge_bol.py:468
 msgid ""
 "Tükenme › Bölge bölme kartında çubuk, halka sayısı ve eksenel dilimi "
 "düzeltin ya da bölmeyi kapatın."
@@ -235,12 +235,12 @@ msgstr ""
 "Correct the pin, ring count and axial slices on the Depletion › Region "
 "subdivision card, or turn the subdivision off."
 
-#: cekirdek/bolge_bol.py:468
+#: cekirdek/bolge_bol.py:470
 #, python-format
 msgid "bölge bölme açık: ayrı tükenme malzemesi %d → %d"
 msgstr "region subdivision on: separate depletion materials %d → %d"
 
-#: cekirdek/bolge_bol.py:469
+#: cekirdek/bolge_bol.py:471
 msgid ""
 "Her halka ve dilim ayrı malzeme olarak yanar (çubuk çubuk yanma otomatik "
 "açılır); bellek ve süre bunların sayısıyla artar."
@@ -509,84 +509,99 @@ msgid "cizim alt süreci argüman almaz: %s"
 msgstr "the drawing subprocess takes no arguments: %s"
 
 # "Görünüm > Dil" menusu
-#: cekirdek/dal.py:68
+#: cekirdek/dal.py:73
 msgid "Dal"
 msgstr "Branch"
 
-#: cekirdek/dal.py:79
+#: cekirdek/dal.py:84
 msgid "Yakıt sıcaklığı [K]"
 msgstr "Fuel temperature [K]"
 
-#: cekirdek/dal.py:80 cekirdek/malzeme_kutup.py:541
+#: cekirdek/dal.py:85 cekirdek/malzeme_kutup.py:541
 msgid "Çözünmüş bor [ppm]"
 msgstr "Dissolved boron [ppm]"
 
-#: cekirdek/dal.py:81
+#: cekirdek/dal.py:86
 msgid "Soğutucu sıcaklığı [K] (yoğunluk korelasyonla)"
 msgstr "Coolant temperature [K] (density by correlation)"
 
-#: cekirdek/dal.py:82
+#: cekirdek/dal.py:87
 msgid "Soğutucu yoğunluğu [g/cm³]"
 msgstr "Coolant density [g/cm³]"
 
-#: cekirdek/dal.py:95 cekirdek/dal.py:172
+#: cekirdek/dal.py:100 cekirdek/dal.py:179
 #, python-format
 msgid "bilinmeyen dal değişkeni: %s"
 msgstr "unknown branch variable: %s"
 
-#: cekirdek/dal.py:97
+#: cekirdek/dal.py:102
 #, python-format
 msgid "'%s' dal değişkeninin hedef malzemesi yok"
 msgstr "branch variable '%s' has no target material"
 
-#: cekirdek/dal.py:99
+#: cekirdek/dal.py:104
 #, python-format
 msgid "'%s' dal değişkeninin değeri yok"
 msgstr "branch variable '%s' has no values"
 
-#: cekirdek/dal.py:102
+#: cekirdek/dal.py:107
 #, python-format
 msgid "dal değeri sonlu bir sayı olmalı: %r"
 msgstr "a branch value must be a finite number: %r"
 
-#: cekirdek/dal.py:123
+#: cekirdek/dal.py:128
 msgid "en az bir yanma adımı seçin"
 msgstr "select at least one burnup step"
 
-#: cekirdek/dal.py:125
+#: cekirdek/dal.py:130
 msgid "yanma adımı indeksi negatif olmayan tam sayı olmalı"
 msgstr "the burnup step index must be a non-negative integer"
 
-#: cekirdek/dal.py:127
+#: cekirdek/dal.py:132
 #, python-format
 msgid "dal biçimi %s olmalı: %s"
 msgstr "the branch form must be %s: %s"
 
-#: cekirdek/dal.py:130
+#: cekirdek/dal.py:135
 #, python-format
 msgid "dal değişkenleri benzersiz olmalı: %s"
 msgstr "branch variables must be unique: %s"
 
-#: cekirdek/dal.py:132
+#: cekirdek/dal.py:137
 msgid "dal değişkeni yok ve taban dal kapalı: koşulacak bir şey yok"
 msgstr "no branch variable and the reference branch is off: nothing to run"
 
-#: cekirdek/dal.py:136
+#: cekirdek/dal.py:141
 #, python-format
 msgid "dal tablosu %d koşu üretir; en çok %d"
 msgstr "the branch table produces %d runs; at most %d"
 
-#: cekirdek/dal.py:181
+#: cekirdek/dal.py:188
 #, python-format
 msgid "'%s' için modelde uygun malzeme yok"
 msgstr "the model has no suitable material for '%s'"
 
-#: cekirdek/dal.py:241 cekirdek/dal.py:328
+#: cekirdek/dal.py:199
+#, python-format
+msgid ""
+"Tükenmede kritiklik araması (%s) açıktı: dal modeli adım başına aranan "
+"değeri değil, modeldeki sabit değeri kullanır; taban dal tükenmenin "
+"k'sına eşit değildir."
+msgstr ""
+"The critical search (%s) was on during the depletion: the branch model "
+"uses the fixed value in the model, not the value searched at each step; "
+"the reference branch does not equal the depletion's k."
+
+#: cekirdek/dal.py:201
+msgid "bor"
+msgstr "boron"
+
+#: cekirdek/dal.py:260 cekirdek/dal.py:347
 #, python-format
 msgid "yanma adımı %d: sonuç dosyasında %d zaman noktası var"
 msgstr "burnup step %d: the result file has %d time points"
 
-#: cekirdek/dal.py:249
+#: cekirdek/dal.py:268
 #, python-format
 msgid ""
 "sonuç dosyasındaki malzemeler modelde yok (kimlik: %s): tükenme "
@@ -595,7 +610,7 @@ msgstr ""
 "the materials in the result file are missing from the model (id: %s): "
 "this model is not the one used in the depletion run"
 
-#: cekirdek/dal.py:255
+#: cekirdek/dal.py:274
 #, python-format
 msgid ""
 "malzeme %s hacmi modelde %r, sonuç dosyasında %r cm³: tükenme koşusundaki"
@@ -604,7 +619,7 @@ msgstr ""
 "material %s has volume %r in the model and %r cm³ in the result file: "
 "this model is not the one used in the depletion run"
 
-#: cekirdek/dal.py:310 cekirdek/parametre.py:310
+#: cekirdek/dal.py:329 cekirdek/parametre.py:310
 msgid "taban"
 msgstr "base"
 
@@ -1338,7 +1353,7 @@ msgstr ""
 "The duct cuts the pins in the outer ring. Increase the inner size or "
 "reduce the pitch."
 
-#: cekirdek/dogrula/geometri.py:322
+#: cekirdek/dogrula/geometri.py:338
 #, python-format
 msgid ""
 "'%s' çubuğunun dış çapı (%.5f cm) kafes adımından (%.5f cm) büyük — çubuk"
@@ -1347,7 +1362,7 @@ msgstr ""
 "the outer diameter of pin '%s' (%.5f cm) is larger than the lattice pitch"
 " (%.5f cm) — the pin extends into the neighbouring cell"
 
-#: cekirdek/dogrula/geometri.py:324
+#: cekirdek/dogrula/geometri.py:340
 msgid ""
 "OpenMC bunu hata saymaz: kafes hücresi çubuğu sessizce keser. Adımı "
 "büyütün ya da çubuk yarıçaplarını küçültün."
@@ -1355,22 +1370,23 @@ msgstr ""
 "OpenMC does not treat this as an error: the lattice cell silently cuts "
 "the pin. Increase the pitch or reduce the pin radii."
 
-#: cekirdek/dogrula/geometri.py:334
+#: cekirdek/dogrula/geometri.py:350
 #, python-format
 msgid "iç içe demet '%s' (%.4f × %.4f cm) demet adımına (%.5f cm) sığmıyor"
 msgstr ""
 "nested assembly '%s' (%.4f × %.4f cm) does not fit the assembly pitch "
 "(%.5f cm)"
 
-#: cekirdek/dogrula/geometri.py:336
+#: cekirdek/dogrula/geometri.py:352
 #, python-format
 msgid ""
 "Kafes hücresi içteki demeti keser; dış halkadaki çubuklar sessizce "
-"kaybolur. Dış demetin adımı en az %.5f cm olmalı."
+"kaybolur. Dış demetin adımı en az %.5f cm olmalı: kor adımını bu değere "
+"(ya da biraz üstüne) ayarlayın."
 msgstr ""
 "The lattice cell cuts the inner assembly; the pins in the outer ring "
 "silently disappear. The pitch of the outer assembly must be at least %.5f"
-" cm."
+" cm: set the core pitch to this value (or slightly above)."
 
 #: cekirdek/dogrula/kaynak.py:48
 msgid "enerji tayfı"
@@ -1670,7 +1686,7 @@ msgstr "core with control drums is 2D — no axial leakage, k-eff comes out too 
 msgid "Gerçekçi bir tambur değeri için Kor sekmesinde aktif yükseklik tanımlayın."
 msgstr "For a realistic drum worth define an active height on the Geometry page."
 
-#: cekirdek/dogrula/kor.py:163 cekirdek/geometri/sablon.py:219
+#: cekirdek/dogrula/kor.py:163 cekirdek/geometri/sablon.py:221
 msgid "küresel düzenekte en az bir kabuk gerekir"
 msgstr "a spherical assembly needs at least one shell"
 
@@ -1684,7 +1700,7 @@ msgstr "the radius of shell %d must be greater than zero"
 msgid "%d. kabukta tanımsız malzeme: %s"
 msgstr "undefined material in shell %d: %s"
 
-#: cekirdek/dogrula/kor.py:177 cekirdek/geometri/sablon.py:223
+#: cekirdek/dogrula/kor.py:177 cekirdek/geometri/sablon.py:225
 #, python-format
 msgid "kabuk yarıçapları artan sırada olmalı: r%d = %.5f ≥ r%d = %.5f"
 msgstr "shell radii must be in increasing order: r%d = %.5f ≥ r%d = %.5f"
@@ -3920,11 +3936,15 @@ msgid "kurulamayan kesit: %s"
 msgstr "cross-section that cannot be built: %s"
 
 #: cekirdek/geometri/sablon.py:187
+msgid "kor haritası boş: Geometri sayfasında haritayı bir demetle boyayın"
+msgstr "the core map is empty: paint the map with an assembly on the Geometry page"
+
+#: cekirdek/geometri/sablon.py:189
 #, python-format
 msgid "kor haritası %d satır, boyut %d bekliyor"
 msgstr "the core map has %d rows, the size expects %d"
 
-#: cekirdek/geometri/sablon.py:255
+#: cekirdek/geometri/sablon.py:257
 msgid ""
 "tamburlu korda kor yarıçapı ve yansıtıcı kuşak kalınlığı sıfırdan büyük "
 "olmalı"
@@ -3932,17 +3952,17 @@ msgstr ""
 "in a core with control drums the core radius and the radial reflector "
 "thickness must be greater than zero"
 
-#: cekirdek/geometri/sablon.py:261
+#: cekirdek/geometri/sablon.py:263
 msgid "tambur yerleşimi geçersiz: "
 msgstr "invalid control drum placement: "
 
-#: cekirdek/geometri/sablon.py:263
+#: cekirdek/geometri/sablon.py:265
 msgid "tamburlu korda kor dolgusu seçilmeli (demet, çubuk ya da malzeme)"
 msgstr ""
 "in a core with control drums a core fill must be selected (assembly, pin "
 "or material)"
 
-#: cekirdek/geometri/sablon.py:304
+#: cekirdek/geometri/sablon.py:306
 #, python-format
 msgid "bilinmeyen kor türü: %s"
 msgstr "unknown core type: %s"
@@ -9470,17 +9490,27 @@ msgstr "control rod search: '%s' is not a control rod"
 msgid "kontrol çubuğu araması sınırı 0–100 daldırma yüzdesi içinde olmalı"
 msgstr "the control rod search bounds must lie within 0–100 percent insertion"
 
-#: cekirdek/tukenme_cikti.py:158
+#: cekirdek/tukenme_cikti.py:176
 msgid ""
 "Aktivite Bq, Bq/g (malzeme kütlesi başına); bozunma ısısı W, W/g (Q: "
 "zincirin bozunma enerjisi, nötrino hariç); foton kaynağı foton/s. Temas "
-"doz hızı FISPACT-II yöntemi (Gy/h, havada), atık sınıfı NRC 10 CFR 61.55 "
-"— bilgi amaçlıdır, sertifika değildir."
+"doz hızı FISPACT-II yöntemi (yarı sonsuz levha, yalnız yakıt, havada "
+"soğurulan doz [Gy(hava) ≠ Sv]; hacimden bağımsız, kılıf yok: üst sınır "
+"göstergesi); atık sınıfı NRC 10 CFR 61.55 tablo karşılaştırması (yakın-"
+"yüzey; kullanılmış yakıt için geçerli değil) — bilgi amaçlıdır, sertifika"
+" değildir. Bozunma ısısında λ ENDF/B-VIII.0 yarı ömründen, Q zincirden; "
+"aktivitede λ zincirden alınır (zincir ≠ ENDF/B-VIII.0 ise ikisi birbirini"
+" tutmaz)."
 msgstr ""
-"Activity Bq, Bq/g (per gram of material); decay heat W, W/g (Q: the "
-"chain's decay energy, neutrinos excluded); photon source photons/s. "
-"Contact dose rate by the FISPACT-II method (Gy/h, in air), waste class "
-"NRC 10 CFR 61.55 — for information, not a certification."
+"Activity Bq, Bq/g (per material mass); decay heat W, W/g (Q: the chain's "
+"decay energy, neutrinos excluded); photon source photons/s. Contact dose "
+"rate by the FISPACT-II method (semi-infinite slab, fuel only, dose "
+"absorbed in air [Gy(air) ≠ Sv]; independent of volume, no cladding: "
+"upper-bound indicator); waste class NRC 10 CFR 61.55 table comparison "
+"(near-surface; not valid for spent fuel) — for information, not a "
+"certification. For decay heat λ comes from the ENDF/B-VIII.0 half-life "
+"and Q from the chain; for activity λ comes from the chain (if the chain "
+"differs from ENDF/B-VIII.0 the two do not match)."
 
 #: cekirdek/tukenme_guc.py:148
 msgid "bu adımda güç dağılımı tally'si yok"
@@ -9905,7 +9935,7 @@ msgstr "depletion requires an eigenvalue (k-eff) calculation"
 msgid "geometride fisil (yakıt) malzeme yok"
 msgstr "there is no fissile (fuel) material in the geometry"
 
-#: cekirdek/uygunluk_denetimi/ayristir.py:147
+#: cekirdek/uygunluk_denetimi/ayristir.py:150
 #, python-format
 msgid ""
 "KAYIP PARÇACIK: %d — geometride boşluk ya da çakışma olabilir; sonuçlara "
@@ -9914,15 +9944,27 @@ msgstr ""
 "LOST PARTICLES: %d — the geometry may contain a gap or an overlap; check "
 "the geometry before trusting the results."
 
-#: cekirdek/uygunluk_denetimi/ayristir.py:152
+#: cekirdek/uygunluk_denetimi/ayristir.py:155
 #, python-format
 msgid "OpenMC hatası: %s"
 msgstr "OpenMC error: %s"
 
-#: cekirdek/uygunluk_denetimi/ayristir.py:154
+#: cekirdek/uygunluk_denetimi/ayristir.py:157
 #, python-format
 msgid "OpenMC %d uyarı yazdı (ilk %d):"
 msgstr "OpenMC wrote %d warnings (first %d):"
+
+#: cekirdek/uygunluk_denetimi/ayristir.py:161
+msgid ""
+"  Not: \"probability table\" uyarısı, nüklid verisindeki rezonans-ötesi "
+"(URR) olasılık tablosunda negatif değer bulunduğunu söyler; model hatası "
+"değildir. Sonuçtan şüphe ediyorsanız başka bir kütüphane sürümüyle "
+"karşılaştırın (Kılavuz: Sorun giderme)."
+msgstr ""
+"  Note: the \"probability table\" warning says that the unresolved-"
+"resonance (URR) probability table in the nuclide data has a negative "
+"value; it is not a model error. If you doubt the result, compare with "
+"another library version (Guide: Troubleshooting)."
 
 #: cekirdek/uygunluk_denetimi/denetle.py:83
 #, python-format
@@ -11144,6 +11186,10 @@ msgstr "energy bounds must be increasing with at least two values (eV)"
 #: cekirdek/varyans.py:163
 msgid "ağırlık penceresi 3B model gerektirir (yükseklik tanımlı değil)"
 msgstr "a weight window needs a 3D model (no height defined)"
+
+#: cekirdek/varyans.py:305
+msgid "(en kötü bin)"
+msgstr "(worst bin)"
 
 #: cekirdek/veri_arsiv.py:83
 #, python-format
