@@ -135,7 +135,7 @@ def usl_satiri(ad: str, d: Mapping[str, Any], dil: str = "tr") -> str:
                   if norm else "—")
     yontem = m.get(d["yontem"], d["yontem"])
     if d["yontem"] == "parametrik_olmayan" and d.get("guven") is not None:
-        yontem += " (β = %%%.1f)" % (100 * d["guven"])
+        yontem += (" (β = %%%.1f)" if dil == "tr" else " (β = %.1f%%)") % (100 * d["guven"])
     k_l = "—" if d.get("K_L") is None else "%.4f" % d["K_L"]
     usl = "%.4f" % d["usl"] if d.get("usl") is not None else m["hesaplanamadi"]
     return "| %s | %d | %s | %s | %s | %s | %s | %s | %s |" % (
