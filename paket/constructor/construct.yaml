@@ -10,7 +10,7 @@
 #    DAGMC/MOAB ek boyut getirir ve arayuz kullanmaz).
 # =============================================================================
 name: openmc-arayuz
-version: "{{ environ['OPENMC_ARAYUZ_SURUM'] }}"
+version: {{ environ['OPENMC_ARAYUZ_SURUM'] }}
 installer_type: sh
 installer_filename: "openmc-arayuz-{{ environ['OPENMC_ARAYUZ_SURUM'] }}-Linux-x86_64.sh"
 channels:
@@ -30,7 +30,7 @@ specs:
 license_file: LICENSE.txt                 # uret.sh LICENSE'tan uretir (.txt sart)
 post_install: post_install.sh
 extra_files:
-  - "{{ environ['OPENMC_ARAYUZ_WHEEL'] }}"
+  - {{ environ['OPENMC_ARAYUZ_WHEEL'] }}
   - kaldir.sh: share/openmc-arayuz-paket/kaldir.sh
   - masaustu: share/openmc-arayuz-paket/masaustu      # P2 (yoksa bos dizin)
 initialize_by_default: false              # ~/.bashrc'ye DOKUNMA
