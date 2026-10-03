@@ -31,7 +31,7 @@ cevabı yoktur: küçük bir örnekte CE/CM ile CE/LI farkı [ders 5.17](05c-der
 |---|---|---|---|---|---|
 | **Soğuma adımları** | Yanma adımlarından SONRA sıfır güçte (yalnız bozunma) adımlar, virgülle. OpenMC güç 0 olan adımda transport koşmaz; bu adımlarda k-eff yoktur (tabloda "—") ve yanma artmaz. | **Soğuma birimi** | 1, 10, 100, 1000 gün | Soğumayı yanma adımı olarak girmek (güç sürer) | `tukenme.sogutma.adimlar` |
 | **Soğuma birimi** | gün, saat, yıl (Julian, 365.25 gün) ya da saniye. MWd/kg anlamsızdır (güç yok). | — | gün | — | `tukenme.sogutma.birim` |
-| **SI iç döngü** | Yalnız SI-* entegratörlerinde görünür: OpenMC `n_steps`. | — | 10 (OpenMC varsayılanı) | Çok büyük değer: süre adım başına (n+1) transport ile artar | `tukenme.si_ic_adim` |
+| **SI iç döngü** | Yalnız SI-* entegratörlerinde görünür: OpenMC `n_steps`. | — | 10 (OpenMC varsayılanı; arayüz sınırı 1–100, fizik eşiği değildir) | Çok büyük değer: süre adım başına (n+1) transport ile artar | `tukenme.si_ic_adim` |
 | **Kaldığı yerden sürdür** | Dizindeki önceki sonuç silinmez. Yarıda kalan koşu son kayıtlı adımın başından devam eder; biten koşuya adım eklendiyse yalnız yeni adımlar koşulur. Önceki koşunun fiziği (malzeme, geometri, güç, entegratör) aynı ve adım listesi öncekinin devamı olmalıdır; değilse koşu başlamaz ve nedeni yazılır. | — | kapalı | Fiziği değiştirip sürdürmek (reddedilir) | `tukenme.surdur` |
 | **Hızlı kip (MicroXS, transport'suz)** | Tek transport'tan tek gruplu mikroskobik tesir kesitleri (`get_microxs_and_flux`, "direct"), sonra `IndependentOperator`: adımlarda transport yok. Spektrum değişimi görülmez, k-eff adım adım hesaplanmaz. Ön inceleme içindir. | — | kapalı | Yüksek yanmada sonucu tam tükenme yerine kullanmak | `tukenme.hizli_kip` |
 | **Tükenme sırasında kritik arama (k = 1)** | Her güçlü adımın başında k = 1 veren değer aranır (`Integrator.add_keff_search_control`, `Model.keff_search` GRsecant). Bulunan değer sonuç tablosunda ve h5'te (`keff_search_root`) durur. SI-* ve hızlı kiple birlikte kullanılamaz. | — | kapalı | Çok dar tolerans: arama adım başına onlarca transport koşar | `tukenme.kritik_arama.var` |
@@ -51,14 +51,14 @@ malzeme başına yazar.
 
 | Büyüklük | Kaynak (OpenMC 0.16) | Not |
 |---|---|---|
-| Aktivite | `Material.get_activity` | λN; yarı ömür koşunun zincirinden |
+| Aktivite | `Material.get_activity` | λN; yarı ömür koşunun zincirinden (bozunma ısısında λ ise ENDF/B-VIII.0 yarı ömründen alınır: zincir ≠ ENDF/B-VIII.0 ise aktivite ve ısı birbirini tutmaz) |
 | Bozunma ısısı | `Material.get_decay_heat` | λNQ; Q zincirin `decay_energy`'si (ENDF/B-VIII.0 bozunum alt kütüphanesi; nötrino hariç). W/g malzeme kütlesi başınadır |
 | Foton kaynağı | `Material.get_decay_photon_energy` | zincirdeki bozunma fotonu spektrumunun integrali |
-| Temas doz hızı | `Material.get_photon_contact_dose_rate` | FISPACT-II yöntemi (yarı sonsuz levha, havada, birikim katsayısı 2), Gy/h; bremsstrahlung yok |
-| Atık sınıfı | `Material.waste_classification` | ABD NRC 10 CFR 61.55 yakın-yüzey sınıfı; kullanılmış yakıt yüksek düzeyli atıktır — **bilgi amaçlıdır, sertifika değildir** |
+| Temas doz hızı | `Material.get_photon_contact_dose_rate` | FISPACT-II yöntemi, Gy/h: **yarı sonsuz levha, yalnız yakıt, havada soğurulan doz (üst sınır göstergesi)**; malzeme hacminden bağımsızdır, kılıf/kap yoktur, bremsstrahlung yok, birikim katsayısı 2; Gy(hava) ≠ Sv. Küçük bir pelet için fiziksel doz değil, seyrek çıkan üst sınırdır |
+| Atık sınıfı | `Material.waste_classification` | **NRC 10 CFR 61.55 tablo karşılaştırması** (yakın-yüzey; kullanılmış yakıt için geçerli değil, o yüksek düzeyli atıktır). Yanma ≈ 0 ya da tablo nüklidi yoksa panel "uygulanamaz" yazar (OpenMC'nin "Class A"sı bir sınıflandırma değildir) — **bilgi amaçlıdır, sertifika değildir** |
 
 Basitleştirilmiş CASL zincirinde birçok aktivasyon ürünü (ör. Co-60) yoktur; aktivite ve
-bozunma ısısı eksik çıkar. Bu çıktılar için tam ENDF/B-VIII.0 zincirini seçin.
+bozunma ısısı eksik çıkar (kısa ömürlü ürünlerde 10–20×; ders 5.17). Bu çıktılar için tam ENDF/B-VIII.0 zincirini seçin.
 
 #### Doğrulama
 

@@ -26,9 +26,9 @@ ROL_ADI = {"yakit": N_("yakıt"), "sogutucu": N_("soğutucu"), "moderator": N_("
 
 # (anahtar, menu metni, varsayilan ad) -- "+ Cubuk" menusu bu sirayla.
 CUBUK_SABLONLARI = (
-    ("yakit", N_("PWR yakıt çubuğu"), "yakit_cubugu"),
-    ("kilavuz", N_("Kılavuz boru"), "kilavuz_boru"),
-    ("kontrol", N_("Kontrol çubuğu"), "kontrol_cubugu"),
+    ("yakit", N_("PWR yakıt çubuğu"), N_("yakit_cubugu")),
+    ("kilavuz", N_("Kılavuz boru"), N_("kilavuz_boru")),
+    ("kontrol", N_("Kontrol çubuğu"), N_("kontrol_cubugu")),
 )
 
 

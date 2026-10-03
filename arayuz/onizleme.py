@@ -54,7 +54,7 @@ from matplotlib.figure import Figure
 from PySide6 import QtCore, QtWidgets
 
 from cekirdek import cizim_sureci as cs
-from cekirdek import onbellek, sema
+from cekirdek import onbellek, rapor, sema
 from cekirdek.ceviri import _, _n, N_
 from cekirdek.gunluk import kaydedici
 from arayuz import onizleme_boyama as boyama
@@ -113,6 +113,7 @@ class OnizlemeWidget(KapsamMixin, VurguMixin, QtWidgets.QWidget):
     dugum_secildi = QtCore.Signal(object)
     cizim_bitti = QtCore.Signal(bool)            # guncel istek bitti (basarili mi)
     gorunurluk_degisti = QtCore.Signal(bool)
+    kapi_degisti = QtCore.Signal()               # model degisti: Calistir kapisi yeniden okunmali
 
     def __init__(self, parent=None, istemci=None):
         super().__init__(parent)
@@ -176,6 +177,7 @@ class OnizlemeWidget(KapsamMixin, VurguMixin, QtWidgets.QWidget):
             self.cozunurluk.addItem(_(etiket))
         self.cozunurluk.setCurrentIndex(1)
         self.gosterge = QtWidgets.QCheckBox(_("Gösterge"))
+        self.gosterge.setMinimumWidth(self.gosterge.sizeHint().width())   # dar panelde kesilmesin (Q1-23)
         self.gosterge.setChecked(True)
         self.cakisma = QtWidgets.QCheckBox(_("Çakışmaları göster"))
         self.cakisma.setToolTip(_(
@@ -287,6 +289,7 @@ class OnizlemeWidget(KapsamMixin, VurguMixin, QtWidgets.QWidget):
         if not self._kapandi:
             self._tam_kirli = True
             self._sayac.start()
+            self.kapi_degisti.emit()
 
     def mesgul_mu(self):
         """Bekleyen (gecikmeli ya da iscide suren) istek var mi."""
@@ -431,7 +434,7 @@ class OnizlemeWidget(KapsamMixin, VurguMixin, QtWidgets.QWidget):
         self.eksenler = eksenler[0]
         self.eksenler2 = eksenler[1] if n > 1 else None
         if n == 2:
-            self.figur.suptitle(ist["spec"].get("ad", ""), fontsize=9)
+            self.figur.suptitle(rapor.yerel_baslik(ist["spec"]), fontsize=9)
 
     def _kesit_ciz(self, ax, ist, eksen, genislik, geom):
         kapsam = _kapsam(genislik)
@@ -447,7 +450,7 @@ class OnizlemeWidget(KapsamMixin, VurguMixin, QtWidgets.QWidget):
         if ist["renk"] == "material" and not ist["kapsam"]:
             self._malzeme_vurgusu(ax, geom, kapsam)
         self._eksen_bicimle(ax, eksen, genislik, len(ist["kesitler"]) == 2,
-                            ist["spec"].get("ad", ""))
+                            rapor.yerel_baslik(ist["spec"]))
 
     def _goruntu_koy(self, ax, img, kapsam, n):
         """Tam gorunumde seyreltilmis goruntu (ekran pikselinin en az

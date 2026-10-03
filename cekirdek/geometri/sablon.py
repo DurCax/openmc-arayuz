@@ -183,6 +183,8 @@ def _dikdortgen_kor(kor, ic, h, gx, gy, yans, sablon):
 def _kare_kafes(spec, kor):
     nx, ny = kor["boyut"]
     harita = kor["harita"]
+    if not harita:
+        raise ValueError(_("kor haritası boş: Geometri sayfasında haritayı bir demetle boyayın"))
     if len(harita) != ny:
         raise ValueError(_("kor haritası %d satır, boyut %d bekliyor") % (len(harita), ny))
     kafes = {"tur": "kafes", "id": "kor_kafesi", "sekil": "kare", "adim": kor["adim"],

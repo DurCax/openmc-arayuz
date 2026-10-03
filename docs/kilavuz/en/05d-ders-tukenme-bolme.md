@@ -28,7 +28,7 @@ consistent with a single-variable sweep.
    nuclides** and add up all rings of the Gd pin (material name `uo2_gd #i` in the result CSV).
 4. On the **Analysis** page, **Branch table** card: tick steps 0 and 2 in **Depletion step
    selection**; **Fuel temperature [K]** 900, **Dissolved boron** 500, **Combination** = each
-   variable alone → **Compute branch table**. Read Δk against the reference branch.
+   variable alone → **Compute branch table**. Read Δk and Δρ against the reference branch (use Δρ for coefficients).
 
 **Expected result** (CASL, 2000 × 40 / 15, seed 7; σ of k ≈ 0.004 = 400 pcm):
 
@@ -45,7 +45,9 @@ consistent with a single-variable sweep.
 
 Branch table (pin cell `pwr_tukenme.json`, 3000 × 30 / 10, measured by the test `test_y5_dal.py`):
 reference k = 1.3643 ± 0.0056 (step 0) and 1.3102 ± 0.0029 (5 MWd/kg); at T_fuel = 900 K Δk =
-−3071 ± 670 pcm and −2706 ± 536 pcm; at boron 500 ppm −7484 ± 695 pcm and −7189 ± 470 pcm.
+−3071 ± 670 pcm and −2706 ± 536 pcm; at boron 500 ppm −7484 ± 695 pcm and −7189 ± 470 pcm (all Δk). Converted to reactivity
+differences (Δρ = 1/k_ref − 1/k): T_fuel −1690 and −1610 pcm; boron −4250 and −4430 pcm, i.e. **≈ −8.5 and
+−8.9 pcm/ppm**.
 
 **Why?**
 
@@ -53,23 +55,30 @@ reference k = 1.3643 ± 0.0056 (step 0) and 1.3102 ± 0.0029 (5 MWd/kg); at T_fu
   also counts as having "burned" the inside; in reality the outer shell shields the interior
   (self-shielding). At 6 MWd/kg the undivided run leaves 19.8% of the Gd-157, the ringed runs leave
   29–31% (a ~35% relative difference). The value converges 0.295 → 0.309 → 0.313 for 3 → 5 → 8
-  rings; 5 rings cannot be told apart from 8 rings within statistics.
+  rings. This is a single run with one seed and no σ is given for the Gd-157 fraction: "5 rings cannot be told apart
+  from 8" (a 0.004 difference) needs a second seed. Compare the outer-ring thickness with the Gd-157 mean free path
+  (~0.09 mm at 0.025 eV): in 5 equal-volume rings the outer ring is ~43 µm, in 8 rings ~26 µm, which explains
+  the convergence observation (rough estimate: 8% Gd₂O₃, N(Gd-157) ≈ 4.2·10²⁰ cm⁻³, σ ≈ 2.5·10⁵ b).
 - **The k(t) differences are at the level of statistics.** In this small example k fluctuates within
   ±400 pcm between runs; the remaining Gd-157 fraction is far less noisy (power and normalization are
   the same). Raise the particle count to see the ring effect on k(t) (no threshold is set).
 - **Ring type.** Equal-volume, equal-thickness and thinning-outward rings give the Gd curve within
-  1–3% at 5 rings; in equal thickness the outer ring is large-volume and thins least, which is why
-  equal volume is recommended (source: Serpent `div` / CASMO practice).
+  1–6% at 5 rings (0.291 / 0.309 / 0.312 at 6 MWd/kg; 2–3% at 3 MWd/kg); in equal thickness the outer ring is large-volume and thins least, which is why
+  equal volume is recommended (similar subdivision is common in Serpent `div` / CASMO practice; an observation of practice, not a cited source).
 - **The branch table is consistent with the sweep.** The step-0 branch equals a single-variable sweep at
   the same condition (T_fuel = 900 K: 1.3336 ± 0.0037 and 1.3392 ± 0.0035; boron 500 ppm: 1.2895 ±
   0.0042 and 1.2810 ± 0.0038) within 2σ; the reference branch agrees with the depletion run's k
-  (1.3643 / 1.3621; 1.3102 / 1.3007) within 2σ. The boron worth ≈ −15 pcm/ppm (fresh, infinite pin
-  cell) changes little with burnup.
+  (1.3643 / 1.3621; 1.3102 / 1.3007) within 2σ. The boron worth ≈ −8.5 pcm/ppm (Δρ; fresh, infinite
+  pin cell; real PWR beginning of cycle ~−7…−10 pcm/ppm) does not change significantly with burnup at this
+  statistics.
+
+This lesson is a teaching measurement; it is **not a certification** (single seed, small statistics).
 
 **Questions.**
 
 1. What does it mean that the remaining Gd-157 fraction still rises slightly at 8 rings? What would your
    convergence criterion be?
-2. Why does the boron worth in the branch table shrink with burnup? (Hint: Gd-157 and U-235 decrease and
-   the spectrum hardens.)
+2. The measured boron worth did not change significantly with burnup (−7484 ± 695 → −7189 ± 470 pcm: difference
+   295 pcm, combined σ ≈ 840 pcm, i.e. 0.35σ). Why would you expect a change, and at what σ would you see it?
+   (Note: this branch table belongs to the Gd-free `pwr_tukenme.json` pin cell; the Gd hint does not apply.)
 3. In the same example set only `gd_cubugu` to 2 rings and subdivide `yakit_cubugu` too: what do you expect?

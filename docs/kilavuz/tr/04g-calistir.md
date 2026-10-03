@@ -105,7 +105,10 @@ Haritanın altında, haritadaki **aynı** değerlerin satır satır hali (yeni h
 harita). Her satır bir yakıt çubuğudur: demet (tam korda), konum (1'den numaralı, x soldan /
 y alttan), x/y [cm], çubuk türü, **bağıl güç** ± σ, **Güç [W]** ve **q′ [W/cm]** (Toplam güç
 girildiyse), 3B'de **En yüksek q′** ile seçili dilimin bağıl gücü ve q′'su. En sıcak çubuk
-(F_ΔH'nin çubuğu) kalın ve renkli satırdır; kesik çubuklar soluk yazılır.
+(F_ΔH'nin çubuğu) kalın ve renkli satırdır; kesik çubuklar soluk yazılır. Toplam güç girilmediyse W ve q′
+sütunları boştur (tablonun altındaki not bunu söyler; Hesap ayarları ▸ Güç dağılımı'nda girin). **Dışa aktarılan
+CSV** UTF-8 **BOM'lu** (`utf-8-sig`) yazılır: Excel/LibreOffice Türkçe karakterleri doğru tanısın diye bilinçli
+bir seçimdir; ham anahtar başlıkları (`demet`, `konum`, `x_cm`, …) makine okuması içindir, ondalık ayırıcı nokta.
 
 | Öğe | Ne yapar |
 |---|---|
@@ -150,7 +153,9 @@ kartın altındadır. Grafik **PNG kaydet** ile kaydedilir.
 ### Verimlilik (FOM) kartı
 
 Sabit kaynak koşusunda ya da [varyans azaltma](04f-hesap-ayarlari.md#ayar-varyans) açıkken görünür.
-Her kullanıcı tally'si için (tüm bölmelerin toplamı; bölmeler bağımsız kabul edilir) **toplam**,
+Her kullanıcı tally'si için, **(skor, nüklid) başına bir satır** (farklı birimli skorlar toplanmaz; filtre
+bölmeli tally'de **en kötü (bağıl hatası en büyük) bölme** alınır, bölmeler toplanmaz: aynı geçmişlerden gelen
+bölmelerin toplam σ'sı eksik olurdu; filtresiz tek skorda tally'nin kendi değeri) **değer**,
 **σ**, **σ bağıl**, koşu süresi **T** ve **FOM = 1 / (σ_bağıl² · T)** yazılır. FOM büyüdükçe aynı
 belirsizliğe daha kısa sürede inilir. Karşılaştırma yalnız **aynı tally ve aynı sonuç** içindir;
 ağırlık penceresi kullanıldıysa T bu koşunun süresidir (pencereleri üreten analog koşunun süresi

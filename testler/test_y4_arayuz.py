@@ -91,7 +91,7 @@ def test_cikti_karti():
     p.hesapla_tikla()
     kontrol("tablo 3 satir", p.tablo.rowCount() == 3, "-> %d; %s" % (p.tablo.rowCount(),
                                                                   p.durum.text()))
-    kontrol("doz ve atik sinifi metni", "Gy/h" in p.doz.text(), p.doz.text())
+    kontrol("doz ve atik sinifi metni", "Gy(hava)/h" in p.doz.text(), p.doz.text())
     kontrol("CSV etkin", p.csv.isEnabled())
     kontrol("CASL zinciri notu gorunur", "CASL" in p.durum.text(), p.durum.text())
     p.seri.setCurrentIndex(p.seri.findData("foton"))

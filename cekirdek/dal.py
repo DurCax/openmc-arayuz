@@ -37,6 +37,11 @@
  TABLO: dal_tablosu(durumlar) -> DalSatiri; dk [pcm] = (k - k_taban) x 1e5,
  sigma_dk = hypot(sigma, sigma_taban) x 1e5 (kosular bagimsiz sayilir;
  ayni tohum kullanildigindan gercek belirsizlik daha kucuktur: muhafazakar).
+ rho_pcm = (1/k_taban - 1/k) x 1e5: REAKTIVITE farki (kosu_gecmisi.k_farki ile
+ ayni tanim; katsayi okumasi icin dk degil bu sutun). sigma_rho = 1e5 x
+ hypot(sigma/k^2, sigma_taban/k_taban^2).
+ KRITIK ARAMA: tukenmede bor/cubuk aramasi aciksa dal modeli spec'in STATIK
+ degeriyle kurulur (adim basina aranan deger uygulanmaz): kritik_arama_notu uyarir.
 
  TERMINAL
    python3 -m cekirdek.dal model.json tukenme_dizini --adimlar 0,4,8 \\
@@ -148,6 +153,8 @@ class DalSatiri:
     dk_pcm: Optional[float]
     dk_sapma_pcm: Optional[float]
     hata: Optional[str] = None
+    rho_pcm: Optional[float] = None
+    rho_sapma_pcm: Optional[float] = None
 
 
 # ============================================================================
@@ -180,6 +187,18 @@ def degisken(spec: Mapping[str, Any], tur: str, degerler: Sequence[float],
     if not h:
         raise ValueError(_("'%s' için modelde uygun malzeme yok") % TURLER[tur][0])
     return DalDegiskeni(tur, h, tuple(float(d) for d in degerler))
+
+
+def kritik_arama_notu(spec: Mapping[str, Any]) -> Optional[str]:
+    """Tukenmede kritiklik aramasi (bor/cubuk) acikken dal tablosunun taban
+    kosulu uyarisi; arama kapaliysa None."""
+    from cekirdek import tukenme_ayar
+    k = tukenme_ayar.kritik_arama((spec or {}).get("tukenme") or {})
+    if not k.var:
+        return None
+    return _("Tükenmede kritiklik araması (%s) açıktı: dal modeli adım başına aranan değeri "
+             "değil, modeldeki sabit değeri kullanır; taban dal tükenmenin k'sına "
+             "eşit değildir.") % (_("bor") if k.tur == "bor" else _("çubuk"))
 
 
 def noktalar(ayar: DalAyar) -> List[Dict[str, float]]:
@@ -328,11 +347,14 @@ def kuyruga_ekle(spec: Mapping[str, Any], h5: str, ayar: DalAyar, kuyruk: Any, k
         raise ValueError(_("yanma adımı %d: sonuç dosyasında %d zaman noktası var")
                          % (gecersiz[0], len(adimlar)))
     hazir = []
+    arama_notu = kritik_arama_notu(spec)
     alinmis = [x.dizin for x in kuyruk.durumlar()]
     for adim in ayar.adimlar:
         for sira, nokta in enumerate(noktalar(ayar)):
             with _kq.hazirlik_kilidi():            # openmc Python API is parcacigi guvenli degil
                 model, notlar = dal_modeli(spec, sonuclar, adim, ayar, nokta)
+                if arama_notu:
+                    notlar = list(notlar) + [arama_notu]
                 dizin = _kq.ayri_dizin(kok_dizin, "adim%02d_dal%03d" % (adim, sira), alinmis,
                                        olustur=True)
                 alinmis.append(dizin)
@@ -377,14 +399,17 @@ def dal_tablosu(durumlar: Sequence[Any]) -> List[DalSatiri]:
         e = x.etiket[ETIKET]
         k = x.k
         t = taban.get(e["adim"])
-        dk = ds = None
+        dk = ds = rho = rho_s = None
         if k is not None and t is not None:
             dk = (k[0] - t[0]) * PCM
             ds = math.hypot(k[1], t[1]) * PCM
+            if k[0] > 0 and t[0] > 0:
+                rho = (1.0 / t[0] - 1.0 / k[0]) * PCM
+                rho_s = PCM * math.hypot(k[1] / k[0] ** 2, t[1] / t[0] ** 2)
         satirlar.append(DalSatiri(
             e["adim"], e["zaman_d"], e["yanma"], e["nokta"], dict(e["degerler"]),
             None if k is None else k[0], None if k is None else k[1], dk, ds,
-            x.hata if x.asama.value in ("basarisiz", "iptal") else None))
+            x.hata if x.asama.value in ("basarisiz", "iptal") else None, rho, rho_s))
     return satirlar
 
 
@@ -403,10 +428,12 @@ def csv_metni(satirlar: Sequence[DalSatiri]) -> str:
     from cekirdek.guc_tablo import satirlar_csv
     adlar = degisken_adlari(satirlar)
     veri: List[List[Any]] = [["adim", "zaman_gun", "yanma_MWd_kg"] + adlar
-                             + ["k", "k_sigma", "dk_pcm", "dk_sigma_pcm", "hata"]]
+                             + ["k", "k_sigma", "dk_pcm", "dk_sigma_pcm",
+                                                "rho_pcm", "rho_sigma_pcm", "hata"]]
     for s in satirlar:
         veri.append([s.adim, s.zaman_d, s.yanma] + [s.degerler.get(a) for a in adlar]
-                    + [s.k, s.sapma, s.dk_pcm, s.dk_sapma_pcm, s.hata or ""])
+                    + [s.k, s.sapma, s.dk_pcm, s.dk_sapma_pcm,
+                                  s.rho_pcm, s.rho_sapma_pcm, s.hata or ""])
     return satirlar_csv(veri)
 
 

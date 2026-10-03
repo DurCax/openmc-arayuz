@@ -90,6 +90,8 @@ class YerlesimMixin(object):
         self.liste.currentRowChanged.connect(self._secim_degisti)
         self.d_kare = bl.ikincil_dugme(_("Kare demet"), "grid-3x3")
         self.d_hex = bl.ikincil_dugme(_("Altıgen demet"), "hexagon")
+        for d_ in (self.d_kare, self.d_hex):         # EN etiketler kesilmesin (Q1-07)
+            d_.setMinimumWidth(d_.sizeHint().width())
         self.d_kopya = bl.duz_dugme(_("Kopyala"), "copy", _("Seçili demetin kopyasını ekler."))
         self.d_sil = bl.tehlikeli_dugme(_("Sil"), "trash", _(
             "Seçili demeti siler (kullanılıyorsa önce sorar)."))
@@ -196,6 +198,7 @@ class YerlesimMixin(object):
         self._dis_duzen = dy
         self.e_dis = QtWidgets.QLabel(_("Demet dışı"))
         self.e_dis.setToolTip(_("Demet hücrelerinin dışında kalan alanı dolduran malzeme."))
+        self.e_dis.setWordWrap(True)        # EN "Outside assembly" dar kartta kesilmesin (Q1-07)
         self.form.addRow(self.e_dis, self._dis_yer)
 
     def _gelismis_kutusu(self):

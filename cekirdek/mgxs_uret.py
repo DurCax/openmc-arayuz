@@ -250,7 +250,9 @@ def xsdata_adlari(lib: "openmc.mgxs.Library") -> Dict[int, str]:
 
 def bolge_adi(domain: Any) -> str:
     ad = getattr(domain, "name", "") or ""
-    tur = type(domain).__name__
+    # OpenMC sinif adi yerine okunur tur (Q1-19): Material -> Malzeme (arayuz dilinde)
+    tur = {"Material": _("Malzeme"), "Cell": _("Hücre"),
+           "Universe": _("Evren")}.get(type(domain).__name__, type(domain).__name__)
     return "%s %d%s" % (tur, domain.id, (" (%s)" % ad) if ad else "")
 
 

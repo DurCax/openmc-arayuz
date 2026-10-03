@@ -4,6 +4,8 @@
 import argparse
 import logging
 import sys
+
+from cekirdek.ceviri import _
 from typing import List, Optional
 
 from cekirdek.masaustu import kurulum
@@ -37,7 +39,11 @@ def main(argv: Optional[List[str]] = None) -> int:
         elif args.komut == "kaldir":
             kurulum.kaldir()
         else:
-            return 0 if kurulum.durum().kurulu else 1
+            kurulu = kurulum.durum().kurulu
+            # Cikis kodu ayni (0 kurulu, 1 degil); yaninda okunur bir satir (Q1-27)
+            print(_("Masaüstü bütünleşmesi kurulu.") if kurulu
+                  else _("Masaüstü bütünleşmesi kurulu değil (kurmak için: kur)."))
+            return 0 if kurulu else 1
     except kurulum.MasaustuHatasi as hata:
         logging.getLogger(__name__).error("hata: %s", hata)
         return 1

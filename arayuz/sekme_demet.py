@@ -532,7 +532,7 @@ class DemetSekmesi(YerlesimMixin, KilifMixin, SekmeTabani):
                         _("Demet kurmadan önce Parçalar sekmesinde en az bir çubuk "
                           "tanımlayın."))
             return None
-        ad = benzersiz_ad(self.spec, "demet_altigen" if tur == "altigen" else "demet_kare")
+        ad = benzersiz_ad(self.spec, _("demet_altigen") if tur == "altigen" else _("demet_kare"))
         self.spec.setdefault("demetler", []).append(yeni_demet(self.spec, tur, ad))
         kor = self.spec.get("kor") or {}
         # Tek demet modelinde kor henuz bir demete isaret etmiyorsa bu demet

@@ -33,7 +33,7 @@ difference is at the level of the statistical noise).
 |---|---|---|---|---|---|
 | **Cooling steps** | Steps at zero power (decay only) AFTER the burnup steps, comma separated. OpenMC runs no transport in a step with zero power; these steps have no k-eff ("—" in the table) and the burnup does not grow. | **Cooling unit** | 1, 10, 100, 1000 days | Entering cooling as burnup steps (the power stays on) | `tukenme.sogutma.adimlar` |
 | **Cooling unit** | day, hour, year (Julian, 365.25 days) or second. MWd/kg is meaningless (no power). | — | day | — | `tukenme.sogutma.birim` |
-| **SI inner loops** | Visible only for the SI-* integrators: OpenMC `n_steps`. | — | 10 (OpenMC default) | A very large value: run time grows with (n+1) transport solutions per step | `tukenme.si_ic_adim` |
+| **SI inner loops** | Visible only for the SI-* integrators: OpenMC `n_steps`. | — | 10 (OpenMC default; interface limit 1–100, not a physical threshold) | A very large value: run time grows with (n+1) transport solutions per step | `tukenme.si_ic_adim` |
 | **Resume from where it stopped** | The previous result in the directory is not deleted. An interrupted run continues from the start of the last saved step; if steps were added to a finished run only the new steps are run. The physics of the previous run (materials, geometry, power, integrator) must be the same and the step list must continue the previous one; otherwise the run does not start and the reason is shown. | — | off | Changing the physics and resuming (refused) | `tukenme.surdur` |
 | **Fast mode (MicroXS, no transport)** | One-group microscopic cross sections from a single transport solution (`get_microxs_and_flux`, "direct"), then `IndependentOperator`: no transport in the steps. The spectrum change is not seen and k-eff is not computed step by step. For previews only. | — | off | Using the result at high burnup instead of full depletion | `tukenme.hizli_kip` |
 | **Critical search during depletion (k = 1)** | At the start of every powered step the value that gives k = 1 is searched (`Integrator.add_keff_search_control`, `Model.keff_search` GRsecant). The value found is in the result table and in the h5 file (`keff_search_root`). Not available with SI-* or fast mode. | — | off | A very tight tolerance: the search runs tens of transport solutions per step | `tukenme.kritik_arama.var` |
@@ -53,14 +53,14 @@ every series per material.
 
 | Quantity | Source (OpenMC 0.16) | Note |
 |---|---|---|
-| Activity | `Material.get_activity` | λN; half-lives from the run's chain |
+| Activity | `Material.get_activity` | λN; half-lives from the run's chain (for decay heat λ comes from the ENDF/B-VIII.0 half-life: if the chain differs from ENDF/B-VIII.0, activity and heat do not match) |
 | Decay heat | `Material.get_decay_heat` | λNQ; Q is the chain's `decay_energy` (ENDF/B-VIII.0 decay sublibrary; neutrinos excluded). W/g is per gram of material |
 | Photon source | `Material.get_decay_photon_energy` | integral of the decay photon spectrum in the chain |
-| Contact dose rate | `Material.get_photon_contact_dose_rate` | FISPACT-II method (semi-infinite slab, in air, build-up factor 2), Gy/h; no bremsstrahlung |
-| Waste class | `Material.waste_classification` | US NRC 10 CFR 61.55 near-surface class; spent fuel is high-level waste — **for information, not a certification** |
+| Contact dose rate | `Material.get_photon_contact_dose_rate` | FISPACT-II method, Gy/h: **semi-infinite slab, fuel only, dose absorbed in air (upper-bound indicator)**; independent of the material volume, no cladding/can, no bremsstrahlung, build-up factor 2; Gy(air) ≠ Sv. For a small pellet it is an upper bound, not a physical dose |
+| Waste class | `Material.waste_classification` | **NRC 10 CFR 61.55 table comparison** (near-surface; not valid for spent fuel, which is high-level waste). With burnup ≈ 0 or no table nuclide the panel shows "not applicable" (OpenMC's "Class A" is not a classification) — **for information, not a certification** |
 
 The simplified CASL chain lacks many activation products (e.g. Co-60); activity and decay
-heat come out incomplete. Choose the full ENDF/B-VIII.0 chain for these outputs.
+heat come out incomplete (10–20× for short-lived products; lesson 5.17). Choose the full ENDF/B-VIII.0 chain for these outputs.
 
 #### Verification
 

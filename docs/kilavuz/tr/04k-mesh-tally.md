@@ -90,6 +90,10 @@ koşuyu tekrar çalıştırın. Normalizasyon çarpanının kendi belirsizliği 
 <a id="mesh-vtk"></a>
 ### VTK ve ParaView
 
+**2B modelde** (eksenel sonsuz) ağın z sınırı ±10⁴ cm'dir; dosyaya yalnız **yazılan koordinatlar** 1 cm'lik bir
+dilime (z = −0.5…+0.5 cm) indirilir ki ParaView'in varsayılan görünümü kullanılabilsin. Alan değerleri
+(hacim / bağıl / hacim başına) ve arayüzdeki harita değişmez; z kalınlığı fiziksel bir yükseklik değildir.
+
 Dosya legacy VTK biçimindedir (`DATASET STRUCTURED_GRID`, ASCII). Python `vtk` paketi
 kuruluysa OpenMC'nin kendi yazıcısı (`Mesh.write_data_to_vtk`, hacim normalizasyonu kapalı)
 kullanılır; değilse (varsayılan ortamda yok, yeni bağımlılık eklenmez) aynı nokta ve hücre

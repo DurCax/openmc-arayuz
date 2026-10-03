@@ -260,6 +260,7 @@ class AnaPencere(DogrulamaMixin, BaslangicAkisi, GezinmeCephesi, MenulerMixin, P
         self.kenar.daraltildi.connect(
             lambda dar: self.ayarlar.setValue(kabuk.KENAR_AYARI, bool(dar)))
         self.onizleme.durum.connect(self._onizleme_durum)
+        self.onizleme.kapi_degisti.connect(self._onizleme_kapisi_degisti)
         self.onizleme.olcu_bulundu.connect(lambda *_a: self._ozet_guncelle())
         self.baslangic.bos_istendi.connect(self._bos_basla)
         self.baslangic.ornek_istendi.connect(self.proje_ac)

@@ -19,6 +19,24 @@ The program runs in a **conda environment**: OpenMC is not published on PyPI, it
 
 ## 1.2 Installation steps
 
+**Single-file installer package (no conda needed).** Linux x86-64, glibc >= 2.28 (Ubuntu 20.04+, Fedora 29+,
+Debian 10+). The package contains Python, OpenMC 0.16, PySide6 and the application (~410 MB; ~1.7 GB installed),
+works offline, needs no root rights and **contains no nuclear data** (the application's *Data* page downloads it,
+see [1.3](#nukleer-veri)):
+
+```bash
+bash openmc-arayuz-<version>-Linux-x86_64.sh -b -p ~/openmc-arayuz   # installs (-b: no questions)
+~/openmc-arayuz/bin/openmc-arayuz                                      # starts
+bash ~/openmc-arayuz/share/openmc-arayuz-paket/kaldir.sh               # uninstalls (deletes only that folder)
+```
+
+To build the package yourself use `paket/constructor/uret.sh` (output `dist/`). If you used this route, skip
+steps 1 and 2 below and continue with step 3 (nuclear data). The installation does not touch your projects,
+`~/nucdata` or `~/.bashrc`. With the package the desktop shortcut is registered during installation; by hand:
+`~/openmc-arayuz/bin/python -m cekirdek.masaustu kur`.
+
+**Installation with conda:**
+
 **1. Conda (Miniforge).** Skip if you already have conda/mamba.
 
 ```bash
@@ -66,7 +84,7 @@ double click (no administrator rights needed; it writes only to your own `~/.loc
 
 ```bash
 python -m cekirdek.masaustu kur        # menu entry + icon + project file type
-python -m cekirdek.masaustu durum      # installed? (exit 0 = installed)
+python -m cekirdek.masaustu durum      # installed? prints "installed" / "not installed" (exit 0 = installed, 1 = not)
 python -m cekirdek.masaustu kaldir     # removes only the files it installed; leaves no trace
 ```
 

@@ -145,6 +145,25 @@ def bos_sablon(anahtar):
     """
     spec = _bos_sablon_ham(anahtar)
     _parametrik_malzemeler(spec, SABLON_MALZEMELERI.get(anahtar, {}))
+    return _gorunen_adlar(spec)
+
+
+def _gorunen_adlar(spec):
+    """Sablonun cubuk/demet adlari etkin dilde (EN: fuel_pin ...). Yalniz YENI
+    sablonun varsayilan adlari degisir; mevcut projelerin adlarina dokunulmaz.
+    Malzeme adlari kutuphane kimligidir (sablonlar aday adlarla arar): degismez.
+    Turkce'de _() adi aynen dondurur: davranis degismez."""
+    from cekirdek import geometri
+    adlar = (("cubuk", _("yakit_cubugu")), ("cubuk", _("kilavuz_boru")),
+             ("cubuk", _("kontrol_cubugu")), ("cubuk", _("emici_cubuk")),
+             ("demet", _("demet_17x17")), ("demet", _("demet_hex")))
+    tur_listesi = {"cubuk": "cubuklar", "demet": "demetler"}
+    turkce = ("yakit_cubugu", "kilavuz_boru", "kontrol_cubugu", "emici_cubuk",
+              "demet_17x17", "demet_hex")
+    for (tur, yeni), eski in zip(adlar, turkce):
+        if yeni == eski or not any(x.get("ad") == eski for x in spec.get(tur_listesi[tur]) or []):
+            continue
+        spec = geometri.ad_degistir(spec, tur, eski, yeni)
     return spec
 
 

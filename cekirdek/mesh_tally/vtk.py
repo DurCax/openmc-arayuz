@@ -16,6 +16,7 @@
  Dosya once gecici adla yazilir, sonra os.replace (yarim dosya kalmaz).
 """
 
+import dataclasses
 import os
 import re
 import tempfile
@@ -111,6 +112,26 @@ def _yerlesik_yaz(sonuc, f, veri):
         np.savetxt(f, np.asarray(dizi, dtype=float).T.ravel(), fmt="%.17g")
 
 
+VTK_SONSUZ_Z_ESIGI = 1.0e3     # [cm] bundan buyuk |z| sinirlari "sonsuz eksen" sayilir
+VTK_BIRIM_YUKSEKLIK = 1.0      # [cm] dista aktarilan 2B geometrinin z kalinligi
+
+
+def _z_kirp(sonuc):
+    """2B (eksenel sonsuz) duzenli mesh'in z siniri +-1e4 cm ise yalniz DISA
+    AKTARILAN geometrinin z'sini 1 cm'ye indirir (ParaView varsayilan gorunumu
+    kullanilabilsin). Degerler (hacim/ bagil / hacim basina) ve sonuc nesnesi
+    degismez: yalniz yazilan koordinatlar."""
+    if sonuc.tur != "duzenli" or len(sonuc.izgaralar[2]) != 2:
+        return sonuc
+    z = sonuc.izgaralar[2]
+    if max(abs(float(z[0])), abs(float(z[-1]))) < VTK_SONSUZ_Z_ESIGI:
+        return sonuc
+    yarim = VTK_BIRIM_YUKSEKLIK / 2.0
+    return dataclasses.replace(
+        sonuc, izgaralar=(sonuc.izgaralar[0], sonuc.izgaralar[1],
+                          np.array([-yarim, yarim])))
+
+
 def vtk_yolunu_denetle(yol) -> str:
     """Yazmadan ONCE: .vtk uzantisi ve yazilabilir ust dizin (OSError/ValueError)."""
     if not str(yol).lower().endswith(".vtk"):
@@ -130,6 +151,7 @@ def vtk_yaz(sonuc, yol, yontem="hacim", kaynak_hizi=None, nuklid=None, yerlesik=
     """
     dizin = vtk_yolunu_denetle(yol)
     veri = alanlar(sonuc, yontem, kaynak_hizi, nuklid, eksenel_sonsuz)
+    sonuc = _z_kirp(sonuc)               # alanlar() ONCE hesaplandi: degerler etkilenmez
     if yerlesik is None:
         yerlesik = not _vtk_var()
     fd, gecici = tempfile.mkstemp(prefix=".mesh_", suffix=".vtk", dir=dizin)

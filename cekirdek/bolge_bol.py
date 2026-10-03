@@ -38,12 +38,14 @@
    esit_hacim     her halka ayni alani (hacmi) tasir: r_k^2 = r_ic^2 + k/n (r_dis^2 - r_ic^2).
                   Cizgisel olarak dista INCELEN halkalar verir; Gd icin onerilen
                   baslangic (kendinden perdeleme dista yogun: dis halka gucun
-                  cogunu tasir, K3 incelemesi). Kaynak: Serpent `div`/CASMO uygulamalari
-                  Gd pinini esit hacimli ya da dista sikilasan halkalara boler.
+                  cogunu tasir, K3 incelemesi). Serpent `div`/CASMO uygulamalarinda Gd
+                  pini benzer bolunur (uygulama gozlemi, kunyeli kaynak degil).
    esit_kalinlik  r_k = r_ic + k/n (r_dis - r_ic): dista daha buyuk hacimli halkalar;
                   kiyas icindir, Gd icin onerilmez.
    dista_incelen  halka kalinliklari geometrik azalir (her halka bir icerdekinin
-                  `oran` kadari, varsayilan 0.6): esit hacimden de sikisik dis halka.
+                  `oran` kadari, varsayilan 0.6): n >= 4 halkada esit hacimden de sikisik dis
+                  halka (oran 0.6, r_ic = 0: n=2 dis halka yaricap orani 0.375 > esit hacim
+                  0.293; n=3 0.184 ~ 0.184; n=4 0.099 < 0.134; n=5 0.056 < 0.106).
                   Oran bir muhendislik tercihidir, olculmus bir esik degil.
 ================================================================================
 """

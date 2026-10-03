@@ -167,12 +167,12 @@ Aracın kriter (benchmark) paketi ve ölçülen sonuçlar `docs/VV.md`'dedir
 aynıdır ve testle denetlenir. Ortam: OpenMC 0.16.0, ENDF/B-VIII.0 (HDF5, 294 K). Adım adım ders:
 [benchmark ve C/E](05-dersler.md#ders-benchmark).
 
-**Küme.** 49 deney kriteri (ICSBEP; v3 Y11 ile): ilk dördü `ornekler/godiva_kriter.json`,
-`ornekler/kriter_jezebel.json`, `ornekler/kriter_flattop25.json`, `ornekler/kriter_lct008.json`;
+**Küme.** 49 deney kriteri (ICSBEP; v3 Y11 ile; 3 + 22 + 24): ilk üçü `ornekler/godiva_kriter.json`,
+`ornekler/kriter_jezebel.json`, `ornekler/kriter_flattop25.json`;
 22'si `ornekler/vv/` altında, mit-crpg/benchmarks (MIT lisansı) OpenMC modellerinden eş merkezli küre
 kabukları olarak aktarılmıştır; 24'ü LEU oksit kafesidir (v3 Y11): LEU-COMP-THERM-006 (TCA, 18 durum,
 kamuya açık birincil rapor JAERI 1254'ten kurulan modeller) ve LEU-COMP-THERM-008 (6 durum,
-mit-crpg). LCT-008 durum 1 h_x ile yeniden üretildi; V&V kümesinde v2 dosyasının yerini alır.
+mit-crpg). LCT-008 durum 1 h_x ile yeniden üretildi; V&V kümesinde v2 dosyasının (`ornekler/kriter_lct008.json`) yerini alır; o dosya **kümeden çıkarıldı** (örnek olarak durur, 49'a sayılmaz).
 Ayrıca iki hesap-hesap kriteri (VVER-1000 LEU demeti, SFR MET-1000)
 vardır. **Deney ve hesap-hesap kriterleri ayrı tutulur:** deney kriterinde E ölçülmüş bir kritik
 düzenektir; hesap-hesap kriterinde E başka kodların hesap ortalamasıdır, "doğru" değer değildir.

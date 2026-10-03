@@ -32,17 +32,20 @@ bor derişiminin nasıl değiştiğini izlemek. Alanlar:
    türü** = Çözünmüş bor, **Hedef** = su, tahminler 500 ve 1500 ppm, sınır 0–5000, **k
    toleransı** 0.005. Başlatın: tabloda her adımın bulunan bor değeri ve k ≈ 1 görünür.
 
-**Ne görmelisiniz (ölçüldü, `testler/test_y4_kosu.py`, CASL zinciri, 1000 parçacık × 10 aktif çevrim).**
+**Ne görmelisiniz (ölçüldü; k ve entegratör satırları `testler/test_y4_kosu.py`, CASL zinciri, 1000 parçacık × 10 aktif çevrim; bozunma ısısı satırları 300 × 6/2, `pwr_tukenme.json`, 40 W/gHM ile 1 gün yanma + 1 ve 10 gün soğuma, yöntem: predictor).**
 
 | Büyüklük | Değer |
 |---|---|
 | Soğumada k | "—" (transport yok); yanma sabit |
-| Bozunma ısısı | 1 gün yanmadan sonra azalır: 0.53 → 0.095 → 0.014 W (1 cm pin; 1, 2, 12. gün) |
+| Bozunma ısısı (tam zincir: ENDF/B-VIII.0 termal) | 10.68 → 0.177 → 0.0140 W (1., 2., 12. gün; ağır metal kütlesi 4.26 g, güç 170 W; yani P'nin %6.3 → %0.10 → %0.008'i) |
+| Bozunma ısısı (CASL zinciri) | 0.54 → 0.097 → 0.0139 W: **EOL'de ~20×, +1 günde ~1.8× eksik** (zincirin 228 nüklidinin yalnız 133'ünde bozunma enerjisi var); 12. günde iki zincir uyuşur |
 | CE/CM − CE/LI | k farkı ~1100 pcm (birleşik 1σ ≈ 1000 pcm); 6 günde U-235 bağıl farkı 1.3e-5 (eşik yok) |
 | Hızlı kip (MicroXS) − tam | U-235 bağıl farkı ~3e-6 (2 gün) |
-| Kritik bor (taze pin) | ~3300 ppm; adım k'si \|k − 1\| ≤ 0.005 + 3σ |
+| Kritik bor (taze pin) | ~3300 ppm: **sızıntısız sonsuz pin hücrenin** değeri (k∞ ≈ 1.36, yanabilir zehir yok); gerçek bir kor değeri değildir (PWR çevrim başı ~1000–1500 ppm). Adım k'si \|k − 1\| ≤ 0.005 + 3σ |
 
-**Sorular.** (1) Soğumanın ilk gününde bozunma ısısı neden en hızlı düşer? (2) CE/LI ile
+Not: adım 6'daki k toleransı 0.005 (500 pcm ≈ 33 ppm bor), kılavuzun varsayılanı 1e-3'tür (100 pcm); ders ayarında adım gürültüsü ~400 pcm olduğundan 1e-3 aramayı çok uzatırdı.
+
+**Sorular.** (1) Soğumanın ilk gününde bozunma ısısı neden en hızlı düşer? (Tam zincirde 10.7 → 0.18 W, ~60×; Way–Wigner: P/P₀ ≈ 0.0622[t⁻⁰·² − (t+T)⁻⁰·²].) (2) CE/LI ile
 CE/CM farkı adımlar uzadıkça nasıl değişir — 5 gün yerine 50 günlük bir adımla deneyin.
 (3) Kritik bor tükenmeyle neden azalır? (4) Hızlı kip yüksek yanmada neden yanılır?
 

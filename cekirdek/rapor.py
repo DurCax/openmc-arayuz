@@ -530,6 +530,9 @@ def _yerel_baslik(spec):
     return spec.get("ad") or _("adsız model")
 
 
+yerel_baslik = _yerel_baslik          # arayuz (onizleme/ust cubuk) da ayni basligi kullanir
+
+
 def _kapak(spec):
     return {"baslik": _yerel_baslik(spec),
             "aciklama": _yerel_aciklama(spec),

@@ -165,6 +165,8 @@ required for speed).
 | actual packing in the regular lattice differs from the target by x % | warning | the cubic lattice count is quantized; the actual value is used |
 | packing > 0.30: CRP is used, setup gets slower | warning | expected; models with many particles can take minutes to build |
 
+**Limits.** This card is a teaching tool; its results are **not a certification**. The cell size (3 particle diameters, `HUCRE_CAP_KATI`), the 50 000-particle warning threshold (`UYARI_PARCACIK_SAYISI`) and the packing-fraction tolerance (1 %, `PF_TOLERANSI`) are measured **interface limits in the code, not physical thresholds**.
+
 ### Common findings
 
 | Finding (summary) | Level | Cause and fix |

@@ -29,12 +29,15 @@ the run directory is that plain model (the staleness check counts the subdivisio
 
     equal volume      r_k² = r_in² + (k/n) (r_out² − r_in²)        every ring has the same area
     equal thickness   r_k  = r_in  + (k/n) (r_out  − r_in)          large-volume rings on the outside
-    thinning outward  geometric thicknesses: t_(k+1) = ratio · t_k  tightest outer ring
+    thinning outward  geometric thicknesses: t_(k+1) = ratio · t_k  tightest outer ring for n ≥ 4
 
 In a Gd pin the absorption is strong at the surface, so the outer ring dominates power and burnup
-(K3 review). **Equal-volume** rings already thin outward and are a good starting point; source:
-Serpent `div` and CASMO practice of splitting the Gd pin into equal-volume or outward-tightening
-rings. Check on a small model that k(t) and the Gd curve converge as you add rings
+(K3 review). **Equal-volume** rings already thin outward and are a good starting point (the Gd pin is split similarly in Serpent `div` and CASMO practice; an observation of
+practice). "Thinning outward" gives an outer ring thinner than equal volume only for **n ≥ 4** rings (ratio 0.6,
+r_in = 0: n = 2 → outer-ring radius ratio 0.375, equal volume 0.293, i.e. THICKER; n = 3 → 0.184 (same); n = 4 →
+0.099 (0.134); n = 5 → 0.056 (0.106)). Compare the outer-ring thickness with the Gd-157 mean free path (~0.09 mm
+at 0.025 eV; in 5 equal-volume rings the outer ring is ~43 µm, in 8 rings ~26 µm). The ring limit (20) and the
+slice limit (50) are **interface limits, not physical thresholds**. Check on a small model that k(t) and the Gd curve converge as you add rings
 ([5.20 Lesson](05d-ders-tukenme-bolme.md#ders-tukenme-bolme)).
 
 **Volume conservation (analytic).** The ring areas are π(r_k² − r_(k−1)²), so they sum to π(r_out² −
@@ -55,3 +58,5 @@ become targets.
 **Script.** The generated Python script contains the subdivided model (rings in the pin
 definition, slices in the layers); the script and the interface build the same model with the same
 radii.
+
+**Limits.** This card is a teaching and scoping tool; its results are **not a certification**.

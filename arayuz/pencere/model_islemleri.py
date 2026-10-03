@@ -10,7 +10,7 @@ import copy
 import math
 
 from cekirdek.ceviri import _, _n, N_
-from cekirdek import sema, dogrula, surum, uygunluk, yollar
+from cekirdek import sema, dogrula, rapor, surum, uygunluk, yollar
 
 
 # Proje koku: arayuz/pencere/ -> arayuz/ -> kok (eski arayuz/ana_pencere.py'de
@@ -145,7 +145,7 @@ def model_ozet_parcalari(spec):
         boyut = {"2B": _("2B"), "3B": _("3B"),
                  "3B_katmanli": _("3B katmanlı")}.get(oz["boyut"], oz["boyut"])
     mod = _("Özdeğer (k-eff)") if oz["mod"] == "eigenvalue" else _("Sabit kaynak")
-    return {"ad": spec.get("ad") or _("adsız model"), "tur": tur_ozeti(spec),
+    return {"ad": rapor.yerel_baslik(spec), "tur": tur_ozeti(spec),
             "boyut": boyut, "mod": mod}
 
 
@@ -339,7 +339,7 @@ def _eksik_parcayi_kur(spec, tur, eklenen=None):
 
     def cubuk_gerekli():
         if not spec.get("cubuklar"):
-            ad = sc.benzersiz_ad(spec, "yakit_cubugu")
+            ad = sc.benzersiz_ad(spec, _("yakit_cubugu"))
             spec.setdefault("cubuklar", []).append(sc.cubuk_sablonu(spec, "yakit", ad))
             eklenen.append(ad)
 

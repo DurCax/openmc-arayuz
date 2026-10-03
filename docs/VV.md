@@ -28,7 +28,7 @@ hesap sonucudur ve "doğru" değer değildir.
 | godiva_kriter.json | HEU-MET-FAST-001 (Godiva) | 1.0000 ± 0.0010 | 1.00038 ± 0.00025 | +38 | 0.37 | 1.00038 | 100000 | 150/50 | 25.3 | geçti |
 | kriter_jezebel.json | PU-MET-FAST-001 (Jezebel) | 1.0000 ± 0.0020 | 0.99996 ± 0.00023 | −4 | 0.02 | 0.99996 | 50000 | 150/50 | 5.5 | geçti |
 | kriter_flattop25.json | HEU-MET-FAST-028 (Flattop-25) | 1.0000 ± 0.0030 | 1.00106 ± 0.00026 | +106 | 0.35 | 1.00106 | 100000 | 150/50 | 51.8 | geçti |
-| kriter_lct008.json | LEU-COMP-THERM-008, durum 1 | 1.0007 ± 0.0012 | 1.00067 ± 0.00021 | −3 | 0.02 | 0.99997 | 100000 | 260/50 | 451.4 | geçti |
+| kriter_lct008.json (v2; **kümeden çıkarıldı**, yerine vv/kriter_lct008_01; 49'a sayılmaz) | LEU-COMP-THERM-008, durum 1 | 1.0007 ± 0.0012 | 1.00067 ± 0.00021 | −3 | 0.02 | 0.99997 | 100000 | 260/50 | 451.4 | geçti |
 | vv/kriter_hst009a.json | HEU-SOL-THERM-009, durum 1 | 0.9990 ± 0.0043 | 1.00088 ± 0.00024 | +188 | 0.44 | 1.00188 | 100000 | 200/50 | 343.0 | geçti |
 | vv/kriter_hst013.json | HEU-SOL-THERM-013, durum 1 | 1.0012 ± 0.0026 | 0.99854 ± 0.00025 | −266 | 1.02 | 0.99734 | 100000 | 200/50 | 361.2 | geçti |
 | vv/kriter_hst032.json | HEU-SOL-THERM-032 (ORNL-10) | 1.0015 ± 0.0026 | 0.99851 ± 0.00020 | −299 | 1.15 | 0.99701 | 100000 | 200/50 | 449.5 | geçti |
@@ -146,7 +146,7 @@ bölünebilir atom, yalnız H bölünebilir malzemenin içindeyse; H yalnız ayr
 | godiva_kriter.json | HEU-MET-FAST-001 | U-235 | 93.71 | metal | yok | 0 | 8.28e+05 | hızlı |
 | kriter_jezebel.json | PU-MET-FAST-001 | Pu | 95.48 | metal | yok | 0 | 1.27e+06 | hızlı |
 | kriter_flattop25.json | HEU-MET-FAST-028 | U-235 | 93.24 | metal | dogal_u | 0 | 7.5e+05 | hızlı |
-| kriter_lct008.json | LEU-COMP-THERM-008 | U-235 | 2.46 | oksit | su | — (heterojen) | 0.282 | termal |
+| kriter_lct008.json (v2; **kümeden çıkarıldı**) | LEU-COMP-THERM-008 | U-235 | 2.46 | oksit | su | — (heterojen) | 0.282 | termal |
 | vv/kriter_hst009a.json | HEU-SOL-THERM-009 | U-235 | 93.18 | çözelti | su | 35.8 | 0.522 | termal |
 | vv/kriter_hst013.json | HEU-SOL-THERM-013 | U-235 | 93.18 | çözelti | yok | 1.37e+03 | 0.0327 | termal |
 | vv/kriter_hst032.json | HEU-SOL-THERM-032 | U-235 | 93.21 | çözelti | yok | 1.84e+03 | 0.0313 | termal |

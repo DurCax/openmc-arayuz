@@ -216,11 +216,30 @@ class DogrulamaMixin(object):
     def _onizleme_durum(self, mesaj, basarili):
         # Yalnizca SORUN bildirilir: her duzenlemeden sonra gelen "onizleme
         # guncel" mesaji gereksizdir.
+        # Eski "onizleme basarisiz" bildirimi, onizleme basarili olunca ya da yenisi
+        # gelince kapanir (Q1-04: basarili cizimden sonra eski hata kalmasin).
+        eski = getattr(self, "_onizleme_bildirimi", None)
+        if eski is not None and (basarili or not self.baslangic_acik_mi()):
+            self._onizleme_bildirimi = None
+            try:
+                eski.kapat()
+            except RuntimeError:        # bildirim zaten silinmis (sure doldu)
+                _log.debug("onizleme bildirimi zaten kapanmis", exc_info=True)
         if not basarili and not self.baslangic_acik_mi():
-            self.bildir_mesaj(mesaj, "uyari", 8000)
+            self._onizleme_bildirimi = self.bildir_mesaj(mesaj, "uyari", 8000)
         self.s_calistir.kapi_guncelle()
         self.s_tukenme.kapi_guncelle()
         self._durum_ipucu_guncelle()
+        self._kosu_dugmesi_guncelle()
+
+    def _onizleme_kapisi_degisti(self):
+        """Model degisince onizleme gecersiz olur (kapi kapanir): Calistir
+        dugmeleri o anda guncellenir, yoksa etkin kalip modal uyari verirdi (Q1-05)."""
+        if self.spec is None or self.baslangic_acik_mi():
+            return
+        self.s_calistir.kapi_guncelle()
+        self.s_analiz.kapi_guncelle()
+        self.s_tukenme.kapi_guncelle()
         self._kosu_dugmesi_guncelle()
 
     def _sekme_durum_mesaji(self, mesaj, basarili):
@@ -269,7 +288,9 @@ class DogrulamaMixin(object):
         if not self.onizleme.cizildi_mi():
             return False, _("Geometri önizlemesi henüz çizilmedi. Önce çiz, "
                             "sonra çalıştır: yanlış geometriyle saatlerce koşmamak "
-                            "için önizlemenin çizilmesi bekleniyor.")
+                            "için önizlemenin çizilmesi bekleniyor. Önizleme Geometri "
+                            "sayfasında çizilir: oraya gidip çizilmesini bekleyin "
+                            "(Analiz ve Tükenme sayfaları da buna bakar).")
         uyari = sum(1 for b in self._bulgular if b.seviye == "uyari")
         if uyari:
             return True, _n("Çalıştırılabilir. %d uyarı var — sonucu etkileyebilir, "

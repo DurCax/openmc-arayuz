@@ -376,6 +376,10 @@ alanı yoktur. Profil C ve B'nin bazı girdileri koşu dizinine elle konan
   yapın.
 - `K3-hata`: OpenMC'nin çıktıya yazdığı hata iletileri (hata). `K3-uyari`: kayıp parçacık
   dışındaki OpenMC uyarıları (not; sonucu etkileyip etkilemediğini logda inceleyin).
+- **"Negative value(s) found on probability table for nuclide Zr96 at 600K"** (K3-uyari ve sonuç kartı):
+  OpenMC'nin nüklid verisindeki rezonans-ötesi (URR) olasılık tablosunda negatif değer bulduğunu söyleyen
+  uyarıdır; model hatası değildir ve koşu geçerlidir. Sonuç kartı bunu tek satırlık bir notla açıklar.
+  Sonuçtan şüphe ediyorsanız aynı modeli başka bir kütüphane sürümüyle karşılaştırın.
 - "Koşu logu (kosu.log) yok" → uygulanamadı: koşu bu uygulamayla yapılmamış; yeniden çalıştırın.
 
 ### Profil B — Kritiklik güvenliği

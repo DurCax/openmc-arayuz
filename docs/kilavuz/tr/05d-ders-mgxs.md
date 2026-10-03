@@ -47,7 +47,7 @@ yöntem) ayırmak ve taşıma düzeltmesinin etkisini ölçmek.
 |---|---|---|---|---|
 | 2 | CE | 1.3582 ± 0.0015 | — | MGXS tally'li koşu |
 | 3 | Σ νΣf·φ / Σ Σa·φ | 1.3565 | ≈ −170 pcm | (n,xn) net üretimi bu orana girmez |
-| 3–4 | G×G özdeğer | 1.3589 | ≈ +70 pcm | ν-saçılma (n,2n)'yi içerir; CE ile 4σ içinde |
+| 3–4 | G×G özdeğer | 1.3589 | ≈ +70 pcm | ν-saçılma (n,2n)'yi içerir; CE'den fark ≈ 0.5σ (σ_CE ≈ 153 pcm) |
 | 5 | MG MC | 1.3591 ± 0.0007 | özdeğere ≈ +20 pcm | aynı sabitler, homojen ortam |
 | 5 | Random ray | 1.3589 | özdeğere < 1 pcm | düz kaynak homojen ortamda kesin |
 | 6 | G×G özdeğer (P0) | 1.3589 | düzeltmesizle aynı | kaldırma Σtr − S11ᶜ = Σt − S11 |
@@ -103,3 +103,5 @@ kaynak hatası büyür ve bölme ya da **Doğrusal** kaynak gerekir.
 *Random Ray* bölümleri; W. M. Stacey, *Nuclear Reactor Physics* (2007), bölüm 4 (çok gruplu
 difüzyon) ve 13 (homojenleştirme); J. R. Tramm vd., "The Random Ray Method for neutral particle
 transport", *J. Comput. Phys.* 342 (2017) 229–252.
+
+**Not.** Bu ders bir eğitim ölçümüdür; grup sabitleri ve kabul eşikleri **sertifika değildir**. "CE'ye ≈ ±birkaç yüz pcm" yöntem hatası beklentisi ölçümlerden sonra konmuş bir öğretim sınırıdır (homojenleştirme/yoğunlaştırma hatası için bkz. Stacey 2007, bölüm 13); fizik eşiği değildir.

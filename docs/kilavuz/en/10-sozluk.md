@@ -204,6 +204,14 @@ add the term to SOZLUK.md).
 | branch calculation | dal hesabı |  |
 | branch table | dal tablosu |  |
 | reference branch | taban dal | base case |
+| decay heat | bozunma ısısı | residual heat |
+| activity | aktivite | radioactivity |
+| contact dose rate | temas doz hızı | surface dose |
+| waste class | atık sınıfı | waste category |
+| cooling step | soğuma adımı | decay step |
+| critical boron | kritik bor | boron search result |
+| removal | kaldırma (grup sabiti) | loss |
+| group condensation | yoğunlaştırma (grup) | collapse |
 
 ### 10.6 Model check, conformity and report
 

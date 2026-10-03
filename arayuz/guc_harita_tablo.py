@@ -235,6 +235,10 @@ class PinTablosu(QtWidgets.QWidget):
         self._tablo, self._dagilim, self._spec = list(tablo or []), dagilim, spec
         self._model.iki_boyut = self._iki_boyut = bool(iki_boyut)
         self._not_metinleri = list(notlar or ())
+        if self._tablo and self._tablo[0].get("W") is None:
+            self._not_metinleri.append(_(
+                "Toplam güç girilmediği için güç [W] ve q′ [W/cm] sütunları boş (CSV'de de): "
+                "Hesap ayarları ▸ Güç dağılımı'nda toplam gücü girin."))
         self._katli, neden = (None, _("güç dağılımı yok"))
         if self._tablo and dagilim:
             try:
