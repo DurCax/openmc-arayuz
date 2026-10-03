@@ -33,7 +33,13 @@ from typing import Optional
 from cekirdek.ceviri import _
 
 SERI_TCA = "LEU-COMP-THERM-006"
-E_TCA, SIGMA_E_TCA = 1.0000, 0.0020      # van der Marck (2006) Tablo IX
+E_TCA, SIGMA_ICSBEP_TCA = 1.0000, 0.0020  # van der Marck (2006) Tablo IX
+# Bu modelin (ICSBEP modeli degil) basitlestirme belirsizligi: U-234 icerigi JAERI 1254'te
+# yok; "u234" varyanti durum 1 ve 14'te k'yi -143 ve -187 pcm degistirdi (docs/VV.md,
+# 02.10.2026; sigma_c ~ 36 pcm). Ortalama 165 pcm 1σ kabul edilir (muhafazakar: etkinin
+# tamami). "alt_tapa" etkisi (-12, -24 pcm) istatistik icinde, eklenmedi.
+SIGMA_BASIT_TCA = 0.00165
+SIGMA_E_TCA = round(math.hypot(SIGMA_ICSBEP_TCA, SIGMA_BASIT_TCA), 4)   # 0.0026
 
 # JAERI 1254 Tablo 1 / Sekil 3 [cm]
 TCA_YAKIT_R = 1.250 / 2.0                 # pelet capi 12.50 mm
@@ -240,8 +246,9 @@ def tca_spec(no: int, varyant: Optional[str] = None) -> dict:
     spec["aciklama_en"] = (
         "TCA critical lattice (JAERI): %dx%d 2.6 w/o UO2 rods, pitch %.3f cm, critical water "
         "level %.2f cm at 20 C. Model built from the public primary report JAERI 1254 "
-        "(not the ICSBEP simplified model); benchmark k = %.4f ± %.4f (ICSBEP, as published "
-        "by van der Marck 2006)." % (d.n, d.n, d.adim, d.su_seviyesi, E_TCA, SIGMA_E_TCA))
+        "(not the ICSBEP simplified model); benchmark k = %.4f ± %.4f (ICSBEP ± 0.0020 as "
+        "published by van der Marck 2006, combined with this model's simplification "
+        "uncertainty, mainly the missing U-234)." % (d.n, d.n, d.adim, d.su_seviyesi, E_TCA, SIGMA_E_TCA))
     spec["referans"] = _referans(d, hucre, varyant)
     return spec
 
@@ -262,9 +269,11 @@ def _referans(d: TcaDurumu, hucre: BirimHucre, varyant: Optional[str]) -> dict:
     varyant_notu = "" if varyant is None else "; DUYARLILIK VARYANTI: %s" % varyant
     return {
         "k": E_TCA, "sigma": SIGMA_E_TCA, "tur": "deney", "seri": SERI_TCA,
-        "kaynak": ("ICSBEP %s, durum %d (TCA %s, %dx%d, desen %d)%s; E ± σ: S.C. van der "
-                   "Marck, Nucl. Data Sheets 107 (2006) 3061, Tablo IX"
-                   % (SERI_TCA, d.no, d.kafes, d.n, d.n, d.desen, varyant_notu)),
+        "kaynak": ("ICSBEP %s, durum %d (TCA %s, %dx%d, desen %d)%s; E = %.4f ± %.4f "
+                   "(ICSBEP; S.C. van der Marck, Nucl. Data Sheets 107 (2006) 3061, Tablo IX) "
+                   "⊕ %.5f model basitleştirmesi (U-234 yok; docs/VV.md) = ± %.4f"
+                   % (SERI_TCA, d.no, d.kafes, d.n, d.n, d.desen, varyant_notu, E_TCA,
+                      SIGMA_ICSBEP_TCA, SIGMA_BASIT_TCA, SIGMA_E_TCA)),
         "kaynak_model": ("JAERI 1254 (Tsuruta vd., 1978; JAEA açık arşiv "
                          "https://jopss.jaea.go.jp/pdfdata/JAERI-1254.pdf) Tablo 1, 2, 8-1, "
                          "Ek A1, A3; durum eşlemesi JAERI-Conf 2003-006 Tablo 1"),

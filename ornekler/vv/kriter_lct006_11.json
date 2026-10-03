@@ -1,7 +1,7 @@
 {
   "surum": 3,
   "ad": "LEU-COMP-THERM-006, durum 11 (TCA 2.48U, 18x18)",
-  "aciklama": "ICSBEP kriteri LEU-COMP-THERM-006 durum 11: TCA (JAERI) 2.48U kafesi, 18×18 %2.596 UO2 çubuğu, Al kılıf, kare adım 2.150 cm (Vsu/Vyakıt = 2.48, H/U = 7.15), 20 °C kritik su seviyesi 50.52 cm. Deneysel kriter değeri k = 1.0000 ± 0.0020.\nModel birincil rapordan (JAERI 1254, JAEA açık arşiv) kurulmuştur; ICSBEP basitleştirilmiş modeli DEĞİLDİR. Basitleştirmeler:\n- Alt yansıtıcı (30 cm) yalnız su: alt ızgara plakası, Al alt uç tapası (16.83 cm) ve yakıt destek plakası modellenmedi (varyant 'alt_tapa' ile ölçülür).\n- Tank duvarı ve tank dışı modellenmedi: yatay su yansıtıcısı tank iç yarıçapına (91.6 cm) kadar, dışı vakum (JAERI 1254 §2.3: yatay yansıtıcı > 40 cm).\n- Su seviyesinin üstü: kuru yakıt bölgesi boşlukta; üst ızgara, Al yünü ve üst tapa modellenmedi.\n- Yakıtta U-234 ve safsızlıklar yok (JAERI 1254 Ek A1 yalnız U-235, U-238, O verir); kılıf saf Al, hava boşluğu kılıf bölgesine karıştırılmış (Ek A1 bölgesel yoğunluğu).\n- Kritik su seviyesi 20 °C'ye indirgenmiş tavsiye değeridir (Tablo 8-1); bütün malzemeler 293 K.",
+  "aciklama": "ICSBEP kriteri LEU-COMP-THERM-006 durum 11: TCA (JAERI) 2.48U kafesi, 18×18 %2.596 UO2 çubuğu, Al kılıf, kare adım 2.150 cm (Vsu/Vyakıt = 2.48, H/U = 7.15), 20 °C kritik su seviyesi 50.52 cm. Deneysel kriter değeri k = 1.0000 ± 0.0026.\nModel birincil rapordan (JAERI 1254, JAEA açık arşiv) kurulmuştur; ICSBEP basitleştirilmiş modeli DEĞİLDİR. Basitleştirmeler:\n- Alt yansıtıcı (30 cm) yalnız su: alt ızgara plakası, Al alt uç tapası (16.83 cm) ve yakıt destek plakası modellenmedi (varyant 'alt_tapa' ile ölçülür).\n- Tank duvarı ve tank dışı modellenmedi: yatay su yansıtıcısı tank iç yarıçapına (91.6 cm) kadar, dışı vakum (JAERI 1254 §2.3: yatay yansıtıcı > 40 cm).\n- Su seviyesinin üstü: kuru yakıt bölgesi boşlukta; üst ızgara, Al yünü ve üst tapa modellenmedi.\n- Yakıtta U-234 ve safsızlıklar yok (JAERI 1254 Ek A1 yalnız U-235, U-238, O verir); kılıf saf Al, hava boşluğu kılıf bölgesine karıştırılmış (Ek A1 bölgesel yoğunluğu).\n- Kritik su seviyesi 20 °C'ye indirgenmiş tavsiye değeridir (Tablo 8-1); bütün malzemeler 293 K.",
   "malzemeler": [
     {
       "ad": "uo2_tca",
@@ -719,13 +719,13 @@
   "seviye": "ileri",
   "baslik": "LEU-COMP-THERM-006, durum 11 (TCA 2.48U, 18x18) — TCA 2.48U, 18×18 kafes, H = 50.52 cm",
   "baslik_en": "LEU-COMP-THERM-006, case 11 (TCA 2.48U, 18x18; ICSBEP benchmark, V&V set)",
-  "aciklama_en": "TCA critical lattice (JAERI): 18x18 2.6 w/o UO2 rods, pitch 2.150 cm, critical water level 50.52 cm at 20 C. Model built from the public primary report JAERI 1254 (not the ICSBEP simplified model); benchmark k = 1.0000 ± 0.0020 (ICSBEP, as published by van der Marck 2006).",
+  "aciklama_en": "TCA critical lattice (JAERI): 18x18 2.6 w/o UO2 rods, pitch 2.150 cm, critical water level 50.52 cm at 20 C. Model built from the public primary report JAERI 1254 (not the ICSBEP simplified model); benchmark k = 1.0000 ± 0.0026 (ICSBEP ± 0.0020 as published by van der Marck 2006, combined with this model's simplification uncertainty, mainly the missing U-234).",
   "referans": {
     "k": 1.0,
-    "sigma": 0.002,
+    "sigma": 0.0026,
     "tur": "deney",
     "seri": "LEU-COMP-THERM-006",
-    "kaynak": "ICSBEP LEU-COMP-THERM-006, durum 11 (TCA 2.48U, 18x18, desen 15); E ± σ: S.C. van der Marck, Nucl. Data Sheets 107 (2006) 3061, Tablo IX",
+    "kaynak": "ICSBEP LEU-COMP-THERM-006, durum 11 (TCA 2.48U, 18x18, desen 15); E = 1.0000 ± 0.0020 (ICSBEP; S.C. van der Marck, Nucl. Data Sheets 107 (2006) 3061, Tablo IX) ⊕ 0.00165 model basitleştirmesi (U-234 yok; docs/VV.md) = ± 0.0026",
     "kaynak_model": "JAERI 1254 (Tsuruta vd., 1978; JAEA açık arşiv https://jopss.jaea.go.jp/pdfdata/JAERI-1254.pdf) Tablo 1, 2, 8-1, Ek A1, A3; durum eşlemesi JAERI-Conf 2003-006 Tablo 1",
     "lisans": "Birincil rapor kamuya açık (JAEA); ICSBEP el kitabı metni kullanılmadı ve yeniden dağıtılmaz (STANDARTLAR.md §6 md. 13).",
     "aoa_girdi": {

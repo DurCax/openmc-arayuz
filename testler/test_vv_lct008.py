@@ -82,6 +82,8 @@ def test_spec_olustur():
     kontrol("MIT lisansi", "MIT" in ref["lisans"])
     kontrol("olcum yok (yeni)", "olcum" not in ref and "aoa" not in ref)
     kontrol("h_x girdisi", ref["aoa_girdi"]["h_x"] > 100.0)
+    kontrol("EALF tally'si (tayf icin)", any(t["ad"] == "vv_ealf" for t in spec["tallyler"]),
+            "-> %s" % [t["ad"] for t in spec["tallyler"]])
 
 
 def test_birim_hucre_hx():

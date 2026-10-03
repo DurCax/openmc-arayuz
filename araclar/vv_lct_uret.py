@@ -110,6 +110,51 @@ def isler_kur(uretilenler: List[Tuple[str, Dict[str, Any]]], is_parcacigi: int,
     return isler
 
 
+AOA_AYAR = (20000, 60, 20)            # EALF icin kisa kosu (vv_kriter_uret.AOA_AYAR ile ayni)
+
+
+def aoa_tamamla(uretilenler: List[Tuple[str, Dict[str, Any]]], is_parcacigi: int,
+                kosu_kok: str) -> List[str]:
+    """Olcumu olup AOA'sinda EALF/tayf eksik dosyalar: EALF tally'li kisa kosu ile
+    referans.aoa tamamlanir; k olcumu (referans.olcum) DEGISMEZ. DONER: guncellenenler."""
+    from cekirdek import kuyruk, sema
+    from cekirdek.vv import aoa
+    hedefler = []
+    for yol, spec in uretilenler:
+        if not os.path.exists(yol):
+            continue
+        with open(yol, encoding="utf-8") as f:
+            ham = json.load(f)
+        ref = ham.get("referans") or {}
+        if "olcum" not in ref or "tayf" in (ref.get("aoa") or {}):
+            continue
+        kisa = sema.tamamla(spec)
+        kisa["ayarlar"]["parcacik"], kisa["ayarlar"]["cevrim"], kisa["ayarlar"]["pasif"] = AOA_AYAR
+        hedefler.append((yol, ham, kisa))
+    with kuyruk.Kuyruk(en_fazla_paralel=1, is_parcacigi_butcesi=is_parcacigi) as k:
+        kimlikler = [(k.ekle(kuyruk.KosuIsi(
+            ad="aoa_" + os.path.basename(y), spec=kisa, is_parcacigi=is_parcacigi,
+            dizin=kuyruk.ayri_dizin(kosu_kok, "aoa_" + os.path.basename(y)))), y, ham, kisa)
+            for y, ham, kisa in hedefler]
+        k.baslat()
+        k.bekle(zaman_asimi=None)
+        guncel = []
+        for kimlik, yol, ham, kisa in kimlikler:
+            d = k.durum(kimlik)
+            if d.asama != kuyruk.Asama.BITTI:
+                _log.error("%s EALF koşusu: %s %s", yol, d.asama.value, d.hata or "")
+                continue
+            param = aoa.parametreler(kisa, d.dizin)
+            param.update(ham["referans"].get("aoa_girdi") or {})
+            param.pop("h_x_not", None)
+            ref = dict(ham["referans"], aoa={a: (round(v, 6) if isinstance(v, float) else v)
+                                             for a, v in param.items()},
+                       aoa_not=("EALF %d parçacık × %d çevrim kısa koşusundan; k ölçümü "
+                                "(olcum) ayrı referans koşusudur." % AOA_AYAR[:2]))
+            guncel.append(yaz(dict(ham, referans=ref, tallyler=kisa["tallyler"]), yol))
+    return guncel
+
+
 def kos(isler: list, is_parcacigi: int) -> List[str]:
     """Y10 kuyrugu, en_fazla_paralel=1 (sirali). DONER: basarisiz is adlari."""
     from cekirdek import kuyruk
@@ -153,12 +198,18 @@ def main(argv: Optional[List[str]] = None) -> int:
     p.add_argument("durumlar", nargs="*")
     p.add_argument("--varyant", default=None)
     p.add_argument("--yalniz-uret", action="store_true")
+    p.add_argument("--aoa-tamamla", action="store_true",
+                   help="olcumlu dosyada eksik EALF/tayf: kisa kosuyla tamamla (k degismez)")
     p.add_argument("--yeniden", action="store_true")
     p.add_argument("--is", type=int, default=VARSAYILAN_IS, dest="is_parcacigi")
     p.add_argument("--kosu-kok", default=KOSU_KOK)
     p.add_argument("--cikti", default=HEDEF)
     a = p.parse_args(argv)
     uretilenler = URETICILER[a.seri](a)
+    if a.aoa_tamamla:
+        for yol in aoa_tamamla(uretilenler, a.is_parcacigi, a.kosu_kok):
+            _log.info("AOA tamamlandı: %s", yol)
+        return 0
     if a.yalniz_uret:
         for yol, spec in uretilenler:
             _log.info("%s", yaz(spec, yol))

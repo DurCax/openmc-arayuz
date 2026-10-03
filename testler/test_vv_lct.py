@@ -77,8 +77,10 @@ def test_tca_spec_referans():
     print("\n[VL4] tca_spec referansi ve AOA girdisi")
     from cekirdek.vv import lct
     ref = lct.tca_spec(1)["referans"]
-    kontrol("E ± σ = 1.0000 ± 0.0020 deney",
-            (ref["k"], ref["sigma"], ref["tur"]) == (1.0, 0.0020, "deney"))
+    kontrol("E ± σ = 1.0000 ± √(0.0020² + 0.00165²) = 0.0026 deney",
+            (ref["k"], ref["sigma"], ref["tur"]) == (1.0, 0.0026, "deney"), "-> %s" % ref["sigma"])
+    kontrol("ICSBEP σ ve basitlestirme σ kaynakta", "0.0020" in ref["kaynak"]
+            and "0.00165" in ref["kaynak"])
     kontrol("seri", ref["seri"] == "LEU-COMP-THERM-006")
     kontrol("birincil kaynak yazili", "JAERI 1254" in ref["kaynak_model"])
     kontrol("E kaynagi yazili", "van der Marck" in ref["kaynak"])

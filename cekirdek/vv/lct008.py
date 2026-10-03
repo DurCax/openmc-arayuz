@@ -118,6 +118,8 @@ def spec_olustur(sablon: Mapping, no: int, su: Sequence[Tuple[str, float]],
     spec.update(malzemeler=malzemeler, demetler=[demet] + spec["demetler"][1:],
                 cubuklar=_cubuklar(sablon, harfler))
     spec["ayarlar"] = dict(spec["ayarlar"], **KOSU)
+    from cekirdek.vv import aoa
+    spec["tallyler"] = [aoa.ealf_tally_tanimi()]     # tayf (AOA) icin EALF
     _metinler(spec, no, harfler, _ppm(su))
     spec["referans"] = _referans(no, birim_hucre_h_x(spec))
     return spec
