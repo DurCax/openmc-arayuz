@@ -103,9 +103,17 @@ class MalzemeSekmesi(SekmeTabani):
         self.d_bos_elle.setAutoRaise(True)
         self.d_bos_elle.setCursor(QtCore.Qt.PointingHandCursor)
         self.d_bos_elle.clicked.connect(self._yeni)
+        self.d_bos_asistan = QtWidgets.QToolButton()
+        self.d_bos_asistan.setText(_("Asistan…"))
+        self.d_bos_asistan.setToolTip(self.d_asistan.toolTip())
+        self.d_bos_asistan.setAutoRaise(True)
+        self.d_bos_asistan.setCursor(QtCore.Qt.PointingHandCursor)
+        self.d_bos_asistan.clicked.connect(self._asistan)
         bos_duzen = self.bos.layout()
         bos_duzen.insertWidget(bos_duzen.indexOf(self.bos.dugme) + 1,
                                self.d_bos_elle, 0, QtCore.Qt.AlignHCenter)
+        bos_duzen.insertWidget(bos_duzen.indexOf(self.d_bos_elle) + 1,
+                               self.d_bos_asistan, 0, QtCore.Qt.AlignHCenter)
         bd.addWidget(self.bos, 1)
 
         self.yigin = QtWidgets.QStackedWidget()

@@ -56,6 +56,11 @@ class KorHaritasiMixin(object):
                         sayac[ad] = sayac.get(ad, 0) + 1
             if sayac:
                 self.palet.sec(max(sayac, key=sayac.get))
+            else:
+                # Bos harita: varsayilan firca "Bos" olmasin; ilk kare kafes (demet).
+                ilk = next((o[0] for o in self._palet_ogeleri() if o[3] == "kafes"), None)
+                if ilk is not None:
+                    self.palet.sec(ilk)
         self.izgara.firca_ayarla(self.palet.secili())
         self.izgara.yukle(adlar, self.palet.renkler())
         nx = max((len(s) for s in adlar), default=0)
@@ -82,8 +87,25 @@ class KorHaritasiMixin(object):
         if self._yukleniyor or self.spec is None:
             return
         if self._harita_yaz(self.izgara.adlar()):
+            self._adimi_oner()
             self._ozet_guncelle()
             self.bildir()
+
+    def _adimi_oner(self):
+        """Demet adimi hic degistirilmediyse (sema varsayilani 1.26 cm = cubuk adimi)
+        ve haritadaki ic ice demet buna sigmiyorsa adimi demetin olcusune cikarir."""
+        from cekirdek import sema
+        from cekirdek.dogrula import geometri as dg
+        kor = self.spec["kor"]
+        if abs(float(kor.get("adim") or 0.0) - sema.VARSAYILAN_KOR["adim"]) > 1e-12:
+            return
+        oneri = dg.demet_adim_onerisi(self.spec)
+        if oneri is None or oneri <= float(kor["adim"]):
+            return
+        kor["adim"] = round(oneri, 6)
+        eski = self.adim.blockSignals(True)
+        self.adim.setValue(kor["adim"])
+        self.adim.blockSignals(eski)
 
     def _altigen_boyandi(self):
         if self._yukleniyor or self.spec is None:

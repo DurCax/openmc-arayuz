@@ -113,6 +113,7 @@ class OnizlemeWidget(KapsamMixin, VurguMixin, QtWidgets.QWidget):
     dugum_secildi = QtCore.Signal(object)
     cizim_bitti = QtCore.Signal(bool)            # guncel istek bitti (basarili mi)
     gorunurluk_degisti = QtCore.Signal(bool)
+    kapi_degisti = QtCore.Signal()               # model degisti: Calistir kapisi yeniden okunmali
 
     def __init__(self, parent=None, istemci=None):
         super().__init__(parent)
@@ -287,6 +288,7 @@ class OnizlemeWidget(KapsamMixin, VurguMixin, QtWidgets.QWidget):
         if not self._kapandi:
             self._tam_kirli = True
             self._sayac.start()
+            self.kapi_degisti.emit()
 
     def mesgul_mu(self):
         """Bekleyen (gecikmeli ya da iscide suren) istek var mi."""

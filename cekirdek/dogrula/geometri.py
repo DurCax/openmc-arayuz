@@ -288,6 +288,22 @@ def _kafes_olculeri(d):
     return adim * nx, adim * ny, adim * min(nx, ny)
 
 
+def demet_adim_onerisi(spec):
+    """Kor haritasinda kullanilan ic ice demetlerin sigdigi en kucuk demet adimi
+    [cm]; harita bos ya da demet yoksa None (arayuz: tam kor varsayilan adimi)."""
+    kor = spec.get("kor") or {}
+    anahtar = kor.get("anahtar") or {}
+    kullanilan = {h for satir in (kor.get("harita") or []) for h in satir}
+    en_buyuk = 0.0
+    for harf in kullanilan:
+        ic = demet_bul(spec, anahtar.get(harf))
+        if ic is None:
+            continue
+        gx, gy, dar = _kafes_olculeri(ic)
+        en_buyuk = max(en_buyuk, max(gx, gy) if kor.get("tur") != "altigen_kafes" else dar)
+    return en_buyuk or None
+
+
 def _kafes_icerik_kontrol(spec, yer, adim, kafes_turu, hedefler):
     """
     Kafes adimi, konumlara yerlestirilen iceriklerden kucuk mu?
@@ -334,6 +350,7 @@ def _kafes_icerik_kontrol(spec, yer, adim, kafes_turu, hedefler):
                     _("iç içe demet '%s' (%.4f × %.4f cm) demet adımına (%.5f cm) "
                     "sığmıyor") % (hedef, gx, gy, P),
                     _("Kafes hücresi içteki demeti keser; dış halkadaki çubuklar "
-                    "sessizce kaybolur. Dış demetin adımı en az %.5f cm olmalı.")
+                    "sessizce kaybolur. Dış demetin adımı en az %.5f cm olmalı: "
+                    "kor adımını bu değere (ya da biraz üstüne) ayarlayın.")
                     % gerekli))
     return bulgular

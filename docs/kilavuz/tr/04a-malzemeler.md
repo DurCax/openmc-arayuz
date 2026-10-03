@@ -30,7 +30,7 @@ Tablo her malzemenin özetini gösterir; satıra çift tıklamak düzenler. Süt
 | Elle tanımla… | Boş bir bileşim tablosuyla yeni malzeme penceresini açar. |
 | Düzenle… | Seçili malzemeyi düzenler (çift tıkla aynı). |
 | Kopyala | Seçili malzemenin `_2` ekli bir kopyasını ekler (ör. iki zenginlik için). |
-| Asistan… | Malzeme asistanını açar (aşağıda); bitince malzeme projeye eklenir. |
+| Asistan… | Malzeme asistanını açar (aşağıda); bitince malzeme projeye eklenir. Boş modelde de görünür ("Henüz malzeme yok" ekranındaki **Asistan…** bağlantısı). |
 | Kütüphanem… | Kullanıcı kütüphanesi ve PNNL-15870 penceresini açar (aşağıda). |
 | Kütüphaneme kaydet | Seçili malzemeyi yalnız bu bilgisayardaki kütüphanenize kaydeder; ad çakışırsa `_2` eki alır. |
 | Sil | Seçili malzemeyi siler. Malzeme modelde kullanılıyorsa kaç yerde kullanıldığını söyleyip onay ister; silinirse o yerler tanımsız kalır ve model kurulamaz. |

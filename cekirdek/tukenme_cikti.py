@@ -10,6 +10,9 @@
                    yari omur zincirden (chain_file), zincirde olmayan
                    nuklidler icin OpenMC'nin ENDF/B-VIII.0 verisi.
    bozunma isisi   openmc.Material.get_decay_heat(units="W") -- lambda N Q;
+                   NOT: lambda burada ENDF/B-VIII.0 yari omrunden
+                   (openmc.data.decay_constant), aktivitede zincirden gelir;
+                   zincir ENDF/B-VIII.0'dan farkliysa ikisi tutmaz.
                    Q = zincirdeki decay_energy (ENDF/B-VIII.0 bozunum alt
                    kutuphanesinin ortalama isik + EM + agir parcacik
                    enerjisi). Notrino enerjisi DAHIL DEGIL.
