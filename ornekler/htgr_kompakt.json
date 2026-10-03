@@ -1,0 +1,343 @@
+{
+  "surum": 3,
+  "ad": "HTGR kompakt (TRISO, AGR-1 olculeri)",
+  "baslik": "HTGR TRISO kompakt",
+  "baslik_en": "HTGR TRISO compact",
+  "aciklama": "Silindirik TRISO yakit kompakti (AGR-1 taban parcacigi, UCO cekirdek) grafit kilifin icinde, yansitici sinir = sonsuz kafes. Parcaciklar rastgele paketlenir (pack_spheres) ve create_triso_lattice kafesine konur; paketleme orani %35. Gercek HTGR blogu degildir: tek kompakt hucresi, helyum kanali yok.\nKaynaklar: katman olculeri INL AGR-1 taban tasarimi (Petti vd.); kompakt capi 12.45 mm, boyu 25 mm.",
+  "aciklama_en": "Cylindrical TRISO fuel compact (AGR-1 baseline particle, UCO kernel) in a graphite sleeve with reflective boundaries (infinite lattice). Particles are randomly packed (pack_spheres) at 35 % packing fraction. Not a real HTGR block: single compact cell, no helium channel.",
+  "kategori": "arastirma",
+  "seviye": "ileri",
+  "malzemeler": [
+    {
+      "ad": "uco",
+      "gorunen_ad": "UCO cekirdek %19.74 (AGR-1)",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 10.9
+      },
+      "sicaklik": 900.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "U",
+          "miktar": 1.0,
+          "birim": "ao",
+          "zenginlik": 19.74
+        },
+        {
+          "tur": "element",
+          "isim": "O",
+          "miktar": 1.5,
+          "birim": "ao"
+        },
+        {
+          "tur": "element",
+          "isim": "C",
+          "miktar": 0.4,
+          "birim": "ao"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        222,
+        93,
+        40
+      ]
+    },
+    {
+      "ad": "tampon",
+      "gorunen_ad": "Gozenekli karbon tampon",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 1.05
+      },
+      "sicaklik": 900.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "C",
+          "miktar": 1.0,
+          "birim": "ao"
+        }
+      ],
+      "sab": [
+        "c_Graphite"
+      ],
+      "renk": [
+        110,
+        110,
+        110
+      ]
+    },
+    {
+      "ad": "pyc_ic",
+      "gorunen_ad": "IPyC",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 1.9
+      },
+      "sicaklik": 900.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "C",
+          "miktar": 1.0,
+          "birim": "ao"
+        }
+      ],
+      "sab": [
+        "c_Graphite"
+      ],
+      "renk": [
+        70,
+        70,
+        70
+      ]
+    },
+    {
+      "ad": "sic",
+      "gorunen_ad": "SiC",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 3.2
+      },
+      "sicaklik": 900.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "Si",
+          "miktar": 1.0,
+          "birim": "ao"
+        },
+        {
+          "tur": "element",
+          "isim": "C",
+          "miktar": 1.0,
+          "birim": "ao"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        150,
+        190,
+        120
+      ]
+    },
+    {
+      "ad": "pyc_dis",
+      "gorunen_ad": "OPyC",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 1.91
+      },
+      "sicaklik": 900.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "C",
+          "miktar": 1.0,
+          "birim": "ao"
+        }
+      ],
+      "sab": [
+        "c_Graphite"
+      ],
+      "renk": [
+        50,
+        50,
+        50
+      ]
+    },
+    {
+      "ad": "matris",
+      "gorunen_ad": "Kompakt grafit matrisi",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 1.4
+      },
+      "sicaklik": 900.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "C",
+          "miktar": 1.0,
+          "birim": "ao"
+        }
+      ],
+      "sab": [
+        "c_Graphite"
+      ],
+      "renk": [
+        130,
+        130,
+        140
+      ]
+    },
+    {
+      "ad": "grafit",
+      "gorunen_ad": "Nukleer grafit",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 1.74
+      },
+      "sicaklik": 900.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "C",
+          "miktar": 1.0,
+          "birim": "ao"
+        }
+      ],
+      "sab": [
+        "c_Graphite"
+      ],
+      "renk": [
+        170,
+        170,
+        175
+      ]
+    }
+  ],
+  "cubuklar": [],
+  "plakalar": [],
+  "demetler": [],
+  "kor": {
+    "tur": "agac"
+  },
+  "ayarlar": {
+    "mod": "eigenvalue",
+    "parcacik": 4000,
+    "cevrim": 60,
+    "pasif": 15,
+    "tohum": 1,
+    "sicaklik_yontemi": "interpolation",
+    "kaynak": {
+      "tur": "kutu",
+      "konum": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "entropi_mesh": {
+      "var": true,
+      "boyut": [
+        10,
+        10,
+        6
+      ]
+    }
+  },
+  "tallyler": [],
+  "guc_dagilimi": {
+    "var": false,
+    "cubuklar": [],
+    "skor": "kappa-fission",
+    "eksenel_dilim": 20,
+    "toplam_guc": null
+  },
+  "tukenme": {
+    "var": false,
+    "zincir": "otomatik",
+    "guc_yogunlugu": 40.0,
+    "adimlar": [
+      0.5,
+      1.5,
+      3.0,
+      5.0,
+      10.0,
+      10.0
+    ],
+    "adim_birimi": "d",
+    "entegrator": "cecm",
+    "malzemeleri_ayir": false,
+    "ek_malzemeler": [],
+    "izlenen": [
+      "U235",
+      "U238",
+      "Pu239",
+      "Pu240",
+      "Pu241",
+      "Xe135",
+      "Sm149"
+    ]
+  },
+  "calistirma": {
+    "is_parcacigi": 8,
+    "dizin": "kosu_htgr_kompakt"
+  },
+  "geometri": {
+    "kok": {
+      "tur": "kap",
+      "id": "kok",
+      "kesit": {
+        "sekil": "silindir",
+        "yaricap": 0.6225
+      },
+      "ic": {
+        "tur": "bilesen",
+        "ad": "agr1_kompakt"
+      },
+      "yerlesimler": [],
+      "halkalar": [
+        {
+          "kalinlik": 0.3,
+          "icerik": {
+            "tur": "malzeme",
+            "ad": "grafit"
+          },
+          "yerlesimler": []
+        }
+      ],
+      "yukseklik": 2.5,
+      "sinir": {
+        "yan": "reflective",
+        "alt": "reflective",
+        "ust": "reflective"
+      }
+    },
+    "parcalar": [],
+    "gruplar": []
+  },
+  "tamburlar": [],
+  "trisolar": [
+    {
+      "ad": "agr1_kompakt",
+      "sekil": "kompakt",
+      "paketleme": 0.35,
+      "yontem": "rastgele",
+      "tohum": 1,
+      "katmanlar": [
+        {
+          "ad": "kernel",
+          "r": 0.0175,
+          "malzeme": "uco"
+        },
+        {
+          "ad": "buffer",
+          "r": 0.0275,
+          "malzeme": "tampon"
+        },
+        {
+          "ad": "ipyc",
+          "r": 0.0315,
+          "malzeme": "pyc_ic"
+        },
+        {
+          "ad": "sic",
+          "r": 0.035,
+          "malzeme": "sic"
+        },
+        {
+          "ad": "opyc",
+          "r": 0.039,
+          "malzeme": "pyc_dis"
+        }
+      ],
+      "matris_malzeme": "matris",
+      "yaricap": 0.6225,
+      "yukseklik": 2.5
+    }
+  ]
+}

@@ -38,6 +38,7 @@
 import math
 
 from cekirdek.geometri import bilesen as _b
+from cekirdek.geometri import bilesen_triso as _bt
 from cekirdek.geometri import kesit as _k
 from cekirdek.geometri import yerlesim as _yer
 from cekirdek.geometri.eksenel import model_yuksekligi
@@ -288,6 +289,8 @@ class Kurucu(KapKurucu):
             u = self._onbellek(("p", ad), False, lambda: _b.plaka(self, t, ad))
         elif tur == "tambur":
             u = self._onbellek(("t", ad), False, lambda: _b.tambur(self, t, ad))
+        elif tur == "triso":
+            u = self._onbellek(("tr", ad), False, lambda: _bt.evren(self, t, ad))
         elif tur == "demet":
             u = self._onbellek(("du", ad), tekil, lambda: self._demet_evreni(t, ad))
         else:

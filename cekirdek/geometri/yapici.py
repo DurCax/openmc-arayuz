@@ -26,6 +26,7 @@ import re
 
 import openmc
 from cekirdek.ceviri import _
+from cekirdek.geometri.yapici_triso import BetikTriso, NesneTriso
 
 # ----------------------------------------------------------------------------
 # ortak
@@ -57,7 +58,7 @@ def _demet(degerler):
     return "(%s)" % ", ".join(sayi(v) for v in degerler)
 
 
-class NesneYapici(object):
+class NesneYapici(NesneTriso):
     """openmc nesneleri ureten yapici (kurucu yolu)."""
     betik = False
 
@@ -210,7 +211,7 @@ def _ifade(x):
     return "None" if x is None else str(x)
 
 
-class BetikYapici(object):
+class BetikYapici(BetikTriso):
     """Ayni yapici cagrilarini Python satirlari olarak yazan yapici."""
     betik = True
 

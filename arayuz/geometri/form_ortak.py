@@ -130,7 +130,8 @@ class FormTabani(QtWidgets.QWidget):
     def bilesen_secenekleri(self):
         ogeler = []
         for bolum, etiket in (("cubuklar", _("çubuk")), ("plakalar", _("plaka")),
-                              ("demetler", _("demet")), ("tamburlar", _("tambur"))):
+                              ("demetler", _("demet")), ("tamburlar", _("tambur")),
+                              ("trisolar", _("TRISO"))):
             ogeler += [(t["ad"], "%s: %s" % (etiket, t["ad"])) for t in self.spec.get(bolum) or []]
         ogeler += [(p["ad"], "%s: %s" % (_("parça"), p["ad"]))
                    for p in (self.agac or {}).get("parcalar") or []]
@@ -138,7 +139,8 @@ class FormTabani(QtWidgets.QWidget):
 
     def kutuphane_adlari(self):
         adlar = set()
-        for bolum in ("cubuklar", "plakalar", "demetler", "tamburlar", "malzemeler"):
+        for bolum in ("cubuklar", "plakalar", "demetler", "tamburlar", "trisolar",
+                      "malzemeler"):
             adlar |= {t.get("ad") for t in self.spec.get(bolum) or []}
         return adlar
 

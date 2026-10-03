@@ -42,6 +42,7 @@
 ================================================================================
 """
 
+import functools
 import math
 from dataclasses import dataclass
 from typing import List, Optional, Tuple
@@ -64,6 +65,7 @@ SC_SINIRI = math.pi / 6.0   # basit kubik kafesin en yuksek paketleme orani
 HUCRE_CAP_KATI = 3.0
 # Bu parcacik sayisinin ustunde Python'da kurulum belirgin uzar (olculdu: 857 -> 2.5 s)
 UYARI_PARCACIK_SAYISI = 50000
+PF_TOLERANSI = 0.01          # hedef paketleme oranina izin verilen bagil sapma (kabul olcutu)
 KATMAN_ADLARI = ("kernel", "buffer", "ipyc", "sic", "opyc")
 
 
@@ -160,33 +162,56 @@ def kafes_adimi(t: dict) -> Tuple[float, float, float]:
 # duzenli (basit kubik) yerlesim
 # ----------------------------------------------------------------------------
 
-def duzenli_merkezler(kap: Konteyner, r_p: float, adim: float) -> np.ndarray:
+KAYMALAR = tuple((i, j, k) for i in (0.0, 0.5) for j in (0.0, 0.5) for k in (0.0, 0.5))
+TARAMA_ADIMI = 801          # adim taramasi cozunurlugu (olculdu: SC sayisi basamaklidir)
+
+
+def izgara_sayilari(kap: Konteyner, adim: float) -> Tuple[int, int]:
+    """(x/y, z) izgara nokta sayisi (kabi tam kaplayacak kadar)."""
+    return int(kap.kutu[0] / adim) + 2, int(kap.kutu[2] / adim) + 2
+
+
+def izgara_ekseni(n: int, adim: float, kayma: float) -> List[float]:
+    """Merkezli izgara konumlari; betik de ayni ifadeyi yazar."""
+    return [adim * (i - (n - 1) / 2.0 + kayma) for i in range(n)]
+
+
+def duzenli_merkezler(kap: Konteyner, r_p: float, adim: float,
+                      kayma: Tuple[float, float, float] = (0.0, 0.0, 0.0)) -> np.ndarray:
     """Basit kubik izgarada kabin icine tam sigan parcacik merkezleri (N x 3).
-    Izgara kabin merkezine gore simetriktir; kosul: kompaktta rho <= R - r_p ve
-    |z| <= h/2 - r_p, pebblede |c| <= R - r_p."""
-    nx = int(kap.kutu[0] / adim) + 1
-    nz = int(kap.kutu[2] / adim) + 1
-    ix = adim * (np.arange(nx) - (nx - 1) / 2.0)
-    iz = adim * (np.arange(nz) - (nz - 1) / 2.0)
-    x, y, z = np.meshgrid(ix, ix, iz, indexing="ij")
+    Izgara kabin merkezine gore simetriktir; kayma (0 ya da 0.5 adim, eksen basina)
+    izgarayi yarim adim kaydirir. Kosul: kompaktta rho <= R - r_p ve |z| <= h/2 - r_p,
+    pebblede |c| <= R - r_p. Karsilastirmalar karesi alinarak yapilir: betik ayni
+    ifadeyi kullanir (bit duzeyinde ayni sonuc)."""
+    nx, nz = izgara_sayilari(kap, adim)
+    ix = np.array(izgara_ekseni(nx, adim, kayma[0]))
+    iy = np.array(izgara_ekseni(nx, adim, kayma[1]))
+    iz = np.array(izgara_ekseni(nz, adim, kayma[2]))
+    x, y, z = np.meshgrid(ix, iy, iz, indexing="ij")
     if kap.sekil == "pebble":
-        ic = np.sqrt(x ** 2 + y ** 2 + z ** 2) <= kap.yaricap - r_p
+        ic = (x * x + y * y + z * z) <= (kap.yaricap - r_p) ** 2
     else:
-        ic = (np.hypot(x, y) <= kap.yaricap - r_p) & (np.abs(z) <= kap.yukseklik / 2.0 - r_p)
+        ic = ((x * x + y * y) <= (kap.yaricap - r_p) ** 2) & \
+            (np.abs(z) <= kap.yukseklik / 2.0 - r_p)
     return np.column_stack([x[ic], y[ic], z[ic]])
 
 
-def duzenli_adim_bul(kap: Konteyner, r_p: float, n_hedef: int) -> float:
-    """Merkez sayisi n_hedef'e en yakin olan kubik adim (tarama; esitlikte buyuk adim).
-    Alt sinir 2 r_p (parcaciklar ust uste binmez)."""
+@functools.lru_cache(maxsize=64)
+def duzenli_adim_bul(kap: Konteyner, r_p: float, n_hedef: int
+                     ) -> Tuple[float, Tuple[float, float, float]]:
+    """(adim, kayma): merkez sayisi n_hedef'e en yakin kubik izgara. Adim ve yarim adim
+    kaymalari taranir (esitlikte buyuk adim); alt sinir 2 r_p (ust uste binme yok)."""
     pf = n_hedef * 4.0 / 3.0 * math.pi * r_p ** 3 / kap.hacim
     a0 = 2.0 * r_p * (SC_SINIRI / max(pf, 1e-12)) ** (1.0 / 3.0)
-    en_iyi, en_iyi_fark = a0, None
-    for c in np.linspace(0.85, 1.25, 161):
+    en_iyi, en_iyi_fark = (a0, KAYMALAR[0]), None
+    for c in np.linspace(0.85, 1.25, TARAMA_ADIMI):
         a = max(a0 * float(c), 2.0 * r_p)
-        fark = abs(len(duzenli_merkezler(kap, r_p, a)) - n_hedef)
-        if en_iyi_fark is None or fark < en_iyi_fark or (fark == en_iyi_fark and a > en_iyi):
-            en_iyi, en_iyi_fark = a, fark
+        for kayma in KAYMALAR:
+            fark = abs(len(duzenli_merkezler(kap, r_p, a, kayma)) - n_hedef)
+            if en_iyi_fark is None or fark < en_iyi_fark or (fark == en_iyi_fark and a > en_iyi[0]):
+                en_iyi, en_iyi_fark = (a, kayma), fark
+        if en_iyi_fark == 0:
+            break
     return en_iyi
 
 
@@ -198,6 +223,7 @@ class Yerlesim:
     hedef_pf: float
     gercek_pf: float
     adim: Optional[float]          # duzenli: kubik adim [cm]; rastgele: None
+    kayma: Tuple[float, float, float] = (0.0, 0.0, 0.0)   # duzenli: yarim adim kaymasi
 
 
 def yerlesim_ozeti(t: dict) -> Yerlesim:
@@ -206,9 +232,9 @@ def yerlesim_ozeti(t: dict) -> Yerlesim:
     hedef = float(t.get("paketleme") or 0.0)
     n = hedef_sayi(t)
     if (t.get("yontem") or "rastgele") == "duzenli":
-        a = duzenli_adim_bul(kap, r_p, n)
-        n = len(duzenli_merkezler(kap, r_p, a))
-        return Yerlesim("duzenli", n, hedef, paketleme_orani(t, n), a)
+        a, kayma = duzenli_adim_bul(kap, r_p, n)
+        n = len(duzenli_merkezler(kap, r_p, a, kayma))
+        return Yerlesim("duzenli", n, hedef, paketleme_orani(t, n), a, kayma)
     return Yerlesim("rastgele", n, hedef, paketleme_orani(t, n), None)
 
 
@@ -266,6 +292,12 @@ def _paketleme_sorunlari(t: dict, kap: Konteyner, r_p: float) -> List[Tuple[str,
         cikti.append(("uyari", _("paketleme %.3g > %.2g: yakın rastgele paketleme (CRP) "
                                 "kullanılır, kurulum yavaşlar") % (pf, RSP_ESIGI)))
     n = hedef_sayi(t)
+    if n >= 1 and yontem == "duzenli" and n <= UYARI_PARCACIK_SAYISI:
+        sapma = yerlesim_ozeti(t).gercek_pf / pf - 1.0
+        if abs(sapma) > PF_TOLERANSI:
+            cikti.append(("uyari", _("düzenli kafeste gerçek paketleme oranı hedeften %%%.1f "
+                                    "farklı (kübik kafesin sayısı basamaklıdır); gerçek "
+                                    "değer kullanılır") % (100.0 * sapma)))
     if n < 1:
         cikti.append(("hata", _("bu paketleme oranıyla kaba hiç parçacık sığmıyor")))
     elif n > UYARI_PARCACIK_SAYISI:

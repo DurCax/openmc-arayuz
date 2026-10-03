@@ -14,6 +14,9 @@ def parca_rengi(spec, ad):
     for t in spec.get("tamburlar") or []:
         if t.get("ad") == ad:
             return parca_rengi(spec, t.get("govde_malzeme"))
+    for t in spec.get("trisolar") or []:      # Y9: matris rengi
+        if t.get("ad") == ad:
+            return parca_rengi(spec, t.get("matris_malzeme"))
     rgb = _parca_rengi(spec, ad)
     if rgb is not None:
         return rgb

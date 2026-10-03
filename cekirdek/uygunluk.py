@@ -233,7 +233,8 @@ def parca_turleri(spec):
     if b.agac:
         # gelismis modda her kutuphane parcasi herhangi bir yuvaya konabilir
         return {"cubuk": True, "plaka": True, "kontrol_cubugu": b.boyut != "2B",
-                "demet_kare": True, "demet_altigen": True, "tambur": True}
+                "demet_kare": True, "demet_altigen": True, "tambur": True,
+                "triso": True}
     kafesli = ("tek_demet", "kare_kafes", "altigen_kafes", "tamburlu")
     demet = tur in kafesli or bool(b.geo["demet"])
     return {
@@ -245,6 +246,7 @@ def parca_turleri(spec):
         "demet_kare": demet and tur != "altigen_kafes",
         "demet_altigen": demet and tur != "kare_kafes",
         "tambur": False,
+        "triso": False,       # Y9: yalniz gelismis modda (agac)
     }
 
 

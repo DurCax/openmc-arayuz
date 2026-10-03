@@ -225,7 +225,7 @@ class _Gezgin(object):
 
     def _dogal_kesit(self, icerik):
         tur, t = bilesen_tanimi(self.tanim, (icerik or {}).get("ad"))
-        if tur == "tambur":
+        if tur == "tambur" or (tur == "triso" and t.get("sekil", "kompakt") == "kompakt"):
             return {"sekil": "silindir", "yaricap": float(t.get("yaricap") or 0.0)}
         return None
 
@@ -355,6 +355,8 @@ class _Gezgin(object):
             yield from self.plaka(ad, t, bolge, yol, kesik, neden, *a)
         elif tur == "tambur":
             yield from self.tambur(ad, t, bolge, yol, kesik, neden, *a)
+        elif tur == "triso":
+            yield from self.triso(ad, t, bolge, yol, kesik, neden, *a)
 
     def _sanal(self, ad, alan, carpan, z, yol, ust, kafeste, kesik, neden, tur):
         if ad is None or _b.sifir_mi(alan):
@@ -436,6 +438,37 @@ class _Gezgin(object):
         for malzeme, alan, adet, ek in katmanlar:
             cikti += self._sanal(malzeme, alan if sigar else None, carpan * adet, z, y + ek,
                                  alt, kafeste, kesik, neden, "plaka")
+        return cikti
+
+    def triso(self, ad, t, bolge, yol, kesik, neden, carpan, z, ust, kafeste, _derinlik):
+        """TRISO kompakt/pebble: katman malzemeleri parcacik sayisi x katman hacmi; matris
+        kap hacminin kalani (kompaktta bolge alani bilinirse kabin disi da matris).
+        Alan = hacim / z uzunlugu (hacim = alan x z uzunlugu x carpan)."""
+        from cekirdek import triso as _t
+        L = 1.0 if z is None else max(float(z[1]) - float(z[0]), 0.0)
+        if L <= 0.0:
+            return []
+        kap = _t.konteyner(t)
+        n = _t.yerlesim_ozeti(t).n
+        alt = ust + ("%s>%s" % (yol, ad),)
+        cikti = []
+        for i, (k, v) in enumerate(_t.katman_hacimleri(t)):
+            cikti += self._sanal(k["malzeme"], n * v / L, carpan, z, "%s>%s/%s" % (yol, ad, k.get("ad") or i),
+                                 alt, kafeste, kesik, neden, "triso")
+        icte = kap.hacim - n * _t.parcacik_hacmi(t)
+        if kap.sekil == "pebble":
+            r, R = kap.yaricap, float(t["dis_yaricap"])
+            matris = icte / L
+            cikti += self._sanal(t.get("kabuk_malzeme"), 4.0 / 3.0 * math.pi * (R ** 3 - r ** 3) / L,
+                                 carpan, z, "%s>%s/kabuk" % (yol, ad), alt, kafeste, kesik, neden, "triso")
+            cikti += self._sanal(t.get("dis_malzeme"), None, carpan, z, "%s>%s/dis" % (yol, ad),
+                                 alt, kafeste, True, "bilesen", "triso")
+        else:
+            disi = None if (bolge is None or bolge.alan is None) else \
+                max(bolge.alan - math.pi * kap.yaricap ** 2, 0.0)
+            matris = None if disi is None else icte / L + disi
+        cikti += self._sanal(t.get("matris_malzeme"), matris, carpan, z, "%s>%s/matris" % (yol, ad),
+                             alt, kafeste, kesik, neden, "triso")
         return cikti
 
     def tambur(self, ad, t, bolge, yol, kesik, neden, carpan, z, ust, kafeste, _derinlik):

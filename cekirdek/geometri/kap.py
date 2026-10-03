@@ -123,6 +123,8 @@ class KapKurucu(object):
             tur, t = bilesen_tanimi(self.tanim, icerik.get("ad"))
             if tur == "tambur":
                 return {"sekil": "silindir", "yaricap": float(t["yaricap"])}
+            if tur == "triso" and t.get("sekil", "kompakt") == "kompakt":
+                return {"sekil": "silindir", "yaricap": float(t["yaricap"])}
         raise ValueError(_("yerleşim deliğinin kesiti verilmeli (yalnız tamburun doğal "
                          "kesiti vardır)"))
 

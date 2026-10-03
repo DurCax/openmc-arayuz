@@ -55,7 +55,7 @@ def test_duzenli_yerlesim_pf_hedefe_yakin_ve_kap_icinde():
     # Act
     oz = triso.yerlesim_ozeti(t)
     kap, r = triso.konteyner(t), triso.parcacik_yaricap(t)
-    c = triso.duzenli_merkezler(kap, r, oz.adim)
+    c = triso.duzenli_merkezler(kap, r, oz.adim, oz.kayma)
     # Assert
     kontrol("pf +-%1", abs(oz.gercek_pf / 0.30 - 1) < 0.01, "-> %.4f" % oz.gercek_pf)
     kontrol("kap icinde", (np.hypot(c[:, 0], c[:, 1]) + r <= kap.yaricap + 1e-12).all()
@@ -99,3 +99,101 @@ HIZLI = [test_agr1_sablonu_standart_olculer, test_hedef_sayi_ve_paketleme_orani,
          test_duzenli_yerlesim_pf_hedefe_yakin_ve_kap_icinde,
          test_duzenli_pf_siniri_ve_dogrulama, test_pebble_hacimleri]
 YAVAS = []
+
+
+# ---------------------------------------------------------------------------
+# model kurulumu (openmc nesneleri; nukleer veri gerekmez)
+# ---------------------------------------------------------------------------
+
+def _model_spec(pf=0.30, yukseklik=0.5, yontem="rastgele"):
+    import json
+    import os
+    from testler.ortak_test import ORNEK
+    from cekirdek import sema
+    with open(os.path.join(ORNEK, "htgr_kompakt.json"), encoding="utf-8") as f:
+        ham = json.load(f)
+    t = ham["trisolar"][0]
+    t.update(paketleme=pf, yukseklik=yukseklik, yontem=yontem)
+    ham["geometri"]["kok"]["yukseklik"] = yukseklik
+    return sema.tamamla(ham)
+
+
+def _kafes_merkezleri(model):
+    """Kurulmus modeldeki TRISO merkezleri (global, tekil): kafes elemanlarinin parcalari."""
+    import numpy as np
+    import openmc
+    kafes = next(c.fill for c in model.geometry.get_all_cells().values()
+                 if isinstance(c.fill, openmc.RectLattice))
+    ll, pitch = np.array(kafes.lower_left), np.array(kafes.pitch)
+    merkezler = {}
+    import itertools
+    for idx in itertools.product(*(range(n) for n in kafes.shape)):
+        evren = kafes.get_universe(idx)
+        if evren is None:
+            continue
+        eleman = ll + (np.array(idx) + 0.5) * pitch
+        for h in evren.cells.values():
+            if h.translation is not None and h.fill_type == "universe":
+                g = tuple(np.round(eleman + np.asarray(h.translation), 9))
+                merkezler[g] = 1
+    return np.array(sorted(merkezler))
+
+
+def test_kurulan_modelde_paketleme_orani_hacim_sayimiyla_hedefe_yuzde_bir_icinde():
+    print("\n[Y9-6] rastgele paketleme: kafesteki TRISO sayimi -> pf hedefe +-%1; cakisma yok")
+    import warnings
+    import numpy as np
+    from cekirdek import kurucu, triso
+    # Arrange
+    spec = _model_spec(pf=0.30)
+    t = spec["trisolar"][0]
+    # Act
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        model, _b = kurucu.kur(spec)
+    c = _kafes_merkezleri(model)
+    r = triso.parcacik_yaricap(t)
+    pf = len(c) * triso.parcacik_hacmi(t) / triso.konteyner(t).hacim
+    d = np.linalg.norm(c[:, None, :] - c[None, :, :], axis=2) + np.eye(len(c)) * 9
+    # Assert
+    kontrol("sayim = hedef sayi", len(c) == triso.hedef_sayi(t), "-> %d" % len(c))
+    kontrol("pf hedefe %1 icinde", abs(pf / 0.30 - 1) < 0.01, "-> %.4f" % pf)
+    kontrol("parcaciklar ust uste binmiyor", d.min() >= 2 * r - 1e-6, "-> %.6g" % d.min())
+    kontrol("kap icinde", (np.hypot(c[:, 0], c[:, 1]) + r <= 0.6225 + 1e-9).all())
+
+
+def test_betik_ve_kurucu_ayni_parcaciklari_kurar():
+    print("\n[Y9-7] betik esdegerligi: uretilen betik ayni TRISO merkezlerini ve ayni hacimleri kurar")
+    import importlib.util
+    import os
+    import tempfile
+    import warnings
+    import numpy as np
+    from cekirdek import kod_uret, kurucu
+    for yontem in ("rastgele", "duzenli"):
+        # Arrange
+        spec = _model_spec(pf=0.20, yontem=yontem)
+        # Act
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            model, _b = kurucu.kur(spec)
+            with tempfile.TemporaryDirectory() as d:
+                yol = os.path.join(d, "model.py")
+                with open(yol, "w", encoding="utf-8") as f:
+                    f.write(kod_uret.uret(spec, "model.py"))
+                eski = os.getcwd()
+                os.chdir(d)
+                try:
+                    sm = importlib.util.spec_from_file_location("y9_betik_" + yontem, yol)
+                    mod = importlib.util.module_from_spec(sm)
+                    sm.loader.exec_module(mod)
+                finally:
+                    os.chdir(eski)
+        a, b = _kafes_merkezleri(model), _kafes_merkezleri(mod.model)
+        # Assert
+        kontrol("%s: ayni sayida parcacik" % yontem, len(a) == len(b) > 0, "-> %d / %d" % (len(a), len(b)))
+        kontrol("%s: merkezler ayni" % yontem, np.allclose(a, b, atol=1e-9))
+
+
+HIZLI += [test_kurulan_modelde_paketleme_orani_hacim_sayimiyla_hedefe_yuzde_bir_icinde,
+          test_betik_ve_kurucu_ayni_parcaciklari_kurar]

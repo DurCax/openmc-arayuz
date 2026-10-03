@@ -72,6 +72,9 @@ def _agac_malzemeleri(spec):
     adlar = {b.ad for b in basvurular(spec) if b.tur == "malzeme"}
     for t in spec.get("tamburlar") or []:
         adlar |= {t.get("govde_malzeme"), t.get("emici_malzeme")}
+    from cekirdek import triso
+    for t in spec.get("trisolar") or []:        # Y9
+        adlar |= set(triso.malzemeler(t))
     return {a for a in adlar if a and a != BOSLUK}
 
 
@@ -235,6 +238,7 @@ def _agac_adini_degistir(spec, eski, yeni):
             if t.get(k) == eski:
                 t[k] = yeni
                 yollar.append("tamburlar/%s/%s" % (t.get("ad"), k))
+    yollar += _triso_adini_degistir(spec, eski, yeni)
     if not isinstance(spec.get("geometri"), dict):
         return yollar
     from cekirdek.geometri.basvuru import agac_adini_degistir
@@ -248,6 +252,24 @@ def _agac_adini_degistir(spec, eski, yeni):
         m["ad"] = yeni
     spec["geometri"] = agac
     return yollar + [y.lstrip("/") for y in agac_yollari]
+
+
+_TRISO_MALZEME_ALANLARI = ("matris_malzeme", "kabuk_malzeme", "dis_malzeme")
+
+
+def _triso_adini_degistir(spec, eski, yeni):
+    """Y9: TRISO tanimlarindaki katman ve matris/kabuk/gaz malzeme adlari (yerinde)."""
+    yollar = []
+    for t in spec.get("trisolar") or []:
+        for i, k in enumerate(t.get("katmanlar") or []):
+            if k.get("malzeme") == eski:
+                k["malzeme"] = yeni
+                yollar.append("trisolar/%s/katmanlar/%d" % (t.get("ad"), i))
+        for a in _TRISO_MALZEME_ALANLARI:
+            if t.get(a) == eski:
+                t[a] = yeni
+                yollar.append("trisolar/%s/%s" % (t.get("ad"), a))
+    return yollar
 
 
 def malzeme_referanslari(spec, ad):
