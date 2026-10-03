@@ -90,7 +90,9 @@ def htgr_kompakt():
         "parcalar": [], "gruplar": []}
     d["ayarlar"] = copy.deepcopy(d["ayarlar"])
     d["ayarlar"].update(parcacik=4000, cevrim=60, pasif=15)
-    d["ayarlar"]["kaynak"] = dict(d["ayarlar"]["kaynak"], tur="kutu", konum=[0.0, 0.0, 0.0])
+    # nokta kaynak: kutu + fissionable kisiti kernel hacim oraninda (~%2.7 < OpenMC'nin %5
+    # reddetme siniri) "Too few source sites" hatasi verir
+    d["ayarlar"]["kaynak"] = dict(d["ayarlar"]["kaynak"], tur="nokta", konum=[0.0, 0.0, 0.0])
     d["ayarlar"]["kaynak"].pop("alt", None)
     d["ayarlar"]["kaynak"].pop("ust", None)
     d["calistirma"] = dict(d["calistirma"], dizin="kosu_htgr_kompakt")

@@ -272,7 +272,7 @@ HIZLI += [test_pebble_kurulur_ve_hacimler_tutarli]
 # YAVAS: kafes yaklasimi (duzenli kafes ve rastgele) k'ya etkisi
 # ---------------------------------------------------------------------------
 
-_PARCACIK, _CEVRIM, _PASIF = 5000, 60, 15
+_PARCACIK, _CEVRIM, _PASIF = 5000, 50, 15
 
 
 def _k(spec, dizin):

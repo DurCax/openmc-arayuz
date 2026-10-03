@@ -218,7 +218,7 @@
     "tohum": 1,
     "sicaklik_yontemi": "interpolation",
     "kaynak": {
-      "tur": "kutu",
+      "tur": "nokta",
       "konum": [
         0.0,
         0.0,
