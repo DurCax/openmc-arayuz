@@ -36,6 +36,8 @@ from cekirdek.kod_uret.tally import _guc_dagilimi, _tallyler
 
 def uret(spec, kaynak_dosya=None, renkli=True):
     """Spec'ten tek basina calisan Python betigi metni uretir."""
+    from cekirdek import bolge_bol
+    spec = bolge_bol.uygula(spec)        # v3 Y5: tukenme.bolme -> bolunmus model
     _admod._KAYIT = {"esle": {}, "kullanilan": set()}
     try:
         return _uret(spec, kaynak_dosya, renkli)

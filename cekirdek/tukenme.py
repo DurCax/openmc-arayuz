@@ -245,7 +245,8 @@ def yakit_ornek_sayisi(spec):
 
 
 def _yakit_ornek_sayisi(spec):
-    from cekirdek import tukenme_hacim
+    from cekirdek import bolge_bol, tukenme_hacim
+    spec = bolge_bol.uygula(spec)           # v3 Y5: bolunmus parcalar da ornektir
     return max([tukenme_hacim.ornek_sayisi(spec, ad) for ad in yanabilir_adlar(spec)] or [0])
 
 
@@ -343,8 +344,9 @@ def hazirla(spec):
     kesin hacimle ayrilir (tukenme_hacim.ornekleri_ayir).
     Dogrulama kapisi burada YOK (--hazirla bilgi yolu); kosu calistir()'dadir.
     """
-    from cekirdek import kurucu, tukenme_hacim
+    from cekirdek import bolge_bol, kurucu, tukenme_hacim
     from cekirdek.gunluk import kaydedici
+    spec = bolge_bol.uygula(spec)           # v3 Y5: halka/eksenel bolme (varsa)
     model, kbilgi = kurucu.kur(_y3.tukenme_icin(spec))   # Y3 tukenmede kapali
     zs = zincir_secimi(spec)
     tamam, mesaj, _zincir = veri_bilgi.zincir_kontrol(zs["yol"])
@@ -423,13 +425,17 @@ def calistir(spec, dizin, geri_cagir=None, veri_kontrolu=True):
     bilgi["surdurulen"]: surdurmede onceki kosunun tamamlanmis adim sayisi.
     """
     bulgular = kapi(spec, veri_kontrolu=veri_kontrolu)
-    from cekirdek import tukenme_ayar, tukenme_guc, tukenme_kosu, tukenme_surdur
+    from cekirdek import bolge_bol, tukenme_ayar, tukenme_guc, tukenme_kosu, tukenme_surdur
+    # v3 Y5: halka/eksenel bolme (tukenme.bolme) spec duzeyinde uygulanir; kayit
+    # ve surdurme kullanicinin kendi spec'idir, model ve hacimler bolunmusten.
+    kullanici_spec = spec
+    spec = bolge_bol.uygula(spec)
     # v3 K3: guc tally'si kurulabilen modelde her adimda pin gucu sayilir
     # (spec kaydi kullanicinin spec'idir).
     model, bilgi = tukenme_guc.olcumlu_hazirla(hazirla, spec)
     bilgi["dogrulama"] = bulgular
     os.makedirs(dizin, exist_ok=True)
-    onceki = (tukenme_surdur.onceki_durum(spec, dizin)
+    onceki = (tukenme_surdur.onceki_durum(kullanici_spec, dizin)
               if tukenme_ayar.surdur(spec["tukenme"]) else None)
     bilgi["surdurulen"] = onceki.tamam if onceki is not None else 0
     if onceki is None:
@@ -439,7 +445,7 @@ def calistir(spec, dizin, geri_cagir=None, veri_kontrolu=True):
         # (v3 K3) adim statepoint'leri yalniz bu arayuzun kayitli dizininde silinir.
         from cekirdek import tukenme_temizlik
         tukenme_temizlik.onceki_sonucu_temizle(dizin)
-    spec_kaydet(spec, dizin)
+    spec_kaydet(kullanici_spec, dizin)
     eski = os.getcwd()
     try:
         os.chdir(dizin)
