@@ -3,8 +3,8 @@
   "ad": "HTGR kompakt (TRISO, AGR-1 olculeri)",
   "baslik": "HTGR TRISO kompakt",
   "baslik_en": "HTGR TRISO compact",
-  "aciklama": "Silindirik TRISO yakit kompakti (AGR-1 taban parcacigi, UCO cekirdek) grafit kilifin icinde, yansitici sinir = sonsuz kafes. Parcaciklar rastgele paketlenir (pack_spheres) ve create_triso_lattice kafesine konur; paketleme orani %35. Gercek HTGR blogu degildir: tek kompakt hucresi, helyum kanali yok.\nKaynaklar: katman olculeri INL AGR-1 taban tasarimi (Petti vd.); kompakt capi 12.45 mm, boyu 25 mm.",
-  "aciklama_en": "Cylindrical TRISO fuel compact (AGR-1 baseline particle, UCO kernel) in a graphite sleeve with reflective boundaries (infinite lattice). Particles are randomly packed (pack_spheres) at 35 % packing fraction. Not a real HTGR block: single compact cell, no helium channel.",
+  "aciklama": "Silindirik TRISO yakit kompakti (AGR-1 taban parcacigi, UCO cekirdek) grafit kilifin icinde, yansitici sinir = sonsuz kafes. Parcaciklar rastgele paketlenir (pack_spheres) ve create_triso_lattice kafesine konur; paketleme orani %35. Gercek HTGR blogu degildir: tek kompakt hucresi, helyum kanali yok.\nKaynaklar: katman olculeri INL AGR-1 taban tasarimi (Petti vd.); kompakt capi 12.45 mm; model, z'de yansitici sinirli 5 mm'lik dilimdir (eksenel sonsuz kompakt).",
+  "aciklama_en": "Cylindrical TRISO fuel compact (AGR-1 baseline particle, UCO kernel) in a graphite sleeve with reflective boundaries (infinite lattice). Particles are randomly packed (pack_spheres) at 35 % packing fraction. Not a real HTGR block: single compact cell, no helium channel. The model is a 5 mm slice with reflective z faces (an axially infinite compact).",
   "kategori": "arastirma",
   "seviye": "ileri",
   "malzemeler": [
@@ -295,7 +295,7 @@
           "yerlesimler": []
         }
       ],
-      "yukseklik": 2.5,
+      "yukseklik": 0.5,
       "sinir": {
         "yan": "reflective",
         "alt": "reflective",
@@ -342,7 +342,7 @@
       ],
       "matris_malzeme": "matris",
       "yaricap": 0.6225,
-      "yukseklik": 2.5
+      "yukseklik": 0.5
     }
   ]
 }

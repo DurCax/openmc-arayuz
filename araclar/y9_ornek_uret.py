@@ -11,6 +11,7 @@ from cekirdek import triso
 
 KOK = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ORNEK = os.path.join(KOK, "ornekler")
+DILIM_CM = 0.5          # eksenel dilim yuksekligi [cm]
 SICAKLIK_K = 900.0     # tipik HTGR yakit sicakligi (varsayim; ornek aciklamasinda yazili)
 
 
@@ -63,16 +64,20 @@ def htgr_kompakt():
                  "(pack_spheres) ve create_triso_lattice kafesine konur; paketleme orani %35. "
                  "Gercek HTGR blogu degildir: tek kompakt hucresi, helyum kanali yok.\n"
                  "Kaynaklar: katman olculeri INL AGR-1 taban tasarimi (Petti vd.); kompakt capi "
-                 "12.45 mm, boyu 25 mm."),
+                 "12.45 mm; model, z'de yansitici sinirli 5 mm'lik dilimdir (eksenel sonsuz kompakt)."),
              aciklama_en=(
                  "Cylindrical TRISO fuel compact (AGR-1 baseline particle, UCO kernel) in a "
                  "graphite sleeve with reflective boundaries (infinite lattice). Particles are "
                  "randomly packed (pack_spheres) at 35 % packing fraction. Not a real HTGR block: "
-                 "single compact cell, no helium channel."))
+                 "single compact cell, no helium channel. The model is a 5 mm slice with reflective z faces "
+                 "(an axially infinite compact)."))
     d["malzemeler"] = htgr_malzemeleri()
     t = triso.sablon("agr1", "agr1_kompakt", {"kernel": "uco", "buffer": "tampon",
                                               "ipyc": "pyc_ic", "sic": "sic", "opyc": "pyc_dis",
                                               "matris": "matris"})
+    # z sinirlari yansitici: model eksenel sonsuz bir kompakti temsil eder, uzunluk k'yi
+    # degistirmez; kisa dilim (5 mm, ~850 parcacik) kurulumu hizli tutar.
+    t["yukseklik"] = DILIM_CM
     d["trisolar"] = [t]
     d["geometri"] = {
         "kok": {"tur": "kap", "id": "kok",
@@ -92,6 +97,42 @@ def htgr_kompakt():
     return d
 
 
+def zirh_agirlik_pencere():
+    """Derin nufuz zirhi (varyans azaltma dersi): D-T kaynagi, su/celik/su katmanlari, en disi
+    ayri adli (ayni bilesimli) 'dedektor' suyu; tally o malzemedeki aki."""
+    with open(os.path.join(ORNEK, "zirh_kure.json"), encoding="utf-8") as f:
+        d = json.load(f)
+    su = next(m for m in d["malzemeler"] if m["ad"] == "su")
+    dedektor = dict(copy.deepcopy(su), ad="dedektor", gorunen_ad="Dedektor suyu (H2O)",
+                    renk=[60, 200, 230])
+    d["malzemeler"].append(dedektor)
+    d["baslik"] = "Derin nufuz zirhi (agirlik penceresi)"
+    d["baslik_en"] = "Deep-penetration shield (weight windows)"
+    d["kategori"], d["seviye"] = "zirh", "ileri"
+    d["ad"] = "Derin nufuz zirhi: su/celik/su + dedektor (agirlik penceresi dersi)"
+    d["aciklama"] = (
+        "Sabit kaynak: merkezde 14.1 MeV D-T nokta kaynagi; 35 cm su, 20 cm celik, 30 cm su "
+        "ve en dista 5 cm'lik dedektor suyu. Tally dedektor malzemesindeki akidir. Analog "
+        "kosuda dedektore ulasan parcacik cok azdir; Hesap ayarlari > Gelismis > Varyans "
+        "azaltma ile MAGIC agirlik pencereleri uretilip uygulanir ve FOM karsilastirilir. "
+        "Sonuc yanliliksizdir: iki yontem istatistik icinde ayni degeri verir. "
+        "Sertifika degildir; olculen FOM kartinin sonuc kisminda yazilidir.")
+    d["aciklama_en"] = (
+        "Fixed source: a 14.1 MeV D-T point source at the centre; 35 cm water, 20 cm steel, "
+        "30 cm water and a 5 cm detector water shell at the outside. The tally is the flux in the "
+        "detector material. In an analog run very few particles reach the detector; generate and "
+        "apply MAGIC weight windows under Settings > Advanced > Variance reduction and compare "
+        "the FOM. The result is unbiased: both methods agree within statistics. Not a "
+        "certification.")
+    d["kor"]["kabuklar"] = [{"r": 35.0, "malzeme": "su"}, {"r": 55.0, "malzeme": "celik"},
+                            {"r": 85.0, "malzeme": "su"}, {"r": 90.0, "malzeme": "dedektor"}]
+    d["tallyler"] = [{"ad": "aki_dedektor", "skorlar": ["flux"], "nuklidler": [],
+                      "filtreler": [{"tur": "malzeme", "adlar": ["dedektor"]}]}]
+    d["ayarlar"]["parcacik"], d["ayarlar"]["cevrim"] = 20000, 40
+    d["calistirma"] = dict(d["calistirma"], dizin="kosu_zirh_agirlik")
+    return d
+
+
 def yaz(ad, d):
     yol = os.path.join(ORNEK, ad)
     with open(yol, "w", encoding="utf-8") as f:
@@ -102,3 +143,4 @@ def yaz(ad, d):
 
 if __name__ == "__main__":
     print(yaz("htgr_kompakt.json", htgr_kompakt()))
+    print(yaz("zirh_agirlik_pencere.json", zirh_agirlik_pencere()))

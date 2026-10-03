@@ -229,7 +229,7 @@ def ad_degistir(spec, tur, eski, yeni):
         kopya["geometri"] = agac
     if tur == "yerlesim" and isinstance(kopya.get("geometri"), dict):
         _yerlesim_adini_degistir(kopya["geometri"], eski, yeni)
-    if tur in ("cubuk", "plaka", "demet", "tambur"):
+    if tur in ("cubuk", "plaka", "demet", "tambur", "triso"):
         _kutuphane_adini_degistir(kopya, tur, eski, yeni)
     return kopya
 
@@ -239,7 +239,7 @@ def _kutuphane_adini_degistir(spec, tur, eski, yeni):
     for t in spec.get(_BOLUM[tur]) or []:
         if t.get("ad") == eski:
             t["ad"] = yeni
-    if tur == "tambur":
+    if tur in ("tambur", "triso"):
         return
     for d in spec.get("demetler") or []:
         for h, v in list((d.get("anahtar") or {}).items()):

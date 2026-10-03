@@ -63,9 +63,9 @@ _PIN_PAYI = 1.25
 _YANSITICI = {"yan": "reflective", "alt": "reflective", "ust": "reflective"}
 _EN_COK_DERINLIK = 10            # dugum cozumunde ic ice parca siniri (geometri.sema)
 
-PARCA_TURLERI = ("cubuk", "plaka", "demet", "tambur")
+PARCA_TURLERI = ("cubuk", "plaka", "demet", "tambur", "triso")
 TUR_ADLARI = {"cubuk": N_("çubuk"), "plaka": N_("plaka"), "demet": N_("demet"),
-              "tambur": N_("tambur")}
+              "tambur": N_("tambur"), "triso": N_("TRISO")}
 _SABLON = {"cubuk": ("tek_cubuk", "cubuklar"), "plaka": ("tek_plaka", "plakalar"),
            "demet": ("tek_demet", "demetler")}
 
@@ -232,6 +232,27 @@ def _tambur_alt_modeli(spec: dict, ad: str, uc_boyutlu: bool) -> dict:
     return _agac_alt_modeli(spec, kok, _etiket("tambur", ad), uc_boyutlu)
 
 
+def _triso_alt_modeli(spec: dict, ad: str) -> dict:
+    """Y9: TRISO kompakti (silindir, kendi yuksekliginde) ya da pebble (kure) alt modeli.
+    Kompakt her zaman 3B kurulur (sonlu silindir); modelin yuksekligi kullanilmaz."""
+    t = next((t for t in spec.get("trisolar") or [] if t.get("ad") == ad), None)
+    if t is None:
+        raise AltModelHatasi(_("tanımsız %(tur)s: %(ad)s") % {"tur": _(TUR_ADLARI["triso"]),
+                                                              "ad": ad})
+    try:
+        if (t.get("sekil") or "kompakt") == "pebble":
+            kesit, yukseklik = {"sekil": "kure", "yaricap": float(t["dis_yaricap"])}, None
+        else:
+            kesit = {"sekil": "silindir", "yaricap": float(t["yaricap"])}
+            yukseklik = float(t["yukseklik"])
+    except (KeyError, TypeError, ValueError) as e:
+        raise AltModelHatasi(_("TRISO ölçüleri okunamadı: %s") % e) from e
+    kok = {"tur": "kap", "kesit": kesit, "ic": {"tur": "bilesen", "ad": ad}}
+    alt = _agac_alt_modeli(spec, kok, _etiket("triso", ad), False)
+    alt["geometri"]["kok"]["yukseklik"] = yukseklik
+    return alt
+
+
 # ----------------------------------------------------------------------------
 # dugum cozumu (gelismis geometri)
 # ----------------------------------------------------------------------------
@@ -334,6 +355,8 @@ def _notlu(spec: dict, sonuc: "AltModel | None") -> "AltModel | None":
 def _parca(spec: dict, tur: str, ad: str, uc_boyutlu: bool) -> AltModel:
     if tur == "tambur":
         return AltModel(_tambur_alt_modeli(spec, ad, uc_boyutlu), _etiket(tur, ad))
+    if tur == "triso":
+        return AltModel(_triso_alt_modeli(spec, ad), _etiket(tur, ad))
     if tur not in _SABLON:
         raise AltModelHatasi(_("bilinmeyen parça türü: %s") % tur)
     return AltModel(_sablon_alt_modeli(spec, tur, ad, uc_boyutlu), _etiket(tur, ad))
