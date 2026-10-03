@@ -16,7 +16,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "openmc-arayuz"
-version = "2.0.0"
+version = "3.0.0"
 description = "OpenMC ile reaktor modeli kurma, calistirma ve sonuc okuma arayuzu"
 readme = "README.md"
 requires-python = ">=3.11"

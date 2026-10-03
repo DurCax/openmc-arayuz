@@ -9,6 +9,7 @@
 import math
 
 from testler.ortak_test import kontrol
+from testler.ortak_test import gereksinim  # v3 izlenebilirlik
 
 
 def _kompakt(pf=0.35, yukseklik=0.5, yontem="rastgele"):
@@ -139,6 +140,7 @@ def _kafes_merkezleri(model):
     return np.array(sorted(merkezler))
 
 
+@gereksinim("R-V3-26")
 def test_kurulan_modelde_paketleme_orani_hacim_sayimiyla_hedefe_yuzde_bir_icinde():
     print("\n[Y9-6] rastgele paketleme: kafesteki TRISO sayimi -> pf hedefe +-%1; cakisma yok")
     import warnings
@@ -162,6 +164,7 @@ def test_kurulan_modelde_paketleme_orani_hacim_sayimiyla_hedefe_yuzde_bir_icinde
     kontrol("kap icinde", (np.hypot(c[:, 0], c[:, 1]) + r <= 0.6225 + 1e-9).all())
 
 
+@gereksinim("R-V3-26")
 def test_betik_ve_kurucu_ayni_parcaciklari_kurar():
     print("\n[Y9-7] betik esdegerligi: uretilen betik ayni TRISO merkezlerini ve ayni hacimleri kurar")
     import importlib.util

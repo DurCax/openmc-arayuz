@@ -14,6 +14,7 @@ import os
 
 from cekirdek import sema
 from testler.ortak_test import kontrol, ORNEK, ISLEM_PARCACIGI
+from testler.ortak_test import gereksinim  # v3 izlenebilirlik
 
 _K_SIGMA = 2.0          # iki bagimsiz tahminin uyumu (birlesik sapmaya gore)
 _ANALOG = (20000, 100)  # parcacik, cevrim (2e6 tarih; ~%10 bagil hata)
@@ -195,6 +196,7 @@ def _kos(spec, dizin, parcacik, cevrim):
     return satir
 
 
+@gereksinim("R-V3-27")
 def test_agirlik_penceresi_yanliliksiz_ve_fom_artar(gecici):
     print("\n[Y9-Y1] zirh: pencereli sonuc analog ile 2 sigma icinde; FOM olculur")
     import math

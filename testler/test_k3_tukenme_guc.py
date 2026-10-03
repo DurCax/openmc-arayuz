@@ -30,6 +30,7 @@ import os
 import shutil
 
 from testler.ortak_test import KOK, ORNEK, kontrol
+from testler.ortak_test import gereksinim  # v3 izlenebilirlik
 
 FIXTURE = os.path.join(KOK, "testler", "veri", "tukenme_guc_ornek")
 
@@ -64,6 +65,7 @@ def test_adim_dosyalari(gecici):
             len(s["adimlar"]) == 3 and any("3" in n for n in s["notlar"]), "-> %r" % (s["notlar"],))
 
 
+@gereksinim("R-V3-08")
 def test_adim_basina_tablo():
     print("\n[TG2] fixture: adim basina pin tablosu")
     from cekirdek import guc_tablo
@@ -237,6 +239,7 @@ def test_tally_olmayan_adim(gecici):
     kontrol("adim dosyasi yoksa None", tukenme_guc.adim_gucleri(bos, _spec()) is None)
 
 
+@gereksinim("R-V3-08")
 def test_gercek_kosu_adim_basina_guc(gecici):
     print("\n[TG8] gercek tukenme kosusu: guc kapali spec'te adim basina tablo uretilir")
     import importlib.util

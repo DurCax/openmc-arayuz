@@ -12,6 +12,7 @@
 import math
 
 from testler.ortak_test import kontrol
+from testler.ortak_test import gereksinim  # v3 izlenebilirlik
 
 _TOL = 1e-12
 
@@ -41,6 +42,7 @@ def test_tek_grup_k_nusf_bolu_sa():
     kontrol("k = 1.3", _yakin(k, 1.3), "-> %r" % k)
 
 
+@gereksinim("R-V3-25")
 def test_iki_grup_yukari_sacilmasiz_el_formulu():
     print("\n[Y8-K2] 2 grup, chi=(1,0), yukari sacilma yok: k = nuSf1/Sr1 + S12 nuSf2/(Sr1 Sa2)")
     from cekirdek import mgxs_k as mk
@@ -55,6 +57,7 @@ def test_iki_grup_yukari_sacilmasiz_el_formulu():
     kontrol("el formulu", _yakin(k, beklenen, 1e-10), "-> %r / %r" % (k, beklenen))
 
 
+@gereksinim("R-V3-25")
 def test_iki_grup_yukari_sacilmali_determinant():
     print("\n[Y8-K3] 2 grup yukari sacilmali: M phi = chi nuSf.phi / k, M = diag(St) - S^T")
     from cekirdek import mgxs_k as mk

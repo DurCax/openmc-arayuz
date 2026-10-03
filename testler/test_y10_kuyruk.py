@@ -14,6 +14,7 @@ import time
 
 from testler.ortak_test import ORNEK, ISLEM_PARCACIGI
 from testler import y10_ortak as yo
+from testler.ortak_test import gereksinim  # v3 izlenebilirlik
 
 # Kuyruk testlerinde bir isin bitmesi icin cömert ust sinir (s); sahte
 # ikili ~0.1 s'de biter. Asilirsa test kilitlenmez, basarisiz olur.
@@ -34,6 +35,7 @@ def _is(tmp_path, ad, **kw):
                           sonuc_kancasi=kw.pop("sonuc_kancasi", yo.sahte_sonuc), **kw)
 
 
+@gereksinim("R-V3-28")
 def test_uc_kosu_sirayla_biter(tmp_path, monkeypatch):
     # Arrange
     from cekirdek import kuyruk
@@ -60,6 +62,7 @@ def test_uc_kosu_sirayla_biter(tmp_path, monkeypatch):
     k.kapat()
 
 
+@gereksinim("R-V3-28")
 def test_her_kosu_ayri_dizinde_ve_ayni_dizin_reddedilir(tmp_path, monkeypatch):
     # Arrange
     from cekirdek import kuyruk
@@ -79,6 +82,7 @@ def test_her_kosu_ayri_dizinde_ve_ayni_dizin_reddedilir(tmp_path, monkeypatch):
     assert kuyruk.ayri_dizin(str(tmp_path), "UO2 3.1%/demet") != yol
 
 
+@gereksinim("R-V3-28")
 def test_paralel_kosu_is_parcacigi_butcesini_asmaz(tmp_path, monkeypatch):
     # Arrange: butce 4, her is 2 is parcacigi -> ayni anda en fazla 2 kosu
     monkeypatch.setenv("SAHTE_SURE", "0.05")

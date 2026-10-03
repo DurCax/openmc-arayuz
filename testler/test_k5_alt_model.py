@@ -12,6 +12,7 @@ import copy
 import os
 
 from testler.ortak_test import kontrol, ORNEK
+from testler.ortak_test import gereksinim  # v3 izlenebilirlik
 
 
 def _spec(ad):
@@ -42,6 +43,7 @@ def _sinir_turleri(kurulu):
             if s.boundary_type != "transmission"}
 
 
+@gereksinim("R-V3-11")
 def test_cubuk_alt_modeli_yalniz_pinin_malzemeleri():
     print("\n[K5A-1] cubuk alt modeli: yalniz pinin malzemeleri, yansitici sinir, girdi degismez")
     from cekirdek import alt_model as am
@@ -66,6 +68,7 @@ def test_cubuk_alt_modeli_yalniz_pinin_malzemeleri():
     kontrol("girdi spec degismedi", spec == once)
 
 
+@gereksinim("R-V3-11")
 def test_demet_alt_modeli_kapsam_disi_malzeme_yok():
     print("\n[K5A-2] demet alt modeli: demetin pinleri var, diger demetlerin yakiti yok")
     from cekirdek import alt_model as am

@@ -11,6 +11,7 @@ testler/test_k1_akis.py.
 import os
 
 from testler.ortak_test import kontrol, ORNEK
+from testler.ortak_test import gereksinim  # v3 izlenebilirlik
 
 
 def _qt():
@@ -38,6 +39,7 @@ def _kapat(p):
 # cekirdek: yeni_spec(kor_turu)
 # ============================================================================
 
+@gereksinim("R-V3-01")
 def test_yeni_spec_gercekten_bos_yalniz_kor_turu():
     print("\n[K1-1] yeni_spec: gercekten bos, yalniz kor turu secilir")
     from cekirdek import sema
@@ -160,6 +162,7 @@ def test_uc_yol_baslangic_ekraninda():
         b.deleteLater()
 
 
+@gereksinim("R-V3-01")
 def test_sifirdan_eksik_adim_sunumu_ve_kapi():
     print("\n[K1-5] Sifirdan: bos model, bilgi tonu 'eksik adim', Calistir kapali + neden")
     _qt()

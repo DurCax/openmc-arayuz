@@ -21,6 +21,7 @@ import os
 import shutil
 
 from testler.ortak_test import KOK, kontrol
+from testler.ortak_test import gereksinim  # v3 izlenebilirlik
 
 FIXTURE = os.path.join(KOK, "testler", "veri", "tukenme_guc_ornek")
 
@@ -47,6 +48,7 @@ def test_plan_saniye():
     kontrol("d, h, a, MWd/kg", sn == [86400.0, 7200.0, 365.25 * 86400.0, 86400.0], repr(sn))
 
 
+@gereksinim("R-V3-22")
 def test_eklenen_adim(gecici):
     print("\n[Y4-S2] biten kosuya adim ekleme: tamam = 2")
     from cekirdek import tukenme_surdur as ts
@@ -58,6 +60,7 @@ def test_eklenen_adim(gecici):
     kontrol("dizinde sonuc yoksa None", ts.onceki_durum(s, os.path.join(gecici, "bos")) is None)
 
 
+@gereksinim("R-V3-22")
 def test_reddedilenler(gecici):
     print("\n[Y4-S3] uyumsuz surdurme reddedilir")
     from cekirdek import tukenme_surdur as ts

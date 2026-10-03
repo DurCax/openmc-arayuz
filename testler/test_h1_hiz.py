@@ -37,6 +37,7 @@ import statistics
 import time
 
 from testler.ortak_test import kontrol, ORNEK
+from testler.ortak_test import gereksinim  # v3 izlenebilirlik
 
 _REFERANS_SURE = 0.40          # s CPU: SFR gelismis agacinin tek gezintisi (bu makine)
 _ACILIS_ESIGI = 4.0            # s: olculen en kotu 1.77 s x2 pay (plan hedefi 3 s ayrica yazdirilir)
@@ -122,6 +123,7 @@ def test_sayim_ozyineleme_siniri(monkeypatch):
             sayi[0] < _SAYIM_SINIRI, "cagri=%d" % sayi[0])
 
 
+@gereksinim("R-V3-13")
 def test_tus_basina_tek_gezinti(monkeypatch):
     print("\n[H1-H4] pencere: gelismis editorde bir alan yazmak en cok BIR agac gezintisi")
     from PySide6 import QtWidgets
@@ -250,6 +252,7 @@ def _ornek_ortanca(ad):
             for j in range(4)]
 
 
+@gereksinim("R-V3-13")
 def test_buyuk_orneklerde_sureler():
     print("\n[H1-Y1] 5 buyuk ornek: acilis, gelismise gecis (dogrulamasiz), tus -- CPU s")
     from PySide6 import QtWidgets

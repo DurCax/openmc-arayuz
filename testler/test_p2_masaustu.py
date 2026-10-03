@@ -23,6 +23,7 @@ import pytest
 from cekirdek import masaustu
 from cekirdek.masaustu import kurulum
 from testler.ortak_test import KOK
+from testler.ortak_test import gereksinim  # v3 izlenebilirlik
 
 _ZAMAN_ASIMI = 120          # s; alt surec (python + xdg araclari)
 _ACILIS_BEKLEME_DENEME = 50     # x 0.1 s = 5 s; xdg-open'in baslattigi sureci bekle
@@ -154,6 +155,7 @@ def test_calistirilabilir_dogrulama():
 # kur / kaldir (gecici HOME)
 # ---------------------------------------------------------------------------
 
+@gereksinim("R-V3-29")
 def test_kur_dosyalari_yazar_ve_kaldir_iz_birakmaz():
     with _gecici() as kok:
         ev = _Ev(kok)

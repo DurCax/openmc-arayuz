@@ -26,6 +26,7 @@ import sys
 import types
 
 from testler.ortak_test import KOK, kontrol
+from testler.ortak_test import gereksinim  # v3 izlenebilirlik
 
 FIXTURE = os.path.join(KOK, "testler", "veri", "kosu_ornek")
 
@@ -50,6 +51,7 @@ def _konum(eksenel, sigma=0.001):
             "toplam": (toplam, sigma * math.sqrt(len(eksenel)))}
 
 
+@gereksinim("R-V3-06")
 def test_tablo_haritayla_ayni():
     print("\n[PT1] Tablo = harita (bagil, σ, sicak pin)")
     from cekirdek import guc_tablo
@@ -75,6 +77,7 @@ def test_tablo_haritayla_ayni():
             (r0["x"], r0["y"]) == guc.cubuk_merkezi(g["dagilim"], r0["anahtar"]))
 
 
+@gereksinim("R-V3-06")
 def test_tablo_toplami_toplam_guc():
     print("\n[PT2] Toplam = toplam guc; ortalama q′")
     from cekirdek import guc_tablo
@@ -177,6 +180,7 @@ def test_demet_ozeti():
     kontrol("demet metni dolu", all(r["demet"] for r in tablo))
 
 
+@gereksinim("R-V3-07")
 def test_ceyrek_katlama():
     print("\n[PT5] Ceyrek katlama yalniz simetri dogrulanirsa")
     from cekirdek import guc_tablo

@@ -22,6 +22,7 @@ import threading
 
 from testler.ortak_test import kontrol, KOK
 from testler.k2_sahte_sunucu import SahteSunucu
+from testler.ortak_test import gereksinim  # v3 izlenebilirlik
 
 _VERI = bytes(range(256)) * 4096          # 1 MiB, tekrarsiz olmayan ama sabit icerik
 _SHA = hashlib.sha256(_VERI).hexdigest()
@@ -102,6 +103,7 @@ def test_katalog_gecersiz_reddedilir():
         bayt=-1)), ValueError))
 
 
+@gereksinim("R-V3-05")
 def test_url_politikasi():
     print("\n[K2-I3] uretim politikasi: yalniz https + katalog alan adlari; kullanici bilgisi yok")
     from cekirdek import veri_indir
@@ -120,6 +122,7 @@ def test_url_politikasi():
 # dosya indirme
 # ---------------------------------------------------------------------------
 
+@gereksinim("R-V3-04")
 def test_tam_indirme_atomik():
     print("\n[K2-I4] tam indirme: sha256 dogru, .part kalmaz, ilerleme bildirilir")
     from cekirdek import veri_indir
@@ -140,6 +143,7 @@ def test_tam_indirme_atomik():
         kontrol("zaten dogru dosya yeniden indirilmez", ikinci == _SHA and len(s.istekler) == 1)
 
 
+@gereksinim("R-V3-04")
 def test_kesinti_ve_surdurme():
     print("\n[K2-I5] kesinti -> .part kalir; yeniden cagrida Range ile kaldigi yerden surer")
     from cekirdek import veri_indir
@@ -161,6 +165,7 @@ def test_kesinti_ve_surdurme():
         kontrol("surdurulen dosya dogru", sha == _SHA and os.path.getsize(hedef) == len(_VERI))
 
 
+@gereksinim("R-V3-04")
 def test_sha256_hatasi():
     print("\n[K2-I6] sha256 tutmazsa hedef olusmaz, bozuk parca silinir")
     from cekirdek import veri_indir

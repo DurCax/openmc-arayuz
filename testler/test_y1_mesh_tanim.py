@@ -16,6 +16,7 @@ import os
 import numpy as np
 
 from testler.ortak_test import kontrol, ORNEK, ISLEM_PARCACIGI
+from testler.ortak_test import gereksinim  # v3 izlenebilirlik
 
 _ORNEK = "pwr_mesh_aki.json"
 
@@ -204,6 +205,7 @@ def test_grup_yapilari():
 # betik esdegerligi (kosmadan: mesh tanimlari birebir ayni)
 # ---------------------------------------------------------------------------
 
+@gereksinim("R-V3-16")
 def test_betik_esdegerligi_mesh_tanimlari(gecici=None):
     print("\n[Y1-T7] betik esdegerligi: kurucu ve uretilen betik AYNI mesh'leri kurar")
     import tempfile
@@ -225,6 +227,7 @@ def test_betik_esdegerligi_mesh_tanimlari(gecici=None):
             "-> %s\n   %s" % (a, b))
 
 
+@gereksinim("R-V3-16")
 def test_yavas_betik_esdegerligi_kosu(gecici):
     print("\n[Y1-T8] YAVAS: kurucu ve betik ayni tohumla ayni k ve mesh tally degerleri")
     import openmc

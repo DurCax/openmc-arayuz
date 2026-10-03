@@ -19,6 +19,7 @@ import math
 import os
 
 from testler.ortak_test import ORNEK, kontrol
+from testler.ortak_test import gereksinim  # v3 izlenebilirlik
 
 
 def _spec():
@@ -61,6 +62,7 @@ def test_noktalar_ve_hatalar():
             kontrol("%s reddedilir" % ad, True)
 
 
+@gereksinim("R-V3-23")
 def test_kosul_taramayla_ayni():
     print("\n[Y5-D2] dal kosulu = tarama.parametre_uygula; taban degismez")
     from cekirdek import dal, tarama

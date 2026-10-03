@@ -16,6 +16,7 @@ import pandas as pd
 import pytest
 
 from testler.ortak_test import ORNEK, ISLEM_PARCACIGI
+from testler.ortak_test import gereksinim  # v3 izlenebilirlik
 
 
 def _ornek(ad):
@@ -201,6 +202,7 @@ def test_coklu_kanal_net_uretimi_x_eksi_bir_ile_agirliklanir():
     assert s.hucreler[0].yok_olma[0] == pytest.approx(1.0 - 0.01 - 0.02 - 0.01)
 
 
+@gereksinim("R-V3-09")
 def test_yakitsiz_bin_fisil_degil_ama_ortalamaya_payda_olarak_girer():
     # Arrange: yakit (P=2, A=1) + kilavuz boru (P=0, A=0.5)
     from cekirdek import yerel_k
@@ -215,6 +217,7 @@ def test_yakitsiz_bin_fisil_degil_ama_ortalamaya_payda_olarak_girer():
     assert s.ortalama[0] == pytest.approx(2.0 / 1.5)
 
 
+@gereksinim("R-V3-09")
 def test_net_yok_olma_agirlikli_ortalama_uretim_toplami_oranina_esit():
     # Arrange: rastgele binler; ozdeslik: sum(D_i k_i)/sum(D_i) = sum P / sum D
     import random
@@ -429,6 +432,7 @@ def test_terminal_cikti_girdiyle_ayniysa_reddeder(tmp_path):
 
 # ---------------------------------------------------------------------------
 
+@gereksinim("R-V3-09")
 def test_sonsuz_kafeste_yerel_k_ortalamasi_k_sonsuza_esit(gecici):
     # Arrange: yansitici 17x17 demet (sonsuz kafes), pin duzeyi
     from cekirdek import kosucu, yerel_k

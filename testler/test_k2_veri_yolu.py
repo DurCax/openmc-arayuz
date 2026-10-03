@@ -13,6 +13,7 @@ import tempfile
 
 from testler.ortak_test import kontrol
 from testler.k2_yalitim import VeriYalitimi
+from testler.ortak_test import gereksinim  # v3 izlenebilirlik
 
 _ZINCIR = "chain_endfb80_thermal.xml"
 
@@ -43,6 +44,7 @@ def _zincir(dizin, ad=_ZINCIR):
     return yol
 
 
+@gereksinim("R-V3-03")
 def test_ortam_degiskeni_once_gelir():
     print("\n[K2-Y1] OPENMC_CROSS_SECTIONS verilmisse ayar ve aday okunmaz (gecersiz olsa da)")
     from cekirdek import veri_yolu
@@ -61,6 +63,7 @@ def test_ortam_degiskeni_once_gelir():
         kontrol("hazir degil", not veri_yolu.veri_hazir_mi(ortam))
 
 
+@gereksinim("R-V3-03")
 def test_ayar_sonra_aday():
     print("\n[K2-Y2] ortam bossa kayitli ayar, o da yoksa ~/nucdata adayi")
     from cekirdek import veri_yolu
@@ -80,6 +83,7 @@ def test_ayar_sonra_aday():
                 veri_yolu.cross_sections(ortam).kaynak == "ayar")
 
 
+@gereksinim("R-V3-03")
 def test_hicbiri_yoksa_yok():
     print("\n[K2-Y3] veri hicbir yerde yoksa kaynak 'yok', deger None")
     from cekirdek import veri_yolu

@@ -18,6 +18,7 @@ import math
 import pytest
 
 from testler.ortak_test import KOK  # noqa: F401  (sys.path)
+from testler.ortak_test import gereksinim  # v3 izlenebilirlik
 
 _GORELI = 1e-9
 
@@ -63,6 +64,7 @@ def test_uranyum_vektoru_ornl_bagintisi():
         mh.uranyum_vektoru(99.5)          # 1.0135 e > 100
 
 
+@gereksinim("R-V3-14")
 def test_uranyum_vektoru_openmc_ile_ayni():
     """Capraz denetim: OpenMC Element.expand (kesit kutuphanesi suzgeci olmadan)."""
     import openmc
@@ -107,6 +109,7 @@ def _uo2(zeng=3.2, yog=10.40):
     return malzeme("uo2", [bilesen("U", 1.0, zenginlik=zeng), bilesen("O", 2.0)], yog)
 
 
+@gereksinim("R-V3-14")
 def test_uo2_turetilmis_degerler_el_hesabi():
     from cekirdek import malzeme_hesap as mh
     # M_U = 1/sum(w/M) = 237.95191837803 ; M_UO2 = M_U + 2 M_O = 269.95052739649

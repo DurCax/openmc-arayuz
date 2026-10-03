@@ -19,6 +19,7 @@ import pytest
 
 from testler.ortak_test import ORNEK, ISLEM_PARCACIGI
 from testler import y10_ortak as yo
+from testler.ortak_test import gereksinim  # v3 izlenebilirlik
 
 _BEKLEME = 60.0          # s; sahte ikiliyle is ~0.1 s'de biter
 
@@ -90,6 +91,7 @@ def test_tek_demet_alt_modeli_yansitici_ve_sade():
         assert kutu.upper_right[0] == pytest.approx(10.71), ad
 
 
+@gereksinim("R-V3-10")
 def test_sihirbaz_modeli_elle_modelle_fiziksel_olarak_ozdes():
     # Arrange: deterministik kanit -- ayni malzeme bilesimi, yuzeyler, hucreler, kafes
     from cekirdek import demet_kinf
@@ -103,6 +105,7 @@ def test_sihirbaz_modeli_elle_modelle_fiziksel_olarak_ozdes():
         assert _imza(sihirbaz) == _imza(elle), ad
 
 
+@gereksinim("R-V3-10")
 def test_budama_yalniz_kullanilmayan_malzemeleri_atar():
     # Arrange
     from cekirdek import demet_kinf, sema

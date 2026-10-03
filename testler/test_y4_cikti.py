@@ -27,6 +27,7 @@ import math
 import os
 
 from testler.ortak_test import kontrol
+from testler.ortak_test import gereksinim  # v3 izlenebilirlik
 
 EV_J = 1.602176634e-19          # CODATA 2018
 AVOGADRO = 6.02214076e23
@@ -71,6 +72,7 @@ def _seriler(gecici):
     return tukenme_cikti.seriler(r, {mid: "kaynak"}, _zincir()), r, mid
 
 
+@gereksinim("R-V3-21")
 def test_bozunma_isisi_analitik(gecici):
     print("\n[Y4-C1] sogutmada bozunma isisi = lambda N0 e^-lambda t Q (W, W/g)")
     import openmc.deplete as d

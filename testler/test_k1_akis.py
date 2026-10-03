@@ -17,6 +17,7 @@ import os
 import tempfile
 
 from testler.ortak_test import kontrol, ISLEM_PARCACIGI
+from testler.ortak_test import gereksinim  # v3 izlenebilirlik
 
 _ZAMAN_ASIMI = 120.0
 # Westinghouse 17x17 olculu pin hucresi, kutuphane varsayilanlariyla (UO2
@@ -101,6 +102,7 @@ def _kontrol_hazir(p):
     kontrol("Calistir acik", izin and p.e_calistir.isEnabled(), "-> %s" % neden)
 
 
+@gereksinim("R-V3-01")
 def test_sifirdan_pin_kuru_calistirma():
     print("\n[K1A-1] sifirdan pin hucresi (gercek widget akisi) -> kuru calistirma")
     _qt()
@@ -116,6 +118,7 @@ def test_sifirdan_pin_kuru_calistirma():
         _kapat(p)
 
 
+@gereksinim("R-V3-02")
 def test_yavas_sifirdan_pin_kosusu(gecici):
     print("\n[K1A-2] sifirdan pin hucresi -> kisa Monte Carlo kosusu")
     _qt()

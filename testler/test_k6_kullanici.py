@@ -17,6 +17,7 @@ import tempfile
 import pytest
 
 from testler.ortak_test import KOK  # noqa: F401
+from testler.ortak_test import gereksinim  # v3 izlenebilirlik
 
 
 def _gecici_dizin():
@@ -70,6 +71,7 @@ def test_degismez_islemler():
         mku.sil(yeni, "yok")
 
 
+@gereksinim("R-V3-15")
 def test_atomik_yazma_yarida_kesilirse_eski_dosya_saglam():
     from unittest import mock
     from cekirdek import malzeme_kullanici as mku
@@ -94,6 +96,7 @@ def test_onceki_surum_yedegi():
     assert [k["ad"] for k in mku.yukle(yol + mku.ONCEKI_EKI)] == ["a"]
 
 
+@gereksinim("R-V3-15")
 def test_bozuk_json_acik_hata_silinmez_yedeklenir():
     from cekirdek import malzeme_kullanici as mku
     yol = os.path.join(_gecici_dizin(), "malzemeler.json")

@@ -19,6 +19,7 @@ import subprocess
 import sys
 
 from testler.ortak_test import kontrol, KOK
+from testler.ortak_test import gereksinim  # v3 izlenebilirlik
 
 _KAYNAK_PAKETLER = ("cekirdek", "arayuz")
 _AZAMI_SATIR = 800          # ORTAK_KURALLAR.md madde 9: dosya < 800 satir
@@ -56,6 +57,7 @@ def _veri_dizini(kok):
     return str(kok)
 
 
+@gereksinim("R-V3-30")
 def test_paket_ve_veri_dizinleri():
     print("\n[T2-1] yollar: paket koku, ornekler, locale, kilavuz, ikon, font, sablon")
     from cekirdek import yollar

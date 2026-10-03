@@ -17,6 +17,7 @@ import os
 from cekirdek import sema
 from testler.ortak_test import kontrol, ISLEM_PARCACIGI
 from testler.regresyon_ortak import ORNEK
+from testler.ortak_test import gereksinim  # v3 izlenebilirlik
 
 _GOR_TOL = 1e-12            # ayni sayilardan cebirsel ozdeslik (kayan nokta)
 _K_SIGMA = 2.0              # "belirsizlik icinde": 2 sigma (yaklasik %95)
@@ -64,6 +65,7 @@ def _hizlar():
             "L": s.Deger(0.0, 0.0)}
 
 
+@gereksinim("R-V3-17")
 def test_dort_faktor_el_hesabi():
     print("\n[Y3-2] dort faktor: OpenMC tally-arithmetic tanimlari, el hesabi")
     from cekirdek import spektrum as s
@@ -102,6 +104,7 @@ def test_sizinti_carpani():
             _yakin(f["k"].ort, f["carpim"].ort * f["c_xn"].ort * f["p_nl"].ort))
 
 
+@gereksinim("R-V3-17")
 def test_hizli_sistemde_dort_faktor_tanimsiz():
     print("\n[Y3-4] termal fisyon yoksa (hizli sistem) eps/p/f/eta tanimsiz, k tanimli")
     from cekirdek import spektrum as s
@@ -288,6 +291,7 @@ def _df_degeri(df, **kosul):
     return float(sat["mean"].sum())
 
 
+@gereksinim("R-V3-17")
 def test_pin_hucre_dort_faktor_k_sonsuz(gecici):
     print("\n[Y3-Y1] yansiticili pin hucre: eps*p*f*eta*c_xn = k-sonsuz (2 sigma)")
     import openmc

@@ -17,6 +17,7 @@ import time
 import numpy as np
 
 from testler.ortak_test import kontrol, ORNEK
+from testler.ortak_test import gereksinim  # v3 izlenebilirlik
 
 # 2B kare, 3B (xz), kafes + tambur, altigen demet, plaka kor, tamburlu kor
 ORNEKLER = ("pwr_17x17", "pwr_3b", "kafes_tamburlu_yansitici", "vver1000_demet", "mtr_kor",
@@ -84,6 +85,7 @@ def _bir_kesit(ad, spec, model, bilgi, eksen):
             "-> %d farkli" % fark_h)
 
 
+@gereksinim("R-V3-12")
 def test_malzeme_haritasi_esdeger():
     print("\n[H2E-1] eski Model.plot ile yeni cizim: tum goruntu esdeger (%d ornek)"
           % len(ORNEKLER))

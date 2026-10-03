@@ -9,6 +9,7 @@ import copy
 import os
 
 from testler.ortak_test import kontrol, ORNEK
+from testler.ortak_test import gereksinim  # v3 izlenebilirlik
 
 _ZAMAN_ASIMI = 120.0
 
@@ -21,6 +22,7 @@ def _surec_durumu(pid):
         return "yok"
 
 
+@gereksinim("R-V3-12")
 def test_calistir_kapisi_ayni():
     print("\n[H2K-1] Calistir kapisi: iyi model acik, kurulamayan kapali; daraltilmis panelde de")
     from PySide6 import QtWidgets

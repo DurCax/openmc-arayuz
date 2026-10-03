@@ -28,6 +28,7 @@ import os
 from cekirdek import sema
 from testler.ortak_test import kontrol, ISLEM_PARCACIGI
 from testler.regresyon_ortak import ORNEK
+from testler.ortak_test import gereksinim  # v3 izlenebilirlik
 
 _SIGMA = 3.0
 _ANALOG_TOL = 1e-9          # analog denge her gecmiste tam: yalniz yuvarlama
@@ -82,6 +83,7 @@ def _analog_terimler(sp, ad):
     return top("absorption"), top("nu-scatter") - top("scatter") + top("nu-fission")
 
 
+@gereksinim("R-V3-19")
 def test_sabit_kaynak_yuzey_akimi_korunumu(gecici):
     print("\n[Y7-F1] sabit kaynak: S + giren - cikan + U = A (kutu dis yuzleri)")
     import openmc
@@ -176,6 +178,7 @@ def _parcacik_tallysi(model):
     return model
 
 
+@gereksinim("R-V3-20")
 def test_foton_acik_isinma_skorlari(gecici):
     print("\n[Y7-F3] foton acik: heating = H_n + H_gama; sonsuz kafeste ~ heating-local")
     from cekirdek import kurucu
@@ -219,6 +222,7 @@ def _yakit_sicakligi(t):
     return spec
 
 
+@gereksinim("R-V3-20")
 def test_sicaklik_interpolasyonu_ara_sicaklik(gecici):
     print("\n[Y7-F4] interpolation: k(600) > k(750) > k(900), k(750) ~ dogrusal orta (3 sigma)")
     import openmc

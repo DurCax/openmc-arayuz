@@ -22,6 +22,7 @@ import numpy as np
 from testler.ortak_test import kontrol
 
 from cekirdek import kinetik as kin
+from testler.ortak_test import gereksinim  # v3 izlenebilirlik
 
 _BIR_GRUP = kin.GrupVerisi(beta=(0.0065,), lam=(0.0767,), nesil_suresi=1e-4,
                            kaynak="test: tek grup")
@@ -85,6 +86,7 @@ def test_inhour_tek_grup_kapali_bicim():
                 and _hata(kok, beklenen) < 1e-9, "-> %s / %s" % (kok, beklenen))
 
 
+@gereksinim("R-V3-18")
 def test_inhour_cok_grup():
     print("\n[Y6-4] Inhour 6 grup: N+1 kok, rho(w)=rho, isaret kurallari")
     v = kin.KEEPIN_U235_TERMAL.nesil_suresi_ile(2e-5)
@@ -106,6 +108,7 @@ def test_inhour_cok_grup():
     kontrol("Keepin, 100 pcm: periyot 40-80 s", 40.0 < t < 80.0, "-> %.1f s" % t)
 
 
+@gereksinim("R-V3-18")
 def test_tek_grup_basamak_analitik():
     print("\n[Y6-5] tek grup basamak: cozucu = analitik iki ustel")
     for rho in (0.001, -0.002, 0.003):
@@ -125,6 +128,7 @@ def test_tek_grup_basamak_analitik():
             "-> %.4f s / %.4f s" % (kin.periyot_tahmini(coz), 1.0 / w1))
 
 
+@gereksinim("R-V3-18")
 def test_alti_grup_basamak_matris_ustel():
     print("\n[Y6-6] 6 grup basamak: cozucu = matris ustel; periyot = Inhour")
     v = kin.KEEPIN_U235_TERMAL.nesil_suresi_ile(2e-5)

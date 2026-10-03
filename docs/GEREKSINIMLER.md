@@ -111,3 +111,42 @@ Kurallar:
 | R-S-16 | Her koşu dizinine spec karması, sürümler, veri karmaları, tohum ve ortam kilidi özetini içeren tekrarlanabilirlik kapsülü yazılır. | Y2, Ek öneri M4 | T |
 | R-S-17 | Bir koşu kapsüldeki spec ile yeniden üretilir ve ortam/sonuç farkı raporlanır. | Y2, Ek öneri M4 | T |
 | R-S-18 | Belge seti (gereksinimler, tasarım, test planı/sonuçları, V&V, kılavuz, bilinen sınırlamalar, değişiklik günlüğü) listelenir ve eksikleri yazılır. | Y3, Y4 | İ |
+
+## 7. v3 (Dalga T–Q) — hız, başlangıç, veri, pin/demet sonuçları, yeni fizik, paketleme
+
+Kimlikler `R-V3-NN`. Yöntem **T** = otomatik test; **A** = analiz (`docs/VV.md`); **İ** = inceleme (öğrenci QA ve profesör denetimi raporları; CHANGELOG 3.0.0).
+
+| Kimlik | Gereksinim | Kaynak | Yöntem |
+|---|---|---|---|
+| R-V3-01 | Yeni ("Sıfırdan") model gerçekten boştur: yalnız çekirdek türü içerir; boş modelde eksik aşamalar bilgi olarak sunulur, gerçek hatalar gizlenmez ve Çalıştır kapalıdır. | K1 | T |
+| R-V3-02 | Örnek kullanmadan sıfırdan kurulan pin hücresi doğrulamadan geçer ve gerçek bir koşu verir. | K1 | T |
+| R-V3-03 | Nükleer veri kütüphanesi yolu tek çözümleyiciden gelir: ortam değişkeni > kullanıcı ayarı > aday klasör; hiçbiri yoksa açık "yok". | K2 | T |
+| R-V3-04 | Kütüphane indirme atomiktir, kesintiden sürdürülür ve bayt/sha256 uyuşmazlığında hata verir. | K2 | T |
+| R-V3-05 | İndirme yalnız https ve katalogdaki izinli alan adlarına yapılır; yönlendirmeler de denetlenir. | K2 | T |
+| R-V3-06 | Pin gücü tablosu güç haritasıyla aynı değerleri taşır ve toplamı toplam güç × hedef payına eşittir. | K3 | T |
+| R-V3-07 | Çeyrek katlama yalnız geometri simetrisi doğrulanırsa yapılır; aksi halde nedeniyle reddedilir. | K3 | T |
+| R-V3-08 | Tükenmede adım başına pin gücü tablosu üretilir (adım × pin). | K3 | T |
+| R-V3-09 | Yerel k haritası: üretim ağırlıklı ortalama ΣP/ΣD sonsuz kafeste k∞'a eşittir; yakıtsız hücrelerin yok olması paydada kalır. | K4 | T |
+| R-V3-10 | Demet k∞ sihirbazının kurduğu tek demet modeli elle kurulanla fiziksel olarak özdeştir; budama yalnız kullanılmayan malzemeleri atar. | K4 | T |
+| R-V3-11 | Önizleme kapsamında alt model yalnız seçili parçanın malzemelerini içerir. | K5 | T |
+| R-V3-12 | Önizleme çizimi eski Model.plot ile aynı malzeme haritasını verir ve Çalıştır kapısı davranışı değişmez. | H2 | T |
+| R-V3-13 | Geometri doğrulaması tuş başına tek ağaç gezintisi yapar; büyük örneklerde açılış ve tuş süreleri gerekçeli eşiklerin altındadır. | H1 | T |
+| R-V3-14 | Malzeme hesaplayıcıları bağımsız el hesabıyla ve OpenMC ile uyumludur (U izotop vektörü, türetilmiş değerler). | K6 | T |
+| R-V3-15 | Kullanıcı malzeme kütüphanesi atomik yazılır; bozuk dosya silinmez, yedeklenir. | K6 | T |
+| R-V3-16 | Mesh tally: kurucu ve üretilen betik aynı ağı ve aynı sonucu verir. | Y1 | T |
+| R-V3-17 | Dört faktör çarpımı (c_xn ile) tally'lerden k∞'u verir; hızlı sistemde termal çarpanlar tanımsız bildirilir. | Y3 | T |
+| R-V3-18 | Nokta kinetiği çözücüsü tek grup analitik çözümle, çok grup Inhour köküyle ve matris üstelle uyuşur. | Y6 | T |
+| R-V3-19 | Sabit kaynakta yüzey akımı dengesi (giren − çıkan + kaynak + üretim = soğurma) korunur. | Y7 | T |
+| R-V3-20 | Foton açıkken heating skorları üretilir; ara sıcaklık interpolasyonla koşar ve sıralama monotondur. | Y7 | T |
+| R-V3-21 | Soğuma adımında bozunma ısısı tek nüklidli analitik çözümle uyuşur. | Y4 | T |
+| R-V3-22 | Tükenme kaldığı yerden yalnız uyumlu fizik ve adım planıyla sürdürülür; uyumsuz istek nedeniyle reddedilir. | Y4 | T |
+| R-V3-23 | Dal tablosunun koşulları tek değişkenli taramayla aynı koddan uygulanır. | Y5 | T |
+| R-V3-24 | Tükenme bölgesi bölme yakıt hacmini korur (Gd pininde halka bölme dahil) ve betik eşdeğeridir. | Y5 | T |
+| R-V3-25 | Grup sabitleriyle sonsuz ortam k∞ (yukarı saçılma dahil G×G özdeğer) el formülüyle uyuşur. | Y8 | T |
+| R-V3-26 | TRISO paketleme oranı hedefe ±%1 içindedir ve kurucu ile betik aynı parçacıkları kurar. | Y9 | T |
+| R-V3-27 | MAGIC ağırlık penceresi sonucu analogla istatistik içinde uyuşur (yanlılıksız) ve FOM'u artırır. | Y9 | T |
+| R-V3-28 | Koşu kuyruğu işleri sırayla çalıştırır, iş parçacığı bütçesini aşmaz ve her koşuya ayrı dizin verir. | Y10 | T |
+| R-V3-29 | Masaüstü kurulumu (.desktop, MIME, ikon) geri alınabilir: kaldırma kurulumdan önceki dosya ağacını bırakır. | P2 | T |
+| R-V3-30 | Dosya yolları tek kaynaktan çözülür ve kurulu paketten (kaynak ağacı olmadan) uygulama açılır. | T2 | T |
+| R-V3-31 | V&V kümesi 24 yeni LEU oksit kafes vakasıyla genişletildi; USL NUREG/CR-6698 ile hesaplanır ve bağımsızlık/normallik sınırlamaları belgelenir (sertifika değildir). | Y11 | A |
+| R-V3-32 | v3 özellikleri bağımsız öğrenci QA (Q1) ve profesör/standart denetiminden (Q2) geçirildi; bulgular düzeltildi ya da açık nokta olarak yazıldı. | Q1, Q2 | İ |

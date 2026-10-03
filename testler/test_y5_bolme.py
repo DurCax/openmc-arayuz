@@ -27,6 +27,7 @@ import math
 import os
 
 from testler.ortak_test import ORNEK, kontrol
+from testler.ortak_test import gereksinim  # v3 izlenebilirlik
 
 GD_RADYAL = 0.39218          # pwr_tukenme yakit yaricapi [cm]
 TOL = 1.0e-9
@@ -68,6 +69,7 @@ def test_halka_yaricaplari():
             kontrol("gecersiz %r reddedilir" % (kotu,), True)
 
 
+@gereksinim("R-V3-24")
 def test_gd_hacim_korunumu():
     print("\n[Y5-B2] Gd pini: halka bolme analitik hacmi korur (1e-9)")
     from cekirdek import bolge_bol as bb, tukenme
@@ -209,6 +211,7 @@ def test_hata_girdileri():
     kontrol("ayni cubuk iki kez", hata(s, "birden fazla"))
 
 
+@gereksinim("R-V3-24")
 def test_betik_esdegerligi():
     print("\n[Y5-B7] betik: bolunmus model kurucu ile ayni")
     from cekirdek import bolge_bol as bb, kod_uret, kurucu
