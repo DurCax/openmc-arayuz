@@ -17,6 +17,7 @@ plots.xml
 *.png
 !belge/*.png
 !docs/kilavuz/resimler/**/*.png
+!cekirdek/masaustu/kaynaklar/*.png
 
 # --- Python ---
 __pycache__/
