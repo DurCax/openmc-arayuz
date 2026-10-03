@@ -130,6 +130,13 @@ Kaynak tablo depodaki [SOZLUK.md](../../SOZLUK.md) dosyasıdır; aşağıdaki ta
 | bölge türü (homojenleştirme) | region type | domain type | OpenMC `domain_type` |
 | kaynak bölgesi (random ray) | source region | flat source region, FSR |  |
 | termal saçılma (S(α,β)) | thermal scattering (S(α,β)) |  |  |
+| TRISO parçacığı | TRISO particle | coated fuel particle | tristructural-isotropic; çekirdek, tampon, IPyC, SiC, OPyC |
+| kompakt (TRISO) | compact | fuel compact | silindirik TRISO yakıt gövdesi |
+| pebble | pebble | fuel sphere, fuel ball | TRISO dolu grafit küre; çoğulu pebbles |
+| paketleme oranı | packing fraction | packing density | parçacık hacminin kap hacmine oranı |
+| ağırlık penceresi | weight window |  | OpenMC `WeightWindows`; bölme ve Russian roulette sınırı |
+| MAGIC (ağırlık penceresi üreteci) | MAGIC |  | OpenMC `WeightWindowGenerator(method='magic')` |
+| verimlilik ölçütü (FOM) | figure of merit (FOM) | efficiency | FOM = 1/(σ_bağıl²·T) |
 | koşu | run | job, execution |  |
 | koşu dizini | run directory | output folder |  |
 | önizleme | preview |  |  |

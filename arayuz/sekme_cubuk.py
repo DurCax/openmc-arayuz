@@ -66,6 +66,7 @@ from arayuz.cubuk.cubuk_formu import (  # noqa: F401
 from arayuz.cubuk.plaka_formu import (  # noqa: F401
     PlakaFormuMixin)
 from arayuz.cubuk.tambur_formu import TamburFormuMixin
+from arayuz.cubuk.triso_formu import TrisoFormuMixin
 
 
 # ============================================================================
@@ -73,7 +74,7 @@ from arayuz.cubuk.tambur_formu import TamburFormuMixin
 # ============================================================================
 
 class CubukSekmesi(SayfalarMixin, CubukFormuMixin, PlakaFormuMixin, TamburFormuMixin,
-                   SekmeTabani):
+                   TrisoFormuMixin, SekmeTabani):
     """Cubuk ve plaka tanimlari."""
 
     KONU = "cubuk"
@@ -88,6 +89,7 @@ class CubukSekmesi(SayfalarMixin, CubukFormuMixin, PlakaFormuMixin, TamburFormuM
         sol_duzen.setSpacing(tokenlar.ARALIK["m"])
         sol_duzen.addWidget(self._liste_karti(), 2)
         sol_duzen.addWidget(self._tambur_karti(), 1)
+        sol_duzen.addWidget(self._triso_karti(), 1)       # Y9
 
         # --- sag: editor yigini ---
         self.bos = BosDurum(_("Henüz parça yok"), "", _("Yakıt çubuğu ekle"))
@@ -100,6 +102,8 @@ class CubukSekmesi(SayfalarMixin, CubukFormuMixin, PlakaFormuMixin, TamburFormuM
         self.yigin.addWidget(self.plaka_sayfa)
         self.tambur_sayfa = self._tambur_sayfa()
         self.yigin.addWidget(self.tambur_sayfa)
+        self.triso_sayfa = self._triso_sayfa()             # Y9
+        self.yigin.addWidget(self.triso_sayfa)
 
         bolucu = QtWidgets.QSplitter(QtCore.Qt.Horizontal)
         bolucu.addWidget(sol)
@@ -156,6 +160,7 @@ class CubukSekmesi(SayfalarMixin, CubukFormuMixin, PlakaFormuMixin, TamburFormuM
     def doldur(self):
         onceki = self._secili()
         onceki_tambur = self._tambur_secili()
+        onceki_triso = self._triso_secili()
         self.liste.blockSignals(True)
         self.liste.clear()
         for c in self.spec.get("cubuklar", []):
@@ -181,6 +186,7 @@ class CubukSekmesi(SayfalarMixin, CubukFormuMixin, PlakaFormuMixin, TamburFormuM
         self._secim_degisti(self.liste.currentRow())
         self._eylemleri_guncelle()
         self._tamburlari_doldur(onceki_tambur)
+        self._trisolari_doldur(onceki_triso)
 
     def _liste_isareti(self, oge, parca):
         eksik = eksik_malzemeler(self.spec, parca)
@@ -242,13 +248,17 @@ class CubukSekmesi(SayfalarMixin, CubukFormuMixin, PlakaFormuMixin, TamburFormuM
     def secili_oge(self):
         """Onizleme kapsami (K5): ("tambur" | "cubuk" | "plaka", ad) ya da (None, None)."""
         tambur = self._tambur_secili()
-        return ("tambur", tambur) if tambur is not None else tuple(self._secili())
+        if tambur is not None:
+            return ("tambur", tambur)
+        x = self._triso_secili()
+        return ("triso", x) if x is not None else tuple(self._secili())
 
     def _secim_degisti(self, _satir):
         tur, ad = self._secili()
         self.oge_secildi.emit()
         if tur is not None:
             self._tambur_secimini_birak()
+            self._triso_secimini_birak()
         eski = self._yukleniyor
         self._yukleniyor = True
         try:

@@ -109,6 +109,32 @@ ortalama enerji yazılır (sabit kaynakta şiddet notu da).
 | **IFP nesil sayısı** | IFP'nin geriye doğru izlediği nesil sayısı; yalnızca kinetik açıkken görünür. | nesil | 10 (1–50) | Çok küçük değer β_eff'i yanlı verir; çok büyük değer belleği şişirir. | `ayarlar.kinetik.nesil` |
 | **Gecikmeli nötron grupları** | Grup başına β_i (IFP beta payına `DelayedGroupFilter`) ve λ_i (ayrı `decay-rate` / `delayed-nu-fission` tally'si) sayılır; [nokta kinetiği kartı](04h2-kinetik.md#kinetik) bunları **Son koşudan al** ile okur. **6 grup (ENDF/B)**, **8 grup (JEFF)** ya da **yalnız toplam β_eff**. Yalnızca kinetik açıkken görünür. | grup | 6 (ENDF/B-VIII.0 kütüphanesiyle) | Kütüphaneyle eşleşmeyen sayı: ENDF/B verisiyle 8 seçilirse 7. ve 8. gruplar boş kalır ve okunurken atılır; JEFF verisiyle 6 seçilirse son iki grup **toplama girmez** (β_eff eksik çıkar). | `ayarlar.kinetik.gruplar` (0, 6, 8) |
 
+<a id="ayar-varyans"></a>
+#### Varyans azaltma (ağırlık pencereleri)
+
+**Gelişmiş** bölümünün altındaki **Varyans azaltma (ağırlık pencereleri, MAGIC)** formu, derin nüfuz
+(zırh) problemlerinde az sayıda parçacığın ulaştığı bölgeleri **ağırlık pencereleriyle** örnekler:
+parçacık ağırlığı pencerenin üstündeyse bölünür, altındaysa Russian roulette ile ya öldürülür ya da
+pencerenin içine çekilir; beklenen ağırlık korunduğundan **sonuç yanlılıksızdır**. Yalnız 3B modelde
+(kökte yükseklik ya da küresel düzenek) çalışır. Pencereleri üreten yöntem **MAGIC**'tir (OpenMC
+`WeightWindowGenerator(method='magic')`; Davis ve Sawan, *Fusion Sci. Technol.* 2013): pencere alt
+sınırı ağ hücresindeki skaler akının en yüksek hücreye oranıyla ölçeklenir. Adım adım:
+[5.21 Ders](05d-ders-triso-varyans.md#ders-triso-varyans).
+
+| Alan | Anlamı | Birim | Tipik aralık | Yaygın yanlış kullanım | Spec anahtarı |
+|---|---|---|---|---|---|
+| **Varyans azaltma** | Üreteç ya da pencere dosyası etkin. Kapalıyken hiçbir ayar yazılmaz. | — | kapalı | 2B modelde açmak (**hata**: ağ z'de sonlu olmalı). | `ayarlar.varyans.var` |
+| **Mod** | **Pencere üret**: koşu analog taşır, pencereler üretilir ve koşu dizinine `weight_windows.h5` yazılır (önerilen ilk adım). **Üret ve aynı koşuda uygula**: pencereler koşu sırasında öğrenilir ve uygulanır; ilk çevrimlerde pencere eksiktir. **Hazır dosyayı uygula**: `.h5` ya da MCNP `wwinp` dosyası yüklenir, pencereler sabittir. | — | üret, sonra uygula | Az parçacıkla (ör. 2000 × 60) "üret ve uygula" seçip pencerenin hiç oluşmadığını fark etmemek: ölçüldü, sonuç analogla bit düzeyinde aynı çıktı. | `ayarlar.varyans.mod` (`uret` \| `uret_uygula` \| `uygula`) |
+| **Ağ türü ve boyutu** | **Düzenli (x, y, z)** modelin sınır kutusunda eşit ağ; **Küresel (r, θ, φ)** küresel düzenekte yalnız yarıçap bölmesi (θ ve φ tek bölme). | bölme | küresel zırhta 8–20 × 1 × 1; düzenli 10³ | Çok ince ağ: hücre başına tally gürültülü, pencere deliklidir (ölçüldü: 18³ düzenli ağda hücrelerin %67'si pencere almadı, küresel 8 bölmede tamamı aldı). | `ayarlar.varyans.mesh_turu`, `mesh_boyut` |
+| **Parçacık**, **Enerji sınırları [eV]** | Pencerenin parçacığı (`neutron`/`photon`); virgüllü artan enerji sınırları (boş: tek grup). | eV | boş | Enerji gruplarını çoğaltıp hücre başına istatistiği boğmak. | `parcacik`, `enerji_siniri` |
+| **En çok gerçekleşme, Güncelleme aralığı** | Pencerelerin güncellendiği en çok çevrim sayısı ve güncelleme sıklığı. | çevrim | üretim koşusunda çevrim sayısı kadar | Varsayılan 10 ile 40 çevrimlik üretimde son 30 çevrimin istatistiğini atmak. | `max_gerceklesme`, `guncelleme_araligi` |
+| **Pencere dosyası** | **Hazır dosyayı uygula** modunda `.h5` (OpenMC) ya da `wwinp` (MCNP). **Son koşudan al** koşu dizinindeki `weight_windows.h5`'i seçer. | — | — | Dosya yok (**hata**). OpenMC 0.16 `wwinp` **dışa aktarmaz**; yalnız `.h5` üretilir. | `ayarlar.varyans.dosya` |
+
+**Kapsam dışı:** **FW-CADIS** (`method='fw_cadis'`). OpenMC 0.16 bu yöntemi kabul eder ancak
+random ray koşusunun **adjoint** çözümünü (`settings.random_ray['adjoint']`, çok gruplu
+kütüphane, ayrı random ray modeli) ister; bu sürümde arayüzde açılmadı. Sonuç sayfasında
+[**Verimlilik (FOM)** kartı](04g-calistir.md#calistir-fom) tally başına FOM'u yazar.
+
 <a id="ayar-guc"></a>
 ### Güç dağılımı kartı
 

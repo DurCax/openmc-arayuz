@@ -486,14 +486,61 @@ KAHIN.update({
 })
 
 
+# v3 Y9 ornekleri -- gercek uygunluk ciktisi incelenerek yazildi (03.10.2026). TRISO'lu
+# agac modelleri: yakit tek malzeme (kernel), grafit/tampon/PyC moderator rolunde
+# (C + c_Graphite); SiC yapisal. Pebble modeli kure kokludur (2B, yalniz yan sinir).
+_TRISO_ROL = {'tampon': {'moderator'}, 'pyc_ic': {'moderator'}, 'sic': {'yapisal'},
+              'pyc_dis': {'moderator'}, 'matris': {'moderator'}, 'grafit': {'moderator'}}
+_TRISO_AYAR = dict(OZDEGER, guc_dagilimi=False, eksenel_dilim=False)
+KAHIN.update({
+    "htgr_kompakt": dict(
+        ozet=_ozet('agac', '3B'),
+        roller=dict(_TRISO_ROL, uco={'yakit'}),
+        sekmeler=TUM_SEKME,
+        hedefler=_h(yakit_sicaklik=['uco'], malzeme_yogunluk=['uco', 'tampon', 'pyc_ic', 'sic',
+                                                              'pyc_dis', 'matris', 'grafit'],
+                    yansitici_kalinlik=['kok/halkalar/0']),
+        kritik=['yansitici_kalinlik'],
+        sinir=(EGRI, ZB, ZB),
+        ayar=_TRISO_AYAR,
+        kaynak=(['nokta', 'kutu'], ['neutron']),
+        guc=[], tukenme=True, parca=(True, True, True)),
+    "htgr_pebble": dict(
+        ozet=_ozet('agac', '2B'),
+        roller=dict(_TRISO_ROL, uo2={'yakit'}, helyum={'gaz'}),
+        sekmeler=TUM_SEKME,
+        hedefler=_h(yakit_sicaklik=['uo2'], malzeme_yogunluk=['uo2', 'tampon', 'pyc_ic', 'sic',
+                                                              'pyc_dis', 'matris', 'grafit',
+                                                              'helyum'],
+                    yansitici_kalinlik=['kok/halkalar/0']),
+        kritik=['yansitici_kalinlik'],
+        sinir=(KURE, [], []),
+        ayar=_TRISO_AYAR,
+        kaynak=(['nokta', 'kutu'], ['neutron']),
+        guc=[], tukenme=True, parca=(True, True, False)),
+    "zirh_agirlik_pencere": dict(
+        ozet=_ozet("kuresel", "2B", fisil=False, mod="fixed source"),
+        roller={"su": SM, "celik": {"yapisal"}, "dedektor": SM},
+        sekmeler=["malzemeler", "kor", "ayarlar", "calistir"],
+        hedefler=_h(),
+        kritik=[],
+        sinir=(KURE, [], []),
+        ayar={"pasif": False, "entropi": False, "kinetik": False,
+              "kaynak_siddeti": True, "foton": True, "kaynak_tayfi_temel": True,
+              "kutu_kaynagi": False, "guc_dagilimi": False, "eksenel_dilim": False},
+        kaynak=(["nokta"], ["neutron", "photon"]),
+        guc=[], tukenme=False, parca=(False, False, False)),
+})
+
+
 def test_kahin_tablosu():
-    print("\n[U1] UYGUNLUK KAHIN TABLOSU: 30 ornek x butun sorular")
+    print("\n[U1] UYGUNLUK KAHIN TABLOSU: 33 ornek x butun sorular")
     from cekirdek import tarama
     u = _u()
     kontrol("kahin 14 tarama turunun hepsini kapsiyor (tarama.TURLER sirasi)",
             tuple(tarama.TURLER) == TURLER, "(%s)" % list(tarama.TURLER))
     orn = sorted(os.path.splitext(a)[0] for a in os.listdir(ORNEK) if a.endswith(".json"))
-    kontrol("kahin 30 ornegin hepsini kapsiyor", orn == sorted(KAHIN), "(%s)" % orn)
+    kontrol("kahin butun orneklerini kapsiyor", orn == sorted(KAHIN), "(%s)" % orn)
 
     for ad in sorted(KAHIN):
         k = KAHIN[ad]

@@ -131,6 +131,13 @@ add the term to SOZLUK.md).
 | region type | bölge türü (homojenleştirme) | domain type |
 | source region | kaynak bölgesi (random ray) | flat source region, FSR |
 | thermal scattering (S(α,β)) | termal saçılma (S(α,β)) |  |
+| TRISO particle | TRISO parçacığı | coated fuel particle |
+| compact | kompakt (TRISO) | fuel compact |
+| pebble | pebble | fuel sphere, fuel ball |
+| packing fraction | paketleme oranı | packing density |
+| weight window | ağırlık penceresi |  |
+| MAGIC | MAGIC (ağırlık penceresi üreteci) |  |
+| figure of merit (FOM) | verimlilik ölçütü (FOM) | efficiency |
 | run | koşu | job, execution |
 | run directory | koşu dizini | output folder |
 | preview | önizleme |  |

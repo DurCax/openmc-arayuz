@@ -167,6 +167,7 @@ class TamburFormuMixin(object):
         eski = self.liste.blockSignals(True)
         self.liste.setCurrentRow(-1)
         self.liste.blockSignals(eski)
+        self._triso_secimini_birak()
         self.d_kopya.setEnabled(False)
         self.d_sil.setEnabled(False)
         self.d_tambur_sil.setEnabled(True)

@@ -14,6 +14,7 @@ from cekirdek import kaynak as _kaynak
 from cekirdek.kod_uret.tukenme import _tukenme
 from cekirdek.kod_uret.spektrum import _spektrum_tallyleri
 from cekirdek.kod_uret.ayarlar_y7 import _y7_ayar_satirlari
+from cekirdek.kod_uret.ayarlar_y9 import _y9_ayar_satirlari
 from cekirdek.kod_uret.mgxs import _mgxs_tallyleri
 
 
@@ -96,6 +97,7 @@ def _ayarlar(spec, satirlar, gx, gy):
     if (k.get("parcacik") or "neutron") == "photon":
         satirlar.append("ayar.photon_transport = True   # foton kaynağı foton taşınımı gerektirir")
     _y7_ayar_satirlari(spec, satirlar)            # Y7 (cekirdek/kod_uret/ayarlar_y7.py)
+    _y9_ayar_satirlari(spec, satirlar, (gx, gy))  # Y9 (cekirdek/kod_uret/ayarlar_y9.py)
     ent = a.get("entropi_mesh") or {}
     if ent.get("var") and a.get("mod", "eigenvalue") == "eigenvalue":
         satirlar.append("")

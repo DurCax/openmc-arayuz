@@ -1,0 +1,272 @@
+{
+  "surum": 1,
+  "ad": "Derin nüfuz zırhı: su/çelik/su + dedektör (ağırlık penceresi dersi)",
+  "aciklama": "Sabit kaynak: merkezde 14.1 MeV D-T nokta kaynağı; 35 cm su, 40 cm çelik, 30 cm su ve en dışta 5 cm'lik dedektör suyu. Tally dedektör malzemesindeki akıdır. Analog koşuda dedektöre ulaşan parçacık çok azdır; Hesap ayarları > Gelişmiş > Varyans azaltma ile MAGIC ağırlık pencereleri üretilip uygulanır ve FOM karşılaştırılır. Sonuç yanlılıksızdır: iki yöntem istatistik içinde aynı değeri verir. Sertifika değildir; ölçülen FOM ders 5.21'de yazılıdır.",
+  "baslik": "Derin nüfuz zırhı (ağırlık penceresi)",
+  "baslik_en": "Deep-penetration shield (weight windows)",
+  "aciklama_en": "Fixed source: a 14.1 MeV D-T point source at the centre; 35 cm water, 40 cm steel, 30 cm water and a 5 cm detector water shell at the outside. The tally is the flux in the detector material. In an analog run very few particles reach the detector; generate and apply MAGIC weight windows under Settings > Advanced > Variance reduction and compare the FOM. The result is unbiased: both methods agree within statistics. Not a certification.",
+  "kategori": "zirh",
+  "seviye": "ileri",
+  "malzemeler": [
+    {
+      "ad": "su",
+      "gorunen_ad": "H2O 0.998 g/cm³",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 0.9980485
+      },
+      "sicaklik": 293.6,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "H",
+          "miktar": 2.0,
+          "birim": "ao"
+        },
+        {
+          "tur": "element",
+          "isim": "O",
+          "miktar": 1.0,
+          "birim": "ao"
+        }
+      ],
+      "sab": [
+        "c_H_in_H2O"
+      ],
+      "renk": [
+        90,
+        150,
+        220
+      ]
+    },
+    {
+      "ad": "celik",
+      "gorunen_ad": "SS-316",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 7.99
+      },
+      "sicaklik": 293.6,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "Fe",
+          "miktar": 65.0,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Cr",
+          "miktar": 17.0,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Ni",
+          "miktar": 12.0,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Mo",
+          "miktar": 2.5,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Mn",
+          "miktar": 2.0,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Si",
+          "miktar": 1.0,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "C",
+          "miktar": 0.5,
+          "birim": "wo"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        190,
+        190,
+        200
+      ]
+    },
+    {
+      "ad": "dedektor",
+      "gorunen_ad": "Dedektör suyu (H2O)",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 0.9980485
+      },
+      "sicaklik": 293.6,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "H",
+          "miktar": 2.0,
+          "birim": "ao"
+        },
+        {
+          "tur": "element",
+          "isim": "O",
+          "miktar": 1.0,
+          "birim": "ao"
+        }
+      ],
+      "sab": [
+        "c_H_in_H2O"
+      ],
+      "renk": [
+        60,
+        200,
+        230
+      ]
+    }
+  ],
+  "cubuklar": [],
+  "plakalar": [],
+  "demetler": [],
+  "kor": {
+    "tur": "kuresel",
+    "cubuk": null,
+    "demet": null,
+    "plaka": null,
+    "adim": 1.26,
+    "boyut": [
+      1,
+      1
+    ],
+    "harita": [],
+    "anahtar": {},
+    "yukseklik": null,
+    "yansitici": {
+      "var": false,
+      "kalinlik": 20.0,
+      "malzeme": null
+    },
+    "kabuklar": [
+      {
+        "r": 35.0,
+        "malzeme": "su"
+      },
+      {
+        "r": 75.0,
+        "malzeme": "celik"
+      },
+      {
+        "r": 105.0,
+        "malzeme": "su"
+      },
+      {
+        "r": 110.0,
+        "malzeme": "dedektor"
+      }
+    ],
+    "dolgu": null,
+    "kor_yaricap": 20.0,
+    "tambur": {
+      "sayi": 0,
+      "yaricap": 4.0,
+      "merkez_yaricap": 26.0,
+      "govde_malzeme": null,
+      "emici_malzeme": null,
+      "emici_ic_yaricap": 2.5,
+      "emici_aci": 120.0,
+      "donme": 0.0,
+      "baslangic_acisi": 0.0
+    },
+    "sinir": {
+      "yan": "vacuum",
+      "alt": "vacuum",
+      "ust": "vacuum"
+    }
+  },
+  "ayarlar": {
+    "mod": "fixed source",
+    "parcacik": 20000,
+    "cevrim": 40,
+    "pasif": 0,
+    "tohum": 1,
+    "sicaklik_yontemi": "interpolation",
+    "kaynak": {
+      "tur": "nokta",
+      "konum": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "parcacik": "neutron",
+      "kuvvet": 1000000000000.0,
+      "enerji": {
+        "tur": "fuzyon",
+        "a": 988000.0,
+        "b": 2.249e-06,
+        "theta": 1293200.0,
+        "enerji": 14100000.0,
+        "noktalar": [],
+        "kenarlar": [],
+        "degerler": [],
+        "e0": 14080000.0,
+        "kutle_orani": 5.0,
+        "iyon_sicaklik": 20000.0
+      },
+      "aci": {
+        "tur": "izotropik",
+        "yon": [
+          0,
+          0,
+          1
+        ],
+        "koni_aci": 30.0
+      }
+    },
+    "entropi_mesh": {
+      "var": false,
+      "boyut": [
+        8,
+        8,
+        1
+      ]
+    },
+    "kinetik": {
+      "var": false,
+      "nesil": 10
+    }
+  },
+  "tallyler": [
+    {
+      "ad": "aki_dedektor",
+      "skorlar": [
+        "flux"
+      ],
+      "nuklidler": [],
+      "filtreler": [
+        {
+          "tur": "malzeme",
+          "adlar": [
+            "dedektor"
+          ]
+        }
+      ]
+    }
+  ],
+  "guc_dagilimi": {
+    "var": false,
+    "cubuk": null,
+    "bolge": 0,
+    "skor": "kappa-fission",
+    "eksenel_dilim": 20,
+    "toplam_guc": null
+  },
+  "calistirma": {
+    "is_parcacigi": 8,
+    "dizin": "kosu_zirh_agirlik"
+  }
+}

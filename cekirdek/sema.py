@@ -570,6 +570,8 @@ def tamamla(ham):
         spec["kor"] = {"tur": AGAC}
     spec["geometri"] = copy.deepcopy(ham.get("geometri"))
     spec["tamburlar"] = copy.deepcopy(ham.get("tamburlar") or [])
+    if ham.get("trisolar"):           # Y9: yalniz varsa (varsayilana yazilmaz; onbellek kimligi)
+        spec["trisolar"] = copy.deepcopy(ham["trisolar"])
     spec["surum"] = SEMA_SURUM
     return spec
 

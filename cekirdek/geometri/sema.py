@@ -29,7 +29,8 @@ UYARI_DELIK_SAYISI = 50
 # Kutuphane bolumleri, kisaltma cozum sirasi (kurucu._universe_uret ile ayni).
 # (spec anahtari, tanim turu)
 BOLUMLER = (("cubuklar", "cubuk"), ("plakalar", "plaka"), ("demetler", "demet"),
-            ("tamburlar", "tambur"), ("parcalar", "parca"))
+            ("tamburlar", "tambur"), ("parcalar", "parca"),
+            ("trisolar", "triso"))
 
 
 def yuva_adi(dugum):
@@ -55,6 +56,8 @@ def tanimlar(spec, agac=None):
     uretilen = (agac.get("_uretilen_tanimlar") or {}).get("tamburlar") or []
     for t in list(spec.get("tamburlar") or []) + list(uretilen):
         sonuc["tambur"].setdefault(t.get("ad"), t)
+    for t in spec.get("trisolar") or []:
+        sonuc["triso"].setdefault(t.get("ad"), t)
     for p in agac.get("parcalar") or []:
         sonuc["parca"].setdefault(p.get("ad"), p)
     sonuc["malzeme"] = {m.get("ad"): m for m in spec.get("malzemeler") or []}

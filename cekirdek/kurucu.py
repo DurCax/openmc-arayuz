@@ -36,6 +36,7 @@ from cekirdek import kaynak as _kaynak
 from cekirdek import mgxs_uret
 from cekirdek import spektrum
 from cekirdek import foton as _foton, sicaklik as _sicaklik, yuzey_akim as _yuzey
+from cekirdek import varyans as _varyans
 from cekirdek.geometri.kurulum import kur as _geo_kur
 from cekirdek.sema import model_yuksekligi as sema_model_yuksekligi
 from cekirdek.sema import guc_hedefleri as sema_guc_hedefleri
@@ -154,6 +155,7 @@ def ayarlari_kur(spec, sinir_kutu, fisil_aralik=None):
         s.photon_transport = True
     _foton.uygula(s, spec)          # Y7: foton tasinimi (cekirdek/foton.py)
     _sicaklik.uygula(s, spec)       # Y7: sicaklik isleme (cekirdek/sicaklik.py)
+    _varyans.uygula(s, spec, sinir_kutu)   # Y9: agirlik pencereleri (cekirdek/varyans.py)
 
     # --- Shannon entropisi mesh'i (kaynak yakinsamasi olcumu) ---
     ent = a.get("entropi_mesh") or {}

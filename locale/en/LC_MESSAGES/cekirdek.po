@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-03 19:37+0300\n"
+"POT-Creation-Date: 2026-10-03 21:18+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -18,17 +18,21 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: cekirdek/alt_model.py:67 cekirdek/sema_basvuru.py:97
+#: cekirdek/alt_model.py:67 cekirdek/sema_basvuru.py:100
 msgid "çubuk"
 msgstr "pin"
 
-#: cekirdek/alt_model.py:67 cekirdek/sema_basvuru.py:97
+#: cekirdek/alt_model.py:67 cekirdek/sema_basvuru.py:100
 msgid "plaka"
 msgstr "plate"
 
-#: cekirdek/alt_model.py:67 cekirdek/sema_basvuru.py:98
+#: cekirdek/alt_model.py:67 cekirdek/sema_basvuru.py:101
 msgid "demet"
 msgstr "assembly"
+
+#: cekirdek/alt_model.py:68
+msgid "TRISO"
+msgstr "TRISO"
 
 #: cekirdek/alt_model.py:68 cekirdek/alt_model.py:225
 msgid "tambur"
@@ -44,6 +48,7 @@ msgid "model yüksekliği okunamadı: %s"
 msgstr "model height could not be read: %s"
 
 #: cekirdek/alt_model.py:175 cekirdek/alt_model.py:225
+#: cekirdek/alt_model.py:240
 #, python-format
 msgid "tanımsız %(tur)s: %(ad)s"
 msgstr "undefined %(tur)s: %(ad)s"
@@ -53,16 +58,25 @@ msgstr "undefined %(tur)s: %(ad)s"
 msgid "tambur yarıçapı sıfırdan büyük olmalı: %s"
 msgstr "drum radius must be greater than zero: %s"
 
-#: cekirdek/alt_model.py:285
+#: cekirdek/alt_model.py:240
+msgid "triso"
+msgstr "TRISO"
+
+#: cekirdek/alt_model.py:249
+#, python-format
+msgid "TRISO ölçüleri okunamadı: %s"
+msgstr "TRISO dimensions could not be read: %s"
+
+#: cekirdek/alt_model.py:306
 msgid "düğüm"
 msgstr "node"
 
-#: cekirdek/alt_model.py:338
+#: cekirdek/alt_model.py:361
 #, python-format
 msgid "bilinmeyen parça türü: %s"
 msgstr "unknown component type: %s"
 
-#: cekirdek/alt_model.py:349
+#: cekirdek/alt_model.py:372
 #, python-format
 msgid "alt model kurulamadı: %s"
 msgstr "sub-model could not be built: %s"
@@ -607,28 +621,28 @@ msgstr "the number of batches must exceed the number of inactive batches"
 msgid "k∞ — %s"
 msgstr "k∞ — %s"
 
-#: cekirdek/dogrula/__init__.py:162
+#: cekirdek/dogrula/__init__.py:166
 #, python-format
 msgid "%d doğrulama hatası; önce bunları giderin"
 msgid_plural "%d doğrulama hatası; önce bunları giderin"
 msgstr[0] "%d model check error; fix it first"
 msgstr[1] "%d model check errors; fix them first"
 
-#: cekirdek/dogrula/__init__.py:190
+#: cekirdek/dogrula/__init__.py:194
 #, python-format
 msgid "%d hata"
 msgid_plural "%d hata"
 msgstr[0] "%d error"
 msgstr[1] "%d errors"
 
-#: cekirdek/dogrula/__init__.py:191
+#: cekirdek/dogrula/__init__.py:195
 #, python-format
 msgid "%d uyarı"
 msgid_plural "%d uyarı"
 msgstr[0] "%d warning"
 msgstr[1] "%d warnings"
 
-#: cekirdek/dogrula/__init__.py:192
+#: cekirdek/dogrula/__init__.py:196
 #, python-format
 msgid "%d bilgi"
 msgid_plural "%d bilgi"
@@ -2522,6 +2536,35 @@ msgstr ""
 "in a fixed source calculation the four factors and k are undefined; only "
 "the spectrum is given"
 
+#: cekirdek/dogrula/triso.py:66
+msgid "TRISO tanımı geometride kullanılmıyor"
+msgstr "the TRISO definition is not used in the geometry"
+
+#: cekirdek/dogrula/triso.py:72
+msgid "TRISO kompaktı 3B model gerektirir"
+msgstr "the TRISO compact needs a 3D model"
+
+#: cekirdek/dogrula/triso.py:73
+msgid ""
+"Kompakt sonlu yükseklikli bir silindirdir; modelin yüksekliği "
+"tanımlanmalı (geometri kökünde yükseklik)."
+msgstr ""
+"A compact is a cylinder of finite height; the model height must be "
+"defined (height on the geometry root)."
+
+#: cekirdek/dogrula/triso.py:81
+#, python-format
+msgid "kompakt yüksekliği (%g cm) modelin yüksekliğinden (%g cm) farklı"
+msgstr "compact height (%g cm) differs from the model height (%g cm)"
+
+#: cekirdek/dogrula/triso.py:83
+msgid ""
+"Parçacıklar yalnızca kompakt yüksekliğinde paketlenir; fazlası matris ile"
+" dolar, eksiği parçacıkları keser."
+msgstr ""
+"Particles are packed only over the compact height; the excess is filled "
+"with matrix, a shortfall cuts the particles."
+
 #: cekirdek/dogrula/tukenme.py:38
 #, python-format
 msgid "Zincirde en yakın ad: %s"
@@ -2722,6 +2765,29 @@ msgstr ""
 "throughout the run. A fresh absorber overstates the control worth at end "
 "of life (optimistic for the shutdown margin). If its burnup matters, "
 "place it in a pin region with an exact volume."
+
+#: cekirdek/dogrula/varyans.py:34
+#, python-format
+msgid "ağırlık penceresi dosyası yok: %s"
+msgstr "weight window file does not exist: %s"
+
+#: cekirdek/dogrula/varyans.py:42
+msgid ""
+"küresel ağırlık penceresi ağı küresel olmayan modelde yalnız kürenin "
+"içindeki bölgeyi kapsar"
+msgstr ""
+"a spherical weight window mesh covers only the region inside the sphere "
+"in a non-spherical model"
+
+#: cekirdek/dogrula/varyans.py:46
+msgid ""
+"pencereler koşu sırasında öğrenilir; ilk çevrimlerde pencere eksik "
+"olduğundan analog taşıma yapılır. Önerilen düzen: önce 'üret', sonra "
+"'uygula'."
+msgstr ""
+"weight windows are learned during the run; in the first batches the "
+"window is incomplete so transport is analog. Recommended order: "
+"'generate' first, then 'apply'."
 
 #: cekirdek/dogrula/veri.py:31
 msgid "nükleer veri kütüphanesi seçilmedi (OPENMC_CROSS_SECTIONS da yok)"
@@ -3042,6 +3108,20 @@ msgstr "unknown assembly type: %s"
 #, python-format
 msgid "'%s' demeti: haritada tanımsız harf '%s'"
 msgstr "assembly '%s': undefined letter '%s' in the map"
+
+#: cekirdek/geometri/bilesen_triso.py:44
+#, python-format
+msgid "'%s' TRISO tanımı geçersiz: %s"
+msgstr "TRISO definition '%s' is invalid: %s"
+
+#: cekirdek/geometri/bilesen_triso.py:48
+#, python-format
+msgid ""
+"'%s' TRISO kompaktı 3B model gerektirir: çekirdek yüksekliği tanımlı "
+"değil. Kompakt sonlu yükseklikli bir silindirdir."
+msgstr ""
+"TRISO compact '%s' needs a 3D model: the core height is not defined. A "
+"compact is a cylinder of finite height."
 
 #: cekirdek/geometri/denetim.py:68
 #, python-format
@@ -3746,13 +3826,13 @@ msgstr ""
 "placement '%s': a non-circular hole cannot be rotated by facing or "
 "rotation"
 
-#: cekirdek/geometri/kap.py:126
+#: cekirdek/geometri/kap.py:128
 msgid "yerleşim deliğinin kesiti verilmeli (yalnız tamburun doğal kesiti vardır)"
 msgstr ""
 "the cross-section of the placement hole must be given (only a control "
 "drum has a natural cross-section)"
 
-#: cekirdek/geometri/kap.py:150 cekirdek/geometri/sablon.py:60
+#: cekirdek/geometri/kap.py:152 cekirdek/geometri/sablon.py:60
 #, python-format
 msgid ""
 "'%s' eksenel katmanı: katmana özel harf eşlemesi yalnızca kare haritalı "
@@ -3761,11 +3841,11 @@ msgstr ""
 "axial layer '%s': a layer-specific letter mapping can be used only in a "
 "full core with a rectangular or hexagonal map"
 
-#: cekirdek/geometri/kap.py:230
+#: cekirdek/geometri/kap.py:232
 msgid "altıgen kor haritası konum sayısı tutmuyor"
 msgstr "the number of positions in the hexagonal core map does not match"
 
-#: cekirdek/geometri/kap.py:235
+#: cekirdek/geometri/kap.py:237
 #, python-format
 msgid ""
 "kor haritasında tanımsız harf: '%s' (kafes zarflı kökte '.' konumu için "
@@ -3774,7 +3854,7 @@ msgstr ""
 "undefined letter in the core map: '%s' (in a root with a lattice "
 "envelope, define a letter in the key for the '.' position)"
 
-#: cekirdek/geometri/kap.py:293
+#: cekirdek/geometri/kap.py:295
 msgid "'kafes_zarfi' üzerinde 'kalinlik' kullanılamaz; 'dis' kesiti verin"
 msgstr "'kalinlik' cannot be used on 'kafes_zarfi'; give a 'dis' cross-section"
 
@@ -3803,38 +3883,38 @@ msgstr "cross-section for which boundary points cannot be generated: %s"
 msgid "alanı hesaplanamayan kesit: %s"
 msgstr "cross-section whose area cannot be computed: %s"
 
-#: cekirdek/geometri/kurulum.py:201
+#: cekirdek/geometri/kurulum.py:202
 #, python-format
 msgid "kurulamayan düğüm türü: %r"
 msgstr "node type that cannot be built: %r"
 
-#: cekirdek/geometri/kurulum.py:225
+#: cekirdek/geometri/kurulum.py:226
 msgid "malzeme düğümüne dönüşüm uygulanamaz"
 msgstr "a transform cannot be applied to a material node"
 
-#: cekirdek/geometri/kurulum.py:269 cekirdek/geometri/kurulum.py:282
+#: cekirdek/geometri/kurulum.py:270 cekirdek/geometri/kurulum.py:283
 #, python-format
 msgid "tanımsız ad: %s (çubuk, plaka elemanı, demet ya da malzeme değil)"
 msgstr ""
 "undefined name: %s (not a pin, plate-type fuel element, assembly or "
 "material)"
 
-#: cekirdek/geometri/kurulum.py:337
+#: cekirdek/geometri/kurulum.py:340
 #, python-format
 msgid "kor haritasında tanımsız harf: '%s'"
 msgstr "undefined letter in the core map: '%s'"
 
-#: cekirdek/geometri/kurulum.py:339
+#: cekirdek/geometri/kurulum.py:342
 #, python-format
 msgid "'%s' kafesi: haritada tanımsız harf '%s'"
 msgstr "lattice '%s': undefined letter '%s' in the map"
 
-#: cekirdek/geometri/kurulum.py:341
+#: cekirdek/geometri/kurulum.py:344
 #, python-format
 msgid "'%s' kafesinin 'dis' yuvası boş"
 msgstr "the 'dis' slot of lattice '%s' is empty"
 
-#: cekirdek/geometri/kurulum.py:383
+#: cekirdek/geometri/kurulum.py:386
 #, python-format
 msgid "kurulamayan kesit: %s"
 msgstr "cross-section that cannot be built: %s"
@@ -5769,37 +5849,37 @@ msgstr "         local slope dk/dx = %.4g / %s"
 msgid "  Çözüm bulunamadı."
 msgstr "  No solution found."
 
-#: cekirdek/dogrula/geometri.py:72 cekirdek/geometri/yapici.py:76
-#: cekirdek/kurucu.py:89 cekirdek/sema_basvuru.py:156 cekirdek/tarama.py:174
-#: cekirdek/tarama.py:180
+#: cekirdek/dogrula/geometri.py:72 cekirdek/dogrula/triso.py:59
+#: cekirdek/geometri/yapici.py:77 cekirdek/kurucu.py:90
+#: cekirdek/sema_basvuru.py:159 cekirdek/tarama.py:174 cekirdek/tarama.py:180
 #, python-format
 msgid "tanımsız malzeme: %s"
 msgstr "undefined material: %s"
 
-#: cekirdek/kurucu.py:204
+#: cekirdek/kurucu.py:206
 msgid "otomatik ağ sınırları için modelin sınır kutusu gerekli"
 msgstr "automatic mesh boundaries require the bounding box of the model"
 
-#: cekirdek/kurucu.py:239
+#: cekirdek/kurucu.py:241
 #, python-format
 msgid "bilinmeyen filtre türü: %s"
 msgstr "unknown filter type: %s"
 
-#: cekirdek/kurucu.py:260 cekirdek/kurucu.py:283
+#: cekirdek/kurucu.py:262 cekirdek/kurucu.py:285
 msgid "güç dağılımı için geçerli bir çubuk seçilmeli"
 msgstr "a valid pin must be selected for the power distribution"
 
-#: cekirdek/kurucu.py:261
+#: cekirdek/kurucu.py:263
 #, python-format
 msgid " ('%s' tanımsız)"
 msgstr " ('%s' undefined)"
 
-#: cekirdek/kurucu.py:268
+#: cekirdek/kurucu.py:270
 #, python-format
 msgid "'%s': geçersiz bölge numarası %d (çubukta %d bölge var)"
 msgstr "'%s': invalid pin region number %d (the pin has %d regions)"
 
-#: cekirdek/kurucu.py:297
+#: cekirdek/kurucu.py:299
 #, python-format
 msgid ""
 "'%s' çubuğu modelde kullanılmıyor. Güç dağılımı yalnızca geometride yer "
@@ -8506,25 +8586,25 @@ msgstr ""
 "%s() cannot be used in advanced (tree) geometry mode: there are no core "
 "fields; use the cekirdek.geometri API"
 
-#: cekirdek/sema_basvuru.py:124
+#: cekirdek/sema_basvuru.py:127
 msgid "Malzeme adı boş olamaz."
 msgstr "The material name cannot be empty."
 
-#: cekirdek/sema_basvuru.py:126
+#: cekirdek/sema_basvuru.py:129
 msgid "Ad boşlukla başlayamaz ya da bitemez."
 msgstr "The name cannot start or end with a space."
 
-#: cekirdek/sema_basvuru.py:128
+#: cekirdek/sema_basvuru.py:131
 #, python-format
 msgid "'%s' ayrılmış bir addır: geometride Boş (madde yok) anlamına gelir."
 msgstr "'%s' is a reserved name: in the geometry it means void (no material)."
 
-#: cekirdek/sema_basvuru.py:131
+#: cekirdek/sema_basvuru.py:134
 #, python-format
 msgid "'%s' adında başka bir malzeme var."
 msgstr "There is another material named '%s'."
 
-#: cekirdek/sema_basvuru.py:134
+#: cekirdek/sema_basvuru.py:137
 #, python-format
 msgid ""
 "'%s' adı bir %s için kullanılıyor. Demet ve katman seçimlerinde aynı ad "
@@ -8533,7 +8613,7 @@ msgstr ""
 "The name '%s' is used for a %s. In assembly and layer selections the same"
 " name would refer to two things."
 
-#: cekirdek/sema_basvuru.py:158
+#: cekirdek/sema_basvuru.py:161
 #, python-format
 msgid "'%s' adında %d malzeme var; önce birini yeniden adlandırın."
 msgstr "Material name '%s' is used by %d materials; rename one of them first."
@@ -9041,6 +9121,114 @@ msgstr "the ring target must have the form '<container id>/halkalar/<i>': %r"
 #, python-format
 msgid "'%s' kabında kalınlıkla tanımlı %d. halka yok"
 msgstr "container '%s' has no ring %d defined by thickness"
+
+#: cekirdek/triso.py:98
+#, python-format
+msgid "bilinmeyen TRISO şekli: %r (geçerli: %s)"
+msgstr "unknown TRISO shape: %r (valid: %s)"
+
+#: cekirdek/triso.py:106
+#, python-format
+msgid "'%s' sayı olmalı"
+msgstr "'%s' must be a number"
+
+#: cekirdek/triso.py:108
+#, python-format
+msgid "'%s' pozitif olmalı (%s)"
+msgstr "'%s' must be positive (%s)"
+
+#: cekirdek/triso.py:116 cekirdek/triso.py:254
+msgid "TRISO parçacığında katman yok"
+msgstr "the TRISO particle has no layers"
+
+#: cekirdek/triso.py:260
+#, python-format
+msgid "katman %d: yarıçap sayı olmalı"
+msgstr "layer %d: the radius must be a number"
+
+#: cekirdek/triso.py:263
+#, python-format
+msgid "katman %d: yarıçap (%g cm) bir içtekinden (%g) büyük olmalı"
+msgstr "layer %d: the radius (%g cm) must be larger than the one inside (%g)"
+
+#: cekirdek/triso.py:266
+#, python-format
+msgid "katman %d: malzeme seçilmemiş"
+msgstr "layer %d: no material selected"
+
+#: cekirdek/triso.py:276
+msgid "matris malzemesi seçilmemiş"
+msgstr "no matrix material selected"
+
+#: cekirdek/triso.py:279
+#, python-format
+msgid "bilinmeyen yerleşim yöntemi: %r"
+msgstr "unknown placement method: %r"
+
+#: cekirdek/triso.py:283
+msgid "paketleme oranı sayı olmalı"
+msgstr "the packing fraction must be a number"
+
+#: cekirdek/triso.py:286
+#, python-format
+msgid ""
+"paketleme oranı 0 ile %.4g arasında olmalı (%s yöntemi için üst sınır; "
+"girilen %g)"
+msgstr ""
+"the packing fraction must be between 0 and %.4g (upper limit for the %s "
+"method; entered %g)"
+
+#: cekirdek/triso.py:289
+#, python-format
+msgid "TRISO parçacığı (çap %g cm) kaba sığmıyor"
+msgstr "the TRISO particle (diameter %g cm) does not fit the container"
+
+#: cekirdek/triso.py:292
+#, python-format
+msgid ""
+"paketleme %.3g > %.2g: yakın rastgele paketleme (CRP) kullanılır, kurulum"
+" yavaşlar"
+msgstr "packing %.3g > %.2g: close random packing (CRP) is used, setup gets slower"
+
+#: cekirdek/triso.py:298
+#, python-format
+msgid ""
+"düzenli kafeste gerçek paketleme oranı hedeften %%%.1f farklı (kübik "
+"kafesin sayısı basamaklıdır); gerçek değer kullanılır"
+msgstr ""
+"the actual packing fraction in the regular lattice differs from the "
+"target by %%%.1f (the cubic lattice count is quantized); the actual value"
+" is used"
+
+#: cekirdek/triso.py:302
+msgid "bu paketleme oranıyla kaba hiç parçacık sığmıyor"
+msgstr "no particle fits the container at this packing fraction"
+
+#: cekirdek/triso.py:304
+#, python-format
+msgid "%d parçacık: model kurulumu ve koşu uzun sürer"
+msgstr "%d particles: model setup and the run take long"
+
+#: cekirdek/triso.py:315
+msgid "'dis_yaricap' sayı olmalı"
+msgstr "'dis_yaricap' must be a number"
+
+#: cekirdek/triso.py:317
+msgid "pebble dış yarıçapı yakıt küresi yarıçapından büyük olmalı"
+msgstr "the pebble outer radius must be larger than the fuel sphere radius"
+
+#: cekirdek/triso.py:318
+msgid "kabuk"
+msgstr "shell"
+
+#: cekirdek/triso.py:318
+msgid "dış (gaz)"
+msgstr "outer (gas)"
+
+#: cekirdek/triso.py:320
+#, python-format
+msgid "pebble %s malzemesi seçilmemiş"
+msgstr "no %s material selected for the pebble"
 
 #: cekirdek/tukenme.py:100
 #, python-format
@@ -9709,11 +9897,11 @@ msgstr "Compact core with control drums"
 msgid "Küresel düzenek (kabuklar)"
 msgstr "Spherical assembly (shells)"
 
-#: cekirdek/uygunluk.py:341
+#: cekirdek/uygunluk.py:343
 msgid "tükenme özdeğer (k-eff) hesabı gerektirir"
 msgstr "depletion requires an eigenvalue (k-eff) calculation"
 
-#: cekirdek/uygunluk.py:343
+#: cekirdek/uygunluk.py:345
 msgid "geometride fisil (yakıt) malzeme yok"
 msgstr "there is no fissile (fuel) material in the geometry"
 
@@ -10897,6 +11085,65 @@ msgstr "infinite (reflective boundary)"
 #, python-format
 msgid "bilinmeyen V&V yöntemi: %r (geçerli: %s)"
 msgstr "unknown V&V method: %r (valid: %s)"
+
+#: cekirdek/varyans.py:93
+#, python-format
+msgid "bilinmeyen varyans azaltma modu: %r (geçerli: %s)"
+msgstr "unknown variance reduction mode: %r (valid: %s)"
+
+#: cekirdek/varyans.py:97
+#, python-format
+msgid ""
+"varyans azaltma yöntemi desteklenmiyor: %r (geçerli: %s; FW-CADIS random "
+"ray adjoint çözümü ister, bu sürümde yok)"
+msgstr ""
+"variance reduction method not supported: %r (valid: %s; FW-CADIS needs a "
+"random ray adjoint solution, not available in this version)"
+
+#: cekirdek/varyans.py:102
+#, python-format
+msgid "bilinmeyen parçacık türü: %r"
+msgstr "unknown particle type: %r"
+
+#: cekirdek/varyans.py:105
+#, python-format
+msgid "bilinmeyen ağ türü: %r (geçerli: %s)"
+msgstr "unknown mesh type: %r (valid: %s)"
+
+#: cekirdek/varyans.py:113
+msgid "'uygula' modu için pencere dosyası (.h5 ya da wwinp) gerekli"
+msgstr "the 'apply' mode needs a weight window file (.h5 or wwinp)"
+
+#: cekirdek/varyans.py:122
+#, python-format
+msgid "'%s' tamsayı olmalı"
+msgstr "'%s' must be an integer"
+
+#: cekirdek/varyans.py:124
+#, python-format
+msgid "'%s' en az 1 olmalı (%d)"
+msgstr "'%s' must be at least 1 (%d)"
+
+#: cekirdek/varyans.py:132
+msgid "ağ boyutu [nx, ny, nz] olmalı"
+msgstr "the mesh size must be [nx, ny, nz]"
+
+#: cekirdek/varyans.py:135
+#, python-format
+msgid "ağ çok büyük: %d hücre (üst sınır %d)"
+msgstr "the mesh is too large: %d cells (upper limit %d)"
+
+#: cekirdek/varyans.py:146
+msgid "enerji sınırları sayı listesi olmalı"
+msgstr "energy bounds must be a list of numbers"
+
+#: cekirdek/varyans.py:148
+msgid "enerji sınırları artan ve en az iki değerli olmalı (eV)"
+msgstr "energy bounds must be increasing with at least two values (eV)"
+
+#: cekirdek/varyans.py:163
+msgid "ağırlık penceresi 3B model gerektirir (yükseklik tanımlı değil)"
+msgstr "a weight window needs a 3D model (no height defined)"
 
 #: cekirdek/veri_arsiv.py:83
 #, python-format

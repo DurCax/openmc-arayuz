@@ -409,7 +409,7 @@ class _Denetci(object):
             ad = icerik.get("ad")
         else:
             return False
-        return ad_bolumleri(self.tanim, ad)[:1] == ["tambur"]
+        return ad_bolumleri(self.tanim, ad)[:1] in (["tambur"], ["triso"])
 
     def _kafes_konumu(self, y, yol, kap):
         adaylar = [kap.get("ic")] + [h.get("icerik") for h in kap.get("halkalar") or []

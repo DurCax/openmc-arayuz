@@ -383,7 +383,8 @@ class GelismisEditor(QtWidgets.QWidget):
 
     def _kutuphane_adlari(self):
         adlar = set()
-        for bolum in ("cubuklar", "plakalar", "demetler", "tamburlar", "malzemeler"):
+        for bolum in ("cubuklar", "plakalar", "demetler", "tamburlar", "trisolar",
+                      "malzemeler"):
             adlar |= {t.get("ad") for t in (self.spec or {}).get(bolum) or []}
         return adlar
 

@@ -27,6 +27,7 @@ overwritten. Use **File › Save as…** to keep your own changes.
 | [5.18](05d-ders-goruntuleyici.md#ders-goruntuleyici) | Viewer: slice, overlaps, tally overlay, 3D | `ornekler/pwr_mesh_aki.json`, `ornekler/vver1000_kor.json`, `ornekler/pwr_3b.json` | intermediate |
 | [5.19](05d-ders-mgxs.md#ders-mgxs) | Group constants, multigroup MC and random ray | `ornekler/pwr_pinhucre.json` | advanced |
 | [5.20](05d-ders-tukenme-bolme.md#ders-tukenme-bolme) | Ring subdivision of a Gd pin and the branch table | `ornekler/bolme/pwr_gd_bolme.json`, `ornekler/pwr_tukenme.json` | advanced |
+| [5.21](05d-ders-triso-varyans.md#ders-triso-varyans) | TRISO fuel, packing fraction and a shield with weight windows | `ornekler/htgr_kompakt.json`, `ornekler/htgr_pebble.json`, `ornekler/zirh_agirlik_pencere.json` | advanced |
 
 **Where do the expected results come from?** Every value has a source: the `referans.olcum` field
 of the example file, [VV.md](../../VV.md), [ORNEKLER.md](../../ORNEKLER.md) or the measurement tables
