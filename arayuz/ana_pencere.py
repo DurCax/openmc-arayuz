@@ -35,7 +35,7 @@ from arayuz.ortak import (  # noqa: F401
     DurumRozeti, cumle_basi, qt_cevirisi_kur, qt_turkce_cevirisi, tekerlek_korumasi_kur)
 from arayuz import hata_yakalayici
 from arayuz.veri import kayit as veri_kayit
-from cekirdek import ceviri, gunluk, surum
+from cekirdek import ceviri, gunluk, masaustu, surum
 
 from arayuz.pencere.model_islemleri import (  # noqa: F401
     KOK, ORNEKLER, UYGULAMA_ADI, _KONU_BAGIMLILIK, _YER_SEKME, EDITOR_ANAHTARI,
@@ -62,7 +62,11 @@ def main(argv=None):
     ceviri.dil_ayarla(ceviri.varsayilan_dil(ayar=ayar.value("gorunum/dil", "", str)))
     qt_cevirisi_kur(app, ceviri.etkin_dil())
     ceviri.dinleyici_ekle(lambda kod: qt_cevirisi_kur(app, kod))
-    app.setApplicationName(surum.UYGULAMA_ADI)
+    # P2: Qt uygulama adi = masaustu kimligi (.desktop adi, StartupWMClass, Wayland
+    # app_id); gorunen urun adi pencere basliklarinda surum.UYGULAMA_ADI'dir.
+    app.setApplicationName(masaustu.UYGULAMA_KIMLIGI)
+    app.setDesktopFileName(masaustu.UYGULAMA_KIMLIGI)
+    app.setWindowIcon(QtGui.QIcon(masaustu.simge_yolu()))
     app.setApplicationVersion(surum.surum())
     tema.uygula(app)
     tekerlek_korumasi_kur(app)

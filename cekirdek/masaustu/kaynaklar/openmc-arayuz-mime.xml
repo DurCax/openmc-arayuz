@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
+  <!-- Proje dosyasi duz ".json"dur; "*.json" glob'u ezilmez (application/json'a
+       dokunulmaz). Tur yalniz ICERIKLE taninir: dosya "surum" anahtariyla baslar
+       (cekirdek/sema.py kaydet: {"surum": N, ...}). application/json'un alt turudur,
+       boylece JSON araclari dosyayi yine JSON sayar. -->
+  <mime-type type="application/x-openmc-arayuz+json">
+    <comment>OpenMC Reactor Core Interface project</comment>
+    <comment xml:lang="tr">OpenMC Reaktör Kuru Arayüzü projesi</comment>
+    <sub-class-of type="application/json"/>
+    <icon name="openmc-arayuz"/>
+    <magic priority="80">
+      <match type="string" value="{&#10;  &quot;surum&quot;:" offset="0"/>
+      <match type="string" value="{&quot;surum&quot;:" offset="0"/>
+      <match type="string" value="{ &quot;surum&quot;:" offset="0"/>
+    </magic>
+  </mime-type>
+</mime-info>

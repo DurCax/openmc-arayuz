@@ -59,6 +59,8 @@ include = ["cekirdek*", "arayuz*"]
 "cekirdek.rapor_sablon" = ["*.html", "*.css"]
 # nukleer veri katalogu (cekirdek/veri_indir.py: katalog_yolu)
 "cekirdek" = ["veri_katalogu.json"]
+# masaustu butunlesmesi (cekirdek/masaustu: .desktop sablonu, MIME XML, simgeler)
+"cekirdek.masaustu" = ["kaynaklar/*"]
 "arayuz" = ["kaynaklar/*.txt", "kaynaklar/fontlar/*", "kaynaklar/ikonlar/*"]
 
 [tool.setuptools.data-files]
