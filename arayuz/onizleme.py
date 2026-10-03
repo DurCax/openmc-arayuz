@@ -105,6 +105,14 @@ def _kapsam(genislik):
     return (-w / 2.0, w / 2.0, -h / 2.0, h / 2.0)
 
 
+class _GostergeAlani(QtWidgets.QScrollArea):
+    """Gosterge alani: istenen yukseklik icerikten bagimsiz, en buyuk yukseklik
+    (cizim sirasinda metin degisince tuval boyutu degismesin; H2)."""
+
+    def sizeHint(self):
+        return QtCore.QSize(super().sizeHint().width(), self.maximumHeight())
+
+
 class OnizlemeWidget(KapsamMixin, VurguMixin, QtWidgets.QWidget):
     """Geometri kesiti gosteren matplotlib tuvali + denetimler."""
 
@@ -192,13 +200,17 @@ class OnizlemeWidget(KapsamMixin, VurguMixin, QtWidgets.QWidget):
         self.gosterge_etiketi.setTextFormat(QtCore.Qt.RichText)
         self.gosterge_etiketi.setContentsMargins(A["s"], 0, A["s"], 0)
         # Uzun malzeme listesi (SFR: 20 oge) tuvali ezmesin: en cok birkac satir, kaydirilir.
-        self.gosterge_alani = QtWidgets.QScrollArea()
+        self.gosterge_alani = _GostergeAlani()
         self.gosterge_alani.setWidget(self.gosterge_etiketi)
         self.gosterge_alani.setWidgetResizable(True)
         self.gosterge_alani.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.gosterge_alani.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-        self.gosterge_alani.setFixedHeight(
-            self.gosterge_etiketi.fontMetrics().lineSpacing() * _GOSTERGE_SATIRI + A["s"])
+        satir = self.gosterge_etiketi.fontMetrics().lineSpacing()
+        # Olagan boyut SABIT (_GOSTERGE_SATIRI satir; icerikle degismez); yalniz
+        # pencere en kucuge sikistirilinca tek satira iner: sabit 3 satir pencere
+        # minimum yuksekligini 320 px'in ustune cikariyordu (test_kabuk, Q4).
+        self.gosterge_alani.setMinimumHeight(satir)
+        self.gosterge_alani.setMaximumHeight(satir * _GOSTERGE_SATIRI + A["s"])
         self._son_gosterge = []
 
     def _duzeni_kur(self):

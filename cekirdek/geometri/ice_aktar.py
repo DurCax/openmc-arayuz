@@ -383,6 +383,11 @@ class _Donusturucu(object):
         return h
 
     def kare_kafes(self, lat):
+        # 3B kafes (orn. TRISO/pebble: openmc.model.create_triso_lattice) agacta
+        # yok; universes (nz, ny, nx) dizisidir -- ham hata yerine gerekceli red.
+        if getattr(lat, "ndim", 2) == 3:
+            raise Desteklenmez(_("üç boyutlu kare kafes (ör. TRISO parçacık kafesi) "
+                               "desteklenmiyor"))
         P = [float(v) for v in lat.pitch][:2]
         if abs(P[0] - P[1]) > PAY:
             raise Desteklenmez(_("kare olmayan kafes adımı (%g × %g)") % tuple(P))

@@ -3199,6 +3199,10 @@ msgstr ""
 msgid "kafeste %d'den çok farklı evren var; harita harfleri yetmiyor"
 msgstr ""
 
+#: cekirdek/geometri/ice_aktar.py:389
+msgid "üç boyutlu kare kafes (ör. TRISO parçacık kafesi) desteklenmiyor"
+msgstr ""
+
 #: cekirdek/geometri/ice_aktar.py:388
 #, python-format
 msgid "kare olmayan kafes adımı (%g × %g)"
