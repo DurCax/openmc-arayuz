@@ -6,7 +6,81 @@ gelir (`pyproject.toml` → `cekirdek/surum.py`). Ayrıntılı değişiklikler `
 (conventional commits). Sürüm notunun kullanıcıya dönük özeti (TR + EN):
 `docs/SURUM_NOTLARI.md`.
 
-## Yayımlanmamış (v3)
+## 3.0.0 — 04.10.2026
+
+### Ortam
+- Uygulama commit: `v3.0.0` etiketi.
+- OpenMC: 0.16.0 (conda-forge, `nodagmc_nompi`; sabit). Python 3.13, PySide6/Qt 6.11.
+- Kütüphane: ENDF/B-VIII.0 HDF5; zincirler ENDF/B-VIII.0 termal/hızlı ve CASL. Pakete veri girmez;
+  Veri sayfası seçer ya da indirir (`cekirdek/veri_katalogu.json`).
+- Platform: yalnız Linux x86-64 (glibc ≥ 2.28 ölçüldü; Ubuntu 22.04/24.04, Fedora hedefi).
+
+### Neyi doğruladık (kanıtıyla)
+- **Tam süit** (hızlı + yavaş, Monte Carlo dahil; `-n 3`, OMP_NUM_THREADS=6, 76 dk): 1618 test;
+  ilk koşuda 1611 geçti, 7 kaldı — 1'i yük kaynaklı süre testi (tek başına geçti), 1'i bu koşudan
+  sonra üretilen izlenebilirlik belgesinin eskiliği, 4'ü gerçek hata (demet ızgarası boyutu,
+  Malzemeler en küçük yüksekliği, TRISO malzeme adı değişikliği, pebble XML içe aktarma reddi) ve
+  1'i kişisel yol denetimi; hepsi düzeltildi ve yeniden koşuldu (aşağıdaki son durum). Toplam kapsam
+  **%91.8** (`cekirdek` + `arayuz`).
+- **Hızlı süit** (son durum): SON_HIZLI.
+- **Fizik çapaları:** k∞ çapası, Godiva, betik ↔ kurucu eşdeğerliği, geometri parmak izi kapısı geçti;
+  v3'te fizik değiştiren her iş (Y1 mesh, Y3 dört faktör, Y4 tükenme, Y5 bölme, Y6 kinetik, Y7 foton/
+  sıcaklık/yüzey, Y8 grup sabitleri, Y9 TRISO/ağırlık penceresi, K3 pin gücü, K4 yerel k) analitik
+  ya da çapraz testlerle (ör. Co-60 bozunma ısısı < 1e-6, tek grup kinetik < 1e-9, yüzey akımı
+  dengesi 1e-14, halka hacmi 1e-9, 2 grup k∞ el formülü) doğrulandı.
+- **Kurulum paketi uçtan uca** (temiz HOME, `env -i`): tek dosya `.sh` (409 MB) kurulur, masaüstü
+  kaydı (.desktop, MIME, ikonlar) yazılır, veri yokken Veri sayfası açılır ve koşu açık hatayla
+  reddedilir, veriyle Godiva k-eff = 0.99900 ± 0.00045, kaldırma iz bırakmaz.
+- **Hız (SFR-MET1000):** açılış 7.8 → ~1.2 s, gelişmiş geometriye geçiş 32.6 → 0.7 s, tuş başına
+  2.9 → ~0.07 s, doğrulama zamanlayıcısı 12.4 → 0.02 s (nokta yoklaması arka plan sürecinde),
+  önizleme 10.8 s donma → 1.6 s (ayrı süreç, en uzun donma ~120 ms).
+- **İzlenebilirlik** (`docs/IZLENEBILIRLIK.md`): 98 gereksinim (32'si yeni R-V3), testsiz 0.
+- **V&V** (`docs/VV.md`): 24 yeni LEU oksit kafes vakası (TCA LCT-006 ×18, LCT-008 ×6); LEU
+  termal alt kümesi için USL = 0.9275 (n = 24, NUREG/CR-6698).
+- **Bağımsız denetimler:** her v3 işi Python/güvenlik incelemesi ve fizik işleri profesör gözü
+  denetiminden geçti (03.10'a kadar); v3 bütünü için öğrenci QA (Q1: 0 bloker, 0 yüksek, 13 orta,
+  16 düşük — ortaların 12'si düzeltildi) ve profesör/standart denetimi (Q2: 0 engelleyici, 9
+  düzeltilmeli — hepsi düzeltildi).
+- Arayüz TR + EN; birleşik katalog %100 çevrili; yeni terimler `docs/SOZLUK.md`'de.
+
+### Neyi doğrulamadık
+- Gerçek Ubuntu 22.04 / Fedora kapsayıcısında kurulum (geliştirme makinesinde docker/podman yok);
+  gerçek GNOME/KDE oturumunda menü ve çift tık.
+- Veri sayfasından GERÇEK bir kütüphane indirme (yalnız ağsız sahte sunucuyla test edildi); 10
+  kütüphane ve 8 zincirde sha256 yok — yalnız bayt sayısı denetlenir ve arayüz bunu söyler.
+- Öğrenci QA kapsamı dışında kalanlar: EN arayüzde 4–10. senaryolar, foton/yüzey akımı koşuları,
+  TRISO/Gd dal tablosu hesabı, random ray, SLURM ve koşu karşılaştırma içeriği, masaüstü `kur`.
+- USL'nin bağımsızlık varsayımı (24 vaka iki deney serisinden; etkin n ≈ 2–6; normallik p = 0.016);
+  PMF-008 ve USI-001 sapmaları başka kütüphaneyle doğrulanamadı.
+- FW-CADIS (OpenMC 0.16 random ray adjoint ister), wwinp dışa aktarma, altıgen mesh (OpenMC'de yok),
+  gelişmiş (ağaç) kipte tükenme bölgesi bölme, OpenMC SolidRayTracePlot'un büyük korlarda çökmesi
+  (görüntüleyici 30 s bekçiyle keser).
+- Windows ve macOS (kapsam dışı). Sertifika/lisanslama değildir.
+
+### Değişiklikler (2.0.0 → 3.0.0)
+- **Hız:** içerik anahtarlı bellekleme, toplu nokta yoklaması (arka plan süreci), kesit ön hesabı,
+  QSS bir kez, tembel `openmc` içe aktarımı; önizleme ayrı kalıcı işçi süreçte (`-p` kipi).
+- **Başlangıç:** Sıfırdan / Şablondan / Örnekten; aşama rehberi; boş modelde eksik aşamalar bilgi tonunda.
+- **Veri ve kütüphaneler sayfası:** klasör seç ya da kütüphane indir (https, izin listesi, sürdürme,
+  arşiv güvenliği), gereksinim kartı, tek veri yolu çözümleyicisi; veri yokken ilk açılışta açılır.
+- **Pin/demet sonuçları:** pin gücü tablosu + CSV, çeyrek katlama, yanmaya göre pin gücü (tüm yakıt
+  halkaları dahil — Gd pini düzeltmesi); yerel k haritası ve demet k∞ sihirbazı.
+- **Önizleme kapsamı** (parça/demet/düğüm) ve F7 ile gizle/göster; görüntüleyici (malzeme/hücre/çakışma
+  kipi, mesh bindirme, 3B, kaynak noktaları).
+- **Malzeme asistanı** ve yerel kullanıcı kütüphanesi (`~/.local/share/openmc_arayuz`), PNNL-15870
+  içe aktarma, IAPWS-IF97/D₂O/Na yoğunlukları.
+- **Yeni fizik:** mesh tally + VTK; spektrum, dört faktör, spektral indeksler; nokta kinetiği (Λ = ℓ/k
+  düzeltmesi); foton taşınımı, sıcaklık işleme, yüzey akımı; tükenme genişletme (8 entegratör,
+  soğuma, sürdürme, MicroXS, kritiklik araması, aktivite/bozunma ısısı/doz/atık karşılaştırması);
+  tükenme bölgesi bölme ve dal tablosu; grup sabitleri, çok gruplu MC, random ray; TRISO ve MAGIC
+  ağırlık penceresi.
+- **İş akışı:** koşu kuyruğu, geçmiş ve karşılaştırma, parametrik model, SLURM betiği.
+- **V&V:** 24 LEU oksit kafes vakası, USL.
+- **Paketleme:** tek dosya `.sh` kurulum (constructor), masaüstü bütünleşmesi (.desktop, MIME, ikon).
+- **Temizlik:** ölü kod (−1.9k satır), `uncertainties` bağımlılığı kaldırıldı, 800 satır sınırı testli,
+  yollar tek kaynakta (`cekirdek/yollar.py`).
+
+### Ayrıntılı v3 girdileri
 
 ### Yeni — TRISO yakıt ve varyans azaltma (v3 Y9)
 - **Parçalar › TRISO** (kompakt, pebble): geometri ağacına yeni bileşen türü (`trisolar[]`);

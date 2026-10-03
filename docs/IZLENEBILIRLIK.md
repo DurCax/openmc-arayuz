@@ -4,12 +4,12 @@
 
 ## Sonuç kaynakları
 
-- `tam.xml` — 2026-10-01T22:00:20.954436+03:00, 725 test
+- `tam.xml` — 2026-10-03T22:27:30.287686+03:00, 1618 test
 
 ## Özet
 
-- Gereksinim: 66 (geçti 63, inceleme 3)
-- Toplanan test: 725; gereksinime bağlı: 153; bağsız: 572
+- Gereksinim: 98 (geçti 92, inceleme 5, KALDI 1)
+- Toplanan test: 1618; gereksinime bağlı: 210; bağsız: 1408
 
 ## Gereksinim → test → son sonuç
 
@@ -77,10 +77,42 @@
 | R-S-12 | T | geçti | `test_uygunluk_arayuz:test_cli_uygunluk` (hizli) — geçti |
 | R-S-13 | T | geçti | `test_uygunluk_arayuz:test_rapor_uygunluk_eki_html` (hizli) — geçti<br>`test_uygunluk_arayuz:test_rapor_uygunluk_eki_pdf` (hizli) — geçti<br>`test_uygunluk_arayuz:test_rapor_uygunluk_hatasi_raporu_durdurmaz` (hizli) — geçti |
 | R-S-14 | T | geçti | `test_vv:test_nureg_ornegi_agirlikli` (hizli) — geçti<br>`test_vv:test_nureg_ornegi_egilim_bant` (hizli) — geçti<br>`test_vv:test_nureg_ornegi_parametrik_olmayan_normallik` (hizli) — geçti<br>`test_vv:test_tolerans_carpani_tablo` (hizli) — geçti<br>`test_vv:test_kurallar` (hizli) — geçti<br>`test_vv:test_yontem_secimi` (hizli) — geçti<br>`test_vv:test_kucuk_kume_usl_yok` (hizli) — geçti<br>`test_vv:test_kume_ozeti` (hizli) — geçti<br>`test_vv:test_profil_b_uctan_uca` (hizli) — geçti |
-| R-S-15 | T | geçti | `test_izlenebilirlik:test_gereksinim_isareti` (hizli) — geçti<br>`test_izlenebilirlik:test_gereksinim_belgesi` (hizli) — geçti<br>`test_izlenebilirlik:test_testler_tanimli_kimlik_kullanir` (hizli) — geçti<br>`test_izlenebilirlik:test_matris_sentetik` (hizli) — geçti<br>`test_izlenebilirlik:test_uretilen_belge_guncel` (hizli) — geçti<br>`test_izlenebilirlik:test_komut_satiri` (hizli) — geçti |
+| R-S-15 | T | KALDI | `test_izlenebilirlik:test_gereksinim_isareti` (hizli) — geçti<br>`test_izlenebilirlik:test_gereksinim_belgesi` (hizli) — geçti<br>`test_izlenebilirlik:test_testler_tanimli_kimlik_kullanir` (hizli) — geçti<br>`test_izlenebilirlik:test_matris_sentetik` (hizli) — geçti<br>`test_izlenebilirlik:test_uretilen_belge_guncel` (hizli) — KALDI<br>`test_izlenebilirlik:test_komut_satiri` (hizli) — geçti |
 | R-S-16 | T | geçti | `test_kapsul:test_kapsul_icerigi` (hizli) — geçti<br>`test_kapsul:test_dosya_kimligi_ve_zincir` (hizli) — geçti<br>`test_kapsul:test_ortam_kilidi_yedekleri` (hizli) — geçti<br>`test_kapsul:test_kosucu_kapsul_yazar` (hizli) — geçti<br>`test_kapsul:test_rapor_kapsul_satiri` (hizli) — geçti |
 | R-S-17 | T | geçti | `test_kapsul:test_farklar` (hizli) — geçti<br>`test_kapsul:test_yeniden_kuru_calisma` (hizli) — geçti<br>`test_kapsul:test_yavas_yeniden_kosu` (yavas) — geçti |
 | R-S-18 | İ | inceleme | — |
+| R-V3-01 | T | geçti | `test_k1_akis:test_sifirdan_pin_kuru_calistirma` (hizli) — geçti<br>`test_k1_baslangic:test_yeni_spec_gercekten_bos_yalniz_kor_turu` (hizli) — geçti<br>`test_k1_baslangic:test_sifirdan_eksik_adim_sunumu_ve_kapi` (hizli) — geçti |
+| R-V3-02 | T | geçti | `test_k1_akis:test_yavas_sifirdan_pin_kosusu` (yavas) — geçti |
+| R-V3-03 | T | geçti | `test_k2_veri_yolu:test_ortam_degiskeni_once_gelir` (hizli) — geçti<br>`test_k2_veri_yolu:test_ayar_sonra_aday` (hizli) — geçti<br>`test_k2_veri_yolu:test_hicbiri_yoksa_yok` (hizli) — geçti |
+| R-V3-04 | T | geçti | `test_k2_veri_indir:test_tam_indirme_atomik` (hizli) — geçti<br>`test_k2_veri_indir:test_kesinti_ve_surdurme` (hizli) — geçti<br>`test_k2_veri_indir:test_sha256_hatasi` (hizli) — geçti |
+| R-V3-05 | T | geçti | `test_k2_veri_indir:test_url_politikasi` (hizli) — geçti |
+| R-V3-06 | T | geçti | `test_k3_pin_tablosu:test_tablo_haritayla_ayni` (hizli) — geçti<br>`test_k3_pin_tablosu:test_tablo_toplami_toplam_guc` (hizli) — geçti |
+| R-V3-07 | T | geçti | `test_k3_pin_tablosu:test_ceyrek_katlama` (hizli) — geçti |
+| R-V3-08 | T | geçti | `test_k3_tukenme_guc:test_adim_basina_tablo` (hizli) — geçti<br>`test_k3_tukenme_guc:test_gercek_kosu_adim_basina_guc` (yavas) — geçti |
+| R-V3-09 | T | geçti | `test_k4_yerel_k:test_yakitsiz_bin_fisil_degil_ama_ortalamaya_payda_olarak_girer` (hizli) — geçti<br>`test_k4_yerel_k:test_net_yok_olma_agirlikli_ortalama_uretim_toplami_oranina_esit` (hizli) — geçti<br>`test_k4_yerel_k:test_sonsuz_kafeste_yerel_k_ortalamasi_k_sonsuza_esit` (yavas) — geçti |
+| R-V3-10 | T | geçti | `test_k4_demet_kinf:test_sihirbaz_modeli_elle_modelle_fiziksel_olarak_ozdes` (hizli) — geçti<br>`test_k4_demet_kinf:test_budama_yalniz_kullanilmayan_malzemeleri_atar` (hizli) — geçti |
+| R-V3-11 | T | geçti | `test_k5_alt_model:test_cubuk_alt_modeli_yalniz_pinin_malzemeleri` (hizli) — geçti<br>`test_k5_alt_model:test_demet_alt_modeli_kapsam_disi_malzeme_yok` (hizli) — geçti |
+| R-V3-12 | T | geçti | `test_h2_esdegerlik:test_malzeme_haritasi_esdeger` (hizli) — geçti<br>`test_h2_kapi:test_calistir_kapisi_ayni` (hizli) — geçti |
+| R-V3-13 | T | geçti | `test_h1_hiz:test_tus_basina_tek_gezinti` (hizli) — geçti<br>`test_h1_hiz:test_buyuk_orneklerde_sureler` (yavas) — geçti |
+| R-V3-14 | T | geçti | `test_k6_hesap:test_uranyum_vektoru_openmc_ile_ayni` (hizli) — geçti<br>`test_k6_hesap:test_uo2_turetilmis_degerler_el_hesabi` (hizli) — geçti |
+| R-V3-15 | T | geçti | `test_k6_kullanici:test_bozuk_json_acik_hata_silinmez_yedeklenir` (hizli) — geçti |
+| R-V3-16 | T | geçti | `test_y1_mesh_tanim:test_betik_esdegerligi_mesh_tanimlari` (hizli) — geçti<br>`test_y1_mesh_tanim:test_yavas_betik_esdegerligi_kosu` (yavas) — geçti |
+| R-V3-17 | T | geçti | `test_y3_spektrum:test_dort_faktor_el_hesabi` (hizli) — geçti<br>`test_y3_spektrum:test_hizli_sistemde_dort_faktor_tanimsiz` (hizli) — geçti<br>`test_y3_spektrum:test_pin_hucre_dort_faktor_k_sonsuz` (yavas) — geçti |
+| R-V3-18 | T | geçti | `test_y6_kinetik:test_inhour_cok_grup` (hizli) — geçti<br>`test_y6_kinetik:test_tek_grup_basamak_analitik` (hizli) — geçti<br>`test_y6_kinetik:test_alti_grup_basamak_matris_ustel` (hizli) — geçti |
+| R-V3-19 | T | geçti | `test_y7_fizik:test_sabit_kaynak_yuzey_akimi_korunumu` (yavas) — geçti |
+| R-V3-20 | T | geçti | `test_y7_fizik:test_foton_acik_isinma_skorlari` (yavas) — geçti<br>`test_y7_fizik:test_sicaklik_interpolasyonu_ara_sicaklik` (yavas) — geçti |
+| R-V3-21 | T | geçti | `test_y4_cikti:test_bozunma_isisi_analitik` (hizli) — geçti |
+| R-V3-22 | T | geçti | `test_y4_surdur:test_eklenen_adim` (hizli) — geçti<br>`test_y4_surdur:test_reddedilenler` (hizli) — geçti |
+| R-V3-23 | T | geçti | `test_y5_dal:test_kosul_taramayla_ayni` (hizli) — geçti |
+| R-V3-24 | T | geçti | `test_y5_bolme:test_gd_hacim_korunumu` (hizli) — geçti<br>`test_y5_bolme:test_betik_esdegerligi` (hizli) — geçti |
+| R-V3-25 | T | geçti | `test_y8_k:test_iki_grup_yukari_sacilmasiz_el_formulu` (hizli) — geçti<br>`test_y8_k:test_iki_grup_yukari_sacilmali_determinant` (hizli) — geçti |
+| R-V3-26 | T | geçti | `test_y9_triso:test_kurulan_modelde_paketleme_orani_hacim_sayimiyla_hedefe_yuzde_bir_icinde` (hizli) — geçti<br>`test_y9_triso:test_betik_ve_kurucu_ayni_parcaciklari_kurar` (hizli) — geçti |
+| R-V3-27 | T | geçti | `test_y9_varyans:test_agirlik_penceresi_yanliliksiz_ve_fom_artar` (yavas) — geçti |
+| R-V3-28 | T | geçti | `test_y10_kuyruk:test_uc_kosu_sirayla_biter` (hizli) — geçti<br>`test_y10_kuyruk:test_her_kosu_ayri_dizinde_ve_ayni_dizin_reddedilir` (hizli) — geçti<br>`test_y10_kuyruk:test_paralel_kosu_is_parcacigi_butcesini_asmaz` (hizli) — geçti |
+| R-V3-29 | T | geçti | `test_p2_masaustu:test_kur_dosyalari_yazar_ve_kaldir_iz_birakmaz` (hizli) — geçti |
+| R-V3-30 | T | geçti | `test_t2_yollar:test_paket_ve_veri_dizinleri` (hizli) — geçti |
+| R-V3-31 | A | inceleme | — |
+| R-V3-32 | İ | inceleme | — |
 
 ## Testsiz gereksinimler (yöntem T, bağlı test yok)
 
@@ -91,6 +123,8 @@ Yok.
 - R-M4-01 (İ) — Yeni ya da değişen kaynak dosyalar 800 satır tavanını aşmaz (aşan dosya gerekçesiyle listelenir).
 - R-M6-02 (İ) — Sürekli tümleştirme (GitHub Actions) hızlı süiti her gönderimde koşar.
 - R-S-18 (İ) — Belge seti (gereksinimler, tasarım, test planı/sonuçları, V&V, kılavuz, bilinen sınırlamalar, değişiklik günlüğü) listelenir ve eksikleri yazılır.
+- R-V3-31 (A) — V&V kümesi 24 yeni LEU oksit kafes vakasıyla genişletildi; USL NUREG/CR-6698 ile hesaplanır ve bağımsızlık/normallik sınırlamaları belgelenir (sertifika değildir).
+- R-V3-32 (İ) — v3 özellikleri bağımsız öğrenci QA (Q1) ve profesör/standart denetiminden (Q2) geçirildi; bulgular düzeltildi ya da açık nokta olarak yazıldı.
 
 ## Tanımsız kimliğe bağlı testler
 

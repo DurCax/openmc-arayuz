@@ -1,4 +1,85 @@
-# Sürüm notları / Release notes — 2.0.0
+# Sürüm notları / Release notes — 3.0.0
+
+Ayrıntılı ve denetlenebilir liste ("neyi doğruladık / neyi doğrulamadık"): `CHANGELOG.md`.
+*The detailed, auditable list ("what we verified / what we did not"): `CHANGELOG.md`.*
+
+---
+
+## Türkçe
+
+**3.0.0 (04.10.2026).**
+
+### Öne çıkanlar
+- **Çok daha hızlı.** Büyük modellerde (SFR) model açılışı ~1 s, gelişmiş geometriye geçiş 0.7 s,
+  yazarken gecikme ~0.07 s; önizleme ve geometri yoklaması ayrı süreçte çalışır, arayüz donmaz.
+- **Kolay başlangıç.** Açılışta örnek yüklenmez: Sıfırdan (boş model + aşama rehberi), Şablondan
+  ya da Örnekten başlayın.
+- **Veri sayfası.** Nükleer veri kütüphanesini klasörden seçin ya da uygulamadan indirin
+  (ENDF/B-VIII.0, JEFF, JENDL …); veri yoksa ilk açılışta bu sayfa açılır.
+- **Pin ve demet sonuçları.** Pin gücü tablosu ve CSV, yanmaya göre pin gücü, yerel k haritası,
+  demet türü başına k∞ sihirbazı.
+- **Malzeme asistanı** ve bilgisayarınızda saklanan kişisel malzeme kütüphanesi.
+- **Yeni hesaplar:** mesh tally ve VTK (ParaView), spektrum ve dört faktör, nokta kinetiği, foton
+  taşınımı ve sıcaklık işleme, yüzey akımı, genişletilmiş tükenme (bozunma ısısı, soğuma, sürdürme,
+  kritiklik araması), Gd pininde halka bölme ve dal tabloları, grup sabitleri ve random ray, TRISO
+  yakıt ve ağırlık penceresi; görüntüleyici (çakışma kipi, 3B); koşu kuyruğu ve karşılaştırma.
+- **Kolay kurulum (Linux).** Tek dosya kurulum paketi; menü kısayolu ve proje dosyası ilişkisi.
+
+### Kurulum
+`bash openmc-arayuz-3.0.0-Linux-x86_64.sh` (kök yetkisi gerekmez; varsayılan `~/openmc-arayuz`).
+Ayrıntı: `KURULUM.md`, kılavuz bölüm 1. Nükleer veri pakete girmez: ilk açılışta Veri sayfası.
+
+### Uyumluluk ve dikkat
+- v2 projeleri açılır. 2B modellerde otomatik mesh tally'nin z aralığı değişti (`CHANGELOG.md`).
+- Kinetikte Λ artık ℓ/k (OpenMC tanımı); v2 raporlarındaki Λ değerleri ℓ idi.
+- Pin gücü artık çok halkalı (ör. Gd) pinlerde tüm yakıt halkalarının toplamıdır.
+- Yalnız Linux. Bu araç **sertifika ya da lisanslama aracı değildir**.
+
+### Bilinen sınırlamalar
+Gerçek dağıtım kapsayıcılarında ve gerçek kütüphane indirmesiyle denenmedi; ayrıntı `CHANGELOG.md`
+"Neyi doğrulamadık".
+
+---
+
+## English
+
+**3.0.0 (2026-10-04).**
+
+### Highlights
+- **Much faster.** On large models (SFR) opening takes ~1 s, switching to the advanced geometry
+  0.7 s, typing latency ~0.07 s; the preview and geometry probing run in separate processes, so
+  the interface does not freeze.
+- **Easy start.** No example is loaded at startup: start From scratch (empty model + step guide),
+  From template or From example.
+- **Data page.** Pick a nuclear data library folder or download one from the application
+  (ENDF/B-VIII.0, JEFF, JENDL …); without data this page opens on first launch.
+- **Pin and assembly results.** Pin power table and CSV, pin power versus burnup, local k map,
+  k∞ wizard per assembly type.
+- **Material assistant** and a personal material library stored on your computer.
+- **New calculations:** mesh tallies and VTK (ParaView), spectrum and four factors, point kinetics,
+  photon transport and temperature treatment, surface current, extended depletion (decay heat,
+  cooling, restart, criticality search), ring subdivision of Gd pins and branch tables, group
+  constants and random ray, TRISO fuel and weight windows; viewer (overlap mode, 3D); run queue
+  and comparison.
+- **Easy installation (Linux).** Single-file installer; menu entry and project file association.
+
+### Installation
+`bash openmc-arayuz-3.0.0-Linux-x86_64.sh` (no root needed; default `~/openmc-arayuz`).
+Details: `INSTALL.md`, guide chapter 1. Nuclear data is not bundled: use the Data page on first launch.
+
+### Compatibility notes
+- v2 projects open. In 2D models the z range of automatic mesh tallies changed (`CHANGELOG.md`).
+- Kinetics: Λ is now ℓ/k (OpenMC definition); Λ values in v2 reports were ℓ.
+- Pin power for multi-ring pins (e.g. Gd) is now the sum over all fuel rings.
+- Linux only. This tool is **not a certification or licensing tool**.
+
+### Known limitations
+Not tried in real distribution containers or with a real library download; see `CHANGELOG.md`
+"What we did not verify".
+
+---
+
+# Önceki sürüm / Previous release
 
 Ayrıntılı ve denetlenebilir liste ("neyi doğruladık / neyi doğrulamadık"): `CHANGELOG.md`.
 *The detailed, auditable list ("what we verified / what we did not"): `CHANGELOG.md`.*
