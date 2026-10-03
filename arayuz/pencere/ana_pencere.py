@@ -221,6 +221,7 @@ class AnaPencere(DogrulamaMixin, BaslangicAkisi, GezinmeCephesi, MenulerMixin, P
         bolucu.setChildrenCollapsible(False)
         bolucu.setSizes(self._kayitli_bolucu())
         self._bolucu = bolucu
+        self._bolucu_uygulandi = False      # kayitli onizleme genisligi (bkz. asagi)
         editor = QtWidgets.QWidget()
         govde = QtWidgets.QHBoxLayout(editor)
         govde.setContentsMargins(0, 0, 0, 0)
@@ -527,12 +528,30 @@ class AnaPencere(DogrulamaMixin, BaslangicAkisi, GezinmeCephesi, MenulerMixin, P
                 self._bolucu.setSizes(boyut)
         self._sag_kip = "tasarim" if tasarim else "yok"
 
+    def _kayitli_genisligi_uygula(self):
+        """Kayitli onizleme genisligi MUTLAK px olarak, bolucu gercek genisligiyle
+        ilk gorundugunde BIR KEZ uygulanir; sayfa kalani alir. Once yalniz
+        acilista setSizes ile ORAN olarak uygulaniyordu: dar pencerede (onizleme
+        en kucuk genisliginde) kaydedilen [484, 260] genis pencerede onizlemeye
+        ~%45 veriyor, 17x17 demet haritasi 28 px hucrenin altina dusuyordu (Q4)."""
+        if self._bolucu_uygulandi or not self._bolucu.isVisible():
+            return
+        boyut = self._bolucu.sizes()
+        toplam = sum(boyut)
+        if len(boyut) != 2 or toplam <= 0:
+            return
+        self._bolucu_uygulandi = True
+        en_az = self.onizleme_paneli.minimumWidth()
+        on = max(en_az, min(self._kayitli_bolucu()[1], toplam - en_az))
+        self._bolucu.setSizes([toplam - on, on])
+
     def _sayfaya_yer_ac(self):
         """Sayfa en kucuk genisligine sigmiyorsa onizlemeden (en kucuk
         genisligine kadar) yer alir: kayitli bolucu orani baska pencere
         boyutundan gelebilir ve yatay kaydirma dogururdu."""
         if not self.onizleme_paneli.isVisible() or self.onizleme_paneli.dar_mi():
             return
+        self._kayitli_genisligi_uygula()
         sayfa = self.yigin_sekme.currentWidget()
         editor = self._sayfa_editor.get(sayfa)
         boyut = self._bolucu.sizes()
