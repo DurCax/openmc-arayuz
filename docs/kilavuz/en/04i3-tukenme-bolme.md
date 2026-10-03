@@ -18,7 +18,7 @@ the run directory is that plain model (the staleness check counts the subdivisio
 
 | Field | Meaning | Unit | Typical range | Common misuse | Spec key |
 |---|---|---|---|---|---|
-| **Region subdivision on** | Master switch. While off, `bolme` is absent from the file (old projects do not change on a round trip). | — | off | Interpreting a single-instance model's result without comparing against the undivided one | `tukenme.bolme` |
+| **Subdivide depletion regions (rings / axial slices)** | Master switch. While off, `bolme` is absent from the file (old projects do not change on a round trip). | — | off | Interpreting a single-instance model's result without comparing against the undivided one | `tukenme.bolme` |
 | **Pin types** | Pin types to subdivide (with a burnable region, cylindrical, not a control rod). In a checked pin the **burnable** (fissile or Gd/Er/B poison) regions are split; cladding, gap and water are not. | — | the Gd pin | Splitting a control rod (rejected: the absorber region depends on insertion) | `tukenme.bolme.cubuklar[].cubuk` |
 | **Ring count** | How many rings the region is split into (1 = no subdivision). | rings | Gd pin: 3–6 | More than 20 (rejected); more rings cost time and memory | `tukenme.bolme.cubuklar[].halka` |
 | **Ring type** | **Equal volume** (default, recommended start for Gd), **equal thickness** (for comparison) or **thinning outward** (geometric). See below. | — | equal volume | Choosing equal thickness and missing that the outer ring carries most of the power | `tukenme.bolme.cubuklar[].tur` (`esit_hacim` \| `esit_kalinlik` \| `dista_incelen`) |

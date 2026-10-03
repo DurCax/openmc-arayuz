@@ -25,11 +25,11 @@ the result no longer belongs to the current model.
 
 | Field | Meaning | Unit | Typical range | Common misuse | Spec key |
 |---|---|---|---|---|---|
-| **Burnup steps** | Time points of the result file where the branch is computed (0 = fresh fuel). | step | a few points (0, middle, end) | Selecting every step: the run count multiplies as steps × conditions | (not written to the spec) |
-| **Fuel temperature** | Temperature of the fissile burnable material (density fixed; solid fuel). | K | 600–1200 | Varying only T_fuel and calling it a "moderator coefficient" | (not written to the spec) |
+| **Depletion step selection** | Time points of the result file where the branch is computed (0 = fresh fuel). | step | a few points (0, middle, end) | Selecting every step: the run count multiplies as steps × conditions | (not written to the spec) |
+| **Fuel temperature [K]** | Temperature of the fissile burnable material (density fixed; solid fuel). | K | 600–1200 | Varying only T_fuel and calling it a "moderator coefficient" | (not written to the spec) |
 | **Dissolved boron** | Boron concentration of the coolant/moderator water (the recipe of the static boron scan). | ppm | 0–1500 | Thinking the water boron burns: the branch composition is frozen | (not written to the spec) |
-| **Coolant temperature** | Coolant temperature; density changes with it through a correlation (water: saturated-liquid table). | K | 550–600 | Assuming density is fixed (the coefficient comes out several times wrong) | (not written to the spec) |
-| **Coolant density** | Sets the density directly (ρ_mod). | g/cm³ | 0.6–0.8 | Giving it together with temperature: the two conflict | (not written to the spec) |
+| **Coolant temperature [K] (density by correlation)** | Coolant temperature; density changes with it through a correlation (water: saturated-liquid table). | K | 550–600 | Assuming density is fixed (the coefficient comes out several times wrong) | (not written to the spec) |
+| **Coolant density [g/cm³]** | Sets the density directly (ρ_mod). | g/cm³ | 0.6–0.8 | Giving it together with temperature: the two conflict | (not written to the spec) |
 | **Combination** | **Each variable alone**: reference + every value of every variable (the same points as a single-variable scan). **All combinations**: Cartesian product. | — | each alone | Opening the Cartesian product with three variables: the run count explodes | (not written to the spec) |
 
 **Table.** Every row is a (step, condition): k ± σ and **Δk [pcm] = (k − k_ref) × 10⁵** against the

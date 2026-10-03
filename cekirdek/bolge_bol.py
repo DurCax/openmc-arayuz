@@ -368,8 +368,8 @@ def uygula(spec: Mapping[str, Any], zorla: bool = False) -> Mapping[str, Any]:
     zorla=False (kurucu.kur, betik): bolme yalniz tukenme.var acikken uygulanir;
     kapali tukenmede model bolunmemis kurulur (betik = kurucu ayni kalir).
     zorla=True (tukenme koşusu, sonuc okuma): tukenme.var'a bakilmaz."""
-    if not zorla and not (spec.get("tukenme") or {}).get("var"):
-        return spec
+    if not zorla and (not (spec.get("tukenme") or {}).get("var") or sema.agac_modu(spec)):
+        return spec          # agac modu: bolme desteklenmez; tukenme kosusu (zorla) hata verir
     b = bolme_oku(spec)
     if b is None:
         return spec

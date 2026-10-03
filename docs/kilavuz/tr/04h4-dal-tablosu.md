@@ -23,11 +23,11 @@ kart bunu yazar.
 
 | Alan | Anlamı | Birim | Tipik aralık | Yaygın yanlış kullanım | Spec anahtarı |
 |---|---|---|---|---|---|
-| **Yanma adımları** | Dalın hesaplanacağı zaman noktaları (sonuç dosyasındaki noktalar; 0 = taze yakıt). | adım | birkaç nokta (0, ortası, sonu) | Her adımı seçmek: koşu sayısı adım × koşul olarak çarpılır | (spec'e yazılmaz) |
-| **Yakıt sıcaklığı** | Fisil yanabilir malzemenin sıcaklığı (yoğunluk sabit; katı yakıt). | K | 600–1200 | Yalnız T_yakıt değiştirip "moderatör katsayısı" demek | (spec'e yazılmaz) |
+| **Tükenme adımı seçimi** | Dalın hesaplanacağı zaman noktaları (sonuç dosyasındaki noktalar; 0 = taze yakıt). | adım | birkaç nokta (0, ortası, sonu) | Her adımı seçmek: koşu sayısı adım × koşul olarak çarpılır | (spec'e yazılmaz) |
+| **Yakıt sıcaklığı [K]** | Fisil yanabilir malzemenin sıcaklığı (yoğunluk sabit; katı yakıt). | K | 600–1200 | Yalnız T_yakıt değiştirip "moderatör katsayısı" demek | (spec'e yazılmaz) |
 | **Çözünmüş bor** | Soğutucu/moderatör suyunun bor derişimi (statik bor taramasının tarifi). | ppm | 0–1500 | Sudaki boru yanabilir sanmak: dal bileşimi sabittir | (spec'e yazılmaz) |
-| **Soğutucu sıcaklığı** | Soğutucu sıcaklığı; yoğunluk korelasyonla birlikte değişir (su: doymuş sıvı tablosu). | K | 550–600 | Yoğunluğu sabit sanmak (katsayı birkaç kat yanlış) | (spec'e yazılmaz) |
-| **Soğutucu yoğunluğu** | Yoğunluğu doğrudan verir (ρ_mod). | g/cm³ | 0.6–0.8 | Sıcaklıkla birlikte vermek: ikisi çelişir | (spec'e yazılmaz) |
+| **Soğutucu sıcaklığı [K] (yoğunluk korelasyonla)** | Soğutucu sıcaklığı; yoğunluk korelasyonla birlikte değişir (su: doymuş sıvı tablosu). | K | 550–600 | Yoğunluğu sabit sanmak (katsayı birkaç kat yanlış) | (spec'e yazılmaz) |
+| **Soğutucu yoğunluğu [g/cm³]** | Yoğunluğu doğrudan verir (ρ_mod). | g/cm³ | 0.6–0.8 | Sıcaklıkla birlikte vermek: ikisi çelişir | (spec'e yazılmaz) |
 | **Birleşim** | **Her değişken tek başına**: taban + her değişkenin her değeri (tek değişkenli taramayla aynı noktalar). **Tüm bileşimler**: kartezyen çarpım. | — | tek başına | Kartezyen çarpımı 3 değişkenle açmak: koşu sayısı patlar | (spec'e yazılmaz) |
 
 **Tablo.** Her satır bir (adım, koşul): k ± σ ve taban dala göre **Δk [pcm] = (k − k_taban) × 10⁵**,

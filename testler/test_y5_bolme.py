@@ -289,7 +289,7 @@ def test_demette_pin_gucu_toplami(gecici):
 def test_ornek_eski_ornekle_ayni():
     print("\n[Y5-B10] pwr_gd_bolme: 5 esit hacimli halka = pwr_gd_tukenme'nin elle yazilmis halkalari")
     from cekirdek import bolge_bol as bb, sema, tukenme
-    yeni = sema.yukle(os.path.join(ORNEK, "pwr_gd_bolme.json"))
+    yeni = sema.yukle(os.path.join(ORNEK, "bolme", "pwr_gd_bolme.json"))
     eski = sema.yukle(os.path.join(ORNEK, "pwr_gd_tukenme.json"))
     y = bb.uygula(yeni)
     ry = [b["r"] for b in sema.cubuk_bul(y, "gd_cubugu")["bolgeler"]][:5]

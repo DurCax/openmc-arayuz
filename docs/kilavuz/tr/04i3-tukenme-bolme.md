@@ -17,7 +17,7 @@ da bu sade modeldir (eskime denetimi bölmeyi **fiziğe dahil** sayar).
 
 | Alan | Anlamı | Birim | Tipik aralık | Yaygın yanlış kullanım | Spec anahtarı |
 |---|---|---|---|---|---|
-| **Bölge bölme açık** | Bölme anahtarı. Kapalıyken `bolme` dosyada yoktur (eski projeler gidiş-dönüşte değişmez). | — | kapalı | Tek örnekli modelde "bölmesiz" ile karşılaştırmadan sonuç yorumlamak | `tukenme.bolme` |
+| **Tükenme bölgelerini böl (halka / eksenel dilim)** | Bölme anahtarı. Kapalıyken `bolme` dosyada yoktur (eski projeler gidiş-dönüşte değişmez). | — | kapalı | Tek örnekli modelde "bölmesiz" ile karşılaştırmadan sonuç yorumlamak | `tukenme.bolme` |
 | **Çubuk türleri** | Bölünecek pin türleri (yanabilir bölgesi olan, silindirik, kontrol olmayan). İşaretli çubuğun **yanabilir** (fisil ya da Gd/Er/B zehirli) bölgeleri bölünür; kılıf, boşluk ve su bölünmez. | — | Gd'li pin | Kontrol çubuğunu bölmek (reddedilir: emici bölge daldırmaya bağlıdır) | `tukenme.bolme.cubuklar[].cubuk` |
 | **Halka sayısı** | Bölgenin kaç halkaya bölüneceği (1 = bölme yok). | halka | Gd pini: 3–6 | 20'den fazla (reddedilir); halka sayısını artırınca süre ve bellek artar | `tukenme.bolme.cubuklar[].halka` |
 | **Halka türü** | **Eşit hacimli** (varsayılan, Gd için önerilen başlangıç), **eşit kalınlıklı** (karşılaştırma için) ya da **dışa doğru incelen** (geometrik). Aşağıya bakın. | — | eşit hacim | Eşit kalınlık seçip dış halkanın gücün çoğunu taşıdığını gözden kaçırmak | `tukenme.bolme.cubuklar[].tur` (`esit_hacim` \| `esit_kalinlik` \| `dista_incelen`) |
