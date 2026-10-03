@@ -316,9 +316,12 @@ def test_profil_b_uctan_uca():
                        uygulama=uyg)
     b2 = _profil_b(gercek, uyg)
     k6 = _bul(b2, "K6")[0]
-    kontrol("depo LEU alt kumesi (n = %d < 10) -> K6 'USL hesaplanamadı'" % gercek.n,
-            k6.durum == "uygulanamadi" and "USL hesaplanamadı" in k6.mesaj, "-> %s" % k6.mesaj)
-    kontrol("K10 uyarisi (n < 10)", any(x.seviye == "uyari" for x in _bul(b2, "K10")))
+    # v3 Y11: depoda LEU kafes vakalari var -> n >= 10, K6 USL ile karsilastirir
+    kontrol("depo LEU alt kumesi (n = %d >= 10) -> K6 USL ile karsilastirdi" % gercek.n,
+            gercek.n >= 10 and "USL =" in k6.mesaj, "-> %s" % k6.mesaj)
+    kontrol("K10: n >= 10 uyarisi yok", not any(
+        x.seviye == "uyari" and "10" in x.mesaj for x in _bul(b2, "K10")),
+        "-> %s" % [(x.seviye, x.mesaj[:80]) for x in _bul(b2, "K10")])
 
 
 def _sahte_kume_leu():
