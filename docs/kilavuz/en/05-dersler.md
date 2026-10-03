@@ -31,7 +31,7 @@ overwritten. Use **File › Save as…** to keep your own changes.
 
 **Where do the expected results come from?** Every value has a source: the `referans.olcum` field
 of the example file, [VV.md](../../VV.md), [ORNEKLER.md](../../ORNEKLER.md) or the measurement tables
-of [README.md](../../../README.md). The measurement condition (particles × batches / inactive
+of [TEKNIK_NOTLAR.md](../../TEKNIK_NOTLAR.md). The measurement condition (particles × batches / inactive
 batches) is given in each lesson. A Monte Carlo result is statistical: with the same settings but a
 different seed or thread count the last digits differ; **a 2–3σ difference with different settings
 is normal**. Uncertainties are 1σ standard uncertainties everywhere. How to read a result:
@@ -84,7 +84,7 @@ this lesson focuses on the physics of the same model.
 9. Watch the convergence plot during the run: after the inactive batches the cumulative mean should
    settle into a flat band. The **Shannon entropy** badge should say **Converged**.
 
-**Expected result.** k∞ = **1.18443 ± 0.00088** ([README.md](../../../README.md), table of measured
+**Expected result.** k∞ = **1.18443 ± 0.00088** ([TEKNIK_NOTLAR.md](../../TEKNIK_NOTLAR.md), table of measured
 reference results; the example's own settings 10 000 × 150 / 40 inactive, seed 1, 6 threads,
 01.10.2026). Your value should be within 2–3σ of this. A larger
 difference or a lost-particle warning signals a problem
@@ -183,7 +183,7 @@ assemblies on a hexagonal core map.
    has no duct; the space outside the pins is filled by the **Outside assembly** fill (`sodyum`).
 3. Keep the **Run settings** as in the file (10 000 × 120, 30 inactive). **Run**.
 
-**Expected result (assembly).** k∞ = **1.46634 ± 0.00070** ([README.md](../../../README.md), table of
+**Expected result (assembly).** k∞ = **1.46634 ± 0.00070** ([TEKNIK_NOTLAR.md](../../TEKNIK_NOTLAR.md), table of
 measured reference results; 53 s with 24 threads). Why k∞ is much larger than for the PWR assembly
 (~1.18): the enrichment is **19.75 %** (PWR assembly 3.2 %), the fuel is a **dense metal** (U-10Mo,
 17 g/cm³; far more uranium per unit volume than UO₂) and there is no absorber of that kind - neither
@@ -451,7 +451,7 @@ to track and export the result as CSV. Every field of the page:
 7. Change something in the model (for example **Power density** 38): the previous result line turns
    into a red **stale result** and says which section changed. Undo with **Ctrl+Z**.
 
-**Expected result** ([README.md](../../../README.md), `pwr_tukenme` example in the depletion section;
+**Expected result** ([TEKNIK_NOTLAR.md](../../TEKNIK_NOTLAR.md), `pwr_tukenme` example in the depletion section;
 full ENDF/B-VIII.0 thermal chain, CECM, 5 000 × 60 particles, ~50 minutes):
 
 | days | MWd/kg | k∞ |
@@ -507,7 +507,7 @@ interpretation: [6.3 Interpreting the power distribution](06-sonuclar.md#guc-dag
    F_ΔH, F_q, the mean and the highest linear power.
 6. Run the same model with **Quick test** and compare F_ΔH: with little statistics F_ΔH goes **up**.
 
-**Expected result** ([README.md](../../../README.md), power distribution and peaking factors section;
+**Expected result** ([TEKNIK_NOTLAR.md](../../TEKNIK_NOTLAR.md), power distribution and peaking factors section;
 the example's own settings 20 000 × 150 / 40 inactive, 20 axial bins, 6 threads, 01.10.2026; seeds
 1-5): a single run gives **F_ΔH ≈ 1.06-1.08**, **F_q ≈ 1.63-1.75** (seed 1: 1.0732 and 1.6264); the
 scatter (1σ) of the 5 seeds is 0.0071 for F_ΔH and 0.051 for F_q. If the maps are averaged first and
@@ -666,7 +666,7 @@ position, critical drum angle) and read the uncertainty of the result. Method:
 5. `ornekler/tamburlu_kor.json`: **Parameter** drum rotation (`tambur_donme`, degrees), interval
    0–180.
 
-**Expected result** ([README.md](../../../README.md), reactivity coefficients and critical search
+**Expected result** ([TEKNIK_NOTLAR.md](../../TEKNIK_NOTLAR.md), reactivity coefficients and critical search
 section):
 
 | Model | Parameter | Critical value | Number of runs |

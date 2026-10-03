@@ -119,7 +119,7 @@ Numerical conventions:
   which one is meant.
 - Length in cm, temperature in K, angle in degrees, energy in eV (unless stated otherwise).
 - The measured numbers in the guide (k-eff, F_ΔH, critical boron...) are taken from the documents
-  in the repository (`docs/VV.md`, `docs/ORNEKLER.md`, `README.md`) and from the `referans.olcum`
+  in the repository (`docs/VV.md`, `docs/ORNEKLER.md`, `docs/TEKNIK_NOTLAR.md`) and from the `referans.olcum`
   field of the examples; small differences in the last digits on your machine are statistical.
 
 ## 0.6 Message levels

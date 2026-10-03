@@ -26,8 +26,8 @@ nuclear data (the application's *Data* page downloads it). Requires Linux x86-64
 (Ubuntu 20.04/22.04/24.04, Fedora 29+, Debian 10+).
 
 ```bash
-bash openmc-arayuz-2.0.0-Linux-x86_64.sh            # asks for the folder; default ~/openmc-arayuz
-bash openmc-arayuz-2.0.0-Linux-x86_64.sh -b -p ~/openmc-arayuz   # non-interactive
+bash openmc-arayuz-3.0.0-Linux-x86_64.sh            # asks for the folder; default ~/openmc-arayuz
+bash openmc-arayuz-3.0.0-Linux-x86_64.sh -b -p ~/openmc-arayuz   # non-interactive
 ~/openmc-arayuz/bin/openmc-arayuz                  # start the application
 bash ~/openmc-arayuz/share/openmc-arayuz-paket/kaldir.sh         # uninstall (removes only that folder)
 ```

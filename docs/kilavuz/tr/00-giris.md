@@ -111,7 +111,7 @@ Sayısal kurallar:
   (reaktivite farkı, ρ = (k − 1)/k). İkisi aynı şey değildir; hangisi olduğu yazılır.
 - Uzunluk cm, sıcaklık K, açı derece, enerji eV (aksi yazılmadıkça).
 - Kılavuzdaki ölçülmüş sayılar (k-eff, F_ΔH, kritik bor…) depodaki belgelerden (`docs/VV.md`,
-  `docs/ORNEKLER.md`, `README.md`) ve örneklerin `referans.olcum` alanından alınmıştır; kendi
+  `docs/ORNEKLER.md`, `docs/TEKNIK_NOTLAR.md`) ve örneklerin `referans.olcum` alanından alınmıştır; kendi
   makinenizde istatistik nedeniyle son hanelerde küçük farklar olağandır.
 
 ## 0.6 Uyarı düzeyleri

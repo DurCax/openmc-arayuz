@@ -248,7 +248,7 @@ katmanlar **alttan üste** saklanır (`kor.eksenel.bolgeler`).
 Katmanlar açıkken modelin yüksekliği **katmanların toplamıdır**; `kor.yukseklik` yok sayılır ve
 `null`'a çekilir (tek gerçek kaynak kuralı). Kartın altındaki satır toplam yüksekliği, aktif yakıt
 aralığını ve (güç dağılımı açıksa) hedef çubuğun aralığını canlı yazar. Üç ayrı yükseklik vardır
-ve karıştırılmamalıdır ([README.md](../../../README.md), “Üç ayrı yükseklik”):
+ve karıştırılmamalıdır ([TEKNIK_NOTLAR.md](../../TEKNIK_NOTLAR.md), “Üç ayrı yükseklik”):
 
 | | ne | nerede kullanılır |
 |---|---|---|

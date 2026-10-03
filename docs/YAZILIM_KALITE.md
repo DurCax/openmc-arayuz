@@ -32,13 +32,13 @@ numarası verilmez, aşağıdaki her şey kendi sözcüklerimizle yazılmıştı
 | Belge | Yer | Durum (01.10.2026) | 12207 süreç adı (yalnız eşleme) |
 |---|---|---|---|
 | Gereksinimler | `docs/GEREKSINIMLER.md` | var (R-… kimlikli, tek cümle, yöntem T/İ/A) | Stakeholder needs / System requirements definition |
-| Tasarım | `docs/GEOMETRI_MODELI.md` (geometri ağacı, §15 kararlar, §16 donmuş API) + `README.md` "Dizin yapısı" (kod haritası) | var; çekirdek dışı modüllerin tasarım belgesi yok, kod haritası README'de | Architecture / Design definition |
+| Tasarım | `docs/GEOMETRI_MODELI.md` (geometri ağacı, §15 kararlar, §16 donmuş API) + `docs/TEKNIK_NOTLAR.md` "Dizin yapısı" (kod haritası) | var; çekirdek dışı modüllerin tasarım belgesi yok, kod haritası README'de | Architecture / Design definition |
 | Test planı | `testler/ortak_test.py` (sözleşme, `gereksinim` işareti), `conftest.py` (hizli / yavas / veri / zincir işaretleri), `.github/workflows/test.yml` | var; ayrı bir "test planı" belgesi yok — plan bu dosyalardadır | Verification |
 | Test sonuçları | pytest `--junitxml` çıktısı → `docs/IZLENEBILIRLIK.md` | var; matris son verilen sonuç dosyasını gösterir, yavaş süit düzenli girmez (§4) | Verification |
 | İzlenebilirlik | `docs/IZLENEBILIRLIK.md` (`araclar/izlenebilirlik.py` üretir) | var | Verification / Information management |
 | V&V raporu | `docs/VV.md` (kriter C/E tablosu), `docs/STANDARTLAR.md` (uygunluk matrisi) | kısmen; yanlılık/USL (S-3) sürüyor | Validation |
 | Kullanıcı kılavuzu | `docs/kilavuz/` (Dalga 3, Ajan 13b) | **yok** (planlandı); bugün `README.md` + `KURULUM.md` | Operation |
-| Bilinen sınırlamalar | bu belge §5 + `README.md` "Bilinen tuzaklar" + `docs/STANDARTLAR.md` §4.10 | var, dağınık | Validation |
+| Bilinen sınırlamalar | bu belge §5 + `docs/TEKNIK_NOTLAR.md` "Bilinen tuzaklar" + `docs/STANDARTLAR.md` §4.10 | var, dağınık | Validation |
 | Değişiklik günlüğü | `CHANGELOG.md` (§7 şablonu), `docs/SURUM_NOTLARI.md` (TR + EN) | var (Dalga 4, 2.0.0); ayrıntı `git log` (conventional commits) | Configuration management |
 | Yapılandırma / ortam kaydı | git + her koşu dizininde `kapsul.json` | var (S-4) | Configuration management |
 | Lisans | `LICENSE`, `THIRD_PARTY_LICENSES.md` | var (Dalga 4; R-M8-01, `testler/test_paket.py`) | — |
@@ -105,7 +105,7 @@ Her madde açık bir eksikliktir; "kapatıldı" denmeden önce kanıtı bu belge
   (kaynak dosyalar ve zaman damgaları matrisin başında yazılır).
 - `yeniden` aynı spec'i kullanır; arada şema göçü olduysa yeni `spec.json` baytları farklı olabilir
   (araç bunu not eder). Eski koşu dizinlerinde (`kapsul.json` öncesi) yeniden üretim yapılamaz.
-- Fizik ve geometri sınırlamaları için: `README.md` "Bilinen tuzaklar", `docs/GEOMETRI_MODELI.md`
+- Fizik ve geometri sınırlamaları için: `docs/TEKNIK_NOTLAR.md` "Bilinen tuzaklar", `docs/GEOMETRI_MODELI.md`
   §16 "Sapmalar", `docs/STANDARTLAR.md` §4.10.
 
 ## 6. Matrisi ve kanıtı yeniden üretmek

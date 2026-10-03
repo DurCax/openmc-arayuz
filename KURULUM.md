@@ -28,8 +28,8 @@ içermez** (uygulamanın *Veri* sayfası indirir). Gereken: Linux x86-64, glibc 
 (Ubuntu 20.04/22.04/24.04, Fedora 29+, Debian 10+).
 
 ```bash
-bash openmc-arayuz-2.0.0-Linux-x86_64.sh            # klasörü sorar; varsayılan ~/openmc-arayuz
-bash openmc-arayuz-2.0.0-Linux-x86_64.sh -b -p ~/openmc-arayuz   # soru sormadan
+bash openmc-arayuz-3.0.0-Linux-x86_64.sh            # klasörü sorar; varsayılan ~/openmc-arayuz
+bash openmc-arayuz-3.0.0-Linux-x86_64.sh -b -p ~/openmc-arayuz   # soru sormadan
 ~/openmc-arayuz/bin/openmc-arayuz                  # uygulamayı başlat
 bash ~/openmc-arayuz/share/openmc-arayuz-paket/kaldir.sh         # kaldır (yalnız o klasörü siler)
 ```

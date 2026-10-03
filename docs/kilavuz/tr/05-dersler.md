@@ -31,7 +31,7 @@ için **Dosya › Farklı kaydet…** kullanın.
 
 **Beklenen sonuçlar nereden geliyor?** Her değer bir kaynağa dayanır: örnek dosyasının
 `referans.olcum` alanı, [VV.md](../../VV.md), [ORNEKLER.md](../../ORNEKLER.md) ya da
-[README.md](../../../README.md) ölçüm tabloları. Ölçüm koşulu (parçacık × çevrim / pasif çevrim)
+[TEKNIK_NOTLAR.md](../../TEKNIK_NOTLAR.md) ölçüm tabloları. Ölçüm koşulu (parçacık × çevrim / pasif çevrim)
 her derste yazılıdır. Monte Carlo sonucu istatistiktir: aynı ayarla farklı tohum ya da farklı
 iş parçacığı sayısıyla son hanelerde fark olur; **farklı ayarla 2–3σ fark olağandır**. Belirsizlik
 her yerde 1σ standart belirsizliktir. Sonucun nasıl okunacağı:
@@ -84,7 +84,7 @@ bölümünü izleyin; bu ders aynı modelin fiziğine odaklanır.
 9. Koşu sürerken yakınsama grafiğini izleyin: pasif çevrimlerden sonra kümülatif ortalama
    düz bir banda oturmalıdır. **Shannon entropisi** rozeti **Yakınsadı** olmalıdır.
 
-**Beklenen sonuç.** k∞ = **1.18443 ± 0.00088** ([README.md](../../../README.md) "Ölçülen
+**Beklenen sonuç.** k∞ = **1.18443 ± 0.00088** ([TEKNIK_NOTLAR.md](../../TEKNIK_NOTLAR.md) "Ölçülen
 referans sonuçlar" tablosu; örneğin kendi ayarı 10 000 × 150 / 40 pasif, tohum 1, 6 iş parçacığı,
 01.10.2026). Sizin değeriniz bu aralığın 2–3σ
 yakınında olmalıdır. Daha büyük bir fark ya da kayıp parçacık uyarısı bir sorun işaretidir
@@ -181,7 +181,7 @@ bir kor haritasına yerleştirmek.
    yoktur; çubukların dışı **Demet dışı** dolgusuyla (`sodyum`) doludur.
 3. **Hesap ayarları** dosyadaki gibi kalsın (10 000 × 120, 30 pasif). **Çalıştır**.
 
-**Beklenen sonuç (demet).** k∞ = **1.46634 ± 0.00070** ([README.md](../../../README.md) "Ölçülen
+**Beklenen sonuç (demet).** k∞ = **1.46634 ± 0.00070** ([TEKNIK_NOTLAR.md](../../TEKNIK_NOTLAR.md) "Ölçülen
 referans sonuçlar"; 24 iş parçacığıyla 53 s). k∞'un PWR demetinden (~1.18) çok büyük olmasının
 nedenleri: zenginlik **%19.75** (PWR demeti %3.2), yakıt **yoğun metal** (U-10Mo, 17 g/cm³; birim
 hacimde UO₂'den çok daha fazla uranyum) ve soğurucu yok — suda çözünmüş **bor** ve hidrojenli
@@ -433,7 +433,7 @@ nüklidleri seçmek ve sonucu CSV olarak almak. Sayfanın her alanı:
 7. Modelde bir şeyi değiştirin (ör. **Güç yoğunluğu** 38): önceki sonuç satırı kırmızı
    **Eski sonuç** olur ve hangi bölümün değiştiğini yazar. **Ctrl+Z** ile geri alın.
 
-**Beklenen sonuç** ([README.md](../../../README.md) "Örnek: pwr_tukenme"; tam ENDF/B-VIII.0 termal
+**Beklenen sonuç** ([TEKNIK_NOTLAR.md](../../TEKNIK_NOTLAR.md) "Örnek: pwr_tukenme"; tam ENDF/B-VIII.0 termal
 zincir, CECM, 5 000 × 60 parçacık, ~50 dakika):
 
 | gün | MWd/kg | k∞ |
@@ -488,7 +488,7 @@ yorum: [6.3 Güç dağılımını yorumlamak](06-sonuclar.md#guc-dagilimi-yorum)
 6. Aynı modeli **Hızlı deneme** ile koşup F_ΔH'yi karşılaştırın: az istatistikle F_ΔH **yukarı**
    çıkar.
 
-**Beklenen sonuç** ([README.md](../../../README.md) "Güç dağılımı ve tepe faktörleri"; örneğin
+**Beklenen sonuç** ([TEKNIK_NOTLAR.md](../../TEKNIK_NOTLAR.md) "Güç dağılımı ve tepe faktörleri"; örneğin
 kendi ayarı 20 000 × 150 / 40 pasif, 20 eksenel dilim, 6 iş parçacığı, 01.10.2026; tohum 1–5):
 tek koşuda **F_ΔH ≈ 1.06–1.08**, **F_q ≈ 1.63–1.75** (tohum 1: 1.0732 ve 1.6264); 5 tohumun
 saçılması (1σ) F_ΔH için 0.0071, F_q için 0.051. Haritaların ortalaması alınıp sonra en büyüğü
@@ -638,7 +638,7 @@ açısı) bulmak ve sonucun belirsizliğini okumak. Yöntem: [4.8 Analiz](04h-an
 5. `ornekler/tamburlu_kor.json`: **Parametre** tambur dönmesi (`tambur_donme`, derece), aralık
    0–180.
 
-**Beklenen sonuç** ([README.md](../../../README.md) "Reaktivite katsayıları ve kritik arama"):
+**Beklenen sonuç** ([TEKNIK_NOTLAR.md](../../TEKNIK_NOTLAR.md) "Reaktivite katsayıları ve kritik arama"):
 
 | Model | Parametre | Kritik değer | Koşu sayısı |
 |---|---|---|---|

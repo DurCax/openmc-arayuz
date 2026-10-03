@@ -265,7 +265,7 @@ While layers are on, the model height is **the sum of the layers**; `kor.yuksekl
 and set to `null` (single source of truth rule). The line under the card shows the total height,
 the active fuel range and (if the power distribution is on) the range of the target pin, live.
 There are three different heights and they must not be mixed up
-([README.md](../../../README.md), "three different heights"):
+([TEKNIK_NOTLAR.md](../../TEKNIK_NOTLAR.md), "three different heights"):
 
 | | what | where it is used |
 |---|---|---|
