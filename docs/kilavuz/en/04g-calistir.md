@@ -108,7 +108,10 @@ Each row is one fuel pin: assembly (in a full core), position (numbered from 1, 
 / y from the bottom), x/y [cm], pin type, **relative power** ± σ, **Power [W]** and
 **q′ [W/cm]** (if a Total power is entered), and in 3D the **Peak q′** plus the relative power
 and q′ of the selected bin. The hottest pin (the pin of F_ΔH) is shown bold and coloured;
-truncated pins are greyed out.
+truncated pins are greyed out. If no Total power is entered, the W and q′ columns are empty (the note below the
+table says so; enter it under Run settings ▸ Power distribution). The **exported CSV** is written as UTF-8 with a
+**BOM** (`utf-8-sig`) on purpose, so that Excel/LibreOffice read the Turkish characters correctly; the raw key
+headers (`demet`, `konum`, `x_cm`, …) are for machine reading, and the decimal separator is a point.
 
 | Element | What it does |
 |---|---|

@@ -137,6 +137,9 @@ def cikti_ozeti(kosu_dizini):
                       hatalar=hatalar, yeniden_baslatma=restart)
 
 
+_OLASILIK_TABLOSU_IZI = "probability table"
+
+
 def ozet_satirlari(ozet):
     """Kullaniciya gosterilecek kisa satirlar (terminal ve Calistir sekmesi).
     Sorun yoksa bos liste."""
@@ -154,6 +157,12 @@ def ozet_satirlari(ozet):
         satirlar.append(_("OpenMC %d uyarı yazdı (ilk %d):")
                         % (len(ozet.uyarilar), min(len(ozet.uyarilar), _ORNEK_SAYISI)))
         satirlar += ["  " + m for m in ozet.uyarilar[:_ORNEK_SAYISI]]
+        if any(_OLASILIK_TABLOSU_IZI in m.lower() for m in ozet.uyarilar):
+            satirlar.append(_("  Not: \"probability table\" uyarısı, nüklid verisindeki "
+                              "rezonans-ötesi (URR) olasılık tablosunda negatif değer "
+                              "bulunduğunu söyler; model hatası değildir. Sonuçtan "
+                              "şüphe ediyorsanız başka bir kütüphane sürümüyle "
+                              "karşılaştırın (Kılavuz: Sorun giderme)."))
     return satirlar
 
 

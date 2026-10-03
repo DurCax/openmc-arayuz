@@ -339,7 +339,7 @@ def _eksik_parcayi_kur(spec, tur, eklenen=None):
 
     def cubuk_gerekli():
         if not spec.get("cubuklar"):
-            ad = sc.benzersiz_ad(spec, "yakit_cubugu")
+            ad = sc.benzersiz_ad(spec, _("yakit_cubugu"))
             spec.setdefault("cubuklar", []).append(sc.cubuk_sablonu(spec, "yakit", ad))
             eklenen.append(ad)
 

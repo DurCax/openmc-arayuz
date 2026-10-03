@@ -105,7 +105,10 @@ Haritanın altında, haritadaki **aynı** değerlerin satır satır hali (yeni h
 harita). Her satır bir yakıt çubuğudur: demet (tam korda), konum (1'den numaralı, x soldan /
 y alttan), x/y [cm], çubuk türü, **bağıl güç** ± σ, **Güç [W]** ve **q′ [W/cm]** (Toplam güç
 girildiyse), 3B'de **En yüksek q′** ile seçili dilimin bağıl gücü ve q′'su. En sıcak çubuk
-(F_ΔH'nin çubuğu) kalın ve renkli satırdır; kesik çubuklar soluk yazılır.
+(F_ΔH'nin çubuğu) kalın ve renkli satırdır; kesik çubuklar soluk yazılır. Toplam güç girilmediyse W ve q′
+sütunları boştur (tablonun altındaki not bunu söyler; Hesap ayarları ▸ Güç dağılımı'nda girin). **Dışa aktarılan
+CSV** UTF-8 **BOM'lu** (`utf-8-sig`) yazılır: Excel/LibreOffice Türkçe karakterleri doğru tanısın diye bilinçli
+bir seçimdir; ham anahtar başlıkları (`demet`, `konum`, `x_cm`, …) makine okuması içindir, ondalık ayırıcı nokta.
 
 | Öğe | Ne yapar |
 |---|---|

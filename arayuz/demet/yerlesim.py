@@ -196,6 +196,7 @@ class YerlesimMixin(object):
         self._dis_duzen = dy
         self.e_dis = QtWidgets.QLabel(_("Demet dışı"))
         self.e_dis.setToolTip(_("Demet hücrelerinin dışında kalan alanı dolduran malzeme."))
+        self.e_dis.setWordWrap(True)        # EN "Outside assembly" dar kartta kesilmesin (Q1-07)
         self.form.addRow(self.e_dis, self._dis_yer)
 
     def _gelismis_kutusu(self):

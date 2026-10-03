@@ -380,6 +380,10 @@ user interface has no field for it. Some inputs of profiles C and B are read fro
   conditions on the Geometry page; in advanced geometry run a point probe with "Probe".
 - `K3-hata`: error messages OpenMC wrote to its output (error). `K3-uyari`: OpenMC warnings other than
   lost particles (note; check in the log whether they affect the result).
+- **"Negative value(s) found on probability table for nuclide Zr96 at 600K"** (K3-uyari and the result card):
+  an OpenMC warning that the unresolved-resonance (URR) probability table in the nuclide data has negative
+  values; it is not a model error and the run is valid. The result card explains it in a one-line note. If you
+  doubt the result, compare the same model with another library version.
 - "No run log (kosu.log)" → not applicable: the run was not made with this application; run it again.
 
 ### Profile B: Criticality safety

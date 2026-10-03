@@ -325,7 +325,7 @@ class CubukSekmesi(SayfalarMixin, CubukFormuMixin, PlakaFormuMixin, TamburFormuM
         """Sablondan cubuk ekler; malzemeler rollerine gore secilir."""
         if not self.spec.get("malzemeler"):
             return None
-        taban = dict((a, v) for a, _m, v in CUBUK_SABLONLARI)[sablon]
+        taban = _(dict((a, v) for a, _m, v in CUBUK_SABLONLARI)[sablon])   # EN: fuel_pin ...
         ad = benzersiz_ad(self.spec, taban)
         self.spec.setdefault("cubuklar", []).append(cubuk_sablonu(self.spec, sablon, ad))
         self._kora_ata("cubuk", ad)

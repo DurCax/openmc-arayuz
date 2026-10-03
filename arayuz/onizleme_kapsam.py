@@ -82,6 +82,8 @@ class KapsamMixin(object):
         self._kapi_ozet = None             # kapi sonucunun ait oldugu tam model ozeti
         self._tam_kirli = False            # gecikmeli istek tam modeli degistirmis olabilir
         self.kapsam = QtWidgets.QComboBox()
+        # EN "Automatic" dar panelde kesilmesin (Q1-07): en uzun ogeye gore genislik.
+        self.kapsam.setSizeAdjustPolicy(QtWidgets.QComboBox.AdjustToContents)
         for veri, ad in KAPSAM_SECENEKLERI:
             self.kapsam.addItem(_(ad), veri)
         self.kapsam.setToolTip(_(
