@@ -150,7 +150,9 @@ kartın altındadır. Grafik **PNG kaydet** ile kaydedilir.
 ### Verimlilik (FOM) kartı
 
 Sabit kaynak koşusunda ya da [varyans azaltma](04f-hesap-ayarlari.md#ayar-varyans) açıkken görünür.
-Her kullanıcı tally'si için (tüm bölmelerin toplamı; bölmeler bağımsız kabul edilir) **toplam**,
+Her kullanıcı tally'si için, **(skor, nüklid) başına bir satır** (farklı birimli skorlar toplanmaz; filtre
+bölmeli tally'de **en kötü (bağıl hatası en büyük) bölme** alınır, bölmeler toplanmaz: aynı geçmişlerden gelen
+bölmelerin toplam σ'sı eksik olurdu; filtresiz tek skorda tally'nin kendi değeri) **değer**,
 **σ**, **σ bağıl**, koşu süresi **T** ve **FOM = 1 / (σ_bağıl² · T)** yazılır. FOM büyüdükçe aynı
 belirsizliğe daha kısa sürede inilir. Karşılaştırma yalnız **aynı tally ve aynı sonuç** içindir;
 ağırlık penceresi kullanıldıysa T bu koşunun süresidir (pencereleri üreten analog koşunun süresi

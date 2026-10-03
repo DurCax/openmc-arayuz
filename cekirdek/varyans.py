@@ -282,10 +282,35 @@ def kosu_suresi(runtime: dict) -> Optional[float]:
     return None
 
 
+def _tally_fom_kalemleri(t) -> list:
+    """[(ek, deger, sapma)]: ek tally adina eklenen son ek. (skor, nuklid) basina bir kalem -- farkli birimli
+    skorlar ya da nuklidler TOPLANMAZ. Filtre bin'li tally'de bin'ler de toplanmaz:
+    bagil hatasi en buyuk (en kotu) sifirdan farkli bin alinir (bin'ler ayni
+    gecmislerden geldiginden toplam sigma'si eksik olurdu). Filtresiz tek skor ve
+    nuklid: tally'nin kendi degeri (eski davranis)."""
+    import numpy as np
+    ort = np.asarray(t.mean, dtype=float).reshape(-1, len(t.nuclides), len(t.scores))
+    sap = np.asarray(t.std_dev, dtype=float).reshape(ort.shape)
+    coklu = ort.shape[1] * ort.shape[2] > 1
+    kalemler = []
+    for i, nuk in enumerate(t.nuclides):
+        for j, skor in enumerate(t.scores):
+            m, sd = ort[:, i, j], sap[:, i, j]
+            ek = " [%s, %s]" % (skor, nuk) if coklu else ""
+            sayilir = np.flatnonzero(m != 0.0)
+            if sayilir.size == 0:
+                continue
+            k = sayilir[np.argmax(sd[sayilir] / np.abs(m[sayilir]))]
+            if m.size > 1:
+                ek += " " + _("(en kötü bin)")
+            kalemler.append((ek, float(m[k]), float(sd[k])))
+    return kalemler
+
+
 def fom_tablosu(statepoint_yolu: str) -> List[FomSatiri]:
-    """Statepoint'teki her tally icin (butun binlerin toplami; binler bagimsiz kabul)
-    FOM satiri. Genel tally'ler (guc, spektrum, yuzey vb.) dahil degildir."""
-    import math
+    """Statepoint'teki her tally icin (skor, nuklid) basina FOM satiri (en kotu
+    filtre bin'i; birimler/bin'ler toplanmaz -- bkz. _tally_fom_kalemleri). Genel
+    tally'ler (guc, spektrum, yuzey vb.) dahil degildir."""
     import openmc
     satirlar: List[FomSatiri] = []
     with openmc.StatePoint(statepoint_yolu) as sp:
@@ -297,10 +322,10 @@ def fom_tablosu(statepoint_yolu: str) -> List[FomSatiri]:
             ad = t.name or "tally_%d" % t.id
             if ad.startswith(_ONEK_DISLA):
                 continue
-            ort, sap = float(t.mean.sum()), math.sqrt(float((t.std_dev ** 2).sum()))
-            s = fom_satiri(ad, ort, sap, sure)
-            if s is not None:
-                satirlar.append(s)
+            for ek, ort, sap in _tally_fom_kalemleri(t):
+                s = fom_satiri(ad + ek, ort, sap, sure)
+                if s is not None:
+                    satirlar.append(s)
     return satirlar
 
 

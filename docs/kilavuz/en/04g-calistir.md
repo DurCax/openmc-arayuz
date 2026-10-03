@@ -155,7 +155,10 @@ below the card. Save the plot with **Save PNG**.
 ### Efficiency (FOM) card
 
 Shown in a fixed-source run or while [variance reduction](04f-hesap-ayarlari.md#ayar-varyans) is on.
-For every user tally (the sum of all bins; bins are taken as independent) it gives the **total**,
+For every user tally, **one row per (score, nuclide)** (scores with different units are not added; for a
+tally with filter bins the **worst bin (largest relative sigma)** is taken and bins are not summed: bins from
+the same histories would give too small a total sigma; with no filter and one score, the tally's own value) it
+gives the **value**,
 **sigma**, **relative sigma**, the run time **T** and **FOM = 1 / (sigma_rel^2 * T)**. The larger the
 FOM, the shorter the time to reach the same uncertainty. Compare only the **same tally and the same
 result**; when weight windows were used, T is the time of this run (the analog run that generated the

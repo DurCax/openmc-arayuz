@@ -136,6 +136,30 @@ def test_fom_formulu_ve_tanimsiz_durumlar():
     kontrol("satir bagil hata 1 %", abs(s.bagil_hata - 0.01) < 1e-12 and abs(s.fom - 1000.0) < 1e-9)
 
 
+def test_fom_kalemleri_skor_nuklid_basina_bin_toplanmaz():
+    print("\n[Y9-V4b] FOM: (skor, nuklid) basina; filtre bin'leri toplanmaz")
+    from types import SimpleNamespace
+    import numpy as np
+    from cekirdek import varyans
+    # Arrange
+    tek = SimpleNamespace(scores=["flux"], nuclides=["total"], mean=np.array([[[2.0]]]),
+                          std_dev=np.array([[[0.02]]]))
+    iki = SimpleNamespace(scores=["flux", "heating"], nuclides=["total"],
+                          mean=np.array([[[1.0, 1e6]]]), std_dev=np.array([[[0.01, 5e4]]]))
+    bin3 = SimpleNamespace(scores=["flux"], nuclides=["total"],
+                           mean=np.array([[[1.0]], [[1.0]], [[0.0]]]),
+                           std_dev=np.array([[[0.01]], [[0.1]], [[0.0]]]))
+    # Act / Assert
+    k1 = varyans._tally_fom_kalemleri(tek)
+    kontrol("tek skor/bin: tally'nin kendi degeri, ek yok", k1 == [("", 2.0, 0.02)], repr(k1))
+    k2 = varyans._tally_fom_kalemleri(iki)
+    kontrol("iki skor: iki kalem, birim karismaz", [x[1] for x in k2] == [1.0, 1e6]
+            and "flux" in k2[0][0] and "heating" in k2[1][0], repr(k2))
+    k3 = varyans._tally_fom_kalemleri(bin3)
+    kontrol("bin'ler: en kotu (en buyuk bagil hata) bin, sifir bin atlanir",
+            len(k3) == 1 and k3[0][2] == 0.1, repr(k3))
+
+
 def test_dogrula_2b_dosya_yok_ve_otf_bilgisi():
     print("\n[Y9-V5] dogrula: 2B model hata, olmayan pencere dosyasi hata, uret_uygula bilgi")
     from cekirdek import dogrula
@@ -201,5 +225,5 @@ def test_agirlik_penceresi_yanliliksiz_ve_fom_artar(gecici):
 
 HIZLI = [test_ayar_yoksa_kapali_ve_gecersiz_degerler_hata,
          test_kurucu_settings_uretim_ve_uygulama_kipleri, test_betik_ayni_ayarlari_kurar,
-         test_fom_formulu_ve_tanimsiz_durumlar, test_dogrula_2b_dosya_yok_ve_otf_bilgisi]
+         test_fom_formulu_ve_tanimsiz_durumlar, test_fom_kalemleri_skor_nuklid_basina_bin_toplanmaz, test_dogrula_2b_dosya_yok_ve_otf_bilgisi]
 YAVAS = [test_agirlik_penceresi_yanliliksiz_ve_fom_artar]
