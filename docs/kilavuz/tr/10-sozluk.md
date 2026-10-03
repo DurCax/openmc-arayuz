@@ -203,6 +203,14 @@ Kaynak tablo depodaki [SOZLUK.md](../../SOZLUK.md) dosyasıdır; aşağıdaki ta
 | dal hesabı | branch calculation |  | sabit bileşimde koşul değişimi (T_yakıt, bor, T_mod) |
 | dal tablosu | branch table |  | yanma adımı × koşul tablosu |
 | taban dal | reference branch | base case | koşulu değişmemiş dal |
+| bozunma ısısı | decay heat | residual heat | λNQ [W]; yalnız bozunmadan; nötrino hariç |
+| aktivite | activity | radioactivity | λN [Bq]; yarı ömür zincirden |
+| temas doz hızı | contact dose rate | surface dose | yarı sonsuz levha, yalnız yakıt, havada soğurulan doz [Gy(hava)/h]; Sv değildir |
+| atık sınıfı | waste class | waste category | NRC 10 CFR 61.55 tablo karşılaştırması; kullanılmış yakıt için geçerli değil |
+| soğuma adımı | cooling step | decay step | transport yok; yalnız bozunma |
+| kritik bor | critical boron | boron search result | k = 1 için bor derişimi [ppm] |
+| kaldırma (grup sabiti) | removal | loss | Σ_R = Σt − Σs,g→g (out-scatter) |
+| yoğunlaştırma (grup) | group collapsing | condensation | ince gruptan kaba gruba akı ağırlıklı indirgeme |
 
 ### 10.6 Doğrulama, uygunluk ve rapor
 

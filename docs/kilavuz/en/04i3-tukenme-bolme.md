@@ -58,3 +58,5 @@ become targets.
 **Script.** The generated Python script contains the subdivided model (rings in the pin
 definition, slices in the layers); the script and the interface build the same model with the same
 radii.
+
+**Limits.** This card is a teaching and scoping tool; its results are **not a certification**.

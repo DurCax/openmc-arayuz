@@ -175,12 +175,12 @@ The benchmark package of the tool and the measured results are in `docs/VV.md`
 files, and a test checks this. Environment: OpenMC 0.16.0, ENDF/B-VIII.0 (HDF5, 294 K). Step-by-step
 lesson: [benchmark and C/E](05-dersler.md#ders-benchmark).
 
-**The set.** 49 experimental benchmarks (ICSBEP; with v3 Y11): the first four are `ornekler/godiva_kriter.json`,
-`ornekler/kriter_jezebel.json`, `ornekler/kriter_flattop25.json`, `ornekler/kriter_lct008.json`;
+**The set.** 49 experimental benchmarks (ICSBEP; with v3 Y11; 3 + 22 + 24): the first three are `ornekler/godiva_kriter.json`,
+`ornekler/kriter_jezebel.json`, `ornekler/kriter_flattop25.json`;
 22 are under `ornekler/vv/`, imported as concentric spherical shells from the OpenMC models of
 mit-crpg/benchmarks (MIT license); 24 are LEU oxide lattices (v3 Y11): LEU-COMP-THERM-006 (TCA,
 18 cases, models built from the public primary report JAERI 1254) and LEU-COMP-THERM-008 (6 cases,
-mit-crpg). LCT-008 case 1 was regenerated with h_x and replaces the v2 file in the V&V set. There are also two code-to-code benchmarks (VVER-1000 LEU assembly,
+mit-crpg). LCT-008 case 1 was regenerated with h_x and replaces the v2 file (`ornekler/kriter_lct008.json`) in the V&V set; that file is **removed from the set** (it stays as an example and is not counted in the 49). There are also two code-to-code benchmarks (VVER-1000 LEU assembly,
 SFR MET-1000). **Experimental and code-to-code benchmarks are kept apart:** in an experimental
 benchmark E is a measured critical assembly; in a code-to-code benchmark E is the average of other
 codes' results, not the "true" value.

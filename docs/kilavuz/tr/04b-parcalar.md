@@ -157,6 +157,8 @@ başına hücre araması yerine kafes hücresi başına yerel liste: hız için 
 | düzenli kafeste gerçek paketleme hedeften %x farklı | uyarı | kübik kafesin sayısı basamaklıdır; gerçek değer kullanılır |
 | paketleme > 0.30: CRP kullanılır, kurulum yavaşlar | uyarı | beklenen; çok parçacıklı modellerde kurulum dakikalar sürebilir |
 
+**Sınırlar.** Bu kart bir eğitim aracıdır, sonuçları **sertifika değildir**. Hücre boyutu (parçacık çapının 3 katı, `HUCRE_CAP_KATI`), 50 000 parçacıklık uyarı eşiği (`UYARI_PARCACIK_SAYISI`) ve paketleme oranı toleransı (%1, `PF_TOLERANSI`) kodda ölçülmüş **arayüz sınırlarıdır; fizik eşiği değildir**.
+
 ### Sık bulgular
 
 | Bulgu (özet) | Seviye | Neden ve çözüm |

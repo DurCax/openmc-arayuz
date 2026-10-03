@@ -49,7 +49,7 @@ lattice) and [5.11 Spectrum](05-dersler.md#ders-spektrum) (thermal cut-off 0.625
 |---|---|---|---|---|
 | 2 | CE | 1.3582 ± 0.0015 | — | run with MGXS tallies |
 | 3 | Σ νΣf·φ / Σ Σa·φ | 1.3565 | ≈ −170 pcm | the net (n,xn) production does not enter this ratio |
-| 3–4 | G×G eigenvalue | 1.3589 | ≈ +70 pcm | ν-scattering includes (n,2n); within 4σ of CE |
+| 3–4 | G×G eigenvalue | 1.3589 | ≈ +70 pcm | ν-scattering includes (n,2n); difference from CE ≈ 0.5σ (σ_CE ≈ 153 pcm) |
 | 5 | MG MC | 1.3591 ± 0.0007 | ≈ +20 pcm vs eigenvalue | same constants, homogeneous medium |
 | 5 | Random ray | 1.3589 | < 1 pcm vs eigenvalue | the flat source is exact in a homogeneous medium |
 | 6 | G×G eigenvalue (P0) | 1.3589 | same as without correction | removal Σtr − S11ᶜ = Σt − S11 |
@@ -111,3 +111,5 @@ thick, large flat regions (reflector, water gap) the flat source error grows and
 *Random Ray* chapters; W. M. Stacey, *Nuclear Reactor Physics* (2007), chapters 4 (multigroup
 diffusion) and 13 (homogenization); J. R. Tramm et al., "The Random Ray Method for neutral particle
 transport", *J. Comput. Phys.* 342 (2017) 229–252.
+
+**Note.** This lesson is a teaching measurement; the group constants and the acceptance thresholds are **not a certification**. The "a few hundred pcm against CE" expected method error is a teaching bound set after the measurements (for homogenization/condensation error see Stacey 2007, chapter 13); it is not a physical threshold.

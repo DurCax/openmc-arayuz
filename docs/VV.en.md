@@ -32,7 +32,7 @@ benchmark E is the result of other codes and is not the "true" value.
 | godiva_kriter.json | HEU-MET-FAST-001 (Godiva) | 1.0000 ± 0.0010 | 1.00038 ± 0.00025 | +38 | 0.37 | 1.00038 | 100000 | 150/50 | 25.3 | passed |
 | kriter_jezebel.json | PU-MET-FAST-001 (Jezebel) | 1.0000 ± 0.0020 | 0.99996 ± 0.00023 | −4 | 0.02 | 0.99996 | 50000 | 150/50 | 5.5 | passed |
 | kriter_flattop25.json | HEU-MET-FAST-028 (Flattop-25) | 1.0000 ± 0.0030 | 1.00106 ± 0.00026 | +106 | 0.35 | 1.00106 | 100000 | 150/50 | 51.8 | passed |
-| kriter_lct008.json | LEU-COMP-THERM-008, case 1 | 1.0007 ± 0.0012 | 1.00067 ± 0.00021 | −3 | 0.02 | 0.99997 | 100000 | 260/50 | 451.4 | passed |
+| kriter_lct008.json (v2; **removed from the set**, replaced by vv/kriter_lct008_01; not counted in the 49) | LEU-COMP-THERM-008, case 1 | 1.0007 ± 0.0012 | 1.00067 ± 0.00021 | −3 | 0.02 | 0.99997 | 100000 | 260/50 | 451.4 | passed |
 | vv/kriter_hst009a.json | HEU-SOL-THERM-009, case 1 | 0.9990 ± 0.0043 | 1.00088 ± 0.00024 | +188 | 0.44 | 1.00188 | 100000 | 200/50 | 343.0 | passed |
 | vv/kriter_hst013.json | HEU-SOL-THERM-013, case 1 | 1.0012 ± 0.0026 | 0.99854 ± 0.00025 | −266 | 1.02 | 0.99734 | 100000 | 200/50 | 361.2 | passed |
 | vv/kriter_hst032.json | HEU-SOL-THERM-032 (ORNL-10) | 1.0015 ± 0.0026 | 0.99851 ± 0.00020 | −299 | 1.15 | 0.99701 | 100000 | 200/50 | 449.5 | passed |
@@ -154,7 +154,7 @@ In `referans.aoa` the form, reflector and spectrum values are stored as Turkish 
 | godiva_kriter.json | HEU-MET-FAST-001 | U-235 | 93.71 | metal | none | 0 | 8.28e+05 | fast |
 | kriter_jezebel.json | PU-MET-FAST-001 | Pu | 95.48 | metal | none | 0 | 1.27e+06 | fast |
 | kriter_flattop25.json | HEU-MET-FAST-028 | U-235 | 93.24 | metal | natural U | 0 | 7.5e+05 | fast |
-| kriter_lct008.json | LEU-COMP-THERM-008 | U-235 | 2.46 | oxide | water | — (heterogeneous) | 0.282 | thermal |
+| kriter_lct008.json (v2; **removed from the set**) | LEU-COMP-THERM-008 | U-235 | 2.46 | oxide | water | — (heterogeneous) | 0.282 | thermal |
 | vv/kriter_hst009a.json | HEU-SOL-THERM-009 | U-235 | 93.18 | solution | water | 35.8 | 0.522 | thermal |
 | vv/kriter_hst013.json | HEU-SOL-THERM-013 | U-235 | 93.18 | solution | none | 1.37e+03 | 0.0327 | thermal |
 | vv/kriter_hst032.json | HEU-SOL-THERM-032 | U-235 | 93.21 | solution | none | 1.84e+03 | 0.0313 | thermal |

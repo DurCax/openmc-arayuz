@@ -56,3 +56,5 @@ Dosyada açık güç hedefi varsa (eski bölge numaraları) bölünen bölgenin 
 
 **Betik.** Üretilen Python betiği bölünmüş modeli içerir (halkalar çubuk tanımında, dilimler
 katmanlarda); betik ile arayüz aynı yarıçaplarla aynı modeli kurar.
+
+**Sınırlar.** Bu kart bir eğitim ve ön inceleme aracıdır; sonuçlar **sertifika değildir**.
