@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-03 19:34+0300\n"
+"POT-Creation-Date: 2026-10-03 19:37+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -9157,13 +9157,13 @@ msgid "tükenme ayarları"
 msgstr "depletion settings"
 
 #: cekirdek/dogrula/tukenme.py:23 cekirdek/tukenme_kayit.py:107
-#: cekirdek/uygunluk_denetimi/vv_arayuz.py:55 cekirdek/vv/kume.py:189
+#: cekirdek/uygunluk_denetimi/vv_arayuz.py:55 cekirdek/vv/kume.py:208
 msgctxt "spektrum"
 msgid "termal"
 msgstr "thermal"
 
 #: cekirdek/dogrula/tukenme.py:24 cekirdek/tukenme_kayit.py:108
-#: cekirdek/uygunluk_denetimi/vv_arayuz.py:57 cekirdek/vv/kume.py:190
+#: cekirdek/uygunluk_denetimi/vv_arayuz.py:57 cekirdek/vv/kume.py:209
 msgctxt "spektrum"
 msgid "hızlı"
 msgstr "fast"
@@ -10456,15 +10456,15 @@ msgstr "neutron spectrum"
 msgid "zenginlik"
 msgstr "enrichment"
 
-#: cekirdek/uygunluk_denetimi/vv_arayuz.py:42 cekirdek/vv/kume.py:195
+#: cekirdek/uygunluk_denetimi/vv_arayuz.py:42 cekirdek/vv/kume.py:214
 msgid "metal"
 msgstr "metal"
 
-#: cekirdek/uygunluk_denetimi/vv_arayuz.py:42 cekirdek/vv/kume.py:195
+#: cekirdek/uygunluk_denetimi/vv_arayuz.py:42 cekirdek/vv/kume.py:214
 msgid "çözelti"
 msgstr "solution"
 
-#: cekirdek/uygunluk_denetimi/vv_arayuz.py:42 cekirdek/vv/kume.py:195
+#: cekirdek/uygunluk_denetimi/vv_arayuz.py:42 cekirdek/vv/kume.py:214
 msgid "oksit"
 msgstr "oxide"
 
@@ -10472,11 +10472,11 @@ msgstr "oxide"
 msgid "karışık"
 msgstr "mixed"
 
-#: cekirdek/uygunluk_denetimi/vv_arayuz.py:43 cekirdek/vv/kume.py:189
+#: cekirdek/uygunluk_denetimi/vv_arayuz.py:43 cekirdek/vv/kume.py:208
 msgid "ara enerji"
 msgstr "intermediate"
 
-#: cekirdek/uygunluk_denetimi/vv_arayuz.py:43 cekirdek/vv/kume.py:196
+#: cekirdek/uygunluk_denetimi/vv_arayuz.py:43 cekirdek/vv/kume.py:215
 msgid "bileşik"
 msgstr "compound"
 
@@ -11094,17 +11094,17 @@ msgstr ""
 "NUREG/CR-6698 (2001) method; benchmark models mit-crpg/benchmarks (MIT licence) and "
 "ICSBEP E ± σ (uncertainties.csv)"
 
-#: cekirdek/vv/kume.py:73
+#: cekirdek/vv/kume.py:92
 #, python-format
 msgid "kriter dosyası okunamadı: %s (%s)"
 msgstr "benchmark file could not be read: %s (%s)"
 
-#: cekirdek/vv/kume.py:142
+#: cekirdek/vv/kume.py:161
 #, python-format
 msgid "USL tolerans bandından, %s noktasında"
 msgstr "USL from the tolerance band, at %s"
 
-#: cekirdek/vv/kume.py:215
+#: cekirdek/vv/kume.py:234
 #, python-format
 msgid ""
 "bu uygulama için USL yok (AOA belirlenemedi): nötron tayfı bilinmiyor; %s — tally'yi "
@@ -11114,7 +11114,7 @@ msgstr ""
 "unknown; %s — fix the tally with the suggestion on the Conformity card ('%s') and run"
 " again"
 
-#: cekirdek/vv/kume.py:218
+#: cekirdek/vv/kume.py:237
 #, python-format
 msgid ""
 "bu uygulama için USL yok (AOA belirlenemedi): nötron tayfı bilinmiyor; EALF "
@@ -11123,7 +11123,7 @@ msgstr ""
 "no USL for this application (AOA could not be determined): the neutron spectrum is "
 "unknown; add the EALF tally ('%s') and run again"
 
-#: cekirdek/vv/kume.py:220
+#: cekirdek/vv/kume.py:239
 #, python-format
 msgid ""
 "bu uygulama için USL yok (AOA belirlenemedi): %s çıkarılamadı; uygunluk girdisinde "
@@ -11132,12 +11132,42 @@ msgstr ""
 "no USL for this application (AOA could not be determined): %s could not be derived; "
 "enter it in the conformity input"
 
-#: cekirdek/vv/kume.py:245
+#: cekirdek/vv/kume.py:264
 #, python-format
 msgid "bu uygulama için USL yok (AOA dışında): kümede alt kümeye (%s) uyan %d vaka var; %s"
 msgstr ""
 "no USL for this application (outside the AOA): cases in the set matching the subset "
 "(%s): %d; %s"
+
+#: cekirdek/vv/lct.py:122
+#, fuzzy, python-format
+msgid "bilinmeyen TCA durumu: %r (1-%d)"
+msgstr "unknown recipe: %r"
+
+#: cekirdek/vv/lct.py:128
+#, python-format
+msgid "adım çubuk çapından küçük: %g cm"
+msgstr ""
+
+#: cekirdek/vv/lct.py:233
+#, fuzzy, python-format
+msgid "bilinmeyen TCA varyantı: %r"
+msgstr "unknown recipe: %r"
+
+#: cekirdek/vv/lct008.py:66
+#, python-format
+msgid "LCT-008 haritası: (%.3f, %.3f) konumunda bilinmeyen evren %r"
+msgstr ""
+
+#: cekirdek/vv/lct008.py:109 cekirdek/vv/lct008.py:200
+#, fuzzy, python-format
+msgid "bilinmeyen LCT-008 durumu: %r"
+msgstr "unknown subprocess: %r"
+
+#: cekirdek/vv/lct008.py:162
+#, fuzzy, python-format
+msgid "malzeme yok: %s"
+msgstr "material %s"
 
 #: cekirdek/yerel_k.py:183
 msgid "kafes ötelenmiş ya da döndürülmüş: yerel k mesh'i hizalanamaz"

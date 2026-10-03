@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-03 19:34+0300\n"
+"POT-Creation-Date: 2026-10-03 19:37+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -8519,13 +8519,13 @@ msgid "tükenme ayarları"
 msgstr ""
 
 #: cekirdek/dogrula/tukenme.py:23 cekirdek/tukenme_kayit.py:107
-#: cekirdek/uygunluk_denetimi/vv_arayuz.py:55 cekirdek/vv/kume.py:189
+#: cekirdek/uygunluk_denetimi/vv_arayuz.py:55 cekirdek/vv/kume.py:208
 msgctxt "spektrum"
 msgid "termal"
 msgstr ""
 
 #: cekirdek/dogrula/tukenme.py:24 cekirdek/tukenme_kayit.py:108
-#: cekirdek/uygunluk_denetimi/vv_arayuz.py:57 cekirdek/vv/kume.py:190
+#: cekirdek/uygunluk_denetimi/vv_arayuz.py:57 cekirdek/vv/kume.py:209
 msgctxt "spektrum"
 msgid "hızlı"
 msgstr ""
@@ -9725,15 +9725,15 @@ msgstr ""
 msgid "zenginlik"
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/vv_arayuz.py:42 cekirdek/vv/kume.py:195
+#: cekirdek/uygunluk_denetimi/vv_arayuz.py:42 cekirdek/vv/kume.py:214
 msgid "metal"
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/vv_arayuz.py:42 cekirdek/vv/kume.py:195
+#: cekirdek/uygunluk_denetimi/vv_arayuz.py:42 cekirdek/vv/kume.py:214
 msgid "çözelti"
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/vv_arayuz.py:42 cekirdek/vv/kume.py:195
+#: cekirdek/uygunluk_denetimi/vv_arayuz.py:42 cekirdek/vv/kume.py:214
 msgid "oksit"
 msgstr ""
 
@@ -9741,11 +9741,11 @@ msgstr ""
 msgid "karışık"
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/vv_arayuz.py:43 cekirdek/vv/kume.py:189
+#: cekirdek/uygunluk_denetimi/vv_arayuz.py:43 cekirdek/vv/kume.py:208
 msgid "ara enerji"
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/vv_arayuz.py:43 cekirdek/vv/kume.py:196
+#: cekirdek/uygunluk_denetimi/vv_arayuz.py:43 cekirdek/vv/kume.py:215
 msgid "bileşik"
 msgstr ""
 
@@ -10329,40 +10329,70 @@ msgid ""
 "ICSBEP E ± σ (uncertainties.csv)"
 msgstr ""
 
-#: cekirdek/vv/kume.py:73
+#: cekirdek/vv/kume.py:92
 #, python-format
 msgid "kriter dosyası okunamadı: %s (%s)"
 msgstr ""
 
-#: cekirdek/vv/kume.py:142
+#: cekirdek/vv/kume.py:161
 #, python-format
 msgid "USL tolerans bandından, %s noktasında"
 msgstr ""
 
-#: cekirdek/vv/kume.py:215
+#: cekirdek/vv/kume.py:234
 #, python-format
 msgid ""
 "bu uygulama için USL yok (AOA belirlenemedi): nötron tayfı bilinmiyor; %s — tally'yi "
 "silip Uygunluk kartındaki öneriyle ('%s') yeniden ekleyin ve koşun"
 msgstr ""
 
-#: cekirdek/vv/kume.py:218
+#: cekirdek/vv/kume.py:237
 #, python-format
 msgid ""
 "bu uygulama için USL yok (AOA belirlenemedi): nötron tayfı bilinmiyor; EALF "
 "tally'sini ('%s') ekleyip yeniden koşun"
 msgstr ""
 
-#: cekirdek/vv/kume.py:220
+#: cekirdek/vv/kume.py:239
 #, python-format
 msgid ""
 "bu uygulama için USL yok (AOA belirlenemedi): %s çıkarılamadı; uygunluk girdisinde "
 "verin"
 msgstr ""
 
-#: cekirdek/vv/kume.py:245
+#: cekirdek/vv/kume.py:264
 #, python-format
 msgid "bu uygulama için USL yok (AOA dışında): kümede alt kümeye (%s) uyan %d vaka var; %s"
+msgstr ""
+
+#: cekirdek/vv/lct.py:122
+#, python-format
+msgid "bilinmeyen TCA durumu: %r (1-%d)"
+msgstr ""
+
+#: cekirdek/vv/lct.py:128
+#, python-format
+msgid "adım çubuk çapından küçük: %g cm"
+msgstr ""
+
+#: cekirdek/vv/lct.py:233
+#, python-format
+msgid "bilinmeyen TCA varyantı: %r"
+msgstr ""
+
+#: cekirdek/vv/lct008.py:66
+#, python-format
+msgid "LCT-008 haritası: (%.3f, %.3f) konumunda bilinmeyen evren %r"
+msgstr ""
+
+#: cekirdek/vv/lct008.py:109 cekirdek/vv/lct008.py:200
+#, python-format
+msgid "bilinmeyen LCT-008 durumu: %r"
+msgstr ""
+
+#: cekirdek/vv/lct008.py:162
+#, python-format
+msgid "malzeme yok: %s"
 msgstr ""
 
 #: cekirdek/yerel_k.py:183
