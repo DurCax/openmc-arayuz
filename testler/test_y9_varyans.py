@@ -16,7 +16,7 @@ from cekirdek import sema
 from testler.ortak_test import kontrol, ORNEK, ISLEM_PARCACIGI
 
 _K_SIGMA = 2.0          # iki bagimsiz tahminin uyumu (birlesik sapmaya gore)
-_ANALOG = (20000, 25)   # parcacik, cevrim (5e5 tarih)
+_ANALOG = (20000, 100)  # parcacik, cevrim (2e6 tarih; ~%10 bagil hata)
 _URETIM = (20000, 40)
 _PENCERELI = (1000, 20)  # 2e4 tarih; her tarih analogdan ~100x pahali
 

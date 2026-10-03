@@ -151,6 +151,18 @@ statistical (about sigma). With photon transport on, the global leakage comparis
 energy groups the plot shows the **leakage spectrum** (J/du, log x). Unit and sign notes are
 below the card. Save the plot with **Save PNG**.
 
+<a id="calistir-fom"></a>
+### Efficiency (FOM) card
+
+Shown in a fixed-source run or while [variance reduction](04f-hesap-ayarlari.md#ayar-varyans) is on.
+For every user tally (the sum of all bins; bins are taken as independent) it gives the **total**,
+**sigma**, **relative sigma**, the run time **T** and **FOM = 1 / (sigma_rel^2 * T)**. The larger the
+FOM, the shorter the time to reach the same uncertainty. Compare only the **same tally and the same
+result**; when weight windows were used, T is the time of this run (the analog run that generated the
+windows is not added). For bias, compare the same tally with an analog run within 2 sigma
+([lesson 5.21](05d-ders-triso-varyans.md#ders-triso-varyans)). Special tallies such as power,
+spectrum and surface current are not on the card.
+
 <a id="calistir-uygunluk"></a>
 ### Conformity card
 

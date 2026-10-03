@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 16:22+0300\n"
+"POT-Creation-Date: 2026-10-03 20:55+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,16 +17,20 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: cekirdek/alt_model.py:67 cekirdek/sema_basvuru.py:97
+#: cekirdek/alt_model.py:67 cekirdek/sema_basvuru.py:100
 msgid "çubuk"
 msgstr ""
 
-#: cekirdek/alt_model.py:67 cekirdek/sema_basvuru.py:97
+#: cekirdek/alt_model.py:67 cekirdek/sema_basvuru.py:100
 msgid "plaka"
 msgstr ""
 
-#: cekirdek/alt_model.py:67 cekirdek/sema_basvuru.py:98
+#: cekirdek/alt_model.py:67 cekirdek/sema_basvuru.py:101
 msgid "demet"
+msgstr ""
+
+#: cekirdek/alt_model.py:68
+msgid "TRISO"
 msgstr ""
 
 #: cekirdek/alt_model.py:68 cekirdek/alt_model.py:225
@@ -42,7 +46,7 @@ msgstr ""
 msgid "model yüksekliği okunamadı: %s"
 msgstr ""
 
-#: cekirdek/alt_model.py:175 cekirdek/alt_model.py:225
+#: cekirdek/alt_model.py:175 cekirdek/alt_model.py:225 cekirdek/alt_model.py:240
 #, python-format
 msgid "tanımsız %(tur)s: %(ad)s"
 msgstr ""
@@ -52,16 +56,25 @@ msgstr ""
 msgid "tambur yarıçapı sıfırdan büyük olmalı: %s"
 msgstr ""
 
-#: cekirdek/alt_model.py:285
+#: cekirdek/alt_model.py:240
+msgid "triso"
+msgstr ""
+
+#: cekirdek/alt_model.py:249
+#, python-format
+msgid "TRISO ölçüleri okunamadı: %s"
+msgstr ""
+
+#: cekirdek/alt_model.py:306
 msgid "düğüm"
 msgstr ""
 
-#: cekirdek/alt_model.py:338
+#: cekirdek/alt_model.py:361
 #, python-format
 msgid "bilinmeyen parça türü: %s"
 msgstr ""
 
-#: cekirdek/alt_model.py:349
+#: cekirdek/alt_model.py:372
 #, python-format
 msgid "alt model kurulamadı: %s"
 msgstr ""
@@ -339,28 +352,28 @@ msgstr ""
 msgid "k∞ — %s"
 msgstr ""
 
-#: cekirdek/dogrula/__init__.py:162
+#: cekirdek/dogrula/__init__.py:166
 #, python-format
 msgid "%d doğrulama hatası; önce bunları giderin"
 msgid_plural "%d doğrulama hatası; önce bunları giderin"
 msgstr[0] ""
 msgstr[1] ""
 
-#: cekirdek/dogrula/__init__.py:190
+#: cekirdek/dogrula/__init__.py:194
 #, python-format
 msgid "%d hata"
 msgid_plural "%d hata"
 msgstr[0] ""
 msgstr[1] ""
 
-#: cekirdek/dogrula/__init__.py:191
+#: cekirdek/dogrula/__init__.py:195
 #, python-format
 msgid "%d uyarı"
 msgid_plural "%d uyarı"
 msgstr[0] ""
 msgstr[1] ""
 
-#: cekirdek/dogrula/__init__.py:192
+#: cekirdek/dogrula/__init__.py:196
 #, python-format
 msgid "%d bilgi"
 msgid_plural "%d bilgi"
@@ -1935,6 +1948,31 @@ msgstr ""
 msgid "sabit kaynak hesabında dört faktör ve k tanımsızdır; yalnız spektrum verilir"
 msgstr ""
 
+#: cekirdek/dogrula/triso.py:66
+msgid "TRISO tanımı geometride kullanılmıyor"
+msgstr ""
+
+#: cekirdek/dogrula/triso.py:72
+msgid "TRISO kompaktı 3B model gerektirir"
+msgstr ""
+
+#: cekirdek/dogrula/triso.py:73
+msgid ""
+"Kompakt sonlu yükseklikli bir silindirdir; modelin yüksekliği tanımlanmalı (geometri "
+"kökünde yükseklik)."
+msgstr ""
+
+#: cekirdek/dogrula/triso.py:81
+#, python-format
+msgid "kompakt yüksekliği (%g cm) modelin yüksekliğinden (%g cm) farklı"
+msgstr ""
+
+#: cekirdek/dogrula/triso.py:83
+msgid ""
+"Parçacıklar yalnızca kompakt yüksekliğinde paketlenir; fazlası matris ile dolar, "
+"eksiği parçacıkları keser."
+msgstr ""
+
 #: cekirdek/dogrula/tukenme.py:38
 #, python-format
 msgid "Zincirde en yakın ad: %s"
@@ -2097,6 +2135,23 @@ msgid ""
 "Hacmi analitik hesaplanamıyor; bu malzeme koşu boyunca taze kalır. Taze kalan emici "
 "ömür sonunda kontrol değerini olduğundan büyük gösterir (kapanma payı açısından "
 "iyimser). Yanması önemliyse onu kesin hacimli bir çubuk bölgesine yerleştirin."
+msgstr ""
+
+#: cekirdek/dogrula/varyans.py:34
+#, python-format
+msgid "ağırlık penceresi dosyası yok: %s"
+msgstr ""
+
+#: cekirdek/dogrula/varyans.py:41
+msgid ""
+"küresel ağırlık penceresi ağı küresel olmayan modelde yalnız kürenin içindeki bölgeyi"
+" kapsar"
+msgstr ""
+
+#: cekirdek/dogrula/varyans.py:45
+msgid ""
+"pencereler koşu sırasında öğrenilir; ilk çevrimlerde pencere eksik olduğundan analog "
+"taşıma yapılır. Önerilen düzen: önce 'üret', sonra 'uygula'."
 msgstr ""
 
 #: cekirdek/dogrula/veri.py:31
@@ -2372,6 +2427,18 @@ msgstr ""
 #: cekirdek/geometri/bilesen.py:199
 #, python-format
 msgid "'%s' demeti: haritada tanımsız harf '%s'"
+msgstr ""
+
+#: cekirdek/geometri/bilesen_triso.py:44
+#, python-format
+msgid "'%s' TRISO tanımı geçersiz: %s"
+msgstr ""
+
+#: cekirdek/geometri/bilesen_triso.py:48
+#, python-format
+msgid ""
+"'%s' TRISO kompaktı 3B model gerektirir: çekirdek yüksekliği tanımlı değil. Kompakt "
+"sonlu yükseklikli bir silindirdir."
 msgstr ""
 
 #: cekirdek/geometri/denetim.py:68
@@ -3007,29 +3074,29 @@ msgstr ""
 msgid "'%s' yerleşimi: daire dışı delik bakış ya da dönme ile döndürülemez"
 msgstr ""
 
-#: cekirdek/geometri/kap.py:126
+#: cekirdek/geometri/kap.py:128
 msgid "yerleşim deliğinin kesiti verilmeli (yalnız tamburun doğal kesiti vardır)"
 msgstr ""
 
-#: cekirdek/geometri/kap.py:150 cekirdek/geometri/sablon.py:60
+#: cekirdek/geometri/kap.py:152 cekirdek/geometri/sablon.py:60
 #, python-format
 msgid ""
 "'%s' eksenel katmanı: katmana özel harf eşlemesi yalnızca kare haritalı tam korda ya "
 "da altıgen haritalı tam korda kullanılabilir"
 msgstr ""
 
-#: cekirdek/geometri/kap.py:230
+#: cekirdek/geometri/kap.py:232
 msgid "altıgen kor haritası konum sayısı tutmuyor"
 msgstr ""
 
-#: cekirdek/geometri/kap.py:235
+#: cekirdek/geometri/kap.py:237
 #, python-format
 msgid ""
 "kor haritasında tanımsız harf: '%s' (kafes zarflı kökte '.' konumu için anahtarda "
 "harf tanımlayın)"
 msgstr ""
 
-#: cekirdek/geometri/kap.py:293
+#: cekirdek/geometri/kap.py:295
 msgid "'kafes_zarfi' üzerinde 'kalinlik' kullanılamaz; 'dis' kesiti verin"
 msgstr ""
 
@@ -3058,36 +3125,36 @@ msgstr ""
 msgid "alanı hesaplanamayan kesit: %s"
 msgstr ""
 
-#: cekirdek/geometri/kurulum.py:201
+#: cekirdek/geometri/kurulum.py:202
 #, python-format
 msgid "kurulamayan düğüm türü: %r"
 msgstr ""
 
-#: cekirdek/geometri/kurulum.py:225
+#: cekirdek/geometri/kurulum.py:226
 msgid "malzeme düğümüne dönüşüm uygulanamaz"
 msgstr ""
 
-#: cekirdek/geometri/kurulum.py:269 cekirdek/geometri/kurulum.py:282
+#: cekirdek/geometri/kurulum.py:270 cekirdek/geometri/kurulum.py:283
 #, python-format
 msgid "tanımsız ad: %s (çubuk, plaka elemanı, demet ya da malzeme değil)"
 msgstr ""
 
-#: cekirdek/geometri/kurulum.py:337
+#: cekirdek/geometri/kurulum.py:340
 #, python-format
 msgid "kor haritasında tanımsız harf: '%s'"
 msgstr ""
 
-#: cekirdek/geometri/kurulum.py:339
+#: cekirdek/geometri/kurulum.py:342
 #, python-format
 msgid "'%s' kafesi: haritada tanımsız harf '%s'"
 msgstr ""
 
-#: cekirdek/geometri/kurulum.py:341
+#: cekirdek/geometri/kurulum.py:344
 #, python-format
 msgid "'%s' kafesinin 'dis' yuvası boş"
 msgstr ""
 
-#: cekirdek/geometri/kurulum.py:383
+#: cekirdek/geometri/kurulum.py:386
 #, python-format
 msgid "kurulamayan kesit: %s"
 msgstr ""
@@ -4744,36 +4811,37 @@ msgstr ""
 msgid "  Çözüm bulunamadı."
 msgstr ""
 
-#: cekirdek/dogrula/geometri.py:72 cekirdek/geometri/yapici.py:76 cekirdek/kurucu.py:89
-#: cekirdek/sema_basvuru.py:156 cekirdek/tarama.py:174 cekirdek/tarama.py:180
+#: cekirdek/dogrula/geometri.py:72 cekirdek/dogrula/triso.py:59
+#: cekirdek/geometri/yapici.py:77 cekirdek/kurucu.py:90 cekirdek/sema_basvuru.py:159
+#: cekirdek/tarama.py:174 cekirdek/tarama.py:180
 #, python-format
 msgid "tanımsız malzeme: %s"
 msgstr ""
 
-#: cekirdek/kurucu.py:204
+#: cekirdek/kurucu.py:206
 msgid "otomatik ağ sınırları için modelin sınır kutusu gerekli"
 msgstr ""
 
-#: cekirdek/kurucu.py:239
+#: cekirdek/kurucu.py:241
 #, python-format
 msgid "bilinmeyen filtre türü: %s"
 msgstr ""
 
-#: cekirdek/kurucu.py:260 cekirdek/kurucu.py:283
+#: cekirdek/kurucu.py:262 cekirdek/kurucu.py:285
 msgid "güç dağılımı için geçerli bir çubuk seçilmeli"
 msgstr ""
 
-#: cekirdek/kurucu.py:261
+#: cekirdek/kurucu.py:263
 #, python-format
 msgid " ('%s' tanımsız)"
 msgstr ""
 
-#: cekirdek/kurucu.py:268
+#: cekirdek/kurucu.py:270
 #, python-format
 msgid "'%s': geçersiz bölge numarası %d (çubukta %d bölge var)"
 msgstr ""
 
-#: cekirdek/kurucu.py:297
+#: cekirdek/kurucu.py:299
 #, python-format
 msgid ""
 "'%s' çubuğu modelde kullanılmıyor. Güç dağılımı yalnızca geometride yer alan bir "
@@ -7388,32 +7456,32 @@ msgid ""
 "cekirdek.geometri API'sini kullanın"
 msgstr ""
 
-#: cekirdek/sema_basvuru.py:124
+#: cekirdek/sema_basvuru.py:127
 msgid "Malzeme adı boş olamaz."
 msgstr ""
 
-#: cekirdek/sema_basvuru.py:126
+#: cekirdek/sema_basvuru.py:129
 msgid "Ad boşlukla başlayamaz ya da bitemez."
-msgstr ""
-
-#: cekirdek/sema_basvuru.py:128
-#, python-format
-msgid "'%s' ayrılmış bir addır: geometride Boş (madde yok) anlamına gelir."
 msgstr ""
 
 #: cekirdek/sema_basvuru.py:131
 #, python-format
-msgid "'%s' adında başka bir malzeme var."
+msgid "'%s' ayrılmış bir addır: geometride Boş (madde yok) anlamına gelir."
 msgstr ""
 
 #: cekirdek/sema_basvuru.py:134
+#, python-format
+msgid "'%s' adında başka bir malzeme var."
+msgstr ""
+
+#: cekirdek/sema_basvuru.py:137
 #, python-format
 msgid ""
 "'%s' adı bir %s için kullanılıyor. Demet ve katman seçimlerinde aynı ad iki şeyi "
 "gösterirdi."
 msgstr ""
 
-#: cekirdek/sema_basvuru.py:158
+#: cekirdek/sema_basvuru.py:161
 #, python-format
 msgid "'%s' adında %d malzeme var; önce birini yeniden adlandırın."
 msgstr ""
@@ -7871,6 +7939,105 @@ msgstr ""
 msgid "'%s' kabında kalınlıkla tanımlı %d. halka yok"
 msgstr ""
 
+#: cekirdek/triso.py:98
+#, python-format
+msgid "bilinmeyen TRISO şekli: %r (geçerli: %s)"
+msgstr ""
+
+#: cekirdek/triso.py:106
+#, python-format
+msgid "'%s' sayı olmalı"
+msgstr ""
+
+#: cekirdek/triso.py:108
+#, python-format
+msgid "'%s' pozitif olmalı (%s)"
+msgstr ""
+
+#: cekirdek/triso.py:116 cekirdek/triso.py:254
+msgid "TRISO parçacığında katman yok"
+msgstr ""
+
+#: cekirdek/triso.py:260
+#, python-format
+msgid "katman %d: yarıçap sayı olmalı"
+msgstr ""
+
+#: cekirdek/triso.py:263
+#, python-format
+msgid "katman %d: yarıçap (%g cm) bir içtekinden (%g) büyük olmalı"
+msgstr ""
+
+#: cekirdek/triso.py:266
+#, python-format
+msgid "katman %d: malzeme seçilmemiş"
+msgstr ""
+
+#: cekirdek/triso.py:276
+msgid "matris malzemesi seçilmemiş"
+msgstr ""
+
+#: cekirdek/triso.py:279
+#, python-format
+msgid "bilinmeyen yerleşim yöntemi: %r"
+msgstr ""
+
+#: cekirdek/triso.py:283
+msgid "paketleme oranı sayı olmalı"
+msgstr ""
+
+#: cekirdek/triso.py:286
+#, python-format
+msgid "paketleme oranı 0 ile %.4g arasında olmalı (%s yöntemi için üst sınır; girilen %g)"
+msgstr ""
+
+#: cekirdek/triso.py:289
+#, python-format
+msgid "TRISO parçacığı (çap %g cm) kaba sığmıyor"
+msgstr ""
+
+#: cekirdek/triso.py:292
+#, python-format
+msgid "paketleme %.3g > %.2g: yakın rastgele paketleme (CRP) kullanılır, kurulum yavaşlar"
+msgstr ""
+
+#: cekirdek/triso.py:298
+#, python-format
+msgid ""
+"düzenli kafeste gerçek paketleme oranı hedeften %%%.1f farklı (kübik kafesin sayısı "
+"basamaklıdır); gerçek değer kullanılır"
+msgstr ""
+
+#: cekirdek/triso.py:302
+msgid "bu paketleme oranıyla kaba hiç parçacık sığmıyor"
+msgstr ""
+
+#: cekirdek/triso.py:304
+#, python-format
+msgid "%d parçacık: model kurulumu ve koşu uzun sürer"
+msgstr ""
+
+#: cekirdek/triso.py:315
+msgid "'dis_yaricap' sayı olmalı"
+msgstr ""
+
+#: cekirdek/triso.py:317
+msgid "pebble dış yarıçapı yakıt bölgesi yarıçapından büyük olmalı"
+msgstr ""
+
+#: cekirdek/triso.py:318
+msgid "kabuk"
+msgstr ""
+
+#: cekirdek/triso.py:318
+msgid "dış (gaz)"
+msgstr ""
+
+#: cekirdek/triso.py:320
+#, python-format
+msgid "pebble %s malzemesi seçilmemiş"
+msgstr ""
+
 #: cekirdek/tukenme.py:100
 #, python-format
 msgid "otomatik: %s"
@@ -8278,13 +8445,13 @@ msgid "tükenme ayarları"
 msgstr ""
 
 #: cekirdek/dogrula/tukenme.py:23 cekirdek/tukenme_kayit.py:107
-#: cekirdek/uygunluk_denetimi/vv_arayuz.py:55 cekirdek/vv/kume.py:189
+#: cekirdek/uygunluk_denetimi/vv_arayuz.py:55 cekirdek/vv/kume.py:208
 msgctxt "spektrum"
 msgid "termal"
 msgstr ""
 
 #: cekirdek/dogrula/tukenme.py:24 cekirdek/tukenme_kayit.py:108
-#: cekirdek/uygunluk_denetimi/vv_arayuz.py:57 cekirdek/vv/kume.py:190
+#: cekirdek/uygunluk_denetimi/vv_arayuz.py:57 cekirdek/vv/kume.py:209
 msgctxt "spektrum"
 msgid "hızlı"
 msgstr ""
@@ -8457,11 +8624,11 @@ msgstr ""
 msgid "Küresel düzenek (kabuklar)"
 msgstr ""
 
-#: cekirdek/uygunluk.py:341
+#: cekirdek/uygunluk.py:343
 msgid "tükenme özdeğer (k-eff) hesabı gerektirir"
 msgstr ""
 
-#: cekirdek/uygunluk.py:343
+#: cekirdek/uygunluk.py:345
 msgid "geometride fisil (yakıt) malzeme yok"
 msgstr ""
 
@@ -9484,15 +9651,15 @@ msgstr ""
 msgid "zenginlik"
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/vv_arayuz.py:42 cekirdek/vv/kume.py:195
+#: cekirdek/uygunluk_denetimi/vv_arayuz.py:42 cekirdek/vv/kume.py:214
 msgid "metal"
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/vv_arayuz.py:42 cekirdek/vv/kume.py:195
+#: cekirdek/uygunluk_denetimi/vv_arayuz.py:42 cekirdek/vv/kume.py:214
 msgid "çözelti"
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/vv_arayuz.py:42 cekirdek/vv/kume.py:195
+#: cekirdek/uygunluk_denetimi/vv_arayuz.py:42 cekirdek/vv/kume.py:214
 msgid "oksit"
 msgstr ""
 
@@ -9500,11 +9667,11 @@ msgstr ""
 msgid "karışık"
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/vv_arayuz.py:43 cekirdek/vv/kume.py:189
+#: cekirdek/uygunluk_denetimi/vv_arayuz.py:43 cekirdek/vv/kume.py:208
 msgid "ara enerji"
 msgstr ""
 
-#: cekirdek/uygunluk_denetimi/vv_arayuz.py:43 cekirdek/vv/kume.py:196
+#: cekirdek/uygunluk_denetimi/vv_arayuz.py:43 cekirdek/vv/kume.py:215
 msgid "bileşik"
 msgstr ""
 
@@ -9527,6 +9694,63 @@ msgstr ""
 #: cekirdek/uygunluk_denetimi/vv_arayuz.py:83
 #, python-format
 msgid "bilinmeyen V&V yöntemi: %r (geçerli: %s)"
+msgstr ""
+
+#: cekirdek/varyans.py:93
+#, python-format
+msgid "bilinmeyen varyans azaltma modu: %r (geçerli: %s)"
+msgstr ""
+
+#: cekirdek/varyans.py:97
+#, python-format
+msgid ""
+"varyans azaltma yöntemi desteklenmiyor: %r (geçerli: %s; FW-CADIS random ray adjoint "
+"çözümü ister, bu sürümde yok)"
+msgstr ""
+
+#: cekirdek/varyans.py:102
+#, python-format
+msgid "bilinmeyen parçacık türü: %r"
+msgstr ""
+
+#: cekirdek/varyans.py:105
+#, python-format
+msgid "bilinmeyen ağ türü: %r (geçerli: %s)"
+msgstr ""
+
+#: cekirdek/varyans.py:113
+msgid "'uygula' modu için pencere dosyası (.h5 ya da wwinp) gerekli"
+msgstr ""
+
+#: cekirdek/varyans.py:122
+#, python-format
+msgid "'%s' tamsayı olmalı"
+msgstr ""
+
+#: cekirdek/varyans.py:124
+#, python-format
+msgid "'%s' en az 1 olmalı (%d)"
+msgstr ""
+
+#: cekirdek/varyans.py:132
+msgid "ağ boyutu [nx, ny, nz] olmalı"
+msgstr ""
+
+#: cekirdek/varyans.py:135
+#, python-format
+msgid "ağ çok büyük: %d hücre (üst sınır %d)"
+msgstr ""
+
+#: cekirdek/varyans.py:146
+msgid "enerji sınırları sayı listesi olmalı"
+msgstr ""
+
+#: cekirdek/varyans.py:148
+msgid "enerji sınırları artan ve en az iki değerli olmalı (eV)"
+msgstr ""
+
+#: cekirdek/varyans.py:163
+msgid "ağırlık penceresi 3B model gerektirir (yükseklik tanımlı değil)"
 msgstr ""
 
 #: cekirdek/veri_arsiv.py:83
@@ -10088,40 +10312,70 @@ msgid ""
 "ICSBEP E ± σ (uncertainties.csv)"
 msgstr ""
 
-#: cekirdek/vv/kume.py:73
+#: cekirdek/vv/kume.py:92
 #, python-format
 msgid "kriter dosyası okunamadı: %s (%s)"
 msgstr ""
 
-#: cekirdek/vv/kume.py:142
+#: cekirdek/vv/kume.py:161
 #, python-format
 msgid "USL tolerans bandından, %s noktasında"
 msgstr ""
 
-#: cekirdek/vv/kume.py:215
+#: cekirdek/vv/kume.py:234
 #, python-format
 msgid ""
 "bu uygulama için USL yok (AOA belirlenemedi): nötron tayfı bilinmiyor; %s — tally'yi "
 "silip Uygunluk kartındaki öneriyle ('%s') yeniden ekleyin ve koşun"
 msgstr ""
 
-#: cekirdek/vv/kume.py:218
+#: cekirdek/vv/kume.py:237
 #, python-format
 msgid ""
 "bu uygulama için USL yok (AOA belirlenemedi): nötron tayfı bilinmiyor; EALF "
 "tally'sini ('%s') ekleyip yeniden koşun"
 msgstr ""
 
-#: cekirdek/vv/kume.py:220
+#: cekirdek/vv/kume.py:239
 #, python-format
 msgid ""
 "bu uygulama için USL yok (AOA belirlenemedi): %s çıkarılamadı; uygunluk girdisinde "
 "verin"
 msgstr ""
 
-#: cekirdek/vv/kume.py:245
+#: cekirdek/vv/kume.py:264
 #, python-format
 msgid "bu uygulama için USL yok (AOA dışında): kümede alt kümeye (%s) uyan %d vaka var; %s"
+msgstr ""
+
+#: cekirdek/vv/lct.py:122
+#, python-format
+msgid "bilinmeyen TCA durumu: %r (1-%d)"
+msgstr ""
+
+#: cekirdek/vv/lct.py:128
+#, python-format
+msgid "adım çubuk çapından küçük: %g cm"
+msgstr ""
+
+#: cekirdek/vv/lct.py:233
+#, python-format
+msgid "bilinmeyen TCA varyantı: %r"
+msgstr ""
+
+#: cekirdek/vv/lct008.py:66
+#, python-format
+msgid "LCT-008 haritası: (%.3f, %.3f) konumunda bilinmeyen evren %r"
+msgstr ""
+
+#: cekirdek/vv/lct008.py:109 cekirdek/vv/lct008.py:200
+#, python-format
+msgid "bilinmeyen LCT-008 durumu: %r"
+msgstr ""
+
+#: cekirdek/vv/lct008.py:162
+#, python-format
+msgid "malzeme yok: %s"
 msgstr ""
 
 #: cekirdek/yerel_k.py:183

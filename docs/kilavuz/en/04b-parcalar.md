@@ -118,6 +118,53 @@ to advanced geometry ([4.5](04e-geometri-gelismis.md#geometri-gelismis)).
 The number, the centre radius and the rotation are not in the definition but in the **placement**
 and the **rotation group** of the advanced geometry ([5.5](05-dersler.md#ders-tambur)).
 
+<a id="triso"></a>
+### TRISO card
+
+The library of **TRISO fuel** (compact and pebble) definitions (`trisolar[]`). The card is shown
+only in **advanced geometry** mode or when the model already has a TRISO definition. A definition
+is used in the tree as a **component** ([4.5](04e-geometri-gelismis.md#geometri-gelismis)); a
+compact is a cylinder, so in advanced geometry it needs a **3D** model (height on the root
+container). Step-by-step example: [lesson 5.21](05d-ders-triso-varyans.md#ders-triso-varyans).
+
+A TRISO particle is a set of concentric layers (inside out: kernel, buffer, IPyC, SiC, OPyC).
+Particles are packed in the container; the remaining volume is filled with the matrix material.
+The **+ TRISO** button offers two starting templates (not a certification; enter your own design):
+
+- **AGR-1 compact (UCO):** kernel diameter 350 um, buffer 100, IPyC 40, SiC 35, OPyC 40 um;
+  compact diameter 12.45 mm, length 25 mm, packing about 35 % (INL AGR-1 baseline design).
+- **HTR-10 pebble (UO2):** kernel diameter 500 um, buffer 90, IPyC 40, SiC 35, OPyC 40 um; fuel
+  zone radius 2.5 cm, outer radius 3.0 cm, about 8335 particles (IAEA-TECDOC-1382).
+
+| Field | What | Unit | `spec` |
+|---|---|---|---|
+| **Name** | name of the definition (the component node refers to it by this name) | - | `trisolar[].ad` |
+| **Shape** | **Compact (cylinder)** or **Pebble (sphere)** | - | `sekil` |
+| **Compact radius / height** | the cylinder in which particles are packed | cm | `yaricap`, `yukseklik` |
+| **Fuel zone radius / Pebble outer radius** | the TRISO-filled sphere of the pebble and the outside of its graphite shell | cm | `yakit_yaricap`, `dis_yaricap` |
+| **Matrix material** | material between the particles (graphite) | - | `matris_malzeme` |
+| **Shell material / Outer gas (pebble)** | between the fuel zone and the outer radius; outside it (helium) | - | `kabuk_malzeme`, `dis_malzeme` |
+| **Packing fraction (target)** | N*(4/3)*pi*r^3 / V_container; random <= 0.64 (CRP limit), regular <= pi/6 = 0.5236 | - | `paketleme` |
+| **Placement** | **Random (RSP/CRP)**: `openmc.model.pack_spheres`; **Regular**: simple cubic lattice | - | `yontem` |
+| **Seed** | seed of the random packing (same seed, same placement) | - | `tohum` |
+| **Layers** | each row: the **outer** radius and material of the layer (increasing order) | cm | `katmanlar[].r`, `.malzeme` |
+
+The summary line under the card gives the **particle count and the actual packing fraction**: with
+random placement N = int(pf*V / V_p), so the actual fraction is within 1/N of the target; in the
+regular cubic lattice the count is quantized, so the deviation can exceed 1 % (validation warns)
+and the **actual** value is used. Random packing switches to close random packing (Jodrey-Tory)
+above pf = 0.30 and setup gets slower. Particles are given to OpenMC through a
+`create_triso_lattice` lattice (a local list per lattice cell instead of a cell search per particle:
+required for speed).
+
+| Finding (summary) | Level | Cause and fix |
+|---|---|---|
+| TRISO compact needs a 3D model | error | no height on the root container; enter a height |
+| compact height differs from the model height | warning | particles are packed only over the compact height; the excess is matrix, a shortfall cuts them |
+| packing fraction must be between ... | error | random <= 0.64, regular <= 0.5236 |
+| actual packing in the regular lattice differs from the target by x % | warning | the cubic lattice count is quantized; the actual value is used |
+| packing > 0.30: CRP is used, setup gets slower | warning | expected; models with many particles can take minutes to build |
+
 ### Common findings
 
 | Finding (summary) | Level | Cause and fix |

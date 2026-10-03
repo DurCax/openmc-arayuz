@@ -146,6 +146,18 @@ taşınımı açıkken global sızıntı karşılaştırması gösterilmez (foto
 Enerji grupları varsa grafik **kaçak spektrumunu** (J/Δu, log x) çizer. Birim ve işaret notları
 kartın altındadır. Grafik **PNG kaydet** ile kaydedilir.
 
+<a id="calistir-fom"></a>
+### Verimlilik (FOM) kartı
+
+Sabit kaynak koşusunda ya da [varyans azaltma](04f-hesap-ayarlari.md#ayar-varyans) açıkken görünür.
+Her kullanıcı tally'si için (tüm bölmelerin toplamı; bölmeler bağımsız kabul edilir) **toplam**,
+**σ**, **σ bağıl**, koşu süresi **T** ve **FOM = 1 / (σ_bağıl² · T)** yazılır. FOM büyüdükçe aynı
+belirsizliğe daha kısa sürede inilir. Karşılaştırma yalnız **aynı tally ve aynı sonuç** içindir;
+ağırlık penceresi kullanıldıysa T bu koşunun süresidir (pencereleri üreten analog koşunun süresi
+eklenmez). Yanlılıksızlık için aynı tally'yi analog koşuyla 2σ içinde karşılaştırın
+([5.21 Ders](05d-ders-triso-varyans.md#ders-triso-varyans)). Güç, spektrum ve yüzey akımı gibi
+özel tally'ler kartta yer almaz.
+
 <a id="calistir-uygunluk"></a>
 ### Uygunluk kartı
 

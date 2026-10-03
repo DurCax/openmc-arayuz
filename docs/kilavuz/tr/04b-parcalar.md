@@ -111,6 +111,52 @@ kullanmaz, ölçüleri **Geometri** sayfasındaki tambur alanlarındadır (`kor.
 Sayı, merkez yarıçapı ve dönme tanımda değil, gelişmiş geometrideki **yerleşim** ve **dönme
 grubundadır** ([5.5](05-dersler.md#ders-tambur)).
 
+<a id="triso"></a>
+### TRISO kartı
+
+**TRISO yakıt** (kompakt ve pebble) tanımlarının kütüphanesidir (`trisolar[]`). Kart yalnız **gelişmiş
+geometri** modunda ya da modelde zaten bir TRISO tanımı varken görünür. Tanım ağaçta bir
+**bileşen** olarak kullanılır ([4.5](04e-geometri-gelismis.md#geometri-gelismis)); kompakt
+silindirdir, bu yüzden gelişmiş geometride **3B** (kök kapta yükseklik) ister. Adım adım örnek:
+[5.21 Ders](05d-ders-triso-varyans.md#ders-triso-varyans).
+
+TRISO parçacığı eş merkezli katmanlardan oluşur (içten dışa: çekirdek, tampon, IPyC, SiC, OPyC).
+Parçacıklar kapta paketlenir; kalan hacim matris malzemesiyle dolar. **+ TRISO** düğmesi iki
+başlangıç şablonu sunar (sertifika değildir; kendi tasarımınızı girin):
+
+- **AGR-1 kompakt (UCO):** çekirdek çapı 350 µm, tampon 100, IPyC 40, SiC 35, OPyC 40 µm; kompakt
+  çapı 12.45 mm, boyu 25 mm, paketleme ≈ %35 (INL AGR-1 taban tasarımı).
+- **HTR-10 pebble (UO₂):** çekirdek çapı 500 µm, tampon 90, IPyC 40, SiC 35, OPyC 40 µm; yakıt
+  bölgesi yarıçapı 2.5 cm, dış yarıçap 3.0 cm, ≈ 8335 parçacık (IAEA-TECDOC-1382).
+
+| Alan | Ne | Birim | `spec` |
+|---|---|---|---|
+| **Ad** | tanımın adı (bileşen düğümü bu adla başvurur) | — | `trisolar[].ad` |
+| **Şekil** | **Kompakt (silindir)** ya da **Pebble (küre)** | — | `sekil` |
+| **Kompakt yarıçapı / yüksekliği** | parçacıkların paketlendiği silindir | cm | `yaricap`, `yukseklik` |
+| **Yakıt bölgesi yarıçapı / Pebble dış yarıçapı** | pebble'ın TRISO dolu küresi ve grafit kabuğunun dışı | cm | `yakit_yaricap`, `dis_yaricap` |
+| **Matris malzemesi** | parçacıklar arasını dolduran malzeme (grafit) | — | `matris_malzeme` |
+| **Kabuk malzemesi / Dış gaz (pebble)** | yakıt bölgesi ile dış yarıçap arası; dışı (helyum) | — | `kabuk_malzeme`, `dis_malzeme` |
+| **Paketleme oranı (hedef)** | N·(4/3)πr³ / V_kap; rastgele ≤ 0.64 (CRP sınırı), düzenli ≤ π/6 = 0.5236 | — | `paketleme` |
+| **Yerleşim** | **Rastgele (RSP/CRP)**: `openmc.model.pack_spheres`; **Düzenli**: basit kübik kafes | — | `yontem` |
+| **Tohum** | rastgele paketlemenin tohumu (aynı tohum aynı yerleşim) | — | `tohum` |
+| **Katmanlar** | her satır: katmanın **dış** yarıçapı ve malzemesi (artan sırada) | cm | `katmanlar[].r`, `.malzeme` |
+
+Kartın altındaki özet satırı **parçacık sayısını ve gerçek paketleme oranını** yazar: rastgele
+yerleşimde N = int(pf·V / V_p) olduğundan gerçek oran hedefe 1/N kadar yakındır; düzenli kübik
+kafeste sayı basamaklı olduğundan fark %1'i aşabilir (doğrulama uyarır) ve **gerçek** değer
+kullanılır. Rastgele paketleme pf > 0.30'da yakın rastgele paketlemeye (Jodrey–Tory) geçer ve
+kurulum yavaşlar. Parçacıklar OpenMC'ye `create_triso_lattice` kafesiyle verilir (parçacık
+başına hücre araması yerine kafes hücresi başına yerel liste: hız için şarttır).
+
+| Bulgu (özet) | Seviye | Neden ve çözüm |
+|---|---|---|
+| TRISO kompaktı 3B model gerektirir | hata | kök kapta yükseklik tanımlı değil; yükseklik girin |
+| kompakt yüksekliği modelin yüksekliğinden farklı | uyarı | parçacıklar yalnız kompakt yüksekliğinde paketlenir; fazlası matris, eksiği keser |
+| paketleme oranı … arasında olmalı | hata | rastgele ≤ 0.64, düzenli ≤ 0.5236 |
+| düzenli kafeste gerçek paketleme hedeften %x farklı | uyarı | kübik kafesin sayısı basamaklıdır; gerçek değer kullanılır |
+| paketleme > 0.30: CRP kullanılır, kurulum yavaşlar | uyarı | beklenen; çok parçacıklı modellerde kurulum dakikalar sürebilir |
+
 ### Sık bulgular
 
 | Bulgu (özet) | Seviye | Neden ve çözüm |
