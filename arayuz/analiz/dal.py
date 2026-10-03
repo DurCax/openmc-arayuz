@@ -36,8 +36,8 @@ ONERILEN = {                    # baslangic degerleri (oneri; kullanici degistir
     "sogutucu_sicaklik": "",
     "malzeme_yogunluk": "",
 }
-BICIM_ADLARI = (("tek", N_("Her değişken tek başına (taramayla aynı noktalar)")),
-                ("kartezyen", N_("Tüm bileşimler (kartezyen çarpım)")))
+BICIM_ADLARI = (("tek", N_("Her değişken tek başına (tek değişkenli taramayla aynı noktalar)")),
+                ("kartezyen", N_("Tüm birleşimler (kartezyen çarpım)")))
 
 
 class DalKarti(bil.Kart):
@@ -65,10 +65,11 @@ class DalKarti(bil.Kart):
         self.adimlar = QtWidgets.QListWidget()
         self.adimlar.setMinimumHeight(ADIM_LISTESI_YUKSEKLIGI // 2)
         self.adimlar.setMaximumHeight(ADIM_LISTESI_YUKSEKLIGI)
-        self.adimlar.setToolTip(_("Dalın hesaplanacağı yanma noktaları (sonuç dosyasındaki "
-                                  "zaman noktaları). Taze yakıt (adım 0) tarama ile karşılaştırılabilir."))
+        self.adimlar.setToolTip(_("Dalın hesaplanacağı tükenme adımı seçimi (sonuç dosyasındaki "
+                                  "zaman noktaları). Taze yakıt (ilk nokta) tek değişkenli tarama ile "
+                                  "karşılaştırılabilir."))
         self.adimlar.itemChanged.connect(self._tahmin)
-        self.d_yenile = QtWidgets.QPushButton(_("Adımları yenile"))
+        self.d_yenile = QtWidgets.QPushButton(_("Tükenme adımlarını yenile"))
         self.d_yenile.clicked.connect(self.adimlari_yukle)
         self.degisken_kutulari: Dict[str, QtWidgets.QCheckBox] = {}
         self.degisken_degerleri: Dict[str, QtWidgets.QLineEdit] = {}
@@ -109,7 +110,7 @@ class DalKarti(bil.Kart):
             "Bileşim yanmayla ilerlemez: bu anlık koşul etkisidir, yeni bir tükenme değil."))
         f = form_duzeni()
         f.addRow(_("Tükenme sonucu:"), self.kaynak)
-        f.addRow(_("Yanma adımları:"), self.adimlar)
+        f.addRow(_("Tükenme adımı seçimi:"), self.adimlar)
         f.addRow("", self.d_yenile)
         for tur in dal.TURLER:
             f.addRow(self.degisken_kutulari[tur], self.degisken_degerleri[tur])
@@ -187,7 +188,7 @@ class DalKarti(bil.Kart):
             QtWidgets.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
             try:
                 for a in dal.adim_listesi(self._h5, self._taban):
-                    o = QtWidgets.QListWidgetItem(_("adım %d — %.4g gün — %.4g MWd/kg")
+                    o = QtWidgets.QListWidgetItem(_("tükenme adımı %d — %.4g gün — %.4g MWd/kg")
                                                   % (a["adim"], a["zaman_d"], a["yanma"]))
                     o.setData(QtCore.Qt.UserRole, a["adim"])
                     o.setFlags(o.flags() | QtCore.Qt.ItemIsUserCheckable)
@@ -195,7 +196,7 @@ class DalKarti(bil.Kart):
                     self.adimlar.addItem(o)
             except Exception as e:     # noqa: BLE001 -- sonuc dosyasi okunamadi: kullaniciya
                 _log.warning("dal: adimlar okunamadi", exc_info=True)
-                self._durum_yaz(_("Adımlar okunamadı: %s") % e, hata=True)
+                self._durum_yaz(_("Tükenme adımı okunamadı: %s") % e, hata=True)
             finally:
                 QtWidgets.QApplication.restoreOverrideCursor()
         self.adimlar.blockSignals(False)
@@ -229,7 +230,7 @@ class DalKarti(bil.Kart):
         try:
             a = self.ayar()
             n = len(a.adimlar) * len(dal.noktalar(a))
-            metin = _("%d koşu (%d adım × %d koşul).") % (n, len(a.adimlar), len(dal.noktalar(a)))
+            metin = _("%d koşu (%d tükenme adımı × %d koşul).") % (n, len(a.adimlar), len(dal.noktalar(a)))
             if n > UYARI_KOSU_SAYISI:
                 metin += " " + _("Uzun sürer: her koşu tam bir transport hesabıdır.")
             self.tahmin_etiketi.setText(metin)

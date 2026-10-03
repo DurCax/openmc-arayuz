@@ -11,6 +11,10 @@ answer two questions:
   the target k-eff (usually 1) is found (critical boron, critical rod position, critical drum
   angle...).
 
+Further cards at the bottom of the page: the [Branch table](04h4-dal-tablosu.md#dal) (T_fuel × C_boron
+× T_mod conditions at the burnup steps of a depletion result, composition frozen), the
+[Group constants](04h3-grup-sabitleri.md#mgxs) and [point kinetics](04h2-kinetik.md).
+
 Each point is **a separate OpenMC run**; the job runs in the background, the interface does not
 freeze and it can be cut at any moment with **Stop**. The points are run with the particle/batch
 values of the model's [Run settings](04f-hesap-ayarlari.md#hesap-ayarlari) page. The analysis

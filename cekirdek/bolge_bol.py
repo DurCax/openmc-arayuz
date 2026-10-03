@@ -466,5 +466,5 @@ def bolme_bulgulari(spec: Mapping[str, Any]) -> list:
                       _("Tükenme › Bölge bölme kartında çubuk, halka sayısı ve eksenel dilimi "
                         "düzeltin ya da bölmeyi kapatın."))]
     return [Bulgu("bilgi", yer, _("bölge bölme açık: ayrı tükenme malzemesi %d → %d") % (once, sonra),
-                  _("Her parça ayrı malzeme olarak yanar (çubuk çubuk yanma otomatik açılır); "
-                    "bellek ve süre parça sayısıyla artar."))]
+                  _("Her halka ve dilim ayrı malzeme olarak yanar (çubuk çubuk yanma otomatik "
+                    "açılır); bellek ve süre bunların sayısıyla artar."))]

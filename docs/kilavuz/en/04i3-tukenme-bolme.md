@@ -1,10 +1,10 @@
 <a id="tukenme-bolme"></a>
-### 4.9.2 Burnable region subdivision: radial rings and axial slices
+### 4.9.2 Depletion region subdivision: radial rings and axial slices
 
 The **Region subdivision** card on the **Depletion** page splits pins into radial **rings** and axial
 layers into **slices**; every piece burns as its own depletion material (the equivalent of Serpent's
 `div` command). Why: a single-material pin burns with one average composition. In a pin with a
-burnable poison (Gd, Er) the neutron-absorbing outer shell burns first and shields the interior
+burnable absorber (Gd, Er) the neutron-absorbing outer shell burns first and shields the interior
 (**self-shielding**); an average composition cannot see this, so the Gd depletion rate and the
 k(t) curve come out wrong. Subdivision also makes the radial distribution of pin power over
 burnup realistic.

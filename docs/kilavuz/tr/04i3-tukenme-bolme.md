@@ -1,5 +1,5 @@
 <a id="tukenme-bolme"></a>
-### 4.9.2 Yanma bölgesi bölme: radyal halka ve eksenel dilim
+### 4.9.2 Tükenme bölgesi bölme: radyal halka ve eksenel dilim
 
 **Tükenme** sayfasındaki **Bölge bölme** kartı, pinleri radyal **halkalara** ve eksenel katmanları
 **dilimlere** böler; her parça ayrı bir tükenme malzemesi olarak yanar (Serpent'in `div` komutunun

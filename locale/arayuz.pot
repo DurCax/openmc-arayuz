@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 16:22+0300\n"
+"POT-Creation-Date: 2026-10-03 19:34+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -147,6 +147,174 @@ msgstr ""
 msgid "Tambur değeri (diferansiyel)"
 msgstr ""
 
+#: arayuz/analiz/dal.py:39
+msgid "Her değişken tek başına (tek değişkenli taramayla aynı noktalar)"
+msgstr ""
+
+#: arayuz/analiz/dal.py:40
+msgid "Tüm birleşimler (kartezyen çarpım)"
+msgstr ""
+
+#: arayuz/analiz/dal.py:46
+msgid "Dal tablosu (yanma × koşul)"
+msgstr ""
+
+#: arayuz/analiz/dal.py:47
+msgid ""
+"Tükenme sonucunun seçili yanma adımlarında bileşim sabit tutulup yakıt sıcaklığı, "
+"bor, soğutucu sıcaklığı/yoğunluğu değiştirilir; her hücre bir transport koşusudur."
+msgstr ""
+
+#: arayuz/analiz/dal.py:68
+msgid ""
+"Dalın hesaplanacağı tükenme adımı seçimi (sonuç dosyasındaki zaman noktaları). Taze "
+"yakıt (ilk nokta) tek değişkenli tarama ile karşılaştırılabilir."
+msgstr ""
+
+#: arayuz/analiz/dal.py:72
+msgid "Tükenme adımlarını yenile"
+msgstr ""
+
+#: arayuz/analiz/dal.py:79
+msgid "virgülle ayrılmış değerler"
+msgstr ""
+
+#: arayuz/analiz/dal.py:90
+msgid "Dal tablosunu hesapla"
+msgstr ""
+
+#: arayuz/analiz/dal.py:93 arayuz/analiz/demet_kinf.py:82 arayuz/analiz/mgxs.py:140
+#: arayuz/sonuc/yerel_k.py:53
+msgid "CSV kaydet…"
+msgstr ""
+
+#: arayuz/analiz/dal.py:108
+msgid ""
+"Δk taban dala (koşulu değişmemiş, aynı bileşim) göre pcm; σ iki koşunun istatistik "
+"belirsizliğinin bileşkesidir (koşular bağımsız sayılır: muhafazakâr). Bileşim "
+"yanmayla ilerlemez: bu anlık koşul etkisidir, yeni bir tükenme değil."
+msgstr ""
+
+#: arayuz/analiz/dal.py:112
+msgid "Tükenme sonucu:"
+msgstr ""
+
+#: arayuz/analiz/dal.py:113
+msgid "Tükenme adımı seçimi:"
+msgstr ""
+
+#: arayuz/analiz/dal.py:117
+msgid "Birleşim:"
+msgstr ""
+
+#: arayuz/analiz/dal.py:164 arayuz/analiz/sekme.py:537
+msgid "Model yok."
+msgstr ""
+
+#: arayuz/analiz/dal.py:169
+msgid "Tükenme sonucu yok: önce Tükenme sekmesinde bir koşu yapın."
+msgstr ""
+
+#: arayuz/analiz/dal.py:177
+#, python-format
+msgid ""
+"Sonuç şimdiki modele ait değil (değişen: %s); dal hesabı sonuç kaydındaki modelle "
+"yapılır."
+msgstr ""
+
+#: arayuz/analiz/dal.py:191
+#, python-format
+msgid "tükenme adımı %d — %.4g gün — %.4g MWd/kg"
+msgstr ""
+
+#: arayuz/analiz/dal.py:199
+#, python-format
+msgid "Tükenme adımı okunamadı: %s"
+msgstr ""
+
+#: arayuz/analiz/dal.py:219
+#, python-format
+msgid "'%s' için sayısal değerler girin (virgülle): %s"
+msgstr ""
+
+#: arayuz/analiz/dal.py:233
+#, python-format
+msgid "%d koşu (%d tükenme adımı × %d koşul)."
+msgstr ""
+
+#: arayuz/analiz/dal.py:235
+msgid "Uzun sürer: her koşu tam bir transport hesabıdır."
+msgstr ""
+
+#: arayuz/analiz/dal.py:254 arayuz/analiz/mgxs.py:266
+msgid "Model yok"
+msgstr ""
+
+#: arayuz/analiz/dal.py:292
+msgid "Dal modelleri hazırlanıyor…"
+msgstr ""
+
+#: arayuz/analiz/dal.py:303
+#, python-format
+msgid "%d koşu sırada."
+msgstr ""
+
+#: arayuz/analiz/dal.py:307
+#, python-format
+msgid "Dal hesabı başlatılamadı: %s"
+msgstr ""
+
+#: arayuz/analiz/dal.py:308
+msgid "Dal hesabı başlatılamadı"
+msgstr ""
+
+#: arayuz/analiz/dal.py:326
+#, python-format
+msgid "Bir koşu başarısız: %s"
+msgstr ""
+
+#: arayuz/analiz/dal.py:328
+#, python-format
+msgid "Dal tablosu tamamlandı (%d koşu)."
+msgstr ""
+
+#: arayuz/analiz/dal.py:330
+#, python-format
+msgid "%d / %d koşu bitti."
+msgstr ""
+
+#: arayuz/analiz/dal.py:337
+msgid "Yanma [MWd/kg]"
+msgstr ""
+
+#: arayuz/analiz/dal.py:337
+msgid "Δk [pcm]"
+msgstr ""
+
+#: arayuz/analiz/dal.py:337 arayuz/demet/yerlesim.py:153 arayuz/demet/yerlesim.py:172
+#: arayuz/geometri/form_kafes.py:96
+msgid "Adım"
+msgstr ""
+
+#: arayuz/analiz/dal.py:337 arayuz/karsilastir/panel.py:31 arayuz/kuyruk/panel.py:30
+msgid "k ± σ"
+msgstr ""
+
+#: arayuz/analiz/dal.py:358
+msgid "Dal tablosunu kaydet"
+msgstr ""
+
+#: arayuz/analiz/dal.py:366
+#, python-format
+msgid "CSV kaydedilemedi: %s"
+msgstr ""
+
+#: arayuz/analiz/dal.py:368 arayuz/analiz/mgxs.py:426 arayuz/goruntuleyici/pencere.py:504
+#: arayuz/pencere/proje.py:151 arayuz/pencere/proje.py:320
+#, python-format
+msgid "Kaydedildi: %s"
+msgstr ""
+
 #: arayuz/analiz/demet_kinf.py:40
 msgid "Kordaki sayı"
 msgstr ""
@@ -182,10 +350,6 @@ msgstr ""
 #: arayuz/analiz/demet_kinf.py:81 arayuz/kuyruk/panel.py:149
 #: arayuz/veri/indirme_karti.py:128
 msgid "İptal"
-msgstr ""
-
-#: arayuz/analiz/demet_kinf.py:82 arayuz/analiz/mgxs.py:140 arayuz/sonuc/yerel_k.py:53
-msgid "CSV kaydet…"
 msgstr ""
 
 #: arayuz/analiz/demet_kinf.py:98
@@ -595,10 +759,6 @@ msgstr ""
 msgid "CE / MG / RR karşılaştırması"
 msgstr ""
 
-#: arayuz/analiz/mgxs.py:266
-msgid "Model yok"
-msgstr ""
-
 #: arayuz/analiz/mgxs.py:323
 msgid "Grup sabiti koşusu başlatılamadı"
 msgstr ""
@@ -649,12 +809,6 @@ msgstr ""
 
 #: arayuz/analiz/mgxs.py:424
 msgid "CSV kaydedilemedi"
-msgstr ""
-
-#: arayuz/analiz/mgxs.py:426 arayuz/goruntuleyici/pencere.py:504
-#: arayuz/pencere/proje.py:151 arayuz/pencere/proje.py:320
-#, python-format
-msgid "Kaydedildi: %s"
 msgstr ""
 
 #: arayuz/analiz/mgxs_tablo.py:26
@@ -748,11 +902,11 @@ msgstr ""
 msgid "Hedef k-eff:"
 msgstr ""
 
-#: arayuz/analiz/sekme.py:106 arayuz/analiz/sekme.py:373
+#: arayuz/analiz/sekme.py:106 arayuz/analiz/sekme.py:380
 msgid "Başlangıç:"
 msgstr ""
 
-#: arayuz/analiz/sekme.py:107 arayuz/analiz/sekme.py:374
+#: arayuz/analiz/sekme.py:107 arayuz/analiz/sekme.py:381
 msgid "Bitiş:"
 msgstr ""
 
@@ -764,11 +918,11 @@ msgstr ""
 msgid "Tahmini süre:"
 msgstr ""
 
-#: arayuz/analiz/sekme.py:128 arayuz/analiz/sekme.py:375
+#: arayuz/analiz/sekme.py:128 arayuz/analiz/sekme.py:382
 msgid "Taramayı başlat"
 msgstr ""
 
-#: arayuz/analiz/sekme.py:141 arayuz/analiz/sekme.py:226
+#: arayuz/analiz/sekme.py:141 arayuz/analiz/sekme.py:232
 msgid "Henüz analiz yapılmadı."
 msgstr ""
 
@@ -776,126 +930,122 @@ msgstr ""
 msgid "Analiz ayarları"
 msgstr ""
 
-#: arayuz/analiz/sekme.py:184 arayuz/pencere/model_islemleri.py:67
+#: arayuz/analiz/sekme.py:188 arayuz/pencere/model_islemleri.py:67
 #: arayuz/yardim/__init__.py:50
 msgid "Analiz"
 msgstr ""
 
-#: arayuz/analiz/sekme.py:185
+#: arayuz/analiz/sekme.py:189
 msgid ""
 "Bir parametreyi tarayıp eğimden reaktivite katsayısını ya da hedef k-eff'i veren "
 "değeri bulursunuz. Yalnızca bu modelde anlamlı parametreler listelenir; her nokta "
 "ayrı bir OpenMC koşusudur."
 msgstr ""
 
-#: arayuz/analiz/sekme.py:240
+#: arayuz/analiz/sekme.py:247
 msgid ""
 "Önceki projenin analizi arka planda sürüyor; sonucu bu projeye yazılmayacak. Yeni "
 "analiz için Durdur ile sonlandırın."
 msgstr ""
 
-#: arayuz/analiz/sekme.py:279
+#: arayuz/analiz/sekme.py:286
 msgid "Reaktivite katsayısı (parametre taraması)"
 msgstr ""
 
-#: arayuz/analiz/sekme.py:281
+#: arayuz/analiz/sekme.py:288
 msgid "Kritik arama (hedef k-eff'i veren değer)"
 msgstr ""
 
-#: arayuz/analiz/sekme.py:300
+#: arayuz/analiz/sekme.py:307
 msgid "Önce bir model açın."
 msgstr ""
 
-#: arayuz/analiz/sekme.py:305
+#: arayuz/analiz/sekme.py:312
 msgid "Model okunamadı; doğrulama listesine bakın."
 msgstr ""
 
-#: arayuz/analiz/sekme.py:307
+#: arayuz/analiz/sekme.py:314
 msgid ""
 "Reaktivite katsayıları ve kritik arama k-eff üzerinden hesaplanır; bu modelin hesap "
 "türü Sabit kaynak (k-eff tanımsız). Hesap ayarları sekmesinde hesap türünü Özdeğer "
 "(k-eff) yapın."
 msgstr ""
 
-#: arayuz/analiz/sekme.py:311
+#: arayuz/analiz/sekme.py:318
 msgid ""
 "Geometride fisil (yakıt) malzeme yok; k-eff tanımsız olduğu için reaktivite "
 "hesaplanamaz."
 msgstr ""
 
-#: arayuz/analiz/sekme.py:313
+#: arayuz/analiz/sekme.py:320
 msgid "Bu modelde taranabilecek bir parametre bulunamadı."
 msgstr ""
 
-#: arayuz/analiz/sekme.py:349
+#: arayuz/analiz/sekme.py:356
 #, python-format
 msgid ""
 "Açıkken parametre listesinde tasarım etütleri de yer alır: %s. Bunlar reaktivite "
 "katsayısı değil, tasarım duyarlılığıdır."
 msgstr ""
 
-#: arayuz/analiz/sekme.py:373
+#: arayuz/analiz/sekme.py:380
 msgctxt "arama"
 msgid "Alt sınır:"
 msgstr ""
 
-#: arayuz/analiz/sekme.py:374
+#: arayuz/analiz/sekme.py:381
 msgctxt "arama"
 msgid "Üst sınır:"
 msgstr ""
 
-#: arayuz/analiz/sekme.py:375
+#: arayuz/analiz/sekme.py:382
 msgid "Kritik aramayı başlat"
 msgstr ""
 
-#: arayuz/analiz/sekme.py:438
+#: arayuz/analiz/sekme.py:445
 msgid "Hedef malzeme:"
 msgstr ""
 
-#: arayuz/analiz/sekme.py:442
+#: arayuz/analiz/sekme.py:449
 msgid "Hedef demet:"
-msgstr ""
-
-#: arayuz/analiz/sekme.py:446
-#, python-format
-msgid "%s  (şu an %%%.1f dalmış)"
-msgstr ""
-
-#: arayuz/analiz/sekme.py:448
-msgid "Kontrol çubuğu:"
 msgstr ""
 
 #: arayuz/analiz/sekme.py:453
 #, python-format
+msgid "%s  (şu an %%%.1f dalmış)"
+msgstr ""
+
+#: arayuz/analiz/sekme.py:455
+msgid "Kontrol çubuğu:"
+msgstr ""
+
+#: arayuz/analiz/sekme.py:460
+#, python-format
 msgid "%s — %d. bölge (r = %.4g cm, %s)"
 msgstr ""
 
-#: arayuz/analiz/sekme.py:458 arayuz/ayar/yerlesim.py:172
+#: arayuz/analiz/sekme.py:465 arayuz/ayar/yerlesim.py:172
 msgid "Hedef bölge:"
 msgstr ""
 
-#: arayuz/analiz/sekme.py:530
-msgid "Model yok."
-msgstr ""
-
-#: arayuz/analiz/sekme.py:533
+#: arayuz/analiz/sekme.py:540
 msgid "Bu modelde taranabilecek bir parametre yok."
 msgstr ""
 
-#: arayuz/analiz/sekme.py:535
+#: arayuz/analiz/sekme.py:542
 #, python-format
 msgid "'%s' bu modelde artık geçerli değil."
 msgstr ""
 
-#: arayuz/analiz/sekme.py:538
+#: arayuz/analiz/sekme.py:545
 msgid "Seçili hedef bu parametre için geçerli değil (model değişmiş olabilir)."
 msgstr ""
 
-#: arayuz/analiz/sekme.py:558
+#: arayuz/analiz/sekme.py:565
 msgid "Seçim geçerli değil"
 msgstr ""
 
-#: arayuz/analiz/sekme.py:559
+#: arayuz/analiz/sekme.py:566
 #, python-format
 msgid ""
 "%s\n"
@@ -903,57 +1053,57 @@ msgid ""
 "Listeler modele göre yenilendi; seçimi gözden geçirin."
 msgstr ""
 
-#: arayuz/analiz/sekme.py:576
+#: arayuz/analiz/sekme.py:583
 msgid "Çalışıyor…"
 msgstr ""
 
-#: arayuz/analiz/sekme.py:602
+#: arayuz/analiz/sekme.py:609
 #, python-format
 msgid "Analiz sürüyor: %s — her nokta ayrı bir koşu."
 msgstr ""
 
-#: arayuz/analiz/sekme.py:607
+#: arayuz/analiz/sekme.py:614
 msgid "Analiz başladı"
 msgstr ""
 
-#: arayuz/analiz/sekme.py:612
+#: arayuz/analiz/sekme.py:619
 msgid "Durdurma istendi — süren koşu bitince duracak"
 msgstr ""
 
-#: arayuz/analiz/sekme.py:618
+#: arayuz/analiz/sekme.py:625
 #, python-format
 msgid "tamamlandı — toplam %s"
 msgstr ""
 
-#: arayuz/analiz/sekme.py:631
+#: arayuz/analiz/sekme.py:638
 msgid "Önceki projenin analizi bitti; sonucu bu projeye yazılmadı."
 msgstr ""
 
-#: arayuz/analiz/sekme.py:637
+#: arayuz/analiz/sekme.py:644
 #, python-format
 msgid "<b>Hata:</b> %s"
 msgstr ""
 
-#: arayuz/analiz/sekme.py:639
+#: arayuz/analiz/sekme.py:646
 #, python-format
 msgid "Analiz hatası: %s"
 msgstr ""
 
-#: arayuz/analiz/sekme.py:654
+#: arayuz/analiz/sekme.py:661
 #, python-format
 msgid "geçen %s  |  kalan ~%s  (ölçüme göre)"
 msgstr ""
 
-#: arayuz/analiz/sekme.py:666
+#: arayuz/analiz/sekme.py:673
 msgid "Tarama tamamlandı"
 msgstr ""
 
-#: arayuz/analiz/sekme.py:674
+#: arayuz/analiz/sekme.py:681
 #, python-format
 msgid "geçen %s  |  %d. koşu bitti"
 msgstr ""
 
-#: arayuz/analiz/sekme.py:687
+#: arayuz/analiz/sekme.py:694
 msgid "Kritik arama tamamlandı"
 msgstr ""
 
@@ -1514,10 +1664,6 @@ msgstr ""
 
 #: arayuz/ayar/yerlesim.py:160
 msgid "Hedef çubuk:"
-msgstr ""
-
-#: arayuz/ayar/yerlesim.py:161
-msgid "Eksenel dilim:"
 msgstr ""
 
 #: arayuz/ayar/yerlesim.py:162 arayuz/sonuc/mesh_harita.py:79
@@ -2915,15 +3061,6 @@ msgstr ""
 
 #: arayuz/demet/yerlesim.py:127
 msgid "Bütün hücreleri seçili parçayla doldurur (Ctrl+Z geri alır)."
-msgstr ""
-
-#: arayuz/demet/yerlesim.py:153 arayuz/demet/yerlesim.py:172
-#: arayuz/geometri/form_kafes.py:96
-msgid "Adım"
-msgstr ""
-
-#: arayuz/demet/yerlesim.py:174 arayuz/geometri/form_kafes.py:99
-msgid "Halka sayısı"
 msgstr ""
 
 #: arayuz/demet/yerlesim.py:175
@@ -4393,7 +4530,7 @@ msgid "Demet"
 msgstr ""
 
 #: arayuz/cubuk/cubuk_formu.py:38 arayuz/cubuk/sayfalar.py:63 arayuz/guc_harita.py:72
-#: arayuz/sekme_cubuk.py:126
+#: arayuz/sekme_cubuk.py:126 arayuz/tukenme_bolme.py:111
 msgid "Çubuk"
 msgstr ""
 
@@ -4834,14 +4971,10 @@ msgstr ""
 msgid "boşluk"
 msgstr ""
 
-#: arayuz/analiz/sekme.py:455 arayuz/ayar/guc_formu.py:72
+#: arayuz/analiz/sekme.py:462 arayuz/ayar/guc_formu.py:72
 #: arayuz/cubuk/parca_islemleri.py:20 arayuz/izgara_yardimci.py:173
 #: arayuz/kor/katmanlar.py:22
 msgid "Boş (madde yok)"
-msgstr ""
-
-#: arayuz/karsilastir/panel.py:31 arayuz/kuyruk/panel.py:30
-msgid "k ± σ"
 msgstr ""
 
 #: arayuz/karsilastir/panel.py:31 arayuz/kuyruk/panel.py:30
@@ -7894,8 +8027,8 @@ msgid_plural "{n} parçacık × {c} çevrim = {t} kaynak parçacığı; tally be
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/analiz/mgxs.py:63 arayuz/analiz/sekme.py:69 arayuz/sekme_calistir.py:78
-#: arayuz/sekme_tukenme.py:76
+#: arayuz/analiz/dal.py:52 arayuz/analiz/mgxs.py:63 arayuz/analiz/sekme.py:69
+#: arayuz/sekme_calistir.py:78 arayuz/sekme_tukenme.py:76
 msgid "hazır değil"
 msgstr ""
 
@@ -7931,8 +8064,8 @@ msgid ""
 " için Durdur ile sonlandırın."
 msgstr ""
 
-#: arayuz/analiz/mgxs.py:312 arayuz/analiz/sekme.py:551 arayuz/sekme_calistir.py:452
-#: arayuz/sekme_calistir.py:553
+#: arayuz/analiz/dal.py:284 arayuz/analiz/mgxs.py:312 arayuz/analiz/sekme.py:558
+#: arayuz/sekme_calistir.py:452 arayuz/sekme_calistir.py:553
 msgid "Çalıştırılamaz"
 msgstr ""
 
@@ -8017,7 +8150,7 @@ msgid_plural "… ve %d hata daha."
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/sekme_calistir.py:579 arayuz/sekme_tukenme.py:492
+#: arayuz/sekme_calistir.py:579 arayuz/sekme_tukenme.py:496
 msgid ""
 "\n"
 "# kullanıcı tarafından durduruldu"
@@ -8066,7 +8199,7 @@ msgid "Koşu bitti ama statepoint bulunamadı"
 msgstr ""
 
 #: arayuz/calistir/sonuc_gosterimi.py:48 arayuz/sekme_calistir.py:683
-#: arayuz/sekme_calistir.py:684 arayuz/sekme_tukenme.py:570
+#: arayuz/sekme_calistir.py:684 arayuz/sekme_tukenme.py:574
 #, python-format
 msgid "Sonuç okunamadı: %s"
 msgstr ""
@@ -8612,11 +8745,11 @@ msgid_plural ""
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/sekme_tukenme.py:193
+#: arayuz/sekme_tukenme.py:196
 msgid "Adım başına pin gücü"
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:195
+#: arayuz/sekme_tukenme.py:198
 msgid ""
 "Her tükenme adımında çubuk güç dağılımı (distribcell + eksenel mesh tally'si) sayılır"
 " ve adım başına bir statepoint dosyası yazılır. Transport süresine etkisi küçüktür; "
@@ -8624,169 +8757,169 @@ msgid ""
 "adım başına 52 kB). On binlerce çubuklu tam korda kapatmayı düşünün."
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:208
+#: arayuz/sekme_tukenme.py:211
 #, python-format
 msgid "%d soğuma adımı (transport yok)"
 msgid_plural "%d soğuma adımı (transport yok)"
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/sekme_tukenme.py:211
+#: arayuz/sekme_tukenme.py:214
 msgid "kritik arama adım başına ek transport koşar"
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:226
+#: arayuz/sekme_tukenme.py:229
 msgid "model yok"
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:257
+#: arayuz/sekme_tukenme.py:260
 #, python-format
 msgid ""
 "%s  |  fisyon verimi %s eV (%s spektrum)\n"
 "%s"
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:264
+#: arayuz/sekme_tukenme.py:267
 #, python-format
 msgid "Zincir dosyası kullanılamıyor: %s (Gelişmiş › Zincir)"
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:270
+#: arayuz/sekme_tukenme.py:273
 #, python-format
 msgid "zincir seçilemedi: %s"
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:281
+#: arayuz/sekme_tukenme.py:284
 #, python-format
 msgid "sayı olmayan: %s"
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:282
+#: arayuz/sekme_tukenme.py:285
 msgid "her adım sıfırdan büyük olmalı"
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:283
+#: arayuz/sekme_tukenme.py:286
 #, python-format
 msgid "Adımlar geçersiz — %s. Virgülle ayrılmış pozitif sayılar girin (ör. 1, 5, 30)."
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:294
+#: arayuz/sekme_tukenme.py:297
 #, python-format
 msgid "%d adım · toplam %.4g gün = %.4g MWd/kg · %d transport çözümü"
 msgid_plural "%d adım · toplam %.4g gün = %.4g MWd/kg · %d transport çözümü"
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/sekme_tukenme.py:300
+#: arayuz/sekme_tukenme.py:303
 msgid "Adım yok — virgülle adım uzunlukları girin."
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:306
+#: arayuz/sekme_tukenme.py:309
 msgid "Yanabilir (fisil) malzeme bulunamadı."
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:312
+#: arayuz/sekme_tukenme.py:315
 msgid "hacim yok"
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:315
+#: arayuz/sekme_tukenme.py:318
 #, python-format
 msgid "hesaplanamadı: %s"
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:333
+#: arayuz/sekme_tukenme.py:336
 msgid "model uygun değil"
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:398
+#: arayuz/sekme_tukenme.py:402
 msgid ""
 "Önceki projenin tükenme koşusu arka planda sürüyor; sonucu bu projeye yazılmayacak. "
 "Yeni koşu için Durdur ile sonlandırın."
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:408 arayuz/sekme_tukenme.py:423
+#: arayuz/sekme_tukenme.py:412 arayuz/sekme_tukenme.py:427
 #, python-format
 msgid "Bu modelde yapılamaz: %s"
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:410
+#: arayuz/sekme_tukenme.py:414
 msgid "Tükenme kapalı — yukarıdan etkinleştirin."
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:422 arayuz/sekme_tukenme.py:426
+#: arayuz/sekme_tukenme.py:426 arayuz/sekme_tukenme.py:430
 msgid "Başlatılamaz"
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:456
+#: arayuz/sekme_tukenme.py:460
 msgid "%v / %m transport"
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:457
+#: arayuz/sekme_tukenme.py:461
 msgid "İlk transport bekleniyor — kalan süre ondan ölçülecek."
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:483
+#: arayuz/sekme_tukenme.py:487
 #, python-format
 msgid "Tükenme koşusu sürüyor → %s"
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:486
+#: arayuz/sekme_tukenme.py:490
 #, python-format
 msgid "Tükenme başladı → %s"
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:525
+#: arayuz/sekme_tukenme.py:529
 #, python-format
 msgid "geçen %s  |  transport başına %.0f s (ölçülen)  |  kalan ~%s"
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:532
+#: arayuz/sekme_tukenme.py:536
 #, python-format
 msgid ""
 "\n"
 "# Süreç başlatılamadı: %s"
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:554
+#: arayuz/sekme_tukenme.py:558
 #, python-format
 msgid "Önceki projenin tükenme koşusu bitti; sonucu bu projeye yazılmadı (dosyalar: %s)."
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:560
+#: arayuz/sekme_tukenme.py:564
 #, python-format
 msgid "Tükenme başarısız (çıkış kodu %d)"
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:561
+#: arayuz/sekme_tukenme.py:565
 msgid "Başarısız — ayrıntılı çıktı aşağıda açıldı."
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:571
+#: arayuz/sekme_tukenme.py:575
 msgid "Sonuç okunamadı — ayrıntılı çıktıya bakın."
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:572
+#: arayuz/sekme_tukenme.py:576
 #, python-format
 msgid ""
 "\n"
 "# Sonuç okunamadı: %s"
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:578
+#: arayuz/sekme_tukenme.py:582
 #, python-format
 msgid "Tamamlandı: %s"
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:579
+#: arayuz/sekme_tukenme.py:583
 msgid "Tükenme tamamlandı"
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:610
+#: arayuz/sekme_tukenme.py:614
 #, python-format
 msgid "%d dk"
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:611
+#: arayuz/sekme_tukenme.py:615
 #, python-format
 msgid "%.1f sa"
 msgstr ""
@@ -9379,7 +9512,7 @@ msgid ""
 "Tipik: PWR 38–40, BWR ~25, SFR 50–100 W/gHM."
 msgstr ""
 
-#: arayuz/tukenme_arayuz.py:75 arayuz/tukenme_arayuz.py:175
+#: arayuz/tukenme_arayuz.py:75 arayuz/tukenme_arayuz.py:177
 #: arayuz/tukenme_cikti_panel.py:54 arayuz/tukenme_pin_gucu.py:74 arayuz/tukenme_y4.py:21
 msgid "gün"
 msgstr ""
@@ -9426,70 +9559,169 @@ msgstr ""
 msgid "Ek yanan malzemeler:"
 msgstr ""
 
-#: arayuz/tukenme_arayuz.py:119
+#: arayuz/tukenme_arayuz.py:121
 msgid "Çubuk çubuk yanma (her örnek ayrı malzeme — çok ağır)"
 msgstr ""
 
-#: arayuz/tukenme_arayuz.py:120
+#: arayuz/tukenme_arayuz.py:122
 msgid ""
 "Yakıtın her örneği (ör. demetteki her çubuk) ayrı yanar; bellek ve süre örnek "
 "sayısıyla artar."
 msgstr ""
 
-#: arayuz/tukenme_arayuz.py:125
+#: arayuz/tukenme_arayuz.py:127
 msgid "Zincir:"
 msgstr ""
 
-#: arayuz/tukenme_arayuz.py:127
+#: arayuz/tukenme_arayuz.py:129
 msgid "Entegratör:"
 msgstr ""
 
-#: arayuz/tukenme_arayuz.py:136
+#: arayuz/tukenme_arayuz.py:138
 msgid "Tükenmeyi başlat"
 msgstr ""
 
-#: arayuz/analiz/mgxs.py:141 arayuz/analiz/sekme.py:130 arayuz/calistir/kartlar.py:87
-#: arayuz/pencere/kabuk.py:191 arayuz/tukenme_arayuz.py:138
+#: arayuz/analiz/dal.py:92 arayuz/analiz/mgxs.py:141 arayuz/analiz/sekme.py:130
+#: arayuz/calistir/kartlar.py:87 arayuz/pencere/kabuk.py:191 arayuz/tukenme_arayuz.py:140
 msgid "Durdur"
 msgstr ""
 
-#: arayuz/tukenme_arayuz.py:153
+#: arayuz/tukenme_arayuz.py:155
 msgid ""
 "Grafikte, tabloda ve CSV'de izlenecek nüklidler. Seçim değişince önceki sonuç yeniden"
 " koşmadan güncellenir."
 msgstr ""
 
-#: arayuz/tukenme_arayuz.py:169
+#: arayuz/tukenme_arayuz.py:171
 msgid "CSV olarak dışa aktar"
 msgstr ""
 
-#: arayuz/tukenme_arayuz.py:170
+#: arayuz/tukenme_arayuz.py:172
 msgid "Zaman, yanma, k, σ ve seçili her nüklidin atom sayısı ile yoğunluğu (ondalık nokta)"
 msgstr ""
 
-#: arayuz/calistir/kartlar.py:176 arayuz/tukenme_arayuz.py:187
+#: arayuz/calistir/kartlar.py:176 arayuz/tukenme_arayuz.py:189
 msgid "Ayrıntılı çıktı"
 msgstr ""
 
-#: arayuz/tukenme_arayuz.py:192
+#: arayuz/tukenme_arayuz.py:194
 msgid "Yanma ayarları"
 msgstr ""
 
-#: arayuz/tukenme_arayuz.py:195
+#: arayuz/tukenme_arayuz.py:197
+msgid "Bölge bölme"
+msgstr ""
+
+#: arayuz/tukenme_arayuz.py:198
+msgid ""
+"Pinleri halkalara, katmanları dilimlere bölüp her halkayı ve dilimi ayrı yakar "
+"(yanabilir zehirli Gd pinleri için önemli)."
+msgstr ""
+
+#: arayuz/tukenme_arayuz.py:201
 msgid "İzlenen nüklidler"
 msgstr ""
 
-#: arayuz/calistir/kartlar.py:84 arayuz/tukenme_arayuz.py:197
+#: arayuz/calistir/kartlar.py:84 arayuz/tukenme_arayuz.py:203
 msgid "Koşu"
 msgstr ""
 
-#: arayuz/analiz/sekme.py:165 arayuz/calistir/kartlar.py:138 arayuz/tukenme_arayuz.py:203
+#: arayuz/analiz/sekme.py:165 arayuz/calistir/kartlar.py:138 arayuz/tukenme_arayuz.py:209
 msgid "Sonuç"
 msgstr ""
 
-#: arayuz/pencere/model_islemleri.py:67 arayuz/tukenme_arayuz.py:218
+#: arayuz/pencere/model_islemleri.py:67 arayuz/tukenme_arayuz.py:224
 #: arayuz/yardim/__init__.py:52
 msgid "Tükenme"
+msgstr ""
+
+#: arayuz/tukenme_bolme.py:50
+msgid "Çubuk kesiti önizlemesi"
+msgstr ""
+
+#: arayuz/tukenme_bolme.py:100
+msgid "Tükenme bölgelerini böl (halka / eksenel dilim)"
+msgstr ""
+
+#: arayuz/tukenme_bolme.py:102
+msgid ""
+"Pin tek ortalama bileşimle değil, halka halka ve dilim dilim ayrı yanar. Yanabilir "
+"zehirli (Gd) pinde dış halka önce yanar; ortalama bileşim bunu kaçırır. Her halka ve "
+"dilim ayrı bir tükenme malzemesidir (çubuk çubuk yanma otomatik açılır) ve "
+"süre/bellek bunların sayısıyla artar."
+msgstr ""
+
+#: arayuz/tukenme_bolme.py:107
+msgid ""
+"Gd pini için eşit hacimli halkalar iyi bir başlangıçtır (dış halkalar ince kalır). "
+"Halka ve dilim sayısını artırınca k(t) ve Gd eğrisi yakınsar; yakınsamayı küçük bir "
+"modelde sınayın."
+msgstr ""
+
+#: arayuz/tukenme_bolme.py:111
+msgid "Halka türü"
+msgstr ""
+
+#: arayuz/demet/yerlesim.py:174 arayuz/geometri/form_kafes.py:99
+#: arayuz/tukenme_bolme.py:111
+msgid "Halka sayısı"
+msgstr ""
+
+#: arayuz/tukenme_bolme.py:119
+msgid ""
+"Dışa doğru incelen halkalarda her halkanın kalınlığı bir içerdekinin bu kadarıdır. "
+"Bir mühendislik tercihidir, ölçülmüş bir eşik değildir."
+msgstr ""
+
+#: arayuz/tukenme_bolme.py:123
+msgid "Yanabilir katmanlar bu kadar eşit dilime bölünür (3B model gerekir). 1: bölme yok."
+msgstr ""
+
+#: arayuz/tukenme_bolme.py:126
+msgid "Önizlemede gösterilen çubuk"
+msgstr ""
+
+#: arayuz/tukenme_bolme.py:135
+msgid "Çubuk türleri:"
+msgstr ""
+
+#: arayuz/tukenme_bolme.py:136
+msgid "İncelme oranı:"
+msgstr ""
+
+#: arayuz/ayar/yerlesim.py:161 arayuz/tukenme_bolme.py:137
+msgid "Eksenel dilim:"
+msgstr ""
+
+#: arayuz/tukenme_bolme.py:139
+msgid "Önizleme:"
+msgstr ""
+
+#: arayuz/tukenme_bolme.py:247
+msgid "Gelişmiş (ağaç) modda bölme desteklenmiyor."
+msgstr ""
+
+#: arayuz/tukenme_bolme.py:248
+msgid "Eksenel dilim için 3B model (yükseklik ya da eksenel katmanlar) gerekir."
+msgstr ""
+
+#: arayuz/tukenme_bolme.py:269
+msgid "Bölme için en az bir çubuk türü seçin ya da eksenel dilim ≥ 2 verin."
+msgstr ""
+
+#: arayuz/tukenme_bolme.py:278
+#, python-format
+msgid "Ayrı tükenme malzemesi: %d → %d (süre ve bellek buna göre artar)."
+msgstr ""
+
+#: arayuz/tukenme_bolme.py:281
+#, python-format
+msgid "Halka hacimlerinin toplamı analitik hacme eşit (en büyük bağıl sapma %.1e)."
+msgstr ""
+
+#: arayuz/tukenme_bolme.py:290
+#, python-format
+msgid "Özet hesaplanamadı: %s"
 msgstr ""
 
 #: arayuz/tukenme_cikti_panel.py:29
@@ -9812,7 +10044,7 @@ msgstr ""
 msgid "Arama türü:"
 msgstr ""
 
-#: arayuz/analiz/sekme.py:98 arayuz/analiz/sekme.py:463 arayuz/tukenme_y4.py:80
+#: arayuz/analiz/sekme.py:98 arayuz/analiz/sekme.py:470 arayuz/tukenme_y4.py:80
 msgid "Hedef:"
 msgstr ""
 

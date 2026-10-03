@@ -182,7 +182,7 @@ Kurallar:
 | fisyon ürünü zehiri | fission product poison | | Xe-135, Sm-149 |
 | entegratör | integrator | | CE/CM, predictor |
 | tükenme adımı | depletion step | time step | |
-| yanma bölgesi bölme | burnable region subdivision | mesh refinement | Serpent `div`; pini halkalara, katmanı dilimlere böler |
+| tükenme bölgesi bölme | depletion region subdivision | mesh refinement | Serpent `div`; pini halkalara, katmanı dilimlere böler |
 | radyal halka (pin halkası) | radial ring (pin ring) | shell, annulus | bölünmüş yakıt bölgesinin halkaları; kafes halkası (*ring*) değildir |
 | eksenel dilim | axial slice | axial zone, node | bir katmanın eşit yükseklikli parçası |
 | eşit hacimli halka | equal-volume ring | | her halka aynı kesit alanı |

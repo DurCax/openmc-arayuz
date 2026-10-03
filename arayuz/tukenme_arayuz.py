@@ -195,7 +195,7 @@ class TukenmeArayuzu:
         self.ayar_kutusu.govde.addLayout(self.ayar_formu)
         self.ayar_kutusu.ekle(self.gelismis)
         self.bolme_kutusu = bil.Kart(_("Bölge bölme"), _(
-            "Pinleri halkalara, katmanları dilimlere bölüp her parçayı ayrı yakar "
+            "Pinleri halkalara, katmanları dilimlere bölüp her halkayı ve dilimi ayrı yakar "
             "(yanabilir zehirli Gd pinleri için önemli)."))
         self.bolme_kutusu.ekle(self.bolme)
         self.izlenen_kutusu = bil.Kart(_("İzlenen nüklidler"))

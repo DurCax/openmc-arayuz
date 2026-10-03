@@ -97,12 +97,12 @@ class TukenmeBolme(QtWidgets.QWidget):
 
     # ------------------------------------------------------------------
     def _kur(self) -> None:
-        self.etkin = QtWidgets.QCheckBox(_("Yanma bölgelerini böl (halka / eksenel dilim)"))
+        self.etkin = QtWidgets.QCheckBox(_("Tükenme bölgelerini böl (halka / eksenel dilim)"))
         self.etkin.setToolTip(_(
             "Pin tek ortalama bileşimle değil, halka halka ve dilim dilim ayrı yanar. "
             "Yanabilir zehirli (Gd) pinde dış halka önce yanar; ortalama bileşim bunu "
-            "kaçırır. Her parça ayrı bir tükenme malzemesidir (çubuk çubuk yanma "
-            "otomatik açılır) ve süre/bellek parça sayısıyla artar."))
+            "kaçırır. Her halka ve dilim ayrı bir tükenme malzemesidir (çubuk çubuk yanma "
+            "otomatik açılır) ve süre/bellek bunların sayısıyla artar."))
         self.bilgi = aciklama(_(
             "Gd pini için eşit hacimli halkalar iyi bir başlangıçtır (dış halkalar ince "
             "kalır). Halka ve dilim sayısını artırınca k(t) ve Gd eğrisi yakınsar; "

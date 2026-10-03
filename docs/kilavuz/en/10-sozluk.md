@@ -190,7 +190,7 @@ add the term to SOZLUK.md).
 | fission product poison | fisyon ürünü zehiri |  |
 | integrator | entegratör |  |
 | depletion step | tükenme adımı | time step |
-| burnable region subdivision | yanma bölgesi bölme | mesh refinement |
+| depletion region subdivision | tükenme bölgesi bölme | mesh refinement |
 | radial ring (pin ring) | radyal halka (pin halkası) | shell, annulus |
 | axial slice | eksenel dilim | axial zone, node |
 | equal-volume ring | eşit hacimli halka |  |
