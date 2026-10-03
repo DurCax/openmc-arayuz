@@ -1,16 +1,16 @@
 {
   "surum": 3,
-  "ad": "HTR-10 pebble (TRISO, Wigner-Seitz)",
+  "ad": "HTR-10 pebble (TRISO, Wigner–Seitz)",
   "baslik": "HTR-10 pebble",
   "baslik_en": "HTR-10 pebble",
-  "aciklama": "HTR-10 yakit kuresi: yakit bolgesi 2.5 cm yaricapli, icinde ~8335 TRISO parcacigi (UO2 cekirdek, capi 500 um; tampon 90, IPyC 40, SiC 35, OPyC 40 um), 0.5 cm grafit kabuk; cevresinde helyum kabugu (yatagin 0.61 paketlemesine denk gelen Wigner-Seitz hucresi) ve yansitici sinir. Sonsuz yatagin kuresel hucre yaklasimidir; gercek yatagin k_inf'i degildir. Kaynak: IAEA-TECDOC-1382, HTR-10 kriterlik benchmark. Helyum yogunlugu ideal gaz (3 MPa, 900 K).",
+  "aciklama": "HTR-10 yakıt küresi: 2.5 cm yarıçaplı yakıt kısmında ~8335 TRISO parçacığı (UO2 çekirdek, çapı 500 µm; tampon 90, IPyC 40, SiC 35, OPyC 40 µm), 0.5 cm grafit kabuk; çevresinde helyum kabuğu (yatağın 0.61 paketlemesine denk gelen Wigner–Seitz hücresi) ve yansıtıcı sınır. Sonsuz yatağın küresel hücre yaklaşımıdır; gerçek yatağın k_inf'i değildir. Kaynak: IAEA-TECDOC-1382, HTR-10 kriterlik benchmark. Helyum yoğunluğu ideal gaz (3 MPa, 900 K).",
   "aciklama_en": "HTR-10 fuel pebble: 2.5 cm fuel zone with ~8335 TRISO particles (UO2 kernel, 500 um diameter; buffer 90, IPyC 40, SiC 35, OPyC 40 um), 0.5 cm graphite shell, surrounded by a helium shell (Wigner-Seitz cell matching the 0.61 bed packing) with reflective boundary. A spherical-cell approximation of the infinite bed, not the k_inf of the real bed. Source: IAEA-TECDOC-1382 HTR-10 benchmark. Helium density from the ideal gas law (3 MPa, 900 K).",
   "kategori": "arastirma",
   "seviye": "ileri",
   "malzemeler": [
     {
       "ad": "uo2",
-      "gorunen_ad": "UO2 cekirdek %17 U-235 (HTR-10)",
+      "gorunen_ad": "UO2 çekirdek %17 U-235 (HTR-10)",
       "yogunluk": {
         "birim": "g/cm3",
         "deger": 10.4
@@ -45,7 +45,7 @@
     },
     {
       "ad": "tampon",
-      "gorunen_ad": "Gozenekli karbon tampon",
+      "gorunen_ad": "Gözenekli karbon tampon",
       "yogunluk": {
         "birim": "g/cm3",
         "deger": 1.1
@@ -236,8 +236,6 @@
     "sicaklik_yontemi": "interpolation",
     "kaynak": {
       "tur": "nokta",
-      "alt": null,
-      "ust": null,
       "konum": [
         0.0,
         0.0,

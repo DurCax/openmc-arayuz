@@ -119,7 +119,7 @@ class TrisoFormuMixin(object):
         self._x_etiket = {}
         for anahtar, etiket, alan in (("yaricap", _("Kompakt yarıçapı"), self.x_yaricap),
                                       ("yukseklik", _("Kompakt yüksekliği"), self.x_yukseklik),
-                                      ("yakit_yaricap", _("Yakıt bölgesi yarıçapı"), self.x_yakit_yaricap),
+                                      ("yakit_yaricap", _("Yakıt küresi yarıçapı"), self.x_yakit_yaricap),
                                       ("dis_yaricap", _("Pebble dış yarıçapı"), self.x_dis_yaricap)):
             self._x_etiket[anahtar] = QtWidgets.QLabel(etiket)
             f.addRow(self._x_etiket[anahtar], alan)
@@ -373,7 +373,7 @@ class TrisoFormuMixin(object):
         if yerler and not self._onay_al(
                 _("TRISO tanımı kullanılıyor"),
                 _("'{ad}' şurada kullanılıyor: {yerler}.\n\nSilinirse bu yerler tanımsız bir "
-                  "bileşene işaret eder ve doğrulama hata verir. Silinsin mi?"
+                  "bileşene işaret eder ve model denetimi hata verir. Silinsin mi?"
                   ).format(ad=ad, yerler="; ".join(yerler))):
             return
         self.spec["trisolar"] = [t for t in self.spec.get("trisolar") or []

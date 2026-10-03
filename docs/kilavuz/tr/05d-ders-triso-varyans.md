@@ -49,16 +49,21 @@ oran özet satırında yazılır (hedeften sapma %1'i aşarsa doğrulama uyarır
 **Ölçülen** (`testler/test_y9_triso.py::test_yavas_duzenli_ve_rastgele_yerlesimin_k_farki`, pf = 0.30,
 5 000 × 50 / 15, ENDF/B-VIII.0, OpenMC 0.16):
 
-@@KTABLO_TR@@
+| Yerleşim | k_eff ± σ |
+|---|---|
+| rastgele, tohum 1 | 1.37298 ± 0.00235 |
+| rastgele, tohum 2 | 1.37521 ± 0.00250 |
+| rastgele, tohum 3 | 1.36884 ± 0.00242 |
+| düzenli (basit kübik) | 1.36965 ± 0.00233 |
 
-Sonuç: **@@KSONUC_TR@@** Bu bir modelleme yaklaşımı farkıdır: düzenli kafes parçacıkların birbirini
+Sonuç: **düzenli kafes rastgele ortalamasından −269 pcm uzaktır (rastgele tohumların ortalaması 1.37234; fark ≈ 0.9 birleşik σ); bu kesinlikte **anlamlı bir fark ölçülmedi**, tohumlar arası yayılım (636 pcm) farkın kendisinden büyüktür. Daha küçük bir etkiyi görmek için çok daha fazla geçmiş gerekir.** Bu bir modelleme yaklaşımı farkıdır: düzenli kafes parçacıkların birbirini
 gölgelemesini (kendini koruma, rezonans soğurması) rastgele paketlemeden farklı hesaplar; gerçek
 yakıt rastgele paketlidir, düzenli kafes bir **yaklaşımdır** ve hız ya da basitlik için seçilir.
 
 ### C. Pebble (HTR-10)
 
 `ornekler/htgr_pebble.json`'u açın. Parçacık: UO₂ çekirdek çapı 500 µm, tampon 90, IPyC 40, SiC 35,
-OPyC 40 µm; yakıt bölgesi yarıçapı 2.5 cm (**≈ 8335 parçacık**, paketleme ≈ %5.0; IAEA-TECDOC-1382),
+OPyC 40 µm; yakıt küresi yarıçapı 2.5 cm (**≈ 8335 parçacık**, paketleme ≈ %5.0; IAEA-TECDOC-1382),
 0.5 cm grafit kabuk, çevresinde yatağın 0.61 paketlemesine denk gelen **Wigner–Seitz** helyum
 kabuğu (hücre yarıçapı 3.54 cm) ve yansıtıcı sınır: sonsuz yatağın **kuresel hücre yaklaşımı**.
 Yatağın gerçek k∞'u değildir. Pebble kuredir; 3B model şartı yoktur. Kapta kalan hacim matris

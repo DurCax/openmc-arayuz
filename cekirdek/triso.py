@@ -314,7 +314,7 @@ def _pebble_sorunlari(t: dict) -> List[Tuple[str, str]]:
     except (TypeError, ValueError):
         return [("hata", _("'dis_yaricap' sayı olmalı"))]
     if not r_dis > float(t.get("yakit_yaricap") or 0.0):
-        cikti.append(("hata", _("pebble dış yarıçapı yakıt bölgesi yarıçapından büyük olmalı")))
+        cikti.append(("hata", _("pebble dış yarıçapı yakıt küresi yarıçapından büyük olmalı")))
     for anahtar, ad in (("kabuk_malzeme", _("kabuk")), ("dis_malzeme", _("dış (gaz)"))):
         if not t.get(anahtar):
             cikti.append(("hata", _("pebble %s malzemesi seçilmemiş") % ad))

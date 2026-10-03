@@ -1,16 +1,16 @@
 {
   "surum": 3,
-  "ad": "HTGR kompakt (TRISO, AGR-1 olculeri)",
+  "ad": "HTGR kompakt (TRISO, AGR-1 ölçüleri)",
   "baslik": "HTGR TRISO kompakt",
   "baslik_en": "HTGR TRISO compact",
-  "aciklama": "Silindirik TRISO yakit kompakti (AGR-1 taban parcacigi, UCO cekirdek) grafit kilifin icinde, yansitici sinir = sonsuz kafes. Parcaciklar rastgele paketlenir (pack_spheres) ve create_triso_lattice kafesine konur; paketleme orani %35. Gercek HTGR blogu degildir: tek kompakt hucresi, helyum kanali yok.\nKaynaklar: katman olculeri INL AGR-1 taban tasarimi (Petti vd.); kompakt capi 12.45 mm; model, z'de yansitici sinirli 5 mm'lik dilimdir (eksenel sonsuz kompakt).",
+  "aciklama": "Silindirik TRISO yakıt kompaktı (AGR-1 taban parçacığı, UCO çekirdek) grafit kılıfın içinde, yansıtıcı sınır = sonsuz kafes. Parçacıklar rastgele paketlenir (pack_spheres) ve create_triso_lattice kafesine konur; paketleme oranı %35. Gerçek HTGR bloğu değildir: tek kompakt hücresi, helyum kanalı yok.\nKaynaklar: katman ölçüleri INL AGR-1 taban tasarımı (Petti vd.); kompakt çapı 12.45 mm; model, z'de yansıtıcı sınırlı 5 mm'lik dilimdir (eksenel sonsuz kompakt).",
   "aciklama_en": "Cylindrical TRISO fuel compact (AGR-1 baseline particle, UCO kernel) in a graphite sleeve with reflective boundaries (infinite lattice). Particles are randomly packed (pack_spheres) at 35 % packing fraction. Not a real HTGR block: single compact cell, no helium channel. The model is a 5 mm slice with reflective z faces (an axially infinite compact).",
   "kategori": "arastirma",
   "seviye": "ileri",
   "malzemeler": [
     {
       "ad": "uco",
-      "gorunen_ad": "UCO cekirdek %19.74 U-235 (AGR-1)",
+      "gorunen_ad": "UCO çekirdek %19.74 U-235 (AGR-1)",
       "yogunluk": {
         "birim": "g/cm3",
         "deger": 10.9
@@ -51,7 +51,7 @@
     },
     {
       "ad": "tampon",
-      "gorunen_ad": "Gozenekli karbon tampon",
+      "gorunen_ad": "Gözenekli karbon tampon",
       "yogunluk": {
         "birim": "g/cm3",
         "deger": 1.05
@@ -180,7 +180,7 @@
     },
     {
       "ad": "grafit",
-      "gorunen_ad": "Nukleer grafit",
+      "gorunen_ad": "Nükleer grafit",
       "yogunluk": {
         "birim": "g/cm3",
         "deger": 1.74

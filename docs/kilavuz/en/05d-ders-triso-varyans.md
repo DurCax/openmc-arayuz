@@ -52,9 +52,14 @@ deviation exceeds 1 %).
 **Measured** (`testler/test_y9_triso.py::test_yavas_duzenli_ve_rastgele_yerlesimin_k_farki`, pf = 0.30,
 5 000 x 50 / 15, ENDF/B-VIII.0, OpenMC 0.16):
 
-@@KTABLO_EN@@
+| Placement | k_eff ± σ |
+|---|---|
+| random, seed 1 | 1.37298 ± 0.00235 |
+| random, seed 2 | 1.37521 ± 0.00250 |
+| random, seed 3 | 1.36884 ± 0.00242 |
+| regular (simple cubic) | 1.36965 ± 0.00233 |
 
-Result: **@@KSONUC_EN@@** This is a difference between modelling approximations: a regular lattice
+Result: **the regular lattice is -269 pcm from the mean of the random seeds (1.37234; difference about 0.9 combined sigma); at this precision **no significant difference was measured**, the spread between seeds (636 pcm) is larger than the difference itself. Many more histories are needed to resolve a smaller effect.** This is a difference between modelling approximations: a regular lattice
 treats the mutual shadowing of particles (self-shielding, resonance absorption) differently from
 random packing; real fuel is randomly packed, the regular lattice is an **approximation** chosen for
 speed or simplicity.
@@ -62,7 +67,7 @@ speed or simplicity.
 ### C. Pebble (HTR-10)
 
 Open `ornekler/htgr_pebble.json`. Particle: UO2 kernel diameter 500 um, buffer 90, IPyC 40, SiC 35,
-OPyC 40 um; fuel zone radius 2.5 cm (**about 8335 particles**, packing about 5.0 %; IAEA-TECDOC-1382),
+OPyC 40 um; fuel sphere radius 2.5 cm (**about 8335 particles**, packing about 5.0 %; IAEA-TECDOC-1382),
 0.5 cm graphite shell, around it a **Wigner-Seitz** helium shell matching the 0.61 packing of the bed
 (cell radius 3.54 cm) and a reflective boundary: a **spherical cell approximation** of the infinite
 bed. It is not the k_inf of the real bed. A pebble is a sphere; there is no 3D-model requirement. The

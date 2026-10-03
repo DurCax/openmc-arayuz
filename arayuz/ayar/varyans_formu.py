@@ -58,8 +58,8 @@ class VaryansFormu(QtWidgets.QWidget):
     def _alanlari_kur(self):
         self.var = QtWidgets.QCheckBox(_("Varyans azaltma (ağırlık pencereleri, MAGIC)"))
         self.var.setToolTip(_(
-            "Derin nüfuz problemlerinde (zırh) az sayıda parçacığın ulaştığı bölgeleri "
-            "ağırlık pencereleriyle örnekler: parçacıklar bölünür ya da öldürülür, sonuç "
+            "Derin nüfuz problemlerinde (zırh) az sayıda parçacığın ulaştığı bölgelere "
+            "ağırlık pencereleriyle yönlendirir: parçacıklar bölünür ya da öldürülür, sonuç "
             "yanlılıksız kalır. Yalnız 3B modelde."))
         self.mod = QtWidgets.QComboBox()
         for anahtar in varyans.MODLAR:

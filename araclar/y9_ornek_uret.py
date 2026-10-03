@@ -30,16 +30,16 @@ def _nuk(isim, miktar):
 
 def htgr_malzemeleri():
     return [
-        _mal("uco", "UCO cekirdek %19.74 U-235 (AGR-1)", 10.9,
+        _mal("uco", "UCO çekirdek %19.74 U-235 (AGR-1)", 10.9,
              [_nuk("U235", 0.19944), _nuk("U238", 0.80056), _el("O", 1.5), _el("C", 0.4)], (222, 93, 40)),
-        _mal("tampon", "Gozenekli karbon tampon", 1.05, [_el("C", 1.0)], (110, 110, 110),
+        _mal("tampon", "Gözenekli karbon tampon", 1.05, [_el("C", 1.0)], (110, 110, 110),
              ["c_Graphite"]),
         _mal("pyc_ic", "IPyC", 1.90, [_el("C", 1.0)], (70, 70, 70), ["c_Graphite"]),
         _mal("sic", "SiC", 3.20, [_el("Si", 1.0), _el("C", 1.0)], (150, 190, 120)),
         _mal("pyc_dis", "OPyC", 1.91, [_el("C", 1.0)], (50, 50, 50), ["c_Graphite"]),
         _mal("matris", "Kompakt grafit matrisi", 1.40, [_el("C", 1.0)], (130, 130, 140),
              ["c_Graphite"]),
-        _mal("grafit", "Nukleer grafit", 1.74, [_el("C", 1.0)], (170, 170, 175), ["c_Graphite"]),
+        _mal("grafit", "Nükleer grafit", 1.74, [_el("C", 1.0)], (170, 170, 175), ["c_Graphite"]),
     ]
 
 
@@ -56,15 +56,15 @@ def _taban():
 
 def htgr_kompakt():
     d = _taban()
-    d.update(ad="HTGR kompakt (TRISO, AGR-1 olculeri)", baslik="HTGR TRISO kompakt",
+    d.update(ad="HTGR kompakt (TRISO, AGR-1 ölçüleri)", baslik="HTGR TRISO kompakt",
              baslik_en="HTGR TRISO compact", kategori="arastirma", seviye="ileri",
              aciklama=(
-                 "Silindirik TRISO yakit kompakti (AGR-1 taban parcacigi, UCO cekirdek) grafit "
-                 "kilifin icinde, yansitici sinir = sonsuz kafes. Parcaciklar rastgele paketlenir "
-                 "(pack_spheres) ve create_triso_lattice kafesine konur; paketleme orani %35. "
-                 "Gercek HTGR blogu degildir: tek kompakt hucresi, helyum kanali yok.\n"
-                 "Kaynaklar: katman olculeri INL AGR-1 taban tasarimi (Petti vd.); kompakt capi "
-                 "12.45 mm; model, z'de yansitici sinirli 5 mm'lik dilimdir (eksenel sonsuz kompakt)."),
+                 "Silindirik TRISO yakıt kompaktı (AGR-1 taban parçacığı, UCO çekirdek) grafit "
+                 "kılıfın içinde, yansıtıcı sınır = sonsuz kafes. Parçacıklar rastgele paketlenir "
+                 "(pack_spheres) ve create_triso_lattice kafesine konur; paketleme oranı %35. "
+                 "Gerçek HTGR bloğu değildir: tek kompakt hücresi, helyum kanalı yok.\n"
+                 "Kaynaklar: katman ölçüleri INL AGR-1 taban tasarımı (Petti vd.); kompakt çapı "
+                 "12.45 mm; model, z'de yansıtıcı sınırlı 5 mm'lik dilimdir (eksenel sonsuz kompakt)."),
              aciklama_en=(
                  "Cylindrical TRISO fuel compact (AGR-1 baseline particle, UCO kernel) in a "
                  "graphite sleeve with reflective boundaries (infinite lattice). Particles are "
@@ -104,15 +104,15 @@ def htgr_pebble():
     helyum kabugu (yatak paketlemesi 0.61 -> hucre yaricapi 3.0 * (1/0.61)^(1/3) = 3.54 cm),
     yansitici sinir (sonsuz yatak yaklasimi, kuresel hucre)."""
     d = _taban()
-    d.update(ad="HTR-10 pebble (TRISO, Wigner-Seitz)", baslik="HTR-10 pebble",
+    d.update(ad="HTR-10 pebble (TRISO, Wigner–Seitz)", baslik="HTR-10 pebble",
              baslik_en="HTR-10 pebble", kategori="arastirma", seviye="ileri",
              aciklama=(
-                 "HTR-10 yakit kuresi: yakit bolgesi 2.5 cm yaricapli, icinde ~8335 TRISO parcacigi "
-                 "(UO2 cekirdek, capi 500 um; tampon 90, IPyC 40, SiC 35, OPyC 40 um), 0.5 cm "
-                 "grafit kabuk; cevresinde helyum kabugu (yatagin 0.61 paketlemesine denk gelen "
-                 "Wigner-Seitz hucresi) ve yansitici sinir. Sonsuz yatagin kuresel hucre "
-                 "yaklasimidir; gercek yatagin k_inf'i degildir. Kaynak: IAEA-TECDOC-1382, "
-                 "HTR-10 kriterlik benchmark. Helyum yogunlugu ideal gaz (3 MPa, 900 K)."),
+                 "HTR-10 yakıt küresi: 2.5 cm yarıçaplı yakıt kısmında ~8335 TRISO parçacığı "
+                 "(UO2 çekirdek, çapı 500 µm; tampon 90, IPyC 40, SiC 35, OPyC 40 µm), 0.5 cm "
+                 "grafit kabuk; çevresinde helyum kabuğu (yatağın 0.61 paketlemesine denk gelen "
+                 "Wigner–Seitz hücresi) ve yansıtıcı sınır. Sonsuz yatağın küresel hücre "
+                 "yaklaşımıdır; gerçek yatağın k_inf'i değildir. Kaynak: IAEA-TECDOC-1382, "
+                 "HTR-10 kriterlik benchmark. Helyum yoğunluğu ideal gaz (3 MPa, 900 K)."),
              aciklama_en=(
                  "HTR-10 fuel pebble: 2.5 cm fuel zone with ~8335 TRISO particles (UO2 kernel, "
                  "500 um diameter; buffer 90, IPyC 40, SiC 35, OPyC 40 um), 0.5 cm graphite shell, "
@@ -121,9 +121,9 @@ def htgr_pebble():
                  "bed, not the k_inf of the real bed. Source: IAEA-TECDOC-1382 HTR-10 benchmark. "
                  "Helium density from the ideal gas law (3 MPa, 900 K)."))
     d["malzemeler"] = [
-        _mal("uo2", "UO2 cekirdek %17 U-235 (HTR-10)", 10.4,
+        _mal("uo2", "UO2 çekirdek %17 U-235 (HTR-10)", 10.4,
              [_nuk("U235", 0.17), _nuk("U238", 0.83), _el("O", 2.0)], (222, 93, 40)),
-        _mal("tampon", "Gozenekli karbon tampon", 1.1, [_el("C", 1.0)], (110, 110, 110), ["c_Graphite"]),
+        _mal("tampon", "Gözenekli karbon tampon", 1.1, [_el("C", 1.0)], (110, 110, 110), ["c_Graphite"]),
         _mal("pyc_ic", "IPyC", 1.9, [_el("C", 1.0)], (70, 70, 70), ["c_Graphite"]),
         _mal("sic", "SiC", 3.18, [_el("Si", 1.0), _el("C", 1.0)], (150, 190, 120)),
         _mal("pyc_dis", "OPyC", 1.9, [_el("C", 1.0)], (50, 50, 50), ["c_Graphite"]),
@@ -151,6 +151,8 @@ def htgr_pebble():
     d["ayarlar"].update(parcacik=4000, cevrim=60, pasif=15)
     d["ayarlar"]["entropi_mesh"] = dict(d["ayarlar"].get("entropi_mesh") or {}, var=False)
     d["ayarlar"]["kaynak"] = dict(d["ayarlar"]["kaynak"], tur="nokta", konum=[0.0, 0.0, 0.0])
+    d["ayarlar"]["kaynak"].pop("alt", None)
+    d["ayarlar"]["kaynak"].pop("ust", None)
     d["calistirma"] = dict(d["calistirma"], dizin="kosu_htgr_pebble")
     return d
 
@@ -161,20 +163,20 @@ def zirh_agirlik_pencere():
     with open(os.path.join(ORNEK, "zirh_kure.json"), encoding="utf-8") as f:
         d = json.load(f)
     su = next(m for m in d["malzemeler"] if m["ad"] == "su")
-    dedektor = dict(copy.deepcopy(su), ad="dedektor", gorunen_ad="Dedektor suyu (H2O)",
+    dedektor = dict(copy.deepcopy(su), ad="dedektor", gorunen_ad="Dedektör suyu (H2O)",
                     renk=[60, 200, 230])
     d["malzemeler"].append(dedektor)
-    d["baslik"] = "Derin nufuz zirhi (agirlik penceresi)"
+    d["baslik"] = "Derin nüfuz zırhı (ağırlık penceresi)"
     d["baslik_en"] = "Deep-penetration shield (weight windows)"
     d["kategori"], d["seviye"] = "zirh", "ileri"
-    d["ad"] = "Derin nufuz zirhi: su/celik/su + dedektor (agirlik penceresi dersi)"
+    d["ad"] = "Derin nüfuz zırhı: su/çelik/su + dedektör (ağırlık penceresi dersi)"
     d["aciklama"] = (
-        "Sabit kaynak: merkezde 14.1 MeV D-T nokta kaynagi; 35 cm su, 40 cm celik, 30 cm su "
-        "ve en dista 5 cm'lik dedektor suyu. Tally dedektor malzemesindeki akidir. Analog "
-        "kosuda dedektore ulasan parcacik cok azdir; Hesap ayarlari > Gelismis > Varyans "
-        "azaltma ile MAGIC agirlik pencereleri uretilip uygulanir ve FOM karsilastirilir. "
-        "Sonuc yanliliksizdir: iki yontem istatistik icinde ayni degeri verir. "
-        "Sertifika degildir; olculen FOM kartinin sonuc kisminda yazilidir.")
+        "Sabit kaynak: merkezde 14.1 MeV D-T nokta kaynağı; 35 cm su, 40 cm çelik, 30 cm su "
+        "ve en dışta 5 cm'lik dedektör suyu. Tally dedektör malzemesindeki akıdır. Analog "
+        "koşuda dedektöre ulaşan parçacık çok azdır; Hesap ayarları > Gelişmiş > Varyans "
+        "azaltma ile MAGIC ağırlık pencereleri üretilip uygulanır ve FOM karşılaştırılır. "
+        "Sonuç yanlılıksızdır: iki yöntem istatistik içinde aynı değeri verir. "
+        "Sertifika değildir; ölçülen FOM ders 5.21'de yazılıdır.")
     d["aciklama_en"] = (
         "Fixed source: a 14.1 MeV D-T point source at the centre; 35 cm water, 40 cm steel, "
         "30 cm water and a 5 cm detector water shell at the outside. The tally is the flux in the "

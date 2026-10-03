@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-03 20:55+0300\n"
+"POT-Creation-Date: 2026-10-03 21:12+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1436,8 +1436,8 @@ msgstr ""
 
 #: arayuz/ayar/varyans_formu.py:61
 msgid ""
-"Derin nüfuz problemlerinde (zırh) az sayıda parçacığın ulaştığı bölgeleri ağırlık "
-"pencereleriyle örnekler: parçacıklar bölünür ya da öldürülür, sonuç yanlılıksız "
+"Derin nüfuz problemlerinde (zırh) az sayıda parçacığın ulaştığı bölgelere ağırlık "
+"pencereleriyle yönlendirir: parçacıklar bölünür ya da öldürülür, sonuç yanlılıksız "
 "kalır. Yalnız 3B modelde."
 msgstr ""
 
@@ -3013,7 +3013,7 @@ msgid "Kompakt yüksekliği"
 msgstr ""
 
 #: arayuz/cubuk/triso_formu.py:122
-msgid "Yakıt bölgesi yarıçapı"
+msgid "Yakıt küresi yarıçapı"
 msgstr ""
 
 #: arayuz/cubuk/triso_formu.py:123
@@ -3084,7 +3084,7 @@ msgstr ""
 msgid ""
 "'{ad}' şurada kullanılıyor: {yerler}.\n"
 "\n"
-"Silinirse bu yerler tanımsız bir bileşene işaret eder ve doğrulama hata verir. "
+"Silinirse bu yerler tanımsız bir bileşene işaret eder ve model denetimi hata verir. "
 "Silinsin mi?"
 msgstr ""
 

@@ -14,7 +14,7 @@
 import os
 from typing import List
 
-from cekirdek import kurucu, varyans
+from cekirdek import varyans
 from cekirdek.ceviri import _
 from cekirdek.dogrula._ortak import Bulgu
 
@@ -37,6 +37,7 @@ def varyans_kontrol(spec: dict) -> List[Bulgu]:
         varyans.mesh_sinirlari(spec, (1.0, 1.0))
     except ValueError as e:
         return [Bulgu("hata", _YER, str(e))]
+    from cekirdek import kurucu            # tembel: kurucu openmc'yi yukler (acilis hizi, H1b)
     if a.mesh_turu == "kuresel" and not kurucu._kure_mu(spec):
         bulgular.append(Bulgu("uyari", _YER, _("küresel ağırlık penceresi ağı küresel olmayan "
                                                "modelde yalnız kürenin içindeki bölgeyi kapsar")))

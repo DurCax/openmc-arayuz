@@ -28,7 +28,7 @@ def test_genislet_27_ornek():
     print("\n[GG1] genislet: 27 ornek hatasiz, saf, yapisal denetimden temiz")
     from cekirdek import geometri
     ornekler = _ornekler()
-    kontrol("31 ornek (28 sablon + 3 G-4 agac; v3 Y1 pwr_mesh_aki)", len(ornekler) == 31)
+    kontrol("34 ornek (28 sablon + 3 G-4 agac + 3 Y9: htgr_kompakt, htgr_pebble, zirh_agirlik_pencere)", len(ornekler) == 34)
     for ad, spec in ornekler:
         once = copy.deepcopy(spec)
         agac = geometri.genislet(spec)

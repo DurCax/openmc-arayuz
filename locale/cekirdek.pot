@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-03 20:55+0300\n"
+"POT-Creation-Date: 2026-10-03 21:12+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2142,13 +2142,13 @@ msgstr ""
 msgid "ağırlık penceresi dosyası yok: %s"
 msgstr ""
 
-#: cekirdek/dogrula/varyans.py:41
+#: cekirdek/dogrula/varyans.py:42
 msgid ""
 "küresel ağırlık penceresi ağı küresel olmayan modelde yalnız kürenin içindeki bölgeyi"
 " kapsar"
 msgstr ""
 
-#: cekirdek/dogrula/varyans.py:45
+#: cekirdek/dogrula/varyans.py:46
 msgid ""
 "pencereler koşu sırasında öğrenilir; ilk çevrimlerde pencere eksik olduğundan analog "
 "taşıma yapılır. Önerilen düzen: önce 'üret', sonra 'uygula'."
@@ -8022,7 +8022,7 @@ msgid "'dis_yaricap' sayı olmalı"
 msgstr ""
 
 #: cekirdek/triso.py:317
-msgid "pebble dış yarıçapı yakıt bölgesi yarıçapından büyük olmalı"
+msgid "pebble dış yarıçapı yakıt küresi yarıçapından büyük olmalı"
 msgstr ""
 
 #: cekirdek/triso.py:318

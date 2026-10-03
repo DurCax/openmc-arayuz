@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-03 20:55+0300\n"
+"POT-Creation-Date: 2026-10-03 21:12+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -2153,7 +2153,6 @@ msgstr ""
 " is given"
 
 #: cekirdek/dogrula/triso.py:66
-#, python-format
 msgid "TRISO tanımı geometride kullanılmıyor"
 msgstr "the TRISO definition is not used in the geometry"
 
@@ -2165,7 +2164,9 @@ msgstr "the TRISO compact needs a 3D model"
 msgid ""
 "Kompakt sonlu yükseklikli bir silindirdir; modelin yüksekliği tanımlanmalı (geometri "
 "kökünde yükseklik)."
-msgstr "A compact is a cylinder of finite height; the model height must be defined (height on the geometry root)."
+msgstr ""
+"A compact is a cylinder of finite height; the model height must be defined (height on"
+" the geometry root)."
 
 #: cekirdek/dogrula/triso.py:81
 #, python-format
@@ -2176,7 +2177,9 @@ msgstr "compact height (%g cm) differs from the model height (%g cm)"
 msgid ""
 "Parçacıklar yalnızca kompakt yüksekliğinde paketlenir; fazlası matris ile dolar, "
 "eksiği parçacıkları keser."
-msgstr "Particles are packed only over the compact height; the excess is filled with matrix, a shortfall cuts the particles."
+msgstr ""
+"Particles are packed only over the compact height; the excess is filled with matrix, "
+"a shortfall cuts the particles."
 
 #: cekirdek/dogrula/tukenme.py:38
 #, python-format
@@ -2370,17 +2373,21 @@ msgstr ""
 msgid "ağırlık penceresi dosyası yok: %s"
 msgstr "weight window file does not exist: %s"
 
-#: cekirdek/dogrula/varyans.py:41
+#: cekirdek/dogrula/varyans.py:42
 msgid ""
 "küresel ağırlık penceresi ağı küresel olmayan modelde yalnız kürenin içindeki bölgeyi"
 " kapsar"
-msgstr "a spherical weight window mesh covers only the region inside the sphere in a non-spherical model"
+msgstr ""
+"a spherical weight window mesh covers only the region inside the sphere in a non-"
+"spherical model"
 
-#: cekirdek/dogrula/varyans.py:45
+#: cekirdek/dogrula/varyans.py:46
 msgid ""
 "pencereler koşu sırasında öğrenilir; ilk çevrimlerde pencere eksik olduğundan analog "
 "taşıma yapılır. Önerilen düzen: önce 'üret', sonra 'uygula'."
-msgstr "weight windows are learned during the run; in the first batches the window is incomplete so transport is analog. Recommended order: 'generate' first, then 'apply'."
+msgstr ""
+"weight windows are learned during the run; in the first batches the window is "
+"incomplete so transport is analog. Recommended order: 'generate' first, then 'apply'."
 
 #: cekirdek/dogrula/veri.py:31
 msgid "nükleer veri kütüphanesi seçilmedi (OPENMC_CROSS_SECTIONS da yok)"
@@ -2701,7 +2708,9 @@ msgstr "TRISO definition '%s' is invalid: %s"
 msgid ""
 "'%s' TRISO kompaktı 3B model gerektirir: çekirdek yüksekliği tanımlı değil. Kompakt "
 "sonlu yükseklikli bir silindirdir."
-msgstr "TRISO compact '%s' needs a 3D model: the core height is not defined. A compact is a cylinder of finite height."
+msgstr ""
+"TRISO compact '%s' needs a 3D model: the core height is not defined. A compact is a "
+"cylinder of finite height."
 
 #: cekirdek/geometri/denetim.py:68
 #, python-format
@@ -8568,7 +8577,6 @@ msgid "katman %d: malzeme seçilmemiş"
 msgstr "layer %d: no material selected"
 
 #: cekirdek/triso.py:276
-#, python-format
 msgid "matris malzemesi seçilmemiş"
 msgstr "no matrix material selected"
 
@@ -8584,7 +8592,9 @@ msgstr "the packing fraction must be a number"
 #: cekirdek/triso.py:286
 #, python-format
 msgid "paketleme oranı 0 ile %.4g arasında olmalı (%s yöntemi için üst sınır; girilen %g)"
-msgstr "the packing fraction must be between 0 and %.4g (upper limit for the %s method; entered %g)"
+msgstr ""
+"the packing fraction must be between 0 and %.4g (upper limit for the %s method; "
+"entered %g)"
 
 #: cekirdek/triso.py:289
 #, python-format
@@ -8601,7 +8611,9 @@ msgstr "packing %.3g > %.2g: close random packing (CRP) is used, setup gets slow
 msgid ""
 "düzenli kafeste gerçek paketleme oranı hedeften %%%.1f farklı (kübik kafesin sayısı "
 "basamaklıdır); gerçek değer kullanılır"
-msgstr "the actual packing fraction in the regular lattice differs from the target by %%%.1f (the cubic lattice count is quantized); the actual value is used"
+msgstr ""
+"the actual packing fraction in the regular lattice differs from the target by %%%.1f "
+"(the cubic lattice count is quantized); the actual value is used"
 
 #: cekirdek/triso.py:302
 msgid "bu paketleme oranıyla kaba hiç parçacık sığmıyor"
@@ -8617,8 +8629,8 @@ msgid "'dis_yaricap' sayı olmalı"
 msgstr "'dis_yaricap' must be a number"
 
 #: cekirdek/triso.py:317
-msgid "pebble dış yarıçapı yakıt bölgesi yarıçapından büyük olmalı"
-msgstr "the pebble outer radius must be larger than the fuel zone radius"
+msgid "pebble dış yarıçapı yakıt küresi yarıçapından büyük olmalı"
+msgstr "the pebble outer radius must be larger than the fuel sphere radius"
 
 #: cekirdek/triso.py:318
 msgid "kabuk"
@@ -10430,7 +10442,9 @@ msgstr "unknown variance reduction mode: %r (valid: %s)"
 msgid ""
 "varyans azaltma yöntemi desteklenmiyor: %r (geçerli: %s; FW-CADIS random ray adjoint "
 "çözümü ister, bu sürümde yok)"
-msgstr "variance reduction method not supported: %r (valid: %s; FW-CADIS needs a random ray adjoint solution, not available in this version)"
+msgstr ""
+"variance reduction method not supported: %r (valid: %s; FW-CADIS needs a random ray "
+"adjoint solution, not available in this version)"
 
 #: cekirdek/varyans.py:102
 #, python-format
@@ -11123,7 +11137,7 @@ msgstr "unknown TCA state: %r (1-%d)"
 #: cekirdek/vv/lct.py:128
 #, python-format
 msgid "adım çubuk çapından küçük: %g cm"
-msgstr ""
+msgstr "pitch is smaller than the pin diameter: %g cm"
 
 #: cekirdek/vv/lct.py:233
 #, python-format
@@ -11133,7 +11147,7 @@ msgstr "unknown TCA variant: %r"
 #: cekirdek/vv/lct008.py:66
 #, python-format
 msgid "LCT-008 haritası: (%.3f, %.3f) konumunda bilinmeyen evren %r"
-msgstr ""
+msgstr "LCT-008 map: unknown universe at (%.3f, %.3f): %r"
 
 #: cekirdek/vv/lct008.py:109 cekirdek/vv/lct008.py:200
 #, python-format

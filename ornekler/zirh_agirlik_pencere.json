@@ -1,8 +1,8 @@
 {
   "surum": 1,
-  "ad": "Derin nufuz zirhi: su/celik/su + dedektor (agirlik penceresi dersi)",
-  "aciklama": "Sabit kaynak: merkezde 14.1 MeV D-T nokta kaynagi; 35 cm su, 40 cm celik, 30 cm su ve en dista 5 cm'lik dedektor suyu. Tally dedektor malzemesindeki akidir. Analog kosuda dedektore ulasan parcacik cok azdir; Hesap ayarlari > Gelismis > Varyans azaltma ile MAGIC agirlik pencereleri uretilip uygulanir ve FOM karsilastirilir. Sonuc yanliliksizdir: iki yontem istatistik icinde ayni degeri verir. Sertifika degildir; olculen FOM kartinin sonuc kisminda yazilidir.",
-  "baslik": "Derin nufuz zirhi (agirlik penceresi)",
+  "ad": "Derin nüfuz zırhı: su/çelik/su + dedektör (ağırlık penceresi dersi)",
+  "aciklama": "Sabit kaynak: merkezde 14.1 MeV D-T nokta kaynağı; 35 cm su, 40 cm çelik, 30 cm su ve en dışta 5 cm'lik dedektör suyu. Tally dedektör malzemesindeki akıdır. Analog koşuda dedektöre ulaşan parçacık çok azdır; Hesap ayarları > Gelişmiş > Varyans azaltma ile MAGIC ağırlık pencereleri üretilip uygulanır ve FOM karşılaştırılır. Sonuç yanlılıksızdır: iki yöntem istatistik içinde aynı değeri verir. Sertifika değildir; ölçülen FOM ders 5.21'de yazılıdır.",
+  "baslik": "Derin nüfuz zırhı (ağırlık penceresi)",
   "baslik_en": "Deep-penetration shield (weight windows)",
   "aciklama_en": "Fixed source: a 14.1 MeV D-T point source at the centre; 35 cm water, 40 cm steel, 30 cm water and a 5 cm detector water shell at the outside. The tally is the flux in the detector material. In an analog run very few particles reach the detector; generate and apply MAGIC weight windows under Settings > Advanced > Variance reduction and compare the FOM. The result is unbiased: both methods agree within statistics. Not a certification.",
   "kategori": "zirh",
@@ -100,7 +100,7 @@
     },
     {
       "ad": "dedektor",
-      "gorunen_ad": "Dedektor suyu (H2O)",
+      "gorunen_ad": "Dedektör suyu (H2O)",
       "yogunluk": {
         "birim": "g/cm3",
         "deger": 0.9980485

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-03 20:55+0300\n"
+"POT-Creation-Date: 2026-10-03 21:12+0300\n"
 "PO-Revision-Date: 2026-10-01 18:14+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -1528,16 +1528,16 @@ msgstr "Variance reduction (weight windows, MAGIC)"
 
 #: arayuz/ayar/varyans_formu.py:61
 msgid ""
-"Derin nüfuz problemlerinde (zırh) az sayıda parçacığın ulaştığı bölgeleri ağırlık "
-"pencereleriyle örnekler: parçacıklar bölünür ya da öldürülür, sonuç yanlılıksız "
+"Derin nüfuz problemlerinde (zırh) az sayıda parçacığın ulaştığı bölgelere ağırlık "
+"pencereleriyle yönlendirir: parçacıklar bölünür ya da öldürülür, sonuç yanlılıksız "
 "kalır. Yalnız 3B modelde."
-msgstr "In deep-penetration problems (shielding), samples the regions few particles reach with weight windows: particles are split or killed, the result stays unbiased. 3D models only."
+msgstr "In deep-penetration problems (shielding), steers particles to the regions few of them reach with weight windows: particles are split or killed, the result stays unbiased. 3D models only."
 
 #: arayuz/ayar/varyans_formu.py:71
 msgid ""
 "Küresel düzenekte küresel ağ (yalnız yarıçap bölmesi) pencereyi yönden bağımsız, az "
 "gürültülü yapar; düzenli ağ her modelde çalışır."
-msgstr "In a spherical setup a spherical mesh (radius divisions only) makes the weight window direction-independent and less noisy; the regular mesh works in any model."
+msgstr "In a spherical assembly a spherical mesh (radius divisions only) makes the weight window direction-independent and less noisy; the regular mesh works in any model."
 
 #: arayuz/ayar/varyans_formu.py:78
 msgid "boş: tek enerji grubu"
@@ -1551,7 +1551,9 @@ msgstr "Comma-separated increasing bounds, e.g. 0, 1e6, 2e7."
 msgid ""
 "Pencerelerin güncellendiği en çok çevrim (tally gerçekleşmesi) sayısı; üretim "
 "koşusunda çevrim sayısına eşitlemek en az gürültülü pencereyi verir."
-msgstr "The most batches (tally realizations) in which the weight windows are updated; setting it to the batch count in the generation run gives the least noisy window."
+msgstr ""
+"The most batches (tally realizations) in which the weight windows are updated; "
+"setting it to the batch count in the generation run gives the least noisy window."
 
 #: arayuz/ayar/varyans_formu.py:86
 msgid "yalnız 'uygula' modunda"
@@ -1563,7 +1565,6 @@ msgid "Gözat…"
 msgstr "Browse…"
 
 #: arayuz/ayar/varyans_formu.py:89
-#, python-format
 msgid "Koşu dizinindeki weight_windows.h5 dosyasını seçer."
 msgstr "Selects the weight_windows.h5 file in the run directory."
 
@@ -1574,7 +1575,12 @@ msgid ""
 "ölçütü FOM = 1 / (σ_bağıl² · T) yazılır; FOM yalnız aynı sonucu aynı belirsizlikle "
 "karşılaştırmak içindir. OpenMC 0.16 wwinp dışa aktarmaz; FW-CADIS random ray adjoint "
 "çözümü istediğinden bu sürümde yoktur."
-msgstr "Recommended order: first make an analog run with 'generate' (weight_windows.h5 is written to the run directory), then run with that file using 'apply'. The result card gives the figure of merit (FOM) = 1 / (σ_rel² · T); FOM is only for comparing the same result at the same uncertainty. OpenMC 0.16 cannot export wwinp; FW-CADIS needs a random ray adjoint solution and is not available in this version."
+msgstr ""
+"Recommended order: first make an analog run with 'generate' (weight_windows.h5 is "
+"written to the run directory), then run with that file using 'apply'. The result card"
+" gives the figure of merit (FOM) = 1 / (σ_rel² · T); FOM is only for comparing the "
+"same result at the same uncertainty. OpenMC 0.16 cannot export wwinp; FW-CADIS needs "
+"a random ray adjoint solution and is not available in this version."
 
 #: arayuz/ayar/varyans_formu.py:174
 msgid "Küresel ağda yarıçap bölmesi sayısı."
@@ -3149,7 +3155,9 @@ msgstr "TRISO"
 msgid ""
 "TRISO kompakt ya da pebble tanımı ekler; gelişmiş geometri editöründe bileşen olarak "
 "seçilir."
-msgstr "Adds a TRISO compact or pebble definition; it is chosen as a component in the advanced geometry editor."
+msgstr ""
+"Adds a TRISO compact or pebble definition; it is chosen as a component in the "
+"advanced geometry editor."
 
 #: arayuz/cubuk/triso_formu.py:81
 msgid "TRISO (kompakt, pebble)"
@@ -3160,7 +3168,9 @@ msgstr "TRISO (compact, pebble)"
 msgid ""
 "Hedef paketleme oranı = N·(4/3)πr³ / V_kap. Rastgele: en çok %.2f (CRP sınırı); "
 "düzenli (basit kübik): en çok π/6 = %.4f."
-msgstr "Target packing fraction = N·(4/3)πr³ / V_container. Random: at most %.2f (CRP limit); regular (simple cubic): at most π/6 = %.4f."
+msgstr ""
+"Target packing fraction = N·(4/3)πr³ / V_container. Random: at most %.2f (CRP limit);"
+" regular (simple cubic): at most π/6 = %.4f."
 
 #: arayuz/cubuk/triso_formu.py:106
 msgid "Rastgele paketlemenin tohumu: aynı tohum aynı yerleşimi verir."
@@ -3180,8 +3190,8 @@ msgid "Kompakt yüksekliği"
 msgstr "Compact height"
 
 #: arayuz/cubuk/triso_formu.py:122
-msgid "Yakıt bölgesi yarıçapı"
-msgstr "Fuel zone radius"
+msgid "Yakıt küresi yarıçapı"
+msgstr "Fuel sphere radius"
 
 #: arayuz/cubuk/triso_formu.py:123
 msgid "Pebble dış yarıçapı"
@@ -3220,7 +3230,10 @@ msgid ""
 "TRISO parçacığı es merkezli katmanlardan oluşur (içten dışa: çekirdek, tampon, IPyC, "
 "SiC, OPyC). Parçacıklar kompakt silindirinde ya da pebble'ın yakıt küresinde "
 "paketlenir; kalan hacim matris ile dolar. Kompakt 3B model ister."
-msgstr "A TRISO particle consists of concentric layers (inside out: kernel, buffer, IPyC, SiC, OPyC). Particles are packed in the compact cylinder or in the fuel sphere of the pebble; the remaining volume is filled with matrix. A compact needs a 3D model."
+msgstr ""
+"A TRISO particle consists of concentric layers (inside out: kernel, buffer, IPyC, "
+"SiC, OPyC). Particles are packed in the compact cylinder or in the fuel sphere of the"
+" pebble; the remaining volume is filled with matrix. A compact needs a 3D model."
 
 #: arayuz/cubuk/triso_formu.py:141 arayuz/geometri/form_kafes.py:275
 msgid "Katmanlar"
@@ -3230,7 +3243,9 @@ msgstr "Layers"
 msgid ""
 "Her satır katmanın DIŞ yarıçapı ve malzemesidir; yarıçaplar artmalıdır. En dış "
 "katmanın yarıçapı parçacık yarıçapıdır."
-msgstr "Each row is the OUTER radius and material of the layer; radii must increase. The radius of the outermost layer is the particle radius."
+msgstr ""
+"Each row is the OUTER radius and material of the layer; radii must increase. The "
+"radius of the outermost layer is the particle radius."
 
 #: arayuz/cubuk/triso_formu.py:302
 #, python-format
@@ -3251,9 +3266,9 @@ msgstr "TRISO definition in use"
 msgid ""
 "'{ad}' şurada kullanılıyor: {yerler}.\n"
 "\n"
-"Silinirse bu yerler tanımsız bir bileşene işaret eder ve doğrulama hata verir. "
+"Silinirse bu yerler tanımsız bir bileşene işaret eder ve model denetimi hata verir. "
 "Silinsin mi?"
-msgstr "'{ad}' is used here: {yerler}.\n\nIf deleted, these places point to an undefined component and validation reports an error. Delete it?"
+msgstr "'{ad}' is used here: {yerler}.\n\nIf deleted, these places point to an undefined component and the model check reports an error. Delete it?"
 
 #: arayuz/demet/demet_islemleri.py:18 arayuz/demet/yerlesim.py:91
 msgid "Kare demet"
@@ -10058,7 +10073,9 @@ msgstr "Efficiency (FOM)"
 msgid ""
 "FOM = 1 / (σ_bağıl² · T): ne kadar büyükse aynı belirsizliğe o kadar kısa sürede "
 "inilir"
-msgstr "FOM = 1 / (σ_rel² · T): the larger it is, the shorter the time to reach the same uncertainty"
+msgstr ""
+"FOM = 1 / (σ_rel² · T): the larger it is, the shorter the time to reach the same "
+"uncertainty"
 
 #: arayuz/sonuc/varyans.py:75
 #, python-format
@@ -10069,14 +10086,19 @@ msgstr "FOM could not be read: %s"
 msgid ""
 "σ bağıl: tally'nin tüm bölmeleri toplanarak (bağımsız kabul) hesaplanır; bölme "
 "bazında FOM için tally'yi tek bölmeye indirin."
-msgstr "σ rel: computed by summing all bins of the tally (taken as independent); for a per-bin FOM reduce the tally to a single bin."
+msgstr ""
+"σ rel: computed by summing all bins of the tally (taken as independent); for a per-"
+"bin FOM reduce the tally to a single bin."
 
 #: arayuz/sonuc/varyans.py:90
 msgid ""
 "Ağırlık penceresi: T bu koşunun süresidir; pencereleri üreten analog koşunun süresi "
 "eklenmemiştir. Yanlılıksızlık için aynı tally'yi analog koşuyla 2σ içinde "
 "karşılaştırın."
-msgstr "Weight window: T is the time of this run; the time of the analog run that generated the windows is not added. For bias, compare the same tally with an analog run within 2σ."
+msgstr ""
+"Weight window: T is the time of this run; the time of the analog run that generated "
+"the windows is not added. For bias, compare the same tally with an analog run within "
+"2σ."
 
 #: arayuz/sonuc/yerel_k.py:71
 msgid "Yerel k hesaplanmadı. Modele yerel k tally'si ekleyip yeniden çalıştırın."
