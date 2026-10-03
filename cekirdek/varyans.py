@@ -7,7 +7,7 @@
  kapali; onbellek kimligi ve eski dosyalar degismez):
 
    {"var": true,
-    "mod": "uret_uygula" | "uygula",
+    "mod": "uret" | "uret_uygula" | "uygula",
     "yontem": "magic",                       # fw_cadis: asagiya bakin
     "parcacik": "neutron" | "photon",
     "mesh_boyut": [nx, ny, nz],              # modelin sinir kutusunda duzenli ag
@@ -16,6 +16,9 @@
     "dosya": "yol.h5 | yol.wwinp"}           # yalniz mod == "uygula"
 
  MODLAR (OpenMC 0.16, openmc/weight_windows.py ve docs/usersguide/variance_reduction)
+   uret        : openmc.WeightWindowGenerator(method='magic', on_the_fly=False) --
+                 kosu ANALOG transport eder, yalniz pencereleri uretir ve kosu sonunda
+                 weight_windows.h5 yazar (onerilen ilk adim; ardindan 'uygula').
    uret_uygula : openmc.WeightWindowGenerator(method='magic', on_the_fly=True) --
                  pencereler KOSU SIRASINDA her `guncelleme_araligi` cevrimde, en cok
                  `max_gerceklesme` gerceklesmeye kadar guncellenir ve ayni kosuda
@@ -52,7 +55,7 @@ from cekirdek.ceviri import _
 _log = logging.getLogger(__name__)
 
 YONTEMLER = ("magic",)
-MODLAR = ("uret_uygula", "uygula")
+MODLAR = ("uret", "uret_uygula", "uygula")
 PARCACIKLAR = ("neutron", "photon")
 VARSAYILAN_BOYUT = (10, 10, 10)
 VARSAYILAN_MAX_GERCEKLESME = 10      # OpenMC varsayilani 1; MAGIC icin birkac gerceklesme gerekir
@@ -65,7 +68,7 @@ H5_UZANTISI = ".h5"
 class VaryansAyari:
     """spec["ayarlar"]["varyans"] dogrulanmis hali."""
     var: bool
-    mod: str = "uret_uygula"
+    mod: str = "uret"
     yontem: str = "magic"
     parcacik: str = "neutron"
     boyut: Tuple[int, int, int] = VARSAYILAN_BOYUT
@@ -81,7 +84,7 @@ def ayar(spec: dict) -> VaryansAyari:
     ham = ((spec or {}).get("ayarlar") or {}).get("varyans")
     if not isinstance(ham, dict) or not ham.get("var"):
         return VaryansAyari(False)
-    mod = ham.get("mod") or "uret_uygula"
+    mod = ham.get("mod") or "uret"
     if mod not in MODLAR:
         raise ValueError(_("bilinmeyen varyans azaltma modu: %r (geçerli: %s)")
                          % (mod, ", ".join(MODLAR)))
@@ -175,10 +178,11 @@ def uygula(settings, spec: dict, sinir_kutu) -> None:
     mesh.lower_left = alt
     mesh.upper_right = ust
     kw = {"energy_bounds": list(a.enerji_siniri)} if a.enerji_siniri else {}
+    uygulaniyor = a.mod == "uret_uygula"
     settings.weight_window_generators = openmc.WeightWindowGenerator(
         mesh, particle_type=a.parcacik, method=a.yontem, max_realizations=a.max_gerceklesme,
-        update_interval=a.aralik, on_the_fly=True, **kw)
-    settings.weight_windows_on = True
+        update_interval=a.aralik, on_the_fly=uygulaniyor, **kw)
+    settings.weight_windows_on = uygulaniyor
 
 
 def betik_satirlari(spec: dict, sinir_kutu) -> List[str]:
@@ -195,15 +199,19 @@ def betik_satirlari(spec: dict, sinir_kutu) -> List[str]:
                 "ayar.weight_windows_on = True"]
     alt, ust = mesh_sinirlari(spec, sinir_kutu)
     enerji = ", energy_bounds=%r" % list(a.enerji_siniri) if a.enerji_siniri else ""
-    return ["# varyans azaltma: MAGIC ağırlık penceresi üreteci (koşu sırasında üretilir ve uygulanır)",
+    uygulaniyor = a.mod == "uret_uygula"
+    baslik = ("koşu sırasında üretilir ve uygulanır" if uygulaniyor
+              else "yalnız üretilir (analog taşıma); weight_windows.h5 yazılır")
+    return ["# varyans azaltma: MAGIC ağırlık penceresi üreteci (%s)" % baslik,
             "_ww_ag = openmc.RegularMesh()",
             "_ww_ag.dimension = %r" % list(a.boyut),
             "_ww_ag.lower_left = %r" % (tuple(alt),),
             "_ww_ag.upper_right = %r" % (tuple(ust),),
             "ayar.weight_window_generators = openmc.WeightWindowGenerator(_ww_ag, "
             "particle_type=%r, method=%r, max_realizations=%d, update_interval=%d, "
-            "on_the_fly=True%s)" % (a.parcacik, a.yontem, a.max_gerceklesme, a.aralik, enerji),
-            "ayar.weight_windows_on = True"]
+            "on_the_fly=%s%s)" % (a.parcacik, a.yontem, a.max_gerceklesme, a.aralik,
+                                     uygulaniyor, enerji),
+            "ayar.weight_windows_on = %s" % uygulaniyor]
 
 
 # ----------------------------------------------------------------------------
