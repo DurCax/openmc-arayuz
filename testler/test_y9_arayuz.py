@@ -117,3 +117,66 @@ HIZLI = [test_triso_bolumu_gorunurluk_ve_secim_formu_doldurur,
          test_form_degisikligi_spec_e_yazilir, test_ekle_ad_degistir_ve_sil,
          test_alt_model_triso_kompakt_ve_pebble]
 YAVAS = []
+
+
+# ---------------------------------------------------------------------------
+# varyans azaltma karti ve FOM karti
+# ---------------------------------------------------------------------------
+
+def test_varyans_formu_spec_e_yazar_ve_kapaliyken_alan_eklemez():
+    print("\n[Y9-U5] varyans formu: dolduruken spec degismez; acinca ayar yazilir; kapali alan yok")
+    import copy
+    from arayuz.ayar.varyans_formu import VaryansFormu
+    from cekirdek import varyans
+    _qt()
+    # Arrange
+    spec = _yukle("zirh_agirlik_pencere")
+    ilk = copy.deepcopy(spec)
+    f = VaryansFormu()
+    # Act
+    f.doldur(spec)
+    degisen = []
+    f.degisti.connect(lambda: degisen.append(1))
+    f.ag_turu.setCurrentIndex(f.ag_turu.findData("kuresel"))
+    kontrol("kapaliyken degisiklik spec'e alan eklemez", "varyans" not in spec["ayarlar"])
+    f.var.setChecked(True)
+    f.nx.setValue(8)
+    f.ny.setValue(1)
+    f.nz.setValue(1)
+    f.enerji.setText("0, 1e6, 2e7")
+    f.enerji.editingFinished.emit()
+    f.max_gerceklesme.setValue(40)
+    a = varyans.ayar(spec)
+    # Assert
+    kontrol("doldur spec'i degistirmedi (ilk durum)", ilk["ayarlar"] == _yukle("zirh_agirlik_pencere")["ayarlar"])
+    kontrol("ayar acik, kuresel, 8x1x1", a.var and a.mesh_turu == "kuresel" and a.boyut == (8, 1, 1))
+    kontrol("enerji sinirlari", a.enerji_siniri == (0.0, 1e6, 2e7), "-> %r" % (a.enerji_siniri,))
+    kontrol("gerceklesme 40, mod uret", a.max_gerceklesme == 40 and a.mod == "uret")
+    kontrol("degisti sinyali", degisen)
+    f.mod.setCurrentIndex(f.mod.findData("uygula"))
+    kontrol("uygula: dosya alani etkin, ag alanlari pasif", f.dosya.isEnabled() and not f.nx.isEnabled())
+
+
+def test_varyans_formu_gelismis_bolumde_ve_fom_karti_tablosu():
+    print("\n[Y9-U6] Hesap ayarlari Gelismis'te varyans formu; FOM karti tablo yazar")
+    from arayuz.sekme_ayar import AyarSekmesi
+    from arayuz.sonuc.varyans import VaryansKarti
+    from cekirdek.varyans import FomSatiri
+    _qt()
+    # Arrange
+    s = AyarSekmesi()
+    s.spec_yukle(_yukle("zirh_agirlik_pencere"))
+    k = VaryansKarti()
+    # Act
+    k.goster([FomSatiri("aki_dedektor", 1.7e9, 1.0e8, 0.0588, 100.0, 2.9)], pencere=True)
+    # Assert
+    kontrol("form ayar sekmesinde", hasattr(s, "y9_formu") and s.y9_formu.parent() is not None)
+    kontrol("kart gorunur", not k.isHidden())
+    kontrol("tablo FOM ve tally adi", "aki_dedektor" in k.tablo.text() and "2.9" in k.tablo.text())
+    kontrol("pencere notu", "analog" in k.notlar.text())
+    k.goster(None)
+    kontrol("None: gizli", k.isHidden())
+
+
+HIZLI += [test_varyans_formu_spec_e_yazar_ve_kapaliyken_alan_eklemez,
+          test_varyans_formu_gelismis_bolumde_ve_fom_karti_tablosu]

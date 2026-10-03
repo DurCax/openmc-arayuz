@@ -139,6 +139,7 @@ class YerlesimMixin(object):
         gf.addRow(_("Gecikmeli nötron grupları:"), self.kinetik_gruplar)
         self.gelismis.ekle(self._sar(gf))
         self.gelismis.ekle(self._y7_formu())       # Y7: foton ve sicaklik (arayuz/ayar/foton_sicaklik.py)
+        self.gelismis.ekle(self._y9_formu())       # Y9: varyans azaltma (arayuz/ayar/varyans_formu.py)
         self.gelismis_tayf_baslik = baslik(_("Başlangıç kaynağının enerjisi ve yönü"))
         self.gelismis.ekle(self.gelismis_tayf_baslik)
         self.gelismis_tayf_not = ipucu(_(
@@ -199,6 +200,13 @@ class YerlesimMixin(object):
         self.y7_formu = FotonSicaklikFormu()
         self.y7_formu.degisti.connect(self.bildir)
         return self.y7_formu
+
+    def _y9_formu(self):
+        """Y9: varyans azaltma (agirlik penceresi) formu (Gelismis icinde)."""
+        from arayuz.ayar.varyans_formu import VaryansFormu
+        self.y9_formu = VaryansFormu()
+        self.y9_formu.degisti.connect(self.bildir)
+        return self.y9_formu
 
     def _tally_formu(self):
         t_form = QtWidgets.QFormLayout()

@@ -143,6 +143,8 @@ class CalistirSekmesi(SonucGosterimiMixin, QtWidgets.QWidget):
         self.yerel_k_karti.setVisible(False)
         from arayuz.sonuc.yuzey import YuzeyKarti           # Y7: kendi gorunurlugu
         self.yuzey_karti = YuzeyKarti()
+        from arayuz.sonuc.varyans import VaryansKarti        # Y9: FOM (kendi gorunurlugu)
+        self.varyans_karti = VaryansKarti()
 
         self.kart = SonucKarti()
         self.durum_etiket, self.ozet_etiket = self.kart.durum_etiket, self.kart.ozet_etiket
@@ -175,6 +177,7 @@ class CalistirSekmesi(SonucGosterimiMixin, QtWidgets.QWidget):
         duzen.addWidget(self.spektrum_karti)
         duzen.addWidget(self.yerel_k_karti)
         duzen.addWidget(self.yuzey_karti)
+        duzen.addWidget(self.varyans_karti)
         duzen.addWidget(self.kart)
         duzen.addWidget(self.uygunluk)
         duzen.addWidget(self.ayrinti_karti)
@@ -251,6 +254,7 @@ class CalistirSekmesi(SonucGosterimiMixin, QtWidgets.QWidget):
         self.spektrum_karti.goster(None)
         self.yerel_k_karti.setVisible(False)
         self.yuzey_karti.goster(None)
+        self.varyans_karti.goster(None)
         self._gorunum_guncelle()
         self.kapi_guncelle()
         self.sonuc_degisti.emit()
@@ -496,6 +500,7 @@ class CalistirSekmesi(SonucGosterimiMixin, QtWidgets.QWidget):
         self.spektrum_karti.goster(None)
         self.yerel_k_karti.setVisible(False)
         self.yuzey_karti.goster(None)
+        self.varyans_karti.goster(None)
         self.pano.temizle()
         self.keff_etiket.setText(_("koşuyor…"))
         self.durum_etiket.setStyleSheet("")
