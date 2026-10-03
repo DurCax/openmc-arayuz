@@ -21,7 +21,7 @@ fi
 
 # P2 kancasi: masaustu kayitlarini (menu, MIME) geri alir
 if [ -f "$BETIK_DIZINI/masaustu/kaldir.sh" ]; then
-    bash "$BETIK_DIZINI/masaustu/kaldir.sh" "$PREFIX" || echo "UYARI: masaustu kaydi kaldirilamadi." >&2
+    PYTHON="$PREFIX/bin/python" bash "$BETIK_DIZINI/masaustu/kaldir.sh" || echo "UYARI: masaustu kaydi kaldirilamadi." >&2
 fi
 
 # Betik kendi dizinini silecek: once bellege okunmasi icin /tmp'ye tasinmaz;

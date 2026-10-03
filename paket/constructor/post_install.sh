@@ -23,14 +23,15 @@ chmod +x "$PAKET_DIZINI/kaldir.sh"
 
 # ---- KANCA (P2): masaustu bütünlesmesi --------------------------------------
 # $PREFIX/share/openmc-arayuz-paket/masaustu/kur.sh varsa cagrilir:
-#     kur.sh <PREFIX>      (kullanicinin $HOME/XDG dizinlerine .desktop/MIME/ikon yazar)
+#     PYTHON=$PREFIX/bin/python kur.sh --exec $PREFIX/bin/openmc-arayuz
+#                          (kullanicinin $HOME/XDG dizinlerine .desktop/MIME/ikon yazar)
 # Basarisizlik kurulumu bozmaz (uyari verilir).
 mkdir -p "$PAKET_DIZINI/masaustu"
 tar -C "$PAKET_DIZINI/masaustu" -xf "$PAKET_DIZINI/masaustu.tar"
 rm -f -- "$PAKET_DIZINI/masaustu.tar"
 KANCA="$PAKET_DIZINI/masaustu/kur.sh"
 if [ -f "$KANCA" ]; then
-    bash "$KANCA" "$PREFIX" || echo "UYARI: masaustu kaydi basarisiz (kanca $KANCA); uygulama yine calisir." >&2
+    PYTHON="$PREFIX/bin/python" bash "$KANCA" --exec "$PREFIX/bin/openmc-arayuz" || echo "UYARI: masaustu kaydi basarisiz (kanca $KANCA); uygulama yine calisir." >&2
 fi
 
 cat <<METIN
