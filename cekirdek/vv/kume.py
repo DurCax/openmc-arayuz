@@ -57,12 +57,31 @@ KAYNAK = (N_("NUREG/CR-6698 (2001) yöntemi; kriter modelleri mit-crpg/benchmark
           "ve ICSBEP E ± σ (uncertainties.csv)"))
 
 
-def kriter_dosyalari():
-    """Kumeye aday JSON dosyalari (sirali)."""
-    yollar = glob.glob(os.path.join(ORNEK, "kriter_*.json"))
-    yollar += [os.path.join(ORNEK, "godiva_kriter.json")]
-    yollar += glob.glob(os.path.join(ORNEK, "vv", "kriter_*.json"))
-    return sorted(y for y in yollar if os.path.exists(y))
+# Ayni deneyin yeniden uretilmis V&V dosyasi (olcumluyse) eskisinin YERINE sayilir;
+# bir deney kumede iki kez yer almaz. v3 Y11: LCT-008 durum 1 h_x ile yeniden uretildi.
+VV_YERINE = {"kriter_lct008.json": os.path.join("vv", "kriter_lct008_01.json")}
+
+
+def _olcumlu(yol: str) -> bool:
+    if not os.path.exists(yol):
+        return False
+    try:
+        with open(yol, encoding="utf-8") as f:
+            return "olcum" in (json.load(f).get("referans") or {})
+    except (OSError, ValueError) as e:
+        _log.warning("V&V yerine geçen dosya okunamadı: %s (%s)", yol, e)
+        return False
+
+
+def kriter_dosyalari(ornek: str = None) -> list:
+    """Kumeye aday JSON dosyalari (sirali). ornek: ornekler kok dizini (test icin)."""
+    ornek = ornek or ORNEK
+    yollar = glob.glob(os.path.join(ornek, "kriter_*.json"))
+    yollar += [os.path.join(ornek, "godiva_kriter.json")]
+    yollar += glob.glob(os.path.join(ornek, "vv", "kriter_*.json"))
+    cikan = {os.path.join(ornek, eski) for eski, yeni in VV_YERINE.items()
+             if _olcumlu(os.path.join(ornek, yeni))}
+    return sorted(y for y in yollar if os.path.exists(y) and y not in cikan)
 
 
 def _oku(yol):

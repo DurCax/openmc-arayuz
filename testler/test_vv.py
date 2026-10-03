@@ -316,9 +316,12 @@ def test_profil_b_uctan_uca():
                        uygulama=uyg)
     b2 = _profil_b(gercek, uyg)
     k6 = _bul(b2, "K6")[0]
-    kontrol("depo LEU alt kumesi (n = %d < 10) -> K6 'USL hesaplanamadı'" % gercek.n,
-            k6.durum == "uygulanamadi" and "USL hesaplanamadı" in k6.mesaj, "-> %s" % k6.mesaj)
-    kontrol("K10 uyarisi (n < 10)", any(x.seviye == "uyari" for x in _bul(b2, "K10")))
+    # v3 Y11: depoda LEU kafes vakalari var -> n >= 10, K6 USL ile karsilastirir
+    kontrol("depo LEU alt kumesi (n = %d >= 10) -> K6 USL ile karsilastirdi" % gercek.n,
+            gercek.n >= 10 and "USL =" in k6.mesaj, "-> %s" % k6.mesaj)
+    kontrol("K10: n >= 10 uyarisi yok", not any(
+        x.seviye == "uyari" and "10" in x.mesaj for x in _bul(b2, "K10")),
+        "-> %s" % [(x.seviye, x.mesaj[:80]) for x in _bul(b2, "K10")])
 
 
 def _sahte_kume_leu():
@@ -346,9 +349,11 @@ def test_vv_kriterleri_kapidan_gecer():
         kontrol("%s: meta temiz" % ad, not ornek_bilgi.dogrula_meta(ham),
                 "-> %s" % ornek_bilgi.dogrula_meta(ham))
         ref = ham["referans"]
-        kontrol("%s: kaynak modeli, lisans notu, seri" % ad,
-                "mit-crpg" in ref.get("kaynak_model", "") and "MIT" in ref.get("lisans", "")
-                and ref.get("seri"))
+        # Acik model kaynagi: mit-crpg/benchmarks (MIT) ya da kamuya acik birincil
+        # deney raporu (v3 Y11: TCA, JAERI 1254); her ikisinde lisans notu zorunlu.
+        acik = (("mit-crpg" in ref.get("kaynak_model", "") and "MIT" in ref.get("lisans", ""))
+                or ("JAERI" in ref.get("kaynak_model", "") and "açık" in ref.get("lisans", "")))
+        kontrol("%s: kaynak modeli, lisans notu, seri" % ad, acik and ref.get("seri"))
         try:
             hatalar = [b for b in dogrula.kapi(sema.yukle(yol)) if b.seviye == "hata"]
         except dogrula.DogrulamaHatasi as e:

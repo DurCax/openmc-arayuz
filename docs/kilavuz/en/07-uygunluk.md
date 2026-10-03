@@ -162,7 +162,8 @@ The honest frame, written **verbatim** on the card and in the report annex:
   error (a note is added and a transient analysis is pointed to).
 - **It is not evidence of criticality safety**: without a V&V summary profile B says "USL could not be
   calculated". Even with a V&V summary the USL is valid only within the area of applicability of the
-  set: with the set of this version **there is no USL for LWR / LEU lattice applications** ([V&V](#vv)).
+  set: the set of this version gives a USL only to **LWR / LEU oxide lattice** applications (n = 24,
+  two experimental series; a teaching figure, not licensing) ([V&V](#vv)).
 - **There is no independent V&V.** The code, the tests and the reviews come from the same development
   process (`docs/YAZILIM_KALITE.md` §4).
 
@@ -174,10 +175,12 @@ The benchmark package of the tool and the measured results are in `docs/VV.md`
 files, and a test checks this. Environment: OpenMC 0.16.0, ENDF/B-VIII.0 (HDF5, 294 K). Step-by-step
 lesson: [benchmark and C/E](05-dersler.md#ders-benchmark).
 
-**The set.** 26 experimental benchmarks (ICSBEP): the first four are `ornekler/godiva_kriter.json`,
+**The set.** 49 experimental benchmarks (ICSBEP; with v3 Y11): the first four are `ornekler/godiva_kriter.json`,
 `ornekler/kriter_jezebel.json`, `ornekler/kriter_flattop25.json`, `ornekler/kriter_lct008.json`;
 22 are under `ornekler/vv/`, imported as concentric spherical shells from the OpenMC models of
-mit-crpg/benchmarks (MIT license). There are also two code-to-code benchmarks (VVER-1000 LEU assembly,
+mit-crpg/benchmarks (MIT license); 24 are LEU oxide lattices (v3 Y11): LEU-COMP-THERM-006 (TCA,
+18 cases, models built from the public primary report JAERI 1254) and LEU-COMP-THERM-008 (6 cases,
+mit-crpg). LCT-008 case 1 was regenerated with h_x and replaces the v2 file in the V&V set. There are also two code-to-code benchmarks (VVER-1000 LEU assembly,
 SFR MET-1000). **Experimental and code-to-code benchmarks are kept apart:** in an experimental
 benchmark E is a measured critical assembly; in a code-to-code benchmark E is the average of other
 codes' results, not the "true" value.
@@ -195,7 +198,10 @@ codes' results, not the "true" value.
 The **acceptance criterion** is \|C − E\| ≤ 3·√(σc² + σe²) and σc ≤ 30 pcm. It is the **project's own
 criterion**, it does not come from a standard. No benchmark exceeds it at present; the largest
 deviations are PU-MET-FAST-008 (2.62σ) and U233-SOL-INTER-001 (2.19σ, −1822 pcm; the outlier that
-makes the normality test of the whole set fail).
+makes the normality test of the whole set fail). Both were studied in v3 with model variants: the
+import, the 1D simplification, S(α,β) and temperature do not explain the deviations; the probable cause
+is nuclear data (consistent with the published U-233 epithermal trend) — **not verified** with another
+library (`docs/VV.md`, "Deviation study").
 
 **Bias and USL: the NUREG/CR-6698 procedure.** (Code `cekirdek/vv/`, formulas `docs/STANDARTLAR.md` §4.)
 1. Normalization k_norm = k_calc / k_exp and combined uncertainty σ = √(σc² + σe²) (eqs. 9, 3).
@@ -215,34 +221,34 @@ either if the confidence β ≤ 40 % (Table 2.2: more data needed). The default 
 VERIFIED**); **0.02 is the absolute lower limit**, and a smaller ΔSM in the profile gives a K11 error.
 The choice of ΔSM and its justification belong to the user organization.
 
-**Measured results (01.10.2026; ΔSM = 0.05, ΔAOA = 0; details in `docs/VV.md`)**
+**Measured results (02.10.2026, with the v3 Y11 LEU lattice cases; ΔSM = 0.05, ΔAOA = 0; details in `docs/VV.md`)**
 
 | Subset (AOA) | n | bias k̄ − 1 | Method | USL |
 |---|---|---|---|---|
-| Whole set | 26 | −0.00051 | non-parametric (β = 73.6 %) | 0.9035 (information only: mixes different AOAs) |
-| Fast spectrum (EALF ≥ 100 keV) | 13 | −0.00050 | tolerance limit | 0.9444 |
-| Thermal spectrum (EALF < 1 eV) | 10 | −0.00089 | tolerance limit | 0.9388 |
-| U-235 (all forms) | 11 | −0.00006 | tolerance limit | 0.9418 (illustration only) |
+| Whole set | 49 | −0.00018 | non-parametric (β = 91.9 %) | 0.9235 (information only: mixes different AOAs) |
+| Fast spectrum (EALF ≥ 100 keV) | 13 | −0.00050 | tolerance limit | 0.9444 (information only) |
+| Thermal spectrum (EALF < 1 eV) | 33 | +0.00010 | non-parametric (β = 81.6 %) | 0.9297 (information only) |
+| U-235 (all forms) | 34 | +0.00021 | non-parametric (β = 82.5 %) | 0.9297 (illustration only) |
 | Solutions (thermal + intermediate) | 10 | −0.00203 | non-parametric (β = 40.1 %) | 0.8735 |
+| **U-235, oxide, thermal, LEU (LCT-006 + LCT-008)** | **24** | +0.00029 | non-parametric (β = 70.8 %) | **0.9275** |
 | Intermediate spectrum | 3 | −0.00005 | tolerance limit | **could not be calculated** |
 | Pu (all forms) | 9 | −0.00086 | non-parametric (β = 37.0 %) | **could not be calculated** |
 | U-233 | 5 | −0.00032 | non-parametric (β = 22.6 %) | **could not be calculated** |
-| LEU (U-235, ≤ 20 %) | 4 | −0.00056 | tolerance limit | **could not be calculated** |
 
 **Which subset does the tool use?** The table above is descriptive. K6 calculates the USL of an
 application **only** from cases that share the application's fissile species, physical form and
 neutron spectrum; for U-235 the enrichment class must also match (ICSBEP: LEU ≤ 10 %, IEU 10-60 %,
 HEU ≥ 60 %; NUREG/CR-6698 §2.5, Table 2.3). If the matching subset has fewer than 10 cases, no USL
-is given. With this criterion the largest subset in the repository set has 5 cases (Pu, metal,
-fast); the LEU oxide lattice has 1 case (LCT-008) and a Godiva-like HEU fast metal 2 cases. **So the
-repository set at present gives no USL to any application** - that is the honest result. The fast
+is given. With this criterion the largest subset in the repository set is **U-235, oxide, thermal, LEU
+(n = 24)**; LWR/LEU lattice applications (e.g. pwr_17x17) get **USL = 0.9275** (non-parametric; the
+set is not normal because the two series differ by ~130 pcm — no U-234 in the TCA model,
+`docs/VV.md`). The 24 cases come from only two experimental series (K14 note); 6698's independence
+assumption is not fully met. For other AOAs the largest subset has 5 cases (Pu, metal, fast) → no
+USL. The fast
 spectrum, thermal spectrum and U-235 rows of the table are mixed in fissile species or form; they are
 for information only.
 
 **For which applications is there NO USL?**
-- **LWR / LEU lattice applications** (the most common at universities): the LEU oxide lattice subset
-  has 1 case → no USL. Independent LEU-COMP-THERM series (LCT-001, -002, -039 ...) are not in
-  mit-crpg; they have to be modeled anew from the ICSBEP handbook.
 - Single-species AOAs (Pu, U-233), the intermediate spectrum and every AOA with fewer than 10 matching
   cases in the set.
 - MOX, oxide powders, heavy water, concrete/steel/lead reflectors, poisoned (B, Gd, Cd) systems, high

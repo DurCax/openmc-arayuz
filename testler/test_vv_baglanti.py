@@ -109,8 +109,9 @@ def test_uygulama_ozeti():
     kontrol("uygulama birlesti (spec + verilen)", uyg.get("tayf") == "termal"
             and uyg.get("bolunebilir") == "U-235")
     vv, _u = kume.uygulama_ozeti(spec, FIXTURE, uygulama={"tayf": "termal"})
-    kontrol("depodaki kume (LEU oksit termal n < 10) -> USL yok (AOA disinda)",
-            vv.usl is None and "AOA dışında" in vv.usl_neden, "-> %s" % vv.usl_neden)
+    kontrol("depodaki kume (v3 Y11: LEU oksit termal n >= 10) -> USL, alt kume oksit",
+            vv.usl is not None and vv.n >= 10 and "oksit" in vv.alt_kume,
+            "-> n %d, %r (%s)" % (vv.n, vv.usl, vv.usl_neden))
     kontrol("girdi spec degismedi", spec == _spec())
 
 
