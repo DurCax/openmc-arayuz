@@ -288,7 +288,9 @@ class DogrulamaMixin(object):
         if not self.onizleme.cizildi_mi():
             return False, _("Geometri önizlemesi henüz çizilmedi. Önce çiz, "
                             "sonra çalıştır: yanlış geometriyle saatlerce koşmamak "
-                            "için önizlemenin çizilmesi bekleniyor.")
+                            "için önizlemenin çizilmesi bekleniyor. Önizleme Geometri "
+                            "sayfasında çizilir: oraya gidip çizilmesini bekleyin "
+                            "(Analiz ve Tükenme sayfaları da buna bakar).")
         uyari = sum(1 for b in self._bulgular if b.seviye == "uyari")
         if uyari:
             return True, _n("Çalıştırılabilir. %d uyarı var — sonucu etkileyebilir, "

@@ -94,6 +94,10 @@ is not added to σ.
 <a id="mesh-vtk"></a>
 ### VTK and ParaView
 
+**In a 2D model** (axially infinite) the z bound of the mesh is ±10⁴ cm; only the **written coordinates** are
+reduced to a 1 cm slab (z = −0.5…+0.5 cm) so that ParaView's default view is usable. The field values (volume /
+relative / per volume) and the map in the application do not change; the z thickness is not a physical height.
+
 The file is in legacy VTK format (`DATASET STRUCTURED_GRID`, ASCII). If the Python `vtk`
 package is installed, OpenMC's own writer (`Mesh.write_data_to_vtk`, volume normalization off)
 is used; otherwise (not in the default environment, no new dependency is added) a built-in

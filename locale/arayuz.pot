@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-03 21:55+0300\n"
+"POT-Creation-Date: 2026-10-03 22:10+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -298,7 +298,7 @@ msgstr ""
 msgid "Δρ [pcm]"
 msgstr ""
 
-#: arayuz/analiz/dal.py:341 arayuz/demet/yerlesim.py:153 arayuz/demet/yerlesim.py:172
+#: arayuz/analiz/dal.py:341 arayuz/demet/yerlesim.py:155 arayuz/demet/yerlesim.py:174
 #: arayuz/geometri/form_kafes.py:96
 msgid "Adım"
 msgstr ""
@@ -326,7 +326,7 @@ msgstr ""
 msgid "Kordaki sayı"
 msgstr ""
 
-#: arayuz/analiz/demet_kinf.py:40 arayuz/demet/yerlesim.py:188
+#: arayuz/analiz/demet_kinf.py:40 arayuz/demet/yerlesim.py:190
 msgid "Boyut"
 msgstr ""
 
@@ -1478,7 +1478,7 @@ msgstr ""
 msgid "enerji"
 msgstr ""
 
-#: arayuz/ayar/sabitler.py:65 arayuz/demet/yerlesim.py:187
+#: arayuz/ayar/sabitler.py:65 arayuz/demet/yerlesim.py:189
 msgid "hücre"
 msgstr ""
 
@@ -3339,76 +3339,76 @@ msgstr ""
 msgid "Tıklayın ya da sürükleyin · sağ tık: parçayı seç"
 msgstr ""
 
-#: arayuz/demet/yerlesim.py:93
+#: arayuz/demet/yerlesim.py:95
 msgid "Seçili demetin kopyasını ekler."
 msgstr ""
 
-#: arayuz/demet/yerlesim.py:95
+#: arayuz/demet/yerlesim.py:97
 msgid "Seçili demeti siler (kullanılıyorsa önce sorar)."
 msgstr ""
 
-#: arayuz/demet/yerlesim.py:100
+#: arayuz/demet/yerlesim.py:102
 msgid "Demetler"
 msgstr ""
 
-#: arayuz/demet/yerlesim.py:116
+#: arayuz/demet/yerlesim.py:118
 msgid "Doldurulacak halka (merkezden dışa numaralı)"
 msgstr ""
 
-#: arayuz/demet/yerlesim.py:120
+#: arayuz/demet/yerlesim.py:122
 msgid "Halkayı doldur"
 msgstr ""
 
-#: arayuz/demet/yerlesim.py:122
+#: arayuz/demet/yerlesim.py:124
 msgid "Parça paleti"
 msgstr ""
 
-#: arayuz/demet/yerlesim.py:126
+#: arayuz/demet/yerlesim.py:128
 msgid "Tümünü doldur"
 msgstr ""
 
-#: arayuz/demet/yerlesim.py:127
+#: arayuz/demet/yerlesim.py:129
 msgid "Bütün hücreleri seçili parçayla doldurur (Ctrl+Z geri alır)."
 msgstr ""
 
-#: arayuz/demet/yerlesim.py:175
+#: arayuz/demet/yerlesim.py:177
 msgid "Merkez dahil halka sayısı; k. halkada 6k hücre vardır."
 msgstr ""
 
-#: arayuz/demet/yerlesim.py:184
+#: arayuz/demet/yerlesim.py:186
 msgid "Sütun sayısı (x)"
 msgstr ""
 
-#: arayuz/demet/yerlesim.py:185
+#: arayuz/demet/yerlesim.py:187
 msgid "Satır sayısı (y)"
 msgstr ""
 
-#: arayuz/demet/yerlesim.py:197
+#: arayuz/demet/yerlesim.py:199
 msgid "Demet dışı"
 msgstr ""
 
-#: arayuz/demet/yerlesim.py:198
+#: arayuz/demet/yerlesim.py:200
 msgid "Demet hücrelerinin dışında kalan alanı dolduran malzeme."
 msgstr ""
 
-#: arayuz/demet/yerlesim.py:206
+#: arayuz/demet/yerlesim.py:208
 msgid "Üst/alt yüzler yatay (tepede hücre)"
 msgstr ""
 
-#: arayuz/demet/yerlesim.py:207
+#: arayuz/demet/yerlesim.py:209
 msgid "Sağ/sol yüzler düşey (sağda hücre)"
 msgstr ""
 
-#: arayuz/demet/yerlesim.py:208 arayuz/geometri/form_kafes.py:100
+#: arayuz/demet/yerlesim.py:210 arayuz/geometri/form_kafes.py:100
 #: arayuz/geometri/form_ortak.py:171
 msgid "Yönelim"
 msgstr ""
 
-#: arayuz/demet/yerlesim.py:210
+#: arayuz/demet/yerlesim.py:212
 msgid "Palette bütün malzemeler ve Boş hücre"
 msgstr ""
 
-#: arayuz/demet/yerlesim.py:212
+#: arayuz/demet/yerlesim.py:214
 msgid ""
 "Varsayılan palet yalnızca çubukları, iç demetleri ve soğutucu/moderatör hücrelerini "
 "gösterir."
@@ -5748,7 +5748,7 @@ msgstr ""
 msgid "y — komşu demetler üstte/altta"
 msgstr ""
 
-#: arayuz/demet/yerlesim.py:158 arayuz/kor_altigen.py:46
+#: arayuz/demet/yerlesim.py:160 arayuz/kor_altigen.py:46
 msgid "halka"
 msgstr ""
 
@@ -6687,7 +6687,7 @@ msgstr ""
 msgid "Malzeme"
 msgstr ""
 
-#: arayuz/goruntuleyici/tuval.py:60 arayuz/onizleme.py:163 arayuz/onizleme.py:334
+#: arayuz/goruntuleyici/tuval.py:60 arayuz/onizleme.py:163 arayuz/onizleme.py:335
 msgid "Model bekleniyor"
 msgstr ""
 
@@ -6703,37 +6703,37 @@ msgstr ""
 msgid "Gösterge"
 msgstr ""
 
-#: arayuz/onizleme.py:181
+#: arayuz/onizleme.py:182
 msgid "Çakışmaları göster"
 msgstr ""
 
-#: arayuz/onizleme.py:183
+#: arayuz/onizleme.py:184
 msgid ""
 "Birden fazla hücrenin kapladığı noktaları ayrı renkle gösterir ve\n"
 "sayısını bildirir. Büyük korlarda çizimi birkaç kat yavaşlatır."
 msgstr ""
 
-#: arayuz/karsilastir/panel.py:111 arayuz/onizleme.py:185 arayuz/veri/sayfa.py:54
+#: arayuz/karsilastir/panel.py:111 arayuz/onizleme.py:186 arayuz/veri/sayfa.py:54
 msgid "Yenile"
 msgstr ""
 
-#: arayuz/malzeme/malzeme_diyalog.py:163 arayuz/onizleme.py:209
+#: arayuz/malzeme/malzeme_diyalog.py:163 arayuz/onizleme.py:210
 msgid "Renk:"
 msgstr ""
 
-#: arayuz/goruntuleyici/paneller.py:74 arayuz/onizleme.py:238
+#: arayuz/goruntuleyici/paneller.py:74 arayuz/onizleme.py:239
 msgid "Çözünürlük:"
 msgstr ""
 
-#: arayuz/goruntuleyici/pencere.py:237 arayuz/onizleme.py:364
+#: arayuz/goruntuleyici/pencere.py:237 arayuz/onizleme.py:365
 msgid "Çiziliyor…"
 msgstr ""
 
-#: arayuz/onizleme.py:493
+#: arayuz/onizleme.py:494
 msgid "Önizleme gizli: model denetlendi, önizleme açılınca çizilir."
 msgstr ""
 
-#: arayuz/onizleme.py:507
+#: arayuz/onizleme.py:508
 #, python-format
 msgid ""
 "Önizleme: %d hücre çakışması bulundu — geometriyi gözden geçirin (kesitte ayrı renkle"
@@ -6744,14 +6744,14 @@ msgid_plural ""
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/onizleme.py:515
+#: arayuz/onizleme.py:516
 #, python-brace-format
 msgid "Önizleme güncel ({kesit}, {n} piksel){ek}"
 msgid_plural "Önizleme güncel ({kesit}, {n} piksel){ek}"
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/onizleme.py:528
+#: arayuz/onizleme.py:529
 #, python-format
 msgid ""
 "Geometri kurulamadı:\n"
@@ -6759,21 +6759,21 @@ msgid ""
 "%s"
 msgstr ""
 
-#: arayuz/onizleme.py:530
+#: arayuz/onizleme.py:531
 #, python-format
 msgid "Önizleme başarısız: %s"
 msgstr ""
 
-#: arayuz/onizleme.py:531
+#: arayuz/onizleme.py:532
 #, python-format
 msgid "Kapsamlı önizleme başarısız (Çalıştır kapısı tam modele bakar): %s"
 msgstr ""
 
-#: arayuz/onizleme.py:579
+#: arayuz/onizleme.py:580
 msgid "[ölçek 1:1 değil]"
 msgstr ""
 
-#: arayuz/onizleme.py:633
+#: arayuz/onizleme.py:634
 msgid "Hücre renkleri yalnız hücreleri ayırt etmek içindir."
 msgstr ""
 
@@ -6831,7 +6831,7 @@ msgstr ""
 msgid "Tam model"
 msgstr ""
 
-#: arayuz/onizleme_kapsam.py:90
+#: arayuz/onizleme_kapsam.py:92
 msgid ""
 "Otomatik: Parçalar sayfasında seçili parça, Demet sayfasında seçili demet,\n"
 "gelişmiş Geometri'de seçili düğüm çizilir (yansıtıcı sınırlı alt model);\n"
@@ -6839,19 +6839,19 @@ msgid ""
 "Çalıştır kapısı her iki kipte de yalnız tam modele bakar."
 msgstr ""
 
-#: arayuz/analiz/mgxs.py:179 arayuz/onizleme_kapsam.py:94
+#: arayuz/analiz/mgxs.py:179 arayuz/onizleme_kapsam.py:96
 msgid "Kapsam:"
 msgstr ""
 
-#: arayuz/onizleme_kapsam.py:125
+#: arayuz/onizleme_kapsam.py:127
 msgid "tam model (alt model kurulamadı)"
 msgstr ""
 
-#: arayuz/onizleme_kapsam.py:175
+#: arayuz/onizleme_kapsam.py:177
 msgid "Önizleme: tam model denetlendi."
 msgstr ""
 
-#: arayuz/onizleme_kapsam.py:178
+#: arayuz/onizleme_kapsam.py:180
 #, python-format
 msgid "Tam model kurulamadı (Çalıştır kapalı): %s"
 msgstr ""
@@ -7035,10 +7035,12 @@ msgstr[1] ""
 #: arayuz/pencere/dogrulama_seridi.py:289
 msgid ""
 "Geometri önizlemesi henüz çizilmedi. Önce çiz, sonra çalıştır: yanlış geometriyle "
-"saatlerce koşmamak için önizlemenin çizilmesi bekleniyor."
+"saatlerce koşmamak için önizlemenin çizilmesi bekleniyor. Önizleme Geometri "
+"sayfasında çizilir: oraya gidip çizilmesini bekleyin (Analiz ve Tükenme sayfaları da "
+"buna bakar)."
 msgstr ""
 
-#: arayuz/pencere/dogrulama_seridi.py:294
+#: arayuz/pencere/dogrulama_seridi.py:296
 #, python-format
 msgid ""
 "Çalıştırılabilir. %d uyarı var — sonucu etkileyebilir, doğrulama listesini gözden "
@@ -7049,7 +7051,7 @@ msgid_plural ""
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/pencere/dogrulama_seridi.py:298
+#: arayuz/pencere/dogrulama_seridi.py:300
 msgid "Model çalıştırılmaya hazır."
 msgstr ""
 
@@ -7461,10 +7463,6 @@ msgstr ""
 
 #: arayuz/pencere/model_islemleri.py:146
 msgid "3B katmanlı"
-msgstr ""
-
-#: arayuz/pencere/model_islemleri.py:148
-msgid "adsız model"
 msgstr ""
 
 #: arayuz/pencere/model_islemleri.py:155
@@ -8472,7 +8470,7 @@ msgid_plural "… ve %d hata daha."
 msgstr[0] ""
 msgstr[1] ""
 
-#: arayuz/sekme_calistir.py:584 arayuz/sekme_tukenme.py:496
+#: arayuz/sekme_calistir.py:584 arayuz/sekme_tukenme.py:497
 msgid ""
 "\n"
 "# kullanıcı tarafından durduruldu"
@@ -8521,7 +8519,7 @@ msgid "Koşu bitti ama statepoint bulunamadı"
 msgstr ""
 
 #: arayuz/calistir/sonuc_gosterimi.py:48 arayuz/sekme_calistir.py:688
-#: arayuz/sekme_calistir.py:689 arayuz/sekme_tukenme.py:574
+#: arayuz/sekme_calistir.py:689 arayuz/sekme_tukenme.py:575
 #, python-format
 msgid "Sonuç okunamadı: %s"
 msgstr ""
@@ -8530,11 +8528,11 @@ msgstr ""
 msgid "başarısız"
 msgstr ""
 
-#: arayuz/sekme_cubuk.py:95 arayuz/sekme_cubuk.py:226 arayuz/sekme_cubuk.py:230
+#: arayuz/sekme_cubuk.py:95 arayuz/sekme_cubuk.py:230 arayuz/sekme_cubuk.py:234
 msgid "Henüz parça yok"
 msgstr ""
 
-#: arayuz/sekme_cubuk.py:95 arayuz/sekme_cubuk.py:233
+#: arayuz/sekme_cubuk.py:95 arayuz/sekme_cubuk.py:237
 msgid "Yakıt çubuğu ekle"
 msgstr ""
 
@@ -8563,13 +8561,13 @@ msgstr ""
 msgid "Plaka"
 msgstr ""
 
-#: arayuz/calistir/kartlar.py:175 arayuz/demet/yerlesim.py:93 arayuz/sekme_cubuk.py:146
+#: arayuz/calistir/kartlar.py:175 arayuz/demet/yerlesim.py:95 arayuz/sekme_cubuk.py:146
 #: arayuz/sekme_malzeme.py:157
 msgid "Kopyala"
 msgstr ""
 
 #: arayuz/ayar/yerlesim.py:233 arayuz/cubuk/tambur_formu.py:71
-#: arayuz/cubuk/triso_formu.py:79 arayuz/demet/yerlesim.py:94 arayuz/geometri/editor.py:116
+#: arayuz/cubuk/triso_formu.py:79 arayuz/demet/yerlesim.py:96 arayuz/geometri/editor.py:116
 #: arayuz/geometri/form_yerlesim.py:60 arayuz/kor/yerlesim.py:130
 #: arayuz/malzeme/kutuphane_tarayici.py:87 arayuz/sekme_cubuk.py:147
 #: arayuz/sekme_malzeme.py:158
@@ -8608,57 +8606,65 @@ msgid ""
 msgstr ""
 
 #: arayuz/sekme_cubuk.py:223
-msgid "Bir parça seçin"
+msgid "TRISO tanımı var"
 msgstr ""
 
 #: arayuz/sekme_cubuk.py:224
-msgid "Düzenlemek için soldaki listeden bir parça seçin."
+msgid "Düzenlemek için aşağıdaki TRISO listesinden bir tanım seçin (kaydırın)."
 msgstr ""
 
 #: arayuz/sekme_cubuk.py:227
-msgid "Plaka elemanı ekleyin; malzemeler rollerine göre otomatik seçilir."
+msgid "Bir parça seçin"
 msgstr ""
 
 #: arayuz/sekme_cubuk.py:228
-msgid "Plaka elemanı ekle"
+msgid "Düzenlemek için soldaki listeden bir parça seçin."
 msgstr ""
 
 #: arayuz/sekme_cubuk.py:231
+msgid "Plaka elemanı ekleyin; malzemeler rollerine göre otomatik seçilir."
+msgstr ""
+
+#: arayuz/sekme_cubuk.py:232
+msgid "Plaka elemanı ekle"
+msgstr ""
+
+#: arayuz/sekme_cubuk.py:235
 msgid ""
 "Soldaki '+ Çubuk' menüsünden bir şablon seçin; malzemeler rollerine göre (yakıt, "
 "zarf, soğutucu) otomatik seçilir."
 msgstr ""
 
-#: arayuz/sekme_cubuk.py:235
+#: arayuz/sekme_cubuk.py:239
 msgid "Bu model parça kullanmıyor"
 msgstr ""
 
-#: arayuz/sekme_cubuk.py:236
+#: arayuz/sekme_cubuk.py:240
 msgid "Bu kor türünde çubuk ya da plaka tanımlanmaz."
 msgstr ""
 
 #: arayuz/cubuk/tambur_formu.py:254 arayuz/cubuk/triso_formu.py:349
-#: arayuz/sekme_cubuk.py:295 arayuz/sekme_demet.py:586
+#: arayuz/sekme_cubuk.py:299 arayuz/sekme_demet.py:586
 #, python-brace-format
 msgid "{hata} Ad değiştirilmedi."
 msgstr ""
 
-#: arayuz/sekme_cubuk.py:343
+#: arayuz/sekme_cubuk.py:347
 #, python-brace-format
 msgid ""
 "Bu modelde {roller} rolünde malzeme yok; ilgili bölgeler kırmızı işaretli. Önce "
 "Malzemeler sekmesinden ekleyin, sonra burada seçin."
 msgstr ""
 
-#: arayuz/geometri/form_kafes.py:323 arayuz/sekme_cubuk.py:366
+#: arayuz/geometri/form_kafes.py:323 arayuz/sekme_cubuk.py:370
 msgid "Parça"
 msgstr ""
 
-#: arayuz/sekme_cubuk.py:399
+#: arayuz/sekme_cubuk.py:403
 msgid "Parça kullanılıyor"
 msgstr ""
 
-#: arayuz/sekme_cubuk.py:400
+#: arayuz/sekme_cubuk.py:404
 #, python-brace-format
 msgid ""
 "'{ad}' şurada kullanılıyor: {yerler}.\n"
@@ -8744,7 +8750,7 @@ msgid ""
 "En az {d:.5f} cm: {sebep}."
 msgstr ""
 
-#: arayuz/demet/yerlesim.py:171 arayuz/sekme_demet.py:286
+#: arayuz/demet/yerlesim.py:173 arayuz/sekme_demet.py:286
 msgid "Komşu hücre merkezleri arası uzaklık (pitch)."
 msgstr ""
 
@@ -8950,7 +8956,7 @@ msgid "Yoğunluk"
 msgstr ""
 
 #: arayuz/cubuk/sayfalar.py:158 arayuz/cubuk/tambur_formu.py:94
-#: arayuz/cubuk/triso_formu.py:116 arayuz/demet/yerlesim.py:169
+#: arayuz/cubuk/triso_formu.py:116 arayuz/demet/yerlesim.py:171
 #: arayuz/geometri/form_kafes.py:93 arayuz/geometri/form_kafes.py:274
 #: arayuz/geometri/form_kafes.py:299 arayuz/geometri/form_kafes.py:330
 #: arayuz/geometri/form_yerlesim.py:78 arayuz/geometri/form_yerlesim.py:337
@@ -9163,95 +9169,95 @@ msgstr ""
 msgid "model uygun değil"
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:402
+#: arayuz/sekme_tukenme.py:403
 msgid ""
 "Önceki projenin tükenme koşusu arka planda sürüyor; sonucu bu projeye yazılmayacak. "
 "Yeni koşu için Durdur ile sonlandırın."
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:412 arayuz/sekme_tukenme.py:427
+#: arayuz/sekme_tukenme.py:413 arayuz/sekme_tukenme.py:428
 #, python-format
 msgid "Bu modelde yapılamaz: %s"
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:414
+#: arayuz/sekme_tukenme.py:415
 msgid "Tükenme kapalı — yukarıdan etkinleştirin."
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:426 arayuz/sekme_tukenme.py:430
+#: arayuz/sekme_tukenme.py:427 arayuz/sekme_tukenme.py:431
 msgid "Başlatılamaz"
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:460
+#: arayuz/sekme_tukenme.py:461
 msgid "%v / %m transport"
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:461
+#: arayuz/sekme_tukenme.py:462
 msgid "İlk transport bekleniyor — kalan süre ondan ölçülecek."
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:487
+#: arayuz/sekme_tukenme.py:488
 #, python-format
 msgid "Tükenme koşusu sürüyor → %s"
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:490
+#: arayuz/sekme_tukenme.py:491
 #, python-format
 msgid "Tükenme başladı → %s"
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:529
+#: arayuz/sekme_tukenme.py:530
 #, python-format
 msgid "geçen %s  |  transport başına %.0f s (ölçülen)  |  kalan ~%s"
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:536
+#: arayuz/sekme_tukenme.py:537
 #, python-format
 msgid ""
 "\n"
 "# Süreç başlatılamadı: %s"
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:558
+#: arayuz/sekme_tukenme.py:559
 #, python-format
 msgid "Önceki projenin tükenme koşusu bitti; sonucu bu projeye yazılmadı (dosyalar: %s)."
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:564
+#: arayuz/sekme_tukenme.py:565
 #, python-format
 msgid "Tükenme başarısız (çıkış kodu %d)"
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:565
+#: arayuz/sekme_tukenme.py:566
 msgid "Başarısız — ayrıntılı çıktı aşağıda açıldı."
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:575
+#: arayuz/sekme_tukenme.py:576
 msgid "Sonuç okunamadı — ayrıntılı çıktıya bakın."
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:576
+#: arayuz/sekme_tukenme.py:577
 #, python-format
 msgid ""
 "\n"
 "# Sonuç okunamadı: %s"
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:582
+#: arayuz/sekme_tukenme.py:583
 #, python-format
 msgid "Tamamlandı: %s"
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:583
+#: arayuz/sekme_tukenme.py:584
 msgid "Tükenme tamamlandı"
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:614
+#: arayuz/sekme_tukenme.py:615
 #, python-format
 msgid "%d dk"
 msgstr ""
 
-#: arayuz/sekme_tukenme.py:615
+#: arayuz/sekme_tukenme.py:616
 #, python-format
 msgid "%.1f sa"
 msgstr ""
@@ -10046,7 +10052,7 @@ msgstr ""
 msgid "Halka türü"
 msgstr ""
 
-#: arayuz/demet/yerlesim.py:174 arayuz/geometri/form_kafes.py:99
+#: arayuz/demet/yerlesim.py:176 arayuz/geometri/form_kafes.py:99
 #: arayuz/tukenme_bolme.py:111
 msgid "Halka sayısı"
 msgstr ""

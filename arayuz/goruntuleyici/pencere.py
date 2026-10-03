@@ -544,11 +544,16 @@ def _mtime(yol):
 def son_statepoint(ana):
     """Ana pencerenin son basarili kosusunun statepoint'i; yoksa None."""
     calistir = getattr(ana, "s_calistir", None)
-    dizin = calistir.son_kosu_dizini() if calistir is not None else None
-    if not dizin:
+    if calistir is None:
         return None
     from cekirdek import kosucu
-    return kosucu.son_statepoint(dizin)
+    dizin = calistir.son_kosu_dizini()
+    if not dizin:
+        # Bu oturumda kosu yok: projenin kosu dizininde kayitli son statepoint (Q1-22);
+        # yol goruntuleyicide gorunur, kullanici baska dosya secebilir.
+        aday = calistir._kosu_dizini()
+        dizin = aday if aday and os.path.isdir(aday) else None
+    return kosucu.son_statepoint(dizin) if dizin else None
 
 
 def ac(ana=None):

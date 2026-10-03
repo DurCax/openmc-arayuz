@@ -18,6 +18,22 @@ Program bir **conda ortamında** çalışır: OpenMC PyPI'da yayımlanmaz, conda
 
 ## 1.2 Kurulum adımları
 
+**Tek dosya kurulum paketi (conda gerekmez).** Linux x86-64, glibc >= 2.28 (Ubuntu 20.04+, Fedora 29+, Debian 10+).
+Paket Python'u, OpenMC 0.16'yı, PySide6'yı ve uygulamayı içerir (~410 MB; kurulunca ~1,7 GB), çevrimdışı
+çalışır, kök yetkisi istemez ve **nükleer veri içermez** (veriyi uygulamanın *Veri* sayfası indirir, bkz. [1.3](#nukleer-veri)):
+
+```bash
+bash openmc-arayuz-<sürüm>-Linux-x86_64.sh -b -p ~/openmc-arayuz   # kurar (-b: soru sormaz)
+~/openmc-arayuz/bin/openmc-arayuz                                    # başlatır
+bash ~/openmc-arayuz/share/openmc-arayuz-paket/kaldir.sh             # kaldırır (yalnız o klasörü siler)
+```
+
+Paketi kendiniz üretmek için `paket/constructor/uret.sh` (çıktı `dist/`). Bu yolu kullandıysanız aşağıdaki 1. ve
+2. adımı atlayıp 3. adımdan (nükleer veri) sürdürün. Kurulum projelerinize, `~/nucdata`'ya ve `~/.bashrc`'ye dokunmaz.
+Paketle kurulumda masaüstü kısayolu kurulum sırasında kendiliğinden kaydedilir; elle: `~/openmc-arayuz/bin/python -m cekirdek.masaustu kur`.
+
+**Conda ile kurulum:**
+
 **1. Conda (Miniforge).** Zaten conda/mamba varsa atlayın.
 
 ```bash
@@ -63,7 +79,7 @@ Uygulamayı uygulama menüsünde görmek ve bir proje dosyasına (`.json`) çift
 
 ```bash
 python -m cekirdek.masaustu kur        # menü girdisi + simge + proje dosyası türü
-python -m cekirdek.masaustu durum      # kurulu mu? (çıkış 0 = kurulu)
+python -m cekirdek.masaustu durum      # kurulu mu? "kurulu" / "kurulu değil" yazar (çıkış 0 = kurulu, 1 = değil)
 python -m cekirdek.masaustu kaldir     # yalnız kurduğu dosyaları siler; iz bırakmaz
 ```
 

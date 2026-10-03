@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-03 21:55+0300\n"
+"POT-Creation-Date: 2026-10-03 22:10+0300\n"
 "PO-Revision-Date: 2026-10-01 18:14+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -318,7 +318,7 @@ msgstr "Δk [pcm]"
 msgid "Δρ [pcm]"
 msgstr "Δρ [pcm]"
 
-#: arayuz/analiz/dal.py:341 arayuz/demet/yerlesim.py:153 arayuz/demet/yerlesim.py:172
+#: arayuz/analiz/dal.py:341 arayuz/demet/yerlesim.py:155 arayuz/demet/yerlesim.py:174
 #: arayuz/geometri/form_kafes.py:96
 msgid "Adım"
 msgstr "Pitch"
@@ -346,7 +346,7 @@ msgstr "Saved: %s"
 msgid "Kordaki sayı"
 msgstr "Count in core"
 
-#: arayuz/analiz/demet_kinf.py:40 arayuz/demet/yerlesim.py:188
+#: arayuz/analiz/demet_kinf.py:40 arayuz/demet/yerlesim.py:190
 msgid "Boyut"
 msgstr "Size"
 
@@ -1577,7 +1577,7 @@ msgstr "Nearest temperature (nearest)"
 msgid "enerji"
 msgstr "energy"
 
-#: arayuz/ayar/sabitler.py:65 arayuz/demet/yerlesim.py:187
+#: arayuz/ayar/sabitler.py:65 arayuz/demet/yerlesim.py:189
 msgid "hücre"
 msgstr "cell"
 
@@ -3549,76 +3549,76 @@ msgstr "Grid"
 msgid "Tıklayın ya da sürükleyin · sağ tık: parçayı seç"
 msgstr "Click or drag · right-click: pick component"
 
-#: arayuz/demet/yerlesim.py:93
+#: arayuz/demet/yerlesim.py:95
 msgid "Seçili demetin kopyasını ekler."
 msgstr "Adds a copy of the selected assembly."
 
-#: arayuz/demet/yerlesim.py:95
+#: arayuz/demet/yerlesim.py:97
 msgid "Seçili demeti siler (kullanılıyorsa önce sorar)."
 msgstr "Deletes the selected assembly (asks first if it is in use)."
 
-#: arayuz/demet/yerlesim.py:100
+#: arayuz/demet/yerlesim.py:102
 msgid "Demetler"
 msgstr "Assemblies"
 
-#: arayuz/demet/yerlesim.py:116
+#: arayuz/demet/yerlesim.py:118
 msgid "Doldurulacak halka (merkezden dışa numaralı)"
 msgstr "Ring to fill (numbered from the center outward)"
 
-#: arayuz/demet/yerlesim.py:120
+#: arayuz/demet/yerlesim.py:122
 msgid "Halkayı doldur"
 msgstr "Fill ring"
 
-#: arayuz/demet/yerlesim.py:122
+#: arayuz/demet/yerlesim.py:124
 msgid "Parça paleti"
 msgstr "Component palette"
 
-#: arayuz/demet/yerlesim.py:126
+#: arayuz/demet/yerlesim.py:128
 msgid "Tümünü doldur"
 msgstr "Fill all"
 
-#: arayuz/demet/yerlesim.py:127
+#: arayuz/demet/yerlesim.py:129
 msgid "Bütün hücreleri seçili parçayla doldurur (Ctrl+Z geri alır)."
 msgstr "Fills every cell with the selected component (Ctrl+Z undoes)."
 
-#: arayuz/demet/yerlesim.py:175
+#: arayuz/demet/yerlesim.py:177
 msgid "Merkez dahil halka sayısı; k. halkada 6k hücre vardır."
 msgstr "Number of rings including the center; ring k has 6k cells."
 
-#: arayuz/demet/yerlesim.py:184
+#: arayuz/demet/yerlesim.py:186
 msgid "Sütun sayısı (x)"
 msgstr "Number of columns (x)"
 
-#: arayuz/demet/yerlesim.py:185
+#: arayuz/demet/yerlesim.py:187
 msgid "Satır sayısı (y)"
 msgstr "Number of rows (y)"
 
-#: arayuz/demet/yerlesim.py:197
+#: arayuz/demet/yerlesim.py:199
 msgid "Demet dışı"
 msgstr "Outside assembly"
 
-#: arayuz/demet/yerlesim.py:198
+#: arayuz/demet/yerlesim.py:200
 msgid "Demet hücrelerinin dışında kalan alanı dolduran malzeme."
 msgstr "Material that fills the space outside the assembly cells."
 
-#: arayuz/demet/yerlesim.py:206
+#: arayuz/demet/yerlesim.py:208
 msgid "Üst/alt yüzler yatay (tepede hücre)"
 msgstr "Top/bottom faces horizontal (cell at the top)"
 
-#: arayuz/demet/yerlesim.py:207
+#: arayuz/demet/yerlesim.py:209
 msgid "Sağ/sol yüzler düşey (sağda hücre)"
 msgstr "Right/left faces vertical (cell on the right)"
 
-#: arayuz/demet/yerlesim.py:208 arayuz/geometri/form_kafes.py:100
+#: arayuz/demet/yerlesim.py:210 arayuz/geometri/form_kafes.py:100
 #: arayuz/geometri/form_ortak.py:171
 msgid "Yönelim"
 msgstr "Orientation"
 
-#: arayuz/demet/yerlesim.py:210
+#: arayuz/demet/yerlesim.py:212
 msgid "Palette bütün malzemeler ve Boş hücre"
 msgstr "All materials and void cell in the palette"
 
-#: arayuz/demet/yerlesim.py:212
+#: arayuz/demet/yerlesim.py:214
 msgid ""
 "Varsayılan palet yalnızca çubukları, iç demetleri ve soğutucu/moderatör hücrelerini "
 "gösterir."
@@ -6083,7 +6083,7 @@ msgstr "x — neighboring assemblies left/right"
 msgid "y — komşu demetler üstte/altta"
 msgstr "y — neighboring assemblies above/below"
 
-#: arayuz/demet/yerlesim.py:158 arayuz/kor_altigen.py:46
+#: arayuz/demet/yerlesim.py:160 arayuz/kor_altigen.py:46
 msgid "halka"
 msgstr "rings"
 
@@ -7071,7 +7071,7 @@ msgstr "Cell"
 msgid "Malzeme"
 msgstr "Material"
 
-#: arayuz/goruntuleyici/tuval.py:60 arayuz/onizleme.py:163 arayuz/onizleme.py:334
+#: arayuz/goruntuleyici/tuval.py:60 arayuz/onizleme.py:163 arayuz/onizleme.py:335
 msgid "Model bekleniyor"
 msgstr "Waiting for a model"
 
@@ -7087,11 +7087,11 @@ msgstr "Section:"
 msgid "Gösterge"
 msgstr "Legend"
 
-#: arayuz/onizleme.py:181
+#: arayuz/onizleme.py:182
 msgid "Çakışmaları göster"
 msgstr "Show overlaps"
 
-#: arayuz/onizleme.py:183
+#: arayuz/onizleme.py:184
 msgid ""
 "Birden fazla hücrenin kapladığı noktaları ayrı renkle gösterir ve\n"
 "sayısını bildirir. Büyük korlarda çizimi birkaç kat yavaşlatır."
@@ -7099,27 +7099,27 @@ msgstr ""
 "Shows points claimed by more than one cell in a separate colour and\n"
 "reports how many there are. Makes plotting several times slower for large cores."
 
-#: arayuz/karsilastir/panel.py:111 arayuz/onizleme.py:185 arayuz/veri/sayfa.py:54
+#: arayuz/karsilastir/panel.py:111 arayuz/onizleme.py:186 arayuz/veri/sayfa.py:54
 msgid "Yenile"
 msgstr "Refresh"
 
-#: arayuz/malzeme/malzeme_diyalog.py:163 arayuz/onizleme.py:209
+#: arayuz/malzeme/malzeme_diyalog.py:163 arayuz/onizleme.py:210
 msgid "Renk:"
 msgstr "Color:"
 
-#: arayuz/goruntuleyici/paneller.py:74 arayuz/onizleme.py:238
+#: arayuz/goruntuleyici/paneller.py:74 arayuz/onizleme.py:239
 msgid "Çözünürlük:"
 msgstr "Resolution:"
 
-#: arayuz/goruntuleyici/pencere.py:237 arayuz/onizleme.py:364
+#: arayuz/goruntuleyici/pencere.py:237 arayuz/onizleme.py:365
 msgid "Çiziliyor…"
 msgstr "Drawing…"
 
-#: arayuz/onizleme.py:493
+#: arayuz/onizleme.py:494
 msgid "Önizleme gizli: model denetlendi, önizleme açılınca çizilir."
 msgstr "Preview hidden: model checked; it is drawn when the preview is shown."
 
-#: arayuz/onizleme.py:507
+#: arayuz/onizleme.py:508
 #, python-format
 msgid ""
 "Önizleme: %d hücre çakışması bulundu — geometriyi gözden geçirin (kesitte ayrı renkle"
@@ -7134,14 +7134,14 @@ msgstr[1] ""
 "Preview: %d cell overlaps found — review the geometry (shown in a separate colour in "
 "the slice)."
 
-#: arayuz/onizleme.py:515
+#: arayuz/onizleme.py:516
 #, python-brace-format
 msgid "Önizleme güncel ({kesit}, {n} piksel){ek}"
 msgid_plural "Önizleme güncel ({kesit}, {n} piksel){ek}"
 msgstr[0] "Preview up to date ({kesit}, {n} pixel){ek}"
 msgstr[1] "Preview up to date ({kesit}, {n} pixels){ek}"
 
-#: arayuz/onizleme.py:528
+#: arayuz/onizleme.py:529
 #, python-format
 msgid ""
 "Geometri kurulamadı:\n"
@@ -7152,21 +7152,21 @@ msgstr ""
 "\n"
 "%s"
 
-#: arayuz/onizleme.py:530
+#: arayuz/onizleme.py:531
 #, python-format
 msgid "Önizleme başarısız: %s"
 msgstr "Preview failed: %s"
 
-#: arayuz/onizleme.py:531
+#: arayuz/onizleme.py:532
 #, python-format
 msgid "Kapsamlı önizleme başarısız (Çalıştır kapısı tam modele bakar): %s"
 msgstr "Scoped preview failed (the Run gate checks the full model): %s"
 
-#: arayuz/onizleme.py:579
+#: arayuz/onizleme.py:580
 msgid "[ölçek 1:1 değil]"
 msgstr "[scale not 1:1]"
 
-#: arayuz/onizleme.py:633
+#: arayuz/onizleme.py:634
 msgid "Hücre renkleri yalnız hücreleri ayırt etmek içindir."
 msgstr "Cell colours only tell cells apart."
 
@@ -7228,7 +7228,7 @@ msgstr "Automatic"
 msgid "Tam model"
 msgstr "Full model"
 
-#: arayuz/onizleme_kapsam.py:90
+#: arayuz/onizleme_kapsam.py:92
 msgid ""
 "Otomatik: Parçalar sayfasında seçili parça, Demet sayfasında seçili demet,\n"
 "gelişmiş Geometri'de seçili düğüm çizilir (yansıtıcı sınırlı alt model);\n"
@@ -7241,19 +7241,19 @@ msgstr ""
 "with reflective boundaries); the full model on other pages. Full model: always\n"
 "the whole model. In both modes the Run gate checks only the full model."
 
-#: arayuz/analiz/mgxs.py:179 arayuz/onizleme_kapsam.py:94
+#: arayuz/analiz/mgxs.py:179 arayuz/onizleme_kapsam.py:96
 msgid "Kapsam:"
 msgstr "Scope:"
 
-#: arayuz/onizleme_kapsam.py:125
+#: arayuz/onizleme_kapsam.py:127
 msgid "tam model (alt model kurulamadı)"
 msgstr "full model (sub-model could not be built)"
 
-#: arayuz/onizleme_kapsam.py:175
+#: arayuz/onizleme_kapsam.py:177
 msgid "Önizleme: tam model denetlendi."
 msgstr "Preview: full model checked."
 
-#: arayuz/onizleme_kapsam.py:178
+#: arayuz/onizleme_kapsam.py:180
 #, python-format
 msgid "Tam model kurulamadı (Çalıştır kapalı): %s"
 msgstr "Full model could not be built (Run disabled): %s"
@@ -7449,12 +7449,16 @@ msgstr[1] ""
 #: arayuz/pencere/dogrulama_seridi.py:289
 msgid ""
 "Geometri önizlemesi henüz çizilmedi. Önce çiz, sonra çalıştır: yanlış geometriyle "
-"saatlerce koşmamak için önizlemenin çizilmesi bekleniyor."
+"saatlerce koşmamak için önizlemenin çizilmesi bekleniyor. Önizleme Geometri "
+"sayfasında çizilir: oraya gidip çizilmesini bekleyin (Analiz ve Tükenme sayfaları da "
+"buna bakar)."
 msgstr ""
-"The geometry preview has not been plotted yet. Plot first, then run: the preview must"
-" be plotted so that you do not run for hours with a wrong geometry."
+"The geometry preview has not been plotted yet. Plot first, then run: to avoid running"
+" for hours with a wrong geometry, the run waits for the preview to be plotted. The "
+"preview is plotted on the Geometry page: go there and wait for it to be plotted (the "
+"Analysis and Depletion pages check this too)."
 
-#: arayuz/pencere/dogrulama_seridi.py:294
+#: arayuz/pencere/dogrulama_seridi.py:296
 #, python-format
 msgid ""
 "Çalıştırılabilir. %d uyarı var — sonucu etkileyebilir, doğrulama listesini gözden "
@@ -7469,7 +7473,7 @@ msgstr[1] ""
 "Ready to run. There are %d warnings — they may affect the result; review the model "
 "check list."
 
-#: arayuz/pencere/dogrulama_seridi.py:298
+#: arayuz/pencere/dogrulama_seridi.py:300
 msgid "Model çalıştırılmaya hazır."
 msgstr "The model is ready to run."
 
@@ -7902,10 +7906,6 @@ msgstr "3D"
 #: arayuz/pencere/model_islemleri.py:146
 msgid "3B katmanlı"
 msgstr "3D layered"
-
-#: arayuz/pencere/model_islemleri.py:148
-msgid "adsız model"
-msgstr "untitled model"
 
 #: arayuz/pencere/model_islemleri.py:155
 #, python-brace-format
@@ -9070,7 +9070,7 @@ msgid_plural "… ve %d hata daha."
 msgstr[0] "… and %d more error."
 msgstr[1] "… and %d more errors."
 
-#: arayuz/sekme_calistir.py:584 arayuz/sekme_tukenme.py:496
+#: arayuz/sekme_calistir.py:584 arayuz/sekme_tukenme.py:497
 msgid ""
 "\n"
 "# kullanıcı tarafından durduruldu"
@@ -9125,7 +9125,7 @@ msgid "Koşu bitti ama statepoint bulunamadı"
 msgstr "Run finished but no statepoint found"
 
 #: arayuz/calistir/sonuc_gosterimi.py:48 arayuz/sekme_calistir.py:688
-#: arayuz/sekme_calistir.py:689 arayuz/sekme_tukenme.py:574
+#: arayuz/sekme_calistir.py:689 arayuz/sekme_tukenme.py:575
 #, python-format
 msgid "Sonuç okunamadı: %s"
 msgstr "Result could not be read: %s"
@@ -9134,11 +9134,11 @@ msgstr "Result could not be read: %s"
 msgid "başarısız"
 msgstr "failed"
 
-#: arayuz/sekme_cubuk.py:95 arayuz/sekme_cubuk.py:226 arayuz/sekme_cubuk.py:230
+#: arayuz/sekme_cubuk.py:95 arayuz/sekme_cubuk.py:230 arayuz/sekme_cubuk.py:234
 msgid "Henüz parça yok"
 msgstr "No components yet"
 
-#: arayuz/sekme_cubuk.py:95 arayuz/sekme_cubuk.py:233
+#: arayuz/sekme_cubuk.py:95 arayuz/sekme_cubuk.py:237
 msgid "Yakıt çubuğu ekle"
 msgstr "Add fuel pin"
 
@@ -9167,13 +9167,13 @@ msgstr "Absorber rod moving axially in the guide tube (3D model)."
 msgid "Plaka"
 msgstr "Plate"
 
-#: arayuz/calistir/kartlar.py:175 arayuz/demet/yerlesim.py:93 arayuz/sekme_cubuk.py:146
+#: arayuz/calistir/kartlar.py:175 arayuz/demet/yerlesim.py:95 arayuz/sekme_cubuk.py:146
 #: arayuz/sekme_malzeme.py:157
 msgid "Kopyala"
 msgstr "Copy"
 
 #: arayuz/ayar/yerlesim.py:233 arayuz/cubuk/tambur_formu.py:71
-#: arayuz/cubuk/triso_formu.py:79 arayuz/demet/yerlesim.py:94 arayuz/geometri/editor.py:116
+#: arayuz/cubuk/triso_formu.py:79 arayuz/demet/yerlesim.py:96 arayuz/geometri/editor.py:116
 #: arayuz/geometri/form_yerlesim.py:60 arayuz/kor/yerlesim.py:130
 #: arayuz/malzeme/kutuphane_tarayici.py:87 arayuz/sekme_cubuk.py:147
 #: arayuz/sekme_malzeme.py:158
@@ -9214,22 +9214,30 @@ msgstr ""
 "the Materials tab."
 
 #: arayuz/sekme_cubuk.py:223
+msgid "TRISO tanımı var"
+msgstr "A TRISO definition exists"
+
+#: arayuz/sekme_cubuk.py:224
+msgid "Düzenlemek için aşağıdaki TRISO listesinden bir tanım seçin (kaydırın)."
+msgstr "Select a definition in the TRISO list below to edit it (scroll down)."
+
+#: arayuz/sekme_cubuk.py:227
 msgid "Bir parça seçin"
 msgstr "Select a component"
 
-#: arayuz/sekme_cubuk.py:224
+#: arayuz/sekme_cubuk.py:228
 msgid "Düzenlemek için soldaki listeden bir parça seçin."
 msgstr "Select a component in the list on the left to edit it."
 
-#: arayuz/sekme_cubuk.py:227
+#: arayuz/sekme_cubuk.py:231
 msgid "Plaka elemanı ekleyin; malzemeler rollerine göre otomatik seçilir."
 msgstr "Add a plate-type fuel element; materials are chosen automatically by role."
 
-#: arayuz/sekme_cubuk.py:228
+#: arayuz/sekme_cubuk.py:232
 msgid "Plaka elemanı ekle"
 msgstr "Add plate-type fuel element"
 
-#: arayuz/sekme_cubuk.py:231
+#: arayuz/sekme_cubuk.py:235
 msgid ""
 "Soldaki '+ Çubuk' menüsünden bir şablon seçin; malzemeler rollerine göre (yakıt, "
 "zarf, soğutucu) otomatik seçilir."
@@ -9237,21 +9245,21 @@ msgstr ""
 "Choose a template from the '+ Pin' menu on the left; materials are chosen "
 "automatically by role (fuel, cladding, coolant)."
 
-#: arayuz/sekme_cubuk.py:235
+#: arayuz/sekme_cubuk.py:239
 msgid "Bu model parça kullanmıyor"
 msgstr "This model uses no components"
 
-#: arayuz/sekme_cubuk.py:236
+#: arayuz/sekme_cubuk.py:240
 msgid "Bu kor türünde çubuk ya da plaka tanımlanmaz."
 msgstr "Pins or plates are not defined for this core type."
 
 #: arayuz/cubuk/tambur_formu.py:254 arayuz/cubuk/triso_formu.py:349
-#: arayuz/sekme_cubuk.py:295 arayuz/sekme_demet.py:586
+#: arayuz/sekme_cubuk.py:299 arayuz/sekme_demet.py:586
 #, python-brace-format
 msgid "{hata} Ad değiştirilmedi."
 msgstr "{hata} The name was not changed."
 
-#: arayuz/sekme_cubuk.py:343
+#: arayuz/sekme_cubuk.py:347
 #, python-brace-format
 msgid ""
 "Bu modelde {roller} rolünde malzeme yok; ilgili bölgeler kırmızı işaretli. Önce "
@@ -9260,15 +9268,15 @@ msgstr ""
 "This model has no material with the {roller} role; the affected regions are marked "
 "red. Add one in the Materials tab first, then select it here."
 
-#: arayuz/geometri/form_kafes.py:323 arayuz/sekme_cubuk.py:366
+#: arayuz/geometri/form_kafes.py:323 arayuz/sekme_cubuk.py:370
 msgid "Parça"
 msgstr "Component"
 
-#: arayuz/sekme_cubuk.py:399
+#: arayuz/sekme_cubuk.py:403
 msgid "Parça kullanılıyor"
 msgstr "Component in use"
 
-#: arayuz/sekme_cubuk.py:400
+#: arayuz/sekme_cubuk.py:404
 #, python-brace-format
 msgid ""
 "'{ad}' şurada kullanılıyor: {yerler}.\n"
@@ -9366,7 +9374,7 @@ msgstr ""
 "Distance between neighboring cell centers (pitch).\n"
 "At least {d:.5f} cm: {sebep}."
 
-#: arayuz/demet/yerlesim.py:171 arayuz/sekme_demet.py:286
+#: arayuz/demet/yerlesim.py:173 arayuz/sekme_demet.py:286
 msgid "Komşu hücre merkezleri arası uzaklık (pitch)."
 msgstr "Distance between neighboring cell centers (pitch)."
 
@@ -9595,7 +9603,7 @@ msgid "Yoğunluk"
 msgstr "Density"
 
 #: arayuz/cubuk/sayfalar.py:158 arayuz/cubuk/tambur_formu.py:94
-#: arayuz/cubuk/triso_formu.py:116 arayuz/demet/yerlesim.py:169
+#: arayuz/cubuk/triso_formu.py:116 arayuz/demet/yerlesim.py:171
 #: arayuz/geometri/form_kafes.py:93 arayuz/geometri/form_kafes.py:274
 #: arayuz/geometri/form_kafes.py:299 arayuz/geometri/form_kafes.py:330
 #: arayuz/geometri/form_yerlesim.py:78 arayuz/geometri/form_yerlesim.py:337
@@ -9829,7 +9837,7 @@ msgstr "could not be computed: %s"
 msgid "model uygun değil"
 msgstr "the model is not suitable"
 
-#: arayuz/sekme_tukenme.py:402
+#: arayuz/sekme_tukenme.py:403
 msgid ""
 "Önceki projenin tükenme koşusu arka planda sürüyor; sonucu bu projeye yazılmayacak. "
 "Yeni koşu için Durdur ile sonlandırın."
@@ -9837,43 +9845,43 @@ msgstr ""
 "A depletion run from the previous project is still going in the background; its "
 "result will not be written to this project. Use Stop to end it before a new run."
 
-#: arayuz/sekme_tukenme.py:412 arayuz/sekme_tukenme.py:427
+#: arayuz/sekme_tukenme.py:413 arayuz/sekme_tukenme.py:428
 #, python-format
 msgid "Bu modelde yapılamaz: %s"
 msgstr "Not possible for this model: %s"
 
-#: arayuz/sekme_tukenme.py:414
+#: arayuz/sekme_tukenme.py:415
 msgid "Tükenme kapalı — yukarıdan etkinleştirin."
 msgstr "Depletion is off — enable it above."
 
-#: arayuz/sekme_tukenme.py:426 arayuz/sekme_tukenme.py:430
+#: arayuz/sekme_tukenme.py:427 arayuz/sekme_tukenme.py:431
 msgid "Başlatılamaz"
 msgstr "Cannot start"
 
-#: arayuz/sekme_tukenme.py:460
+#: arayuz/sekme_tukenme.py:461
 msgid "%v / %m transport"
 msgstr "%v / %m transport"
 
-#: arayuz/sekme_tukenme.py:461
+#: arayuz/sekme_tukenme.py:462
 msgid "İlk transport bekleniyor — kalan süre ondan ölçülecek."
 msgstr "Waiting for the first transport solve — the remaining time will be measured from it."
 
-#: arayuz/sekme_tukenme.py:487
+#: arayuz/sekme_tukenme.py:488
 #, python-format
 msgid "Tükenme koşusu sürüyor → %s"
 msgstr "Depletion run in progress → %s"
 
-#: arayuz/sekme_tukenme.py:490
+#: arayuz/sekme_tukenme.py:491
 #, python-format
 msgid "Tükenme başladı → %s"
 msgstr "Depletion started → %s"
 
-#: arayuz/sekme_tukenme.py:529
+#: arayuz/sekme_tukenme.py:530
 #, python-format
 msgid "geçen %s  |  transport başına %.0f s (ölçülen)  |  kalan ~%s"
 msgstr "elapsed %s  |  %.0f s per transport (measured)  |  remaining ~%s"
 
-#: arayuz/sekme_tukenme.py:536
+#: arayuz/sekme_tukenme.py:537
 #, python-format
 msgid ""
 "\n"
@@ -9882,27 +9890,27 @@ msgstr ""
 "\n"
 "# Process could not be started: %s"
 
-#: arayuz/sekme_tukenme.py:558
+#: arayuz/sekme_tukenme.py:559
 #, python-format
 msgid "Önceki projenin tükenme koşusu bitti; sonucu bu projeye yazılmadı (dosyalar: %s)."
 msgstr ""
 "The previous project's depletion run finished; its result was not written to this "
 "project (files: %s)."
 
-#: arayuz/sekme_tukenme.py:564
+#: arayuz/sekme_tukenme.py:565
 #, python-format
 msgid "Tükenme başarısız (çıkış kodu %d)"
 msgstr "Depletion failed (exit code %d)"
 
-#: arayuz/sekme_tukenme.py:565
+#: arayuz/sekme_tukenme.py:566
 msgid "Başarısız — ayrıntılı çıktı aşağıda açıldı."
 msgstr "Failed — the detailed output is open below."
 
-#: arayuz/sekme_tukenme.py:575
+#: arayuz/sekme_tukenme.py:576
 msgid "Sonuç okunamadı — ayrıntılı çıktıya bakın."
 msgstr "Result could not be read — see the detailed output."
 
-#: arayuz/sekme_tukenme.py:576
+#: arayuz/sekme_tukenme.py:577
 #, python-format
 msgid ""
 "\n"
@@ -9911,21 +9919,21 @@ msgstr ""
 "\n"
 "# Result could not be read: %s"
 
-#: arayuz/sekme_tukenme.py:582
+#: arayuz/sekme_tukenme.py:583
 #, python-format
 msgid "Tamamlandı: %s"
 msgstr "Finished: %s"
 
-#: arayuz/sekme_tukenme.py:583
+#: arayuz/sekme_tukenme.py:584
 msgid "Tükenme tamamlandı"
 msgstr "Depletion finished"
 
-#: arayuz/sekme_tukenme.py:614
+#: arayuz/sekme_tukenme.py:615
 #, python-format
 msgid "%d dk"
 msgstr "%d min"
 
-#: arayuz/sekme_tukenme.py:615
+#: arayuz/sekme_tukenme.py:616
 #, python-format
 msgid "%.1f sa"
 msgstr "%.1f h"
@@ -10812,7 +10820,7 @@ msgstr ""
 msgid "Halka türü"
 msgstr "Ring type"
 
-#: arayuz/demet/yerlesim.py:174 arayuz/geometri/form_kafes.py:99
+#: arayuz/demet/yerlesim.py:176 arayuz/geometri/form_kafes.py:99
 #: arayuz/tukenme_bolme.py:111
 msgid "Halka sayısı"
 msgstr "Number of rings"
@@ -12534,4 +12542,7 @@ msgstr "User guide"
 
 #~ msgid "%s: temas doz hızı %.4g Gy/h · atık sınıfı (10 CFR 61.55) %s"
 #~ msgstr "%s: contact dose rate %.4g Gy/h · waste class (10 CFR 61.55) %s"
+
+#~ msgid "adsız model"
+#~ msgstr "untitled model"
 

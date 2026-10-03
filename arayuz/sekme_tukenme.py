@@ -340,8 +340,9 @@ class TukenmeSekmesi(SekmeTabani, SonucBolumu, TukenmeArayuzu):
         self.izlenen_kutusu.setVisible(acik or self.sonuc_var())
         self.kosu_kutusu.setVisible(acik or kosuyor)
         self.aciklama.setVisible(True)
+        # Kapaliyken ve sonuc yokken bos Sonuc karti/grafikler gosterilmez (Q1-16).
         self.sonuc_kutusu.setVisible(self.sonuc_var() or kosuyor
-                                     or bool(self.onceki_etiket.text()))
+                                     or (acik and bool(self.onceki_etiket.text())))
         self.ayrinti.setVisible(kosuyor or bool(self.log.toPlainText()))
 
     # ==================================================================

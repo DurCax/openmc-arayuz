@@ -219,6 +219,10 @@ class CubukSekmesi(SayfalarMixin, CubukFormuMixin, PlakaFormuMixin, TamburFormuM
             self.bos.ayarla(_("Önce malzeme gerekli"),
                             _("Parçalar malzemelerden kurulur. Malzemeler sekmesinden "
                               "yakıt, zarf ve soğutucu malzemelerini ekleyin."), "")
+        elif self.spec and self.spec.get("trisolar") and not self.liste.count():
+            self.bos.ayarla(_("TRISO tanımı var"),
+                            _("Düzenlemek için aşağıdaki TRISO listesinden bir tanım "
+                              "seçin (kaydırın)."), "")
         elif self.liste.count():
             self.bos.ayarla(_("Bir parça seçin"),
                             _("Düzenlemek için soldaki listeden bir parça seçin."), "")

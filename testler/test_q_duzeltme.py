@@ -132,7 +132,24 @@ def test_onizleme_kapi_degisti_sinyali(qapp=None):
     del uyg
 
 
-HIZLI = [test_atik_sinifi_uygulanamaz_ve_tablo_nuklidi,
+def test_vtk_2b_z_kirpilir_degerler_ayni():
+    print("\n[Q-Q1f] 2B mesh VTK: z +-1e4 cm -> 1 cm; degerler degismez")
+    import numpy as np
+    from cekirdek.mesh_tally import vtk as mvtk
+    from cekirdek.mesh_tally.sonuc import MeshSonuc
+    g = (np.array([0.0, 1.0, 2.0]), np.array([0.0, 1.0]), np.array([-1e4, 1e4]))
+    ort = np.ones((2, 1, 1, 1, 1, 1))
+    s = MeshSonuc("m", "duzenli", g, (0, 0, 0), ("flux",), ("total",), None, ort, 0.1 * ort, True)
+    k = mvtk._z_kirp(s)
+    kontrol("z 1 cm", float(k.izgaralar[2][-1] - k.izgaralar[2][0]) == mvtk.VTK_BIRIM_YUKSEKLIK)
+    kontrol("x, y ve degerler ayni", k.izgaralar[0] is g[0] and k.ortalama is ort)
+    g3 = (g[0], g[1], np.array([0.0, 50.0]))
+    kontrol("3B (kucuk z) dokunulmaz", mvtk._z_kirp(MeshSonuc(
+        "m", "duzenli", g3, (0, 0, 0), ("flux",), ("total",), None, ort, ort, True)).izgaralar[2]
+        is g3[2])
+
+
+HIZLI = [test_vtk_2b_z_kirpilir_degerler_ayni, test_atik_sinifi_uygulanamaz_ve_tablo_nuklidi,
          test_dal_kritik_arama_notu_ve_reaktivite_sutunu,
          test_demet_adim_onerisi_ve_bos_harita_mesaji, test_probability_table_notu,
          test_en_varsayilan_adlar_tr_degismez, test_onizleme_kapi_degisti_sinyali]

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-03 21:55+0300\n"
+"POT-Creation-Date: 2026-10-03 22:10+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -6354,6 +6354,14 @@ msgid ""
 "denetimi atlandı."
 msgstr ""
 
+#: cekirdek/masaustu/__main__.py:44
+msgid "Masaüstü bütünleşmesi kurulu."
+msgstr ""
+
+#: cekirdek/masaustu/__main__.py:45
+msgid "Masaüstü bütünleşmesi kurulu değil (kurmak için: kur)."
+msgstr ""
+
 #: cekirdek/mesh_tally/geometri.py:28
 #, python-format
 msgid "desteklenmeyen ağ sınıfı: %s"
@@ -6554,12 +6562,12 @@ msgstr ""
 msgid "bilinmeyen enerji grup yapısı: %s"
 msgstr ""
 
-#: cekirdek/mesh_tally/vtk.py:117
+#: cekirdek/mesh_tally/vtk.py:138
 #, python-format
 msgid "VTK dosya adı .vtk ile bitmeli: %s"
 msgstr ""
 
-#: cekirdek/mesh_tally/vtk.py:120
+#: cekirdek/mesh_tally/vtk.py:141
 #, python-format
 msgid "VTK dizini yok ya da yazılamıyor: %s"
 msgstr ""
@@ -6672,11 +6680,11 @@ msgstr ""
 msgid "bölgede fisyon yok: k∞ tanımsız"
 msgstr ""
 
-#: cekirdek/mgxs_uret.py:63
+#: cekirdek/mgxs_uret.py:63 cekirdek/mgxs_uret.py:254
 msgid "Hücre"
 msgstr ""
 
-#: cekirdek/dogrula/_ortak.py:25 cekirdek/mgxs_uret.py:63
+#: cekirdek/dogrula/_ortak.py:25 cekirdek/mgxs_uret.py:63 cekirdek/mgxs_uret.py:254
 msgid "Malzeme"
 msgstr ""
 
@@ -6760,16 +6768,20 @@ msgstr ""
 msgid "bilinmeyen MGXS türü: %s (geçerli: %s)"
 msgstr ""
 
-#: cekirdek/mgxs_uret.py:362
+#: cekirdek/mgxs_uret.py:255
+msgid "Evren"
+msgstr ""
+
+#: cekirdek/mgxs_uret.py:364
 #, python-format
 msgid "k∞ özdeğeri hesaplanamadı: %s"
 msgstr ""
 
-#: cekirdek/mgxs_uret.py:409
+#: cekirdek/mgxs_uret.py:411
 msgid "bu spec'te MGXS açık değil"
 msgstr ""
 
-#: cekirdek/mgxs_uret.py:426
+#: cekirdek/mgxs_uret.py:428
 #, python-format
 msgid ""
 "%d bölge/grup için saçılma köşegeni negatif (P0 düzeltmesi): MG Monte Carlo bunu "
@@ -7326,26 +7338,26 @@ msgstr ""
 msgid "adsız model"
 msgstr ""
 
-#: cekirdek/rapor.py:579
+#: cekirdek/rapor.py:582
 #, python-format
 msgid "Bilinmeyen rapor biçimi: %s (geçerli: %s)"
 msgstr ""
 
-#: cekirdek/rapor.py:582
+#: cekirdek/rapor.py:585
 msgid "Rapor için model (spec) gerekli."
 msgstr ""
 
-#: cekirdek/rapor.py:584
+#: cekirdek/rapor.py:587
 #, python-format
 msgid "Koşu dizini bulunamadı: %s"
 msgstr ""
 
-#: cekirdek/rapor.py:593
+#: cekirdek/rapor.py:596
 #, python-format
 msgid "Rapor dizini oluşturulamadı: %s (%s)"
 msgstr ""
 
-#: cekirdek/rapor.py:604
+#: cekirdek/rapor.py:607
 #, python-format
 msgid "Rapor yazılamadı: %s (%s)"
 msgstr ""
