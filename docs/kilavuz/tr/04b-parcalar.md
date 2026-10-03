@@ -136,7 +136,7 @@ başlangıç şablonu sunar (sertifika değildir; kendi tasarımınızı girin):
 | **Kompakt yarıçapı / yüksekliği** | parçacıkların paketlendiği silindir | cm | `yaricap`, `yukseklik` |
 | **Yakıt bölgesi yarıçapı / Pebble dış yarıçapı** | pebble'ın TRISO dolu küresi ve grafit kabuğunun dışı | cm | `yakit_yaricap`, `dis_yaricap` |
 | **Matris malzemesi** | parçacıklar arasını dolduran malzeme (grafit) | — | `matris_malzeme` |
-| **Kabuk malzemesi / Dış gaz (pebble)** | yakıt bölgesi ile dış yarıçap arası; dışı (helyum) | — | `kabuk_malzeme`, `dis_malzeme` |
+| **Kabuk malzemesi (pebble)**, **Dış gaz (pebble)** | yakıt bölgesi ile dış yarıçap arası; dışı (helyum) | — | `kabuk_malzeme`, `dis_malzeme` |
 | **Paketleme oranı (hedef)** | N·(4/3)πr³ / V_kap; rastgele ≤ 0.64 (CRP sınırı), düzenli ≤ π/6 = 0.5236 | — | `paketleme` |
 | **Yerleşim** | **Rastgele (RSP/CRP)**: `openmc.model.pack_spheres`; **Düzenli**: basit kübik kafes | — | `yontem` |
 | **Tohum** | rastgele paketlemenin tohumu (aynı tohum aynı yerleşim) | — | `tohum` |

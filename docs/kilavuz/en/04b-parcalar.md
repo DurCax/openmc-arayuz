@@ -143,7 +143,7 @@ The **+ TRISO** button offers two starting templates (not a certification; enter
 | **Compact radius / height** | the cylinder in which particles are packed | cm | `yaricap`, `yukseklik` |
 | **Fuel zone radius / Pebble outer radius** | the TRISO-filled sphere of the pebble and the outside of its graphite shell | cm | `yakit_yaricap`, `dis_yaricap` |
 | **Matrix material** | material between the particles (graphite) | - | `matris_malzeme` |
-| **Shell material / Outer gas (pebble)** | between the fuel zone and the outer radius; outside it (helium) | - | `kabuk_malzeme`, `dis_malzeme` |
+| **Shell material (pebble)**, **Outer gas (pebble)** | between the fuel zone and the outer radius; outside it (helium) | - | `kabuk_malzeme`, `dis_malzeme` |
 | **Packing fraction (target)** | N*(4/3)*pi*r^3 / V_container; random <= 0.64 (CRP limit), regular <= pi/6 = 0.5236 | - | `paketleme` |
 | **Placement** | **Random (RSP/CRP)**: `openmc.model.pack_spheres`; **Regular**: simple cubic lattice | - | `yontem` |
 | **Seed** | seed of the random packing (same seed, same placement) | - | `tohum` |

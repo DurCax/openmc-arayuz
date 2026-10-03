@@ -21,9 +21,9 @@ pencereleriyle** nasıl hızlandırırız ve sonucun **yanlılıksız** kaldığ
    100, IPyC 40, SiC 35, OPyC 40 µm (dış yarıçaplar 0.0175, 0.0275, 0.0315, 0.0350, 0.0390 cm);
    kompakt yarıçapı 0.6225 cm; model, z'de yansıtıcı sınırlı **5 mm'lik dilimdir** (eksenel sonsuz
    kompakt; uzunluk k'yı değiştirmez, dilim kurulumu hızlandırır).
-2. Özet satırı **857 parçacık · gerçek paketleme oranı 0.3499 (hedef 0.3500)** yazar. **El
+2. Özet satırı **857 parçacık · gerçek paketleme oranı 0.3498 (hedef 0.3500)** yazar. **El
    hesabı:** V_kap = π·0.6225²·0.5 = 0.6086 cm³, V_p = (4/3)π·0.039³ = 2.485·10⁻⁴ cm³,
-   N = int(0.35·0.6086 / 2.485·10⁻⁴) = 857, gerçek oran = 857·V_p / V_kap = 0.3499.
+   N = int(0.35·0.6086 / 2.485·10⁻⁴) = 857, gerçek oran = 857·V_p / V_kap = 0.3498.
 3. **Doğrulama** koşuyu açmadan modeli denetler: kompakt 3B ister (kökte yükseklik var), malzemeler
    tanımlı, paketleme ≤ 0.64. Paketleme 0.30'u aşınca **yakın rastgele paketleme (CRP)** uyarısı
    çıkar; bu beklenir, kurulum yavaşlar.
@@ -82,11 +82,14 @@ malzemesindeki akıdır.
 **Ölçülen** (2 000 000 analog geçmiş; 20 000 pencereli geçmiş; 6 iş parçacığı; kaynak: bu depodaki
 `testler/test_y9_varyans.py`):
 
-@@FTABLO_TR@@
+| Koşu | Geçmiş | T [s] | dedektör akısı ± σ [1/s] | σ bağıl | FOM |
+|---|---|---|---|---|---|
+| analog | 2·10⁶ | 62 | 1.687·10⁹ ± 0.164·10⁹ | %9.8 | 1.69 |
+| MAGIC pencereli (küresel, 8 bölme) | 2·10⁴ | 109 | 1.597·10⁹ ± 0.066·10⁹ | %4.1 | 5.37 |
 
-- **Yanlılıksızlık:** pencereli sonuç analogla **@@FARK@@ σ** (birleşik) farkla uyumludur; kabul
+- **Yanlılıksızlık:** pencereli sonuç analogla **0.51 σ** (birleşik) farkla uyumludur; kabul
   ölçütü ≤ 2σ.
-- **FOM artışı:** **≈ @@ORAN@@ ×** (üretim koşusunun süresi hariç; üretim koşusu analog bir koşudur ve
+- **FOM artışı:** **≈ 3.2 ×** (üretim koşusunun süresi hariç; üretim koşusu analog bir koşudur ve
   süresi ayrıca eklenmelidir). Eşik değil ölçümdür: sayı problemin derinliğine bağlıdır.
 
 **Ağırlık pencereleri her problemde kazandırmaz.** Aynı hesabı daha ince bir zırhta (35 cm su, 20 cm

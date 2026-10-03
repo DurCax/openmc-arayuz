@@ -44,6 +44,9 @@ for teaching, and must not be used as design values.
 | **kriter_lct008.json** | B&W critical lattice (LCT-008) | benchmark | advanced | experiment: ICSBEP LEU-COMP-THERM-008/1 | ICSBEP |
 | **kriter_vver1000_ugd.json** | VVER-1000 LEU assembly benchmark (NEA) | benchmark | advanced | calculation: NEA/NSC/DOC(2002)10 | NEA/NSC/DOC(2002)10 |
 | zirh_kure.json | Shielding sphere (fixed source) | shielding | intermediate | — | — |
+| **htgr_kompakt.json** | HTGR TRISO compact (AGR-1 dimensions, 5 mm slice) | research | advanced | - | INL AGR-1 baseline design; 35 % packing |
+| **htgr_pebble.json** | HTR-10 pebble (Wigner-Seitz sphere) | research | advanced | - | IAEA-TECDOC-1382 dimensions |
+| **zirh_agirlik_pencere.json** | Deep-penetration shield (weight window lesson) | shielding | advanced | - | lesson 5.21: window FOM measurement |
 | **zirh_katmanli.json** | Layered shield (fixed source) | shielding | intermediate | — | PNNL-15870 concrete; Cf-252 Watt values (not verified) |
 
 Category and level are stored as identifiers (`arastirma`, `kriter`, `zirh`; `giris`, `orta`,

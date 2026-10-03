@@ -41,6 +41,9 @@ bunlar eğitim amaçlıdır ve bir tasarım değeri gibi kullanılmamalıdır.
 | **kriter_vver1000_ugd.json** | VVER-1000 LEU demet kriteri (NEA) | kriter | ileri | hesap: NEA/NSC/DOC(2002)10 | NEA/NSC/DOC(2002)10 |
 | zirh_kure.json | Zırh küresi (sabit kaynak) | zırh | orta | — | — |
 | **zirh_katmanli.json** | Katmanlı zırh (sabit kaynak) | zırh | orta | — | PNNL-15870 beton; Cf-252 Watt değerleri (doğrulanmadı) |
+| **htgr_kompakt.json** | HTGR TRISO kompakt (AGR-1 ölçüleri, 5 mm dilim) | araştırma | ileri | — | INL AGR-1 taban tasarımı; paketleme %35 |
+| **htgr_pebble.json** | HTR-10 pebble (Wigner–Seitz küresi) | araştırma | ileri | — | IAEA-TECDOC-1382 ölçüleri |
+| **zirh_agirlik_pencere.json** | Derin nüfuz zırhı (ağırlık penceresi dersi) | zırh | ileri | — | ders 5.21: pencere FOM ölçümü |
 
 Kalın dosyalar Dalga 2'de eklendi (16 dosya); kalın-italik üç dosya Dalga G-4'te
 eklenen **gelişmiş geometri (ağaç, şema 3)** örnekleridir. Bu üçünün "referans"ı

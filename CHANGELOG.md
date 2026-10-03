@@ -8,6 +8,20 @@ gelir (`pyproject.toml` → `cekirdek/surum.py`). Ayrıntılı değişiklikler `
 
 ## Yayımlanmamış (v3)
 
+### Yeni — TRISO yakıt ve varyans azaltma (v3 Y9)
+- **Parçalar › TRISO** (kompakt, pebble): geometri ağacına yeni bileşen türü (`trisolar[]`);
+  `openmc.model.pack_spheres` (rastgele, RSP/CRP) ya da basit kübik kafes + `create_triso_lattice`.
+  AGR-1 ve HTR-10 şablonları. Önizleme kapsamı, betik, malzeme yeniden adlandırma, doğrulama (3B şartı,
+  paketleme sınırları). Örnekler: `htgr_kompakt`, `htgr_pebble`.
+- **Hesap ayarları › Gelişmiş › Varyans azaltma** (`ayarlar.varyans`): MAGIC ağırlık penceresi üretimi
+  (analog `uret`, `uret_uygula`), hazır `.h5`/`wwinp` uygulama, düzenli ve küresel ağ, enerji grupları.
+  **Çalıştır › Verimlilik (FOM)** kartı: FOM = 1/(σ_bağıl²·T). Örnek: `zirh_agirlik_pencere`. Ders 5.21.
+- Doğrulanan: paketleme oranı hedefe ±%1 (kurulmuş modelde kafesteki TRISO sayımıyla; üst üste binme yok);
+  betik ve kurucu aynı parçacık merkezlerini kurar; derin zırhta pencereli sonuç analogla 0.5σ içinde
+  (yanlılıksız), FOM ≈ 3× (üretim koşusu hariç). Doğrulanmayan: FW-CADIS (kapsam dışı: random ray adjoint
+  ister), wwinp dışa aktarma (OpenMC 0.16'da yok), ince zırhta pencere kazancı (ölçüldü: kazanç yok).
+- Davranış: `ayarlar.varyans` ve `trisolar` yoksa model, betik ve önbellek kimliği değişmez.
+
 ### Davranış değişikliği — ağ (mesh) tally'leri (v3 Y1)
 - **2B (eksenel sonsuz) modelde otomatik ağın z aralığı ±1 cm → ±10⁴ cm** (`Z_2B_YARI`,
   `cekirdek/mesh_tally/tanim.py`). `mesh_turu` alanı olmayan `otomatik: true` v2 projeleri de
