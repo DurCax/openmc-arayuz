@@ -71,6 +71,7 @@ include = ["cekirdek*", "arayuz*"]
 # Yalniz derlenmis ceviri (.mo) kurulur; .po/.pot gelistirme dosyasidir.
 "share/openmc-arayuz/ornekler" = ["ornekler/*.json"]
 "share/openmc-arayuz/ornekler/vv" = ["ornekler/vv/*.json"]
+"share/openmc-arayuz/ornekler/bolme" = ["ornekler/bolme/*.json"]
 "share/openmc-arayuz/locale/en/LC_MESSAGES" = ["locale/en/LC_MESSAGES/*.mo"]
 "share/openmc-arayuz/docs/kilavuz/tr" = ["docs/kilavuz/tr/*"]
 "share/openmc-arayuz/docs/kilavuz/en" = ["docs/kilavuz/en/*"]
