@@ -18,6 +18,7 @@
    [Y5-B7] Betik esdegerligi: kod_uret bolunmus modeli uretir (hucre sayisi ve
            yaricaplar kurucu.kur ile ayni).
    [Y5-B8] hazirla: halka basina ayri malzeme, hacim toplami analitik (ZINCIR).
+   [Y5-B9] (YAVAS) Demet: bolunmus ve bolunmemis kosuda K3 pin gucu tutarli.
 """
 
 import copy
@@ -247,10 +248,46 @@ def test_hazirla_halka_malzemeleri():
     kontrol("esit hacimli halkalar esit", v[-1] - v[0] <= TOL * v[-1], repr(v))
 
 
+def test_demette_pin_gucu_toplami(gecici):
+    print("\n[Y5-B9] demet: halka bolme sonrasi K3 pin gucu bolunmemisle tutarli (3 sigma)")
+    from cekirdek import sema, tukenme, tukenme_guc
+    def kos(ad, bolme):
+        s = sema.yukle(os.path.join(ORNEK, "pwr_gd_tukenme.json"))
+        s["ayarlar"].update(parcacik=2000, cevrim=40, pasif=10, tohum=5)
+        s["ayarlar"]["entropi_mesh"]["var"] = False
+        s["tukenme"].update(zincir="casl_termal", entegrator="predictor", adimlar=[1.0],
+                            adim_birimi="d", izlenen=["Gd157"])
+        if bolme:
+            s["tukenme"]["bolme"] = {"cubuklar": [{"cubuk": "yakit_cubugu", "halka": 3},
+                                                  {"cubuk": "gd_cubugu", "halka": 2,
+                                                   "bolgeler": [4]}]}
+        d = os.path.join(gecici, ad)
+        h5, b = tukenme.calistir(s, d, veri_kontrolu=False)
+        return s, d, h5, b
+    s0, d0, h0, _b0 = kos("bolunmemis", False)
+    s1, d1, h1, b1 = kos("bolunmus", True)
+    kontrol("bolunmus: ornek sayisi arttı", b1["ornek_sayisi"] > _b0["ornek_sayisi"],
+            "%d -> %d" % (_b0["ornek_sayisi"], b1["ornek_sayisi"]))
+    t0 = tukenme_guc.adim_gucleri(d0, s0, h0)["adimlar"][0]["tablo"]
+    t1 = tukenme_guc.adim_gucleri(d1, s1, h1)["adimlar"][0]["tablo"]
+    kontrol("ayni sayida pin satiri", len(t0) == len(t1) > 0, "%d %d" % (len(t0), len(t1)))
+    f0 = {(r["demet"], r["konum"]): r for r in t0}
+    en_kotu = 0.0
+    for r in t1:
+        a = f0[(r["demet"], r["konum"])]
+        fark = abs(r["bagil"] - a["bagil"])
+        sg = (r["sigma"] ** 2 + a["sigma"] ** 2) ** 0.5
+        en_kotu = max(en_kotu, fark / sg if sg else 0.0)
+    kontrol("her pinin bagil gucu 4 sigma icinde (en kotu %.2f sigma)" % en_kotu, en_kotu <= 4.0)
+    m0 = sum(r["W"] for r in t0 if r["W"])
+    m1 = sum(r["W"] for r in t1 if r["W"])
+    kontrol("toplam guc korunur (%.4g vs %.4g W)" % (m0, m1), abs(m1 - m0) <= 0.02 * m0)
+
+
 HIZLI = [test_halka_yaricaplari, test_gd_hacim_korunumu, test_uygula_ozellikleri,
          test_guc_hedefleri_uyumu, test_eksenel_dilim, test_hata_girdileri,
          test_betik_esdegerligi]
-YAVAS = []
+YAVAS = [test_demette_pin_gucu_toplami]
 HIZLI += [test_hazirla_halka_malzemeleri]
-VERI_GEREKEN = [test_betik_esdegerligi, test_hazirla_halka_malzemeleri]
-ZINCIR_GEREKEN = [test_hazirla_halka_malzemeleri]
+VERI_GEREKEN = [test_betik_esdegerligi, test_hazirla_halka_malzemeleri] + YAVAS
+ZINCIR_GEREKEN = [test_hazirla_halka_malzemeleri] + YAVAS
