@@ -765,6 +765,15 @@ def _ad_degisimi_olc(spec, eski, yeni, baslik):
     model_alanlari = {k: v for k, v in s2.items()
                       if k not in ("referans", "baslik", "baslik_en", "aciklama",
                                    "aciklama_en", "kategori", "seviye", "ad")}
+    # TRISO katman ETIKETI (trisolar[].katmanlar[].ad: kernel/buffer/ipyc/sic/
+    # opyc, triso.SABLONLAR) malzeme basvurusu degildir; basvuru "malzeme"
+    # alanidir ve guncellenir. htgr_* orneklerinde "sic" katman etiketi
+    # tesadufen SiC malzemesinin adiyla ayni (Q4, 04.10.2026).
+    if model_alanlari.get("trisolar"):
+        model_alanlari["trisolar"] = [
+            dict(t, katmanlar=[{k: v for k, v in kt.items() if k != "ad"}
+                               for kt in t.get("katmanlar") or []])
+            for t in model_alanlari["trisolar"]]
     if eski in set(_dizeler(model_alanlari)) and not golgeli:
         return "%s: eski ad spec'te kaldi" % baslik
     return None
