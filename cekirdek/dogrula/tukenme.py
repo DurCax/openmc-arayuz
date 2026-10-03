@@ -169,6 +169,8 @@ def tukenme_kontrol(spec, veri_kontrolu=True):
     # v3 Y4: entegrator, sogutma, surdurme, hizli kip, kritik arama
     from cekirdek import tukenme_ayar
     bulgular.extend(tukenme_ayar.ayar_bulgulari(spec))
+    from cekirdek import bolge_bol          # v3 Y5: halka / eksenel bolme
+    bulgular.extend(bolge_bol.bolme_bulgulari(spec))
     return bulgular
 
 

@@ -17,6 +17,7 @@
            bolge, dis bolge, gecersiz halka sayisi/tur.
    [Y5-B7] Betik esdegerligi: kod_uret bolunmus modeli uretir (hucre sayisi ve
            yaricaplar kurucu.kur ile ayni).
+   [Y5-B11] Dogrulama bulgulari: gecersiz bolme HATA (kapi durur), gecerli BILGI.
    [Y5-B8] hazirla: halka basina ayri malzeme, hacim toplami analitik (ZINCIR).
    [Y5-B9] (YAVAS) Demet: bolunmus ve bolunmemis kosuda K3 pin gucu tutarli.
 """
@@ -303,9 +304,32 @@ def test_ornek_eski_ornekle_ayni():
             repr(bb.ornek_sayilari(yeni)))
 
 
+def test_dogrulama_bulgulari():
+    print("\n[Y5-B11] dogrulama: gecersiz bolme HATA, gecerli bolme BILGI, kapi hatada durur")
+    from cekirdek import bolge_bol as bb, dogrula, tukenme
+    s = _gd_pin(4)
+    s["tukenme"]["var"] = True
+    b = bb.bolme_bulgulari(s)
+    kontrol("gecerli: tek BILGI, 1 -> 4", len(b) == 1 and b[0].seviye == "bilgi"
+            and "1 → 4" in b[0].mesaj, repr([x.mesaj for x in b]))
+    kotu = copy.deepcopy(s)
+    kotu["tukenme"]["bolme"]["cubuklar"][0]["cubuk"] = "yok"
+    b = bb.bolme_bulgulari(kotu)
+    kontrol("gecersiz: HATA", len(b) == 1 and b[0].seviye == "hata", repr([x.mesaj for x in b]))
+    mesajlar = [x.mesaj for x in dogrula.tum_kontroller(kotu, veri_kontrolu=False)]
+    kontrol("canli listede", any("bölme geçersiz" in m for m in mesajlar))
+    try:
+        tukenme.kapi(kotu, veri_kontrolu=False)
+        kontrol("kapi gecersiz bolmede durur", False)
+    except dogrula.DogrulamaHatasi:
+        kontrol("kapi gecersiz bolmede durur", True)
+    s["tukenme"]["var"] = False
+    kontrol("tukenme kapaliyken bulgu yok", bb.bolme_bulgulari(s) == [])
+
+
 HIZLI = [test_halka_yaricaplari, test_gd_hacim_korunumu, test_uygula_ozellikleri,
          test_guc_hedefleri_uyumu, test_eksenel_dilim, test_hata_girdileri,
-         test_betik_esdegerligi, test_ornek_eski_ornekle_ayni]
+         test_betik_esdegerligi, test_ornek_eski_ornekle_ayni, test_dogrulama_bulgulari]
 YAVAS = [test_demette_pin_gucu_toplami]
 HIZLI += [test_hazirla_halka_malzemeleri]
 VERI_GEREKEN = [test_betik_esdegerligi, test_hazirla_halka_malzemeleri] + YAVAS

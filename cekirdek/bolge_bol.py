@@ -447,3 +447,24 @@ def ornek_sayilari(spec: Mapping[str, Any]) -> Tuple[int, int]:
 def _ornek_say(spec: Mapping[str, Any]) -> int:
     from cekirdek import tukenme, tukenme_hacim
     return sum(tukenme_hacim.ornek_sayisi(spec, ad) for ad in tukenme.yanabilir_adlar(spec))
+
+
+def bolme_bulgulari(spec: Mapping[str, Any]) -> list:
+    """Dogrulama bulgulari (cekirdek/dogrula/tukenme.py cagirir): gecersiz bolme HATA,
+    gecerli bolme BILGI (ayri malzeme sayisi). Bolme yoksa ya da tukenme kapaliysa bos."""
+    from cekirdek.dogrula._ortak import Bulgu
+    t = spec.get("tukenme") or {}
+    if not t.get("var") or not t.get(ANAHTAR):
+        return []
+    yer = "tukenme/bolme"
+    try:
+        if bolme_oku(spec) is None:
+            return []
+        once, sonra = ornek_sayilari(spec)
+    except ValueError as e:
+        return [Bulgu("hata", yer, _("tükenme bölgesi bölme geçersiz: %s") % e,
+                      _("Tükenme › Bölge bölme kartında çubuk, halka sayısı ve eksenel dilimi "
+                        "düzeltin ya da bölmeyi kapatın."))]
+    return [Bulgu("bilgi", yer, _("bölge bölme açık: ayrı tükenme malzemesi %d → %d") % (once, sonra),
+                  _("Her parça ayrı malzeme olarak yanar (çubuk çubuk yanma otomatik açılır); "
+                    "bellek ve süre parça sayısıyla artar."))]
