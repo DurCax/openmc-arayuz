@@ -360,10 +360,16 @@ def _eksenel_bol(spec: Dict[str, Any], b: Bolme) -> None:
     eks["bolgeler"] = yeni
 
 
-def uygula(spec: Mapping[str, Any]) -> Mapping[str, Any]:
+def uygula(spec: Mapping[str, Any], zorla: bool = False) -> Mapping[str, Any]:
     """Bolmeyi uygulanmis YENI spec; bolme yoksa girdinin kendisi. Girdi degismez.
     Donen spec'te tukenme.bolme YOKTUR (ikinci uygulama bolmez) ve cubuk cubuk
-    yanma (malzemeleri_ayir) aciktir: bolunen parcalar ancak boylece ayri yanar."""
+    yanma (malzemeleri_ayir) aciktir: bolunen parcalar ancak boylece ayri yanar.
+
+    zorla=False (kurucu.kur, betik): bolme yalniz tukenme.var acikken uygulanir;
+    kapali tukenmede model bolunmemis kurulur (betik = kurucu ayni kalir).
+    zorla=True (tukenme koşusu, sonuc okuma): tukenme.var'a bakilmaz."""
+    if not zorla and not (spec.get("tukenme") or {}).get("var"):
+        return spec
     b = bolme_oku(spec)
     if b is None:
         return spec
@@ -435,7 +441,7 @@ def kesit_onizleme(spec: Mapping[str, Any], cubuk: str) -> Tuple[Halka, ...]:
 def ornek_sayilari(spec: Mapping[str, Any]) -> Tuple[int, int]:
     """(bolmeden once, sonra) yanabilir malzeme ornek (ayri tukenme malzemesi)
     sayisi: kullaniciya maliyeti gostermek icin."""
-    return _ornek_say(spec), _ornek_say(uygula(spec))
+    return _ornek_say(spec), _ornek_say(uygula(spec, zorla=True))
 
 
 def _ornek_say(spec: Mapping[str, Any]) -> int:

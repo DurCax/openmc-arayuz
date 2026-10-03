@@ -63,6 +63,7 @@ class DalKarti(bil.Kart):
         self.kaynak = QtWidgets.QLabel("")
         self.kaynak.setWordWrap(True)
         self.adimlar = QtWidgets.QListWidget()
+        self.adimlar.setMinimumHeight(ADIM_LISTESI_YUKSEKLIGI // 2)
         self.adimlar.setMaximumHeight(ADIM_LISTESI_YUKSEKLIGI)
         self.adimlar.setToolTip(_("Dalın hesaplanacağı yanma noktaları (sonuç dosyasındaki "
                                   "zaman noktaları). Taze yakıt (adım 0) tarama ile karşılaştırılabilir."))
@@ -346,6 +347,7 @@ class DalKarti(bil.Kart):
                              "—" if s.dk_pcm is None else "%+.0f ± %.0f" % (s.dk_pcm, s.dk_sapma_pcm)]
             for j, metin in enumerate(hucreler):
                 self.tablo.setItem(i, j, QtWidgets.QTableWidgetItem(metin))
+        self.tablo.resizeColumnsToContents()
 
     def csv_kaydet(self, yol: Optional[str] = None) -> Optional[str]:
         if not self._satirlar:

@@ -246,7 +246,7 @@ def yakit_ornek_sayisi(spec):
 
 def _yakit_ornek_sayisi(spec):
     from cekirdek import bolge_bol, tukenme_hacim
-    spec = bolge_bol.uygula(spec)           # v3 Y5: bolunmus parcalar da ornektir
+    spec = bolge_bol.uygula(spec, zorla=True)   # v3 Y5: bolunmus parcalar da ornektir
     return max([tukenme_hacim.ornek_sayisi(spec, ad) for ad in yanabilir_adlar(spec)] or [0])
 
 
@@ -346,7 +346,7 @@ def hazirla(spec):
     """
     from cekirdek import bolge_bol, kurucu, tukenme_hacim
     from cekirdek.gunluk import kaydedici
-    spec = bolge_bol.uygula(spec)           # v3 Y5: halka/eksenel bolme (varsa)
+    spec = bolge_bol.uygula(spec, zorla=True)   # v3 Y5: halka/eksenel bolme (varsa)
     model, kbilgi = kurucu.kur(_y3.tukenme_icin(spec))   # Y3 tukenmede kapali
     zs = zincir_secimi(spec)
     tamam, mesaj, _zincir = veri_bilgi.zincir_kontrol(zs["yol"])
@@ -429,7 +429,7 @@ def calistir(spec, dizin, geri_cagir=None, veri_kontrolu=True):
     # v3 Y5: halka/eksenel bolme (tukenme.bolme) spec duzeyinde uygulanir; kayit
     # ve surdurme kullanicinin kendi spec'idir, model ve hacimler bolunmusten.
     kullanici_spec = spec
-    spec = bolge_bol.uygula(spec)
+    spec = bolge_bol.uygula(spec, zorla=True)
     # v3 K3: guc tally'si kurulabilen modelde her adimda pin gucu sayilir
     # (spec kaydi kullanicinin spec'idir).
     model, bilgi = tukenme_guc.olcumlu_hazirla(hazirla, spec)

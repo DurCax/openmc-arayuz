@@ -63,7 +63,7 @@ def _malzeme_haritasi(spec):
     Cubuk cubuk yanmada klonlar da (ad ve kendi hacmiyle) haritaya girer.
     """
     from cekirdek import bolge_bol, kurucu
-    spec = bolge_bol.uygula(spec)                       # v3 Y5: kosudaki bolunmus model
+    spec = bolge_bol.uygula(spec, zorla=True)           # v3 Y5: kosudaki bolunmus model
     model, kb = kurucu.kur(_y3.tukenme_icin(spec))      # Y3 tukenmede kapali
     hv = _tk().hacimler(spec)
     ad_by_id = {str(m.id): ad for ad, m in kb["malzemeler"].items()}

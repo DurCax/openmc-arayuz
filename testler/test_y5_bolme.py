@@ -200,6 +200,7 @@ def test_hata_girdileri():
     s["cubuklar"][0]["kesit"] = "kare"
     kontrol("kare kesit", hata(s, "silindirik değil"))
     k = sema.yukle(os.path.join(ORNEK, "pwr_kontrol.json"))
+    k["tukenme"]["var"] = True
     k["tukenme"]["bolme"] = {"cubuklar": [{"cubuk": "kontrol_cubugu", "halka": 3}]}
     kontrol("kontrol cubugu", hata(k, "kontrol çubuğu"))
     s = _gd_pin()
@@ -284,9 +285,27 @@ def test_demette_pin_gucu_toplami(gecici):
     kontrol("toplam guc korunur (%.4g vs %.4g W)" % (m0, m1), abs(m1 - m0) <= 0.02 * m0)
 
 
+def test_ornek_eski_ornekle_ayni():
+    print("\n[Y5-B10] pwr_gd_bolme: 5 esit hacimli halka = pwr_gd_tukenme'nin elle yazilmis halkalari")
+    from cekirdek import bolge_bol as bb, sema, tukenme
+    yeni = sema.yukle(os.path.join(ORNEK, "pwr_gd_bolme.json"))
+    eski = sema.yukle(os.path.join(ORNEK, "pwr_gd_tukenme.json"))
+    y = bb.uygula(yeni)
+    ry = [b["r"] for b in sema.cubuk_bul(y, "gd_cubugu")["bolgeler"]][:5]
+    re_ = [b["r"] for b in sema.cubuk_bul(eski, "gd_cubugu")["bolgeler"]][:5]
+    kontrol("yaricaplar 5 basamak yuvarlama icinde ayni", max(abs(a - b) for a, b in zip(ry, re_)) < 1e-5,
+            repr(ry))
+    hy = sum(v["hacim"] for a, v in tukenme.hacimler(y).items() if a.startswith("uo2_gd"))
+    he = sum(v["hacim"] for a, v in tukenme.hacimler(eski).items() if a.startswith("uo2_gd"))
+    kontrol("Gd malzemesi toplam hacmi ayni (1e-5)", abs(hy - he) <= 1e-5 * he, "%r %r" % (hy, he))
+    kontrol("ornek sayisi 1 + 24 UO2 -> 5 + 24", bb.ornek_sayilari(yeni) == (25, 29)
+            or bb.ornek_sayilari(yeni)[1] - bb.ornek_sayilari(yeni)[0] == 4,
+            repr(bb.ornek_sayilari(yeni)))
+
+
 HIZLI = [test_halka_yaricaplari, test_gd_hacim_korunumu, test_uygula_ozellikleri,
          test_guc_hedefleri_uyumu, test_eksenel_dilim, test_hata_girdileri,
-         test_betik_esdegerligi]
+         test_betik_esdegerligi, test_ornek_eski_ornekle_ayni]
 YAVAS = [test_demette_pin_gucu_toplami]
 HIZLI += [test_hazirla_halka_malzemeleri]
 VERI_GEREKEN = [test_betik_esdegerligi, test_hazirla_halka_malzemeleri] + YAVAS

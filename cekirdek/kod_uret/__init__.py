@@ -27,6 +27,7 @@
 
 
 import datetime
+import sys
 
 from cekirdek.kod_uret import ad as _admod
 from cekirdek.kod_uret.ad import _ad, _f, dokuman_metni  # noqa: F401  (arayuz _ad kullanir)
@@ -43,6 +44,10 @@ def uret(spec, kaynak_dosya=None, renkli=True):
         return _uret(spec, kaynak_dosya, renkli)
     finally:
         _admod._KAYIT = None
+        # Cubuk cubuk yanmanin ornek hacimleri kurucu.kur ile hesaplanir (openmc
+        # nesneleri uretir); kimlik sayaci uretimden sonra ayni baslangicta kalsin.
+        if "openmc" in sys.modules:
+            sys.modules["openmc"].reset_auto_ids()
 
 
 def _uret(spec, kaynak_dosya, renkli):
