@@ -184,7 +184,16 @@ def test_tablo_ve_csv():
     metin = dal.csv_metni(t)
     ilk = metin.splitlines()[0]
     kontrol("CSV basligi sabit anahtarlar",
-            ilk == "adim,zaman_gun,yanma_MWd_kg,T_yakit,k,k_sigma,dk_pcm,dk_sigma_pcm,hata", ilk)
+            ilk == "adim,zaman_gun,yanma_MWd_kg,T_yakit,k,k_sigma,dk_pcm,dk_sigma_pcm,rho_pcm,rho_sigma_pcm,hata", ilk)
+    from cekirdek import kosu_gecmisi
+    kf = kosu_gecmisi.k_farki(1.2000, 0.0003, 1.1900, 0.0004)
+    kontrol("drho = 1/k_taban - 1/k (kosu_gecmisi.k_farki ile ayni)",
+            abs(t[1].rho_pcm - kf.rho_fark_pcm) < 1e-6 and abs(t[1].rho_sapma_pcm - kf.rho_sigma_pcm) < 1e-6,
+            "%r vs %r" % (t[1].rho_pcm, kf.rho_fark_pcm))
+    kontrol("taban drho = 0", t[0].rho_pcm == 0.0)
+    kontrol("kritik arama kapaliyken not yok", dal.kritik_arama_notu({"tukenme": {}}) is None)
+    kontrol("kritik arama aciksa not var",
+            "kritik" in (dal.kritik_arama_notu({"tukenme": {"kritik_arama": {"var": True}}}) or "").lower())
     kontrol("CSV satir sayisi", len(metin.strip().splitlines()) == 6)
     kasit = [_durum("f", 0, 0, {}, None, "basarisiz", "=HYPERLINK(\"x\")")]
     kontrol("hata metni formul korumali", "'=HYPERLINK" in dal.csv_metni(dal.dal_tablosu(kasit)))

@@ -31,7 +31,10 @@ kart bunu yazar.
 | **Birleşim** | **Her değişken tek başına**: taban + her değişkenin her değeri (tek değişkenli taramayla aynı noktalar). **Tüm bileşimler**: kartezyen çarpım. | — | tek başına | Kartezyen çarpımı 3 değişkenle açmak: koşu sayısı patlar | (spec'e yazılmaz) |
 
 **Tablo.** Her satır bir (adım, koşul): k ± σ ve taban dala göre **Δk [pcm] = (k − k_taban) × 10⁵**,
-σ_Δk = √(σ² + σ_taban²) × 10⁵. Koşular bağımsız sayıldığından bu belirsizlik **muhafazakârdır**
+σ_Δk = √(σ² + σ_taban²) × 10⁵. Δk bir **k farkıdır**, reaktivite katsayısı değildir; reaktivite farkı
+**Δρ [pcm] = (1/k_taban − 1/k) × 10⁵**'tir (σ_ρ = 10⁵ · √((σ/k²)² + (σ_taban/k_taban²)²); `kosu_gecmisi.k_farki` ile
+aynı tanım). Katsayıyı Δρ'dan okuyun: k ≈ 1.36 tabanında Δρ ≈ Δk/1.86 (bor 500 ppm için Δk = −7484 pcm ↔
+Δρ ≈ −4250 pcm ≈ −8.5 pcm/ppm). Koşular bağımsız sayıldığından bu belirsizlik **muhafazakârdır**
 (aynı tohum kullanıldığından gerçek belirsizlik daha küçüktür). **CSV kaydet** her satırı
 yazar (ondalık nokta, sabit sütun anahtarları).
 
@@ -39,6 +42,10 @@ yazar (ondalık nokta, sabit sütun anahtarları).
 verir; taban dal, tükenme koşusunun o adımdaki k'sıyla aynıdır (testlerde 2σ içinde ölçüldü).
 Terminal: `python3 -m cekirdek.dal model.json tukenme_dizini --adimlar 0,4 --yakit-sicaklik 600,900
 --bor 0,500` ([8. Terminal](08-terminal.md#terminal)).
+
+**Tükenmede kritiklik araması (bor/çubuk) açıksa** dal modeli adım başına aranan değeri değil, modeldeki
+sabit değeri kullanır; "taban dal = tükenmenin k'sı" tutmaz. Kart bu durumda durum satırında ve her işin
+notunda uyarır; katsayı için aramasız bir tükenme koşusu kullanın.
 
 Bu bir **eğitim ve ön inceleme** aracıdır: bir çekirdek simülatörünün dal tablosu (HFP/HZP, kesin
 bor basamakları, soğuma) yerine geçmez; sertifika değildir.

@@ -96,8 +96,23 @@ def seriler(r, ad_by_id: dict, zincir_yolu: str | None) -> dict:
     return {"zaman_d": zaman, "malzeme": malzeme, "toplam": toplam}
 
 
+ATIK_UYGULANAMAZ = "uygulanamaz"
+_ATIK_TABLOLARI = ("NRC_long", "NRC_short_A", "NRC_short_B", "NRC_short_C")
+
+
+def atik_sinifi(m) -> str:
+    """10 CFR 61.55 tablo karsilastirmasi; malzemede tablo nuklidi yoksa
+    (taze/az yanmis yakit) OpenMC "Class A" doner (§61.55(a)(6)) -- bu bir
+    siniflandirma degil, tablonun uygulanamamasidir: ATIK_UYGULANAMAZ."""
+    if not any(m.waste_disposal_rating(limits=t, metal=True) > 0.0 for t in _ATIK_TABLOLARI):
+        return ATIK_UYGULANAMAZ
+    return m.waste_classification()
+
+
 def doz_ve_atik(r, ad_by_id: dict, zincir_yolu: str | None, adim: int = -1) -> dict:
     """{ad: {"doz_gy_h": float, "atik_sinifi": str}} -- secilen adimda.
+    Doz: yari sonsuz levha, yalniz yakit, havada sogurulan doz (ust sinir
+    gostergesi; hacimden bagimsiz). atik_sinifi: ATIK_UYGULANAMAZ olabilir.
     Malzeme basina hata metni "hata" anahtarinda (sessiz degil)."""
     from cekirdek.gunluk import kaydedici
     sonuc = {}
@@ -107,7 +122,7 @@ def doz_ve_atik(r, ad_by_id: dict, zincir_yolu: str | None, adim: int = -1) -> d
             m = r[adim].get_material(mid)
             try:
                 sonuc[ad] = {"doz_gy_h": float(m.get_photon_contact_dose_rate()),
-                             "atik_sinifi": m.waste_classification()}
+                             "atik_sinifi": atik_sinifi(m)}
             except (ValueError, KeyError, RuntimeError) as e:
                 kaydedici(__name__).warning("doz/atik hesaplanamadi (%s): %s", ad, e)
                 sonuc[ad] = {"doz_gy_h": float("nan"), "atik_sinifi": "",
@@ -157,5 +172,9 @@ def birim_aciklamasi() -> str:
     """Arayuz/kilavuz notu: birimler ve kaynaklar (etkin dilde)."""
     return _("Aktivite Bq, Bq/g (malzeme kütlesi başına); bozunma ısısı W, W/g (Q: zincirin "
              "bozunma enerjisi, nötrino hariç); foton kaynağı foton/s. Temas doz hızı "
-             "FISPACT-II yöntemi (Gy/h, havada), atık sınıfı NRC 10 CFR 61.55 — bilgi "
-             "amaçlıdır, sertifika değildir.")
+             "FISPACT-II yöntemi (yarı sonsuz levha, yalnız yakıt, havada soğurulan doz "
+             "[Gy(hava) ≠ Sv]; hacimden bağımsız, kılıf yok: üst sınır göstergesi); atık "
+             "sınıfı NRC 10 CFR 61.55 tablo karşılaştırması (yakın-yüzey; kullanılmış "
+             "yakıt için geçerli değil) — bilgi amaçlıdır, sertifika değildir. Bozunma "
+             "ısısında λ ENDF/B-VIII.0 yarı ömründen, Q zincirden; aktivitede λ zincirden "
+             "alınır (zincir ≠ ENDF/B-VIII.0 ise ikisi birbirini tutmaz).")

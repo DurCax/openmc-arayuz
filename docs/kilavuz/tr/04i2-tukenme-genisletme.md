@@ -51,14 +51,14 @@ malzeme başına yazar.
 
 | Büyüklük | Kaynak (OpenMC 0.16) | Not |
 |---|---|---|
-| Aktivite | `Material.get_activity` | λN; yarı ömür koşunun zincirinden |
+| Aktivite | `Material.get_activity` | λN; yarı ömür koşunun zincirinden (bozunma ısısında λ ise ENDF/B-VIII.0 yarı ömründen alınır: zincir ≠ ENDF/B-VIII.0 ise aktivite ve ısı birbirini tutmaz) |
 | Bozunma ısısı | `Material.get_decay_heat` | λNQ; Q zincirin `decay_energy`'si (ENDF/B-VIII.0 bozunum alt kütüphanesi; nötrino hariç). W/g malzeme kütlesi başınadır |
 | Foton kaynağı | `Material.get_decay_photon_energy` | zincirdeki bozunma fotonu spektrumunun integrali |
-| Temas doz hızı | `Material.get_photon_contact_dose_rate` | FISPACT-II yöntemi (yarı sonsuz levha, havada, birikim katsayısı 2), Gy/h; bremsstrahlung yok |
-| Atık sınıfı | `Material.waste_classification` | ABD NRC 10 CFR 61.55 yakın-yüzey sınıfı; kullanılmış yakıt yüksek düzeyli atıktır — **bilgi amaçlıdır, sertifika değildir** |
+| Temas doz hızı | `Material.get_photon_contact_dose_rate` | FISPACT-II yöntemi, Gy/h: **yarı sonsuz levha, yalnız yakıt, havada soğurulan doz (üst sınır göstergesi)**; malzeme hacminden bağımsızdır, kılıf/kap yoktur, bremsstrahlung yok, birikim katsayısı 2; Gy(hava) ≠ Sv. Küçük bir pelet için fiziksel doz değil, seyrek çıkan üst sınırdır |
+| Atık sınıfı | `Material.waste_classification` | **NRC 10 CFR 61.55 tablo karşılaştırması** (yakın-yüzey; kullanılmış yakıt için geçerli değil, o yüksek düzeyli atıktır). Yanma ≈ 0 ya da tablo nüklidi yoksa panel "uygulanamaz" yazar (OpenMC'nin "Class A"sı bir sınıflandırma değildir) — **bilgi amaçlıdır, sertifika değildir** |
 
 Basitleştirilmiş CASL zincirinde birçok aktivasyon ürünü (ör. Co-60) yoktur; aktivite ve
-bozunma ısısı eksik çıkar. Bu çıktılar için tam ENDF/B-VIII.0 zincirini seçin.
+bozunma ısısı eksik çıkar (kısa ömürlü ürünlerde 10–20×; ders 5.17). Bu çıktılar için tam ENDF/B-VIII.0 zincirini seçin.
 
 #### Doğrulama
 

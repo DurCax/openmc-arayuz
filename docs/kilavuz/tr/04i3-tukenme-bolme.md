@@ -28,12 +28,16 @@ da bu sade modeldir (eskime denetimi bölmeyi **fiziğe dahil** sayar).
 
     eşit hacim      r_k² = r_ic² + (k/n) (r_dış² − r_ic²)         her halka aynı alan
     eşit kalınlık   r_k  = r_ic  + (k/n) (r_dış  − r_ic)           dışta büyük hacimli halkalar
-    dışa incelen    kalınlıklar geometrik: t_(k+1) = oran · t_k    en sıkışık dış halka
+    dışa incelen    kalınlıklar geometrik: t_(k+1) = oran · t_k    n ≥ 4'te en sıkışık dış halka
 
 Gd pininde yarıçapa göre soğurma güçlü olduğundan dış halka güç ve yanma bakımından baskındır
 (K3 incelemesi). **Eşit hacimli** halkalar, dışa doğru zaten incelen halkalardır ve iyi bir
-başlangıçtır; kaynak: Serpent `div` ve CASMO uygulamalarında Gd pininin eşit hacimli ya da dışa
-doğru sıkışan halkalara bölünmesi. Halka sayısını artırınca k(t) ve Gd eğrisinin yakınsadığını
+başlangıçtır (Serpent `div` ve CASMO uygulamalarında Gd pini benzer biçimde bölünür; uygulama gözlemidir).
+"Dışa incelen" yalnız **n ≥ 4** halkada eşit hacimden daha ince bir dış halka verir (oran 0.6, r_ic = 0: n = 2 → dış
+halka 0.375 yarıçap oranı, eşit hacimde 0.293 yani DAHA KALIN; n = 3 → 0.184 (aynı); n = 4 → 0.099 (0.134); n = 5 → 0.056 (0.106)).
+Dış halka kalınlığını Gd-157 ortalama serbest yoluyla kıyaslayın (0.025 eV'de ~0.09 mm; eşit hacimli 5 halkada dış
+halka ~43 µm, 8 halkada ~26 µm). Halka sınırı (20) ve dilim sınırı (50) **arayüz sınırlarıdır, fizik eşiği
+değildir**. Halka sayısını artırınca k(t) ve Gd eğrisinin yakınsadığını
 küçük bir modelde sınayın ([5.20 Ders](05d-ders-tukenme-bolme.md#ders-tukenme-bolme)).
 
 **Hacim korunumu (analitik).** Halka alanları π(r_k² − r_(k−1)²) olduğundan toplamları π(r_dış² −

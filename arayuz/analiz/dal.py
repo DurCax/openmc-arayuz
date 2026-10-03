@@ -105,9 +105,12 @@ class DalKarti(bil.Kart):
         self.tablo.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.tablo.setMinimumHeight(TABLO_YUKSEKLIGI)
         self.not_etiketi = aciklama(_(
-            "Δk taban dala (koşulu değişmemiş, aynı bileşim) göre pcm; σ iki koşunun "
-            "istatistik belirsizliğinin bileşkesidir (koşular bağımsız sayılır: muhafazakâr). "
-            "Bileşim yanmayla ilerlemez: bu anlık koşul etkisidir, yeni bir tükenme değil."))
+            "Δk [pcm] = (k − k_taban)·10⁵ bir k farkıdır, reaktivite katsayısı değildir; Δρ [pcm] = "
+            "(1/k_taban − 1/k)·10⁵ reaktivite farkıdır (katsayıları bundan okuyun: ppm başına "
+            "pcm için Δρ'yu bor farkına bölün). Taban: koşulu değişmemiş, aynı bileşim; σ iki "
+            "koşunun istatistik belirsizliğinin bileşkesidir (koşular bağımsız sayılır: "
+            "muhafazakâr). Bileşim yanmayla ilerlemez: bu anlık koşul etkisidir, yeni bir "
+            "tükenme değil. Tükenmede kritiklik araması açıksa dal sabit modeli kullanır."))
         f = form_duzeni()
         f.addRow(_("Tükenme sonucu:"), self.kaynak)
         f.addRow(_("Tükenme adımı seçimi:"), self.adimlar)
@@ -300,7 +303,8 @@ class DalKarti(bil.Kart):
                 self._durumlar[kimlik] = q.durum(kimlik)
             self.ilerleme.setRange(0, len(kimlikler))
             self.ilerleme.setValue(0)
-            self._durum_yaz(_("%d koşu sırada.") % len(kimlikler))
+            arama = dal.kritik_arama_notu(self._taban)
+            self._durum_yaz(_("%d koşu sırada.") % len(kimlikler) + (" " + arama if arama else ""))
             q.baslat()
         except Exception as e:          # noqa: BLE001 -- model/sonuc uyusmazligi, dizin: kullaniciya
             _log.warning("dal baslatilamadi: %s", e, exc_info=True)
@@ -334,7 +338,7 @@ class DalKarti(bil.Kart):
 
     def _tabloyu_doldur(self) -> None:
         adlar = dal.degisken_adlari(self._satirlar)
-        basliklar = [_("Adım"), _("Yanma [MWd/kg]")] + adlar + [_("k ± σ"), _("Δk [pcm]")]
+        basliklar = [_("Adım"), _("Yanma [MWd/kg]")] + adlar + [_("k ± σ"), _("Δk [pcm]"), _("Δρ [pcm]")]
         self.tablo.setColumnCount(len(basliklar))
         self.tablo.setHorizontalHeaderLabels(basliklar)
         self.tablo.setRowCount(len(self._satirlar))
@@ -342,10 +346,11 @@ class DalKarti(bil.Kart):
             hucreler = ["%d" % s.adim, "%.4g" % s.yanma]
             hucreler += ["%g" % s.degerler[a] if a in s.degerler else "—" for a in adlar]
             if s.k is None:
-                hucreler += [s.hata or "—", "—"]
+                hucreler += [s.hata or "—", "—", "—"]
             else:
                 hucreler += ["%.5f ± %.5f" % (s.k, s.sapma),
-                             "—" if s.dk_pcm is None else "%+.0f ± %.0f" % (s.dk_pcm, s.dk_sapma_pcm)]
+                             "—" if s.dk_pcm is None else "%+.0f ± %.0f" % (s.dk_pcm, s.dk_sapma_pcm),
+                             "—" if s.rho_pcm is None else "%+.0f ± %.0f" % (s.rho_pcm, s.rho_sapma_pcm)]
             for j, metin in enumerate(hucreler):
                 self.tablo.setItem(i, j, QtWidgets.QTableWidgetItem(metin))
         self.tablo.resizeColumnsToContents()

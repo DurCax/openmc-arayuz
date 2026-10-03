@@ -53,14 +53,14 @@ every series per material.
 
 | Quantity | Source (OpenMC 0.16) | Note |
 |---|---|---|
-| Activity | `Material.get_activity` | λN; half-lives from the run's chain |
+| Activity | `Material.get_activity` | λN; half-lives from the run's chain (for decay heat λ comes from the ENDF/B-VIII.0 half-life: if the chain differs from ENDF/B-VIII.0, activity and heat do not match) |
 | Decay heat | `Material.get_decay_heat` | λNQ; Q is the chain's `decay_energy` (ENDF/B-VIII.0 decay sublibrary; neutrinos excluded). W/g is per gram of material |
 | Photon source | `Material.get_decay_photon_energy` | integral of the decay photon spectrum in the chain |
-| Contact dose rate | `Material.get_photon_contact_dose_rate` | FISPACT-II method (semi-infinite slab, in air, build-up factor 2), Gy/h; no bremsstrahlung |
-| Waste class | `Material.waste_classification` | US NRC 10 CFR 61.55 near-surface class; spent fuel is high-level waste — **for information, not a certification** |
+| Contact dose rate | `Material.get_photon_contact_dose_rate` | FISPACT-II method, Gy/h: **semi-infinite slab, fuel only, dose absorbed in air (upper-bound indicator)**; independent of the material volume, no cladding/can, no bremsstrahlung, build-up factor 2; Gy(air) ≠ Sv. For a small pellet it is an upper bound, not a physical dose |
+| Waste class | `Material.waste_classification` | **NRC 10 CFR 61.55 table comparison** (near-surface; not valid for spent fuel, which is high-level waste). With burnup ≈ 0 or no table nuclide the panel shows "not applicable" (OpenMC's "Class A" is not a classification) — **for information, not a certification** |
 
 The simplified CASL chain lacks many activation products (e.g. Co-60); activity and decay
-heat come out incomplete. Choose the full ENDF/B-VIII.0 chain for these outputs.
+heat come out incomplete (10–20× for short-lived products; lesson 5.17). Choose the full ENDF/B-VIII.0 chain for these outputs.
 
 #### Verification
 

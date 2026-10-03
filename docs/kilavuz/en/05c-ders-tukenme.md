@@ -34,17 +34,20 @@ concentration changes during depletion. Fields:
    **Search type** = Dissolved boron, **Target** = su, guesses 500 and 1500 ppm, bounds 0–5000,
    **k tolerance** 0.005. Start: the table shows the boron found at every step and k ≈ 1.
 
-**What you should see (measured, `testler/test_y4_kosu.py`, CASL chain, 1000 particles × 10 active batches).**
+**What you should see (measured; the k and integrator rows `testler/test_y4_kosu.py`, CASL chain, 1000 particles × 10 active batches; the decay-heat rows 300 × 6/2, `pwr_tukenme.json`, 1 day of burnup at 40 W/gHM plus 1 and 10 days of cooling, predictor).**
 
 | Quantity | Value |
 |---|---|
 | k during cooling | "—" (no transport); burnup constant |
-| Decay heat | falls after 1 day of burnup: 0.53 → 0.095 → 0.014 W (1 cm pin; days 1, 2, 12) |
+| Decay heat (full chain: ENDF/B-VIII.0 thermal) | 10.68 → 0.177 → 0.0140 W (days 1, 2, 12; heavy-metal mass 4.26 g, power 170 W; i.e. 6.3% → 0.10% → 0.008% of P) |
+| Decay heat (CASL chain) | 0.54 → 0.097 → 0.0139 W: **about 20× too low at end of life and ~1.8× at +1 day** (only 133 of the chain's 228 nuclides have decay energy); the two chains agree at day 12 |
 | CE/CM − CE/LI | k difference ~1100 pcm (combined 1σ ≈ 1000 pcm); U-235 relative difference after 6 days 1.3e-5 (no threshold) |
 | Fast mode (MicroXS) − full | U-235 relative difference ~3e-6 (2 days) |
-| Critical boron (fresh pin) | ~3300 ppm; step k within \|k − 1\| ≤ 0.005 + 3σ |
+| Critical boron (fresh pin) | ~3300 ppm: the value of an **infinite pin cell without leakage** (k∞ ≈ 1.36, no burnable poison); not a real core value (PWR beginning of cycle ~1000–1500 ppm). Step k within \|k − 1\| ≤ 0.005 + 3σ |
 
-**Questions.** (1) Why does the decay heat fall fastest during the first day of cooling?
+Note: the k tolerance in step 6 is 0.005 (500 pcm ≈ 33 ppm boron) while the guide default is 1e-3 (100 pcm); with the lesson's ~400 pcm step noise 1e-3 would make the search very long.
+
+**Questions.** (1) Why does the decay heat fall fastest during the first day of cooling? (Full chain: 10.7 → 0.18 W, ~60×; Way–Wigner: P/P₀ ≈ 0.0622[t⁻⁰·² − (t+T)⁻⁰·²].)
 (2) How does the CE/LI versus CE/CM difference change as the steps get longer — try a 50-day
 step instead of 5 days. (3) Why does the critical boron fall with burnup? (4) Why is fast
 mode wrong at high burnup?

@@ -35,12 +35,19 @@ the result no longer belongs to the current model.
 **Table.** Every row is a (step, condition): k ± σ and **Δk [pcm] = (k − k_ref) × 10⁵** against the
 reference branch, σ_Δk = √(σ² + σ_ref²) × 10⁵. Because the runs are treated as independent this
 uncertainty is **conservative** (with the same seed the true uncertainty is smaller). **Save CSV**
-writes every row (decimal point, fixed column keys).
+writes every row (decimal point, fixed column keys). Δk is a **k difference**, not a reactivity
+coefficient; the reactivity difference is **Δρ [pcm] = (1/k_ref − 1/k) × 10⁵** (σ_ρ = 10⁵ · √((σ/k²)² +
+(σ_ref/k_ref²)²); same definition as `kosu_gecmisi.k_farki`). Read coefficients from Δρ: at k ≈ 1.36,
+Δρ ≈ Δk/1.86 (500 ppm boron: Δk = −7484 pcm ↔ Δρ ≈ −4250 pcm ≈ −8.5 pcm/ppm).
 
 **Consistency.** The step-0 branch gives, within statistics, the same k as the single-variable scan
 at the same condition; the reference branch equals the depletion run's k at that step (measured to
 within 2σ in the tests). Terminal: `python3 -m cekirdek.dal model.json depletion_dir --adimlar 0,4
 --yakit-sicaklik 600,900 --bor 0,500` ([8. Terminal](08-terminal.md#terminal)).
+
+**If the critical search (boron/rod) was on during the depletion**, the branch model uses the fixed value in
+the model, not the value searched at each step; "reference branch = the depletion's k" does not hold. The card
+warns in the status line and in each job's note; use a depletion run without the search for coefficients.
 
 This is a **teaching and scoping** tool: it does not replace a core simulator's branch tables (HFP/HZP,
 exact boron steps, cooling); it is not a certification.

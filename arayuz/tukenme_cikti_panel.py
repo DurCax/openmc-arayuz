@@ -105,8 +105,8 @@ class TukenmeCiktiPaneli(bil.Kart):
                  % (len(self._seriler["zaman_d"]), len(self._seriler["malzeme"])))
         if "casl" in os.path.basename(self._seriler.get("zincir") or "").lower():
             metin += " " + _("Basitleştirilmiş CASL zinciri: birçok aktivasyon ürünü (ör. Co-60) "
-                             "yok; aktivite ve bozunma ısısı eksik çıkar. Bu çıktılar için tam "
-                             "ENDF/B-VIII.0 zincirini seçin.")
+                             "yok; aktivite ve bozunma ısısı eksik çıkar (kısa ömürlü ürünlerde 10–20×). "
+                             "Bu çıktılar için tam ENDF/B-VIII.0 zincirini seçin.")
         self.durum.setText(metin)
         self._tablo_doldur()
         self._doz_yaz(doz)
@@ -126,13 +126,19 @@ class TukenmeCiktiPaneli(bil.Kart):
         self.tablo.resizeColumnsToContents()
 
     def _doz_yaz(self, doz: dict) -> None:
+        from cekirdek import tukenme_cikti
         satirlar = []
         for ad, v in doz.items():
             if v.get("hata"):
                 satirlar.append(_("%s: hesaplanamadı (%s)") % (ad, v["hata"]))
             else:
-                satirlar.append(_("%s: temas doz hızı %.4g Gy/h · atık sınıfı (10 CFR 61.55) %s")
-                                % (ad, v["doz_gy_h"], v["atik_sinifi"]))
+                atik = (_("uygulanamaz (tabloda nüklid yok / yanma ≈ 0)")
+                        if v["atik_sinifi"] == tukenme_cikti.ATIK_UYGULANAMAZ else v["atik_sinifi"])
+                satirlar.append(_("%s: temas doz hızı %.4g Gy(hava)/h (yarı sonsuz levha, yalnız yakıt, "
+                                  "havada soğurulan doz; hacimden bağımsız, kılıf yok: üst sınır "
+                                  "göstergesi) · atık sınıfı: NRC 10 CFR 61.55 tablo karşılaştırması "
+                                  "(yakın-yüzey; kullanılmış yakıt için geçerli değil) %s")
+                                % (ad, v["doz_gy_h"], atik))
         self.doz.setText(_("Son adımda:\n") + "\n".join(satirlar))
 
     def _ciz(self, *_a) -> None:
