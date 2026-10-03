@@ -25,6 +25,9 @@ chmod +x "$PAKET_DIZINI/kaldir.sh"
 # $PREFIX/share/openmc-arayuz-paket/masaustu/kur.sh varsa cagrilir:
 #     kur.sh <PREFIX>      (kullanicinin $HOME/XDG dizinlerine .desktop/MIME/ikon yazar)
 # Basarisizlik kurulumu bozmaz (uyari verilir).
+mkdir -p "$PAKET_DIZINI/masaustu"
+tar -C "$PAKET_DIZINI/masaustu" -xf "$PAKET_DIZINI/masaustu.tar"
+rm -f -- "$PAKET_DIZINI/masaustu.tar"
 KANCA="$PAKET_DIZINI/masaustu/kur.sh"
 if [ -f "$KANCA" ]; then
     bash "$KANCA" "$PREFIX" || echo "UYARI: masaustu kaydi basarisiz (kanca $KANCA); uygulama yine calisir." >&2

@@ -32,7 +32,7 @@ post_install: post_install.sh
 extra_files:
   - {{ environ['OPENMC_ARAYUZ_WHEEL'] }}
   - kaldir.sh: share/openmc-arayuz-paket/kaldir.sh
-  - masaustu: share/openmc-arayuz-paket/masaustu      # P2 (yoksa bos dizin)
+  - masaustu.tar: share/openmc-arayuz-paket/masaustu.tar   # P2 dosyalari (constructor dizin kopyalamaz)
 initialize_by_default: false              # ~/.bashrc'ye DOKUNMA
 register_envs: false                      # ~/.conda/environments.txt'e yazma
 keep_pkgs: false

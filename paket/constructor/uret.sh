@@ -28,7 +28,7 @@ fi
 SAHNE="$(mktemp -d)"
 trap 'rm -rf -- "$SAHNE"' EXIT
 KAYNAK="$SAHNE/kaynak"
-mkdir -p "$KAYNAK" "$SAHNE/yapi/masaustu"
+mkdir -p "$KAYNAK" "$SAHNE/masaustu" "$SAHNE/yapi"
 
 # Kopyadan derle: pip kaynak agacini (build/, *.egg-info) kirletmesin
 tar -C "$KOK" --exclude=.git --exclude=.claude --exclude='.env*' --exclude=dist \
@@ -41,9 +41,10 @@ cp "$KOK/paket/constructor/construct.yaml" "$KOK/paket/constructor/post_install.
 cp "$KOK/LICENSE" "$SAHNE/yapi/LICENSE.txt"
 # P2 dosyalari (varsa) kurulum agacina girer; yoksa bos dizin
 if [ -d "$KOK/paket/masaustu" ]; then
-    cp -R "$KOK/paket/masaustu/." "$SAHNE/yapi/masaustu/"
+    cp -R "$KOK/paket/masaustu/." "$SAHNE/masaustu/"
 fi
-touch "$SAHNE/yapi/masaustu/.yer-tutucu"
+touch "$SAHNE/masaustu/.yer-tutucu"
+tar -C "$SAHNE/masaustu" -cf "$SAHNE/yapi/masaustu.tar" .
 
 WHEEL="$(cd "$SAHNE/yapi" && ls openmc_arayuz-*.whl)"
 export OPENMC_ARAYUZ_SURUM="$SURUM" OPENMC_ARAYUZ_WHEEL="$WHEEL"
