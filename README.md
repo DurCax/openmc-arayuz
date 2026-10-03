@@ -1,6 +1,6 @@
 <div align="center">
 
-# OpenMC Reaktör Kuru Arayüzü
+# OpenMC İnput Kurulum ve Çözüm Arayüzü
 
 **Yakıt çubuğundan tam kora, tükenmeden zırhlamaya — OpenMC modellerini tek bir masaüstü
 uygulamasında kurun, çalıştırmadan önce görün, hesaplayın ve sonuçlarını okuyun.**
