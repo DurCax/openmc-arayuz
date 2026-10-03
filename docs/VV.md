@@ -6,7 +6,8 @@ Bu belge aracın kriter (benchmark) paketini ve ölçülen sonuçları verir. Sa
 
 **Ortam:** OpenMC 0.16.0, ENDF/B-VIII.0 (HDF5, OpenMC resmî kütüphanesi, 294 K).
 İlk beş kriter (Ajan 9): 8 OpenMP iş parçacığı, 29.09.2026. V&V kümesi (`vv/…`,
-Dalga S-3): 12 OpenMP iş parçacığı, 01.10.2026. Makine her iki durumda başka Monte
+Dalga S-3): 12 OpenMP iş parçacığı, 01.10.2026. LEU oksit kafes vakaları (`vv/kriter_lct*`,
+v3 Y11): 6 OpenMP iş parçacığı, 02.10.2026. Makine her iki durumda başka Monte
 Carlo işleriyle paylaşıldı; süreler bu yüzden üst sınırdır. Pasif çevrim sayısı her
 satırda "çevrim/pasif" olarak verilir.
 
@@ -33,6 +34,30 @@ hesap sonucudur ve "doğru" değer değildir.
 | vv/kriter_hst032.json | HEU-SOL-THERM-032 (ORNL-10) | 1.0015 ± 0.0026 | 0.99851 ± 0.00020 | −299 | 1.15 | 0.99701 | 100000 | 200/50 | 449.5 | geçti |
 | vv/kriter_imf003.json | IEU-MET-FAST-003, durum 2 | 1.0000 ± 0.0017 | 1.00013 ± 0.00018 | +13 | 0.08 | 1.00013 | 100000 | 200/50 | 63.3 | geçti |
 | vv/kriter_imf004.json | IEU-MET-FAST-004, durum 2 | 1.0000 ± 0.0030 | 1.00482 ± 0.00020 | +482 | 1.60 | 1.00482 | 100000 | 200/50 | 52.2 | geçti |
+| vv/kriter_lct006_01.json | LEU-COMP-THERM-006, durum 1 | 1.0000 ± 0.0026 | 1.00085 ± 0.00027 | +85 | 0.33 | 1.00085 | 100000 | 200/50 | 640.6 | geçti |
+| vv/kriter_lct006_02.json | LEU-COMP-THERM-006, durum 2 | 1.0000 ± 0.0026 | 1.00119 ± 0.00027 | +119 | 0.46 | 1.00119 | 100000 | 200/50 | 559.3 | geçti |
+| vv/kriter_lct006_03.json | LEU-COMP-THERM-006, durum 3 | 1.0000 ± 0.0026 | 1.00116 ± 0.00030 | +116 | 0.44 | 1.00116 | 100000 | 200/50 | 706.0 | geçti |
+| vv/kriter_lct006_04.json | LEU-COMP-THERM-006, durum 4 | 1.0000 ± 0.0026 | 1.00108 ± 0.00026 | +108 | 0.41 | 1.00108 | 100000 | 200/50 | 711.2 | geçti |
+| vv/kriter_lct006_05.json | LEU-COMP-THERM-006, durum 5 | 1.0000 ± 0.0026 | 1.00084 ± 0.00025 | +84 | 0.32 | 1.00084 | 100000 | 200/50 | 525.1 | geçti |
+| vv/kriter_lct006_06.json | LEU-COMP-THERM-006, durum 6 | 1.0000 ± 0.0026 | 1.00164 ± 0.00025 | +164 | 0.63 | 1.00164 | 100000 | 200/50 | 527.2 | geçti |
+| vv/kriter_lct006_07.json | LEU-COMP-THERM-006, durum 7 | 1.0000 ± 0.0026 | 1.00173 ± 0.00025 | +173 | 0.66 | 1.00173 | 100000 | 200/50 | 467.2 | geçti |
+| vv/kriter_lct006_08.json | LEU-COMP-THERM-006, durum 8 | 1.0000 ± 0.0026 | 1.00078 ± 0.00023 | +78 | 0.30 | 1.00078 | 100000 | 200/50 | 482.9 | geçti |
+| vv/kriter_lct006_09.json | LEU-COMP-THERM-006, durum 9 | 1.0000 ± 0.0026 | 1.00134 ± 0.00027 | +134 | 0.51 | 1.00134 | 100000 | 200/50 | 472.3 | geçti |
+| vv/kriter_lct006_10.json | LEU-COMP-THERM-006, durum 10 | 1.0000 ± 0.0026 | 1.00099 ± 0.00025 | +99 | 0.38 | 1.00099 | 100000 | 200/50 | 451.3 | geçti |
+| vv/kriter_lct006_11.json | LEU-COMP-THERM-006, durum 11 | 1.0000 ± 0.0026 | 1.00152 ± 0.00023 | +152 | 0.58 | 1.00152 | 100000 | 200/50 | 408.9 | geçti |
+| vv/kriter_lct006_12.json | LEU-COMP-THERM-006, durum 12 | 1.0000 ± 0.0026 | 1.00075 ± 0.00026 | +75 | 0.29 | 1.00075 | 100000 | 200/50 | 397.8 | geçti |
+| vv/kriter_lct006_13.json | LEU-COMP-THERM-006, durum 13 | 1.0000 ± 0.0026 | 1.00081 ± 0.00026 | +81 | 0.31 | 1.00081 | 100000 | 200/50 | 394.4 | geçti |
+| vv/kriter_lct006_14.json | LEU-COMP-THERM-006, durum 14 | 1.0000 ± 0.0026 | 1.00126 ± 0.00027 | +126 | 0.48 | 1.00126 | 100000 | 200/50 | 423.9 | geçti |
+| vv/kriter_lct006_15.json | LEU-COMP-THERM-006, durum 15 | 1.0000 ± 0.0026 | 1.00090 ± 0.00027 | +90 | 0.34 | 1.00090 | 100000 | 200/50 | 417.5 | geçti |
+| vv/kriter_lct006_16.json | LEU-COMP-THERM-006, durum 16 | 1.0000 ± 0.0026 | 1.00063 ± 0.00027 | +63 | 0.24 | 1.00063 | 100000 | 200/50 | 407.1 | geçti |
+| vv/kriter_lct006_17.json | LEU-COMP-THERM-006, durum 17 | 1.0000 ± 0.0026 | 1.00119 ± 0.00022 | +119 | 0.46 | 1.00119 | 100000 | 200/50 | 401.0 | geçti |
+| vv/kriter_lct006_18.json | LEU-COMP-THERM-006, durum 18 | 1.0000 ± 0.0026 | 1.00070 ± 0.00026 | +70 | 0.27 | 1.00070 | 100000 | 200/50 | 394.3 | geçti |
+| vv/kriter_lct008_01.json | LEU-COMP-THERM-008, durum 1 | 1.0007 ± 0.0012 | 1.00049 ± 0.00022 | −21 | 0.17 | 0.99979 | 100000 | 200/50 | 370.6 | geçti |
+| vv/kriter_lct008_02.json | LEU-COMP-THERM-008, durum 2 | 1.0007 ± 0.0012 | 1.00080 ± 0.00025 | +10 | 0.08 | 1.00010 | 100000 | 200/50 | 351.7 | geçti |
+| vv/kriter_lct008_05.json | LEU-COMP-THERM-008, durum 5 | 1.0007 ± 0.0012 | 1.00033 ± 0.00022 | −37 | 0.30 | 0.99963 | 100000 | 200/50 | 360.3 | geçti |
+| vv/kriter_lct008_07.json | LEU-COMP-THERM-008, durum 7 | 1.0007 ± 0.0012 | 1.00044 ± 0.00021 | −26 | 0.21 | 0.99974 | 100000 | 200/50 | 367.8 | geçti |
+| vv/kriter_lct008_08.json | LEU-COMP-THERM-008, durum 8 | 1.0007 ± 0.0012 | 0.99942 ± 0.00022 | −128 | 1.05 | 0.99872 | 100000 | 200/50 | 366.8 | geçti |
+| vv/kriter_lct008_11.json | LEU-COMP-THERM-008, durum 11 | 1.0007 ± 0.0012 | 1.00140 ± 0.00023 | +70 | 0.57 | 1.00070 | 100000 | 200/50 | 367.2 | geçti |
 | vv/kriter_lst002a.json | LEU-SOL-THERM-002, durum 1 | 1.0038 ± 0.0040 | 0.99994 ± 0.00020 | −386 | 0.96 | 0.99615 | 100000 | 200/50 | 322.4 | geçti |
 | vv/kriter_lst002b.json | LEU-SOL-THERM-002, durum 2 | 1.0024 ± 0.0037 | 0.99578 ± 0.00023 | −662 | 1.79 | 0.99340 | 100000 | 200/50 | 226.8 | geçti |
 | vv/kriter_lst003c.json | LEU-SOL-THERM-003, durum 3 | 0.9995 ± 0.0042 | 1.00396 ± 0.00028 | +446 | 1.06 | 1.00446 | 100000 | 200/50 | 221.6 | geçti |
@@ -127,6 +152,30 @@ bölünebilir atom, yalnız H bölünebilir malzemenin içindeyse; H yalnız ayr
 | vv/kriter_hst032.json | HEU-SOL-THERM-032 | U-235 | 93.21 | çözelti | yok | 1.84e+03 | 0.0313 | termal |
 | vv/kriter_imf003.json | IEU-MET-FAST-003 | U-235 | 36.53 | metal | yok | 0 | 6.18e+05 | hızlı |
 | vv/kriter_imf004.json | IEU-MET-FAST-004 | U-235 | 36.54 | metal | grafit | 0 | 5.79e+05 | hızlı |
+| vv/kriter_lct006_01.json | LEU-COMP-THERM-006 | U-235 | 2.60 | oksit | su | 165 | 0.24 | termal |
+| vv/kriter_lct006_02.json | LEU-COMP-THERM-006 | U-235 | 2.60 | oksit | su | 165 | 0.246 | termal |
+| vv/kriter_lct006_03.json | LEU-COMP-THERM-006 | U-235 | 2.60 | oksit | su | 165 | 0.253 | termal |
+| vv/kriter_lct006_04.json | LEU-COMP-THERM-006 | U-235 | 2.60 | oksit | su | 201 | 0.185 | termal |
+| vv/kriter_lct006_05.json | LEU-COMP-THERM-006 | U-235 | 2.60 | oksit | su | 201 | 0.191 | termal |
+| vv/kriter_lct006_06.json | LEU-COMP-THERM-006 | U-235 | 2.60 | oksit | su | 201 | 0.196 | termal |
+| vv/kriter_lct006_07.json | LEU-COMP-THERM-006 | U-235 | 2.60 | oksit | su | 201 | 0.201 | termal |
+| vv/kriter_lct006_08.json | LEU-COMP-THERM-006 | U-235 | 2.60 | oksit | su | 201 | 0.206 | termal |
+| vv/kriter_lct006_09.json | LEU-COMP-THERM-006 | U-235 | 2.60 | oksit | su | 272 | 0.139 | termal |
+| vv/kriter_lct006_10.json | LEU-COMP-THERM-006 | U-235 | 2.60 | oksit | su | 272 | 0.142 | termal |
+| vv/kriter_lct006_11.json | LEU-COMP-THERM-006 | U-235 | 2.60 | oksit | su | 272 | 0.145 | termal |
+| vv/kriter_lct006_12.json | LEU-COMP-THERM-006 | U-235 | 2.60 | oksit | su | 272 | 0.149 | termal |
+| vv/kriter_lct006_13.json | LEU-COMP-THERM-006 | U-235 | 2.60 | oksit | su | 272 | 0.152 | termal |
+| vv/kriter_lct006_14.json | LEU-COMP-THERM-006 | U-235 | 2.60 | oksit | su | 329 | 0.117 | termal |
+| vv/kriter_lct006_15.json | LEU-COMP-THERM-006 | U-235 | 2.60 | oksit | su | 329 | 0.12 | termal |
+| vv/kriter_lct006_16.json | LEU-COMP-THERM-006 | U-235 | 2.60 | oksit | su | 329 | 0.123 | termal |
+| vv/kriter_lct006_17.json | LEU-COMP-THERM-006 | U-235 | 2.60 | oksit | su | 329 | 0.125 | termal |
+| vv/kriter_lct006_18.json | LEU-COMP-THERM-006 | U-235 | 2.60 | oksit | su | 329 | 0.128 | termal |
+| vv/kriter_lct008_01.json | LEU-COMP-THERM-008 | U-235 | 2.46 | oksit | su | 216 | 0.281 | termal |
+| vv/kriter_lct008_02.json | LEU-COMP-THERM-008 | U-235 | 2.46 | oksit | su | 216 | 0.249 | termal |
+| vv/kriter_lct008_05.json | LEU-COMP-THERM-008 | U-235 | 2.46 | oksit | su | 216 | 0.248 | termal |
+| vv/kriter_lct008_07.json | LEU-COMP-THERM-008 | U-235 | 2.46 | oksit | su | 216 | 0.247 | termal |
+| vv/kriter_lct008_08.json | LEU-COMP-THERM-008 | U-235 | 2.46 | oksit | su | 216 | 0.246 | termal |
+| vv/kriter_lct008_11.json | LEU-COMP-THERM-008 | U-235 | 2.46 | oksit | su | 216 | 0.255 | termal |
 | vv/kriter_lst002a.json | LEU-SOL-THERM-002 | U-235 | 4.89 | çözelti | su | 1.1e+03 | 0.0385 | termal |
 | vv/kriter_lst002b.json | LEU-SOL-THERM-002 | U-235 | 4.89 | çözelti | yok | 1e+03 | 0.0404 | termal |
 | vv/kriter_lst003c.json | LEU-SOL-THERM-003 | U-235 | 10.07 | çözelti | yok | 897 | 0.039 | termal |
@@ -180,29 +229,29 @@ verilmez (Tablo 2.2).
 edildiği bildirilen değer — **DOĞRULANMADI**, bkz. STANDARTLAR.md §2.2); 0.02 mutlak
 alt sınırdır. ΔSM seçimi ve gerekçesi kullanıcı kuruluşa aittir.
 
-### Sonuçlar (01.10.2026; ΔSM = 0.05, ΔAOA = 0)
+### Sonuçlar (02.10.2026; v3 Y11 LEU kafes vakalarıyla; ΔSM = 0.05, ΔAOA = 0)
 
 σ_bias olarak birleştirilmiş standart sapma S_p (eş. 7; bant yönteminde eş. 28) verilir.
 K_L tolerans sınırı / parametrik olmayan alt sınırdır; USL = K_L − ΔSM − ΔAOA.
 
 | Alt küme (AOA) | n | yanlılık k̄ − 1 | S_p | Normallik (Shapiro–Wilk) | Eğilim | Yöntem | K_L | USL |
 |---|---|---|---|---|---|---|---|---|
-| Bütün küme | 26 | −0.00051 | 0.00235 | W = 0.794, p = 0.000 → normal değil | ealf: yok (t = 0.63), zenginlik: yok (t = 0.60) | parametrik olmayan (β = %73.6) | 0.9535 | 0.9035 |
+| Bütün küme | 49 | −0.00018 | 0.00230 | W = 0.678, p = 0.000 → normal değil | ealf: yok (t = 1.22), zenginlik: VAR (t = 2.20) | parametrik olmayan (β = %91.9) | 0.9735 | 0.9235 |
 | Hızlı tayf (EALF ≥ 100 keV) | 13 | −0.00050 | 0.00191 | W = 0.927, p = 0.311 → normal | ealf: yok (t = 1.23), zenginlik: yok (t = 1.60) | tolerans sınırı | 0.9944 | 0.9444 |
-| Termal tayf (EALF < 1 eV) | 10 | −0.00089 | 0.00355 | W = 0.984, p = 0.984 → normal | ealf: yok (t = 1.89), zenginlik: yok (t = 0.52) | tolerans sınırı | 0.9888 | 0.9388 |
+| Termal tayf (EALF < 1 eV) | 33 | +0.00010 | 0.00250 | W = 0.803, p = 0.000 → normal değil | ealf: yok (t = 2.00), h_x: VAR (t = 3.20), zenginlik: yok (t = 1.87) | parametrik olmayan (β = %81.6) | 0.9797 | 0.9297 |
 | Ara tayf | 3 | −0.00005 | 0.00334 | W = 0.941, p = 0.530 → normal | ealf: yok (t = 1.15), zenginlik: yok (t = 3.75) | tolerans sınırı | 0.9744 | **hesaplanamadı** |
 | Çözelti (termal + ara) | 10 | −0.00203 | 0.00532 | W = 0.841, p = 0.045 → normal değil | ealf: yok (t = 0.40), h_x: yok (t = 0.31), zenginlik: yok (t = 0.24) | parametrik olmayan (β = %40.1) | 0.9235 | 0.8735 |
-| U-235 (bütün biçimler) | 11 | −0.00006 | 0.00289 | W = 0.964, p = 0.819 → normal | ealf: yok (t = 1.59), zenginlik: yok (t = 0.08) | tolerans sınırı | 0.9918 | 0.9418 |
+| U-235 (bütün biçimler) | 34 | +0.00021 | 0.00239 | W = 0.831, p = 0.000 → normal değil | ealf: yok (t = 1.12), h_x: VAR (t = 3.51), zenginlik: yok (t = 0.48) | parametrik olmayan (β = %82.5) | 0.9797 | 0.9297 |
 | Pu (bütün biçimler) | 9 | −0.00086 | 0.00189 | W = 0.831, p = 0.046 → normal değil | ealf: yok (t = 1.37), zenginlik: yok (t = 1.98) | parametrik olmayan (β = %37.0) | — | **hesaplanamadı** |
 | U-233 | 5 | −0.00032 | 0.00268 | W = 0.689, p = 0.007 → normal değil | ealf: yok (t = 0.56), h_x: yok (t = 0.15), zenginlik: yok (t = 0.52) | parametrik olmayan (β = %22.6) | — | **hesaplanamadı** |
-| LEU (U-235, zenginlik ≤ %20) | 4 | −0.00056 | 0.00350 | W = 0.980, p = 0.904 → normal | ealf: yok (t = 0.64), zenginlik: yok (t = 0.21) | tolerans sınırı | 0.9814 | **hesaplanamadı** |
+| LEU (U-235, zenginlik ≤ %20) | 27 | +0.00022 | 0.00233 | W = 0.730, p = 0.000 → normal değil | ealf: yok (t = 0.03), h_x: yok (t = 1.86), zenginlik: yok (t = 0.25) | parametrik olmayan (β = %75.0) | 0.9697 | 0.9197 |
 
-Ortak notlar: kullanılan yanlılık = min(k̄ − 1, 0) — bütün alt kümelerde yanlılık
-negatiftir, pozitif yanlılık kredilendirilmesi söz konusu değildir (eş. 8). H/X eğilimi
-yalnız bütün vakalarda H/X tanımlıysa hesaplanır (LCT-008 ve PMF-011'de tanımsız →
-o alt kümelerde H/X eğilimi yok). Hiçbir alt kümede anlamlı eğilim çıkmadı
-(t < t₀.₉₇₅,ₙ₋₂), bu yüzden tolerans bandı yöntemi seçilmedi. Aynı deney serisinden
-iki vaka (LEU-SOL-THERM-002 durum 1 ve 2) vardır: K14 "bağımsız değil" notu verir.
+Ortak notlar: kullanılan yanlılık = min(k̄ − 1, 0) — pozitif yanlılık kredilendirilmez (eş. 8).
+H/X eğilimi yalnız bütün vakalarda H/X tanımlıysa hesaplanır (LEU kafeslerde birim hücre H/U-235
+`aoa_girdi`den gelir; PMF-011'de tanımsız). Normal olmayan alt kümelerde parametrik olmayan
+yöntem seçilir; orada eğilim ("VAR") USL'yi değiştirmez ve karışık kümelerde çoğu zaman seriler
+arası farktır. Aynı deney serisinden çok vaka vardır (LCT-006: 18, LCT-008: 6, LST-002: 2):
+K14 "bağımsız değil" notu verir.
 
 ### Araç hangi alt kümeyi kullanır (panel, rapor eki, CLI)
 
@@ -215,10 +264,11 @@ tayfını paylaşan vakalardan hesaplar; U-235'te ayrıca zenginlik sınıfı ay
 küme, n ve yöntem yazılır. Yansıtıcı ve H/X alt kümeyi daraltmaz: K6-AOA ve K12 ayrıca
 denetler; heterojen kafeste H/X çıkarılamazsa K12 uyarır (H/X karşılaştırılmadı).
 
-Depodaki kümede (26 vaka) bu ölçütle en büyük alt küme 5 vakadır:
+Depodaki kümede (49 vaka; v3 Y11 ile) bu ölçütle alt kümeler:
 
 | Alt küme | n |
 |---|---|
+| U-235, oksit, termal, LEU (LCT-006 + LCT-008) | 24 |
 | Pu, metal, hızlı | 5 |
 | U-235, çözelti, termal, HEU | 3 |
 | U-233, metal, hızlı | 3 |
@@ -226,33 +276,30 @@ Depodaki kümede (26 vaka) bu ölçütle en büyük alt küme 5 vakadır:
 | U-235, metal, hızlı, IEU (IMF-003, -004) | 2 |
 | U-235, çözelti, termal, LEU | 2 |
 | Pu, çözelti, termal | 2 |
-| U-235, oksit, termal, LEU (LCT-008) | 1 |
 | diğer 6 alt küme | birer vaka |
 
-Sonuç: **şu an depodaki küme hiçbir uygulama için USL vermez.** Bu bir hata değil, dürüst
-sonuçtur: LWR/LEU kafes (pwr_17x17 vb.) için uygun alt küme yalnız LCT-008'dir (n = 1);
-Godiva benzeri HEU hızlı metal için n = 2. Önceki sürüm alt kümeyi yalnız tayfla seçiyor ve
+Sonuç: **yalnız LWR / LEU oksit kafes uygulamaları** (pwr_17x17 vb.) USL alır (n = 24, USL =
+0.9275; ayrıntı ve sınırlamalar "LEU oksit kafes kümesi" bölümünde). Diğer her AOA için uygun alt
+küme n < 10'dur → USL yok; bu dürüst sonuçtur. Önceki sürüm alt kümeyi yalnız tayfla seçiyor ve
 pwr_17x17'ye 9 çözelti + 1 kafesten USL = 0.93877 veriyordu (6698 Tablo 2.3'e aykırı;
-düzeltildi, regresyon testi `testler/test_vv_altkume.py`). USL için ilgili alt kümeye en az
-10 bağımsız deney eklenmelidir (STANDARTLAR.md §5).
+düzeltildi, regresyon testi `testler/test_vv_altkume.py`). Başka AOA'lar için ilgili alt kümeye
+en az 10 bağımsız deney eklenmelidir (STANDARTLAR.md §5).
 
 ### Tablodaki karışık alt kümeler neden USL için kullanılmaz
 
-- **Hızlı tayf (0.9444, n = 13)**, **termal tayf (0.9388, n = 10)** ve **U-235 (bütün
-  biçimler, 0.9418, n = 11)** satırları bölünebilir tür ve/veya biçim bakımından karışıktır;
+- **Hızlı tayf (0.9444, n = 13)**, **termal tayf (0.9297, n = 33)** ve **U-235 (bütün
+  biçimler, 0.9297, n = 34)** satırları bölünebilir tür ve/veya biçim bakımından karışıktır;
   6698 Tablo 2.3 bunların aynı olmasını ister. Bu satırlar yalnız bilgi içindir; araç bunları
   hiçbir uygulamaya USL olarak vermez.
-- **LWR / LEU kafes uygulamaları** (üniversitede en sık kullanılan): LEU oksit kafes alt
-  kümesinde 1 vaka var (LCT-008) → **USL yok**. Açık modeli bulunan bağımsız LEU-COMP-THERM
-  serileri (LCT-001, -002, -039 …) mit-crpg'de yoktur; ICSBEP el kitabından yeniden
-  modellenmeleri gerekir (STANDARTLAR.md §5).
+- **LWR / LEU kafes uygulamaları:** v3 Y11 ile LEU oksit kafes alt kümesi n = 24'tür ve
+  USL verilir (bkz. "LEU oksit kafes kümesi"); yalnız iki seriden geldiği için sınırlıdır.
 - **Tek bölünebilir türlü AOA'lar:** Pu (n = 9, normal değil, β = %37.0) ve U-233
   (n = 5, β = %22.6) → **USL hesaplanamadı** (Tablo 2.2: ek veri gerekli).
 - **Ara tayf** (n = 3) → **USL hesaplanamadı**.
 - MOX, oksit tozları, ıslak toz/bileşikler, ağır su, beton/çelik/kurşun yansıtıcılar,
   zehirli (B, Gd, Cd) sistemler, yüksek Pu-240 (> %20) ve AOA aralığı dışındaki
   zenginlik/H/X/EALF değerleri — kümede temsil edilmiyor; K6-AOA ve K12 uyarır.
-- Bütün küme USL'si (0.9035, parametrik olmayan) farklı AOA'ları karıştırır; 6698 USL'nin
+- Bütün küme USL'si (0.9235, parametrik olmayan) farklı AOA'ları karıştırır; 6698 USL'nin
   her AOA için ayrı hesaplanmasını ister — bu satır yalnız bilgi içindir.
 - PU-COMP-INTER-001 (PCI-001) modelinde H için S(α,β) termal saçılma verisi yoktur
   (mit-crpg modeli; bileşikteki H serbest gaz olarak taşınır). Ara tayfta etkisi küçük
@@ -264,7 +311,9 @@ düzeltildi, regresyon testi `testler/test_vv_altkume.py`). USL için ilgili alt
   ANS-8.24 metni görülmedi (STANDARTLAR.md §2.2). ΔSM = 0.05 varsayılanının kaynağı
   **DOĞRULANMADI**; 0.02 mutlak alt sınırdır. Pay seçimi kullanıcı kuruluşundur.
 - Deneyler arası korelasyon ele alınmaz (6698 bağımsızlık varsayar; UACSA açık konu).
-- Vakaların hepsi ICSBEP **basitleştirilmiş** (çoğu 1B küresel) modelleridir; modelleme
+- LCT-006 (TCA) vakaları ICSBEP modeli değil, birincil rapordan kurulmuş modellerdir;
+  basitleştirme belirsizliği σE'ye eklendi (LEU bölümü). Diğer vakalar ICSBEP
+  **basitleştirilmiş** (çoğu 1B küresel) modelleridir; modelleme
   yanlılığı E ± σ'nın içinde kabul edilir (ICSBEP değerlendirmesi). E ± σ mit-crpg
   `uncertainties.csv`'den alındı; güncel ICSBEP baskısıyla **karşılaştırılmadı**
   (STANDARTLAR.md §5 uyarısı).
@@ -275,16 +324,146 @@ düzeltildi, regresyon testi `testler/test_vv_altkume.py`). USL için ilgili alt
 - Bu araç sertifika vermez (STANDARTLAR.md §1); USL, kullanıcı kuruluşun kendi doğrulama
   raporunun yerine geçmez.
 
+## LEU oksit kafes kümesi (v3 Y11)
+
+Amaç: LWR / LEU kafes uygulamaları (pwr_17x17 vb.) için NUREG/CR-6698 alt kümesini (U-235,
+oksit, termal, LEU) n ≥ 10'a çıkarmak. Ortam: OpenMC 0.16.0, ENDF/B-VIII.0 (294 K HDF5),
+6 OpenMP iş parçacığı, Y10 koşu kuyruğuyla sıralı (`araclar/vv_lct_uret.py`), 02.10.2026;
+makine başka koşularla paylaşıldı, süreler üst sınırdır. Grafikler (C/E – H/U-235 ve – EALF):
+`python araclar/vv_rapor.py grafik`.
+
+### Kaynak taraması (02.10.2026)
+
+- **mit-crpg/benchmarks** (OpenMC'nin resmî kriter deposu, MIT lisansı, commit ba41bee,
+  17.09.2025): LCT serilerinden yalnız **LCT-008** vardır; onun da yalnız 6 durumunun (1, 2, 5,
+  7, 8, 11) OpenMC girdisi bulunur. openmc-dev örgütünde ayrı bir kriter deposu yoktur.
+- GitHub taraması: `ragusa/ICSBEP_OpenSn` (MIT) mit-crpg kopyasıdır; `pedrojrv/ML_Nuclear_Data`
+  LCT-001 Serpent girdileri içerir ama **lisansı yoktur** (kullanılmadı);
+  `jtramm/input_examples_openmc` KRITZ-2'yi yanlış ICSBEP kimliğiyle (LCT-001) etiketler
+  (kullanılmadı).
+- **Birincil deney raporu:** TCA (LCT-006) için JAERI 1254 (Tsuruta vd., 1978) JAEA açık
+  arşivindedir (https://jopss.jaea.go.jp/pdfdata/JAERI-1254.pdf): yakıt, çubuk, tank, adım,
+  20 °C kritik su seviyeleri (Tablo 8-1), atom yoğunlukları (Ek A1) ve desenler (Ek A3).
+  ICSBEP durum eşlemesi: JAERI-Conf 2003-006 Tablo 1 (Okumura ve Mori; OSTI ETDEWEB 20435859).
+- **E ± σ** yayımlanmış kaynaktan: LCT-006 bütün durumlar 1.0000 ± 0.0020 (S.C. van der Marck,
+  Nucl. Data Sheets 107 (2006) 3061, Tablo IX); LCT-008 1.0007 ± 0.0012 (mit-crpg
+  `uncertainties.csv`). ICSBEP el kitabı metni kullanılmadı ve dağıtılmaz
+  (STANDARTLAR.md §6 md. 13).
+
+| Seri | Açık tanım | Arayüzle kurulabilir mi | Bu sürümde |
+|---|---|---|---|
+| LCT-001, -002, -003 (PNL kümeleri, %2.35 / %4.31) | birincil PNL raporları (OSTI'de listelenir; bu çalışmada indirilmedi) | evet: kap + kafes yerleşimleri | kurulmadı — birincil rapordan modelleme ve denetim sonraki iş |
+| **LCT-006 (TCA, %2.6, 18 durum)** | **JAERI 1254 (açık)** | **evet: kare kafes + eksenel yığın (ıslak/kuru) + silindir tank** | **18 durum kuruldu ve koşuldu** |
+| LCT-007, LCT-039 (Valduc, %4.74) | yalnız ICSBEP (CEA raporları açık değil) | evet | kurulmadı — açık tanım yok |
+| **LCT-008 (B&W Core XI, %2.46)** | **mit-crpg: durum 1, 2, 5, 7, 8, 11** | **evet** | **6 durum** (diğer 11 durumun açık modeli yok) |
+| LCT-009, -010, -016, -017, -042 (PNL, absorban levha / yansıtıcı duvar) | birincil PNL raporları | evet (levha kapları + kafes yerleşimleri) | kurulmadı |
+| LCT-051 (B&W, 9 demet) | yalnız ICSBEP | evet | kurulmadı — açık tanım yok |
+
+### TCA modeli (LCT-006) ve basitleştirmeleri
+
+`cekirdek/vv/lct.py`: gelişmiş (ağaç) mod; kök kap = silindir tank (r = 91.6 cm), içinde eksenel
+yığın: 30 cm alt su → kritik su seviyesi H kadar ıslak yakıt kafesi → (144.15 − H) cm kuru yakıt
+kafesi (çubuk dışı boşluk). Çubuk: UO2 r = 0.625 cm, Al kılıf (hava boşluğu dahil bölgesel yoğunluk,
+Ek A1) dış r = 0.7085 cm. Birim hücre Vsu/Vyakıt ve H/U değerleri Tablo 2 ile tutar
+(`testler/test_vv_lct.py` VL2). **Bu model ICSBEP basitleştirilmiş modeli değildir**; birincil
+rapordan kurulur. Basitleştirmeler: (1) alt yansıtıcı yalnız su (ızgara, Al alt uç tapası, destek
+plakası yok); (2) tank duvarı ve dışı yok (yatay su > 40 cm); (3) su seviyesinin üstünde ızgara,
+Al yünü, üst tapa yok; (4) yakıtta **U-234 yok** (JAERI 1254 vermez), kılıf saf Al; (5) su
+seviyesi 20 °C'ye indirgenmiş tavsiye değeri, bütün malzemeler 293 K.
+
+**Basitleştirme duyarlılığı (ölçüldü, aynı istatistik, durum 1 ve 14):**
+
+| Varyant | Δk durum 1 [pcm] | Δk durum 14 [pcm] | Yorum |
+|---|---|---|---|
+| `alt_tapa`: alt 16.83 cm'de Al uç tapaları | −12 ± 36 | −24 ± 37 | istatistik içinde; eklenmedi |
+| `u234`: U-234/U-235 = 0.0080 (LCT-008 yakıtından tahmin) | −143 ± 37 | −187 ± 36 | **anlamlı** |
+
+U-234 içeriği bilinmediği için etkinin tamamı (ortalama 165 pcm) bu modelin 1σ basitleştirme
+belirsizliği sayıldı: TCA vakalarında σE = √(0.0020² + 0.00165²) = **0.0026** (kaynak metni
+`referans.kaynak`'ta). Bu, ICSBEP'in kendi basitleştirilmiş model belirsizliğinin (0.0020'nin
+içinde) üstüne eklenen, muhafazakâr bir paydır.
+
+### Sonuçlar: C/E
+
+Satırlar deney tablosundadır (`vv/kriter_lct006_NN.json`, `vv/kriter_lct008_NN.json`).
+
+- **LCT-006 (18):** C/E = 1.00063 – 1.00173, ağırlıklı yanlılık +0.00108; her vaka
+  |C − E| < 1σ. ENDF/B-VII.0 ile yayımlanmış ICSBEP-modeli sonuçları 0.99981 – 1.00094
+  (van der Marck 2006, Tablo IX). Fark büyük ölçüde U-234'ün yokluğudur: `u234` varyantıyla
+  durum 1 ve 14 C/E ≈ 0.9994.
+- **LCT-008 (6):** C/E = 0.99872 – 1.00070, yanlılık −0.00022. Durum 1 v2 ölçümüyle tutarlı
+  (1.00049 ± 0.00022 / 1.00067 ± 0.00021; 0.6σ). EALF kısa EALF koşusundan (20000 × 60).
+- H/U-235 (165 – 329) ve EALF (0.12 – 0.28 eV) ile C/E'de seri içinde anlamlı eğilim yok
+  (aşağıdaki tablo).
+
+### USL: LEU oksit kafes alt kümesi (NUREG/CR-6698; ΔSM = 0.05, ΔAOA = 0)
+
+| Alt küme (AOA) | n | yanlılık k̄ − 1 | S_p | Normallik (Shapiro–Wilk) | Eğilim | Yöntem | K_L | USL |
+|---|---|---|---|---|---|---|---|---|
+| U-235, oksit, termal, LEU (LCT-006 + LCT-008) | 24 | +0.00029 | 0.00207 | W = 0.894, p = 0.016 → normal değil | ealf: VAR (t = 3.32), h_x: yok (t = 1.25), zenginlik: VAR (t = 5.93) | parametrik olmayan (β = %70.8) | 0.9775 | 0.9275 |
+| LCT-006 (TCA) | 18 | +0.00108 | 0.00263 | W = 0.937, p = 0.258 → normal | ealf: yok (t = 0.77), h_x: yok (t = 1.01) | tolerans sınırı | 0.9935 | 0.9435 |
+| LCT-008 (B&W Core XI) | 6 | −0.00022 | 0.00138 | W = 0.947, p = 0.720 → normal | ealf: yok (t = 0.46), h_x: yok (t = 0.50) | tolerans sınırı | 0.9947 | **hesaplanamadı** |
+
+- **Araç LWR/LEU kafes uygulamalarına artık USL verir:** pwr_17x17 için alt küme "U-235, oksit,
+  termal, LEU", n = 24, **USL = 0.9275** (parametrik olmayan; K6 metninde alt küme, n ve yöntem
+  yazar). Önceki sürümün hatalı 0.93877'si (9 çözelti + 1 kafes) değildir.
+- **Neden parametrik olmayan:** birleşik küme normal değil (p = 0.016) çünkü iki seri arasında
+  ~130 pcm fark var (TCA'da U-234 yok, yukarıda). Parametrik olmayan yöntemde eğilim USL'yi
+  değiştirmez; tablodaki "zenginlik: VAR" iki serinin zenginlik farkından (%2.46 / %2.60) doğar,
+  gerçek bir zenginlik eğilimi olarak yorumlanmamalıdır.
+- **Bağımsızlık:** 24 vaka yalnız **iki deney serisinden** gelir (aynı tesis, aynı yakıt). 6698
+  vakaların bağımsız olduğunu varsayar; korelasyon ele alınmaz. K14 "tek seriden çok vaka" notu
+  verir. Bu yüzden bu USL bir **öğretim/araç doğrulaması** sayısıdır; lisanslama ya da kritiklik
+  güvenliği değerlendirmesi için **yeterli değildir** — sertifika değildir.
+- Uygulamanın zenginliği (%3.2) kümenin aralığı (%2.46 – 2.60) dışındadır: K12 bunu uyarır.
+  6698 aralık dışı kullanım için gerekçe ve ΔAOA ister; varsayılan ΔAOA = 0 kullanıcı kararıdır.
+- Seri başına: LCT-006 tek başına normal (tolerans sınırı, USL 0.9435) ama tek seridir; LCT-008
+  n = 6 < 10 → USL yok.
+
 ## Kütüphane yanlılığı açıklamaları
 
 Şu an 3σ ölçütünü aşan kriter yok. Ölçütün içinde kalan ama dikkat çeken iki sapma
-(nedenleri bu çalışmada incelenmedi): PU-MET-FAST-008 (Thor) C − E = −164 pcm, σe yalnız
-60 pcm olduğu için 2.62σ; U233-SOL-INTER-001 C − E = −1822 pcm, σe = 830 pcm ile 2.19σ.
-Bu iki vaka küme istatistiğinde ağırlıklarıyla yer alır; U233-SOL-INTER-001 bütün kümenin
-normallik testini başarısız kılan uç değerdir. Aşan bir kriter eklenirse açıklaması bu
-başlığın altına "### <örnek dosyası>" başlığıyla yazılır ve
-`testler/test_benchmark.py` içindeki `KUTUPHANE_YANLILIGI` sözlüğüne o başlık
-eklenir.
+PU-MET-FAST-008 (Thor; −164 pcm, σe yalnız 60 pcm olduğu için 2.62σ) ve U233-SOL-INTER-001
+(−1822 pcm, σe = 830 pcm ile 2.19σ) aşağıda incelendi. Aşan bir kriter eklenirse açıklaması bu
+başlığın altına "### <örnek dosyası>" başlığıyla yazılır ve `testler/test_benchmark.py`
+içindeki `KUTUPHANE_YANLILIGI` sözlüğüne o başlık eklenir.
+
+### Sapma incelemesi: PU-MET-FAST-008 ve U233-SOL-INTER-001 (v3 Y11)
+
+Tek kütüphane (ENDF/B-VIII.0) olduğundan nükleer veri değiştirilemedi; yalnız **model
+varyantları** koşuldu (`araclar/vv_sapma_duyarlilik.py`, 6 iş parçacığı, 02.10.2026; sonuçlar
+`~/openmc_v3_ciktilar/y11/sapma_duyarlilik.json`).
+
+| Koşu | k ± σ | Yorum |
+|---|---|---|
+| PMF-008, araç (1B, v2 ölçümü) | 0.99836 ± 0.00018 | E = 1.0000 ± 0.0006 → −164 pcm (2.62σ) |
+| PMF-008, mit-crpg özgün 1B girdisi | 0.99804 ± 0.00018 | araçla eşdeğer (1.3σ) |
+| PMF-008, mit-crpg özgün **2B** girdisi (küre + Th silindiri) | 0.99753 ± 0.00016 | −247 pcm, **3.98σ** (aynı E ± σ) |
+| USI-001, araç (v2 ölçümü) | 0.98178 ± 0.00022 | E = 1.0000 ± 0.0083 → −1822 pcm (2.19σ) |
+| USI-001, mit-crpg özgün girdisi | 0.98171 ± 0.00020 | araçla eşdeğer |
+| USI-001, çözeltide H S(α,β) yok (serbest gaz) | 0.98465 ± 0.00021 | +287 pcm: termal saçılmanın üst sınırı |
+| USI-001, Be'de S(α,β) yok | 0.98178 ± 0.00018 | etkisiz |
+| USI-001, bütün malzemeler 300 K | 0.98164 ± 0.00021 | etkisiz (−14 pcm) |
+
+**PU-MET-FAST-008 (Thor).** Araç ile özgün girdi aynı sonucu verir; sapma aktarımdan gelmez.
+1B küresel basitleştirme sapmayı **açıklamaz**: daha gerçekçi 2B model (Th silindiri) daha da
+düşüktür. ENDF/B-VII.0 ile aynı kriter C/E = 0.99879 (−121 pcm; van der Marck 2006) — yani
+eksik tahmin iki kütüphane sürümünde de vardır. Model varyantlarıyla açıklanamayan, iki sürümde
+süren bir sapma nükleer veri yanlılığı **adayıdır** (Pu-239 hızlı veri ya da Th-232 yansıtıcı
+verisi); bu çalışmada başka kütüphane olmadığı için **doğrulanmadı**. 2B modelin 3σ'yı aşması
+kriter paketine alınmamıştır (paketteki vaka 1B modeldir, 2.62σ ile ölçüt içinde).
+
+**U233-SOL-INTER-001.** Araç ile özgün girdi eşdeğer. Termal saçılma, Be S(α,β) ve sıcaklık
+varyantları −1822 pcm'lik sapmayı açıklamaz (en büyük etki +287 pcm, ve o da fiziksel olmayan
+bir üst sınırdır). Vaka ara tayftadır (EALF 7 eV). Pigni, Capote ve Trkov (ORNL/IAEA, 2021,
+OSTI 1813225) ENDF/B-VII.1 ve VIII.0'da U-233 çözeltilerinde k'nın epitermal fisyon payıyla
+güçlü biçimde azaldığını, USI-001 grubunun (Falstaff, LLNL; epitermal pay %50–75) bu eğilimin
+uzantısında eksik tahmin edildiğini ve nedenin U-233 rezonans bölgesi ve fisyon nötron tayfı
+(PFNS) verisi olduğunu raporlar; yeni değerlendirme PFNS değişikliğiyle yaklaşık +500 pcm
+düzeltme vermiş ama eğilimi tümüyle gidermemiştir. Bizim sonucumuz bu bulguyla **tutarlıdır**:
+sapmanın kaynağı büyük olasılıkla ENDF/B-VIII.0 U-233 verisidir (bu çalışmada başka kütüphaneyle
+**doğrulanmadı**). Vaka ölçüt içinde kalır (σe = 830 pcm büyük) ama U-233 alt kümesinin
+normalliğini bozar; U-233 uygulamalarına zaten USL verilmez (n = 5).
 
 ## Yeniden üretme
 
@@ -294,6 +473,11 @@ eklenir.
 - Tablodaki referans koşuları: örneği açın, parçacık/çevrim/pasif değerlerini
   tablodakiyle değiştirin, `OMP_NUM_THREADS=8` ile çalıştırın.
 
+- LEU kafes vakaları (v3 Y11; ~4 saat, 6 iş): `OMP_NUM_THREADS=6 python araclar/vv_lct_uret.py tca`
+  ve `... lct008 <benchmarks dizini>` (EALF eksikse `--aoa-tamamla`); duyarlılık varyantları
+  `... tca 1 14 --varyant alt_tapa|u234 --cikti <dizin>`; sapma koşuları
+  `python araclar/vv_sapma_duyarlilik.py <benchmarks dizini>`; tablolar
+  `python araclar/vv_rapor.py guncelle|usl|betimsel|grafik`.
 - V&V kümesini yeniden üretmek (mit-crpg/benchmarks klonu gerekir; ~2 saat, 12 iş):
   `OMP_NUM_THREADS=12 python araclar/vv_kriter_uret.py <benchmarks dizini>`;
   mevcut dört kritere AOA eki: `... --aoa-mevcut`.
@@ -301,6 +485,15 @@ eklenir.
   denetçide: `denetle(spec, kosu_dizini, ("B",), vv=kume.ozet(...), uygulama=kume.uygulama(spec, kosu_dizini))`.
 
 ## Kaynaklar
+
+- H. Tsuruta vd., Critical Sizes of Light-Water Moderated UO2 and PuO2-UO2 Lattices,
+  JAERI 1254 (1978), https://jopss.jaea.go.jp/pdfdata/JAERI-1254.pdf — LCT-006 modeli.
+- K. Okumura, T. Mori, Integral Test of JENDL-3.3 for Thermal Reactors, JAERI-Conf 2003-006
+  (OSTI ETDEWEB 20435859) — LCT-006 durum eşlemesi.
+- S.C. van der Marck, Benchmarking ENDF/B-VII.0, Nucl. Data Sheets 107 (2006) 3061 — LCT-006
+  E ± σ, VII.0 C/E (LCT-006, PMF-008).
+- M.T. Pigni, R. Capote, A. Trkov, Progress on the reevaluation and validation of the n+233U
+  neutron cross sections (2021), OSTI 1813225 — U-233 epitermal eğilim (USI-001).
 
 - NUREG/CR-6698: J.C. Dean, R.W. Tayloe Jr., Guide for Validation of Nuclear Criticality
   Safety Calculational Methodology, NRC, Ocak 2001 (ML050250061) — yanlılık, USL, AOA yöntemi.

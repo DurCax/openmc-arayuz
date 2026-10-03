@@ -58,6 +58,25 @@ Before opening, `calistir.sh` checks the environment: is the `openmc` command on
 something is missing it tells you what to do (see
 [9.4 Installation and environment problems](09-sorun-giderme.md#kurulum-sorunlari)).
 
+### Desktop shortcut
+
+To see the application in your application menu and to open a project file (`.json`) with a
+double click (no administrator rights needed; it writes only to your own `~/.local` and
+`~/.config`):
+
+```bash
+python -m cekirdek.masaustu kur        # menu entry + icon + project file type
+python -m cekirdek.masaustu durum      # installed? (exit 0 = installed)
+python -m cekirdek.masaustu kaldir     # removes only the files it installed; leaves no trace
+```
+
+The menu shows "OpenMC Reactor Core Interface" under **Science**. Project files saved by this
+application are recognised as a separate type (`application/x-openmc-arayuz+json`; the file
+starts with `{"surum": …`) and open with this application. The file name and the `.json`
+extension do not change; **the association of your other JSON files is not touched**. From the
+command line the same is `openmc-arayuz project.json`. If the entry does not appear, log out
+and in again.
+
 <a id="nukleer-veri"></a>
 ## 1.3 Nuclear data and depletion chain
 

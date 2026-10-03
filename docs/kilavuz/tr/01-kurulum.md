@@ -56,6 +56,23 @@ pytest -m hizli -n auto -q          # hızlı test süiti; sonunda "passed", 0 f
 ayarlı mı, grafik oturum var mı, tükenme zinciri tam mı. Bir eksik varsa ne yapacağınızı yazar
 (bkz. [9.4 Kurulum ve ortam sorunları](09-sorun-giderme.md#kurulum-sorunlari)).
 
+### Masaüstü kısayolu
+
+Uygulamayı uygulama menüsünde görmek ve bir proje dosyasına (`.json`) çift tıklayınca açmak için
+(yönetici yetkisi gerekmez; yalnız kendi `~/.local` ve `~/.config` dizininize yazar):
+
+```bash
+python -m cekirdek.masaustu kur        # menü girdisi + simge + proje dosyası türü
+python -m cekirdek.masaustu durum      # kurulu mu? (çıkış 0 = kurulu)
+python -m cekirdek.masaustu kaldir     # yalnız kurduğu dosyaları siler; iz bırakmaz
+```
+
+Menüde **Bilim** altında "OpenMC Reaktör Kuru Arayüzü" görünür. Bu uygulamanın kaydettiği
+proje dosyaları ayrı bir tür olarak tanınır (`application/x-openmc-arayuz+json`; dosya
+`{"surum": …` ile başlar) ve bu uygulamayla açılır. Dosya adı ya da `.json` uzantısı
+değişmez; **başka JSON dosyalarınızın ilişkisine dokunulmaz**. Komut satırından aynısı:
+`openmc-arayuz proje.json`. Menüde görünmezse oturumu kapatıp açın.
+
 <a id="nukleer-veri"></a>
 ## 1.3 Nükleer veri ve tükenme zinciri
 

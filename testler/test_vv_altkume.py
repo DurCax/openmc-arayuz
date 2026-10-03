@@ -4,8 +4,9 @@ test_vv_altkume.py -- uygulamaya uygun V&V alt kumesi (NUREG/CR-6698 §2.5, Tabl
 
   [VA1] aoa_filtresi: bolunebilir tur + fiziksel bicim + tayf (+ U-235 zenginlik
         sinifi, ICSBEP LEU/IEU/HEU); biri eksikse None (USL yok).
-  [VA2] Regresyon: pwr_17x17 (LEU oksit kafes, termal) -> K6 USL VERMEZ. Eski kod
-        yalniz tayfla 9 cozelti + 1 LCT secip USL 0.93877 veriyordu.
+  [VA2] Regresyon: pwr_17x17 (LEU oksit kafes, termal) -> USL YALNIZ LEU oksit
+        kafeslerden (v3 Y11: LCT-006 + LCT-008, n >= 10). Eski kod yalniz tayfla
+        9 cozelti + 1 LCT secip USL 0.93877 veriyordu.
   [VA3] Hizli metal (Godiva benzeri) uygulama: >= 10 uygun vakalik kumede USL
         verilir; alt kume, n ve yontem K6 "gecti" metninde yazar.
   [VA4] Depodaki kume ile Godiva: U-235 HEU hizli metal vaka sayisi < 10 -> USL yok
@@ -61,15 +62,23 @@ def test_aoa_filtresi_daraltir():
 
 
 def test_pwr_17x17_usl_vermez():
-    print("\n[VA2] Regresyon: pwr_17x17 LEU oksit kafes -> USL yok")
+    print("\n[VA2] Regresyon: pwr_17x17 LEU oksit kafes -> USL YALNIZ LEU oksit kafeslerden")
     from cekirdek.vv import kume
     vv, uyg = kume.uygulama_ozeti(_spec("pwr_17x17.json"), uygulama={"tayf": "termal"})
-    kontrol("USL None", vv.usl is None, "-> USL %r, n %d" % (vv.usl, vv.n))
-    kontrol("alt kume yalniz LEU oksit termal (n < 10)", vv.n < 10, "-> n %d" % vv.n)
-    kontrol("neden durust: 'USL yok' + alt kume", "USL yok" in vv.usl_neden
-            and "oksit" in vv.usl_neden, "-> %s" % vv.usl_neden)
+    alt = kume.vakalar(filtre=kume.aoa_filtresi(uyg))
     kontrol("uygulama spec'ten: oksit, U-235", uyg.get("fiziksel_bicim") == "oksit"
             and uyg.get("bolunebilir") == "U-235")
+    kontrol("alt kumede cozelti yok (yalniz oksit)", alt and all(
+        v.parametreler.get("fiziksel_bicim") == "oksit" for v in alt), "-> %d" % len(alt))
+    kontrol("n = alt kume (v3 Y11: LCT-006 + LCT-008)", vv.n == len(alt) and vv.n >= 10,
+            "-> n %d" % vv.n)
+    kontrol("USL hesaplandi; eski hatali 0.93877 (9 cozelti + 1 LCT) degil",
+            vv.usl is not None and abs(vv.usl - 0.93877) > 1e-4, "-> %r" % vv.usl)
+    kontrol("alt kume metni oksit + LEU", "oksit" in vv.alt_kume and "LEU" in vv.alt_kume,
+            "-> %s" % vv.alt_kume)
+    # Kume normal degil (iki seri arasi ~130 pcm fark; docs/VV.md): parametrik olmayan yontem.
+    kontrol("yontem durust: parametrik olmayan", vv.yontem == "parametrik_olmayan",
+            "-> %s" % vv.yontem)
 
 
 def _baglam(vv, uyg, k=0.90, s=0.0005):

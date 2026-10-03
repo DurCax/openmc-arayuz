@@ -1,0 +1,19 @@
+[Desktop Entry]
+Version=1.1
+Type=Application
+Name=OpenMC Reactor Core Interface
+Name[tr]=OpenMC Reaktör Kuru Arayüzü
+GenericName=Reactor physics interface
+GenericName[tr]=Reaktör fiziği arayüzü
+Comment=Build, run and analyse OpenMC neutron transport models
+Comment[tr]=OpenMC nötron taşınım modellerini kurun, koşturun ve inceleyin
+Exec=@EXEC@ %f
+TryExec=@TRYEXEC@
+Icon=openmc-arayuz
+Terminal=false
+Categories=Science;Education;Physics;
+Keywords=OpenMC;reactor;nuclear;neutron;Monte Carlo;criticality;
+Keywords[tr]=OpenMC;reaktör;nükleer;nötron;Monte Carlo;kritiklik;
+MimeType=application/x-openmc-arayuz+json;
+StartupWMClass=openmc-arayuz
+StartupNotify=true

@@ -153,8 +153,9 @@ Kartta ve rapor ekinde **aynen** yazılan dürüst çerçeve:
   olduğunu söyler; GDC 11'in karşılandığını söylemez. Pozitif MTC tek başına hata sayılmaz (not
   düşülür, geçici rejim analizine işaret edilir).
 - **Kritiklik güvenliği kanıtı değildir** — V&V özeti olmadan B profili "USL hesaplanamadı" der.
-  V&V özeti olsa bile USL yalnız kümenin uygulanabilirlik alanında geçerlidir: bu sürümün kümesiyle
-  **LWR / LEU kafes uygulamaları için USL yoktur** ([V&V](#vv)).
+  V&V özeti olsa bile USL yalnız kümenin uygulanabilirlik alanında geçerlidir: bu sürümün kümesi
+  yalnız **LWR / LEU oksit kafes** uygulamalarına USL verir (n = 24, iki deney serisi; öğretim
+  amaçlı bir sayıdır, lisanslama değildir) ([V&V](#vv)).
 - **Bağımsız V&V yoktur.** Kod, testler ve incelemeler aynı geliştirme sürecinden çıkar
   (`docs/YAZILIM_KALITE.md` §4).
 
@@ -166,10 +167,13 @@ Aracın kriter (benchmark) paketi ve ölçülen sonuçlar `docs/VV.md`'dedir
 aynıdır ve testle denetlenir. Ortam: OpenMC 0.16.0, ENDF/B-VIII.0 (HDF5, 294 K). Adım adım ders:
 [benchmark ve C/E](05-dersler.md#ders-benchmark).
 
-**Küme.** 26 deney kriteri (ICSBEP): ilk dördü `ornekler/godiva_kriter.json`,
+**Küme.** 49 deney kriteri (ICSBEP; v3 Y11 ile): ilk dördü `ornekler/godiva_kriter.json`,
 `ornekler/kriter_jezebel.json`, `ornekler/kriter_flattop25.json`, `ornekler/kriter_lct008.json`;
 22'si `ornekler/vv/` altında, mit-crpg/benchmarks (MIT lisansı) OpenMC modellerinden eş merkezli küre
-kabukları olarak aktarılmıştır. Ayrıca iki hesap-hesap kriteri (VVER-1000 LEU demeti, SFR MET-1000)
+kabukları olarak aktarılmıştır; 24'ü LEU oksit kafesidir (v3 Y11): LEU-COMP-THERM-006 (TCA, 18 durum,
+kamuya açık birincil rapor JAERI 1254'ten kurulan modeller) ve LEU-COMP-THERM-008 (6 durum,
+mit-crpg). LCT-008 durum 1 h_x ile yeniden üretildi; V&V kümesinde v2 dosyasının yerini alır.
+Ayrıca iki hesap-hesap kriteri (VVER-1000 LEU demeti, SFR MET-1000)
 vardır. **Deney ve hesap-hesap kriterleri ayrı tutulur:** deney kriterinde E ölçülmüş bir kritik
 düzenektir; hesap-hesap kriterinde E başka kodların hesap ortalamasıdır, "doğru" değer değildir.
 
@@ -185,7 +189,10 @@ düzenektir; hesap-hesap kriterinde E başka kodların hesap ortalamasıdır, "d
 
 **Kabul ölçütü** \|C − E\| ≤ 3·√(σc² + σe²) ve σc ≤ 30 pcm'dir. Bu **projenin kendi ölçütüdür**,
 bir standarttan gelmez. Şu an ölçütü aşan kriter yoktur; en büyük sapmalar PU-MET-FAST-008 (2.62σ)
-ve U233-SOL-INTER-001 (2.19σ, −1822 pcm; bütün kümenin normallik testini bozan uç değer).
+ve U233-SOL-INTER-001 (2.19σ, −1822 pcm; bütün kümenin normallik testini bozan uç değer). İkisi v3'te
+model varyantlarıyla incelendi: aktarım, 1B basitleştirme, S(α,β) ve sıcaklık sapmayı açıklamaz;
+olası neden nükleer veridir (U-233 için yayımlanmış epitermal eğilimle tutarlı) — başka kütüphaneyle
+**doğrulanmadı** (`docs/VV.md`, "Sapma incelemesi").
 
 **Yanlılık ve USL: NUREG/CR-6698 akışı.** (Kod `cekirdek/vv/`, formüller `docs/STANDARTLAR.md` §4.)
 1. Normalleştirme k_norm = k_calc / k_exp ve birleşik belirsizlik σ = √(σc² + σe²) (eş. 9, 3).
@@ -204,33 +211,32 @@ verilmez** ("hesaplanamadı"); parametrik olmayan yöntemde güven β ≤ %40 is
 sınırdır** ve profilde daha küçük bir ΔSM K11 hatası verir. ΔSM'nin seçimi ve gerekçesi kullanıcı
 kuruluşa aittir.
 
-**Ölçülen sonuçlar (01.10.2026; ΔSM = 0.05, ΔAOA = 0; ayrıntı `docs/VV.md`)**
+**Ölçülen sonuçlar (02.10.2026, v3 Y11 LEU kafes vakalarıyla; ΔSM = 0.05, ΔAOA = 0; ayrıntı `docs/VV.md`)**
 
 | Alt küme (AOA) | n | yanlılık k̄ − 1 | Yöntem | USL |
 |---|---|---|---|---|
-| Bütün küme | 26 | −0.00051 | parametrik olmayan (β = %73.6) | 0.9035 (yalnız bilgi: farklı AOA'ları karıştırır) |
-| Hızlı tayf (EALF ≥ 100 keV) | 13 | −0.00050 | tolerans sınırı | 0.9444 |
-| Termal tayf (EALF < 1 eV) | 10 | −0.00089 | tolerans sınırı | 0.9388 |
-| U-235 (bütün biçimler) | 11 | −0.00006 | tolerans sınırı | 0.9418 (yalnız gösterim) |
+| Bütün küme | 49 | −0.00018 | parametrik olmayan (β = %91.9) | 0.9235 (yalnız bilgi: farklı AOA'ları karıştırır) |
+| Hızlı tayf (EALF ≥ 100 keV) | 13 | −0.00050 | tolerans sınırı | 0.9444 (yalnız bilgi) |
+| Termal tayf (EALF < 1 eV) | 33 | +0.00010 | parametrik olmayan (β = %81.6) | 0.9297 (yalnız bilgi) |
+| U-235 (bütün biçimler) | 34 | +0.00021 | parametrik olmayan (β = %82.5) | 0.9297 (yalnız gösterim) |
 | Çözelti (termal + ara) | 10 | −0.00203 | parametrik olmayan (β = %40.1) | 0.8735 |
+| **U-235, oksit, termal, LEU (LCT-006 + LCT-008)** | **24** | +0.00029 | parametrik olmayan (β = %70.8) | **0.9275** |
 | Ara tayf | 3 | −0.00005 | tolerans sınırı | **hesaplanamadı** |
 | Pu (bütün biçimler) | 9 | −0.00086 | parametrik olmayan (β = %37.0) | **hesaplanamadı** |
 | U-233 | 5 | −0.00032 | parametrik olmayan (β = %22.6) | **hesaplanamadı** |
-| LEU (U-235, ≤ %20) | 4 | −0.00056 | tolerans sınırı | **hesaplanamadı** |
 
 **Araç hangi alt kümeyi kullanır?** Yukarıdaki tablo betimseldir. K6, bir uygulamanın USL'sini
 **yalnız** uygulamayla aynı bölünebilir türü, aynı fiziksel biçimi ve aynı nötron tayfını paylaşan
 vakalardan hesaplar; U-235'te zenginlik sınıfı da aynı olmalıdır (ICSBEP: LEU ≤ %10, IEU %10–60,
 HEU ≥ %60; NUREG/CR-6698 §2.5, Tablo 2.3). Uygun alt kümede 10'dan az vaka varsa USL verilmez.
-Depodaki kümede bu ölçütle en büyük alt küme 5 vakadır (Pu, metal, hızlı); LEU oksit kafeste
-1 vaka (LCT-008), Godiva benzeri HEU hızlı metalde 2 vaka vardır. **Bu yüzden depodaki küme şu an
-hiçbir uygulamaya USL vermez** — dürüst sonuç budur. Tablodaki hızlı tayf, termal tayf ve U-235
+Depodaki kümede bu ölçütle en büyük alt küme **U-235, oksit, termal, LEU (n = 24)**'dir; LWR/LEU
+kafes uygulamaları (ör. pwr_17x17) **USL = 0.9275** alır (parametrik olmayan; küme normal değil
+çünkü iki seri ~130 pcm farklı — TCA modelinde U-234 yok, `docs/VV.md`). 24 vaka yalnız iki deney
+serisindendir (K14 notu); 6698'in bağımsızlık varsayımı tam sağlanmaz. Diğer AOA'larda en büyük alt
+küme 5 vakadır (Pu, metal, hızlı) → USL yok. Tablodaki hızlı tayf, termal tayf ve U-235
 satırları bölünebilir tür ya da biçim bakımından karışıktır; yalnız bilgi içindir.
 
 **Hangi uygulamalar için USL YOK?**
-- **LWR / LEU kafes uygulamaları** (üniversitede en sık kullanılan): LEU oksit kafes alt kümesinde
-  1 vaka var → USL yok. Bağımsız LEU-COMP-THERM serileri (LCT-001, -002, -039 …) mit-crpg'de yoktur;
-  ICSBEP el kitabından yeniden modellenmeleri gerekir.
 - Tek bölünebilir türlü AOA'lar (Pu, U-233), ara tayf ve kümede 10'dan az eşi olan her AOA.
 - MOX, oksit tozları, ağır su, beton/çelik/kurşun yansıtıcılar, zehirli (B, Gd, Cd) sistemler,
   yüksek Pu-240 (> %20) ve AOA aralığı dışındaki zenginlik/H/X/EALF değerleri — kümede temsil
