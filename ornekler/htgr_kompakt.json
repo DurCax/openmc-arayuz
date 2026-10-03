@@ -10,7 +10,7 @@
   "malzemeler": [
     {
       "ad": "uco",
-      "gorunen_ad": "UCO cekirdek %19.74 (AGR-1)",
+      "gorunen_ad": "UCO cekirdek %19.74 U-235 (AGR-1)",
       "yogunluk": {
         "birim": "g/cm3",
         "deger": 10.9
@@ -18,11 +18,16 @@
       "sicaklik": 900.0,
       "bilesim": [
         {
-          "tur": "element",
-          "isim": "U",
-          "miktar": 1.0,
-          "birim": "ao",
-          "zenginlik": 19.74
+          "tur": "nuklid",
+          "isim": "U235",
+          "miktar": 0.19944,
+          "birim": "ao"
+        },
+        {
+          "tur": "nuklid",
+          "isim": "U238",
+          "miktar": 0.80056,
+          "birim": "ao"
         },
         {
           "tur": "element",

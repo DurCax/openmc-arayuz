@@ -171,6 +171,11 @@ _YOL_KALIPLARI = (
     (r"tukenme/ek_malzemeler/\d+$", lambda: _("tükenme ek malzemeleri")),
     (r"tamburlar/(.+)/govde_malzeme$", lambda a: _("‘%s’ tamburunun gövdesi") % a),
     (r"tamburlar/(.+)/emici_malzeme$", lambda a: _("‘%s’ tamburunun emicisi") % a),
+    (r"trisolar/(.+)/katmanlar/(\d+)$",
+     lambda a, i: _("‘{ad}’ TRISO parçacığının {n}. katmanı").format(ad=a, n=int(i) + 1)),
+    (r"trisolar/(.+)/matris_malzeme$", lambda a: _("‘%s’ TRISO matrisi") % a),
+    (r"trisolar/(.+)/kabuk_malzeme$", lambda a: _("‘%s’ pebble kabuğu") % a),
+    (r"trisolar/(.+)/dis_malzeme$", lambda a: _("‘%s’ pebble dış gazı") % a),
     (r"geometri/(.+)$", lambda y: _geometri_yolu(y)),
 )
 

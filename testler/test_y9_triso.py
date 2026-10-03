@@ -197,3 +197,46 @@ def test_betik_ve_kurucu_ayni_parcaciklari_kurar():
 
 HIZLI += [test_kurulan_modelde_paketleme_orani_hacim_sayimiyla_hedefe_yuzde_bir_icinde,
           test_betik_ve_kurucu_ayni_parcaciklari_kurar]
+
+
+def test_dogrula_triso_2b_model_hata_ve_tanimsiz_malzeme():
+    print("\n[Y9-8] dogrula: 2B modelde kompakt hata; tanimsiz malzeme hata; yukseklik uyumsuzlugu uyari")
+    from cekirdek import dogrula
+    # Arrange
+    spec = _model_spec(pf=0.2)
+    # Act / Assert
+    temiz = [b for b in dogrula.tum_kontroller(spec, veri_kontrolu=False)
+             if b.yer.startswith("trisolar")]
+    kontrol("temiz modelde TRISO bulgusu yok", temiz == [], "-> %r" % temiz)
+    s2 = _model_spec(pf=0.2)
+    s2["geometri"]["kok"]["yukseklik"] = None
+    b2 = dogrula.tum_kontroller(s2, veri_kontrolu=False)
+    kontrol("2B: hata", any(b.seviye == "hata" and "3B" in b.mesaj for b in b2))
+    s3 = _model_spec(pf=0.2)
+    s3["trisolar"][0]["matris_malzeme"] = "yok_boyle"
+    b3 = dogrula.tum_kontroller(s3, veri_kontrolu=False)
+    kontrol("tanimsiz malzeme hata", any(b.seviye == "hata" and "tanımsız malzeme" in b.mesaj
+                                         for b in b3))
+    s4 = _model_spec(pf=0.2)
+    s4["trisolar"][0]["yukseklik"] = 0.4
+    b4 = dogrula.tum_kontroller(s4, veri_kontrolu=False)
+    kontrol("yukseklik farki uyari", any(b.seviye == "uyari" and "yüksekliğinden" in b.mesaj
+                                         for b in b4))
+
+
+def test_malzeme_adi_degisimi_triso_alanlarini_gunceller():
+    print("\n[Y9-9] malzeme yeniden adlandirma: TRISO katman ve matris basvurulari da degisir")
+    from cekirdek import sema
+    # Arrange
+    spec = _model_spec(pf=0.2)
+    # Act
+    sema.malzeme_adini_degistir(spec, "uco", "uco2")
+    sema.malzeme_adini_degistir(spec, "matris", "matris2")
+    t = spec["trisolar"][0]
+    # Assert
+    kontrol("kernel uco2", t["katmanlar"][0]["malzeme"] == "uco2")
+    kontrol("matris2", t["matris_malzeme"] == "matris2")
+
+
+HIZLI += [test_dogrula_triso_2b_model_hata_ve_tanimsiz_malzeme,
+          test_malzeme_adi_degisimi_triso_alanlarini_gunceller]
