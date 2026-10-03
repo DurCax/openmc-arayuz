@@ -1,0 +1,39 @@
+# =============================================================================
+#  openmc-arayuz -- conda constructor tarifi (tek dosya .sh kurulum)
+#  Uretim: paket/constructor/uret.sh (surum, wheel ve lisans metni hazirlanir)
+#  Belge: https://conda.github.io/constructor/construct-yaml/
+#
+#  - Kurulum CEVRIMDISI: butun paketler .sh dosyasinin icindedir.
+#  - Kok yetkisi GEREKMEZ: varsayilan hedef $HOME/openmc-arayuz.
+#  - Nukleer veri YOKTUR (K2: uygulamanin Veri sayfasi indirir).
+#  - OpenMC: conda-forge 0.16.0, nodagmc + nompi varyanti (MPI ve DAGMC yok;
+#    DAGMC/MOAB ek boyut getirir ve arayuz kullanmaz).
+# =============================================================================
+name: openmc-arayuz
+version: "{{ environ['OPENMC_ARAYUZ_SURUM'] }}"
+installer_type: sh
+installer_filename: "openmc-arayuz-{{ environ['OPENMC_ARAYUZ_SURUM'] }}-Linux-x86_64.sh"
+channels:
+  - conda-forge
+specs:
+  - python 3.13.*
+  - openmc 0.16.0 nodagmc_nompi_py313*   # SABIT: environment.yml ile ayni gerekce
+  - pyside6 >=6.5
+  - numpy >=1.24
+  - scipy >=1.10
+  - pandas >=2.0
+  - matplotlib-base >=3.7
+  - h5py >=3.8
+  - babel >=2.12
+  - pip
+  - curl                                  # veri_indir.sh
+license_file: LICENSE.txt                 # uret.sh LICENSE'tan uretir (.txt sart)
+post_install: post_install.sh
+extra_files:
+  - "{{ environ['OPENMC_ARAYUZ_WHEEL'] }}"
+  - kaldir.sh: share/openmc-arayuz-paket/kaldir.sh
+  - masaustu: share/openmc-arayuz-paket/masaustu      # P2 (yoksa bos dizin)
+initialize_by_default: false              # ~/.bashrc'ye DOKUNMA
+register_envs: false                      # ~/.conda/environments.txt'e yazma
+keep_pkgs: false
+check_path_spaces: true
