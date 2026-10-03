@@ -1487,9 +1487,8 @@ msgid "Hazır pencere dosyasını uygula (.h5 ya da wwinp)"
 msgstr "Apply an existing window file (.h5 or wwinp)"
 
 #: arayuz/ayar/varyans_formu.py:25
-#, fuzzy
 msgid "Düzenli (x, y, z)"
-msgstr "List (x, y)"
+msgstr "Regular (x, y, z)"
 
 #: arayuz/ayar/varyans_formu.py:25
 msgid "Küresel (r, θ, φ)"
@@ -1500,33 +1499,28 @@ msgid "Ağırlık pencereleri (*.h5 *.wwinp wwinp*);;Tüm dosyalar (*)"
 msgstr "Weight windows (*.h5 *.wwinp wwinp*);;All files (*)"
 
 #: arayuz/ayar/varyans_formu.py:47
-#, fuzzy
 msgid "Mod:"
-msgstr "Mode"
+msgstr "Mode:"
 
 #: arayuz/ayar/varyans_formu.py:49
-#, fuzzy
 msgid "Ağ boyutu:"
-msgstr "Size:"
+msgstr "Mesh size:"
 
 #: arayuz/ayar/varyans_formu.py:51
-#, fuzzy
 msgid "Enerji sınırları [eV]:"
-msgstr "Group boundaries [eV]:"
+msgstr "Energy bounds [eV]:"
 
 #: arayuz/ayar/varyans_formu.py:52
 msgid "En çok gerçekleşme:"
 msgstr "Max realizations:"
 
 #: arayuz/ayar/varyans_formu.py:53
-#, fuzzy
 msgid "Güncelleme aralığı:"
-msgstr "z range:"
+msgstr "Update interval:"
 
 #: arayuz/ayar/varyans_formu.py:54
-#, fuzzy
 msgid "Pencere dosyası:"
-msgstr "Depletion chain file"
+msgstr "Window file:"
 
 #: arayuz/ayar/varyans_formu.py:59
 msgid "Varyans azaltma (ağırlık pencereleri, MAGIC)"
@@ -1546,9 +1540,8 @@ msgid ""
 msgstr "In a spherical setup a spherical mesh (radius divisions only) makes the weight window direction-independent and less noisy; the regular mesh works in any model."
 
 #: arayuz/ayar/varyans_formu.py:78
-#, fuzzy
 msgid "boş: tek enerji grubu"
-msgstr "Energy group:"
+msgstr "empty: one energy group"
 
 #: arayuz/ayar/varyans_formu.py:79
 msgid "Virgülle ayrılmış artan sınırlar, ör. 0, 1e6, 2e7."
@@ -1570,9 +1563,9 @@ msgid "Gözat…"
 msgstr "Browse…"
 
 #: arayuz/ayar/varyans_formu.py:89
-#, fuzzy, python-format
+#, python-format
 msgid "Koşu dizinindeki weight_windows.h5 dosyasını seçer."
-msgstr "No statepoint file in the run directory: %s"
+msgstr "Selects the weight_windows.h5 file in the run directory."
 
 #: arayuz/ayar/varyans_formu.py:91
 msgid ""
@@ -3101,9 +3094,8 @@ msgstr ""
 " an error. Delete it?"
 
 #: arayuz/cubuk/triso_formu.py:31
-#, fuzzy
 msgid "Çekirdek"
-msgstr "Central assembly A"
+msgstr "Kernel"
 
 #: arayuz/cubuk/triso_formu.py:31
 msgid "Tampon"
@@ -3114,18 +3106,16 @@ msgid "İç PyC (IPyC)"
 msgstr "Inner PyC (IPyC)"
 
 #: arayuz/cubuk/triso_formu.py:32
-#, fuzzy
 msgid "SiC"
-msgstr "Delete"
+msgstr "SiC"
 
 #: arayuz/cubuk/triso_formu.py:32
 msgid "Dış PyC (OPyC)"
 msgstr "Outer PyC (OPyC)"
 
 #: arayuz/cubuk/triso_formu.py:33
-#, fuzzy
 msgid "Kompakt (silindir)"
-msgstr "cylinder"
+msgstr "Compact (cylinder)"
 
 #: arayuz/cubuk/triso_formu.py:33
 msgid "Pebble (küre)"
@@ -3140,31 +3130,26 @@ msgid "Düzenli (basit kübik)"
 msgstr "Regular (simple cubic)"
 
 #: arayuz/cubuk/triso_formu.py:35
-#, fuzzy
 msgid "AGR-1 kompakt (UCO)"
-msgstr "Compact core with control drums"
+msgstr "AGR-1 compact (UCO)"
 
 #: arayuz/cubuk/triso_formu.py:35
 msgid "HTR-10 pebble (UO2)"
 msgstr "HTR-10 pebble (UO2)"
 
 #: arayuz/cubuk/triso_formu.py:70
-#, fuzzy
 msgid "TRISO tanımları"
-msgstr "Control drums"
+msgstr "TRISO definitions"
 
 #: arayuz/cubuk/triso_formu.py:72 arayuz/geometri/form_ortak.py:134
 msgid "TRISO"
 msgstr "TRISO"
 
 #: arayuz/cubuk/triso_formu.py:73
-#, fuzzy
 msgid ""
 "TRISO kompakt ya da pebble tanımı ekler; gelişmiş geometri editöründe bileşen olarak "
 "seçilir."
-msgstr ""
-"Adds a control drum definition; placements in the advanced geometry editor choose "
-"from this library."
+msgstr "Adds a TRISO compact or pebble definition; it is chosen as a component in the advanced geometry editor."
 
 #: arayuz/cubuk/triso_formu.py:81
 msgid "TRISO (kompakt, pebble)"
@@ -3187,57 +3172,48 @@ msgid "Şekil"
 msgstr "Shape"
 
 #: arayuz/cubuk/triso_formu.py:120
-#, fuzzy
 msgid "Kompakt yarıçapı"
-msgstr "Core radius:"
+msgstr "Compact radius"
 
 #: arayuz/cubuk/triso_formu.py:121
-#, fuzzy
 msgid "Kompakt yüksekliği"
-msgstr "layer height"
+msgstr "Compact height"
 
 #: arayuz/cubuk/triso_formu.py:122
-#, fuzzy
 msgid "Yakıt bölgesi yarıçapı"
-msgstr "Pin region radius"
+msgstr "Fuel zone radius"
 
 #: arayuz/cubuk/triso_formu.py:123
-#, fuzzy
 msgid "Pebble dış yarıçapı"
-msgstr "Outer radius"
+msgstr "Pebble outer radius"
 
 #: arayuz/cubuk/triso_formu.py:126
-#, fuzzy
 msgid "Matris malzemesi"
-msgstr "Cladding material:"
+msgstr "Matrix material"
 
 #: arayuz/cubuk/triso_formu.py:127
-#, fuzzy
 msgid "Kabuk malzemesi (pebble)"
-msgstr "Block material"
+msgstr "Shell material (pebble)"
 
 #: arayuz/cubuk/triso_formu.py:128
 msgid "Dış gaz (pebble)"
 msgstr "Outer gas (pebble)"
 
 #: arayuz/cubuk/triso_formu.py:131
-#, fuzzy
 msgid "Paketleme oranı (hedef)"
-msgstr "Add plate-type fuel element"
+msgstr "Packing fraction (target)"
 
 #: arayuz/cubuk/triso_formu.py:132 arayuz/geometri/form_yerlesim.py:37
 msgid "Yerleşim"
 msgstr "Placement"
 
 #: arayuz/cubuk/triso_formu.py:133
-#, fuzzy
 msgid "Tohum"
-msgstr "Seed:"
+msgstr "Seed"
 
 #: arayuz/cubuk/triso_formu.py:134
-#, fuzzy
 msgid "TRISO yakıt"
-msgstr "Fuel"
+msgstr "TRISO fuel"
 
 #: arayuz/cubuk/triso_formu.py:135
 msgid ""
@@ -3267,22 +3243,17 @@ msgid " · kübik adım %.5f cm"
 msgstr " · cubic pitch %.5f cm"
 
 #: arayuz/cubuk/triso_formu.py:374
-#, fuzzy
 msgid "TRISO tanımı kullanılıyor"
-msgstr "Drum in use"
+msgstr "TRISO definition in use"
 
 #: arayuz/cubuk/triso_formu.py:375
-#, fuzzy, python-brace-format
+#, python-brace-format
 msgid ""
 "'{ad}' şurada kullanılıyor: {yerler}.\n"
 "\n"
 "Silinirse bu yerler tanımsız bir bileşene işaret eder ve doğrulama hata verir. "
 "Silinsin mi?"
-msgstr ""
-"'{ad}' is used in: {yerler}.\n"
-"\n"
-"If deleted, these places will point to an undefined assembly and the model check will"
-" report an error. Delete it?"
+msgstr "'{ad}' is used here: {yerler}.\n\nIf deleted, these places point to an undefined component and validation reports an error. Delete it?"
 
 #: arayuz/demet/demet_islemleri.py:18 arayuz/demet/yerlesim.py:91
 msgid "Kare demet"
@@ -10056,28 +10027,24 @@ msgid "φ·V / Δu [cm / kaynak nötronu]"
 msgstr "φ·V / Δu [cm / source neutron]"
 
 #: arayuz/sonuc/varyans.py:28
-#, fuzzy
 msgid "tally"
-msgstr "Tally:"
+msgstr "tally"
 
 #: arayuz/sonuc/varyans.py:28
-#, fuzzy
 msgid "toplam"
-msgstr "Total power:"
+msgstr "total"
 
 #: arayuz/sonuc/varyans.py:28
 msgid "σ"
 msgstr "σ"
 
 #: arayuz/sonuc/varyans.py:28
-#, fuzzy
 msgid "σ bağıl"
-msgstr "Bin relative"
+msgstr "σ rel"
 
 #: arayuz/sonuc/varyans.py:28
-#, fuzzy
 msgid "T [s]"
-msgstr "Time [s]"
+msgstr "T [s]"
 
 #: arayuz/sonuc/varyans.py:28
 msgid "FOM"
@@ -10094,9 +10061,9 @@ msgid ""
 msgstr "FOM = 1 / (σ_rel² · T): the larger it is, the shorter the time to reach the same uncertainty"
 
 #: arayuz/sonuc/varyans.py:75
-#, fuzzy, python-format
+#, python-format
 msgid "FOM okunamadı: %s"
-msgstr "Result could not be read: %s"
+msgstr "FOM could not be read: %s"
 
 #: arayuz/sonuc/varyans.py:87
 msgid ""

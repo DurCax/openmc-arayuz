@@ -31,9 +31,8 @@ msgid "demet"
 msgstr "assembly"
 
 #: cekirdek/alt_model.py:68
-#, fuzzy
 msgid "TRISO"
-msgstr "Date"
+msgstr "TRISO"
 
 #: cekirdek/alt_model.py:68 cekirdek/alt_model.py:225
 msgid "tambur"
@@ -59,14 +58,13 @@ msgid "tambur yarıçapı sıfırdan büyük olmalı: %s"
 msgstr "drum radius must be greater than zero: %s"
 
 #: cekirdek/alt_model.py:240
-#, fuzzy
 msgid "triso"
-msgstr "Date"
+msgstr "TRISO"
 
 #: cekirdek/alt_model.py:249
-#, fuzzy, python-format
+#, python-format
 msgid "TRISO ölçüleri okunamadı: %s"
-msgstr "Report could not be read: %s"
+msgstr "TRISO dimensions could not be read: %s"
 
 #: cekirdek/alt_model.py:306
 msgid "düğüm"
@@ -2155,14 +2153,13 @@ msgstr ""
 " is given"
 
 #: cekirdek/dogrula/triso.py:66
-#, fuzzy, python-format
+#, python-format
 msgid "TRISO tanımı geometride kullanılmıyor"
-msgstr "the name '%s' is already in use"
+msgstr "the TRISO definition is not used in the geometry"
 
 #: cekirdek/dogrula/triso.py:72
-#, fuzzy
 msgid "TRISO kompaktı 3B model gerektirir"
-msgstr "the control rod search needs a 3D model"
+msgstr "the TRISO compact needs a 3D model"
 
 #: cekirdek/dogrula/triso.py:73
 msgid ""
@@ -2171,11 +2168,9 @@ msgid ""
 msgstr "A compact is a cylinder of finite height; the model height must be defined (height on the geometry root)."
 
 #: cekirdek/dogrula/triso.py:81
-#, fuzzy, python-format
+#, python-format
 msgid "kompakt yüksekliği (%g cm) modelin yüksekliğinden (%g cm) farklı"
-msgstr ""
-"The sum of the axial stack outside the root (%g cm) is not equal to the model height "
-"(%g cm)."
+msgstr "compact height (%g cm) differs from the model height (%g cm)"
 
 #: cekirdek/dogrula/triso.py:83
 msgid ""
@@ -2371,9 +2366,9 @@ msgstr ""
 "volume."
 
 #: cekirdek/dogrula/varyans.py:34
-#, fuzzy, python-format
+#, python-format
 msgid "ağırlık penceresi dosyası yok: %s"
-msgstr "chain file does not exist: %s"
+msgstr "weight window file does not exist: %s"
 
 #: cekirdek/dogrula/varyans.py:41
 msgid ""
@@ -2697,18 +2692,16 @@ msgid "'%s' demeti: haritada tanımsız harf '%s'"
 msgstr "assembly '%s': undefined letter '%s' in the map"
 
 #: cekirdek/geometri/bilesen_triso.py:44
-#, fuzzy, python-format
+#, python-format
 msgid "'%s' TRISO tanımı geçersiz: %s"
-msgstr "the unit of row '%s' is invalid: %s"
+msgstr "TRISO definition '%s' is invalid: %s"
 
 #: cekirdek/geometri/bilesen_triso.py:48
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "'%s' TRISO kompaktı 3B model gerektirir: çekirdek yüksekliği tanımlı değil. Kompakt "
 "sonlu yükseklikli bir silindirdir."
-msgstr ""
-"control rod '%s' requires a 3D model: the core height is not defined. Insertion "
-"cannot be defined without an axial tip position."
+msgstr "TRISO compact '%s' needs a 3D model: the core height is not defined. A compact is a cylinder of finite height."
 
 #: cekirdek/geometri/denetim.py:68
 #, python-format
@@ -8541,55 +8534,52 @@ msgid "'%s' kabında kalınlıkla tanımlı %d. halka yok"
 msgstr "container '%s' has no ring %d defined by thickness"
 
 #: cekirdek/triso.py:98
-#, fuzzy, python-format
+#, python-format
 msgid "bilinmeyen TRISO şekli: %r (geçerli: %s)"
-msgstr "unknown V&V method: %r (valid: %s)"
+msgstr "unknown TRISO shape: %r (valid: %s)"
 
 #: cekirdek/triso.py:106
-#, fuzzy, python-format
+#, python-format
 msgid "'%s' sayı olmalı"
-msgstr "%s must be a number: %r"
+msgstr "'%s' must be a number"
 
 #: cekirdek/triso.py:108
-#, fuzzy, python-format
+#, python-format
 msgid "'%s' pozitif olmalı (%s)"
-msgstr "%s must be positive and finite: %r"
+msgstr "'%s' must be positive (%s)"
 
 #: cekirdek/triso.py:116 cekirdek/triso.py:254
 msgid "TRISO parçacığında katman yok"
 msgstr "the TRISO particle has no layers"
 
 #: cekirdek/triso.py:260
-#, fuzzy, python-format
+#, python-format
 msgid "katman %d: yarıçap sayı olmalı"
-msgstr "cooling steps must be numbers"
+msgstr "layer %d: the radius must be a number"
 
 #: cekirdek/triso.py:263
-#, fuzzy, python-format
+#, python-format
 msgid "katman %d: yarıçap (%g cm) bir içtekinden (%g) büyük olmalı"
-msgstr ""
-"the inner radius of the absorber (%.4f cm) must be smaller than the drum radius (%.4f"
-" cm)"
+msgstr "layer %d: the radius (%g cm) must be larger than the one inside (%g)"
 
 #: cekirdek/triso.py:266
-#, fuzzy, python-format
+#, python-format
 msgid "katman %d: malzeme seçilmemiş"
-msgstr "no %s material selected"
+msgstr "layer %d: no material selected"
 
 #: cekirdek/triso.py:276
-#, fuzzy, python-format
+#, python-format
 msgid "matris malzemesi seçilmemiş"
-msgstr "no %s material selected"
+msgstr "no matrix material selected"
 
 #: cekirdek/triso.py:279
-#, fuzzy, python-format
+#, python-format
 msgid "bilinmeyen yerleşim yöntemi: %r"
-msgstr "unknown placement mode: %s"
+msgstr "unknown placement method: %r"
 
 #: cekirdek/triso.py:283
-#, fuzzy
 msgid "paketleme oranı sayı olmalı"
-msgstr "the numbers of components and fractions must match"
+msgstr "the packing fraction must be a number"
 
 #: cekirdek/triso.py:286
 #, python-format
@@ -8623,28 +8613,25 @@ msgid "%d parçacık: model kurulumu ve koşu uzun sürer"
 msgstr "%d particles: model setup and the run take long"
 
 #: cekirdek/triso.py:315
-#, fuzzy
 msgid "'dis_yaricap' sayı olmalı"
-msgstr "request number must be an integer"
+msgstr "'dis_yaricap' must be a number"
 
 #: cekirdek/triso.py:317
-#, fuzzy
 msgid "pebble dış yarıçapı yakıt bölgesi yarıçapından büyük olmalı"
-msgstr "mesh outer radius must be greater than zero"
+msgstr "the pebble outer radius must be larger than the fuel zone radius"
 
 #: cekirdek/triso.py:318
-#, fuzzy
 msgid "kabuk"
-msgstr "pins"
+msgstr "shell"
 
 #: cekirdek/triso.py:318
 msgid "dış (gaz)"
 msgstr "outer (gas)"
 
 #: cekirdek/triso.py:320
-#, fuzzy, python-format
+#, python-format
 msgid "pebble %s malzemesi seçilmemiş"
-msgstr "no %s material selected"
+msgstr "no %s material selected for the pebble"
 
 #: cekirdek/tukenme.py:100
 #, python-format
@@ -10434,9 +10421,9 @@ msgid "bilinmeyen V&V yöntemi: %r (geçerli: %s)"
 msgstr "unknown V&V method: %r (valid: %s)"
 
 #: cekirdek/varyans.py:93
-#, fuzzy, python-format
+#, python-format
 msgid "bilinmeyen varyans azaltma modu: %r (geçerli: %s)"
-msgstr "unknown V&V method: %r (valid: %s)"
+msgstr "unknown variance reduction mode: %r (valid: %s)"
 
 #: cekirdek/varyans.py:97
 #, python-format
@@ -10446,37 +10433,37 @@ msgid ""
 msgstr "variance reduction method not supported: %r (valid: %s; FW-CADIS needs a random ray adjoint solution, not available in this version)"
 
 #: cekirdek/varyans.py:102
-#, fuzzy, python-format
+#, python-format
 msgid "bilinmeyen parçacık türü: %r"
-msgstr "unknown particle type: %s"
+msgstr "unknown particle type: %r"
 
 #: cekirdek/varyans.py:105
-#, fuzzy, python-format
+#, python-format
 msgid "bilinmeyen ağ türü: %r (geçerli: %s)"
-msgstr "unknown mesh type: %s (valid: %s)"
+msgstr "unknown mesh type: %r (valid: %s)"
 
 #: cekirdek/varyans.py:113
 msgid "'uygula' modu için pencere dosyası (.h5 ya da wwinp) gerekli"
 msgstr "the 'apply' mode needs a weight window file (.h5 or wwinp)"
 
 #: cekirdek/varyans.py:122
-#, fuzzy, python-format
+#, python-format
 msgid "'%s' tamsayı olmalı"
-msgstr "%s must be a number: %r"
+msgstr "'%s' must be an integer"
 
 #: cekirdek/varyans.py:124
-#, fuzzy, python-format
+#, python-format
 msgid "'%s' en az 1 olmalı (%d)"
-msgstr "%s: must be a number (%r)"
+msgstr "'%s' must be at least 1 (%d)"
 
 #: cekirdek/varyans.py:132
 msgid "ağ boyutu [nx, ny, nz] olmalı"
 msgstr "the mesh size must be [nx, ny, nz]"
 
 #: cekirdek/varyans.py:135
-#, fuzzy, python-format
+#, python-format
 msgid "ağ çok büyük: %d hücre (üst sınır %d)"
-msgstr "the file is too large (%d bytes; limit %d)"
+msgstr "the mesh is too large: %d cells (upper limit %d)"
 
 #: cekirdek/varyans.py:146
 msgid "enerji sınırları sayı listesi olmalı"
@@ -10487,9 +10474,8 @@ msgid "enerji sınırları artan ve en az iki değerli olmalı (eV)"
 msgstr "energy bounds must be increasing with at least two values (eV)"
 
 #: cekirdek/varyans.py:163
-#, fuzzy
 msgid "ağırlık penceresi 3B model gerektirir (yükseklik tanımlı değil)"
-msgstr "the control rod requires a 3D model (core height undefined)"
+msgstr "a weight window needs a 3D model (no height defined)"
 
 #: cekirdek/veri_arsiv.py:83
 #, python-format
@@ -11130,9 +11116,9 @@ msgstr ""
 "(%s): %d; %s"
 
 #: cekirdek/vv/lct.py:122
-#, fuzzy, python-format
+#, python-format
 msgid "bilinmeyen TCA durumu: %r (1-%d)"
-msgstr "unknown recipe: %r"
+msgstr "unknown TCA state: %r (1-%d)"
 
 #: cekirdek/vv/lct.py:128
 #, python-format
@@ -11140,9 +11126,9 @@ msgid "adım çubuk çapından küçük: %g cm"
 msgstr ""
 
 #: cekirdek/vv/lct.py:233
-#, fuzzy, python-format
+#, python-format
 msgid "bilinmeyen TCA varyantı: %r"
-msgstr "unknown recipe: %r"
+msgstr "unknown TCA variant: %r"
 
 #: cekirdek/vv/lct008.py:66
 #, python-format
@@ -11150,14 +11136,14 @@ msgid "LCT-008 haritası: (%.3f, %.3f) konumunda bilinmeyen evren %r"
 msgstr ""
 
 #: cekirdek/vv/lct008.py:109 cekirdek/vv/lct008.py:200
-#, fuzzy, python-format
+#, python-format
 msgid "bilinmeyen LCT-008 durumu: %r"
-msgstr "unknown subprocess: %r"
+msgstr "unknown LCT-008 state: %r"
 
 #: cekirdek/vv/lct008.py:162
-#, fuzzy, python-format
+#, python-format
 msgid "malzeme yok: %s"
-msgstr "material %s"
+msgstr "no such material: %s"
 
 #: cekirdek/yerel_k.py:183
 msgid "kafes ötelenmiş ya da döndürülmüş: yerel k mesh'i hizalanamaz"
