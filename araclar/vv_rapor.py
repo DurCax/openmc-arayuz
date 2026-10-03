@@ -120,9 +120,13 @@ def dosyalar(desen: str = "vv/kriter_lct*.json") -> List[Tuple[str, Dict[str, An
     return sonuc
 
 
+PARAMETRE_EN = {"ealf": "EALF", "zenginlik": "enrichment", "h_x": "H/X"}
+
+
 def _egilim_metni(egilim: Mapping[str, Mapping[str, Any]], dil: str) -> str:
     m = METIN[dil]
-    return ", ".join("%s: %s (t = %.2f)" % (p, m["var"] if e["anlamli"] else m["yok"], e["t"])
+    ad = (lambda p: PARAMETRE_EN.get(p, p)) if dil == "en" else (lambda p: p)
+    return ", ".join("%s: %s (t = %.2f)" % (ad(p), m["var"] if e["anlamli"] else m["yok"], e["t"])
                      for p, e in sorted(egilim.items())) or "—"
 
 

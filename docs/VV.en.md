@@ -10,7 +10,8 @@ checks this (BM4).
 
 **Environment:** OpenMC 0.16.0, ENDF/B-VIII.0 (HDF5, OpenMC's official library, 294 K).
 First five benchmarks (Agent 9): 8 OpenMP threads, 29.09.2026. V&V set (`vv/…`,
-Wave S-3): 12 OpenMP threads, 01.10.2026. In both cases the machine was shared with other Monte
+Wave S-3): 12 OpenMP threads, 01.10.2026. LEU oxide lattice cases (`vv/kriter_lct*`, v3 Y11):
+6 OpenMP threads, 02.10.2026. In all cases the machine was shared with other Monte
 Carlo jobs; the run times are therefore upper bounds. The number of inactive batches is given in
 each row as "batches/inactive".
 
@@ -238,7 +239,7 @@ NUREG-1718 / NUREG-1520 Ch. 5 App. B — **NOT VERIFIED**, see STANDARTLAR.en.md
 the absolute lower limit. The choice of ΔSM and its justification belong to the user
 organisation.
 
-### Results (01.10.2026; ΔSM = 0.05, ΔAOA = 0)
+### Results (02.10.2026; with the v3 Y11 LEU lattice cases; ΔSM = 0.05, ΔAOA = 0)
 
 σ_bias is given as the pooled standard deviation S_p (eq. 7; eq. 28 in the band method).
 K_L is the tolerance limit / non-parametric lower limit; USL = K_L − ΔSM − ΔAOA. In the Trend
@@ -246,22 +247,22 @@ column, "none" means that the slope is not significant.
 
 | Subset (AOA) | n | bias k̄ − 1 | S_p | Normality (Shapiro–Wilk) | Trend | Method | K_L | USL |
 |---|---|---|---|---|---|---|---|---|
-| Whole set | 26 | −0.00051 | 0.00235 | W = 0.794, p = 0.000 → not normal | EALF: none (t = 0.63), enrichment: none (t = 0.60) | non-parametric (β = 73.6 %) | 0.9535 | 0.9035 |
+| All cases | 49 | −0.00018 | 0.00230 | W = 0.678, p = 0.000 → not normal | EALF: none (t = 1.22), enrichment: YES (t = 2.20) | non-parametric (β = 91.9%) | 0.9735 | 0.9235 |
 | Fast spectrum (EALF ≥ 100 keV) | 13 | −0.00050 | 0.00191 | W = 0.927, p = 0.311 → normal | EALF: none (t = 1.23), enrichment: none (t = 1.60) | tolerance limit | 0.9944 | 0.9444 |
-| Thermal spectrum (EALF < 1 eV) | 10 | −0.00089 | 0.00355 | W = 0.984, p = 0.984 → normal | EALF: none (t = 1.89), enrichment: none (t = 0.52) | tolerance limit | 0.9888 | 0.9388 |
-| Intermediate spectrum | 3 | −0.00005 | 0.00334 | W = 0.941, p = 0.530 → normal | EALF: none (t = 1.15), enrichment: none (t = 3.75) | tolerance limit | 0.9744 | **not calculated** |
-| Solutions (thermal + intermediate) | 10 | −0.00203 | 0.00532 | W = 0.841, p = 0.045 → not normal | EALF: none (t = 0.40), H/X: none (t = 0.31), enrichment: none (t = 0.24) | non-parametric (β = 40.1 %) | 0.9235 | 0.8735 |
-| U-235 (all forms) | 11 | −0.00006 | 0.00289 | W = 0.964, p = 0.819 → normal | EALF: none (t = 1.59), enrichment: none (t = 0.08) | tolerance limit | 0.9918 | 0.9418 |
-| Pu (all forms) | 9 | −0.00086 | 0.00189 | W = 0.831, p = 0.046 → not normal | EALF: none (t = 1.37), enrichment: none (t = 1.98) | non-parametric (β = 37.0 %) | — | **not calculated** |
-| U-233 | 5 | −0.00032 | 0.00268 | W = 0.689, p = 0.007 → not normal | EALF: none (t = 0.56), H/X: none (t = 0.15), enrichment: none (t = 0.52) | non-parametric (β = 22.6 %) | — | **not calculated** |
-| LEU (U-235, enrichment ≤ 20 %) | 4 | −0.00056 | 0.00350 | W = 0.980, p = 0.904 → normal | EALF: none (t = 0.64), enrichment: none (t = 0.21) | tolerance limit | 0.9814 | **not calculated** |
+| Thermal spectrum (EALF < 1 eV) | 33 | +0.00010 | 0.00250 | W = 0.803, p = 0.000 → not normal | EALF: none (t = 2.00), H/X: YES (t = 3.20), enrichment: none (t = 1.87) | non-parametric (β = 81.6%) | 0.9797 | 0.9297 |
+| Intermediate spectrum | 3 | −0.00005 | 0.00334 | W = 0.941, p = 0.530 → normal | EALF: none (t = 1.15), enrichment: none (t = 3.75) | tolerance limit | 0.9744 | **not computed** |
+| Solution (thermal + intermediate) | 10 | −0.00203 | 0.00532 | W = 0.841, p = 0.045 → not normal | EALF: none (t = 0.40), H/X: none (t = 0.31), enrichment: none (t = 0.24) | non-parametric (β = 40.1%) | 0.9235 | 0.8735 |
+| U-235 (all forms) | 34 | +0.00021 | 0.00239 | W = 0.831, p = 0.000 → not normal | EALF: none (t = 1.12), H/X: YES (t = 3.51), enrichment: none (t = 0.48) | non-parametric (β = 82.5%) | 0.9797 | 0.9297 |
+| Pu (all forms) | 9 | −0.00086 | 0.00189 | W = 0.831, p = 0.046 → not normal | EALF: none (t = 1.37), enrichment: none (t = 1.98) | non-parametric (β = 37.0%) | — | **not computed** |
+| U-233 | 5 | −0.00032 | 0.00268 | W = 0.689, p = 0.007 → not normal | EALF: none (t = 0.56), H/X: none (t = 0.15), enrichment: none (t = 0.52) | non-parametric (β = 22.6%) | — | **not computed** |
+| LEU (U-235, enrichment ≤ 20%) | 27 | +0.00022 | 0.00233 | W = 0.730, p = 0.000 → not normal | EALF: none (t = 0.03), H/X: none (t = 1.86), enrichment: none (t = 0.25) | non-parametric (β = 75.0%) | 0.9697 | 0.9197 |
 
-Common notes: the bias used is min(k̄ − 1, 0) — the bias is negative in all subsets, so crediting
-a positive bias does not arise (eq. 8). The H/X trend is computed only if H/X is defined for all
-cases (undefined for LCT-008 and PMF-011 → no H/X trend in those subsets). No subset showed a
-significant trend (t < t₀.₉₇₅,ₙ₋₂), so the tolerance band method was not selected. There are two
-cases from the same experimental series (LEU-SOL-THERM-002 cases 1 and 2): K14 gives the
-"not independent" note.
+Common notes: the bias used is min(k̄ − 1, 0) — a positive bias is not credited (eq. 8). The H/X
+trend is computed only if H/X is defined for all cases (for LEU lattices the unit-cell H/U-235
+comes from `aoa_girdi`; undefined for PMF-011). Non-normal subsets use the non-parametric method;
+there a trend ("YES") does not change the USL and in mixed sets is often a difference between
+series. Several cases come from the same series (LCT-006: 18, LCT-008: 6, LST-002: 2): K14 gives
+the "not independent" note.
 
 ### Which subset the tool uses (panel, report annex, CLI)
 
@@ -274,10 +275,11 @@ says "no USL for this application (outside the AOA)". When K6 passes, the messag
 subset, n and the method. Reflector and H/X do not narrow the subset: K6-AOA and K12 check them
 separately; if H/X cannot be derived for a heterogeneous lattice, K12 warns (H/X not compared).
 
-With this criterion the largest subset in the repository set (26 cases) has 5 cases:
+With this criterion the subsets of the repository set (49 cases with v3 Y11) are:
 
 | Subset | n |
 |---|---|
+| U-235, oxide, thermal, LEU (LCT-006 + LCT-008) | 24 |
 | Pu, metal, fast | 5 |
 | U-235, solution, thermal, HEU | 3 |
 | U-233, metal, fast | 3 |
@@ -285,33 +287,30 @@ With this criterion the largest subset in the repository set (26 cases) has 5 ca
 | U-235, metal, fast, IEU (IMF-003, -004) | 2 |
 | U-235, solution, thermal, LEU | 2 |
 | Pu, solution, thermal | 2 |
-| U-235, oxide, thermal, LEU (LCT-008) | 1 |
 | 6 other subsets | one case each |
 
-Result: **at present the repository set gives no USL for any application.** This is not a bug
-but the honest result: for an LWR/LEU lattice (pwr_17x17 etc.) the matching subset is LCT-008
-alone (n = 1); for a Godiva-like HEU fast metal n = 2. The previous version selected the subset
-by spectrum only and gave pwr_17x17 a USL of 0.93877 from 9 solutions + 1 lattice (contrary to
-6698 Table 2.3; fixed, regression test `testler/test_vv_altkume.py`). A USL needs at least 10
-independent experiments added to the relevant subset (STANDARTLAR.en.md §5).
+Result: **only LWR / LEU oxide lattice applications** (pwr_17x17 etc.) get a USL (n = 24,
+USL = 0.9275; details and limitations in the "LEU oxide lattice set" section). For every other AOA
+the matching subset has n < 10 → no USL; this is the honest result. The previous version selected
+the subset by spectrum only and gave pwr_17x17 a USL of 0.93877 from 9 solutions + 1 lattice
+(contrary to 6698 Table 2.3; fixed, regression test `testler/test_vv_altkume.py`). Other AOAs need
+at least 10 independent experiments added to the relevant subset (STANDARTLAR.en.md §5).
 
 ### Why the mixed subsets of the table are not used for a USL
 
-- The **fast spectrum (0.9444, n = 13)**, **thermal spectrum (0.9388, n = 10)** and **U-235
-  (all forms, 0.9418, n = 11)** rows are mixed in fissile species and/or form; 6698 Table 2.3
+- The **fast spectrum (0.9444, n = 13)**, **thermal spectrum (0.9297, n = 33)** and **U-235
+  (all forms, 0.9297, n = 34)** rows are mixed in fissile species and/or form; 6698 Table 2.3
   asks for these to be the same. These rows are for information only; the tool does not give
   them to any application as a USL.
-- **LWR / LEU lattice applications** (the most frequent at universities): the LEU oxide lattice
-  subset has 1 case (LCT-008) → **no USL**. Independent LEU-COMP-THERM series with open models
-  (LCT-001, -002, -039 …) are not in mit-crpg; they would have to be remodelled from the ICSBEP
-  handbook (STANDARTLAR.en.md §5).
+- **LWR / LEU lattice applications:** with v3 Y11 the LEU oxide lattice subset has n = 24 and a
+  USL is given (see "LEU oxide lattice set"); limited because it comes from only two series.
 - **AOAs with a single fissile species:** Pu (n = 9, not normal, β = 37.0 %) and U-233
   (n = 5, β = 22.6 %) → **USL could not be calculated** (Table 2.2: additional data required).
 - **Intermediate spectrum** (n = 3) → **USL could not be calculated**.
 - MOX, oxide powders, wet powders/compounds, heavy water, concrete/steel/lead reflectors,
   poisoned (B, Gd, Cd) systems, high Pu-240 (> 20 %) and enrichment/H/X/EALF values outside the
   AOA range — not represented in the set; K6-AOA and K12 warn.
-- The whole-set USL (0.9035, non-parametric) mixes different AOAs; 6698 requires the USL to be
+- The whole-set USL (0.9235, non-parametric) mixes different AOAs; 6698 requires the USL to be
   calculated separately for each AOA — this row is for information only.
 - The PU-COMP-INTER-001 (PCI-001) model has no S(α,β) thermal scattering data for H (mit-crpg
   model; the H in the compound is transported as a free gas). The effect is expected to be small
@@ -326,7 +325,9 @@ independent experiments added to the relevant subset (STANDARTLAR.en.md §5).
   organisation.
 - Correlation between experiments is not treated (6698 assumes independence; an open topic in
   UACSA).
-- All cases are ICSBEP **simplified** models (most of them 1D spherical); the modelling bias is
+- The LCT-006 (TCA) cases are not ICSBEP models but built from the primary report; their
+  simplification uncertainty is added to σE (LEU section). The other cases are ICSBEP
+  **simplified** models (most of them 1D spherical); the modelling bias is
   taken to be inside E ± σ (the ICSBEP evaluation). E ± σ were taken from mit-crpg
   `uncertainties.csv`; they were **not compared** with the current ICSBEP edition
   (STANDARTLAR.en.md §5 warning).
@@ -337,16 +338,149 @@ independent experiments added to the relevant subset (STANDARTLAR.en.md §5).
 - This tool does not issue certificates (STANDARTLAR.en.md §1); the USL does not replace the user
   organisation's own validation report.
 
+## LEU oxide lattice set (v3 Y11)
+
+Goal: grow the NUREG/CR-6698 subset for LWR / LEU lattice applications (pwr_17x17 etc.) —
+U-235, oxide, thermal, LEU — to n ≥ 10. Environment: OpenMC 0.16.0, ENDF/B-VIII.0 (294 K HDF5),
+6 OpenMP threads, run sequentially through the Y10 run queue (`araclar/vv_lct_uret.py`),
+02.10.2026; the machine was shared, times are upper bounds. Plots (C/E vs H/U-235 and EALF):
+`python araclar/vv_rapor.py grafik`.
+
+### Source survey (02.10.2026)
+
+- **mit-crpg/benchmarks** (OpenMC's official benchmark repository, MIT licence, commit ba41bee,
+  17.09.2025): of the LCT series only **LCT-008** is present, and only 6 of its cases (1, 2, 5,
+  7, 8, 11) have OpenMC inputs. The openmc-dev organisation has no separate benchmark repository.
+- GitHub survey: `ragusa/ICSBEP_OpenSn` (MIT) is a copy of mit-crpg; `pedrojrv/ML_Nuclear_Data`
+  has LCT-001 Serpent inputs but **no licence** (not used); `jtramm/input_examples_openmc` labels
+  KRITZ-2 with a wrong ICSBEP identifier (LCT-001; not used).
+- **Primary experiment report:** for TCA (LCT-006), JAERI 1254 (Tsuruta et al., 1978) is in the
+  JAEA open archive (https://jopss.jaea.go.jp/pdfdata/JAERI-1254.pdf): fuel, rod, tank, pitch,
+  20 °C critical water levels (Table 8-1), atom densities (App. A1) and loading patterns (App. A3).
+  ICSBEP case mapping: JAERI-Conf 2003-006 Table 1 (Okumura and Mori; OSTI ETDEWEB 20435859).
+- **E ± σ** from published sources: LCT-006 all cases 1.0000 ± 0.0020 (S.C. van der Marck,
+  Nucl. Data Sheets 107 (2006) 3061, Table IX); LCT-008 1.0007 ± 0.0012 (mit-crpg
+  `uncertainties.csv`). The ICSBEP handbook text was not used and is not distributed
+  (STANDARTLAR.en.md §6 item 13).
+
+| Series | Open definition | Buildable with the GUI | In this release |
+|---|---|---|---|
+| LCT-001, -002, -003 (PNL clusters, 2.35% / 4.31%) | primary PNL reports (listed on OSTI; not downloaded here) | yes: container + lattice placements | not built — modelling and checking from the primary report is future work |
+| **LCT-006 (TCA, 2.6%, 18 cases)** | **JAERI 1254 (open)** | **yes: square lattice + axial stack (wet/dry) + cylindrical tank** | **18 cases built and run** |
+| LCT-007, LCT-039 (Valduc, 4.74%) | ICSBEP only (CEA reports not public) | yes | not built — no open definition |
+| **LCT-008 (B&W Core XI, 2.46%)** | **mit-crpg: cases 1, 2, 5, 7, 8, 11** | **yes** | **6 cases** (no open model for the other 11) |
+| LCT-009, -010, -016, -017, -042 (PNL, absorber plates / reflecting walls) | primary PNL reports | yes (plate containers + lattice placements) | not built |
+| LCT-051 (B&W, 9 assemblies) | ICSBEP only | yes | not built — no open definition |
+
+### TCA model (LCT-006) and its simplifications
+
+`cekirdek/vv/lct.py`: advanced (tree) mode; root container = cylindrical tank (r = 91.6 cm)
+holding an axial stack: 30 cm bottom water → wet fuel lattice up to the critical water level H →
+dry fuel lattice for (144.15 − H) cm (void outside the rods). Rod: UO2 r = 0.625 cm, Al clad
+(regional density including the air gap, App. A1) outer r = 0.7085 cm. The unit-cell Vwater/Vfuel
+and H/U values match Table 2 (`testler/test_vv_lct.py` VL2). **This is not the ICSBEP simplified
+model**; it is built from the primary report. Simplifications: (1) bottom reflector water only
+(no grid, Al bottom end plugs, support plate); (2) no tank wall or anything outside (horizontal
+water > 40 cm); (3) no grid, Al wool or top plugs above the water level; (4) **no U-234** in the
+fuel (JAERI 1254 does not give it), pure Al clad; (5) water level is the recommended value
+reduced to 20 °C, all materials at 293 K.
+
+**Simplification sensitivity (measured, same statistics, cases 1 and 14):**
+
+| Variant | Δk case 1 [pcm] | Δk case 14 [pcm] | Comment |
+|---|---|---|---|
+| `alt_tapa`: Al end plugs in the bottom 16.83 cm | −12 ± 36 | −24 ± 37 | within statistics; not added |
+| `u234`: U-234/U-235 = 0.0080 (estimated from LCT-008 fuel) | −143 ± 37 | −187 ± 36 | **significant** |
+
+Since the U-234 content is unknown, the whole effect (mean 165 pcm) is taken as this model's 1σ
+simplification uncertainty: for the TCA cases σE = √(0.0020² + 0.00165²) = **0.0026** (stated in
+`referans.kaynak`). This is a conservative margin added on top of the ICSBEP uncertainty.
+
+### Results: C/E
+
+The rows are in the experimental table (`vv/kriter_lct006_NN.json`, `vv/kriter_lct008_NN.json`).
+
+- **LCT-006 (18):** C/E = 1.00063 – 1.00173, weighted bias +0.00108; every case |C − E| < 1σ.
+  Published ENDF/B-VII.0 results with the ICSBEP model: 0.99981 – 1.00094 (van der Marck 2006,
+  Table IX). The difference is mostly the missing U-234: with the `u234` variant cases 1 and 14
+  give C/E ≈ 0.9994.
+- **LCT-008 (6):** C/E = 0.99872 – 1.00070, bias −0.00022. Case 1 agrees with the v2 measurement
+  (1.00049 ± 0.00022 / 1.00067 ± 0.00021; 0.6σ). EALF from a short EALF run (20000 × 60).
+- No significant C/E trend with H/U-235 (165 – 329) or EALF (0.12 – 0.28 eV) within a series
+  (table below).
+
+### USL: LEU oxide lattice subset (NUREG/CR-6698; ΔSM = 0.05, ΔAOA = 0)
+
+| Subset (AOA) | n | bias k̄ − 1 | S_p | Normality (Shapiro–Wilk) | Trend | Method | K_L | USL |
+|---|---|---|---|---|---|---|---|---|
+| U-235, oxide, thermal, LEU (LCT-006 + LCT-008) | 24 | +0.00029 | 0.00207 | W = 0.894, p = 0.016 → not normal | EALF: YES (t = 3.32), H/X: none (t = 1.25), enrichment: YES (t = 5.93) | non-parametric (β = 70.8%) | 0.9775 | 0.9275 |
+| LCT-006 (TCA) | 18 | +0.00108 | 0.00263 | W = 0.937, p = 0.258 → normal | EALF: none (t = 0.77), H/X: none (t = 1.01) | tolerance limit | 0.9935 | 0.9435 |
+| LCT-008 (B&W Core XI) | 6 | −0.00022 | 0.00138 | W = 0.947, p = 0.720 → normal | EALF: none (t = 0.46), H/X: none (t = 0.50) | tolerance limit | 0.9947 | **not computed** |
+
+- **The tool now gives a USL to LWR/LEU lattice applications:** for pwr_17x17 the subset is
+  "U-235, oxide, thermal, LEU", n = 24, **USL = 0.9275** (non-parametric; the K6 message states
+  subset, n and method). It is not the previous version's wrong 0.93877 (9 solutions + 1 lattice).
+- **Why non-parametric:** the combined set is not normal (p = 0.016) because the two series
+  differ by ~130 pcm (no U-234 in TCA, above). In the non-parametric method a trend does not change
+  the USL; the "enrichment: YES" in the table comes from the enrichment difference of the two
+  series (2.46% / 2.60%) and must not be read as a real enrichment trend.
+- **Independence:** the 24 cases come from **only two experimental series**. 6698 assumes
+  independent cases; correlation is not treated. K14 gives the "many cases from one series" note.
+  This USL is therefore a **teaching / tool-validation figure**; it is **not sufficient** for
+  licensing or criticality-safety evaluation — this is not a certificate.
+- The application's enrichment (3.2%) is outside the set's range (2.46 – 2.60%): K12 warns. 6698
+  asks for justification and ΔAOA for use outside the range; the default ΔAOA = 0 is the user's
+  decision.
+- Per series: LCT-006 alone is normal (tolerance limit, USL 0.9435) but is a single series;
+  LCT-008 n = 6 < 10 → no USL.
+
 ## Library bias explanations
 
-At present no benchmark exceeds the 3σ criterion. Two deviations inside the criterion that
-nevertheless stand out (their causes were not investigated in this work): PU-MET-FAST-008 (Thor)
-C − E = −164 pcm, 2.62σ because σe is only 60 pcm; U233-SOL-INTER-001 C − E = −1822 pcm, 2.19σ
-with σe = 830 pcm. Both cases enter the set statistics with their weights; U233-SOL-INTER-001 is
-the outlier that makes the normality test of the whole set fail. If a benchmark that exceeds the
+At present no benchmark exceeds the 3σ criterion. Two deviations inside the criterion that stand
+out, PU-MET-FAST-008 (Thor; −164 pcm, 2.62σ because σe is only 60 pcm) and U233-SOL-INTER-001
+(−1822 pcm, 2.19σ with σe = 830 pcm), are studied below. If a benchmark that exceeds the
 criterion is added, its explanation is written under this heading with a heading
 "### <example file>" (in `docs/VV.md`), and that heading is added to the `KUTUPHANE_YANLILIGI`
 dictionary in `testler/test_benchmark.py`.
+
+### Deviation study: PU-MET-FAST-008 and U233-SOL-INTER-001 (v3 Y11)
+
+With a single library (ENDF/B-VIII.0) the nuclear data could not be changed; only **model
+variants** were run (`araclar/vv_sapma_duyarlilik.py`, 6 threads, 02.10.2026; results in
+`~/openmc_v3_ciktilar/y11/sapma_duyarlilik.json`).
+
+| Run | k ± σ | Comment |
+|---|---|---|
+| PMF-008, tool (1D, v2 measurement) | 0.99836 ± 0.00018 | E = 1.0000 ± 0.0006 → −164 pcm (2.62σ) |
+| PMF-008, original mit-crpg 1D input | 0.99804 ± 0.00018 | equivalent to the tool (1.3σ) |
+| PMF-008, original mit-crpg **2D** input (sphere + Th cylinder) | 0.99753 ± 0.00016 | −247 pcm, **3.98σ** (same E ± σ) |
+| USI-001, tool (v2 measurement) | 0.98178 ± 0.00022 | E = 1.0000 ± 0.0083 → −1822 pcm (2.19σ) |
+| USI-001, original mit-crpg input | 0.98171 ± 0.00020 | equivalent to the tool |
+| USI-001, no H S(α,β) in the solution (free gas) | 0.98465 ± 0.00021 | +287 pcm: upper bound of thermal scattering |
+| USI-001, no S(α,β) in Be | 0.98178 ± 0.00018 | no effect |
+| USI-001, all materials at 300 K | 0.98164 ± 0.00021 | no effect (−14 pcm) |
+
+**PU-MET-FAST-008 (Thor).** The tool and the original input agree; the deviation does not come
+from the import. The 1D spherical simplification does **not explain** it: the more realistic 2D
+model (Th cylinder) is even lower. With ENDF/B-VII.0 the same benchmark gives C/E = 0.99879
+(−121 pcm; van der Marck 2006) — the underprediction exists in both library releases. A deviation
+that model variants do not explain and that persists across releases is a **candidate** nuclear
+data bias (Pu-239 fast data or Th-232 reflector data); with no other library here it is **not
+verified**. The 2D model exceeding 3σ is not in the benchmark suite (the suite case is the 1D model,
+2.62σ, within the criterion).
+
+**U233-SOL-INTER-001.** The tool and the original input are equivalent. Thermal scattering, Be
+S(α,β) and temperature variants do not explain the −1822 pcm deviation (largest effect +287 pcm,
+and that is a non-physical upper bound). The case is in the intermediate spectrum (EALF 7 eV).
+Pigni, Capote and Trkov (ORNL/IAEA, 2021, OSTI 1813225) report that in ENDF/B-VII.1 and VIII.0
+k of U-233 solutions decreases strongly with the epithermal fission fraction, that the USI-001
+group (Falstaff, LLNL; epithermal fraction 50–75%) is underpredicted as an extension of this
+trend, and that the cause is U-233 resonance-region and prompt fission neutron spectrum (PFNS)
+data; their new evaluation gave about +500 pcm through the PFNS change but did not remove the trend
+fully. Our result is **consistent** with this: the deviation most likely comes from the
+ENDF/B-VIII.0 U-233 data (**not verified** here with another library). The case stays inside the
+criterion (σe = 830 pcm is large) but breaks the normality of the U-233 subset; U-233
+applications get no USL anyway (n = 5).
 
 ## Reproduction
 
@@ -356,6 +490,11 @@ dictionary in `testler/test_benchmark.py`.
 - Reference runs of the table: open the example, set particles/batches/inactive to the values in
   the table, run with `OMP_NUM_THREADS=8`.
 
+- LEU lattice cases (v3 Y11; ~4 hours, 6 threads): `OMP_NUM_THREADS=6 python araclar/vv_lct_uret.py tca`
+  and `... lct008 <benchmarks directory>` (`--aoa-tamamla` if EALF is missing); sensitivity
+  variants `... tca 1 14 --varyant alt_tapa|u234 --cikti <dir>`; deviation runs
+  `python araclar/vv_sapma_duyarlilik.py <benchmarks directory>`; tables
+  `python araclar/vv_rapor.py guncelle|usl|betimsel|grafik`.
 - Regenerating the V&V set (requires a clone of mit-crpg/benchmarks; ~2 hours, 12 threads):
   `OMP_NUM_THREADS=12 python araclar/vv_kriter_uret.py <benchmarks directory>`;
   AOA supplement for the four existing benchmarks: `... --aoa-mevcut`.
@@ -363,6 +502,15 @@ dictionary in `testler/test_benchmark.py`.
   in the checker: `denetle(spec, kosu_dizini, ("B",), vv=kume.ozet(...), uygulama=kume.uygulama(spec, kosu_dizini))`.
 
 ## References
+
+- H. Tsuruta et al., Critical Sizes of Light-Water Moderated UO2 and PuO2-UO2 Lattices,
+  JAERI 1254 (1978), https://jopss.jaea.go.jp/pdfdata/JAERI-1254.pdf — LCT-006 model.
+- K. Okumura, T. Mori, Integral Test of JENDL-3.3 for Thermal Reactors, JAERI-Conf 2003-006
+  (OSTI ETDEWEB 20435859) — LCT-006 case mapping.
+- S.C. van der Marck, Benchmarking ENDF/B-VII.0, Nucl. Data Sheets 107 (2006) 3061 — LCT-006
+  E ± σ, VII.0 C/E (LCT-006, PMF-008).
+- M.T. Pigni, R. Capote, A. Trkov, Progress on the reevaluation and validation of the n+233U
+  neutron cross sections (2021), OSTI 1813225 — U-233 epithermal trend (USI-001).
 
 - NUREG/CR-6698: J.C. Dean, R.W. Tayloe Jr., Guide for Validation of Nuclear Criticality
   Safety Calculational Methodology, NRC, January 2001 (ML050250061) — bias, USL, AOA method.
