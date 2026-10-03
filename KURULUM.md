@@ -20,6 +20,25 @@ Kurulum dört adımdır; en uzunu nükleer veri indirmesidir (bir kez).
 | Bellek | 8 GB yeterli; 17×17 demet ve 3B modeller için 16 GB rahat |
 | İnternet | Veri indirmesi için (tek sefer, birkaç GB) |
 
+## Hızlı kurulum (tek dosya, conda gerekmez)
+
+Tek bir kendiliğinden açılan kurulum dosyası Python'u, OpenMC 0.16.0'ı, PySide6'yı ve uygulamayı
+içerir (yaklaşık 410 MB; kurulunca 1,7 GB). Çevrimdışı çalışır, kök yetkisi istemez ve **nükleer veri
+içermez** (uygulamanın *Veri* sayfası indirir). Gereken: Linux x86-64, glibc >= 2.28
+(Ubuntu 20.04/22.04/24.04, Fedora 29+, Debian 10+).
+
+```bash
+bash openmc-arayuz-2.0.0-Linux-x86_64.sh            # klasörü sorar; varsayılan ~/openmc-arayuz
+bash openmc-arayuz-2.0.0-Linux-x86_64.sh -b -p ~/openmc-arayuz   # soru sormadan
+~/openmc-arayuz/bin/openmc-arayuz                  # uygulamayı başlat
+bash ~/openmc-arayuz/share/openmc-arayuz-paket/kaldir.sh         # kaldır (yalnız o klasörü siler)
+```
+
+Projelerinize, `~/nucdata`'ya ve `~/.config/openmc_arayuz` ayarlarına dokunulmaz; kurulum `~/.bashrc`'yi
+değiştirmez. Kurulum dosyasını kendiniz üretmek için: `paket/constructor/uret.sh`
+(`constructor` kurulu `openmc-paketleme` conda ortamı gerekir; çıktı `dist/`).
+Bu yolu kullanıyorsanız aşağıdaki 1. ve 2. adımı atlayıp 3. adımdan (nükleer veri) sürdürün.
+
 ## 1. Conda (Miniforge) kurun
 
 Zaten conda/mamba varsa bu adımı atlayın.

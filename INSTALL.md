@@ -18,6 +18,25 @@ Installation has four steps; the longest is the one-time nuclear data download.
 | Memory | 8 GB is enough; 16 GB is comfortable for 17×17 assemblies and 3D models |
 | Internet | For the data download (once, a few GB) |
 
+## Quick install (one file, no conda needed)
+
+A single self-extracting installer contains Python, OpenMC 0.16.0, PySide6 and the application
+(about 410 MB; 1.7 GB installed). It works offline, needs no root rights, and does **not** include
+nuclear data (the application's *Data* page downloads it). Requires Linux x86-64 with glibc >= 2.28
+(Ubuntu 20.04/22.04/24.04, Fedora 29+, Debian 10+).
+
+```bash
+bash openmc-arayuz-2.0.0-Linux-x86_64.sh            # asks for the folder; default ~/openmc-arayuz
+bash openmc-arayuz-2.0.0-Linux-x86_64.sh -b -p ~/openmc-arayuz   # non-interactive
+~/openmc-arayuz/bin/openmc-arayuz                  # start the application
+bash ~/openmc-arayuz/share/openmc-arayuz-paket/kaldir.sh         # uninstall (removes only that folder)
+```
+
+Your projects, `~/nucdata` and the settings in `~/.config/openmc_arayuz` are never touched, and the
+installer does not edit `~/.bashrc`. To build the installer yourself: `paket/constructor/uret.sh`
+(needs the conda environment `openmc-paketleme` with `constructor`; output in `dist/`).
+If you use this route, skip steps 1 and 2 below and continue with step 3 (nuclear data).
+
 ## 1. Install conda (Miniforge)
 
 Skip this step if conda or mamba is already installed.
