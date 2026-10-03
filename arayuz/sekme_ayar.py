@@ -62,6 +62,7 @@ from arayuz.ayar.guc_formu import (  # noqa: F401
     GucFormuMixin)
 from arayuz.ayar.tally_formu import (  # noqa: F401
     TallyFormuMixin)
+from arayuz.ayar.yuzey_tally import YuzeyTallyMixin  # Y7
 
 # Kaynak turu ve parcacik secim kutularinin gorunen adlari (gosterirken _()).
 _KAYNAK_TUR_ADLARI = {"nokta": N_("Nokta kaynak"), "kutu": N_("Kutu (yalnızca fisil bölgeler)")}
@@ -73,7 +74,8 @@ def _cevrili_ogeler(anahtarlar, adlar):
     return [(t, _(adlar[t]) if t in adlar else t) for t in anahtarlar]
 
 
-class AyarSekmesi(YerlesimMixin, KaynakFormuMixin, GucFormuMixin, TallyFormuMixin, SekmeTabani):
+class AyarSekmesi(YerlesimMixin, KaynakFormuMixin, GucFormuMixin, TallyFormuMixin,
+                  YuzeyTallyMixin, SekmeTabani):
 
     KONU = "ayar"
 
@@ -444,6 +446,8 @@ class AyarSekmesi(YerlesimMixin, KaynakFormuMixin, GucFormuMixin, TallyFormuMixi
         self._guc_doldur()
         self._tallyleri_doldur()
         self.spektrum_karti.doldur(self.spec)        # Y3 (arayuz/ayar/spektrum_karti.py)
+        self.yerel_k_karti.doldur(self.spec)         # K4 (arayuz/ayar/yerel_k_karti.py)
+        self.y7_formu.doldur(self.spec)              # Y7 (arayuz/ayar/foton_sicaklik.py)
         self._gorunurluk()
 
     def showEvent(self, olay):

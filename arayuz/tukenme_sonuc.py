@@ -20,6 +20,7 @@
 import copy
 import csv
 import io
+import math
 import os
 import time
 
@@ -102,9 +103,11 @@ def tablo_doldur(tablo, s):
     for z, b, kk, ss in zip(s["zaman_d"], s["yanma"], s["k"], s["k_sapma"]):
         r = tablo.rowCount()
         tablo.insertRow(r)
-        rho = (kk - 1.0) / kk * 1e5
-        for c, metin in enumerate(("%.3f" % z, "%.4f" % b,
-                                   "%.5f +/- %.5f" % (kk, ss), "%+.0f" % rho)):
+        if math.isfinite(kk) and kk > 0:
+            k_metni, rho_metni = "%.5f +/- %.5f" % (kk, ss), "%+.0f" % ((kk - 1.0) / kk * 1e5)
+        else:                    # v3 Y4: sogutma adimi / hizli kip -- transport yok
+            k_metni, rho_metni = "—", "—"
+        for c, metin in enumerate(("%.3f" % z, "%.4f" % b, k_metni, rho_metni)):
             tablo.setItem(r, c, QtWidgets.QTableWidgetItem(metin))
     tablo.resizeColumnsToContents()
 
@@ -303,6 +306,7 @@ class SonucBolumu(PinGucuBolumu):
         self._sonuc = self._kaynak = None
         self._secim_bekliyor = False
         self._pin_gucu_unut()
+        self.cikti_paneli.kaynak_ayarla(None)
         self.csv_dugmesi.setEnabled(False)
         self.bulunamayan_etiket.setText("")
         self.bulunamayan_etiket.setVisible(False)
@@ -316,6 +320,7 @@ class SonucBolumu(PinGucuBolumu):
         if kaynak is not None:
             self._kaynak = kaynak
             self._pin_gucu_yukle(kaynak)
+            self.cikti_paneli.kaynak_ayarla(kaynak)
         self._sonuc = s
         grafik_ciz(self.eksen_k, self.eksen_n, s)
         self.tuval.draw_idle()

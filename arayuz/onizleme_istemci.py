@@ -17,7 +17,10 @@ Kurallar
   - Yeni istek eskisini gecersiz kilar: no'su guncel olmayan her yanit atilir
     (isci de kesitler arasinda yeni istegi gorup eskisini birakir).
   - Istek bekcisi: BEKCI_MS icinde "son" gelmezse isci oldurulur ("model cok
-    agir" iletisi).
+    agir" iletisi). Bekci ISTEK BASINADIR (v3 Y2): yeni istek suren bekciyi
+    ertelemez (asili bir isi surekli yeni istekle canli tutmasin); bayat istegin
+    "son"u gelince sayac kuyruktaki istek icin yeniden baslar. Iscinin ilk
+    istegi (soguk hazirla) icin ilk_zaman_asimi_ms ayri verilebilir.
   - Isci olurse: coktu(mesaj) yayilir; isci daha once 'hazir' olmussa ustel
     geri cekilmeyle yeniden baslatilir; EN_COK_ARDISIK_COKME ust uste cokmede
     durur, bir sonraki istekte yeniden denenir. Coken istek YENIDEN
@@ -74,8 +77,12 @@ class CizimIstemcisi(QtCore.QObject):
     coktu = QtCore.Signal(str)
     hazir = QtCore.Signal()
 
-    def __init__(self, parent=None, komut=None, zaman_asimi_ms=BEKCI_MS):
+    def __init__(self, parent=None, komut=None, zaman_asimi_ms=BEKCI_MS,
+                 ilk_zaman_asimi_ms=None):
         super().__init__(parent)
+        self._normal_ms = int(zaman_asimi_ms)
+        self._ilk_ms = int(ilk_zaman_asimi_ms or zaman_asimi_ms)
+        self._isindi = False                # iscinin ilk istegi bitti mi
         self._komut = komut
         self._surec = None
         self._cozucu = None
@@ -125,6 +132,7 @@ class CizimIstemcisi(QtCore.QObject):
         surec.errorOccurred.connect(self._surec_hatasi)
         self._surec, self._cozucu, self._hazir = surec, cs.CerceveCozucu(), False
         self._kapaniyor = False
+        self._isindi = False
         surec.start(program, arg)
 
     def calisiyor_mu(self):
@@ -158,8 +166,19 @@ class CizimIstemcisi(QtCore.QObject):
             _log.warning("onizleme istegi gonderilemedi", exc_info=True)
             self.coktu.emit(_("Önizleme isteği gönderilemedi: %s") % e)
             return self._son_no
-        self._bekci.start()
+        self._bekci_baslat(yeniden=False)
         return self._son_no
+
+    def _butce_ms(self) -> int:
+        """Siradaki istegin bekci butcesi: iscinin ilk istegi soguk hazirlamadir."""
+        return self._normal_ms if self._isindi else self._ilk_ms
+
+    def _bekci_baslat(self, yeniden: bool) -> None:
+        """Istek basina bekci: calisiyorsa ertelenmez (yeniden=False)."""
+        if self._bekci.isActive() and not yeniden:
+            return
+        self._bekci.setInterval(self._butce_ms())
+        self._bekci.start()
 
     def iptal(self):
         """Guncel istegi gecersiz kilar ve isciye bildirir (isi kesit arasinda birakir)."""
@@ -212,7 +231,11 @@ class CizimIstemcisi(QtCore.QObject):
             self._hazir = True
             self.hazir.emit()
             return
+        if tur == cs.YANIT_SON:
+            self._isindi = True
         if no != self._son_no:
+            if tur == cs.YANIT_SON and self._bitmedi:
+                self._bekci_baslat(yeniden=True)   # isci simdi guncel istege gecti
             return                          # eski istegin yaniti: atilir
         if tur == cs.YANIT_SON:
             self._bitmedi = False

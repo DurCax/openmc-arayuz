@@ -5,7 +5,8 @@
 
 from cekirdek import sema
 from cekirdek.kod_uret.ad import _ad, _f, _bolum, _mat_ifade  # noqa: F401
-from cekirdek.geometri.yapici import yorum_metni
+from cekirdek.kod_uret.yuzey import _yuzey_tallyleri
+from cekirdek.yuzey_akim import yuzey_tally_mi as _yuzey_tally_mi
 
 
 def _guc_dagilimi(spec, satirlar, uretilen, gx, gy):
@@ -13,6 +14,7 @@ def _guc_dagilimi(spec, satirlar, uretilen, gx, gy):
     g = spec.get("guc_dagilimi") or {}
     if not g.get("var"):
         return []
+    from cekirdek.geometri.yapici import yorum_metni   # tembel: openmc (H1b)
     hedefler, eksik = _guc_hedefleri(spec, uretilen)
     for cubuk_ad in eksik:
         satirlar.append("")
@@ -121,6 +123,8 @@ def _tallyler(spec, satirlar, ek_tallyler=None, on_satirlar=None, sinir_kutu=Non
     satirlar.extend(on_satirlar or [])
     adlar = []
     for i, t in enumerate(spec["tallyler"]):
+        if _yuzey_tally_mi(t):
+            continue          # Y7: cekirdek/kod_uret/yuzey.py (tallyler'den sonra)
         v = "tally_%d" % (i + 1)
         adlar.append(v)
         satirlar.append("")
@@ -150,3 +154,4 @@ def _tallyler(spec, satirlar, ek_tallyler=None, on_satirlar=None, sinir_kutu=Non
     adlar += [genel] if genel else []
     satirlar.append("")
     satirlar.append("tallyler = openmc.Tallies([%s])" % ", ".join(adlar + ek_tallyler))
+    _yuzey_tallyleri(spec, satirlar, sinir_kutu)   # Y7 (cekirdek/kod_uret/yuzey.py)

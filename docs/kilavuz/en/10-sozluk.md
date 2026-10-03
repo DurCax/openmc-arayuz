@@ -126,6 +126,10 @@ add the term to SOZLUK.md).
 | flux | akı |  |
 | cross section | tesir kesiti |  |
 | cross section library | tesir kesiti kütüphanesi | XS library |
+| group constant (multigroup cross section) | grup sabiti (çok gruplu tesir kesiti) |  |
+| transport correction | taşıma düzeltmesi |  |
+| region type | bölge türü (homojenleştirme) | domain type |
+| source region | kaynak bölgesi (random ray) | flat source region, FSR |
 | thermal scattering (S(α,β)) | termal saçılma (S(α,β)) |  |
 | run | koşu | job, execution |
 | run directory | koşu dizini | output folder |

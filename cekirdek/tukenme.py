@@ -44,17 +44,15 @@
 ================================================================================
 """
 
-import collections
 import math
 import os
 import sys
-import threading
 import types
 
 from cekirdek import sema, veri_bilgi
 from cekirdek import tukenme_spektrum as _spektrum
 from cekirdek import spektrum as _y3          # Y3: tukenmede spektrum tally'leri kapali
-from cekirdek.ceviri import N_, _, etkin_dil, pgettext
+from cekirdek.ceviri import _, etkin_dil
 from cekirdek.uygunluk_bellek import Bellek, icerik_anahtari
 
 # Spec icerigine gore bellek (v3 H1): Tukenme sekmesi her doldurmada yeniden
@@ -380,7 +378,7 @@ def hazirla(spec):
         ornek = tukenme_hacim.ornekleri_ayir(model, spec, hv, {a: nesneler[a] for a in hv})
     return model, {"zincir": zs, "hacimler": hv, "agir_metal_g": agir,
                    "yanabilir": list(hv), "atlanan": atlanan, "ornek_sayisi": ornek,
-                   "stokastik": stokastik}
+                   "stokastik": stokastik, "nesneler": nesneler}
 
 
 def _agir_metal_kutlesi(m):
@@ -409,6 +407,7 @@ def kapi(spec, veri_kontrolu=True):
     from cekirdek import dogrula
     denetlenen = copy.deepcopy(spec)
     denetlenen.setdefault("tukenme", {})["var"] = True
+    # v3 Y4 ayarlari dogrula/tukenme.tukenme_kontrol icinde (canli liste ile ayni)
     return dogrula.kapi(denetlenen, veri_kontrolu=veri_kontrolu)
 
 
@@ -419,361 +418,54 @@ def calistir(spec, dizin, geri_cagir=None, veri_kontrolu=True):
 
     Once dogrulama kapisi (kapi): hata varsa dogrula.DogrulamaHatasi ve
     dizindeki ONCEKI sonuc ile spec kaydi SILINMEZ. bilgi["dogrulama"]:
-    kapidan gecen bulgular (uyari, bilgi).
+    kapidan gecen bulgular (uyari, bilgi). v3 Y4: entegrator, sogutma,
+    surdurme, kritik arama ve hizli kip cekirdek/tukenme_kosu.py'dedir;
+    bilgi["surdurulen"]: surdurmede onceki kosunun tamamlanmis adim sayisi.
     """
     bulgular = kapi(spec, veri_kontrolu=veri_kontrolu)
-    import openmc.deplete as d
-    from cekirdek import tukenme_guc
-    t = spec["tukenme"]
+    from cekirdek import tukenme_ayar, tukenme_guc, tukenme_kosu, tukenme_surdur
     # v3 K3: guc tally'si kurulabilen modelde her adimda pin gucu sayilir
     # (spec kaydi kullanicinin spec'idir).
     model, bilgi = tukenme_guc.olcumlu_hazirla(hazirla, spec)
     bilgi["dogrulama"] = bulgular
-    zs = bilgi["zincir"]
     os.makedirs(dizin, exist_ok=True)
-    # Eski sonuc SILINIR, sonra spec kaydi yazilir. Sira onemli: kosu yarida
-    # kalirsa dizinde eski bir sonuc ile YENI bir spec kaydi yan yana kalir
-    # ve eski sonuc "guncel" diye gosterilirdi.
-    # (v3 K3) adim statepoint'leri yalniz bu arayuzun kayitli dizininde silinir.
-    from cekirdek import tukenme_temizlik
-    tukenme_temizlik.onceki_sonucu_temizle(dizin)
+    onceki = (tukenme_surdur.onceki_durum(spec, dizin)
+              if tukenme_ayar.surdur(spec["tukenme"]) else None)
+    bilgi["surdurulen"] = onceki.tamam if onceki is not None else 0
+    if onceki is None:
+        # Eski sonuc SILINIR, sonra spec kaydi yazilir. Sira onemli: kosu yarida
+        # kalirsa dizinde eski bir sonuc ile YENI bir spec kaydi yan yana kalir
+        # ve eski sonuc "guncel" diye gosterilirdi.
+        # (v3 K3) adim statepoint'leri yalniz bu arayuzun kayitli dizininde silinir.
+        from cekirdek import tukenme_temizlik
+        tukenme_temizlik.onceki_sonucu_temizle(dizin)
     spec_kaydet(spec, dizin)
     eski = os.getcwd()
     try:
         os.chdir(dizin)
-        # Ornekler hazirla()'da kesin hacimle ayrildi; OpenMC'nin esit bolmesi
-        # (diff_burnable_mats) bu yuzden KAPALI.
-        op = d.CoupledOperator(
-            model, zs["yol"],
-            diff_burnable_mats=False,
-            normalization_mode="fission-q",
-            fission_yield_mode="constant",
-            fission_yield_opts={"energy": zs["verim_enerjisi"]},
-        )
-        Sinif = {"cecm": d.CECMIntegrator,
-                 "predictor": d.PredictorIntegrator}[t.get("entegrator") or "cecm"]
-        integ = Sinif(op, list(t["adimlar"]),
-                      power_density=float(t["guc_yogunlugu"]),
-                      timestep_units=t.get("adim_birimi") or "d")
-        integ.integrate()
+        tukenme_kosu.kos(model, bilgi, spec, dizin, onceki)
     finally:
         os.chdir(eski)
     return os.path.join(dizin, "depletion_results.h5"), bilgi
 
 
-# Sonuc okuma kaynagi onbellegi: {(h5, boyut, mtime, spec imzasi): (Results,
-# {malzeme_id: ad}, hacimler)}. Olculdu: Results() 3820 nuklidli dosyada
-# 1.8 s, kurucu.kur + hacimler ~0.5 s; secim degisince bunlar TEKRARLANMAZ.
-_SONUC_KAYNAGI = collections.OrderedDict()   # kilitli LRU (v3 K3)
-_SONUC_KILIDI = threading.Lock()
-_SONUC_KAYNAGI_EN_COK = 2
-
-
-def _klon_kaydi(model, spec, hv, nesneler):
-    """
-    Cubuk cubuk yanmanin (malzemeleri_ayir) klonlari: {malzeme_id: (ad, hacim)}.
-
-    Klonlar kosudakiyle AYNI yolla (tukenme_hacim.ornekleri_ayir) kurulur;
-    malzeme basina, Cell.paths (= distribcell ornek) sirasinda numaralanir:
-    "uo2 #1", "uo2 #2", ... Boylece sonuc tablosu ve CSV klonlari kimlik
-    numarasiyla ("1043") degil okunur adiyla gosterir ve her klonun kendi
-    hacmi bilindigi icin yogunluk [atom/b-cm] hesaplanabilir.
-    """
-    from cekirdek import tukenme_hacim
-    kayit = {}
-    for ad, m in nesneler.items():
-        once = {x.id for x in model.geometry.get_all_materials().values()}
-        m.depletable = True
-        m.volume = hv[ad]["hacim"]
-        tukenme_hacim.ornekleri_ayir(model, spec, {ad: hv[ad]}, {ad: m})
-        yeni = [x for x in model.geometry.get_all_materials().values()
-                if x.id not in once]
-        for i, klon in enumerate(sorted(yeni, key=lambda x: x.id), 1):
-            kayit[str(klon.id)] = ("%s #%d" % (ad, i), klon.volume)
-    return kayit
-
-
-def _malzeme_haritasi(spec):
-    """
-    ({malzeme_id: gorunen ad}, {gorunen ad: hacim cm3}).
-    Cubuk cubuk yanmada klonlar da (ad ve kendi hacmiyle) haritaya girer.
-    """
-    from cekirdek import kurucu
-    model, kb = kurucu.kur(_y3.tukenme_icin(spec))      # Y3 tukenmede kapali
-    hv = hacimler(spec)
-    ad_by_id = {str(m.id): ad for ad, m in kb["malzemeler"].items()}
-    hacim_by_ad = {ad: v.get("hacim") for ad, v in hv.items()}
-    if not (spec.get("tukenme") or {}).get("malzemeleri_ayir"):
-        return ad_by_id, hacim_by_ad
-    nesneler = {a: kb["malzemeler"][a] for a in hv if a in kb["malzemeler"]}
-    for mid, (ad, hacim) in _klon_kaydi(model, spec, hv, nesneler).items():
-        ad_by_id[mid] = ad
-        hacim_by_ad[ad] = hacim
-    return ad_by_id, hacim_by_ad
-
-
-def _sonuc_kaynagi(h5, spec):
-    """(Results, {malzeme_id: ad}, {ad: hacim}) -- dosya/spec degismedikce onbellekten."""
-    import json
-    import openmc.deplete as d
-    bilgi = os.stat(h5)
-    anahtar = (os.path.abspath(h5), bilgi.st_size, bilgi.st_mtime,
-               json.dumps(spec, sort_keys=True, default=str))
-    with _SONUC_KILIDI:
-        kaynak = _SONUC_KAYNAGI.get(anahtar)
-        if kaynak is not None:
-            _SONUC_KAYNAGI.move_to_end(anahtar)
-            return kaynak
-    # Okuma kilit DISINDA (saniyeler): arka plan iscileri birbirini beklemez.
-    r = d.Results(h5)
-    ad_by_id, hacim_by_ad = _malzeme_haritasi(spec)
-    kaynak = (r, types.MappingProxyType(ad_by_id), types.MappingProxyType(hacim_by_ad))
-    with _SONUC_KILIDI:
-        _SONUC_KAYNAGI[anahtar] = kaynak
-        _SONUC_KAYNAGI.move_to_end(anahtar)
-        while len(_SONUC_KAYNAGI) > _SONUC_KAYNAGI_EN_COK:
-            _SONUC_KAYNAGI.popitem(last=False)
-    return kaynak
-
-
-def sonuc_oku(h5, spec, izlenen=None):
-    """
-    DONER {"zaman_d", "yanma", "k", "k_sapma", "atomlar": {malz: {nuklid: [..]}},
-           "yogunluk": {malz: {nuklid: [atom/b-cm]}}, "adim_sayisi",
-           "bulunamayan": [sonuc dosyasinda olmayan izlenen adlar]}
-
-    izlenen verilmezse spec'teki tukenme.izlenen okunur. Verilirse (arayuzde
-    secim degisti) ayni h5'ten okunur; kosu tekrarlanmaz. Bulunamayan ad
-    (or. "Xe-135") eskiden SESSIZCE atlaniyordu; simdi listelenir ve loglanir.
-    """
-    from cekirdek.gunluk import kaydedici
-    r, ad_by_id, hacim_by_ad = _sonuc_kaynagi(h5, spec)
-    zaman, k = r.get_keff(time_units="d")
-    p = float(spec["tukenme"]["guc_yogunlugu"])
-    if izlenen is None:
-        izlenen = (spec.get("tukenme") or {}).get("izlenen") or []
-    bilinen = r[0].index_nuc
-    bulunamayan = [n for n in izlenen if n not in bilinen]
-    atomlar, yogunluk = {}, {}
-    for mid in r[0].index_mat.keys():
-        ad = ad_by_id.get(str(mid), str(mid))
-        atomlar[ad], yogunluk[ad] = {}, {}
-        V = hacim_by_ad.get(ad)
-        for n in (n for n in izlenen if n in bilinen):
-            _t, a = r.get_atoms(str(mid), n)
-            atomlar[ad][n] = [float(x) for x in a]
-            if V:
-                yogunluk[ad][n] = [float(x) / V * 1e-24 for x in a]
-    if bulunamayan:
-        kaydedici(__name__).warning("tükenme sonucunda bulunamayan nüklidler (%s): %s",
-                                    h5, ", ".join(bulunamayan))
-    return {
-        "zaman_d": [float(x) for x in zaman],
-        "yanma": [yanma(float(x), p) for x in zaman],
-        "k": [float(x) for x in k[:, 0]],
-        "k_sapma": [float(x) for x in k[:, 1]],
-        "atomlar": atomlar,
-        "yogunluk": yogunluk,
-        "adim_sayisi": len(zaman) - 1,
-        "bulunamayan": bulunamayan,
-    }
-
-
-# ============================================================================
-# Onceki kosu
-#   Arayuz acildiginda son koşunun sonucu gosterilir. Tuzak: sonuc SU ANKI
-#   spec'e ait olmayabilir (kullanici kosudan sonra gucu ya da zenginligi
-#   degistirmis olabilir). Eski bir sonucu guncelmis gibi gostermek, hic
-#   gostermemekten kotudur. Bu yuzden kosu basinda spec'in kopyasi yazilir;
-#   acilista karsilastirilir ve sonuc O KOPYAYA gore okunur (malzeme
-#   kimlikleri ve hacimler kosudaki modelden gelsin).
-# ============================================================================
-
-from cekirdek.tukenme_temizlik import SPEC_KAYDI  # noqa: E402 (tek tanim)
-
-# Fizigi etkilemeyen bolumler: bunlar degisti diye sonuc eskimez.
-_FIZIK_DISI = ("ad", "aciklama", "calistirma") + sema.META_ALANLARI
-
-
-def kosu_dizini(spec, proje_yolu=None):
-    """Tukenme sonuclarinin dizini: <proje dizini>/<calistirma.dizin>_tukenme."""
-    taban = sema.kosu_tabani(proje_yolu)
-    dizin = (spec.get("calistirma") or {}).get("dizin", "kosu") + "_tukenme"
-    return dizin if os.path.isabs(dizin) else os.path.join(taban, dizin)
-
-
-def _fizik_kismi(spec):
-    """
-    Sonucu etkileyen kisim. ad/aciklama/calistirma, tukenme.var ve
-    tukenme.izlenen cikarilir: tukenmeyi kapatip acmak ya da izlenen nuklid
-    secimini degistirmek sonucu eskitmez (izlenen yalnizca h5'ten hangi
-    nuklidlerin OKUNACAGINI belirler; kosu butun zinciri izler).
-
-    Karsilastirma METIN (json/hash) ile degil Python esitligiyle yapilir:
-    JSON'da 3 ile 3.0 farkli metindir ama ayni sayidir; hash kullanmak
-    degismemis bir modeli "eski" gosterirdi.
-    """
-    import copy
-    sade = {k: copy.deepcopy(v) for k, v in sema.tamamla(spec).items()
-            if k not in _FIZIK_DISI}
-    sade.get("tukenme", {}).pop("var", None)
-    sade.get("tukenme", {}).pop("izlenen", None)
-    sade.get("tukenme", {}).pop("adim_gucu", None)   # yalniz olcum (K3): fizik degil
-    sade.pop("surum", None)
-    return sade
-
-
-def spec_kaydet(spec, dizin):
-    import json
-    with open(os.path.join(dizin, SPEC_KAYDI), "w", encoding="utf-8") as f:
-        json.dump(spec, f, indent=2, ensure_ascii=False)
-
-
-def onceki_sonuc(spec, dizin):
-    """
-    Dizindeki son tukenme sonucu. Sonuc yoksa None.
-    DONER {"h5", "tarih": float, "durum": "guncel"|"eski"|"bilinmiyor",
-           "farklar": [bolum], "sonuc": sonuc_oku(...)}
-    """
-    h5 = os.path.join(dizin, "depletion_results.h5")
-    if not os.path.exists(h5):
-        return None
-    durum, farklar = eskime(spec, dizin)
-    kayit = _kayit_oku(dizin)
-    return {"h5": h5, "tarih": os.path.getmtime(h5), "durum": durum,
-            "farklar": farklar, "sonuc": sonuc_oku(h5, kayit or spec)}
-
-
-def _kayit_oku(dizin):
-    yol = os.path.join(dizin, SPEC_KAYDI)
-    return sema.yukle(yol) if os.path.exists(yol) else None
-
-
-# Spec bolumlerinin kullaniciya gorunen adlari (eskime farklari icin).
-BOLUM_ADLARI = {
-    "malzemeler": N_("malzemeler"), "cubuklar": N_("çubuklar"),
-    "plakalar": N_("plaka elemanları"), "demetler": N_("demetler"), "kor": N_("kor"),
-    "ayarlar": N_("hesap ayarları"), "tallyler": N_("tally'ler"),
-    "guc_dagilimi": N_("güç dağılımı"), "tukenme": N_("tükenme ayarları"),
-}
-# Turkce adlar (geriye uyum); gosterirken spektrum_adi() etkin dilde verir.
-SPEKTRUM_ADLARI = {"termal": "termal", "hizli": "hızlı"}
-
-
-def spektrum_adi(kod):
-    """Spektrum turunun gorunen adi, etkin dilde (SPEKTRUM_ADLARI)."""
-    return {"termal": pgettext("spektrum", "termal"),
-            "hizli": pgettext("spektrum", "hızlı")}.get(kod, kod)
-
-
-def fark_metni(farklar):
-    """Eskime farklarinin okunur listesi: "malzemeler, hesap ayarları"."""
-    return ", ".join(_(BOLUM_ADLARI[f]) if f in BOLUM_ADLARI else f for f in farklar)
-
-
-def eskime(spec, dizin):
-    """
-    (durum, farklar): sonuc bu spec'e mi ait? Sonucu OKUMAZ -- arayuz her
-    duzenlemede cagirir, ucuz olmali.
-      "guncel"     : fizigi etkileyen her sey ayni
-      "eski"       : farklar = degisen spec bolumleri
-      "bilinmiyor" : kosunun spec kaydi yok
-    """
-    kayit = _kayit_oku(dizin)
-    if kayit is None:
-        return "bilinmiyor", []
-    a, b = _fizik_kismi(spec), _fizik_kismi(kayit)
-    farklar = sorted(k for k in set(a) | set(b) if a.get(k) != b.get(k))
-    return ("eski" if farklar else "guncel"), farklar
+# Sonuc okuma (v3 Y4: cekirdek/tukenme_oku.py), onceki kosu ve eskime
+# (cekirdek/tukenme_kayit.py), terminal (cekirdek/tukenme_terminal.py) ayri
+# modullerdedir; genel adlar burada yeniden disa aktarilir.
+from cekirdek.tukenme_oku import (  # noqa: E402,F401
+    _SONUC_KAYNAGI, _SONUC_KILIDI, _SONUC_KAYNAGI_EN_COK, _klon_kaydi,
+    _malzeme_haritasi, _sonuc_kaynagi, sonuc_oku)
+from cekirdek.tukenme_temizlik import SPEC_KAYDI  # noqa: E402,F401 (tek tanim)
+from cekirdek.tukenme_kayit import (  # noqa: E402,F401
+    _FIZIK_DISI, kosu_dizini, _fizik_kismi, spec_kaydet, onceki_sonuc, _kayit_oku,
+    BOLUM_ADLARI, SPEKTRUM_ADLARI, spektrum_adi, fark_metni, eskime)
+from cekirdek.tukenme_terminal import KOSU_ISARETI, kosu_basligi, _terminal  # noqa: E402,F401
 
 
 def transport_sayisi(spec):
-    """Toplam transport cozumu: (adim + 1) x entegrator basina transport."""
-    t = spec.get("tukenme") or {}
-    n = len(t.get("adimlar") or [])
-    basina = 2 if (t.get("entegrator") or "cecm") == "cecm" else 1
-    return n * basina + 1
-
-
-# ============================================================================
-# Terminal
-# ============================================================================
-
-# MAKINE ISARETI -- CEVRILMEZ. arayuz/sekme_tukenme._cikti_oku alt surecin
-# ciktisini suzerken baslik satirini bu sabitle tanir ("TÜKENME" in satir);
-# Ingilizce arayuzde de ayni kalmali (testler/test_ceviri_cekirdek CC5).
-KOSU_ISARETI = "TÜKENME"
-
-
-def kosu_basligi(spec):
-    """Terminal ciktisinin baslik satiri: " TÜKENME: <model adi>" (isaret sabit)."""
-    return " %s: %s" % (KOSU_ISARETI, spec.get("ad", ""))
-
-
-def _terminal(argv):
-    import argparse
-    ap = argparse.ArgumentParser(prog="python3 -m cekirdek.tukenme")
-    ap.add_argument("spec")
-    ap.add_argument("-s", "--is-parcacigi", type=int, default=None)
-    ap.add_argument("--dizin", default=None)
-    ap.add_argument("--hazirla", action="store_true",
-                    help=_("koşmadan hacim, zincir ve ağır metal bilgisini yazdır"))
-    ap.add_argument("--veri-kontrolu-yok", action="store_true",
-                    help=_("doğrulamada nüklid/kütüphane denetimini atla"))
-    a = ap.parse_args(argv)
-    from cekirdek import veri_yolu
-    veri_yolu.surece_uygula()   # K2: Veri sayfasi secimi (openmc.deplete ortami okur)
-
-    # libgomp OMP_NUM_THREADS'i KUTUPHANE YUKLENIRKEN okur; openmc.deplete'in
-    # ice aktarilmasi kutuphaneyi yukler. Bu yuzden once ortam, sonra import.
-    if a.is_parcacigi:
-        os.environ["OMP_NUM_THREADS"] = str(a.is_parcacigi)
-
-    import warnings
-    warnings.filterwarnings("ignore")
-    spec = sema.yukle(a.spec)
-    spec.setdefault("tukenme", {})["var"] = True
-    zs = zincir_secimi(spec)
-    t = spec["tukenme"]
-    print("=" * 74)
-    print(kosu_basligi(spec))
-    print("=" * 74)
-    print(_("  zincir        : %s  (%s)") % (os.path.basename(zs["yol"]), zs["gerekce"]))
-    print(_("  fisyon verimi : %s eV (%s spektrum)")
-          % (zs["verim_enerjisi"], spektrum_adi(zs["temel"])))
-    print(_("  güç yoğunluğu : %g W/gHM") % float(t["guc_yogunlugu"]))
-    print(_("  adımlar       : %s %s  → %d transport")
-          % (", ".join("%g" % float(x) for x in t["adimlar"]),
-             {"d": _("gün")}.get(t.get("adim_birimi", "d"), t.get("adim_birimi", "d")),
-             transport_sayisi(spec)))
-    from cekirdek import tukenme_hacim
-    for ad, v in hacimler(spec).items():
-        print(_("  hacim %-10s: %s cm³ [%s] %s") % (ad, ("%.6g" % v["hacim"]) if v["hacim"] else "—",
-                                                  tukenme_hacim.yontem_metni(v["yontem"]), v["ayrinti"]))
-    if a.hazirla:
-        _m, b = hazirla(spec)
-        print(_("  ağır metal    : %.6g g") % b["agir_metal_g"])
-        return 0
-
-    dizin = a.dizin or os.path.join(os.path.dirname(os.path.abspath(a.spec)),
-                                    (spec.get("calistirma") or {}).get("dizin", "kosu") + "_tukenme")
-    from cekirdek import dogrula
-    try:
-        h5, bilgi = calistir(spec, dizin, veri_kontrolu=not a.veri_kontrolu_yok)
-    except dogrula.DogrulamaHatasi as e:
-        print(_("\n  DOĞRULAMA: koşu başlatılmadı (%d hata)") % len(e.bulgular))
-        for b in e.tum_bulgular:          # hatalar + uyari/bilgi (tek denetim)
-            print("  %s" % b)
-        return 2
-    for b in bilgi["dogrulama"]:
-        print("  %s" % b)
-    s = sonuc_oku(h5, spec)
-    print(_("\n  ağır metal: %.6g g") % bilgi["agir_metal_g"])
-    print("  %8s %10s %18s" % (_("gün"), "MWd/kg", "k-eff"))
-    for z, b, k, sk in zip(s["zaman_d"], s["yanma"], s["k"], s["k_sapma"]):
-        print("  %8.2f %10.3f %10.5f ± %.5f" % (z, b, k, sk))
-    print(_("\n  sonuç: %s") % h5)
-    return 0
+    """Toplam transport cozumu (entegrator, sogutma, hizli kip): tukenme_ayar."""
+    from cekirdek import tukenme_ayar
+    return tukenme_ayar.transport_sayisi(spec.get("tukenme") or {})
 
 
 if __name__ == "__main__":

@@ -21,6 +21,7 @@ Sekmeler, kenar çubuğundaki sırayla:
 | [4.8](04h-analiz.md#analiz) | Analiz | parametre taraması, reaktivite katsayıları, kritik arama |
 | [4.9](04i-tukenme.md#tukenme) | Tükenme | yanma hesabı ve izlenen nüklidler |
 | [4.11](04k-mesh-tally.md#mesh-tally) | Ağ (mesh) tally'si | ağ türü, sınırlar, 2B harita, VTK |
+| [4.12](04l-goruntuleyici.md#goruntuleyici) | Görüntüleyici (Araçlar menüsü) | kesit, çakışma, tally bindirmesi, kaynak noktaları, 3B |
 
 ## Bu bölüm nasıl okunur
 

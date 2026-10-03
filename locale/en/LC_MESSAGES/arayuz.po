@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-02 10:46+0300\n"
+"POT-Creation-Date: 2026-10-02 16:22+0300\n"
 "PO-Revision-Date: 2026-10-01 18:14+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -151,6 +151,126 @@ msgstr "Rod worth (differential)"
 msgid "Tambur değeri (diferansiyel)"
 msgstr "Drum worth (differential)"
 
+#: arayuz/analiz/demet_kinf.py:40
+msgid "Kordaki sayı"
+msgstr "Count in core"
+
+#: arayuz/analiz/demet_kinf.py:40 arayuz/demet/yerlesim.py:188
+msgid "Boyut"
+msgstr "Size"
+
+#: arayuz/analiz/demet_kinf.py:41
+msgid "k∞ ± σ"
+msgstr "k∞ ± σ"
+
+#: arayuz/analiz/demet_kinf.py:41 arayuz/karsilastir/panel.py:31 arayuz/kuyruk/panel.py:30
+msgid "Durum"
+msgstr "State"
+
+#: arayuz/analiz/demet_kinf.py:41 arayuz/kuyruk/panel.py:30
+msgid "Çevrim"
+msgstr "Batch"
+
+#: arayuz/analiz/demet_kinf.py:42
+msgid "kare"
+msgstr "square"
+
+#: arayuz/analiz/demet_kinf.py:42
+msgid "altıgen"
+msgstr "hexagonal"
+
+#: arayuz/analiz/demet_kinf.py:80
+msgid "Kuyruğa ekle ve başlat"
+msgstr "Add to queue and start"
+
+#: arayuz/analiz/demet_kinf.py:81 arayuz/kuyruk/panel.py:149
+#: arayuz/veri/indirme_karti.py:128
+msgid "İptal"
+msgstr "Cancel"
+
+#: arayuz/analiz/demet_kinf.py:82 arayuz/analiz/mgxs.py:140 arayuz/sonuc/yerel_k.py:53
+msgid "CSV kaydet…"
+msgstr "Save CSV…"
+
+#: arayuz/analiz/demet_kinf.py:98
+msgid "Koşu ayarları (her demet için)"
+msgstr "Run settings (per assembly)"
+
+#: arayuz/analiz/demet_kinf.py:100 arayuz/ayar/yerlesim.py:98
+msgid "Parçacık:"
+msgstr "Particle:"
+
+#: arayuz/analiz/demet_kinf.py:101
+msgid "Çevrim:"
+msgstr "Batches:"
+
+#: arayuz/analiz/demet_kinf.py:102 arayuz/ayar/yerlesim.py:85
+msgid "Pasif çevrim:"
+msgstr "Inactive batches:"
+
+#: arayuz/analiz/demet_kinf.py:103
+msgid "Tohum:"
+msgstr "Seed:"
+
+#: arayuz/analiz/demet_kinf.py:104
+msgid "İş parçacığı (koşu başına):"
+msgstr "Threads (per run):"
+
+#: arayuz/analiz/demet_kinf.py:105
+msgid "Aynı anda koşu:"
+msgstr "Concurrent runs:"
+
+#: arayuz/analiz/demet_kinf.py:110
+msgid ""
+"Her demet türü yansıtıcı sınırlı tek demet modeli olarak (sonsuz kafes, 2B) ayrı "
+"koşulur. Sonuç k∞'dur: sızıntı, su aralığı, yansıtıcı ve komşu demetlerin etkisi "
+"yoktur. Yanmaya göre k∞ bu sürümde yok."
+msgstr ""
+"Each assembly type is run separately as a single-assembly model with reflective "
+"boundaries (infinite lattice, 2D). The result is k∞: leakage, water gap, reflector "
+"and neighbouring assemblies have no effect. k∞ versus burnup is not available in this"
+" version."
+
+#: arayuz/analiz/demet_kinf.py:126 arayuz/analiz/demet_kinf.py:287
+msgid "Demet k∞ sihirbazı"
+msgstr "Assembly k∞ wizard"
+
+#: arayuz/analiz/demet_kinf.py:150
+msgid "Modelde demet tanımı yok."
+msgstr "The model defines no assembly."
+
+#: arayuz/analiz/demet_kinf.py:169
+msgid "En az bir demet seçin."
+msgstr "Select at least one assembly."
+
+#: arayuz/analiz/demet_kinf.py:182
+#, python-format
+msgid "Başlatılamadı: %s"
+msgstr "Could not start: %s"
+
+#: arayuz/analiz/demet_kinf.py:187
+#, python-format
+msgid "%d demet kuyrukta."
+msgstr "%d assemblies queued."
+
+#: arayuz/analiz/demet_kinf.py:236
+msgid "Demet k∞ tablosunu kaydet"
+msgstr "Save assembly k∞ table"
+
+#: arayuz/analiz/demet_kinf.py:242 arayuz/analiz/demet_kinf.py:270
+msgid "Demet k∞"
+msgstr "Assembly k∞"
+
+#: arayuz/analiz/demet_kinf.py:242 arayuz/sonuc/yerel_k.py:263
+#, python-format
+msgid "Kaydedilemedi: %s"
+msgstr "Could not save: %s"
+
+#: arayuz/analiz/demet_kinf.py:271
+#, python-format
+msgid "%d demet koşusu bitmedi; kapatılırsa iptal edilir. Kapatılsın mı?"
+msgstr "%d assembly runs have not finished; closing cancels them. Close?"
+
 #: arayuz/analiz/kinetik.py:34
 msgid "Keepin U-235 termal (6 grup)"
 msgstr "Keepin U-235 thermal (6 groups)"
@@ -212,10 +332,6 @@ msgid ""
 msgstr ""
 "Step: ρ inserted at t = 0; ramp: ρ reached at the end of the ramp.\n"
 "1 pcm = 10⁻⁵ Δk/k; 1 $ = β_eff. ρ ≥ 1 $ is PROMPT CRITICAL."
-
-#: arayuz/analiz/kinetik.py:89
-msgid "Hesapla"
-msgstr "Compute"
 
 #: arayuz/analiz/kinetik.py:94
 msgid "Adiyabatik sıcaklık geri beslemesi"
@@ -371,6 +487,287 @@ msgstr ""
 "Data: %s; solver: %s (stiff ODE). Point kinetics has no spatial effects; it is for "
 "education and is not a certification."
 
+#: arayuz/analiz/mgxs.py:57
+msgid "Grup sabitleri ve random ray"
+msgstr "Group constants and random ray"
+
+#: arayuz/analiz/mgxs.py:58
+msgid ""
+"Akı ağırlıklı çok gruplu tesir kesitleri (openmc.mgxs) üretir; aynı geometriyi çok "
+"gruplu Monte Carlo ve random ray ile yeniden koşup CE sonucuyla karşılaştırır."
+msgstr ""
+"Generates flux-weighted multigroup cross sections (openmc.mgxs); reruns the same "
+"geometry with multigroup Monte Carlo and random ray and compares with the CE result."
+
+#: arayuz/analiz/mgxs.py:83
+msgid ""
+"Malzeme: her malzeme bir bölge. Hücre: her malzemeli hücre bir bölge.\n"
+"Demet: modelin tamamı tek bölge (yansıtıcı sınırlı modelde sonsuz kafes sabitleri)."
+msgstr ""
+"Material: each material is one region. Cell: each material-filled cell is one region."
+"\n"
+"Assembly: the whole model is one region (infinite-lattice constants in a reflective "
+"model)."
+
+#: arayuz/analiz/mgxs.py:88 arayuz/ayar/spektrum_karti.py:37
+#, python-format
+msgid "%s (%d grup)"
+msgstr "%s (%d groups)"
+
+#: arayuz/analiz/mgxs.py:90
+msgid ""
+"Homojenleştirme için 2–8 grup; MG ile yeniden koşu için ince yapı (CASMO-70, "
+"XMAS-172) grup yoğunlaştırma hatasını küçültür."
+msgstr ""
+"2–8 groups for homogenization; for running again in MG a fine structure (CASMO-70, "
+"XMAS-172) reduces the group condensation error."
+
+#: arayuz/analiz/mgxs.py:93
+msgid "Yok (izotropik saçılma, Σt)"
+msgstr "None (isotropic scattering, Σt)"
+
+#: arayuz/analiz/mgxs.py:94
+msgid "P0 taşıma düzeltmesi (out-scatter, Σtr)"
+msgstr "P0 transport correction (out-scatter, Σtr)"
+
+#: arayuz/analiz/mgxs.py:96
+msgid ""
+"P0: Σtr = Σt − Σs1 ve saçılma köşegeni Σs1 kadar azalır; sonsuz ortam k∞'u değişmez, "
+"sızıntı (D = 1/3Σtr) değişir.\n"
+"İnce grupta köşegen negatif olabilir: MG Monte Carlo bunu doğru işleyemez (random ray"
+" kararlılaştırır)."
+msgstr ""
+"P0: Σtr = Σt − Σs1 and the scattering diagonal is reduced by Σs1; the infinite-medium"
+" k∞ is unchanged, leakage (D = 1/3Σtr) changes.\n"
+"In fine groups the diagonal can become negative: MG Monte Carlo cannot handle it "
+"correctly (random ray stabilizes it)."
+
+#: arayuz/analiz/mgxs.py:107
+msgid "Σt, Σa, νΣf, χ ve saçılma matrisleri her zaman üretilir (MG kütüphanesi için gerekli)."
+msgstr ""
+"Σt, Σa, νΣf, χ and the scattering matrices are always generated (required by the MG "
+"library)."
+
+#: arayuz/analiz/mgxs.py:112
+msgid "ışın"
+msgstr "rays"
+
+#: arayuz/analiz/mgxs.py:118
+msgid "Düz (flat)"
+msgstr "Flat"
+
+#: arayuz/analiz/mgxs.py:118
+msgid "Doğrusal (linear)"
+msgstr "Linear"
+
+#: arayuz/analiz/mgxs.py:119
+msgid "Doğrusal, yalnız x-y"
+msgstr "Linear, x-y only"
+
+#: arayuz/analiz/mgxs.py:122
+msgid ""
+"Kaynak bölgelerini eksen başına N×N kare ağ ile böler (0 = bölme yok, varsayılan). "
+"Büyük düz bölgelerde artırın."
+msgstr ""
+"Subdivides source regions with an N×N square mesh per axis (0 = no subdivision, "
+"default). Increase it for large flat regions."
+
+#: arayuz/analiz/mgxs.py:124
+msgid "Random ray ayarları"
+msgstr "Random ray settings"
+
+#: arayuz/analiz/mgxs.py:126
+msgid "Çevrim başına ışın:"
+msgstr "Rays per batch:"
+
+#: arayuz/analiz/mgxs.py:127
+msgid "Çevrim / pasif:"
+msgstr "Batches / inactive:"
+
+#: arayuz/analiz/mgxs.py:128
+msgid "Ölü / aktif mesafe:"
+msgstr "Dead / active distance:"
+
+#: arayuz/analiz/mgxs.py:129
+msgid "Kaynak şekli:"
+msgstr "Source shape:"
+
+#: arayuz/analiz/mgxs.py:130
+msgid "Kaynak bölgesi bölmesi:"
+msgstr "Source region subdivision:"
+
+#: arayuz/analiz/mgxs.py:136
+msgid "Grup sabitlerini üret"
+msgstr "Generate group constants"
+
+#: arayuz/analiz/mgxs.py:138
+msgid "MG ile yeniden koş"
+msgstr "Rerun in MG"
+
+#: arayuz/analiz/mgxs.py:139
+msgid "Random ray ile koş"
+msgstr "Run with random ray"
+
+#: arayuz/analiz/mgxs.py:154 arayuz/analiz/mgxs.py:220
+msgid "Henüz grup sabiti üretilmedi."
+msgstr "No group constants generated yet."
+
+#: arayuz/analiz/mgxs.py:180
+msgid "Bölge türü:"
+msgstr "Region type:"
+
+#: arayuz/analiz/mgxs.py:181 arayuz/ayar/mesh_formu.py:86
+msgid "Grup yapısı:"
+msgstr "Group structure:"
+
+#: arayuz/analiz/mgxs.py:182
+msgid "Taşıma düzeltmesi:"
+msgstr "Transport correction:"
+
+#: arayuz/analiz/mgxs.py:183
+msgid "Ek türler:"
+msgstr "Additional types:"
+
+#: arayuz/analiz/mgxs.py:193
+msgid "Gösterilen tür:"
+msgstr "Shown type:"
+
+#: arayuz/analiz/mgxs.py:194
+msgid "CE / MG / RR karşılaştırması"
+msgstr "CE / MG / RR comparison"
+
+#: arayuz/analiz/mgxs.py:266
+msgid "Model yok"
+msgstr "No model"
+
+#: arayuz/analiz/mgxs.py:323
+msgid "Grup sabiti koşusu başlatılamadı"
+msgstr "Could not start the group constant run"
+
+#: arayuz/analiz/mgxs.py:338
+msgid "MG koşusu başlatılamadı"
+msgstr "Could not start the MG run"
+
+#: arayuz/analiz/mgxs.py:344
+msgid "Random ray koşusu başlatılamadı"
+msgstr "Could not start the random ray run"
+
+#: arayuz/analiz/mgxs.py:365
+#, python-format
+msgid "%s başarısız: %s"
+msgstr "%s failed: %s"
+
+#: arayuz/analiz/mgxs.py:376
+#, python-format
+msgid "%s: çevrim %d%s"
+msgstr "%s: batch %d%s"
+
+#: arayuz/analiz/mgxs.py:378
+#, python-format
+msgid "%s bitti."
+msgstr "%s finished."
+
+#: arayuz/analiz/mgxs.py:383
+msgid "CE koşusu bitti ama grup sabitleri okunamadı"
+msgstr "The CE run finished but the group constants could not be read"
+
+#: arayuz/analiz/mgxs.py:397
+msgid "Hepsi"
+msgstr "All"
+
+#: arayuz/analiz/mgxs.py:410
+#, python-format
+msgid "%d satırın ilk %d'i gösteriliyor; tamamı mgxs.csv'de."
+msgstr "Of %d rows, the first %d are shown; all are in mgxs.csv."
+
+#: arayuz/analiz/mgxs.py:411
+msgid "Grup 1 en yüksek enerji. σ: istatistik (1σ)."
+msgstr "Group 1 is the highest energy. σ: statistical (1σ)."
+
+#: arayuz/analiz/mgxs.py:418
+msgid "Grup sabitlerini kaydet"
+msgstr "Save group constants"
+
+#: arayuz/analiz/mgxs.py:424
+msgid "CSV kaydedilemedi"
+msgstr "Could not save CSV"
+
+#: arayuz/analiz/mgxs.py:426 arayuz/goruntuleyici/pencere.py:504
+#: arayuz/pencere/proje.py:151 arayuz/pencere/proje.py:320
+#, python-format
+msgid "Kaydedildi: %s"
+msgstr "Saved: %s"
+
+#: arayuz/analiz/mgxs_tablo.py:26
+msgid "yok"
+msgstr "none"
+
+#: arayuz/analiz/mgxs_tablo.py:55 arayuz/analiz/sekme.py:151
+#: arayuz/geometri/form_yerlesim.py:339 arayuz/sonuc/mesh_harita.py:41
+msgid "Değer"
+msgstr "Value"
+
+#: arayuz/analiz/mgxs_tablo.py:55 arayuz/cubuk/parca_islemleri.py:240
+#: arayuz/cubuk/sayfalar.py:117
+msgid "Bölge"
+msgstr "Region"
+
+#: arayuz/analiz/mgxs_tablo.py:77
+msgid "Yöntem"
+msgstr "Method"
+
+#: arayuz/analiz/mgxs_tablo.py:77
+msgid "Δk CE'ye [pcm]"
+msgstr "Δk vs CE [pcm]"
+
+#: arayuz/analiz/mgxs_tablo.py:77
+msgid "Δk MG'ye [pcm]"
+msgstr "Δk vs MG [pcm]"
+
+#: arayuz/analiz/mgxs_tablo.py:78
+msgid "Süre [s]"
+msgstr "Time [s]"
+
+#: arayuz/analiz/mgxs_tablo.py:103
+#, python-format
+msgid "Grup sabitleri hazır — bölge sayısı: %d, %s (%d grup), taşıma düzeltmesi: %s"
+msgstr "Group constants ready (regions: %d, %s (%d groups), transport correction: %s)"
+
+#: arayuz/analiz/mgxs_tablo.py:108
+#, python-format
+msgid "CE k: %s"
+msgstr "CE k: %s"
+
+#: arayuz/analiz/mgxs_tablo.py:109
+#, python-format
+msgid "Sabitlerden k = Σ νΣf·φ / Σ Σa·φ ((n,xn) hariç): %s"
+msgstr "k from constants = Σ νΣf·φ / Σ Σa·φ (without (n,xn)): %s"
+
+#: arayuz/analiz/mgxs_tablo.py:114
+#, python-format
+msgid "Sonsuz ortam k∞ (G×G özdeğer, yukarı saçılma ve (n,xn) dahil): %s"
+msgstr "Infinite-medium k∞ (G×G eigenvalue, upscatter and (n,xn) included): %s"
+
+#: arayuz/analiz/mgxs_tablo.py:117
+#, python-format
+msgid "Özdeğer − CE: %+.0f pcm"
+msgstr "Eigenvalue − CE: %+.0f pcm"
+
+#: arayuz/analiz/mgxs_tablo.py:120
+msgid ""
+"σ'lar birinci derece ve bağımsızlık varsayımlıdır (aynı geçmişlerden gelen tally'ler "
+"ilişkilidir); k∞ yalnız yansıtıcı sınırlı (sonsuz kafes) modelde CE k ile "
+"karşılaştırılabilir."
+msgstr ""
+"σ values are first order and assume independence (tallies from the same histories are"
+" correlated); k∞ is comparable with CE k only in a reflective (infinite lattice) "
+"model."
+
+#: arayuz/analiz/mgxs_tablo.py:125
+#, python-format
+msgid "Kütüphane: %s"
+msgstr "Library: %s"
+
 #: arayuz/analiz/sekme.py:77
 msgid "Bu modelde analiz yapılamaz"
 msgstr "No analysis is possible for this model"
@@ -383,15 +780,11 @@ msgstr "Calculate:"
 msgid "Gelişmiş parametreler"
 msgstr "Advanced parameters"
 
-#: arayuz/analiz/sekme.py:98 arayuz/analiz/sekme.py:456
-msgid "Hedef:"
-msgstr "Target:"
-
 #: arayuz/analiz/sekme.py:102
 msgid "nokta"
 msgstr "points"
 
-#: arayuz/analiz/sekme.py:104
+#: arayuz/analiz/sekme.py:104 arayuz/goruntuleyici/paneller.py:195
 msgid "Nokta sayısı:"
 msgstr "Number of points:"
 
@@ -399,11 +792,11 @@ msgstr "Number of points:"
 msgid "Hedef k-eff:"
 msgstr "Target k-eff:"
 
-#: arayuz/analiz/sekme.py:106 arayuz/analiz/sekme.py:366
+#: arayuz/analiz/sekme.py:106 arayuz/analiz/sekme.py:373
 msgid "Başlangıç:"
 msgstr "Start:"
 
-#: arayuz/analiz/sekme.py:107 arayuz/analiz/sekme.py:367
+#: arayuz/analiz/sekme.py:107 arayuz/analiz/sekme.py:374
 msgid "Bitiş:"
 msgstr "End:"
 
@@ -415,29 +808,24 @@ msgstr "Parameter:"
 msgid "Tahmini süre:"
 msgstr "Estimated time:"
 
-#: arayuz/analiz/sekme.py:128 arayuz/analiz/sekme.py:368
+#: arayuz/analiz/sekme.py:128 arayuz/analiz/sekme.py:375
 msgid "Taramayı başlat"
 msgstr "Start sweep"
 
-#: arayuz/analiz/sekme.py:141 arayuz/analiz/sekme.py:220
+#: arayuz/analiz/sekme.py:141 arayuz/analiz/sekme.py:226
 msgid "Henüz analiz yapılmadı."
 msgstr "No analysis has been run yet."
-
-#: arayuz/analiz/sekme.py:151 arayuz/geometri/form_yerlesim.py:339
-#: arayuz/sonuc/mesh_harita.py:41
-msgid "Değer"
-msgstr "Value"
 
 #: arayuz/analiz/sekme.py:160
 msgid "Analiz ayarları"
 msgstr "Analysis settings"
 
-#: arayuz/analiz/sekme.py:180 arayuz/pencere/model_islemleri.py:67
+#: arayuz/analiz/sekme.py:184 arayuz/pencere/model_islemleri.py:67
 #: arayuz/yardim/__init__.py:50
 msgid "Analiz"
 msgstr "Analysis"
 
-#: arayuz/analiz/sekme.py:181
+#: arayuz/analiz/sekme.py:185
 msgid ""
 "Bir parametreyi tarayıp eğimden reaktivite katsayısını ya da hedef k-eff'i veren "
 "değeri bulursunuz. Yalnızca bu modelde anlamlı parametreler listelenir; her nokta "
@@ -447,7 +835,7 @@ msgstr ""
 "that gives a target k-eff. Only parameters meaningful for this model are listed; each"
 " point is a separate OpenMC run."
 
-#: arayuz/analiz/sekme.py:233
+#: arayuz/analiz/sekme.py:240
 msgid ""
 "Önceki projenin analizi arka planda sürüyor; sonucu bu projeye yazılmayacak. Yeni "
 "analiz için Durdur ile sonlandırın."
@@ -455,23 +843,23 @@ msgstr ""
 "An analysis from the previous project is still going in the background; its result "
 "will not be written to this project. Use Stop to end it before a new analysis."
 
-#: arayuz/analiz/sekme.py:272
+#: arayuz/analiz/sekme.py:279
 msgid "Reaktivite katsayısı (parametre taraması)"
 msgstr "Reactivity coefficient (parameter sweep)"
 
-#: arayuz/analiz/sekme.py:274
+#: arayuz/analiz/sekme.py:281
 msgid "Kritik arama (hedef k-eff'i veren değer)"
 msgstr "Critical search (value giving the target k-eff)"
 
-#: arayuz/analiz/sekme.py:293
+#: arayuz/analiz/sekme.py:300
 msgid "Önce bir model açın."
 msgstr "Open a model first."
 
-#: arayuz/analiz/sekme.py:298
+#: arayuz/analiz/sekme.py:305
 msgid "Model okunamadı; doğrulama listesine bakın."
 msgstr "The model could not be read; see the model check list."
 
-#: arayuz/analiz/sekme.py:300
+#: arayuz/analiz/sekme.py:307
 msgid ""
 "Reaktivite katsayıları ve kritik arama k-eff üzerinden hesaplanır; bu modelin hesap "
 "türü Sabit kaynak (k-eff tanımsız). Hesap ayarları sekmesinde hesap türünü Özdeğer "
@@ -481,7 +869,7 @@ msgstr ""
 " calculation type is Fixed source (k-eff undefined). Set the calculation type to "
 "Eigenvalue (k-eff) on the Run settings page."
 
-#: arayuz/analiz/sekme.py:304
+#: arayuz/analiz/sekme.py:311
 msgid ""
 "Geometride fisil (yakıt) malzeme yok; k-eff tanımsız olduğu için reaktivite "
 "hesaplanamaz."
@@ -489,11 +877,11 @@ msgstr ""
 "The geometry has no fissile (fuel) material; k-eff is undefined, so reactivity cannot"
 " be computed."
 
-#: arayuz/analiz/sekme.py:306
+#: arayuz/analiz/sekme.py:313
 msgid "Bu modelde taranabilecek bir parametre bulunamadı."
 msgstr "No parameter that can be swept was found in this model."
 
-#: arayuz/analiz/sekme.py:342
+#: arayuz/analiz/sekme.py:349
 #, python-format
 msgid ""
 "Açıkken parametre listesinde tasarım etütleri de yer alır: %s. Bunlar reaktivite "
@@ -502,68 +890,68 @@ msgstr ""
 "When open, the parameter list also includes design studies: %s. These are design "
 "sensitivities, not reactivity coefficients."
 
-#: arayuz/analiz/sekme.py:366
+#: arayuz/analiz/sekme.py:373
 msgctxt "arama"
 msgid "Alt sınır:"
 msgstr "Lower bound:"
 
-#: arayuz/analiz/sekme.py:367
+#: arayuz/analiz/sekme.py:374
 msgctxt "arama"
 msgid "Üst sınır:"
 msgstr "Upper bound:"
 
-#: arayuz/analiz/sekme.py:368
+#: arayuz/analiz/sekme.py:375
 msgid "Kritik aramayı başlat"
 msgstr "Start critical search"
 
-#: arayuz/analiz/sekme.py:431
+#: arayuz/analiz/sekme.py:438
 msgid "Hedef malzeme:"
 msgstr "Target material:"
 
-#: arayuz/analiz/sekme.py:435
+#: arayuz/analiz/sekme.py:442
 msgid "Hedef demet:"
 msgstr "Target assembly:"
 
-#: arayuz/analiz/sekme.py:439
+#: arayuz/analiz/sekme.py:446
 #, python-format
 msgid "%s  (şu an %%%.1f dalmış)"
 msgstr "%s  (currently %.1f%% inserted)"
 
-#: arayuz/analiz/sekme.py:441
+#: arayuz/analiz/sekme.py:448
 msgid "Kontrol çubuğu:"
 msgstr "Control rod:"
 
-#: arayuz/analiz/sekme.py:446
+#: arayuz/analiz/sekme.py:453
 #, python-format
 msgid "%s — %d. bölge (r = %.4g cm, %s)"
 msgstr "%s — pin region %d (r = %.4g cm, %s)"
 
-#: arayuz/analiz/sekme.py:451 arayuz/ayar/yerlesim.py:170
+#: arayuz/analiz/sekme.py:458 arayuz/ayar/yerlesim.py:172
 msgid "Hedef bölge:"
 msgstr "Target pin region:"
 
-#: arayuz/analiz/sekme.py:523
+#: arayuz/analiz/sekme.py:530
 msgid "Model yok."
 msgstr "No model."
 
-#: arayuz/analiz/sekme.py:526
+#: arayuz/analiz/sekme.py:533
 msgid "Bu modelde taranabilecek bir parametre yok."
 msgstr "This model has no parameter that can be swept."
 
-#: arayuz/analiz/sekme.py:528
+#: arayuz/analiz/sekme.py:535
 #, python-format
 msgid "'%s' bu modelde artık geçerli değil."
 msgstr "'%s' is no longer valid for this model."
 
-#: arayuz/analiz/sekme.py:531
+#: arayuz/analiz/sekme.py:538
 msgid "Seçili hedef bu parametre için geçerli değil (model değişmiş olabilir)."
 msgstr "The selected target is not valid for this parameter (the model may have changed)."
 
-#: arayuz/analiz/sekme.py:551
+#: arayuz/analiz/sekme.py:558
 msgid "Seçim geçerli değil"
 msgstr "Invalid selection"
 
-#: arayuz/analiz/sekme.py:552
+#: arayuz/analiz/sekme.py:559
 #, python-format
 msgid ""
 "%s\n"
@@ -574,57 +962,57 @@ msgstr ""
 "\n"
 "The lists were refreshed for the model; review your selection."
 
-#: arayuz/analiz/sekme.py:569
+#: arayuz/analiz/sekme.py:576
 msgid "Çalışıyor…"
 msgstr "Working…"
 
-#: arayuz/analiz/sekme.py:595
+#: arayuz/analiz/sekme.py:602
 #, python-format
 msgid "Analiz sürüyor: %s — her nokta ayrı bir koşu."
 msgstr "Analysis in progress: %s — each point is a separate run."
 
-#: arayuz/analiz/sekme.py:600
+#: arayuz/analiz/sekme.py:607
 msgid "Analiz başladı"
 msgstr "Analysis started"
 
-#: arayuz/analiz/sekme.py:605
+#: arayuz/analiz/sekme.py:612
 msgid "Durdurma istendi — süren koşu bitince duracak"
 msgstr "Stop requested — it will stop when the current run finishes"
 
-#: arayuz/analiz/sekme.py:611
+#: arayuz/analiz/sekme.py:618
 #, python-format
 msgid "tamamlandı — toplam %s"
 msgstr "finished — total %s"
 
-#: arayuz/analiz/sekme.py:624
+#: arayuz/analiz/sekme.py:631
 msgid "Önceki projenin analizi bitti; sonucu bu projeye yazılmadı."
 msgstr "The previous project's analysis finished; its result was not written to this project."
 
-#: arayuz/analiz/sekme.py:630
+#: arayuz/analiz/sekme.py:637
 #, python-format
 msgid "<b>Hata:</b> %s"
 msgstr "<b>Error:</b> %s"
 
-#: arayuz/analiz/sekme.py:632
+#: arayuz/analiz/sekme.py:639
 #, python-format
 msgid "Analiz hatası: %s"
 msgstr "Analysis error: %s"
 
-#: arayuz/analiz/sekme.py:647
+#: arayuz/analiz/sekme.py:654
 #, python-format
 msgid "geçen %s  |  kalan ~%s  (ölçüme göre)"
 msgstr "elapsed %s  |  remaining ~%s  (measured)"
 
-#: arayuz/analiz/sekme.py:659
+#: arayuz/analiz/sekme.py:666
 msgid "Tarama tamamlandı"
 msgstr "Parameter sweep finished"
 
-#: arayuz/analiz/sekme.py:667
+#: arayuz/analiz/sekme.py:674
 #, python-format
 msgid "geçen %s  |  %d. koşu bitti"
 msgstr "elapsed %s  |  run %d finished"
 
-#: arayuz/analiz/sekme.py:680
+#: arayuz/analiz/sekme.py:687
 msgid "Kritik arama tamamlandı"
 msgstr "Critical search finished"
 
@@ -701,6 +1089,97 @@ msgid_plural "~%s   (%d koşu × ~%s)%s"
 msgstr[0] "~%s   (%d run × ~%s)%s"
 msgstr[1] "~%s   (%d runs × ~%s)%s"
 
+#: arayuz/ayar/foton_sicaklik.py:22
+msgid "Kalın hedef frenleme (ttb)"
+msgstr "Thick-target bremsstrahlung (ttb)"
+
+#: arayuz/ayar/foton_sicaklik.py:22
+msgid "Yerel bırakım (led)"
+msgstr "Local energy deposition (led)"
+
+#: arayuz/ayar/foton_sicaklik.py:42
+msgid "Elektron işlemi:"
+msgstr "Electron treatment:"
+
+#: arayuz/ayar/foton_sicaklik.py:44
+msgid "Sıcaklık toleransı:"
+msgstr "Temperature tolerance:"
+
+#: arayuz/ayar/foton_sicaklik.py:45
+msgid "Varsayılan sıcaklık:"
+msgstr "Default temperature:"
+
+#: arayuz/ayar/foton_sicaklik.py:55
+msgid "Yüklenecek aralık:"
+msgstr "Range to load:"
+
+#: arayuz/ayar/foton_sicaklik.py:57
+msgid ""
+"Yalnız kütüphanede bulunan sıcaklıklarda veri vardır (ENDF/B-VIII.0: 250, 294, 600, "
+"900, 1200, 2500 K). En yakın yöntemi tolerans içindeki kütüphane sıcaklığını "
+"kullanır; ara değer yöntemi iki komşu sıcaklık arasında stokastik interpolasyon "
+"yapar. Doğrulama her malzeme için hangisinin kullanılacağını yazar."
+msgstr ""
+"Data exist only at library temperatures (ENDF/B-VIII.0: 250, 294, 600, 900, 1200, "
+"2500 K). The nearest method uses the library temperature within the tolerance; the "
+"interpolation method interpolates stochastically between the two neighbouring "
+"temperatures. The model check states which one is used for each material."
+
+#: arayuz/ayar/foton_sicaklik.py:64
+msgid "Foton taşınımı (gama ısınması)"
+msgstr "Photon transport (gamma heating)"
+
+#: arayuz/ayar/foton_sicaklik.py:66
+msgid ""
+"Nötronlardan doğan gamalar da taşınır; 'heating' skoru nötron + gama\n"
+"ısınmasını verir. Kütüphanede her element için foton verisi gerekir.\n"
+"Koşu belirgin biçimde uzar."
+msgstr ""
+"Gammas born from neutrons are transported too; the 'heating' score gives neutron + "
+"gamma\n"
+"heating. The library needs photon data for every element.\n"
+"The run takes noticeably longer."
+
+#: arayuz/ayar/foton_sicaklik.py:73
+msgid ""
+"ttb: elektron/pozitron enerjisi doğduğu yerde bırakılır, frenleme\n"
+"fotonları taşınır (OpenMC varsayılanı). led: frenleme fotonu da üretilmez."
+msgstr ""
+"ttb: electron/positron energy is deposited where born, bremsstrahlung\n"
+"photons are transported (OpenMC default). led: no bremsstrahlung photons either."
+
+#: arayuz/ayar/foton_sicaklik.py:75
+msgid "Foton kaynağı seçili: foton taşınımı zaten açık."
+msgstr "Photon source selected: photon transport is already on."
+
+#: arayuz/ayar/foton_sicaklik.py:78
+msgid ""
+"En yakın: kütüphane sıcaklığı bu kadar yakınsa kullanılır.\n"
+"Ara değer: kütüphane aralığının bu kadar dışına uç değerle izin verilir."
+msgstr ""
+"Nearest: a library temperature this close is used.\n"
+"Interpolation: allowance outside the library range where the end value is used."
+
+#: arayuz/ayar/foton_sicaklik.py:81
+msgid "Sıcaklığı verilmemiş malzemelerin sıcaklığı."
+msgstr "Temperature of materials without a temperature."
+
+#: arayuz/ayar/foton_sicaklik.py:82
+msgid "Windowed multipole (rezonans bölgesinde her sıcaklık)"
+msgstr "Windowed multipole (any temperature in the resonance region)"
+
+#: arayuz/ayar/foton_sicaklik.py:84
+msgid ""
+"Çözülmüş rezonans bölgesinde Doppler genişlemesi her sıcaklıkta analitik\n"
+"hesaplanır. Kütüphanede wmp verisi gerekir; yoksa OpenMC yalnız uyarır."
+msgstr ""
+"In the resolved resonance region Doppler broadening is computed analytically\n"
+"at any temperature. Requires wmp data in the library; otherwise OpenMC only warns."
+
+#: arayuz/ayar/foton_sicaklik.py:87
+msgid "Aralıktaki TÜM kütüphane sıcaklıklarını yükle (geri beslemeli hesaplar için)."
+msgstr "Load ALL library temperatures in the range (for feedback calculations)."
+
 #: arayuz/ayar/guc_formu.py:35
 #, python-format
 msgid "Tüm yakıt çubukları (%d tür)"
@@ -737,22 +1216,22 @@ msgstr ""
 msgid "Çubuk bazlı güç dağılımı hesapla (F_ΔH{fq})"
 msgstr "Compute pin power distribution (F_ΔH{fq})"
 
-#: arayuz/ayar/kaynak_formu.py:95
+#: arayuz/ayar/kaynak_formu.py:96
 #, python-brace-format
 msgid "Ortalama enerji: {e}"
 msgstr "Mean energy: {e}"
 
-#: arayuz/ayar/kaynak_formu.py:98
+#: arayuz/ayar/kaynak_formu.py:99
 msgid "Şiddet 1 — sonuçlar kaynak parçacığı başına kalır."
 msgstr "Strength 1 — results stay per source particle."
 
-#: arayuz/ayar/kaynak_formu.py:100
+#: arayuz/ayar/kaynak_formu.py:101
 msgid "Sonuçlar mutlak birimde olur (OpenMC şiddeti kendisi uygular, ayrıca çarpmayın)."
 msgstr ""
 "Results are in absolute units (OpenMC applies the strength itself; do not multiply "
 "again)."
 
-#: arayuz/ayar/kaynak_formu.py:105
+#: arayuz/ayar/kaynak_formu.py:106
 #, python-brace-format
 msgid "Tayf kurulamadı: {hata}"
 msgstr "Spectrum could not be built: {hata}"
@@ -785,11 +1264,11 @@ msgstr "Predefined group structures are taken from OpenMC (openmc.mgxs.GROUP_STR
 msgid "Ağ türü:"
 msgstr "Mesh type:"
 
-#: arayuz/ayar/mesh_formu.py:77
+#: arayuz/ayar/mesh_formu.py:77 arayuz/ayar/yuzey_tally.py:50
 msgid "alt"
 msgstr "lower"
 
-#: arayuz/ayar/mesh_formu.py:78
+#: arayuz/ayar/mesh_formu.py:78 arayuz/ayar/yuzey_tally.py:51
 msgid "üst"
 msgstr "upper"
 
@@ -808,10 +1287,6 @@ msgstr "Outer radius:"
 #: arayuz/ayar/mesh_formu.py:82
 msgid "z aralığı:"
 msgstr "z range:"
-
-#: arayuz/ayar/mesh_formu.py:86
-msgid "Grup yapısı:"
-msgstr "Group structure:"
 
 #: arayuz/ayar/mesh_formu.py:127
 msgid "Öneri yok: modelin dış ölçüsü okunamadı."
@@ -956,11 +1431,6 @@ msgstr ""
 "Adds six tallies to the run (names start with y3_). Results appear in the\n"
 "“Spectrum and four factors” card on the Run page."
 
-#: arayuz/ayar/spektrum_karti.py:37
-#, python-format
-msgid "%s (%d grup)"
-msgstr "%s (%d groups)"
-
 #: arayuz/ayar/spektrum_karti.py:39
 msgid ""
 "Akı spektrumunun enerji grupları (OpenMC hazır yapıları).\n"
@@ -993,97 +1463,143 @@ msgstr ""
 "The group structure '%s' in the file is invalid; choose one from the list to fix it "
 "(the run will not start as it is)."
 
-#: arayuz/ayar/tally_formu.py:118
+#: arayuz/ayar/tally_formu.py:119
 #, python-brace-format
 msgid "Skorlar: {s}"
 msgstr "Scores: {s}"
 
-#: arayuz/ayar/tally_formu.py:126
+#: arayuz/ayar/tally_formu.py:127
 #, python-brace-format
 msgid "Ayrıca dosyadan gelen filtre: {f} (korunur)."
 msgstr "Additional filter from the file: {f} (kept)."
 
-#: arayuz/ayar/yerlesim.py:79
+#: arayuz/ayar/yerel_k_karti.py:22
+msgid "Kapalı"
+msgstr "Off"
+
+#: arayuz/ayar/yerel_k_karti.py:22
+msgid "Pin"
+msgstr "Pin"
+
+#: arayuz/ayar/yerel_k_karti.py:23
+msgid "tüm model yüksekliği"
+msgstr "whole model height"
+
+#: arayuz/ayar/yerel_k_karti.py:23
+msgid "yalnız aktif (fisil) bölge"
+msgstr "active (fissile) region only"
+
+#: arayuz/ayar/yerel_k_karti.py:32
+msgid "Yerel k haritası (pin/demet)"
+msgstr "Local k map (pin/assembly)"
+
+#: arayuz/ayar/yerel_k_karti.py:33
+msgid "νΣ_f φ / (Σ_a φ − X) — yerel üretim / yok olma oranı"
+msgstr "νΣ_f φ / (Σ_a φ − X) — local production / removal ratio"
+
+#: arayuz/ayar/yerel_k_karti.py:43
+msgid ""
+"3B modelde 'tüm model' eksenel yansıtıcıyı da içerir (kapsam 1, sonsuz kafes "
+"denetimi); 'aktif' yalnız fisil katmanı alır."
+msgstr ""
+"In a 3D model 'whole model' also contains the axial reflector (coverage 1, infinite-"
+"lattice check); 'active' takes only the fissile layer."
+
+#: arayuz/ayar/yerel_k_karti.py:46 arayuz/sonuc/yerel_k.py:51
+msgid "Düzey:"
+msgstr "Level:"
+
+#: arayuz/ayar/yerel_k_karti.py:47
+msgid "Eksenel kapsam:"
+msgstr "Axial extent:"
+
+#: arayuz/ayar/yerel_k_karti.py:49
+msgid ""
+"Koşuya hatveye hizalı bir mesh tally'si ve filtresiz bir toplam tally'si ekler "
+"(adları yerel_k_ ile başlar); harita Çalıştır sayfasında görünür. Yalnız kare kafes."
+msgstr ""
+"Adds a mesh tally aligned to the pitch and an unfiltered total tally to the run "
+"(names start with yerel_k_); the map appears on the Run page. Rectangular lattice "
+"only."
+
+#: arayuz/ayar/yerel_k_karti.py:78
+#, python-format
+msgid "Yerel k bu modelde kurulamaz: %s"
+msgstr "Local k cannot be built for this model: %s"
+
+#: arayuz/ayar/yerlesim.py:80
 msgid "Hesap türü:"
 msgstr "Calculation type:"
 
-#: arayuz/ayar/yerlesim.py:80
+#: arayuz/ayar/yerlesim.py:81
 msgid "Hesap hassasiyeti:"
 msgstr "Accuracy preset:"
 
-#: arayuz/ayar/yerlesim.py:82
+#: arayuz/ayar/yerlesim.py:83
 msgid "Parçacık / çevrim:"
 msgstr "Particles / batch:"
 
-#: arayuz/ayar/yerlesim.py:83
+#: arayuz/ayar/yerlesim.py:84
 msgid "Toplam çevrim:"
 msgstr "Total batches:"
 
-#: arayuz/ayar/yerlesim.py:84
-msgid "Pasif çevrim:"
-msgstr "Inactive batches:"
-
-#: arayuz/ayar/yerlesim.py:86 arayuz/pencere/kabuk.py:38
+#: arayuz/ayar/yerlesim.py:87 arayuz/pencere/kabuk.py:38
 msgid "Hesap"
 msgstr "Calculation"
 
-#: arayuz/ayar/yerlesim.py:94
+#: arayuz/ayar/yerlesim.py:95
 msgid "Kaynak tipi:"
 msgstr "Source type:"
 
-#: arayuz/ayar/yerlesim.py:96
+#: arayuz/ayar/yerlesim.py:97
 msgid "Nokta konumu:"
 msgstr "Point position:"
 
-#: arayuz/ayar/yerlesim.py:97
-msgid "Parçacık:"
-msgstr "Particle:"
-
-#: arayuz/ayar/yerlesim.py:98
+#: arayuz/ayar/yerlesim.py:99
 msgid "Kaynak şiddeti [1/s]:"
 msgstr "Source strength [1/s]:"
 
-#: arayuz/ayar/yerlesim.py:115
+#: arayuz/ayar/yerlesim.py:116
 msgid "Enerji tayfı:"
 msgstr "Energy spectrum:"
 
-#: arayuz/ayar/yerlesim.py:118
+#: arayuz/ayar/yerlesim.py:119
 msgid "Açısal dağılım:"
 msgstr "Angular distribution:"
 
-#: arayuz/ayar/yerlesim.py:120
+#: arayuz/ayar/yerlesim.py:121
 msgid "Yön:"
 msgstr "Direction:"
 
-#: arayuz/ayar/yerlesim.py:121
+#: arayuz/ayar/yerlesim.py:122
 msgid "Koni yarı açısı:"
 msgstr "Cone half-angle:"
 
-#: arayuz/ayar/yerlesim.py:127
+#: arayuz/ayar/yerlesim.py:128
 msgid "Rastgele tohum:"
 msgstr "Random seed:"
 
-#: arayuz/ayar/yerlesim.py:128
+#: arayuz/ayar/yerlesim.py:129
 msgid "Sıcaklık yöntemi:"
 msgstr "Temperature method:"
 
-#: arayuz/ayar/yerlesim.py:136
+#: arayuz/ayar/yerlesim.py:137
 msgid "Entropi ağı:"
 msgstr "Entropy mesh:"
 
-#: arayuz/ayar/yerlesim.py:137
+#: arayuz/ayar/yerlesim.py:138
 msgid "IFP nesil sayısı:"
 msgstr "IFP generations:"
 
-#: arayuz/ayar/yerlesim.py:138
+#: arayuz/ayar/yerlesim.py:139
 msgid "Gecikmeli nötron grupları:"
 msgstr "Delayed neutron groups:"
 
-#: arayuz/ayar/yerlesim.py:140
+#: arayuz/ayar/yerlesim.py:142
 msgid "Başlangıç kaynağının enerjisi ve yönü"
 msgstr "Initial source energy and direction"
 
-#: arayuz/ayar/yerlesim.py:143
+#: arayuz/ayar/yerlesim.py:145
 msgid ""
 "Özdeğer hesabında bunlar yalnızca başlangıç tahminidir; pasif çevrimlerde gerçek "
 "fisyon tayfına döner ve k-eff'i etkilemez."
@@ -1091,59 +1607,115 @@ msgstr ""
 "In an eigenvalue calculation these are only an initial guess; the source relaxes to "
 "the true fission spectrum during the inactive batches and does not affect k-eff."
 
-#: arayuz/ayar/yerlesim.py:154
+#: arayuz/ayar/yerlesim.py:156
 msgid "Güç dağılımı"
 msgstr "Power distribution"
 
-#: arayuz/ayar/yerlesim.py:158
+#: arayuz/ayar/yerlesim.py:160
 msgid "Hedef çubuk:"
 msgstr "Target pin:"
 
-#: arayuz/ayar/yerlesim.py:159
+#: arayuz/ayar/yerlesim.py:161
 msgid "Eksenel dilim:"
 msgstr "Axial bins:"
 
-#: arayuz/ayar/yerlesim.py:160 arayuz/sonuc/mesh_harita.py:79
+#: arayuz/ayar/yerlesim.py:162 arayuz/sonuc/mesh_harita.py:79
 #: arayuz/sonuc/mesh_harita.py:218
 msgid "Toplam güç:"
 msgstr "Total power:"
 
-#: arayuz/ayar/yerlesim.py:171 arayuz/sonuc/mesh_harita.py:130
+#: arayuz/ayar/yerlesim.py:173 arayuz/goruntuleyici/paneller.py:136
+#: arayuz/sonuc/mesh_harita.py:130
 msgid "Skor:"
 msgstr "Score:"
 
-#: arayuz/ayar/yerlesim.py:190 arayuz/cubuk/sayfalar.py:203 arayuz/malzeme/asistan.py:131
+#: arayuz/ayar/yerlesim.py:207 arayuz/cubuk/sayfalar.py:203 arayuz/malzeme/asistan.py:131
 #: arayuz/malzeme/kutuphane_diyalog.py:65 arayuz/malzeme/malzeme_diyalog.py:83
 msgid "Ad:"
 msgstr "Name:"
 
-#: arayuz/ayar/yerlesim.py:191
+#: arayuz/ayar/yerlesim.py:208
 msgid "Ne ölçülsün:"
 msgstr "Measure:"
 
-#: arayuz/ayar/yerlesim.py:193
+#: arayuz/ayar/yerlesim.py:210
 msgid "Skorlar:"
 msgstr "Scores:"
 
-#: arayuz/ayar/yerlesim.py:196
+#: arayuz/ayar/yerlesim.py:213
 msgid "Grup sınırları [eV]:"
 msgstr "Group boundaries [eV]:"
 
-#: arayuz/ayar/yerlesim.py:200
+#: arayuz/ayar/yerlesim.py:217
 msgid "Ağ bölmeleri:"
 msgstr "Mesh divisions:"
 
-#: arayuz/ayar/yerlesim.py:206
+#: arayuz/ayar/yerlesim.py:224
 msgid "+ Tally"
 msgstr "+ Tally"
 
-#: arayuz/ayar/yerlesim.py:226
+#: arayuz/ayar/yerlesim.py:244
 msgid "Tally'ler"
 msgstr "Tallies"
 
-#: arayuz/ayar/yerlesim.py:226
+#: arayuz/ayar/yerlesim.py:244
 msgid "Ölçülecek büyüklükler"
 msgstr "Quantities to measure"
+
+#: arayuz/ayar/yuzey_tally.py:23
+msgid "Hacim (akı, tepkime)"
+msgstr "Volume (flux, reactions)"
+
+#: arayuz/ayar/yuzey_tally.py:24
+msgid "Yüzey: model sınırı (kaçak)"
+msgstr "Surface: model boundary (leakage)"
+
+#: arayuz/ayar/yuzey_tally.py:25
+msgid "Yüzey: kutu ağı (giren / çıkan)"
+msgstr "Surface: box mesh (in / out)"
+
+#: arayuz/ayar/yuzey_tally.py:38
+msgid ""
+"Hacim: bölgedeki akı ve tepkime hızları.\n"
+"Model sınırı: vakum sınırından kaçan parçacıklar (yüzey başına).\n"
+"Kutu ağı: ağ hücrelerinin yüzlerinden giren ve çıkan kısmi akımlar ve\n"
+"nötron dengesi (giren − çıkan + kaynak + üretim = soğurma)."
+msgstr ""
+"Volume: flux and reaction rates in the region.\n"
+"Model boundary: particles leaking through the vacuum boundary (per surface).\n"
+"Box mesh: partial currents entering and leaving through the faces of the mesh cells "
+"and\n"
+"the neutron balance (in - out + source + production = absorption)."
+
+#: arayuz/ayar/yuzey_tally.py:48
+msgid "otomatik (model kutusu)"
+msgstr "automatic (model box)"
+
+#: arayuz/ayar/yuzey_tally.py:49
+msgid "x, y, z [cm]; ikisi de boşsa model kutusu kullanılır."
+msgstr "x, y, z [cm]; if both are empty the model box is used."
+
+#: arayuz/ayar/yuzey_tally.py:53
+msgid ""
+"Yüzey tally'sinde skor 'current'tır; enerji grupları açıksa kaçak spektrumu verilir. "
+"Akım kaynak parçacığına süzülür. Sonuç Çalıştır sayfasındaki “Yüzey akımı” "
+"kartındadır."
+msgstr ""
+"A surface tally scores 'current'; with energy groups a leakage spectrum is given. The"
+" current is filtered to the source particle. The result is in the “Surface current” "
+"card on the Run page."
+
+#: arayuz/ayar/yuzey_tally.py:56
+msgid "Tür:"
+msgstr "Type:"
+
+#: arayuz/ayar/yuzey_tally.py:57
+msgid "Kutu bölmeleri:"
+msgstr "Box divisions:"
+
+#: arayuz/ayar/yuzey_tally.py:58
+msgid "Kutu sınırları [cm]:"
+msgstr "Box bounds [cm]:"
 
 #: arayuz/baslangic.py:71
 msgid "Yakıt çubuğu (pin hücre)"
@@ -1319,7 +1891,7 @@ msgstr "Open from file"
 msgid "Kaydedilmiş bir model (.json) ya da OpenMC XML klasörü."
 msgstr "A saved model (.json) or an OpenMC XML folder."
 
-#: arayuz/baslangic.py:456 arayuz/pencere/menuler.py:140
+#: arayuz/baslangic.py:456 arayuz/pencere/menuler.py:146
 msgid "Aç…"
 msgstr "Open…"
 
@@ -1327,7 +1899,7 @@ msgstr "Open…"
 msgid "Bilgisayarınızdaki bir model dosyasını (.json) açar (Ctrl+O)."
 msgstr "Opens a model file (.json) from your computer (Ctrl+O)."
 
-#: arayuz/baslangic.py:464 arayuz/pencere/menuler.py:142
+#: arayuz/baslangic.py:464 arayuz/pencere/menuler.py:148
 msgid "Son kullanılanlar"
 msgstr "Recent"
 
@@ -1504,7 +2076,7 @@ msgid "boş şablonu olmayan kart: %s"
 msgstr "card without an empty template: %s"
 
 #: arayuz/bilesenler/bildirim.py:98 arayuz/malzeme/kutuphane_tarayici.py:53
-#: arayuz/pencere/menuler.py:354
+#: arayuz/pencere/menuler.py:365
 msgid "Kapat"
 msgstr "Close"
 
@@ -1820,16 +2392,16 @@ msgstr "Loaded from disk"
 msgid "Kayıtlı koşu gösteriliyor; koşu öncesi doğrulama bu oturumda yapılmadı."
 msgstr "Showing a saved run; the pre-run model check was not done in this session."
 
-#: arayuz/calistir/sonuc_gosterimi.py:109
+#: arayuz/calistir/sonuc_gosterimi.py:112
 msgid "Koşu tamamlandı (sabit kaynak) — sonuçlar tally'lerde"
 msgstr "Run complete (fixed source) — results are in the tallies"
 
-#: arayuz/calistir/sonuc_gosterimi.py:112
+#: arayuz/calistir/sonuc_gosterimi.py:115
 #, python-format
 msgid "Koşu tamamlandı: k-eff = %.5f ± %.5f"
 msgstr "Run complete: k-eff = %.5f ± %.5f"
 
-#: arayuz/calistir/sonuc_gosterimi.py:124
+#: arayuz/calistir/sonuc_gosterimi.py:144
 msgid ""
 "Sabit kaynak — k-eff tanımsız\n"
 "Sonuç tally'lerdir (aşağıda)."
@@ -1837,7 +2409,7 @@ msgstr ""
 "Fixed source — k-eff undefined\n"
 "The results are tallies (below)."
 
-#: arayuz/calistir/sonuc_gosterimi.py:151
+#: arayuz/calistir/sonuc_gosterimi.py:171
 msgid "Dikkat: kaynak yakınsamamış olabilir — pasif çevrim sayısını artırın"
 msgstr "Caution: the source may not have converged — increase the number of inactive batches"
 
@@ -1852,10 +2424,6 @@ msgstr "batch"
 #: arayuz/calistir/yakinsama.py:65
 msgid "Grafiği kaydet"
 msgstr "Save chart"
-
-#: arayuz/calistir/yakinsama.py:77 arayuz/pencere/proje.py:146
-msgid "Kaydedilemedi"
-msgstr "Could not save"
 
 #: arayuz/calistir/yakinsama.py:86
 msgid "Yakınsama"
@@ -2071,10 +2639,6 @@ msgctxt "madde"
 msgid "Boş"
 msgstr "Void"
 
-#: arayuz/cubuk/parca_islemleri.py:240 arayuz/cubuk/sayfalar.py:117
-msgid "Bölge"
-msgstr "Region"
-
 #: arayuz/cubuk/parca_islemleri.py:281
 msgid "Ad boş olamaz."
 msgstr "Name cannot be empty."
@@ -2236,6 +2800,7 @@ msgstr ""
 "in place. It cannot move into the outer region."
 
 #: arayuz/cubuk/sayfalar.py:162 arayuz/geometri/formlar.py:148
+#: arayuz/goruntuleyici/paneller.py:55 arayuz/goruntuleyici/pencere.py:126
 msgid "Kesit"
 msgstr "Cross-section"
 
@@ -2541,10 +3106,6 @@ msgstr "Number of columns (x)"
 #: arayuz/demet/yerlesim.py:185
 msgid "Satır sayısı (y)"
 msgstr "Number of rows (y)"
-
-#: arayuz/demet/yerlesim.py:188
-msgid "Boyut"
-msgstr "Size"
 
 #: arayuz/demet/yerlesim.py:197
 msgid "Demet dışı"
@@ -3726,6 +4287,304 @@ msgstr ""
 msgid "Sınır koşulları"
 msgstr "Boundary conditions"
 
+#: arayuz/goruntuleyici/__init__.py:17
+msgid "Malzeme/hücre/çakışma kesiti, ağ tally bindirmesi, kaynak noktaları, 3B görünüm (Y2)"
+msgstr "Material/cell/overlap slice, mesh tally overlay, source points, 3D view (Y2)"
+
+#: arayuz/goruntuleyici/gorunum.py:173
+msgid "ÇAKIŞMA: nokta birden çok hücrede"
+msgstr "OVERLAP: point in more than one cell"
+
+#: arayuz/goruntuleyici/gorunum.py:175
+msgid "hücre yok (geometri dışı ya da tanımsız bölge)"
+msgstr "no cell (outside the geometry or undefined region)"
+
+#: arayuz/goruntuleyici/gorunum.py:176
+#, python-format
+msgid "hücre %d"
+msgstr "cell %d"
+
+#: arayuz/goruntuleyici/gorunum.py:178
+#, python-format
+msgid ", örnek %d"
+msgstr ", instance %d"
+
+#: arayuz/goruntuleyici/gorunum.py:179
+msgid "boşluk (void)"
+msgstr "void"
+
+#: arayuz/goruntuleyici/gorunum.py:180
+#, python-format
+msgid "malzeme %d"
+msgstr "material %d"
+
+#: arayuz/goruntuleyici/paneller.py:68
+msgid "Çakışma denetimi"
+msgstr "Overlap check"
+
+#: arayuz/goruntuleyici/paneller.py:69
+msgid "Tüm modeli göster"
+msgstr "Show whole model"
+
+#: arayuz/goruntuleyici/paneller.py:71
+msgid "Kesit ekseni:"
+msgstr "Slice axis:"
+
+#: arayuz/goruntuleyici/paneller.py:72
+msgid "Kesit konumu:"
+msgstr "Slice position:"
+
+#: arayuz/goruntuleyici/paneller.py:73
+msgid "Görünür genişlik:"
+msgstr "Visible width:"
+
+#: arayuz/goruntuleyici/paneller.py:75 arayuz/goruntuleyici/paneller.py:223
+msgid "Renklendirme:"
+msgstr "Coloring:"
+
+#: arayuz/goruntuleyici/paneller.py:78
+msgid ""
+"Tekerlek: yakınlaştır · sol tuşla sürükle: kaydır. Çakışma kipi denetimi "
+"kendiliğinden açar."
+msgstr ""
+"Wheel: zoom · drag with the left button: pan. The overlap mode turns the check on by "
+"itself."
+
+#: arayuz/goruntuleyici/paneller.py:110
+msgid "Ağ (mesh) tally bindirmesi"
+msgstr "Mesh tally overlay"
+
+#: arayuz/goruntuleyici/paneller.py:114 arayuz/goruntuleyici/paneller.py:153
+msgid "(statepoint yok)"
+msgstr "(no statepoint)"
+
+#: arayuz/goruntuleyici/paneller.py:116
+msgid "Statepoint seç…"
+msgstr "Choose statepoint…"
+
+#: arayuz/goruntuleyici/paneller.py:125
+msgid "Güvenilmez hücreleri gizle (σ maskesi)"
+msgstr "Hide unreliable cells (σ mask)"
+
+#: arayuz/goruntuleyici/paneller.py:135 arayuz/sonuc/mesh_harita.py:130
+msgid "Tally:"
+msgstr "Tally:"
+
+#: arayuz/goruntuleyici/paneller.py:137 arayuz/sonuc/mesh_harita.py:131
+msgid "Enerji grubu:"
+msgstr "Energy group:"
+
+#: arayuz/goruntuleyici/paneller.py:138 arayuz/sonuc/mesh_harita.py:134
+msgid "Normalizasyon:"
+msgstr "Normalization:"
+
+#: arayuz/goruntuleyici/paneller.py:139
+msgid "Opaklık:"
+msgstr "Opacity:"
+
+#: arayuz/goruntuleyici/paneller.py:141
+msgid "Bağıl hata eşiği:"
+msgstr "Relative error threshold:"
+
+#: arayuz/goruntuleyici/paneller.py:160
+msgid "Toplam (tüm gruplar)"
+msgstr "Total (all groups)"
+
+#: arayuz/goruntuleyici/paneller.py:162
+#, python-format
+msgid "Grup %d"
+msgstr "Group %d"
+
+#: arayuz/goruntuleyici/paneller.py:181
+msgid "Kaynak noktaları"
+msgstr "Source points"
+
+#: arayuz/goruntuleyici/paneller.py:186
+msgid "Model kaynağı (settings.source)"
+msgstr "Model source (settings.source)"
+
+#: arayuz/goruntuleyici/paneller.py:187
+msgid "Statepoint kaynak bankası"
+msgstr "Statepoint source bank"
+
+#: arayuz/goruntuleyici/paneller.py:192
+msgid "tümü (izdüşüm)"
+msgstr "all (projection)"
+
+#: arayuz/goruntuleyici/paneller.py:194
+msgid "Kaynak:"
+msgstr "Source:"
+
+#: arayuz/goruntuleyici/paneller.py:196
+msgid "Dilim kalınlığı:"
+msgstr "Slice thickness:"
+
+#: arayuz/goruntuleyici/paneller.py:210 arayuz/goruntuleyici/pencere.py:127
+msgid "3B görünüm"
+msgstr "3D view"
+
+#: arayuz/goruntuleyici/paneller.py:221
+msgid "Çiz"
+msgstr "Draw"
+
+#: arayuz/goruntuleyici/paneller.py:224
+msgid "Azimut:"
+msgstr "Azimuth:"
+
+#: arayuz/goruntuleyici/paneller.py:225
+msgid "Yükselti:"
+msgstr "Elevation:"
+
+#: arayuz/goruntuleyici/paneller.py:226
+msgid "Uzaklık katı:"
+msgstr "Distance factor:"
+
+#: arayuz/goruntuleyici/paneller.py:227
+msgid "Görüş açısı:"
+msgstr "Field of view:"
+
+#: arayuz/goruntuleyici/paneller.py:228
+msgid "Gizlenen malzemeler:"
+msgstr "Hidden materials:"
+
+#: arayuz/goruntuleyici/paneller.py:230
+msgid "2B modelde geometri eksenel sonsuzdur: 3B görünüm sonsuz prizmayı gösterir."
+msgstr "In a 2D model the geometry is axially infinite: the 3D view shows an infinite prism."
+
+#: arayuz/goruntuleyici/pencere.py:77
+msgid "Görüntüleyici"
+msgstr "Viewer"
+
+#: arayuz/goruntuleyici/pencere.py:112
+msgid "Modeli yenile"
+msgstr "Reload model"
+
+#: arayuz/goruntuleyici/pencere.py:113
+msgid "PNG olarak kaydet…"
+msgstr "Save as PNG…"
+
+#: arayuz/goruntuleyici/pencere.py:172
+msgid "Açık model yok: önce bir model açın."
+msgstr "No open model: open a model first."
+
+#: arayuz/goruntuleyici/pencere.py:254
+msgid "Kaynak bankası için statepoint seçin (Ağ tally bindirmesi > Statepoint seç…)."
+msgstr "Choose a statepoint for the source bank (Mesh tally overlay > Choose statepoint…)."
+
+#: arayuz/goruntuleyici/pencere.py:273
+msgid "Önce kesit çizilmeli (model bilgisi bekleniyor)."
+msgstr "The slice must be drawn first (waiting for model information)."
+
+#: arayuz/goruntuleyici/pencere.py:282
+msgid "3B görünüm çiziliyor…"
+msgstr "Drawing 3D view…"
+
+#: arayuz/goruntuleyici/pencere.py:341
+#, python-format
+msgid "Görüntüleyici: %s"
+msgstr "Viewer: %s"
+
+#: arayuz/goruntuleyici/pencere.py:345
+#, python-format
+msgid ""
+"3B görünüm üretilemedi:\n"
+"\n"
+"%s"
+msgstr ""
+"The 3D view could not be produced:\n"
+"\n"
+"%s"
+
+#: arayuz/goruntuleyici/pencere.py:348
+#, python-format
+msgid ""
+"Kesit çizilemedi:\n"
+"\n"
+"%s"
+msgstr ""
+"The slice could not be drawn:\n"
+"\n"
+"%s"
+
+#: arayuz/goruntuleyici/pencere.py:354
+#, python-format
+msgid ""
+"3B ışın izleme bu modelde başarısız oldu (OpenMC 0.16 SolidRayTracePlot sınırlaması; "
+"bazı tam kor modellerinde süreç çöker ya da asılı kalır).\n"
+"\n"
+"%s"
+msgstr ""
+"3D ray tracing failed for this model (OpenMC 0.16 SolidRayTracePlot limitation; on "
+"some full-core models the process crashes or hangs).\n"
+"\n"
+"%s"
+
+#: arayuz/goruntuleyici/pencere.py:396
+#, python-format
+msgid "Bindirme yapılamadı: %s"
+msgstr "Overlay failed: %s"
+
+#: arayuz/goruntuleyici/pencere.py:408
+msgid "Kesit güncel."
+msgstr "Slice up to date."
+
+#: arayuz/goruntuleyici/pencere.py:410
+#, python-format
+msgid "ÇAKIŞMA: %d piksel birden çok hücrede."
+msgstr "OVERLAP: %d pixels in more than one cell."
+
+#: arayuz/goruntuleyici/pencere.py:412
+#, python-format
+msgid "Hücresiz (geometri dışı ya da tanımsız): %d piksel."
+msgstr "No cell (outside the geometry or undefined): %d pixels."
+
+#: arayuz/goruntuleyici/pencere.py:415
+#, python-format
+msgid "Kaynak noktası: %d / %d gösteriliyor."
+msgstr "Source points: showing %d / %d."
+
+#: arayuz/goruntuleyici/pencere.py:464
+#, python-format
+msgid "tally: %.4g"
+msgstr "tally: %.4g"
+
+#: arayuz/goruntuleyici/pencere.py:479
+#, python-format
+msgid "Statepoint okunamadı: %s"
+msgstr "Statepoint could not be read: %s"
+
+#: arayuz/goruntuleyici/pencere.py:481
+msgid "Statepoint'te ağ (mesh) tally'si yok."
+msgstr "No mesh tally in the statepoint."
+
+#: arayuz/goruntuleyici/pencere.py:487
+msgid "Statepoint seç"
+msgstr "Choose statepoint"
+
+#: arayuz/goruntuleyici/pencere.py:488
+msgid "Statepoint (statepoint*.h5);;HDF5 (*.h5)"
+msgstr "Statepoint (statepoint*.h5);;HDF5 (*.h5)"
+
+#: arayuz/goruntuleyici/pencere.py:499
+msgid "PNG olarak kaydet"
+msgstr "Save as PNG"
+
+#: arayuz/goruntuleyici/pencere.py:499
+msgid "PNG resmi (*.png)"
+msgstr "PNG image (*.png)"
+
+#: arayuz/goruntuleyici/renk_kipi.py:24
+msgid "Çakışma ve tanımsız bölge"
+msgstr "Overlap and undefined region"
+
+#: arayuz/goruntuleyici/tuval.py:87
+msgid "kaynak noktaları"
+msgstr "source points"
+
+#: arayuz/goruntuleyici/tuval.py:161
+msgid "3B görünüm için “Çiz”e basın"
+msgstr "Press “Draw” for the 3D view"
+
 #: arayuz/guc_harita.py:62
 msgid "Çubuk toplam gücü (F_ΔH)"
 msgstr "Total pin power (F_ΔH)"
@@ -3739,18 +4598,19 @@ msgstr "Single axial bin (F_q)"
 msgid "Dilim %d"
 msgstr "Axial bin %d"
 
-#: arayuz/guc_harita.py:67
+#: arayuz/guc_harita.py:67 arayuz/sonuc/yerel_k.py:52
 msgid "Değerleri haritaya yaz"
 msgstr "Write values on the map"
 
-#: arayuz/guc_harita.py:68
+#: arayuz/guc_harita.py:68 arayuz/sonuc/yerel_k.py:54
 msgid "PNG kaydet…"
 msgstr "Save PNG…"
 
-#: arayuz/demet/yerlesim.py:35 arayuz/geometri/sablon_diyalogu.py:23
-#: arayuz/guc_harita.py:71 arayuz/guc_harita_tablo.py:37
-#: arayuz/pencere/model_islemleri.py:65 arayuz/sekme_demet.py:514
-#: arayuz/yardim/__init__.py:45
+#: arayuz/analiz/demet_kinf.py:40 arayuz/analiz/demet_kinf.py:41
+#: arayuz/ayar/yerel_k_karti.py:22 arayuz/demet/yerlesim.py:35
+#: arayuz/geometri/sablon_diyalogu.py:23 arayuz/guc_harita.py:71
+#: arayuz/guc_harita_tablo.py:37 arayuz/pencere/model_islemleri.py:65
+#: arayuz/sekme_demet.py:514 arayuz/yardim/__init__.py:45
 msgid "Demet"
 msgstr "Assembly"
 
@@ -3909,11 +4769,11 @@ msgstr "axial bin"
 msgid "Eksenel profil"
 msgstr "Axial profile"
 
-#: arayuz/guc_harita.py:364 arayuz/karsilastir/panel.py:214
+#: arayuz/guc_harita.py:364 arayuz/karsilastir/panel.py:214 arayuz/sonuc/yerel_k.py:208
 msgid "x (soldan)"
 msgstr "x (from left)"
 
-#: arayuz/guc_harita.py:365 arayuz/karsilastir/panel.py:215
+#: arayuz/guc_harita.py:365 arayuz/karsilastir/panel.py:215 arayuz/sonuc/yerel_k.py:209
 msgid "y (alttan)"
 msgstr "y (from bottom)"
 
@@ -3995,6 +4855,7 @@ msgstr "Pin power table could not be built: %s"
 msgid "Konum"
 msgstr "Position"
 
+#: arayuz/analiz/demet_kinf.py:40 arayuz/analiz/mgxs_tablo.py:55
 #: arayuz/cubuk/sayfalar.py:160 arayuz/geometri/form_yerlesim.py:338
 #: arayuz/geometri/formlar.py:86 arayuz/guc_harita_tablo.py:41 arayuz/malzeme/bilesim.py:37
 msgid "Tür"
@@ -4088,7 +4949,7 @@ msgid "Çeyrek katlama yapılamaz: %s"
 msgstr "Quarter folding not possible: %s"
 
 #: arayuz/guc_harita_tablo.py:340 arayuz/tukenme_pin_gucu.py:231
-#: arayuz/tukenme_sonuc.py:116
+#: arayuz/tukenme_sonuc.py:119
 msgid "CSV dosyası (*.csv)"
 msgstr "CSV file (*.csv)"
 
@@ -4224,15 +5085,11 @@ msgstr "material"
 msgid "boşluk"
 msgstr "void"
 
-#: arayuz/analiz/sekme.py:448 arayuz/ayar/guc_formu.py:72
+#: arayuz/analiz/sekme.py:455 arayuz/ayar/guc_formu.py:72
 #: arayuz/cubuk/parca_islemleri.py:20 arayuz/izgara_yardimci.py:173
 #: arayuz/kor/katmanlar.py:22
 msgid "Boş (madde yok)"
 msgstr "Void (no material)"
-
-#: arayuz/karsilastir/panel.py:31 arayuz/kuyruk/panel.py:30
-msgid "Durum"
-msgstr "State"
 
 #: arayuz/karsilastir/panel.py:31 arayuz/kuyruk/panel.py:30
 msgid "k ± σ"
@@ -4823,10 +5680,6 @@ msgstr[1] ""
 "\n"
 "Continue?"
 
-#: arayuz/kuyruk/panel.py:30
-msgid "Çevrim"
-msgstr "Batch"
-
 #: arayuz/kuyruk/panel.py:33
 msgid "bekliyor"
 msgstr "waiting"
@@ -4890,10 +5743,6 @@ msgstr "Up"
 #: arayuz/kuyruk/panel.py:148
 msgid "Aşağı"
 msgstr "Down"
-
-#: arayuz/kuyruk/panel.py:149 arayuz/veri/indirme_karti.py:128
-msgid "İptal"
-msgstr "Cancel"
 
 #: arayuz/kuyruk/panel.py:150
 msgid "Kaldır"
@@ -5412,7 +6261,7 @@ msgstr ""
 msgid "Elle düzenlemeye geçince malzeme kütüphane parametrelerinden ayrılır."
 msgstr "Switching to manual editing detaches the material from the library parameters."
 
-#: arayuz/malzeme/malzeme_diyalog.py:206 arayuz/pencere/dogrulama_seridi.py:123
+#: arayuz/malzeme/malzeme_diyalog.py:206 arayuz/pencere/dogrulama_seridi.py:153
 msgid "Tamam"
 msgstr "OK"
 
@@ -5700,29 +6549,31 @@ msgstr[1] "{n} are not in the selected chain (red)"
 msgid "aşağıdan işaretleyin ya da hazır set seçin"
 msgstr "check below or pick a preset set"
 
-#: arayuz/onizleme.py:72
+#: arayuz/goruntuleyici/paneller.py:21 arayuz/onizleme.py:72
 msgid "Düşük (400)"
 msgstr "Low (400)"
 
-#: arayuz/onizleme.py:72
+#: arayuz/goruntuleyici/paneller.py:21 arayuz/onizleme.py:72
 msgid "Normal (800)"
 msgstr "Normal (800)"
 
-#: arayuz/onizleme.py:73
+#: arayuz/goruntuleyici/paneller.py:22 arayuz/onizleme.py:73
 msgid "Yüksek (1400)"
 msgstr "High (1400)"
 
+#: arayuz/goruntuleyici/paneller.py:214 arayuz/goruntuleyici/renk_kipi.py:23
 #: arayuz/onizleme.py:77
 msgid "Hücre"
 msgstr "Cell"
 
 #: arayuz/cubuk/sayfalar.py:117 arayuz/demet/kilif.py:59 arayuz/geometri/formlar.py:30
-#: arayuz/geometri/formlar.py:87 arayuz/kor/yerlesim.py:85 arayuz/onizleme.py:77
+#: arayuz/geometri/formlar.py:87 arayuz/goruntuleyici/paneller.py:213
+#: arayuz/goruntuleyici/renk_kipi.py:23 arayuz/kor/yerlesim.py:85 arayuz/onizleme.py:77
 #: arayuz/sekme_malzeme.py:237
 msgid "Malzeme"
 msgstr "Material"
 
-#: arayuz/onizleme.py:162 arayuz/onizleme.py:332
+#: arayuz/goruntuleyici/tuval.py:60 arayuz/onizleme.py:162 arayuz/onizleme.py:332
 msgid "Model bekleniyor"
 msgstr "Waiting for a model"
 
@@ -5758,11 +6609,11 @@ msgstr "Refresh"
 msgid "Renk:"
 msgstr "Color:"
 
-#: arayuz/onizleme.py:237
+#: arayuz/goruntuleyici/paneller.py:74 arayuz/onizleme.py:237
 msgid "Çözünürlük:"
 msgstr "Resolution:"
 
-#: arayuz/onizleme.py:362
+#: arayuz/goruntuleyici/pencere.py:237 arayuz/onizleme.py:362
 msgid "Çiziliyor…"
 msgstr "Drawing…"
 
@@ -5821,16 +6672,16 @@ msgstr "[scale not 1:1]"
 msgid "Hücre renkleri yalnız hücreleri ayırt etmek içindir."
 msgstr "Cell colours only tell cells apart."
 
-#: arayuz/onizleme_boyama.py:108
+#: arayuz/onizleme_boyama.py:113
 msgid "Çakışma"
 msgstr "Overlap"
 
-#: arayuz/onizleme_istemci.py:159
+#: arayuz/onizleme_istemci.py:167
 #, python-format
 msgid "Önizleme isteği gönderilemedi: %s"
 msgstr "Preview request could not be sent: %s"
 
-#: arayuz/onizleme_istemci.py:263
+#: arayuz/onizleme_istemci.py:286
 #, python-format
 msgid ""
 "Önizleme %d s içinde bitmedi; model çizim için çok ağır olabilir, süreç durduruldu. "
@@ -5839,21 +6690,21 @@ msgstr ""
 "The preview did not finish within %d s; the model may be too heavy to plot, so the "
 "process was stopped. Lower the resolution or turn off the overlap check."
 
-#: arayuz/onizleme_istemci.py:267
+#: arayuz/onizleme_istemci.py:290
 msgid "çöktü"
 msgstr "crashed"
 
-#: arayuz/onizleme_istemci.py:268
+#: arayuz/onizleme_istemci.py:291
 #, python-format
 msgid "çıkış kodu %d"
 msgstr "exit code %d"
 
-#: arayuz/onizleme_istemci.py:269
+#: arayuz/onizleme_istemci.py:292
 #, python-format
 msgid "Önizleme süreci beklenmedik biçimde sonlandı (%s)."
 msgstr "The preview process ended unexpectedly (%s)."
 
-#: arayuz/onizleme_istemci.py:271
+#: arayuz/onizleme_istemci.py:294
 #, python-format
 msgid ""
 "Üst üste %d kez sonlandı; otomatik yeniden başlatma durduruldu, bir sonraki çizimde "
@@ -5862,11 +6713,11 @@ msgstr ""
 "It ended %d times in a row; automatic restart was stopped, it is retried on the next "
 "plot."
 
-#: arayuz/onizleme_istemci.py:274
+#: arayuz/onizleme_istemci.py:297
 msgid "Yeniden başlatıldı; model değişince önizleme yeniden çizilir."
 msgstr "Restarted; the preview is redrawn when the model changes."
 
-#: arayuz/onizleme_istemci.py:287
+#: arayuz/onizleme_istemci.py:310
 #, python-format
 msgid "Önizleme süreci başlatılamadı: %s"
 msgstr "The preview process could not be started: %s"
@@ -5892,7 +6743,7 @@ msgstr ""
 "with reflective boundaries); the full model on other pages. Full model: always\n"
 "the whole model. In both modes the Run gate checks only the full model."
 
-#: arayuz/onizleme_kapsam.py:92
+#: arayuz/analiz/mgxs.py:179 arayuz/onizleme_kapsam.py:92
 msgid "Kapsam:"
 msgstr "Scope:"
 
@@ -5909,59 +6760,59 @@ msgstr "Preview: full model checked."
 msgid "Tam model kurulamadı (Çalıştır kapalı): %s"
 msgstr "Full model could not be built (Run disabled): %s"
 
-#: arayuz/ortak.py:173
+#: arayuz/ortak.py:231
 msgid "seçilmemiş"
 msgstr "not selected"
 
-#: arayuz/ortak.py:233
+#: arayuz/ortak.py:291
 msgid "Malzeme rengi"
 msgstr "Material color"
 
-#: arayuz/ortak.py:388
+#: arayuz/ortak.py:446
 msgid "Gelişmiş"
 msgstr "Advanced"
 
-#: arayuz/ortak.py:459
+#: arayuz/ortak.py:517
 msgid "Gizle"
 msgstr "Hide"
 
-#: arayuz/ortak.py:459
+#: arayuz/ortak.py:517
 msgid "Nadiren gereken ayarları göster"
 msgstr "Show rarely needed settings"
 
-#: arayuz/pencere/ana_pencere.py:123
+#: arayuz/pencere/ana_pencere.py:128
 msgid "yeni model"
 msgstr "new model"
 
-#: arayuz/pencere/ana_pencere.py:155
+#: arayuz/pencere/ana_pencere.py:160
 msgid "Sayfalar"
 msgstr "Pages"
 
-#: arayuz/pencere/ana_pencere.py:341
+#: arayuz/pencere/ana_pencere.py:346
 msgid "Şablon kurulamadı"
 msgstr "Template could not be built"
 
-#: arayuz/pencere/ana_pencere.py:348
+#: arayuz/pencere/ana_pencere.py:353
 #, python-brace-format
 msgid "Çalışan sade bir model kuruldu ({ad}). Kaydetmek için 'Farklı kaydet' kullanın."
 msgstr "A simple working model was set up ({ad}). Use 'Save as' to save it."
 
-#: arayuz/pencere/ana_pencere.py:556
+#: arayuz/pencere/ana_pencere.py:561
 #, python-brace-format
 msgid "adsız — örnek: {ornek}"
 msgstr "untitled — example: {ornek}"
 
-#: arayuz/pencere/ana_pencere.py:559
+#: arayuz/pencere/ana_pencere.py:564
 msgid "kaydedilmemiş"
 msgstr "unsaved"
 
-#: arayuz/pencere/ana_pencere.py:584
+#: arayuz/pencere/ana_pencere.py:589
 msgid "Boyuta tıklayınca Kor sayfasına, hesap türüne tıklayınca Hesap ayarlarına gider."
 msgstr ""
 "Click the dimension to go to the Geometry page, the calculation type to go to Run "
 "settings."
 
-#: arayuz/pencere/ana_pencere.py:628
+#: arayuz/pencere/ana_pencere.py:633
 #, python-brace-format
 msgid ""
 " Model bu türün gerektirdiği parçayı içermiyordu; şablondan eklendi: {parca} "
@@ -5970,104 +6821,104 @@ msgstr ""
 " The model lacked the component this type needs; added from the template: {parca} "
 "(edit it on the Components/Assembly page)."
 
-#: arayuz/pencere/ana_pencere.py:631
+#: arayuz/pencere/ana_pencere.py:636
 #, python-brace-format
 msgid "Kor türü: {tur} — geri almak için Ctrl+Z.{ek}"
 msgstr "Core type: {tur} — press Ctrl+Z to undo.{ek}"
 
-#: arayuz/pencere/dogrulama_seridi.py:32
+#: arayuz/pencere/dogrulama_seridi.py:36
 msgid "Hata"
 msgstr "Error"
 
-#: arayuz/pencere/dogrulama_seridi.py:32
+#: arayuz/pencere/dogrulama_seridi.py:36
 msgid "Uyarı"
 msgstr "Warning"
 
-#: arayuz/pencere/dogrulama_seridi.py:32
+#: arayuz/pencere/dogrulama_seridi.py:36
 msgid "Bilgi"
 msgstr "Info"
 
-#: arayuz/pencere/dogrulama_seridi.py:33
+#: arayuz/pencere/dogrulama_seridi.py:37
 msgid "Eksik aşama"
 msgstr "Missing step"
 
-#: arayuz/pencere/dogrulama_seridi.py:58
+#: arayuz/pencere/dogrulama_seridi.py:67
 msgid "Tıklayınca ilgili sayfaya gider; sağ tık: kılavuzda aç."
 msgstr "Click to go to its page; right-click: open in the user guide."
 
-#: arayuz/pencere/dogrulama_seridi.py:62
+#: arayuz/pencere/dogrulama_seridi.py:71
 msgid "✓ Bulgu yok — model tutarlı görünüyor."
 msgstr "✓ No findings — the model looks consistent."
 
-#: arayuz/pencere/dogrulama_seridi.py:74
+#: arayuz/pencere/dogrulama_seridi.py:83
 msgid "Tıklayınca ilgili sayfaya gider."
 msgstr "Click to go to the relevant page."
 
-#: arayuz/pencere/dogrulama_seridi.py:83
+#: arayuz/pencere/dogrulama_seridi.py:113
 #, python-format
 msgid "doğrulama sırasında hata: %s"
 msgstr "error during model check: %s"
 
-#: arayuz/pencere/dogrulama_seridi.py:92
+#: arayuz/pencere/dogrulama_seridi.py:122
 msgid "Doğrulama yenilendi (veri kütüphanesi dahil)."
 msgstr "Model check refreshed (including data library)."
 
-#: arayuz/pencere/dogrulama_seridi.py:114
+#: arayuz/pencere/dogrulama_seridi.py:144
 #, python-brace-format
 msgid "Doğrulama: {n} hata"
 msgid_plural "Doğrulama: {n} hata"
 msgstr[0] "Model check: {n} error"
 msgstr[1] "Model check: {n} errors"
 
-#: arayuz/pencere/dogrulama_seridi.py:117
+#: arayuz/pencere/dogrulama_seridi.py:147
 #, python-brace-format
 msgid "Doğrulama: {n} uyarı"
 msgid_plural "Doğrulama: {n} uyarı"
 msgstr[0] "Model check: {n} warning"
 msgstr[1] "Model check: {n} warnings"
 
-#: arayuz/pencere/dogrulama_seridi.py:120
+#: arayuz/pencere/dogrulama_seridi.py:150
 msgid "Doğrulama: hata yok"
 msgstr "Model check: no errors"
 
-#: arayuz/pencere/dogrulama_seridi.py:121
+#: arayuz/pencere/dogrulama_seridi.py:151
 #, python-brace-format
 msgid "{n} bilgi"
 msgid_plural "{n} bilgi"
 msgstr[0] "{n} info"
 msgstr[1] "{n} info"
 
-#: arayuz/pencere/dogrulama_seridi.py:122
+#: arayuz/pencere/dogrulama_seridi.py:152
 #, python-brace-format
 msgid "{n} uyarı"
 msgid_plural "{n} uyarı"
 msgstr[0] "{n} warning"
 msgstr[1] "{n} warnings"
 
-#: arayuz/pencere/dogrulama_seridi.py:128
+#: arayuz/pencere/dogrulama_seridi.py:158
 #, python-brace-format
 msgid "{h} hata, {u} uyarı, {b} bilgi"
 msgstr "Errors: {h}, warnings: {u}, info: {b}"
 
-#: arayuz/pencere/dogrulama_seridi.py:133
+#: arayuz/pencere/dogrulama_seridi.py:163
 #, python-brace-format
 msgid "Sıradaki aşama: {baslik} — {aciklama}"
 msgstr "Next step: {baslik} — {aciklama}"
 
-#: arayuz/pencere/dogrulama_seridi.py:141
+#: arayuz/pencere/dogrulama_seridi.py:171
 #, python-brace-format
 msgid "Model kuruluyor: {tamam}/{toplam} aşama"
 msgstr "Building the model: {tamam}/{toplam} steps"
 
-#: arayuz/pencere/dogrulama_seridi.py:143
+#: arayuz/pencere/dogrulama_seridi.py:173
 msgid "Çalıştır, eksik aşamalar tamamlanınca açılır."
 msgstr "Run becomes available once the missing steps are done."
 
-#: arayuz/pencere/dogrulama_seridi.py:144
+#: arayuz/pencere/dogrulama_seridi.py:174
 msgid "Eksik aşamalar tamamlanınca doğrulama sonucu burada görünür."
 msgstr "The model check result appears here once the missing steps are done."
 
-#: arayuz/pencere/dogrulama_seridi.py:212
+#: arayuz/pencere/dogrulama_seridi.py:242
 #, python-format
 msgid ""
 "Doğrulamada %d hata var — önce bunları giderin. Alttaki rozete tıklayıp bir bulguyu "
@@ -6082,7 +6933,7 @@ msgstr[1] ""
 "The model check found %d errors — fix them first. Click the badge below and pick a "
 "finding to go to its page."
 
-#: arayuz/pencere/dogrulama_seridi.py:230
+#: arayuz/pencere/dogrulama_seridi.py:260
 #, python-brace-format
 msgid ""
 "Model henüz kurulmadı: {n} aşama eksik. Sıradaki aşama: {baslik} — {aciklama} Alttaki"
@@ -6097,7 +6948,7 @@ msgstr[1] ""
 "The model is not built yet: {n} steps are missing. Next step: {baslik} — {aciklama} "
 "Use the step guide at the bottom to go to the relevant page."
 
-#: arayuz/pencere/dogrulama_seridi.py:240
+#: arayuz/pencere/dogrulama_seridi.py:270
 msgid ""
 "Geometri önizlemesi henüz çizilmedi. Önce çiz, sonra çalıştır: yanlış geometriyle "
 "saatlerce koşmamak için önizlemenin çizilmesi bekleniyor."
@@ -6105,7 +6956,7 @@ msgstr ""
 "The geometry preview has not been plotted yet. Plot first, then run: the preview must"
 " be plotted so that you do not run for hours with a wrong geometry."
 
-#: arayuz/pencere/dogrulama_seridi.py:245
+#: arayuz/pencere/dogrulama_seridi.py:275
 #, python-format
 msgid ""
 "Çalıştırılabilir. %d uyarı var — sonucu etkileyebilir, doğrulama listesini gözden "
@@ -6120,7 +6971,7 @@ msgstr[1] ""
 "Ready to run. There are %d warnings — they may affect the result; review the model "
 "check list."
 
-#: arayuz/pencere/dogrulama_seridi.py:249
+#: arayuz/pencere/dogrulama_seridi.py:279
 msgid "Model çalıştırılmaya hazır."
 msgstr "The model is ready to run."
 
@@ -6252,11 +7103,11 @@ msgstr "&File"
 msgid "D&üzen"
 msgstr "&Edit"
 
-#: arayuz/pencere/menuler.py:104 arayuz/pencere/menuler.py:323
+#: arayuz/pencere/menuler.py:104 arayuz/pencere/menuler.py:334
 msgid "Geri al"
 msgstr "Undo"
 
-#: arayuz/pencere/menuler.py:105 arayuz/pencere/menuler.py:323
+#: arayuz/pencere/menuler.py:105 arayuz/pencere/menuler.py:334
 msgid "Yinele"
 msgstr "Redo"
 
@@ -6276,102 +7127,114 @@ msgstr "Workflow…"
 msgid "Koşu kuyruğu, koşu geçmişi ve karşılaştırma, SLURM betiği (Y10)"
 msgstr "Run queue, run history and comparison, SLURM script (Y10)"
 
-#: arayuz/pencere/menuler.py:112
+#: arayuz/pencere/menuler.py:113
+msgid "Demet k∞ sihirbazı…"
+msgstr "Assembly k∞ wizard…"
+
+#: arayuz/pencere/menuler.py:114
+msgid "Her demet türü için yansıtıcı sınırlı tek demet k∞ koşusu (K4)"
+msgstr "A single-assembly k∞ run with reflective boundaries for every assembly type (K4)"
+
+#: arayuz/pencere/menuler.py:115
+msgid "Görüntüleyici…"
+msgstr "Viewer…"
+
+#: arayuz/pencere/menuler.py:118
 msgid "&Yardım"
 msgstr "&Help"
 
-#: arayuz/pencere/menuler.py:115
+#: arayuz/pencere/menuler.py:121
 msgid "Kullanım kılavuzunu etkin sayfanın bölümünde açar"
 msgstr "Opens the user guide at the section for the current page"
 
-#: arayuz/pencere/menuler.py:116 arayuz/pencere/menuler.py:348
+#: arayuz/pencere/menuler.py:122 arayuz/pencere/menuler.py:359
 #: arayuz/pencere/yardim_metni.py:14
 msgid "Yardım ve terimler"
 msgstr "Help and terms"
 
-#: arayuz/pencere/menuler.py:117 arayuz/pencere/menuler.py:368
+#: arayuz/pencere/menuler.py:123 arayuz/pencere/menuler.py:379
 msgid "Hakkında"
 msgstr "About"
 
-#: arayuz/pencere/menuler.py:121 arayuz/pencere/menuler.py:325
+#: arayuz/pencere/menuler.py:127 arayuz/pencere/menuler.py:336
 msgid "Doğrulamayı yenile (veri kütüphanesi dahil)"
 msgstr "Refresh model check (including data library)"
 
-#: arayuz/pencere/menuler.py:124 arayuz/pencere/menuler.py:326
+#: arayuz/pencere/menuler.py:130 arayuz/pencere/menuler.py:337
 msgid "Önizlemeyi yenile"
 msgstr "Refresh preview"
 
-#: arayuz/pencere/menuler.py:126 arayuz/pencere/menuler.py:328
+#: arayuz/pencere/menuler.py:132 arayuz/pencere/menuler.py:339
 msgid "ÇALIŞTIR"
 msgstr "RUN"
 
-#: arayuz/pencere/menuler.py:127
+#: arayuz/pencere/menuler.py:133
 msgid "Modeli çalıştır (F9) — önce geometri çizilmiş ve doğrulama hatasız olmalı"
 msgstr ""
 "Run the model (F9) — the geometry must be plotted and the model check free of errors "
 "first"
 
-#: arayuz/pencere/menuler.py:137
+#: arayuz/pencere/menuler.py:143
 msgid "Yeni…"
 msgstr "New…"
 
-#: arayuz/pencere/menuler.py:139
+#: arayuz/pencere/menuler.py:145
 msgid "Başlangıç ekranı: ne modelleyeceğini seç"
 msgstr "Start screen: choose what to model"
 
-#: arayuz/pencere/menuler.py:141
+#: arayuz/pencere/menuler.py:147
 msgid "Bir model dosyası (.json) aç"
 msgstr "Open a model file (.json)"
 
-#: arayuz/pencere/menuler.py:144 arayuz/pencere/menuler.py:322 arayuz/pencere/proje.py:76
+#: arayuz/pencere/menuler.py:150 arayuz/pencere/menuler.py:333 arayuz/pencere/proje.py:76
 msgid "Kaydet"
 msgstr "Save"
 
-#: arayuz/pencere/menuler.py:146
+#: arayuz/pencere/menuler.py:152
 msgid "Farklı kaydet…"
 msgstr "Save as…"
 
-#: arayuz/pencere/menuler.py:149
+#: arayuz/pencere/menuler.py:155
 msgid "Malzemeleri içe aktar (OpenMC XML)…"
 msgstr "Import materials (OpenMC XML)…"
 
-#: arayuz/pencere/menuler.py:151
+#: arayuz/pencere/menuler.py:157
 msgid "Python betiği olarak dışa aktar…"
 msgstr "Export as Python script…"
 
-#: arayuz/pencere/menuler.py:153
+#: arayuz/pencere/menuler.py:159
 msgid "Tek başına çalışan bir Python betiği üretir"
 msgstr "Writes a standalone Python script"
 
-#: arayuz/pencere/menuler.py:154
+#: arayuz/pencere/menuler.py:160
 msgid "OpenMC XML olarak dışa aktar…"
 msgstr "Export as OpenMC XML…"
 
-#: arayuz/pencere/menuler.py:156
+#: arayuz/pencere/menuler.py:162
 msgid "Önizlemeyi PNG olarak kaydet…"
 msgstr "Save preview as PNG…"
 
-#: arayuz/pencere/menuler.py:157
+#: arayuz/pencere/menuler.py:163
 msgid "Rapor oluştur…"
 msgstr "Create report…"
 
-#: arayuz/pencere/menuler.py:158
+#: arayuz/pencere/menuler.py:164
 msgid "Model ve son koşu için HTML ya da PDF rapor yazar"
 msgstr "Writes an HTML or PDF report for the model and the last run"
 
-#: arayuz/pencere/menuler.py:160
+#: arayuz/pencere/menuler.py:166
 msgid "Çıkış"
 msgstr "Quit"
 
-#: arayuz/pencere/menuler.py:178 arayuz/pencere/menuler.py:337
+#: arayuz/pencere/menuler.py:184 arayuz/pencere/menuler.py:348
 msgid "Tam ekran"
 msgstr "Full screen"
 
-#: arayuz/pencere/menuler.py:185
+#: arayuz/pencere/menuler.py:191
 msgid "Önizlemeyi göster"
 msgstr "Show preview"
 
-#: arayuz/pencere/menuler.py:189
+#: arayuz/pencere/menuler.py:195
 msgid ""
 "Önizleme panelini gizler ya da gösterir; gizliyken çizim yapılmaz (Çalıştır kapısı "
 "için model yine denetlenir)"
@@ -6379,56 +7242,56 @@ msgstr ""
 "Hides or shows the preview panel; nothing is plotted while it is hidden (the model is"
 " still checked for the Run gate)"
 
-#: arayuz/pencere/menuler.py:272
+#: arayuz/pencere/menuler.py:283
 #, python-brace-format
 msgid "Tema: {ad}"
 msgstr "Theme: {ad}"
 
-#: arayuz/pencere/menuler.py:291
+#: arayuz/pencere/menuler.py:302
 msgid "Dil"
 msgstr "Language"
 
-#: arayuz/pencere/menuler.py:291
+#: arayuz/pencere/menuler.py:302
 msgid "Dil değişikliği uygulama yeniden başlatılınca geçerli olur."
 msgstr "The language change takes effect after the application restarts."
 
-#: arayuz/pencere/menuler.py:321
+#: arayuz/pencere/menuler.py:332
 msgid "Yeni model (başlangıç ekranı)"
 msgstr "New model (start screen)"
 
-#: arayuz/pencere/menuler.py:321 arayuz/pencere/proje.py:204
+#: arayuz/pencere/menuler.py:332 arayuz/pencere/proje.py:204
 msgid "Aç"
 msgstr "Open"
 
-#: arayuz/pencere/menuler.py:322
+#: arayuz/pencere/menuler.py:333
 msgid "Farklı kaydet"
 msgstr "Save as"
 
-#: arayuz/pencere/menuler.py:324 arayuz/pencere/proje.py:281
+#: arayuz/pencere/menuler.py:335 arayuz/pencere/proje.py:281
 msgid "Python betiği olarak dışa aktar"
 msgstr "Export as Python script"
 
-#: arayuz/pencere/menuler.py:327
+#: arayuz/pencere/menuler.py:338
 msgid "Önizlemeyi gizle / göster"
 msgstr "Hide / show preview"
 
-#: arayuz/pencere/menuler.py:329
+#: arayuz/pencere/menuler.py:340
 msgid "Kullanım kılavuzu (etkin sayfanın bölümü)"
 msgstr "User guide (section for the current page)"
 
-#: arayuz/pencere/menuler.py:330
+#: arayuz/pencere/menuler.py:341
 msgid "Bu yardım"
 msgstr "This help"
 
-#: arayuz/pencere/menuler.py:332
+#: arayuz/pencere/menuler.py:343
 msgid "Klavye kısayolları"
 msgstr "Keyboard shortcuts"
 
-#: arayuz/pencere/menuler.py:338
+#: arayuz/pencere/menuler.py:349
 msgid "Başlangıç ekranında: açık modele dön"
 msgstr "On the start screen: return to the open model"
 
-#: arayuz/pencere/menuler.py:341
+#: arayuz/pencere/menuler.py:352
 msgid ""
 "Demet ve kor haritasında sol tık boyar, sağ tık o hücrenin parçasını fırça yapar; "
 "altıgen haritada tekerlek yakınlaştırır."
@@ -6436,7 +7299,7 @@ msgstr ""
 "In the assembly and core maps, left-click paints and right-click picks that cell's "
 "component as the brush; on the hexagonal map the mouse wheel zooms."
 
-#: arayuz/pencere/menuler.py:369
+#: arayuz/pencere/menuler.py:380
 #, python-brace-format
 msgid ""
 "{ad}\n"
@@ -6714,11 +7577,6 @@ msgid ""
 msgstr ""
 "Example opened as a copy: %s — use 'Save as' to save it (the example file is not "
 "changed)"
-
-#: arayuz/pencere/proje.py:151 arayuz/pencere/proje.py:320
-#, python-format
-msgid "Kaydedildi: %s"
-msgstr "Saved: %s"
 
 #: arayuz/pencere/proje.py:164
 msgid "Modeli kaydet"
@@ -7255,32 +8113,32 @@ msgstr "Power density"
 msgid "Ağır metal gramı başına güç [W/gHM]."
 msgstr "Power per gram of heavy metal [W/gHM]."
 
-#: arayuz/sekme_ayar.py:67
+#: arayuz/sekme_ayar.py:68
 msgid "Nokta kaynak"
 msgstr "Point source"
 
-#: arayuz/sekme_ayar.py:67
+#: arayuz/sekme_ayar.py:68
 msgid "Kutu (yalnızca fisil bölgeler)"
 msgstr "Box (fissile regions only)"
 
-#: arayuz/sekme_ayar.py:68
+#: arayuz/sekme_ayar.py:69
 msgid "Nötron"
 msgstr "Neutron"
 
-#: arayuz/sekme_ayar.py:68
+#: arayuz/sekme_ayar.py:69
 msgid "Foton (gama)"
 msgstr "Photon (gamma)"
 
-#: arayuz/pencere/model_islemleri.py:147 arayuz/sekme_ayar.py:100
+#: arayuz/pencere/model_islemleri.py:147 arayuz/sekme_ayar.py:102
 msgid "Özdeğer (k-eff)"
 msgstr "Eigenvalue (k-eff)"
 
 #: arayuz/pencere/model_islemleri.py:147 arayuz/pencere/yardim_metni.py:84
-#: arayuz/sekme_ayar.py:101
+#: arayuz/sekme_ayar.py:103
 msgid "Sabit kaynak"
 msgstr "Fixed source"
 
-#: arayuz/sekme_ayar.py:103
+#: arayuz/sekme_ayar.py:105
 msgid ""
 "Özdeğer: kendi kendini sürdüren zincir tepkimesi; sonuç k-eff.\n"
 "Sabit kaynak: dışarıdan verilen bir kaynağın taşınımı (zırhlama,\n"
@@ -7290,11 +8148,11 @@ msgstr ""
 "Fixed source: transport from an external source (shielding,\n"
 "detectors); the results are tallies, there is no k-eff."
 
-#: arayuz/sekme_ayar.py:109 arayuz/sekme_ayar.py:261
+#: arayuz/sekme_ayar.py:111 arayuz/sekme_ayar.py:263
 msgid "Özel"
 msgstr "Custom"
 
-#: arayuz/sekme_ayar.py:111
+#: arayuz/sekme_ayar.py:113
 msgid ""
 "Hızlı deneme: modelin çalıştığını görmek için.\n"
 "Normal: ders ve ödev hesapları için.\n"
@@ -7306,7 +8164,7 @@ msgstr ""
 "Accurate: to resolve small reactivity differences (slow).\n"
 "Custom: enter the particle and batch counts yourself."
 
-#: arayuz/sekme_ayar.py:121
+#: arayuz/sekme_ayar.py:123
 msgid ""
 "Pasif çevrimler kaynak dağılımı yakınsayana kadar atılır ve\n"
 "istatistiğe katılmaz. Tipik olarak 20–50 pasif çevrim kullanılır."
@@ -7314,11 +8172,11 @@ msgstr ""
 "Inactive batches are discarded until the source distribution converges\n"
 "and are not included in the statistics. Typically 20–50 inactive batches are used."
 
-#: arayuz/sekme_ayar.py:124
+#: arayuz/sekme_ayar.py:126
 msgid "Kinetik parametreleri hesapla (β_eff ve üretim zamanı Λ)"
 msgstr "Compute kinetics parameters (β_eff and neutron generation time Λ)"
 
-#: arayuz/sekme_ayar.py:126
+#: arayuz/sekme_ayar.py:128
 msgid ""
 "IFP (Iterated Fission Probability) yöntemiyle hesaplanır.\n"
 "β_eff : gecikmiş nötron kesri — reaktivite biriminin ($) tanımı\n"
@@ -7332,15 +8190,15 @@ msgstr ""
 "\n"
 "Slows the run somewhat; leave it off unless needed."
 
-#: arayuz/sekme_ayar.py:134
+#: arayuz/sekme_ayar.py:136
 msgid "Aynı tohum ve aynı model aynı sonucu verir."
 msgstr "The same seed and the same model give the same result."
 
-#: arayuz/sekme_ayar.py:136
+#: arayuz/sekme_ayar.py:138
 msgid "Shannon entropisi ile kaynak yakınsamasını ölç"
 msgstr "Measure source convergence with Shannon entropy"
 
-#: arayuz/sekme_ayar.py:138
+#: arayuz/sekme_ayar.py:140
 msgid ""
 "Kaynak dağılımının pasif çevrimler içinde yakınsayıp yakınsamadığını\n"
 "ölçer. Yakınsamamış kaynak k-eff'i yanlı tahmin ettirir ve bu başka\n"
@@ -7350,11 +8208,11 @@ msgstr ""
 "inactive batches. An unconverged source biases the k-eff estimate, and\n"
 "this is not noticeable otherwise. Keep it on for eigenvalue calculations."
 
-#: arayuz/sekme_ayar.py:141
+#: arayuz/sekme_ayar.py:143
 msgid "Ağ boyutu otomatik"
 msgstr "Automatic mesh size"
 
-#: arayuz/sekme_ayar.py:143
+#: arayuz/sekme_ayar.py:145
 msgid ""
 "8 × 8 radyal bölme; 3B modelde eksenel 8 bölme, 2B'de tek dilim.\n"
 "Model 2B ↔ 3B değişince ağ da değişir."
@@ -7362,27 +8220,27 @@ msgstr ""
 "8 × 8 radial divisions; 8 axial divisions in a 3D model, a single bin in 2D.\n"
 "The mesh changes when the model switches between 2D and 3D."
 
-#: arayuz/sekme_ayar.py:148
+#: arayuz/sekme_ayar.py:150
 msgid "nesil"
 msgstr "generations"
 
-#: arayuz/sekme_ayar.py:149
+#: arayuz/sekme_ayar.py:151
 msgid "IFP'nin geriye doğru izlediği nesil sayısı."
 msgstr "Number of generations that IFP traces back."
 
-#: arayuz/sekme_ayar.py:152
+#: arayuz/sekme_ayar.py:154
 msgid "6 grup (ENDF/B)"
 msgstr "6 groups (ENDF/B)"
 
-#: arayuz/sekme_ayar.py:152
+#: arayuz/sekme_ayar.py:154
 msgid "8 grup (JEFF)"
 msgstr "8 groups (JEFF)"
 
-#: arayuz/sekme_ayar.py:153
+#: arayuz/sekme_ayar.py:155
 msgid "yalnız toplam β_eff"
 msgstr "total β_eff only"
 
-#: arayuz/sekme_ayar.py:156
+#: arayuz/sekme_ayar.py:158
 msgid ""
 "Grup başına β_i ve λ_i (nokta kinetiği için). Grup sayısı nükleer veri\n"
 "kütüphanesiyle eşleşmeli: ENDF/B-VII.1/VIII.0 6 grup, JEFF-3.1+ 8 grup."
@@ -7391,7 +8249,7 @@ msgstr ""
 "nuclear\n"
 "data library: ENDF/B-VII.1/VIII.0 6 groups, JEFF-3.1+ 8 groups."
 
-#: arayuz/sekme_ayar.py:167
+#: arayuz/sekme_ayar.py:169
 msgid ""
 "Foton seçilirse foton taşınımı da açılır ve kütüphanede foton\n"
 "verisi bulunmalıdır."
@@ -7399,7 +8257,7 @@ msgstr ""
 "Selecting photon also enables photon transport; the library\n"
 "must contain photon data."
 
-#: arayuz/sekme_ayar.py:171
+#: arayuz/sekme_ayar.py:173
 msgid ""
 "Kaynak şiddeti [parçacık/s]. Tally sonuçları bununla çarpılır ve\n"
 "mutlak birime geçer (1/s, 1/cm²/s). 1 bırakılırsa sonuçlar kaynak\n"
@@ -7409,7 +8267,7 @@ msgstr ""
 "become absolute (1/s, 1/cm²/s). If left at 1, results stay per source\n"
 "particle."
 
-#: arayuz/sekme_ayar.py:185
+#: arayuz/sekme_ayar.py:187
 msgid ""
 "enerji[eV]:olasılık çiftleri, virgülle ayrılmış\n"
 "Örnek (Co-60): 1.173e6:0.5, 1.333e6:0.5"
@@ -7417,19 +8275,19 @@ msgstr ""
 "energy[eV]:probability pairs, comma-separated\n"
 "Example (Co-60): 1.173e6:0.5, 1.333e6:0.5"
 
-#: arayuz/sekme_ayar.py:189
+#: arayuz/sekme_ayar.py:191
 msgid "N+1 grup kenarı [eV], artan sırada"
 msgstr "N+1 group edges [eV], in increasing order"
 
-#: arayuz/sekme_ayar.py:190
+#: arayuz/sekme_ayar.py:192
 msgid "N grup değeri (bağıl); kenar sayısından bir eksik olmalı"
 msgstr "N group values (relative); one fewer than the number of edges"
 
-#: arayuz/sekme_ayar.py:193
+#: arayuz/sekme_ayar.py:195
 msgid "Tepkimeye girenlerin kütleleri toplamı: D+T = 2+3 = 5, D+D = 4"
 msgstr "Sum of the reactant masses: D+T = 2+3 = 5, D+D = 4"
 
-#: arayuz/sekme_ayar.py:195
+#: arayuz/sekme_ayar.py:197
 msgid ""
 "İyon sıcaklığı kT. D-T için genişleme:\n"
 "FWHM = 177 × √kT[keV] keV"
@@ -7437,49 +8295,49 @@ msgstr ""
 "Ion temperature kT. Broadening for D-T:\n"
 "FWHM = 177 × √kT[keV] keV"
 
-#: arayuz/sekme_ayar.py:201
+#: arayuz/sekme_ayar.py:203
 msgid "Enerji:"
 msgstr "Energy:"
 
-#: arayuz/sekme_ayar.py:202
+#: arayuz/sekme_ayar.py:204
 msgid "Çizgiler:"
 msgstr "Lines:"
 
-#: arayuz/sekme_ayar.py:203
+#: arayuz/sekme_ayar.py:205
 msgid "Grup kenarları:"
 msgstr "Group edges:"
 
-#: arayuz/sekme_ayar.py:203
+#: arayuz/sekme_ayar.py:205
 msgid "Grup değerleri:"
 msgstr "Group values:"
 
-#: arayuz/sekme_ayar.py:204
+#: arayuz/sekme_ayar.py:206
 msgid "Ortalama E₀:"
 msgstr "Mean E₀:"
 
-#: arayuz/sekme_ayar.py:204
+#: arayuz/sekme_ayar.py:206
 msgid "Kütle toplamı:"
 msgstr "Mass sum:"
 
-#: arayuz/sekme_ayar.py:205
+#: arayuz/sekme_ayar.py:207
 msgid "İyon sıcaklığı:"
 msgstr "Ion temperature:"
 
-#: arayuz/sekme_ayar.py:223
+#: arayuz/sekme_ayar.py:225
 msgid " derece"
 msgstr " degrees"
 
-#: arayuz/sekme_ayar.py:224
+#: arayuz/sekme_ayar.py:226
 msgid "Koninin yarı açılımı (eksenden kenara açı). Katı açıda düzgün dağılım kullanılır."
 msgstr ""
 "Half-opening of the cone (angle from the axis to the edge). The distribution is "
 "uniform in solid angle."
 
-#: arayuz/sekme_ayar.py:229
+#: arayuz/sekme_ayar.py:231
 msgid "Çubuk bazlı güç dağılımı hesapla (F_ΔH, 3B'de F_q)"
 msgstr "Compute pin power distribution (F_ΔH, F_q in 3D)"
 
-#: arayuz/sekme_ayar.py:231
+#: arayuz/sekme_ayar.py:233
 msgid ""
 "Demette tekrarlanan yakıt çubuğunun her örneği ayrı sayılır\n"
 "(OpenMC: DistribcellFilter). Buradan tepe faktörleri çıkar:\n"
@@ -7491,15 +8349,15 @@ msgstr ""
 "  F_ΔH = highest pin power / average        (radial)\n"
 "  F_q  = highest local power density / average (requires 3D)"
 
-#: arayuz/sekme_ayar.py:240
+#: arayuz/sekme_ayar.py:242
 msgid "dilim"
 msgstr "bins"
 
-#: arayuz/sekme_ayar.py:242
+#: arayuz/sekme_ayar.py:244
 msgid "(boş — yalnızca bağıl)"
 msgstr "(empty — relative only)"
 
-#: arayuz/sekme_ayar.py:245
+#: arayuz/sekme_ayar.py:247
 msgid ""
 "Toplam güç, <b>modelin kapsadığı</b> bölgenin gücüdür — tüm korun değil. Örnek: 3400 "
 "MWth / 193 demet = 17.6 MW; tek demetlik modelde 17.6e6 W girilir. Boş bırakılırsa "
@@ -7509,11 +8367,11 @@ msgstr ""
 " core. Example: 3400 MWth / 193 assemblies = 17.6 MW; for a single-assembly model "
 "enter 17.6e6 W. If left empty, only the relative distribution is given."
 
-#: arayuz/sekme_ayar.py:267
+#: arayuz/sekme_ayar.py:269
 msgid "Enerji grupları"
 msgstr "Energy groups"
 
-#: arayuz/sekme_ayar.py:269
+#: arayuz/sekme_ayar.py:271
 msgid ""
 "Grup sınırları [eV], artan sırada, virgülle ayrılmış.\n"
 "Örnek (iki grup): 0.0, 0.625, 2.0e7"
@@ -7521,15 +8379,15 @@ msgstr ""
 "Group boundaries [eV], in increasing order, comma-separated.\n"
 "Example (two groups): 0.0, 0.625, 2.0e7"
 
-#: arayuz/sekme_ayar.py:271
+#: arayuz/sekme_ayar.py:273
 msgid "Akı haritası (düzenli ağ)"
 msgstr "Flux map (regular mesh)"
 
-#: arayuz/sekme_ayar.py:272
+#: arayuz/sekme_ayar.py:274
 msgid "Sınırlar model kurulurken modelin dış ölçüsünden alınır."
 msgstr "The bounds are taken from the model's outer dimensions when the model is built."
 
-#: arayuz/sekme_ayar.py:277
+#: arayuz/sekme_ayar.py:279
 msgid ""
 "Henüz tally yok. “+ Tally” ile ekleyin: ne ölçmek istediğinizi (akı, reaksiyon hızı, "
 "ısı) seçersiniz."
@@ -7537,35 +8395,35 @@ msgstr ""
 "No tallies yet. Add one with “+ Tally” and choose what to measure (flux, reaction "
 "rate, heat)."
 
-#: arayuz/sekme_ayar.py:328
+#: arayuz/sekme_ayar.py:330
 msgid " (bu modelde geçersiz)"
 msgstr " (invalid in this model)"
 
-#: arayuz/ayar/guc_formu.py:55 arayuz/sekme_ayar.py:384
+#: arayuz/ayar/guc_formu.py:55 arayuz/sekme_ayar.py:386
 msgid " (bilinmeyen)"
 msgstr " (unknown)"
 
-#: arayuz/sekme_ayar.py:472
+#: arayuz/sekme_ayar.py:476
 msgid "Başlangıç kaynağı"
 msgstr "Initial source"
 
-#: arayuz/ayar/yerlesim.py:102 arayuz/sekme_ayar.py:473
+#: arayuz/ayar/yerlesim.py:103 arayuz/sekme_ayar.py:477
 msgctxt "kaynak"
 msgid "Kaynak"
 msgstr "Source"
 
-#: arayuz/sekme_ayar.py:523
+#: arayuz/sekme_ayar.py:527
 #, python-brace-format
 msgid "{n} parçacık × {c} çevrim ({p} pasif, {a} aktif)"
 msgid_plural "{n} parçacık × {c} çevrim ({p} pasif, {a} aktif)"
 msgstr[0] "{n} particles × {c} batch ({p} inactive, {a} active)"
 msgstr[1] "{n} particles × {c} batches ({p} inactive, {a} active)"
 
-#: arayuz/sekme_ayar.py:528
+#: arayuz/sekme_ayar.py:532
 msgid " — aktif çevrim yok: pasif çevrim sayısını azaltın."
 msgstr " — no active batches: reduce the number of inactive batches."
 
-#: arayuz/sekme_ayar.py:531
+#: arayuz/sekme_ayar.py:535
 #, python-brace-format
 msgid ""
 " — beklenen k-eff belirsizliği ≈ ±{s} pcm (pin hücre ölçümü; büyük korlarda daha "
@@ -7574,7 +8432,7 @@ msgstr ""
 " — expected k-eff uncertainty ≈ ±{s} pcm (pin cell measurement; may be larger for "
 "large cores)"
 
-#: arayuz/sekme_ayar.py:535
+#: arayuz/sekme_ayar.py:539
 #, python-brace-format
 msgid "{n} parçacık × {c} çevrim = {t} kaynak parçacığı; tally belirsizliği 1/√N ile azalır."
 msgid_plural "{n} parçacık × {c} çevrim = {t} kaynak parçacığı; tally belirsizliği 1/√N ile azalır."
@@ -7583,7 +8441,8 @@ msgstr[1] ""
 "{n} particles × {c} batches = {t} source particles; tally uncertainty decreases as "
 "1/√N."
 
-#: arayuz/analiz/sekme.py:69 arayuz/sekme_calistir.py:78 arayuz/sekme_tukenme.py:76
+#: arayuz/analiz/mgxs.py:63 arayuz/analiz/sekme.py:69 arayuz/sekme_calistir.py:78
+#: arayuz/sekme_tukenme.py:76
 msgid "hazır değil"
 msgstr "not ready"
 
@@ -7601,19 +8460,19 @@ msgstr "Press Run; k-eff convergence and the results appear on this page."
 msgid "Çalıştır"
 msgstr "Run"
 
-#: arayuz/sekme_calistir.py:208
+#: arayuz/sekme_calistir.py:217
 msgid "OpenMC çıktısı panoya kopyalandı"
 msgstr "OpenMC output copied to the clipboard"
 
-#: arayuz/calistir/pano.py:98 arayuz/calistir/pano.py:114 arayuz/sekme_calistir.py:228
+#: arayuz/calistir/pano.py:98 arayuz/calistir/pano.py:114 arayuz/sekme_calistir.py:237
 msgid "Denetlenmedi"
 msgstr "Not checked"
 
-#: arayuz/calistir/pano.py:115 arayuz/sekme_calistir.py:229
+#: arayuz/calistir/pano.py:115 arayuz/sekme_calistir.py:238
 msgid "Çalıştır'a basınca koşu öncesi doğrulama yapılır."
 msgstr "The model is checked before the run when you press Run."
 
-#: arayuz/sekme_calistir.py:250
+#: arayuz/sekme_calistir.py:261
 msgid ""
 "Önceki projenin koşusu arka planda sürüyor; sonucu bu projeye yazılmayacak. Yeni koşu"
 " için Durdur ile sonlandırın."
@@ -7621,19 +8480,20 @@ msgstr ""
 "A run from the previous project is still going in the background; its result will not"
 " be written to this project. Use Stop to end it before a new run."
 
-#: arayuz/analiz/sekme.py:544 arayuz/sekme_calistir.py:441 arayuz/sekme_calistir.py:540
+#: arayuz/analiz/mgxs.py:312 arayuz/analiz/sekme.py:551 arayuz/sekme_calistir.py:452
+#: arayuz/sekme_calistir.py:553
 msgid "Çalıştırılamaz"
 msgstr "Cannot run"
 
-#: arayuz/sekme_calistir.py:455
+#: arayuz/sekme_calistir.py:466
 msgid "Model kurulamadı"
 msgstr "Model could not be built"
 
-#: arayuz/sekme_calistir.py:461
+#: arayuz/sekme_calistir.py:472
 msgid "openmc bulunamadı"
 msgstr "openmc not found"
 
-#: arayuz/sekme_calistir.py:462
+#: arayuz/sekme_calistir.py:473
 msgid ""
 "openmc çalıştırılabilir dosyası PATH'te yok.\n"
 "Conda ortamının etkin olduğundan emin olun (openmc-env)."
@@ -7641,60 +8501,60 @@ msgstr ""
 "The openmc executable is not on PATH.\n"
 "Make sure the conda environment is active (openmc-env)."
 
-#: arayuz/sekme_calistir.py:487
+#: arayuz/sekme_calistir.py:500
 msgid "koşuyor…"
 msgstr "running…"
 
-#: arayuz/calistir/pano.py:154 arayuz/sekme_calistir.py:490
+#: arayuz/calistir/pano.py:154 arayuz/sekme_calistir.py:503
 msgid "Sabit kaynak — k-eff tanımsız; sonuç tally'lerdir."
 msgstr "Fixed source — k-eff undefined; the results are tallies."
 
-#: arayuz/sekme_calistir.py:491
+#: arayuz/sekme_calistir.py:504
 msgid "Koşu sürüyor; k-eff kümülatif ortalamadır."
 msgstr "Run in progress; k-eff is the cumulative mean."
 
-#: arayuz/sekme_calistir.py:500
+#: arayuz/sekme_calistir.py:513
 msgid "%v / %m çevrim"
 msgstr "%v / %m batches"
 
-#: arayuz/sekme_calistir.py:510
+#: arayuz/sekme_calistir.py:523
 #, python-format
 msgid "# komut: %s -s %d"
 msgstr "# command: %s -s %d"
 
-#: arayuz/sekme_calistir.py:511
+#: arayuz/sekme_calistir.py:524
 #, python-format
 msgid "# dizin: %s"
 msgstr "# directory: %s"
 
-#: arayuz/sekme_calistir.py:517
+#: arayuz/sekme_calistir.py:530
 #, python-format
 msgid "Koşu sürüyor (%d iş parçacığı) → %s"
 msgid_plural "Koşu sürüyor (%d iş parçacığı) → %s"
 msgstr[0] "Running (%d thread) → %s"
 msgstr[1] "Running (%d threads) → %s"
 
-#: arayuz/sekme_calistir.py:521
+#: arayuz/sekme_calistir.py:534
 #, python-format
 msgid "Koşu başladı → %s"
 msgstr "Run started → %s"
 
-#: arayuz/sekme_calistir.py:537 arayuz/uygunluk_paneli.py:303
+#: arayuz/sekme_calistir.py:550 arayuz/uygunluk_paneli.py:303
 #, python-format
 msgid "%d hata"
 msgid_plural "%d hata"
 msgstr[0] "%d error"
 msgstr[1] "%d errors"
 
-#: arayuz/sekme_calistir.py:539
+#: arayuz/sekme_calistir.py:552
 msgid "Koşu başlatılmadı; önceki sonuç silinmedi."
 msgstr "Run not started; the previous result was not deleted."
 
-#: arayuz/sekme_calistir.py:544
+#: arayuz/sekme_calistir.py:557
 msgid "Hata yok"
 msgstr "No errors"
 
-#: arayuz/sekme_calistir.py:551
+#: arayuz/sekme_calistir.py:564
 #, python-format
 msgid "Doğrulama hataları giderilmeden koşu başlatılmaz (%d hata); önceki sonuç silinmedi."
 msgid_plural "Doğrulama hataları giderilmeden koşu başlatılmaz (%d hata); önceki sonuç silinmedi."
@@ -7705,14 +8565,14 @@ msgstr[1] ""
 "The run cannot start until the model check errors are fixed (%d errors); the previous"
 " result was not deleted."
 
-#: arayuz/sekme_calistir.py:558
+#: arayuz/sekme_calistir.py:571
 #, python-format
 msgid "… ve %d hata daha."
 msgid_plural "… ve %d hata daha."
 msgstr[0] "… and %d more error."
 msgstr[1] "… and %d more errors."
 
-#: arayuz/sekme_calistir.py:566 arayuz/sekme_tukenme.py:474
+#: arayuz/sekme_calistir.py:579 arayuz/sekme_tukenme.py:492
 msgid ""
 "\n"
 "# kullanıcı tarafından durduruldu"
@@ -7720,7 +8580,7 @@ msgstr ""
 "\n"
 "# stopped by the user"
 
-#: arayuz/sekme_calistir.py:606
+#: arayuz/sekme_calistir.py:619
 #, python-format
 msgid ""
 "\n"
@@ -7729,50 +8589,50 @@ msgstr ""
 "\n"
 "# Process error: %s"
 
-#: arayuz/sekme_calistir.py:623
+#: arayuz/sekme_calistir.py:636
 #, python-format
 msgid "Önceki projenin koşusu bitti; sonucu bu projeye yazılmadı (dosyalar: %s)."
 msgstr ""
 "The previous project's run finished; its result was not written to this project "
 "(files: %s)."
 
-#: arayuz/sekme_calistir.py:638
+#: arayuz/sekme_calistir.py:651
 #, python-format
 msgid "Koşu başarısız (çıkış kodu %d). OpenMC çıktısı aşağıda, 'Ayrıntılı çıktı' bölümünde."
 msgstr "Run failed (exit code %d). The OpenMC output is below, under 'Detailed output'."
 
-#: arayuz/sekme_calistir.py:640
+#: arayuz/sekme_calistir.py:653
 #, python-format
 msgid "Koşu başarısız (çıkış kodu %d)"
 msgstr "Run failed (exit code %d)"
 
-#: arayuz/sekme_calistir.py:653
+#: arayuz/sekme_calistir.py:666
 msgid "durduruldu"
 msgstr "stopped"
 
-#: arayuz/sekme_calistir.py:655
+#: arayuz/sekme_calistir.py:668
 msgid "Koşu kullanıcı tarafından durduruldu; sonuç yok."
 msgstr "Run stopped by the user; no result."
 
-#: arayuz/sekme_calistir.py:658
+#: arayuz/sekme_calistir.py:671
 msgid "Koşu durduruldu"
 msgstr "Run stopped"
 
-#: arayuz/sekme_calistir.py:664
+#: arayuz/sekme_calistir.py:677
 msgid "Koşu bitti ama statepoint dosyası bulunamadı."
 msgstr "The run finished but no statepoint file was found."
 
-#: arayuz/sekme_calistir.py:665
+#: arayuz/sekme_calistir.py:678
 msgid "Koşu bitti ama statepoint bulunamadı"
 msgstr "Run finished but no statepoint found"
 
-#: arayuz/calistir/sonuc_gosterimi.py:48 arayuz/sekme_calistir.py:670
-#: arayuz/sekme_calistir.py:671 arayuz/sekme_tukenme.py:552
+#: arayuz/calistir/sonuc_gosterimi.py:48 arayuz/sekme_calistir.py:683
+#: arayuz/sekme_calistir.py:684 arayuz/sekme_tukenme.py:570
 #, python-format
 msgid "Sonuç okunamadı: %s"
 msgstr "Result could not be read: %s"
 
-#: arayuz/analiz/sonuc.py:83 arayuz/kuyruk/panel.py:34 arayuz/sekme_calistir.py:687
+#: arayuz/analiz/sonuc.py:83 arayuz/kuyruk/panel.py:34 arayuz/sekme_calistir.py:700
 msgid "başarısız"
 msgstr "failed"
 
@@ -7814,7 +8674,7 @@ msgstr "Plate"
 msgid "Kopyala"
 msgstr "Copy"
 
-#: arayuz/ayar/yerlesim.py:207 arayuz/cubuk/tambur_formu.py:71 arayuz/demet/yerlesim.py:94
+#: arayuz/ayar/yerlesim.py:225 arayuz/cubuk/tambur_formu.py:71 arayuz/demet/yerlesim.py:94
 #: arayuz/geometri/editor.py:116 arayuz/geometri/form_yerlesim.py:60
 #: arayuz/kor/yerlesim.py:130 arayuz/malzeme/kutuphane_tarayici.py:87
 #: arayuz/sekme_cubuk.py:143 arayuz/sekme_malzeme.py:150
@@ -8192,20 +9052,20 @@ msgstr ""
 "single core open to its surroundings, choose Vacuum."
 
 #: arayuz/geometri/sablon_diyalogu.py:139 arayuz/pencere/model_islemleri.py:145
-#: arayuz/sekme_kor.py:368
+#: arayuz/sekme_kor.py:370
 msgid "2B"
 msgstr "2D"
 
-#: arayuz/sekme_kor.py:373
+#: arayuz/sekme_kor.py:375
 #, python-format
 msgid "Kurulamadı: %s"
 msgstr "Could not be built: %s"
 
-#: arayuz/sekme_kor.py:475
+#: arayuz/sekme_kor.py:477
 msgid "Tambur yok — düz yansıtıcı kuşak."
 msgstr "No drums — plain radial reflector."
 
-#: arayuz/sekme_kor.py:488
+#: arayuz/sekme_kor.py:490
 #, python-format
 msgid "Geçerli — komşu tambur merkezleri arası %.3f cm (iki yarıçap %.3f cm)."
 msgstr "Valid — neighboring drum centers %.3f cm apart (two radii: %.3f cm)."
@@ -8368,11 +9228,11 @@ msgstr[1] ""
 "If you delete it, these places become undefined and the model cannot be built. Delete"
 " anyway?"
 
-#: arayuz/sekme_tukenme.py:189
+#: arayuz/sekme_tukenme.py:193
 msgid "Adım başına pin gücü"
 msgstr "Pin power per step"
 
-#: arayuz/sekme_tukenme.py:191
+#: arayuz/sekme_tukenme.py:195
 msgid ""
 "Her tükenme adımında çubuk güç dağılımı (distribcell + eksenel mesh tally'si) sayılır"
 " ve adım başına bir statepoint dosyası yazılır. Transport süresine etkisi küçüktür; "
@@ -8385,11 +9245,22 @@ msgstr ""
 "24 pins × 4 bins). Consider switching it off for a full core with tens of thousands "
 "of pins."
 
-#: arayuz/sekme_tukenme.py:209
+#: arayuz/sekme_tukenme.py:208
+#, python-format
+msgid "%d soğuma adımı (transport yok)"
+msgid_plural "%d soğuma adımı (transport yok)"
+msgstr[0] "%d cooling step (no transport)"
+msgstr[1] "%d cooling steps (no transport)"
+
+#: arayuz/sekme_tukenme.py:211
+msgid "kritik arama adım başına ek transport koşar"
+msgstr "the critical search runs extra transport solutions per step"
+
+#: arayuz/sekme_tukenme.py:226
 msgid "model yok"
 msgstr "no model"
 
-#: arayuz/sekme_tukenme.py:240
+#: arayuz/sekme_tukenme.py:257
 #, python-format
 msgid ""
 "%s  |  fisyon verimi %s eV (%s spektrum)\n"
@@ -8398,59 +9269,59 @@ msgstr ""
 "%s  |  fission yield %s eV (%s spectrum)\n"
 "%s"
 
-#: arayuz/sekme_tukenme.py:247
+#: arayuz/sekme_tukenme.py:264
 #, python-format
 msgid "Zincir dosyası kullanılamıyor: %s (Gelişmiş › Zincir)"
 msgstr "Depletion chain file cannot be used: %s (Advanced › Chain)"
 
-#: arayuz/sekme_tukenme.py:253
+#: arayuz/sekme_tukenme.py:270
 #, python-format
 msgid "zincir seçilemedi: %s"
 msgstr "depletion chain could not be selected: %s"
 
-#: arayuz/sekme_tukenme.py:264
+#: arayuz/sekme_tukenme.py:281
 #, python-format
 msgid "sayı olmayan: %s"
 msgstr "not a number: %s"
 
-#: arayuz/sekme_tukenme.py:265
+#: arayuz/sekme_tukenme.py:282
 msgid "her adım sıfırdan büyük olmalı"
 msgstr "every step must be greater than zero"
 
-#: arayuz/sekme_tukenme.py:266
+#: arayuz/sekme_tukenme.py:283
 #, python-format
 msgid "Adımlar geçersiz — %s. Virgülle ayrılmış pozitif sayılar girin (ör. 1, 5, 30)."
 msgstr "Invalid steps — %s. Enter comma-separated positive numbers (e.g. 1, 5, 30)."
 
-#: arayuz/sekme_tukenme.py:277
+#: arayuz/sekme_tukenme.py:294
 #, python-format
 msgid "%d adım · toplam %.4g gün = %.4g MWd/kg · %d transport çözümü"
 msgid_plural "%d adım · toplam %.4g gün = %.4g MWd/kg · %d transport çözümü"
 msgstr[0] "%d step · total %.4g days = %.4g MWd/kg · %d transport solves"
 msgstr[1] "%d steps · total %.4g days = %.4g MWd/kg · %d transport solves"
 
-#: arayuz/sekme_tukenme.py:282
+#: arayuz/sekme_tukenme.py:300
 msgid "Adım yok — virgülle adım uzunlukları girin."
 msgstr "No steps — enter step lengths separated by commas."
 
-#: arayuz/sekme_tukenme.py:288
+#: arayuz/sekme_tukenme.py:306
 msgid "Yanabilir (fisil) malzeme bulunamadı."
 msgstr "No depletable (fissile) material found."
 
-#: arayuz/sekme_tukenme.py:294
+#: arayuz/sekme_tukenme.py:312
 msgid "hacim yok"
 msgstr "no volume"
 
-#: arayuz/sekme_tukenme.py:297
+#: arayuz/sekme_tukenme.py:315
 #, python-format
 msgid "hesaplanamadı: %s"
 msgstr "could not be computed: %s"
 
-#: arayuz/sekme_tukenme.py:315
+#: arayuz/sekme_tukenme.py:333
 msgid "model uygun değil"
 msgstr "the model is not suitable"
 
-#: arayuz/sekme_tukenme.py:380
+#: arayuz/sekme_tukenme.py:398
 msgid ""
 "Önceki projenin tükenme koşusu arka planda sürüyor; sonucu bu projeye yazılmayacak. "
 "Yeni koşu için Durdur ile sonlandırın."
@@ -8458,43 +9329,43 @@ msgstr ""
 "A depletion run from the previous project is still going in the background; its "
 "result will not be written to this project. Use Stop to end it before a new run."
 
-#: arayuz/sekme_tukenme.py:390 arayuz/sekme_tukenme.py:405
+#: arayuz/sekme_tukenme.py:408 arayuz/sekme_tukenme.py:423
 #, python-format
 msgid "Bu modelde yapılamaz: %s"
 msgstr "Not possible for this model: %s"
 
-#: arayuz/sekme_tukenme.py:392
+#: arayuz/sekme_tukenme.py:410
 msgid "Tükenme kapalı — yukarıdan etkinleştirin."
 msgstr "Depletion is off — enable it above."
 
-#: arayuz/sekme_tukenme.py:404 arayuz/sekme_tukenme.py:408
+#: arayuz/sekme_tukenme.py:422 arayuz/sekme_tukenme.py:426
 msgid "Başlatılamaz"
 msgstr "Cannot start"
 
-#: arayuz/sekme_tukenme.py:438
+#: arayuz/sekme_tukenme.py:456
 msgid "%v / %m transport"
 msgstr "%v / %m transport"
 
-#: arayuz/sekme_tukenme.py:439
+#: arayuz/sekme_tukenme.py:457
 msgid "İlk transport bekleniyor — kalan süre ondan ölçülecek."
 msgstr "Waiting for the first transport solve — the remaining time will be measured from it."
 
-#: arayuz/sekme_tukenme.py:465
+#: arayuz/sekme_tukenme.py:483
 #, python-format
 msgid "Tükenme koşusu sürüyor → %s"
 msgstr "Depletion run in progress → %s"
 
-#: arayuz/sekme_tukenme.py:468
+#: arayuz/sekme_tukenme.py:486
 #, python-format
 msgid "Tükenme başladı → %s"
 msgstr "Depletion started → %s"
 
-#: arayuz/sekme_tukenme.py:507
+#: arayuz/sekme_tukenme.py:525
 #, python-format
 msgid "geçen %s  |  transport başına %.0f s (ölçülen)  |  kalan ~%s"
 msgstr "elapsed %s  |  %.0f s per transport (measured)  |  remaining ~%s"
 
-#: arayuz/sekme_tukenme.py:514
+#: arayuz/sekme_tukenme.py:532
 #, python-format
 msgid ""
 "\n"
@@ -8503,27 +9374,27 @@ msgstr ""
 "\n"
 "# Process could not be started: %s"
 
-#: arayuz/sekme_tukenme.py:536
+#: arayuz/sekme_tukenme.py:554
 #, python-format
 msgid "Önceki projenin tükenme koşusu bitti; sonucu bu projeye yazılmadı (dosyalar: %s)."
 msgstr ""
 "The previous project's depletion run finished; its result was not written to this "
 "project (files: %s)."
 
-#: arayuz/sekme_tukenme.py:542
+#: arayuz/sekme_tukenme.py:560
 #, python-format
 msgid "Tükenme başarısız (çıkış kodu %d)"
 msgstr "Depletion failed (exit code %d)"
 
-#: arayuz/sekme_tukenme.py:543
+#: arayuz/sekme_tukenme.py:561
 msgid "Başarısız — ayrıntılı çıktı aşağıda açıldı."
 msgstr "Failed — the detailed output is open below."
 
-#: arayuz/sekme_tukenme.py:553
+#: arayuz/sekme_tukenme.py:571
 msgid "Sonuç okunamadı — ayrıntılı çıktıya bakın."
 msgstr "Result could not be read — see the detailed output."
 
-#: arayuz/sekme_tukenme.py:554
+#: arayuz/sekme_tukenme.py:572
 #, python-format
 msgid ""
 "\n"
@@ -8532,21 +9403,21 @@ msgstr ""
 "\n"
 "# Result could not be read: %s"
 
-#: arayuz/sekme_tukenme.py:560
+#: arayuz/sekme_tukenme.py:578
 #, python-format
 msgid "Tamamlandı: %s"
 msgstr "Finished: %s"
 
-#: arayuz/sekme_tukenme.py:561
+#: arayuz/sekme_tukenme.py:579
 msgid "Tükenme tamamlandı"
 msgstr "Depletion finished"
 
-#: arayuz/sekme_tukenme.py:592
+#: arayuz/sekme_tukenme.py:610
 #, python-format
 msgid "%d dk"
 msgstr "%d min"
 
-#: arayuz/sekme_tukenme.py:593
+#: arayuz/sekme_tukenme.py:611
 #, python-format
 msgid "%.1f sa"
 msgstr "%.1f h"
@@ -8589,21 +9460,9 @@ msgstr ""
 "cells marked × exceed the relative error threshold or received no score at all. For a"
 " 3D view open the VTK file in ParaView."
 
-#: arayuz/sonuc/mesh_harita.py:130
-msgid "Tally:"
-msgstr "Tally:"
-
-#: arayuz/sonuc/mesh_harita.py:131
-msgid "Enerji grubu:"
-msgstr "Energy group:"
-
 #: arayuz/sonuc/mesh_harita.py:132
 msgid "Dilim ekseni:"
 msgstr "Slice axis:"
-
-#: arayuz/sonuc/mesh_harita.py:134
-msgid "Normalizasyon:"
-msgstr "Normalization:"
 
 #: arayuz/sonuc/mesh_harita.py:135
 msgid "Gösterim:"
@@ -8872,13 +9731,278 @@ msgstr "No spectrum tally"
 msgid "model geneli"
 msgstr "whole model"
 
-#: arayuz/sonuc/spektrum.py:210
+#: arayuz/sonuc/spektrum.py:210 arayuz/sonuc/yuzey.py:187
 msgid "enerji [eV]"
 msgstr "energy [eV]"
 
 #: arayuz/sonuc/spektrum.py:211
 msgid "φ·V / Δu [cm / kaynak nötronu]"
 msgstr "φ·V / Δu [cm / source neutron]"
+
+#: arayuz/sonuc/yerel_k.py:71
+msgid "Yerel k hesaplanmadı. Modele yerel k tally'si ekleyip yeniden çalıştırın."
+msgstr "Local k was not computed. Add the local k tally to the model and run it again."
+
+#: arayuz/sonuc/yerel_k.py:82
+msgid ""
+"k_yerel = νΣ_f φ / (Σ_a φ − X) her pin/demet hücresinde: yerel üretim / yok olma "
+"oranı (sızıntı ve net akım terimi içermez), k∞ değildir. Akı komşulardan gelen "
+"nötronları içerir; oranı hücredeki spektrum belirler. X: (n,xn) tepkimelerinin net "
+"nötron üretimi (OpenMC 'absorption'ı bunları saymaz)."
+msgstr ""
+"k_local = νΣ_f φ / (Σ_a φ − X) in each pin/assembly cell: a local production / "
+"removal ratio (contains no leakage or net current term), not k∞. The flux includes "
+"neutrons coming from neighbours; the ratio is set by the spectrum in the cell. X: net"
+" neutron production of (n,xn) reactions (OpenMC 'absorption' does not count them)."
+
+#: arayuz/sonuc/yerel_k.py:89
+msgid ""
+"Belirsizlik: σ, pay ile payda arasındaki korelasyon yok sayılarak yayılır "
+"(ihtiyatlı); bin σ'ları çevrimler arası korelasyonu görmez (iyimser). Gerçek "
+"belirsizlik için modeli birkaç tohumla koşun."
+msgstr ""
+"Uncertainty: σ is propagated ignoring the correlation between numerator and "
+"denominator (conservative); bin σ values do not see the batch-to-batch correlation "
+"(optimistic). For the true uncertainty, run the model with several seeds."
+
+#: arayuz/sonuc/yerel_k.py:96
+msgid "Yerel k haritası"
+msgstr "Local k map"
+
+#: arayuz/sonuc/yerel_k.py:119
+#, python-format
+msgid "Yerel k okunamadı: %s"
+msgstr "Local k could not be read: %s"
+
+#: arayuz/sonuc/yerel_k.py:138
+msgid "Yerel k hesaplanmadı: bu koşuda yerel k tally'si yok."
+msgstr "Local k was not computed: this run has no local k tally."
+
+#: arayuz/sonuc/yerel_k.py:155
+#, python-format
+msgid "<b>ortalama k = %.5f ± %.5f</b> (net yok olma ağırlıklı = Σ νΣ_f φ / Σ (Σ_a φ − X))"
+msgstr "<b>mean k = %.5f ± %.5f</b> (net-removal weighted = Σ νΣ_f φ / Σ (Σ_a φ − X))"
+
+#: arayuz/sonuc/yerel_k.py:158
+#, python-format
+msgid "koşunun k-eff'i %.5f ± %.5f"
+msgstr "k-eff of the run %.5f ± %.5f"
+
+#: arayuz/sonuc/yerel_k.py:159
+#, python-format
+msgid "c_xn = %.5f"
+msgstr "c_xn = %.5f"
+
+#: arayuz/sonuc/yerel_k.py:161
+#, python-format
+msgid "harita kapsamı (net yok olma payı): %.4f"
+msgstr "map coverage (share of net removal): %.4f"
+
+#: arayuz/sonuc/yerel_k.py:163
+#, python-format
+msgid "P/(D+L) = %.5f (sızıntı L = %.5f; k-eff ile karşılaştırın)"
+msgstr "P/(D+L) = %.5f (leakage L = %.5f; compare with k-eff)"
+
+#: arayuz/sonuc/yerel_k.py:167
+#, python-format
+msgid "en düşük / en yüksek: %.4f / %.4f"
+msgstr "lowest / highest: %.4f / %.4f"
+
+#: arayuz/sonuc/yerel_k.py:169
+msgid ""
+"Yerel üretim / yok olma oranı (sızıntı ve net akım terimi içermez), k∞ değildir. "
+"Ortalama yalnız sonsuz kafeste (yansıtıcı sınır, kapsam %100) k∞'a eşittir; kritiklik"
+" globaldir: k_eff = ΣP / (ΣD + L)."
+msgstr ""
+"Local production / removal ratio (contains no leakage or net current term), not k∞. "
+"The mean equals k∞ only in an infinite lattice (reflective boundary, 100% coverage); "
+"criticality is global: k_eff = ΣP / (ΣD + L)."
+
+#: arayuz/sonuc/yerel_k.py:207
+msgid "k_yerel"
+msgstr "k_local"
+
+#: arayuz/sonuc/yerel_k.py:211
+#, python-format
+msgid ""
+"Yerel k — %s düzeyi\n"
+"beyaz: yakıtsız konum (k = 0)"
+msgstr ""
+"Local k — %s level\n"
+"white: position without fuel (k = 0)"
+
+#: arayuz/sonuc/yerel_k.py:233
+#, python-format
+msgid "(%d, %d): yakıtsız"
+msgstr "(%d, %d): no fuel"
+
+#: arayuz/sonuc/yerel_k.py:234
+#, python-format
+msgid "(%d, %d): k_yerel = %.5f ± %.5f (xn düzeltmesiz %.5f)"
+msgstr "(%d, %d): k_local = %.5f ± %.5f (without xn correction %.5f)"
+
+#: arayuz/sonuc/yerel_k.py:257
+msgid "Yerel k tablosunu kaydet"
+msgstr "Save local k table"
+
+#: arayuz/sonuc/yerel_k.py:263
+msgid "Yerel k"
+msgstr "Local k"
+
+#: arayuz/sonuc/yerel_k.py:267
+msgid "Yerel k haritasını kaydet"
+msgstr "Save local k map"
+
+#: arayuz/sonuc/yuzey.py:33
+msgid "bilinmiyor"
+msgstr "unknown"
+
+#: arayuz/sonuc/yuzey.py:38
+msgid "kaçak (vakum sınırı, |J| toplamı)"
+msgstr "leakage (vacuum boundary, sum of |J|)"
+
+#: arayuz/sonuc/yuzey.py:41
+#, python-format
+msgid "  yüzey %d"
+msgstr "  surface %d"
+
+#: arayuz/sonuc/yuzey.py:43
+#, python-format
+msgid "%d yüzey daha"
+msgstr "%d more surfaces"
+
+#: arayuz/sonuc/yuzey.py:45
+msgid "global sızıntı (OpenMC)"
+msgstr "global leakage (OpenMC)"
+
+#: arayuz/sonuc/yuzey.py:50
+msgid "giren (dış yüzler)"
+msgstr "in (outer faces)"
+
+#: arayuz/sonuc/yuzey.py:50
+msgid "çıkan (dış yüzler)"
+msgstr "out (outer faces)"
+
+#: arayuz/sonuc/yuzey.py:51
+msgid "net çıkan"
+msgstr "net out"
+
+#: arayuz/sonuc/yuzey.py:54
+#, python-format
+msgid "giren %s · çıkan %s"
+msgstr "in %s · out %s"
+
+#: arayuz/sonuc/yuzey.py:58
+msgid "kaynak S · üretim U · soğurma A"
+msgstr "source S · production U · absorption A"
+
+#: arayuz/sonuc/yuzey.py:62
+#, python-format
+msgid "  (bağıl %.1e)"
+msgstr "  (relative %.1e)"
+
+#: arayuz/sonuc/yuzey.py:71
+msgid "model sınırı"
+msgstr "model boundary"
+
+#: arayuz/sonuc/yuzey.py:74
+#, python-format
+msgid "kutu ağı %s, %s … %s cm"
+msgstr "box mesh %s, %s … %s cm"
+
+#: arayuz/sonuc/yuzey.py:90
+#, python-format
+msgid ""
+"Birim 1/s: kaynak şiddeti %g ile çarpılmış (kaynak parçacığı başına değer için "
+"şiddete bölün)."
+msgstr ""
+"Unit 1/s: multiplied by the source strength %g (divide by the strength for values per"
+" source particle)."
+
+#: arayuz/sonuc/yuzey.py:93
+msgid "Birim: kaynak parçacığı başına."
+msgstr "Unit: per source particle."
+
+#: arayuz/sonuc/yuzey.py:95
+msgid "Birim: kaynak nötronu başına (özdeğer; mutlak değer için güç normalizasyonu gerekir)."
+msgstr "Unit: per source neutron (eigenvalue; absolute values need power normalization)."
+
+#: arayuz/sonuc/yuzey.py:98
+msgid ""
+"Sınır: OpenMC net akımı yüzey normaline göre işaretler (+ normal yönü); vakum "
+"yüzeyinden her geçiş dışarı olduğundan yüzey başına |J| kaçaktır. Toplam global "
+"sızıntıyla aynı olaylardır."
+msgstr ""
+"Boundary: OpenMC signs the net current with the surface normal (+ along the normal); "
+"every crossing of a vacuum surface goes out, so |J| per surface is the leakage. The "
+"total is the same events as the global leakage."
+
+#: arayuz/sonuc/yuzey.py:102
+msgid ""
+"Foton taşınımı açık: OpenMC global sızıntısı fotonları da sayar; sınır tally'si "
+"kaynak parçacığına süzüldüğü için karşılaştırılmadı."
+msgstr ""
+"Photon transport on: the OpenMC global leakage also counts photons; the boundary "
+"tally is filtered to the source particle, so they are not compared."
+
+#: arayuz/sonuc/yuzey.py:105
+msgid ""
+"Kutu: OpenMC 'out' hücreden çıkan, 'in' giren kısmi akımdır; iç yüzler birbirini "
+"götürür. Denge S + J_giren − J_çıkan + U = A; U = nu-scatter − scatter ((n,xn) ve "
+"MT5), sabit kaynakta + nu-fission."
+msgstr ""
+"Box: OpenMC 'out' is the partial current leaving a cell, 'in' the one entering; inner"
+" faces cancel. Balance S + J_in - J_out + U = A; U = nu-scatter - scatter ((n,xn) and"
+" MT5), + nu-fission in fixed source."
+
+#: arayuz/sonuc/yuzey.py:109
+msgid "± birinci derece, terimler arası korelasyon yok sayıldı: yaklaşık."
+msgstr "+- first order, correlation between terms ignored: approximate."
+
+#: arayuz/sonuc/yuzey.py:111
+msgid ""
+"Kaçak spektrumu: grup akımı / Δu (letarji genişliği), kutuda yalnız dış yüzlerden "
+"çıkan akım."
+msgstr ""
+"Leakage spectrum: group current / du (lethargy width); for a box only the current "
+"leaving through the outer faces."
+
+#: arayuz/sonuc/yuzey.py:118
+msgid ""
+"Sabit kaynak, analog tahminci: denge her geçmişte tamdır (survival biasing, ağırlık "
+"penceresi ve enerji/zaman kesmesi kapalıyken); artık yalnız yuvarlamadır."
+msgstr ""
+"Fixed source, analog estimator: the balance holds in every history (with survival "
+"biasing, weight windows and energy/time cutoffs off); the residual is round-off only."
+
+#: arayuz/sonuc/yuzey.py:121
+msgid ""
+"Özdeğer: S = nu-fission/k yalnız beklenen değerdir; artık istatistiksel, yakınsamış "
+"kaynakta ~σ mertebesindedir (tam değildir)."
+msgstr ""
+"Eigenvalue: S = nu-fission/k is only an expected value; the residual is statistical, "
+"about sigma with a converged source (not exact)."
+
+#: arayuz/sonuc/yuzey.py:129
+msgid "Yüzey akımı ve kaçak"
+msgstr "Surface current and leakage"
+
+#: arayuz/sonuc/yuzey.py:130
+msgid "Sınırdan kaçak, kutu yüzlerinden giren/çıkan, nötron dengesi"
+msgstr "Boundary leakage, in/out through box faces, neutron balance"
+
+#: arayuz/sonuc/yuzey.py:157
+#, python-format
+msgid "Yüzey akımı sonucu okunamadı: %s"
+msgstr "Surface current result could not be read: %s"
+
+#: arayuz/sonuc/yuzey.py:178
+msgid "Kaçak spektrumu için yüzey tally'sine enerji grupları ekleyin"
+msgstr "Add energy groups to the surface tally for a leakage spectrum"
+
+#: arayuz/sonuc/yuzey.py:188
+msgid "J / Δu"
+msgstr "J / Δu"
 
 #: arayuz/tasarim/tokenlar.py:129
 msgid "Kobalt"
@@ -8948,7 +10072,8 @@ msgstr ""
 "\n"
 "Typical: PWR 38–40, BWR ~25, SFR 50–100 W/gHM."
 
-#: arayuz/tukenme_arayuz.py:75 arayuz/tukenme_arayuz.py:173 arayuz/tukenme_pin_gucu.py:74
+#: arayuz/tukenme_arayuz.py:75 arayuz/tukenme_arayuz.py:175
+#: arayuz/tukenme_cikti_panel.py:54 arayuz/tukenme_pin_gucu.py:74 arayuz/tukenme_y4.py:21
 msgid "gün"
 msgstr "days"
 
@@ -9001,19 +10126,11 @@ msgstr "Depleted materials:"
 msgid "Ek yanan malzemeler:"
 msgstr "Additional depleted materials:"
 
-#: arayuz/tukenme_arayuz.py:116
-msgid "CECM (öngörücü-düzeltici, adım başına 2 transport)"
-msgstr "CECM (predictor-corrector, 2 transport solves per step)"
-
-#: arayuz/tukenme_arayuz.py:117
-msgid "Predictor (adım başına 1 transport, kaba)"
-msgstr "Predictor (1 transport solve per step, coarse)"
-
-#: arayuz/tukenme_arayuz.py:118
+#: arayuz/tukenme_arayuz.py:119
 msgid "Çubuk çubuk yanma (her örnek ayrı malzeme — çok ağır)"
 msgstr "Pin-by-pin burnup (each instance a separate material — very heavy)"
 
-#: arayuz/tukenme_arayuz.py:119
+#: arayuz/tukenme_arayuz.py:120
 msgid ""
 "Yakıtın her örneği (ör. demetteki her çubuk) ayrı yanar; bellek ve süre örnek "
 "sayısıyla artar."
@@ -9021,24 +10138,24 @@ msgstr ""
 "Each fuel instance (e.g. each pin in the assembly) is depleted separately; memory and"
 " time grow with the number of instances."
 
-#: arayuz/tukenme_arayuz.py:124
+#: arayuz/tukenme_arayuz.py:125
 msgid "Zincir:"
 msgstr "Chain:"
 
-#: arayuz/tukenme_arayuz.py:126
+#: arayuz/tukenme_arayuz.py:127
 msgid "Entegratör:"
 msgstr "Integrator:"
 
-#: arayuz/tukenme_arayuz.py:134
+#: arayuz/tukenme_arayuz.py:136
 msgid "Tükenmeyi başlat"
 msgstr "Start depletion"
 
-#: arayuz/analiz/sekme.py:130 arayuz/calistir/kartlar.py:87 arayuz/pencere/kabuk.py:191
-#: arayuz/tukenme_arayuz.py:136
+#: arayuz/analiz/mgxs.py:141 arayuz/analiz/sekme.py:130 arayuz/calistir/kartlar.py:87
+#: arayuz/pencere/kabuk.py:191 arayuz/tukenme_arayuz.py:138
 msgid "Durdur"
 msgstr "Stop"
 
-#: arayuz/tukenme_arayuz.py:151
+#: arayuz/tukenme_arayuz.py:153
 msgid ""
 "Grafikte, tabloda ve CSV'de izlenecek nüklidler. Seçim değişince önceki sonuç yeniden"
 " koşmadan güncellenir."
@@ -9046,40 +10163,130 @@ msgstr ""
 "Nuclides to track in the chart, table and CSV. When the selection changes, the "
 "previous result is updated without rerunning."
 
-#: arayuz/tukenme_arayuz.py:167
+#: arayuz/tukenme_arayuz.py:169
 msgid "CSV olarak dışa aktar"
 msgstr "Export as CSV"
 
-#: arayuz/tukenme_arayuz.py:168
+#: arayuz/tukenme_arayuz.py:170
 msgid "Zaman, yanma, k, σ ve seçili her nüklidin atom sayısı ile yoğunluğu (ondalık nokta)"
 msgstr ""
 "Time, burnup, k, σ and the atom count and density of each selected nuclide (decimal "
 "point)"
 
-#: arayuz/calistir/kartlar.py:176 arayuz/tukenme_arayuz.py:185
+#: arayuz/calistir/kartlar.py:176 arayuz/tukenme_arayuz.py:187
 msgid "Ayrıntılı çıktı"
 msgstr "Detailed output"
 
-#: arayuz/tukenme_arayuz.py:190
+#: arayuz/tukenme_arayuz.py:192
 msgid "Yanma ayarları"
 msgstr "Burnup settings"
 
-#: arayuz/tukenme_arayuz.py:193
+#: arayuz/tukenme_arayuz.py:195
 msgid "İzlenen nüklidler"
 msgstr "Tracked nuclides"
 
-#: arayuz/calistir/kartlar.py:84 arayuz/tukenme_arayuz.py:195
+#: arayuz/calistir/kartlar.py:84 arayuz/tukenme_arayuz.py:197
 msgid "Koşu"
 msgstr "Run"
 
-#: arayuz/analiz/sekme.py:165 arayuz/calistir/kartlar.py:138 arayuz/tukenme_arayuz.py:201
+#: arayuz/analiz/sekme.py:165 arayuz/calistir/kartlar.py:138 arayuz/tukenme_arayuz.py:203
 msgid "Sonuç"
 msgstr "Result"
 
-#: arayuz/pencere/model_islemleri.py:67 arayuz/tukenme_arayuz.py:214
+#: arayuz/pencere/model_islemleri.py:67 arayuz/tukenme_arayuz.py:218
 #: arayuz/yardim/__init__.py:52
 msgid "Tükenme"
 msgstr "Depletion"
+
+#: arayuz/tukenme_cikti_panel.py:29
+msgid "Bozunma ısısı [W]"
+msgstr "Decay heat [W]"
+
+#: arayuz/tukenme_cikti_panel.py:29
+msgid "Bozunma ısısı [W/g]"
+msgstr "Decay heat [W/g]"
+
+#: arayuz/tukenme_cikti_panel.py:30
+msgid "Aktivite [Bq]"
+msgstr "Activity [Bq]"
+
+#: arayuz/tukenme_cikti_panel.py:30
+msgid "Aktivite [Bq/g]"
+msgstr "Activity [Bq/g]"
+
+#: arayuz/tukenme_cikti_panel.py:31
+msgid "Foton kaynağı [foton/s]"
+msgstr "Photon source [photons/s]"
+
+#: arayuz/analiz/kinetik.py:89 arayuz/tukenme_cikti_panel.py:38
+msgid "Hesapla"
+msgstr "Compute"
+
+#: arayuz/tukenme_cikti_panel.py:39
+msgid "Aktivite, bozunma ısısı ve foton kaynağı"
+msgstr "Activity, decay heat and photon source"
+
+#: arayuz/tukenme_cikti_panel.py:46 arayuz/tukenme_cikti_panel.py:86
+msgid "Sonuç yok."
+msgstr "No result."
+
+#: arayuz/tukenme_cikti_panel.py:54
+msgid "foton/s"
+msgstr "photons/s"
+
+#: arayuz/tukenme_cikti_panel.py:61
+msgid "Çıktıları CSV olarak dışa aktar"
+msgstr "Export outputs as CSV"
+
+#: arayuz/tukenme_cikti_panel.py:85
+msgid "Sonuç hazır — «Hesapla» ile çıktıları hesaplayın."
+msgstr "Result ready — compute the outputs with «Compute»."
+
+#: arayuz/tukenme_cikti_panel.py:100
+#, python-format
+msgid "Çıktılar hesaplanamadı: %s"
+msgstr "The outputs could not be computed: %s"
+
+#: arayuz/tukenme_cikti_panel.py:104
+#, python-format
+msgid "%d zaman noktası, %d malzeme."
+msgstr "%d time points, %d materials."
+
+#: arayuz/tukenme_cikti_panel.py:107
+msgid ""
+"Basitleştirilmiş CASL zinciri: birçok aktivasyon ürünü (ör. Co-60) yok; aktivite ve "
+"bozunma ısısı eksik çıkar. Bu çıktılar için tam ENDF/B-VIII.0 zincirini seçin."
+msgstr ""
+"Simplified CASL chain: many activation products (e.g. Co-60) are missing; activity "
+"and decay heat come out incomplete. Choose the full ENDF/B-VIII.0 chain for these "
+"outputs."
+
+#: arayuz/tukenme_cikti_panel.py:132
+#, python-format
+msgid "%s: hesaplanamadı (%s)"
+msgstr "%s: could not be computed (%s)"
+
+#: arayuz/tukenme_cikti_panel.py:134
+#, python-format
+msgid "%s: temas doz hızı %.4g Gy/h · atık sınıfı (10 CFR 61.55) %s"
+msgstr "%s: contact dose rate %.4g Gy/h · waste class (10 CFR 61.55) %s"
+
+#: arayuz/tukenme_cikti_panel.py:136
+msgid "Son adımda:\n"
+msgstr "At the last step:\n"
+
+#: arayuz/tukenme_cikti_panel.py:153 arayuz/tukenme_sonuc.py:58
+msgid "zaman [gün]"
+msgstr "time [days]"
+
+#: arayuz/tukenme_cikti_panel.py:165
+msgid "Çıktıları kaydet"
+msgstr "Save outputs"
+
+#: arayuz/calistir/yakinsama.py:77 arayuz/goruntuleyici/pencere.py:507
+#: arayuz/pencere/proje.py:146 arayuz/tukenme_cikti_panel.py:172
+msgid "Kaydedilemedi"
+msgstr "Could not save"
 
 #: arayuz/tukenme_ek.py:31
 msgid "Ek yanan malzemeler"
@@ -9164,7 +10371,7 @@ msgstr ""
 msgid "adım %d — %.4g gün, %.4g MWd/kg"
 msgstr "step %d — %.4g d, %.4g MWd/kg"
 
-#: arayuz/tukenme_pin_gucu.py:191 arayuz/tukenme_sonuc.py:57 arayuz/tukenme_sonuc.py:73
+#: arayuz/tukenme_pin_gucu.py:191 arayuz/tukenme_sonuc.py:58 arayuz/tukenme_sonuc.py:74
 msgid "yanma [MWd/kg]"
 msgstr "burnup [MWd/kg]"
 
@@ -9180,15 +10387,11 @@ msgstr "Save step × pin table"
 msgid "Tepe faktörlerini kaydet"
 msgstr "Save peaking factors"
 
-#: arayuz/tukenme_sonuc.py:57
-msgid "zaman [gün]"
-msgstr "time [days]"
-
-#: arayuz/tukenme_sonuc.py:115
+#: arayuz/tukenme_sonuc.py:118
 msgid "Tükenme sonucunu CSV olarak kaydet"
 msgstr "Save depletion result as CSV"
 
-#: arayuz/tukenme_sonuc.py:142
+#: arayuz/tukenme_sonuc.py:145
 #, python-format
 msgid ""
 "Yarım kalmış koşu (%s): %d / %d adım tamamlanmış. Koşu durdurulmuş ya da hâlâ sürüyor"
@@ -9197,12 +10400,12 @@ msgstr ""
 "Incomplete run (%s): %d / %d steps completed. The run may have been stopped or may "
 "still be going; run again for the full result."
 
-#: arayuz/tukenme_sonuc.py:146
+#: arayuz/tukenme_sonuc.py:149
 #, python-format
 msgid "Önceki koşunun sonucu (%s) — bu modele ait."
 msgstr "Result of the previous run (%s) — belongs to this model."
 
-#: arayuz/tukenme_sonuc.py:148
+#: arayuz/tukenme_sonuc.py:151
 #, python-format
 msgid ""
 "Eski sonuç (%s): model o koşudan beri değişti (%s). Gösterilen sayılar bu modele ait "
@@ -9211,7 +10414,7 @@ msgstr ""
 "Outdated result (%s): the model has changed since that run (%s). The numbers shown do"
 " not belong to this model — run again."
 
-#: arayuz/tukenme_sonuc.py:151
+#: arayuz/tukenme_sonuc.py:154
 #, python-format
 msgid ""
 "Önceki koşunun sonucu (%s). Koşunun model kaydı yok; bu modele ait olduğu "
@@ -9220,7 +10423,7 @@ msgstr ""
 "Result of the previous run (%s). The run has no model record; it cannot be confirmed "
 "that it belongs to this model."
 
-#: arayuz/tukenme_sonuc.py:206
+#: arayuz/tukenme_sonuc.py:209
 #, python-format
 msgid ""
 "Bu model için kayıtlı tükenme sonucu yok. Sonuçlar şuraya yazılır: %s (Çalıştır "
@@ -9229,33 +10432,159 @@ msgstr ""
 "No saved depletion result for this model. Results are written to: %s (derived from "
 "the run directory on the Run page)."
 
-#: arayuz/tukenme_sonuc.py:224
+#: arayuz/tukenme_sonuc.py:227
 msgid "Önceki koşunun sonucu okunuyor…"
 msgstr "Reading the previous run's result…"
 
-#: arayuz/tukenme_sonuc.py:250
+#: arayuz/tukenme_sonuc.py:253
 #, python-format
 msgid "Önceki sonuç okunamadı: %s"
 msgstr "The previous result could not be read: %s"
 
-#: arayuz/tukenme_sonuc.py:337
+#: arayuz/tukenme_sonuc.py:342
 #, python-format
 msgid "Sonuçta bulunamayan nüklidler (grafikte yok): %s"
 msgstr "Nuclides not found in the result (not in the chart): %s"
 
-#: arayuz/tukenme_sonuc.py:379
+#: arayuz/tukenme_sonuc.py:384
 #, python-format
 msgid "Seçim sonuç dosyasından okunamadı: %s"
 msgstr "The selection could not be read from the result file: %s"
 
-#: arayuz/tukenme_sonuc.py:392
+#: arayuz/tukenme_sonuc.py:397
 msgid "CSV yazılamadı"
 msgstr "CSV could not be written"
 
-#: arayuz/tukenme_sonuc.py:395
+#: arayuz/tukenme_sonuc.py:400
 #, python-format
 msgid "CSV kaydedildi: %s"
 msgstr "CSV saved: %s"
+
+#: arayuz/tukenme_y4.py:21
+msgid "saat"
+msgstr "hours"
+
+#: arayuz/tukenme_y4.py:21
+msgid "yıl"
+msgstr "years"
+
+#: arayuz/tukenme_y4.py:21
+msgid "saniye"
+msgstr "seconds"
+
+#: arayuz/tukenme_y4.py:22
+msgid "Çözünmüş bor [ppm]"
+msgstr "Dissolved boron [ppm]"
+
+#: arayuz/tukenme_y4.py:22
+msgid "Kontrol çubuğu daldırma [%]"
+msgstr "Control rod insertion [%]"
+
+#: arayuz/tukenme_y4.py:32
+msgid ""
+"openmc.deplete entegratörü. Yüksek mertebe daha az adımla aynı doğruluğu verir ama "
+"adım başına daha çok transport koşar. SI-* (stokastik örtük) adım başına iç döngü "
+"koşar; kritik aramayla birlikte kullanılamaz."
+msgstr ""
+"openmc.deplete integrator. A higher order gives the same accuracy with fewer steps "
+"but runs more transport solutions per step. SI-* (stochastic implicit) runs an inner "
+"loop in each step; it cannot be used with the critical search."
+
+#: arayuz/tukenme_y4.py:51
+msgid "ör. 1, 10, 100 (boş: soğuma yok)"
+msgstr "e.g. 1, 10, 100 (empty: no cooling)"
+
+#: arayuz/tukenme_y4.py:53
+msgid ""
+"Yanmadan SONRA sıfır güçte (yalnız bozunma) adımlar. Transport koşulmaz; bozunma "
+"ısısı, aktivite ve foton kaynağı soğuma adımlarında izlenir."
+msgstr ""
+"Steps at zero power (decay only) AFTER the burnup. No transport is run; decay heat, "
+"activity and photon source are followed in the cooling steps."
+
+#: arayuz/tukenme_y4.py:61
+msgid "SI-* entegratörlerinin iç döngü sayısı (OpenMC n_steps)."
+msgstr "Number of inner loops of the SI-* integrators (OpenMC n_steps)."
+
+#: arayuz/tukenme_y4.py:62
+msgid "Kaldığı yerden sürdür"
+msgstr "Resume from where it stopped"
+
+#: arayuz/tukenme_y4.py:64
+msgid ""
+"Dizindeki önceki sonuç silinmez; yarıda kalan koşu son kayıtlı adımdan devam eder, "
+"biten koşuya eklenen adımlar koşulur. Fizik aynı olmalı."
+msgstr ""
+"The previous result in the directory is not deleted; an interrupted run continues "
+"from the last saved step, steps added to a finished run are run. The physics must be "
+"the same."
+
+#: arayuz/tukenme_y4.py:66
+msgid "Hızlı kip (MicroXS, transport'suz)"
+msgstr "Fast mode (MicroXS, no transport)"
+
+#: arayuz/tukenme_y4.py:68
+msgid ""
+"Tek transport'tan tek gruplu tesir kesitleri; adımlar transport koşmadan çözülür. "
+"Spektrum değişimi görülmez ve k-eff adım adım hesaplanmaz."
+msgstr ""
+"One-group cross sections from a single transport solution; the steps are solved "
+"without transport. The spectrum change is not seen and k-eff is not computed step by "
+"step."
+
+#: arayuz/tukenme_y4.py:73
+msgid "Soğuma adımları:"
+msgstr "Cooling steps:"
+
+#: arayuz/tukenme_y4.py:74
+msgid "Soğuma birimi:"
+msgstr "Cooling unit:"
+
+#: arayuz/tukenme_y4.py:75
+msgid "SI iç döngü:"
+msgstr "SI inner loops:"
+
+#: arayuz/tukenme_y4.py:79
+msgid "Arama türü:"
+msgstr "Search type:"
+
+#: arayuz/analiz/sekme.py:98 arayuz/analiz/sekme.py:463 arayuz/tukenme_y4.py:80
+msgid "Hedef:"
+msgstr "Target:"
+
+#: arayuz/tukenme_y4.py:81
+msgid "Başlangıç tahminleri:"
+msgstr "Initial guesses:"
+
+#: arayuz/tukenme_y4.py:82
+msgid "Sınır [en az, en çok]:"
+msgstr "Bounds [min, max]:"
+
+#: arayuz/tukenme_y4.py:83
+msgid "k toleransı:"
+msgstr "k tolerance:"
+
+#: arayuz/tukenme_y4.py:97
+msgid "Tükenme sırasında kritik arama (k = 1)"
+msgstr "Critical search during depletion (k = 1)"
+
+#: arayuz/tukenme_y4.py:99
+msgid ""
+"Her güçlü adımın başında k = 1 veren bor derişimi ya da kontrol çubuğu daldırması "
+"aranır (OpenMC add_keff_search_control, GRsecant). Adım başına birkaç ek transport "
+"koşar."
+msgstr ""
+"At the start of every powered step the boron concentration or control rod insertion "
+"giving k = 1 is searched (OpenMC add_keff_search_control, GRsecant). It runs a few "
+"extra transport solutions per step."
+
+#: arayuz/tukenme_y4.py:112
+msgid ""
+"Arama |k − 1| ≤ tolerans ve σ ≤ tolerans olunca durur. Varsayılan 1e-3 (100 pcm): "
+"tipik bir tükenme adımının istatistik belirsizliği düzeyi."
+msgstr ""
+"The search stops when |k − 1| ≤ tolerance and σ ≤ tolerance. Default 1e-3 (100 pcm): "
+"the statistical uncertainty level of a typical depletion step."
 
 #: arayuz/uygunluk_paneli.py:58
 msgid "kontrolü geçti"
@@ -9795,47 +11124,51 @@ msgid "Ders: nokta kinetiği"
 msgstr "Lesson: point kinetics"
 
 #: arayuz/yardim/__init__.py:65
+msgid "Ders: foton ısınması, sıcaklık interpolasyonu, yüzey akımı"
+msgstr "Lesson: photon heating, temperature interpolation, surface current"
+
+#: arayuz/yardim/__init__.py:66
 msgid "Sonuçları yorumlamak"
 msgstr "Interpreting results"
 
-#: arayuz/yardim/__init__.py:66
+#: arayuz/yardim/__init__.py:67
 msgid "Önce çiz, sonra çalıştır"
 msgstr "Draw first, then run"
 
-#: arayuz/yardim/__init__.py:67
+#: arayuz/yardim/__init__.py:68
 msgid "Bilinen tuzaklar"
 msgstr "Known pitfalls"
 
-#: arayuz/yardim/__init__.py:68
+#: arayuz/yardim/__init__.py:69
 msgid "Uygunluk denetimi"
 msgstr "Conformity check"
 
-#: arayuz/yardim/__init__.py:69
+#: arayuz/yardim/__init__.py:70
 msgid "Doğrulama ve geçerleme (V&V)"
 msgstr "Verification and validation (V&V)"
 
-#: arayuz/yardim/__init__.py:70
+#: arayuz/yardim/__init__.py:71
 msgid "Terminal ve HPC kullanımı"
 msgstr "Terminal and HPC use"
 
-#: arayuz/yardim/__init__.py:71
+#: arayuz/yardim/__init__.py:72
 msgid "Sorun giderme"
 msgstr "Troubleshooting"
 
-#: arayuz/yardim/__init__.py:72
+#: arayuz/yardim/__init__.py:73
 msgid "Uygunluk kuralları (K1–K16)"
 msgstr "Conformity rules (K1–K16)"
 
-#: arayuz/yardim/__init__.py:73
+#: arayuz/yardim/__init__.py:74
 msgid "Terim sözlüğü"
 msgstr "Glossary"
 
-#: arayuz/yardim/__init__.py:105
+#: arayuz/yardim/__init__.py:106
 #, python-brace-format
 msgid "Kullanım kılavuzu bulunamadı: {yol}"
 msgstr "User guide not found: {yol}"
 
-#: arayuz/yardim/__init__.py:125
+#: arayuz/yardim/__init__.py:126
 #, python-brace-format
 msgid "Kılavuzda bu bölüm yok: {b}"
 msgstr "This section is not in the user guide: {b}"
@@ -9884,7 +11217,7 @@ msgstr "{n} matches"
 msgid "Kullanım kılavuzunda bu sayfanın bölümünü açar (F1)"
 msgstr "Opens this page's section in the user guide (F1)"
 
-#: arayuz/pencere/menuler.py:114 arayuz/yardim/gosterici.py:56
+#: arayuz/pencere/menuler.py:120 arayuz/yardim/gosterici.py:56
 #: arayuz/yardim_baglanti.py:106
 msgid "Kullanım kılavuzu"
 msgstr "User guide"
@@ -10497,4 +11830,10 @@ msgstr "User guide"
 
 #~ msgid "Bir model türüyle boş başlayın ya da hazır bir örneğin kopyasını açın."
 #~ msgstr "Start empty with a model type, or open a copy of a ready-made example."
+
+#~ msgid "CECM (öngörücü-düzeltici, adım başına 2 transport)"
+#~ msgstr "CECM (predictor-corrector, 2 transport solves per step)"
+
+#~ msgid "Predictor (adım başına 1 transport, kaba)"
+#~ msgstr "Predictor (1 transport solve per step, coarse)"
 

@@ -19,6 +19,32 @@ gelir (`pyproject.toml` → `cekirdek/surum.py`). Ayrıntılı değişiklikler `
 - Özdeğer hesabında ağ tally'si varsa filtresiz `mesh_genel_isi` tally'si (`kappa-fission`,
   `heating-local`) eklenir; mutlak normalizasyonun paydası buradan okunur.
 
+### Yeni — grup sabitleri, çok gruplu MC ve random ray (v3 Y8)
+- **Analiz › Grup sabitleri ve random ray** kartı: `openmc.mgxs` ile akı ağırlıklı grup sabitleri
+  (bölge: malzeme / hücre / demet; CASMO-2…70, XMAS-172; taşıma düzeltmesi yok / P0), tablo,
+  `mgxs.csv`, `mgxs.h5`; aynı geometrinin MG Monte Carlo ve random ray koşusu; CE/MG/RR
+  karşılaştırması (k ± σ, Δpcm, süre). Kılavuz: Grup sabitleri kartı; ders 5.19.
+- Doğrulanan: pin hücre 2 grup tek bölge G×G k∞ CE ile +74 pcm (4σ_CE içinde), random ray
+  homojen ortamda özdeğere < 1 pcm; CASMO-70 malzeme MG MC CE'ye −66 ± 181 pcm (eşik 500),
+  random ray MG'ye −10 pcm (eşik 300). Doğrulanmayan: sızıntılı/kor ölçekli homojenleştirme,
+  sabit kaynakta random ray, sabitlerin çekirdek simülatöründe kullanımı.
+- Davranış: `ayarlar.mgxs` yoksa kurulan model ve betik değişmez (varsayılana yazılmaz);
+  tükenmede MGXS tally'leri eklenmez. P0 ile ince grupta MG MC geçersizdir (negatif köşegen,
+  ölçülen −7600 pcm) — sonuç notu uyarır; varsayılan düzeltme "yok".
+- `cekirdek/kuyruk.py`: genel `hazirlik_kilidi()` / `HAZIRLIK_KILIDI` (eski `_HAZIRLIK_KILIDI`
+  aynı nesne).
+
+### Davranış değişikliği — foton, sıcaklık, yüzey (v3 Y7)
+- **Geçersiz `ayarlar.sicaklik_yontemi`** (ör. `spline`) artık doğrulamada **hata** verir;
+  önceden değer OpenMC'ye geçer ve koşu başında OpenMC durdururdu.
+- Doğrulama malzeme sıcaklığını kütüphaneyle karşılaştırır: `nearest` + tolerans dışı sıcaklık
+  **hata** (OpenMC zaten dururdu), "yalnız kütüphane sıcaklığı kullanılır" **uyarı**, ara
+  sıcaklıklar tek **bilgi** bulgusu.
+- `kosucu.tally_metni`: ağ filtreli (MultiIndex) tablolar ham döküm yerine biçimli tablo
+  (`ağ N (x=…, y=…, z=…)` etiketi; en çok 200 satır).
+- `foton`, `sicaklik` ayar alanları yoksa kurulan model ve üretilen betik değişmez
+  (`testler/veri/y7_altin_pinhucre.py`).
+
 ## 2.0.0 — 02.10.2026
 
 ### Ortam

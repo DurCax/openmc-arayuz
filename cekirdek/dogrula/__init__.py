@@ -43,13 +43,28 @@ import os
 
 from cekirdek.sema import kor_yuksekligi as sema_kor_yuksekligi
 from cekirdek.sema import BOSLUK, malzeme_bul, cubuk_bul, plaka_bul, demet_bul
-from cekirdek import altigen, kurucu, veri_bilgi, sema
+from cekirdek import altigen, veri_bilgi, sema
 from cekirdek import kaynak as _kaynak
 # "Bu modelde ne gecerli?" kurallarinin TEK kaynagi. Arayuz ayni kurallarla
 # secenekleri gizler/suzer; burada ayni kurali ihlal eden (elle yazilmis)
 # dosyalar yakalanir. Kural burada TEKRAR YAZILMAZ.
 from cekirdek import uygunluk
 from cekirdek.ceviri import _n
+
+
+def __getattr__(ad):
+    """Eski ad alani: dogrula.kurucu tembel (kurucu openmc'yi yukler; acilista
+    gerekmez -- H1b). PEP 562."""
+    if ad == "kurucu":
+        from cekirdek import kurucu
+        globals()["kurucu"] = kurucu        # sonraki erisim dogrudan
+        return kurucu
+    raise AttributeError("module %r has no attribute %r" % (__name__, ad))
+
+
+def __dir__():
+    return sorted(set(globals()) | {"kurucu"})
+
 
 # Alt moduller (bolunme: Dalga 0). Bugunku butun herkese acik ve testlerin/
 # arayuzun kullandigi ozel adlar burada yeniden dis verilir; boylece
@@ -77,6 +92,9 @@ from cekirdek.dogrula.eksenel import (  # noqa: F401
 from cekirdek.dogrula.tukenme import (  # noqa: F401
     _SPEKTRUM_ADI, tukenme_kontrol)
 from cekirdek.dogrula.spektrum import spektrum_kontrol  # noqa: F401  (Y3)
+from cekirdek.dogrula.y7 import y7_kontrol  # noqa: F401  (Y7)
+from cekirdek.dogrula.yuzey import yuzey_kontrol  # noqa: F401  (Y7)
+from cekirdek.dogrula.mgxs import mgxs_kontrol  # noqa: F401  (Y8)
 from cekirdek.dogrula.ayar import (  # noqa: F401
     ayar_kontrol)
 from cekirdek.dogrula.kaynak import (  # noqa: F401
@@ -111,6 +129,9 @@ def tum_kontroller(spec, veri_kontrolu=True):
     bulgular += tukenme_kontrol(spec, veri_kontrolu)
     bulgular += tally_kontrol(spec)
     bulgular += spektrum_kontrol(spec)            # Y3
+    bulgular += y7_kontrol(spec, veri_kontrolu)   # Y7: foton, sicaklik
+    bulgular += yuzey_kontrol(spec)               # Y7: yuzey akimi tally'leri
+    bulgular += mgxs_kontrol(spec)                # Y8
     bulgular += guc_dagilimi_kontrol(spec)
     bulgular += referans_kontrol(spec)
     # nuklid kontrolu malzemeleri kurmayi gerektirir; once temel hatalar temiz olmali

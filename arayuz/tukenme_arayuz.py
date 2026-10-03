@@ -113,8 +113,9 @@ class TukenmeArayuzu:
         self.zincir_bilgi.setObjectName("soluk")
         self.zincir_bilgi.setWordWrap(True)
         self.entegrator = QtWidgets.QComboBox()
-        self.entegrator.addItem(_("CECM (öngörücü-düzeltici, adım başına 2 transport)"), "cecm")
-        self.entegrator.addItem(_("Predictor (adım başına 1 transport, kaba)"), "predictor")
+        from arayuz.tukenme_y4 import TukenmeGenisletme, entegrator_doldur
+        entegrator_doldur(self.entegrator)          # v3 Y4: 8 openmc.deplete entegratoru
+        self.y4 = TukenmeGenisletme()               # sogutma, surdurme, hizli kip, arama
         self.ayir = QtWidgets.QCheckBox(_("Çubuk çubuk yanma (her örnek ayrı malzeme — çok ağır)"))
         self.ayir.setToolTip(_("Yakıtın her örneği (ör. demetteki her çubuk) ayrı yanar; "
                                "bellek ve süre örnek sayısıyla artar."))
@@ -129,6 +130,7 @@ class TukenmeArayuzu:
         gk = QtWidgets.QWidget()
         gk.setLayout(gf)
         self.gelismis.ekle(gk)
+        self.gelismis.ekle(self.y4)
 
     def _kosuyu_kur(self):
         self.d_baslat = QtWidgets.QPushButton(_("Tükenmeyi başlat"))
@@ -201,13 +203,15 @@ class TukenmeArayuzu:
         self.sonuc_kutusu = bil.Kart(_("Sonuç"), eylem=self.csv_dugmesi)
         for w in (self.onceki_etiket, self.bulunamayan_etiket, self.tuval, self.tablo):
             self.sonuc_kutusu.ekle(w)
+        from arayuz.tukenme_cikti_panel import TukenmeCiktiPaneli
+        self.cikti_paneli = TukenmeCiktiPaneli()    # v3 Y4
         self.icerik = QtWidgets.QWidget()
         ic = QtWidgets.QVBoxLayout(self.icerik)
         ic.setContentsMargins(0, 0, 0, 0)
         ic.setSpacing(A["l"])
         ic.addWidget(self.var)
         for w in (self.ayar_kutusu, self.izlenen_kutusu, self.kosu_kutusu,
-                  self.sonuc_kutusu, self.ayrinti):
+                  self.sonuc_kutusu, self.cikti_paneli, self.ayrinti):
             ic.addWidget(w)
         ic.addStretch(1)
         duzen = sd.sayfa_duzeni(self)

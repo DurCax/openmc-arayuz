@@ -175,6 +175,10 @@ class AnalizSekmesi(QtWidgets.QWidget):
         from arayuz.analiz.kinetik import KinetikKarti
         self.kinetik = KinetikKarti()
         ic.addWidget(self.kinetik)
+        # Y8: grup sabitleri, MG ve random ray (arayuz/analiz/mgxs.py)
+        from arayuz.analiz.mgxs import MgxsKarti
+        self.mgxs = MgxsKarti()
+        ic.addWidget(self.mgxs)
         ic.addStretch(1)
         duzen = sd.sayfa_duzeni(self)
         duzen.addWidget(sd.sayfa_basligi(_("Analiz"), aciklama(_(
@@ -189,6 +193,7 @@ class AnalizSekmesi(QtWidgets.QWidget):
     # ==================================================================
     def kapi_ayarla(self, fonksiyon):
         self._kapi = fonksiyon
+        self.mgxs.kapi_ayarla(fonksiyon)
 
     def spec_ayarla(self, spec, proje_yolu=None):
         """
@@ -198,6 +203,7 @@ class AnalizSekmesi(QtWidgets.QWidget):
         """
         self.spec = spec
         self.proje_yolu = proje_yolu
+        self.mgxs.spec_ayarla(spec, proje_yolu)
         self._listeleri_doldur()
         self.kapi_guncelle()
         self._tahmin_guncelle()
@@ -223,6 +229,7 @@ class AnalizSekmesi(QtWidgets.QWidget):
         self.ilerleme.setValue(0)
         self.hedef.clear()         # onceki projenin hedefi yeni projeye tasinmasin
         self.kinetik.sifirla()
+        self.mgxs.sifirla()
         self._sonuc_gorunumu()
         self.kapi_guncelle()
         self.sonuc_degisti.emit()
