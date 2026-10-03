@@ -38,7 +38,15 @@ python -m pip wheel --no-deps --no-build-isolation -q -w "$SAHNE/yapi" "$KAYNAK"
 
 cp "$KOK/paket/constructor/construct.yaml" "$KOK/paket/constructor/post_install.sh" \
    "$KOK/paket/constructor/kaldir.sh" "$SAHNE/yapi/"
-cp "$KOK/LICENSE" "$SAHNE/yapi/LICENSE.txt"
+# constructor lisans metnini yalniz ASCII kabul eder: Turkce harfler sadelestirilir
+python - "$KOK/LICENSE" "$SAHNE/yapi/LICENSE.txt" <<'PY'
+import sys, unicodedata
+tablo = str.maketrans({"\u0131": "i", "\u0130": "I", "\u2019": "'", "\u2018": "'",
+                       "\u201c": '"', "\u201d": '"', "\u2013": "-", "\u2014": "-"})
+metin = open(sys.argv[1], encoding="utf-8").read().translate(tablo)
+metin = unicodedata.normalize("NFKD", metin).encode("ascii", "ignore").decode("ascii")
+open(sys.argv[2], "w", encoding="ascii").write(metin)
+PY
 # P2 dosyalari (varsa) kurulum agacina girer; yoksa bos dizin
 if [ -d "$KOK/paket/masaustu" ]; then
     cp -R "$KOK/paket/masaustu/." "$SAHNE/masaustu/"
