@@ -1,0 +1,418 @@
+{
+  "surum": 1,
+  "ad": "Gd'li süper hücrede tükenme (yanabilir zehir)",
+  "aciklama": "Tükenme bölgesi bölme (v3 Y5): pwr_gd_tukenme.json ile aynı model, ama Gd'li pelet tek malzeme (UO2 %2.0 + %8 Gd2O3) ve Tükenme › Bölge bölme ile 5 EŞİT HACİMLİ halkaya bölünür. Eşit hacimli 5 halka, eski örneğin elle yazılmış eşit alanlı halkalarıyla aynı yarıçapları verir (0.18318 / 0.25905 / 0.31727 / 0.36636 / 0.4096 cm); her halka ayrı malzeme olarak yanar. Halka sayısını ve türünü (eşit hacim / eşit kalınlık / dışa incelen) değiştirip k(t) ve Gd-157 eğrisinin yakınsamasını sınayın (kılavuz ders 5.20). Güç yoğunluğu 38 W/gHM; adımlar CECM ve ≤ 1 MWd/kg (bkz. pwr_gd_tukenme.json: öngörücü ve büyük adım iç halkaların yanmasını eksik hesaplar). Öğretim amaçlıdır; sertifika değildir.",
+  "malzemeler": [
+    {
+      "ad": "uo2",
+      "gorunen_ad": "UO2 %4.0",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 10.4
+      },
+      "sicaklik": 900.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "U",
+          "miktar": 1.0,
+          "birim": "ao",
+          "zenginlik": 4.0
+        },
+        {
+          "tur": "element",
+          "isim": "O",
+          "miktar": 2.0,
+          "birim": "ao"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        222,
+        93,
+        40
+      ]
+    },
+    {
+      "ad": "uo2_gd",
+      "gorunen_ad": "UO2 %2.0 + %8 Gd2O3",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 10.2
+      },
+      "sicaklik": 900.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "U",
+          "miktar": 0.81098,
+          "birim": "wo",
+          "zenginlik": 2.0
+        },
+        {
+          "tur": "element",
+          "isim": "O",
+          "miktar": 0.119612,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Gd",
+          "miktar": 0.069408,
+          "birim": "wo"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        120,
+        170,
+        60
+      ]
+    },
+    {
+      "ad": "helyum",
+      "gorunen_ad": "He",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 0.0018
+      },
+      "sicaklik": 600.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "He",
+          "miktar": 1.0,
+          "birim": "ao"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        235,
+        235,
+        245
+      ]
+    },
+    {
+      "ad": "zirkaloy4",
+      "gorunen_ad": "Zircaloy-4",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 6.55
+      },
+      "sicaklik": 600.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "Zr",
+          "miktar": 98.23,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Sn",
+          "miktar": 1.45,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Fe",
+          "miktar": 0.21,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "Cr",
+          "miktar": 0.11,
+          "birim": "wo"
+        }
+      ],
+      "sab": [],
+      "renk": [
+        150,
+        150,
+        160
+      ]
+    },
+    {
+      "ad": "su",
+      "gorunen_ad": "H2O 0.700 g/cm³ + 1300 ppm B",
+      "yogunluk": {
+        "birim": "g/cm3",
+        "deger": 0.7
+      },
+      "sicaklik": 580.0,
+      "bilesim": [
+        {
+          "tur": "element",
+          "isim": "H",
+          "miktar": 11.176126561199002,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "O",
+          "miktar": 88.69941715237303,
+          "birim": "wo"
+        },
+        {
+          "tur": "element",
+          "isim": "B",
+          "miktar": 0.13,
+          "birim": "wo"
+        }
+      ],
+      "sab": [
+        "c_H_in_H2O"
+      ],
+      "renk": [
+        90,
+        150,
+        220
+      ]
+    }
+  ],
+  "cubuklar": [
+    {
+      "ad": "yakit_cubugu",
+      "tur": "silindirik",
+      "bolgeler": [
+        {
+          "r": 0.4096,
+          "malzeme": "uo2"
+        },
+        {
+          "r": 0.418,
+          "malzeme": "helyum"
+        },
+        {
+          "r": 0.475,
+          "malzeme": "zirkaloy4"
+        },
+        {
+          "r": null,
+          "malzeme": "su"
+        }
+      ]
+    },
+    {
+      "ad": "gd_cubugu",
+      "tur": "silindirik",
+      "bolgeler": [
+        {
+          "r": 0.4096,
+          "malzeme": "uo2_gd"
+        },
+        {
+          "r": 0.418,
+          "malzeme": "helyum"
+        },
+        {
+          "r": 0.475,
+          "malzeme": "zirkaloy4"
+        },
+        {
+          "r": null,
+          "malzeme": "su"
+        }
+      ]
+    }
+  ],
+  "plakalar": [],
+  "demetler": [
+    {
+      "ad": "super_hucre",
+      "tur": "kare",
+      "adim": 1.26,
+      "boyut": [
+        5,
+        5
+      ],
+      "harita": [
+        "yyyyy",
+        "yyyyy",
+        "yygyy",
+        "yyyyy",
+        "yyyyy"
+      ],
+      "anahtar": {
+        "y": "yakit_cubugu",
+        "g": "gd_cubugu"
+      },
+      "dolgu_disi": "su"
+    }
+  ],
+  "kor": {
+    "tur": "tek_demet",
+    "cubuk": null,
+    "demet": "super_hucre",
+    "plaka": null,
+    "adim": 1.26,
+    "boyut": [
+      1,
+      1
+    ],
+    "harita": [],
+    "halka_sayisi": 2,
+    "yonelim": "x",
+    "anahtar": {},
+    "yukseklik": null,
+    "yansitici": {
+      "var": false,
+      "kalinlik": 20.0,
+      "malzeme": null
+    },
+    "kabuklar": [],
+    "dolgu": null,
+    "kor_yaricap": 20.0,
+    "tambur": {
+      "sayi": 0,
+      "yaricap": 4.0,
+      "merkez_yaricap": 26.0,
+      "govde_malzeme": null,
+      "emici_malzeme": null,
+      "emici_ic_yaricap": 2.5,
+      "emici_aci": 120.0,
+      "donme": 0.0,
+      "baslangic_acisi": 0.0
+    },
+    "eksenel": {
+      "var": false,
+      "bolgeler": []
+    },
+    "sinir": {
+      "yan": "reflective",
+      "alt": "reflective",
+      "ust": "reflective"
+    }
+  },
+  "ayarlar": {
+    "mod": "eigenvalue",
+    "parcacik": 5000,
+    "cevrim": 80,
+    "pasif": 20,
+    "tohum": 1,
+    "sicaklik_yontemi": "interpolation",
+    "kaynak": {
+      "tur": "kutu",
+      "konum": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "parcacik": "neutron",
+      "kuvvet": 1.0,
+      "enerji": {
+        "tur": "watt",
+        "a": 988000.0,
+        "b": 2.249e-06,
+        "theta": 1293200.0,
+        "enerji": 14100000.0,
+        "noktalar": [],
+        "kenarlar": [],
+        "degerler": [],
+        "e0": 14080000.0,
+        "kutle_orani": 5.0,
+        "iyon_sicaklik": 20000.0
+      },
+      "aci": {
+        "tur": "izotropik",
+        "yon": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "koni_aci": 30.0
+      },
+      "alt": null,
+      "ust": null
+    },
+    "entropi_mesh": {
+      "var": true,
+      "boyut": [
+        5,
+        5,
+        1
+      ]
+    },
+    "kinetik": {
+      "var": false,
+      "nesil": 10
+    }
+  },
+  "tallyler": [
+    {
+      "ad": "reaksiyonlar",
+      "skorlar": [
+        "fission",
+        "absorption",
+        "nu-fission"
+      ],
+      "filtreler": [],
+      "nuklidler": []
+    }
+  ],
+  "guc_dagilimi": {
+    "var": false,
+    "cubuk": null,
+    "bolge": 0,
+    "skor": "kappa-fission",
+    "eksenel_dilim": 20,
+    "toplam_guc": null
+  },
+  "tukenme": {
+    "var": true,
+    "zincir": "termal",
+    "guc_yogunlugu": 38.0,
+    "adimlar": [
+      0.02,
+      0.08,
+      0.4,
+      0.5,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+    ],
+    "adim_birimi": "MWd/kg",
+    "entegrator": "cecm",
+    "malzemeleri_ayir": false,
+    "ek_malzemeler": [],
+    "izlenen": [
+      "U235",
+      "Pu239",
+      "Xe135",
+      "Sm149",
+      "Gd155",
+      "Gd157"
+    ],
+    "bolme": {
+      "cubuklar": [
+        {
+          "cubuk": "gd_cubugu",
+          "halka": 5,
+          "tur": "esit_hacim"
+        }
+      ]
+    }
+  },
+  "calistirma": {
+    "is_parcacigi": 8,
+    "dizin": "kosu"
+  },
+  "baslik": "Gd'li çubukta otomatik halka bölme",
+  "kategori": "pwr",
+  "seviye": "ileri",
+  "baslik_en": "Gadolinia pin with automatic ring subdivision",
+  "aciklama_en": "Depletion region subdivision (v3 Y5): the same model as pwr_gd_tukenme.json, but the Gd pellet is a single material (UO2 2.0% + 8% Gd2O3) and is split into 5 EQUAL-VOLUME rings by Depletion > Region subdivision. Five equal-volume rings give the same radii as the hand-written equal-area rings of the old example (0.18318 / 0.25905 / 0.31727 / 0.36636 / 0.4096 cm); every ring burns as its own material. Change the ring count and type (equal volume / equal thickness / thinning outward) to test convergence of k(t) and the Gd-157 curve (guide lesson 5.20). Power density 38 W/gHM; CECM with steps <= 1 MWd/kg. For teaching only; not a certification."
+}

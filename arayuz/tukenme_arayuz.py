@@ -116,6 +116,8 @@ class TukenmeArayuzu:
         from arayuz.tukenme_y4 import TukenmeGenisletme, entegrator_doldur
         entegrator_doldur(self.entegrator)          # v3 Y4: 8 openmc.deplete entegratoru
         self.y4 = TukenmeGenisletme()               # sogutma, surdurme, hizli kip, arama
+        from arayuz.tukenme_bolme import TukenmeBolme
+        self.bolme = TukenmeBolme()                 # v3 Y5: halka / eksenel bolme sihirbazi
         self.ayir = QtWidgets.QCheckBox(_("Çubuk çubuk yanma (her örnek ayrı malzeme — çok ağır)"))
         self.ayir.setToolTip(_("Yakıtın her örneği (ör. demetteki her çubuk) ayrı yanar; "
                                "bellek ve süre örnek sayısıyla artar."))
@@ -192,13 +194,17 @@ class TukenmeArayuzu:
         self.ayar_kutusu = bil.Kart(_("Yanma ayarları"))
         self.ayar_kutusu.govde.addLayout(self.ayar_formu)
         self.ayar_kutusu.ekle(self.gelismis)
+        self.bolme_kutusu = bil.Kart(_("Bölge bölme"), _(
+            "Pinleri halkalara, katmanları dilimlere bölüp her halkayı ve dilimi ayrı yakar "
+            "(yanabilir zehirli Gd pinleri için önemli)."))
+        self.bolme_kutusu.ekle(self.bolme)
         self.izlenen_kutusu = bil.Kart(_("İzlenen nüklidler"))
         self.izlenen_kutusu.ekle(self.izlenen)
         self.kosu_kutusu = bil.Kart(_("Koşu"))
         self.kosu_kutusu.ekle(sd.kosu_satiri(self.d_baslat, self.d_durdur, self.ilerleme))
         self.kosu_kutusu.ekle(self.kapi_etiket)
         self.kosu_kutusu.ekle(self.sure_etiket)
-        for kart in (self.ayar_kutusu, self.izlenen_kutusu, self.kosu_kutusu):
+        for kart in (self.ayar_kutusu, self.bolme_kutusu, self.izlenen_kutusu, self.kosu_kutusu):
             kart.setMaximumWidth(FORM_GENISLIGI)
         self.sonuc_kutusu = bil.Kart(_("Sonuç"), eylem=self.csv_dugmesi)
         for w in (self.onceki_etiket, self.bulunamayan_etiket, self.tuval, self.tablo):
@@ -210,7 +216,7 @@ class TukenmeArayuzu:
         ic.setContentsMargins(0, 0, 0, 0)
         ic.setSpacing(A["l"])
         ic.addWidget(self.var)
-        for w in (self.ayar_kutusu, self.izlenen_kutusu, self.kosu_kutusu,
+        for w in (self.ayar_kutusu, self.bolme_kutusu, self.izlenen_kutusu, self.kosu_kutusu,
                   self.sonuc_kutusu, self.cikti_paneli, self.ayrinti):
             ic.addWidget(w)
         ic.addStretch(1)

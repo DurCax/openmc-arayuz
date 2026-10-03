@@ -179,6 +179,10 @@ class AnalizSekmesi(QtWidgets.QWidget):
         from arayuz.analiz.mgxs import MgxsKarti
         self.mgxs = MgxsKarti()
         ic.addWidget(self.mgxs)
+        # Y5: dal tablosu (yanma x T_yakit x C_bor; arayuz/analiz/dal.py)
+        from arayuz.analiz.dal import DalKarti
+        self.dal = DalKarti()
+        ic.addWidget(self.dal)
         ic.addStretch(1)
         duzen = sd.sayfa_duzeni(self)
         duzen.addWidget(sd.sayfa_basligi(_("Analiz"), aciklama(_(
@@ -194,6 +198,7 @@ class AnalizSekmesi(QtWidgets.QWidget):
     def kapi_ayarla(self, fonksiyon):
         self._kapi = fonksiyon
         self.mgxs.kapi_ayarla(fonksiyon)
+        self.dal.kapi_ayarla(fonksiyon)
 
     def spec_ayarla(self, spec, proje_yolu=None):
         """
@@ -204,6 +209,7 @@ class AnalizSekmesi(QtWidgets.QWidget):
         self.spec = spec
         self.proje_yolu = proje_yolu
         self.mgxs.spec_ayarla(spec, proje_yolu)
+        self.dal.spec_ayarla(spec, proje_yolu)
         self._listeleri_doldur()
         self.kapi_guncelle()
         self._tahmin_guncelle()
@@ -230,6 +236,7 @@ class AnalizSekmesi(QtWidgets.QWidget):
         self.hedef.clear()         # onceki projenin hedefi yeni projeye tasinmasin
         self.kinetik.sifirla()
         self.mgxs.sifirla()
+        self.dal.sifirla()
         self._sonuc_gorunumu()
         self.kapi_guncelle()
         self.sonuc_degisti.emit()

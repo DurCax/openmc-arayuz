@@ -10,6 +10,10 @@ değiştirerek iki soruyu yanıtlar:
 - **Kritik arama (hedef k-eff'i veren değer):** hedef k-eff'i (çoğunlukla 1) veren parametre
   değeri bulunur (kritik bor, kritik çubuk konumu, kritik tambur açısı…).
 
+Sayfanın altındaki ek kartlar: [Dal tablosu](04h4-dal-tablosu.md#dal) (tükenme sonucunun yanma
+adımlarında sabit bileşimle T_yakıt × C_bor × T_mod koşulları),
+[Grup sabitleri](04h3-grup-sabitleri.md#mgxs) ve [nokta kinetiği](04h2-kinetik.md).
+
 Her nokta **ayrı bir OpenMC koşusudur**; iş arka planda yürür, arayüz donmaz ve **Durdur**
 ile istenildiği an kesilebilir. Noktalar modelin [Hesap ayarları](04f-hesap-ayarlari.md#hesap-ayarlari)
 sayfasındaki parçacık/çevrim değerleriyle koşulur. Analiz ayarları spec'e **yazılmaz**;

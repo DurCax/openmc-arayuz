@@ -111,6 +111,7 @@ class TukenmeSekmesi(SekmeTabani, SonucBolumu, TukenmeArayuzu):
         self.adimlar.editingFinished.connect(self._kaydet)
         self.ek_liste.degisti.connect(self._kaydet)
         self.y4.degisti.connect(self._kaydet)
+        self.bolme.degisti.connect(self._kaydet)
         self._gorunum_guncelle()
 
     # ==================================================================
@@ -133,6 +134,7 @@ class TukenmeSekmesi(SekmeTabani, SonucBolumu, TukenmeArayuzu):
         self.izlenen.secim_ayarla(list(t.get("izlenen") or []), sinyal=False)
         self.ek_liste.doldur(self.spec)
         self.y4.doldur(self.spec)
+        self.bolme.doldur(self.spec)         # v3 Y5
         self._ozet_guncelle()
         self._onceki_yukle()
 
@@ -183,6 +185,7 @@ class TukenmeSekmesi(SekmeTabani, SonucBolumu, TukenmeArayuzu):
         t["izlenen"] = self.izlenen.secim()
         t["ek_malzemeler"] = self.ek_liste.secim()
         self.y4.yaz(t)                       # v3 Y4 (varsayilanlar yazilmaz)
+        self.bolme.yaz(t)                    # v3 Y5 (bolme yoksa anahtar yazilmaz)
         self.y4.gorunum(t["entegrator"])
         self._ozet_guncelle()
         self.bildir()
@@ -333,6 +336,7 @@ class TukenmeSekmesi(SekmeTabani, SonucBolumu, TukenmeArayuzu):
             self.bos.ayarla(metin=_cumle(neden or _("model uygun değil")))
         self.icerik.setVisible(uygun or kosuyor)
         self.ayar_kutusu.setVisible(acik)
+        self.bolme_kutusu.setVisible(acik)
         self.izlenen_kutusu.setVisible(acik or self.sonuc_var())
         self.kosu_kutusu.setVisible(acik or kosuyor)
         self.aciklama.setVisible(True)

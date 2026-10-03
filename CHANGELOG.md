@@ -19,6 +19,24 @@ gelir (`pyproject.toml` → `cekirdek/surum.py`). Ayrıntılı değişiklikler `
 - Özdeğer hesabında ağ tally'si varsa filtresiz `mesh_genel_isi` tally'si (`kappa-fission`,
   `heating-local`) eklenir; mutlak normalizasyonun paydası buradan okunur.
 
+### Yeni — tükenme bölgesi bölme ve dal tabloları (v3 Y5)
+- **Tükenme › Bölge bölme** kartı (`tukenme.bolme`, `cekirdek/bolge_bol.py`): pini radyal halkalara
+  (eşit hacim / eşit kalınlık / dışa incelen) ve eksenel katmanları dilimlere böler; her parça ayrı
+  tükenme malzemesi (Serpent `div`). Spec düzeyinde uygulanır, çubuk çubuk yanma otomatik açılır;
+  K3 pin gücü bölünen pinin bütün halkalarını toplar. Bölme yalnız `tukenme.var` açıkken kurucu ve
+  betikte görünür; gelişmiş (ağaç) modda desteklenmez (doğrulama HATA).
+- **Analiz › Dal tablosu** kartı (`cekirdek/dal.py`): tükenme sonucunun yanma adımlarında bileşim
+  sabit, T_yakıt × C_bor × T_mod/ρ_mod koşulları; Y10 kuyruğunda; k ± σ, Δk [pcm], CSV; terminal
+  `python3 -m cekirdek.dal`. Örnek `ornekler/bolme/pwr_gd_bolme.json`; kılavuz 4.9.2, dal kartı, ders 5.20.
+- Doğrulanan: halka alanları toplamı analitik hacme 1e-9 içinde (3 tür, 2B/3B); eşit hacimli 5 halka
+  eski `pwr_gd_tukenme` halkalarıyla aynı yarıçap; bölünmüş demette K3 pin gücü bölünmemişle 4σ içinde
+  (en kötü 3.4σ), toplam güç aynı; betik = kurucu; dal taban k = tükenme k ve adım-0 dalı tek değişkenli
+  tarama (T_yakıt, bor) 2σ içinde. Gd pininde 6 MWd/kg'da kalan Gd-157: bölmesiz 0.198, 3/5/8 halka
+  0.295/0.309/0.313 (k farkları istatistik düzeyinde, eşik yok). Doğrulanmayan: kor ölçeğinde bölme
+  maliyeti, eksenel dilimin k(t) etkisi, dal tablosunun çekirdek simülatörü HFP/HZP tablolarıyla kıyası.
+- Davranış: `tukenme.bolme` yoksa hiçbir şey değişmez. `kod_uret.uret` sonunda openmc kimlik
+  sayacı sıfırlanır (çubuk çubuk yanma hesapları kimlik tüketiyordu).
+
 ### Yeni — grup sabitleri, çok gruplu MC ve random ray (v3 Y8)
 - **Analiz › Grup sabitleri ve random ray** kartı: `openmc.mgxs` ile akı ağırlıklı grup sabitleri
   (bölge: malzeme / hücre / demet; CASMO-2…70, XMAS-172; taşıma düzeltmesi yok / P0), tablo,

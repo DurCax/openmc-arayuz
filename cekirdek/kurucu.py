@@ -376,6 +376,8 @@ def kur(spec):
       bilgi : {"malzemeler", "renkler", "universeler", "sinir_kutu"}
     """
     openmc.reset_auto_ids()          # ardarda kurulumlarda id cakismasini onler
+    from cekirdek import bolge_bol
+    spec = bolge_bol.uygula(spec)    # v3 Y5: tukenme.bolme (yalniz tukenme.var acikken)
 
     nesneler, materials, renkler = malzemeleri_kur(spec)
     universeler = {}
