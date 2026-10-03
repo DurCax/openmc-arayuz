@@ -22,7 +22,7 @@ gelir (`pyproject.toml` → `cekirdek/surum.py`). Ayrıntılı değişiklikler `
   Malzemeler en küçük yüksekliği, TRISO malzeme adı değişikliği, pebble XML içe aktarma reddi) ve
   1'i kişisel yol denetimi; hepsi düzeltildi ve yeniden koşuldu (aşağıdaki son durum). Toplam kapsam
   **%91.8** (`cekirdek` + `arayuz`).
-- **Hızlı süit** (son durum): SON_HIZLI.
+- **Hızlı süit** (son durum, `v3.0.0`): 1492 geçti / 0 kaldı; düzeltilen 7 testin dosyaları yeniden koşuldu: 69/69 geçti; fizik çapaları 13/13.
 - **Fizik çapaları:** k∞ çapası, Godiva, betik ↔ kurucu eşdeğerliği, geometri parmak izi kapısı geçti;
   v3'te fizik değiştiren her iş (Y1 mesh, Y3 dört faktör, Y4 tükenme, Y5 bölme, Y6 kinetik, Y7 foton/
   sıcaklık/yüzey, Y8 grup sabitleri, Y9 TRISO/ağırlık penceresi, K3 pin gücü, K4 yerel k) analitik
@@ -34,7 +34,10 @@ gelir (`pyproject.toml` → `cekirdek/surum.py`). Ayrıntılı değişiklikler `
 - **Hız (SFR-MET1000):** açılış 7.8 → ~1.2 s, gelişmiş geometriye geçiş 32.6 → 0.7 s, tuş başına
   2.9 → ~0.07 s, doğrulama zamanlayıcısı 12.4 → 0.02 s (nokta yoklaması arka plan sürecinde),
   önizleme 10.8 s donma → 1.6 s (ayrı süreç, en uzun donma ~120 ms).
-- **İzlenebilirlik** (`docs/IZLENEBILIRLIK.md`): 98 gereksinim (32'si yeni R-V3), testsiz 0.
+- **İzlenebilirlik** (`docs/IZLENEBILIRLIK.md`, tam süit + yeniden koşu JUnit'i): 98 gereksinim (32'si yeni
+  R-V3) — 92 geçti, 5 inceleme, 1 KALDI, testsiz 0. Matris en kötü sonucu gösterir: R-S-15'in
+  `test_uretilen_belge_guncel` testi tam süitte matris belgesi henüz yenilenmediği için kaldı; belge
+  yenilendikten sonra test geçiyor (yeniden koşu 11/11), satır bilerek muhafazakâr bırakıldı.
 - **V&V** (`docs/VV.md`): 24 yeni LEU oksit kafes vakası (TCA LCT-006 ×18, LCT-008 ×6); LEU
   termal alt kümesi için USL = 0.9275 (n = 24, NUREG/CR-6698).
 - **Bağımsız denetimler:** her v3 işi Python/güvenlik incelemesi ve fizik işleri profesör gözü

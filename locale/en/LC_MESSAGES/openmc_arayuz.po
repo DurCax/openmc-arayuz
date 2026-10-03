@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmc-arayuz 2.0.0.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-03 22:27+0300\n"
+"POT-Creation-Date: 2026-10-04 00:33+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -22512,6 +22512,10 @@ msgstr "top"
 #: arayuz/geometri/sinir_formu.py:99
 msgid "üst sınır"
 msgstr "top boundary"
+
+#: cekirdek/geometri/ice_aktar.py:389
+msgid "üç boyutlu kare kafes (ör. TRISO parçacık kafesi) desteklenmiyor"
+msgstr "three-dimensional rectangular lattice (e.g. a TRISO particle lattice) is not supported"
 
 #: cekirdek/rapor_sablon/uygunluk_eki.py:29
 msgid "İU"
