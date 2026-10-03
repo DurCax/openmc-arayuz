@@ -3686,6 +3686,10 @@ msgstr ""
 "the lattice has more than %d different universes; the map letters are not"
 " enough"
 
+#: cekirdek/geometri/ice_aktar.py:389
+msgid "üç boyutlu kare kafes (ör. TRISO parçacık kafesi) desteklenmiyor"
+msgstr "three-dimensional rectangular lattice (e.g. a TRISO particle lattice) is not supported"
+
 #: cekirdek/geometri/ice_aktar.py:388
 #, python-format
 msgid "kare olmayan kafes adımı (%g × %g)"
