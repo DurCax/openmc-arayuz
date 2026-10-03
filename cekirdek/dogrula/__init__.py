@@ -96,6 +96,7 @@ from cekirdek.dogrula.y7 import y7_kontrol  # noqa: F401  (Y7)
 from cekirdek.dogrula.yuzey import yuzey_kontrol  # noqa: F401  (Y7)
 from cekirdek.dogrula.mgxs import mgxs_kontrol  # noqa: F401  (Y8)
 from cekirdek.dogrula.triso import triso_kontrol  # noqa: F401  (Y9)
+from cekirdek.dogrula.varyans import varyans_kontrol  # noqa: F401  (Y9)
 from cekirdek.dogrula.ayar import (  # noqa: F401
     ayar_kontrol)
 from cekirdek.dogrula.kaynak import (  # noqa: F401
@@ -134,6 +135,7 @@ def tum_kontroller(spec, veri_kontrolu=True):
     bulgular += yuzey_kontrol(spec)               # Y7: yuzey akimi tally'leri
     bulgular += mgxs_kontrol(spec)                # Y8
     bulgular += triso_kontrol(spec)               # Y9: TRISO kompakt / pebble
+    bulgular += varyans_kontrol(spec)             # Y9: agirlik pencereleri
     bulgular += guc_dagilimi_kontrol(spec)
     bulgular += referans_kontrol(spec)
     # nuklid kontrolu malzemeleri kurmayi gerektirir; once temel hatalar temiz olmali

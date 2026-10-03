@@ -111,21 +111,21 @@ def zirh_agirlik_pencere():
     d["kategori"], d["seviye"] = "zirh", "ileri"
     d["ad"] = "Derin nufuz zirhi: su/celik/su + dedektor (agirlik penceresi dersi)"
     d["aciklama"] = (
-        "Sabit kaynak: merkezde 14.1 MeV D-T nokta kaynagi; 35 cm su, 20 cm celik, 30 cm su "
+        "Sabit kaynak: merkezde 14.1 MeV D-T nokta kaynagi; 35 cm su, 40 cm celik, 30 cm su "
         "ve en dista 5 cm'lik dedektor suyu. Tally dedektor malzemesindeki akidir. Analog "
         "kosuda dedektore ulasan parcacik cok azdir; Hesap ayarlari > Gelismis > Varyans "
         "azaltma ile MAGIC agirlik pencereleri uretilip uygulanir ve FOM karsilastirilir. "
         "Sonuc yanliliksizdir: iki yontem istatistik icinde ayni degeri verir. "
         "Sertifika degildir; olculen FOM kartinin sonuc kisminda yazilidir.")
     d["aciklama_en"] = (
-        "Fixed source: a 14.1 MeV D-T point source at the centre; 35 cm water, 20 cm steel, "
+        "Fixed source: a 14.1 MeV D-T point source at the centre; 35 cm water, 40 cm steel, "
         "30 cm water and a 5 cm detector water shell at the outside. The tally is the flux in the "
         "detector material. In an analog run very few particles reach the detector; generate and "
         "apply MAGIC weight windows under Settings > Advanced > Variance reduction and compare "
         "the FOM. The result is unbiased: both methods agree within statistics. Not a "
         "certification.")
-    d["kor"]["kabuklar"] = [{"r": 35.0, "malzeme": "su"}, {"r": 55.0, "malzeme": "celik"},
-                            {"r": 85.0, "malzeme": "su"}, {"r": 90.0, "malzeme": "dedektor"}]
+    d["kor"]["kabuklar"] = [{"r": 35.0, "malzeme": "su"}, {"r": 75.0, "malzeme": "celik"},
+                            {"r": 105.0, "malzeme": "su"}, {"r": 110.0, "malzeme": "dedektor"}]
     d["tallyler"] = [{"ad": "aki_dedektor", "skorlar": ["flux"], "nuklidler": [],
                       "filtreler": [{"tur": "malzeme", "adlar": ["dedektor"]}]}]
     d["ayarlar"]["parcacik"], d["ayarlar"]["cevrim"] = 20000, 40

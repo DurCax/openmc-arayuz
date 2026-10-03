@@ -10,6 +10,7 @@
     "mod": "uret" | "uret_uygula" | "uygula",
     "yontem": "magic",                       # fw_cadis: asagiya bakin
     "parcacik": "neutron" | "photon",
+    "mesh_turu": "duzenli" | "kuresel",      # kuresel: r, theta, phi (kuresel duzenekte)
     "mesh_boyut": [nx, ny, nz],              # modelin sinir kutusunda duzenli ag
     "enerji_siniri": [E0, E1, ...] [eV],     # bos: tek enerji grubu (OpenMC varsayilani)
     "max_gerceklesme": 10, "guncelleme_araligi": 1,
@@ -58,6 +59,8 @@ YONTEMLER = ("magic",)
 MODLAR = ("uret", "uret_uygula", "uygula")
 PARCACIKLAR = ("neutron", "photon")
 VARSAYILAN_BOYUT = (10, 10, 10)
+VARSAYILAN_KURESEL = (20, 1, 1)       # kuresel ag: yaricap bolmesi, theta, phi
+MESH_TURLERI = ("duzenli", "kuresel")
 VARSAYILAN_MAX_GERCEKLESME = 10      # OpenMC varsayilani 1; MAGIC icin birkac gerceklesme gerekir
 VARSAYILAN_ARALIK = 1                # OpenMC varsayilani
 EN_COK_HUCRE = 2_000_000             # ag hucresi ust siniri (bellek: hucre x enerji grubu)
@@ -72,6 +75,7 @@ class VaryansAyari:
     yontem: str = "magic"
     parcacik: str = "neutron"
     boyut: Tuple[int, int, int] = VARSAYILAN_BOYUT
+    mesh_turu: str = "duzenli"
     enerji_siniri: Tuple[float, ...] = ()
     max_gerceklesme: int = VARSAYILAN_MAX_GERCEKLESME
     aralik: int = VARSAYILAN_ARALIK
@@ -96,14 +100,19 @@ def ayar(spec: dict) -> VaryansAyari:
     parcacik = ham.get("parcacik") or "neutron"
     if parcacik not in PARCACIKLAR:
         raise ValueError(_("bilinmeyen parçacık türü: %r") % (parcacik,))
-    boyut = _boyut(ham.get("mesh_boyut"))
+    mesh_turu = ham.get("mesh_turu") or "duzenli"
+    if mesh_turu not in MESH_TURLERI:
+        raise ValueError(_("bilinmeyen ağ türü: %r (geçerli: %s)")
+                         % (mesh_turu, ", ".join(MESH_TURLERI)))
+    boyut = _boyut(ham.get("mesh_boyut"), mesh_turu)
     enerji = _enerji(ham.get("enerji_siniri"))
     max_g = _tam(ham.get("max_gerceklesme", VARSAYILAN_MAX_GERCEKLESME), "max_gerceklesme")
     aralik = _tam(ham.get("guncelleme_araligi", VARSAYILAN_ARALIK), "guncelleme_araligi")
     dosya = ham.get("dosya") or None
     if mod == "uygula" and not dosya:
         raise ValueError(_("'uygula' modu için pencere dosyası (.h5 ya da wwinp) gerekli"))
-    return VaryansAyari(True, mod, yontem, parcacik, boyut, enerji, max_g, aralik, dosya)
+    return VaryansAyari(True, mod, yontem, parcacik, boyut, mesh_turu, enerji, max_g, aralik,
+                        dosya)
 
 
 def _tam(deger, ad: str) -> int:
@@ -116,9 +125,9 @@ def _tam(deger, ad: str) -> int:
     return v
 
 
-def _boyut(ham) -> Tuple[int, int, int]:
+def _boyut(ham, mesh_turu: str = "duzenli") -> Tuple[int, int, int]:
     if ham is None:
-        return VARSAYILAN_BOYUT
+        return VARSAYILAN_KURESEL if mesh_turu == "kuresel" else VARSAYILAN_BOYUT
     if not isinstance(ham, (list, tuple)) or len(ham) != 3:
         raise ValueError(_("ağ boyutu [nx, ny, nz] olmalı"))
     boyut = tuple(_tam(v, "mesh_boyut") for v in ham)
@@ -173,16 +182,38 @@ def uygula(settings, spec: dict, sinir_kutu) -> None:
         settings.weight_windows_on = True
         return
     alt, ust = mesh_sinirlari(spec, sinir_kutu)
-    mesh = openmc.RegularMesh()
-    mesh.dimension = list(a.boyut)
-    mesh.lower_left = alt
-    mesh.upper_right = ust
+    if a.mesh_turu == "kuresel":
+        g = kuresel_izgaralar(a.boyut, ust[0])
+        mesh = openmc.SphericalMesh(r_grid=g[0], theta_grid=g[1], phi_grid=g[2])
+    else:
+        mesh = openmc.RegularMesh()
+        mesh.dimension = list(a.boyut)
+        mesh.lower_left = alt
+        mesh.upper_right = ust
     kw = {"energy_bounds": list(a.enerji_siniri)} if a.enerji_siniri else {}
     uygulaniyor = a.mod == "uret_uygula"
     settings.weight_window_generators = openmc.WeightWindowGenerator(
         mesh, particle_type=a.parcacik, method=a.yontem, max_realizations=a.max_gerceklesme,
         update_interval=a.aralik, on_the_fly=uygulaniyor, **kw)
     settings.weight_windows_on = uygulaniyor
+
+
+def kuresel_izgaralar(boyut, yaricap: float):
+    """(r, theta, phi) izgaralari: r 0..yaricap, theta 0..pi, phi 0..2pi, esit aralikli."""
+    import math
+    def lin(a, b, n):
+        return [a + (b - a) * i / n for i in range(n + 1)]
+    return (lin(0.0, float(yaricap), boyut[0]), lin(0.0, math.pi, boyut[1]),
+            lin(0.0, 2.0 * math.pi, boyut[2]))
+
+
+def _mesh_satirlari(a: "VaryansAyari", alt, ust) -> List[str]:
+    if a.mesh_turu == "kuresel":
+        g = kuresel_izgaralar(a.boyut, ust[0])
+        return ["_ww_ag = openmc.SphericalMesh(r_grid=%r, theta_grid=%r, phi_grid=%r)" % g]
+    return ["_ww_ag = openmc.RegularMesh()", "_ww_ag.dimension = %r" % list(a.boyut),
+            "_ww_ag.lower_left = %r" % (tuple(alt),),
+            "_ww_ag.upper_right = %r" % (tuple(ust),)]
 
 
 def betik_satirlari(spec: dict, sinir_kutu) -> List[str]:
@@ -203,10 +234,7 @@ def betik_satirlari(spec: dict, sinir_kutu) -> List[str]:
     baslik = ("koşu sırasında üretilir ve uygulanır" if uygulaniyor
               else "yalnız üretilir (analog taşıma); weight_windows.h5 yazılır")
     return ["# varyans azaltma: MAGIC ağırlık penceresi üreteci (%s)" % baslik,
-            "_ww_ag = openmc.RegularMesh()",
-            "_ww_ag.dimension = %r" % list(a.boyut),
-            "_ww_ag.lower_left = %r" % (tuple(alt),),
-            "_ww_ag.upper_right = %r" % (tuple(ust),),
+            *_mesh_satirlari(a, alt, ust),
             "ayar.weight_window_generators = openmc.WeightWindowGenerator(_ww_ag, "
             "particle_type=%r, method=%r, max_realizations=%d, update_interval=%d, "
             "on_the_fly=%s%s)" % (a.parcacik, a.yontem, a.max_gerceklesme, a.aralik,
